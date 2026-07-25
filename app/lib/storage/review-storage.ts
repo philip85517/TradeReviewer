@@ -32,7 +32,29 @@ export function loadReviewState(
 
   try {
     const parsed = JSON.parse(serialized) as StoredReviewState;
-    return parsed.version === 1 ? parsed : null;
+    if (
+      parsed.version !== 1 ||
+      typeof parsed.replayCursor !== "string" ||
+      typeof parsed.thesis !== "string" ||
+      !Array.isArray(parsed.drawings)
+    ) {
+      return null;
+    }
+    return {
+      ...parsed,
+      drawings: parsed.drawings
+        .filter(
+          (drawing) =>
+            drawing &&
+            typeof drawing.id === "string" &&
+            Array.isArray(drawing.anchors),
+        )
+        .map((drawing) => ({
+          ...drawing,
+          createdAtCursor:
+            drawing.createdAtCursor ?? parsed.replayCursor,
+        })),
+    };
   } catch {
     return null;
   }

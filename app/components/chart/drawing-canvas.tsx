@@ -106,7 +106,12 @@ export function DrawingCanvas({
     context.clearRect(0, 0, size.width, size.height);
 
     const coordinates = (anchor: DrawingAnchor) => {
-      const projectedX = coordinateAdapter?.timeToX(anchor.time);
+      const nearestCandle =
+        candles.find((candle) => candle.time >= anchor.time) ??
+        candles.at(-1);
+      const projectedX = coordinateAdapter?.timeToX(
+        nearestCandle?.time ?? anchor.time,
+      );
       const projectedY = coordinateAdapter?.priceToY(anchor.price);
       if (
         projectedX !== null &&

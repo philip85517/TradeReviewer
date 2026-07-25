@@ -9,7 +9,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import Decimal from "decimal.js";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { Drawing, DrawingTool } from "../lib/chart/drawings";
 import {
@@ -30,11 +30,12 @@ import {
   saveReviewState,
 } from "../lib/storage/review-storage";
 import {
-  loadImportedEpisodes,
-  saveImportedEpisodes,
+  loadImportedExecutions,
+  mergeExecutions,
+  saveImportedExecutions,
 } from "../lib/storage/import-library";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
-import type { TradeEpisode } from "../lib/trades/types";
+import type { TradeExecution } from "../lib/trades/types";
 import { ChartToolbar } from "./chart/chart-toolbar";
 import { DrawingToolbar } from "./chart/drawing-toolbar";
 import { ReplayChart } from "./chart/replay-chart";
@@ -77,17 +78,22 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   const [frame, setFrame] = useState(initialFrame);
   const [playing, setPlaying] = useState(false);
   const [stepping, setStepping] = useState(false);
+  const [restoring, setRestoring] = useState(true);
+  const [replayError, setReplayError] = useState<string | null>(null);
   const [speed, setSpeed] = useState(700);
   const [activeTool, setActiveTool] = useState<DrawingTool>("cursor");
   const [drawings, setDrawings] = useState<Drawing[]>([]);
   const [drawingHistory, setDrawingHistory] = useState<Drawing[][]>([]);
   const [redoHistory, setRedoHistory] = useState<Drawing[][]>([]);
   const [thesis, setThesis] = useState(DEFAULT_THESIS);
-  const [importedEpisodes, setImportedEpisodes] = useState<TradeEpisode[]>([]);
+  const [importedExecutions, setImportedExecutions] = useState<
+    TradeExecution[]
+  >([]);
   const [selectedEpisodeId, setSelectedEpisodeId] = useState("demo");
   const [diagnostics, setDiagnostics] = useState<ImportDiagnostic[]>([]);
   const [importing, setImporting] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const replayRequestSequence = useRef(0);
 
   const cursor = frame.cursor;
   const chartCandles = useMemo(
@@ -107,6 +113,12 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     () => visibleDrawingsAtCursor(drawings, cursor, timeframe),
     [cursor, drawings, timeframe],
   );
+  const allDrawingsLocked =
+    drawings.length > 0 && drawings.every((drawing) => drawing.locked);
+  const importedEpisodes = useMemo(
+    () => buildTradeEpisodes(importedExecutions),
+    [importedExecutions],
+  );
   const selectedImportedEpisode = importedEpisodes.find(
     (episode) => episode.id === selectedEpisodeId,
   );
@@ -115,32 +127,65 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     mode: DemoReplayMode,
     requestedCursor = cursor,
   ) {
-    if (stepping) return;
+    if (stepping || restoring) return;
+    const requestId = ++replayRequestSequence.current;
     setStepping(true);
+    setReplayError(null);
     try {
       const nextFrame = await fetchDemoFrame(mode, requestedCursor);
+      if (requestId !== replayRequestSequence.current) return;
       setFrame(nextFrame);
       if (!nextFrame.canGoForward) setPlaying(false);
+    } catch {
+      if (requestId !== replayRequestSequence.current) return;
+      setPlaying(false);
+      setReplayError("回放数据暂时无法读取，请重试。");
     } finally {
-      setStepping(false);
+      if (requestId === replayRequestSequence.current) {
+        setStepping(false);
+      }
     }
   }
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
+      const requestId = ++replayRequestSequence.current;
       const stored = loadReviewState(REVIEW_ID);
-      setImportedEpisodes(loadImportedEpisodes());
+      setImportedExecutions(loadImportedExecutions());
       if (stored) {
-        if (stored.replayCursor !== initialFrame.cursor) {
-          void fetchDemoFrame("restore", stored.replayCursor).then(setFrame);
-        }
         setTimeframe(stored.timeframe);
         setThesis(stored.thesis);
         setDrawings(stored.drawings);
       }
-      setHydrated(true);
+
+      const restore = async () => {
+        try {
+          if (stored && stored.replayCursor !== initialFrame.cursor) {
+            const restoredFrame = await fetchDemoFrame(
+              "restore",
+              stored.replayCursor,
+            );
+            if (requestId === replayRequestSequence.current) {
+              setFrame(restoredFrame);
+            }
+          }
+        } catch {
+          if (requestId === replayRequestSequence.current) {
+              setReplayError("上次回放位置无法恢复，已从安全起点开始。");
+          }
+        } finally {
+          if (requestId === replayRequestSequence.current) {
+            setRestoring(false);
+            setHydrated(true);
+          }
+        }
+      };
+      void restore();
     });
-    return () => window.cancelAnimationFrame(frame);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      replayRequestSequence.current += 1;
+    };
   }, [initialFrame.cursor]);
 
   useEffect(() => {
@@ -156,18 +201,37 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
 
   useEffect(() => {
     if (!playing) return;
-    if (!frame.canGoForward || stepping) return;
+    if (!frame.canGoForward || stepping || restoring) return;
     const timeout = window.setTimeout(() => {
+      const requestId = ++replayRequestSequence.current;
       setStepping(true);
+      setReplayError(null);
       void fetchDemoFrame("next", frame.cursor)
         .then((nextFrame) => {
+          if (requestId !== replayRequestSequence.current) return;
           setFrame(nextFrame);
           if (!nextFrame.canGoForward) setPlaying(false);
         })
-        .finally(() => setStepping(false));
+        .catch(() => {
+          if (requestId !== replayRequestSequence.current) return;
+          setPlaying(false);
+          setReplayError("回放数据暂时无法读取，请重试。");
+        })
+        .finally(() => {
+          if (requestId === replayRequestSequence.current) {
+            setStepping(false);
+          }
+        });
     }, speed);
     return () => window.clearTimeout(timeout);
-  }, [frame.canGoForward, frame.cursor, playing, speed, stepping]);
+  }, [
+    frame.canGoForward,
+    frame.cursor,
+    playing,
+    restoring,
+    speed,
+    stepping,
+  ]);
 
   function commitDrawings(next: Drawing[]) {
     setDrawingHistory((history) => [...history, drawings]);
@@ -204,18 +268,16 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
         sourceTimezone: "Asia/Shanghai",
       });
       setDiagnostics(result.diagnostics);
-      const parsedEpisodes = buildTradeEpisodes(result.records);
-      const mergedEpisodes = [
-        ...new Map(
-          [...importedEpisodes, ...parsedEpisodes].map((episode) => [
-            episode.id,
-            episode,
-          ]),
-        ).values(),
-      ];
-      setImportedEpisodes(mergedEpisodes);
-      saveImportedEpisodes(mergedEpisodes);
-      if (parsedEpisodes[0]) setSelectedEpisodeId(parsedEpisodes[0].id);
+      const mergedExecutions = mergeExecutions(
+        importedExecutions,
+        result.records,
+      );
+      const rebuiltEpisodes = buildTradeEpisodes(mergedExecutions);
+      setImportedExecutions(mergedExecutions);
+      saveImportedExecutions(mergedExecutions);
+      if (rebuiltEpisodes[0]) {
+        setSelectedEpisodeId(rebuiltEpisodes[0].id);
+      }
     } catch {
       setDiagnostics([
         {
@@ -224,7 +286,6 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
           message: "文件无法读取，请确认这是富途导出的 XLSX 对账单。",
         },
       ]);
-      setImportedEpisodes([]);
     } finally {
       setImporting(false);
     }
@@ -289,16 +350,31 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
           {selectedImportedEpisode ? (
             <ImportedEpisodeReview episode={selectedImportedEpisode} />
           ) : (
-          <div className="chart-layout">
+            <div className="chart-layout">
             <DrawingToolbar
               activeTool={activeTool}
               canUndo={drawingHistory.length > 0}
               canRedo={redoHistory.length > 0}
+              allLocked={allDrawingsLocked}
               onToolChange={setActiveTool}
               onUndo={undoDrawing}
               onRedo={redoDrawing}
+              onToggleLock={() => {
+                if (drawings.length === 0) return;
+                commitDrawings(
+                  drawings.map((drawing) => ({
+                    ...drawing,
+                    locked: !allDrawingsLocked,
+                  })),
+                );
+              }}
               onClear={() => {
-                if (drawings.length > 0) commitDrawings([]);
+                const lockedDrawings = drawings.filter(
+                  (drawing) => drawing.locked,
+                );
+                if (lockedDrawings.length !== drawings.length) {
+                  commitDrawings(lockedDrawings);
+                }
               }}
             />
             <div className="chart-column">
@@ -367,8 +443,8 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
                 <ReplayControls
                   playing={playing}
                   speed={speed}
-                  canGoBack={frame.canGoBack && !stepping}
-                  canGoForward={frame.canGoForward && !stepping}
+                  canGoBack={frame.canGoBack && !stepping && !restoring}
+                  canGoForward={frame.canGoForward && !stepping && !restoring}
                   onPrevious={() => {
                     setPlaying(false);
                     void requestFrame("previous");
@@ -385,6 +461,11 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
                   onSpeedChange={setSpeed}
                 />
                 <div className="replay-status">
+                  {replayError && (
+                    <span className="replay-error" role="alert">
+                      {replayError}
+                    </span>
+                  )}
                   <CalendarDays size={14} />
                   <span>游标之后的数据未加载</span>
                   <span className="status-separator">·</span>

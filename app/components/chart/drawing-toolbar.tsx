@@ -32,20 +32,24 @@ type Props = {
   activeTool: DrawingTool;
   canUndo: boolean;
   canRedo: boolean;
+  allLocked: boolean;
   onToolChange: (tool: DrawingTool) => void;
   onUndo: () => void;
   onRedo: () => void;
   onClear: () => void;
+  onToggleLock: () => void;
 };
 
 export function DrawingToolbar({
   activeTool,
   canUndo,
   canRedo,
+  allLocked,
   onToolChange,
   onUndo,
   onRedo,
   onClear,
+  onToggleLock,
 }: Props) {
   return (
     <div className="drawing-toolbar" aria-label="绘图工具">
@@ -64,7 +68,12 @@ export function DrawingToolbar({
         );
       })}
       <div className="drawing-divider" />
-      <button aria-label="锁定图形" title="锁定图形">
+      <button
+        className={allLocked ? "active" : ""}
+        aria-label={allLocked ? "解锁全部图形" : "锁定全部图形"}
+        title={allLocked ? "解锁全部图形" : "锁定全部图形"}
+        onClick={onToggleLock}
+      >
         <Lock size={18} />
       </button>
       <button

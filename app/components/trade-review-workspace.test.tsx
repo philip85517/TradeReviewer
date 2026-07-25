@@ -1,6 +1,13 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import type { DemoReplayFrame } from "../lib/demo/replay-frame";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
@@ -42,6 +49,8 @@ const nextFrame: DemoReplayFrame = {
 };
 
 describe("TradeReviewWorkspace", () => {
+  afterEach(() => cleanup());
+
   beforeEach(() => {
     window.localStorage.clear();
     vi.stubGlobal(
@@ -82,5 +91,19 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.getByTestId("replay-cursor")).toHaveTextContent(
       cursorAfterAdvance ?? "",
     );
+  });
+
+  it("stops replay and reports a recoverable message when a step fails", async () => {
+    const user = userEvent.setup();
+    vi.mocked(fetch).mockRejectedValueOnce(new Error("offline"));
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await user.click(
+      screen.getByRole("button", { name: "下一根 K 线" }),
+    );
+
+    expect(
+      await screen.findByRole("alert"),
+    ).toHaveTextContent("回放数据暂时无法读取");
   });
 });

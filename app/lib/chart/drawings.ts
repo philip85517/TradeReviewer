@@ -81,12 +81,9 @@ export function visibleDrawingsAtCursor(
   timeframe: Timeframe,
 ) {
   return drawings.filter((drawing) => {
-    const knowledgeTime =
-      drawing.createdAtCursor ??
-      drawing.anchors.reduce(
-        (latest, anchor) => (anchor.time > latest ? anchor.time : latest),
-        "",
-      );
+    // Missing metadata is legacy/unknown knowledge. Storage migration assigns
+    // the saved replay cursor; direct unknown values stay hidden conservatively.
+    const knowledgeTime = drawing.createdAtCursor ?? "\uffff";
     const visibleOnTimeframe =
       drawing.visibleOn === "all" ||
       drawing.visibleOn.includes(timeframe);

@@ -158,6 +158,7 @@ export function ReplayChart({
         });
 
         chart.subscribeCrosshairMove((param) => {
+          setCoordinateVersion((version) => version + 1);
           if (!param.time) {
             setCrosshair(null);
             return;
@@ -283,7 +284,15 @@ export function ReplayChart({
   const displayCandle = crosshair ?? candles.at(-1);
 
   return (
-    <div className="chart-stage">
+    <div
+      className="chart-stage"
+      onPointerMove={() =>
+        setCoordinateVersion((version) => version + 1)
+      }
+      onWheel={() =>
+        setCoordinateVersion((version) => version + 1)
+      }
+    >
       <div className="chart-ohlc">
         <span>
           {crosshair

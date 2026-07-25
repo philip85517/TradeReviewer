@@ -1,36 +1,47 @@
-import type { TradeEpisode } from "../trades/types";
+import type { TradeExecution } from "../trades/types";
 
-const STORAGE_KEY = "trade-reviewer:imports:v1";
+const STORAGE_KEY = "trade-reviewer:executions:v1";
 
-function isEpisode(value: unknown): value is TradeEpisode {
+function isExecution(value: unknown): value is TradeExecution {
   if (!value || typeof value !== "object") return false;
-  const candidate = value as Partial<TradeEpisode>;
+  const candidate = value as Partial<TradeExecution>;
   return (
     typeof candidate.id === "string" &&
     typeof candidate.accountId === "string" &&
+    typeof candidate.executedAt === "string" &&
+    typeof candidate.quantity === "string" &&
+    typeof candidate.price === "string" &&
     typeof candidate.instrument?.id === "string" &&
-    typeof candidate.instrument.symbol === "string" &&
-    Array.isArray(candidate.executions) &&
-    candidate.executions.every(
-      (execution) =>
-        execution &&
-        typeof execution.id === "string" &&
-        typeof execution.executedAt === "string" &&
-        (execution.side === "buy" || execution.side === "sell"),
-    )
+    (candidate.side === "buy" || candidate.side === "sell")
   );
 }
 
-export function saveImportedEpisodes(episodes: TradeEpisode[]) {
+export function mergeExecutions(
+  current: TradeExecution[],
+  incoming: TradeExecution[],
+) {
+  return [
+    ...new Map(
+      [...current, ...incoming].map((execution) => [
+        execution.id,
+        execution,
+      ]),
+    ).values(),
+  ].sort((a, b) => a.executedAt.localeCompare(b.executedAt));
+}
+
+export function saveImportedExecutions(executions: TradeExecution[]) {
   if (typeof window === "undefined") return;
-  const unique = [...new Map(episodes.map((item) => [item.id, item])).values()];
   window.localStorage.setItem(
     STORAGE_KEY,
-    JSON.stringify({ version: 1, episodes: unique }),
+    JSON.stringify({
+      version: 1,
+      executions: mergeExecutions([], executions),
+    }),
   );
 }
 
-export function loadImportedEpisodes(): TradeEpisode[] {
+export function loadImportedExecutions(): TradeExecution[] {
   if (typeof window === "undefined") return [];
   const serialized = window.localStorage.getItem(STORAGE_KEY);
   if (!serialized) return [];
@@ -38,10 +49,10 @@ export function loadImportedEpisodes(): TradeEpisode[] {
   try {
     const parsed = JSON.parse(serialized) as {
       version?: unknown;
-      episodes?: unknown;
+      executions?: unknown;
     };
-    if (parsed.version !== 1 || !Array.isArray(parsed.episodes)) return [];
-    return parsed.episodes.filter(isEpisode);
+    if (parsed.version !== 1 || !Array.isArray(parsed.executions)) return [];
+    return mergeExecutions([], parsed.executions.filter(isExecution));
   } catch {
     return [];
   }

@@ -36,4 +36,23 @@ describe("review storage", () => {
 
     expect(loadReviewState("episode-1")).toEqual(state);
   });
+
+  it("migrates legacy drawings to the saved replay knowledge boundary", () => {
+    const legacyDrawing = { ...drawing };
+    delete legacyDrawing.createdAtCursor;
+    window.localStorage.setItem(
+      "trade-reviewer:review:v1:legacy",
+      JSON.stringify({
+        version: 1,
+        replayCursor: "2025-01-10T00:00:00.000Z",
+        timeframe: "1D",
+        thesis: "",
+        drawings: [legacyDrawing],
+      }),
+    );
+
+    expect(
+      loadReviewState("legacy")?.drawings[0].createdAtCursor,
+    ).toBe("2025-01-10T00:00:00.000Z");
+  });
 });

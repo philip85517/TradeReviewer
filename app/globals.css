@@ -893,6 +893,14 @@ input:focus-visible {
   font-size: 8px;
 }
 
+.replay-error {
+  max-width: 230px;
+  overflow: hidden;
+  color: #ff8a88;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .status-separator {
   margin: 0 3px;
   color: #3d4b5e;

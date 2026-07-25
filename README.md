@@ -1,98 +1,59 @@
-# vinext-starter
+# TradeReview
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+一个本地优先的历史交易复盘工具。它把券商成交组织为交易回合，并在隐藏未来行情、未来成交和最终盈亏的前提下逐根回放 K 线，帮助用户重新经历当时的判断与风险。
 
-## Prerequisites
+## 当前可用能力
 
-- Node.js `>=22.13.0`
+- TradingView 风格的专业图表工作区
+- 15 分钟、1 小时、4 小时、日线和周线切换
+- 上一根、下一根、自动播放和跳至下一成交
+- 已揭示持仓、移动平均成本、浮动盈亏、收益率和费用
+- 买卖成交箭头与成本线
+- 趋势线、水平线、价格标注、文字和盈亏比绘图工具
+- 绘图撤销、重做、清空以及浏览器本地保存
+- 交易计划、失效条件、目标区间和最大风险记录
+- 富途 XLSX 在浏览器本地解析、重复检测、诊断和交易回合分组
 
-## Quick Start
+## 隐私与数据边界
+
+- `trades/` 下的原始券商文件被 Git 忽略，不会进入提交或部署。
+- 富途文件只在浏览器中解析，不会上传。
+- 当前复盘草稿使用浏览器 `localStorage` 保存在本设备。
+- 图表中的行情为确定性演示数据，不能用于真实投资判断。
+- 导入的真实成交会完成解析与分组，但在接入合法历史行情数据源前不会与演示行情混合。
+
+## 本地运行
+
+需要 Node.js `>=22.13.0`。
 
 ```bash
 npm install
 npm run dev
+```
+
+打开 `http://localhost:3000/`。
+
+## 验证
+
+```bash
+npm run test:unit
+npm run typecheck
+npm run lint
 npm run build
+npm test
 ```
 
-This starter does not use `wrangler.jsonc`.
+## 主要技术
 
-## Included Shape
+- React 19、TypeScript、vinext/Vite
+- TradingView Lightweight Charts（Apache-2.0）
+- SheetJS XLSX
+- Decimal.js
+- Vitest 与 Testing Library
 
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
+## 当前限制
 
-## Workspace Auth Headers
-
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
-```
-
-## Optional Dispatch-Owned ChatGPT Sign-In
-
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
-
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
-
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+- Tiger 与招商证券 PDF 适配器尚未进入首个垂直切片。
+- 尚未连接真实的美股、港股和 A 股历史行情提供商。
+- 当前绘图工具集为首批插件，图层面板和更多斐波那契/通道工具将在后续迭代。
+- 数据默认只保存在当前浏览器，尚无跨设备同步。

@@ -190,4 +190,32 @@ describe("parseFutuWorkbook", () => {
       }),
     );
   });
+
+  it("uses workbook content in execution identity even when filenames match", () => {
+    const base = [
+      "2025-03-13 00:38:57",
+      "美股账户",
+      "0855",
+      "证券",
+      "BABA",
+      "US",
+      "买入开仓",
+      "20250313",
+      "USD",
+      "20",
+      "137.65",
+      "-2753",
+      "2.05",
+      "-2755.05",
+    ];
+    const first = parseFutuWorkbook(workbookBuffer([base]), {
+      fileName: "成交.xlsx",
+    });
+    const second = parseFutuWorkbook(
+      workbookBuffer([[...base.slice(0, 9), "21", ...base.slice(10)]]),
+      { fileName: "成交.xlsx" },
+    );
+
+    expect(first.records[0].id).not.toBe(second.records[0].id);
+  });
 });

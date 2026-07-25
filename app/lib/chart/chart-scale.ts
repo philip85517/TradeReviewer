@@ -15,3 +15,14 @@ export function priceRangeForCandles(candles: Candle[]) {
     priceRange: Math.max(maxPrice - minPrice, 0.01),
   };
 }
+
+export function containingCandleTime(
+  candles: Candle[],
+  anchorTime: string,
+) {
+  if (candles.length === 0) return anchorTime;
+  return (
+    candles.findLast((candle) => candle.time <= anchorTime)?.time ??
+    candles[0].time
+  );
+}

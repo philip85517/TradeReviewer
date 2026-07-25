@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { priceRangeForCandles } from "./chart-scale";
+import {
+  containingCandleTime,
+  priceRangeForCandles,
+} from "./chart-scale";
 
 describe("priceRangeForCandles", () => {
   it("uses the visible candle range instead of forcing the scale to include zero", () => {
@@ -32,5 +35,35 @@ describe("priceRangeForCandles", () => {
       maxPrice: 1,
       priceRange: 1,
     });
+  });
+});
+
+describe("containingCandleTime", () => {
+  it("maps an intraday anchor to the preceding daily bucket", () => {
+    const candles = [
+      {
+        time: "2026-07-23T13:30:00.000Z",
+        open: 10,
+        high: 11,
+        low: 9,
+        close: 10,
+        volume: 1,
+      },
+      {
+        time: "2026-07-24T13:30:00.000Z",
+        open: 10,
+        high: 11,
+        low: 9,
+        close: 10,
+        volume: 1,
+      },
+    ];
+
+    expect(
+      containingCandleTime(
+        candles,
+        "2026-07-23T18:15:00.000Z",
+      ),
+    ).toBe("2026-07-23T13:30:00.000Z");
   });
 });

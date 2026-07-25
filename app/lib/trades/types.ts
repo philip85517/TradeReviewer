@@ -15,6 +15,7 @@ export type TradeExecution = {
     sheet?: string;
     row: number;
     fileName?: string;
+    fileFingerprint?: string;
     sourceTimestampText?: string;
     sourceTimezone?: string;
   };

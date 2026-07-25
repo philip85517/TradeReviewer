@@ -7,7 +7,10 @@ import type {
   DrawingAnchor,
   DrawingTool,
 } from "../../lib/chart/drawings";
-import { priceRangeForCandles } from "../../lib/chart/chart-scale";
+import {
+  containingCandleTime,
+  priceRangeForCandles,
+} from "../../lib/chart/chart-scale";
 import type { Candle } from "../../lib/market/types";
 
 type Props = {
@@ -106,11 +109,8 @@ export function DrawingCanvas({
     context.clearRect(0, 0, size.width, size.height);
 
     const coordinates = (anchor: DrawingAnchor) => {
-      const nearestCandle =
-        candles.find((candle) => candle.time >= anchor.time) ??
-        candles.at(-1);
       const projectedX = coordinateAdapter?.timeToX(
-        nearestCandle?.time ?? anchor.time,
+        containingCandleTime(candles, anchor.time),
       );
       const projectedY = coordinateAdapter?.priceToY(anchor.price);
       if (

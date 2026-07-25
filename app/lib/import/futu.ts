@@ -28,6 +28,7 @@ export type FutuSourceTimezone =
 type ParseFutuOptions = {
   sourceTimezone?: FutuSourceTimezone;
   fileName?: string;
+  sourceFileId?: string;
 };
 
 function text(value: unknown) {
@@ -72,12 +73,27 @@ function accountLabel(name: unknown, id: string) {
   return `${text(name) || "券商账户"} · ${lastFour || "----"}`;
 }
 
+function workbookFingerprint(input: ArrayBuffer | Uint8Array) {
+  const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
+  let first = 0x811c9dc5;
+  let second = 0x9e3779b9;
+  for (const byte of bytes) {
+    first = Math.imul(first ^ byte, 0x01000193);
+    second = Math.imul(second ^ (byte + first), 0x85ebca6b);
+  }
+  return [first, second]
+    .map((value) => (value >>> 0).toString(16).padStart(8, "0"))
+    .join("");
+}
+
 export function parseFutuWorkbook(
   input: ArrayBuffer | Uint8Array,
   options: ParseFutuOptions = {},
 ): ImportResult<TradeExecution> {
   const sourceTimezone = options.sourceTimezone ?? "Asia/Shanghai";
   const sourceFileName = options.fileName ?? "futu-workbook.xlsx";
+  const sourceFileId =
+    options.sourceFileId ?? workbookFingerprint(input);
   const workbook = XLSX.read(input, { type: "array", cellDates: false });
   const sheet = workbook.Sheets[TRADE_SHEET];
   const diagnostics: ImportDiagnostic[] = [];
@@ -179,12 +195,13 @@ export function parseFutuWorkbook(
     const market = marketFor(row["交易所/市场"]);
 
     records.push({
-      id: `futu:${sourceFileName}:${TRADE_SHEET}:${sourceRow}`,
+      id: `futu:${sourceFileId}:${TRADE_SHEET}:${sourceRow}`,
       source: {
         platform: "futu",
         sheet: TRADE_SHEET,
         row: sourceRow,
         fileName: sourceFileName,
+        fileFingerprint: sourceFileId,
         sourceTimestampText,
         sourceTimezone,
       },

@@ -16,9 +16,20 @@ type Props = {
   drawings: Drawing[];
   activeTool: DrawingTool;
   onAddDrawing: (drawing: Drawing) => void;
+  coordinateAdapter?: ChartCoordinateAdapter;
+  coordinateVersion?: number;
 };
 
 type CanvasSize = { width: number; height: number };
+
+export type ChartCoordinateAdapter = {
+  timeToX: (time: string) => number | null;
+  priceToY: (price: number) => number | null;
+  xToTime: (x: number) => string | null;
+  yToPrice: (y: number) => number | null;
+};
+
+const FALLBACK_ADAPTER_VERSION = 0;
 
 function drawingId() {
   return `drawing-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -30,6 +41,8 @@ export function DrawingCanvas({
   drawings,
   activeTool,
   onAddDrawing,
+  coordinateAdapter,
+  coordinateVersion = FALLBACK_ADAPTER_VERSION,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [size, setSize] = useState<CanvasSize>({ width: 0, height: 0 });
@@ -38,6 +51,15 @@ export function DrawingCanvas({
   const { minPrice, maxPrice, priceRange } = priceRangeForCandles(candles);
 
   function anchorFromPoint(x: number, y: number): DrawingAnchor {
+    const projectedTime = coordinateAdapter?.xToTime(x);
+    const projectedPrice = coordinateAdapter?.yToPrice(y);
+    if (projectedTime && projectedPrice !== null && projectedPrice !== undefined) {
+      return {
+        time: projectedTime > cursor ? cursor : projectedTime,
+        price: Number(projectedPrice.toFixed(2)),
+      };
+    }
+
     const index = Math.max(
       0,
       Math.min(
@@ -84,6 +106,17 @@ export function DrawingCanvas({
     context.clearRect(0, 0, size.width, size.height);
 
     const coordinates = (anchor: DrawingAnchor) => {
+      const projectedX = coordinateAdapter?.timeToX(anchor.time);
+      const projectedY = coordinateAdapter?.priceToY(anchor.price);
+      if (
+        projectedX !== null &&
+        projectedX !== undefined &&
+        projectedY !== null &&
+        projectedY !== undefined
+      ) {
+        return { x: projectedX, y: projectedY };
+      }
+
       const index = Math.max(
         0,
         candles.findIndex((candle) => candle.time >= anchor.time),
@@ -165,7 +198,16 @@ export function DrawingCanvas({
     }
 
     context.globalAlpha = 1;
-  }, [candles, drawings, maxPrice, minPrice, priceRange, size]);
+  }, [
+    candles,
+    coordinateAdapter,
+    coordinateVersion,
+    drawings,
+    maxPrice,
+    minPrice,
+    priceRange,
+    size,
+  ]);
 
   function createSingleAnchorDrawing(anchor: DrawingAnchor) {
     const tool = activeTool;

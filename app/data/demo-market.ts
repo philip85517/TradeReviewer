@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { Candle } from "../lib/market/types";
 
 const BARS_PER_SESSION = 26;
@@ -49,5 +51,3 @@ export const demoCandles15m: Candle[] = (() => {
 
   return candles;
 })();
-
-export const demoInitialCursorIndex = 430;

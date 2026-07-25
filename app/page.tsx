@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { TradeReviewWorkspace } from "./components/trade-review-workspace";
+import { getDemoReplayFrame } from "./lib/demo/server-replay-provider";
 
 export const metadata: Metadata = {
   title: "TradeReview — 历史交易复盘",
@@ -9,5 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <TradeReviewWorkspace />;
+  return (
+    <TradeReviewWorkspace initialFrame={getDemoReplayFrame()} />
+  );
 }

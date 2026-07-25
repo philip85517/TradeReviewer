@@ -20,22 +20,33 @@ const REQUIRED_HEADERS = [
 ] as const;
 
 type FutuRow = Record<string, string | number | null | undefined>;
+export type FutuSourceTimezone =
+  | "Asia/Shanghai"
+  | "Asia/Hong_Kong"
+  | "UTC";
+
+type ParseFutuOptions = {
+  sourceTimezone?: FutuSourceTimezone;
+  fileName?: string;
+};
 
 function text(value: unknown) {
   return String(value ?? "").trim();
 }
 
-function decimal(value: unknown) {
+function decimal(value: unknown, allowBlank = false) {
   const normalized = text(value).replaceAll(",", "");
-  return new Decimal(normalized || 0).abs().toString();
+  if (!normalized && allowBlank) return "0";
+  if (!normalized) throw new Error("missing numeric value");
+  return new Decimal(normalized).abs().toString();
 }
 
-function normalizeTime(value: unknown) {
+function normalizeTime(value: unknown, timezone: FutuSourceTimezone) {
   const source = text(value);
   const isoLike = source.includes("T") ? source : source.replace(" ", "T");
   const withZone = /(?:Z|[+-]\d{2}:\d{2})$/.test(isoLike)
     ? isoLike
-    : `${isoLike}Z`;
+    : `${isoLike}${timezone === "UTC" ? "Z" : "+08:00"}`;
   const parsed = new Date(withZone);
   return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
 }
@@ -61,20 +72,12 @@ function accountLabel(name: unknown, id: string) {
   return `${text(name) || "券商账户"} · ${lastFour || "----"}`;
 }
 
-function fingerprint(row: FutuRow) {
-  return [
-    text(row["账户号码"]),
-    text(row["成交时间"]),
-    text(row["代码名称"]),
-    text(row["方向"]),
-    decimal(row["数量/面值"]),
-    decimal(row["价格"]),
-  ].join("|");
-}
-
 export function parseFutuWorkbook(
   input: ArrayBuffer | Uint8Array,
+  options: ParseFutuOptions = {},
 ): ImportResult<TradeExecution> {
+  const sourceTimezone = options.sourceTimezone ?? "Asia/Shanghai";
+  const sourceFileName = options.fileName ?? "futu-workbook.xlsx";
   const workbook = XLSX.read(input, { type: "array", cellDates: false });
   const sheet = workbook.Sheets[TRADE_SHEET];
   const diagnostics: ImportDiagnostic[] = [];
@@ -119,8 +122,6 @@ export function parseFutuWorkbook(
   }
 
   const records: TradeExecution[] = [];
-  const seen = new Set<string>();
-
   rows.forEach((row, index) => {
     const sourceRow = index + 2;
 
@@ -136,7 +137,11 @@ export function parseFutuWorkbook(
     }
 
     const side = sideFor(row["方向"]);
-    const executedAt = normalizeTime(row["成交时间"]);
+    const sourceTimestampText = text(row["成交时间"]);
+    const executedAt = normalizeTime(
+      row["成交时间"],
+      sourceTimezone,
+    );
     if (!side || !executedAt) {
       diagnostics.push({
         severity: "warning",
@@ -148,29 +153,40 @@ export function parseFutuWorkbook(
       return;
     }
 
-    const rowFingerprint = fingerprint(row);
-    if (seen.has(rowFingerprint)) {
+    let quantity: string;
+    let price: string;
+    let fee: string;
+    try {
+      quantity = decimal(row["数量/面值"]);
+      price = decimal(row["价格"]);
+      fee = decimal(row["总费用"], true);
+      if (new Decimal(quantity).lte(0) || new Decimal(price).lte(0)) {
+        throw new Error("quantity and price must be positive");
+      }
+    } catch {
       diagnostics.push({
         severity: "warning",
-        code: "duplicate-trade",
-        message: "已跳过重复成交",
+        code: "invalid-numeric-field",
+        message: "数量、价格或费用无法识别，已跳过该行",
         sheet: TRADE_SHEET,
         row: sourceRow,
       });
       return;
     }
-    seen.add(rowFingerprint);
 
     const accountId = text(row["账户号码"]);
     const symbol = text(row["代码名称"]).toUpperCase();
     const market = marketFor(row["交易所/市场"]);
 
     records.push({
-      id: `futu:${accountId}:${symbol}:${executedAt}:${sourceRow}`,
+      id: `futu:${sourceFileName}:${TRADE_SHEET}:${sourceRow}`,
       source: {
         platform: "futu",
         sheet: TRADE_SHEET,
         row: sourceRow,
+        fileName: sourceFileName,
+        sourceTimestampText,
+        sourceTimezone,
       },
       accountId,
       accountLabel: accountLabel(row["账户名称"], accountId),
@@ -183,9 +199,9 @@ export function parseFutuWorkbook(
       },
       side,
       executedAt,
-      quantity: decimal(row["数量/面值"]),
-      price: decimal(row["价格"]),
-      fee: decimal(row["总费用"]),
+      quantity,
+      price,
+      fee,
     });
   });
 

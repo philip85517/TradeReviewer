@@ -14,6 +14,9 @@ export type TradeExecution = {
     platform: string;
     sheet?: string;
     row: number;
+    fileName?: string;
+    sourceTimestampText?: string;
+    sourceTimezone?: string;
   };
   accountId: string;
   accountLabel: string;

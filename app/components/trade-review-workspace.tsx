@@ -8,15 +8,18 @@ import {
   PanelRightOpen,
   Sparkles,
 } from "lucide-react";
+import Decimal from "decimal.js";
 import { useEffect, useMemo, useState } from "react";
 
-import {
-  demoCandles15m,
-  demoInitialCursorIndex,
-} from "../data/demo-market";
-import { demoExecutions } from "../data/demo-trades";
 import type { Drawing, DrawingTool } from "../lib/chart/drawings";
-import { clampDrawingToCursor } from "../lib/chart/drawings";
+import {
+  clampDrawingToCursor,
+  visibleDrawingsAtCursor,
+} from "../lib/chart/drawings";
+import type {
+  DemoReplayFrame,
+  DemoReplayMode,
+} from "../lib/demo/replay-frame";
 import { parseFutuWorkbook } from "../lib/import/futu";
 import type { ImportDiagnostic } from "../lib/import/import-result";
 import { aggregateCandles } from "../lib/market/aggregate";
@@ -26,6 +29,10 @@ import {
   loadReviewState,
   saveReviewState,
 } from "../lib/storage/review-storage";
+import {
+  loadImportedEpisodes,
+  saveImportedEpisodes,
+} from "../lib/storage/import-library";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeEpisode } from "../lib/trades/types";
 import { ChartToolbar } from "./chart/chart-toolbar";
@@ -33,6 +40,7 @@ import { DrawingToolbar } from "./chart/drawing-toolbar";
 import { ReplayChart } from "./chart/replay-chart";
 import { ReplayControls } from "./replay/replay-controls";
 import { EpisodeSidebar } from "./review/episode-sidebar";
+import { ImportedEpisodeReview } from "./review/imported-episode-review";
 import { ThesisPanel } from "./review/thesis-panel";
 
 const REVIEW_ID = "demo-xpev-2025";
@@ -48,10 +56,27 @@ function money(value: string, currency = "USD") {
   }).format(Number(value));
 }
 
-export function TradeReviewWorkspace() {
+type Props = {
+  initialFrame: DemoReplayFrame;
+};
+
+async function fetchDemoFrame(
+  mode: DemoReplayMode,
+  cursor: string,
+) {
+  const params = new URLSearchParams({ cursor, mode });
+  const response = await fetch(`/api/demo-replay?${params}`, {
+    cache: "no-store",
+  });
+  if (!response.ok) throw new Error("replay request failed");
+  return (await response.json()) as DemoReplayFrame;
+}
+
+export function TradeReviewWorkspace({ initialFrame }: Props) {
   const [timeframe, setTimeframe] = useState<Timeframe>("1D");
-  const [cursorIndex, setCursorIndex] = useState(demoInitialCursorIndex);
+  const [frame, setFrame] = useState(initialFrame);
   const [playing, setPlaying] = useState(false);
+  const [stepping, setStepping] = useState(false);
   const [speed, setSpeed] = useState(700);
   const [activeTool, setActiveTool] = useState<DrawingTool>("cursor");
   const [drawings, setDrawings] = useState<Drawing[]>([]);
@@ -59,46 +84,56 @@ export function TradeReviewWorkspace() {
   const [redoHistory, setRedoHistory] = useState<Drawing[][]>([]);
   const [thesis, setThesis] = useState(DEFAULT_THESIS);
   const [importedEpisodes, setImportedEpisodes] = useState<TradeEpisode[]>([]);
+  const [selectedEpisodeId, setSelectedEpisodeId] = useState("demo");
   const [diagnostics, setDiagnostics] = useState<ImportDiagnostic[]>([]);
   const [importing, setImporting] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
-  const cursor = demoCandles15m[cursorIndex].time;
-  const revealedBaseCandles = useMemo(
-    () => demoCandles15m.slice(0, cursorIndex + 1),
-    [cursorIndex],
-  );
+  const cursor = frame.cursor;
   const chartCandles = useMemo(
-    () => aggregateCandles(revealedBaseCandles, timeframe),
-    [revealedBaseCandles, timeframe],
+    () => aggregateCandles(frame.candles15m, timeframe),
+    [frame.candles15m, timeframe],
   );
   const snapshot = useMemo(
     () =>
       createReplaySnapshot({
         candles: chartCandles,
-        executions: demoExecutions,
+        executions: frame.executions,
         cursor,
       }),
-    [chartCandles, cursor],
+    [chartCandles, cursor, frame.executions],
   );
   const visibleDrawings = useMemo(
-    () =>
-      drawings.filter(
-        (drawing) =>
-          drawing.visibleOn === "all" ||
-          drawing.visibleOn.includes(timeframe),
-      ),
-    [drawings, timeframe],
+    () => visibleDrawingsAtCursor(drawings, cursor, timeframe),
+    [cursor, drawings, timeframe],
   );
+  const selectedImportedEpisode = importedEpisodes.find(
+    (episode) => episode.id === selectedEpisodeId,
+  );
+
+  async function requestFrame(
+    mode: DemoReplayMode,
+    requestedCursor = cursor,
+  ) {
+    if (stepping) return;
+    setStepping(true);
+    try {
+      const nextFrame = await fetchDemoFrame(mode, requestedCursor);
+      setFrame(nextFrame);
+      if (!nextFrame.canGoForward) setPlaying(false);
+    } finally {
+      setStepping(false);
+    }
+  }
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       const stored = loadReviewState(REVIEW_ID);
+      setImportedEpisodes(loadImportedEpisodes());
       if (stored) {
-        const storedIndex = demoCandles15m.findIndex(
-          (candle) => candle.time === stored.replayCursor,
-        );
-        if (storedIndex >= 0) setCursorIndex(storedIndex);
+        if (stored.replayCursor !== initialFrame.cursor) {
+          void fetchDemoFrame("restore", stored.replayCursor).then(setFrame);
+        }
         setTimeframe(stored.timeframe);
         setThesis(stored.thesis);
         setDrawings(stored.drawings);
@@ -106,7 +141,7 @@ export function TradeReviewWorkspace() {
       setHydrated(true);
     });
     return () => window.cancelAnimationFrame(frame);
-  }, []);
+  }, [initialFrame.cursor]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -121,17 +156,18 @@ export function TradeReviewWorkspace() {
 
   useEffect(() => {
     if (!playing) return;
-    const interval = window.setInterval(() => {
-      setCursorIndex((current) => {
-        if (current >= demoCandles15m.length - 1) {
-          setPlaying(false);
-          return current;
-        }
-        return current + 1;
-      });
+    if (!frame.canGoForward || stepping) return;
+    const timeout = window.setTimeout(() => {
+      setStepping(true);
+      void fetchDemoFrame("next", frame.cursor)
+        .then((nextFrame) => {
+          setFrame(nextFrame);
+          if (!nextFrame.canGoForward) setPlaying(false);
+        })
+        .finally(() => setStepping(false));
     }, speed);
-    return () => window.clearInterval(interval);
-  }, [playing, speed]);
+    return () => window.clearTimeout(timeout);
+  }, [frame.canGoForward, frame.cursor, playing, speed, stepping]);
 
   function commitDrawings(next: Drawing[]) {
     setDrawingHistory((history) => [...history, drawings]);
@@ -160,28 +196,26 @@ export function TradeReviewWorkspace() {
     setRedoHistory((history) => history.slice(0, -1));
   }
 
-  function goToNextExecution() {
-    const nextExecution = demoExecutions.find(
-      (execution) => execution.executedAt > cursor,
-    );
-    if (!nextExecution) {
-      setCursorIndex((current) =>
-        Math.min(current + 1, demoCandles15m.length - 1),
-      );
-      return;
-    }
-    const target = demoCandles15m.findIndex(
-      (candle) => candle.time >= nextExecution.executedAt,
-    );
-    if (target >= 0) setCursorIndex(target);
-  }
-
   async function importFutu(file: File) {
     setImporting(true);
     try {
-      const result = parseFutuWorkbook(await file.arrayBuffer());
+      const result = parseFutuWorkbook(await file.arrayBuffer(), {
+        fileName: file.name,
+        sourceTimezone: "Asia/Shanghai",
+      });
       setDiagnostics(result.diagnostics);
-      setImportedEpisodes(buildTradeEpisodes(result.records));
+      const parsedEpisodes = buildTradeEpisodes(result.records);
+      const mergedEpisodes = [
+        ...new Map(
+          [...importedEpisodes, ...parsedEpisodes].map((episode) => [
+            episode.id,
+            episode,
+          ]),
+        ).values(),
+      ];
+      setImportedEpisodes(mergedEpisodes);
+      saveImportedEpisodes(mergedEpisodes);
+      if (parsedEpisodes[0]) setSelectedEpisodeId(parsedEpisodes[0].id);
     } catch {
       setDiagnostics([
         {
@@ -198,6 +232,10 @@ export function TradeReviewWorkspace() {
 
   const latestCandle = snapshot.candles.at(-1);
   const pnlPositive = Number(snapshot.position.unrealizedPnl) >= 0;
+  const netPnl = new Decimal(snapshot.position.realizedPnl)
+    .plus(snapshot.position.unrealizedPnl)
+    .minus(snapshot.position.fees)
+    .toString();
 
   return (
     <main className="trade-review-app">
@@ -234,14 +272,23 @@ export function TradeReviewWorkspace() {
           diagnostics={diagnostics}
           importing={importing}
           onImport={importFutu}
+          revealedDemoExecutions={snapshot.executions}
+          selectedEpisodeId={selectedEpisodeId}
+          onSelectEpisode={setSelectedEpisodeId}
         />
 
         <section className="review-workspace" aria-label="交易复盘图表工作区">
           <ChartToolbar
             timeframe={timeframe}
             onTimeframeChange={setTimeframe}
+            symbol={selectedImportedEpisode?.instrument.symbol}
+            instrumentName={selectedImportedEpisode?.instrument.name}
+            market={selectedImportedEpisode?.instrument.market}
           />
 
+          {selectedImportedEpisode ? (
+            <ImportedEpisodeReview episode={selectedImportedEpisode} />
+          ) : (
           <div className="chart-layout">
             <DrawingToolbar
               activeTool={activeTool}
@@ -289,6 +336,15 @@ export function TradeReviewWorkspace() {
                     </b>
                   </span>
                   <span>
+                    已实现 <b>{money(snapshot.position.realizedPnl)}</b>
+                  </span>
+                  <span>
+                    净盈亏{" "}
+                    <b className={Number(netPnl) >= 0 ? "positive" : "negative"}>
+                      {money(netPnl)}
+                    </b>
+                  </span>
+                  <span>
                     收益率{" "}
                     <b className={pnlPositive ? "positive" : "negative"}>
                       {Number(snapshot.position.returnPercent).toFixed(2)}%
@@ -311,24 +367,19 @@ export function TradeReviewWorkspace() {
                 <ReplayControls
                   playing={playing}
                   speed={speed}
-                  canGoBack={cursorIndex > 0}
-                  canGoForward={cursorIndex < demoCandles15m.length - 1}
+                  canGoBack={frame.canGoBack && !stepping}
+                  canGoForward={frame.canGoForward && !stepping}
                   onPrevious={() => {
                     setPlaying(false);
-                    setCursorIndex((current) => Math.max(0, current - 1));
+                    void requestFrame("previous");
                   }}
                   onNext={() => {
                     setPlaying(false);
-                    setCursorIndex((current) =>
-                      Math.min(
-                        demoCandles15m.length - 1,
-                        current + 1,
-                      ),
-                    );
+                    void requestFrame("next");
                   }}
                   onNextExecution={() => {
                     setPlaying(false);
-                    goToNextExecution();
+                    void requestFrame("next-execution");
                   }}
                   onTogglePlay={() => setPlaying((value) => !value)}
                   onSpeedChange={setSpeed}
@@ -343,6 +394,7 @@ export function TradeReviewWorkspace() {
               </div>
             </div>
           </div>
+          )}
         </section>
 
         <ThesisPanel thesis={thesis} onThesisChange={setThesis} />

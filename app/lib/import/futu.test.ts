@@ -90,13 +90,14 @@ describe("parseFutuWorkbook", () => {
           "92.11285091",
         ],
       ]),
+      { sourceTimezone: "Asia/Shanghai", fileName: "futu-2025.xlsx" },
     );
 
     expect(result.blocked).toBe(false);
     expect(result.records).toHaveLength(2);
     expect(result.records[0]).toMatchObject({
       side: "buy",
-      executedAt: "2025-03-13T00:38:57.000Z",
+      executedAt: "2025-03-12T16:38:57.000Z",
       quantity: "20",
       price: "137.65",
       fee: "2.05",
@@ -107,7 +108,14 @@ describe("parseFutuWorkbook", () => {
         market: "US",
         currency: "USD",
       },
-      source: { platform: "futu", sheet: "证券-交易流水", row: 2 },
+      source: {
+        platform: "futu",
+        sheet: "证券-交易流水",
+        row: 2,
+        fileName: "futu-2025.xlsx",
+        sourceTimestampText: "2025-03-13 00:38:57",
+        sourceTimezone: "Asia/Shanghai",
+      },
     });
     expect(result.records[1].side).toBe("sell");
     expect(result.diagnostics).toContainEqual(
@@ -128,7 +136,7 @@ describe("parseFutuWorkbook", () => {
     );
   });
 
-  it("deduplicates exact execution rows and reports the source row", () => {
+  it("preserves identical fills when they occur on distinct source rows", () => {
     const duplicate = [
       "2025-03-13 00:38:57",
       "美股孖展账户(0855)",
@@ -148,9 +156,38 @@ describe("parseFutuWorkbook", () => {
 
     const result = parseFutuWorkbook(workbookBuffer([duplicate, duplicate]));
 
-    expect(result.records).toHaveLength(1);
+    expect(result.records).toHaveLength(2);
+    expect(result.records[0].id).not.toBe(result.records[1].id);
+  });
+
+  it("skips malformed numeric rows with a row-level diagnostic", () => {
+    const malformed = [
+      "2025-03-13 00:38:57",
+      "美股账户",
+      "0855",
+      "证券",
+      "BABA",
+      "US",
+      "买入开仓",
+      "20250313",
+      "USD",
+      "not-a-number",
+      "137.65",
+      "-2753",
+      "2.05",
+      "-2755.05",
+    ];
+
+    const result = parseFutuWorkbook(workbookBuffer([malformed]), {
+      sourceTimezone: "Asia/Shanghai",
+    });
+
+    expect(result.records).toEqual([]);
     expect(result.diagnostics).toContainEqual(
-      expect.objectContaining({ code: "duplicate-trade", row: 3 }),
+      expect.objectContaining({
+        code: "invalid-numeric-field",
+        row: 2,
+      }),
     );
   });
 });

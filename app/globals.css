@@ -364,6 +364,117 @@ input:focus-visible {
   color: #a9c8c3;
 }
 
+.imported-episode {
+  width: 100%;
+  border: 1px solid transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.imported-episode.active {
+  border-color: rgba(47, 128, 237, 0.7);
+  background: rgba(47, 128, 237, 0.12);
+}
+
+.imported-review {
+  min-height: 0;
+  padding: 24px;
+  overflow: auto;
+  background:
+    linear-gradient(rgba(25, 39, 57, 0.32) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(25, 39, 57, 0.32) 1px, transparent 1px),
+    var(--chart-bg);
+  background-size: 72px 48px;
+}
+
+.imported-review-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  max-width: 920px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(13, 22, 34, 0.94);
+  box-shadow: var(--shadow);
+}
+
+.imported-review-callout h2 {
+  margin: 4px 0 6px;
+  font-size: 20px;
+}
+
+.imported-review-callout p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.callout-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--accent);
+  background: rgba(47, 128, 237, 0.14);
+}
+
+.pending-market-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 7px 9px;
+  white-space: nowrap;
+  border-radius: 999px;
+  color: #f3ba2f;
+  background: rgba(243, 186, 47, 0.12);
+}
+
+.execution-review-table {
+  max-width: 920px;
+  margin-top: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(13, 22, 34, 0.94);
+}
+
+.execution-review-head,
+.execution-review-row {
+  display: grid;
+  grid-template-columns: 1.8fr 0.7fr 0.7fr 0.8fr 0.7fr 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+.execution-review-head {
+  color: var(--text-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+
+.execution-review-row {
+  color: var(--text-secondary);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(38, 54, 74, 0.65);
+}
+
+.execution-review-row:last-child {
+  border-bottom: 0;
+}
+
+.execution-review-row > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
 .imported-episode div,
 .imported-episode strong,
 .imported-episode span {

@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { TradeExecution } from "../lib/trades/types";
 import { demoCandles15m } from "./demo-market";
 

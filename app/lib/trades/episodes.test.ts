@@ -48,4 +48,26 @@ describe("buildTradeEpisodes", () => {
     });
     expect(episodes[0].executions).toHaveLength(4);
   });
+
+  it("closes a long and opens a short when one sell crosses through zero", () => {
+    const episodes = buildTradeEpisodes([
+      execution("buy", "2025-01-02T14:30:00Z", "100", "10"),
+      execution("sell", "2025-01-03T14:30:00Z", "150", "9"),
+    ]);
+
+    expect(episodes).toHaveLength(2);
+    expect(episodes[0]).toMatchObject({
+      direction: "long",
+      status: "closed",
+      remainingQuantity: "0",
+    });
+    expect(episodes[0].executions.at(-1)?.quantity).toBe("100");
+    expect(episodes[1]).toMatchObject({
+      direction: "short",
+      status: "open",
+      openingQuantity: "50",
+      remainingQuantity: "50",
+    });
+    expect(episodes[1].executions[0].quantity).toBe("50");
+  });
 });

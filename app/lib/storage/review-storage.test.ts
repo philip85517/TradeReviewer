@@ -16,6 +16,7 @@ const drawing: Drawing = {
   locked: true,
   visibleOn: "all",
   stage: "pre-trade",
+  createdAtCursor: "2025-01-06T00:00:00.000Z",
   text: "突破价",
 };
 

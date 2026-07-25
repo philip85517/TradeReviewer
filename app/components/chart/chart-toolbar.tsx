@@ -22,16 +22,25 @@ const timeframes: Array<{ value: Timeframe; label: string }> = [
 type Props = {
   timeframe: Timeframe;
   onTimeframeChange: (timeframe: Timeframe) => void;
+  symbol?: string;
+  instrumentName?: string;
+  market?: string;
 };
 
-export function ChartToolbar({ timeframe, onTimeframeChange }: Props) {
+export function ChartToolbar({
+  timeframe,
+  onTimeframeChange,
+  symbol = "XPEV",
+  instrumentName = "小鹏汽车",
+  market = "NYSE",
+}: Props) {
   return (
     <div className="chart-toolbar" aria-label="图表工具栏">
       <div className="symbol-control">
-        <div className="symbol-avatar">X</div>
+        <div className="symbol-avatar">{symbol.slice(0, 1)}</div>
         <div>
-          <strong>XPEV</strong>
-          <span>小鹏汽车 · NYSE</span>
+          <strong>{symbol}</strong>
+          <span>{instrumentName} · {market}</span>
         </div>
         <ChevronDown size={14} />
       </div>

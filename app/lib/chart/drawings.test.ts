@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   calculateRiskReward,
   clampDrawingToCursor,
+  visibleDrawingsAtCursor,
   type Drawing,
 } from "./drawings";
 
@@ -21,6 +22,7 @@ describe("drawing replay safety", () => {
       locked: false,
       visibleOn: "all",
       stage: "during-replay",
+      createdAtCursor: cursor,
     };
 
     const clamped = clampDrawingToCursor(drawing, cursor);
@@ -30,6 +32,35 @@ describe("drawing replay safety", () => {
       { time: cursor, price: 12 },
     ]);
     expect(drawing.anchors[1].time).toBe("2025-01-09T00:00:00.000Z");
+  });
+
+  it("hides annotations that were created after a rewound cursor", () => {
+    const drawing: Drawing = {
+      id: "late-note",
+      tool: "text",
+      anchors: [{ time: "2025-01-08T00:00:00.000Z", price: 12 }],
+      style: { color: "#2f80ed", lineWidth: 1, opacity: 1 },
+      hidden: false,
+      locked: false,
+      visibleOn: "all",
+      stage: "during-replay",
+      createdAtCursor: "2025-01-08T00:00:00.000Z",
+    };
+
+    expect(
+      visibleDrawingsAtCursor(
+        [drawing],
+        "2025-01-06T00:00:00.000Z",
+        "1D",
+      ),
+    ).toEqual([]);
+    expect(
+      visibleDrawingsAtCursor(
+        [drawing],
+        "2025-01-08T00:00:00.000Z",
+        "1D",
+      ),
+    ).toEqual([drawing]);
   });
 });
 

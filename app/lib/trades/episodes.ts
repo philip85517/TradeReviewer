@@ -44,6 +44,26 @@ function createEpisode(execution: TradeExecution): EpisodeAccumulator {
   };
 }
 
+function executionPart(
+  execution: TradeExecution,
+  quantity: Decimal,
+  totalQuantity: Decimal,
+  suffix: string,
+): TradeExecution {
+  const allocatedFee = new Decimal(execution.fee || 0)
+    .mul(quantity)
+    .div(totalQuantity);
+
+  return {
+    ...execution,
+    id: `${execution.id}:${suffix}`,
+    source: { ...execution.source },
+    instrument: { ...execution.instrument },
+    quantity: quantity.toString(),
+    fee: allocatedFee.toDecimalPlaces(8).toString(),
+  };
+}
+
 export function buildTradeEpisodes(
   executions: TradeExecution[],
 ): TradeEpisode[] {
@@ -64,6 +84,37 @@ export function buildTradeEpisodes(
     const delta = signedQuantity(execution);
     const addsExposure =
       existing.position.isPositive() === delta.isPositive();
+
+    const crossesZero =
+      !addsExposure && delta.abs().gt(existing.position.abs());
+    if (crossesZero) {
+      const totalQuantity = delta.abs();
+      const closingQuantity = existing.position.abs();
+      const reversingQuantity = totalQuantity.minus(closingQuantity);
+      const closingExecution = executionPart(
+        execution,
+        closingQuantity,
+        totalQuantity,
+        "close",
+      );
+      const reversingExecution = executionPart(
+        execution,
+        reversingQuantity,
+        totalQuantity,
+        "reverse",
+      );
+
+      existing.episode.executions.push(closingExecution);
+      existing.position = new Decimal(0);
+      existing.episode.remainingQuantity = "0";
+      existing.episode.status = "closed";
+      existing.episode.endedAt = execution.executedAt;
+      episodes.push(existing.episode);
+
+      const reversed = createEpisode(reversingExecution);
+      active.set(key, reversed);
+      continue;
+    }
 
     existing.episode.executions.push(execution);
     existing.position = existing.position.plus(delta);

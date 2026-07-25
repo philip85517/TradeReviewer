@@ -19,13 +19,15 @@ export function saveReviewState(
   episodeId: string,
   state: StoredReviewState,
 ) {
-  localStorage.setItem(storageKey(episodeId), JSON.stringify(state));
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(storageKey(episodeId), JSON.stringify(state));
 }
 
 export function loadReviewState(
   episodeId: string,
 ): StoredReviewState | null {
-  const serialized = localStorage.getItem(storageKey(episodeId));
+  if (typeof window === "undefined") return null;
+  const serialized = window.localStorage.getItem(storageKey(episodeId));
   if (!serialized) return null;
 
   try {

@@ -29,6 +29,11 @@ export type Drawing = {
   locked: boolean;
   visibleOn: "all" | Timeframe[];
   stage: "pre-trade" | "during-replay" | "post-review";
+  /**
+   * Replay knowledge boundary. Optional only for v1 persisted drawings;
+   * every newly committed drawing receives the current cursor.
+   */
+  createdAtCursor?: string;
 };
 
 export type RiskRewardInput = {
@@ -66,7 +71,28 @@ export function clampDrawingToCursor(
     style: { ...drawing.style },
     visibleOn:
       drawing.visibleOn === "all" ? "all" : [...drawing.visibleOn],
+    createdAtCursor: drawing.createdAtCursor ?? cursor,
   };
+}
+
+export function visibleDrawingsAtCursor(
+  drawings: Drawing[],
+  cursor: string,
+  timeframe: Timeframe,
+) {
+  return drawings.filter((drawing) => {
+    const knowledgeTime =
+      drawing.createdAtCursor ??
+      drawing.anchors.reduce(
+        (latest, anchor) => (anchor.time > latest ? anchor.time : latest),
+        "",
+      );
+    const visibleOnTimeframe =
+      drawing.visibleOn === "all" ||
+      drawing.visibleOn.includes(timeframe);
+
+    return !drawing.hidden && visibleOnTimeframe && knowledgeTime <= cursor;
+  });
 }
 
 export function calculateRiskReward(

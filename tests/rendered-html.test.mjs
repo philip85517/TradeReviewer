@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import test from "node:test";
 
 async function render() {
@@ -33,5 +35,23 @@ test("server-renders the historical trade review workspace", async () => {
   assert.match(html, /交易复盘图表工作区/);
   assert.match(html, /未来信息已锁定/);
   assert.match(html, /导入富途 XLSX/);
+  assert.match(html, /尚未成交/);
+  assert.doesNotMatch(html, /demo-buy-1|demo-buy-2|demo-sell-1/);
   assert.doesNotMatch(html, /codex-preview|Building your site|react-loading-skeleton/i);
+});
+
+test("client bundle contains no unrevealed demo executions", () => {
+  const clientDirectory = new URL("../dist/client/", import.meta.url);
+  const files = readdirSync(clientDirectory, {
+    recursive: true,
+    withFileTypes: true,
+  });
+  const bundle = files
+    .filter((entry) => entry.isFile() && /\.(?:js|html|json)$/.test(entry.name))
+    .map((entry) =>
+      readFileSync(join(entry.parentPath, entry.name), "utf8"),
+    )
+    .join("\n");
+
+  assert.doesNotMatch(bundle, /demo-buy-1|demo-buy-2|demo-sell-1/);
 });

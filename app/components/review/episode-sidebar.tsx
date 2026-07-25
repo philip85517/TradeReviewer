@@ -3,13 +3,19 @@
 import { Check, Clock3, FileSpreadsheet, Upload } from "lucide-react";
 
 import type { ImportDiagnostic } from "../../lib/import/import-result";
-import type { TradeEpisode } from "../../lib/trades/types";
+import type {
+  TradeEpisode,
+  TradeExecution,
+} from "../../lib/trades/types";
 
 type Props = {
   importedEpisodes: TradeEpisode[];
   diagnostics: ImportDiagnostic[];
   importing: boolean;
   onImport: (file: File) => void;
+  revealedDemoExecutions: TradeExecution[];
+  selectedEpisodeId: string;
+  onSelectEpisode: (episodeId: string) => void;
 };
 
 export function EpisodeSidebar({
@@ -17,7 +23,16 @@ export function EpisodeSidebar({
   diagnostics,
   importing,
   onImport,
+  revealedDemoExecutions,
+  selectedEpisodeId,
+  onSelectEpisode,
 }: Props) {
+  const revealedBuys = revealedDemoExecutions.filter(
+    (execution) => execution.side === "buy",
+  ).length;
+  const revealedSells = revealedDemoExecutions.filter(
+    (execution) => execution.side === "sell",
+  ).length;
   return (
     <aside className="episode-sidebar">
       <div className="sidebar-heading">
@@ -43,7 +58,10 @@ export function EpisodeSidebar({
       <p className="privacy-note">文件仅在此设备解析，不会上传。</p>
 
       <div className="episode-list">
-        <button className="episode-card active">
+        <button
+          className={`episode-card ${selectedEpisodeId === "demo" ? "active" : ""}`}
+          onClick={() => onSelectEpisode("demo")}
+        >
           <div className="episode-card-top">
             <span className="market-chip">US</span>
             <strong>XPEV</strong>
@@ -55,7 +73,11 @@ export function EpisodeSidebar({
           <p>小鹏汽车 · Tiger</p>
           <div className="episode-meta">
             <span>2025 Q1</span>
-            <b>2 买 / 1 卖</b>
+            <b>
+              {revealedBuys + revealedSells === 0
+                ? "尚未成交"
+                : `${revealedBuys} 买 / ${revealedSells} 卖`}
+            </b>
           </div>
         </button>
       </div>
@@ -66,8 +88,12 @@ export function EpisodeSidebar({
             <Check size={15} />
             已解析 {importedEpisodes.length} 个回合
           </div>
-          {importedEpisodes.slice(0, 4).map((episode) => (
-            <div className="imported-episode" key={episode.id}>
+          {importedEpisodes.slice(0, 8).map((episode) => (
+            <button
+              className={`imported-episode ${selectedEpisodeId === episode.id ? "active" : ""}`}
+              key={episode.id}
+              onClick={() => onSelectEpisode(episode.id)}
+            >
               <FileSpreadsheet size={15} />
               <div>
                 <strong>{episode.instrument.symbol}</strong>
@@ -76,9 +102,9 @@ export function EpisodeSidebar({
                   {episode.status === "closed" ? "已平仓" : "持仓中"}
                 </span>
               </div>
-            </div>
+            </button>
           ))}
-          <p>成交已保存在当前会话；真实行情接入后即可回放。</p>
+          <p>成交已保存在此设备；选择回合可查看逐笔记录。</p>
         </section>
       )}
 

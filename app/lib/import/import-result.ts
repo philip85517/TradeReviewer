@@ -4,6 +4,8 @@ export type ImportDiagnostic = {
   message: string;
   sheet?: string;
   row?: number;
+  instrumentSymbol?: string;
+  assetClass?: string;
 };
 
 export type ImportResult<T> = {

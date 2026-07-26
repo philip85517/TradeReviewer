@@ -2,6 +2,7 @@ import Decimal from "decimal.js";
 import * as XLSX from "xlsx";
 
 import type { TradeExecution, TradeSide } from "../trades/types";
+import { instrumentDisplayName } from "../instruments/display-name";
 import type { ImportDiagnostic, ImportResult } from "./import-result";
 
 const TRADE_SHEET = "证券-交易流水";
@@ -148,6 +149,8 @@ export function parseFutuWorkbook(
         message: `已跳过${text(row["品类"]) || "未知"}记录`,
         sheet: TRADE_SHEET,
         row: sourceRow,
+        instrumentSymbol: text(row["代码名称"]).toUpperCase(),
+        assetClass: text(row["品类"]),
       });
       return;
     }
@@ -210,7 +213,7 @@ export function parseFutuWorkbook(
       instrument: {
         id: `${market}:${symbol}`,
         symbol,
-        name: symbol,
+        name: instrumentDisplayName(symbol, market),
         market,
         currency: text(row["币种"]).toUpperCase(),
       },

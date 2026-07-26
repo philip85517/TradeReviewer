@@ -1,31 +1,50 @@
 "use client";
 
-import { Check, Clock3, FileSpreadsheet, Upload } from "lucide-react";
+import {
+  Clock3,
+  Database,
+  History,
+  RefreshCw,
+  Upload,
+} from "lucide-react";
 
-import type { ImportDiagnostic } from "../../lib/import/import-result";
-import type {
-  TradeEpisode,
-  TradeExecution,
-} from "../../lib/trades/types";
+import type { MarketDataSyncStatus } from "../../lib/market/sync-status";
+import { marketDataStatusLabel } from "../../lib/market/sync-status";
+import type { InstrumentTradeSummary } from "../../lib/trades/instruments";
+import type { TradeExecution } from "../../lib/trades/types";
 
 type Props = {
-  importedEpisodes: TradeEpisode[];
-  diagnostics: ImportDiagnostic[];
+  importedInstruments: InstrumentTradeSummary[];
   importing: boolean;
+  importError: string | null;
   onImport: (file: File) => void;
+  onOpenHistory: () => void;
   revealedDemoExecutions: TradeExecution[];
-  selectedEpisodeId: string;
-  onSelectEpisode: (episodeId: string) => void;
+  selectedInstrumentId: string;
+  onSelectInstrument: (instrumentId: string) => void;
+  marketDataStatuses: Record<string, MarketDataSyncStatus>;
+  onUpdateMarketData: (instrumentId: string) => void;
 };
 
+function shortDate(value: string) {
+  return new Date(value).toLocaleDateString("zh-CN", {
+    year: "2-digit",
+    month: "2-digit",
+    day: "2-digit",
+  });
+}
+
 export function EpisodeSidebar({
-  importedEpisodes,
-  diagnostics,
+  importedInstruments,
   importing,
+  importError,
   onImport,
+  onOpenHistory,
   revealedDemoExecutions,
-  selectedEpisodeId,
-  onSelectEpisode,
+  selectedInstrumentId,
+  onSelectInstrument,
+  marketDataStatuses,
+  onUpdateMarketData,
 }: Props) {
   const revealedBuys = revealedDemoExecutions.filter(
     (execution) => execution.side === "buy",
@@ -33,46 +52,73 @@ export function EpisodeSidebar({
   const revealedSells = revealedDemoExecutions.filter(
     (execution) => execution.side === "sell",
   ).length;
+
   return (
     <aside className="episode-sidebar">
       <div className="sidebar-heading">
         <div>
-          <span className="eyebrow">交易回合</span>
-          <h2>历史复盘</h2>
+          <span className="eyebrow">股票复盘</span>
+          <h2>我的交易</h2>
         </div>
-        <span className="episode-count">1 个演示</span>
+        <span className="episode-count">
+          {importedInstruments.length + 1} 只股票
+        </span>
       </div>
-      <label className="import-button">
-        <Upload size={16} />
-        {importing ? "正在解析…" : "导入富途 XLSX"}
-        <input
-          type="file"
-          accept=".xlsx"
-          disabled={importing}
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file) onImport(file);
-          }}
-        />
-      </label>
-      <p className="privacy-note">文件仅在此设备解析，不会上传。</p>
 
+      <div className="import-actions">
+        <label className="import-button">
+          <Upload size={16} />
+          {importing ? "正在解析…" : "导入交易记录"}
+          <input
+            type="file"
+            accept=".xlsx,.xls"
+            disabled={importing}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) onImport(file);
+              event.currentTarget.value = "";
+            }}
+          />
+        </label>
+        <button
+          className="history-button"
+          aria-label="查看导入记录"
+          onClick={onOpenHistory}
+        >
+          <History size={15} />
+        </button>
+      </div>
+      <p className="privacy-note">
+        自动识别已适配格式，确认前不会写入交易库。
+      </p>
+      {importError && (
+        <p className="sidebar-import-error" role="alert">
+          {importError}
+        </p>
+      )}
+
+      <div className="stock-list-heading">
+        <span>有成交的股票</span>
+        <b>{importedInstruments.length + 1}</b>
+      </div>
       <div className="episode-list">
         <button
-          className={`episode-card ${selectedEpisodeId === "demo" ? "active" : ""}`}
-          onClick={() => onSelectEpisode("demo")}
+          className={`stock-card ${selectedInstrumentId === "demo" ? "active" : ""}`}
+          onClick={() => onSelectInstrument("demo")}
         >
-          <div className="episode-card-top">
+          <div className="stock-card-title">
             <span className="market-chip">US</span>
-            <strong>XPEV</strong>
+            <div>
+              <strong>小鹏汽车</strong>
+              <span>XPEV</span>
+            </div>
             <span className="episode-status">
               <Clock3 size={12} />
               回放中
             </span>
           </div>
-          <p>小鹏汽车 · Tiger</p>
-          <div className="episode-meta">
-            <span>2025 Q1</span>
+          <div className="stock-card-meta">
+            <span>演示交易</span>
             <b>
               {revealedBuys + revealedSells === 0
                 ? "尚未成交"
@@ -80,40 +126,63 @@ export function EpisodeSidebar({
             </b>
           </div>
         </button>
+
+        {importedInstruments.map((item) => {
+          const status =
+            marketDataStatuses[item.instrument.id] ?? "needs-provider";
+          return (
+            <div
+              role="button"
+              tabIndex={0}
+              className={`stock-card ${selectedInstrumentId === item.instrument.id ? "active" : ""}`}
+              key={item.instrument.id}
+              onClick={() => onSelectInstrument(item.instrument.id)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  onSelectInstrument(item.instrument.id);
+                }
+              }}
+            >
+              <div className="stock-card-title">
+                <span className="market-chip">{item.instrument.market}</span>
+                <div>
+                  <strong>{item.instrument.name}</strong>
+                  <span>{item.instrument.symbol}</span>
+                </div>
+                <button
+                  className="stock-refresh"
+                  aria-label={`更新${item.instrument.name}行情`}
+                  disabled={status === "syncing"}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onUpdateMarketData(item.instrument.id);
+                  }}
+                >
+                  <RefreshCw
+                    size={13}
+                    className={status === "syncing" ? "spinning" : ""}
+                  />
+                </button>
+              </div>
+              <div className="stock-card-meta">
+                <span>
+                  {shortDate(item.firstTradeAt)}—{shortDate(item.lastTradeAt)}
+                </span>
+                <b>{item.tradeCount} 笔成交</b>
+              </div>
+              <div className={`market-data-state ${status}`}>
+                <Database size={11} />
+                {marketDataStatusLabel(status)}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      {importedEpisodes.length > 0 && (
-        <section className="import-result">
-          <div className="import-result-title">
-            <Check size={15} />
-            已解析 {importedEpisodes.length} 个回合
-          </div>
-          {importedEpisodes.slice(0, 8).map((episode) => (
-            <button
-              className={`imported-episode ${selectedEpisodeId === episode.id ? "active" : ""}`}
-              key={episode.id}
-              onClick={() => onSelectEpisode(episode.id)}
-            >
-              <FileSpreadsheet size={15} />
-              <div>
-                <strong>{episode.instrument.symbol}</strong>
-                <span>
-                  {episode.executions.length} 笔 ·{" "}
-                  {episode.status === "closed" ? "已平仓" : "持仓中"}
-                </span>
-              </div>
-            </button>
-          ))}
-          <p>成交已保存在此设备；选择回合可查看逐笔记录。</p>
-        </section>
-      )}
-
-      {diagnostics.length > 0 && (
-        <div className="diagnostic-summary">
-          {diagnostics.filter((item) => item.severity !== "info").length} 条需检查，
-          {diagnostics.filter((item) => item.severity === "info").length} 条已跳过
-        </div>
-      )}
+      <button className="import-history-link" onClick={onOpenHistory}>
+        <History size={13} />
+        查看导入记录
+      </button>
     </aside>
   );
 }

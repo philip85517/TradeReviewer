@@ -34,7 +34,8 @@ test("server-renders the historical trade review workspace", async () => {
   assert.match(html, /逐笔复盘/);
   assert.match(html, /交易复盘图表工作区/);
   assert.match(html, /未来信息已锁定/);
-  assert.match(html, /导入富途 XLSX/);
+  assert.match(html, /导入交易记录/);
+  assert.match(html, /小鹏汽车/);
   assert.match(html, /尚未成交/);
   assert.doesNotMatch(html, /demo-buy-1|demo-buy-2|demo-sell-1/);
   assert.doesNotMatch(html, /codex-preview|Building your site|react-loading-skeleton/i);

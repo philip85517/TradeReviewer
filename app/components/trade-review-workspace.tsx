@@ -21,8 +21,12 @@ import type {
   DemoReplayMode,
 } from "../lib/demo/replay-frame";
 import { parseFutuWorkbook } from "../lib/import/futu";
-import type { ImportDiagnostic } from "../lib/import/import-result";
+import {
+  createImportPreview,
+  type ImportPreview,
+} from "../lib/import/import-preview";
 import { aggregateCandles } from "../lib/market/aggregate";
+import type { MarketDataSyncStatus } from "../lib/market/sync-status";
 import type { Timeframe } from "../lib/market/types";
 import { createReplaySnapshot } from "../lib/replay/replay-engine";
 import {
@@ -34,10 +38,17 @@ import {
   mergeExecutions,
   saveImportedExecutions,
 } from "../lib/storage/import-library";
-import { buildTradeEpisodes } from "../lib/trades/episodes";
+import {
+  loadImportHistory,
+  saveImportHistoryEntry,
+  type ImportHistoryEntry,
+} from "../lib/storage/import-history";
+import { buildInstrumentTradeSummaries } from "../lib/trades/instruments";
 import type { TradeExecution } from "../lib/trades/types";
 import { ChartToolbar } from "./chart/chart-toolbar";
 import { DrawingToolbar } from "./chart/drawing-toolbar";
+import { ImportConfirmDialog } from "./import/import-confirm-dialog";
+import { ImportHistoryDialog } from "./import/import-history-dialog";
 import { ReplayChart } from "./chart/replay-chart";
 import { ReplayControls } from "./replay/replay-controls";
 import { EpisodeSidebar } from "./review/episode-sidebar";
@@ -89,11 +100,22 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   const [importedExecutions, setImportedExecutions] = useState<
     TradeExecution[]
   >([]);
-  const [selectedEpisodeId, setSelectedEpisodeId] = useState("demo");
-  const [diagnostics, setDiagnostics] = useState<ImportDiagnostic[]>([]);
+  const [selectedInstrumentId, setSelectedInstrumentId] = useState("demo");
+  const [pendingImport, setPendingImport] = useState<ImportPreview | null>(
+    null,
+  );
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importHistory, setImportHistory] = useState<ImportHistoryEntry[]>(
+    [],
+  );
+  const [showImportHistory, setShowImportHistory] = useState(false);
+  const [marketDataStatuses, setMarketDataStatuses] = useState<
+    Record<string, MarketDataSyncStatus>
+  >({});
   const [importing, setImporting] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const replayRequestSequence = useRef(0);
+  const marketDataTimers = useRef<number[]>([]);
 
   const cursor = frame.cursor;
   const chartCandles = useMemo(
@@ -115,12 +137,12 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   );
   const allDrawingsLocked =
     drawings.length > 0 && drawings.every((drawing) => drawing.locked);
-  const importedEpisodes = useMemo(
-    () => buildTradeEpisodes(importedExecutions),
+  const importedInstruments = useMemo(
+    () => buildInstrumentTradeSummaries(importedExecutions),
     [importedExecutions],
   );
-  const selectedImportedEpisode = importedEpisodes.find(
-    (episode) => episode.id === selectedEpisodeId,
+  const selectedImportedInstrument = importedInstruments.find(
+    (item) => item.instrument.id === selectedInstrumentId,
   );
 
   async function requestFrame(
@@ -151,7 +173,17 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     const frame = window.requestAnimationFrame(() => {
       const requestId = ++replayRequestSequence.current;
       const stored = loadReviewState(REVIEW_ID);
-      setImportedExecutions(loadImportedExecutions());
+      const storedExecutions = loadImportedExecutions();
+      setImportedExecutions(storedExecutions);
+      setImportHistory(loadImportHistory());
+      setMarketDataStatuses(
+        Object.fromEntries(
+          buildInstrumentTradeSummaries(storedExecutions).map((item) => [
+            item.instrument.id,
+            "needs-provider" satisfies MarketDataSyncStatus,
+          ]),
+        ),
+      );
       if (stored) {
         setTimeframe(stored.timeframe);
         setThesis(stored.thesis);
@@ -187,6 +219,15 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       replayRequestSequence.current += 1;
     };
   }, [initialFrame.cursor]);
+
+  useEffect(
+    () => () => {
+      marketDataTimers.current.forEach((timer) =>
+        window.clearTimeout(timer),
+      );
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!hydrated) return;
@@ -260,35 +301,83 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     setRedoHistory((history) => history.slice(0, -1));
   }
 
-  async function importFutu(file: File) {
+  function startMarketDataUpdate(instrumentIds: string[]) {
+    if (instrumentIds.length === 0) return;
+    setMarketDataStatuses((current) => ({
+      ...current,
+      ...Object.fromEntries(
+        instrumentIds.map((instrumentId) => [instrumentId, "syncing"]),
+      ),
+    }));
+    const timer = window.setTimeout(() => {
+      setMarketDataStatuses((current) => ({
+        ...current,
+        ...Object.fromEntries(
+          instrumentIds.map((instrumentId) => [
+            instrumentId,
+            "needs-provider",
+          ]),
+        ),
+      }));
+    }, 1200);
+    marketDataTimers.current.push(timer);
+  }
+
+  async function parseImport(file: File) {
     setImporting(true);
+    setImportError(null);
     try {
       const result = parseFutuWorkbook(await file.arrayBuffer(), {
         fileName: file.name,
         sourceTimezone: "Asia/Shanghai",
       });
-      setDiagnostics(result.diagnostics);
-      const mergedExecutions = mergeExecutions(
-        importedExecutions,
-        result.records,
-      );
-      const rebuiltEpisodes = buildTradeEpisodes(mergedExecutions);
-      setImportedExecutions(mergedExecutions);
-      saveImportedExecutions(mergedExecutions);
-      if (rebuiltEpisodes[0]) {
-        setSelectedEpisodeId(rebuiltEpisodes[0].id);
-      }
+      setPendingImport(createImportPreview(file.name, result));
     } catch {
-      setDiagnostics([
-        {
-          severity: "error",
-          code: "unreadable-workbook",
-          message: "文件无法读取，请确认这是富途导出的 XLSX 对账单。",
-        },
-      ]);
+      setImportError(
+        "暂时无法识别这个文件。请确认它是已适配券商导出的 XLSX 交易记录。",
+      );
     } finally {
       setImporting(false);
     }
+  }
+
+  function confirmImport() {
+    if (!pendingImport || pendingImport.blocked) return;
+    const mergedExecutions = mergeExecutions(
+      importedExecutions,
+      pendingImport.records,
+    );
+    const summaries = buildInstrumentTradeSummaries(mergedExecutions);
+    const importedAt = new Date().toISOString();
+    const historyEntry: ImportHistoryEntry = {
+      id: pendingImport.id,
+      fileName: pendingImport.fileName,
+      importedAt,
+      firstTradeAt: pendingImport.firstTradeAt,
+      lastTradeAt: pendingImport.lastTradeAt,
+      tradeCount: pendingImport.tradeCount,
+      instrumentCount: pendingImport.instrumentCount,
+      excludedInstrumentCount: pendingImport.excludedInstrumentCount,
+    };
+
+    setImportedExecutions(mergedExecutions);
+    saveImportedExecutions(mergedExecutions);
+    saveImportHistoryEntry(historyEntry);
+    setImportHistory([
+      historyEntry,
+      ...importHistory.filter((entry) => entry.id !== historyEntry.id),
+    ]);
+    const importedIds = pendingImport.instruments.map(
+      (item) => item.instrument.id,
+    );
+    startMarketDataUpdate(importedIds);
+    const firstImported = summaries.find((item) =>
+      importedIds.includes(item.instrument.id),
+    );
+    if (firstImported) {
+      setSelectedInstrumentId(firstImported.instrument.id);
+    }
+    setPendingImport(null);
   }
 
   const latestCandle = snapshot.candles.at(-1);
@@ -329,26 +418,43 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
 
       <div className="workspace">
         <EpisodeSidebar
-          importedEpisodes={importedEpisodes}
-          diagnostics={diagnostics}
+          importedInstruments={importedInstruments}
           importing={importing}
-          onImport={importFutu}
+          importError={importError}
+          onImport={parseImport}
+          onOpenHistory={() => setShowImportHistory(true)}
           revealedDemoExecutions={snapshot.executions}
-          selectedEpisodeId={selectedEpisodeId}
-          onSelectEpisode={setSelectedEpisodeId}
+          selectedInstrumentId={selectedInstrumentId}
+          onSelectInstrument={setSelectedInstrumentId}
+          marketDataStatuses={marketDataStatuses}
+          onUpdateMarketData={(instrumentId) =>
+            startMarketDataUpdate([instrumentId])
+          }
         />
 
         <section className="review-workspace" aria-label="交易复盘图表工作区">
           <ChartToolbar
             timeframe={timeframe}
             onTimeframeChange={setTimeframe}
-            symbol={selectedImportedEpisode?.instrument.symbol}
-            instrumentName={selectedImportedEpisode?.instrument.name}
-            market={selectedImportedEpisode?.instrument.market}
+            symbol={selectedImportedInstrument?.instrument.symbol}
+            instrumentName={selectedImportedInstrument?.instrument.name}
+            market={selectedImportedInstrument?.instrument.market}
           />
 
-          {selectedImportedEpisode ? (
-            <ImportedEpisodeReview episode={selectedImportedEpisode} />
+          {selectedImportedInstrument ? (
+            <ImportedEpisodeReview
+              summary={selectedImportedInstrument}
+              marketDataStatus={
+                marketDataStatuses[
+                  selectedImportedInstrument.instrument.id
+                ] ?? "needs-provider"
+              }
+              onUpdateMarketData={() =>
+                startMarketDataUpdate([
+                  selectedImportedInstrument.instrument.id,
+                ])
+              }
+            />
           ) : (
             <div className="chart-layout">
             <DrawingToolbar
@@ -478,12 +584,34 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
           )}
         </section>
 
-        <ThesisPanel thesis={thesis} onThesisChange={setThesis} />
+        <ThesisPanel
+          thesis={thesis}
+          onThesisChange={setThesis}
+          instrumentLabel={
+            selectedImportedInstrument
+              ? `${selectedImportedInstrument.instrument.name}（${selectedImportedInstrument.instrument.symbol}）`
+              : "小鹏汽车（XPEV）"
+          }
+          available={!selectedImportedInstrument}
+        />
       </div>
 
       <button className="mobile-panel-toggle" aria-label="打开复盘面板">
         <PanelRightOpen size={18} />
       </button>
+      {pendingImport && (
+        <ImportConfirmDialog
+          preview={pendingImport}
+          onCancel={() => setPendingImport(null)}
+          onConfirm={confirmImport}
+        />
+      )}
+      {showImportHistory && (
+        <ImportHistoryDialog
+          entries={importHistory}
+          onClose={() => setShowImportHistory(false)}
+        />
+      )}
     </main>
   );
 }

@@ -5,21 +5,31 @@ import { Brain, CheckCircle2, ShieldCheck } from "lucide-react";
 type Props = {
   thesis: string;
   onThesisChange: (value: string) => void;
+  instrumentLabel: string;
+  available: boolean;
 };
 
-export function ThesisPanel({ thesis, onThesisChange }: Props) {
+export function ThesisPanel({
+  thesis,
+  onThesisChange,
+  instrumentLabel,
+  available,
+}: Props) {
   return (
     <aside className="thesis-panel">
       <div className="thesis-header">
         <div>
           <span className="eyebrow">当时的我</span>
           <h2>交易预期</h2>
+          <span className="thesis-instrument">{instrumentLabel}</span>
         </div>
         <span className="autosave">
           <CheckCircle2 size={13} />
           自动保存
         </span>
       </div>
+      {available ? (
+        <>
       <label className="thesis-field">
         <span>
           <Brain size={14} />
@@ -49,6 +59,16 @@ export function ThesisPanel({ thesis, onThesisChange }: Props) {
           <strong>1.0R</strong>
         </div>
       </div>
+        </>
+      ) : (
+        <div className="thesis-unavailable">
+          <Brain size={20} />
+          <strong>等待行情数据</strong>
+          <p>
+            行情补齐并开始复盘后，可在这里记录这只股票当时的买入理由、预期路径与失效条件。
+          </p>
+        </div>
+      )}
       <div className="future-guard">
         <ShieldCheck size={16} />
         <p>

@@ -187,8 +187,62 @@ describe("parseFutuWorkbook", () => {
       expect.objectContaining({
         code: "invalid-numeric-field",
         row: 2,
+        instrumentSymbol: "BABA",
       }),
     );
+  });
+
+  it("reports an empty stock code as an excluded instrument", () => {
+    const row = [
+      "2025-03-13 00:38:57",
+      "美股账户",
+      "0855",
+      "证券",
+      "",
+      "US",
+      "买入开仓",
+      "20250313",
+      "USD",
+      "20",
+      "137.65",
+      "-2753",
+      "2.05",
+      "-2755.05",
+    ];
+
+    const result = parseFutuWorkbook(workbookBuffer([row]));
+
+    expect(result.records).toEqual([]);
+    expect(result.diagnostics).toContainEqual(
+      expect.objectContaining({ code: "missing-instrument-symbol" }),
+    );
+  });
+
+  it("preserves a stock name supplied alongside its code", () => {
+    const row = [
+      "2025-03-13 00:38:57",
+      "港股账户",
+      "0855",
+      "证券",
+      "1810 小米集团-W",
+      "SEHK",
+      "买入开仓",
+      "20250313",
+      "HKD",
+      "100",
+      "50",
+      "-5000",
+      "2",
+      "-5002",
+    ];
+
+    const result = parseFutuWorkbook(workbookBuffer([row]));
+
+    expect(result.records[0].instrument).toMatchObject({
+      id: "HK:1810",
+      symbol: "1810",
+      name: "小米集团-W",
+    });
   });
 
   it("uses workbook content in execution identity even when filenames match", () => {

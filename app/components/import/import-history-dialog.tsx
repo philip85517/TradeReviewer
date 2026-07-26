@@ -3,6 +3,7 @@
 import { CalendarRange, FileClock, X } from "lucide-react";
 
 import type { ImportHistoryEntry } from "../../lib/storage/import-history";
+import { useModalFocus } from "./use-modal-focus";
 
 type Props = {
   entries: ImportHistoryEntry[];
@@ -15,9 +16,11 @@ function date(value?: string) {
 }
 
 export function ImportHistoryDialog({ entries, onClose }: Props) {
+  const dialogRef = useModalFocus(onClose);
   return (
     <div className="modal-backdrop">
       <section
+        ref={dialogRef}
         className="history-dialog"
         role="dialog"
         aria-modal="true"

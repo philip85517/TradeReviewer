@@ -44,6 +44,7 @@ describe("ImportConfirmDialog", () => {
         preview={preview}
         onCancel={() => {}}
         onConfirm={onConfirm}
+        onRenameInstrument={() => {}}
       />,
     );
 
@@ -57,5 +58,21 @@ describe("ImportConfirmDialog", () => {
       }),
     );
     expect(onConfirm).toHaveBeenCalledOnce();
+  });
+
+  it("closes with Escape", async () => {
+    const onCancel = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <ImportConfirmDialog
+        preview={preview}
+        onCancel={onCancel}
+        onConfirm={() => {}}
+        onRenameInstrument={() => {}}
+      />,
+    );
+
+    await user.keyboard("{Escape}");
+    expect(onCancel).toHaveBeenCalledOnce();
   });
 });

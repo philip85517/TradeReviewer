@@ -32,12 +32,17 @@ export function createImportPreview(
   result: ImportResult<TradeExecution>,
 ): ImportPreview {
   const instruments = buildInstrumentTradeSummaries(result.records);
+  const rejectedDiagnosticCodes = new Set([
+    "unsupported-asset-class",
+    "invalid-trade-row",
+    "invalid-numeric-field",
+    "missing-instrument-symbol",
+  ]);
   const excludedSymbols = [
     ...new Set(
       result.diagnostics
-        .filter((item) => item.code === "unsupported-asset-class")
-        .map((item) => item.instrumentSymbol)
-        .filter((value): value is string => Boolean(value)),
+        .filter((item) => rejectedDiagnosticCodes.has(item.code))
+        .map((item) => item.instrumentSymbol?.trim() || "未识别标的"),
     ),
   ];
   const times = result.records

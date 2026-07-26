@@ -11,11 +11,13 @@ import {
 } from "lucide-react";
 
 import type { ImportPreview } from "../../lib/import/import-preview";
+import { useModalFocus } from "./use-modal-focus";
 
 type Props = {
   preview: ImportPreview;
   onCancel: () => void;
   onConfirm: () => void;
+  onRenameInstrument: (instrumentId: string, name: string) => void;
 };
 
 function date(value?: string) {
@@ -27,14 +29,20 @@ export function ImportConfirmDialog({
   preview,
   onCancel,
   onConfirm,
+  onRenameInstrument,
 }: Props) {
+  const dialogRef = useModalFocus(onCancel);
   const warnings = preview.diagnostics.filter(
     (item) => item.severity !== "info",
   );
+  const unresolvedNames = preview.instruments.filter(
+    (item) => item.instrument.name === "名称待行情源补充",
+  ).length;
 
   return (
     <div className="modal-backdrop">
       <section
+        ref={dialogRef}
         className="import-dialog"
         role="dialog"
         aria-modal="true"
@@ -101,9 +109,25 @@ export function ImportConfirmDialog({
                   <Check size={13} />
                 </span>
                 <div>
-                  <strong>
-                    {item.instrument.name}（{item.instrument.symbol}）
-                  </strong>
+                  {item.instrument.name === "名称待行情源补充" ? (
+                    <label className="instrument-name-field">
+                      <span>{item.instrument.symbol} 股票名称</span>
+                      <input
+                        aria-label={`${item.instrument.symbol} 股票名称`}
+                        placeholder="请输入股票名称"
+                        onBlur={(event) =>
+                          onRenameInstrument(
+                            item.instrument.id,
+                            event.target.value,
+                          )
+                        }
+                      />
+                    </label>
+                  ) : (
+                    <strong>
+                      {item.instrument.name}（{item.instrument.symbol}）
+                    </strong>
+                  )}
                   <span>{item.instrument.market}</span>
                 </div>
                 <b>{item.tradeCount} 笔</b>
@@ -123,6 +147,11 @@ export function ImportConfirmDialog({
             {warnings.length} 条记录需要检查，确认后仅导入有效成交。
           </div>
         )}
+        {unresolvedNames > 0 && (
+          <div className="import-warning">
+            请补充 {unresolvedNames} 只股票的名称后再确认导入。
+          </div>
+        )}
 
         <footer className="modal-footer">
           <p>确认后将保存到此设备，并自动为新增股票启动行情更新。</p>
@@ -131,7 +160,7 @@ export function ImportConfirmDialog({
           </button>
           <button
             className="primary-button"
-            disabled={preview.blocked}
+            disabled={preview.blocked || unresolvedNames > 0}
             onClick={onConfirm}
           >
             确认导入并开始更新行情

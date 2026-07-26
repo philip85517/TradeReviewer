@@ -48,6 +48,17 @@ describe("createImportPreview", () => {
           message: "已跳过基金记录",
           instrumentSymbol: "FUND-1",
         },
+        {
+          severity: "warning",
+          code: "invalid-numeric-field",
+          message: "价格错误",
+          instrumentSymbol: "BROKEN",
+        },
+        {
+          severity: "warning",
+          code: "missing-instrument-symbol",
+          message: "代码为空",
+        },
       ],
       blocked: false,
     };
@@ -58,7 +69,7 @@ describe("createImportPreview", () => {
       fileName: "交易记录.xlsx",
       tradeCount: 3,
       instrumentCount: 2,
-      excludedInstrumentCount: 1,
+      excludedInstrumentCount: 3,
       firstTradeAt: "2025-03-01T00:00:00.000Z",
       lastTradeAt: "2025-04-01T00:00:00.000Z",
       blocked: false,
@@ -66,6 +77,11 @@ describe("createImportPreview", () => {
     expect(preview.instruments.map((item) => item.instrument.name)).toEqual([
       "阿里巴巴",
       "英伟达",
+    ]);
+    expect(preview.excludedSymbols).toEqual([
+      "FUND-1",
+      "BROKEN",
+      "未识别标的",
     ]);
   });
 });

@@ -1,4 +1,5 @@
-const STORAGE_KEY = "trade-reviewer:import-history:v1";
+export const IMPORT_HISTORY_STORAGE_KEY =
+  "trade-reviewer:import-history:v1";
 
 export type ImportHistoryEntry = {
   id: string;
@@ -26,7 +27,7 @@ function isEntry(value: unknown): value is ImportHistoryEntry {
 
 export function loadImportHistory(): ImportHistoryEntry[] {
   if (typeof window === "undefined") return [];
-  const serialized = window.localStorage.getItem(STORAGE_KEY);
+  const serialized = window.localStorage.getItem(IMPORT_HISTORY_STORAGE_KEY);
   if (!serialized) return [];
   try {
     const parsed = JSON.parse(serialized) as unknown;
@@ -42,5 +43,8 @@ export function saveImportHistoryEntry(entry: ImportHistoryEntry) {
     entry,
     ...loadImportHistory().filter((item) => item.id !== entry.id),
   ];
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  window.localStorage.setItem(
+    IMPORT_HISTORY_STORAGE_KEY,
+    JSON.stringify(next),
+  );
 }

@@ -16,12 +16,35 @@ export function instrumentDisplayName(
   market: string,
   sourceName?: string,
 ) {
+  const canonicalSymbol = canonicalInstrumentSymbol(symbol, market);
   const cleanedSourceName = sourceName?.trim();
-  if (cleanedSourceName && cleanedSourceName !== symbol) {
+  if (
+    cleanedSourceName &&
+    cleanedSourceName !== symbol &&
+    cleanedSourceName !== canonicalSymbol
+  ) {
     return cleanedSourceName;
   }
   return (
-    KNOWN_NAMES[`${market.toUpperCase()}:${symbol.toUpperCase()}`] ??
+    KNOWN_NAMES[`${market.toUpperCase()}:${canonicalSymbol}`] ??
     "名称待行情源补充"
   );
+}
+
+export function canonicalInstrumentSymbol(
+  symbol: string,
+  market: string,
+) {
+  const upper = symbol.trim().toUpperCase();
+  if (market.toUpperCase() === "HK" && /^\d+$/.test(upper)) {
+    return upper.replace(/^0+(?=\d)/, "");
+  }
+  return upper;
+}
+
+export function canonicalInstrumentId(
+  symbol: string,
+  market: string,
+) {
+  return `${market.toUpperCase()}:${canonicalInstrumentSymbol(symbol, market)}`;
 }

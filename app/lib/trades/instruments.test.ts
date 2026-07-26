@@ -46,4 +46,21 @@ describe("buildInstrumentTradeSummaries", () => {
     });
     expect(summaries[1].instrument.name).toBe("英伟达");
   });
+
+  it("merges market aliases such as HK 700 and 0700", () => {
+    const summaries = buildInstrumentTradeSummaries([
+      execution("1", "700", "HK", "2025-03-01T00:00:00.000Z"),
+      execution("2", "0700", "HK", "2025-03-02T00:00:00.000Z"),
+    ]);
+
+    expect(summaries).toHaveLength(1);
+    expect(summaries[0]).toMatchObject({
+      instrument: {
+        id: "HK:700",
+        name: "腾讯控股",
+        symbol: "700",
+      },
+      tradeCount: 2,
+    });
+  });
 });

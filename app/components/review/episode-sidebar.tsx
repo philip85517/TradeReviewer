@@ -61,12 +61,21 @@ export function EpisodeSidebar({
           <h2>我的交易</h2>
         </div>
         <span className="episode-count">
-          {importedInstruments.length + 1} 只股票
+          {importedInstruments.length || 1} 只股票
         </span>
       </div>
 
       <div className="import-actions">
-        <label className="import-button">
+        <label
+          className="import-button"
+          role="button"
+          tabIndex={importing ? -1 : 0}
+          onKeyDown={(event) => {
+            if (event.key !== "Enter" && event.key !== " ") return;
+            event.preventDefault();
+            event.currentTarget.querySelector("input")?.click();
+          }}
+        >
           <Upload size={16} />
           {importing ? "正在解析…" : "导入交易记录"}
           <input
@@ -99,10 +108,10 @@ export function EpisodeSidebar({
 
       <div className="stock-list-heading">
         <span>有成交的股票</span>
-        <b>{importedInstruments.length + 1}</b>
+        <b>{importedInstruments.length || 1}</b>
       </div>
       <div className="episode-list">
-        <button
+        {importedInstruments.length === 0 && <button
           className={`stock-card ${selectedInstrumentId === "demo" ? "active" : ""}`}
           onClick={() => onSelectInstrument("demo")}
         >
@@ -125,55 +134,49 @@ export function EpisodeSidebar({
                 : `${revealedBuys} 买 / ${revealedSells} 卖`}
             </b>
           </div>
-        </button>
+        </button>}
 
         {importedInstruments.map((item) => {
           const status =
             marketDataStatuses[item.instrument.id] ?? "needs-provider";
           return (
             <div
-              role="button"
-              tabIndex={0}
-              className={`stock-card ${selectedInstrumentId === item.instrument.id ? "active" : ""}`}
+              className={`stock-card imported ${selectedInstrumentId === item.instrument.id ? "active" : ""}`}
               key={item.instrument.id}
-              onClick={() => onSelectInstrument(item.instrument.id)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  onSelectInstrument(item.instrument.id);
-                }
-              }}
             >
-              <div className="stock-card-title">
-                <span className="market-chip">{item.instrument.market}</span>
-                <div>
-                  <strong>{item.instrument.name}</strong>
-                  <span>{item.instrument.symbol}</span>
+              <button
+                className="stock-card-select"
+                onClick={() => onSelectInstrument(item.instrument.id)}
+              >
+                <div className="stock-card-title">
+                  <span className="market-chip">{item.instrument.market}</span>
+                  <div>
+                    <strong>{item.instrument.name}</strong>
+                    <span>{item.instrument.symbol}</span>
+                  </div>
                 </div>
-                <button
-                  className="stock-refresh"
-                  aria-label={`更新${item.instrument.name}行情`}
-                  disabled={status === "syncing"}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    onUpdateMarketData(item.instrument.id);
-                  }}
-                >
-                  <RefreshCw
-                    size={13}
-                    className={status === "syncing" ? "spinning" : ""}
-                  />
-                </button>
-              </div>
-              <div className="stock-card-meta">
-                <span>
-                  {shortDate(item.firstTradeAt)}—{shortDate(item.lastTradeAt)}
-                </span>
-                <b>{item.tradeCount} 笔成交</b>
-              </div>
-              <div className={`market-data-state ${status}`}>
-                <Database size={11} />
-                {marketDataStatusLabel(status)}
-              </div>
+                <div className="stock-card-meta">
+                  <span>
+                    {shortDate(item.firstTradeAt)}—{shortDate(item.lastTradeAt)}
+                  </span>
+                  <b>{item.tradeCount} 笔成交</b>
+                </div>
+                <div className={`market-data-state ${status}`}>
+                  <Database size={11} />
+                  {marketDataStatusLabel(status)}
+                </div>
+              </button>
+              <button
+                className="stock-refresh"
+                aria-label={`更新${item.instrument.name}行情`}
+                disabled={status === "syncing"}
+                onClick={() => onUpdateMarketData(item.instrument.id)}
+              >
+                <RefreshCw
+                  size={13}
+                  className={status === "syncing" ? "spinning" : ""}
+                />
+              </button>
             </div>
           );
         })}

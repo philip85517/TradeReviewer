@@ -1,4 +1,8 @@
-import { instrumentDisplayName } from "../instruments/display-name";
+import {
+  canonicalInstrumentId,
+  canonicalInstrumentSymbol,
+  instrumentDisplayName,
+} from "../instruments/display-name";
 import type { Instrument, TradeExecution } from "./types";
 
 export type InstrumentTradeSummary = {
@@ -14,9 +18,13 @@ export function buildInstrumentTradeSummaries(
 ): InstrumentTradeSummary[] {
   const grouped = new Map<string, TradeExecution[]>();
   for (const execution of executions) {
-    const current = grouped.get(execution.instrument.id) ?? [];
+    const key = canonicalInstrumentId(
+      execution.instrument.symbol,
+      execution.instrument.market,
+    );
+    const current = grouped.get(key) ?? [];
     current.push(execution);
-    grouped.set(execution.instrument.id, current);
+    grouped.set(key, current);
   }
 
   return [...grouped.values()]
@@ -25,11 +33,17 @@ export function buildInstrumentTradeSummaries(
         a.executedAt.localeCompare(b.executedAt),
       );
       const sourceInstrument = sorted[0].instrument;
+      const symbol = canonicalInstrumentSymbol(
+        sourceInstrument.symbol,
+        sourceInstrument.market,
+      );
       return {
         instrument: {
           ...sourceInstrument,
+          id: canonicalInstrumentId(symbol, sourceInstrument.market),
+          symbol,
           name: instrumentDisplayName(
-            sourceInstrument.symbol,
+            symbol,
             sourceInstrument.market,
             sourceInstrument.name,
           ),

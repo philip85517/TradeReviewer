@@ -2,7 +2,11 @@ import Decimal from "decimal.js";
 import * as XLSX from "xlsx";
 
 import type { TradeExecution, TradeSide } from "../trades/types";
-import { instrumentDisplayName } from "../instruments/display-name";
+import {
+  canonicalInstrumentId,
+  canonicalInstrumentSymbol,
+  instrumentDisplayName,
+} from "../instruments/display-name";
 import type { ImportDiagnostic, ImportResult } from "./import-result";
 
 const TRADE_SHEET = "证券-交易流水";
@@ -74,6 +78,19 @@ function accountLabel(name: unknown, id: string) {
   return `${text(name) || "券商账户"} · ${lastFour || "----"}`;
 }
 
+function instrumentDescriptor(value: unknown) {
+  const raw = text(value);
+  const parenthesized = raw.match(/^(.+?)\s*[（(]([A-Za-z0-9.-]+)[）)]$/);
+  if (parenthesized) {
+    return { symbol: parenthesized[2], name: parenthesized[1].trim() };
+  }
+  const prefixed = raw.match(/^([A-Za-z0-9.]+)\s+(.+)$/);
+  if (prefixed) {
+    return { symbol: prefixed[1], name: prefixed[2].trim() };
+  }
+  return { symbol: raw, name: undefined };
+}
+
 function workbookFingerprint(input: ArrayBuffer | Uint8Array) {
   const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
   let first = 0x811c9dc5;
@@ -141,6 +158,8 @@ export function parseFutuWorkbook(
   const records: TradeExecution[] = [];
   rows.forEach((row, index) => {
     const sourceRow = index + 2;
+    const descriptor = instrumentDescriptor(row["代码名称"]);
+    const rawInstrumentSymbol = descriptor.symbol.toUpperCase();
 
     if (text(row["品类"]) !== "证券") {
       diagnostics.push({
@@ -149,7 +168,19 @@ export function parseFutuWorkbook(
         message: `已跳过${text(row["品类"]) || "未知"}记录`,
         sheet: TRADE_SHEET,
         row: sourceRow,
-        instrumentSymbol: text(row["代码名称"]).toUpperCase(),
+        instrumentSymbol: rawInstrumentSymbol || undefined,
+        assetClass: text(row["品类"]),
+      });
+      return;
+    }
+
+    if (!rawInstrumentSymbol) {
+      diagnostics.push({
+        severity: "warning",
+        code: "missing-instrument-symbol",
+        message: "股票代码为空，已跳过该行",
+        sheet: TRADE_SHEET,
+        row: sourceRow,
         assetClass: text(row["品类"]),
       });
       return;
@@ -168,6 +199,8 @@ export function parseFutuWorkbook(
         message: "成交方向或成交时间无法识别",
         sheet: TRADE_SHEET,
         row: sourceRow,
+        instrumentSymbol: rawInstrumentSymbol,
+        assetClass: text(row["品类"]),
       });
       return;
     }
@@ -189,13 +222,15 @@ export function parseFutuWorkbook(
         message: "数量、价格或费用无法识别，已跳过该行",
         sheet: TRADE_SHEET,
         row: sourceRow,
+        instrumentSymbol: rawInstrumentSymbol,
+        assetClass: text(row["品类"]),
       });
       return;
     }
 
     const accountId = text(row["账户号码"]);
-    const symbol = text(row["代码名称"]).toUpperCase();
     const market = marketFor(row["交易所/市场"]);
+    const symbol = canonicalInstrumentSymbol(rawInstrumentSymbol, market);
 
     records.push({
       id: `futu:${sourceFileId}:${TRADE_SHEET}:${sourceRow}`,
@@ -211,9 +246,9 @@ export function parseFutuWorkbook(
       accountId,
       accountLabel: accountLabel(row["账户名称"], accountId),
       instrument: {
-        id: `${market}:${symbol}`,
+        id: canonicalInstrumentId(symbol, market),
         symbol,
-        name: instrumentDisplayName(symbol, market),
+        name: instrumentDisplayName(symbol, market, descriptor.name),
         market,
         currency: text(row["币种"]).toUpperCase(),
       },

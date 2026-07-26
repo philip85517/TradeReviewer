@@ -69,13 +69,13 @@ export function ThesisPanel({
           </p>
         </div>
       )}
-      <div className="future-guard">
+      {available && <div className="future-guard">
         <ShieldCheck size={16} />
         <p>
           <strong>未来信息已锁定</strong>
           后续 K 线、成交与事后标注不会提前出现。
         </p>
-      </div>
+      </div>}
     </aside>
   );
 }

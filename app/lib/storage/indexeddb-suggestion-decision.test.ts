@@ -12,6 +12,7 @@ const databases: string[] = [];
 
 const suggestion: TagSuggestionRecord = {
   version: 1,
+  tagDictionaryVersion: 1,
   id: "episode-1:entry-20d-breakout:1",
   episodeId: "episode-1",
   instrumentId: "US:XPEV",
@@ -27,6 +28,7 @@ const suggestion: TagSuggestionRecord = {
 
 const review: EpisodeReviewRecord = {
   version: 1,
+  tagDictionaryVersion: 1,
   episodeId: "episode-1",
   instrumentId: "US:XPEV",
   updatedAt: "2026-07-27T01:00:00.000Z",
@@ -127,5 +129,65 @@ describe("persistSuggestionDecision", () => {
     expect(
       await new IndexedDbEpisodeReviewRepository(databaseName).getAll(),
     ).toEqual([]);
+  });
+
+  it("merges a confirmation into the latest persisted review", async () => {
+    const databaseName = `trade-reviewer-decision-${crypto.randomUUID()}`;
+    databases.push(databaseName);
+    const reviews = new IndexedDbEpisodeReviewRepository(databaseName);
+    await reviews.put({
+      ...review,
+      plan: { ...review.plan, thesis: "已经保存的复盘逻辑" },
+      confirmedTagIds: ["planned"],
+    });
+
+    const persisted = await persistSuggestionDecision({
+      databaseName,
+      suggestion,
+      review,
+    });
+
+    expect(persisted?.plan.thesis).toBe("已经保存的复盘逻辑");
+    expect(persisted?.confirmedTagIds).toEqual([
+      "planned",
+      "breakout",
+    ]);
+    expect(await reviews.get("episode-1")).toEqual(persisted);
+  });
+
+  it("serializes simultaneous confirmations for the same episode", async () => {
+    const databaseName = `trade-reviewer-decision-${crypto.randomUUID()}`;
+    databases.push(databaseName);
+    const pullbackSuggestion: TagSuggestionRecord = {
+      ...suggestion,
+      id: "episode-1:first-pullback-after-breakout:1",
+      tagId: "pullback",
+      finalTagId: "pullback",
+      ruleId: "first-pullback-after-breakout",
+    };
+
+    await Promise.all([
+      persistSuggestionDecision({
+        databaseName,
+        suggestion,
+        review,
+      }),
+      persistSuggestionDecision({
+        databaseName,
+        suggestion: pullbackSuggestion,
+        review: {
+          ...review,
+          confirmedTagIds: ["pullback"],
+        },
+      }),
+    ]);
+
+    expect(
+      (
+        await new IndexedDbEpisodeReviewRepository(databaseName).get(
+          "episode-1",
+        )
+      )?.confirmedTagIds,
+    ).toEqual(["breakout", "pullback"]);
   });
 });

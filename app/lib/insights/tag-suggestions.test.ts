@@ -106,6 +106,7 @@ function entry(
     review: savedReview,
     reviewStatus: savedReview?.review.completed ? "completed" : "pending",
     confirmedTagIds: savedReview?.confirmedTagIds ?? [],
+    tagDictionaryVersion: 1,
     rMultiple: "1",
   };
 
@@ -190,6 +191,7 @@ describe("buildTagSuggestions", () => {
     expect(suggestions).toHaveLength(1);
     expect(suggestions[0]).toMatchObject({
       episodeId: "episode-breakout",
+      tagDictionaryVersion: 1,
       tagId: "breakout",
       finalTagId: null,
       ruleId: "entry-20d-breakout",
@@ -320,6 +322,7 @@ describe("buildTagSuggestions", () => {
     ];
     const rejected: TagSuggestionRecord = {
       version: 1,
+      tagDictionaryVersion: 1,
       id: "episode-rejected:scale-in:1",
       episodeId: "episode-rejected",
       instrumentId: "US:XPEV",

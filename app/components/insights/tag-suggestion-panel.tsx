@@ -4,7 +4,10 @@ import { Check, ExternalLink, Sparkles, X } from "lucide-react";
 import { useState } from "react";
 
 import type { TagSuggestionRecord } from "../../lib/insights/types";
-import { reviewTagLabel } from "../../lib/reviews/review-tags";
+import {
+  reviewTagLabel,
+  REVIEW_TAGS,
+} from "../../lib/reviews/review-tags";
 
 export type SuggestionEpisodeContext = {
   instrumentId: string;
@@ -18,6 +21,10 @@ type Props = {
   suggestions: TagSuggestionRecord[];
   episodeContexts: Record<string, SuggestionEpisodeContext>;
   onConfirm: (suggestion: TagSuggestionRecord) => void | Promise<void>;
+  onEdit: (
+    suggestion: TagSuggestionRecord,
+    finalTagId: string,
+  ) => void | Promise<void>;
   onReject: (suggestion: TagSuggestionRecord) => void | Promise<void>;
   onOpenEpisode: (instrumentId: string, episodeId: string) => void;
 };
@@ -38,12 +45,16 @@ export function TagSuggestionPanel({
   suggestions,
   episodeContexts,
   onConfirm,
+  onEdit,
   onReject,
   onOpenEpisode,
 }: Props) {
   const [resolved, setResolved] = useState<Set<string>>(() => new Set());
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selectedTagIds, setSelectedTagIds] = useState<
+    Record<string, string>
+  >({});
   const pending = suggestions.filter(
     ({ id, status }) => status === "suggested" && !resolved.has(id),
   );
@@ -91,6 +102,9 @@ export function TagSuggestionPanel({
               context?.instrumentName ?? suggestion.instrumentId;
             const episodeLabel = context?.episodeLabel ?? "该回合";
             const disabled = busyId === suggestion.id;
+            const selectedTagId =
+              selectedTagIds[suggestion.id] ?? suggestion.tagId;
+            const selectedTagLabel = reviewTagLabel(selectedTagId);
             return (
               <article key={suggestion.id}>
                 <div className="suggestion-card-heading">
@@ -109,6 +123,26 @@ export function TagSuggestionPanel({
                 <small>
                   规则 {suggestion.ruleId} · v{suggestion.ruleVersion}
                 </small>
+                <label className="suggestion-tag-edit">
+                  <span>最终标签</span>
+                  <select
+                    aria-label={`调整“${tagLabel}”建议标签`}
+                    value={selectedTagId}
+                    disabled={disabled}
+                    onChange={(event) =>
+                      setSelectedTagIds((current) => ({
+                        ...current,
+                        [suggestion.id]: event.target.value,
+                      }))
+                    }
+                  >
+                    {REVIEW_TAGS.map((tag) => (
+                      <option key={tag.id} value={tag.id}>
+                        {tag.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
                 <div className="suggestion-actions">
                   <button
                     type="button"
@@ -136,8 +170,19 @@ export function TagSuggestionPanel({
                   <button
                     type="button"
                     disabled={disabled}
-                    onClick={() => void decide(suggestion, onConfirm)}
-                    aria-label={`确认“${tagLabel}”`}
+                    onClick={() =>
+                      void decide(
+                        suggestion,
+                        selectedTagId === suggestion.tagId
+                          ? onConfirm
+                          : (item) => onEdit(item, selectedTagId),
+                      )
+                    }
+                    aria-label={
+                      selectedTagId === suggestion.tagId
+                        ? `确认“${tagLabel}”`
+                        : `确认改为“${selectedTagLabel}”`
+                    }
                   >
                     <Check size={13} />
                     确认

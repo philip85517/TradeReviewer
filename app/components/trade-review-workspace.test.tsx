@@ -58,7 +58,10 @@ const nextFrame: DemoReplayFrame = {
 };
 
 describe("TradeReviewWorkspace", () => {
-  afterEach(() => cleanup());
+  afterEach(() => {
+    cleanup();
+    vi.restoreAllMocks();
+  });
 
   beforeEach(async () => {
     window.localStorage.clear();
@@ -436,7 +439,7 @@ describe("TradeReviewWorkspace", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it("confirms a cached rule suggestion and opens the exact episode without requesting market data", async () => {
+  it("accepts an edited cached suggestion and opens the exact episode without requesting market data", async () => {
     const user = userEvent.setup();
     const instrument = {
       id: "US:XPEV",
@@ -531,6 +534,15 @@ describe("TradeReviewWorkspace", () => {
       },
     });
     vi.mocked(fetch).mockClear();
+    let releaseReviews!: (records: EpisodeReviewRecord[]) => void;
+    vi.spyOn(
+      IndexedDbEpisodeReviewRepository.prototype,
+      "getAll",
+    ).mockReturnValueOnce(
+      new Promise((resolve) => {
+        releaseReviews = resolve;
+      }),
+    );
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
     await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
@@ -539,7 +551,13 @@ describe("TradeReviewWorkspace", () => {
     expect(
       await screen.findByRole("heading", { name: "待确认规则建议" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("分批进入")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "确认“分批进入”" }),
+    ).not.toBeInTheDocument();
+    releaseReviews([]);
+    expect(
+      await screen.findByText("分批进入", { selector: "b" }),
+    ).toBeInTheDocument();
     await user.click(
       screen.getByRole("button", {
         name: "查看小鹏汽车第 1 次交易",
@@ -551,8 +569,14 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.getByText("目标回合买入一")).toBeInTheDocument();
     expect(screen.getByText("目标回合买入二")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "模式洞察" }));
+    await user.selectOptions(
+      screen.getByRole("combobox", {
+        name: "调整“分批进入”建议标签",
+      }),
+      "planned",
+    );
     await user.click(
-      screen.getByRole("button", { name: /确认.*分批进入/ }),
+      screen.getByRole("button", { name: "确认改为“计划内”" }),
     );
 
     const suggestions =
@@ -560,14 +584,14 @@ describe("TradeReviewWorkspace", () => {
     expect(suggestions).toEqual([
       expect.objectContaining({
         episodeId: episode.id,
-        status: "confirmed",
-        finalTagId: "scale-in",
+        status: "edited",
+        finalTagId: "planned",
       }),
     ]);
     expect(
       (await new IndexedDbEpisodeReviewRepository().get(episode.id))
         ?.confirmedTagIds,
-    ).toContain("scale-in");
+    ).toContain("planned");
 
     expect(screen.getByText("暂无待确认建议")).toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();

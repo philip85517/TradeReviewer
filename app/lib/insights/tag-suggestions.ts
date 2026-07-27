@@ -9,6 +9,7 @@ import type {
   TagSuggestionRecord,
   TagSuggestionRuleId,
 } from "./types";
+import { REVIEW_TAG_DICTIONARY_VERSION } from "../reviews/review-tags";
 
 export type {
   SuggestionEvidence,
@@ -34,6 +35,7 @@ function createSuggestion(
 ): TagSuggestionRecord {
   return {
     version: 1,
+    tagDictionaryVersion: REVIEW_TAG_DICTIONARY_VERSION,
     id: suggestionId(item.episode.id, ruleId),
     episodeId: item.episode.id,
     instrumentId: item.episode.instrument.id,

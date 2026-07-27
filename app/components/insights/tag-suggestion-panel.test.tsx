@@ -20,6 +20,7 @@ function suggestion(
         : "scale-in";
   return {
     version: 1,
+    tagDictionaryVersion: 1,
     id: `${episodeId}:${rule}:1`,
     episodeId,
     instrumentId: "US:XPEV",
@@ -89,6 +90,7 @@ describe("TagSuggestionPanel", () => {
         ]}
         episodeContexts={contexts}
         onConfirm={onConfirm}
+        onEdit={vi.fn()}
         onReject={onReject}
         onOpenEpisode={onOpenEpisode}
       />,
@@ -136,6 +138,7 @@ describe("TagSuggestionPanel", () => {
         ]}
         episodeContexts={contexts}
         onConfirm={vi.fn().mockRejectedValue(new Error("quota"))}
+        onEdit={vi.fn()}
         onReject={vi.fn()}
         onOpenEpisode={vi.fn()}
       />,
@@ -151,5 +154,36 @@ describe("TagSuggestionPanel", () => {
     expect(
       screen.getByRole("button", { name: "确认“突破”" }),
     ).toBeInTheDocument();
+  });
+
+  it("persists an explicitly edited final tag", async () => {
+    const user = userEvent.setup();
+    const item = suggestion(
+      "entry-20d-breakout",
+      "episode-breakout",
+    );
+    const onEdit = vi.fn().mockResolvedValue(undefined);
+    render(
+      <TagSuggestionPanel
+        suggestions={[item]}
+        episodeContexts={contexts}
+        onConfirm={vi.fn()}
+        onEdit={onEdit}
+        onReject={vi.fn()}
+        onOpenEpisode={vi.fn()}
+      />,
+    );
+
+    await user.selectOptions(
+      screen.getByRole("combobox", {
+        name: "调整“突破”建议标签",
+      }),
+      "pullback",
+    );
+    await user.click(
+      screen.getByRole("button", { name: "确认改为“回踩”" }),
+    );
+
+    expect(onEdit).toHaveBeenCalledWith(item, "pullback");
   });
 });

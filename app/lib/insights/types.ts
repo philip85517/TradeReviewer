@@ -31,6 +31,7 @@ export type TagSuggestionRuleId =
 
 export type TagSuggestionRecord = {
   version: 1;
+  tagDictionaryVersion: number;
   id: string;
   episodeId: string;
   instrumentId: string;

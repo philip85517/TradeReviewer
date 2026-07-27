@@ -129,6 +129,7 @@ function libraryEpisode(options: {
     review,
     reviewStatus: "completed",
     confirmedTagIds: tags,
+    tagDictionaryVersion: 1,
     rMultiple: options.rMultiple,
   };
 }
@@ -187,6 +188,7 @@ function confirmedSuggestion(
 ): TagSuggestionRecord {
   return {
     version: 1,
+    tagDictionaryVersion: 1,
     id: `${episodeId}:entry-20d-breakout:1`,
     episodeId,
     instrumentId: xpev.id,
@@ -295,13 +297,14 @@ describe("buildInsightEpisodeFacts", () => {
         averageEntryPrice: "10",
         openingExecutionCount: 2,
         addOnCount: 1,
-        mfePercent: "50",
+        mfePercent: "20",
         maePercent: "-10",
-        givebackPercent: "30",
+        givebackPercent: "0",
         confirmedTagIds: ["breakout", "planned"],
         confirmedRuleVersions: [
           {
             tagId: "breakout",
+            tagDictionaryVersion: 1,
             ruleId: "entry-20d-breakout",
             ruleVersion: 1,
           },
@@ -317,9 +320,9 @@ describe("buildInsightEpisodeFacts", () => {
         averageEntryPrice: "20",
         openingExecutionCount: 1,
         addOnCount: 0,
-        mfePercent: "30",
-        maePercent: "-10",
-        givebackPercent: "10",
+        mfePercent: "20",
+        maePercent: "0",
+        givebackPercent: "0",
         confirmedTagIds: ["planned"],
         confirmedRuleVersions: [],
       }),

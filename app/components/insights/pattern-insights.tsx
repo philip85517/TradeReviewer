@@ -19,6 +19,7 @@ import type {
   PatternInsightReport,
 } from "../../lib/insights/insight-engine";
 import type { TagSuggestionRecord } from "../../lib/insights/types";
+import { formatMarketTradingDate } from "../../lib/market/trading-date";
 import {
   TagSuggestionPanel,
   type SuggestionEpisodeContext,
@@ -33,6 +34,10 @@ type Props = {
   episodeContexts: Record<string, SuggestionEpisodeContext>;
   onConfirmSuggestion: (
     suggestion: TagSuggestionRecord,
+  ) => void | Promise<void>;
+  onEditSuggestion: (
+    suggestion: TagSuggestionRecord,
+    finalTagId: string,
   ) => void | Promise<void>;
   onRejectSuggestion: (
     suggestion: TagSuggestionRecord,
@@ -95,10 +100,12 @@ function versionLabel(insight: PatternInsight) {
 function EpisodeLink({
   fact,
   kind,
+  metricBasis,
   onOpenEpisode,
 }: {
   fact: InsightEpisodeFact;
   kind: "证据" | "反例" | "基准";
+  metricBasis: PatternInsight["metricBasis"];
   onOpenEpisode: Props["onOpenEpisode"];
 }) {
   return (
@@ -113,14 +120,14 @@ function EpisodeLink({
           {fact.instrumentName}（{fact.instrumentSymbol}）
         </strong>
         <small>
-          {new Date(fact.startedAt).toLocaleDateString("zh-CN")}—
-          {new Date(fact.endedAt).toLocaleDateString("zh-CN")}
+          {formatMarketTradingDate(fact.startedAt, fact.market)}—
+          {formatMarketTradingDate(fact.endedAt, fact.market)}
         </small>
       </span>
       <b>
-        {fact.rMultiple === null
-          ? `${fact.returnPercent ?? "—"}%`
-          : `${fact.rMultiple}R`}
+        {metricBasis === "r-multiple"
+          ? `${fact.rMultiple ?? "—"}R`
+          : `${fact.returnPercent ?? "—"}%`}
       </b>
       <ChevronRight size={14} />
     </button>
@@ -196,6 +203,7 @@ function InsightCard({
               key={fact.episodeId}
               fact={fact}
               kind="证据"
+              metricBasis={insight.metricBasis}
               onOpenEpisode={onOpenEpisode}
             />
           ))}
@@ -208,6 +216,7 @@ function InsightCard({
               key={fact.episodeId}
               fact={fact}
               kind="反例"
+              metricBasis={insight.metricBasis}
               onOpenEpisode={onOpenEpisode}
             />
           ))}
@@ -220,6 +229,7 @@ function InsightCard({
               key={fact.episodeId}
               fact={fact}
               kind="基准"
+              metricBasis={insight.metricBasis}
               onOpenEpisode={onOpenEpisode}
             />
           ))}
@@ -265,6 +275,7 @@ export function PatternInsights({
   suggestions,
   episodeContexts,
   onConfirmSuggestion,
+  onEditSuggestion,
   onRejectSuggestion,
   onOpenEpisode,
 }: Props) {
@@ -304,6 +315,7 @@ export function PatternInsights({
         suggestions={suggestions}
         episodeContexts={episodeContexts}
         onConfirm={onConfirmSuggestion}
+        onEdit={onEditSuggestion}
         onReject={onRejectSuggestion}
         onOpenEpisode={onOpenEpisode}
       />

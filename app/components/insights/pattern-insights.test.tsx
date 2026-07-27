@@ -36,6 +36,7 @@ function fact(
     maePercent: "-3",
     givebackPercent: "2",
     confirmedTagIds: ["breakout"],
+    tagDictionaryVersion: 1,
     confirmedRuleVersions: [],
     calculationVersion: 1,
   };
@@ -132,6 +133,7 @@ describe("PatternInsights", () => {
         suggestions={[]}
         episodeContexts={{}}
         onConfirmSuggestion={vi.fn()}
+        onEditSuggestion={vi.fn()}
         onRejectSuggestion={vi.fn()}
         onOpenEpisode={onOpenEpisode}
       />,
@@ -211,6 +213,7 @@ describe("PatternInsights", () => {
         suggestions={[]}
         episodeContexts={{}}
         onConfirmSuggestion={vi.fn()}
+        onEditSuggestion={vi.fn()}
         onRejectSuggestion={vi.fn()}
         onOpenEpisode={vi.fn()}
       />,
@@ -230,6 +233,36 @@ describe("PatternInsights", () => {
     expect(screen.queryByText("可用洞察")).not.toBeInTheDocument();
   });
 
+  it("uses the report basis for evidence rows even when R is available", () => {
+    render(
+      <PatternInsights
+        report={report({
+          metricBasis: "return-percent",
+          formalInsights: [
+            insight({
+              metricBasis: "return-percent",
+              medianTagged: "2",
+              medianBaseline: "0.5",
+            }),
+          ],
+        })}
+        facts={[
+          { ...facts[0], rMultiple: "99", returnPercent: "2" },
+          ...facts.slice(1),
+        ]}
+        suggestions={[]}
+        episodeContexts={{}}
+        onConfirmSuggestion={vi.fn()}
+        onEditSuggestion={vi.fn()}
+        onRejectSuggestion={vi.fn()}
+        onOpenEpisode={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("2%", { selector: "b" })).toBeInTheDocument();
+    expect(screen.queryByText("99R")).not.toBeInTheDocument();
+  });
+
   it("uses an honest empty state when no candidate reaches three samples", () => {
     render(
       <PatternInsights
@@ -243,6 +276,7 @@ describe("PatternInsights", () => {
         suggestions={[]}
         episodeContexts={{}}
         onConfirmSuggestion={vi.fn()}
+        onEditSuggestion={vi.fn()}
         onRejectSuggestion={vi.fn()}
         onOpenEpisode={vi.fn()}
       />,

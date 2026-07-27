@@ -448,12 +448,13 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
             records.map((record) => [record.episodeId, record]),
           ),
         );
+        setReviewsHydrated(true);
       })
       .catch(() => {
-        if (active) setEpisodeReviews({});
-      })
-      .finally(() => {
-        if (active) setReviewsHydrated(true);
+        if (active) {
+          setEpisodeReviews({});
+          setReviewsHydrated(false);
+        }
       });
     return () => {
       active = false;
@@ -466,13 +467,16 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     void new IndexedDbTagSuggestionRepository()
       .getAll()
       .then((records) => {
-        if (active) setSuggestionDecisions(records);
+        if (active) {
+          setSuggestionDecisions(records);
+          setSuggestionsHydrated(true);
+        }
       })
       .catch(() => {
-        if (active) setSuggestionDecisions([]);
-      })
-      .finally(() => {
-        if (active) setSuggestionsHydrated(true);
+        if (active) {
+          setSuggestionDecisions([]);
+          setSuggestionsHydrated(false);
+        }
       });
     return () => {
       active = false;
@@ -860,12 +864,16 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     setActiveView("library");
   }
 
-  async function confirmSuggestion(suggestion: TagSuggestionRecord) {
+  async function acceptSuggestion(
+    suggestion: TagSuggestionRecord,
+    finalTagId: string,
+    status: "confirmed" | "edited",
+  ) {
     const decidedAt = new Date().toISOString();
     const decided: TagSuggestionRecord = {
       ...suggestion,
-      status: "confirmed",
-      finalTagId: suggestion.tagId,
+      status,
+      finalTagId,
       decidedAt,
     };
     const current =
@@ -877,23 +885,38 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       );
     const review: EpisodeReviewRecord = {
       ...current,
+      tagDictionaryVersion: suggestion.tagDictionaryVersion,
       updatedAt: decidedAt,
       confirmedTagIds: [
-        ...new Set([...current.confirmedTagIds, suggestion.tagId]),
+        ...new Set([...current.confirmedTagIds, finalTagId]),
       ],
     };
-    await persistSuggestionDecision({
+    const persistedReview = await persistSuggestionDecision({
       suggestion: decided,
       review,
     });
+    if (!persistedReview) {
+      throw new Error("确认建议时未写入复盘记录");
+    }
     setSuggestionDecisions((records) => [
       ...records.filter(({ id }) => id !== decided.id),
       decided,
     ]);
     setEpisodeReviews((records) => ({
       ...records,
-      [review.episodeId]: review,
+      [persistedReview.episodeId]: persistedReview,
     }));
+  }
+
+  function confirmSuggestion(suggestion: TagSuggestionRecord) {
+    return acceptSuggestion(suggestion, suggestion.tagId, "confirmed");
+  }
+
+  function editSuggestion(
+    suggestion: TagSuggestionRecord,
+    finalTagId: string,
+  ) {
+    return acceptSuggestion(suggestion, finalTagId, "edited");
   }
 
   async function rejectSuggestion(suggestion: TagSuggestionRecord) {
@@ -1006,9 +1029,14 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
           <PatternInsights
             report={insightReport}
             facts={insightFactResult.facts}
-            suggestions={suggestionsHydrated ? tagSuggestions : []}
+            suggestions={
+              suggestionsHydrated && reviewsHydrated
+                ? tagSuggestions
+                : []
+            }
             episodeContexts={insightEpisodeContexts}
             onConfirmSuggestion={confirmSuggestion}
+            onEditSuggestion={editSuggestion}
             onRejectSuggestion={rejectSuggestion}
             onOpenEpisode={openLibraryEpisode}
           />

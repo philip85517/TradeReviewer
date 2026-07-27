@@ -4,6 +4,7 @@ import type {
   EpisodeReviewRecord,
   EpisodeReviewStatus,
 } from "./types";
+import { REVIEW_TAG_DICTIONARY_VERSION } from "./review-tags";
 
 type NetPnlMetric = {
   netPnl: string | null;
@@ -16,6 +17,7 @@ export function createEmptyEpisodeReviewRecord(
 ): EpisodeReviewRecord {
   return {
     version: 1,
+    tagDictionaryVersion: REVIEW_TAG_DICTIONARY_VERSION,
     episodeId,
     instrumentId,
     updatedAt,
@@ -84,6 +86,8 @@ export function normalizeEpisodeReviewRecord(
 ): EpisodeReviewRecord {
   return {
     ...record,
+    tagDictionaryVersion:
+      record.tagDictionaryVersion ?? REVIEW_TAG_DICTIONARY_VERSION,
     episodeId: clean(record.episodeId),
     instrumentId: clean(record.instrumentId),
     plan: {

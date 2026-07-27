@@ -55,6 +55,7 @@ function suggestion(
 ): TagSuggestionRecord {
   return {
     version: 1,
+    tagDictionaryVersion: 1,
     id: "episode-1:entry-20d-breakout:1",
     episodeId: " episode-1 ",
     instrumentId: " US:XPEV ",

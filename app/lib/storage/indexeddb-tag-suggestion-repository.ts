@@ -2,6 +2,7 @@ import type {
   SuggestionEvidence,
   TagSuggestionRecord,
 } from "../insights/types";
+import { REVIEW_TAG_DICTIONARY_VERSION } from "../reviews/review-tags";
 import {
   openTradeReviewDatabase,
   requestValue,
@@ -42,6 +43,8 @@ export function normalizeTagSuggestionRecord(
 ): TagSuggestionRecord {
   return {
     ...record,
+    tagDictionaryVersion:
+      record.tagDictionaryVersion ?? REVIEW_TAG_DICTIONARY_VERSION,
     id: record.id.trim(),
     episodeId: record.episodeId.trim(),
     instrumentId: record.instrumentId.trim(),

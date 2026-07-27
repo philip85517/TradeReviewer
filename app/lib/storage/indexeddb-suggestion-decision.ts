@@ -3,6 +3,7 @@ import { normalizeEpisodeReviewRecord } from "../reviews/review-metrics";
 import type { EpisodeReviewRecord } from "../reviews/types";
 import {
   openTradeReviewDatabase,
+  requestValue,
   REVIEWS,
   TAG_SUGGESTIONS,
   transactionDone,
@@ -22,6 +23,7 @@ export async function persistSuggestionDecision({
 }: PersistSuggestionDecisionInput) {
   const database = await openTradeReviewDatabase(databaseName);
   const stores = review ? [TAG_SUGGESTIONS, REVIEWS] : [TAG_SUGGESTIONS];
+  let persistedReview: EpisodeReviewRecord | undefined;
   try {
     const transaction = database.transaction(stores, "readwrite");
     const completion = transactionDone(transaction);
@@ -30,9 +32,22 @@ export async function persistSuggestionDecision({
         .objectStore(TAG_SUGGESTIONS)
         .put(normalizeTagSuggestionRecord(suggestion));
       if (review) {
-        transaction
-          .objectStore(REVIEWS)
-          .put(normalizeEpisodeReviewRecord(review));
+        const incoming = normalizeEpisodeReviewRecord(review);
+        const reviewStore = transaction.objectStore(REVIEWS);
+        const current = (await requestValue(
+          reviewStore.get(incoming.episodeId),
+        )) as EpisodeReviewRecord | undefined;
+        persistedReview = normalizeEpisodeReviewRecord({
+          ...(current ?? incoming),
+          updatedAt: incoming.updatedAt,
+          confirmedTagIds: [
+            ...new Set([
+              ...(current?.confirmedTagIds ?? []),
+              ...incoming.confirmedTagIds,
+            ]),
+          ],
+        });
+        reviewStore.put(persistedReview);
       }
     } catch (error) {
       transaction.abort();
@@ -40,6 +55,7 @@ export async function persistSuggestionDecision({
       throw error;
     }
     await completion;
+    return persistedReview;
   } finally {
     database.close();
   }

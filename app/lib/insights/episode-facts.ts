@@ -24,6 +24,7 @@ export type InsightEpisodeExclusion = {
 
 export type ConfirmedRuleVersion = {
   tagId: string;
+  tagDictionaryVersion: number;
   ruleId: string;
   ruleVersion: number;
 };
@@ -49,6 +50,7 @@ export type InsightEpisodeFact = {
   maePercent: string;
   givebackPercent: string;
   confirmedTagIds: string[];
+  tagDictionaryVersion: number;
   confirmedRuleVersions: ConfirmedRuleVersion[];
   calculationVersion: 1;
 };
@@ -114,16 +116,18 @@ function averageEntry(
 function excursionMetrics(
   direction: "long" | "short",
   price: Decimal,
+  executionPrices: string[],
   candles: DailyCandleRecord[],
   returnPercent: string | null,
 ) {
+  const observedPrices = executionPrices.map((value) => new Decimal(value));
   const maximum = candles.reduce(
     (value, candle) => Decimal.max(value, candle.high),
-    new Decimal(candles[0].high),
+    Decimal.max(price, ...observedPrices),
   );
   const minimum = candles.reduce(
     (value, candle) => Decimal.min(value, candle.low),
-    new Decimal(candles[0].low),
+    Decimal.min(price, ...observedPrices),
   );
   const mfe =
     direction === "long"
@@ -213,6 +217,7 @@ export function buildInsightEpisodeFacts(
         )
         .map((suggestion) => ({
           tagId: suggestion.finalTagId ?? suggestion.tagId,
+          tagDictionaryVersion: suggestion.tagDictionaryVersion,
           ruleId: suggestion.ruleId,
           ruleVersion: suggestion.ruleVersion,
         }))
@@ -224,7 +229,11 @@ export function buildInsightEpisodeFacts(
       const excursions = excursionMetrics(
         item.episode.direction,
         entryBasis.price,
-        episodeCandles,
+        item.episode.executions.map(({ price }) => price),
+        episodeCandles.filter(
+          ({ tradingDate }) =>
+            tradingDate > startDate && tradingDate < endDate,
+        ),
         item.metrics.returnPercent,
       );
 
@@ -251,6 +260,7 @@ export function buildInsightEpisodeFacts(
         addOnCount: Math.max(0, entryBasis.count - 1),
         ...excursions,
         confirmedTagIds: [...item.confirmedTagIds],
+        tagDictionaryVersion: item.tagDictionaryVersion,
         confirmedRuleVersions,
         calculationVersion: 1,
       });

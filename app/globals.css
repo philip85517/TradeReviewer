@@ -1834,6 +1834,26 @@ input:focus-visible {
   margin-top: 11px;
 }
 
+.suggestion-tag-edit {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--faint);
+  font-size: 8px;
+}
+
+.suggestion-tag-edit select {
+  min-width: 120px;
+  height: 28px;
+  padding: 0 7px;
+  border: 1px solid #30435d;
+  border-radius: 6px;
+  color: #b9cbe1;
+  background: #0d1723;
+  font-size: 9px;
+}
+
 .suggestion-actions button,
 .insight-category-tabs button {
   min-height: 30px;

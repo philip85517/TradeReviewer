@@ -32,6 +32,7 @@ function fact(
     maePercent: String(-(index + 1)),
     givebackPercent: "1",
     confirmedTagIds: [],
+    tagDictionaryVersion: 1,
     confirmedRuleVersions: [],
     calculationVersion: 1,
     ...overrides,
@@ -70,6 +71,12 @@ describe("buildPatternInsightReport", () => {
       medianTagged: "2",
       medianBaseline: "6",
       medianDifference: "-4",
+      evidenceEpisodeIds: [],
+      counterexampleEpisodeIds: [
+        "episode-01",
+        "episode-02",
+        "episode-03",
+      ],
     });
     expect(report.formalInsights).not.toContainEqual(
       expect.objectContaining({
@@ -177,6 +184,7 @@ describe("buildPatternInsightReport", () => {
             ? [
                 {
                   tagId: "breakout",
+                  tagDictionaryVersion: 2,
                   ruleId: "entry-20d-breakout",
                   ruleVersion: 1,
                 },
@@ -211,6 +219,7 @@ describe("buildPatternInsightReport", () => {
           ruleVersion: 1,
         },
       ],
+      tagDictionaryVersion: 2,
       medianMfePercent: "4",
       medianMaePercent: "-3",
       medianGivebackPercent: "1",

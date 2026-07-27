@@ -1,9 +1,6 @@
 import Decimal from "decimal.js";
 
-import {
-  REVIEW_TAG_DICTIONARY_VERSION,
-  reviewTagLabel,
-} from "../reviews/review-tags";
+import { reviewTagLabel } from "../reviews/review-tags";
 import type {
   InsightEpisodeExclusion,
   InsightEpisodeFact,
@@ -48,7 +45,7 @@ export type PatternInsight = {
   counterexampleEpisodeIds: string[];
   baselineEpisodeIds: string[];
   conclusion: string;
-  tagDictionaryVersion: 1 | null;
+  tagDictionaryVersion: number | null;
   ruleVersions: Array<{ ruleId: string; ruleVersion: number }>;
   calculationVersion: 1;
 };
@@ -217,6 +214,25 @@ function uniqueRuleVersions(
   );
 }
 
+function tagDictionaryVersion(
+  sample: InsightEpisodeFact[],
+  tagId: string,
+) {
+  const versions = [
+    ...new Set(
+      sample.flatMap((fact) => {
+        const suggestionVersions = fact.confirmedRuleVersions
+          .filter((item) => item.tagId === tagId)
+          .map((item) => item.tagDictionaryVersion);
+        return suggestionVersions.length > 0
+          ? suggestionVersions
+          : [fact.tagDictionaryVersion];
+      }),
+    ),
+  ];
+  return versions.length === 1 ? versions[0] : null;
+}
+
 function buildInsight(
   definition: CandidateDefinition,
   facts: InsightEpisodeFact[],
@@ -241,8 +257,16 @@ function buildInsight(
   const positive = sample.filter((fact) =>
     new Decimal(metricValue(fact, basis) as string).gt(0),
   );
+  const comparisonThreshold = medianBaseline ?? new Decimal(0);
+  const evidence = sample.filter((fact) =>
+    new Decimal(metricValue(fact, basis) as string).gt(
+      comparisonThreshold,
+    ),
+  );
   const counterexamples = sample.filter((fact) =>
-    new Decimal(metricValue(fact, basis) as string).lte(0),
+    new Decimal(metricValue(fact, basis) as string).lte(
+      comparisonThreshold,
+    ),
   );
   const plannedCount = sample.filter((fact) =>
     fact.confirmedTagIds.includes("planned"),
@@ -300,14 +324,14 @@ function buildInsight(
             .div(sample.length)
             .times(100)
             .toString(),
-    evidenceEpisodeIds: positive.map(({ episodeId }) => episodeId),
+    evidenceEpisodeIds: evidence.map(({ episodeId }) => episodeId),
     counterexampleEpisodeIds: counterexamples.map(
       ({ episodeId }) => episodeId,
     ),
     baselineEpisodeIds: baseline.map(({ episodeId }) => episodeId),
     conclusion,
     tagDictionaryVersion: isTag
-      ? REVIEW_TAG_DICTIONARY_VERSION
+      ? tagDictionaryVersion(sample, definition.dimension.value)
       : null,
     ruleVersions: isTag
       ? uniqueRuleVersions(sample, definition.dimension.value)

@@ -26,9 +26,23 @@ import {
   type ImportPreview,
 } from "../lib/import/import-preview";
 import { aggregateCandles } from "../lib/market/aggregate";
-import type { MarketDataSyncStatus } from "../lib/market/sync-status";
+import type {
+  DailyCandleRecord,
+  SupportedMarket,
+} from "../lib/market/contracts";
+import {
+  coverageStatusForSegments,
+  type MarketDataSyncStatus,
+} from "../lib/market/sync-status";
+import {
+  hasOpenPosition,
+  requiredMarketDataRange,
+  requiredRangeExpanded,
+} from "../lib/market/sync-range";
+import { syncMarketData } from "../lib/market/sync-service";
 import type { Timeframe } from "../lib/market/types";
 import { createReplaySnapshot } from "../lib/replay/replay-engine";
+import { formatReplayCursor } from "../lib/replay/format-time";
 import {
   loadReviewState,
   saveReviewState,
@@ -46,6 +60,7 @@ import {
   loadMarketDataJobs,
   saveMarketDataJob,
 } from "../lib/storage/market-data-jobs";
+import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-data-repository";
 import { buildInstrumentTradeSummaries } from "../lib/trades/instruments";
 import type { TradeExecution } from "../lib/trades/types";
 import { ChartToolbar } from "./chart/chart-toolbar";
@@ -61,6 +76,12 @@ import { ThesisPanel } from "./review/thesis-panel";
 const REVIEW_ID = "demo-xpev-2025";
 const DEFAULT_THESIS =
   "宽通道上升后的第一次深度回撤。等待重新站上短期高点，确认买盘跟随后分批进入；如果跌破前低则逻辑失效。";
+const SUPPORTED_MARKETS = new Set<SupportedMarket>([
+  "US",
+  "HK",
+  "CN-SH",
+  "CN-SZ",
+]);
 
 function money(value: string, currency = "USD") {
   return new Intl.NumberFormat("zh-CN", {
@@ -115,10 +136,16 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   const [marketDataStatuses, setMarketDataStatuses] = useState<
     Record<string, MarketDataSyncStatus>
   >({});
+  const [marketDataCandles, setMarketDataCandles] = useState<
+    Record<string, DailyCandleRecord[]>
+  >({});
   const [importing, setImporting] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const replayRequestSequence = useRef(0);
   const marketDataRequestSequences = useRef<Record<string, number>>({});
+  const marketDataAbortControllers = useRef<
+    Record<string, AbortController>
+  >({});
 
   const cursor = frame.cursor;
   const chartCandles = useMemo(
@@ -195,12 +222,16 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
           storedInstrumentSummaries.map((item) => [
             item.instrument.id,
             storedMarketDataStatuses.get(item.instrument.id) ??
-              ("needs-provider" satisfies MarketDataSyncStatus),
+              ("not-requested" satisfies MarketDataSyncStatus),
           ]),
         ),
       );
       if (stored) {
-        setTimeframe(stored.timeframe);
+        setTimeframe(
+          storedInstrumentSummaries.length > 0
+            ? "1D"
+            : stored.timeframe,
+        );
         setThesis(stored.thesis);
         setDrawings(stored.drawings);
       }
@@ -234,6 +265,52 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       replayRequestSequence.current += 1;
     };
   }, [initialFrame.cursor]);
+
+  useEffect(() => {
+    if (!hydrated || !selectedImportedInstrument) return;
+    let active = true;
+    const summary = selectedImportedInstrument;
+    const range = requiredMarketDataRange(
+      summary.firstTradeAt,
+      summary.lastTradeAt,
+      {
+        open: hasOpenPosition(summary.executions),
+        market: SUPPORTED_MARKETS.has(
+          summary.instrument.market.toUpperCase() as SupportedMarket,
+        )
+          ? (summary.instrument.market.toUpperCase() as SupportedMarket)
+          : undefined,
+      },
+    );
+    const repository = new IndexedDbMarketDataRepository();
+    void Promise.all([
+      repository.getDailyCandles(
+        summary.instrument.id,
+        range.startDate,
+        range.endDate,
+      ),
+      repository.getCoverage(summary.instrument.id),
+    ]).then(([candles, coverage]) => {
+      if (!active) return;
+      setMarketDataCandles((current) => ({
+        ...current,
+        [summary.instrument.id]: candles,
+      }));
+      setMarketDataStatuses((current) => ({
+        ...current,
+        [summary.instrument.id]: coverageStatusForSegments(coverage),
+      }));
+    }).catch(() => {
+      if (!active) return;
+      setMarketDataStatuses((current) => ({
+        ...current,
+        [summary.instrument.id]: "storage-error",
+      }));
+    });
+    return () => {
+      active = false;
+    };
+  }, [hydrated, selectedImportedInstrument]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -291,6 +368,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   function selectInstrument(instrumentId: string) {
     if (instrumentId !== "demo") {
       setPlaying(false);
+      setTimeframe("1D");
       replayRequestSequence.current += 1;
       setStepping(false);
     }
@@ -320,17 +398,12 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
 
   async function startMarketDataUpdate(instrumentIds: string[]) {
     if (instrumentIds.length === 0) return;
-    const instrumentsById = new Map(
-      buildInstrumentTradeSummaries(importedExecutions).map((item) => [
-        item.instrument.id,
-        item.instrument,
-      ]),
+    const summariesById = new Map(
+      buildInstrumentTradeSummaries([
+        ...importedExecutions,
+        ...(pendingImport?.records ?? []),
+      ]).map((item) => [item.instrument.id, item]),
     );
-    if (pendingImport) {
-      for (const item of pendingImport.instruments) {
-        instrumentsById.set(item.instrument.id, item.instrument);
-      }
-    }
     setMarketDataStatuses((current) => ({
       ...current,
       ...Object.fromEntries(
@@ -340,11 +413,16 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
 
     await Promise.all(
       instrumentIds.map(async (instrumentId) => {
-        const instrument = instrumentsById.get(instrumentId);
-        if (!instrument) return;
+        const summary = summariesById.get(instrumentId);
+        if (!summary) return;
+        const { instrument } = summary;
+        const normalizedMarket = instrument.market.toUpperCase();
         const requestSequence =
           (marketDataRequestSequences.current[instrumentId] ?? 0) + 1;
         marketDataRequestSequences.current[instrumentId] = requestSequence;
+        marketDataAbortControllers.current[instrumentId]?.abort();
+        const abortController = new AbortController();
+        marketDataAbortControllers.current[instrumentId] = abortController;
         const requestedAt = new Date().toISOString();
         try {
           saveMarketDataJob({
@@ -357,34 +435,78 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
         } catch {
           setMarketDataStatuses((current) => ({
             ...current,
-            [instrumentId]: "error",
+            [instrumentId]: "storage-error",
           }));
-          return;
         }
-        let status: MarketDataSyncStatus = "error";
+        let status: MarketDataSyncStatus = "source-unavailable";
         let message = "行情更新请求失败，请稍后重试。";
+        const repository = new IndexedDbMarketDataRepository();
         try {
-          const response = await fetch("/api/market-data/refresh", {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({
-              instrumentId,
-              symbol: instrument.symbol,
-              market: instrument.market,
-            }),
+          if (!SUPPORTED_MARKETS.has(normalizedMarket as SupportedMarket)) {
+            throw new Error(`暂不支持 ${instrument.market} 市场行情`);
+          }
+          const result = await syncMarketData({
+            instrumentId,
+            symbol: instrument.symbol,
+            market: normalizedMarket as SupportedMarket,
+            currency: instrument.currency,
+            required: requiredMarketDataRange(
+              summary.firstTradeAt,
+              summary.lastTradeAt,
+              {
+                open: hasOpenPosition(summary.executions),
+                market: normalizedMarket as SupportedMarket,
+              },
+            ),
+            repository,
+            fetcher: fetch,
+            signal: abortController.signal,
           });
-          const result = (await response.json()) as {
-            status?: MarketDataSyncStatus;
-            message?: string;
-          };
+          status = result.status;
+          message =
+            result.source === "cache"
+              ? "已使用本地缓存，未请求外部行情。"
+              : `已补齐 ${result.requestedRanges.length} 个行情缺口。`;
+          setMarketDataCandles((current) => ({
+            ...current,
+            [instrumentId]: result.candles,
+          }));
+        } catch (error) {
+          if (
+            error instanceof DOMException &&
+            error.name === "AbortError"
+          ) {
+            return;
+          }
           status =
-            response.ok &&
-            ["needs-provider", "ready"].includes(result.status ?? "")
-              ? (result.status as MarketDataSyncStatus)
-              : "error";
-          message = result.message ?? message;
-        } catch {
-          status = "error";
+            error instanceof DOMException
+              ? "storage-error"
+              : "source-unavailable";
+          message =
+            error instanceof Error ? error.message : "行情更新失败";
+          try {
+            const range = requiredMarketDataRange(
+              summary.firstTradeAt,
+              summary.lastTradeAt,
+              {
+                open: hasOpenPosition(summary.executions),
+                market: normalizedMarket as SupportedMarket,
+              },
+            );
+            const cached = await repository.getDailyCandles(
+              instrumentId,
+              range.startDate,
+              range.endDate,
+            );
+            if (cached.length > 0) {
+              setMarketDataCandles((current) => ({
+                ...current,
+                [instrumentId]: cached,
+              }));
+            }
+          } catch {
+            status = "storage-error";
+          }
         }
         if (
           marketDataRequestSequences.current[instrumentId] !==
@@ -402,16 +524,21 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
             message,
           });
         } catch {
-          status = "error";
+          status = "storage-error";
         }
         setMarketDataStatuses((current) => ({
           ...current,
           [instrumentId]: status,
         }));
+        if (
+          marketDataAbortControllers.current[instrumentId] ===
+          abortController
+        ) {
+          delete marketDataAbortControllers.current[instrumentId];
+        }
       }),
     );
   }
-
   async function parseImport(file: File) {
     setImporting(true);
     setImportError(null);
@@ -432,6 +559,12 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
 
   function confirmImport() {
     if (!pendingImport || pendingImport.blocked) return;
+    const previousSummaries = new Map(
+      buildInstrumentTradeSummaries(importedExecutions).map((item) => [
+        item.instrument.id,
+        item,
+      ]),
+    );
     const mergedExecutions = mergeExecutions(
       importedExecutions,
       pendingImport.records,
@@ -470,13 +603,44 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     const importedIds = pendingImport.instruments.map(
       (item) => item.instrument.id,
     );
-    void startMarketDataUpdate(importedIds);
+    const automaticSyncIds = summaries
+      .filter((summary) => importedIds.includes(summary.instrument.id))
+      .filter((summary) => {
+        const previous = previousSummaries.get(summary.instrument.id);
+        const normalizedMarket =
+          summary.instrument.market.toUpperCase() as SupportedMarket;
+        const range = requiredMarketDataRange(
+          summary.firstTradeAt,
+          summary.lastTradeAt,
+          {
+            open: hasOpenPosition(summary.executions),
+            market: SUPPORTED_MARKETS.has(normalizedMarket)
+              ? normalizedMarket
+              : undefined,
+          },
+        );
+        const previousRange = previous
+          ? requiredMarketDataRange(
+              previous.firstTradeAt,
+              previous.lastTradeAt,
+              {
+                open: hasOpenPosition(previous.executions),
+                market: SUPPORTED_MARKETS.has(normalizedMarket)
+                  ? normalizedMarket
+                  : undefined,
+              },
+            )
+          : undefined;
+        return requiredRangeExpanded(previousRange, range);
+      })
+      .map((summary) => summary.instrument.id);
     const firstImported = summaries.find((item) =>
       importedIds.includes(item.instrument.id),
     );
     if (firstImported) {
       selectInstrument(firstImported.instrument.id);
     }
+    void startMarketDataUpdate(automaticSyncIds);
     setPendingImport(null);
   }
 
@@ -579,6 +743,9 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
             symbol={selectedImportedInstrument?.instrument.symbol}
             instrumentName={selectedImportedInstrument?.instrument.name}
             market={selectedImportedInstrument?.instrument.market}
+            supportedTimeframes={
+              selectedImportedInstrument ? ["1D", "1W"] : undefined
+            }
           />
 
           {selectedImportedInstrument ? (
@@ -587,8 +754,14 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
               marketDataStatus={
                 marketDataStatuses[
                   selectedImportedInstrument.instrument.id
-                ] ?? "needs-provider"
+                ] ?? "not-requested"
               }
+              candles={
+                marketDataCandles[
+                  selectedImportedInstrument.instrument.id
+                ] ?? []
+              }
+              timeframe={timeframe}
               onUpdateMarketData={() =>
                 void startMarketDataUpdate([
                   selectedImportedInstrument.instrument.id,
@@ -630,13 +803,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
                     className={`live-dot ${playing ? "playing" : ""}`}
                   />
                   <span data-testid="replay-cursor">
-                    {new Date(cursor).toLocaleString("zh-CN", {
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: false,
-                    })}
+                    {formatReplayCursor(cursor)}
                   </span>
                   <strong>{latestCandle?.close.toFixed(2)}</strong>
                   <span className="currency-label">USD</span>

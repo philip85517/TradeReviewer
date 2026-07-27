@@ -25,6 +25,7 @@ type Props = {
   symbol?: string;
   instrumentName?: string;
   market?: string;
+  supportedTimeframes?: Timeframe[];
 };
 
 export function ChartToolbar({
@@ -33,6 +34,7 @@ export function ChartToolbar({
   symbol = "XPEV",
   instrumentName = "小鹏汽车",
   market = "NYSE",
+  supportedTimeframes = timeframes.map((item) => item.value),
 }: Props) {
   return (
     <div className="chart-toolbar" aria-label="图表工具栏">
@@ -54,6 +56,7 @@ export function ChartToolbar({
             key={item.value}
             className={timeframe === item.value ? "active" : ""}
             aria-label={`切换到 ${item.value}`}
+            disabled={!supportedTimeframes.includes(item.value)}
             onClick={() => onTimeframeChange(item.value)}
           >
             {item.label}

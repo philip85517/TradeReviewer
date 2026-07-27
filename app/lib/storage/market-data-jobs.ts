@@ -20,7 +20,19 @@ function isJob(value: unknown): value is MarketDataJob {
     typeof candidate.symbol === "string" &&
     typeof candidate.market === "string" &&
     typeof candidate.requestedAt === "string" &&
-    ["syncing", "needs-provider", "ready", "error"].includes(
+    [
+      "not-requested",
+      "syncing",
+      "complete",
+      "partial",
+      "stale",
+      "source-unavailable",
+      "invalid-response",
+      "storage-error",
+      "needs-provider",
+      "ready",
+      "error",
+    ].includes(
       candidate.status ?? "",
     )
   );

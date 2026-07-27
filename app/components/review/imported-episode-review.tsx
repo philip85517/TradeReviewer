@@ -6,15 +6,25 @@ import {
   DatabaseZap,
   RefreshCw,
 } from "lucide-react";
+import { useMemo } from "react";
 
 import type { MarketDataSyncStatus } from "../../lib/market/sync-status";
 import { marketDataStatusLabel } from "../../lib/market/sync-status";
+import { aggregateCandles } from "../../lib/market/aggregate";
+import type { DailyCandleRecord } from "../../lib/market/contracts";
+import {
+  dailyRecordToChartCandle,
+  type Timeframe,
+} from "../../lib/market/types";
 import type { InstrumentTradeSummary } from "../../lib/trades/instruments";
+import { ReplayChart } from "../chart/replay-chart";
 
 type Props = {
   summary: InstrumentTradeSummary;
   marketDataStatus: MarketDataSyncStatus;
   onUpdateMarketData: () => void;
+  timeframe: Timeframe;
+  candles: DailyCandleRecord[];
 };
 
 function date(value: string) {
@@ -25,8 +35,28 @@ export function ImportedEpisodeReview({
   summary,
   marketDataStatus,
   onUpdateMarketData,
+  timeframe,
+  candles,
 }: Props) {
   const { instrument, executions } = summary;
+  const chartCandles = useMemo(
+    () =>
+      aggregateCandles(
+        candles.map(dailyRecordToChartCandle),
+        timeframe === "1W" ? "1W" : "1D",
+      ),
+    [candles, timeframe],
+  );
+  const firstCandle = candles[0];
+  const lastCandle = candles.at(-1);
+  const providerLabel =
+    lastCandle?.provider === "tencent"
+      ? "腾讯公开行情"
+      : lastCandle?.provider === "eastmoney"
+        ? "东方财富公开行情"
+        : lastCandle?.provider === "yahoo"
+          ? "Yahoo Finance 公开行情"
+          : null;
   return (
     <section className="imported-review" aria-label="导入股票成交详情">
       <div className="imported-review-callout">
@@ -41,7 +71,9 @@ export function ImportedEpisodeReview({
           <p>
             已导入 {summary.tradeCount} 笔成交，交易区间为{" "}
             {date(summary.firstTradeAt)} 至 {date(summary.lastTradeAt)}。
-            当前尚缺少该股票的历史 K 线，行情补齐后即可从首笔成交前开始逐根复盘。
+            {candles.length > 0
+              ? ` 已缓存 ${candles.length} 根日线，可直接复盘且不会重复请求。`
+              : " 当前尚缺少该股票的历史 K 线，行情补齐后即可从首笔成交前开始逐根复盘。"}
           </p>
         </div>
         <div className="market-update-action">
@@ -62,6 +94,33 @@ export function ImportedEpisodeReview({
           </button>
         </div>
       </div>
+
+      {chartCandles.length > 0 && lastCandle && (
+        <div
+          className="imported-market-chart"
+          data-testid="imported-market-chart"
+        >
+          <div className="imported-market-meta">
+            <strong>
+              {timeframe === "1W" ? "周线" : "日线"} · 本地缓存
+            </strong>
+            <span>
+              {providerLabel} · {firstCandle?.tradingDate} 至{" "}
+              {lastCandle.tradingDate} · 抓取于{" "}
+              {new Date(lastCandle.fetchedAt).toLocaleString("zh-CN")}
+            </span>
+          </div>
+          <ReplayChart
+            candles={chartCandles}
+            executions={executions}
+            cursor={chartCandles.at(-1)?.time ?? summary.lastTradeAt}
+            averageCost={0}
+            drawings={[]}
+            activeTool="cursor"
+            onAddDrawing={() => undefined}
+          />
+        </div>
+      )}
 
       <div className="execution-section-heading">
         <div>

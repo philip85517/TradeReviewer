@@ -1,3 +1,5 @@
+import "fake-indexeddb/auto";
+
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
@@ -10,6 +12,8 @@ import {
 } from "vitest";
 
 import type { DemoReplayFrame } from "../lib/demo/replay-frame";
+import { saveImportedExecutions } from "../lib/storage/import-library";
+import type { TradeExecution } from "../lib/trades/types";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
 
 const initialFrame: DemoReplayFrame = {
@@ -51,8 +55,13 @@ const nextFrame: DemoReplayFrame = {
 describe("TradeReviewWorkspace", () => {
   afterEach(() => cleanup());
 
-  beforeEach(() => {
+  beforeEach(async () => {
     window.localStorage.clear();
+    await new Promise<void>((resolve, reject) => {
+      const request = indexedDB.deleteDatabase("trade-reviewer");
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
@@ -105,5 +114,36 @@ describe("TradeReviewWorkspace", () => {
     expect(
       await screen.findByRole("alert"),
     ).toHaveTextContent("回放数据暂时无法读取");
+  });
+
+  it("loads imported stocks after a page reload without starting a market request", async () => {
+    const imported: TradeExecution = {
+      id: "futu:2",
+      source: { platform: "futu", row: 2 },
+      accountId: "acct",
+      accountLabel: "富途",
+      instrument: {
+        id: "HK:1810",
+        symbol: "1810",
+        name: "小米集团-W",
+        market: "HK",
+        currency: "HKD",
+      },
+      side: "buy",
+      executedAt: "2025-01-02T02:00:00.000Z",
+      quantity: "100",
+      price: "34.5",
+      fee: "10",
+    };
+    saveImportedExecutions([imported]);
+    vi.mocked(fetch).mockClear();
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    expect(
+      await screen.findByRole("heading", { name: "小米集团-W（1810）" }),
+    ).toBeInTheDocument();
+    await new Promise((resolve) => window.setTimeout(resolve, 50));
+    expect(fetch).not.toHaveBeenCalled();
   });
 });

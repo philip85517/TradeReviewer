@@ -1,0 +1,57 @@
+export const DATABASE_VERSION = 2;
+export const DAILY_CANDLES = "dailyCandles";
+export const COVERAGE = "coverage";
+export const PROVIDER_SYMBOLS = "providerSymbols";
+export const REVIEWS = "reviews";
+
+export function requestValue<T>(request: IDBRequest<T>) {
+  return new Promise<T>((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+export function transactionDone(transaction: IDBTransaction) {
+  return new Promise<void>((resolve, reject) => {
+    transaction.oncomplete = () => resolve();
+    transaction.onabort = () =>
+      reject(transaction.error ?? new Error("IndexedDB 事务已回滚"));
+    transaction.onerror = () =>
+      reject(transaction.error ?? new Error("IndexedDB 事务失败"));
+  });
+}
+
+export function openTradeReviewDatabase(databaseName: string) {
+  return new Promise<IDBDatabase>((resolve, reject) => {
+    const request = indexedDB.open(databaseName, DATABASE_VERSION);
+    request.onupgradeneeded = () => {
+      const database = request.result;
+      if (!database.objectStoreNames.contains(DAILY_CANDLES)) {
+        database.createObjectStore(DAILY_CANDLES, {
+          keyPath: [
+            "instrumentId",
+            "tradingDate",
+            "adjustmentMode",
+          ],
+        });
+      }
+      if (!database.objectStoreNames.contains(COVERAGE)) {
+        database.createObjectStore(COVERAGE, {
+          keyPath: "instrumentId",
+        });
+      }
+      if (!database.objectStoreNames.contains(PROVIDER_SYMBOLS)) {
+        database.createObjectStore(PROVIDER_SYMBOLS, {
+          keyPath: ["instrumentId", "provider"],
+        });
+      }
+      if (!database.objectStoreNames.contains(REVIEWS)) {
+        database.createObjectStore(REVIEWS, {
+          keyPath: "episodeId",
+        });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}

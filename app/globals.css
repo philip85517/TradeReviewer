@@ -2133,7 +2133,7 @@ input:focus-visible {
 .library-metric-grid {
   margin-top: 14px;
   display: grid;
-  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  grid-template-columns: repeat(5, minmax(105px, 1fr));
   gap: 9px;
 }
 
@@ -2290,6 +2290,185 @@ input:focus-visible {
   line-height: 1.55;
 }
 
+.episode-review-editor {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(15, 23, 34, 0.97);
+}
+
+.episode-review-editor-header,
+.episode-review-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.episode-review-editor-header h3 {
+  margin: 3px 0 0;
+  font-size: 13px;
+}
+
+.episode-r-preview {
+  padding: 6px 9px;
+  border: 1px solid rgba(38, 166, 154, 0.35);
+  border-radius: 6px;
+  color: #7ed2c3;
+  background: rgba(38, 166, 154, 0.09);
+  font: 11px var(--font-geist-mono);
+}
+
+.episode-review-sections {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.episode-review-sections fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 12px;
+  display: grid;
+  gap: 9px;
+  border: 1px solid #25364c;
+  border-radius: 8px;
+}
+
+.episode-review-sections legend {
+  padding: 0 6px;
+  color: #b8c8dc;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.episode-review-sections label {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.episode-review-sections label > span {
+  color: var(--faint);
+  font-size: 8px;
+}
+
+.episode-review-sections input,
+.episode-review-sections select,
+.episode-review-sections textarea {
+  width: 100%;
+  border: 1px solid #2b3b51;
+  border-radius: 6px;
+  outline: 0;
+  color: #d4deea;
+  background: #111b28;
+  font-size: 9px;
+}
+
+.episode-review-sections input,
+.episode-review-sections select {
+  height: 32px;
+  padding: 0 8px;
+}
+
+.episode-review-sections textarea {
+  min-height: 62px;
+  padding: 8px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.episode-review-sections input:focus,
+.episode-review-sections select:focus,
+.episode-review-sections textarea:focus {
+  border-color: #397dce;
+}
+
+.episode-review-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.episode-review-tags {
+  margin-top: 12px;
+  display: grid;
+  gap: 7px;
+}
+
+.episode-review-tags > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #91a4bd;
+  font-size: 9px;
+}
+
+.episode-review-tags > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.episode-review-tags label {
+  padding: 5px 7px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid #293a51;
+  border-radius: 999px;
+  color: #8193aa;
+  background: #111b28;
+  font-size: 8px;
+  cursor: pointer;
+}
+
+.episode-review-tags label:has(input:checked) {
+  border-color: #397dce;
+  color: #bfd8f7;
+  background: rgba(47, 128, 237, 0.13);
+}
+
+.episode-review-actions {
+  margin-top: 14px;
+  justify-content: flex-end;
+  color: #8799b0;
+  font-size: 8px;
+}
+
+.episode-review-actions > label,
+.episode-review-saved,
+.episode-review-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.episode-review-actions > label {
+  margin-right: auto;
+}
+
+.episode-review-actions [role="alert"] {
+  color: #f28c82;
+}
+
+.episode-review-saved {
+  color: #75c8b9;
+}
+
+.episode-review-actions button {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid #3269aa;
+  border-radius: 6px;
+  color: #c6dcf8;
+  background: rgba(47, 128, 237, 0.14);
+  font-size: 9px;
+  cursor: pointer;
+}
+
 @media (max-width: 1260px) {
   .workspace {
     grid-template-columns: 220px minmax(600px, 1fr);
@@ -2313,6 +2492,10 @@ input:focus-visible {
 
   .library-filters {
     grid-template-columns: minmax(210px, 1.4fr) repeat(3, minmax(105px, 0.7fr));
+  }
+
+  .episode-review-sections {
+    grid-template-columns: 1fr;
   }
 
   .library-stock-head,

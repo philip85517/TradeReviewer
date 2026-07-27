@@ -7,28 +7,14 @@ import type {
   MarketDataCommit,
   MarketDataRepository,
 } from "./market-data-repository";
-
-const DATABASE_VERSION = 1;
-const DAILY_CANDLES = "dailyCandles";
-const COVERAGE = "coverage";
-const PROVIDER_SYMBOLS = "providerSymbols";
-
-function requestValue<T>(request: IDBRequest<T>) {
-  return new Promise<T>((resolve, reject) => {
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-function transactionDone(transaction: IDBTransaction) {
-  return new Promise<void>((resolve, reject) => {
-    transaction.oncomplete = () => resolve();
-    transaction.onabort = () =>
-      reject(transaction.error ?? new Error("IndexedDB 事务已回滚"));
-    transaction.onerror = () =>
-      reject(transaction.error ?? new Error("IndexedDB 事务失败"));
-  });
-}
+import {
+  COVERAGE,
+  DAILY_CANDLES,
+  openTradeReviewDatabase,
+  PROVIDER_SYMBOLS,
+  requestValue,
+  transactionDone,
+} from "./indexeddb-schema";
 
 export class IndexedDbMarketDataRepository
   implements MarketDataRepository
@@ -36,33 +22,7 @@ export class IndexedDbMarketDataRepository
   constructor(private readonly databaseName = "trade-reviewer") {}
 
   private open() {
-    return new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open(this.databaseName, DATABASE_VERSION);
-      request.onupgradeneeded = () => {
-        const database = request.result;
-        if (!database.objectStoreNames.contains(DAILY_CANDLES)) {
-          database.createObjectStore(DAILY_CANDLES, {
-            keyPath: [
-              "instrumentId",
-              "tradingDate",
-              "adjustmentMode",
-            ],
-          });
-        }
-        if (!database.objectStoreNames.contains(COVERAGE)) {
-          database.createObjectStore(COVERAGE, {
-            keyPath: "instrumentId",
-          });
-        }
-        if (!database.objectStoreNames.contains(PROVIDER_SYMBOLS)) {
-          database.createObjectStore(PROVIDER_SYMBOLS, {
-            keyPath: ["instrumentId", "provider"],
-          });
-        }
-      };
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
+    return openTradeReviewDatabase(this.databaseName);
   }
 
   async getDailyCandles(

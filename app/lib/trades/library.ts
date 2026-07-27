@@ -4,6 +4,14 @@ import type { DailyCandleRecord } from "../market/contracts";
 import type { MarketDataSyncStatus } from "../market/sync-status";
 import { marketTradingDate } from "../market/trading-date";
 import {
+  calculateRMultiple,
+  episodeReviewStatus,
+} from "../reviews/review-metrics";
+import type {
+  EpisodeReviewRecord,
+  EpisodeReviewStatus,
+} from "../reviews/types";
+import {
   summarizeTradeEpisode,
   type TradeEpisodeMetrics,
 } from "./episode-metrics";
@@ -14,6 +22,10 @@ import type { Instrument, TradeEpisode, TradeExecution } from "./types";
 export type TradeLibraryEpisode = {
   episode: TradeEpisode;
   metrics: TradeEpisodeMetrics;
+  review?: EpisodeReviewRecord;
+  reviewStatus: EpisodeReviewStatus;
+  confirmedTagIds: string[];
+  rMultiple: string | null;
 };
 
 export type TradeLibraryEntry = {
@@ -28,12 +40,16 @@ export type TradeLibraryEntry = {
   status: "open" | "closed";
   netPnl: string | null;
   returnPercent: string | null;
+  reviewedEpisodeCount: number;
+  confirmedTagIds: string[];
+  cumulativeR: string | null;
 };
 
 export function buildTradeLibraryEntries(
   summaries: InstrumentTradeSummary[],
   candlesByInstrument: Record<string, DailyCandleRecord[]>,
   marketDataStatuses: Record<string, MarketDataSyncStatus>,
+  reviewsByEpisode: Record<string, EpisodeReviewRecord> = {},
 ): TradeLibraryEntry[] {
   return summaries
     .map((summary) => {
@@ -54,16 +70,25 @@ export function buildTradeLibraryEntries(
             latestExecution.executedAt,
             episode.instrument.market,
           );
+          const metrics = summarizeTradeEpisode(
+            episode,
+            episode.status === "open" &&
+              hasCompleteMarketData &&
+              latestCandle &&
+              latestCandle.tradingDate >= latestExecutionTradingDate
+              ? latestCandle.close
+              : undefined,
+          );
+          const review = reviewsByEpisode[episode.id];
           return {
             episode,
-            metrics: summarizeTradeEpisode(
-              episode,
-              episode.status === "open" &&
-                hasCompleteMarketData &&
-                latestCandle &&
-                latestCandle.tradingDate >= latestExecutionTradingDate
-                ? latestCandle.close
-                : undefined,
+            metrics,
+            review,
+            reviewStatus: episodeReviewStatus(review),
+            confirmedTagIds: review?.confirmedTagIds ?? [],
+            rMultiple: calculateRMultiple(
+              metrics,
+              review?.plan.plannedRiskAmount ?? "",
             ),
           };
         })
@@ -90,6 +115,23 @@ export function buildTradeLibraryEntries(
         netPnl === null || grossExposure.isZero()
           ? null
           : netPnl.div(grossExposure).times(100);
+      const confirmedTagIds = [
+        ...new Set(
+          episodes.flatMap(({ confirmedTagIds: tagIds }) => tagIds),
+        ),
+      ];
+      const rValues = episodes
+        .map(({ rMultiple }) => rMultiple)
+        .filter((value): value is string => value !== null);
+      const cumulativeR =
+        rValues.length === 0
+          ? null
+          : rValues
+              .reduce(
+                (total, value) => total.plus(value),
+                new Decimal(0),
+              )
+              .toString();
 
       return {
         instrument: summary.instrument,
@@ -109,6 +151,11 @@ export function buildTradeLibraryEntries(
           : ("closed" as const),
         netPnl: netPnl?.toString() ?? null,
         returnPercent: returnPercent?.toString() ?? null,
+        reviewedEpisodeCount: episodes.filter(
+          ({ reviewStatus }) => reviewStatus === "completed",
+        ).length,
+        confirmedTagIds,
+        cumulativeR,
       };
     })
     .sort(

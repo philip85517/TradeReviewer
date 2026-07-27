@@ -21,6 +21,11 @@ import {
   formatMarketTradingDate,
   marketTradingDate,
 } from "../../lib/market/trading-date";
+import type { EpisodeReviewRecord } from "../../lib/reviews/types";
+import {
+  reviewTagLabel,
+  REVIEW_TAGS,
+} from "../../lib/reviews/review-tags";
 import {
   dailyRecordToChartCandle,
   type Timeframe,
@@ -30,6 +35,7 @@ import type {
   TradeLibraryEpisode,
 } from "../../lib/trades/library";
 import { ReplayChart } from "../chart/replay-chart";
+import { EpisodeReviewEditor } from "../review/episode-review-editor";
 
 type Props = {
   entries: TradeLibraryEntry[];
@@ -38,6 +44,8 @@ type Props = {
   timeframe: Timeframe;
   onTimeframeChange: (timeframe: Timeframe) => void;
   onOpenInReview: (instrumentId: string) => void;
+  onSaveReview: (record: EpisodeReviewRecord) => void | Promise<void>;
+  reviewsHydrated: boolean;
 };
 
 type FilterValue = "all" | string;
@@ -69,6 +77,8 @@ export function TradeLibrary({
   timeframe,
   onTimeframeChange,
   onOpenInReview,
+  onSaveReview,
+  reviewsHydrated,
 }: Props) {
   const [selectedInstrumentId, setSelectedInstrumentId] = useState<
     string | null
@@ -83,6 +93,7 @@ export function TradeLibrary({
   const [positionStatus, setPositionStatus] =
     useState<FilterValue>("all");
   const [dataStatus, setDataStatus] = useState<FilterValue>("all");
+  const [tag, setTag] = useState<FilterValue>("all");
 
   const selectedEntry = entries.find(
     (entry) => entry.instrument.id === selectedInstrumentId,
@@ -152,6 +163,7 @@ export function TradeLibrary({
           )) &&
         (positionStatus === "all" ||
           entry.status === positionStatus) &&
+        (tag === "all" || entry.confirmedTagIds.includes(tag)) &&
         (dataStatus === "all" ||
           (dataStatus === "complete" && dataIsComplete) ||
           (dataStatus === "incomplete" && !dataIsComplete))
@@ -165,6 +177,7 @@ export function TradeLibrary({
     marketDataStatuses,
     positionStatus,
     query,
+    tag,
     year,
   ]);
 
@@ -260,7 +273,11 @@ export function TradeLibrary({
                         )
                       : "至今"}
                   </p>
-                  <span className="library-review-status">待复盘</span>
+                  <span className="library-review-status">
+                    {item.reviewStatus === "completed"
+                      ? "已复盘"
+                      : "待复盘"}
+                  </span>
                   <div>
                     <span>
                       {item.episode.direction === "long" ? "多头" : "空头"} ·{" "}
@@ -342,6 +359,14 @@ export function TradeLibrary({
                 <span>费用</span>
                 <strong>{metrics.fees}</strong>
               </div>
+              <div>
+                <span>R 倍数</span>
+                <strong>
+                  {selectedEpisode.rMultiple === null
+                    ? "—"
+                    : `${selectedEpisode.rMultiple}R`}
+                </strong>
+              </div>
             </div>
 
             {chartCandles.length > 0 ? (
@@ -410,18 +435,24 @@ export function TradeLibrary({
               ))}
             </div>
 
-            <div className="library-review-grid">
-              <article>
-                <span className="eyebrow">交易计划</span>
-                <strong>尚未记录当前回合的事前计划</strong>
-                <p>进入逐笔复盘，可在揭示后续走势前补充买入理由与失效条件。</p>
-              </article>
-              <article>
-                <span className="eyebrow">复盘结论</span>
-                <strong>尚未完成当前回合复盘</strong>
-                <p>后续将保存决策、执行、风险与心理等结构化结论。</p>
-              </article>
-            </div>
+            {reviewsHydrated ? (
+              <EpisodeReviewEditor
+                key={episode.id}
+                episodeId={episode.id}
+                instrumentId={selectedEntry.instrument.id}
+                netPnl={metrics.netPnl}
+                record={selectedEpisode.review}
+                onSave={onSaveReview}
+              />
+            ) : (
+              <section
+                className="episode-review-editor"
+                aria-label="正在读取当前回合复盘"
+                aria-live="polite"
+              >
+                正在读取本机复盘记录…
+              </section>
+            )}
           </div>
         </div>
       </section>
@@ -521,8 +552,17 @@ export function TradeLibrary({
         </label>
         <label>
           <span>标签</span>
-          <select aria-label="按标签筛选" disabled value="deferred">
-            <option value="deferred">下一阶段开放</option>
+          <select
+            aria-label="按标签筛选"
+            value={tag}
+            onChange={(event) => setTag(event.target.value)}
+          >
+            <option value="all">全部标签</option>
+            {REVIEW_TAGS.map(({ id, label }) => (
+              <option value={id} key={id}>
+                {label}
+              </option>
+            ))}
           </select>
         </label>
       </div>
@@ -576,7 +616,17 @@ export function TradeLibrary({
                     {entry.accountCount} 个账户 · {entry.tradeCount} 笔成交 ·{" "}
                     {entry.episodeCount} 个回合
                   </span>
-                  <small>累计 R — · 标签待确认</small>
+                  <small>
+                    {entry.cumulativeR === null
+                      ? "累计 R —"
+                      : `累计 ${entry.cumulativeR}R`}{" "}
+                    ·{" "}
+                    {entry.confirmedTagIds.length === 0
+                      ? "标签待确认"
+                      : entry.confirmedTagIds
+                          .map(reviewTagLabel)
+                          .join("、")}
+                  </small>
                 </span>
                 <span>
                   {formatMarketTradingDate(

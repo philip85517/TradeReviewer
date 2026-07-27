@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import type { DailyCandleRecord } from "../market/contracts";
+import type { EpisodeReviewRecord } from "../reviews/types";
 import { buildInstrumentTradeSummaries } from "./instruments";
+import { buildTradeEpisodes } from "./episodes";
 import { buildTradeLibraryEntries } from "./library";
 import type { Instrument, TradeExecution } from "./types";
 
@@ -162,5 +164,55 @@ describe("buildTradeLibraryEntries", () => {
     );
 
     expect(entry.netPnl).toBe("200");
+  });
+
+  it("projects confirmed review status, tags, and exact R by episode id", () => {
+    const executions = [
+      fill(xpev, "a", "buy", "2025-01-02T14:30:00Z", "100", "10"),
+      fill(xpev, "a", "sell", "2025-01-03T14:30:00Z", "100", "12"),
+    ];
+    const [episode] = buildTradeEpisodes(executions);
+    const review: EpisodeReviewRecord = {
+      version: 1,
+      episodeId: episode.id,
+      instrumentId: "US:XPEV",
+      updatedAt: "2025-01-04T00:00:00.000Z",
+      plan: {
+        thesis: "等待突破",
+        expectedPath: "",
+        invalidationCondition: "",
+        targetRange: "",
+        plannedRiskAmount: "100",
+        confidence: 4,
+      },
+      review: {
+        decisionQuality: 4,
+        executionQuality: 4,
+        riskManagement: "",
+        psychology: "",
+        reusableRule: "",
+        completed: true,
+      },
+      confirmedTagIds: ["breakout", "planned"],
+    };
+
+    const [entry] = buildTradeLibraryEntries(
+      buildInstrumentTradeSummaries(executions),
+      {},
+      { "US:XPEV": "complete" },
+      { [episode.id]: review },
+    );
+
+    expect(entry).toMatchObject({
+      reviewedEpisodeCount: 1,
+      confirmedTagIds: ["breakout", "planned"],
+      cumulativeR: "2",
+    });
+    expect(entry.episodes[0]).toMatchObject({
+      reviewStatus: "completed",
+      confirmedTagIds: ["breakout", "planned"],
+      rMultiple: "2",
+      review,
+    });
   });
 });

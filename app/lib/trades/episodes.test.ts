@@ -196,6 +196,34 @@ describe("buildTradeEpisodes", () => {
     );
   });
 
+  it("keeps an episode ID stable when an overlapping export replaces source identity", () => {
+    const original = execution(
+      "buy",
+      "2025-01-02T14:30:00Z",
+      "100",
+      "10",
+    );
+    original.id = "export-a-row-2";
+    original.source = {
+      platform: "futu",
+      fileFingerprint: "export-a",
+      row: 2,
+    };
+    const replacement = {
+      ...original,
+      id: "export-b-row-9",
+      source: {
+        platform: "futu",
+        fileFingerprint: "export-b",
+        row: 9,
+      },
+    };
+
+    expect(buildTradeEpisodes([original])[0].id).toBe(
+      buildTradeEpisodes([replacement])[0].id,
+    );
+  });
+
   it("preserves the original fee exactly when a reversal fill is allocated", () => {
     const buy = execution(
       "buy",

@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { DailyCandleRecord } from "../../lib/market/contracts";
+import type { EpisodeReviewRecord } from "../../lib/reviews/types";
 import { buildInstrumentTradeSummaries } from "../../lib/trades/instruments";
 import { buildTradeLibraryEntries } from "../../lib/trades/library";
 import type { Instrument, TradeExecution } from "../../lib/trades/types";
@@ -70,7 +71,9 @@ function candle(
   };
 }
 
-function setup() {
+function setup(
+  options: { reviewed?: boolean; reviewsHydrated?: boolean } = {},
+) {
   const candlesByInstrument = {
     "US:XPEV": [
       candle("US:XPEV", "2025-01-02", "10"),
@@ -79,21 +82,61 @@ function setup() {
     ],
     "HK:1810": [candle("HK:1810", "2024-12-09", "31")],
   };
-  const entries = buildTradeLibraryEntries(
-    buildInstrumentTradeSummaries([
+  const summaries = buildInstrumentTradeSummaries([
       fill(xpev, "buy", "2025-01-02T14:30:00Z", "旧回合买入"),
       fill(xpev, "sell", "2025-01-03T14:30:00Z", "旧回合卖出"),
       fill(xpev, "buy", "2025-01-05T14:30:00Z", "新回合买入"),
       fill(xiaomi, "buy", "2024-12-08T02:00:00Z", "小米买入"),
       fill(xiaomi, "sell", "2024-12-09T02:00:00Z", "小米卖出"),
-    ]),
+    ]);
+  const baseEntries = buildTradeLibraryEntries(
+    summaries,
     candlesByInstrument,
     {
       "US:XPEV": "complete",
       "HK:1810": "partial",
     },
   );
+  const latestXpevEpisode = baseEntries.find(
+    (entry) => entry.instrument.id === "US:XPEV",
+  )?.episodes[0].episode;
+  const review: EpisodeReviewRecord | undefined =
+    options.reviewed && latestXpevEpisode
+      ? {
+          version: 1,
+          episodeId: latestXpevEpisode.id,
+          instrumentId: "US:XPEV",
+          updatedAt: "2025-02-01T00:00:00.000Z",
+          plan: {
+            thesis: "等待回踩确认",
+            expectedPath: "",
+            invalidationCondition: "",
+            targetRange: "",
+            plannedRiskAmount: "99",
+            confidence: 4,
+          },
+          review: {
+            decisionQuality: 4,
+            executionQuality: 4,
+            riskManagement: "",
+            psychology: "",
+            reusableRule: "",
+            completed: true,
+          },
+          confirmedTagIds: ["pullback"],
+        }
+      : undefined;
+  const entries = buildTradeLibraryEntries(
+    summaries,
+    candlesByInstrument,
+    {
+      "US:XPEV": "complete",
+      "HK:1810": "partial",
+    },
+    review ? { [review.episodeId]: review } : {},
+  );
   const onOpenInReview = vi.fn();
+  const onSaveReview = vi.fn();
   render(
     <TradeLibrary
       entries={entries}
@@ -105,9 +148,15 @@ function setup() {
       timeframe="1D"
       onTimeframeChange={vi.fn()}
       onOpenInReview={onOpenInReview}
+      onSaveReview={onSaveReview}
+      reviewsHydrated={options.reviewsHydrated ?? true}
     />,
   );
-  return { onOpenInReview };
+  return {
+    onOpenInReview,
+    onSaveReview,
+    xpevEpisodeId: latestXpevEpisode?.id,
+  };
 }
 
 describe("TradeLibrary", () => {
@@ -127,7 +176,7 @@ describe("TradeLibrary", () => {
     ).toBeGreaterThan(0);
     expect(
       screen.getByRole("combobox", { name: "按标签筛选" }),
-    ).toBeDisabled();
+    ).toBeEnabled();
 
     await user.type(
       screen.getByRole("searchbox", { name: "搜索股票" }),
@@ -238,5 +287,54 @@ describe("TradeLibrary", () => {
     );
 
     expect(onOpenInReview).toHaveBeenCalledWith("US:XPEV");
+  });
+
+  it("shows persisted review facts and saves the selected episode", async () => {
+    const user = userEvent.setup();
+    const { onSaveReview, xpevEpisodeId } = setup({ reviewed: true });
+
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "按标签筛选" }),
+      "pullback",
+    );
+    expect(
+      screen.getByRole("button", { name: "打开小鹏汽车交易回合" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "打开小米集团-W交易回合" }),
+    ).not.toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: "打开小鹏汽车交易回合" }),
+    );
+
+    expect(screen.getAllByText("已复盘").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("1R").length).toBeGreaterThan(0);
+    expect(screen.getByRole("checkbox", { name: "回踩" })).toBeChecked();
+    expect(screen.getByLabelText("买入理由")).toHaveValue("等待回踩确认");
+
+    await user.click(
+      screen.getByRole("button", { name: "保存当前回合复盘" }),
+    );
+    expect(onSaveReview).toHaveBeenCalledWith(
+      expect.objectContaining({
+        episodeId: xpevEpisodeId,
+        confirmedTagIds: ["pullback"],
+      }),
+    );
+  });
+
+  it("does not open an editable blank review before persistence hydration", async () => {
+    const user = userEvent.setup();
+    setup({ reviewsHydrated: false });
+
+    await user.click(
+      screen.getByRole("button", { name: "打开小鹏汽车交易回合" }),
+    );
+
+    expect(
+      screen.getByLabelText("正在读取当前回合复盘"),
+    ).toHaveTextContent("正在读取本机复盘记录");
+    expect(screen.queryByLabelText("买入理由")).not.toBeInTheDocument();
   });
 });

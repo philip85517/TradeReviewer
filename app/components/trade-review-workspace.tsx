@@ -48,6 +48,8 @@ import {
   loadReviewState,
   saveReviewState,
 } from "../lib/storage/review-storage";
+import { IndexedDbEpisodeReviewRepository } from "../lib/storage/indexeddb-episode-review-repository";
+import type { EpisodeReviewRecord } from "../lib/reviews/types";
 import {
   loadImportedExecutions,
   mergeExecutions,
@@ -144,6 +146,10 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   const [marketDataCandles, setMarketDataCandles] = useState<
     Record<string, DailyCandleRecord[]>
   >({});
+  const [episodeReviews, setEpisodeReviews] = useState<
+    Record<string, EpisodeReviewRecord>
+  >({});
+  const [reviewsHydrated, setReviewsHydrated] = useState(false);
   const [importing, setImporting] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const replayRequestSequence = useRef(0);
@@ -185,8 +191,14 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
         importedInstruments,
         marketDataCandles,
         marketDataStatuses,
+        episodeReviews,
       ),
-    [importedInstruments, marketDataCandles, marketDataStatuses],
+    [
+      episodeReviews,
+      importedInstruments,
+      marketDataCandles,
+      marketDataStatuses,
+    ],
   );
 
   async function requestFrame(
@@ -344,6 +356,30 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       active = false;
     };
   }, [hydrated, importedInstruments]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    let active = true;
+    void new IndexedDbEpisodeReviewRepository()
+      .getAll()
+      .then((records) => {
+        if (!active) return;
+        setEpisodeReviews(
+          Object.fromEntries(
+            records.map((record) => [record.episodeId, record]),
+          ),
+        );
+      })
+      .catch(() => {
+        if (active) setEpisodeReviews({});
+      })
+      .finally(() => {
+        if (active) setReviewsHydrated(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [hydrated]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -791,6 +827,14 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
             onOpenInReview={(instrumentId) => {
               selectInstrument(instrumentId);
               setActiveView("review");
+            }}
+            reviewsHydrated={reviewsHydrated}
+            onSaveReview={async (record) => {
+              await new IndexedDbEpisodeReviewRepository().put(record);
+              setEpisodeReviews((current) => ({
+                ...current,
+                [record.episodeId]: record,
+              }));
             }}
           />
         ) : (

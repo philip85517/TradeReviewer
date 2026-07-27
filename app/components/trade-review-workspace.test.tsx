@@ -12,8 +12,11 @@ import {
 } from "vitest";
 
 import type { DemoReplayFrame } from "../lib/demo/replay-frame";
+import type { EpisodeReviewRecord } from "../lib/reviews/types";
+import { IndexedDbEpisodeReviewRepository } from "../lib/storage/indexeddb-episode-review-repository";
 import { saveImportedExecutions } from "../lib/storage/import-library";
 import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-data-repository";
+import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeExecution } from "../lib/trades/types";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
 
@@ -336,6 +339,99 @@ describe("TradeReviewWorkspace", () => {
       await screen.findByText("日线 · 本地缓存 · 买卖点"),
     ).toBeInTheDocument();
     expect(screen.queryByText("本地尚无行情")).not.toBeInTheDocument();
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("hydrates and updates the review record for the exact position episode", async () => {
+    const user = userEvent.setup();
+    const executions: TradeExecution[] = [
+      {
+        id: "xpev-review-buy",
+        source: { platform: "futu", row: 2 },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument: {
+          id: "US:XPEV",
+          symbol: "XPEV",
+          name: "小鹏汽车",
+          market: "US",
+          currency: "USD",
+        },
+        side: "buy",
+        executedAt: "2025-01-02T14:30:00.000Z",
+        quantity: "100",
+        price: "10",
+        fee: "0",
+      },
+      {
+        id: "xpev-review-sell",
+        source: { platform: "futu", row: 3 },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument: {
+          id: "US:XPEV",
+          symbol: "XPEV",
+          name: "小鹏汽车",
+          market: "US",
+          currency: "USD",
+        },
+        side: "sell",
+        executedAt: "2025-01-03T14:30:00.000Z",
+        quantity: "100",
+        price: "12",
+        fee: "0",
+      },
+    ];
+    saveImportedExecutions(executions);
+    const [episode] = buildTradeEpisodes(executions);
+    const record: EpisodeReviewRecord = {
+      version: 1,
+      episodeId: episode.id,
+      instrumentId: "US:XPEV",
+      updatedAt: "2025-01-04T00:00:00.000Z",
+      plan: {
+        thesis: "等待突破",
+        expectedPath: "",
+        invalidationCondition: "",
+        targetRange: "",
+        plannedRiskAmount: "100",
+        confidence: 4,
+      },
+      review: {
+        decisionQuality: 4,
+        executionQuality: 4,
+        riskManagement: "",
+        psychology: "",
+        reusableRule: "",
+        completed: true,
+      },
+      confirmedTagIds: ["breakout"],
+    };
+    const reviews = new IndexedDbEpisodeReviewRepository();
+    await reviews.put(record);
+    vi.mocked(fetch).mockClear();
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
+    await user.click(screen.getByRole("button", { name: "交易库" }));
+    await user.click(
+      await screen.findByRole("button", {
+        name: "打开小鹏汽车交易回合",
+      }),
+    );
+
+    expect(await screen.findByLabelText("买入理由")).toHaveValue(
+      "等待突破",
+    );
+    expect(screen.getAllByText("已复盘").length).toBeGreaterThan(0);
+    await user.clear(screen.getByLabelText("买入理由"));
+    await user.type(screen.getByLabelText("买入理由"), "等待回踩");
+    await user.click(
+      screen.getByRole("button", { name: "保存当前回合复盘" }),
+    );
+
+    expect(await screen.findByText("已保存在本机")).toBeInTheDocument();
+    expect((await reviews.get(episode.id))?.plan.thesis).toBe("等待回踩");
     expect(fetch).not.toHaveBeenCalled();
   });
 });

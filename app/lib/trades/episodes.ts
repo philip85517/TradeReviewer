@@ -32,16 +32,32 @@ function signedQuantity(execution: TradeExecution) {
   return execution.side === "buy" ? quantity : quantity.negated();
 }
 
-function createEpisode(execution: TradeExecution): EpisodeAccumulator {
+function stableOpeningKey(execution: TradeExecution) {
+  return JSON.stringify([
+    episodeKey(execution),
+    execution.executedAt,
+    execution.side,
+    new Decimal(execution.quantity).abs().toString(),
+    new Decimal(execution.price).toString(),
+  ]);
+}
+
+function createEpisode(
+  execution: TradeExecution,
+  openingOccurrences: Map<string, number>,
+): EpisodeAccumulator {
   const position = signedQuantity(execution);
   const direction = position.isNegative() ? "short" : "long";
   const openingQuantity = position.abs();
+  const openingKey = stableOpeningKey(execution);
+  const occurrence = (openingOccurrences.get(openingKey) ?? 0) + 1;
+  openingOccurrences.set(openingKey, occurrence);
 
   return {
     position,
     openingQuantity,
     episode: {
-      id: `${episodeKey(execution)}:${execution.executedAt}:${execution.id}`,
+      id: `episode:${encodeURIComponent(openingKey)}:${occurrence}`,
       accountId: execution.accountId,
       accountLabel: execution.accountLabel,
       instrument: execution.instrument,
@@ -75,6 +91,7 @@ export function buildTradeEpisodes(
   executions: TradeExecution[],
 ): TradeEpisode[] {
   const active = new Map<string, EpisodeAccumulator>();
+  const openingOccurrences = new Map<string, number>();
   const episodes: TradeEpisode[] = [];
 
   for (const execution of [...executions].sort(sortByExecutionTime)) {
@@ -82,7 +99,7 @@ export function buildTradeEpisodes(
     const existing = active.get(key);
 
     if (!existing) {
-      const created = createEpisode(execution);
+      const created = createEpisode(execution, openingOccurrences);
       if (created.position.isZero()) continue;
       active.set(key, created);
       continue;
@@ -123,7 +140,10 @@ export function buildTradeEpisodes(
       existing.episode.endedAt = execution.executedAt;
       episodes.push(existing.episode);
 
-      const reversed = createEpisode(reversingExecution);
+      const reversed = createEpisode(
+        reversingExecution,
+        openingOccurrences,
+      );
       active.set(key, reversed);
       continue;
     }

@@ -47,6 +47,7 @@ describe("episode review metrics", () => {
       ),
     ).toEqual({
       version: 1,
+      tagDictionaryVersion: 1,
       episodeId: "episode-new",
       instrumentId: "US:XPEV",
       updatedAt: "2026-07-27T01:00:00.000Z",

@@ -30,6 +30,7 @@ import type {
   DailyCandleRecord,
   SupportedMarket,
 } from "../lib/market/contracts";
+import { buildTradeLibraryEntries } from "../lib/trades/library";
 import {
   coverageStatusForSegments,
   type MarketDataSyncStatus,
@@ -72,6 +73,7 @@ import { ReplayControls } from "./replay/replay-controls";
 import { EpisodeSidebar } from "./review/episode-sidebar";
 import { ImportedEpisodeReview } from "./review/imported-episode-review";
 import { ThesisPanel } from "./review/thesis-panel";
+import { TradeLibrary } from "./library/trade-library";
 
 const REVIEW_ID = "demo-xpev-2025";
 const DEFAULT_THESIS =
@@ -109,6 +111,9 @@ async function fetchDemoFrame(
 }
 
 export function TradeReviewWorkspace({ initialFrame }: Props) {
+  const [activeView, setActiveView] = useState<"review" | "library">(
+    "review",
+  );
   const [timeframe, setTimeframe] = useState<Timeframe>("1D");
   const [frame, setFrame] = useState(initialFrame);
   const [playing, setPlaying] = useState(false);
@@ -173,6 +178,15 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   );
   const selectedImportedInstrument = importedInstruments.find(
     (item) => item.instrument.id === selectedInstrumentId,
+  );
+  const tradeLibraryEntries = useMemo(
+    () =>
+      buildTradeLibraryEntries(
+        importedInstruments,
+        marketDataCandles,
+        marketDataStatuses,
+      ),
+    [importedInstruments, marketDataCandles, marketDataStatuses],
   );
 
   async function requestFrame(
@@ -267,50 +281,69 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   }, [initialFrame.cursor]);
 
   useEffect(() => {
-    if (!hydrated || !selectedImportedInstrument) return;
+    if (!hydrated || importedInstruments.length === 0) return;
     let active = true;
-    const summary = selectedImportedInstrument;
-    const range = requiredMarketDataRange(
-      summary.firstTradeAt,
-      summary.lastTradeAt,
-      {
-        open: hasOpenPosition(summary.executions),
-        market: SUPPORTED_MARKETS.has(
-          summary.instrument.market.toUpperCase() as SupportedMarket,
-        )
-          ? (summary.instrument.market.toUpperCase() as SupportedMarket)
-          : undefined,
-      },
-    );
     const repository = new IndexedDbMarketDataRepository();
-    void Promise.all([
-      repository.getDailyCandles(
-        summary.instrument.id,
-        range.startDate,
-        range.endDate,
-      ),
-      repository.getCoverage(summary.instrument.id),
-    ]).then(([candles, coverage]) => {
+    void Promise.all(
+      importedInstruments.map(async (summary) => {
+        const instrumentId = summary.instrument.id;
+        const range = requiredMarketDataRange(
+          summary.firstTradeAt,
+          summary.lastTradeAt,
+          {
+            open: hasOpenPosition(summary.executions),
+            market: SUPPORTED_MARKETS.has(
+              summary.instrument.market.toUpperCase() as SupportedMarket,
+            )
+              ? (summary.instrument.market.toUpperCase() as SupportedMarket)
+              : undefined,
+          },
+        );
+        try {
+          const [candles, coverage] = await Promise.all([
+            repository.getDailyCandles(
+              instrumentId,
+              range.startDate,
+              range.endDate,
+            ),
+            repository.getCoverage(instrumentId),
+          ]);
+          return {
+            candles,
+            instrumentId,
+            status: coverageStatusForSegments(coverage),
+          };
+        } catch {
+          return {
+            candles: [],
+            instrumentId,
+            status: "storage-error" as const,
+          };
+        }
+      }),
+    ).then((results) => {
       if (!active) return;
-      setMarketDataCandles((current) => ({
-        ...current,
-        [summary.instrument.id]: candles,
-      }));
-      setMarketDataStatuses((current) => ({
-        ...current,
-        [summary.instrument.id]: coverageStatusForSegments(coverage),
-      }));
-    }).catch(() => {
-      if (!active) return;
-      setMarketDataStatuses((current) => ({
-        ...current,
-        [summary.instrument.id]: "storage-error",
-      }));
+      setMarketDataCandles((current) => {
+        const next = { ...current };
+        for (const result of results) {
+          next[result.instrumentId] = result.candles;
+        }
+        return next;
+      });
+      setMarketDataStatuses((current) => {
+        const next = { ...current };
+        for (const result of results) {
+          if (current[result.instrumentId] !== "syncing") {
+            next[result.instrumentId] = result.status;
+          }
+        }
+        return next;
+      });
     });
     return () => {
       active = false;
     };
-  }, [hydrated, selectedImportedInstrument]);
+  }, [hydrated, importedInstruments]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -704,9 +737,32 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
           </div>
         </div>
         <nav className="app-nav" aria-label="主导航">
-          <button className="active">逐笔复盘</button>
-          <button>交易库</button>
-          <button>模式洞察</button>
+          <button
+            className={activeView === "review" ? "active" : ""}
+            aria-current={activeView === "review" ? "page" : undefined}
+            onClick={() => setActiveView("review")}
+          >
+            逐笔复盘
+          </button>
+          <button
+            className={activeView === "library" ? "active" : ""}
+            aria-current={activeView === "library" ? "page" : undefined}
+            onClick={() => {
+              if (timeframe !== "1D" && timeframe !== "1W") {
+                setTimeframe("1D");
+              }
+              setActiveView("library");
+            }}
+          >
+            交易库
+          </button>
+          <button
+            disabled
+            aria-label="模式洞察（下一阶段）"
+            title="规则统计与模式洞察将在下一阶段开放"
+          >
+            模式洞察
+          </button>
         </nav>
         <div className="header-actions">
           <span className="demo-chip">
@@ -720,7 +776,25 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
         </div>
       </header>
 
-      <div className="workspace">
+      <div
+        className={`workspace ${activeView === "library" ? "library-mode" : ""}`}
+      >
+        {activeView === "library" ? (
+          <TradeLibrary
+            entries={tradeLibraryEntries}
+            candlesByInstrument={marketDataCandles}
+            marketDataStatuses={marketDataStatuses}
+            timeframe={
+              timeframe === "1W" ? "1W" : "1D"
+            }
+            onTimeframeChange={setTimeframe}
+            onOpenInReview={(instrumentId) => {
+              selectInstrument(instrumentId);
+              setActiveView("review");
+            }}
+          />
+        ) : (
+          <>
         <EpisodeSidebar
           importedInstruments={importedInstruments}
           importing={importing}
@@ -901,11 +975,15 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
           }
           available={!selectedImportedInstrument}
         />
+          </>
+        )}
       </div>
 
-      <button className="mobile-panel-toggle" aria-label="打开复盘面板">
-        <PanelRightOpen size={18} />
-      </button>
+      {activeView === "review" && (
+        <button className="mobile-panel-toggle" aria-label="打开复盘面板">
+          <PanelRightOpen size={18} />
+        </button>
+      )}
       {pendingImport && (
         <ImportConfirmDialog
           preview={pendingImport}

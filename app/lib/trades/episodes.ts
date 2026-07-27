@@ -1,5 +1,6 @@
 import Decimal from "decimal.js";
 
+import { canonicalInstrumentId } from "../instruments/display-name";
 import type { TradeEpisode, TradeExecution } from "./types";
 
 type EpisodeAccumulator = {
@@ -9,11 +10,21 @@ type EpisodeAccumulator = {
 };
 
 function sortByExecutionTime(a: TradeExecution, b: TradeExecution) {
-  return a.executedAt.localeCompare(b.executedAt);
+  return (
+    a.executedAt.localeCompare(b.executedAt) ||
+    (a.source.fileFingerprint ?? a.source.fileName ?? "").localeCompare(
+      b.source.fileFingerprint ?? b.source.fileName ?? "",
+    ) ||
+    a.source.row - b.source.row ||
+    a.id.localeCompare(b.id)
+  );
 }
 
 function episodeKey(execution: TradeExecution) {
-  return `${execution.accountId}:${execution.instrument.id}`;
+  return `${execution.accountId}:${canonicalInstrumentId(
+    execution.instrument.symbol,
+    execution.instrument.market,
+  )}`;
 }
 
 function signedQuantity(execution: TradeExecution) {
@@ -30,7 +41,7 @@ function createEpisode(execution: TradeExecution): EpisodeAccumulator {
     position,
     openingQuantity,
     episode: {
-      id: `${episodeKey(execution)}:${execution.executedAt}`,
+      id: `${episodeKey(execution)}:${execution.executedAt}:${execution.id}`,
       accountId: execution.accountId,
       accountLabel: execution.accountLabel,
       instrument: execution.instrument,
@@ -47,20 +58,16 @@ function createEpisode(execution: TradeExecution): EpisodeAccumulator {
 function executionPart(
   execution: TradeExecution,
   quantity: Decimal,
-  totalQuantity: Decimal,
   suffix: string,
+  allocatedFee: Decimal,
 ): TradeExecution {
-  const allocatedFee = new Decimal(execution.fee || 0)
-    .mul(quantity)
-    .div(totalQuantity);
-
   return {
     ...execution,
     id: `${execution.id}:${suffix}`,
     source: { ...execution.source },
     instrument: { ...execution.instrument },
     quantity: quantity.toString(),
-    fee: allocatedFee.toDecimalPlaces(8).toString(),
+    fee: allocatedFee.toString(),
   };
 }
 
@@ -91,17 +98,22 @@ export function buildTradeEpisodes(
       const totalQuantity = delta.abs();
       const closingQuantity = existing.position.abs();
       const reversingQuantity = totalQuantity.minus(closingQuantity);
+      const totalFee = new Decimal(execution.fee || 0);
+      const closingFee = totalFee
+        .mul(closingQuantity)
+        .div(totalQuantity);
+      const reversingFee = totalFee.minus(closingFee);
       const closingExecution = executionPart(
         execution,
         closingQuantity,
-        totalQuantity,
         "close",
+        closingFee,
       );
       const reversingExecution = executionPart(
         execution,
         reversingQuantity,
-        totalQuantity,
         "reverse",
+        reversingFee,
       );
 
       existing.episode.executions.push(closingExecution);

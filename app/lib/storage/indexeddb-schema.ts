@@ -1,8 +1,9 @@
-export const DATABASE_VERSION = 2;
+export const DATABASE_VERSION = 3;
 export const DAILY_CANDLES = "dailyCandles";
 export const COVERAGE = "coverage";
 export const PROVIDER_SYMBOLS = "providerSymbols";
 export const REVIEWS = "reviews";
+export const TAG_SUGGESTIONS = "tagSuggestions";
 
 export function requestValue<T>(request: IDBRequest<T>) {
   return new Promise<T>((resolve, reject) => {
@@ -48,6 +49,11 @@ export function openTradeReviewDatabase(databaseName: string) {
       if (!database.objectStoreNames.contains(REVIEWS)) {
         database.createObjectStore(REVIEWS, {
           keyPath: "episodeId",
+        });
+      }
+      if (!database.objectStoreNames.contains(TAG_SUGGESTIONS)) {
+        database.createObjectStore(TAG_SUGGESTIONS, {
+          keyPath: "id",
         });
       }
     };

@@ -25,6 +25,10 @@ import {
   createImportPreview,
   type ImportPreview,
 } from "../lib/import/import-preview";
+import { buildInsightEpisodeFacts } from "../lib/insights/episode-facts";
+import { buildPatternInsightReport } from "../lib/insights/insight-engine";
+import { buildTagSuggestions } from "../lib/insights/tag-suggestions";
+import type { TagSuggestionRecord } from "../lib/insights/types";
 import { aggregateCandles } from "../lib/market/aggregate";
 import type {
   DailyCandleRecord,
@@ -49,6 +53,9 @@ import {
   saveReviewState,
 } from "../lib/storage/review-storage";
 import { IndexedDbEpisodeReviewRepository } from "../lib/storage/indexeddb-episode-review-repository";
+import { IndexedDbTagSuggestionRepository } from "../lib/storage/indexeddb-tag-suggestion-repository";
+import { persistSuggestionDecision } from "../lib/storage/indexeddb-suggestion-decision";
+import { createEmptyEpisodeReviewRecord } from "../lib/reviews/review-metrics";
 import type { EpisodeReviewRecord } from "../lib/reviews/types";
 import {
   loadImportedExecutions,
@@ -75,7 +82,11 @@ import { ReplayControls } from "./replay/replay-controls";
 import { EpisodeSidebar } from "./review/episode-sidebar";
 import { ImportedEpisodeReview } from "./review/imported-episode-review";
 import { ThesisPanel } from "./review/thesis-panel";
-import { TradeLibrary } from "./library/trade-library";
+import {
+  TradeLibrary,
+  type TradeLibraryTarget,
+} from "./library/trade-library";
+import { PatternInsights } from "./insights/pattern-insights";
 
 const REVIEW_ID = "demo-xpev-2025";
 const DEFAULT_THESIS =
@@ -113,9 +124,9 @@ async function fetchDemoFrame(
 }
 
 export function TradeReviewWorkspace({ initialFrame }: Props) {
-  const [activeView, setActiveView] = useState<"review" | "library">(
-    "review",
-  );
+  const [activeView, setActiveView] = useState<
+    "review" | "library" | "insights"
+  >("review");
   const [timeframe, setTimeframe] = useState<Timeframe>("1D");
   const [frame, setFrame] = useState(initialFrame);
   const [playing, setPlaying] = useState(false);
@@ -150,6 +161,12 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     Record<string, EpisodeReviewRecord>
   >({});
   const [reviewsHydrated, setReviewsHydrated] = useState(false);
+  const [suggestionDecisions, setSuggestionDecisions] = useState<
+    TagSuggestionRecord[]
+  >([]);
+  const [suggestionsHydrated, setSuggestionsHydrated] = useState(false);
+  const [libraryTarget, setLibraryTarget] =
+    useState<TradeLibraryTarget>();
   const [importing, setImporting] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const replayRequestSequence = useRef(0);
@@ -157,6 +174,8 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   const marketDataAbortControllers = useRef<
     Record<string, AbortController>
   >({});
+  const [suggestionGeneratedAt] = useState(() => new Date().toISOString());
+  const libraryTargetSequence = useRef(0);
 
   const cursor = frame.cursor;
   const chartCandles = useMemo(
@@ -199,6 +218,66 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       marketDataCandles,
       marketDataStatuses,
     ],
+  );
+  const tagSuggestions = useMemo(
+    () =>
+      buildTagSuggestions(
+        tradeLibraryEntries,
+        marketDataCandles,
+        suggestionDecisions,
+        suggestionGeneratedAt,
+      ),
+    [
+      marketDataCandles,
+      suggestionDecisions,
+      suggestionGeneratedAt,
+      tradeLibraryEntries,
+    ],
+  );
+  const insightFactResult = useMemo(
+    () =>
+      buildInsightEpisodeFacts(
+        tradeLibraryEntries,
+        marketDataCandles,
+        marketDataStatuses,
+        suggestionDecisions,
+      ),
+    [
+      marketDataCandles,
+      marketDataStatuses,
+      suggestionDecisions,
+      tradeLibraryEntries,
+    ],
+  );
+  const insightReport = useMemo(
+    () =>
+      buildPatternInsightReport(
+        insightFactResult.facts,
+        insightFactResult.excluded,
+      ),
+    [insightFactResult],
+  );
+  const insightEpisodeContexts = useMemo(
+    () =>
+      Object.fromEntries(
+        tradeLibraryEntries.flatMap((entry) =>
+          entry.episodes.map((item, index) => [
+            item.episode.id,
+            {
+              instrumentId: entry.instrument.id,
+              instrumentName: entry.instrument.name,
+              instrumentSymbol: entry.instrument.symbol,
+              episodeLabel: `第 ${entry.episodes.length - index} 次交易`,
+              dateRange: `${new Date(item.episode.startedAt).toLocaleDateString("zh-CN")}—${
+                item.episode.endedAt
+                  ? new Date(item.episode.endedAt).toLocaleDateString("zh-CN")
+                  : "持仓中"
+              }`,
+            },
+          ]),
+        ),
+      ),
+    [tradeLibraryEntries],
   );
 
   async function requestFrame(
@@ -375,6 +454,25 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       })
       .finally(() => {
         if (active) setReviewsHydrated(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    let active = true;
+    void new IndexedDbTagSuggestionRepository()
+      .getAll()
+      .then((records) => {
+        if (active) setSuggestionDecisions(records);
+      })
+      .catch(() => {
+        if (active) setSuggestionDecisions([]);
+      })
+      .finally(() => {
+        if (active) setSuggestionsHydrated(true);
       });
     return () => {
       active = false;
@@ -753,6 +851,65 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     );
   }
 
+  function openLibraryEpisode(instrumentId: string, episodeId: string) {
+    setLibraryTarget({
+      requestId: ++libraryTargetSequence.current,
+      instrumentId,
+      episodeId,
+    });
+    setActiveView("library");
+  }
+
+  async function confirmSuggestion(suggestion: TagSuggestionRecord) {
+    const decidedAt = new Date().toISOString();
+    const decided: TagSuggestionRecord = {
+      ...suggestion,
+      status: "confirmed",
+      finalTagId: suggestion.tagId,
+      decidedAt,
+    };
+    const current =
+      episodeReviews[suggestion.episodeId] ??
+      createEmptyEpisodeReviewRecord(
+        suggestion.episodeId,
+        suggestion.instrumentId,
+        decidedAt,
+      );
+    const review: EpisodeReviewRecord = {
+      ...current,
+      updatedAt: decidedAt,
+      confirmedTagIds: [
+        ...new Set([...current.confirmedTagIds, suggestion.tagId]),
+      ],
+    };
+    await persistSuggestionDecision({
+      suggestion: decided,
+      review,
+    });
+    setSuggestionDecisions((records) => [
+      ...records.filter(({ id }) => id !== decided.id),
+      decided,
+    ]);
+    setEpisodeReviews((records) => ({
+      ...records,
+      [review.episodeId]: review,
+    }));
+  }
+
+  async function rejectSuggestion(suggestion: TagSuggestionRecord) {
+    const decided: TagSuggestionRecord = {
+      ...suggestion,
+      status: "rejected",
+      finalTagId: null,
+      decidedAt: new Date().toISOString(),
+    };
+    await persistSuggestionDecision({ suggestion: decided });
+    setSuggestionDecisions((records) => [
+      ...records.filter(({ id }) => id !== decided.id),
+      decided,
+    ]);
+  }
+
   const latestCandle = snapshot.candles.at(-1);
   const pnlPositive = Number(snapshot.position.unrealizedPnl) >= 0;
   const netPnl = new Decimal(snapshot.position.realizedPnl)
@@ -793,9 +950,9 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
             交易库
           </button>
           <button
-            disabled
-            aria-label="模式洞察（下一阶段）"
-            title="规则统计与模式洞察将在下一阶段开放"
+            className={activeView === "insights" ? "active" : ""}
+            aria-current={activeView === "insights" ? "page" : undefined}
+            onClick={() => setActiveView("insights")}
           >
             模式洞察
           </button>
@@ -813,10 +970,17 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       </header>
 
       <div
-        className={`workspace ${activeView === "library" ? "library-mode" : ""}`}
+        className={`workspace ${
+          activeView === "library"
+            ? "library-mode"
+            : activeView === "insights"
+              ? "insights-mode"
+              : ""
+        }`}
       >
         {activeView === "library" ? (
           <TradeLibrary
+            key={libraryTarget?.requestId ?? 0}
             entries={tradeLibraryEntries}
             candlesByInstrument={marketDataCandles}
             marketDataStatuses={marketDataStatuses}
@@ -829,6 +993,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
               setActiveView("review");
             }}
             reviewsHydrated={reviewsHydrated}
+            target={libraryTarget}
             onSaveReview={async (record) => {
               await new IndexedDbEpisodeReviewRepository().put(record);
               setEpisodeReviews((current) => ({
@@ -836,6 +1001,16 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
                 [record.episodeId]: record,
               }));
             }}
+          />
+        ) : activeView === "insights" ? (
+          <PatternInsights
+            report={insightReport}
+            facts={insightFactResult.facts}
+            suggestions={suggestionsHydrated ? tagSuggestions : []}
+            episodeContexts={insightEpisodeContexts}
+            onConfirmSuggestion={confirmSuggestion}
+            onRejectSuggestion={rejectSuggestion}
+            onOpenEpisode={openLibraryEpisode}
           />
         ) : (
           <>

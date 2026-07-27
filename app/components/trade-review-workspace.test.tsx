@@ -14,6 +14,7 @@ import {
 import type { DemoReplayFrame } from "../lib/demo/replay-frame";
 import type { EpisodeReviewRecord } from "../lib/reviews/types";
 import { IndexedDbEpisodeReviewRepository } from "../lib/storage/indexeddb-episode-review-repository";
+import { IndexedDbTagSuggestionRepository } from "../lib/storage/indexeddb-tag-suggestion-repository";
 import { saveImportedExecutions } from "../lib/storage/import-library";
 import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-data-repository";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
@@ -432,6 +433,143 @@ describe("TradeReviewWorkspace", () => {
 
     expect(await screen.findByText("已保存在本机")).toBeInTheDocument();
     expect((await reviews.get(episode.id))?.plan.thesis).toBe("等待回踩");
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("confirms a cached rule suggestion and opens the exact episode without requesting market data", async () => {
+    const user = userEvent.setup();
+    const instrument = {
+      id: "US:XPEV",
+      symbol: "XPEV",
+      name: "小鹏汽车",
+      market: "US",
+      currency: "USD",
+    };
+    const executions: TradeExecution[] = [
+      {
+        id: "scale-in-1",
+        source: {
+          platform: "futu",
+          row: 2,
+          sourceTimestampText: "目标回合买入一",
+        },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "buy",
+        executedAt: "2025-01-02T14:30:00.000Z",
+        quantity: "50",
+        price: "10",
+        fee: "0",
+      },
+      {
+        id: "scale-in-2",
+        source: {
+          platform: "futu",
+          row: 3,
+          sourceTimestampText: "目标回合买入二",
+        },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "buy",
+        executedAt: "2025-01-02T15:30:00.000Z",
+        quantity: "50",
+        price: "11",
+        fee: "0",
+      },
+      {
+        id: "scale-in-close",
+        source: {
+          platform: "futu",
+          row: 4,
+          sourceTimestampText: "目标回合卖出",
+        },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "sell",
+        executedAt: "2025-01-03T14:30:00.000Z",
+        quantity: "100",
+        price: "12",
+        fee: "0",
+      },
+    ];
+    saveImportedExecutions(executions);
+    const [episode] = buildTradeEpisodes(executions);
+    await new IndexedDbMarketDataRepository().commitSyncResult({
+      instrumentId: instrument.id,
+      candles: ["2025-01-02", "2025-01-03"].map(
+        (tradingDate, index) => ({
+          instrumentId: instrument.id,
+          tradingDate,
+          open: index === 0 ? "10" : "11",
+          high: index === 0 ? "11" : "12",
+          low: index === 0 ? "9" : "10",
+          close: index === 0 ? "10.5" : "12",
+          volume: "1000",
+          currency: "USD",
+          provider: "tencent" as const,
+          providerSymbol: "usXPEV",
+          adjustmentMode: "raw" as const,
+          fetchedAt: "2025-01-04T00:00:00.000Z",
+        }),
+      ),
+      coverage: [
+        {
+          startDate: "2024-01-01",
+          endDate: "2025-02-01",
+          status: "complete",
+          provider: "tencent",
+          fetchedAt: "2025-01-04T00:00:00.000Z",
+          missingTradingDates: [],
+        },
+      ],
+      providerSymbol: {
+        provider: "tencent",
+        symbol: "usXPEV",
+      },
+    });
+    vi.mocked(fetch).mockClear();
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
+    await user.click(screen.getByRole("button", { name: "模式洞察" }));
+
+    expect(
+      await screen.findByRole("heading", { name: "待确认规则建议" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("分批进入")).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", {
+        name: "查看小鹏汽车第 1 次交易",
+      }),
+    );
+    expect(
+      await screen.findByRole("heading", { name: "第 1 次交易" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("目标回合买入一")).toBeInTheDocument();
+    expect(screen.getByText("目标回合买入二")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "模式洞察" }));
+    await user.click(
+      screen.getByRole("button", { name: /确认.*分批进入/ }),
+    );
+
+    const suggestions =
+      await new IndexedDbTagSuggestionRepository().getAll();
+    expect(suggestions).toEqual([
+      expect.objectContaining({
+        episodeId: episode.id,
+        status: "confirmed",
+        finalTagId: "scale-in",
+      }),
+    ]);
+    expect(
+      (await new IndexedDbEpisodeReviewRepository().get(episode.id))
+        ?.confirmedTagIds,
+    ).toContain("scale-in");
+
+    expect(screen.getByText("暂无待确认建议")).toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
   });
 });

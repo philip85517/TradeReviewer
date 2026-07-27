@@ -72,7 +72,15 @@ function candle(
 }
 
 function setup(
-  options: { reviewed?: boolean; reviewsHydrated?: boolean } = {},
+  options: {
+    reviewed?: boolean;
+    reviewsHydrated?: boolean;
+    target?: {
+      requestId: number;
+      instrumentId: string;
+      episodeId: string;
+    };
+  } = {},
 ) {
   const candlesByInstrument = {
     "US:XPEV": [
@@ -150,12 +158,16 @@ function setup(
       onOpenInReview={onOpenInReview}
       onSaveReview={onSaveReview}
       reviewsHydrated={options.reviewsHydrated ?? true}
+      target={options.target}
     />,
   );
   return {
     onOpenInReview,
     onSaveReview,
     xpevEpisodeId: latestXpevEpisode?.id,
+    olderXpevEpisodeId: baseEntries.find(
+      (entry) => entry.instrument.id === "US:XPEV",
+    )?.episodes[1].episode.id,
   };
 }
 
@@ -336,5 +348,24 @@ describe("TradeLibrary", () => {
       screen.getByLabelText("正在读取当前回合复盘"),
     ).toHaveTextContent("正在读取本机复盘记录");
     expect(screen.queryByLabelText("买入理由")).not.toBeInTheDocument();
+  });
+
+  it("opens the exact stock and episode supplied by an insight target", () => {
+    const initial = setup();
+    cleanup();
+
+    setup({
+      target: {
+        requestId: 1,
+        instrumentId: "US:XPEV",
+        episodeId: initial.olderXpevEpisodeId as string,
+      },
+    });
+
+    expect(
+      screen.getByRole("heading", { name: "第 1 次交易" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("旧回合买入")).toBeInTheDocument();
+    expect(screen.queryByText("新回合买入")).not.toBeInTheDocument();
   });
 });

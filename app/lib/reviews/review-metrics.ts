@@ -9,6 +9,36 @@ type NetPnlMetric = {
   netPnl: string | null;
 };
 
+export function createEmptyEpisodeReviewRecord(
+  episodeId: string,
+  instrumentId: string,
+  updatedAt = new Date(0).toISOString(),
+): EpisodeReviewRecord {
+  return {
+    version: 1,
+    episodeId,
+    instrumentId,
+    updatedAt,
+    plan: {
+      thesis: "",
+      expectedPath: "",
+      invalidationCondition: "",
+      targetRange: "",
+      plannedRiskAmount: "",
+      confidence: null,
+    },
+    review: {
+      decisionQuality: null,
+      executionQuality: null,
+      riskManagement: "",
+      psychology: "",
+      reusableRule: "",
+      completed: false,
+    },
+    confirmedTagIds: [],
+  };
+}
+
 export function episodeReviewStatus(
   record?: EpisodeReviewRecord,
 ): EpisodeReviewStatus {

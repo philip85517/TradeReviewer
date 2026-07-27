@@ -95,6 +95,10 @@ function median(values: string[]) {
   return sorted[middle - 1].plus(sorted[middle]).div(2);
 }
 
+function displayMetric(value: Decimal) {
+  return value.toDecimalPlaces(2).toString();
+}
+
 function confidenceFor(
   sampleCount: number,
   baselineCount: number,
@@ -176,9 +180,19 @@ function tagCandidates(facts: InsightEpisodeFact[]) {
         ? "execution-psychology"
         : null;
     if (!category) return [];
-    return [
-      {
-        id: `tag:${tagId}`,
+    const dictionaryVersions = [
+      ...new Set(
+        facts
+          .filter(({ confirmedTagIds }) =>
+            confirmedTagIds.includes(tagId),
+          )
+          .flatMap((fact) =>
+            factTagDictionaryVersions(fact, tagId),
+          ),
+      ),
+    ].sort((a, b) => a - b);
+    return dictionaryVersions.map((dictionaryVersion) => ({
+        id: `tag:${tagId}:dictionary-v${dictionaryVersion}`,
         category,
         dimension: {
           kind: "confirmed-tag",
@@ -186,10 +200,25 @@ function tagCandidates(facts: InsightEpisodeFact[]) {
           value: tagId,
           label: reviewTagLabel(tagId),
         },
-        matches: (fact) => fact.confirmedTagIds.includes(tagId),
-      },
-    ];
+        matches: (fact) =>
+          fact.confirmedTagIds.includes(tagId) &&
+          factTagDictionaryVersions(fact, tagId).includes(
+            dictionaryVersion,
+          ),
+      }));
   });
+}
+
+function factTagDictionaryVersions(
+  fact: InsightEpisodeFact,
+  tagId: string,
+) {
+  const suggestionVersions = fact.confirmedRuleVersions
+    .filter((item) => item.tagId === tagId)
+    .map((item) => item.tagDictionaryVersion);
+  return suggestionVersions.length > 0
+    ? [...new Set(suggestionVersions)]
+    : [fact.tagDictionaryVersion];
 }
 
 function uniqueRuleVersions(
@@ -220,14 +249,9 @@ function tagDictionaryVersion(
 ) {
   const versions = [
     ...new Set(
-      sample.flatMap((fact) => {
-        const suggestionVersions = fact.confirmedRuleVersions
-          .filter((item) => item.tagId === tagId)
-          .map((item) => item.tagDictionaryVersion);
-        return suggestionVersions.length > 0
-          ? suggestionVersions
-          : [fact.tagDictionaryVersion];
-      }),
+      sample.flatMap((fact) =>
+        factTagDictionaryVersions(fact, tagId),
+      ),
     ),
   ];
   return versions.length === 1 ? versions[0] : null;
@@ -258,15 +282,15 @@ function buildInsight(
     new Decimal(metricValue(fact, basis) as string).gt(0),
   );
   const comparisonThreshold = medianBaseline ?? new Decimal(0);
-  const evidence = sample.filter((fact) =>
-    new Decimal(metricValue(fact, basis) as string).gt(
-      comparisonThreshold,
-    ),
-  );
-  const counterexamples = sample.filter((fact) =>
-    new Decimal(metricValue(fact, basis) as string).lte(
-      comparisonThreshold,
-    ),
+  const supportsConclusion = (fact: InsightEpisodeFact) => {
+    const value = new Decimal(metricValue(fact, basis) as string);
+    return difference?.isNegative()
+      ? value.lt(comparisonThreshold)
+      : value.gt(comparisonThreshold);
+  };
+  const evidence = sample.filter(supportsConclusion);
+  const counterexamples = sample.filter(
+    (fact) => !supportsConclusion(fact),
   );
   const plannedCount = sample.filter((fact) =>
     fact.confirmedTagIds.includes("planned"),
@@ -274,8 +298,8 @@ function buildInsight(
   const metricLabel = basis === "r-multiple" ? "R" : "收益率";
   const conclusion =
     medianBaseline === null
-      ? `${definition.dimension.label}当前仅显示描述统计，中位${metricLabel}为 ${medianTagged.toString()}；基准样本不足，不比较差异。`
-      : `${definition.dimension.label}样本的中位${metricLabel}为 ${medianTagged.toString()}，与基准组相差 ${difference?.toString()}；这是相关性描述，不代表因果。`;
+      ? `${definition.dimension.label}当前仅显示描述统计，中位${metricLabel}为 ${displayMetric(medianTagged)}；基准样本不足，不比较差异。`
+      : `${definition.dimension.label}样本的中位${metricLabel}为 ${displayMetric(medianTagged)}，与基准组相差 ${displayMetric(difference as Decimal)}；这是相关性描述，不代表因果。`;
   const isTag = definition.dimension.kind === "confirmed-tag";
 
   return {

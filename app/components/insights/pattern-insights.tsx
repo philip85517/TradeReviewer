@@ -64,8 +64,17 @@ const CATEGORY_OPTIONS: Array<{
   },
 ];
 
+function displayNumber(value: string) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return value;
+  return new Intl.NumberFormat("zh-CN", {
+    maximumFractionDigits: 2,
+    useGrouping: false,
+  }).format(number);
+}
+
 function percent(value: string) {
-  return `${value}%`;
+  return `${displayNumber(value)}%`;
 }
 
 function basisLabel(insight: PatternInsight) {
@@ -126,8 +135,12 @@ function EpisodeLink({
       </span>
       <b>
         {metricBasis === "r-multiple"
-          ? `${fact.rMultiple ?? "—"}R`
-          : `${fact.returnPercent ?? "—"}%`}
+          ? fact.rMultiple === null
+            ? "—"
+            : `${displayNumber(fact.rMultiple)}R`
+          : fact.returnPercent === null
+            ? "—"
+            : `${displayNumber(fact.returnPercent)}%`}
       </b>
       <ChevronRight size={14} />
     </button>
@@ -139,11 +152,13 @@ function InsightCard({
   factsByEpisode,
   onOpenEpisode,
   early = false,
+  descriptive = false,
 }: {
   insight: PatternInsight;
   factsByEpisode: Map<string, InsightEpisodeFact>;
   onOpenEpisode: Props["onOpenEpisode"];
   early?: boolean;
+  descriptive?: boolean;
 }) {
   const suffix = metricSuffix(insight);
   const evidence = insight.evidenceEpisodeIds
@@ -160,7 +175,7 @@ function InsightCard({
       <header>
         <div>
           <span className="insight-confidence">
-            {confidenceLabel(insight)}
+            {descriptive ? "描述统计" : confidenceLabel(insight)}
           </span>
           {early && <b>样本不足，仅供观察</b>}
           <h3>{insight.dimension.label}</h3>
@@ -178,15 +193,15 @@ function InsightCard({
         </span>
       </div>
       <div className="insight-metrics">
-        <span>中位 {insight.medianTagged}{suffix}</span>
+        <span>中位 {displayNumber(insight.medianTagged)}{suffix}</span>
         <span>
           基准{" "}
           {insight.medianBaseline === null
             ? "不足"
-            : `${insight.medianBaseline}${suffix}`}
+            : `${displayNumber(insight.medianBaseline)}${suffix}`}
         </span>
         <span>胜率 {percent(insight.winRate)}</span>
-        <span>净盈亏 {insight.netPnl}</span>
+        <span>净盈亏 {displayNumber(insight.netPnl)}</span>
         <span>MFE {percent(insight.medianMfePercent)}</span>
         <span>MAE {percent(insight.medianMaePercent)}</span>
         <span>回吐 {percent(insight.medianGivebackPercent)}</span>
@@ -398,6 +413,7 @@ export function PatternInsights({
                 insight={item}
                 factsByEpisode={factsByEpisode}
                 onOpenEpisode={onOpenEpisode}
+                descriptive
               />
             ))}
           </div>

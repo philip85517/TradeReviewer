@@ -71,12 +71,12 @@ describe("buildPatternInsightReport", () => {
       medianTagged: "2",
       medianBaseline: "6",
       medianDifference: "-4",
-      evidenceEpisodeIds: [],
-      counterexampleEpisodeIds: [
+      evidenceEpisodeIds: [
         "episode-01",
         "episode-02",
         "episode-03",
       ],
+      counterexampleEpisodeIds: [],
     });
     expect(report.formalInsights).not.toContainEqual(
       expect.objectContaining({
@@ -234,8 +234,49 @@ describe("buildPatternInsightReport", () => {
       )
       .map(({ id }) => id);
     expect(tiedPatternIds).toEqual([
-      "tag:breakout",
-      "tag:pullback",
+      "tag:breakout:dictionary-v2",
+      "tag:pullback:dictionary-v1",
     ]);
+  });
+
+  it("keeps incompatible tag dictionary versions in separate candidates", () => {
+    const facts = Array.from({ length: 9 }, (_, index) =>
+      fact(index, {
+        confirmedTagIds: index < 6 ? ["breakout"] : [],
+        tagDictionaryVersion: index < 3 ? 1 : 2,
+        confirmedRuleVersions:
+          index < 6
+            ? [
+                {
+                  tagId: "breakout",
+                  tagDictionaryVersion: index < 3 ? 1 : 2,
+                  ruleId: "entry-20d-breakout",
+                  ruleVersion: 1,
+                },
+              ]
+            : [],
+      }),
+    );
+
+    const report = buildPatternInsightReport(facts, []);
+    const breakoutCandidates = report.earlySignals.filter(
+      ({ dimension }) => dimension.value === "breakout",
+    );
+
+    expect(breakoutCandidates).toHaveLength(2);
+    expect(breakoutCandidates).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "tag:breakout:dictionary-v2",
+          sampleCount: 3,
+          tagDictionaryVersion: 2,
+        }),
+        expect.objectContaining({
+          id: "tag:breakout:dictionary-v1",
+          sampleCount: 3,
+          tagDictionaryVersion: 1,
+        }),
+      ]),
+    );
   });
 });

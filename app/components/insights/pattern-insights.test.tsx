@@ -241,13 +241,18 @@ describe("PatternInsights", () => {
           formalInsights: [
             insight({
               metricBasis: "return-percent",
-              medianTagged: "2",
-              medianBaseline: "0.5",
+              medianTagged: "11.1111111111111",
+              medianBaseline: "0.5555555555555",
+              winRate: "66.6666666666667",
             }),
           ],
         })}
         facts={[
-          { ...facts[0], rMultiple: "99", returnPercent: "2" },
+          {
+            ...facts[0],
+            rMultiple: "99",
+            returnPercent: "10.4972375690608",
+          },
           ...facts.slice(1),
         ]}
         suggestions={[]}
@@ -259,8 +264,50 @@ describe("PatternInsights", () => {
       />,
     );
 
-    expect(screen.getByText("2%", { selector: "b" })).toBeInTheDocument();
+    expect(screen.getByText("中位 11.11%")).toBeInTheDocument();
+    expect(screen.getByText("基准 0.56%")).toBeInTheDocument();
+    expect(screen.getByText("胜率 66.67%")).toBeInTheDocument();
+    expect(screen.getByText("10.5%", { selector: "b" })).toBeInTheDocument();
+    expect(screen.queryByText("11.1111111111111%")).not.toBeInTheDocument();
     expect(screen.queryByText("99R")).not.toBeInTheDocument();
+  });
+
+  it("labels insufficient-baseline cards as descriptive statistics", () => {
+    const descriptive = insight({
+      id: "market:US",
+      category: "condition",
+      dimension: {
+        kind: "market",
+        id: "market",
+        value: "US",
+        label: "美股",
+      },
+      sampleCount: 8,
+      baselineCount: 1,
+      medianBaseline: null,
+      medianDifference: null,
+      tagDictionaryVersion: null,
+    });
+    const { container } = render(
+      <PatternInsights
+        report={report({
+          formalInsights: [],
+          descriptiveStatistics: [descriptive],
+          excluded: [],
+        })}
+        facts={facts}
+        suggestions={[]}
+        episodeContexts={{}}
+        onConfirmSuggestion={vi.fn()}
+        onEditSuggestion={vi.fn()}
+        onRejectSuggestion={vi.fn()}
+        onOpenEpisode={vi.fn()}
+      />,
+    );
+
+    expect(
+      container.querySelector(".insight-confidence"),
+    ).toHaveTextContent("描述统计");
   });
 
   it("uses an honest empty state when no candidate reaches three samples", () => {

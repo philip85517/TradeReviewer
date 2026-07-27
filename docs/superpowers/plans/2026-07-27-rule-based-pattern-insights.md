@@ -140,7 +140,7 @@ Expected: all tests pass and existing schema migrations remain intact.
 - Test: `app/lib/insights/episode-facts.test.ts`
 
 **Interfaces:**
-- Consumes: `TradeLibraryEntry[]`, local daily candles, and market-data statuses.
+- Consumes: `TradeLibraryEntry[]`, local daily candles, market-data statuses, and confirmed/edited suggestion decisions.
 - Produces: `InsightEpisodeFact[]` plus excluded episode records.
 
 - [ ] **Step 1: Write failing eligibility and metric tests**
@@ -167,7 +167,7 @@ Expected: module resolution fails because the fact projection does not exist.
 
 - [ ] **Step 3: Implement the pure fact projection**
 
-Define `InsightEpisodeFact` with instrument/episode identity, market, direction, dates, confirmed tags, metric strings, and calculation version `1`. Derive an average entry basis from opening-side execution value divided by opening-side quantity. Slice candles using market-local dates, calculate long/short excursions with Decimal.js, and return explicit exclusions rather than partial facts.
+Define `InsightEpisodeFact` with instrument/episode identity, market, direction, dates, confirmed tags, confirmed rule/version provenance, metric strings, and calculation version `1`. Derive an average entry basis from opening-side execution value divided by opening-side quantity. Slice candles using market-local dates, calculate long/short excursions with Decimal.js, and return explicit exclusions rather than partial facts.
 
 - [ ] **Step 4: Run the focused test and verify GREEN**
 

@@ -204,7 +204,7 @@ function confirmedSuggestion(
 }
 
 describe("buildInsightEpisodeFacts", () => {
-  it("calculates direction-aware long and short excursion facts", () => {
+  it("calculates direction-aware excursions without applying later scale-in basis backwards", () => {
     const longExecutions = [
       execution(
         xpev,
@@ -298,7 +298,7 @@ describe("buildInsightEpisodeFacts", () => {
         openingExecutionCount: 2,
         addOnCount: 1,
         mfePercent: "20",
-        maePercent: "-10",
+        maePercent: "0",
         givebackPercent: "0",
         confirmedTagIds: ["breakout", "planned"],
         confirmedRuleVersions: [

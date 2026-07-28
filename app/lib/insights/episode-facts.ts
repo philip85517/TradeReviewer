@@ -114,29 +114,83 @@ function averageEntry(
 }
 
 function excursionMetrics(
-  direction: "long" | "short",
-  price: Decimal,
-  executionPrices: string[],
+  item: TradeLibraryEntry["episodes"][number],
   candles: DailyCandleRecord[],
   returnPercent: string | null,
 ) {
-  const observedPrices = executionPrices.map((value) => new Decimal(value));
-  const maximum = candles.reduce(
-    (value, candle) => Decimal.max(value, candle.high),
-    Decimal.max(price, ...observedPrices),
+  const direction = item.episode.direction;
+  const openingSide = direction === "long" ? "buy" : "sell";
+  const executions = [...item.episode.executions].sort(
+    (a, b) => a.executedAt.localeCompare(b.executedAt),
   );
-  const minimum = candles.reduce(
-    (value, candle) => Decimal.min(value, candle.low),
-    Decimal.min(price, ...observedPrices),
+  let quantity = new Decimal(0);
+  let cost = new Decimal(0);
+  let mfe = new Decimal(0);
+  let mae = new Decimal(0);
+  const observe = (observed: Decimal, basis: Decimal) => {
+    const move =
+      direction === "long"
+        ? observed.minus(basis).div(basis).times(100)
+        : basis.minus(observed).div(basis).times(100);
+    mfe = Decimal.max(mfe, move);
+    mae = Decimal.min(mae, move);
+  };
+
+  for (const execution of executions) {
+    const executionQuantity = new Decimal(execution.quantity);
+    const executionPrice = new Decimal(execution.price);
+    if (execution.side === openingSide) {
+      quantity = quantity.plus(executionQuantity);
+      cost = cost.plus(executionQuantity.times(executionPrice));
+      observe(executionPrice, cost.div(quantity));
+      continue;
+    }
+    if (quantity.isZero()) continue;
+    const basis = cost.div(quantity);
+    observe(executionPrice, basis);
+    const closingQuantity = Decimal.min(quantity, executionQuantity);
+    quantity = quantity.minus(closingQuantity);
+    cost = cost.minus(closingQuantity.times(basis));
+  }
+
+  const executionDates = new Set(
+    executions.map(({ executedAt }) =>
+      marketTradingDate(executedAt, item.episode.instrument.market),
+    ),
   );
-  const mfe =
-    direction === "long"
-      ? maximum.minus(price).div(price).times(100)
-      : price.minus(minimum).div(price).times(100);
-  const mae =
-    direction === "long"
-      ? minimum.minus(price).div(price).times(100)
-      : price.minus(maximum).div(price).times(100);
+  for (const candle of candles) {
+    if (executionDates.has(candle.tradingDate)) continue;
+    let priorQuantity = new Decimal(0);
+    let priorCost = new Decimal(0);
+    for (const execution of executions) {
+      const executionDate = marketTradingDate(
+        execution.executedAt,
+        item.episode.instrument.market,
+      );
+      if (executionDate >= candle.tradingDate) break;
+      const executionQuantity = new Decimal(execution.quantity);
+      const executionPrice = new Decimal(execution.price);
+      if (execution.side === openingSide) {
+        priorQuantity = priorQuantity.plus(executionQuantity);
+        priorCost = priorCost.plus(
+          executionQuantity.times(executionPrice),
+        );
+      } else if (!priorQuantity.isZero()) {
+        const basis = priorCost.div(priorQuantity);
+        const closingQuantity = Decimal.min(
+          priorQuantity,
+          executionQuantity,
+        );
+        priorQuantity = priorQuantity.minus(closingQuantity);
+        priorCost = priorCost.minus(closingQuantity.times(basis));
+      }
+    }
+    if (priorQuantity.isZero()) continue;
+    const basis = priorCost.div(priorQuantity);
+    observe(new Decimal(candle.high), basis);
+    observe(new Decimal(candle.low), basis);
+  }
+
   const giveback =
     returnPercent === null
       ? new Decimal(0)
@@ -227,9 +281,7 @@ export function buildInsightEpisodeFacts(
             a.ruleId.localeCompare(b.ruleId),
         );
       const excursions = excursionMetrics(
-        item.episode.direction,
-        entryBasis.price,
-        item.episode.executions.map(({ price }) => price),
+        item,
         episodeCandles.filter(
           ({ tradingDate }) =>
             tradingDate > startDate && tradingDate < endDate,

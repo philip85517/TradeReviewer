@@ -20,6 +20,16 @@
 - Viewing insights, switching insight categories, and drilling into cached episodes must not call `fetch`.
 - All user executions, reviews, suggestion decisions, and derived insights stay in the current browser.
 
+## Delivery Slice
+
+This Phase 3B delivery implements the first three deterministic suggestion
+rules: 20-session breakout, the first pullback after breakout, and scale-in.
+The broader design candidates—ATR/range entry position, concentration
+changes, unplanned adds, stop deviation, excursion anomalies, volatility
+regimes, and additional add-on-count comparisons—are explicitly deferred to
+the next deterministic-rules slice. They do not require AI and are not
+silently represented by the three rules in this plan.
+
 ---
 
 ### Task 1: Versioned Suggestion Domain and Deterministic Rules

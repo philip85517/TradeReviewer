@@ -165,4 +165,36 @@ describe("IndexedDbTagSuggestionRepository", () => {
       },
     ]);
   });
+
+  it("normalizes legacy records that predate dictionary provenance", async () => {
+    const databaseName = `trade-reviewer-suggestion-${crypto.randomUUID()}`;
+    databases.push(databaseName);
+    const repository = new IndexedDbTagSuggestionRepository(databaseName);
+    await repository.put(suggestion("rejected"));
+
+    const database = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open(databaseName, 3);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const legacy = { ...suggestion("rejected") } as Partial<TagSuggestionRecord>;
+    delete legacy.tagDictionaryVersion;
+    await new Promise<void>((resolve, reject) => {
+      const transaction = database.transaction(
+        "tagSuggestions",
+        "readwrite",
+      );
+      transaction.objectStore("tagSuggestions").put(legacy);
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+    });
+    database.close();
+
+    expect(await repository.getAll()).toEqual([
+      expect.objectContaining({
+        id: "episode-1:entry-20d-breakout:1",
+        tagDictionaryVersion: 1,
+      }),
+    ]);
+  });
 });

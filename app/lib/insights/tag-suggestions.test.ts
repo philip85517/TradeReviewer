@@ -213,7 +213,7 @@ describe("buildTagSuggestions", () => {
   it("suggests the first pullback near a breakout level from the prior five sessions", () => {
     const base = januaryCandles(20);
     const breakout = candle("2025-01-21", "10.8", "10.5", "10.2");
-    const pause = candle("2025-01-22", "10.7", "10.4", "10.1");
+    const pause = candle("2025-01-22", "10.7", "10.4", "10.4");
     const fills = [
       execution(
         "open",
@@ -248,6 +248,42 @@ describe("buildTagSuggestions", () => {
         reference: "10",
       },
     ]);
+  });
+
+  it("does not call a later retest the first pullback", () => {
+    const base = januaryCandles(20);
+    const breakout = candle("2025-01-21", "10.8", "10.5", "10.2");
+    const earlierRetest = candle(
+      "2025-01-22",
+      "10.7",
+      "10.4",
+      "10.1",
+    );
+    const fills = [
+      execution(
+        "open",
+        "buy",
+        "2025-01-23T15:00:00Z",
+        "100",
+        "10.1",
+      ),
+      execution(
+        "close",
+        "sell",
+        "2025-01-24T15:00:00Z",
+        "100",
+        "11",
+      ),
+    ];
+
+    const suggestions = buildTagSuggestions(
+      [entry("episode-late-pullback", fills)],
+      { "US:XPEV": [...base, breakout, earlierRetest] },
+      [],
+      GENERATED_AT,
+    );
+
+    expect(suggestions).toEqual([]);
   });
 
   it("suggests scale-in for multiple opening-side executions", () => {

@@ -127,7 +127,14 @@ function pullbackSuggestion(
     const nearLevel =
       observed.gte(reference.times("0.97")) &&
       observed.lte(reference.times("1.03"));
-    if (!brokeOut || !nearLevel) continue;
+    const alreadyRetested = prior
+      .slice(index + 1)
+      .some(
+        (candle) =>
+          new Decimal(candle.low).lte(reference.times("1.03")) &&
+          new Decimal(candle.high).gte(reference.times("0.97")),
+      );
+    if (!brokeOut || !nearLevel || alreadyRetested) continue;
 
     return createSuggestion(
       item,

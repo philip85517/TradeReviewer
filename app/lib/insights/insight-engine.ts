@@ -64,6 +64,8 @@ type CandidateDefinition = {
   category: InsightCategory;
   dimension: InsightDimension;
   matches: (fact: InsightEpisodeFact) => boolean;
+  eligible?: (fact: InsightEpisodeFact) => boolean;
+  tagDictionaryVersion?: number;
 };
 
 const PATTERN_TAGS = new Set([
@@ -192,20 +194,34 @@ function tagCandidates(facts: InsightEpisodeFact[]) {
       ),
     ].sort((a, b) => a - b);
     return dictionaryVersions.map((dictionaryVersion) => ({
-        id: `tag:${tagId}:dictionary-v${dictionaryVersion}`,
-        category,
-        dimension: {
-          kind: "confirmed-tag",
-          id: "confirmed-tag",
-          value: tagId,
-          label: reviewTagLabel(tagId),
-        },
-        matches: (fact) =>
+      id: `tag:${tagId}:dictionary-v${dictionaryVersion}`,
+      category,
+      dimension: {
+        kind: "confirmed-tag",
+        id: "confirmed-tag",
+        value: tagId,
+        label: reviewTagLabel(tagId),
+      },
+      matches: (fact) => {
+        const versions = factTagDictionaryVersions(fact, tagId);
+        return (
           fact.confirmedTagIds.includes(tagId) &&
-          factTagDictionaryVersions(fact, tagId).includes(
-            dictionaryVersion,
-          ),
-      }));
+          versions.length === 1 &&
+          versions[0] === dictionaryVersion
+        );
+      },
+      eligible: (fact) => {
+        if (!fact.confirmedTagIds.includes(tagId)) {
+          return fact.tagDictionaryVersion === dictionaryVersion;
+        }
+        const versions = factTagDictionaryVersions(fact, tagId);
+        return (
+          versions.length === 1 &&
+          versions[0] === dictionaryVersion
+        );
+      },
+      tagDictionaryVersion: dictionaryVersion,
+    }));
   });
 }
 
@@ -243,28 +259,19 @@ function uniqueRuleVersions(
   );
 }
 
-function tagDictionaryVersion(
-  sample: InsightEpisodeFact[],
-  tagId: string,
-) {
-  const versions = [
-    ...new Set(
-      sample.flatMap((fact) =>
-        factTagDictionaryVersions(fact, tagId),
-      ),
-    ),
-  ];
-  return versions.length === 1 ? versions[0] : null;
-}
-
 function buildInsight(
   definition: CandidateDefinition,
   facts: InsightEpisodeFact[],
   basis: InsightMetricBasis,
 ): PatternInsight | null {
-  const sample = facts.filter(definition.matches);
+  const eligibleFacts = definition.eligible
+    ? facts.filter(definition.eligible)
+    : facts;
+  const sample = eligibleFacts.filter(definition.matches);
   if (sample.length < 3) return null;
-  const baseline = facts.filter((fact) => !definition.matches(fact));
+  const baseline = eligibleFacts.filter(
+    (fact) => !definition.matches(fact),
+  );
   const sampleMetrics = sample.map(
     (fact) => metricValue(fact, basis) as string,
   );
@@ -355,7 +362,7 @@ function buildInsight(
     baselineEpisodeIds: baseline.map(({ episodeId }) => episodeId),
     conclusion,
     tagDictionaryVersion: isTag
-      ? tagDictionaryVersion(sample, definition.dimension.value)
+      ? definition.tagDictionaryVersion ?? null
       : null,
     ruleVersions: isTag
       ? uniqueRuleVersions(sample, definition.dimension.value)

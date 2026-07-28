@@ -175,6 +175,7 @@ describe("buildPatternInsightReport", () => {
         returnPercent: returns[index],
         rMultiple: null,
         netPnl: returns[index],
+        tagDictionaryVersion: 2,
         confirmedTagIds: [
           ...(index < 5 ? ["breakout", "pullback"] : []),
           ...(index < 6 ? ["fomo"] : []),
@@ -186,6 +187,12 @@ describe("buildPatternInsightReport", () => {
                   tagId: "breakout",
                   tagDictionaryVersion: 2,
                   ruleId: "entry-20d-breakout",
+                  ruleVersion: 1,
+                },
+                {
+                  tagId: "pullback",
+                  tagDictionaryVersion: 2,
+                  ruleId: "first-pullback-after-breakout",
                   ruleVersion: 1,
                 },
               ]
@@ -235,17 +242,20 @@ describe("buildPatternInsightReport", () => {
       .map(({ id }) => id);
     expect(tiedPatternIds).toEqual([
       "tag:breakout:dictionary-v2",
-      "tag:pullback:dictionary-v1",
+      "tag:pullback:dictionary-v2",
     ]);
   });
 
   it("keeps incompatible tag dictionary versions in separate candidates", () => {
-    const facts = Array.from({ length: 9 }, (_, index) =>
+    const facts = Array.from({ length: 13 }, (_, index) =>
       fact(index, {
-        confirmedTagIds: index < 6 ? ["breakout"] : [],
-        tagDictionaryVersion: index < 3 ? 1 : 2,
+        confirmedTagIds:
+          index < 3 || (index >= 6 && index < 9) || index === 12
+            ? ["breakout"]
+            : [],
+        tagDictionaryVersion: index < 6 ? 1 : 2,
         confirmedRuleVersions:
-          index < 6
+          index < 3 || (index >= 6 && index < 9)
             ? [
                 {
                   tagId: "breakout",
@@ -254,6 +264,21 @@ describe("buildPatternInsightReport", () => {
                   ruleVersion: 1,
                 },
               ]
+            : index === 12
+              ? [
+                  {
+                    tagId: "breakout",
+                    tagDictionaryVersion: 1,
+                    ruleId: "entry-20d-breakout",
+                    ruleVersion: 1,
+                  },
+                  {
+                    tagId: "breakout",
+                    tagDictionaryVersion: 2,
+                    ruleId: "entry-20d-breakout",
+                    ruleVersion: 2,
+                  },
+                ]
             : [],
       }),
     );
@@ -269,11 +294,23 @@ describe("buildPatternInsightReport", () => {
         expect.objectContaining({
           id: "tag:breakout:dictionary-v2",
           sampleCount: 3,
+          baselineCount: 3,
+          baselineEpisodeIds: [
+            "episode-10",
+            "episode-11",
+            "episode-12",
+          ],
           tagDictionaryVersion: 2,
         }),
         expect.objectContaining({
           id: "tag:breakout:dictionary-v1",
           sampleCount: 3,
+          baselineCount: 3,
+          baselineEpisodeIds: [
+            "episode-04",
+            "episode-05",
+            "episode-06",
+          ],
           tagDictionaryVersion: 1,
         }),
       ]),

@@ -68,9 +68,10 @@ export class IndexedDbTagSuggestionRepository
         TAG_SUGGESTIONS,
         "readonly",
       );
-      return (await requestValue(
+      const records = (await requestValue(
         transaction.objectStore(TAG_SUGGESTIONS).getAll(),
       )) as TagSuggestionRecord[];
+      return records.map(normalizeTagSuggestionRecord);
     } finally {
       database.close();
     }

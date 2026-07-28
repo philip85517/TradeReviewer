@@ -10,7 +10,8 @@ export type InsightExclusionReason =
   | "open-episode"
   | "incomplete-market-data"
   | "missing-episode-candles"
-  | "missing-comparison-metric";
+  | "missing-comparison-metric"
+  | "ambiguous-tag-provenance";
 
 export type InsightEpisodeExclusion = {
   episodeId: string;
@@ -65,6 +66,8 @@ const REASON_LABELS: Record<InsightExclusionReason, string> = {
   "incomplete-market-data": "本地行情覆盖不完整",
   "missing-episode-candles": "回合起止日期缺少完整 K 线",
   "missing-comparison-metric": "缺少当前统计口径所需指标",
+  "ambiguous-tag-provenance":
+    "标签版本归属不唯一，未进入该标签比较",
 };
 
 function exclusion(
@@ -140,6 +143,9 @@ function excursionMetrics(
     const executionQuantity = new Decimal(execution.quantity);
     const executionPrice = new Decimal(execution.price);
     if (execution.side === openingSide) {
+      if (!quantity.isZero()) {
+        observe(executionPrice, cost.div(quantity));
+      }
       quantity = quantity.plus(executionQuantity);
       cost = cost.plus(executionQuantity.times(executionPrice));
       observe(executionPrice, cost.div(quantity));

@@ -315,5 +315,12 @@ describe("buildPatternInsightReport", () => {
         }),
       ]),
     );
+    expect(report.excluded).toContainEqual(
+      expect.objectContaining({
+        episodeId: "episode-13",
+        reason: "ambiguous-tag-provenance",
+        reasonLabel: "标签版本归属不唯一，未进入该标签比较",
+      }),
+    );
   });
 });

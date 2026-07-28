@@ -406,6 +406,22 @@ export function buildPatternInsightReport(
     rCoverage >= 0.8 ? "r-multiple" : "return-percent";
   const facts: InsightEpisodeFact[] = [];
   const missing: InsightEpisodeExclusion[] = [];
+  const ambiguous = inputFacts
+    .filter((fact) =>
+      fact.confirmedTagIds.some(
+        (tagId) =>
+          factTagDictionaryVersions(fact, tagId).length > 1,
+      ),
+    )
+    .map<InsightEpisodeExclusion>((fact) => ({
+      episodeId: fact.episodeId,
+      instrumentId: fact.instrumentId,
+      instrumentName: fact.instrumentName,
+      startedAt: fact.startedAt,
+      endedAt: fact.endedAt,
+      reason: "ambiguous-tag-provenance",
+      reasonLabel: "标签版本归属不唯一，未进入该标签比较",
+    }));
   for (const fact of inputFacts) {
     if (metricValue(fact, metricBasis) !== null) {
       facts.push(fact);
@@ -448,7 +464,7 @@ export function buildPatternInsightReport(
           sampleCount >= 5 && baselineCount < 3,
       )
       .sort(rank),
-    excluded: [...upstreamExclusions, ...missing],
+    excluded: [...upstreamExclusions, ...missing, ...ambiguous],
     calculationVersion: 1,
   };
 }

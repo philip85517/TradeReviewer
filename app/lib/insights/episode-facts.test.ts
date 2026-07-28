@@ -297,9 +297,9 @@ describe("buildInsightEpisodeFacts", () => {
         averageEntryPrice: "10",
         openingExecutionCount: 2,
         addOnCount: 1,
-        mfePercent: "20",
+        mfePercent: "22.222222222222222222",
         maePercent: "0",
-        givebackPercent: "0",
+        givebackPercent: "2.222222222222222222",
         confirmedTagIds: ["breakout", "planned"],
         confirmedRuleVersions: [
           {

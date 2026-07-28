@@ -7,6 +7,7 @@ import type { EpisodeReviewRecord } from "../reviews/types";
 import type { TagSuggestionRecord } from "../insights/types";
 import { IndexedDbEpisodeReviewRepository } from "./indexeddb-episode-review-repository";
 import { IndexedDbMarketDataRepository } from "./indexeddb-market-data-repository";
+import { DATABASE_VERSION } from "./indexeddb-schema";
 import { IndexedDbTagSuggestionRepository } from "./indexeddb-tag-suggestion-repository";
 
 const databases: string[] = [];
@@ -173,7 +174,7 @@ describe("IndexedDbTagSuggestionRepository", () => {
     await repository.put(suggestion("rejected"));
 
     const database = await new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open(databaseName, 3);
+      const request = indexedDB.open(databaseName, DATABASE_VERSION);
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
     });

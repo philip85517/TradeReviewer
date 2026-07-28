@@ -45,6 +45,7 @@ import {
   requiredRangeExpanded,
 } from "../lib/market/sync-range";
 import { syncMarketData } from "../lib/market/sync-service";
+import { refreshInstrumentMetadata } from "../lib/instruments/resolve-service";
 import type { Timeframe } from "../lib/market/types";
 import { createReplaySnapshot } from "../lib/replay/replay-engine";
 import { formatReplayCursor } from "../lib/replay/format-time";
@@ -71,6 +72,7 @@ import {
   saveMarketDataJob,
 } from "../lib/storage/market-data-jobs";
 import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-data-repository";
+import { IndexedDbInstrumentMetadataRepository } from "../lib/storage/indexeddb-instrument-metadata-repository";
 import { buildInstrumentTradeSummaries } from "../lib/trades/instruments";
 import type { TradeExecution } from "../lib/trades/types";
 import { ChartToolbar } from "./chart/chart-toolbar";
@@ -616,6 +618,17 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
           if (!SUPPORTED_MARKETS.has(normalizedMarket as SupportedMarket)) {
             throw new Error(`暂不支持 ${instrument.market} 市场行情`);
           }
+          void refreshInstrumentMetadata(
+            {
+              market: normalizedMarket as SupportedMarket,
+              symbol: instrument.symbol,
+            },
+            {
+              repository: new IndexedDbInstrumentMetadataRepository(),
+              fetcher: fetch,
+              signal: abortController.signal,
+            },
+          ).catch(() => undefined);
           const result = await syncMarketData({
             instrumentId,
             symbol: instrument.symbol,

@@ -155,6 +155,101 @@ describe("TradeReviewWorkspace", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
+  it("refreshes metadata without blocking cached candles when metadata is unresolved", async () => {
+    const user = userEvent.setup();
+    const imported: TradeExecution = {
+      id: "futu:metadata-refresh",
+      source: { platform: "futu", row: 2 },
+      accountId: "acct",
+      accountLabel: "富途",
+      instrument: {
+        id: "HK:1810",
+        symbol: "1810",
+        name: "小米集团-W",
+        market: "HK",
+        currency: "HKD",
+      },
+      side: "buy",
+      executedAt: "2025-01-02T02:00:00.000Z",
+      quantity: "100",
+      price: "34.5",
+      fee: "10",
+    };
+    saveImportedExecutions([
+      imported,
+      {
+        ...imported,
+        id: "futu:metadata-refresh-sell",
+        source: { platform: "futu", row: 3 },
+        side: "sell",
+        executedAt: "2025-01-03T02:00:00.000Z",
+      },
+    ]);
+    const repository = new IndexedDbMarketDataRepository();
+    await repository.commitSyncResult({
+      instrumentId: "HK:1810",
+      candles: [
+        {
+          instrumentId: "HK:1810",
+          tradingDate: "2025-01-02",
+          open: "34",
+          high: "35",
+          low: "33",
+          close: "34.5",
+          volume: "1000",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2026-07-29T00:00:00.000Z",
+        },
+      ],
+      coverage: [
+        {
+          startDate: "2023-11-01",
+          endDate: "2025-03-01",
+          status: "complete",
+          provider: "tencent",
+          fetchedAt: "2026-07-29T00:00:00.000Z",
+          missingTradingDates: [],
+        },
+      ],
+      providerSymbol: {
+        provider: "tencent",
+        symbol: "hk01810",
+      },
+    });
+    vi.mocked(fetch).mockResolvedValue({
+      ok: false,
+      json: async () => ({
+        error: {
+          code: "unresolved",
+          attempts: [
+            {
+              source: "hkex",
+              code: "no-data",
+              message: "未找到证券",
+            },
+          ],
+        },
+      }),
+    } as Response);
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("heading", { name: "小米集团-W（1810）" });
+    expect(await screen.findByTestId("imported-market-chart")).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: "更新小米集团-W行情" }),
+    );
+
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/instruments/resolve?market=HK&symbol=1810",
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
+    expect(screen.getByTestId("imported-market-chart")).toBeInTheDocument();
+  });
+
   it("navigates through stock and episode library levels without requesting market data", async () => {
     const user = userEvent.setup();
     const instrument = {

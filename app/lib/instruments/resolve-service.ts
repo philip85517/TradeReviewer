@@ -15,6 +15,7 @@ export type ResolveBatchResult = {
   resolved: Map<string, ResolvedInstrument>;
   unresolved: Map<string, InstrumentMetadataFailure>;
   cacheHits: number;
+  backgroundRefresh: Promise<void>;
 };
 
 type ResolveOptions = {
@@ -204,102 +205,147 @@ export async function resolveInstrumentMetadataBatch(
       unresolved.set(instrumentId, failure);
     }
   };
+  const resolveJob = async (
+    instrumentId: string,
+    lookup: InstrumentLookup,
+  ) => {
+    if (options.signal?.aborted) {
+      recordFailure(
+        instrumentId,
+        clientFailure(lookup, "aborted", "证券元数据请求已取消"),
+      );
+      return;
+    }
+
+    const query = new URLSearchParams({
+      market: lookup.market,
+      symbol: lookup.symbol,
+    });
+    let response: Response;
+    try {
+      response = await fetcher(`/api/instruments/resolve?${query}`, {
+        signal: options.signal,
+      });
+    } catch (error) {
+      recordFailure(
+        instrumentId,
+        clientFailure(
+          lookup,
+          options.signal?.aborted ? "aborted" : "request-failed",
+          error instanceof Error ? error.message : "证券元数据请求失败",
+        ),
+      );
+      return;
+    }
+
+    let body: unknown;
+    try {
+      body = await response.json();
+    } catch {
+      recordFailure(
+        instrumentId,
+        clientFailure(lookup, "invalid-response", "证券元数据响应无效"),
+      );
+      return;
+    }
+    if (!response.ok) {
+      recordFailure(instrumentId, parseFailure(body, lookup));
+      return;
+    }
+    if (options.signal?.aborted) {
+      recordFailure(
+        instrumentId,
+        clientFailure(lookup, "aborted", "证券元数据请求已取消"),
+      );
+      return;
+    }
+
+    let record: ResolvedInstrument;
+    try {
+      record = validateResolvedInstrument(body, lookup);
+    } catch {
+      recordFailure(
+        instrumentId,
+        clientFailure(lookup, "invalid-response", "证券元数据响应无效"),
+      );
+      return;
+    }
+
+    try {
+      await options.repository.put(record);
+    } catch (error) {
+      recordFailure(
+        instrumentId,
+        clientFailure(
+          lookup,
+          "cache-write-failed",
+          error instanceof Error ? error.message : "证券元数据缓存失败",
+        ),
+      );
+      return;
+    }
+    resolved.set(instrumentId, record);
+    staleInstrumentIds.delete(instrumentId);
+    unresolved.delete(instrumentId);
+  };
+
+  pending.sort(
+    ([left], [right]) =>
+      Number(staleInstrumentIds.has(left)) -
+      Number(staleInstrumentIds.has(right)),
+  );
+  const blockingInstrumentIds = new Set(
+    pending.flatMap(([instrumentId]) =>
+      staleInstrumentIds.has(instrumentId) ? [] : [instrumentId],
+    ),
+  );
+  let blockingJobs = blockingInstrumentIds.size;
+  let finishBlockingJobs: (() => void) | undefined;
+  const blockingDone =
+    blockingJobs === 0
+      ? Promise.resolve()
+      : new Promise<void>((resolve) => {
+          finishBlockingJobs = resolve;
+        });
+
   const worker = async () => {
     while (nextJob < pending.length) {
       const job = pending[nextJob];
       nextJob += 1;
       if (!job) return;
       const [instrumentId, lookup] = job;
-
-      if (options.signal?.aborted) {
-        recordFailure(
-          instrumentId,
-          clientFailure(lookup, "aborted", "证券元数据请求已取消"),
-        );
-        continue;
-      }
-
-      const query = new URLSearchParams({
-        market: lookup.market,
-        symbol: lookup.symbol,
-      });
-      let response: Response;
       try {
-        response = await fetcher(`/api/instruments/resolve?${query}`, {
-          signal: options.signal,
-        });
+        await resolveJob(instrumentId, lookup);
       } catch (error) {
         recordFailure(
           instrumentId,
           clientFailure(
             lookup,
-            options.signal?.aborted ? "aborted" : "request-failed",
+            "request-failed",
             error instanceof Error ? error.message : "证券元数据请求失败",
           ),
         );
-        continue;
+      } finally {
+        if (blockingInstrumentIds.has(instrumentId)) {
+          blockingJobs -= 1;
+          if (blockingJobs === 0) finishBlockingJobs?.();
+        }
       }
-
-      let body: unknown;
-      try {
-        body = await response.json();
-      } catch {
-        recordFailure(
-          instrumentId,
-          clientFailure(lookup, "invalid-response", "证券元数据响应无效"),
-        );
-        continue;
-      }
-      if (!response.ok) {
-        recordFailure(instrumentId, parseFailure(body, lookup));
-        continue;
-      }
-      if (options.signal?.aborted) {
-        recordFailure(
-          instrumentId,
-          clientFailure(lookup, "aborted", "证券元数据请求已取消"),
-        );
-        continue;
-      }
-
-      let record: ResolvedInstrument;
-      try {
-        record = validateResolvedInstrument(body, lookup);
-      } catch {
-        recordFailure(
-          instrumentId,
-          clientFailure(lookup, "invalid-response", "证券元数据响应无效"),
-        );
-        continue;
-      }
-
-      try {
-        await options.repository.put(record);
-      } catch (error) {
-        recordFailure(
-          instrumentId,
-          clientFailure(
-            lookup,
-            "cache-write-failed",
-            error instanceof Error ? error.message : "证券元数据缓存失败",
-          ),
-        );
-        continue;
-      }
-      resolved.set(instrumentId, record);
-      staleInstrumentIds.delete(instrumentId);
-      unresolved.delete(instrumentId);
     }
   };
 
-  await Promise.all(
+  const backgroundRefresh = Promise.all(
     Array.from(
       { length: workerCount(options.concurrency, pending.length) },
       worker,
     ),
+  ).then(
+    () => undefined,
+    () => undefined,
   );
+  await blockingDone;
 
-  return { resolved, unresolved, cacheHits };
+  return { resolved, unresolved, cacheHits, backgroundRefresh };
 }
 
 export async function refreshInstrumentMetadata(

@@ -78,8 +78,13 @@ describe("resolveInstrumentMetadataBatch", () => {
         resolvedAt: "2026-05-01T00:00:00.000Z",
       },
     ]);
-    const fetcher = vi.fn(async () =>
-      Response.json({
+    let releaseRefresh: (() => void) | undefined;
+    const refreshReleased = new Promise<void>((resolve) => {
+      releaseRefresh = resolve;
+    });
+    const fetcher = vi.fn(async () => {
+      await refreshReleased;
+      return Response.json({
         market: "HK",
         symbol: "700",
         name: "腾讯控股",
@@ -87,10 +92,10 @@ describe("resolveInstrumentMetadataBatch", () => {
         source: "hkex",
         confidence: "official",
         resolvedAt: "2026-07-29T12:00:00.000Z",
-      }),
-    );
+      });
+    });
 
-    const result = await resolveInstrumentMetadataBatch(
+    const resolution = resolveInstrumentMetadataBatch(
       [{ market: "HK", symbol: "00700" }],
       {
         repository,
@@ -98,14 +103,29 @@ describe("resolveInstrumentMetadataBatch", () => {
         clock: () => Date.parse("2026-07-29T12:00:00.000Z"),
       },
     );
+    const earlyResult = await Promise.race([
+      resolution,
+      new Promise<"blocked">((resolve) => {
+        setTimeout(() => resolve("blocked"), 100);
+      }),
+    ]);
 
-    expect(result.resolved.get("HK:700")?.name).toBe("腾讯控股");
-    expect(result.cacheHits).toBe(1);
+    expect(earlyResult).not.toBe("blocked");
+    if (earlyResult === "blocked") return;
+    expect(earlyResult.resolved.get("HK:700")?.name).toBe("旧名称");
+    expect(earlyResult.cacheHits).toBe(1);
     expect(fetcher).toHaveBeenCalledOnce();
+    expect(repository.put).not.toHaveBeenCalled();
+
+    releaseRefresh?.();
+    await earlyResult.backgroundRefresh;
+
+    expect(earlyResult.resolved.get("HK:700")?.name).toBe("腾讯控股");
+    expect(earlyResult.cacheHits).toBe(1);
     expect(repository.put).toHaveBeenCalledWith(
       expect.objectContaining({ name: "腾讯控股" }),
     );
-    expect(result.unresolved.size).toBe(0);
+    expect(earlyResult.unresolved.size).toBe(0);
   });
 
   it("retains stale metadata when its bounded refresh fails", async () => {
@@ -120,22 +140,12 @@ describe("resolveInstrumentMetadataBatch", () => {
         resolvedAt: "2026-07-20T00:00:00.000Z",
       },
     ]);
-    const fetcher = vi.fn(async () =>
-      Response.json(
-        {
-          error: {
-            code: "unresolved",
-            attempts: [
-              {
-                source: "nasdaq",
-                code: "no-data",
-                message: "未找到证券",
-              },
-            ],
-          },
-        },
-        { status: 404 },
-      ),
+    let rejectRefresh: ((error: Error) => void) | undefined;
+    const fetcher = vi.fn(
+      () =>
+        new Promise<Response>((_resolve, reject) => {
+          rejectRefresh = reject;
+        }),
     );
 
     const result = await resolveInstrumentMetadataBatch(
@@ -152,6 +162,13 @@ describe("resolveInstrumentMetadataBatch", () => {
     expect(result.cacheHits).toBe(1);
     expect(result.unresolved.size).toBe(0);
     expect(fetcher).toHaveBeenCalledOnce();
+    expect(repository.put).not.toHaveBeenCalled();
+
+    rejectRefresh?.(new Error("offline"));
+    await result.backgroundRefresh;
+
+    expect(result.resolved.get("US:AAPL")?.name).toBe("Cached Apple");
+    expect(result.unresolved.size).toBe(0);
     expect(repository.put).not.toHaveBeenCalled();
   });
 

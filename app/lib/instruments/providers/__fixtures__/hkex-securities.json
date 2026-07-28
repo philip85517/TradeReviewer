@@ -1,0 +1,17 @@
+[
+  {
+    "Stock Code": 700,
+    "Name of Securities": "TENCENT HOLDINGS",
+    "Category": "Equity"
+  },
+  {
+    "Stock Code": "02800",
+    "Name of Securities": "TRACKER FUND OF HONG KONG",
+    "Category": "ETF"
+  },
+  {
+    "Stock Code": "convertible-bond-row",
+    "Name of Securities": "EXAMPLE CONVERTIBLE BOND",
+    "Category": "Debt Securities"
+  }
+]

@@ -1,4 +1,8 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
 import { describe, expect, it, vi } from "vitest";
+import * as XLSX from "xlsx";
 
 import {
   EASTMONEY_BLANK_NAME,
@@ -22,11 +26,25 @@ import {
   TENCENT_SZ_159915,
   TENCENT_US_AAPL,
 } from "./__fixtures__/provider-responses";
+import HKEX_ROWS from "./__fixtures__/hkex-securities.json";
 import {
   EastmoneyMetadataProvider,
   parseEastmoneyMetadata,
 } from "./eastmoney-metadata";
+import {
+  HkexDirectoryProvider,
+  parseHkexRows,
+} from "./hkex-directory";
 import { InstrumentMetadataProviderError } from "./metadata-errors";
+import {
+  type CatalogCache,
+  NasdaqDirectoryProvider,
+  parseNasdaqDirectories,
+} from "./nasdaq-directory";
+import {
+  parseSecCompanyTickers,
+  SecCompanyTickersProvider,
+} from "./sec-company-tickers";
 import {
   parseSinaMetadata,
   SinaMetadataProvider,
@@ -35,6 +53,21 @@ import {
   parseTencentMetadata,
   TencentMetadataProvider,
 } from "./tencent-metadata";
+
+const NASDAQ_LISTED = readFileSync(
+  resolve(
+    process.cwd(),
+    "app/lib/instruments/providers/__fixtures__/nasdaqlisted.txt",
+  ),
+  "utf8",
+);
+const OTHER_LISTED = readFileSync(
+  resolve(
+    process.cwd(),
+    "app/lib/instruments/providers/__fixtures__/otherlisted.txt",
+  ),
+  "utf8",
+);
 
 describe("portal metadata providers", () => {
   it("parses Tencent stock and ETF responses with matching codes", () => {
@@ -389,5 +422,162 @@ describe("portal metadata providers", () => {
       expect(new EastmoneyMetadataProvider().supports(lookup)).toBe(true);
       expect(new SinaMetadataProvider().supports(lookup)).toBe(true);
     }
+  });
+});
+
+describe("official catalog providers", () => {
+  const SEC_COMPANY_TICKERS = {
+    fields: ["cik", "name", "ticker", "exchange"],
+    data: [
+      [320193, "Apple Inc.", "AAPL", "Nasdaq"],
+      [1067983, "Berkshire Hathaway Inc.", "BRK-B", "NYSE"],
+    ],
+  };
+
+  class MemoryCatalogCache implements CatalogCache {
+    readonly entries = new Map<string, Response>();
+
+    async match(key: string) {
+      return this.entries.get(key)?.clone();
+    }
+
+    async put(key: string, response: Response) {
+      this.entries.set(key, response.clone());
+    }
+  }
+
+  function hkexWorkbookBytes() {
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.json_to_sheet(HKEX_ROWS),
+      "List of Securities",
+    );
+    return XLSX.write(workbook, { type: "array", bookType: "xlsx" });
+  }
+
+  it("merges Nasdaq-listed and other-listed stock/ETF rows", () => {
+    const directory = parseNasdaqDirectories(NASDAQ_LISTED, OTHER_LISTED);
+    expect(directory.get("AAPL")).toMatchObject({
+      assetType: "stock",
+      source: "nasdaq",
+    });
+    expect(directory.get("SPY")).toMatchObject({
+      assetType: "etf",
+      source: "nasdaq",
+    });
+    expect(directory.has("ZVZZT")).toBe(false);
+  });
+
+  it("accepts only HK equities and ETFs from the official list", () => {
+    const directory = parseHkexRows(HKEX_ROWS);
+    expect(directory.get("00700")?.assetType).toBe("stock");
+    expect(directory.get("02800")?.assetType).toBe("etf");
+    expect(directory.has("convertible-bond-row")).toBe(false);
+  });
+
+  it("parses SEC company tickers only as stock identities", () => {
+    const directory = parseSecCompanyTickers(SEC_COMPANY_TICKERS);
+    expect(directory.get("AAPL")).toMatchObject({
+      name: "Apple Inc.",
+      assetType: "stock",
+      source: "sec",
+    });
+    expect(
+      [...directory.values()].every(({ assetType }) => assetType === "stock"),
+    ).toBe(true);
+  });
+
+  it("coalesces concurrent Nasdaq downloads and reuses the daily raw cache", async () => {
+    const cache = new MemoryCatalogCache();
+    const fetcher = vi.fn<typeof fetch>(async (input) => {
+      const url = String(input);
+      if (url.endsWith("/nasdaqlisted.txt")) {
+        return new Response(NASDAQ_LISTED);
+      }
+      if (url.endsWith("/otherlisted.txt")) {
+        return new Response(OTHER_LISTED);
+      }
+      return new Response("", { status: 404 });
+    });
+    const now = () => Date.UTC(2026, 6, 29);
+    const first = new NasdaqDirectoryProvider({ cache, fetcher, now });
+    const second = new NasdaqDirectoryProvider({ cache, fetcher, now });
+
+    await expect(
+      Promise.all([
+        first.resolve({ market: "US", symbol: "AAPL" }),
+        second.resolve({ market: "US", symbol: "SPY" }),
+      ]),
+    ).resolves.toEqual([
+      expect.objectContaining({ symbol: "AAPL", assetType: "stock" }),
+      expect.objectContaining({ symbol: "SPY", assetType: "etf" }),
+    ]);
+    await expect(
+      new NasdaqDirectoryProvider({ cache, fetcher, now }).resolve({
+        market: "US",
+        symbol: "QQQ",
+      }),
+    ).resolves.toMatchObject({ symbol: "QQQ", assetType: "etf" });
+
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(cache.entries.size).toBe(2);
+  });
+
+  it("reads HKEX xlsx bytes once for concurrent same-day lookups", async () => {
+    const cache = new MemoryCatalogCache();
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(new Response(hkexWorkbookBytes()));
+    const now = () => Date.UTC(2026, 6, 29);
+
+    await expect(
+      Promise.all([
+        new HkexDirectoryProvider({ cache, fetcher, now }).resolve({
+          market: "HK",
+          symbol: "700",
+        }),
+        new HkexDirectoryProvider({ cache, fetcher, now }).resolve({
+          market: "HK",
+          symbol: "02800",
+        }),
+      ]),
+    ).resolves.toEqual([
+      expect.objectContaining({ symbol: "700", assetType: "stock" }),
+      expect.objectContaining({ symbol: "2800", assetType: "etf" }),
+    ]);
+
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(cache.entries.size).toBe(1);
+  });
+
+  it("identifies SEC requests and refreshes the raw cache after 86400 seconds", async () => {
+    const cache = new MemoryCatalogCache();
+    const fetcher = vi.fn<typeof fetch>(async () =>
+      new Response(JSON.stringify(SEC_COMPANY_TICKERS), {
+          headers: { "content-type": "application/json" },
+      }),
+    );
+    let currentTime = Date.UTC(2026, 6, 29);
+    const provider = new SecCompanyTickersProvider({
+      cache,
+      fetcher,
+      now: () => currentTime,
+    });
+
+    await expect(
+      provider.resolve({ market: "US", symbol: "AAPL" }),
+    ).resolves.toMatchObject({ symbol: "AAPL", assetType: "stock" });
+    await expect(
+      provider.resolve({ market: "US", symbol: "BRK-B" }),
+    ).resolves.toMatchObject({ symbol: "BRK-B", assetType: "stock" });
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(fetcher.mock.calls[0]?.[1]).toMatchObject({
+      headers: expect.objectContaining({ "User-Agent": expect.any(String) }),
+    });
+
+    currentTime += 86_400_000;
+    await provider.resolve({ market: "US", symbol: "AAPL" });
+    expect(fetcher).toHaveBeenCalledTimes(2);
   });
 });

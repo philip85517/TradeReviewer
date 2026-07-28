@@ -1,4 +1,5 @@
 export type TradeSide = "buy" | "sell";
+export type TradeTimePrecision = "second" | "date-only";
 
 export type Instrument = {
   id: string;
@@ -13,7 +14,10 @@ export type TradeExecution = {
   source: {
     platform: string;
     sheet?: string;
+    page?: number;
     row: number;
+    sourceOrder?: number;
+    timePrecision?: TradeTimePrecision;
     fileName?: string;
     fileFingerprint?: string;
     sourceTimestampText?: string;

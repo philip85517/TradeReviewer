@@ -144,4 +144,37 @@ describe("import execution library", () => {
       "阿里巴巴",
     );
   });
+
+  it("preserves date-only source order for same-day executions", () => {
+    const firstSourceRow = execution(
+      "cms:z",
+      "buy",
+      "2026-02-24T07:00:00.000Z",
+      "100",
+    );
+    firstSourceRow.source = {
+      platform: "china-merchants",
+      row: 12,
+      sourceOrder: 0,
+      timePrecision: "date-only",
+    };
+    const secondSourceRow = execution(
+      "cms:a",
+      "sell",
+      "2026-02-24T07:00:00.000Z",
+      "100",
+    );
+    secondSourceRow.source = {
+      platform: "china-merchants",
+      row: 11,
+      sourceOrder: 1,
+      timePrecision: "date-only",
+    };
+
+    expect(
+      mergeExecutions([], [secondSourceRow, firstSourceRow]).map(
+        (item) => item.id,
+      ),
+    ).toEqual(["cms:z", "cms:a"]);
+  });
 });

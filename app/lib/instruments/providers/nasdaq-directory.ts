@@ -62,6 +62,7 @@ export async function loadCatalogFile({
   key,
   now,
   providerLabel,
+  validate,
 }: {
   cache: CatalogCache;
   fetcher: typeof fetch;
@@ -69,12 +70,15 @@ export async function loadCatalogFile({
   key: string;
   now: number;
   providerLabel: string;
+  validate: (bytes: ArrayBuffer) => void;
 }): Promise<LoadedCatalogFile> {
   try {
     const cached = await cache.match(key);
     const loadedAt = Number(cached?.headers.get(LOADED_AT_HEADER));
     if (cached && Number.isFinite(loadedAt) && isFresh(loadedAt, now)) {
-      return { bytes: await cached.arrayBuffer(), loadedAt };
+      const bytes = await cached.arrayBuffer();
+      validate(bytes);
+      return { bytes, loadedAt };
     }
   } catch {
     // A cache outage must not prevent a fresh official catalog request.
@@ -93,6 +97,7 @@ export async function loadCatalogFile({
     return invalidMetadataResponse(`${providerLabel}无法解析`);
   }
 
+  validate(bytes);
   const headers = new Headers(response.headers);
   headers.set(LOADED_AT_HEADER, String(now));
   headers.set("Cache-Control", "public, max-age=86400");
@@ -118,6 +123,41 @@ function parsePipeRows(raw: string): DirectoryRow[] {
         .map((value, index) => [headers[index] ?? "", value.trim()]),
     ),
   );
+}
+
+function validatedPipeRows(
+  raw: string,
+  symbolHeader: "Symbol" | "ACT Symbol",
+): DirectoryRow[] {
+  const [headerLine, ...lines] = raw.split(/\r?\n/u);
+  const headers = new Set(
+    (headerLine ?? "").split("|").map((header) => header.trim()),
+  );
+  const requiredHeaders = [
+    symbolHeader,
+    "Security Name",
+    "Test Issue",
+    "ETF",
+  ];
+  if (
+    requiredHeaders.some((header) => !headers.has(header)) ||
+    !lines.some((line) => line.startsWith("File Creation Time:"))
+  ) {
+    return invalidMetadataResponse("Nasdaq 目录文件结构无效");
+  }
+  const rows = parsePipeRows(raw);
+  if (
+    !rows.some(
+      (row) =>
+        row[symbolHeader]?.trim() &&
+        row["Security Name"]?.trim() &&
+        row["Test Issue"]?.trim().toUpperCase() === "N" &&
+        ["Y", "N"].includes(row.ETF?.trim().toUpperCase()),
+    )
+  ) {
+    return invalidMetadataResponse("Nasdaq 目录文件结构无效");
+  }
+  return rows;
 }
 
 function addNasdaqRows(
@@ -156,13 +196,13 @@ export function parseNasdaqDirectories(
   const directory = new Map<string, ResolvedInstrument>();
   addNasdaqRows(
     directory,
-    parsePipeRows(nasdaqListed),
+    validatedPipeRows(nasdaqListed, "Symbol"),
     "Symbol",
     resolvedAt,
   );
   addNasdaqRows(
     directory,
-    parsePipeRows(otherListed),
+    validatedPipeRows(otherListed, "ACT Symbol"),
     "ACT Symbol",
     resolvedAt,
   );
@@ -207,6 +247,9 @@ async function loadNasdaqDirectory(
         key: NASDAQ_LISTED_URL,
         now: currentTime,
         providerLabel: "Nasdaq 上市证券目录",
+        validate: (bytes) => {
+          validatedPipeRows(new TextDecoder().decode(bytes), "Symbol");
+        },
       }),
       loadCatalogFile({
         cache,
@@ -214,6 +257,9 @@ async function loadNasdaqDirectory(
         key: OTHER_LISTED_URL,
         now: currentTime,
         providerLabel: "Nasdaq 其他上市证券目录",
+        validate: (bytes) => {
+          validatedPipeRows(new TextDecoder().decode(bytes), "ACT Symbol");
+        },
       }),
     ]);
     const loadedAt = Math.min(nasdaqListed.loadedAt, otherListed.loadedAt);

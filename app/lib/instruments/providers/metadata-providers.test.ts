@@ -446,11 +446,13 @@ describe("official catalog providers", () => {
     }
   }
 
-  function hkexWorkbookBytes() {
+  function hkexWorkbookBytes(
+    rows: readonly Record<string, unknown>[] = HKEX_ROWS,
+  ) {
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(
       workbook,
-      XLSX.utils.json_to_sheet(HKEX_ROWS),
+      XLSX.utils.json_to_sheet([...rows]),
       "List of Securities",
     );
     return XLSX.write(workbook, { type: "array", bookType: "xlsx" });
@@ -473,7 +475,9 @@ describe("official catalog providers", () => {
     const directory = parseHkexRows(HKEX_ROWS);
     expect(directory.get("00700")?.assetType).toBe("stock");
     expect(directory.get("02800")?.assetType).toBe("etf");
-    expect(directory.has("convertible-bond-row")).toBe(false);
+    expect(directory.has("04600")).toBe(false);
+    expect(directory.has("07200")).toBe(false);
+    expect(directory.has("04333")).toBe(false);
   });
 
   it("parses SEC company tickers only as stock identities", () => {
@@ -578,6 +582,95 @@ describe("official catalog providers", () => {
 
     currentTime += 86_400_000;
     await provider.resolve({ market: "US", symbol: "AAPL" });
+    expect(fetcher).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not cache malformed Nasdaq 200 responses and retries the download", async () => {
+    const cache = new MemoryCatalogCache();
+    let malformed = true;
+    const fetcher = vi.fn<typeof fetch>(async (input) => {
+      if (malformed) return new Response("<html>challenge</html>");
+      return new Response(
+        String(input).endsWith("/nasdaqlisted.txt")
+          ? NASDAQ_LISTED
+          : OTHER_LISTED,
+      );
+    });
+    const provider = new NasdaqDirectoryProvider({
+      cache,
+      fetcher,
+      now: () => Date.UTC(2026, 6, 29),
+    });
+
+    await expect(
+      provider.resolve({ market: "US", symbol: "AAPL" }),
+    ).rejects.toMatchObject({ code: "invalid-response" });
+    expect(cache.entries.size).toBe(0);
+
+    malformed = false;
+    await expect(
+      provider.resolve({ market: "US", symbol: "AAPL" }),
+    ).resolves.toMatchObject({ symbol: "AAPL", assetType: "stock" });
+    expect(fetcher).toHaveBeenCalledTimes(4);
+  });
+
+  it("does not cache malformed HKEX 200 responses and retries the download", async () => {
+    const cache = new MemoryCatalogCache();
+    let malformed = true;
+    const fetcher = vi.fn<typeof fetch>(async () =>
+      new Response(
+        hkexWorkbookBytes(
+          malformed
+            ? [{ Code: "700", Name: "TENCENT HOLDINGS" }]
+            : HKEX_ROWS,
+        ),
+      ),
+    );
+    const provider = new HkexDirectoryProvider({
+      cache,
+      fetcher,
+      now: () => Date.UTC(2026, 6, 29),
+    });
+
+    await expect(
+      provider.resolve({ market: "HK", symbol: "700" }),
+    ).rejects.toMatchObject({ code: "invalid-response" });
+    expect(cache.entries.size).toBe(0);
+
+    malformed = false;
+    await expect(
+      provider.resolve({ market: "HK", symbol: "700" }),
+    ).resolves.toMatchObject({ symbol: "700", assetType: "stock" });
+    expect(fetcher).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not cache malformed SEC 200 responses and retries the download", async () => {
+    const cache = new MemoryCatalogCache();
+    let malformed = true;
+    const fetcher = vi.fn<typeof fetch>(async () =>
+      new Response(
+        JSON.stringify(
+          malformed
+            ? { fields: ["cik", "name"], data: [[320193, "Apple Inc."]] }
+            : SEC_COMPANY_TICKERS,
+        ),
+      ),
+    );
+    const provider = new SecCompanyTickersProvider({
+      cache,
+      fetcher,
+      now: () => Date.UTC(2026, 6, 29),
+    });
+
+    await expect(
+      provider.resolve({ market: "US", symbol: "AAPL" }),
+    ).rejects.toMatchObject({ code: "invalid-response" });
+    expect(cache.entries.size).toBe(0);
+
+    malformed = false;
+    await expect(
+      provider.resolve({ market: "US", symbol: "AAPL" }),
+    ).resolves.toMatchObject({ symbol: "AAPL", assetType: "stock" });
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
 });

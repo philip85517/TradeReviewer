@@ -31,7 +31,7 @@ const EQUITY_CATEGORIES = new Set([
   "EQUITY SECURITIES (MAIN BOARD)",
   "EQUITY SECURITIES (GEM)",
 ]);
-const ETF_CATEGORIES = new Set([
+const ETF_SUBCATEGORIES = new Set([
   "ETF",
   "EXCHANGE TRADED FUND",
   "EXCHANGE TRADED FUNDS",
@@ -50,10 +50,12 @@ function textField(row: Record<string, unknown>, name: string): string {
     : "";
 }
 
-function categoryAssetType(category: string): InstrumentAssetType | undefined {
-  const normalized = category.trim().toUpperCase();
-  if (EQUITY_CATEGORIES.has(normalized)) return "stock";
-  if (ETF_CATEGORIES.has(normalized)) return "etf";
+function categoryAssetType(
+  category: string,
+  subCategory: string,
+): InstrumentAssetType | undefined {
+  if (ETF_SUBCATEGORIES.has(subCategory.trim().toUpperCase())) return "etf";
+  if (EQUITY_CATEGORIES.has(category.trim().toUpperCase())) return "stock";
   return undefined;
 }
 
@@ -61,13 +63,28 @@ export function parseHkexRows(
   rows: readonly unknown[],
   resolvedAt = new Date().toISOString(),
 ): Map<string, ResolvedInstrument> {
+  if (
+    !rows.some(
+      (value) =>
+        isRecord(value) &&
+        ["Stock Code", "Name of Securities", "Category", "Sub-Category"].every(
+          (header) => Object.prototype.hasOwnProperty.call(value, header),
+        ),
+    )
+  ) {
+    return invalidMetadataResponse("港交所证券目录文件结构无效");
+  }
+
   const directory = new Map<string, ResolvedInstrument>();
   for (const value of rows) {
     if (!isRecord(value)) continue;
 
     const rawCode = textField(value, "Stock Code");
     const name = textField(value, "Name of Securities");
-    const assetType = categoryAssetType(textField(value, "Category"));
+    const assetType = categoryAssetType(
+      textField(value, "Category"),
+      textField(value, "Sub-Category"),
+    );
     if (!/^\d{1,5}$/u.test(rawCode) || !name || !assetType) continue;
 
     const paddedCode = rawCode.padStart(5, "0");
@@ -81,7 +98,29 @@ export function parseHkexRows(
       resolvedAt,
     });
   }
+  if (directory.size === 0) {
+    return invalidMetadataResponse("港交所证券目录文件结构无效");
+  }
   return directory;
+}
+
+function parseHkexWorkbook(
+  bytes: ArrayBuffer,
+  resolvedAt = new Date().toISOString(),
+): Map<string, ResolvedInstrument> {
+  try {
+    const workbook = XLSX.read(bytes, { type: "array" });
+    const firstSheet = workbook.SheetNames[0];
+    if (!firstSheet) invalidMetadataResponse("港交所证券目录无法解析");
+    const worksheet = workbook.Sheets[firstSheet];
+    if (!worksheet) invalidMetadataResponse("港交所证券目录无法解析");
+    return parseHkexRows(
+      XLSX.utils.sheet_to_json(worksheet, { defval: "" }),
+      resolvedAt,
+    );
+  } catch {
+    return invalidMetadataResponse("港交所证券目录无法解析");
+  }
 }
 
 type HkexCatalogState = {
@@ -122,20 +161,12 @@ async function loadHkexDirectory(
       key: HKEX_SECURITIES_URL,
       now: currentTime,
       providerLabel: "港交所证券目录",
+      validate: (bytes) => {
+        parseHkexWorkbook(bytes);
+      },
     });
-    let rows: unknown[];
-    try {
-      const workbook = XLSX.read(file.bytes, { type: "array" });
-      const firstSheet = workbook.SheetNames[0];
-      if (!firstSheet) invalidMetadataResponse("港交所证券目录无法解析");
-      const worksheet = workbook.Sheets[firstSheet];
-      if (!worksheet) invalidMetadataResponse("港交所证券目录无法解析");
-      rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-    } catch {
-      return invalidMetadataResponse("港交所证券目录无法解析");
-    }
-    const directory = parseHkexRows(
-      rows,
+    const directory = parseHkexWorkbook(
+      file.bytes,
       new Date(file.loadedAt).toISOString(),
     );
     state.snapshot = { loadedAt: file.loadedAt, value: directory };

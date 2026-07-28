@@ -32,7 +32,7 @@ export function parseSecCompanyTickers(
 ): Map<string, ResolvedInstrument> {
   const directory = new Map<string, ResolvedInstrument>();
   if (!isRecord(value) || !Array.isArray(value.fields) || !Array.isArray(value.data)) {
-    return directory;
+    return invalidMetadataResponse("SEC 公司代码目录文件结构无效");
   }
 
   const fields = value.fields.map((field) =>
@@ -41,7 +41,9 @@ export function parseSecCompanyTickers(
   const tickerIndex = fields.indexOf("ticker");
   const nameIndex = fields.indexOf("name");
   const exchangeIndex = fields.indexOf("exchange");
-  if (tickerIndex < 0 || nameIndex < 0 || exchangeIndex < 0) return directory;
+  if (tickerIndex < 0 || nameIndex < 0 || exchangeIndex < 0) {
+    return invalidMetadataResponse("SEC 公司代码目录文件结构无效");
+  }
 
   for (const rawRow of value.data) {
     if (!Array.isArray(rawRow)) continue;
@@ -69,7 +71,23 @@ export function parseSecCompanyTickers(
       resolvedAt,
     });
   }
+  if (directory.size === 0) {
+    return invalidMetadataResponse("SEC 公司代码目录文件结构无效");
+  }
   return directory;
+}
+
+function parseSecCompanyTickerBytes(
+  bytes: ArrayBuffer,
+  resolvedAt = new Date().toISOString(),
+): Map<string, ResolvedInstrument> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(new TextDecoder().decode(bytes));
+  } catch {
+    return invalidMetadataResponse("SEC 公司代码目录无法解析");
+  }
+  return parseSecCompanyTickers(parsed, resolvedAt);
 }
 
 type SecCatalogState = {
@@ -111,15 +129,12 @@ async function loadSecDirectory(
       key: SEC_COMPANY_TICKERS_URL,
       now: currentTime,
       providerLabel: "SEC 公司代码目录",
+      validate: (bytes) => {
+        parseSecCompanyTickerBytes(bytes);
+      },
     });
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(new TextDecoder().decode(file.bytes));
-    } catch {
-      return invalidMetadataResponse("SEC 公司代码目录无法解析");
-    }
-    const directory = parseSecCompanyTickers(
-      parsed,
+    const directory = parseSecCompanyTickerBytes(
+      file.bytes,
       new Date(file.loadedAt).toISOString(),
     );
     state.snapshot = { loadedAt: file.loadedAt, value: directory };

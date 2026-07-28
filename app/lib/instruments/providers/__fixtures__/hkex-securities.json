@@ -2,16 +2,31 @@
   {
     "Stock Code": 700,
     "Name of Securities": "TENCENT HOLDINGS",
-    "Category": "Equity"
+    "Category": "Equity",
+    "Sub-Category": "Equity"
   },
   {
     "Stock Code": "02800",
     "Name of Securities": "TRACKER FUND OF HONG KONG",
-    "Category": "ETF"
+    "Category": "Exchange Traded Products",
+    "Sub-Category": "Exchange Traded Funds"
   },
   {
-    "Stock Code": "convertible-bond-row",
+    "Stock Code": "04600",
     "Name of Securities": "EXAMPLE CONVERTIBLE BOND",
-    "Category": "Debt Securities"
+    "Category": "Debt Securities",
+    "Sub-Category": "Convertible Bonds"
+  },
+  {
+    "Stock Code": "07200",
+    "Name of Securities": "EXAMPLE LEVERAGED PRODUCT",
+    "Category": "Exchange Traded Products",
+    "Sub-Category": "Leveraged and Inverse Products"
+  },
+  {
+    "Stock Code": "04333",
+    "Name of Securities": "EXAMPLE CLOSED-ENDED FUND",
+    "Category": "Investment Products",
+    "Sub-Category": "Closed-ended Fund"
   }
 ]

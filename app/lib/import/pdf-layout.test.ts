@@ -20,20 +20,34 @@ describe("PDF table layout helpers", () => {
     ]);
   });
 
+  it("orders canvas-coordinate rows from visual top to bottom", () => {
+    const rows = groupItemsIntoRows(
+      [
+        { text: "页脚", x: 20, y: 700, width: 30, height: 10 },
+        { text: "表头", x: 20, y: 100, width: 30, height: 10 },
+      ],
+      1,
+    );
+
+    expect(rows.map((row) => row.items[0].text)).toEqual(["表头", "页脚"]);
+  });
+
   it("assigns wrapped items to stable table columns", () => {
     const [row] = groupItemsIntoRows(
       [
-        { text: "小米集团-W", x: 20, y: 500, width: 80, height: 10 },
-        { text: "01810", x: 20, y: 490, width: 35, height: 10 },
-        { text: "开仓做空", x: 220, y: 500, width: 60, height: 10 },
-        { text: "-800", x: 380, y: 500, width: 30, height: 10 },
+        { text: "小米", x: 20, y: 490, width: 45, height: 10 },
+        { text: "集团-W", x: 80, y: 490, width: 55, height: 10 },
+        { text: "01810", x: 20, y: 500, width: 35, height: 10 },
+        { text: "开仓", x: 220, y: 490, width: 30, height: 10 },
+        { text: "做空", x: 260, y: 490, width: 30, height: 10 },
+        { text: "-800", x: 380, y: 490, width: 30, height: 10 },
       ],
       12,
     );
 
     expect(cellsForColumns(row, [0, 200, 350, 500])).toEqual([
-      "小米集团-W 01810",
-      "开仓做空",
+      "小米 集团-W 01810",
+      "开仓 做空",
       "-800",
     ]);
   });

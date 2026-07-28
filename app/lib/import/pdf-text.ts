@@ -1,6 +1,8 @@
 export type PdfTextItem = {
   text: string;
+  /** Canvas-space horizontal position measured from the visual left. */
   x: number;
+  /** Canvas-space baseline measured from the visual top. */
   y: number;
   width: number;
   height: number;
@@ -22,9 +24,9 @@ export async function extractPdfPages(input: ArrayBuffer): Promise<PdfTextPage[]
   ).toString();
 
   const loadingTask = pdfjs.getDocument({ data: new Uint8Array(input) });
-  const document = await loadingTask.promise;
 
   try {
+    const document = await loadingTask.promise;
     const pages: PdfTextPage[] = [];
 
     for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {

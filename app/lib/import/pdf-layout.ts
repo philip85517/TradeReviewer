@@ -1,9 +1,49 @@
 import type { PdfTextItem } from "./pdf-text";
 
 export type PdfTextRow = {
+  /** Canvas-space baseline; smaller values are visually nearer the page top. */
   y: number;
   items: PdfTextItem[];
 };
+
+function visualLineTolerance(items: readonly PdfTextItem[]): number {
+  const positiveHeights = items
+    .map((item) => item.height)
+    .filter((height) => Number.isFinite(height) && height > 0);
+  const smallestHeight =
+    positiveHeights.length > 0 ? Math.min(...positiveHeights) : 4;
+
+  return Math.max(0.5, smallestHeight / 4);
+}
+
+function itemsInVisualOrder(items: readonly PdfTextItem[]): PdfTextItem[] {
+  const tolerance = visualLineTolerance(items);
+  const lines: Array<{
+    y: number;
+    yTotal: number;
+    items: PdfTextItem[];
+  }> = [];
+
+  for (const item of [...items].sort(
+    (left, right) => left.y - right.y || left.x - right.x,
+  )) {
+    const line = lines.find(
+      (candidate) => Math.abs(candidate.y - item.y) <= tolerance,
+    );
+
+    if (line) {
+      line.items.push(item);
+      line.yTotal += item.y;
+      line.y = line.yTotal / line.items.length;
+    } else {
+      lines.push({ y: item.y, yTotal: item.y, items: [item] });
+    }
+  }
+
+  return lines.flatMap((line) =>
+    line.items.sort((left, right) => left.x - right.x),
+  );
+}
 
 export function groupItemsIntoRows(
   items: readonly PdfTextItem[],
@@ -15,7 +55,7 @@ export function groupItemsIntoRows(
 
   const rows: Array<PdfTextRow & { yTotal: number }> = [];
   const orderedItems = [...items].sort(
-    (left, right) => right.y - left.y || left.x - right.x,
+    (left, right) => left.y - right.y || left.x - right.x,
   );
 
   for (const item of orderedItems) {
@@ -32,9 +72,7 @@ export function groupItemsIntoRows(
 
   return rows.map(({ y, items: rowItems }) => ({
     y,
-    items: rowItems.sort(
-      (left, right) => left.x - right.x || right.y - left.y,
-    ),
+    items: itemsInVisualOrder(rowItems),
   }));
 }
 
@@ -55,7 +93,7 @@ export function cellsForColumns(
 
   const cells = Array.from({ length: boundaries.length - 1 }, () => [] as string[]);
 
-  for (const item of row.items) {
+  for (const item of itemsInVisualOrder(row.items)) {
     const columnIndex = boundaries.findIndex(
       (boundary, index) =>
         index < boundaries.length - 1 &&

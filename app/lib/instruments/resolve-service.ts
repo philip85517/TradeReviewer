@@ -23,10 +23,15 @@ type ResolveOptions = {
   concurrency?: number;
   forceRefresh?: boolean;
   signal?: AbortSignal;
+  clock?: () => number;
 };
 
 type ProviderSource = Exclude<InstrumentMetadataSource, "statement">;
 
+const DAY_MS = 86_400_000;
+const OFFICIAL_METADATA_TTL_MS = DAY_MS;
+const PORTAL_METADATA_TTL_MS = 30 * DAY_MS;
+const STATEMENT_METADATA_TTL_MS = 365 * DAY_MS;
 const PROVIDER_SOURCES = new Set<ProviderSource>([
   "nasdaq",
   "sec",
@@ -118,6 +123,33 @@ function workerCount(concurrency: number | undefined, jobs: number) {
   return Math.min(jobs, Math.max(1, requested));
 }
 
+function metadataTtl(record: ResolvedInstrument) {
+  if (
+    record.source === "statement" ||
+    record.confidence === "statement"
+  ) {
+    return STATEMENT_METADATA_TTL_MS;
+  }
+  if (
+    record.source === "nasdaq" ||
+    record.source === "sec" ||
+    record.source === "hkex" ||
+    record.confidence === "official"
+  ) {
+    return OFFICIAL_METADATA_TTL_MS;
+  }
+  return PORTAL_METADATA_TTL_MS;
+}
+
+function isFreshMetadata(record: ResolvedInstrument, now: number) {
+  const resolvedAt = Date.parse(record.resolvedAt);
+  return (
+    Number.isFinite(resolvedAt) &&
+    resolvedAt <= now &&
+    now - resolvedAt < metadataTtl(record)
+  );
+}
+
 export async function resolveInstrumentMetadataBatch(
   lookups: InstrumentLookup[],
   options: ResolveOptions,
@@ -134,6 +166,8 @@ export async function resolveInstrumentMetadataBatch(
 
   const resolved = new Map<string, ResolvedInstrument>();
   const unresolved = new Map<string, InstrumentMetadataFailure>();
+  const staleInstrumentIds = new Set<string>();
+  const now = (options.clock ?? Date.now)();
   let cacheHits = 0;
   let pending = [...uniqueLookups.entries()];
 
@@ -146,12 +180,12 @@ export async function resolveInstrumentMetadataBatch(
         const record = cached.get(instrumentId);
         if (!record) return true;
         try {
-          resolved.set(
-            instrumentId,
-            validateResolvedInstrument(record, lookup),
-          );
+          const validated = validateResolvedInstrument(record, lookup);
+          resolved.set(instrumentId, validated);
           cacheHits += 1;
-          return false;
+          if (isFreshMetadata(validated, now)) return false;
+          staleInstrumentIds.add(instrumentId);
+          return true;
         } catch {
           return true;
         }
@@ -162,6 +196,14 @@ export async function resolveInstrumentMetadataBatch(
   }
 
   let nextJob = 0;
+  const recordFailure = (
+    instrumentId: string,
+    failure: InstrumentMetadataFailure,
+  ) => {
+    if (!staleInstrumentIds.has(instrumentId)) {
+      unresolved.set(instrumentId, failure);
+    }
+  };
   const worker = async () => {
     while (nextJob < pending.length) {
       const job = pending[nextJob];
@@ -170,7 +212,7 @@ export async function resolveInstrumentMetadataBatch(
       const [instrumentId, lookup] = job;
 
       if (options.signal?.aborted) {
-        unresolved.set(
+        recordFailure(
           instrumentId,
           clientFailure(lookup, "aborted", "证券元数据请求已取消"),
         );
@@ -187,7 +229,7 @@ export async function resolveInstrumentMetadataBatch(
           signal: options.signal,
         });
       } catch (error) {
-        unresolved.set(
+        recordFailure(
           instrumentId,
           clientFailure(
             lookup,
@@ -202,18 +244,18 @@ export async function resolveInstrumentMetadataBatch(
       try {
         body = await response.json();
       } catch {
-        unresolved.set(
+        recordFailure(
           instrumentId,
           clientFailure(lookup, "invalid-response", "证券元数据响应无效"),
         );
         continue;
       }
       if (!response.ok) {
-        unresolved.set(instrumentId, parseFailure(body, lookup));
+        recordFailure(instrumentId, parseFailure(body, lookup));
         continue;
       }
       if (options.signal?.aborted) {
-        unresolved.set(
+        recordFailure(
           instrumentId,
           clientFailure(lookup, "aborted", "证券元数据请求已取消"),
         );
@@ -224,7 +266,7 @@ export async function resolveInstrumentMetadataBatch(
       try {
         record = validateResolvedInstrument(body, lookup);
       } catch {
-        unresolved.set(
+        recordFailure(
           instrumentId,
           clientFailure(lookup, "invalid-response", "证券元数据响应无效"),
         );
@@ -234,7 +276,7 @@ export async function resolveInstrumentMetadataBatch(
       try {
         await options.repository.put(record);
       } catch (error) {
-        unresolved.set(
+        recordFailure(
           instrumentId,
           clientFailure(
             lookup,
@@ -245,6 +287,8 @@ export async function resolveInstrumentMetadataBatch(
         continue;
       }
       resolved.set(instrumentId, record);
+      staleInstrumentIds.delete(instrumentId);
+      unresolved.delete(instrumentId);
     }
   };
 

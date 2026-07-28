@@ -34,7 +34,7 @@ function memoryRepository(seed: ResolvedInstrument[] = []) {
 }
 
 describe("resolveInstrumentMetadataBatch", () => {
-  it("returns cached records without network requests", async () => {
+  it("returns fresh cached portal records without network requests", async () => {
     const fetcher = vi.fn();
     const seededRepository = memoryRepository([
       {
@@ -42,9 +42,9 @@ describe("resolveInstrumentMetadataBatch", () => {
         symbol: "700",
         name: "腾讯控股",
         assetType: "stock",
-        source: "hkex",
-        confidence: "official",
-        resolvedAt: "2026-07-29T00:00:00.000Z",
+        source: "tencent",
+        confidence: "portal",
+        resolvedAt: "2026-07-10T00:00:00.000Z",
       },
     ]);
 
@@ -53,12 +53,106 @@ describe("resolveInstrumentMetadataBatch", () => {
         { market: "HK", symbol: "700" },
         { market: "HK", symbol: "00700" },
       ],
-      { repository: seededRepository, fetcher, concurrency: 3 },
+      {
+        repository: seededRepository,
+        fetcher,
+        concurrency: 3,
+        clock: () => Date.parse("2026-07-29T12:00:00.000Z"),
+      },
     );
 
     expect(result.resolved.size).toBe(1);
     expect(result.cacheHits).toBe(1);
     expect(fetcher).not.toHaveBeenCalled();
+  });
+
+  it("refreshes stale portal metadata and replaces the cached result", async () => {
+    const repository = memoryRepository([
+      {
+        market: "HK",
+        symbol: "700",
+        name: "旧名称",
+        assetType: "stock",
+        source: "tencent",
+        confidence: "portal",
+        resolvedAt: "2026-05-01T00:00:00.000Z",
+      },
+    ]);
+    const fetcher = vi.fn(async () =>
+      Response.json({
+        market: "HK",
+        symbol: "700",
+        name: "腾讯控股",
+        assetType: "stock",
+        source: "hkex",
+        confidence: "official",
+        resolvedAt: "2026-07-29T12:00:00.000Z",
+      }),
+    );
+
+    const result = await resolveInstrumentMetadataBatch(
+      [{ market: "HK", symbol: "00700" }],
+      {
+        repository,
+        fetcher,
+        clock: () => Date.parse("2026-07-29T12:00:00.000Z"),
+      },
+    );
+
+    expect(result.resolved.get("HK:700")?.name).toBe("腾讯控股");
+    expect(result.cacheHits).toBe(1);
+    expect(fetcher).toHaveBeenCalledOnce();
+    expect(repository.put).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "腾讯控股" }),
+    );
+    expect(result.unresolved.size).toBe(0);
+  });
+
+  it("retains stale metadata when its bounded refresh fails", async () => {
+    const repository = memoryRepository([
+      {
+        market: "US",
+        symbol: "AAPL",
+        name: "Cached Apple",
+        assetType: "stock",
+        source: "nasdaq",
+        confidence: "official",
+        resolvedAt: "2026-07-20T00:00:00.000Z",
+      },
+    ]);
+    const fetcher = vi.fn(async () =>
+      Response.json(
+        {
+          error: {
+            code: "unresolved",
+            attempts: [
+              {
+                source: "nasdaq",
+                code: "no-data",
+                message: "未找到证券",
+              },
+            ],
+          },
+        },
+        { status: 404 },
+      ),
+    );
+
+    const result = await resolveInstrumentMetadataBatch(
+      [{ market: "US", symbol: "AAPL" }],
+      {
+        repository,
+        fetcher,
+        concurrency: 1,
+        clock: () => Date.parse("2026-07-29T12:00:00.000Z"),
+      },
+    );
+
+    expect(result.resolved.get("US:AAPL")?.name).toBe("Cached Apple");
+    expect(result.cacheHits).toBe(1);
+    expect(result.unresolved.size).toBe(0);
+    expect(fetcher).toHaveBeenCalledOnce();
+    expect(repository.put).not.toHaveBeenCalled();
   });
 
   it("deduplicates lookups, caps concurrency, and caches successes", async () => {

@@ -22,7 +22,10 @@ type ProviderOverrides = Partial<
 >;
 
 export type InstrumentMetadataRouter = {
-  resolve(lookup: InstrumentLookup): Promise<ResolvedInstrument>;
+  resolve(
+    lookup: InstrumentLookup,
+    signal?: AbortSignal,
+  ): Promise<ResolvedInstrument>;
 };
 
 const ERROR_PRIORITY: readonly InstrumentMetadataProviderErrorCode[] = [
@@ -99,6 +102,17 @@ function selectedErrorCode(
   );
 }
 
+function throwIfChainAborted(signal?: AbortSignal) {
+  if (!signal?.aborted) return;
+  throw (
+    signal.reason ??
+    new InstrumentMetadataProviderError(
+      "source-timeout",
+      "证券元数据请求已终止",
+    )
+  );
+}
+
 export function createMetadataRouter(
   fetcher: typeof fetch = fetch,
   clock: () => number = Date.now,
@@ -111,17 +125,20 @@ export function createMetadataRouter(
   };
 
   return {
-    async resolve(lookup) {
+    async resolve(lookup, signal) {
       const attempts: InstrumentMetadataFailure["attempts"] = [];
       for (const provider of providers[lookup.market]) {
+        throwIfChainAborted(signal);
         if (!provider.supports(lookup)) continue;
         let resolved: ResolvedInstrument;
         try {
           resolved = await provider.resolve(lookup, fetcher);
         } catch (error) {
+          throwIfChainAborted(signal);
           attempts.push(safeAttempt(provider, error));
           continue;
         }
+        throwIfChainAborted(signal);
         try {
           return validateResolvedInstrument(resolved, lookup);
         } catch {

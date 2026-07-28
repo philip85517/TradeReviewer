@@ -11,7 +11,10 @@ import {
 const CACHE_CONTROL = "public, max-age=21600, stale-while-revalidate=86400";
 const REQUEST_TIMEOUT_MS = 12_000;
 const MAX_REQUESTS_PER_MINUTE = 30;
-const requestsByClient = new Map<string, number[]>();
+const requestsByClient = new Map<
+  string,
+  { windowStartedAt: number; acceptedRequests: number }
+>();
 
 function json(body: unknown, status = 200) {
   return Response.json(body, {
@@ -31,16 +34,27 @@ function clientId(request: Request) {
 function isRateLimited(request: Request) {
   const key = clientId(request);
   const now = Date.now();
-  const recent = (requestsByClient.get(key) ?? []).filter(
-    (timestamp) => now - timestamp < 60_000,
-  );
-  recent.push(now);
-  requestsByClient.set(key, recent);
+  const current = requestsByClient.get(key);
+  if (
+    !current ||
+    now < current.windowStartedAt ||
+    now - current.windowStartedAt >= 60_000
+  ) {
+    requestsByClient.set(key, {
+      windowStartedAt: now,
+      acceptedRequests: 1,
+    });
+  } else if (current.acceptedRequests >= MAX_REQUESTS_PER_MINUTE) {
+    return true;
+  } else {
+    current.acceptedRequests += 1;
+  }
+
   if (requestsByClient.size > 1_000) {
     const oldestKey = requestsByClient.keys().next().value;
     if (typeof oldestKey === "string") requestsByClient.delete(oldestKey);
   }
-  return recent.length > MAX_REQUESTS_PER_MINUTE;
+  return false;
 }
 
 function errorStatus(code: string) {
@@ -96,16 +110,15 @@ export async function GET(request: Request) {
 
   try {
     const result = await Promise.race([
-      createMetadataRouter(providerFetch).resolve(lookup),
+      createMetadataRouter(providerFetch).resolve(lookup, controller.signal),
       new Promise<never>((_, reject) => {
         timeout = setTimeout(() => {
-          controller.abort();
-          reject(
-            new InstrumentMetadataProviderError(
-              "source-timeout",
-              "证券元数据请求超时",
-            ),
+          const timeoutError = new InstrumentMetadataProviderError(
+            "source-timeout",
+            "证券元数据请求超时",
           );
+          controller.abort(timeoutError);
+          reject(timeoutError);
         }, REQUEST_TIMEOUT_MS);
       }),
     ]);

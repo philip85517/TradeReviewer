@@ -92,6 +92,29 @@ describe("instrument metadata router", () => {
     });
   });
 
+  it("stops before a later provider when the resolver chain is aborted", async () => {
+    const controller = new AbortController();
+    const timeoutError = new InstrumentMetadataProviderError(
+      "source-timeout",
+      "证券元数据请求超时",
+    );
+    const laterProvider = vi.fn(async () => RESOLVED);
+    const router = createMetadataRouter(fetch, Date.now, {
+      US: [
+        provider("nasdaq", async () => {
+          controller.abort(timeoutError);
+          throw timeoutError;
+        }),
+        provider("tencent", laterProvider),
+      ],
+    });
+
+    await expect(
+      router.resolve(LOOKUP, controller.signal),
+    ).rejects.toBe(timeoutError);
+    expect(laterProvider).not.toHaveBeenCalled();
+  });
+
   it("returns every failed attempt without exposing provider response bodies", async () => {
     const rawBody = "<html>private upstream body</html>";
     const router = createMetadataRouter(fetch, Date.now, {

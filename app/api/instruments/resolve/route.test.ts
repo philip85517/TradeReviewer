@@ -51,7 +51,10 @@ describe("GET /api/instruments/resolve", () => {
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual(SUCCESS);
-    expect(resolve).toHaveBeenCalledWith({ market: "HK", symbol: "700" });
+    expect(resolve).toHaveBeenCalledWith(
+      { market: "HK", symbol: "700" },
+      expect.any(AbortSignal),
+    );
   });
 
   it("rejects invalid requests before resolving metadata", async () => {
@@ -139,11 +142,42 @@ describe("GET /api/instruments/resolve", () => {
     expect(resolve).toHaveBeenCalledTimes(30);
   });
 
+  it("does not let sustained rejected requests consume the next rate-limit window", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-29T00:00:00.000Z"));
+    resolve.mockResolvedValue(SUCCESS);
+    const request = () =>
+      GET(
+        new Request(
+          "http://localhost/api/instruments/resolve?market=HK&symbol=700",
+          { headers: { "x-forwarded-for": "198.51.100.7" } },
+        ),
+      );
+
+    for (let index = 0; index < 30; index += 1) {
+      expect((await request()).status).toBe(200);
+    }
+    vi.setSystemTime(new Date("2026-07-29T00:00:30.000Z"));
+    for (let index = 0; index < 100; index += 1) {
+      expect((await request()).status).toBe(429);
+    }
+    vi.setSystemTime(new Date("2026-07-29T00:01:00.001Z"));
+
+    expect((await request()).status).toBe(200);
+    expect(resolve).toHaveBeenCalledTimes(31);
+  });
+
   it("aborts the full provider chain after twelve seconds", async () => {
     vi.useFakeTimers();
-    resolve.mockImplementation(
-      () => new Promise(() => undefined),
-    );
+    let chainSignal: AbortSignal | undefined;
+    resolve.mockImplementation((_lookup, signal: AbortSignal) => {
+      chainSignal = signal;
+      return new Promise((_resolve, reject) => {
+        signal.addEventListener("abort", () => reject(signal.reason), {
+          once: true,
+        });
+      });
+    });
 
     const responsePromise = GET(
       new Request(
@@ -158,6 +192,7 @@ describe("GET /api/instruments/resolve", () => {
     expect(await response.json()).toMatchObject({
       error: { code: "source-timeout" },
     });
+    expect(chainSignal?.aborted).toBe(true);
   });
 
   it("adds public transient caching only to successful responses", async () => {

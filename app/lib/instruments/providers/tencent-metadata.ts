@@ -1,6 +1,5 @@
 import { canonicalInstrumentSymbol } from "../display-name";
 import {
-  validateResolvedInstrument,
   type InstrumentAssetType,
   type InstrumentLookup,
   type ResolvedInstrument,
@@ -10,6 +9,7 @@ import {
   invalidMetadataResponse,
   noMetadata,
   requestMetadataResponse,
+  validateProviderMetadataResult,
   type InstrumentMetadataProvider,
 } from "./metadata-errors";
 
@@ -83,7 +83,7 @@ export function parseTencentMetadata(
   const assetType = assetTypeFromTencentFields(fields);
   if (!assetType) noMetadata("腾讯证券元数据缺少资产类型证据");
 
-  return validateResolvedInstrument(
+  return validateProviderMetadataResult(
     {
       ...lookup,
       name,
@@ -93,6 +93,7 @@ export function parseTencentMetadata(
       resolvedAt: new Date().toISOString(),
     },
     lookup,
+    "腾讯证券元数据",
   );
 }
 
@@ -119,7 +120,7 @@ export class TencentMetadataProvider implements InstrumentMetadataProvider {
       const charset =
         /charset\s*=\s*["']?([^;"'\s]+)/iu.exec(
           response.headers.get("content-type") ?? "",
-        )?.[1] ?? "gbk";
+        )?.[1] ?? "gb18030";
       text = new TextDecoder(charset).decode(await response.arrayBuffer());
     } catch {
       throw new InstrumentMetadataProviderError(

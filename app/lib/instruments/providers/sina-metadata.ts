@@ -1,7 +1,6 @@
 import { classifyExchangeTradedAsset } from "../asset-classification";
 import { canonicalInstrumentSymbol } from "../display-name";
 import {
-  validateResolvedInstrument,
   type InstrumentLookup,
   type ResolvedInstrument,
 } from "../metadata-contracts";
@@ -10,6 +9,7 @@ import {
   invalidMetadataResponse,
   noMetadata,
   requestMetadataResponse,
+  validateProviderMetadataResult,
   type InstrumentMetadataProvider,
 } from "./metadata-errors";
 
@@ -50,7 +50,7 @@ export function parseSinaMetadata(
   const assetType = classifyExchangeTradedAsset(lookup, name);
   if (!assetType) noMetadata("新浪证券元数据缺少资产类型证据");
 
-  return validateResolvedInstrument(
+  return validateProviderMetadataResult(
     {
       ...lookup,
       name,
@@ -60,6 +60,7 @@ export function parseSinaMetadata(
       resolvedAt: new Date().toISOString(),
     },
     lookup,
+    "新浪证券元数据",
   );
 }
 
@@ -85,7 +86,11 @@ export class SinaMetadataProvider implements InstrumentMetadataProvider {
 
     let text: string;
     try {
-      text = await response.text();
+      const charset =
+        /charset\s*=\s*["']?([^;"'\s]+)/iu.exec(
+          response.headers.get("content-type") ?? "",
+        )?.[1] ?? "gb18030";
+      text = new TextDecoder(charset).decode(await response.arrayBuffer());
     } catch {
       throw new InstrumentMetadataProviderError(
         "invalid-response",

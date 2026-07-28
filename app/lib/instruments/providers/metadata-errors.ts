@@ -1,7 +1,8 @@
-import type {
-  InstrumentLookup,
-  InstrumentMetadataSource,
-  ResolvedInstrument,
+import {
+  validateResolvedInstrument,
+  type InstrumentLookup,
+  type InstrumentMetadataSource,
+  type ResolvedInstrument,
 } from "../metadata-contracts";
 
 export type InstrumentMetadataProviderErrorCode =
@@ -83,4 +84,17 @@ export function invalidMetadataResponse(message: string): never {
 
 export function noMetadata(message: string): never {
   throw new InstrumentMetadataProviderError("no-data", message);
+}
+
+export function validateProviderMetadataResult(
+  value: unknown,
+  lookup: InstrumentLookup,
+  providerLabel: string,
+): ResolvedInstrument {
+  try {
+    return validateResolvedInstrument(value, lookup);
+  } catch (error) {
+    if (error instanceof InstrumentMetadataProviderError) throw error;
+    return invalidMetadataResponse(`${providerLabel}响应无效`);
+  }
 }

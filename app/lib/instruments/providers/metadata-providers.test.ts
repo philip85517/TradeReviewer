@@ -2,15 +2,23 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   EASTMONEY_BLANK_NAME,
+  EASTMONEY_HK_700,
+  EASTMONEY_NAME_IS_CODE,
   EASTMONEY_NO_DATA,
+  EASTMONEY_SH_510300,
   EASTMONEY_SH_600519,
   EASTMONEY_SZ_159915,
   EASTMONEY_US_BABA,
+  EASTMONEY_WRONG_MARKET_600519,
   SINA_OTHER_CODE,
+  SINA_NAME_IS_CODE,
   SINA_SH_600519,
   SINA_SH_600519_ASCII,
+  SINA_SH_600519_GB18030,
   TENCENT_BLANK_NAME,
   TENCENT_HK_700,
+  TENCENT_HK_700_GB18030,
+  TENCENT_NAME_IS_CODE,
   TENCENT_SZ_159915,
   TENCENT_US_AAPL,
 } from "./__fixtures__/provider-responses";
@@ -44,7 +52,7 @@ describe("portal metadata providers", () => {
     ).toMatchObject({ name: "创业板ETF易方达", assetType: "etf" });
   });
 
-  it("uses Eastmoney type evidence or the audited A-share classifier", () => {
+  it("uses the audited A-share classifier for Eastmoney responses", () => {
     expect(
       parseEastmoneyMetadata(EASTMONEY_SH_600519, {
         market: "CN-SH",
@@ -59,6 +67,54 @@ describe("portal metadata providers", () => {
     ).toMatchObject({ name: "创业板ETF易方达", assetType: "etf" });
   });
 
+  it("classifies Shanghai ETFs from the audited A-share classifier", () => {
+    expect(
+      parseEastmoneyMetadata(EASTMONEY_SH_510300, {
+        market: "CN-SH",
+        symbol: "510300",
+      }),
+    ).toMatchObject({ name: "沪深300ETF", assetType: "etf" });
+  });
+
+  it("rejects an Eastmoney response from the wrong market", () => {
+    expect(() =>
+      parseEastmoneyMetadata(
+        EASTMONEY_WRONG_MARKET_600519,
+        { market: "CN-SH", symbol: "600519" },
+        "1",
+      ),
+    ).toThrowError(
+      expect.objectContaining<Partial<InstrumentMetadataProviderError>>({
+        code: "invalid-response",
+      }),
+    );
+  });
+
+  it("returns no-data for Eastmoney HK and US responses without type evidence", () => {
+    expect(() =>
+      parseEastmoneyMetadata(
+        EASTMONEY_HK_700,
+        { market: "HK", symbol: "700" },
+        "116",
+      ),
+    ).toThrowError(
+      expect.objectContaining<Partial<InstrumentMetadataProviderError>>({
+        code: "no-data",
+      }),
+    );
+    expect(() =>
+      parseEastmoneyMetadata(
+        EASTMONEY_US_BABA,
+        { market: "US", symbol: "BABA" },
+        "106",
+      ),
+    ).toThrowError(
+      expect.objectContaining<Partial<InstrumentMetadataProviderError>>({
+        code: "no-data",
+      }),
+    );
+  });
+
   it("uses the audited A-share classifier for Sina responses", () => {
     expect(
       parseSinaMetadata(SINA_SH_600519, {
@@ -66,6 +122,19 @@ describe("portal metadata providers", () => {
         symbol: "600519",
       }),
     ).toMatchObject({ name: "贵州茅台", assetType: "stock" });
+  });
+
+  it("decodes Sina response bytes as GB18030 by default", async () => {
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(new Response(SINA_SH_600519_GB18030));
+
+    await expect(
+      new SinaMetadataProvider().resolve(
+        { market: "CN-SH", symbol: "600519" },
+        fetcher,
+      ),
+    ).resolves.toMatchObject({ name: "㐀科技", assetType: "stock" });
   });
 
   it("rejects HTML, blank names, and code mismatches", () => {
@@ -93,6 +162,35 @@ describe("portal metadata providers", () => {
         symbol: "AAPL",
       }),
     ).toThrow("代码不匹配");
+  });
+
+  it("maps final result validation failures to invalid-response", () => {
+    const invalidResults = [
+      () =>
+        parseTencentMetadata(TENCENT_NAME_IS_CODE, {
+          market: "HK",
+          symbol: "700",
+        }),
+      () =>
+        parseEastmoneyMetadata(
+          EASTMONEY_NAME_IS_CODE,
+          { market: "CN-SH", symbol: "600519" },
+          "1",
+        ),
+      () =>
+        parseSinaMetadata(SINA_NAME_IS_CODE, {
+          market: "CN-SH",
+          symbol: "600519",
+        }),
+    ];
+
+    for (const parse of invalidResults) {
+      expect(parse).toThrowError(
+        expect.objectContaining<Partial<InstrumentMetadataProviderError>>({
+          code: "invalid-response",
+        }),
+      );
+    }
   });
 
   it("rejects no data and responses without asset-type evidence", () => {
@@ -193,25 +291,36 @@ describe("portal metadata providers", () => {
     ).resolves.toMatchObject({ name: "腾讯控股", assetType: "stock" });
   });
 
+  it("decodes Tencent response bytes as GB18030 by default", async () => {
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(new Response(TENCENT_HK_700_GB18030));
+
+    await expect(
+      new TencentMetadataProvider().resolve(
+        { market: "HK", symbol: "700" },
+        fetcher,
+      ),
+    ).resolves.toMatchObject({ name: "㐀科技", assetType: "stock" });
+  });
+
   it("tries the supported Eastmoney US market IDs", async () => {
     const fetcher = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(new Response(EASTMONEY_NO_DATA, { status: 200 }))
-      .mockResolvedValueOnce(new Response(EASTMONEY_US_BABA, { status: 200 }));
+      .mockResolvedValueOnce(new Response(EASTMONEY_US_BABA, { status: 200 }))
+      .mockResolvedValueOnce(new Response(EASTMONEY_NO_DATA, { status: 200 }));
 
     await expect(
       new EastmoneyMetadataProvider().resolve(
         { market: "US", symbol: "BABA" },
         fetcher,
       ),
-    ).resolves.toMatchObject({
-      symbol: "BABA",
-      name: "Alibaba Group Holding Ltd",
-      assetType: "stock",
-    });
+    ).rejects.toMatchObject({ code: "no-data" });
     expect(fetcher.mock.calls.map(([url]) => url)).toEqual([
       expect.stringContaining("secid=105.BABA"),
       expect.stringContaining("secid=106.BABA"),
+      expect.stringContaining("secid=107.BABA"),
     ]);
   });
 

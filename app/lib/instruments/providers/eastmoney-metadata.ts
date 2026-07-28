@@ -1,8 +1,6 @@
 import { classifyExchangeTradedAsset } from "../asset-classification";
 import { canonicalInstrumentSymbol } from "../display-name";
 import {
-  validateResolvedInstrument,
-  type InstrumentAssetType,
   type InstrumentLookup,
   type ResolvedInstrument,
 } from "../metadata-contracts";
@@ -11,6 +9,7 @@ import {
   invalidMetadataResponse,
   noMetadata,
   requestMetadataResponse,
+  validateProviderMetadataResult,
   type InstrumentMetadataProvider,
 } from "./metadata-errors";
 
@@ -52,19 +51,10 @@ function parseEnvelope(raw: string | unknown): EastmoneyMetadataEnvelope {
   }
 }
 
-function eastmoneyAssetType(
-  explicitType: unknown,
-  lookup: InstrumentLookup,
-  name: string,
-): InstrumentAssetType | undefined {
-  if (explicitType === 1 || explicitType === "1") return "stock";
-  if (explicitType === 5 || explicitType === "5") return "etf";
-  return classifyExchangeTradedAsset(lookup, name);
-}
-
 export function parseEastmoneyMetadata(
   raw: string | unknown,
   lookup: InstrumentLookup,
+  expectedMarketId: string = EASTMONEY_MARKET_IDS[lookup.market][0] ?? "",
 ): ResolvedInstrument {
   const envelope = parseEnvelope(raw);
   if (envelope.data === null || envelope.data === undefined) {
@@ -86,11 +76,19 @@ export function parseEastmoneyMetadata(
   ) {
     invalidMetadataResponse("东方财富证券元数据代码不匹配");
   }
+  const responseMarketId =
+    typeof envelope.data.f107 === "number" ||
+    typeof envelope.data.f107 === "string"
+      ? String(envelope.data.f107)
+      : "";
+  if (!responseMarketId || responseMarketId !== expectedMarketId) {
+    invalidMetadataResponse("东方财富证券元数据市场不匹配");
+  }
 
-  const assetType = eastmoneyAssetType(envelope.data.f107, lookup, name);
+  const assetType = classifyExchangeTradedAsset(lookup, name);
   if (!assetType) noMetadata("东方财富证券元数据缺少资产类型证据");
 
-  return validateResolvedInstrument(
+  return validateProviderMetadataResult(
     {
       ...lookup,
       name,
@@ -100,6 +98,7 @@ export function parseEastmoneyMetadata(
       resolvedAt: new Date().toISOString(),
     },
     lookup,
+    "东方财富证券元数据",
   );
 }
 
@@ -145,7 +144,7 @@ export class EastmoneyMetadataProvider implements InstrumentMetadataProvider {
       }
 
       try {
-        return parseEastmoneyMetadata(text, lookup);
+        return parseEastmoneyMetadata(text, lookup, marketId);
       } catch (error) {
         if (
           error instanceof InstrumentMetadataProviderError &&

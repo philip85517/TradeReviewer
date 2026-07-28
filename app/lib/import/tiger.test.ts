@@ -6,6 +6,10 @@ import {
   TIGER_IDENTICAL_FILL_PAGES,
   TIGER_PAGES,
   TIGER_SHORT_PAGES,
+  TIGER_TRADITIONAL_CROSS_PAGE_DUPLICATE,
+  TIGER_TRADITIONAL_DIFFERENT_MARKET,
+  TIGER_TRADITIONAL_MISSING_KEY_FIELD,
+  TIGER_TRADITIONAL_PAGES,
 } from "./__fixtures__/tiger-pages";
 import {
   detectTigerStatement,
@@ -116,5 +120,77 @@ describe("Tiger PDF import", () => {
         bytes,
       }),
     ).resolves.toMatchObject({ broker: "tiger", blocked: false });
+  });
+
+  it("parses the anonymized Traditional-Chinese multi-line layout", () => {
+    expect(detectTigerStatement(TIGER_TRADITIONAL_PAGES)).toMatchObject({
+      matched: true,
+    });
+
+    const result = parseTigerPages(TIGER_TRADITIONAL_PAGES, options);
+    expect(result.records).toHaveLength(3);
+    expect(result.records[0]).toMatchObject({
+      side: "buy",
+      executedAt: "2025-09-18T02:00:00.000Z",
+      instrument: { market: "HK", symbol: "1810", name: "匿名港股" },
+    });
+    expect(result.records[1]).toMatchObject({
+      side: "sell",
+      executedAt: "2025-09-18T14:00:00.000Z",
+      instrument: { market: "US", symbol: "SPY" },
+    });
+    expect(result.records[2]).toMatchObject({
+      executedAt: "2025-12-18T15:00:00.000Z",
+    });
+    expect(result.candidates).toContainEqual(
+      expect.objectContaining({
+        symbol: "MYST",
+        sourceAssetType: "unknown",
+      }),
+    );
+  });
+
+  it("collapses an exact blank-identity continuation across a page header", () => {
+    const result = parseTigerPages(
+      TIGER_TRADITIONAL_CROSS_PAGE_DUPLICATE,
+      options,
+    );
+    expect(result.records).toHaveLength(1);
+  });
+
+  it("does not collapse an identity continuation with a missing key field", () => {
+    const result = parseTigerPages(
+      TIGER_TRADITIONAL_MISSING_KEY_FIELD,
+      options,
+    );
+    expect(result.records).toHaveLength(2);
+  });
+
+  it("does not collapse otherwise identical rows from different markets", () => {
+    const result = parseTigerPages(
+      TIGER_TRADITIONAL_DIFFERENT_MARKET,
+      options,
+    );
+    expect(result.records).toHaveLength(2);
+    expect(result.records.map((record) => record.instrument.market)).toEqual([
+      "HK",
+      "US",
+    ]);
+  });
+
+  it("distinguishes a Tiger document with an unsupported table schema", () => {
+    const detection = detectTigerStatement(NON_TIGER_PAGES);
+    expect(detection).toMatchObject({
+      matched: false,
+      diagnostics: [
+        expect.objectContaining({ code: "unsupported-tiger-layout" }),
+      ],
+    });
+    expect(parseTigerPages(NON_TIGER_PAGES, options)).toMatchObject({
+      blocked: true,
+      diagnostics: [
+        expect.objectContaining({ code: "unsupported-tiger-layout" }),
+      ],
+    });
   });
 });

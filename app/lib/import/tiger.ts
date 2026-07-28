@@ -31,22 +31,33 @@ const REQUIRED_HEADER_FIELDS = [
 
 const SIDE_BY_LABEL: Record<string, TradeSide> = {
   买入: "buy",
+  買入: "buy",
   开仓做多: "buy",
+  開倉做多: "buy",
   平仓空头: "buy",
+  平倉空頭: "buy",
   卖出: "sell",
+  賣出: "sell",
   平仓多头: "sell",
+  平倉多頭: "sell",
   开仓做空: "sell",
+  開倉做空: "sell",
 };
 
 type HeaderField =
   | "code"
   | "name"
   | "market"
+  | "exchange"
   | "assetType"
   | "direction"
   | "quantity"
   | "price"
+  | "amount"
+  | "interest"
   | "fee"
+  | "realized"
+  | "description"
   | "currency"
   | "executedAt"
   | "settlementDate";
@@ -80,17 +91,22 @@ type ParsedIdentity = {
 };
 
 const HEADER_ALIASES: Record<HeaderField, readonly string[]> = {
-  code: ["证券代码", "股票代码", "代码"],
+  code: ["代碼", "证券代码", "股票代码", "代码"],
   name: ["证券名称", "股票名称", "名称"],
-  market: ["市场", "交易市场"],
-  assetType: ["证券类型", "产品类型", "资产类型"],
-  direction: ["交易类型", "买卖方向", "方向", "买卖"],
-  quantity: ["成交数量", "数量"],
-  price: ["成交价格", "价格"],
-  fee: ["佣金及费用", "总费用", "费用", "手续费"],
-  currency: ["币种", "货币"],
-  executedAt: ["成交时间", "执行时间", "交易时间"],
-  settlementDate: ["交收日期", "结算日期"],
+  market: ["市場", "市场", "交易市场"],
+  exchange: ["交易所"],
+  assetType: ["證券類型", "证券类型", "产品类型", "资产类型"],
+  direction: ["交易類型", "交易类型", "买卖方向", "方向", "买卖"],
+  quantity: ["數量", "成交数量", "数量"],
+  price: ["交易價格", "成交价格", "价格"],
+  amount: ["成交額", "成交额"],
+  interest: ["成交應計利息", "成交应计利息"],
+  fee: ["佣金/稅", "佣金/税", "佣金及费用", "总费用", "费用", "手续费"],
+  realized: ["已實現的損益", "已实现的损益"],
+  description: ["說明", "说明"],
+  currency: ["幣種", "币种", "货币"],
+  executedAt: ["成交時間", "成交时间", "执行时间", "交易时间"],
+  settlementDate: ["交收日期", "結算日期", "结算日期"],
 };
 
 function compact(value: string | undefined): string {
@@ -115,7 +131,7 @@ function fieldForHeader(text: string): HeaderField | undefined {
 function headerColumns(row: PdfTextRow): HeaderColumn[] | null {
   const columns = row.items.flatMap((item) => {
     const field = fieldForHeader(item.text);
-    return field ? [{ field, x: item.x }] : [];
+    return field ? [{ field, x: item.x + item.width / 2 }] : [];
   });
   const fields = new Set(columns.map((column) => column.field));
 
@@ -127,6 +143,7 @@ function headerColumns(row: PdfTextRow): HeaderColumn[] | null {
 function isStockSection(text: string): boolean {
   const normalized = compact(text).toLowerCase();
   return (
+    normalized === "股票" ||
     normalized.includes("股票交易") ||
     normalized.includes("证券交易") ||
     normalized === "stocks" ||
@@ -137,6 +154,7 @@ function isStockSection(text: string): boolean {
 function isFundSection(text: string): boolean {
   const normalized = compact(text).toLowerCase();
   return (
+    normalized === "基金" ||
     normalized.includes("基金交易") ||
     normalized === "funds" ||
     normalized.includes("fundtransactions")
@@ -167,6 +185,16 @@ export function detectTigerStatement(
   return {
     matched: hasHeading && hasStockTable,
     confidence: hasHeading && hasStockTable ? 1 : hasHeading ? 0.35 : 0,
+    diagnostics:
+      hasHeading && !hasStockTable
+        ? [
+            {
+              severity: "error",
+              code: "unsupported-tiger-layout",
+              message: "已识别 Tiger 对账单，但当前表格结构暂不支持",
+            },
+          ]
+        : undefined,
   };
 }
 
@@ -177,15 +205,7 @@ function rowCells(
   const parts = new Map<HeaderField, string[]>();
 
   for (const item of row.items) {
-    let closest: HeaderColumn | undefined;
-    let closestDistance = Number.POSITIVE_INFINITY;
-    for (const column of columns) {
-      const distance = Math.abs(item.x - column.x);
-      if (distance < closestDistance) {
-        closest = column;
-        closestDistance = distance;
-      }
-    }
+    const closest = closestColumn(item, columns);
     const value = item.text.trim();
     if (!closest || !value) continue;
     const existing = parts.get(closest.field) ?? [];
@@ -198,47 +218,166 @@ function rowCells(
   );
 }
 
+function closestColumn(
+  item: PdfTextPage["items"][number],
+  columns: readonly HeaderColumn[],
+): HeaderColumn | undefined {
+  let closest: HeaderColumn | undefined;
+  let closestDistance = Number.POSITIVE_INFINITY;
+  const itemCenter = item.x + item.width / 2;
+  for (const column of columns) {
+    const distance = Math.abs(itemCenter - column.x);
+    if (distance < closestDistance) {
+      closest = column;
+      closestDistance = distance;
+    }
+  }
+  return closest;
+}
+
+function isExecutionAnchor(
+  row: PdfTextRow,
+  columns: readonly HeaderColumn[],
+): boolean {
+  const cells = rowCells(row, columns);
+  return Boolean(
+      compact(cells.direction) &&
+      compact(cells.quantity) &&
+      compact(cells.price) &&
+      (compact(cells.market) ||
+        compact(cells.code) ||
+        compact(cells.currency)),
+  );
+}
+
+function logicalRowsForSegment(
+  page: PdfTextPage,
+  items: readonly PdfTextPage["items"][number][],
+  columns: readonly HeaderColumn[],
+  section: "stock" | "fund",
+  headerY: number,
+  endY: number,
+  sourceOrderStart: number,
+): ParsedLayoutRow[] {
+  const usableEnd = Math.min(endY, page.height - 35);
+  const segmentItems = items.filter(
+    (item) => item.y > headerY + 2 && item.y < usableEnd,
+  );
+  const anchors = groupItemsIntoRows(segmentItems, 2)
+    .filter((row) => isExecutionAnchor(row, columns))
+    .map((row) => row.y);
+
+  return anchors.map((anchorY, index) => {
+    const lower =
+      index === 0 ? headerY + 2 : (anchors[index - 1] + anchorY) / 2;
+    const upper =
+      index === anchors.length - 1
+        ? usableEnd
+        : (anchorY + anchors[index + 1]) / 2;
+    const logicalItems = segmentItems.filter(
+      (item) => {
+        if (item.y < lower || item.y >= upper) return false;
+        const field = closestColumn(item, columns)?.field;
+        const distance = item.y - anchorY;
+        if (field === "code" || field === "name" || field === "executedAt") {
+          return Math.abs(distance) <= 14;
+        }
+        if (field === "fee") {
+          return (
+            distance >= -40 &&
+            distance <= (index === anchors.length - 1 ? 100 : 40)
+          );
+        }
+        return Math.abs(distance) <= 3;
+      },
+    );
+
+    return {
+      page: page.pageNumber,
+      row: Math.round(anchorY),
+      sourceOrder: sourceOrderStart + index + 1,
+      cells: rowCells({ y: anchorY, items: logicalItems }, columns),
+      section,
+    };
+  });
+}
+
 function positionedRows(pages: readonly PdfTextPage[]): ParsedLayoutRow[] {
   const result: ParsedLayoutRow[] = [];
   let sourceOrder = 0;
   let section: "stock" | "fund" | null = null;
+  let pendingTimestampDate: string | undefined;
 
   for (const page of pages) {
     const rows = groupItemsIntoRows(page.items, 2);
-    let columns: HeaderColumn[] | null = null;
+    let active:
+      | {
+          section: "stock" | "fund";
+          columns: HeaderColumn[];
+          headerY: number;
+        }
+      | undefined;
 
-    rows.forEach((row, rowIndex) => {
+    const flush = (endY: number) => {
+      if (!active) return;
+      const logical = logicalRowsForSegment(
+        page,
+        page.items,
+        active.columns,
+        active.section,
+        active.headerY,
+        endY,
+        sourceOrder,
+      );
+      const firstLogicalRow = logical[0];
+      if (pendingTimestampDate && firstLogicalRow) {
+        if (
+          !/\d{4}[-/]\d{1,2}[-/]\d{1,2}/.test(
+            firstLogicalRow.cells.executedAt ?? "",
+          )
+        ) {
+          firstLogicalRow.cells.executedAt =
+            `${pendingTimestampDate} ${
+              firstLogicalRow.cells.executedAt ?? ""
+            }`.trim();
+        }
+        pendingTimestampDate = undefined;
+      }
+      result.push(...logical);
+      sourceOrder += logical.length;
+      const lastAnchor = logical.at(-1)?.row ?? active.headerY;
+      const trailingDate = page.items
+        .filter((item) => item.y > lastAnchor + 14 && item.y < page.height - 35)
+        .filter(
+          (item) =>
+            closestColumn(item, active?.columns ?? [])?.field === "executedAt",
+        )
+        .map((item) => item.text.trim())
+        .findLast((text) => /^\d{4}[-/]\d{1,2}[-/]\d{1,2}$/.test(text));
+      if (trailingDate) pendingTimestampDate = trailingDate;
+      active = undefined;
+    };
+
+    rows.forEach((row) => {
       const text = row.items.map((item) => item.text).join(" ");
       if (isStockSection(text)) {
+        flush(row.y);
         section = "stock";
-        columns = null;
         return;
       }
       if (isFundSection(text)) {
+        flush(row.y);
         section = "fund";
-        columns = null;
         return;
       }
 
       const possibleHeader = headerColumns(row);
       if (possibleHeader && section) {
-        columns = possibleHeader;
-        return;
+        flush(row.y);
+        active = { section, columns: possibleHeader, headerY: row.y };
       }
-      if (!section || !columns) return;
-      if (/第\s*\d+\s*页|Page\s+\d+/i.test(text)) return;
-
-      const cells = rowCells(row, columns);
-      if (!Object.values(cells).some(Boolean)) return;
-      sourceOrder += 1;
-      result.push({
-        page: page.pageNumber,
-        row: rowIndex + 1,
-        sourceOrder,
-        cells,
-        section,
-      });
     });
+    flush(page.height);
   }
 
   return result;
@@ -270,7 +409,12 @@ function sideFor(
   for (const [knownLabel, side] of Object.entries(SIDE_BY_LABEL)) {
     if (label === knownLabel || label.includes(knownLabel)) return side;
   }
-  if (label.includes("开仓") || label.includes("平仓")) {
+  if (
+    label.includes("开仓") ||
+    label.includes("平仓") ||
+    label.includes("開倉") ||
+    label.includes("平倉")
+  ) {
     if (signedQuantity.isPositive()) return "buy";
     if (signedQuantity.isNegative()) return "sell";
   }
@@ -340,11 +484,11 @@ function timestamp(
 ): { iso: string; timezone: string } | null {
   const source = value?.trim() ?? "";
   const match = source.match(
-    /^(\d{4}[-/]\d{1,2}[-/]\d{1,2})[ T](\d{1,2}:\d{2}:\d{2})\s*(.+)$/,
+    /^(\d{4}[-/]\d{1,2}[-/]\d{1,2})[ T](\d{1,2}:\d{2}:\d{2})\s*,?\s*(.+)$/,
   );
   if (!match) return null;
   const zoneText = match[3].trim();
-  let offset: string;
+  let offset: string | undefined;
   const numericZone = zoneText.match(/^(?:GMT|UTC)?\s*([+-])(\d{1,2})(?::?(\d{2}))?$/i);
   if (numericZone) {
     offset = `${numericZone[1]}${numericZone[2].padStart(2, "0")}:${numericZone[3] ?? "00"}`;
@@ -352,14 +496,87 @@ function timestamp(
     offset = "Z";
   } else if (/^(?:HKT|Asia\/(?:Hong_Kong|Shanghai))$/i.test(zoneText)) {
     offset = "+08:00";
-  } else {
-    return null;
   }
-  const isoLike = `${match[1].replaceAll("/", "-")}T${match[2]}${offset}`;
-  const parsed = new Date(isoLike);
+  const dateText = match[1].replaceAll("/", "-");
+  const parsed = offset
+    ? new Date(`${dateText}T${match[2]}${offset}`)
+    : zonedWallTime(dateText, match[2], zoneText);
   return Number.isNaN(parsed.getTime())
     ? null
     : { iso: parsed.toISOString(), timezone: zoneText };
+}
+
+function zonedWallTime(
+  dateText: string,
+  timeText: string,
+  printedZone: string,
+): Date {
+  const timeZone =
+    printedZone.toLowerCase() === "us/eastern"
+      ? "America/New_York"
+      : printedZone;
+  const [year, month, day] = dateText.split("-").map(Number);
+  const [hour, minute, second] = timeText.split(":").map(Number);
+  if (
+    [year, month, day, hour, minute, second].some(
+      (part) => !Number.isInteger(part),
+    )
+  ) {
+    return new Date(Number.NaN);
+  }
+
+  const wallUtc = Date.UTC(year, month - 1, day, hour, minute, second);
+  let candidate = wallUtc;
+  try {
+    const formatter = new Intl.DateTimeFormat("en-CA", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h23",
+    });
+    for (let iteration = 0; iteration < 3; iteration += 1) {
+      const parts = Object.fromEntries(
+        formatter
+          .formatToParts(new Date(candidate))
+          .filter((part) => part.type !== "literal")
+          .map((part) => [part.type, Number(part.value)]),
+      );
+      const represented = Date.UTC(
+        parts.year,
+        parts.month - 1,
+        parts.day,
+        parts.hour,
+        parts.minute,
+        parts.second,
+      );
+      const correction = wallUtc - represented;
+      if (correction === 0) break;
+      candidate += correction;
+    }
+    const finalParts = Object.fromEntries(
+      formatter
+        .formatToParts(new Date(candidate))
+        .filter((part) => part.type !== "literal")
+        .map((part) => [part.type, Number(part.value)]),
+    );
+    if (
+      finalParts.year !== year ||
+      finalParts.month !== month ||
+      finalParts.day !== day ||
+      finalParts.hour !== hour ||
+      finalParts.minute !== minute ||
+      finalParts.second !== second
+    ) {
+      return new Date(Number.NaN);
+    }
+    return new Date(candidate);
+  } catch {
+    return new Date(Number.NaN);
+  }
 }
 
 function addExclusion(
@@ -378,15 +595,30 @@ function addExclusion(
   else exclusions.push({ category, label, count: 1, instrumentSymbol });
 }
 
-function duplicateLayoutKey(cells: ParsedLayoutRow["cells"]): string {
-  return JSON.stringify([
+function duplicateLayoutKey(
+  cells: ParsedLayoutRow["cells"],
+  market: string | undefined,
+): string | null {
+  let normalizedFee: string;
+  try {
+    if (!compact(cells.fee)) return null;
+    normalizedFee = totalFee(cells.fee);
+  } catch {
+    return null;
+  }
+  const values = [
+    compact(market),
     compact(cells.direction),
     compact(cells.quantity),
     compact(cells.price),
-    compact(cells.fee),
+    normalizedFee,
     compact(cells.executedAt),
     compact(cells.settlementDate),
     compact(cells.currency),
+  ];
+  if (values.some((value) => !value)) return null;
+  return JSON.stringify([
+    ...values,
   ]);
 }
 
@@ -396,18 +628,22 @@ export function parseTigerPages(
 ): StatementParseResult {
   const detection = detectTigerStatement(pages);
   if (!detection.matched) {
+    const layoutDiagnostics = detection.diagnostics ?? [];
     return {
       broker: "tiger",
       records: [],
       candidates: [],
       exclusions: [],
-      diagnostics: [
-        {
-          severity: "error",
-          code: "not-tiger-statement",
-          message: "文件不是可识别的 Tiger 股票成交对账单",
-        },
-      ],
+      diagnostics:
+        layoutDiagnostics.length > 0
+          ? layoutDiagnostics
+          : [
+              {
+                severity: "error",
+                code: "not-tiger-statement",
+                message: "文件不是可识别的 Tiger 股票成交对账单",
+              },
+            ],
       blocked: true,
     };
   }
@@ -421,23 +657,48 @@ export function parseTigerPages(
         page: number;
         sourceOrder: number;
         identity: ParsedIdentity;
-        layoutKey: string;
+        layoutKey: string | null;
+        completeIdentity: boolean;
+        section: "stock" | "fund";
       }
     | undefined;
 
   for (const layoutRow of positionedRows(pages)) {
     const { cells } = layoutRow;
-    const identityBlank = !compact(cells.code) && !compact(cells.name);
-    const immediatelyAdjacent =
+    const parsedIdentity = parseIdentity(
+      cells.code,
+      cells.name,
+      cells.market,
+      cells.currency,
+    );
+    const currentMarket =
+      parsedIdentity?.market ??
+      (compact(cells.market).toUpperCase() === "HK"
+        ? "HK"
+        : compact(cells.market).toUpperCase() === "US"
+          ? "US"
+          : compact(cells.currency).toUpperCase() === "HKD"
+            ? "HK"
+            : compact(cells.currency).toUpperCase() === "USD"
+              ? "US"
+          : undefined);
+    const incompleteIdentity =
+      !parsedIdentity ||
+      !parsedIdentity.name ||
+      (!compact(cells.code) && !compact(cells.name));
+    const layoutKey = duplicateLayoutKey(cells, currentMarket);
+    const immediatelyAdjacent = Boolean(
       previous &&
-      previous.page === layoutRow.page &&
-      previous.sourceOrder + 1 === layoutRow.sourceOrder;
+      previous.sourceOrder + 1 === layoutRow.sourceOrder &&
+      previous.section === layoutRow.section,
+    );
     if (
-      identityBlank &&
+      incompleteIdentity &&
       immediatelyAdjacent &&
-      previous?.layoutKey === duplicateLayoutKey(cells)
+      previous?.completeIdentity &&
+      layoutKey !== null &&
+      previous?.layoutKey === layoutKey
     ) {
-      previous = undefined;
       continue;
     }
 
@@ -452,12 +713,9 @@ export function parseTigerPages(
       continue;
     }
 
-    const identity = parseIdentity(
-      cells.code,
-      cells.name,
-      cells.market,
-      cells.currency,
-    );
+    const identity =
+      parsedIdentity ??
+      (immediatelyAdjacent ? previous?.identity : undefined);
     if (!identity) {
       addExclusion(exclusions, "invalid-row", "证券代码或市场无法识别");
       diagnostics.push({
@@ -485,7 +743,9 @@ export function parseTigerPages(
       const assetLabel = `${cells.assetType ?? ""} ${identity.name ?? ""}`;
       const sourceAssetType = /\bETF\b|交易所交易基金/i.test(assetLabel)
         ? "etf"
-        : "stock";
+        : /股票|stock/i.test(cells.assetType ?? "")
+          ? "stock"
+          : "unknown";
       const candidate: ParsedInstrumentCandidate = {
         market: identity.market,
         symbol: identity.symbol,
@@ -530,7 +790,9 @@ export function parseTigerPages(
         page: layoutRow.page,
         sourceOrder: layoutRow.sourceOrder,
         identity,
-        layoutKey: duplicateLayoutKey(cells),
+        layoutKey,
+        completeIdentity: Boolean(identity.name),
+        section: layoutRow.section,
       };
     } catch {
       addExclusion(

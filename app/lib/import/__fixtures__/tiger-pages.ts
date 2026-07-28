@@ -1,6 +1,6 @@
 import type { PdfTextItem, PdfTextPage } from "../pdf-text";
 
-const COLUMNS = [24, 116, 252, 342, 420, 496, 566, 642, 812] as const;
+const COLUMNS = [24, 116, 252, 342, 420, 450, 566, 642, 812] as const;
 
 function item(text: string, x: number, y: number): PdfTextItem {
   return { text, x, y, width: Math.max(text.length * 6, 12), height: 10 };
@@ -195,4 +195,258 @@ export const NON_TIGER_PAGES: PdfTextPage[] = [
       item("Monthly account summary", 24, 70),
     ],
   },
+];
+
+const TRADITIONAL_COLUMNS = {
+  code: 29,
+  market: 251,
+  exchange: 291,
+  direction: 343,
+  quantity: 415,
+  price: 457,
+  amount: 539,
+  fee: 761,
+  realized: 819,
+  description: 904,
+  executedAt: 1006,
+  settlementDate: 1076,
+  currency: 1139,
+} as const;
+
+function traditionalHeader(y = 117): PdfTextItem[] {
+  return [
+    item("代碼", TRADITIONAL_COLUMNS.code, y),
+    item("市場", TRADITIONAL_COLUMNS.market, y),
+    item("交易所", TRADITIONAL_COLUMNS.exchange, y),
+    item("交易類型", TRADITIONAL_COLUMNS.direction, y),
+    item("數量", TRADITIONAL_COLUMNS.quantity, y),
+    item("交易價格", TRADITIONAL_COLUMNS.price, y),
+    item("成交額", TRADITIONAL_COLUMNS.amount, y),
+    item("佣金/稅", TRADITIONAL_COLUMNS.fee, y),
+    item("已實現的損益", TRADITIONAL_COLUMNS.realized, y),
+    item("說明", TRADITIONAL_COLUMNS.description, y),
+    item("成交時間", TRADITIONAL_COLUMNS.executedAt, y),
+    item("交收日期", TRADITIONAL_COLUMNS.settlementDate, y),
+    item("幣種", TRADITIONAL_COLUMNS.currency, y),
+  ];
+}
+
+type TraditionalRow = {
+  y: number;
+  name?: string;
+  code?: string;
+  market: "HK" | "US";
+  direction: string;
+  quantity: string;
+  price: string;
+  feeParts?: string[];
+  date: string;
+  timeZone: string;
+  settlement?: string;
+  currency: "HKD" | "USD";
+};
+
+function traditionalRow(input: TraditionalRow): PdfTextItem[] {
+  const settlement = input.settlement ?? input.date;
+  return [
+    ...(input.name
+      ? [item(input.name, TRADITIONAL_COLUMNS.code, input.y - 6)]
+      : []),
+    ...(input.code
+      ? [item(`(${input.code})`, TRADITIONAL_COLUMNS.code, input.y + 6)]
+      : []),
+    item(input.market, TRADITIONAL_COLUMNS.market + 12, input.y),
+    item("SMART", TRADITIONAL_COLUMNS.exchange + 13, input.y),
+    item(input.direction, TRADITIONAL_COLUMNS.direction + 3, input.y),
+    item(input.quantity, TRADITIONAL_COLUMNS.quantity + 1, input.y),
+    item(input.price, TRADITIONAL_COLUMNS.price + 3, input.y),
+    ...(input.feeParts ?? ["佣金 -1.20", "平台費 -0.30"]).map(
+      (fee, index, all) =>
+        item(
+          fee,
+          TRADITIONAL_COLUMNS.fee - 28,
+          input.y + (index - (all.length - 1) / 2) * 9,
+        ),
+    ),
+    item(input.date, TRADITIONAL_COLUMNS.executedAt - 8, input.y - 6),
+    item(
+      `10:00:00, ${input.timeZone}`,
+      TRADITIONAL_COLUMNS.executedAt - 34,
+      input.y + 6,
+    ),
+    item(settlement, TRADITIONAL_COLUMNS.settlementDate - 7, input.y),
+    item(input.currency, TRADITIONAL_COLUMNS.currency + 7, input.y),
+  ];
+}
+
+function traditionalPage(
+  pageNumber: number,
+  rows: TraditionalRow[],
+  includeSection: boolean,
+): PdfTextPage {
+  return {
+    pageNumber,
+    width: 1190,
+    height: 840,
+    items: [
+      item("Tiger Brokers (NZ) Limited", 23, 40),
+      ...(includeSection ? [item("股票", 34, 82)] : []),
+      ...traditionalHeader(),
+      ...rows.flatMap(traditionalRow),
+      item(`${pageNumber} / 2`, 1146, 828),
+    ],
+  };
+}
+
+export const TIGER_TRADITIONAL_PAGES: PdfTextPage[] = [
+  traditionalPage(
+    1,
+    [
+      {
+        y: 200,
+        name: "匿名港股",
+        code: "01810",
+        market: "HK",
+        direction: "開倉",
+        quantity: "100",
+        price: "40.5",
+        date: "2025-09-18",
+        timeZone: "Asia/Hong_Kong",
+        currency: "HKD",
+      },
+      {
+        y: 300,
+        name: "Anonymous ETF",
+        code: "SPY",
+        market: "US",
+        direction: "平倉",
+        quantity: "-2",
+        price: "600.25",
+        date: "2025-09-18",
+        timeZone: "US/Eastern",
+        currency: "USD",
+      },
+    ],
+    true,
+  ),
+  traditionalPage(
+    2,
+    [
+      {
+        y: 200,
+        name: "Anonymous Security",
+        code: "MYST",
+        market: "US",
+        direction: "賣出",
+        quantity: "-1",
+        price: "10",
+        date: "2025-12-18",
+        timeZone: "US/Eastern",
+        currency: "USD",
+      },
+    ],
+    false,
+  ),
+];
+
+export const TIGER_TRADITIONAL_CROSS_PAGE_DUPLICATE: PdfTextPage[] = [
+  traditionalPage(
+    1,
+    [
+      {
+        y: 700,
+        name: "匿名港股",
+        code: "01810",
+        market: "HK",
+        direction: "開倉做空",
+        quantity: "-800",
+        price: "22.5",
+        date: "2025-06-01",
+        timeZone: "Asia/Hong_Kong",
+        currency: "HKD",
+      },
+    ],
+    true,
+  ),
+  traditionalPage(
+    2,
+    [
+      {
+        y: 145,
+        market: "HK",
+        direction: "開倉做空",
+        quantity: "-800",
+        price: "22.5",
+        date: "2025-06-01",
+        timeZone: "Asia/Hong_Kong",
+        currency: "HKD",
+      },
+    ],
+    false,
+  ),
+];
+
+export const TIGER_TRADITIONAL_MISSING_KEY_FIELD: PdfTextPage[] = [
+  traditionalPage(
+    1,
+    [
+      {
+        y: 200,
+        name: "Anonymous ETF",
+        code: "SPY",
+        market: "US",
+        direction: "開倉",
+        quantity: "2",
+        price: "600.25",
+        date: "2025-09-18",
+        timeZone: "US/Eastern",
+        currency: "USD",
+      },
+      {
+        y: 300,
+        code: "SPY",
+        market: "US",
+        direction: "開倉",
+        quantity: "2",
+        price: "600.25",
+        date: "2025-09-18",
+        timeZone: "US/Eastern",
+        settlement: "",
+        currency: "USD",
+      },
+    ],
+    true,
+  ),
+];
+
+export const TIGER_TRADITIONAL_DIFFERENT_MARKET: PdfTextPage[] = [
+  traditionalPage(
+    1,
+    [
+      {
+        y: 200,
+        name: "Anonymous Security",
+        code: "ABCD",
+        market: "HK",
+        direction: "開倉",
+        quantity: "2",
+        price: "10",
+        date: "2025-09-18",
+        timeZone: "Asia/Hong_Kong",
+        currency: "USD",
+      },
+      {
+        y: 300,
+        code: "ABCD",
+        market: "US",
+        direction: "開倉",
+        quantity: "2",
+        price: "10",
+        date: "2025-09-18",
+        timeZone: "Asia/Hong_Kong",
+        currency: "USD",
+      },
+    ],
+    true,
+  ),
 ];

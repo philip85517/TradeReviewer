@@ -1,3 +1,5 @@
+import type { CoverageStatus } from "./contracts";
+
 export type MarketDataSyncStatus =
   | "not-requested"
   | "syncing"
@@ -25,10 +27,10 @@ export function marketDataStatusLabel(status: MarketDataSyncStatus) {
 }
 
 export function coverageStatusForSegments(
-  segments: CoverageSegment[],
-): MarketDataSyncStatus {
+  segments: ReadonlyArray<{ status: CoverageStatus }>,
+): CoverageStatus {
   if (segments.length === 0) return "not-requested";
-  const priority: MarketDataSyncStatus[] = [
+  const priority: CoverageStatus[] = [
     "storage-error",
     "invalid-response",
     "source-unavailable",
@@ -42,4 +44,3 @@ export function coverageStatusForSegments(
     ) ?? "complete"
   );
 }
-import type { CoverageSegment } from "./contracts";

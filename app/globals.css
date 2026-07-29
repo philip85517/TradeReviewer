@@ -821,6 +821,7 @@ input:focus-visible {
 }
 
 .chart-toolbar {
+  position: relative;
   height: 44px;
   flex: 0 0 44px;
   display: flex;
@@ -928,8 +929,124 @@ input:focus-visible {
 
 .local-data-badge {
   margin-right: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
   color: var(--faint);
+  background: transparent;
   font-size: 9px;
+  cursor: pointer;
+}
+
+.local-data-badge:hover,
+.icon-button.active {
+  color: var(--text);
+  background: var(--surface-soft);
+}
+
+.chart-popover {
+  position: absolute;
+  z-index: 20;
+  top: 48px;
+  right: 9px;
+  width: min(320px, calc(100vw - 24px));
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  background: #162131;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+}
+
+.instrument-search-popover {
+  right: auto;
+  left: 180px;
+}
+
+.instrument-search-popover input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--text);
+  background: #0e1621;
+}
+
+.instrument-search-option {
+  width: 100%;
+  margin-top: 5px;
+  padding: 8px;
+  border: 0;
+  border-radius: 5px;
+  color: var(--text);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.instrument-search-option:hover,
+.instrument-search-option[aria-selected="true"] {
+  background: var(--blue-soft);
+}
+
+.popover-empty {
+  margin: 10px 2px 2px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.popover-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.popover-heading button {
+  border: 0;
+  border-radius: 4px;
+  padding: 5px 7px;
+  color: #9dccff;
+  background: var(--blue-soft);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.market-data-detail {
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.market-data-detail dl {
+  margin: 5px 0 0;
+}
+
+.market-data-detail dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+  font-size: 10px;
+}
+
+.market-data-detail dt {
+  color: var(--muted);
+}
+
+.market-data-detail dd {
+  margin: 0;
+  text-align: right;
+}
+
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 9px;
+  font-size: 11px;
 }
 
 .chart-layout {

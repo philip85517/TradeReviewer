@@ -801,6 +801,136 @@ describe("TradeReviewWorkspace", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
+  it("merges a deferred metadata name with an overlapping import confirmation without losing either", async () => {
+    const user = userEvent.setup();
+    const metadataResponse = deferred<Response>();
+    const existing: TradeExecution = {
+      id: "deferred-name-buy",
+      source: { platform: "tiger", row: 2 },
+      accountId: "tiger-account",
+      accountLabel: "Tiger",
+      instrument: {
+        id: "HK:1810",
+        symbol: "1810",
+        name: "小米旧名称",
+        market: "HK",
+        currency: "HKD",
+      },
+      side: "buy",
+      executedAt: "2025-01-02T02:00:00.000Z",
+      quantity: "100",
+      price: "34.5",
+      fee: "10",
+    };
+    saveImportedExecutions([existing]);
+    vi.mocked(fetch).mockReturnValue(metadataResponse.promise);
+    mockDispatcher.mockResolvedValue(cmsParsedResult);
+    mockEnrichment.mockResolvedValue(cmsEnrichedResult);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("heading", { name: "小米旧名称（1810）" });
+
+    await user.click(
+      screen.getByRole("button", { name: "更新小米旧名称行情" }),
+    );
+    await user.upload(
+      screen.getByLabelText("导入交易记录"),
+      new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
+    );
+    await user.click(
+      await screen.findByRole("button", {
+        name: "确认导入并开始更新行情",
+      }),
+    );
+    metadataResponse.resolve(
+      Response.json({
+        market: "HK",
+        symbol: "1810",
+        name: "小米并发更新名称",
+        assetType: "stock",
+        source: "hkex",
+        confidence: "official",
+        resolvedAt: "2026-07-29T00:00:00.000Z",
+      }),
+    );
+
+    expect(
+      await screen.findByText("小米并发更新名称"),
+    ).toBeInTheDocument();
+    expect(
+      loadImportedExecutions().map((item) => [
+        item.instrument.id,
+        item.instrument.name,
+      ]),
+    ).toEqual([
+      ["HK:1810", "小米并发更新名称"],
+      ["CN-SH:600938", "中国海油"],
+    ]);
+  });
+
+  it("keeps UI and durable executions unchanged when refreshed-name persistence fails", async () => {
+    const user = userEvent.setup();
+    const existing: TradeExecution = {
+      id: "failed-name-save",
+      source: { platform: "tiger", row: 2 },
+      accountId: "tiger-account",
+      accountLabel: "Tiger",
+      instrument: {
+        id: "HK:1810",
+        symbol: "1810",
+        name: "保存前名称",
+        market: "HK",
+        currency: "HKD",
+      },
+      side: "buy",
+      executedAt: "2025-01-02T02:00:00.000Z",
+      quantity: "100",
+      price: "34.5",
+      fee: "10",
+    };
+    saveImportedExecutions([existing]);
+    vi.mocked(fetch).mockResolvedValue(
+      Response.json({
+        market: "HK",
+        symbol: "1810",
+        name: "无法持久化的新名称",
+        assetType: "stock",
+        source: "hkex",
+        confidence: "official",
+        resolvedAt: "2026-07-29T00:00:00.000Z",
+      }),
+    );
+    const originalSetItem = window.localStorage.setItem.bind(
+      window.localStorage,
+    );
+    vi.spyOn(window.localStorage, "setItem").mockImplementation(
+      (key, value) => {
+        if (key === "trade-reviewer:executions:v1") {
+          throw new Error("quota");
+        }
+        originalSetItem(key, value);
+      },
+    );
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("heading", { name: "保存前名称（1810）" });
+
+    await user.click(
+      screen.getByRole("button", { name: "更新保存前名称行情" }),
+    );
+
+    expect(
+      await screen.findByRole("alert"),
+    ).toHaveTextContent("新名称未能保存");
+    expect(
+      screen.getByRole("heading", { name: "保存前名称（1810）" }),
+    ).toBeInTheDocument();
+    expect(loadImportedExecutions()[0].instrument.name).toBe(
+      "保存前名称",
+    );
+    expect(
+      screen.queryByText("无法持久化的新名称"),
+    ).not.toBeInTheDocument();
+  });
+
   it("navigates through stock and episode library levels without requesting market data", async () => {
     const user = userEvent.setup();
     const instrument = {

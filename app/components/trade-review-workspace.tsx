@@ -189,12 +189,20 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   const [hydrated, setHydrated] = useState(false);
   const replayRequestSequence = useRef(0);
   const importRequestSequence = useRef(0);
+  const importedExecutionsRef = useRef<TradeExecution[] | null>(null);
   const marketDataRequestSequences = useRef<Record<string, number>>({});
   const marketDataAbortControllers = useRef<
     Record<string, AbortController>
   >({});
   const [suggestionGeneratedAt] = useState(() => new Date().toISOString());
   const libraryTargetSequence = useRef(0);
+
+  function currentExecutionSnapshot() {
+    if (importedExecutionsRef.current === null) {
+      importedExecutionsRef.current = loadImportedExecutions();
+    }
+    return importedExecutionsRef.current;
+  }
 
   const cursor = frame.cursor;
   const chartCandles = useMemo(
@@ -328,6 +336,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       const requestId = ++replayRequestSequence.current;
       const stored = loadReviewState(REVIEW_ID);
       const storedExecutions = loadImportedExecutions();
+      importedExecutionsRef.current = storedExecutions;
       const storedInstrumentSummaries =
         buildInstrumentTradeSummaries(storedExecutions);
       setImportedExecutions(storedExecutions);
@@ -637,6 +646,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
         }
         let status: MarketDataSyncStatus = "source-unavailable";
         let message = "行情更新请求失败，请稍后重试。";
+        let metadataPersistenceFailed = false;
         const repository = new IndexedDbMarketDataRepository();
         const metadataRefresh = options.refreshMetadata
           ? refreshInstrumentMetadata(
@@ -659,34 +669,32 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
                 ) {
                   return;
                 }
-                setImportedExecutions((current) => {
-                  if (
-                    marketDataRequestSequences.current[instrumentId] !==
-                    requestSequence
-                  ) {
-                    return current;
-                  }
-                  const next = current.map((execution) =>
-                    canonicalInstrumentId(
-                      execution.instrument.symbol,
-                      execution.instrument.market,
-                    ) === instrumentId
-                      ? {
-                          ...execution,
-                          instrument: {
-                            ...execution.instrument,
-                            name: metadata.name,
-                          },
-                        }
-                      : execution,
+                const current = currentExecutionSnapshot();
+                const next = current.map((execution) =>
+                  canonicalInstrumentId(
+                    execution.instrument.symbol,
+                    execution.instrument.market,
+                  ) === instrumentId
+                    ? {
+                        ...execution,
+                        instrument: {
+                          ...execution.instrument,
+                          name: metadata.name,
+                        },
+                      }
+                    : execution,
+                );
+                try {
+                  saveImportedExecutions(next);
+                } catch {
+                  metadataPersistenceFailed = true;
+                  setImportError(
+                    "已查询到证券新名称，但新名称未能保存；交易库仍保留原名称。",
                   );
-                  try {
-                    saveImportedExecutions(next);
-                    return next;
-                  } catch {
-                    return current;
-                  }
-                });
+                  return;
+                }
+                importedExecutionsRef.current = next;
+                setImportedExecutions(next);
               })
               .catch(() => undefined)
           : Promise.resolve();
@@ -758,6 +766,10 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
           }
         }
         await metadataRefresh;
+        if (metadataPersistenceFailed) {
+          status = "storage-error";
+          message = "证券新名称未能保存，交易库仍保留原名称。";
+        }
         if (
           marketDataRequestSequences.current[instrumentId] !==
           requestSequence
@@ -795,10 +807,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     enriched: EnrichedImportResult,
   ) {
     const basePreview = createImportPreview(fileName, enriched);
-    const current = mergeExecutions(
-      loadImportedExecutions(),
-      importedExecutions,
-    );
+    const current = currentExecutionSnapshot();
     const merged = mergeExecutions(current, enriched.importable);
     const retainedIncomingCount = Math.max(
       0,
@@ -906,14 +915,15 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       return;
     }
     importRequestSequence.current += 1;
+    const currentExecutions = currentExecutionSnapshot();
     const previousSummaries = new Map(
-      buildInstrumentTradeSummaries(importedExecutions).map((item) => [
+      buildInstrumentTradeSummaries(currentExecutions).map((item) => [
         item.instrument.id,
         item,
       ]),
     );
     const mergedExecutions = mergeExecutions(
-      importedExecutions,
+      currentExecutions,
       pendingImport.records,
     );
     const summaries = buildInstrumentTradeSummaries(mergedExecutions);
@@ -939,7 +949,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
 
     try {
       persistImportBatch(
-        importedExecutions,
+        currentExecutions,
         mergedExecutions,
         historyEntry,
       );
@@ -950,6 +960,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       setPendingImport(null);
       return;
     }
+    importedExecutionsRef.current = mergedExecutions;
     setImportedExecutions(mergedExecutions);
     setImportHistory([
       historyEntry,

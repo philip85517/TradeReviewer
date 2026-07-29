@@ -48,10 +48,11 @@ function shiftTime(timestamp: string, milliseconds: number) {
   return new Date(new Date(timestamp).getTime() + milliseconds).toISOString();
 }
 
-function hasCompleteCoverage(
+function coverageGaps(
   required: IntradayTimeRange,
   coverage: IntervalCoverageSegment[],
 ) {
+  let gaps = [{ ...required }];
   const segments = coverage
     .filter(
       (segment) =>
@@ -64,16 +65,40 @@ function hasCompleteCoverage(
       endTime: segment.requestedEnd,
     }))
     .sort((left, right) => left.startTime.localeCompare(right.startTime));
-  let coveredUntil = required.startTime;
 
   for (const segment of segments) {
-    if (segment.startTime > coveredUntil) return false;
-    if (segment.endTime >= required.endTime) return true;
-    if (segment.endTime >= coveredUntil) {
-      coveredUntil = shiftTime(segment.endTime, 1);
-    }
+    gaps = gaps.flatMap((gap) => {
+      if (segment.endTime < gap.startTime || segment.startTime > gap.endTime) {
+        return [gap];
+      }
+      const remaining: IntradayTimeRange[] = [];
+      if (segment.startTime > gap.startTime) {
+        remaining.push({
+          startTime: gap.startTime,
+          endTime: shiftTime(segment.startTime, -1),
+        });
+      }
+      if (segment.endTime < gap.endTime) {
+        remaining.push({
+          startTime: shiftTime(segment.endTime, 1),
+          endTime: gap.endTime,
+        });
+      }
+      return remaining;
+    });
   }
-  return false;
+  return gaps;
+}
+
+function coverageForRange(
+  required: IntradayTimeRange,
+  coverage: IntervalCoverageSegment[],
+) {
+  return coverage.filter(
+    (segment) =>
+      segment.requestedEnd >= required.startTime &&
+      segment.requestedStart <= required.endTime,
+  );
 }
 
 function parseRouteResult(value: unknown, range: IntradayTimeRange) {
@@ -146,11 +171,14 @@ export async function syncIntradayMarketData({
   };
   throwIfAborted();
   let coverage = await repository.getIntervalCoverage(instrumentId, "15m");
+  const requestedRanges = coverageGaps(required, coverage).flatMap((range) =>
+    splitIntradayRequestRange(range),
+  );
 
-  if (hasCompleteCoverage(required, coverage)) {
+  if (requestedRanges.length === 0) {
     return {
       source: "cache",
-      status: coverageStatusForSegments(coverage),
+      status: coverageStatusForSegments(coverageForRange(required, coverage)),
       candles: await repository.getCandles(
         instrumentId,
         "15m",
@@ -162,7 +190,6 @@ export async function syncIntradayMarketData({
     };
   }
 
-  const requestedRanges = splitIntradayRequestRange(required);
   for (const range of requestedRanges) {
     throwIfAborted();
     const query = new URLSearchParams({
@@ -264,7 +291,7 @@ export async function syncIntradayMarketData({
 
   return {
     source: "network",
-    status: coverageStatusForSegments(coverage),
+    status: coverageStatusForSegments(coverageForRange(required, coverage)),
     candles: await repository.getCandles(
       instrumentId,
       "15m",

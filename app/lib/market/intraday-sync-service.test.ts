@@ -235,6 +235,84 @@ describe("syncIntradayMarketData", () => {
     });
   });
 
+  it("preserves complete coverage when a history-limit refresh overlaps it", async () => {
+    const repo = repository();
+    const confirmedCoverage: IntervalCoverageSegment = {
+      ...completeCoverage,
+      requestedStart: "2025-01-01T00:00:00.000Z",
+      requestedEnd: "2025-03-31T23:59:59.999Z",
+    };
+    await repo.commitIntervalSyncResult({
+      instrumentId: "HK:1810",
+      interval: "15m",
+      candles: [candle],
+      coverage: [confirmedCoverage],
+      providerSymbol: { provider: "tencent", symbol: "hk01810" },
+    });
+    const historyLimitFetcher = vi.fn<typeof fetch>(async () =>
+      Response.json(
+        { error: { code: "provider-history-limit" } },
+        { status: 502 },
+      ),
+    );
+
+    const refreshed = await syncIntradayMarketData({
+      instrumentId: "HK:1810",
+      symbol: "1810",
+      market: "HK",
+      currency: "HKD",
+      required: {
+        startTime: "2025-02-01T00:00:00.000Z",
+        endTime: "2025-04-30T23:59:59.999Z",
+      },
+      repository: repo,
+      fetcher: historyLimitFetcher,
+    });
+
+    expect(refreshed.requestedRanges).toEqual([
+      {
+        startTime: "2025-04-01T00:00:00.000Z",
+        endTime: "2025-04-30T23:59:59.999Z",
+      },
+    ]);
+    expect(refreshed.coverage).toEqual(
+      expect.arrayContaining([
+        confirmedCoverage,
+        expect.objectContaining({
+          status: "partial",
+          requestedStart: "2025-04-01T00:00:00.000Z",
+          requestedEnd: "2025-04-30T23:59:59.999Z",
+          reason: "provider-history-limit",
+        }),
+      ]),
+    );
+    expect(
+      refreshed.coverage.filter((segment) => segment.status === "partial"),
+    ).toEqual([
+      expect.objectContaining({
+        requestedStart: "2025-04-01T00:00:00.000Z",
+        requestedEnd: "2025-04-30T23:59:59.999Z",
+      }),
+    ]);
+
+    const cacheOnlyFetcher = vi.fn<typeof fetch>();
+    const cached = await syncIntradayMarketData({
+      instrumentId: "HK:1810",
+      symbol: "1810",
+      market: "HK",
+      currency: "HKD",
+      required: {
+        startTime: "2025-02-01T00:00:00.000Z",
+        endTime: "2025-03-31T23:59:59.999Z",
+      },
+      repository: repo,
+      fetcher: cacheOnlyFetcher,
+    });
+
+    expect(cached).toMatchObject({ source: "cache", status: "complete" });
+    expect(cacheOnlyFetcher).not.toHaveBeenCalled();
+  });
+
   it("uses the cached result after a successful intraday sync", async () => {
     const repo = repository();
     const fetcher = vi.fn<typeof fetch>(async () => intradayResponse());

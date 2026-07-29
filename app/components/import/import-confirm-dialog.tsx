@@ -300,7 +300,7 @@ export function ImportConfirmDialog({
           </button>
           <button
             className="primary-button"
-            disabled={preview.blocked}
+            disabled={preview.blocked || retryingUnresolved}
             onClick={onConfirm}
           >
             确认导入并开始更新行情

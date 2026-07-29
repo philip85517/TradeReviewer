@@ -28,6 +28,16 @@ import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeExecution } from "../lib/trades/types";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
 
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, resolve, reject };
+}
+
 const {
   mockDispatcher,
   mockEnrichment,
@@ -303,6 +313,7 @@ describe("TradeReviewWorkspace", () => {
 
   it("retries only selected unresolved canonical instruments while preserving the full result", async () => {
     const user = userEvent.setup();
+    saveImportedExecutions(cmsEnrichedResult.importable);
     const firstEnriched: EnrichedImportResult = {
       ...cmsEnrichedResult,
       unresolved: [
@@ -325,6 +336,7 @@ describe("TradeReviewWorkspace", () => {
         type: "application/pdf",
       }),
     );
+    expect(await screen.findByText("1 笔已跳过")).toBeInTheDocument();
     await user.click(
       await screen.findByRole("button", { name: "重新查询" }),
     );
@@ -338,7 +350,172 @@ describe("TradeReviewWorkspace", () => {
       }),
     );
     expect(
-      await screen.findByText("中国海油（600938）"),
+      (await screen.findAllByText("中国海油（600938）")).length,
+    ).toBeGreaterThan(0);
+    expect(screen.getByText("1 笔已跳过")).toBeInTheDocument();
+  });
+
+  it("does not resurrect an import when a deferred unresolved retry finishes after cancel", async () => {
+    const user = userEvent.setup();
+    const pendingRetry = deferred<EnrichedImportResult>();
+    mockDispatcher.mockResolvedValue(cmsParsedResult);
+    mockEnrichment
+      .mockResolvedValueOnce({
+        ...cmsEnrichedResult,
+        unresolved: [
+          { market: "HK", symbol: "99999", attempts: [] },
+        ],
+      })
+      .mockReturnValueOnce(pendingRetry.promise);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(
+      screen.getByLabelText("导入交易记录"),
+      new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
+    );
+    await user.click(
+      await screen.findByRole("button", { name: "重新查询" }),
+    );
+
+    await user.click(screen.getByRole("button", { name: "取消" }));
+    pendingRetry.resolve(cmsEnrichedResult);
+    await pendingRetry.promise;
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+
+    expect(
+      screen.queryByRole("heading", { name: "确认导入交易记录" }),
+    ).not.toBeInTheDocument();
+    expect(loadImportedExecutions()).toEqual([]);
+  });
+
+  it("disables confirmation while an unresolved retry is pending", async () => {
+    const user = userEvent.setup();
+    const pendingRetry = deferred<EnrichedImportResult>();
+    mockDispatcher.mockResolvedValue(cmsParsedResult);
+    mockEnrichment
+      .mockResolvedValueOnce({
+        ...cmsEnrichedResult,
+        unresolved: [
+          { market: "HK", symbol: "99999", attempts: [] },
+        ],
+      })
+      .mockReturnValueOnce(pendingRetry.promise);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(
+      screen.getByLabelText("导入交易记录"),
+      new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
+    );
+    await user.click(
+      await screen.findByRole("button", { name: "重新查询" }),
+    );
+
+    const confirmButton = screen.getByRole("button", {
+      name: "确认导入并开始更新行情",
+    });
+    expect(confirmButton).toBeDisabled();
+    await user.click(confirmButton);
+    expect(loadImportedExecutions()).toEqual([]);
+    pendingRetry.resolve(cmsEnrichedResult);
+    expect(
+      await screen.findByRole("button", {
+        name: "确认导入并开始更新行情",
+      }),
+    ).toBeEnabled();
+  });
+
+  it("reports stable-id duplicates when the same statement is imported again", async () => {
+    const user = userEvent.setup();
+    saveImportedExecutions(cmsEnrichedResult.importable);
+    mockDispatcher.mockResolvedValue(cmsParsedResult);
+    mockEnrichment.mockResolvedValue(cmsEnrichedResult);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("heading", { name: "中国海油（600938）" });
+    await user.upload(
+      screen.getByLabelText("导入交易记录"),
+      new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
+    );
+
+    expect(await screen.findByText("1 笔已跳过")).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", {
+        name: "确认导入并开始更新行情",
+      }),
+    );
+    expect(loadImportedExecutions()).toHaveLength(1);
+    expect(loadImportHistory()[0].duplicateTradeCount).toBe(1);
+  });
+
+  it("retains the larger legitimate same-file fill multiplicity and counts only the overlap", async () => {
+    const user = userEvent.setup();
+    const existing = {
+      ...cmsEnrichedResult.importable[0],
+      id: "old-file:1",
+      source: {
+        ...cmsEnrichedResult.importable[0].source,
+        row: 1,
+        sourceOrder: 1,
+        fileFingerprint: "old-file",
+      },
+    };
+    const incoming = [7, 8].map((row) => ({
+      ...cmsEnrichedResult.importable[0],
+      id: `new-file:${row}`,
+      source: {
+        ...cmsEnrichedResult.importable[0].source,
+        row,
+        sourceOrder: row,
+        fileFingerprint: "new-file",
+      },
+    }));
+    saveImportedExecutions([existing]);
+    mockDispatcher.mockResolvedValue({
+      ...cmsParsedResult,
+      records: incoming,
+    });
+    mockEnrichment.mockResolvedValue({
+      ...cmsEnrichedResult,
+      importable: incoming,
+    });
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(
+      screen.getByLabelText("导入交易记录"),
+      new File(["pdf"], "重叠区间.pdf", { type: "application/pdf" }),
+    );
+
+    expect(await screen.findByText("1 笔已跳过")).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", {
+        name: "确认导入并开始更新行情",
+      }),
+    );
+    expect(loadImportedExecutions().map((item) => item.id)).toEqual([
+      "new-file:7",
+      "new-file:8",
+    ]);
+    expect(loadImportHistory()[0].duplicateTradeCount).toBe(1);
+  });
+
+  it("keeps executions and import history when post-import K-line sync fails", async () => {
+    const user = userEvent.setup();
+    mockDispatcher.mockResolvedValue(cmsParsedResult);
+    mockEnrichment.mockResolvedValue(cmsEnrichedResult);
+    mockMarketDataSync.mockRejectedValueOnce(
+      new Error("公开行情暂不可用"),
+    );
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(
+      screen.getByLabelText("导入交易记录"),
+      new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
+    );
+    await user.click(
+      await screen.findByRole("button", {
+        name: "确认导入并开始更新行情",
+      }),
+    );
+
+    expect(loadImportedExecutions()).toHaveLength(1);
+    expect(loadImportHistory()).toHaveLength(1);
+    expect(
+      await screen.findByRole("heading", { name: "中国海油（600938）" }),
     ).toBeInTheDocument();
   });
 
@@ -532,6 +709,96 @@ describe("TradeReviewWorkspace", () => {
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
     expect(screen.getByTestId("imported-market-chart")).toBeInTheDocument();
+  });
+
+  it("applies a refreshed canonical name to every execution and keeps it after candle failure and reload", async () => {
+    const user = userEvent.setup();
+    const base: TradeExecution = {
+      id: "name-refresh-buy",
+      source: { platform: "tiger", row: 2 },
+      accountId: "private-account-88",
+      accountLabel: "Tiger 私密账户",
+      instrument: {
+        id: "HK:1810",
+        symbol: "1810",
+        name: "旧证券名称",
+        market: "HK",
+        currency: "HKD",
+      },
+      side: "buy",
+      executedAt: "2025-01-02T02:00:00.000Z",
+      quantity: "100",
+      price: "34.5",
+      fee: "10",
+    };
+    saveImportedExecutions([
+      base,
+      {
+        ...base,
+        id: "name-refresh-sell",
+        source: { platform: "tiger", row: 3 },
+        side: "sell",
+        executedAt: "2025-01-03T02:00:00.000Z",
+      },
+    ]);
+    vi.mocked(fetch).mockResolvedValue(
+      Response.json({
+        market: "HK",
+        symbol: "1810",
+        name: "小米集团-W（更新）",
+        assetType: "stock",
+        source: "hkex",
+        confidence: "official",
+        resolvedAt: "2026-07-29T00:00:00.000Z",
+      }),
+    );
+    mockMarketDataSync.mockRejectedValueOnce(
+      new Error("K 线更新失败"),
+    );
+
+    const view = render(
+      <TradeReviewWorkspace initialFrame={initialFrame} />,
+    );
+    await screen.findByRole("heading", { name: "旧证券名称（1810）" });
+    await user.click(
+      screen.getByRole("button", { name: "更新旧证券名称行情" }),
+    );
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "小米集团-W（更新）（1810）",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      loadImportedExecutions().map((item) => item.instrument.name),
+    ).toEqual(["小米集团-W（更新）", "小米集团-W（更新）"]);
+    const metadataRequest = vi.mocked(fetch).mock.calls.find(
+      ([input]) =>
+        String(input) ===
+        "/api/instruments/resolve?market=HK&symbol=1810",
+    );
+    expect(metadataRequest).toBeDefined();
+    expect(metadataRequest?.[1]).toEqual({
+      signal: expect.any(AbortSignal),
+    });
+    expect(metadataRequest?.[1]).not.toHaveProperty("body");
+    expect(metadataRequest?.[1]).not.toHaveProperty("method");
+    expect(JSON.stringify(metadataRequest)).not.toContain(
+      "private-account-88",
+    );
+    expect(JSON.stringify(metadataRequest)).not.toContain(
+      "Tiger 私密账户",
+    );
+
+    view.unmount();
+    vi.mocked(fetch).mockClear();
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    expect(
+      await screen.findByRole("heading", {
+        name: "小米集团-W（更新）（1810）",
+      }),
+    ).toBeInTheDocument();
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it("navigates through stock and episode library levels without requesting market data", async () => {

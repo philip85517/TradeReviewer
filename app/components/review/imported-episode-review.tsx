@@ -138,22 +138,34 @@ export function ImportedEpisodeReview({
           <span>费用</span>
           <span>源时区</span>
         </div>
-        {executions.map((execution) => (
-          <div className="execution-review-row" key={execution.id}>
-            <span>
-              <Clock3 size={13} />
-              {execution.source.sourceTimestampText ??
-                new Date(execution.executedAt).toLocaleString("zh-CN")}
-            </span>
-            <b className={execution.side === "buy" ? "positive" : "negative"}>
-              {execution.side === "buy" ? "买入" : "卖出"}
-            </b>
-            <span>{execution.quantity}</span>
-            <span>{execution.price}</span>
-            <span>{execution.fee}</span>
-            <span>{execution.source.sourceTimezone ?? "已含时区"}</span>
-          </div>
-        ))}
+        {executions.map((execution) => {
+          const isDateOnly =
+            execution.source.timePrecision === "date-only";
+          const timestampText =
+            execution.source.sourceTimestampText ??
+            (isDateOnly
+              ? date(execution.executedAt)
+              : new Date(execution.executedAt).toLocaleString("zh-CN"));
+
+          return (
+            <div className="execution-review-row" key={execution.id}>
+              <span>
+                <Clock3 size={13} />
+                {timestampText}
+                {isDateOnly ? " · 对账单未提供成交时间" : null}
+              </span>
+              <b
+                className={execution.side === "buy" ? "positive" : "negative"}
+              >
+                {execution.side === "buy" ? "买入" : "卖出"}
+              </b>
+              <span>{execution.quantity}</span>
+              <span>{execution.price}</span>
+              <span>{execution.fee}</span>
+              <span>{execution.source.sourceTimezone ?? "已含时区"}</span>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

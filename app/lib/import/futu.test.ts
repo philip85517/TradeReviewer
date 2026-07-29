@@ -1,6 +1,7 @@
 import * as XLSX from "xlsx";
 import { describe, expect, it } from "vitest";
 
+import { fingerprintBytes } from "./file-fingerprint";
 import { parseFutuWorkbook } from "./futu";
 
 const headers = [
@@ -39,60 +40,62 @@ function missingTradeSheetBuffer() {
 
 describe("parseFutuWorkbook", () => {
   it("imports securities trades and reports skipped fund activity", () => {
-    const result = parseFutuWorkbook(
-      workbookBuffer([
-        [
-          "2025-03-13 00:38:57",
-          "美股孖展账户(0855)",
-          "1001100200280855",
-          "证券",
-          "BABA",
-          "US",
-          "买入开仓",
-          "20250313",
-          "USD",
-          "20.00000000",
-          "137.65000000",
-          "-2753.00000000",
-          "2.05000000",
-          "-2755.05000000",
-        ],
-        [
-          "2025-04-10 14:20:00",
-          "美股孖展账户(0855)",
-          "1001100200280855",
-          "证券",
-          "BABA",
-          "US",
-          "卖出平仓",
-          "20250410",
-          "USD",
-          "-20.00000000",
-          "145.00000000",
-          "2900.00000000",
-          "2.05000000",
-          "2897.95000000",
-        ],
-        [
-          "2025-04-11 15:00:00",
-          "基金账户",
-          "1001100900280855",
-          "基金",
-          "880022",
-          "FD",
-          "赎回",
-          "-",
-          "USD",
-          "-8.12777900",
-          "11.33309000",
-          "92.11285091",
-          "0",
-          "92.11285091",
-        ],
-      ]),
-      { sourceTimezone: "Asia/Shanghai", fileName: "futu-2025.xlsx" },
-    );
+    const bytes = workbookBuffer([
+      [
+        "2025-03-13 00:38:57",
+        "美股孖展账户(0855)",
+        "1001100200280855",
+        "证券",
+        "BABA",
+        "US",
+        "买入开仓",
+        "20250313",
+        "USD",
+        "20.00000000",
+        "137.65000000",
+        "-2753.00000000",
+        "2.05000000",
+        "-2755.05000000",
+      ],
+      [
+        "2025-04-10 14:20:00",
+        "美股孖展账户(0855)",
+        "1001100200280855",
+        "证券",
+        "BABA",
+        "US",
+        "卖出平仓",
+        "20250410",
+        "USD",
+        "-20.00000000",
+        "145.00000000",
+        "2900.00000000",
+        "2.05000000",
+        "2897.95000000",
+      ],
+      [
+        "2025-04-11 15:00:00",
+        "基金账户",
+        "1001100900280855",
+        "基金",
+        "880022",
+        "FD",
+        "赎回",
+        "-",
+        "USD",
+        "-8.12777900",
+        "11.33309000",
+        "92.11285091",
+        "0",
+        "92.11285091",
+      ],
+    ]);
+    const result = parseFutuWorkbook(bytes, {
+      sourceTimezone: "Asia/Shanghai",
+      fileName: "futu-2025.xlsx",
+    });
 
+    expect(result.broker).toBe("futu");
     expect(result.blocked).toBe(false);
     expect(result.records).toHaveLength(2);
     expect(result.records[0]).toMatchObject({
@@ -117,6 +120,22 @@ describe("parseFutuWorkbook", () => {
         sourceTimezone: "Asia/Shanghai",
       },
     });
+    expect(result.records[0].source.fileFingerprint).toBe(
+      fingerprintBytes(bytes),
+    );
+    expect(result.candidates).toContainEqual({
+      market: "US",
+      symbol: "BABA",
+      sourceName: undefined,
+      sourceAssetType: "unknown",
+    });
+    expect(result.exclusions).toContainEqual(
+      expect.objectContaining({
+        category: "fund",
+        count: 1,
+        instrumentSymbol: "880022",
+      }),
+    );
     expect(result.records[1].side).toBe("sell");
     expect(result.diagnostics).toContainEqual(
       expect.objectContaining({

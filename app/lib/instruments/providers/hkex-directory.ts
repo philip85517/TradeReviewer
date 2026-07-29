@@ -22,6 +22,8 @@ import {
 
 const HKEX_SECURITIES_URL =
   "https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx";
+const HKEX_ETPS_URL =
+  "https://www.hkex.com.hk/-/media/HKEX-Market/Products/Securities/ETP/Market-Making-Obligations_List-of-ETPs_csv.csv";
 
 const EQUITY_CATEGORIES = new Set([
   "EQUITY",
@@ -37,6 +39,8 @@ const ETF_SUBCATEGORIES = new Set([
   "EXCHANGE TRADED FUNDS",
   "EXCHANGE-TRADED FUND",
   "EXCHANGE-TRADED FUNDS",
+  "LEVERAGED AND INVERSE PRODUCT",
+  "LEVERAGED AND INVERSE PRODUCTS",
 ]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -104,6 +108,84 @@ export function parseHkexRows(
   return directory;
 }
 
+export function parseHkexEtpRows(
+  rows: readonly unknown[],
+  resolvedAt = new Date().toISOString(),
+): Map<string, ResolvedInstrument> {
+  const directory = new Map<string, ResolvedInstrument>();
+  let hasExpectedHeaders = false;
+
+  for (const value of rows) {
+    if (!isRecord(value)) continue;
+    const normalizedFields = new Map(
+      Object.entries(value).map(([key, fieldValue]) => [
+        key.trim().replaceAll(/\s+/gu, " ").toUpperCase(),
+        fieldValue,
+      ]),
+    );
+    if (
+      normalizedFields.has("STOCK CODE") &&
+      normalizedFields.has("NAME OF ETP")
+    ) {
+      hasExpectedHeaders = true;
+    }
+
+    const rawCodeValue = normalizedFields.get("STOCK CODE");
+    const nameValue = normalizedFields.get("NAME OF ETP");
+    const rawCode =
+      typeof rawCodeValue === "string" || typeof rawCodeValue === "number"
+        ? String(rawCodeValue).trim()
+        : "";
+    const name =
+      typeof nameValue === "string" || typeof nameValue === "number"
+        ? String(nameValue).trim()
+        : "";
+    if (!/^\d{1,5}$/u.test(rawCode) || !name) continue;
+
+    directory.set(rawCode.padStart(5, "0"), {
+      market: "HK",
+      symbol: canonicalInstrumentSymbol(rawCode, "HK"),
+      name,
+      assetType: "etf",
+      source: "hkex",
+      confidence: "official",
+      resolvedAt,
+    });
+  }
+
+  if (!hasExpectedHeaders || directory.size === 0) {
+    return invalidMetadataResponse("港交所 ETP 目录文件结构无效");
+  }
+  return directory;
+}
+
+function rowsFromWorksheet(
+  worksheet: XLSX.WorkSheet,
+  requiredHeaders: readonly string[],
+): unknown[] {
+  const values = XLSX.utils.sheet_to_json<unknown[]>(worksheet, {
+    header: 1,
+    defval: "",
+  });
+  const headerIndex = values.findIndex(
+    (row) =>
+      Array.isArray(row) &&
+      requiredHeaders.every((header) =>
+        row.some(
+          (value) =>
+            String(value).trim().replaceAll(/\s+/gu, " ") === header,
+        ),
+      ),
+  );
+  if (headerIndex < 0) {
+    return invalidMetadataResponse("港交所证券目录文件结构无效");
+  }
+  return XLSX.utils.sheet_to_json(worksheet, {
+    range: headerIndex,
+    defval: "",
+  });
+}
+
 function parseHkexWorkbook(
   bytes: ArrayBuffer,
   resolvedAt = new Date().toISOString(),
@@ -115,7 +197,12 @@ function parseHkexWorkbook(
     const worksheet = workbook.Sheets[firstSheet];
     if (!worksheet) invalidMetadataResponse("港交所证券目录无法解析");
     return parseHkexRows(
-      XLSX.utils.sheet_to_json(worksheet, { defval: "" }),
+      rowsFromWorksheet(worksheet, [
+        "Stock Code",
+        "Name of Securities",
+        "Category",
+        "Sub-Category",
+      ]),
       resolvedAt,
     );
   } catch {
@@ -123,9 +210,30 @@ function parseHkexWorkbook(
   }
 }
 
+function parseHkexEtpWorkbook(
+  bytes: ArrayBuffer,
+  resolvedAt = new Date().toISOString(),
+): Map<string, ResolvedInstrument> {
+  try {
+    const workbook = XLSX.read(bytes, { type: "array" });
+    const firstSheet = workbook.SheetNames[0];
+    if (!firstSheet) invalidMetadataResponse("港交所 ETP 目录无法解析");
+    const worksheet = workbook.Sheets[firstSheet];
+    if (!worksheet) invalidMetadataResponse("港交所 ETP 目录无法解析");
+    return parseHkexEtpRows(
+      rowsFromWorksheet(worksheet, ["Stock Code", "Name of ETP"]),
+      resolvedAt,
+    );
+  } catch {
+    return invalidMetadataResponse("港交所 ETP 目录无法解析");
+  }
+}
+
 type HkexCatalogState = {
   snapshot?: CatalogSnapshot<Map<string, ResolvedInstrument>>;
   inFlight?: Promise<Map<string, ResolvedInstrument>>;
+  etpSnapshot?: CatalogSnapshot<Map<string, ResolvedInstrument>>;
+  etpInFlight?: Promise<Map<string, ResolvedInstrument>>;
 };
 
 const catalogStates = new WeakMap<CatalogCache, HkexCatalogState>();
@@ -180,6 +288,48 @@ async function loadHkexDirectory(
   }
 }
 
+async function loadHkexEtpDirectory(
+  cache: CatalogCache,
+  fetcher: typeof fetch,
+  now: () => number,
+): Promise<Map<string, ResolvedInstrument>> {
+  const state = catalogState(cache);
+  const currentTime = now();
+  if (
+    state.etpSnapshot &&
+    state.etpSnapshot.loadedAt <= currentTime &&
+    currentTime - state.etpSnapshot.loadedAt < CATALOG_TTL_MS
+  ) {
+    return state.etpSnapshot.value;
+  }
+  if (state.etpInFlight) return state.etpInFlight;
+
+  const request = (async () => {
+    const file = await loadCatalogFile({
+      cache,
+      fetcher,
+      key: HKEX_ETPS_URL,
+      now: currentTime,
+      providerLabel: "港交所 ETP 目录",
+      validate: (bytes) => {
+        parseHkexEtpWorkbook(bytes);
+      },
+    });
+    const directory = parseHkexEtpWorkbook(
+      file.bytes,
+      new Date(file.loadedAt).toISOString(),
+    );
+    state.etpSnapshot = { loadedAt: file.loadedAt, value: directory };
+    return directory;
+  })();
+  state.etpInFlight = request;
+  try {
+    return await request;
+  } finally {
+    if (state.etpInFlight === request) state.etpInFlight = undefined;
+  }
+}
+
 export class HkexDirectoryProvider implements InstrumentMetadataProvider {
   readonly id = "hkex" as const;
   private readonly cache: CatalogCache;
@@ -205,11 +355,18 @@ export class HkexDirectoryProvider implements InstrumentMetadataProvider {
       5,
       "0",
     );
-    const resolved = (await loadHkexDirectory(
+    let resolved = (await loadHkexDirectory(
       this.cache,
       fetcher,
       this.now,
     )).get(symbol);
+    if (!resolved) {
+      resolved = (await loadHkexEtpDirectory(
+        this.cache,
+        fetcher,
+        this.now,
+      )).get(symbol);
+    }
     if (!resolved) noMetadata("港交所目录未返回该证券");
     return validateProviderMetadataResult(resolved, lookup, "港交所目录");
   }

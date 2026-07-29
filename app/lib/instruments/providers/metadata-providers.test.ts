@@ -68,6 +68,11 @@ const OTHER_LISTED = readFileSync(
   ),
   "utf8",
 );
+const HKEX_ETPS = [
+  "Stock Code ,Name of ETP,Market Making Obligation Grouping",
+  "7226,CSOP Hang Seng TECH Index Daily (2x) Leveraged Product,B",
+  "7552,CSOP Hang Seng TECH Index Daily (-2x) Inverse Product,B",
+].join("\n");
 
 describe("portal metadata providers", () => {
   it("parses Tencent stock and ETF responses with matching codes", () => {
@@ -458,6 +463,24 @@ describe("official catalog providers", () => {
     return XLSX.write(workbook, { type: "array", bookType: "xlsx" });
   }
 
+  function currentHkexWorkbookBytes(
+    rows: readonly Record<string, unknown>[] = HKEX_ROWS,
+  ) {
+    const headers = Object.keys(rows[0] ?? {});
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.aoa_to_sheet([
+        ["List of Securities"],
+        ["Updated as at 30/07/2026"],
+        headers,
+        ...rows.map((row) => headers.map((header) => row[header] ?? "")),
+      ]),
+      "ListOfSecurities",
+    );
+    return XLSX.write(workbook, { type: "array", bookType: "xlsx" });
+  }
+
   it("merges Nasdaq-listed and other-listed stock/ETF rows", () => {
     const directory = parseNasdaqDirectories(NASDAQ_LISTED, OTHER_LISTED);
     expect(directory.get("AAPL")).toMatchObject({
@@ -471,12 +494,12 @@ describe("official catalog providers", () => {
     expect(directory.has("ZVZZT")).toBe(false);
   });
 
-  it("accepts only HK equities and ETFs from the official list", () => {
+  it("accepts HK equities, ETFs, and leveraged/inverse ETPs from the official list", () => {
     const directory = parseHkexRows(HKEX_ROWS);
     expect(directory.get("00700")?.assetType).toBe("stock");
     expect(directory.get("02800")?.assetType).toBe("etf");
     expect(directory.has("04600")).toBe(false);
-    expect(directory.has("07200")).toBe(false);
+    expect(directory.get("07200")?.assetType).toBe("etf");
     expect(directory.has("04333")).toBe(false);
   });
 
@@ -553,6 +576,69 @@ describe("official catalog providers", () => {
 
     expect(fetcher).toHaveBeenCalledTimes(1);
     expect(cache.entries.size).toBe(1);
+  });
+
+  it("locates the HKEX column headers after the title and update rows", async () => {
+    const cache = new MemoryCatalogCache();
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(new Response(currentHkexWorkbookBytes()));
+    const provider = new HkexDirectoryProvider({
+      cache,
+      fetcher,
+      now: () => Date.UTC(2026, 6, 30),
+    });
+
+    await expect(
+      provider.resolve({ market: "HK", symbol: "700" }),
+    ).resolves.toMatchObject({
+      symbol: "700",
+      name: "TENCENT HOLDINGS",
+      assetType: "stock",
+    });
+  });
+
+  it("falls back to the official HKEX ETP directory when the securities workbook omits a fund", async () => {
+    const cache = new MemoryCatalogCache();
+    const fetcher = vi.fn<typeof fetch>(async (input) =>
+      String(input).endsWith(".csv")
+        ? new Response(HKEX_ETPS)
+        : new Response(
+            hkexWorkbookBytes([
+              {
+                "Stock Code": "00001",
+                "Name of Securities": "CKH HOLDINGS",
+                Category: "Equity",
+                "Sub-Category": "Equity Securities (Main Board)",
+              },
+            ]),
+          ),
+    );
+    const provider = new HkexDirectoryProvider({
+      cache,
+      fetcher,
+      now: () => Date.UTC(2026, 6, 30),
+    });
+
+    await expect(
+      provider.resolve({ market: "HK", symbol: "7226" }),
+    ).resolves.toMatchObject({
+      symbol: "7226",
+      name: "CSOP Hang Seng TECH Index Daily (2x) Leveraged Product",
+      assetType: "etf",
+      source: "hkex",
+    });
+    await expect(
+      provider.resolve({ market: "HK", symbol: "7552" }),
+    ).resolves.toMatchObject({
+      symbol: "7552",
+      name: "CSOP Hang Seng TECH Index Daily (-2x) Inverse Product",
+      assetType: "etf",
+      source: "hkex",
+    });
+
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(cache.entries.size).toBe(2);
   });
 
   it("identifies SEC requests and refreshes the raw cache after 86400 seconds", async () => {

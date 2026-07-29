@@ -22,6 +22,11 @@ export type DrawingAnchor = {
   price: number;
 };
 
+export type CanonicalDrawingTool = Exclude<
+  DrawingTool,
+  "cursor" | "risk-reward"
+>;
+
 export type Drawing = {
   version?: 1 | 2;
   id: string;
@@ -48,10 +53,14 @@ export type Drawing = {
   createdAtCursor?: string;
 };
 
-export type NormalizedDrawing = Drawing & {
+export type NormalizedDrawing = Omit<
+  Drawing,
+  "version" | "episodeId" | "name" | "tool" | "zIndex" | "createdAtCursor"
+> & {
   version: 2;
   episodeId: string;
   name: string;
+  tool: CanonicalDrawingTool;
   zIndex: number;
   createdAtCursor: string;
 };
@@ -97,7 +106,7 @@ export function requiredAnchorCount(tool: DrawingTool) {
   return anchorCounts[tool];
 }
 
-function canonicalTool(drawing: Drawing): Exclude<DrawingTool, "cursor"> {
+function canonicalTool(drawing: Drawing): CanonicalDrawingTool {
   if (drawing.tool !== "risk-reward") return drawing.tool;
   return drawing.anchors[1]?.price < drawing.anchors[0]?.price
     ? "long-risk-reward"
@@ -149,7 +158,7 @@ export function normalizeDrawing(
   const normalized: NormalizedDrawing = {
     ...drawing,
     version: 2,
-    episodeId: drawing.episodeId ?? episodeId,
+    episodeId,
     name: drawing.name ?? tool,
     tool,
     anchors: drawing.anchors.map((anchor) => ({ ...anchor })),

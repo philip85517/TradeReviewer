@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import type { Drawing } from "../chart/drawings";
+import type { Drawing, NormalizedDrawing } from "../chart/drawings";
 import {
   loadReviewState,
   saveReviewState,
@@ -81,5 +81,41 @@ describe("review storage", () => {
       episodeId: "legacy",
     });
     expect(localStorage.getItem("trade-reviewer:review:v2:legacy")).not.toBeNull();
+  });
+
+  it("makes the requested episode authoritative when saving and loading v2 state", () => {
+    const drawingForB: NormalizedDrawing = {
+      ...drawing,
+      version: 2,
+      episodeId: "episode-b",
+      name: "B 的价格标注",
+      tool: "price-label",
+      zIndex: 0,
+      createdAtCursor: "2025-01-06T00:00:00.000Z",
+    };
+    const stateForB = {
+      version: 2 as const,
+      episodeId: "episode-b",
+      replayCursor: "2025-01-06T00:00:00.000Z",
+      timeframe: "1D" as const,
+      activePanelTab: "notes" as const,
+      drawings: [drawingForB],
+    };
+
+    saveReviewState("episode-a", stateForB);
+    expect(loadReviewState("episode-a")).toMatchObject({
+      episodeId: "episode-a",
+      activePanelTab: "notes",
+      drawings: [{ episodeId: "episode-a" }],
+    });
+
+    window.localStorage.setItem(
+      "trade-reviewer:review:v2:episode-a",
+      JSON.stringify(stateForB),
+    );
+    expect(loadReviewState("episode-a")).toMatchObject({
+      episodeId: "episode-a",
+      drawings: [{ episodeId: "episode-a" }],
+    });
   });
 });

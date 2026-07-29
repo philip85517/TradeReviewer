@@ -69,17 +69,15 @@ function normalizeState(
   episodeId: string,
   state: StoredReviewState,
 ): LoadedReviewState {
-  const normalizedEpisodeId =
-    state.version === 2 ? state.episodeId : episodeId;
   return {
     version: 2,
-    episodeId: normalizedEpisodeId,
+    episodeId,
     replayCursor: state.replayCursor,
     timeframe: state.timeframe,
     activePanelTab: state.version === 2 ? state.activePanelTab : "stats",
     drawings: normalizeDrawings(
       state.drawings,
-      normalizedEpisodeId,
+      episodeId,
       state.replayCursor,
     ),
     thesis: state.thesis ?? "",

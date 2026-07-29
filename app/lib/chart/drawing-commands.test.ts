@@ -34,6 +34,24 @@ function drawing(
 }
 
 describe("drawing command history", () => {
+  it("rejects a legacy generic risk-reward drawing from command history", () => {
+    const legacyRiskReward = {
+      ...drawing("legacy-risk", {
+        tool: "long-risk-reward",
+        anchors: [
+          { time: "2025-01-02T00:00:00.000Z", price: 100 },
+          { time: "2025-01-02T00:00:00.000Z", price: 95 },
+          { time: "2025-01-02T00:00:00.000Z", price: 110 },
+        ],
+      }),
+      tool: "risk-reward",
+    } as unknown as NormalizedDrawing;
+
+    expect(() => createDrawingHistory([legacyRiskReward])).toThrow(
+      "规范化绘图不支持旧版风险回报工具",
+    );
+  });
+
   it("creates, updates, renames, toggles, reorders, deletes, and clears drawings", () => {
     const trend = drawing("trend");
     const label = drawing("label", {

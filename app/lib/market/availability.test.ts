@@ -129,4 +129,24 @@ describe("resolveTimeframeAvailability", () => {
       reason: "公开行情源暂不可用",
     });
   });
+
+  it("explains when a completed intraday request returned no candles", () => {
+    const result = resolveTimeframeAvailability({
+      intradayCandles: [],
+      dailyCandles: [],
+      intradayCoverage: [
+        {
+          interval: "15m",
+          requestedStart: "2025-01-01T00:00:00.000Z",
+          requestedEnd: "2025-01-10T00:00:00.000Z",
+          status: "complete",
+        },
+      ],
+    });
+
+    expect(result["15m"]).toEqual({
+      enabled: false,
+      reason: "已获取该周期行情但没有可用的 15 分钟数据",
+    });
+  });
 });

@@ -35,6 +35,13 @@ export function aggregateCandles(
   options?: AggregationOptions,
 ): Candle[] {
   if (
+    options?.sourceInterval === "15m" &&
+    !["15m", "1h", "4h"].includes(timeframe)
+  ) {
+    throw new Error(`不能从 ${options.sourceInterval} 生成 ${timeframe}`);
+  }
+
+  if (
     options?.sourceInterval &&
     INTERVAL_RANK[options.sourceInterval] > INTERVAL_RANK[timeframe]
   ) {

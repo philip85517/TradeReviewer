@@ -243,4 +243,13 @@ describe("aggregateCandles", () => {
       }),
     ).toThrow("不能从 1D 生成 15m");
   });
+
+  it("rejects an attempt to derive weekly candles from native 15m candles", () => {
+    expect(() =>
+      aggregateCandles(fifteenMinuteCandles, "1W", {
+        sourceInterval: "15m",
+        market: "US",
+      }),
+    ).toThrow("不能从 15m 生成 1W");
+  });
 });

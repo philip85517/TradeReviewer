@@ -23,6 +23,7 @@ const INTRADAY_UNAVAILABLE_REASONS: Record<string, string> = {
 const INTRADAY_UNAVAILABLE_STATUSES: Partial<
   Record<IntervalCoverageSegment["status"], string>
 > = {
+  complete: "已获取该周期行情但没有可用的 15 分钟数据",
   syncing: "正在获取 15 分钟行情",
   partial: "15 分钟行情暂不可用",
   stale: "15 分钟行情需要更新",

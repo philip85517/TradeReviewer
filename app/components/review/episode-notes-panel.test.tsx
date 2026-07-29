@@ -1,10 +1,12 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { EpisodeNotesPanel } from "./episode-notes-panel";
 
 describe("EpisodeNotesPanel", () => {
+  afterEach(cleanup);
+
   it("keeps every plan and review field, tags, completion, and save status editable", async () => {
     const user = userEvent.setup();
     const onSave = vi.fn().mockResolvedValue(undefined);
@@ -46,5 +48,21 @@ describe("EpisodeNotesPanel", () => {
         confirmedTagIds: ["breakout"],
       }),
     );
+  });
+
+  it("announces a dirty draft while it waits for autosave", async () => {
+    const user = userEvent.setup();
+    render(
+      <EpisodeNotesPanel
+        episodeId="episode-1"
+        instrumentId="HK:9868"
+        delayMs={600}
+        onSave={vi.fn().mockResolvedValue(undefined)}
+      />,
+    );
+
+    await user.type(screen.getByLabelText("买入理由"), "等待回踩");
+
+    expect(screen.getByRole("status")).toHaveTextContent("等待自动保存");
   });
 });

@@ -2633,6 +2633,10 @@ input:focus-visible {
   background: #0f1620;
 }
 
+.review-side-panel-shell {
+  display: contents;
+}
+
 .review-side-panel-desktop {
   padding: 17px 15px;
 }

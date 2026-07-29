@@ -37,7 +37,7 @@ export function EpisodeNotesPanel({ episodeId, instrumentId, record, delayMs, on
         </fieldset>
       </div>
       <div className="episode-review-tags"><span><Tags size={13} />用户确认标签</span><div>{REVIEW_TAGS.map(({ id, label }) => <label key={id}><input type="checkbox" checked={draft.confirmedTagIds.includes(id)} onChange={() => toggleTag(id)} />{label}</label>)}</div></div>
-      <footer className="episode-notes-status"><label><input type="checkbox" aria-label="标记为已完成复盘" checked={draft.review.completed} onChange={(event) => updateReview("completed", event.target.checked)} />标记为已完成复盘</label>{status === "saving" && <span role="status" aria-live="polite">正在自动保存</span>}{status === "saved" && <span role="status" aria-live="polite"><CheckCircle2 size={13} />已自动保存</span>}{error && <span role="alert">{error}</span>}{status === "error" && <button type="button" onClick={() => void retry()}>重试保存</button>}</footer>
+      <footer className="episode-notes-status"><label><input type="checkbox" aria-label="标记为已完成复盘" checked={draft.review.completed} onChange={(event) => updateReview("completed", event.target.checked)} />标记为已完成复盘</label>{status === "dirty" && <span role="status" aria-live="polite">等待自动保存</span>}{status === "saving" && <span role="status" aria-live="polite">正在自动保存</span>}{status === "saved" && <span role="status" aria-live="polite"><CheckCircle2 size={13} />已自动保存</span>}{error && <span role="alert">{error}</span>}{status === "error" && <button type="button" onClick={() => void retry()}>重试保存</button>}</footer>
     </section>
   );
 }

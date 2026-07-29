@@ -6,11 +6,15 @@ import type {
   ProviderResult,
 } from "../contracts";
 import { providerSymbolCandidates } from "../symbol-map";
-import { validateProviderCandles } from "../validation";
+import {
+  validateProviderCandles,
+  validateProviderMarketCandles,
+} from "../validation";
 import {
   marketLocalTimestampToIso,
   MarketDataProviderError,
   readProviderJson,
+  utcIsoToMarketLocal,
 } from "./errors";
 import type { IntradayCandleRequest, IntradayProviderResult } from "./router";
 
@@ -144,6 +148,9 @@ export class TencentProvider implements MarketDataProvider {
     fetcher: typeof fetch = fetch,
   ): Promise<IntradayProviderResult> {
     let hasUnavailableHistory = false;
+    const timeZone = marketTimeZone(request.market);
+    const startTime = utcIsoToMarketLocal(request.startTime, timeZone);
+    const endTime = utcIsoToMarketLocal(request.endTime, timeZone);
     for (const providerSymbol of providerSymbolCandidates(
       this.id,
       request.market,
@@ -152,8 +159,8 @@ export class TencentProvider implements MarketDataProvider {
       const params = [
         providerSymbol,
         "m15",
-        request.startTime,
-        request.endTime,
+        startTime,
+        endTime,
         "500",
         "",
       ].join(",");
@@ -166,7 +173,7 @@ export class TencentProvider implements MarketDataProvider {
         parsed = parseTencentIntraday(
           value,
           providerSymbol,
-          marketTimeZone(request.market),
+          timeZone,
         );
       } catch (error) {
         throw new MarketDataProviderError(
@@ -181,6 +188,18 @@ export class TencentProvider implements MarketDataProvider {
       if (candles.length === 0) {
         hasUnavailableHistory ||= parsed.length > 0;
         continue;
+      }
+      try {
+        validateProviderMarketCandles(
+          candles,
+          request.startTime,
+          request.endTime,
+        );
+      } catch (error) {
+        throw new MarketDataProviderError(
+          "invalid-response",
+          error instanceof Error ? error.message : "腾讯行情响应无效",
+        );
       }
       return {
         provider: this.id,

@@ -19,6 +19,33 @@ export class MarketDataProviderError extends Error {
   }
 }
 
+function marketTimeParts(timestamp: Date, timeZone: string) {
+  return Object.fromEntries(
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h23",
+    })
+      .formatToParts(timestamp)
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, part.value]),
+  );
+}
+
+export function utcIsoToMarketLocal(value: string, timeZone: string) {
+  const timestamp = new Date(value);
+  if (!Number.isFinite(timestamp.getTime())) {
+    throw new Error("行情时间格式已变化");
+  }
+  const parts = marketTimeParts(timestamp, timeZone);
+  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
+}
+
 export function marketLocalTimestampToIso(
   value: string,
   timeZone: string,
@@ -37,24 +64,9 @@ export function marketLocalTimestampToIso(
     Number(minute),
     Number(second),
   );
-  const formatter = new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hourCycle: "h23",
-  });
   let timestamp = expected;
   for (let attempt = 0; attempt < 2; attempt += 1) {
-    const parts = Object.fromEntries(
-      formatter
-        .formatToParts(new Date(timestamp))
-        .filter((part) => part.type !== "literal")
-        .map((part) => [part.type, part.value]),
-    );
+    const parts = marketTimeParts(new Date(timestamp), timeZone);
     const observed = Date.UTC(
       Number(parts.year),
       Number(parts.month) - 1,

@@ -7,7 +7,10 @@ import type {
   SupportedMarket,
 } from "../contracts";
 import { normalizeMarketSymbol } from "../symbol-map";
-import { validateProviderCandles } from "../validation";
+import {
+  validateProviderCandles,
+  validateProviderMarketCandles,
+} from "../validation";
 import { MarketDataProviderError, readProviderJson } from "./errors";
 import type { IntradayCandleRequest, IntradayProviderResult } from "./router";
 
@@ -174,6 +177,11 @@ export class YahooProvider implements MarketDataProvider {
             : "Yahoo 未返回该股票数据",
         );
       }
+      validateProviderMarketCandles(
+        candles,
+        request.startTime,
+        request.endTime,
+      );
       return {
         provider: this.id,
         providerSymbol,

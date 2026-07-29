@@ -7,11 +7,15 @@ import type {
   SupportedMarket,
 } from "../contracts";
 import { providerSymbolCandidates } from "../symbol-map";
-import { validateProviderCandles } from "../validation";
+import {
+  validateProviderCandles,
+  validateProviderMarketCandles,
+} from "../validation";
 import {
   marketLocalTimestampToIso,
   MarketDataProviderError,
   readProviderJson,
+  utcIsoToMarketLocal,
 } from "./errors";
 import type { IntradayCandleRequest, IntradayProviderResult } from "./router";
 
@@ -142,12 +146,14 @@ export class EastmoneyProvider implements MarketDataProvider {
     if (!providerSymbol) {
       throw new MarketDataProviderError("no-data", "东方财富不支持该市场");
     }
+    const startTime = utcIsoToMarketLocal(request.startTime, "Asia/Shanghai");
+    const endTime = utcIsoToMarketLocal(request.endTime, "Asia/Shanghai");
     const query = new URLSearchParams({
       secid: providerSymbol,
       klt: "15",
       fqt: "0",
-      beg: request.startTime.replace(/\D/g, ""),
-      end: request.endTime.replace(/\D/g, ""),
+      beg: startTime.replace(/\D/g, ""),
+      end: endTime.replace(/\D/g, ""),
       fields1: "f1,f2,f3,f4,f5,f6",
       fields2: "f51,f52,f53,f54,f55,f56",
     });
@@ -169,6 +175,11 @@ export class EastmoneyProvider implements MarketDataProvider {
             : "东方财富未返回该股票数据",
         );
       }
+      validateProviderMarketCandles(
+        candles,
+        request.startTime,
+        request.endTime,
+      );
       return {
         provider: this.id,
         providerSymbol,

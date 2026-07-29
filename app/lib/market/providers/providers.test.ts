@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import { parseEastmoneyDaily, parseEastmoneyIntraday } from "./eastmoney";
-import { parseTencentDaily, parseTencentIntraday } from "./tencent";
+import {
+  EastmoneyProvider,
+  parseEastmoneyDaily,
+  parseEastmoneyIntraday,
+} from "./eastmoney";
+import {
+  parseTencentDaily,
+  parseTencentIntraday,
+  TencentProvider,
+} from "./tencent";
 import { parseYahooDaily, parseYahooIntraday } from "./yahoo";
 import { createProviderRouter } from "./router";
 import { MarketDataProviderError } from "./errors";
@@ -409,4 +417,142 @@ describe("provider routing", () => {
       }),
     );
   });
+});
+
+describe("intraday provider requests", () => {
+  it("asks Tencent for HK market-open bounds in Hong Kong local time", async () => {
+    let requestedUrl: URL | undefined;
+    const fetcher: typeof fetch = async (input) => {
+      requestedUrl = new URL(String(input));
+      return Response.json({
+        data: {
+          hk01810: {
+            m15: [
+              ["2025-01-02 09:30:00", "34.1", "34.5", "35", "33.8", "1200"],
+              ["2025-01-02 09:45:00", "34.5", "34.7", "35", "34", "900"],
+            ],
+          },
+        },
+      });
+    };
+
+    await new TencentProvider().fetchIntraday(
+      {
+        instrumentId: "HK:1810",
+        symbol: "1810",
+        market: "HK",
+        interval: "15m",
+        startTime: "2025-01-02T01:30:00.000Z",
+        endTime: "2025-01-02T01:45:00.000Z",
+      },
+      fetcher,
+    );
+
+    expect(requestedUrl?.searchParams.get("param")).toBe(
+      "hk01810,m15,2025-01-02 09:30:00,2025-01-02 09:45:00,500,",
+    );
+  });
+
+  it("asks Eastmoney for local bounds across the Shanghai date boundary", async () => {
+    let requestedUrl: URL | undefined;
+    const fetcher: typeof fetch = async (input) => {
+      requestedUrl = new URL(String(input));
+      return Response.json({
+        data: {
+          klines: [
+            "2025-01-03 00:00:00,100,102,104,99,800",
+            "2025-01-03 00:15:00,102,103,105,101,600",
+          ],
+        },
+      });
+    };
+
+    await new EastmoneyProvider().fetchIntraday(
+      {
+        instrumentId: "CN-SH:600519",
+        symbol: "600519",
+        market: "CN-SH",
+        interval: "15m",
+        startTime: "2025-01-02T16:00:00.000Z",
+        endTime: "2025-01-02T16:15:00.000Z",
+      },
+      fetcher,
+    );
+
+    expect(requestedUrl?.searchParams.get("beg")).toBe("20250103000000");
+    expect(requestedUrl?.searchParams.get("end")).toBe("20250103001500");
+  });
+
+  it.each([
+    ["an empty price", "", "11", "12", "9", "100"],
+    ["a nonnumeric close", "10", "invalid", "12", "9", "100"],
+    ["a non-finite high", "10", "11", "Infinity", "9", "100"],
+    ["an invalid OHLC range", "10", "11", "9", "12", "100"],
+  ])(
+    "rejects Tencent candles with %s as invalid responses",
+    async (_case, open, close, high, low, volume) => {
+      const fetcher: typeof fetch = async () =>
+        Response.json({
+          data: {
+            hk01810: {
+              m15: [["2025-01-02 09:30:00", open, close, high, low, volume]],
+            },
+          },
+        });
+
+      await expect(
+        new TencentProvider().fetchIntraday(
+          {
+            instrumentId: "HK:1810",
+            symbol: "1810",
+            market: "HK",
+            interval: "15m",
+            startTime: "2025-01-02T01:30:00.000Z",
+            endTime: "2025-01-02T01:30:00.000Z",
+          },
+          fetcher,
+        ),
+      ).rejects.toEqual(
+        expect.objectContaining<Partial<MarketDataProviderError>>({
+          code: "invalid-response",
+        }),
+      );
+    },
+  );
+
+  it.each([
+    ["a nonnumeric open", "invalid", "11", "12", "9", "100"],
+    ["a non-finite volume", "10", "11", "12", "9", "Infinity"],
+    ["an invalid OHLC range", "10", "11", "9", "12", "100"],
+  ])(
+    "rejects Eastmoney candles with %s as invalid responses",
+    async (_case, open, close, high, low, volume) => {
+      const fetcher: typeof fetch = async () =>
+        Response.json({
+          data: {
+            klines: [
+              `2025-01-02 09:30:00,${open},${close},${high},${low},${volume}`,
+            ],
+          },
+        });
+
+      await expect(
+        new EastmoneyProvider().fetchIntraday(
+          {
+            instrumentId: "CN-SH:600519",
+            symbol: "600519",
+            market: "CN-SH",
+            interval: "15m",
+            startTime: "2025-01-02T01:30:00.000Z",
+            endTime: "2025-01-02T01:30:00.000Z",
+          },
+          fetcher,
+        ),
+      ).rejects.toEqual(
+        expect.objectContaining<Partial<MarketDataProviderError>>({
+          code: "invalid-response",
+        }),
+      );
+    },
+  );
 });

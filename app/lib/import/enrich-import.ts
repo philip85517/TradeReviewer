@@ -7,6 +7,7 @@ import type {
   InstrumentMetadataFailure,
   ResolvedInstrument,
 } from "../instruments/metadata-contracts";
+import { validateResolvedInstrument } from "../instruments/metadata-contracts";
 import {
   resolveInstrumentMetadataBatch,
   type ResolveBatchResult,
@@ -178,33 +179,36 @@ function emptyResolution(): ResolveBatchResult {
   };
 }
 
-function mergeResolutions(
-  results: ResolveBatchResult[],
-): ResolveBatchResult {
-  const resolved = new Map<string, ResolvedInstrument>();
-  const unresolved = new Map<string, InstrumentMetadataFailure>();
-  for (const result of results) {
-    for (const [instrumentId, metadata] of result.resolved) {
-      resolved.set(instrumentId, metadata);
-      unresolved.delete(instrumentId);
-    }
-    for (const [instrumentId, failure] of result.unresolved) {
-      if (!resolved.has(instrumentId)) {
-        unresolved.set(instrumentId, failure);
+async function readValidCachedMetadata(
+  lookups: InstrumentLookup[],
+  repository: InstrumentMetadataRepository | undefined,
+): Promise<Map<string, ResolvedInstrument>> {
+  if (!repository || lookups.length === 0) return new Map();
+  const uniqueLookups = new Map(
+    lookups.map((lookup) => [
+      canonicalInstrumentId(lookup.symbol, lookup.market),
+      lookup,
+    ]),
+  );
+  try {
+    const records = await repository.getMany([...uniqueLookups.keys()]);
+    const valid = new Map<string, ResolvedInstrument>();
+    for (const [instrumentId, lookup] of uniqueLookups) {
+      const record = records.get(instrumentId);
+      if (!record) continue;
+      try {
+        valid.set(
+          instrumentId,
+          validateResolvedInstrument(record, lookup),
+        );
+      } catch {
+        // Invalid cache entries behave exactly like a cache miss.
       }
     }
+    return valid;
+  } catch {
+    return new Map();
   }
-  return {
-    resolved,
-    unresolved,
-    cacheHits: results.reduce(
-      (total, result) => total + result.cacheHits,
-      0,
-    ),
-    backgroundRefresh: Promise.all(
-      results.map((result) => result.backgroundRefresh),
-    ).then(() => undefined),
-  };
 }
 
 export async function enrichStatementImport(
@@ -250,7 +254,10 @@ export async function enrichStatementImport(
       }),
     );
   }
-  const statementMetadata = new Map<string, ResolvedInstrument>();
+  const proposedStatementMetadata = new Map<
+    string,
+    ResolvedInstrument
+  >();
   const lookups: InstrumentLookup[] = [];
   const resolvedAt = new Date(
     (options.clock ?? Date.now)(),
@@ -259,7 +266,7 @@ export async function enrichStatementImport(
   for (const [instrumentId, candidate] of candidates) {
     const statementName = usableStatementName(candidate);
     if (statementName) {
-      statementMetadata.set(instrumentId, {
+      proposedStatementMetadata.set(instrumentId, {
         market: candidate.market,
         symbol: canonicalInstrumentSymbol(
           candidate.symbol,
@@ -282,15 +289,33 @@ export async function enrichStatementImport(
     }
   }
 
-  if (options.repository && statementMetadata.size > 0) {
+  const cachedStatementMetadata = await readValidCachedMetadata(
+    [...proposedStatementMetadata.values()].map(({ market, symbol }) => ({
+      market,
+      symbol,
+    })),
+    options.repository,
+  );
+  const trustedMetadata = new Map<string, ResolvedInstrument>();
+  for (const [instrumentId, proposed] of proposedStatementMetadata) {
+    trustedMetadata.set(
+      instrumentId,
+      cachedStatementMetadata.get(instrumentId) ?? proposed,
+    );
+  }
+
+  if (options.repository && proposedStatementMetadata.size > 0) {
     await Promise.all(
-      [...statementMetadata.values()].map(async (metadata) => {
-        try {
-          await options.repository?.put(metadata);
-        } catch {
-          // Cache durability must not decide whether a valid trade imports.
-        }
-      }),
+      [...proposedStatementMetadata.entries()].map(
+        async ([instrumentId, metadata]) => {
+          if (cachedStatementMetadata.has(instrumentId)) return;
+          try {
+            await options.repository?.put(metadata);
+          } catch {
+            // Cache durability must not decide whether a valid trade imports.
+          }
+        },
+      ),
     );
   }
 
@@ -326,18 +351,21 @@ export async function enrichStatementImport(
           canonicalInstrumentId(lookup.symbol, lookup.market),
         ),
       );
-      const normal = lookups.filter(
+      const unselected = lookups.filter(
         (lookup) =>
           !selectedIds.has(
             canonicalInstrumentId(lookup.symbol, lookup.market),
           ),
       );
-      resolution = mergeResolutions(
-        await Promise.all([
-          runResolver(normal, false),
-          runResolver(forced, true),
-        ]),
+      const cachedUnselected = await readValidCachedMetadata(
+        unselected,
+        options.repository,
       );
+      resolution = await runResolver(forced, true);
+      for (const [instrumentId, metadata] of cachedUnselected) {
+        resolution.resolved.set(instrumentId, metadata);
+      }
+      resolution.cacheHits += cachedUnselected.size;
     } else {
       resolution = await runResolver(
         lookups,
@@ -345,6 +373,10 @@ export async function enrichStatementImport(
       );
     }
   }
+  for (const [instrumentId, metadata] of trustedMetadata) {
+    resolution.resolved.set(instrumentId, metadata);
+  }
+  resolution.cacheHits += cachedStatementMetadata.size;
 
   const unresolved: InstrumentMetadataFailure[] = [];
   const importable: TradeExecution[] = [];
@@ -361,12 +393,6 @@ export async function enrichStatementImport(
 
   for (const [instrumentId, candidate] of candidates) {
     const records = recordsByInstrument.get(instrumentId) ?? [];
-    const statement = statementMetadata.get(instrumentId);
-    if (statement) {
-      resolution.resolved.set(instrumentId, statement);
-      continue;
-    }
-
     const metadata = resolution.resolved.get(instrumentId);
     if (metadata) continue;
 

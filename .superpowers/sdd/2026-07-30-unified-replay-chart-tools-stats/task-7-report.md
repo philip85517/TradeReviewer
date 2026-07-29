@@ -54,3 +54,49 @@ The Task 7 controlled command props are intentionally additive, so the current w
 ## Commit
 
 `3f9572622e13bff1117a1649dd5214f9d1580820` (`feat: make chart drawings editable`)
+
+## Review remediation — round 1
+
+Implementation commit: `cba8a218313bca603e0d7cb7e664363d738ea509`
+
+- Corrected the overlay interaction state so every non-cursor creation tool
+  receives its initial pointer event while cursor mode remains available to
+  the underlying chart.
+- Whole-drawing drags now translate every anchor through the coordinate
+  adapter in both time and price. Positive time movement is limited by the
+  latest anchor's distance to the replay cursor, preserving relative geometry
+  instead of independently flattening anchors at the boundary.
+- Long and short risk/reward geometry is canonicalized before every add or
+  replace command. Reversed creation drags are reflected into the selected
+  direction with a 2R target, while crossed stop and target handles retain
+  their independent distance on the valid side of entry.
+
+### Remediation RED evidence
+
+```sh
+npm run test:unit -- app/components/chart/drawing-canvas.test.tsx
+# 8 failed, 5 passed
+```
+
+The failures directly reproduced the inverted drawing-mode class, unchanged
+anchor times during whole-drawing movement, reversed stop placement, and
+crossed stop/target handles.
+
+### Remediation verification
+
+```sh
+npm run test:unit -- app/components/chart/drawing-canvas.test.tsx app/components/chart/drawing-layers-panel.test.tsx app/components/chart/chart-toolbar.test.tsx
+# 3 files passed, 16 tests passed
+
+npm run test:unit
+# 46 files passed, 217 tests passed
+
+npm run typecheck
+# exit 0
+
+npm run lint
+# exit 0, no warnings
+
+git diff --check
+# exit 0
+```

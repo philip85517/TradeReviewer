@@ -230,3 +230,87 @@ git diff --check
 
 No optional compatibility props or deleted imported-review/thesis components
 were restored during remediation.
+
+---
+
+## Remediation round 2
+
+Commit `15661ec7ed21c9540a0a13e7a5e831406171e128`
+(`fix: tighten replay boundary semantics`) addresses the remaining replay
+boundary findings:
+
+1. Intraday availability now uses an explicit seven-calendar-day pre-entry
+   context, which normally supplies roughly five completed sessions without
+   allowing a lone candle from an unrelated older episode to enable the
+   period. Candle records are treated as bar starts, so a `10:07` execution
+   overlaps its `10:00` 15-minute candle. A closed episode ends at the end of
+   the bar containing its final execution; later episodes cannot extend that
+   boundary. An open episode extends through the latest cached candle or
+   completed provider-covered range. Intraday coverage and limitation reasons
+   are filtered through the same effective range. Daily availability remains
+   on the existing expanded date-range rule. Replay publication still hides
+   candles after the independent knowledge cursor.
+2. Cursor-safe drawing comparison now filters by cursor and timeframe and then
+   reindexes the visible projection before comparing it. Reordering a future
+   drawing across earlier drawings therefore cannot expose an undo/redo action
+   merely because the earlier drawings' raw global `zIndex` values changed.
+   The action becomes available after advancing to the future drawing's
+   creation cursor.
+3. Demo step, restore, and refresh requests publish a controlled busy reason
+   through the shared chart view model. While one is active, the market-data
+   refresh action is disabled, carries a visible reason, and exposes that
+   reason through `aria-describedby`, so a repeat click cannot be silently
+   ignored.
+
+### Round 2 RED evidence
+
+The initial reviewer probes were added before implementation:
+
+```sh
+npm run test:unit -- app/components/trade-review-workspace.test.tsx app/lib/chart/drawing-commands.test.ts
+# 2 files failed; 5 tests failed / 26
+# Non-aligned, pre-entry, and open-episode candles were unavailable;
+# demo refresh stayed enabled while its request was active; and a future-only
+# reorder incorrectly enabled cursor-rewound undo.
+```
+
+After separating the intraday context from the legacy daily expansion, the
+explicit bound was also observed failing against the overbroad implementation:
+
+```sh
+npm run test:unit -- app/components/trade-review-workspace.test.tsx -t "does not use candles before the bounded pre-entry context"
+# 1 test failed / 20
+# An unrelated candle eight calendar days before entry incorrectly enabled 15m.
+```
+
+The focused range, drawing, and busy-state probes passed after their respective
+minimal changes.
+
+### Round 2 final verification
+
+```sh
+npm run test:unit -- app/components/review/review-chart-workspace.test.tsx app/components/trade-review-workspace.test.tsx
+# 2 files passed, 21 tests passed
+
+npm run test:unit -- app/components/chart/chart-toolbar.test.tsx app/components/chart/market-data-popover.test.tsx app/lib/chart/drawing-commands.test.ts app/lib/market/availability.test.ts app/lib/market/sync-range.test.ts
+# 5 files passed, 31 tests passed
+
+npm run test:unit
+# 55 files passed, 271 tests passed
+
+npm run typecheck
+# exit 0
+
+npm run lint
+# exit 0, no findings
+
+git diff --check
+# exit 0
+
+npm run build
+# exit 0; production build completed
+# Advisory only: a client chunk remains larger than 500 kB after minification.
+```
+
+No optional compatibility props or deleted imported-review/thesis components
+were restored in round 2.

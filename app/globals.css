@@ -260,29 +260,11 @@ input:focus-visible {
 }
 
 .import-actions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 34px;
-  gap: 7px;
   margin-top: 15px;
 }
 
 .import-actions .import-button {
   margin-top: 0;
-}
-
-.history-button {
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  color: var(--muted);
-  background: #131d2a;
-  cursor: pointer;
-}
-
-.history-button:hover {
-  color: white;
-  border-color: #3a5d86;
 }
 
 .import-button:hover {
@@ -300,6 +282,59 @@ input:focus-visible {
   color: var(--faint);
   font-size: 9px;
   text-align: center;
+}
+
+.import-progress {
+  margin: 8px 0 0;
+  padding: 9px 8px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 3px;
+  border: 1px solid var(--line-soft);
+  border-radius: 7px;
+  background: #101925;
+  list-style: none;
+}
+
+.import-progress li {
+  min-width: 0;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  color: #53677f;
+  font-size: 7px;
+  white-space: nowrap;
+}
+
+.import-progress li > span {
+  width: 15px;
+  height: 15px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #304157;
+  border-radius: 50%;
+  font-size: 7px;
+}
+
+.import-progress li.active {
+  color: #82baff;
+}
+
+.import-progress li.active > span {
+  border-color: var(--blue);
+  color: white;
+  background: var(--blue);
+  box-shadow: 0 0 0 3px rgba(41, 121, 255, 0.12);
+}
+
+.import-progress li.complete {
+  color: #67b9ab;
+}
+
+.import-progress li.complete > span {
+  border-color: rgba(38, 166, 154, 0.5);
+  color: #7bd2c4;
+  background: rgba(38, 166, 154, 0.12);
 }
 
 .sidebar-import-error {
@@ -1423,7 +1458,7 @@ input:focus-visible {
 .import-stat-grid {
   margin: 14px 20px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 8px;
 }
 
@@ -1525,22 +1560,6 @@ input:focus-visible {
   font-size: 8px;
 }
 
-.instrument-name-field {
-  display: grid;
-  gap: 4px;
-}
-
-.instrument-name-field input {
-  width: min(230px, 100%);
-  padding: 6px 8px;
-  border: 1px solid #355374;
-  border-radius: 5px;
-  color: #e3ebf5;
-  background: #0c1521;
-  font-size: 10px;
-}
-
-.excluded-summary,
 .import-warning {
   margin: 10px 20px 0;
   padding: 9px 11px;
@@ -1551,8 +1570,108 @@ input:focus-visible {
 }
 
 .import-warning {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   color: #e0a16c;
   background: rgba(239, 135, 83, 0.08);
+}
+
+.classification-empty {
+  margin: 0;
+  padding: 18px 13px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.import-category-panel,
+.unresolved-panel {
+  margin: 10px 20px 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+
+.exclusion-groups {
+  padding: 10px 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.exclusion-groups span {
+  padding: 5px 8px;
+  border: 1px solid rgba(216, 169, 77, 0.28);
+  border-radius: 999px;
+  color: #d7b36e;
+  background: rgba(216, 169, 77, 0.08);
+  font-size: 9px;
+}
+
+.unresolved-panel {
+  border-color: rgba(239, 135, 83, 0.28);
+}
+
+.unresolved-heading {
+  padding: 11px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(239, 135, 83, 0.06);
+}
+
+.unresolved-heading > div {
+  display: grid;
+  gap: 4px;
+}
+
+.unresolved-heading strong {
+  color: #e6b080;
+  font-size: 10px;
+}
+
+.unresolved-heading span,
+.unresolved-row span {
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.retry-unresolved {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.unresolved-list {
+  display: grid;
+}
+
+.unresolved-row {
+  padding: 9px 12px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid rgba(39, 51, 69, 0.68);
+  cursor: pointer;
+}
+
+.unresolved-row input {
+  accent-color: var(--blue);
+}
+
+.unresolved-description {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.unresolved-row strong {
+  color: #c9d4e1;
+  font-size: 9px;
 }
 
 .modal-footer {

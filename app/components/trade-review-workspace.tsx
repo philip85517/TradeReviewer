@@ -828,46 +828,6 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     setPendingImport(null);
   }
 
-  function renamePendingInstrument(instrumentId: string, name: string) {
-    const normalizedName = name.trim() || "名称待行情源补充";
-    setPendingImport((current) =>
-      current
-        ? {
-            ...current,
-            records: current.records.map((record) =>
-              record.instrument.id === instrumentId
-                ? {
-                    ...record,
-                    instrument: {
-                      ...record.instrument,
-                      name: normalizedName,
-                    },
-                  }
-                : record,
-            ),
-            instruments: current.instruments.map((item) =>
-              item.instrument.id === instrumentId
-                ? {
-                    ...item,
-                    instrument: {
-                      ...item.instrument,
-                      name: normalizedName,
-                    },
-                    executions: item.executions.map((execution) => ({
-                      ...execution,
-                      instrument: {
-                        ...execution.instrument,
-                        name: normalizedName,
-                      },
-                    })),
-                  }
-                : item,
-            ),
-          }
-        : null,
-    );
-  }
-
   function openLibraryEpisode(instrumentId: string, episodeId: string) {
     setLibraryTarget({
       requestId: ++libraryTargetSequence.current,
@@ -1249,7 +1209,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
           preview={pendingImport}
           onCancel={() => setPendingImport(null)}
           onConfirm={confirmImport}
-          onRenameInstrument={renamePendingInstrument}
+          onRetryUnresolved={() => {}}
         />
       )}
       {showImportHistory && (

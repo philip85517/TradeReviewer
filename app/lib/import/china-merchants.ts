@@ -14,8 +14,13 @@ import type {
   StatementInput,
   StatementParseResult,
 } from "./contracts";
+import { fingerprintBytes } from "./file-fingerprint";
 import { groupItemsIntoRows, type PdfTextRow } from "./pdf-layout";
-import { extractPdfPages, type PdfTextPage } from "./pdf-text";
+import {
+  extractPdfPages,
+  type PdfTextItem,
+  type PdfTextPage,
+} from "./pdf-text";
 
 const BROKER_MARKER = "招商证券";
 const FLOW_MARKER = "流水明细";
@@ -52,13 +57,39 @@ type StatementRow = {
   instrumentSymbol?: string;
   instrumentName?: string;
   business: string;
-  numericValues: string[];
+  quantity?: string;
+  price?: string;
+  amount?: string;
+  commission?: string;
+  stampDuty?: string;
+  otherFee?: string;
   currencyLabel?: string;
 };
 
 type ParsedIdentity = {
   symbol: string;
   sourceName?: string;
+};
+
+type NumericField =
+  | "quantity"
+  | "price"
+  | "amount"
+  | "commission"
+  | "stampDuty"
+  | "otherFee";
+
+type TableLayout = {
+  instrumentStart: number;
+  numericStart: number;
+  quantitySpan: number;
+  amountSpan: number;
+  feeSpan: number;
+};
+
+type PositionedNumber = {
+  value: string;
+  centerX: number;
 };
 
 function compact(value: string | undefined): string {
@@ -73,9 +104,48 @@ function rowText(row: PdfTextRow): string {
   return row.items.map((item) => item.text).join(" ");
 }
 
-function isSupportedHeader(row: PdfTextRow): boolean {
+function tableLayout(row: PdfTextRow): TableLayout | null {
   const text = compact(rowText(row));
-  return TABLE_HEADERS.every((label) => text.includes(label));
+  if (!TABLE_HEADERS.every((label) => text.includes(label))) return null;
+
+  const instrument = row.items.find((item) =>
+    compact(item.text).includes("证券代码证券名称"),
+  );
+  const business = row.items.find((item) =>
+    compact(item.text).includes("业务标志"),
+  );
+  const quantityPrice = row.items.find((item) =>
+    compact(item.text).includes("发生数量成交均价"),
+  );
+  const amount = row.items.find((item) =>
+    compact(item.text).includes("成交金额"),
+  );
+  const fees = row.items.find((item) =>
+    compact(item.text).includes("佣金印花税其他费"),
+  );
+  const change = row.items.find((item) =>
+    compact(item.text).includes("变动金额"),
+  );
+  if (!instrument || !business || !quantityPrice || !amount || !fees || !change) {
+    return null;
+  }
+
+  const quantitySpan = amount.x - quantityPrice.x;
+  const amountSpan = fees.x - amount.x;
+  const feeSpan = change.x - fees.x;
+  if (quantitySpan <= 0 || amountSpan <= 0 || feeSpan <= 0) return null;
+
+  return {
+    instrumentStart: instrument.x,
+    numericStart: quantityPrice.x,
+    quantitySpan,
+    amountSpan,
+    feeSpan,
+  };
+}
+
+function isSupportedHeader(row: PdfTextRow): boolean {
+  return tableLayout(row) !== null;
 }
 
 function normalizedBusiness(value: string): string {
@@ -116,25 +186,95 @@ export function detectChinaMerchantsStatement(
   };
 }
 
-function businessItem(row: PdfTextRow) {
-  return row.items.find((item) => {
-    if (item.x <= 250) return false;
-    const text = compact(item.text);
-    return (
-      Object.keys(EXECUTION_SIDE).some((label) => text.includes(label)) ||
-      /回购|购回|拆出|申购|认购|配售|配股|中签|银行|转入|转出|存入|取出|利息|费用|组合费|红利|红股|股息|分红|送股|入账|托管|冻结|解冻|指定|撤销|转换/.test(
-        text,
-      )
-    );
+const EXCLUDED_BUSINESS_PATTERN =
+  /回购|购回|拆出|申购|认购|配售|配股|中签|银行|转入|转出|存入|取出|利息|费用|组合费|红利|红股|股息|分红|送股|入账|托管|冻结|解冻|指定|撤销|转换/;
+
+function businessItem(row: PdfTextRow, layout: TableLayout) {
+  const execution = row.items.find((item) =>
+    Object.keys(EXECUTION_SIDE).some((label) =>
+      compact(item.text).includes(label),
+    ),
+  );
+  if (execution) return execution;
+
+  return row.items
+    .filter(
+      (item) =>
+        item.x >= layout.instrumentStart &&
+        item.x < layout.numericStart &&
+        EXCLUDED_BUSINESS_PATTERN.test(compact(item.text)),
+    )
+    .sort((left, right) => right.x - left.x)[0];
+}
+
+function positionedNumbers(item: PdfTextItem): PositionedNumber[] {
+  const matches = [
+    ...item.text.matchAll(/[+-]?(?:\d[\d,]*(?:\.\d+)?|\.\d+)/g),
+  ];
+  const sourceLength = Math.max(item.text.length, 1);
+  return matches.map((match) => {
+    const start = match.index;
+    const centerCharacter = start + match[0].length / 2;
+    return {
+      value: match[0].replaceAll(",", ""),
+      centerX: item.x + (centerCharacter / sourceLength) * item.width,
+    };
   });
 }
 
-function numericTokens(value: string): string[] {
-  return (
-    value
-      .replaceAll(",", "")
-      .match(/[+-]?(?:\d+(?:\.\d+)?|\.\d+)/g) ?? []
+function numericCells(
+  row: PdfTextRow,
+  layout: TableLayout,
+): Partial<Record<NumericField, string>> {
+  const cells: Partial<Record<NumericField, string>> = {};
+  const tokens = row.items
+    .filter((item) => item.x >= layout.numericStart - 40)
+    .sort((left, right) => left.x - right.x)
+    .flatMap(positionedNumbers)
+    .sort((left, right) => left.centerX - right.centerX);
+  const quantityEnd =
+    layout.numericStart + layout.quantitySpan * 0.4;
+  const priceEnd =
+    layout.numericStart + layout.quantitySpan * 0.77;
+  const amountEnd =
+    layout.numericStart + layout.quantitySpan + layout.amountSpan * 0.4;
+  for (const token of tokens) {
+    if (token.centerX < quantityEnd && cells.quantity === undefined) {
+      cells.quantity = token.value;
+    } else if (token.centerX < priceEnd && cells.price === undefined) {
+      cells.price = token.value;
+    } else if (token.centerX < amountEnd && cells.amount === undefined) {
+      cells.amount = token.value;
+    }
+  }
+
+  const amountToken = tokens.find(
+    (token) =>
+      token.centerX >= priceEnd && token.centerX < amountEnd,
   );
+  if (!amountToken) return cells;
+  const remaining = tokens.filter((token) => token.centerX >= amountEnd);
+  const commissionEnd = amountToken.centerX + layout.amountSpan;
+  const stampDutyEnd =
+    commissionEnd + layout.feeSpan * 0.27;
+  const otherFeeEnd =
+    commissionEnd + layout.feeSpan * 0.58;
+  for (const token of remaining) {
+    if (token.centerX < commissionEnd && cells.commission === undefined) {
+      cells.commission = token.value;
+    } else if (
+      token.centerX < stampDutyEnd &&
+      cells.stampDuty === undefined
+    ) {
+      cells.stampDuty = token.value;
+    } else if (
+      token.centerX < otherFeeEnd &&
+      cells.otherFee === undefined
+    ) {
+      cells.otherFee = token.value;
+    }
+  }
+  return cells;
 }
 
 function rowIdentity(
@@ -172,15 +312,17 @@ function rowIdentity(
   if (symbol && embeddedName) {
     return { symbol, sourceName: embeddedName };
   }
-  if (!symbol || !nameItem || /\d{5,6}/.test(nameItem.text)) return null;
+  if (!symbol) return null;
+  if (!nameItem || /\d{5,6}/.test(nameItem.text)) return { symbol };
   const sourceName = nameItem.text.trim();
-  return sourceName ? { symbol, sourceName } : null;
+  return sourceName ? { symbol, sourceName } : { symbol };
 }
 
 function positionedRows(pages: readonly PdfTextPage[]): StatementRow[] {
   const result: StatementRow[] = [];
   let inFlowSection = false;
   let sourceOrder = 0;
+  let activeLayout: TableLayout | null = null;
 
   for (const page of pages) {
     const rows = groupItemsIntoRows(page.items, 2);
@@ -190,7 +332,12 @@ function positionedRows(pages: readonly PdfTextPage[]): StatementRow[] {
         inFlowSection = true;
         continue;
       }
-      if (!inFlowSection || isSupportedHeader(row)) continue;
+      const detectedLayout = tableLayout(row);
+      if (detectedLayout) {
+        if (inFlowSection) activeLayout = detectedLayout;
+        continue;
+      }
+      if (!inFlowSection || !activeLayout) continue;
 
       const dateItem = row.items.find((item) =>
         /^\s*\d{8}\s+\S+/.test(item.text),
@@ -201,7 +348,7 @@ function positionedRows(pages: readonly PdfTextPage[]): StatementRow[] {
         .match(/^(\d{8})\s+(.+?)\s*$/);
       if (!dateMatch) continue;
 
-      const business = businessItem(row);
+      const business = businessItem(row, activeLayout);
       if (!business) continue;
       const businessLabel = normalizedBusiness(business.text);
       const parsedIdentity = rowIdentity(
@@ -210,10 +357,7 @@ function positionedRows(pages: readonly PdfTextPage[]): StatementRow[] {
         business,
         businessLabel,
       );
-      const numericValues = row.items
-        .filter((item) => item.x > business.x)
-        .sort((left, right) => left.x - right.x)
-        .flatMap((item) => numericTokens(item.text));
+      const cells = numericCells(row, activeLayout);
       const currencyItem = row.items.find(
         (item) =>
           item.x > dateItem.x &&
@@ -230,7 +374,7 @@ function positionedRows(pages: readonly PdfTextPage[]): StatementRow[] {
         instrumentSymbol: parsedIdentity?.symbol,
         instrumentName: parsedIdentity?.sourceName,
         business: businessLabel,
-        numericValues,
+        ...cells,
         currencyLabel: currencyItem?.text,
       });
       sourceOrder += 1;
@@ -267,11 +411,56 @@ function feeTotal(values: readonly string[]): string {
 function executionDate(dateText: string): string {
   const match = dateText.match(/^(\d{4})(\d{2})(\d{2})$/);
   if (!match) throw new Error("invalid date");
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const calendarCheck = new Date(Date.UTC(year, month - 1, day));
+  if (
+    calendarCheck.getUTCFullYear() !== year ||
+    calendarCheck.getUTCMonth() !== month - 1 ||
+    calendarCheck.getUTCDate() !== day
+  ) {
+    throw new Error("invalid date");
+  }
   const date = new Date(
     `${match[1]}-${match[2]}-${match[3]}T15:00:00+08:00`,
   );
   if (Number.isNaN(date.getTime())) throw new Error("invalid date");
   return date.toISOString();
+}
+
+function statementAccountReference(
+  pages: readonly PdfTextPage[],
+): string | undefined {
+  const explicit = pages.flatMap((page) =>
+    page.items.flatMap((item) => {
+      const match = item.text.match(
+        /资产账号\s*[:：]\s*([A-Z0-9-]{6,})/i,
+      );
+      return match ? [match[1]] : [];
+    }),
+  );
+  if (explicit.length > 0) return explicit[0];
+
+  return pages
+    .flatMap((page) => page.items)
+    .flatMap((item) =>
+      [...item.text.matchAll(/(?:^|\s)([A-Z]\d{9}|\d{10})(?=\s|$)/gi)].map(
+        (match) => match[1],
+      ),
+    )[0];
+}
+
+function maskedAccountId(
+  pages: readonly PdfTextPage[],
+  fileFingerprint: string,
+): string {
+  const reference =
+    statementAccountReference(pages) ?? `file:${fileFingerprint}`;
+  const masked = fingerprintBytes(
+    new TextEncoder().encode(`china-merchants-account-v1:${reference}`),
+  );
+  return `china-merchants:${masked}`;
 }
 
 function currencyCode(label: string | undefined): string {
@@ -312,6 +501,27 @@ function obviousFund(symbol: string, name: string | undefined): boolean {
 function obviousEtf(symbol: string, name: string | undefined): boolean {
   if (/\bETF\b|交易型开放式指数基金/i.test(name ?? "")) return true;
   return /^(?:15|51|56|58)\d{4}$/.test(symbol);
+}
+
+function sourceAssetType(
+  market: ParsedInstrumentCandidate["market"],
+  symbol: string,
+  name: string | undefined,
+): NonNullable<ParsedInstrumentCandidate["sourceAssetType"]> {
+  if (obviousEtf(symbol, name)) return "etf";
+  if (
+    market === "CN-SH" &&
+    /^(?:600|601|603|605|688|689)\d{3}$/.test(symbol)
+  ) {
+    return "stock";
+  }
+  if (
+    market === "CN-SZ" &&
+    /^(?:000|001|002|003|300|301)\d{3}$/.test(symbol)
+  ) {
+    return "stock";
+  }
+  return "unknown";
 }
 
 function excludedFlowCategory(
@@ -359,10 +569,13 @@ export function parseChinaMerchantsPages(
   const candidates = new Map<string, ParsedInstrumentCandidate>();
   const exclusions: ImportExclusion[] = [];
   const diagnostics: StatementParseResult["diagnostics"] = [];
+  const statementAccountId =
+    options.accountId ??
+    maskedAccountId(pages, options.fileFingerprint);
 
   for (const layoutRow of positionedRows(pages)) {
     const parsedIdentity =
-      layoutRow.instrumentSymbol && layoutRow.instrumentName
+      layoutRow.instrumentSymbol
         ? {
             symbol: layoutRow.instrumentSymbol,
             sourceName: layoutRow.instrumentName,
@@ -422,22 +635,22 @@ export function parseChinaMerchantsPages(
         parsedIdentity.symbol,
         market,
       );
-      const quantity = decimal(layoutRow.numericValues[0]).abs();
-      const price = decimal(layoutRow.numericValues[1]).abs();
-      if (quantity.lte(0) || price.lte(0)) {
+      const quantity = decimal(layoutRow.quantity).abs();
+      const price = decimal(layoutRow.price).abs();
+      const amount = decimal(layoutRow.amount).abs();
+      if (quantity.lte(0) || price.lte(0) || amount.lte(0)) {
         throw new Error("invalid execution");
       }
-      const sourceAssetType = obviousEtf(
+      const assetType = sourceAssetType(
+        market,
         symbol,
         parsedIdentity.sourceName,
-      )
-        ? "etf"
-        : "stock";
+      );
       const candidate: ParsedInstrumentCandidate = {
         market,
         symbol,
         sourceName: parsedIdentity.sourceName,
-        sourceAssetType,
+        sourceAssetType: assetType,
       };
       candidates.set(`${market}:${symbol}`, candidate);
 
@@ -454,7 +667,7 @@ export function parseChinaMerchantsPages(
           sourceTimestampText: layoutRow.dateText,
           sourceTimezone: "Asia/Shanghai",
         },
-        accountId: options.accountId ?? "china-merchants",
+        accountId: statementAccountId,
         accountLabel: options.accountLabel ?? "招商证券账户",
         instrument: {
           id: canonicalInstrumentId(symbol, market),
@@ -471,7 +684,11 @@ export function parseChinaMerchantsPages(
         executedAt: executionDate(layoutRow.dateText),
         quantity: quantity.toString(),
         price: price.toString(),
-        fee: feeTotal(layoutRow.numericValues.slice(3, 6)),
+        fee: feeTotal([
+          layoutRow.commission ?? "0",
+          layoutRow.stampDuty ?? "0",
+          layoutRow.otherFee ?? "0",
+        ]),
       });
     } catch {
       addExclusion(

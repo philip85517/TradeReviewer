@@ -23,10 +23,14 @@ function statementRow(
     commission?: string;
     stampDuty?: string;
     otherFee?: string;
+    change?: string;
     combineNameAndBusiness?: boolean;
   },
 ): PdfTextItem[] {
-  const parsedInstrument = values.instrument?.match(/^(\d{5,6})\s+(.+)$/);
+  const parsedInstrument = values.instrument?.match(
+    /^(\d{5,6})(?:\s+(.+))?$/,
+  );
+  const numericShift = values.combineNameAndBusiness ? 14 : 0;
   return [
     item(`${values.date} ${values.market}`, 36, y),
     item(
@@ -36,7 +40,7 @@ function statementRow(
       120,
       y,
     ),
-    ...(parsedInstrument
+    ...(parsedInstrument?.[2]
       ? [
           item(
             values.combineNameAndBusiness
@@ -51,14 +55,23 @@ function statementRow(
     ...(!values.combineNameAndBusiness
       ? [item(values.business, 371, y)]
       : []),
-    ...(values.quantity ? [item(values.quantity, 464, y)] : []),
-    ...(values.price ? [item(values.price, 514, y)] : []),
-    ...(values.amount ? [item(values.amount, 570, y)] : []),
-    ...(values.commission ? [item(values.commission, 625, y)] : []),
-    ...(values.stampDuty ? [item(values.stampDuty, 652, y)] : []),
-    ...(values.otherFee ? [item(values.otherFee, 679, y)] : []),
-    item("0.00", 736, y),
-    item("100000.00", 794, y),
+    ...(values.quantity
+      ? [item(values.quantity, 464 + numericShift, y)]
+      : []),
+    ...(values.price ? [item(values.price, 514 + numericShift, y)] : []),
+    ...(values.amount ? [item(values.amount, 552 + numericShift, y)] : []),
+    ...(values.commission
+      ? [item(values.commission, 600 + numericShift, y)]
+      : []),
+    ...(values.stampDuty
+      ? [item(values.stampDuty, 627 + numericShift, y)]
+      : []),
+    ...(values.otherFee
+      ? [item(values.otherFee, 654 + numericShift, y)]
+      : []),
+    item(values.change ?? "9000.00", 684 + numericShift, y),
+    item("100000.00", 736 + numericShift, y),
+    item("0.00", 794 + numericShift, y),
   ];
 }
 
@@ -69,6 +82,7 @@ const headingPage: PdfTextPage = {
   items: [
     item("招商证券营业部[匿名营业部]普通对账单", 36, 36),
     item("统计日期：20250101 - 20251231", 36, 54),
+    item("资产账号：0000000001", 36, 72),
   ],
 };
 
@@ -111,7 +125,7 @@ export const CHINA_MERCHANTS_PAGES: PdfTextPage[] = [
       ...statementRow(234, {
         date: "20250103",
         market: "上海",
-        instrument: "518880 黄金ETF",
+        instrument: "518880 红利ETF",
         business: "证券买入",
         quantity: "1000",
         price: "6.50",
@@ -123,7 +137,7 @@ export const CHINA_MERCHANTS_PAGES: PdfTextPage[] = [
       ...statementRow(252, {
         date: "20250103",
         market: "上海",
-        instrument: "600938 匿名能源",
+        instrument: "600938 招商银行",
         business: "证券买入",
         quantity: "500",
         price: "20.00",
@@ -135,7 +149,7 @@ export const CHINA_MERCHANTS_PAGES: PdfTextPage[] = [
       ...statementRow(270, {
         date: "20250104",
         market: "上海",
-        instrument: "518880 黄金ETF",
+        instrument: "518880 红利ETF",
         business: "证券卖出",
         quantity: "-1000",
         price: "6.80",
@@ -147,7 +161,7 @@ export const CHINA_MERCHANTS_PAGES: PdfTextPage[] = [
       ...statementRow(288, {
         date: "20250104",
         market: "上海",
-        instrument: "600938 匿名能源",
+        instrument: "600938 招商银行",
         business: "证券卖出",
         quantity: "-500",
         price: "22.00",
@@ -251,4 +265,146 @@ export const CHINA_MERCHANTS_IDENTICAL_FILLS: PdfTextPage[] = [
       }),
     ],
   },
+];
+
+export const CHINA_MERCHANTS_CODE_ONLY: PdfTextPage[] = [
+  headingPage,
+  {
+    pageNumber: 2,
+    width: 900,
+    height: 600,
+    items: [
+      ...tableHeader,
+      ...statementRow(216, {
+        date: "20250103",
+        market: "上海",
+        instrument: "600036",
+        business: "证券买入",
+        quantity: "100",
+        price: "40.00",
+        amount: "-4000.00",
+        commission: "5.00",
+      }),
+    ],
+  },
+];
+
+export const CHINA_MERCHANTS_EMPTY_FEES: PdfTextPage[] = [
+  headingPage,
+  {
+    pageNumber: 2,
+    width: 900,
+    height: 600,
+    items: [
+      ...tableHeader,
+      ...statementRow(216, {
+        date: "20250103",
+        market: "上海",
+        instrument: "600938 匿名股票",
+        business: "证券买入",
+        quantity: "100",
+        price: "20.00",
+        amount: "-2000.00",
+        stampDuty: "1.00",
+        otherFee: "2.00",
+      }),
+      ...statementRow(234, {
+        date: "20250104",
+        market: "上海",
+        instrument: "600938 匿名股票",
+        business: "证券卖出",
+        quantity: "-100",
+        price: "21.00",
+        amount: "2100.00",
+        commission: "3.00",
+        otherFee: "2.00",
+      }),
+      ...statementRow(252, {
+        date: "20250105",
+        market: "上海",
+        instrument: "600938 匿名股票",
+        business: "证券买入",
+        quantity: "100",
+        price: "20.50",
+        amount: "-2050.00",
+        commission: "3.00",
+        stampDuty: "1.00",
+      }),
+    ],
+  },
+];
+
+export const CHINA_MERCHANTS_CROSS_PAGE: PdfTextPage[] = [
+  headingPage,
+  {
+    pageNumber: 2,
+    width: 900,
+    height: 600,
+    items: [
+      ...tableHeader,
+      ...statementRow(522, {
+        date: "20250103",
+        market: "上海",
+        instrument: "600938 匿名股票",
+        business: "证券买入",
+        quantity: "100",
+        price: "20.00",
+        amount: "-2000.00",
+        commission: "5.00",
+        stampDuty: "1.00",
+        otherFee: "0.20",
+      }),
+    ],
+  },
+  {
+    pageNumber: 3,
+    width: 900,
+    height: 600,
+    items: [
+      ...statementRow(54, {
+        date: "20250104",
+        market: "上海",
+        instrument: "600938 匿名股票",
+        business: "证券卖出",
+        quantity: "-100",
+        price: "21.00",
+        amount: "2100.00",
+        commission: "5.00",
+      }),
+    ],
+  },
+];
+
+export const CHINA_MERCHANTS_INVALID_DATE: PdfTextPage[] = [
+  headingPage,
+  {
+    pageNumber: 2,
+    width: 900,
+    height: 600,
+    items: [
+      ...tableHeader,
+      ...statementRow(216, {
+        date: "20250230",
+        market: "上海",
+        instrument: "600938 匿名股票",
+        business: "证券买入",
+        quantity: "100",
+        price: "20.00",
+        amount: "-2000.00",
+        commission: "5.00",
+      }),
+    ],
+  },
+];
+
+export const CHINA_MERCHANTS_OTHER_ACCOUNT: PdfTextPage[] = [
+  {
+    ...headingPage,
+    items: headingPage.items.map((sourceItem) =>
+      sourceItem.text.startsWith("资产账号")
+        ? { ...sourceItem, text: "资产账号：0000000002" }
+        : sourceItem,
+    ),
+  },
+  CHINA_MERCHANTS_PAGES[1],
 ];

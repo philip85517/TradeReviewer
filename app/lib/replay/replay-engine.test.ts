@@ -60,4 +60,22 @@ describe("createReplaySnapshot", () => {
     });
     expect(JSON.stringify(snapshot)).not.toContain("2025-01-07");
   });
+
+  it("reveals an execution ledger without inventing a candle mark", () => {
+    const snapshot = createReplaySnapshot({
+      candles: [],
+      executions,
+      cursor: "2025-01-07T00:00:00.000Z",
+    });
+
+    expect(snapshot.candles).toEqual([]);
+    expect(snapshot.executions).toEqual(executions);
+    expect(snapshot.position).toMatchObject({
+      quantity: "0",
+      realizedPnl: "400",
+      unrealizedPnl: "0",
+      fees: "4",
+      netPnl: "396",
+    });
+  });
 });

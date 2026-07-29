@@ -182,4 +182,28 @@ describe("calculatePositionPathMetrics", () => {
     expect(metrics.mfe).toEqual({ amount: "10", percent: "10" });
     expect(metrics.profitGiveback).toEqual({ amount: "0", percent: "0" });
   });
+
+  it("retains the revealed execution ledger when path candles are unavailable", () => {
+    const metrics = calculatePositionPathMetrics({
+      candles: [],
+      executions: [
+        fill("buy", "2025-01-02T14:30:00Z", "10", "10", "1"),
+        fill("sell", "2025-01-02T15:00:00Z", "10", "12", "1"),
+      ],
+      cursor: "2025-01-02T15:00:00Z",
+      episodeStartedAt: "2025-01-02T14:30:00Z",
+    });
+
+    expect(metrics.current).toMatchObject({
+      quantity: "0",
+      realizedPnl: "20",
+      unrealizedPnl: "0",
+      fees: "2",
+      netPnl: "18",
+    });
+    expect(metrics.mfe).toBeNull();
+    expect(metrics.unavailableReason).toBe(
+      "No candle is available at or before the replay cursor.",
+    );
+  });
 });

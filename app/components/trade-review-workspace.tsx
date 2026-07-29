@@ -9,9 +9,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   applyDrawingCommand,
+  redoDrawingAtCursor,
   createDrawingHistory,
-  redoDrawingCommand,
-  undoDrawingCommand,
+  setAllDrawingsLockedAtCursor,
+  undoDrawingAtCursor,
   type DrawingCommand,
   type DrawingHistory,
 } from "../lib/chart/drawing-commands";
@@ -255,6 +256,73 @@ function aggregateVisibleCandles(
   });
 }
 
+function episodeWindow(episode: TradeEpisode) {
+  return {
+    start: episode.startedAt,
+    end:
+      episode.endedAt ??
+      episode.executions.at(-1)?.executedAt ??
+      episode.startedAt,
+  };
+}
+
+function coverageOverlapsEpisode(
+  segment: IntervalCoverageSegment,
+  episode: TradeEpisode,
+) {
+  const window = episodeWindow(episode);
+  const start = segment.actualStart ?? segment.requestedStart;
+  const end = segment.actualEnd ?? segment.requestedEnd;
+  return start <= window.end && end >= window.start;
+}
+
+function resolveEpisodeTimeframeAvailability(
+  state: InstrumentMarketState,
+  episode: TradeEpisode | undefined,
+) {
+  if (!episode) {
+    return resolveTimeframeAvailability({
+      intradayCandles: state.intraday,
+      dailyCandles: state.daily,
+      intradayCoverage: state.intradayCoverage,
+    });
+  }
+  const window = episodeWindow(episode);
+  const startDate = window.start.slice(0, 10);
+  const endDate = window.end.slice(0, 10);
+  const intradayCandles = state.intraday.filter(
+    (candle) =>
+      candle.timestamp >= window.start &&
+      candle.timestamp <= window.end,
+  );
+  const dailyCandles = state.daily.filter(
+    (candle) =>
+      candle.tradingDate >= startDate &&
+      candle.tradingDate <= endDate,
+  );
+  const intradayCoverage = state.intradayCoverage.filter((segment) =>
+    coverageOverlapsEpisode(segment, episode),
+  );
+  const availability = resolveTimeframeAvailability({
+    intradayCandles,
+    dailyCandles,
+    intradayCoverage,
+  });
+  if (
+    intradayCandles.length === 0 &&
+    intradayCoverage.length === 0 &&
+    state.intraday.length > 0
+  ) {
+    for (const timeframe of ["15m", "1h", "4h"] as const) {
+      availability[timeframe] = {
+        enabled: false,
+        reason: "该交易回合没有可用的 15 分钟行情",
+      };
+    }
+  }
+  return availability;
+}
+
 function providerLabel(
   provider: DailyCandleRecord["provider"] | undefined,
 ) {
@@ -294,6 +362,9 @@ function marketDataDetails(
         (availability["15m"].enabled
           ? undefined
           : availability["15m"].reason),
+      availableTimeframes: (
+        ["15m", "1h", "4h"] as const
+      ).filter((timeframe) => availability[timeframe].enabled),
     },
     {
       providerLabel: providerLabel(firstDaily?.provider),
@@ -308,6 +379,9 @@ function marketDataDetails(
           ?.fetchedAt,
       status: state.dailyStatus,
       limitationReason: state.dailyMessage,
+      availableTimeframes: (["1D", "1W"] as const).filter(
+        (timeframe) => availability[timeframe].enabled,
+      ),
     },
   ];
 }
@@ -464,12 +538,11 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   );
   const importedAvailability = useMemo(
     () =>
-      resolveTimeframeAvailability({
-        intradayCandles: selectedMarketState.intraday,
-        dailyCandles: selectedMarketState.daily,
-        intradayCoverage: selectedMarketState.intradayCoverage,
-      }),
-    [selectedMarketState],
+      resolveEpisodeTimeframeAvailability(
+        selectedMarketState,
+        selectedEpisode,
+      ),
+    [selectedEpisode, selectedMarketState],
   );
   const importedSourceCandles = useMemo(
     () =>
@@ -509,6 +582,11 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   );
   const importedCanGoForward = importedSourceCandles.some(
     (candle) => candle.time > activeCursor,
+  );
+  const importedCanGoToNextExecution = Boolean(
+    selectedEpisode?.executions.some(
+      (execution) => execution.executedAt > activeCursor,
+    ),
   );
 
   const demoChartCandles = useMemo(
@@ -610,21 +688,20 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   );
   const searchableInstruments = useMemo(
     () =>
-      importedInstruments.length > 0
-        ? importedInstruments.map(({ instrument }) => ({
-            id: instrument.id,
-            name: instrument.name,
-            symbol: instrument.symbol,
-            market: instrument.market,
-          }))
-        : [
-            {
-              id: "demo",
-              name: DEMO_INSTRUMENT.name,
-              symbol: DEMO_INSTRUMENT.symbol,
-              market: DEMO_INSTRUMENT.market,
-            },
-          ],
+      [
+        {
+          id: "demo",
+          name: DEMO_INSTRUMENT.name,
+          symbol: DEMO_INSTRUMENT.symbol,
+          market: DEMO_INSTRUMENT.market,
+        },
+        ...importedInstruments.map(({ instrument }) => ({
+          id: instrument.id,
+          name: instrument.name,
+          symbol: instrument.symbol,
+          market: instrument.market,
+        })),
+      ],
     [importedInstruments],
   );
 
@@ -647,6 +724,9 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     canGoForward: selectedImportedInstrument
       ? importedCanGoForward
       : frame.canGoForward && !stepping && !restoring,
+    canGoToNextExecution: selectedImportedInstrument
+      ? importedCanGoToNextExecution
+      : frame.canGoForward && !stepping && !restoring,
     replayError,
     dataDetails: selectedImportedInstrument
       ? marketDataDetails(selectedMarketState, importedAvailability)
@@ -657,6 +737,13 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
             coverageStart: frame.candles15m[0]?.time,
             coverageEnd: frame.candles15m.at(-1)?.time,
             status: "complete",
+            availableTimeframes: [
+              "15m",
+              "1h",
+              "4h",
+              "1D",
+              "1W",
+            ],
           },
         ],
   };
@@ -711,7 +798,11 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     setSelectedInstrumentId(summary.instrument.id);
     setSelectedEpisodeId(newest.id);
     const state = marketStates[summary.instrument.id] ?? emptyMarketState();
-    const preferred = state.intraday.length > 0 ? "15m" : "1D";
+    const availability = resolveEpisodeTimeframeAvailability(
+      state,
+      newest,
+    );
+    const preferred = availability["15m"].enabled ? "15m" : "1D";
     const source = sourceCandlesForTimeframe(state, preferred);
     const fallback =
       source.findLast((candle) => candle.time <= newest.startedAt)?.time ??
@@ -730,6 +821,33 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       setDrawingHistory(createDrawingHistory(stored?.drawings ?? []));
       setSelectedDrawingId(null);
       setLayersOpen(false);
+      setDrawerOpen(false);
+      setReplayError(null);
+      if (
+        stored?.replayCursor &&
+        stored.replayCursor !== frame.cursor
+      ) {
+        const requestId = ++replayRequestSequence.current;
+        setRestoring(true);
+        void fetchDemoFrame("restore", stored.replayCursor)
+          .then((restoredFrame) => {
+            if (requestId === replayRequestSequence.current) {
+              setFrame(restoredFrame);
+            }
+          })
+          .catch(() => {
+            if (requestId === replayRequestSequence.current) {
+              setReplayError(
+                "上次演示回放位置无法恢复，已保留当前安全位置。",
+              );
+            }
+          })
+          .finally(() => {
+            if (requestId === replayRequestSequence.current) {
+              setRestoring(false);
+            }
+          });
+      }
       return;
     }
     const summary = importedInstruments.find(
@@ -743,7 +861,11 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     if (!episode) return;
     setPlaying(false);
     setSelectedEpisodeId(episode.id);
-    const preferred = selectedMarketState.intraday.length > 0 ? "15m" : "1D";
+    const availability = resolveEpisodeTimeframeAvailability(
+      selectedMarketState,
+      episode,
+    );
+    const preferred = availability["15m"].enabled ? "15m" : "1D";
     const source = sourceCandlesForTimeframe(
       selectedMarketState,
       preferred,
@@ -802,7 +924,6 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       const restore = async () => {
         try {
           if (
-            !firstSummary &&
             storedDemo &&
             storedDemo.replayCursor !== initialFrame.cursor
           ) {
@@ -884,11 +1005,10 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       )?.state;
       if (!selectedState) return;
       const stored = loadReviewState(selectedEpisode.id);
-      const availability = resolveTimeframeAvailability({
-        intradayCandles: selectedState.intraday,
-        dailyCandles: selectedState.daily,
-        intradayCoverage: selectedState.intradayCoverage,
-      });
+      const availability = resolveEpisodeTimeframeAvailability(
+        selectedState,
+        selectedEpisode,
+      );
       const nextTimeframe = stored?.timeframe ??
         (selectedState.intraday.length > 0 ? "15m" : "1D");
       const availableTimeframe = availability[nextTimeframe].enabled
@@ -960,7 +1080,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   }, [hydrated]);
 
   useEffect(() => {
-    if (!hydrated || !activeEpisodeId) return;
+    if (!hydrated || restoring || !activeEpisodeId) return;
     saveReviewState(activeEpisodeId, {
       version: 2,
       episodeId: activeEpisodeId,
@@ -975,6 +1095,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     activePanelTab,
     drawingHistory.present,
     hydrated,
+    restoring,
     timeframe,
   ]);
 
@@ -1413,7 +1534,6 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   }
 
   function nextImportedExecution() {
-    const lastKnowledgeTime = importedSourceCandles.at(-1)?.time;
     const fromReplay = importedReplay.nextExecution();
     const next =
       fromReplay > importedCursor
@@ -1421,9 +1541,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
         : selectedEpisode?.executions.find(
             (execution) => execution.executedAt > importedCursor,
           )?.executedAt;
-    if (next && (!lastKnowledgeTime || next <= lastKnowledgeTime)) {
-      setImportedCursor(next);
-    }
+    if (next) setImportedCursor(next);
   }
 
   return (
@@ -1564,6 +1682,8 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
                   void startMarketDataUpdate([
                     selectedImportedInstrument.instrument.id,
                   ]);
+                } else {
+                  void requestFrame("restore", frame.cursor);
                 }
               }}
               onToggleLayers={() => setLayersOpen((open) => !open)}
@@ -1576,12 +1696,20 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
               onSelectDrawing={setSelectedDrawingId}
               onUndoDrawing={() =>
                 setDrawingHistory((history) =>
-                  undoDrawingCommand(history),
+                  undoDrawingAtCursor(
+                    history,
+                    activeCursor,
+                    timeframe,
+                  ),
                 )
               }
               onRedoDrawing={() =>
                 setDrawingHistory((history) =>
-                  redoDrawingCommand(history),
+                  redoDrawingAtCursor(
+                    history,
+                    activeCursor,
+                    timeframe,
+                  ),
                 )
               }
               onClearDrawings={() =>
@@ -1604,19 +1732,11 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
               }
               onToggleAllDrawings={() =>
                 setDrawingHistory((history) =>
-                  history.present
-                    .filter(
-                      (drawing) =>
-                        drawing.createdAtCursor <= activeCursor,
-                    )
-                    .reduce(
-                      (next, drawing) =>
-                        applyDrawingCommand(next, {
-                          type: "toggle-locked",
-                          id: drawing.id,
-                        }),
-                      history,
-                    ),
+                  setAllDrawingsLockedAtCursor(
+                    history,
+                    activeCursor,
+                    timeframe,
+                  ),
                 )
               }
               onPrevious={() => {

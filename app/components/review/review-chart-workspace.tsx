@@ -8,6 +8,10 @@ import type {
   DrawingHistory,
 } from "../../lib/chart/drawing-commands";
 import {
+  canRedoDrawingAtCursor,
+  canUndoDrawingAtCursor,
+} from "../../lib/chart/drawing-commands";
+import {
   visibleDrawingsAtCursor,
   type DrawingTool,
 } from "../../lib/chart/drawings";
@@ -42,6 +46,7 @@ export type ReviewChartViewModel = {
   pathMetrics: PositionPathMetrics;
   canGoBack: boolean;
   canGoForward: boolean;
+  canGoToNextExecution: boolean;
   replayError: string | null;
   dataDetails: MarketDataDetails[];
 };
@@ -110,6 +115,23 @@ function dateTime(value: string) {
   });
 }
 
+function fee(value: string, currency: string) {
+  return new Intl.NumberFormat("zh-CN", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 2,
+  }).format(Number(value));
+}
+
+function executionSource(execution: TradeExecution) {
+  const source = execution.source;
+  return [
+    source.platform,
+    source.sheet,
+    `第 ${source.row} 行`,
+  ].filter(Boolean).join(" · ");
+}
+
 export function ReviewChartWorkspace({
   model,
   episodeOptions,
@@ -173,6 +195,16 @@ export function ReviewChartWorkspace({
   const allDrawingsLocked =
     knowledgeVisibleDrawings.length > 0 &&
     knowledgeVisibleDrawings.every((drawing) => drawing.locked);
+  const canUndo = canUndoDrawingAtCursor(
+    drawingHistory,
+    model.cursor,
+    model.timeframe,
+  );
+  const canRedo = canRedoDrawingAtCursor(
+    drawingHistory,
+    model.cursor,
+    model.timeframe,
+  );
   const latestCandle = model.candles.at(-1);
   const pnlPositive = Number(model.position.netPnl) >= 0;
   const instrumentLabel = `${model.instrument.name}（${model.instrument.symbol}）`;
@@ -216,7 +248,11 @@ export function ReviewChartWorkspace({
           dataDetails={model.dataDetails}
           onRefreshMarketData={onRefreshMarketData}
           layersOpen={layersOpen}
-          layersDisabledReason={undefined}
+          layersDisabledReason={
+            knowledgeVisibleDrawings.length === 0
+              ? "当前游标和周期暂无绘图"
+              : undefined
+          }
           onToggleLayers={onToggleLayers}
           fullscreen={fullscreen}
           settings={settings}
@@ -229,8 +265,8 @@ export function ReviewChartWorkspace({
         <div className="chart-layout">
           <DrawingToolbar
             activeTool={activeTool}
-            canUndo={drawingHistory.past.length > 0}
-            canRedo={drawingHistory.future.length > 0}
+            canUndo={canUndo}
+            canRedo={canRedo}
             allLocked={allDrawingsLocked}
             onToolChange={onToolChange}
             onUndo={onUndoDrawing}
@@ -327,6 +363,7 @@ export function ReviewChartWorkspace({
                 speed={speed}
                 canGoBack={model.canGoBack}
                 canGoForward={model.canGoForward}
+                canGoToNextExecution={model.canGoToNextExecution}
                 onPrevious={onPrevious}
                 onNext={onNext}
                 onNextExecution={onNextExecution}
@@ -364,6 +401,13 @@ export function ReviewChartWorkspace({
                       <span>
                         {execution.quantity} × {execution.price}
                       </span>
+                      <span>
+                        费用 {fee(execution.fee, model.instrument.currency)}
+                      </span>
+                      <small>来源 {executionSource(execution)}</small>
+                      <small>
+                        时区 {execution.source.sourceTimezone ?? "未记录"}
+                      </small>
                       {execution.source.sourceTimestampText && (
                         <small>{execution.source.sourceTimestampText}</small>
                       )}

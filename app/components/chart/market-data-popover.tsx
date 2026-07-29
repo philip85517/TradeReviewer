@@ -3,6 +3,7 @@
 import { useEffect, useRef, type RefObject } from "react";
 
 import type { NativeMarketInterval } from "../../lib/market/contracts";
+import type { Timeframe } from "../../lib/market/types";
 import {
   marketDataStatusLabel,
   type MarketDataSyncStatus,
@@ -16,6 +17,7 @@ export type MarketDataDetails = {
   fetchedAt?: string;
   status: MarketDataSyncStatus;
   limitationReason?: string;
+  availableTimeframes: Timeframe[];
 };
 
 type Props = {
@@ -76,7 +78,12 @@ export function MarketDataPopover({
   if (!open) return null;
   const visibleDetails: MarketDataDetails[] = details.length > 0
     ? details
-    : [{ providerLabel: null, nativeInterval: "1D", status: "not-requested" }];
+    : [{
+        providerLabel: null,
+        nativeInterval: "1D",
+        status: "not-requested",
+        availableTimeframes: [],
+      }];
 
   return (
     <div className="chart-popover market-data-popover" ref={popoverRef} role="dialog" aria-label="行情数据详情">
@@ -94,6 +101,7 @@ export function MarketDataPopover({
               <div><dt>实际覆盖</dt><dd>{coverage}</dd></div>
               <div><dt>获取时间</dt><dd>{detail.fetchedAt ?? "尚未获取"}</dd></div>
               <div><dt>状态</dt><dd>{marketDataStatusLabel(detail.status)}</dd></div>
+              <div><dt>可用周期</dt><dd>{detail.availableTimeframes.length > 0 ? detail.availableTimeframes.join("、") : "暂无"}</dd></div>
               {detail.limitationReason ? <div><dt>周期限制</dt><dd>{detail.limitationReason}</dd></div> : null}
             </dl>
           </section>

@@ -1,4 +1,5 @@
 import type { NormalizedDrawing } from "./drawings";
+import type { Timeframe } from "../market/types";
 
 export type DrawingHistory = {
   past: NormalizedDrawing[][];
@@ -12,6 +13,7 @@ export type DrawingCommand =
   | { type: "rename"; id: string; name: string }
   | { type: "toggle-hidden"; id: string }
   | { type: "toggle-locked"; id: string }
+  | { type: "set-locked"; ids: string[]; locked: boolean }
   | { type: "move"; id: string; direction: "up" | "down" }
   | { type: "delete"; id: string }
   | { type: "clear-unlocked" };
@@ -60,6 +62,18 @@ export function applyDrawingCommand(
   if (command.type === "clear-unlocked") {
     const next = present.filter((drawing) => drawing.locked);
     return next.length === present.length ? history : commit(history, next);
+  }
+
+  if (command.type === "set-locked") {
+    const ids = new Set(command.ids);
+    const next = present.map((drawing) =>
+      ids.has(drawing.id) && drawing.locked !== command.locked
+        ? { ...drawing, locked: command.locked }
+        : drawing,
+    );
+    return next.some((drawing, index) => drawing !== present[index])
+      ? commit(history, next)
+      : history;
   }
 
   const commandId =
@@ -118,4 +132,106 @@ export function redoDrawingCommand(history: DrawingHistory): DrawingHistory {
     present: cloneDrawings(next),
     future: history.future.slice(1).map(cloneDrawings),
   };
+}
+
+function knowledgeVisibleDrawings(
+  drawings: NormalizedDrawing[],
+  cursor: string,
+  timeframe: Timeframe,
+) {
+  return drawings.filter(
+    (drawing) =>
+      drawing.createdAtCursor <= cursor &&
+      (drawing.visibleOn === "all" ||
+        drawing.visibleOn.includes(timeframe)),
+  );
+}
+
+function sameKnowledgeSnapshot(
+  left: NormalizedDrawing[],
+  right: NormalizedDrawing[],
+  cursor: string,
+  timeframe: Timeframe,
+) {
+  return (
+    JSON.stringify(
+      knowledgeVisibleDrawings(left, cursor, timeframe),
+    ) ===
+    JSON.stringify(
+      knowledgeVisibleDrawings(right, cursor, timeframe),
+    )
+  );
+}
+
+export function canUndoDrawingAtCursor(
+  history: DrawingHistory,
+  cursor: string,
+  timeframe: Timeframe,
+) {
+  const previous = history.past.at(-1);
+  return Boolean(
+    previous &&
+      !sameKnowledgeSnapshot(
+        previous,
+        history.present,
+        cursor,
+        timeframe,
+      ),
+  );
+}
+
+export function canRedoDrawingAtCursor(
+  history: DrawingHistory,
+  cursor: string,
+  timeframe: Timeframe,
+) {
+  const next = history.future[0];
+  return Boolean(
+    next &&
+      !sameKnowledgeSnapshot(
+        next,
+        history.present,
+        cursor,
+        timeframe,
+      ),
+  );
+}
+
+export function undoDrawingAtCursor(
+  history: DrawingHistory,
+  cursor: string,
+  timeframe: Timeframe,
+) {
+  return canUndoDrawingAtCursor(history, cursor, timeframe)
+    ? undoDrawingCommand(history)
+    : history;
+}
+
+export function redoDrawingAtCursor(
+  history: DrawingHistory,
+  cursor: string,
+  timeframe: Timeframe,
+) {
+  return canRedoDrawingAtCursor(history, cursor, timeframe)
+    ? redoDrawingCommand(history)
+    : history;
+}
+
+export function setAllDrawingsLockedAtCursor(
+  history: DrawingHistory,
+  cursor: string,
+  timeframe: Timeframe,
+) {
+  const drawings = knowledgeVisibleDrawings(
+    history.present,
+    cursor,
+    timeframe,
+  );
+  if (drawings.length === 0) return history;
+  const locked = !drawings.every((drawing) => drawing.locked);
+  return applyDrawingCommand(history, {
+    type: "set-locked",
+    ids: drawings.map((drawing) => drawing.id),
+    locked,
+  });
 }

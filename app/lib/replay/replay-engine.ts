@@ -31,7 +31,10 @@ export function createReplaySnapshot({
   const revealedExecutions = executions
     .filter((execution) => execution.executedAt <= cursor)
     .sort((a, b) => a.executedAt.localeCompare(b.executedAt));
-  const latestClose = revealedCandles.at(-1)?.close ?? 0;
+  const latestClose =
+    revealedCandles.at(-1)?.close ??
+    revealedExecutions.at(-1)?.price ??
+    0;
 
   return {
     cursor,

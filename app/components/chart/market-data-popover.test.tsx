@@ -24,6 +24,7 @@ describe("MarketDataPopover", () => {
             fetchedAt: "2025-02-01 09:30",
             status: "partial",
             limitationReason: "公开行情源未覆盖更早日期",
+            availableTimeframes: ["15m", "1h", "4h"],
           },
         ]}
       />,
@@ -33,6 +34,7 @@ describe("MarketDataPopover", () => {
     expect(screen.getByText("2025-01-02 至 2025-01-31")).toBeVisible();
     expect(screen.getByText("2025-02-01 09:30")).toBeVisible();
     expect(screen.getByText("公开行情源未覆盖更早日期")).toBeVisible();
+    expect(screen.getByText("15m、1h、4h")).toBeVisible();
     await user.click(screen.getByRole("button", { name: "刷新行情数据" }));
     expect(onRefresh).toHaveBeenCalledTimes(1);
   });
@@ -47,6 +49,7 @@ describe("MarketDataPopover", () => {
             providerLabel: null,
             nativeInterval: "1D",
             status: "not-requested",
+            availableTimeframes: [],
           },
         ]}
       />,
@@ -71,6 +74,7 @@ describe("MarketDataPopover", () => {
           nativeInterval: "15m",
           status,
           limitationReason: "公开行情源未覆盖该日期",
+          availableTimeframes: [],
         }]}
       />,
     );

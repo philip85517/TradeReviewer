@@ -3,8 +3,13 @@ import { describe, expect, it } from "vitest";
 import type { NormalizedDrawing } from "./drawings";
 import {
   applyDrawingCommand,
+  canRedoDrawingAtCursor,
+  canUndoDrawingAtCursor,
   createDrawingHistory,
+  redoDrawingAtCursor,
   redoDrawingCommand,
+  setAllDrawingsLockedAtCursor,
+  undoDrawingAtCursor,
   undoDrawingCommand,
 } from "./drawing-commands";
 
@@ -111,5 +116,135 @@ describe("drawing command history", () => {
     history = redoDrawingCommand(history);
     expect(history.present[0].name).toBe("下降趋势线");
     expect(history.present[0]).not.toBe(renamed);
+  });
+
+  it("keeps future-only history unavailable until its creation cursor", () => {
+    const future = drawing("future", {
+      createdAtCursor: "2025-01-05T00:00:00.000Z",
+    });
+    let history = createDrawingHistory();
+    history = applyDrawingCommand(history, {
+      type: "add",
+      drawing: future,
+    });
+
+    expect(
+      canUndoDrawingAtCursor(
+        history,
+        "2025-01-03T00:00:00.000Z",
+        "15m",
+      ),
+    ).toBe(false);
+    expect(
+      undoDrawingAtCursor(
+        history,
+        "2025-01-03T00:00:00.000Z",
+        "15m",
+      ),
+    ).toEqual(history);
+
+    expect(
+      canUndoDrawingAtCursor(
+        history,
+        "2025-01-05T00:00:00.000Z",
+        "15m",
+      ),
+    ).toBe(true);
+    history = undoDrawingAtCursor(
+      history,
+      "2025-01-05T00:00:00.000Z",
+      "15m",
+    );
+    expect(history.present).toEqual([]);
+    expect(
+      canRedoDrawingAtCursor(
+        history,
+        "2025-01-03T00:00:00.000Z",
+        "15m",
+      ),
+    ).toBe(false);
+    expect(
+      redoDrawingAtCursor(
+        history,
+        "2025-01-03T00:00:00.000Z",
+        "15m",
+      ),
+    ).toEqual(history);
+    expect(
+      canRedoDrawingAtCursor(
+        history,
+        "2025-01-05T00:00:00.000Z",
+        "15m",
+      ),
+    ).toBe(true);
+  });
+
+  it("does not cross a future-only snapshot to mutate earlier visible state", () => {
+    const early = drawing("early", {
+      createdAtCursor: "2025-01-02T00:00:00.000Z",
+    });
+    const future = drawing("future", {
+      createdAtCursor: "2025-01-05T00:00:00.000Z",
+    });
+    let history = createDrawingHistory([early]);
+    history = applyDrawingCommand(history, {
+      type: "rename",
+      id: early.id,
+      name: "已修改",
+    });
+    history = applyDrawingCommand(history, {
+      type: "add",
+      drawing: future,
+    });
+
+    const unchanged = undoDrawingAtCursor(
+      history,
+      "2025-01-03T00:00:00.000Z",
+      "15m",
+    );
+
+    expect(unchanged).toEqual(history);
+    expect(unchanged.present).toMatchObject([
+      { id: "early", name: "已修改" },
+      { id: "future", name: "趋势线" },
+    ]);
+  });
+
+  it("sets one lock target for only the supplied visible drawing IDs", () => {
+    let history = createDrawingHistory([
+      drawing("unlocked"),
+      drawing("locked", { locked: true, zIndex: 1 }),
+      drawing("other-period", {
+        visibleOn: ["1D"],
+        zIndex: 2,
+      }),
+      drawing("future", {
+        createdAtCursor: "2025-01-10T00:00:00.000Z",
+        zIndex: 3,
+      }),
+    ]);
+
+    history = setAllDrawingsLockedAtCursor(
+      history,
+      "2025-01-05T00:00:00.000Z",
+      "15m",
+    );
+
+    expect(history.present).toMatchObject([
+      { id: "unlocked", locked: true },
+      { id: "locked", locked: true },
+      { id: "other-period", locked: false },
+      { id: "future", locked: false },
+    ]);
+
+    history = setAllDrawingsLockedAtCursor(
+      history,
+      "2025-01-05T00:00:00.000Z",
+      "15m",
+    );
+    expect(history.present.slice(0, 2)).toMatchObject([
+      { id: "unlocked", locked: false },
+      { id: "locked", locked: false },
+    ]);
   });
 });

@@ -1,8 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 
-import { createDrawingHistory } from "../../lib/chart/drawing-commands";
+import {
+  applyDrawingCommand,
+  createDrawingHistory,
+} from "../../lib/chart/drawing-commands";
 import type { NormalizedDrawing } from "../../lib/chart/drawings";
 import type { ReviewChartViewModel } from "./review-chart-workspace";
 import { ReviewChartWorkspace } from "./review-chart-workspace";
@@ -77,6 +81,7 @@ const model: ReviewChartViewModel = {
         platform: "futu",
         row: 2,
         sourceTimestampText: "开仓成交",
+        sourceTimezone: "Asia/Shanghai",
       },
       accountId: "acct",
       accountLabel: "富途",
@@ -91,7 +96,7 @@ const model: ReviewChartViewModel = {
       executedAt: "2025-01-02T02:00:00.000Z",
       quantity: "100",
       price: "34.5",
-      fee: "0",
+      fee: "8",
     },
   ],
   position: {
@@ -124,6 +129,7 @@ const model: ReviewChartViewModel = {
   },
   canGoBack: true,
   canGoForward: true,
+  canGoToNextExecution: true,
   replayError: null,
   dataDetails: [
     {
@@ -133,6 +139,7 @@ const model: ReviewChartViewModel = {
       coverageEnd: "2025-01-02T02:45:00.000Z",
       fetchedAt: "2025-01-03T00:00:00.000Z",
       status: "complete",
+      availableTimeframes: ["15m", "1h", "4h"],
     },
   ],
 };
@@ -144,11 +151,18 @@ describe("ReviewChartWorkspace", () => {
     const onToolChange = vi.fn();
     const onToggleLayers = vi.fn();
     const onNext = vi.fn();
-
-    render(
-      <ReviewChartWorkspace
-        model={model}
-        episodeOptions={[
+    let drawingHistory = createDrawingHistory();
+    drawingHistory = applyDrawingCommand(drawingHistory, {
+      type: "add",
+      drawing: trend,
+    });
+    drawingHistory = applyDrawingCommand(drawingHistory, {
+      type: "add",
+      drawing: futureTrend,
+    });
+    const props = {
+        model,
+        episodeOptions: [
           {
             id: "episode-1",
             label: "第 1 次交易",
@@ -156,30 +170,30 @@ describe("ReviewChartWorkspace", () => {
             endedAt: "2025-01-02T02:45:00.000Z",
             status: "closed",
           },
-        ]}
-        playing={false}
-        speed={700}
-        activeTool="cursor"
-        drawingHistory={createDrawingHistory([trend, futureTrend])}
-        selectedDrawingId={null}
-        layersOpen
-        settings={{
+        ],
+        playing: false,
+        speed: 700,
+        activeTool: "cursor" as const,
+        drawingHistory,
+        selectedDrawingId: null,
+        layersOpen: true,
+        settings: {
           version: 1,
           showGrid: true,
           showVolume: true,
           showExecutions: true,
           showAverageCost: true,
           colorScheme: "teal-red",
-        }}
-        instruments={[
+        },
+        instruments: [
           {
             id: "HK:1810",
             name: "小米集团-W",
             symbol: "1810",
             market: "HK",
           },
-        ]}
-        review={{
+        ],
+        review: {
           version: 1,
           episodeId: "episode-1",
           instrumentId: "HK:1810",
@@ -201,32 +215,32 @@ describe("ReviewChartWorkspace", () => {
             completed: false,
           },
           confirmedTagIds: [],
-        }}
-        activePanelTab="stats"
-        drawerOpen={false}
-        onEpisodeChange={vi.fn()}
-        onTimeframeChange={onTimeframeChange}
-        onSelectInstrument={vi.fn()}
-        onRefreshMarketData={vi.fn()}
-        onToggleLayers={onToggleLayers}
-        onSettingsChange={vi.fn()}
-        onToolChange={onToolChange}
-        onDrawingCommand={vi.fn()}
-        onSelectDrawing={vi.fn()}
-        onUndoDrawing={vi.fn()}
-        onRedoDrawing={vi.fn()}
-        onClearDrawings={vi.fn()}
-        onToggleAllDrawings={vi.fn()}
-        onPrevious={vi.fn()}
-        onNext={onNext}
-        onNextExecution={vi.fn()}
-        onTogglePlay={vi.fn()}
-        onSpeedChange={vi.fn()}
-        onActivePanelTabChange={vi.fn()}
-        onDrawerOpenChange={vi.fn()}
-        onSaveReview={vi.fn().mockResolvedValue(undefined)}
-      />,
-    );
+        },
+        activePanelTab: "stats" as const,
+        drawerOpen: false,
+        onEpisodeChange: vi.fn(),
+        onTimeframeChange,
+        onSelectInstrument: vi.fn(),
+        onRefreshMarketData: vi.fn(),
+        onToggleLayers,
+        onSettingsChange: vi.fn(),
+        onToolChange,
+        onDrawingCommand: vi.fn(),
+        onSelectDrawing: vi.fn(),
+        onUndoDrawing: vi.fn(),
+        onRedoDrawing: vi.fn(),
+        onClearDrawings: vi.fn(),
+        onToggleAllDrawings: vi.fn(),
+        onPrevious: vi.fn(),
+        onNext,
+        onNextExecution: vi.fn(),
+        onTogglePlay: vi.fn(),
+        onSpeedChange: vi.fn(),
+        onActivePanelTabChange: vi.fn(),
+        onDrawerOpenChange: vi.fn(),
+        onSaveReview: vi.fn().mockResolvedValue(undefined),
+      } satisfies ComponentProps<typeof ReviewChartWorkspace>;
+    const { rerender } = render(<ReviewChartWorkspace {...props} />);
 
     expect(
       screen.getByRole("heading", { name: "小米集团-W（1810）" }),
@@ -236,8 +250,15 @@ describe("ReviewChartWorkspace", () => {
     );
     expect(screen.getByText("最大盈利（MFE）")).toBeInTheDocument();
     expect(screen.getByText("开仓成交")).toBeInTheDocument();
+    expect(screen.getByText("费用 HK$8.00")).toBeInTheDocument();
+    expect(screen.getByText("来源 futu · 第 2 行")).toBeInTheDocument();
+    expect(screen.getByText("时区 Asia/Shanghai")).toBeInTheDocument();
     expect(screen.getByDisplayValue("突破趋势")).toBeInTheDocument();
     expect(screen.queryByText("未来趋势")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "图层" })).toBeEnabled();
+    expect(
+      screen.getByRole("button", { name: "撤销绘图" }),
+    ).toBeDisabled();
     expect(document.querySelector(".chart-stage")).toHaveAttribute(
       "data-show-volume",
       "true",
@@ -251,5 +272,31 @@ describe("ReviewChartWorkspace", () => {
     expect(onToggleLayers).toHaveBeenCalledTimes(1);
     await user.click(screen.getByRole("button", { name: "下一根 K 线" }));
     expect(onNext).toHaveBeenCalledTimes(1);
+
+    rerender(
+      <ReviewChartWorkspace
+        {...props}
+        model={{ ...model, cursor: "2025-01-02T02:45:00.000Z" }}
+      />,
+    );
+    expect(screen.getByDisplayValue("未来趋势")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "撤销绘图" }),
+    ).toBeEnabled();
+
+    rerender(
+      <ReviewChartWorkspace
+        {...props}
+        model={{ ...model, cursor: "2025-01-02T01:45:00.000Z" }}
+      />,
+    );
+    const layers = screen.getByRole("button", { name: "图层" });
+    expect(layers).toBeDisabled();
+    expect(layers).toHaveAttribute(
+      "title",
+      "当前游标和周期暂无绘图",
+    );
+    expect(screen.queryByDisplayValue("突破趋势")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("未来趋势")).not.toBeInTheDocument();
   });
 });

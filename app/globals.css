@@ -1204,7 +1204,14 @@ input:focus-visible {
 
 .execution-details li {
   display: grid;
-  grid-template-columns: minmax(145px, 1fr) 42px minmax(90px, auto) minmax(0, 1fr);
+  grid-template-columns:
+    minmax(145px, 1fr)
+    42px
+    minmax(90px, auto)
+    minmax(90px, auto)
+    minmax(110px, 1fr)
+    minmax(100px, 0.8fr)
+    minmax(0, 1fr);
   gap: 8px;
   padding: 4px 0;
   color: #9cabc0;

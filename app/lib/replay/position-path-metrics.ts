@@ -61,8 +61,14 @@ export function calculatePositionPathMetrics(
   const latestCandle = candles.at(-1);
 
   if (!latestCandle) {
+    const lastExecution = executions.at(-1);
     return {
-      current: emptyPosition(),
+      current: lastExecution
+        ? replayPositionAtPrice({
+            executions,
+            markPrice: lastExecution.price,
+          })
+        : emptyPosition(),
       holdingMilliseconds: null,
       mfe: null,
       mae: null,

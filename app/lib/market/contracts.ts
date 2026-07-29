@@ -4,6 +4,8 @@ export type MarketDataProviderId = "tencent" | "eastmoney" | "yahoo";
 
 export type AdjustmentMode = "raw";
 
+export type NativeMarketInterval = "15m" | "1D";
+
 export type DailyCandleRecord = {
   instrumentId: string;
   tradingDate: string;
@@ -18,6 +20,27 @@ export type DailyCandleRecord = {
   adjustmentMode: AdjustmentMode;
   fetchedAt: string;
 };
+
+export type MarketCandleRecord = {
+  instrumentId: string;
+  interval: NativeMarketInterval;
+  timestamp: string;
+  open: string;
+  high: string;
+  low: string;
+  close: string;
+  volume: string;
+  currency: string;
+  provider: MarketDataProviderId;
+  providerSymbol: string;
+  adjustmentMode: AdjustmentMode;
+  fetchedAt: string;
+};
+
+export type ProviderMarketCandle = Pick<
+  MarketCandleRecord,
+  "timestamp" | "open" | "high" | "low" | "close" | "volume"
+>;
 
 export type ProviderDailyCandle = Omit<
   DailyCandleRecord,
@@ -48,6 +71,18 @@ export type CoverageSegment = {
   provider?: MarketDataProviderId;
   fetchedAt?: string;
   missingTradingDates: string[];
+  reason?: string;
+};
+
+export type IntervalCoverageSegment = {
+  interval: NativeMarketInterval;
+  requestedStart: string;
+  requestedEnd: string;
+  actualStart?: string;
+  actualEnd?: string;
+  status: CoverageStatus;
+  provider?: MarketDataProviderId;
+  fetchedAt?: string;
   reason?: string;
 };
 

@@ -21,6 +21,48 @@ const summary: InstrumentTradeSummary = {
 afterEach(cleanup);
 
 describe("ImportedEpisodeReview", () => {
+  it("labels date-only rows without synthesizing a trade time", () => {
+    render(
+      <ImportedEpisodeReview
+        summary={{
+          ...summary,
+          executions: [
+            {
+              id: "cms:statement:1",
+              source: {
+                platform: "china-merchants",
+                page: 1,
+                row: 8,
+                sourceOrder: 1,
+                timePrecision: "date-only",
+                sourceTimestampText: "20250102",
+                sourceTimezone: "Asia/Shanghai",
+              },
+              accountId: "cms:account",
+              accountLabel: "招商证券账户",
+              instrument: summary.instrument,
+              side: "buy",
+              executedAt: "2099-12-31T23:59:59.000Z",
+              quantity: "100",
+              price: "34.50",
+              fee: "5",
+            },
+          ],
+          tradeCount: 1,
+        }}
+        marketDataStatus="not-requested"
+        onUpdateMarketData={vi.fn()}
+        timeframe="1D"
+        candles={[]}
+      />,
+    );
+
+    expect(
+      screen.getByText(/20250102.*对账单未提供成交时间/),
+    ).toHaveTextContent("20250102 · 对账单未提供成交时间");
+    expect(screen.queryByText(/2099|23:59:59/)).not.toBeInTheDocument();
+  });
+
   it("shows a cached chart with the stock name, source and coverage dates", () => {
     render(
       <ImportedEpisodeReview

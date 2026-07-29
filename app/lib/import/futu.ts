@@ -7,7 +7,16 @@ import {
   canonicalInstrumentSymbol,
   instrumentDisplayName,
 } from "../instruments/display-name";
-import type { ImportDiagnostic, ImportResult } from "./import-result";
+import type { ImportDiagnostic } from "./import-result";
+import type {
+  BrokerStatementParser,
+  DetectionResult,
+  ImportExclusion,
+  ParsedInstrumentCandidate,
+  StatementInput,
+  StatementParseResult,
+} from "./contracts";
+import { fingerprintBytes } from "./file-fingerprint";
 
 const TRADE_SHEET = "证券-交易流水";
 const REQUIRED_HEADERS = [
@@ -73,6 +82,17 @@ function marketFor(value: unknown) {
   return market || "UNKNOWN";
 }
 
+function isSupportedMarket(
+  market: string,
+): market is ParsedInstrumentCandidate["market"] {
+  return (
+    market === "US" ||
+    market === "HK" ||
+    market === "CN-SH" ||
+    market === "CN-SZ"
+  );
+}
+
 function accountLabel(name: unknown, id: string) {
   const lastFour = id.slice(-4);
   return `${text(name) || "券商账户"} · ${lastFour || "----"}`;
@@ -91,34 +111,132 @@ function instrumentDescriptor(value: unknown) {
   return { symbol: raw, name: undefined };
 }
 
-function workbookFingerprint(input: ArrayBuffer | Uint8Array) {
-  const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
-  let first = 0x811c9dc5;
-  let second = 0x9e3779b9;
-  for (const byte of bytes) {
-    first = Math.imul(first ^ byte, 0x01000193);
-    second = Math.imul(second ^ (byte + first), 0x85ebca6b);
+function sourceAssetType(
+  name: string | undefined,
+): ParsedInstrumentCandidate["sourceAssetType"] {
+  return /\bETF\b|交易型开放式指数基金/i.test(name ?? "")
+    ? "etf"
+    : "unknown";
+}
+
+function mergeCandidateEvidence(
+  current: ParsedInstrumentCandidate | undefined,
+  incoming: ParsedInstrumentCandidate,
+): ParsedInstrumentCandidate {
+  if (!current) return incoming;
+  const symbol = canonicalInstrumentSymbol(
+    incoming.symbol,
+    incoming.market,
+  );
+  const names = [current.sourceName, incoming.sourceName]
+    .map((name) => name?.trim())
+    .filter(
+      (name): name is string =>
+        typeof name === "string" &&
+        name.length > 0 &&
+        canonicalInstrumentSymbol(name, incoming.market) !== symbol,
+    )
+    .sort();
+  const evidence = [
+    current.sourceAssetType,
+    incoming.sourceAssetType,
+  ];
+
+  return {
+    market: incoming.market,
+    symbol,
+    sourceName: names[0],
+    sourceAssetType: evidence.includes("etf")
+      ? "etf"
+      : evidence.includes("stock")
+        ? "stock"
+        : "unknown",
+  };
+}
+
+function exclusionCategory(
+  assetClass: string,
+): ImportExclusion["category"] {
+  if (/基金/.test(assetClass)) return "fund";
+  if (/外汇|货币|換匯|换汇/i.test(assetClass)) return "fx";
+  if (/债|債/.test(assetClass)) return "bond";
+  if (/现金|現金|资金|資金/.test(assetClass)) return "cash";
+  return "unknown-asset";
+}
+
+function addExclusion(
+  exclusions: ImportExclusion[],
+  category: ImportExclusion["category"],
+  label: string,
+  instrumentSymbol?: string,
+) {
+  const existing = exclusions.find(
+    (item) =>
+      item.category === category &&
+      item.label === label &&
+      item.instrumentSymbol === instrumentSymbol,
+  );
+  if (existing) existing.count += 1;
+  else exclusions.push({ category, label, count: 1, instrumentSymbol });
+}
+
+export function detectFutuWorkbook(
+  input: ArrayBuffer | Uint8Array,
+): DetectionResult {
+  try {
+    const workbook = XLSX.read(input, { type: "array", cellDates: false });
+    const sheet = workbook.Sheets[TRADE_SHEET];
+    if (!sheet) return { matched: false, confidence: 0 };
+    const rows = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
+      header: 1,
+      defval: "",
+      raw: false,
+    });
+    const headers = new Set((rows[0] ?? []).map(text));
+    const missingHeaders = REQUIRED_HEADERS.filter(
+      (header) => !headers.has(header),
+    );
+    if (missingHeaders.length > 0) {
+      return {
+        matched: false,
+        confidence: 0.5,
+        diagnostics: [
+          {
+            severity: "error",
+            code: "invalid-futu-trade-sheet",
+            message: `富途交易工作表缺少必要列：${missingHeaders.join("、")}`,
+            sheet: TRADE_SHEET,
+            row: 1,
+          },
+        ],
+      };
+    }
+    return { matched: true, confidence: 1 };
+  } catch {
+    return { matched: false, confidence: 0 };
   }
-  return [first, second]
-    .map((value) => (value >>> 0).toString(16).padStart(8, "0"))
-    .join("");
 }
 
 export function parseFutuWorkbook(
   input: ArrayBuffer | Uint8Array,
   options: ParseFutuOptions = {},
-): ImportResult<TradeExecution> {
+): StatementParseResult {
   const sourceTimezone = options.sourceTimezone ?? "Asia/Shanghai";
   const sourceFileName = options.fileName ?? "futu-workbook.xlsx";
   const sourceFileId =
-    options.sourceFileId ?? workbookFingerprint(input);
+    options.sourceFileId ?? fingerprintBytes(input);
   const workbook = XLSX.read(input, { type: "array", cellDates: false });
   const sheet = workbook.Sheets[TRADE_SHEET];
   const diagnostics: ImportDiagnostic[] = [];
+  const exclusions: ImportExclusion[] = [];
+  const candidates = new Map<string, ParsedInstrumentCandidate>();
 
   if (!sheet) {
     return {
+      broker: "futu",
       records: [],
+      candidates: [],
+      exclusions: [],
       diagnostics: [
         {
           severity: "error",
@@ -141,7 +259,10 @@ export function parseFutuWorkbook(
 
   if (missingHeaders.length > 0) {
     return {
+      broker: "futu",
       records: [],
+      candidates: [],
+      exclusions: [],
       diagnostics: [
         {
           severity: "error",
@@ -162,6 +283,13 @@ export function parseFutuWorkbook(
     const rawInstrumentSymbol = descriptor.symbol.toUpperCase();
 
     if (text(row["品类"]) !== "证券") {
+      const assetClass = text(row["品类"]) || "未知品类";
+      addExclusion(
+        exclusions,
+        exclusionCategory(assetClass),
+        assetClass,
+        rawInstrumentSymbol || undefined,
+      );
       diagnostics.push({
         severity: "info",
         code: "unsupported-asset-class",
@@ -175,6 +303,7 @@ export function parseFutuWorkbook(
     }
 
     if (!rawInstrumentSymbol) {
+      addExclusion(exclusions, "invalid-row", "股票代码为空");
       diagnostics.push({
         severity: "warning",
         code: "missing-instrument-symbol",
@@ -193,6 +322,12 @@ export function parseFutuWorkbook(
       sourceTimezone,
     );
     if (!side || !executedAt) {
+      addExclusion(
+        exclusions,
+        "invalid-row",
+        "成交方向或成交时间无法识别",
+        rawInstrumentSymbol,
+      );
       diagnostics.push({
         severity: "warning",
         code: "invalid-trade-row",
@@ -216,6 +351,12 @@ export function parseFutuWorkbook(
         throw new Error("quantity and price must be positive");
       }
     } catch {
+      addExclusion(
+        exclusions,
+        "invalid-row",
+        "数量、价格或费用无法识别",
+        rawInstrumentSymbol,
+      );
       diagnostics.push({
         severity: "warning",
         code: "invalid-numeric-field",
@@ -230,7 +371,39 @@ export function parseFutuWorkbook(
 
     const accountId = text(row["账户号码"]);
     const market = marketFor(row["交易所/市场"]);
+    if (!isSupportedMarket(market)) {
+      addExclusion(
+        exclusions,
+        "invalid-row",
+        "交易市场无法识别",
+        rawInstrumentSymbol,
+      );
+      diagnostics.push({
+        severity: "warning",
+        code: "unsupported-market",
+        message: "交易市场无法识别，已跳过该行",
+        sheet: TRADE_SHEET,
+        row: sourceRow,
+        instrumentSymbol: rawInstrumentSymbol,
+        assetClass: text(row["品类"]),
+      });
+      return;
+    }
     const symbol = canonicalInstrumentSymbol(rawInstrumentSymbol, market);
+    const candidate: ParsedInstrumentCandidate = {
+      market,
+      symbol,
+      sourceName: descriptor.name,
+      sourceAssetType: sourceAssetType(descriptor.name),
+    };
+    const candidateKey = canonicalInstrumentId(
+      candidate.symbol,
+      candidate.market,
+    );
+    candidates.set(
+      candidateKey,
+      mergeCandidateEvidence(candidates.get(candidateKey), candidate),
+    );
 
     records.push({
       id: `futu:${sourceFileId}:${TRADE_SHEET}:${sourceRow}`,
@@ -260,5 +433,25 @@ export function parseFutuWorkbook(
     });
   });
 
-  return { records, diagnostics, blocked: false };
+  return {
+    broker: "futu",
+    records,
+    candidates: [...candidates.values()],
+    exclusions,
+    diagnostics,
+    blocked: false,
+  };
+}
+
+export class FutuStatementParser implements BrokerStatementParser {
+  async detect(input: StatementInput): Promise<DetectionResult> {
+    return detectFutuWorkbook(input.bytes);
+  }
+
+  async parse(input: StatementInput): Promise<StatementParseResult> {
+    return parseFutuWorkbook(input.bytes, {
+      fileName: input.fileName,
+      sourceFileId: input.fileFingerprint,
+    });
+  }
 }

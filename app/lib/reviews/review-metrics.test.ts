@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   calculateRMultiple,
+  createEmptyEpisodeReviewRecord,
   episodeReviewStatus,
   normalizeEpisodeReviewRecord,
 } from "./review-metrics";
@@ -37,6 +38,39 @@ function record(
 }
 
 describe("episode review metrics", () => {
+  it("creates a deterministic blank record for suggestion confirmation", () => {
+    expect(
+      createEmptyEpisodeReviewRecord(
+        "episode-new",
+        "US:XPEV",
+        "2026-07-27T01:00:00.000Z",
+      ),
+    ).toEqual({
+      version: 1,
+      tagDictionaryVersion: 1,
+      episodeId: "episode-new",
+      instrumentId: "US:XPEV",
+      updatedAt: "2026-07-27T01:00:00.000Z",
+      plan: {
+        thesis: "",
+        expectedPath: "",
+        invalidationCondition: "",
+        targetRange: "",
+        plannedRiskAmount: "",
+        confidence: null,
+      },
+      review: {
+        decisionQuality: null,
+        executionQuality: null,
+        riskManagement: "",
+        psychology: "",
+        reusableRule: "",
+        completed: false,
+      },
+      confirmedTagIds: [],
+    });
+  });
+
   it("marks only explicitly completed records as reviewed", () => {
     expect(episodeReviewStatus()).toBe("pending");
     expect(episodeReviewStatus(record())).toBe("pending");

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Check,
   Clock3,
   Database,
   History,
@@ -13,9 +14,18 @@ import { marketDataStatusLabel } from "../../lib/market/sync-status";
 import type { InstrumentTradeSummary } from "../../lib/trades/instruments";
 import type { TradeExecution } from "../../lib/trades/types";
 
+export type ImportPhase =
+  | "idle"
+  | "detecting"
+  | "parsing"
+  | "classifying"
+  | "resolving"
+  | "ready";
+
 type Props = {
   importedInstruments: InstrumentTradeSummary[];
   importing: boolean;
+  importPhase?: ImportPhase;
   importError: string | null;
   onImport: (file: File) => void;
   onOpenHistory: () => void;
@@ -37,6 +47,7 @@ function shortDate(value: string) {
 export function EpisodeSidebar({
   importedInstruments,
   importing,
+  importPhase = importing ? "parsing" : "idle",
   importError,
   onImport,
   onOpenHistory,
@@ -52,6 +63,21 @@ export function EpisodeSidebar({
   const revealedSells = revealedDemoExecutions.filter(
     (execution) => execution.side === "sell",
   ).length;
+  const importSteps: Array<{
+    phase: Exclude<ImportPhase, "idle">;
+    label: string;
+  }> = [
+    { phase: "detecting", label: "识别格式" },
+    { phase: "parsing", label: "解析成交" },
+    { phase: "classifying", label: "识别股票" },
+    { phase: "resolving", label: "补全名称" },
+    { phase: "ready", label: "准备行情" },
+  ];
+  const activeStep = importSteps.findIndex(
+    (step) => step.phase === importPhase,
+  );
+  const activeStepLabel =
+    importSteps[activeStep]?.label ?? "准备导入";
 
   return (
     <aside className="episode-sidebar">
@@ -79,8 +105,9 @@ export function EpisodeSidebar({
           <Upload size={16} />
           {importing ? "正在解析…" : "导入交易记录"}
           <input
+            aria-label="导入交易记录"
             type="file"
-            accept=".xlsx,.xls"
+            accept=".xlsx,.xls,.pdf"
             disabled={importing}
             onChange={(event) => {
               const file = event.target.files?.[0];
@@ -89,14 +116,54 @@ export function EpisodeSidebar({
             }}
           />
         </label>
-        <button
-          className="history-button"
-          aria-label="查看导入记录"
-          onClick={onOpenHistory}
-        >
-          <History size={15} />
-        </button>
       </div>
+      {importing && (
+        <ol
+          className="import-progress"
+          role="status"
+          aria-live="polite"
+          aria-label={`导入进度：${activeStepLabel}（进行中）`}
+        >
+          {importSteps.map((step, index) => {
+            const state =
+              index < activeStep
+                ? "complete"
+                : index === activeStep
+                  ? "active"
+                  : "pending";
+            return (
+              <li
+                className={state}
+                key={step.phase}
+                aria-current={state === "active" ? "step" : undefined}
+                aria-label={`${step.label}，${
+                  state === "complete"
+                    ? "已完成"
+                    : state === "active"
+                      ? "进行中"
+                      : "待处理"
+                }`}
+              >
+                <span className="import-progress-marker" aria-hidden="true">
+                  {state === "complete" ? (
+                    <Check size={9} />
+                  ) : (
+                    index + 1
+                  )}
+                </span>
+                <span className="import-progress-label">{step.label}</span>
+                <span className="import-progress-state">
+                  {state === "complete"
+                    ? "已完成"
+                    : state === "active"
+                      ? "进行中"
+                      : "待处理"}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+      )}
       <p className="privacy-note">
         自动识别已适配格式，确认前不会写入交易库。
       </p>

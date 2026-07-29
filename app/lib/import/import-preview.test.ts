@@ -1,29 +1,31 @@
 import { describe, expect, it } from "vitest";
 
-import { createImportPreview } from "./import-preview";
-import type { ImportResult } from "./import-result";
 import type { TradeExecution } from "../trades/types";
+import type { EnrichedImportResult } from "./enrich-import";
+import type { StatementParseResult } from "./contracts";
+import { createImportPreview } from "./import-preview";
 
 function execution(
   id: string,
   symbol: string,
+  name: string,
   executedAt: string,
 ): TradeExecution {
   return {
     id,
     source: {
-      platform: "futu",
+      platform: "tiger",
       row: 2,
       fileFingerprint: "abc",
     },
     accountId: "acct",
     accountLabel: "账户",
     instrument: {
-      id: `US:${symbol}`,
+      id: `HK:${symbol}`,
       symbol,
-      name: symbol,
-      market: "US",
-      currency: "USD",
+      name,
+      market: "HK",
+      currency: "HKD",
     },
     side: "buy",
     executedAt,
@@ -34,54 +36,148 @@ function execution(
 }
 
 describe("createImportPreview", () => {
-  it("summarizes range, trades, included stocks, and excluded symbols", () => {
-    const result: ImportResult<TradeExecution> = {
-      records: [
-        execution("1", "NVDA", "2025-03-01T00:00:00.000Z"),
-        execution("2", "NVDA", "2025-03-10T00:00:00.000Z"),
-        execution("3", "BABA", "2025-04-01T00:00:00.000Z"),
+  it("summarizes only complete instruments and groups exclusions", () => {
+    const result: EnrichedImportResult = {
+      broker: "tiger",
+      importable: [
+        execution(
+          "1",
+          "700",
+          "腾讯控股",
+          "2025-03-01T00:00:00.000Z",
+        ),
+        execution(
+          "2",
+          "700",
+          "腾讯控股",
+          "2025-03-10T00:00:00.000Z",
+        ),
+        execution(
+          "3",
+          "1810",
+          "小米集团-W",
+          "2025-04-01T00:00:00.000Z",
+        ),
+      ],
+      unresolved: [
+        {
+          market: "US",
+          symbol: "BROKEN",
+          attempts: [
+            {
+              source: "nasdaq",
+              code: "not-found",
+              message: "未找到",
+            },
+          ],
+        },
+      ],
+      exclusions: [
+        { category: "bond", label: "可转债", count: 1 },
+        { category: "bond", label: "可转债", count: 1 },
+        { category: "fund", label: "基金", count: 3 },
+        {
+          category: "unknown-asset",
+          label: "无法确认属于股票或 ETF",
+          count: 1,
+          instrumentSymbol: "BROKEN",
+        },
+        {
+          category: "unknown-asset",
+          label: "其他未支持品类",
+          count: 2,
+          instrumentSymbol: "MYSTERY",
+        },
       ],
       diagnostics: [
         {
           severity: "info",
-          code: "unsupported-asset-class",
-          message: "已跳过基金记录",
-          instrumentSymbol: "FUND-1",
-        },
-        {
-          severity: "warning",
-          code: "invalid-numeric-field",
-          message: "价格错误",
-          instrumentSymbol: "BROKEN",
-        },
-        {
-          severity: "warning",
-          code: "missing-instrument-symbol",
-          message: "代码为空",
+          code: "cross-file-duplicate",
+          message: "已存在相同成交",
         },
       ],
-      blocked: false,
+      cacheHits: 0,
     };
 
-    const preview = createImportPreview("交易记录.xlsx", result);
+    const preview = createImportPreview("Tiger_2025.pdf", result);
 
     expect(preview).toMatchObject({
-      fileName: "交易记录.xlsx",
+      fileName: "Tiger_2025.pdf",
+      sourceLabel: "Tiger 证券",
       tradeCount: 3,
       instrumentCount: 2,
+      duplicateTradeCount: 1,
+      unresolvedInstrumentCount: 1,
       excludedInstrumentCount: 3,
       firstTradeAt: "2025-03-01T00:00:00.000Z",
       lastTradeAt: "2025-04-01T00:00:00.000Z",
       blocked: false,
     });
     expect(preview.instruments.map((item) => item.instrument.name)).toEqual([
-      "阿里巴巴",
-      "英伟达",
+      "小米集团-W",
+      "腾讯控股",
     ]);
-    expect(preview.excludedSymbols).toEqual([
-      "FUND-1",
-      "BROKEN",
-      "未识别标的",
+    expect(preview.exclusionGroups).toEqual([
+      { category: "bond", label: "可转债", count: 2 },
+      { category: "fund", label: "基金", count: 3 },
+      {
+        category: "unknown-asset",
+        label: "其他未支持品类",
+        count: 2,
+      },
     ]);
+    expect(preview.unresolved).toHaveLength(1);
+  });
+
+  it("blocks confirmation only when no complete execution can import", () => {
+    const result: EnrichedImportResult = {
+      broker: "china-merchants",
+      importable: [],
+      unresolved: [
+        {
+          market: "CN-SH",
+          symbol: "600000",
+          attempts: [],
+        },
+      ],
+      exclusions: [],
+      diagnostics: [],
+      cacheHits: 0,
+    };
+
+    expect(createImportPreview("招商证券.pdf", result).blocked).toBe(true);
+  });
+
+  it("fails closed for raw parser records without verified metadata", () => {
+    const parsed: StatementParseResult = {
+      broker: "futu",
+      records: [
+        execution(
+          "raw-1",
+          "99999",
+          "名称待行情源补充",
+          "2025-03-01T00:00:00.000Z",
+        ),
+      ],
+      candidates: [
+        {
+          market: "HK",
+          symbol: "99999",
+          sourceAssetType: "unknown",
+        },
+      ],
+      exclusions: [],
+      diagnostics: [],
+      blocked: false,
+    };
+
+    const preview = createImportPreview("raw.xlsx", parsed);
+
+    expect(preview.records).toEqual([]);
+    expect(preview.instruments).toEqual([]);
+    expect(preview.unresolved).toEqual([
+      expect.objectContaining({ market: "HK", symbol: "99999" }),
+    ]);
+    expect(preview.blocked).toBe(true);
   });
 });

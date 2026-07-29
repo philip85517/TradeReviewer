@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 
 import {
   calculateRMultiple,
+  createEmptyEpisodeReviewRecord,
   isValidPlannedRiskAmount,
   normalizeEpisodeReviewRecord,
 } from "../../lib/reviews/review-metrics";
@@ -22,35 +23,6 @@ type Props = {
   onSave: (record: EpisodeReviewRecord) => void | Promise<void>;
 };
 
-function emptyRecord(
-  episodeId: string,
-  instrumentId: string,
-): EpisodeReviewRecord {
-  return {
-    version: 1,
-    episodeId,
-    instrumentId,
-    updatedAt: new Date(0).toISOString(),
-    plan: {
-      thesis: "",
-      expectedPath: "",
-      invalidationCondition: "",
-      targetRange: "",
-      plannedRiskAmount: "",
-      confidence: null,
-    },
-    review: {
-      decisionQuality: null,
-      executionQuality: null,
-      riskManagement: "",
-      psychology: "",
-      reusableRule: "",
-      completed: false,
-    },
-    confirmedTagIds: [],
-  };
-}
-
 function score(value: string): ReviewScore | null {
   return value === "" ? null : (Number(value) as ReviewScore);
 }
@@ -63,7 +35,7 @@ export function EpisodeReviewEditor({
   onSave,
 }: Props) {
   const [draft, setDraft] = useState(() =>
-    record ?? emptyRecord(episodeId, instrumentId),
+    record ?? createEmptyEpisodeReviewRecord(episodeId, instrumentId),
   );
   const [loadedUpdatedAt, setLoadedUpdatedAt] = useState(
     record?.updatedAt,

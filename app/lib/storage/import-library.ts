@@ -74,7 +74,10 @@ export function mergeExecutions(
 
   return merged.sort(
     (a, b) =>
-      a.executedAt.localeCompare(b.executedAt) || a.id.localeCompare(b.id),
+      a.executedAt.localeCompare(b.executedAt) ||
+      (a.source.sourceOrder ?? a.source.row) -
+        (b.source.sourceOrder ?? b.source.row) ||
+      a.id.localeCompare(b.id),
   );
 }
 

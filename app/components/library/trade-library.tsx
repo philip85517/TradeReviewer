@@ -46,9 +46,16 @@ type Props = {
   onOpenInReview: (instrumentId: string) => void;
   onSaveReview: (record: EpisodeReviewRecord) => void | Promise<void>;
   reviewsHydrated: boolean;
+  target?: TradeLibraryTarget;
 };
 
 type FilterValue = "all" | string;
+
+export type TradeLibraryTarget = {
+  requestId: number;
+  instrumentId: string;
+  episodeId: string;
+};
 
 function money(value: string | null, currency: string) {
   if (value === null) return "待行情";
@@ -79,13 +86,14 @@ export function TradeLibrary({
   onOpenInReview,
   onSaveReview,
   reviewsHydrated,
+  target,
 }: Props) {
   const [selectedInstrumentId, setSelectedInstrumentId] = useState<
     string | null
-  >(null);
+  >(target?.instrumentId ?? null);
   const [selectedEpisodeId, setSelectedEpisodeId] = useState<
     string | null
-  >(null);
+  >(target?.episodeId ?? null);
   const [query, setQuery] = useState("");
   const [market, setMarket] = useState<FilterValue>("all");
   const [account, setAccount] = useState<FilterValue>("all");

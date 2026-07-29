@@ -4,6 +4,16 @@ import { createRef } from "react";
 
 import { useFullscreen } from "./use-fullscreen";
 
+type Equal<Left, Right> = (
+  <Value>() => Value extends Left ? 1 : 2
+) extends <Value>() => Value extends Right ? 1 : 2
+  ? true
+  : false;
+
+type ToggleReturn = ReturnType<ReturnType<typeof useFullscreen>["toggleFullscreen"]>;
+const toggleReturnsPromiseVoid: Equal<ToggleReturn, Promise<void>> = true;
+void toggleReturnsPromiseVoid;
+
 afterEach(() => {
   vi.restoreAllMocks();
   Object.defineProperty(document, "fullscreenElement", {
@@ -60,7 +70,7 @@ describe("useFullscreen", () => {
 
     const { result } = renderHook(() => useFullscreen(ref));
 
-    await expect(act(() => result.current.toggleFullscreen())).resolves.toBe(false);
+    await expect(act(() => result.current.toggleFullscreen())).resolves.toBeUndefined();
     expect(result.current.error).toBe("无法进入全屏");
   });
 
@@ -80,7 +90,7 @@ describe("useFullscreen", () => {
     const { result } = renderHook(() => useFullscreen(ref));
     expect(result.current.isFullscreen).toBe(true);
 
-    await expect(act(() => result.current.toggleFullscreen())).resolves.toBe(false);
+    await expect(act(() => result.current.toggleFullscreen())).resolves.toBeUndefined();
     expect(result.current.error).toBe("无法退出全屏");
   });
 });

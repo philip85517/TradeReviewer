@@ -8,7 +8,7 @@ export function useFullscreen(
   supported: boolean;
   isFullscreen: boolean;
   error: string | null;
-  toggleFullscreen: () => Promise<boolean>;
+  toggleFullscreen: () => Promise<void>;
 } {
   const supported =
     typeof document !== "undefined" &&
@@ -31,7 +31,7 @@ export function useFullscreen(
     error,
     toggleFullscreen: async () => {
       const target = targetRef.current;
-      if (!supported || !target) return false;
+      if (!supported || !target) return;
       setError(null);
       try {
         if (document.fullscreenElement === target) {
@@ -39,10 +39,8 @@ export function useFullscreen(
         } else {
           await target.requestFullscreen();
         }
-        return true;
       } catch {
         setError(document.fullscreenElement === target ? "无法退出全屏" : "无法进入全屏");
-        return false;
       }
     },
   };

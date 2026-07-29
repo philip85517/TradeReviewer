@@ -6,11 +6,50 @@ import { ChartToolbar } from "./chart-toolbar";
 
 afterEach(cleanup);
 
+function controlledProps() {
+  return {
+    timeframe: "1D" as const,
+    timeframeAvailability: {
+      "15m": { enabled: true },
+      "1h": { enabled: true },
+      "4h": { enabled: true },
+      "1D": { enabled: true },
+      "1W": { enabled: true },
+    },
+    onTimeframeChange: vi.fn(),
+    instruments: [],
+    onSelectInstrument: vi.fn(),
+    dataDetails: [],
+    onRefreshMarketData: undefined,
+    layersOpen: false,
+    layersDisabledReason: undefined,
+    onToggleLayers: vi.fn(),
+    fullscreen: {
+      supported: false,
+      isFullscreen: false,
+      error: null,
+      toggleFullscreen: vi.fn().mockResolvedValue(undefined),
+    },
+    settings: {
+      version: 1 as const,
+      showGrid: true,
+      showVolume: true,
+      showExecutions: true,
+      showAverageCost: true,
+      colorScheme: "teal-red" as const,
+    },
+    onSettingsChange: vi.fn(),
+    symbol: "XPEV",
+    instrumentName: "小鹏汽车",
+    market: "US",
+  };
+}
+
 describe("ChartToolbar", () => {
   it("opens the instrument search from its labelled toolbar control", async () => {
     const user = userEvent.setup();
 
-    render(<ChartToolbar timeframe="1D" onTimeframeChange={vi.fn()} />);
+    render(<ChartToolbar {...controlledProps()} />);
 
     await user.click(screen.getByRole("button", { name: "搜索标的" }));
 
@@ -20,9 +59,14 @@ describe("ChartToolbar", () => {
   it("disables intraday periods when an imported stock only has daily data", () => {
     render(
       <ChartToolbar
-        timeframe="1D"
-        onTimeframeChange={vi.fn()}
-        supportedTimeframes={["1D", "1W"]}
+        {...controlledProps()}
+        timeframeAvailability={{
+          "15m": { enabled: false, reason: "只有日线" },
+          "1h": { enabled: false, reason: "只有日线" },
+          "4h": { enabled: false, reason: "只有日线" },
+          "1D": { enabled: true },
+          "1W": { enabled: true },
+        }}
       />,
     );
 
@@ -39,8 +83,7 @@ describe("ChartToolbar", () => {
     const onSelectInstrument = vi.fn();
     render(
       <ChartToolbar
-        timeframe="1D"
-        onTimeframeChange={vi.fn()}
+        {...controlledProps()}
         instruments={[{ id: "HK:1357", name: "美图公司", symbol: "1357", market: "HK" }]}
         onSelectInstrument={onSelectInstrument}
       />,
@@ -61,8 +104,7 @@ describe("ChartToolbar", () => {
     const onFullscreen = vi.fn().mockResolvedValue(undefined);
     render(
       <ChartToolbar
-        timeframe="1D"
-        onTimeframeChange={vi.fn()}
+        {...controlledProps()}
         timeframeAvailability={{
           "15m": { enabled: false, reason: "尚未获取 15 分钟行情" },
           "1h": { enabled: false, reason: "尚未获取 15 分钟行情" },
@@ -88,7 +130,7 @@ describe("ChartToolbar", () => {
 
   it("updates the expanded state when a popover trigger is clicked again", async () => {
     const user = userEvent.setup();
-    render(<ChartToolbar timeframe="1D" onTimeframeChange={vi.fn()} />);
+    render(<ChartToolbar {...controlledProps()} />);
 
     const trigger = screen.getByRole("button", { name: "搜索标的" });
     await user.click(trigger);
@@ -100,8 +142,7 @@ describe("ChartToolbar", () => {
   it("explains unsupported fullscreen and exposes a recovered fullscreen error", () => {
     render(
       <ChartToolbar
-        timeframe="1D"
-        onTimeframeChange={vi.fn()}
+        {...controlledProps()}
         fullscreen={{ supported: true, isFullscreen: false, error: "无法进入全屏", toggleFullscreen: vi.fn() }}
       />,
     );
@@ -109,7 +150,7 @@ describe("ChartToolbar", () => {
     expect(screen.getByRole("status")).toHaveTextContent("无法进入全屏");
 
     cleanup();
-    render(<ChartToolbar timeframe="1D" onTimeframeChange={vi.fn()} />);
+    render(<ChartToolbar {...controlledProps()} />);
     const fullscreen = screen.getByRole("button", { name: "全屏" });
     expect(fullscreen).toBeDisabled();
     expect(fullscreen).toHaveAttribute("title", "浏览器不支持全屏");
@@ -120,8 +161,7 @@ describe("ChartToolbar", () => {
     const user = userEvent.setup();
     render(
       <ChartToolbar
-        timeframe="1D"
-        onTimeframeChange={vi.fn()}
+        {...controlledProps()}
         fullscreen={{
           supported: true,
           isFullscreen: false,

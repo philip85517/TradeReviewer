@@ -1,7 +1,7 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { Drawing } from "../../lib/chart/drawings";
+import type { NormalizedDrawing } from "../../lib/chart/drawings";
 import { DrawingCanvas } from "./drawing-canvas";
 import { DrawingToolbar } from "./drawing-toolbar";
 
@@ -19,14 +19,36 @@ const adapter = {
   yToPrice: (y: number) => 200 - y,
 };
 
+function savedDrawing(
+  input: Pick<NormalizedDrawing, "id" | "tool" | "anchors"> &
+    Partial<NormalizedDrawing>,
+): NormalizedDrawing {
+  return {
+    version: 2,
+    episodeId: "episode-1",
+    name: input.tool,
+    style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
+    hidden: false,
+    locked: false,
+    visibleOn: "all",
+    stage: "during-replay",
+    zIndex: 0,
+    createdAtCursor: candles[1].time,
+    ...input,
+  };
+}
+
 function renderCanvas(overrides: Record<string, unknown> = {}) {
   const props = {
     episodeId: "episode-1",
     candles,
     cursor: candles[1].time,
-    drawings: [] as Drawing[],
+    drawings: [] as NormalizedDrawing[],
+    selectedDrawingId: null,
     activeTool: "rectangle" as const,
-    onAddDrawing: vi.fn(),
+    plannedRiskAmount: undefined,
+    onSelectDrawing: vi.fn(),
+    onCommand: vi.fn(),
     coordinateAdapter: adapter,
     ...overrides,
   };
@@ -116,12 +138,12 @@ describe("drawing interactions", () => {
   it("selects a line and emits one replacement after its handle is dragged", () => {
     const onCommand = vi.fn();
     const onSelectDrawing = vi.fn();
-    const drawing: Drawing = {
+    const drawing = savedDrawing({
       id: "line-1", tool: "trend-line", anchors: [
         { time: candles[0].time, price: 100 }, { time: candles[1].time, price: 120 },
       ], style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
       hidden: false, locked: false, visibleOn: "all", stage: "during-replay",
-    };
+    });
     const { stage } = renderCanvas({
       activeTool: "cursor", drawings: [drawing], selectedDrawingId: "line-1", onCommand, onSelectDrawing,
     });
@@ -164,11 +186,11 @@ describe("drawing interactions", () => {
 
   it("does not move a locked drawing", () => {
     const onCommand = vi.fn();
-    const drawing: Drawing = {
+    const drawing = savedDrawing({
       id: "locked", tool: "horizontal-line", anchors: [{ time: candles[0].time, price: 100 }],
       style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
       hidden: false, locked: true, visibleOn: "all", stage: "during-replay",
-    };
+    });
     const { stage } = renderCanvas({ activeTool: "cursor", drawings: [drawing], onCommand });
 
     fireEvent.pointerDown(stage, { pointerId: 1, clientX: 10, clientY: 100 });
@@ -180,7 +202,7 @@ describe("drawing interactions", () => {
 
   it("opens and edits selected text from a cursor-mode stage event", () => {
     const onCommand = vi.fn();
-    const drawing: Drawing = {
+    const drawing = savedDrawing({
       id: "text-1",
       tool: "text",
       text: "原注释",
@@ -190,7 +212,7 @@ describe("drawing interactions", () => {
       locked: false,
       visibleOn: "all",
       stage: "during-replay",
-    };
+    });
     const { stage } = renderCanvas({
       activeTool: "cursor",
       drawings: [drawing],
@@ -220,13 +242,13 @@ describe("drawing interactions", () => {
       xToTime: (x: number) => new Date(start + (x / 10 - 1) * day).toISOString(),
       yToPrice: (y: number) => 200 - y,
     };
-    const drawing: Drawing = {
+    const drawing = savedDrawing({
       id: "move-line", tool: "trend-line", anchors: [
         { time: "2026-01-01T00:00:00.000Z", price: 100 },
         { time: "2026-01-03T00:00:00.000Z", price: 120 },
       ], style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
       hidden: false, locked: false, visibleOn: "all", stage: "during-replay",
-    };
+    });
     const { stage } = renderCanvas({
       activeTool: "cursor",
       cursor: "2026-01-05T00:00:00.000Z",
@@ -282,14 +304,14 @@ describe("drawing interactions", () => {
     ["short-risk-reward", 110, 90, 110, 80],
   ] as const)("keeps %s canonical when its stop handle crosses entry", (tool, initialStop, crossedStop, expectedStop, target) => {
     const onCommand = vi.fn();
-    const drawing: Drawing = {
+    const drawing = savedDrawing({
       id: `${tool}-1`, tool, anchors: [
         { time: candles[0].time, price: 100 },
         { time: candles[1].time, price: initialStop },
         { time: candles[1].time, price: target },
       ], style: { color: "#2f80ed", lineWidth: 1.5, opacity: 1 },
       hidden: false, locked: false, visibleOn: "all", stage: "during-replay",
-    };
+    });
     const { stage } = renderCanvas({
       activeTool: "cursor", drawings: [drawing], selectedDrawingId: drawing.id, onCommand,
     });
@@ -314,14 +336,14 @@ describe("drawing interactions", () => {
     ["short-risk-reward", 110, 80, 120, 80],
   ] as const)("keeps %s canonical when its target handle crosses entry", (tool, stop, initialTarget, crossedTarget, expectedTarget) => {
     const onCommand = vi.fn();
-    const drawing: Drawing = {
+    const drawing = savedDrawing({
       id: `${tool}-target`, tool, anchors: [
         { time: candles[0].time, price: 100 },
         { time: candles[1].time, price: stop },
         { time: candles[1].time, price: initialTarget },
       ], style: { color: "#2f80ed", lineWidth: 1.5, opacity: 1 },
       hidden: false, locked: false, visibleOn: "all", stage: "during-replay",
-    };
+    });
     const { stage } = renderCanvas({
       activeTool: "cursor", drawings: [drawing], selectedDrawingId: drawing.id, onCommand,
     });

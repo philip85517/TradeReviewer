@@ -13,9 +13,7 @@ export type DrawingTool =
   | "text"
   | "measure"
   | "long-risk-reward"
-  | "short-risk-reward"
-  /** Legacy tool kept until the workspace migrates in Task 10. */
-  | "risk-reward";
+  | "short-risk-reward";
 
 export type DrawingAnchor = {
   time: string;
@@ -24,16 +22,15 @@ export type DrawingAnchor = {
 
 export type CanonicalDrawingTool = Exclude<
   DrawingTool,
-  "cursor" | "risk-reward"
+  "cursor"
 >;
 
-export type Drawing = {
+export type LegacyDrawing = {
   version?: 1 | 2;
   id: string;
-  /** Optional while current components still create v1-shaped drawings. */
   episodeId?: string;
   name?: string;
-  tool: Exclude<DrawingTool, "cursor">;
+  tool: CanonicalDrawingTool | "risk-reward";
   anchors: DrawingAnchor[];
   style: {
     color: string;
@@ -54,7 +51,7 @@ export type Drawing = {
 };
 
 export type NormalizedDrawing = Omit<
-  Drawing,
+  LegacyDrawing,
   "version" | "episodeId" | "name" | "tool" | "zIndex" | "createdAtCursor"
 > & {
   version: 2;
@@ -87,7 +84,7 @@ function number(value: Decimal) {
   return value.toDecimalPlaces(6).toNumber();
 }
 
-const anchorCounts: Record<DrawingTool, number> = {
+const anchorCounts: Record<DrawingTool | "risk-reward", number> = {
   cursor: 0,
   "trend-line": 2,
   "horizontal-line": 1,
@@ -102,18 +99,22 @@ const anchorCounts: Record<DrawingTool, number> = {
   "risk-reward": 3,
 };
 
-export function requiredAnchorCount(tool: DrawingTool) {
+export function requiredAnchorCount(tool: DrawingTool | "risk-reward") {
   return anchorCounts[tool];
 }
 
-function canonicalTool(drawing: Drawing): CanonicalDrawingTool {
+function canonicalTool(
+  drawing: LegacyDrawing | NormalizedDrawing,
+): CanonicalDrawingTool {
   if (drawing.tool !== "risk-reward") return drawing.tool;
   return drawing.anchors[1]?.price < drawing.anchors[0]?.price
     ? "long-risk-reward"
     : "short-risk-reward";
 }
 
-export function validateDrawing(drawing: Drawing) {
+export function validateDrawing(
+  drawing: LegacyDrawing | NormalizedDrawing,
+) {
   if (drawing.anchors.length !== requiredAnchorCount(drawing.tool)) {
     throw new Error(`绘图锚点数量必须为 ${requiredAnchorCount(drawing.tool)}`);
   }
@@ -149,7 +150,7 @@ export function validateDrawing(drawing: Drawing) {
 }
 
 export function normalizeDrawing(
-  drawing: Drawing,
+  drawing: LegacyDrawing | NormalizedDrawing,
   episodeId: string,
   replayCursor: string,
   zIndex: number,
@@ -173,9 +174,9 @@ export function normalizeDrawing(
 }
 
 export function clampDrawingToCursor(
-  drawing: Drawing,
+  drawing: NormalizedDrawing,
   cursor: string,
-): Drawing {
+): NormalizedDrawing {
   return {
     ...drawing,
     anchors: drawing.anchors.map((anchor) => ({
@@ -190,19 +191,20 @@ export function clampDrawingToCursor(
 }
 
 export function visibleDrawingsAtCursor(
-  drawings: Drawing[],
+  drawings: NormalizedDrawing[],
   cursor: string,
   timeframe: Timeframe,
 ) {
   return drawings.filter((drawing) => {
-    // Missing metadata is legacy/unknown knowledge. Storage migration assigns
-    // the saved replay cursor; direct unknown values stay hidden conservatively.
-    const knowledgeTime = drawing.createdAtCursor ?? "\uffff";
     const visibleOnTimeframe =
       drawing.visibleOn === "all" ||
       drawing.visibleOn.includes(timeframe);
 
-    return !drawing.hidden && visibleOnTimeframe && knowledgeTime <= cursor;
+    return (
+      !drawing.hidden &&
+      visibleOnTimeframe &&
+      drawing.createdAtCursor <= cursor
+    );
   });
 }
 

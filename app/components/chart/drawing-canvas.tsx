@@ -9,33 +9,41 @@ import {
   isPointNearSegment,
   type ProjectedPoint,
 } from "../../lib/chart/drawing-geometry";
-import type { Drawing, DrawingAnchor, DrawingTool, NormalizedDrawing } from "../../lib/chart/drawings";
+import type {
+  DrawingAnchor,
+  DrawingTool,
+  NormalizedDrawing,
+} from "../../lib/chart/drawings";
 import { containingCandleTime, priceRangeForCandles } from "../../lib/chart/chart-scale";
 import type { Candle } from "../../lib/market/types";
 
 type Props = {
-  episodeId?: string;
+  episodeId: string;
   candles: Candle[];
   cursor: string;
-  drawings: Drawing[];
-  selectedDrawingId?: string | null;
+  drawings: NormalizedDrawing[];
+  selectedDrawingId: string | null;
   activeTool: DrawingTool;
-  plannedRiskAmount?: string;
-  onSelectDrawing?: (id: string | null) => void;
-  onCommand?: (command: DrawingCommand) => void;
-  /** Compatibility callback retained until the workspace migrates in Task 10. */
-  onAddDrawing?: (drawing: Drawing) => void;
+  plannedRiskAmount: string | undefined;
+  onSelectDrawing: (id: string | null) => void;
+  onCommand: (command: DrawingCommand) => void;
   coordinateAdapter?: ChartCoordinateAdapter;
   coordinateVersion?: number;
 };
 
 type CanvasSize = { width: number; height: number };
 type DragState = {
-  drawing: Drawing;
+  drawing: NormalizedDrawing;
   anchorIndex: number | null;
   originPoint: ProjectedPoint;
 };
-type TextEditor = { anchor: DrawingAnchor; x: number; y: number; drawing?: Drawing; value: string };
+type TextEditor = { anchor: DrawingAnchor; x: number; y: number; drawing?: NormalizedDrawing; value: string };
+type DrawingDraft = Omit<
+  NormalizedDrawing,
+  "version" | "episodeId" | "name" | "zIndex" | "createdAtCursor"
+> & {
+  name?: string;
+};
 type GestureHandlers = {
   activeTool: DrawingTool;
   pointerDown: (clientX: number, clientY: number) => void;
@@ -59,14 +67,16 @@ function drawingId() {
 const names: Record<Exclude<DrawingTool, "cursor">, string> = {
   "trend-line": "趋势线", "horizontal-line": "水平线", "vertical-line": "垂直线",
   rectangle: "矩形区间", arrow: "箭头", "price-label": "价格标注", text: "文字标注",
-  measure: "区间测量", "long-risk-reward": "做多盈亏比", "short-risk-reward": "做空盈亏比", "risk-reward": "盈亏比",
+  measure: "区间测量", "long-risk-reward": "做多盈亏比", "short-risk-reward": "做空盈亏比",
 };
 
 function styleFor(tool: DrawingTool) {
   return { color: tool === "price-label" ? "#f3ba2f" : "#2f80ed", lineWidth: tool === "trend-line" || tool === "arrow" ? 2 : 1.5, opacity: 0.95 };
 }
 
-function withCanonicalRiskRewardGeometry(drawing: Drawing): Drawing {
+function withCanonicalRiskRewardGeometry(
+  drawing: NormalizedDrawing,
+): NormalizedDrawing {
   if (
     (drawing.tool !== "long-risk-reward" &&
       drawing.tool !== "short-risk-reward") ||
@@ -98,17 +108,16 @@ export function DrawingCanvas({
   plannedRiskAmount,
   onSelectDrawing,
   onCommand,
-  onAddDrawing,
   coordinateAdapter,
   coordinateVersion = FALLBACK_ADAPTER_VERSION,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const startAnchorRef = useRef<DrawingAnchor | null>(null);
   const dragRef = useRef<DragState | null>(null);
-  const previewRef = useRef<Drawing | null>(null);
+  const previewRef = useRef<NormalizedDrawing | null>(null);
   const gestureHandlersRef = useRef<GestureHandlers | null>(null);
   const [size, setSize] = useState<CanvasSize>({ width: 0, height: 0 });
-  const [preview, setPreview] = useState<Drawing | null>(null);
+  const [preview, setPreview] = useState<NormalizedDrawing | null>(null);
   const [editor, setEditor] = useState<TextEditor | null>(null);
   const { minPrice, maxPrice, priceRange } = priceRangeForCandles(candles);
 
@@ -131,26 +140,29 @@ export function DrawingCanvas({
     return { x: candles.length <= 1 ? 0 : (index / (candles.length - 1)) * size.width, y: ((maxPrice - anchor.price) / priceRange) * size.height };
   }, [candles, coordinateAdapter, maxPrice, priceRange, size.width, size.height]);
 
-  function normalized(drawing: Drawing): NormalizedDrawing {
-    const tool = drawing.tool === "risk-reward"
-      ? drawing.anchors[1]?.price < drawing.anchors[0]?.price ? "long-risk-reward" : "short-risk-reward"
-      : drawing.tool;
+  function normalized(drawing: DrawingDraft): NormalizedDrawing {
     return {
-      ...drawing, version: 2, episodeId: episodeId ?? "unknown", name: drawing.name ?? names[tool], tool,
-      zIndex: drawing.zIndex ?? drawings.length, createdAtCursor: drawing.createdAtCursor ?? cursor,
-    } as NormalizedDrawing;
+      ...drawing,
+      version: 2,
+      episodeId,
+      name: drawing.name ?? names[drawing.tool],
+      zIndex: drawings.length,
+      createdAtCursor: cursor,
+    };
   }
 
-  function emitAdd(drawing: Drawing) {
-    const canonical = withCanonicalRiskRewardGeometry(drawing);
-    if (onCommand) onCommand({ type: "add", drawing: normalized(canonical) });
-    else onAddDrawing?.(canonical);
+  function emitAdd(drawing: DrawingDraft) {
+    const normalizedDrawing = normalized(drawing);
+    onCommand({
+      type: "add",
+      drawing: withCanonicalRiskRewardGeometry(normalizedDrawing),
+    });
   }
 
-  function emitReplace(drawing: Drawing) {
-    onCommand?.({
+  function emitReplace(drawing: NormalizedDrawing) {
+    onCommand({
       type: "replace",
-      drawing: normalized(withCanonicalRiskRewardGeometry(drawing)),
+      drawing: withCanonicalRiskRewardGeometry(drawing),
     });
   }
 
@@ -195,7 +207,7 @@ export function DrawingCanvas({
         if (drawing.tool === "price-label") { context.setLineDash([]); context.fillRect(size.width - 54, points[0].y - 10, 54, 20); context.fillStyle = "#ffffff"; context.font = "11px var(--font-geist-mono)"; context.fillText(drawing.anchors[0].price.toFixed(2), size.width - 48, points[0].y + 4); }
       }
       if (drawing.tool === "text") { context.font = "600 12px var(--font-geist-sans)"; context.fillText(drawing.text ?? "关键位", points[0].x + 6, points[0].y - 8); }
-      if ((drawing.tool === "long-risk-reward" || drawing.tool === "short-risk-reward" || drawing.tool === "risk-reward") && points[1] && points[2]) {
+      if ((drawing.tool === "long-risk-reward" || drawing.tool === "short-risk-reward") && points[1] && points[2]) {
         const left = Math.min(points[0].x, points[1].x, points[2].x); const right = Math.max(points[0].x, points[1].x, points[2].x, left + 110);
         context.globalAlpha = 0.2; context.fillStyle = "#ef5350"; context.fillRect(left, Math.min(points[0].y, points[1].y), right - left, Math.abs(points[1].y - points[0].y)); context.fillStyle = "#26a69a"; context.fillRect(left, Math.min(points[0].y, points[2].y), right - left, Math.abs(points[2].y - points[0].y));
         const risk = Math.abs(drawing.anchors[0].price - drawing.anchors[1].price); const reward = Math.abs(drawing.anchors[2].price - drawing.anchors[0].price); const budget = Number(plannedRiskAmount);
@@ -220,7 +232,7 @@ export function DrawingCanvas({
     });
   }
 
-  function beginEdit(drawing: Drawing, point: ProjectedPoint) {
+  function beginEdit(drawing: NormalizedDrawing, point: ProjectedPoint) {
     const points = drawing.anchors.map(pointFor);
     const anchorIndex = points.findIndex((item) => isPointNearAnchorHandle(point, item));
     dragRef.current = {
@@ -234,8 +246,8 @@ export function DrawingCanvas({
     const tool = activeTool;
     if (tool === "cursor" || tool === "text" || tool === "horizontal-line" || tool === "vertical-line" || tool === "price-label") return;
     const base = { id: drawingId(), tool, anchors: [first, last], style: styleFor(tool), hidden: false, locked: false, visibleOn: "all" as const, stage: "during-replay" as const };
-    if (tool === "long-risk-reward" || tool === "short-risk-reward" || tool === "risk-reward") {
-      const direction = tool === "short-risk-reward" ? "short" : tool === "long-risk-reward" ? "long" : last.price < first.price ? "long" : "short";
+    if (tool === "long-risk-reward" || tool === "short-risk-reward") {
+      const direction = tool === "short-risk-reward" ? "short" : "long";
       const risk = Math.max(Math.abs(first.price - last.price), 0.01);
       const stop = direction === "long"
         ? first.price - risk
@@ -281,7 +293,7 @@ export function DrawingCanvas({
     const anchor = anchorFromPoint(point.x, point.y);
     if (activeTool === "cursor") {
       const drawing = hitDrawing(point);
-      onSelectDrawing?.(drawing?.id ?? null);
+      onSelectDrawing(drawing?.id ?? null);
       if (drawing?.tool === "text" && !drawing.locked) {
         const textPoint = pointFor(drawing.anchors[0]);
         setEditor({

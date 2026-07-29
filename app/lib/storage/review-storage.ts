@@ -1,6 +1,6 @@
 import {
   normalizeDrawing,
-  type Drawing,
+  type LegacyDrawing,
   type NormalizedDrawing,
 } from "../chart/drawings";
 import type { Timeframe } from "../market/types";
@@ -12,23 +12,26 @@ export type EpisodeReviewState = {
   timeframe: Timeframe;
   activePanelTab: "stats" | "notes";
   drawings: NormalizedDrawing[];
-  thesis?: string;
 };
 
-/** Kept until the current workspace starts writing the v2 UI state. */
-export type LegacyStoredReviewState = {
+type LegacyStoredReviewState = {
   version: 1;
   replayCursor: string;
   timeframe: Timeframe;
   thesis: string;
-  drawings: Drawing[];
+  drawings: LegacyDrawing[];
 };
 
 export type StoredReviewState =
+  EpisodeReviewState;
+
+type LoadedReviewState = EpisodeReviewState & {
+  legacyThesis?: string;
+};
+
+type PersistedReviewState =
   | EpisodeReviewState
   | LegacyStoredReviewState;
-
-type LoadedReviewState = EpisodeReviewState & { thesis: string };
 
 const LEGACY_PREFIX = "trade-reviewer:review:v1";
 const PREFIX = "trade-reviewer:review:v2";
@@ -41,12 +44,12 @@ function legacyStorageKey(episodeId: string) {
   return `${LEGACY_PREFIX}:${episodeId}`;
 }
 
-function isDrawingLike(value: unknown): value is Drawing {
+function isDrawingLike(value: unknown): value is LegacyDrawing {
   return Boolean(
     value &&
       typeof value === "object" &&
-      typeof (value as Drawing).id === "string" &&
-      Array.isArray((value as Drawing).anchors),
+      typeof (value as LegacyDrawing).id === "string" &&
+      Array.isArray((value as LegacyDrawing).anchors),
   );
 }
 
@@ -67,7 +70,7 @@ function normalizeDrawings(
 
 function normalizeState(
   episodeId: string,
-  state: StoredReviewState,
+  state: PersistedReviewState,
 ): LoadedReviewState {
   return {
     version: 2,
@@ -80,7 +83,9 @@ function normalizeState(
       episodeId,
       state.replayCursor,
     ),
-    thesis: state.thesis ?? "",
+    ...(state.version === 1
+      ? { legacyThesis: state.thesis }
+      : {}),
   };
 }
 
@@ -94,9 +99,9 @@ function isValidTimeframe(value: unknown): value is Timeframe {
   );
 }
 
-function parseStoredState(value: unknown): StoredReviewState | null {
+function parseStoredState(value: unknown): PersistedReviewState | null {
   if (!value || typeof value !== "object") return null;
-  const state = value as Partial<StoredReviewState>;
+  const state = value as Partial<PersistedReviewState>;
   if (
     typeof state.replayCursor !== "string" ||
     !isValidTimeframe(state.timeframe) ||
@@ -110,8 +115,7 @@ function parseStoredState(value: unknown): StoredReviewState | null {
   if (
     state.version === 2 &&
     typeof state.episodeId === "string" &&
-    (state.activePanelTab === "stats" || state.activePanelTab === "notes") &&
-    (state.thesis === undefined || typeof state.thesis === "string")
+    (state.activePanelTab === "stats" || state.activePanelTab === "notes")
   ) {
     return state as EpisodeReviewState;
   }
@@ -128,13 +132,27 @@ function readStoredState(key: string) {
   }
 }
 
+function toPersistedState(state: LoadedReviewState): EpisodeReviewState {
+  return {
+    version: 2,
+    episodeId: state.episodeId,
+    replayCursor: state.replayCursor,
+    timeframe: state.timeframe,
+    activePanelTab: state.activePanelTab,
+    drawings: state.drawings,
+  };
+}
+
 export function saveReviewState(
   episodeId: string,
   state: StoredReviewState,
 ) {
   if (typeof window === "undefined") return;
   const normalized = normalizeState(episodeId, state);
-  window.localStorage.setItem(storageKey(episodeId), JSON.stringify(normalized));
+  window.localStorage.setItem(
+    storageKey(episodeId),
+    JSON.stringify(toPersistedState(normalized)),
+  );
 }
 
 export function loadReviewState(
@@ -149,6 +167,9 @@ export function loadReviewState(
   const legacy = readStoredState(legacyStorageKey(episodeId));
   if (!legacy || legacy.version !== 1) return null;
   const migrated = normalizeState(episodeId, legacy);
-  window.localStorage.setItem(storageKey(episodeId), JSON.stringify(migrated));
+  window.localStorage.setItem(
+    storageKey(episodeId),
+    JSON.stringify(toPersistedState(migrated)),
+  );
   return migrated;
 }

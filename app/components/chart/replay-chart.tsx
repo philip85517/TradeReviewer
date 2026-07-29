@@ -8,9 +8,13 @@ import type {
   Time,
 } from "lightweight-charts";
 
-import type { Drawing, DrawingTool } from "../../lib/chart/drawings";
+import type {
+  DrawingTool,
+  NormalizedDrawing,
+} from "../../lib/chart/drawings";
 import type { DrawingCommand } from "../../lib/chart/drawing-commands";
 import type { Candle } from "../../lib/market/types";
+import type { ChartSettings } from "../../lib/storage/chart-settings";
 import type { TradeExecution } from "../../lib/trades/types";
 import {
   DrawingCanvas,
@@ -22,14 +26,14 @@ type Props = {
   executions: TradeExecution[];
   cursor: string;
   averageCost: number;
-  drawings: Drawing[];
+  drawings: NormalizedDrawing[];
   activeTool: DrawingTool;
-  episodeId?: string;
-  selectedDrawingId?: string | null;
-  plannedRiskAmount?: string;
-  onSelectDrawing?: (id: string | null) => void;
-  onCommand?: (command: DrawingCommand) => void;
-  onAddDrawing?: (drawing: Drawing) => void;
+  settings: ChartSettings;
+  episodeId: string;
+  selectedDrawingId: string | null;
+  plannedRiskAmount: string | undefined;
+  onSelectDrawing: (id: string | null) => void;
+  onCommand: (command: DrawingCommand) => void;
 };
 
 type CrosshairCandle = Pick<
@@ -48,12 +52,12 @@ export function ReplayChart({
   averageCost,
   drawings,
   activeTool,
+  settings,
   episodeId,
   selectedDrawingId,
   plannedRiskAmount,
   onSelectDrawing,
   onCommand,
-  onAddDrawing,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -251,7 +255,7 @@ export function ReplayChart({
       })),
     );
 
-    const markers = executions
+    const markers = (settings.showExecutions ? executions : [])
       .map((execution) => {
         const candle =
           [...candles]
@@ -283,20 +287,73 @@ export function ReplayChart({
 
     costLineRef.current?.applyOptions({
       price: averageCost > 0 ? averageCost : candles.at(-1)?.close ?? 0,
-      axisLabelVisible: averageCost > 0,
+      axisLabelVisible: settings.showAverageCost && averageCost > 0,
     });
     if (!fittedRef.current && candles.length > 0) {
       chartRef.current?.timeScale().fitContent();
       fittedRef.current = true;
     }
     setCoordinateVersion((version) => version + 1);
-  }, [averageCost, candles, chartReady, executions]);
+  }, [
+    averageCost,
+    candles,
+    chartReady,
+    executions,
+    settings.showAverageCost,
+    settings.showExecutions,
+  ]);
+
+  useEffect(() => {
+    if (!chartReady) return;
+    const colors = settings.colorScheme === "green-red"
+      ? { up: "#22c55e", down: "#ef4444" }
+      : settings.colorScheme === "blue-orange"
+        ? { up: "#3b82f6", down: "#f97316" }
+        : { up: "#26a69a", down: "#ef5350" };
+    chartRef.current?.applyOptions({
+      grid: {
+        vertLines: {
+          color: "#1c2634",
+          visible: settings.showGrid,
+        },
+        horzLines: {
+          color: "#1c2634",
+          visible: settings.showGrid,
+        },
+      },
+    });
+    seriesRef.current?.applyOptions({
+      upColor: colors.up,
+      downColor: colors.down,
+      wickUpColor: colors.up,
+      wickDownColor: colors.down,
+    });
+    volumeSeriesRef.current?.applyOptions({
+      visible: settings.showVolume,
+    });
+    costLineRef.current?.applyOptions({
+      axisLabelVisible:
+        settings.showAverageCost && averageCost > 0,
+    });
+  }, [
+    averageCost,
+    chartReady,
+    settings.colorScheme,
+    settings.showAverageCost,
+    settings.showGrid,
+    settings.showVolume,
+  ]);
 
   const displayCandle = crosshair ?? candles.at(-1);
 
   return (
     <div
       className="chart-stage"
+      data-show-grid={settings.showGrid}
+      data-show-volume={settings.showVolume}
+      data-show-executions={settings.showExecutions}
+      data-show-average-cost={settings.showAverageCost}
+      data-color-scheme={settings.colorScheme}
       onPointerMove={() =>
         setCoordinateVersion((version) => version + 1)
       }
@@ -338,7 +395,6 @@ export function ReplayChart({
         plannedRiskAmount={plannedRiskAmount}
         onSelectDrawing={onSelectDrawing}
         onCommand={onCommand}
-        onAddDrawing={onAddDrawing}
         coordinateAdapter={coordinateAdapter}
         coordinateVersion={coordinateVersion}
       />

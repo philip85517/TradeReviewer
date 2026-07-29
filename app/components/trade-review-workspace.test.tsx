@@ -1,6 +1,11 @@
 import "fake-indexeddb/auto";
 
-import { cleanup, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   afterEach,
@@ -16,6 +21,7 @@ import type { EpisodeReviewRecord } from "../lib/reviews/types";
 import { IndexedDbEpisodeReviewRepository } from "../lib/storage/indexeddb-episode-review-repository";
 import { saveImportedExecutions } from "../lib/storage/import-library";
 import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-data-repository";
+import { saveReviewState } from "../lib/storage/review-storage";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeExecution } from "../lib/trades/types";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
@@ -55,6 +61,35 @@ const nextFrame: DemoReplayFrame = {
   ],
   canGoBack: true,
 };
+
+function defaultEpisodeRecord(
+  episodeId: string,
+  instrumentId: string,
+): EpisodeReviewRecord {
+  return {
+    version: 1,
+    episodeId,
+    instrumentId,
+    updatedAt: "2025-01-07T00:00:00.000Z",
+    plan: {
+      thesis: "",
+      expectedPath: "",
+      invalidationCondition: "",
+      targetRange: "",
+      plannedRiskAmount: "",
+      confidence: null,
+    },
+    review: {
+      decisionQuality: null,
+      executionQuality: null,
+      riskManagement: "",
+      psychology: "",
+      reusableRule: "",
+      completed: false,
+    },
+    confirmedTagIds: [],
+  };
+}
 
 describe("TradeReviewWorkspace", () => {
   afterEach(() => cleanup());
@@ -148,6 +183,704 @@ describe("TradeReviewWorkspace", () => {
       await screen.findByRole("heading", { name: "小米集团-W（1810）" }),
     ).toBeInTheDocument();
     await new Promise((resolve) => window.setTimeout(resolve, 50));
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("uses the unified replay workspace for a cached imported episode", async () => {
+    const user = userEvent.setup();
+    const instrument = {
+      id: "HK:1810",
+      symbol: "1810",
+      name: "小米集团-W",
+      market: "HK",
+      currency: "HKD",
+    };
+    const executions: TradeExecution[] = [
+      {
+        id: "xiaomi-open",
+        source: {
+          platform: "futu",
+          row: 2,
+          sourceTimestampText: "开仓成交",
+        },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "buy",
+        executedAt: "2025-01-02T02:00:00.000Z",
+        quantity: "100",
+        price: "34.5",
+        fee: "0",
+      },
+      {
+        id: "xiaomi-close",
+        source: {
+          platform: "futu",
+          row: 3,
+          sourceTimestampText: "平仓成交",
+        },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "sell",
+        executedAt: "2025-01-02T02:45:00.000Z",
+        quantity: "100",
+        price: "36.5",
+        fee: "0",
+      },
+    ];
+    saveImportedExecutions(executions);
+    const [episode] = buildTradeEpisodes(executions);
+    const repository = new IndexedDbMarketDataRepository();
+    await repository.commitSyncResult({
+      instrumentId: instrument.id,
+      candles: [
+        {
+          instrumentId: instrument.id,
+          tradingDate: "2025-01-02",
+          open: "34.5",
+          high: "36.8",
+          low: "34",
+          close: "36.5",
+          volume: "10000",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      coverage: [
+        {
+          startDate: "2024-01-01",
+          endDate: "2025-02-01",
+          status: "complete",
+          provider: "tencent",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+          missingTradingDates: [],
+        },
+      ],
+      providerSymbol: {
+        provider: "tencent",
+        symbol: "hk01810",
+      },
+    });
+    await repository.commitIntervalSyncResult({
+      instrumentId: instrument.id,
+      interval: "15m",
+      candles: [
+        {
+          instrumentId: instrument.id,
+          interval: "15m",
+          timestamp: "2025-01-02T02:00:00.000Z",
+          open: "34.5",
+          high: "35",
+          low: "34",
+          close: "34.8",
+          volume: "1000",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+        {
+          instrumentId: instrument.id,
+          interval: "15m",
+          timestamp: "2025-01-02T02:15:00.000Z",
+          open: "34.8",
+          high: "36",
+          low: "34.7",
+          close: "35.8",
+          volume: "1200",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+        {
+          instrumentId: instrument.id,
+          interval: "15m",
+          timestamp: "2025-01-02T02:30:00.000Z",
+          open: "35.8",
+          high: "36.2",
+          low: "35.5",
+          close: "36",
+          volume: "900",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+        {
+          instrumentId: instrument.id,
+          interval: "15m",
+          timestamp: "2025-01-02T02:45:00.000Z",
+          open: "36",
+          high: "36.8",
+          low: "35.9",
+          close: "36.5",
+          volume: "1500",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      coverage: [
+        {
+          interval: "15m",
+          requestedStart: "2025-01-02T00:00:00.000Z",
+          requestedEnd: "2025-01-02T23:59:59.999Z",
+          actualStart: "2025-01-02T02:00:00.000Z",
+          actualEnd: "2025-01-02T02:45:00.000Z",
+          status: "complete",
+          provider: "tencent",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      providerSymbol: {
+        provider: "tencent",
+        symbol: "hk01810",
+      },
+    });
+    await new IndexedDbEpisodeReviewRepository().put({
+      version: 1,
+      episodeId: episode.id,
+      instrumentId: instrument.id,
+      updatedAt: "2025-01-03T00:00:00.000Z",
+      plan: {
+        thesis: "回踩后承接",
+        expectedPath: "",
+        invalidationCondition: "",
+        targetRange: "",
+        plannedRiskAmount: "100",
+        confidence: 4,
+      },
+      review: {
+        decisionQuality: null,
+        executionQuality: null,
+        riskManagement: "",
+        psychology: "",
+        reusableRule: "",
+        completed: false,
+      },
+      confirmedTagIds: [],
+    });
+    vi.mocked(fetch).mockClear();
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    expect(
+      await screen.findByRole("heading", { name: "小米集团-W（1810）" }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: "切换到 15m" }),
+    ).toBeEnabled();
+    expect(screen.getByRole("button", { name: "趋势线" })).toBeEnabled();
+    expect(screen.getByText("最大盈利（MFE）")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "下一根 K 线" }),
+    ).toBeEnabled();
+    expect(
+      screen.queryByLabelText("导入股票成交详情"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("高 36.80")).not.toBeInTheDocument();
+
+    const cursorBefore = screen.getByTestId("replay-cursor").textContent;
+    const mfeBefore =
+      screen.getByText("最大盈利（MFE）").parentElement?.textContent;
+    expect(screen.queryByText("平仓成交")).not.toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: "下一根 K 线" }),
+    );
+
+    expect(screen.getByTestId("replay-cursor").textContent).not.toBe(
+      cursorBefore,
+    );
+    expect(
+      screen.getByText("最大盈利（MFE）").parentElement?.textContent,
+    ).not.toBe(mfeBefore);
+    expect(screen.queryByText("平仓成交")).not.toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: "下一根 K 线" }),
+    );
+    expect(screen.queryByText("平仓成交")).not.toBeInTheDocument();
+    expect(screen.queryByText("+HK$200.00")).not.toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: "下一根 K 线" }),
+    );
+    expect(screen.getByText("平仓成交")).toBeInTheDocument();
+    expect(screen.getAllByText("+HK$200.00").length).toBeGreaterThan(0);
+    expect(screen.getByText("高 36.80")).toBeInTheDocument();
+
+    const cursorBeforePeriodChange =
+      screen.getByTestId("replay-cursor").textContent;
+    await user.click(screen.getByRole("button", { name: "切换到 1h" }));
+    expect(screen.getByTestId("replay-cursor").textContent).not.toBe(
+      "2025/1/2 10:45",
+    );
+    expect(screen.getByTestId("replay-cursor").textContent).toBe(
+      cursorBeforePeriodChange,
+    );
+    await user.click(screen.getByRole("button", { name: "搜索标的" }));
+    await user.type(screen.getByRole("searchbox"), "1810");
+    await user.click(
+      screen.getByRole("option", {
+        name: "小米集团-W 1810 HK",
+      }),
+    );
+    await user.click(screen.getByRole("button", { name: "行情数据详情" }));
+    expect(
+      screen.getByRole("region", { name: "15m 行情详情" }),
+    ).toHaveTextContent("腾讯行情");
+    await user.click(screen.getByRole("button", { name: "图表设置" }));
+    await user.click(screen.getByRole("checkbox", { name: "显示成交量" }));
+    expect(document.querySelector(".chart-stage")).toHaveAttribute(
+      "data-show-volume",
+      "false",
+    );
+    await user.click(screen.getByRole("button", { name: "图层" }));
+    expect(screen.getByText("暂无绘图图层")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "全屏" })).toHaveAttribute(
+      "title",
+      "浏览器不支持全屏",
+    );
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("keeps notes available and explains provider-limited intraday periods for daily-only data", async () => {
+    const user = userEvent.setup();
+    const instrument = {
+      id: "HK:1357",
+      symbol: "1357",
+      name: "美图公司",
+      market: "HK",
+      currency: "HKD",
+    };
+    const execution: TradeExecution = {
+      id: "meitu-open",
+      source: { platform: "futu", row: 2 },
+      accountId: "acct",
+      accountLabel: "富途",
+      instrument,
+      side: "buy",
+      executedAt: "2025-01-02T02:00:00.000Z",
+      quantity: "100",
+      price: "3",
+      fee: "0",
+    };
+    saveImportedExecutions([execution]);
+    const repository = new IndexedDbMarketDataRepository();
+    await repository.commitSyncResult({
+      instrumentId: instrument.id,
+      candles: [
+        {
+          instrumentId: instrument.id,
+          tradingDate: "2025-01-02",
+          open: "3",
+          high: "3.2",
+          low: "2.9",
+          close: "3.1",
+          volume: "10000",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01357",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      coverage: [
+        {
+          startDate: "2024-01-01",
+          endDate: "2025-02-01",
+          status: "complete",
+          provider: "tencent",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+          missingTradingDates: [],
+        },
+      ],
+      providerSymbol: { provider: "tencent", symbol: "hk01357" },
+    });
+    await repository.commitIntervalSyncResult({
+      instrumentId: instrument.id,
+      interval: "15m",
+      candles: [],
+      coverage: [
+        {
+          interval: "15m",
+          requestedStart: "2025-01-01T00:00:00.000Z",
+          requestedEnd: "2025-01-03T23:59:59.999Z",
+          status: "partial",
+          reason: "provider-history-limit",
+        },
+      ],
+    });
+    vi.mocked(fetch).mockClear();
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("heading", { name: "美图公司（1357）" });
+
+    for (const period of ["15m", "1h", "4h"]) {
+      const button = screen.getByRole("button", {
+        name: `切换到 ${period}`,
+      });
+      expect(button).toBeDisabled();
+      expect(button).toHaveAttribute(
+        "title",
+        "公开行情源未覆盖该交易日期的 15 分钟行情",
+      );
+    }
+    await user.click(screen.getByRole("tab", { name: "复盘笔记" }));
+    expect(screen.getByLabelText("买入理由")).toBeEnabled();
+    await user.type(screen.getByLabelText("买入理由"), "只有日线也能记录");
+    expect(screen.getByLabelText("买入理由")).toHaveValue(
+      "只有日线也能记录",
+    );
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("preserves cached intervals and reports each failed refresh independently", async () => {
+    const user = userEvent.setup();
+    const instrument = {
+      id: "HK:1810",
+      symbol: "1810",
+      name: "小米集团-W",
+      market: "HK",
+      currency: "HKD",
+    };
+    const execution: TradeExecution = {
+      id: "refresh-open",
+      source: { platform: "futu", row: 2 },
+      accountId: "acct",
+      accountLabel: "富途",
+      instrument,
+      side: "buy",
+      executedAt: "2025-01-02T02:00:00.000Z",
+      quantity: "100",
+      price: "34.5",
+      fee: "0",
+    };
+    saveImportedExecutions([execution]);
+    const repository = new IndexedDbMarketDataRepository();
+    await repository.commitSyncResult({
+      instrumentId: instrument.id,
+      candles: [
+        {
+          instrumentId: instrument.id,
+          tradingDate: "2025-01-02",
+          open: "34.5",
+          high: "35",
+          low: "34",
+          close: "34.8",
+          volume: "1000",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      coverage: [
+        {
+          startDate: "2024-01-01",
+          endDate: "2025-02-01",
+          status: "partial",
+          provider: "tencent",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+          missingTradingDates: ["2025-01-06"],
+        },
+      ],
+      providerSymbol: { provider: "tencent", symbol: "hk01810" },
+    });
+    await repository.commitIntervalSyncResult({
+      instrumentId: instrument.id,
+      interval: "15m",
+      candles: [
+        {
+          instrumentId: instrument.id,
+          interval: "15m",
+          timestamp: "2025-01-02T02:00:00.000Z",
+          open: "34.5",
+          high: "35",
+          low: "34",
+          close: "34.8",
+          volume: "1000",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+        {
+          instrumentId: instrument.id,
+          interval: "15m",
+          timestamp: "2025-01-02T02:15:00.000Z",
+          open: "34.8",
+          high: "35.2",
+          low: "34.7",
+          close: "35",
+          volume: "1000",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      coverage: [
+        {
+          interval: "15m",
+          requestedStart: "2025-01-02T00:00:00.000Z",
+          requestedEnd: "2025-01-02T03:00:00.000Z",
+          actualStart: "2025-01-02T02:00:00.000Z",
+          actualEnd: "2025-01-02T02:15:00.000Z",
+          status: "partial",
+          provider: "tencent",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      providerSymbol: { provider: "tencent", symbol: "hk01810" },
+    });
+    vi.mocked(fetch).mockRejectedValue(new Error("offline"));
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("heading", {
+      name: "小米集团-W（1810）",
+    });
+    const cursor = screen.getByTestId("replay-cursor").textContent;
+    await user.click(screen.getByRole("button", { name: "行情数据详情" }));
+    await user.click(
+      screen.getByRole("button", { name: "刷新行情数据" }),
+    );
+
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+    await waitFor(() =>
+      expect(
+        screen.getByRole("region", { name: "15m 行情详情" }),
+      ).toHaveTextContent("15 分钟：offline"),
+    );
+    expect(
+      screen.getByRole("region", { name: "1D 行情详情" }),
+    ).toHaveTextContent("日线：offline");
+    expect(
+      screen.getByRole("button", { name: "切换到 15m" }),
+    ).toBeEnabled();
+    expect(screen.getByTestId("replay-cursor")).toHaveTextContent(
+      cursor ?? "",
+    );
+  });
+
+  it("restores cursor, drawings, panel tab, and notes independently for each episode", async () => {
+    const user = userEvent.setup();
+    const instrument = {
+      id: "US:XPEV",
+      symbol: "XPEV",
+      name: "小鹏汽车",
+      market: "US",
+      currency: "USD",
+    };
+    const executions: TradeExecution[] = [
+      {
+        id: "old-open",
+        source: { platform: "futu", row: 2 },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "buy",
+        executedAt: "2025-01-02T14:30:00.000Z",
+        quantity: "10",
+        price: "10",
+        fee: "0",
+      },
+      {
+        id: "old-close",
+        source: { platform: "futu", row: 3 },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "sell",
+        executedAt: "2025-01-02T15:00:00.000Z",
+        quantity: "10",
+        price: "11",
+        fee: "0",
+      },
+      {
+        id: "new-open",
+        source: { platform: "futu", row: 4 },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "buy",
+        executedAt: "2025-01-06T14:30:00.000Z",
+        quantity: "10",
+        price: "12",
+        fee: "0",
+      },
+      {
+        id: "new-close",
+        source: { platform: "futu", row: 5 },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "sell",
+        executedAt: "2025-01-06T15:00:00.000Z",
+        quantity: "10",
+        price: "13",
+        fee: "0",
+      },
+    ];
+    saveImportedExecutions(executions);
+    const [oldEpisode, newEpisode] = buildTradeEpisodes(executions);
+    const repository = new IndexedDbMarketDataRepository();
+    const candleTimes = [
+      "2025-01-02T14:30:00.000Z",
+      "2025-01-02T14:45:00.000Z",
+      "2025-01-02T15:00:00.000Z",
+      "2025-01-06T14:30:00.000Z",
+      "2025-01-06T14:45:00.000Z",
+      "2025-01-06T15:00:00.000Z",
+    ];
+    await repository.commitIntervalSyncResult({
+      instrumentId: instrument.id,
+      interval: "15m",
+      candles: candleTimes.map((timestamp, index) => ({
+        instrumentId: instrument.id,
+        interval: "15m" as const,
+        timestamp,
+        open: String(10 + index * 0.5),
+        high: String(11 + index * 0.5),
+        low: String(9 + index * 0.5),
+        close: String(10.5 + index * 0.5),
+        volume: "1000",
+        currency: "USD",
+        provider: "yahoo" as const,
+        providerSymbol: "XPEV",
+        adjustmentMode: "raw" as const,
+        fetchedAt: "2025-01-07T00:00:00.000Z",
+      })),
+      coverage: [
+        {
+          interval: "15m",
+          requestedStart: "2025-01-02T00:00:00.000Z",
+          requestedEnd: "2025-01-06T23:59:59.999Z",
+          actualStart: candleTimes[0],
+          actualEnd: candleTimes.at(-1),
+          status: "complete",
+          provider: "yahoo",
+          fetchedAt: "2025-01-07T00:00:00.000Z",
+        },
+      ],
+      providerSymbol: { provider: "yahoo", symbol: "XPEV" },
+    });
+    saveReviewState(oldEpisode.id, {
+      version: 2,
+      episodeId: oldEpisode.id,
+      replayCursor: "2025-01-02T14:45:00.000Z",
+      timeframe: "15m",
+      activePanelTab: "notes",
+      drawings: [
+        {
+          version: 2,
+          id: "old-drawing",
+          episodeId: oldEpisode.id,
+          name: "旧回合趋势",
+          tool: "trend-line",
+          anchors: [
+            { time: "2025-01-02T14:30:00.000Z", price: 10 },
+            { time: "2025-01-02T14:45:00.000Z", price: 11 },
+          ],
+          style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
+          zIndex: 0,
+          hidden: false,
+          locked: false,
+          visibleOn: "all",
+          stage: "during-replay",
+          createdAtCursor: "2025-01-02T14:45:00.000Z",
+        },
+      ],
+    });
+    saveReviewState(newEpisode.id, {
+      version: 2,
+      episodeId: newEpisode.id,
+      replayCursor: "2025-01-06T14:45:00.000Z",
+      timeframe: "15m",
+      activePanelTab: "stats",
+      drawings: [
+        {
+          version: 2,
+          id: "new-drawing",
+          episodeId: newEpisode.id,
+          name: "新回合趋势",
+          tool: "trend-line",
+          anchors: [
+            { time: "2025-01-06T14:30:00.000Z", price: 12 },
+            { time: "2025-01-06T14:45:00.000Z", price: 13 },
+          ],
+          style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
+          zIndex: 0,
+          hidden: false,
+          locked: false,
+          visibleOn: "all",
+          stage: "during-replay",
+          createdAtCursor: "2025-01-06T14:45:00.000Z",
+        },
+      ],
+    });
+    const reviewRepository = new IndexedDbEpisodeReviewRepository();
+    await reviewRepository.put({
+      ...defaultEpisodeRecord(newEpisode.id, instrument.id),
+      plan: {
+        ...defaultEpisodeRecord(newEpisode.id, instrument.id).plan,
+        thesis: "新回合笔记",
+      },
+    });
+    await reviewRepository.put({
+      ...defaultEpisodeRecord(oldEpisode.id, instrument.id),
+      plan: {
+        ...defaultEpisodeRecord(oldEpisode.id, instrument.id).plan,
+        thesis: "旧回合笔记",
+      },
+    });
+    vi.mocked(fetch).mockClear();
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
+    await waitFor(() =>
+      expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
+        "data-cursor",
+        "2025-01-06T14:45:00.000Z",
+      ),
+    );
+    await user.click(screen.getByRole("button", { name: "图层" }));
+    expect(screen.getByDisplayValue("新回合趋势")).toBeInTheDocument();
+    expect(screen.queryByDisplayValue("旧回合趋势")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "复盘笔记" }));
+    expect(screen.getByLabelText("买入理由")).toHaveValue("新回合笔记");
+
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "交易回合" }),
+      oldEpisode.id,
+    );
+
+    expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
+      "data-cursor",
+      "2025-01-02T14:45:00.000Z",
+    );
+    expect(screen.getByRole("tab", { name: "复盘笔记" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(screen.getByLabelText("买入理由")).toHaveValue("旧回合笔记");
+    await user.click(screen.getByRole("button", { name: "图层" }));
+    expect(screen.getByDisplayValue("旧回合趋势")).toBeInTheDocument();
+    expect(screen.queryByDisplayValue("新回合趋势")).not.toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
   });
 

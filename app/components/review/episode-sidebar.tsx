@@ -113,6 +113,7 @@ export function EpisodeSidebar({
       <div className="episode-list">
         {importedInstruments.length === 0 && <button
           className={`stock-card ${selectedInstrumentId === "demo" ? "active" : ""}`}
+          aria-pressed={selectedInstrumentId === "demo"}
           onClick={() => onSelectInstrument("demo")}
         >
           <div className="stock-card-title">
@@ -146,6 +147,7 @@ export function EpisodeSidebar({
             >
               <button
                 className="stock-card-select"
+                aria-pressed={selectedInstrumentId === item.instrument.id}
                 onClick={() => onSelectInstrument(item.instrument.id)}
               >
                 <div className="stock-card-title">

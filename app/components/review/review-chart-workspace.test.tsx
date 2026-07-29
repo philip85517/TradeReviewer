@@ -1,0 +1,255 @@
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+
+import { createDrawingHistory } from "../../lib/chart/drawing-commands";
+import type { NormalizedDrawing } from "../../lib/chart/drawings";
+import type { ReviewChartViewModel } from "./review-chart-workspace";
+import { ReviewChartWorkspace } from "./review-chart-workspace";
+
+const trend: NormalizedDrawing = {
+  version: 2,
+  id: "trend-1",
+  episodeId: "episode-1",
+  name: "突破趋势",
+  tool: "trend-line",
+  anchors: [
+    { time: "2025-01-02T02:00:00.000Z", price: 34 },
+    { time: "2025-01-02T02:15:00.000Z", price: 35 },
+  ],
+  style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
+  zIndex: 0,
+  hidden: false,
+  locked: false,
+  visibleOn: "all",
+  stage: "during-replay",
+  createdAtCursor: "2025-01-02T02:15:00.000Z",
+};
+
+const futureTrend: NormalizedDrawing = {
+  ...trend,
+  id: "future-trend",
+  name: "未来趋势",
+  createdAtCursor: "2025-01-02T02:45:00.000Z",
+};
+
+const model: ReviewChartViewModel = {
+  source: "imported",
+  episodeId: "episode-1",
+  instrument: {
+    id: "HK:1810",
+    symbol: "1810",
+    name: "小米集团-W",
+    market: "HK",
+    currency: "HKD",
+  },
+  timeframe: "15m",
+  timeframeAvailability: {
+    "15m": { enabled: true },
+    "1h": { enabled: true },
+    "4h": { enabled: true },
+    "1D": { enabled: true },
+    "1W": { enabled: true },
+  },
+  cursor: "2025-01-02T02:15:00.000Z",
+  candles: [
+    {
+      time: "2025-01-02T02:00:00.000Z",
+      open: 34.5,
+      high: 35,
+      low: 34,
+      close: 34.8,
+      volume: 1000,
+    },
+    {
+      time: "2025-01-02T02:15:00.000Z",
+      open: 34.8,
+      high: 36,
+      low: 34.7,
+      close: 35.8,
+      volume: 1200,
+    },
+  ],
+  executions: [
+    {
+      id: "open",
+      source: {
+        platform: "futu",
+        row: 2,
+        sourceTimestampText: "开仓成交",
+      },
+      accountId: "acct",
+      accountLabel: "富途",
+      instrument: {
+        id: "HK:1810",
+        symbol: "1810",
+        name: "小米集团-W",
+        market: "HK",
+        currency: "HKD",
+      },
+      side: "buy",
+      executedAt: "2025-01-02T02:00:00.000Z",
+      quantity: "100",
+      price: "34.5",
+      fee: "0",
+    },
+  ],
+  position: {
+    quantity: "100",
+    averageCost: "34.5",
+    realizedPnl: "0",
+    unrealizedPnl: "130",
+    netPnl: "130",
+    fees: "0",
+    grossCapitalDeployed: "3450",
+    returnPercent: "3.76811594",
+  },
+  pathMetrics: {
+    current: {
+      quantity: "100",
+      averageCost: "34.5",
+      realizedPnl: "0",
+      unrealizedPnl: "130",
+      netPnl: "130",
+      fees: "0",
+      grossCapitalDeployed: "3450",
+      returnPercent: "3.76811594",
+    },
+    holdingMilliseconds: 15 * 60 * 1000,
+    mfe: { amount: "150", percent: "4.34782609" },
+    mae: { amount: "-50", percent: "-1.44927536" },
+    maximumDrawdown: { amount: "0", percent: "0" },
+    profitGiveback: { amount: "20", percent: "0.57971014" },
+    rMultiple: "1.3",
+  },
+  canGoBack: true,
+  canGoForward: true,
+  replayError: null,
+  dataDetails: [
+    {
+      providerLabel: "腾讯行情",
+      nativeInterval: "15m",
+      coverageStart: "2025-01-02T02:00:00.000Z",
+      coverageEnd: "2025-01-02T02:45:00.000Z",
+      fetchedAt: "2025-01-03T00:00:00.000Z",
+      status: "complete",
+    },
+  ],
+};
+
+describe("ReviewChartWorkspace", () => {
+  it("renders the controlled replay, drawing, layer, execution, and review surfaces", async () => {
+    const user = userEvent.setup();
+    const onTimeframeChange = vi.fn();
+    const onToolChange = vi.fn();
+    const onToggleLayers = vi.fn();
+    const onNext = vi.fn();
+
+    render(
+      <ReviewChartWorkspace
+        model={model}
+        episodeOptions={[
+          {
+            id: "episode-1",
+            label: "第 1 次交易",
+            startedAt: "2025-01-02T02:00:00.000Z",
+            endedAt: "2025-01-02T02:45:00.000Z",
+            status: "closed",
+          },
+        ]}
+        playing={false}
+        speed={700}
+        activeTool="cursor"
+        drawingHistory={createDrawingHistory([trend, futureTrend])}
+        selectedDrawingId={null}
+        layersOpen
+        settings={{
+          version: 1,
+          showGrid: true,
+          showVolume: true,
+          showExecutions: true,
+          showAverageCost: true,
+          colorScheme: "teal-red",
+        }}
+        instruments={[
+          {
+            id: "HK:1810",
+            name: "小米集团-W",
+            symbol: "1810",
+            market: "HK",
+          },
+        ]}
+        review={{
+          version: 1,
+          episodeId: "episode-1",
+          instrumentId: "HK:1810",
+          updatedAt: "2025-01-03T00:00:00.000Z",
+          plan: {
+            thesis: "回踩后承接",
+            expectedPath: "",
+            invalidationCondition: "",
+            targetRange: "",
+            plannedRiskAmount: "100",
+            confidence: 4,
+          },
+          review: {
+            decisionQuality: null,
+            executionQuality: null,
+            riskManagement: "",
+            psychology: "",
+            reusableRule: "",
+            completed: false,
+          },
+          confirmedTagIds: [],
+        }}
+        activePanelTab="stats"
+        drawerOpen={false}
+        onEpisodeChange={vi.fn()}
+        onTimeframeChange={onTimeframeChange}
+        onSelectInstrument={vi.fn()}
+        onRefreshMarketData={vi.fn()}
+        onToggleLayers={onToggleLayers}
+        onSettingsChange={vi.fn()}
+        onToolChange={onToolChange}
+        onDrawingCommand={vi.fn()}
+        onSelectDrawing={vi.fn()}
+        onUndoDrawing={vi.fn()}
+        onRedoDrawing={vi.fn()}
+        onClearDrawings={vi.fn()}
+        onToggleAllDrawings={vi.fn()}
+        onPrevious={vi.fn()}
+        onNext={onNext}
+        onNextExecution={vi.fn()}
+        onTogglePlay={vi.fn()}
+        onSpeedChange={vi.fn()}
+        onActivePanelTabChange={vi.fn()}
+        onDrawerOpenChange={vi.fn()}
+        onSaveReview={vi.fn().mockResolvedValue(undefined)}
+      />,
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "小米集团-W（1810）" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "交易回合" })).toHaveValue(
+      "episode-1",
+    );
+    expect(screen.getByText("最大盈利（MFE）")).toBeInTheDocument();
+    expect(screen.getByText("开仓成交")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("突破趋势")).toBeInTheDocument();
+    expect(screen.queryByText("未来趋势")).not.toBeInTheDocument();
+    expect(document.querySelector(".chart-stage")).toHaveAttribute(
+      "data-show-volume",
+      "true",
+    );
+
+    await user.click(screen.getByRole("button", { name: "趋势线" }));
+    expect(onToolChange).toHaveBeenCalledWith("trend-line");
+    await user.click(screen.getByRole("button", { name: "切换到 1h" }));
+    expect(onTimeframeChange).toHaveBeenCalledWith("1h");
+    await user.click(screen.getByRole("button", { name: "图层" }));
+    expect(onToggleLayers).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByRole("button", { name: "下一根 K 线" }));
+    expect(onNext).toHaveBeenCalledTimes(1);
+  });
+});

@@ -1,4 +1,4 @@
-import type { Drawing, NormalizedDrawing } from "./drawings";
+import type { NormalizedDrawing } from "./drawings";
 
 export type DrawingHistory = {
   past: NormalizedDrawing[][];
@@ -17,9 +17,6 @@ export type DrawingCommand =
   | { type: "clear-unlocked" };
 
 function cloneDrawing(drawing: NormalizedDrawing): NormalizedDrawing {
-  if ((drawing as Drawing).tool === "risk-reward") {
-    throw new Error("规范化绘图不支持旧版风险回报工具");
-  }
   return {
     ...drawing,
     anchors: drawing.anchors.map((anchor) => ({ ...anchor })),

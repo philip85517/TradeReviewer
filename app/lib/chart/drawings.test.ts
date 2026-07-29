@@ -7,14 +7,18 @@ import {
   requiredAnchorCount,
   validateDrawing,
   visibleDrawingsAtCursor,
-  type Drawing,
+  type LegacyDrawing,
+  type NormalizedDrawing,
 } from "./drawings";
 
 describe("drawing replay safety", () => {
   it("clamps every future anchor to the revealed cursor", () => {
     const cursor = "2025-01-06T00:00:00.000Z";
-    const drawing: Drawing = {
+    const drawing: NormalizedDrawing = {
+      version: 2,
       id: "trend-1",
+      episodeId: "episode-1",
+      name: "趋势线",
       tool: "trend-line",
       anchors: [
         { time: "2025-01-03T00:00:00.000Z", price: 10 },
@@ -26,6 +30,7 @@ describe("drawing replay safety", () => {
       visibleOn: "all",
       stage: "during-replay",
       createdAtCursor: cursor,
+      zIndex: 0,
     };
 
     const clamped = clampDrawingToCursor(drawing, cursor);
@@ -38,8 +43,11 @@ describe("drawing replay safety", () => {
   });
 
   it("hides annotations that were created after a rewound cursor", () => {
-    const drawing: Drawing = {
+    const drawing: NormalizedDrawing = {
+      version: 2,
       id: "late-note",
+      episodeId: "episode-1",
+      name: "复盘文字",
       tool: "text",
       anchors: [{ time: "2025-01-08T00:00:00.000Z", price: 12 }],
       style: { color: "#2f80ed", lineWidth: 1, opacity: 1 },
@@ -48,6 +56,7 @@ describe("drawing replay safety", () => {
       visibleOn: "all",
       stage: "during-replay",
       createdAtCursor: "2025-01-08T00:00:00.000Z",
+      zIndex: 0,
     };
 
     expect(
@@ -80,7 +89,7 @@ describe("drawing contracts", () => {
   });
 
   it("rejects a long risk-reward drawing whose stop is above entry", () => {
-    const longRiskRewardWithStopAboveEntry: Drawing = {
+    const longRiskRewardWithStopAboveEntry: LegacyDrawing = {
       id: "long-invalid",
       tool: "long-risk-reward",
       anchors: [

@@ -31,75 +31,55 @@ const timeframes: Array<{ value: Timeframe; label: string }> = [
   { value: "1W", label: "1W" },
 ];
 
-const defaultSettings: ChartSettings = {
-  version: 1,
-  showGrid: true,
-  showVolume: true,
-  showExecutions: true,
-  showAverageCost: true,
-  colorScheme: "teal-red",
-};
-
 type Props = {
   timeframe: Timeframe;
-  timeframeAvailability?: TimeframeAvailability;
+  timeframeAvailability: TimeframeAvailability;
   onTimeframeChange: (timeframe: Timeframe) => void;
-  instruments?: SearchableInstrument[];
-  onSelectInstrument?: (instrumentId: string) => void;
-  dataDetails?: MarketDataDetails[];
-  onRefreshMarketData?: () => void;
-  layersOpen?: boolean;
-  layersDisabledReason?: string;
-  onToggleLayers?: () => void;
-  fullscreen?: ReturnType<typeof useFullscreen>;
-  settings?: ChartSettings;
-  onSettingsChange?: (settings: ChartSettings) => void;
-  symbol?: string;
-  instrumentName?: string;
-  market?: string;
-  // Compatibility prop retained until Task 10 wires timeframeAvailability.
-  supportedTimeframes?: Timeframe[];
+  instruments: SearchableInstrument[];
+  onSelectInstrument: (instrumentId: string) => void;
+  dataDetails: MarketDataDetails[];
+  onRefreshMarketData: (() => void) | undefined;
+  layersOpen: boolean;
+  layersDisabledReason: string | undefined;
+  onToggleLayers: () => void;
+  fullscreen: ReturnType<typeof useFullscreen>;
+  settings: ChartSettings;
+  onSettingsChange: (settings: ChartSettings) => void;
+  symbol: string;
+  instrumentName: string;
+  market: string;
 };
-
-function legacyAvailability(supportedTimeframes: Timeframe[]): TimeframeAvailability {
-  return Object.fromEntries(
-    timeframes.map(({ value }) => [value, { enabled: supportedTimeframes.includes(value) }]),
-  ) as TimeframeAvailability;
-}
 
 export function ChartToolbar({
   timeframe,
   timeframeAvailability,
   onTimeframeChange,
-  instruments = [],
-  onSelectInstrument = () => undefined,
-  dataDetails = [],
+  instruments,
+  onSelectInstrument,
+  dataDetails,
   onRefreshMarketData,
   layersOpen,
   layersDisabledReason,
   onToggleLayers,
   fullscreen,
-  settings = defaultSettings,
-  onSettingsChange = () => undefined,
-  symbol = "XPEV",
-  instrumentName = "小鹏汽车",
-  market = "NYSE",
-  supportedTimeframes = timeframes.map((item) => item.value),
+  settings,
+  onSettingsChange,
+  symbol,
+  instrumentName,
+  market,
 }: Props) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [dataOpen, setDataOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [uncontrolledLayersOpen, setUncontrolledLayersOpen] = useState(false);
   const [fullscreenError, setFullscreenError] = useState<string | null>(null);
   const searchTriggerRef = useRef<HTMLButtonElement>(null);
   const dataTriggerRef = useRef<HTMLButtonElement>(null);
   const settingsTriggerRef = useRef<HTMLButtonElement>(null);
-  const availability = timeframeAvailability ?? legacyAvailability(supportedTimeframes);
-  const resolvedLayersOpen = layersOpen ?? uncontrolledLayersOpen;
-  const fullscreenDisabledReason = fullscreen?.supported
+  const availability = timeframeAvailability;
+  const fullscreenDisabledReason = fullscreen.supported
     ? undefined
     : "浏览器不支持全屏";
-  const displayedFullscreenError = fullscreen?.error ?? fullscreenError;
+  const displayedFullscreenError = fullscreen.error ?? fullscreenError;
 
   return (
     <div className="chart-toolbar" aria-label="图表工具栏">
@@ -162,30 +142,27 @@ export function ChartToolbar({
         本地数据
       </button>
       <button
-        className={`icon-button${resolvedLayersOpen ? " active" : ""}`}
+        className={`icon-button${layersOpen ? " active" : ""}`}
         aria-label="图层"
-        aria-expanded={resolvedLayersOpen}
-        aria-pressed={resolvedLayersOpen}
+        aria-expanded={layersOpen}
+        aria-pressed={layersOpen}
         disabled={Boolean(layersDisabledReason)}
         title={layersDisabledReason}
         aria-description={layersDisabledReason}
-        onClick={() => {
-          onToggleLayers?.();
-          if (layersOpen === undefined) setUncontrolledLayersOpen((open) => !open);
-        }}
+        onClick={onToggleLayers}
       >
         <Layers3 size={17} />
       </button>
       <button
-        className={`icon-button${fullscreen?.isFullscreen ? " active" : ""}`}
+        className={`icon-button${fullscreen.isFullscreen ? " active" : ""}`}
         aria-label="全屏"
-        aria-pressed={Boolean(fullscreen?.isFullscreen)}
-        disabled={!fullscreen?.supported}
+        aria-pressed={fullscreen.isFullscreen}
+        disabled={!fullscreen.supported}
         title={fullscreenDisabledReason}
         aria-description={fullscreenDisabledReason}
         onClick={() => {
           setFullscreenError(null);
-          void fullscreen?.toggleFullscreen().catch(() => {
+          void fullscreen.toggleFullscreen().catch(() => {
             setFullscreenError("无法切换全屏");
           });
         }}

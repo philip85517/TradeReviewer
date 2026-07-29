@@ -8,7 +8,10 @@ import type { ResolveBatchResult } from "../instruments/resolve-service";
 import type { InstrumentMetadataRepository } from "../storage/instrument-metadata-repository";
 import type { TradeExecution } from "../trades/types";
 import type { StatementParseResult } from "./contracts";
-import { enrichStatementImport } from "./enrich-import";
+import {
+  enrichStatementImport,
+  type EnrichedImportResult,
+} from "./enrich-import";
 
 function execution(
   market: "US" | "HK" | "CN-SH",
@@ -487,11 +490,65 @@ describe("enrichStatementImport", () => {
         },
       ]),
     );
+    const firstFailure: InstrumentMetadataFailure = {
+      market: "US",
+      symbol: "ONE",
+      attempts: [
+        {
+          source: "nasdaq",
+          code: "not-found",
+          message: "Nasdaq 未找到 ONE",
+        },
+        {
+          source: "sec",
+          code: "not-found",
+          message: "SEC 未找到 ONE",
+        },
+      ],
+    };
+    const secondFailure: InstrumentMetadataFailure = {
+      market: "US",
+      symbol: "TWO",
+      attempts: [
+        {
+          source: "nasdaq",
+          code: "not-found",
+          message: "Nasdaq 未找到 TWO",
+        },
+        {
+          source: "tencent",
+          code: "upstream-empty",
+          message: "腾讯行情未返回 TWO",
+        },
+      ],
+    };
+    const previous: EnrichedImportResult = {
+      broker: "tiger",
+      importable: [],
+      unresolved: [firstFailure, secondFailure],
+      exclusions: [
+        {
+          category: "unknown-asset",
+          label: "无法确认属于股票或 ETF",
+          count: 1,
+          instrumentSymbol: "ONE",
+        },
+        {
+          category: "unknown-asset",
+          label: "无法确认属于股票或 ETF",
+          count: 1,
+          instrumentSymbol: "TWO",
+        },
+      ],
+      diagnostics: [],
+      cacheHits: 0,
+    };
 
     const result = await enrichStatementImport(parsed, {
       resolver,
       forceRefresh: true,
       onlyInstrumentIds: ["US:ONE"],
+      previous,
     });
 
     expect(resolver).toHaveBeenCalledOnce();
@@ -502,9 +559,7 @@ describe("enrichStatementImport", () => {
     expect(result.importable.map((item) => item.instrument.symbol)).toEqual([
       "ONE",
     ]);
-    expect(result.unresolved).toContainEqual(
-      expect.objectContaining({ symbol: "TWO" }),
-    );
+    expect(result.unresolved).toEqual([secondFailure]);
     expect(result.exclusions).toContainEqual(
       expect.objectContaining({
         category: "unknown-asset",

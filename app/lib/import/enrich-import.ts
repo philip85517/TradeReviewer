@@ -43,6 +43,7 @@ export type EnrichStatementImportOptions = {
   repository?: InstrumentMetadataRepository;
   forceRefresh?: boolean;
   onlyInstrumentIds?: string[];
+  previous?: EnrichedImportResult;
   signal?: AbortSignal;
   clock?: () => number;
 };
@@ -230,6 +231,28 @@ export async function enrichStatementImport(
   const selectedIds = options.onlyInstrumentIds
     ? new Set(options.onlyInstrumentIds)
     : undefined;
+  const isTargetedRetry = Boolean(
+    options.forceRefresh && selectedIds,
+  );
+  const previous =
+    options.previous?.broker === parsed.broker
+      ? options.previous
+      : undefined;
+  const previousFailures = new Map(
+    (previous?.unresolved ?? []).map((failure) => [
+      canonicalInstrumentId(failure.symbol, failure.market),
+      failure,
+    ]),
+  );
+  const previousImportableNames = new Map(
+    (previous?.importable ?? []).map((record) => [
+      canonicalInstrumentId(
+        record.instrument.symbol,
+        record.instrument.market,
+      ),
+      record.instrument.name,
+    ]),
+  );
   const candidates = new Map<string, ParsedInstrumentCandidate>();
   for (const candidate of parsed.candidates) {
     const instrumentId = candidateId(candidate);
@@ -395,9 +418,20 @@ export async function enrichStatementImport(
     const records = recordsByInstrument.get(instrumentId) ?? [];
     const metadata = resolution.resolved.get(instrumentId);
     if (metadata) continue;
+    const isUnselectedRetry =
+      isTargetedRetry && !selectedIds?.has(instrumentId);
+    if (
+      isUnselectedRetry &&
+      previousImportableNames.has(instrumentId)
+    ) {
+      continue;
+    }
 
     const failure =
       resolution.unresolved.get(instrumentId) ??
+      (isUnselectedRetry
+        ? previousFailures.get(instrumentId)
+        : undefined) ??
       unknownFailure(candidate);
     unresolved.push(failure);
     addUnknownExclusion(exclusions, candidate, Math.max(records.length, 1));
@@ -409,7 +443,17 @@ export async function enrichStatementImport(
       record.instrument.market,
     );
     const metadata = resolution.resolved.get(instrumentId);
-    if (metadata) importable.push(applyMetadata(record, metadata));
+    if (metadata) {
+      importable.push(applyMetadata(record, metadata));
+      continue;
+    }
+    const previousName =
+      isTargetedRetry && !selectedIds?.has(instrumentId)
+        ? previousImportableNames.get(instrumentId)
+        : undefined;
+    if (previousName) {
+      importable.push(applyMetadata(record, { name: previousName }));
+    }
   }
 
   return {

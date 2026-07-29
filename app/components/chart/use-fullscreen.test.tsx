@@ -45,4 +45,42 @@ describe("useFullscreen", () => {
 
     expect(result.current.supported).toBe(false);
   });
+
+  it("reports a rejected fullscreen request without rejecting the toggle promise", async () => {
+    const target = document.createElement("section");
+    const ref = { current: target };
+    Object.defineProperty(HTMLElement.prototype, "requestFullscreen", {
+      configurable: true,
+      value: vi.fn().mockRejectedValue(new Error("denied")),
+    });
+    Object.defineProperty(document, "exitFullscreen", {
+      configurable: true,
+      value: vi.fn().mockResolvedValue(undefined),
+    });
+
+    const { result } = renderHook(() => useFullscreen(ref));
+
+    await expect(act(() => result.current.toggleFullscreen())).resolves.toBe(false);
+    expect(result.current.error).toBe("无法进入全屏");
+  });
+
+  it("reports a rejected fullscreen exit and starts synchronized when already fullscreen", async () => {
+    const target = document.createElement("section");
+    const ref = { current: target };
+    Object.defineProperty(HTMLElement.prototype, "requestFullscreen", {
+      configurable: true,
+      value: vi.fn().mockResolvedValue(undefined),
+    });
+    Object.defineProperty(document, "fullscreenElement", { configurable: true, value: target });
+    Object.defineProperty(document, "exitFullscreen", {
+      configurable: true,
+      value: vi.fn().mockRejectedValue(new Error("denied")),
+    });
+
+    const { result } = renderHook(() => useFullscreen(ref));
+    expect(result.current.isFullscreen).toBe(true);
+
+    await expect(act(() => result.current.toggleFullscreen())).resolves.toBe(false);
+    expect(result.current.error).toBe("无法退出全屏");
+  });
 });

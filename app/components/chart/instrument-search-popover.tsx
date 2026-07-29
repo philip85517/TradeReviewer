@@ -67,8 +67,18 @@ export function InstrumentSearchPopover({
         close();
       }
     };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        close();
+      }
+    };
     document.addEventListener("pointerdown", onPointerDown);
-    return () => document.removeEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
   });
 
   if (!open) return null;
@@ -93,10 +103,6 @@ export function InstrumentSearchPopover({
           setActiveIndex(0);
         }}
         onKeyDown={(event) => {
-          if (event.key === "Escape") {
-            event.preventDefault();
-            close();
-          }
           if (event.key === "ArrowDown" && results.length > 0) {
             event.preventDefault();
             setActiveIndex((index) => (index + 1) % results.length);

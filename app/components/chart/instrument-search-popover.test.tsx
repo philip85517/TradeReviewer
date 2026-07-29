@@ -74,6 +74,7 @@ describe("InstrumentSearchPopover", () => {
       />,
     );
 
+    screen.getByRole("option", { name: "美图公司 1357 HK" }).focus();
     await user.keyboard("{Escape}");
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(trigger).toHaveFocus();
@@ -83,13 +84,14 @@ describe("InstrumentSearchPopover", () => {
     document.body.removeChild(trigger);
   });
 
-  it("shows the bundled demo only before imported instruments exist", () => {
+  it("omits the bundled demo ID and result after any imported instrument exists", () => {
+    const onSelectInstrument = vi.fn();
     const { rerender } = render(
       <InstrumentSearchPopover
         open
         instruments={[]}
         onClose={vi.fn()}
-        onSelectInstrument={vi.fn()}
+        onSelectInstrument={onSelectInstrument}
       />,
     );
     expect(screen.getByRole("option", { name: "小鹏汽车 XPEV NYSE" })).toBeVisible();
@@ -97,11 +99,14 @@ describe("InstrumentSearchPopover", () => {
     rerender(
       <InstrumentSearchPopover
         open
-        instruments={instruments}
+      instruments={[{ id: "HK:1357", name: "美图公司", symbol: "1357", market: "HK" }]}
         onClose={vi.fn()}
-        onSelectInstrument={vi.fn()}
+        onSelectInstrument={onSelectInstrument}
       />,
     );
-    expect(screen.queryAllByRole("option", { name: "小鹏汽车 XPEV NYSE" })).toHaveLength(1);
+    expect(screen.queryByRole("option", { name: "小鹏汽车 XPEV NYSE" })).not.toBeInTheDocument();
+    screen.getByRole("option", { name: "美图公司 1357 HK" }).click();
+    expect(onSelectInstrument).toHaveBeenCalledWith("HK:1357");
+    expect(onSelectInstrument).not.toHaveBeenCalledWith("demo:XPEV");
   });
 });

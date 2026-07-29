@@ -72,7 +72,7 @@ describe("ChartToolbar", () => {
         }}
         layersOpen
         onToggleLayers={onToggleLayers}
-        fullscreen={{ supported: true, isFullscreen: false, toggleFullscreen: onFullscreen }}
+        fullscreen={{ supported: true, isFullscreen: false, error: null, toggleFullscreen: onFullscreen }}
       />,
     );
 
@@ -95,5 +95,44 @@ describe("ChartToolbar", () => {
     await user.click(trigger);
 
     expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("explains unsupported fullscreen and exposes a recovered fullscreen error", () => {
+    render(
+      <ChartToolbar
+        timeframe="1D"
+        onTimeframeChange={vi.fn()}
+        fullscreen={{ supported: true, isFullscreen: false, error: "无法进入全屏", toggleFullscreen: vi.fn() }}
+      />,
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent("无法进入全屏");
+
+    cleanup();
+    render(<ChartToolbar timeframe="1D" onTimeframeChange={vi.fn()} />);
+    const fullscreen = screen.getByRole("button", { name: "全屏" });
+    expect(fullscreen).toBeDisabled();
+    expect(fullscreen).toHaveAttribute("title", "浏览器不支持全屏");
+    expect(fullscreen).toHaveAttribute("aria-description", "浏览器不支持全屏");
+  });
+
+  it("catches an injected fullscreen toggle rejection and announces it", async () => {
+    const user = userEvent.setup();
+    render(
+      <ChartToolbar
+        timeframe="1D"
+        onTimeframeChange={vi.fn()}
+        fullscreen={{
+          supported: true,
+          isFullscreen: false,
+          error: null,
+          toggleFullscreen: vi.fn().mockRejectedValue(new Error("denied")),
+        }}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "全屏" }));
+
+    expect(screen.getByRole("status")).toHaveTextContent("无法切换全屏");
   });
 });

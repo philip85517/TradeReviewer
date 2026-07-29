@@ -26,6 +26,21 @@ type Props = {
   triggerRef?: RefObject<HTMLElement | null>;
 };
 
+function coverageLabel(detail: MarketDataDetails) {
+  if (detail.coverageStart && detail.coverageEnd) {
+    return `${detail.coverageStart} 至 ${detail.coverageEnd}`;
+  }
+  if (detail.status === "not-requested") return "尚未请求行情，暂无实际覆盖区间";
+  if (detail.status === "syncing") return "正在请求行情，暂无实际覆盖区间";
+  if (detail.status === "complete" || detail.status === "ready") {
+    return "请求已完成，但没有可用的行情数据";
+  }
+  if (detail.status === "partial" || detail.status === "stale") {
+    return "请求已完成，但没有可用的实际覆盖区间";
+  }
+  return "行情请求未能完成，暂无实际覆盖区间";
+}
+
 export function MarketDataPopover({
   open,
   details,
@@ -70,9 +85,7 @@ export function MarketDataPopover({
         {onRefresh ? <button type="button" onClick={onRefresh}>刷新行情数据</button> : null}
       </div>
       {visibleDetails.map((detail) => {
-        const coverage = detail.coverageStart && detail.coverageEnd
-          ? `${detail.coverageStart} 至 ${detail.coverageEnd}`
-          : "尚未请求行情，暂无实际覆盖区间";
+        const coverage = coverageLabel(detail);
         return (
           <section className="market-data-detail" key={detail.nativeInterval} aria-label={`${detail.nativeInterval} 行情详情`}>
             <strong>{detail.nativeInterval}</strong>

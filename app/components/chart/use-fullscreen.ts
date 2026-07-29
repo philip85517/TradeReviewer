@@ -7,14 +7,17 @@ export function useFullscreen(
 ): {
   supported: boolean;
   isFullscreen: boolean;
-  toggleFullscreen: () => Promise<void>;
+  error: string | null;
+  toggleFullscreen: () => Promise<boolean>;
 } {
   const supported =
     typeof document !== "undefined" &&
     typeof document.exitFullscreen === "function" &&
     typeof HTMLElement !== "undefined" &&
     typeof HTMLElement.prototype.requestFullscreen === "function";
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  // eslint-disable-next-line react-hooks/refs -- native fullscreen state must be accurate on the first mounted frame.
+  const [isFullscreen, setIsFullscreen] = useState(() => typeof document !== "undefined" && document.fullscreenElement === targetRef.current);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const updateFullscreen = () => setIsFullscreen(document.fullscreenElement === targetRef.current);
@@ -25,13 +28,21 @@ export function useFullscreen(
   return {
     supported,
     isFullscreen,
+    error,
     toggleFullscreen: async () => {
       const target = targetRef.current;
-      if (!supported || !target) return;
-      if (document.fullscreenElement === target) {
-        await document.exitFullscreen();
-      } else {
-        await target.requestFullscreen();
+      if (!supported || !target) return false;
+      setError(null);
+      try {
+        if (document.fullscreenElement === target) {
+          await document.exitFullscreen();
+        } else {
+          await target.requestFullscreen();
+        }
+        return true;
+      } catch {
+        setError(document.fullscreenElement === target ? "无法退出全屏" : "无法进入全屏");
+        return false;
       }
     },
   };

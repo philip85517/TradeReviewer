@@ -90,11 +90,16 @@ export function ChartToolbar({
   const [dataOpen, setDataOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [uncontrolledLayersOpen, setUncontrolledLayersOpen] = useState(false);
+  const [fullscreenError, setFullscreenError] = useState<string | null>(null);
   const searchTriggerRef = useRef<HTMLButtonElement>(null);
   const dataTriggerRef = useRef<HTMLButtonElement>(null);
   const settingsTriggerRef = useRef<HTMLButtonElement>(null);
   const availability = timeframeAvailability ?? legacyAvailability(supportedTimeframes);
   const resolvedLayersOpen = layersOpen ?? uncontrolledLayersOpen;
+  const fullscreenDisabledReason = fullscreen?.supported
+    ? undefined
+    : "浏览器不支持全屏";
+  const displayedFullscreenError = fullscreen?.error ?? fullscreenError;
 
   return (
     <div className="chart-toolbar" aria-label="图表工具栏">
@@ -176,10 +181,18 @@ export function ChartToolbar({
         aria-label="全屏"
         aria-pressed={Boolean(fullscreen?.isFullscreen)}
         disabled={!fullscreen?.supported}
-        onClick={() => void fullscreen?.toggleFullscreen()}
+        title={fullscreenDisabledReason}
+        aria-description={fullscreenDisabledReason}
+        onClick={() => {
+          setFullscreenError(null);
+          void fullscreen?.toggleFullscreen().catch(() => {
+            setFullscreenError("无法切换全屏");
+          });
+        }}
       >
         <Maximize2 size={17} />
       </button>
+      {displayedFullscreenError ? <span className="toolbar-status" role="status">{displayedFullscreenError}</span> : null}
       <button
         className="icon-button"
         aria-label="图表设置"

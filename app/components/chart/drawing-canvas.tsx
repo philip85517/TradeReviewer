@@ -30,7 +30,11 @@ type Props = {
 };
 
 type CanvasSize = { width: number; height: number };
-type DragState = { drawing: Drawing; anchorIndex: number | null; origin: DrawingAnchor };
+type DragState = {
+  drawing: Drawing;
+  anchorIndex: number | null;
+  originPoint: ProjectedPoint;
+};
 type TextEditor = { anchor: DrawingAnchor; x: number; y: number; drawing?: Drawing; value: string };
 
 export type ChartCoordinateAdapter = {
@@ -54,6 +58,28 @@ const names: Record<Exclude<DrawingTool, "cursor">, string> = {
 
 function styleFor(tool: DrawingTool) {
   return { color: tool === "price-label" ? "#f3ba2f" : "#2f80ed", lineWidth: tool === "trend-line" || tool === "arrow" ? 2 : 1.5, opacity: 0.95 };
+}
+
+function withCanonicalRiskRewardGeometry(drawing: Drawing): Drawing {
+  if (
+    (drawing.tool !== "long-risk-reward" &&
+      drawing.tool !== "short-risk-reward") ||
+    drawing.anchors.length < 3
+  ) {
+    return drawing;
+  }
+  const [entry, stop, target] = drawing.anchors;
+  const risk = Math.max(Math.abs(stop.price - entry.price), 0.01);
+  const reward = Math.max(Math.abs(target.price - entry.price), 0.01);
+  const direction = drawing.tool === "long-risk-reward" ? 1 : -1;
+  return {
+    ...drawing,
+    anchors: [
+      entry,
+      { ...stop, price: Number((entry.price - direction * risk).toFixed(2)) },
+      { ...target, price: Number((entry.price + direction * reward).toFixed(2)) },
+    ],
+  };
 }
 
 export function DrawingCanvas({
@@ -108,12 +134,16 @@ export function DrawingCanvas({
   }
 
   function emitAdd(drawing: Drawing) {
-    if (onCommand) onCommand({ type: "add", drawing: normalized(drawing) });
-    else onAddDrawing?.(drawing);
+    const canonical = withCanonicalRiskRewardGeometry(drawing);
+    if (onCommand) onCommand({ type: "add", drawing: normalized(canonical) });
+    else onAddDrawing?.(canonical);
   }
 
   function emitReplace(drawing: Drawing) {
-    onCommand?.({ type: "replace", drawing: normalized(drawing) });
+    onCommand?.({
+      type: "replace",
+      drawing: normalized(withCanonicalRiskRewardGeometry(drawing)),
+    });
   }
 
   useEffect(() => {
@@ -182,10 +212,14 @@ export function DrawingCanvas({
     });
   }
 
-  function beginEdit(drawing: Drawing, point: ProjectedPoint, anchor: DrawingAnchor) {
+  function beginEdit(drawing: Drawing, point: ProjectedPoint) {
     const points = drawing.anchors.map(pointFor);
     const anchorIndex = points.findIndex((item) => isPointNearAnchorHandle(point, item));
-    setDrag({ drawing, anchorIndex: anchorIndex < 0 ? null : anchorIndex, origin: anchor });
+    setDrag({
+      drawing,
+      anchorIndex: anchorIndex < 0 ? null : anchorIndex,
+      originPoint: point,
+    });
   }
 
   function createDrawing(first: DrawingAnchor, last: DrawingAnchor) {
@@ -194,8 +228,22 @@ export function DrawingCanvas({
     const base = { id: drawingId(), tool, anchors: [first, last], style: styleFor(tool), hidden: false, locked: false, visibleOn: "all" as const, stage: "during-replay" as const };
     if (tool === "long-risk-reward" || tool === "short-risk-reward" || tool === "risk-reward") {
       const direction = tool === "short-risk-reward" ? "short" : tool === "long-risk-reward" ? "long" : last.price < first.price ? "long" : "short";
-      const target = direction === "long" ? first.price + Math.abs(first.price - last.price) * 2 : first.price - Math.abs(first.price - last.price) * 2;
-      emitAdd({ ...base, tool, anchors: [first, last, { ...last, price: Number(target.toFixed(2)) }] });
+      const risk = Math.max(Math.abs(first.price - last.price), 0.01);
+      const stop = direction === "long"
+        ? first.price - risk
+        : first.price + risk;
+      const target = direction === "long"
+        ? first.price + risk * 2
+        : first.price - risk * 2;
+      emitAdd({
+        ...base,
+        tool,
+        anchors: [
+          first,
+          { ...last, price: Number(stop.toFixed(2)) },
+          { ...last, price: Number(target.toFixed(2)) },
+        ],
+      });
       return;
     }
     emitAdd(base);
@@ -211,16 +259,16 @@ export function DrawingCanvas({
     setEditor(null);
   }
 
-  const editing = Boolean(startAnchor || drag || activeTool === "cursor");
+  const drawingMode = activeTool !== "cursor";
   return (
-    <div className={`drawing-canvas ${editing ? "drawing-mode" : ""}`}>
+    <div className={`drawing-canvas ${drawingMode ? "drawing-mode" : ""}`}>
       <canvas ref={canvasRef} role="img" aria-label="绘图画布" onPointerDown={(event) => {
         if (candles.length === 0) return;
         const rect = event.currentTarget.getBoundingClientRect(); const point = { x: event.clientX - rect.left, y: event.clientY - rect.top }; const anchor = anchorFromPoint(point.x, point.y);
         if (activeTool === "cursor") {
           const drawing = hitDrawing(point); onSelectDrawing?.(drawing?.id ?? null);
           if (drawing?.tool === "text" && !drawing.locked) { setEditor({ anchor: drawing.anchors[0], x: pointFor(drawing.anchors[0]).x, y: pointFor(drawing.anchors[0]).y, drawing, value: drawing.text ?? "" }); return; }
-          if (drawing && !drawing.locked) beginEdit(drawing, point, anchor);
+          if (drawing && !drawing.locked) beginEdit(drawing, point);
           return;
         }
         if (activeTool === "text") { setEditor({ anchor, x: point.x, y: point.y, value: "" }); return; }
@@ -228,8 +276,36 @@ export function DrawingCanvas({
         setStartAnchor(anchor);
       }} onPointerMove={(event) => {
         if (!drag) return;
-        const rect = event.currentTarget.getBoundingClientRect(); const anchor = anchorFromPoint(event.clientX - rect.left, event.clientY - rect.top);
-        const anchors = drag.drawing.anchors.map((item, index) => drag.anchorIndex === null ? { time: item.time > cursor ? cursor : item.time, price: Number((item.price + anchor.price - drag.origin.price).toFixed(2)) } : index === drag.anchorIndex ? anchor : item);
+        const rect = event.currentTarget.getBoundingClientRect();
+        const point = {
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top,
+        };
+        const anchor = anchorFromPoint(point.x, point.y);
+        let anchors: DrawingAnchor[];
+        if (drag.anchorIndex !== null) {
+          anchors = drag.drawing.anchors.map((item, index) =>
+            index === drag.anchorIndex ? anchor : item,
+          );
+        } else {
+          const requestedX = point.x - drag.originPoint.x;
+          const requestedY = point.y - drag.originPoint.y;
+          const cursorX = coordinateAdapter?.timeToX(cursor);
+          const latestX = Math.max(
+            ...drag.drawing.anchors.map((item) => pointFor(item).x),
+          );
+          const translatedX =
+            cursorX === null || cursorX === undefined
+              ? requestedX
+              : Math.min(requestedX, cursorX - latestX);
+          anchors = drag.drawing.anchors.map((item) => {
+            const projected = pointFor(item);
+            return anchorFromPoint(
+              projected.x + translatedX,
+              projected.y + requestedY,
+            );
+          });
+        }
         setPreview({ ...drag.drawing, anchors });
       }} onPointerUp={(event) => {
         if (drag) { if (preview) emitReplace(preview); setDrag(null); setPreview(null); return; }

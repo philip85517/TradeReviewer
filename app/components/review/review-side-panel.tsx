@@ -1,12 +1,15 @@
 "use client";
 
 import { PanelRightOpen, X } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 import type { PositionPathMetrics } from "../../lib/replay/position-path-metrics";
 import type { EpisodeReviewRecord } from "../../lib/reviews/types";
 import { useModalFocus } from "../import/use-modal-focus";
 import { EpisodeNotesPanel } from "./episode-notes-panel";
 import { PositionStatsPanel } from "./position-stats-panel";
+
+const desktopReviewPanelQuery = "(min-width: 1260px)";
 
 type Props = {
   instrumentLabel: string;
@@ -40,10 +43,39 @@ function PanelContent(props: Props) {
 }
 
 export function ReviewSidePanel(props: Props) {
+  const { drawerOpen, onDrawerOpenChange } = props;
+  const focusDesktopPanelRef = useRef(false);
   const dialogRef = useModalFocus(
-    () => props.onDrawerOpenChange(false),
-    props.drawerOpen,
+    () => onDrawerOpenChange(false),
+    drawerOpen,
   );
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
+    const desktop = window.matchMedia(desktopReviewPanelQuery);
+    const closeDrawerOnDesktop = (
+      event: Pick<MediaQueryListEvent, "matches">,
+    ) => {
+      if (!event.matches || !drawerOpen) return;
+      focusDesktopPanelRef.current = true;
+      onDrawerOpenChange(false);
+    };
+
+    closeDrawerOnDesktop(desktop);
+    desktop.addEventListener("change", closeDrawerOnDesktop);
+    return () => {
+      desktop.removeEventListener("change", closeDrawerOnDesktop);
+    };
+  }, [drawerOpen, onDrawerOpenChange]);
+
+  useEffect(() => {
+    if (drawerOpen || !focusDesktopPanelRef.current) return;
+    focusDesktopPanelRef.current = false;
+    dialogRef.current
+      ?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]')
+      ?.focus();
+  }, [dialogRef, drawerOpen]);
+
   return <>
     <div className={props.drawerOpen ? "modal-backdrop review-side-panel-backdrop" : "review-side-panel-shell"}>
       <aside ref={dialogRef} className={`review-side-panel ${props.drawerOpen ? "review-side-panel-drawer" : "review-side-panel-desktop"}`} role={props.drawerOpen ? "dialog" : undefined} aria-modal={props.drawerOpen || undefined} aria-label={props.drawerOpen ? "复盘面板" : undefined}>

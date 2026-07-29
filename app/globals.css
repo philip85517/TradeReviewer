@@ -692,10 +692,6 @@ input:focus-visible {
   background: transparent;
   color: var(--muted);
   cursor: pointer;
-  transition:
-    color 120ms ease,
-    background-color 120ms ease,
-    opacity 120ms ease;
 }
 
 .icon-button:hover:not(:disabled),
@@ -734,6 +730,10 @@ input:focus-visible {
   background: transparent;
   font: 600 10px var(--font-geist-mono);
   cursor: pointer;
+}
+
+.icon-button,
+.timeframe-group button {
   transition:
     color 120ms ease,
     background-color 120ms ease,
@@ -2664,7 +2664,7 @@ input:focus-visible {
   }
 
   .trade-review-app {
-    min-width: 760px;
+    min-width: 0;
   }
 
   .workspace {
@@ -2713,6 +2713,48 @@ input:focus-visible {
 
   .library-detail-layout {
     grid-template-columns: 230px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 759px) {
+  .app-header,
+  .chart-footer {
+    overflow-x: auto;
+  }
+
+  .review-chart-heading,
+  .chart-toolbar {
+    height: auto;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+  }
+
+  .chart-toolbar {
+    min-height: 44px;
+    row-gap: 4px;
+    padding: 6px 9px;
+  }
+
+  .symbol-control {
+    min-width: 0;
+    flex: 1 1 150px;
+  }
+
+  .toolbar-spacer {
+    display: none;
+  }
+
+  .chart-popover {
+    position: fixed;
+    z-index: 90;
+    top: 70px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-width: none;
+    max-height: calc(100vh - 82px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 }
 

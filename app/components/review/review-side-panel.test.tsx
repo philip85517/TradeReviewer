@@ -21,6 +21,7 @@ describe("ReviewSidePanel", () => {
   afterEach(() => {
     cleanup();
     vi.useRealTimers();
+    vi.unstubAllGlobals();
   });
 
   it("switches accessible tabs and opens one notes form in a focus-restoring drawer", async () => {
@@ -68,6 +69,70 @@ describe("ReviewSidePanel", () => {
     await user.click(screen.getByRole("tab", { name: "复盘笔记" }));
     expect(stats).toHaveAttribute("hidden");
     expect(notes).not.toHaveAttribute("hidden");
+  });
+
+  it("returns an open compact drawer to desktop panel semantics after crossing 1260px", async () => {
+    const listeners = new Set<(event: MediaQueryListEvent) => void>();
+    let matches = false;
+    const desktopQuery = {
+      get matches() {
+        return matches;
+      },
+      media: "(min-width: 1260px)",
+      onchange: null,
+      addEventListener: (
+        type: string,
+        listener: (event: MediaQueryListEvent) => void,
+      ) => {
+        if (type === "change") listeners.add(listener);
+      },
+      removeEventListener: (
+        type: string,
+        listener: (event: MediaQueryListEvent) => void,
+      ) => {
+        if (type === "change") listeners.delete(listener);
+      },
+    } as MediaQueryList;
+    const crossDesktopBoundary = (nextMatches: boolean) => {
+      matches = nextMatches;
+      const event = {
+        matches,
+        media: desktopQuery.media,
+      } as MediaQueryListEvent;
+      for (const listener of listeners) listener(event);
+    };
+    vi.stubGlobal("matchMedia", vi.fn(() => desktopQuery));
+    const onDrawerOpenChange = vi.fn();
+
+    function Harness() {
+      const [drawerOpen, setDrawerOpen] = useState(false);
+      return <ReviewSidePanel instrumentLabel="小鹏汽车（XPEV）" currency="HKD" metrics={metrics} episodeId="episode-1" instrumentId="HK:9868" activeTab="stats" onActiveTabChange={vi.fn()} onSaveReview={vi.fn().mockResolvedValue(undefined)} drawerOpen={drawerOpen} onDrawerOpenChange={(open) => { onDrawerOpenChange(open); setDrawerOpen(open); }} />;
+    }
+
+    const view = render(<Harness />);
+    const trigger = screen.getByRole("button", { name: "打开复盘面板" });
+    trigger.focus();
+    fireEvent.click(trigger);
+    expect(screen.getByRole("dialog", { name: "复盘面板" })).toBeInTheDocument();
+
+    act(() => crossDesktopBoundary(true));
+
+    expect(screen.queryByRole("dialog", { name: "复盘面板" })).not.toBeInTheDocument();
+    const desktopPanel = document.querySelector(".review-side-panel-desktop");
+    expect(desktopPanel).toBeInTheDocument();
+    expect(desktopPanel).not.toHaveAttribute("role");
+    expect(desktopPanel).not.toHaveAttribute("aria-modal");
+    expect(document.querySelector(".review-side-panel-backdrop")).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "路径统计" })).toHaveFocus();
+    expect(onDrawerOpenChange).toHaveBeenLastCalledWith(false);
+
+    const callCountBeforeUnmount = onDrawerOpenChange.mock.calls.length;
+    view.unmount();
+    act(() => {
+      crossDesktopBoundary(false);
+      crossDesktopBoundary(true);
+    });
+    expect(onDrawerOpenChange).toHaveBeenCalledTimes(callCountBeforeUnmount);
   });
 
   it("preserves a rejected draft through tab and drawer changes, then retries that draft", async () => {

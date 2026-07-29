@@ -50,11 +50,15 @@ function mediaMatches(parent: Node["parent"], viewportWidth: number) {
   return true;
 }
 
-function declarationsAt(selector: string, viewportWidth: number) {
+function declarationsAt(
+  selector: string | string[],
+  viewportWidth: number,
+) {
+  const selectors = Array.isArray(selector) ? selector : [selector];
   const declarations = new Map<string, string>();
   globalStyles.walkRules((rule) => {
     if (
-      rule.selectors.includes(selector) &&
+      rule.selectors.some((item) => selectors.includes(item)) &&
       mediaMatches(rule.parent, viewportWidth)
     ) {
       rule.walkDecls((declaration) => {
@@ -378,6 +382,35 @@ describe("TradeReviewWorkspace", () => {
       document.querySelector(".review-side-panel-desktop"),
     ).toBeInTheDocument();
     expect(trigger).toHaveFocus();
+  });
+
+  it("contains the toolbar and every chart popover within a 390px viewport", () => {
+    expect(
+      declarationsAt(".trade-review-app", 390).get("min-width"),
+    ).toBe("0");
+    expect(
+      declarationsAt(".chart-toolbar", 390).get("flex-wrap"),
+    ).toBe("wrap");
+
+    const genericPopover = declarationsAt(".chart-popover", 390);
+    expect(genericPopover.get("position")).toBe("fixed");
+    expect(genericPopover.get("top")).toBe("70px");
+    expect(genericPopover.get("right")).toBe("12px");
+    expect(genericPopover.get("left")).toBe("12px");
+    expect(genericPopover.get("width")).toBe("auto");
+    expect(genericPopover.get("max-width")).toBe("none");
+    expect(genericPopover.get("max-height")).toBe("calc(100vh - 82px)");
+    expect(genericPopover.get("overflow-y")).toBe("auto");
+
+    const searchPopover = declarationsAt(
+      [".chart-popover", ".instrument-search-popover"],
+      390,
+    );
+    expect(searchPopover.get("position")).toBe("fixed");
+    expect(searchPopover.get("right")).toBe("12px");
+    expect(searchPopover.get("left")).toBe("12px");
+    expect(searchPopover.get("width")).toBe("auto");
+    expect(searchPopover.get("max-width")).toBe("none");
   });
 
   it("loads imported stocks after a page reload without starting a market request", async () => {

@@ -76,6 +76,8 @@ export function EpisodeSidebar({
   const activeStep = importSteps.findIndex(
     (step) => step.phase === importPhase,
   );
+  const activeStepLabel =
+    importSteps[activeStep]?.label ?? "准备导入";
 
   return (
     <aside className="episode-sidebar">
@@ -116,7 +118,12 @@ export function EpisodeSidebar({
         </label>
       </div>
       {importing && (
-        <ol className="import-progress" aria-label="导入进度">
+        <ol
+          className="import-progress"
+          role="status"
+          aria-live="polite"
+          aria-label={`导入进度：${activeStepLabel}（进行中）`}
+        >
           {importSteps.map((step, index) => {
             const state =
               index < activeStep
@@ -125,15 +132,33 @@ export function EpisodeSidebar({
                   ? "active"
                   : "pending";
             return (
-              <li className={state} key={step.phase}>
-                <span>
+              <li
+                className={state}
+                key={step.phase}
+                aria-current={state === "active" ? "step" : undefined}
+                aria-label={`${step.label}，${
+                  state === "complete"
+                    ? "已完成"
+                    : state === "active"
+                      ? "进行中"
+                      : "待处理"
+                }`}
+              >
+                <span className="import-progress-marker" aria-hidden="true">
                   {state === "complete" ? (
                     <Check size={9} />
                   ) : (
                     index + 1
                   )}
                 </span>
-                {step.label}
+                <span className="import-progress-label">{step.label}</span>
+                <span className="import-progress-state">
+                  {state === "complete"
+                    ? "已完成"
+                    : state === "active"
+                      ? "进行中"
+                      : "待处理"}
+                </span>
               </li>
             );
           })}

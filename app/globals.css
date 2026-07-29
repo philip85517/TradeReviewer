@@ -306,7 +306,7 @@ input:focus-visible {
   white-space: nowrap;
 }
 
-.import-progress li > span {
+.import-progress-marker {
   width: 15px;
   height: 15px;
   display: grid;
@@ -316,11 +316,28 @@ input:focus-visible {
   font-size: 7px;
 }
 
+.import-progress-label {
+  color: inherit;
+}
+
+.import-progress-state {
+  color: #53677f;
+  font-size: 6px;
+}
+
+.import-progress li.active .import-progress-state {
+  color: #82baff;
+}
+
+.import-progress li.complete .import-progress-state {
+  color: #67b9ab;
+}
+
 .import-progress li.active {
   color: #82baff;
 }
 
-.import-progress li.active > span {
+.import-progress li.active > .import-progress-marker {
   border-color: var(--blue);
   color: white;
   background: var(--blue);
@@ -331,7 +348,7 @@ input:focus-visible {
   color: #67b9ab;
 }
 
-.import-progress li.complete > span {
+.import-progress li.complete > .import-progress-marker {
   border-color: rgba(38, 166, 154, 0.5);
   color: #7bd2c4;
   background: rgba(38, 166, 154, 0.12);
@@ -1484,11 +1501,10 @@ input:focus-visible {
 }
 
 .import-stat-grid strong {
-  overflow: hidden;
   color: #cbd6e4;
   font-size: 10px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .import-classification {
@@ -1663,10 +1679,43 @@ input:focus-visible {
 }
 
 .unresolved-description {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(100px, auto) 1fr;
+  align-items: start;
+  gap: 4px 12px;
+}
+
+.attempt-summary-label {
+  color: var(--faint);
+  font-size: 8px;
+}
+
+.attempt-summary-list {
+  grid-column: 2;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 3px;
+  color: var(--muted);
+  font-size: 8px;
+  line-height: 1.4;
+  list-style: none;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 720px) {
+  .import-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .import-stat-grid > div:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .import-stat-grid strong {
+    white-space: normal;
+  }
 }
 
 .unresolved-row strong {

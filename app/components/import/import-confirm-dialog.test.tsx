@@ -34,12 +34,12 @@ const preview: ImportPreview = {
         {
           source: "nasdaq",
           code: "not-found",
-          message: "未找到",
+          message: "未找到证券",
         },
         {
           source: "sec",
-          code: "not-found",
-          message: "未找到",
+          code: "timeout",
+          message: "请求超时 https://private.example?token=secret",
         },
       ],
     },
@@ -74,7 +74,13 @@ describe("ImportConfirmDialog", () => {
     expect(screen.getByText("腾讯控股（700）")).toBeInTheDocument();
     expect(screen.getByText("可转债 2 笔")).toBeInTheDocument();
     expect(screen.getByText("1 个标的暂未导入")).toBeInTheDocument();
-    expect(screen.getByText(/NASDAQ、SEC/)).toBeInTheDocument();
+    expect(
+      screen.getByText("NASDAQ：not-found · 未找到证券"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("SEC：timeout · 请求超时 外部服务"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/private\.example/)).not.toBeInTheDocument();
     expect(screen.queryByRole("textbox", { name: /股票名称/ })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "重新查询" }));
@@ -170,6 +176,17 @@ describe("ImportConfirmDialog", () => {
     ]) {
       expect(screen.getByText(label)).toBeInTheDocument();
     }
+    expect(screen.getByRole("status")).toHaveAttribute(
+      "aria-label",
+      "导入进度：补全名称（进行中）",
+    );
+    expect(screen.getByText("补全名称").closest("li")).toHaveAttribute(
+      "aria-current",
+      "step",
+    );
+    expect(
+      screen.getByText("补全名称").closest("li"),
+    ).toHaveAccessibleName("补全名称，进行中");
     expect(screen.getAllByRole("button", { name: /导入记录/ })).toHaveLength(1);
   });
 });

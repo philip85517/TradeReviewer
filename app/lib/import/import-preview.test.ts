@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { TradeExecution } from "../trades/types";
 import type { EnrichedImportResult } from "./enrich-import";
+import type { StatementParseResult } from "./contracts";
 import { createImportPreview } from "./import-preview";
 
 function execution(
@@ -75,6 +76,12 @@ describe("createImportPreview", () => {
         { category: "bond", label: "可转债", count: 1 },
         { category: "bond", label: "可转债", count: 1 },
         { category: "fund", label: "基金", count: 3 },
+        {
+          category: "unknown-asset",
+          label: "无法确认属于股票或 ETF",
+          count: 1,
+          instrumentSymbol: "BROKEN",
+        },
       ],
       diagnostics: [
         {
@@ -108,6 +115,7 @@ describe("createImportPreview", () => {
       { category: "bond", label: "可转债", count: 2 },
       { category: "fund", label: "基金", count: 3 },
     ]);
+    expect(preview.unresolved).toHaveLength(1);
   });
 
   it("blocks confirmation only when no complete execution can import", () => {
@@ -127,5 +135,38 @@ describe("createImportPreview", () => {
     };
 
     expect(createImportPreview("招商证券.pdf", result).blocked).toBe(true);
+  });
+
+  it("fails closed for raw parser records without verified metadata", () => {
+    const parsed: StatementParseResult = {
+      broker: "futu",
+      records: [
+        execution(
+          "raw-1",
+          "99999",
+          "名称待行情源补充",
+          "2025-03-01T00:00:00.000Z",
+        ),
+      ],
+      candidates: [
+        {
+          market: "HK",
+          symbol: "99999",
+          sourceAssetType: "unknown",
+        },
+      ],
+      exclusions: [],
+      diagnostics: [],
+      blocked: false,
+    };
+
+    const preview = createImportPreview("raw.xlsx", parsed);
+
+    expect(preview.records).toEqual([]);
+    expect(preview.instruments).toEqual([]);
+    expect(preview.unresolved).toEqual([
+      expect.objectContaining({ market: "HK", symbol: "99999" }),
+    ]);
+    expect(preview.blocked).toBe(true);
   });
 });

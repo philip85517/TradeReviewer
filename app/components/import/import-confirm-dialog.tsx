@@ -44,17 +44,38 @@ function date(value?: string) {
   return new Date(value).toLocaleDateString("zh-CN");
 }
 
-function attemptedSources(
+function safeAttemptCode(code: string) {
+  return (
+    code
+      .trim()
+      .replace(/[^a-zA-Z0-9_-]/g, "")
+      .slice(0, 40) || "unknown"
+  );
+}
+
+function safeAttemptMessage(message: string) {
+  return (
+    message
+      .replace(/https?:\/\/\S+/gi, "外部服务")
+      .replace(/[\u0000-\u001f\u007f<>]/g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 100) || "查询失败"
+  );
+}
+
+function attemptSummaries(
   failure: ImportPreview["unresolved"][number],
 ) {
-  const labels = [
+  return [
     ...new Set(
-      failure.attempts.map(
-        (attempt) => SOURCE_LABELS[attempt.source],
+      failure.attempts.map((attempt) =>
+        `${SOURCE_LABELS[attempt.source]}：${safeAttemptCode(
+          attempt.code,
+        )} · ${safeAttemptMessage(attempt.message)}`,
       ),
     ),
   ];
-  return labels.length > 0 ? labels.join("、") : "暂无可用数据源";
 }
 
 export function ImportConfirmDialog({
@@ -219,6 +240,7 @@ export function ImportConfirmDialog({
                   failure.symbol,
                   failure.market,
                 );
+                const summaries = attemptSummaries(failure);
                 return (
                 <label
                   key={`${failure.market}:${failure.symbol}`}
@@ -240,14 +262,23 @@ export function ImportConfirmDialog({
                       })
                     }
                   />
-                  <span className="unresolved-description">
+                  <div className="unresolved-description">
                     <strong>
                       {failure.symbol} · {failure.market}
                     </strong>
-                    <span>
-                      已尝试：{attemptedSources(failure)}
+                    <span className="attempt-summary-label">
+                      失败摘要
                     </span>
-                  </span>
+                    <ul className="attempt-summary-list">
+                      {summaries.length > 0 ? (
+                        summaries.map((summary) => (
+                          <li key={summary}>{summary}</li>
+                        ))
+                      ) : (
+                        <li>暂无可用数据源</li>
+                      )}
+                    </ul>
+                  </div>
                 </label>
                 );
               })}

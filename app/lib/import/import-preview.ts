@@ -1,5 +1,9 @@
 import type { InstrumentMetadataFailure } from "../instruments/metadata-contracts";
 import {
+  canonicalInstrumentId,
+  canonicalInstrumentSymbol,
+} from "../instruments/display-name";
+import {
   buildInstrumentTradeSummaries,
   type InstrumentTradeSummary,
 } from "../trades/instruments";
@@ -65,6 +69,49 @@ function groupedExclusions(
   );
 }
 
+function unresolvedFromRawParse(
+  result: StatementParseResult,
+): InstrumentMetadataFailure[] {
+  const failures = new Map<string, InstrumentMetadataFailure>();
+  for (const candidate of result.candidates) {
+    const symbol = canonicalInstrumentSymbol(
+      candidate.symbol,
+      candidate.market,
+    );
+    failures.set(canonicalInstrumentId(symbol, candidate.market), {
+      market: candidate.market,
+      symbol,
+      attempts: [],
+    });
+  }
+  for (const record of result.records) {
+    if (
+      record.instrument.market !== "US" &&
+      record.instrument.market !== "HK" &&
+      record.instrument.market !== "CN-SH" &&
+      record.instrument.market !== "CN-SZ"
+    ) {
+      continue;
+    }
+    const symbol = canonicalInstrumentSymbol(
+      record.instrument.symbol,
+      record.instrument.market,
+    );
+    const instrumentId = canonicalInstrumentId(
+      symbol,
+      record.instrument.market,
+    );
+    if (!failures.has(instrumentId)) {
+      failures.set(instrumentId, {
+        market: record.instrument.market,
+        symbol,
+        attempts: [],
+      });
+    }
+  }
+  return [...failures.values()];
+}
+
 function duplicateCount(result: EnrichedImportResult) {
   return result.diagnostics.filter((diagnostic) =>
     diagnostic.code.toLowerCase().includes("duplicate"),
@@ -81,8 +128,10 @@ export function createImportPreview(
       ? result
       : {
           broker: result.broker,
-          importable: result.records,
-          unresolved: [],
+          // A parser can identify rows, but only enrichment can prove both
+          // name and stock/ETF type. Keep this compatibility path fail-closed.
+          importable: [],
+          unresolved: unresolvedFromRawParse(result),
           exclusions: result.exclusions,
           diagnostics: result.diagnostics,
           cacheHits: 0,
@@ -94,7 +143,11 @@ export function createImportPreview(
   const fingerprint =
     enriched.importable[0]?.source.fileFingerprint ??
     `${enriched.broker}:${fileName}:${enriched.importable.length}`;
-  const exclusionGroups = groupedExclusions(enriched.exclusions);
+  const exclusionGroups = groupedExclusions(
+    enriched.exclusions.filter(
+      (exclusion) => exclusion.category !== "unknown-asset",
+    ),
+  );
 
   return {
     id: `import:${fingerprint}`,

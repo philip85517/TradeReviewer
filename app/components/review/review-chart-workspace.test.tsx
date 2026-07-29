@@ -131,6 +131,7 @@ const model: ReviewChartViewModel = {
   canGoForward: true,
   canGoToNextExecution: true,
   replayError: null,
+  refreshDisabledReason: undefined,
   dataDetails: [
     {
       providerLabel: "腾讯行情",

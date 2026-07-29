@@ -91,6 +91,70 @@ function defaultEpisodeRecord(
   };
 }
 
+const availabilityInstrument = {
+  id: "US:XPEV",
+  symbol: "XPEV",
+  name: "小鹏汽车",
+  market: "US",
+  currency: "USD",
+};
+
+function availabilityExecution(input: {
+  id: string;
+  row: number;
+  side: "buy" | "sell";
+  executedAt: string;
+}): TradeExecution {
+  return {
+    id: input.id,
+    source: { platform: "futu", row: input.row },
+    accountId: "acct",
+    accountLabel: "富途",
+    instrument: availabilityInstrument,
+    side: input.side,
+    executedAt: input.executedAt,
+    quantity: "10",
+    price: input.side === "buy" ? "10" : "11",
+    fee: "0",
+  };
+}
+
+async function cacheAvailabilityCandles(timestamps: string[]) {
+  const repository = new IndexedDbMarketDataRepository();
+  await repository.commitIntervalSyncResult({
+    instrumentId: availabilityInstrument.id,
+    interval: "15m",
+    candles: timestamps.map((timestamp) => ({
+      instrumentId: availabilityInstrument.id,
+      interval: "15m" as const,
+      timestamp,
+      open: "10",
+      high: "11",
+      low: "9",
+      close: "10.5",
+      volume: "1000",
+      currency: "USD",
+      provider: "yahoo" as const,
+      providerSymbol: "XPEV",
+      adjustmentMode: "raw" as const,
+      fetchedAt: "2025-01-07T00:00:00.000Z",
+    })),
+    coverage: timestamps.length === 0
+      ? []
+      : [{
+          interval: "15m",
+          requestedStart: timestamps[0],
+          requestedEnd: timestamps.at(-1) ?? timestamps[0],
+          actualStart: timestamps[0],
+          actualEnd: timestamps.at(-1) ?? timestamps[0],
+          status: "complete",
+          provider: "yahoo",
+          fetchedAt: "2025-01-07T00:00:00.000Z",
+        }],
+    providerSymbol: { provider: "yahoo", symbol: "XPEV" },
+  });
+}
+
 describe("TradeReviewWorkspace", () => {
   afterEach(() => cleanup());
 
@@ -295,6 +359,160 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
       "data-cursor",
       nextFrame.cursor,
+    );
+  });
+
+  it("disables demo refresh accessibly while a replay request is active", async () => {
+    const user = userEvent.setup();
+    let resolveRequest: ((response: Response) => void) | undefined;
+    vi.mocked(fetch).mockImplementationOnce(
+      () =>
+        new Promise<Response>((resolve) => {
+          resolveRequest = resolve;
+        }),
+    );
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await user.click(
+      screen.getByRole("button", { name: "下一根 K 线" }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: "行情数据详情" }),
+    );
+
+    const refresh = screen.getByRole("button", {
+      name: "刷新行情数据",
+    });
+    expect(refresh).toBeDisabled();
+    expect(refresh).toHaveAttribute(
+      "title",
+      "正在读取演示回放数据",
+    );
+    expect(refresh).toHaveAccessibleDescription(
+      "正在读取演示回放数据",
+    );
+    await user.click(refresh);
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    resolveRequest?.({
+      ok: true,
+      json: async () => nextFrame,
+    } as Response);
+    await waitFor(() =>
+      expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
+        "data-cursor",
+        nextFrame.cursor,
+      ),
+    );
+  });
+
+  it("uses the containing 15 minute bar for non-aligned closed fills", async () => {
+    saveImportedExecutions([
+      availabilityExecution({
+        id: "non-aligned-open",
+        row: 2,
+        side: "buy",
+        executedAt: "2025-01-02T10:07:00.000Z",
+      }),
+      availabilityExecution({
+        id: "non-aligned-close",
+        row: 3,
+        side: "sell",
+        executedAt: "2025-01-02T10:07:00.000Z",
+      }),
+    ]);
+    await cacheAvailabilityCandles([
+      "2025-01-02T10:00:00.000Z",
+    ]);
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await screen.findByText("本地导入");
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "切换到 15m" }),
+      ).toBeEnabled(),
+    );
+  });
+
+  it("accepts bounded pre-entry candles as episode chart context", async () => {
+    saveImportedExecutions([
+      availabilityExecution({
+        id: "context-open",
+        row: 2,
+        side: "buy",
+        executedAt: "2025-01-02T10:07:00.000Z",
+      }),
+      availabilityExecution({
+        id: "context-close",
+        row: 3,
+        side: "sell",
+        executedAt: "2025-01-02T10:22:00.000Z",
+      }),
+    ]);
+    await cacheAvailabilityCandles([
+      "2025-01-01T10:00:00.000Z",
+    ]);
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await screen.findByText("本地导入");
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "切换到 15m" }),
+      ).toBeEnabled(),
+    );
+  });
+
+  it("does not use candles before the bounded pre-entry context", async () => {
+    saveImportedExecutions([
+      availabilityExecution({
+        id: "bounded-open",
+        row: 2,
+        side: "buy",
+        executedAt: "2025-01-02T10:07:00.000Z",
+      }),
+      availabilityExecution({
+        id: "bounded-close",
+        row: 3,
+        side: "sell",
+        executedAt: "2025-01-02T10:22:00.000Z",
+      }),
+    ]);
+    await cacheAvailabilityCandles([
+      "2024-12-25T10:00:00.000Z",
+    ]);
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await screen.findByText("本地导入");
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "切换到 15m" }),
+      ).toBeDisabled(),
+    );
+  });
+
+  it("extends an open episode through cached data after its latest fill", async () => {
+    saveImportedExecutions([
+      availabilityExecution({
+        id: "open-position",
+        row: 2,
+        side: "buy",
+        executedAt: "2025-01-02T10:07:00.000Z",
+      }),
+    ]);
+    await cacheAvailabilityCandles([
+      "2025-01-03T10:00:00.000Z",
+    ]);
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await screen.findByText("本地导入");
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "切换到 15m" }),
+      ).toBeEnabled(),
     );
   });
 

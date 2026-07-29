@@ -139,11 +139,13 @@ function knowledgeVisibleDrawings(
   cursor: string,
   timeframe: Timeframe,
 ) {
-  return drawings.filter(
-    (drawing) =>
-      drawing.createdAtCursor <= cursor &&
-      (drawing.visibleOn === "all" ||
-        drawing.visibleOn.includes(timeframe)),
+  return withZIndices(
+    drawings.filter(
+      (drawing) =>
+        drawing.createdAtCursor <= cursor &&
+        (drawing.visibleOn === "all" ||
+          drawing.visibleOn.includes(timeframe)),
+    ),
   );
 }
 

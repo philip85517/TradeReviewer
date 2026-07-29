@@ -52,6 +52,7 @@ import {
   requiredRangeExpanded,
 } from "../lib/market/sync-range";
 import { syncMarketData } from "../lib/market/sync-service";
+import { marketTradingDate } from "../lib/market/trading-date";
 import type { Candle, Timeframe } from "../lib/market/types";
 import { createImportedReplay } from "../lib/replay/imported-replay";
 import { calculatePositionPathMetrics } from "../lib/replay/position-path-metrics";
@@ -256,24 +257,132 @@ function aggregateVisibleCandles(
   });
 }
 
-function episodeWindow(episode: TradeEpisode) {
+const INTRADAY_BAR_MILLISECONDS = 15 * 60 * 1000;
+const INTRADAY_PRE_ENTRY_CONTEXT_DAYS = 7;
+const DAY_MILLISECONDS = 24 * 60 * 60 * 1000;
+
+function containingIntradayBarEnd(timestamp: string) {
+  const milliseconds = Date.parse(timestamp);
+  if (!Number.isFinite(milliseconds)) return timestamp;
+  const barStart =
+    Math.floor(milliseconds / INTRADAY_BAR_MILLISECONDS) *
+    INTRADAY_BAR_MILLISECONDS;
+  return new Date(
+    barStart + INTRADAY_BAR_MILLISECONDS - 1,
+  ).toISOString();
+}
+
+function latestIso(values: string[], fallback: string) {
+  return values.reduce(
+    (latest, value) => (value > latest ? value : latest),
+    fallback,
+  );
+}
+
+function endOfIsoDate(value: string) {
+  return `${value.slice(0, 10)}T23:59:59.999Z`;
+}
+
+function intradayContextStart(timestamp: string) {
+  return new Date(
+    Date.parse(timestamp) -
+      INTRADAY_PRE_ENTRY_CONTEXT_DAYS * DAY_MILLISECONDS,
+  ).toISOString();
+}
+
+function episodeWindow(
+  state: InstrumentMarketState,
+  episode: TradeEpisode,
+) {
+  const market = episode.instrument.market;
+  const lastExecutionAt = latestIso(
+    episode.executions.map((execution) => execution.executedAt),
+    episode.startedAt,
+  );
+  const holdingEnd = episode.endedAt ?? lastExecutionAt;
+  const dailyRange = requiredMarketDataRange(
+    episode.startedAt,
+    holdingEnd,
+  );
+  // Seven calendar days normally provide roughly five completed sessions of
+  // chart context without letting unrelated older episodes enable intraday.
+  const intradayStart = intradayContextStart(episode.startedAt);
+  const holdingEndTime = containingIntradayBarEnd(holdingEnd);
+  const holdingEndDate = marketTradingDate(holdingEnd, market);
+
+  if (episode.status === "closed") {
+    return {
+      intradayStart,
+      intradayEnd: holdingEndTime,
+      dailyStartDate: dailyRange.startDate,
+      dailyEndDate: dailyRange.endDate,
+    };
+  }
+
+  const completeIntradayCoverage = state.intradayCoverage.flatMap(
+    (segment) => {
+      if (segment.actualEnd) {
+        return [containingIntradayBarEnd(segment.actualEnd)];
+      }
+      return segment.status === "complete"
+        ? [containingIntradayBarEnd(segment.requestedEnd)]
+        : [];
+    },
+  );
+  const completeDailyCoverage = state.dailyCoverage
+    .filter((segment) => segment.status === "complete")
+    .map((segment) => segment.endDate);
+  const end = latestIso(
+    [
+      ...state.intraday.map((candle) =>
+        containingIntradayBarEnd(candle.timestamp),
+      ),
+      ...completeIntradayCoverage,
+      ...state.daily.map((candle) =>
+        endOfIsoDate(candle.tradingDate),
+      ),
+      ...completeDailyCoverage.map(endOfIsoDate),
+    ],
+    holdingEndTime,
+  );
+  const endDate = latestIso(
+    [
+      ...state.intraday.map((candle) =>
+        marketTradingDate(candle.timestamp, market),
+      ),
+      ...state.intradayCoverage.flatMap((segment) => {
+        const coveredEnd =
+          segment.actualEnd ??
+          (segment.status === "complete"
+            ? segment.requestedEnd
+            : undefined);
+        return coveredEnd
+          ? [marketTradingDate(coveredEnd, market)]
+          : [];
+      }),
+      ...state.daily.map((candle) => candle.tradingDate),
+      ...completeDailyCoverage,
+    ],
+    holdingEndDate,
+  );
   return {
-    start: episode.startedAt,
-    end:
-      episode.endedAt ??
-      episode.executions.at(-1)?.executedAt ??
-      episode.startedAt,
+    intradayStart,
+    intradayEnd: end,
+    dailyStartDate: dailyRange.startDate,
+    dailyEndDate: endDate,
   };
 }
 
 function coverageOverlapsEpisode(
   segment: IntervalCoverageSegment,
-  episode: TradeEpisode,
+  window: ReturnType<typeof episodeWindow>,
 ) {
-  const window = episodeWindow(episode);
-  const start = segment.actualStart ?? segment.requestedStart;
-  const end = segment.actualEnd ?? segment.requestedEnd;
-  return start <= window.end && end >= window.start;
+  const start = segment.requestedStart;
+  const end = containingIntradayBarEnd(segment.requestedEnd);
+  return (
+    start <= window.intradayEnd &&
+    end >= window.intradayStart
+  );
 }
 
 function resolveEpisodeTimeframeAvailability(
@@ -287,21 +396,20 @@ function resolveEpisodeTimeframeAvailability(
       intradayCoverage: state.intradayCoverage,
     });
   }
-  const window = episodeWindow(episode);
-  const startDate = window.start.slice(0, 10);
-  const endDate = window.end.slice(0, 10);
+  const window = episodeWindow(state, episode);
   const intradayCandles = state.intraday.filter(
     (candle) =>
-      candle.timestamp >= window.start &&
-      candle.timestamp <= window.end,
+      candle.timestamp <= window.intradayEnd &&
+      containingIntradayBarEnd(candle.timestamp) >=
+        window.intradayStart,
   );
   const dailyCandles = state.daily.filter(
     (candle) =>
-      candle.tradingDate >= startDate &&
-      candle.tradingDate <= endDate,
+      candle.tradingDate >= window.dailyStartDate &&
+      candle.tradingDate <= window.dailyEndDate,
   );
   const intradayCoverage = state.intradayCoverage.filter((segment) =>
-    coverageOverlapsEpisode(segment, episode),
+    coverageOverlapsEpisode(segment, window),
   );
   const availability = resolveTimeframeAvailability({
     intradayCandles,
@@ -746,6 +854,10 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
             ],
           },
         ],
+    refreshDisabledReason:
+      !selectedImportedInstrument && (stepping || restoring)
+        ? "正在读取演示回放数据"
+        : undefined,
   };
 
   async function requestFrame(

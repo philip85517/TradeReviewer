@@ -49,6 +49,7 @@ export type ReviewChartViewModel = {
   canGoToNextExecution: boolean;
   replayError: string | null;
   dataDetails: MarketDataDetails[];
+  refreshDisabledReason: string | undefined;
 };
 
 export type EpisodeOption = {
@@ -247,6 +248,7 @@ export function ReviewChartWorkspace({
           onSelectInstrument={onSelectInstrument}
           dataDetails={model.dataDetails}
           onRefreshMarketData={onRefreshMarketData}
+          refreshDisabledReason={model.refreshDisabledReason}
           layersOpen={layersOpen}
           layersDisabledReason={
             knowledgeVisibleDrawings.length === 0

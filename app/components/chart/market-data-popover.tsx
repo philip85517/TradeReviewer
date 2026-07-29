@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect, useId, useRef, type RefObject } from "react";
 
 import type { NativeMarketInterval } from "../../lib/market/contracts";
 import type { Timeframe } from "../../lib/market/types";
@@ -25,6 +25,7 @@ type Props = {
   details: MarketDataDetails[];
   onClose: () => void;
   onRefresh?: () => void;
+  refreshDisabledReason: string | undefined;
   triggerRef?: RefObject<HTMLElement | null>;
 };
 
@@ -48,9 +49,11 @@ export function MarketDataPopover({
   details,
   onClose,
   onRefresh,
+  refreshDisabledReason,
   triggerRef,
 }: Props) {
   const popoverRef = useRef<HTMLDivElement>(null);
+  const refreshReasonId = useId();
   const close = () => {
     onClose();
     triggerRef?.current?.focus();
@@ -89,7 +92,24 @@ export function MarketDataPopover({
     <div className="chart-popover market-data-popover" ref={popoverRef} role="dialog" aria-label="行情数据详情">
       <div className="popover-heading">
         <strong>行情数据详情</strong>
-        {onRefresh ? <button type="button" onClick={onRefresh}>刷新行情数据</button> : null}
+        {onRefresh ? (
+          <button
+            type="button"
+            disabled={Boolean(refreshDisabledReason)}
+            title={refreshDisabledReason}
+            aria-describedby={
+              refreshDisabledReason ? refreshReasonId : undefined
+            }
+            onClick={onRefresh}
+          >
+            刷新行情数据
+          </button>
+        ) : null}
+        {refreshDisabledReason ? (
+          <span id={refreshReasonId} className="toolbar-status">
+            {refreshDisabledReason}
+          </span>
+        ) : null}
       </div>
       {visibleDetails.map((detail) => {
         const coverage = coverageLabel(detail);

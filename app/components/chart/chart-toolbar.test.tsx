@@ -21,6 +21,7 @@ function controlledProps() {
     onSelectInstrument: vi.fn(),
     dataDetails: [],
     onRefreshMarketData: undefined,
+    refreshDisabledReason: undefined,
     layersOpen: false,
     layersDisabledReason: undefined,
     onToggleLayers: vi.fn(),

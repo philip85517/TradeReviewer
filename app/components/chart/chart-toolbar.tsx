@@ -39,6 +39,7 @@ type Props = {
   onSelectInstrument: (instrumentId: string) => void;
   dataDetails: MarketDataDetails[];
   onRefreshMarketData: (() => void) | undefined;
+  refreshDisabledReason: string | undefined;
   layersOpen: boolean;
   layersDisabledReason: string | undefined;
   onToggleLayers: () => void;
@@ -58,6 +59,7 @@ export function ChartToolbar({
   onSelectInstrument,
   dataDetails,
   onRefreshMarketData,
+  refreshDisabledReason,
   layersOpen,
   layersDisabledReason,
   onToggleLayers,
@@ -196,6 +198,7 @@ export function ChartToolbar({
         details={dataDetails}
         onClose={() => setDataOpen(false)}
         onRefresh={onRefreshMarketData}
+        refreshDisabledReason={refreshDisabledReason}
         triggerRef={dataTriggerRef}
       />
       <ChartSettingsPopover

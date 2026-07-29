@@ -210,6 +210,63 @@ describe("drawing command history", () => {
     ]);
   });
 
+  it("ignores z-index shifts caused only by reordering a future drawing", () => {
+    const earlyBack = drawing("early-back", {
+      createdAtCursor: "2025-01-02T00:00:00.000Z",
+    });
+    const earlyFront = drawing("early-front", {
+      createdAtCursor: "2025-01-02T00:00:00.000Z",
+      zIndex: 1,
+    });
+    const future = drawing("future", {
+      createdAtCursor: "2025-01-05T00:00:00.000Z",
+      zIndex: 2,
+    });
+    let history = createDrawingHistory([
+      earlyBack,
+      earlyFront,
+      future,
+    ]);
+    history = applyDrawingCommand(history, {
+      type: "move",
+      id: future.id,
+      direction: "down",
+    });
+
+    const rewindCursor = "2025-01-03T00:00:00.000Z";
+    const futureCursor = "2025-01-05T00:00:00.000Z";
+    expect(
+      canUndoDrawingAtCursor(history, rewindCursor, "15m"),
+    ).toBe(false);
+    expect(
+      undoDrawingAtCursor(history, rewindCursor, "15m"),
+    ).toBe(history);
+    expect(
+      canUndoDrawingAtCursor(history, futureCursor, "15m"),
+    ).toBe(true);
+
+    history = undoDrawingAtCursor(history, futureCursor, "15m");
+    expect(history.present.map((item) => item.id)).toEqual([
+      "early-back",
+      "early-front",
+      "future",
+    ]);
+    expect(
+      canRedoDrawingAtCursor(history, rewindCursor, "15m"),
+    ).toBe(false);
+    expect(
+      redoDrawingAtCursor(history, rewindCursor, "15m"),
+    ).toBe(history);
+    expect(
+      canRedoDrawingAtCursor(history, futureCursor, "15m"),
+    ).toBe(true);
+    expect(
+      redoDrawingAtCursor(history, futureCursor, "15m").present.map(
+        (item) => item.id,
+      ),
+    ).toEqual(["early-back", "future", "early-front"]);
+  });
+
   it("sets one lock target for only the supplied visible drawing IDs", () => {
     let history = createDrawingHistory([
       drawing("unlocked"),

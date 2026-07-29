@@ -15,6 +15,7 @@ describe("MarketDataPopover", () => {
         open
         onClose={vi.fn()}
         onRefresh={onRefresh}
+        refreshDisabledReason={undefined}
         details={[
           {
             providerLabel: "腾讯行情",
@@ -44,6 +45,7 @@ describe("MarketDataPopover", () => {
       <MarketDataPopover
         open
         onClose={vi.fn()}
+        refreshDisabledReason={undefined}
         details={[
           {
             providerLabel: null,
@@ -69,6 +71,7 @@ describe("MarketDataPopover", () => {
       <MarketDataPopover
         open
         onClose={vi.fn()}
+        refreshDisabledReason={undefined}
         details={[{
           providerLabel: "腾讯行情",
           nativeInterval: "15m",

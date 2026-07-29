@@ -5,6 +5,7 @@ import type {
   ResolvedInstrument,
 } from "../instruments/metadata-contracts";
 import type { ResolveBatchResult } from "../instruments/resolve-service";
+import type { InstrumentMetadataRepository } from "../storage/instrument-metadata-repository";
 import type { TradeExecution } from "../trades/types";
 import type { StatementParseResult } from "./contracts";
 import { enrichStatementImport } from "./enrich-import";
@@ -192,24 +193,48 @@ describe("enrichStatementImport", () => {
     ).toBe(true);
   });
 
-  it("can retry only selected unresolved instruments", async () => {
+  it("returns the complete import after a targeted unresolved retry succeeds", async () => {
     const parsed: StatementParseResult = {
       broker: "tiger",
       records: [
-        execution("US", "ONE", undefined),
+        execution("US", "ONE", "Already Known"),
         execution("US", "TWO", undefined),
       ],
       candidates: [
-        { market: "US", symbol: "ONE", sourceAssetType: "unknown" },
+        {
+          market: "US",
+          symbol: "ONE",
+          sourceName: "Already Known",
+          sourceAssetType: "stock",
+        },
         { market: "US", symbol: "TWO", sourceAssetType: "unknown" },
       ],
-      exclusions: [],
+      exclusions: [
+        {
+          category: "bond",
+          label: "可转债",
+          count: 2,
+          instrumentSymbol: "113001",
+        },
+      ],
       diagnostics: [],
       blocked: false,
     };
-    const resolver = vi.fn(async () => resolution([]));
+    const resolver = vi.fn(async () =>
+      resolution([
+        {
+          market: "US",
+          symbol: "TWO",
+          name: "Newly Resolved",
+          assetType: "stock",
+          source: "nasdaq",
+          confidence: "official",
+          resolvedAt,
+        },
+      ]),
+    );
 
-    await enrichStatementImport(parsed, {
+    const result = await enrichStatementImport(parsed, {
       resolver,
       onlyInstrumentIds: ["US:TWO"],
       forceRefresh: true,
@@ -217,6 +242,176 @@ describe("enrichStatementImport", () => {
 
     expect(resolver).toHaveBeenCalledWith([
       { market: "US", symbol: "TWO" },
+    ], expect.objectContaining({ forceRefresh: true }));
+    expect(result.importable.map((item) => item.instrument.name)).toEqual([
+      "Already Known",
+      "Newly Resolved",
     ]);
+    expect(result.unresolved).toEqual([]);
+    expect(result.exclusions).toContainEqual(
+      expect.objectContaining({
+        category: "bond",
+        count: 2,
+      }),
+    );
+  });
+
+  it("stores trusted statement metadata and later resolves code-only imports from cache", async () => {
+    const stored = new Map<string, ResolvedInstrument>();
+    const repository: InstrumentMetadataRepository = {
+      get: async (instrumentId) => stored.get(instrumentId),
+      getMany: async (instrumentIds) =>
+        new Map(
+          instrumentIds.flatMap((instrumentId) => {
+            const item = stored.get(instrumentId);
+            return item ? [[instrumentId, item] as const] : [];
+          }),
+        ),
+      put: async (record) => {
+        stored.set(`${record.market}:${record.symbol}`, record);
+      },
+    };
+    const trusted: StatementParseResult = {
+      broker: "tiger",
+      records: [execution("HK", "700", "腾讯控股")],
+      candidates: [
+        {
+          market: "HK",
+          symbol: "700",
+          sourceName: "腾讯控股",
+          sourceAssetType: "stock",
+        },
+      ],
+      exclusions: [],
+      diagnostics: [],
+      blocked: false,
+    };
+
+    await enrichStatementImport(trusted, {
+      repository,
+      clock: () => Date.parse(resolvedAt),
+    });
+
+    expect(stored.get("HK:700")).toEqual({
+      market: "HK",
+      symbol: "700",
+      name: "腾讯控股",
+      assetType: "stock",
+      source: "statement",
+      confidence: "statement",
+      resolvedAt,
+    });
+
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    try {
+      const codeOnly: StatementParseResult = {
+        ...trusted,
+        records: [execution("HK", "700", undefined)],
+        candidates: [
+          {
+            market: "HK",
+            symbol: "700",
+            sourceAssetType: "unknown",
+          },
+        ],
+      };
+      const result = await enrichStatementImport(codeOnly, {
+        repository,
+        clock: () => Date.parse(resolvedAt),
+      });
+
+      expect(result.importable[0].instrument.name).toBe("腾讯控股");
+      expect(result.cacheHits).toBe(1);
+      expect(fetchMock).not.toHaveBeenCalled();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("does not discard trusted statement trades when metadata cache writes fail", async () => {
+    const repository: InstrumentMetadataRepository = {
+      get: async () => undefined,
+      getMany: async () => new Map(),
+      put: async () => {
+        throw new Error("quota exceeded");
+      },
+    };
+    const parsed: StatementParseResult = {
+      broker: "tiger",
+      records: [execution("HK", "700", "腾讯控股")],
+      candidates: [
+        {
+          market: "HK",
+          symbol: "700",
+          sourceName: "腾讯控股",
+          sourceAssetType: "stock",
+        },
+      ],
+      exclusions: [],
+      diagnostics: [],
+      blocked: false,
+    };
+
+    const result = await enrichStatementImport(parsed, { repository });
+
+    expect(result.importable).toHaveLength(1);
+    expect(result.importable[0].instrument.name).toBe("腾讯控股");
+  });
+
+  it.each([
+    [
+      {
+        market: "US" as const,
+        symbol: "SPY",
+        sourceName: "SPDR S&P 500 ETF Trust",
+        sourceAssetType: "etf" as const,
+      },
+      {
+        market: "US" as const,
+        symbol: "SPY",
+        sourceAssetType: "unknown" as const,
+      },
+    ],
+    [
+      {
+        market: "US" as const,
+        symbol: "SPY",
+        sourceAssetType: "unknown" as const,
+      },
+      {
+        market: "US" as const,
+        symbol: "SPY",
+        sourceName: "SPDR S&P 500 ETF Trust",
+        sourceAssetType: "etf" as const,
+      },
+    ],
+  ])("merges canonical candidate evidence independently of row order", async (
+    first,
+    second,
+  ) => {
+    const resolver = vi.fn(async () => resolution([]));
+    const parsed: StatementParseResult = {
+      broker: "futu",
+      records: [
+        execution("US", "SPY", undefined, "fill-1"),
+        execution("US", "SPY", undefined, "fill-2"),
+      ],
+      candidates: [first, second],
+      exclusions: [],
+      diagnostics: [],
+      blocked: false,
+    };
+
+    const result = await enrichStatementImport(parsed, { resolver });
+
+    expect(resolver).not.toHaveBeenCalled();
+    expect(result.importable).toHaveLength(2);
+    expect(
+      result.importable.every(
+        (item) =>
+          item.instrument.name === "SPDR S&P 500 ETF Trust",
+      ),
+    ).toBe(true);
   });
 });

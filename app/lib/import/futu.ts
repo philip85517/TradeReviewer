@@ -119,6 +119,41 @@ function sourceAssetType(
     : "unknown";
 }
 
+function mergeCandidateEvidence(
+  current: ParsedInstrumentCandidate | undefined,
+  incoming: ParsedInstrumentCandidate,
+): ParsedInstrumentCandidate {
+  if (!current) return incoming;
+  const symbol = canonicalInstrumentSymbol(
+    incoming.symbol,
+    incoming.market,
+  );
+  const names = [current.sourceName, incoming.sourceName]
+    .map((name) => name?.trim())
+    .filter(
+      (name): name is string =>
+        typeof name === "string" &&
+        name.length > 0 &&
+        canonicalInstrumentSymbol(name, incoming.market) !== symbol,
+    )
+    .sort();
+  const evidence = [
+    current.sourceAssetType,
+    incoming.sourceAssetType,
+  ];
+
+  return {
+    market: incoming.market,
+    symbol,
+    sourceName: names[0],
+    sourceAssetType: evidence.includes("etf")
+      ? "etf"
+      : evidence.includes("stock")
+        ? "stock"
+        : "unknown",
+  };
+}
+
 function exclusionCategory(
   assetClass: string,
 ): ImportExclusion["category"] {
@@ -361,7 +396,14 @@ export function parseFutuWorkbook(
       sourceName: descriptor.name,
       sourceAssetType: sourceAssetType(descriptor.name),
     };
-    candidates.set(`${candidate.market}:${candidate.symbol}`, candidate);
+    const candidateKey = canonicalInstrumentId(
+      candidate.symbol,
+      candidate.market,
+    );
+    candidates.set(
+      candidateKey,
+      mergeCandidateEvidence(candidates.get(candidateKey), candidate),
+    );
 
     records.push({
       id: `futu:${sourceFileId}:${TRADE_SHEET}:${sourceRow}`,

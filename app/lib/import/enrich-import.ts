@@ -31,6 +31,10 @@ export type EnrichedImportResult = {
 
 export type InstrumentMetadataResolver = (
   lookups: InstrumentLookup[],
+  options?: {
+    forceRefresh?: boolean;
+    signal?: AbortSignal;
+  },
 ) => Promise<ResolveBatchResult>;
 
 export type EnrichStatementImportOptions = {
@@ -39,10 +43,53 @@ export type EnrichStatementImportOptions = {
   forceRefresh?: boolean;
   onlyInstrumentIds?: string[];
   signal?: AbortSignal;
+  clock?: () => number;
 };
 
 function candidateId(candidate: ParsedInstrumentCandidate): string {
   return canonicalInstrumentId(candidate.symbol, candidate.market);
+}
+
+function mergeCandidateEvidence(
+  current: ParsedInstrumentCandidate | undefined,
+  incoming: ParsedInstrumentCandidate,
+): ParsedInstrumentCandidate {
+  if (!current) {
+    return {
+      ...incoming,
+      symbol: canonicalInstrumentSymbol(
+        incoming.symbol,
+        incoming.market,
+      ),
+    };
+  }
+  const symbol = canonicalInstrumentSymbol(
+    incoming.symbol,
+    incoming.market,
+  );
+  const names = [current.sourceName, incoming.sourceName]
+    .map((name) => name?.trim())
+    .filter(
+      (name): name is string =>
+        typeof name === "string" &&
+        name.length > 0 &&
+        canonicalInstrumentSymbol(name, incoming.market) !== symbol,
+    )
+    .sort();
+  const evidence = [
+    current.sourceAssetType,
+    incoming.sourceAssetType,
+  ];
+  return {
+    market: incoming.market,
+    symbol,
+    sourceName: names[0],
+    sourceAssetType: evidence.includes("etf")
+      ? "etf"
+      : evidence.includes("stock")
+        ? "stock"
+        : "unknown",
+  };
 }
 
 function usableStatementName(candidate: ParsedInstrumentCandidate) {
@@ -52,7 +99,7 @@ function usableStatementName(candidate: ParsedInstrumentCandidate) {
     candidate.market,
   );
   return sourceName &&
-    sourceName !== symbol &&
+    canonicalInstrumentSymbol(sourceName, candidate.market) !== symbol &&
     (candidate.sourceAssetType === "stock" ||
       candidate.sourceAssetType === "etf")
     ? sourceName
@@ -122,6 +169,44 @@ function applyMetadata(
   };
 }
 
+function emptyResolution(): ResolveBatchResult {
+  return {
+    resolved: new Map(),
+    unresolved: new Map(),
+    cacheHits: 0,
+    backgroundRefresh: Promise.resolve(),
+  };
+}
+
+function mergeResolutions(
+  results: ResolveBatchResult[],
+): ResolveBatchResult {
+  const resolved = new Map<string, ResolvedInstrument>();
+  const unresolved = new Map<string, InstrumentMetadataFailure>();
+  for (const result of results) {
+    for (const [instrumentId, metadata] of result.resolved) {
+      resolved.set(instrumentId, metadata);
+      unresolved.delete(instrumentId);
+    }
+    for (const [instrumentId, failure] of result.unresolved) {
+      if (!resolved.has(instrumentId)) {
+        unresolved.set(instrumentId, failure);
+      }
+    }
+  }
+  return {
+    resolved,
+    unresolved,
+    cacheHits: results.reduce(
+      (total, result) => total + result.cacheHits,
+      0,
+    ),
+    backgroundRefresh: Promise.all(
+      results.map((result) => result.backgroundRefresh),
+    ).then(() => undefined),
+  };
+}
+
 export async function enrichStatementImport(
   parsed: StatementParseResult,
   options: EnrichStatementImportOptions,
@@ -141,9 +226,14 @@ export async function enrichStatementImport(
   const selectedIds = options.onlyInstrumentIds
     ? new Set(options.onlyInstrumentIds)
     : undefined;
-  const candidates = new Map(
-    parsed.candidates.map((candidate) => [candidateId(candidate), candidate]),
-  );
+  const candidates = new Map<string, ParsedInstrumentCandidate>();
+  for (const candidate of parsed.candidates) {
+    const instrumentId = candidateId(candidate);
+    candidates.set(
+      instrumentId,
+      mergeCandidateEvidence(candidates.get(instrumentId), candidate),
+    );
+  }
   for (const record of parsed.records) {
     const market = record.instrument
       .market as ParsedInstrumentCandidate["market"];
@@ -151,22 +241,36 @@ export async function enrichStatementImport(
       record.instrument.symbol,
       market,
     );
-    if (!candidates.has(instrumentId)) {
-      candidates.set(instrumentId, {
+    candidates.set(
+      instrumentId,
+      mergeCandidateEvidence(candidates.get(instrumentId), {
         market,
         symbol: record.instrument.symbol,
         sourceAssetType: "unknown",
-      });
-    }
+      }),
+    );
   }
-  const statementNames = new Map<string, string>();
+  const statementMetadata = new Map<string, ResolvedInstrument>();
   const lookups: InstrumentLookup[] = [];
+  const resolvedAt = new Date(
+    (options.clock ?? Date.now)(),
+  ).toISOString();
 
   for (const [instrumentId, candidate] of candidates) {
-    if (selectedIds && !selectedIds.has(instrumentId)) continue;
     const statementName = usableStatementName(candidate);
     if (statementName) {
-      statementNames.set(instrumentId, statementName);
+      statementMetadata.set(instrumentId, {
+        market: candidate.market,
+        symbol: canonicalInstrumentSymbol(
+          candidate.symbol,
+          candidate.market,
+        ),
+        name: statementName,
+        assetType: candidate.sourceAssetType as "stock" | "etf",
+        source: "statement",
+        confidence: "statement",
+        resolvedAt,
+      });
     } else {
       lookups.push({
         market: candidate.market,
@@ -178,24 +282,67 @@ export async function enrichStatementImport(
     }
   }
 
-  let resolution: ResolveBatchResult = {
-    resolved: new Map(),
-    unresolved: new Map(),
-    cacheHits: 0,
-    backgroundRefresh: Promise.resolve(),
-  };
-  if (lookups.length > 0) {
+  if (options.repository && statementMetadata.size > 0) {
+    await Promise.all(
+      [...statementMetadata.values()].map(async (metadata) => {
+        try {
+          await options.repository?.put(metadata);
+        } catch {
+          // Cache durability must not decide whether a valid trade imports.
+        }
+      }),
+    );
+  }
+
+  const runResolver = async (
+    batch: InstrumentLookup[],
+    forceRefresh: boolean,
+  ): Promise<ResolveBatchResult> => {
+    if (batch.length === 0) return emptyResolution();
     if (options.resolver) {
-      resolution = await options.resolver(lookups);
+      return forceRefresh || options.signal
+        ? options.resolver(batch, {
+            forceRefresh,
+            signal: options.signal,
+          })
+        : options.resolver(batch);
+    }
+    if (!options.repository) {
+      throw new Error("证券元数据补全需要本地缓存仓库");
+    }
+    return resolveInstrumentMetadataBatch(batch, {
+      repository: options.repository,
+      forceRefresh,
+      signal: options.signal,
+      clock: options.clock,
+    });
+  };
+
+  let resolution = emptyResolution();
+  if (lookups.length > 0) {
+    if (options.forceRefresh && selectedIds) {
+      const forced = lookups.filter((lookup) =>
+        selectedIds.has(
+          canonicalInstrumentId(lookup.symbol, lookup.market),
+        ),
+      );
+      const normal = lookups.filter(
+        (lookup) =>
+          !selectedIds.has(
+            canonicalInstrumentId(lookup.symbol, lookup.market),
+          ),
+      );
+      resolution = mergeResolutions(
+        await Promise.all([
+          runResolver(normal, false),
+          runResolver(forced, true),
+        ]),
+      );
     } else {
-      if (!options.repository) {
-        throw new Error("证券元数据补全需要本地缓存仓库");
-      }
-      resolution = await resolveInstrumentMetadataBatch(lookups, {
-        repository: options.repository,
-        forceRefresh: options.forceRefresh,
-        signal: options.signal,
-      });
+      resolution = await runResolver(
+        lookups,
+        Boolean(options.forceRefresh),
+      );
     }
   }
 
@@ -213,31 +360,30 @@ export async function enrichStatementImport(
   }
 
   for (const [instrumentId, candidate] of candidates) {
-    if (selectedIds && !selectedIds.has(instrumentId)) continue;
     const records = recordsByInstrument.get(instrumentId) ?? [];
-    const statementName = statementNames.get(instrumentId);
-    if (statementName) {
-      importable.push(
-        ...records.map((record) =>
-          applyMetadata(record, { name: statementName }),
-        ),
-      );
+    const statement = statementMetadata.get(instrumentId);
+    if (statement) {
+      resolution.resolved.set(instrumentId, statement);
       continue;
     }
 
     const metadata = resolution.resolved.get(instrumentId);
-    if (metadata) {
-      importable.push(
-        ...records.map((record) => applyMetadata(record, metadata)),
-      );
-      continue;
-    }
+    if (metadata) continue;
 
     const failure =
       resolution.unresolved.get(instrumentId) ??
       unknownFailure(candidate);
     unresolved.push(failure);
     addUnknownExclusion(exclusions, candidate, Math.max(records.length, 1));
+  }
+
+  for (const record of parsed.records) {
+    const instrumentId = canonicalInstrumentId(
+      record.instrument.symbol,
+      record.instrument.market,
+    );
+    const metadata = resolution.resolved.get(instrumentId);
+    if (metadata) importable.push(applyMetadata(record, metadata));
   }
 
   return {

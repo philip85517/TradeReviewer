@@ -264,6 +264,59 @@ describe("parseFutuWorkbook", () => {
     });
   });
 
+  it.each([["named-first"], ["code-first"]])(
+    "keeps the strongest ETF candidate evidence regardless of row order: %s",
+    (order) => {
+      const named = [
+        "2025-03-13 00:38:57",
+        "美股账户",
+        "0855",
+        "证券",
+        "SPY SPDR S&P 500 ETF Trust",
+        "US",
+        "买入开仓",
+        "20250313",
+        "USD",
+        "1",
+        "500",
+        "-500",
+        "1",
+        "-501",
+      ];
+      const codeOnly = [
+        "2025-03-14 00:38:57",
+        "美股账户",
+        "0855",
+        "证券",
+        "SPY",
+        "US",
+        "卖出平仓",
+        "20250314",
+        "USD",
+        "-1",
+        "501",
+        "501",
+        "1",
+        "500",
+      ];
+      const rows =
+        order === "named-first"
+          ? [named, codeOnly]
+          : [codeOnly, named];
+
+      const result = parseFutuWorkbook(workbookBuffer(rows));
+
+      expect(result.candidates).toEqual([
+        {
+          market: "US",
+          symbol: "SPY",
+          sourceName: "SPDR S&P 500 ETF Trust",
+          sourceAssetType: "etf",
+        },
+      ]);
+    },
+  );
+
   it("uses workbook content in execution identity even when filenames match", () => {
     const base = [
       "2025-03-13 00:38:57",

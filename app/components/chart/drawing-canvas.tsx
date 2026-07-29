@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import type { DrawingCommand } from "../../lib/chart/drawing-commands";
 import {
@@ -36,6 +36,12 @@ type DragState = {
   originPoint: ProjectedPoint;
 };
 type TextEditor = { anchor: DrawingAnchor; x: number; y: number; drawing?: Drawing; value: string };
+type GestureHandlers = {
+  activeTool: DrawingTool;
+  pointerDown: (clientX: number, clientY: number) => void;
+  pointerMove: (clientX: number, clientY: number) => void;
+  pointerUp: (clientX: number, clientY: number) => void;
+};
 
 export type ChartCoordinateAdapter = {
   timeToX: (time: string) => number | null;
@@ -97,9 +103,11 @@ export function DrawingCanvas({
   coordinateVersion = FALLBACK_ADAPTER_VERSION,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const startAnchorRef = useRef<DrawingAnchor | null>(null);
+  const dragRef = useRef<DragState | null>(null);
+  const previewRef = useRef<Drawing | null>(null);
+  const gestureHandlersRef = useRef<GestureHandlers | null>(null);
   const [size, setSize] = useState<CanvasSize>({ width: 0, height: 0 });
-  const [startAnchor, setStartAnchor] = useState<DrawingAnchor | null>(null);
-  const [drag, setDrag] = useState<DragState | null>(null);
   const [preview, setPreview] = useState<Drawing | null>(null);
   const [editor, setEditor] = useState<TextEditor | null>(null);
   const { minPrice, maxPrice, priceRange } = priceRangeForCandles(candles);
@@ -215,11 +223,11 @@ export function DrawingCanvas({
   function beginEdit(drawing: Drawing, point: ProjectedPoint) {
     const points = drawing.anchors.map(pointFor);
     const anchorIndex = points.findIndex((item) => isPointNearAnchorHandle(point, item));
-    setDrag({
+    dragRef.current = {
       drawing,
       anchorIndex: anchorIndex < 0 ? null : anchorIndex,
       originPoint: point,
-    });
+    };
   }
 
   function createDrawing(first: DrawingAnchor, last: DrawingAnchor) {
@@ -309,10 +317,11 @@ export function DrawingCanvas({
       });
       return;
     }
-    setStartAnchor(anchor);
+    startAnchorRef.current = anchor;
   }
 
   function handlePointerMove(clientX: number, clientY: number) {
+    const drag = dragRef.current;
     if (!drag) return;
     const point = pointFromClient(clientX, clientY);
     if (!point) return;
@@ -341,25 +350,38 @@ export function DrawingCanvas({
         );
       });
     }
-    setPreview({ ...drag.drawing, anchors });
+    const nextPreview = { ...drag.drawing, anchors };
+    previewRef.current = nextPreview;
+    setPreview(nextPreview);
   }
 
   function handlePointerUp(clientX: number, clientY: number) {
+    const drag = dragRef.current;
     if (drag) {
-      if (preview) emitReplace(preview);
-      setDrag(null);
+      if (previewRef.current) emitReplace(previewRef.current);
+      dragRef.current = null;
+      previewRef.current = null;
       setPreview(null);
       return;
     }
+    const startAnchor = startAnchorRef.current;
     if (!startAnchor) return;
     const point = pointFromClient(clientX, clientY);
     if (!point) return;
     createDrawing(startAnchor, anchorFromPoint(point.x, point.y));
-    setStartAnchor(null);
+    startAnchorRef.current = null;
   }
 
+  useLayoutEffect(() => {
+    gestureHandlersRef.current = {
+      activeTool,
+      pointerDown: handlePointerDown,
+      pointerMove: handlePointerMove,
+      pointerUp: handlePointerUp,
+    };
+  });
+
   useEffect(() => {
-    if (activeTool !== "cursor") return;
     const canvas = canvasRef.current;
     const stage = canvas?.closest(".chart-stage");
     if (!stage) return;
@@ -368,18 +390,24 @@ export function DrawingCanvas({
       Boolean(event.target.closest(".drawing-text-editor"));
     const onPointerDown = (event: Event) => {
       if (fromTextEditor(event)) return;
+      const handlers = gestureHandlersRef.current;
+      if (handlers?.activeTool !== "cursor") return;
       const pointer = event as PointerEvent;
-      handlePointerDown(pointer.clientX, pointer.clientY);
+      handlers.pointerDown(pointer.clientX, pointer.clientY);
     };
     const onPointerMove = (event: Event) => {
       if (fromTextEditor(event)) return;
+      const handlers = gestureHandlersRef.current;
+      if (handlers?.activeTool !== "cursor") return;
       const pointer = event as PointerEvent;
-      handlePointerMove(pointer.clientX, pointer.clientY);
+      handlers.pointerMove(pointer.clientX, pointer.clientY);
     };
     const onPointerUp = (event: Event) => {
       if (fromTextEditor(event)) return;
+      const handlers = gestureHandlersRef.current;
+      if (handlers?.activeTool !== "cursor") return;
       const pointer = event as PointerEvent;
-      handlePointerUp(pointer.clientX, pointer.clientY);
+      handlers.pointerUp(pointer.clientX, pointer.clientY);
     };
     stage.addEventListener("pointerdown", onPointerDown, true);
     stage.addEventListener("pointermove", onPointerMove, true);
@@ -389,7 +417,7 @@ export function DrawingCanvas({
       stage.removeEventListener("pointermove", onPointerMove, true);
       stage.removeEventListener("pointerup", onPointerUp, true);
     };
-  });
+  }, []);
 
   const drawingMode = activeTool !== "cursor";
   return (

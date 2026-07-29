@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { Drawing } from "../../lib/chart/drawings";
@@ -133,11 +133,24 @@ describe("drawing interactions", () => {
     });
     const preventDefault = vi.spyOn(pointerDown, "preventDefault");
     const stopPropagation = vi.spyOn(pointerDown, "stopPropagation");
-    fireEvent(stage, pointerDown);
-    fireEvent.pointerMove(stage, { pointerId: 1, clientX: 20, clientY: 90 });
-    fireEvent.pointerUp(stage, { pointerId: 1, clientX: 20, clientY: 90 });
+    const pointerMove = new MouseEvent("pointermove", {
+      bubbles: true,
+      clientX: 20,
+      clientY: 90,
+    });
+    const pointerUp = new MouseEvent("pointerup", {
+      bubbles: true,
+      clientX: 20,
+      clientY: 90,
+    });
+    act(() => {
+      stage.dispatchEvent(pointerDown);
+      stage.dispatchEvent(pointerMove);
+      stage.dispatchEvent(pointerUp);
+    });
 
     expect(onSelectDrawing).toHaveBeenCalledWith("line-1");
+    expect(onSelectDrawing).toHaveBeenCalledTimes(1);
     expect(preventDefault).not.toHaveBeenCalled();
     expect(stopPropagation).not.toHaveBeenCalled();
     expect(onCommand).toHaveBeenCalledTimes(1);

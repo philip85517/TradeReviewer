@@ -138,3 +138,47 @@ git diff --check
 Remediation implementation commit:
 `c49bd0085b650d6b49c4618aa914ea7c024383d6`
 (`fix: harden chart toolbar feedback`).
+
+## Remediation round 2
+
+Restored the public `useFullscreen().toggleFullscreen` contract to the Task 8
+signature `() => Promise<void>`. Rejected native fullscreen operations remain
+caught internally, update the recoverable `error` state, and resolve `void` so
+the toolbar cannot create an unhandled rejection when discarding the promise.
+
+### RED evidence
+
+The hook regression test was changed to require resolved `undefined` for both
+rejected request and exit operations. Before the implementation change:
+
+```sh
+npm run test:unit -- app/components/chart/use-fullscreen.test.tsx
+# 2 failed / 2 passed: received false instead of undefined
+```
+
+The same test file now contains a compile-time `Equal` assertion that the
+public return type is exactly `Promise<void>`; `npm run typecheck` validates
+that assertion.
+
+### GREEN and verification evidence
+
+```sh
+# focused Task 8 suite
+# 5 files passed, 23 tests passed
+
+npm run typecheck
+# exit 0
+
+npm run lint
+# exit 0
+
+npm run test:unit
+# 50 files passed, 240 tests passed
+
+git diff --check
+# exit 0
+```
+
+Round-2 implementation commit:
+`669ae2ca937a77b7b8e91893e8ceacac9319edba`
+(`fix: preserve fullscreen toggle contract`).

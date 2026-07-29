@@ -13,7 +13,10 @@ import type {
   StatementBroker,
   StatementParseResult,
 } from "./contracts";
-import type { EnrichedImportResult } from "./enrich-import";
+import {
+  UNRESOLVED_ASSET_EXCLUSION_LABEL,
+  type EnrichedImportResult,
+} from "./enrich-import";
 
 export type ImportPreview = {
   id: string;
@@ -118,6 +121,21 @@ function duplicateCount(result: EnrichedImportResult) {
   ).length;
 }
 
+function isRetryableMetadataExclusion(
+  exclusion: ImportExclusion,
+  unresolvedSymbols: Set<string>,
+) {
+  return (
+    exclusion.category === "unknown-asset" &&
+    exclusion.label.trim() ===
+      UNRESOLVED_ASSET_EXCLUSION_LABEL &&
+    typeof exclusion.instrumentSymbol === "string" &&
+    unresolvedSymbols.has(
+      exclusion.instrumentSymbol.trim().toUpperCase(),
+    )
+  );
+}
+
 export function createImportPreview(
   fileName: string,
   result: EnrichedImportResult | StatementParseResult,
@@ -143,9 +161,18 @@ export function createImportPreview(
   const fingerprint =
     enriched.importable[0]?.source.fileFingerprint ??
     `${enriched.broker}:${fileName}:${enriched.importable.length}`;
+  const unresolvedSymbols = new Set(
+    enriched.unresolved.map((failure) =>
+      failure.symbol.trim().toUpperCase(),
+    ),
+  );
   const exclusionGroups = groupedExclusions(
     enriched.exclusions.filter(
-      (exclusion) => exclusion.category !== "unknown-asset",
+      (exclusion) =>
+        !isRetryableMetadataExclusion(
+          exclusion,
+          unresolvedSymbols,
+        ),
     ),
   );
 

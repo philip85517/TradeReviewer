@@ -82,6 +82,12 @@ describe("createImportPreview", () => {
           count: 1,
           instrumentSymbol: "BROKEN",
         },
+        {
+          category: "unknown-asset",
+          label: "其他未支持品类",
+          count: 2,
+          instrumentSymbol: "MYSTERY",
+        },
       ],
       diagnostics: [
         {
@@ -102,7 +108,7 @@ describe("createImportPreview", () => {
       instrumentCount: 2,
       duplicateTradeCount: 1,
       unresolvedInstrumentCount: 1,
-      excludedInstrumentCount: 2,
+      excludedInstrumentCount: 3,
       firstTradeAt: "2025-03-01T00:00:00.000Z",
       lastTradeAt: "2025-04-01T00:00:00.000Z",
       blocked: false,
@@ -114,6 +120,11 @@ describe("createImportPreview", () => {
     expect(preview.exclusionGroups).toEqual([
       { category: "bond", label: "可转债", count: 2 },
       { category: "fund", label: "基金", count: 3 },
+      {
+        category: "unknown-asset",
+        label: "其他未支持品类",
+        count: 2,
+      },
     ]);
     expect(preview.unresolved).toHaveLength(1);
   });

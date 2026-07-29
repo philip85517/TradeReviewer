@@ -21,6 +21,9 @@ import type {
 } from "./contracts";
 import type { ImportDiagnostic } from "./import-result";
 
+export const UNRESOLVED_ASSET_EXCLUSION_LABEL =
+  "无法确认属于股票或 ETF";
+
 export type EnrichedImportResult = {
   broker: StatementParseResult["broker"];
   importable: TradeExecution[];
@@ -151,7 +154,7 @@ function addUnknownExclusion(
   else {
     exclusions.push({
       category: "unknown-asset",
-      label: "无法确认属于股票或 ETF",
+      label: UNRESOLVED_ASSET_EXCLUSION_LABEL,
       count,
       instrumentSymbol: symbol,
     });

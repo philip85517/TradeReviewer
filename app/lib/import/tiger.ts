@@ -90,6 +90,14 @@ type ParsedIdentity = {
   name?: string;
 };
 
+type FeeBlock = {
+  firstPage: number;
+  lastPage: number;
+  firstY: number;
+  lastY: number;
+  lines: string[];
+};
+
 const HEADER_ALIASES: Record<HeaderField, readonly string[]> = {
   code: ["代碼", "证券代码", "股票代码", "代码"],
   name: ["证券名称", "股票名称", "名称"],
@@ -283,10 +291,7 @@ function logicalRowsForSegment(
           return Math.abs(distance) <= 14;
         }
         if (field === "fee") {
-          return (
-            distance >= -40 &&
-            distance <= (index === anchors.length - 1 ? 100 : 40)
-          );
+          return false;
         }
         return Math.abs(distance) <= 3;
       },
@@ -302,8 +307,162 @@ function logicalRowsForSegment(
   });
 }
 
+function isFeeLine(text: string): boolean {
+  return /(?:佣金|費|费|稅|税|Commission|Fee)/i.test(text);
+}
+
+function startsFeeList(text: string): boolean {
+  return /^(?:結算費|结算费|其他代收|Commission\b)/i.test(text.trim());
+}
+
+function feeLabel(line: string): string {
+  return line
+    .split(/[:：]/, 1)[0]
+    .replace(/\s+/g, "")
+    .toLowerCase();
+}
+
+function mergeFeeContinuation(pending: FeeBlock, current: FeeBlock) {
+  const pendingLabels = pending.lines.map(feeLabel);
+  const currentLabels = current.lines.map(feeLabel);
+  let overlap = Math.min(pendingLabels.length, currentLabels.length);
+  while (
+    overlap > 0 &&
+    pendingLabels
+      .slice(-overlap)
+      .some((label, index) => label !== currentLabels[index])
+  ) {
+    overlap -= 1;
+  }
+
+  if (
+    overlap === 0 &&
+    pendingLabels[0] &&
+    pendingLabels[0] === currentLabels[0]
+  ) {
+    pending.lines = [...current.lines];
+  } else {
+    pending.lines.push(...current.lines.slice(overlap));
+  }
+  pending.lastPage = current.lastPage;
+  pending.lastY = current.lastY;
+}
+
+function feeBlocksForSegment(
+  page: PdfTextPage,
+  columns: readonly HeaderColumn[],
+  headerY: number,
+  endY: number,
+  logicalRows: readonly ParsedLayoutRow[],
+): FeeBlock[] {
+  const anchorYs = logicalRows.map((row) => row.row);
+  const lines = groupItemsIntoRows(
+    page.items.filter((item) => {
+      if (item.y <= headerY + 2 || item.y >= Math.min(endY, page.height - 35)) {
+        return false;
+      }
+      return closestColumn(item, columns)?.field === "fee";
+    }),
+    2,
+  )
+    .map((row) => ({
+      y: row.y,
+      text: row.items
+        .map((item) => item.text.trim())
+        .filter(Boolean)
+        .join(" "),
+    }))
+    .filter(
+      (line) =>
+        line.text &&
+        (isFeeLine(line.text) ||
+          (anchorYs.some((anchorY) => Math.abs(anchorY - line.y) <= 3) &&
+            /^[()\d.,+\-\s]+$/.test(line.text))),
+    );
+
+  const blocks: FeeBlock[] = [];
+  for (const line of lines) {
+    const prior = blocks.at(-1);
+    const beginsNewList =
+      !prior ||
+      startsFeeList(line.text) ||
+      line.y - prior.lastY > 14;
+    if (beginsNewList) {
+      blocks.push({
+        firstPage: page.pageNumber,
+        lastPage: page.pageNumber,
+        firstY: line.y,
+        lastY: line.y,
+        lines: [line.text],
+      });
+    } else {
+      prior.lines.push(line.text);
+      prior.lastY = line.y;
+    }
+  }
+
+  return blocks;
+}
+
+function assignFeeBlocks(
+  rows: ParsedLayoutRow[],
+  incoming: FeeBlock[],
+  pending: FeeBlock | undefined,
+): FeeBlock | undefined {
+  const candidates = [...incoming];
+  if (pending) {
+    const first = candidates[0];
+    const firstAnchor = rows[0]?.row;
+    const secondAnchor = rows[1]?.row;
+    const firstCenter = first
+      ? (first.firstY + first.lastY) / 2
+      : Number.POSITIVE_INFINITY;
+    const firstBelongsToFirstAnchor =
+      first &&
+      firstAnchor !== undefined &&
+      (secondAnchor === undefined ||
+        Math.abs(firstCenter - firstAnchor) <
+          Math.abs(firstCenter - secondAnchor));
+    const continuesAcrossPage =
+      first &&
+      pending.lastPage + 1 === first.firstPage &&
+      firstBelongsToFirstAnchor;
+    if (continuesAcrossPage) {
+      mergeFeeContinuation(pending, first);
+      candidates.shift();
+    }
+    candidates.unshift(pending);
+  }
+
+  rows.forEach((row, rowIndex) => {
+    if (candidates.length === 0) return;
+    const remainingRows = rows.length - rowIndex;
+    const skippable = Math.max(0, candidates.length - remainingRows);
+    let selectedIndex = 0;
+    let selectedDistance = Number.POSITIVE_INFINITY;
+    for (let index = 0; index <= skippable; index += 1) {
+      const block = candidates[index];
+      const representativeY =
+        block.firstPage < row.page
+          ? row.row
+          : (block.firstY + block.lastY) / 2;
+      const distance = Math.abs(representativeY - row.row);
+      if (distance < selectedDistance) {
+        selectedIndex = index;
+        selectedDistance = distance;
+      }
+    }
+    const selected = candidates[selectedIndex];
+    candidates.splice(0, selectedIndex + 1);
+    row.cells.fee = selected.lines.join(" ");
+  });
+
+  return candidates.at(-1);
+}
+
 function positionedRows(pages: readonly PdfTextPage[]): ParsedLayoutRow[] {
   const result: ParsedLayoutRow[] = [];
+  let pendingFeeBlock: FeeBlock | undefined;
   let sourceOrder = 0;
   let section: "stock" | "fund" | null = null;
   let pendingTimestampDate: string | undefined;
@@ -329,6 +488,20 @@ function positionedRows(pages: readonly PdfTextPage[]): ParsedLayoutRow[] {
         endY,
         sourceOrder,
       );
+      if (active.section === "stock") {
+        const pageFeeBlocks = feeBlocksForSegment(
+          page,
+          active.columns,
+          active.headerY,
+          endY,
+          logical,
+        );
+        pendingFeeBlock = assignFeeBlocks(
+          logical,
+          pageFeeBlocks,
+          pendingFeeBlock,
+        );
+      }
       const firstLogicalRow = logical[0];
       if (pendingTimestampDate && firstLogicalRow) {
         if (
@@ -431,6 +604,8 @@ function parseIdentity(
   let inferredName = nameValue?.trim() || undefined;
   let rawCode = compact(sourceCode).toUpperCase();
   if (!rawCode) return null;
+  const standaloneParenthesized = rawCode.match(/^\(([A-Z0-9.-]+)\)$/);
+  if (standaloneParenthesized) rawCode = standaloneParenthesized[1];
   let marketText = compact(marketValue).toUpperCase();
   let symbol = rawCode;
 
@@ -658,7 +833,6 @@ export function parseTigerPages(
         sourceOrder: number;
         identity: ParsedIdentity;
         layoutKey: string | null;
-        completeIdentity: boolean;
         section: "stock" | "fund";
       }
     | undefined;
@@ -695,7 +869,6 @@ export function parseTigerPages(
     if (
       incompleteIdentity &&
       immediatelyAdjacent &&
-      previous?.completeIdentity &&
       layoutKey !== null &&
       previous?.layoutKey === layoutKey
     ) {
@@ -791,7 +964,6 @@ export function parseTigerPages(
         sourceOrder: layoutRow.sourceOrder,
         identity,
         layoutKey,
-        completeIdentity: Boolean(identity.name),
         section: layoutRow.section,
       };
     } catch {

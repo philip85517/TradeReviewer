@@ -10,6 +10,8 @@ import {
   TIGER_TRADITIONAL_DIFFERENT_MARKET,
   TIGER_TRADITIONAL_MISSING_KEY_FIELD,
   TIGER_TRADITIONAL_PAGES,
+  TIGER_TRADITIONAL_SPLIT_FEE_DUPLICATE,
+  TIGER_TRADITIONAL_VARIABLE_HEIGHT_FEES,
 } from "./__fixtures__/tiger-pages";
 import {
   detectTigerStatement,
@@ -164,6 +166,7 @@ describe("Tiger PDF import", () => {
       options,
     );
     expect(result.records).toHaveLength(2);
+    expect(result.records[1]?.instrument.symbol).toBe("SPY");
   });
 
   it("does not collapse otherwise identical rows from different markets", () => {
@@ -192,5 +195,22 @@ describe("Tiger PDF import", () => {
         expect.objectContaining({ code: "unsupported-tiger-layout" }),
       ],
     });
+  });
+
+  it("attributes variable-height fee lists by logical block", () => {
+    const result = parseTigerPages(
+      TIGER_TRADITIONAL_VARIABLE_HEIGHT_FEES,
+      options,
+    );
+    expect(result.records.map((record) => record.fee)).toEqual(["7", "6"]);
+  });
+
+  it("joins a split cross-page fee list before collapsing its display duplicate", () => {
+    const result = parseTigerPages(
+      TIGER_TRADITIONAL_SPLIT_FEE_DUPLICATE,
+      options,
+    );
+    expect(result.records).toHaveLength(1);
+    expect(result.records[0]?.fee).toBe("7");
   });
 });

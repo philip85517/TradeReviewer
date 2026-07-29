@@ -450,3 +450,117 @@ export const TIGER_TRADITIONAL_DIFFERENT_MARKET: PdfTextPage[] = [
     true,
   ),
 ];
+
+const HK_FEE_LABELS = [
+  "結算費",
+  "印花稅",
+  "交易征費",
+  "交易所費用",
+  "佣金",
+  "平臺費",
+  "會計及財匯局交易征費",
+] as const;
+
+function feeList(
+  labels: readonly string[],
+  startY: number,
+  amount: string,
+): PdfTextItem[] {
+  return labels.map((label, index) =>
+    item(
+      `${label}: ${amount}`,
+      TRADITIONAL_COLUMNS.fee - 28,
+      startY + index * 9,
+    ),
+  );
+}
+
+function withExtraItems(
+  sourcePage: PdfTextPage,
+  extraItems: PdfTextItem[],
+): PdfTextPage {
+  return { ...sourcePage, items: [...sourcePage.items, ...extraItems] };
+}
+
+export const TIGER_TRADITIONAL_VARIABLE_HEIGHT_FEES: PdfTextPage[] = [
+  withExtraItems(
+    traditionalPage(
+      1,
+      [
+        {
+          y: 210,
+          name: "匿名甲",
+          code: "01810",
+          market: "HK",
+          direction: "開倉",
+          quantity: "10",
+          price: "20",
+          feeParts: [],
+          date: "2025-06-01",
+          timeZone: "Asia/Hong_Kong",
+          currency: "HKD",
+        },
+        {
+          y: 250,
+          name: "匿名乙",
+          code: "00700",
+          market: "HK",
+          direction: "開倉",
+          quantity: "20",
+          price: "30",
+          feeParts: [],
+          date: "2025-06-02",
+          timeZone: "Asia/Hong_Kong",
+          currency: "HKD",
+        },
+      ],
+      true,
+    ),
+    [
+      ...feeList(HK_FEE_LABELS, 180, "-1"),
+      ...feeList(["結算費", "佣金", "平臺費"], 260, "-2"),
+    ],
+  ),
+];
+
+export const TIGER_TRADITIONAL_SPLIT_FEE_DUPLICATE: PdfTextPage[] = [
+  withExtraItems(
+    traditionalPage(
+      1,
+      [
+        {
+          y: 650,
+          name: "匿名港股",
+          code: "01810",
+          market: "HK",
+          direction: "開倉做空",
+          quantity: "-800",
+          price: "22.5",
+          feeParts: HK_FEE_LABELS.map((label) => `${label}: -1`),
+          date: "2025-06-01",
+          timeZone: "Asia/Hong_Kong",
+          currency: "HKD",
+        },
+      ],
+      true,
+    ),
+    feeList(HK_FEE_LABELS.slice(0, 3), 760, "-1"),
+  ),
+  traditionalPage(
+    2,
+    [
+      {
+        y: 145,
+        market: "HK",
+        direction: "開倉做空",
+        quantity: "-800",
+        price: "22.5",
+        feeParts: HK_FEE_LABELS.slice(3).map((label) => `${label}: -1`),
+        date: "2025-06-01",
+        timeZone: "Asia/Hong_Kong",
+        currency: "HKD",
+      },
+    ],
+    false,
+  ),
+];

@@ -6,8 +6,15 @@ export type DrawingTool =
   | "cursor"
   | "trend-line"
   | "horizontal-line"
+  | "vertical-line"
+  | "rectangle"
+  | "arrow"
   | "price-label"
   | "text"
+  | "measure"
+  | "long-risk-reward"
+  | "short-risk-reward"
+  /** Legacy tool kept until the workspace migrates in Task 10. */
   | "risk-reward";
 
 export type DrawingAnchor = {
@@ -16,7 +23,11 @@ export type DrawingAnchor = {
 };
 
 export type Drawing = {
+  version?: 1 | 2;
   id: string;
+  /** Optional while current components still create v1-shaped drawings. */
+  episodeId?: string;
+  name?: string;
   tool: Exclude<DrawingTool, "cursor">;
   anchors: DrawingAnchor[];
   style: {
@@ -25,6 +36,7 @@ export type Drawing = {
     opacity: number;
   };
   text?: string;
+  zIndex?: number;
   hidden: boolean;
   locked: boolean;
   visibleOn: "all" | Timeframe[];
@@ -34,6 +46,14 @@ export type Drawing = {
    * every newly committed drawing receives the current cursor.
    */
   createdAtCursor?: string;
+};
+
+export type NormalizedDrawing = Drawing & {
+  version: 2;
+  episodeId: string;
+  name: string;
+  zIndex: number;
+  createdAtCursor: string;
 };
 
 export type RiskRewardInput = {
@@ -56,6 +76,91 @@ export type RiskRewardMetrics = {
 
 function number(value: Decimal) {
   return value.toDecimalPlaces(6).toNumber();
+}
+
+const anchorCounts: Record<DrawingTool, number> = {
+  cursor: 0,
+  "trend-line": 2,
+  "horizontal-line": 1,
+  "vertical-line": 1,
+  rectangle: 2,
+  arrow: 2,
+  "price-label": 1,
+  text: 1,
+  measure: 2,
+  "long-risk-reward": 3,
+  "short-risk-reward": 3,
+  "risk-reward": 3,
+};
+
+export function requiredAnchorCount(tool: DrawingTool) {
+  return anchorCounts[tool];
+}
+
+function canonicalTool(drawing: Drawing): Exclude<DrawingTool, "cursor"> {
+  if (drawing.tool !== "risk-reward") return drawing.tool;
+  return drawing.anchors[1]?.price < drawing.anchors[0]?.price
+    ? "long-risk-reward"
+    : "short-risk-reward";
+}
+
+export function validateDrawing(drawing: Drawing) {
+  if (drawing.anchors.length !== requiredAnchorCount(drawing.tool)) {
+    throw new Error(`绘图锚点数量必须为 ${requiredAnchorCount(drawing.tool)}`);
+  }
+  if (
+    drawing.anchors.some(
+      (anchor) =>
+        !anchor.time ||
+        !Number.isFinite(anchor.price),
+    )
+  ) {
+    throw new Error("绘图锚点无效");
+  }
+
+  const tool = canonicalTool(drawing);
+  if (tool === "long-risk-reward") {
+    const [entry, stop, target] = drawing.anchors;
+    if (stop.price >= entry.price) {
+      throw new Error("做多止损必须低于入场价");
+    }
+    if (target.price <= entry.price) {
+      throw new Error("做多目标必须高于入场价");
+    }
+  }
+  if (tool === "short-risk-reward") {
+    const [entry, stop, target] = drawing.anchors;
+    if (stop.price <= entry.price) {
+      throw new Error("做空止损必须高于入场价");
+    }
+    if (target.price >= entry.price) {
+      throw new Error("做空目标必须低于入场价");
+    }
+  }
+}
+
+export function normalizeDrawing(
+  drawing: Drawing,
+  episodeId: string,
+  replayCursor: string,
+  zIndex: number,
+): NormalizedDrawing {
+  const tool = canonicalTool(drawing);
+  const normalized: NormalizedDrawing = {
+    ...drawing,
+    version: 2,
+    episodeId: drawing.episodeId ?? episodeId,
+    name: drawing.name ?? tool,
+    tool,
+    anchors: drawing.anchors.map((anchor) => ({ ...anchor })),
+    style: { ...drawing.style },
+    visibleOn:
+      drawing.visibleOn === "all" ? "all" : [...drawing.visibleOn],
+    zIndex: drawing.version === 2 ? (drawing.zIndex ?? zIndex) : zIndex,
+    createdAtCursor: drawing.createdAtCursor ?? replayCursor,
+  };
+  validateDrawing(normalized);
+  return normalized;
 }
 
 export function clampDrawingToCursor(

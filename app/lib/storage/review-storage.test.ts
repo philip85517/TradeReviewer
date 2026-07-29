@@ -23,7 +23,7 @@ const drawing: Drawing = {
 describe("review storage", () => {
   beforeEach(() => localStorage.clear());
 
-  it("round-trips versioned review state without losing drawings", () => {
+  it("writes version-2 state while accepting the current version-1 workspace input", () => {
     const state: StoredReviewState = {
       version: 1,
       replayCursor: "2025-01-06T00:00:00.000Z",
@@ -34,7 +34,26 @@ describe("review storage", () => {
 
     saveReviewState("episode-1", state);
 
-    expect(loadReviewState("episode-1")).toEqual(state);
+    expect(loadReviewState("episode-1")).toMatchObject({
+      version: 2,
+      episodeId: "episode-1",
+      replayCursor: state.replayCursor,
+      timeframe: "1D",
+      activePanelTab: "stats",
+      thesis: state.thesis,
+    });
+    expect(loadReviewState("episode-1")?.drawings[0]).toMatchObject({
+      version: 2,
+      episodeId: "episode-1",
+      name: "price-label",
+      zIndex: 0,
+    });
+    expect(
+      localStorage.getItem("trade-reviewer:review:v1:episode-1"),
+    ).toBeNull();
+    expect(
+      localStorage.getItem("trade-reviewer:review:v2:episode-1"),
+    ).not.toBeNull();
   });
 
   it("migrates legacy drawings to the saved replay knowledge boundary", () => {
@@ -51,8 +70,16 @@ describe("review storage", () => {
       }),
     );
 
-    expect(
-      loadReviewState("legacy")?.drawings[0].createdAtCursor,
-    ).toBe("2025-01-10T00:00:00.000Z");
+    expect(loadReviewState("legacy")).toMatchObject({
+      version: 2,
+      episodeId: "legacy",
+      activePanelTab: "stats",
+    });
+    expect(loadReviewState("legacy")?.drawings[0]).toMatchObject({
+      createdAtCursor: "2025-01-10T00:00:00.000Z",
+      version: 2,
+      episodeId: "legacy",
+    });
+    expect(localStorage.getItem("trade-reviewer:review:v2:legacy")).not.toBeNull();
   });
 });

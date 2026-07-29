@@ -1086,10 +1086,49 @@ input:focus-visible {
   z-index: 3;
 }
 
+.drawing-canvas canvas {
+  width: 100%;
+  height: 100%;
+}
+
 .drawing-canvas.drawing-mode {
   pointer-events: auto;
   cursor: crosshair;
 }
+
+.drawing-text-editor {
+  position: absolute;
+  z-index: 2;
+  min-width: 120px;
+  border: 1px solid var(--blue);
+  border-radius: 4px;
+  padding: 3px 6px;
+  color: var(--text);
+  background: #101722;
+  font: 12px var(--font-geist-sans);
+}
+
+.drawing-layers-panel {
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+}
+
+.drawing-layer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px;
+  padding: 5px;
+  border: 1px solid var(--line-soft);
+  border-radius: 5px;
+}
+
+.drawing-layer.selected { border-color: var(--blue); }
+.drawing-layer-select, .drawing-layer-actions button { border: 0; color: var(--muted); background: transparent; cursor: pointer; }
+.drawing-layer input { min-width: 0; border: 0; color: var(--text); background: transparent; font: 10px var(--font-geist-sans); }
+.drawing-layer-actions { grid-column: 1 / -1; display: flex; gap: 2px; }
+.drawing-layer-actions button:disabled { opacity: .4; cursor: not-allowed; }
+.drawing-layers-empty { padding: 12px; color: var(--muted); font-size: 11px; }
 
 .chart-ohlc {
   position: absolute;

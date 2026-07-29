@@ -9,6 +9,7 @@ import type {
 } from "lightweight-charts";
 
 import type { Drawing, DrawingTool } from "../../lib/chart/drawings";
+import type { DrawingCommand } from "../../lib/chart/drawing-commands";
 import type { Candle } from "../../lib/market/types";
 import type { TradeExecution } from "../../lib/trades/types";
 import {
@@ -23,7 +24,12 @@ type Props = {
   averageCost: number;
   drawings: Drawing[];
   activeTool: DrawingTool;
-  onAddDrawing: (drawing: Drawing) => void;
+  episodeId?: string;
+  selectedDrawingId?: string | null;
+  plannedRiskAmount?: string;
+  onSelectDrawing?: (id: string | null) => void;
+  onCommand?: (command: DrawingCommand) => void;
+  onAddDrawing?: (drawing: Drawing) => void;
 };
 
 type CrosshairCandle = Pick<
@@ -42,6 +48,11 @@ export function ReplayChart({
   averageCost,
   drawings,
   activeTool,
+  episodeId,
+  selectedDrawingId,
+  plannedRiskAmount,
+  onSelectDrawing,
+  onCommand,
   onAddDrawing,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -318,10 +329,15 @@ export function ReplayChart({
       </div>
       <div ref={containerRef} className="lightweight-chart" />
       <DrawingCanvas
+        episodeId={episodeId}
         candles={candles}
         cursor={cursor}
         drawings={drawings}
         activeTool={activeTool}
+        selectedDrawingId={selectedDrawingId}
+        plannedRiskAmount={plannedRiskAmount}
+        onSelectDrawing={onSelectDrawing}
+        onCommand={onCommand}
         onAddDrawing={onAddDrawing}
         coordinateAdapter={coordinateAdapter}
         coordinateVersion={coordinateVersion}

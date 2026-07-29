@@ -86,3 +86,55 @@ Implementation commit: `e3e706db21f5b9223daf9ae02483e6c924bb42df`
 - Fullscreen is injected as an optional hook result; the workspace element and
   persisted chart/data inputs intentionally remain unwired until Task 10, per
   the approved migration constraint.
+
+## Remediation round 1
+
+### Scope addressed
+
+- Status-aware market-data fallback copy: only `not-requested` says no request
+  was made; partial, empty, syncing, and failed states each report their real
+  condition while retaining the limitation reason.
+- Fullscreen request and exit failures are caught by the hook and returned as a
+  safe `false` result with recoverable error state. The toolbar also catches an
+  injected rejected toggle and announces it with a live status message.
+- Unsupported fullscreen controls now expose a concise title and accessible
+  disabled reason.
+- Search listens for Escape at the dialog/document level, so closing works from
+  result options as well as the search field and restores trigger focus.
+- Fullscreen state initializes from an already-fullscreen target.
+- The first-run test now proves a non-demo imported instrument excludes both
+  the bundled demo result and its selectable ID.
+
+### RED evidence
+
+```sh
+npm run test:unit -- app/components/chart/chart-toolbar.test.tsx app/components/chart/instrument-search-popover.test.tsx app/components/chart/market-data-popover.test.tsx app/components/chart/chart-settings-popover.test.tsx app/components/chart/use-fullscreen.test.tsx
+```
+
+Result before the remediation implementation: 4 files failed, 8 tests failed.
+The failures covered status-matrix copy, Escape from a focused result,
+fullscreen request rejection, initial fullscreen synchronization, and missing
+toolbar feedback for a rejected injected toggle.
+
+### GREEN and verification evidence
+
+```sh
+# focused Task 8 suite
+# 5 files passed, 23 tests passed
+
+npm run typecheck
+# exit 0
+
+npm run lint
+# exit 0
+
+npm run test:unit
+# 50 files passed, 240 tests passed
+
+git diff --check
+# exit 0
+```
+
+Remediation implementation commit:
+`c49bd0085b650d6b49c4618aa914ea7c024383d6`
+(`fix: harden chart toolbar feedback`).

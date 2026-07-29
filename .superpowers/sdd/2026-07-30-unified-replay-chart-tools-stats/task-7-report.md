@@ -144,3 +144,46 @@ npm run lint
 git diff --check
 # exit 0
 ```
+
+## Review remediation — round 3
+
+Implementation commit: `c7342cbb08427e921a9ffb6d2f30755c1fdd8b88`
+
+- Installed the native `.chart-stage` capture listeners once per mount instead
+  of removing and reinstalling them after every drag/preview render.
+- Kept the stable listeners current through a layout-synchronized handler ref,
+  so changes to tools, drawings, cursor, coordinate adapters, and callbacks
+  are visible without listener churn.
+- Moved transient start-anchor, drag, and preview coordination into refs that
+  are updated synchronously before React schedules visual state. A native
+  pointerdown, pointermove, and pointerup dispatched in one event batch now
+  observes the current interaction and emits exactly one replacement command.
+
+### Round 3 RED evidence
+
+```sh
+npm run test:unit -- app/components/chart/drawing-canvas.test.tsx
+# 1 failed, 13 passed
+```
+
+The same-`act` native pointer sequence selected the drawing but emitted no
+replacement because move/up read the pre-pointerdown `drag` closure.
+
+### Round 3 verification
+
+```sh
+npm run test:unit -- app/components/chart/drawing-canvas.test.tsx app/components/chart/drawing-layers-panel.test.tsx app/components/chart/chart-toolbar.test.tsx
+# 3 files passed, 17 tests passed
+
+npm run test:unit
+# 46 files passed, 218 tests passed
+
+npm run typecheck
+# exit 0
+
+npm run lint
+# exit 0, no warnings
+
+git diff --check
+# exit 0
+```

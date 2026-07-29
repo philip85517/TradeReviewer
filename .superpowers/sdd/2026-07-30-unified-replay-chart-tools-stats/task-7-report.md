@@ -100,3 +100,47 @@ npm run lint
 git diff --check
 # exit 0
 ```
+
+## Review remediation — round 2
+
+Implementation commit: `7d287b891692e432d044ed22fbe54bee87fdf284`
+
+- Kept the bitmap drawing overlay pointer-transparent in cursor mode so the
+  lightweight chart continues to receive pan, scale, and crosshair gestures.
+- Added cursor-only native capture listeners on the containing `.chart-stage`
+  and routed their coordinates through the same selection, text-edit, handle,
+  and whole-drawing gesture functions used by the targetable creation canvas.
+- Capture listeners neither prevent default nor stop propagation, and they
+  ignore events originating from the inline text editor.
+- Made the inline text editor explicitly pointer-targetable even though its
+  overlay parent is transparent.
+
+### Round 2 RED evidence
+
+```sh
+npm run test:unit -- app/components/chart/drawing-canvas.test.tsx
+# 7 failed, 7 passed
+```
+
+The failures showed that stage-targeted cursor events did not select drawings,
+open text editing, or produce whole/handle replacement commands. The
+creation-mode canvas tests remained green.
+
+### Round 2 verification
+
+```sh
+npm run test:unit -- app/components/chart/drawing-canvas.test.tsx app/components/chart/drawing-layers-panel.test.tsx app/components/chart/chart-toolbar.test.tsx
+# 3 files passed, 17 tests passed
+
+npm run test:unit
+# 46 files passed, 218 tests passed
+
+npm run typecheck
+# exit 0
+
+npm run lint
+# exit 0, no warnings
+
+git diff --check
+# exit 0
+```

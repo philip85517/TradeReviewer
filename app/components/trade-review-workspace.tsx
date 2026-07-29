@@ -20,7 +20,12 @@ import type {
   DemoReplayFrame,
   DemoReplayMode,
 } from "../lib/demo/replay-frame";
-import { parseFutuWorkbook } from "../lib/import/futu";
+import type { StatementParseResult } from "../lib/import/contracts";
+import {
+  enrichStatementImport,
+  type EnrichedImportResult,
+} from "../lib/import/enrich-import";
+import { parseBrokerStatement } from "../lib/import/dispatcher";
 import {
   createImportPreview,
   type ImportPreview,
@@ -81,7 +86,10 @@ import { ImportConfirmDialog } from "./import/import-confirm-dialog";
 import { ImportHistoryDialog } from "./import/import-history-dialog";
 import { ReplayChart } from "./chart/replay-chart";
 import { ReplayControls } from "./replay/replay-controls";
-import { EpisodeSidebar } from "./review/episode-sidebar";
+import {
+  EpisodeSidebar,
+  type ImportPhase,
+} from "./review/episode-sidebar";
 import { ImportedEpisodeReview } from "./review/imported-episode-review";
 import { ThesisPanel } from "./review/thesis-panel";
 import {
@@ -148,6 +156,10 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   const [pendingImport, setPendingImport] = useState<ImportPreview | null>(
     null,
   );
+  const [pendingParsedImport, setPendingParsedImport] =
+    useState<StatementParseResult | null>(null);
+  const [pendingEnrichedImport, setPendingEnrichedImport] =
+    useState<EnrichedImportResult | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [importHistory, setImportHistory] = useState<ImportHistoryEntry[]>(
     [],
@@ -170,6 +182,8 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   const [libraryTarget, setLibraryTarget] =
     useState<TradeLibraryTarget>();
   const [importing, setImporting] = useState(false);
+  const [importPhase, setImportPhase] = useState<ImportPhase>("idle");
+  const [retryingUnresolved, setRetryingUnresolved] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const replayRequestSequence = useRef(0);
   const marketDataRequestSequences = useRef<Record<string, number>>({});
@@ -569,13 +583,20 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     setRedoHistory((history) => history.slice(0, -1));
   }
 
-  async function startMarketDataUpdate(instrumentIds: string[]) {
+  async function startMarketDataUpdate(
+    instrumentIds: string[],
+    options: {
+      executions?: TradeExecution[];
+      refreshMetadata?: boolean;
+    } = {},
+  ) {
     if (instrumentIds.length === 0) return;
+    const executions = options.executions ?? importedExecutions;
     const summariesById = new Map(
-      buildInstrumentTradeSummaries([
-        ...importedExecutions,
-        ...(pendingImport?.records ?? []),
-      ]).map((item) => [item.instrument.id, item]),
+      buildInstrumentTradeSummaries(executions).map((item) => [
+        item.instrument.id,
+        item,
+      ]),
     );
     setMarketDataStatuses((current) => ({
       ...current,
@@ -618,17 +639,20 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
           if (!SUPPORTED_MARKETS.has(normalizedMarket as SupportedMarket)) {
             throw new Error(`暂不支持 ${instrument.market} 市场行情`);
           }
-          void refreshInstrumentMetadata(
-            {
-              market: normalizedMarket as SupportedMarket,
-              symbol: instrument.symbol,
-            },
-            {
-              repository: new IndexedDbInstrumentMetadataRepository(),
-              fetcher: fetch,
-              signal: abortController.signal,
-            },
-          ).catch(() => undefined);
+          if (options.refreshMetadata) {
+            void refreshInstrumentMetadata(
+              {
+                market: normalizedMarket as SupportedMarket,
+                symbol: instrument.symbol,
+              },
+              {
+                repository:
+                  new IndexedDbInstrumentMetadataRepository(),
+                fetcher: fetch,
+                signal: abortController.signal,
+              },
+            ).catch(() => undefined);
+          }
           const result = await syncMarketData({
             instrumentId,
             symbol: instrument.symbol,
@@ -725,19 +749,76 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   }
   async function parseImport(file: File) {
     setImporting(true);
+    setImportPhase("detecting");
     setImportError(null);
+    setPendingImport(null);
+    setPendingParsedImport(null);
+    setPendingEnrichedImport(null);
     try {
-      const result = parseFutuWorkbook(await file.arrayBuffer(), {
-        fileName: file.name,
-        sourceTimezone: "Asia/Shanghai",
+      await Promise.resolve();
+      setImportPhase("parsing");
+      const parsed = await parseBrokerStatement(file);
+      if (parsed.broker === "unknown" || parsed.blocked) {
+        const message = parsed.diagnostics.find(
+          (diagnostic) => diagnostic.severity === "error",
+        )?.message;
+        throw new Error(message ?? "暂时无法识别这个交易记录");
+      }
+      setPendingParsedImport(parsed);
+      setImportPhase("classifying");
+      await Promise.resolve();
+      setImportPhase("resolving");
+      const enriched = await enrichStatementImport(parsed, {
+        repository: new IndexedDbInstrumentMetadataRepository(),
       });
-      setPendingImport(createImportPreview(file.name, result));
-    } catch {
+      const preview = createImportPreview(file.name, enriched);
+      setPendingEnrichedImport(enriched);
+      setPendingImport(preview);
+      setImportPhase("ready");
+    } catch (error) {
       setImportError(
-        "暂时无法识别这个文件。请确认它是已适配券商导出的 XLSX 交易记录。",
+        error instanceof Error
+          ? error.message
+          : "暂时无法识别这个文件。请确认它来自富途、Tiger 或招商证券。",
       );
+      setImportPhase("idle");
     } finally {
       setImporting(false);
+    }
+  }
+
+  async function retryUnresolved(instrumentIds: string[]) {
+    if (
+      instrumentIds.length === 0 ||
+      !pendingParsedImport ||
+      !pendingEnrichedImport ||
+      !pendingImport
+    ) {
+      return;
+    }
+    setRetryingUnresolved(true);
+    setImportError(null);
+    try {
+      const enriched = await enrichStatementImport(pendingParsedImport, {
+        repository: new IndexedDbInstrumentMetadataRepository(),
+        forceRefresh: true,
+        onlyInstrumentIds: instrumentIds,
+        previous: pendingEnrichedImport,
+      });
+      const preview = createImportPreview(
+        pendingImport.fileName,
+        enriched,
+      );
+      setPendingEnrichedImport(enriched);
+      setPendingImport(preview);
+    } catch (error) {
+      setImportError(
+        error instanceof Error
+          ? error.message
+          : "重新查询证券名称失败，请稍后再试。",
+      );
+    } finally {
+      setRetryingUnresolved(false);
     }
   }
 
@@ -758,12 +839,20 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     const historyEntry: ImportHistoryEntry = {
       id: pendingImport.id,
       fileName: pendingImport.fileName,
+      sourceLabel: pendingImport.sourceLabel,
       importedAt,
       firstTradeAt: pendingImport.firstTradeAt,
       lastTradeAt: pendingImport.lastTradeAt,
       tradeCount: pendingImport.tradeCount,
       instrumentCount: pendingImport.instrumentCount,
       excludedInstrumentCount: pendingImport.excludedInstrumentCount,
+      excludedRecordCount: pendingImport.exclusionGroups.reduce(
+        (total, group) => total + group.count,
+        0,
+      ),
+      duplicateTradeCount: pendingImport.duplicateTradeCount,
+      unresolvedInstrumentCount:
+        pendingImport.unresolvedInstrumentCount,
     };
 
     try {
@@ -824,8 +913,13 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     if (firstImported) {
       selectInstrument(firstImported.instrument.id);
     }
-    void startMarketDataUpdate(automaticSyncIds);
+    void startMarketDataUpdate(automaticSyncIds, {
+      executions: mergedExecutions,
+    });
     setPendingImport(null);
+    setPendingParsedImport(null);
+    setPendingEnrichedImport(null);
+    setImportPhase("idle");
   }
 
   function openLibraryEpisode(instrumentId: string, episodeId: string) {
@@ -1018,6 +1112,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
         <EpisodeSidebar
           importedInstruments={importedInstruments}
           importing={importing}
+          importPhase={importPhase}
           importError={importError}
           onImport={parseImport}
           onOpenHistory={() => setShowImportHistory(true)}
@@ -1026,7 +1121,9 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
           onSelectInstrument={selectInstrument}
           marketDataStatuses={marketDataStatuses}
           onUpdateMarketData={(instrumentId) =>
-            void startMarketDataUpdate([instrumentId])
+            void startMarketDataUpdate([instrumentId], {
+              refreshMetadata: true,
+            })
           }
         />
 
@@ -1059,7 +1156,9 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
               onUpdateMarketData={() =>
                 void startMarketDataUpdate([
                   selectedImportedInstrument.instrument.id,
-                ])
+                ], {
+                  refreshMetadata: true,
+                })
               }
             />
           ) : (
@@ -1207,9 +1306,17 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       {pendingImport && (
         <ImportConfirmDialog
           preview={pendingImport}
-          onCancel={() => setPendingImport(null)}
+          onCancel={() => {
+            setPendingImport(null);
+            setPendingParsedImport(null);
+            setPendingEnrichedImport(null);
+            setImportPhase("idle");
+          }}
           onConfirm={confirmImport}
-          onRetryUnresolved={() => {}}
+          onRetryUnresolved={(instrumentIds) =>
+            void retryUnresolved(instrumentIds)
+          }
+          retryingUnresolved={retryingUnresolved}
         />
       )}
       {showImportHistory && (

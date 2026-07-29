@@ -11,15 +11,45 @@ import {
   vi,
 } from "vitest";
 
+import type { EnrichedImportResult } from "../lib/import/enrich-import";
+import type { StatementParseResult } from "../lib/import/contracts";
+import { requiredMarketDataRange } from "../lib/market/sync-range";
 import type { DemoReplayFrame } from "../lib/demo/replay-frame";
 import type { EpisodeReviewRecord } from "../lib/reviews/types";
 import { IndexedDbEpisodeReviewRepository } from "../lib/storage/indexeddb-episode-review-repository";
 import { IndexedDbTagSuggestionRepository } from "../lib/storage/indexeddb-tag-suggestion-repository";
-import { saveImportedExecutions } from "../lib/storage/import-library";
+import {
+  loadImportedExecutions,
+  saveImportedExecutions,
+} from "../lib/storage/import-library";
+import { loadImportHistory } from "../lib/storage/import-history";
 import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-data-repository";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeExecution } from "../lib/trades/types";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
+
+const {
+  mockDispatcher,
+  mockEnrichment,
+  mockMarketDataSync,
+} = vi.hoisted(() => ({
+  mockDispatcher: vi.fn(),
+  mockEnrichment: vi.fn(),
+  mockMarketDataSync: vi.fn(),
+}));
+
+vi.mock("../lib/import/dispatcher", () => ({
+  parseBrokerStatement: mockDispatcher,
+}));
+
+vi.mock("../lib/import/enrich-import", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../lib/import/enrich-import")>()),
+  enrichStatementImport: mockEnrichment,
+}));
+
+vi.mock("../lib/market/sync-service", () => ({
+  syncMarketData: mockMarketDataSync,
+}));
 
 const initialFrame: DemoReplayFrame = {
   cursorIndex: 0,
@@ -57,6 +87,89 @@ const nextFrame: DemoReplayFrame = {
   canGoBack: true,
 };
 
+const cmsExecution: TradeExecution = {
+  id: "cms:fixture:7",
+  source: {
+    platform: "china-merchants",
+    page: 2,
+    row: 7,
+    sourceOrder: 3,
+    timePrecision: "date-only",
+    fileName: "招商证券.pdf",
+    fileFingerprint: "cms-fixture",
+    sourceTimestampText: "2026-03-01",
+    sourceTimezone: "Asia/Shanghai",
+  },
+  accountId: "cms:account-1",
+  accountLabel: "招商证券 · 账户 1",
+  instrument: {
+    id: "CN-SH:600938",
+    symbol: "600938",
+    name: "名称待行情源补充",
+    market: "CN-SH",
+    currency: "CNY",
+  },
+  side: "buy",
+  executedAt: "2026-03-01T07:00:00.000Z",
+  quantity: "100",
+  price: "15.20",
+  fee: "5",
+};
+
+const cmsUnresolvedExecution: TradeExecution = {
+  ...cmsExecution,
+  id: "cms:fixture:8",
+  source: {
+    ...cmsExecution.source,
+    row: 8,
+    sourceOrder: 4,
+  },
+  instrument: {
+    id: "HK:99999",
+    symbol: "99999",
+    name: "名称待行情源补充",
+    market: "HK",
+    currency: "HKD",
+  },
+};
+
+const cmsParsedResult: StatementParseResult = {
+  broker: "china-merchants",
+  records: [cmsExecution, cmsUnresolvedExecution],
+  candidates: [
+    {
+      market: "CN-SH",
+      symbol: "600938",
+      sourceAssetType: "unknown",
+    },
+    {
+      market: "HK",
+      symbol: "99999",
+      sourceAssetType: "unknown",
+    },
+  ],
+  exclusions: [],
+  diagnostics: [],
+  blocked: false,
+};
+
+const cmsEnrichedResult: EnrichedImportResult = {
+  broker: "china-merchants",
+  importable: [
+    {
+      ...cmsExecution,
+      instrument: {
+        ...cmsExecution.instrument,
+        name: "中国海油",
+      },
+    },
+  ],
+  unresolved: [],
+  exclusions: [],
+  diagnostics: [],
+  cacheHits: 0,
+};
+
 describe("TradeReviewWorkspace", () => {
   afterEach(() => {
     cleanup();
@@ -77,6 +190,156 @@ describe("TradeReviewWorkspace", () => {
         json: async () => nextFrame,
       }),
     );
+    mockDispatcher.mockReset();
+    mockEnrichment.mockReset();
+    mockMarketDataSync.mockReset();
+    mockMarketDataSync.mockResolvedValue({
+      source: "cache",
+      status: "complete",
+      candles: [],
+      requestedRanges: [],
+    });
+  });
+
+  it("imports a recognized PDF locally without asking for stock names", async () => {
+    const user = userEvent.setup();
+    mockDispatcher.mockResolvedValue(cmsParsedResult);
+    mockEnrichment.mockResolvedValue(cmsEnrichedResult);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await user.upload(
+      screen.getByLabelText("导入交易记录"),
+      new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], "招商证券.pdf", {
+        type: "application/pdf",
+      }),
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: "确认导入交易记录" }),
+    ).toBeInTheDocument();
+    expect(mockDispatcher).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "招商证券.pdf" }),
+    );
+    expect(screen.queryByRole("textbox", { name: /股票名称/ }))
+      .not.toBeInTheDocument();
+    expect(
+      vi.mocked(fetch).mock.calls.every(
+        ([input]) => !String(input).includes("招商证券.pdf"),
+      ),
+    ).toBe(true);
+  });
+
+  it("persists only complete records and starts cache-first gap sync for the imported instrument", async () => {
+    const user = userEvent.setup();
+    mockDispatcher.mockResolvedValue(cmsParsedResult);
+    mockEnrichment.mockResolvedValue({
+      ...cmsEnrichedResult,
+      unresolved: [
+        {
+          market: "HK",
+          symbol: "99999",
+          attempts: [
+            {
+              source: "hkex",
+              code: "no-data",
+              message: "未找到证券",
+            },
+          ],
+        },
+      ],
+    });
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await user.upload(
+      screen.getByLabelText("导入交易记录"),
+      new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], "招商证券.pdf", {
+        type: "application/pdf",
+      }),
+    );
+    await user.click(
+      await screen.findByRole("button", {
+        name: "确认导入并开始更新行情",
+      }),
+    );
+
+    expect(loadImportedExecutions()).toEqual([
+      expect.objectContaining({
+        id: "cms:fixture:7",
+        accountId: "cms:account-1",
+        source: expect.objectContaining({
+          sourceOrder: 3,
+          timePrecision: "date-only",
+        }),
+        instrument: expect.objectContaining({
+          id: "CN-SH:600938",
+          name: "中国海油",
+        }),
+      }),
+    ]);
+    expect(mockMarketDataSync).toHaveBeenCalledWith(
+      expect.objectContaining({
+        instrumentId: "CN-SH:600938",
+        required: requiredMarketDataRange(
+          cmsExecution.executedAt,
+          cmsExecution.executedAt,
+          { open: true, market: "CN-SH" },
+        ),
+      }),
+    );
+    expect(loadImportHistory()).toEqual([
+      expect.objectContaining({
+        sourceLabel: "招商证券",
+        tradeCount: 1,
+        instrumentCount: 1,
+        unresolvedInstrumentCount: 1,
+      }),
+    ]);
+    expect(
+      vi.mocked(fetch).mock.calls.some(([input]) =>
+        String(input).includes("/api/instruments/resolve"),
+      ),
+    ).toBe(false);
+  });
+
+  it("retries only selected unresolved canonical instruments while preserving the full result", async () => {
+    const user = userEvent.setup();
+    const firstEnriched: EnrichedImportResult = {
+      ...cmsEnrichedResult,
+      unresolved: [
+        {
+          market: "HK",
+          symbol: "99999",
+          attempts: [],
+        },
+      ],
+    };
+    mockDispatcher.mockResolvedValue(cmsParsedResult);
+    mockEnrichment
+      .mockResolvedValueOnce(firstEnriched)
+      .mockResolvedValueOnce(cmsEnrichedResult);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await user.upload(
+      screen.getByLabelText("导入交易记录"),
+      new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], "招商证券.pdf", {
+        type: "application/pdf",
+      }),
+    );
+    await user.click(
+      await screen.findByRole("button", { name: "重新查询" }),
+    );
+
+    expect(mockEnrichment).toHaveBeenLastCalledWith(
+      cmsParsedResult,
+      expect.objectContaining({
+        forceRefresh: true,
+        onlyInstrumentIds: ["HK:99999"],
+        previous: firstEnriched,
+      }),
+    );
+    expect(
+      await screen.findByText("中国海油（600938）"),
+    ).toBeInTheDocument();
   });
 
   it("advances one candle without revealing the future and preserves the cursor across periods", async () => {
@@ -234,6 +497,27 @@ describe("TradeReviewWorkspace", () => {
         },
       }),
     } as Response);
+    mockMarketDataSync.mockResolvedValueOnce({
+      source: "cache",
+      status: "complete",
+      candles: [
+        {
+          instrumentId: "HK:1810",
+          tradingDate: "2025-01-02",
+          open: "34",
+          high: "35",
+          low: "33",
+          close: "34.5",
+          volume: "1000",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2026-07-29T00:00:00.000Z",
+        },
+      ],
+      requestedRanges: [],
+    });
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
     await screen.findByRole("heading", { name: "小米集团-W（1810）" });

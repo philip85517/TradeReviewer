@@ -1,16 +1,11 @@
-import Decimal from "decimal.js";
-
 import type { Candle } from "../market/types";
 import type { TradeExecution } from "../trades/types";
+import {
+  replayPositionAtPrice,
+  type PositionLedgerSnapshot,
+} from "./position-ledger";
 
-export type ReplayPosition = {
-  quantity: string;
-  averageCost: string;
-  realizedPnl: string;
-  unrealizedPnl: string;
-  fees: string;
-  returnPercent: string;
-};
+export type ReplayPosition = PositionLedgerSnapshot;
 
 export type ReplaySnapshot = {
   cursor: string;
@@ -24,74 +19,6 @@ type ReplayInput = {
   executions: TradeExecution[];
   cursor: string;
 };
-
-function decimalString(value: Decimal) {
-  return value.isZero() ? "0" : value.toDecimalPlaces(8).toString();
-}
-
-function calculatePosition(
-  executions: TradeExecution[],
-  marketPrice: Decimal,
-): ReplayPosition {
-  let quantity = new Decimal(0);
-  let averageCost = new Decimal(0);
-  let realizedPnl = new Decimal(0);
-  let fees = new Decimal(0);
-
-  for (const execution of executions) {
-    const size = new Decimal(execution.quantity).abs();
-    const price = new Decimal(execution.price);
-    fees = fees.plus(execution.fee || 0);
-
-    if (execution.side === "buy") {
-      if (quantity.gte(0)) {
-        const newQuantity = quantity.plus(size);
-        averageCost = newQuantity.isZero()
-          ? new Decimal(0)
-          : averageCost.mul(quantity).plus(price.mul(size)).div(newQuantity);
-        quantity = newQuantity;
-      } else {
-        const covered = Decimal.min(quantity.abs(), size);
-        realizedPnl = realizedPnl.plus(averageCost.minus(price).mul(covered));
-        quantity = quantity.plus(size);
-        if (quantity.isPositive()) averageCost = price;
-        if (quantity.isZero()) averageCost = new Decimal(0);
-      }
-    } else if (quantity.lte(0)) {
-      const newAbsoluteQuantity = quantity.abs().plus(size);
-      averageCost = newAbsoluteQuantity.isZero()
-        ? new Decimal(0)
-        : averageCost
-            .mul(quantity.abs())
-            .plus(price.mul(size))
-            .div(newAbsoluteQuantity);
-      quantity = quantity.minus(size);
-    } else {
-      const closed = Decimal.min(quantity, size);
-      realizedPnl = realizedPnl.plus(price.minus(averageCost).mul(closed));
-      quantity = quantity.minus(size);
-      if (quantity.isNegative()) averageCost = price;
-      if (quantity.isZero()) averageCost = new Decimal(0);
-    }
-  }
-
-  const unrealizedPnl = quantity.isPositive()
-    ? marketPrice.minus(averageCost).mul(quantity)
-    : averageCost.minus(marketPrice).mul(quantity.abs());
-  const costBasis = averageCost.mul(quantity.abs());
-  const returnPercent = costBasis.isZero()
-    ? new Decimal(0)
-    : unrealizedPnl.div(costBasis).mul(100);
-
-  return {
-    quantity: decimalString(quantity),
-    averageCost: decimalString(averageCost),
-    realizedPnl: decimalString(realizedPnl),
-    unrealizedPnl: decimalString(unrealizedPnl),
-    fees: decimalString(fees),
-    returnPercent: decimalString(returnPercent),
-  };
-}
 
 export function createReplaySnapshot({
   candles,
@@ -110,9 +37,9 @@ export function createReplaySnapshot({
     cursor,
     candles: revealedCandles,
     executions: revealedExecutions,
-    position: calculatePosition(
-      revealedExecutions,
-      new Decimal(latestClose),
-    ),
+    position: replayPositionAtPrice({
+      executions: revealedExecutions,
+      markPrice: String(latestClose),
+    }),
   };
 }

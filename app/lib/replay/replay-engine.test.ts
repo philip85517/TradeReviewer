@@ -53,8 +53,10 @@ describe("createReplaySnapshot", () => {
       averageCost: "10",
       realizedPnl: "0",
       unrealizedPnl: "200",
+      netPnl: "198",
       fees: "2",
-      returnPercent: "20",
+      grossCapitalDeployed: "1000",
+      returnPercent: "19.8",
     });
     expect(JSON.stringify(snapshot)).not.toContain("2025-01-07");
   });

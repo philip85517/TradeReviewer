@@ -259,60 +259,156 @@ export function DrawingCanvas({
     setEditor(null);
   }
 
+  function pointFromClient(clientX: number, clientY: number) {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+    const rect = canvas.getBoundingClientRect();
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  }
+
+  function handlePointerDown(clientX: number, clientY: number) {
+    if (candles.length === 0) return;
+    const point = pointFromClient(clientX, clientY);
+    if (!point) return;
+    const anchor = anchorFromPoint(point.x, point.y);
+    if (activeTool === "cursor") {
+      const drawing = hitDrawing(point);
+      onSelectDrawing?.(drawing?.id ?? null);
+      if (drawing?.tool === "text" && !drawing.locked) {
+        const textPoint = pointFor(drawing.anchors[0]);
+        setEditor({
+          anchor: drawing.anchors[0],
+          x: textPoint.x,
+          y: textPoint.y,
+          drawing,
+          value: drawing.text ?? "",
+        });
+        return;
+      }
+      if (drawing && !drawing.locked) beginEdit(drawing, point);
+      return;
+    }
+    if (activeTool === "text") {
+      setEditor({ anchor, x: point.x, y: point.y, value: "" });
+      return;
+    }
+    if (
+      activeTool === "horizontal-line" ||
+      activeTool === "vertical-line" ||
+      activeTool === "price-label"
+    ) {
+      emitAdd({
+        id: drawingId(),
+        tool: activeTool,
+        anchors: [anchor],
+        style: styleFor(activeTool),
+        hidden: false,
+        locked: false,
+        visibleOn: "all",
+        stage: "during-replay",
+      });
+      return;
+    }
+    setStartAnchor(anchor);
+  }
+
+  function handlePointerMove(clientX: number, clientY: number) {
+    if (!drag) return;
+    const point = pointFromClient(clientX, clientY);
+    if (!point) return;
+    const anchor = anchorFromPoint(point.x, point.y);
+    let anchors: DrawingAnchor[];
+    if (drag.anchorIndex !== null) {
+      anchors = drag.drawing.anchors.map((item, index) =>
+        index === drag.anchorIndex ? anchor : item,
+      );
+    } else {
+      const requestedX = point.x - drag.originPoint.x;
+      const requestedY = point.y - drag.originPoint.y;
+      const cursorX = coordinateAdapter?.timeToX(cursor);
+      const latestX = Math.max(
+        ...drag.drawing.anchors.map((item) => pointFor(item).x),
+      );
+      const translatedX =
+        cursorX === null || cursorX === undefined
+          ? requestedX
+          : Math.min(requestedX, cursorX - latestX);
+      anchors = drag.drawing.anchors.map((item) => {
+        const projected = pointFor(item);
+        return anchorFromPoint(
+          projected.x + translatedX,
+          projected.y + requestedY,
+        );
+      });
+    }
+    setPreview({ ...drag.drawing, anchors });
+  }
+
+  function handlePointerUp(clientX: number, clientY: number) {
+    if (drag) {
+      if (preview) emitReplace(preview);
+      setDrag(null);
+      setPreview(null);
+      return;
+    }
+    if (!startAnchor) return;
+    const point = pointFromClient(clientX, clientY);
+    if (!point) return;
+    createDrawing(startAnchor, anchorFromPoint(point.x, point.y));
+    setStartAnchor(null);
+  }
+
+  useEffect(() => {
+    if (activeTool !== "cursor") return;
+    const canvas = canvasRef.current;
+    const stage = canvas?.closest(".chart-stage");
+    if (!stage) return;
+    const fromTextEditor = (event: Event) =>
+      event.target instanceof Element &&
+      Boolean(event.target.closest(".drawing-text-editor"));
+    const onPointerDown = (event: Event) => {
+      if (fromTextEditor(event)) return;
+      const pointer = event as PointerEvent;
+      handlePointerDown(pointer.clientX, pointer.clientY);
+    };
+    const onPointerMove = (event: Event) => {
+      if (fromTextEditor(event)) return;
+      const pointer = event as PointerEvent;
+      handlePointerMove(pointer.clientX, pointer.clientY);
+    };
+    const onPointerUp = (event: Event) => {
+      if (fromTextEditor(event)) return;
+      const pointer = event as PointerEvent;
+      handlePointerUp(pointer.clientX, pointer.clientY);
+    };
+    stage.addEventListener("pointerdown", onPointerDown, true);
+    stage.addEventListener("pointermove", onPointerMove, true);
+    stage.addEventListener("pointerup", onPointerUp, true);
+    return () => {
+      stage.removeEventListener("pointerdown", onPointerDown, true);
+      stage.removeEventListener("pointermove", onPointerMove, true);
+      stage.removeEventListener("pointerup", onPointerUp, true);
+    };
+  });
+
   const drawingMode = activeTool !== "cursor";
   return (
     <div className={`drawing-canvas ${drawingMode ? "drawing-mode" : ""}`}>
-      <canvas ref={canvasRef} role="img" aria-label="绘图画布" onPointerDown={(event) => {
-        if (candles.length === 0) return;
-        const rect = event.currentTarget.getBoundingClientRect(); const point = { x: event.clientX - rect.left, y: event.clientY - rect.top }; const anchor = anchorFromPoint(point.x, point.y);
-        if (activeTool === "cursor") {
-          const drawing = hitDrawing(point); onSelectDrawing?.(drawing?.id ?? null);
-          if (drawing?.tool === "text" && !drawing.locked) { setEditor({ anchor: drawing.anchors[0], x: pointFor(drawing.anchors[0]).x, y: pointFor(drawing.anchors[0]).y, drawing, value: drawing.text ?? "" }); return; }
-          if (drawing && !drawing.locked) beginEdit(drawing, point);
-          return;
+      <canvas
+        ref={canvasRef}
+        role="img"
+        aria-label="绘图画布"
+        onPointerDown={(event) =>
+          handlePointerDown(event.clientX, event.clientY)
         }
-        if (activeTool === "text") { setEditor({ anchor, x: point.x, y: point.y, value: "" }); return; }
-        if (activeTool === "horizontal-line" || activeTool === "vertical-line" || activeTool === "price-label") { emitAdd({ id: drawingId(), tool: activeTool, anchors: [anchor], style: styleFor(activeTool), hidden: false, locked: false, visibleOn: "all", stage: "during-replay" }); return; }
-        setStartAnchor(anchor);
-      }} onPointerMove={(event) => {
-        if (!drag) return;
-        const rect = event.currentTarget.getBoundingClientRect();
-        const point = {
-          x: event.clientX - rect.left,
-          y: event.clientY - rect.top,
-        };
-        const anchor = anchorFromPoint(point.x, point.y);
-        let anchors: DrawingAnchor[];
-        if (drag.anchorIndex !== null) {
-          anchors = drag.drawing.anchors.map((item, index) =>
-            index === drag.anchorIndex ? anchor : item,
-          );
-        } else {
-          const requestedX = point.x - drag.originPoint.x;
-          const requestedY = point.y - drag.originPoint.y;
-          const cursorX = coordinateAdapter?.timeToX(cursor);
-          const latestX = Math.max(
-            ...drag.drawing.anchors.map((item) => pointFor(item).x),
-          );
-          const translatedX =
-            cursorX === null || cursorX === undefined
-              ? requestedX
-              : Math.min(requestedX, cursorX - latestX);
-          anchors = drag.drawing.anchors.map((item) => {
-            const projected = pointFor(item);
-            return anchorFromPoint(
-              projected.x + translatedX,
-              projected.y + requestedY,
-            );
-          });
+        onPointerMove={(event) =>
+          handlePointerMove(event.clientX, event.clientY)
         }
-        setPreview({ ...drag.drawing, anchors });
-      }} onPointerUp={(event) => {
-        if (drag) { if (preview) emitReplace(preview); setDrag(null); setPreview(null); return; }
-        if (!startAnchor) return;
-        const rect = event.currentTarget.getBoundingClientRect(); createDrawing(startAnchor, anchorFromPoint(event.clientX - rect.left, event.clientY - rect.top)); setStartAnchor(null);
-      }} />
-      {editor && <input autoFocus className="drawing-text-editor" aria-label="文字标注" value={editor.value} style={{ left: editor.x + 4, top: editor.y - 24 }} onChange={(event) => setEditor({ ...editor, value: event.target.value })} onBlur={commitText} onKeyDown={(event) => { if (event.key === "Enter") commitText(); if (event.key === "Escape") setEditor(null); }} />}
+        onPointerUp={(event) =>
+          handlePointerUp(event.clientX, event.clientY)
+        }
+      />
+      {editor && <input autoFocus className="drawing-text-editor" aria-label="文字标注" value={editor.value} style={{ left: editor.x + 4, top: editor.y - 24, pointerEvents: "auto" }} onChange={(event) => setEditor({ ...editor, value: event.target.value })} onBlur={commitText} onKeyDown={(event) => { if (event.key === "Enter") commitText(); if (event.key === "Escape") setEditor(null); }} />}
     </div>
   );
 }

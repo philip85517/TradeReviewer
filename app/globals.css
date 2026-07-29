@@ -1098,6 +1098,7 @@ input:focus-visible {
 
 .drawing-text-editor {
   position: absolute;
+  pointer-events: auto;
   z-index: 2;
   min-width: 120px;
   border: 1px solid var(--blue);

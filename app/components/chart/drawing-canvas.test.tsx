@@ -30,13 +30,18 @@ function renderCanvas(overrides: Record<string, unknown> = {}) {
     coordinateAdapter: adapter,
     ...overrides,
   };
-  render(<DrawingCanvas {...(props as Parameters<typeof DrawingCanvas>[0])} />);
+  render(
+    <div className="chart-stage" data-testid="chart-stage">
+      <DrawingCanvas {...(props as Parameters<typeof DrawingCanvas>[0])} />
+    </div>,
+  );
   const canvas = screen.getByRole("img", { name: "绘图画布" });
+  const stage = screen.getByTestId("chart-stage");
   vi.spyOn(canvas, "getBoundingClientRect").mockReturnValue({
     x: 0, y: 0, width: 100, height: 100, top: 0, left: 0,
     right: 100, bottom: 100, toJSON: () => ({}),
   });
-  return { canvas, props };
+  return { canvas, props, stage };
 }
 
 describe("drawing interactions", () => {
@@ -117,15 +122,24 @@ describe("drawing interactions", () => {
       ], style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
       hidden: false, locked: false, visibleOn: "all", stage: "during-replay",
     };
-    const { canvas } = renderCanvas({
+    const { stage } = renderCanvas({
       activeTool: "cursor", drawings: [drawing], selectedDrawingId: "line-1", onCommand, onSelectDrawing,
     });
 
-    fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 10, clientY: 100 });
-    fireEvent.pointerMove(canvas, { pointerId: 1, clientX: 20, clientY: 90 });
-    fireEvent.pointerUp(canvas, { pointerId: 1, clientX: 20, clientY: 90 });
+    const pointerDown = new MouseEvent("pointerdown", {
+      bubbles: true,
+      clientX: 10,
+      clientY: 100,
+    });
+    const preventDefault = vi.spyOn(pointerDown, "preventDefault");
+    const stopPropagation = vi.spyOn(pointerDown, "stopPropagation");
+    fireEvent(stage, pointerDown);
+    fireEvent.pointerMove(stage, { pointerId: 1, clientX: 20, clientY: 90 });
+    fireEvent.pointerUp(stage, { pointerId: 1, clientX: 20, clientY: 90 });
 
     expect(onSelectDrawing).toHaveBeenCalledWith("line-1");
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(stopPropagation).not.toHaveBeenCalled();
     expect(onCommand).toHaveBeenCalledTimes(1);
     expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
       type: "replace",
@@ -142,13 +156,45 @@ describe("drawing interactions", () => {
       style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
       hidden: false, locked: true, visibleOn: "all", stage: "during-replay",
     };
-    const { canvas } = renderCanvas({ activeTool: "cursor", drawings: [drawing], onCommand });
+    const { stage } = renderCanvas({ activeTool: "cursor", drawings: [drawing], onCommand });
 
-    fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 10, clientY: 100 });
-    fireEvent.pointerMove(canvas, { pointerId: 1, clientX: 20, clientY: 90 });
-    fireEvent.pointerUp(canvas, { pointerId: 1, clientX: 20, clientY: 90 });
+    fireEvent.pointerDown(stage, { pointerId: 1, clientX: 10, clientY: 100 });
+    fireEvent.pointerMove(stage, { pointerId: 1, clientX: 20, clientY: 90 });
+    fireEvent.pointerUp(stage, { pointerId: 1, clientX: 20, clientY: 90 });
 
     expect(onCommand).not.toHaveBeenCalled();
+  });
+
+  it("opens and edits selected text from a cursor-mode stage event", () => {
+    const onCommand = vi.fn();
+    const drawing: Drawing = {
+      id: "text-1",
+      tool: "text",
+      text: "原注释",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      style: { color: "#2f80ed", lineWidth: 1.5, opacity: 1 },
+      hidden: false,
+      locked: false,
+      visibleOn: "all",
+      stage: "during-replay",
+    };
+    const { stage } = renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      onCommand,
+    });
+
+    fireEvent.pointerDown(stage, { clientX: 10, clientY: 100 });
+    const editor = screen.getByRole("textbox", { name: "文字标注" });
+    expect(editor).toHaveStyle({ pointerEvents: "auto" });
+    fireEvent.change(editor, { target: { value: "更新注释" } });
+    fireEvent.keyDown(editor, { key: "Enter" });
+
+    expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
+      type: "replace",
+      drawing: expect.objectContaining({ id: "text-1", text: "更新注释" }),
+    }));
   });
 
   it("moves a whole drawing in time and price with one replacement command", () => {
@@ -168,7 +214,7 @@ describe("drawing interactions", () => {
       ], style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
       hidden: false, locked: false, visibleOn: "all", stage: "during-replay",
     };
-    const { canvas } = renderCanvas({
+    const { stage } = renderCanvas({
       activeTool: "cursor",
       cursor: "2026-01-05T00:00:00.000Z",
       candles: [
@@ -181,9 +227,9 @@ describe("drawing interactions", () => {
       onCommand,
     });
 
-    fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 20, clientY: 90 });
-    fireEvent.pointerMove(canvas, { pointerId: 1, clientX: 50, clientY: 70 });
-    fireEvent.pointerUp(canvas, { pointerId: 1, clientX: 50, clientY: 70 });
+    fireEvent.pointerDown(stage, { pointerId: 1, clientX: 20, clientY: 90 });
+    fireEvent.pointerMove(stage, { pointerId: 1, clientX: 50, clientY: 70 });
+    fireEvent.pointerUp(stage, { pointerId: 1, clientX: 50, clientY: 70 });
 
     expect(onCommand).toHaveBeenCalledTimes(1);
     expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
@@ -231,13 +277,13 @@ describe("drawing interactions", () => {
       ], style: { color: "#2f80ed", lineWidth: 1.5, opacity: 1 },
       hidden: false, locked: false, visibleOn: "all", stage: "during-replay",
     };
-    const { canvas } = renderCanvas({
+    const { stage } = renderCanvas({
       activeTool: "cursor", drawings: [drawing], selectedDrawingId: drawing.id, onCommand,
     });
 
-    fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 80, clientY: 200 - initialStop });
-    fireEvent.pointerMove(canvas, { pointerId: 1, clientX: 80, clientY: 200 - crossedStop });
-    fireEvent.pointerUp(canvas, { pointerId: 1, clientX: 80, clientY: 200 - crossedStop });
+    fireEvent.pointerDown(stage, { pointerId: 1, clientX: 80, clientY: 200 - initialStop });
+    fireEvent.pointerMove(stage, { pointerId: 1, clientX: 80, clientY: 200 - crossedStop });
+    fireEvent.pointerUp(stage, { pointerId: 1, clientX: 80, clientY: 200 - crossedStop });
 
     expect(onCommand).toHaveBeenCalledTimes(1);
     expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
@@ -263,13 +309,13 @@ describe("drawing interactions", () => {
       ], style: { color: "#2f80ed", lineWidth: 1.5, opacity: 1 },
       hidden: false, locked: false, visibleOn: "all", stage: "during-replay",
     };
-    const { canvas } = renderCanvas({
+    const { stage } = renderCanvas({
       activeTool: "cursor", drawings: [drawing], selectedDrawingId: drawing.id, onCommand,
     });
 
-    fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 80, clientY: 200 - initialTarget });
-    fireEvent.pointerMove(canvas, { pointerId: 1, clientX: 80, clientY: 200 - crossedTarget });
-    fireEvent.pointerUp(canvas, { pointerId: 1, clientX: 80, clientY: 200 - crossedTarget });
+    fireEvent.pointerDown(stage, { pointerId: 1, clientX: 80, clientY: 200 - initialTarget });
+    fireEvent.pointerMove(stage, { pointerId: 1, clientX: 80, clientY: 200 - crossedTarget });
+    fireEvent.pointerUp(stage, { pointerId: 1, clientX: 80, clientY: 200 - crossedTarget });
 
     expect(onCommand).toHaveBeenCalledTimes(1);
     expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({

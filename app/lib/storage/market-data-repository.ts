@@ -22,7 +22,7 @@ export type IntervalMarketDataCommit = {
   interval: NativeMarketInterval;
   candles: MarketCandleRecord[];
   coverage: IntervalCoverageSegment[];
-  providerSymbol: {
+  providerSymbol?: {
     provider: MarketDataProviderId;
     symbol: string;
   };

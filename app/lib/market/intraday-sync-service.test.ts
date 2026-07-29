@@ -221,6 +221,9 @@ describe("syncIntradayMarketData", () => {
       }),
     ]);
     expect(
+      await repo.getProviderSymbol("HK:1810", "tencent"),
+    ).toBeUndefined();
+    expect(
       resolveTimeframeAvailability({
         intradayCandles: result.candles,
         dailyCandles: [],

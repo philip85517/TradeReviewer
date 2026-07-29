@@ -107,19 +107,6 @@ function replaceCoverageForRange(
   );
 }
 
-async function providerSymbolForHistoryLimit(
-  repository: MarketDataRepository,
-  instrumentId: string,
-  symbol: string,
-  coverage: IntervalCoverageSegment[],
-) {
-  const provider = coverage.find((segment) => segment.provider)?.provider ?? "tencent";
-  return {
-    provider,
-    symbol: (await repository.getProviderSymbol(instrumentId, provider)) ?? symbol,
-  };
-}
-
 export function splitIntradayRequestRange(
   range: IntradayTimeRange,
   maxDays = 60,
@@ -195,12 +182,6 @@ export async function syncIntradayMarketData({
         | undefined;
       throwIfAborted();
       if (body?.error?.code === "provider-history-limit") {
-        const providerSymbol = await providerSymbolForHistoryLimit(
-          repository,
-          instrumentId,
-          symbol,
-          coverage,
-        );
         const segment: IntervalCoverageSegment = {
           interval: "15m",
           requestedStart: range.startTime,
@@ -216,7 +197,6 @@ export async function syncIntradayMarketData({
           interval: "15m",
           candles: [],
           coverage,
-          providerSymbol,
         });
         continue;
       }

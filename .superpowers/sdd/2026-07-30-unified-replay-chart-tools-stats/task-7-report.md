@@ -50,3 +50,7 @@ git diff --check
 ## Concerns
 
 The Task 7 controlled command props are intentionally additive, so the current workspace remains on the legacy add-only callback until Task 10 adopts `DrawingHistory` commands. The new layer panel is delivered as a reusable controlled component; top-level panel visibility/state wiring is deferred to the planned consumer migration.
+
+## Commit
+
+`3f9572622e13bff1117a1649dd5214f9d1580820` (`feat: make chart drawings editable`)

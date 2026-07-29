@@ -18,6 +18,7 @@
 - Monetary, quantity, and position-path calculations use Decimal.js.
 - Existing version-2 IndexedDB daily candles, coverage, provider symbols, reviews, and local imported executions remain readable after migration.
 - Drawings, review state, chart preferences, and notes remain device-local and episode-scoped.
+- Tasks 6–9 introduce shared-contract changes additively: legacy props and fields stay readable and callable until Task 10 updates every consumer, then Task 10 removes the compatibility surface.
 - The top-level “模式洞察” navigation is not part of this plan.
 - No test contacts a live market-data provider.
 
@@ -1014,7 +1015,9 @@ exist.
 
 - [ ] **Step 3: Extend drawing types and validation**
 
-Use:
+Use a normalized v2 type for commands and persistence while keeping legacy
+metadata optional on the public input until Task 10 updates every existing
+component literal:
 
 ```ts
 export type DrawingTool =
@@ -1031,19 +1034,27 @@ export type DrawingTool =
   | "short-risk-reward";
 
 export type Drawing = {
-  version: 2;
+  version?: 1 | 2;
   id: string;
-  episodeId: string;
-  name: string;
+  episodeId?: string;
+  name?: string;
   tool: Exclude<DrawingTool, "cursor">;
   anchors: DrawingAnchor[];
   style: DrawingStyle;
   text?: string;
-  zIndex: number;
+  zIndex?: number;
   hidden: boolean;
   locked: boolean;
   visibleOn: "all" | Timeframe[];
   stage: "pre-trade" | "during-replay" | "post-review";
+  createdAtCursor?: string;
+};
+
+export type NormalizedDrawing = Drawing & {
+  version: 2;
+  episodeId: string;
+  name: string;
+  zIndex: number;
   createdAtCursor: string;
 };
 ```
@@ -1053,6 +1064,8 @@ tool label as name, array order as z-index, version 2, and the saved cursor as
 missing knowledge time. Map legacy `"risk-reward"` to
 `"long-risk-reward"` when stop is below entry and `"short-risk-reward"`
 otherwise.
+`normalizeDrawing(drawing, episodeId, replayCursor, zIndex)` returns
+`NormalizedDrawing`; drawing commands accept normalized values only.
 
 - [ ] **Step 4: Write failing command-history and geometry tests**
 
@@ -1080,14 +1093,14 @@ Export:
 
 ```ts
 export type DrawingHistory = {
-  past: Drawing[][];
-  present: Drawing[];
-  future: Drawing[][];
+  past: NormalizedDrawing[][];
+  present: NormalizedDrawing[];
+  future: NormalizedDrawing[][];
 };
 
 export type DrawingCommand =
-  | { type: "add"; drawing: Drawing }
-  | { type: "replace"; drawing: Drawing }
+  | { type: "add"; drawing: NormalizedDrawing }
+  | { type: "replace"; drawing: NormalizedDrawing }
   | { type: "rename"; id: string; name: string }
   | { type: "toggle-hidden"; id: string }
   | { type: "toggle-locked"; id: string }
@@ -1132,7 +1145,8 @@ export type StoredReviewState = {
   replayCursor: string;
   timeframe: Timeframe;
   activePanelTab: "stats" | "notes";
-  drawings: Drawing[];
+  drawings: NormalizedDrawing[];
+  thesis?: string;
 };
 
 export type ChartSettings = {
@@ -1147,7 +1161,9 @@ export type ChartSettings = {
 
 Keep reading the existing `trade-reviewer:review:v1:<episodeId>` key and
 write migrated state to `trade-reviewer:review:v2:<episodeId>`. Store chart
-settings at `trade-reviewer:chart-settings:v1`.
+settings at `trade-reviewer:chart-settings:v1`. The optional `thesis` field
+is a compatibility bridge for the current top-level workspace; Task 10 moves
+notes to the episode review repository and stops writing it.
 
 - [ ] **Step 8: Verify Task 6 and commit**
 
@@ -1216,19 +1232,21 @@ Expected: FAIL because new tools, selection, and `onCommand` do not exist.
 
 - [ ] **Step 3: Render and create every drawing tool**
 
-Change `DrawingCanvas` props to:
+Add the controlled editing props while retaining the existing add-only
+callback through Task 9:
 
 ```ts
 type Props = {
-  episodeId: string;
+  episodeId?: string;
   candles: Candle[];
   cursor: string;
   drawings: Drawing[];
-  selectedDrawingId: string | null;
+  selectedDrawingId?: string | null;
   activeTool: DrawingTool;
   plannedRiskAmount?: string;
-  onSelectDrawing: (id: string | null) => void;
-  onCommand: (command: DrawingCommand) => void;
+  onSelectDrawing?: (id: string | null) => void;
+  onCommand?: (command: DrawingCommand) => void;
+  onAddDrawing?: (drawing: Drawing) => void;
   coordinateAdapter?: ChartCoordinateAdapter;
   coordinateVersion?: number;
 };
@@ -1253,7 +1271,8 @@ canvas; on pointer down, capture either an anchor index or the whole drawing.
 On pointer move, keep only local preview state. On pointer up, emit one
 `replace` command so one drag corresponds to one undo step. Position an HTML
 `input` over a new or selected text drawing and commit on Enter/blur, cancel
-on Escape.
+on Escape. When the controlled callbacks are absent, preserve current
+add-only behavior so the top-level workspace stays green until Task 10.
 
 - [ ] **Step 6: Write failing layer-panel tests**
 
@@ -1402,23 +1421,25 @@ listener on unmount.
 - [ ] **Step 7: Expand `ChartToolbar` orchestration**
 
 Replace the previously inert icon buttons with controlled popover triggers and
-callbacks. Add:
+callbacks. Introduce the new orchestration props as optional with stable
+defaults so existing callers compile until Task 10; Task 10 supplies all of
+them and removes the compatibility defaults. Add:
 
 ```ts
 type Props = {
   timeframe: Timeframe;
-  timeframeAvailability: TimeframeAvailability;
+  timeframeAvailability?: TimeframeAvailability;
   onTimeframeChange: (timeframe: Timeframe) => void;
-  instruments: SearchableInstrument[];
-  onSelectInstrument: (instrumentId: string) => void;
-  dataDetails: MarketDataDetails[];
-  onRefreshMarketData: () => void;
-  layersOpen: boolean;
+  instruments?: SearchableInstrument[];
+  onSelectInstrument?: (instrumentId: string) => void;
+  dataDetails?: MarketDataDetails[];
+  onRefreshMarketData?: () => void;
+  layersOpen?: boolean;
   layersDisabledReason?: string;
-  onToggleLayers: () => void;
-  fullscreen: ReturnType<typeof useFullscreen>;
-  settings: ChartSettings;
-  onSettingsChange: (settings: ChartSettings) => void;
+  onToggleLayers?: () => void;
+  fullscreen?: ReturnType<typeof useFullscreen>;
+  settings?: ChartSettings;
+  onSettingsChange?: (settings: ChartSettings) => void;
   symbol: string;
   instrumentName: string;
   market: string;
@@ -1454,7 +1475,6 @@ tests PASS.
 - Create: `app/components/review/episode-notes-panel.test.tsx`
 - Create: `app/components/review/review-side-panel.tsx`
 - Create: `app/components/review/review-side-panel.test.tsx`
-- Delete: `app/components/review/thesis-panel.tsx`
 - Modify: `app/globals.css`
 
 **Interfaces:**
@@ -1563,7 +1583,10 @@ type Props = {
 ```
 
 Render the same content inside the fixed desktop aside or modal drawer; do
-not mount two editable note forms simultaneously.
+not mount two editable note forms simultaneously. Keep
+`app/components/review/thesis-panel.tsx` intact during this task so the
+existing workspace continues compiling; Task 10 replaces its call site and
+deletes it.
 
 - [ ] **Step 7: Verify Task 9 and commit**
 
@@ -1590,6 +1613,7 @@ tests PASS.
 - Modify: `app/components/trade-review-workspace.test.tsx`
 - Delete: `app/components/review/imported-episode-review.tsx`
 - Delete: `app/components/review/imported-episode-review.test.tsx`
+- Delete: `app/components/review/thesis-panel.tsx`
 - Modify: `app/globals.css`
 
 **Interfaces:**
@@ -1731,7 +1755,9 @@ Create drawing history from stored episode drawings. Apply commands through
 fullscreen, chart settings, layers, position metrics, review record, and
 autosave. The right panel is available for imported episodes even when market
 data is missing; its stats tab explains the missing data and its notes tab
-remains editable.
+remains editable. Once every caller uses the controlled contracts, remove the
+temporary optional prop defaults and the optional `StoredReviewState.thesis`
+write path introduced for Tasks 6–9.
 
 - [ ] **Step 8: Add future-boundary and unavailable-period integration tests**
 
@@ -1752,7 +1778,7 @@ Run:
 
 ```bash
 npm run test:unit -- app/components/review/review-chart-workspace.test.tsx app/components/trade-review-workspace.test.tsx
-git add app/components/trade-review-workspace.tsx app/components/trade-review-workspace.test.tsx app/components/review/review-chart-workspace.tsx app/components/review/review-chart-workspace.test.tsx app/components/review/episode-sidebar.tsx app/components/review/imported-episode-review.tsx app/components/review/imported-episode-review.test.tsx app/globals.css
+git add app/components/trade-review-workspace.tsx app/components/trade-review-workspace.test.tsx app/components/review/review-chart-workspace.tsx app/components/review/review-chart-workspace.test.tsx app/components/review/episode-sidebar.tsx app/components/review/imported-episode-review.tsx app/components/review/imported-episode-review.test.tsx app/components/review/thesis-panel.tsx app/globals.css
 git commit -m "feat: unify imported and demo replay"
 ```
 

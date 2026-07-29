@@ -73,14 +73,9 @@ export function calculatePositionPathMetrics(
     };
   }
 
-  const current = replayPositionAtPrice({
-    executions,
-    markPrice: String(latestCandle.close),
-  });
-
   if (executions.length === 0) {
     return {
-      current,
+      current: emptyPosition(),
       holdingMilliseconds: null,
       mfe: null,
       mae: null,
@@ -91,13 +86,38 @@ export function calculatePositionPathMetrics(
     };
   }
 
+  const usableCandles = candles.filter(
+    (candle) => candle.time >= executions[0].executedAt,
+  );
+  if (usableCandles.length === 0) {
+    const lastExecution = executions.at(-1)!;
+    return {
+      current: replayPositionAtPrice({
+        executions,
+        markPrice: lastExecution.price,
+      }),
+      holdingMilliseconds: null,
+      mfe: null,
+      mae: null,
+      maximumDrawdown: null,
+      profitGiveback: null,
+      rMultiple: null,
+      unavailableReason:
+        "No candle is available at or after the first execution through the replay cursor.",
+    };
+  }
+
+  const current = replayPositionAtPrice({
+    executions,
+    markPrice: String(usableCandles.at(-1)!.close),
+  });
   let mfe: Decimal | undefined;
   let mae: Decimal | undefined;
   let maximumDrawdown = new Decimal(0);
   let highestPreviousClose: Decimal | undefined;
   let maximumGrossCapitalDeployed = new Decimal(current.grossCapitalDeployed);
 
-  for (const candle of candles) {
+  for (const candle of usableCandles) {
     const candleExecutions = executions.filter(
       (execution) => execution.executedAt <= candle.time,
     );
@@ -168,7 +188,10 @@ export function calculatePositionPathMetrics(
     mae: mae ? pathAmount(mae, maximumGrossCapitalDeployed) : null,
     maximumDrawdown: pathAmount(maximumDrawdown, maximumGrossCapitalDeployed),
     profitGiveback: mfe
-      ? pathAmount(mfe.minus(currentNetPnl), maximumGrossCapitalDeployed)
+      ? pathAmount(
+          Decimal.max(0, mfe.minus(currentNetPnl)),
+          maximumGrossCapitalDeployed,
+        )
       : null,
     rMultiple:
       plannedRiskAmount && !plannedRiskAmount.isZero()

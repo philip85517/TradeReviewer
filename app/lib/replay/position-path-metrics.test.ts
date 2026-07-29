@@ -138,4 +138,48 @@ describe("calculatePositionPathMetrics", () => {
       unavailableReason: "No execution has occurred at or before the replay cursor.",
     });
   });
+
+  it("does not use a pre-entry candle when no candle is available after entry", () => {
+    const metrics = calculatePositionPathMetrics({
+      candles: [candle("2025-01-02T14:30:00Z", 10, 11, 9, 10)],
+      executions: [
+        fill("buy", "2025-01-02T14:45:00Z", "10", "12"),
+      ],
+      cursor: "2025-01-02T15:00:00Z",
+      episodeStartedAt: "2025-01-02T14:45:00Z",
+      plannedRiskAmount: "20",
+    });
+
+    expect(metrics.current).toMatchObject({
+      quantity: "10",
+      averageCost: "12",
+      unrealizedPnl: "0",
+    });
+    expect(metrics).toMatchObject({
+      holdingMilliseconds: null,
+      mfe: null,
+      mae: null,
+      maximumDrawdown: null,
+      profitGiveback: null,
+      rMultiple: null,
+      unavailableReason:
+        "No candle is available at or after the first execution through the replay cursor.",
+    });
+  });
+
+  it("clamps profit giveback to zero when current net P&L exceeds candle MFE", () => {
+    const metrics = calculatePositionPathMetrics({
+      candles: [candle("2025-01-02T14:30:00Z", 10, 11, 9, 10)],
+      executions: [
+        fill("buy", "2025-01-02T14:30:00Z", "10", "10"),
+        fill("sell", "2025-01-02T14:45:00Z", "10", "20"),
+      ],
+      cursor: "2025-01-02T15:00:00Z",
+      episodeStartedAt: "2025-01-02T14:30:00Z",
+    });
+
+    expect(metrics.current.netPnl).toBe("100");
+    expect(metrics.mfe).toEqual({ amount: "10", percent: "10" });
+    expect(metrics.profitGiveback).toEqual({ amount: "0", percent: "0" });
+  });
 });

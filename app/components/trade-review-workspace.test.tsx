@@ -15,6 +15,9 @@ import {
   it,
   vi,
 } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import postcss, { type AtRule, type Node } from "postcss";
 
 import type { DemoReplayFrame } from "../lib/demo/replay-frame";
 import type { EpisodeReviewRecord } from "../lib/reviews/types";
@@ -25,6 +28,56 @@ import { saveReviewState } from "../lib/storage/review-storage";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeExecution } from "../lib/trades/types";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
+
+const globalStyles = postcss.parse(
+  readFileSync(join(process.cwd(), "app/globals.css"), "utf8"),
+);
+
+function mediaMatches(parent: Node["parent"], viewportWidth: number) {
+  let current: Node["parent"] = parent;
+  while (current) {
+    const atRule = current as AtRule;
+    if (current.type === "atrule" && atRule.name === "media") {
+      const query = atRule.params;
+      const maximum = query.match(/max-width:\s*(\d+)px/);
+      const minimum = query.match(/min-width:\s*(\d+)px/);
+      if (maximum && viewportWidth > Number(maximum[1])) return false;
+      if (minimum && viewportWidth < Number(minimum[1])) return false;
+      if (/prefers-reduced-motion/.test(query)) return false;
+    }
+    current = current.parent;
+  }
+  return true;
+}
+
+function declarationsAt(selector: string, viewportWidth: number) {
+  const declarations = new Map<string, string>();
+  globalStyles.walkRules((rule) => {
+    if (
+      rule.selectors.includes(selector) &&
+      mediaMatches(rule.parent, viewportWidth)
+    ) {
+      rule.walkDecls((declaration) => {
+        declarations.set(declaration.prop, declaration.value);
+      });
+    }
+  });
+  return declarations;
+}
+
+function reducedMotionDeclarations(selector: string) {
+  const declarations = new Map<string, string>();
+  globalStyles.walkAtRules("media", (media) => {
+    if (!/prefers-reduced-motion:\s*reduce/.test(media.params)) return;
+    media.walkRules((rule) => {
+      if (!rule.selectors.includes(selector)) return;
+      rule.walkDecls((declaration) => {
+        declarations.set(declaration.prop, declaration.value);
+      });
+    });
+  });
+  return declarations;
+}
 
 const initialFrame: DemoReplayFrame = {
   cursorIndex: 0,
@@ -217,6 +270,114 @@ describe("TradeReviewWorkspace", () => {
     expect(
       await screen.findByRole("alert"),
     ).toHaveTextContent("回放数据暂时无法读取");
+  });
+
+  it("switches from the desktop review panel to an operable narrow drawer", async () => {
+    const user = userEvent.setup();
+
+    expect(
+      declarationsAt(".workspace", 1260).get("grid-template-columns"),
+    ).toBe("244px minmax(620px, 1fr) 290px");
+    expect(
+      declarationsAt(".review-side-panel-trigger", 1260).get("display"),
+    ).toBe("none");
+    expect(
+      declarationsAt(".workspace", 1259).get("grid-template-columns"),
+    ).toBe("220px minmax(600px, 1fr)");
+    expect(
+      declarationsAt(".review-side-panel-desktop", 1259).get("display"),
+    ).toBe("none");
+    expect(
+      declarationsAt(".review-side-panel-trigger", 1259).get("display"),
+    ).toBe("grid");
+    expect(
+      declarationsAt(".workspace", 1060).get("grid-template-columns"),
+    ).toBe("220px minmax(600px, 1fr)");
+    expect(
+      declarationsAt(".workspace", 1059).get("grid-template-columns"),
+    ).toBe("minmax(0, 1fr)");
+    expect(
+      declarationsAt(".episode-sidebar", 1059).get("display"),
+    ).toBe("none");
+    expect(
+      declarationsAt(".instrument-search-popover", 1059).get("left"),
+    ).toBe("9px");
+    expect(
+      declarationsAt(".instrument-search-popover", 1059).get("right"),
+    ).toBe("9px");
+    expect(
+      declarationsAt(".instrument-search-popover", 1059).get("width"),
+    ).toBe("auto");
+    expect(
+      declarationsAt(".review-side-panel-drawer", 1259).get("animation"),
+    ).toContain("review-drawer-in");
+    expect(
+      reducedMotionDeclarations(".review-side-panel-drawer").get("animation"),
+    ).toBe("none");
+    expect(
+      reducedMotionDeclarations(".spinning").get("animation"),
+    ).toBe("none");
+    expect(
+      reducedMotionDeclarations(".live-dot.playing").get("animation"),
+    ).toBe("none");
+    expect(
+      declarationsAt(".timeframe-group button:disabled", 1260).get("cursor"),
+    ).toBe("not-allowed");
+    expect(
+      declarationsAt(".icon-button:disabled", 1260).get("opacity"),
+    ).toBe("0.35");
+    expect(
+      declarationsAt(".icon-button:hover:not(:disabled)", 1260).get(
+        "background",
+      ),
+    ).toBe("var(--surface-soft)");
+    expect(
+      declarationsAt(
+        '.episode-notes-status [role="status"]',
+        1260,
+      ).get("background"),
+    ).toBe("rgba(47, 128, 237, 0.1)");
+    expect(
+      declarationsAt(".market-data-state.stale", 1260).get("color"),
+    ).toBe("#e7c76f");
+    expect(
+      declarationsAt(".replay-error", 1260).get("background"),
+    ).toBe("rgba(239, 83, 80, 0.1)");
+    expect(
+      declarationsAt('[role="button"]:focus-visible', 1260).get("outline"),
+    ).toBe("2px solid var(--blue)");
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    expect(
+      screen.getByRole("heading", { name: "持仓统计" }),
+    ).toBeInTheDocument();
+    expect(
+      document.querySelector(".review-side-panel-desktop"),
+    ).toBeInTheDocument();
+
+    const trigger = screen.getByRole("button", {
+      name: "打开复盘面板",
+    });
+    expect(trigger).toHaveClass("review-side-panel-trigger");
+    await user.click(trigger);
+
+    expect(
+      screen.getByRole("dialog", { name: "复盘面板" }),
+    ).toHaveClass("review-side-panel-drawer");
+    expect(
+      document.querySelector(".review-side-panel-desktop"),
+    ).not.toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+
+    expect(
+      screen.queryByRole("dialog", { name: "复盘面板" }),
+    ).not.toBeInTheDocument();
+    expect(
+      document.querySelector(".review-side-panel-desktop"),
+    ).toBeInTheDocument();
+    expect(trigger).toHaveFocus();
   });
 
   it("loads imported stocks after a page reload without starting a market request", async () => {

@@ -66,7 +66,7 @@ export function PositionStatsPanel({
   const missingPlanReason = "复盘计划尚未填写。";
   return (
     <section className="position-stats-panel" aria-label={`${instrumentLabel} 路径统计`}>
-      <header><span className="eyebrow">Position path</span><h2>仓位统计</h2><span>{instrumentLabel}</span></header>
+      <header><span className="eyebrow">Position path</span><h2>持仓统计</h2><span>{instrumentLabel}</span></header>
       <section aria-labelledby="current-state-heading"><h3 id="current-state-heading">当前状态</h3><dl>
         <Metric label="持仓数量" value={currentAvailable ? current.quantity : "—"} detail={currentAvailable ? undefined : reason} />
         <Metric label="平均成本" value={currentValue(current.averageCost, (value) => amount(value, currency))} detail={currentAvailable ? undefined : reason} />

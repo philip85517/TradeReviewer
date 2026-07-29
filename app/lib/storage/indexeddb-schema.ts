@@ -1,8 +1,10 @@
-export const DATABASE_VERSION = 2;
+export const DATABASE_VERSION = 3;
 export const DAILY_CANDLES = "dailyCandles";
 export const COVERAGE = "coverage";
 export const PROVIDER_SYMBOLS = "providerSymbols";
 export const REVIEWS = "reviews";
+export const MARKET_CANDLES = "marketCandles";
+export const INTERVAL_COVERAGE = "intervalCoverage";
 
 export function requestValue<T>(request: IDBRequest<T>) {
   return new Promise<T>((resolve, reject) => {
@@ -48,6 +50,21 @@ export function openTradeReviewDatabase(databaseName: string) {
       if (!database.objectStoreNames.contains(REVIEWS)) {
         database.createObjectStore(REVIEWS, {
           keyPath: "episodeId",
+        });
+      }
+      if (!database.objectStoreNames.contains(MARKET_CANDLES)) {
+        database.createObjectStore(MARKET_CANDLES, {
+          keyPath: [
+            "instrumentId",
+            "interval",
+            "timestamp",
+            "adjustmentMode",
+          ],
+        });
+      }
+      if (!database.objectStoreNames.contains(INTERVAL_COVERAGE)) {
+        database.createObjectStore(INTERVAL_COVERAGE, {
+          keyPath: ["instrumentId", "interval"],
         });
       }
     };

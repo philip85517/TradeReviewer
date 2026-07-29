@@ -1,7 +1,10 @@
 import type {
   CoverageSegment,
   DailyCandleRecord,
+  IntervalCoverageSegment,
+  MarketCandleRecord,
   MarketDataProviderId,
+  NativeMarketInterval,
 } from "../market/contracts";
 
 export type MarketDataCommit = {
@@ -14,7 +17,28 @@ export type MarketDataCommit = {
   };
 };
 
+export type IntervalMarketDataCommit = {
+  instrumentId: string;
+  interval: NativeMarketInterval;
+  candles: MarketCandleRecord[];
+  coverage: IntervalCoverageSegment[];
+  providerSymbol: {
+    provider: MarketDataProviderId;
+    symbol: string;
+  };
+};
+
 export interface MarketDataRepository {
+  getCandles(
+    instrumentId: string,
+    interval: NativeMarketInterval,
+    startTime: string,
+    endTime: string,
+  ): Promise<MarketCandleRecord[]>;
+  getIntervalCoverage(
+    instrumentId: string,
+    interval: NativeMarketInterval,
+  ): Promise<IntervalCoverageSegment[]>;
   getDailyCandles(
     instrumentId: string,
     startDate: string,
@@ -26,4 +50,5 @@ export interface MarketDataRepository {
     provider: MarketDataProviderId,
   ): Promise<string | undefined>;
   commitSyncResult(result: MarketDataCommit): Promise<void>;
+  commitIntervalSyncResult(result: IntervalMarketDataCommit): Promise<void>;
 }

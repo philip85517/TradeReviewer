@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { parseEastmoneyDaily } from "./eastmoney";
-import { parseTencentDaily } from "./tencent";
-import { parseYahooDaily } from "./yahoo";
+import { parseEastmoneyDaily, parseEastmoneyIntraday } from "./eastmoney";
+import { parseTencentDaily, parseTencentIntraday } from "./tencent";
+import { parseYahooDaily, parseYahooIntraday } from "./yahoo";
 import { createProviderRouter } from "./router";
 import { MarketDataProviderError } from "./errors";
 
@@ -90,6 +90,108 @@ describe("provider response parsers", () => {
       "腾讯行情响应格式已变化",
     );
   });
+
+  it("normalizes Tencent 15 minute K-line timestamps from the market time zone", () => {
+    const response = {
+      code: 0,
+      data: {
+        hk01810: {
+          m15: [["2025-01-02 09:30:00", "34.1", "34.5", "35", "33.8", "1200"]],
+        },
+      },
+    };
+
+    expect(parseTencentIntraday(response, "hk01810", "Asia/Hong_Kong")).toEqual([
+      {
+        timestamp: "2025-01-02T01:30:00.000Z",
+        open: "34.1",
+        high: "35",
+        low: "33.8",
+        close: "34.5",
+        volume: "1200",
+      },
+    ]);
+  });
+
+  it("normalizes Eastmoney 15 minute K-line timestamps from the market time zone", () => {
+    const response = {
+      data: {
+        klines: ["2025-01-02 09:30:00,100,102,104,99,800"],
+      },
+    };
+
+    expect(parseEastmoneyIntraday(response, "Asia/Shanghai")).toEqual([
+      expect.objectContaining({
+        timestamp: "2025-01-02T01:30:00.000Z",
+        close: "102",
+      }),
+    ]);
+  });
+
+  it("normalizes Yahoo 15 minute timestamps that are already UTC", () => {
+    const response = {
+      chart: {
+        result: [
+          {
+            timestamp: [1735828200],
+            indicators: {
+              quote: [
+                {
+                  open: [10],
+                  high: [12],
+                  low: [9],
+                  close: [11],
+                  volume: [100],
+                },
+              ],
+            },
+          },
+        ],
+        error: null,
+      },
+    };
+
+    expect(parseYahooIntraday(response)).toEqual([
+      expect.objectContaining({
+        timestamp: "2025-01-02T14:30:00.000Z",
+        close: "11",
+      }),
+    ]);
+  });
+
+  it("rejects null intraday OHLC values instead of yielding a partial candle", () => {
+    const response = {
+      chart: {
+        result: [
+          {
+            timestamp: [1735828200],
+            indicators: {
+              quote: [
+                {
+                  open: [10],
+                  high: [12],
+                  low: [9],
+                  close: [null],
+                  volume: [100],
+                },
+              ],
+            },
+          },
+        ],
+        error: null,
+      },
+    };
+
+    expect(() => parseYahooIntraday(response)).toThrow(
+      "Yahoo 行情响应格式已变化",
+    );
+  });
+
+  it("rejects changed intraday envelopes instead of yielding fake candles", () => {
+    expect(() => parseEastmoneyIntraday({ data: {} }, "Asia/Shanghai")).toThrow(
+      "东方财富行情响应格式已变化",
+    );
+  });
 });
 
 describe("provider routing", () => {
@@ -165,6 +267,145 @@ describe("provider routing", () => {
     ).rejects.toEqual(
       expect.objectContaining<Partial<MarketDataProviderError>>({
         code: "source-rate-limited",
+      }),
+    );
+  });
+
+  it("falls back to Eastmoney for 15 minute A-share candles when Tencent is unavailable", async () => {
+    const fetcher: typeof fetch = async (input) => {
+      if (String(input).includes("gtimg")) {
+        return new Response("unavailable", { status: 503 });
+      }
+      return Response.json({
+        data: {
+          klines: ["2025-01-02 09:30:00,100,102,104,99,800"],
+        },
+      });
+    };
+
+    const result = await createProviderRouter(fetcher).fetchIntraday({
+      instrumentId: "CN-SH:600519",
+      symbol: "600519",
+      market: "CN-SH",
+      interval: "15m",
+      startTime: "2025-01-02T01:30:00.000Z",
+      endTime: "2025-01-02T01:30:00.000Z",
+    });
+
+    expect(result).toMatchObject({
+      provider: "eastmoney",
+      providerSymbol: "1.600519",
+      interval: "15m",
+      candles: [
+        {
+          timestamp: "2025-01-02T01:30:00.000Z",
+          close: "102",
+        },
+      ],
+    });
+  });
+
+  it.each([
+    {
+      market: "US" as const,
+      symbol: "XPEV",
+      instrumentId: "US:XPEV",
+      providerSymbol: "XPEV",
+    },
+    {
+      market: "HK" as const,
+      symbol: "1810",
+      instrumentId: "HK:1810",
+      providerSymbol: "1810.HK",
+    },
+  ])("falls back to Yahoo 15 minute candles for $market", async (request) => {
+    const fetcher: typeof fetch = async (input) => {
+      if (String(input).includes("gtimg")) {
+        return new Response("unavailable", { status: 503 });
+      }
+      return Response.json({
+        chart: {
+          result: [
+            {
+              timestamp: [1735828200],
+              indicators: {
+                quote: [
+                  {
+                    open: [10],
+                    high: [12],
+                    low: [9],
+                    close: [11],
+                    volume: [100],
+                  },
+                ],
+              },
+            },
+          ],
+          error: null,
+        },
+      });
+    };
+
+    const result = await createProviderRouter(fetcher).fetchIntraday({
+      ...request,
+      interval: "15m",
+      startTime: "2025-01-02T14:30:00.000Z",
+      endTime: "2025-01-02T14:30:00.000Z",
+    });
+
+    expect(result).toMatchObject({
+      provider: "yahoo",
+      providerSymbol: request.providerSymbol,
+      candles: [{ timestamp: "2025-01-02T14:30:00.000Z", close: "11" }],
+    });
+  });
+
+  it("preserves history-limit semantics when every eligible 15 minute source lacks the range", async () => {
+    const fetcher: typeof fetch = async (input) => {
+      if (String(input).includes("gtimg")) {
+        return Response.json({
+          data: {
+            "usXPEV.N": {
+              m15: [["2020-01-02 09:30:00", "10", "11", "12", "9", "100"]],
+            },
+          },
+        });
+      }
+      return Response.json({
+        chart: {
+          result: [
+            {
+              timestamp: [1577971800],
+              indicators: {
+                quote: [
+                  {
+                    open: [10],
+                    high: [12],
+                    low: [9],
+                    close: [11],
+                    volume: [100],
+                  },
+                ],
+              },
+            },
+          ],
+          error: null,
+        },
+      });
+    };
+
+    await expect(
+      createProviderRouter(fetcher).fetchIntraday({
+        instrumentId: "US:XPEV",
+        symbol: "XPEV",
+        market: "US",
+        interval: "15m",
+        startTime: "2025-01-02T14:30:00.000Z",
+        endTime: "2025-01-02T14:30:00.000Z",
+      }),
+    ).rejects.toEqual(
+      expect.objectContaining<Partial<MarketDataProviderError>>({
+        code: "provider-history-limit",
       }),
     );
   });

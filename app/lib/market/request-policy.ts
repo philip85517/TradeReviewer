@@ -2,6 +2,7 @@ import type {
   DailyCandleRequest,
   SupportedMarket,
 } from "./contracts";
+import type { IntradayCandleRequest } from "./providers/router";
 import { normalizeMarketSymbol } from "./symbol-map";
 
 const MARKETS = new Set<SupportedMarket>(["US", "HK", "CN-SH", "CN-SZ"]);
@@ -52,5 +53,58 @@ export function parseDailyCandleRequest(url: URL): DailyCandleRequest {
     symbol,
     startDate,
     endDate,
+  };
+}
+
+function parseIsoTimestamp(value: string) {
+  const timestamp = Date.parse(value);
+  if (!Number.isFinite(timestamp) || new Date(timestamp).toISOString() !== value) {
+    throw new InvalidMarketDataRequest("时间必须使用 ISO 8601 UTC 格式");
+  }
+  return timestamp;
+}
+
+export function parseIntradayCandleRequest(url: URL): IntradayCandleRequest {
+  const marketValue = url.searchParams.get("market")?.toUpperCase();
+  if (!marketValue || !MARKETS.has(marketValue as SupportedMarket)) {
+    throw new InvalidMarketDataRequest("不支持的市场");
+  }
+  const market = marketValue as SupportedMarket;
+  const symbolValue = url.searchParams.get("symbol") ?? "";
+  let symbol: string;
+  try {
+    symbol = normalizeMarketSymbol(market, symbolValue);
+  } catch (error) {
+    throw new InvalidMarketDataRequest(
+      error instanceof Error ? error.message : "股票代码无效",
+    );
+  }
+
+  if (url.searchParams.get("interval") !== "15m") {
+    throw new InvalidMarketDataRequest("仅支持 15 分钟行情");
+  }
+  const startTime = url.searchParams.get("start") ?? "";
+  const endTime = url.searchParams.get("end") ?? "";
+  const start = parseIsoTimestamp(startTime);
+  const end = parseIsoTimestamp(endTime);
+  if (end < start) {
+    throw new InvalidMarketDataRequest("时间区间无效");
+  }
+
+  const startDay = Date.parse(`${startTime.slice(0, 10)}T00:00:00Z`);
+  const endDay = Date.parse(`${endTime.slice(0, 10)}T00:00:00Z`);
+  if ((endDay - startDay) / DAY + 1 > 60) {
+    throw new InvalidMarketDataRequest(
+      "15 分钟行情单次请求不能超过 60 个自然日",
+    );
+  }
+
+  return {
+    instrumentId: `${market}:${symbol}`,
+    market,
+    symbol,
+    interval: "15m",
+    startTime,
+    endTime,
   };
 }

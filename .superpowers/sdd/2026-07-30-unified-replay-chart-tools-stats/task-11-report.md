@@ -238,3 +238,193 @@ Implementation commit:
   responsive/documentation task.
 - The development server's local-certificate diagnostic prevented a clean
   warning-free startup log, although the page still served successfully.
+
+---
+
+## Fix round 1
+
+### Scope
+
+The first Task 11 review identified two responsive invariants and two related
+maintenance issues. Commit `a2b2b4debde5dcfa7abf5a96c4ab7e06db0f454c`
+addresses all four without changing replay or storage architecture.
+
+1. `ReviewSidePanel` now observes `(min-width: 1260px)`. If a compact drawer
+   is open when the query becomes true, it requests the controlled drawer
+   state to close. The persistent aside returns to desktop classes without
+   dialog/`aria-modal` semantics or a backdrop.
+2. The desktop transition focuses the selected panel tab after the modal
+   focus hook restores its prior target, avoiding focus on the drawer trigger
+   that CSS has just hidden. The media-query listener is removed on cleanup.
+3. Below `1060px`, `.trade-review-app` now has `min-width: 0`. Below `760px`,
+   the heading and chart toolbar wrap, header/footer controls remain locally
+   scrollable, and all `.chart-popover` variants use viewport-fixed `12px`
+   left/right bounds, an automatic width, a viewport-derived maximum height,
+   and internal vertical scrolling.
+4. The test's direct PostCSS import is now backed by an explicit exact
+   `postcss: 8.5.23` dev dependency in both `package.json` and the root
+   package-lock entry. `npm ls postcss --depth=0` reports
+   `postcss@8.5.23 overridden`.
+5. The identical icon-button and timeframe-button transition declarations
+   were combined into one selector block. The drawer/tab transitions differ
+   in properties and remain separate.
+
+### RED / GREEN evidence
+
+#### RED 1: drawer remains modal after live resize
+
+The component regression represents a `1259px` viewport with
+`(min-width: 1260px)` initially false, opens the real controlled drawer, then
+dispatches the query crossing to true.
+
+```text
+npm run test:unit -- app/components/review/review-side-panel.test.tsx
+
+Test Files  1 failed (1)
+Tests       1 failed | 3 passed (4)
+
+Expected no dialog after the query crossed to desktop.
+Received the existing review-side-panel-drawer with role="dialog" and
+aria-modal="true".
+```
+
+After the component fix, the same test verifies that the dialog and backdrop
+are gone, the desktop aside has no modal semantics, the selected `路径统计`
+tab owns focus, and query changes after unmount do not invoke the controlled
+callback.
+
+```text
+npm run test:unit -- app/components/review/review-side-panel.test.tsx
+
+Test Files  1 passed (1)
+Tests       4 passed (4)
+```
+
+#### RED 2: 390px viewport inherits the 760px minimum
+
+```text
+npm run test:unit -- app/components/trade-review-workspace.test.tsx
+
+Test Files  1 failed (1)
+Tests       1 failed | 21 passed (22)
+
+expected .trade-review-app min-width at 390px: 0
+received:                                    760px
+```
+
+After the CSS fix, the 390px assertions verify the zero application minimum,
+wrapping toolbar, and the full generic/search popover cascade in source order.
+The existing exact `1059`/`1060` and `1259`/`1260` assertions remain in the
+same passing suite.
+
+```text
+npm run test:unit -- app/components/trade-review-workspace.test.tsx
+
+Test Files  1 passed (1)
+Tests       22 passed (22)
+```
+
+After dependency and transition cleanup, both focused suites were rerun:
+
+```text
+npm run test:unit -- app/components/review/review-side-panel.test.tsx app/components/trade-review-workspace.test.tsx
+
+Test Files  2 passed (2)
+Tests       26 passed (26)
+```
+
+### Final automated verification
+
+Every required command was run separately after the final source change and
+its complete output was inspected.
+
+```text
+npm run test:unit
+
+Test Files  55 passed (55)
+Tests       274 passed (274)
+exit 0
+```
+
+Vitest emitted the existing Node `[DEP0205] module.register() is deprecated`
+dependency/tooling warning.
+
+```text
+npm run typecheck
+
+> tsc --noEmit
+exit 0
+```
+
+```text
+npm run lint
+
+> eslint . --ignore-pattern dist --ignore-pattern .next
+exit 0, no findings
+```
+
+An earlier lint run exposed one new `react-hooks/exhaustive-deps` warning for
+effect fields accessed through `props`. The component now destructures the
+two controlled drawer fields, and the final lint output above is clean.
+
+```text
+npm run build
+
+vinext build (Vite 8.0.13)
+client references: 149 modules
+server references: 179 modules
+rsc environment: 155 modules
+client environment: 1884 modules
+ssr environment: 185 modules
+Build complete.
+exit 0
+```
+
+The build emitted the existing Node `[DEP0205]` warning and Vite's existing
+large-chunk advisory; it reported no build errors.
+
+```text
+npm test
+
+Build complete.
+server-renders the historical trade review workspace: pass
+client bundle contains no unrevealed demo executions: pass
+tests 2, pass 2, fail 0
+exit 0
+```
+
+```text
+git diff --check
+
+exit 0
+```
+
+### Development server
+
+`npm run dev` again started at `http://localhost:3000/`. The live request
+returned:
+
+```text
+status=200 content_type=text/html; charset=utf-8
+GET / 200
+```
+
+The server was stopped with Ctrl-C. Startup again emitted the existing
+`[DEP0205]`, `Request.cf` fallback, and local issuer certificate diagnostics.
+The browser-control backend remains unavailable from the original Task 11
+inspection, so no new visual or browser-console pass is claimed.
+
+### Files and commit
+
+Implementation files:
+
+- `app/components/review/review-side-panel.tsx`
+- `app/components/review/review-side-panel.test.tsx`
+- `app/components/trade-review-workspace.test.tsx`
+- `app/globals.css`
+- `package.json`
+- `package-lock.json`
+
+Implementation commit:
+`a2b2b4debde5dcfa7abf5a96c4ab7e06db0f454c`
+(`fix: harden responsive review layout`).

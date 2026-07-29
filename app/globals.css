@@ -2626,6 +2626,176 @@ input:focus-visible {
   cursor: pointer;
 }
 
+.review-side-panel {
+  min-width: 0;
+  overflow-y: auto;
+  border-left: 1px solid var(--line);
+  background: #0f1620;
+}
+
+.review-side-panel-desktop {
+  padding: 17px 15px;
+}
+
+.review-side-panel-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #293a51;
+  border-radius: 8px;
+  background: #111b28;
+}
+
+.review-side-panel-tabs button {
+  min-height: 30px;
+  border: 0;
+  border-radius: 5px;
+  color: #8799b0;
+  background: transparent;
+  font-size: 9px;
+  cursor: pointer;
+}
+
+.review-side-panel-tabs button[aria-selected="true"] {
+  color: #c6dcf8;
+  background: #21344d;
+}
+
+.position-stats-panel > header {
+  margin: 15px 0 12px;
+}
+
+.position-stats-panel > header h2,
+.review-side-panel-drawer h2 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.position-stats-panel > header > span:last-child {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.position-stats-panel > section {
+  margin-top: 12px;
+}
+
+.position-stats-panel h3 {
+  margin: 0 0 7px;
+  color: #b8c8dc;
+  font-size: 9px;
+}
+
+.position-stats-panel dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.position-stat {
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid #25364c;
+  border-radius: 7px;
+  background: #111b28;
+}
+
+.position-stat dt,
+.position-stat small {
+  color: var(--faint);
+  font-size: 8px;
+}
+
+.position-stat dd {
+  margin: 4px 0 0;
+  color: #d4deea;
+  font: 11px var(--font-geist-mono);
+}
+
+.position-stat small {
+  display: block;
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+.episode-notes-panel {
+  margin-top: 12px;
+}
+
+.episode-notes-status {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: #8799b0;
+  font-size: 8px;
+}
+
+.episode-notes-status > label,
+.episode-notes-status [role="status"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.episode-notes-status > label {
+  margin-right: auto;
+}
+
+.episode-notes-status [role="status"] {
+  color: #75c8b9;
+}
+
+.episode-notes-status [role="alert"] {
+  color: #f28c82;
+}
+
+.episode-notes-status button,
+.review-side-panel-drawer header button {
+  border: 1px solid #3269aa;
+  border-radius: 6px;
+  color: #c6dcf8;
+  background: rgba(47, 128, 237, 0.14);
+  cursor: pointer;
+}
+
+.episode-notes-status button {
+  min-height: 28px;
+  padding: 0 8px;
+  font-size: 8px;
+}
+
+.review-side-panel-trigger {
+  display: none;
+}
+
+.review-side-panel-drawer {
+  width: min(430px, 100%);
+  max-height: min(820px, calc(100vh - 48px));
+  padding: 17px 15px;
+  border: 1px solid #2d3d52;
+  border-radius: 14px;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55);
+}
+
+.review-side-panel-drawer > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.review-side-panel-drawer header button {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+}
+
 @media (max-width: 1260px) {
   .workspace {
     grid-template-columns: 220px minmax(600px, 1fr);
@@ -2633,6 +2803,26 @@ input:focus-visible {
 
   .thesis-panel {
     display: none;
+  }
+
+  .review-side-panel-desktop {
+    display: none;
+  }
+
+  .review-side-panel-trigger {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 20;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #385175;
+    border-radius: 50%;
+    color: #acd0ff;
+    background: #1b2c43;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   }
 
   .mobile-panel-toggle {

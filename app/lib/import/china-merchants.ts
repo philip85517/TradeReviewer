@@ -500,7 +500,7 @@ function obviousFund(symbol: string, name: string | undefined): boolean {
 
 function obviousEtf(symbol: string, name: string | undefined): boolean {
   if (/\bETF\b|交易型开放式指数基金/i.test(name ?? "")) return true;
-  return /^(?:15|51|56|58)\d{4}$/.test(symbol);
+  return /^(?:159\d{3}|(?:51|56|58)\d{4})$/.test(symbol);
 }
 
 function sourceAssetType(

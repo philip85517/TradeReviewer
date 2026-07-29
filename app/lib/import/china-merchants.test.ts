@@ -8,6 +8,7 @@ import {
   CHINA_MERCHANTS_INVALID_DATE,
   CHINA_MERCHANTS_OTHER_ACCOUNT,
   CHINA_MERCHANTS_PAGES,
+  CHINA_MERCHANTS_SHENZHEN_TYPE_BOUNDARY,
   NON_CHINA_MERCHANTS_PAGES,
 } from "./__fixtures__/china-merchants-pages";
 import {
@@ -138,6 +139,28 @@ describe("China Merchants Securities PDF import", () => {
         symbol: "600036",
         sourceName: undefined,
         sourceAssetType: "stock",
+      },
+    ]);
+  });
+
+  it("does not treat historical 150xxx graded funds as Shenzhen ETFs", () => {
+    const result = parseChinaMerchantsPages(
+      CHINA_MERCHANTS_SHENZHEN_TYPE_BOUNDARY,
+      options,
+    );
+
+    expect(result.candidates).toEqual([
+      {
+        market: "CN-SZ",
+        symbol: "150001",
+        sourceName: undefined,
+        sourceAssetType: "unknown",
+      },
+      {
+        market: "CN-SZ",
+        symbol: "159001",
+        sourceName: undefined,
+        sourceAssetType: "etf",
       },
     ]);
   });

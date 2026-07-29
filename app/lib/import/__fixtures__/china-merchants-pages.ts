@@ -289,6 +289,38 @@ export const CHINA_MERCHANTS_CODE_ONLY: PdfTextPage[] = [
   },
 ];
 
+export const CHINA_MERCHANTS_SHENZHEN_TYPE_BOUNDARY: PdfTextPage[] = [
+  headingPage,
+  {
+    pageNumber: 2,
+    width: 900,
+    height: 600,
+    items: [
+      ...tableHeader,
+      ...statementRow(216, {
+        date: "20250103",
+        market: "深圳",
+        instrument: "150001",
+        business: "证券买入",
+        quantity: "100",
+        price: "1.00",
+        amount: "-100.00",
+        commission: "1.00",
+      }),
+      ...statementRow(234, {
+        date: "20250104",
+        market: "深圳",
+        instrument: "159001",
+        business: "证券买入",
+        quantity: "100",
+        price: "2.00",
+        amount: "-200.00",
+        commission: "1.00",
+      }),
+    ],
+  },
+];
+
 export const CHINA_MERCHANTS_EMPTY_FEES: PdfTextPage[] = [
   headingPage,
   {

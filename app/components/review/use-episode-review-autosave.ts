@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   episodePlanAtCursor,
-  isValidPlannedRiskAmount,
+  hasValidPlannedRiskAmounts,
   mergeEpisodePlanRevision,
   normalizeEpisodeReviewRecord,
 } from "../../lib/reviews/review-metrics";
@@ -34,6 +34,7 @@ type RetainedDraft = {
 
 const retainedDrafts = new Map<string, RetainedDraft>();
 const latestRevisions = new Map<string, number>();
+const latestSaveTimestamps = new Map<string, number>();
 
 function identityFor(episodeId: string, instrumentId: string) {
   return `${episodeId}\u0000${instrumentId}`;
@@ -43,6 +44,20 @@ function nextRevision(identity: string) {
   const revision = (latestRevisions.get(identity) ?? 0) + 1;
   latestRevisions.set(identity, revision);
   return revision;
+}
+
+function nextSaveTimestamp(
+  identity: string,
+  candidate: EpisodeReviewRecord,
+) {
+  const candidateTimestamp = Date.parse(candidate.updatedAt);
+  const next = Math.max(
+    Date.now(),
+    Number.isFinite(candidateTimestamp) ? candidateTimestamp + 1 : 0,
+    (latestSaveTimestamps.get(identity) ?? -1) + 1,
+  );
+  latestSaveTimestamps.set(identity, next);
+  return new Date(next).toISOString();
 }
 
 function emptyPlan(): EpisodePlan {
@@ -163,7 +178,7 @@ export function useEpisodeReviewAutosave(input: Input) {
       candidate: EpisodeReviewRecord,
       revision: number,
     ) => {
-      if (!isValidPlannedRiskAmount(candidate.plan.plannedRiskAmount)) {
+      if (!hasValidPlannedRiskAmounts(candidate)) {
         const retained: RetainedDraft = {
           draft: candidate,
           status: "error",
@@ -179,7 +194,7 @@ export function useEpisodeReviewAutosave(input: Input) {
 
       const next = normalizeEpisodeReviewRecord({
         ...candidate,
-        updatedAt: new Date().toISOString(),
+        updatedAt: nextSaveTimestamp(identity, candidate),
       });
       const saving: RetainedDraft = {
         draft: next,

@@ -42,6 +42,8 @@ type IntradayRouteResult = {
   };
 };
 
+class IntradayRouteIdentityError extends Error {}
+
 export type SyncIntradayMarketDataOptions = {
   instrumentId: string;
   symbol: string;
@@ -251,7 +253,7 @@ function parseRouteResult(
       result.request.startTime !== range.startTime ||
       result.request.endTime !== range.endTime
   ) {
-    throw new Error("行情接口响应标的不匹配");
+    throw new IntradayRouteIdentityError("行情接口响应标的不匹配");
   }
   validateProviderMarketCandles(result.candles, range.startTime, range.endTime);
   return result as IntradayRouteResult;
@@ -322,6 +324,18 @@ export async function syncIntradayMarketData({
   const requestedRanges = coverageGaps(required, coverage).flatMap((range) =>
     splitIntradayRequestRange(range),
   );
+  const failureResult = async (status: CoverageStatus) => ({
+    source: "network" as const,
+    status,
+    candles: await repository.getCandles(
+      instrumentId,
+      "15m",
+      required.startTime,
+      required.endTime,
+    ),
+    coverage,
+    requestedRanges,
+  });
 
   if (requestedRanges.length === 0) {
     return {
@@ -375,24 +389,28 @@ export async function syncIntradayMarketData({
         });
         continue;
       }
-      return {
-        source: "network",
-        status: "source-unavailable",
-        candles: await repository.getCandles(
-          instrumentId,
-          "15m",
-          required.startTime,
-          required.endTime,
-        ),
-        coverage,
-        requestedRanges,
-      };
+      const reportedStatus = body?.error?.code;
+      return failureResult(
+        reportedStatus === "invalid-response" ||
+          reportedStatus === "source-rate-limited" ||
+          reportedStatus === "source-forbidden" ||
+          reportedStatus === "source-unavailable"
+          ? reportedStatus
+          : "source-unavailable",
+      );
     }
-    const result = parseRouteResult(await response.json(), range, {
-      instrumentId,
-      symbol,
-      market,
-    });
+    let result: IntradayRouteResult;
+    try {
+      result = parseRouteResult(await response.json(), range, {
+        instrumentId,
+        symbol,
+        market,
+      });
+    } catch (error) {
+      throwIfAborted();
+      if (error instanceof IntradayRouteIdentityError) throw error;
+      return failureResult("invalid-response");
+    }
     throwIfAborted();
     const historyLimited =
       result.candles.length === 0 ||

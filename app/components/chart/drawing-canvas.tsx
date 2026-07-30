@@ -149,6 +149,39 @@ export function formatRiskRewardLabel(
   return parts.join(" · ");
 }
 
+function riskRewardLabelLines(
+  drawing: NormalizedDrawing,
+  plannedRiskAmount: string | undefined,
+  currency: string,
+) {
+  const [entry, stop, target] = drawing.anchors;
+  if (!entry || !stop || !target) return [];
+  const metrics = calculateRiskReward({
+    direction:
+      drawing.tool === "long-risk-reward" ? "long" : "short",
+    entry: entry.price,
+    stop: stop.price,
+    target: target.price,
+  });
+  const lines = [
+    `入场 ${entry.price.toFixed(2)}`,
+    `止损 ${stop.price.toFixed(2)}`,
+    `目标 ${target.price.toFixed(2)}`,
+    `风险距离 ${metrics.riskPerShare.toFixed(2)} (${metrics.riskPercent.toFixed(2)}%)`,
+    `收益距离 ${metrics.rewardPerShare.toFixed(2)} (${metrics.rewardPercent.toFixed(2)}%)`,
+    `${metrics.ratio.toFixed(2)}R`,
+  ];
+  const budget = Number(plannedRiskAmount);
+  if (Number.isFinite(budget) && budget > 0) {
+    lines.push(
+      `计划风险 ${localizedCurrency(budget, currency)}`,
+      `潜在收益 ${localizedCurrency(budget * metrics.ratio, currency)}`,
+      `建议数量 ${Math.floor(budget / metrics.riskPerShare)}`,
+    );
+  }
+  return lines;
+}
+
 function validationMessage(drawing: NormalizedDrawing) {
   if (
     (drawing.tool === "long-risk-reward" ||
@@ -303,13 +336,35 @@ export function DrawingCanvas({
       if ((drawing.tool === "long-risk-reward" || drawing.tool === "short-risk-reward") && points[1] && points[2]) {
         const left = Math.min(points[0].x, points[1].x, points[2].x); const right = Math.max(points[0].x, points[1].x, points[2].x, left + 110);
         context.globalAlpha = 0.2; context.fillStyle = "#ef5350"; context.fillRect(left, Math.min(points[0].y, points[1].y), right - left, Math.abs(points[1].y - points[0].y)); context.fillStyle = "#26a69a"; context.fillRect(left, Math.min(points[0].y, points[2].y), right - left, Math.abs(points[2].y - points[0].y));
-        context.globalAlpha = 0.95; context.fillStyle = "#e6edf7"; context.font = "600 11px var(--font-geist-mono)";
-        const text = formatRiskRewardLabel(
+        context.globalAlpha = 0.95; context.fillStyle = "#e6edf7"; context.font = "600 10px var(--font-geist-mono)";
+        const lines = riskRewardLabelLines(
           drawing,
           plannedRiskAmount,
           currency,
         );
-        context.fillText(text, left + 8, points[0].y - 8);
+        const lineHeight = 13;
+        const widestLine = Math.max(
+          ...lines.map((line) =>
+            context.measureText
+              ? context.measureText(line).width
+              : line.length * 6,
+          ),
+          0,
+        );
+        const labelX = Math.min(
+          Math.max(left + 8, 4),
+          Math.max(4, size.width - widestLine - 4),
+        );
+        const labelY = Math.min(
+          Math.max(points[0].y - 8, 12),
+          Math.max(
+            12,
+            size.height - (lines.length - 1) * lineHeight - 4,
+          ),
+        );
+        lines.forEach((line, index) => {
+          context.fillText(line, labelX, labelY + index * lineHeight);
+        });
       }
       if (drawing.id === selectedDrawingId) { context.fillStyle = "#ffffff"; for (const point of points) { context.fillRect(point.x - 3, point.y - 3, 6, 6); } }
     }

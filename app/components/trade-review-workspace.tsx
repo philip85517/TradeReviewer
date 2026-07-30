@@ -190,6 +190,37 @@ function marketRanges(summary: InstrumentTradeSummary) {
   };
 }
 
+function episodeIntradaySyncRange(
+  episode: TradeEpisode,
+  market: SupportedMarket,
+): IntradayTimeRange {
+  const lastExecutionAt = latestIso(
+    episode.executions.map((execution) => execution.executedAt),
+    episode.startedAt,
+  );
+  const startTime = intradayContextStart(
+    episode.startedAt,
+    episode.instrument.market,
+  );
+  if (episode.status === "closed") {
+    return {
+      startTime,
+      endTime: containingIntradayBarEnd(
+        episode.endedAt ?? lastExecutionAt,
+      ),
+    };
+  }
+  const latestCompletedSession = requiredMarketDataRange(
+    episode.startedAt,
+    lastExecutionAt,
+    { open: true, market },
+  ).endDate;
+  return {
+    startTime,
+    endTime: endOfIsoDate(latestCompletedSession),
+  };
+}
+
 async function readInstrumentMarketState(
   summary: InstrumentTradeSummary,
   repository: IndexedDbMarketDataRepository,
@@ -1365,6 +1396,13 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
         const { instrument } = summary;
         const market = supportedMarket(instrument.market);
         const ranges = marketRanges(summary);
+        const summaryEpisodes = sortedEpisodes(summary);
+        const requestedEpisode =
+          instrumentId === selectedInstrumentId
+            ? summaryEpisodes.find(
+                (episode) => episode.id === selectedEpisodeId,
+              ) ?? summaryEpisodes[0]
+            : summaryEpisodes[0];
         const requestedAt = new Date().toISOString();
         try {
           saveMarketDataJob({
@@ -1408,7 +1446,9 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
               symbol: instrument.symbol,
               market,
               currency: instrument.currency,
-              required: ranges.intraday,
+              required: requestedEpisode
+                ? episodeIntradaySyncRange(requestedEpisode, market)
+                : ranges.intraday,
               repository,
               fetcher: fetch,
               signal: abortController.signal,
@@ -1700,6 +1740,25 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     if (next) setImportedCursor(next);
   }
 
+  async function saveEpisodeReview(record: EpisodeReviewRecord) {
+    const persisted =
+      await new IndexedDbEpisodeReviewRepository().put(record);
+    if (!persisted) return;
+    setEpisodeReviews((current) => {
+      const visible = current[record.episodeId];
+      if (
+        visible &&
+        Date.parse(visible.updatedAt) > Date.parse(record.updatedAt)
+      ) {
+        return current;
+      }
+      return {
+        ...current,
+        [record.episodeId]: record,
+      };
+    });
+  }
+
   return (
     <main className="trade-review-app">
       <header className="app-header">
@@ -1767,13 +1826,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
               setActiveView("review");
             }}
             reviewsHydrated={reviewsHydrated}
-            onSaveReview={async (record) => {
-              await new IndexedDbEpisodeReviewRepository().put(record);
-              setEpisodeReviews((current) => ({
-                ...current,
-                [record.episodeId]: record,
-              }));
-            }}
+            onSaveReview={saveEpisodeReview}
           />
         ) : (
           <>
@@ -1915,13 +1968,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
               onSpeedChange={setSpeed}
               onActivePanelTabChange={setActivePanelTab}
               onDrawerOpenChange={setDrawerOpen}
-              onSaveReview={async (record) => {
-                await new IndexedDbEpisodeReviewRepository().put(record);
-                setEpisodeReviews((current) => ({
-                  ...current,
-                  [record.episodeId]: record,
-                }));
-              }}
+              onSaveReview={saveEpisodeReview}
             />
             )}
           </>

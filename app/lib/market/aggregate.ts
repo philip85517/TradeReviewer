@@ -152,7 +152,11 @@ export function aggregateCandles(
 
     return [...groups.values()]
       .sort((left, right) => left.time.localeCompare(right.time))
-      .map((group) => aggregateGroup(group.candles, group.time));
+      .flatMap((group) =>
+        splitAtMissingSourceBars(group.candles).map((segment, index) =>
+          aggregateGroup(segment, index === 0 ? group.time : segment[0].time),
+        ),
+      );
   }
 
   const result: Candle[] = [];
@@ -180,6 +184,24 @@ export function aggregateCandles(
   }
 
   return result;
+}
+
+function splitAtMissingSourceBars(candles: Candle[]) {
+  const segments: Candle[][] = [];
+  for (const candle of candles) {
+    const segment = segments.at(-1);
+    const previous = segment?.at(-1);
+    if (
+      !segment ||
+      !previous ||
+      Date.parse(candle.time) - Date.parse(previous.time) !== 15 * 60 * 1000
+    ) {
+      segments.push([candle]);
+    } else {
+      segment.push(candle);
+    }
+  }
+  return segments;
 }
 
 function aggregateGroup(candles: Candle[], time = candles[0]?.time): Candle {

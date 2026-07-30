@@ -178,6 +178,42 @@ describe("syncIntradayMarketData", () => {
     });
   });
 
+  it.each([
+    {
+      label: "invalid response",
+      expected: "invalid-response",
+      response: () => Response.json({ changed: "shape" }),
+    },
+    {
+      label: "rate limit",
+      expected: "source-rate-limited",
+      response: () =>
+        Response.json(
+          { error: { code: "source-rate-limited" } },
+          { status: 429 },
+        ),
+    },
+    {
+      label: "access refusal",
+      expected: "source-forbidden",
+      response: () =>
+        Response.json(
+          { error: { code: "source-forbidden" } },
+          { status: 403 },
+        ),
+    },
+  ] as const)(
+    "preserves $label identity at the synchronization boundary",
+    async ({ expected, response }) => {
+      const repo = repository();
+      const result = await syncIntradayMarketData(
+        syncOptions(repo, vi.fn<typeof fetch>(async () => response())),
+      );
+
+      expect(result.status).toBe(expected);
+    },
+  );
+
   it("does not commit a response after its signal is aborted", async () => {
     const repo = repository();
     const controller = new AbortController();

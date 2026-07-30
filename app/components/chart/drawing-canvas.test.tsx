@@ -1,4 +1,11 @@
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { NormalizedDrawing } from "../../lib/chart/drawings";
@@ -8,7 +15,11 @@ import {
 } from "./drawing-canvas";
 import { DrawingToolbar } from "./drawing-toolbar";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
 
 const candles = [
   { time: "2026-01-01T00:00:00.000Z", open: 100, high: 105, low: 95, close: 102, volume: 10 },
@@ -540,6 +551,97 @@ describe("drawing interactions", () => {
     expect(label).toContain("计划风险 JP¥1,000.00");
     expect(label).toContain("潜在收益 JP¥2,000.00");
     expect(label).not.toContain("$");
+  });
+
+  it("renders complete risk/reward values as contained stacked lines on a compact canvas", async () => {
+    const fillText = vi.fn();
+    const measureText = vi.fn((text: string) => ({
+      width: text.length * 6,
+    })) as unknown as CanvasRenderingContext2D["measureText"];
+    const context = {
+      setTransform: vi.fn(),
+      clearRect: vi.fn(),
+      setLineDash: vi.fn(),
+      fillRect: vi.fn(),
+      beginPath: vi.fn(),
+      moveTo: vi.fn(),
+      lineTo: vi.fn(),
+      stroke: vi.fn(),
+      arc: vi.fn(),
+      fill: vi.fn(),
+      strokeRect: vi.fn(),
+      fillText,
+      measureText,
+      globalAlpha: 1,
+      strokeStyle: "",
+      fillStyle: "",
+      lineWidth: 1,
+      font: "",
+    } as unknown as CanvasRenderingContext2D;
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(
+      context,
+    );
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(
+          private readonly callback: ResizeObserverCallback,
+        ) {}
+        observe(target: Element) {
+          this.callback(
+            [
+              {
+                target,
+                contentRect: {
+                  width: 180,
+                  height: 150,
+                },
+              } as ResizeObserverEntry,
+            ],
+            this as unknown as ResizeObserver,
+          );
+        }
+        disconnect() {}
+        unobserve() {}
+      },
+    );
+    const drawing = savedDrawing({
+      id: "compact-risk-label",
+      tool: "long-risk-reward",
+      anchors: [
+        { time: candles[0].time, price: 100 },
+        { time: candles[1].time, price: 90 },
+        { time: candles[1].time, price: 120 },
+      ],
+    });
+
+    renderCanvas({
+      drawings: [drawing],
+      plannedRiskAmount: "1000",
+      currency: "HKD",
+    });
+
+    await waitFor(() => expect(fillText.mock.calls.length).toBeGreaterThan(1));
+    const renderedText = fillText.mock.calls
+      .map(([text]) => String(text))
+      .join("\n");
+    for (const required of [
+      "入场 100.00",
+      "止损 90.00",
+      "目标 120.00",
+      "计划风险 HK$1,000.00",
+      "建议数量 100",
+      "潜在收益 HK$2,000.00",
+      "2.00R",
+    ]) {
+      expect(renderedText).toContain(required);
+    }
+    for (const [text, x, y] of fillText.mock.calls) {
+      expect(Number(x)).toBeGreaterThanOrEqual(0);
+      expect(Number(y)).toBeGreaterThanOrEqual(0);
+      expect(Number(x) + String(text).length * 6).toBeLessThanOrEqual(180);
+      expect(Number(y)).toBeLessThanOrEqual(150);
+    }
   });
 
   it.each([

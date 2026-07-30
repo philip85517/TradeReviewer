@@ -21,55 +21,57 @@ export function createImportedReplay(
   input: ImportedReplayInput,
 ): ImportedReplay {
   const candles = [...input.candles].sort((a, b) =>
-    candleKnowledgeAt(a).localeCompare(candleKnowledgeAt(b)),
+    Date.parse(candleKnowledgeAt(a)) - Date.parse(candleKnowledgeAt(b)),
   );
   const executions = [...input.executions].sort((a, b) =>
-    a.executedAt.localeCompare(b.executedAt),
+    Date.parse(a.executedAt) - Date.parse(b.executedAt),
   );
   const firstCandle = candles[0];
   const lastCandle = candles.at(-1);
+  const storedCursorTime = input.storedCursor
+    ? Date.parse(input.storedCursor)
+    : Number.NaN;
   const storedCursorIsInRange =
     input.storedCursor !== undefined &&
     firstCandle !== undefined &&
     lastCandle !== undefined &&
-    input.storedCursor >= candleKnowledgeAt(firstCandle) &&
-    input.storedCursor <= candleKnowledgeAt(lastCandle);
+    Number.isFinite(storedCursorTime) &&
+    storedCursorTime >= Date.parse(firstCandle.time) &&
+    storedCursorTime <= Date.parse(candleKnowledgeAt(lastCandle));
   const currentCursor = storedCursorIsInRange
-    ? candleKnowledgeAt(
-        candles.findLast(
-          (candle) => candleKnowledgeAt(candle) <= input.storedCursor!,
-        )!,
-      )
+    ? input.storedCursor!
     : firstCandle
       ? candleKnowledgeAt(firstCandle)
       : "";
-  const currentIndex = candles.findIndex(
-    (candle) => candleKnowledgeAt(candle) === currentCursor,
+  const currentCursorTime = Date.parse(currentCursor);
+  const previousCandle = candles.findLast(
+    (candle) => Date.parse(candleKnowledgeAt(candle)) < currentCursorTime,
+  );
+  const nextCandle = candles.find(
+    (candle) => Date.parse(candleKnowledgeAt(candle)) > currentCursorTime,
   );
 
   return {
     currentCursor,
-    canGoBack: currentIndex > 0,
-    canGoForward: currentIndex >= 0 && currentIndex < candles.length - 1,
-    previous: () => {
-      const candle = candles[Math.max(currentIndex - 1, 0)];
-      return candle ? candleKnowledgeAt(candle) : currentCursor;
-    },
-    next: () =>
-      candles[Math.min(currentIndex + 1, candles.length - 1)]
-        ? candleKnowledgeAt(
-            candles[Math.min(currentIndex + 1, candles.length - 1)],
-          )
-        : currentCursor,
+    canGoBack: previousCandle !== undefined,
+    canGoForward: nextCandle !== undefined,
+    previous: () =>
+      previousCandle ? candleKnowledgeAt(previousCandle) : currentCursor,
+    next: () => (nextCandle ? candleKnowledgeAt(nextCandle) : currentCursor),
     nextExecution: () =>
-      executions.find((execution) => execution.executedAt > currentCursor)
-        ?.executedAt ?? currentCursor,
+      executions.find(
+        (execution) => Date.parse(execution.executedAt) > currentCursorTime,
+      )?.executedAt ?? currentCursor,
     cursorForTimeframe: (nextCandles) => {
       const containing = [...nextCandles]
         .sort((a, b) =>
-          candleKnowledgeAt(a).localeCompare(candleKnowledgeAt(b)),
+          Date.parse(candleKnowledgeAt(a)) -
+          Date.parse(candleKnowledgeAt(b)),
         )
-        .findLast((candle) => candleKnowledgeAt(candle) <= currentCursor);
+        .findLast(
+          (candle) =>
+            Date.parse(candleKnowledgeAt(candle)) <= currentCursorTime,
+        );
       return containing ? candleKnowledgeAt(containing) : currentCursor;
     },
   };

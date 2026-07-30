@@ -1,6 +1,10 @@
+import "fake-indexeddb/auto";
+
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import type { EpisodeReviewRecord } from "../../lib/reviews/types";
+import { IndexedDbEpisodeReviewRepository } from "../../lib/storage/indexeddb-episode-review-repository";
 import { useEpisodeReviewAutosave } from "./use-episode-review-autosave";
 
 function deferred<T>() {
@@ -199,6 +203,130 @@ describe("useEpisodeReviewAutosave", () => {
     expect(reviewSave.planRevisions.at(-1)?.plan.thesis).toBe(
       "later thesis",
     );
+  });
+
+  it.each(["-1", "0"])(
+    "rejects historical planned risk %s even when the latest plan remains valid",
+    async (invalidRisk) => {
+      vi.useFakeTimers();
+      const onSave = vi.fn().mockResolvedValue(undefined);
+      const record: EpisodeReviewRecord = {
+        version: 1,
+        episodeId: `historical-risk-${invalidRisk}`,
+        instrumentId: "HK:9868",
+        updatedAt: "2025-01-02T11:00:00.000Z",
+        plan: {
+          thesis: "later",
+          expectedPath: "",
+          invalidationCondition: "",
+          targetRange: "",
+          plannedRiskAmount: "50",
+          confidence: null,
+        },
+        planRevisions: [
+          {
+            knowledgeAt: "2025-01-02T10:00:00.000Z",
+            plan: {
+              thesis: "entry",
+              expectedPath: "",
+              invalidationCondition: "",
+              targetRange: "",
+              plannedRiskAmount: "100",
+              confidence: null,
+            },
+          },
+          {
+            knowledgeAt: "2025-01-02T11:00:00.000Z",
+            plan: {
+              thesis: "later",
+              expectedPath: "",
+              invalidationCondition: "",
+              targetRange: "",
+              plannedRiskAmount: "50",
+              confidence: null,
+            },
+          },
+        ],
+        review: {
+          decisionQuality: null,
+          executionQuality: null,
+          riskManagement: "",
+          psychology: "",
+          reusableRule: "",
+          completed: false,
+        },
+        confirmedTagIds: [],
+      };
+      const { result } = renderHook(() =>
+        useEpisodeReviewAutosave({
+          episodeId: record.episodeId,
+          instrumentId: record.instrumentId,
+          record,
+          knowledgeCursor: "2025-01-02T10:30:00.000Z",
+          episodeStartedAt: "2025-01-02T10:00:00.000Z",
+          onSave,
+        }),
+      );
+
+      act(() =>
+        result.current.updatePlan("plannedRiskAmount", invalidRisk),
+      );
+      await act(async () => vi.advanceTimersByTimeAsync(600));
+
+      expect(onSave).not.toHaveBeenCalled();
+      expect(result.current.status).toBe("error");
+      expect(result.current.error).toBe("计划风险必须大于 0");
+    },
+  );
+
+  it("keeps the newest concurrent save in IndexedDB when it resolves first", async () => {
+    const databaseName = `autosave-newest-${crypto.randomUUID()}`;
+    const repository = new IndexedDbEpisodeReviewRepository(databaseName);
+    const olderStarted = deferred<void>();
+    const olderWrite = deferred<void>();
+    const olderPersisted = deferred<void>();
+    const newestPersisted = deferred<void>();
+    const onSave = vi.fn(async (record: EpisodeReviewRecord) => {
+      if (record.plan.thesis === "older draft") {
+        olderStarted.resolve();
+        await olderWrite.promise;
+      }
+      await repository.put(record);
+      if (record.plan.thesis === "older draft") {
+        olderPersisted.resolve();
+      } else {
+        newestPersisted.resolve();
+      }
+    });
+    const { result, unmount } = renderHook(() =>
+      useEpisodeReviewAutosave({
+        episodeId: "episode-concurrent-order",
+        instrumentId: "US:XPEV",
+        delayMs: 0,
+        onSave,
+      }),
+    );
+
+    act(() => result.current.updatePlan("thesis", "older draft"));
+    await act(async () => olderStarted.promise);
+
+    act(() => result.current.updatePlan("thesis", "newest draft"));
+    await act(async () => newestPersisted.promise);
+    expect((await repository.get("episode-concurrent-order"))?.plan.thesis)
+      .toBe("newest draft");
+
+    olderWrite.resolve();
+    await act(async () => olderPersisted.promise);
+    expect((await repository.get("episode-concurrent-order"))?.plan.thesis)
+      .toBe("newest draft");
+    expect(result.current.draft.plan.thesis).toBe("newest draft");
+
+    unmount();
+    await new Promise<void>((resolve, reject) => {
+      const request = indexedDB.deleteDatabase(databaseName);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
   });
 
   it("retains a late failed switch flush by episode and retries the same draft", async () => {

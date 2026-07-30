@@ -6,6 +6,8 @@ export type MarketDataSyncStatus =
   | "complete"
   | "partial"
   | "stale"
+  | "source-rate-limited"
+  | "source-forbidden"
   | "source-unavailable"
   | "invalid-response"
   | "storage-error"
@@ -19,6 +21,8 @@ export function marketDataStatusLabel(status: MarketDataSyncStatus) {
   if (status === "complete" || status === "ready") return "本地行情完整";
   if (status === "partial") return "行情部分可用";
   if (status === "stale") return "行情可更新";
+  if (status === "source-rate-limited") return "行情源访问受限";
+  if (status === "source-forbidden") return "行情源拒绝访问";
   if (status === "source-unavailable") return "行情源暂不可用";
   if (status === "invalid-response") return "行情格式异常";
   if (status === "storage-error") return "本地存储失败";
@@ -33,6 +37,8 @@ export function coverageStatusForSegments(
   const priority: CoverageStatus[] = [
     "storage-error",
     "invalid-response",
+    "source-forbidden",
+    "source-rate-limited",
     "source-unavailable",
     "syncing",
     "partial",

@@ -710,6 +710,97 @@ describe("TradeReviewWorkspace", () => {
     );
   });
 
+  it("bounds intraday refresh to the selected episode and changes bounds after an episode switch", async () => {
+    const user = userEvent.setup();
+    const executions = [
+      availabilityExecution({
+        id: "old-open",
+        row: 2,
+        side: "buy",
+        executedAt: "2025-01-02T14:30:00.000Z",
+      }),
+      availabilityExecution({
+        id: "old-close",
+        row: 3,
+        side: "sell",
+        executedAt: "2025-01-02T15:00:00.000Z",
+      }),
+      availabilityExecution({
+        id: "new-open",
+        row: 4,
+        side: "buy",
+        executedAt: "2025-01-06T14:30:00.000Z",
+      }),
+      availabilityExecution({
+        id: "new-close",
+        row: 5,
+        side: "sell",
+        executedAt: "2025-01-06T15:00:00.000Z",
+      }),
+    ];
+    saveImportedExecutions(executions);
+    const [oldEpisode] = buildTradeEpisodes(executions);
+    vi.mocked(fetch).mockImplementation(async () =>
+      Response.json(
+        { error: { code: "source-unavailable" } },
+        { status: 502 },
+      ),
+    );
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("combobox", { name: "交易回合" });
+    await user.click(
+      await screen.findByRole("button", { name: "行情数据详情" }),
+    );
+    await user.click(
+      await screen.findByRole("button", { name: "刷新行情数据" }),
+    );
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+
+    const newestIntraday = new URL(
+      String(
+        vi.mocked(fetch).mock.calls.find(([input]) =>
+          String(input).includes("/api/market-data/intraday"),
+        )?.[0],
+      ),
+      "http://localhost",
+    );
+    expect(newestIntraday.searchParams.get("start")).toBe(
+      "2024-12-30T14:30:00.000Z",
+    );
+    expect(newestIntraday.searchParams.get("end")).toBe(
+      "2025-01-06T15:14:59.999Z",
+    );
+
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "交易回合" }),
+      oldEpisode.id,
+    );
+    vi.mocked(fetch).mockClear();
+    await user.click(
+      screen.getByRole("button", { name: "行情数据详情" }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: "刷新行情数据" }),
+    );
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+
+    const oldIntraday = new URL(
+      String(
+        vi.mocked(fetch).mock.calls.find(([input]) =>
+          String(input).includes("/api/market-data/intraday"),
+        )?.[0],
+      ),
+      "http://localhost",
+    );
+    expect(oldIntraday.searchParams.get("start")).toBe(
+      "2024-12-26T14:30:00.000Z",
+    );
+    expect(oldIntraday.searchParams.get("end")).toBe(
+      "2025-01-02T15:14:59.999Z",
+    );
+  });
+
   it("uses the unified replay workspace for a cached imported episode", async () => {
     const user = userEvent.setup();
     const instrument = {

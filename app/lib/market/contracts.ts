@@ -67,6 +67,8 @@ export type CoverageStatus =
   | "complete"
   | "partial"
   | "stale"
+  | "source-rate-limited"
+  | "source-forbidden"
   | "source-unavailable"
   | "invalid-response"
   | "storage-error";

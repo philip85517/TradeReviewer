@@ -26,6 +26,8 @@ const INTRADAY_UNAVAILABLE_STATUSES: Partial<
   syncing: "正在获取 15 分钟行情",
   partial: "15 分钟行情暂不可用",
   stale: "15 分钟行情需要更新",
+  "source-rate-limited": "公开行情源暂时限制访问",
+  "source-forbidden": "公开行情源拒绝访问 15 分钟行情",
   "source-unavailable": "公开行情源暂不可用",
   "invalid-response": "公开行情源返回的 15 分钟行情格式异常",
   "storage-error": "本地存储失败",

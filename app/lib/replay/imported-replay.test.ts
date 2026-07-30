@@ -125,4 +125,29 @@ describe("createImportedReplay", () => {
       "2025-01-02T10:15:00.000Z",
     );
   });
+
+  it("preserves a raw cursor before the first completed bar when finding the next execution", () => {
+    const completedCandles = [
+      {
+        ...candle("2025-01-02T10:00:00.000Z"),
+        knowledgeAt: "2025-01-02T10:15:00.000Z",
+      },
+    ];
+    const replay = createImportedReplay({
+      candles: completedCandles,
+      executions: [
+        fill("2025-01-02T10:12:00.000Z"),
+        fill("2025-01-02T10:20:00.000Z"),
+      ],
+      storedCursor: "2025-01-02T10:07:00.000Z",
+    });
+
+    expect(replay.currentCursor).toBe("2025-01-02T10:07:00.000Z");
+    expect(replay.nextExecution()).toBe("2025-01-02T10:12:00.000Z");
+    expect(
+      completedCandles.filter(
+        (bar) => bar.knowledgeAt <= replay.currentCursor,
+      ),
+    ).toEqual([]);
+  });
 });

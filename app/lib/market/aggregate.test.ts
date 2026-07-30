@@ -297,6 +297,81 @@ describe("aggregateCandles", () => {
     ]);
   });
 
+  it("splits one US hourly bucket at a missing 15 minute source bar", () => {
+    const hourly = aggregateCandles(
+      [
+        {
+          time: "2025-01-02T14:30:00.000Z",
+          knowledgeAt: "2025-01-02T14:45:00.000Z",
+          open: 10,
+          high: 11,
+          low: 9,
+          close: 10.5,
+          volume: 10,
+        },
+        {
+          time: "2025-01-02T14:45:00.000Z",
+          knowledgeAt: "2025-01-02T15:00:00.000Z",
+          open: 10.5,
+          high: 12,
+          low: 10,
+          close: 11,
+          volume: 20,
+        },
+        {
+          time: "2025-01-02T15:15:00.000Z",
+          knowledgeAt: "2025-01-02T15:30:00.000Z",
+          open: 13,
+          high: 14,
+          low: 12,
+          close: 13.5,
+          volume: 30,
+        },
+        {
+          time: "2025-01-02T15:30:00.000Z",
+          knowledgeAt: "2025-01-02T15:45:00.000Z",
+          open: 13.5,
+          high: 15,
+          low: 13,
+          close: 14,
+          volume: 40,
+        },
+      ],
+      "1h",
+      { sourceInterval: "15m", market: "US" },
+    );
+
+    expect(hourly).toEqual([
+      {
+        time: "2025-01-02T14:30:00.000Z",
+        knowledgeAt: "2025-01-02T15:00:00.000Z",
+        open: 10,
+        high: 12,
+        low: 9,
+        close: 11,
+        volume: 30,
+      },
+      {
+        time: "2025-01-02T15:15:00.000Z",
+        knowledgeAt: "2025-01-02T15:30:00.000Z",
+        open: 13,
+        high: 14,
+        low: 12,
+        close: 13.5,
+        volume: 30,
+      },
+      {
+        time: "2025-01-02T15:30:00.000Z",
+        knowledgeAt: "2025-01-02T15:45:00.000Z",
+        open: 13.5,
+        high: 15,
+        low: 13,
+        close: 14,
+        volume: 40,
+      },
+    ]);
+  });
+
   it("does not aggregate across the mainland lunch break", () => {
     const hourly = aggregateCandles(
       [
@@ -372,9 +447,27 @@ describe("aggregateCandles", () => {
           volume: 10,
         },
         {
+          time: "2025-01-02T14:45:00.000Z",
+          knowledgeAt: "2025-01-02T15:00:00.000Z",
+          open: 10,
+          high: 12,
+          low: 10,
+          close: 11,
+          volume: 20,
+        },
+        {
+          time: "2025-01-02T15:00:00.000Z",
+          knowledgeAt: "2025-01-02T15:15:00.000Z",
+          open: 11,
+          high: 12,
+          low: 10,
+          close: 11,
+          volume: 20,
+        },
+        {
           time: "2025-01-02T15:15:00.000Z",
           knowledgeAt: "2025-01-02T15:30:00.000Z",
-          open: 10,
+          open: 11,
           high: 12,
           low: 10,
           close: 11,

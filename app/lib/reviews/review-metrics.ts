@@ -46,6 +46,18 @@ export function isValidPlannedRiskAmount(value: string) {
   }
 }
 
+export function hasValidPlannedRiskAmounts(
+  record: EpisodeReviewRecord,
+) {
+  return (
+    isValidPlannedRiskAmount(record.plan.plannedRiskAmount) &&
+    (record.planRevisions?.every((revision) =>
+      isValidPlannedRiskAmount(revision.plan.plannedRiskAmount),
+    ) ??
+      true)
+  );
+}
+
 function clean(value: string) {
   return value.trim();
 }

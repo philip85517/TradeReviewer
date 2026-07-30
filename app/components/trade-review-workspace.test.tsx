@@ -7,6 +7,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import * as XLSX from "xlsx";
 import {
   afterEach,
   beforeEach,
@@ -174,6 +175,41 @@ function availabilityExecution(input: {
     price: input.side === "buy" ? "10" : "11",
     fee: "0",
   };
+}
+
+function futuImportFile(rows: unknown[][]) {
+  const workbook = XLSX.utils.book_new();
+  const sheet = XLSX.utils.aoa_to_sheet([
+    [
+      "成交时间",
+      "账户名称",
+      "账户号码",
+      "品类",
+      "代码名称",
+      "交易所/市场",
+      "方向",
+      "交收日期",
+      "币种",
+      "数量/面值",
+      "价格",
+      "成交金额",
+      "总费用",
+      "变动金额",
+    ],
+    ...rows,
+  ]);
+  XLSX.utils.book_append_sheet(workbook, sheet, "证券-交易流水");
+  const buffer = XLSX.write(workbook, {
+    type: "array",
+    bookType: "xlsx",
+  }) as ArrayBuffer;
+  const file = new File([buffer], "later-xpev-episode.xlsx", {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+  Object.defineProperty(file, "arrayBuffer", {
+    value: async () => buffer,
+  });
+  return file;
 }
 
 async function cacheAvailabilityCandles(timestamps: string[]) {
@@ -798,6 +834,96 @@ describe("TradeReviewWorkspace", () => {
     );
     expect(oldIntraday.searchParams.get("end")).toBe(
       "2025-01-02T15:14:59.999Z",
+    );
+  });
+
+  it("automatically syncs a newly imported later episode using that episode's bounds", async () => {
+    const user = userEvent.setup();
+    saveImportedExecutions([
+      availabilityExecution({
+        id: "existing-open",
+        row: 2,
+        side: "buy",
+        executedAt: "2025-01-02T14:30:00.000Z",
+      }),
+      availabilityExecution({
+        id: "existing-close",
+        row: 3,
+        side: "sell",
+        executedAt: "2025-01-02T15:00:00.000Z",
+      }),
+    ]);
+    vi.mocked(fetch).mockImplementation(async () =>
+      Response.json(
+        { error: { code: "source-unavailable" } },
+        { status: 502 },
+      ),
+    );
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("combobox", { name: "交易回合" });
+    vi.mocked(fetch).mockClear();
+    const fileInput = document.querySelector<HTMLInputElement>(
+      'input[type="file"]',
+    );
+    expect(fileInput).not.toBeNull();
+    await user.upload(
+      fileInput!,
+      futuImportFile([
+        [
+          "2025-01-06 22:30:00",
+          "富途",
+          "acct",
+          "证券",
+          "XPEV 小鹏汽车",
+          "US",
+          "买入开仓",
+          "20250106",
+          "USD",
+          "10",
+          "10",
+          "-100",
+          "0",
+          "-100",
+        ],
+        [
+          "2025-01-06 23:00:00",
+          "富途",
+          "acct",
+          "证券",
+          "XPEV 小鹏汽车",
+          "US",
+          "卖出平仓",
+          "20250106",
+          "USD",
+          "-10",
+          "11",
+          "110",
+          "0",
+          "110",
+        ],
+      ]),
+    );
+    await user.click(
+      await screen.findByRole("button", {
+        name: "确认导入并开始更新行情",
+      }),
+    );
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+
+    const intradayRequest = new URL(
+      String(
+        vi.mocked(fetch).mock.calls.find(([input]) =>
+          String(input).includes("/api/market-data/intraday"),
+        )?.[0],
+      ),
+      "http://localhost",
+    );
+    expect(intradayRequest.searchParams.get("start")).toBe(
+      "2024-12-30T14:30:00.000Z",
+    );
+    expect(intradayRequest.searchParams.get("end")).toBe(
+      "2025-01-06T15:14:59.999Z",
     );
   });
 

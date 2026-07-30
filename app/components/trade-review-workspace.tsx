@@ -1344,7 +1344,10 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     [],
   );
 
-  async function startMarketDataUpdate(instrumentIds: string[]) {
+  async function startMarketDataUpdate(
+    instrumentIds: string[],
+    episodeIdsByInstrument: Readonly<Record<string, string>> = {},
+  ) {
     if (instrumentIds.length === 0) return;
     const summariesById = new Map(
       buildInstrumentTradeSummaries([
@@ -1397,12 +1400,15 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
         const market = supportedMarket(instrument.market);
         const ranges = marketRanges(summary);
         const summaryEpisodes = sortedEpisodes(summary);
+        const requestedEpisodeId =
+          episodeIdsByInstrument[instrumentId] ??
+          (instrumentId === selectedInstrumentId
+            ? selectedEpisodeId
+            : undefined);
         const requestedEpisode =
-          instrumentId === selectedInstrumentId
-            ? summaryEpisodes.find(
-                (episode) => episode.id === selectedEpisodeId,
-              ) ?? summaryEpisodes[0]
-            : summaryEpisodes[0];
+          summaryEpisodes.find(
+            (episode) => episode.id === requestedEpisodeId,
+          ) ?? summaryEpisodes[0];
         const requestedAt = new Date().toISOString();
         try {
           saveMarketDataJob({
@@ -1634,8 +1640,17 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     const firstImported = summaries.find((item) =>
       importedIds.includes(item.instrument.id),
     );
+    const automaticEpisodeIds = Object.fromEntries(
+      summaries.flatMap((summary) => {
+        if (!automaticSyncIds.includes(summary.instrument.id)) return [];
+        const newestEpisode = sortedEpisodes(summary)[0];
+        return newestEpisode
+          ? [[summary.instrument.id, newestEpisode.id]]
+          : [];
+      }),
+    );
     if (firstImported) selectImportedSummary(firstImported);
-    void startMarketDataUpdate(automaticSyncIds);
+    void startMarketDataUpdate(automaticSyncIds, automaticEpisodeIds);
     setPendingImport(null);
   }
 

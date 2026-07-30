@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 
-import type { Candle } from "../market/types";
+import { candleKnowledgeAt, type Candle } from "../market/types";
 import type { TradeExecution } from "../trades/types";
 import {
   replayPositionAtPrice,
@@ -53,7 +53,7 @@ export function calculatePositionPathMetrics(
   input: PositionPathInput,
 ): PositionPathMetrics {
   const candles = input.candles
-    .filter((candle) => candle.time <= input.cursor)
+    .filter((candle) => candleKnowledgeAt(candle) <= input.cursor)
     .sort((a, b) => a.time.localeCompare(b.time));
   const executions = input.executions
     .filter((execution) => execution.executedAt <= input.cursor)
@@ -93,7 +93,7 @@ export function calculatePositionPathMetrics(
   }
 
   const usableCandles = candles.filter(
-    (candle) => candle.time >= executions[0].executedAt,
+    (candle) => candleKnowledgeAt(candle) >= executions[0].executedAt,
   );
   if (usableCandles.length === 0) {
     const lastExecution = executions.at(-1)!;
@@ -125,7 +125,7 @@ export function calculatePositionPathMetrics(
 
   for (const candle of usableCandles) {
     const candleExecutions = executions.filter(
-      (execution) => execution.executedAt <= candle.time,
+      (execution) => execution.executedAt <= candleKnowledgeAt(candle),
     );
     if (candleExecutions.length === 0) continue;
 

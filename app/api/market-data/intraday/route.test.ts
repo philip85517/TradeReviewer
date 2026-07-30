@@ -83,6 +83,14 @@ describe("GET /api/market-data/intraday", () => {
       providerSymbol: "hk01810",
       interval: "15m",
       adjustmentMode: "raw",
+      request: {
+        instrumentId: "HK:1810",
+        symbol: "1810",
+        market: "HK",
+        interval: "15m",
+        startTime: "2025-01-02T01:30:00.000Z",
+        endTime: "2025-01-02T01:30:00.000Z",
+      },
       candles: [
         { timestamp: "2025-01-02T01:30:00.000Z", close: "34.5" },
       ],

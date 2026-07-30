@@ -25,7 +25,12 @@ import {
 export class IndexedDbMarketDataRepository
   implements MarketDataRepository
 {
-  constructor(private readonly databaseName = "trade-reviewer") {}
+  constructor(
+    private readonly databaseName = "trade-reviewer",
+    private readonly testHooks?: {
+      beforeIntervalCoverageWrite?: () => void;
+    },
+  ) {}
 
   private open() {
     return openTradeReviewDatabase(this.databaseName);
@@ -203,19 +208,26 @@ export class IndexedDbMarketDataRepository
         "readwrite",
       );
       const completion = transactionDone(transaction);
-      const candles = transaction.objectStore(MARKET_CANDLES);
-      for (const candle of result.candles) candles.put(candle);
-      transaction.objectStore(INTERVAL_COVERAGE).put({
-        instrumentId: result.instrumentId,
-        interval: result.interval,
-        segments: result.coverage,
-      });
-      if (result.providerSymbol) {
-        transaction.objectStore(PROVIDER_SYMBOLS).put({
+      try {
+        const candles = transaction.objectStore(MARKET_CANDLES);
+        for (const candle of result.candles) candles.put(candle);
+        this.testHooks?.beforeIntervalCoverageWrite?.();
+        transaction.objectStore(INTERVAL_COVERAGE).put({
           instrumentId: result.instrumentId,
-          provider: result.providerSymbol.provider,
-          symbol: result.providerSymbol.symbol,
+          interval: result.interval,
+          segments: result.coverage,
         });
+        if (result.providerSymbol) {
+          transaction.objectStore(PROVIDER_SYMBOLS).put({
+            instrumentId: result.instrumentId,
+            provider: result.providerSymbol.provider,
+            symbol: result.providerSymbol.symbol,
+          });
+        }
+      } catch (error) {
+        transaction.abort();
+        await completion.catch(() => undefined);
+        throw error;
       }
       await completion;
     } finally {

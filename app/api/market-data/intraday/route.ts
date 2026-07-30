@@ -85,7 +85,11 @@ export async function GET(request: Request) {
         }, REQUEST_TIMEOUT_MS);
       }),
     ]);
-    return json({ ...result, adjustmentMode: "raw" });
+    return json({
+      ...result,
+      request: intradayRequest,
+      adjustmentMode: "raw",
+    });
   } catch (error) {
     const providerError =
       error instanceof MarketDataProviderError ? error : undefined;

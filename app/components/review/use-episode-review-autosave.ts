@@ -3,10 +3,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
+  episodePlanAtCursor,
   isValidPlannedRiskAmount,
+  mergeEpisodePlanRevision,
   normalizeEpisodeReviewRecord,
 } from "../../lib/reviews/review-metrics";
-import type { EpisodeReviewRecord } from "../../lib/reviews/types";
+import type {
+  EpisodePlan,
+  EpisodeReviewRecord,
+} from "../../lib/reviews/types";
 
 type Status = "idle" | "dirty" | "saving" | "saved" | "error";
 
@@ -14,24 +19,53 @@ type Input = {
   episodeId: string;
   instrumentId: string;
   record?: EpisodeReviewRecord;
+  knowledgeCursor?: string;
+  episodeStartedAt?: string;
   delayMs?: number;
   onSave: (record: EpisodeReviewRecord) => Promise<void>;
 };
 
-function emptyRecord(episodeId: string, instrumentId: string): EpisodeReviewRecord {
+type RetainedDraft = {
+  draft: EpisodeReviewRecord;
+  status: Exclude<Status, "idle" | "saved">;
+  error: string | null;
+  revision: number;
+};
+
+const retainedDrafts = new Map<string, RetainedDraft>();
+const latestRevisions = new Map<string, number>();
+
+function identityFor(episodeId: string, instrumentId: string) {
+  return `${episodeId}\u0000${instrumentId}`;
+}
+
+function nextRevision(identity: string) {
+  const revision = (latestRevisions.get(identity) ?? 0) + 1;
+  latestRevisions.set(identity, revision);
+  return revision;
+}
+
+function emptyPlan(): EpisodePlan {
+  return {
+    thesis: "",
+    expectedPath: "",
+    invalidationCondition: "",
+    targetRange: "",
+    plannedRiskAmount: "",
+    confidence: null,
+  };
+}
+
+function emptyRecord(
+  episodeId: string,
+  instrumentId: string,
+): EpisodeReviewRecord {
   return {
     version: 1,
     episodeId,
     instrumentId,
     updatedAt: new Date(0).toISOString(),
-    plan: {
-      thesis: "",
-      expectedPath: "",
-      invalidationCondition: "",
-      targetRange: "",
-      plannedRiskAmount: "",
-      confidence: null,
-    },
+    plan: emptyPlan(),
     review: {
       decisionQuality: null,
       executionQuality: null,
@@ -44,135 +78,302 @@ function emptyRecord(episodeId: string, instrumentId: string): EpisodeReviewReco
   };
 }
 
-function recordFor(input: Pick<Input, "episodeId" | "instrumentId" | "record">) {
+function sourceRecord(
+  input: Pick<Input, "episodeId" | "instrumentId" | "record">,
+) {
   return input.record ?? emptyRecord(input.episodeId, input.instrumentId);
+}
+
+function displayRecordAtCursor(
+  record: EpisodeReviewRecord,
+  knowledgeCursor: string | undefined,
+) {
+  if (!knowledgeCursor) return record;
+  return {
+    ...record,
+    plan: episodePlanAtCursor(record, knowledgeCursor) ?? emptyPlan(),
+  };
 }
 
 export function useEpisodeReviewAutosave(input: Input) {
   const delayMs = input.delayMs ?? 600;
-  const [draft, setDraft] = useState(() => recordFor(input));
-  const [status, setStatus] = useState<Status>("idle");
-  const [error, setError] = useState<string | null>(null);
+  const initialIdentity = identityFor(
+    input.episodeId,
+    input.instrumentId,
+  );
+  const initialRetained = retainedDrafts.get(initialIdentity);
+  const initialSource = initialRetained?.draft ?? sourceRecord(input);
+  const [draft, setDraft] = useState(() =>
+    displayRecordAtCursor(initialSource, input.knowledgeCursor),
+  );
+  const [status, setStatus] = useState<Status>(
+    initialRetained?.status ?? "idle",
+  );
+  const [error, setError] = useState<string | null>(
+    initialRetained?.error ?? null,
+  );
   const draftRef = useRef(draft);
-  const dirtyRef = useRef(false);
-  const revisionRef = useRef(0);
+  const sourceRef = useRef(initialSource);
+  const dirtyRef = useRef(Boolean(initialRetained));
+  const revisionRef = useRef(
+    initialRetained?.revision ??
+      latestRevisions.get(initialIdentity) ??
+      0,
+  );
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const identityRef = useRef(`${input.episodeId}\u0000${input.instrumentId}`);
+  const identityRef = useRef(initialIdentity);
+  const cursorRef = useRef(input.knowledgeCursor);
   const recordUpdatedAtRef = useRef(input.record?.updatedAt);
   const onSaveRef = useRef(input.onSave);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
     onSaveRef.current = input.onSave;
   }, [input.onSave]);
 
-  const persist = useCallback(async (candidate: EpisodeReviewRecord, revision: number) => {
-    if (!isValidPlannedRiskAmount(candidate.plan.plannedRiskAmount)) {
-      if (revision === revisionRef.current) {
-        setStatus("error");
-        setError("计划风险必须大于 0");
+  const showRetainedState = useCallback(
+    (
+      identity: string,
+      revision: number,
+      retained: RetainedDraft,
+    ) => {
+      if (
+        !mountedRef.current ||
+        identity !== identityRef.current ||
+        revision !== revisionRef.current
+      ) {
+        return;
       }
-      return;
-    }
+      draftRef.current = displayRecordAtCursor(
+        retained.draft,
+        cursorRef.current,
+      );
+      sourceRef.current = retained.draft;
+      dirtyRef.current = true;
+      setDraft(draftRef.current);
+      setStatus(retained.status);
+      setError(retained.error);
+    },
+    [setDraft, setError, setStatus],
+  );
 
-    const next = normalizeEpisodeReviewRecord({
-      ...candidate,
-      updatedAt: new Date().toISOString(),
-    });
-    if (revision === revisionRef.current) {
-      setStatus("saving");
-      setError(null);
-    }
-    try {
-      await onSaveRef.current(next);
-      if (revision !== revisionRef.current) return;
-      draftRef.current = next;
-      dirtyRef.current = false;
-      setDraft(next);
-      setStatus("saved");
-    } catch {
-      if (revision !== revisionRef.current) return;
-      setStatus("error");
-      setError("保存失败，请检查本机存储后重试");
-    }
-  }, []);
+  const persist = useCallback(
+    async (
+      identity: string,
+      candidate: EpisodeReviewRecord,
+      revision: number,
+    ) => {
+      if (!isValidPlannedRiskAmount(candidate.plan.plannedRiskAmount)) {
+        const retained: RetainedDraft = {
+          draft: candidate,
+          status: "error",
+          error: "计划风险必须大于 0",
+          revision,
+        };
+        if (latestRevisions.get(identity) === revision) {
+          retainedDrafts.set(identity, retained);
+          showRetainedState(identity, revision, retained);
+        }
+        return;
+      }
+
+      const next = normalizeEpisodeReviewRecord({
+        ...candidate,
+        updatedAt: new Date().toISOString(),
+      });
+      const saving: RetainedDraft = {
+        draft: next,
+        status: "saving",
+        error: null,
+        revision,
+      };
+      if (latestRevisions.get(identity) !== revision) return;
+      retainedDrafts.set(identity, saving);
+      showRetainedState(identity, revision, saving);
+
+      try {
+        await onSaveRef.current(next);
+        if (latestRevisions.get(identity) !== revision) return;
+        retainedDrafts.delete(identity);
+        if (
+          !mountedRef.current ||
+          identity !== identityRef.current ||
+          revision !== revisionRef.current
+        ) {
+          return;
+        }
+        sourceRef.current = next;
+        draftRef.current = displayRecordAtCursor(
+          next,
+          cursorRef.current,
+        );
+        dirtyRef.current = false;
+        setDraft(draftRef.current);
+        setStatus("saved");
+        setError(null);
+      } catch {
+        if (latestRevisions.get(identity) !== revision) return;
+        const failed: RetainedDraft = {
+          draft: next,
+          status: "error",
+          error: "保存失败，请检查本机存储后重试",
+          revision,
+        };
+        retainedDrafts.set(identity, failed);
+        showRetainedState(identity, revision, failed);
+      }
+    },
+    [setDraft, setError, setStatus, showRetainedState],
+  );
 
   const flushPending = useCallback(() => {
     if (timerRef.current !== null) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
     }
-    if (dirtyRef.current) {
-      void persist(draftRef.current, revisionRef.current);
+    const identity = identityRef.current;
+    const retained = retainedDrafts.get(identity);
+    if (
+      dirtyRef.current &&
+      retained?.status === "dirty" &&
+      retained.revision === revisionRef.current
+    ) {
+      void persist(identity, retained.draft, retained.revision);
     }
   }, [persist]);
 
-  const schedule = useCallback((next: EpisodeReviewRecord) => {
-    revisionRef.current += 1;
-    const revision = revisionRef.current;
-    draftRef.current = next;
-    dirtyRef.current = true;
-    setDraft(next);
-    setStatus("dirty");
-    setError(null);
-    if (timerRef.current !== null) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => {
-      timerRef.current = null;
-      void persist(next, revision);
-    }, delayMs);
-  }, [delayMs, persist]);
+  const schedule = useCallback(
+    (next: EpisodeReviewRecord) => {
+      const identity = identityRef.current;
+      const revision = nextRevision(identity);
+      const retained: RetainedDraft = {
+        draft: next,
+        status: "dirty",
+        error: null,
+        revision,
+      };
+      revisionRef.current = revision;
+      sourceRef.current = next;
+      draftRef.current = displayRecordAtCursor(
+        next,
+        cursorRef.current,
+      );
+      dirtyRef.current = true;
+      retainedDrafts.set(identity, retained);
+      setDraft(draftRef.current);
+      setStatus("dirty");
+      setError(null);
+      if (timerRef.current !== null) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
+        timerRef.current = null;
+        void persist(identity, next, revision);
+      }, delayMs);
+    },
+    [delayMs, persist, setDraft, setError, setStatus],
+  );
 
   useEffect(() => {
-    const identity = `${input.episodeId}\u0000${input.instrumentId}`;
+    const identity = identityFor(input.episodeId, input.instrumentId);
     if (identity !== identityRef.current) {
       flushPending();
       identityRef.current = identity;
+      cursorRef.current = input.knowledgeCursor;
       recordUpdatedAtRef.current = input.record?.updatedAt;
-      revisionRef.current += 1;
-      const next = recordFor(input);
-      draftRef.current = next;
-      dirtyRef.current = false;
-      setDraft(next);
-      setStatus("idle");
-      setError(null);
+      const retained = retainedDrafts.get(identity);
+      const next = retained?.draft ?? sourceRecord(input);
+      revisionRef.current =
+        retained?.revision ?? latestRevisions.get(identity) ?? 0;
+      sourceRef.current = next;
+      draftRef.current = displayRecordAtCursor(
+        next,
+        input.knowledgeCursor,
+      );
+      dirtyRef.current = Boolean(retained);
+      setDraft(draftRef.current);
+      setStatus(retained?.status ?? "idle");
+      setError(retained?.error ?? null);
       return;
     }
+
+    if (input.knowledgeCursor !== cursorRef.current) {
+      flushPending();
+      cursorRef.current = input.knowledgeCursor;
+      const retained = retainedDrafts.get(identity);
+      const next = retained?.draft ?? sourceRef.current;
+      sourceRef.current = next;
+      draftRef.current = displayRecordAtCursor(
+        next,
+        input.knowledgeCursor,
+      );
+      dirtyRef.current = Boolean(retained);
+      setDraft(draftRef.current);
+      setStatus(retained?.status ?? "idle");
+      setError(retained?.error ?? null);
+      return;
+    }
+
     if (
       input.record &&
       input.record.updatedAt !== recordUpdatedAtRef.current &&
-      !dirtyRef.current
+      !retainedDrafts.has(identity)
     ) {
       recordUpdatedAtRef.current = input.record.updatedAt;
-      draftRef.current = input.record;
-      setDraft(input.record);
+      sourceRef.current = input.record;
+      draftRef.current = displayRecordAtCursor(
+        input.record,
+        input.knowledgeCursor,
+      );
+      dirtyRef.current = false;
+      setDraft(draftRef.current);
       setStatus("idle");
       setError(null);
     }
   }, [flushPending, input]);
 
-  useEffect(() => () => flushPending(), [flushPending]);
+  useEffect(
+    () => {
+      mountedRef.current = true;
+      return () => {
+        mountedRef.current = false;
+        flushPending();
+      };
+    },
+    [flushPending],
+  );
 
-  const updatePlan = <K extends keyof EpisodeReviewRecord["plan"]>(
+  const updatePlan = <K extends keyof EpisodePlan>(
     key: K,
-    value: EpisodeReviewRecord["plan"][K],
+    value: EpisodePlan[K],
   ) => {
-    schedule({
-      ...draftRef.current,
-      plan: { ...draftRef.current.plan, [key]: value },
+    const nextPlan = { ...draftRef.current.plan, [key]: value };
+    if (!input.knowledgeCursor) {
+      schedule({ ...sourceRef.current, plan: nextPlan });
+      return;
+    }
+    const revised = mergeEpisodePlanRevision({
+      record: sourceRef.current,
+      knowledgeAt: input.knowledgeCursor,
+      episodeStartedAt:
+        input.episodeStartedAt ?? input.knowledgeCursor,
+      plan: nextPlan,
     });
+    schedule(revised);
   };
 
-  const updateReview = <K extends keyof EpisodeReviewRecord["review"]>(
+  const updateReview = <
+    K extends keyof EpisodeReviewRecord["review"],
+  >(
     key: K,
     value: EpisodeReviewRecord["review"][K],
   ) => {
     schedule({
-      ...draftRef.current,
-      review: { ...draftRef.current.review, [key]: value },
+      ...sourceRef.current,
+      review: { ...sourceRef.current.review, [key]: value },
     });
   };
 
   const toggleTag = (tagId: string) => {
-    const current = draftRef.current;
+    const current = sourceRef.current;
     schedule({
       ...current,
       confirmedTagIds: current.confirmedTagIds.includes(tagId)
@@ -186,8 +387,24 @@ export function useEpisodeReviewAutosave(input: Input) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
     }
-    await persist(draftRef.current, revisionRef.current);
+    const identity = identityRef.current;
+    const retained = retainedDrafts.get(identity);
+    const candidate = retained?.draft ?? sourceRef.current;
+    const revision =
+      retained?.revision || revisionRef.current || nextRevision(identity);
+    revisionRef.current = revision;
+    latestRevisions.set(identity, revision);
+    dirtyRef.current = true;
+    await persist(identity, candidate, revision);
   };
 
-  return { draft, status, error, updatePlan, updateReview, toggleTag, retry };
+  return {
+    draft,
+    status,
+    error,
+    updatePlan,
+    updateReview,
+    toggleTag,
+    retry,
+  };
 }

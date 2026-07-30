@@ -20,7 +20,10 @@ import type { Candle, Timeframe } from "../../lib/market/types";
 import type { PositionLedgerSnapshot } from "../../lib/replay/position-ledger";
 import type { PositionPathMetrics } from "../../lib/replay/position-path-metrics";
 import { formatReplayCursor } from "../../lib/replay/format-time";
-import type { EpisodeReviewRecord } from "../../lib/reviews/types";
+import type {
+  EpisodePlan,
+  EpisodeReviewRecord,
+} from "../../lib/reviews/types";
 import type { ChartSettings } from "../../lib/storage/chart-settings";
 import type { Instrument, TradeExecution } from "../../lib/trades/types";
 import { ChartToolbar } from "../chart/chart-toolbar";
@@ -72,6 +75,7 @@ type Props = {
   settings: ChartSettings;
   instruments: SearchableInstrument[];
   review?: EpisodeReviewRecord;
+  visiblePlan?: EpisodePlan;
   activePanelTab: "stats" | "notes";
   drawerOpen: boolean;
   onEpisodeChange: (episodeId: string) => void;
@@ -145,6 +149,7 @@ export function ReviewChartWorkspace({
   settings,
   instruments,
   review,
+  visiblePlan,
   activePanelTab,
   drawerOpen,
   onEpisodeChange,
@@ -209,6 +214,9 @@ export function ReviewChartWorkspace({
   const latestCandle = model.candles.at(-1);
   const pnlPositive = Number(model.position.netPnl) >= 0;
   const instrumentLabel = `${model.instrument.name}（${model.instrument.symbol}）`;
+  const episodeStartedAt =
+    episodeOptions.find((episode) => episode.id === model.episodeId)
+      ?.startedAt ?? model.cursor;
 
   return (
     <>
@@ -345,7 +353,8 @@ export function ReviewChartWorkspace({
               activeTool={activeTool}
               settings={settings}
               selectedDrawingId={selectedDrawingId}
-              plannedRiskAmount={review?.plan.plannedRiskAmount}
+              plannedRiskAmount={visiblePlan?.plannedRiskAmount}
+              currency={model.instrument.currency}
               onSelectDrawing={onSelectDrawing}
               onCommand={onDrawingCommand}
             />
@@ -427,8 +436,11 @@ export function ReviewChartWorkspace({
         currency={model.instrument.currency}
         metrics={model.pathMetrics}
         review={review}
+        visiblePlan={visiblePlan}
         episodeId={model.episodeId}
         instrumentId={model.instrument.id}
+        knowledgeCursor={model.cursor}
+        episodeStartedAt={episodeStartedAt}
         activeTab={activePanelTab}
         onActiveTabChange={onActivePanelTabChange}
         onSaveReview={onSaveReview}

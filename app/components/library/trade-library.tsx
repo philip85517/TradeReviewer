@@ -382,6 +382,7 @@ export function TradeLibrary({
                   candles={chartCandles}
                   executions={episode.executions}
                   cursor={cursor}
+                  currency={selectedEntry.instrument.currency}
                   averageCost={0}
                   drawings={[]}
                   activeTool="cursor"

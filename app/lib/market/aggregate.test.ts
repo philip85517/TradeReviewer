@@ -106,11 +106,24 @@ describe("aggregateCandles", () => {
   it("converts a native market record without changing its timestamp", () => {
     expect(marketRecordToChartCandle(intradayRecord)).toEqual({
       time: "2025-01-02T14:30:00.000Z",
+      knowledgeAt: "2025-01-02T14:45:00.000Z",
       open: 10,
       high: 11,
       low: 9,
       close: 10.5,
       volume: 100,
+    });
+  });
+
+  it("preserves an explicit provider availability time separately from the chart bucket start", () => {
+    expect(
+      marketRecordToChartCandle({
+        ...intradayRecord,
+        knowledgeAt: "2025-01-02T14:46:00.000Z",
+      }),
+    ).toMatchObject({
+      time: "2025-01-02T14:30:00.000Z",
+      knowledgeAt: "2025-01-02T14:46:00.000Z",
     });
   });
 
@@ -138,6 +151,7 @@ describe("aggregateCandles", () => {
     expect(hourly).toEqual([
       {
         time: "2025-01-02T14:30:00.000Z",
+        knowledgeAt: "2025-01-02T15:15:00.000Z",
         open: 10,
         high: 12,
         low: 9,
@@ -233,6 +247,148 @@ describe("aggregateCandles", () => {
         volume: 160,
       },
     ]);
+  });
+
+  it("keeps missing 15m bars in their wall-clock hourly buckets instead of compacting them", () => {
+    const hourly = aggregateCandles(
+      [
+        {
+          time: "2025-01-02T14:30:00.000Z",
+          knowledgeAt: "2025-01-02T14:45:00.000Z",
+          open: 10,
+          high: 11,
+          low: 9,
+          close: 10,
+          volume: 10,
+        },
+        {
+          time: "2025-01-02T15:30:00.000Z",
+          knowledgeAt: "2025-01-02T15:45:00.000Z",
+          open: 12,
+          high: 13,
+          low: 11,
+          close: 12,
+          volume: 20,
+        },
+      ],
+      "1h",
+      { sourceInterval: "15m", market: "US" },
+    );
+
+    expect(hourly).toEqual([
+      {
+        time: "2025-01-02T14:30:00.000Z",
+        knowledgeAt: "2025-01-02T14:45:00.000Z",
+        open: 10,
+        high: 11,
+        low: 9,
+        close: 10,
+        volume: 10,
+      },
+      {
+        time: "2025-01-02T15:30:00.000Z",
+        knowledgeAt: "2025-01-02T15:45:00.000Z",
+        open: 12,
+        high: 13,
+        low: 11,
+        close: 12,
+        volume: 20,
+      },
+    ]);
+  });
+
+  it("does not aggregate across the mainland lunch break", () => {
+    const hourly = aggregateCandles(
+      [
+        {
+          time: "2025-01-02T03:15:00.000Z",
+          knowledgeAt: "2025-01-02T03:45:00.000Z",
+          open: 10,
+          high: 11,
+          low: 9,
+          close: 10,
+          volume: 10,
+        },
+        {
+          time: "2025-01-02T05:00:00.000Z",
+          knowledgeAt: "2025-01-02T05:15:00.000Z",
+          open: 12,
+          high: 13,
+          low: 11,
+          close: 12,
+          volume: 20,
+        },
+      ],
+      "4h",
+      { sourceInterval: "15m", market: "CN-SH" },
+    );
+
+    expect(hourly.map((candle) => candle.time)).toEqual([
+      "2025-01-02T01:30:00.000Z",
+      "2025-01-02T05:00:00.000Z",
+    ]);
+  });
+
+  it("aligns US buckets to the local 09:30 session open across daylight saving time", () => {
+    const hourly = aggregateCandles(
+      [
+        {
+          time: "2025-01-02T15:15:00.000Z",
+          open: 10,
+          high: 11,
+          low: 9,
+          close: 10,
+          volume: 10,
+        },
+        {
+          time: "2025-07-02T14:15:00.000Z",
+          open: 12,
+          high: 13,
+          low: 11,
+          close: 12,
+          volume: 20,
+        },
+      ],
+      "1h",
+      { sourceInterval: "15m", market: "US" },
+    );
+
+    expect(hourly.map((candle) => candle.time)).toEqual([
+      "2025-01-02T14:30:00.000Z",
+      "2025-07-02T13:30:00.000Z",
+    ]);
+  });
+
+  it("publishes a derived candle only when its last contributing bar is complete", () => {
+    const [hourly] = aggregateCandles(
+      [
+        {
+          time: "2025-01-02T14:30:00.000Z",
+          knowledgeAt: "2025-01-02T14:45:00.000Z",
+          open: 10,
+          high: 11,
+          low: 9,
+          close: 10,
+          volume: 10,
+        },
+        {
+          time: "2025-01-02T15:15:00.000Z",
+          knowledgeAt: "2025-01-02T15:30:00.000Z",
+          open: 10,
+          high: 12,
+          low: 10,
+          close: 11,
+          volume: 20,
+        },
+      ],
+      "1h",
+      { sourceInterval: "15m", market: "US" },
+    );
+
+    expect(hourly).toMatchObject({
+      time: "2025-01-02T14:30:00.000Z",
+      knowledgeAt: "2025-01-02T15:30:00.000Z",
+    });
   });
 
   it("rejects an attempt to derive 15m candles from daily candles", () => {

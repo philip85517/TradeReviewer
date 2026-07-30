@@ -32,6 +32,7 @@ type Props = {
   episodeId: string;
   selectedDrawingId: string | null;
   plannedRiskAmount: string | undefined;
+  currency: string;
   onSelectDrawing: (id: string | null) => void;
   onCommand: (command: DrawingCommand) => void;
 };
@@ -56,6 +57,7 @@ export function ReplayChart({
   episodeId,
   selectedDrawingId,
   plannedRiskAmount,
+  currency,
   onSelectDrawing,
   onCommand,
 }: Props) {
@@ -393,6 +395,7 @@ export function ReplayChart({
         activeTool={activeTool}
         selectedDrawingId={selectedDrawingId}
         plannedRiskAmount={plannedRiskAmount}
+        currency={currency}
         onSelectDrawing={onSelectDrawing}
         onCommand={onCommand}
         coordinateAdapter={coordinateAdapter}

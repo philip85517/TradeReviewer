@@ -88,6 +88,13 @@ describe("syncMarketData", () => {
         fetchedAt: "2025-02-01T00:00:00.000Z",
         adjustmentMode: "raw",
         warnings: [],
+        request: {
+          instrumentId: "HK:1810",
+          symbol: "1810",
+          market: "HK",
+          startDate: "2025-01-01",
+          endDate: "2025-01-03",
+        },
         candles: [
           {
             tradingDate: "2025-01-02",
@@ -146,6 +153,13 @@ describe("syncMarketData", () => {
         fetchedAt: "2025-02-01T00:00:00.000Z",
         adjustmentMode: "raw",
         warnings: [],
+        request: {
+          instrumentId: "HK:1810",
+          symbol: "1810",
+          market: "HK",
+          startDate: "2025-01-01",
+          endDate: "2025-01-03",
+        },
         candles: [
           {
             tradingDate: "2025-01-02",
@@ -202,6 +216,13 @@ describe("syncMarketData", () => {
         fetchedAt: "2025-02-02T00:00:00.000Z",
         adjustmentMode: "raw",
         warnings: [],
+        request: {
+          instrumentId: "HK:1810",
+          symbol: "1810",
+          market: "HK",
+          startDate: "2025-01-03",
+          endDate: "2025-01-03",
+        },
         candles: [
           {
             tradingDate: "2025-01-03",
@@ -287,6 +308,13 @@ describe("syncMarketData", () => {
         fetchedAt: "2025-02-01T00:00:00.000Z",
         adjustmentMode: "raw",
         warnings: [],
+        request: {
+          instrumentId: "HK:1810",
+          symbol: "1810",
+          market: "HK",
+          startDate: "2025-01-02",
+          endDate: "2025-01-02",
+        },
         candles: [
           {
             tradingDate: "2025-01-02",
@@ -313,5 +341,83 @@ describe("syncMarketData", () => {
       }),
     ).rejects.toMatchObject({ name: "AbortError" });
     expect(await repo.getCoverage("HK:1810")).toEqual([]);
+  });
+
+  it("rejects a response for a different daily instrument before persistence", async () => {
+    const repo = repository();
+    const fetcher = vi.fn<typeof fetch>(async () =>
+      Response.json({
+        provider: "tencent",
+        providerSymbol: "hk09999",
+        fetchedAt: "2025-02-01T00:00:00.000Z",
+        adjustmentMode: "raw",
+        warnings: [],
+        request: {
+          instrumentId: "HK:9999",
+          symbol: "9999",
+          market: "HK",
+          startDate: "2025-01-02",
+          endDate: "2025-01-02",
+        },
+        candles: [
+          {
+            tradingDate: "2025-01-02",
+            open: "34.1",
+            high: "35",
+            low: "33.8",
+            close: "34.5",
+            volume: "1200",
+          },
+        ],
+      }),
+    );
+
+    await expect(
+      syncMarketData({
+        instrumentId: "HK:1810",
+        symbol: "1810",
+        market: "HK",
+        currency: "HKD",
+        required: { startDate: "2025-01-02", endDate: "2025-01-02" },
+        repository: repo,
+        fetcher,
+      }),
+    ).rejects.toThrow("行情接口响应标的不匹配");
+    expect(await repo.getCoverage("HK:1810")).toEqual([]);
+  });
+
+  it("rejects a daily route response without echoed request identity", async () => {
+    const repo = repository();
+    const fetcher = vi.fn<typeof fetch>(async () =>
+      Response.json({
+        provider: "tencent",
+        providerSymbol: "hk01810",
+        fetchedAt: "2025-02-01T00:00:00.000Z",
+        adjustmentMode: "raw",
+        warnings: [],
+        candles: [
+          {
+            tradingDate: "2025-01-02",
+            open: "34.1",
+            high: "35",
+            low: "33.8",
+            close: "34.5",
+            volume: "1200",
+          },
+        ],
+      }),
+    );
+
+    await expect(
+      syncMarketData({
+        instrumentId: "HK:1810",
+        symbol: "1810",
+        market: "HK",
+        currency: "HKD",
+        required: { startDate: "2025-01-02", endDate: "2025-01-02" },
+        repository: repo,
+        fetcher,
+      }),
+    ).rejects.toThrow("行情接口响应标的不匹配");
   });
 });

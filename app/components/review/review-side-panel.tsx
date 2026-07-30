@@ -4,7 +4,10 @@ import { PanelRightOpen, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 import type { PositionPathMetrics } from "../../lib/replay/position-path-metrics";
-import type { EpisodeReviewRecord } from "../../lib/reviews/types";
+import type {
+  EpisodePlan,
+  EpisodeReviewRecord,
+} from "../../lib/reviews/types";
 import { useModalFocus } from "../import/use-modal-focus";
 import { EpisodeNotesPanel } from "./episode-notes-panel";
 import { PositionStatsPanel } from "./position-stats-panel";
@@ -16,8 +19,11 @@ type Props = {
   currency: string;
   metrics: PositionPathMetrics;
   review?: EpisodeReviewRecord;
+  visiblePlan?: EpisodePlan;
   episodeId: string;
   instrumentId: string;
+  knowledgeCursor?: string;
+  episodeStartedAt?: string;
   activeTab: "stats" | "notes";
   onActiveTabChange: (tab: "stats" | "notes") => void;
   onSaveReview: (record: EpisodeReviewRecord) => Promise<void>;
@@ -34,10 +40,10 @@ function PanelContent(props: Props) {
       <button role="tab" id={`${notesId}-tab`} aria-selected={props.activeTab === "notes"} aria-controls={notesId} onClick={() => props.onActiveTabChange("notes")}>复盘笔记</button>
     </div>
     <div role="tabpanel" id={statsId} aria-labelledby={`${statsId}-tab`} hidden={props.activeTab !== "stats"}>
-      <PositionStatsPanel instrumentLabel={props.instrumentLabel} currency={props.currency} metrics={props.metrics} plan={props.review?.plan} />
+      <PositionStatsPanel instrumentLabel={props.instrumentLabel} currency={props.currency} metrics={props.metrics} plan={props.visiblePlan ?? props.review?.plan} />
     </div>
     <div role="tabpanel" id={notesId} aria-labelledby={`${notesId}-tab`} hidden={props.activeTab !== "notes"}>
-      <EpisodeNotesPanel episodeId={props.episodeId} instrumentId={props.instrumentId} record={props.review} onSave={props.onSaveReview} />
+      <EpisodeNotesPanel episodeId={props.episodeId} instrumentId={props.instrumentId} record={props.review} knowledgeCursor={props.knowledgeCursor} episodeStartedAt={props.episodeStartedAt} onSave={props.onSaveReview} />
     </div>
   </>;
 }

@@ -217,6 +217,14 @@ describe("ReviewChartWorkspace", () => {
           },
           confirmedTagIds: [],
         },
+        visiblePlan: {
+          thesis: "游标可见计划",
+          expectedPath: "",
+          invalidationCondition: "游标止损",
+          targetRange: "37–38",
+          plannedRiskAmount: "25",
+          confidence: 3,
+        },
         activePanelTab: "stats" as const,
         drawerOpen: false,
         onEpisodeChange: vi.fn(),
@@ -250,6 +258,12 @@ describe("ReviewChartWorkspace", () => {
       "episode-1",
     );
     expect(screen.getByText("最大盈利（MFE）")).toBeInTheDocument();
+    expect(
+      screen.getByText("计划风险").parentElement,
+    ).toHaveTextContent("HK$25.00");
+    expect(
+      screen.getByRole("heading", { name: "计划对比" }).parentElement,
+    ).toHaveTextContent("失效条件游标止损");
     expect(screen.getByText("开仓成交")).toBeInTheDocument();
     expect(screen.getByText("费用 HK$8.00")).toBeInTheDocument();
     expect(screen.getByText("来源 futu · 第 2 行")).toBeInTheDocument();

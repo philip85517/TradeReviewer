@@ -92,6 +92,8 @@ the meaning of existing daily records. A normalized stored candle contains:
 - `instrumentId`
 - `interval`
 - an absolute ISO timestamp
+- an optional absolute `knowledgeAt` timestamp for the first cursor at which
+  completed OHLCV is knowable
 - open, high, low, close, and volume as decimal strings
 - currency, provider, provider symbol, adjustment mode, and fetch timestamp
 
@@ -329,6 +331,13 @@ note model. The panel edits:
 Changes autosave locally after a short debounce. The panel exposes saving,
 saved, validation-error, and storage-error states. Switching instrument or
 episode flushes a valid pending save and never reuses another episode’s draft.
+
+Plan fields additionally keep episode-local revisions keyed by knowledge
+cursor. Cursor-derived statistics and drawing labels select the latest plan
+revision at or before the current cursor. A legacy record without revision
+metadata is adapted as a baseline plan known at the episode start, so
+existing notes remain visible. A rejected flush retains its dirty draft by
+episode and instrument until that exact draft is retried successfully.
 
 ## Future-Information Boundary
 

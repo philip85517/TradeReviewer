@@ -52,11 +52,21 @@ import {
   requiredRangeExpanded,
 } from "../lib/market/sync-range";
 import { syncMarketData } from "../lib/market/sync-service";
-import { marketTradingDate } from "../lib/market/trading-date";
-import type { Candle, Timeframe } from "../lib/market/types";
+import {
+  marketCalendarDateOffset,
+  marketTradingDate,
+} from "../lib/market/trading-date";
+import {
+  candleKnowledgeAt,
+  dailyRecordToChartCandle,
+  marketRecordToChartCandle,
+  type Candle,
+  type Timeframe,
+} from "../lib/market/types";
 import { createImportedReplay } from "../lib/replay/imported-replay";
 import { calculatePositionPathMetrics } from "../lib/replay/position-path-metrics";
 import { createReplaySnapshot } from "../lib/replay/replay-engine";
+import { episodePlanAtCursor } from "../lib/reviews/review-metrics";
 import type { EpisodeReviewRecord } from "../lib/reviews/types";
 import {
   loadChartSettings,
@@ -212,25 +222,11 @@ async function readInstrumentMarketState(
 }
 
 function intervalRecordToCandle(record: MarketCandleRecord): Candle {
-  return {
-    time: record.timestamp,
-    open: Number(record.open),
-    high: Number(record.high),
-    low: Number(record.low),
-    close: Number(record.close),
-    volume: Number(record.volume),
-  };
+  return marketRecordToChartCandle(record);
 }
 
 function dailyRecordToKnowledgeCandle(record: DailyCandleRecord): Candle {
-  return {
-    time: `${record.tradingDate}T23:59:59.999Z`,
-    open: Number(record.open),
-    high: Number(record.high),
-    low: Number(record.low),
-    close: Number(record.close),
-    volume: Number(record.volume),
-  };
+  return dailyRecordToChartCandle(record);
 }
 
 function sourceCandlesForTimeframe(
@@ -259,7 +255,6 @@ function aggregateVisibleCandles(
 
 const INTRADAY_BAR_MILLISECONDS = 15 * 60 * 1000;
 const INTRADAY_PRE_ENTRY_CONTEXT_DAYS = 7;
-const DAY_MILLISECONDS = 24 * 60 * 60 * 1000;
 
 function containingIntradayBarEnd(timestamp: string) {
   const milliseconds = Date.parse(timestamp);
@@ -283,11 +278,12 @@ function endOfIsoDate(value: string) {
   return `${value.slice(0, 10)}T23:59:59.999Z`;
 }
 
-function intradayContextStart(timestamp: string) {
-  return new Date(
-    Date.parse(timestamp) -
-      INTRADAY_PRE_ENTRY_CONTEXT_DAYS * DAY_MILLISECONDS,
-  ).toISOString();
+function intradayContextStart(timestamp: string, market: string) {
+  return marketCalendarDateOffset(
+    timestamp,
+    market,
+    -INTRADAY_PRE_ENTRY_CONTEXT_DAYS,
+  );
 }
 
 function episodeWindow(
@@ -306,7 +302,7 @@ function episodeWindow(
   );
   // Seven calendar days normally provide roughly five completed sessions of
   // chart context without letting unrelated older episodes enable intraday.
-  const intradayStart = intradayContextStart(episode.startedAt);
+  const intradayStart = intradayContextStart(episode.startedAt, market);
   const holdingEndTime = containingIntradayBarEnd(holdingEnd);
   const holdingEndDate = marketTradingDate(holdingEnd, market);
 
@@ -665,31 +661,38 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   const importedVisibleSource = useMemo(
     () =>
       importedSourceCandles.filter(
-        (candle) => candle.time <= activeCursor,
+        (candle) => candleKnowledgeAt(candle) <= activeCursor,
       ),
     [activeCursor, importedSourceCandles],
   );
-  const importedDisplayCandles = useMemo(
+  const importedTimelineCandles = useMemo(
     () =>
       selectedImportedInstrument
         ? aggregateVisibleCandles(
-            importedVisibleSource,
+            importedSourceCandles,
             timeframe,
             selectedImportedInstrument.instrument.market,
           )
         : [],
-    [importedVisibleSource, selectedImportedInstrument, timeframe],
+    [importedSourceCandles, selectedImportedInstrument, timeframe],
+  );
+  const importedDisplayCandles = useMemo(
+    () =>
+      importedTimelineCandles.filter(
+        (candle) => candleKnowledgeAt(candle) <= activeCursor,
+      ),
+    [activeCursor, importedTimelineCandles],
   );
   const importedReplay = createImportedReplay({
-    candles: importedSourceCandles,
+    candles: importedTimelineCandles,
     executions: selectedEpisode?.executions ?? [],
     storedCursor: importedCursor,
   });
-  const importedCanGoBack = importedSourceCandles.some(
-    (candle) => candle.time < activeCursor,
+  const importedCanGoBack = importedTimelineCandles.some(
+    (candle) => candleKnowledgeAt(candle) < activeCursor,
   );
-  const importedCanGoForward = importedSourceCandles.some(
-    (candle) => candle.time > activeCursor,
+  const importedCanGoForward = importedTimelineCandles.some(
+    (candle) => candleKnowledgeAt(candle) > activeCursor,
   );
   const importedCanGoToNextExecution = Boolean(
     selectedEpisode?.executions.some(
@@ -728,6 +731,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   const activeInstrument = selectedImportedInstrument?.instrument ??
     DEMO_INSTRUMENT;
   const activeReview = episodeReviews[activeEpisodeId];
+  const activePlan = episodePlanAtCursor(activeReview, activeCursor);
   const activeMetrics = useMemo(
     () =>
       calculatePositionPathMetrics({
@@ -743,11 +747,11 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
           initialFrame.candles15m[0]?.time ??
           initialFrame.cursor,
         episodeEndedAt: selectedEpisode?.endedAt,
-        plannedRiskAmount: activeReview?.plan.plannedRiskAmount,
+        plannedRiskAmount: activePlan?.plannedRiskAmount,
       }),
     [
       activeCursor,
-      activeReview?.plan.plannedRiskAmount,
+      activePlan?.plannedRiskAmount,
       frame.candles15m,
       frame.executions,
       importedVisibleSource,
@@ -917,8 +921,15 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     const preferred = availability["15m"].enabled ? "15m" : "1D";
     const source = sourceCandlesForTimeframe(state, preferred);
     const fallback =
-      source.findLast((candle) => candle.time <= newest.startedAt)?.time ??
-      newest.startedAt;
+      source.findLast(
+        (candle) => candleKnowledgeAt(candle) <= newest.startedAt,
+      )
+        ? candleKnowledgeAt(
+            source.findLast(
+              (candle) => candleKnowledgeAt(candle) <= newest.startedAt,
+            )!,
+          )
+        : newest.startedAt;
     restoreEpisodeUi(newest.id, fallback, preferred);
   }
 
@@ -983,8 +994,15 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       preferred,
     );
     const fallback =
-      source.findLast((candle) => candle.time <= episode.startedAt)?.time ??
-      episode.startedAt;
+      source.findLast(
+        (candle) => candleKnowledgeAt(candle) <= episode.startedAt,
+      )
+        ? candleKnowledgeAt(
+            source.findLast(
+              (candle) => candleKnowledgeAt(candle) <= episode.startedAt,
+            )!,
+          )
+        : episode.startedAt;
     restoreEpisodeUi(episode.id, fallback, preferred);
   }
 
@@ -1138,8 +1156,16 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
         );
         setImportedCursor(
           source.findLast(
-            (candle) => candle.time <= selectedEpisode.startedAt,
-          )?.time ?? selectedEpisode.startedAt,
+            (candle) =>
+              candleKnowledgeAt(candle) <= selectedEpisode.startedAt,
+          )
+            ? candleKnowledgeAt(
+                source.findLast(
+                  (candle) =>
+                    candleKnowledgeAt(candle) <= selectedEpisode.startedAt,
+                )!,
+              )
+            : selectedEpisode.startedAt,
         );
       }
     });
@@ -1220,13 +1246,19 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       }
       const timeout = window.setTimeout(() => {
         const next =
-          importedSourceCandles.find(
-            (candle) => candle.time > importedCursor,
-          )?.time ?? importedCursor;
+          importedTimelineCandles.find(
+            (candle) => candleKnowledgeAt(candle) > importedCursor,
+          )
+            ? candleKnowledgeAt(
+                importedTimelineCandles.find(
+                  (candle) => candleKnowledgeAt(candle) > importedCursor,
+                )!,
+              )
+            : importedCursor;
         setImportedCursor(next);
         if (
-          !importedSourceCandles.some(
-            (candle) => candle.time > next,
+          !importedTimelineCandles.some(
+            (candle) => candleKnowledgeAt(candle) > next,
           )
         ) {
           setPlaying(false);
@@ -1262,7 +1294,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     frame.cursor,
     importedCanGoForward,
     importedCursor,
-    importedSourceCandles,
+    importedTimelineCandles,
     playing,
     restoring,
     selectedImportedInstrument,
@@ -1629,9 +1661,15 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     const exact = importedReplay.currentCursor === importedCursor;
     const previous = exact
       ? importedReplay.previous()
-      : importedSourceCandles.findLast(
-          (candle) => candle.time < importedCursor,
-        )?.time;
+      : importedTimelineCandles.findLast(
+          (candle) => candleKnowledgeAt(candle) < importedCursor,
+        )
+        ? candleKnowledgeAt(
+            importedTimelineCandles.findLast(
+              (candle) => candleKnowledgeAt(candle) < importedCursor,
+            )!,
+          )
+        : undefined;
     if (previous) setImportedCursor(previous);
   }
 
@@ -1639,9 +1677,15 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     const exact = importedReplay.currentCursor === importedCursor;
     const next = exact
       ? importedReplay.next()
-      : importedSourceCandles.find(
-          (candle) => candle.time > importedCursor,
-        )?.time;
+      : importedTimelineCandles.find(
+          (candle) => candleKnowledgeAt(candle) > importedCursor,
+        )
+        ? candleKnowledgeAt(
+            importedTimelineCandles.find(
+              (candle) => candleKnowledgeAt(candle) > importedCursor,
+            )!,
+          )
+        : undefined;
     if (next) setImportedCursor(next);
   }
 
@@ -1784,6 +1828,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
               settings={settings}
               instruments={searchableInstruments}
               review={activeReview}
+              visiblePlan={activePlan}
               activePanelTab={activePanelTab}
               drawerOpen={drawerOpen}
               onEpisodeChange={selectEpisode}

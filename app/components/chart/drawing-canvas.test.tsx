@@ -2,7 +2,10 @@ import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { NormalizedDrawing } from "../../lib/chart/drawings";
-import { DrawingCanvas } from "./drawing-canvas";
+import {
+  DrawingCanvas,
+  formatRiskRewardLabel,
+} from "./drawing-canvas";
 import { DrawingToolbar } from "./drawing-toolbar";
 
 afterEach(cleanup);
@@ -47,6 +50,7 @@ function renderCanvas(overrides: Record<string, unknown> = {}) {
     selectedDrawingId: null,
     activeTool: "rectangle" as const,
     plannedRiskAmount: undefined,
+    currency: "HKD",
     onSelectDrawing: vi.fn(),
     onCommand: vi.fn(),
     coordinateAdapter: adapter,
@@ -153,18 +157,30 @@ describe("drawing interactions", () => {
       clientX: 10,
       clientY: 100,
     });
+    Object.defineProperty(pointerDown, "pointerId", { value: 7 });
     const preventDefault = vi.spyOn(pointerDown, "preventDefault");
     const stopPropagation = vi.spyOn(pointerDown, "stopPropagation");
+    const setPointerCapture = vi.fn();
+    const releasePointerCapture = vi.fn();
+    Object.defineProperties(stage, {
+      setPointerCapture: { configurable: true, value: setPointerCapture },
+      releasePointerCapture: {
+        configurable: true,
+        value: releasePointerCapture,
+      },
+    });
     const pointerMove = new MouseEvent("pointermove", {
       bubbles: true,
       clientX: 20,
       clientY: 90,
     });
+    Object.defineProperty(pointerMove, "pointerId", { value: 7 });
     const pointerUp = new MouseEvent("pointerup", {
       bubbles: true,
       clientX: 20,
       clientY: 90,
     });
+    Object.defineProperty(pointerUp, "pointerId", { value: 7 });
     act(() => {
       stage.dispatchEvent(pointerDown);
       stage.dispatchEvent(pointerMove);
@@ -173,8 +189,10 @@ describe("drawing interactions", () => {
 
     expect(onSelectDrawing).toHaveBeenCalledWith("line-1");
     expect(onSelectDrawing).toHaveBeenCalledTimes(1);
-    expect(preventDefault).not.toHaveBeenCalled();
-    expect(stopPropagation).not.toHaveBeenCalled();
+    expect(preventDefault).toHaveBeenCalled();
+    expect(stopPropagation).toHaveBeenCalled();
+    expect(setPointerCapture).toHaveBeenCalledWith(7);
+    expect(releasePointerCapture).toHaveBeenCalledWith(7);
     expect(onCommand).toHaveBeenCalledTimes(1);
     expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
       type: "replace",
@@ -182,6 +200,126 @@ describe("drawing interactions", () => {
         { time: candles[0].time, price: 110 }, { time: candles[1].time, price: 120 },
       ] }),
     }));
+  });
+
+  it("lets a blank cursor gesture propagate to chart navigation", () => {
+    const onSelectDrawing = vi.fn();
+    const { stage } = renderCanvas({
+      activeTool: "cursor",
+      drawings: [],
+      onSelectDrawing,
+    });
+    const setPointerCapture = vi.fn();
+    Object.defineProperty(stage, "setPointerCapture", {
+      configurable: true,
+      value: setPointerCapture,
+    });
+    const pointerDown = new MouseEvent("pointerdown", {
+      bubbles: true,
+      clientX: 50,
+      clientY: 50,
+    });
+    Object.defineProperty(pointerDown, "pointerId", { value: 3 });
+    const preventDefault = vi.spyOn(pointerDown, "preventDefault");
+    const stopPropagation = vi.spyOn(pointerDown, "stopPropagation");
+
+    act(() => stage.dispatchEvent(pointerDown));
+
+    expect(onSelectDrawing).toHaveBeenCalledWith(null);
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(stopPropagation).not.toHaveBeenCalled();
+    expect(setPointerCapture).not.toHaveBeenCalled();
+  });
+
+  it("cancels a captured drawing drag without emitting a replacement", () => {
+    const onCommand = vi.fn();
+    const drawing = savedDrawing({
+      id: "cancel-line",
+      tool: "trend-line",
+      anchors: [
+        { time: candles[0].time, price: 100 },
+        { time: candles[1].time, price: 120 },
+      ],
+    });
+    const { stage, props } = renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      onCommand,
+    });
+    const setPointerCapture = vi.fn();
+    const releasePointerCapture = vi.fn();
+    Object.defineProperties(stage, {
+      setPointerCapture: { configurable: true, value: setPointerCapture },
+      releasePointerCapture: {
+        configurable: true,
+        value: releasePointerCapture,
+      },
+    });
+
+    fireEvent.pointerDown(stage, {
+      pointerId: 9,
+      clientX: 10,
+      clientY: 100,
+    });
+    fireEvent.pointerMove(stage, {
+      pointerId: 9,
+      clientX: 140,
+      clientY: 80,
+    });
+    fireEvent.pointerCancel(stage, { pointerId: 9 });
+
+    expect(setPointerCapture).toHaveBeenCalledWith(9);
+    expect(releasePointerCapture).toHaveBeenCalledWith(9);
+    expect(onCommand).not.toHaveBeenCalled();
+
+    vi.mocked(props.onSelectDrawing).mockClear();
+    cleanup();
+    fireEvent.pointerDown(stage, {
+      pointerId: 10,
+      clientX: 10,
+      clientY: 100,
+    });
+    expect(props.onSelectDrawing).not.toHaveBeenCalled();
+  });
+
+  it("cancels a drag on lost pointer capture and does not duplicate completion", () => {
+    const onCommand = vi.fn();
+    const drawing = savedDrawing({
+      id: "lost-capture-line",
+      tool: "trend-line",
+      anchors: [
+        { time: candles[0].time, price: 100 },
+        { time: candles[1].time, price: 120 },
+      ],
+    });
+    const { stage } = renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      onCommand,
+    });
+    Object.defineProperties(stage, {
+      setPointerCapture: { configurable: true, value: vi.fn() },
+      releasePointerCapture: { configurable: true, value: vi.fn() },
+    });
+
+    fireEvent.pointerDown(stage, {
+      pointerId: 11,
+      clientX: 10,
+      clientY: 100,
+    });
+    fireEvent.pointerMove(stage, {
+      pointerId: 11,
+      clientX: 20,
+      clientY: 90,
+    });
+    fireEvent(stage, new Event("lostpointercapture", { bubbles: true }));
+    fireEvent.pointerUp(stage, {
+      pointerId: 11,
+      clientX: 20,
+      clientY: 90,
+    });
+
+    expect(onCommand).not.toHaveBeenCalled();
   });
 
   it("does not move a locked drawing", () => {
@@ -297,6 +435,111 @@ describe("drawing interactions", () => {
         ],
       }),
     }));
+  });
+
+  it("rejects a zero-risk creation without changing tools or emitting a command", () => {
+    const onCommand = vi.fn();
+    const { canvas } = renderCanvas({
+      activeTool: "long-risk-reward",
+      onCommand,
+    });
+
+    fireEvent.pointerDown(canvas, {
+      pointerId: 12,
+      clientX: 10,
+      clientY: 100,
+    });
+    fireEvent.pointerUp(canvas, {
+      pointerId: 12,
+      clientX: 40,
+      clientY: 100,
+    });
+
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(canvas.parentElement).toHaveClass("drawing-mode");
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "止损价不能等于入场价",
+    );
+  });
+
+  it("rejects a zero-risk stop-handle edit without emitting replace", () => {
+    const onCommand = vi.fn();
+    const drawing = savedDrawing({
+      id: "zero-risk-edit",
+      tool: "long-risk-reward",
+      anchors: [
+        { time: candles[0].time, price: 100 },
+        { time: candles[1].time, price: 90 },
+        { time: candles[1].time, price: 120 },
+      ],
+    });
+    const { stage } = renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      onCommand,
+    });
+
+    fireEvent.pointerDown(stage, {
+      pointerId: 13,
+      clientX: 80,
+      clientY: 110,
+    });
+    fireEvent.pointerMove(stage, {
+      pointerId: 13,
+      clientX: 80,
+      clientY: 100,
+    });
+    fireEvent.pointerUp(stage, {
+      pointerId: 13,
+      clientX: 80,
+      clientY: 100,
+    });
+
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "止损价不能等于入场价",
+    );
+  });
+
+  it.each([
+    ["long-risk-reward", 100, 90, 120],
+    ["short-risk-reward", 100, 110, 80],
+  ] as const)(
+    "formats complete localized %s metrics",
+    (tool, entry, stop, target) => {
+      const drawing = savedDrawing({
+        id: `${tool}-label`,
+        tool,
+        anchors: [
+          { time: candles[0].time, price: entry },
+          { time: candles[1].time, price: stop },
+          { time: candles[1].time, price: target },
+        ],
+      });
+
+      expect(
+        formatRiskRewardLabel(drawing, "1000", "HKD"),
+      ).toBe(
+        "风险距离 10.00 (10.00%) · 收益距离 20.00 (20.00%) · 2.00R · 计划风险 HK$1,000.00 · 潜在收益 HK$2,000.00 · 建议数量 100",
+      );
+    },
+  );
+
+  it("uses the instrument currency instead of a dollar literal", () => {
+    const drawing = savedDrawing({
+      id: "jpy-risk-label",
+      tool: "long-risk-reward",
+      anchors: [
+        { time: candles[0].time, price: 100 },
+        { time: candles[1].time, price: 90 },
+        { time: candles[1].time, price: 120 },
+      ],
+    });
+
+    const label = formatRiskRewardLabel(drawing, "1000", "JPY");
+    expect(label).toContain("计划风险 JP¥1,000.00");
+    expect(label).toContain("潜在收益 JP¥2,000.00");
+    expect(label).not.toContain("$");
   });
 
   it.each([

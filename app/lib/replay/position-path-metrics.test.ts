@@ -206,4 +206,34 @@ describe("calculatePositionPathMetrics", () => {
       "No candle is available at or before the replay cursor.",
     );
   });
+
+  it("keeps a 10:00-10:15 bar out of path metrics until 10:15", () => {
+    const bar = {
+      ...candle("2025-01-02T10:00:00.000Z", 10, 12, 9, 11),
+      knowledgeAt: "2025-01-02T10:15:00.000Z",
+    };
+    const execution = fill(
+      "buy",
+      "2025-01-02T10:07:00.000Z",
+      "10",
+      "10",
+    );
+
+    expect(
+      calculatePositionPathMetrics({
+        candles: [bar],
+        executions: [execution],
+        cursor: "2025-01-02T10:07:00.000Z",
+        episodeStartedAt: execution.executedAt,
+      }).mfe,
+    ).toBeNull();
+    expect(
+      calculatePositionPathMetrics({
+        candles: [bar],
+        executions: [execution],
+        cursor: "2025-01-02T10:15:00.000Z",
+        episodeStartedAt: execution.executedAt,
+      }).mfe,
+    ).toEqual({ amount: "20", percent: "20" });
+  });
 });

@@ -304,4 +304,61 @@ describe("drawing command history", () => {
       { id: "locked", locked: false },
     ]);
   });
+
+  it.each([
+    {
+      name: "future-hidden",
+      hidden: drawing("future", {
+        createdAtCursor: "2025-01-10T00:00:00.000Z",
+        zIndex: 1,
+      }),
+    },
+    {
+      name: "timeframe-hidden",
+      hidden: drawing("other-period", {
+        visibleOn: ["1D"],
+        zIndex: 1,
+      }),
+    },
+  ])(
+    "moves across a $name raw neighbor using only visible eligible IDs",
+    ({ hidden }) => {
+      const low = drawing("visible-low", {
+        createdAtCursor: "2025-01-02T00:00:00.000Z",
+        zIndex: 0,
+      });
+      const high = drawing("visible-high", {
+        createdAtCursor: "2025-01-02T00:00:00.000Z",
+        zIndex: 2,
+      });
+      let history = createDrawingHistory([low, hidden, high]);
+
+      history = applyDrawingCommand(history, {
+        type: "move",
+        id: "visible-low",
+        direction: "up",
+        eligibleIds: ["visible-high", "visible-low"],
+      });
+
+      expect(history.present.map((item) => item.id)).toEqual([
+        "visible-high",
+        hidden.id,
+        "visible-low",
+      ]);
+      expect(history.past).toHaveLength(1);
+
+      history = applyDrawingCommand(history, {
+        type: "move",
+        id: "visible-low",
+        direction: "down",
+        eligibleIds: ["visible-low", "visible-high"],
+      });
+      expect(history.present.map((item) => item.id)).toEqual([
+        "visible-low",
+        hidden.id,
+        "visible-high",
+      ]);
+      expect(history.past).toHaveLength(2);
+    },
+  );
 });

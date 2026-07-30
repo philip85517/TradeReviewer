@@ -7,6 +7,7 @@ import {
   CloudOff,
   Layers3,
   Maximize2,
+  Minimize2,
   Search,
   Settings,
 } from "lucide-react";
@@ -81,6 +82,9 @@ export function ChartToolbar({
   const fullscreenDisabledReason = fullscreen.supported
     ? undefined
     : "浏览器不支持全屏";
+  const fullscreenLabel = fullscreen.isFullscreen
+    ? "退出全屏"
+    : "进入全屏";
   const displayedFullscreenError = fullscreen.error ?? fullscreenError;
 
   return (
@@ -157,10 +161,10 @@ export function ChartToolbar({
       </button>
       <button
         className={`icon-button${fullscreen.isFullscreen ? " active" : ""}`}
-        aria-label="全屏"
+        aria-label={fullscreenLabel}
         aria-pressed={fullscreen.isFullscreen}
         disabled={!fullscreen.supported}
-        title={fullscreenDisabledReason}
+        title={fullscreenDisabledReason ?? fullscreenLabel}
         aria-description={fullscreenDisabledReason}
         onClick={() => {
           setFullscreenError(null);
@@ -169,7 +173,11 @@ export function ChartToolbar({
           });
         }}
       >
-        <Maximize2 size={17} />
+        {fullscreen.isFullscreen ? (
+          <Minimize2 size={17} />
+        ) : (
+          <Maximize2 size={17} />
+        )}
       </button>
       {displayedFullscreenError ? <span className="toolbar-status" role="status">{displayedFullscreenError}</span> : null}
       <button

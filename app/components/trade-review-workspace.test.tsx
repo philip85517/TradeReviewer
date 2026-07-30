@@ -877,13 +877,37 @@ describe("TradeReviewWorkspace", () => {
       instrumentId: instrument.id,
       updatedAt: "2025-01-03T00:00:00.000Z",
       plan: {
-        thesis: "回踩后承接",
+        thesis: "未来修订计划",
         expectedPath: "",
-        invalidationCondition: "",
-        targetRange: "",
-        plannedRiskAmount: "100",
+        invalidationCondition: "未来失效条件",
+        targetRange: "未来目标",
+        plannedRiskAmount: "50",
         confidence: 4,
       },
+      planRevisions: [
+        {
+          knowledgeAt: "2025-01-02T02:00:00.000Z",
+          plan: {
+            thesis: "入场计划",
+            expectedPath: "",
+            invalidationCondition: "入场失效条件",
+            targetRange: "入场目标",
+            plannedRiskAmount: "100",
+            confidence: 4,
+          },
+        },
+        {
+          knowledgeAt: "2025-01-02T02:30:00.000Z",
+          plan: {
+            thesis: "未来修订计划",
+            expectedPath: "",
+            invalidationCondition: "未来失效条件",
+            targetRange: "未来目标",
+            plannedRiskAmount: "50",
+            confidence: 4,
+          },
+        },
+      ],
       review: {
         decisionQuality: null,
         executionQuality: null,
@@ -906,6 +930,10 @@ describe("TradeReviewWorkspace", () => {
     ).toBeEnabled();
     expect(screen.getByRole("button", { name: "趋势线" })).toBeEnabled();
     expect(screen.getByText("最大盈利（MFE）")).toBeInTheDocument();
+    expect(screen.getByText("计划风险").parentElement).toHaveTextContent(
+      "HK$100.00",
+    );
+    expect(screen.queryByText("未来失效条件")).not.toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "下一根 K 线" }),
     ).toBeEnabled();
@@ -918,6 +946,9 @@ describe("TradeReviewWorkspace", () => {
     const mfeBefore =
       screen.getByText("最大盈利（MFE）").parentElement?.textContent;
     expect(screen.queryByText("平仓成交")).not.toBeInTheDocument();
+    expect(screen.getByText("计划风险").parentElement).toHaveTextContent(
+      "HK$100.00",
+    );
 
     await user.click(
       screen.getByRole("button", { name: "下一根 K 线" }),
@@ -934,6 +965,10 @@ describe("TradeReviewWorkspace", () => {
     await user.click(
       screen.getByRole("button", { name: "下一根 K 线" }),
     );
+    expect(screen.getByText("计划风险").parentElement).toHaveTextContent(
+      "HK$50.00",
+    );
+    expect(screen.getByText("未来失效条件")).toBeInTheDocument();
     expect(screen.queryByText("平仓成交")).not.toBeInTheDocument();
     expect(screen.queryByText("+HK$200.00")).not.toBeInTheDocument();
 
@@ -942,6 +977,10 @@ describe("TradeReviewWorkspace", () => {
     );
     expect(screen.getByText("平仓成交")).toBeInTheDocument();
     expect(screen.getAllByText("+HK$200.00").length).toBeGreaterThan(0);
+
+    await user.click(
+      screen.getByRole("button", { name: "下一根 K 线" }),
+    );
     expect(screen.getByText("高 36.80")).toBeInTheDocument();
 
     const cursorBeforePeriodChange =
@@ -978,10 +1017,9 @@ describe("TradeReviewWorkspace", () => {
       "title",
       "当前游标和周期暂无绘图",
     );
-    expect(screen.getByRole("button", { name: "全屏" })).toHaveAttribute(
-      "title",
-      "浏览器不支持全屏",
-    );
+    expect(
+      screen.getByRole("button", { name: "进入全屏" }),
+    ).toHaveAttribute("title", "浏览器不支持全屏");
     expect(fetch).not.toHaveBeenCalled();
   });
 
@@ -1343,9 +1381,14 @@ describe("TradeReviewWorkspace", () => {
         name: "小米集团-W（1810）",
       });
 
-      expect(
-        screen.getByRole("button", { name: "下一根 K 线" }),
-      ).toBeDisabled();
+      const nextCandle = screen.getByRole("button", {
+        name: "下一根 K 线",
+      });
+      if (withCandle) {
+        expect(nextCandle).toBeEnabled();
+        await user.click(nextCandle);
+      }
+      expect(nextCandle).toBeDisabled();
       const nextExecution = screen.getByRole("button", {
         name: "跳至下一笔成交",
       });
@@ -1493,6 +1536,84 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.getByTestId("replay-cursor")).toHaveTextContent(
       cursor ?? "",
     );
+  });
+
+  it("reveals an imported provider candle only at its completed-bar knowledge boundary", async () => {
+    const user = userEvent.setup();
+    const execution = availabilityExecution({
+      id: "completed-bar-entry",
+      row: 1,
+      side: "buy",
+      executedAt: "2025-01-02T10:07:00.000Z",
+    });
+    saveImportedExecutions([execution]);
+    const [episode] = buildTradeEpisodes([execution]);
+    await new IndexedDbMarketDataRepository().commitIntervalSyncResult({
+      instrumentId: availabilityInstrument.id,
+      interval: "15m",
+      candles: [
+        {
+          instrumentId: availabilityInstrument.id,
+          interval: "15m",
+          timestamp: "2025-01-02T10:00:00.000Z",
+          knowledgeAt: "2025-01-02T10:15:00.000Z",
+          open: "10",
+          high: "12",
+          low: "9",
+          close: "11",
+          volume: "1000",
+          currency: "USD",
+          provider: "yahoo",
+          providerSymbol: "XPEV",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      coverage: [
+        {
+          interval: "15m",
+          requestedStart: "2025-01-02T10:00:00.000Z",
+          requestedEnd: "2025-01-02T10:15:00.000Z",
+          actualStart: "2025-01-02T10:00:00.000Z",
+          actualEnd: "2025-01-02T10:00:00.000Z",
+          status: "complete",
+          provider: "yahoo",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      providerSymbol: { provider: "yahoo", symbol: "XPEV" },
+    });
+    saveReviewState(episode.id, {
+      version: 2,
+      episodeId: episode.id,
+      replayCursor: execution.executedAt,
+      timeframe: "15m",
+      activePanelTab: "stats",
+      drawings: [],
+    });
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
+
+    await waitFor(() =>
+      expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
+        "data-cursor",
+        "2025-01-02T10:07:00.000Z",
+      ),
+    );
+    expect(
+      screen.getAllByText(
+        "No candle is available at or before the replay cursor.",
+      ).length,
+    ).toBeGreaterThan(0);
+
+    await user.click(screen.getByRole("button", { name: "下一根 K 线" }));
+
+    expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
+      "data-cursor",
+      "2025-01-02T10:15:00.000Z",
+    );
+    expect(screen.getAllByText("+US$20.00").length).toBeGreaterThan(0);
   });
 
   it("restores cursor, drawings, panel tab, and notes independently for each episode", async () => {

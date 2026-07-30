@@ -14,6 +14,10 @@ import type {
   DrawingTool,
   NormalizedDrawing,
 } from "../../lib/chart/drawings";
+import {
+  calculateRiskReward,
+  validateDrawing,
+} from "../../lib/chart/drawings";
 import { containingCandleTime, priceRangeForCandles } from "../../lib/chart/chart-scale";
 import type { Candle } from "../../lib/market/types";
 
@@ -25,6 +29,7 @@ type Props = {
   selectedDrawingId: string | null;
   activeTool: DrawingTool;
   plannedRiskAmount: string | undefined;
+  currency: string;
   onSelectDrawing: (id: string | null) => void;
   onCommand: (command: DrawingCommand) => void;
   coordinateAdapter?: ChartCoordinateAdapter;
@@ -46,9 +51,10 @@ type DrawingDraft = Omit<
 };
 type GestureHandlers = {
   activeTool: DrawingTool;
-  pointerDown: (clientX: number, clientY: number) => void;
+  pointerDown: (clientX: number, clientY: number) => boolean;
   pointerMove: (clientX: number, clientY: number) => void;
   pointerUp: (clientX: number, clientY: number) => void;
+  pointerCancel: () => void;
 };
 
 export type ChartCoordinateAdapter = {
@@ -85,8 +91,8 @@ function withCanonicalRiskRewardGeometry(
     return drawing;
   }
   const [entry, stop, target] = drawing.anchors;
-  const risk = Math.max(Math.abs(stop.price - entry.price), 0.01);
-  const reward = Math.max(Math.abs(target.price - entry.price), 0.01);
+  const risk = Math.abs(stop.price - entry.price);
+  const reward = Math.abs(target.price - entry.price);
   const direction = drawing.tool === "long-risk-reward" ? 1 : -1;
   return {
     ...drawing,
@@ -98,6 +104,67 @@ function withCanonicalRiskRewardGeometry(
   };
 }
 
+function localizedCurrency(value: number, currency: string) {
+  return new Intl.NumberFormat("zh-CN", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+export function formatRiskRewardLabel(
+  drawing: NormalizedDrawing,
+  plannedRiskAmount: string | undefined,
+  currency: string,
+) {
+  if (
+    drawing.tool !== "long-risk-reward" &&
+    drawing.tool !== "short-risk-reward"
+  ) {
+    return "";
+  }
+  const [entry, stop, target] = drawing.anchors;
+  if (!entry || !stop || !target) return "";
+  const metrics = calculateRiskReward({
+    direction:
+      drawing.tool === "long-risk-reward" ? "long" : "short",
+    entry: entry.price,
+    stop: stop.price,
+    target: target.price,
+  });
+  const parts = [
+    `风险距离 ${metrics.riskPerShare.toFixed(2)} (${metrics.riskPercent.toFixed(2)}%)`,
+    `收益距离 ${metrics.rewardPerShare.toFixed(2)} (${metrics.rewardPercent.toFixed(2)}%)`,
+    `${metrics.ratio.toFixed(2)}R`,
+  ];
+  const budget = Number(plannedRiskAmount);
+  if (Number.isFinite(budget) && budget > 0) {
+    parts.push(
+      `计划风险 ${localizedCurrency(budget, currency)}`,
+      `潜在收益 ${localizedCurrency(budget * metrics.ratio, currency)}`,
+      `建议数量 ${Math.floor(budget / metrics.riskPerShare)}`,
+    );
+  }
+  return parts.join(" · ");
+}
+
+function validationMessage(drawing: NormalizedDrawing) {
+  if (
+    (drawing.tool === "long-risk-reward" ||
+      drawing.tool === "short-risk-reward") &&
+    drawing.anchors[0]?.price === drawing.anchors[1]?.price
+  ) {
+    return "止损价不能等于入场价";
+  }
+  try {
+    validateDrawing(drawing);
+    return null;
+  } catch (error) {
+    return error instanceof Error ? error.message : "绘图参数无效";
+  }
+}
+
 export function DrawingCanvas({
   episodeId,
   candles,
@@ -106,6 +173,7 @@ export function DrawingCanvas({
   selectedDrawingId,
   activeTool,
   plannedRiskAmount,
+  currency,
   onSelectDrawing,
   onCommand,
   coordinateAdapter,
@@ -116,9 +184,16 @@ export function DrawingCanvas({
   const dragRef = useRef<DragState | null>(null);
   const previewRef = useRef<NormalizedDrawing | null>(null);
   const gestureHandlersRef = useRef<GestureHandlers | null>(null);
+  const capturedPointerRef = useRef<{
+    target: Element;
+    pointerId: number;
+  } | null>(null);
   const [size, setSize] = useState<CanvasSize>({ width: 0, height: 0 });
   const [preview, setPreview] = useState<NormalizedDrawing | null>(null);
   const [editor, setEditor] = useState<TextEditor | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(
+    null,
+  );
   const { minPrice, maxPrice, priceRange } = priceRangeForCandles(candles);
 
   function anchorFromPoint(x: number, y: number): DrawingAnchor {
@@ -152,18 +227,36 @@ export function DrawingCanvas({
   }
 
   function emitAdd(drawing: DrawingDraft) {
-    const normalizedDrawing = normalized(drawing);
+    const normalizedDrawing = withCanonicalRiskRewardGeometry(
+      normalized(drawing),
+    );
+    const message = validationMessage(normalizedDrawing);
+    if (message) {
+      setValidationError(message);
+      return false;
+    }
+    setValidationError(null);
     onCommand({
       type: "add",
-      drawing: withCanonicalRiskRewardGeometry(normalizedDrawing),
+      drawing: normalizedDrawing,
     });
+    return true;
   }
 
   function emitReplace(drawing: NormalizedDrawing) {
+    const normalizedDrawing =
+      withCanonicalRiskRewardGeometry(drawing);
+    const message = validationMessage(normalizedDrawing);
+    if (message) {
+      setValidationError(message);
+      return false;
+    }
+    setValidationError(null);
     onCommand({
       type: "replace",
-      drawing: withCanonicalRiskRewardGeometry(drawing),
+      drawing: normalizedDrawing,
     });
+    return true;
   }
 
   useEffect(() => {
@@ -210,15 +303,18 @@ export function DrawingCanvas({
       if ((drawing.tool === "long-risk-reward" || drawing.tool === "short-risk-reward") && points[1] && points[2]) {
         const left = Math.min(points[0].x, points[1].x, points[2].x); const right = Math.max(points[0].x, points[1].x, points[2].x, left + 110);
         context.globalAlpha = 0.2; context.fillStyle = "#ef5350"; context.fillRect(left, Math.min(points[0].y, points[1].y), right - left, Math.abs(points[1].y - points[0].y)); context.fillStyle = "#26a69a"; context.fillRect(left, Math.min(points[0].y, points[2].y), right - left, Math.abs(points[2].y - points[0].y));
-        const risk = Math.abs(drawing.anchors[0].price - drawing.anchors[1].price); const reward = Math.abs(drawing.anchors[2].price - drawing.anchors[0].price); const budget = Number(plannedRiskAmount);
         context.globalAlpha = 0.95; context.fillStyle = "#e6edf7"; context.font = "600 11px var(--font-geist-mono)";
-        const text = Number.isFinite(budget) && budget > 0 ? `风险 $${budget.toFixed(2)} · 收益 $${(budget * reward / Math.max(risk, .01)).toFixed(2)} · ${Math.floor(budget / Math.max(risk, .01))} 股` : `R:R 1:${(reward / Math.max(risk, .01)).toFixed(1)}`;
+        const text = formatRiskRewardLabel(
+          drawing,
+          plannedRiskAmount,
+          currency,
+        );
         context.fillText(text, left + 8, points[0].y - 8);
       }
       if (drawing.id === selectedDrawingId) { context.fillStyle = "#ffffff"; for (const point of points) { context.fillRect(point.x - 3, point.y - 3, 6, 6); } }
     }
     context.globalAlpha = 1;
-  }, [candles, coordinateAdapter, coordinateVersion, drawings, maxPrice, minPrice, plannedRiskAmount, pointFor, preview, priceRange, selectedDrawingId, size]);
+  }, [candles, coordinateAdapter, coordinateVersion, currency, drawings, maxPrice, minPrice, plannedRiskAmount, pointFor, preview, priceRange, selectedDrawingId, size]);
 
   function hitDrawing(point: ProjectedPoint) {
     return [...drawings].sort((a, b) => (b.zIndex ?? 0) - (a.zIndex ?? 0)).find((drawing) => {
@@ -248,7 +344,7 @@ export function DrawingCanvas({
     const base = { id: drawingId(), tool, anchors: [first, last], style: styleFor(tool), hidden: false, locked: false, visibleOn: "all" as const, stage: "during-replay" as const };
     if (tool === "long-risk-reward" || tool === "short-risk-reward") {
       const direction = tool === "short-risk-reward" ? "short" : "long";
-      const risk = Math.max(Math.abs(first.price - last.price), 0.01);
+      const risk = Math.abs(first.price - last.price);
       const stop = direction === "long"
         ? first.price - risk
         : first.price + risk;
@@ -287,13 +383,14 @@ export function DrawingCanvas({
   }
 
   function handlePointerDown(clientX: number, clientY: number) {
-    if (candles.length === 0) return;
+    if (candles.length === 0) return false;
     const point = pointFromClient(clientX, clientY);
-    if (!point) return;
+    if (!point) return false;
     const anchor = anchorFromPoint(point.x, point.y);
     if (activeTool === "cursor") {
       const drawing = hitDrawing(point);
       onSelectDrawing(drawing?.id ?? null);
+      if (!drawing) return false;
       if (drawing?.tool === "text" && !drawing.locked) {
         const textPoint = pointFor(drawing.anchors[0]);
         setEditor({
@@ -303,14 +400,14 @@ export function DrawingCanvas({
           drawing,
           value: drawing.text ?? "",
         });
-        return;
+        return true;
       }
       if (drawing && !drawing.locked) beginEdit(drawing, point);
-      return;
+      return true;
     }
     if (activeTool === "text") {
       setEditor({ anchor, x: point.x, y: point.y, value: "" });
-      return;
+      return true;
     }
     if (
       activeTool === "horizontal-line" ||
@@ -327,9 +424,10 @@ export function DrawingCanvas({
         visibleOn: "all",
         stage: "during-replay",
       });
-      return;
+      return true;
     }
     startAnchorRef.current = anchor;
+    return true;
   }
 
   function handlePointerMove(clientX: number, clientY: number) {
@@ -384,12 +482,44 @@ export function DrawingCanvas({
     startAnchorRef.current = null;
   }
 
+  function cancelGesture() {
+    dragRef.current = null;
+    previewRef.current = null;
+    startAnchorRef.current = null;
+    setPreview(null);
+  }
+
+  function capturePointer(target: Element, pointerId: number) {
+    if (!Number.isFinite(pointerId)) return;
+    const captureTarget = target as Element & {
+      setPointerCapture?: (id: number) => void;
+    };
+    captureTarget.setPointerCapture?.(pointerId);
+    capturedPointerRef.current = { target, pointerId };
+  }
+
+  function releaseCapturedPointer(pointerId?: number) {
+    const captured = capturedPointerRef.current;
+    if (
+      !captured ||
+      (pointerId !== undefined && captured.pointerId !== pointerId)
+    ) {
+      return;
+    }
+    capturedPointerRef.current = null;
+    const captureTarget = captured.target as Element & {
+      releasePointerCapture?: (id: number) => void;
+    };
+    captureTarget.releasePointerCapture?.(captured.pointerId);
+  }
+
   useLayoutEffect(() => {
     gestureHandlersRef.current = {
       activeTool,
       pointerDown: handlePointerDown,
       pointerMove: handlePointerMove,
       pointerUp: handlePointerUp,
+      pointerCancel: cancelGesture,
     };
   });
 
@@ -405,29 +535,87 @@ export function DrawingCanvas({
       const handlers = gestureHandlersRef.current;
       if (handlers?.activeTool !== "cursor") return;
       const pointer = event as PointerEvent;
-      handlers.pointerDown(pointer.clientX, pointer.clientY);
+      const owned = handlers.pointerDown(
+        pointer.clientX,
+        pointer.clientY,
+      );
+      if (!owned) return;
+      pointer.preventDefault();
+      pointer.stopPropagation();
+      if (dragRef.current) {
+        capturePointer(stage, pointer.pointerId);
+      }
     };
     const onPointerMove = (event: Event) => {
       if (fromTextEditor(event)) return;
       const handlers = gestureHandlersRef.current;
-      if (handlers?.activeTool !== "cursor") return;
+      if (
+        handlers?.activeTool !== "cursor" ||
+        !capturedPointerRef.current
+      ) {
+        return;
+      }
       const pointer = event as PointerEvent;
+      pointer.preventDefault();
+      pointer.stopPropagation();
       handlers.pointerMove(pointer.clientX, pointer.clientY);
     };
     const onPointerUp = (event: Event) => {
       if (fromTextEditor(event)) return;
       const handlers = gestureHandlersRef.current;
-      if (handlers?.activeTool !== "cursor") return;
+      if (
+        handlers?.activeTool !== "cursor" ||
+        !capturedPointerRef.current
+      ) {
+        return;
+      }
       const pointer = event as PointerEvent;
+      pointer.preventDefault();
+      pointer.stopPropagation();
       handlers.pointerUp(pointer.clientX, pointer.clientY);
+      releaseCapturedPointer(pointer.pointerId);
+    };
+    const onPointerCancel = (event: Event) => {
+      if (!capturedPointerRef.current) return;
+      const pointer = event as PointerEvent;
+      pointer.preventDefault();
+      pointer.stopPropagation();
+      gestureHandlersRef.current?.pointerCancel();
+      releaseCapturedPointer(pointer.pointerId);
+    };
+    const onLostPointerCapture = () => {
+      if (!capturedPointerRef.current) return;
+      gestureHandlersRef.current?.pointerCancel();
+      capturedPointerRef.current = null;
     };
     stage.addEventListener("pointerdown", onPointerDown, true);
     stage.addEventListener("pointermove", onPointerMove, true);
     stage.addEventListener("pointerup", onPointerUp, true);
+    stage.addEventListener("pointercancel", onPointerCancel, true);
+    stage.addEventListener(
+      "lostpointercapture",
+      onLostPointerCapture,
+      true,
+    );
     return () => {
       stage.removeEventListener("pointerdown", onPointerDown, true);
       stage.removeEventListener("pointermove", onPointerMove, true);
       stage.removeEventListener("pointerup", onPointerUp, true);
+      stage.removeEventListener(
+        "pointercancel",
+        onPointerCancel,
+        true,
+      );
+      stage.removeEventListener(
+        "lostpointercapture",
+        onLostPointerCapture,
+        true,
+      );
+      dragRef.current = null;
+      previewRef.current = null;
+      startAnchorRef.current = null;
+      capturedPointerRef.current = null;
+      gestureHandlersRef.current = null;
     };
   }, []);
 
@@ -438,16 +626,45 @@ export function DrawingCanvas({
         ref={canvasRef}
         role="img"
         aria-label="绘图画布"
-        onPointerDown={(event) =>
-          handlePointerDown(event.clientX, event.clientY)
-        }
-        onPointerMove={(event) =>
-          handlePointerMove(event.clientX, event.clientY)
-        }
-        onPointerUp={(event) =>
-          handlePointerUp(event.clientX, event.clientY)
-        }
+        onPointerDown={(event) => {
+          if (!handlePointerDown(event.clientX, event.clientY)) return;
+          event.preventDefault();
+          event.stopPropagation();
+          if (startAnchorRef.current || dragRef.current) {
+            capturePointer(event.currentTarget, event.pointerId);
+          }
+        }}
+        onPointerMove={(event) => {
+          if (!capturedPointerRef.current) return;
+          event.preventDefault();
+          event.stopPropagation();
+          handlePointerMove(event.clientX, event.clientY);
+        }}
+        onPointerUp={(event) => {
+          if (!capturedPointerRef.current) return;
+          event.preventDefault();
+          event.stopPropagation();
+          handlePointerUp(event.clientX, event.clientY);
+          releaseCapturedPointer(event.pointerId);
+        }}
+        onPointerCancel={(event) => {
+          if (!capturedPointerRef.current) return;
+          event.preventDefault();
+          event.stopPropagation();
+          cancelGesture();
+          releaseCapturedPointer(event.pointerId);
+        }}
+        onLostPointerCapture={() => {
+          if (!capturedPointerRef.current) return;
+          cancelGesture();
+          capturedPointerRef.current = null;
+        }}
       />
+      {validationError && (
+        <p className="drawing-validation-error" role="alert">
+          {validationError}
+        </p>
+      )}
       {editor && <input autoFocus className="drawing-text-editor" aria-label="文字标注" value={editor.value} style={{ left: editor.x + 4, top: editor.y - 24, pointerEvents: "auto" }} onChange={(event) => setEditor({ ...editor, value: event.target.value })} onBlur={commitText} onKeyDown={(event) => { if (event.key === "Enter") commitText(); if (event.key === "Escape") setEditor(null); }} />}
     </div>
   );

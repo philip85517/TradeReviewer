@@ -197,4 +197,50 @@ describe("IndexedDbEpisodeReviewRepository", () => {
 
     expect(await reviews.getAll()).toEqual([review("修订版")]);
   });
+
+  it("reloads cursor-versioned plans without crossing episode boundaries", async () => {
+    const databaseName = `trade-reviewer-plan-revisions-${crypto.randomUUID()}`;
+    databases.push(databaseName);
+    const reviews = new IndexedDbEpisodeReviewRepository(databaseName);
+    const first = {
+      ...review("future plan"),
+      planRevisions: [
+        {
+          knowledgeAt: "2025-01-02T10:00:00.000Z",
+          plan: {
+            ...review("entry plan").plan,
+            plannedRiskAmount: "100",
+          },
+        },
+        {
+          knowledgeAt: "2025-01-02T11:00:00.000Z",
+          plan: {
+            ...review("future plan").plan,
+            plannedRiskAmount: "50",
+          },
+        },
+      ],
+    };
+    const second = {
+      ...review("other episode"),
+      episodeId: "episode-2",
+      planRevisions: [
+        {
+          knowledgeAt: "2025-01-03T10:00:00.000Z",
+          plan: review("other episode").plan,
+        },
+      ],
+    };
+
+    await reviews.put(first);
+    await reviews.put(second);
+
+    expect((await reviews.get("episode-1"))?.planRevisions).toEqual(
+      first.planRevisions,
+    );
+    expect((await reviews.get("episode-2"))?.planRevisions).toEqual(
+      second.planRevisions,
+    );
+    expect(await reviews.getAll()).toHaveLength(2);
+  });
 });

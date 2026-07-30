@@ -78,4 +78,42 @@ describe("createReplaySnapshot", () => {
       netPnl: "396",
     });
   });
+
+  it("does not reveal a provider bar until its explicit completion boundary", () => {
+    const providerBar: Candle = {
+      time: "2025-01-02T10:00:00.000Z",
+      knowledgeAt: "2025-01-02T10:15:00.000Z",
+      open: 10,
+      high: 12,
+      low: 9,
+      close: 11,
+      volume: 100,
+    };
+    const fillAt1007 = {
+      ...executions[0],
+      executedAt: "2025-01-02T10:07:00.000Z",
+    };
+
+    expect(
+      createReplaySnapshot({
+        candles: [providerBar],
+        executions: [fillAt1007],
+        cursor: "2025-01-02T10:07:00.000Z",
+      }).candles,
+    ).toEqual([]);
+    expect(
+      createReplaySnapshot({
+        candles: [providerBar],
+        executions: [fillAt1007],
+        cursor: "2025-01-02T10:14:59.999Z",
+      }).candles,
+    ).toEqual([]);
+    expect(
+      createReplaySnapshot({
+        candles: [providerBar],
+        executions: [fillAt1007],
+        cursor: "2025-01-02T10:15:00.000Z",
+      }).candles,
+    ).toEqual([providerBar]);
+  });
 });

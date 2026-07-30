@@ -39,7 +39,12 @@ describe("DrawingLayersPanel", () => {
     expect(onCommand).toHaveBeenCalledWith({ type: "rename", id: "trend-1", name: "突破趋势" });
     expect(onCommand).toHaveBeenCalledWith({ type: "toggle-hidden", id: "trend-1" });
     expect(onCommand).toHaveBeenCalledWith({ type: "toggle-locked", id: "trend-1" });
-    expect(onCommand).toHaveBeenCalledWith({ type: "move", id: "line-2", direction: "up" });
+    expect(onCommand).toHaveBeenCalledWith({
+      type: "move",
+      id: "line-2",
+      direction: "up",
+      eligibleIds: ["trend-1", "line-2"],
+    });
     expect(onCommand).toHaveBeenCalledWith({ type: "delete", id: "trend-1" });
     expect(screen.getByRole("button", { name: "上移趋势线" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "下移水平线" })).toBeDisabled();

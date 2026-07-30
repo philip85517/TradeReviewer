@@ -14,7 +14,12 @@ export type DrawingCommand =
   | { type: "toggle-hidden"; id: string }
   | { type: "toggle-locked"; id: string }
   | { type: "set-locked"; ids: string[]; locked: boolean }
-  | { type: "move"; id: string; direction: "up" | "down" }
+  | {
+      type: "move";
+      id: string;
+      direction: "up" | "down";
+      eligibleIds?: string[];
+    }
   | { type: "delete"; id: string }
   | { type: "clear-unlocked" };
 
@@ -107,7 +112,19 @@ export function applyDrawingCommand(
     return current.locked ? history : commit(history, present.filter((drawing) => drawing.id !== command.id));
   }
 
-  const target = command.direction === "up" ? index + 1 : index - 1;
+  const eligibleIds = command.eligibleIds
+    ? new Set(command.eligibleIds)
+    : null;
+  const step = command.direction === "up" ? 1 : -1;
+  let target = index + step;
+  while (
+    eligibleIds &&
+    target >= 0 &&
+    target < present.length &&
+    !eligibleIds.has(present[target].id)
+  ) {
+    target += step;
+  }
   if (target < 0 || target >= present.length) return history;
   const next = [...present];
   [next[index], next[target]] = [next[target], next[index]];

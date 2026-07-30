@@ -1,5 +1,7 @@
 import type {
   DailyCandleRequest,
+  IntradayCandleRequest,
+  IntradayProviderResult,
   MarketDataProvider,
   ProviderDailyCandle,
   ProviderMarketCandle,
@@ -12,11 +14,13 @@ import {
   validateProviderMarketCandles,
 } from "../validation";
 import { MarketDataProviderError, readProviderJson } from "./errors";
-import type { IntradayCandleRequest, IntradayProviderResult } from "./router";
 
 type YahooEnvelope = {
   chart?: {
     result?: Array<{
+      meta?: {
+        symbol?: unknown;
+      };
       timestamp?: unknown;
       indicators?: {
         quote?: Array<Record<string, unknown>>;
@@ -25,6 +29,17 @@ type YahooEnvelope = {
     }>;
   };
 };
+
+function validateYahooIdentity(value: unknown, providerSymbol: string) {
+  const symbol = (value as YahooEnvelope)?.chart?.result?.[0]?.meta?.symbol;
+  if (
+    symbol !== undefined &&
+    (typeof symbol !== "string" ||
+      symbol.toUpperCase() !== providerSymbol.toUpperCase())
+  ) {
+    throw new Error("Yahoo 行情响应标的不匹配");
+  }
+}
 
 function numberAt(value: unknown, index: number) {
   if (!Array.isArray(value) || typeof value[index] !== "number") {
@@ -115,6 +130,7 @@ export class YahooProvider implements MarketDataProvider {
     );
     const value = await readProviderJson(response, "Yahoo 行情");
     try {
+      validateYahooIdentity(value, providerSymbol);
       const candles = parseYahooDaily(value);
       validateProviderCandles(
         candles,
@@ -164,6 +180,7 @@ export class YahooProvider implements MarketDataProvider {
     );
     const value = await readProviderJson(response, "Yahoo 行情");
     try {
+      validateYahooIdentity(value, providerSymbol);
       const parsed = parseYahooIntraday(value);
       const candles = parsed.filter(
         (candle) =>

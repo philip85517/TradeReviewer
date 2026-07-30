@@ -18,6 +18,7 @@ const labels: Record<NormalizedDrawing["tool"], string> = {
 
 export function DrawingLayersPanel({ drawings, onCommand, onSelectDrawing, selectedDrawingId }: Props) {
   const sorted = [...drawings].sort((a, b) => (b.zIndex ?? 0) - (a.zIndex ?? 0));
+  const eligibleIds = sorted.map((drawing) => drawing.id);
   if (sorted.length === 0) return <p className="drawing-layers-empty">暂无绘图图层</p>;
   return (
     <div className="drawing-layers-panel" aria-label="绘图图层">
@@ -31,8 +32,8 @@ export function DrawingLayersPanel({ drawings, onCommand, onSelectDrawing, selec
           <div className="drawing-layer-actions">
             <button aria-label={`${drawing.hidden ? "显示" : "隐藏"}${name}`} aria-pressed={!drawing.hidden} onClick={() => onCommand({ type: "toggle-hidden", id: drawing.id })}>{drawing.hidden ? <EyeOff size={14} /> : <Eye size={14} />}</button>
             <button aria-label={`${drawing.locked ? "解锁" : "锁定"}${name}`} aria-pressed={drawing.locked} onClick={() => onCommand({ type: "toggle-locked", id: drawing.id })}>{drawing.locked ? <Lock size={14} /> : <Unlock size={14} />}</button>
-            <button aria-label={`上移${name}`} title={isTop ? "已在最上层" : "上移图层"} disabled={isTop} onClick={() => onCommand({ type: "move", id: drawing.id, direction: "up" })}><ChevronUp size={14} /></button>
-            <button aria-label={`下移${name}`} title={isBottom ? "已在最下层" : "下移图层"} disabled={isBottom} onClick={() => onCommand({ type: "move", id: drawing.id, direction: "down" })}><ChevronDown size={14} /></button>
+            <button aria-label={`上移${name}`} title={isTop ? "已在最上层" : "上移图层"} disabled={isTop} onClick={() => onCommand({ type: "move", id: drawing.id, direction: "up", eligibleIds })}><ChevronUp size={14} /></button>
+            <button aria-label={`下移${name}`} title={isBottom ? "已在最下层" : "下移图层"} disabled={isBottom} onClick={() => onCommand({ type: "move", id: drawing.id, direction: "down", eligibleIds })}><ChevronDown size={14} /></button>
             <button aria-label={`删除${name}`} disabled={drawing.locked} onClick={() => onCommand({ type: "delete", id: drawing.id })}><Trash2 size={14} /></button>
           </div>
         </div>;

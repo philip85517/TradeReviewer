@@ -6,7 +6,16 @@ import type {
   ProviderMarketCandle,
   SupportedMarket,
 } from "./contracts";
+import {
+  CalendarOutOfRangeError,
+  expectedTradingDates,
+} from "./calendar";
+import { marketLocalTimestampToIso } from "./providers/errors";
 import { coverageStatusForSegments } from "./sync-status";
+import {
+  marketTimeZone,
+  marketTradingDate,
+} from "./trading-date";
 import { validateProviderMarketCandles } from "./validation";
 import type { MarketDataRepository } from "../storage/market-data-repository";
 
@@ -23,6 +32,14 @@ type IntradayRouteResult = {
   adjustmentMode: "raw";
   candles: ProviderMarketCandle[];
   warnings: string[];
+  request: {
+    instrumentId: string;
+    symbol: string;
+    market: SupportedMarket;
+    interval: "15m";
+    startTime: string;
+    endTime: string;
+  };
 };
 
 export type SyncIntradayMarketDataOptions = {
@@ -48,6 +65,96 @@ function shiftTime(timestamp: string, milliseconds: number) {
   return new Date(new Date(timestamp).getTime() + milliseconds).toISOString();
 }
 
+function fifteenMinuteBarKnowledgeAt(timestamp: string) {
+  return shiftTime(timestamp, 15 * 60 * 1000);
+}
+
+const MARKET_SESSIONS: Record<
+  SupportedMarket,
+  Array<{ startMinute: number; endMinute: number }>
+> = {
+  US: [{ startMinute: 9 * 60 + 30, endMinute: 16 * 60 }],
+  HK: [
+    { startMinute: 9 * 60 + 30, endMinute: 12 * 60 },
+    { startMinute: 13 * 60, endMinute: 16 * 60 },
+  ],
+  "CN-SH": [
+    { startMinute: 9 * 60 + 30, endMinute: 11 * 60 + 30 },
+    { startMinute: 13 * 60, endMinute: 15 * 60 },
+  ],
+  "CN-SZ": [
+    { startMinute: 9 * 60 + 30, endMinute: 11 * 60 + 30 },
+    { startMinute: 13 * 60, endMinute: 15 * 60 },
+  ],
+};
+
+function expectedIntradayTimestamps(
+  range: IntradayTimeRange,
+  market: SupportedMarket,
+) {
+  let tradingDates: string[];
+  try {
+    tradingDates = expectedTradingDates(
+      market,
+      marketTradingDate(range.startTime, market),
+      marketTradingDate(range.endTime, market),
+    );
+  } catch (error) {
+    if (error instanceof CalendarOutOfRangeError) return undefined;
+    throw error;
+  }
+
+  const timeZone = marketTimeZone(market);
+  return tradingDates.flatMap((date) =>
+    MARKET_SESSIONS[market].flatMap((session) => {
+      const timestamps: string[] = [];
+      for (
+        let minute = session.startMinute;
+        minute < session.endMinute;
+        minute += 15
+      ) {
+        const hour = Math.floor(minute / 60);
+        const minuteWithinHour = minute % 60;
+        const timestamp = marketLocalTimestampToIso(
+          `${date} ${String(hour).padStart(2, "0")}:${String(
+            minuteWithinHour,
+          ).padStart(2, "0")}:00`,
+          timeZone,
+        );
+        if (
+          timestamp >= range.startTime &&
+          timestamp <= range.endTime
+        ) {
+          timestamps.push(timestamp);
+        }
+      }
+      return timestamps;
+    }),
+  );
+}
+
+function contiguousCandleRuns(candles: MarketCandleRecord[]) {
+  const sorted = [...candles].sort((left, right) =>
+    left.timestamp.localeCompare(right.timestamp),
+  );
+  const runs: MarketCandleRecord[][] = [];
+  for (const candle of sorted) {
+    const current = runs.at(-1);
+    const previous = current?.at(-1);
+    if (
+      !current ||
+      !previous ||
+      Date.parse(candle.timestamp) - Date.parse(previous.timestamp) !==
+        15 * 60 * 1000
+    ) {
+      runs.push([candle]);
+    } else {
+      current.push(candle);
+    }
+  }
+  return runs;
+}
+
 function coverageGaps(
   required: IntradayTimeRange,
   coverage: IntervalCoverageSegment[],
@@ -57,12 +164,23 @@ function coverageGaps(
     .filter(
       (segment) =>
         (segment.status === "complete" || segment.status === "partial") &&
+        segment.reason !== "missing-candles" &&
         segment.requestedEnd >= required.startTime &&
         segment.requestedStart <= required.endTime,
     )
     .map((segment) => ({
-      startTime: segment.requestedStart,
-      endTime: segment.requestedEnd,
+      startTime:
+        segment.status === "partial" &&
+        segment.actualStart &&
+        segment.actualEnd
+          ? segment.actualStart
+          : segment.requestedStart,
+      endTime:
+        segment.status === "partial" &&
+        segment.actualStart &&
+        segment.actualEnd
+          ? segment.actualEnd
+          : segment.requestedEnd,
     }))
     .sort((left, right) => left.startTime.localeCompare(right.startTime));
 
@@ -101,7 +219,14 @@ function coverageForRange(
   );
 }
 
-function parseRouteResult(value: unknown, range: IntradayTimeRange) {
+function parseRouteResult(
+  value: unknown,
+  range: IntradayTimeRange,
+  expected: Pick<
+    SyncIntradayMarketDataOptions,
+    "instrumentId" | "symbol" | "market"
+  >,
+) {
   if (!value || typeof value !== "object") {
     throw new Error("行情接口响应无效");
   }
@@ -117,6 +242,17 @@ function parseRouteResult(value: unknown, range: IntradayTimeRange) {
   ) {
     throw new Error("行情接口响应无效");
   }
+  if (
+    !result.request ||
+    result.request.instrumentId !== expected.instrumentId ||
+      result.request.symbol !== expected.symbol ||
+      result.request.market !== expected.market ||
+      result.request.interval !== "15m" ||
+      result.request.startTime !== range.startTime ||
+      result.request.endTime !== range.endTime
+  ) {
+    throw new Error("行情接口响应标的不匹配");
+  }
   validateProviderMarketCandles(result.candles, range.startTime, range.endTime);
   return result as IntradayRouteResult;
 }
@@ -126,15 +262,27 @@ function replaceCoverageForRange(
   range: IntradayTimeRange,
 ) {
   return coverage.filter(
-    (segment) =>
-      segment.requestedEnd < range.startTime ||
-      segment.requestedStart > range.endTime,
+    (segment) => {
+      const start =
+        segment.status === "partial" &&
+        segment.actualStart &&
+        segment.actualEnd
+          ? segment.actualStart
+          : segment.requestedStart;
+      const end =
+        segment.status === "partial" &&
+        segment.actualStart &&
+        segment.actualEnd
+          ? segment.actualEnd
+          : segment.requestedEnd;
+      return end < range.startTime || start > range.endTime;
+    },
   );
 }
 
 export function splitIntradayRequestRange(
   range: IntradayTimeRange,
-  maxDays = 60,
+  maxDays = 14,
 ) {
   const chunks: IntradayTimeRange[] = [];
   let start = range.startTime;
@@ -240,7 +388,11 @@ export async function syncIntradayMarketData({
         requestedRanges,
       };
     }
-    const result = parseRouteResult(await response.json(), range);
+    const result = parseRouteResult(await response.json(), range, {
+      instrumentId,
+      symbol,
+      market,
+    });
     throwIfAborted();
     const historyLimited =
       result.candles.length === 0 ||
@@ -249,6 +401,7 @@ export async function syncIntradayMarketData({
       instrumentId,
       interval: "15m",
       timestamp: candle.timestamp,
+      knowledgeAt: candle.knowledgeAt ?? fifteenMinuteBarKnowledgeAt(candle.timestamp),
       open: candle.open,
       high: candle.high,
       low: candle.low,
@@ -260,22 +413,61 @@ export async function syncIntradayMarketData({
       adjustmentMode: "raw",
       fetchedAt: result.fetchedAt,
     }));
-    const segment: IntervalCoverageSegment = {
-      interval: "15m",
-      requestedStart: range.startTime,
-      requestedEnd: range.endTime,
-      ...(candles.length > 0
-        ? {
-            actualStart: candles[0].timestamp,
-            actualEnd: candles.at(-1)?.timestamp,
-          }
-        : {}),
-      status: historyLimited ? "partial" : "complete",
-      provider: result.provider,
-      fetchedAt: result.fetchedAt,
-      ...(historyLimited ? { reason: "provider-history-limit" } : {}),
-    };
-    coverage = [...replaceCoverageForRange(coverage, range), segment];
+    const expectedTimestamps = historyLimited
+      ? undefined
+      : expectedIntradayTimestamps(range, market);
+    const returnedTimestamps = new Set(
+      candles.map((item) => item.timestamp),
+    );
+    const missingTimestamps = expectedTimestamps?.filter(
+      (timestamp) => !returnedTimestamps.has(timestamp),
+    );
+    const sparse = Boolean(missingTimestamps?.length);
+    const segments: IntervalCoverageSegment[] = sparse
+      ? [
+          ...contiguousCandleRuns(candles).map((run) => ({
+            interval: "15m" as const,
+            requestedStart: run[0].timestamp,
+            requestedEnd: run.at(-1)!.timestamp,
+            actualStart: run[0].timestamp,
+            actualEnd: run.at(-1)!.timestamp,
+            status: "complete" as const,
+            provider: result.provider,
+            fetchedAt: result.fetchedAt,
+          })),
+          {
+            interval: "15m",
+            requestedStart: range.startTime,
+            requestedEnd: range.endTime,
+            status: "partial",
+            provider: result.provider,
+            fetchedAt: result.fetchedAt,
+            reason: "missing-candles",
+          },
+        ]
+      : [
+          {
+            interval: "15m",
+            requestedStart: range.startTime,
+            requestedEnd: range.endTime,
+            ...(candles.length > 0
+              ? {
+                  actualStart: candles[0].timestamp,
+                  actualEnd: candles.at(-1)?.timestamp,
+                }
+              : {}),
+            status: historyLimited ? "partial" : "complete",
+            provider: result.provider,
+            fetchedAt: result.fetchedAt,
+            ...(historyLimited
+              ? { reason: "provider-history-limit" }
+              : {}),
+          },
+        ];
+    coverage = [
+      ...replaceCoverageForRange(coverage, range),
+      ...segments,
+    ];
     throwIfAborted();
     await repository.commitIntervalSyncResult({
       instrumentId,

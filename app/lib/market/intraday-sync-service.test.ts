@@ -56,6 +56,14 @@ function intradayResponse(candles = [candle]) {
     interval: "15m",
     adjustmentMode: "raw",
     warnings: [],
+    request: {
+      instrumentId: "HK:1810",
+      symbol: "1810",
+      market: "HK",
+      interval: "15m",
+      startTime: "2025-01-02T02:00:00.000Z",
+      endTime: "2025-01-02T03:00:00.000Z",
+    },
     candles: candles.map((record) => ({
       timestamp: record.timestamp,
       open: record.open,
@@ -97,26 +105,21 @@ afterEach(async () => {
 });
 
 describe("splitIntradayRequestRange", () => {
-  it("splits inclusive intraday requests into at most 60-day chunks", () => {
-    expect(
-      splitIntradayRequestRange({
+  it("splits inclusive intraday requests into provider-safe sub-500-bar chunks", () => {
+    const chunks = splitIntradayRequestRange({
         startTime: "2025-01-01T00:00:00.000Z",
         endTime: "2025-05-01T00:00:00.000Z",
-      }),
-    ).toEqual([
-      {
-        startTime: "2025-01-01T00:00:00.000Z",
-        endTime: "2025-03-01T23:59:59.999Z",
-      },
-      {
-        startTime: "2025-03-02T00:00:00.000Z",
-        endTime: "2025-04-30T23:59:59.999Z",
-      },
-      {
-        startTime: "2025-05-01T00:00:00.000Z",
-        endTime: "2025-05-01T00:00:00.000Z",
-      },
-    ]);
+      });
+
+    expect(chunks).toHaveLength(9);
+    expect(chunks[0]).toEqual({
+      startTime: "2025-01-01T00:00:00.000Z",
+      endTime: "2025-01-14T23:59:59.999Z",
+    });
+    expect(chunks.at(-1)).toEqual({
+      startTime: "2025-04-23T00:00:00.000Z",
+      endTime: "2025-05-01T00:00:00.000Z",
+    });
   });
 });
 
@@ -272,6 +275,14 @@ describe("syncIntradayMarketData", () => {
     expect(refreshed.requestedRanges).toEqual([
       {
         startTime: "2025-04-01T00:00:00.000Z",
+        endTime: "2025-04-14T23:59:59.999Z",
+      },
+      {
+        startTime: "2025-04-15T00:00:00.000Z",
+        endTime: "2025-04-28T23:59:59.999Z",
+      },
+      {
+        startTime: "2025-04-29T00:00:00.000Z",
         endTime: "2025-04-30T23:59:59.999Z",
       },
     ]);
@@ -281,19 +292,14 @@ describe("syncIntradayMarketData", () => {
         expect.objectContaining({
           status: "partial",
           requestedStart: "2025-04-01T00:00:00.000Z",
-          requestedEnd: "2025-04-30T23:59:59.999Z",
+          requestedEnd: "2025-04-14T23:59:59.999Z",
           reason: "provider-history-limit",
         }),
       ]),
     );
     expect(
       refreshed.coverage.filter((segment) => segment.status === "partial"),
-    ).toEqual([
-      expect.objectContaining({
-        requestedStart: "2025-04-01T00:00:00.000Z",
-        requestedEnd: "2025-04-30T23:59:59.999Z",
-      }),
-    ]);
+    ).toHaveLength(3);
 
     const cacheOnlyFetcher = vi.fn<typeof fetch>();
     const cached = await syncIntradayMarketData({
@@ -313,25 +319,196 @@ describe("syncIntradayMarketData", () => {
     expect(cacheOnlyFetcher).not.toHaveBeenCalled();
   });
 
-  it("uses the cached result after a successful intraday sync", async () => {
+  it("keeps a sparse session response partial and retries only its missing ranges", async () => {
     const repo = repository();
     const fetcher = vi.fn<typeof fetch>(async () => intradayResponse());
     const first = await syncIntradayMarketData(syncOptions(repo, fetcher));
-    const cachedFetcher = vi.fn<typeof fetch>();
+    const missingFetcher = vi.fn<typeof fetch>(async (input) => {
+      const url = new URL(String(input), "http://localhost");
+      return Response.json({
+        provider: "tencent",
+        providerSymbol: "hk01810",
+        fetchedAt: "2025-02-01T00:00:00.000Z",
+        interval: "15m",
+        adjustmentMode: "raw",
+        warnings: [],
+        request: {
+          instrumentId: "HK:1810",
+          symbol: "1810",
+          market: "HK",
+          interval: "15m",
+          startTime: url.searchParams.get("start"),
+          endTime: url.searchParams.get("end"),
+        },
+        candles: [],
+      });
+    });
     const second = await syncIntradayMarketData(
+      syncOptions(repo, missingFetcher),
+    );
+    const cachedFetcher = vi.fn<typeof fetch>();
+    const third = await syncIntradayMarketData(
       syncOptions(repo, cachedFetcher),
     );
 
-    expect(first).toMatchObject({ source: "network", status: "complete" });
-    expect(first.coverage).toEqual([
-      expect.objectContaining({
-        requestedStart: "2025-01-02T02:00:00.000Z",
-        requestedEnd: "2025-01-02T03:00:00.000Z",
-        actualStart: candle.timestamp,
-        actualEnd: candle.timestamp,
-      }),
+    expect(first).toMatchObject({ source: "network", status: "partial" });
+    expect(first.coverage).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          requestedStart: candle.timestamp,
+          requestedEnd: candle.timestamp,
+          status: "complete",
+        }),
+        expect.objectContaining({
+          requestedStart: "2025-01-02T02:00:00.000Z",
+          requestedEnd: "2025-01-02T03:00:00.000Z",
+          status: "partial",
+          reason: "missing-candles",
+        }),
+      ]),
+    );
+    expect(second.requestedRanges).toEqual([
+      {
+        startTime: "2025-01-02T02:00:00.000Z",
+        endTime: "2025-01-02T02:29:59.999Z",
+      },
+      {
+        startTime: "2025-01-02T02:30:00.001Z",
+        endTime: "2025-01-02T03:00:00.000Z",
+      },
     ]);
-    expect(second).toMatchObject({ source: "cache", candles: [candle] });
+    expect(third).toMatchObject({
+      source: "cache",
+      status: "partial",
+      candles: [
+        expect.objectContaining({
+          timestamp: candle.timestamp,
+        }),
+      ],
+    });
+    expect(third.coverage).toEqual(
+      expect.arrayContaining([
+      expect.objectContaining({
+          requestedStart: "2025-01-02T02:00:00.000Z",
+          requestedEnd: "2025-01-02T02:29:59.999Z",
+          status: "partial",
+        }),
+        expect.objectContaining({
+          requestedStart: "2025-01-02T02:30:00.001Z",
+          requestedEnd: "2025-01-02T03:00:00.000Z",
+          status: "partial",
+        }),
+      ]),
+    );
+    expect(missingFetcher).toHaveBeenCalledTimes(2);
     expect(cachedFetcher).not.toHaveBeenCalled();
+  });
+
+  it("rejects a response for a different instrument before persistence", async () => {
+    const repo = repository();
+    const fetcher = vi.fn<typeof fetch>(async () =>
+      Response.json({
+        ...((await intradayResponse().json()) as object),
+        request: {
+          instrumentId: "HK:9999",
+          symbol: "9999",
+          market: "HK",
+          interval: "15m",
+          startTime: "2025-01-02T02:00:00.000Z",
+          endTime: "2025-01-02T03:00:00.000Z",
+        },
+      }),
+    );
+
+    await expect(
+      syncIntradayMarketData(syncOptions(repo, fetcher)),
+    ).rejects.toThrow("行情接口响应标的不匹配");
+    expect(
+      await repo.getCandles(
+        "HK:1810",
+        "15m",
+        "2025-01-02T02:00:00.000Z",
+        "2025-01-02T03:00:00.000Z",
+      ),
+    ).toEqual([]);
+  });
+
+  it("retries only the missing sides of capped actual coverage and then stabilizes no-data gaps", async () => {
+    const repo = repository();
+    const cappedCoverage: IntervalCoverageSegment = {
+      interval: "15m",
+      requestedStart: "2025-01-02T02:00:00.000Z",
+      requestedEnd: "2025-01-02T03:00:00.000Z",
+      actualStart: "2025-01-02T02:15:00.000Z",
+      actualEnd: "2025-01-02T02:30:00.000Z",
+      status: "partial",
+      provider: "tencent",
+      reason: "provider-history-limit",
+      fetchedAt: "2025-02-01T00:00:00.000Z",
+    };
+    await repo.commitIntervalSyncResult({
+      instrumentId: "HK:1810",
+      interval: "15m",
+      candles: [candle],
+      coverage: [cappedCoverage],
+      providerSymbol: { provider: "tencent", symbol: "hk01810" },
+    });
+    const historyLimitFetcher = vi.fn<typeof fetch>(async () =>
+      Response.json(
+        { error: { code: "provider-history-limit" } },
+        { status: 502 },
+      ),
+    );
+
+    const first = await syncIntradayMarketData(
+      syncOptions(repo, historyLimitFetcher),
+    );
+
+    expect(first.requestedRanges).toEqual([
+      {
+        startTime: "2025-01-02T02:00:00.000Z",
+        endTime: "2025-01-02T02:14:59.999Z",
+      },
+      {
+        startTime: "2025-01-02T02:30:00.001Z",
+        endTime: "2025-01-02T03:00:00.000Z",
+      },
+    ]);
+    expect(first.coverage).toEqual(
+      expect.arrayContaining([
+        cappedCoverage,
+        expect.objectContaining({
+          requestedStart: "2025-01-02T02:00:00.000Z",
+          requestedEnd: "2025-01-02T02:14:59.999Z",
+          status: "partial",
+        }),
+        expect.objectContaining({
+          requestedStart: "2025-01-02T02:30:00.001Z",
+          requestedEnd: "2025-01-02T03:00:00.000Z",
+          status: "partial",
+        }),
+      ]),
+    );
+
+    const noLoopFetcher = vi.fn<typeof fetch>();
+    const second = await syncIntradayMarketData(
+      syncOptions(repo, noLoopFetcher),
+    );
+    expect(second.source).toBe("cache");
+    expect(second.status).toBe("partial");
+    expect(noLoopFetcher).not.toHaveBeenCalled();
+  });
+
+  it("rejects an intraday route response without echoed request identity", async () => {
+    const repo = repository();
+    const fetcher = vi.fn<typeof fetch>(async () => {
+      const body = (await intradayResponse().json()) as Record<string, unknown>;
+      delete body.request;
+      return Response.json(body);
+    });
+
+    await expect(
+      syncIntradayMarketData(syncOptions(repo, fetcher)),
+    ).rejects.toThrow("行情接口响应标的不匹配");
   });
 });

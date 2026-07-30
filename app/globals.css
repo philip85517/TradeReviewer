@@ -1058,6 +1058,21 @@ input:focus-visible {
   font: 12px var(--font-geist-sans);
 }
 
+.drawing-validation-error {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  max-width: min(320px, calc(100% - 24px));
+  margin: 0;
+  padding: 7px 10px;
+  border: 1px solid rgba(239, 83, 80, 0.55);
+  border-radius: 6px;
+  color: #ffb4b2;
+  background: rgba(56, 20, 24, 0.94);
+  font-size: 11px;
+  pointer-events: none;
+}
+
 .drawing-layers-panel {
   display: grid;
   gap: 4px;

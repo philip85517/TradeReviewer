@@ -10,6 +10,8 @@ type Props = {
   episodeId: string;
   instrumentId: string;
   record?: EpisodeReviewRecord;
+  knowledgeCursor?: string;
+  episodeStartedAt?: string;
   delayMs?: number;
   onSave: (record: EpisodeReviewRecord) => Promise<void>;
 };
@@ -18,8 +20,8 @@ function score(value: string): ReviewScore | null {
   return value === "" ? null : Number(value) as ReviewScore;
 }
 
-export function EpisodeNotesPanel({ episodeId, instrumentId, record, delayMs, onSave }: Props) {
-  const { draft, status, error, updatePlan, updateReview, toggleTag, retry } = useEpisodeReviewAutosave({ episodeId, instrumentId, record, delayMs, onSave });
+export function EpisodeNotesPanel({ episodeId, instrumentId, record, knowledgeCursor, episodeStartedAt, delayMs, onSave }: Props) {
+  const { draft, status, error, updatePlan, updateReview, toggleTag, retry } = useEpisodeReviewAutosave({ episodeId, instrumentId, record, knowledgeCursor, episodeStartedAt, delayMs, onSave });
   return (
     <section className="episode-notes-panel" aria-label="当前回合复盘">
       <div className="episode-review-sections">

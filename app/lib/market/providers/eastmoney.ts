@@ -1,5 +1,7 @@
 import type {
   DailyCandleRequest,
+  IntradayCandleRequest,
+  IntradayProviderResult,
   MarketDataProvider,
   ProviderDailyCandle,
   ProviderMarketCandle,
@@ -17,13 +19,23 @@ import {
   readProviderJson,
   utcIsoToMarketLocal,
 } from "./errors";
-import type { IntradayCandleRequest, IntradayProviderResult } from "./router";
 
 type EastmoneyEnvelope = {
   data?: {
+    code?: unknown;
     klines?: unknown;
   };
 };
+
+function validateEastmoneyIdentity(value: unknown, providerSymbol: string) {
+  const code = (value as EastmoneyEnvelope)?.data?.code;
+  if (
+    code !== undefined &&
+    (typeof code !== "string" || code !== providerSymbol.split(".").at(-1))
+  ) {
+    throw new Error("东方财富行情响应标的不匹配");
+  }
+}
 
 export function parseEastmoneyDaily(
   value: unknown,
@@ -106,6 +118,7 @@ export class EastmoneyProvider implements MarketDataProvider {
     );
     const value = await readProviderJson(response, "东方财富行情");
     try {
+      validateEastmoneyIdentity(value, providerSymbol);
       const candles = parseEastmoneyDaily(value);
       validateProviderCandles(
         candles,
@@ -162,6 +175,7 @@ export class EastmoneyProvider implements MarketDataProvider {
     );
     const value = await readProviderJson(response, "东方财富行情");
     try {
+      validateEastmoneyIdentity(value, providerSymbol);
       const parsed = parseEastmoneyIntraday(value, "Asia/Shanghai");
       const candles = parsed.filter(
         (candle) =>

@@ -1,5 +1,7 @@
 import type {
   DailyCandleRequest,
+  IntradayCandleRequest,
+  IntradayProviderResult,
   MarketDataProvider,
   ProviderDailyCandle,
   ProviderMarketCandle,
@@ -16,7 +18,6 @@ import {
   readProviderJson,
   utcIsoToMarketLocal,
 } from "./errors";
-import type { IntradayCandleRequest, IntradayProviderResult } from "./router";
 
 function marketTimeZone(market: DailyCandleRequest["market"]) {
   if (market === "US") return "America/New_York";
@@ -134,7 +135,8 @@ export class TencentProvider implements MarketDataProvider {
         providerSymbol,
         fetchedAt: new Date().toISOString(),
         candles,
-        warnings: [],
+        warnings:
+          candles.length >= 500 ? ["provider-history-limit"] : [],
       };
     }
     throw new MarketDataProviderError(
@@ -207,7 +209,8 @@ export class TencentProvider implements MarketDataProvider {
         fetchedAt: new Date().toISOString(),
         interval: "15m",
         candles,
-        warnings: [],
+        warnings:
+          parsed.length >= 500 ? ["provider-history-limit"] : [],
       };
     }
     throw new MarketDataProviderError(

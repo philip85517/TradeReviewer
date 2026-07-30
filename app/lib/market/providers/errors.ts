@@ -4,7 +4,6 @@ export type MarketDataErrorCode =
   | "source-timeout"
   | "source-unavailable"
   | "invalid-response"
-  | "unsupported-interval"
   | "provider-history-limit"
   | "no-data";
 

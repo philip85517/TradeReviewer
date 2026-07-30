@@ -124,7 +124,9 @@ describe("ChartToolbar", () => {
     expect(period).toHaveAttribute("aria-description", "尚未获取 15 分钟行情");
     expect(screen.getByRole("button", { name: "图层" })).toHaveAttribute("aria-pressed", "true");
     await user.click(screen.getByRole("button", { name: "图层" }));
-    await user.click(screen.getByRole("button", { name: "全屏" }));
+    await user.click(
+      screen.getByRole("button", { name: "进入全屏" }),
+    );
     expect(onToggleLayers).toHaveBeenCalledTimes(1);
     expect(onFullscreen).toHaveBeenCalledTimes(1);
   });
@@ -152,7 +154,9 @@ describe("ChartToolbar", () => {
 
     cleanup();
     render(<ChartToolbar {...controlledProps()} />);
-    const fullscreen = screen.getByRole("button", { name: "全屏" });
+    const fullscreen = screen.getByRole("button", {
+      name: "进入全屏",
+    });
     expect(fullscreen).toBeDisabled();
     expect(fullscreen).toHaveAttribute("title", "浏览器不支持全屏");
     expect(fullscreen).toHaveAttribute("aria-description", "浏览器不支持全屏");
@@ -172,8 +176,46 @@ describe("ChartToolbar", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: "全屏" }));
+    await user.click(
+      screen.getByRole("button", { name: "进入全屏" }),
+    );
 
     expect(screen.getByRole("status")).toHaveTextContent("无法切换全屏");
+  });
+
+  it("switches the fullscreen label, title, and icon for the active state", () => {
+    const { rerender } = render(
+      <ChartToolbar
+        {...controlledProps()}
+        fullscreen={{
+          supported: true,
+          isFullscreen: false,
+          error: null,
+          toggleFullscreen: vi.fn(),
+        }}
+      />,
+    );
+
+    const enter = screen.getByRole("button", { name: "进入全屏" });
+    expect(enter).toHaveAttribute("title", "进入全屏");
+    expect(enter.querySelector("svg")).toHaveClass(
+      "lucide-maximize-2",
+    );
+
+    rerender(
+      <ChartToolbar
+        {...controlledProps()}
+        fullscreen={{
+          supported: true,
+          isFullscreen: true,
+          error: null,
+          toggleFullscreen: vi.fn(),
+        }}
+      />,
+    );
+
+    const exit = screen.getByRole("button", { name: "退出全屏" });
+    expect(exit).toHaveAttribute("title", "退出全屏");
+    expect(exit.querySelector("svg")).toHaveClass("lucide-minimize-2");
   });
 });

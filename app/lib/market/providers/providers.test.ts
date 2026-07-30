@@ -10,7 +10,11 @@ import {
   parseTencentIntraday,
   TencentProvider,
 } from "./tencent";
-import { parseYahooDaily, parseYahooIntraday } from "./yahoo";
+import {
+  parseYahooDaily,
+  parseYahooIntraday,
+  YahooProvider,
+} from "./yahoo";
 import { createProviderRouter } from "./router";
 import { MarketDataProviderError } from "./errors";
 
@@ -481,6 +485,92 @@ describe("intraday provider requests", () => {
 
     expect(requestedUrl?.searchParams.get("beg")).toBe("20250103000000");
     expect(requestedUrl?.searchParams.get("end")).toBe("20250103001500");
+  });
+
+  it("marks a Tencent 500-row intraday response as truncated", async () => {
+    const rows = Array.from({ length: 500 }, (_, index) => {
+      const timestamp = new Date(
+        Date.UTC(2025, 0, 1, 0, index * 15),
+      );
+      const local = timestamp.toISOString().replace("T", " ").slice(0, 19);
+      return [local, "10", "11", "12", "9", "100"];
+    });
+    const result = await new TencentProvider().fetchIntraday(
+      {
+        instrumentId: "HK:1810",
+        symbol: "1810",
+        market: "HK",
+        interval: "15m",
+        startTime: "2024-12-31T16:00:00.000Z",
+        endTime: "2025-01-05T20:45:00.000Z",
+      },
+      async () =>
+        Response.json({
+          data: { hk01810: { m15: rows } },
+        }),
+    );
+
+    expect(result.candles).toHaveLength(500);
+    expect(result.warnings).toContain("provider-history-limit");
+  });
+
+  it("rejects an Eastmoney response carrying a different instrument code", async () => {
+    await expect(
+      new EastmoneyProvider().fetchIntraday(
+        {
+          instrumentId: "CN-SH:600519",
+          symbol: "600519",
+          market: "CN-SH",
+          interval: "15m",
+          startTime: "2025-01-02T01:30:00.000Z",
+          endTime: "2025-01-02T01:30:00.000Z",
+        },
+        async () =>
+          Response.json({
+            data: {
+              code: "000001",
+              klines: ["2025-01-02 09:30:00,100,102,104,99,800"],
+            },
+          }),
+      ),
+    ).rejects.toMatchObject({ code: "invalid-response" });
+  });
+
+  it("rejects a Yahoo response carrying a different provider symbol", async () => {
+    await expect(
+      new YahooProvider().fetchIntraday(
+        {
+          instrumentId: "US:XPEV",
+          symbol: "XPEV",
+          market: "US",
+          interval: "15m",
+          startTime: "2025-01-02T14:30:00.000Z",
+          endTime: "2025-01-02T14:30:00.000Z",
+        },
+        async () =>
+          Response.json({
+            chart: {
+              result: [
+                {
+                  meta: { symbol: "TSLA" },
+                  timestamp: [1735828200],
+                  indicators: {
+                    quote: [
+                      {
+                        open: [10],
+                        high: [12],
+                        low: [9],
+                        close: [11],
+                        volume: [100],
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          }),
+      ),
+    ).rejects.toMatchObject({ code: "invalid-response" });
   });
 
   it.each([

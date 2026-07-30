@@ -25,6 +25,7 @@ export type MarketCandleRecord = {
   instrumentId: string;
   interval: NativeMarketInterval;
   timestamp: string;
+  knowledgeAt?: string;
   open: string;
   high: string;
   low: string;
@@ -39,7 +40,13 @@ export type MarketCandleRecord = {
 
 export type ProviderMarketCandle = Pick<
   MarketCandleRecord,
-  "timestamp" | "open" | "high" | "low" | "close" | "volume"
+  | "timestamp"
+  | "knowledgeAt"
+  | "open"
+  | "high"
+  | "low"
+  | "close"
+  | "volume"
 >;
 
 export type ProviderDailyCandle = Omit<
@@ -102,6 +109,24 @@ export type ProviderResult = {
   warnings: string[];
 };
 
+export type IntradayCandleRequest = {
+  instrumentId: string;
+  symbol: string;
+  market: SupportedMarket;
+  interval: "15m";
+  startTime: string;
+  endTime: string;
+};
+
+export type IntradayProviderResult = {
+  provider: MarketDataProviderId;
+  providerSymbol: string;
+  fetchedAt: string;
+  interval: "15m";
+  candles: ProviderMarketCandle[];
+  warnings: string[];
+};
+
 export interface MarketDataProvider {
   readonly id: MarketDataProviderId;
   supports(market: SupportedMarket): boolean;
@@ -109,4 +134,8 @@ export interface MarketDataProvider {
     request: DailyCandleRequest,
     fetcher?: typeof fetch,
   ): Promise<ProviderResult>;
+  fetchIntraday(
+    request: IntradayCandleRequest,
+    fetcher?: typeof fetch,
+  ): Promise<IntradayProviderResult>;
 }

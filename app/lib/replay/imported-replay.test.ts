@@ -94,4 +94,35 @@ describe("createImportedReplay", () => {
     expect(last.next()).toBe(candles[2].time);
     expect(last.nextExecution()).toBe(candles[2].time);
   });
+
+  it("navigates and maps periods by candle availability instead of bucket start", () => {
+    const completedCandles = [
+      {
+        ...candle("2025-01-02T10:00:00.000Z"),
+        knowledgeAt: "2025-01-02T10:15:00.000Z",
+      },
+      {
+        ...candle("2025-01-02T10:15:00.000Z"),
+        knowledgeAt: "2025-01-02T10:30:00.000Z",
+      },
+    ];
+    const hourly = [
+      {
+        ...candle("2025-01-02T10:00:00.000Z"),
+        knowledgeAt: "2025-01-02T11:00:00.000Z",
+      },
+    ];
+
+    const replay = createImportedReplay({
+      candles: completedCandles,
+      executions: [fill("2025-01-02T10:07:00.000Z")],
+      storedCursor: "2025-01-02T10:15:00.000Z",
+    });
+
+    expect(replay.currentCursor).toBe("2025-01-02T10:15:00.000Z");
+    expect(replay.next()).toBe("2025-01-02T10:30:00.000Z");
+    expect(replay.cursorForTimeframe(hourly)).toBe(
+      "2025-01-02T10:15:00.000Z",
+    );
+  });
 });

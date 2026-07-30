@@ -1,4 +1,4 @@
-import type { Candle } from "../market/types";
+import { candleKnowledgeAt, type Candle } from "../market/types";
 import type { TradeExecution } from "../trades/types";
 import {
   replayPositionAtPrice,
@@ -26,7 +26,7 @@ export function createReplaySnapshot({
   cursor,
 }: ReplayInput): ReplaySnapshot {
   const revealedCandles = candles
-    .filter((candle) => candle.time <= cursor)
+    .filter((candle) => candleKnowledgeAt(candle) <= cursor)
     .sort((a, b) => a.time.localeCompare(b.time));
   const revealedExecutions = executions
     .filter((execution) => execution.executedAt <= cursor)

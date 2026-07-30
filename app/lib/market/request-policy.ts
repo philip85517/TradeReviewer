@@ -1,8 +1,8 @@
 import type {
   DailyCandleRequest,
+  IntradayCandleRequest,
   SupportedMarket,
 } from "./contracts";
-import type { IntradayCandleRequest } from "./providers/router";
 import { normalizeMarketSymbol } from "./symbol-map";
 
 const MARKETS = new Set<SupportedMarket>(["US", "HK", "CN-SH", "CN-SZ"]);

@@ -1,6 +1,6 @@
 import "fake-indexeddb/auto";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type {
   CoverageSegment,
@@ -8,13 +8,6 @@ import type {
   IntervalCoverageSegment,
   MarketCandleRecord,
 } from "../market/contracts";
-import {
-  INTERVAL_COVERAGE,
-  MARKET_CANDLES,
-  openTradeReviewDatabase,
-  PROVIDER_SYMBOLS,
-  transactionDone,
-} from "./indexeddb-schema";
 import { IndexedDbMarketDataRepository } from "./indexeddb-market-data-repository";
 
 const databases: string[] = [];
@@ -203,34 +196,29 @@ describe("IndexedDbMarketDataRepository", () => {
     ).toEqual([genericDailyCandle]);
   });
 
-  it("rolls back all interval stores when their transaction is aborted", async () => {
+  it("rolls back all interval stores when the real commit path fails mid-transaction", async () => {
     const databaseName = `trade-reviewer-test-${crypto.randomUUID()}`;
     databases.push(databaseName);
-    const repo = new IndexedDbMarketDataRepository(databaseName);
-    const database = await openTradeReviewDatabase(databaseName);
-    try {
-      const transaction = database.transaction(
-        [MARKET_CANDLES, INTERVAL_COVERAGE, PROVIDER_SYMBOLS],
-        "readwrite",
-      );
-      const completion = transactionDone(transaction);
-      transaction.objectStore(MARKET_CANDLES).put(intervalCandle);
-      transaction.objectStore(INTERVAL_COVERAGE).put({
+    const failCommit = vi.fn(() => {
+      throw new Error("injected interval coverage failure");
+    });
+    const repo = new IndexedDbMarketDataRepository(databaseName, {
+      beforeIntervalCoverageWrite: failCommit,
+    });
+
+    await expect(
+      repo.commitIntervalSyncResult({
         instrumentId: "HK:1810",
         interval: "15m",
-        segments: [intervalCoverage],
-      });
-      transaction.objectStore(PROVIDER_SYMBOLS).put({
-        instrumentId: "HK:1810",
-        provider: "tencent",
-        symbol: "hk01810",
-      });
-      transaction.abort();
-
-      await expect(completion).rejects.toBeInstanceOf(Error);
-    } finally {
-      database.close();
-    }
+        candles: [intervalCandle],
+        coverage: [intervalCoverage],
+        providerSymbol: {
+          provider: "tencent",
+          symbol: "hk01810",
+        },
+      }),
+    ).rejects.toThrow("injected interval coverage failure");
+    expect(failCommit).toHaveBeenCalledOnce();
 
     expect(
       await repo.getCandles(

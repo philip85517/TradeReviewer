@@ -12,7 +12,6 @@ export type TimeframeAvailability = Record<
 
 const INTRADAY_UNAVAILABLE_REASONS: Record<string, string> = {
   "provider-history-limit": "公开行情源未覆盖该交易日期的 15 分钟行情",
-  "unsupported-interval": "公开行情源不支持 15 分钟行情",
   "source-rate-limited": "公开行情源暂时限制访问",
   "source-forbidden": "公开行情源拒绝访问 15 分钟行情",
   "source-timeout": "公开行情源请求超时",

@@ -776,11 +776,21 @@ describe("TradeReviewWorkspace", () => {
     ];
     saveImportedExecutions(executions);
     const [oldEpisode] = buildTradeEpisodes(executions);
-    vi.mocked(fetch).mockImplementation(async () =>
-      Response.json(
-        { error: { code: "source-unavailable" } },
-        { status: 502 },
-      ),
+    vi.mocked(fetch).mockImplementation(async (input) =>
+      String(input).includes("/api/instruments/resolve")
+        ? Response.json({
+            market: "US",
+            symbol: "XPEV",
+            name: "小鹏汽车",
+            assetType: "stock",
+            source: "nasdaq",
+            confidence: "official",
+            resolvedAt: "2026-07-30T00:00:00.000Z",
+          })
+        : Response.json(
+            { error: { code: "source-unavailable" } },
+            { status: 502 },
+          ),
     );
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
@@ -791,7 +801,13 @@ describe("TradeReviewWorkspace", () => {
     await user.click(
       await screen.findByRole("button", { name: "刷新行情数据" }),
     );
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+    await waitFor(() =>
+      expect(
+        vi.mocked(fetch).mock.calls.some(([input]) =>
+          String(input).includes("/api/market-data/intraday"),
+        ),
+      ).toBe(true),
+    );
 
     const newestIntraday = new URL(
       String(
@@ -819,7 +835,13 @@ describe("TradeReviewWorkspace", () => {
     await user.click(
       screen.getByRole("button", { name: "刷新行情数据" }),
     );
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+    await waitFor(() =>
+      expect(
+        vi.mocked(fetch).mock.calls.filter(([input]) =>
+          String(input).includes("/api/market-data/"),
+        ),
+      ).toHaveLength(2),
+    );
 
     const oldIntraday = new URL(
       String(
@@ -853,11 +875,21 @@ describe("TradeReviewWorkspace", () => {
         executedAt: "2025-01-02T15:00:00.000Z",
       }),
     ]);
-    vi.mocked(fetch).mockImplementation(async () =>
-      Response.json(
-        { error: { code: "source-unavailable" } },
-        { status: 502 },
-      ),
+    vi.mocked(fetch).mockImplementation(async (input) =>
+      String(input).includes("/api/instruments/resolve")
+        ? Response.json({
+            market: "US",
+            symbol: "XPEV",
+            name: "小鹏汽车",
+            assetType: "stock",
+            source: "nasdaq",
+            confidence: "official",
+            resolvedAt: "2026-07-30T00:00:00.000Z",
+          })
+        : Response.json(
+            { error: { code: "source-unavailable" } },
+            { status: 502 },
+          ),
     );
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
@@ -909,7 +941,13 @@ describe("TradeReviewWorkspace", () => {
         name: "确认导入并开始更新行情",
       }),
     );
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+    await waitFor(() =>
+      expect(
+        vi.mocked(fetch).mock.calls.some(([input]) =>
+          String(input).includes("/api/market-data/intraday"),
+        ),
+      ).toBe(true),
+    );
 
     const intradayRequest = new URL(
       String(
@@ -937,11 +975,21 @@ describe("TradeReviewWorkspace", () => {
         executedAt: "2025-01-02T14:30:00.000Z",
       }),
     ]);
-    vi.mocked(fetch).mockImplementation(async () =>
-      Response.json(
-        { error: { code: "source-unavailable" } },
-        { status: 502 },
-      ),
+    vi.mocked(fetch).mockImplementation(async (input) =>
+      String(input).includes("/api/instruments/resolve")
+        ? Response.json({
+            market: "US",
+            symbol: "XPEV",
+            name: "小鹏汽车",
+            assetType: "stock",
+            source: "nasdaq",
+            confidence: "official",
+            resolvedAt: "2026-07-30T00:00:00.000Z",
+          })
+        : Response.json(
+            { error: { code: "source-unavailable" } },
+            { status: 502 },
+          ),
     );
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
@@ -1009,7 +1057,13 @@ describe("TradeReviewWorkspace", () => {
         name: "确认导入并开始更新行情",
       }),
     );
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+    await waitFor(() =>
+      expect(
+        vi.mocked(fetch).mock.calls.some(([input]) =>
+          String(input).includes("/api/market-data/intraday"),
+        ),
+      ).toBe(true),
+    );
 
     const intradayRequest = new URL(
       String(
@@ -1838,7 +1892,13 @@ describe("TradeReviewWorkspace", () => {
       screen.getByRole("button", { name: "刷新行情数据" }),
     );
 
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+    await waitFor(() =>
+      expect(
+        vi.mocked(fetch).mock.calls.filter(([input]) =>
+          String(input).includes("/api/market-data/"),
+        ),
+      ).toHaveLength(2),
+    );
     await waitFor(() =>
       expect(
         screen.getByRole("region", { name: "15m 行情详情" }),

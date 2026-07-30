@@ -21,11 +21,20 @@ import type {
   DemoReplayFrame,
   DemoReplayMode,
 } from "../lib/demo/replay-frame";
-import { parseFutuWorkbook } from "../lib/import/futu";
+import type { StatementParseResult } from "../lib/import/contracts";
+import {
+  enrichStatementImport,
+  type EnrichedImportResult,
+} from "../lib/import/enrich-import";
+import { parseBrokerStatement } from "../lib/import/dispatcher";
 import {
   createImportPreview,
   type ImportPreview,
 } from "../lib/import/import-preview";
+import { buildInsightEpisodeFacts } from "../lib/insights/episode-facts";
+import { buildPatternInsightReport } from "../lib/insights/insight-engine";
+import { buildTagSuggestions } from "../lib/insights/tag-suggestions";
+import type { TagSuggestionRecord } from "../lib/insights/types";
 import { aggregateCandles } from "../lib/market/aggregate";
 import {
   resolveTimeframeAvailability,
@@ -52,6 +61,8 @@ import {
   requiredRangeExpanded,
 } from "../lib/market/sync-range";
 import { syncMarketData } from "../lib/market/sync-service";
+import { canonicalInstrumentId } from "../lib/instruments/display-name";
+import { refreshInstrumentMetadata } from "../lib/instruments/resolve-service";
 import {
   marketCalendarDateOffset,
   marketTradingDate,
@@ -66,7 +77,10 @@ import {
 import { createImportedReplay } from "../lib/replay/imported-replay";
 import { calculatePositionPathMetrics } from "../lib/replay/position-path-metrics";
 import { createReplaySnapshot } from "../lib/replay/replay-engine";
-import { episodePlanAtCursor } from "../lib/reviews/review-metrics";
+import {
+  createEmptyEpisodeReviewRecord,
+  episodePlanAtCursor,
+} from "../lib/reviews/review-metrics";
 import type { EpisodeReviewRecord } from "../lib/reviews/types";
 import {
   loadChartSettings,
@@ -75,6 +89,8 @@ import {
 } from "../lib/storage/chart-settings";
 import { IndexedDbEpisodeReviewRepository } from "../lib/storage/indexeddb-episode-review-repository";
 import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-data-repository";
+import { IndexedDbTagSuggestionRepository } from "../lib/storage/indexeddb-tag-suggestion-repository";
+import { persistSuggestionDecision } from "../lib/storage/indexeddb-suggestion-decision";
 import {
   loadImportHistory,
   type ImportHistoryEntry,
@@ -82,6 +98,7 @@ import {
 import {
   loadImportedExecutions,
   mergeExecutions,
+  saveImportedExecutions,
 } from "../lib/storage/import-library";
 import { persistImportBatch } from "../lib/storage/import-transaction";
 import {
@@ -106,13 +123,21 @@ import type {
 import type { MarketDataDetails } from "./chart/market-data-popover";
 import { ImportConfirmDialog } from "./import/import-confirm-dialog";
 import { ImportHistoryDialog } from "./import/import-history-dialog";
-import { TradeLibrary } from "./library/trade-library";
-import { EpisodeSidebar } from "./review/episode-sidebar";
+import {
+  TradeLibrary,
+  type TradeLibraryTarget,
+} from "./library/trade-library";
+import { PatternInsights } from "./insights/pattern-insights";
+import {
+  EpisodeSidebar,
+  type ImportPhase,
+} from "./review/episode-sidebar";
 import {
   ReviewChartWorkspace,
   type EpisodeOption,
   type ReviewChartViewModel,
 } from "./review/review-chart-workspace";
+import { IndexedDbInstrumentMetadataRepository } from "../lib/storage/indexeddb-instrument-metadata-repository";
 
 const REVIEW_ID = "demo-xpev-2025";
 const DEFAULT_THESIS =
@@ -591,9 +616,9 @@ function isAbortError(error: unknown) {
 }
 
 export function TradeReviewWorkspace({ initialFrame }: Props) {
-  const [activeView, setActiveView] = useState<"review" | "library">(
-    "review",
-  );
+  const [activeView, setActiveView] = useState<
+    "review" | "library" | "insights"
+  >("review");
   const [timeframe, setTimeframe] = useState<Timeframe>("1D");
   const [frame, setFrame] = useState(initialFrame);
   const [playing, setPlaying] = useState(false);
@@ -625,6 +650,10 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
   const [pendingImport, setPendingImport] = useState<ImportPreview | null>(
     null,
   );
+  const [pendingParsedImport, setPendingParsedImport] =
+    useState<StatementParseResult | null>(null);
+  const [pendingEnrichedImport, setPendingEnrichedImport] =
+    useState<EnrichedImportResult | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [importHistory, setImportHistory] = useState<ImportHistoryEntry[]>(
     [],
@@ -640,14 +669,33 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     Record<string, EpisodeReviewRecord>
   >({});
   const [reviewsHydrated, setReviewsHydrated] = useState(false);
+  const [suggestionDecisions, setSuggestionDecisions] = useState<
+    TagSuggestionRecord[]
+  >([]);
+  const [suggestionsHydrated, setSuggestionsHydrated] = useState(false);
+  const [libraryTarget, setLibraryTarget] =
+    useState<TradeLibraryTarget>();
   const [importing, setImporting] = useState(false);
+  const [importPhase, setImportPhase] = useState<ImportPhase>("idle");
+  const [retryingUnresolved, setRetryingUnresolved] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const replayRequestSequence = useRef(0);
+  const importRequestSequence = useRef(0);
+  const importedExecutionsRef = useRef<TradeExecution[] | null>(null);
   const marketDataRequestSequences = useRef<Record<string, number>>({});
   const marketDataAbortControllers = useRef<
     Record<string, AbortController>
   >({});
   const legacyDemoThesis = useRef(DEFAULT_THESIS);
+  const [suggestionGeneratedAt] = useState(() => new Date().toISOString());
+  const libraryTargetSequence = useRef(0);
+
+  function currentExecutionSnapshot() {
+    if (importedExecutionsRef.current === null) {
+      importedExecutionsRef.current = loadImportedExecutions();
+    }
+    return importedExecutionsRef.current;
+  }
 
   const importedInstruments = useMemo(
     () => buildInstrumentTradeSummaries(importedExecutions),
@@ -894,6 +942,66 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
         ? "正在读取演示回放数据"
         : undefined,
   };
+  const tagSuggestions = useMemo(
+    () =>
+      buildTagSuggestions(
+        tradeLibraryEntries,
+        marketDataCandles,
+        suggestionDecisions,
+        suggestionGeneratedAt,
+      ),
+    [
+      marketDataCandles,
+      suggestionDecisions,
+      suggestionGeneratedAt,
+      tradeLibraryEntries,
+    ],
+  );
+  const insightFactResult = useMemo(
+    () =>
+      buildInsightEpisodeFacts(
+        tradeLibraryEntries,
+        marketDataCandles,
+        marketDataStatuses,
+        suggestionDecisions,
+      ),
+    [
+      marketDataCandles,
+      marketDataStatuses,
+      suggestionDecisions,
+      tradeLibraryEntries,
+    ],
+  );
+  const insightReport = useMemo(
+    () =>
+      buildPatternInsightReport(
+        insightFactResult.facts,
+        insightFactResult.excluded,
+      ),
+    [insightFactResult],
+  );
+  const insightEpisodeContexts = useMemo(
+    () =>
+      Object.fromEntries(
+        tradeLibraryEntries.flatMap((entry) =>
+          entry.episodes.map((item, index) => [
+            item.episode.id,
+            {
+              instrumentId: entry.instrument.id,
+              instrumentName: entry.instrument.name,
+              instrumentSymbol: entry.instrument.symbol,
+              episodeLabel: `第 ${entry.episodes.length - index} 次交易`,
+              dateRange: `${new Date(item.episode.startedAt).toLocaleDateString("zh-CN")}—${
+                item.episode.endedAt
+                  ? new Date(item.episode.endedAt).toLocaleDateString("zh-CN")
+                  : "持仓中"
+              }`,
+            },
+          ]),
+        ),
+      ),
+    [tradeLibraryEntries],
+  );
 
   async function requestFrame(
     mode: DemoReplayMode,
@@ -1041,6 +1149,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     const animationFrame = window.requestAnimationFrame(() => {
       const requestId = ++replayRequestSequence.current;
       const storedExecutions = loadImportedExecutions();
+      importedExecutionsRef.current = storedExecutions;
       const storedSummaries =
         buildInstrumentTradeSummaries(storedExecutions);
       const jobs = new Map(
@@ -1228,6 +1337,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
           );
         }
         setEpisodeReviews(reviews);
+        setReviewsHydrated(true);
       })
       .catch(() => {
         if (active) {
@@ -1238,10 +1348,30 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
               legacyDemoThesis.current,
             ),
           });
+          setReviewsHydrated(false);
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, [hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    let active = true;
+    void new IndexedDbTagSuggestionRepository()
+      .getAll()
+      .then((records) => {
+        if (active) {
+          setSuggestionDecisions(records);
+          setSuggestionsHydrated(true);
         }
       })
-      .finally(() => {
-        if (active) setReviewsHydrated(true);
+      .catch(() => {
+        if (active) {
+          setSuggestionDecisions([]);
+          setSuggestionsHydrated(false);
+        }
       });
     return () => {
       active = false;
@@ -1346,14 +1476,21 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
 
   async function startMarketDataUpdate(
     instrumentIds: string[],
-    episodeIdsByInstrument: Readonly<Record<string, string>> = {},
+    options: {
+      executions?: TradeExecution[];
+      refreshMetadata?: boolean;
+      episodeIdsByInstrument?: Readonly<Record<string, string>>;
+    } = {},
   ) {
     if (instrumentIds.length === 0) return;
+    const executions = options.executions ?? importedExecutions;
+    const episodeIdsByInstrument =
+      options.episodeIdsByInstrument ?? {};
     const summariesById = new Map(
-      buildInstrumentTradeSummaries([
-        ...importedExecutions,
-        ...(pendingImport?.records ?? []),
-      ]).map((item) => [item.instrument.id, item]),
+      buildInstrumentTradeSummaries(executions).map((item) => [
+        item.instrument.id,
+        item,
+      ]),
     );
 
     await Promise.all(
@@ -1425,7 +1562,58 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
             dailyMessage: "无法记录本地行情更新状态",
           };
         }
-
+        let metadataPersistenceFailed = false;
+        const metadataRefresh =
+          options.refreshMetadata && market
+            ? refreshInstrumentMetadata(
+                {
+                  market,
+                  symbol: instrument.symbol,
+                },
+                {
+                  repository:
+                    new IndexedDbInstrumentMetadataRepository(),
+                  fetcher: fetch,
+                  signal: abortController.signal,
+                },
+              )
+                .then((metadata) => {
+                  if (
+                    !metadata ||
+                    marketDataRequestSequences.current[instrumentId] !==
+                      requestSequence
+                  ) {
+                    return;
+                  }
+                  const current = currentExecutionSnapshot();
+                  const renamed = current.map((execution) =>
+                    canonicalInstrumentId(
+                      execution.instrument.symbol,
+                      execution.instrument.market,
+                    ) === instrumentId
+                      ? {
+                          ...execution,
+                          instrument: {
+                            ...execution.instrument,
+                            name: metadata.name,
+                          },
+                        }
+                      : execution,
+                  );
+                  try {
+                    saveImportedExecutions(renamed);
+                  } catch {
+                    metadataPersistenceFailed = true;
+                    setImportError(
+                      "已查询到证券新名称，但新名称未能保存；交易库仍保留原名称。",
+                    );
+                    return;
+                  }
+                  importedExecutionsRef.current = renamed;
+                  setImportedExecutions(renamed);
+                })
+                .catch(() => undefined)
+            : Promise.resolve();
         let next = { ...cached };
         if (!market) {
           next = {
@@ -1512,7 +1700,12 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
                 : "15 分钟行情更新失败";
           }
         }
-
+        await metadataRefresh;
+        if (metadataPersistenceFailed) {
+          next.dailyStatus = "storage-error";
+          next.dailyMessage =
+            "证券新名称未能保存，交易库仍保留原名称。";
+        }
         if (
           marketDataRequestSequences.current[instrumentId] !==
           requestSequence
@@ -1548,34 +1741,128 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     );
   }
 
+  function previewForImport(
+    fileName: string,
+    enriched: EnrichedImportResult,
+  ) {
+    const basePreview = createImportPreview(fileName, enriched);
+    const current = currentExecutionSnapshot();
+    const merged = mergeExecutions(current, enriched.importable);
+    const retainedIncomingCount = Math.max(
+      0,
+      merged.length - current.length,
+    );
+    const libraryDuplicateCount = Math.max(
+      0,
+      enriched.importable.length - retainedIncomingCount,
+    );
+    return {
+      ...basePreview,
+      duplicateTradeCount:
+        basePreview.duplicateTradeCount + libraryDuplicateCount,
+    };
+  }
+
   async function parseImport(file: File) {
+    const requestId = ++importRequestSequence.current;
     setImporting(true);
+    setImportPhase("detecting");
+    setImportError(null);
+    setPendingImport(null);
+    setPendingParsedImport(null);
+    setPendingEnrichedImport(null);
+    try {
+      await Promise.resolve();
+      setImportPhase("parsing");
+      const parsed = await parseBrokerStatement(file);
+      if (requestId !== importRequestSequence.current) return;
+      if (parsed.broker === "unknown" || parsed.blocked) {
+        const message = parsed.diagnostics.find(
+          (diagnostic) => diagnostic.severity === "error",
+        )?.message;
+        throw new Error(message ?? "暂时无法识别这个交易记录");
+      }
+      setPendingParsedImport(parsed);
+      setImportPhase("classifying");
+      await Promise.resolve();
+      setImportPhase("resolving");
+      const enriched = await enrichStatementImport(parsed, {
+        repository: new IndexedDbInstrumentMetadataRepository(),
+      });
+      if (requestId !== importRequestSequence.current) return;
+      const preview = previewForImport(file.name, enriched);
+      setPendingEnrichedImport(enriched);
+      setPendingImport(preview);
+      setImportPhase("ready");
+    } catch (error) {
+      if (requestId !== importRequestSequence.current) return;
+      setImportError(
+        error instanceof Error
+          ? error.message
+          : "暂时无法识别这个文件。请确认它来自富途、Tiger 或招商证券。",
+      );
+      setImportPhase("idle");
+    } finally {
+      if (requestId === importRequestSequence.current) {
+        setImporting(false);
+      }
+    }
+  }
+
+  async function retryUnresolved(instrumentIds: string[]) {
+    if (
+      instrumentIds.length === 0 ||
+      !pendingParsedImport ||
+      !pendingEnrichedImport ||
+      !pendingImport
+    ) {
+      return;
+    }
+    const requestId = ++importRequestSequence.current;
+    setRetryingUnresolved(true);
     setImportError(null);
     try {
-      const result = parseFutuWorkbook(await file.arrayBuffer(), {
-        fileName: file.name,
-        sourceTimezone: "Asia/Shanghai",
+      const enriched = await enrichStatementImport(pendingParsedImport, {
+        repository: new IndexedDbInstrumentMetadataRepository(),
+        forceRefresh: true,
+        onlyInstrumentIds: instrumentIds,
+        previous: pendingEnrichedImport,
       });
-      setPendingImport(createImportPreview(file.name, result));
-    } catch {
+      if (requestId !== importRequestSequence.current) return;
+      const preview = previewForImport(
+        pendingImport.fileName,
+        enriched,
+      );
+      setPendingEnrichedImport(enriched);
+      setPendingImport(preview);
+    } catch (error) {
+      if (requestId !== importRequestSequence.current) return;
       setImportError(
-        "暂时无法识别这个文件。请确认它是已适配券商导出的 XLSX 交易记录。",
+        error instanceof Error
+          ? error.message
+          : "重新查询证券名称失败，请稍后再试。",
       );
     } finally {
-      setImporting(false);
+      if (requestId === importRequestSequence.current) {
+        setRetryingUnresolved(false);
+      }
     }
   }
 
   function confirmImport() {
-    if (!pendingImport || pendingImport.blocked) return;
+    if (!pendingImport || pendingImport.blocked || retryingUnresolved) {
+      return;
+    }
+    importRequestSequence.current += 1;
+    const currentExecutions = currentExecutionSnapshot();
     const previousSummaries = new Map(
-      buildInstrumentTradeSummaries(importedExecutions).map((item) => [
+      buildInstrumentTradeSummaries(currentExecutions).map((item) => [
         item.instrument.id,
         item,
       ]),
     );
     const mergedExecutions = mergeExecutions(
-      importedExecutions,
+      currentExecutions,
       pendingImport.records,
     );
     const summaries = buildInstrumentTradeSummaries(mergedExecutions);
@@ -1583,16 +1870,24 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
     const historyEntry: ImportHistoryEntry = {
       id: pendingImport.id,
       fileName: pendingImport.fileName,
+      sourceLabel: pendingImport.sourceLabel,
       importedAt,
       firstTradeAt: pendingImport.firstTradeAt,
       lastTradeAt: pendingImport.lastTradeAt,
       tradeCount: pendingImport.tradeCount,
       instrumentCount: pendingImport.instrumentCount,
       excludedInstrumentCount: pendingImport.excludedInstrumentCount,
+      excludedRecordCount: pendingImport.exclusionGroups.reduce(
+        (total, group) => total + group.count,
+        0,
+      ),
+      duplicateTradeCount: pendingImport.duplicateTradeCount,
+      unresolvedInstrumentCount:
+        pendingImport.unresolvedInstrumentCount,
     };
     try {
       persistImportBatch(
-        importedExecutions,
+        currentExecutions,
         mergedExecutions,
         historyEntry,
       );
@@ -1603,6 +1898,7 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       setPendingImport(null);
       return;
     }
+    importedExecutionsRef.current = mergedExecutions;
     setImportedExecutions(mergedExecutions);
     setImportHistory([
       historyEntry,
@@ -1655,48 +1951,92 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       }),
     );
     if (firstImported) selectImportedSummary(firstImported);
-    void startMarketDataUpdate(automaticSyncIds, automaticEpisodeIds);
+    void startMarketDataUpdate(automaticSyncIds, {
+      executions: mergedExecutions,
+      episodeIdsByInstrument: automaticEpisodeIds,
+    });
     setPendingImport(null);
+    setPendingParsedImport(null);
+    setPendingEnrichedImport(null);
+    setImportPhase("idle");
   }
 
-  function renamePendingInstrument(instrumentId: string, name: string) {
-    const normalizedName = name.trim() || "名称待行情源补充";
-    setPendingImport((current) =>
-      current
-        ? {
-            ...current,
-            records: current.records.map((record) =>
-              record.instrument.id === instrumentId
-                ? {
-                    ...record,
-                    instrument: {
-                      ...record.instrument,
-                      name: normalizedName,
-                    },
-                  }
-                : record,
-            ),
-            instruments: current.instruments.map((item) =>
-              item.instrument.id === instrumentId
-                ? {
-                    ...item,
-                    instrument: {
-                      ...item.instrument,
-                      name: normalizedName,
-                    },
-                    executions: item.executions.map((execution) => ({
-                      ...execution,
-                      instrument: {
-                        ...execution.instrument,
-                        name: normalizedName,
-                      },
-                    })),
-                  }
-                : item,
-            ),
-          }
-        : null,
-    );
+  function openLibraryEpisode(instrumentId: string, episodeId: string) {
+    setLibraryTarget({
+      requestId: ++libraryTargetSequence.current,
+      instrumentId,
+      episodeId,
+    });
+    setActiveView("library");
+  }
+
+  async function acceptSuggestion(
+    suggestion: TagSuggestionRecord,
+    finalTagId: string,
+    status: "confirmed" | "edited",
+  ) {
+    const decidedAt = new Date().toISOString();
+    const decided: TagSuggestionRecord = {
+      ...suggestion,
+      status,
+      finalTagId,
+      decidedAt,
+    };
+    const current =
+      episodeReviews[suggestion.episodeId] ??
+      createEmptyEpisodeReviewRecord(
+        suggestion.episodeId,
+        suggestion.instrumentId,
+        decidedAt,
+      );
+    const review: EpisodeReviewRecord = {
+      ...current,
+      tagDictionaryVersion: suggestion.tagDictionaryVersion,
+      updatedAt: decidedAt,
+      confirmedTagIds: [
+        ...new Set([...current.confirmedTagIds, finalTagId]),
+      ],
+    };
+    const persistedReview = await persistSuggestionDecision({
+      suggestion: decided,
+      review,
+    });
+    if (!persistedReview) {
+      throw new Error("确认建议时未写入复盘记录");
+    }
+    setSuggestionDecisions((records) => [
+      ...records.filter(({ id }) => id !== decided.id),
+      decided,
+    ]);
+    setEpisodeReviews((records) => ({
+      ...records,
+      [persistedReview.episodeId]: persistedReview,
+    }));
+  }
+
+  function confirmSuggestion(suggestion: TagSuggestionRecord) {
+    return acceptSuggestion(suggestion, suggestion.tagId, "confirmed");
+  }
+
+  function editSuggestion(
+    suggestion: TagSuggestionRecord,
+    finalTagId: string,
+  ) {
+    return acceptSuggestion(suggestion, finalTagId, "edited");
+  }
+
+  async function rejectSuggestion(suggestion: TagSuggestionRecord) {
+    const decided: TagSuggestionRecord = {
+      ...suggestion,
+      status: "rejected",
+      finalTagId: null,
+      decidedAt: new Date().toISOString(),
+    };
+    await persistSuggestionDecision({ suggestion: decided });
+    setSuggestionDecisions((records) => [
+      ...records.filter(({ id }) => id !== decided.id),
+      decided,
+    ]);
   }
 
   function applyCommand(command: DrawingCommand) {
@@ -1812,9 +2152,9 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
             交易库
           </button>
           <button
-            disabled
-            aria-label="模式洞察（下一阶段）"
-            title="规则统计与模式洞察将在下一阶段开放"
+            className={activeView === "insights" ? "active" : ""}
+            aria-current={activeView === "insights" ? "page" : undefined}
+            onClick={() => setActiveView("insights")}
           >
             模式洞察
           </button>
@@ -1832,10 +2172,17 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       </header>
 
       <div
-        className={`workspace ${activeView === "library" ? "library-mode" : ""}`}
+        className={`workspace ${
+          activeView === "library"
+            ? "library-mode"
+            : activeView === "insights"
+              ? "insights-mode"
+              : ""
+        }`}
       >
         {activeView === "library" ? (
           <TradeLibrary
+            key={libraryTarget?.requestId ?? 0}
             entries={tradeLibraryEntries}
             candlesByInstrument={marketDataCandles}
             marketDataStatuses={marketDataStatuses}
@@ -1846,13 +2193,30 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
               setActiveView("review");
             }}
             reviewsHydrated={reviewsHydrated}
+            target={libraryTarget}
             onSaveReview={saveEpisodeReview}
+          />
+        ) : activeView === "insights" ? (
+          <PatternInsights
+            report={insightReport}
+            facts={insightFactResult.facts}
+            suggestions={
+              suggestionsHydrated && reviewsHydrated
+                ? tagSuggestions
+                : []
+            }
+            episodeContexts={insightEpisodeContexts}
+            onConfirmSuggestion={confirmSuggestion}
+            onEditSuggestion={editSuggestion}
+            onRejectSuggestion={rejectSuggestion}
+            onOpenEpisode={openLibraryEpisode}
           />
         ) : (
           <>
             <EpisodeSidebar
               importedInstruments={importedInstruments}
               importing={importing}
+              importPhase={importPhase}
               importError={importError}
               onImport={parseImport}
               onOpenHistory={() => setShowImportHistory(true)}
@@ -1861,7 +2225,9 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
               onSelectInstrument={selectInstrument}
               marketDataStatuses={marketDataStatuses}
               onUpdateMarketData={(instrumentId) =>
-                void startMarketDataUpdate([instrumentId])
+                void startMarketDataUpdate([instrumentId], {
+                  refreshMetadata: true,
+                })
               }
             />
             {selectedImportedInstrument &&
@@ -1911,7 +2277,9 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
                 if (selectedImportedInstrument) {
                   void startMarketDataUpdate([
                     selectedImportedInstrument.instrument.id,
-                  ]);
+                  ], {
+                    refreshMetadata: true,
+                  });
                 } else {
                   void requestFrame("restore", frame.cursor);
                 }
@@ -1998,9 +2366,19 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
       {pendingImport && (
         <ImportConfirmDialog
           preview={pendingImport}
-          onCancel={() => setPendingImport(null)}
+          onCancel={() => {
+            importRequestSequence.current += 1;
+            setRetryingUnresolved(false);
+            setPendingImport(null);
+            setPendingParsedImport(null);
+            setPendingEnrichedImport(null);
+            setImportPhase("idle");
+          }}
           onConfirm={confirmImport}
-          onRenameInstrument={renamePendingInstrument}
+          onRetryUnresolved={(instrumentIds) =>
+            void retryUnresolved(instrumentIds)
+          }
+          retryingUnresolved={retryingUnresolved}
         />
       )}
       {showImportHistory && (

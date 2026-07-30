@@ -102,6 +102,7 @@ const coverage: CoverageSegment = {
 function review(thesis: string): EpisodeReviewRecord {
   return {
     version: 1,
+    tagDictionaryVersion: 1,
     episodeId: "episode-1",
     instrumentId: "US:XPEV",
     updatedAt: "2025-02-02T00:00:00.000Z",

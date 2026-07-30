@@ -140,6 +140,19 @@ describe("syncMarketData", () => {
     expect(String(fetcher.mock.calls[0][0])).toContain(
       "market=HK&symbol=1810&start=2025-01-01&end=2025-01-03",
     );
+    const requestUrl = new URL(
+      String(fetcher.mock.calls[0][0]),
+      "http://localhost",
+    );
+    expect([...requestUrl.searchParams.keys()].sort()).toEqual([
+      "end",
+      "market",
+      "start",
+      "symbol",
+    ]);
+    expect(fetcher.mock.calls[0][1]).toEqual({ signal: undefined });
+    expect(fetcher.mock.calls[0][1]).not.toHaveProperty("body");
+    expect(fetcher.mock.calls[0][1]).not.toHaveProperty("method");
     expect(second.source).toBe("cache");
     expect(secondFetcher).not.toHaveBeenCalled();
   });

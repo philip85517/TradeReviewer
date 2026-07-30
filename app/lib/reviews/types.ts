@@ -16,6 +16,7 @@ export type EpisodePlanRevision = {
 
 export type EpisodeReviewRecord = {
   version: 1;
+  tagDictionaryVersion?: number;
   episodeId: string;
   instrumentId: string;
   updatedAt: string;

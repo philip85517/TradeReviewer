@@ -20,6 +20,16 @@
 - Viewing insights, switching insight categories, and drilling into cached episodes must not call `fetch`.
 - All user executions, reviews, suggestion decisions, and derived insights stay in the current browser.
 
+## Delivery Slice
+
+This Phase 3B delivery implements the first three deterministic suggestion
+rules: 20-session breakout, the first pullback after breakout, and scale-in.
+The broader design candidates—ATR/range entry position, concentration
+changes, unplanned adds, stop deviation, excursion anomalies, volatility
+regimes, and additional add-on-count comparisons—are explicitly deferred to
+the next deterministic-rules slice. They do not require AI and are not
+silently represented by the three rules in this plan.
+
 ---
 
 ### Task 1: Versioned Suggestion Domain and Deterministic Rules
@@ -140,7 +150,7 @@ Expected: all tests pass and existing schema migrations remain intact.
 - Test: `app/lib/insights/episode-facts.test.ts`
 
 **Interfaces:**
-- Consumes: `TradeLibraryEntry[]`, local daily candles, and market-data statuses.
+- Consumes: `TradeLibraryEntry[]`, local daily candles, market-data statuses, and confirmed/edited suggestion decisions.
 - Produces: `InsightEpisodeFact[]` plus excluded episode records.
 
 - [ ] **Step 1: Write failing eligibility and metric tests**
@@ -167,7 +177,7 @@ Expected: module resolution fails because the fact projection does not exist.
 
 - [ ] **Step 3: Implement the pure fact projection**
 
-Define `InsightEpisodeFact` with instrument/episode identity, market, direction, dates, confirmed tags, metric strings, and calculation version `1`. Derive an average entry basis from opening-side execution value divided by opening-side quantity. Slice candles using market-local dates, calculate long/short excursions with Decimal.js, and return explicit exclusions rather than partial facts.
+Define `InsightEpisodeFact` with instrument/episode identity, market, direction, dates, confirmed tags, confirmed rule/version provenance, metric strings, and calculation version `1`. Derive an average entry basis from opening-side execution value divided by opening-side quantity. Slice candles using market-local dates, calculate long/short excursions with Decimal.js, and return explicit exclusions rather than partial facts.
 
 - [ ] **Step 4: Run the focused test and verify GREEN**
 

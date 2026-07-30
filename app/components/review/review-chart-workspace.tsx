@@ -120,6 +120,13 @@ function dateTime(value: string) {
   });
 }
 
+export function executionTimestampLabel(execution: TradeExecution) {
+  if (execution.source.timePrecision === "date-only") {
+    return `${execution.source.sourceTimestampText ?? "日期未知"} · 对账单未提供成交时间`;
+  }
+  return dateTime(execution.executedAt);
+}
+
 function fee(value: string, currency: string) {
   return new Intl.NumberFormat("zh-CN", {
     style: "currency",
@@ -403,27 +410,35 @@ export function ReviewChartWorkspace({
                 <p>游标之前尚无成交。</p>
               ) : (
                 <ol>
-                  {model.executions.map((execution) => (
-                    <li key={execution.id}>
-                      <time dateTime={execution.executedAt}>
-                        {dateTime(execution.executedAt)}
-                      </time>
-                      <b>{execution.side === "buy" ? "买入" : "卖出"}</b>
-                      <span>
-                        {execution.quantity} × {execution.price}
-                      </span>
-                      <span>
-                        费用 {fee(execution.fee, model.instrument.currency)}
-                      </span>
-                      <small>来源 {executionSource(execution)}</small>
-                      <small>
-                        时区 {execution.source.sourceTimezone ?? "未记录"}
-                      </small>
-                      {execution.source.sourceTimestampText && (
-                        <small>{execution.source.sourceTimestampText}</small>
-                      )}
-                    </li>
-                  ))}
+                  {model.executions.map((execution) => {
+                    const dateOnly =
+                      execution.source.timePrecision === "date-only";
+                    const sourceTimestamp =
+                      execution.source.sourceTimestampText;
+                    return (
+                      <li key={execution.id}>
+                        <time
+                          dateTime={dateOnly ? undefined : execution.executedAt}
+                        >
+                          {executionTimestampLabel(execution)}
+                        </time>
+                        <b>{execution.side === "buy" ? "买入" : "卖出"}</b>
+                        <span>
+                          {execution.quantity} × {execution.price}
+                        </span>
+                        <span>
+                          费用 {fee(execution.fee, model.instrument.currency)}
+                        </span>
+                        <small>来源 {executionSource(execution)}</small>
+                        <small>
+                          时区 {execution.source.sourceTimezone ?? "未记录"}
+                        </small>
+                        {!dateOnly && sourceTimestamp && (
+                          <small>{sourceTimestamp}</small>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ol>
               )}
             </details>

@@ -8,8 +8,11 @@ import {
   createDrawingHistory,
 } from "../../lib/chart/drawing-commands";
 import type { NormalizedDrawing } from "../../lib/chart/drawings";
-import type { ReviewChartViewModel } from "./review-chart-workspace";
-import { ReviewChartWorkspace } from "./review-chart-workspace";
+import {
+  executionTimestampLabel,
+  ReviewChartWorkspace,
+  type ReviewChartViewModel,
+} from "./review-chart-workspace";
 
 const trend: NormalizedDrawing = {
   version: 2,
@@ -146,6 +149,23 @@ const model: ReviewChartViewModel = {
 };
 
 describe("ReviewChartWorkspace", () => {
+  it("labels date-only broker rows without exposing a synthetic time", () => {
+    const execution = {
+      ...model.executions[0],
+      executedAt: "2099-12-31T23:59:59.000Z",
+      source: {
+        ...model.executions[0].source,
+        timePrecision: "date-only" as const,
+        sourceTimestampText: "20250102",
+      },
+    };
+
+    expect(executionTimestampLabel(execution)).toBe(
+      "20250102 · 对账单未提供成交时间",
+    );
+    expect(executionTimestampLabel(execution)).not.toMatch(/2099|23:59:59/);
+  });
+
   it("renders the controlled replay, drawing, layer, execution, and review surfaces", async () => {
     const user = userEvent.setup();
     const onTimeframeChange = vi.fn();

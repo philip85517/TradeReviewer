@@ -7,6 +7,7 @@ import {
   calculateRMultiple,
   episodeReviewStatus,
 } from "../reviews/review-metrics";
+import { REVIEW_TAG_DICTIONARY_VERSION } from "../reviews/review-tags";
 import type {
   EpisodeReviewRecord,
   EpisodeReviewStatus,
@@ -25,6 +26,7 @@ export type TradeLibraryEpisode = {
   review?: EpisodeReviewRecord;
   reviewStatus: EpisodeReviewStatus;
   confirmedTagIds: string[];
+  tagDictionaryVersion: number;
   rMultiple: string | null;
 };
 
@@ -86,6 +88,9 @@ export function buildTradeLibraryEntries(
             review,
             reviewStatus: episodeReviewStatus(review),
             confirmedTagIds: review?.confirmedTagIds ?? [],
+            tagDictionaryVersion:
+              review?.tagDictionaryVersion ??
+              REVIEW_TAG_DICTIONARY_VERSION,
             rMultiple: calculateRMultiple(
               metrics,
               review?.plan.plannedRiskAmount ?? "",

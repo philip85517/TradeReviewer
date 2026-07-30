@@ -3,7 +3,9 @@ export type ImportDiagnostic = {
   code: string;
   message: string;
   sheet?: string;
+  page?: number;
   row?: number;
+  sourceOrder?: number;
   instrumentSymbol?: string;
   assetClass?: string;
 };

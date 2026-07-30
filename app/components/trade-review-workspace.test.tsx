@@ -927,6 +927,106 @@ describe("TradeReviewWorkspace", () => {
     );
   });
 
+  it("automatically syncs a newer episode when the same import closes an open episode", async () => {
+    const user = userEvent.setup();
+    saveImportedExecutions([
+      availabilityExecution({
+        id: "existing-open",
+        row: 2,
+        side: "buy",
+        executedAt: "2025-01-02T14:30:00.000Z",
+      }),
+    ]);
+    vi.mocked(fetch).mockImplementation(async () =>
+      Response.json(
+        { error: { code: "source-unavailable" } },
+        { status: 502 },
+      ),
+    );
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("combobox", { name: "交易回合" });
+    vi.mocked(fetch).mockClear();
+    const fileInput = document.querySelector<HTMLInputElement>(
+      'input[type="file"]',
+    );
+    expect(fileInput).not.toBeNull();
+    await user.upload(
+      fileInput!,
+      futuImportFile([
+        [
+          "2025-01-02 23:00:00",
+          "富途",
+          "acct",
+          "证券",
+          "XPEV 小鹏汽车",
+          "US",
+          "卖出平仓",
+          "20250102",
+          "USD",
+          "-10",
+          "11",
+          "110",
+          "0",
+          "110",
+        ],
+        [
+          "2025-01-06 22:30:00",
+          "富途",
+          "acct",
+          "证券",
+          "XPEV 小鹏汽车",
+          "US",
+          "买入开仓",
+          "20250106",
+          "USD",
+          "10",
+          "10",
+          "-100",
+          "0",
+          "-100",
+        ],
+        [
+          "2025-01-06 23:00:00",
+          "富途",
+          "acct",
+          "证券",
+          "XPEV 小鹏汽车",
+          "US",
+          "卖出平仓",
+          "20250106",
+          "USD",
+          "-10",
+          "11",
+          "110",
+          "0",
+          "110",
+        ],
+      ]),
+    );
+    await user.click(
+      await screen.findByRole("button", {
+        name: "确认导入并开始更新行情",
+      }),
+    );
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+
+    const intradayRequest = new URL(
+      String(
+        vi.mocked(fetch).mock.calls.find(([input]) =>
+          String(input).includes("/api/market-data/intraday"),
+        )?.[0],
+      ),
+      "http://localhost",
+    );
+    expect(intradayRequest.searchParams.get("start")).toBe(
+      "2024-12-30T14:30:00.000Z",
+    );
+    expect(intradayRequest.searchParams.get("end")).toBe(
+      "2025-01-06T15:14:59.999Z",
+    );
+  });
+
   it("uses the unified replay workspace for a cached imported episode", async () => {
     const user = userEvent.setup();
     const instrument = {

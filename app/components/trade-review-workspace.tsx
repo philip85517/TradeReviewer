@@ -1634,7 +1634,12 @@ export function TradeReviewWorkspace({ initialFrame }: Props) {
               },
             )
           : undefined;
-        return requiredRangeExpanded(previousRange, range);
+        const newestEpisode = sortedEpisodes(summary)[0];
+        const previousNewestEpisode = sortedEpisodes(previous)[0];
+        return (
+          requiredRangeExpanded(previousRange, range) ||
+          newestEpisode?.id !== previousNewestEpisode?.id
+        );
       })
       .map((summary) => summary.instrument.id);
     const firstImported = summaries.find((item) =>

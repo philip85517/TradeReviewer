@@ -68,6 +68,7 @@ export function anchorTradeRows(
   image: OcrImageResult,
   options: AnchorTradeRowsOptions,
 ): AnchoredTradeRow[] {
+  const localRowHeight = image.height * 0.04;
   const anchors = image.lines
     .flatMap((line) => {
       const side = sideFromTradeLabel(line.text);
@@ -78,50 +79,53 @@ export function anchorTradeRows(
         ? [{ line, side }]
         : [];
     })
+    .filter(({ line: anchor }) =>
+      image.lines.some((candidate) => {
+        const candidateCenter = lineCenterY(candidate);
+        return (
+          candidate !== anchor &&
+          candidateCenter >= anchor.sourceBounds.y &&
+          candidateCenter <= anchor.sourceBounds.y + localRowHeight &&
+          options.isCorroboratingLine(candidate)
+        );
+      }),
+    )
     .sort((left, right) => lineCenterY(left.line) - lineCenterY(right.line));
 
-  return anchors
-    .map(({ line: anchor, side }, index) => {
-      const center = lineCenterY(anchor);
-      const previousCenter =
-        index > 0 ? lineCenterY(anchors[index - 1].line) : undefined;
-      const nextCenter =
-        index + 1 < anchors.length
-          ? lineCenterY(anchors[index + 1].line)
-          : undefined;
-      const fallbackHalfBand = image.height * 0.04;
-      const top =
-        previousCenter === undefined
-          ? center -
-            (nextCenter === undefined
-              ? fallbackHalfBand
-              : (nextCenter - center) / 2)
-          : (previousCenter + center) / 2;
-      const bottom =
-        nextCenter === undefined
-          ? center +
-            (previousCenter === undefined
-              ? fallbackHalfBand
-              : (center - previousCenter) / 2)
-          : (center + nextCenter) / 2;
+  return anchors.map(({ line: anchor, side }, index) => {
+    const center = lineCenterY(anchor);
+    const previousCenter =
+      index > 0 ? lineCenterY(anchors[index - 1].line) : undefined;
+    const nextCenter =
+      index + 1 < anchors.length
+        ? lineCenterY(anchors[index + 1].line)
+        : undefined;
+    const fallbackHalfBand = image.height * 0.04;
+    const top =
+      previousCenter === undefined
+        ? center -
+          (nextCenter === undefined
+            ? fallbackHalfBand
+            : (nextCenter - center) / 2)
+        : (previousCenter + center) / 2;
+    const bottom =
+      nextCenter === undefined
+        ? center +
+          (previousCenter === undefined
+            ? fallbackHalfBand
+            : (center - previousCenter) / 2)
+        : (center + nextCenter) / 2;
 
-      return {
-        sourceRowIndex: index,
-        side,
-        anchor,
-        lines: image.lines.filter((candidate) => {
-          const candidateCenter = lineCenterY(candidate);
-          return candidateCenter >= top && candidateCenter < bottom;
-        }),
-      };
-    })
-    .filter((row) =>
-      row.lines.some(
-        (line) =>
-          line !== row.anchor && options.isCorroboratingLine(line),
-      ),
-    )
-    .map((row, sourceRowIndex) => ({ ...row, sourceRowIndex }));
+    return {
+      sourceRowIndex: index,
+      side,
+      anchor,
+      lines: image.lines.filter((candidate) => {
+        const candidateCenter = lineCenterY(candidate);
+        return candidateCenter >= top && candidateCenter < bottom;
+      }),
+    };
+  });
 }
 
 function hasText(

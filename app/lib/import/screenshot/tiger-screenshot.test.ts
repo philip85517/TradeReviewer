@@ -178,6 +178,25 @@ describe("Tiger dark order-history screenshots", () => {
     },
   );
 
+  it("filters a close footer side control before it can truncate the final trade row", () => {
+    const drafts = parseTigerScreenshot(
+      image("tiger-close-footer", 1_220, 2_000, [
+        ...TIGER_SCREENSHOT_OCR.lines,
+        ocrLine("Buy", 20, 590, 80, 24),
+      ]),
+    );
+
+    expect(drafts).toHaveLength(2);
+    expect(drafts[1]).toMatchObject({
+      sourceName: "APPLE",
+      symbol: "AAPL",
+      side: "sell",
+      quantity: "5",
+      price: "12.05",
+      sourceTimestampText: "2024/06/05 14:39:25",
+    });
+  });
+
   it("preserves two executions that occur in the same second", () => {
     const drafts = parseTigerScreenshot(TIGER_SCREENSHOT_OCR);
 

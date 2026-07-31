@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   FUTU_SCREENSHOT_OCR,
+  TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR,
   TIGER_SCREENSHOT_OCR,
   image,
   ocrLine,
@@ -21,6 +22,22 @@ describe("screenshot layout detection", () => {
       matched: true,
       broker: "tiger",
       layoutVersion: "tiger-orders-dark-v1",
+    });
+  });
+
+  it("does not identify an unbranded instrument-first layout from only one complete row", () => {
+    expect(
+      detectScreenshotLayout(
+        image(
+          "instrument-first-one-row",
+          TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR.width,
+          TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR.height,
+          TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR.lines.slice(0, 13),
+        ),
+      ),
+    ).toMatchObject({
+      matched: false,
+      code: "unsupported-screenshot-layout",
     });
   });
 

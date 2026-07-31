@@ -162,6 +162,21 @@ function hasText(
   return image.lines.some((line) => predicate(compact(line.text)));
 }
 
+function hasTigerBrandingBefore(
+  image: OcrImageResult,
+  boundary: number | undefined,
+): boolean {
+  return (
+    boundary !== undefined &&
+    image.lines.some(
+      (line) =>
+        line.sourceBounds.y + line.sourceBounds.height < boundary &&
+        (compact(line.text).includes("tiger") ||
+          compact(line.text).includes("老虎")),
+    )
+  );
+}
+
 export function screenshotHeaderLines(
   image: OcrImageResult,
   aliases: readonly string[],
@@ -274,14 +289,11 @@ function tigerSideFirstScore(image: OcrImageResult): number {
       text.includes("orderhistory") ||
       text.includes("transactionhistory"),
   );
-  const account = hasText(
-    image,
-    (text) => text.includes("tiger") || text.includes("老虎"),
-  );
   const headers = selectScreenshotHeaders(
     image,
     TIGER_SCREENSHOT_HEADER_ALIASES,
   );
+  const account = hasTigerBrandingBefore(image, headers.bounds?.top);
   const expectedHeaderLines = headers.lines;
   const relativeHeaders =
     expectedHeaderLines.every(
@@ -301,11 +313,43 @@ function tigerSideFirstScore(image: OcrImageResult): number {
         lineCenterX(line) / image.width > 0.12 &&
         !isStructuralScreenshotText(line.text),
     }).length > 0;
+  return [title, account, relativeHeaders, tradeRow].filter(Boolean).length / 4;
+}
+
+function hasVerticallyStackedLines(lines: readonly OcrTextLine[]): boolean {
+  const ordered = [...lines].sort(
+    (left, right) => left.sourceBounds.y - right.sourceBounds.y,
+  );
+  return ordered.some(
+    (line, index) =>
+      index > 0 &&
+      ordered[index - 1].sourceBounds.y +
+        ordered[index - 1].sourceBounds.height <=
+        line.sourceBounds.y,
+  );
+}
+
+function isCompleteInstrumentFirstRow(
+  image: OcrImageResult,
+  row: AnchoredTradeRow,
+): boolean {
+  const nonStructuralLines = row.lines.filter(
+    (line) => !isStructuralScreenshotText(line.text),
+  );
+  const instrumentLines = nonStructuralLines.filter(
+    (line) => lineCenterX(line) / image.width < 0.47,
+  );
+  const quantityAndPriceLines = nonStructuralLines.filter((line) => {
+    const x = lineCenterX(line) / image.width;
+    return x >= 0.62 && x < 0.82;
+  });
+  const timestampLines = nonStructuralLines.filter(
+    (line) => lineCenterX(line) / image.width >= 0.82,
+  );
   return (
-    (title ? 0.3 : 0) +
-    (account ? 0.1 : 0) +
-    (relativeHeaders ? 0.3 : 0) +
-    (tradeRow ? 0.3 : 0)
+    hasVerticallyStackedLines(instrumentLines) &&
+    hasVerticallyStackedLines(quantityAndPriceLines) &&
+    timestampLines.length > 0
   );
 }
 
@@ -319,15 +363,12 @@ function tigerInstrumentFirstScore(image: OcrImageResult): number {
       text.includes("orderhistory") ||
       text.includes("transactionhistory"),
   );
-  const account = hasText(
-    image,
-    (text) => text.includes("tiger") || text.includes("老虎"),
-  );
   const headers = selectScreenshotHeaders(
     image,
     TIGER_INSTRUMENT_FIRST_HEADER_ALIASES,
     { minimumNormalizedX: 0.47, maximumNormalizedX: 0.62 },
   );
+  const account = hasTigerBrandingBefore(image, headers.bounds?.top);
   const [instrument, side, quantity, price, timestamp] = headers.lines;
   const instrumentFirstHeaders =
     instrument !== undefined &&
@@ -339,23 +380,31 @@ function tigerInstrumentFirstScore(image: OcrImageResult): number {
     lineCenterX(side) < lineCenterX(quantity) &&
     Math.abs(lineCenterX(quantity) - lineCenterX(price)) <=
       image.width * 0.08 &&
+    lineCenterY(quantity) < lineCenterY(price) &&
+    lineCenterY(price) - lineCenterY(quantity) <= image.height * 0.04 &&
+    Math.abs(lineCenterY(instrument) - lineCenterY(side)) <=
+      image.height * 0.03 &&
+    Math.abs(lineCenterY(side) - lineCenterY(timestamp)) <=
+      image.height * 0.03 &&
     Math.max(lineCenterX(quantity), lineCenterX(price)) <
       lineCenterX(timestamp);
   const headerBottom = headers.bounds?.bottom ?? 0;
-  const tradeRow =
-    anchorTradeRows(image, {
-      minimumNormalizedAnchorX: 0.47,
-      maximumNormalizedAnchorX: 0.62,
-      minimumAnchorY: headerBottom,
-      isCorroboratingLine: (line) =>
-        lineCenterX(line) / image.width < 0.47 &&
-        !isStructuralScreenshotText(line.text),
-    }).length > 0;
+  const completeTradeRows = anchorTradeRows(image, {
+    minimumNormalizedAnchorX: 0.47,
+    maximumNormalizedAnchorX: 0.62,
+    minimumAnchorY: headerBottom,
+    isCorroboratingLine: (line) =>
+      lineCenterX(line) / image.width < 0.47 &&
+      !isStructuralScreenshotText(line.text),
+  }).filter((row) => isCompleteInstrumentFirstRow(image, row));
+  // With no broker label, two repeated complete rows are the independent
+  // evidence that distinguishes this exact history-table structure.
+  const tradeRows = completeTradeRows.length >= 2;
   return (
     (title ? 0.3 : 0) +
     (account ? 0.1 : 0) +
     (instrumentFirstHeaders ? 0.3 : 0) +
-    (tradeRow ? 0.3 : 0)
+    (tradeRows ? 0.3 : 0)
   );
 }
 

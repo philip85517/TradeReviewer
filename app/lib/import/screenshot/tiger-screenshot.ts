@@ -16,6 +16,7 @@ import {
   TIGER_INSTRUMENT_FIRST_HEADER_ALIASES,
   TIGER_SCREENSHOT_HEADER_ALIASES,
 } from "./layout-detector";
+import { probableAlphabeticTickerLine } from "./instrument-symbol";
 
 const TIGER_SIDE_FIRST_COLUMNS = {
   anchorMinimumX: 0,
@@ -222,16 +223,9 @@ export function parseTigerScreenshot(
         ? TIGER_INSTRUMENT_FIRST_COLUMNS.instrument
         : TIGER_SIDE_FIRST_COLUMNS.instrument,
     );
-    const symbolCandidates = instrumentLines.filter((line) => {
-        const value = line.text.trim();
-        return (
-          /^\d{1,6}$/.test(value) ||
-          /^[A-Za-z][A-Za-z0-9.-]{0,9}$/.test(value)
-        );
-      });
     const symbolLine =
-      symbolCandidates.find((line) => /^\d{1,6}$/.test(line.text.trim())) ??
-      (instrumentLines.length > 1 ? symbolCandidates.at(-1) : undefined);
+      instrumentLines.find((line) => /^\d{1,6}$/.test(line.text.trim())) ??
+      probableAlphabeticTickerLine(instrumentLines);
     const nameLine = instrumentLines.find((line) => line !== symbolLine);
     const identity = symbolMarket(symbolLine?.text);
     const quantityAndPriceLines = linesInColumn(

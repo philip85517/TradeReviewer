@@ -15,6 +15,7 @@ import {
   isStructuralScreenshotText,
   selectScreenshotHeaders,
 } from "./layout-detector";
+import { probableAlphabeticTickerLine } from "./instrument-symbol";
 
 const LAYOUT_VERSION = "futu-orders-dark-v1";
 
@@ -188,19 +189,12 @@ export function parseFutuScreenshot(
       row.lines,
       FUTU_COLUMNS.instrument,
     );
-    const symbolCandidates = instrumentLines.filter((line) => {
-      const value = line.text.trim();
-      return (
-        /^\d{1,6}$/.test(value) ||
-        (market === "US" && /^[A-Za-z][A-Za-z0-9.-]{0,9}$/.test(value))
-      );
-    });
     const symbolLine =
-      symbolCandidates.find((line) =>
+      instrumentLines.find((line) =>
         /^\d{1,6}$/.test(line.text.trim()),
       ) ??
-      (market === "US" && instrumentLines.length > 1
-        ? symbolCandidates.at(-1)
+      (market === "US"
+        ? probableAlphabeticTickerLine(instrumentLines)
         : undefined);
     const nameLine = instrumentLines.find((line) => line !== symbolLine);
     const rawSymbol = symbolLine?.text.trim();

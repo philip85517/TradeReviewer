@@ -39,6 +39,40 @@ describe("Futu dark order-history screenshots", () => {
     });
   });
 
+  it("does not promote an uppercase company name when the lower US ticker OCR is corrupt", () => {
+    const [draft] = parseFutuScreenshot(
+      image("futu-us-corrupt-ticker", 1_220, 2_000, [
+        ...FUTU_US_SCREENSHOT_OCR.lines.slice(0, 8),
+        ocrLine("TESLA", 245, 390, 150, 24),
+        ocrLine("T3S?", 245, 425, 100, 20),
+        ...FUTU_US_SCREENSHOT_OCR.lines.slice(10),
+      ]),
+    );
+
+    expect(draft).toMatchObject({
+      market: "US",
+      symbol: undefined,
+      sourceName: "TESLA",
+    });
+  });
+
+  it("leaves an uppercase company and ticker pair unresolved as ambiguous", () => {
+    const [draft] = parseFutuScreenshot(
+      image("futu-us-ambiguous-ticker", 1_220, 2_000, [
+        ...FUTU_US_SCREENSHOT_OCR.lines.slice(0, 8),
+        ocrLine("TESLA", 245, 390, 150, 24),
+        ocrLine("TSLA", 245, 425, 100, 20),
+        ...FUTU_US_SCREENSHOT_OCR.lines.slice(10),
+      ]),
+    );
+
+    expect(draft).toMatchObject({
+      market: "US",
+      symbol: undefined,
+      sourceName: "TESLA",
+    });
+  });
+
   it("keeps a market order incomplete instead of inventing a fill price", () => {
     expect(parseFutuScreenshot(FUTU_SCREENSHOT_OCR)[0]).toMatchObject({
       broker: "futu",

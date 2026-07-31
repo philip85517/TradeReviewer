@@ -21,9 +21,7 @@ describe("Tiger dark order-history screenshots", () => {
       broker: "tiger",
       layoutVersion: "tiger-instrument-first-dark-v1",
     });
-    expect(
-      parseTigerScreenshot(TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR),
-    ).toEqual([
+    expect(parseTigerScreenshot(TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR)).toEqual([
       expect.objectContaining({
         broker: "tiger",
         layoutVersion: "tiger-instrument-first-dark-v1",
@@ -36,30 +34,74 @@ describe("Tiger dark order-history screenshots", () => {
         price: "42.5",
         sourceTimestampText: "2024/01/02 09:30:00",
       }),
+      expect.objectContaining({
+        broker: "tiger",
+        layoutVersion: "tiger-instrument-first-dark-v1",
+        sourceName: "Sample Works",
+        market: "US",
+        symbol: "EXM2",
+        side: "buy",
+        quantity: "5",
+        price: "21.25",
+        sourceTimestampText: "2024/01/03 10:45:00",
+      }),
     ]);
   });
 
-  it("parses a structurally complete Tiger row without broker branding", () => {
-    expect(
-      detectScreenshotLayout(TIGER_UNBRANDED_SCREENSHOT_OCR),
-    ).toMatchObject({
-      matched: true,
-      broker: "tiger",
-      layoutVersion: "tiger-orders-dark-v1",
+  it("rejects a side-first Tiger-shaped layout without broker branding", () => {
+    expect(detectScreenshotLayout(TIGER_UNBRANDED_SCREENSHOT_OCR)).toMatchObject({
+      matched: false,
+      code: "unsupported-screenshot-layout",
     });
-    expect(parseTigerScreenshot(TIGER_UNBRANDED_SCREENSHOT_OCR)).toEqual([
-      expect.objectContaining({
-        broker: "tiger",
-        sourceAccountSuffix: undefined,
-        sourceName: "Example Labs",
-        market: "US",
-        symbol: "DEMO",
-        side: "buy",
-        quantity: "3",
-        price: "42.5",
-        sourceTimestampText: "2024/01/02 09:30:00",
-      }),
+    expect(parseTigerScreenshot(TIGER_UNBRANDED_SCREENSHOT_OCR)).toEqual([]);
+  });
+
+  it("does not treat a Tiger-like company name below the headers as broker branding", () => {
+    const screenshot = image("unbranded-tiger-company", 1_220, 2_000, [
+      ...TIGER_UNBRANDED_SCREENSHOT_OCR.lines.slice(0, 7),
+      ocrLine("Tiger Example Holdings", 180, 390, 250, 24),
+      ...TIGER_UNBRANDED_SCREENSHOT_OCR.lines.slice(8),
     ]);
+
+    expect(detectScreenshotLayout(screenshot)).toMatchObject({
+      matched: false,
+      code: "unsupported-screenshot-layout",
+    });
+    expect(parseTigerScreenshot(screenshot)).toEqual([]);
+  });
+
+  it("does not promote an uppercase company name when the lower ticker OCR is corrupt", () => {
+    const [draft] = parseTigerScreenshot(
+      image("tiger-corrupt-ticker", 1_220, 2_000, [
+        ...TIGER_SCREENSHOT_OCR.lines.slice(0, 8),
+        ocrLine("TESLA", 180, 390, 180, 24),
+        ocrLine("T3S?", 180, 425, 100, 20),
+        ...TIGER_SCREENSHOT_OCR.lines.slice(10),
+      ]),
+    );
+
+    expect(draft).toMatchObject({
+      market: undefined,
+      symbol: undefined,
+      sourceName: "TESLA",
+    });
+  });
+
+  it("leaves an uppercase company and ticker pair unresolved as ambiguous", () => {
+    const [draft] = parseTigerScreenshot(
+      image("tiger-ambiguous-ticker", 1_220, 2_000, [
+        ...TIGER_SCREENSHOT_OCR.lines.slice(0, 8),
+        ocrLine("EXAMPLE", 180, 390, 180, 24),
+        ocrLine("EXMP", 180, 425, 100, 20),
+        ...TIGER_SCREENSHOT_OCR.lines.slice(10),
+      ]),
+    );
+
+    expect(draft).toMatchObject({
+      market: undefined,
+      symbol: undefined,
+      sourceName: "EXAMPLE",
+    });
   });
 
   it("maps an anchored row to normalized fields, union bounds, and field evidence", () => {
@@ -77,7 +119,7 @@ describe("Tiger dark order-history screenshots", () => {
       },
       market: "US",
       symbol: "NVDA",
-      sourceName: "NVIDIA",
+      sourceName: "Nvidia",
       side: "buy",
       quantity: "10",
       price: "120.5",
@@ -219,7 +261,7 @@ describe("Tiger dark order-history screenshots", () => {
     });
     expect(
       parseTigerScreenshot(screenshot).map((draft) => draft.sourceName),
-    ).toEqual(["NVIDIA", "APPLE"]);
+    ).toEqual(["Nvidia", "Apple"]);
   });
 
   it("does not turn navigation, headers, or footer text into drafts", () => {
@@ -266,7 +308,7 @@ describe("Tiger dark order-history screenshots", () => {
     );
 
     expect(draft).toMatchObject({
-      sourceName: "APPLE",
+      sourceName: "Apple",
       market: undefined,
       symbol: undefined,
       quantity: "5",
@@ -303,7 +345,7 @@ describe("Tiger dark order-history screenshots", () => {
 
     expect(drafts).toHaveLength(2);
     expect(drafts[1]).toMatchObject({
-      sourceName: "APPLE",
+      sourceName: "Apple",
       symbol: "AAPL",
       side: "sell",
       quantity: "5",

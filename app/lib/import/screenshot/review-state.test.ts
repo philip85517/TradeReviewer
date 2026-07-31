@@ -4,6 +4,8 @@ import type {
   ScreenshotField,
   ScreenshotTradeDraft,
 } from "./contracts";
+import { TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR } from "./__fixtures__/ocr-lines";
+import { parseTigerScreenshot } from "./tiger-screenshot";
 import {
   reviewBlockers,
   screenshotReviewReducer,
@@ -265,6 +267,35 @@ describe("screenshotReviewReducer", () => {
 });
 
 describe("reviewBlockers", () => {
+  it("accepts parsed Tiger instrument-first provenance for review", () => {
+    const [parsed] = parseTigerScreenshot(
+      TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR,
+    );
+    const current: ScreenshotReviewState = {
+      batchId: "screenshot-batch:instrument-first",
+      images: [
+        {
+          imageId: TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR.imageId,
+          fingerprint: "anonymous-fixture",
+          captureIndex: 0,
+          broker: "tiger",
+          layoutVersion: "tiger-instrument-first-dark-v1",
+        },
+      ],
+      drafts: [parsed],
+      deletedDraftIds: new Set(),
+      sourceTimezone: "Asia/Hong_Kong",
+      account: { id: "account-1", label: "Tiger account" },
+    };
+
+    expect(
+      reviewBlockers(current).filter(
+        ({ code, draftId, field }) =>
+          code === "invalid-field" && draftId === parsed.id && !field,
+      ),
+    ).toEqual([]);
+  });
+
   it("uses 0.85 as the exact confidence boundary", () => {
     const below = draft("image-1:tiger:0", {
       fieldEvidence: {

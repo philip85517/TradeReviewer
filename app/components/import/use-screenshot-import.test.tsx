@@ -365,6 +365,63 @@ describe("useScreenshotImport", () => {
     expect(onPrepared).not.toHaveBeenCalled();
   });
 
+  it("waits for canceled engine initialization and disposal before creating a replacement engine", async () => {
+    const initialization = deferred<LocalOcrEngine>();
+    const disposal = deferred<void>();
+    const firstDispose = vi.fn(() => disposal.promise);
+    const firstEngine: LocalOcrEngine = {
+      recognize: vi.fn(),
+      dispose: firstDispose,
+    };
+    const replacementEngine: LocalOcrEngine = {
+      recognize: vi.fn(),
+      dispose: vi.fn().mockResolvedValue(undefined),
+    };
+    const createOcrEngine = vi
+      .fn<() => Promise<LocalOcrEngine>>()
+      .mockImplementationOnce(() => initialization.promise)
+      .mockResolvedValueOnce(replacementEngine);
+    const { dependencies } = setupDependencies({ createOcrEngine });
+    const { result } = renderHook(() =>
+      useScreenshotImport({
+        currentExecutions: () => [],
+        onPrepared: vi.fn(),
+        dependencies,
+      }),
+    );
+
+    let firstStart!: Promise<void>;
+    await act(async () => {
+      firstStart = result.current.start([file("first.png")]);
+      await Promise.resolve();
+    });
+    expect(createOcrEngine).toHaveBeenCalledTimes(1);
+
+    let replacementStart!: Promise<void>;
+    await act(async () => {
+      result.current.cancel();
+      replacementStart = result.current.start([file("replacement.png")]);
+      await Promise.resolve();
+    });
+    expect(createOcrEngine).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      initialization.resolve(firstEngine);
+      await initialization.promise;
+      await Promise.resolve();
+    });
+    expect(firstDispose).toHaveBeenCalledTimes(1);
+    expect(createOcrEngine).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      disposal.resolve();
+      await disposal.promise;
+      await replacementStart;
+      await firstStart;
+    });
+    expect(createOcrEngine).toHaveBeenCalledTimes(2);
+  });
+
   it("recomputes duplicate and conflict analysis after an edit", async () => {
     const { dependencies } = setupDependencies();
     const current = execution("existing");

@@ -40,7 +40,9 @@ export type ScreenshotReviewImage = ScreenshotReviewImageSource &
       }
     | {
         broker: "tiger";
-        layoutVersion: "tiger-orders-dark-v1";
+        layoutVersion:
+          | "tiger-orders-dark-v1"
+          | "tiger-instrument-first-dark-v1";
       }
   );
 
@@ -82,7 +84,8 @@ function isSupportedReviewImage(
     (image?.broker === "futu" &&
       image.layoutVersion === "futu-orders-dark-v1") ||
     (image?.broker === "tiger" &&
-      image.layoutVersion === "tiger-orders-dark-v1")
+      (image.layoutVersion === "tiger-orders-dark-v1" ||
+        image.layoutVersion === "tiger-instrument-first-dark-v1"))
   );
 }
 

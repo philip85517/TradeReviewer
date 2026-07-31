@@ -95,6 +95,7 @@ type ScreenshotSession = {
   id: number;
   resources: Map<string, ImageResource>;
   dependencies: ScreenshotImportDependencies;
+  engineCreationBarrier: Promise<void>;
   enginePromise?: Promise<LocalOcrEngine>;
   disposePromise?: Promise<void>;
   active?: { imageId: string; controller: AbortController };
@@ -287,6 +288,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
   const mountedRef = useRef(true);
   const nextSessionIdRef = useRef(0);
   const sessionRef = useRef<ScreenshotSession | undefined>(undefined);
+  const disposalTailRef = useRef<Promise<void>>(Promise.resolve());
   const stateRef = useRef<ScreenshotReviewState | null>(null);
   const statusesRef = useRef<ImageStatus[]>([]);
   const reconciliationRef = useRef<ExecutionReconciliation | undefined>(
@@ -388,11 +390,20 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
         }
         session.resources.clear();
       }
-      session.disposePromise ??= session.enginePromise
-        ? session.enginePromise
-            .then((engine) => engine.dispose())
-            .catch(() => undefined)
-        : Promise.resolve();
+      if (!session.disposePromise) {
+        const previousDisposals = disposalTailRef.current;
+        session.disposePromise = previousDisposals.then(async () => {
+          if (!session.enginePromise) return;
+          try {
+            const engine = await session.enginePromise;
+            await engine.dispose();
+          } catch {
+            // Failed initialization has no engine to release; failed disposal
+            // must not poison the serialization tail for later sessions.
+          }
+        });
+        disposalTailRef.current = session.disposePromise;
+      }
       if (sessionRef.current === session) sessionRef.current = undefined;
       if (resetView && mountedRef.current) {
         stateRef.current = null;
@@ -427,7 +438,11 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
       session.active = { imageId, controller };
 
       try {
-        session.enginePromise ??= session.dependencies.createOcrEngine();
+        if (!session.enginePromise) {
+          await session.engineCreationBarrier;
+          if (!isActive(session) || !session.resources.has(imageId)) return;
+          session.enginePromise = session.dependencies.createOcrEngine();
+        }
         const engine = await session.enginePromise;
         if (!isActive(session) || !session.resources.has(imageId)) return;
         const ocr = await session.dependencies.recognize(
@@ -511,6 +526,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
         id: ++nextSessionIdRef.current,
         resources: new Map(),
         dependencies,
+        engineCreationBarrier: disposalTailRef.current,
         queue: Promise.resolve(),
         closed: false,
         completing: false,

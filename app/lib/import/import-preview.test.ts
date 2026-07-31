@@ -104,6 +104,7 @@ describe("createImportPreview", () => {
     expect(preview).toMatchObject({
       fileName: "Tiger_2025.pdf",
       sourceLabel: "Tiger 证券",
+      sourceKind: "statement",
       tradeCount: 3,
       instrumentCount: 2,
       duplicateTradeCount: 1,
@@ -179,5 +180,39 @@ describe("createImportPreview", () => {
       expect.objectContaining({ market: "HK", symbol: "99999" }),
     ]);
     expect(preview.blocked).toBe(true);
+  });
+
+  it("labels screenshot previews and preserves explicit reconciliation counts", () => {
+    const result: EnrichedImportResult = {
+      broker: "futu",
+      importable: [
+        execution(
+          "screenshot-1",
+          "700",
+          "腾讯控股",
+          "2025-03-01T00:00:00.000Z",
+        ),
+      ],
+      unresolved: [],
+      exclusions: [],
+      diagnostics: [],
+      cacheHits: 0,
+    };
+
+    expect(
+      createImportPreview("3 张交易截图", result, {
+        sourceKind: "screenshot",
+        captureCount: 3,
+        duplicateTradeCount: 4,
+        conflictTradeCount: 2,
+      }),
+    ).toMatchObject({
+      fileName: "3 张交易截图",
+      sourceKind: "screenshot",
+      sourceLabel: "富途截图",
+      captureCount: 3,
+      duplicateTradeCount: 4,
+      conflictTradeCount: 2,
+    });
   });
 });

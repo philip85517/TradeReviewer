@@ -19,6 +19,7 @@ import type {
   ReconciliationDecision,
 } from "../../lib/import/execution-reconciliation";
 import {
+  resolvedReviewAccount,
   reviewBlockers,
   type ScreenshotReviewAction,
   type ScreenshotReviewState,
@@ -184,6 +185,7 @@ export function ScreenshotReviewDialog({
   const [drawerSelection, setDrawerSelection] =
     useState<DrawerSelection | null>(null);
   const blockers = reviewBlockers(state);
+  const reviewAccount = resolvedReviewAccount(state);
   const activeDrafts = state.drafts.filter(
     ({ id }) => !state.deletedDraftIds.has(id),
   );
@@ -308,6 +310,49 @@ export function ScreenshotReviewDialog({
             <X size={18} aria-hidden="true" />
           </button>
         </header>
+
+        <div className="screenshot-review-context">
+          <label>
+            <span>截图成交时区</span>
+            <select
+              aria-label="截图成交时区"
+              value={state.sourceTimezone ?? ""}
+              onChange={(event) =>
+                onAction({
+                  type: "set-time-zone",
+                  timeZone: event.target.value,
+                })
+              }
+            >
+              <option value="" disabled>
+                选择时区
+              </option>
+              <option value="Asia/Shanghai">中国标准时间</option>
+              <option value="America/New_York">美国东部时间</option>
+              <option value="America/Chicago">美国中部时间</option>
+              <option value="America/Los_Angeles">美国太平洋时间</option>
+            </select>
+          </label>
+          <label>
+            <span>交易账户</span>
+            <input
+              aria-label="交易账户"
+              type="text"
+              value={state.account?.label ?? reviewAccount?.label ?? ""}
+              placeholder="输入账户名称"
+              onChange={(event) => {
+                const accountLabel = event.target.value;
+                onAction({
+                  type: "set-account",
+                  accountId: accountLabel.trim()
+                    ? `screenshot:manual:${accountLabel.trim().toLowerCase()}`
+                    : "",
+                  accountLabel,
+                });
+              }}
+            />
+          </label>
+        </div>
 
         <div
           className={`screenshot-review-body${

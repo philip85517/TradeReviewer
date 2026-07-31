@@ -22,6 +22,8 @@ export type ImportPreview = {
   id: string;
   fileName: string;
   sourceLabel: string;
+  sourceKind: "statement" | "screenshot";
+  captureCount?: number;
   records: TradeExecution[];
   instruments: InstrumentTradeSummary[];
   unresolved: InstrumentMetadataFailure[];
@@ -29,6 +31,7 @@ export type ImportPreview = {
   tradeCount: number;
   instrumentCount: number;
   duplicateTradeCount: number;
+  conflictTradeCount?: number;
   unresolvedInstrumentCount: number;
   /** Kept until import-history migrates to categorized record counts. */
   excludedInstrumentCount: number;
@@ -38,7 +41,10 @@ export type ImportPreview = {
 };
 
 type CreateImportPreviewOptions = {
+  sourceKind?: "statement" | "screenshot";
+  captureCount?: number;
   duplicateTradeCount?: number;
+  conflictTradeCount?: number;
 };
 
 const BROKER_LABELS: Record<StatementBroker, string> = {
@@ -179,7 +185,19 @@ export function createImportPreview(
   return {
     id: `import:${fingerprint}`,
     fileName,
-    sourceLabel: BROKER_LABELS[enriched.broker],
+    sourceLabel:
+      options.sourceKind === "screenshot"
+        ? enriched.broker === "futu"
+          ? "富途截图"
+          : enriched.broker === "tiger"
+            ? "老虎截图"
+            : "交易截图"
+        : BROKER_LABELS[enriched.broker],
+    sourceKind: options.sourceKind ?? "statement",
+    ...(options.sourceKind === "screenshot" &&
+    typeof options.captureCount === "number"
+      ? { captureCount: options.captureCount }
+      : {}),
     records: enriched.importable,
     instruments,
     unresolved: enriched.unresolved.map((failure) => ({
@@ -191,6 +209,10 @@ export function createImportPreview(
     instrumentCount: instruments.length,
     duplicateTradeCount:
       options.duplicateTradeCount ?? duplicateCount(enriched),
+    ...(options.sourceKind === "screenshot" &&
+    typeof options.conflictTradeCount === "number"
+      ? { conflictTradeCount: options.conflictTradeCount }
+      : {}),
     unresolvedInstrumentCount: enriched.unresolved.length,
     excludedInstrumentCount: exclusionGroups.length,
     firstTradeAt: times[0],

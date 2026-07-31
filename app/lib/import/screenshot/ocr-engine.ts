@@ -1,4 +1,3 @@
-import { PaddleOCR } from "@paddleocr/paddleocr-js";
 import type { OcrTextLine, SourceBounds } from "./contracts";
 
 export type LocalOcrEngine = {
@@ -140,6 +139,7 @@ function polygonBounds(
 }
 
 export async function createLocalOcrEngine(): Promise<LocalOcrEngine> {
+  const { PaddleOCR } = await import("@paddleocr/paddleocr-js");
   const needsCreateImageBitmapCompatibility =
     typeof createImageBitmap !== "function" || fallbackShimInstalled;
   const supportsWorkerImages =

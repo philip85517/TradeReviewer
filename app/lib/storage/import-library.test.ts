@@ -128,6 +128,25 @@ describe("import execution library", () => {
     expect(mergeExecutions(twoFills, oneFill)).toHaveLength(2);
   });
 
+  it("round-trips the representative set chosen for a larger fill multiplicity", () => {
+    const buy = execution(
+      "statement-a:2",
+      "buy",
+      "2025-03-12T16:38:57.000Z",
+      "20",
+    );
+    const oneFill = [fromFile(buy, "file-a", "file-a:2")];
+    const twoFills = [
+      fromFile(buy, "file-b", "file-b:2"),
+      fromFile(buy, "file-b", "file-b:3"),
+    ];
+    const merged = mergeExecutions(oneFill, twoFills);
+
+    saveImportedExecutions(merged);
+
+    expect(loadImportedExecutions()).toEqual(merged);
+  });
+
   it("enriches an existing duplicate with a newly supplied stock name", () => {
     const buy = execution(
       "statement-a:2",

@@ -7,6 +7,7 @@ import {
   Check,
   CopyCheck,
   FileSpreadsheet,
+  GitCompareArrows,
   Layers3,
   ListChecks,
   RefreshCw,
@@ -151,6 +152,13 @@ export function ImportConfirmDialog({
             <span>重复成交</span>
             <strong>{preview.duplicateTradeCount} 笔已跳过</strong>
           </div>
+          {preview.sourceKind === "screenshot" && (
+            <div className={(preview.conflictTradeCount ?? 0) > 0 ? "warning" : ""}>
+              <GitCompareArrows size={17} />
+              <span>成交冲突</span>
+              <strong>{preview.conflictTradeCount ?? 0} 笔已处理</strong>
+            </div>
+          )}
           <div
             className={
               preview.unresolvedInstrumentCount > 0 ? "warning" : ""

@@ -8,6 +8,20 @@ import {
 export const IMPORTED_EXECUTIONS_STORAGE_KEY =
   "trade-reviewer:executions:v1";
 
+function uniqueStableExecutions(executions: readonly TradeExecution[]) {
+  const byId = new Map<string, TradeExecution>();
+  for (const execution of executions) {
+    const existing = byId.get(execution.id);
+    if (
+      !existing ||
+      compareExecutionEvidence(execution, existing) > 0
+    ) {
+      byId.set(execution.id, execution);
+    }
+  }
+  return [...byId.values()].sort(compareExecutions);
+}
+
 function isExecution(value: unknown): value is TradeExecution {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<TradeExecution>;
@@ -26,20 +40,10 @@ export function mergeExecutions(
   current: readonly TradeExecution[],
   incoming: readonly TradeExecution[],
 ) {
-  const byId = new Map<string, TradeExecution>();
-  for (const execution of [...current, ...incoming]) {
-    const existing = byId.get(execution.id);
-    if (
-      !existing ||
-      compareExecutionEvidence(execution, existing) > 0
-    ) {
-      byId.set(execution.id, execution);
-    }
-  }
-
-  return reconcileExecutions([], [...byId.values()]).acceptedIncoming.sort(
-    compareExecutions,
-  );
+  return reconcileExecutions(
+    [],
+    uniqueStableExecutions([...current, ...incoming]),
+  ).acceptedIncoming.sort(compareExecutions);
 }
 
 export function saveImportedExecutions(executions: TradeExecution[]) {
@@ -48,7 +52,7 @@ export function saveImportedExecutions(executions: TradeExecution[]) {
     IMPORTED_EXECUTIONS_STORAGE_KEY,
     JSON.stringify({
       version: 1,
-      executions: mergeExecutions([], executions),
+      executions: uniqueStableExecutions(executions),
     }),
   );
 }
@@ -66,7 +70,7 @@ export function loadImportedExecutions(): TradeExecution[] {
       executions?: unknown;
     };
     if (parsed.version !== 1 || !Array.isArray(parsed.executions)) return [];
-    return mergeExecutions([], parsed.executions.filter(isExecution));
+    return uniqueStableExecutions(parsed.executions.filter(isExecution));
   } catch {
     return [];
   }

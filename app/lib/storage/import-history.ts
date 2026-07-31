@@ -14,6 +14,9 @@ export type ImportHistoryEntry = {
   excludedRecordCount: number;
   duplicateTradeCount: number;
   unresolvedInstrumentCount: number;
+  sourceKind?: "statement" | "screenshot";
+  captureCount?: number;
+  conflictTradeCount?: number;
 };
 
 function count(value: unknown, fallback = 0) {
@@ -63,6 +66,10 @@ function parseEntry(value: unknown): ImportHistoryEntry | undefined {
       unresolvedInstrumentCount: count(
         candidate.unresolvedInstrumentCount,
       ),
+      sourceKind:
+        candidate.sourceKind === "screenshot" ? "screenshot" : "statement",
+      captureCount: count(candidate.captureCount),
+      conflictTradeCount: count(candidate.conflictTradeCount),
     };
   }
   return undefined;

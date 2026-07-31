@@ -122,8 +122,14 @@ function futuMarket(
   return undefined;
 }
 
-function futuAccountSuffix(image: OcrImageResult): string | undefined {
-  for (const line of image.lines) {
+function futuAccountSuffix(
+  image: OcrImageResult,
+  headerBoundary: number,
+): string | undefined {
+  for (const line of image.lines.filter(
+    ({ sourceBounds }) =>
+      sourceBounds.y + sourceBounds.height <= headerBoundary,
+  )) {
     const match =
       /(?:FUTU|富途|牛牛).*?[·•]\s*((?:[A-Z]\d{3,})|(?:\*+\d{3,})|(?:\d{4,}))\s*$/i.exec(
         line.text.trim(),
@@ -131,6 +137,25 @@ function futuAccountSuffix(image: OcrImageResult): string | undefined {
     if (match) return match[1].toUpperCase();
   }
   return undefined;
+}
+
+function headerTop(image: OcrImageResult): number {
+  const headers = new Set([
+    "订单状态",
+    "名称/代码",
+    "名称代码",
+    "数量/价格",
+    "数量价格",
+    "成交时间",
+  ]);
+  return Math.min(
+    Number.POSITIVE_INFINITY,
+    ...image.lines
+      .filter((line) =>
+        headers.has(line.text.replace(/\s+/g, "").trim()),
+      )
+      .map((line) => line.sourceBounds.y),
+  );
 }
 
 function headerBottom(image: OcrImageResult): number {
@@ -173,7 +198,10 @@ export function parseFutuScreenshot(
   }
 
   const market = futuMarket(image);
-  const sourceAccountSuffix = futuAccountSuffix(image);
+  const sourceAccountSuffix = futuAccountSuffix(
+    image,
+    headerTop(image),
+  );
   return anchorTradeRows(image, {
     maximumNormalizedAnchorX: FUTU_COLUMNS.anchorMaximumX,
     minimumAnchorY: headerBottom(image),

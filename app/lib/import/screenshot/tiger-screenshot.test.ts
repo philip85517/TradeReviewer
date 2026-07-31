@@ -120,6 +120,19 @@ describe("Tiger dark order-history screenshots", () => {
     expect(draft.sourceAccountSuffix).toBeUndefined();
   });
 
+  it("does not extract an account suffix from body or footer text", () => {
+    const [draft] = parseTigerScreenshot(
+      image("tiger-body-account", 1_220, 2_000, [
+        TIGER_SCREENSHOT_OCR.lines[0],
+        ocrLine("Tiger Brokers", 430, 190, 220, 24),
+        ...TIGER_SCREENSHOT_OCR.lines.slice(2),
+        ocrLine("Tiger Brokers · U9876", 430, 1_700, 300, 24),
+      ]),
+    );
+
+    expect(draft.sourceAccountSuffix).toBeUndefined();
+  });
+
   it("does not turn navigation, headers, or footer text into drafts", () => {
     expect(
       parseTigerScreenshot(

@@ -53,7 +53,7 @@ function draft(
           rawText: raw[field],
           confidence: 0.96,
           repaired: false,
-          confirmedByUser: false,
+          confirmedByUser: field === "executedAt",
         },
       ]),
     ),
@@ -71,6 +71,8 @@ function state(
         imageId: "image-1",
         fingerprint: "image-fingerprint",
         captureIndex: 2,
+        broker: "futu",
+        layoutVersion: "futu-orders-dark-v1",
       },
     ],
     drafts,
@@ -183,6 +185,8 @@ describe("toStatementParseResult", () => {
       imageId: "image-2",
       fingerprint: "image-fingerprint-2",
       captureIndex: 3,
+      broker: "futu",
+      layoutVersion: "futu-orders-dark-v1",
     });
 
     const result = toStatementParseResult(current);
@@ -219,6 +223,32 @@ describe("toStatementParseResult", () => {
       type: "confirm-field",
       draftId: lowConfidence.id,
       field: "price",
+    });
+    expect(toStatementParseResult(confirmed).records).toHaveLength(1);
+  });
+
+  it("cannot bypass explicit confirmation of an exact-second timestamp", () => {
+    const unconfirmedTime = draft("image-1:futu:4", {
+      fieldEvidence: {
+        ...draft("base").fieldEvidence,
+        executedAt: {
+          rawText: "24/06/05 14:41:08",
+          confidence: 1,
+          repaired: false,
+          confirmedByUser: false,
+        },
+      },
+    });
+    const current = state([unconfirmedTime]);
+
+    expect(() => toStatementParseResult(current)).toThrow(
+      /unconfirmed-field:image-1:futu:4:executedAt/,
+    );
+
+    const confirmed = screenshotReviewReducer(current, {
+      type: "confirm-field",
+      draftId: unconfirmedTime.id,
+      field: "executedAt",
     });
     expect(toStatementParseResult(confirmed).records).toHaveLength(1);
   });

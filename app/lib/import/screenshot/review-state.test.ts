@@ -53,7 +53,7 @@ function draft(
           rawText: values[field],
           confidence: 0.85,
           repaired: false,
-          confirmedByUser: false,
+          confirmedByUser: field === "executedAt",
         },
       ]),
     ),
@@ -71,6 +71,8 @@ function state(
         imageId: "image-1",
         fingerprint: "fingerprint-1",
         captureIndex: 0,
+        broker: "tiger",
+        layoutVersion: "tiger-orders-dark-v1",
       },
     ],
     drafts,
@@ -189,7 +191,7 @@ describe("screenshotReviewReducer", () => {
     expect(next.drafts[1]).toMatchObject({
       id: "image-1:manual:1",
       broker: "tiger",
-      layoutVersion: "manual",
+      layoutVersion: "tiger-orders-dark-v1",
       imageId: "image-1",
       sourceRowIndex: 1,
       sourceAccountSuffix: "U6789",
@@ -198,6 +200,49 @@ describe("screenshotReviewReducer", () => {
     expect(next.drafts[1].market).toBeUndefined();
     expect(reviewBlockers(next).some(({ draftId }) =>
       draftId === "image-1:manual:1")).toBe(true);
+  });
+
+  it("adds a blank row from supported image metadata without parsed drafts", () => {
+    const current = state([]);
+
+    const next = screenshotReviewReducer(current, {
+      type: "add-draft",
+      imageId: "image-1",
+    });
+
+    expect(next.drafts).toEqual([
+      expect.objectContaining({
+        id: "image-1:manual:0",
+        broker: "tiger",
+        layoutVersion: "tiger-orders-dark-v1",
+        imageId: "image-1",
+        sourceRowIndex: 0,
+        fieldEvidence: {},
+      }),
+    ]);
+  });
+
+  it("does not add a row without supported image metadata", () => {
+    const missing = state([]);
+    missing.images = [];
+    expect(
+      screenshotReviewReducer(missing, {
+        type: "add-draft",
+        imageId: "image-1",
+      }).drafts,
+    ).toEqual([]);
+
+    const unsupported = state([]);
+    unsupported.images[0] = {
+      ...unsupported.images[0],
+      layoutVersion: "unsupported-layout",
+    } as unknown as ScreenshotReviewState["images"][number];
+    expect(
+      screenshotReviewReducer(unsupported, {
+        type: "add-draft",
+        imageId: "image-1",
+      }).drafts,
+    ).toEqual([]);
   });
 
   it("stores normalized timezone and explicit account selections", () => {
@@ -271,6 +316,28 @@ describe("reviewBlockers", () => {
       expect.objectContaining({
         code: "unconfirmed-field",
         field: "price",
+      }),
+    );
+  });
+
+  it("requires explicit confirmation for an exact-second timestamp at any score", () => {
+    const unconfirmedTime = draft("image-1:tiger:0", {
+      fieldEvidence: {
+        ...draft().fieldEvidence,
+        executedAt: {
+          rawText: "2024/06/05 14:39:25",
+          confidence: 1,
+          repaired: false,
+          confirmedByUser: false,
+        },
+      },
+    });
+
+    expect(reviewBlockers(state([unconfirmedTime]))).toContainEqual(
+      expect.objectContaining({
+        code: "unconfirmed-field",
+        draftId: unconfirmedTime.id,
+        field: "executedAt",
       }),
     );
   });
@@ -398,6 +465,22 @@ describe("reviewBlockers", () => {
   it("blocks an active row whose image metadata is missing", () => {
     const current = state();
     current.images = [];
+
+    expect(reviewBlockers(current)).toContainEqual(
+      expect.objectContaining({
+        code: "invalid-field",
+        draftId: "image-1:tiger:0",
+      }),
+    );
+  });
+
+  it("blocks image metadata whose supported layout does not match the row", () => {
+    const current = state();
+    current.images[0] = {
+      ...current.images[0],
+      broker: "futu",
+      layoutVersion: "futu-orders-dark-v1",
+    };
 
     expect(reviewBlockers(current)).toContainEqual(
       expect.objectContaining({

@@ -26,11 +26,23 @@ export type ScreenshotReviewAction =
     }
   | { type: "set-account"; accountId: string; accountLabel: string };
 
-export type ScreenshotReviewImage = {
+type ScreenshotReviewImageSource = {
   imageId: string;
   fingerprint: string;
   captureIndex: number;
 };
+
+export type ScreenshotReviewImage = ScreenshotReviewImageSource &
+  (
+    | {
+        broker: "futu";
+        layoutVersion: "futu-orders-dark-v1";
+      }
+    | {
+        broker: "tiger";
+        layoutVersion: "tiger-orders-dark-v1";
+      }
+  );
 
 export type ScreenshotReviewState = {
   batchId: string;
@@ -62,6 +74,17 @@ const REQUIRED_FIELDS: ScreenshotField[] = [
   "executedAt",
 ];
 const MARKETS = new Set(["US", "HK", "CN-SH", "CN-SZ"]);
+
+function isSupportedReviewImage(
+  image: ScreenshotReviewImage | undefined,
+): image is ScreenshotReviewImage {
+  return (
+    (image?.broker === "futu" &&
+      image.layoutVersion === "futu-orders-dark-v1") ||
+    (image?.broker === "tiger" &&
+      image.layoutVersion === "tiger-orders-dark-v1")
+  );
+}
 
 function activeDrafts(
   state: ScreenshotReviewState,
@@ -229,22 +252,25 @@ export function screenshotReviewReducer(
         ]),
       };
     case "add-draft": {
+      const image = state.images.find(
+        ({ imageId }) => imageId === action.imageId,
+      );
+      if (!isSupportedReviewImage(image)) return state;
       const imageDrafts = state.drafts.filter(
         ({ imageId }) => imageId === action.imageId,
       );
       const template = imageDrafts[0];
-      if (!template) return state;
       const sourceRowIndex =
         Math.max(-1, ...imageDrafts.map((draft) => draft.sourceRowIndex)) +
         1;
       const manualDraft: ScreenshotTradeDraft = {
         id: `${action.imageId}:manual:${sourceRowIndex}`,
-        broker: template.broker,
-        layoutVersion: "manual",
+        broker: image.broker,
+        layoutVersion: image.layoutVersion,
         imageId: action.imageId,
         sourceRowIndex,
         sourceBounds: { x: 0, y: 0, width: 0, height: 0 },
-        sourceAccountSuffix: template.sourceAccountSuffix,
+        sourceAccountSuffix: template?.sourceAccountSuffix,
         fieldEvidence: {},
       };
       return { ...state, drafts: [...state.drafts, manualDraft] };
@@ -316,7 +342,13 @@ export function reviewBlockers(
     const images = state.images.filter(
       ({ imageId }) => imageId === draft.imageId,
     );
-    if (images.length !== 1) {
+    const image = images[0];
+    if (
+      images.length !== 1 ||
+      !isSupportedReviewImage(image) ||
+      image.broker !== draft.broker ||
+      image.layoutVersion !== draft.layoutVersion
+    ) {
       blockers.push({
         code: "invalid-field",
         draftId: draft.id,
@@ -338,7 +370,8 @@ export function reviewBlockers(
       if (
         !evidence ||
         (!evidence.confirmedByUser &&
-          (!Number.isFinite(evidence.confidence) ||
+          (field === "executedAt" ||
+            !Number.isFinite(evidence.confidence) ||
             evidence.confidence < SCREENSHOT_REVIEW_CONFIDENCE ||
             evidence.repaired))
       ) {

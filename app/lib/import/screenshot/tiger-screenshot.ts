@@ -162,8 +162,14 @@ function headerBottom(image: OcrImageResult): number {
   );
 }
 
-function tigerAccountSuffix(image: OcrImageResult): string | undefined {
-  for (const line of image.lines) {
+function tigerAccountSuffix(
+  image: OcrImageResult,
+  headerBoundary: number,
+): string | undefined {
+  for (const line of image.lines.filter(
+    ({ sourceBounds }) =>
+      sourceBounds.y + sourceBounds.height <= headerBoundary,
+  )) {
     const match =
       /(?:TIGER(?:\s+BROKERS)?|老虎).*?[·•]\s*((?:[A-Z]\d{3,})|(?:\*+\d{3,})|(?:\d{4,}))\s*$/i.exec(
         line.text.trim(),
@@ -171,6 +177,25 @@ function tigerAccountSuffix(image: OcrImageResult): string | undefined {
     if (match) return match[1].toUpperCase();
   }
   return undefined;
+}
+
+function headerTop(image: OcrImageResult): number {
+  const headers = new Set([
+    "方向",
+    "名称/代码",
+    "名称代码",
+    "成交数量",
+    "成交价格",
+    "成交时间",
+  ]);
+  return Math.min(
+    Number.POSITIVE_INFINITY,
+    ...image.lines
+      .filter((line) =>
+        headers.has(line.text.replace(/\s+/g, "").trim()),
+      )
+      .map((line) => line.sourceBounds.y),
+  );
 }
 
 export function parseTigerScreenshot(
@@ -181,7 +206,10 @@ export function parseTigerScreenshot(
     return [];
   }
 
-  const sourceAccountSuffix = tigerAccountSuffix(image);
+  const sourceAccountSuffix = tigerAccountSuffix(
+    image,
+    headerTop(image),
+  );
   return anchorTradeRows(image, {
     maximumNormalizedAnchorX: TIGER_COLUMNS.anchorMaximumX,
     minimumAnchorY: headerBottom(image),

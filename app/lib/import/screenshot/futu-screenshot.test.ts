@@ -85,4 +85,17 @@ describe("Futu dark order-history screenshots", () => {
 
     expect(draft.sourceAccountSuffix).toBeUndefined();
   });
+
+  it("does not extract an account suffix from body or footer text", () => {
+    const [draft] = parseFutuScreenshot(
+      image("futu-body-account", 1_220, 2_000, [
+        FUTU_SCREENSHOT_OCR.lines[0],
+        ocrLine("FUTU HK", 470, 190, 160, 24),
+        ...FUTU_SCREENSHOT_OCR.lines.slice(2),
+        ocrLine("FUTU · 9876", 470, 1_700, 180, 24),
+      ]),
+    );
+
+    expect(draft.sourceAccountSuffix).toBeUndefined();
+  });
 });

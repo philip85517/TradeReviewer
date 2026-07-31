@@ -184,8 +184,10 @@ function canvasBlob(canvas: HTMLCanvasElement): Promise<Blob> {
 async function recognizeCanvas(
   canvas: HTMLCanvasElement,
   engine: LocalOcrEngine,
+  signal: AbortSignal,
 ): ReturnType<LocalOcrEngine["recognize"]> {
   const processedTile = await canvasBlob(canvas);
+  abortIfNeeded(signal);
   return engine.recognize(processedTile);
 }
 
@@ -246,7 +248,7 @@ export async function recognizeScreenshot(
       preprocessPixels(pixels);
       context.putImageData(pixels, 0, 0);
 
-      const result = await recognizeCanvas(canvas, engine);
+      const result = await recognizeCanvas(canvas, engine, options.signal);
       abortIfNeeded(options.signal);
       lines.push(...result.lines.map((line) => remapLine(line, tile.y)));
       options.onProgress(tile.index + 1, tiles.length);

@@ -16,15 +16,27 @@
   "wasm": [
     {
       "path": "ort/ort-wasm-simd-threaded.asyncify.wasm",
-      "bytes": 24254953,
-      "sha256": "7e83cd6cee77e478bc96a7e91b198144fb5e4126287daf1f9b54bb195ebcd55a",
+      "bytes": 27190919,
+      "sha256": "f33595b9f7ea51aa6f646dd5a2bde6fbb1c7bcde0b9d2b5f240011a09c1830d0",
       "source": "node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.wasm"
     },
     {
       "path": "ort/ort-wasm-simd-threaded.jsep.wasm",
-      "bytes": 8340355,
-      "sha256": "4b2edcf33cb32a4d97c17190514bdc1bed34e32a34d8d8d1158dca4322369aad",
+      "bytes": 25014754,
+      "sha256": "2e0a3d0e3f6b7c13ecfaba38c13691fd19c9ed470e72f9d7d8416ca59ab6dbcd",
       "source": "node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.wasm"
+    },
+    {
+      "path": "ort/ort-wasm-simd-threaded.jspi.wasm",
+      "bytes": 16894865,
+      "sha256": "47989653e231e7184f580c42199463bd6b77470e89d8241e27446193eadeb98b",
+      "source": "node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jspi.wasm"
+    },
+    {
+      "path": "ort/ort-wasm-simd-threaded.wasm",
+      "bytes": 12361745,
+      "sha256": "be0e129949062ad50290ef94683fac8be5bb6156f709e030b7a5f1661a2f6c17",
+      "source": "node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.wasm"
     }
   ]
 }

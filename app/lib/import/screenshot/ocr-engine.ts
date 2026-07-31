@@ -33,6 +33,9 @@ function polygonBounds(
 }
 
 export async function createLocalOcrEngine(): Promise<LocalOcrEngine> {
+  const supportsWorkerImages =
+    typeof ImageBitmap !== "undefined" &&
+    typeof createImageBitmap === "function";
   const paddle = await PaddleOCR.create({
     textDetectionModelName: "PP-OCRv5_mobile_det",
     textDetectionModelAsset: {
@@ -42,7 +45,7 @@ export async function createLocalOcrEngine(): Promise<LocalOcrEngine> {
     textRecognitionModelAsset: {
       url: RECOGNITION_MODEL_URL,
     },
-    worker: true,
+    worker: supportsWorkerImages,
     ortOptions: {
       backend: "wasm",
       wasmPaths: "/ocr/ort/",

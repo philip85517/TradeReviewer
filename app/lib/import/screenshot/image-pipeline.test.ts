@@ -172,6 +172,36 @@ describe("long screenshot image pipeline", () => {
     expect(sourceBitmap.close).toHaveBeenCalledTimes(1);
   });
 
+  it("does not start OCR when cancellation arrives during tile encoding", async () => {
+    installCanvas();
+    let finishEncoding: BlobCallback | undefined;
+    vi.mocked(HTMLCanvasElement.prototype.toBlob).mockImplementation(
+      (callback) => {
+        finishEncoding = callback;
+      },
+    );
+    const sourceBitmap = bitmap(2, 2);
+    vi.stubGlobal("createImageBitmap", vi.fn().mockResolvedValue(sourceBitmap));
+    const controller = new AbortController();
+    const recognize = vi
+      .fn()
+      .mockResolvedValue({ width: 2, height: 2, lines: [] });
+
+    const result = recognizeScreenshot(
+      screenshotInput(),
+      { recognize, dispose: vi.fn() },
+      { signal: controller.signal, onProgress: vi.fn() },
+    );
+    await vi.waitFor(() => expect(finishEncoding).toBeTypeOf("function"));
+
+    controller.abort();
+    finishEncoding!(new Blob(["processed"], { type: "image/png" }));
+
+    await expect(result).rejects.toMatchObject({ name: "AbortError" });
+    expect(recognize).not.toHaveBeenCalled();
+    expect(sourceBitmap.close).toHaveBeenCalledTimes(1);
+  });
+
   it("grayscales, inverts dark pixels, and stretches contrast deterministically", async () => {
     const { getOutputPixels } = installCanvas(
       new Uint8ClampedArray([

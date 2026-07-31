@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const paddle = vi.hoisted(() => ({
   create: vi.fn(),
@@ -16,6 +16,8 @@ import { createLocalOcrEngine } from "./ocr-engine";
 
 describe("same-origin PaddleOCR adapter", () => {
   beforeEach(() => {
+    vi.stubGlobal("ImageBitmap", class {});
+    vi.stubGlobal("createImageBitmap", vi.fn());
     paddle.create.mockReset();
     paddle.predict.mockReset();
     paddle.dispose.mockReset();
@@ -24,6 +26,10 @@ describe("same-origin PaddleOCR adapter", () => {
       dispose: paddle.dispose,
     });
     paddle.dispose.mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it("creates a worker-backed WASM engine with same-origin assets", async () => {
@@ -49,6 +55,25 @@ describe("same-origin PaddleOCR adapter", () => {
       }),
     );
   });
+
+  it.each(["ImageBitmap", "createImageBitmap"])(
+    "uses the browser-local main thread when %s is unavailable",
+    async (capability) => {
+      vi.stubGlobal(capability, undefined);
+
+      await createLocalOcrEngine();
+
+      expect(paddle.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          worker: false,
+          ortOptions: expect.objectContaining({
+            backend: "wasm",
+            wasmPaths: "/ocr/ort/",
+          }),
+        }),
+      );
+    },
+  );
 
   it("maps PaddleOCR poly, text, and score into source lines", async () => {
     paddle.predict.mockResolvedValue([

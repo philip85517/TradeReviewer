@@ -139,6 +139,24 @@ describe("Futu dark order-history screenshots", () => {
     });
   });
 
+  it("does not derive market from a body company line", () => {
+    const [draft] = parseFutuScreenshot(
+      image("futu-body-market-spoof", 1_220, 2_000, [
+        FUTU_SCREENSHOT_OCR.lines[0],
+        ocrLine("FUTU HK INDUSTRIES", 245, 390, 220, 24),
+        ocrLine("富途 · 4321", 470, 190, 180, 24),
+        ...FUTU_SCREENSHOT_OCR.lines.slice(2, 8),
+        ...FUTU_SCREENSHOT_OCR.lines.slice(9),
+      ]),
+    );
+
+    expect(draft).toMatchObject({
+      market: undefined,
+      symbol: undefined,
+      sourceName: "FUTU HK INDUSTRIES",
+    });
+  });
+
   it("does not guess an account suffix from arbitrary header digits", () => {
     const [draft] = parseFutuScreenshot(
       image("futu-unmasked-account", 1_220, 2_000, [

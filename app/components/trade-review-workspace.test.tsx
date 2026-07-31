@@ -922,6 +922,92 @@ describe("TradeReviewWorkspace", () => {
     expect(mockMarketDataSync).not.toHaveBeenCalled();
   });
 
+  it("keeps an existing conflict when the selected screenshot replacement does not survive enrichment", async () => {
+    const user = userEvent.setup();
+    const existing = screenshotExecution(
+      "existing-msft",
+      "MSFT",
+      "微软",
+      "2025-03-02T01:30:00Z",
+      "200",
+    );
+    saveImportedExecutions([existing]);
+    const draftsByImage = new Map([
+      [
+        "capture-1",
+        [
+          screenshotDraft(
+            "capture-1",
+            0,
+            "MSFT",
+            "微软",
+            "2025-03-02 09:30:00",
+            "201",
+            { timestampConfirmed: true },
+          ),
+          screenshotDraft(
+            "capture-1",
+            1,
+            "AAPL",
+            "苹果",
+            "2025-04-10 09:30:00",
+            "150",
+            { timestampConfirmed: true },
+          ),
+        ],
+      ],
+    ]);
+    mockEnrichment.mockImplementation(async (parsed: StatementParseResult) => ({
+      broker: parsed.broker,
+      importable: parsed.records.filter(
+        ({ instrument }) => instrument.symbol === "AAPL",
+      ),
+      unresolved: [
+        { market: "US", symbol: "MSFT", attempts: [] },
+      ],
+      exclusions: [],
+      diagnostics: [],
+      cacheHits: 0,
+    }));
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        screenshotImportDependencies={screenshotDependencies(draftsByImage)}
+      />,
+    );
+
+    await user.upload(
+      screen.getByLabelText("从截图恢复交易"),
+      new File(["synthetic"], "synthetic.png", { type: "image/png" }),
+    );
+    await user.selectOptions(
+      await screen.findByLabelText("截图成交时区"),
+      "Asia/Shanghai",
+    );
+    await user.click(screen.getByRole("button", { name: "处理 MSFT 冲突" }));
+    await user.click(screen.getByRole("radio", { name: /使用截图记录/ }));
+    await user.click(
+      screen.getByRole("button", { name: "关闭截图识别依据" }),
+    );
+    await user.click(screen.getByRole("button", { name: "确认导入" }));
+
+    expect(
+      await screen.findByRole("heading", { name: "确认导入交易记录" }),
+    ).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: "确认导入并开始更新行情" }),
+    );
+
+    expect(loadImportedExecutions()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "existing-msft" }),
+        expect.objectContaining({
+          instrument: expect.objectContaining({ symbol: "AAPL" }),
+        }),
+      ]),
+    );
+  });
+
   it("hides the frozen screenshot review while import preparation is pending", async () => {
     const user = userEvent.setup();
     const enrichment = deferred<EnrichedImportResult>();

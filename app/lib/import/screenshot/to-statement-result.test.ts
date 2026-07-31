@@ -87,7 +87,7 @@ describe("toStatementParseResult", () => {
       broker: "futu",
       records: [
         {
-          id: "futu:screenshot-batch:abc:2:4",
+          id: "futu:image-fingerprint:4",
           source: {
             platform: "futu",
             row: 4,
@@ -199,6 +199,36 @@ describe("toStatementParseResult", () => {
       { fingerprint: "image-fingerprint", captureIndex: 2 },
       { fingerprint: "image-fingerprint-2", captureIndex: 3 },
     ]);
+  });
+
+  it("keeps row identity stable when the same screenshot is imported in another batch", () => {
+    const alone = state();
+    const combined = state();
+    combined.batchId = "screenshot-batch:different";
+    combined.images[0] = {
+      ...combined.images[0],
+      captureIndex: 0,
+    };
+
+    expect(toStatementParseResult(alone).records[0].id).toBe(
+      toStatementParseResult(combined).records[0].id,
+    );
+  });
+
+  it("uses the same row identity for repeated captures with the same fingerprint", () => {
+    const repeated = state([
+      draft("image-1:futu:4"),
+      draft("image-2:futu:4", { imageId: "image-2" }),
+    ]);
+    repeated.images.push({
+      ...repeated.images[0],
+      imageId: "image-2",
+      captureIndex: 3,
+    });
+
+    const [first, second] = toStatementParseResult(repeated).records;
+    expect(first.id).toBe(second.id);
+    expect(first.source.captureIndex).not.toBe(second.source.captureIndex);
   });
 
   it("cannot bypass low-confidence or repaired field review", () => {

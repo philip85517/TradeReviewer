@@ -298,6 +298,44 @@ describe("useScreenshotImport", () => {
     expect(result.current.state?.drafts[0]).toBe(completedDraft);
   });
 
+  it("creates a fresh OCR engine when initialization failed transiently", async () => {
+    const replacementEngine: LocalOcrEngine = {
+      recognize: vi.fn(),
+      dispose: vi.fn().mockResolvedValue(undefined),
+    };
+    const createOcrEngine = vi
+      .fn<() => Promise<LocalOcrEngine>>()
+      .mockRejectedValueOnce(new Error("WASM initialization failed"))
+      .mockResolvedValueOnce(replacementEngine);
+    const recognize = vi.fn(async (input: ScreenshotInput) =>
+      imageResult(input.id),
+    );
+    const { dependencies } = setupDependencies({
+      createOcrEngine,
+      recognize,
+    });
+    const { result } = renderHook(() =>
+      useScreenshotImport({
+        currentExecutions: () => [],
+        onPrepared: vi.fn(),
+        dependencies,
+      }),
+    );
+
+    await act(async () => {
+      await result.current.start([file("one.png")]);
+    });
+    expect(result.current.images[0].state).toBe("failed");
+
+    await act(async () => {
+      await result.current.retryImage("image-1");
+    });
+
+    expect(createOcrEngine).toHaveBeenCalledTimes(2);
+    expect(recognize).toHaveBeenCalledTimes(1);
+    expect(result.current.images[0].state).toBe("needs-review");
+  });
+
   it("removing one image releases only its URL and drafts", async () => {
     const { dependencies, revokeObjectUrl } = setupDependencies();
     const { result } = renderHook(() =>
@@ -501,8 +539,8 @@ describe("useScreenshotImport", () => {
         parsed: expect.objectContaining({
           broker: "futu",
           records: expect.arrayContaining([
-            expect.objectContaining({ id: "futu:batch-1:0:0" }),
-            expect.objectContaining({ id: "futu:batch-1:1:0" }),
+            expect.objectContaining({ id: "futu:fingerprint-1:0" }),
+            expect.objectContaining({ id: "futu:fingerprint-2:0" }),
           ]),
         }),
         reconciliation: expect.objectContaining({ conflicts: [] }),

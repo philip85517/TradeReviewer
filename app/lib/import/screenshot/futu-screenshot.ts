@@ -100,8 +100,16 @@ function numericValue(line: OcrTextLine | undefined): {
 
 function futuMarket(
   image: OcrImageResult,
+  headerBoundary: number | undefined,
 ): ScreenshotTradeDraft["market"] {
+  if (headerBoundary === undefined || !Number.isFinite(headerBoundary)) {
+    return undefined;
+  }
   const marker = image.lines
+    .filter(
+      ({ sourceBounds }) =>
+        sourceBounds.y + sourceBounds.height < headerBoundary,
+    )
     .map((line) => line.text.trim().toUpperCase())
     .find(
       (text) =>
@@ -168,11 +176,11 @@ export function parseFutuScreenshot(
     return [];
   }
 
-  const market = futuMarket(image);
   const headers = selectScreenshotHeaders(
     image,
     FUTU_SCREENSHOT_HEADER_ALIASES,
   );
+  const market = futuMarket(image, headers.bounds?.top);
   const sourceAccountSuffix = futuAccountSuffix(
     image,
     headers.bounds?.top,

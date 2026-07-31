@@ -165,6 +165,9 @@ export function createImportPreview(
     .map((record) => record.executedAt)
     .sort((a, b) => a.localeCompare(b));
   const fingerprint =
+    (options.sourceKind === "screenshot"
+      ? enriched.importable[0]?.source.batchId
+      : undefined) ??
     enriched.importable[0]?.source.fileFingerprint ??
     `${enriched.broker}:${fileName}:${enriched.importable.length}`;
   const unresolvedSymbols = new Set(

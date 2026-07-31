@@ -443,7 +443,16 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
           if (!isActive(session) || !session.resources.has(imageId)) return;
           session.enginePromise = session.dependencies.createOcrEngine();
         }
-        const engine = await session.enginePromise;
+        const enginePromise = session.enginePromise;
+        let engine: LocalOcrEngine;
+        try {
+          engine = await enginePromise;
+        } catch (error) {
+          if (session.enginePromise === enginePromise) {
+            session.enginePromise = undefined;
+          }
+          throw error;
+        }
         if (!isActive(session) || !session.resources.has(imageId)) return;
         const ocr = await session.dependencies.recognize(
           resource.input,

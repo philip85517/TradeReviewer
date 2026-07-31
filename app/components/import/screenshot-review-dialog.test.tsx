@@ -359,6 +359,7 @@ describe("ScreenshotReviewDialog", () => {
       "99",
     );
     mismatchedCurrent.source.fileFingerprint = "old-fingerprint";
+    mismatchedCurrent.source.batchId = "screenshot-batch:old";
     const fingerprintlessOld = screenshotExecution(
       "fingerprintless-old-amd",
       "AMD",
@@ -440,6 +441,48 @@ describe("ScreenshotReviewDialog", () => {
     ).toBeVisible();
     expect(
       within(table).queryByRole("cell", { name: "NVDA 价格 100" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("prefers capture index when repeated captures share a fingerprint", async () => {
+    const user = userEvent.setup();
+    const current = reviewState(false);
+    current.images[1] = {
+      ...current.images[1],
+      fingerprint: current.images[0].fingerprint,
+    };
+    current.drafts = [
+      draft("draft-first-capture", "NVDA", 0, { imageId: "image-1" }),
+      draft("draft-second-capture", "AMD", 0, { imageId: "image-2" }),
+    ];
+    const duplicate = screenshotExecution(
+      "incoming-amd-second-capture",
+      "AMD",
+      1,
+      0,
+      "100",
+    );
+    duplicate.source.fileFingerprint = current.images[0].fingerprint;
+    renderDialog({
+      state: current,
+      reviewReconciliation: {
+        acceptedIncoming: [],
+        automaticReplacementIds: [],
+        duplicates: [
+          {
+            kept: statementExecution("existing-amd", "AMD", "100"),
+            skipped: duplicate,
+          },
+        ],
+        conflicts: [],
+      },
+    });
+
+    await user.click(screen.getByRole("button", { name: "自动重复" }));
+    const table = screen.getByRole("table", { name: "截图成交总表" });
+    expect(within(table).getByRole("row", { name: /AMD/ })).toBeVisible();
+    expect(
+      within(table).queryByRole("row", { name: /NVDA/ }),
     ).not.toBeInTheDocument();
   });
 

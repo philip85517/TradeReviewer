@@ -85,6 +85,23 @@ describe("screenshot layout detection", () => {
     });
   });
 
+  it("does not accept Futu branding found only in a body company row", () => {
+    expect(
+      detectScreenshotLayout(
+        image("futu-body-brand-spoof", 1_220, 2_000, [
+          FUTU_SCREENSHOT_OCR.lines[0],
+          ocrLine("账户", 470, 190, 120, 24),
+          ...FUTU_SCREENSHOT_OCR.lines.slice(2, 8),
+          ocrLine("FUTU HOLDINGS HK", 245, 390, 220, 24),
+          ...FUTU_SCREENSHOT_OCR.lines.slice(9),
+        ]),
+      ),
+    ).toMatchObject({
+      matched: false,
+      code: "unsupported-screenshot-layout",
+    });
+  });
+
   it("fails closed when Tiger quantity and price headers are swapped", () => {
     expect(
       detectScreenshotLayout(

@@ -64,11 +64,7 @@ function draftIdForExecution(
   if (source.inputKind !== "screenshot") return undefined;
 
   let image: ScreenshotReviewState["images"][number] | undefined;
-  if (source.fileFingerprint !== undefined) {
-    image = state.images.find(
-      ({ fingerprint }) => fingerprint === source.fileFingerprint,
-    );
-  } else if (
+  if (
     source.batchId === state.batchId &&
     typeof source.captureIndex === "number" &&
     Number.isSafeInteger(source.captureIndex) &&
@@ -76,6 +72,11 @@ function draftIdForExecution(
   ) {
     image = state.images.find(
       ({ captureIndex }) => captureIndex === source.captureIndex,
+    );
+  }
+  if (!image && source.fileFingerprint !== undefined) {
+    image = state.images.find(
+      ({ fingerprint }) => fingerprint === source.fileFingerprint,
     );
   }
   if (!image) return undefined;

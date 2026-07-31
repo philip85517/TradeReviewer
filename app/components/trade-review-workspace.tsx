@@ -26,7 +26,11 @@ import {
   type EnrichedImportResult,
 } from "../lib/import/enrich-import";
 import { parseBrokerStatement } from "../lib/import/dispatcher";
-import { applyReconciliationDecisions } from "../lib/import/execution-reconciliation";
+import {
+  applyReconciliationDecisions,
+  reconcileExecutions,
+  type ReconciliationDecision,
+} from "../lib/import/execution-reconciliation";
 import {
   createImportPreview,
   type ImportPreview,
@@ -177,6 +181,8 @@ export function TradeReviewWorkspace({
     useState<TradeExecution[] | null>(null);
   const [pendingImportMergeBase, setPendingImportMergeBase] =
     useState<TradeExecution[] | null>(null);
+  const [pendingScreenshotDecisions, setPendingScreenshotDecisions] =
+    useState<ReadonlyMap<string, ReconciliationDecision> | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [importHistory, setImportHistory] = useState<ImportHistoryEntry[]>(
     [],
@@ -867,7 +873,7 @@ export function TradeReviewWorkspace({
   ) {
     const requestId = ++importRequestSequence.current;
     const originalExecutions = currentExecutionSnapshot();
-    const { currentAfterReplacements, incomingToMerge } =
+    const { incomingToMerge } =
       applyReconciliationDecisions(
         originalExecutions,
         prepared.reconciliation,
@@ -896,20 +902,33 @@ export function TradeReviewWorkspace({
     setPendingParsedImport(parsed);
     setPendingEnrichedImport(null);
     setPendingImportOriginalExecutions(originalExecutions);
-    setPendingImportMergeBase(currentAfterReplacements);
+    setPendingImportMergeBase(null);
+    setPendingScreenshotDecisions(prepared.decisions);
     try {
       await Promise.resolve();
       setImportPhase("resolving");
-      const enriched = await enrichStatementImport(parsed, {
+      const rawEnriched = await enrichStatementImport(parsed, {
         repository: new IndexedDbInstrumentMetadataRepository(),
       });
       if (requestId !== importRequestSequence.current) return;
+      const survivorReconciliation = reconcileExecutions(
+        originalExecutions,
+        rawEnriched.importable,
+      );
+      const { currentAfterReplacements, incomingToMerge: survivors } =
+        applyReconciliationDecisions(
+          originalExecutions,
+          survivorReconciliation,
+          prepared.decisions,
+        );
+      const enriched = { ...rawEnriched, importable: survivors };
       const preview = previewForImport(prepared.fileName, enriched, {
         captureCount: prepared.captureCount,
         duplicateTradeCount: prepared.reconciliation.duplicates.length,
         conflictTradeCount,
       });
       setPendingEnrichedImport(enriched);
+      setPendingImportMergeBase(currentAfterReplacements);
       setPendingImport(preview);
       setImportPhase("ready");
     } catch (error) {
@@ -922,6 +941,7 @@ export function TradeReviewWorkspace({
       setImportPhase("idle");
       setPendingImportOriginalExecutions(null);
       setPendingImportMergeBase(null);
+      setPendingScreenshotDecisions(null);
       throw error;
     } finally {
       if (requestId === importRequestSequence.current) {
@@ -941,6 +961,7 @@ export function TradeReviewWorkspace({
     setPendingEnrichedImport(null);
     setPendingImportOriginalExecutions(null);
     setPendingImportMergeBase(null);
+    setPendingScreenshotDecisions(null);
     try {
       await Promise.resolve();
       setImportPhase("parsing");
@@ -992,21 +1013,46 @@ export function TradeReviewWorkspace({
     setRetryingUnresolved(true);
     setImportError(null);
     try {
-      const enriched = await enrichStatementImport(pendingParsedImport, {
+      const rawEnriched = await enrichStatementImport(pendingParsedImport, {
         repository: new IndexedDbInstrumentMetadataRepository(),
         forceRefresh: true,
         onlyInstrumentIds: instrumentIds,
         previous: pendingEnrichedImport,
       });
       if (requestId !== importRequestSequence.current) return;
+      let enriched = rawEnriched;
+      const screenshotDuplicateTradeCount = pendingImport.duplicateTradeCount;
+      let screenshotConflictTradeCount = pendingImport.conflictTradeCount ?? 0;
+      if (
+        pendingImport.sourceKind === "screenshot" &&
+        pendingImportOriginalExecutions &&
+        pendingScreenshotDecisions
+      ) {
+        const survivorReconciliation = reconcileExecutions(
+          pendingImportOriginalExecutions,
+          rawEnriched.importable,
+        );
+        const { currentAfterReplacements, incomingToMerge } =
+          applyReconciliationDecisions(
+            pendingImportOriginalExecutions,
+            survivorReconciliation,
+            pendingScreenshotDecisions,
+          );
+        enriched = { ...rawEnriched, importable: incomingToMerge };
+        setPendingImportMergeBase(currentAfterReplacements);
+        screenshotConflictTradeCount = survivorReconciliation.conflicts.reduce(
+          (total, conflict) => total + conflict.incoming.length,
+          0,
+        );
+      }
       const preview = previewForImport(
         pendingImport.fileName,
         enriched,
         pendingImport.sourceKind === "screenshot"
           ? {
               captureCount: pendingImport.captureCount ?? 0,
-              duplicateTradeCount: pendingImport.duplicateTradeCount,
-              conflictTradeCount: pendingImport.conflictTradeCount ?? 0,
+              duplicateTradeCount: screenshotDuplicateTradeCount,
+              conflictTradeCount: screenshotConflictTradeCount,
             }
           : undefined,
       );
@@ -1085,6 +1131,7 @@ export function TradeReviewWorkspace({
       setPendingImport(null);
       setPendingImportOriginalExecutions(null);
       setPendingImportMergeBase(null);
+      setPendingScreenshotDecisions(null);
       return;
     }
     importedExecutionsRef.current = mergedExecutions;
@@ -1141,6 +1188,7 @@ export function TradeReviewWorkspace({
     setPendingEnrichedImport(null);
     setPendingImportOriginalExecutions(null);
     setPendingImportMergeBase(null);
+    setPendingScreenshotDecisions(null);
     setImportPhase("idle");
   }
 
@@ -1345,6 +1393,7 @@ export function TradeReviewWorkspace({
             setPendingEnrichedImport(null);
             setPendingImportOriginalExecutions(null);
             setPendingImportMergeBase(null);
+            setPendingScreenshotDecisions(null);
             void screenshotImport.start(files).catch((error) => {
               setImportError(
                 error instanceof Error ? error.message : "截图识别失败",
@@ -1550,6 +1599,7 @@ export function TradeReviewWorkspace({
             setPendingEnrichedImport(null);
             setPendingImportOriginalExecutions(null);
             setPendingImportMergeBase(null);
+            setPendingScreenshotDecisions(null);
             setImportPhase("idle");
           }}
           onConfirm={confirmImport}
@@ -1580,6 +1630,7 @@ export function TradeReviewWorkspace({
             setImportPhase("idle");
             setPendingImportOriginalExecutions(null);
             setPendingImportMergeBase(null);
+            setPendingScreenshotDecisions(null);
           }}
           onCompleteReview={() => {
             void screenshotImport.completeReview().catch((error) => {

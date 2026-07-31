@@ -177,6 +177,22 @@ function hasTigerBrandingBefore(
   );
 }
 
+function hasFutuBrandingBefore(
+  image: OcrImageResult,
+  boundary: number | undefined,
+): boolean {
+  return (
+    boundary !== undefined &&
+    image.lines.some(
+      (line) =>
+        line.sourceBounds.y + line.sourceBounds.height < boundary &&
+        (compact(line.text).includes("futu") ||
+          compact(line.text).includes("富途") ||
+          compact(line.text).includes("牛牛")),
+    )
+  );
+}
+
 export function screenshotHeaderLines(
   image: OcrImageResult,
   aliases: readonly string[],
@@ -251,17 +267,11 @@ export function selectScreenshotHeaders(
 
 function futuScore(image: OcrImageResult): number {
   const title = hasText(image, (text) => text.includes("订单记录"));
-  const account = hasText(
-    image,
-    (text) =>
-      text.includes("futu") ||
-      text.includes("富途") ||
-      text.includes("牛牛"),
-  );
   const headers = selectScreenshotHeaders(
     image,
     FUTU_SCREENSHOT_HEADER_ALIASES,
   );
+  const account = hasFutuBrandingBefore(image, headers.bounds?.top);
   const foundHeaders = headers.lines.filter(
     (line): line is OcrTextLine => line !== undefined,
   );

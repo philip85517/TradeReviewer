@@ -67,7 +67,7 @@ export function toStatementParseResult(
     }
 
     return {
-      id: `${draft.broker}:${state.batchId}:${image.captureIndex}:${draft.sourceRowIndex}`,
+      id: `${draft.broker}:${image.fingerprint}:${draft.sourceRowIndex}`,
       source: {
         platform: draft.broker,
         row: draft.sourceRowIndex,

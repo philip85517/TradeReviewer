@@ -120,4 +120,19 @@ describe("Futu dark order-history screenshots", () => {
       parseFutuScreenshot(screenshot)[0].sourceAccountSuffix,
     ).toBeUndefined();
   });
+
+  it("keeps trades when a footer repeats a recognized header alias", () => {
+    const screenshot = image("futu-footer-header", 1_220, 2_000, [
+      ...FUTU_SCREENSHOT_OCR.lines,
+      ocrLine("成交时间（当地）", 1_000, 1_700, 190, 22),
+    ]);
+
+    expect(detectScreenshotLayout(screenshot)).toMatchObject({
+      matched: true,
+      broker: "futu",
+    });
+    expect(
+      parseFutuScreenshot(screenshot).map((draft) => draft.sourceName),
+    ).toEqual(["思摩尔国际", "腾讯控股"]);
+  });
 });

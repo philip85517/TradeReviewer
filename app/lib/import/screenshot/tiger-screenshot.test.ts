@@ -156,6 +156,21 @@ describe("Tiger dark order-history screenshots", () => {
     ).toBeUndefined();
   });
 
+  it("keeps trades when a footer repeats a recognized header alias", () => {
+    const screenshot = image("tiger-footer-header", 1_220, 2_000, [
+      ...TIGER_SCREENSHOT_OCR.lines,
+      ocrLine("成交时间（当地）", 1_000, 1_700, 190, 22),
+    ]);
+
+    expect(detectScreenshotLayout(screenshot)).toMatchObject({
+      matched: true,
+      broker: "tiger",
+    });
+    expect(
+      parseTigerScreenshot(screenshot).map((draft) => draft.sourceName),
+    ).toEqual(["NVIDIA", "APPLE"]);
+  });
+
   it("does not turn navigation, headers, or footer text into drafts", () => {
     expect(
       parseTigerScreenshot(

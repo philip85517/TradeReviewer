@@ -13,7 +13,7 @@ import {
   detectScreenshotLayout,
   FUTU_SCREENSHOT_HEADER_ALIASES,
   isStructuralScreenshotText,
-  screenshotHeaderBounds,
+  selectScreenshotHeaders,
 } from "./layout-detector";
 
 const LAYOUT_VERSION = "futu-orders-dark-v1";
@@ -168,17 +168,17 @@ export function parseFutuScreenshot(
   }
 
   const market = futuMarket(image);
-  const headerBounds = screenshotHeaderBounds(
+  const headers = selectScreenshotHeaders(
     image,
     FUTU_SCREENSHOT_HEADER_ALIASES,
   );
   const sourceAccountSuffix = futuAccountSuffix(
     image,
-    headerBounds?.top,
+    headers.bounds?.top,
   );
   return anchorTradeRows(image, {
     maximumNormalizedAnchorX: FUTU_COLUMNS.anchorMaximumX,
-    minimumAnchorY: headerBounds?.bottom ?? 0,
+    minimumAnchorY: headers.bounds?.bottom ?? 0,
     isCorroboratingLine: (line) =>
       centerX(line, image) >= FUTU_COLUMNS.instrument[0] &&
       !isStructuralScreenshotText(line.text),

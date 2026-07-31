@@ -12,7 +12,7 @@ import {
   anchorTradeRows,
   detectScreenshotLayout,
   isStructuralScreenshotText,
-  screenshotHeaderBounds,
+  selectScreenshotHeaders,
   TIGER_SCREENSHOT_HEADER_ALIASES,
 } from "./layout-detector";
 
@@ -176,17 +176,17 @@ export function parseTigerScreenshot(
     return [];
   }
 
-  const headerBounds = screenshotHeaderBounds(
+  const headers = selectScreenshotHeaders(
     image,
     TIGER_SCREENSHOT_HEADER_ALIASES,
   );
   const sourceAccountSuffix = tigerAccountSuffix(
     image,
-    headerBounds?.top,
+    headers.bounds?.top,
   );
   return anchorTradeRows(image, {
     maximumNormalizedAnchorX: TIGER_COLUMNS.anchorMaximumX,
-    minimumAnchorY: headerBounds?.bottom ?? 0,
+    minimumAnchorY: headers.bounds?.bottom ?? 0,
     isCorroboratingLine: (line) =>
       centerX(line, image) >= TIGER_COLUMNS.instrument[0] &&
       !isStructuralScreenshotText(line.text),

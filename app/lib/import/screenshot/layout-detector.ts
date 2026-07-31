@@ -154,30 +154,64 @@ export function screenshotHeaderLines(
   image: OcrImageResult,
   aliases: readonly string[],
 ): OcrTextLine[] {
-  return image.lines.filter((line) => {
-    const text = compact(line.text);
-    return aliases.some(
-      (alias) => text === alias || text.includes(alias),
+  return image.lines
+    .filter((line) => {
+      const text = compact(line.text);
+      return aliases.some(
+        (alias) => text === alias || text.includes(alias),
+      );
+    })
+    .sort(
+      (left, right) =>
+        left.sourceBounds.y - right.sourceBounds.y ||
+        left.sourceBounds.x - right.sourceBounds.x,
     );
-  });
 }
 
-export function screenshotHeaderBounds(
+export type ScreenshotHeaderSelection = {
+  lines: Array<OcrTextLine | undefined>;
+  bounds?: { top: number; bottom: number };
+};
+
+export function selectScreenshotHeaders(
   image: OcrImageResult,
   expectedHeaders: ReadonlyArray<readonly string[]>,
-): { top: number; bottom: number } | undefined {
-  const lines = expectedHeaders.flatMap((aliases) =>
-    screenshotHeaderLines(image, aliases),
+): ScreenshotHeaderSelection {
+  const rowAnchorTops = image.lines
+    .filter(
+      (line) =>
+        sideFromTradeLabel(line.text) !== undefined &&
+        lineCenterX(line) / image.width <= 0.15,
+    )
+    .map((line) => line.sourceBounds.y);
+  if (rowAnchorTops.length === 0) {
+    return { lines: expectedHeaders.map(() => undefined) };
+  }
+  const rowAnchorTop = Math.min(...rowAnchorTops);
+
+  const lines = expectedHeaders.map((aliases) =>
+    screenshotHeaderLines(image, aliases).find(
+      ({ sourceBounds }) =>
+        sourceBounds.y + sourceBounds.height < rowAnchorTop,
+    ),
   );
-  if (lines.length === 0) return undefined;
+  const selectedLines = lines.filter(
+    (line): line is OcrTextLine => line !== undefined,
+  );
+  if (selectedLines.length === 0) return { lines };
 
   return {
-    top: Math.min(...lines.map((line) => line.sourceBounds.y)),
-    bottom: Math.max(
-      ...lines.map(
-        (line) => line.sourceBounds.y + line.sourceBounds.height,
+    lines,
+    bounds: {
+      top: Math.min(
+        ...selectedLines.map((line) => line.sourceBounds.y),
       ),
-    ),
+      bottom: Math.max(
+        ...selectedLines.map(
+          (line) => line.sourceBounds.y + line.sourceBounds.height,
+        ),
+      ),
+    },
   };
 }
 
@@ -190,13 +224,14 @@ function futuScore(image: OcrImageResult): number {
       text.includes("富途") ||
       text.includes("牛牛"),
   );
-  const foundHeaders = FUTU_SCREENSHOT_HEADER_ALIASES.flatMap(
-    (aliases, index) =>
-      screenshotHeaderLines(image, aliases).length > 0 ? [index] : [],
+  const headers = selectScreenshotHeaders(
+    image,
+    FUTU_SCREENSHOT_HEADER_ALIASES,
   );
-  const headerBottom =
-    screenshotHeaderBounds(image, FUTU_SCREENSHOT_HEADER_ALIASES)
-      ?.bottom ?? 0;
+  const foundHeaders = headers.lines.filter(
+    (line): line is OcrTextLine => line !== undefined,
+  );
+  const headerBottom = headers.bounds?.bottom ?? 0;
   const completedRow = anchorTradeRows(image, {
     maximumNormalizedAnchorX: 0.15,
     minimumAnchorY: headerBottom,
@@ -224,9 +259,11 @@ function tigerScore(image: OcrImageResult): number {
     image,
     (text) => text.includes("tiger") || text.includes("老虎"),
   );
-  const expectedHeaderLines = TIGER_SCREENSHOT_HEADER_ALIASES.map(
-    (aliases) => screenshotHeaderLines(image, aliases)[0],
+  const headers = selectScreenshotHeaders(
+    image,
+    TIGER_SCREENSHOT_HEADER_ALIASES,
   );
+  const expectedHeaderLines = headers.lines;
   const relativeHeaders =
     expectedHeaderLines.every(
       (line): line is OcrTextLine => line !== undefined,
@@ -236,14 +273,7 @@ function tigerScore(image: OcrImageResult): number {
         index === 0 ||
         lineCenterX(line!) > lineCenterX(expectedHeaderLines[index - 1]!),
     );
-  const headerBottom = Math.max(
-    0,
-    ...expectedHeaderLines.flatMap((line) =>
-      line
-        ? [line.sourceBounds.y + line.sourceBounds.height]
-        : [],
-    ),
-  );
+  const headerBottom = headers.bounds?.bottom ?? 0;
   const tradeRow =
     anchorTradeRows(image, {
       maximumNormalizedAnchorX: 0.15,

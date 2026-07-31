@@ -500,7 +500,7 @@ describe("ScreenshotReviewDialog", () => {
 
     await user.click(
       screen.getByRole("button", {
-        name: "删除 NVDA 成交，来源 orders-1.png 第 1 行，24/06/05 14:41:08，数量 10，价格 114.8",
+        name: "删除 NVDA 成交，来源第 1 张 orders-1.png 第 1 行，24/06/05 14:41:08，数量 10，价格 114.8",
       }),
     );
     await user.click(
@@ -532,17 +532,17 @@ describe("ScreenshotReviewDialog", () => {
     renderDialog({ state: current });
 
     const deleteButtons = screen.getAllByRole("button", {
-      name: /^删除 NVDA 成交，来源 orders-1\.png 第/,
+      name: /^删除 NVDA 成交，来源第 1 张 orders-1\.png 第/,
     });
     expect(deleteButtons).toHaveLength(2);
     expect(
       screen.getByRole("button", {
-        name: "删除 NVDA 成交，来源 orders-1.png 第 1 行，24/06/05 14:41:08，数量 10，价格 114.8",
+        name: "删除 NVDA 成交，来源第 1 张 orders-1.png 第 1 行，24/06/05 14:41:08，数量 10，价格 114.8",
       }),
     ).toBeVisible();
     expect(
       screen.getByRole("button", {
-        name: "删除 NVDA 成交，来源 orders-1.png 第 2 行，24/06/05 14:41:08，数量 20，价格 115.2",
+        name: "删除 NVDA 成交，来源第 1 张 orders-1.png 第 2 行，24/06/05 14:41:08，数量 20，价格 115.2",
       }),
     ).toBeVisible();
     expect(
@@ -551,7 +551,8 @@ describe("ScreenshotReviewDialog", () => {
     ).toBe(2);
   });
 
-  it("keeps delete names unique when identical fills reuse a row number across images", () => {
+  it("uses stable image ordinals to delete identical fills from same-named images", async () => {
+    const user = userEvent.setup();
     const current = reviewState(false);
     current.drafts = [
       draft("draft-nvda-image-1", "NVDA", 0, {
@@ -564,18 +565,35 @@ describe("ScreenshotReviewDialog", () => {
         price: "114.8",
       }),
     ];
-    renderDialog({ state: current });
+    const sameNamedImages = images.map((image) => ({
+      ...image,
+      fileName: "orders.png",
+    }));
+    const { onAction } = renderDialog({
+      state: current,
+      reviewImages: sameNamedImages,
+    });
 
-    expect(
-      screen.getByRole("button", {
-        name: "删除 NVDA 成交，来源 orders-1.png 第 1 行，24/06/05 14:41:08，数量 10，价格 114.8",
-      }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("button", {
-        name: "删除 NVDA 成交，来源 orders-2.png 第 1 行，24/06/05 14:41:08，数量 10，价格 114.8",
-      }),
-    ).toBeVisible();
+    const first = screen.getByRole("button", {
+      name: "删除 NVDA 成交，来源第 1 张 orders.png 第 1 行，24/06/05 14:41:08，数量 10，价格 114.8",
+    });
+    const second = screen.getByRole("button", {
+      name: "删除 NVDA 成交，来源第 2 张 orders.png 第 1 行，24/06/05 14:41:08，数量 10，价格 114.8",
+    });
+    expect(first).toBeVisible();
+    expect(second).toBeVisible();
+
+    await user.click(first);
+    await user.click(second);
+
+    expect(onAction).toHaveBeenNthCalledWith(1, {
+      type: "delete-draft",
+      draftId: "draft-nvda-image-1",
+    });
+    expect(onAction).toHaveBeenNthCalledWith(2, {
+      type: "delete-draft",
+      draftId: "draft-nvda-image-2",
+    });
   });
 
   it.each([

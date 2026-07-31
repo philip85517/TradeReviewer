@@ -209,6 +209,12 @@ export function ScreenshotReviewDialog({
     [state, reconciliation],
   );
   const imageNames = new Map(images.map((image) => [image.id, image.fileName]));
+  const imageDescriptors = new Map(
+    images.map((image, index) => [
+      image.id,
+      `第 ${index + 1} 张 ${image.fileName}`,
+    ]),
+  );
   const effectiveSelectedImageId = images.some(
     ({ id }) => id === selectedImageId,
   )
@@ -461,6 +467,7 @@ export function ScreenshotReviewDialog({
                 duplicateDraftIds={duplicateDraftIds}
                 conflictByDraftId={conflictByDraftId}
                 imageNames={imageNames}
+                imageDescriptors={imageDescriptors}
                 onSelectField={(selection) =>
                   setDrawerSelection({ kind: "field", ...selection })
                 }

@@ -27,6 +27,7 @@ type ScreenshotTradeTableProps = {
   duplicateDraftIds: ReadonlySet<string>;
   conflictByDraftId: ReadonlyMap<string, ExecutionConflict>;
   imageNames: ReadonlyMap<string, string>;
+  imageDescriptors: ReadonlyMap<string, string>;
   onSelectField(selection: ScreenshotSelectedField): void;
   onSelectConflict(conflict: ExecutionConflict): void;
   onDeleteDraft(draftId: string): void;
@@ -58,13 +59,13 @@ function fieldValue(
 
 function deleteDraftLabel(
   draft: ScreenshotTradeDraft,
-  imageName: string | undefined,
+  imageDescriptor: string | undefined,
 ) {
   const symbol = draft.symbol || "未命名成交";
-  const sourceName = imageName?.trim() || draft.imageId;
+  const sourceName = imageDescriptor?.trim() || draft.imageId;
   const details = [
     Number.isInteger(draft.sourceRowIndex) && draft.sourceRowIndex >= 0
-      ? `来源 ${sourceName} 第 ${draft.sourceRowIndex + 1} 行`
+      ? `来源${sourceName} 第 ${draft.sourceRowIndex + 1} 行`
       : undefined,
     draft.sourceTimestampText?.trim() || undefined,
     draft.quantity?.trim() ? `数量 ${draft.quantity.trim()}` : undefined,
@@ -113,6 +114,7 @@ export function ScreenshotTradeTable({
   duplicateDraftIds,
   conflictByDraftId,
   imageNames,
+  imageDescriptors,
   onSelectField,
   onSelectConflict,
   onDeleteDraft,
@@ -238,7 +240,7 @@ export function ScreenshotTradeTable({
                   type="button"
                   aria-label={deleteDraftLabel(
                     draft,
-                    imageNames.get(draft.imageId),
+                    imageDescriptors.get(draft.imageId),
                   )}
                   onClick={() => onDeleteDraft(draft.id)}
                 >

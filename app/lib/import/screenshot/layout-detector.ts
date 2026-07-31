@@ -46,6 +46,21 @@ const SIDE_BY_LABEL = new Map<string, "buy" | "sell">([
   ["sell", "sell"],
 ]);
 
+export const FUTU_SCREENSHOT_HEADER_ALIASES = [
+  ["订单状态"],
+  ["名称/代码", "名称代码"],
+  ["数量/价格", "数量价格"],
+  ["成交时间"],
+] as const;
+
+export const TIGER_SCREENSHOT_HEADER_ALIASES = [
+  ["方向"],
+  ["名称/代码", "名称代码"],
+  ["成交数量"],
+  ["成交价格"],
+  ["成交时间"],
+] as const;
+
 function compact(text: string): string {
   return text.replace(/\s+/g, "").trim().toLowerCase();
 }
@@ -135,7 +150,7 @@ function hasText(
   return image.lines.some((line) => predicate(compact(line.text)));
 }
 
-function headerLines(
+export function screenshotHeaderLines(
   image: OcrImageResult,
   aliases: readonly string[],
 ): OcrTextLine[] {
@@ -147,6 +162,25 @@ function headerLines(
   });
 }
 
+export function screenshotHeaderBounds(
+  image: OcrImageResult,
+  expectedHeaders: ReadonlyArray<readonly string[]>,
+): { top: number; bottom: number } | undefined {
+  const lines = expectedHeaders.flatMap((aliases) =>
+    screenshotHeaderLines(image, aliases),
+  );
+  if (lines.length === 0) return undefined;
+
+  return {
+    top: Math.min(...lines.map((line) => line.sourceBounds.y)),
+    bottom: Math.max(
+      ...lines.map(
+        (line) => line.sourceBounds.y + line.sourceBounds.height,
+      ),
+    ),
+  };
+}
+
 function futuScore(image: OcrImageResult): number {
   const title = hasText(image, (text) => text.includes("订单记录"));
   const account = hasText(
@@ -156,23 +190,13 @@ function futuScore(image: OcrImageResult): number {
       text.includes("富途") ||
       text.includes("牛牛"),
   );
-  const expectedHeaders = [
-    ["订单状态"],
-    ["名称/代码", "名称代码"],
-    ["数量/价格", "数量价格"],
-    ["成交时间"],
-  ];
-  const foundHeaders = expectedHeaders.flatMap((aliases, index) =>
-    headerLines(image, aliases).length > 0 ? [index] : [],
+  const foundHeaders = FUTU_SCREENSHOT_HEADER_ALIASES.flatMap(
+    (aliases, index) =>
+      screenshotHeaderLines(image, aliases).length > 0 ? [index] : [],
   );
-  const headerBottom = Math.max(
-    0,
-    ...expectedHeaders.flatMap((aliases) =>
-      headerLines(image, aliases).map(
-        (line) => line.sourceBounds.y + line.sourceBounds.height,
-      ),
-    ),
-  );
+  const headerBottom =
+    screenshotHeaderBounds(image, FUTU_SCREENSHOT_HEADER_ALIASES)
+      ?.bottom ?? 0;
   const completedRow = anchorTradeRows(image, {
     maximumNormalizedAnchorX: 0.15,
     minimumAnchorY: headerBottom,
@@ -200,13 +224,9 @@ function tigerScore(image: OcrImageResult): number {
     image,
     (text) => text.includes("tiger") || text.includes("老虎"),
   );
-  const expectedHeaderLines = [
-    ["方向"],
-    ["名称/代码", "名称代码"],
-    ["成交数量"],
-    ["成交价格"],
-    ["成交时间"],
-  ].map((aliases) => headerLines(image, aliases)[0]);
+  const expectedHeaderLines = TIGER_SCREENSHOT_HEADER_ALIASES.map(
+    (aliases) => screenshotHeaderLines(image, aliases)[0],
+  );
   const relativeHeaders =
     expectedHeaderLines.every(
       (line): line is OcrTextLine => line !== undefined,

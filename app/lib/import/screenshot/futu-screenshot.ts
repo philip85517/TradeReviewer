@@ -11,7 +11,9 @@ import type {
 import {
   anchorTradeRows,
   detectScreenshotLayout,
+  FUTU_SCREENSHOT_HEADER_ALIASES,
   isStructuralScreenshotText,
+  screenshotHeaderBounds,
 } from "./layout-detector";
 
 const LAYOUT_VERSION = "futu-orders-dark-v1";
@@ -124,11 +126,17 @@ function futuMarket(
 
 function futuAccountSuffix(
   image: OcrImageResult,
-  headerBoundary: number,
+  headerBoundary: number | undefined,
 ): string | undefined {
+  if (
+    headerBoundary === undefined ||
+    !Number.isFinite(headerBoundary)
+  ) {
+    return undefined;
+  }
   for (const line of image.lines.filter(
     ({ sourceBounds }) =>
-      sourceBounds.y + sourceBounds.height <= headerBoundary,
+      sourceBounds.y + sourceBounds.height < headerBoundary,
   )) {
     const match =
       /(?:FUTU|富途|牛牛).*?[·•]\s*((?:[A-Z]\d{3,})|(?:\*+\d{3,})|(?:\d{4,}))\s*$/i.exec(
@@ -137,44 +145,6 @@ function futuAccountSuffix(
     if (match) return match[1].toUpperCase();
   }
   return undefined;
-}
-
-function headerTop(image: OcrImageResult): number {
-  const headers = new Set([
-    "订单状态",
-    "名称/代码",
-    "名称代码",
-    "数量/价格",
-    "数量价格",
-    "成交时间",
-  ]);
-  return Math.min(
-    Number.POSITIVE_INFINITY,
-    ...image.lines
-      .filter((line) =>
-        headers.has(line.text.replace(/\s+/g, "").trim()),
-      )
-      .map((line) => line.sourceBounds.y),
-  );
-}
-
-function headerBottom(image: OcrImageResult): number {
-  const headers = new Set([
-    "订单状态",
-    "名称/代码",
-    "名称代码",
-    "数量/价格",
-    "数量价格",
-    "成交时间",
-  ]);
-  return Math.max(
-    0,
-    ...image.lines
-      .filter((line) =>
-        headers.has(line.text.replace(/\s+/g, "").trim()),
-      )
-      .map((line) => line.sourceBounds.y + line.sourceBounds.height),
-  );
 }
 
 function timestampValue(lines: readonly OcrTextLine[]): {
@@ -198,13 +168,17 @@ export function parseFutuScreenshot(
   }
 
   const market = futuMarket(image);
+  const headerBounds = screenshotHeaderBounds(
+    image,
+    FUTU_SCREENSHOT_HEADER_ALIASES,
+  );
   const sourceAccountSuffix = futuAccountSuffix(
     image,
-    headerTop(image),
+    headerBounds?.top,
   );
   return anchorTradeRows(image, {
     maximumNormalizedAnchorX: FUTU_COLUMNS.anchorMaximumX,
-    minimumAnchorY: headerBottom(image),
+    minimumAnchorY: headerBounds?.bottom ?? 0,
     isCorroboratingLine: (line) =>
       centerX(line, image) >= FUTU_COLUMNS.instrument[0] &&
       !isStructuralScreenshotText(line.text),

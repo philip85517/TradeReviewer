@@ -6,6 +6,7 @@ import {
   ocrLine,
 } from "./__fixtures__/ocr-lines";
 import { parseFutuScreenshot } from "./futu-screenshot";
+import { detectScreenshotLayout } from "./layout-detector";
 
 describe("Futu dark order-history screenshots", () => {
   it("keeps a market order incomplete instead of inventing a fill price", () => {
@@ -97,5 +98,26 @@ describe("Futu dark order-history screenshots", () => {
     );
 
     expect(draft.sourceAccountSuffix).toBeUndefined();
+  });
+
+  it("bounds suffix extraction with decorated detector header aliases", () => {
+    const screenshot = image("futu-decorated-headers", 1_220, 2_000, [
+      FUTU_SCREENSHOT_OCR.lines[0],
+      ocrLine("FUTU HK", 470, 190, 160, 24),
+      ocrLine("订单状态：", 20, 310, 150, 22),
+      ocrLine("名称/代码（证券）", 245, 310, 210, 22),
+      ocrLine("数量/价格:", 760, 310, 180, 22),
+      ocrLine("成交时间（当地）", 1_020, 310, 190, 22),
+      ...FUTU_SCREENSHOT_OCR.lines.slice(6),
+      ocrLine("FUTU · 9876", 470, 1_700, 180, 24),
+    ]);
+
+    expect(detectScreenshotLayout(screenshot)).toMatchObject({
+      matched: true,
+      broker: "futu",
+    });
+    expect(
+      parseFutuScreenshot(screenshot)[0].sourceAccountSuffix,
+    ).toBeUndefined();
   });
 });

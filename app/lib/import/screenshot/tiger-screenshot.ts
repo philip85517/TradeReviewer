@@ -12,6 +12,8 @@ import {
   anchorTradeRows,
   detectScreenshotLayout,
   isStructuralScreenshotText,
+  screenshotHeaderBounds,
+  TIGER_SCREENSHOT_HEADER_ALIASES,
 } from "./layout-detector";
 
 const LAYOUT_VERSION = "tiger-orders-dark-v1";
@@ -143,32 +145,19 @@ function timestampValue(lines: readonly OcrTextLine[]): {
   };
 }
 
-function headerBottom(image: OcrImageResult): number {
-  const headers = new Set([
-    "方向",
-    "名称/代码",
-    "名称代码",
-    "成交数量",
-    "成交价格",
-    "成交时间",
-  ]);
-  return Math.max(
-    0,
-    ...image.lines
-      .filter((line) =>
-        headers.has(line.text.replace(/\s+/g, "").trim()),
-      )
-      .map((line) => line.sourceBounds.y + line.sourceBounds.height),
-  );
-}
-
 function tigerAccountSuffix(
   image: OcrImageResult,
-  headerBoundary: number,
+  headerBoundary: number | undefined,
 ): string | undefined {
+  if (
+    headerBoundary === undefined ||
+    !Number.isFinite(headerBoundary)
+  ) {
+    return undefined;
+  }
   for (const line of image.lines.filter(
     ({ sourceBounds }) =>
-      sourceBounds.y + sourceBounds.height <= headerBoundary,
+      sourceBounds.y + sourceBounds.height < headerBoundary,
   )) {
     const match =
       /(?:TIGER(?:\s+BROKERS)?|老虎).*?[·•]\s*((?:[A-Z]\d{3,})|(?:\*+\d{3,})|(?:\d{4,}))\s*$/i.exec(
@@ -179,25 +168,6 @@ function tigerAccountSuffix(
   return undefined;
 }
 
-function headerTop(image: OcrImageResult): number {
-  const headers = new Set([
-    "方向",
-    "名称/代码",
-    "名称代码",
-    "成交数量",
-    "成交价格",
-    "成交时间",
-  ]);
-  return Math.min(
-    Number.POSITIVE_INFINITY,
-    ...image.lines
-      .filter((line) =>
-        headers.has(line.text.replace(/\s+/g, "").trim()),
-      )
-      .map((line) => line.sourceBounds.y),
-  );
-}
-
 export function parseTigerScreenshot(
   image: OcrImageResult,
 ): ScreenshotTradeDraft[] {
@@ -206,13 +176,17 @@ export function parseTigerScreenshot(
     return [];
   }
 
+  const headerBounds = screenshotHeaderBounds(
+    image,
+    TIGER_SCREENSHOT_HEADER_ALIASES,
+  );
   const sourceAccountSuffix = tigerAccountSuffix(
     image,
-    headerTop(image),
+    headerBounds?.top,
   );
   return anchorTradeRows(image, {
     maximumNormalizedAnchorX: TIGER_COLUMNS.anchorMaximumX,
-    minimumAnchorY: headerBottom(image),
+    minimumAnchorY: headerBounds?.bottom ?? 0,
     isCorroboratingLine: (line) =>
       centerX(line, image) >= TIGER_COLUMNS.instrument[0] &&
       !isStructuralScreenshotText(line.text),

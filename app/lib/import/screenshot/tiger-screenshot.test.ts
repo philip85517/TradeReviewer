@@ -5,6 +5,7 @@ import {
   image,
   ocrLine,
 } from "./__fixtures__/ocr-lines";
+import { detectScreenshotLayout } from "./layout-detector";
 import { parseTigerScreenshot } from "./tiger-screenshot";
 
 const TIGER_LAYOUT_LINES = TIGER_SCREENSHOT_OCR.lines.slice(0, 7);
@@ -131,6 +132,28 @@ describe("Tiger dark order-history screenshots", () => {
     );
 
     expect(draft.sourceAccountSuffix).toBeUndefined();
+  });
+
+  it("bounds suffix extraction with decorated detector header aliases", () => {
+    const screenshot = image("tiger-decorated-headers", 1_220, 2_000, [
+      TIGER_SCREENSHOT_OCR.lines[0],
+      ocrLine("Tiger Brokers", 430, 190, 220, 24),
+      ocrLine("方向：", 20, 310, 100, 22),
+      ocrLine("名称/代码（证券）", 180, 310, 210, 22),
+      ocrLine("成交数量:", 600, 310, 150, 22),
+      ocrLine("成交价格：", 780, 310, 150, 22),
+      ocrLine("成交时间（当地）", 1_000, 310, 190, 22),
+      ...TIGER_SCREENSHOT_OCR.lines.slice(7),
+      ocrLine("Tiger Brokers · U9876", 430, 1_700, 300, 24),
+    ]);
+
+    expect(detectScreenshotLayout(screenshot)).toMatchObject({
+      matched: true,
+      broker: "tiger",
+    });
+    expect(
+      parseTigerScreenshot(screenshot)[0].sourceAccountSuffix,
+    ).toBeUndefined();
   });
 
   it("does not turn navigation, headers, or footer text into drafts", () => {

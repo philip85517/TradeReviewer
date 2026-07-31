@@ -141,6 +141,43 @@ describe("Tiger dark order-history screenshots", () => {
     });
   });
 
+  it("does not promote a lone alphabetic company name to a ticker", () => {
+    const [draft] = parseTigerScreenshot(
+      image("tiger-name-only", 1_220, 2_000, [
+        ...TIGER_LAYOUT_LINES,
+        ...TIGER_SCREENSHOT_OCR.lines.slice(14, 16),
+        ...TIGER_SCREENSHOT_OCR.lines.slice(17, 21),
+      ]),
+    );
+
+    expect(draft).toMatchObject({
+      sourceName: "APPLE",
+      market: undefined,
+      symbol: undefined,
+      quantity: "5",
+      price: "12.05",
+      sourceTimestampText: "2024/06/05 14:39:25",
+    });
+  });
+
+  it.each(["买入", "卖出", "Buy", "Sell"])(
+    "ignores an exact %s footer control even beside navigation text",
+    (label) => {
+      const drafts = parseTigerScreenshot(
+        image(`tiger-footer-${label}`, 1_220, 2_000, [
+          ...TIGER_SCREENSHOT_OCR.lines,
+          ocrLine(label, 20, 1_850, 80, 24),
+        ]),
+      );
+
+      expect(drafts).toHaveLength(2);
+      expect(drafts.map((draft) => draft.symbol)).toEqual([
+        "NVDA",
+        "AAPL",
+      ]);
+    },
+  );
+
   it("preserves two executions that occur in the same second", () => {
     const drafts = parseTigerScreenshot(TIGER_SCREENSHOT_OCR);
 

@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   FUTU_SCREENSHOT_OCR,
   TIGER_SCREENSHOT_OCR,
+  image,
+  ocrLine,
 } from "./__fixtures__/ocr-lines";
 import { parseFutuScreenshot } from "./futu-screenshot";
 
@@ -52,5 +54,22 @@ describe("Futu dark order-history screenshots", () => {
 
   it("fails closed on a different broker layout", () => {
     expect(parseFutuScreenshot(TIGER_SCREENSHOT_OCR)).toEqual([]);
+  });
+
+  it("does not read the SH suffix inside CASH as a Shanghai market", () => {
+    const [draft] = parseFutuScreenshot(
+      image("futu-cash", 1_220, 2_000, [
+        FUTU_SCREENSHOT_OCR.lines[0],
+        ocrLine("FUTU CASH · 4321", 470, 190, 240, 24),
+        ...FUTU_SCREENSHOT_OCR.lines.slice(2),
+      ]),
+    );
+
+    expect(draft).toMatchObject({
+      market: undefined,
+      symbol: undefined,
+      sourceName: "思摩尔国际",
+      quantity: "4000",
+    });
   });
 });

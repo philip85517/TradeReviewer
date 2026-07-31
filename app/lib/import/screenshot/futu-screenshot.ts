@@ -11,6 +11,7 @@ import type {
 import {
   anchorTradeRows,
   detectScreenshotLayout,
+  isStructuralScreenshotText,
 } from "./layout-detector";
 
 const LAYOUT_VERSION = "futu-orders-dark-v1";
@@ -98,7 +99,7 @@ function futuMarket(
   image: OcrImageResult,
 ): ScreenshotTradeDraft["market"] {
   const marker = image.lines
-    .map((line) => line.text.replace(/\s+/g, "").toUpperCase())
+    .map((line) => line.text.trim().toUpperCase())
     .find(
       (text) =>
         text.includes("FUTU") ||
@@ -106,11 +107,38 @@ function futuMarket(
         text.includes("牛牛"),
     );
   if (!marker) return undefined;
-  if (marker.includes("HK") || marker.includes("港")) return "HK";
-  if (marker.includes("US") || marker.includes("美")) return "US";
-  if (marker.includes("SH") || marker.includes("沪")) return "CN-SH";
-  if (marker.includes("SZ") || marker.includes("深")) return "CN-SZ";
+  if (/(?:^|[^A-Z])HK(?:$|[^A-Z])/.test(marker) || /港股|香港/.test(marker)) {
+    return "HK";
+  }
+  if (/(?:^|[^A-Z])US(?:$|[^A-Z])/.test(marker) || /美股|美国/.test(marker)) {
+    return "US";
+  }
+  if (/(?:^|[^A-Z])SH(?:$|[^A-Z])/.test(marker) || /沪股|上海/.test(marker)) {
+    return "CN-SH";
+  }
+  if (/(?:^|[^A-Z])SZ(?:$|[^A-Z])/.test(marker) || /深股|深圳/.test(marker)) {
+    return "CN-SZ";
+  }
   return undefined;
+}
+
+function headerBottom(image: OcrImageResult): number {
+  const headers = new Set([
+    "订单状态",
+    "名称/代码",
+    "名称代码",
+    "数量/价格",
+    "数量价格",
+    "成交时间",
+  ]);
+  return Math.max(
+    0,
+    ...image.lines
+      .filter((line) =>
+        headers.has(line.text.replace(/\s+/g, "").trim()),
+      )
+      .map((line) => line.sourceBounds.y + line.sourceBounds.height),
+  );
 }
 
 function timestampValue(lines: readonly OcrTextLine[]): {
@@ -134,7 +162,13 @@ export function parseFutuScreenshot(
   }
 
   const market = futuMarket(image);
-  return anchorTradeRows(image, FUTU_COLUMNS.anchorMaximumX).map((row) => {
+  return anchorTradeRows(image, {
+    maximumNormalizedAnchorX: FUTU_COLUMNS.anchorMaximumX,
+    minimumAnchorY: headerBottom(image),
+    isCorroboratingLine: (line) =>
+      centerX(line, image) >= FUTU_COLUMNS.instrument[0] &&
+      !isStructuralScreenshotText(line.text),
+  }).map((row) => {
     const instrumentLines = linesInColumn(
       image,
       row.lines,

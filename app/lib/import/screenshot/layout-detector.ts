@@ -25,6 +25,12 @@ export type AnchoredTradeRow = {
   lines: OcrTextLine[];
 };
 
+export type AnchorTradeRowsOptions = {
+  maximumNormalizedAnchorX: number;
+  minimumAnchorY: number;
+  isCorroboratingLine: (line: OcrTextLine) => boolean;
+};
+
 const UNSUPPORTED_LAYOUT: ScreenshotLayoutDetection = {
   matched: false,
   code: "unsupported-screenshot-layout",
@@ -60,52 +66,62 @@ export function sideFromTradeLabel(
 
 export function anchorTradeRows(
   image: OcrImageResult,
-  maximumNormalizedAnchorX: number,
+  options: AnchorTradeRowsOptions,
 ): AnchoredTradeRow[] {
   const anchors = image.lines
     .flatMap((line) => {
       const side = sideFromTradeLabel(line.text);
       return side &&
-        lineCenterX(line) / image.width <= maximumNormalizedAnchorX
+        lineCenterX(line) / image.width <=
+          options.maximumNormalizedAnchorX &&
+        lineCenterY(line) > options.minimumAnchorY
         ? [{ line, side }]
         : [];
     })
     .sort((left, right) => lineCenterY(left.line) - lineCenterY(right.line));
 
-  return anchors.map(({ line: anchor, side }, index) => {
-    const center = lineCenterY(anchor);
-    const previousCenter =
-      index > 0 ? lineCenterY(anchors[index - 1].line) : undefined;
-    const nextCenter =
-      index + 1 < anchors.length
-        ? lineCenterY(anchors[index + 1].line)
-        : undefined;
-    const fallbackHalfBand = image.height * 0.04;
-    const top =
-      previousCenter === undefined
-        ? center -
-          (nextCenter === undefined
-            ? fallbackHalfBand
-            : (nextCenter - center) / 2)
-        : (previousCenter + center) / 2;
-    const bottom =
-      nextCenter === undefined
-        ? center +
-          (previousCenter === undefined
-            ? fallbackHalfBand
-            : (center - previousCenter) / 2)
-        : (center + nextCenter) / 2;
+  return anchors
+    .map(({ line: anchor, side }, index) => {
+      const center = lineCenterY(anchor);
+      const previousCenter =
+        index > 0 ? lineCenterY(anchors[index - 1].line) : undefined;
+      const nextCenter =
+        index + 1 < anchors.length
+          ? lineCenterY(anchors[index + 1].line)
+          : undefined;
+      const fallbackHalfBand = image.height * 0.04;
+      const top =
+        previousCenter === undefined
+          ? center -
+            (nextCenter === undefined
+              ? fallbackHalfBand
+              : (nextCenter - center) / 2)
+          : (previousCenter + center) / 2;
+      const bottom =
+        nextCenter === undefined
+          ? center +
+            (previousCenter === undefined
+              ? fallbackHalfBand
+              : (center - previousCenter) / 2)
+          : (center + nextCenter) / 2;
 
-    return {
-      sourceRowIndex: index,
-      side,
-      anchor,
-      lines: image.lines.filter((candidate) => {
-        const candidateCenter = lineCenterY(candidate);
-        return candidateCenter >= top && candidateCenter < bottom;
-      }),
-    };
-  });
+      return {
+        sourceRowIndex: index,
+        side,
+        anchor,
+        lines: image.lines.filter((candidate) => {
+          const candidateCenter = lineCenterY(candidate);
+          return candidateCenter >= top && candidateCenter < bottom;
+        }),
+      };
+    })
+    .filter((row) =>
+      row.lines.some(
+        (line) =>
+          line !== row.anchor && options.isCorroboratingLine(line),
+      ),
+    )
+    .map((row, sourceRowIndex) => ({ ...row, sourceRowIndex }));
 }
 
 function hasText(
@@ -136,20 +152,33 @@ function futuScore(image: OcrImageResult): number {
       text.includes("富途") ||
       text.includes("牛牛"),
   );
-  const headers = new Set(
-    [
-      ["订单状态"],
-      ["名称/代码", "名称代码"],
-      ["数量/价格", "数量价格"],
-      ["成交时间"],
-    ].flatMap((aliases, index) =>
-      headerLines(image, aliases).length > 0 ? [index] : [],
+  const expectedHeaders = [
+    ["订单状态"],
+    ["名称/代码", "名称代码"],
+    ["数量/价格", "数量价格"],
+    ["成交时间"],
+  ];
+  const foundHeaders = expectedHeaders.flatMap((aliases, index) =>
+    headerLines(image, aliases).length > 0 ? [index] : [],
+  );
+  const headerBottom = Math.max(
+    0,
+    ...expectedHeaders.flatMap((aliases) =>
+      headerLines(image, aliases).map(
+        (line) => line.sourceBounds.y + line.sourceBounds.height,
+      ),
     ),
   );
-  const completedRow = anchorTradeRows(image, 0.15).some((row) =>
+  const completedRow = anchorTradeRows(image, {
+    maximumNormalizedAnchorX: 0.15,
+    minimumAnchorY: headerBottom,
+    isCorroboratingLine: (line) =>
+      lineCenterX(line) / image.width > 0.15 &&
+      !isStructuralScreenshotText(line.text),
+  }).some((row) =>
     row.lines.some((line) => compact(line.text).includes("全部成交")),
   );
-  return [title, account, headers.size >= 3, completedRow].filter(Boolean)
+  return [title, account, foundHeaders.length >= 3, completedRow].filter(Boolean)
     .length / 4;
 }
 
@@ -183,9 +212,46 @@ function tigerScore(image: OcrImageResult): number {
         index === 0 ||
         lineCenterX(line!) > lineCenterX(expectedHeaderLines[index - 1]!),
     );
-  const tradeRow = anchorTradeRows(image, 0.15).length > 0;
+  const headerBottom = Math.max(
+    0,
+    ...expectedHeaderLines.flatMap((line) =>
+      line
+        ? [line.sourceBounds.y + line.sourceBounds.height]
+        : [],
+    ),
+  );
+  const tradeRow =
+    anchorTradeRows(image, {
+      maximumNormalizedAnchorX: 0.15,
+      minimumAnchorY: headerBottom,
+      isCorroboratingLine: (line) =>
+        lineCenterX(line) / image.width > 0.12 &&
+        !isStructuralScreenshotText(line.text),
+    }).length > 0;
   return [title, account, relativeHeaders, tradeRow].filter(Boolean).length /
     4;
+}
+
+export function isStructuralScreenshotText(text: string): boolean {
+  const value = compact(text);
+  return (
+    value.startsWith("首页订单行情") ||
+    value.startsWith("homeordersmarkets") ||
+    value === "免责声明" ||
+    [
+      "订单记录",
+      "订单历史",
+      "订单状态",
+      "名称/代码",
+      "名称代码",
+      "数量/价格",
+      "数量价格",
+      "成交时间",
+      "方向",
+      "成交数量",
+      "成交价格",
+    ].includes(value)
+  );
 }
 
 export function detectScreenshotLayout(

@@ -11,6 +11,7 @@ import type {
 import {
   anchorTradeRows,
   detectScreenshotLayout,
+  isStructuralScreenshotText,
 } from "./layout-detector";
 
 const LAYOUT_VERSION = "tiger-orders-dark-v1";
@@ -142,6 +143,25 @@ function timestampValue(lines: readonly OcrTextLine[]): {
   };
 }
 
+function headerBottom(image: OcrImageResult): number {
+  const headers = new Set([
+    "方向",
+    "名称/代码",
+    "名称代码",
+    "成交数量",
+    "成交价格",
+    "成交时间",
+  ]);
+  return Math.max(
+    0,
+    ...image.lines
+      .filter((line) =>
+        headers.has(line.text.replace(/\s+/g, "").trim()),
+      )
+      .map((line) => line.sourceBounds.y + line.sourceBounds.height),
+  );
+}
+
 export function parseTigerScreenshot(
   image: OcrImageResult,
 ): ScreenshotTradeDraft[] {
@@ -150,21 +170,28 @@ export function parseTigerScreenshot(
     return [];
   }
 
-  return anchorTradeRows(image, TIGER_COLUMNS.anchorMaximumX).map((row) => {
+  return anchorTradeRows(image, {
+    maximumNormalizedAnchorX: TIGER_COLUMNS.anchorMaximumX,
+    minimumAnchorY: headerBottom(image),
+    isCorroboratingLine: (line) =>
+      centerX(line, image) >= TIGER_COLUMNS.instrument[0] &&
+      !isStructuralScreenshotText(line.text),
+  }).map((row) => {
     const instrumentLines = linesInColumn(
       image,
       row.lines,
       TIGER_COLUMNS.instrument,
     );
-    const symbolLine = instrumentLines
-      .filter((line) => {
+    const symbolCandidates = instrumentLines.filter((line) => {
         const value = line.text.trim();
         return (
           /^\d{1,6}$/.test(value) ||
           /^[A-Za-z][A-Za-z0-9.-]{0,9}$/.test(value)
         );
-      })
-      .at(-1);
+      });
+    const symbolLine =
+      symbolCandidates.find((line) => /^\d{1,6}$/.test(line.text.trim())) ??
+      (instrumentLines.length > 1 ? symbolCandidates.at(-1) : undefined);
     const nameLine = instrumentLines.find((line) => line !== symbolLine);
     const identity = symbolMarket(symbolLine?.text);
     const quantityLine = linesInColumn(

@@ -1,5 +1,9 @@
 import type { TradeExecution } from "../trades/types";
-import { canonicalInstrumentId } from "../instruments/display-name";
+import {
+  compareExecutionEvidence,
+  compareExecutions,
+  reconcileExecutions,
+} from "../import/execution-reconciliation";
 
 export const IMPORTED_EXECUTIONS_STORAGE_KEY =
   "trade-reviewer:executions:v1";
@@ -7,98 +11,50 @@ export const IMPORTED_EXECUTIONS_STORAGE_KEY =
 function isExecution(value: unknown): value is TradeExecution {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<TradeExecution>;
+  const source = candidate.source;
+  const instrument = candidate.instrument;
   return (
     typeof candidate.id === "string" &&
     typeof candidate.accountId === "string" &&
+    typeof candidate.accountLabel === "string" &&
     typeof candidate.executedAt === "string" &&
     typeof candidate.quantity === "string" &&
     typeof candidate.price === "string" &&
-    typeof candidate.instrument?.id === "string" &&
+    typeof candidate.fee === "string" &&
+    typeof instrument?.id === "string" &&
+    typeof instrument.symbol === "string" &&
+    typeof instrument.name === "string" &&
+    typeof instrument.market === "string" &&
+    typeof instrument.currency === "string" &&
+    typeof source?.platform === "string" &&
+    typeof source.row === "number" &&
+    (source.sourceOrder === undefined ||
+      typeof source.sourceOrder === "number") &&
+    (source.fileName === undefined || typeof source.fileName === "string") &&
+    (source.fileFingerprint === undefined ||
+      typeof source.fileFingerprint === "string") &&
     (candidate.side === "buy" || candidate.side === "sell")
   );
 }
 
 export function mergeExecutions(
-  current: TradeExecution[],
-  incoming: TradeExecution[],
+  current: readonly TradeExecution[],
+  incoming: readonly TradeExecution[],
 ) {
   const byId = new Map<string, TradeExecution>();
   for (const execution of [...current, ...incoming]) {
     const existing = byId.get(execution.id);
-    byId.set(
-      execution.id,
-      existing ? withBestInstrumentName(existing, [execution]) : execution,
-    );
-  }
-
-  const bySignature = new Map<string, TradeExecution[]>();
-  for (const execution of byId.values()) {
-    const signature = [
-      execution.accountId,
-      canonicalInstrumentId(
-        execution.instrument.symbol,
-        execution.instrument.market,
-      ),
-      execution.executedAt,
-      execution.side,
-      execution.quantity,
-      execution.price,
-      execution.fee,
-    ].join("|");
-    bySignature.set(signature, [
-      ...(bySignature.get(signature) ?? []),
-      execution,
-    ]);
-  }
-
-  const merged = [...bySignature.values()].flatMap((duplicates) => {
-    const byFile = new Map<string, TradeExecution[]>();
-    for (const execution of duplicates) {
-      const fingerprint =
-        execution.source.fileFingerprint ??
-        `legacy:${execution.source.fileName ?? execution.source.platform}`;
-      byFile.set(fingerprint, [
-        ...(byFile.get(fingerprint) ?? []),
-        execution,
-      ]);
+    if (
+      !existing ||
+      compareExecutionEvidence(execution, existing) > 0
+    ) {
+      byId.set(execution.id, execution);
     }
-    const selected = [...byFile.entries()].sort(
-      ([fingerprintA, recordsA], [fingerprintB, recordsB]) =>
-        recordsB.length - recordsA.length ||
-        fingerprintA.localeCompare(fingerprintB),
-    )[0]?.[1] ?? [];
-    return selected.map((execution) =>
-      withBestInstrumentName(execution, duplicates),
-    );
-  });
+  }
 
-  return merged.sort(
-    (a, b) =>
-      a.executedAt.localeCompare(b.executedAt) ||
-      (a.source.sourceOrder ?? a.source.row) -
-        (b.source.sourceOrder ?? b.source.row) ||
-      a.id.localeCompare(b.id),
+  return reconcileExecutions([], [...byId.values()]).acceptedIncoming.sort(
+    compareExecutions,
   );
-}
-
-function withBestInstrumentName(
-  execution: TradeExecution,
-  candidates: TradeExecution[],
-): TradeExecution {
-  const resolvedName = [execution, ...candidates]
-    .map((candidate) => candidate.instrument.name.trim())
-    .find(
-      (name) =>
-        name &&
-        name !== "名称待行情源补充" &&
-        name !== execution.instrument.symbol,
-    );
-  return resolvedName
-    ? {
-        ...execution,
-        instrument: { ...execution.instrument, name: resolvedName },
-      }
-    : execution;
 }
 
 export function saveImportedExecutions(executions: TradeExecution[]) {

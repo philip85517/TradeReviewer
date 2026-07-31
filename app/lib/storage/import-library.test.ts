@@ -145,6 +145,182 @@ describe("import execution library", () => {
     );
   });
 
+  it("ignores account and fee differences in the economic signature", () => {
+    const buy = execution(
+      "statement-a:2",
+      "buy",
+      "2025-03-12T16:38:57.000Z",
+      "20",
+    );
+    const statement = fromFile(buy, "statement", "statement:2");
+    statement.accountId = "account-0855";
+    statement.accountLabel = "Futu · 0855";
+    statement.fee = "2.05";
+    statement.source.inputKind = "statement";
+    const screenshot = fromFile(buy, "image", "image:2");
+    screenshot.accountId = "account-manual";
+    screenshot.accountLabel = "Manual account";
+    screenshot.fee = "0";
+    screenshot.source.inputKind = "screenshot";
+
+    expect(mergeExecutions([statement], [screenshot])).toEqual([statement]);
+  });
+
+  it("preserves richer statement metadata for an automatic duplicate", () => {
+    const buy = execution(
+      "base",
+      "buy",
+      "2025-03-12T16:38:57.000Z",
+      "20",
+    );
+    const screenshot = fromFile(buy, "image", "image:2");
+    screenshot.accountId = "unknown";
+    screenshot.accountLabel = "Unknown";
+    screenshot.fee = "0";
+    screenshot.instrument.name = "名称待行情源补充";
+    screenshot.source.inputKind = "screenshot";
+    const statement = fromFile(buy, "statement", "statement:2");
+    statement.accountId = "account-0855";
+    statement.accountLabel = "Futu · 0855";
+    statement.fee = "2.05";
+    statement.instrument.name = "阿里巴巴";
+    statement.source.inputKind = "statement";
+
+    expect(mergeExecutions([screenshot], [statement])).toEqual([statement]);
+    expect(mergeExecutions([statement], [screenshot])).toEqual([statement]);
+  });
+
+  it("keeps different-core records at the same candidate instant", () => {
+    const buy = fromFile(
+      execution("buy", "buy", "2025-03-12T16:38:57.000Z", "20"),
+      "statement",
+      "statement:2",
+    );
+    const sell = fromFile(
+      execution("sell", "sell", "2025-03-12T16:38:57.000Z", "20"),
+      "image",
+      "image:2",
+    );
+
+    expect(mergeExecutions([buy], [sell]).map(({ id }) => id)).toEqual([
+      "image:2",
+      "statement:2",
+    ]);
+  });
+
+  it("preserves multiplicity for legacy rows without source evidence", () => {
+    const buy = execution(
+      "legacy:2",
+      "buy",
+      "2025-03-12T16:38:57.000Z",
+      "20",
+    );
+    const second = { ...buy, id: "legacy:3", source: { ...buy.source, row: 3 } };
+
+    expect(mergeExecutions([], [buy, second])).toEqual([buy, second]);
+  });
+
+  it("does not collapse legacy rows when a verified screenshot overlaps", () => {
+    const legacy = execution(
+      "legacy:2",
+      "buy",
+      "2025-03-12T16:38:57.000Z",
+      "20",
+    );
+    const screenshot = fromFile(legacy, "image-source", "image:2");
+    screenshot.source.inputKind = "screenshot";
+    const secondLegacy = {
+      ...legacy,
+      id: "legacy:3",
+      source: { ...legacy.source, row: 3 },
+    };
+
+    expect(mergeExecutions([legacy], [screenshot])).toHaveLength(2);
+    expect(mergeExecutions([legacy, secondLegacy], [screenshot])).toHaveLength(
+      3,
+    );
+  });
+
+  it("still merges a repeated legacy execution with the same stable ID", () => {
+    const legacy = execution(
+      "legacy:2",
+      "buy",
+      "2025-03-12T16:38:57.000Z",
+      "20",
+    );
+    const repeated = {
+      ...legacy,
+      source: { ...legacy.source },
+      instrument: { ...legacy.instrument },
+    };
+
+    expect(mergeExecutions([legacy], [repeated])).toEqual([legacy]);
+  });
+
+  it("uses platform and filename as a source identity only when both exist", () => {
+    const buy = execution(
+      "base",
+      "buy",
+      "2025-03-12T16:38:57.000Z",
+      "20",
+    );
+    const first = {
+      ...buy,
+      id: "same-file:2",
+      source: { ...buy.source, fileName: "fills.xlsx", row: 2 },
+    };
+    const second = {
+      ...buy,
+      id: "same-file:3",
+      source: { ...buy.source, fileName: "fills.xlsx", row: 3 },
+    };
+    const overlapping = {
+      ...buy,
+      id: "other-file:2",
+      source: { ...buy.source, fileName: "overlap.xlsx", row: 2 },
+    };
+
+    expect(mergeExecutions([], [first, second])).toEqual([first, second]);
+    expect(mergeExecutions([first], [overlapping])).toHaveLength(1);
+  });
+
+  it("loads all different-core conflict records from storage", () => {
+    const buy = fromFile(
+      execution("buy", "buy", "2025-03-12T16:38:57.000Z", "20"),
+      "statement",
+      "statement:2",
+    );
+    const changedQuantity = fromFile(
+      execution("changed", "buy", "2025-03-12T16:38:57.000Z", "21"),
+      "image",
+      "image:2",
+    );
+    window.localStorage.setItem(
+      "trade-reviewer:executions:v1",
+      JSON.stringify({
+        version: 1,
+        executions: [
+          buy,
+          {
+            id: "malformed",
+            accountId: "acct",
+            executedAt: "2025-03-12T16:38:57.000Z",
+            quantity: "20",
+            price: "137.65",
+            instrument: { id: "US:BABA" },
+            side: "buy",
+          },
+          changedQuantity,
+        ],
+      }),
+    );
+
+    expect(loadImportedExecutions().map(({ id }) => id)).toEqual([
+      "image:2",
+      "statement:2",
+    ]);
+  });
+
   it("preserves date-only source order for same-day executions", () => {
     const firstSourceRow = execution(
       "cms:z",

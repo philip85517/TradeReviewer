@@ -188,9 +188,20 @@ export function parseFutuScreenshot(
       row.lines,
       FUTU_COLUMNS.instrument,
     );
-    const symbolLine = instrumentLines.find((line) =>
-      /^\d{1,6}$/.test(line.text.trim()),
-    );
+    const symbolCandidates = instrumentLines.filter((line) => {
+      const value = line.text.trim();
+      return (
+        /^\d{1,6}$/.test(value) ||
+        (market === "US" && /^[A-Za-z][A-Za-z0-9.-]{0,9}$/.test(value))
+      );
+    });
+    const symbolLine =
+      symbolCandidates.find((line) =>
+        /^\d{1,6}$/.test(line.text.trim()),
+      ) ??
+      (market === "US" && instrumentLines.length > 1
+        ? symbolCandidates.at(-1)
+        : undefined);
     const nameLine = instrumentLines.find((line) => line !== symbolLine);
     const rawSymbol = symbolLine?.text.trim();
     const symbol =

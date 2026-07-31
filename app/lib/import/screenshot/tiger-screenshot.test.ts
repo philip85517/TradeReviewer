@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   FUTU_SCREENSHOT_OCR,
+  TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR,
   TIGER_SCREENSHOT_OCR,
+  TIGER_UNBRANDED_SCREENSHOT_OCR,
   image,
   ocrLine,
 } from "./__fixtures__/ocr-lines";
@@ -11,6 +13,55 @@ import { parseTigerScreenshot } from "./tiger-screenshot";
 const TIGER_LAYOUT_LINES = TIGER_SCREENSHOT_OCR.lines.slice(0, 7);
 
 describe("Tiger dark order-history screenshots", () => {
+  it("parses a structurally complete instrument-first Tiger row", () => {
+    expect(
+      detectScreenshotLayout(TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR),
+    ).toMatchObject({
+      matched: true,
+      broker: "tiger",
+      layoutVersion: "tiger-instrument-first-dark-v1",
+    });
+    expect(
+      parseTigerScreenshot(TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR),
+    ).toEqual([
+      expect.objectContaining({
+        broker: "tiger",
+        layoutVersion: "tiger-instrument-first-dark-v1",
+        sourceAccountSuffix: undefined,
+        sourceName: "Example Systems",
+        market: "US",
+        symbol: "DEMO",
+        side: "sell",
+        quantity: "3",
+        price: "42.5",
+        sourceTimestampText: "2024/01/02 09:30:00",
+      }),
+    ]);
+  });
+
+  it("parses a structurally complete Tiger row without broker branding", () => {
+    expect(
+      detectScreenshotLayout(TIGER_UNBRANDED_SCREENSHOT_OCR),
+    ).toMatchObject({
+      matched: true,
+      broker: "tiger",
+      layoutVersion: "tiger-orders-dark-v1",
+    });
+    expect(parseTigerScreenshot(TIGER_UNBRANDED_SCREENSHOT_OCR)).toEqual([
+      expect.objectContaining({
+        broker: "tiger",
+        sourceAccountSuffix: undefined,
+        sourceName: "Example Labs",
+        market: "US",
+        symbol: "DEMO",
+        side: "buy",
+        quantity: "3",
+        price: "42.5",
+        sourceTimestampText: "2024/01/02 09:30:00",
+      }),
+    ]);
+  });
+
   it("maps an anchored row to normalized fields, union bounds, and field evidence", () => {
     expect(parseTigerScreenshot(TIGER_SCREENSHOT_OCR)[0]).toEqual({
       id: "tiger-1:tiger:0",

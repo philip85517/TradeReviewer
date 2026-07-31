@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   FUTU_SCREENSHOT_OCR,
+  FUTU_US_SCREENSHOT_OCR,
   TIGER_SCREENSHOT_OCR,
   image,
   ocrLine,
@@ -9,6 +10,35 @@ import { parseFutuScreenshot } from "./futu-screenshot";
 import { detectScreenshotLayout } from "./layout-detector";
 
 describe("Futu dark order-history screenshots", () => {
+  it("parses an alphabetic ticker from a complete Futu US row", () => {
+    expect(parseFutuScreenshot(FUTU_US_SCREENSHOT_OCR)[0]).toMatchObject({
+      broker: "futu",
+      market: "US",
+      symbol: "DEMO",
+      sourceName: "Example Devices",
+      side: "buy",
+      quantity: "3",
+      price: "42.5",
+      sourceTimestampText: "2024/01/02 09:30:00",
+    });
+  });
+
+  it("does not promote a lone alphabetic company name to a US ticker", () => {
+    const [draft] = parseFutuScreenshot(
+      image("futu-us-name-only", 1_220, 2_000, [
+        ...FUTU_US_SCREENSHOT_OCR.lines.slice(0, 8),
+        ocrLine("EXAMPLE", 245, 390, 150, 24),
+        ...FUTU_US_SCREENSHOT_OCR.lines.slice(10),
+      ]),
+    );
+
+    expect(draft).toMatchObject({
+      market: "US",
+      symbol: undefined,
+      sourceName: "EXAMPLE",
+    });
+  });
+
   it("keeps a market order incomplete instead of inventing a fill price", () => {
     expect(parseFutuScreenshot(FUTU_SCREENSHOT_OCR)[0]).toMatchObject({
       broker: "futu",

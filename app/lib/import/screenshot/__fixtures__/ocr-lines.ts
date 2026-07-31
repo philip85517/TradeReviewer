@@ -69,6 +69,28 @@ export const FUTU_SCREENSHOT_OCR: OcrImageResult = image(
   ],
 );
 
+export const FUTU_US_SCREENSHOT_OCR: OcrImageResult = image(
+  "futu-us",
+  1_220,
+  2_000,
+  [
+    ocrLine("订单记录", 42, 110, 180, 30),
+    ocrLine("FUTU US · 4321", 470, 190, 210, 24),
+    ocrLine("订单状态", 20, 310, 150, 22),
+    ocrLine("名称/代码", 245, 310, 180, 22),
+    ocrLine("数量/价格", 760, 310, 180, 22),
+    ocrLine("成交时间", 1_020, 310, 170, 22),
+    ocrLine("买入", 20, 390, 80, 24),
+    ocrLine("全部成交", 20, 425, 120, 20),
+    ocrLine("Example Devices", 245, 390, 190, 24),
+    ocrLine("DEMO", 245, 425, 100, 20),
+    ocrLine("3", 800, 390, 80, 24),
+    ocrLine("42.50", 800, 425, 100, 20),
+    ocrLine("2024/01/02", 1_025, 390, 150, 22),
+    ocrLine("09:30:00", 1_025, 425, 130, 22),
+  ],
+);
+
 export const TIGER_SCREENSHOT_OCR: OcrImageResult = image(
   "tiger-1",
   1_220,
@@ -96,5 +118,47 @@ export const TIGER_SCREENSHOT_OCR: OcrImageResult = image(
     ocrLine("2024/06/05", 1_010, 530, 150, 22),
     ocrLine("14:39:25", 1_010, 565, 130, 22),
     ocrLine("首页 订单 行情", 42, 1_900, 300, 22),
+  ],
+);
+
+export const TIGER_UNBRANDED_SCREENSHOT_OCR: OcrImageResult = image(
+  "tiger-unbranded",
+  1_220,
+  2_000,
+  [
+    ocrLine("订单历史", 42, 110, 180, 30),
+    ocrLine("方向", 20, 310, 100, 22),
+    ocrLine("名称/代码", 180, 310, 180, 22),
+    ocrLine("成交数量", 600, 310, 150, 22),
+    ocrLine("成交价格", 780, 310, 150, 22),
+    ocrLine("成交时间", 1_000, 310, 170, 22),
+    ocrLine("买入", 20, 390, 80, 24),
+    ocrLine("Example Labs", 180, 390, 180, 24),
+    ocrLine("DEMO", 180, 425, 100, 20),
+    ocrLine("3", 620, 390, 80, 24),
+    ocrLine("42.50", 800, 390, 100, 24),
+    ocrLine("2024/01/02", 1_010, 390, 150, 22),
+    ocrLine("09:30:00", 1_010, 425, 130, 22),
+  ],
+);
+
+export const TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR: OcrImageResult = image(
+  "tiger-instrument-first",
+  1_220,
+  2_000,
+  [
+    ocrLine("交易历史", 42, 110, 180, 30),
+    ocrLine("名称/代码", 20, 310, 180, 22),
+    ocrLine("方向", 575, 310, 100, 22),
+    ocrLine("成交数量", 780, 300, 150, 22),
+    ocrLine("成交价格", 780, 335, 150, 22),
+    ocrLine("成交时间", 1_000, 310, 170, 22),
+    ocrLine("Example Systems", 20, 450, 220, 24),
+    ocrLine("DEMO", 20, 485, 100, 20),
+    ocrLine("卖出", 575, 450, 80, 24),
+    ocrLine("3", 800, 450, 80, 24),
+    ocrLine("42.50", 800, 485, 100, 20),
+    ocrLine("2024/01/02", 1_010, 450, 150, 22),
+    ocrLine("09:30:00", 1_010, 485, 130, 22),
   ],
 );

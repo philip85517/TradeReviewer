@@ -9,7 +9,8 @@ export type ScreenshotLayoutDetection =
       broker: "futu" | "tiger";
       layoutVersion:
         | "futu-orders-dark-v1"
-        | "tiger-orders-dark-v1";
+        | "tiger-orders-dark-v1"
+        | "tiger-instrument-first-dark-v1";
       confidence: number;
     }
   | {
@@ -26,6 +27,7 @@ export type AnchoredTradeRow = {
 };
 
 export type AnchorTradeRowsOptions = {
+  minimumNormalizedAnchorX?: number;
   maximumNormalizedAnchorX: number;
   minimumAnchorY: number;
   isCorroboratingLine: (line: OcrTextLine) => boolean;
@@ -61,6 +63,14 @@ export const TIGER_SCREENSHOT_HEADER_ALIASES = [
   ["成交时间"],
 ] as const;
 
+export const TIGER_INSTRUMENT_FIRST_HEADER_ALIASES = [
+  ["名称/代码", "名称代码"],
+  ["方向"],
+  ["成交数量"],
+  ["成交价格"],
+  ["成交时间"],
+] as const;
+
 function compact(text: string): string {
   return text.replace(/\s+/g, "").trim().toLowerCase();
 }
@@ -88,6 +98,8 @@ export function anchorTradeRows(
     .flatMap((line) => {
       const side = sideFromTradeLabel(line.text);
       return side &&
+        lineCenterX(line) / image.width >=
+          (options.minimumNormalizedAnchorX ?? 0) &&
         lineCenterX(line) / image.width <=
           options.maximumNormalizedAnchorX &&
         lineCenterY(line) > options.minimumAnchorY
@@ -176,12 +188,19 @@ export type ScreenshotHeaderSelection = {
 export function selectScreenshotHeaders(
   image: OcrImageResult,
   expectedHeaders: ReadonlyArray<readonly string[]>,
+  anchorRange: {
+    minimumNormalizedX?: number;
+    maximumNormalizedX: number;
+  } = { maximumNormalizedX: 0.15 },
 ): ScreenshotHeaderSelection {
   const rowAnchorTops = image.lines
     .filter(
       (line) =>
         sideFromTradeLabel(line.text) !== undefined &&
-        lineCenterX(line) / image.width <= 0.15,
+        lineCenterX(line) / image.width >=
+          (anchorRange.minimumNormalizedX ?? 0) &&
+        lineCenterX(line) / image.width <=
+          anchorRange.maximumNormalizedX,
     )
     .map((line) => line.sourceBounds.y);
   if (rowAnchorTops.length === 0) {
@@ -245,7 +264,7 @@ function futuScore(image: OcrImageResult): number {
     .length / 4;
 }
 
-function tigerScore(image: OcrImageResult): number {
+function tigerSideFirstScore(image: OcrImageResult): number {
   const title = hasText(
     image,
     (text) =>
@@ -282,8 +301,62 @@ function tigerScore(image: OcrImageResult): number {
         lineCenterX(line) / image.width > 0.12 &&
         !isStructuralScreenshotText(line.text),
     }).length > 0;
-  return [title, account, relativeHeaders, tradeRow].filter(Boolean).length /
-    4;
+  return (
+    (title ? 0.3 : 0) +
+    (account ? 0.1 : 0) +
+    (relativeHeaders ? 0.3 : 0) +
+    (tradeRow ? 0.3 : 0)
+  );
+}
+
+function tigerInstrumentFirstScore(image: OcrImageResult): number {
+  const title = hasText(
+    image,
+    (text) =>
+      text.includes("订单历史") ||
+      text.includes("交易历史") ||
+      text.includes("成交记录") ||
+      text.includes("orderhistory") ||
+      text.includes("transactionhistory"),
+  );
+  const account = hasText(
+    image,
+    (text) => text.includes("tiger") || text.includes("老虎"),
+  );
+  const headers = selectScreenshotHeaders(
+    image,
+    TIGER_INSTRUMENT_FIRST_HEADER_ALIASES,
+    { minimumNormalizedX: 0.47, maximumNormalizedX: 0.62 },
+  );
+  const [instrument, side, quantity, price, timestamp] = headers.lines;
+  const instrumentFirstHeaders =
+    instrument !== undefined &&
+    side !== undefined &&
+    quantity !== undefined &&
+    price !== undefined &&
+    timestamp !== undefined &&
+    lineCenterX(instrument) < lineCenterX(side) &&
+    lineCenterX(side) < lineCenterX(quantity) &&
+    Math.abs(lineCenterX(quantity) - lineCenterX(price)) <=
+      image.width * 0.08 &&
+    Math.max(lineCenterX(quantity), lineCenterX(price)) <
+      lineCenterX(timestamp);
+  const headerBottom = headers.bounds?.bottom ?? 0;
+  const tradeRow =
+    anchorTradeRows(image, {
+      minimumNormalizedAnchorX: 0.47,
+      maximumNormalizedAnchorX: 0.62,
+      minimumAnchorY: headerBottom,
+      isCorroboratingLine: (line) =>
+        lineCenterX(line) / image.width < 0.47 &&
+        !isStructuralScreenshotText(line.text),
+    }).length > 0;
+  return (
+    (title ? 0.3 : 0) +
+    (account ? 0.1 : 0) +
+    (instrumentFirstHeaders ? 0.3 : 0) +
+    (tradeRow ? 0.3 : 0)
+  );
 }
 
 export function isStructuralScreenshotText(text: string): boolean {
@@ -312,9 +385,16 @@ export function detectScreenshotLayout(
   image: OcrImageResult,
 ): ScreenshotLayoutDetection {
   const futu = futuScore(image);
-  const tiger = tigerScore(image);
+  const tigerSideFirst = tigerSideFirstScore(image);
+  const tigerInstrumentFirst = tigerInstrumentFirstScore(image);
   const futuMatched = futu >= 0.85;
-  const tigerMatched = tiger >= 0.85;
+  const tigerSideFirstMatched = tigerSideFirst >= 0.85;
+  const tigerInstrumentFirstMatched = tigerInstrumentFirst >= 0.85;
+  if (tigerSideFirstMatched && tigerInstrumentFirstMatched) {
+    return UNSUPPORTED_LAYOUT;
+  }
+  const tigerMatched =
+    tigerSideFirstMatched || tigerInstrumentFirstMatched;
 
   if (futuMatched === tigerMatched) {
     return UNSUPPORTED_LAYOUT;
@@ -330,7 +410,11 @@ export function detectScreenshotLayout(
   return {
     matched: true,
     broker: "tiger",
-    layoutVersion: "tiger-orders-dark-v1",
-    confidence: tiger,
+    layoutVersion: tigerInstrumentFirstMatched
+      ? "tiger-instrument-first-dark-v1"
+      : "tiger-orders-dark-v1",
+    confidence: tigerInstrumentFirstMatched
+      ? tigerInstrumentFirst
+      : tigerSideFirst,
   };
 }

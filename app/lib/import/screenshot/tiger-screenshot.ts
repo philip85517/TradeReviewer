@@ -13,16 +13,24 @@ import {
   detectScreenshotLayout,
   isStructuralScreenshotText,
   selectScreenshotHeaders,
+  TIGER_INSTRUMENT_FIRST_HEADER_ALIASES,
   TIGER_SCREENSHOT_HEADER_ALIASES,
 } from "./layout-detector";
 
-const LAYOUT_VERSION = "tiger-orders-dark-v1";
-
-const TIGER_COLUMNS = {
+const TIGER_SIDE_FIRST_COLUMNS = {
+  anchorMinimumX: 0,
   anchorMaximumX: 0.12,
   instrument: [0.12, 0.48],
   quantity: [0.48, 0.64],
   price: [0.64, 0.82],
+  timestamp: [0.82, 1],
+} as const;
+
+const TIGER_INSTRUMENT_FIRST_COLUMNS = {
+  anchorMinimumX: 0.47,
+  anchorMaximumX: 0.62,
+  instrument: [0, 0.47],
+  quantityAndPrice: [0.62, 0.82],
   timestamp: [0.82, 1],
 } as const;
 
@@ -176,25 +184,43 @@ export function parseTigerScreenshot(
     return [];
   }
 
+  const instrumentFirst =
+    layout.layoutVersion === "tiger-instrument-first-dark-v1";
   const headers = selectScreenshotHeaders(
     image,
-    TIGER_SCREENSHOT_HEADER_ALIASES,
+    instrumentFirst
+      ? TIGER_INSTRUMENT_FIRST_HEADER_ALIASES
+      : TIGER_SCREENSHOT_HEADER_ALIASES,
+    instrumentFirst
+      ? { minimumNormalizedX: 0.47, maximumNormalizedX: 0.62 }
+      : { maximumNormalizedX: 0.15 },
   );
   const sourceAccountSuffix = tigerAccountSuffix(
     image,
     headers.bounds?.top,
   );
   return anchorTradeRows(image, {
-    maximumNormalizedAnchorX: TIGER_COLUMNS.anchorMaximumX,
+    minimumNormalizedAnchorX: instrumentFirst
+      ? TIGER_INSTRUMENT_FIRST_COLUMNS.anchorMinimumX
+      : TIGER_SIDE_FIRST_COLUMNS.anchorMinimumX,
+    maximumNormalizedAnchorX: instrumentFirst
+      ? TIGER_INSTRUMENT_FIRST_COLUMNS.anchorMaximumX
+      : TIGER_SIDE_FIRST_COLUMNS.anchorMaximumX,
     minimumAnchorY: headers.bounds?.bottom ?? 0,
     isCorroboratingLine: (line) =>
-      centerX(line, image) >= TIGER_COLUMNS.instrument[0] &&
+      (instrumentFirst
+        ? centerX(line, image) <
+          TIGER_INSTRUMENT_FIRST_COLUMNS.instrument[1]
+        : centerX(line, image) >=
+          TIGER_SIDE_FIRST_COLUMNS.instrument[0]) &&
       !isStructuralScreenshotText(line.text),
   }).map((row) => {
     const instrumentLines = linesInColumn(
       image,
       row.lines,
-      TIGER_COLUMNS.instrument,
+      instrumentFirst
+        ? TIGER_INSTRUMENT_FIRST_COLUMNS.instrument
+        : TIGER_SIDE_FIRST_COLUMNS.instrument,
     );
     const symbolCandidates = instrumentLines.filter((line) => {
         const value = line.text.trim();
@@ -208,22 +234,29 @@ export function parseTigerScreenshot(
       (instrumentLines.length > 1 ? symbolCandidates.at(-1) : undefined);
     const nameLine = instrumentLines.find((line) => line !== symbolLine);
     const identity = symbolMarket(symbolLine?.text);
-    const quantityLine = linesInColumn(
+    const quantityAndPriceLines = linesInColumn(
       image,
       row.lines,
-      TIGER_COLUMNS.quantity,
-    )[0];
-    const priceLine = linesInColumn(
-      image,
-      row.lines,
-      TIGER_COLUMNS.price,
-    )[0];
+      instrumentFirst
+        ? TIGER_INSTRUMENT_FIRST_COLUMNS.quantityAndPrice
+        : TIGER_SIDE_FIRST_COLUMNS.quantity,
+    );
+    const quantityLine = quantityAndPriceLines[0];
+    const priceLine = instrumentFirst
+      ? quantityAndPriceLines[1]
+      : linesInColumn(
+          image,
+          row.lines,
+          TIGER_SIDE_FIRST_COLUMNS.price,
+        )[0];
     const quantity = numericValue(quantityLine);
     const price = numericValue(priceLine);
     const timestampLines = linesInColumn(
       image,
       row.lines,
-      TIGER_COLUMNS.timestamp,
+      instrumentFirst
+        ? TIGER_INSTRUMENT_FIRST_COLUMNS.timestamp
+        : TIGER_SIDE_FIRST_COLUMNS.timestamp,
     );
     const timestamp = timestampValue(timestampLines);
     const usedLines = [
@@ -252,7 +285,7 @@ export function parseTigerScreenshot(
     return {
       id: `${image.imageId}:tiger:${row.sourceRowIndex}`,
       broker: "tiger",
-      layoutVersion: LAYOUT_VERSION,
+      layoutVersion: layout.layoutVersion,
       imageId: image.imageId,
       sourceRowIndex: row.sourceRowIndex,
       sourceBounds: unionBounds(usedLines),

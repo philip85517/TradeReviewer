@@ -1,0 +1,56 @@
+import { describe, expect, it } from "vitest";
+import {
+  FUTU_SCREENSHOT_OCR,
+  TIGER_SCREENSHOT_OCR,
+} from "./__fixtures__/ocr-lines";
+import { parseFutuScreenshot } from "./futu-screenshot";
+
+describe("Futu dark order-history screenshots", () => {
+  it("keeps a market order incomplete instead of inventing a fill price", () => {
+    expect(parseFutuScreenshot(FUTU_SCREENSHOT_OCR)[0]).toMatchObject({
+      broker: "futu",
+      layoutVersion: "futu-orders-dark-v1",
+      market: "HK",
+      symbol: "6969",
+      sourceName: "思摩尔国际",
+      side: "sell",
+      quantity: "4000",
+      price: undefined,
+      sourceTimestampText: "24/06/05 14:39:25",
+      fieldEvidence: {
+        price: {
+          rawText: "市价",
+          repaired: false,
+          confirmedByUser: false,
+        },
+      },
+    });
+  });
+
+  it("normalizes a numeric limit price with Decimal.js", () => {
+    expect(parseFutuScreenshot(FUTU_SCREENSHOT_OCR)[1]).toMatchObject({
+      market: "HK",
+      symbol: "700",
+      sourceName: "腾讯控股",
+      side: "buy",
+      quantity: "200",
+      price: "381.4",
+      sourceTimestampText: "24/06/05 14:41:08",
+      sourceRowIndex: 1,
+    });
+  });
+
+  it("emits only the two anchored trade rows, excluding header and footer text", () => {
+    const drafts = parseFutuScreenshot(FUTU_SCREENSHOT_OCR);
+
+    expect(drafts).toHaveLength(2);
+    expect(drafts.map((draft) => draft.sourceName)).toEqual([
+      "思摩尔国际",
+      "腾讯控股",
+    ]);
+  });
+
+  it("fails closed on a different broker layout", () => {
+    expect(parseFutuScreenshot(TIGER_SCREENSHOT_OCR)).toEqual([]);
+  });
+});

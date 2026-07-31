@@ -17,6 +17,7 @@ import type {
 import type { LocalOcrEngine } from "../../lib/import/screenshot/ocr-engine";
 import type { TradeExecution } from "../../lib/trades/types";
 import {
+  type PreparedScreenshotImport,
   type ScreenshotImportDependencies,
   useScreenshotImport,
 } from "./use-screenshot-import";
@@ -456,5 +457,131 @@ describe("useScreenshotImport", () => {
     expect(result.current.open).toBe(false);
     expect(dispose).toHaveBeenCalledTimes(1);
     expect(revokeObjectUrl).toHaveBeenCalledTimes(2);
+  });
+
+  it("freezes every session mutation while deferred preparation is pending", async () => {
+    const prepared = deferred<void>();
+    const { dependencies, dispose, revokeObjectUrl } = setupDependencies();
+    let emitted: PreparedScreenshotImport | undefined;
+    let prepareCalls = 0;
+    const onPrepared = (value: PreparedScreenshotImport) => {
+      prepareCalls += 1;
+      emitted = value;
+      return prepared.promise;
+    };
+    const { result } = renderHook(() =>
+      useScreenshotImport({
+        currentExecutions: () => [execution("existing", { price: "101" })],
+        onPrepared,
+        dependencies,
+      }),
+    );
+    await act(async () => {
+      await result.current.start([file("one.png")]);
+    });
+    await makeValid({ result } as never);
+    const conflictId = result.current.reconciliation?.conflicts[0]?.id;
+    expect(conflictId).toBeTruthy();
+    act(() => result.current.decide(conflictId!, "keep-existing"));
+
+    let completion!: Promise<void>;
+    await act(async () => {
+      completion = result.current.completeReview();
+      await Promise.resolve();
+    });
+
+    expect(result.current.completing).toBe(true);
+    const frozenState = result.current.state;
+    const frozenImages = result.current.images;
+    const frozenReconciliation = result.current.reconciliation;
+    await act(async () => {
+      await result.current.start([file("replacement.png")]);
+      await result.current.retryImage("image-1");
+      result.current.removeImage("image-1");
+      result.current.dispatch({
+        type: "edit-field",
+        draftId: "image-1:draft",
+        field: "price",
+        value: "999",
+      });
+      result.current.decide(conflictId!, "use-incoming");
+      result.current.cancel();
+    });
+
+    expect(result.current.completing).toBe(true);
+    expect(result.current.open).toBe(true);
+    expect(result.current.state).toBe(frozenState);
+    expect(result.current.images).toEqual(frozenImages);
+    expect(result.current.reconciliation).toBe(frozenReconciliation);
+    expect(result.current.decisions.get(conflictId!)).toBe("keep-existing");
+    expect(prepareCalls).toBe(1);
+    expect(emitted?.parsed.records[0]).toMatchObject({
+      price: "100",
+    });
+    expect(emitted?.decisions.get(conflictId!)).toBe(
+      "keep-existing",
+    );
+    expect(dispose).not.toHaveBeenCalled();
+    expect(revokeObjectUrl).not.toHaveBeenCalled();
+
+    await act(async () => {
+      prepared.resolve();
+      await completion;
+    });
+    expect(result.current.completing).toBe(false);
+    expect(result.current.open).toBe(false);
+    expect(dispose).toHaveBeenCalledTimes(1);
+    expect(revokeObjectUrl).toHaveBeenCalledTimes(1);
+  });
+
+  it("restores the frozen review after deferred preparation fails", async () => {
+    const prepared = deferred<void>();
+    const { dependencies, dispose, revokeObjectUrl } = setupDependencies();
+    const { result } = renderHook(() =>
+      useScreenshotImport({
+        currentExecutions: () => [],
+        onPrepared: () => prepared.promise,
+        dependencies,
+      }),
+    );
+    await act(async () => {
+      await result.current.start([file("one.png")]);
+    });
+    await makeValid({ result } as never);
+    const frozenState = result.current.state;
+    let completion!: Promise<void>;
+    await act(async () => {
+      completion = result.current.completeReview();
+      await Promise.resolve();
+    });
+    expect(result.current.completing).toBe(true);
+
+    await act(async () => {
+      prepared.reject(new Error("metadata unavailable"));
+      await expect(completion).rejects.toThrow("metadata unavailable");
+    });
+
+    expect(result.current.completing).toBe(false);
+    expect(result.current.open).toBe(true);
+    expect(result.current.state).toBe(frozenState);
+    expect(dispose).not.toHaveBeenCalled();
+    expect(revokeObjectUrl).not.toHaveBeenCalled();
+
+    act(() =>
+      result.current.dispatch({
+        type: "edit-field",
+        draftId: "image-1:draft",
+        field: "price",
+        value: "102",
+      }),
+    );
+    expect(result.current.state?.drafts[0].price).toBe("102");
+
+    await act(async () => {
+      result.current.cancel();
+      await Promise.resolve();
+    });
+    expect(dispose).toHaveBeenCalledTimes(1);
+    expect(revokeObjectUrl).toHaveBeenCalledTimes(1);
   });
 });

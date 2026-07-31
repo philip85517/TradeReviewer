@@ -19,7 +19,7 @@ function uniqueStableExecutions(executions: readonly TradeExecution[]) {
       byId.set(execution.id, execution);
     }
   }
-  return [...byId.values()].sort(compareExecutions);
+  return [...byId.values()];
 }
 
 function isExecution(value: unknown): value is TradeExecution {
@@ -52,7 +52,7 @@ export function saveImportedExecutions(executions: TradeExecution[]) {
     IMPORTED_EXECUTIONS_STORAGE_KEY,
     JSON.stringify({
       version: 1,
-      executions: uniqueStableExecutions(executions),
+      executions: uniqueStableExecutions(executions).sort(compareExecutions),
     }),
   );
 }
@@ -70,7 +70,9 @@ export function loadImportedExecutions(): TradeExecution[] {
       executions?: unknown;
     };
     if (parsed.version !== 1 || !Array.isArray(parsed.executions)) return [];
-    return uniqueStableExecutions(parsed.executions.filter(isExecution));
+    return uniqueStableExecutions(parsed.executions.filter(isExecution)).sort(
+      compareExecutions,
+    );
   } catch {
     return [];
   }

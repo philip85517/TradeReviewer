@@ -636,7 +636,7 @@ describe("TradeReviewWorkspace", () => {
       }),
     );
     expect(loadImportedExecutions().map((item) => item.id)).toEqual([
-      "old-file:1",
+      "new-file:7",
       "new-file:8",
     ]);
     expect(loadImportHistory()[0].duplicateTradeCount).toBe(1);
@@ -920,6 +920,61 @@ describe("TradeReviewWorkspace", () => {
     expect(loadImportHistory()).toEqual([]);
     expect(persistSpy).not.toHaveBeenCalled();
     expect(mockMarketDataSync).not.toHaveBeenCalled();
+  });
+
+  it("hides the frozen screenshot review while import preparation is pending", async () => {
+    const user = userEvent.setup();
+    const enrichment = deferred<EnrichedImportResult>();
+    const draftsByImage = new Map([
+      [
+        "capture-1",
+        [
+          screenshotDraft(
+            "capture-1",
+            0,
+            "AAPL",
+            "苹果",
+            "2025-04-10 09:30:00",
+            "150",
+            { timestampConfirmed: true },
+          ),
+        ],
+      ],
+    ]);
+    mockEnrichment.mockReturnValue(enrichment.promise);
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        screenshotImportDependencies={screenshotDependencies(draftsByImage)}
+      />,
+    );
+
+    await user.upload(screen.getByLabelText("从截图恢复交易"), [
+      new File(["one"], "one.png", { type: "image/png" }),
+    ]);
+    await user.selectOptions(
+      await screen.findByLabelText("截图成交时区"),
+      "Asia/Shanghai",
+    );
+    await user.clear(screen.getByLabelText("交易账户"));
+    await user.type(screen.getByLabelText("交易账户"), "截图测试账户");
+    await user.click(screen.getByRole("button", { name: "确认导入" }));
+
+    expect(
+      screen.queryByRole("heading", { name: "从截图恢复交易" }),
+    ).not.toBeInTheDocument();
+
+    enrichment.resolve({
+      broker: "futu",
+      importable: [],
+      unresolved: [],
+      exclusions: [],
+      diagnostics: [],
+      cacheHits: 0,
+    });
+    expect(
+      await screen.findByRole("heading", { name: "确认导入交易记录" }),
+    ).toBeInTheDocument();
   });
 
   it("advances one candle without revealing the future and preserves the cursor across periods", async () => {

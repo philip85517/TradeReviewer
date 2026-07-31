@@ -120,7 +120,7 @@ describe("execution reconciliation", () => {
     expect(current).toHaveLength(2);
   });
 
-  it("retains the larger source multiplicity when incoming has two identical fills", () => {
+  it("retains the larger incoming source as the equal-evidence representative set", () => {
     const current = fill({ fingerprint: "source-a", row: 1 });
     const incoming = [
       fill({ fingerprint: "source-b", row: 1 }),
@@ -129,8 +129,11 @@ describe("execution reconciliation", () => {
 
     const result = reconcileExecutions([current], incoming);
 
-    expect(result.acceptedIncoming).toEqual([incoming[1]]);
-    expect(result.duplicates).toHaveLength(1);
+    expect(result.acceptedIncoming).toEqual(incoming);
+    expect(result.automaticReplacementIds).toEqual([current.id]);
+    expect(result.duplicates).toEqual([
+      { kept: incoming[0], skipped: current },
+    ]);
   });
 
   it("uses an incoming statement when it has richer account, fee, and name evidence", () => {

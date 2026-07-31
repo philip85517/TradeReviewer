@@ -128,6 +128,30 @@ describe("import execution library", () => {
     expect(mergeExecutions(twoFills, oneFill)).toHaveLength(2);
   });
 
+  it("keeps equal-evidence occurrences from the newly imported larger source", () => {
+    const buy = execution(
+      "statement-a:2",
+      "buy",
+      "2025-03-12T16:38:57.000Z",
+      "20",
+    );
+    const existing = fromFile(buy, "old-file", "old-file:1");
+    existing.source.sourceOrder = 1;
+    const incoming = [7, 8].map((sourceOrder) => {
+      const next = fromFile(
+        buy,
+        "new-file",
+        `new-file:${sourceOrder}`,
+      );
+      next.source.sourceOrder = sourceOrder;
+      return next;
+    });
+
+    expect(
+      mergeExecutions([existing], incoming).map(({ id }) => id),
+    ).toEqual(["new-file:7", "new-file:8"]);
+  });
+
   it("round-trips the representative set chosen for a larger fill multiplicity", () => {
     const buy = execution(
       "statement-a:2",

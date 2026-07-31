@@ -244,10 +244,11 @@ function compareTagged(left: TaggedExecution, right: TaggedExecution) {
 
 function selectRepresentative<
   T extends { execution: TradeExecution; origin: "current" | "incoming" },
->(candidates: T[]) {
+>(candidates: T[], occurrenceCount: (candidate: T) => number = () => 0) {
   return [...candidates].sort(
     (left, right) =>
       compareExecutionEvidence(right.execution, left.execution) ||
+      occurrenceCount(right) - occurrenceCount(left) ||
       Number(right.origin === "current") - Number(left.origin === "current") ||
       compareExecutions(left.execution, right.execution) ||
       executionSourceInstanceId(left.execution).localeCompare(
@@ -368,6 +369,13 @@ export function reconcileExecutions(
         0,
         ...sourceGroups.map((records) => records.length),
       );
+      const sourceMultiplicity = new Map(
+        sourceGroups.flatMap((records) =>
+          records[0]
+            ? [[records[0].sourceInstanceId, records.length] as const]
+            : [],
+        ),
+      );
 
       for (let index = 0; index < maximumMultiplicity; index += 1) {
         const automaticPair = sourceGroups
@@ -380,7 +388,11 @@ export function reconcileExecutions(
           continue;
         }
 
-        const kept = selectRepresentative(automaticPair);
+        const kept = selectRepresentative(
+          automaticPair,
+          ({ sourceInstanceId }) =>
+            sourceMultiplicity.get(sourceInstanceId) ?? 0,
+        );
         if (kept.origin === "incoming") acceptedIncoming.add(kept);
         for (const skipped of automaticPair) {
           if (skipped === kept) continue;

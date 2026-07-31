@@ -259,6 +259,7 @@ function issueCountForImage(
 
 export function useScreenshotImport(options: UseScreenshotImportOptions): {
   open: boolean;
+  completing: boolean;
   state: ScreenshotReviewState | null;
   images: ScreenshotReviewImage[];
   reconciliation?: ExecutionReconciliation;
@@ -293,6 +294,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
   );
   const decisionsRef = useRef<Map<string, ReconciliationDecision>>(new Map());
   const [open, setOpen] = useState(false);
+  const [completing, setCompleting] = useState(false);
   const [state, setState] = useState<ScreenshotReviewState | null>(null);
   const [statuses, setStatuses] = useState<ImageStatus[]>([]);
   const [reconciliation, setReconciliation] = useState<
@@ -397,6 +399,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
         reconciliationRef.current = undefined;
         decisionsRef.current = new Map();
         setOpen(false);
+        setCompleting(false);
         setState(null);
         setStatusList([]);
         setReconciliation(undefined);
@@ -498,6 +501,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
 
   const start = useCallback(
     async (files: File[]) => {
+      if (sessionRef.current?.completing) return;
       const validation = dependencies.validateFiles(files);
       if (!validation.ok) throw new Error(validation.message);
       const previous = sessionRef.current;
@@ -516,6 +520,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
       reconciliationRef.current = undefined;
       decisionsRef.current = new Map();
       setOpen(true);
+      setCompleting(false);
       setState(null);
       setStatusList([]);
       setReconciliation(undefined);
@@ -572,7 +577,12 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
   const retryImage = useCallback(
     async (imageId: string) => {
       const session = sessionRef.current;
-      if (!session || !isActive(session) || !session.resources.has(imageId)) {
+      if (
+        !session ||
+        !isActive(session) ||
+        session.completing ||
+        !session.resources.has(imageId)
+      ) {
         return;
       }
       updateStatus(imageId, (status) => ({
@@ -593,7 +603,12 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
     (imageId: string) => {
       const session = sessionRef.current;
       const resource = session?.resources.get(imageId);
-      if (!session || !resource || !isActive(session)) return;
+      if (
+        !session ||
+        !resource ||
+        !isActive(session) ||
+        session.completing
+      ) return;
       if (session.active?.imageId === imageId) {
         session.active.controller.abort();
       }
@@ -612,7 +627,12 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
     (action: ScreenshotReviewAction) => {
       const session = sessionRef.current;
       const current = stateRef.current;
-      if (!session || !current || !isActive(session)) return;
+      if (
+        !session ||
+        !current ||
+        !isActive(session) ||
+        session.completing
+      ) return;
       updateReview(screenshotReviewReducer(current, action));
     },
     [isActive, updateReview],
@@ -620,7 +640,11 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
 
   const decide = useCallback(
     (conflictId: string, decision: ReconciliationDecision) => {
+      const session = sessionRef.current;
       if (
+        !session ||
+        !isActive(session) ||
+        session.completing ||
         !reconciliationRef.current?.conflicts.some(
           ({ id }) => id === conflictId,
         )
@@ -632,7 +656,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
       decisionsRef.current = next;
       setDecisions(next);
     },
-    [],
+    [isActive],
   );
 
   const completeReview = useCallback(async () => {
@@ -675,6 +699,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
       decisionsRef.current,
     );
     session.completing = true;
+    setCompleting(true);
     try {
       await callbacksRef.current.onPrepared({
         parsed,
@@ -685,14 +710,17 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
       });
       if (isActive(session)) await closeSession(session, true);
     } catch (error) {
-      if (isActive(session)) session.completing = false;
+      if (isActive(session)) {
+        session.completing = false;
+        setCompleting(false);
+      }
       throw error;
     }
   }, [closeSession, isActive]);
 
   const cancel = useCallback(() => {
     const session = sessionRef.current;
-    if (session) void closeSession(session, true);
+    if (session && !session.completing) void closeSession(session, true);
   }, [closeSession]);
 
   useEffect(() => {
@@ -727,6 +755,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
 
   return {
     open,
+    completing,
     state,
     images,
     reconciliation,

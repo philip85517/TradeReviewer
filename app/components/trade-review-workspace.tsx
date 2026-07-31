@@ -1559,7 +1559,9 @@ export function TradeReviewWorkspace({
           retryingUnresolved={retryingUnresolved}
         />
       )}
-      {screenshotImport.open && screenshotImport.state && (
+      {screenshotImport.open &&
+        !screenshotImport.completing &&
+        screenshotImport.state && (
         <ScreenshotReviewDialog
           state={screenshotImport.state}
           images={screenshotImport.images}

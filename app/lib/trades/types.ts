@@ -1,3 +1,5 @@
+import type { SourceBounds } from "../import/screenshot/contracts";
+
 export type TradeSide = "buy" | "sell";
 export type TradeTimePrecision = "second" | "date-only";
 
@@ -22,6 +24,10 @@ export type TradeExecution = {
     fileFingerprint?: string;
     sourceTimestampText?: string;
     sourceTimezone?: string;
+    inputKind?: "statement" | "screenshot";
+    batchId?: string;
+    captureIndex?: number;
+    sourceBounds?: SourceBounds;
   };
   accountId: string;
   accountLabel: string;

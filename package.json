@@ -14,9 +14,12 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "assets:ocr": "node scripts/vendor-ocr-assets.mjs"
   },
   "dependencies": {
+    "@js-temporal/polyfill": "0.5.1",
+    "@paddleocr/paddleocr-js": "0.4.2",
     "decimal.js": "10.6.0",
     "drizzle-orm": "0.45.2",
     "lightweight-charts": "5.2.0",

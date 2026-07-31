@@ -1,0 +1,30 @@
+{
+  "models": [
+    {
+      "path": "models/PP-OCRv5_mobile_det_onnx_infer.tar",
+      "bytes": 4843520,
+      "sha256": "781056046c9ed77a15c94681605db6a0f62317c2e9cce6931c71da2478d4bc30",
+      "source": "https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv5_mobile_det_onnx_infer.tar"
+    },
+    {
+      "path": "models/PP-OCRv5_mobile_rec_onnx_infer.tar",
+      "bytes": 16701440,
+      "sha256": "f7e792bc836f36e7ef895ad47c426d75b0b75b1650caa6d63fe9418441ffba8c",
+      "source": "https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv5_mobile_rec_onnx_infer.tar"
+    }
+  ],
+  "wasm": [
+    {
+      "path": "ort/ort-wasm-simd-threaded.asyncify.wasm",
+      "bytes": 24254953,
+      "sha256": "7e83cd6cee77e478bc96a7e91b198144fb5e4126287daf1f9b54bb195ebcd55a",
+      "source": "node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.wasm"
+    },
+    {
+      "path": "ort/ort-wasm-simd-threaded.jsep.wasm",
+      "bytes": 8340355,
+      "sha256": "4b2edcf33cb32a4d97c17190514bdc1bed34e32a34d8d8d1158dca4322369aad",
+      "source": "node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.wasm"
+    }
+  ]
+}

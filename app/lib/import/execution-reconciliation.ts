@@ -34,6 +34,7 @@ type TaggedExecution = {
   sourceInstanceId: string;
   sourceVerified: boolean;
   instantVerified: boolean;
+  coreVerified: boolean;
 };
 
 function executionInstantIdentity(executedAt: string) {
@@ -47,37 +48,74 @@ function executionInstantIdentity(executedAt: string) {
   }
 }
 
-function normalizedDecimal(value: string) {
+function decimalIdentity(value: unknown) {
+  const raw = typeof value === "string" ? value : String(value ?? "");
   try {
-    return new Decimal(value).toString();
+    const decimal = new Decimal(raw);
+    if (!decimal.isFinite() || !decimal.gt(0)) {
+      return { value: `invalid:${raw}`, verified: false } as const;
+    }
+    return { value: decimal.toString(), verified: true } as const;
   } catch {
-    return `invalid:${value}`;
+    return { value: `invalid:${raw}`, verified: false } as const;
   }
 }
 
+function executionInstrumentIdentity(execution: TradeExecution) {
+  const instrument = execution.instrument;
+  const symbol = instrument?.symbol;
+  const market = instrument?.market;
+  if (
+    typeof symbol === "string" &&
+    symbol.trim() &&
+    typeof market === "string" &&
+    market.trim()
+  ) {
+    return canonicalInstrumentId(symbol, market);
+  }
+  const instrumentId = instrument?.id;
+  return typeof instrumentId === "string" && instrumentId.trim()
+    ? instrumentId.trim().toUpperCase()
+    : `unknown:${execution.id}`;
+}
+
 export function executionCandidateKey(execution: TradeExecution) {
-  return `${canonicalInstrumentId(
-    execution.instrument.symbol,
-    execution.instrument.market,
-  )}|${executionInstantIdentity(execution.executedAt).value}`;
+  return `${executionInstrumentIdentity(execution)}|${
+    executionInstantIdentity(execution.executedAt).value
+  }`;
+}
+
+function executionCoreIdentity(execution: TradeExecution) {
+  const quantity = decimalIdentity(execution.quantity);
+  const price = decimalIdentity(execution.price);
+  return {
+    value: [
+      execution.side,
+      quantity.value,
+      price.value,
+    ].join("|"),
+    verified: quantity.verified && price.verified,
+  };
 }
 
 export function executionCoreKey(execution: TradeExecution) {
-  return [
-    execution.side,
-    normalizedDecimal(execution.quantity),
-    normalizedDecimal(execution.price),
-  ].join("|");
+  return executionCoreIdentity(execution).value;
 }
 
 export function executionSourceIdentity(execution: TradeExecution) {
-  const fingerprint = execution.source.fileFingerprint?.trim();
+  const source = execution.source;
+  const fingerprint =
+    typeof source?.fileFingerprint === "string"
+      ? source.fileFingerprint.trim()
+      : "";
   if (fingerprint) {
     return { id: `fingerprint:${fingerprint}`, verified: true } as const;
   }
 
-  const platform = execution.source.platform.trim();
-  const fileName = execution.source.fileName?.trim();
+  const platform =
+    typeof source?.platform === "string" ? source.platform.trim() : "";
+  const fileName =
+    typeof source?.fileName === "string" ? source.fileName.trim() : "";
   if (platform && fileName) {
     return { id: `file:${platform}|${fileName}`, verified: true } as const;
   }
@@ -93,22 +131,58 @@ export function compareExecutions(
   left: TradeExecution,
   right: TradeExecution,
 ) {
-  let timeDifference: number;
-  try {
-    timeDifference = Temporal.Instant.compare(left.executedAt, right.executedAt);
-  } catch {
-    timeDifference = left.executedAt.localeCompare(right.executedAt);
+  const leftKey = executionOrderKey(left);
+  const rightKey = executionOrderKey(right);
+  const categoryDifference = leftKey.timeCategory - rightKey.timeCategory;
+  let timeDifference = 0;
+  if (leftKey.timeCategory === 0 && rightKey.timeCategory === 0) {
+    const leftInstant = leftKey.timeValue as bigint;
+    const rightInstant = rightKey.timeValue as bigint;
+    timeDifference =
+      leftInstant < rightInstant ? -1 : leftInstant > rightInstant ? 1 : 0;
+  } else if (leftKey.timeCategory === 1 && rightKey.timeCategory === 1) {
+    timeDifference = String(leftKey.timeValue).localeCompare(
+      String(rightKey.timeValue),
+    );
   }
   return (
+    categoryDifference ||
     timeDifference ||
-    (left.source.sourceOrder ?? left.source.row) -
-      (right.source.sourceOrder ?? right.source.row) ||
-    left.id.localeCompare(right.id)
+    leftKey.sourceOrder - rightKey.sourceOrder ||
+    leftKey.id.localeCompare(rightKey.id)
   );
 }
 
+function executionOrderKey(execution: TradeExecution) {
+  const executedAt =
+    typeof execution.executedAt === "string" ? execution.executedAt : "";
+  let timeCategory: 0 | 1 = 0;
+  let timeValue: bigint | string;
+  try {
+    timeValue = Temporal.Instant.from(executedAt).epochNanoseconds;
+  } catch {
+    timeCategory = 1;
+    timeValue = executedAt;
+  }
+  const source = execution.source;
+  const sourceOrderCandidate = source?.sourceOrder ?? source?.row;
+  const sourceOrder =
+    typeof sourceOrderCandidate === "number" &&
+    Number.isFinite(sourceOrderCandidate)
+      ? sourceOrderCandidate
+      : Number.MAX_SAFE_INTEGER;
+  return {
+    timeCategory,
+    timeValue,
+    sourceOrder,
+    id: typeof execution.id === "string" ? execution.id : "",
+  };
+}
+
 function hasMeaningfulAccount(execution: TradeExecution) {
-  const account = `${execution.accountId} ${execution.accountLabel}`.trim();
+  const account = `${execution.accountId ?? ""} ${
+    execution.accountLabel ?? ""
+  }`.trim();
   return Boolean(account) && !/(unknown|unassigned|未指定|未知)/i.test(account);
 }
 
@@ -121,10 +195,17 @@ function hasMeaningfulFee(execution: TradeExecution) {
 }
 
 function hasResolvedName(execution: TradeExecution) {
-  const name = execution.instrument.name.trim();
+  const name =
+    typeof execution.instrument?.name === "string"
+      ? execution.instrument.name.trim()
+      : "";
+  const symbol =
+    typeof execution.instrument?.symbol === "string"
+      ? execution.instrument.symbol.trim().toUpperCase()
+      : "";
   return Boolean(name) &&
     name !== "名称待行情源补充" &&
-    name.toUpperCase() !== execution.instrument.symbol.trim().toUpperCase();
+    (!symbol || name.toUpperCase() !== symbol);
 }
 
 function evidenceRank(execution: TradeExecution) {
@@ -132,7 +213,7 @@ function evidenceRank(execution: TradeExecution) {
     Number(hasMeaningfulFee(execution)),
     Number(hasMeaningfulAccount(execution)),
     Number(hasResolvedName(execution)),
-    Number(execution.source.inputKind === "statement"),
+    Number(execution.source?.inputKind === "statement"),
   ] as const;
 }
 
@@ -161,12 +242,17 @@ function compareTagged(left: TaggedExecution, right: TaggedExecution) {
   );
 }
 
-function selectRepresentative(candidates: TaggedExecution[]) {
+function selectRepresentative<
+  T extends { execution: TradeExecution; origin: "current" | "incoming" },
+>(candidates: T[]) {
   return [...candidates].sort(
     (left, right) =>
       compareExecutionEvidence(right.execution, left.execution) ||
       Number(right.origin === "current") - Number(left.origin === "current") ||
-      compareTagged(left, right),
+      compareExecutions(left.execution, right.execution) ||
+      executionSourceInstanceId(left.execution).localeCompare(
+        executionSourceInstanceId(right.execution),
+      ),
   )[0];
 }
 
@@ -183,37 +269,68 @@ export function reconcileExecutions(
   current: readonly TradeExecution[],
   incoming: readonly TradeExecution[],
 ): ExecutionReconciliation {
-  const tagged: TaggedExecution[] = [
-    ...current.map((execution) => {
-      const sourceIdentity = executionSourceIdentity(execution);
-      const instantIdentity = executionInstantIdentity(execution.executedAt);
-      return {
+  const sameIdGroups = groupBy(
+    [
+      ...current.map((execution) => ({
         execution,
         origin: "current" as const,
-        candidateKey: executionCandidateKey(execution),
-        coreKey: executionCoreKey(execution),
-        sourceInstanceId: sourceIdentity.id,
-        sourceVerified: sourceIdentity.verified,
-        instantVerified: instantIdentity.verified,
-      };
-    }),
-    ...incoming.map((execution) => {
-      const sourceIdentity = executionSourceIdentity(execution);
-      const instantIdentity = executionInstantIdentity(execution.executedAt);
-      return {
+      })),
+      ...incoming.map((execution) => ({
         execution,
         origin: "incoming" as const,
-        candidateKey: executionCandidateKey(execution),
-        coreKey: executionCoreKey(execution),
-        sourceInstanceId: sourceIdentity.id,
-        sourceVerified: sourceIdentity.verified,
-        instantVerified: instantIdentity.verified,
-      };
-    }),
-  ];
+      })),
+    ],
+    ({ execution }) => execution.id,
+  );
+  const effective: Array<{
+    execution: TradeExecution;
+    origin: "current" | "incoming";
+  }> = [];
+  const identityDuplicates: ExecutionReconciliation["duplicates"] = [];
+  const identityReplacementIds = new Set<string>();
+  for (const group of sameIdGroups.values()) {
+    const hasIncoming = group.some(({ origin }) => origin === "incoming");
+    if (!hasIncoming || group.length === 1) {
+      effective.push(...group);
+      continue;
+    }
+    const kept = selectRepresentative(group);
+    effective.push(kept);
+    for (const skipped of group) {
+      if (skipped === kept) continue;
+      identityDuplicates.push({
+        kept: kept.execution,
+        skipped: skipped.execution,
+      });
+    }
+    if (
+      kept.origin === "incoming" &&
+      group.some(({ origin }) => origin === "current")
+    ) {
+      identityReplacementIds.add(kept.execution.id);
+    }
+  }
+
+  const tagged: TaggedExecution[] = effective.map(({ execution, origin }) => {
+    const sourceIdentity = executionSourceIdentity(execution);
+    const instantIdentity = executionInstantIdentity(execution.executedAt);
+    const coreIdentity = executionCoreIdentity(execution);
+    return {
+      execution,
+      origin,
+      candidateKey: executionCandidateKey(execution),
+      coreKey: coreIdentity.value,
+      sourceInstanceId: sourceIdentity.id,
+      sourceVerified: sourceIdentity.verified,
+      instantVerified: instantIdentity.verified,
+      coreVerified: coreIdentity.verified,
+    };
+  });
   const acceptedIncoming = new Set<TaggedExecution>();
-  const automaticReplacementIds = new Set<string>();
-  const duplicates: ExecutionReconciliation["duplicates"] = [];
+  const automaticReplacementIds = new Set(identityReplacementIds);
+  const duplicates: ExecutionReconciliation["duplicates"] = [
+    ...identityDuplicates,
+  ];
   const unmatchedByCandidate = new Map<
     string,
     { current: TaggedExecution[]; incoming: TaggedExecution[] }
@@ -230,8 +347,8 @@ export function reconcileExecutions(
     const coreGroups = groupBy(candidateGroup, ({ coreKey }) => coreKey);
     for (const coreGroup of [...coreGroups.values()]) {
       for (const record of coreGroup.filter(
-        ({ sourceVerified, instantVerified }) =>
-          !sourceVerified || !instantVerified,
+        ({ sourceVerified, instantVerified, coreVerified }) =>
+          !sourceVerified || !instantVerified || !coreVerified,
       )) {
         unmatched[record.origin].push(record);
         if (record.origin === "incoming") acceptedIncoming.add(record);
@@ -239,8 +356,8 @@ export function reconcileExecutions(
       const sourceGroups = [
         ...groupBy(
           coreGroup.filter(
-            ({ sourceVerified, instantVerified }) =>
-              sourceVerified && instantVerified,
+            ({ sourceVerified, instantVerified, coreVerified }) =>
+              sourceVerified && instantVerified && coreVerified,
           ),
           ({ sourceInstanceId }) => sourceInstanceId,
         ),
@@ -288,6 +405,8 @@ export function reconcileExecutions(
           candidate.sourceVerified &&
           existing.instantVerified &&
           candidate.instantVerified &&
+          existing.coreVerified &&
+          candidate.coreVerified &&
           existing.sourceInstanceId !== candidate.sourceInstanceId &&
           existing.coreKey !== candidate.coreKey,
       ),
@@ -300,6 +419,8 @@ export function reconcileExecutions(
           candidate.sourceVerified &&
           existing.instantVerified &&
           candidate.instantVerified &&
+          existing.coreVerified &&
+          candidate.coreVerified &&
           existing.sourceInstanceId !== candidate.sourceInstanceId &&
           existing.coreKey !== candidate.coreKey,
       ),

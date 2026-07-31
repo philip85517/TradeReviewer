@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { TradeExecution } from "../trades/types";
 import {
   applyReconciliationDecisions,
+  compareExecutions,
   reconcileExecutions,
 } from "./execution-reconciliation";
 
@@ -274,6 +275,116 @@ describe("execution reconciliation", () => {
     expect(reconcileExecutions([existing], [incoming]).duplicates).toEqual([
       { kept: existing, skipped: incoming },
     ]);
+  });
+
+  it.each([
+    ["quantity", "not-a-decimal"],
+    ["quantity", "NaN"],
+    ["quantity", "0"],
+    ["quantity", "-1"],
+    ["price", "not-a-decimal"],
+    ["price", "NaN"],
+    ["price", "0"],
+    ["price", "-1"],
+  ] as const)(
+    "does not auto-match executions with non-positive or invalid %s %s",
+    (field, value) => {
+      const existing = fill({ fingerprint: "source-a", [field]: value });
+      const incoming = fill({ fingerprint: "source-b", [field]: value });
+
+      const result = reconcileExecutions([existing], [incoming]);
+
+      expect(result.acceptedIncoming).toEqual([incoming]);
+      expect(result.automaticReplacementIds).toEqual([]);
+      expect(result.duplicates).toEqual([]);
+      expect(result.conflicts).toEqual([]);
+    },
+  );
+
+  it("orders valid and invalid instants transitively for every input permutation", () => {
+    const validFirst = fill({
+      id: "valid-first",
+      executedAt: "2026-01-01T00:00:00+14:00",
+    });
+    const validSecond = fill({
+      id: "valid-second",
+      executedAt: "2025-12-31T23:00:00-12:00",
+    });
+    const invalid = fill({ id: "invalid", executedAt: "2025z" });
+
+    expect(compareExecutions(validFirst, validSecond)).toBeLessThan(0);
+    expect(compareExecutions(validSecond, invalid)).toBeLessThan(0);
+    expect(compareExecutions(validFirst, invalid)).toBeLessThan(0);
+
+    const permutations = [
+      [validFirst, validSecond, invalid],
+      [validFirst, invalid, validSecond],
+      [validSecond, validFirst, invalid],
+      [validSecond, invalid, validFirst],
+      [invalid, validFirst, validSecond],
+      [invalid, validSecond, validFirst],
+    ];
+    for (const permutation of permutations) {
+      expect(
+        [...permutation].sort(compareExecutions).map(({ id }) => id),
+      ).toEqual(["valid-first", "valid-second", "invalid"]);
+    }
+  });
+
+  it("keeps a richer current record when the incoming execution ID is the same", () => {
+    const current = fill({
+      id: "same-id",
+      fingerprint: "same-source",
+      inputKind: "statement",
+      fee: "2.05",
+      name: "Alibaba",
+      quantity: "not-a-decimal",
+    });
+    const incoming = fill({
+      id: "same-id",
+      fingerprint: "same-source",
+      inputKind: "screenshot",
+      fee: "0",
+      name: "名称待行情源补充",
+      quantity: "not-a-decimal",
+    });
+
+    const result = reconcileExecutions([current], [incoming]);
+
+    expect(result.acceptedIncoming).toEqual([]);
+    expect(result.automaticReplacementIds).toEqual([]);
+    expect(result.duplicates).toEqual([{ kept: current, skipped: incoming }]);
+    expect(result.conflicts).toEqual([]);
+  });
+
+  it("replaces a current record when the same-ID incoming record is richer", () => {
+    const current = fill({
+      id: "same-id",
+      fingerprint: "same-source",
+      inputKind: "screenshot",
+      accountId: "unknown",
+      accountLabel: "Unknown",
+      fee: "0",
+      name: "名称待行情源补充",
+      price: "0",
+    });
+    const incoming = fill({
+      id: "same-id",
+      fingerprint: "same-source",
+      inputKind: "statement",
+      accountId: "account-0855",
+      accountLabel: "Futu · 0855",
+      fee: "2.05",
+      name: "Alibaba",
+      price: "0",
+    });
+
+    const result = reconcileExecutions([current], [incoming]);
+
+    expect(result.acceptedIncoming).toEqual([incoming]);
+    expect(result.automaticReplacementIds).toEqual([current.id]);
+    expect(result.duplicates).toEqual([{ kept: incoming, skipped: current }]);
+    expect(result.conflicts).toEqual([]);
   });
 
   it("does not auto-match a legacy execution without verified source evidence", () => {

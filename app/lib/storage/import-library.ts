@@ -11,28 +11,13 @@ export const IMPORTED_EXECUTIONS_STORAGE_KEY =
 function isExecution(value: unknown): value is TradeExecution {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<TradeExecution>;
-  const source = candidate.source;
-  const instrument = candidate.instrument;
   return (
     typeof candidate.id === "string" &&
     typeof candidate.accountId === "string" &&
-    typeof candidate.accountLabel === "string" &&
     typeof candidate.executedAt === "string" &&
     typeof candidate.quantity === "string" &&
     typeof candidate.price === "string" &&
-    typeof candidate.fee === "string" &&
-    typeof instrument?.id === "string" &&
-    typeof instrument.symbol === "string" &&
-    typeof instrument.name === "string" &&
-    typeof instrument.market === "string" &&
-    typeof instrument.currency === "string" &&
-    typeof source?.platform === "string" &&
-    typeof source.row === "number" &&
-    (source.sourceOrder === undefined ||
-      typeof source.sourceOrder === "number") &&
-    (source.fileName === undefined || typeof source.fileName === "string") &&
-    (source.fileFingerprint === undefined ||
-      typeof source.fileFingerprint === "string") &&
+    typeof candidate.instrument?.id === "string" &&
     (candidate.side === "buy" || candidate.side === "sell")
   );
 }

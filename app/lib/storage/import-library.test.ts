@@ -302,7 +302,7 @@ describe("import execution library", () => {
         executions: [
           buy,
           {
-            id: "malformed",
+            id: "v1-partial",
             accountId: "acct",
             executedAt: "2025-03-12T16:38:57.000Z",
             quantity: "20",
@@ -318,6 +318,7 @@ describe("import execution library", () => {
     expect(loadImportedExecutions().map(({ id }) => id)).toEqual([
       "image:2",
       "statement:2",
+      "v1-partial",
     ]);
   });
 

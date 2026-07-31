@@ -3230,6 +3230,14 @@ input:focus-visible {
   gap: 5px;
 }
 
+.failed-image-guidance {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #d9908c;
+  font-size: 7px;
+  line-height: 1.4;
+}
+
 .failed-image-actions button {
   min-height: 25px;
   display: inline-flex;
@@ -3826,7 +3834,11 @@ input:focus-visible {
   }
 
   .failed-image-actions {
-    display: none;
+    grid-template-columns: 1fr;
+  }
+
+  .failed-image-guidance {
+    grid-column: 1;
   }
 
   .screenshot-manual-add {

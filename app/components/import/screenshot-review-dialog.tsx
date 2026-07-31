@@ -62,17 +62,21 @@ function draftIdForExecution(
   const source = execution.source;
   if (source.inputKind !== "screenshot") return undefined;
 
-  const image =
-    state.images.find(
-      ({ fingerprint }) =>
-        source.fileFingerprint &&
-        fingerprint === source.fileFingerprint,
-    ) ??
-    state.images.find(
-      ({ captureIndex }) =>
-        source.captureIndex !== undefined &&
-        captureIndex === source.captureIndex,
+  let image: ScreenshotReviewState["images"][number] | undefined;
+  if (source.fileFingerprint !== undefined) {
+    image = state.images.find(
+      ({ fingerprint }) => fingerprint === source.fileFingerprint,
     );
+  } else if (
+    source.batchId === state.batchId &&
+    typeof source.captureIndex === "number" &&
+    Number.isSafeInteger(source.captureIndex) &&
+    source.captureIndex >= 0
+  ) {
+    image = state.images.find(
+      ({ captureIndex }) => captureIndex === source.captureIndex,
+    );
+  }
   if (!image) return undefined;
 
   return state.drafts.find(
@@ -93,15 +97,23 @@ function reconciliationRows(
     return { duplicateDraftIds, conflictByDraftId };
   }
 
+  const currentBatchScreenshot = (execution: TradeExecution) =>
+    execution.source.inputKind === "screenshot" &&
+    execution.source.batchId === state.batchId;
+
   for (const duplicate of reconciliation.duplicates) {
-    for (const execution of [duplicate.kept, duplicate.skipped]) {
+    for (const execution of [duplicate.kept, duplicate.skipped].filter(
+      currentBatchScreenshot,
+    )) {
       const draftId = draftIdForExecution(execution, state);
       if (draftId) duplicateDraftIds.add(draftId);
     }
   }
 
   for (const conflict of reconciliation.conflicts) {
-    for (const execution of [...conflict.existing, ...conflict.incoming]) {
+    for (const execution of conflict.incoming.filter(
+      currentBatchScreenshot,
+    )) {
       const draftId = draftIdForExecution(execution, state);
       if (draftId) conflictByDraftId.set(draftId, conflict);
     }
@@ -354,7 +366,14 @@ export function ScreenshotReviewDialog({
                     aria-label={imageStatusLabel(image)}
                   />
                   {image.state === "failed" && (
-                    <div className="failed-image-actions">
+                    <div
+                      className="failed-image-actions"
+                      role="group"
+                      aria-label={`恢复 ${image.fileName}`}
+                    >
+                      <p className="failed-image-guidance">
+                        重试或移除此截图后才能继续
+                      </p>
                       <button
                         type="button"
                         aria-label={`重试 ${image.fileName}`}

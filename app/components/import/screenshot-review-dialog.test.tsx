@@ -251,6 +251,7 @@ const images: ScreenshotReviewImage[] = [
 function renderDialog({
   state = reviewState(),
   reviewImages = images,
+  reviewReconciliation = reconciliation(),
   decisions = new Map<string, ReconciliationDecision>(),
   onAction = vi.fn(),
   onDecision = vi.fn(),
@@ -261,6 +262,7 @@ function renderDialog({
 }: {
   state?: ScreenshotReviewState;
   reviewImages?: ScreenshotReviewImage[];
+  reviewReconciliation?: ExecutionReconciliation;
   decisions?: ReadonlyMap<string, ReconciliationDecision>;
   onAction?: ScreenshotReviewDialogProps["onAction"];
   onDecision?: ScreenshotReviewDialogProps["onDecision"];
@@ -274,7 +276,7 @@ function renderDialog({
       <ScreenshotReviewDialog
         state={state}
         images={reviewImages}
-        reconciliation={reconciliation()}
+        reconciliation={reviewReconciliation}
         decisions={decisions}
         onAction={onAction}
         onDecision={onDecision}
@@ -340,6 +342,107 @@ describe("ScreenshotReviewDialog", () => {
     expect(within(table).getAllByRole("row")).toHaveLength(5);
   });
 
+  it("maps only current-batch screenshot rows when an old screenshot reuses capture and row indices", async () => {
+    const user = userEvent.setup();
+    const currentIncoming = screenshotExecution(
+      "incoming-amd",
+      "AMD",
+      0,
+      1,
+      "100",
+    );
+    const mismatchedCurrent = screenshotExecution(
+      "mismatched-current-amd",
+      "AMD",
+      0,
+      0,
+      "99",
+    );
+    mismatchedCurrent.source.fileFingerprint = "old-fingerprint";
+    const fingerprintlessOld = screenshotExecution(
+      "fingerprintless-old-amd",
+      "AMD",
+      0,
+      0,
+      "98",
+    );
+    delete fingerprintlessOld.source.fileFingerprint;
+    fingerprintlessOld.source.batchId = "screenshot-batch:old";
+    renderDialog({
+      state: reviewState(false),
+      reviewReconciliation: {
+        acceptedIncoming: [],
+        automaticReplacementIds: [],
+        duplicates: [],
+        conflicts: [
+          {
+            id: "conflict-amd",
+            candidateKey: "US:AMD|2024-06-05T18:41:08Z",
+            existing: [
+              statementExecution("existing-amd", "AMD", "102"),
+            ],
+            incoming: [
+              mismatchedCurrent,
+              fingerprintlessOld,
+              currentIncoming,
+            ],
+          },
+        ],
+      },
+    });
+
+    await user.click(screen.getByRole("button", { name: "冲突" }));
+    const table = screen.getByRole("table", { name: "截图成交总表" });
+    expect(within(table).getAllByRole("row")).toHaveLength(2);
+    expect(within(table).getByRole("row", { name: /AMD/ })).toBeVisible();
+    expect(
+      within(table).queryByRole("row", { name: /NVDA/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("maps a same-symbol same-second duplicate to its exact source row", async () => {
+    const user = userEvent.setup();
+    const current = reviewState(false);
+    current.drafts = [
+      draft("draft-nvda-first", "NVDA", 0, { price: "100" }),
+      draft("draft-nvda-second", "NVDA", 1, { price: "101" }),
+    ];
+    const duplicate = screenshotExecution(
+      "incoming-nvda-second",
+      "NVDA",
+      0,
+      1,
+      "101",
+    );
+    delete duplicate.source.fileFingerprint;
+    renderDialog({
+      state: current,
+      reviewReconciliation: {
+        acceptedIncoming: [],
+        automaticReplacementIds: [],
+        duplicates: [
+          {
+            kept: statementExecution("existing-nvda", "NVDA", "101"),
+            skipped: duplicate,
+          },
+        ],
+        conflicts: [],
+      },
+    });
+
+    await user.click(
+      screen.getByRole("button", { name: "自动重复" }),
+    );
+    const table = screen.getByRole("table", { name: "截图成交总表" });
+    expect(within(table).getAllByRole("row")).toHaveLength(2);
+    expect(
+      within(table).getByRole("cell", { name: "NVDA 价格 101" }),
+    ).toBeVisible();
+    expect(
+      within(table).queryByRole("cell", { name: "NVDA 价格 100" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("opens low-confidence source evidence and confirms the recognized value", async () => {
     const user = userEvent.setup();
     const { onAction } = renderDialog();
@@ -396,7 +499,9 @@ describe("ScreenshotReviewDialog", () => {
     const { onAction } = renderDialog();
 
     await user.click(
-      screen.getByRole("button", { name: "删除 NVDA 成交" }),
+      screen.getByRole("button", {
+        name: "删除 NVDA 成交，来源 orders-1.png 第 1 行，24/06/05 14:41:08，数量 10，价格 114.8",
+      }),
     );
     await user.click(
       screen.getByRole("button", { name: "手工补录成交" }),
@@ -410,6 +515,67 @@ describe("ScreenshotReviewDialog", () => {
       type: "add-draft",
       imageId: "image-1",
     });
+  });
+
+  it("gives same-symbol same-second rows unique delete names", () => {
+    const current = reviewState(false);
+    current.drafts = [
+      draft("draft-nvda-first", "NVDA", 0, {
+        quantity: "10",
+        price: "114.8",
+      }),
+      draft("draft-nvda-second", "NVDA", 1, {
+        quantity: "20",
+        price: "115.2",
+      }),
+    ];
+    renderDialog({ state: current });
+
+    const deleteButtons = screen.getAllByRole("button", {
+      name: /^删除 NVDA 成交，来源 orders-1\.png 第/,
+    });
+    expect(deleteButtons).toHaveLength(2);
+    expect(
+      screen.getByRole("button", {
+        name: "删除 NVDA 成交，来源 orders-1.png 第 1 行，24/06/05 14:41:08，数量 10，价格 114.8",
+      }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", {
+        name: "删除 NVDA 成交，来源 orders-1.png 第 2 行，24/06/05 14:41:08，数量 20，价格 115.2",
+      }),
+    ).toBeVisible();
+    expect(
+      new Set(deleteButtons.map((button) => button.getAttribute("aria-label")))
+        .size,
+    ).toBe(2);
+  });
+
+  it("keeps delete names unique when identical fills reuse a row number across images", () => {
+    const current = reviewState(false);
+    current.drafts = [
+      draft("draft-nvda-image-1", "NVDA", 0, {
+        quantity: "10",
+        price: "114.8",
+      }),
+      draft("draft-nvda-image-2", "NVDA", 0, {
+        imageId: "image-2",
+        quantity: "10",
+        price: "114.8",
+      }),
+    ];
+    renderDialog({ state: current });
+
+    expect(
+      screen.getByRole("button", {
+        name: "删除 NVDA 成交，来源 orders-1.png 第 1 行，24/06/05 14:41:08，数量 10，价格 114.8",
+      }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", {
+        name: "删除 NVDA 成交，来源 orders-2.png 第 1 行，24/06/05 14:41:08，数量 10，价格 114.8",
+      }),
+    ).toBeVisible();
   });
 
   it.each([
@@ -460,11 +626,15 @@ describe("ScreenshotReviewDialog", () => {
         name: "orders-3.png，识别失败：无法识别版式",
       }),
     ).toBeInTheDocument();
+    const recovery = screen.getByRole("group", {
+      name: "恢复 orders-3.png",
+    });
+    expect(recovery).toHaveTextContent("重试或移除此截图后才能继续");
     await user.click(
-      screen.getByRole("button", { name: "重试 orders-3.png" }),
+      within(recovery).getByRole("button", { name: "重试 orders-3.png" }),
     );
     await user.click(
-      screen.getByRole("button", { name: "移除 orders-3.png" }),
+      within(recovery).getByRole("button", { name: "移除 orders-3.png" }),
     );
 
     expect(onRetryImage).toHaveBeenCalledWith("image-3");

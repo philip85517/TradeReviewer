@@ -56,6 +56,23 @@ function fieldValue(
   return draft[field] ?? "";
 }
 
+function deleteDraftLabel(
+  draft: ScreenshotTradeDraft,
+  imageName: string | undefined,
+) {
+  const symbol = draft.symbol || "未命名成交";
+  const sourceName = imageName?.trim() || draft.imageId;
+  const details = [
+    Number.isInteger(draft.sourceRowIndex) && draft.sourceRowIndex >= 0
+      ? `来源 ${sourceName} 第 ${draft.sourceRowIndex + 1} 行`
+      : undefined,
+    draft.sourceTimestampText?.trim() || undefined,
+    draft.quantity?.trim() ? `数量 ${draft.quantity.trim()}` : undefined,
+    draft.price?.trim() ? `价格 ${draft.price.trim()}` : undefined,
+  ].filter((detail): detail is string => Boolean(detail));
+  return `删除 ${symbol} 成交${details.length > 0 ? `，${details.join("，")}` : ""}`;
+}
+
 function interactiveFieldCell(
   draft: ScreenshotTradeDraft,
   field: ScreenshotField,
@@ -219,7 +236,10 @@ export function ScreenshotTradeTable({
                 <button
                   className="screenshot-delete-button"
                   type="button"
-                  aria-label={`删除 ${symbol} 成交`}
+                  aria-label={deleteDraftLabel(
+                    draft,
+                    imageNames.get(draft.imageId),
+                  )}
                   onClick={() => onDeleteDraft(draft.id)}
                 >
                   <Trash2 size={15} aria-hidden="true" />

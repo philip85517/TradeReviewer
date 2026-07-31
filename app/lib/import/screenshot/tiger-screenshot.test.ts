@@ -30,6 +30,7 @@ describe("Tiger dark order-history screenshots", () => {
       quantity: "10",
       price: "120.5",
       sourceTimestampText: "2024/06/05 14:39:25",
+      sourceAccountSuffix: "U6789",
       fieldEvidence: {
         market: {
           rawText: "NVDA",
@@ -105,6 +106,18 @@ describe("Tiger dark order-history screenshots", () => {
         },
       },
     });
+  });
+
+  it("does not guess an account suffix from arbitrary header digits", () => {
+    const [draft] = parseTigerScreenshot(
+      image("tiger-unmasked-account", 1_220, 2_000, [
+        TIGER_SCREENSHOT_OCR.lines[0],
+        ocrLine("Tiger Brokers report 2024", 430, 190, 300, 24),
+        ...TIGER_SCREENSHOT_OCR.lines.slice(2),
+      ]),
+    );
+
+    expect(draft.sourceAccountSuffix).toBeUndefined();
   });
 
   it("does not turn navigation, headers, or footer text into drafts", () => {

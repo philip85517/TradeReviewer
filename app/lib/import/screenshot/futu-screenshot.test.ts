@@ -19,6 +19,7 @@ describe("Futu dark order-history screenshots", () => {
       quantity: "4000",
       price: undefined,
       sourceTimestampText: "24/06/05 14:39:25",
+      sourceAccountSuffix: "4321",
       fieldEvidence: {
         price: {
           rawText: "市价",
@@ -71,5 +72,17 @@ describe("Futu dark order-history screenshots", () => {
       sourceName: "思摩尔国际",
       quantity: "4000",
     });
+  });
+
+  it("does not guess an account suffix from arbitrary header digits", () => {
+    const [draft] = parseFutuScreenshot(
+      image("futu-unmasked-account", 1_220, 2_000, [
+        FUTU_SCREENSHOT_OCR.lines[0],
+        ocrLine("FUTU HK report 2024", 470, 190, 240, 24),
+        ...FUTU_SCREENSHOT_OCR.lines.slice(2),
+      ]),
+    );
+
+    expect(draft.sourceAccountSuffix).toBeUndefined();
   });
 });

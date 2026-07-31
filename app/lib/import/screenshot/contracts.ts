@@ -70,6 +70,7 @@ export type ScreenshotTradeDraft = {
   quantity?: string;
   price?: string;
   sourceTimestampText?: string;
+  sourceAccountSuffix?: string;
   timeDisambiguation?: "earlier" | "later";
   fieldEvidence: Partial<Record<ScreenshotField, ScreenshotFieldEvidence>>;
 };

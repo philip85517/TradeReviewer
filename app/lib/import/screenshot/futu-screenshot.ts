@@ -122,6 +122,17 @@ function futuMarket(
   return undefined;
 }
 
+function futuAccountSuffix(image: OcrImageResult): string | undefined {
+  for (const line of image.lines) {
+    const match =
+      /(?:FUTU|富途|牛牛).*?[·•]\s*((?:[A-Z]\d{3,})|(?:\*+\d{3,})|(?:\d{4,}))\s*$/i.exec(
+        line.text.trim(),
+      );
+    if (match) return match[1].toUpperCase();
+  }
+  return undefined;
+}
+
 function headerBottom(image: OcrImageResult): number {
   const headers = new Set([
     "订单状态",
@@ -162,6 +173,7 @@ export function parseFutuScreenshot(
   }
 
   const market = futuMarket(image);
+  const sourceAccountSuffix = futuAccountSuffix(image);
   return anchorTradeRows(image, {
     maximumNormalizedAnchorX: FUTU_COLUMNS.anchorMaximumX,
     minimumAnchorY: headerBottom(image),
@@ -230,6 +242,7 @@ export function parseFutuScreenshot(
       quantity: quantity.value,
       price: price.value,
       sourceTimestampText: timestamp.value,
+      sourceAccountSuffix,
       fieldEvidence,
     };
   });

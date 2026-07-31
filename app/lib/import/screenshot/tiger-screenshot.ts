@@ -162,6 +162,17 @@ function headerBottom(image: OcrImageResult): number {
   );
 }
 
+function tigerAccountSuffix(image: OcrImageResult): string | undefined {
+  for (const line of image.lines) {
+    const match =
+      /(?:TIGER(?:\s+BROKERS)?|老虎).*?[·•]\s*((?:[A-Z]\d{3,})|(?:\*+\d{3,})|(?:\d{4,}))\s*$/i.exec(
+        line.text.trim(),
+      );
+    if (match) return match[1].toUpperCase();
+  }
+  return undefined;
+}
+
 export function parseTigerScreenshot(
   image: OcrImageResult,
 ): ScreenshotTradeDraft[] {
@@ -170,6 +181,7 @@ export function parseTigerScreenshot(
     return [];
   }
 
+  const sourceAccountSuffix = tigerAccountSuffix(image);
   return anchorTradeRows(image, {
     maximumNormalizedAnchorX: TIGER_COLUMNS.anchorMaximumX,
     minimumAnchorY: headerBottom(image),
@@ -249,6 +261,7 @@ export function parseTigerScreenshot(
       quantity: quantity.value,
       price: price.value,
       sourceTimestampText: timestamp.value,
+      sourceAccountSuffix,
       fieldEvidence,
     };
   });

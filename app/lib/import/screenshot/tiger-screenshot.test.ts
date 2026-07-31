@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   FUTU_SCREENSHOT_OCR,
+  TIGER_BRANDED_INSTRUMENT_FIRST_ONE_ROW_OCR,
   TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR,
   TIGER_SCREENSHOT_OCR,
   TIGER_UNBRANDED_SCREENSHOT_OCR,
@@ -13,6 +14,37 @@ import { parseTigerScreenshot } from "./tiger-screenshot";
 const TIGER_LAYOUT_LINES = TIGER_SCREENSHOT_OCR.lines.slice(0, 7);
 
 describe("Tiger dark order-history screenshots", () => {
+  it("detects and parses one instrument-first row with Tiger branding above the headers", () => {
+    expect(
+      detectScreenshotLayout(
+        TIGER_BRANDED_INSTRUMENT_FIRST_ONE_ROW_OCR,
+      ),
+    ).toEqual({
+      matched: true,
+      broker: "tiger",
+      layoutVersion: "tiger-instrument-first-dark-v1",
+      confidence: 1,
+    });
+    expect(
+      parseTigerScreenshot(
+        TIGER_BRANDED_INSTRUMENT_FIRST_ONE_ROW_OCR,
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        broker: "tiger",
+        layoutVersion: "tiger-instrument-first-dark-v1",
+        sourceAccountSuffix: undefined,
+        sourceName: "Example Systems",
+        market: "US",
+        symbol: "DEMO",
+        side: "sell",
+        quantity: "3",
+        price: "42.5",
+        sourceTimestampText: "2024/01/02 09:30:00",
+      }),
+    ]);
+  });
+
   it("parses a structurally complete instrument-first Tiger row", () => {
     expect(
       detectScreenshotLayout(TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR),

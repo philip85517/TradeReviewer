@@ -397,9 +397,9 @@ function tigerInstrumentFirstScore(image: OcrImageResult): number {
       lineCenterX(line) / image.width < 0.47 &&
       !isStructuralScreenshotText(line.text),
   }).filter((row) => isCompleteInstrumentFirstRow(image, row));
-  // With no broker label, two repeated complete rows are the independent
-  // evidence that distinguishes this exact history-table structure.
-  const tradeRows = completeTradeRows.length >= 2;
+  // With no trusted broker label, two repeated complete rows are the
+  // independent evidence that distinguishes this exact history-table structure.
+  const tradeRows = completeTradeRows.length >= (account ? 1 : 2);
   return (
     (title ? 0.3 : 0) +
     (account ? 0.1 : 0) +

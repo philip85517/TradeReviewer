@@ -169,3 +169,25 @@ export const TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR: OcrImageResult = image(
     ocrLine("10:45:00", 1_010, 625, 130, 22),
   ],
 );
+
+export const TIGER_BRANDED_INSTRUMENT_FIRST_ONE_ROW_OCR: OcrImageResult = image(
+  "tiger-branded-instrument-first-one-row",
+  1_220,
+  2_000,
+  [
+    ocrLine("交易历史", 42, 110, 180, 30),
+    ocrLine("Tiger Brokers", 430, 190, 220, 24),
+    ocrLine("名称/代码", 20, 310, 180, 22),
+    ocrLine("方向", 575, 310, 100, 22),
+    ocrLine("成交数量", 780, 300, 150, 22),
+    ocrLine("成交价格", 780, 335, 150, 22),
+    ocrLine("成交时间", 1_000, 310, 170, 22),
+    ocrLine("Example Systems", 20, 450, 220, 24),
+    ocrLine("DEMO", 20, 485, 100, 20),
+    ocrLine("卖出", 575, 450, 80, 24),
+    ocrLine("3", 800, 450, 80, 24),
+    ocrLine("42.50", 800, 485, 100, 20),
+    ocrLine("2024/01/02", 1_010, 450, 150, 22),
+    ocrLine("09:30:00", 1_010, 485, 130, 22),
+  ],
+);

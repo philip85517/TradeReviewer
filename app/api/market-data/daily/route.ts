@@ -94,7 +94,11 @@ export async function GET(request: Request) {
         );
       }),
     ]);
-    return json({ ...result, adjustmentMode: "raw" });
+    return json({
+      ...result,
+      request: dailyRequest,
+      adjustmentMode: "raw",
+    });
   } catch (error) {
     const providerError =
       error instanceof MarketDataProviderError ? error : undefined;

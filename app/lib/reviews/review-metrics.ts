@@ -1,6 +1,7 @@
 import Decimal from "decimal.js";
 
 import type {
+  EpisodePlan,
   EpisodeReviewRecord,
   EpisodeReviewStatus,
 } from "./types";
@@ -77,27 +78,105 @@ export function isValidPlannedRiskAmount(value: string) {
   }
 }
 
+export function hasValidPlannedRiskAmounts(
+  record: EpisodeReviewRecord,
+) {
+  return (
+    isValidPlannedRiskAmount(record.plan.plannedRiskAmount) &&
+    (record.planRevisions?.every((revision) =>
+      isValidPlannedRiskAmount(revision.plan.plannedRiskAmount),
+    ) ??
+      true)
+  );
+}
+
 function clean(value: string) {
   return value.trim();
+}
+
+function normalizePlan(plan: EpisodePlan): EpisodePlan {
+  return {
+    ...plan,
+    thesis: clean(plan.thesis),
+    expectedPath: clean(plan.expectedPath),
+    invalidationCondition: clean(plan.invalidationCondition),
+    targetRange: clean(plan.targetRange),
+    plannedRiskAmount: clean(plan.plannedRiskAmount),
+  };
+}
+
+function normalizedPlanRevisions(record: EpisodeReviewRecord) {
+  if (!record.planRevisions) return undefined;
+  const revisions = new Map(
+    record.planRevisions
+      .filter((revision) => !Number.isNaN(Date.parse(revision.knowledgeAt)))
+      .map((revision) => [
+        revision.knowledgeAt,
+        {
+          knowledgeAt: revision.knowledgeAt,
+          plan: normalizePlan(revision.plan),
+        },
+      ]),
+  );
+  return [...revisions.values()].sort((left, right) =>
+    left.knowledgeAt.localeCompare(right.knowledgeAt),
+  );
+}
+
+export function episodePlanAtCursor(
+  record: EpisodeReviewRecord | undefined,
+  cursor: string,
+): EpisodePlan | undefined {
+  if (!record) return undefined;
+  if (!record.planRevisions) return record.plan;
+  return normalizedPlanRevisions(record)
+    ?.findLast((revision) => revision.knowledgeAt <= cursor)
+    ?.plan;
+}
+
+export function mergeEpisodePlanRevision(input: {
+  record: EpisodeReviewRecord;
+  knowledgeAt: string;
+  episodeStartedAt: string;
+  plan: EpisodePlan;
+}): EpisodeReviewRecord {
+  const existing = normalizedPlanRevisions(input.record) ?? [
+    {
+      knowledgeAt: input.episodeStartedAt,
+      plan: normalizePlan(input.record.plan),
+    },
+  ];
+  const revisions = [
+    ...existing.filter(
+      (revision) => revision.knowledgeAt !== input.knowledgeAt,
+    ),
+    {
+      knowledgeAt: input.knowledgeAt,
+      plan: normalizePlan(input.plan),
+    },
+  ].sort((left, right) =>
+    left.knowledgeAt.localeCompare(right.knowledgeAt),
+  );
+
+  return {
+    ...input.record,
+    plan: revisions.at(-1)?.plan ?? normalizePlan(input.plan),
+    planRevisions: revisions,
+  };
 }
 
 export function normalizeEpisodeReviewRecord(
   record: EpisodeReviewRecord,
 ): EpisodeReviewRecord {
+  const planRevisions = normalizedPlanRevisions(record);
   return {
     ...record,
     tagDictionaryVersion:
       record.tagDictionaryVersion ?? REVIEW_TAG_DICTIONARY_VERSION,
     episodeId: clean(record.episodeId),
     instrumentId: clean(record.instrumentId),
-    plan: {
-      ...record.plan,
-      thesis: clean(record.plan.thesis),
-      expectedPath: clean(record.plan.expectedPath),
-      invalidationCondition: clean(record.plan.invalidationCondition),
-      targetRange: clean(record.plan.targetRange),
-      plannedRiskAmount: clean(record.plan.plannedRiskAmount),
-    },
+    plan: normalizePlan(record.plan),
+    ...(planRevisions ? { planRevisions } : {}),
     review: {
       ...record.review,
       riskManagement: clean(record.review.riskManagement),

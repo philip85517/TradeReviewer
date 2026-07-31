@@ -1,29 +1,61 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
+import type { DrawingCommand } from "../../lib/chart/drawing-commands";
+import {
+  isPointNearAnchorHandle,
+  isPointNearRectangleEdge,
+  isPointNearSegment,
+  type ProjectedPoint,
+} from "../../lib/chart/drawing-geometry";
 import type {
-  Drawing,
   DrawingAnchor,
   DrawingTool,
+  NormalizedDrawing,
 } from "../../lib/chart/drawings";
 import {
-  containingCandleTime,
-  priceRangeForCandles,
-} from "../../lib/chart/chart-scale";
+  calculateRiskReward,
+  validateDrawing,
+} from "../../lib/chart/drawings";
+import { containingCandleTime, priceRangeForCandles } from "../../lib/chart/chart-scale";
 import type { Candle } from "../../lib/market/types";
 
 type Props = {
+  episodeId: string;
   candles: Candle[];
   cursor: string;
-  drawings: Drawing[];
+  drawings: NormalizedDrawing[];
+  selectedDrawingId: string | null;
   activeTool: DrawingTool;
-  onAddDrawing: (drawing: Drawing) => void;
+  plannedRiskAmount: string | undefined;
+  currency: string;
+  onSelectDrawing: (id: string | null) => void;
+  onCommand: (command: DrawingCommand) => void;
   coordinateAdapter?: ChartCoordinateAdapter;
   coordinateVersion?: number;
 };
 
 type CanvasSize = { width: number; height: number };
+type DragState = {
+  drawing: NormalizedDrawing;
+  anchorIndex: number | null;
+  originPoint: ProjectedPoint;
+};
+type TextEditor = { anchor: DrawingAnchor; x: number; y: number; drawing?: NormalizedDrawing; value: string };
+type DrawingDraft = Omit<
+  NormalizedDrawing,
+  "version" | "episodeId" | "name" | "zIndex" | "createdAtCursor"
+> & {
+  name?: string;
+};
+type GestureHandlers = {
+  activeTool: DrawingTool;
+  pointerDown: (clientX: number, clientY: number) => boolean;
+  pointerMove: (clientX: number, clientY: number) => void;
+  pointerUp: (clientX: number, clientY: number) => void;
+  pointerCancel: () => void;
+};
 
 export type ChartCoordinateAdapter = {
   timeToX: (time: string) => number | null;
@@ -38,44 +70,226 @@ function drawingId() {
   return `drawing-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
+const names: Record<Exclude<DrawingTool, "cursor">, string> = {
+  "trend-line": "趋势线", "horizontal-line": "水平线", "vertical-line": "垂直线",
+  rectangle: "矩形区间", arrow: "箭头", "price-label": "价格标注", text: "文字标注",
+  measure: "区间测量", "long-risk-reward": "做多盈亏比", "short-risk-reward": "做空盈亏比",
+};
+
+function styleFor(tool: DrawingTool) {
+  return { color: tool === "price-label" ? "#f3ba2f" : "#2f80ed", lineWidth: tool === "trend-line" || tool === "arrow" ? 2 : 1.5, opacity: 0.95 };
+}
+
+function withCanonicalRiskRewardGeometry(
+  drawing: NormalizedDrawing,
+): NormalizedDrawing {
+  if (
+    (drawing.tool !== "long-risk-reward" &&
+      drawing.tool !== "short-risk-reward") ||
+    drawing.anchors.length < 3
+  ) {
+    return drawing;
+  }
+  const [entry, stop, target] = drawing.anchors;
+  const risk = Math.abs(stop.price - entry.price);
+  const reward = Math.abs(target.price - entry.price);
+  const direction = drawing.tool === "long-risk-reward" ? 1 : -1;
+  return {
+    ...drawing,
+    anchors: [
+      entry,
+      { ...stop, price: Number((entry.price - direction * risk).toFixed(2)) },
+      { ...target, price: Number((entry.price + direction * reward).toFixed(2)) },
+    ],
+  };
+}
+
+function localizedCurrency(value: number, currency: string) {
+  return new Intl.NumberFormat("zh-CN", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+export function formatRiskRewardLabel(
+  drawing: NormalizedDrawing,
+  plannedRiskAmount: string | undefined,
+  currency: string,
+) {
+  if (
+    drawing.tool !== "long-risk-reward" &&
+    drawing.tool !== "short-risk-reward"
+  ) {
+    return "";
+  }
+  const [entry, stop, target] = drawing.anchors;
+  if (!entry || !stop || !target) return "";
+  const metrics = calculateRiskReward({
+    direction:
+      drawing.tool === "long-risk-reward" ? "long" : "short",
+    entry: entry.price,
+    stop: stop.price,
+    target: target.price,
+  });
+  const parts = [
+    `风险距离 ${metrics.riskPerShare.toFixed(2)} (${metrics.riskPercent.toFixed(2)}%)`,
+    `收益距离 ${metrics.rewardPerShare.toFixed(2)} (${metrics.rewardPercent.toFixed(2)}%)`,
+    `${metrics.ratio.toFixed(2)}R`,
+  ];
+  const budget = Number(plannedRiskAmount);
+  if (Number.isFinite(budget) && budget > 0) {
+    parts.push(
+      `计划风险 ${localizedCurrency(budget, currency)}`,
+      `潜在收益 ${localizedCurrency(budget * metrics.ratio, currency)}`,
+      `建议数量 ${Math.floor(budget / metrics.riskPerShare)}`,
+    );
+  }
+  return parts.join(" · ");
+}
+
+function riskRewardLabelLines(
+  drawing: NormalizedDrawing,
+  plannedRiskAmount: string | undefined,
+  currency: string,
+) {
+  const [entry, stop, target] = drawing.anchors;
+  if (!entry || !stop || !target) return [];
+  const metrics = calculateRiskReward({
+    direction:
+      drawing.tool === "long-risk-reward" ? "long" : "short",
+    entry: entry.price,
+    stop: stop.price,
+    target: target.price,
+  });
+  const lines = [
+    `入场 ${entry.price.toFixed(2)}`,
+    `止损 ${stop.price.toFixed(2)}`,
+    `目标 ${target.price.toFixed(2)}`,
+    `风险距离 ${metrics.riskPerShare.toFixed(2)} (${metrics.riskPercent.toFixed(2)}%)`,
+    `收益距离 ${metrics.rewardPerShare.toFixed(2)} (${metrics.rewardPercent.toFixed(2)}%)`,
+    `${metrics.ratio.toFixed(2)}R`,
+  ];
+  const budget = Number(plannedRiskAmount);
+  if (Number.isFinite(budget) && budget > 0) {
+    lines.push(
+      `计划风险 ${localizedCurrency(budget, currency)}`,
+      `潜在收益 ${localizedCurrency(budget * metrics.ratio, currency)}`,
+      `建议数量 ${Math.floor(budget / metrics.riskPerShare)}`,
+    );
+  }
+  return lines;
+}
+
+function validationMessage(drawing: NormalizedDrawing) {
+  if (
+    (drawing.tool === "long-risk-reward" ||
+      drawing.tool === "short-risk-reward") &&
+    drawing.anchors[0]?.price === drawing.anchors[1]?.price
+  ) {
+    return "止损价不能等于入场价";
+  }
+  try {
+    validateDrawing(drawing);
+    return null;
+  } catch (error) {
+    return error instanceof Error ? error.message : "绘图参数无效";
+  }
+}
+
 export function DrawingCanvas({
+  episodeId,
   candles,
   cursor,
   drawings,
+  selectedDrawingId,
   activeTool,
-  onAddDrawing,
+  plannedRiskAmount,
+  currency,
+  onSelectDrawing,
+  onCommand,
   coordinateAdapter,
   coordinateVersion = FALLBACK_ADAPTER_VERSION,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const startAnchorRef = useRef<DrawingAnchor | null>(null);
+  const dragRef = useRef<DragState | null>(null);
+  const previewRef = useRef<NormalizedDrawing | null>(null);
+  const gestureHandlersRef = useRef<GestureHandlers | null>(null);
+  const capturedPointerRef = useRef<{
+    target: Element;
+    pointerId: number;
+  } | null>(null);
   const [size, setSize] = useState<CanvasSize>({ width: 0, height: 0 });
-  const [startAnchor, setStartAnchor] = useState<DrawingAnchor | null>(null);
-
+  const [preview, setPreview] = useState<NormalizedDrawing | null>(null);
+  const [editor, setEditor] = useState<TextEditor | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(
+    null,
+  );
   const { minPrice, maxPrice, priceRange } = priceRangeForCandles(candles);
 
   function anchorFromPoint(x: number, y: number): DrawingAnchor {
     const projectedTime = coordinateAdapter?.xToTime(x);
     const projectedPrice = coordinateAdapter?.yToPrice(y);
     if (projectedTime && projectedPrice !== null && projectedPrice !== undefined) {
-      return {
-        time: projectedTime > cursor ? cursor : projectedTime,
-        price: Number(projectedPrice.toFixed(2)),
-      };
+      return { time: projectedTime > cursor ? cursor : projectedTime, price: Number(projectedPrice.toFixed(2)) };
     }
+    const index = Math.max(0, Math.min(candles.length - 1, Math.round((x / Math.max(size.width, 1)) * (candles.length - 1))));
+    const price = maxPrice - (y / Math.max(size.height, 1)) * priceRange;
+    return { time: (candles[index]?.time ?? cursor) > cursor ? cursor : (candles[index]?.time ?? cursor), price: Number(price.toFixed(2)) };
+  }
 
-    const index = Math.max(
-      0,
-      Math.min(
-        candles.length - 1,
-        Math.round((x / Math.max(size.width, 1)) * (candles.length - 1)),
-      ),
-    );
-    const price =
-      maxPrice - (y / Math.max(size.height, 1)) * priceRange;
+  const pointFor = useCallback((anchor: DrawingAnchor): ProjectedPoint => {
+    const projectedX = coordinateAdapter?.timeToX(containingCandleTime(candles, anchor.time));
+    const projectedY = coordinateAdapter?.priceToY(anchor.price);
+    if (projectedX !== null && projectedX !== undefined && projectedY !== null && projectedY !== undefined) return { x: projectedX, y: projectedY };
+    const index = Math.max(0, candles.findIndex((candle) => candle.time >= anchor.time));
+    return { x: candles.length <= 1 ? 0 : (index / (candles.length - 1)) * size.width, y: ((maxPrice - anchor.price) / priceRange) * size.height };
+  }, [candles, coordinateAdapter, maxPrice, priceRange, size.width, size.height]);
+
+  function normalized(drawing: DrawingDraft): NormalizedDrawing {
     return {
-      time: candles[index]?.time ?? cursor,
-      price: Number(price.toFixed(2)),
+      ...drawing,
+      version: 2,
+      episodeId,
+      name: drawing.name ?? names[drawing.tool],
+      zIndex: drawings.length,
+      createdAtCursor: cursor,
     };
+  }
+
+  function emitAdd(drawing: DrawingDraft) {
+    const normalizedDrawing = withCanonicalRiskRewardGeometry(
+      normalized(drawing),
+    );
+    const message = validationMessage(normalizedDrawing);
+    if (message) {
+      setValidationError(message);
+      return false;
+    }
+    setValidationError(null);
+    onCommand({
+      type: "add",
+      drawing: normalizedDrawing,
+    });
+    return true;
+  }
+
+  function emitReplace(drawing: NormalizedDrawing) {
+    const normalizedDrawing =
+      withCanonicalRiskRewardGeometry(drawing);
+    const message = validationMessage(normalizedDrawing);
+    if (message) {
+      setValidationError(message);
+      return false;
+    }
+    setValidationError(null);
+    onCommand({
+      type: "replace",
+      drawing: normalizedDrawing,
+    });
+    return true;
   }
 
   useEffect(() => {
@@ -97,217 +311,416 @@ export function DrawingCanvas({
     if (!canvas || size.width === 0 || size.height === 0) return;
     const context = canvas.getContext("2d");
     if (!context) return;
-
-    context.setTransform(
-      window.devicePixelRatio,
-      0,
-      0,
-      window.devicePixelRatio,
-      0,
-      0,
-    );
+    context.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
     context.clearRect(0, 0, size.width, size.height);
-
-    const coordinates = (anchor: DrawingAnchor) => {
-      const projectedX = coordinateAdapter?.timeToX(
-        containingCandleTime(candles, anchor.time),
-      );
-      const projectedY = coordinateAdapter?.priceToY(anchor.price);
-      if (
-        projectedX !== null &&
-        projectedX !== undefined &&
-        projectedY !== null &&
-        projectedY !== undefined
-      ) {
-        return { x: projectedX, y: projectedY };
-      }
-
-      const index = Math.max(
-        0,
-        candles.findIndex((candle) => candle.time >= anchor.time),
-      );
-      return {
-        x:
-          candles.length <= 1
-            ? 0
-            : (index / (candles.length - 1)) * size.width,
-        y: ((maxPrice - anchor.price) / priceRange) * size.height,
-      };
-    };
-
-    for (const drawing of drawings) {
+    for (const drawing of preview ? drawings.map((item) => item.id === preview.id ? preview : item) : drawings) {
       if (drawing.hidden || drawing.anchors.length === 0) continue;
-      const points = drawing.anchors.map(coordinates);
+      const points = drawing.anchors.map(pointFor);
       context.globalAlpha = drawing.style.opacity;
       context.strokeStyle = drawing.style.color;
       context.fillStyle = drawing.style.color;
       context.lineWidth = drawing.style.lineWidth;
       context.setLineDash([]);
-
-      if (drawing.tool === "trend-line" && points[1]) {
-        context.beginPath();
-        context.moveTo(points[0].x, points[0].y);
-        context.lineTo(points[1].x, points[1].y);
-        context.stroke();
+      if ((drawing.tool === "trend-line" || drawing.tool === "arrow" || drawing.tool === "measure") && points[1]) {
+        context.beginPath(); context.moveTo(points[0].x, points[0].y); context.lineTo(points[1].x, points[1].y); context.stroke();
+        if (drawing.tool === "arrow") { context.beginPath(); context.arc(points[1].x, points[1].y, 3, 0, Math.PI * 2); context.fill(); }
+        if (drawing.tool === "measure") { context.font = "600 11px var(--font-geist-mono)"; context.fillText(`${Math.abs(drawing.anchors[1].price - drawing.anchors[0].price).toFixed(2)}`, points[1].x + 6, points[1].y - 6); }
       }
-
-      if (
-        drawing.tool === "horizontal-line" ||
-        drawing.tool === "price-label"
-      ) {
-        context.setLineDash([6, 5]);
-        context.beginPath();
-        context.moveTo(0, points[0].y);
-        context.lineTo(size.width, points[0].y);
-        context.stroke();
-        if (drawing.tool === "price-label") {
-          const label = drawing.anchors[0].price.toFixed(2);
-          context.setLineDash([]);
-          context.fillRect(size.width - 54, points[0].y - 10, 54, 20);
-          context.fillStyle = "#ffffff";
-          context.font = "11px var(--font-geist-mono)";
-          context.fillText(label, size.width - 48, points[0].y + 4);
-        }
+      if (drawing.tool === "rectangle" && points[1]) { context.strokeRect(points[0].x, points[0].y, points[1].x - points[0].x, points[1].y - points[0].y); }
+      if (drawing.tool === "vertical-line") { context.setLineDash([6, 5]); context.beginPath(); context.moveTo(points[0].x, 0); context.lineTo(points[0].x, size.height); context.stroke(); }
+      if (drawing.tool === "horizontal-line" || drawing.tool === "price-label") {
+        context.setLineDash([6, 5]); context.beginPath(); context.moveTo(0, points[0].y); context.lineTo(size.width, points[0].y); context.stroke();
+        if (drawing.tool === "price-label") { context.setLineDash([]); context.fillRect(size.width - 54, points[0].y - 10, 54, 20); context.fillStyle = "#ffffff"; context.font = "11px var(--font-geist-mono)"; context.fillText(drawing.anchors[0].price.toFixed(2), size.width - 48, points[0].y + 4); }
       }
-
-      if (drawing.tool === "text") {
-        context.font = "600 12px var(--font-geist-sans)";
-        context.fillText(drawing.text ?? "关键位", points[0].x + 6, points[0].y - 8);
+      if (drawing.tool === "text") { context.font = "600 12px var(--font-geist-sans)"; context.fillText(drawing.text ?? "关键位", points[0].x + 6, points[0].y - 8); }
+      if ((drawing.tool === "long-risk-reward" || drawing.tool === "short-risk-reward") && points[1] && points[2]) {
+        const left = Math.min(points[0].x, points[1].x, points[2].x); const right = Math.max(points[0].x, points[1].x, points[2].x, left + 110);
+        context.globalAlpha = 0.2; context.fillStyle = "#ef5350"; context.fillRect(left, Math.min(points[0].y, points[1].y), right - left, Math.abs(points[1].y - points[0].y)); context.fillStyle = "#26a69a"; context.fillRect(left, Math.min(points[0].y, points[2].y), right - left, Math.abs(points[2].y - points[0].y));
+        context.globalAlpha = 0.95; context.fillStyle = "#e6edf7"; context.font = "600 10px var(--font-geist-mono)";
+        const lines = riskRewardLabelLines(
+          drawing,
+          plannedRiskAmount,
+          currency,
+        );
+        const lineHeight = 13;
+        const widestLine = Math.max(
+          ...lines.map((line) =>
+            context.measureText
+              ? context.measureText(line).width
+              : line.length * 6,
+          ),
+          0,
+        );
+        const labelX = Math.min(
+          Math.max(left + 8, 4),
+          Math.max(4, size.width - widestLine - 4),
+        );
+        const labelY = Math.min(
+          Math.max(points[0].y - 8, 12),
+          Math.max(
+            12,
+            size.height - (lines.length - 1) * lineHeight - 4,
+          ),
+        );
+        lines.forEach((line, index) => {
+          context.fillText(line, labelX, labelY + index * lineHeight);
+        });
       }
-
-      if (drawing.tool === "risk-reward" && points[1] && points[2]) {
-        const left = Math.min(points[0].x, points[1].x, points[2].x);
-        const right = Math.max(points[0].x, points[1].x, points[2].x, left + 110);
-        const entryY = points[0].y;
-        const stopY = points[1].y;
-        const targetY = points[2].y;
-        context.globalAlpha = 0.2;
-        context.fillStyle = "#ef5350";
-        context.fillRect(left, Math.min(entryY, stopY), right - left, Math.abs(stopY - entryY));
-        context.fillStyle = "#26a69a";
-        context.fillRect(left, Math.min(entryY, targetY), right - left, Math.abs(targetY - entryY));
-        context.globalAlpha = 0.9;
-        context.strokeStyle = "#e6edf7";
-        context.setLineDash([5, 4]);
-        context.beginPath();
-        context.moveTo(left, entryY);
-        context.lineTo(right, entryY);
-        context.stroke();
-        const risk = Math.abs(drawing.anchors[0].price - drawing.anchors[1].price);
-        const reward = Math.abs(drawing.anchors[2].price - drawing.anchors[0].price);
-        context.setLineDash([]);
-        context.fillStyle = "#e6edf7";
-        context.font = "600 11px var(--font-geist-mono)";
-        context.fillText(`R:R 1:${(reward / Math.max(risk, 0.01)).toFixed(1)}`, left + 8, entryY - 8);
-      }
+      if (drawing.id === selectedDrawingId) { context.fillStyle = "#ffffff"; for (const point of points) { context.fillRect(point.x - 3, point.y - 3, 6, 6); } }
     }
-
     context.globalAlpha = 1;
-  }, [
-    candles,
-    coordinateAdapter,
-    coordinateVersion,
-    drawings,
-    maxPrice,
-    minPrice,
-    priceRange,
-    size,
-  ]);
+  }, [candles, coordinateAdapter, coordinateVersion, currency, drawings, maxPrice, minPrice, plannedRiskAmount, pointFor, preview, priceRange, selectedDrawingId, size]);
 
-  function createSingleAnchorDrawing(anchor: DrawingAnchor) {
-    const tool = activeTool;
-    if (
-      tool !== "horizontal-line" &&
-      tool !== "price-label" &&
-      tool !== "text"
-    ) {
-      return;
-    }
-    onAddDrawing({
-      id: drawingId(),
-      tool,
-      anchors: [anchor],
-      style: {
-        color: tool === "price-label" ? "#f3ba2f" : "#2f80ed",
-        lineWidth: 1.5,
-        opacity: 0.95,
-      },
-      text: tool === "text" ? "关键观察" : undefined,
-      hidden: false,
-      locked: false,
-      visibleOn: "all",
-      stage: "during-replay",
+  function hitDrawing(point: ProjectedPoint) {
+    return [...drawings].sort((a, b) => (b.zIndex ?? 0) - (a.zIndex ?? 0)).find((drawing) => {
+      if (drawing.hidden) return false;
+      const points = drawing.anchors.map(pointFor);
+      if (points.some((anchor) => isPointNearAnchorHandle(point, anchor))) return true;
+      if (drawing.tool === "rectangle" && points[1]) return isPointNearRectangleEdge(point, points[0], points[1]);
+      if (drawing.tool === "horizontal-line" || drawing.tool === "price-label") return Math.abs(point.y - points[0].y) <= 6;
+      if (drawing.tool === "vertical-line") return Math.abs(point.x - points[0].x) <= 6;
+      return Boolean(points[1] && isPointNearSegment(point, points[0], points[1]));
     });
   }
 
+  function beginEdit(drawing: NormalizedDrawing, point: ProjectedPoint) {
+    const points = drawing.anchors.map(pointFor);
+    const anchorIndex = points.findIndex((item) => isPointNearAnchorHandle(point, item));
+    dragRef.current = {
+      drawing,
+      anchorIndex: anchorIndex < 0 ? null : anchorIndex,
+      originPoint: point,
+    };
+  }
+
+  function createDrawing(first: DrawingAnchor, last: DrawingAnchor) {
+    const tool = activeTool;
+    if (tool === "cursor" || tool === "text" || tool === "horizontal-line" || tool === "vertical-line" || tool === "price-label") return;
+    const base = { id: drawingId(), tool, anchors: [first, last], style: styleFor(tool), hidden: false, locked: false, visibleOn: "all" as const, stage: "during-replay" as const };
+    if (tool === "long-risk-reward" || tool === "short-risk-reward") {
+      const direction = tool === "short-risk-reward" ? "short" : "long";
+      const risk = Math.abs(first.price - last.price);
+      const stop = direction === "long"
+        ? first.price - risk
+        : first.price + risk;
+      const target = direction === "long"
+        ? first.price + risk * 2
+        : first.price - risk * 2;
+      emitAdd({
+        ...base,
+        tool,
+        anchors: [
+          first,
+          { ...last, price: Number(stop.toFixed(2)) },
+          { ...last, price: Number(target.toFixed(2)) },
+        ],
+      });
+      return;
+    }
+    emitAdd(base);
+  }
+
+  function commitText() {
+    if (!editor) return;
+    const text = editor.value.trim();
+    if (text) {
+      if (editor.drawing) emitReplace({ ...editor.drawing, text });
+      else emitAdd({ id: drawingId(), tool: "text", anchors: [editor.anchor], text, style: styleFor("text"), hidden: false, locked: false, visibleOn: "all", stage: "during-replay" });
+    }
+    setEditor(null);
+  }
+
+  function pointFromClient(clientX: number, clientY: number) {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+    const rect = canvas.getBoundingClientRect();
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  }
+
+  function handlePointerDown(clientX: number, clientY: number) {
+    if (candles.length === 0) return false;
+    const point = pointFromClient(clientX, clientY);
+    if (!point) return false;
+    const anchor = anchorFromPoint(point.x, point.y);
+    if (activeTool === "cursor") {
+      const drawing = hitDrawing(point);
+      onSelectDrawing(drawing?.id ?? null);
+      if (!drawing) return false;
+      if (drawing?.tool === "text" && !drawing.locked) {
+        const textPoint = pointFor(drawing.anchors[0]);
+        setEditor({
+          anchor: drawing.anchors[0],
+          x: textPoint.x,
+          y: textPoint.y,
+          drawing,
+          value: drawing.text ?? "",
+        });
+        return true;
+      }
+      if (drawing && !drawing.locked) beginEdit(drawing, point);
+      return true;
+    }
+    if (activeTool === "text") {
+      setEditor({ anchor, x: point.x, y: point.y, value: "" });
+      return true;
+    }
+    if (
+      activeTool === "horizontal-line" ||
+      activeTool === "vertical-line" ||
+      activeTool === "price-label"
+    ) {
+      emitAdd({
+        id: drawingId(),
+        tool: activeTool,
+        anchors: [anchor],
+        style: styleFor(activeTool),
+        hidden: false,
+        locked: false,
+        visibleOn: "all",
+        stage: "during-replay",
+      });
+      return true;
+    }
+    startAnchorRef.current = anchor;
+    return true;
+  }
+
+  function handlePointerMove(clientX: number, clientY: number) {
+    const drag = dragRef.current;
+    if (!drag) return;
+    const point = pointFromClient(clientX, clientY);
+    if (!point) return;
+    const anchor = anchorFromPoint(point.x, point.y);
+    let anchors: DrawingAnchor[];
+    if (drag.anchorIndex !== null) {
+      anchors = drag.drawing.anchors.map((item, index) =>
+        index === drag.anchorIndex ? anchor : item,
+      );
+    } else {
+      const requestedX = point.x - drag.originPoint.x;
+      const requestedY = point.y - drag.originPoint.y;
+      const cursorX = coordinateAdapter?.timeToX(cursor);
+      const latestX = Math.max(
+        ...drag.drawing.anchors.map((item) => pointFor(item).x),
+      );
+      const translatedX =
+        cursorX === null || cursorX === undefined
+          ? requestedX
+          : Math.min(requestedX, cursorX - latestX);
+      anchors = drag.drawing.anchors.map((item) => {
+        const projected = pointFor(item);
+        return anchorFromPoint(
+          projected.x + translatedX,
+          projected.y + requestedY,
+        );
+      });
+    }
+    const nextPreview = { ...drag.drawing, anchors };
+    previewRef.current = nextPreview;
+    setPreview(nextPreview);
+  }
+
+  function handlePointerUp(clientX: number, clientY: number) {
+    const drag = dragRef.current;
+    if (drag) {
+      if (previewRef.current) emitReplace(previewRef.current);
+      dragRef.current = null;
+      previewRef.current = null;
+      setPreview(null);
+      return;
+    }
+    const startAnchor = startAnchorRef.current;
+    if (!startAnchor) return;
+    const point = pointFromClient(clientX, clientY);
+    if (!point) return;
+    createDrawing(startAnchor, anchorFromPoint(point.x, point.y));
+    startAnchorRef.current = null;
+  }
+
+  function cancelGesture() {
+    dragRef.current = null;
+    previewRef.current = null;
+    startAnchorRef.current = null;
+    setPreview(null);
+  }
+
+  function capturePointer(target: Element, pointerId: number) {
+    if (!Number.isFinite(pointerId)) return;
+    const captureTarget = target as Element & {
+      setPointerCapture?: (id: number) => void;
+    };
+    captureTarget.setPointerCapture?.(pointerId);
+    capturedPointerRef.current = { target, pointerId };
+  }
+
+  function releaseCapturedPointer(pointerId?: number) {
+    const captured = capturedPointerRef.current;
+    if (
+      !captured ||
+      (pointerId !== undefined && captured.pointerId !== pointerId)
+    ) {
+      return;
+    }
+    capturedPointerRef.current = null;
+    const captureTarget = captured.target as Element & {
+      releasePointerCapture?: (id: number) => void;
+    };
+    captureTarget.releasePointerCapture?.(captured.pointerId);
+  }
+
+  useLayoutEffect(() => {
+    gestureHandlersRef.current = {
+      activeTool,
+      pointerDown: handlePointerDown,
+      pointerMove: handlePointerMove,
+      pointerUp: handlePointerUp,
+      pointerCancel: cancelGesture,
+    };
+  });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const stage = canvas?.closest(".chart-stage");
+    if (!stage) return;
+    const fromTextEditor = (event: Event) =>
+      event.target instanceof Element &&
+      Boolean(event.target.closest(".drawing-text-editor"));
+    const onPointerDown = (event: Event) => {
+      if (fromTextEditor(event)) return;
+      const handlers = gestureHandlersRef.current;
+      if (handlers?.activeTool !== "cursor") return;
+      const pointer = event as PointerEvent;
+      const owned = handlers.pointerDown(
+        pointer.clientX,
+        pointer.clientY,
+      );
+      if (!owned) return;
+      pointer.preventDefault();
+      pointer.stopPropagation();
+      if (dragRef.current) {
+        capturePointer(stage, pointer.pointerId);
+      }
+    };
+    const onPointerMove = (event: Event) => {
+      if (fromTextEditor(event)) return;
+      const handlers = gestureHandlersRef.current;
+      if (
+        handlers?.activeTool !== "cursor" ||
+        !capturedPointerRef.current
+      ) {
+        return;
+      }
+      const pointer = event as PointerEvent;
+      pointer.preventDefault();
+      pointer.stopPropagation();
+      handlers.pointerMove(pointer.clientX, pointer.clientY);
+    };
+    const onPointerUp = (event: Event) => {
+      if (fromTextEditor(event)) return;
+      const handlers = gestureHandlersRef.current;
+      if (
+        handlers?.activeTool !== "cursor" ||
+        !capturedPointerRef.current
+      ) {
+        return;
+      }
+      const pointer = event as PointerEvent;
+      pointer.preventDefault();
+      pointer.stopPropagation();
+      handlers.pointerUp(pointer.clientX, pointer.clientY);
+      releaseCapturedPointer(pointer.pointerId);
+    };
+    const onPointerCancel = (event: Event) => {
+      if (!capturedPointerRef.current) return;
+      const pointer = event as PointerEvent;
+      pointer.preventDefault();
+      pointer.stopPropagation();
+      gestureHandlersRef.current?.pointerCancel();
+      releaseCapturedPointer(pointer.pointerId);
+    };
+    const onLostPointerCapture = () => {
+      if (!capturedPointerRef.current) return;
+      gestureHandlersRef.current?.pointerCancel();
+      capturedPointerRef.current = null;
+    };
+    stage.addEventListener("pointerdown", onPointerDown, true);
+    stage.addEventListener("pointermove", onPointerMove, true);
+    stage.addEventListener("pointerup", onPointerUp, true);
+    stage.addEventListener("pointercancel", onPointerCancel, true);
+    stage.addEventListener(
+      "lostpointercapture",
+      onLostPointerCapture,
+      true,
+    );
+    return () => {
+      stage.removeEventListener("pointerdown", onPointerDown, true);
+      stage.removeEventListener("pointermove", onPointerMove, true);
+      stage.removeEventListener("pointerup", onPointerUp, true);
+      stage.removeEventListener(
+        "pointercancel",
+        onPointerCancel,
+        true,
+      );
+      stage.removeEventListener(
+        "lostpointercapture",
+        onLostPointerCapture,
+        true,
+      );
+      dragRef.current = null;
+      previewRef.current = null;
+      startAnchorRef.current = null;
+      capturedPointerRef.current = null;
+      gestureHandlersRef.current = null;
+    };
+  }, []);
+
+  const drawingMode = activeTool !== "cursor";
   return (
-    <canvas
-      ref={canvasRef}
-      className={`drawing-canvas ${activeTool !== "cursor" ? "drawing-mode" : ""}`}
-      aria-label="绘图画布"
-      onPointerDown={(event) => {
-        if (activeTool === "cursor" || candles.length === 0) return;
-        const rect = event.currentTarget.getBoundingClientRect();
-        const anchor = anchorFromPoint(
-          event.clientX - rect.left,
-          event.clientY - rect.top,
-        );
-        if (
-          activeTool === "horizontal-line" ||
-          activeTool === "price-label" ||
-          activeTool === "text"
-        ) {
-          createSingleAnchorDrawing(anchor);
-          return;
-        }
-        setStartAnchor(anchor);
-        event.currentTarget.setPointerCapture(event.pointerId);
-      }}
-      onPointerUp={(event) => {
-        if (!startAnchor || candles.length === 0) return;
-        const rect = event.currentTarget.getBoundingClientRect();
-        const endAnchor = anchorFromPoint(
-          event.clientX - rect.left,
-          event.clientY - rect.top,
-        );
-
-        if (activeTool === "trend-line") {
-          onAddDrawing({
-            id: drawingId(),
-            tool: "trend-line",
-            anchors: [startAnchor, endAnchor],
-            style: { color: "#2f80ed", lineWidth: 2, opacity: 0.95 },
-            hidden: false,
-            locked: false,
-            visibleOn: "all",
-            stage: "during-replay",
-          });
-        }
-
-        if (activeTool === "risk-reward") {
-          const entry = startAnchor.price;
-          const stop = endAnchor.price;
-          const isLong = stop < entry;
-          const target = isLong
-            ? entry + Math.abs(entry - stop) * 2
-            : entry - Math.abs(stop - entry) * 2;
-          onAddDrawing({
-            id: drawingId(),
-            tool: "risk-reward",
-            anchors: [
-              startAnchor,
-              endAnchor,
-              { ...endAnchor, price: Number(target.toFixed(2)) },
-            ],
-            style: { color: "#d9e2f1", lineWidth: 1, opacity: 0.95 },
-            hidden: false,
-            locked: false,
-            visibleOn: "all",
-            stage: "during-replay",
-          });
-        }
-        setStartAnchor(null);
-      }}
-    />
+    <div className={`drawing-canvas ${drawingMode ? "drawing-mode" : ""}`}>
+      <canvas
+        ref={canvasRef}
+        role="img"
+        aria-label="绘图画布"
+        onPointerDown={(event) => {
+          if (!handlePointerDown(event.clientX, event.clientY)) return;
+          event.preventDefault();
+          event.stopPropagation();
+          if (startAnchorRef.current || dragRef.current) {
+            capturePointer(event.currentTarget, event.pointerId);
+          }
+        }}
+        onPointerMove={(event) => {
+          if (!capturedPointerRef.current) return;
+          event.preventDefault();
+          event.stopPropagation();
+          handlePointerMove(event.clientX, event.clientY);
+        }}
+        onPointerUp={(event) => {
+          if (!capturedPointerRef.current) return;
+          event.preventDefault();
+          event.stopPropagation();
+          handlePointerUp(event.clientX, event.clientY);
+          releaseCapturedPointer(event.pointerId);
+        }}
+        onPointerCancel={(event) => {
+          if (!capturedPointerRef.current) return;
+          event.preventDefault();
+          event.stopPropagation();
+          cancelGesture();
+          releaseCapturedPointer(event.pointerId);
+        }}
+        onLostPointerCapture={() => {
+          if (!capturedPointerRef.current) return;
+          cancelGesture();
+          capturedPointerRef.current = null;
+        }}
+      />
+      {validationError && (
+        <p className="drawing-validation-error" role="alert">
+          {validationError}
+        </p>
+      )}
+      {editor && <input autoFocus className="drawing-text-editor" aria-label="文字标注" value={editor.value} style={{ left: editor.x + 4, top: editor.y - 24, pointerEvents: "auto" }} onChange={(event) => setEditor({ ...editor, value: event.target.value })} onBlur={commitText} onKeyDown={(event) => { if (event.key === "Enter") commitText(); if (event.key === "Escape") setEditor(null); }} />}
+    </div>
   );
 }

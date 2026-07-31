@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import type { CoverageSegment } from "./contracts";
+import type {
+  CoverageSegment,
+  IntervalCoverageSegment,
+} from "./contracts";
 import { coverageStatusForSegments } from "./sync-status";
 
 describe("coverageStatusForSegments", () => {
@@ -17,6 +20,20 @@ describe("coverageStatusForSegments", () => {
         endDate: "2025-12-31",
         status: "complete",
         missingTradingDates: [],
+      },
+    ];
+
+    expect(coverageStatusForSegments(segments)).toBe("partial");
+  });
+
+  it("reports partial when cached 15m coverage is provider-limited", () => {
+    const segments: IntervalCoverageSegment[] = [
+      {
+        interval: "15m",
+        requestedStart: "2025-01-01T00:00:00.000Z",
+        requestedEnd: "2025-01-31T23:59:59.999Z",
+        status: "partial",
+        reason: "provider-history-limit",
       },
     ];
 

@@ -6,18 +6,31 @@ export type DrawingTool =
   | "cursor"
   | "trend-line"
   | "horizontal-line"
+  | "vertical-line"
+  | "rectangle"
+  | "arrow"
   | "price-label"
   | "text"
-  | "risk-reward";
+  | "measure"
+  | "long-risk-reward"
+  | "short-risk-reward";
 
 export type DrawingAnchor = {
   time: string;
   price: number;
 };
 
-export type Drawing = {
+export type CanonicalDrawingTool = Exclude<
+  DrawingTool,
+  "cursor"
+>;
+
+export type LegacyDrawing = {
+  version?: 1 | 2;
   id: string;
-  tool: Exclude<DrawingTool, "cursor">;
+  episodeId?: string;
+  name?: string;
+  tool: CanonicalDrawingTool | "risk-reward";
   anchors: DrawingAnchor[];
   style: {
     color: string;
@@ -25,6 +38,7 @@ export type Drawing = {
     opacity: number;
   };
   text?: string;
+  zIndex?: number;
   hidden: boolean;
   locked: boolean;
   visibleOn: "all" | Timeframe[];
@@ -34,6 +48,18 @@ export type Drawing = {
    * every newly committed drawing receives the current cursor.
    */
   createdAtCursor?: string;
+};
+
+export type NormalizedDrawing = Omit<
+  LegacyDrawing,
+  "version" | "episodeId" | "name" | "tool" | "zIndex" | "createdAtCursor"
+> & {
+  version: 2;
+  episodeId: string;
+  name: string;
+  tool: CanonicalDrawingTool;
+  zIndex: number;
+  createdAtCursor: string;
 };
 
 export type RiskRewardInput = {
@@ -58,10 +84,99 @@ function number(value: Decimal) {
   return value.toDecimalPlaces(6).toNumber();
 }
 
+const anchorCounts: Record<DrawingTool | "risk-reward", number> = {
+  cursor: 0,
+  "trend-line": 2,
+  "horizontal-line": 1,
+  "vertical-line": 1,
+  rectangle: 2,
+  arrow: 2,
+  "price-label": 1,
+  text: 1,
+  measure: 2,
+  "long-risk-reward": 3,
+  "short-risk-reward": 3,
+  "risk-reward": 3,
+};
+
+export function requiredAnchorCount(tool: DrawingTool | "risk-reward") {
+  return anchorCounts[tool];
+}
+
+function canonicalTool(
+  drawing: LegacyDrawing | NormalizedDrawing,
+): CanonicalDrawingTool {
+  if (drawing.tool !== "risk-reward") return drawing.tool;
+  return drawing.anchors[1]?.price < drawing.anchors[0]?.price
+    ? "long-risk-reward"
+    : "short-risk-reward";
+}
+
+export function validateDrawing(
+  drawing: LegacyDrawing | NormalizedDrawing,
+) {
+  if (drawing.anchors.length !== requiredAnchorCount(drawing.tool)) {
+    throw new Error(`绘图锚点数量必须为 ${requiredAnchorCount(drawing.tool)}`);
+  }
+  if (
+    drawing.anchors.some(
+      (anchor) =>
+        !anchor.time ||
+        !Number.isFinite(anchor.price),
+    )
+  ) {
+    throw new Error("绘图锚点无效");
+  }
+
+  const tool = canonicalTool(drawing);
+  if (tool === "long-risk-reward") {
+    const [entry, stop, target] = drawing.anchors;
+    if (stop.price >= entry.price) {
+      throw new Error("做多止损必须低于入场价");
+    }
+    if (target.price <= entry.price) {
+      throw new Error("做多目标必须高于入场价");
+    }
+  }
+  if (tool === "short-risk-reward") {
+    const [entry, stop, target] = drawing.anchors;
+    if (stop.price <= entry.price) {
+      throw new Error("做空止损必须高于入场价");
+    }
+    if (target.price >= entry.price) {
+      throw new Error("做空目标必须低于入场价");
+    }
+  }
+}
+
+export function normalizeDrawing(
+  drawing: LegacyDrawing | NormalizedDrawing,
+  episodeId: string,
+  replayCursor: string,
+  zIndex: number,
+): NormalizedDrawing {
+  const tool = canonicalTool(drawing);
+  const normalized: NormalizedDrawing = {
+    ...drawing,
+    version: 2,
+    episodeId,
+    name: drawing.name ?? tool,
+    tool,
+    anchors: drawing.anchors.map((anchor) => ({ ...anchor })),
+    style: { ...drawing.style },
+    visibleOn:
+      drawing.visibleOn === "all" ? "all" : [...drawing.visibleOn],
+    zIndex: drawing.version === 2 ? (drawing.zIndex ?? zIndex) : zIndex,
+    createdAtCursor: drawing.createdAtCursor ?? replayCursor,
+  };
+  validateDrawing(normalized);
+  return normalized;
+}
+
 export function clampDrawingToCursor(
-  drawing: Drawing,
+  drawing: NormalizedDrawing,
   cursor: string,
-): Drawing {
+): NormalizedDrawing {
   return {
     ...drawing,
     anchors: drawing.anchors.map((anchor) => ({
@@ -76,19 +191,20 @@ export function clampDrawingToCursor(
 }
 
 export function visibleDrawingsAtCursor(
-  drawings: Drawing[],
+  drawings: NormalizedDrawing[],
   cursor: string,
   timeframe: Timeframe,
 ) {
   return drawings.filter((drawing) => {
-    // Missing metadata is legacy/unknown knowledge. Storage migration assigns
-    // the saved replay cursor; direct unknown values stay hidden conservatively.
-    const knowledgeTime = drawing.createdAtCursor ?? "\uffff";
     const visibleOnTimeframe =
       drawing.visibleOn === "all" ||
       drawing.visibleOn.includes(timeframe);
 
-    return !drawing.hidden && visibleOnTimeframe && knowledgeTime <= cursor;
+    return (
+      !drawing.hidden &&
+      visibleOnTimeframe &&
+      drawing.createdAtCursor <= cursor
+    );
   });
 }
 

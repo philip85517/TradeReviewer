@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-export function useModalFocus(onClose: () => void) {
+export function useModalFocus(onClose: () => void, active = true) {
   const dialogRef = useRef<HTMLElement>(null);
   const onCloseRef = useRef(onClose);
 
@@ -11,6 +11,7 @@ export function useModalFocus(onClose: () => void) {
   }, [onClose]);
 
   useEffect(() => {
+    if (!active) return;
     const previouslyFocused = document.activeElement as HTMLElement | null;
     const dialog = dialogRef.current;
     const focusableSelector =
@@ -44,7 +45,7 @@ export function useModalFocus(onClose: () => void) {
       document.removeEventListener("keydown", onKeyDown);
       previouslyFocused?.focus();
     };
-  }, []);
+  }, [active]);
 
   return dialogRef;
 }

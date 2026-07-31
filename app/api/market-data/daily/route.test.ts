@@ -76,6 +76,15 @@ describe("GET /api/market-data/daily", () => {
     expect(body.provider).toBe("tencent");
     expect(body.providerSymbol).toBe("hk01810");
     expect(body.adjustmentMode).toBe("raw");
+    expect(body).toMatchObject({
+      request: {
+        instrumentId: "HK:1810",
+        symbol: "1810",
+        market: "HK",
+        startDate: "2025-01-01",
+        endDate: "2025-01-31",
+      },
+    });
     expect(body.candles[0].close).toBe("34.5");
   });
 });

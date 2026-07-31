@@ -13,6 +13,32 @@
       "source": "https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv5_mobile_rec_onnx_infer.tar"
     }
   ],
+  "modules": [
+    {
+      "path": "ort/ort-wasm-simd-threaded.asyncify.mjs",
+      "bytes": 48533,
+      "sha256": "dee69056fbfedf946ba0d9026e191c1361c5455895355e03f4346bf9308e58eb",
+      "source": "node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.mjs"
+    },
+    {
+      "path": "ort/ort-wasm-simd-threaded.jsep.mjs",
+      "bytes": 46595,
+      "sha256": "9a99acd12acc495184c9ea4d458ac9424f8180aacfbc7b8371ed64f9351e4a81",
+      "source": "node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.mjs"
+    },
+    {
+      "path": "ort/ort-wasm-simd-threaded.jspi.mjs",
+      "bytes": 45481,
+      "sha256": "1622f02ae35e41f8df9db21f750ae1d494c1b0df3cb3f9d669ea2be8a69a0417",
+      "source": "node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jspi.mjs"
+    },
+    {
+      "path": "ort/ort-wasm-simd-threaded.mjs",
+      "bytes": 24274,
+      "sha256": "5687566b1bc1c8cf628d76c2ddb16b2a3b81a7997273d4666564880495088e57",
+      "source": "node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.mjs"
+    }
+  ],
   "wasm": [
     {
       "path": "ort/ort-wasm-simd-threaded.asyncify.wasm",

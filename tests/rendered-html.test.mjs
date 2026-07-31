@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
+import { pathToFileURL } from "node:url";
 
 async function render() {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -55,4 +56,15 @@ test("client bundle contains no unrevealed demo executions", () => {
     .join("\n");
 
   assert.doesNotMatch(bundle, /demo-buy-1|demo-buy-2|demo-sell-1/);
+});
+
+test("emits an importable same-origin ONNX Runtime JSEP module", async () => {
+  const runtimeModule = join(
+    new URL("../dist/client/ocr/ort/", import.meta.url).pathname,
+    "ort-wasm-simd-threaded.jsep.mjs",
+  );
+
+  const imported = await import(pathToFileURL(runtimeModule).href);
+
+  assert.equal(typeof imported.default, "function");
 });

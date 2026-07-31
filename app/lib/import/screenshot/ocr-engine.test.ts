@@ -98,7 +98,7 @@ describe("same-origin PaddleOCR adapter", () => {
         worker: true,
         ortOptions: expect.objectContaining({
           backend: "wasm",
-          wasmPaths: "/ocr/ort/",
+          wasmPaths: "http://localhost:3000/ocr/ort/",
           numThreads: 1,
           simd: true,
         }),
@@ -118,7 +118,7 @@ describe("same-origin PaddleOCR adapter", () => {
           worker: false,
           ortOptions: expect.objectContaining({
             backend: "wasm",
-            wasmPaths: "/ocr/ort/",
+            wasmPaths: "http://localhost:3000/ocr/ort/",
           }),
         }),
       );

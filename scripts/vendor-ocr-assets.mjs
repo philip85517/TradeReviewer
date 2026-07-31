@@ -97,7 +97,7 @@ async function downloadVerifiedModel(model) {
   };
 }
 
-async function copyVerifiedWasm(file) {
+async function copyVerifiedOrtAsset(file) {
   const source = new URL(file, ortSourceDirectory);
   const destination = new URL(file, ortDirectory);
   const temporary = temporaryUrl(destination);
@@ -128,18 +128,31 @@ for (const model of models) {
 const wasmFiles = (await readdir(ortSourceDirectory))
   .filter((file) => /^ort-wasm.*\.wasm$/.test(file))
   .sort();
+const moduleFiles = (await readdir(ortSourceDirectory))
+  .filter((file) => /^ort-wasm.*\.mjs$/.test(file))
+  .sort();
 if (wasmFiles.length === 0) {
   throw new Error(
     "No node_modules/onnxruntime-web/dist/ort-wasm*.wasm files found",
   );
 }
+if (moduleFiles.length === 0) {
+  throw new Error(
+    "No node_modules/onnxruntime-web/dist/ort-wasm*.mjs files found",
+  );
+}
 const wasmAssets = [];
 for (const file of wasmFiles) {
-  wasmAssets.push(await copyVerifiedWasm(file));
+  wasmAssets.push(await copyVerifiedOrtAsset(file));
+}
+const moduleAssets = [];
+for (const file of moduleFiles) {
+  moduleAssets.push(await copyVerifiedOrtAsset(file));
 }
 
 const manifest = {
   models: modelAssets,
+  modules: moduleAssets,
   wasm: wasmAssets,
 };
 const manifestDestination = new URL("asset-manifest.json", publicRoot);
@@ -156,5 +169,5 @@ try {
 }
 
 console.log(
-  `Verified ${modelAssets.length} OCR models and ${wasmAssets.length} ONNX Runtime WASM assets.`,
+  `Verified ${modelAssets.length} OCR models, ${moduleAssets.length} ONNX Runtime modules, and ${wasmAssets.length} WASM binaries.`,
 );

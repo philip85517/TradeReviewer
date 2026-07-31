@@ -157,7 +157,7 @@ export async function createLocalOcrEngine(): Promise<LocalOcrEngine> {
     worker: supportsWorkerImages,
     ortOptions: {
       backend: "wasm",
-      wasmPaths: "/ocr/ort/",
+      wasmPaths: new URL("/ocr/ort/", window.location.href).href,
       numThreads: 1,
       simd: true,
     },

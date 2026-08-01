@@ -292,4 +292,3 @@ status.sh
 - [ ] **Step 4: Review the final diff and commit verification evidence.**
 
   Run `git status --short`, `git diff --stat master...HEAD`, and `git diff --check master...HEAD`. Do not commit `data/`, `.env`, logs, Docker volumes, or build output.
-

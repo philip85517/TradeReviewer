@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, readFile, readlink, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readdir, readFile, readlink, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, join, resolve } from "node:path";
 import { describe, expect, test } from "vitest";
@@ -199,6 +199,95 @@ describe("deployment release staging", () => {
       await expect(readlink(join(targetDir, "app", "current"))).resolves.toBe(
         join("releases", accepted.releaseId),
       );
+    } finally {
+      await rm(sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("rejects a symlinked app path before writing into protected target storage", async () => {
+    const sandbox = await mkdtemp(join(tmpdir(), "tradereview-deploy-"));
+    const sourceDir = join(sandbox, "source");
+    const targetDir = join(sandbox, "target");
+
+    try {
+      await mkdir(join(sourceDir), { recursive: true });
+      await writeFile(join(sourceDir, "package.json"), "{}", "utf8");
+      await mkdir(join(targetDir, "data"), { recursive: true });
+      await symlink(join(targetDir, "data"), join(targetDir, "app"));
+
+      await expect(
+        runDeployment({ mode: "code", sourceDir, targetDir, now: new Date("2026-08-01T03:04:05.678Z") }),
+      ).rejects.toThrow(/symlink|deployment path/i);
+      await expect(readdir(join(targetDir, "data"))).resolves.toEqual([]);
+    } finally {
+      await rm(sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("rejects a symlinked releases path before staging a release", async () => {
+    const sandbox = await mkdtemp(join(tmpdir(), "tradereview-deploy-"));
+    const sourceDir = join(sandbox, "source");
+    const targetDir = join(sandbox, "target");
+
+    try {
+      await mkdir(sourceDir, { recursive: true });
+      await writeFile(join(sourceDir, "package.json"), "{}", "utf8");
+      await mkdir(join(targetDir, "app"), { recursive: true });
+      await mkdir(join(targetDir, "config"), { recursive: true });
+      await symlink(join(targetDir, "config"), join(targetDir, "app", "releases"));
+
+      await expect(
+        runDeployment({ mode: "code", sourceDir, targetDir, now: new Date("2026-08-01T03:04:05.678Z") }),
+      ).rejects.toThrow(/symlink|deployment path/i);
+      await expect(readdir(join(targetDir, "config"))).resolves.toEqual([]);
+    } finally {
+      await rm(sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("removes staged release artifacts when release acceptance fails", async () => {
+    const sandbox = await mkdtemp(join(tmpdir(), "tradereview-deploy-"));
+    const sourceDir = join(sandbox, "source");
+    const targetDir = join(sandbox, "target");
+
+    try {
+      await mkdir(sourceDir, { recursive: true });
+      await writeFile(join(sourceDir, "package.json"), "{}", "utf8");
+
+      await expect(
+        runDeployment({
+          mode: "code",
+          sourceDir,
+          targetDir,
+          now: new Date("2026-08-01T03:04:05.678Z"),
+          acceptRelease() {
+            throw new Error("release rejected");
+          },
+        }),
+      ).rejects.toThrow("release rejected");
+      await expect(readdir(join(targetDir, "app", "releases"))).resolves.toEqual([]);
+      await expect(readdir(join(targetDir, "app"))).resolves.toEqual(["releases"]);
+    } finally {
+      await rm(sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("allocates a distinct release when retries share a timestamp", async () => {
+    const sandbox = await mkdtemp(join(tmpdir(), "tradereview-deploy-"));
+    const sourceDir = join(sandbox, "source");
+    const targetDir = join(sandbox, "target");
+    const now = new Date("2026-08-01T03:04:05.678Z");
+
+    try {
+      await mkdir(sourceDir, { recursive: true });
+      await writeFile(join(sourceDir, "package.json"), "{}", "utf8");
+
+      const first = await runDeployment({ mode: "code", sourceDir, targetDir, now });
+      const second = await runDeployment({ mode: "code", sourceDir, targetDir, now });
+
+      expect(second.releaseId).not.toBe(first.releaseId);
+      await expect(readFile(join(first.releaseDir, "package.json"), "utf8")).resolves.toBe("{}");
+      await expect(readFile(join(second.releaseDir, "package.json"), "utf8")).resolves.toBe("{}");
     } finally {
       await rm(sandbox, { recursive: true, force: true });
     }

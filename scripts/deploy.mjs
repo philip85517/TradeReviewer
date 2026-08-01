@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { cp, mkdir, readlink, rename, rm, symlink } from "node:fs/promises";
+import { cp, lstat, mkdir, readlink, rename, rm, symlink } from "node:fs/promises";
 import { realpathSync } from "node:fs";
 import { basename, dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -180,6 +180,44 @@ async function copyIfPresent(sourcePath, targetPath) {
   }
 }
 
+async function assertSafeStagingPath(path, targetRoot, label) {
+  let details;
+  try {
+    details = await lstat(path);
+  } catch (error) {
+    if (error.code === "ENOENT") return;
+    throw error;
+  }
+
+  if (details.isSymbolicLink()) throw new Error(`${label} must not be a symlink`);
+  if (!details.isDirectory()) throw new Error(`${label} must be a directory`);
+
+  const canonicalPath = canonicalizePath(path);
+  if (!isDescendant(canonicalPath, targetRoot)) {
+    throw new Error(`${label} resolves outside the deployment target`);
+  }
+}
+
+async function assertSafeStagingRoots(paths, targetRoot) {
+  await assertSafeStagingPath(paths.appDir, targetRoot, "Deployment app path");
+  await assertSafeStagingPath(paths.releasesDir, targetRoot, "Deployment releases path");
+}
+
+async function reserveReleaseDirectory(releasesDir, sourceDir, now) {
+  const baseReleaseId = createReleaseId(sourceDir, now);
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    const releaseId = attempt === 0 ? baseReleaseId : `${baseReleaseId}-${attempt}`;
+    const releaseDir = join(releasesDir, releaseId);
+    try {
+      await mkdir(releaseDir);
+      return { releaseId, releaseDir };
+    } catch (error) {
+      if (error.code !== "EEXIST") throw error;
+    }
+  }
+  throw new Error(`Unable to allocate a unique release under ${releasesDir}`);
+}
+
 async function readPreviousRelease(currentLink) {
   try {
     return basename(await readlink(currentLink));
@@ -199,52 +237,69 @@ export async function runDeployment(options, dependencies = {}) {
   const policy = getSyncPolicy(mode);
   const resolvedPaths = validateDeploymentPaths(sourceDir, targetDir);
   const paths = resolveDeploymentPaths(resolvedPaths.targetDir);
-  const releaseId = createReleaseId(resolvedPaths.sourceDir, options.now);
-  const releaseDir = join(paths.releasesDir, releaseId);
+  await assertSafeStagingRoots(paths, resolvedPaths.targetDir);
 
   if (dryRun) {
-    return { mode, policy, paths, releaseId, releaseDir, dryRun: true };
+    const releaseId = createReleaseId(resolvedPaths.sourceDir, options.now);
+    return { mode, policy, paths, releaseId, releaseDir: join(paths.releasesDir, releaseId), dryRun: true };
   }
 
-  await mkdir(paths.releasesDir, { recursive: true });
-  await cp(resolvedPaths.sourceDir, releaseDir, {
-    recursive: true,
-    force: false,
-    errorOnExist: true,
-    filter: applicationFilter(resolvedPaths.sourceDir),
-  });
+  let releaseDir;
+  let temporaryLink;
+  let releaseReserved = false;
 
-  if (policy.copyRuntimeFiles) {
-    await Promise.all([
-      copyIfPresent(join(resolvedPaths.sourceDir, "deploy"), paths.opsDir),
-      copyIfPresent(join(resolvedPaths.sourceDir, "Makefile"), join(resolvedPaths.targetDir, "Makefile")),
-    ]);
+  try {
+    await mkdir(paths.releasesDir, { recursive: true });
+    await assertSafeStagingRoots(paths, resolvedPaths.targetDir);
+    const allocation = await reserveReleaseDirectory(paths.releasesDir, resolvedPaths.sourceDir, options.now);
+    const { releaseId } = allocation;
+    releaseDir = allocation.releaseDir;
+    releaseReserved = true;
+
+    await cp(resolvedPaths.sourceDir, releaseDir, {
+      recursive: true,
+      force: true,
+      filter: applicationFilter(resolvedPaths.sourceDir),
+    });
+
+    if (policy.copyRuntimeFiles) {
+      await Promise.all([
+        copyIfPresent(join(resolvedPaths.sourceDir, "deploy"), paths.opsDir),
+        copyIfPresent(join(resolvedPaths.sourceDir, "Makefile"), join(resolvedPaths.targetDir, "Makefile")),
+      ]);
+    }
+
+    const previousRelease = await readPreviousRelease(paths.currentLink);
+    temporaryLink = join(paths.appDir, `.current-${releaseId}-${process.pid}.tmp`);
+    await symlink(join("releases", releaseId), temporaryLink);
+
+    const release = {
+      mode,
+      policy,
+      paths,
+      releaseId,
+      releaseDir,
+      previousRelease,
+      activeRelease: previousRelease,
+      staged: true,
+    };
+    const acceptRelease = options.acceptRelease ?? dependencies.acceptRelease;
+    const accepted = await shouldAcceptRelease(acceptRelease, release);
+
+    if (accepted) {
+      await rename(temporaryLink, paths.currentLink);
+      temporaryLink = undefined;
+      return { ...release, activeRelease: releaseId, accepted: true };
+    }
+
+    await rm(temporaryLink, { force: true });
+    temporaryLink = undefined;
+    return { ...release, accepted: false };
+  } catch (error) {
+    if (temporaryLink) await rm(temporaryLink, { force: true }).catch(() => undefined);
+    if (releaseReserved) await rm(releaseDir, { recursive: true, force: true }).catch(() => undefined);
+    throw error;
   }
-
-  const previousRelease = await readPreviousRelease(paths.currentLink);
-  const temporaryLink = join(paths.appDir, `.current-${releaseId}-${process.pid}.tmp`);
-  await symlink(join("releases", releaseId), temporaryLink);
-
-  const release = {
-    mode,
-    policy,
-    paths,
-    releaseId,
-    releaseDir,
-    previousRelease,
-    activeRelease: previousRelease,
-    staged: true,
-  };
-  const acceptRelease = options.acceptRelease ?? dependencies.acceptRelease;
-  const accepted = await shouldAcceptRelease(acceptRelease, release);
-
-  if (accepted) {
-    await rename(temporaryLink, paths.currentLink);
-    return { ...release, activeRelease: releaseId, accepted: true };
-  }
-
-  await rm(temporaryLink, { force: true });
-  return { ...release, accepted: false };
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

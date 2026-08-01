@@ -15,12 +15,12 @@ async function readManifest(relativePath) {
 
 describe("deployment templates", () => {
   test("provide the repository deployment contract", async () => {
-    const [makefile, compose, envExample, dockerfile, releaseContextIgnore] = await Promise.all([
+    const [makefile, compose, envExample, dockerfile, dockerfileIgnore] = await Promise.all([
       readManifest("Makefile"),
       readManifest("deploy/compose.yaml"),
       readManifest("deploy/config/.env.example"),
       readManifest("deploy/Dockerfile"),
-      readManifest(".dockerignore"),
+      readManifest("deploy/Dockerfile.dockerignore"),
     ]);
 
     expect(makefile).toContain("deploy-code:");
@@ -29,7 +29,7 @@ describe("deployment templates", () => {
     expect(compose).toContain("./data/sqlite:/var/lib/tradereview");
     expect(envExample).toContain("APP_BIND=127.0.0.1");
     expect(dockerfile).toContain("npm run assets:ocr");
-    expect(releaseContextIgnore).toContain(".env");
-    expect(releaseContextIgnore).toContain("data");
+    expect(dockerfileIgnore).toContain(".env");
+    expect(dockerfileIgnore).toContain("data");
   });
 });

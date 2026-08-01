@@ -32,6 +32,7 @@ SQLite 采用卷级隔离。SQLite 不是网络数据库服务，因此应用容
 │   ├── restore-db.sh
 │   └── healthcheck.sh
 ├── compose.yaml
+├── Makefile
 └── DEPLOYMENT.md
 ```
 

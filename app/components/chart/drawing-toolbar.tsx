@@ -2,9 +2,14 @@
 
 import {
   ChartNoAxesCombined,
+  ArrowDownUp,
+  ArrowUpRight,
+  BoxSelect,
   Lock,
   Minus,
   MousePointer2,
+  MoveVertical,
+  Ruler,
   Redo2,
   Tag,
   Trash2,
@@ -23,9 +28,14 @@ const tools: Array<{
   { value: "cursor", label: "选择", icon: MousePointer2 },
   { value: "trend-line", label: "趋势线", icon: TrendingUp },
   { value: "horizontal-line", label: "水平线", icon: Minus },
+  { value: "vertical-line", label: "垂直线", icon: MoveVertical },
+  { value: "rectangle", label: "矩形区间", icon: BoxSelect },
+  { value: "arrow", label: "箭头", icon: ArrowUpRight },
   { value: "price-label", label: "价格标注", icon: Tag },
   { value: "text", label: "文字标注", icon: Type },
-  { value: "risk-reward", label: "盈亏比", icon: ChartNoAxesCombined },
+  { value: "measure", label: "区间测量", icon: Ruler },
+  { value: "long-risk-reward", label: "做多盈亏比", icon: ChartNoAxesCombined },
+  { value: "short-risk-reward", label: "做空盈亏比", icon: ArrowDownUp },
 ];
 
 type Props = {
@@ -60,6 +70,7 @@ export function DrawingToolbar({
             key={tool.value}
             className={activeTool === tool.value ? "active" : ""}
             aria-label={tool.label}
+            aria-pressed={activeTool === tool.value}
             title={tool.label}
             onClick={() => onToolChange(tool.value)}
           >
@@ -71,6 +82,7 @@ export function DrawingToolbar({
       <button
         className={allLocked ? "active" : ""}
         aria-label={allLocked ? "解锁全部图形" : "锁定全部图形"}
+        aria-pressed={allLocked}
         title={allLocked ? "解锁全部图形" : "锁定全部图形"}
         onClick={onToggleLock}
       >

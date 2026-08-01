@@ -1,0 +1,364 @@
+import { describe, expect, it } from "vitest";
+
+import type { NormalizedDrawing } from "./drawings";
+import {
+  applyDrawingCommand,
+  canRedoDrawingAtCursor,
+  canUndoDrawingAtCursor,
+  createDrawingHistory,
+  redoDrawingAtCursor,
+  redoDrawingCommand,
+  setAllDrawingsLockedAtCursor,
+  undoDrawingAtCursor,
+  undoDrawingCommand,
+} from "./drawing-commands";
+
+function drawing(
+  id: string,
+  overrides: Partial<NormalizedDrawing> = {},
+): NormalizedDrawing {
+  return {
+    version: 2,
+    id,
+    episodeId: "episode-1",
+    name: "趋势线",
+    tool: "trend-line",
+    anchors: [
+      { time: "2025-01-02T00:00:00.000Z", price: 10 },
+      { time: "2025-01-03T00:00:00.000Z", price: 12 },
+    ],
+    style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
+    hidden: false,
+    locked: false,
+    visibleOn: "all",
+    stage: "during-replay",
+    createdAtCursor: "2025-01-03T00:00:00.000Z",
+    zIndex: 0,
+    ...overrides,
+  };
+}
+
+describe("drawing command history", () => {
+  it("creates, updates, renames, toggles, reorders, deletes, and clears drawings", () => {
+    const trend = drawing("trend");
+    const label = drawing("label", {
+      name: "价格标注",
+      tool: "price-label",
+      anchors: [{ time: "2025-01-03T00:00:00.000Z", price: 12 }],
+      zIndex: 1,
+    });
+    let history = createDrawingHistory([trend]);
+
+    history = applyDrawingCommand(history, { type: "add", drawing: label });
+    history = applyDrawingCommand(history, {
+      type: "replace",
+      drawing: { ...trend, anchors: [{ time: "2025-01-04T00:00:00.000Z", price: 11 }, trend.anchors[1]] },
+    });
+    history = applyDrawingCommand(history, {
+      type: "rename",
+      id: trend.id,
+      name: "下降趋势线",
+    });
+    history = applyDrawingCommand(history, { type: "toggle-hidden", id: label.id });
+    history = applyDrawingCommand(history, { type: "toggle-locked", id: label.id });
+    history = applyDrawingCommand(history, { type: "move", id: label.id, direction: "down" });
+
+    expect(history.present).toMatchObject([
+      { id: "label", zIndex: 0, hidden: true, locked: true },
+      {
+        id: "trend",
+        zIndex: 1,
+        name: "下降趋势线",
+        anchors: [
+          { time: "2025-01-04T00:00:00.000Z", price: 11 },
+          { time: "2025-01-03T00:00:00.000Z", price: 12 },
+        ],
+      },
+    ]);
+
+    history = applyDrawingCommand(history, { type: "delete", id: trend.id });
+    expect(history.present.map((item) => item.id)).toEqual(["label"]);
+
+    history = applyDrawingCommand(history, {
+      type: "add",
+      drawing: drawing("unlocked"),
+    });
+    history = applyDrawingCommand(history, { type: "clear-unlocked" });
+    expect(history.present.map((item) => item.id)).toEqual(["label"]);
+  });
+
+  it("does not replace or delete a locked drawing", () => {
+    const locked = drawing("locked", { locked: true });
+    let history = createDrawingHistory([locked]);
+
+    history = applyDrawingCommand(history, {
+      type: "replace",
+      drawing: { ...locked, name: "不应替换" },
+    });
+    history = applyDrawingCommand(history, { type: "delete", id: locked.id });
+
+    expect(history.present).toEqual([locked]);
+    expect(history.past).toEqual([]);
+  });
+
+  it("undoes and redoes immutable commands", () => {
+    const trend = drawing("trend");
+    let history = createDrawingHistory([trend]);
+    history = applyDrawingCommand(history, {
+      type: "rename",
+      id: trend.id,
+      name: "下降趋势线",
+    });
+    const renamed = history.present[0];
+
+    history = undoDrawingCommand(history);
+    expect(history.present[0].name).toBe("趋势线");
+    history = redoDrawingCommand(history);
+    expect(history.present[0].name).toBe("下降趋势线");
+    expect(history.present[0]).not.toBe(renamed);
+  });
+
+  it("keeps future-only history unavailable until its creation cursor", () => {
+    const future = drawing("future", {
+      createdAtCursor: "2025-01-05T00:00:00.000Z",
+    });
+    let history = createDrawingHistory();
+    history = applyDrawingCommand(history, {
+      type: "add",
+      drawing: future,
+    });
+
+    expect(
+      canUndoDrawingAtCursor(
+        history,
+        "2025-01-03T00:00:00.000Z",
+        "15m",
+      ),
+    ).toBe(false);
+    expect(
+      undoDrawingAtCursor(
+        history,
+        "2025-01-03T00:00:00.000Z",
+        "15m",
+      ),
+    ).toEqual(history);
+
+    expect(
+      canUndoDrawingAtCursor(
+        history,
+        "2025-01-05T00:00:00.000Z",
+        "15m",
+      ),
+    ).toBe(true);
+    history = undoDrawingAtCursor(
+      history,
+      "2025-01-05T00:00:00.000Z",
+      "15m",
+    );
+    expect(history.present).toEqual([]);
+    expect(
+      canRedoDrawingAtCursor(
+        history,
+        "2025-01-03T00:00:00.000Z",
+        "15m",
+      ),
+    ).toBe(false);
+    expect(
+      redoDrawingAtCursor(
+        history,
+        "2025-01-03T00:00:00.000Z",
+        "15m",
+      ),
+    ).toEqual(history);
+    expect(
+      canRedoDrawingAtCursor(
+        history,
+        "2025-01-05T00:00:00.000Z",
+        "15m",
+      ),
+    ).toBe(true);
+  });
+
+  it("does not cross a future-only snapshot to mutate earlier visible state", () => {
+    const early = drawing("early", {
+      createdAtCursor: "2025-01-02T00:00:00.000Z",
+    });
+    const future = drawing("future", {
+      createdAtCursor: "2025-01-05T00:00:00.000Z",
+    });
+    let history = createDrawingHistory([early]);
+    history = applyDrawingCommand(history, {
+      type: "rename",
+      id: early.id,
+      name: "已修改",
+    });
+    history = applyDrawingCommand(history, {
+      type: "add",
+      drawing: future,
+    });
+
+    const unchanged = undoDrawingAtCursor(
+      history,
+      "2025-01-03T00:00:00.000Z",
+      "15m",
+    );
+
+    expect(unchanged).toEqual(history);
+    expect(unchanged.present).toMatchObject([
+      { id: "early", name: "已修改" },
+      { id: "future", name: "趋势线" },
+    ]);
+  });
+
+  it("ignores z-index shifts caused only by reordering a future drawing", () => {
+    const earlyBack = drawing("early-back", {
+      createdAtCursor: "2025-01-02T00:00:00.000Z",
+    });
+    const earlyFront = drawing("early-front", {
+      createdAtCursor: "2025-01-02T00:00:00.000Z",
+      zIndex: 1,
+    });
+    const future = drawing("future", {
+      createdAtCursor: "2025-01-05T00:00:00.000Z",
+      zIndex: 2,
+    });
+    let history = createDrawingHistory([
+      earlyBack,
+      earlyFront,
+      future,
+    ]);
+    history = applyDrawingCommand(history, {
+      type: "move",
+      id: future.id,
+      direction: "down",
+    });
+
+    const rewindCursor = "2025-01-03T00:00:00.000Z";
+    const futureCursor = "2025-01-05T00:00:00.000Z";
+    expect(
+      canUndoDrawingAtCursor(history, rewindCursor, "15m"),
+    ).toBe(false);
+    expect(
+      undoDrawingAtCursor(history, rewindCursor, "15m"),
+    ).toBe(history);
+    expect(
+      canUndoDrawingAtCursor(history, futureCursor, "15m"),
+    ).toBe(true);
+
+    history = undoDrawingAtCursor(history, futureCursor, "15m");
+    expect(history.present.map((item) => item.id)).toEqual([
+      "early-back",
+      "early-front",
+      "future",
+    ]);
+    expect(
+      canRedoDrawingAtCursor(history, rewindCursor, "15m"),
+    ).toBe(false);
+    expect(
+      redoDrawingAtCursor(history, rewindCursor, "15m"),
+    ).toBe(history);
+    expect(
+      canRedoDrawingAtCursor(history, futureCursor, "15m"),
+    ).toBe(true);
+    expect(
+      redoDrawingAtCursor(history, futureCursor, "15m").present.map(
+        (item) => item.id,
+      ),
+    ).toEqual(["early-back", "future", "early-front"]);
+  });
+
+  it("sets one lock target for only the supplied visible drawing IDs", () => {
+    let history = createDrawingHistory([
+      drawing("unlocked"),
+      drawing("locked", { locked: true, zIndex: 1 }),
+      drawing("other-period", {
+        visibleOn: ["1D"],
+        zIndex: 2,
+      }),
+      drawing("future", {
+        createdAtCursor: "2025-01-10T00:00:00.000Z",
+        zIndex: 3,
+      }),
+    ]);
+
+    history = setAllDrawingsLockedAtCursor(
+      history,
+      "2025-01-05T00:00:00.000Z",
+      "15m",
+    );
+
+    expect(history.present).toMatchObject([
+      { id: "unlocked", locked: true },
+      { id: "locked", locked: true },
+      { id: "other-period", locked: false },
+      { id: "future", locked: false },
+    ]);
+
+    history = setAllDrawingsLockedAtCursor(
+      history,
+      "2025-01-05T00:00:00.000Z",
+      "15m",
+    );
+    expect(history.present.slice(0, 2)).toMatchObject([
+      { id: "unlocked", locked: false },
+      { id: "locked", locked: false },
+    ]);
+  });
+
+  it.each([
+    {
+      name: "future-hidden",
+      hidden: drawing("future", {
+        createdAtCursor: "2025-01-10T00:00:00.000Z",
+        zIndex: 1,
+      }),
+    },
+    {
+      name: "timeframe-hidden",
+      hidden: drawing("other-period", {
+        visibleOn: ["1D"],
+        zIndex: 1,
+      }),
+    },
+  ])(
+    "moves across a $name raw neighbor using only visible eligible IDs",
+    ({ hidden }) => {
+      const low = drawing("visible-low", {
+        createdAtCursor: "2025-01-02T00:00:00.000Z",
+        zIndex: 0,
+      });
+      const high = drawing("visible-high", {
+        createdAtCursor: "2025-01-02T00:00:00.000Z",
+        zIndex: 2,
+      });
+      let history = createDrawingHistory([low, hidden, high]);
+
+      history = applyDrawingCommand(history, {
+        type: "move",
+        id: "visible-low",
+        direction: "up",
+        eligibleIds: ["visible-high", "visible-low"],
+      });
+
+      expect(history.present.map((item) => item.id)).toEqual([
+        "visible-high",
+        hidden.id,
+        "visible-low",
+      ]);
+      expect(history.past).toHaveLength(1);
+
+      history = applyDrawingCommand(history, {
+        type: "move",
+        id: "visible-low",
+        direction: "down",
+        eligibleIds: ["visible-low", "visible-high"],
+      });
+      expect(history.present.map((item) => item.id)).toEqual([
+        "visible-low",
+        hidden.id,
+        "visible-high",
+      ]);
+      expect(history.past).toHaveLength(2);
+    },
+  );
+});

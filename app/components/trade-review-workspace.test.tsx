@@ -1,7 +1,13 @@
 import "fake-indexeddb/auto";
 
-import { cleanup, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import * as XLSX from "xlsx";
 import {
   afterEach,
   beforeEach,
@@ -10,6 +16,9 @@ import {
   it,
   vi,
 } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import postcss, { type AtRule, type Node } from "postcss";
 
 import type { EnrichedImportResult } from "../lib/import/enrich-import";
 import type { StatementParseResult } from "../lib/import/contracts";
@@ -23,7 +32,6 @@ import { requiredMarketDataRange } from "../lib/market/sync-range";
 import type { DemoReplayFrame } from "../lib/demo/replay-frame";
 import type { EpisodeReviewRecord } from "../lib/reviews/types";
 import { IndexedDbEpisodeReviewRepository } from "../lib/storage/indexeddb-episode-review-repository";
-import { IndexedDbTagSuggestionRepository } from "../lib/storage/indexeddb-tag-suggestion-repository";
 import {
   loadImportedExecutions,
   saveImportedExecutions,
@@ -31,10 +39,65 @@ import {
 import { loadImportHistory } from "../lib/storage/import-history";
 import * as importTransaction from "../lib/storage/import-transaction";
 import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-data-repository";
+import { saveReviewState } from "../lib/storage/review-storage";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeExecution } from "../lib/trades/types";
 import type { ScreenshotImportDependencies } from "./import/use-screenshot-import";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
+
+const globalStyles = postcss.parse(
+  readFileSync(join(process.cwd(), "app/globals.css"), "utf8"),
+);
+
+function mediaMatches(parent: Node["parent"], viewportWidth: number) {
+  let current: Node["parent"] = parent;
+  while (current) {
+    const atRule = current as AtRule;
+    if (current.type === "atrule" && atRule.name === "media") {
+      const query = atRule.params;
+      const maximum = query.match(/max-width:\s*(\d+)px/);
+      const minimum = query.match(/min-width:\s*(\d+)px/);
+      if (maximum && viewportWidth > Number(maximum[1])) return false;
+      if (minimum && viewportWidth < Number(minimum[1])) return false;
+      if (/prefers-reduced-motion/.test(query)) return false;
+    }
+    current = current.parent;
+  }
+  return true;
+}
+
+function declarationsAt(
+  selector: string | string[],
+  viewportWidth: number,
+) {
+  const selectors = Array.isArray(selector) ? selector : [selector];
+  const declarations = new Map<string, string>();
+  globalStyles.walkRules((rule) => {
+    if (
+      rule.selectors.some((item) => selectors.includes(item)) &&
+      mediaMatches(rule.parent, viewportWidth)
+    ) {
+      rule.walkDecls((declaration) => {
+        declarations.set(declaration.prop, declaration.value);
+      });
+    }
+  });
+  return declarations;
+}
+
+function reducedMotionDeclarations(selector: string) {
+  const declarations = new Map<string, string>();
+  globalStyles.walkAtRules("media", (media) => {
+    if (!/prefers-reduced-motion:\s*reduce/.test(media.params)) return;
+    media.walkRules((rule) => {
+      if (!rule.selectors.includes(selector)) return;
+      rule.walkDecls((declaration) => {
+        declarations.set(declaration.prop, declaration.value);
+      });
+    });
+  });
+  return declarations;
+}
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -46,28 +109,46 @@ function deferred<T>() {
   return { promise, resolve, reject };
 }
 
-const {
-  mockDispatcher,
-  mockEnrichment,
-  mockMarketDataSync,
-} = vi.hoisted(() => ({
-  mockDispatcher: vi.fn(),
-  mockEnrichment: vi.fn(),
-  mockMarketDataSync: vi.fn(),
-}));
+const { mockDispatcher, mockEnrichment, mockMarketDataSync } = vi.hoisted(
+  () => ({
+    mockDispatcher: vi.fn(),
+    mockEnrichment: vi.fn(),
+    mockMarketDataSync: vi.fn(),
+  }),
+);
 
-vi.mock("../lib/import/dispatcher", () => ({
-  parseBrokerStatement: mockDispatcher,
-}));
+vi.mock("../lib/import/dispatcher", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../lib/import/dispatcher")>();
+  return {
+    ...actual,
+    parseBrokerStatement: (...args: Parameters<typeof actual.parseBrokerStatement>) =>
+      mockDispatcher.getMockImplementation()
+        ? mockDispatcher(...args)
+        : actual.parseBrokerStatement(...args),
+  };
+});
 
-vi.mock("../lib/import/enrich-import", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("../lib/import/enrich-import")>()),
-  enrichStatementImport: mockEnrichment,
-}));
+vi.mock("../lib/import/enrich-import", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../lib/import/enrich-import")>();
+  return {
+    ...actual,
+    enrichStatementImport: (...args: Parameters<typeof actual.enrichStatementImport>) =>
+      mockEnrichment.getMockImplementation()
+        ? mockEnrichment(...args)
+        : actual.enrichStatementImport(...args),
+  };
+});
 
-vi.mock("../lib/market/sync-service", () => ({
-  syncMarketData: mockMarketDataSync,
-}));
+vi.mock("../lib/market/sync-service", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../lib/market/sync-service")>();
+  return {
+    ...actual,
+    syncMarketData: (...args: Parameters<typeof actual.syncMarketData>) =>
+      mockMarketDataSync.getMockImplementation()
+        ? mockMarketDataSync(...args)
+        : actual.syncMarketData(...args),
+  };
+});
 
 const initialFrame: DemoReplayFrame = {
   cursorIndex: 0,
@@ -105,88 +186,133 @@ const nextFrame: DemoReplayFrame = {
   canGoBack: true,
 };
 
-const cmsExecution: TradeExecution = {
-  id: "cms:fixture:7",
-  source: {
-    platform: "china-merchants",
-    page: 2,
-    row: 7,
-    sourceOrder: 3,
-    timePrecision: "date-only",
-    fileName: "招商证券.pdf",
-    fileFingerprint: "cms-fixture",
-    sourceTimestampText: "2026-03-01",
-    sourceTimezone: "Asia/Shanghai",
-  },
-  accountId: "cms:account-1",
-  accountLabel: "招商证券 · 账户 1",
-  instrument: {
-    id: "CN-SH:600938",
-    symbol: "600938",
-    name: "名称待行情源补充",
-    market: "CN-SH",
-    currency: "CNY",
-  },
-  side: "buy",
-  executedAt: "2026-03-01T07:00:00.000Z",
-  quantity: "100",
-  price: "15.20",
-  fee: "5",
+function defaultEpisodeRecord(
+  episodeId: string,
+  instrumentId: string,
+): EpisodeReviewRecord {
+  return {
+    version: 1,
+    episodeId,
+    instrumentId,
+    updatedAt: "2025-01-07T00:00:00.000Z",
+    plan: {
+      thesis: "",
+      expectedPath: "",
+      invalidationCondition: "",
+      targetRange: "",
+      plannedRiskAmount: "",
+      confidence: null,
+    },
+    review: {
+      decisionQuality: null,
+      executionQuality: null,
+      riskManagement: "",
+      psychology: "",
+      reusableRule: "",
+      completed: false,
+    },
+    confirmedTagIds: [],
+  };
+}
+
+const availabilityInstrument = {
+  id: "US:XPEV",
+  symbol: "XPEV",
+  name: "小鹏汽车",
+  market: "US",
+  currency: "USD",
 };
 
-const cmsUnresolvedExecution: TradeExecution = {
-  ...cmsExecution,
-  id: "cms:fixture:8",
-  source: {
-    ...cmsExecution.source,
-    row: 8,
-    sourceOrder: 4,
-  },
-  instrument: {
-    id: "HK:99999",
-    symbol: "99999",
-    name: "名称待行情源补充",
-    market: "HK",
-    currency: "HKD",
-  },
-};
+function availabilityExecution(input: {
+  id: string;
+  row: number;
+  side: "buy" | "sell";
+  executedAt: string;
+}): TradeExecution {
+  return {
+    id: input.id,
+    source: { platform: "futu", row: input.row },
+    accountId: "acct",
+    accountLabel: "富途",
+    instrument: availabilityInstrument,
+    side: input.side,
+    executedAt: input.executedAt,
+    quantity: "10",
+    price: input.side === "buy" ? "10" : "11",
+    fee: "0",
+  };
+}
 
-const cmsParsedResult: StatementParseResult = {
-  broker: "china-merchants",
-  records: [cmsExecution, cmsUnresolvedExecution],
-  candidates: [
-    {
-      market: "CN-SH",
-      symbol: "600938",
-      sourceAssetType: "unknown",
-    },
-    {
-      market: "HK",
-      symbol: "99999",
-      sourceAssetType: "unknown",
-    },
-  ],
-  exclusions: [],
-  diagnostics: [],
-  blocked: false,
-};
+function futuImportFile(rows: unknown[][]) {
+  const workbook = XLSX.utils.book_new();
+  const sheet = XLSX.utils.aoa_to_sheet([
+    [
+      "成交时间",
+      "账户名称",
+      "账户号码",
+      "品类",
+      "代码名称",
+      "交易所/市场",
+      "方向",
+      "交收日期",
+      "币种",
+      "数量/面值",
+      "价格",
+      "成交金额",
+      "总费用",
+      "变动金额",
+    ],
+    ...rows,
+  ]);
+  XLSX.utils.book_append_sheet(workbook, sheet, "证券-交易流水");
+  const buffer = XLSX.write(workbook, {
+    type: "array",
+    bookType: "xlsx",
+  }) as ArrayBuffer;
+  const file = new File([buffer], "later-xpev-episode.xlsx", {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+  Object.defineProperty(file, "arrayBuffer", {
+    value: async () => buffer,
+  });
+  return file;
+}
 
-const cmsEnrichedResult: EnrichedImportResult = {
-  broker: "china-merchants",
-  importable: [
-    {
-      ...cmsExecution,
-      instrument: {
-        ...cmsExecution.instrument,
-        name: "中国海油",
-      },
-    },
-  ],
-  unresolved: [],
-  exclusions: [],
-  diagnostics: [],
-  cacheHits: 0,
-};
+async function cacheAvailabilityCandles(timestamps: string[]) {
+  const repository = new IndexedDbMarketDataRepository();
+  await repository.commitIntervalSyncResult({
+    instrumentId: availabilityInstrument.id,
+    interval: "15m",
+    candles: timestamps.map((timestamp) => ({
+      instrumentId: availabilityInstrument.id,
+      interval: "15m" as const,
+      timestamp,
+      open: "10",
+      high: "11",
+      low: "9",
+      close: "10.5",
+      volume: "1000",
+      currency: "USD",
+      provider: "yahoo" as const,
+      providerSymbol: "XPEV",
+      adjustmentMode: "raw" as const,
+      fetchedAt: "2025-01-07T00:00:00.000Z",
+    })),
+    coverage: timestamps.length === 0
+      ? []
+      : [{
+          interval: "15m",
+          requestedStart: timestamps[0],
+          requestedEnd: timestamps.at(-1) ?? timestamps[0],
+          actualStart: timestamps[0],
+          actualEnd: timestamps.at(-1) ?? timestamps[0],
+          status: "complete",
+          provider: "yahoo",
+          fetchedAt: "2025-01-07T00:00:00.000Z",
+        }],
+    providerSymbol: { provider: "yahoo", symbol: "XPEV" },
+  });
+}
 
 const screenshotFields: ScreenshotField[] = [
   "market",
@@ -351,320 +477,6 @@ describe("TradeReviewWorkspace", () => {
     mockDispatcher.mockReset();
     mockEnrichment.mockReset();
     mockMarketDataSync.mockReset();
-    mockMarketDataSync.mockResolvedValue({
-      source: "cache",
-      status: "complete",
-      candles: [],
-      requestedRanges: [],
-    });
-  });
-
-  it("imports a recognized PDF locally without asking for stock names", async () => {
-    const user = userEvent.setup();
-    mockDispatcher.mockResolvedValue(cmsParsedResult);
-    mockEnrichment.mockResolvedValue(cmsEnrichedResult);
-    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-
-    await user.upload(
-      screen.getByLabelText("导入交易记录"),
-      new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], "招商证券.pdf", {
-        type: "application/pdf",
-      }),
-    );
-
-    expect(
-      await screen.findByRole("heading", { name: "确认导入交易记录" }),
-    ).toBeInTheDocument();
-    expect(mockDispatcher).toHaveBeenCalledWith(
-      expect.objectContaining({ name: "招商证券.pdf" }),
-    );
-    expect(screen.queryByRole("textbox", { name: /股票名称/ }))
-      .not.toBeInTheDocument();
-    expect(
-      vi.mocked(fetch).mock.calls.every(
-        ([input]) => !String(input).includes("招商证券.pdf"),
-      ),
-    ).toBe(true);
-  });
-
-  it("persists only complete records and starts cache-first gap sync for the imported instrument", async () => {
-    const user = userEvent.setup();
-    mockDispatcher.mockResolvedValue(cmsParsedResult);
-    mockEnrichment.mockResolvedValue({
-      ...cmsEnrichedResult,
-      unresolved: [
-        {
-          market: "HK",
-          symbol: "99999",
-          attempts: [
-            {
-              source: "hkex",
-              code: "no-data",
-              message: "未找到证券",
-            },
-          ],
-        },
-      ],
-    });
-    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-
-    await user.upload(
-      screen.getByLabelText("导入交易记录"),
-      new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], "招商证券.pdf", {
-        type: "application/pdf",
-      }),
-    );
-    await user.click(
-      await screen.findByRole("button", {
-        name: "确认导入并开始更新行情",
-      }),
-    );
-
-    expect(loadImportedExecutions()).toEqual([
-      expect.objectContaining({
-        id: "cms:fixture:7",
-        accountId: "cms:account-1",
-        source: expect.objectContaining({
-          sourceOrder: 3,
-          timePrecision: "date-only",
-        }),
-        instrument: expect.objectContaining({
-          id: "CN-SH:600938",
-          name: "中国海油",
-        }),
-      }),
-    ]);
-    expect(mockMarketDataSync).toHaveBeenCalledWith(
-      expect.objectContaining({
-        instrumentId: "CN-SH:600938",
-        required: requiredMarketDataRange(
-          cmsExecution.executedAt,
-          cmsExecution.executedAt,
-          { open: true, market: "CN-SH" },
-        ),
-      }),
-    );
-    expect(loadImportHistory()).toEqual([
-      expect.objectContaining({
-        sourceLabel: "招商证券",
-        tradeCount: 1,
-        instrumentCount: 1,
-        unresolvedInstrumentCount: 1,
-      }),
-    ]);
-    expect(
-      vi.mocked(fetch).mock.calls.some(([input]) =>
-        String(input).includes("/api/instruments/resolve"),
-      ),
-    ).toBe(false);
-  });
-
-  it("retries only selected unresolved canonical instruments while preserving the full result", async () => {
-    const user = userEvent.setup();
-    saveImportedExecutions(cmsEnrichedResult.importable);
-    const firstEnriched: EnrichedImportResult = {
-      ...cmsEnrichedResult,
-      unresolved: [
-        {
-          market: "HK",
-          symbol: "99999",
-          attempts: [],
-        },
-      ],
-    };
-    mockDispatcher.mockResolvedValue(cmsParsedResult);
-    mockEnrichment
-      .mockResolvedValueOnce(firstEnriched)
-      .mockResolvedValueOnce(cmsEnrichedResult);
-    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-
-    await user.upload(
-      screen.getByLabelText("导入交易记录"),
-      new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], "招商证券.pdf", {
-        type: "application/pdf",
-      }),
-    );
-    expect(await screen.findByText("1 笔已跳过")).toBeInTheDocument();
-    await user.click(
-      await screen.findByRole("button", { name: "重新查询" }),
-    );
-
-    expect(mockEnrichment).toHaveBeenLastCalledWith(
-      cmsParsedResult,
-      expect.objectContaining({
-        forceRefresh: true,
-        onlyInstrumentIds: ["HK:99999"],
-        previous: firstEnriched,
-      }),
-    );
-    expect(
-      (await screen.findAllByText("中国海油（600938）")).length,
-    ).toBeGreaterThan(0);
-    expect(screen.getByText("1 笔已跳过")).toBeInTheDocument();
-  });
-
-  it("does not resurrect an import when a deferred unresolved retry finishes after cancel", async () => {
-    const user = userEvent.setup();
-    const pendingRetry = deferred<EnrichedImportResult>();
-    mockDispatcher.mockResolvedValue(cmsParsedResult);
-    mockEnrichment
-      .mockResolvedValueOnce({
-        ...cmsEnrichedResult,
-        unresolved: [
-          { market: "HK", symbol: "99999", attempts: [] },
-        ],
-      })
-      .mockReturnValueOnce(pendingRetry.promise);
-    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await user.upload(
-      screen.getByLabelText("导入交易记录"),
-      new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
-    );
-    await user.click(
-      await screen.findByRole("button", { name: "重新查询" }),
-    );
-
-    await user.click(screen.getByRole("button", { name: "取消" }));
-    pendingRetry.resolve(cmsEnrichedResult);
-    await pendingRetry.promise;
-    await new Promise((resolve) => window.setTimeout(resolve, 0));
-
-    expect(
-      screen.queryByRole("heading", { name: "确认导入交易记录" }),
-    ).not.toBeInTheDocument();
-    expect(loadImportedExecutions()).toEqual([]);
-  });
-
-  it("disables confirmation while an unresolved retry is pending", async () => {
-    const user = userEvent.setup();
-    const pendingRetry = deferred<EnrichedImportResult>();
-    mockDispatcher.mockResolvedValue(cmsParsedResult);
-    mockEnrichment
-      .mockResolvedValueOnce({
-        ...cmsEnrichedResult,
-        unresolved: [
-          { market: "HK", symbol: "99999", attempts: [] },
-        ],
-      })
-      .mockReturnValueOnce(pendingRetry.promise);
-    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await user.upload(
-      screen.getByLabelText("导入交易记录"),
-      new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
-    );
-    await user.click(
-      await screen.findByRole("button", { name: "重新查询" }),
-    );
-
-    const confirmButton = screen.getByRole("button", {
-      name: "确认导入并开始更新行情",
-    });
-    expect(confirmButton).toBeDisabled();
-    await user.click(confirmButton);
-    expect(loadImportedExecutions()).toEqual([]);
-    pendingRetry.resolve(cmsEnrichedResult);
-    expect(
-      await screen.findByRole("button", {
-        name: "确认导入并开始更新行情",
-      }),
-    ).toBeEnabled();
-  });
-
-  it("reports stable-id duplicates when the same statement is imported again", async () => {
-    const user = userEvent.setup();
-    saveImportedExecutions(cmsEnrichedResult.importable);
-    mockDispatcher.mockResolvedValue(cmsParsedResult);
-    mockEnrichment.mockResolvedValue(cmsEnrichedResult);
-    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "中国海油（600938）" });
-    await user.upload(
-      screen.getByLabelText("导入交易记录"),
-      new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
-    );
-
-    expect(await screen.findByText("1 笔已跳过")).toBeInTheDocument();
-    await user.click(
-      screen.getByRole("button", {
-        name: "确认导入并开始更新行情",
-      }),
-    );
-    expect(loadImportedExecutions()).toHaveLength(1);
-    expect(loadImportHistory()[0].duplicateTradeCount).toBe(1);
-  });
-
-  it("retains the larger legitimate same-file fill multiplicity and counts only the overlap", async () => {
-    const user = userEvent.setup();
-    const existing = {
-      ...cmsEnrichedResult.importable[0],
-      id: "old-file:1",
-      source: {
-        ...cmsEnrichedResult.importable[0].source,
-        row: 1,
-        sourceOrder: 1,
-        fileFingerprint: "old-file",
-      },
-    };
-    const incoming = [7, 8].map((row) => ({
-      ...cmsEnrichedResult.importable[0],
-      id: `new-file:${row}`,
-      source: {
-        ...cmsEnrichedResult.importable[0].source,
-        row,
-        sourceOrder: row,
-        fileFingerprint: "new-file",
-      },
-    }));
-    saveImportedExecutions([existing]);
-    mockDispatcher.mockResolvedValue({
-      ...cmsParsedResult,
-      records: incoming,
-    });
-    mockEnrichment.mockResolvedValue({
-      ...cmsEnrichedResult,
-      importable: incoming,
-    });
-    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await user.upload(
-      screen.getByLabelText("导入交易记录"),
-      new File(["pdf"], "重叠区间.pdf", { type: "application/pdf" }),
-    );
-
-    expect(await screen.findByText("1 笔已跳过")).toBeInTheDocument();
-    await user.click(
-      screen.getByRole("button", {
-        name: "确认导入并开始更新行情",
-      }),
-    );
-    expect(loadImportedExecutions().map((item) => item.id)).toEqual([
-      "new-file:7",
-      "new-file:8",
-    ]);
-    expect(loadImportHistory()[0].duplicateTradeCount).toBe(1);
-  });
-
-  it("keeps executions and import history when post-import K-line sync fails", async () => {
-    const user = userEvent.setup();
-    mockDispatcher.mockResolvedValue(cmsParsedResult);
-    mockEnrichment.mockResolvedValue(cmsEnrichedResult);
-    mockMarketDataSync.mockRejectedValueOnce(
-      new Error("公开行情暂不可用"),
-    );
-    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await user.upload(
-      screen.getByLabelText("导入交易记录"),
-      new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
-    );
-    await user.click(
-      await screen.findByRole("button", {
-        name: "确认导入并开始更新行情",
-      }),
-    );
-
-    expect(loadImportedExecutions()).toHaveLength(1);
-    expect(loadImportHistory()).toHaveLength(1);
-    expect(
-      await screen.findByRole("heading", { name: "中国海油（600938）" }),
-    ).toBeInTheDocument();
   });
 
   it("keeps the statement input unchanged and exposes an independent multi-image screenshot input", () => {
@@ -685,6 +497,12 @@ describe("TradeReviewWorkspace", () => {
   it("reviews two screenshots and applies duplicate, use-incoming, and keep-both decisions through the existing import transaction", async () => {
     const user = userEvent.setup();
     const persistSpy = vi.spyOn(importTransaction, "persistImportBatch");
+    mockMarketDataSync.mockResolvedValue({
+      source: "cache",
+      status: "complete",
+      candles: [],
+      requestedRanges: [],
+    });
     const existing = [
       screenshotExecution(
         "existing-nvda",
@@ -1108,6 +926,143 @@ describe("TradeReviewWorkspace", () => {
     ).toHaveTextContent("回放数据暂时无法读取");
   });
 
+  it("switches from the desktop review panel to an operable narrow drawer", async () => {
+    const user = userEvent.setup();
+
+    expect(
+      declarationsAt(".workspace", 1260).get("grid-template-columns"),
+    ).toBe("244px minmax(620px, 1fr) 290px");
+    expect(
+      declarationsAt(".review-side-panel-trigger", 1260).get("display"),
+    ).toBe("none");
+    expect(
+      declarationsAt(".workspace", 1259).get("grid-template-columns"),
+    ).toBe("220px minmax(600px, 1fr)");
+    expect(
+      declarationsAt(".review-side-panel-desktop", 1259).get("display"),
+    ).toBe("none");
+    expect(
+      declarationsAt(".review-side-panel-trigger", 1259).get("display"),
+    ).toBe("grid");
+    expect(
+      declarationsAt(".workspace", 1060).get("grid-template-columns"),
+    ).toBe("220px minmax(600px, 1fr)");
+    expect(
+      declarationsAt(".workspace", 1059).get("grid-template-columns"),
+    ).toBe("minmax(0, 1fr)");
+    expect(
+      declarationsAt(".episode-sidebar", 1059).get("display"),
+    ).toBe("none");
+    expect(
+      declarationsAt(".instrument-search-popover", 1059).get("left"),
+    ).toBe("9px");
+    expect(
+      declarationsAt(".instrument-search-popover", 1059).get("right"),
+    ).toBe("9px");
+    expect(
+      declarationsAt(".instrument-search-popover", 1059).get("width"),
+    ).toBe("auto");
+    expect(
+      declarationsAt(".review-side-panel-drawer", 1259).get("animation"),
+    ).toContain("review-drawer-in");
+    expect(
+      reducedMotionDeclarations(".review-side-panel-drawer").get("animation"),
+    ).toBe("none");
+    expect(
+      reducedMotionDeclarations(".spinning").get("animation"),
+    ).toBe("none");
+    expect(
+      reducedMotionDeclarations(".live-dot.playing").get("animation"),
+    ).toBe("none");
+    expect(
+      declarationsAt(".timeframe-group button:disabled", 1260).get("cursor"),
+    ).toBe("not-allowed");
+    expect(
+      declarationsAt(".icon-button:disabled", 1260).get("opacity"),
+    ).toBe("0.35");
+    expect(
+      declarationsAt(".icon-button:hover:not(:disabled)", 1260).get(
+        "background",
+      ),
+    ).toBe("var(--surface-soft)");
+    expect(
+      declarationsAt(
+        '.episode-notes-status [role="status"]',
+        1260,
+      ).get("background"),
+    ).toBe("rgba(47, 128, 237, 0.1)");
+    expect(
+      declarationsAt(".market-data-state.stale", 1260).get("color"),
+    ).toBe("#e7c76f");
+    expect(
+      declarationsAt(".replay-error", 1260).get("background"),
+    ).toBe("rgba(239, 83, 80, 0.1)");
+    expect(
+      declarationsAt('[role="button"]:focus-visible', 1260).get("outline"),
+    ).toBe("2px solid var(--blue)");
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    expect(
+      screen.getByRole("heading", { name: "持仓统计" }),
+    ).toBeInTheDocument();
+    expect(
+      document.querySelector(".review-side-panel-desktop"),
+    ).toBeInTheDocument();
+
+    const trigger = screen.getByRole("button", {
+      name: "打开复盘面板",
+    });
+    expect(trigger).toHaveClass("review-side-panel-trigger");
+    await user.click(trigger);
+
+    expect(
+      screen.getByRole("dialog", { name: "复盘面板" }),
+    ).toHaveClass("review-side-panel-drawer");
+    expect(
+      document.querySelector(".review-side-panel-desktop"),
+    ).not.toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+
+    expect(
+      screen.queryByRole("dialog", { name: "复盘面板" }),
+    ).not.toBeInTheDocument();
+    expect(
+      document.querySelector(".review-side-panel-desktop"),
+    ).toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+  });
+
+  it("contains the toolbar and every chart popover within a 390px viewport", () => {
+    expect(
+      declarationsAt(".trade-review-app", 390).get("min-width"),
+    ).toBe("0");
+    expect(
+      declarationsAt(".chart-toolbar", 390).get("flex-wrap"),
+    ).toBe("wrap");
+
+    const genericPopover = declarationsAt(".chart-popover", 390);
+    expect(genericPopover.get("position")).toBe("fixed");
+    expect(genericPopover.get("top")).toBe("70px");
+    expect(genericPopover.get("right")).toBe("12px");
+    expect(genericPopover.get("left")).toBe("12px");
+    expect(genericPopover.get("width")).toBe("auto");
+    expect(genericPopover.get("max-width")).toBe("none");
+    expect(genericPopover.get("max-height")).toBe("calc(100vh - 82px)");
+    expect(genericPopover.get("overflow-y")).toBe("auto");
+
+    const searchPopover = declarationsAt(
+      [".chart-popover", ".instrument-search-popover"],
+      390,
+    );
+    expect(searchPopover.get("position")).toBe("fixed");
+    expect(searchPopover.get("right")).toBe("12px");
+    expect(searchPopover.get("left")).toBe("12px");
+    expect(searchPopover.get("width")).toBe("auto");
+    expect(searchPopover.get("max-width")).toBe("none");
+  });
+
   it("loads imported stocks after a page reload without starting a market request", async () => {
     const imported: TradeExecution = {
       id: "futu:2",
@@ -1139,62 +1094,678 @@ describe("TradeReviewWorkspace", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it("refreshes metadata without blocking cached candles when metadata is unresolved", async () => {
+  it("keeps demo reachable with imports and restores its saved server frame and UI state", async () => {
     const user = userEvent.setup();
-    const imported: TradeExecution = {
-      id: "futu:metadata-refresh",
-      source: { platform: "futu", row: 2 },
-      accountId: "acct",
-      accountLabel: "富途",
-      instrument: {
-        id: "HK:1810",
-        symbol: "1810",
-        name: "小米集团-W",
-        market: "HK",
-        currency: "HKD",
-      },
-      side: "buy",
-      executedAt: "2025-01-02T02:00:00.000Z",
-      quantity: "100",
-      price: "34.5",
-      fee: "10",
-    };
     saveImportedExecutions([
-      imported,
       {
-        ...imported,
-        id: "futu:metadata-refresh-sell",
-        source: { platform: "futu", row: 3 },
-        side: "sell",
-        executedAt: "2025-01-03T02:00:00.000Z",
+        id: "imported-open",
+        source: { platform: "futu", row: 2 },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument: {
+          id: "HK:1810",
+          symbol: "1810",
+          name: "小米集团-W",
+          market: "HK",
+          currency: "HKD",
+        },
+        side: "buy",
+        executedAt: "2025-01-02T02:00:00.000Z",
+        quantity: "100",
+        price: "34.5",
+        fee: "0",
       },
     ]);
+    saveReviewState("demo-xpev-2025", {
+      version: 2,
+      episodeId: "demo-xpev-2025",
+      replayCursor: nextFrame.cursor,
+      timeframe: "1W",
+      activePanelTab: "stats",
+      drawings: [
+        {
+          version: 2,
+          id: "demo-saved-drawing",
+          episodeId: "demo-xpev-2025",
+          name: "演示保存趋势",
+          tool: "trend-line",
+          anchors: [
+            { time: initialFrame.cursor, price: 10 },
+            { time: nextFrame.cursor, price: 10.4 },
+          ],
+          style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
+          zIndex: 0,
+          hidden: false,
+          locked: false,
+          visibleOn: "all",
+          stage: "during-replay",
+          createdAtCursor: initialFrame.cursor,
+        },
+      ],
+    });
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await screen.findByRole("heading", {
+      name: "小米集团-W（1810）",
+    });
+    expect(
+      screen.getByRole("button", { name: /小鹏汽车.*演示交易/ }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "搜索标的" }));
+    await user.type(screen.getByRole("searchbox"), "XPEV");
+    await user.click(
+      screen.getByRole("option", { name: "小鹏汽车 XPEV US" }),
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" }),
+    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining(
+          `cursor=${encodeURIComponent(nextFrame.cursor)}&mode=restore`,
+        ),
+        { cache: "no-store" },
+      ),
+    );
+    expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
+      "data-cursor",
+      nextFrame.cursor,
+    );
+    expect(
+      screen.getByRole("button", { name: "切换到 1W" }),
+    ).toHaveClass("active");
+    await user.click(screen.getByRole("button", { name: "图层" }));
+    expect(
+      screen.getByDisplayValue("演示保存趋势"),
+    ).toBeInTheDocument();
+  });
+
+  it("refreshes the selected demo frame from the existing replay backend", async () => {
+    const user = userEvent.setup();
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await user.click(
+      screen.getByRole("button", { name: "行情数据详情" }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: "刷新行情数据" }),
+    );
+
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("mode=restore"),
+        { cache: "no-store" },
+      ),
+    );
+    expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
+      "data-cursor",
+      nextFrame.cursor,
+    );
+  });
+
+  it("disables demo refresh accessibly while a replay request is active", async () => {
+    const user = userEvent.setup();
+    let resolveRequest: ((response: Response) => void) | undefined;
+    vi.mocked(fetch).mockImplementationOnce(
+      () =>
+        new Promise<Response>((resolve) => {
+          resolveRequest = resolve;
+        }),
+    );
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await user.click(
+      screen.getByRole("button", { name: "下一根 K 线" }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: "行情数据详情" }),
+    );
+
+    const refresh = screen.getByRole("button", {
+      name: "刷新行情数据",
+    });
+    expect(refresh).toBeDisabled();
+    expect(refresh).toHaveAttribute(
+      "title",
+      "正在读取演示回放数据",
+    );
+    expect(refresh).toHaveAccessibleDescription(
+      "正在读取演示回放数据",
+    );
+    await user.click(refresh);
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    resolveRequest?.({
+      ok: true,
+      json: async () => nextFrame,
+    } as Response);
+    await waitFor(() =>
+      expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
+        "data-cursor",
+        nextFrame.cursor,
+      ),
+    );
+  });
+
+  it("uses the containing 15 minute bar for non-aligned closed fills", async () => {
+    saveImportedExecutions([
+      availabilityExecution({
+        id: "non-aligned-open",
+        row: 2,
+        side: "buy",
+        executedAt: "2025-01-02T10:07:00.000Z",
+      }),
+      availabilityExecution({
+        id: "non-aligned-close",
+        row: 3,
+        side: "sell",
+        executedAt: "2025-01-02T10:07:00.000Z",
+      }),
+    ]);
+    await cacheAvailabilityCandles([
+      "2025-01-02T10:00:00.000Z",
+    ]);
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await screen.findByText("本地导入");
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "切换到 15m" }),
+      ).toBeEnabled(),
+    );
+  });
+
+  it("accepts bounded pre-entry candles as episode chart context", async () => {
+    saveImportedExecutions([
+      availabilityExecution({
+        id: "context-open",
+        row: 2,
+        side: "buy",
+        executedAt: "2025-01-02T10:07:00.000Z",
+      }),
+      availabilityExecution({
+        id: "context-close",
+        row: 3,
+        side: "sell",
+        executedAt: "2025-01-02T10:22:00.000Z",
+      }),
+    ]);
+    await cacheAvailabilityCandles([
+      "2025-01-01T10:00:00.000Z",
+    ]);
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await screen.findByText("本地导入");
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "切换到 15m" }),
+      ).toBeEnabled(),
+    );
+  });
+
+  it("does not use candles before the bounded pre-entry context", async () => {
+    saveImportedExecutions([
+      availabilityExecution({
+        id: "bounded-open",
+        row: 2,
+        side: "buy",
+        executedAt: "2025-01-02T10:07:00.000Z",
+      }),
+      availabilityExecution({
+        id: "bounded-close",
+        row: 3,
+        side: "sell",
+        executedAt: "2025-01-02T10:22:00.000Z",
+      }),
+    ]);
+    await cacheAvailabilityCandles([
+      "2024-12-25T10:00:00.000Z",
+    ]);
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await screen.findByText("本地导入");
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "切换到 15m" }),
+      ).toBeDisabled(),
+    );
+  });
+
+  it("extends an open episode through cached data after its latest fill", async () => {
+    saveImportedExecutions([
+      availabilityExecution({
+        id: "open-position",
+        row: 2,
+        side: "buy",
+        executedAt: "2025-01-02T10:07:00.000Z",
+      }),
+    ]);
+    await cacheAvailabilityCandles([
+      "2025-01-03T10:00:00.000Z",
+    ]);
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await screen.findByText("本地导入");
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "切换到 15m" }),
+      ).toBeEnabled(),
+    );
+  });
+
+  it("bounds intraday refresh to the selected episode and changes bounds after an episode switch", async () => {
+    const user = userEvent.setup();
+    const executions = [
+      availabilityExecution({
+        id: "old-open",
+        row: 2,
+        side: "buy",
+        executedAt: "2025-01-02T14:30:00.000Z",
+      }),
+      availabilityExecution({
+        id: "old-close",
+        row: 3,
+        side: "sell",
+        executedAt: "2025-01-02T15:00:00.000Z",
+      }),
+      availabilityExecution({
+        id: "new-open",
+        row: 4,
+        side: "buy",
+        executedAt: "2025-01-06T14:30:00.000Z",
+      }),
+      availabilityExecution({
+        id: "new-close",
+        row: 5,
+        side: "sell",
+        executedAt: "2025-01-06T15:00:00.000Z",
+      }),
+    ];
+    saveImportedExecutions(executions);
+    const [oldEpisode] = buildTradeEpisodes(executions);
+    vi.mocked(fetch).mockImplementation(async (input) =>
+      String(input).includes("/api/instruments/resolve")
+        ? Response.json({
+            market: "US",
+            symbol: "XPEV",
+            name: "小鹏汽车",
+            assetType: "stock",
+            source: "nasdaq",
+            confidence: "official",
+            resolvedAt: "2026-07-30T00:00:00.000Z",
+          })
+        : Response.json(
+            { error: { code: "source-unavailable" } },
+            { status: 502 },
+          ),
+    );
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("combobox", { name: "交易回合" });
+    await user.click(
+      await screen.findByRole("button", { name: "行情数据详情" }),
+    );
+    await user.click(
+      await screen.findByRole("button", { name: "刷新行情数据" }),
+    );
+    await waitFor(() =>
+      expect(
+        vi.mocked(fetch).mock.calls.some(([input]) =>
+          String(input).includes("/api/market-data/intraday"),
+        ),
+      ).toBe(true),
+    );
+
+    const newestIntraday = new URL(
+      String(
+        vi.mocked(fetch).mock.calls.find(([input]) =>
+          String(input).includes("/api/market-data/intraday"),
+        )?.[0],
+      ),
+      "http://localhost",
+    );
+    expect(newestIntraday.searchParams.get("start")).toBe(
+      "2024-12-30T14:30:00.000Z",
+    );
+    expect(newestIntraday.searchParams.get("end")).toBe(
+      "2025-01-06T15:14:59.999Z",
+    );
+
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "交易回合" }),
+      oldEpisode.id,
+    );
+    vi.mocked(fetch).mockClear();
+    await user.click(
+      screen.getByRole("button", { name: "行情数据详情" }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: "刷新行情数据" }),
+    );
+    await waitFor(() =>
+      expect(
+        vi.mocked(fetch).mock.calls.filter(([input]) =>
+          String(input).includes("/api/market-data/"),
+        ),
+      ).toHaveLength(2),
+    );
+
+    const oldIntraday = new URL(
+      String(
+        vi.mocked(fetch).mock.calls.find(([input]) =>
+          String(input).includes("/api/market-data/intraday"),
+        )?.[0],
+      ),
+      "http://localhost",
+    );
+    expect(oldIntraday.searchParams.get("start")).toBe(
+      "2024-12-26T14:30:00.000Z",
+    );
+    expect(oldIntraday.searchParams.get("end")).toBe(
+      "2025-01-02T15:14:59.999Z",
+    );
+  });
+
+  it("automatically syncs a newly imported later episode using that episode's bounds", async () => {
+    const user = userEvent.setup();
+    saveImportedExecutions([
+      availabilityExecution({
+        id: "existing-open",
+        row: 2,
+        side: "buy",
+        executedAt: "2025-01-02T14:30:00.000Z",
+      }),
+      availabilityExecution({
+        id: "existing-close",
+        row: 3,
+        side: "sell",
+        executedAt: "2025-01-02T15:00:00.000Z",
+      }),
+    ]);
+    vi.mocked(fetch).mockImplementation(async (input) =>
+      String(input).includes("/api/instruments/resolve")
+        ? Response.json({
+            market: "US",
+            symbol: "XPEV",
+            name: "小鹏汽车",
+            assetType: "stock",
+            source: "nasdaq",
+            confidence: "official",
+            resolvedAt: "2026-07-30T00:00:00.000Z",
+          })
+        : Response.json(
+            { error: { code: "source-unavailable" } },
+            { status: 502 },
+          ),
+    );
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("combobox", { name: "交易回合" });
+    vi.mocked(fetch).mockClear();
+    const fileInput = document.querySelector<HTMLInputElement>(
+      'input[type="file"]',
+    );
+    expect(fileInput).not.toBeNull();
+    await user.upload(
+      fileInput!,
+      futuImportFile([
+        [
+          "2025-01-06 22:30:00",
+          "富途",
+          "acct",
+          "证券",
+          "XPEV 小鹏汽车",
+          "US",
+          "买入开仓",
+          "20250106",
+          "USD",
+          "10",
+          "10",
+          "-100",
+          "0",
+          "-100",
+        ],
+        [
+          "2025-01-06 23:00:00",
+          "富途",
+          "acct",
+          "证券",
+          "XPEV 小鹏汽车",
+          "US",
+          "卖出平仓",
+          "20250106",
+          "USD",
+          "-10",
+          "11",
+          "110",
+          "0",
+          "110",
+        ],
+      ]),
+    );
+    await user.click(
+      await screen.findByRole("button", {
+        name: "确认导入并开始更新行情",
+      }),
+    );
+    await waitFor(() =>
+      expect(
+        vi.mocked(fetch).mock.calls.some(([input]) =>
+          String(input).includes("/api/market-data/intraday"),
+        ),
+      ).toBe(true),
+    );
+
+    const intradayRequest = new URL(
+      String(
+        vi.mocked(fetch).mock.calls.find(([input]) =>
+          String(input).includes("/api/market-data/intraday"),
+        )?.[0],
+      ),
+      "http://localhost",
+    );
+    expect(intradayRequest.searchParams.get("start")).toBe(
+      "2024-12-30T14:30:00.000Z",
+    );
+    expect(intradayRequest.searchParams.get("end")).toBe(
+      "2025-01-06T15:14:59.999Z",
+    );
+  });
+
+  it("automatically syncs a newer episode when the same import closes an open episode", async () => {
+    const user = userEvent.setup();
+    saveImportedExecutions([
+      availabilityExecution({
+        id: "existing-open",
+        row: 2,
+        side: "buy",
+        executedAt: "2025-01-02T14:30:00.000Z",
+      }),
+    ]);
+    vi.mocked(fetch).mockImplementation(async (input) =>
+      String(input).includes("/api/instruments/resolve")
+        ? Response.json({
+            market: "US",
+            symbol: "XPEV",
+            name: "小鹏汽车",
+            assetType: "stock",
+            source: "nasdaq",
+            confidence: "official",
+            resolvedAt: "2026-07-30T00:00:00.000Z",
+          })
+        : Response.json(
+            { error: { code: "source-unavailable" } },
+            { status: 502 },
+          ),
+    );
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("combobox", { name: "交易回合" });
+    vi.mocked(fetch).mockClear();
+    const fileInput = document.querySelector<HTMLInputElement>(
+      'input[type="file"]',
+    );
+    expect(fileInput).not.toBeNull();
+    await user.upload(
+      fileInput!,
+      futuImportFile([
+        [
+          "2025-01-02 23:00:00",
+          "富途",
+          "acct",
+          "证券",
+          "XPEV 小鹏汽车",
+          "US",
+          "卖出平仓",
+          "20250102",
+          "USD",
+          "-10",
+          "11",
+          "110",
+          "0",
+          "110",
+        ],
+        [
+          "2025-01-06 22:30:00",
+          "富途",
+          "acct",
+          "证券",
+          "XPEV 小鹏汽车",
+          "US",
+          "买入开仓",
+          "20250106",
+          "USD",
+          "10",
+          "10",
+          "-100",
+          "0",
+          "-100",
+        ],
+        [
+          "2025-01-06 23:00:00",
+          "富途",
+          "acct",
+          "证券",
+          "XPEV 小鹏汽车",
+          "US",
+          "卖出平仓",
+          "20250106",
+          "USD",
+          "-10",
+          "11",
+          "110",
+          "0",
+          "110",
+        ],
+      ]),
+    );
+    await user.click(
+      await screen.findByRole("button", {
+        name: "确认导入并开始更新行情",
+      }),
+    );
+    await waitFor(() =>
+      expect(
+        vi.mocked(fetch).mock.calls.some(([input]) =>
+          String(input).includes("/api/market-data/intraday"),
+        ),
+      ).toBe(true),
+    );
+
+    const intradayRequest = new URL(
+      String(
+        vi.mocked(fetch).mock.calls.find(([input]) =>
+          String(input).includes("/api/market-data/intraday"),
+        )?.[0],
+      ),
+      "http://localhost",
+    );
+    expect(intradayRequest.searchParams.get("start")).toBe(
+      "2024-12-30T14:30:00.000Z",
+    );
+    expect(intradayRequest.searchParams.get("end")).toBe(
+      "2025-01-06T15:14:59.999Z",
+    );
+  });
+
+  it("uses the unified replay workspace for a cached imported episode", async () => {
+    const user = userEvent.setup();
+    const instrument = {
+      id: "HK:1810",
+      symbol: "1810",
+      name: "小米集团-W",
+      market: "HK",
+      currency: "HKD",
+    };
+    const executions: TradeExecution[] = [
+      {
+        id: "xiaomi-open",
+        source: {
+          platform: "futu",
+          row: 2,
+          sourceTimestampText: "开仓成交",
+        },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "buy",
+        executedAt: "2025-01-02T02:00:00.000Z",
+        quantity: "100",
+        price: "34.5",
+        fee: "0",
+      },
+      {
+        id: "xiaomi-close",
+        source: {
+          platform: "futu",
+          row: 3,
+          sourceTimestampText: "平仓成交",
+        },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "sell",
+        executedAt: "2025-01-02T02:45:00.000Z",
+        quantity: "100",
+        price: "36.5",
+        fee: "0",
+      },
+    ];
+    saveImportedExecutions(executions);
+    const [episode] = buildTradeEpisodes(executions);
     const repository = new IndexedDbMarketDataRepository();
     await repository.commitSyncResult({
-      instrumentId: "HK:1810",
+      instrumentId: instrument.id,
       candles: [
         {
-          instrumentId: "HK:1810",
+          instrumentId: instrument.id,
           tradingDate: "2025-01-02",
-          open: "34",
-          high: "35",
-          low: "33",
-          close: "34.5",
-          volume: "1000",
+          open: "34.5",
+          high: "36.8",
+          low: "34",
+          close: "36.5",
+          volume: "10000",
           currency: "HKD",
           provider: "tencent",
           providerSymbol: "hk01810",
           adjustmentMode: "raw",
-          fetchedAt: "2026-07-29T00:00:00.000Z",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
         },
       ],
       coverage: [
         {
-          startDate: "2023-11-01",
-          endDate: "2025-03-01",
+          startDate: "2024-01-01",
+          endDate: "2025-02-01",
           status: "complete",
           provider: "tencent",
-          fetchedAt: "2026-07-29T00:00:00.000Z",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
           missingTradingDates: [],
         },
       ],
@@ -1203,276 +1774,1044 @@ describe("TradeReviewWorkspace", () => {
         symbol: "hk01810",
       },
     });
-    vi.mocked(fetch).mockResolvedValue({
-      ok: false,
-      json: async () => ({
-        error: {
-          code: "unresolved",
-          attempts: [
-            {
-              source: "hkex",
-              code: "no-data",
-              message: "未找到证券",
-            },
-          ],
-        },
-      }),
-    } as Response);
-    mockMarketDataSync.mockResolvedValueOnce({
-      source: "cache",
-      status: "complete",
+    await repository.commitIntervalSyncResult({
+      instrumentId: instrument.id,
+      interval: "15m",
       candles: [
         {
-          instrumentId: "HK:1810",
-          tradingDate: "2025-01-02",
-          open: "34",
+          instrumentId: instrument.id,
+          interval: "15m",
+          timestamp: "2025-01-02T02:00:00.000Z",
+          open: "34.5",
           high: "35",
-          low: "33",
-          close: "34.5",
+          low: "34",
+          close: "34.8",
           volume: "1000",
           currency: "HKD",
           provider: "tencent",
           providerSymbol: "hk01810",
           adjustmentMode: "raw",
-          fetchedAt: "2026-07-29T00:00:00.000Z",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+        {
+          instrumentId: instrument.id,
+          interval: "15m",
+          timestamp: "2025-01-02T02:15:00.000Z",
+          open: "34.8",
+          high: "36",
+          low: "34.7",
+          close: "35.8",
+          volume: "1200",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+        {
+          instrumentId: instrument.id,
+          interval: "15m",
+          timestamp: "2025-01-02T02:30:00.000Z",
+          open: "35.8",
+          high: "36.2",
+          low: "35.5",
+          close: "36",
+          volume: "900",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+        {
+          instrumentId: instrument.id,
+          interval: "15m",
+          timestamp: "2025-01-02T02:45:00.000Z",
+          open: "36",
+          high: "36.8",
+          low: "35.9",
+          close: "36.5",
+          volume: "1500",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
         },
       ],
-      requestedRanges: [],
-    });
-
-    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "小米集团-W（1810）" });
-    expect(await screen.findByTestId("imported-market-chart")).toBeInTheDocument();
-
-    await user.click(
-      screen.getByRole("button", { name: "更新小米集团-W行情" }),
-    );
-
-    expect(fetch).toHaveBeenCalledWith(
-      "/api/instruments/resolve?market=HK&symbol=1810",
-      expect.objectContaining({ signal: expect.any(AbortSignal) }),
-    );
-    expect(screen.getByTestId("imported-market-chart")).toBeInTheDocument();
-  });
-
-  it("applies a refreshed canonical name to every execution and keeps it after candle failure and reload", async () => {
-    const user = userEvent.setup();
-    const base: TradeExecution = {
-      id: "name-refresh-buy",
-      source: { platform: "tiger", row: 2 },
-      accountId: "private-account-88",
-      accountLabel: "Tiger 私密账户",
-      instrument: {
-        id: "HK:1810",
-        symbol: "1810",
-        name: "旧证券名称",
-        market: "HK",
-        currency: "HKD",
+      coverage: [
+        {
+          interval: "15m",
+          requestedStart: "2025-01-02T00:00:00.000Z",
+          requestedEnd: "2025-01-02T23:59:59.999Z",
+          actualStart: "2025-01-02T02:00:00.000Z",
+          actualEnd: "2025-01-02T02:45:00.000Z",
+          status: "complete",
+          provider: "tencent",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      providerSymbol: {
+        provider: "tencent",
+        symbol: "hk01810",
       },
-      side: "buy",
-      executedAt: "2025-01-02T02:00:00.000Z",
-      quantity: "100",
-      price: "34.5",
-      fee: "10",
-    };
-    saveImportedExecutions([
-      base,
-      {
-        ...base,
-        id: "name-refresh-sell",
-        source: { platform: "tiger", row: 3 },
-        side: "sell",
-        executedAt: "2025-01-03T02:00:00.000Z",
-      },
-    ]);
-    vi.mocked(fetch).mockResolvedValue(
-      Response.json({
-        market: "HK",
-        symbol: "1810",
-        name: "小米集团-W（更新）",
-        assetType: "stock",
-        source: "hkex",
-        confidence: "official",
-        resolvedAt: "2026-07-29T00:00:00.000Z",
-      }),
-    );
-    mockMarketDataSync.mockRejectedValueOnce(
-      new Error("K 线更新失败"),
-    );
-
-    const view = render(
-      <TradeReviewWorkspace initialFrame={initialFrame} />,
-    );
-    await screen.findByRole("heading", { name: "旧证券名称（1810）" });
-    await user.click(
-      screen.getByRole("button", { name: "更新旧证券名称行情" }),
-    );
-
-    expect(
-      await screen.findByRole("heading", {
-        name: "小米集团-W（更新）（1810）",
-      }),
-    ).toBeInTheDocument();
-    expect(
-      loadImportedExecutions().map((item) => item.instrument.name),
-    ).toEqual(["小米集团-W（更新）", "小米集团-W（更新）"]);
-    const metadataRequest = vi.mocked(fetch).mock.calls.find(
-      ([input]) =>
-        String(input) ===
-        "/api/instruments/resolve?market=HK&symbol=1810",
-    );
-    expect(metadataRequest).toBeDefined();
-    expect(metadataRequest?.[1]).toEqual({
-      signal: expect.any(AbortSignal),
     });
-    expect(metadataRequest?.[1]).not.toHaveProperty("body");
-    expect(metadataRequest?.[1]).not.toHaveProperty("method");
-    expect(JSON.stringify(metadataRequest)).not.toContain(
-      "private-account-88",
-    );
-    expect(JSON.stringify(metadataRequest)).not.toContain(
-      "Tiger 私密账户",
-    );
-
-    view.unmount();
+    await new IndexedDbEpisodeReviewRepository().put({
+      version: 1,
+      episodeId: episode.id,
+      instrumentId: instrument.id,
+      updatedAt: "2025-01-03T00:00:00.000Z",
+      plan: {
+        thesis: "未来修订计划",
+        expectedPath: "",
+        invalidationCondition: "未来失效条件",
+        targetRange: "未来目标",
+        plannedRiskAmount: "50",
+        confidence: 4,
+      },
+      planRevisions: [
+        {
+          knowledgeAt: "2025-01-02T02:00:00.000Z",
+          plan: {
+            thesis: "入场计划",
+            expectedPath: "",
+            invalidationCondition: "入场失效条件",
+            targetRange: "入场目标",
+            plannedRiskAmount: "100",
+            confidence: 4,
+          },
+        },
+        {
+          knowledgeAt: "2025-01-02T02:30:00.000Z",
+          plan: {
+            thesis: "未来修订计划",
+            expectedPath: "",
+            invalidationCondition: "未来失效条件",
+            targetRange: "未来目标",
+            plannedRiskAmount: "50",
+            confidence: 4,
+          },
+        },
+      ],
+      review: {
+        decisionQuality: null,
+        executionQuality: null,
+        riskManagement: "",
+        psychology: "",
+        reusableRule: "",
+        completed: false,
+      },
+      confirmedTagIds: [],
+    });
     vi.mocked(fetch).mockClear();
+
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
     expect(
-      await screen.findByRole("heading", {
-        name: "小米集团-W（更新）（1810）",
-      }),
+      await screen.findByRole("heading", { name: "小米集团-W（1810）" }),
     ).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: "切换到 15m" }),
+    ).toBeEnabled();
+    expect(screen.getByRole("button", { name: "趋势线" })).toBeEnabled();
+    expect(screen.getByText("最大盈利（MFE）")).toBeInTheDocument();
+    expect(screen.getByText("计划风险").parentElement).toHaveTextContent(
+      "HK$100.00",
+    );
+    expect(screen.queryByText("未来失效条件")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "下一根 K 线" }),
+    ).toBeEnabled();
+    expect(
+      screen.queryByLabelText("导入股票成交详情"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("高 36.80")).not.toBeInTheDocument();
+
+    const cursorBefore = screen.getByTestId("replay-cursor").textContent;
+    const mfeBefore =
+      screen.getByText("最大盈利（MFE）").parentElement?.textContent;
+    expect(screen.queryByText("平仓成交")).not.toBeInTheDocument();
+    expect(screen.getByText("计划风险").parentElement).toHaveTextContent(
+      "HK$100.00",
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: "下一根 K 线" }),
+    );
+
+    expect(screen.getByTestId("replay-cursor").textContent).not.toBe(
+      cursorBefore,
+    );
+    expect(
+      screen.getByText("最大盈利（MFE）").parentElement?.textContent,
+    ).not.toBe(mfeBefore);
+    expect(screen.queryByText("平仓成交")).not.toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: "下一根 K 线" }),
+    );
+    expect(screen.getByText("计划风险").parentElement).toHaveTextContent(
+      "HK$50.00",
+    );
+    expect(screen.getByText("未来失效条件")).toBeInTheDocument();
+    expect(screen.queryByText("平仓成交")).not.toBeInTheDocument();
+    expect(screen.queryByText("+HK$200.00")).not.toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: "下一根 K 线" }),
+    );
+    expect(screen.getByText("平仓成交")).toBeInTheDocument();
+    expect(screen.getAllByText("+HK$200.00").length).toBeGreaterThan(0);
+
+    await user.click(
+      screen.getByRole("button", { name: "下一根 K 线" }),
+    );
+    expect(screen.getByText("高 36.80")).toBeInTheDocument();
+
+    const cursorBeforePeriodChange =
+      screen.getByTestId("replay-cursor").textContent;
+    await user.click(screen.getByRole("button", { name: "切换到 1h" }));
+    expect(screen.getByTestId("replay-cursor").textContent).not.toBe(
+      "2025/1/2 10:45",
+    );
+    expect(screen.getByTestId("replay-cursor").textContent).toBe(
+      cursorBeforePeriodChange,
+    );
+    await user.click(screen.getByRole("button", { name: "搜索标的" }));
+    await user.type(screen.getByRole("searchbox"), "1810");
+    await user.click(
+      screen.getByRole("option", {
+        name: "小米集团-W 1810 HK",
+      }),
+    );
+    await user.click(screen.getByRole("button", { name: "行情数据详情" }));
+    expect(
+      screen.getByRole("region", { name: "15m 行情详情" }),
+    ).toHaveTextContent("腾讯行情");
+    expect(
+      screen.getByRole("region", { name: "15m 行情详情" }),
+    ).toHaveTextContent("15m、1h、4h");
+    await user.click(screen.getByRole("button", { name: "图表设置" }));
+    await user.click(screen.getByRole("checkbox", { name: "显示成交量" }));
+    expect(document.querySelector(".chart-stage")).toHaveAttribute(
+      "data-show-volume",
+      "false",
+    );
+    expect(screen.getByRole("button", { name: "图层" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "图层" })).toHaveAttribute(
+      "title",
+      "当前游标和周期暂无绘图",
+    );
+    expect(
+      screen.getByRole("button", { name: "进入全屏" }),
+    ).toHaveAttribute("title", "浏览器不支持全屏");
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it("merges a deferred metadata name with an overlapping import confirmation without losing either", async () => {
+  it("keeps notes available and explains provider-limited intraday periods for daily-only data", async () => {
     const user = userEvent.setup();
-    const metadataResponse = deferred<Response>();
-    const existing: TradeExecution = {
-      id: "deferred-name-buy",
-      source: { platform: "tiger", row: 2 },
-      accountId: "tiger-account",
-      accountLabel: "Tiger",
-      instrument: {
-        id: "HK:1810",
-        symbol: "1810",
-        name: "小米旧名称",
-        market: "HK",
-        currency: "HKD",
-      },
+    const instrument = {
+      id: "HK:1357",
+      symbol: "1357",
+      name: "美图公司",
+      market: "HK",
+      currency: "HKD",
+    };
+    const execution: TradeExecution = {
+      id: "meitu-open",
+      source: { platform: "futu", row: 2 },
+      accountId: "acct",
+      accountLabel: "富途",
+      instrument,
       side: "buy",
       executedAt: "2025-01-02T02:00:00.000Z",
       quantity: "100",
-      price: "34.5",
-      fee: "10",
+      price: "3",
+      fee: "0",
     };
-    saveImportedExecutions([existing]);
-    vi.mocked(fetch).mockReturnValue(metadataResponse.promise);
-    mockDispatcher.mockResolvedValue(cmsParsedResult);
-    mockEnrichment.mockResolvedValue(cmsEnrichedResult);
+    saveImportedExecutions([execution]);
+    const repository = new IndexedDbMarketDataRepository();
+    await repository.commitSyncResult({
+      instrumentId: instrument.id,
+      candles: [
+        {
+          instrumentId: instrument.id,
+          tradingDate: "2025-01-02",
+          open: "3",
+          high: "3.2",
+          low: "2.9",
+          close: "3.1",
+          volume: "10000",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01357",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      coverage: [
+        {
+          startDate: "2024-01-01",
+          endDate: "2025-02-01",
+          status: "complete",
+          provider: "tencent",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+          missingTradingDates: [],
+        },
+      ],
+      providerSymbol: { provider: "tencent", symbol: "hk01357" },
+    });
+    await repository.commitIntervalSyncResult({
+      instrumentId: instrument.id,
+      interval: "15m",
+      candles: [],
+      coverage: [
+        {
+          interval: "15m",
+          requestedStart: "2025-01-01T00:00:00.000Z",
+          requestedEnd: "2025-01-03T23:59:59.999Z",
+          status: "partial",
+          reason: "provider-history-limit",
+        },
+      ],
+    });
+    vi.mocked(fetch).mockClear();
+
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "小米旧名称（1810）" });
+    await screen.findByRole("heading", { name: "美图公司（1357）" });
 
-    await user.click(
-      screen.getByRole("button", { name: "更新小米旧名称行情" }),
+    for (const period of ["15m", "1h", "4h"]) {
+      const button = screen.getByRole("button", {
+        name: `切换到 ${period}`,
+      });
+      expect(button).toBeDisabled();
+      expect(button).toHaveAttribute(
+        "title",
+        "公开行情源未覆盖该交易日期的 15 分钟行情",
+      );
+    }
+    await user.click(screen.getByRole("tab", { name: "复盘笔记" }));
+    expect(screen.getByLabelText("买入理由")).toBeEnabled();
+    await user.type(screen.getByLabelText("买入理由"), "只有日线也能记录");
+    expect(screen.getByLabelText("买入理由")).toHaveValue(
+      "只有日线也能记录",
     );
-    await user.upload(
-      screen.getByLabelText("导入交易记录"),
-      new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
-    );
-    await user.click(
-      await screen.findByRole("button", {
-        name: "确认导入并开始更新行情",
-      }),
-    );
-    metadataResponse.resolve(
-      Response.json({
-        market: "HK",
-        symbol: "1810",
-        name: "小米并发更新名称",
-        assetType: "stock",
-        source: "hkex",
-        confidence: "official",
-        resolvedAt: "2026-07-29T00:00:00.000Z",
-      }),
-    );
-
-    expect(
-      await screen.findByText("小米并发更新名称"),
-    ).toBeInTheDocument();
-    expect(
-      loadImportedExecutions().map((item) => [
-        item.instrument.id,
-        item.instrument.name,
-      ]),
-    ).toEqual([
-      ["HK:1810", "小米并发更新名称"],
-      ["CN-SH:600938", "中国海油"],
-    ]);
+    expect(fetch).not.toHaveBeenCalled();
   });
 
-  it("keeps UI and durable executions unchanged when refreshed-name persistence fails", async () => {
+  it("derives intraday availability from the selected episode window", async () => {
     const user = userEvent.setup();
-    const existing: TradeExecution = {
-      id: "failed-name-save",
-      source: { platform: "tiger", row: 2 },
-      accountId: "tiger-account",
-      accountLabel: "Tiger",
-      instrument: {
+    const instrument = {
+      id: "US:XPEV",
+      symbol: "XPEV",
+      name: "小鹏汽车",
+      market: "US",
+      currency: "USD",
+    };
+    const executions: TradeExecution[] = [
+      {
+        id: "old-open",
+        source: { platform: "futu", row: 2 },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "buy",
+        executedAt: "2025-01-02T14:30:00.000Z",
+        quantity: "10",
+        price: "10",
+        fee: "0",
+      },
+      {
+        id: "old-close",
+        source: { platform: "futu", row: 3 },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "sell",
+        executedAt: "2025-01-02T15:00:00.000Z",
+        quantity: "10",
+        price: "11",
+        fee: "0",
+      },
+      {
+        id: "new-open",
+        source: { platform: "futu", row: 4 },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "buy",
+        executedAt: "2025-01-06T14:30:00.000Z",
+        quantity: "10",
+        price: "12",
+        fee: "0",
+      },
+      {
+        id: "new-close",
+        source: { platform: "futu", row: 5 },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "sell",
+        executedAt: "2025-01-06T15:00:00.000Z",
+        quantity: "10",
+        price: "13",
+        fee: "0",
+      },
+    ];
+    saveImportedExecutions(executions);
+    const [oldEpisode] = buildTradeEpisodes(executions);
+    const repository = new IndexedDbMarketDataRepository();
+    await repository.commitSyncResult({
+      instrumentId: instrument.id,
+      candles: [
+        {
+          instrumentId: instrument.id,
+          tradingDate: "2025-01-02",
+          open: "10",
+          high: "11",
+          low: "9",
+          close: "11",
+          volume: "1000",
+          currency: "USD",
+          provider: "yahoo",
+          providerSymbol: "XPEV",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-07T00:00:00.000Z",
+        },
+        {
+          instrumentId: instrument.id,
+          tradingDate: "2025-01-06",
+          open: "12",
+          high: "13",
+          low: "11",
+          close: "13",
+          volume: "1000",
+          currency: "USD",
+          provider: "yahoo",
+          providerSymbol: "XPEV",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-07T00:00:00.000Z",
+        },
+      ],
+      coverage: [
+        {
+          startDate: "2025-01-02",
+          endDate: "2025-01-06",
+          status: "complete",
+          provider: "yahoo",
+          fetchedAt: "2025-01-07T00:00:00.000Z",
+          missingTradingDates: [],
+        },
+      ],
+      providerSymbol: { provider: "yahoo", symbol: "XPEV" },
+    });
+    await repository.commitIntervalSyncResult({
+      instrumentId: instrument.id,
+      interval: "15m",
+      candles: [
+        {
+          instrumentId: instrument.id,
+          interval: "15m",
+          timestamp: "2025-01-06T14:30:00.000Z",
+          open: "12",
+          high: "12.5",
+          low: "11.8",
+          close: "12.4",
+          volume: "1000",
+          currency: "USD",
+          provider: "yahoo",
+          providerSymbol: "XPEV",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-07T00:00:00.000Z",
+        },
+      ],
+      coverage: [
+        {
+          interval: "15m",
+          requestedStart: "2025-01-06T14:30:00.000Z",
+          requestedEnd: "2025-01-06T15:00:00.000Z",
+          actualStart: "2025-01-06T14:30:00.000Z",
+          actualEnd: "2025-01-06T14:30:00.000Z",
+          status: "complete",
+          provider: "yahoo",
+          fetchedAt: "2025-01-07T00:00:00.000Z",
+        },
+      ],
+      providerSymbol: { provider: "yahoo", symbol: "XPEV" },
+    });
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("option", { name: /第 2 次交易/ });
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "切换到 15m" }),
+      ).toBeEnabled(),
+    );
+
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "交易回合" }),
+      oldEpisode.id,
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "切换到 15m" }),
+      ).toBeDisabled(),
+    );
+    expect(
+      screen.getByRole("button", { name: "切换到 15m" }),
+    ).toHaveAttribute(
+      "title",
+      "该交易回合没有可用的 15 分钟行情",
+    );
+    expect(
+      screen.getByRole("button", { name: "切换到 1D" }),
+    ).toBeEnabled();
+  });
+
+  it.each([
+    { label: "after the final cached candle", withCandle: true },
+    { label: "without cached candles", withCandle: false },
+  ])(
+    "reveals the next execution $label without enabling next-candle navigation",
+    async ({ withCandle }) => {
+      const user = userEvent.setup();
+      const instrument = {
         id: "HK:1810",
         symbol: "1810",
-        name: "保存前名称",
+        name: "小米集团-W",
         market: "HK",
         currency: "HKD",
-      },
+      };
+      const executions: TradeExecution[] = [
+        {
+          id: "boundary-open",
+          source: {
+            platform: "futu",
+            row: 2,
+            sourceTimestampText: "开仓成交",
+            sourceTimezone: "Asia/Shanghai",
+          },
+          accountId: "acct",
+          accountLabel: "富途",
+          instrument,
+          side: "buy",
+          executedAt: "2025-01-02T02:00:00.000Z",
+          quantity: "100",
+          price: "34.5",
+          fee: "0",
+        },
+        {
+          id: "boundary-close",
+          source: {
+            platform: "futu",
+            row: 3,
+            sourceTimestampText: "平仓成交",
+            sourceTimezone: "Asia/Shanghai",
+          },
+          accountId: "acct",
+          accountLabel: "富途",
+          instrument,
+          side: "sell",
+          executedAt: "2025-01-02T02:45:00.000Z",
+          quantity: "100",
+          price: "36.5",
+          fee: "0",
+        },
+      ];
+      saveImportedExecutions(executions);
+      if (withCandle) {
+        await new IndexedDbMarketDataRepository()
+          .commitIntervalSyncResult({
+            instrumentId: instrument.id,
+            interval: "15m",
+            candles: [
+              {
+                instrumentId: instrument.id,
+                interval: "15m",
+                timestamp: "2025-01-02T02:00:00.000Z",
+                open: "34.5",
+                high: "35",
+                low: "34",
+                close: "34.8",
+                volume: "1000",
+                currency: "HKD",
+                provider: "tencent",
+                providerSymbol: "hk01810",
+                adjustmentMode: "raw",
+                fetchedAt: "2025-01-03T00:00:00.000Z",
+              },
+            ],
+            coverage: [
+              {
+                interval: "15m",
+                requestedStart: "2025-01-02T02:00:00.000Z",
+                requestedEnd: "2025-01-02T02:00:00.000Z",
+                actualStart: "2025-01-02T02:00:00.000Z",
+                actualEnd: "2025-01-02T02:00:00.000Z",
+                status: "complete",
+                provider: "tencent",
+                fetchedAt: "2025-01-03T00:00:00.000Z",
+              },
+            ],
+            providerSymbol: {
+              provider: "tencent",
+              symbol: "hk01810",
+            },
+          });
+      }
+
+      render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+      await screen.findByRole("heading", {
+        name: "小米集团-W（1810）",
+      });
+
+      const nextCandle = screen.getByRole("button", {
+        name: "下一根 K 线",
+      });
+      if (withCandle) {
+        expect(nextCandle).toBeEnabled();
+        await user.click(nextCandle);
+      }
+      expect(nextCandle).toBeDisabled();
+      const nextExecution = screen.getByRole("button", {
+        name: "跳至下一笔成交",
+      });
+      expect(nextExecution).toBeEnabled();
+
+      await user.click(nextExecution);
+
+      expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
+        "data-cursor",
+        "2025-01-02T02:45:00.000Z",
+      );
+      expect(screen.getByText("平仓成交")).toBeInTheDocument();
+      expect(
+        screen.getAllByText("+HK$200.00").length,
+      ).toBeGreaterThan(0);
+    },
+  );
+
+  it("preserves cached intervals and reports each failed refresh independently", async () => {
+    const user = userEvent.setup();
+    const instrument = {
+      id: "HK:1810",
+      symbol: "1810",
+      name: "小米集团-W",
+      market: "HK",
+      currency: "HKD",
+    };
+    const execution: TradeExecution = {
+      id: "refresh-open",
+      source: { platform: "futu", row: 2 },
+      accountId: "acct",
+      accountLabel: "富途",
+      instrument,
       side: "buy",
       executedAt: "2025-01-02T02:00:00.000Z",
       quantity: "100",
       price: "34.5",
-      fee: "10",
+      fee: "0",
     };
-    saveImportedExecutions([existing]);
-    vi.mocked(fetch).mockResolvedValue(
-      Response.json({
-        market: "HK",
-        symbol: "1810",
-        name: "无法持久化的新名称",
-        assetType: "stock",
-        source: "hkex",
-        confidence: "official",
-        resolvedAt: "2026-07-29T00:00:00.000Z",
-      }),
-    );
-    const originalSetItem = window.localStorage.setItem.bind(
-      window.localStorage,
-    );
-    vi.spyOn(window.localStorage, "setItem").mockImplementation(
-      (key, value) => {
-        if (key === "trade-reviewer:executions:v1") {
-          throw new Error("quota");
-        }
-        originalSetItem(key, value);
-      },
-    );
+    saveImportedExecutions([execution]);
+    const repository = new IndexedDbMarketDataRepository();
+    await repository.commitSyncResult({
+      instrumentId: instrument.id,
+      candles: [
+        {
+          instrumentId: instrument.id,
+          tradingDate: "2025-01-02",
+          open: "34.5",
+          high: "35",
+          low: "34",
+          close: "34.8",
+          volume: "1000",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      coverage: [
+        {
+          startDate: "2024-01-01",
+          endDate: "2025-02-01",
+          status: "partial",
+          provider: "tencent",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+          missingTradingDates: ["2025-01-06"],
+        },
+      ],
+      providerSymbol: { provider: "tencent", symbol: "hk01810" },
+    });
+    await repository.commitIntervalSyncResult({
+      instrumentId: instrument.id,
+      interval: "15m",
+      candles: [
+        {
+          instrumentId: instrument.id,
+          interval: "15m",
+          timestamp: "2025-01-02T02:00:00.000Z",
+          open: "34.5",
+          high: "35",
+          low: "34",
+          close: "34.8",
+          volume: "1000",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+        {
+          instrumentId: instrument.id,
+          interval: "15m",
+          timestamp: "2025-01-02T02:15:00.000Z",
+          open: "34.8",
+          high: "35.2",
+          low: "34.7",
+          close: "35",
+          volume: "1000",
+          currency: "HKD",
+          provider: "tencent",
+          providerSymbol: "hk01810",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      coverage: [
+        {
+          interval: "15m",
+          requestedStart: "2025-01-02T00:00:00.000Z",
+          requestedEnd: "2025-01-02T03:00:00.000Z",
+          actualStart: "2025-01-02T02:00:00.000Z",
+          actualEnd: "2025-01-02T02:15:00.000Z",
+          status: "partial",
+          provider: "tencent",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      providerSymbol: { provider: "tencent", symbol: "hk01810" },
+    });
+    vi.mocked(fetch).mockRejectedValue(new Error("offline"));
+
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "保存前名称（1810）" });
-
+    await screen.findByRole("heading", {
+      name: "小米集团-W（1810）",
+    });
+    const cursor = screen.getByTestId("replay-cursor").textContent;
+    await user.click(screen.getByRole("button", { name: "行情数据详情" }));
     await user.click(
-      screen.getByRole("button", { name: "更新保存前名称行情" }),
+      screen.getByRole("button", { name: "刷新行情数据" }),
     );
 
-    expect(
-      await screen.findByRole("alert"),
-    ).toHaveTextContent("新名称未能保存");
-    expect(
-      screen.getByRole("heading", { name: "保存前名称（1810）" }),
-    ).toBeInTheDocument();
-    expect(loadImportedExecutions()[0].instrument.name).toBe(
-      "保存前名称",
+    await waitFor(() =>
+      expect(
+        vi.mocked(fetch).mock.calls.filter(([input]) =>
+          String(input).includes("/api/market-data/"),
+        ),
+      ).toHaveLength(2),
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByRole("region", { name: "15m 行情详情" }),
+      ).toHaveTextContent("15 分钟：offline"),
     );
     expect(
-      screen.queryByText("无法持久化的新名称"),
-    ).not.toBeInTheDocument();
+      screen.getByRole("region", { name: "1D 行情详情" }),
+    ).toHaveTextContent("日线：offline");
+    expect(
+      screen.getByRole("button", { name: "切换到 15m" }),
+    ).toBeEnabled();
+    expect(screen.getByTestId("replay-cursor")).toHaveTextContent(
+      cursor ?? "",
+    );
+  });
+
+  it("reveals an imported provider candle only at its completed-bar knowledge boundary", async () => {
+    const user = userEvent.setup();
+    const execution = availabilityExecution({
+      id: "completed-bar-entry",
+      row: 1,
+      side: "buy",
+      executedAt: "2025-01-02T10:07:00.000Z",
+    });
+    saveImportedExecutions([execution]);
+    const [episode] = buildTradeEpisodes([execution]);
+    await new IndexedDbMarketDataRepository().commitIntervalSyncResult({
+      instrumentId: availabilityInstrument.id,
+      interval: "15m",
+      candles: [
+        {
+          instrumentId: availabilityInstrument.id,
+          interval: "15m",
+          timestamp: "2025-01-02T10:00:00.000Z",
+          knowledgeAt: "2025-01-02T10:15:00.000Z",
+          open: "10",
+          high: "12",
+          low: "9",
+          close: "11",
+          volume: "1000",
+          currency: "USD",
+          provider: "yahoo",
+          providerSymbol: "XPEV",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      coverage: [
+        {
+          interval: "15m",
+          requestedStart: "2025-01-02T10:00:00.000Z",
+          requestedEnd: "2025-01-02T10:15:00.000Z",
+          actualStart: "2025-01-02T10:00:00.000Z",
+          actualEnd: "2025-01-02T10:00:00.000Z",
+          status: "complete",
+          provider: "yahoo",
+          fetchedAt: "2025-01-03T00:00:00.000Z",
+        },
+      ],
+      providerSymbol: { provider: "yahoo", symbol: "XPEV" },
+    });
+    saveReviewState(episode.id, {
+      version: 2,
+      episodeId: episode.id,
+      replayCursor: execution.executedAt,
+      timeframe: "15m",
+      activePanelTab: "stats",
+      drawings: [],
+    });
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
+
+    await waitFor(() =>
+      expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
+        "data-cursor",
+        "2025-01-02T10:07:00.000Z",
+      ),
+    );
+    expect(
+      screen.getAllByText(
+        "No candle is available at or before the replay cursor.",
+      ).length,
+    ).toBeGreaterThan(0);
+
+    await user.click(screen.getByRole("button", { name: "下一根 K 线" }));
+
+    expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
+      "data-cursor",
+      "2025-01-02T10:15:00.000Z",
+    );
+    expect(screen.getAllByText("+US$20.00").length).toBeGreaterThan(0);
+  });
+
+  it("restores cursor, drawings, panel tab, and notes independently for each episode", async () => {
+    const user = userEvent.setup();
+    const instrument = {
+      id: "US:XPEV",
+      symbol: "XPEV",
+      name: "小鹏汽车",
+      market: "US",
+      currency: "USD",
+    };
+    const executions: TradeExecution[] = [
+      {
+        id: "old-open",
+        source: { platform: "futu", row: 2 },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "buy",
+        executedAt: "2025-01-02T14:30:00.000Z",
+        quantity: "10",
+        price: "10",
+        fee: "0",
+      },
+      {
+        id: "old-close",
+        source: { platform: "futu", row: 3 },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "sell",
+        executedAt: "2025-01-02T15:00:00.000Z",
+        quantity: "10",
+        price: "11",
+        fee: "0",
+      },
+      {
+        id: "new-open",
+        source: { platform: "futu", row: 4 },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "buy",
+        executedAt: "2025-01-06T14:30:00.000Z",
+        quantity: "10",
+        price: "12",
+        fee: "0",
+      },
+      {
+        id: "new-close",
+        source: { platform: "futu", row: 5 },
+        accountId: "acct",
+        accountLabel: "富途",
+        instrument,
+        side: "sell",
+        executedAt: "2025-01-06T15:00:00.000Z",
+        quantity: "10",
+        price: "13",
+        fee: "0",
+      },
+    ];
+    saveImportedExecutions(executions);
+    const [oldEpisode, newEpisode] = buildTradeEpisodes(executions);
+    const repository = new IndexedDbMarketDataRepository();
+    const candleTimes = [
+      "2025-01-02T14:30:00.000Z",
+      "2025-01-02T14:45:00.000Z",
+      "2025-01-02T15:00:00.000Z",
+      "2025-01-06T14:30:00.000Z",
+      "2025-01-06T14:45:00.000Z",
+      "2025-01-06T15:00:00.000Z",
+    ];
+    await repository.commitIntervalSyncResult({
+      instrumentId: instrument.id,
+      interval: "15m",
+      candles: candleTimes.map((timestamp, index) => ({
+        instrumentId: instrument.id,
+        interval: "15m" as const,
+        timestamp,
+        open: String(10 + index * 0.5),
+        high: String(11 + index * 0.5),
+        low: String(9 + index * 0.5),
+        close: String(10.5 + index * 0.5),
+        volume: "1000",
+        currency: "USD",
+        provider: "yahoo" as const,
+        providerSymbol: "XPEV",
+        adjustmentMode: "raw" as const,
+        fetchedAt: "2025-01-07T00:00:00.000Z",
+      })),
+      coverage: [
+        {
+          interval: "15m",
+          requestedStart: "2025-01-02T00:00:00.000Z",
+          requestedEnd: "2025-01-06T23:59:59.999Z",
+          actualStart: candleTimes[0],
+          actualEnd: candleTimes.at(-1),
+          status: "complete",
+          provider: "yahoo",
+          fetchedAt: "2025-01-07T00:00:00.000Z",
+        },
+      ],
+      providerSymbol: { provider: "yahoo", symbol: "XPEV" },
+    });
+    saveReviewState(oldEpisode.id, {
+      version: 2,
+      episodeId: oldEpisode.id,
+      replayCursor: "2025-01-02T14:45:00.000Z",
+      timeframe: "15m",
+      activePanelTab: "notes",
+      drawings: [
+        {
+          version: 2,
+          id: "old-drawing",
+          episodeId: oldEpisode.id,
+          name: "旧回合趋势",
+          tool: "trend-line",
+          anchors: [
+            { time: "2025-01-02T14:30:00.000Z", price: 10 },
+            { time: "2025-01-02T14:45:00.000Z", price: 11 },
+          ],
+          style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
+          zIndex: 0,
+          hidden: false,
+          locked: false,
+          visibleOn: "all",
+          stage: "during-replay",
+          createdAtCursor: "2025-01-02T14:45:00.000Z",
+        },
+      ],
+    });
+    saveReviewState(newEpisode.id, {
+      version: 2,
+      episodeId: newEpisode.id,
+      replayCursor: "2025-01-06T14:45:00.000Z",
+      timeframe: "15m",
+      activePanelTab: "stats",
+      drawings: [
+        {
+          version: 2,
+          id: "new-drawing",
+          episodeId: newEpisode.id,
+          name: "新回合趋势",
+          tool: "trend-line",
+          anchors: [
+            { time: "2025-01-06T14:30:00.000Z", price: 12 },
+            { time: "2025-01-06T14:45:00.000Z", price: 13 },
+          ],
+          style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
+          zIndex: 0,
+          hidden: false,
+          locked: false,
+          visibleOn: "all",
+          stage: "during-replay",
+          createdAtCursor: "2025-01-06T14:45:00.000Z",
+        },
+      ],
+    });
+    const reviewRepository = new IndexedDbEpisodeReviewRepository();
+    await reviewRepository.put({
+      ...defaultEpisodeRecord(newEpisode.id, instrument.id),
+      plan: {
+        ...defaultEpisodeRecord(newEpisode.id, instrument.id).plan,
+        thesis: "新回合笔记",
+      },
+    });
+    await reviewRepository.put({
+      ...defaultEpisodeRecord(oldEpisode.id, instrument.id),
+      plan: {
+        ...defaultEpisodeRecord(oldEpisode.id, instrument.id).plan,
+        thesis: "旧回合笔记",
+      },
+    });
+    vi.mocked(fetch).mockClear();
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
+    await waitFor(() =>
+      expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
+        "data-cursor",
+        "2025-01-06T14:45:00.000Z",
+      ),
+    );
+    await user.click(screen.getByRole("button", { name: "图层" }));
+    expect(screen.getByDisplayValue("新回合趋势")).toBeInTheDocument();
+    expect(screen.queryByDisplayValue("旧回合趋势")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "复盘笔记" }));
+    expect(screen.getByLabelText("买入理由")).toHaveValue("新回合笔记");
+
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "交易回合" }),
+      oldEpisode.id,
+    );
+
+    expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
+      "data-cursor",
+      "2025-01-02T14:45:00.000Z",
+    );
+    expect(screen.getByRole("tab", { name: "复盘笔记" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(screen.getByLabelText("买入理由")).toHaveValue("旧回合笔记");
+    await user.click(screen.getByRole("button", { name: "图层" }));
+    expect(screen.getByDisplayValue("旧回合趋势")).toBeInTheDocument();
+    expect(screen.queryByDisplayValue("新回合趋势")).not.toBeInTheDocument();
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it("navigates through stock and episode library levels without requesting market data", async () => {
@@ -1756,164 +3095,6 @@ describe("TradeReviewWorkspace", () => {
 
     expect(await screen.findByText("已保存在本机")).toBeInTheDocument();
     expect((await reviews.get(episode.id))?.plan.thesis).toBe("等待回踩");
-    expect(fetch).not.toHaveBeenCalled();
-  });
-
-  it("accepts an edited cached suggestion and opens the exact episode without requesting market data", async () => {
-    const user = userEvent.setup();
-    const instrument = {
-      id: "US:XPEV",
-      symbol: "XPEV",
-      name: "小鹏汽车",
-      market: "US",
-      currency: "USD",
-    };
-    const executions: TradeExecution[] = [
-      {
-        id: "scale-in-1",
-        source: {
-          platform: "futu",
-          row: 2,
-          sourceTimestampText: "目标回合买入一",
-        },
-        accountId: "acct",
-        accountLabel: "富途",
-        instrument,
-        side: "buy",
-        executedAt: "2025-01-02T14:30:00.000Z",
-        quantity: "50",
-        price: "10",
-        fee: "0",
-      },
-      {
-        id: "scale-in-2",
-        source: {
-          platform: "futu",
-          row: 3,
-          sourceTimestampText: "目标回合买入二",
-        },
-        accountId: "acct",
-        accountLabel: "富途",
-        instrument,
-        side: "buy",
-        executedAt: "2025-01-02T15:30:00.000Z",
-        quantity: "50",
-        price: "11",
-        fee: "0",
-      },
-      {
-        id: "scale-in-close",
-        source: {
-          platform: "futu",
-          row: 4,
-          sourceTimestampText: "目标回合卖出",
-        },
-        accountId: "acct",
-        accountLabel: "富途",
-        instrument,
-        side: "sell",
-        executedAt: "2025-01-03T14:30:00.000Z",
-        quantity: "100",
-        price: "12",
-        fee: "0",
-      },
-    ];
-    saveImportedExecutions(executions);
-    const [episode] = buildTradeEpisodes(executions);
-    await new IndexedDbMarketDataRepository().commitSyncResult({
-      instrumentId: instrument.id,
-      candles: ["2025-01-02", "2025-01-03"].map(
-        (tradingDate, index) => ({
-          instrumentId: instrument.id,
-          tradingDate,
-          open: index === 0 ? "10" : "11",
-          high: index === 0 ? "11" : "12",
-          low: index === 0 ? "9" : "10",
-          close: index === 0 ? "10.5" : "12",
-          volume: "1000",
-          currency: "USD",
-          provider: "tencent" as const,
-          providerSymbol: "usXPEV",
-          adjustmentMode: "raw" as const,
-          fetchedAt: "2025-01-04T00:00:00.000Z",
-        }),
-      ),
-      coverage: [
-        {
-          startDate: "2024-01-01",
-          endDate: "2025-02-01",
-          status: "complete",
-          provider: "tencent",
-          fetchedAt: "2025-01-04T00:00:00.000Z",
-          missingTradingDates: [],
-        },
-      ],
-      providerSymbol: {
-        provider: "tencent",
-        symbol: "usXPEV",
-      },
-    });
-    vi.mocked(fetch).mockClear();
-    let releaseReviews!: (records: EpisodeReviewRecord[]) => void;
-    vi.spyOn(
-      IndexedDbEpisodeReviewRepository.prototype,
-      "getAll",
-    ).mockReturnValueOnce(
-      new Promise((resolve) => {
-        releaseReviews = resolve;
-      }),
-    );
-
-    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
-    await user.click(screen.getByRole("button", { name: "模式洞察" }));
-
-    expect(
-      await screen.findByRole("heading", { name: "待确认规则建议" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: "确认“分批进入”" }),
-    ).not.toBeInTheDocument();
-    releaseReviews([]);
-    expect(
-      await screen.findByText("分批进入", { selector: "b" }),
-    ).toBeInTheDocument();
-    await user.click(
-      screen.getByRole("button", {
-        name: "查看小鹏汽车第 1 次交易",
-      }),
-    );
-    expect(
-      await screen.findByRole("heading", { name: "第 1 次交易" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText("目标回合买入一")).toBeInTheDocument();
-    expect(screen.getByText("目标回合买入二")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "模式洞察" }));
-    await user.selectOptions(
-      screen.getByRole("combobox", {
-        name: "调整“分批进入”建议标签",
-      }),
-      "planned",
-    );
-    await user.click(
-      screen.getByRole("button", { name: "确认改为“计划内”" }),
-    );
-
-    const suggestions =
-      await new IndexedDbTagSuggestionRepository().getAll();
-    expect(suggestions).toEqual([
-      expect.objectContaining({
-        episodeId: episode.id,
-        status: "edited",
-        finalTagId: "planned",
-      }),
-    ]);
-    expect(
-      (await new IndexedDbEpisodeReviewRepository().get(episode.id))
-        ?.confirmedTagIds,
-    ).toContain("planned");
-
-    expect(screen.getByText("暂无待确认建议")).toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
   });
 });

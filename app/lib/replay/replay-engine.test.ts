@@ -53,9 +53,67 @@ describe("createReplaySnapshot", () => {
       averageCost: "10",
       realizedPnl: "0",
       unrealizedPnl: "200",
+      netPnl: "198",
       fees: "2",
-      returnPercent: "20",
+      grossCapitalDeployed: "1000",
+      returnPercent: "19.8",
     });
     expect(JSON.stringify(snapshot)).not.toContain("2025-01-07");
+  });
+
+  it("reveals an execution ledger without inventing a candle mark", () => {
+    const snapshot = createReplaySnapshot({
+      candles: [],
+      executions,
+      cursor: "2025-01-07T00:00:00.000Z",
+    });
+
+    expect(snapshot.candles).toEqual([]);
+    expect(snapshot.executions).toEqual(executions);
+    expect(snapshot.position).toMatchObject({
+      quantity: "0",
+      realizedPnl: "400",
+      unrealizedPnl: "0",
+      fees: "4",
+      netPnl: "396",
+    });
+  });
+
+  it("does not reveal a provider bar until its explicit completion boundary", () => {
+    const providerBar: Candle = {
+      time: "2025-01-02T10:00:00.000Z",
+      knowledgeAt: "2025-01-02T10:15:00.000Z",
+      open: 10,
+      high: 12,
+      low: 9,
+      close: 11,
+      volume: 100,
+    };
+    const fillAt1007 = {
+      ...executions[0],
+      executedAt: "2025-01-02T10:07:00.000Z",
+    };
+
+    expect(
+      createReplaySnapshot({
+        candles: [providerBar],
+        executions: [fillAt1007],
+        cursor: "2025-01-02T10:07:00.000Z",
+      }).candles,
+    ).toEqual([]);
+    expect(
+      createReplaySnapshot({
+        candles: [providerBar],
+        executions: [fillAt1007],
+        cursor: "2025-01-02T10:14:59.999Z",
+      }).candles,
+    ).toEqual([]);
+    expect(
+      createReplaySnapshot({
+        candles: [providerBar],
+        executions: [fillAt1007],
+        cursor: "2025-01-02T10:15:00.000Z",
+      }).candles,
+    ).toEqual([providerBar]);
   });
 });

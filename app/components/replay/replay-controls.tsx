@@ -13,6 +13,7 @@ type Props = {
   speed: number;
   canGoBack: boolean;
   canGoForward: boolean;
+  canGoToNextExecution: boolean;
   onPrevious: () => void;
   onNext: () => void;
   onNextExecution: () => void;
@@ -25,6 +26,7 @@ export function ReplayControls({
   speed,
   canGoBack,
   canGoForward,
+  canGoToNextExecution,
   onPrevious,
   onNext,
   onNextExecution,
@@ -60,7 +62,7 @@ export function ReplayControls({
       <button
         className="next-trade-button"
         onClick={onNextExecution}
-        disabled={!canGoForward}
+        disabled={!canGoToNextExecution}
         aria-label="跳至下一笔成交"
       >
         <SkipForward size={17} />

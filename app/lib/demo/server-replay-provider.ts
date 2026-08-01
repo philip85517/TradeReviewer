@@ -2,6 +2,7 @@ import "server-only";
 
 import { demoCandles15m } from "../../data/demo-market";
 import { demoExecutions } from "../../data/demo-trades";
+import { candleKnowledgeAt } from "../market/types";
 import type {
   DemoReplayFrame,
   DemoReplayMode,
@@ -9,55 +10,77 @@ import type {
 
 export const DEMO_INITIAL_CURSOR_INDEX = 360;
 
-function indexForCursor(cursor?: string | null) {
-  if (!cursor) return DEMO_INITIAL_CURSOR_INDEX;
-  const exact = demoCandles15m.findIndex(
-    (candle) => candle.time === cursor,
-  );
-  if (exact >= 0) return exact;
-
-  const firstAfter = demoCandles15m.findIndex(
-    (candle) => candle.time > cursor,
-  );
-  return firstAfter <= 0 ? 0 : firstAfter - 1;
+function timestamp(value: string) {
+  return Date.parse(value);
 }
 
-function nextExecutionIndex(currentIndex: number) {
-  const cursor = demoCandles15m[currentIndex].time;
+function restoredCursor(cursor?: string | null) {
+  const defaultCursor = candleKnowledgeAt(
+    demoCandles15m[DEMO_INITIAL_CURSOR_INDEX],
+  );
+  if (!cursor || !Number.isFinite(timestamp(cursor))) return defaultCursor;
+
+  const firstBarStart = timestamp(demoCandles15m[0].time);
+  const lastCompletion = timestamp(candleKnowledgeAt(demoCandles15m.at(-1)!));
+  const requested = timestamp(cursor);
+  if (requested < firstBarStart || requested > lastCompletion) {
+    return defaultCursor;
+  }
+  return cursor;
+}
+
+function adjacentCompletion(cursor: string, direction: "next" | "previous") {
+  const cursorTime = timestamp(cursor);
+  const candidate =
+    direction === "next"
+      ? demoCandles15m.find(
+          (candle) => timestamp(candleKnowledgeAt(candle)) > cursorTime,
+        )
+      : demoCandles15m.findLast(
+          (candle) => timestamp(candleKnowledgeAt(candle)) < cursorTime,
+        );
+  return candidate ? candleKnowledgeAt(candidate) : cursor;
+}
+
+function nextExecutionCursor(cursor: string) {
+  const cursorTime = timestamp(cursor);
   const execution = demoExecutions.find(
-    (candidate) => candidate.executedAt > cursor,
+    (candidate) => timestamp(candidate.executedAt) > cursorTime,
   );
-  if (!execution) return Math.min(currentIndex + 1, demoCandles15m.length - 1);
-  const index = demoCandles15m.findIndex(
-    (candle) => candle.time >= execution.executedAt,
-  );
-  return index < 0 ? demoCandles15m.length - 1 : index;
+  return execution?.executedAt ?? adjacentCompletion(cursor, "next");
 }
 
 export function getDemoReplayFrame(input?: {
   cursor?: string | null;
   mode?: DemoReplayMode;
 }): DemoReplayFrame {
-  const currentIndex = indexForCursor(input?.cursor);
+  const restored = restoredCursor(input?.cursor);
   const mode = input?.mode ?? "restore";
-  const cursorIndex =
+  const cursor =
     mode === "next"
-      ? Math.min(currentIndex + 1, demoCandles15m.length - 1)
+      ? adjacentCompletion(restored, "next")
       : mode === "previous"
-        ? Math.max(currentIndex - 1, 0)
+        ? adjacentCompletion(restored, "previous")
         : mode === "next-execution"
-          ? nextExecutionIndex(currentIndex)
-          : currentIndex;
-  const cursor = demoCandles15m[cursorIndex].time;
+          ? nextExecutionCursor(restored)
+          : restored;
+  const cursorTime = timestamp(cursor);
+  const cursorIndex = demoCandles15m.findLastIndex(
+    (candle) => timestamp(candleKnowledgeAt(candle)) <= cursorTime,
+  );
 
   return {
     cursorIndex,
     cursor,
     candles15m: demoCandles15m.slice(0, cursorIndex + 1),
     executions: demoExecutions.filter(
-      (execution) => execution.executedAt <= cursor,
+      (execution) => timestamp(execution.executedAt) <= cursorTime,
     ),
-    canGoBack: cursorIndex > 0,
-    canGoForward: cursorIndex < demoCandles15m.length - 1,
+    canGoBack: demoCandles15m.some(
+      (candle) => timestamp(candleKnowledgeAt(candle)) < cursorTime,
+    ),
+    canGoForward: demoCandles15m.some(
+      (candle) => timestamp(candleKnowledgeAt(candle)) > cursorTime,
+    ),
   };
 }

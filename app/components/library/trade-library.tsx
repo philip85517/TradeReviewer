@@ -386,13 +386,26 @@ export function TradeLibrary({
                   </span>
                 </div>
                 <ReplayChart
+                  episodeId={episode.id}
                   candles={chartCandles}
                   executions={episode.executions}
                   cursor={cursor}
+                  currency={selectedEntry.instrument.currency}
                   averageCost={0}
                   drawings={[]}
                   activeTool="cursor"
-                  onAddDrawing={() => undefined}
+                  selectedDrawingId={null}
+                  plannedRiskAmount={undefined}
+                  settings={{
+                    version: 1,
+                    showGrid: true,
+                    showVolume: true,
+                    showExecutions: true,
+                    showAverageCost: true,
+                    colorScheme: "teal-red",
+                  }}
+                  onSelectDrawing={() => undefined}
+                  onCommand={() => undefined}
                 />
               </div>
             ) : (

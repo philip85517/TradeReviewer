@@ -90,7 +90,7 @@ export function EpisodeSidebar({
           <h2>我的交易</h2>
         </div>
         <span className="episode-count">
-          {importedInstruments.length || 1} 只股票
+          {importedInstruments.length + 1} 只股票
         </span>
       </div>
 
@@ -203,11 +203,12 @@ export function EpisodeSidebar({
 
       <div className="stock-list-heading">
         <span>有成交的股票</span>
-        <b>{importedInstruments.length || 1}</b>
+        <b>{importedInstruments.length + 1}</b>
       </div>
       <div className="episode-list">
-        {importedInstruments.length === 0 && <button
+        <button
           className={`stock-card ${selectedInstrumentId === "demo" ? "active" : ""}`}
+          aria-pressed={selectedInstrumentId === "demo"}
           onClick={() => onSelectInstrument("demo")}
         >
           <div className="stock-card-title">
@@ -229,7 +230,7 @@ export function EpisodeSidebar({
                 : `${revealedBuys} 买 / ${revealedSells} 卖`}
             </b>
           </div>
-        </button>}
+        </button>
 
         {importedInstruments.map((item) => {
           const status =
@@ -241,6 +242,7 @@ export function EpisodeSidebar({
             >
               <button
                 className="stock-card-select"
+                aria-pressed={selectedInstrumentId === item.instrument.id}
                 onClick={() => onSelectInstrument(item.instrument.id)}
               >
                 <div className="stock-card-title">

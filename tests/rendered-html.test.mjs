@@ -34,7 +34,9 @@ test("server-renders the historical trade review workspace", async () => {
   assert.match(html, /<title>TradeReview — 历史交易复盘<\/title>/i);
   assert.match(html, /逐笔复盘/);
   assert.match(html, /交易复盘图表工作区/);
-  assert.match(html, /未来信息已锁定/);
+  assert.match(html, /持仓统计/);
+  assert.match(html, /图表工具栏/);
+  assert.match(html, /游标之后的数据未加载/);
   assert.match(html, /导入交易记录/);
   assert.match(html, /小鹏汽车/);
   assert.match(html, /尚未成交/);

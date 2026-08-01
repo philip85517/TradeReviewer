@@ -38,6 +38,9 @@ export const demoCandles15m: Candle[] = (() => {
 
       candles.push({
         time: time.toISOString(),
+        knowledgeAt: new Date(
+          time.getTime() + SESSION_MINUTES * 60 * 1000,
+        ).toISOString(),
         open,
         high,
         low,

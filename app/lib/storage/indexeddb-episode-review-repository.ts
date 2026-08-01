@@ -42,10 +42,21 @@ export class IndexedDbEpisodeReviewRepository
     try {
       const transaction = database.transaction(REVIEWS, "readwrite");
       const completion = transactionDone(transaction);
-      transaction
-        .objectStore(REVIEWS)
-        .put(normalizeEpisodeReviewRecord(record));
+      const store = transaction.objectStore(REVIEWS);
+      const normalized = normalizeEpisodeReviewRecord(record);
+      const current = (await requestValue(
+        store.get(record.episodeId),
+      )) as EpisodeReviewRecord | undefined;
+      if (
+        current &&
+        Date.parse(current.updatedAt) > Date.parse(normalized.updatedAt)
+      ) {
+        await completion;
+        return false;
+      }
+      store.put(normalized);
       await completion;
+      return true;
     } finally {
       database.close();
     }

@@ -1,4 +1,5 @@
 import type {
+  DailyCandleRequest,
   DailyCandleRecord,
   MarketDataProviderId,
   ProviderResult,
@@ -29,6 +30,7 @@ type SyncMarketDataOptions = {
 
 type RouteResult = ProviderResult & {
   adjustmentMode: "raw";
+  request: DailyCandleRequest;
 };
 
 function isProvider(value: unknown): value is MarketDataProviderId {
@@ -101,7 +103,14 @@ function preserveCoverageOutsideGap(
   });
 }
 
-function parseRouteResult(value: unknown, range: DateRange): RouteResult {
+function parseRouteResult(
+  value: unknown,
+  range: DateRange,
+  expected: Pick<
+    SyncMarketDataOptions,
+    "instrumentId" | "symbol" | "market"
+  >,
+): RouteResult {
   if (!value || typeof value !== "object") {
     throw new Error("行情接口响应无效");
   }
@@ -115,6 +124,16 @@ function parseRouteResult(value: unknown, range: DateRange): RouteResult {
     !Array.isArray(result.warnings)
   ) {
     throw new Error("行情接口响应无效");
+  }
+  if (
+    !result.request ||
+    result.request.instrumentId !== expected.instrumentId ||
+      result.request.symbol !== expected.symbol ||
+      result.request.market !== expected.market ||
+      result.request.startDate !== range.startDate ||
+      result.request.endDate !== range.endDate
+  ) {
+    throw new Error("行情接口响应标的不匹配");
   }
   validateProviderCandles(
     result.candles,
@@ -178,7 +197,11 @@ export async function syncMarketData({
         | undefined;
       throw new Error(body?.error?.message ?? "行情更新失败");
     }
-    const result = parseRouteResult(await response.json(), gap);
+    const result = parseRouteResult(await response.json(), gap, {
+      instrumentId,
+      symbol,
+      market,
+    });
     throwIfAborted();
     const candles: DailyCandleRecord[] = result.candles.map((candle) => ({
       instrumentId,
@@ -197,6 +220,10 @@ export async function syncMarketData({
     let missingTradingDates: string[] = [];
     let segmentStatus: "complete" | "partial" = "complete";
     let reason: string | undefined;
+    if (result.warnings.includes("provider-history-limit")) {
+      segmentStatus = "partial";
+      reason = "provider-history-limit";
+    }
     try {
       const returnedDates = new Set(
         result.candles.map((candle) => candle.tradingDate),
@@ -210,7 +237,7 @@ export async function syncMarketData({
     } catch (error) {
       if (!(error instanceof CalendarOutOfRangeError)) throw error;
       segmentStatus = "partial";
-      reason = "calendar-out-of-range";
+      reason ??= "calendar-out-of-range";
     }
     coverage = [
       ...preserveCoverageOutsideGap(coverage, gap),

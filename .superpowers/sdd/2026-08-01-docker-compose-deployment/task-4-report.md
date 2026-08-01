@@ -25,3 +25,13 @@ The brief's literal focused command, `PATH=/usr/local/bin:/usr/bin:/bin vitest .
 ## Environment limitation
 
 Docker is unavailable in this worktree environment: `docker: command not found`. Consequently, `docker compose config` and a live backup/restore/health runtime check could not be performed. The scripts have shell-syntax and source-contract coverage, but live Compose validation remains for an environment with Docker installed.
+
+## Review follow-up
+
+- `status.sh` now requires only safe deployment, config, and data parents. It reports an absent SQLite directory or database as missing instead of exiting before status output.
+- `restore-db.sh` now rejects a checksum sidecar whenever it exists but is not a regular, non-symlink file; a valid regular sidecar remains checksum-verified.
+- Added isolated executable-script behavior tests with a temporary target and fake Docker command. They prove restore rejection for relative, missing, directory, symlink, checksum-mismatch, and unsafe-sidecar inputs, and prove status reports a missing SQLite directory without failing.
+
+Follow-up verification passed:
+
+- `PATH=/usr/local/bin:/usr/bin:/bin ./node_modules/.bin/vitest run scripts/deploy.test.mjs -t "SQLite operations"` — 6 tests passed.

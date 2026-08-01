@@ -30,7 +30,11 @@ checksum_file() {
 verify_checksum_when_present() {
   local backup_path="$1"
   local checksum_path="${backup_path}.sha256"
-  [[ -f "$checksum_path" && ! -L "$checksum_path" ]] || return 0
+  if [[ -e "$checksum_path" || -L "$checksum_path" ]]; then
+    [[ -f "$checksum_path" && ! -L "$checksum_path" ]] || fail "backup checksum sidecar is unsafe"
+  else
+    return 0
+  fi
   local expected actual
   expected="$(awk 'NR == 1 { print $1 }' "$checksum_path")"
   actual="$(checksum_file "$backup_path" | awk '{ print $1 }')"

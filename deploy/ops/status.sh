@@ -74,7 +74,6 @@ verify_checksum_when_present() {
 assert_safe_directory "$deploy_root"
 assert_safe_directory "$config_dir"
 assert_safe_directory "$data_dir"
-assert_safe_directory "$sqlite_dir"
 [[ -f "$config_dir/.env" && ! -L "$config_dir/.env" ]] || fail "configuration is missing or unsafe"
 
 active_release="none"
@@ -91,8 +90,14 @@ printf 'compose service state:\n'
 compose ps --format 'table {{.Name}}\t{{.State}}\t{{.Health}}'
 printf 'configured bind: %s:%s\n' "$(env_value APP_BIND)" "$(env_value APP_PORT)"
 
-if [[ -f "$database_path" && ! -L "$database_path" ]]; then
+if [[ ! -e "$sqlite_dir" && ! -L "$sqlite_dir" ]]; then
+  printf 'database: missing (SQLite directory is absent)\n'
+elif [[ ! -d "$sqlite_dir" || -L "$sqlite_dir" ]]; then
+  printf 'database: unavailable (SQLite directory is unsafe)\n'
+elif [[ -f "$database_path" && ! -L "$database_path" ]]; then
   printf 'database: present (%s bytes)\n' "$(file_size "$database_path")"
+elif [[ -e "$database_path" || -L "$database_path" ]]; then
+  printf 'database: unavailable (database path is unsafe)\n'
 else
   printf 'database: missing\n'
 fi

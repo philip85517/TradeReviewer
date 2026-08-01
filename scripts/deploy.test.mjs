@@ -1,7 +1,8 @@
-import { mkdtemp, mkdir, readdir, readFile, readlink, rm, symlink, writeFile } from "node:fs/promises";
+import { chmod, cp, mkdtemp, mkdir, readdir, readFile, readlink, rm, symlink, writeFile } from "node:fs/promises";
 import { realpathSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, resolve } from "node:path";
+import { spawn } from "node:child_process";
 import { describe, expect, test } from "vitest";
 import {
   buildAndStartRelease,
@@ -27,6 +28,44 @@ async function readManifest(relativePath) {
     if (error.code === "ENOENT") return "";
     throw error;
   }
+}
+
+async function createOperationalSandbox() {
+  const sandbox = await mkdtemp(join(tmpdir(), "tradereview-operations-"));
+  const targetDir = join(sandbox, "target");
+  const binDir = join(sandbox, "bin");
+
+  await Promise.all([
+    cp(join(root, "deploy", "ops"), join(targetDir, "deploy", "ops"), { recursive: true }),
+    mkdir(join(targetDir, "config"), { recursive: true }),
+    mkdir(join(targetDir, "data"), { recursive: true }),
+    mkdir(binDir, { recursive: true }),
+  ]);
+  await Promise.all([
+    writeFile(join(targetDir, "config", ".env"), "APP_BIND=127.0.0.1\nAPP_PORT=3000\n"),
+    writeFile(join(binDir, "docker"), "#!/usr/bin/env bash\nprintf '[]\\n'\n"),
+  ]);
+  await chmod(join(binDir, "docker"), 0o755);
+
+  return { sandbox, targetDir, binDir };
+}
+
+async function runOperationalScript(scriptPath, args, binDir) {
+  return new Promise((resolveRun, rejectRun) => {
+    const child = spawn(scriptPath, args, {
+      env: { ...process.env, PATH: `${binDir}:${process.env.PATH}`, LC_ALL: "C", LANG: "C" },
+    });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk;
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk;
+    });
+    child.on("error", rejectRun);
+    child.on("close", (exitCode) => resolveRun({ exitCode, stdout, stderr }));
+  });
 }
 
 describe("deployment templates", () => {
@@ -110,6 +149,73 @@ describe("SQLite operations", () => {
     const dockerfile = await readManifest("deploy/Dockerfile");
 
     expect(dockerfile).toContain("sqlite3");
+  });
+
+  test("reports a missing SQLite directory instead of failing status", async () => {
+    const fixture = await createOperationalSandbox();
+
+    try {
+      const result = await runOperationalScript(join(fixture.targetDir, "deploy", "ops", "status.sh"), [], fixture.binDir);
+
+      expect(result).toMatchObject({ exitCode: 0 });
+      expect(result.stdout).toContain("database: missing");
+    } finally {
+      await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("rejects unsafe restore inputs before touching the database", async () => {
+    const fixture = await createOperationalSandbox();
+    const restore = join(fixture.targetDir, "deploy", "ops", "restore-db.sh");
+    const missingPath = join(fixture.sandbox, "missing.sqlite");
+    const directoryPath = join(fixture.sandbox, "backup-directory");
+    const regularPath = join(fixture.sandbox, "backup.sqlite");
+    const symlinkPath = join(fixture.sandbox, "backup-link.sqlite");
+
+    try {
+      await Promise.all([
+        mkdir(directoryPath),
+        writeFile(regularPath, "backup"),
+        mkdir(join(fixture.targetDir, "data", "sqlite"), { recursive: true }),
+      ]);
+      await symlink(regularPath, symlinkPath);
+
+      for (const input of ["relative.sqlite", missingPath, directoryPath, symlinkPath]) {
+        const result = await runOperationalScript(restore, [input], fixture.binDir);
+        expect(result.exitCode).toBe(1);
+        expect(result.stderr).toMatch(/absolute|regular file/);
+      }
+    } finally {
+      await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("rejects mismatched and unsafe checksum sidecars before restore", async () => {
+    const fixture = await createOperationalSandbox();
+    const restore = join(fixture.targetDir, "deploy", "ops", "restore-db.sh");
+    const backupPath = join(fixture.sandbox, "backup.sqlite");
+    const checksumPath = `${backupPath}.sha256`;
+    const checksumTarget = join(fixture.sandbox, "checksum-target.sha256");
+
+    try {
+      await Promise.all([
+        mkdir(join(fixture.targetDir, "data", "sqlite"), { recursive: true }),
+        writeFile(backupPath, "backup"),
+      ]);
+      await writeFile(checksumPath, "not-the-backup  backup.sqlite\n");
+      const mismatch = await runOperationalScript(restore, [backupPath], fixture.binDir);
+      expect(mismatch.stderr).toContain("checksum verification failed");
+      expect(mismatch.exitCode).toBe(1);
+
+      await writeFile(checksumTarget, "unused\n");
+      await rm(checksumPath);
+      await symlink(checksumTarget, checksumPath);
+      const unsafeSidecar = await runOperationalScript(restore, [backupPath], fixture.binDir);
+      expect(unsafeSidecar).toMatchObject({ exitCode: 1 });
+      expect(unsafeSidecar.stderr).toContain("checksum sidecar is unsafe");
+    } finally {
+      await rm(fixture.sandbox, { recursive: true, force: true });
+    }
   });
 });
 

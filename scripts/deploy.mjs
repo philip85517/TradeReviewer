@@ -71,7 +71,7 @@ export function parseArgs(argv) {
     index = option.nextIndex;
     if (mode) options.mode = mode.value;
     if (source) options.sourceDir = resolve(source.value);
-    if (target) options.targetDir = resolve(target.value);
+    if (target) options.targetDir = target.value;
     if (backup) options.backupPath = backup.value;
   }
 

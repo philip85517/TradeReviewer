@@ -69,6 +69,22 @@ async function runOperationalScript(scriptPath, args, binDir) {
   });
 }
 
+async function runDeploymentCli(args) {
+  return new Promise((resolveRun, rejectRun) => {
+    const child = spawn(process.execPath, [join(root, "scripts", "deploy.mjs"), ...args], { cwd: root });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk;
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk;
+    });
+    child.on("error", rejectRun);
+    child.on("close", (exitCode) => resolveRun({ exitCode, stdout, stderr }));
+  });
+}
+
 describe("deployment templates", () => {
   test("provide the repository deployment contract", async () => {
     const [makefile, compose, envExample, dockerfile, dockerfileIgnore] = await Promise.all([
@@ -276,6 +292,46 @@ describe("deployment path planning", () => {
       ),
     ).rejects.toThrow(/filesystem root/i);
     expect(composeStarted).toBe(false);
+  });
+
+  test("CLI options preserve and reject a relative deployment target before Compose runs", async () => {
+    const options = parseArgs(["--mode=down", "--target=."]);
+    let composeStarted = false;
+
+    expect(options.targetDir).toBe(".");
+    await expect(
+      runDeployment(options, {
+        composeRunner: async () => {
+          composeStarted = true;
+          return { exitCode: 0 };
+        },
+      }),
+    ).rejects.toThrow(/target path must be absolute/i);
+    expect(composeStarted).toBe(false);
+  });
+
+  test("deployment CLI rejects a relative target before Docker is invoked", async () => {
+    const result = await runDeploymentCli(["--mode=down", "--target=."]);
+
+    expect(result).toMatchObject({ exitCode: 1, stdout: "" });
+    expect(result.stderr).toMatch(/target path must be absolute/i);
+  });
+
+  test("rejects symlink and non-directory mutating targets", async () => {
+    const sandbox = await mkdtemp(join(tmpdir(), "tradereview-target-validation-"));
+    const directoryPath = join(sandbox, "directory");
+    const symlinkPath = join(sandbox, "symlink");
+    const filePath = join(sandbox, "file");
+
+    try {
+      await Promise.all([mkdir(directoryPath), writeFile(filePath, "not a directory")]);
+      await symlink(directoryPath, symlinkPath);
+
+      await expect(validateMutatingTarget(symlinkPath)).rejects.toThrow(/non-symlink directory/i);
+      await expect(validateMutatingTarget(filePath)).rejects.toThrow(/non-symlink directory/i);
+    } finally {
+      await rm(sandbox, { recursive: true, force: true });
+    }
   });
 });
 

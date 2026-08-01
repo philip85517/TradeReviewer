@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { chmod, cp, lstat, mkdir, readFile, readdir, readlink, rename, rm, symlink, writeFile } from "node:fs/promises";
 import { realpathSync } from "node:fs";
 import { spawn } from "node:child_process";
+import { createServer } from "node:net";
 import { hostname as osHostname } from "node:os";
 import { basename, dirname, isAbsolute, join, parse, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -931,6 +932,49 @@ async function deploymentConfigValue(targetDir, key) {
   }
 }
 
+export async function assertDeploymentPortAvailable(targetDir, { skipIfActiveRelease = false } = {}) {
+  if (skipIfActiveRelease) return;
+
+  const bind = (await deploymentConfigValue(targetDir, "APP_BIND")) || "127.0.0.1";
+  const configuredPort = (await deploymentConfigValue(targetDir, "APP_PORT")) || "4317";
+  if (!/^\d+$/.test(configuredPort)) {
+    throw new Error(`APP_PORT must be an integer between 1 and 65535 (received ${configuredPort})`);
+  }
+
+  const port = Number(configuredPort);
+  if (!Number.isSafeInteger(port) || port < 1 || port > 65535) {
+    throw new Error(`APP_PORT must be an integer between 1 and 65535 (received ${configuredPort})`);
+  }
+
+  await new Promise((resolvePort, rejectPort) => {
+    const server = createServer();
+    server.once("error", (error) => {
+      if (error.code === "EADDRINUSE") {
+        rejectPort(
+          new Error(
+            `Deployment host port ${bind}:${port} is already in use. Set APP_PORT in ${join(
+              resolve(targetDir),
+              "config",
+              ".env",
+            )} to an unused port and retry.`,
+          ),
+        );
+        return;
+      }
+      rejectPort(new Error(`Unable to check deployment host port ${bind}:${port}: ${error.message}`));
+    });
+    server.listen({ host: bind, port }, () => {
+      server.close((error) => {
+        if (error) {
+          rejectPort(new Error(`Unable to release deployment host port ${bind}:${port}: ${error.message}`));
+          return;
+        }
+        resolvePort();
+      });
+    });
+  });
+}
+
 async function releaseRetentionCount(targetDir) {
   const configured = (await deploymentConfigValue(targetDir, "RELEASES_TO_KEEP")) ?? "5";
   if (!/^\d+$/.test(configured) || Number(configured) < 2 || !Number.isSafeInteger(Number(configured))) {
@@ -1107,6 +1151,19 @@ export async function runDeployment(options, dependencies = {}) {
           paths,
         });
       }
+      const previousRelease = await readPreviousRelease(paths.currentLink);
+      const useDefaultLifecycle =
+        options.acceptRelease === undefined &&
+        dependencies.acceptRelease === undefined &&
+        Boolean(dependencies.commandRunner || dependencies.composeRunner);
+      const shouldCheckDeploymentPort =
+        useDefaultLifecycle &&
+        (dependencies.commandRunner === defaultCommandRunner || typeof dependencies.portProbe === "function");
+      if (shouldCheckDeploymentPort) {
+        await (dependencies.portProbe ?? assertDeploymentPortAvailable)(resolvedPaths.targetDir, {
+          skipIfActiveRelease: Boolean(previousRelease),
+        });
+      }
       await mkdir(paths.releasesDir, { recursive: true });
       await assertSafeStagingRoots(paths, resolvedPaths.targetDir);
       const allocation = await reserveReleaseDirectory(paths.releasesDir, resolvedPaths.sourceDir, options.now);
@@ -1128,7 +1185,6 @@ export async function runDeployment(options, dependencies = {}) {
         });
       }
 
-      const previousRelease = await readPreviousRelease(paths.currentLink);
       temporaryLink = join(paths.appDir, `.current-${releaseId}-${process.pid}.tmp`);
       await symlink(join("releases", releaseId), temporaryLink);
 
@@ -1143,10 +1199,6 @@ export async function runDeployment(options, dependencies = {}) {
         staged: true,
       };
       releaseForRecovery = release;
-      const useDefaultLifecycle =
-        options.acceptRelease === undefined &&
-        dependencies.acceptRelease === undefined &&
-        Boolean(dependencies.commandRunner || dependencies.composeRunner);
       if (useDefaultLifecycle) {
         lifecycleComposeRunner = createTargetComposeRunner(resolvedPaths.targetDir, dependencies);
       }

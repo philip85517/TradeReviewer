@@ -1,15 +1,20 @@
 import { mkdtemp, mkdir, readdir, readFile, readlink, rm, symlink, writeFile } from "node:fs/promises";
+import { realpathSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
+  buildAndStartRelease,
+  createComposeRunner,
   DEFAULT_DEPLOY_ROOT,
   createReleaseId,
   getSyncPolicy,
   parseArgs,
+  rollbackRelease,
   resolveDeploymentPaths,
   runDeployment,
   validateDeploymentPaths,
+  waitForHealthy,
 } from "./deploy.mjs";
 
 const root = resolve(import.meta.dirname, "..");
@@ -290,6 +295,196 @@ describe("deployment release staging", () => {
       await expect(readFile(join(second.releaseDir, "package.json"), "utf8")).resolves.toBe("{}");
     } finally {
       await rm(sandbox, { recursive: true, force: true });
+    }
+  });
+});
+
+function createRecordingCommandRunner(responses) {
+  const calls = [];
+  let responseIndex = 0;
+
+  return {
+    calls,
+    commandRunner: async (command, args, options = {}) => {
+      calls.push({ command, args, env: options.env });
+      const response = responses[responseIndex];
+      responseIndex += 1;
+      return typeof response === "function" ? response({ command, args, options }) : response;
+    },
+  };
+}
+
+async function createLifecycleSandbox() {
+  const sandbox = await mkdtemp(join(tmpdir(), "tradereview-compose-"));
+  const sourceDir = join(sandbox, "source");
+  const targetDir = join(sandbox, "target");
+  const previousRelease = "previous-release";
+
+  await Promise.all([
+    mkdir(sourceDir, { recursive: true }),
+    mkdir(join(targetDir, "app", "releases", previousRelease), { recursive: true }),
+    mkdir(join(targetDir, "config"), { recursive: true }),
+    mkdir(join(targetDir, "data"), { recursive: true }),
+    mkdir(join(targetDir, "logs"), { recursive: true }),
+  ]);
+  await Promise.all([
+    writeFile(join(sourceDir, "package.json"), "{}"),
+    writeFile(join(targetDir, "compose.yaml"), "services: {}\n"),
+    writeFile(join(targetDir, "config", ".env"), "COMPOSE_PROJECT_NAME=target-project\nSECRET=not-for-logs\n"),
+    writeFile(join(targetDir, "data", "sentinel"), "data"),
+    writeFile(join(targetDir, "logs", "sentinel"), "logs"),
+  ]);
+  await symlink(join("releases", previousRelease), join(targetDir, "app", "current"));
+
+  return { sandbox, sourceDir, targetDir, previousRelease };
+}
+
+function composeArguments(targetDir, command) {
+  const rootDir = realpathSync(targetDir);
+  return [
+    "compose",
+    "--project-directory",
+    rootDir,
+    "--file",
+    join(rootDir, "compose.yaml"),
+    "--env-file",
+    join(rootDir, "config", ".env"),
+    ...command,
+  ];
+}
+
+async function expectRuntimeFilesUntouched(targetDir) {
+  await expect(readFile(join(targetDir, "config", ".env"), "utf8")).resolves.toBe(
+    "COMPOSE_PROJECT_NAME=target-project\nSECRET=not-for-logs\n",
+  );
+  await expect(readFile(join(targetDir, "data", "sentinel"), "utf8")).resolves.toBe("data");
+  await expect(readFile(join(targetDir, "logs", "sentinel"), "utf8")).resolves.toBe("logs");
+}
+
+describe("Compose lifecycle", () => {
+  test("builds, starts, health-checks, and then switches current", async () => {
+    const fixture = await createLifecycleSandbox();
+    const recording = createRecordingCommandRunner([
+      { exitCode: 0 },
+      { exitCode: 0 },
+      { exitCode: 0, stdout: '[{"Health":"healthy"}]' },
+    ]);
+
+    try {
+      const result = await runDeployment(
+        { mode: "code", sourceDir: fixture.sourceDir, targetDir: fixture.targetDir },
+        { commandRunner: recording.commandRunner },
+      );
+
+      await expect(readlink(join(fixture.targetDir, "app", "current"))).resolves.toBe(
+        join("releases", result.releaseId),
+      );
+      expect(recording.calls.map(({ command, args }) => ({ command, args }))).toEqual([
+        { command: "docker", args: composeArguments(fixture.targetDir, ["build"]) },
+        { command: "docker", args: composeArguments(fixture.targetDir, ["up", "--detach"]) },
+        { command: "docker", args: composeArguments(fixture.targetDir, ["ps", "--format", "json"]) },
+      ]);
+      expect(recording.calls[0].env).toMatchObject({
+        APP_RELEASE_CONTEXT: `./app/releases/${result.releaseId}`,
+      });
+      expect(JSON.stringify(recording.calls)).not.toContain("not-for-logs");
+      await expectRuntimeFilesUntouched(fixture.targetDir);
+    } finally {
+      await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("leaves current unchanged and restarts the previous release when build fails", async () => {
+    const fixture = await createLifecycleSandbox();
+    const recording = createRecordingCommandRunner([{ exitCode: 1 }, { exitCode: 0 }]);
+
+    try {
+      await expect(
+        runDeployment(
+          { mode: "code", sourceDir: fixture.sourceDir, targetDir: fixture.targetDir },
+          { commandRunner: recording.commandRunner },
+        ),
+      ).rejects.toThrow("Docker Compose build failed");
+
+      await expect(readlink(join(fixture.targetDir, "app", "current"))).resolves.toBe(
+        join("releases", fixture.previousRelease),
+      );
+      expect(recording.calls.map(({ args }) => args.at(-1))).toEqual(["build", "--detach"]);
+      expect(recording.calls[1].env).toMatchObject({
+        APP_RELEASE_CONTEXT: `./app/releases/${fixture.previousRelease}`,
+      });
+      await expect(readdir(join(fixture.targetDir, "app", "releases"))).resolves.toEqual([
+        fixture.previousRelease,
+      ]);
+      await expectRuntimeFilesUntouched(fixture.targetDir);
+    } finally {
+      await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("restores current and starts the previous release when health fails", async () => {
+    const fixture = await createLifecycleSandbox();
+    const recording = createRecordingCommandRunner([
+      { exitCode: 0 },
+      { exitCode: 0 },
+      { exitCode: 0, stdout: '[{"Health":"unhealthy"}]' },
+      { exitCode: 0 },
+    ]);
+
+    try {
+      await expect(
+        runDeployment(
+          { mode: "code", sourceDir: fixture.sourceDir, targetDir: fixture.targetDir },
+          { commandRunner: recording.commandRunner },
+        ),
+      ).rejects.toThrow("Docker Compose service is unhealthy");
+
+      await expect(readlink(join(fixture.targetDir, "app", "current"))).resolves.toBe(
+        join("releases", fixture.previousRelease),
+      );
+      expect(recording.calls.map(({ args }) => args.at(-1))).toEqual(["build", "--detach", "json", "--detach"]);
+      expect(recording.calls[3].env).toMatchObject({
+        APP_RELEASE_CONTEXT: `./app/releases/${fixture.previousRelease}`,
+      });
+      await expect(readdir(join(fixture.targetDir, "app", "releases"))).resolves.toEqual([
+        fixture.previousRelease,
+      ]);
+      await expectRuntimeFilesUntouched(fixture.targetDir);
+    } finally {
+      await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("exposes compose lifecycle helpers for explicit callers", async () => {
+    const fixture = await createLifecycleSandbox();
+    const recording = createRecordingCommandRunner([
+      { exitCode: 0 },
+      { exitCode: 0 },
+      { exitCode: 0, stdout: '[{"Health":"healthy"}]' },
+      { exitCode: 0 },
+    ]);
+
+    try {
+      const composeRunner = createComposeRunner({
+        targetDir: fixture.targetDir,
+        commandRunner: recording.commandRunner,
+      });
+      await buildAndStartRelease({
+        targetDir: fixture.targetDir,
+        releaseId: "candidate-release",
+        previousRelease: fixture.previousRelease,
+        composeRunner,
+      });
+      await waitForHealthy({ targetDir: fixture.targetDir, timeoutMs: 10, composeRunner });
+      await rollbackRelease({
+        targetDir: fixture.targetDir,
+        releaseId: "candidate-release",
+        previousRelease: fixture.previousRelease,
+        composeRunner,
+      });
+      expect(recording.calls).toHaveLength(4);
+    } finally {
+      await rm(fixture.sandbox, { recursive: true, force: true });
     }
   });
 });

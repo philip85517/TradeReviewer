@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { cp, lstat, mkdir, readlink, rename, rm, symlink } from "node:fs/promises";
 import { realpathSync } from "node:fs";
+import { spawn } from "node:child_process";
 import { basename, dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -232,6 +233,157 @@ async function shouldAcceptRelease(acceptRelease, release) {
   return acceptRelease === true;
 }
 
+function validateReleaseId(releaseId, label = "Release ID") {
+  if (!releaseId || basename(releaseId) !== releaseId || releaseId === "." || releaseId === "..") {
+    throw new Error(`${label} must name a single release`);
+  }
+  return releaseId;
+}
+
+function releaseContext(releaseId) {
+  return { APP_RELEASE_CONTEXT: `./app/releases/${validateReleaseId(releaseId)}` };
+}
+
+function defaultCommandRunner(command, args, options = {}) {
+  const environment = { ...process.env, ...options.env };
+  delete environment.COMPOSE_PROJECT_NAME;
+
+  return new Promise((resolveCommand, rejectCommand) => {
+    const child = spawn(command, args, {
+      cwd: options.cwd,
+      env: environment,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk;
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk;
+    });
+    child.on("error", rejectCommand);
+    child.on("close", (exitCode) => resolveCommand({ exitCode, stdout, stderr }));
+  });
+}
+
+function commandExitCode(result) {
+  if (!result || typeof result !== "object") return 0;
+  return result.exitCode ?? result.code ?? result.status ?? 0;
+}
+
+function commandOutput(result) {
+  if (!result || typeof result !== "object") return "";
+  return result.stdout ?? result.output ?? "";
+}
+
+export function createComposeRunner({ targetDir, env = {}, commandRunner = defaultCommandRunner }) {
+  const rootDir = resolve(targetDir);
+  const composeArguments = [
+    "compose",
+    "--project-directory",
+    rootDir,
+    "--file",
+    join(rootDir, "compose.yaml"),
+    "--env-file",
+    join(rootDir, "config", ".env"),
+  ];
+
+  return async (args, commandEnv = {}) => {
+    const result = await commandRunner("docker", [...composeArguments, ...args], {
+      cwd: rootDir,
+      env: { ...env, ...commandEnv },
+    });
+    if (commandExitCode(result) !== 0) {
+      throw new Error(`Docker Compose ${args[0]} failed`);
+    }
+    return result;
+  };
+}
+
+export async function buildAndStartRelease({ targetDir, releaseId, composeRunner }) {
+  resolve(targetDir);
+  const context = releaseContext(releaseId);
+  await composeRunner(["build"], context);
+  await composeRunner(["up", "--detach"], context);
+}
+
+function parseComposeServices(output) {
+  const text = String(output).trim();
+  if (!text) return [];
+  try {
+    const parsed = JSON.parse(text);
+    return Array.isArray(parsed) ? parsed : [parsed];
+  } catch {
+    return text
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => JSON.parse(line));
+  }
+}
+
+function serviceHealth(service) {
+  return String(service.Health ?? service.health ?? service.State ?? service.state ?? "").toLowerCase();
+}
+
+function sleep(milliseconds) {
+  return new Promise((resolveSleep) => setTimeout(resolveSleep, milliseconds));
+}
+
+export async function waitForHealthy({ targetDir, timeoutMs, composeRunner }) {
+  resolve(targetDir);
+  const timeout = timeoutMs ?? 60_000;
+  const deadline = Date.now() + timeout;
+
+  while (true) {
+    const result = await composeRunner(["ps", "--format", "json"]);
+    const healthStates = parseComposeServices(commandOutput(result)).map(serviceHealth);
+    if (healthStates.includes("unhealthy")) throw new Error("Docker Compose service is unhealthy");
+    if (healthStates.length > 0 && healthStates.every((health) => health === "healthy")) return;
+    if (Date.now() >= deadline) throw new Error("Docker Compose health check timed out");
+    await sleep(Math.min(1_000, deadline - Date.now()));
+  }
+}
+
+async function pointCurrentAtRelease(paths, releaseId) {
+  const temporaryLink = join(paths.appDir, `.current-${releaseId}-${process.pid}.tmp`);
+  await rm(temporaryLink, { force: true });
+  await symlink(join("releases", releaseId), temporaryLink);
+  await rename(temporaryLink, paths.currentLink);
+}
+
+export async function rollbackRelease({ targetDir, releaseId, previousRelease, composeRunner }) {
+  const rootDir = canonicalizePath(targetDir);
+  const paths = resolveDeploymentPaths(rootDir);
+  validateReleaseId(releaseId);
+  await assertSafeStagingRoots(paths, rootDir);
+
+  if (previousRelease) {
+    validateReleaseId(previousRelease, "Previous release ID");
+    await pointCurrentAtRelease(paths, previousRelease);
+    await composeRunner(["up", "--detach"], releaseContext(previousRelease));
+  }
+
+  await rm(join(paths.releasesDir, releaseId), { recursive: true, force: true });
+}
+
+function lifecycleAcceptance(targetDir, dependencies) {
+  const composeRunner =
+    dependencies.composeRunner ??
+    createComposeRunner({ targetDir, env: dependencies.env, commandRunner: dependencies.commandRunner });
+
+  return async (release) => {
+    try {
+      await buildAndStartRelease({ ...release, targetDir, composeRunner });
+      await waitForHealthy({ targetDir, timeoutMs: dependencies.healthTimeoutMs, composeRunner });
+      return true;
+    } catch (error) {
+      await rollbackRelease({ ...release, targetDir, composeRunner }).catch(() => undefined);
+      throw error;
+    }
+  };
+}
+
 export async function runDeployment(options, dependencies = {}) {
   const { mode = "full", sourceDir = process.cwd(), targetDir = DEFAULT_DEPLOY_ROOT, dryRun = false } = options;
   const policy = getSyncPolicy(mode);
@@ -283,7 +435,10 @@ export async function runDeployment(options, dependencies = {}) {
       activeRelease: previousRelease,
       staged: true,
     };
-    const acceptRelease = options.acceptRelease ?? dependencies.acceptRelease;
+    const acceptRelease =
+      options.acceptRelease ??
+      dependencies.acceptRelease ??
+      (dependencies.commandRunner || dependencies.composeRunner ? lifecycleAcceptance(resolvedPaths.targetDir, dependencies) : undefined);
     const accepted = await shouldAcceptRelease(acceptRelease, release);
 
     if (accepted) {

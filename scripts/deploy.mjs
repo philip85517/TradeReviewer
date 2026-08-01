@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { cp, lstat, mkdir, readlink, rename, rm, symlink } from "node:fs/promises";
+import { cp, lstat, mkdir, readdir, readlink, rename, rm, symlink } from "node:fs/promises";
 import { realpathSync } from "node:fs";
 import { spawn } from "node:child_process";
 import { basename, dirname, join, relative, resolve, sep } from "node:path";
@@ -88,7 +88,7 @@ export function resolveDeploymentPaths(targetDir) {
     currentLink: join(appDir, "current"),
     configDir: join(rootDir, "config"),
     dataDir: join(rootDir, "data"),
-    backupsDir: join(rootDir, "backups"),
+    backupsDir: join(rootDir, "data", "backups"),
     logsDir: join(rootDir, "logs"),
     opsDir: join(rootDir, "deploy"),
   };
@@ -166,7 +166,6 @@ export function createReleaseId(sourceDir, now = new Date()) {
     now.getUTCHours().toString().padStart(2, "0"),
     now.getUTCMinutes().toString().padStart(2, "0"),
     now.getUTCSeconds().toString().padStart(2, "0"),
-    now.getUTCMilliseconds().toString().padStart(3, "0"),
   ].join("");
   const sourceHash = createHash("sha256").update(resolve(sourceDir)).digest("hex").slice(0, 10);
   return `${timestamp}T${time}Z-${sourceHash}`;
@@ -235,6 +234,41 @@ async function readPreviousRelease(currentLink) {
   }
 }
 
+export async function readActiveRelease(targetDir) {
+  return readPreviousRelease(resolveDeploymentPaths(resolve(targetDir)).currentLink);
+}
+
+export async function acquireDeploymentLock(targetDir) {
+  const rootDir = canonicalizePath(targetDir);
+  const lockDir = join(rootDir, ".deploy-lock");
+
+  try {
+    await mkdir(rootDir, { recursive: true });
+    await mkdir(lockDir);
+  } catch (error) {
+    if (error.code === "EEXIST") {
+      throw new Error(`Deployment operation is already running for ${rootDir}`);
+    }
+    throw error;
+  }
+
+  let released = false;
+  return async () => {
+    if (released) return;
+    released = true;
+    await rm(lockDir, { recursive: true, force: true });
+  };
+}
+
+async function withDeploymentLock(targetDir, operation) {
+  const releaseLock = await acquireDeploymentLock(targetDir);
+  try {
+    return await operation();
+  } finally {
+    await releaseLock();
+  }
+}
+
 async function shouldAcceptRelease(acceptRelease, release) {
   if (typeof acceptRelease === "function") return Boolean(await acceptRelease(release));
   return acceptRelease === true;
@@ -296,6 +330,13 @@ export async function runOperationalCommand({ targetDir, mode, backupPath }, { o
   const result = await operationRunner(scriptPath, args, { cwd: rootDir });
   if (commandExitCode(result) !== 0) throw new Error(`Deployment operation ${mode} failed`);
   return result;
+}
+
+function createTargetComposeRunner(targetDir, dependencies) {
+  return (
+    dependencies.composeRunner ??
+    createComposeRunner({ targetDir, env: dependencies.env, commandRunner: dependencies.commandRunner })
+  );
 }
 
 export function createComposeRunner({ targetDir, env = {}, commandRunner = defaultCommandRunner }) {
@@ -391,9 +432,7 @@ export async function rollbackRelease({ targetDir, releaseId, previousRelease, c
 }
 
 function lifecycleAcceptance(targetDir, dependencies) {
-  const composeRunner =
-    dependencies.composeRunner ??
-    createComposeRunner({ targetDir, env: dependencies.env, commandRunner: dependencies.commandRunner });
+  const composeRunner = createTargetComposeRunner(targetDir, dependencies);
 
   return async (release) => {
     try {
@@ -407,12 +446,96 @@ function lifecycleAcceptance(targetDir, dependencies) {
   };
 }
 
+async function releaseDirectories(paths) {
+  try {
+    const entries = await readdir(paths.releasesDir, { withFileTypes: true });
+    return entries
+      .filter((entry) => entry.isDirectory() && !entry.isSymbolicLink())
+      .map((entry) => validateReleaseId(entry.name))
+      .sort();
+  } catch (error) {
+    if (error.code === "ENOENT") return [];
+    throw error;
+  }
+}
+
+export async function rollbackToPreviousRelease({ targetDir, healthTimeoutMs }, dependencies = {}) {
+  const rootDir = canonicalizePath(targetDir);
+  const paths = resolveDeploymentPaths(rootDir);
+  await assertSafeStagingRoots(paths, rootDir);
+  const activeRelease = await readActiveRelease(rootDir);
+  if (!activeRelease) throw new Error("Cannot roll back without an active release");
+
+  const releases = await releaseDirectories(paths);
+  const activeIndex = releases.indexOf(activeRelease);
+  const previousRelease = activeIndex > 0 ? releases[activeIndex - 1] : undefined;
+  if (!previousRelease) throw new Error("Cannot roll back without a previous release");
+
+  const composeRunner = createTargetComposeRunner(rootDir, dependencies);
+  await buildAndStartRelease({ targetDir: rootDir, releaseId: previousRelease, composeRunner });
+  await waitForHealthy({ targetDir: rootDir, timeoutMs: healthTimeoutMs, composeRunner });
+  await pointCurrentAtRelease(paths, previousRelease);
+  return { targetDir: rootDir, activeRelease: previousRelease, previousRelease: activeRelease };
+}
+
+export async function stopDeployment({ targetDir }, dependencies = {}) {
+  const rootDir = canonicalizePath(targetDir);
+  const composeRunner = createTargetComposeRunner(rootDir, dependencies);
+  await composeRunner(["down"]);
+  return { targetDir: rootDir, activeRelease: await readActiveRelease(rootDir) };
+}
+
+async function initializeDeploymentConfig({ sourceDir, targetDir }) {
+  const resolvedPaths = validateDeploymentPaths(sourceDir, targetDir);
+  const paths = resolveDeploymentPaths(resolvedPaths.targetDir);
+  await assertSafeStagingPath(paths.configDir, resolvedPaths.targetDir, "Deployment config path");
+  await mkdir(paths.configDir, { recursive: true });
+  await assertSafeStagingPath(paths.configDir, resolvedPaths.targetDir, "Deployment config path");
+
+  const envPath = join(paths.configDir, ".env");
+  try {
+    const envDetails = await lstat(envPath);
+    if (envDetails.isSymbolicLink() || !envDetails.isFile()) {
+      throw new Error("Deployment configuration must be a regular file");
+    }
+    return { targetDir: resolvedPaths.targetDir, configPath: envPath, created: false };
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+
+  const templatePath = join(resolvedPaths.sourceDir, "deploy", "config", ".env.example");
+  const templateDetails = await lstat(templatePath);
+  if (templateDetails.isSymbolicLink() || !templateDetails.isFile()) {
+    throw new Error("Deployment configuration template must be a regular file");
+  }
+  await cp(templatePath, envPath, { force: false });
+  return { targetDir: resolvedPaths.targetDir, configPath: envPath, created: true };
+}
+
+function isMutatingMode(mode) {
+  return mode === "full" || mode === "deploy" || mode === "code" || mode === "backup" || mode === "restore" || mode === "rollback" || mode === "down" || mode === "config";
+}
+
 export async function runDeployment(options, dependencies = {}) {
   const { mode = "full", sourceDir = process.cwd(), targetDir = DEFAULT_DEPLOY_ROOT, dryRun = false } = options;
   if (OPERATION_SCRIPTS[mode]) {
-    return runOperationalCommand(
-      { targetDir, mode, backupPath: options.backupPath },
-      { operationRunner: dependencies.operationRunner ?? dependencies.commandRunner },
+    const operation = () =>
+      runOperationalCommand(
+        { targetDir, mode, backupPath: options.backupPath },
+        { operationRunner: dependencies.operationRunner ?? dependencies.commandRunner },
+      );
+    return mode === "status" || mode === "healthcheck" ? operation() : withDeploymentLock(targetDir, operation);
+  }
+  if (mode === "rollback") {
+    return withDeploymentLock(targetDir, () =>
+      rollbackToPreviousRelease({ targetDir, healthTimeoutMs: options.healthTimeoutMs }, dependencies),
+    );
+  }
+  if (mode === "down") return withDeploymentLock(targetDir, () => stopDeployment({ targetDir }, dependencies));
+  if (mode === "config") {
+    const resolvedPaths = validateDeploymentPaths(sourceDir, targetDir);
+    return withDeploymentLock(resolvedPaths.targetDir, () =>
+      initializeDeploymentConfig({ sourceDir: resolvedPaths.sourceDir, targetDir: resolvedPaths.targetDir }),
     );
   }
   const policy = getSyncPolicy(mode);
@@ -425,70 +548,81 @@ export async function runDeployment(options, dependencies = {}) {
     return { mode, policy, paths, releaseId, releaseDir: join(paths.releasesDir, releaseId), dryRun: true };
   }
 
-  let releaseDir;
-  let temporaryLink;
-  let releaseReserved = false;
+  return withDeploymentLock(resolvedPaths.targetDir, async () => {
+    let releaseDir;
+    let temporaryLink;
+    let releaseReserved = false;
 
-  try {
-    await mkdir(paths.releasesDir, { recursive: true });
-    await assertSafeStagingRoots(paths, resolvedPaths.targetDir);
-    const allocation = await reserveReleaseDirectory(paths.releasesDir, resolvedPaths.sourceDir, options.now);
-    const { releaseId } = allocation;
-    releaseDir = allocation.releaseDir;
-    releaseReserved = true;
+    try {
+      await mkdir(paths.releasesDir, { recursive: true });
+      await assertSafeStagingRoots(paths, resolvedPaths.targetDir);
+      const allocation = await reserveReleaseDirectory(paths.releasesDir, resolvedPaths.sourceDir, options.now);
+      const { releaseId } = allocation;
+      releaseDir = allocation.releaseDir;
+      releaseReserved = true;
 
-    await cp(resolvedPaths.sourceDir, releaseDir, {
-      recursive: true,
-      force: true,
-      filter: applicationFilter(resolvedPaths.sourceDir),
-    });
+      await cp(resolvedPaths.sourceDir, releaseDir, {
+        recursive: true,
+        force: true,
+        filter: applicationFilter(resolvedPaths.sourceDir),
+      });
 
-    if (policy.copyRuntimeFiles) {
-      await Promise.all([
-        copyIfPresent(join(resolvedPaths.sourceDir, "deploy"), paths.opsDir),
-        copyIfPresent(join(resolvedPaths.sourceDir, "Makefile"), join(resolvedPaths.targetDir, "Makefile")),
-      ]);
-    }
+      if (policy.copyRuntimeFiles) {
+        await Promise.all([
+          copyIfPresent(join(resolvedPaths.sourceDir, "deploy"), paths.opsDir),
+          copyIfPresent(join(resolvedPaths.sourceDir, "Makefile"), join(resolvedPaths.targetDir, "Makefile")),
+        ]);
+      }
 
-    const previousRelease = await readPreviousRelease(paths.currentLink);
-    temporaryLink = join(paths.appDir, `.current-${releaseId}-${process.pid}.tmp`);
-    await symlink(join("releases", releaseId), temporaryLink);
+      const previousRelease = await readPreviousRelease(paths.currentLink);
+      temporaryLink = join(paths.appDir, `.current-${releaseId}-${process.pid}.tmp`);
+      await symlink(join("releases", releaseId), temporaryLink);
 
-    const release = {
-      mode,
-      policy,
-      paths,
-      releaseId,
-      releaseDir,
-      previousRelease,
-      activeRelease: previousRelease,
-      staged: true,
-    };
-    const acceptRelease =
-      options.acceptRelease ??
-      dependencies.acceptRelease ??
-      (dependencies.commandRunner || dependencies.composeRunner ? lifecycleAcceptance(resolvedPaths.targetDir, dependencies) : undefined);
-    const accepted = await shouldAcceptRelease(acceptRelease, release);
+      const release = {
+        mode,
+        policy,
+        paths,
+        releaseId,
+        releaseDir,
+        previousRelease,
+        activeRelease: previousRelease,
+        staged: true,
+      };
+      const acceptRelease =
+        options.acceptRelease ??
+        dependencies.acceptRelease ??
+        (dependencies.commandRunner || dependencies.composeRunner
+          ? lifecycleAcceptance(resolvedPaths.targetDir, dependencies)
+          : undefined);
+      const accepted = await shouldAcceptRelease(acceptRelease, release);
 
-    if (accepted) {
-      await rename(temporaryLink, paths.currentLink);
+      if (accepted) {
+        await rename(temporaryLink, paths.currentLink);
+        temporaryLink = undefined;
+        return { ...release, activeRelease: releaseId, accepted: true };
+      }
+
+      await rm(temporaryLink, { force: true });
       temporaryLink = undefined;
-      return { ...release, activeRelease: releaseId, accepted: true };
+      return { ...release, accepted: false };
+    } catch (error) {
+      if (temporaryLink) await rm(temporaryLink, { force: true }).catch(() => undefined);
+      if (releaseReserved) await rm(releaseDir, { recursive: true, force: true }).catch(() => undefined);
+      throw error;
     }
-
-    await rm(temporaryLink, { force: true });
-    temporaryLink = undefined;
-    return { ...release, accepted: false };
-  } catch (error) {
-    if (temporaryLink) await rm(temporaryLink, { force: true }).catch(() => undefined);
-    if (releaseReserved) await rm(releaseDir, { recursive: true, force: true }).catch(() => undefined);
-    throw error;
-  }
+  });
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  runDeployment(parseArgs(process.argv.slice(2)))
-    .then((result) => process.stdout.write(`${JSON.stringify(result)}\n`))
+  const options = parseArgs(process.argv.slice(2));
+  runDeployment(options, { commandRunner: defaultCommandRunner })
+    .then(async (result) => {
+      process.stdout.write(`${JSON.stringify(result)}\n`);
+      if (isMutatingMode(options.mode)) {
+        const activeRelease = result.activeRelease ?? (await readActiveRelease(options.targetDir)) ?? "none";
+        process.stdout.write(`Deployment target: ${resolve(options.targetDir)}\nActive release: ${activeRelease}\n`);
+      }
+    })
     .catch((error) => {
       process.stderr.write(`${error.message}\n`);
       process.exitCode = 1;

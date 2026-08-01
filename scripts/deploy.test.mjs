@@ -236,7 +236,7 @@ describe("deployment path planning", () => {
       currentLink: "/srv/tradereview/app/current",
       configDir: "/srv/tradereview/config",
       dataDir: "/srv/tradereview/data",
-      backupsDir: "/srv/tradereview/backups",
+      backupsDir: "/srv/tradereview/data/backups",
       logsDir: "/srv/tradereview/logs",
       opsDir: "/srv/tradereview/deploy",
     });
@@ -269,7 +269,7 @@ describe("deployment copy policy", () => {
 describe("deployment release staging", () => {
   test("creates sortable release identifiers", () => {
     expect(createReleaseId("/repo", new Date("2026-08-01T03:04:05.678Z"))).toMatch(
-      /^20260801T030405678Z-[a-z0-9-]+$/,
+      /^20260801T030405Z-[a-z0-9-]+$/,
     );
   });
 
@@ -671,6 +671,128 @@ describe("Compose lifecycle", () => {
         composeRunner,
       });
       expect(recording.calls).toHaveLength(5);
+    } finally {
+      await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  });
+});
+
+async function createIntegrationSandbox() {
+  const sandbox = await mkdtemp(join(tmpdir(), "tradereview-deployment-integration-"));
+  const sourceDir = join(sandbox, "source");
+  const targetDir = join(sandbox, "target");
+  const previousRelease = "20260731T010203Z-previous";
+
+  await Promise.all([
+    mkdir(join(sourceDir, "deploy"), { recursive: true }),
+    mkdir(join(targetDir, "app", "releases", previousRelease), { recursive: true }),
+    mkdir(join(targetDir, "config"), { recursive: true }),
+    mkdir(join(targetDir, "data", "sqlite"), { recursive: true }),
+    mkdir(join(targetDir, "data", "backups"), { recursive: true }),
+    mkdir(join(targetDir, "logs"), { recursive: true }),
+  ]);
+  await Promise.all([
+    writeFile(join(sourceDir, "package.json"), "{}\n"),
+    writeFile(join(sourceDir, "deploy", "Dockerfile"), "FROM node:22\n"),
+    writeFile(join(targetDir, "compose.yaml"), "services: {}\n"),
+    writeFile(join(targetDir, "config", ".env"), "APP_BIND=127.0.0.1\nAPP_PORT=3000\n"),
+    writeFile(join(targetDir, "data", "sqlite", "tradereview.sqlite"), "database-sentinel"),
+    writeFile(join(targetDir, "data", "backups", "backup.sqlite"), "backup-sentinel"),
+    writeFile(join(targetDir, "logs", "app.log"), "log-sentinel"),
+  ]);
+  await symlink(join("releases", previousRelease), join(targetDir, "app", "current"));
+
+  return { sandbox, sourceDir, targetDir, previousRelease };
+}
+
+describe("deployment filesystem integration", () => {
+  test("code-only integration preserves protected storage", async () => {
+    const fixture = await createIntegrationSandbox();
+    const beforeEnv = await readFile(join(fixture.targetDir, "config", ".env"), "utf8");
+    const beforeDatabase = await readFile(join(fixture.targetDir, "data", "sqlite", "tradereview.sqlite"));
+    const beforeBackups = await readFile(join(fixture.targetDir, "data", "backups", "backup.sqlite"));
+    const beforeLogs = await readFile(join(fixture.targetDir, "logs", "app.log"));
+
+    try {
+      const result = await runDeployment(
+        { mode: "code", sourceDir: fixture.sourceDir, targetDir: fixture.targetDir },
+        {
+          composeRunner: async (args) =>
+            args[0] === "ps" ? { exitCode: 0, stdout: '[{"Health":"healthy"}]' } : { exitCode: 0 },
+        },
+      );
+
+      const afterEnv = await readFile(join(fixture.targetDir, "config", ".env"), "utf8");
+      const afterDatabase = await readFile(join(fixture.targetDir, "data", "sqlite", "tradereview.sqlite"));
+      const afterBackups = await readFile(join(fixture.targetDir, "data", "backups", "backup.sqlite"));
+      const afterLogs = await readFile(join(fixture.targetDir, "logs", "app.log"));
+
+      expect(afterEnv).toBe(beforeEnv);
+      expect(afterDatabase).toEqual(beforeDatabase);
+      expect(afterBackups).toEqual(beforeBackups);
+      expect(afterLogs).toEqual(beforeLogs);
+      expect(result.activeRelease).toMatch(/^[0-9]{8}T[0-9]{6}Z-/);
+    } finally {
+      await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("integration health failure leaves the old release active", async () => {
+    const fixture = await createIntegrationSandbox();
+
+    try {
+      await expect(
+        runDeployment(
+          { mode: "code", sourceDir: fixture.sourceDir, targetDir: fixture.targetDir },
+          {
+            composeRunner: async (args) =>
+              args[0] === "ps" ? { exitCode: 0, stdout: '[{"Health":"unhealthy"}]' } : { exitCode: 0 },
+          },
+        ),
+      ).rejects.toThrow("Docker Compose service is unhealthy");
+
+      await expect(readlink(join(fixture.targetDir, "app", "current"))).resolves.toBe(
+        join("releases", fixture.previousRelease),
+      );
+      await expect(readdir(join(fixture.targetDir, "app", "releases"))).resolves.toEqual([fixture.previousRelease]);
+    } finally {
+      await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("rejects concurrent deployment lock acquisition", async () => {
+    const fixture = await createIntegrationSandbox();
+    let beginHealthCheck;
+    let finishHealthCheck;
+    const healthCheckStarted = new Promise((resolveStarted) => {
+      beginHealthCheck = resolveStarted;
+    });
+    const healthCheckFinished = new Promise((resolveFinished) => {
+      finishHealthCheck = resolveFinished;
+    });
+    const composeRunner = async (args) => {
+      if (args[0] !== "ps") return { exitCode: 0 };
+      beginHealthCheck();
+      await healthCheckFinished;
+      return { exitCode: 0, stdout: '[{"Health":"healthy"}]' };
+    };
+
+    try {
+      const first = runDeployment(
+        { mode: "code", sourceDir: fixture.sourceDir, targetDir: fixture.targetDir },
+        { composeRunner },
+      );
+      await healthCheckStarted;
+
+      await expect(
+        runDeployment(
+          { mode: "code", sourceDir: fixture.sourceDir, targetDir: fixture.targetDir },
+          { composeRunner },
+        ),
+      ).rejects.toThrow(/deployment operation is already running/i);
+
+      finishHealthCheck();
+      await expect(first).resolves.toMatchObject({ accepted: true });
     } finally {
       await rm(fixture.sandbox, { recursive: true, force: true });
     }

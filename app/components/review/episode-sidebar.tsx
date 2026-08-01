@@ -5,6 +5,7 @@ import {
   Clock3,
   Database,
   History,
+  ImageUp,
   RefreshCw,
   Upload,
 } from "lucide-react";
@@ -28,6 +29,7 @@ type Props = {
   importPhase?: ImportPhase;
   importError: string | null;
   onImport: (file: File) => void;
+  onScreenshotImport: (files: File[]) => void;
   onOpenHistory: () => void;
   revealedDemoExecutions: TradeExecution[];
   selectedInstrumentId: string;
@@ -50,6 +52,7 @@ export function EpisodeSidebar({
   importPhase = importing ? "parsing" : "idle",
   importError,
   onImport,
+  onScreenshotImport,
   onOpenHistory,
   revealedDemoExecutions,
   selectedInstrumentId,
@@ -112,6 +115,31 @@ export function EpisodeSidebar({
             onChange={(event) => {
               const file = event.target.files?.[0];
               if (file) onImport(file);
+              event.currentTarget.value = "";
+            }}
+          />
+        </label>
+        <label
+          className="import-button"
+          role="button"
+          tabIndex={importing ? -1 : 0}
+          onKeyDown={(event) => {
+            if (event.key !== "Enter" && event.key !== " ") return;
+            event.preventDefault();
+            event.currentTarget.querySelector("input")?.click();
+          }}
+        >
+          <ImageUp size={16} />
+          从截图恢复交易
+          <input
+            aria-label="从截图恢复交易"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+            multiple
+            disabled={importing}
+            onChange={(event) => {
+              const files = Array.from(event.target.files ?? []);
+              if (files.length > 0) onScreenshotImport(files);
               event.currentTarget.value = "";
             }}
           />

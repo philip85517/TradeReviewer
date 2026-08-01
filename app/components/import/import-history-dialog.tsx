@@ -56,6 +56,14 @@ export function ImportHistoryDialog({ entries, onClose }: Props) {
                     <CalendarRange size={12} />
                     {date(entry.firstTradeAt)} — {date(entry.lastTradeAt)}
                   </span>
+                  {entry.sourceKind === "screenshot" && (
+                    <div className="history-screenshot-meta">
+                      <span>{entry.captureCount ?? 0} 张截图</span>
+                      <span>
+                        已处理 {entry.conflictTradeCount ?? 0} 笔冲突
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <dl>
                   <div>

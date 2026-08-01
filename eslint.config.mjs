@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    ".worktrees/**",
+    // Version-pinned third-party OCR runtime modules are copied verbatim.
+    "public/ocr/ort/**",
   ]),
 ]);
 

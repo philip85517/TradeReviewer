@@ -14,14 +14,18 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "assets:ocr": "node scripts/vendor-ocr-assets.mjs"
   },
   "dependencies": {
+    "@js-temporal/polyfill": "0.5.1",
+    "@paddleocr/paddleocr-js": "0.4.2",
     "decimal.js": "10.6.0",
     "drizzle-orm": "0.45.2",
     "lightweight-charts": "5.2.0",
     "lucide-react": "1.26.0",
     "next": "16.2.11",
+    "onnxruntime-web": "1.24.3",
     "pdfjs-dist": "6.1.200",
     "react": "19.2.6",
     "react-dom": "19.2.6",

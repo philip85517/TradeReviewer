@@ -1,6 +1,7 @@
 import { chmod, cp, mkdtemp, mkdir, readdir, readFile, readlink, rm, stat, symlink, utimes, writeFile } from "node:fs/promises";
 import { realpathSync } from "node:fs";
 import { createServer } from "node:http";
+import { createServer as createTcpServer } from "node:net";
 import { hostname, tmpdir } from "node:os";
 import { basename, join, resolve } from "node:path";
 import { spawn } from "node:child_process";
@@ -12,6 +13,7 @@ import {
   DEFAULT_DEPLOY_ROOT,
   createReleaseId,
   getSyncPolicy,
+  assertDeploymentPortAvailable,
   parseArgs,
   rollbackRelease,
   runOperationalCommand,
@@ -253,13 +255,15 @@ async function runMake(targetDir, target, env = {}) {
 
 describe("deployment templates", () => {
   test("provide the repository deployment contract", async () => {
-    const [makefile, compose, envExample, dockerfile, dockerfileIgnore, contextIgnore] = await Promise.all([
+    const [makefile, compose, envExample, dockerfile, dockerfileIgnore, contextIgnore, deploymentDocs, readme] = await Promise.all([
       readManifest("Makefile"),
       readManifest("deploy/compose.yaml"),
       readManifest("deploy/config/.env.example"),
       readManifest("deploy/Dockerfile"),
       readManifest("deploy/Dockerfile.dockerignore"),
       readManifest("deploy/.dockerignore"),
+      readManifest("deploy/DEPLOYMENT.md"),
+      readManifest("README.md"),
     ]);
 
     expect(makefile).toContain("deploy-code:");
@@ -267,6 +271,12 @@ describe("deployment templates", () => {
     expect(compose).toContain("name: ${COMPOSE_PROJECT_NAME:-tradereview}");
     expect(compose).toContain("./data/sqlite:/var/lib/tradereview");
     expect(envExample).toContain("APP_BIND=127.0.0.1");
+    expect(envExample).toContain("APP_PORT=4317");
+    expect(compose).toContain("${APP_BIND:-127.0.0.1}:${APP_PORT:-4317}:3000");
+    expect(compose).toContain("PORT: 3000");
+    expect(compose).toContain("127.0.0.1:3000");
+    expect(deploymentDocs).toContain("127.0.0.1:4317");
+    expect(readme).toContain("localhost:4317");
     expect(dockerfile).toContain("npm run assets:ocr");
     expect(dockerfileIgnore).toContain(".env");
     expect(dockerfileIgnore).toBe(contextIgnore);
@@ -685,6 +695,110 @@ describe("SQLite operations", () => {
       expect(unsafeSidecar.stderr).toContain("checksum sidecar is unsafe");
     } finally {
       await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("deployment port preflight", () => {
+  test("accepts an available configured host port", async () => {
+    const sandbox = await mkdtemp(join(tmpdir(), "tradereview-port-available-"));
+    const targetDir = join(sandbox, "target");
+    const server = createTcpServer();
+
+    try {
+      await mkdir(join(targetDir, "config"), { recursive: true });
+      await new Promise((resolveListen, rejectListen) => {
+        server.once("error", rejectListen);
+        server.listen(0, "127.0.0.1", resolveListen);
+      });
+      const address = server.address();
+      if (!address || typeof address === "string") throw new Error("Port test server did not bind");
+      const port = address.port;
+      await new Promise((resolveClose, rejectClose) => server.close((error) => (error ? rejectClose(error) : resolveClose())));
+      await writeFile(join(targetDir, "config", ".env"), `APP_BIND=127.0.0.1\nAPP_PORT=${port}\n`);
+
+      await expect(assertDeploymentPortAvailable(targetDir)).resolves.toBeUndefined();
+    } finally {
+      if (server.listening) await new Promise((resolveClose) => server.close(resolveClose));
+      await rm(sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("reports an actionable error when the configured host port is occupied", async () => {
+    const sandbox = await mkdtemp(join(tmpdir(), "tradereview-port-occupied-"));
+    const targetDir = join(sandbox, "target");
+    const server = createTcpServer();
+
+    try {
+      await mkdir(join(targetDir, "config"), { recursive: true });
+      await new Promise((resolveListen, rejectListen) => {
+        server.once("error", rejectListen);
+        server.listen(0, "127.0.0.1", resolveListen);
+      });
+      const address = server.address();
+      if (!address || typeof address === "string") throw new Error("Port test server did not bind");
+      await writeFile(join(targetDir, "config", ".env"), `APP_BIND=127.0.0.1\nAPP_PORT=${address.port}\n`);
+
+      await expect(assertDeploymentPortAvailable(targetDir)).rejects.toThrow(/already in use.*APP_PORT/i);
+    } finally {
+      if (server.listening) await new Promise((resolveClose) => server.close(resolveClose));
+      await rm(sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("skips the probe for a target with an active release", async () => {
+    const sandbox = await mkdtemp(join(tmpdir(), "tradereview-port-active-"));
+    const targetDir = join(sandbox, "target");
+    const server = createTcpServer();
+
+    try {
+      await mkdir(join(targetDir, "config"), { recursive: true });
+      await new Promise((resolveListen, rejectListen) => {
+        server.once("error", rejectListen);
+        server.listen(0, "127.0.0.1", resolveListen);
+      });
+      const address = server.address();
+      if (!address || typeof address === "string") throw new Error("Port test server did not bind");
+      await writeFile(join(targetDir, "config", ".env"), `APP_BIND=127.0.0.1\nAPP_PORT=${address.port}\n`);
+
+      await expect(assertDeploymentPortAvailable(targetDir, { skipIfActiveRelease: true })).resolves.toBeUndefined();
+    } finally {
+      if (server.listening) await new Promise((resolveClose) => server.close(resolveClose));
+      await rm(sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("fails before Compose when the first-deployment port probe rejects", async () => {
+    const sandbox = await mkdtemp(join(tmpdir(), "tradereview-port-lifecycle-"));
+    const sourceDir = join(sandbox, "source");
+    const targetDir = join(sandbox, "target");
+    let composeStarted = false;
+
+    try {
+      await Promise.all([mkdir(sourceDir, { recursive: true }), mkdir(join(targetDir, "config"), { recursive: true })]);
+      await Promise.all([
+        writeFile(join(sourceDir, "package.json"), "{}\n"),
+        writeFile(join(targetDir, "config", ".env"), "APP_BIND=127.0.0.1\nAPP_PORT=4317\n"),
+      ]);
+
+      await expect(
+        runDeployment(
+          { mode: "code", sourceDir, targetDir },
+          {
+            commandRunner: async () => {
+              composeStarted = true;
+              return { exitCode: 0 };
+            },
+            portProbe: async () => {
+              throw new Error("port already in use");
+            },
+          },
+        ),
+      ).rejects.toThrow("port already in use");
+      expect(composeStarted).toBe(false);
+      await expect(readdir(join(targetDir, "app", "releases"))).rejects.toMatchObject({ code: "ENOENT" });
+    } finally {
+      await rm(sandbox, { recursive: true, force: true });
     }
   });
 });

@@ -564,10 +564,61 @@ describe("SQLite operations", () => {
     }
   });
 
-  test("includes the SQLite CLI in the Compose runtime image", async () => {
+  test("provides SQLite operations without an apt repository dependency", async () => {
     const dockerfile = await readManifest("deploy/Dockerfile");
+    const sqliteCli = await readManifest("deploy/ops/sqlite-cli.mjs");
 
-    expect(dockerfile).toContain("sqlite3");
+    expect(dockerfile).not.toContain("apt-get");
+    expect(dockerfile).toContain("sqlite-cli.mjs");
+    expect(sqliteCli).toContain("node:sqlite");
+    expect(sqliteCli).toContain("backup(");
+  });
+
+  test("backs up, checks, and restores SQLite databases with the runtime helper", async () => {
+    const sandbox = await mkdtemp(join(tmpdir(), "tradereview-sqlite-cli-"));
+    const databasePath = join(sandbox, "source.sqlite");
+    const backupPath = join(sandbox, "backup.sqlite");
+    const restoredPath = join(sandbox, "restored.sqlite");
+    const helperPath = resolve(root, "deploy/ops/sqlite-cli.mjs");
+
+    try {
+      const initialized = await runProcess("/usr/bin/sqlite3", [
+        databasePath,
+        "CREATE TABLE state (value TEXT); INSERT INTO state VALUES ('healthy');",
+      ]);
+      expect(initialized.exitCode).toBe(0);
+
+      const backup = await runProcess(process.execPath, [
+        helperPath,
+        databasePath,
+        `.backup '${backupPath}'`,
+      ]);
+      expect(backup.exitCode).toBe(0);
+
+      const quickCheck = await runProcess(process.execPath, [
+        helperPath,
+        backupPath,
+        "PRAGMA quick_check;",
+      ]);
+      expect(quickCheck.exitCode).toBe(0);
+      expect(quickCheck.stdout.trim()).toBe("ok");
+
+      const restore = await runProcess(process.execPath, [
+        helperPath,
+        restoredPath,
+        `.restore '${backupPath}'`,
+      ]);
+      expect(restore.exitCode).toBe(0);
+
+      const restoredValue = await runProcess("/usr/bin/sqlite3", [
+        restoredPath,
+        "SELECT value FROM state;",
+      ]);
+      expect(restoredValue.exitCode).toBe(0);
+      expect(restoredValue.stdout.trim()).toBe("healthy");
+    } finally {
+      await rm(sandbox, { recursive: true, force: true });
+    }
   });
 
   test("reports a missing SQLite directory instead of failing status", async () => {

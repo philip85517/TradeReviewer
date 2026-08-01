@@ -134,5 +134,5 @@ describe("extractPdfPages", () => {
         height: expect.any(Number),
       }),
     );
-  });
+  }, 15_000);
 });

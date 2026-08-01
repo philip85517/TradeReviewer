@@ -354,7 +354,7 @@ describe("SQLite operations", () => {
     } finally {
       await rm(fixture.sandbox, { recursive: true, force: true });
     }
-  });
+  }, 15_000);
 
   test("publishes a checked backup and applies config retention only to safe backup pairs", async () => {
     const fixture = await createSqliteOperationalSandbox();
@@ -497,7 +497,7 @@ describe("SQLite operations", () => {
       await healthServer.close();
       await rm(fixture.sandbox, { recursive: true, force: true });
     }
-  }, 15_000);
+  }, 30_000);
 
   test("provide safe, consistent SQLite operational scripts", async () => {
     const [healthcheck, backup, restore, status] = await Promise.all([

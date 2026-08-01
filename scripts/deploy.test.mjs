@@ -354,7 +354,7 @@ describe("SQLite operations", () => {
     } finally {
       await rm(fixture.sandbox, { recursive: true, force: true });
     }
-  }, 15_000);
+  });
 
   test("publishes a checked backup and applies config retention only to safe backup pairs", async () => {
     const fixture = await createSqliteOperationalSandbox();
@@ -427,7 +427,7 @@ describe("SQLite operations", () => {
     } finally {
       await rm(fixture.sandbox, { recursive: true, force: true });
     }
-  });
+  }, 15_000);
 
   test("restores a checked database through an atomic swap and returns healthy", async () => {
     const fixture = await createSqliteOperationalSandbox();

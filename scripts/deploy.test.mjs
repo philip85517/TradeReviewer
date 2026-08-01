@@ -427,6 +427,10 @@ describe("Compose lifecycle", () => {
 
   test("restores current and starts the previous release when health fails", async () => {
     const fixture = await createLifecycleSandbox();
+    const now = new Date("2026-08-01T03:04:05.678Z");
+    const candidateRelease = createReleaseId(realpathSync(fixture.sourceDir), now);
+    const candidateContext = `./app/releases/${candidateRelease}`;
+    const previousContext = `./app/releases/${fixture.previousRelease}`;
     const recording = createRecordingCommandRunner([
       { exitCode: 0 },
       { exitCode: 0 },
@@ -438,7 +442,7 @@ describe("Compose lifecycle", () => {
     try {
       await expect(
         runDeployment(
-          { mode: "code", sourceDir: fixture.sourceDir, targetDir: fixture.targetDir },
+          { mode: "code", sourceDir: fixture.sourceDir, targetDir: fixture.targetDir, now },
           { commandRunner: recording.commandRunner },
         ),
       ).rejects.toThrow("Docker Compose service is unhealthy");
@@ -446,12 +450,18 @@ describe("Compose lifecycle", () => {
       await expect(readlink(join(fixture.targetDir, "app", "current"))).resolves.toBe(
         join("releases", fixture.previousRelease),
       );
-      expect(recording.calls.map(({ args }) => args.at(-1))).toEqual(["build", "--detach", "json", "build", "--detach"]);
+      expect(recording.calls.map(({ args, env }) => ({ args: args.slice(7), context: env.APP_RELEASE_CONTEXT }))).toEqual([
+        { args: ["build"], context: candidateContext },
+        { args: ["up", "--detach"], context: candidateContext },
+        { args: ["ps", "--format", "json"], context: undefined },
+        { args: ["build"], context: previousContext },
+        { args: ["up", "--detach"], context: previousContext },
+      ]);
       expect(recording.calls[3].env).toMatchObject({
-        APP_RELEASE_CONTEXT: `./app/releases/${fixture.previousRelease}`,
+        APP_RELEASE_CONTEXT: previousContext,
       });
       expect(recording.calls[4].env).toMatchObject({
-        APP_RELEASE_CONTEXT: `./app/releases/${fixture.previousRelease}`,
+        APP_RELEASE_CONTEXT: previousContext,
       });
       await expect(readdir(join(fixture.targetDir, "app", "releases"))).resolves.toEqual([
         fixture.previousRelease,

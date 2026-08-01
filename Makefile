@@ -15,7 +15,7 @@ deploy-backup:
 	node scripts/deploy.mjs --mode=backup --source="$(CURDIR)" --target="$(DEPLOY_ROOT)"
 
 deploy-restore:
-	@test -n "$(BACKUP)" || { echo "BACKUP must be an absolute path to a backup file" >&2; exit 2; }
+	@case "$(BACKUP)" in /*) [ -f "$(BACKUP)" ] && [ ! -L "$(BACKUP)" ] ;; *) false ;; esac || { echo "BACKUP must be an absolute regular, non-symlink backup file" >&2; exit 2; }
 	node scripts/deploy.mjs --mode=restore --source="$(CURDIR)" --target="$(DEPLOY_ROOT)" --backup="$(BACKUP)"
 
 deploy-rollback:

@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { cp, lstat, mkdir, readdir, readlink, rename, rm, symlink } from "node:fs/promises";
 import { realpathSync } from "node:fs";
 import { spawn } from "node:child_process";
-import { basename, dirname, join, relative, resolve, sep } from "node:path";
+import { basename, dirname, isAbsolute, join, parse, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const DEFAULT_DEPLOY_ROOT = "/Users/zhoulin/projects/TradeReview";
@@ -135,6 +135,32 @@ export function validateDeploymentPaths(sourceDir, targetDir) {
   return { sourceDir: sourcePath, targetDir: targetPath };
 }
 
+export async function validateMutatingTarget(targetDir) {
+  if (!targetDir || !isAbsolute(targetDir)) {
+    throw new Error("Deployment target path must be absolute");
+  }
+
+  const configuredTarget = resolve(targetDir);
+  if (configuredTarget === parse(configuredTarget).root) {
+    throw new Error("Deployment target must not be the filesystem root");
+  }
+
+  try {
+    const details = await lstat(configuredTarget);
+    if (details.isSymbolicLink() || !details.isDirectory()) {
+      throw new Error("Deployment target must be a non-symlink directory");
+    }
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+
+  const canonicalTarget = canonicalizePath(configuredTarget);
+  if (canonicalTarget === parse(canonicalTarget).root) {
+    throw new Error("Deployment target must not be the filesystem root");
+  }
+  return canonicalTarget;
+}
+
 export function getSyncPolicy(mode) {
   if (mode === "full" || mode === "deploy") {
     return {
@@ -239,7 +265,7 @@ export async function readActiveRelease(targetDir) {
 }
 
 export async function acquireDeploymentLock(targetDir) {
-  const rootDir = canonicalizePath(targetDir);
+  const rootDir = await validateMutatingTarget(targetDir);
   const lockDir = join(rootDir, ".deploy-lock");
 
   try {
@@ -322,10 +348,27 @@ export async function runOperationalCommand({ targetDir, mode, backupPath }, { o
   const scriptName = OPERATION_SCRIPTS[mode];
   if (!scriptName) throw new Error(`Unsupported deployment operation: ${mode}`);
 
-  const rootDir = resolve(targetDir);
+  let safeBackupPath;
+  if (mode === "restore") {
+    if (!backupPath || !isAbsolute(backupPath)) {
+      throw new Error("Restore requires an absolute regular file backup path");
+    }
+    try {
+      const details = await lstat(backupPath);
+      if (details.isSymbolicLink() || !details.isFile()) {
+        throw new Error("Restore requires an absolute regular file backup path");
+      }
+    } catch (error) {
+      if (error.code === "ENOENT") throw new Error("Restore requires an absolute regular file backup path");
+      throw error;
+    }
+    safeBackupPath = resolve(backupPath);
+  }
+
+  const rootDir =
+    mode === "status" || mode === "healthcheck" ? resolve(targetDir) : await validateMutatingTarget(targetDir);
   const scriptPath = join(rootDir, "deploy", "ops", scriptName);
-  const args = mode === "restore" ? [backupPath] : [];
-  if (mode === "restore" && !backupPath) throw new Error("Restore requires a backup path");
+  const args = mode === "restore" ? [safeBackupPath] : [];
 
   const result = await operationRunner(scriptPath, args, { cwd: rootDir });
   if (commandExitCode(result) !== 0) throw new Error(`Deployment operation ${mode} failed`);
@@ -460,7 +503,7 @@ async function releaseDirectories(paths) {
 }
 
 export async function rollbackToPreviousRelease({ targetDir, healthTimeoutMs }, dependencies = {}) {
-  const rootDir = canonicalizePath(targetDir);
+  const rootDir = await validateMutatingTarget(targetDir);
   const paths = resolveDeploymentPaths(rootDir);
   await assertSafeStagingRoots(paths, rootDir);
   const activeRelease = await readActiveRelease(rootDir);
@@ -479,7 +522,7 @@ export async function rollbackToPreviousRelease({ targetDir, healthTimeoutMs }, 
 }
 
 export async function stopDeployment({ targetDir }, dependencies = {}) {
-  const rootDir = canonicalizePath(targetDir);
+  const rootDir = await validateMutatingTarget(targetDir);
   const composeRunner = createTargetComposeRunner(rootDir, dependencies);
   await composeRunner(["down"]);
   return { targetDir: rootDir, activeRelease: await readActiveRelease(rootDir) };
@@ -533,13 +576,15 @@ export async function runDeployment(options, dependencies = {}) {
   }
   if (mode === "down") return withDeploymentLock(targetDir, () => stopDeployment({ targetDir }, dependencies));
   if (mode === "config") {
-    const resolvedPaths = validateDeploymentPaths(sourceDir, targetDir);
+    const safeTargetDir = await validateMutatingTarget(targetDir);
+    const resolvedPaths = validateDeploymentPaths(sourceDir, safeTargetDir);
     return withDeploymentLock(resolvedPaths.targetDir, () =>
       initializeDeploymentConfig({ sourceDir: resolvedPaths.sourceDir, targetDir: resolvedPaths.targetDir }),
     );
   }
   const policy = getSyncPolicy(mode);
-  const resolvedPaths = validateDeploymentPaths(sourceDir, targetDir);
+  const safeTargetDir = await validateMutatingTarget(targetDir);
+  const resolvedPaths = validateDeploymentPaths(sourceDir, safeTargetDir);
   const paths = resolveDeploymentPaths(resolvedPaths.targetDir);
   await assertSafeStagingRoots(paths, resolvedPaths.targetDir);
 
@@ -570,6 +615,7 @@ export async function runDeployment(options, dependencies = {}) {
       if (policy.copyRuntimeFiles) {
         await Promise.all([
           copyIfPresent(join(resolvedPaths.sourceDir, "deploy"), paths.opsDir),
+          copyIfPresent(join(resolvedPaths.sourceDir, "deploy", "compose.yaml"), join(resolvedPaths.targetDir, "compose.yaml")),
           copyIfPresent(join(resolvedPaths.sourceDir, "Makefile"), join(resolvedPaths.targetDir, "Makefile")),
         ]);
       }

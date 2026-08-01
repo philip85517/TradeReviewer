@@ -15,6 +15,7 @@ import {
   runOperationalCommand,
   resolveDeploymentPaths,
   runDeployment,
+  validateMutatingTarget,
   validateDeploymentPaths,
   waitForHealthy,
 } from "./deploy.mjs";
@@ -128,21 +129,29 @@ describe("SQLite operations", () => {
 
   test("dispatches each operational mode to its target-side script", async () => {
     const calls = [];
-    const targetDir = "/srv/tradereview";
+    const sandbox = await mkdtemp(join(tmpdir(), "tradereview-operation-dispatch-"));
+    const targetDir = join(sandbox, "target");
+    const backupPath = join(sandbox, "backup.sqlite");
     const operationRunner = async (command, args, options) => {
       calls.push({ command, args, options });
       return { exitCode: 0 };
     };
 
-    await runOperationalCommand({ targetDir, mode: "restore", backupPath: "/tmp/backup.sqlite" }, { operationRunner });
+    try {
+      await writeFile(backupPath, "backup");
+      await runOperationalCommand({ targetDir, mode: "restore", backupPath }, { operationRunner });
+      const canonicalTargetDir = join(realpathSync(sandbox), "target");
 
-    expect(calls).toEqual([
-      {
-        command: "/srv/tradereview/deploy/ops/restore-db.sh",
-        args: ["/tmp/backup.sqlite"],
-        options: { cwd: targetDir },
-      },
-    ]);
+      expect(calls).toEqual([
+        {
+          command: join(canonicalTargetDir, "deploy", "ops", "restore-db.sh"),
+          args: [backupPath],
+          options: { cwd: canonicalTargetDir },
+        },
+      ]);
+    } finally {
+      await rm(sandbox, { recursive: true, force: true });
+    }
   });
 
   test("includes the SQLite CLI in the Compose runtime image", async () => {
@@ -246,6 +255,27 @@ describe("deployment path planning", () => {
     expect(() => validateDeploymentPaths("/repo", "/repo")).toThrow(/must differ/i);
     expect(() => validateDeploymentPaths("/repo", "/repo/releases")).toThrow(/inside/i);
     expect(() => validateDeploymentPaths("/repo/source", "/repo")).toThrow(/inside/i);
+  });
+
+  test("rejects the filesystem root as a mutating deployment target", async () => {
+    await expect(validateMutatingTarget("/")).rejects.toThrow(/filesystem root/i);
+  });
+
+  test("rejects deploy-down at the filesystem root before Compose runs", async () => {
+    let composeStarted = false;
+
+    await expect(
+      runDeployment(
+        { mode: "down", targetDir: "/" },
+        {
+          composeRunner: async () => {
+            composeStarted = true;
+            return { exitCode: 0 };
+          },
+        },
+      ),
+    ).rejects.toThrow(/filesystem root/i);
+    expect(composeStarted).toBe(false);
   });
 });
 
@@ -706,6 +736,33 @@ async function createIntegrationSandbox() {
 }
 
 describe("deployment filesystem integration", () => {
+  test("full integration copies Compose configuration to a clean target", async () => {
+    const sandbox = await mkdtemp(join(tmpdir(), "tradereview-clean-target-"));
+    const sourceDir = join(sandbox, "source");
+    const targetDir = join(sandbox, "target");
+
+    try {
+      await mkdir(join(sourceDir, "deploy"), { recursive: true });
+      await Promise.all([
+        writeFile(join(sourceDir, "package.json"), "{}\n"),
+        writeFile(join(sourceDir, "deploy", "Dockerfile"), "FROM node:22\n"),
+        writeFile(join(sourceDir, "deploy", "compose.yaml"), "services: {}\n"),
+      ]);
+
+      await runDeployment(
+        { mode: "full", sourceDir, targetDir },
+        {
+          composeRunner: async (args) =>
+            args[0] === "ps" ? { exitCode: 0, stdout: '[{"Health":"healthy"}]' } : { exitCode: 0 },
+        },
+      );
+
+      await expect(readFile(join(targetDir, "compose.yaml"), "utf8")).resolves.toBe("services: {}\n");
+    } finally {
+      await rm(sandbox, { recursive: true, force: true });
+    }
+  });
+
   test("code-only integration preserves protected storage", async () => {
     const fixture = await createIntegrationSandbox();
     const beforeEnv = await readFile(join(fixture.targetDir, "config", ".env"), "utf8");
@@ -795,6 +852,37 @@ describe("deployment filesystem integration", () => {
       await expect(first).resolves.toMatchObject({ accepted: true });
     } finally {
       await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("restore rejects an unsafe backup path before dispatch", async () => {
+    const sandbox = await mkdtemp(join(tmpdir(), "tradereview-restore-validation-"));
+    const targetDir = join(sandbox, "target");
+    const directoryPath = join(sandbox, "backup-directory");
+    const regularPath = join(sandbox, "backup.sqlite");
+    const symlinkPath = join(sandbox, "backup-link.sqlite");
+    let operationStarted = false;
+
+    try {
+      await Promise.all([mkdir(directoryPath), writeFile(regularPath, "backup")]);
+      await symlink(regularPath, symlinkPath);
+
+      for (const backupPath of ["relative.sqlite", directoryPath, symlinkPath]) {
+        await expect(
+          runDeployment(
+            { mode: "restore", targetDir, backupPath },
+            {
+              operationRunner: async () => {
+                operationStarted = true;
+                return { exitCode: 0 };
+              },
+            },
+          ),
+        ).rejects.toThrow(/absolute regular file/i);
+      }
+      expect(operationStarted).toBe(false);
+    } finally {
+      await rm(sandbox, { recursive: true, force: true });
     }
   });
 });

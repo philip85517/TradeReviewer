@@ -307,7 +307,7 @@ describe("SQLite operations", () => {
       `;
       const result = await runProcess(process.execPath, [
         join(root, "deploy", "ops", "run-command.mjs"),
-        "300",
+        "1500",
         process.execPath,
         "-e",
         commandSource,

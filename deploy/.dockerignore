@@ -1,0 +1,12 @@
+.git
+.env
+.env.*
+!.env.example
+.next
+dist
+node_modules
+data
+logs
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

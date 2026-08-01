@@ -13,6 +13,12 @@ import {
 
 import type { EnrichedImportResult } from "../lib/import/enrich-import";
 import type { StatementParseResult } from "../lib/import/contracts";
+import type {
+  OcrImageResult,
+  ScreenshotField,
+  ScreenshotInput,
+  ScreenshotTradeDraft,
+} from "../lib/import/screenshot/contracts";
 import { requiredMarketDataRange } from "../lib/market/sync-range";
 import type { DemoReplayFrame } from "../lib/demo/replay-frame";
 import type { EpisodeReviewRecord } from "../lib/reviews/types";
@@ -23,9 +29,11 @@ import {
   saveImportedExecutions,
 } from "../lib/storage/import-library";
 import { loadImportHistory } from "../lib/storage/import-history";
+import * as importTransaction from "../lib/storage/import-transaction";
 import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-data-repository";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeExecution } from "../lib/trades/types";
+import type { ScreenshotImportDependencies } from "./import/use-screenshot-import";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
 
 function deferred<T>() {
@@ -179,6 +187,146 @@ const cmsEnrichedResult: EnrichedImportResult = {
   diagnostics: [],
   cacheHits: 0,
 };
+
+const screenshotFields: ScreenshotField[] = [
+  "market",
+  "symbol",
+  "side",
+  "quantity",
+  "price",
+  "executedAt",
+];
+
+function screenshotDraft(
+  imageId: string,
+  row: number,
+  symbol: string,
+  sourceName: string,
+  sourceTimestampText: string,
+  price: string,
+  options: { lowConfidencePrice?: boolean; timestampConfirmed?: boolean } = {},
+): ScreenshotTradeDraft {
+  return {
+    id: `${imageId}:draft:${row}`,
+    broker: "futu",
+    layoutVersion: "futu-orders-dark-v1",
+    imageId,
+    sourceRowIndex: row,
+    sourceBounds: { x: 10, y: row * 100 + 20, width: 500, height: 60 },
+    market: "US",
+    symbol,
+    sourceName,
+    side: "buy",
+    quantity: "1",
+    price,
+    sourceTimestampText,
+    sourceAccountSuffix: "1234",
+    fieldEvidence: Object.fromEntries(
+      screenshotFields.map((field) => [
+        field,
+        {
+          rawText: field === "price" ? price : sourceTimestampText,
+          confidence:
+            field === "price" && options.lowConfidencePrice ? 0.5 : 0.99,
+          repaired: false,
+          confirmedByUser:
+            field === "executedAt"
+              ? (options.timestampConfirmed ?? false)
+              : false,
+          sourceBounds: { x: 10, y: row * 100 + 20, width: 100, height: 20 },
+        },
+      ]),
+    ),
+  };
+}
+
+function screenshotExecution(
+  id: string,
+  symbol: string,
+  name: string,
+  executedAt: string,
+  price: string,
+): TradeExecution {
+  return {
+    id,
+    source: {
+      platform: "futu",
+      row: 1,
+      sourceOrder: 1,
+      fileFingerprint: `statement:${id}`,
+      inputKind: "statement",
+    },
+    accountId: "statement-account",
+    accountLabel: "富途证券账户",
+    instrument: {
+      id: `US:${symbol}`,
+      symbol,
+      name,
+      market: "US",
+      currency: "USD",
+    },
+    side: "buy",
+    executedAt,
+    quantity: "1",
+    price,
+    fee: "1",
+  };
+}
+
+function screenshotDependencies(
+  draftsByImage: ReadonlyMap<string, ScreenshotTradeDraft[]>,
+): ScreenshotImportDependencies {
+  return {
+    validateFiles: (files) => ({ ok: true, files }),
+    buildInputs: async (files) =>
+      files.map((selected, index): ScreenshotInput => ({
+        id: `capture-${index + 1}`,
+        index,
+        file: selected,
+        fingerprint: `capture-fingerprint-${index + 1}`,
+      })),
+    buildBatchId: () => "screenshot-batch-workspace",
+    createObjectUrl: (selected) => `blob:${selected.name}`,
+    revokeObjectUrl: vi.fn(),
+    createOcrEngine: vi.fn().mockResolvedValue({
+      recognize: vi.fn(),
+      dispose: vi.fn().mockResolvedValue(undefined),
+    }),
+    recognize: async (input, _engine, options) => {
+      options.onProgress(1, 1);
+      return {
+        imageId: input.id,
+        width: 1_000,
+        height: 2_000,
+        lines: [],
+      } satisfies OcrImageResult;
+    },
+    detectLayout: () => ({
+      matched: true,
+      broker: "futu",
+      layoutVersion: "futu-orders-dark-v1",
+      confidence: 1,
+    }),
+    parseFutu: (image) => draftsByImage.get(image.imageId) ?? [],
+    parseTiger: () => [],
+  };
+}
+
+async function confirmScreenshotTimestamp(
+  user: ReturnType<typeof userEvent.setup>,
+  symbol: string,
+  timestamp: string,
+) {
+  await user.click(
+    screen.getByRole("cell", {
+      name: `${symbol} 成交时间 ${timestamp}，待确认`,
+    }),
+  );
+  await user.click(screen.getByRole("button", { name: "确认识别值" }));
+  await user.click(
+    screen.getByRole("button", { name: "关闭截图识别依据" }),
+  );
+}
 
 describe("TradeReviewWorkspace", () => {
   afterEach(() => {
@@ -516,6 +664,402 @@ describe("TradeReviewWorkspace", () => {
     expect(loadImportHistory()).toHaveLength(1);
     expect(
       await screen.findByRole("heading", { name: "中国海油（600938）" }),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps the statement input unchanged and exposes an independent multi-image screenshot input", () => {
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    const statementInput = screen.getByLabelText("导入交易记录");
+    expect(statementInput).toHaveAttribute("accept", ".xlsx,.xls,.pdf");
+    expect(statementInput).not.toHaveAttribute("multiple");
+
+    const screenshotInput = screen.getByLabelText("从截图恢复交易");
+    expect(screenshotInput).toHaveAttribute(
+      "accept",
+      "image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp",
+    );
+    expect(screenshotInput).toHaveAttribute("multiple");
+  });
+
+  it("reviews two screenshots and applies duplicate, use-incoming, and keep-both decisions through the existing import transaction", async () => {
+    const user = userEvent.setup();
+    const persistSpy = vi.spyOn(importTransaction, "persistImportBatch");
+    const existing = [
+      screenshotExecution(
+        "existing-nvda",
+        "NVDA",
+        "英伟达",
+        "2025-03-01T01:30:00Z",
+        "100",
+      ),
+      screenshotExecution(
+        "existing-msft",
+        "MSFT",
+        "微软",
+        "2025-03-02T01:30:00Z",
+        "200",
+      ),
+      screenshotExecution(
+        "existing-tsla",
+        "TSLA",
+        "特斯拉",
+        "2025-03-03T01:30:00Z",
+        "300",
+      ),
+    ];
+    saveImportedExecutions(existing);
+    const draftsByImage = new Map([
+      [
+        "capture-1",
+        [
+          screenshotDraft(
+            "capture-1",
+            0,
+            "NVDA",
+            "英伟达",
+            "2025-03-01 09:30:00",
+            "100",
+          ),
+          screenshotDraft(
+            "capture-1",
+            1,
+            "MSFT",
+            "微软",
+            "2025-03-02 09:30:00",
+            "201",
+          ),
+        ],
+      ],
+      [
+        "capture-2",
+        [
+          screenshotDraft(
+            "capture-2",
+            0,
+            "TSLA",
+            "特斯拉",
+            "2025-03-03 09:30:00",
+            "301",
+          ),
+          screenshotDraft(
+            "capture-2",
+            1,
+            "AAPL",
+            "苹果",
+            "2025-04-10 09:30:00",
+            "150",
+            { lowConfidencePrice: true },
+          ),
+        ],
+      ],
+    ]);
+    mockEnrichment.mockImplementation(async (parsed: StatementParseResult) => ({
+      broker: parsed.broker,
+      importable: parsed.records,
+      unresolved: [],
+      exclusions: [],
+      diagnostics: [],
+      cacheHits: 0,
+    }));
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        screenshotImportDependencies={screenshotDependencies(draftsByImage)}
+      />,
+    );
+
+    await user.upload(screen.getByLabelText("从截图恢复交易"), [
+      new File(["one"], "one.png", { type: "image/png" }),
+      new File(["two"], "two.png", { type: "image/png" }),
+    ]);
+    expect(
+      await screen.findByRole("heading", { name: "从截图恢复交易" }),
+    ).toBeInTheDocument();
+
+    await user.selectOptions(
+      screen.getByLabelText("截图成交时区"),
+      "Asia/Shanghai",
+    );
+    await user.clear(screen.getByLabelText("交易账户"));
+    await user.type(screen.getByLabelText("交易账户"), "截图测试账户");
+    await confirmScreenshotTimestamp(user, "NVDA", "2025-03-01 09:30:00");
+    await confirmScreenshotTimestamp(user, "MSFT", "2025-03-02 09:30:00");
+    await confirmScreenshotTimestamp(user, "TSLA", "2025-03-03 09:30:00");
+    await confirmScreenshotTimestamp(user, "AAPL", "2025-04-10 09:30:00");
+
+    await user.click(
+      screen.getByRole("cell", { name: "AAPL 价格 150，待确认" }),
+    );
+    await user.clear(screen.getByRole("textbox", { name: "修改价格" }));
+    await user.type(screen.getByRole("textbox", { name: "修改价格" }), "151");
+    await user.click(screen.getByRole("button", { name: "保存修改" }));
+    await user.click(
+      screen.getByRole("button", { name: "关闭截图识别依据" }),
+    );
+
+    expect(
+      screen.getByRole("status", {
+        name: "批次统计：总成交 4，待确认 0，自动重复 1，冲突 2",
+      }),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "处理 MSFT 冲突" }));
+    await user.click(screen.getByRole("radio", { name: /使用截图记录/ }));
+    await user.click(
+      screen.getByRole("button", { name: "关闭截图识别依据" }),
+    );
+    await user.click(screen.getByRole("button", { name: "处理 TSLA 冲突" }));
+    await user.click(screen.getByRole("radio", { name: /全部保留/ }));
+    await user.click(
+      screen.getByRole("button", { name: "关闭截图识别依据" }),
+    );
+    await user.click(screen.getByRole("button", { name: "确认导入" }));
+
+    expect(
+      await screen.findByRole("heading", { name: "确认导入交易记录" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("2 张交易截图")).toBeInTheDocument();
+    expect(screen.getByText(/已自动识别为 富途截图 交易记录/)).toBeInTheDocument();
+    expect(screen.getByText("1 笔已跳过")).toBeInTheDocument();
+    expect(screen.getByText("2 笔已处理")).toBeInTheDocument();
+    expect(screen.getByText("3 笔成交")).toBeInTheDocument();
+    expect(mockEnrichment).toHaveBeenCalledWith(
+      expect.objectContaining({
+        records: expect.arrayContaining([
+          expect.objectContaining({ instrument: expect.objectContaining({ symbol: "MSFT" }) }),
+          expect.objectContaining({ instrument: expect.objectContaining({ symbol: "TSLA" }) }),
+          expect.objectContaining({ instrument: expect.objectContaining({ symbol: "AAPL" }) }),
+        ]),
+      }),
+      expect.anything(),
+    );
+    expect(mockEnrichment.mock.calls[0][0].records).toHaveLength(3);
+
+    await user.click(
+      screen.getByRole("button", { name: "确认导入并开始更新行情" }),
+    );
+
+    const persisted = loadImportedExecutions();
+    expect(persisted.map(({ id }) => id)).not.toContain("existing-msft");
+    expect(persisted.map(({ id }) => id)).toContain("existing-nvda");
+    expect(persisted.filter(({ instrument }) => instrument.symbol === "NVDA"))
+      .toHaveLength(1);
+    expect(persisted.filter(({ instrument }) => instrument.symbol === "TSLA"))
+      .toHaveLength(2);
+    expect(persisted).toHaveLength(5);
+    expect(persistSpy).toHaveBeenCalledWith(
+      existing,
+      expect.arrayContaining([
+        expect.objectContaining({ id: "existing-nvda" }),
+      ]),
+      expect.objectContaining({
+        sourceKind: "screenshot",
+        captureCount: 2,
+        conflictTradeCount: 2,
+      }),
+    );
+    expect(mockMarketDataSync).toHaveBeenCalledTimes(1);
+    expect(mockMarketDataSync).toHaveBeenCalledWith(
+      expect.objectContaining({
+        instrumentId: "US:AAPL",
+        required: requiredMarketDataRange(
+          "2025-04-10T01:30:00Z",
+          "2025-04-10T01:30:00Z",
+          { open: true, market: "US" },
+        ),
+      }),
+    );
+  }, 15_000);
+
+  it("does not persist when a prepared screenshot import preview is canceled", async () => {
+    const user = userEvent.setup();
+    const persistSpy = vi.spyOn(importTransaction, "persistImportBatch");
+    const draftsByImage = new Map([
+      [
+        "capture-1",
+        [
+          screenshotDraft(
+            "capture-1",
+            0,
+            "AAPL",
+            "苹果",
+            "2025-04-10 09:30:00",
+            "150",
+            { timestampConfirmed: true },
+          ),
+        ],
+      ],
+    ]);
+    mockEnrichment.mockImplementation(async (parsed: StatementParseResult) => ({
+      broker: parsed.broker,
+      importable: parsed.records,
+      unresolved: [],
+      exclusions: [],
+      diagnostics: [],
+      cacheHits: 0,
+    }));
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        screenshotImportDependencies={screenshotDependencies(draftsByImage)}
+      />,
+    );
+
+    await user.upload(screen.getByLabelText("从截图恢复交易"),
+      new File(["one"], "one.png", { type: "image/png" }),
+    );
+    await user.selectOptions(
+      await screen.findByLabelText("截图成交时区"),
+      "Asia/Shanghai",
+    );
+    await user.click(screen.getByRole("button", { name: "确认导入" }));
+    await screen.findByRole("heading", { name: "确认导入交易记录" });
+    await user.click(screen.getByRole("button", { name: "取消" }));
+
+    expect(loadImportedExecutions()).toEqual([]);
+    expect(loadImportHistory()).toEqual([]);
+    expect(persistSpy).not.toHaveBeenCalled();
+    expect(mockMarketDataSync).not.toHaveBeenCalled();
+  });
+
+  it("keeps an existing conflict when the selected screenshot replacement does not survive enrichment", async () => {
+    const user = userEvent.setup();
+    const existing = screenshotExecution(
+      "existing-msft",
+      "MSFT",
+      "微软",
+      "2025-03-02T01:30:00Z",
+      "200",
+    );
+    saveImportedExecutions([existing]);
+    const draftsByImage = new Map([
+      [
+        "capture-1",
+        [
+          screenshotDraft(
+            "capture-1",
+            0,
+            "MSFT",
+            "微软",
+            "2025-03-02 09:30:00",
+            "201",
+            { timestampConfirmed: true },
+          ),
+          screenshotDraft(
+            "capture-1",
+            1,
+            "AAPL",
+            "苹果",
+            "2025-04-10 09:30:00",
+            "150",
+            { timestampConfirmed: true },
+          ),
+        ],
+      ],
+    ]);
+    mockEnrichment.mockImplementation(async (parsed: StatementParseResult) => ({
+      broker: parsed.broker,
+      importable: parsed.records.filter(
+        ({ instrument }) => instrument.symbol === "AAPL",
+      ),
+      unresolved: [
+        { market: "US", symbol: "MSFT", attempts: [] },
+      ],
+      exclusions: [],
+      diagnostics: [],
+      cacheHits: 0,
+    }));
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        screenshotImportDependencies={screenshotDependencies(draftsByImage)}
+      />,
+    );
+
+    await user.upload(
+      screen.getByLabelText("从截图恢复交易"),
+      new File(["synthetic"], "synthetic.png", { type: "image/png" }),
+    );
+    await user.selectOptions(
+      await screen.findByLabelText("截图成交时区"),
+      "Asia/Shanghai",
+    );
+    await user.click(screen.getByRole("button", { name: "处理 MSFT 冲突" }));
+    await user.click(screen.getByRole("radio", { name: /使用截图记录/ }));
+    await user.click(
+      screen.getByRole("button", { name: "关闭截图识别依据" }),
+    );
+    await user.click(screen.getByRole("button", { name: "确认导入" }));
+
+    expect(
+      await screen.findByRole("heading", { name: "确认导入交易记录" }),
+    ).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: "确认导入并开始更新行情" }),
+    );
+
+    expect(loadImportedExecutions()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "existing-msft" }),
+        expect.objectContaining({
+          instrument: expect.objectContaining({ symbol: "AAPL" }),
+        }),
+      ]),
+    );
+  });
+
+  it("hides the frozen screenshot review while import preparation is pending", async () => {
+    const user = userEvent.setup();
+    const enrichment = deferred<EnrichedImportResult>();
+    const draftsByImage = new Map([
+      [
+        "capture-1",
+        [
+          screenshotDraft(
+            "capture-1",
+            0,
+            "AAPL",
+            "苹果",
+            "2025-04-10 09:30:00",
+            "150",
+            { timestampConfirmed: true },
+          ),
+        ],
+      ],
+    ]);
+    mockEnrichment.mockReturnValue(enrichment.promise);
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        screenshotImportDependencies={screenshotDependencies(draftsByImage)}
+      />,
+    );
+
+    await user.upload(screen.getByLabelText("从截图恢复交易"), [
+      new File(["one"], "one.png", { type: "image/png" }),
+    ]);
+    await user.selectOptions(
+      await screen.findByLabelText("截图成交时区"),
+      "Asia/Shanghai",
+    );
+    await user.clear(screen.getByLabelText("交易账户"));
+    await user.type(screen.getByLabelText("交易账户"), "截图测试账户");
+    await user.click(screen.getByRole("button", { name: "确认导入" }));
+
+    expect(
+      screen.queryByRole("heading", { name: "从截图恢复交易" }),
+    ).not.toBeInTheDocument();
+
+    enrichment.resolve({
+      broker: "futu",
+      importable: [],
+      unresolved: [],
+      exclusions: [],
+      diagnostics: [],
+      cacheHits: 0,
+    });
+    expect(
+      await screen.findByRole("heading", { name: "确认导入交易记录" }),
     ).toBeInTheDocument();
   });
 

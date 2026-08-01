@@ -104,6 +104,7 @@ describe("createImportPreview", () => {
     expect(preview).toMatchObject({
       fileName: "Tiger_2025.pdf",
       sourceLabel: "Tiger 证券",
+      sourceKind: "statement",
       tradeCount: 3,
       instrumentCount: 2,
       duplicateTradeCount: 1,
@@ -179,5 +180,71 @@ describe("createImportPreview", () => {
       expect.objectContaining({ market: "HK", symbol: "99999" }),
     ]);
     expect(preview.blocked).toBe(true);
+  });
+
+  it("labels screenshot previews and preserves explicit reconciliation counts", () => {
+    const result: EnrichedImportResult = {
+      broker: "futu",
+      importable: [
+        execution(
+          "screenshot-1",
+          "700",
+          "腾讯控股",
+          "2025-03-01T00:00:00.000Z",
+        ),
+      ],
+      unresolved: [],
+      exclusions: [],
+      diagnostics: [],
+      cacheHits: 0,
+    };
+
+    expect(
+      createImportPreview("3 张交易截图", result, {
+        sourceKind: "screenshot",
+        captureCount: 3,
+        duplicateTradeCount: 4,
+        conflictTradeCount: 2,
+      }),
+    ).toMatchObject({
+      fileName: "3 张交易截图",
+      sourceKind: "screenshot",
+      sourceLabel: "富途截图",
+      captureCount: 3,
+      duplicateTradeCount: 4,
+      conflictTradeCount: 2,
+    });
+  });
+
+  it("uses the screenshot batch identity instead of the first capture fingerprint", () => {
+    const record = execution(
+      "screenshot-1",
+      "700",
+      "腾讯控股",
+      "2025-03-01T00:00:00.000Z",
+    );
+    const result: EnrichedImportResult = {
+      broker: "futu",
+      importable: [record],
+      unresolved: [],
+      exclusions: [],
+      diagnostics: [],
+      cacheHits: 0,
+    };
+    const single = createImportPreview("1 张交易截图", {
+      ...result,
+      importable: [
+        { ...record, source: { ...record.source, batchId: "batch-a" } },
+      ],
+    }, { sourceKind: "screenshot", captureCount: 1 });
+    const combined = createImportPreview("2 张交易截图", {
+      ...result,
+      importable: [
+        { ...record, source: { ...record.source, batchId: "batch-a-b" } },
+      ],
+    }, { sourceKind: "screenshot", captureCount: 2 });
+
+    expect(single.id).toBe("import:batch-a");
+    expect(combined.id).toBe("import:batch-a-b");
   });
 });

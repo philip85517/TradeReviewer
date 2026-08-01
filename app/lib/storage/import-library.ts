@@ -1,8 +1,26 @@
 import type { TradeExecution } from "../trades/types";
-import { canonicalInstrumentId } from "../instruments/display-name";
+import {
+  compareExecutionEvidence,
+  compareExecutions,
+  reconcileExecutions,
+} from "../import/execution-reconciliation";
 
 export const IMPORTED_EXECUTIONS_STORAGE_KEY =
   "trade-reviewer:executions:v1";
+
+function uniqueStableExecutions(executions: readonly TradeExecution[]) {
+  const byId = new Map<string, TradeExecution>();
+  for (const execution of executions) {
+    const existing = byId.get(execution.id);
+    if (
+      !existing ||
+      compareExecutionEvidence(execution, existing) > 0
+    ) {
+      byId.set(execution.id, execution);
+    }
+  }
+  return [...byId.values()];
+}
 
 function isExecution(value: unknown): value is TradeExecution {
   if (!value || typeof value !== "object") return false;
@@ -19,86 +37,13 @@ function isExecution(value: unknown): value is TradeExecution {
 }
 
 export function mergeExecutions(
-  current: TradeExecution[],
-  incoming: TradeExecution[],
+  current: readonly TradeExecution[],
+  incoming: readonly TradeExecution[],
 ) {
-  const byId = new Map<string, TradeExecution>();
-  for (const execution of [...current, ...incoming]) {
-    const existing = byId.get(execution.id);
-    byId.set(
-      execution.id,
-      existing ? withBestInstrumentName(existing, [execution]) : execution,
-    );
-  }
-
-  const bySignature = new Map<string, TradeExecution[]>();
-  for (const execution of byId.values()) {
-    const signature = [
-      execution.accountId,
-      canonicalInstrumentId(
-        execution.instrument.symbol,
-        execution.instrument.market,
-      ),
-      execution.executedAt,
-      execution.side,
-      execution.quantity,
-      execution.price,
-      execution.fee,
-    ].join("|");
-    bySignature.set(signature, [
-      ...(bySignature.get(signature) ?? []),
-      execution,
-    ]);
-  }
-
-  const merged = [...bySignature.values()].flatMap((duplicates) => {
-    const byFile = new Map<string, TradeExecution[]>();
-    for (const execution of duplicates) {
-      const fingerprint =
-        execution.source.fileFingerprint ??
-        `legacy:${execution.source.fileName ?? execution.source.platform}`;
-      byFile.set(fingerprint, [
-        ...(byFile.get(fingerprint) ?? []),
-        execution,
-      ]);
-    }
-    const selected = [...byFile.entries()].sort(
-      ([fingerprintA, recordsA], [fingerprintB, recordsB]) =>
-        recordsB.length - recordsA.length ||
-        fingerprintA.localeCompare(fingerprintB),
-    )[0]?.[1] ?? [];
-    return selected.map((execution) =>
-      withBestInstrumentName(execution, duplicates),
-    );
-  });
-
-  return merged.sort(
-    (a, b) =>
-      a.executedAt.localeCompare(b.executedAt) ||
-      (a.source.sourceOrder ?? a.source.row) -
-        (b.source.sourceOrder ?? b.source.row) ||
-      a.id.localeCompare(b.id),
-  );
-}
-
-function withBestInstrumentName(
-  execution: TradeExecution,
-  candidates: TradeExecution[],
-): TradeExecution {
-  const resolvedName = [execution, ...candidates]
-    .map((candidate) => candidate.instrument.name.trim())
-    .find(
-      (name) =>
-        name &&
-        name !== "名称待行情源补充" &&
-        name !== execution.instrument.symbol,
-    );
-  return resolvedName
-    ? {
-        ...execution,
-        instrument: { ...execution.instrument, name: resolvedName },
-      }
-    : execution;
+  return reconcileExecutions(
+    [],
+    uniqueStableExecutions([...current, ...incoming]),
+  ).acceptedIncoming.sort(compareExecutions);
 }
 
 export function saveImportedExecutions(executions: TradeExecution[]) {
@@ -107,7 +52,7 @@ export function saveImportedExecutions(executions: TradeExecution[]) {
     IMPORTED_EXECUTIONS_STORAGE_KEY,
     JSON.stringify({
       version: 1,
-      executions: mergeExecutions([], executions),
+      executions: uniqueStableExecutions(executions).sort(compareExecutions),
     }),
   );
 }
@@ -125,7 +70,9 @@ export function loadImportedExecutions(): TradeExecution[] {
       executions?: unknown;
     };
     if (parsed.version !== 1 || !Array.isArray(parsed.executions)) return [];
-    return mergeExecutions([], parsed.executions.filter(isExecution));
+    return uniqueStableExecutions(parsed.executions.filter(isExecution)).sort(
+      compareExecutions,
+    );
   } catch {
     return [];
   }

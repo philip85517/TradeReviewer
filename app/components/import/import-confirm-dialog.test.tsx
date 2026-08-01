@@ -10,6 +10,7 @@ const preview: ImportPreview = {
   id: "import:abc",
   fileName: "Tiger_2025.pdf",
   sourceLabel: "Tiger 证券",
+  sourceKind: "statement",
   records: [],
   instruments: [
     {
@@ -154,6 +155,7 @@ describe("ImportConfirmDialog", () => {
         importPhase="resolving"
         importError={null}
         onImport={() => {}}
+        onScreenshotImport={() => {}}
         onOpenHistory={() => {}}
         revealedDemoExecutions={[]}
         selectedInstrumentId="demo"

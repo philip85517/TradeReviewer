@@ -361,7 +361,9 @@ export async function rollbackRelease({ targetDir, releaseId, previousRelease, c
   if (previousRelease) {
     validateReleaseId(previousRelease, "Previous release ID");
     await pointCurrentAtRelease(paths, previousRelease);
-    await composeRunner(["up", "--detach"], releaseContext(previousRelease));
+    const previousContext = releaseContext(previousRelease);
+    await composeRunner(["build"], previousContext);
+    await composeRunner(["up", "--detach"], previousContext);
   }
 
   await rm(join(paths.releasesDir, releaseId), { recursive: true, force: true });

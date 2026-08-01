@@ -396,7 +396,7 @@ describe("Compose lifecycle", () => {
 
   test("leaves current unchanged and restarts the previous release when build fails", async () => {
     const fixture = await createLifecycleSandbox();
-    const recording = createRecordingCommandRunner([{ exitCode: 1 }, { exitCode: 0 }]);
+    const recording = createRecordingCommandRunner([{ exitCode: 1 }, { exitCode: 0 }, { exitCode: 0 }]);
 
     try {
       await expect(
@@ -409,8 +409,11 @@ describe("Compose lifecycle", () => {
       await expect(readlink(join(fixture.targetDir, "app", "current"))).resolves.toBe(
         join("releases", fixture.previousRelease),
       );
-      expect(recording.calls.map(({ args }) => args.at(-1))).toEqual(["build", "--detach"]);
+      expect(recording.calls.map(({ args }) => args.at(-1))).toEqual(["build", "build", "--detach"]);
       expect(recording.calls[1].env).toMatchObject({
+        APP_RELEASE_CONTEXT: `./app/releases/${fixture.previousRelease}`,
+      });
+      expect(recording.calls[2].env).toMatchObject({
         APP_RELEASE_CONTEXT: `./app/releases/${fixture.previousRelease}`,
       });
       await expect(readdir(join(fixture.targetDir, "app", "releases"))).resolves.toEqual([
@@ -429,6 +432,7 @@ describe("Compose lifecycle", () => {
       { exitCode: 0 },
       { exitCode: 0, stdout: '[{"Health":"unhealthy"}]' },
       { exitCode: 0 },
+      { exitCode: 0 },
     ]);
 
     try {
@@ -442,8 +446,11 @@ describe("Compose lifecycle", () => {
       await expect(readlink(join(fixture.targetDir, "app", "current"))).resolves.toBe(
         join("releases", fixture.previousRelease),
       );
-      expect(recording.calls.map(({ args }) => args.at(-1))).toEqual(["build", "--detach", "json", "--detach"]);
+      expect(recording.calls.map(({ args }) => args.at(-1))).toEqual(["build", "--detach", "json", "build", "--detach"]);
       expect(recording.calls[3].env).toMatchObject({
+        APP_RELEASE_CONTEXT: `./app/releases/${fixture.previousRelease}`,
+      });
+      expect(recording.calls[4].env).toMatchObject({
         APP_RELEASE_CONTEXT: `./app/releases/${fixture.previousRelease}`,
       });
       await expect(readdir(join(fixture.targetDir, "app", "releases"))).resolves.toEqual([
@@ -461,6 +468,7 @@ describe("Compose lifecycle", () => {
       { exitCode: 0 },
       { exitCode: 0 },
       { exitCode: 0, stdout: '[{"Health":"healthy"}]' },
+      { exitCode: 0 },
       { exitCode: 0 },
     ]);
 
@@ -482,7 +490,7 @@ describe("Compose lifecycle", () => {
         previousRelease: fixture.previousRelease,
         composeRunner,
       });
-      expect(recording.calls).toHaveLength(4);
+      expect(recording.calls).toHaveLength(5);
     } finally {
       await rm(fixture.sandbox, { recursive: true, force: true });
     }

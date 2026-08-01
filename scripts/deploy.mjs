@@ -20,6 +20,7 @@ const APPLICATION_ROOT_EXCLUSIONS = new Set([
   "config",
   "trades",
   ".superpowers",
+  ".worktrees",
 ]);
 
 const PRIVATE_CREDENTIAL_NAMES = new Set([

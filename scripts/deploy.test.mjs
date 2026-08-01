@@ -771,6 +771,7 @@ describe("deployment release staging", () => {
         "config",
         "trades",
         ".superpowers",
+        ".worktrees",
       ];
       await Promise.all([
         mkdir(join(sourceDir, "deploy"), { recursive: true }),

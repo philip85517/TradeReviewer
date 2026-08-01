@@ -11,6 +11,7 @@ import {
   getSyncPolicy,
   parseArgs,
   rollbackRelease,
+  runOperationalCommand,
   resolveDeploymentPaths,
   runDeployment,
   validateDeploymentPaths,
@@ -46,6 +47,69 @@ describe("deployment templates", () => {
     expect(dockerfile).toContain("npm run assets:ocr");
     expect(dockerfileIgnore).toContain(".env");
     expect(dockerfileIgnore).toContain("data");
+  });
+});
+
+describe("SQLite operations", () => {
+  test("provide safe, consistent SQLite operational scripts", async () => {
+    const [healthcheck, backup, restore, status] = await Promise.all([
+      readManifest("deploy/ops/healthcheck.sh"),
+      readManifest("deploy/ops/backup-db.sh"),
+      readManifest("deploy/ops/restore-db.sh"),
+      readManifest("deploy/ops/status.sh"),
+    ]);
+
+    for (const script of [healthcheck, backup, restore, status]) {
+      expect(script).toContain("set -euo pipefail");
+    }
+
+    expect(backup).toContain("data/backups");
+    expect(backup).toMatch(/date -u .*%Y%m%dT%H%M%SZ/);
+    expect(backup).toContain("sha256");
+    expect(backup).toContain(".backup");
+    expect(backup).toContain("compose run");
+    expect(backup).not.toMatch(/\bcp\b|\brsync\b/);
+
+    expect(restore).toContain('"$backup_path" == /*');
+    expect(restore).toContain("-f");
+    expect(restore).toContain("-L");
+    expect(restore).toContain("checksum");
+    expect(restore).toContain("pre-restore");
+    expect(restore).toContain(".restore");
+    expect(restore).toContain("compose stop");
+    expect(restore).toContain("healthcheck.sh");
+
+    expect(healthcheck).toContain("compose ps");
+    expect(healthcheck).toContain("fetch(");
+    expect(status).toContain("active release");
+    expect(status).toContain("retained releases");
+    expect(status).toContain("checksum");
+    expect(status).not.toMatch(/cat\s+[^\n]*\.env/);
+  });
+
+  test("dispatches each operational mode to its target-side script", async () => {
+    const calls = [];
+    const targetDir = "/srv/tradereview";
+    const operationRunner = async (command, args, options) => {
+      calls.push({ command, args, options });
+      return { exitCode: 0 };
+    };
+
+    await runOperationalCommand({ targetDir, mode: "restore", backupPath: "/tmp/backup.sqlite" }, { operationRunner });
+
+    expect(calls).toEqual([
+      {
+        command: "/srv/tradereview/deploy/ops/restore-db.sh",
+        args: ["/tmp/backup.sqlite"],
+        options: { cwd: targetDir },
+      },
+    ]);
+  });
+
+  test("includes the SQLite CLI in the Compose runtime image", async () => {
+    const dockerfile = await readManifest("deploy/Dockerfile");
+
+    expect(dockerfile).toContain("sqlite3");
   });
 });
 

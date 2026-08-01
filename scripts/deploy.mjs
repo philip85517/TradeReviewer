@@ -21,6 +21,13 @@ const APPLICATION_EXCLUSIONS = new Set([
   ".superpowers",
 ]);
 
+const OPERATION_SCRIPTS = Object.freeze({
+  status: "status.sh",
+  backup: "backup-db.sh",
+  restore: "restore-db.sh",
+  healthcheck: "healthcheck.sh",
+});
+
 function optionValue(argv, index, flag) {
   const argument = argv[index];
   if (argument === flag) {
@@ -65,7 +72,7 @@ export function parseArgs(argv) {
     if (mode) options.mode = mode.value;
     if (source) options.sourceDir = resolve(source.value);
     if (target) options.targetDir = resolve(target.value);
-    if (backup) options.backupPath = resolve(backup.value);
+    if (backup) options.backupPath = backup.value;
   }
 
   return options;
@@ -277,6 +284,20 @@ function commandOutput(result) {
   return result.stdout ?? result.output ?? "";
 }
 
+export async function runOperationalCommand({ targetDir, mode, backupPath }, { operationRunner = defaultCommandRunner } = {}) {
+  const scriptName = OPERATION_SCRIPTS[mode];
+  if (!scriptName) throw new Error(`Unsupported deployment operation: ${mode}`);
+
+  const rootDir = resolve(targetDir);
+  const scriptPath = join(rootDir, "deploy", "ops", scriptName);
+  const args = mode === "restore" ? [backupPath] : [];
+  if (mode === "restore" && !backupPath) throw new Error("Restore requires a backup path");
+
+  const result = await operationRunner(scriptPath, args, { cwd: rootDir });
+  if (commandExitCode(result) !== 0) throw new Error(`Deployment operation ${mode} failed`);
+  return result;
+}
+
 export function createComposeRunner({ targetDir, env = {}, commandRunner = defaultCommandRunner }) {
   const rootDir = resolve(targetDir);
   const composeArguments = [
@@ -388,6 +409,12 @@ function lifecycleAcceptance(targetDir, dependencies) {
 
 export async function runDeployment(options, dependencies = {}) {
   const { mode = "full", sourceDir = process.cwd(), targetDir = DEFAULT_DEPLOY_ROOT, dryRun = false } = options;
+  if (OPERATION_SCRIPTS[mode]) {
+    return runOperationalCommand(
+      { targetDir, mode, backupPath: options.backupPath },
+      { operationRunner: dependencies.operationRunner ?? dependencies.commandRunner },
+    );
+  }
   const policy = getSyncPolicy(mode);
   const resolvedPaths = validateDeploymentPaths(sourceDir, targetDir);
   const paths = resolveDeploymentPaths(resolvedPaths.targetDir);

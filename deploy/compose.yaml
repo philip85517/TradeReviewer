@@ -2,6 +2,7 @@ name: ${COMPOSE_PROJECT_NAME:-tradereview}
 
 services:
   app:
+    restart: unless-stopped
     build:
       context: ${APP_RELEASE_CONTEXT:-./app/current}
       dockerfile: deploy/Dockerfile

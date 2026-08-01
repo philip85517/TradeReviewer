@@ -2,7 +2,7 @@
 set -euo pipefail
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
-deploy_root="$(cd -- "$script_dir/../.." && pwd -P)"
+deploy_root="$(cd -- "$script_dir/.." && pwd -P)"
 config_dir="$deploy_root/config"
 
 fail() {
@@ -16,7 +16,7 @@ assert_safe_directory() {
 }
 
 compose() {
-  docker compose \
+  node "$script_dir/run-command.mjs" "${COMPOSE_COMMAND_TIMEOUT_MS:-30000}" docker compose \
     --project-directory "$deploy_root" \
     --file "$deploy_root/compose.yaml" \
     --env-file "$config_dir/.env" \
@@ -60,6 +60,8 @@ port="$(env_value APP_PORT)"
 [[ -n "$bind" && "$port" =~ ^[0-9]+$ ]] || fail "APP_BIND and APP_PORT must be configured"
 [[ "$bind" == "0.0.0.0" ]] && bind="127.0.0.1"
 endpoint="http://$bind:$port/"
-node -e 'fetch(process.argv[1]).then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))' "$endpoint" \
+fetch_timeout_ms="${HEALTH_FETCH_TIMEOUT_MS:-10000}"
+[[ "$fetch_timeout_ms" =~ ^[1-9][0-9]*$ ]] || fail "HEALTH_FETCH_TIMEOUT_MS must be a positive integer"
+node -e 'fetch(process.argv[1], { signal: AbortSignal.timeout(Number(process.argv[2])) }).then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))' "$endpoint" "$fetch_timeout_ms" \
   || fail "HTTP health check failed for $endpoint"
 printf 'healthy: %s\n' "$endpoint"

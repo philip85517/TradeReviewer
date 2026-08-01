@@ -2,7 +2,7 @@
 set -euo pipefail
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
-deploy_root="$(cd -- "$script_dir/../.." && pwd -P)"
+deploy_root="$(cd -- "$script_dir/.." && pwd -P)"
 config_dir="$deploy_root/config"
 data_dir="$deploy_root/data"
 sqlite_dir="$data_dir/sqlite"
@@ -30,7 +30,7 @@ checksum_file() {
 }
 
 compose() {
-  docker compose \
+  node "$script_dir/run-command.mjs" "${COMPOSE_COMMAND_TIMEOUT_MS:-30000}" docker compose \
     --project-directory "$deploy_root" \
     --file "$deploy_root/compose.yaml" \
     --env-file "$config_dir/.env" \

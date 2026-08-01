@@ -1,44 +1,123 @@
 # Docker Compose 部署指南
 
-部署命令应从本仓库的工作副本运行。默认目标目录为
-`/Users/zhoulin/projects/TradeReview`；可通过 `DEPLOY_ROOT=/绝对路径` 覆盖。
-目标目录不能是源仓库或其子目录。
+默认部署根目录是 `/Users/zhoulin/projects/TradeReview`；可在源代码工作副本中通过
+`DEPLOY_ROOT=/绝对路径` 覆盖。目标目录不能是源仓库或其普通子目录。完整部署完成后，
+目标根目录也包含独立的 `Makefile` 和 `ops/deploy.sh`，因此状态、备份、恢复、回滚、
+停止以及基于当前 release 的再次部署可以直接在目标根目录执行。
 
-## 首次部署
+## 目标目录
 
-先在目标目录创建仅本机保存的配置，再按需编辑它；该命令只会在 `.env` 不存在时复制示例，绝不会覆盖已有配置。
+```text
+/Users/zhoulin/projects/TradeReview/
+├── app/
+│   ├── releases/<release-id>/
+│   └── current -> releases/<active-release>
+├── config/
+│   ├── .env
+│   └── .env.example
+├── data/
+│   ├── sqlite/tradereview.sqlite
+│   └── backups/
+├── logs/
+├── ops/
+│   ├── deploy.sh
+│   ├── deploy.mjs
+│   ├── backup-db.sh
+│   ├── restore-db.sh
+│   ├── healthcheck.sh
+│   ├── status.sh
+│   └── run-command.mjs
+├── compose.yaml
+├── Makefile
+└── DEPLOYMENT.md
+```
+
+## 首次部署与重复部署
+
+在源代码工作副本执行：
+
+```bash
+make deploy
+make deploy-status
+```
+
+第一次 `make deploy` 会自动创建完整目录、`config/.env.example`、权限为 `0600`
+的 `config/.env`、SQLite/备份/日志目录以及初始 SQLite 文件，然后才调用 Compose。
+若部署前需要修改端口等配置，可先执行：
 
 ```bash
 make deploy-config
 $EDITOR /Users/zhoulin/projects/TradeReview/config/.env
 make deploy
-make deploy-status
 ```
 
-`make deploy` 创建一个新的 `app/releases/<release-id>`，用 Docker Compose 构建并启动它，健康检查成功后才原子更新 `app/current`。每个会改变部署状态的命令结束时都会打印目标目录和当前 release。
-
-默认只监听 `127.0.0.1:3000`。若需要反向代理或公开访问，请在目标的 `config/.env` 中明确修改 `APP_BIND` 和 `APP_PORT`，然后运行 `make deploy`。
+`deploy-config` 和重复的完整部署都不会覆盖已有 `config/.env`。完整部署也不会覆盖
+SQLite、备份或日志。默认只监听 `127.0.0.1:3000`；公网域名、HTTPS、反向代理及
+`APP_BIND=0.0.0.0` 均需明确配置。
 
 ## 日常操作
 
+可从源工作副本运行下列命令；完整部署后，也可在目标根目录运行相同目标：
+
 ```bash
-make deploy-code                 # 仅发布应用代码
-make deploy-status               # release、服务、绑定和 SQLite 状态
-make deploy-backup               # 一致性 SQLite 备份到 data/backups/
+make deploy-code
+make deploy-status
+make deploy-backup
 make deploy-restore BACKUP=/absolute/path/to/backup.sqlite
-make deploy-rollback             # 切换到前一个保留 release，并经健康检查确认
-make deploy-down                 # 停止 Compose 服务（不会删除数据或 release）
-make deploy                      # 再次构建并启动当前源代码
+make deploy-rollback
+make deploy-down
+make deploy
 ```
 
-`deploy-restore` 需要绝对路径的常规文件；若同名 `.sha256` 文件存在，会先验证校验和。恢复前会额外创建备份，原备份和恢复前备份都会保留。`make deploy-restore` 在调用部署工具前检查 `BACKUP` 是否已设置。
+目标根目录的 `deploy`/`deploy-code` 以 `app/current` 为源创建一个新 release；
+源工作副本中的命令以当前工作副本为源。所有脚本路径和自定义部署根目录都会按独立参数
+引用，不依赖调用者的当前相对路径。
 
-## 数据与配置边界
+## 发布、失败恢复与保留
 
-代码发布只会写入 `app/releases/` 和临时 release 指针。它不会读取、复制、删除、迁移或覆盖目标的 `config/.env`、`data/sqlite/`、`data/backups/` 或 `logs/`。完整部署同样保留这些路径；它仅更新部署模板和 release 内容。
+每次发布先创建 `app/releases/<release-id>`，再构建、启动并等待服务健康；成功后才
+原子替换 `app/current`。完整部署的 Compose、Makefile、文档、配置示例和 `ops/`
+控制面会先保存恢复快照。构建、启动、健康检查、指针发布或保留清理失败时，工具会恢复
+旧控制面，重新构建并启动原 active release，并再次执行健康检查。恢复本身失败不会被
+隐藏；错误会同时报告原失败与恢复失败。
 
-部署操作使用目标根目录的排他锁，若已有部署正在运行，第二个操作会立即失败而不是并发修改 release。构建、启动或健康检查失败时，旧 release 保持活动状态；失败候选 release 会被移除，不会触碰用户数据。
+失败输出包含经过配置值脱敏的 Compose 日志、active release 和可执行的回滚命令。
+Compose 子命令、运维子进程、服务健康轮询和 HTTP 请求都有有限超时。
 
-SQLite 通过 `./data/sqlite:/var/lib/tradereview` 与应用镜像隔离。该边界只保护服务端 SQLite 文件；浏览器的 localStorage 和 IndexedDB 仍是每台浏览器本机的数据，部署不会把它们迁移或同步到服务端。
+`RELEASES_TO_KEEP` 默认是 5，且必须至少为 2。每次成功发布后只删除经过名称、类型和
+路径验证的非 active release；符号链接、未知目录和 active/直接前一 release 不会被清理。
+部署锁保存 PID、主机、时间和随机所有权令牌；同机 owner 进程已经退出的锁可安全回收，
+活动锁、无效锁和尚未达到跨主机超时的锁不会被抢占。
 
-Docker Compose 必须已安装并可用。部署脚本会使用目标下的 `compose.yaml` 和 `config/.env`；不要提交该 `.env` 文件，也不要把真实配置复制到镜像或仓库。
+## 配置和凭据边界
+
+源同步与 Docker 构建上下文会排除 `.env`/`.env.*`（保留示例）、`.npmrc`、
+常见私钥/证书密钥容器以及根运行时数据目录。完整部署只发布明确允许的控制面文件，不会
+复制本地 `deploy/config/.env`。不要在代码目录、release 或镜像中保存真实凭据。
+
+`make deploy-code` 只创建应用 release 和执行健康门禁，不写入或删除
+`config/.env`、`data/sqlite/`、`data/backups/` 或 `logs/`。
+
+## SQLite 备份与恢复
+
+`make deploy-backup` 使用 SQLite 原生在线备份写入 `0600` 临时文件，执行
+`PRAGMA quick_check`，计算 SHA-256，再以原子重命名发布校验文件和备份。默认保留天数
+从目标 `config/.env` 的 `BACKUP_RETENTION_DAYS` 读取；也可直接运行
+`ops/backup-db.sh --retention-days N` 覆盖。清理只处理格式正确、非符号链接的备份对。
+一次性 SQLite 容器使用当前运维用户的 UID/GID，避免在主机备份目录中留下不可管理的
+root 所有文件。
+
+`deploy-restore` 只接受绝对路径的普通非符号链接文件；存在 `.sha256` 时必须先通过
+校验。工具先创建当前数据库的一致性备份，在同目录临时数据库中恢复并检查完整性，然后
+停止应用并原子交换数据库。启动或健康检查失败会换回原数据库、重新启动原应用并再次
+检查健康；恢复失败和恢复过程的错误都会保留并报告。
+
+## 数据边界
+
+SQLite 通过 `./data/sqlite:/var/lib/tradereview` 与镜像层隔离。此任务没有改变
+TradeReview 的浏览器数据模型：交易、复盘草稿和行情缓存仍在每个浏览器的
+`localStorage`/IndexedDB 中，部署不会迁移、上传或同步这些数据。
+
+Docker Compose 必须已安装并可用。部署前可用
+`docker compose --env-file deploy/config/.env.example -f deploy/compose.yaml config --no-env-resolution`
+验证模板；生产操作使用目标根目录的 `compose.yaml` 和 `config/.env`。

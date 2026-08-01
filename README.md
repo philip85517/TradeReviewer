@@ -48,7 +48,7 @@ npm run dev
 
 ## Docker Compose 部署
 
-生产部署使用 Docker Compose，默认目标为 `/Users/zhoulin/projects/TradeReview`。首次执行 `make deploy-config` 后编辑目标的 `config/.env`，再运行 `make deploy`。日常命令包括 `make deploy-code`、`make deploy-status`、`make deploy-backup`、`make deploy-restore BACKUP=/absolute/path/to/backup.sqlite`、`make deploy-rollback` 和 `make deploy-down`。完整的安全边界、恢复流程和 SQLite 限制见 [部署指南](deploy/DEPLOYMENT.md)。
+生产部署使用 Docker Compose，默认目标为 `/Users/zhoulin/projects/TradeReview`。第一次 `make deploy` 会自动初始化本机配置、SQLite、备份、日志和目标侧运维入口；如需预先编辑配置，可先运行 `make deploy-config`。日常命令包括 `make deploy-code`、`make deploy-status`、`make deploy-backup`、`make deploy-restore BACKUP=/absolute/path/to/backup.sqlite`、`make deploy-rollback` 和 `make deploy-down`。完整的凭据排除、失败恢复、保留策略、备份事务和 SQLite/浏览器数据边界见 [部署指南](deploy/DEPLOYMENT.md)。
 
 ## 验证
 

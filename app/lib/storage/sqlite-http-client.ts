@@ -1,0 +1,133 @@
+import type {
+  CoverageSegment,
+  IntervalCoverageSegment,
+  MarketCandleRecord,
+  NativeMarketInterval,
+} from "../market/contracts";
+import type { EpisodeReviewRecord } from "../reviews/types";
+import type { Instrument, TradeExecution } from "../trades/types";
+import type { ChartSettings } from "./chart-settings";
+import type { ImportHistoryEntry } from "./import-history";
+import type {
+  IntervalMarketDataCommit,
+  MarketDataCommit,
+} from "./market-data-repository";
+import type {
+  BrowserStatePayload,
+  ExecutionMergeReport,
+  MigrationReport,
+  SqliteStatus,
+  StorageBootstrap,
+} from "./sqlite-contracts";
+import type { TagSuggestionRecord } from "../insights/types";
+
+export class StorageHttpError extends Error {
+  constructor(
+    readonly status: number,
+    readonly code: string,
+    message: string,
+  ) {
+    super(message);
+    this.name = "StorageHttpError";
+  }
+}
+
+export type MarketDataRead = {
+  candles: MarketCandleRecord[];
+  intervalCoverage: IntervalCoverageSegment[];
+  coverage?: CoverageSegment[];
+};
+
+export type MarketDataWrite =
+  | { kind: "daily"; result: MarketDataCommit }
+  | { kind: "interval"; result: IntervalMarketDataCommit };
+
+export type MergeTradeDataInput = {
+  executions: TradeExecution[];
+  instruments?: Instrument[];
+  importHistory?: ImportHistoryEntry[];
+};
+
+export type SqliteHttpClient = ReturnType<typeof createSqliteHttpClient>;
+
+type Fetcher = (input: string, init?: RequestInit) => Promise<Response>;
+
+function errorFromResponse(status: number, body: unknown): StorageHttpError {
+  const error = body && typeof body === "object" && "error" in body
+    ? (body as { error?: unknown }).error
+    : undefined;
+  const code = error && typeof error === "object" && typeof (error as { code?: unknown }).code === "string"
+    ? (error as { code: string }).code
+    : "storage-request-failed";
+  const message = error && typeof error === "object" && typeof (error as { message?: unknown }).message === "string"
+    ? (error as { message: string }).message
+    : `Storage request failed (${status})`;
+  return new StorageHttpError(status, code, message);
+}
+
+async function parseResponse<T>(response: Response): Promise<T> {
+  let body: unknown;
+  try {
+    body = await response.json();
+  } catch {
+    if (!response.ok) throw new StorageHttpError(response.status, "storage-request-failed", `Storage request failed (${response.status})`);
+    throw new StorageHttpError(response.status, "invalid-response", "Storage response was not valid JSON");
+  }
+  if (!response.ok) throw errorFromResponse(response.status, body);
+  return body as T;
+}
+
+function jsonRequest(method: "POST" | "PUT", body: unknown): RequestInit {
+  return {
+    method,
+    cache: "no-store",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+  };
+}
+
+function marketDataUrl(input: {
+  instrumentId: string;
+  interval: NativeMarketInterval;
+  start?: string;
+  end?: string;
+}): string {
+  const params = new URLSearchParams({
+    instrumentId: input.instrumentId,
+    interval: input.interval,
+  });
+  if (input.start !== undefined) params.set("start", input.start);
+  if (input.end !== undefined) params.set("end", input.end);
+  return `/api/storage/market-data?${params.toString()}`;
+}
+
+export function createSqliteHttpClient(fetcher: Fetcher = fetch): {
+  getStatus(): Promise<SqliteStatus>;
+  getBootstrap(): Promise<StorageBootstrap>;
+  migrate(payload: BrowserStatePayload): Promise<MigrationReport>;
+  mergeExecutions(input: MergeTradeDataInput): Promise<ExecutionMergeReport>;
+  putReview(record: EpisodeReviewRecord): Promise<EpisodeReviewRecord>;
+  putTagSuggestion(record: TagSuggestionRecord): Promise<TagSuggestionRecord>;
+  getMarketData(input: {
+    instrumentId: string;
+    interval: NativeMarketInterval;
+    start?: string;
+    end?: string;
+  }): Promise<MarketDataRead>;
+  putMarketData(input: MarketDataWrite): Promise<{ ok: true }>;
+  getSettings(): Promise<ChartSettings>;
+  putSettings(settings: ChartSettings): Promise<ChartSettings>;
+} {
+  return {
+    getStatus: async () => parseResponse<SqliteStatus>(await fetcher("/api/storage/status", { cache: "no-store" })),
+    getBootstrap: async () => parseResponse<StorageBootstrap>(await fetcher("/api/storage/bootstrap", { cache: "no-store" })),
+    migrate: async (payload) => parseResponse<MigrationReport>(await fetcher("/api/storage/migrate", jsonRequest("POST", payload))),
+    mergeExecutions: async (input) => parseResponse<ExecutionMergeReport>(await fetcher("/api/storage/trades", jsonRequest("PUT", input))),
+    putReview: async (record) => parseResponse<EpisodeReviewRecord>(await fetcher("/api/storage/reviews", jsonRequest("PUT", record))),
+    putTagSuggestion: async (record) => parseResponse<TagSuggestionRecord>(await fetcher("/api/storage/reviews", jsonRequest("PUT", record))),
+    getMarketData: async (input) => parseResponse<MarketDataRead>(await fetcher(marketDataUrl(input), { cache: "no-store" })),
+    putMarketData: async (input) => parseResponse<{ ok: true }>(await fetcher("/api/storage/market-data", jsonRequest("PUT", input))),
+    getSettings: async () => parseResponse<ChartSettings>(await fetcher("/api/storage/settings", { cache: "no-store" })),
+    putSettings: async (settings) => parseResponse<ChartSettings>(await fetcher("/api/storage/settings", jsonRequest("PUT", settings))),
+  };
+}

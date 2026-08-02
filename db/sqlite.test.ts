@@ -81,4 +81,20 @@ describe("SQLite storage foundation", () => {
     expect(() => openSqliteDatabase("relative.sqlite")).toThrow("absolute path");
     expect(() => openSqliteDatabase("/tmp/../unsafe.sqlite")).toThrow("unsafe");
   });
+
+  it("reopens a usable connection after a cached connection is closed", () => {
+    const databasePath = tempDatabasePath();
+    const firstDatabase = openSqliteDatabase(databasePath);
+    firstDatabase.close();
+
+    const reopenedDatabase = openSqliteDatabase(databasePath);
+    expect(reopenedDatabase.prepare("select 1 as value").get()).toEqual({ value: 1 });
+  });
+
+  it("rejects a changed checksum for an already-applied migration", () => {
+    const database = openSqliteDatabase(tempDatabasePath());
+    database.prepare("update schema_migrations set checksum = ? where version = 1").run("changed");
+
+    expect(() => initializeSqlite(database)).toThrow("checksum does not match");
+  });
 });

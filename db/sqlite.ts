@@ -75,8 +75,11 @@ export function initializeSqlite(database: DatabaseSync): void {
 export function openSqliteDatabase(path?: string): DatabaseSync {
   const databasePath = resolveDatabasePath(path);
   const existing = databases.get(databasePath);
-  if (existing) {
+  if (existing?.isOpen) {
     return existing;
+  }
+  if (existing) {
+    databases.delete(databasePath);
   }
 
   ensureDatabaseDirectory(databasePath);

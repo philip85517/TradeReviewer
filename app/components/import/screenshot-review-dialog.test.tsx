@@ -740,6 +740,45 @@ describe("ScreenshotReviewDialog", () => {
     ).toBeVisible();
   });
 
+  it("keeps a failed blob preview visible and allows manual add for that image", async () => {
+    const user = userEvent.setup();
+    const failed: ScreenshotReviewImage = {
+      id: "image-3",
+      fileName: "orders-3.png",
+      previewUrl: "blob:https://trade-review/image-3",
+      width: 1170,
+      height: 2532,
+      state: "failed",
+      completedTiles: 1,
+      totalTiles: 4,
+      tradeCount: 0,
+      issueCount: 1,
+      error: "无法识别版式",
+    };
+    const { onAction } = renderDialog({
+      reviewImages: [...images, failed],
+    });
+    const failedImage = screen.getByRole("button", {
+      name: "选择 orders-3.png",
+    });
+
+    expect(failedImage.querySelector("img")).toHaveAttribute(
+      "src",
+      failed.previewUrl,
+    );
+    await user.click(failedImage);
+    const manualAdd = screen.getByRole("button", {
+      name: "手工补录成交",
+    });
+    expect(manualAdd).toBeEnabled();
+    await user.click(manualAdd);
+
+    expect(onAction).toHaveBeenCalledWith({
+      type: "add-draft",
+      imageId: failed.id,
+    });
+  });
+
   it("cancels from the button and Escape", async () => {
     const user = userEvent.setup();
     const { onCancel } = renderDialog();

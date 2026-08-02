@@ -14,6 +14,50 @@ import { parseTigerScreenshot } from "./tiger-screenshot";
 const TIGER_LAYOUT_LINES = TIGER_SCREENSHOT_OCR.lines.slice(0, 7);
 
 describe("Tiger dark order-history screenshots", () => {
+  it("pairs jittered timestamp boxes by closest vertical center", () => {
+    const [draft] = parseTigerScreenshot(
+      image("tiger-jittered-timestamps", 1_220, 13_000, [
+        ...TIGER_SCREENSHOT_OCR.lines.slice(0, 12),
+        ocrLine("2024/06/05", 1_010, 390, 150, 22),
+        ocrLine("14:39:25", 1_010, 389, 130, 22),
+        ocrLine("2025/06/06", 1_010, 436, 150, 22),
+        ocrLine("10:00:00", 1_010, 435, 130, 22),
+      ]),
+    );
+
+    expect(draft).toMatchObject({
+      sourceTimestampText: "2024/06/05 14:39:25",
+      fieldEvidence: {
+        executedAt: {
+          rawText: "2024/06/05 14:39:25",
+          sourceBounds: {
+            x: 1_010,
+            y: 389,
+            width: 150,
+            height: 23,
+          },
+        },
+      },
+    });
+  });
+
+  it("preserves internal OCR whitespace in timestamp source text and evidence", () => {
+    const [draft] = parseTigerScreenshot(
+      image("tiger-timestamp-whitespace", 1_220, 2_000, [
+        ...TIGER_SCREENSHOT_OCR.lines.slice(0, 12),
+        ocrLine("2024/  06/05", 1_010, 390, 150, 22),
+        ocrLine("14:  39:25", 1_010, 425, 130, 22),
+      ]),
+    );
+
+    expect(draft.sourceTimestampText).toBe(
+      "2024/  06/05 14:  39:25",
+    );
+    expect(draft.fieldEvidence.executedAt?.rawText).toBe(
+      "2024/  06/05 14:  39:25",
+    );
+  });
+
   it("selects one closest date and time pair from a broad timestamp band", () => {
     const [draft] = parseTigerScreenshot(
       image("tiger-multiple-timestamps", 1_220, 13_000, [

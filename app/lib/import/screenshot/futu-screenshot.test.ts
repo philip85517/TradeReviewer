@@ -10,6 +10,50 @@ import { parseFutuScreenshot } from "./futu-screenshot";
 import { detectScreenshotLayout } from "./layout-detector";
 
 describe("Futu dark order-history screenshots", () => {
+  it("pairs jittered timestamp boxes by closest vertical center", () => {
+    const [draft] = parseFutuScreenshot(
+      image("futu-jittered-timestamps", 1_220, 13_000, [
+        ...FUTU_SCREENSHOT_OCR.lines.slice(0, 12),
+        ocrLine("24/06/05", 1_025, 390, 130, 22),
+        ocrLine("14:39:25", 1_025, 389, 130, 22),
+        ocrLine("25/06/06", 1_025, 436, 130, 22),
+        ocrLine("10:00:00", 1_025, 435, 130, 22),
+      ]),
+    );
+
+    expect(draft).toMatchObject({
+      sourceTimestampText: "24/06/05 14:39:25",
+      fieldEvidence: {
+        executedAt: {
+          rawText: "24/06/05 14:39:25",
+          sourceBounds: {
+            x: 1_025,
+            y: 389,
+            width: 130,
+            height: 23,
+          },
+        },
+      },
+    });
+  });
+
+  it("preserves internal OCR whitespace in timestamp source text and evidence", () => {
+    const [draft] = parseFutuScreenshot(
+      image("futu-timestamp-whitespace", 1_220, 2_000, [
+        ...FUTU_SCREENSHOT_OCR.lines.slice(0, 12),
+        ocrLine("24/  06/05", 1_025, 390, 130, 22),
+        ocrLine("14:  39:25", 1_025, 425, 130, 22),
+      ]),
+    );
+
+    expect(draft.sourceTimestampText).toBe(
+      "24/  06/05 14:  39:25",
+    );
+    expect(draft.fieldEvidence.executedAt?.rawText).toBe(
+      "24/  06/05 14:  39:25",
+    );
+  });
+
   it("selects one closest date and time pair from a broad timestamp band", () => {
     const [draft] = parseFutuScreenshot(
       image("futu-multiple-timestamps", 1_220, 13_000, [

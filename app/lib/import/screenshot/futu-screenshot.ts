@@ -164,8 +164,8 @@ function timestampValue(lines: readonly OcrTextLine[]): {
   const selected = selectTimestampValue(lines);
   if (!selected) return {};
   return {
-    value: selected.value,
-    evidence: evidence(selected.value, selected.lines),
+    value: selected.rawText,
+    evidence: evidence(selected.rawText, selected.lines),
   };
 }
 

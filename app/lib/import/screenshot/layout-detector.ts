@@ -83,7 +83,7 @@ function lineCenterY(line: OcrTextLine): number {
   return line.sourceBounds.y + line.sourceBounds.height / 2;
 }
 
-function localRowHeight(image: OcrImageResult): number {
+function rowAssociationWindowHeight(image: OcrImageResult): number {
   const heights = image.lines
     .map((line) => line.sourceBounds.height)
     .filter((height) => Number.isFinite(height) && height > 0)
@@ -109,7 +109,7 @@ export function anchorTradeRows(
   image: OcrImageResult,
   options: AnchorTradeRowsOptions,
 ): AnchoredTradeRow[] {
-  const rowHeight = localRowHeight(image);
+  const associationWindowHeight = rowAssociationWindowHeight(image);
   const anchors = image.lines
     .flatMap((line) => {
       const side = sideFromTradeLabel(line.text);
@@ -128,7 +128,8 @@ export function anchorTradeRows(
         return (
           candidate !== anchor &&
           candidateCenter >= anchor.sourceBounds.y &&
-          candidateCenter <= anchor.sourceBounds.y + rowHeight &&
+          candidateCenter <=
+            anchor.sourceBounds.y + associationWindowHeight &&
           options.isCorroboratingLine(candidate)
         );
       }),
@@ -143,7 +144,7 @@ export function anchorTradeRows(
       index + 1 < anchors.length
         ? lineCenterY(anchors[index + 1].line)
         : undefined;
-    const fallbackHalfBand = rowHeight;
+    const fallbackHalfBand = associationWindowHeight;
     const top =
       previousCenter === undefined
         ? center -
@@ -168,7 +169,10 @@ export function anchorTradeRows(
         return (
           candidateCenter >= Math.max(top, anchor.sourceBounds.y) &&
           candidateCenter <
-            Math.min(bottom, anchor.sourceBounds.y + rowHeight)
+            Math.min(
+              bottom,
+              anchor.sourceBounds.y + associationWindowHeight,
+            )
         );
       }),
     };

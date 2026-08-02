@@ -388,8 +388,7 @@ export function ScreenshotReviewDialog({
                     }
                     onClick={() => setSelectedImageId(image.id)}
                   >
-                    {image.previewUrl.startsWith("blob:") &&
-                    image.state !== "failed" ? (
+                    {image.previewUrl.startsWith("blob:") ? (
                       // Object URLs stay in memory and are never converted.
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -450,7 +449,7 @@ export function ScreenshotReviewDialog({
             <button
               className="secondary-button screenshot-manual-add"
               type="button"
-              disabled={!selectedImage || selectedImage.state === "failed"}
+              disabled={!selectedImage}
               onClick={() =>
                 effectiveSelectedImageId &&
                 onAction({

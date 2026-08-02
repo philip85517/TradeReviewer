@@ -1,9 +1,102 @@
 import type { OcrTextLine } from "./contracts";
 
 export type TimestampValueSelection = {
-  value: string;
+  normalizedValue: string;
+  rawText: string;
   lines: readonly OcrTextLine[];
 };
+
+function joinLineText(
+  lines: readonly OcrTextLine[],
+  text: (line: OcrTextLine) => string,
+): string {
+  return lines.map(text).join(" ");
+}
+
+type NormalizedTimestampLine = {
+  line: OcrTextLine;
+  text: string;
+};
+
+type TimestampPair = {
+  date: NormalizedTimestampLine;
+  time: NormalizedTimestampLine;
+  distance: number;
+};
+
+function lineCenterY(line: OcrTextLine): number {
+  return line.sourceBounds.y + line.sourceBounds.height / 2;
+}
+
+function timestampPair(
+  date: NormalizedTimestampLine,
+  time: NormalizedTimestampLine,
+): TimestampPair {
+  return {
+    date,
+    time,
+    distance: Math.abs(lineCenterY(date.line) - lineCenterY(time.line)),
+  };
+}
+
+function orderedTimestampPairs(
+  dateLines: readonly NormalizedTimestampLine[],
+  timeLines: readonly NormalizedTimestampLine[],
+): TimestampPair[] {
+  const dates = [...dateLines].sort(
+    (left, right) => lineCenterY(left.line) - lineCenterY(right.line),
+  );
+  const times = [...timeLines].sort(
+    (left, right) => lineCenterY(left.line) - lineCenterY(right.line),
+  );
+  const primary = dates.length <= times.length ? dates : times;
+  const secondary = dates.length <= times.length ? times : dates;
+  const primaryIsDate = dates.length <= times.length;
+  let previous = secondary.map(() => ({
+    cost: 0,
+    pairs: [] as TimestampPair[],
+  }));
+  previous.push({ cost: 0, pairs: [] });
+
+  for (let primaryIndex = 0; primaryIndex < primary.length; primaryIndex += 1) {
+    const current: Array<
+      { cost: number; pairs: TimestampPair[] } | undefined
+    > = [undefined];
+    for (
+      let secondaryCount = 1;
+      secondaryCount <= secondary.length;
+      secondaryCount += 1
+    ) {
+      const skipped = current[secondaryCount - 1];
+      const prior = previous[secondaryCount - 1];
+      const paired = primaryIsDate
+        ? timestampPair(
+            primary[primaryIndex],
+            secondary[secondaryCount - 1],
+          )
+        : timestampPair(
+            secondary[secondaryCount - 1],
+            primary[primaryIndex],
+          );
+      const matched = prior
+        ? {
+            cost: prior.cost + paired.distance,
+            pairs: [...prior.pairs, paired],
+          }
+        : undefined;
+      current.push(
+        !skipped || (matched && matched.cost < skipped.cost)
+          ? matched
+          : skipped,
+      );
+    }
+    previous = current.map(
+      (entry) => entry ?? { cost: Number.POSITIVE_INFINITY, pairs: [] },
+    );
+  }
+
+  return previous[secondary.length]?.pairs ?? [];
+}
 
 export function selectTimestampValue(
   lines: readonly OcrTextLine[],
@@ -23,21 +116,7 @@ export function selectTimestampValue(
       text,
     ),
   );
-  const timestampPairs = dateLines.flatMap((date) =>
-    timeLines
-      .filter(
-        (time) => time.line.sourceBounds.y >= date.line.sourceBounds.y,
-      )
-      .map((time) => ({
-        date,
-        time,
-        distance: Math.abs(
-          date.line.sourceBounds.y +
-            date.line.sourceBounds.height / 2 -
-            (time.line.sourceBounds.y + time.line.sourceBounds.height / 2),
-        ),
-      })),
-  );
+  const timestampPairs = orderedTimestampPairs(dateLines, timeLines);
   const closestPair = timestampPairs.reduce<
     (typeof timestampPairs)[number] | undefined
   >(
@@ -51,16 +130,18 @@ export function selectTimestampValue(
         ? [closestPair.date.line]
         : [closestPair.date.line, closestPair.time.line];
     return {
-      value:
+      normalizedValue:
         closestPair.date.line === closestPair.time.line
           ? closestPair.date.text
           : `${closestPair.date.text} ${closestPair.time.text}`,
+      rawText: joinLineText(selectedLines, (line) => line.text.trim()),
       lines: selectedLines,
     };
   }
 
   return {
-    value: normalizedLines.map(({ text }) => text).join(" "),
+    normalizedValue: normalizedLines.map(({ text }) => text).join(" "),
+    rawText: joinLineText(lines, (line) => line.text.trim()),
     lines,
   };
 }

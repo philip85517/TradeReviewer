@@ -107,7 +107,16 @@ function productionSourceFiles(directory: string): string[] {
 }
 
 function importStatements(source: string) {
-  return source.match(/^import[\s\S]*?;$/gm) ?? [];
+  const statements: string[] = [];
+  const starts = source.matchAll(/^import\b/gm);
+  for (const startMatch of starts) {
+    const start = startMatch.index;
+    if (start === undefined) continue;
+    const end = source.indexOf(";", start);
+    if (end === -1) throw new Error(`Unterminated import statement at offset ${start}`);
+    statements.push(source.slice(start, end + 1));
+  }
+  return statements;
 }
 
 function allowsPureImportLibraryImport(statement: string) {
@@ -229,6 +238,20 @@ describe("SQLite production storage boundary", () => {
       );
     });
 
+    await user.click(await screen.findByRole("tab", { name: "复盘笔记" }));
+    await user.type(
+      await screen.findByLabelText("心理复盘"),
+      "边界测试复盘记录",
+    );
+    await waitFor(() => {
+      expect(client.putReview).toHaveBeenCalledWith(
+        expect.objectContaining({
+          instrumentId: importedExecution.instrument.id,
+          review: expect.objectContaining({ psychology: "边界测试复盘记录" }),
+        }),
+      );
+    });
+
     await user.click(await screen.findByRole("button", { name: "图表设置" }));
     await user.click(screen.getByRole("checkbox", { name: "显示成交量" }));
     await waitFor(() => {
@@ -237,7 +260,6 @@ describe("SQLite production storage boundary", () => {
       );
     });
 
-    expect(client.putReviewState).toHaveBeenCalled();
     expect(writeLegacyStorage).not.toHaveBeenCalled();
     expect(indexedDbOpen).not.toHaveBeenCalled();
   });
@@ -261,13 +283,11 @@ describe("SQLite production storage boundary", () => {
     for (const path of productionSourceFiles(join(root, "app"))) {
       const relative = path.slice(root.length + 1);
       if (relative === "app/lib/storage/browser-state-export.ts" || legacyStoragePaths.some((file) => relative === `app/lib/storage/${file}`)) continue;
-      const source = readFileSync(path, "utf8");
-      const withoutImportLibrary = source.replace(
-        /import[\s\S]*?from\s*["'][^"']*import-library["'];/g,
-        "",
-      );
-      expect(withoutImportLibrary, relative).not.toMatch(legacyRuntimeImport);
-      for (const statement of importStatements(source).filter((item) => item.includes("import-library"))) {
+      const statements = importStatements(readFileSync(path, "utf8"));
+      const importLibraryStatements = statements.filter((item) => item.includes("import-library"));
+      const otherRuntimeImports = statements.filter((item) => !item.includes("import-library"));
+      expect(otherRuntimeImports.join("\n"), relative).not.toMatch(legacyRuntimeImport);
+      for (const statement of importLibraryStatements) {
         expect(allowsPureImportLibraryImport(statement), `${relative}: ${statement}`).toBe(true);
       }
     }
@@ -278,5 +298,16 @@ describe("SQLite production storage boundary", () => {
     expect(allowsPureImportLibraryImport(
       'import { saveImportedExecutions } from "./import-library";',
     )).toBe(false);
+
+    const forbiddenBeforeImportLibrary = [
+      'import { saveChartSettings } from "./chart-settings";',
+      'import { mergeExecutions } from "./import-library";',
+    ].join("\n");
+    const fixtureImports = importStatements(forbiddenBeforeImportLibrary);
+    expect(
+      fixtureImports
+        .filter((statement) => !statement.includes("import-library"))
+        .join("\n"),
+    ).toMatch(legacyRuntimeImport);
   });
 });

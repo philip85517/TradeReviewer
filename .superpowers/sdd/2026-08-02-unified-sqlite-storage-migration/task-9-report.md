@@ -6,11 +6,15 @@ Base commit: `5f0897a`
 
 - Added a storage-boundary regression suite that renders an empty SQLite
   bootstrap without legacy reads, drives a real import and chart-settings save
-  through a successful SQLite client while asserting no legacy browser writes,
-  and prevents normal production imports of legacy browser persistence modules.
+  plus an autosaved review-note edit through a successful SQLite client while
+  asserting no legacy browser writes, and prevents normal production imports
+  of legacy browser persistence modules.
 - The import-library boundary permits only the pure `mergeExecutions` value
   import (or type-only imports) outside migration/test modules; a forbidden
-  `saveImportedExecutions` import is an explicit regression case.
+  `saveImportedExecutions` import is an explicit regression case. The source
+  audit extracts individual import statements before filtering the
+  import-library exception, including a fixture where a forbidden import comes
+  before the allowed import-library statement.
 - Marked the retired localStorage/IndexedDB modules and the browser exporter
   explicitly `MIGRATION-ONLY`. The exporter is the production migration
   boundary; the remaining browser write helpers are retained only for isolated

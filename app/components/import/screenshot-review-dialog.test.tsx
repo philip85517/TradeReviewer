@@ -740,7 +740,7 @@ describe("ScreenshotReviewDialog", () => {
     ).toBeVisible();
   });
 
-  it("keeps a failed blob preview visible and allows manual add for that image", async () => {
+  it("keeps a failed blob preview visible and allows manual add with supported metadata", async () => {
     const user = userEvent.setup();
     const failed: ScreenshotReviewImage = {
       id: "image-3",
@@ -755,7 +755,16 @@ describe("ScreenshotReviewDialog", () => {
       issueCount: 1,
       error: "无法识别版式",
     };
+    const state = reviewState();
+    state.images.push({
+      imageId: failed.id,
+      fingerprint: "fingerprint-3",
+      captureIndex: 2,
+      broker: "tiger",
+      layoutVersion: "tiger-orders-dark-v1",
+    });
     const { onAction } = renderDialog({
+      state,
       reviewImages: [...images, failed],
     });
     const failedImage = screen.getByRole("button", {
@@ -777,6 +786,36 @@ describe("ScreenshotReviewDialog", () => {
       type: "add-draft",
       imageId: failed.id,
     });
+  });
+
+  it("disables manual add for a failed image without supported metadata", async () => {
+    const user = userEvent.setup();
+    const failed: ScreenshotReviewImage = {
+      id: "image-3",
+      fileName: "orders-3.png",
+      previewUrl: "blob:https://trade-review/image-3",
+      width: 1170,
+      height: 2532,
+      state: "failed",
+      completedTiles: 1,
+      totalTiles: 4,
+      tradeCount: 0,
+      issueCount: 1,
+      error: "无法识别版式",
+    };
+    const { onAction } = renderDialog({
+      reviewImages: [...images, failed],
+    });
+
+    await user.click(
+      screen.getByRole("button", { name: "选择 orders-3.png" }),
+    );
+    const manualAdd = screen.getByRole("button", {
+      name: "手工补录成交",
+    });
+    expect(manualAdd).toBeDisabled();
+    await user.click(manualAdd);
+    expect(onAction).not.toHaveBeenCalled();
   });
 
   it("cancels from the button and Escape", async () => {

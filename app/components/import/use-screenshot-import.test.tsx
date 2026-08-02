@@ -298,6 +298,106 @@ describe("useScreenshotImport", () => {
     expect(result.current.state?.drafts[0]).toBe(completedDraft);
   });
 
+  it("adds a blank draft for a failed image when successful images share its layout", async () => {
+    const onPrepared = vi.fn();
+    const { dependencies } = setupDependencies({
+      recognize: async (input, _engine, options) => {
+        options.onProgress(1, 1);
+        if (input.id === "image-2") throw new Error("OCR failed");
+        return imageResult(input.id);
+      },
+    });
+    const { result } = renderHook(() =>
+      useScreenshotImport({
+        currentExecutions: () => [],
+        onPrepared,
+        dependencies,
+      }),
+    );
+
+    await act(async () => {
+      await result.current.start([file("one.png"), file("two.png")]);
+    });
+    const failedImage = result.current.images.find(
+      ({ state }) => state === "failed",
+    );
+    expect(failedImage?.id).toBe("image-2");
+    expect(result.current.state?.images).toContainEqual({
+      imageId: "image-2",
+      fingerprint: "fingerprint-2",
+      captureIndex: 1,
+      broker: "futu",
+      layoutVersion: "futu-orders-dark-v1",
+    });
+
+    await makeValid({ result } as never);
+    await act(async () => {
+      await result.current.completeReview();
+    });
+    expect(onPrepared).not.toHaveBeenCalled();
+    expect(result.current.images[1].state).toBe("failed");
+
+    act(() =>
+      result.current.dispatch({
+        type: "add-draft",
+        imageId: failedImage!.id,
+      }),
+    );
+
+    expect(result.current.state?.drafts).toHaveLength(2);
+    expect(result.current.state?.drafts[1]).toMatchObject({
+      id: "image-2:manual:0",
+      broker: "futu",
+      layoutVersion: "futu-orders-dark-v1",
+      imageId: "image-2",
+      sourceRowIndex: 0,
+      fieldEvidence: {},
+    });
+    expect(result.current.state?.drafts[1].market).toBeUndefined();
+  });
+
+  it("retains matched layout metadata when parsing finds no trades", async () => {
+    const { dependencies } = setupDependencies({
+      parseFutu: () => [],
+    });
+    const { result } = renderHook(() =>
+      useScreenshotImport({
+        currentExecutions: () => [],
+        onPrepared: vi.fn(),
+        dependencies,
+      }),
+    );
+
+    await act(async () => {
+      await result.current.start([file("one.png")]);
+    });
+
+    expect(result.current.images[0].state).toBe("failed");
+    expect(result.current.state?.images).toEqual([
+      {
+        imageId: "image-1",
+        fingerprint: "fingerprint-1",
+        captureIndex: 0,
+        broker: "futu",
+        layoutVersion: "futu-orders-dark-v1",
+      },
+    ]);
+
+    act(() =>
+      result.current.dispatch({ type: "add-draft", imageId: "image-1" }),
+    );
+    expect(result.current.state?.drafts).toEqual([
+      expect.objectContaining({
+        id: "image-1:manual:0",
+        broker: "futu",
+        layoutVersion: "futu-orders-dark-v1",
+        imageId: "image-1",
+        sourceRowIndex: 0,
+        fieldEvidence: {},
+      }),
+    ]);
+  });
+
   it("creates a fresh OCR engine when initialization failed transiently", async () => {
     const replacementEngine: LocalOcrEngine = {
       recognize: vi.fn(),

@@ -226,6 +226,9 @@ export function ScreenshotReviewDialog({
   const selectedImage = images.find(
     ({ id }) => id === effectiveSelectedImageId,
   );
+  const selectedImageMetadata = state.images.find(
+    ({ imageId }) => imageId === effectiveSelectedImageId,
+  );
   const filteredDrafts = activeDrafts.filter((draft) => {
     if (filter === "pending") return pendingDraftIds.has(draft.id);
     if (filter === "conflict") return conflictByDraftId.has(draft.id);
@@ -449,7 +452,7 @@ export function ScreenshotReviewDialog({
             <button
               className="secondary-button screenshot-manual-add"
               type="button"
-              disabled={!selectedImage}
+              disabled={!selectedImage || !selectedImageMetadata}
               onClick={() =>
                 effectiveSelectedImageId &&
                 onAction({

@@ -91,6 +91,15 @@ type ImageResource = {
   released: boolean;
 };
 
+type SupportedReviewLayout =
+  | { broker: "futu"; layoutVersion: "futu-orders-dark-v1" }
+  | {
+      broker: "tiger";
+      layoutVersion:
+        | "tiger-orders-dark-v1"
+        | "tiger-instrument-first-dark-v1";
+    };
+
 type ScreenshotSession = {
   id: number;
   resources: Map<string, ImageResource>;
@@ -191,6 +200,86 @@ function replaceImageResult(
       [...state.deletedDraftIds].filter((id) => !replacedDraftIds.has(id)),
     ),
   });
+}
+
+function replaceImageMetadata(
+  state: ScreenshotReviewState,
+  image: ReviewImageSource,
+) {
+  return sortReviewState({
+    ...state,
+    images: [
+      ...state.images.filter(({ imageId }) => imageId !== image.imageId),
+      image,
+    ],
+  });
+}
+
+function supportedReviewLayout(
+  value:
+    | { broker: "futu" | "tiger"; layoutVersion: string }
+    | undefined,
+): SupportedReviewLayout | undefined {
+  if (
+    value?.broker === "futu" &&
+    value.layoutVersion === "futu-orders-dark-v1"
+  ) {
+    return {
+      broker: "futu",
+      layoutVersion: "futu-orders-dark-v1",
+    };
+  }
+  if (
+    value?.broker === "tiger" &&
+    (value.layoutVersion === "tiger-orders-dark-v1" ||
+      value.layoutVersion === "tiger-instrument-first-dark-v1")
+  ) {
+    return {
+      broker: "tiger",
+      layoutVersion: value.layoutVersion,
+    };
+  }
+  return undefined;
+}
+
+function sharedSuccessfulLayout(
+  state: ScreenshotReviewState,
+  statuses: readonly ImageStatus[],
+): SupportedReviewLayout | undefined {
+  const successfulImageIds = new Set(
+    statuses
+      .filter(({ state: imageState }) =>
+        ["complete", "needs-review"].includes(imageState),
+      )
+      .map(({ id }) => id),
+  );
+  const successfulImages = state.images.filter(({ imageId }) =>
+    successfulImageIds.has(imageId),
+  );
+  const first = successfulImages[0];
+  if (
+    !first ||
+    successfulImages.some(
+      (image) =>
+        image.broker !== first.broker ||
+        image.layoutVersion !== first.layoutVersion,
+    )
+  ) {
+    return undefined;
+  }
+  return supportedReviewLayout(first);
+}
+
+function reviewImageSource(
+  input: ScreenshotInput,
+  layout: SupportedReviewLayout,
+): ReviewImageSource {
+  return {
+    imageId: input.id,
+    fingerprint: input.fingerprint,
+    captureIndex: input.index,
+    ...layout,
+  };
 }
 
 function removeImageResult(state: ScreenshotReviewState, imageId: string) {
@@ -436,6 +525,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
       }));
       const controller = new AbortController();
       session.active = { imageId, controller };
+      let matchedLayout: SupportedReviewLayout | undefined;
 
       try {
         if (!session.enginePromise) {
@@ -474,6 +564,8 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
         if (!isActive(session) || !session.resources.has(imageId)) return;
         const layout = session.dependencies.detectLayout(ocr);
         if (!layout.matched) throw new Error(layout.message);
+        matchedLayout = supportedReviewLayout(layout);
+        if (!matchedLayout) throw new Error("暂不支持该截图版式");
         const drafts =
           layout.broker === "futu"
             ? session.dependencies.parseFutu(ocr)
@@ -492,13 +584,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
         updateReview(
           replaceImageResult(
             current,
-            {
-              imageId,
-              fingerprint: resource.input.fingerprint,
-              captureIndex: resource.input.index,
-              broker: layout.broker,
-              layoutVersion: layout.layoutVersion,
-            } as ReviewImageSource,
+            reviewImageSource(resource.input, matchedLayout),
             drafts,
           ),
         );
@@ -508,11 +594,25 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
           isActive(session) &&
           session.resources.has(imageId)
         ) {
+          const current = stateRef.current;
+          const recoveryLayout =
+            matchedLayout ||
+            (current
+              ? sharedSuccessfulLayout(current, statusesRef.current)
+              : undefined);
           updateStatus(imageId, (status) => ({
             ...status,
             state: "failed",
             error: messageFor(error),
           }));
+          if (current && recoveryLayout) {
+            updateReview(
+              replaceImageMetadata(
+                current,
+                reviewImageSource(resource.input, recoveryLayout),
+              ),
+            );
+          }
         }
       } finally {
         if (session.active?.controller === controller) {

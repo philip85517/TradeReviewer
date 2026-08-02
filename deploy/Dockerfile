@@ -14,7 +14,7 @@ FROM node:22-bookworm-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 
-RUN apt-get update \
+RUN apt-get -o Acquire::Retries=5 update \
   && apt-get install --no-install-recommends --yes sqlite3 \
   && rm -rf /var/lib/apt/lists/*
 

@@ -268,6 +268,7 @@ describe("deployment templates", () => {
     expect(compose).toContain("./data/sqlite:/var/lib/tradereview");
     expect(envExample).toContain("APP_BIND=127.0.0.1");
     expect(dockerfile).toContain("npm run assets:ocr");
+    expect(dockerfile).toContain("apt-get -o Acquire::Retries=5 update");
     expect(dockerfileIgnore).toContain(".env");
     expect(dockerfileIgnore).toBe(contextIgnore);
     expect(dockerfileIgnore).toContain("**/.npmrc");

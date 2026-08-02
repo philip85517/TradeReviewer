@@ -14,6 +14,31 @@ import { parseTigerScreenshot } from "./tiger-screenshot";
 const TIGER_LAYOUT_LINES = TIGER_SCREENSHOT_OCR.lines.slice(0, 7);
 
 describe("Tiger dark order-history screenshots", () => {
+  it("selects one closest date and time pair from a broad timestamp band", () => {
+    const [draft] = parseTigerScreenshot(
+      image("tiger-multiple-timestamps", 1_220, 13_000, [
+        ...TIGER_SCREENSHOT_OCR.lines.slice(0, 14),
+        ocrLine("2025/06/06", 1_010, 436, 150, 22),
+        ocrLine("10:00:00", 1_010, 458, 130, 20),
+      ]),
+    );
+
+    expect(draft).toMatchObject({
+      sourceTimestampText: "2025/06/06 10:00:00",
+      fieldEvidence: {
+        executedAt: {
+          rawText: "2025/06/06 10:00:00",
+          sourceBounds: {
+            x: 1_010,
+            y: 436,
+            width: 150,
+            height: 42,
+          },
+        },
+      },
+    });
+  });
+
   it("detects and parses one instrument-first row with Tiger branding above the headers", () => {
     expect(
       detectScreenshotLayout(

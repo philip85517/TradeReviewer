@@ -10,6 +10,31 @@ import { parseFutuScreenshot } from "./futu-screenshot";
 import { detectScreenshotLayout } from "./layout-detector";
 
 describe("Futu dark order-history screenshots", () => {
+  it("selects one closest date and time pair from a broad timestamp band", () => {
+    const [draft] = parseFutuScreenshot(
+      image("futu-multiple-timestamps", 1_220, 13_000, [
+        ...FUTU_SCREENSHOT_OCR.lines.slice(0, 14),
+        ocrLine("25/06/06", 1_025, 436, 130, 22),
+        ocrLine("10:00:00", 1_025, 458, 130, 20),
+      ]),
+    );
+
+    expect(draft).toMatchObject({
+      sourceTimestampText: "25/06/06 10:00:00",
+      fieldEvidence: {
+        executedAt: {
+          rawText: "25/06/06 10:00:00",
+          sourceBounds: {
+            x: 1_025,
+            y: 436,
+            width: 130,
+            height: 42,
+          },
+        },
+      },
+    });
+  });
+
   it("parses an alphabetic ticker from a complete Futu US row", () => {
     expect(parseFutuScreenshot(FUTU_US_SCREENSHOT_OCR)[0]).toMatchObject({
       broker: "futu",

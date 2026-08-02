@@ -104,7 +104,7 @@ describe("SqliteStore", () => {
     const bootstrap = createStore().getBootstrap();
 
     expect(bootstrap).toMatchObject({
-      schemaVersion: 2,
+      schemaVersion: 3,
       executions: [], importHistory: [], instruments: [], reviews: [],
       tagSuggestions: [], marketDataJobs: [], settings: {},
     });
@@ -185,6 +185,17 @@ describe("SqliteStore", () => {
     expect(store.getDailyCandles()).toEqual([daily]);
     expect(store.getIntervalCoverage()).toEqual([{ ...intervalCoverage, adjustmentMode: "raw" }]);
     expect(store.mergeBrowserState(payload({ sourceFingerprint: "market-state-repeat", executions: [], instruments: [instrument], dailyCandles: [daily], intervalCoverage: [intervalCoverage], providerSymbols: [{ instrumentId: instrument.id, provider: "tencent", providerSymbol: "hk00700" }] }))).toMatchObject({ inserted: 0, duplicate: 10, conflict: 0 });
+  });
+
+  it("commits repository market-data contracts atomically and returns daily 1D candles", () => {
+    const store = createStore();
+    store.mergeExecutions([execution]);
+    const daily = { instrumentId: instrument.id, tradingDate: "2026-01-02", open: "1", high: "2", low: "1", close: "2", volume: "3", currency: "HKD", provider: "tencent" as const, providerSymbol: "700", adjustmentMode: "raw" as const, fetchedAt: "2026-01-03T00:00:00.000Z" };
+    store.commitMarketData({ instrumentId: instrument.id, candles: [daily], coverage: [{ startDate: "2026-01-02", endDate: "2026-01-02", status: "complete", missingTradingDates: [] }], providerSymbol: { provider: "tencent", symbol: "700" } });
+    expect(store.getCandles(instrument.id, "1D", "2026-01-01T00:00:00.000Z", "2026-01-03T00:00:00.000Z")).toMatchObject([{ interval: "1D", timestamp: "2026-01-02T00:00:00.000Z", close: "2" }]);
+    expect(store.getCoverageSegments(instrument.id)).toHaveLength(1);
+    expect(() => store.commitMarketData({ instrumentId: instrument.id, candles: [daily], coverage: [{ startDate: "bad", endDate: "bad", status: "complete", missingTradingDates: "bad" as never }], providerSymbol: { provider: "tencent", symbol: "700" } })).toThrow("Invalid coverage");
+    expect(store.getDailyCandles(instrument.id)).toEqual([daily]);
   });
 
   it("rolls back all tables when one browser-state record is invalid", () => {

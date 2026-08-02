@@ -8,7 +8,7 @@ import { withSqliteTransaction } from "../../../db/sqlite";
 import { normalizeDrawing, validateDrawing } from "../chart/drawings";
 import { compareExecutions, reconcileExecutions } from "../import/execution-reconciliation";
 import type { TagSuggestionRecord } from "../insights/types";
-import type { DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord } from "../market/contracts";
+import type { CoverageSegment, DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord } from "../market/contracts";
 import type { EpisodeReviewRecord } from "../reviews/types";
 import type { Instrument, TradeExecution } from "../trades/types";
 import type { ChartSettings } from "./chart-settings";
@@ -32,6 +32,19 @@ type IntervalCoverageRecord = IntervalCoverageSegment & {
 };
 type NormalizedIntervalCoverageRecord = IntervalCoverageRecord & {
   adjustmentMode: "raw";
+};
+type MarketDataCommitInput = {
+  instrumentId: string;
+  candles: DailyCandleRecord[];
+  coverage: CoverageSegment[];
+  providerSymbol: { provider: string; symbol: string };
+};
+type IntervalMarketDataCommitInput = {
+  instrumentId: string;
+  interval: "15m" | "1D";
+  candles: MarketCandleRecord[];
+  coverage: IntervalCoverageSegment[];
+  providerSymbol?: { provider: string; symbol: string };
 };
 type MigrationCounts = Pick<MigrationReport, "inserted" | "duplicate" | "conflict">;
 
@@ -501,11 +514,12 @@ export class SqliteStore {
   getTagSuggestions(): TagSuggestionRecord[] { return (this.database.prepare("select evidence_json from tag_suggestions order by id").all() as Row[]).map((row) => parseJson<TagSuggestionRecord>(row.evidence_json, "tag suggestion")); }
   getMarketDataJobs(): MarketDataJob[] { return (this.database.prepare("select progress_json from market_data_jobs order by id").all() as Row[]).map((row) => parseJson<MarketDataJob>(row.progress_json, "market data job")); }
   getSettings(): Record<string, unknown> { return Object.fromEntries((this.database.prepare("select key, value_json from app_settings order by key").all() as Row[]).map((row) => [asString(row.key, "setting key"), parseJson(row.value_json, "setting value")])); }
-  getDailyCandles(instrumentId?: string): DailyCandleRecord[] {
-    const where = instrumentId ? "where instrument_id = ?" : "";
+  getDailyCandles(instrumentId?: string, start?: string, end?: string): DailyCandleRecord[] {
+    const clauses = [instrumentId ? "instrument_id = ?" : "", start ? "date >= ?" : "", end ? "date <= ?" : ""].filter(Boolean);
+    const where = clauses.length ? `where ${clauses.join(" and ")}` : "";
     const rows = this.database
       .prepare(`select * from daily_candles ${where} order by instrument_id, date`)
-      .all(...(instrumentId ? [instrumentId] : [])) as Row[];
+      .all(...[instrumentId, start, end].filter((value): value is string => Boolean(value))) as Row[];
     return rows.map(mapDailyCandleRow);
   }
 
@@ -534,6 +548,24 @@ export class SqliteStore {
       .prepare("select instrument_id, adjustment_mode, start_date, end_date from coverage order by instrument_id")
       .all() as Row[];
     return rows.map(mapCoverageRow);
+  }
+
+  getCoverageSegments(instrumentId: string): CoverageSegment[] {
+    const row = this.database.prepare("select details_json, start_date, end_date from coverage where instrument_id = ? and adjustment_mode = 'raw'").get(instrumentId) as Row | undefined;
+    if (!row) return [];
+    if (row.details_json) return parseJson<CoverageSegment[]>(row.details_json, "coverage");
+    return typeof row.start_date === "string" && typeof row.end_date === "string" ? [{ startDate: row.start_date, endDate: row.end_date, status: "complete", missingTradingDates: [] }] : [];
+  }
+
+  getCandles(instrumentId: string, interval: "15m" | "1D", start: string, end: string): MarketCandleRecord[] {
+    const generic = this.getMarketCandles(instrumentId, interval, start, end);
+    if (interval !== "1D") return generic;
+    const byTimestamp = new Map(generic.map((candle) => [candle.timestamp, candle]));
+    for (const candle of this.getDailyCandles(instrumentId, start.slice(0, 10), end.slice(0, 10))) {
+      const timestamp = `${candle.tradingDate}T00:00:00.000Z`;
+      if (timestamp >= start && timestamp <= end && !byTimestamp.has(timestamp)) byTimestamp.set(timestamp, { ...candle, interval: "1D", timestamp });
+    }
+    return [...byTimestamp.values()].sort((left, right) => left.timestamp.localeCompare(right.timestamp));
   }
 
   getIntervalCoverage(): NormalizedIntervalCoverageRecord[] {
@@ -583,6 +615,28 @@ export class SqliteStore {
   putTagSuggestion(record: TagSuggestionRecord): void {
     validateTagSuggestion(record);
     withSqliteTransaction(this.database, () => this.putTagSuggestionInTransaction(record));
+  }
+
+  putReviewState(state: EpisodeReviewState): void {
+    validateReviewState(state);
+    withSqliteTransaction(this.database, () => this.putReviewStateInTransaction(state));
+  }
+
+  commitMarketData(result: MarketDataCommitInput): void {
+    if (!result || typeof result.instrumentId !== "string" || !Array.isArray(result.candles) || !Array.isArray(result.coverage) || !result.providerSymbol || typeof result.providerSymbol.provider !== "string" || typeof result.providerSymbol.symbol !== "string") throw new Error("Invalid market data");
+    result.candles.forEach(validateDailyCandle);
+    result.coverage.forEach((segment) => { if (!segment || typeof segment.startDate !== "string" || typeof segment.endDate !== "string" || !Array.isArray(segment.missingTradingDates)) throw new Error("Invalid coverage"); });
+    withSqliteTransaction(this.database, () => {
+      result.candles.forEach((candle) => this.putDailyCandle(candle));
+      this.putCoverageSegments(result.instrumentId, result.coverage);
+      this.putProviderSymbol({ instrumentId: result.instrumentId, provider: result.providerSymbol.provider, providerSymbol: result.providerSymbol.symbol });
+    });
+  }
+
+  commitIntervalMarketData(result: IntervalMarketDataCommitInput): void {
+    if (!result || typeof result.instrumentId !== "string" || (result.interval !== "15m" && result.interval !== "1D") || !Array.isArray(result.candles) || !Array.isArray(result.coverage)) throw new Error("Invalid market data");
+    result.candles.forEach(validateMarketCandle); result.coverage.forEach(validateIntervalCoverage);
+    withSqliteTransaction(this.database, () => { result.candles.forEach((candle) => this.putMarketCandle(candle)); result.coverage.forEach((coverage) => this.putIntervalCoverage({ ...coverage, instrumentId: result.instrumentId })); if (result.providerSymbol) this.putProviderSymbol({ instrumentId: result.instrumentId, provider: result.providerSymbol.provider, providerSymbol: result.providerSymbol.symbol }); });
   }
 
   putMarketData(input: { dailyCandles?: DailyCandleRecord[]; marketCandles?: MarketCandleRecord[]; coverage?: CoverageRecord[]; intervalCoverage?: IntervalCoverageRecord[]; providerSymbols?: ProviderSymbolRecord[] }): void {
@@ -649,7 +703,7 @@ export class SqliteStore {
           this.getReviewStates().find((item) => item.episodeId === state.episodeId),
           state,
         );
-        this.putReviewState(state);
+        this.putReviewStateInTransaction(state);
       }
       for (const suggestion of payload.tagSuggestions) {
         classifyMigrationRecord(
@@ -907,7 +961,7 @@ export class SqliteStore {
     return true;
   }
 
-  private putReviewState(state: EpisodeReviewState): void {
+  private putReviewStateInTransaction(state: EpisodeReviewState): void {
     validateReviewState(state);
     const cursor = json(
       {
@@ -1050,6 +1104,13 @@ export class SqliteStore {
       coverage.startDate ?? null,
       coverage.endDate ?? null,
     );
+  }
+
+  private putCoverageSegments(instrumentId: string, segments: CoverageSegment[]): void {
+    this.ensureInstrumentId(instrumentId);
+    const startDate = segments.at(0)?.startDate ?? null;
+    const endDate = segments.at(-1)?.endDate ?? null;
+    this.database.prepare("insert into coverage (instrument_id, adjustment_mode, start_date, end_date, details_json, updated_at) values (?, 'raw', ?, ?, ?, current_timestamp) on conflict(instrument_id, adjustment_mode) do update set start_date = excluded.start_date, end_date = excluded.end_date, details_json = excluded.details_json, updated_at = excluded.updated_at").run(instrumentId, startDate, endDate, json(segments, "coverage"));
   }
 
   private putIntervalCoverage(coverage: IntervalCoverageRecord): void {

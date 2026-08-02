@@ -14,12 +14,14 @@ import {
   TAG_SUGGESTIONS,
 } from "./indexeddb-schema";
 import { loadMarketDataJobs } from "./market-data-jobs";
-import { loadReviewState } from "./review-storage";
+import { parseStoredReviewState } from "./review-storage";
 import type { BrowserStatePayload, CoverageRecord, ProviderSymbolRecord, StoredInstrument } from "./sqlite-contracts";
 import type { EpisodeReviewRecord } from "../reviews/types";
 import type { TagSuggestionRecord } from "../insights/types";
 import type { TradeExecution } from "../trades/types";
 import { validateResolvedInstrument } from "../instruments/metadata-contracts";
+import { normalizeEpisodeReviewRecord } from "../reviews/review-metrics";
+import { normalizeTagSuggestionRecord } from "./tag-suggestion-repository";
 
 const DATABASE_NAME = "trade-reviewer";
 const CLIENT_ID_KEY = "trade-reviewer:sqlite-migration:client-id:v1";
@@ -27,6 +29,53 @@ const REVIEW_PREFIXES = ["trade-reviewer:review:v2:", "trade-reviewer:review:v1:
 
 function records<T>(value: unknown): T[] {
   return Array.isArray(value) ? value as T[] : [];
+}
+
+function record(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : null;
+}
+
+function strings(value: Record<string, unknown>, fields: readonly string[]) {
+  return fields.every((field) => typeof value[field] === "string");
+}
+
+function isReview(value: unknown): value is EpisodeReviewRecord {
+  const item = record(value);
+  const plan = item && record(item.plan);
+  const review = item && record(item.review);
+  return Boolean(item && plan && review && item.version === 1 && strings(item, ["episodeId", "instrumentId", "updatedAt"]) && strings(plan, ["thesis", "expectedPath", "invalidationCondition", "targetRange", "plannedRiskAmount"]) && strings(review, ["riskManagement", "psychology", "reusableRule"]) && typeof review.completed === "boolean" && Array.isArray(item.confirmedTagIds) && item.confirmedTagIds.every((tag) => typeof tag === "string"));
+}
+
+function isTagSuggestion(value: unknown): value is TagSuggestionRecord {
+  const item = record(value);
+  if (!item || item.version !== 1 || !strings(item, ["id", "episodeId", "instrumentId", "tagId", "ruleId", "status", "suggestedAt"]) || !Array.isArray(item.evidence)) return false;
+  if (!["suggested", "confirmed", "rejected", "edited"].includes(item.status as string) || !["entry-20d-breakout", "first-pullback-after-breakout", "scale-in"].includes(item.ruleId as string)) return false;
+  return item.evidence.every((evidence) => {
+    const item = record(evidence);
+    return Boolean(item && typeof item.kind === "string" && typeof item.observed === "string" && typeof item.reference === "string" && (item.kind === "execution-count" || (typeof item.tradingDate === "string" && (item.kind === "price-comparison" || (item.kind === "breakout-pullback" && typeof item.breakoutDate === "string")))));
+  });
+}
+
+function isDailyCandle(value: unknown): value is DailyCandleRecord {
+  const item = record(value);
+  return Boolean(item && strings(item, ["instrumentId", "tradingDate", "open", "high", "low", "close", "volume", "currency", "provider", "providerSymbol", "adjustmentMode", "fetchedAt"]) && item.adjustmentMode === "raw");
+}
+
+function isMarketCandle(value: unknown): value is MarketCandleRecord {
+  const item = record(value);
+  return Boolean(item && strings(item, ["instrumentId", "interval", "timestamp", "open", "high", "low", "close", "volume", "currency", "provider", "providerSymbol", "adjustmentMode", "fetchedAt"]) && (item.interval === "15m" || item.interval === "1D") && item.adjustmentMode === "raw");
+}
+
+function isCoverageSegment(value: unknown): value is CoverageSegment {
+  const item = record(value);
+  return Boolean(item && strings(item, ["startDate", "endDate", "status"]) && Array.isArray(item.missingTradingDates) && item.missingTradingDates.every((date) => typeof date === "string"));
+}
+
+function isIntervalCoverageSegment(value: unknown): value is IntervalCoverageSegment {
+  const item = record(value);
+  return Boolean(item && strings(item, ["interval", "requestedStart", "requestedEnd", "status"]) && (item.interval === "15m" || item.interval === "1D"));
 }
 
 function currencyForMarket(market: string) {
@@ -38,6 +87,7 @@ function currencyForMarket(market: string) {
 function instrumentsFrom(
   executions: readonly TradeExecution[],
   metadata: readonly Record<string, unknown>[],
+  referencedIds: readonly string[],
 ): StoredInstrument[] {
   const result = new Map<string, StoredInstrument>();
   for (const execution of executions) result.set(execution.instrument.id, { ...execution.instrument });
@@ -66,6 +116,20 @@ function instrumentsFrom(
       metadata: resolved,
     });
   }
+  for (const instrumentId of referencedIds) {
+    if (result.has(instrumentId)) continue;
+    const separator = instrumentId.indexOf(":");
+    const market = separator > 0 ? instrumentId.slice(0, separator) : "";
+    const symbol = separator > 0 ? instrumentId.slice(separator + 1) : "";
+    if (!symbol || !["US", "HK", "CN-SH", "CN-SZ"].includes(market)) continue;
+    result.set(instrumentId, {
+      id: instrumentId,
+      symbol,
+      name: "名称待行情源补充",
+      market,
+      currency: currencyForMarket(market),
+    });
+  }
   return [...result.values()];
 }
 
@@ -79,8 +143,11 @@ function reviewStates(): BrowserStatePayload["reviewStates"] {
     }
   }
   return [...episodeIds].flatMap((episodeId) => {
-    const state = loadReviewState(episodeId);
-    return state ? [state] : [];
+    for (const prefix of REVIEW_PREFIXES) {
+      const state = parseStoredReviewState(episodeId, localStorage.getItem(`${prefix}${episodeId}`));
+      if (state) return [state];
+    }
+    return [];
   });
 }
 
@@ -88,7 +155,7 @@ function coverageRecords(value: unknown): CoverageRecord[] {
   return records<{ instrumentId?: unknown; segments?: unknown }>(value).flatMap((record) => {
     const instrumentId = record.instrumentId;
     if (typeof instrumentId !== "string" || !Array.isArray(record.segments)) return [];
-    const segments = record.segments.map((segment) => segment as CoverageSegment);
+    const segments = record.segments.filter(isCoverageSegment);
     return [{
       instrumentId,
       adjustmentMode: "raw" as const,
@@ -104,7 +171,7 @@ function intervalCoverageRecords(value: unknown): BrowserStatePayload["intervalC
     const instrumentId = record.instrumentId;
     const interval = record.interval;
     if (typeof instrumentId !== "string" || (interval !== "15m" && interval !== "1D") || !Array.isArray(record.segments)) return [];
-    return record.segments.map((segment) => ({
+    return record.segments.filter(isIntervalCoverageSegment).map((segment) => ({
       instrumentId,
       adjustmentMode: "raw" as const,
       ...(segment as IntervalCoverageSegment),
@@ -119,6 +186,29 @@ function providerSymbols(value: unknown): ProviderSymbolRecord[] {
       ? [{ instrumentId: record.instrumentId, provider: record.provider, providerSymbol: record.symbol }]
       : [],
   );
+}
+
+function referencedInstrumentIds(input: {
+  reviews: readonly EpisodeReviewRecord[];
+  reviewStates: ReadonlyArray<BrowserStatePayload["reviewStates"][number]>;
+  tagSuggestions: readonly TagSuggestionRecord[];
+  marketDataJobs: ReadonlyArray<BrowserStatePayload["marketDataJobs"][number]>;
+  dailyCandles: readonly DailyCandleRecord[];
+  marketCandles: readonly MarketCandleRecord[];
+  coverage: readonly CoverageRecord[];
+  intervalCoverage: ReadonlyArray<BrowserStatePayload["intervalCoverage"][number]>;
+  providerSymbols: readonly ProviderSymbolRecord[];
+}) {
+  return [...new Set([
+    ...input.reviews.map((item) => item.instrumentId),
+    ...input.tagSuggestions.map((item) => item.instrumentId),
+    ...input.marketDataJobs.map((item) => item.instrumentId),
+    ...input.dailyCandles.map((item) => item.instrumentId),
+    ...input.marketCandles.map((item) => item.instrumentId),
+    ...input.coverage.map((item) => item.instrumentId),
+    ...input.intervalCoverage.map((item) => item.instrumentId),
+    ...input.providerSymbols.map((item) => item.instrumentId),
+  ])];
 }
 
 function clientId() {
@@ -136,23 +226,32 @@ export async function exportLegacyBrowserState(): Promise<BrowserStatePayload | 
   const hasLegacyData = rawExecutions !== null || localStorage.getItem("trade-reviewer:import-history:v1") !== null || localStorage.getItem("trade-reviewer:market-data-jobs:v1") !== null || localStorage.getItem("trade-reviewer:chart-settings:v1") !== null || Object.values(stores).some((items) => items.length > 0) || [...Array(localStorage.length)].some((_, index) => REVIEW_PREFIXES.some((prefix) => localStorage.key(index)?.startsWith(prefix)));
   if (!hasLegacyData) return null;
   const executions = rawExecutions ? deserializeImportedExecutions(rawExecutions) : [];
+  const reviews = records(stores[REVIEWS]).filter(isReview).map(normalizeEpisodeReviewRecord);
+  const states = reviewStates();
+  const suggestions = records(stores[TAG_SUGGESTIONS]).filter(isTagSuggestion).map(normalizeTagSuggestionRecord);
+  const dailyCandles = records(stores[DAILY_CANDLES]).filter(isDailyCandle);
+  const marketCandles = records(stores[MARKET_CANDLES]).filter(isMarketCandle);
+  const coverage = coverageRecords(stores[COVERAGE]);
+  const intervalCoverage = intervalCoverageRecords(stores[INTERVAL_COVERAGE]);
+  const symbols = providerSymbols(stores[PROVIDER_SYMBOLS]);
+  const jobs = loadMarketDataJobs();
   const payload = {
     version: 1 as const,
     sourceClientId: clientId(),
     sourceFingerprint: "",
     executions,
     importHistory: loadImportHistory(),
-    instruments: instrumentsFrom(executions, records<Record<string, unknown>>(stores[INSTRUMENT_METADATA])),
-    reviews: records<EpisodeReviewRecord>(stores[REVIEWS]),
-    reviewStates: reviewStates(),
-    tagSuggestions: records<TagSuggestionRecord>(stores[TAG_SUGGESTIONS]),
-    marketDataJobs: loadMarketDataJobs(),
+    instruments: instrumentsFrom(executions, records<Record<string, unknown>>(stores[INSTRUMENT_METADATA]), referencedInstrumentIds({ reviews, reviewStates: states, tagSuggestions: suggestions, marketDataJobs: jobs, dailyCandles, marketCandles, coverage, intervalCoverage, providerSymbols: symbols })),
+    reviews,
+    reviewStates: states,
+    tagSuggestions: suggestions,
+    marketDataJobs: jobs,
     settings: loadChartSettings(),
-    dailyCandles: records<DailyCandleRecord>(stores[DAILY_CANDLES]),
-    marketCandles: records<MarketCandleRecord>(stores[MARKET_CANDLES]),
-    coverage: coverageRecords(stores[COVERAGE]),
-    intervalCoverage: intervalCoverageRecords(stores[INTERVAL_COVERAGE]),
-    providerSymbols: providerSymbols(stores[PROVIDER_SYMBOLS]),
+    dailyCandles,
+    marketCandles,
+    coverage,
+    intervalCoverage,
+    providerSymbols: symbols,
   } satisfies BrowserStatePayload;
   return { ...payload, sourceFingerprint: calculateBrowserStateFingerprint(payload) };
 }

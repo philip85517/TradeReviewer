@@ -132,6 +132,20 @@ function readStoredState(key: string) {
   }
 }
 
+/** Parses a persisted review state without writing the v2 compatibility key. */
+export function parseStoredReviewState(
+  episodeId: string,
+  serialized: string | null,
+): LoadedReviewState | null {
+  if (!serialized) return null;
+  try {
+    const state = parseStoredState(JSON.parse(serialized) as unknown);
+    return state ? normalizeState(episodeId, state) : null;
+  } catch {
+    return null;
+  }
+}
+
 function toPersistedState(state: LoadedReviewState): EpisodeReviewState {
   return {
     version: 2,
@@ -159,10 +173,11 @@ export function loadReviewState(
   episodeId: string,
 ): LoadedReviewState | null {
   if (typeof window === "undefined") return null;
-  const current = readStoredState(storageKey(episodeId));
-  if (current?.version === 2) {
-    return normalizeState(episodeId, current);
-  }
+  const current = parseStoredReviewState(
+    episodeId,
+    window.localStorage.getItem(storageKey(episodeId)),
+  );
+  if (current?.version === 2) return current;
 
   const legacy = readStoredState(legacyStorageKey(episodeId));
   if (!legacy || legacy.version !== 1) return null;

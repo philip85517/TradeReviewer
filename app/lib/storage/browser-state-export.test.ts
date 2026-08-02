@@ -105,4 +105,33 @@ describe("exportLegacyBrowserState", () => {
     void sourceFingerprint;
     expect(calculateBrowserStateFingerprint(base)).toBe(createHash("sha256").update(canonicalize(state)).digest("hex"));
   });
+
+  it("infers instruments referenced only by market data and reviews", async () => {
+    await seedStore(DAILY_CANDLES, { instrumentId: "US:ORPH", tradingDate: "2025-01-02", open: "1", high: "2", low: "0.5", close: "1.5", volume: "10", currency: "USD", provider: "yahoo", providerSymbol: "ORPH", adjustmentMode: "raw", fetchedAt: "2025-01-02T03:04:05.000Z" });
+    await seedStore(REVIEWS, { version: 1, episodeId: "episode-orphan", instrumentId: "US:ORPH", updatedAt: "2025-01-02T03:04:05.000Z", plan: { thesis: "", expectedPath: "", invalidationCondition: "", targetRange: "", plannedRiskAmount: "", confidence: null }, review: { decisionQuality: null, executionQuality: null, riskManagement: "", psychology: "", reusableRule: "", completed: false }, confirmedTagIds: [] });
+
+    const payload = await exportLegacyBrowserState();
+
+    expect(payload?.instruments).toContainEqual(expect.objectContaining({ id: "US:ORPH", symbol: "ORPH", market: "US", currency: "USD" }));
+    const directory = mkdtempSync(join(tmpdir(), "tradereview-inferred-instrument-"));
+    try {
+      const store = new SqliteStore(openSqliteDatabase(join(directory, "store.sqlite")));
+      expect(() => store.mergeBrowserState(payload!)).not.toThrow();
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
+  });
+
+  it("filters malformed legacy records and does not rewrite v1 review state", async () => {
+    localStorage.setItem("trade-reviewer:review:v1:legacy", JSON.stringify({ version: 1, replayCursor: "2025-01-02T00:00:00.000Z", timeframe: "1D", thesis: "", drawings: [] }));
+    await seedStore(DAILY_CANDLES, { instrumentId: "HK:700", tradingDate: "2025-01-02", open: "1", high: "2", low: "0.5", close: "1.5", volume: "10", currency: "HKD", provider: "tencent", providerSymbol: "700", adjustmentMode: "raw", fetchedAt: "2025-01-02T03:04:05.000Z" });
+    await seedStore(REVIEWS, { episodeId: "broken" });
+
+    const payload = await exportLegacyBrowserState();
+
+    expect(payload?.reviews).toEqual([]);
+    expect(payload?.reviewStates).toEqual([expect.objectContaining({ episodeId: "legacy", version: 2 })]);
+    expect(localStorage.getItem("trade-reviewer:review:v2:legacy")).toBeNull();
+    expect(localStorage.getItem("trade-reviewer:review:v1:legacy")).not.toBeNull();
+  });
 });

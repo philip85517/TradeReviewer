@@ -6,9 +6,11 @@ import type {
   NativeMarketInterval,
 } from "../market/contracts";
 import type { EpisodeReviewRecord } from "../reviews/types";
+import type { EpisodeReviewState } from "./review-storage";
 import type { TradeExecution } from "../trades/types";
 import type { ChartSettings } from "./chart-settings";
 import type { ImportHistoryEntry } from "./import-history";
+import type { MarketDataJob } from "./market-data-jobs";
 import type {
   IntervalMarketDataCommit,
   MarketDataCommit,
@@ -112,6 +114,7 @@ export function createSqliteHttpClient(fetcher: Fetcher = fetch): {
   migrate(payload: BrowserStatePayload): Promise<MigrationReport>;
   mergeExecutions(input: MergeTradeDataInput): Promise<ExecutionMergeReport>;
   putReview(record: EpisodeReviewRecord): Promise<EpisodeReviewRecord>;
+  putReviewState(state: EpisodeReviewState): Promise<EpisodeReviewState>;
   putTagSuggestion(record: TagSuggestionRecord): Promise<TagSuggestionRecord>;
   getProviderSymbol(instrumentId: string, provider: string): Promise<string | undefined>;
   getMarketData(input: {
@@ -122,6 +125,7 @@ export function createSqliteHttpClient(fetcher: Fetcher = fetch): {
     dailyOnly?: boolean;
   }): Promise<MarketDataRead>;
   putMarketData(input: MarketDataWrite): Promise<{ ok: true }>;
+  putMarketDataJob(job: MarketDataJob): Promise<MarketDataJob>;
   getSettings(): Promise<ChartSettings>;
   putSettings(settings: ChartSettings): Promise<ChartSettings>;
 } {
@@ -131,6 +135,7 @@ export function createSqliteHttpClient(fetcher: Fetcher = fetch): {
     migrate: async (payload) => parseResponse<MigrationReport>(await fetcher("/api/storage/migrate", jsonRequest("POST", payload))),
     mergeExecutions: async (input) => parseResponse<ExecutionMergeReport>(await fetcher("/api/storage/trades", jsonRequest("PUT", input))),
     putReview: async (record) => parseResponse<EpisodeReviewRecord>(await fetcher("/api/storage/reviews", jsonRequest("PUT", record))),
+    putReviewState: async (state) => parseResponse<EpisodeReviewState>(await fetcher("/api/storage/reviews", jsonRequest("PUT", state))),
     putTagSuggestion: async (record) => parseResponse<TagSuggestionRecord>(await fetcher("/api/storage/reviews", jsonRequest("PUT", record))),
     getProviderSymbol: async (instrumentId, provider) => {
       const params = new URLSearchParams({ instrumentId, provider });
@@ -139,6 +144,7 @@ export function createSqliteHttpClient(fetcher: Fetcher = fetch): {
     },
     getMarketData: async (input) => parseResponse<MarketDataRead>(await fetcher(marketDataUrl(input), { cache: "no-store" })),
     putMarketData: async (input) => parseResponse<{ ok: true }>(await fetcher("/api/storage/market-data", jsonRequest("PUT", input))),
+    putMarketDataJob: async (job) => parseResponse<MarketDataJob>(await fetcher("/api/storage/market-data", jsonRequest("PUT", { kind: "job", job }))),
     getSettings: async () => parseResponse<ChartSettings>(await fetcher("/api/storage/settings", { cache: "no-store" })),
     putSettings: async (settings) => parseResponse<ChartSettings>(await fetcher("/api/storage/settings", jsonRequest("PUT", settings))),
   };

@@ -698,6 +698,11 @@ export class SqliteStore {
     });
   }
 
+  putMarketDataJob(job: MarketDataJob): void {
+    validateJob(job);
+    withSqliteTransaction(this.database, () => this.putMarketDataJobRecord(job));
+  }
+
   mergeBrowserState(payload: BrowserStatePayload): MigrationReport {
     validateBrowserState(payload);
     const existing = this.database.prepare("select * from data_migrations where source_fingerprint = ?").get(payload.sourceFingerprint) as Row | undefined;
@@ -756,7 +761,7 @@ export class SqliteStore {
           this.getMarketDataJobs().find((item) => item.instrumentId === job.instrumentId),
           job,
         );
-        this.putMarketDataJob(job);
+        this.putMarketDataJobRecord(job);
       }
       for (const candle of payload.dailyCandles) {
         classifyMigrationRecord(
@@ -1043,7 +1048,7 @@ export class SqliteStore {
     );
   }
 
-  private putMarketDataJob(job: MarketDataJob): void {
+  private putMarketDataJobRecord(job: MarketDataJob): void {
     validateJob(job);
     this.ensureInstrumentId(job.instrumentId);
     this.database.prepare(`

@@ -27,6 +27,14 @@ import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-d
 import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeExecution } from "../lib/trades/types";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
+import { createLegacySqliteClient } from "./test-support/legacy-sqlite-client";
+
+const mockSqliteClient = vi.hoisted(() => ({ current: undefined as unknown }));
+
+vi.mock("../lib/storage/sqlite-http-client", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../lib/storage/sqlite-http-client")>()),
+  createSqliteHttpClient: () => mockSqliteClient.current,
+}));
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -203,6 +211,7 @@ describe("TradeReviewWorkspace", () => {
     mockDispatcher.mockReset();
     mockEnrichment.mockReset();
     mockMarketDataSync.mockReset();
+    mockSqliteClient.current = createLegacySqliteClient();
     mockMarketDataSync.mockResolvedValue({
       source: "cache",
       status: "complete",

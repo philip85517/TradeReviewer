@@ -31,6 +31,8 @@ import type {
 import { requiredMarketDataRange } from "../lib/market/sync-range";
 import type { DemoReplayFrame } from "../lib/demo/replay-frame";
 import type { EpisodeReviewRecord } from "../lib/reviews/types";
+import type { SqliteHttpClient } from "../lib/storage/sqlite-http-client";
+import type { StorageBootstrap } from "../lib/storage/sqlite-contracts";
 import { IndexedDbEpisodeReviewRepository } from "../lib/storage/indexeddb-episode-review-repository";
 import {
   loadImportedExecutions,
@@ -44,6 +46,14 @@ import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeExecution } from "../lib/trades/types";
 import type { ScreenshotImportDependencies } from "./import/use-screenshot-import";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
+import { createLegacySqliteClient } from "./test-support/legacy-sqlite-client";
+
+const mockSqliteClient = vi.hoisted(() => ({ current: undefined as unknown }));
+
+vi.mock("../lib/storage/sqlite-http-client", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../lib/storage/sqlite-http-client")>()),
+  createSqliteHttpClient: () => mockSqliteClient.current,
+}));
 
 const globalStyles = postcss.parse(
   readFileSync(join(process.cwd(), "app/globals.css"), "utf8"),
@@ -477,6 +487,50 @@ describe("TradeReviewWorkspace", () => {
     mockDispatcher.mockReset();
     mockEnrichment.mockReset();
     mockMarketDataSync.mockReset();
+    mockSqliteClient.current = createLegacySqliteClient();
+  });
+
+  it("boots from the SQLite bootstrap response without reading legacy execution storage", async () => {
+    const getBootstrap = vi.fn().mockResolvedValue({
+      schemaVersion: 1,
+      migration: null,
+      executions: [availabilityExecution({
+        id: "sqlite-xpev",
+        row: 1,
+        side: "buy",
+        executedAt: "2025-01-07T14:30:00.000Z",
+      })],
+      importHistory: [],
+      instruments: [availabilityInstrument],
+      reviews: [],
+      reviewStates: [],
+      tagSuggestions: [],
+      marketDataJobs: [],
+      settings: {
+        version: 1,
+        showGrid: true,
+        showVolume: true,
+        showExecutions: true,
+        showAverageCost: true,
+        colorScheme: "teal-red",
+      },
+    } satisfies StorageBootstrap);
+    const legacyRead = vi.spyOn(
+      await import("../lib/storage/import-library"),
+      "loadImportedExecutions",
+    );
+
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+        storageClient={{ ...createLegacySqliteClient(), getBootstrap } as SqliteHttpClient}
+      />,
+    );
+
+    expect(await screen.findByText("小鹏汽车")).toBeInTheDocument();
+    expect(getBootstrap).toHaveBeenCalledOnce();
+    expect(legacyRead).not.toHaveBeenCalled();
   });
 
   it("keeps the statement input unchanged and exposes an independent multi-image screenshot input", () => {

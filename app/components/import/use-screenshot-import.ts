@@ -100,6 +100,8 @@ type SupportedReviewLayout =
         | "tiger-instrument-first-dark-v1";
     };
 
+type ImageMetadataOrigin = "matched" | "inferred";
+
 type ScreenshotSession = {
   id: number;
   resources: Map<string, ImageResource>;
@@ -108,6 +110,7 @@ type ScreenshotSession = {
   enginePromise?: Promise<LocalOcrEngine>;
   disposePromise?: Promise<void>;
   active?: { imageId: string; controller: AbortController };
+  metadataOrigins: Map<string, ImageMetadataOrigin>;
   queue: Promise<void>;
   closed: boolean;
   completing: boolean;
@@ -245,11 +248,14 @@ function supportedReviewLayout(
 function sharedSuccessfulLayout(
   state: ScreenshotReviewState,
   statuses: readonly ImageStatus[],
+  metadataOrigins: ReadonlyMap<string, ImageMetadataOrigin>,
 ): SupportedReviewLayout | undefined {
   const successfulImageIds = new Set(
     statuses
-      .filter(({ state: imageState }) =>
-        ["complete", "needs-review"].includes(imageState),
+      .filter(
+        ({ id, state: imageState }) =>
+          ["complete", "needs-review"].includes(imageState) &&
+          metadataOrigins.get(id) === "matched",
       )
       .map(({ id }) => id),
   );
@@ -280,6 +286,68 @@ function reviewImageSource(
     captureIndex: input.index,
     ...layout,
   };
+}
+
+function reconcileImageMetadata(
+  state: ScreenshotReviewState,
+  statuses: readonly ImageStatus[],
+  resources: ReadonlyMap<string, ImageResource>,
+  metadataOrigins: ReadonlyMap<string, ImageMetadataOrigin>,
+): {
+  state: ScreenshotReviewState;
+  metadataOrigins: Map<string, ImageMetadataOrigin>;
+} {
+  const nextOrigins = new Map(metadataOrigins);
+  const activeImageIds = new Set(statuses.map(({ id }) => id));
+  for (const imageId of nextOrigins.keys()) {
+    if (!activeImageIds.has(imageId)) nextOrigins.delete(imageId);
+  }
+
+  const sharedLayout = sharedSuccessfulLayout(
+    state,
+    statuses,
+    nextOrigins,
+  );
+  let nextState = state;
+  for (const status of statuses) {
+    if (status.state !== "failed") continue;
+
+    const origin = nextOrigins.get(status.id);
+    if (origin === "matched") continue;
+
+    if (!sharedLayout) {
+      if (origin === "inferred") {
+        nextState = sortReviewState({
+          ...nextState,
+          images: nextState.images.filter(
+            ({ imageId }) => imageId !== status.id,
+          ),
+        });
+        nextOrigins.delete(status.id);
+      }
+      continue;
+    }
+
+    const resource = resources.get(status.id);
+    if (!resource) continue;
+    const existing = nextState.images.find(
+      ({ imageId }) => imageId === status.id,
+    );
+    if (
+      origin === "inferred" &&
+      existing?.broker === sharedLayout.broker &&
+      existing.layoutVersion === sharedLayout.layoutVersion
+    ) {
+      continue;
+    }
+    nextState = replaceImageMetadata(
+      nextState,
+      reviewImageSource(resource.input, sharedLayout),
+    );
+    nextOrigins.set(status.id, "inferred");
+  }
+
+  return { state: nextState, metadataOrigins: nextOrigins };
 }
 
 function removeImageResult(state: ScreenshotReviewState, imageId: string) {
@@ -469,6 +537,22 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
     session.dependencies.revokeObjectUrl(resource.previewUrl);
   }, []);
 
+  const reconcileSessionMetadata = useCallback(
+    (session: ScreenshotSession) => {
+      const current = stateRef.current;
+      if (!current || !isActive(session)) return;
+      const reconciled = reconcileImageMetadata(
+        current,
+        statusesRef.current,
+        session.resources,
+        session.metadataOrigins,
+      );
+      session.metadataOrigins = reconciled.metadataOrigins;
+      if (reconciled.state !== current) updateReview(reconciled.state);
+    },
+    [isActive, updateReview],
+  );
+
   const closeSession = useCallback(
     (session: ScreenshotSession, resetView: boolean) => {
       if (!session.closed) {
@@ -581,6 +665,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
           ...status,
           state: "queued",
         }));
+        session.metadataOrigins.set(imageId, "matched");
         updateReview(
           replaceImageResult(
             current,
@@ -588,6 +673,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
             drafts,
           ),
         );
+        reconcileSessionMetadata(session);
       } catch (error) {
         if (
           !isAbortError(error) &&
@@ -595,24 +681,21 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
           session.resources.has(imageId)
         ) {
           const current = stateRef.current;
-          const recoveryLayout =
-            matchedLayout ||
-            (current
-              ? sharedSuccessfulLayout(current, statusesRef.current)
-              : undefined);
           updateStatus(imageId, (status) => ({
             ...status,
             state: "failed",
             error: messageFor(error),
           }));
-          if (current && recoveryLayout) {
+          if (current && matchedLayout) {
+            session.metadataOrigins.set(imageId, "matched");
             updateReview(
               replaceImageMetadata(
                 current,
-                reviewImageSource(resource.input, recoveryLayout),
+                reviewImageSource(resource.input, matchedLayout),
               ),
             );
           }
+          reconcileSessionMetadata(session);
         }
       } finally {
         if (session.active?.controller === controller) {
@@ -620,7 +703,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
         }
       }
     },
-    [isActive, updateReview, updateStatus],
+    [isActive, reconcileSessionMetadata, updateReview, updateStatus],
   );
 
   const start = useCallback(
@@ -636,6 +719,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
         resources: new Map(),
         dependencies,
         engineCreationBarrier: disposalTailRef.current,
+        metadataOrigins: new Map(),
         queue: Promise.resolve(),
         closed: false,
         completing: false,
@@ -742,10 +826,20 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
       setStatusList(
         statusesRef.current.filter((status) => status.id !== imageId),
       );
+      session.metadataOrigins.delete(imageId);
       const current = stateRef.current;
-      if (current) updateReview(removeImageResult(current, imageId));
+      if (current) {
+        updateReview(removeImageResult(current, imageId));
+        reconcileSessionMetadata(session);
+      }
     },
-    [isActive, releaseResource, setStatusList, updateReview],
+    [
+      isActive,
+      reconcileSessionMetadata,
+      releaseResource,
+      setStatusList,
+      updateReview,
+    ],
   );
 
   const dispatch = useCallback(

@@ -122,20 +122,17 @@ describe("exportLegacyBrowserState", () => {
     }
   });
 
-  it("filters malformed legacy records and does not rewrite v1 review state", async () => {
+  it("rejects malformed legacy records and does not rewrite v1 review state", async () => {
     localStorage.setItem("trade-reviewer:review:v1:legacy", JSON.stringify({ version: 1, replayCursor: "2025-01-02T00:00:00.000Z", timeframe: "1D", thesis: "", drawings: [] }));
     await seedStore(DAILY_CANDLES, { instrumentId: "HK:700", tradingDate: "2025-01-02", open: "1", high: "2", low: "0.5", close: "1.5", volume: "10", currency: "HKD", provider: "tencent", providerSymbol: "700", adjustmentMode: "raw", fetchedAt: "2025-01-02T03:04:05.000Z" });
     await seedStore(REVIEWS, { episodeId: "broken" });
 
-    const payload = await exportLegacyBrowserState();
-
-    expect(payload?.reviews).toEqual([]);
-    expect(payload?.reviewStates).toEqual([expect.objectContaining({ episodeId: "legacy", version: 2 })]);
+    await expect(exportLegacyBrowserState()).rejects.toThrow("Invalid legacy reviews");
     expect(localStorage.getItem("trade-reviewer:review:v2:legacy")).toBeNull();
     expect(localStorage.getItem("trade-reviewer:review:v1:legacy")).not.toBeNull();
   });
 
-  it("filters invalid coverage and tag optionals while keeping valid sibling records", async () => {
+  it("rejects invalid coverage and tag records instead of silently dropping them", async () => {
     await seedStore(COVERAGE, { instrumentId: "HK:700", segments: [
       { startDate: "2025-01-01", endDate: "2025-01-02", status: "unexpected", missingTradingDates: [] },
       { startDate: "2025-01-03", endDate: "2025-01-04", status: "partial", provider: "tencent", fetchedAt: "2025-01-04T00:00:00.000Z", missingTradingDates: [], reason: "late source" },
@@ -148,10 +145,18 @@ describe("exportLegacyBrowserState", () => {
     await seedStore(TAG_SUGGESTIONS, { ...validTag, id: "bad-tag", finalTagId: 1 });
     await seedStore(TAG_SUGGESTIONS, validTag);
 
-    const payload = await exportLegacyBrowserState();
+    await expect(exportLegacyBrowserState()).rejects.toThrow("Invalid legacy tag suggestions");
+  });
 
-    expect(payload?.coverage).toEqual([expect.objectContaining({ segments: [expect.objectContaining({ startDate: "2025-01-03" })] })]);
-    expect(payload?.intervalCoverage).toEqual([expect.objectContaining({ requestedStart: "2025-01-02T00:00:00.000Z" })]);
-    expect(payload?.tagSuggestions).toEqual([validTag]);
+  it("excludes the built-in XPEV demo from production migration payloads", async () => {
+    const demo: TradeExecution = { ...execution, id: "demo-execution", source: { platform: "demo", row: 0 }, instrument: { id: "US:XPEV", symbol: "XPEV", name: "小鹏汽车", market: "US", currency: "USD" } };
+    localStorage.setItem("trade-reviewer:executions:v1", JSON.stringify({ version: 1, executions: [demo] }));
+    localStorage.setItem("trade-reviewer:review:v2:demo-xpev-2025", JSON.stringify({ version: 2, episodeId: "demo-xpev-2025", replayCursor: "2025-01-01T00:00:00.000Z", timeframe: "1D", activePanelTab: "stats", drawings: [] }));
+
+    const payload = await exportLegacyBrowserState({ excludeDemo: true });
+
+    expect(payload?.executions).toEqual([]);
+    expect(payload?.instruments).not.toEqual(expect.arrayContaining([expect.objectContaining({ id: "US:XPEV" })]));
+    expect(payload?.reviewStates).toEqual([]);
   });
 });

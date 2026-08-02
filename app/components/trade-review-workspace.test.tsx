@@ -537,9 +537,14 @@ describe("TradeReviewWorkspace", () => {
       schemaVersion: 1, migration: null, executions: [], importHistory: [], instruments: [], reviews: [], reviewStates: [], tagSuggestions: [], marketDataJobs: [],
       settings: { version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" },
     };
-    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={{ ...createLegacySqliteClient(), getBootstrap: vi.fn().mockResolvedValue(bootstrap) } as SqliteHttpClient} legacyStateExporter={vi.fn().mockResolvedValue(null)} />);
+    const client = createLegacySqliteClient();
+    const putReviewState = vi.fn(client.putReviewState);
+    const exporter = vi.fn().mockResolvedValue(null);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={{ ...client, getBootstrap: vi.fn().mockResolvedValue(bootstrap), putReviewState } as SqliteHttpClient} legacyStateExporter={exporter} />);
     expect(await screen.findByText("暂无导入股票，请先导入交易记录。")).toBeInTheDocument();
     expect(screen.queryByText("小鹏汽车")).not.toBeInTheDocument();
+    expect(exporter).toHaveBeenCalledWith({ excludeDemo: true });
+    expect(putReviewState).not.toHaveBeenCalled();
   });
 
   it("does not export legacy browser state after the SQLite server confirms migration", async () => {
@@ -809,6 +814,7 @@ describe("TradeReviewWorkspace", () => {
           executions: expect.arrayContaining([
             expect.objectContaining({ id: "existing-nvda" }),
           ]),
+          replaceExecutionIds: ["existing-msft"],
           importHistory: expect.arrayContaining([
             expect.objectContaining({
               sourceKind: "screenshot",

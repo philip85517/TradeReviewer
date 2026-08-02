@@ -11,6 +11,9 @@ function nonEmpty(value: string | null) { return value !== null && value.trim().
 function isReview(value: unknown): value is EpisodeReviewRecord { return Boolean(value && typeof value === "object" && (value as { version?: unknown }).version === 1 && "plan" in value && "review" in value); }
 function isSuggestion(value: unknown): value is TagSuggestionRecord { return Boolean(value && typeof value === "object" && (value as { version?: unknown }).version === 1 && "tagId" in value && !("plan" in value)); }
 function isReviewState(value: unknown): value is EpisodeReviewState { return Boolean(value && typeof value === "object" && (value as { version?: unknown }).version === 2 && "drawings" in value && "replayCursor" in value); }
+function isSuggestionDecision(value: unknown): value is { kind: "suggestion-decision"; suggestion: TagSuggestionRecord; review: EpisodeReviewRecord } {
+  return Boolean(value && typeof value === "object" && (value as { kind?: unknown }).kind === "suggestion-decision" && isSuggestion((value as { suggestion?: unknown }).suggestion) && isReview((value as { review?: unknown }).review));
+}
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -33,6 +36,7 @@ export async function PUT(request: Request) {
     const store = getSqliteStore(openSqliteDatabase());
     if (isReview(body)) return store.putReview(body) ? response(body) : error("conflict", 409);
     if (isReviewState(body)) { store.putReviewState(body); return response(body); }
+    if (isSuggestionDecision(body)) return store.putSuggestionDecision(body) ? response({ suggestion: body.suggestion, review: body.review }) : error("conflict", 409);
     if (isSuggestion(body)) { store.putTagSuggestion(body); return response(body); }
     return error("invalid-request", 400);
   } catch (caught) {

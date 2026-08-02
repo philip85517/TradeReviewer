@@ -51,6 +51,13 @@ export type MergeTradeDataInput = {
   executions: TradeExecution[];
   instruments?: StoredInstrument[];
   importHistory?: ImportHistoryEntry[];
+  /** Existing execution ids intentionally removed by a client reconciliation decision. */
+  replaceExecutionIds?: string[];
+};
+
+export type SuggestionDecisionInput = {
+  suggestion: TagSuggestionRecord;
+  review: EpisodeReviewRecord;
 };
 
 export type SqliteHttpClient = ReturnType<typeof createSqliteHttpClient>;
@@ -116,6 +123,7 @@ export function createSqliteHttpClient(fetcher: Fetcher = fetch): {
   putReview(record: EpisodeReviewRecord): Promise<EpisodeReviewRecord>;
   putReviewState(state: EpisodeReviewState): Promise<EpisodeReviewState>;
   putTagSuggestion(record: TagSuggestionRecord): Promise<TagSuggestionRecord>;
+  putSuggestionDecision(input: SuggestionDecisionInput): Promise<SuggestionDecisionInput>;
   getProviderSymbol(instrumentId: string, provider: string): Promise<string | undefined>;
   getMarketData(input: {
     instrumentId: string;
@@ -137,6 +145,7 @@ export function createSqliteHttpClient(fetcher: Fetcher = fetch): {
     putReview: async (record) => parseResponse<EpisodeReviewRecord>(await fetcher("/api/storage/reviews", jsonRequest("PUT", record))),
     putReviewState: async (state) => parseResponse<EpisodeReviewState>(await fetcher("/api/storage/reviews", jsonRequest("PUT", state))),
     putTagSuggestion: async (record) => parseResponse<TagSuggestionRecord>(await fetcher("/api/storage/reviews", jsonRequest("PUT", record))),
+    putSuggestionDecision: async (input) => parseResponse<SuggestionDecisionInput>(await fetcher("/api/storage/reviews", jsonRequest("PUT", { kind: "suggestion-decision", ...input }))),
     getProviderSymbol: async (instrumentId, provider) => {
       const params = new URLSearchParams({ instrumentId, provider });
       const result = await parseResponse<{ providerSymbol: string | null }>(await fetcher(`/api/storage/market-data?${params.toString()}`, { cache: "no-store" }));

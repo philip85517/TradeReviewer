@@ -193,7 +193,7 @@ async function createSqliteOperationalSandbox() {
   await chmod(join(binDir, "docker"), 0o755);
   const initialized = await runProcess("/usr/bin/sqlite3", [
     databasePath,
-    "CREATE TABLE state(value TEXT NOT NULL); INSERT INTO state VALUES('before');",
+    "CREATE TABLE state(value TEXT NOT NULL); INSERT INTO state VALUES('before'); CREATE TABLE data_migrations(source_fingerprint TEXT, version INTEGER, status TEXT, completed_at TEXT, counts_json TEXT, validation_digest TEXT); INSERT INTO data_migrations VALUES ('fixture', 1, 'complete', '2026-08-02T00:00:00.000Z', '{\"inserted\":1}', 'fixture-digest');",
   ]);
   if (initialized.exitCode !== 0) throw new Error(initialized.stderr);
 
@@ -397,7 +397,7 @@ describe("SQLite operations", () => {
       const metadata = JSON.parse(await readFile(`${publishedPath}.metadata.json`, "utf8"));
       expect(metadata).toMatchObject({
         schemaVersion: 0,
-        dataMigrations: [],
+        dataMigrations: [{ version: 1, status: "complete" }],
         recordCounts: { instruments: 0, executions: 0 },
       });
       const backedUpValue = await runProcess("/usr/bin/sqlite3", [publishedPath, "SELECT value FROM state;"]);
@@ -539,6 +539,8 @@ describe("SQLite operations", () => {
 
     expect(healthcheck).toContain("compose ps");
     expect(healthcheck).toContain("fetch(");
+    expect(await readManifest("deploy/compose.yaml")).toContain("/api/storage/status");
+    expect(backup).not.toContain('sqlite_query_backup \\\"select');
     expect(status).toContain("active release");
     expect(status).toContain("retained releases");
     expect(status).toContain("checksum");
@@ -600,12 +602,11 @@ describe("SQLite operations", () => {
         `
           CREATE TABLE schema_migrations(version INTEGER NOT NULL);
           INSERT INTO schema_migrations VALUES (3);
-          CREATE TABLE data_migrations(source_fingerprint TEXT, version INTEGER, status TEXT, completed_at TEXT, counts_json TEXT);
-          INSERT INTO data_migrations VALUES ('browser-1', 1, 'complete', '2026-08-02T00:00:00.000Z', '{"instruments":2,"executions":3}');
           CREATE TABLE instruments(id TEXT);
           INSERT INTO instruments VALUES ('HK:700'), ('US:MSFT');
           CREATE TABLE executions(id TEXT);
           INSERT INTO executions VALUES ('trade-1'), ('trade-2'), ('trade-3');
+          UPDATE data_migrations SET counts_json = '{"instruments":2,"executions":3}', validation_digest = 'fixture-digest';
         `,
       ]);
       expect(initialized.exitCode).toBe(0);
@@ -615,12 +616,14 @@ describe("SQLite operations", () => {
       expect(result).toMatchObject({ exitCode: 0 });
       expect(result.stdout).toContain("schema version: 3");
       expect(result.stdout).toContain("data migration status: complete (1)");
+      expect(result.stdout).toContain('data migration counts: {"instruments":2,"executions":3}');
+      expect(result.stdout).toContain("data migration validation digest: fixture-digest");
       expect(result.stdout).toContain("business records: instruments=2");
       expect(result.stdout).toContain("executions=3");
     } finally {
       await rm(fixture.sandbox, { recursive: true, force: true });
     }
-  });
+  }, 30_000);
 
   test("rejects unsafe restore inputs before touching the database", async () => {
     const fixture = await createOperationalSandbox();

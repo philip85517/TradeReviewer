@@ -1313,12 +1313,10 @@ describe("TradeReviewWorkspace", () => {
     });
     vi.mocked(fetch).mockClear();
     const client = createLegacySqliteClient();
-    const putTagSuggestion = vi.fn(client.putTagSuggestion);
-    const putReview = vi.fn(client.putReview);
+    const putSuggestionDecision = vi.fn(client.putSuggestionDecision);
     mockSqliteClient.current = {
       ...client,
-      putTagSuggestion,
-      putReview,
+      putSuggestionDecision,
     };
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
@@ -1353,19 +1351,12 @@ describe("TradeReviewWorkspace", () => {
     );
 
     await waitFor(() =>
-      expect(putTagSuggestion).toHaveBeenCalledWith(
+      expect(putSuggestionDecision).toHaveBeenCalledWith(
         expect.objectContaining({
-          episodeId: episode.id,
-          status: "edited",
-          finalTagId: "planned",
+          suggestion: expect.objectContaining({ episodeId: episode.id, status: "edited", finalTagId: "planned" }),
+          review: expect.objectContaining({ episodeId: episode.id, confirmedTagIds: expect.arrayContaining(["planned"]) }),
         }),
       ),
-    );
-    expect(putReview).toHaveBeenCalledWith(
-      expect.objectContaining({
-        episodeId: episode.id,
-        confirmedTagIds: expect.arrayContaining(["planned"]),
-      }),
     );
 
     expect(await screen.findByText("暂无待确认建议")).toBeInTheDocument();

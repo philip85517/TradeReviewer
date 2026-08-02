@@ -16,8 +16,8 @@ describe("storage trades route", () => {
   it("reads and writes a validated merge with no-store", async () => {
     openSqliteDatabase.mockReturnValue({}); mergeTradeData.mockReturnValue({ inserted: 1, duplicate: 0, conflict: 0 });
     getExecutions.mockReturnValue([execution]); getImportHistory.mockReturnValue([]); getInstruments.mockReturnValue([instrument]);
-    expect((await PUT(request({ executions: [execution], instruments: [instrument] }))).status).toBe(200);
-    expect(mergeTradeData).toHaveBeenCalledWith({ executions: [execution], instruments: [instrument] });
+    expect((await PUT(request({ executions: [execution], instruments: [instrument], replaceExecutionIds: ["old-id"] }))).status).toBe(200);
+    expect(mergeTradeData).toHaveBeenCalledWith({ executions: [execution], instruments: [instrument], replaceExecutionIds: ["old-id"] });
     const response = await GET(); expect(response.headers.get("cache-control")).toBe("no-store"); expect(await response.json()).toMatchObject({ executions: [execution] });
   });
   it("rejects malformed payloads and maps unknown instruments", async () => {

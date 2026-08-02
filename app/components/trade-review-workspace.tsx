@@ -184,7 +184,7 @@ type Props = {
   screenshotImportDependencies?: Partial<ScreenshotImportDependencies>;
   /** Injectable only for integration tests; production creates the HTTP client. */
   storageClient?: SqliteHttpClient;
-  legacyStateExporter?: () => Promise<import("../lib/storage/sqlite-contracts").BrowserStatePayload | null>;
+  legacyStateExporter?: (options?: { excludeDemo?: boolean }) => Promise<import("../lib/storage/sqlite-contracts").BrowserStatePayload | null>;
 };
 
 const DEFAULT_CHART_SETTINGS: ChartSettings = {
@@ -1229,7 +1229,7 @@ function isAbortError(error: unknown) {
         setStorageError(null);
         let bootstrap = await storageClient.getBootstrap();
         if (!bootstrap.migration) {
-          const legacyState = await legacyStateExporter();
+          const legacyState = await legacyStateExporter({ excludeDemo: !showDemo });
           if (legacyState) {
             setStorageState("migration");
             await migrateLegacyBrowserState(storageClient, legacyState, {
@@ -1239,17 +1239,20 @@ function isAbortError(error: unknown) {
           }
         }
         if (!active) return;
+        const productionExecutions = showDemo
+          ? bootstrap.executions
+          : bootstrap.executions.filter((execution) => execution.source.platform !== "demo");
         const storedSummaries = buildInstrumentTradeSummaries(
-          bootstrap.executions,
+          productionExecutions,
         );
         const jobs = new Map(
           bootstrap.marketDataJobs.map((job) => [job.instrumentId, job.status]),
         );
         const states = Object.fromEntries(
-          bootstrap.reviewStates.map((state) => [state.episodeId, state]),
+          bootstrap.reviewStates.filter((state) => showDemo || state.episodeId !== REVIEW_ID).map((state) => [state.episodeId, state]),
         );
         const reviews = Object.fromEntries(
-          bootstrap.reviews.map((record) => [record.episodeId, record]),
+          bootstrap.reviews.filter((record) => showDemo || record.episodeId !== REVIEW_ID).map((record) => [record.episodeId, record]),
         );
         if (showDemo && !reviews[REVIEW_ID]) {
           reviews[REVIEW_ID] = defaultReviewRecord(
@@ -1258,13 +1261,13 @@ function isAbortError(error: unknown) {
             DEFAULT_THESIS,
           );
         }
-        importedExecutionsRef.current = bootstrap.executions;
-        setImportedExecutions(bootstrap.executions);
+        importedExecutionsRef.current = productionExecutions;
+        setImportedExecutions(productionExecutions);
         setImportHistory(bootstrap.importHistory);
         setReviewStates(states);
         setEpisodeReviews(reviews);
         setReviewsHydrated(true);
-        setSuggestionDecisions(bootstrap.tagSuggestions);
+        setSuggestionDecisions(bootstrap.tagSuggestions.filter((suggestion) => showDemo || suggestion.episodeId !== REVIEW_ID));
         setSuggestionsHydrated(true);
         setSettings(isChartSettings(bootstrap.settings) ? bootstrap.settings : DEFAULT_CHART_SETTINGS);
         setMarketStates(
@@ -1416,7 +1419,7 @@ function isAbortError(error: unknown) {
   ]);
 
   useEffect(() => {
-    if (!hydrated || restoring || !activeEpisodeId) return;
+    if (!hydrated || restoring || !activeEpisodeId || (!showDemo && !selectedImportedInstrument)) return;
     const state: EpisodeReviewState = {
       version: 2,
       episodeId: activeEpisodeId,
@@ -1437,6 +1440,8 @@ function isAbortError(error: unknown) {
     restoring,
     storageClient,
     timeframe,
+    showDemo,
+    selectedImportedInstrument,
   ]);
 
   useEffect(() => {
@@ -2053,6 +2058,10 @@ function isAbortError(error: unknown) {
       mergeBase,
       pendingImport.records,
     );
+    const mergedIds = new Set(mergedExecutions.map((execution) => execution.id));
+    const replaceExecutionIds = currentExecutions
+      .filter((execution) => !mergedIds.has(execution.id))
+      .map((execution) => execution.id);
     const summaries = buildInstrumentTradeSummaries(mergedExecutions);
     const importedAt = new Date().toISOString();
     const historyEntry: ImportHistoryEntry = {
@@ -2085,6 +2094,7 @@ function isAbortError(error: unknown) {
         executions: mergedExecutions,
         instruments: summaries.map(({ instrument }) => instrument),
         importHistory: [historyEntry],
+        ...(replaceExecutionIds.length > 0 ? { replaceExecutionIds } : {}),
       });
     } catch {
       setImportError(
@@ -2202,11 +2212,7 @@ function isAbortError(error: unknown) {
         ...new Set([...current.confirmedTagIds, finalTagId]),
       ],
     };
-    await suggestionRepository.put(decided);
-    const persistedReview = await reviewRepository.put(review);
-    if (!persistedReview) {
-      throw new Error("确认建议时未写入复盘记录");
-    }
+    await storageClient.putSuggestionDecision({ suggestion: decided, review });
     setSuggestionDecisions((records) => [
       ...records.filter(({ id }) => id !== decided.id),
       decided,

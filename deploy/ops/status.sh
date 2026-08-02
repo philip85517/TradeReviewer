@@ -99,7 +99,7 @@ sqlite_scalar_or_unavailable() {
 }
 
 report_sqlite_business_state() {
-  local schema_version migration_status table_name count table_names
+  local schema_version migration_status migration_counts migration_digest table_name count table_names
   local -a record_counts=()
   local -a business_tables=(
     instruments import_batches executions reviews daily_candles market_candles coverage
@@ -114,10 +114,16 @@ report_sqlite_business_state() {
   printf 'schema version: %s\n' "$schema_version"
 
   migration_status='not migrated'
+  migration_counts='unavailable'
+  migration_digest='unavailable'
   if sqlite_table_is_present "$table_names" data_migrations; then
     migration_status="$(sqlite_scalar_or_unavailable "select coalesce((select status || ' (' || version || ')' from data_migrations order by completed_at desc, source_fingerprint desc limit 1), 'none');")"
+    migration_counts="$(sqlite_scalar_or_unavailable "select coalesce((select counts_json from data_migrations order by completed_at desc, source_fingerprint desc limit 1), '{}');")"
+    migration_digest="$(sqlite_scalar_or_unavailable "select coalesce((select validation_digest from data_migrations order by completed_at desc, source_fingerprint desc limit 1), '');")"
   fi
   printf 'data migration status: %s\n' "$migration_status"
+  printf 'data migration counts: %s\n' "$migration_counts"
+  printf 'data migration validation digest: %s\n' "$migration_digest"
 
   for table_name in "${business_tables[@]}"; do
     count=0

@@ -6,7 +6,7 @@
 import type { CoverageSegment, DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord } from "../market/contracts";
 import { loadChartSettings } from "./chart-settings";
 import { loadImportHistory } from "./import-history";
-import { deserializeImportedExecutions, IMPORTED_EXECUTIONS_STORAGE_KEY } from "./import-library";
+import { isSerializedExecution, IMPORTED_EXECUTIONS_STORAGE_KEY } from "./import-library";
 import {
   COVERAGE,
   DAILY_CANDLES,
@@ -37,8 +37,22 @@ const COVERAGE_STATUSES = new Set([
   "invalid-response", "storage-error",
 ]);
 
+export type BrowserStateExportOptions = { excludeDemo?: boolean };
+const DEMO_REVIEW_ID = "demo-xpev-2025";
+const DEMO_INSTRUMENT_ID = "US:XPEV";
+
 function records<T>(value: unknown): T[] {
   return Array.isArray(value) ? value as T[] : [];
+}
+
+function strictRecords<T>(value: unknown, label: string, predicate: (item: unknown) => item is T): T[] {
+  if (!Array.isArray(value)) throw new Error(`Invalid legacy ${label}`);
+  if (value.some((item) => !predicate(item))) throw new Error(`Invalid legacy ${label}`);
+  return value;
+}
+
+function parseLegacyJson(serialized: string, label: string): unknown {
+  try { return JSON.parse(serialized) as unknown; } catch { throw new Error(`Invalid legacy ${label}`); }
 }
 
 function record(value: unknown): Record<string, unknown> | null {
@@ -111,7 +125,7 @@ function instrumentsFrom(
     const market = typeof record.market === "string" ? record.market : "";
     const symbol = typeof record.symbol === "string" ? record.symbol : "";
     const name = typeof record.name === "string" ? record.name : "";
-    if (!instrumentId || !market || !symbol || !name || !["US", "HK", "CN-SH", "CN-SZ"].includes(market)) continue;
+    if (!instrumentId || !market || !symbol || !name || !["US", "HK", "CN-SH", "CN-SZ"].includes(market)) throw new Error("Invalid legacy instrument metadata");
     let resolved;
     try {
       resolved = validateResolvedInstrument(record, {
@@ -119,7 +133,7 @@ function instrumentsFrom(
         symbol,
       });
     } catch {
-      continue;
+      throw new Error("Invalid legacy instrument metadata");
     }
     const existing = result.get(instrumentId);
     result.set(instrumentId, {
@@ -136,7 +150,7 @@ function instrumentsFrom(
     const separator = instrumentId.indexOf(":");
     const market = separator > 0 ? instrumentId.slice(0, separator) : "";
     const symbol = separator > 0 ? instrumentId.slice(separator + 1) : "";
-    if (!symbol || !["US", "HK", "CN-SH", "CN-SZ"].includes(market)) continue;
+    if (!symbol || !["US", "HK", "CN-SH", "CN-SZ"].includes(market)) throw new Error("Invalid legacy instrument reference");
     result.set(instrumentId, {
       id: instrumentId,
       symbol,
@@ -159,7 +173,9 @@ function reviewStates(): BrowserStatePayload["reviewStates"] {
   }
   return [...episodeIds].flatMap((episodeId) => {
     for (const prefix of REVIEW_PREFIXES) {
-      const state = parseStoredReviewState(episodeId, localStorage.getItem(`${prefix}${episodeId}`));
+      const serialized = localStorage.getItem(`${prefix}${episodeId}`);
+      const state = parseStoredReviewState(episodeId, serialized);
+      if (serialized !== null && !state) throw new Error("Invalid legacy review state");
       if (state) return [state];
     }
     return [];
@@ -169,8 +185,8 @@ function reviewStates(): BrowserStatePayload["reviewStates"] {
 function coverageRecords(value: unknown): CoverageRecord[] {
   return records<{ instrumentId?: unknown; segments?: unknown }>(value).flatMap((record) => {
     const instrumentId = record.instrumentId;
-    if (typeof instrumentId !== "string" || !Array.isArray(record.segments)) return [];
-    const segments = record.segments.filter(isCoverageSegment);
+    if (typeof instrumentId !== "string" || !Array.isArray(record.segments) || record.segments.some((segment) => !isCoverageSegment(segment))) throw new Error("Invalid legacy coverage");
+    const segments = record.segments as CoverageSegment[];
     return [{
       instrumentId,
       adjustmentMode: "raw" as const,
@@ -185,8 +201,8 @@ function intervalCoverageRecords(value: unknown): BrowserStatePayload["intervalC
   return records<{ instrumentId?: unknown; interval?: unknown; segments?: unknown }>(value).flatMap((record) => {
     const instrumentId = record.instrumentId;
     const interval = record.interval;
-    if (typeof instrumentId !== "string" || (interval !== "15m" && interval !== "1D") || !Array.isArray(record.segments)) return [];
-    return record.segments.filter(isIntervalCoverageSegment).map((segment) => ({
+    if (typeof instrumentId !== "string" || (interval !== "15m" && interval !== "1D") || !Array.isArray(record.segments) || record.segments.some((segment) => !isIntervalCoverageSegment(segment))) throw new Error("Invalid legacy interval coverage");
+    return (record.segments as IntervalCoverageSegment[]).map((segment) => ({
       instrumentId,
       adjustmentMode: "raw" as const,
       ...(segment as IntervalCoverageSegment),
@@ -196,11 +212,10 @@ function intervalCoverageRecords(value: unknown): BrowserStatePayload["intervalC
 }
 
 function providerSymbols(value: unknown): ProviderSymbolRecord[] {
-  return records<{ instrumentId?: unknown; provider?: unknown; symbol?: unknown }>(value).flatMap((record) =>
-    typeof record.instrumentId === "string" && typeof record.provider === "string" && typeof record.symbol === "string"
-      ? [{ instrumentId: record.instrumentId, provider: record.provider, providerSymbol: record.symbol }]
-      : [],
-  );
+  return records<{ instrumentId?: unknown; provider?: unknown; symbol?: unknown }>(value).map((record) => {
+    if (typeof record.instrumentId !== "string" || typeof record.provider !== "string" || typeof record.symbol !== "string") throw new Error("Invalid legacy provider symbol");
+    return { instrumentId: record.instrumentId, provider: record.provider, providerSymbol: record.symbol };
+  });
 }
 
 function referencedInstrumentIds(input: {
@@ -234,21 +249,49 @@ function clientId() {
   return next;
 }
 
-export async function exportLegacyBrowserState(): Promise<BrowserStatePayload | null> {
+export async function exportLegacyBrowserState(options: BrowserStateExportOptions = {}): Promise<BrowserStatePayload | null> {
   if (typeof window === "undefined" || typeof indexedDB === "undefined") return null;
   const rawExecutions = localStorage.getItem(IMPORTED_EXECUTIONS_STORAGE_KEY);
   const stores = await readAllTradeReviewStores(DATABASE_NAME);
   const hasLegacyData = rawExecutions !== null || localStorage.getItem("trade-reviewer:import-history:v1") !== null || localStorage.getItem("trade-reviewer:market-data-jobs:v1") !== null || localStorage.getItem("trade-reviewer:chart-settings:v1") !== null || Object.values(stores).some((items) => items.length > 0) || [...Array(localStorage.length)].some((_, index) => REVIEW_PREFIXES.some((prefix) => localStorage.key(index)?.startsWith(prefix)));
   if (!hasLegacyData) return null;
-  const executions = rawExecutions ? deserializeImportedExecutions(rawExecutions) : [];
-  const reviews = records(stores[REVIEWS]).filter(isReview).map(normalizeEpisodeReviewRecord);
+  let executions: TradeExecution[] = [];
+  if (rawExecutions) {
+    const parsed = parseLegacyJson(rawExecutions, "executions") as Record<string, unknown>;
+    if (parsed.version !== 1 || !Array.isArray(parsed.executions)) throw new Error("Invalid legacy executions");
+    executions = strictRecords(parsed.executions, "executions", isSerializedExecution);
+  }
+  const reviews = strictRecords(stores[REVIEWS], "reviews", isReview).map(normalizeEpisodeReviewRecord);
   const states = reviewStates();
-  const suggestions = records(stores[TAG_SUGGESTIONS]).filter(isTagSuggestion).map(normalizeTagSuggestionRecord);
-  const dailyCandles = records(stores[DAILY_CANDLES]).filter(isDailyCandle);
-  const marketCandles = records(stores[MARKET_CANDLES]).filter(isMarketCandle);
+  const suggestions = strictRecords(stores[TAG_SUGGESTIONS], "tag suggestions", isTagSuggestion).map(normalizeTagSuggestionRecord);
+  const dailyCandles = strictRecords(stores[DAILY_CANDLES], "daily candles", isDailyCandle);
+  const marketCandles = strictRecords(stores[MARKET_CANDLES], "market candles", isMarketCandle);
   const coverage = coverageRecords(stores[COVERAGE]);
   const intervalCoverage = intervalCoverageRecords(stores[INTERVAL_COVERAGE]);
   const symbols = providerSymbols(stores[PROVIDER_SYMBOLS]);
+  const jobsRaw = localStorage.getItem("trade-reviewer:market-data-jobs:v1");
+  if (jobsRaw) {
+    const parsed = parseLegacyJson(jobsRaw, "market data jobs") as Record<string, unknown>;
+    if ((parsed.version !== 1 && parsed.version !== 2) || !Array.isArray(parsed.jobs)) throw new Error("Invalid legacy market data jobs");
+    const statuses = new Set(["not-requested", "syncing", "complete", "partial", "stale", "source-rate-limited", "source-forbidden", "source-unavailable", "invalid-response", "storage-error", "needs-provider", "ready", "error"]);
+    if (parsed.jobs.some((job) => {
+      if (!job || typeof job !== "object") return true;
+      const item = job as Record<string, unknown>;
+      if (typeof item.instrumentId !== "string" || typeof item.symbol !== "string" || typeof item.market !== "string" || typeof item.requestedAt !== "string" || typeof item.status !== "string" || !statuses.has(item.status)) return true;
+      if (parsed.version === 2 && (!Array.isArray(item.intervals) || item.intervals.some((interval) => !interval || typeof interval !== "object" || !((interval as Record<string, unknown>).interval === "15m" || (interval as Record<string, unknown>).interval === "1D") || typeof (interval as Record<string, unknown>).status !== "string" || !statuses.has((interval as Record<string, unknown>).status as string)))) return true;
+      return false;
+    })) throw new Error("Invalid legacy market data jobs");
+  }
+  const historyRaw = localStorage.getItem("trade-reviewer:import-history:v1");
+  if (historyRaw) {
+    const parsed = parseLegacyJson(historyRaw, "import history");
+    if (!Array.isArray(parsed) || parsed.some((entry) => !entry || typeof entry !== "object" || typeof (entry as Record<string, unknown>).id !== "string" || typeof (entry as Record<string, unknown>).fileName !== "string" || typeof (entry as Record<string, unknown>).importedAt !== "string" || typeof (entry as Record<string, unknown>).tradeCount !== "number" || typeof (entry as Record<string, unknown>).instrumentCount !== "number" || typeof (entry as Record<string, unknown>).excludedInstrumentCount !== "number")) throw new Error("Invalid legacy import history");
+  }
+  const settingsRaw = localStorage.getItem("trade-reviewer:chart-settings:v1");
+  if (settingsRaw) {
+    const parsed = parseLegacyJson(settingsRaw, "chart settings") as Record<string, unknown>;
+    if (parsed.version !== 1 || typeof parsed.showGrid !== "boolean" || typeof parsed.showVolume !== "boolean" || typeof parsed.showExecutions !== "boolean" || typeof parsed.showAverageCost !== "boolean" || !["teal-red", "green-red", "blue-orange"].includes(parsed.colorScheme as string)) throw new Error("Invalid legacy chart settings");
+  }
   const jobs = loadMarketDataJobs();
   const payload = {
     version: 1 as const,
@@ -268,7 +311,25 @@ export async function exportLegacyBrowserState(): Promise<BrowserStatePayload | 
     intervalCoverage,
     providerSymbols: symbols,
   } satisfies BrowserStatePayload;
-  return { ...payload, sourceFingerprint: calculateBrowserStateFingerprint(payload) };
+  if (!options.excludeDemo) return { ...payload, sourceFingerprint: calculateBrowserStateFingerprint(payload) };
+  const keepExecution = (execution: TradeExecution) => execution.source.platform !== "demo" && execution.instrument.id !== DEMO_INSTRUMENT_ID;
+  const keepInstrument = (instrument: StoredInstrument) => instrument.id !== DEMO_INSTRUMENT_ID;
+  const keepEpisode = (episodeId: string) => episodeId !== DEMO_REVIEW_ID;
+  const filtered = {
+    ...payload,
+    executions: payload.executions.filter(keepExecution),
+    instruments: payload.instruments.filter(keepInstrument),
+    reviews: payload.reviews.filter((item) => keepEpisode(item.episodeId)),
+    reviewStates: payload.reviewStates.filter((item) => keepEpisode(item.episodeId)),
+    tagSuggestions: payload.tagSuggestions.filter((item) => keepEpisode(item.episodeId)),
+    marketDataJobs: payload.marketDataJobs.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID),
+    dailyCandles: payload.dailyCandles.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID),
+    marketCandles: payload.marketCandles.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID),
+    coverage: payload.coverage.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID),
+    intervalCoverage: payload.intervalCoverage.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID),
+    providerSymbols: payload.providerSymbols.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID),
+  } satisfies BrowserStatePayload;
+  return { ...filtered, sourceFingerprint: calculateBrowserStateFingerprint(filtered) };
 }
 
 function canonicalize(value: unknown): string {

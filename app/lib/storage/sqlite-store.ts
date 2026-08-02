@@ -8,6 +8,7 @@ import { withSqliteTransaction } from "../../../db/sqlite";
 import { normalizeDrawing, validateDrawing } from "../chart/drawings";
 import { compareExecutions, reconcileExecutions } from "../import/execution-reconciliation";
 import type { TagSuggestionRecord } from "../insights/types";
+import { createEmptyEpisodeReviewRecord } from "../reviews/review-metrics";
 import type { CoverageSegment, DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord } from "../market/contracts";
 import type { EpisodeReviewRecord } from "../reviews/types";
 import type { Instrument, TradeExecution } from "../trades/types";
@@ -627,6 +628,7 @@ export class SqliteStore {
     instruments?: StoredInstrument[];
     executions: TradeExecution[];
     importHistory?: ImportHistoryEntry[];
+    replaceExecutionIds?: string[];
   }): ExecutionMergeReport {
     if (!input || !Array.isArray(input.executions)
       || (input.instruments !== undefined && !Array.isArray(input.instruments))
@@ -636,8 +638,10 @@ export class SqliteStore {
     input.instruments?.forEach(validateInstrument);
     input.executions.forEach(validateExecution);
     input.importHistory?.forEach(validateImportHistory);
+    if (input.replaceExecutionIds !== undefined && (!Array.isArray(input.replaceExecutionIds) || input.replaceExecutionIds.some((id) => typeof id !== "string" || !id))) throw new Error("Invalid execution replacements");
     return withSqliteTransaction(this.database, () => {
       for (const instrument of input.instruments ?? []) this.putInstrument(instrument);
+      for (const id of input.replaceExecutionIds ?? []) this.database.prepare("delete from executions where id = ?").run(id);
       const result = this.mergeExecutionsInTransaction(input.executions);
       for (const entry of input.importHistory ?? []) this.putImportHistory(entry);
       return result;
@@ -652,6 +656,16 @@ export class SqliteStore {
   putTagSuggestion(record: TagSuggestionRecord): void {
     validateTagSuggestion(record);
     withSqliteTransaction(this.database, () => this.putTagSuggestionInTransaction(record));
+  }
+
+  putSuggestionDecision(input: { suggestion: TagSuggestionRecord; review: EpisodeReviewRecord }): boolean {
+    validateTagSuggestion(input.suggestion);
+    validateReview(input.review);
+    return withSqliteTransaction(this.database, () => {
+      if (!this.putReviewInTransaction(input.review)) return false;
+      this.putTagSuggestionInTransaction(input.suggestion);
+      return true;
+    });
   }
 
   putReviewState(state: EpisodeReviewState): void {
@@ -1028,6 +1042,9 @@ export class SqliteStore {
   private putTagSuggestionInTransaction(record: TagSuggestionRecord): void {
     validateTagSuggestion(record);
     this.ensureInstrumentId(record.instrumentId);
+    if (!this.getReview(record.episodeId)) {
+      this.putReviewInTransaction(createEmptyEpisodeReviewRecord(record.episodeId, record.instrumentId, record.suggestedAt));
+    }
     this.database.prepare(`
       insert into tag_suggestions (
         id, episode_id, instrument_id, tag, status, evidence_json, created_at, updated_at

@@ -16,11 +16,11 @@ function validation(error: unknown) {
   if (!(error instanceof Error)) return false;
   return error.message.startsWith("Invalid ") || error.message.startsWith("Unknown instrument:");
 }
-function parseMerge(value: unknown): { instruments?: StoredInstrument[]; executions: TradeExecution[]; importHistory?: ImportHistoryEntry[] } | undefined {
+function parseMerge(value: unknown): { instruments?: StoredInstrument[]; executions: TradeExecution[]; importHistory?: ImportHistoryEntry[]; replaceExecutionIds?: string[] } | undefined {
   if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
   const body = value as Record<string, unknown>;
-  if (!Array.isArray(body.executions) || (body.instruments !== undefined && !Array.isArray(body.instruments)) || (body.importHistory !== undefined && !Array.isArray(body.importHistory))) return undefined;
-  return { executions: body.executions as TradeExecution[], ...(body.instruments ? { instruments: body.instruments as StoredInstrument[] } : {}), ...(body.importHistory ? { importHistory: body.importHistory as ImportHistoryEntry[] } : {}) };
+  if (!Array.isArray(body.executions) || (body.instruments !== undefined && !Array.isArray(body.instruments)) || (body.importHistory !== undefined && !Array.isArray(body.importHistory)) || (body.replaceExecutionIds !== undefined && (!Array.isArray(body.replaceExecutionIds) || body.replaceExecutionIds.some((id) => typeof id !== "string")))) return undefined;
+  return { executions: body.executions as TradeExecution[], ...(body.instruments ? { instruments: body.instruments as StoredInstrument[] } : {}), ...(body.importHistory ? { importHistory: body.importHistory as ImportHistoryEntry[] } : {}), ...(body.replaceExecutionIds ? { replaceExecutionIds: body.replaceExecutionIds as string[] } : {}) };
 }
 
 export async function GET() {

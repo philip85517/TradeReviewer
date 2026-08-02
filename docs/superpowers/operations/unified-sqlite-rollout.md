@@ -4,6 +4,10 @@ This release makes the mounted SQLite file the only business-data source. The
 browser's old `localStorage` and IndexedDB records are used once to create the
 migration payload, then remain only as a short-term rollback copy.
 
+Production mode never seeds the XPEV demo review. When `showDemo` is disabled,
+the migration exporter removes the known demo episode/instrument. Malformed
+legacy records abort migration before its completion marker is written.
+
 ## Deploy the same persistent environment
 
 Run each command from the source checkout, with the same deployment root. Do
@@ -24,6 +28,9 @@ symlink atomically. The container bind-mounts
 `/var/lib/tradereview/tradereview.sqlite` in the container and
 `/Users/zhoulin/projects/TradeReview/data/sqlite/tradereview.sqlite` on the
 host. A new release must not create a second business database.
+The Compose healthcheck calls `/api/storage/status`, which opens SQLite and
+initializes the schema; lazy database/schema failures therefore block release
+publication.
 
 ## Verify the browser migration
 
@@ -43,6 +50,10 @@ If the migration reports failed records or an unexpected count, stop before
 removing any browser rollback data. Capture the report and investigate the
 invalid records; the server migration is transactional and retries with the
 same fingerprint are idempotent.
+
+Screenshot conflict decisions are sent with the merged snapshot and explicit
+replacement ids. This preserves a “use incoming” choice after reload instead
+of allowing a second server reconciliation pass to restore the old row.
 
 ## Backup and restart verification
 

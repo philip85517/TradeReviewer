@@ -150,7 +150,7 @@ write_backup_metadata() {
     schema_version="$(sqlite_backup_scalar 'select coalesce(max(version), 0) from schema_migrations;')"
   fi
   if sqlite_backup_table_is_present "$table_names" data_migrations; then
-    data_migrations="$(sqlite_query_backup \"select coalesce(json_group_array(json_object('version', version, 'status', status)), '[]') from data_migrations;\")" || data_migrations='[]'
+    data_migrations="$(sqlite_query_backup "select coalesce(json_group_array(json_object('version', version, 'status', status)), '[]') from data_migrations;")"
   fi
   for table_name in "${business_tables[@]}"; do
     count=0

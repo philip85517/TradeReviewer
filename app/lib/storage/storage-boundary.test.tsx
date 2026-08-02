@@ -158,6 +158,7 @@ function emptySqliteClient(): SqliteHttpClient {
     putReview: vi.fn().mockResolvedValue({}),
     putReviewState: vi.fn().mockResolvedValue({}),
     putTagSuggestion: vi.fn().mockResolvedValue({}),
+    putSuggestionDecision: vi.fn().mockResolvedValue({}),
     getProviderSymbol: vi.fn().mockResolvedValue(undefined),
     getMarketData: vi.fn().mockResolvedValue({ candles: [], intervalCoverage: [] }),
     putMarketData: vi.fn().mockResolvedValue({ ok: true }),

@@ -68,6 +68,7 @@ export function createLegacySqliteClient(): SqliteHttpClient {
     async putReview(record) { await reviews.put(record); state = null; return record; },
     async putReviewState(record) { saveReviewState(record.episodeId, record); state = null; return record; },
     async putTagSuggestion(record) { await suggestions.put(record); state = null; return record; },
+    async putSuggestionDecision(input) { await suggestions.put(input.suggestion); await reviews.put(input.review); state = null; return input; },
     async getProviderSymbol(instrumentId, provider) { return market.getProviderSymbol(instrumentId, provider as never); },
     async getMarketData(input) {
       const start = input.start ?? "0000-01-01T00:00:00.000Z";

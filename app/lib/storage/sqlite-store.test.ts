@@ -137,6 +137,47 @@ describe("SqliteStore", () => {
     expect(store.getBootstrap().instruments).toEqual([{ ...instrument, metadata }]);
   });
 
+  it("preserves an incoming screenshot replacement when the old conflicting id is removed atomically", () => {
+    const store = createStore();
+    const existing = { ...execution, id: "existing-conflict" };
+    const incoming = { ...execution, id: "incoming-conflict", price: "999" };
+    store.mergeExecutions([existing]);
+
+    expect(store.mergeTradeData({ executions: [incoming], replaceExecutionIds: [existing.id] })).toEqual({ inserted: 1, duplicate: 0, conflict: 0 });
+    expect(store.getExecutions().map((item) => item.id)).toEqual([incoming.id]);
+    expect(store.getExecutions()[0]?.price).toBe("999");
+  });
+
+  it("creates a placeholder review for a suggestion-only migration payload", () => {
+    const store = createStore();
+    const suggestion = {
+      version: 1 as const, tagDictionaryVersion: 1, id: "orphan-suggestion", episodeId: "orphan-episode", instrumentId: instrument.id,
+      tagId: "entry-20d-breakout" as const, finalTagId: null, ruleId: "entry-20d-breakout" as const, ruleVersion: 1 as const,
+      status: "suggested" as const, suggestedAt: "2026-01-02T03:04:05.000Z", decidedAt: null, evidence: [],
+    };
+
+    expect(() => store.mergeBrowserState(payload({ sourceFingerprint: "suggestion-only", executions: [], tagSuggestions: [suggestion] }))).not.toThrow();
+    expect(store.getTagSuggestions()).toEqual([suggestion]);
+    expect(store.getReview("orphan-episode")).toMatchObject({ episodeId: "orphan-episode", instrumentId: instrument.id });
+  });
+
+  it("does not persist a suggestion when its combined review decision conflicts", () => {
+    const store = createStore();
+    store.mergeTradeData({ instruments: [instrument], executions: [] });
+    const newerReview = {
+      version: 1 as const, tagDictionaryVersion: 1, episodeId: "decision-episode", instrumentId: instrument.id, updatedAt: "2026-02-01T00:00:00.000Z",
+      plan: { thesis: "new", expectedPath: "", invalidationCondition: "", targetRange: "", plannedRiskAmount: "", confidence: null },
+      review: { decisionQuality: null, executionQuality: null, riskManagement: "", psychology: "", reusableRule: "", completed: false }, confirmedTagIds: [],
+    };
+    store.putReview(newerReview);
+    const staleReview = { ...newerReview, updatedAt: "2026-01-01T00:00:00.000Z", confirmedTagIds: ["entry-20d-breakout"] };
+    const suggestion = { version: 1 as const, tagDictionaryVersion: 1, id: "atomic-suggestion", episodeId: "decision-episode", instrumentId: instrument.id, tagId: "entry-20d-breakout" as const, finalTagId: "entry-20d-breakout" as const, ruleId: "entry-20d-breakout" as const, ruleVersion: 1 as const, status: "confirmed" as const, suggestedAt: "2026-01-01T00:00:00.000Z", decidedAt: "2026-01-01T00:00:00.000Z", evidence: [] };
+
+    expect(store.putSuggestionDecision({ suggestion, review: staleReview })).toBe(false);
+    expect(store.getTagSuggestions()).toEqual([]);
+    expect(store.getReview("decision-episode")?.plan.thesis).toBe("new");
+  });
+
   it("migrates resolved instrument metadata from browser state into bootstrap", () => {
     const store = createStore();
     const metadata = {

@@ -512,12 +512,16 @@ export class SqliteStore {
   getMarketCandles(
     instrumentId?: string,
     interval?: MarketCandleRecord["interval"],
+    start?: string,
+    end?: string,
   ): MarketCandleRecord[] {
     const clauses = [
       instrumentId ? "instrument_id = ?" : "",
       interval ? "interval = ?" : "",
+      start ? "timestamp >= ?" : "",
+      end ? "timestamp <= ?" : "",
     ].filter(Boolean);
-    const values = [instrumentId, interval].filter((value): value is string => Boolean(value));
+    const values = [instrumentId, interval, start, end].filter((value): value is string => Boolean(value));
     const where = clauses.length ? `where ${clauses.join(" and ")}` : "";
     const rows = this.database
       .prepare(`select * from market_candles ${where} order by instrument_id, interval, timestamp`)
@@ -550,6 +554,27 @@ export class SqliteStore {
     return withSqliteTransaction(this.database, () => this.mergeExecutionsInTransaction(incoming));
   }
 
+  mergeTradeData(input: {
+    instruments?: Instrument[];
+    executions: TradeExecution[];
+    importHistory?: ImportHistoryEntry[];
+  }): ExecutionMergeReport {
+    if (!input || !Array.isArray(input.executions)
+      || (input.instruments !== undefined && !Array.isArray(input.instruments))
+      || (input.importHistory !== undefined && !Array.isArray(input.importHistory))) {
+      throw new Error("Invalid trade merge");
+    }
+    input.instruments?.forEach(validateInstrument);
+    input.executions.forEach(validateExecution);
+    input.importHistory?.forEach(validateImportHistory);
+    return withSqliteTransaction(this.database, () => {
+      for (const instrument of input.instruments ?? []) this.putInstrument(instrument);
+      const result = this.mergeExecutionsInTransaction(input.executions);
+      for (const entry of input.importHistory ?? []) this.putImportHistory(entry);
+      return result;
+    });
+  }
+
   putReview(record: EpisodeReviewRecord): boolean {
     validateReview(record);
     return withSqliteTransaction(this.database, () => this.putReviewInTransaction(record));
@@ -560,11 +585,18 @@ export class SqliteStore {
     withSqliteTransaction(this.database, () => this.putTagSuggestionInTransaction(record));
   }
 
-  putMarketData(input: { dailyCandles?: DailyCandleRecord[]; marketCandles?: MarketCandleRecord[]; coverage?: CoverageRecord[]; providerSymbols?: ProviderSymbolRecord[] }): void {
+  putMarketData(input: { dailyCandles?: DailyCandleRecord[]; marketCandles?: MarketCandleRecord[]; coverage?: CoverageRecord[]; intervalCoverage?: IntervalCoverageRecord[]; providerSymbols?: ProviderSymbolRecord[] }): void {
+    if (!input || typeof input !== "object") throw new Error("Invalid market data");
+    input.dailyCandles?.forEach(validateDailyCandle);
+    input.marketCandles?.forEach(validateMarketCandle);
+    input.coverage?.forEach(validateCoverage);
+    input.intervalCoverage?.forEach(validateIntervalCoverage);
+    input.providerSymbols?.forEach(validateProviderSymbol);
     withSqliteTransaction(this.database, () => {
       for (const candle of input.dailyCandles ?? []) this.putDailyCandle(candle);
       for (const candle of input.marketCandles ?? []) this.putMarketCandle(candle);
       for (const entry of input.coverage ?? []) this.putCoverage(entry);
+      for (const entry of input.intervalCoverage ?? []) this.putIntervalCoverage(entry);
       for (const entry of input.providerSymbols ?? []) this.putProviderSymbol(entry);
     });
   }

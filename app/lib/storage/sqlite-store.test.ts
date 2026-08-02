@@ -118,6 +118,25 @@ describe("SqliteStore", () => {
     expect(store.getInstruments()).toEqual([instrument]);
   });
 
+  it("preserves resolved instrument metadata when later executions upsert the core instrument", () => {
+    const store = createStore();
+    const metadata = {
+      market: "HK" as const,
+      symbol: "700",
+      name: "腾讯控股",
+      assetType: "stock" as const,
+      source: "hkex" as const,
+      confidence: "official" as const,
+      resolvedAt: "2026-01-01T00:00:00.000Z",
+    };
+
+    store.mergeTradeData({ instruments: [{ ...instrument, metadata }], executions: [] });
+    store.mergeExecutions([execution]);
+
+    expect(store.getInstruments()).toEqual([{ ...instrument, metadata }]);
+    expect(store.getBootstrap().instruments).toEqual([{ ...instrument, metadata }]);
+  });
+
   it("deduplicates a repeated browser migration by source fingerprint", () => {
     const store = createStore();
     expect(store.mergeBrowserState(payload())).toMatchObject({ inserted: 8, duplicate: 0, conflict: 0, failed: 0 });

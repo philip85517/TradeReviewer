@@ -77,6 +77,25 @@ describe("SQLite API repository adapters", () => {
     });
   });
 
+  it("keeps daily-only candles and provider-symbol lookups distinct from generic candles", async () => {
+    const getMarketData = vi.fn().mockResolvedValue({
+      candles: [{ interval: "1D", timestamp: "2025-01-02T00:00:00.000Z", close: "99" }],
+      dailyCandles: [{ tradingDate: "2025-01-02", close: "10" }],
+      intervalCoverage: [],
+    });
+    const getProviderSymbol = vi.fn().mockResolvedValue("hk00700");
+    const repository = new ApiMarketDataRepository(client({ getMarketData, getProviderSymbol }));
+
+    await expect(repository.getDailyCandles("HK:700", "2025-01-01", "2025-01-31")).resolves.toEqual([
+      { tradingDate: "2025-01-02", close: "10" },
+    ]);
+    await expect(repository.getProviderSymbol("HK:700", "tencent")).resolves.toBe("hk00700");
+    expect(getMarketData).toHaveBeenCalledWith({
+      instrumentId: "HK:700", interval: "1D", start: "2025-01-01T00:00:00.000Z", end: "2025-01-31T23:59:59.999Z", dailyOnly: true,
+    });
+    expect(getProviderSymbol).toHaveBeenCalledWith("HK:700", "tencent");
+  });
+
   it("maps review and tag repository calls to the review endpoint client", async () => {
     const record = {
       version: 1 as const,
@@ -115,21 +134,24 @@ describe("SQLite API repository adapters", () => {
     expect(putTagSuggestion).toHaveBeenCalledWith(suggestion);
   });
 
-  it("derives statement metadata from persisted instruments and writes it through trades", async () => {
+  it("round-trips complete resolved metadata through persisted instruments", async () => {
     const mergeExecutions = vi.fn().mockResolvedValue({ inserted: 0, duplicate: 0, conflict: 0 });
     const getBootstrap = vi.fn().mockResolvedValue({
-      instruments: [{ id: "HK:700", market: "HK", symbol: "700", name: "腾讯", currency: "HKD" }],
+      instruments: [{
+        id: "HK:700", market: "HK", symbol: "700", name: "腾讯", currency: "HKD",
+        metadata: { market: "HK", symbol: "700", name: "腾讯", assetType: "stock", source: "hkex", confidence: "official", resolvedAt: "2025-01-01T00:00:00.000Z" },
+      }],
     });
     const repository = new ApiInstrumentMetadataRepository(client({ getBootstrap, mergeExecutions }));
 
     await expect(repository.get("HK:700")).resolves.toMatchObject({
-      market: "HK", symbol: "700", name: "腾讯", source: "statement", confidence: "statement",
+      market: "HK", symbol: "700", name: "腾讯", source: "hkex", confidence: "official", resolvedAt: "2025-01-01T00:00:00.000Z",
     });
     await repository.put({
       market: "US", symbol: "SPY", name: "SPDR S&P 500 ETF Trust", assetType: "etf", source: "nasdaq", confidence: "official", resolvedAt: "2025-01-01T00:00:00.000Z",
     });
     expect(mergeExecutions).toHaveBeenCalledWith({
-      instruments: [{ id: "US:SPY", market: "US", symbol: "SPY", name: "SPDR S&P 500 ETF Trust", currency: "USD" }],
+      instruments: [{ id: "US:SPY", market: "US", symbol: "SPY", name: "SPDR S&P 500 ETF Trust", currency: "USD", metadata: { market: "US", symbol: "SPY", name: "SPDR S&P 500 ETF Trust", assetType: "etf", source: "nasdaq", confidence: "official", resolvedAt: "2025-01-01T00:00:00.000Z" } }],
       executions: [],
     });
   });

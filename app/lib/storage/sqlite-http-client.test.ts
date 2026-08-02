@@ -106,6 +106,31 @@ describe("createSqliteHttpClient", () => {
     );
   });
 
+  it("requests daily-only candles and persisted provider symbols through explicit queries", async () => {
+    const fetcher = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(json({ candles: [], dailyCandles: [], intervalCoverage: [] }))
+      .mockResolvedValueOnce(json({ providerSymbol: "hk00700" }));
+    const client = createSqliteHttpClient(fetcher);
+
+    await client.getMarketData({
+      instrumentId: "HK:700",
+      interval: "1D",
+      start: "2025-01-01T00:00:00.000Z",
+      end: "2025-01-31T23:59:59.999Z",
+      dailyOnly: true,
+    });
+    await expect(client.getProviderSymbol("HK:700", "tencent")).resolves.toBe("hk00700");
+
+    expect(fetcher).toHaveBeenNthCalledWith(1,
+      "/api/storage/market-data?instrumentId=HK%3A700&interval=1D&start=2025-01-01T00%3A00%3A00.000Z&end=2025-01-31T23%3A59%3A59.999Z&dailyOnly=true",
+      { cache: "no-store" },
+    );
+    expect(fetcher).toHaveBeenNthCalledWith(2,
+      "/api/storage/market-data?instrumentId=HK%3A700&provider=tencent",
+      { cache: "no-store" },
+    );
+  });
+
   it("exposes structured non-success responses as StorageHttpError", async () => {
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
       json(

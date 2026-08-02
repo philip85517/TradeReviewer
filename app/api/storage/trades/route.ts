@@ -1,6 +1,7 @@
 import { openSqliteDatabase } from "../../../../db/sqlite";
 import type { ImportHistoryEntry } from "../../../lib/storage/import-history";
-import type { Instrument, TradeExecution } from "../../../lib/trades/types";
+import type { TradeExecution } from "../../../lib/trades/types";
+import type { StoredInstrument } from "../../../lib/storage/sqlite-contracts";
 import { getSqliteStore } from "../../../lib/storage/sqlite-store";
 
 export const runtime = "nodejs";
@@ -15,11 +16,11 @@ function validation(error: unknown) {
   if (!(error instanceof Error)) return false;
   return error.message.startsWith("Invalid ") || error.message.startsWith("Unknown instrument:");
 }
-function parseMerge(value: unknown): { instruments?: Instrument[]; executions: TradeExecution[]; importHistory?: ImportHistoryEntry[] } | undefined {
+function parseMerge(value: unknown): { instruments?: StoredInstrument[]; executions: TradeExecution[]; importHistory?: ImportHistoryEntry[] } | undefined {
   if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
   const body = value as Record<string, unknown>;
   if (!Array.isArray(body.executions) || (body.instruments !== undefined && !Array.isArray(body.instruments)) || (body.importHistory !== undefined && !Array.isArray(body.importHistory))) return undefined;
-  return { executions: body.executions as TradeExecution[], ...(body.instruments ? { instruments: body.instruments as Instrument[] } : {}), ...(body.importHistory ? { importHistory: body.importHistory as ImportHistoryEntry[] } : {}) };
+  return { executions: body.executions as TradeExecution[], ...(body.instruments ? { instruments: body.instruments as StoredInstrument[] } : {}), ...(body.importHistory ? { importHistory: body.importHistory as ImportHistoryEntry[] } : {}) };
 }
 
 export async function GET() {

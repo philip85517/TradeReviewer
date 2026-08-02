@@ -1,6 +1,7 @@
 import type { TagSuggestionRecord } from "../insights/types";
 import type { DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord } from "../market/contracts";
 import type { EpisodeReviewRecord } from "../reviews/types";
+import type { ResolvedInstrument } from "../instruments/metadata-contracts";
 import type { Instrument, TradeExecution } from "../trades/types";
 import type { ChartSettings } from "./chart-settings";
 import type { ImportHistoryEntry } from "./import-history";
@@ -28,7 +29,7 @@ export type StorageBootstrap = {
   migration: StorageMigrationStatus;
   executions: TradeExecution[];
   importHistory: ImportHistoryEntry[];
-  instruments: Instrument[];
+  instruments: StoredInstrument[];
   reviews: EpisodeReviewRecord[];
   reviewStates: EpisodeReviewState[];
   tagSuggestions: TagSuggestionRecord[];
@@ -73,4 +74,7 @@ export type SqliteStatus = {
   schemaVersion: number;
   migration: StorageMigrationStatus;
   counts: Record<string, number>;
+};
+export type StoredInstrument = Instrument & {
+  metadata?: ResolvedInstrument;
 };

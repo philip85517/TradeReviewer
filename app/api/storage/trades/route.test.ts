@@ -7,7 +7,7 @@ vi.mock("../../../lib/storage/sqlite-store", () => ({ getSqliteStore: vi.fn(() =
 vi.mock("../../../../db/sqlite", () => ({ openSqliteDatabase }));
 import { GET, PUT } from "./route";
 
-const instrument = { id: "HK:700", symbol: "700", name: "腾讯", market: "HK", currency: "HKD" };
+const instrument = { id: "HK:700", symbol: "700", name: "腾讯", market: "HK", currency: "HKD", metadata: { market: "HK", symbol: "700", name: "腾讯", assetType: "stock", source: "hkex", confidence: "official", resolvedAt: "2025-01-01T00:00:00.000Z" } };
 const execution = { id: "e1", source: { platform: "broker", row: 1 }, accountId: "a", accountLabel: "A", instrument, side: "buy", executedAt: "2025-01-01T00:00:00Z", quantity: "1", price: "1", fee: "0" };
 const request = (body: unknown) => new Request("http://localhost/api/storage/trades", { method: "PUT", body: JSON.stringify(body) });
 afterEach(() => vi.clearAllMocks());

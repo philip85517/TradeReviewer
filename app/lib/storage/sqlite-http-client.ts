@@ -1,11 +1,12 @@
 import type {
   CoverageSegment,
+  DailyCandleRecord,
   IntervalCoverageSegment,
   MarketCandleRecord,
   NativeMarketInterval,
 } from "../market/contracts";
 import type { EpisodeReviewRecord } from "../reviews/types";
-import type { Instrument, TradeExecution } from "../trades/types";
+import type { TradeExecution } from "../trades/types";
 import type { ChartSettings } from "./chart-settings";
 import type { ImportHistoryEntry } from "./import-history";
 import type {
@@ -18,6 +19,7 @@ import type {
   MigrationReport,
   SqliteStatus,
   StorageBootstrap,
+  StoredInstrument,
 } from "./sqlite-contracts";
 import type { TagSuggestionRecord } from "../insights/types";
 
@@ -34,6 +36,7 @@ export class StorageHttpError extends Error {
 
 export type MarketDataRead = {
   candles: MarketCandleRecord[];
+  dailyCandles?: DailyCandleRecord[];
   intervalCoverage: IntervalCoverageSegment[];
   coverage?: CoverageSegment[];
 };
@@ -44,7 +47,7 @@ export type MarketDataWrite =
 
 export type MergeTradeDataInput = {
   executions: TradeExecution[];
-  instruments?: Instrument[];
+  instruments?: StoredInstrument[];
   importHistory?: ImportHistoryEntry[];
 };
 
@@ -91,6 +94,7 @@ function marketDataUrl(input: {
   interval: NativeMarketInterval;
   start?: string;
   end?: string;
+  dailyOnly?: boolean;
 }): string {
   const params = new URLSearchParams({
     instrumentId: input.instrumentId,
@@ -98,6 +102,7 @@ function marketDataUrl(input: {
   });
   if (input.start !== undefined) params.set("start", input.start);
   if (input.end !== undefined) params.set("end", input.end);
+  if (input.dailyOnly) params.set("dailyOnly", "true");
   return `/api/storage/market-data?${params.toString()}`;
 }
 
@@ -108,11 +113,13 @@ export function createSqliteHttpClient(fetcher: Fetcher = fetch): {
   mergeExecutions(input: MergeTradeDataInput): Promise<ExecutionMergeReport>;
   putReview(record: EpisodeReviewRecord): Promise<EpisodeReviewRecord>;
   putTagSuggestion(record: TagSuggestionRecord): Promise<TagSuggestionRecord>;
+  getProviderSymbol(instrumentId: string, provider: string): Promise<string | undefined>;
   getMarketData(input: {
     instrumentId: string;
     interval: NativeMarketInterval;
     start?: string;
     end?: string;
+    dailyOnly?: boolean;
   }): Promise<MarketDataRead>;
   putMarketData(input: MarketDataWrite): Promise<{ ok: true }>;
   getSettings(): Promise<ChartSettings>;
@@ -125,6 +132,11 @@ export function createSqliteHttpClient(fetcher: Fetcher = fetch): {
     mergeExecutions: async (input) => parseResponse<ExecutionMergeReport>(await fetcher("/api/storage/trades", jsonRequest("PUT", input))),
     putReview: async (record) => parseResponse<EpisodeReviewRecord>(await fetcher("/api/storage/reviews", jsonRequest("PUT", record))),
     putTagSuggestion: async (record) => parseResponse<TagSuggestionRecord>(await fetcher("/api/storage/reviews", jsonRequest("PUT", record))),
+    getProviderSymbol: async (instrumentId, provider) => {
+      const params = new URLSearchParams({ instrumentId, provider });
+      const result = await parseResponse<{ providerSymbol: string | null }>(await fetcher(`/api/storage/market-data?${params.toString()}`, { cache: "no-store" }));
+      return result.providerSymbol ?? undefined;
+    },
     getMarketData: async (input) => parseResponse<MarketDataRead>(await fetcher(marketDataUrl(input), { cache: "no-store" })),
     putMarketData: async (input) => parseResponse<{ ok: true }>(await fetcher("/api/storage/market-data", jsonRequest("PUT", input))),
     getSettings: async () => parseResponse<ChartSettings>(await fetcher("/api/storage/settings", { cache: "no-store" })),

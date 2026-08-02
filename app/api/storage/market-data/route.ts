@@ -14,9 +14,48 @@ function validCoverage(value: unknown): value is CoverageSegment { const item = 
 function parseDailyCommit(value: unknown) { const item = record(value); if (!item || typeof item.instrumentId !== "string" || !Array.isArray(item.candles) || !Array.isArray(item.coverage)) return undefined; const symbol = providerSymbol(item.providerSymbol); if (!symbol || !item.coverage.every(validCoverage) || !item.candles.every((candle) => { const c = record(candle); return c && c.instrumentId === item.instrumentId && typeof c.tradingDate === "string" && typeof c.open === "string" && typeof c.high === "string" && typeof c.low === "string" && typeof c.close === "string" && typeof c.volume === "string" && typeof c.currency === "string" && typeof c.provider === "string" && typeof c.providerSymbol === "string" && c.adjustmentMode === "raw" && typeof c.fetchedAt === "string"; })) return undefined; return { instrumentId: item.instrumentId, candles: item.candles as DailyCandleRecord[], coverage: item.coverage as CoverageSegment[], providerSymbol: symbol }; }
 function parseIntervalCommit(value: unknown) { const item = record(value); if (!item || typeof item.instrumentId !== "string" || (item.interval !== "15m" && item.interval !== "1D") || !Array.isArray(item.candles) || !Array.isArray(item.coverage)) return undefined; const interval = item.interval as "15m" | "1D"; const symbol = item.providerSymbol === undefined ? undefined : providerSymbol(item.providerSymbol); if (item.providerSymbol !== undefined && !symbol) return undefined; if (!item.coverage.every((coverage) => { const c = record(coverage); return c && c.interval === interval && typeof c.requestedStart === "string" && typeof c.requestedEnd === "string" && typeof c.status === "string" && coverageStatuses.has(c.status); }) || !item.candles.every((candle) => { const c = record(candle); return c && c.instrumentId === item.instrumentId && c.interval === interval && typeof c.timestamp === "string" && typeof c.open === "string" && typeof c.high === "string" && typeof c.low === "string" && typeof c.close === "string" && typeof c.volume === "string" && typeof c.currency === "string" && typeof c.provider === "string" && typeof c.providerSymbol === "string" && c.adjustmentMode === "raw" && typeof c.fetchedAt === "string"; })) return undefined; return { instrumentId: item.instrumentId, interval, candles: item.candles as MarketCandleRecord[], coverage: item.coverage as IntervalCoverageSegment[], ...(symbol ? { providerSymbol: symbol } : {}) }; }
 export async function GET(request: Request) {
-  const url = new URL(request.url); const instrumentId = url.searchParams.get("instrumentId"); const interval = url.searchParams.get("interval"); const start = url.searchParams.get("start") ?? undefined; const end = url.searchParams.get("end") ?? undefined;
-  if (!validId(instrumentId) || !interval || !intervals.has(interval) || (start && end && start > end)) return invalid();
-  try { const store = getSqliteStore(openSqliteDatabase()); if (!store.getInstruments().some((item) => item.id === instrumentId)) return response({ error: { code: "not-found", message: "not found" } }, 404); const from = start ?? "0000-01-01T00:00:00.000Z"; const to = end ?? "9999-12-31T23:59:59.999Z"; return response({ candles: store.getCandles(instrumentId!, interval as MarketCandleRecord["interval"], from, to), intervalCoverage: store.getIntervalCoverage().filter((item) => item.instrumentId === instrumentId && item.interval === interval), ...(interval === "1D" ? { coverage: store.getCoverageSegments(instrumentId!) } : {}) }); } catch (caught) { if (caught instanceof Error && caught.message.startsWith("Unknown instrument:")) return response({ error: { code: "not-found", message: "not found" } }, 404); return response({ error: { code: "storage-unavailable", message: "storage unavailable" } }, 503); }
+  const url = new URL(request.url);
+  const instrumentId = url.searchParams.get("instrumentId");
+  const provider = url.searchParams.get("provider");
+  const interval = url.searchParams.get("interval");
+  const start = url.searchParams.get("start") ?? undefined;
+  const end = url.searchParams.get("end") ?? undefined;
+  const dailyOnly = url.searchParams.get("dailyOnly");
+  if (!validId(instrumentId) || (start && end && start > end)) return invalid();
+  try {
+    const store = getSqliteStore(openSqliteDatabase());
+    if (!store.getInstruments().some((item) => item.id === instrumentId)) {
+      return response({ error: { code: "not-found", message: "not found" } }, 404);
+    }
+    if (provider !== null) {
+      if (!provider.trim() || interval || start || end || dailyOnly) return invalid();
+      return response({ providerSymbol: store.getProviderSymbol(instrumentId!, provider) ?? null });
+    }
+    if (!interval || !intervals.has(interval) || (dailyOnly !== null && dailyOnly !== "true")) return invalid();
+    const from = start ?? "0000-01-01T00:00:00.000Z";
+    const to = end ?? "9999-12-31T23:59:59.999Z";
+    const intervalCoverage = store.getIntervalCoverage().filter(
+      (item) => item.instrumentId === instrumentId && item.interval === interval,
+    );
+    if (dailyOnly === "true") {
+      if (interval !== "1D") return invalid();
+      return response({
+        dailyCandles: store.getDailyCandles(instrumentId!, from.slice(0, 10), to.slice(0, 10)),
+        intervalCoverage,
+        coverage: store.getCoverageSegments(instrumentId!),
+      });
+    }
+    return response({
+      candles: store.getCandles(instrumentId!, interval as MarketCandleRecord["interval"], from, to),
+      intervalCoverage,
+      ...(interval === "1D" ? { coverage: store.getCoverageSegments(instrumentId!) } : {}),
+    });
+  } catch (caught) {
+    if (caught instanceof Error && caught.message.startsWith("Unknown instrument:")) {
+      return response({ error: { code: "not-found", message: "not found" } }, 404);
+    }
+    return response({ error: { code: "storage-unavailable", message: "storage unavailable" } }, 503);
+  }
 }
 export async function PUT(request: Request) {
   let value: unknown; try { value = await request.json(); } catch { return invalid(); }

@@ -23,6 +23,7 @@ import type {
   ProviderSymbolRecord,
   SqliteStatus,
   StorageBootstrap,
+  StoredInstrument,
 } from "./sqlite-contracts";
 
 type Row = Record<string, unknown>;
@@ -126,12 +127,21 @@ function sameJson(left: unknown, right: unknown) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 
-function validateInstrument(value: unknown): asserts value is Instrument {
+function validateInstrument(value: unknown): asserts value is StoredInstrument {
+  const instrument = asRecord(value, "instrument");
   assertStringFields(
-    asRecord(value, "instrument"),
+    instrument,
     ["id", "symbol", "name", "market", "currency"],
     "instrument",
   );
+  if (instrument.metadata !== undefined) {
+    const metadata = asRecord(instrument.metadata, "instrument metadata");
+    assertStringFields(metadata, ["market", "symbol", "name", "assetType", "source", "confidence", "resolvedAt"], "instrument metadata");
+    if (metadata.market !== instrument.market || metadata.symbol !== instrument.symbol || metadata.name !== instrument.name) {
+      throw new Error("Invalid instrument metadata");
+    }
+    assertJsonSafe(metadata, "instrument metadata");
+  }
 }
 
 function validateExecution(value: unknown): asserts value is TradeExecution {
@@ -347,13 +357,16 @@ function migrationReport(row: Row): MigrationReport {
   return { ...counts, sourceFingerprint: asString(row.source_fingerprint, "migration fingerprint"), validationDigest: typeof row.validation_digest === "string" ? row.validation_digest : "" };
 }
 
-function mapInstrumentRow(row: Row): Instrument {
+function mapInstrumentRow(row: Row): StoredInstrument {
   return {
     id: asString(row.id, "instrument id"),
     symbol: asString(row.symbol, "symbol"),
     name: asString(row.name, "name"),
     market: asString(row.market, "market"),
     currency: asString(row.currency, "currency"),
+    ...(row.metadata_json
+      ? { metadata: parseJson<StoredInstrument["metadata"]>(row.metadata_json, "instrument metadata") }
+      : {}),
   };
 }
 
@@ -487,9 +500,9 @@ export class SqliteStore {
     };
   }
 
-  getInstruments(): Instrument[] {
+  getInstruments(): StoredInstrument[] {
     const rows = this.database
-      .prepare("select id, symbol, name, market, currency from instruments order by id")
+      .prepare("select id, symbol, name, market, currency, metadata_json from instruments order by id")
       .all() as Row[];
     return rows.map(mapInstrumentRow);
   }
@@ -582,12 +595,19 @@ export class SqliteStore {
     return rows.map(mapProviderSymbolRow);
   }
 
+  getProviderSymbol(instrumentId: string, provider: string): string | undefined {
+    const row = this.database.prepare(
+      "select provider_symbol from provider_symbols where instrument_id = ? and provider = ?",
+    ).get(instrumentId, provider) as Row | undefined;
+    return typeof row?.provider_symbol === "string" ? row.provider_symbol : undefined;
+  }
+
   mergeExecutions(incoming: readonly TradeExecution[]): ExecutionMergeReport {
     return withSqliteTransaction(this.database, () => this.mergeExecutionsInTransaction(incoming));
   }
 
   mergeTradeData(input: {
-    instruments?: Instrument[];
+    instruments?: StoredInstrument[];
     executions: TradeExecution[];
     importHistory?: ImportHistoryEntry[];
   }): ExecutionMergeReport {
@@ -806,17 +826,18 @@ export class SqliteStore {
     return Boolean(this.database.prepare("select 1 from instruments where id = ?").get(id));
   }
 
-  private putInstrument(instrument: Instrument): boolean {
+  private putInstrument(instrument: StoredInstrument): boolean {
     validateInstrument(instrument);
     const existed = this.hasInstrument(instrument.id);
     this.database.prepare(`
-      insert into instruments (id, symbol, name, market, currency, updated_at)
-      values (?, ?, ?, ?, ?, current_timestamp)
+      insert into instruments (id, symbol, name, market, currency, metadata_json, updated_at)
+      values (?, ?, ?, ?, ?, ?, current_timestamp)
       on conflict(id) do update set
         symbol = excluded.symbol,
         name = excluded.name,
         market = excluded.market,
         currency = excluded.currency,
+        metadata_json = coalesce(excluded.metadata_json, instruments.metadata_json),
         updated_at = excluded.updated_at
     `).run(
       instrument.id,
@@ -824,6 +845,7 @@ export class SqliteStore {
       instrument.name,
       instrument.market,
       instrument.currency,
+      instrument.metadata ? json(instrument.metadata, "instrument metadata") : null,
     );
     return !existed;
   }

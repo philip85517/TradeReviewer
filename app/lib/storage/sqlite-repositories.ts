@@ -10,7 +10,6 @@ import type {
 } from "../market/contracts";
 import { normalizeEpisodeReviewRecord } from "../reviews/review-metrics";
 import type { EpisodeReviewRecord } from "../reviews/types";
-import type { Instrument } from "../trades/types";
 import type { TagSuggestionRecord } from "../insights/types";
 import type { EpisodeReviewRepository } from "./episode-review-repository";
 import type { InstrumentMetadataRepository } from "./instrument-metadata-repository";
@@ -28,41 +27,10 @@ import {
   type TagSuggestionRepository,
 } from "./tag-suggestion-repository";
 
-const metadataResolvedAt = "1970-01-01T00:00:00.000Z";
-
 function marketCurrency(market: string): string {
   if (market === "HK") return "HKD";
   if (market === "CN-SH" || market === "CN-SZ") return "CNY";
   return "USD";
-}
-
-function asDailyCandle(candle: MarketCandleRecord): DailyCandleRecord {
-  return {
-    instrumentId: candle.instrumentId,
-    tradingDate: candle.timestamp.slice(0, 10),
-    open: candle.open,
-    high: candle.high,
-    low: candle.low,
-    close: candle.close,
-    volume: candle.volume,
-    currency: candle.currency,
-    provider: candle.provider,
-    providerSymbol: candle.providerSymbol,
-    adjustmentMode: candle.adjustmentMode,
-    fetchedAt: candle.fetchedAt,
-  };
-}
-
-function asResolvedInstrument(instrument: Instrument): ResolvedInstrument {
-  return {
-    market: instrument.market as ResolvedInstrument["market"],
-    symbol: instrument.symbol,
-    name: instrument.name,
-    assetType: "stock",
-    source: "statement",
-    confidence: "statement",
-    resolvedAt: metadataResolvedAt,
-  };
 }
 
 export class ApiMarketDataRepository implements MarketDataRepository {
@@ -77,13 +45,13 @@ export class ApiMarketDataRepository implements MarketDataRepository {
   }
 
   async getDailyCandles(instrumentId: string, startDate: string, endDate: string): Promise<DailyCandleRecord[]> {
-    const candles = await this.getCandles(
+    return (await this.client.getMarketData({
       instrumentId,
-      "1D",
-      `${startDate}T00:00:00.000Z`,
-      `${endDate}T23:59:59.999Z`,
-    );
-    return candles.map(asDailyCandle);
+      interval: "1D",
+      start: `${startDate}T00:00:00.000Z`,
+      end: `${endDate}T23:59:59.999Z`,
+      dailyOnly: true,
+    })).dailyCandles ?? [];
   }
 
   async getCoverage(instrumentId: string): Promise<CoverageSegment[]> {
@@ -91,8 +59,7 @@ export class ApiMarketDataRepository implements MarketDataRepository {
   }
 
   async getProviderSymbol(instrumentId: string, provider: MarketDataProviderId): Promise<string | undefined> {
-    const candles = await this.client.getMarketData({ instrumentId, interval: "1D" });
-    return candles.candles.find((candle) => candle.provider === provider)?.providerSymbol;
+    return this.client.getProviderSymbol(instrumentId, provider);
   }
 
   async commitSyncResult(result: MarketDataCommit): Promise<void> {
@@ -145,7 +112,7 @@ export class ApiInstrumentMetadataRepository implements InstrumentMetadataReposi
     const instrument = (await this.client.getBootstrap()).instruments.find(
       (candidate) => candidate.id === instrumentId,
     );
-    return instrument ? asResolvedInstrument(instrument) : undefined;
+    return instrument?.metadata;
   }
 
   async getMany(instrumentIds: string[]): Promise<Map<string, ResolvedInstrument>> {
@@ -154,7 +121,7 @@ export class ApiInstrumentMetadataRepository implements InstrumentMetadataReposi
     return new Map(
       instruments
         .filter((instrument) => wanted.has(instrument.id))
-        .map((instrument) => [instrument.id, asResolvedInstrument(instrument)]),
+        .flatMap((instrument) => instrument.metadata ? [[instrument.id, instrument.metadata] as const] : []),
     );
   }
 
@@ -166,6 +133,7 @@ export class ApiInstrumentMetadataRepository implements InstrumentMetadataReposi
         symbol: record.symbol,
         name: record.name,
         currency: marketCurrency(record.market),
+        metadata: record,
       }],
       executions: [],
     });

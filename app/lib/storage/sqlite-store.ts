@@ -624,8 +624,8 @@ export class SqliteStore {
 
   commitMarketData(result: MarketDataCommitInput): void {
     if (!result || typeof result.instrumentId !== "string" || !Array.isArray(result.candles) || !Array.isArray(result.coverage) || !result.providerSymbol || typeof result.providerSymbol.provider !== "string" || typeof result.providerSymbol.symbol !== "string") throw new Error("Invalid market data");
-    result.candles.forEach(validateDailyCandle);
-    result.coverage.forEach((segment) => { if (!segment || typeof segment.startDate !== "string" || typeof segment.endDate !== "string" || !Array.isArray(segment.missingTradingDates)) throw new Error("Invalid coverage"); });
+    result.candles.forEach((candle) => { validateDailyCandle(candle); if (candle.instrumentId !== result.instrumentId) throw new Error("Invalid market data"); });
+    result.coverage.forEach((segment) => { if (!segment || typeof segment.startDate !== "string" || typeof segment.endDate !== "string" || !COVERAGE_STATUSES.has(segment.status) || !Array.isArray(segment.missingTradingDates) || segment.missingTradingDates.some((date) => typeof date !== "string")) throw new Error("Invalid coverage"); });
     withSqliteTransaction(this.database, () => {
       result.candles.forEach((candle) => this.putDailyCandle(candle));
       this.putCoverageSegments(result.instrumentId, result.coverage);
@@ -635,7 +635,7 @@ export class SqliteStore {
 
   commitIntervalMarketData(result: IntervalMarketDataCommitInput): void {
     if (!result || typeof result.instrumentId !== "string" || (result.interval !== "15m" && result.interval !== "1D") || !Array.isArray(result.candles) || !Array.isArray(result.coverage)) throw new Error("Invalid market data");
-    result.candles.forEach(validateMarketCandle); result.coverage.forEach(validateIntervalCoverage);
+    result.candles.forEach((candle) => { validateMarketCandle(candle); if (candle.instrumentId !== result.instrumentId || candle.interval !== result.interval) throw new Error("Invalid market data"); }); result.coverage.forEach((coverage) => validateIntervalCoverage({ ...coverage, instrumentId: result.instrumentId }));
     withSqliteTransaction(this.database, () => { result.candles.forEach((candle) => this.putMarketCandle(candle)); result.coverage.forEach((coverage) => this.putIntervalCoverage({ ...coverage, instrumentId: result.instrumentId })); if (result.providerSymbol) this.putProviderSymbol({ instrumentId: result.instrumentId, provider: result.providerSymbol.provider, providerSymbol: result.providerSymbol.symbol }); });
   }
 

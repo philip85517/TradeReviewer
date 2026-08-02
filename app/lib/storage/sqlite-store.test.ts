@@ -198,6 +198,21 @@ describe("SqliteStore", () => {
     expect(store.getDailyCandles(instrument.id)).toEqual([daily]);
   });
 
+  it("rejects malformed API market-data batches without partial writes", () => {
+    const store = createStore();
+    store.mergeExecutions([execution]);
+    const candle = { instrumentId: instrument.id, interval: "15m" as const, timestamp: "2026-01-02T01:00:00.000Z", open: "1", high: "2", low: "1", close: "2", volume: "3", currency: "HKD", provider: "tencent" as const, providerSymbol: "700", adjustmentMode: "raw" as const, fetchedAt: "2026-01-03T00:00:00.000Z" };
+    const intervalCoverage = { interval: "15m" as const, requestedStart: "2026-01-02T00:00:00.000Z", requestedEnd: "2026-01-02T02:00:00.000Z", status: "complete" as const };
+    store.commitIntervalMarketData({ instrumentId: instrument.id, interval: "15m", candles: [candle], coverage: [intervalCoverage], providerSymbol: { provider: "tencent", symbol: "700" } });
+    store.commitIntervalMarketData({ instrumentId: instrument.id, interval: "15m", candles: [candle], coverage: [intervalCoverage], providerSymbol: { provider: "tencent", symbol: "700" } });
+    expect(store.getCandles(instrument.id, "15m", "2026-01-02T00:00:00.000Z", "2026-01-02T02:00:00.000Z")).toHaveLength(1);
+    expect(() => store.commitIntervalMarketData({ instrumentId: instrument.id, interval: "1D", candles: [candle], coverage: [intervalCoverage], providerSymbol: { provider: "tencent", symbol: "700" } })).toThrow("Invalid market data");
+    expect(() => store.commitMarketData({ instrumentId: "missing", candles: [], coverage: [], providerSymbol: { provider: "tencent", symbol: "missing" } })).toThrow("Unknown instrument: missing");
+    const before = snapshotAllTables(store);
+    expect(() => store.commitIntervalMarketData({ instrumentId: instrument.id, interval: "15m", candles: [candle, { ...candle, instrumentId: "other" }], coverage: [intervalCoverage], providerSymbol: { provider: "tencent", symbol: "700" } })).toThrow("Invalid market data");
+    expect(snapshotAllTables(store)).toEqual(before);
+  });
+
   it("rolls back all tables when one browser-state record is invalid", () => {
     const store = createStore();
     expect(() => store.mergeBrowserState(payload({ reviews: [{ episodeId: "invalid" } as never] }))).toThrow("Invalid review");

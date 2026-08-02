@@ -187,6 +187,7 @@ type Props = {
   screenshotImportDependencies?: Partial<ScreenshotImportDependencies>;
   /** Injectable only for integration tests; production creates the HTTP client. */
   storageClient?: SqliteHttpClient;
+  legacyStateExporter?: () => Promise<import("../lib/storage/sqlite-contracts").BrowserStatePayload | null>;
 };
 
 const DEFAULT_CHART_SETTINGS: ChartSettings = {
@@ -645,6 +646,7 @@ export function TradeReviewWorkspace({
   showDemo = true,
   screenshotImportDependencies,
   storageClient: storageClientOverride,
+  legacyStateExporter = exportLegacyBrowserState,
 }: Props) {
 function isAbortError(error: unknown) {
   return error instanceof DOMException && error.name === "AbortError";
@@ -1233,7 +1235,7 @@ function isAbortError(error: unknown) {
           SQLITE_MIGRATION_MARKER_KEY,
         );
         if (!migrationMarker && !bootstrap.migration) {
-          const legacyState = await exportLegacyBrowserState();
+          const legacyState = await legacyStateExporter();
           if (legacyState) {
           setStorageState("migration");
           await migrateLegacyBrowserState(storageClient, legacyState);
@@ -1320,7 +1322,7 @@ function isAbortError(error: unknown) {
       active = false;
       replayRequestSequence.current += 1;
     };
-  }, [bootstrapAttempt, initialFrame.cursor, showDemo, storageClient]);
+  }, [bootstrapAttempt, initialFrame.cursor, legacyStateExporter, showDemo, storageClient]);
 
   useEffect(() => {
     if (!hydrated || importedInstruments.length === 0) return;

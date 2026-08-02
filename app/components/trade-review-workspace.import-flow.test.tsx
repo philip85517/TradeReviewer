@@ -1368,7 +1368,7 @@ describe("TradeReviewWorkspace", () => {
       }),
     );
 
-    expect(screen.getByText("暂无待确认建议")).toBeInTheDocument();
+    expect(await screen.findByText("暂无待确认建议")).toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
   });
 });

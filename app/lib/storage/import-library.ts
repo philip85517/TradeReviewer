@@ -8,7 +8,7 @@ import {
 export const IMPORTED_EXECUTIONS_STORAGE_KEY =
   "trade-reviewer:executions:v1";
 
-function uniqueStableExecutions(executions: readonly TradeExecution[]) {
+export function uniqueStableExecutions(executions: readonly TradeExecution[]) {
   const byId = new Map<string, TradeExecution>();
   for (const execution of executions) {
     const existing = byId.get(execution.id);
@@ -22,7 +22,7 @@ function uniqueStableExecutions(executions: readonly TradeExecution[]) {
   return [...byId.values()];
 }
 
-function isExecution(value: unknown): value is TradeExecution {
+export function isSerializedExecution(value: unknown): value is TradeExecution {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<TradeExecution>;
   return (
@@ -34,6 +34,25 @@ function isExecution(value: unknown): value is TradeExecution {
     typeof candidate.instrument?.id === "string" &&
     (candidate.side === "buy" || candidate.side === "sell")
   );
+}
+
+/** Shared migration boundary for the legacy localStorage execution payload. */
+export function serializeImportedExecutions(executions: readonly TradeExecution[]) {
+  return JSON.stringify({
+    version: 1,
+    executions: uniqueStableExecutions(executions).sort(compareExecutions),
+  });
+}
+
+/** Parses the legacy localStorage payload without consulting browser globals. */
+export function deserializeImportedExecutions(serialized: string): TradeExecution[] {
+  try {
+    const parsed = JSON.parse(serialized) as { version?: unknown; executions?: unknown };
+    if (parsed.version !== 1 || !Array.isArray(parsed.executions)) return [];
+    return uniqueStableExecutions(parsed.executions.filter(isSerializedExecution)).sort(compareExecutions);
+  } catch {
+    return [];
+  }
 }
 
 export function mergeExecutions(
@@ -50,10 +69,7 @@ export function saveImportedExecutions(executions: TradeExecution[]) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(
     IMPORTED_EXECUTIONS_STORAGE_KEY,
-    JSON.stringify({
-      version: 1,
-      executions: uniqueStableExecutions(executions).sort(compareExecutions),
-    }),
+    serializeImportedExecutions(executions),
   );
 }
 
@@ -64,16 +80,5 @@ export function loadImportedExecutions(): TradeExecution[] {
   );
   if (!serialized) return [];
 
-  try {
-    const parsed = JSON.parse(serialized) as {
-      version?: unknown;
-      executions?: unknown;
-    };
-    if (parsed.version !== 1 || !Array.isArray(parsed.executions)) return [];
-    return uniqueStableExecutions(parsed.executions.filter(isExecution)).sort(
-      compareExecutions,
-    );
-  } catch {
-    return [];
-  }
+  return deserializeImportedExecutions(serialized);
 }

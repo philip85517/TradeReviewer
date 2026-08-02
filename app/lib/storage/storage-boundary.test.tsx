@@ -1,11 +1,36 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import type { StatementParseResult } from "../import/contracts";
+import type { EnrichedImportResult } from "../import/enrich-import";
 import type { DemoReplayFrame } from "../demo/replay-frame";
 import type { SqliteHttpClient } from "./sqlite-http-client";
+import type { TradeExecution } from "../trades/types";
 import { TradeReviewWorkspace } from "../../components/trade-review-workspace";
+
+const { mockDispatcher, mockEnrichment, mockMarketDataSync } = vi.hoisted(
+  () => ({
+    mockDispatcher: vi.fn(),
+    mockEnrichment: vi.fn(),
+    mockMarketDataSync: vi.fn(),
+  }),
+);
+
+vi.mock("../import/dispatcher", () => ({
+  parseBrokerStatement: mockDispatcher,
+}));
+
+vi.mock("../import/enrich-import", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../import/enrich-import")>()),
+  enrichStatementImport: mockEnrichment,
+}));
+
+vi.mock("../market/sync-service", () => ({
+  syncMarketData: mockMarketDataSync,
+}));
 
 const root = process.cwd();
 const workspacePath = join(root, "app/components/trade-review-workspace.tsx");
@@ -34,6 +59,43 @@ const initialFrame: DemoReplayFrame = {
   canGoForward: false,
 };
 
+const importedExecution: TradeExecution = {
+  id: "boundary:trade:1",
+  source: { platform: "china-merchants", page: 1, row: 1 },
+  accountId: "boundary-account",
+  accountLabel: "边界测试账户",
+  instrument: {
+    id: "CN-SH:600938",
+    symbol: "600938",
+    name: "中国海油",
+    market: "CN-SH",
+    currency: "CNY",
+  },
+  side: "buy",
+  executedAt: "2026-01-02T02:00:00.000Z",
+  quantity: "100",
+  price: "15.20",
+  fee: "5",
+};
+
+const importParseResult: StatementParseResult = {
+  broker: "china-merchants",
+  records: [importedExecution],
+  candidates: [{ market: "CN-SH", symbol: "600938", sourceAssetType: "stock" }],
+  exclusions: [],
+  diagnostics: [],
+  blocked: false,
+};
+
+const enrichedImport: EnrichedImportResult = {
+  broker: "china-merchants",
+  importable: [importedExecution],
+  unresolved: [],
+  exclusions: [],
+  diagnostics: [],
+  cacheHits: 0,
+};
+
 function productionSourceFiles(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const path = join(directory, entry.name);
@@ -42,6 +104,22 @@ function productionSourceFiles(directory: string): string[] {
     }
     return /(?<!\.test)\.(?:ts|tsx)$/.test(entry.name) ? [path] : [];
   });
+}
+
+function importStatements(source: string) {
+  return source.match(/^import[\s\S]*?;$/gm) ?? [];
+}
+
+function allowsPureImportLibraryImport(statement: string) {
+  if (!statement.includes("import-library")) return true;
+  if (/^import\s+type\b/.test(statement)) return true;
+  const named = statement.match(/import\s*\{([\s\S]*?)\}\s*from\s*["'][^"']*import-library["'];/);
+  if (!named) return false;
+  return named[1]
+    .split(",")
+    .map((specifier) => specifier.trim().split(/\s+as\s+/)[0])
+    .filter(Boolean)
+    .every((specifier) => specifier === "mergeExecutions");
 }
 
 function emptySqliteClient(): SqliteHttpClient {
@@ -84,6 +162,9 @@ describe("SQLite production storage boundary", () => {
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
+    mockDispatcher.mockReset();
+    mockEnrichment.mockReset();
+    mockMarketDataSync.mockReset();
   });
 
   it("renders the import-empty state from an empty SQLite bootstrap without legacy reads", async () => {
@@ -106,17 +187,59 @@ describe("SQLite production storage boundary", () => {
     expect(readLegacyStorage).not.toHaveBeenCalled();
   });
 
-  it("routes import and review persistence through SQLite APIs rather than legacy writes", () => {
-    const workspace = readFileSync(workspacePath, "utf8");
+  it("persists an imported trade and chart settings through SQLite without legacy browser writes", async () => {
+    const user = userEvent.setup();
+    const client = emptySqliteClient();
+    const writeLegacyStorage = vi.spyOn(Storage.prototype, "setItem");
+    const indexedDbOpen = vi.fn();
+    vi.stubGlobal("indexedDB", { open: indexedDbOpen });
+    mockDispatcher.mockResolvedValue(importParseResult);
+    mockEnrichment.mockResolvedValue(enrichedImport);
+    mockMarketDataSync.mockResolvedValue({
+      source: "cache",
+      status: "complete",
+      candles: [],
+      requestedRanges: [],
+    });
 
-    expect(workspace).toContain("storageClient.mergeExecutions(");
-    expect(workspace).toContain("storageClient.putReviewState(");
-    expect(workspace).toContain("reviewRepository.put(record)");
-    expect(workspace).toContain("storageClient.putSettings(next)");
-    expect(workspace).not.toMatch(/\b(?:load|save)ImportedExecutions\b/);
-    expect(workspace).not.toMatch(/\b(?:load|save)ImportHistory\b/);
-    expect(workspace).not.toMatch(/\b(?:load|save)ChartSettings\b/);
-    expect(workspace).not.toMatch(/\b(?:IndexedDb|localStorage|indexedDB)\b/);
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+        storageClient={client}
+        legacyStateExporter={async () => null}
+      />,
+    );
+
+    await user.upload(
+      await screen.findByLabelText("导入交易记录"),
+      new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], "boundary.pdf", {
+        type: "application/pdf",
+      }),
+    );
+    await user.click(
+      await screen.findByRole("button", { name: "确认导入并开始更新行情" }),
+    );
+    await waitFor(() => {
+      expect(client.mergeExecutions).toHaveBeenCalledWith(
+        expect.objectContaining({
+          executions: [importedExecution],
+          importHistory: [expect.objectContaining({ fileName: "boundary.pdf" })],
+        }),
+      );
+    });
+
+    await user.click(await screen.findByRole("button", { name: "图表设置" }));
+    await user.click(screen.getByRole("checkbox", { name: "显示成交量" }));
+    await waitFor(() => {
+      expect(client.putSettings).toHaveBeenCalledWith(
+        expect.objectContaining({ showVolume: false }),
+      );
+    });
+
+    expect(client.putReviewState).toHaveBeenCalled();
+    expect(writeLegacyStorage).not.toHaveBeenCalled();
+    expect(indexedDbOpen).not.toHaveBeenCalled();
   });
 
   it("marks legacy browser stores as migration-only and limits the exporter boundary", () => {
@@ -130,7 +253,6 @@ describe("SQLite production storage boundary", () => {
 
     const legacyModules = legacyStoragePaths
       .map((file) => file.replace(/\.ts$/, ""))
-      .filter((file) => file !== "import-library")
       .join("|");
     const legacyRuntimeImport = new RegExp(
       `^import(?!\\s+type\\b)\\s+[^;]*?from\\s+["'][^"']*(?:${legacyModules})["']`,
@@ -139,7 +261,22 @@ describe("SQLite production storage boundary", () => {
     for (const path of productionSourceFiles(join(root, "app"))) {
       const relative = path.slice(root.length + 1);
       if (relative === "app/lib/storage/browser-state-export.ts" || legacyStoragePaths.some((file) => relative === `app/lib/storage/${file}`)) continue;
-      expect(readFileSync(path, "utf8"), relative).not.toMatch(legacyRuntimeImport);
+      const source = readFileSync(path, "utf8");
+      const withoutImportLibrary = source.replace(
+        /import[\s\S]*?from\s*["'][^"']*import-library["'];/g,
+        "",
+      );
+      expect(withoutImportLibrary, relative).not.toMatch(legacyRuntimeImport);
+      for (const statement of importStatements(source).filter((item) => item.includes("import-library"))) {
+        expect(allowsPureImportLibraryImport(statement), `${relative}: ${statement}`).toBe(true);
+      }
     }
+
+    expect(allowsPureImportLibraryImport(
+      'import { mergeExecutions } from "./import-library";',
+    )).toBe(true);
+    expect(allowsPureImportLibraryImport(
+      'import { saveImportedExecutions } from "./import-library";',
+    )).toBe(false);
   });
 });

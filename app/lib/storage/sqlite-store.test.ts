@@ -150,6 +150,7 @@ describe("SqliteStore", () => {
 
     expect(store.getDailyCandles()).toEqual([daily]);
     expect(store.getIntervalCoverage()).toEqual([{ ...intervalCoverage, adjustmentMode: "raw" }]);
+    expect(store.mergeBrowserState(payload({ sourceFingerprint: "market-state-repeat", executions: [], instruments: [instrument], dailyCandles: [daily], intervalCoverage: [intervalCoverage], providerSymbols: [{ instrumentId: instrument.id, provider: "tencent", providerSymbol: "hk00700" }] }))).toMatchObject({ inserted: 0, duplicate: 10, conflict: 0 });
   });
 
   it("rolls back all tables when one browser-state record is invalid", () => {
@@ -166,5 +167,13 @@ describe("SqliteStore", () => {
 
     expect(() => store.mergeBrowserState(payload())).toThrow("marker failed");
     expect(store.getBootstrap()).toMatchObject({ executions: [], instruments: [] });
+  });
+
+  it("rejects invalid nested browser state before any table is written", () => {
+    const store = createStore();
+    const invalidJob = { instrumentId: instrument.id, symbol: "700", market: "HK", requestedAt: "2026-01-01T00:00:00.000Z", status: "complete", intervals: [{ interval: "15m", status: 42 }] };
+
+    expect(() => store.mergeBrowserState(payload({ marketDataJobs: [invalidJob as never] }))).toThrow("Invalid market data job");
+    expect(store.getStatus().counts).toMatchObject({ instruments: 0, executions: 0, market_data_jobs: 0 });
   });
 });

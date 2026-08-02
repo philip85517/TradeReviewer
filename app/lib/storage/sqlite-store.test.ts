@@ -226,6 +226,21 @@ describe("SqliteStore", () => {
     expect(store.mergeBrowserState(payload({ sourceFingerprint: "market-state-repeat", executions: [], instruments: [instrument], dailyCandles: [daily], intervalCoverage: [intervalCoverage], providerSymbols: [{ instrumentId: instrument.id, provider: "tencent", providerSymbol: "hk00700" }] }))).toMatchObject({ inserted: 0, duplicate: 10, conflict: 0 });
   });
 
+  it("preserves complete daily coverage evidence from a browser-state migration", () => {
+    const store = createStore();
+    const segments = [{ startDate: "2026-01-02", endDate: "2026-01-04", status: "partial" as const, provider: "tencent" as const, fetchedAt: "2026-01-05T00:00:00.000Z", missingTradingDates: ["2026-01-03"], reason: "market holiday" }];
+
+    store.mergeBrowserState(payload({
+      sourceFingerprint: "daily-coverage-state",
+      executions: [],
+      instruments: [instrument],
+      coverage: [{ instrumentId: instrument.id, adjustmentMode: "raw", startDate: "2026-01-02", endDate: "2026-01-04", segments }],
+    }));
+
+    expect(store.getCoverage()).toEqual([{ instrumentId: instrument.id, adjustmentMode: "raw", startDate: "2026-01-02", endDate: "2026-01-04", segments }]);
+    expect(store.getCoverageSegments(instrument.id)).toEqual(segments);
+  });
+
   it("commits repository market-data contracts atomically and returns daily 1D candles", () => {
     const store = createStore();
     store.mergeExecutions([execution]);

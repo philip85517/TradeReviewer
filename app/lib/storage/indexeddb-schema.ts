@@ -84,3 +84,26 @@ export function openTradeReviewDatabase(databaseName: string) {
     request.onerror = () => reject(request.error);
   });
 }
+
+/**
+ * Reads every legacy TradeReview object store without changing its contents.
+ * This is deliberately kept at the IndexedDB boundary so the one-time SQLite
+ * migration cannot accidentally acquire a read/write transaction.
+ */
+export async function readAllTradeReviewStores(databaseName: string) {
+  const database = await openTradeReviewDatabase(databaseName);
+  try {
+    const names = [...database.objectStoreNames];
+    if (names.length === 0) return {} as Record<string, unknown[]>;
+    const transaction = database.transaction(names, "readonly");
+    const records = await Promise.all(
+      names.map(async (name) => [
+        name,
+        await requestValue(transaction.objectStore(name).getAll()),
+      ] as const),
+    );
+    return Object.fromEntries(records) as Record<string, unknown[]>;
+  } finally {
+    database.close();
+  }
+}

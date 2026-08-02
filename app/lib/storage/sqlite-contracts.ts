@@ -1,5 +1,5 @@
 import type { TagSuggestionRecord } from "../insights/types";
-import type { DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord } from "../market/contracts";
+import type { CoverageSegment, DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord } from "../market/contracts";
 import type { EpisodeReviewRecord } from "../reviews/types";
 import type { ResolvedInstrument } from "../instruments/metadata-contracts";
 import type { Instrument, TradeExecution } from "../trades/types";
@@ -13,6 +13,8 @@ export type CoverageRecord = {
   adjustmentMode: "raw";
   startDate?: string;
   endDate?: string;
+  /** Complete legacy coverage evidence, retained during browser-to-SQLite migration. */
+  segments?: CoverageSegment[];
 };
 
 export type ProviderSymbolRecord = {

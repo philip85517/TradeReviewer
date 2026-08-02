@@ -252,6 +252,22 @@ function validateCoverage(value: unknown): asserts value is CoverageRecord {
     throw new Error("Invalid coverage");
   }
   assertOptionalStringFields(coverage, ["startDate", "endDate"], "coverage");
+  if (coverage.segments !== undefined) {
+    if (!Array.isArray(coverage.segments)) throw new Error("Invalid coverage");
+    for (const segment of coverage.segments) {
+      const item = asRecord(segment, "coverage segment");
+      if (
+        typeof item.startDate !== "string"
+        || typeof item.endDate !== "string"
+        || typeof item.status !== "string"
+        || !COVERAGE_STATUSES.has(item.status)
+        || !Array.isArray(item.missingTradingDates)
+        || item.missingTradingDates.some((date) => typeof date !== "string")
+      ) throw new Error("Invalid coverage");
+      assertOptionalStringFields(item, ["provider", "fetchedAt", "reason"], "coverage segment");
+    }
+    assertJsonSafe(coverage.segments, "coverage");
+  }
 }
 
 function normalizeIntervalCoverage(value: IntervalCoverageRecord): NormalizedIntervalCoverageRecord {
@@ -452,6 +468,7 @@ function mapCoverageRow(row: Row): CoverageRecord {
     adjustmentMode: asString(row.adjustment_mode, "adjustment mode") as "raw",
     ...(typeof row.start_date === "string" ? { startDate: row.start_date } : {}),
     ...(typeof row.end_date === "string" ? { endDate: row.end_date } : {}),
+    ...(typeof row.details_json === "string" ? { segments: parseJson<CoverageSegment[]>(row.details_json, "coverage") } : {}),
   };
 }
 
@@ -558,7 +575,7 @@ export class SqliteStore {
 
   getCoverage(): CoverageRecord[] {
     const rows = this.database
-      .prepare("select instrument_id, adjustment_mode, start_date, end_date from coverage order by instrument_id")
+      .prepare("select instrument_id, adjustment_mode, start_date, end_date, details_json from coverage order by instrument_id")
       .all() as Row[];
     return rows.map(mapCoverageRow);
   }
@@ -1114,17 +1131,19 @@ export class SqliteStore {
     validateCoverage(coverage);
     this.ensureInstrumentId(coverage.instrumentId);
     this.database.prepare(`
-      insert into coverage (instrument_id, adjustment_mode, start_date, end_date, updated_at)
-      values (?, ?, ?, ?, current_timestamp)
+      insert into coverage (instrument_id, adjustment_mode, start_date, end_date, details_json, updated_at)
+      values (?, ?, ?, ?, ?, current_timestamp)
       on conflict(instrument_id, adjustment_mode) do update set
         start_date = excluded.start_date,
         end_date = excluded.end_date,
+        details_json = excluded.details_json,
         updated_at = excluded.updated_at
     `).run(
       coverage.instrumentId,
       coverage.adjustmentMode,
       coverage.startDate ?? null,
       coverage.endDate ?? null,
+      coverage.segments ? json(coverage.segments, "coverage") : null,
     );
   }
 

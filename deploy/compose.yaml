@@ -6,6 +6,8 @@ services:
     build:
       context: ${APP_RELEASE_CONTEXT:-./app/current}
       dockerfile: deploy/Dockerfile
+      args:
+        DEBIAN_MIRROR: ${DEBIAN_MIRROR:-mirrors.aliyun.com}
     env_file:
       - ./config/.env
     environment:

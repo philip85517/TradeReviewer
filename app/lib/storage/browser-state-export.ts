@@ -51,6 +51,10 @@ function strictRecords<T>(value: unknown, label: string, predicate: (item: unkno
   return value;
 }
 
+function rebuildableRecords<T>(value: unknown, predicate: (item: unknown) => item is T): T[] {
+  return Array.isArray(value) ? value.filter(predicate) : [];
+}
+
 function parseLegacyJson(serialized: string, label: string): unknown {
   try { return JSON.parse(serialized) as unknown; } catch { throw new Error(`Invalid legacy ${label}`); }
 }
@@ -264,8 +268,8 @@ export async function exportLegacyBrowserState(options: BrowserStateExportOption
   const reviews = strictRecords(stores[REVIEWS], "reviews", isReview).map(normalizeEpisodeReviewRecord);
   const states = reviewStates();
   const suggestions = strictRecords(stores[TAG_SUGGESTIONS], "tag suggestions", isTagSuggestion).map(normalizeTagSuggestionRecord);
-  const dailyCandles = strictRecords(stores[DAILY_CANDLES], "daily candles", isDailyCandle);
-  const marketCandles = strictRecords(stores[MARKET_CANDLES], "market candles", isMarketCandle);
+  const dailyCandles = rebuildableRecords(stores[DAILY_CANDLES], isDailyCandle);
+  const marketCandles = rebuildableRecords(stores[MARKET_CANDLES], isMarketCandle);
   const coverage = coverageRecords(stores[COVERAGE]);
   const intervalCoverage = intervalCoverageRecords(stores[INTERVAL_COVERAGE]);
   const symbols = providerSymbols(stores[PROVIDER_SYMBOLS]);

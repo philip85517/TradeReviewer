@@ -55,6 +55,10 @@ make deploy
 SQLite、备份或日志。默认只监听 `127.0.0.1:3000`；公网域名、HTTPS、反向代理及
 `APP_BIND=0.0.0.0` 均需明确配置。
 
+Docker runtime 镜像默认使用 `mirrors.aliyun.com` 安装 SQLite CLI，以适配当前网络对
+`deb.debian.org` 的访问限制；可在目标 `config/.env` 中将 `DEBIAN_MIRROR` 改为可访问的
+Debian 镜像主机名后重新部署。镜像地址只接受主机名，不接受路径、协议或命令字符。
+
 ## 日常操作
 
 可从源工作副本运行下列命令；完整部署后，也可在目标根目录运行相同目标：

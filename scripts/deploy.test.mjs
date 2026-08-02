@@ -580,6 +580,14 @@ describe("SQLite operations", () => {
     expect(dockerfile).toContain("sqlite3");
   });
 
+  test("uses a reachable configurable Debian mirror for the runtime package install", async () => {
+    const dockerfile = await readManifest("deploy/Dockerfile");
+
+    expect(dockerfile).toContain("ARG DEBIAN_MIRROR=mirrors.aliyun.com");
+    expect(dockerfile).toContain("DEBIAN_MIRROR");
+    expect(dockerfile).toContain("deb.debian.org");
+  });
+
   test("reports a missing SQLite directory instead of failing status", async () => {
     const fixture = await createOperationalSandbox();
 

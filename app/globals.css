@@ -3269,6 +3269,57 @@ input:focus-visible {
   font-size: 9px;
 }
 
+.screenshot-review-context {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 12px 22px;
+  border-bottom: 1px solid var(--line);
+  background: #111a27;
+}
+
+.screenshot-review-context label {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.screenshot-review-context label:first-child {
+  flex: 0 1 300px;
+}
+
+.screenshot-review-context label:last-child {
+  flex: 0 1 240px;
+}
+
+.screenshot-review-context select,
+.screenshot-review-context input {
+  width: 100%;
+  min-width: 0;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid #2b3b51;
+  border-radius: 8px;
+  outline: 0;
+  color: #d4deea;
+  background: #111b28;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.screenshot-review-context select:focus,
+.screenshot-review-context input:focus {
+  border-color: #397dce;
+}
+
+.screenshot-review-context input::placeholder {
+  color: #66778f;
+}
+
 .screenshot-review-body {
   flex: 1;
   min-height: 0;
@@ -3979,6 +4030,17 @@ input:focus-visible {
 }
 
 @media (max-width: 640px) {
+  .screenshot-review-context {
+    flex-wrap: wrap;
+    gap: 10px 12px;
+    padding: 10px 14px;
+  }
+
+  .screenshot-review-context label:first-child,
+  .screenshot-review-context label:last-child {
+    flex: 1 1 min(100%, 220px);
+  }
+
   .screenshot-review-body,
   .screenshot-review-body.has-evidence {
     grid-template-columns: minmax(0, 1fr);

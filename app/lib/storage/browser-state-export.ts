@@ -26,6 +26,11 @@ import { normalizeTagSuggestionRecord } from "./tag-suggestion-repository";
 const DATABASE_NAME = "trade-reviewer";
 const CLIENT_ID_KEY = "trade-reviewer:sqlite-migration:client-id:v1";
 const REVIEW_PREFIXES = ["trade-reviewer:review:v2:", "trade-reviewer:review:v1:"] as const;
+const COVERAGE_STATUSES = new Set([
+  "not-requested", "syncing", "complete", "partial", "stale",
+  "source-rate-limited", "source-forbidden", "source-unavailable",
+  "invalid-response", "storage-error",
+]);
 
 function records<T>(value: unknown): T[] {
   return Array.isArray(value) ? value as T[] : [];
@@ -50,7 +55,8 @@ function isReview(value: unknown): value is EpisodeReviewRecord {
 
 function isTagSuggestion(value: unknown): value is TagSuggestionRecord {
   const item = record(value);
-  if (!item || item.version !== 1 || !strings(item, ["id", "episodeId", "instrumentId", "tagId", "ruleId", "status", "suggestedAt"]) || !Array.isArray(item.evidence)) return false;
+  if (!item || item.version !== 1 || item.ruleVersion !== 1 || typeof item.tagDictionaryVersion !== "number" || !strings(item, ["id", "episodeId", "instrumentId", "tagId", "ruleId", "status", "suggestedAt"]) || !Array.isArray(item.evidence)) return false;
+  if ((item.finalTagId !== null && typeof item.finalTagId !== "string") || (item.decidedAt !== null && typeof item.decidedAt !== "string")) return false;
   if (!["suggested", "confirmed", "rejected", "edited"].includes(item.status as string) || !["entry-20d-breakout", "first-pullback-after-breakout", "scale-in"].includes(item.ruleId as string)) return false;
   return item.evidence.every((evidence) => {
     const item = record(evidence);
@@ -70,12 +76,16 @@ function isMarketCandle(value: unknown): value is MarketCandleRecord {
 
 function isCoverageSegment(value: unknown): value is CoverageSegment {
   const item = record(value);
-  return Boolean(item && strings(item, ["startDate", "endDate", "status"]) && Array.isArray(item.missingTradingDates) && item.missingTradingDates.every((date) => typeof date === "string"));
+  return Boolean(item && strings(item, ["startDate", "endDate", "status"]) && COVERAGE_STATUSES.has(item.status as string) && Array.isArray(item.missingTradingDates) && item.missingTradingDates.every((date) => typeof date === "string") && optionalStrings(item, ["provider", "fetchedAt", "reason"]));
 }
 
 function isIntervalCoverageSegment(value: unknown): value is IntervalCoverageSegment {
   const item = record(value);
-  return Boolean(item && strings(item, ["interval", "requestedStart", "requestedEnd", "status"]) && (item.interval === "15m" || item.interval === "1D"));
+  return Boolean(item && strings(item, ["interval", "requestedStart", "requestedEnd", "status"]) && (item.interval === "15m" || item.interval === "1D") && COVERAGE_STATUSES.has(item.status as string) && optionalStrings(item, ["actualStart", "actualEnd", "provider", "fetchedAt", "reason"]));
+}
+
+function optionalStrings(value: Record<string, unknown>, fields: readonly string[]) {
+  return fields.every((field) => value[field] === undefined || typeof value[field] === "string");
 }
 
 function currencyForMarket(market: string) {

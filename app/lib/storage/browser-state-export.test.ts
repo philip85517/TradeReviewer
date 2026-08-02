@@ -134,4 +134,24 @@ describe("exportLegacyBrowserState", () => {
     expect(localStorage.getItem("trade-reviewer:review:v2:legacy")).toBeNull();
     expect(localStorage.getItem("trade-reviewer:review:v1:legacy")).not.toBeNull();
   });
+
+  it("filters invalid coverage and tag optionals while keeping valid sibling records", async () => {
+    await seedStore(COVERAGE, { instrumentId: "HK:700", segments: [
+      { startDate: "2025-01-01", endDate: "2025-01-02", status: "unexpected", missingTradingDates: [] },
+      { startDate: "2025-01-03", endDate: "2025-01-04", status: "partial", provider: "tencent", fetchedAt: "2025-01-04T00:00:00.000Z", missingTradingDates: [], reason: "late source" },
+    ] });
+    await seedStore(INTERVAL_COVERAGE, { instrumentId: "HK:700", interval: "15m", segments: [
+      { interval: "15m", requestedStart: "2025-01-01T00:00:00.000Z", requestedEnd: "2025-01-01T00:15:00.000Z", status: "complete", provider: 1 },
+      { interval: "15m", requestedStart: "2025-01-02T00:00:00.000Z", requestedEnd: "2025-01-02T00:15:00.000Z", status: "complete", actualStart: "2025-01-02T00:00:00.000Z" },
+    ] });
+    const validTag = { version: 1, tagDictionaryVersion: 1, id: "valid-tag", episodeId: "episode", instrumentId: "HK:700", tagId: "entry-20d-breakout", finalTagId: null, ruleId: "entry-20d-breakout", ruleVersion: 1, status: "suggested", suggestedAt: "2025-01-02T00:00:00.000Z", decidedAt: null, evidence: [] };
+    await seedStore(TAG_SUGGESTIONS, { ...validTag, id: "bad-tag", finalTagId: 1 });
+    await seedStore(TAG_SUGGESTIONS, validTag);
+
+    const payload = await exportLegacyBrowserState();
+
+    expect(payload?.coverage).toEqual([expect.objectContaining({ segments: [expect.objectContaining({ startDate: "2025-01-03" })] })]);
+    expect(payload?.intervalCoverage).toEqual([expect.objectContaining({ requestedStart: "2025-01-02T00:00:00.000Z" })]);
+    expect(payload?.tagSuggestions).toEqual([validTag]);
+  });
 });

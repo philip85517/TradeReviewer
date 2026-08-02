@@ -97,13 +97,17 @@ Compose 子命令、运维子进程、服务健康轮询和 HTTP 请求都有有
 
 `make deploy-code` 只创建应用 release 和执行健康门禁，不写入或删除
 `config/.env`、`data/sqlite/`、`data/backups/` 或 `logs/`。
+所有 release 都复用同一个 `data/sqlite/` 目录；发布应用代码不会创建另一套业务数据库。
 
 ## SQLite 备份与恢复
 
 `make deploy-backup` 使用 SQLite 原生在线备份写入 `0600` 临时文件，执行
-`PRAGMA quick_check`，计算 SHA-256，再以原子重命名发布校验文件和备份。默认保留天数
+`PRAGMA quick_check`，计算 SHA-256，并在通过完整性检查后生成同名的
+`.metadata.json`（schema 版本、浏览器数据迁移版本/状态和各业务表记录数），再以原子重命名
+发布元数据、校验文件和备份。默认保留天数
 从目标 `config/.env` 的 `BACKUP_RETENTION_DAYS` 读取；也可直接运行
-`ops/backup-db.sh --retention-days N` 覆盖。清理只处理格式正确、非符号链接的备份对。
+`ops/backup-db.sh --retention-days N` 覆盖。清理只处理格式正确、非符号链接的备份及其
+checksum/metadata sidecar。
 一次性 SQLite 容器使用当前运维用户的 UID/GID，避免在主机备份目录中留下不可管理的
 root 所有文件。
 
@@ -114,9 +118,11 @@ root 所有文件。
 
 ## 数据边界
 
-SQLite 通过 `./data/sqlite:/var/lib/tradereview` 与镜像层隔离。此任务没有改变
-TradeReview 的浏览器数据模型：交易、复盘草稿和行情缓存仍在每个浏览器的
-`localStorage`/IndexedDB 中，部署不会迁移、上传或同步这些数据。
+SQLite 通过 `./data/sqlite:/var/lib/tradereview` 与镜像层隔离，是交易、导入历史、复盘、
+行情、设置等业务数据的唯一持久化来源。升级后的浏览器会将旧
+`localStorage`/`IndexedDB` 数据一次性迁移到 SQLite；旧浏览器数据仅保留为短期只读回滚副本，
+正常运行不再读取或写入它。`make deploy-status` 会显示 active release、监听地址、数据库大小、
+schema/data migration 状态、各业务表记录数以及最新备份的校验状态。
 
 Docker Compose 必须已安装并可用。部署前可用
 `docker compose --env-file deploy/config/.env.example -f deploy/compose.yaml config --no-env-resolution`

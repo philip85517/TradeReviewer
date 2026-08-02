@@ -392,6 +392,13 @@ describe("SQLite operations", () => {
       const publishedPath = join(backupsDir, publishedBackup);
       expect((await stat(publishedPath)).mode & 0o777).toBe(0o600);
       expect((await stat(`${publishedPath}.sha256`)).mode & 0o777).toBe(0o600);
+      expect((await stat(`${publishedPath}.metadata.json`)).mode & 0o777).toBe(0o600);
+      const metadata = JSON.parse(await readFile(`${publishedPath}.metadata.json`, "utf8"));
+      expect(metadata).toMatchObject({
+        schemaVersion: 0,
+        dataMigrations: [],
+        recordCounts: { instruments: 0, executions: 0 },
+      });
       const backedUpValue = await runProcess("/usr/bin/sqlite3", [publishedPath, "SELECT value FROM state;"]);
       expect(backedUpValue).toMatchObject({ exitCode: 0, stdout: "before\n" });
       expect(entries.some((entry) => entry.includes("partial"))).toBe(false);
@@ -578,6 +585,37 @@ describe("SQLite operations", () => {
 
       expect(result).toMatchObject({ exitCode: 0 });
       expect(result.stdout).toContain("database: missing");
+    } finally {
+      await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  });
+
+  test("reports SQLite schema, migration, and business record counts", async () => {
+    const fixture = await createSqliteOperationalSandbox();
+
+    try {
+      const initialized = await runProcess("/usr/bin/sqlite3", [
+        fixture.databasePath,
+        `
+          CREATE TABLE schema_migrations(version INTEGER NOT NULL);
+          INSERT INTO schema_migrations VALUES (3);
+          CREATE TABLE data_migrations(source_fingerprint TEXT, version INTEGER, status TEXT, completed_at TEXT, counts_json TEXT);
+          INSERT INTO data_migrations VALUES ('browser-1', 1, 'complete', '2026-08-02T00:00:00.000Z', '{"instruments":2,"executions":3}');
+          CREATE TABLE instruments(id TEXT);
+          INSERT INTO instruments VALUES ('HK:700'), ('US:MSFT');
+          CREATE TABLE executions(id TEXT);
+          INSERT INTO executions VALUES ('trade-1'), ('trade-2'), ('trade-3');
+        `,
+      ]);
+      expect(initialized.exitCode).toBe(0);
+
+      const result = await runOperationalScript(join(fixture.targetDir, "ops", "status.sh"), [], fixture.binDir);
+
+      expect(result).toMatchObject({ exitCode: 0 });
+      expect(result.stdout).toContain("schema version: 3");
+      expect(result.stdout).toContain("data migration status: complete (1)");
+      expect(result.stdout).toContain("business records: instruments=2");
+      expect(result.stdout).toContain("executions=3");
     } finally {
       await rm(fixture.sandbox, { recursive: true, force: true });
     }

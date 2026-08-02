@@ -8,6 +8,7 @@ data_dir="$deploy_root/data"
 sqlite_dir="$data_dir/sqlite"
 backups_dir="$data_dir/backups"
 database_path="$sqlite_dir/tradereview.sqlite"
+database_container_path="/var/lib/tradereview/tradereview.sqlite"
 current_link="$deploy_root/app/current"
 releases_dir="$deploy_root/app/releases"
 
@@ -71,6 +72,63 @@ verify_checksum_when_present() {
   [[ -n "$expected" && "$expected" == "$actual" ]] && printf 'valid' || printf 'invalid'
 }
 
+sqlite_query() {
+  local query="$1"
+  compose run --rm --no-deps --user "$(id -u):$(id -g)" app \
+    sqlite3 "$database_container_path" "$query"
+}
+
+sqlite_table_names() {
+  sqlite_query "select group_concat(name, '|') from sqlite_master where type = 'table';"
+}
+
+sqlite_table_is_present() {
+  local table_names="|$1|"
+  local table_name="$2"
+  [[ "$table_names" == *"|$table_name|"* ]]
+}
+
+sqlite_scalar_or_unavailable() {
+  local query="$1"
+  local result
+  if result="$(sqlite_query "$query")"; then
+    printf '%s' "${result//$'\r'/}"
+  else
+    printf 'unavailable'
+  fi
+}
+
+report_sqlite_business_state() {
+  local schema_version migration_status table_name count table_names
+  local -a record_counts=()
+  local -a business_tables=(
+    instruments import_batches executions reviews daily_candles market_candles coverage
+    interval_coverage provider_symbols tag_suggestions market_data_jobs app_settings
+  )
+
+  table_names="$(sqlite_table_names 2>/dev/null || true)"
+  schema_version=0
+  if sqlite_table_is_present "$table_names" schema_migrations; then
+    schema_version="$(sqlite_scalar_or_unavailable 'select coalesce(max(version), 0) from schema_migrations;')"
+  fi
+  printf 'schema version: %s\n' "$schema_version"
+
+  migration_status='not migrated'
+  if sqlite_table_is_present "$table_names" data_migrations; then
+    migration_status="$(sqlite_scalar_or_unavailable "select coalesce((select status || ' (' || version || ')' from data_migrations order by completed_at desc, source_fingerprint desc limit 1), 'none');")"
+  fi
+  printf 'data migration status: %s\n' "$migration_status"
+
+  for table_name in "${business_tables[@]}"; do
+    count=0
+    if sqlite_table_is_present "$table_names" "$table_name"; then
+      count="$(sqlite_scalar_or_unavailable "select count(*) from $table_name;")"
+    fi
+    record_counts+=("$table_name=$count")
+  done
+  printf 'business records: %s\n' "$(IFS=', '; printf '%s' "${record_counts[*]}")"
+}
+
 assert_safe_directory "$deploy_root"
 assert_safe_directory "$config_dir"
 assert_safe_directory "$data_dir"
@@ -96,6 +154,7 @@ elif [[ ! -d "$sqlite_dir" || -L "$sqlite_dir" ]]; then
   printf 'database: unavailable (SQLite directory is unsafe)\n'
 elif [[ -f "$database_path" && ! -L "$database_path" ]]; then
   printf 'database: present (%s bytes)\n' "$(file_size "$database_path")"
+  report_sqlite_business_state
 elif [[ -e "$database_path" || -L "$database_path" ]]; then
   printf 'database: unavailable (database path is unsafe)\n'
 else

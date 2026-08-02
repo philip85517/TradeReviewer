@@ -13,12 +13,21 @@ export type WallClockResult =
 const WALL_CLOCK_PATTERN =
   /^(\d{2}|\d{4})([/-])(\d{2})\2(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
 
+function normalizeWallClockSourceText(sourceText: string): string {
+  return sourceText
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/\s*([/:-])\s*/g, "$1");
+}
+
 export function wallClockToInstant(
   sourceText: string,
   timeZone: string,
   disambiguation?: "earlier" | "later",
 ): WallClockResult {
-  const match = WALL_CLOCK_PATTERN.exec(sourceText);
+  const match = WALL_CLOCK_PATTERN.exec(
+    normalizeWallClockSourceText(sourceText),
+  );
   if (!match) {
     return { ok: false, code: "invalid-wall-clock" };
   }

@@ -136,6 +136,26 @@ describe("toStatementParseResult", () => {
     });
   });
 
+  it("converts OCR-spaced timestamps without rewriting raw provenance", () => {
+    const rawTimestamp = "24/  06/05 14:  41:08";
+    const spacedTimestamp = draft("image-1:futu:4");
+    spacedTimestamp.sourceTimestampText = rawTimestamp;
+    spacedTimestamp.fieldEvidence.executedAt = {
+      ...spacedTimestamp.fieldEvidence.executedAt!,
+      rawText: rawTimestamp,
+    };
+
+    const result = toStatementParseResult(state([spacedTimestamp]));
+
+    expect(result.records[0]).toMatchObject({
+      executedAt: "2024-06-05T06:41:08Z",
+      source: { sourceTimestampText: rawTimestamp },
+    });
+    expect(spacedTimestamp.fieldEvidence.executedAt.rawText).toBe(
+      rawTimestamp,
+    );
+  });
+
   it("uses explicit account selection instead of the parsed suffix", () => {
     const current = state();
     current.account = { id: "chosen", label: "Chosen account" };

@@ -5,7 +5,7 @@
  */
 import type { CoverageSegment, DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord } from "../market/contracts";
 import { loadChartSettings } from "./chart-settings";
-import { loadImportHistory } from "./import-history";
+import { isLegacyImportHistoryEntry, loadImportHistory } from "./import-history";
 import { isSerializedExecution, IMPORTED_EXECUTIONS_STORAGE_KEY } from "./import-library";
 import {
   COVERAGE,
@@ -18,7 +18,7 @@ import {
   REVIEWS,
   TAG_SUGGESTIONS,
 } from "./indexeddb-schema";
-import { loadMarketDataJobs } from "./market-data-jobs";
+import { isLegacyMarketDataJob, isLegacyMarketDataJobBase, loadMarketDataJobs } from "./market-data-jobs";
 import { parseStoredReviewState } from "./review-storage";
 import type { BrowserStatePayload, CoverageRecord, ProviderSymbolRecord, StoredInstrument } from "./sqlite-contracts";
 import type { EpisodeReviewRecord } from "../reviews/types";
@@ -273,19 +273,15 @@ export async function exportLegacyBrowserState(options: BrowserStateExportOption
   if (jobsRaw) {
     const parsed = parseLegacyJson(jobsRaw, "market data jobs") as Record<string, unknown>;
     if ((parsed.version !== 1 && parsed.version !== 2) || !Array.isArray(parsed.jobs)) throw new Error("Invalid legacy market data jobs");
-    const statuses = new Set(["not-requested", "syncing", "complete", "partial", "stale", "source-rate-limited", "source-forbidden", "source-unavailable", "invalid-response", "storage-error", "needs-provider", "ready", "error"]);
-    if (parsed.jobs.some((job) => {
-      if (!job || typeof job !== "object") return true;
-      const item = job as Record<string, unknown>;
-      if (typeof item.instrumentId !== "string" || typeof item.symbol !== "string" || typeof item.market !== "string" || typeof item.requestedAt !== "string" || typeof item.status !== "string" || !statuses.has(item.status)) return true;
-      if (parsed.version === 2 && (!Array.isArray(item.intervals) || item.intervals.some((interval) => !interval || typeof interval !== "object" || !((interval as Record<string, unknown>).interval === "15m" || (interval as Record<string, unknown>).interval === "1D") || typeof (interval as Record<string, unknown>).status !== "string" || !statuses.has((interval as Record<string, unknown>).status as string)))) return true;
-      return false;
-    })) throw new Error("Invalid legacy market data jobs");
+    const valid = parsed.version === 2
+      ? parsed.jobs.every(isLegacyMarketDataJob)
+      : parsed.jobs.every(isLegacyMarketDataJobBase);
+    if (!valid) throw new Error("Invalid legacy market data jobs");
   }
   const historyRaw = localStorage.getItem("trade-reviewer:import-history:v1");
   if (historyRaw) {
     const parsed = parseLegacyJson(historyRaw, "import history");
-    if (!Array.isArray(parsed) || parsed.some((entry) => !entry || typeof entry !== "object" || typeof (entry as Record<string, unknown>).id !== "string" || typeof (entry as Record<string, unknown>).fileName !== "string" || typeof (entry as Record<string, unknown>).importedAt !== "string" || typeof (entry as Record<string, unknown>).tradeCount !== "number" || typeof (entry as Record<string, unknown>).instrumentCount !== "number" || typeof (entry as Record<string, unknown>).excludedInstrumentCount !== "number")) throw new Error("Invalid legacy import history");
+    if (!Array.isArray(parsed) || !parsed.every(isLegacyImportHistoryEntry)) throw new Error("Invalid legacy import history");
   }
   const settingsRaw = localStorage.getItem("trade-reviewer:chart-settings:v1");
   if (settingsRaw) {
@@ -312,8 +308,9 @@ export async function exportLegacyBrowserState(options: BrowserStateExportOption
     providerSymbols: symbols,
   } satisfies BrowserStatePayload;
   if (!options.excludeDemo) return { ...payload, sourceFingerprint: calculateBrowserStateFingerprint(payload) };
-  const keepExecution = (execution: TradeExecution) => execution.source.platform !== "demo" && execution.instrument.id !== DEMO_INSTRUMENT_ID;
-  const keepInstrument = (instrument: StoredInstrument) => instrument.id !== DEMO_INSTRUMENT_ID;
+  const hasRealXpev = payload.executions.some((execution) => execution.instrument.id === DEMO_INSTRUMENT_ID && execution.source.platform !== "demo");
+  const keepExecution = (execution: TradeExecution) => execution.source.platform !== "demo";
+  const keepInstrument = (instrument: StoredInstrument) => instrument.id !== DEMO_INSTRUMENT_ID || hasRealXpev;
   const keepEpisode = (episodeId: string) => episodeId !== DEMO_REVIEW_ID;
   const filtered = {
     ...payload,
@@ -322,12 +319,12 @@ export async function exportLegacyBrowserState(options: BrowserStateExportOption
     reviews: payload.reviews.filter((item) => keepEpisode(item.episodeId)),
     reviewStates: payload.reviewStates.filter((item) => keepEpisode(item.episodeId)),
     tagSuggestions: payload.tagSuggestions.filter((item) => keepEpisode(item.episodeId)),
-    marketDataJobs: payload.marketDataJobs.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID),
-    dailyCandles: payload.dailyCandles.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID),
-    marketCandles: payload.marketCandles.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID),
-    coverage: payload.coverage.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID),
-    intervalCoverage: payload.intervalCoverage.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID),
-    providerSymbols: payload.providerSymbols.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID),
+    marketDataJobs: payload.marketDataJobs.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID || hasRealXpev),
+    dailyCandles: payload.dailyCandles.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID || hasRealXpev),
+    marketCandles: payload.marketCandles.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID || hasRealXpev),
+    coverage: payload.coverage.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID || hasRealXpev),
+    intervalCoverage: payload.intervalCoverage.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID || hasRealXpev),
+    providerSymbols: payload.providerSymbols.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID || hasRealXpev),
   } satisfies BrowserStatePayload;
   return { ...filtered, sourceFingerprint: calculateBrowserStateFingerprint(filtered) };
 }

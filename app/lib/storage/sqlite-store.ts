@@ -661,6 +661,7 @@ export class SqliteStore {
   putSuggestionDecision(input: { suggestion: TagSuggestionRecord; review: EpisodeReviewRecord }): boolean {
     validateTagSuggestion(input.suggestion);
     validateReview(input.review);
+    if (input.suggestion.episodeId !== input.review.episodeId || input.suggestion.instrumentId !== input.review.instrumentId) throw new Error("Invalid suggestion decision");
     return withSqliteTransaction(this.database, () => {
       if (!this.putReviewInTransaction(input.review)) return false;
       this.putTagSuggestionInTransaction(input.suggestion);

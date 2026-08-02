@@ -43,7 +43,7 @@ const VALID_STATUSES: MarketDataSyncStatus[] = [
   "error",
 ];
 
-function isIntervalJob(value: unknown): value is MarketDataIntervalJob {
+export function isLegacyMarketDataIntervalJob(value: unknown): value is MarketDataIntervalJob {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<MarketDataIntervalJob>;
   return (
@@ -58,24 +58,27 @@ function isIntervalJob(value: unknown): value is MarketDataIntervalJob {
   );
 }
 
-function isBaseJob(value: unknown): value is Omit<MarketDataJob, "intervals"> {
+export function isLegacyMarketDataJobBase(value: unknown): value is Omit<MarketDataJob, "intervals"> {
   if (!value || typeof value !== "object") return false;
-  const candidate = value as Partial<MarketDataJob>;
+  const candidate = value as Partial<MarketDataJobInput> & { coverageStart?: unknown; coverageEnd?: unknown };
   return (
     typeof candidate.instrumentId === "string" &&
     typeof candidate.symbol === "string" &&
     typeof candidate.market === "string" &&
     typeof candidate.requestedAt === "string" &&
     typeof candidate.status === "string" &&
-    VALID_STATUSES.includes(candidate.status)
+    VALID_STATUSES.includes(candidate.status) &&
+    (candidate.message === undefined || typeof candidate.message === "string") &&
+    (candidate.coverageStart === undefined || typeof candidate.coverageStart === "string") &&
+    (candidate.coverageEnd === undefined || typeof candidate.coverageEnd === "string")
   );
 }
 
-function isJob(value: unknown): value is MarketDataJob {
+export function isLegacyMarketDataJob(value: unknown): value is MarketDataJob {
   return (
-    isBaseJob(value) &&
+    isLegacyMarketDataJobBase(value) &&
     Array.isArray((value as Partial<MarketDataJob>).intervals) &&
-    (value as Partial<MarketDataJob>).intervals?.every(isIntervalJob) === true
+    (value as Partial<MarketDataJob>).intervals?.every(isLegacyMarketDataIntervalJob) === true
   );
 }
 
@@ -120,11 +123,11 @@ export function loadMarketDataJobs(): MarketDataJob[] {
     };
     if (!Array.isArray(parsed.jobs)) return [];
     if (parsed.version === 2) {
-      return parsed.jobs.filter(isJob).map(recoverInterruptedJob);
+      return parsed.jobs.filter(isLegacyMarketDataJob).map(recoverInterruptedJob);
     }
     if (parsed.version === 1) {
       return parsed.jobs
-        .filter(isBaseJob)
+        .filter(isLegacyMarketDataJobBase)
         .map((job) => withIntervals(job))
         .map(recoverInterruptedJob);
     }

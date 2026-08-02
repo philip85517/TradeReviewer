@@ -150,13 +150,36 @@ describe("exportLegacyBrowserState", () => {
 
   it("excludes the built-in XPEV demo from production migration payloads", async () => {
     const demo: TradeExecution = { ...execution, id: "demo-execution", source: { platform: "demo", row: 0 }, instrument: { id: "US:XPEV", symbol: "XPEV", name: "小鹏汽车", market: "US", currency: "USD" } };
-    localStorage.setItem("trade-reviewer:executions:v1", JSON.stringify({ version: 1, executions: [demo] }));
+    const real: TradeExecution = { ...demo, id: "real-xpev", source: { platform: "broker", row: 1 }, accountId: "real-account" };
+    localStorage.setItem("trade-reviewer:executions:v1", JSON.stringify({ version: 1, executions: [demo, real] }));
     localStorage.setItem("trade-reviewer:review:v2:demo-xpev-2025", JSON.stringify({ version: 2, episodeId: "demo-xpev-2025", replayCursor: "2025-01-01T00:00:00.000Z", timeframe: "1D", activePanelTab: "stats", drawings: [] }));
 
     const payload = await exportLegacyBrowserState({ excludeDemo: true });
 
-    expect(payload?.executions).toEqual([]);
-    expect(payload?.instruments).not.toEqual(expect.arrayContaining([expect.objectContaining({ id: "US:XPEV" })]));
+    expect(payload?.executions).toEqual([real]);
+    expect(payload?.instruments).toEqual([expect.objectContaining({ id: "US:XPEV" })]);
     expect(payload?.reviewStates).toEqual([]);
+  });
+
+  it("strictly validates optional legacy job and history fields before migration", async () => {
+    localStorage.setItem("trade-reviewer:market-data-jobs:v1", JSON.stringify({ version: 2, jobs: [{ instrumentId: "HK:700", symbol: "700", market: "HK", requestedAt: "2025-01-02T00:00:00.000Z", status: "complete", message: 42, intervals: [{ interval: "1D", status: "complete", coverageStart: 42 }] }] }));
+    localStorage.setItem("trade-reviewer:import-history:v1", JSON.stringify([{ id: "batch", fileName: "trades.csv", importedAt: "2025-01-02T00:00:00.000Z", tradeCount: 1, instrumentCount: 1, excludedInstrumentCount: 0, excludedRecordCount: "bad" }]));
+
+    await expect(exportLegacyBrowserState()).rejects.toThrow("Invalid legacy market data jobs");
+    localStorage.removeItem("trade-reviewer:market-data-jobs:v1");
+    await expect(exportLegacyBrowserState()).rejects.toThrow("Invalid legacy import history");
+    expect(localStorage.getItem("trade-reviewer:sqlite-migration:complete:v1")).toBeNull();
+  });
+
+  it("preserves valid optional legacy job and history fields", async () => {
+    const job = { instrumentId: "HK:700", symbol: "700", market: "HK", requestedAt: "2025-01-02T00:00:00.000Z", status: "complete", message: "done", intervals: [{ interval: "1D", status: "partial", coverageStart: "2025-01-01", coverageEnd: "2025-01-02", message: "partial" }] };
+    const history = { id: "batch", fileName: "trades.csv", sourceLabel: "Broker", importedAt: "2025-01-02T00:00:00.000Z", tradeCount: 1, instrumentCount: 1, excludedInstrumentCount: 0, excludedRecordCount: 2, duplicateTradeCount: 3, unresolvedInstrumentCount: 4, firstTradeAt: "2025-01-01T00:00:00.000Z", lastTradeAt: "2025-01-02T00:00:00.000Z", sourceKind: "screenshot", captureCount: 5, conflictTradeCount: 6 };
+    localStorage.setItem("trade-reviewer:market-data-jobs:v1", JSON.stringify({ version: 2, jobs: [job] }));
+    localStorage.setItem("trade-reviewer:import-history:v1", JSON.stringify([history]));
+
+    const payload = await exportLegacyBrowserState();
+
+    expect(payload?.marketDataJobs).toEqual([job]);
+    expect(payload?.importHistory).toEqual([history]);
   });
 });

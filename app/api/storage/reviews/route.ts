@@ -12,7 +12,10 @@ function isReview(value: unknown): value is EpisodeReviewRecord { return Boolean
 function isSuggestion(value: unknown): value is TagSuggestionRecord { return Boolean(value && typeof value === "object" && (value as { version?: unknown }).version === 1 && "tagId" in value && !("plan" in value)); }
 function isReviewState(value: unknown): value is EpisodeReviewState { return Boolean(value && typeof value === "object" && (value as { version?: unknown }).version === 2 && "drawings" in value && "replayCursor" in value); }
 function isSuggestionDecision(value: unknown): value is { kind: "suggestion-decision"; suggestion: TagSuggestionRecord; review: EpisodeReviewRecord } {
-  return Boolean(value && typeof value === "object" && (value as { kind?: unknown }).kind === "suggestion-decision" && isSuggestion((value as { suggestion?: unknown }).suggestion) && isReview((value as { review?: unknown }).review));
+  if (!value || typeof value !== "object" || (value as { kind?: unknown }).kind !== "suggestion-decision") return false;
+  const suggestion = (value as { suggestion?: unknown }).suggestion;
+  const review = (value as { review?: unknown }).review;
+  return isSuggestion(suggestion) && isReview(review) && suggestion.episodeId === review.episodeId && suggestion.instrumentId === review.instrumentId;
 }
 
 export async function GET(request: Request) {

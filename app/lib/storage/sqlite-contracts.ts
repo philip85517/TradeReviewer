@@ -43,7 +43,7 @@ export type BrowserStatePayload = {
   sourceFingerprint: string;
   executions: TradeExecution[];
   importHistory: ImportHistoryEntry[];
-  instruments: Instrument[];
+  instruments: StoredInstrument[];
   reviews: EpisodeReviewRecord[];
   reviewStates: EpisodeReviewState[];
   tagSuggestions: TagSuggestionRecord[];

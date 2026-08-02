@@ -308,15 +308,17 @@ export async function exportLegacyBrowserState(options: BrowserStateExportOption
     providerSymbols: symbols,
   } satisfies BrowserStatePayload;
   if (!options.excludeDemo) return { ...payload, sourceFingerprint: calculateBrowserStateFingerprint(payload) };
-  const hasRealXpev = payload.executions.some((execution) => execution.instrument.id === DEMO_INSTRUMENT_ID && execution.source.platform !== "demo")
+  const hasDemoXpevExecution = payload.executions.some((execution) => execution.instrument.id === DEMO_INSTRUMENT_ID && execution.source.platform === "demo");
+  const hasRealXpevActivity = payload.executions.some((execution) => execution.instrument.id === DEMO_INSTRUMENT_ID && execution.source.platform !== "demo")
     || payload.reviews.some((review) => review.instrumentId === DEMO_INSTRUMENT_ID && review.episodeId !== DEMO_REVIEW_ID)
-    || payload.tagSuggestions.some((suggestion) => suggestion.instrumentId === DEMO_INSTRUMENT_ID && suggestion.episodeId !== DEMO_REVIEW_ID)
-    || payload.marketDataJobs.some((job) => job.instrumentId === DEMO_INSTRUMENT_ID)
+    || payload.tagSuggestions.some((suggestion) => suggestion.instrumentId === DEMO_INSTRUMENT_ID && suggestion.episodeId !== DEMO_REVIEW_ID);
+  const hasOrphanXpevMarketData = payload.marketDataJobs.some((job) => job.instrumentId === DEMO_INSTRUMENT_ID)
     || payload.dailyCandles.some((candle) => candle.instrumentId === DEMO_INSTRUMENT_ID)
     || payload.marketCandles.some((candle) => candle.instrumentId === DEMO_INSTRUMENT_ID)
     || payload.coverage.some((coverage) => coverage.instrumentId === DEMO_INSTRUMENT_ID)
     || payload.intervalCoverage.some((coverage) => coverage.instrumentId === DEMO_INSTRUMENT_ID)
     || payload.providerSymbols.some((symbol) => symbol.instrumentId === DEMO_INSTRUMENT_ID);
+  const hasRealXpev = hasRealXpevActivity || (!hasDemoXpevExecution && hasOrphanXpevMarketData);
   const keepExecution = (execution: TradeExecution) => execution.source.platform !== "demo";
   const keepInstrument = (instrument: StoredInstrument) => instrument.id !== DEMO_INSTRUMENT_ID || hasRealXpev;
   const keepEpisode = (episodeId: string) => episodeId !== DEMO_REVIEW_ID;

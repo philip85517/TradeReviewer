@@ -161,6 +161,18 @@ describe("exportLegacyBrowserState", () => {
     expect(payload?.reviewStates).toEqual([]);
   });
 
+  it("does not treat a demo-only XPEV market cache as real activity", async () => {
+    const demo: TradeExecution = { ...execution, id: "demo-execution", source: { platform: "demo", row: 0 }, instrument: { id: "US:XPEV", symbol: "XPEV", name: "小鹏汽车", market: "US", currency: "USD" } };
+    localStorage.setItem("trade-reviewer:executions:v1", JSON.stringify({ version: 1, executions: [demo] }));
+    await seedStore(DAILY_CANDLES, { instrumentId: "US:XPEV", tradingDate: "2025-01-02", open: "1", high: "2", low: "0.5", close: "1.5", volume: "10", currency: "USD", provider: "yahoo", providerSymbol: "XPEV", adjustmentMode: "raw", fetchedAt: "2025-01-02T03:04:05.000Z" });
+
+    const payload = await exportLegacyBrowserState({ excludeDemo: true });
+
+    expect(payload?.executions).toEqual([]);
+    expect(payload?.dailyCandles).toEqual([]);
+    expect(payload?.instruments).not.toEqual(expect.arrayContaining([expect.objectContaining({ id: "US:XPEV" })]));
+  });
+
   it("strictly validates optional legacy job and history fields before migration", async () => {
     localStorage.setItem("trade-reviewer:market-data-jobs:v1", JSON.stringify({ version: 2, jobs: [{ instrumentId: "HK:700", symbol: "700", market: "HK", requestedAt: "2025-01-02T00:00:00.000Z", status: "complete", message: 42, intervals: [{ interval: "1D", status: "complete", coverageStart: 42 }] }] }));
     localStorage.setItem("trade-reviewer:import-history:v1", JSON.stringify([{ id: "batch", fileName: "trades.csv", importedAt: "2025-01-02T00:00:00.000Z", tradeCount: 1, instrumentCount: 1, excludedInstrumentCount: 0, excludedRecordCount: "bad" }]));

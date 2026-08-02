@@ -382,6 +382,17 @@ input:focus-visible {
   gap: 8px;
 }
 
+.episode-list-empty {
+  margin: 0;
+  padding: 16px 10px;
+  border: 1px dashed var(--line-soft);
+  border-radius: 9px;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.5;
+  text-align: center;
+}
+
 .episode-card {
   width: 100%;
   padding: 11px;
@@ -680,6 +691,25 @@ input:focus-visible {
   place-items: center;
   color: var(--muted);
   background: var(--surface);
+}
+
+.review-workspace-empty {
+  min-height: 0;
+  display: grid;
+  place-content: center;
+  gap: 6px;
+  color: var(--muted);
+  background: var(--surface);
+  text-align: center;
+}
+
+.review-workspace-empty strong {
+  color: #d9e5f4;
+  font-size: 14px;
+}
+
+.review-workspace-empty span {
+  font-size: 10px;
 }
 
 .chart-toolbar {

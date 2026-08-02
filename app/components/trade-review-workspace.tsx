@@ -187,6 +187,7 @@ type InstrumentMarketState = {
 
 type Props = {
   initialFrame: DemoReplayFrame;
+  showDemo?: boolean;
   screenshotImportDependencies?: Partial<ScreenshotImportDependencies>;
 };
 
@@ -625,6 +626,7 @@ async function fetchDemoFrame(
 
 export function TradeReviewWorkspace({
   initialFrame,
+  showDemo = true,
   screenshotImportDependencies,
 }: Props) {
 function isAbortError(error: unknown) {
@@ -659,7 +661,9 @@ function isAbortError(error: unknown) {
   const [importedExecutions, setImportedExecutions] = useState<
     TradeExecution[]
   >([]);
-  const [selectedInstrumentId, setSelectedInstrumentId] = useState("demo");
+  const [selectedInstrumentId, setSelectedInstrumentId] = useState(
+    showDemo ? "demo" : "",
+  );
   const [selectedEpisodeId, setSelectedEpisodeId] = useState(REVIEW_ID);
   const [importedCursor, setImportedCursor] = useState(initialFrame.cursor);
   const [pendingImport, setPendingImport] = useState<ImportPreview | null>(
@@ -906,12 +910,16 @@ function isAbortError(error: unknown) {
   const searchableInstruments = useMemo(
     () =>
       [
-        {
-          id: "demo",
-          name: DEMO_INSTRUMENT.name,
-          symbol: DEMO_INSTRUMENT.symbol,
-          market: DEMO_INSTRUMENT.market,
-        },
+        ...(showDemo
+          ? [
+              {
+                id: "demo",
+                name: DEMO_INSTRUMENT.name,
+                symbol: DEMO_INSTRUMENT.symbol,
+                market: DEMO_INSTRUMENT.market,
+              },
+            ]
+          : []),
         ...importedInstruments.map(({ instrument }) => ({
           id: instrument.id,
           name: instrument.name,
@@ -919,7 +927,7 @@ function isAbortError(error: unknown) {
           market: instrument.market,
         })),
       ],
-    [importedInstruments],
+    [importedInstruments, showDemo],
   );
 
   const viewModel: ReviewChartViewModel = {
@@ -1100,6 +1108,7 @@ function isAbortError(error: unknown) {
 
   function selectInstrument(instrumentId: string) {
     if (instrumentId === "demo") {
+      if (!showDemo) return;
       setPlaying(false);
       setSelectedInstrumentId("demo");
       setSelectedEpisodeId(REVIEW_ID);
@@ -2341,8 +2350,12 @@ function isAbortError(error: unknown) {
         </nav>
         <div className="header-actions">
           <span className="demo-chip">
-            <Sparkles size={13} />
-            {selectedImportedInstrument ? "本地导入" : "演示行情"}
+            {showDemo && <Sparkles size={13} />}
+            {selectedImportedInstrument
+              ? "本地导入"
+              : showDemo
+                ? "演示行情"
+                : "等待导入"}
           </span>
           <button className="icon-button mobile-menu" aria-label="打开菜单">
             <Menu size={19} />
@@ -2395,6 +2408,7 @@ function isAbortError(error: unknown) {
           <>
             <EpisodeSidebar
               importedInstruments={importedInstruments}
+              showDemo={showDemo}
               importing={importing}
               importPhase={importPhase}
               importError={importError}
@@ -2425,7 +2439,15 @@ function isAbortError(error: unknown) {
                 })
               }
             />
-            {selectedImportedInstrument &&
+            {!showDemo && !selectedImportedInstrument ? (
+              <section
+                className="review-workspace review-workspace-empty"
+                aria-label="交易复盘图表工作区"
+              >
+                <strong>暂无导入交易</strong>
+                <span>请先从左侧导入交易记录，再开始复盘。</span>
+              </section>
+            ) : selectedImportedInstrument &&
             !hydratedMarketIds.has(
               selectedImportedInstrument.instrument.id,
             ) ? (

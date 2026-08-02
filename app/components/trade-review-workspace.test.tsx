@@ -494,6 +494,21 @@ describe("TradeReviewWorkspace", () => {
     expect(screenshotInput).toHaveAttribute("multiple");
   });
 
+  it("does not expose the bundled demo in production mode", async () => {
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+      />,
+    );
+
+    expect(
+      await screen.findByText("暂无导入股票，请先导入交易记录。"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("小鹏汽车")).not.toBeInTheDocument();
+    expect(screen.queryByText("演示行情")).not.toBeInTheDocument();
+  });
+
   it("reviews two screenshots and applies duplicate, use-incoming, and keep-both decisions through the existing import transaction", async () => {
     const user = userEvent.setup();
     const persistSpy = vi.spyOn(importTransaction, "persistImportBatch");

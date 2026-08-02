@@ -11,6 +11,9 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <TradeReviewWorkspace initialFrame={getDemoReplayFrame()} />
+    <TradeReviewWorkspace
+      initialFrame={getDemoReplayFrame()}
+      showDemo={false}
+    />
   );
 }

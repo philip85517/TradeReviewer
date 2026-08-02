@@ -182,4 +182,15 @@ describe("exportLegacyBrowserState", () => {
     expect(payload?.marketDataJobs).toEqual([job]);
     expect(payload?.importHistory).toEqual([history]);
   });
+
+  it("keeps real XPEV references when no execution row is present", async () => {
+    await seedStore(REVIEWS, { version: 1, episodeId: "real-xpev-episode", instrumentId: "US:XPEV", updatedAt: "2025-01-02T03:04:05.000Z", plan: { thesis: "real", expectedPath: "", invalidationCondition: "", targetRange: "", plannedRiskAmount: "", confidence: null }, review: { decisionQuality: null, executionQuality: null, riskManagement: "", psychology: "", reusableRule: "", completed: false }, confirmedTagIds: [] });
+    await seedStore(DAILY_CANDLES, { instrumentId: "US:XPEV", tradingDate: "2025-01-02", open: "1", high: "2", low: "0.5", close: "1.5", volume: "10", currency: "USD", provider: "yahoo", providerSymbol: "XPEV", adjustmentMode: "raw", fetchedAt: "2025-01-02T03:04:05.000Z" });
+
+    const payload = await exportLegacyBrowserState({ excludeDemo: true });
+
+    expect(payload?.instruments).toEqual([expect.objectContaining({ id: "US:XPEV" })]);
+    expect(payload?.reviews).toEqual([expect.objectContaining({ episodeId: "real-xpev-episode" })]);
+    expect(payload?.dailyCandles).toEqual([expect.objectContaining({ instrumentId: "US:XPEV" })]);
+  });
 });

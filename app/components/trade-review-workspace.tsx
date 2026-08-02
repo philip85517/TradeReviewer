@@ -107,7 +107,10 @@ import {
   type SqliteHttpClient,
 } from "../lib/storage/sqlite-http-client";
 import { exportLegacyBrowserState } from "../lib/storage/browser-state-export";
-import { migrateLegacyBrowserState } from "../lib/storage/browser-state-migration";
+import {
+  migrateLegacyBrowserState,
+  SQLITE_MIGRATION_MARKER_KEY,
+} from "../lib/storage/browser-state-migration";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
 import {
   buildInstrumentTradeSummaries,
@@ -1225,12 +1228,18 @@ function isAbortError(error: unknown) {
       try {
         setStorageState("loading");
         setStorageError(null);
-        const legacyState = await exportLegacyBrowserState();
-        if (legacyState) {
+        let bootstrap = await storageClient.getBootstrap();
+        const migrationMarker = window.localStorage.getItem(
+          SQLITE_MIGRATION_MARKER_KEY,
+        );
+        if (!migrationMarker && !bootstrap.migration) {
+          const legacyState = await exportLegacyBrowserState();
+          if (legacyState) {
           setStorageState("migration");
           await migrateLegacyBrowserState(storageClient, legacyState);
+            bootstrap = await storageClient.getBootstrap();
+          }
         }
-        const bootstrap = await storageClient.getBootstrap();
         if (!active) return;
         const storedSummaries = buildInstrumentTradeSummaries(
           bootstrap.executions,
@@ -2314,15 +2323,21 @@ function isAbortError(error: unknown) {
     });
   }
 
+  if (storageState !== "ready") {
+    const failed = storageState === "error";
+    return (
+      <main className="trade-review-app" aria-live="polite">
+        <section className="review-workspace review-workspace-loading" aria-busy={!failed} aria-label="SQLite 存储状态">
+          <strong>{failed ? "无法打开交易数据" : storageState === "migration" ? "正在迁移浏览器交易数据" : "正在连接交易数据"}</strong>
+          <span>{failed ? storageError ?? "SQLite 存储暂时不可用。" : storageState === "migration" ? "首次升级会将现有浏览器数据安全迁移到 SQLite。" : "正在从 SQLite 读取交易记录…"}</span>
+          {failed && <button type="button" onClick={() => setBootstrapAttempt((value) => value + 1)}>重试</button>}
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="trade-review-app">
-      {storageState !== "ready" && (
-        <section className="review-workspace review-workspace-loading" aria-live="polite" aria-busy={storageState !== "error"} aria-label="SQLite 存储状态">
-          <strong>{storageState === "error" ? "无法打开交易数据" : storageState === "migration" ? "正在迁移浏览器交易数据" : "正在连接交易数据"}</strong>
-          <span>{storageState === "error" ? storageError ?? "SQLite 存储暂时不可用。" : "正常业务数据将在 SQLite 就绪后显示。"}</span>
-          {storageState === "error" && <button type="button" onClick={() => setBootstrapAttempt((value) => value + 1)}>重试</button>}
-        </section>
-      )}
       <header className="app-header">
         <div className="brand">
           <div className="brand-mark">

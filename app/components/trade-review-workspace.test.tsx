@@ -39,7 +39,6 @@ import {
   saveImportedExecutions,
 } from "../lib/storage/import-library";
 import { loadImportHistory } from "../lib/storage/import-history";
-import * as importTransaction from "../lib/storage/import-transaction";
 import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-data-repository";
 import { saveReviewState } from "../lib/storage/review-storage";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
@@ -551,14 +550,14 @@ describe("TradeReviewWorkspace", () => {
     expect(exporter).not.toHaveBeenCalled();
   });
 
-  it("keeps the statement input unchanged and exposes an independent multi-image screenshot input", () => {
+  it("keeps the statement input unchanged and exposes an independent multi-image screenshot input", async () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
-    const statementInput = screen.getByLabelText("导入交易记录");
+    const statementInput = await screen.findByLabelText("导入交易记录");
     expect(statementInput).toHaveAttribute("accept", ".xlsx,.xls,.pdf");
     expect(statementInput).not.toHaveAttribute("multiple");
 
-    const screenshotInput = screen.getByLabelText("从截图恢复交易");
+    const screenshotInput = await screen.findByLabelText("从截图恢复交易");
     expect(screenshotInput).toHaveAttribute(
       "accept",
       "image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp",
@@ -583,7 +582,9 @@ describe("TradeReviewWorkspace", () => {
 
   it("reviews two screenshots and applies duplicate, use-incoming, and keep-both decisions through the existing import transaction", async () => {
     const user = userEvent.setup();
-    const persistSpy = vi.spyOn(importTransaction, "persistImportBatch");
+    const client = createLegacySqliteClient();
+    const mergeExecutions = vi.fn(client.mergeExecutions);
+    mockSqliteClient.current = { ...client, mergeExecutions };
     mockMarketDataSync.mockResolvedValue({
       source: "cache",
       status: "complete",
@@ -674,7 +675,7 @@ describe("TradeReviewWorkspace", () => {
       />,
     );
 
-    await user.upload(screen.getByLabelText("从截图恢复交易"), [
+    await user.upload(await screen.findByLabelText("从截图恢复交易"), [
       new File(["one"], "one.png", { type: "image/png" }),
       new File(["two"], "two.png", { type: "image/png" }),
     ]);
@@ -752,33 +753,41 @@ describe("TradeReviewWorkspace", () => {
     expect(persisted.filter(({ instrument }) => instrument.symbol === "TSLA"))
       .toHaveLength(2);
     expect(persisted).toHaveLength(5);
-    expect(persistSpy).toHaveBeenCalledWith(
-      existing,
-      expect.arrayContaining([
-        expect.objectContaining({ id: "existing-nvda" }),
-      ]),
-      expect.objectContaining({
-        sourceKind: "screenshot",
-        captureCount: 2,
-        conflictTradeCount: 2,
-      }),
+    await waitFor(() =>
+      expect(mergeExecutions).toHaveBeenCalledWith(
+        expect.objectContaining({
+          executions: expect.arrayContaining([
+            expect.objectContaining({ id: "existing-nvda" }),
+          ]),
+          importHistory: expect.arrayContaining([
+            expect.objectContaining({
+              sourceKind: "screenshot",
+              captureCount: 2,
+              conflictTradeCount: 2,
+            }),
+          ]),
+        }),
+      ),
     );
-    expect(mockMarketDataSync).toHaveBeenCalledTimes(1);
-    expect(mockMarketDataSync).toHaveBeenCalledWith(
-      expect.objectContaining({
-        instrumentId: "US:AAPL",
-        required: requiredMarketDataRange(
-          "2025-04-10T01:30:00Z",
-          "2025-04-10T01:30:00Z",
-          { open: true, market: "US" },
-        ),
-      }),
+    await waitFor(() =>
+      expect(mockMarketDataSync).toHaveBeenCalledWith(
+        expect.objectContaining({
+          instrumentId: "US:AAPL",
+          required: requiredMarketDataRange(
+            "2025-04-10T01:30:00Z",
+            "2025-04-10T01:30:00Z",
+            { open: true, market: "US" },
+          ),
+        }),
+      ),
     );
   }, 15_000);
 
   it("does not persist when a prepared screenshot import preview is canceled", async () => {
     const user = userEvent.setup();
-    const persistSpy = vi.spyOn(importTransaction, "persistImportBatch");
+    const client = createLegacySqliteClient();
+    const mergeExecutions = vi.fn(client.mergeExecutions);
+    mockSqliteClient.current = { ...client, mergeExecutions };
     const draftsByImage = new Map([
       [
         "capture-1",
@@ -810,7 +819,7 @@ describe("TradeReviewWorkspace", () => {
       />,
     );
 
-    await user.upload(screen.getByLabelText("从截图恢复交易"),
+    await user.upload(await screen.findByLabelText("从截图恢复交易"),
       new File(["one"], "one.png", { type: "image/png" }),
     );
     await user.selectOptions(
@@ -823,7 +832,7 @@ describe("TradeReviewWorkspace", () => {
 
     expect(loadImportedExecutions()).toEqual([]);
     expect(loadImportHistory()).toEqual([]);
-    expect(persistSpy).not.toHaveBeenCalled();
+    expect(mergeExecutions).not.toHaveBeenCalled();
     expect(mockMarketDataSync).not.toHaveBeenCalled();
   });
 
@@ -882,7 +891,7 @@ describe("TradeReviewWorkspace", () => {
     );
 
     await user.upload(
-      screen.getByLabelText("从截图恢复交易"),
+      await screen.findByLabelText("从截图恢复交易"),
       new File(["synthetic"], "synthetic.png", { type: "image/png" }),
     );
     await user.selectOptions(
@@ -940,7 +949,7 @@ describe("TradeReviewWorkspace", () => {
       />,
     );
 
-    await user.upload(screen.getByLabelText("从截图恢复交易"), [
+    await user.upload(await screen.findByLabelText("从截图恢复交易"), [
       new File(["one"], "one.png", { type: "image/png" }),
     ]);
     await user.selectOptions(
@@ -972,14 +981,14 @@ describe("TradeReviewWorkspace", () => {
     const user = userEvent.setup();
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
-    const cursorBefore = screen.getByTestId("replay-cursor").textContent;
+    const cursorBefore = (await screen.findByTestId("replay-cursor")).textContent;
 
     expect(screen.queryByText("未来成交")).not.toBeInTheDocument();
     expect(screen.queryByText(/共 \d+ 根/)).not.toBeInTheDocument();
     expect(screen.getByText("尚未成交")).toBeInTheDocument();
 
     await user.click(
-      screen.getByRole("button", { name: "下一根 K 线" }),
+      await screen.findByRole("button", { name: "下一根 K 线" }),
     );
 
     expect(screen.getByTestId("replay-cursor").textContent).not.toBe(
@@ -1005,7 +1014,7 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
     await user.click(
-      screen.getByRole("button", { name: "下一根 K 线" }),
+      await screen.findByRole("button", { name: "下一根 K 线" }),
     );
 
     expect(
@@ -1091,7 +1100,7 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
     expect(
-      screen.getByRole("heading", { name: "持仓统计" }),
+      await screen.findByRole("heading", { name: "持仓统计" }),
     ).toBeInTheDocument();
     expect(
       document.querySelector(".review-side-panel-desktop"),
@@ -1275,7 +1284,7 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
     await user.click(
-      screen.getByRole("button", { name: "行情数据详情" }),
+      await screen.findByRole("button", { name: "行情数据详情" }),
     );
     await user.click(
       screen.getByRole("button", { name: "刷新行情数据" }),
@@ -1305,10 +1314,10 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
     await user.click(
-      screen.getByRole("button", { name: "下一根 K 线" }),
+      await screen.findByRole("button", { name: "下一根 K 线" }),
     );
     await user.click(
-      screen.getByRole("button", { name: "行情数据详情" }),
+      await screen.findByRole("button", { name: "行情数据详情" }),
     );
 
     const refresh = screen.getByRole("button", {

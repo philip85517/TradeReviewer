@@ -207,6 +207,7 @@ describe("SqliteStore", () => {
     store.commitIntervalMarketData({ instrumentId: instrument.id, interval: "15m", candles: [candle], coverage: [intervalCoverage], providerSymbol: { provider: "tencent", symbol: "700" } });
     expect(store.getCandles(instrument.id, "15m", "2026-01-02T00:00:00.000Z", "2026-01-02T02:00:00.000Z")).toHaveLength(1);
     expect(() => store.commitIntervalMarketData({ instrumentId: instrument.id, interval: "1D", candles: [candle], coverage: [intervalCoverage], providerSymbol: { provider: "tencent", symbol: "700" } })).toThrow("Invalid market data");
+    expect(() => store.commitIntervalMarketData({ instrumentId: instrument.id, interval: "15m", candles: [candle], coverage: [{ ...intervalCoverage, interval: "1D" }], providerSymbol: { provider: "tencent", symbol: "700" } })).toThrow("Invalid market data");
     expect(() => store.commitMarketData({ instrumentId: "missing", candles: [], coverage: [], providerSymbol: { provider: "tencent", symbol: "missing" } })).toThrow("Unknown instrument: missing");
     const before = snapshotAllTables(store);
     expect(() => store.commitIntervalMarketData({ instrumentId: instrument.id, interval: "15m", candles: [candle, { ...candle, instrumentId: "other" }], coverage: [intervalCoverage], providerSymbol: { provider: "tencent", symbol: "700" } })).toThrow("Invalid market data");

@@ -1,6 +1,5 @@
 import { openSqliteDatabase } from "../../../../db/sqlite";
 import type { CoverageSegment, DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord } from "../../../lib/market/contracts";
-import type { CoverageRecord, ProviderSymbolRecord } from "../../../lib/storage/sqlite-contracts";
 import { getSqliteStore } from "../../../lib/storage/sqlite-store";
 
 export const runtime = "nodejs";
@@ -24,7 +23,5 @@ export async function PUT(request: Request) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return invalid(); const body = value as Record<string, unknown>;
   if (body.kind === "daily") { const result = parseDailyCommit(body.result); if (!result) return invalid(); try { getSqliteStore(openSqliteDatabase()).commitMarketData(result); return response({ ok: true }); } catch (caught) { if (caught instanceof Error && caught.message.startsWith("Unknown instrument:")) return response({ error: { code: "not-found", message: "not found" } }, 404); if (caught instanceof Error && caught.message.startsWith("Invalid ")) return invalid(); return response({ error: { code: "storage-unavailable", message: "storage unavailable" } }, 503); } }
   if (body.kind === "interval") { const result = parseIntervalCommit(body.result); if (!result) return invalid(); try { getSqliteStore(openSqliteDatabase()).commitIntervalMarketData(result); return response({ ok: true }); } catch (caught) { if (caught instanceof Error && caught.message.startsWith("Unknown instrument:")) return response({ error: { code: "not-found", message: "not found" } }, 404); if (caught instanceof Error && caught.message.startsWith("Invalid ")) return invalid(); return response({ error: { code: "storage-unavailable", message: "storage unavailable" } }, 503); } }
-  const collections = ["dailyCandles", "marketCandles", "coverage", "intervalCoverage", "providerSymbols"] as const;
-  if (!collections.some((key) => body[key] !== undefined) || collections.some((key) => body[key] !== undefined && !Array.isArray(body[key]))) return invalid();
-  try { getSqliteStore(openSqliteDatabase()).putMarketData({ dailyCandles: body.dailyCandles as never, marketCandles: body.marketCandles as MarketCandleRecord[] | undefined, coverage: body.coverage as CoverageRecord[] | undefined, intervalCoverage: body.intervalCoverage as never, providerSymbols: body.providerSymbols as ProviderSymbolRecord[] | undefined }); return response({ ok: true }); } catch (caught) { if (caught instanceof Error && caught.message.startsWith("Unknown instrument:")) return response({ error: { code: "not-found", message: "not found" } }, 404); if (caught instanceof Error && caught.message.startsWith("Invalid ")) return invalid(); return response({ error: { code: "storage-unavailable", message: "storage unavailable" } }, 503); }
+  return invalid();
 }

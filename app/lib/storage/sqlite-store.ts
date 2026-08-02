@@ -635,7 +635,7 @@ export class SqliteStore {
 
   commitIntervalMarketData(result: IntervalMarketDataCommitInput): void {
     if (!result || typeof result.instrumentId !== "string" || (result.interval !== "15m" && result.interval !== "1D") || !Array.isArray(result.candles) || !Array.isArray(result.coverage)) throw new Error("Invalid market data");
-    result.candles.forEach((candle) => { validateMarketCandle(candle); if (candle.instrumentId !== result.instrumentId || candle.interval !== result.interval) throw new Error("Invalid market data"); }); result.coverage.forEach((coverage) => validateIntervalCoverage({ ...coverage, instrumentId: result.instrumentId }));
+    result.candles.forEach((candle) => { validateMarketCandle(candle); if (candle.instrumentId !== result.instrumentId || candle.interval !== result.interval) throw new Error("Invalid market data"); }); result.coverage.forEach((coverage) => { if (coverage.interval !== result.interval) throw new Error("Invalid market data"); validateIntervalCoverage({ ...coverage, instrumentId: result.instrumentId }); });
     withSqliteTransaction(this.database, () => { result.candles.forEach((candle) => this.putMarketCandle(candle)); result.coverage.forEach((coverage) => this.putIntervalCoverage({ ...coverage, instrumentId: result.instrumentId })); if (result.providerSymbol) this.putProviderSymbol({ instrumentId: result.instrumentId, provider: result.providerSymbol.provider, providerSymbol: result.providerSymbol.symbol }); });
   }
 

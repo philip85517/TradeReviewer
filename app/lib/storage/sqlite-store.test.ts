@@ -176,4 +176,30 @@ describe("SqliteStore", () => {
     expect(() => store.mergeBrowserState(payload({ marketDataJobs: [invalidJob as never] }))).toThrow("Invalid market data job");
     expect(store.getStatus().counts).toMatchObject({ instruments: 0, executions: 0, market_data_jobs: 0 });
   });
+
+  it("rejects an unknown market-data job status before migration", () => {
+    const store = createStore();
+    const job = { instrumentId: instrument.id, symbol: "700", market: "HK", requestedAt: "2026-01-01T00:00:00.000Z", status: "unknown", intervals: [] };
+
+    expect(() => store.mergeBrowserState(payload({ marketDataJobs: [job as never] }))).toThrow("Invalid market data job");
+    expect(store.getStatus().counts.instruments).toBe(0);
+  });
+
+  it("rejects an unknown market-data interval status before migration", () => {
+    const store = createStore();
+    const job = { instrumentId: instrument.id, symbol: "700", market: "HK", requestedAt: "2026-01-01T00:00:00.000Z", status: "complete", intervals: [{ interval: "15m", status: "unknown" }] };
+
+    expect(() => store.mergeBrowserState(payload({ marketDataJobs: [job as never] }))).toThrow("Invalid market data job");
+    expect(store.getStatus().counts.instruments).toBe(0);
+  });
+
+  it("rejects malformed drawing anchors and nested undefined JSON values", () => {
+    const store = createStore();
+    const drawing = { version: 2, id: "drawing", episodeId: "episode", name: "bad", tool: "horizontal-line", anchors: [{ time: "", price: Number.NaN }], style: { color: "#fff", lineWidth: 1, opacity: 1 }, zIndex: 0, hidden: false, locked: false, visibleOn: "all", stage: "during-replay", createdAtCursor: "2026-01-01T00:00:00.000Z" };
+    const state = { version: 2, episodeId: "episode", replayCursor: "2026-01-01T00:00:00.000Z", timeframe: "1D", activePanelTab: "notes", drawings: [drawing] };
+
+    expect(() => store.mergeBrowserState(payload({ reviewStates: [state as never] }))).toThrow();
+    expect(() => store.mergeBrowserState(payload({ sourceFingerprint: "nested-undefined", providerSymbols: [{ instrumentId: instrument.id, provider: "yahoo", providerSymbol: "700", metadata: { invalid: undefined } }] }))).toThrow("Invalid provider metadata");
+    expect(store.getStatus().counts.instruments).toBe(0);
+  });
 });

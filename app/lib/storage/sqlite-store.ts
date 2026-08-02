@@ -5,6 +5,7 @@ import type { DatabaseSync } from "node:sqlite";
 
 import { SQLITE_MIGRATIONS } from "../../../db/sqlite-schema";
 import { withSqliteTransaction } from "../../../db/sqlite";
+import { normalizeDrawing, validateDrawing } from "../chart/drawings";
 import { compareExecutions, reconcileExecutions } from "../import/execution-reconciliation";
 import type { TagSuggestionRecord } from "../insights/types";
 import type { DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord } from "../market/contracts";
@@ -26,6 +27,17 @@ import type {
 
 type Row = Record<string, unknown>;
 
+const MARKET_DATA_STATUSES = new Set([
+  "not-requested", "syncing", "complete", "partial", "stale",
+  "source-rate-limited", "source-forbidden", "source-unavailable",
+  "invalid-response", "storage-error", "needs-provider", "ready", "error",
+]);
+const COVERAGE_STATUSES = new Set([
+  "not-requested", "syncing", "complete", "partial", "stale",
+  "source-rate-limited", "source-forbidden", "source-unavailable",
+  "invalid-response", "storage-error",
+]);
+
 function asString(value: unknown, field: string) {
   if (typeof value !== "string") throw new Error(`Invalid ${field}`);
   return value;
@@ -38,10 +50,30 @@ function parseJson<T>(value: unknown, field: string): T {
 
 function json(value: unknown, field: string) {
   try {
+    assertJsonSafe(value, field);
     const serialized = JSON.stringify(value);
     if (serialized === undefined) throw new Error(`Invalid ${field}`);
     return serialized;
   } catch { throw new Error(`Invalid ${field}`); }
+}
+
+function assertJsonSafe(value: unknown, field: string, seen = new Set<object>()): void {
+  if (value === null || typeof value === "string" || typeof value === "boolean") return;
+  if (typeof value === "number") {
+    if (Number.isFinite(value)) return;
+    throw new Error(`Invalid ${field}`);
+  }
+  if (typeof value !== "object" || value === undefined) throw new Error(`Invalid ${field}`);
+  if (seen.has(value)) throw new Error(`Invalid ${field}`);
+  seen.add(value);
+  if (Array.isArray(value)) {
+    value.forEach((item) => assertJsonSafe(item, field, seen));
+  } else {
+    const prototype = Object.getPrototypeOf(value);
+    if (prototype !== Object.prototype && prototype !== null) throw new Error(`Invalid ${field}`);
+    Object.values(value).forEach((item) => assertJsonSafe(item, field, seen));
+  }
+  seen.delete(value);
 }
 
 function sameJson(left: unknown, right: unknown) {
@@ -78,7 +110,8 @@ function validateReviewState(value: unknown): asserts value is EpisodeReviewStat
   const state = value as EpisodeReviewState;
   if (state.version !== 2 || typeof state.episodeId !== "string" || typeof state.replayCursor !== "string" || !["15m", "1h", "4h", "1D", "1W"].includes(state.timeframe) || (state.activePanelTab !== "stats" && state.activePanelTab !== "notes") || !Array.isArray(state.drawings)) throw new Error("Invalid review state");
   for (const drawing of state.drawings) {
-    if (!drawing || typeof drawing.id !== "string" || drawing.version !== 2 || drawing.episodeId !== state.episodeId || typeof drawing.name !== "string" || !Array.isArray(drawing.anchors) || !drawing.style || typeof drawing.style.color !== "string" || typeof drawing.style.lineWidth !== "number" || typeof drawing.style.opacity !== "number" || typeof drawing.zIndex !== "number" || typeof drawing.hidden !== "boolean" || typeof drawing.locked !== "boolean" || typeof drawing.createdAtCursor !== "string") throw new Error("Invalid review drawing");
+    if (!drawing || typeof drawing.id !== "string" || drawing.version !== 2 || drawing.episodeId !== state.episodeId || typeof drawing.name !== "string" || !Array.isArray(drawing.anchors) || !drawing.style || typeof drawing.style.color !== "string" || typeof drawing.style.lineWidth !== "number" || typeof drawing.style.opacity !== "number" || typeof drawing.zIndex !== "number" || typeof drawing.hidden !== "boolean" || typeof drawing.locked !== "boolean" || typeof drawing.createdAtCursor !== "string" || (drawing.visibleOn !== "all" && (!Array.isArray(drawing.visibleOn) || drawing.visibleOn.some((timeframe) => !["15m", "1h", "4h", "1D", "1W"].includes(timeframe)))) || !["pre-trade", "during-replay", "post-review"].includes(drawing.stage)) throw new Error("Invalid review drawing");
+    try { validateDrawing(normalizeDrawing(drawing, state.episodeId, state.replayCursor, drawing.zIndex)); } catch { throw new Error("Invalid review drawing"); }
   }
 }
 
@@ -89,12 +122,12 @@ function validateTagSuggestion(value: unknown): asserts value is TagSuggestionRe
 }
 
 function validateImportHistory(value: unknown): asserts value is ImportHistoryEntry { if (!value || typeof value !== "object") throw new Error("Invalid import history"); const entry = value as ImportHistoryEntry; for (const field of ["id", "fileName", "sourceLabel", "importedAt"] as const) asString(entry[field], "import history"); for (const field of ["tradeCount", "instrumentCount", "excludedInstrumentCount", "excludedRecordCount", "duplicateTradeCount", "unresolvedInstrumentCount", "captureCount", "conflictTradeCount"] as const) if (entry[field] !== undefined && (typeof entry[field] !== "number" || !Number.isFinite(entry[field]) || entry[field] < 0)) throw new Error("Invalid import history"); }
-function validateJob(value: unknown): asserts value is MarketDataJob { if (!value || typeof value !== "object") throw new Error("Invalid market data job"); const job = value as MarketDataJob; for (const field of ["instrumentId", "symbol", "market", "requestedAt", "status"] as const) asString(job[field], "market data job"); if (!Array.isArray(job.intervals) || job.intervals.some((interval) => !interval || (interval.interval !== "15m" && interval.interval !== "1D") || typeof interval.status !== "string" || (interval.message !== undefined && typeof interval.message !== "string") || (interval.coverageStart !== undefined && typeof interval.coverageStart !== "string") || (interval.coverageEnd !== undefined && typeof interval.coverageEnd !== "string"))) throw new Error("Invalid market data job"); }
+function validateJob(value: unknown): asserts value is MarketDataJob { if (!value || typeof value !== "object") throw new Error("Invalid market data job"); const job = value as MarketDataJob; for (const field of ["instrumentId", "symbol", "market", "requestedAt", "status"] as const) asString(job[field], "market data job"); if (!MARKET_DATA_STATUSES.has(job.status) || !Array.isArray(job.intervals) || job.intervals.some((interval) => !interval || (interval.interval !== "15m" && interval.interval !== "1D") || typeof interval.status !== "string" || !MARKET_DATA_STATUSES.has(interval.status) || (interval.message !== undefined && typeof interval.message !== "string") || (interval.coverageStart !== undefined && typeof interval.coverageStart !== "string") || (interval.coverageEnd !== undefined && typeof interval.coverageEnd !== "string"))) throw new Error("Invalid market data job"); }
 function validateDailyCandle(value: unknown): asserts value is DailyCandleRecord { if (!value || typeof value !== "object") throw new Error("Invalid daily candle"); for (const field of ["instrumentId", "tradingDate", "open", "high", "low", "close", "volume", "currency", "provider", "providerSymbol", "adjustmentMode", "fetchedAt"] as const) asString((value as DailyCandleRecord)[field], "daily candle"); }
 function validateMarketCandle(value: unknown): asserts value is MarketCandleRecord { if (!value || typeof value !== "object") throw new Error("Invalid market candle"); for (const field of ["instrumentId", "interval", "timestamp", "open", "high", "low", "close", "volume", "currency", "provider", "providerSymbol", "adjustmentMode", "fetchedAt"] as const) asString((value as MarketCandleRecord)[field], "market candle"); }
 function validateCoverage(value: unknown): asserts value is CoverageRecord { if (!value || typeof value !== "object" || typeof (value as CoverageRecord).instrumentId !== "string" || (value as CoverageRecord).adjustmentMode !== "raw") throw new Error("Invalid coverage"); const coverage = value as CoverageRecord; if ((coverage.startDate !== undefined && typeof coverage.startDate !== "string") || (coverage.endDate !== undefined && typeof coverage.endDate !== "string")) throw new Error("Invalid coverage"); }
 function normalizeIntervalCoverage(value: IntervalCoverageSegment & { instrumentId: string; adjustmentMode?: "raw" }) { return { ...value, adjustmentMode: value.adjustmentMode ?? "raw" } as IntervalCoverageSegment & { instrumentId: string; adjustmentMode: "raw" }; }
-function validateIntervalCoverage(value: unknown): asserts value is IntervalCoverageSegment & { instrumentId: string; adjustmentMode?: "raw" } { if (!value || typeof value !== "object" || typeof (value as { instrumentId?: unknown }).instrumentId !== "string" || !["15m", "1D"].includes((value as IntervalCoverageSegment).interval) || typeof (value as IntervalCoverageSegment).requestedStart !== "string" || typeof (value as IntervalCoverageSegment).requestedEnd !== "string" || typeof (value as IntervalCoverageSegment).status !== "string") throw new Error("Invalid interval coverage"); const coverage = value as IntervalCoverageSegment & { adjustmentMode?: unknown }; if (coverage.adjustmentMode !== undefined && coverage.adjustmentMode !== "raw") throw new Error("Invalid interval coverage"); for (const field of ["actualStart", "actualEnd", "provider", "fetchedAt", "reason"] as const) if (coverage[field] !== undefined && typeof coverage[field] !== "string") throw new Error("Invalid interval coverage"); }
+function validateIntervalCoverage(value: unknown): asserts value is IntervalCoverageSegment & { instrumentId: string; adjustmentMode?: "raw" } { if (!value || typeof value !== "object" || typeof (value as { instrumentId?: unknown }).instrumentId !== "string" || !["15m", "1D"].includes((value as IntervalCoverageSegment).interval) || typeof (value as IntervalCoverageSegment).requestedStart !== "string" || typeof (value as IntervalCoverageSegment).requestedEnd !== "string" || typeof (value as IntervalCoverageSegment).status !== "string" || !COVERAGE_STATUSES.has((value as IntervalCoverageSegment).status)) throw new Error("Invalid interval coverage"); const coverage = value as IntervalCoverageSegment & { adjustmentMode?: unknown }; if (coverage.adjustmentMode !== undefined && coverage.adjustmentMode !== "raw") throw new Error("Invalid interval coverage"); for (const field of ["actualStart", "actualEnd", "provider", "fetchedAt", "reason"] as const) if (coverage[field] !== undefined && typeof coverage[field] !== "string") throw new Error("Invalid interval coverage"); }
 function validateProviderSymbol(value: unknown): asserts value is ProviderSymbolRecord { if (!value || typeof value !== "object" || typeof (value as ProviderSymbolRecord).instrumentId !== "string" || typeof (value as ProviderSymbolRecord).provider !== "string" || typeof (value as ProviderSymbolRecord).providerSymbol !== "string") throw new Error("Invalid provider symbol"); const metadata = (value as ProviderSymbolRecord).metadata; if (metadata !== undefined && (!metadata || typeof metadata !== "object" || Array.isArray(metadata))) throw new Error("Invalid provider symbol"); if (metadata) json(metadata, "provider metadata"); }
 
 function migrationReport(row: Row): MigrationReport {

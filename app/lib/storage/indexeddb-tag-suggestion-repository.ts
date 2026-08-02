@@ -1,3 +1,4 @@
+/** MIGRATION-ONLY: retired IndexedDB repository for browser-state-export/tests. */
 import type { TagSuggestionRecord } from "../insights/types";
 import {
   openTradeReviewDatabase,

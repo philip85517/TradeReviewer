@@ -1,3 +1,4 @@
+/** MIGRATION-ONLY: load/save access the retired browser rollback copy. */
 import type { MarketDataSyncStatus } from "../market/sync-status";
 import type { NativeMarketInterval } from "../market/contracts";
 

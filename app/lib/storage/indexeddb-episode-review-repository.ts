@@ -1,3 +1,4 @@
+/** MIGRATION-ONLY: retired IndexedDB repository for browser-state-export/tests. */
 import { normalizeEpisodeReviewRecord } from "../reviews/review-metrics";
 import type { EpisodeReviewRecord } from "../reviews/types";
 import type { EpisodeReviewRepository } from "./episode-review-repository";

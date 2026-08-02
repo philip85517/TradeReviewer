@@ -1,3 +1,4 @@
+/** MIGRATION-ONLY: retired IndexedDB schema read by browser-state-export. */
 export const DATABASE_VERSION = 4;
 export const DAILY_CANDLES = "dailyCandles";
 export const COVERAGE = "coverage";

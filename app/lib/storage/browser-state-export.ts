@@ -1,3 +1,8 @@
+/**
+ * MIGRATION-ONLY: the sole production reader of the retired browser stores.
+ * It serializes the rollback copy for the one-time SQLite migration; normal
+ * workspace reads and writes must use the SQLite HTTP client instead.
+ */
 import type { CoverageSegment, DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord } from "../market/contracts";
 import { loadChartSettings } from "./chart-settings";
 import { loadImportHistory } from "./import-history";

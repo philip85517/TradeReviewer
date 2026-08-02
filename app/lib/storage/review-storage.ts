@@ -1,3 +1,4 @@
+/** MIGRATION-ONLY: load/save access the retired browser rollback copy. */
 import {
   normalizeDrawing,
   type LegacyDrawing,

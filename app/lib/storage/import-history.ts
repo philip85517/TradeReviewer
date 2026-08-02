@@ -1,3 +1,4 @@
+/** MIGRATION-ONLY: load/save access the retired browser rollback copy. */
 export const IMPORT_HISTORY_STORAGE_KEY =
   "trade-reviewer:import-history:v1";
 

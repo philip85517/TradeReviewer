@@ -1,3 +1,8 @@
+/**
+ * MIGRATION-ONLY: browser load/save functions retain the rollback copy for
+ * browser-state-export. Pure reconciliation and serialization helpers remain
+ * available to the SQLite-backed workspace.
+ */
 import type { TradeExecution } from "../trades/types";
 import {
   compareExecutionEvidence,

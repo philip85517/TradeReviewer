@@ -87,9 +87,7 @@ import {
   episodePlanAtCursor,
 } from "../lib/reviews/review-metrics";
 import type { EpisodeReviewRecord } from "../lib/reviews/types";
-import {
-  type ChartSettings,
-} from "../lib/storage/chart-settings";
+import type { ChartSettings } from "../lib/storage/chart-settings";
 import type { ImportHistoryEntry } from "../lib/storage/import-history";
 import {
   mergeExecutions,

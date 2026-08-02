@@ -5,6 +5,7 @@ import type { Instrument, TradeExecution } from "../trades/types";
 import type { ChartSettings } from "./chart-settings";
 import type { ImportHistoryEntry } from "./import-history";
 import type { MarketDataJob } from "./market-data-jobs";
+import type { EpisodeReviewState } from "./review-storage";
 
 export type CoverageRecord = {
   instrumentId: string;
@@ -29,6 +30,7 @@ export type StorageBootstrap = {
   importHistory: ImportHistoryEntry[];
   instruments: Instrument[];
   reviews: EpisodeReviewRecord[];
+  reviewStates: EpisodeReviewState[];
   tagSuggestions: TagSuggestionRecord[];
   marketDataJobs: MarketDataJob[];
   settings: Record<string, unknown>;
@@ -42,6 +44,7 @@ export type BrowserStatePayload = {
   importHistory: ImportHistoryEntry[];
   instruments: Instrument[];
   reviews: EpisodeReviewRecord[];
+  reviewStates: EpisodeReviewState[];
   tagSuggestions: TagSuggestionRecord[];
   marketDataJobs: MarketDataJob[];
   settings: ChartSettings | Record<string, unknown>;

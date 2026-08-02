@@ -46,6 +46,7 @@ function payload(overrides: Partial<BrowserStatePayload> = {}): BrowserStatePayl
     importHistory: [],
     instruments: [instrument],
     reviews: [],
+    reviewStates: [],
     tagSuggestions: [],
     marketDataJobs: [],
     settings: { version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" },
@@ -69,7 +70,7 @@ describe("SqliteStore", () => {
     const bootstrap = createStore().getBootstrap();
 
     expect(bootstrap).toMatchObject({
-      schemaVersion: 1,
+      schemaVersion: 2,
       executions: [], importHistory: [], instruments: [], reviews: [],
       tagSuggestions: [], marketDataJobs: [], settings: {},
     });
@@ -90,6 +91,13 @@ describe("SqliteStore", () => {
     expect(store.getExecutions()).toEqual([execution]);
   });
 
+  it("reports duplicates for an overlapping migration with a new fingerprint", () => {
+    const store = createStore();
+    store.mergeBrowserState(payload());
+
+    expect(store.mergeBrowserState(payload({ sourceFingerprint: "migration-2" }))).toMatchObject({ inserted: 0, duplicate: 8, conflict: 0 });
+  });
+
   it("preserves a newer review when an older payload is retried", () => {
     const store = createStore();
     store.mergeExecutions([execution]);
@@ -107,6 +115,23 @@ describe("SqliteStore", () => {
     expect(store.getReview("episode-1")?.plan.thesis).toBe("new");
   });
 
+  it("round-trips review UI state including drawings", () => {
+    const store = createStore();
+    const state = {
+      version: 2 as const,
+      episodeId: "episode-state",
+      replayCursor: "2026-01-02T00:00:00.000Z",
+      timeframe: "1D" as const,
+      activePanelTab: "notes" as const,
+      drawings: [{ version: 2 as const, id: "drawing-1", episodeId: "episode-state", name: "Line", tool: "horizontal-line" as const, anchors: [{ time: "2026-01-02T00:00:00.000Z", price: 1 }], style: { color: "#fff", lineWidth: 1, opacity: 1 }, zIndex: 0, hidden: false, locked: false, visibleOn: "all" as const, stage: "during-replay" as const, createdAtCursor: "2026-01-02T00:00:00.000Z" }],
+    };
+
+    store.mergeBrowserState(payload({ sourceFingerprint: "migration-state", reviewStates: [state] }));
+
+    expect(store.getReviewStates()).toEqual([state]);
+    expect(store.getBootstrap().reviewStates).toEqual([state]);
+  });
+
   it("stores and reads decimal fields without numeric coercion", () => {
     const store = createStore();
     store.mergeExecutions([execution]);
@@ -116,10 +141,30 @@ describe("SqliteStore", () => {
     expect(stored.price).toBe("123.450000000000000001");
   });
 
+  it("round-trips candle provenance and full interval coverage without provider joins", () => {
+    const store = createStore();
+    const daily = { instrumentId: instrument.id, tradingDate: "2026-01-02", open: "1.01", high: "2.02", low: "1.00", close: "2.00", volume: "3", currency: "HKD", provider: "yahoo" as const, providerSymbol: "0700.HK", adjustmentMode: "raw" as const, fetchedAt: "2026-01-03T00:00:00.000Z" };
+    const intervalCoverage = { instrumentId: instrument.id, interval: "15m" as const, requestedStart: "2026-01-02T00:00:00.000Z", requestedEnd: "2026-01-02T04:00:00.000Z", actualStart: "2026-01-02T00:15:00.000Z", actualEnd: "2026-01-02T03:45:00.000Z", status: "partial" as const, provider: "yahoo" as const, fetchedAt: "2026-01-03T00:00:00.000Z", reason: "holiday" };
+
+    store.mergeBrowserState(payload({ sourceFingerprint: "market-state", executions: [], instruments: [instrument], dailyCandles: [daily], intervalCoverage: [intervalCoverage], providerSymbols: [{ instrumentId: instrument.id, provider: "tencent", providerSymbol: "hk00700" }] }));
+
+    expect(store.getDailyCandles()).toEqual([daily]);
+    expect(store.getIntervalCoverage()).toEqual([{ ...intervalCoverage, adjustmentMode: "raw" }]);
+  });
+
   it("rolls back all tables when one browser-state record is invalid", () => {
     const store = createStore();
     expect(() => store.mergeBrowserState(payload({ reviews: [{ episodeId: "invalid" } as never] }))).toThrow("Invalid review");
 
     expect(store.getBootstrap()).toMatchObject({ executions: [], instruments: [], reviews: [] });
+  });
+
+  it("rolls back data when recording the migration marker fails", () => {
+    const store = createStore();
+    const database = (store as unknown as { database: ReturnType<typeof openSqliteDatabase> }).database;
+    database.exec("create trigger fail_marker before insert on data_migrations begin select raise(abort, 'marker failed'); end");
+
+    expect(() => store.mergeBrowserState(payload())).toThrow("marker failed");
+    expect(store.getBootstrap()).toMatchObject({ executions: [], instruments: [] });
   });
 });

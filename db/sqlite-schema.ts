@@ -157,6 +157,21 @@ create table if not exists app_settings (
 );
 `;
 
+const repositoryCompletenessSql = `
+alter table daily_candles add column provider text;
+alter table daily_candles add column provider_symbol text;
+alter table daily_candles add column currency text;
+alter table daily_candles add column fetched_at text;
+
+alter table market_candles add column provider text;
+alter table market_candles add column provider_symbol text;
+alter table market_candles add column currency text;
+alter table market_candles add column fetched_at text;
+alter table market_candles add column knowledge_at text;
+
+alter table interval_coverage add column details_json text check (details_json is null or json_valid(details_json));
+`;
+
 function migration(version: number, name: string, sql: string): SqliteMigration {
   return {
     version,
@@ -168,4 +183,5 @@ function migration(version: number, name: string, sql: string): SqliteMigration 
 
 export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
   migration(1, "unified-storage-schema", unifiedSchemaSql),
+  migration(2, "preserve-repository-provenance", repositoryCompletenessSql),
 ];

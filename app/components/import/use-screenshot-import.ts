@@ -850,7 +850,11 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
         !session ||
         !current ||
         !isActive(session) ||
-        session.completing
+        session.completing ||
+        (action.type === "add-draft" &&
+          statusesRef.current.some(({ state: imageState }) =>
+            ["queued", "recognizing"].includes(imageState),
+          ))
       ) return;
       updateReview(screenshotReviewReducer(current, action));
     },

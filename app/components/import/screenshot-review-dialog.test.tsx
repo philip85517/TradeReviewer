@@ -788,6 +788,57 @@ describe("ScreenshotReviewDialog", () => {
     });
   });
 
+  it("disables manual add with supported inferred metadata while another image is unfinished", async () => {
+    const user = userEvent.setup();
+    const failed: ScreenshotReviewImage = {
+      id: "image-3",
+      fileName: "orders-3.png",
+      previewUrl: "blob:https://trade-review/image-3",
+      width: 1170,
+      height: 2532,
+      state: "failed",
+      completedTiles: 1,
+      totalTiles: 4,
+      tradeCount: 0,
+      issueCount: 1,
+      error: "OCR failed",
+    };
+    const queued: ScreenshotReviewImage = {
+      id: "image-4",
+      fileName: "orders-4.png",
+      previewUrl: "blob:https://trade-review/image-4",
+      width: 0,
+      height: 0,
+      state: "queued",
+      completedTiles: 0,
+      totalTiles: 0,
+      tradeCount: 0,
+      issueCount: 0,
+    };
+    const state = reviewState();
+    state.images.push({
+      imageId: failed.id,
+      fingerprint: "fingerprint-3",
+      captureIndex: 2,
+      broker: "tiger",
+      layoutVersion: "tiger-orders-dark-v1",
+    });
+    const { onAction } = renderDialog({
+      state,
+      reviewImages: [...images, failed, queued],
+    });
+
+    await user.click(
+      screen.getByRole("button", { name: "选择 orders-3.png" }),
+    );
+    const manualAdd = screen.getByRole("button", {
+      name: "手工补录成交",
+    });
+    expect(manualAdd).toBeDisabled();
+    await user.click(manualAdd);
+    expect(onAction).not.toHaveBeenCalled();
+  });
+
   it("disables manual add for a failed image without supported metadata", async () => {
     const user = userEvent.setup();
     const failed: ScreenshotReviewImage = {

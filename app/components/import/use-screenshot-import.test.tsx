@@ -479,6 +479,85 @@ describe("useScreenshotImport", () => {
     ]);
   });
 
+  it("rejects manual add while inferred metadata is provisional before later layouts diverge", async () => {
+    const thirdRecognition = deferred<OcrImageResult>();
+    const thirdStarted = deferred<void>();
+    const { dependencies } = setupDependencies({
+      recognize: async (input, _engine, options) => {
+        options.onProgress(1, 1);
+        if (input.id === "image-2") throw new Error("OCR failed");
+        if (input.id === "image-3") {
+          thirdStarted.resolve();
+          return thirdRecognition.promise;
+        }
+        return imageResult(input.id);
+      },
+      detectLayout: (image) =>
+        image.imageId === "image-3"
+          ? {
+              matched: true,
+              broker: "tiger",
+              layoutVersion: "tiger-orders-dark-v1",
+              confidence: 1,
+            }
+          : {
+              matched: true,
+              broker: "futu",
+              layoutVersion: "futu-orders-dark-v1",
+              confidence: 1,
+            },
+    });
+    const { result } = renderHook(() =>
+      useScreenshotImport({
+        currentExecutions: () => [],
+        onPrepared: vi.fn(),
+        dependencies,
+      }),
+    );
+
+    let started!: Promise<void>;
+    await act(async () => {
+      started = result.current.start([
+        file("one.png"),
+        file("two.png"),
+        file("three.png"),
+      ]);
+      await thirdStarted.promise;
+    });
+    expect(result.current.images.map(({ state }) => state)).toEqual([
+      "needs-review",
+      "failed",
+      "recognizing",
+    ]);
+    expect(result.current.state?.images).toContainEqual(
+      expect.objectContaining({ imageId: "image-2" }),
+    );
+
+    act(() =>
+      result.current.dispatch({ type: "add-draft", imageId: "image-2" }),
+    );
+    expect(result.current.state?.drafts.map(({ imageId }) => imageId)).toEqual([
+      "image-1",
+    ]);
+
+    await act(async () => {
+      thirdRecognition.resolve(imageResult("image-3"));
+      await started;
+    });
+
+    expect(result.current.state?.drafts.map(({ imageId }) => imageId)).toEqual([
+      "image-1",
+      "image-3",
+    ]);
+    expect(
+      result.current.state?.drafts.every((candidate) =>
+        result.current.state?.images.some(
+          ({ imageId }) => imageId === candidate.imageId,
+        ),
+      ),
+    ).toBe(true);
+  });
+
   it("retains matched layout metadata when parsing finds no trades", async () => {
     const { dependencies } = setupDependencies({
       parseFutu: () => [],

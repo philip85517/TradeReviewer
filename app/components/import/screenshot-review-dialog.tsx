@@ -239,6 +239,9 @@ export function ScreenshotReviewDialog({
   const unresolvedConflicts = conflicts.filter(
     ({ id }) => !decisions.has(id),
   );
+  const batchConsensusPending = images.some(({ state: imageState }) =>
+    ["queued", "recognizing"].includes(imageState),
+  );
   const unfinishedImage = images.some(({ state: imageState }) =>
     ["queued", "recognizing", "failed"].includes(imageState),
   );
@@ -452,7 +455,11 @@ export function ScreenshotReviewDialog({
             <button
               className="secondary-button screenshot-manual-add"
               type="button"
-              disabled={!selectedImage || !selectedImageMetadata}
+              disabled={
+                !selectedImage ||
+                !selectedImageMetadata ||
+                batchConsensusPending
+              }
               onClick={() =>
                 effectiveSelectedImageId &&
                 onAction({

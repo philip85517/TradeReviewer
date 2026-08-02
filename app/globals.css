@@ -3559,6 +3559,11 @@ input:focus-visible {
   white-space: nowrap;
 }
 
+.screenshot-trade-table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .screenshot-trade-table th {
   position: sticky;
   top: 0;
@@ -3646,7 +3651,21 @@ input:focus-visible {
   background: rgba(243, 186, 47, 0.08);
 }
 
-.screenshot-field-cell small {
+.screenshot-field-content {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.screenshot-field-value {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.screenshot-field-pending {
+  flex: 0 0 auto;
   margin-left: 5px;
   padding: 2px 4px;
   border: 1px solid rgba(243, 186, 47, 0.42);

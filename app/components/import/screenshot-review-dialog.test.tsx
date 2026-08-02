@@ -537,6 +537,41 @@ describe("ScreenshotReviewDialog", () => {
     });
   });
 
+  it("keeps a long pending timestamp fully accessible while separating its visible value", () => {
+    const longTimestamp = "2024-06-05 14:41:08 America/New_York (EDT)";
+    const current = reviewState(false);
+    current.drafts = [
+      draft("draft-long-timestamp", "NVDA", 0, {
+        sourceTimestampText: longTimestamp,
+        fieldEvidence: {
+          ...draft("base", "NVDA", 0).fieldEvidence,
+          executedAt: {
+            rawText: longTimestamp,
+            confidence: 0.97,
+            repaired: false,
+            confirmedByUser: false,
+            sourceBounds: { x: 120, y: 320, width: 360, height: 36 },
+          },
+        },
+      }),
+    ];
+    renderDialog({ state: current });
+
+    const cell = screen.getByRole("cell", {
+      name: `NVDA 成交时间 ${longTimestamp}，待确认`,
+    });
+    expect(
+      within(cell).getByText(longTimestamp, {
+        selector: ".screenshot-field-value",
+      }),
+    ).toHaveTextContent(longTimestamp);
+    expect(
+      within(cell).getByText("待确认", {
+        selector: ".screenshot-field-pending",
+      }),
+    ).toBeInTheDocument();
+  });
+
   it("dispatches row-specific delete and manual add actions", async () => {
     const user = userEvent.setup();
     const { onAction } = renderDialog();

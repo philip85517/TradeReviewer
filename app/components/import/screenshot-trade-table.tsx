@@ -101,8 +101,10 @@ function interactiveFieldCell(
         }
       }}
     >
-      <span>{value}</span>
-      {pending && <small>待确认</small>}
+      <span className="screenshot-field-content">
+        <span className="screenshot-field-value">{value}</span>
+        {pending && <small className="screenshot-field-pending">待确认</small>}
+      </span>
     </td>
   );
 }

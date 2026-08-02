@@ -5,6 +5,10 @@ export const SQLITE_MIGRATION_MARKER_KEY = "trade-reviewer:sqlite-migration:comp
 const MAX_ATTEMPTS = 3;
 
 type MigrationClient = Pick<SqliteHttpClient, "migrate">;
+type MigrationOptions = {
+  /** The SQLite server has no recorded migration, so a local marker is not authoritative. */
+  ignoreLocalMarker?: boolean;
+};
 
 function completed(payload: BrowserStatePayload): MigrationReport | null {
   const serialized = localStorage.getItem(SQLITE_MIGRATION_MARKER_KEY);
@@ -19,8 +23,12 @@ function retryable(error: unknown) {
   return !(error instanceof StorageHttpError) || error.status >= 500;
 }
 
-export async function migrateLegacyBrowserState(client: MigrationClient, payload: BrowserStatePayload): Promise<MigrationReport> {
-  const prior = completed(payload);
+export async function migrateLegacyBrowserState(
+  client: MigrationClient,
+  payload: BrowserStatePayload,
+  options: MigrationOptions = {},
+): Promise<MigrationReport> {
+  const prior = options.ignoreLocalMarker ? null : completed(payload);
   if (prior) return prior;
   let lastError: unknown;
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {

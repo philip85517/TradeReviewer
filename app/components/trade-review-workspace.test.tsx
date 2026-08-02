@@ -32,7 +32,7 @@ import { requiredMarketDataRange } from "../lib/market/sync-range";
 import type { DemoReplayFrame } from "../lib/demo/replay-frame";
 import type { EpisodeReviewRecord } from "../lib/reviews/types";
 import type { SqliteHttpClient } from "../lib/storage/sqlite-http-client";
-import type { StorageBootstrap } from "../lib/storage/sqlite-contracts";
+import type { BrowserStatePayload, StorageBootstrap } from "../lib/storage/sqlite-contracts";
 import { IndexedDbEpisodeReviewRepository } from "../lib/storage/indexeddb-episode-review-repository";
 import {
   loadImportedExecutions,
@@ -542,12 +542,62 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.queryByText("小鹏汽车")).not.toBeInTheDocument();
   });
 
-  it("does not export legacy browser state after a completed migration marker", async () => {
+  it("does not export legacy browser state after the SQLite server confirms migration", async () => {
     const exporter = vi.fn();
     window.localStorage.setItem("trade-reviewer:sqlite-migration:complete:v1", JSON.stringify({ sourceFingerprint: "done", validationDigest: "digest" }));
-    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={createLegacySqliteClient()} legacyStateExporter={exporter} />);
+    const client = createLegacySqliteClient();
+    const getBootstrap = vi.fn().mockResolvedValue({
+      schemaVersion: 1,
+      migration: {
+        sourceFingerprint: "done",
+        inserted: 0,
+        duplicate: 0,
+        conflict: 0,
+        failed: 0,
+        validationDigest: "digest",
+      },
+      executions: [],
+      importHistory: [],
+      instruments: [],
+      reviews: [],
+      reviewStates: [],
+      tagSuggestions: [],
+      marketDataJobs: [],
+      settings: { version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" },
+    } satisfies StorageBootstrap);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={{ ...client, getBootstrap }} legacyStateExporter={exporter} />);
     await screen.findByText("暂无导入股票，请先导入交易记录。");
     expect(exporter).not.toHaveBeenCalled();
+  });
+
+  it("migrates legacy browser state when SQLite has no migration despite a local marker", async () => {
+    window.localStorage.setItem("trade-reviewer:sqlite-migration:complete:v1", JSON.stringify({ sourceFingerprint: "stale-browser-marker", validationDigest: "digest" }));
+    const client = createLegacySqliteClient();
+    const migrate = vi.fn(client.migrate);
+    const exporter = vi.fn().mockResolvedValue({
+      version: 1,
+      sourceClientId: "browser-a",
+      sourceFingerprint: "browser-a:empty",
+      executions: [],
+      importHistory: [],
+      instruments: [],
+      reviews: [],
+      reviewStates: [],
+      tagSuggestions: [],
+      marketDataJobs: [],
+      settings: { version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" },
+      dailyCandles: [],
+      marketCandles: [],
+      coverage: [],
+      intervalCoverage: [],
+      providerSymbols: [],
+    } satisfies BrowserStatePayload);
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={{ ...client, migrate }} legacyStateExporter={exporter} />);
+
+    await screen.findByText("暂无导入股票，请先导入交易记录。");
+    expect(exporter).toHaveBeenCalledOnce();
+    expect(migrate).toHaveBeenCalledOnce();
   });
 
   it("keeps the statement input unchanged and exposes an independent multi-image screenshot input", async () => {

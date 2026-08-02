@@ -109,7 +109,6 @@ import {
 import { exportLegacyBrowserState } from "../lib/storage/browser-state-export";
 import {
   migrateLegacyBrowserState,
-  SQLITE_MIGRATION_MARKER_KEY,
 } from "../lib/storage/browser-state-migration";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
 import {
@@ -1231,14 +1230,13 @@ function isAbortError(error: unknown) {
         setStorageState("loading");
         setStorageError(null);
         let bootstrap = await storageClient.getBootstrap();
-        const migrationMarker = window.localStorage.getItem(
-          SQLITE_MIGRATION_MARKER_KEY,
-        );
-        if (!migrationMarker && !bootstrap.migration) {
+        if (!bootstrap.migration) {
           const legacyState = await legacyStateExporter();
           if (legacyState) {
-          setStorageState("migration");
-          await migrateLegacyBrowserState(storageClient, legacyState);
+            setStorageState("migration");
+            await migrateLegacyBrowserState(storageClient, legacyState, {
+              ignoreLocalMarker: true,
+            });
             bootstrap = await storageClient.getBootstrap();
           }
         }

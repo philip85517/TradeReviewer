@@ -1,3 +1,4 @@
+/** MIGRATION-ONLY: retired IndexedDB repository for browser-state-export/tests. */
 import { canonicalInstrumentId } from "../instruments/display-name";
 import type { ResolvedInstrument } from "../instruments/metadata-contracts";
 import {

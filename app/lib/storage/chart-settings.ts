@@ -1,3 +1,4 @@
+/** MIGRATION-ONLY: load/save access the retired browser rollback copy. */
 export type ChartSettings = {
   version: 1;
   showGrid: boolean;

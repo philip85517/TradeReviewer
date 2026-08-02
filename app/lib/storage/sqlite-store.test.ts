@@ -2,7 +2,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { openSqliteDatabase } from "../../../db/sqlite";
 import type { BrowserStatePayload } from "./sqlite-contracts";
@@ -14,6 +14,39 @@ function createStore() {
   const directory = mkdtempSync(join(tmpdir(), "tradereview-store-"));
   directories.push(directory);
   return new SqliteStore(openSqliteDatabase(join(directory, "store.sqlite")));
+}
+
+function databaseFor(store: SqliteStore) {
+  return (store as unknown as {
+    database: ReturnType<typeof openSqliteDatabase>;
+  }).database;
+}
+
+function snapshotAllTables(store: SqliteStore) {
+  const database = databaseFor(store);
+  const tables = database.prepare(
+    "select name from sqlite_master where type = 'table' and name not like 'sqlite_%' order by name",
+  ).all() as Array<{ name: string }>;
+
+  return Object.fromEntries(
+    tables.map(({ name }) => [
+      name,
+      database.prepare(`select * from "${name}" order by rowid`).all(),
+    ]),
+  );
+}
+
+function expectBrowserStateRejectionBeforeTransaction(
+  store: SqliteStore,
+  browserState: BrowserStatePayload,
+) {
+  const database = databaseFor(store);
+  const before = snapshotAllTables(store);
+  const exec = vi.spyOn(database, "exec");
+
+  expect(() => store.mergeBrowserState(browserState)).toThrow();
+  expect(exec).not.toHaveBeenCalledWith("begin immediate");
+  expect(snapshotAllTables(store)).toEqual(before);
 }
 
 const instrument = {
@@ -60,6 +93,7 @@ function payload(overrides: Partial<BrowserStatePayload> = {}): BrowserStatePayl
 }
 
 afterEach(() => {
+  vi.restoreAllMocks();
   for (const directory of directories.splice(0)) {
     rmSync(directory, { recursive: true, force: true });
   }
@@ -201,5 +235,49 @@ describe("SqliteStore", () => {
     expect(() => store.mergeBrowserState(payload({ reviewStates: [state as never] }))).toThrow();
     expect(() => store.mergeBrowserState(payload({ sourceFingerprint: "nested-undefined", providerSymbols: [{ instrumentId: instrument.id, provider: "yahoo", providerSymbol: "700", metadata: { invalid: undefined } }] }))).toThrow("Invalid provider metadata");
     expect(store.getStatus().counts.instruments).toBe(0);
+  });
+
+  it("rejects nested undefined in a market-data job before any table changes", () => {
+    const store = createStore();
+    const job = {
+      instrumentId: instrument.id,
+      symbol: instrument.symbol,
+      market: instrument.market,
+      requestedAt: "2026-01-01T00:00:00.000Z",
+      status: "complete",
+      intervals: [{
+        interval: "15m",
+        status: "complete",
+        metadata: { invalid: undefined },
+      }],
+    };
+
+    expectBrowserStateRejectionBeforeTransaction(
+      store,
+      payload({ marketDataJobs: [job as never] }),
+    );
+  });
+
+  it("rejects nested undefined in settings before any table changes", () => {
+    const store = createStore();
+
+    expectBrowserStateRejectionBeforeTransaction(
+      store,
+      payload({ settings: { nested: { invalid: undefined } } }),
+    );
+  });
+
+  it("rejects nested undefined in coverage before any table changes", () => {
+    const store = createStore();
+    const coverage = {
+      instrumentId: instrument.id,
+      adjustmentMode: "raw",
+      metadata: { invalid: undefined },
+    };
+
+    expectBrowserStateRejectionBeforeTransaction(
+      store,
+      payload({ coverage: [coverage as never] }),
+    );
   });
 });

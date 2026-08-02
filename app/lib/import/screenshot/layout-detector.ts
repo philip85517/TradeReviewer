@@ -83,6 +83,22 @@ function lineCenterY(line: OcrTextLine): number {
   return line.sourceBounds.y + line.sourceBounds.height / 2;
 }
 
+function rowAssociationWindowHeight(image: OcrImageResult): number {
+  const heights = image.lines
+    .map((line) => line.sourceBounds.height)
+    .filter((height) => Number.isFinite(height) && height > 0)
+    .sort((left, right) => left - right);
+  const middle = Math.floor(heights.length / 2);
+  const medianHeight =
+    heights.length === 0
+      ? 24
+      : heights.length % 2 === 0
+        ? (heights[middle - 1] + heights[middle]) / 2
+        : heights[middle];
+
+  return Math.min(Math.max(medianHeight * 4, 48), 120);
+}
+
 export function sideFromTradeLabel(
   text: string,
 ): "buy" | "sell" | undefined {
@@ -93,7 +109,7 @@ export function anchorTradeRows(
   image: OcrImageResult,
   options: AnchorTradeRowsOptions,
 ): AnchoredTradeRow[] {
-  const localRowHeight = image.height * 0.04;
+  const associationWindowHeight = rowAssociationWindowHeight(image);
   const anchors = image.lines
     .flatMap((line) => {
       const side = sideFromTradeLabel(line.text);
@@ -112,7 +128,8 @@ export function anchorTradeRows(
         return (
           candidate !== anchor &&
           candidateCenter >= anchor.sourceBounds.y &&
-          candidateCenter <= anchor.sourceBounds.y + localRowHeight &&
+          candidateCenter <=
+            anchor.sourceBounds.y + associationWindowHeight &&
           options.isCorroboratingLine(candidate)
         );
       }),
@@ -127,7 +144,7 @@ export function anchorTradeRows(
       index + 1 < anchors.length
         ? lineCenterY(anchors[index + 1].line)
         : undefined;
-    const fallbackHalfBand = image.height * 0.04;
+    const fallbackHalfBand = associationWindowHeight;
     const top =
       previousCenter === undefined
         ? center -
@@ -149,7 +166,14 @@ export function anchorTradeRows(
       anchor,
       lines: image.lines.filter((candidate) => {
         const candidateCenter = lineCenterY(candidate);
-        return candidateCenter >= top && candidateCenter < bottom;
+        return (
+          candidateCenter >= Math.max(top, anchor.sourceBounds.y) &&
+          candidateCenter <
+            Math.min(
+              bottom,
+              anchor.sourceBounds.y + associationWindowHeight,
+            )
+        );
       }),
     };
   });

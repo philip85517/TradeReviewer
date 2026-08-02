@@ -6,9 +6,35 @@ import {
   image,
   ocrLine,
 } from "./__fixtures__/ocr-lines";
-import { detectScreenshotLayout } from "./layout-detector";
+import {
+  anchorTradeRows,
+  detectScreenshotLayout,
+} from "./layout-detector";
 
 describe("screenshot layout detection", () => {
+  it("keeps long-image trade rows within their local OCR line bands", () => {
+    const rows = anchorTradeRows(
+      image("long-local-rows", 1_220, 13_000, [
+        ocrLine("买入", 20, 1_000, 80, 24),
+        ocrLine("Alpha", 180, 1_000, 160, 24),
+        ocrLine("unrelated", 180, 1_080, 160, 20),
+        ocrLine("卖出", 20, 1_140, 80, 24),
+        ocrLine("Beta", 180, 1_140, 160, 24),
+      ]),
+      {
+        maximumNormalizedAnchorX: 0.15,
+        minimumAnchorY: 0,
+        isCorroboratingLine: (line) => line.sourceBounds.x >= 180,
+      },
+    );
+
+    expect(rows.map((row) => row.side)).toEqual(["buy", "sell"]);
+    expect(rows.map((row) => row.lines.map((line) => line.text))).toEqual([
+      ["买入", "Alpha"],
+      ["卖出", "Beta"],
+    ]);
+  });
+
   it("requires the independent Futu title, account, headers, and trade-row signals", () => {
     expect(detectScreenshotLayout(FUTU_SCREENSHOT_OCR)).toMatchObject({
       matched: true,

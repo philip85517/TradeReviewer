@@ -25,6 +25,7 @@ export type ImportPhase =
 
 type Props = {
   importedInstruments: InstrumentTradeSummary[];
+  showDemo?: boolean;
   importing: boolean;
   importPhase?: ImportPhase;
   importError: string | null;
@@ -48,6 +49,7 @@ function shortDate(value: string) {
 
 export function EpisodeSidebar({
   importedInstruments,
+  showDemo = true,
   importing,
   importPhase = importing ? "parsing" : "idle",
   importError,
@@ -90,7 +92,7 @@ export function EpisodeSidebar({
           <h2>我的交易</h2>
         </div>
         <span className="episode-count">
-          {importedInstruments.length + 1} 只股票
+          {importedInstruments.length + (showDemo ? 1 : 0)} 只股票
         </span>
       </div>
 
@@ -203,34 +205,41 @@ export function EpisodeSidebar({
 
       <div className="stock-list-heading">
         <span>有成交的股票</span>
-        <b>{importedInstruments.length + 1}</b>
+        <b>{importedInstruments.length + (showDemo ? 1 : 0)}</b>
       </div>
       <div className="episode-list">
-        <button
-          className={`stock-card ${selectedInstrumentId === "demo" ? "active" : ""}`}
-          aria-pressed={selectedInstrumentId === "demo"}
-          onClick={() => onSelectInstrument("demo")}
-        >
-          <div className="stock-card-title">
-            <span className="market-chip">US</span>
-            <div>
-              <strong>小鹏汽车</strong>
-              <span>XPEV</span>
+        {showDemo && (
+          <button
+            className={`stock-card ${selectedInstrumentId === "demo" ? "active" : ""}`}
+            aria-pressed={selectedInstrumentId === "demo"}
+            onClick={() => onSelectInstrument("demo")}
+          >
+            <div className="stock-card-title">
+              <span className="market-chip">US</span>
+              <div>
+                <strong>小鹏汽车</strong>
+                <span>XPEV</span>
+              </div>
+              <span className="episode-status">
+                <Clock3 size={12} />
+                回放中
+              </span>
             </div>
-            <span className="episode-status">
-              <Clock3 size={12} />
-              回放中
-            </span>
-          </div>
-          <div className="stock-card-meta">
-            <span>演示交易</span>
-            <b>
-              {revealedBuys + revealedSells === 0
-                ? "尚未成交"
-                : `${revealedBuys} 买 / ${revealedSells} 卖`}
-            </b>
-          </div>
-        </button>
+            <div className="stock-card-meta">
+              <span>演示交易</span>
+              <b>
+                {revealedBuys + revealedSells === 0
+                  ? "尚未成交"
+                  : `${revealedBuys} 买 / ${revealedSells} 卖`}
+              </b>
+            </div>
+          </button>
+        )}
+        {!showDemo && importedInstruments.length === 0 && (
+          <p className="episode-list-empty">
+            暂无导入股票，请先导入交易记录。
+          </p>
+        )}
 
         {importedInstruments.map((item) => {
           const status =

@@ -16,6 +16,7 @@ import {
   selectScreenshotHeaders,
 } from "./layout-detector";
 import { probableAlphabeticTickerLine } from "./instrument-symbol";
+import { selectTimestampValue } from "./timestamp-value";
 
 const LAYOUT_VERSION = "futu-orders-dark-v1";
 
@@ -160,11 +161,11 @@ function timestampValue(lines: readonly OcrTextLine[]): {
   value?: string;
   evidence?: ScreenshotFieldEvidence;
 } {
-  if (lines.length === 0) return {};
-  const rawText = lines.map((line) => line.text.trim()).join(" ");
+  const selected = selectTimestampValue(lines);
+  if (!selected) return {};
   return {
-    value: rawText,
-    evidence: evidence(rawText, lines),
+    value: selected.rawText,
+    evidence: evidence(selected.rawText, selected.lines),
   };
 }
 

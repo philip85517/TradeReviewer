@@ -17,6 +17,7 @@ import {
   TIGER_SCREENSHOT_HEADER_ALIASES,
 } from "./layout-detector";
 import { probableAlphabeticTickerLine } from "./instrument-symbol";
+import { selectTimestampValue } from "./timestamp-value";
 
 const TIGER_SIDE_FIRST_COLUMNS = {
   anchorMinimumX: 0,
@@ -146,11 +147,11 @@ function timestampValue(lines: readonly OcrTextLine[]): {
   value?: string;
   evidence?: ScreenshotFieldEvidence;
 } {
-  if (lines.length === 0) return {};
-  const rawText = lines.map((line) => line.text.trim()).join(" ");
+  const selected = selectTimestampValue(lines);
+  if (!selected) return {};
   return {
-    value: rawText,
-    evidence: evidence(rawText, lines),
+    value: selected.rawText,
+    evidence: evidence(selected.rawText, selected.lines),
   };
 }
 

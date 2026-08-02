@@ -226,6 +226,9 @@ export function ScreenshotReviewDialog({
   const selectedImage = images.find(
     ({ id }) => id === effectiveSelectedImageId,
   );
+  const selectedImageMetadata = state.images.find(
+    ({ imageId }) => imageId === effectiveSelectedImageId,
+  );
   const filteredDrafts = activeDrafts.filter((draft) => {
     if (filter === "pending") return pendingDraftIds.has(draft.id);
     if (filter === "conflict") return conflictByDraftId.has(draft.id);
@@ -235,6 +238,9 @@ export function ScreenshotReviewDialog({
   const conflicts = reconciliation?.conflicts ?? [];
   const unresolvedConflicts = conflicts.filter(
     ({ id }) => !decisions.has(id),
+  );
+  const batchConsensusPending = images.some(({ state: imageState }) =>
+    ["queued", "recognizing"].includes(imageState),
   );
   const unfinishedImage = images.some(({ state: imageState }) =>
     ["queued", "recognizing", "failed"].includes(imageState),
@@ -388,8 +394,7 @@ export function ScreenshotReviewDialog({
                     }
                     onClick={() => setSelectedImageId(image.id)}
                   >
-                    {image.previewUrl.startsWith("blob:") &&
-                    image.state !== "failed" ? (
+                    {image.previewUrl.startsWith("blob:") ? (
                       // Object URLs stay in memory and are never converted.
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -450,7 +455,11 @@ export function ScreenshotReviewDialog({
             <button
               className="secondary-button screenshot-manual-add"
               type="button"
-              disabled={!selectedImage || selectedImage.state === "failed"}
+              disabled={
+                !selectedImage ||
+                !selectedImageMetadata ||
+                batchConsensusPending
+              }
               onClick={() =>
                 effectiveSelectedImageId &&
                 onAction({

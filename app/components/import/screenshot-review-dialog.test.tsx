@@ -537,6 +537,41 @@ describe("ScreenshotReviewDialog", () => {
     });
   });
 
+  it("keeps a long pending timestamp fully accessible while separating its visible value", () => {
+    const longTimestamp = "2024-06-05 14:41:08 America/New_York (EDT)";
+    const current = reviewState(false);
+    current.drafts = [
+      draft("draft-long-timestamp", "NVDA", 0, {
+        sourceTimestampText: longTimestamp,
+        fieldEvidence: {
+          ...draft("base", "NVDA", 0).fieldEvidence,
+          executedAt: {
+            rawText: longTimestamp,
+            confidence: 0.97,
+            repaired: false,
+            confirmedByUser: false,
+            sourceBounds: { x: 120, y: 320, width: 360, height: 36 },
+          },
+        },
+      }),
+    ];
+    renderDialog({ state: current });
+
+    const cell = screen.getByRole("cell", {
+      name: `NVDA 成交时间 ${longTimestamp}，待确认`,
+    });
+    expect(
+      within(cell).getByText(longTimestamp, {
+        selector: ".screenshot-field-value",
+      }),
+    ).toHaveTextContent(longTimestamp);
+    expect(
+      within(cell).getByText("待确认", {
+        selector: ".screenshot-field-pending",
+      }),
+    ).toBeInTheDocument();
+  });
+
   it("dispatches row-specific delete and manual add actions", async () => {
     const user = userEvent.setup();
     const { onAction } = renderDialog();
@@ -703,6 +738,135 @@ describe("ScreenshotReviewDialog", () => {
     expect(
       screen.getByRole("button", { name: "选择 orders-2.png" }),
     ).toBeVisible();
+  });
+
+  it("keeps a failed blob preview visible and allows manual add with supported metadata", async () => {
+    const user = userEvent.setup();
+    const failed: ScreenshotReviewImage = {
+      id: "image-3",
+      fileName: "orders-3.png",
+      previewUrl: "blob:https://trade-review/image-3",
+      width: 1170,
+      height: 2532,
+      state: "failed",
+      completedTiles: 1,
+      totalTiles: 4,
+      tradeCount: 0,
+      issueCount: 1,
+      error: "无法识别版式",
+    };
+    const state = reviewState();
+    state.images.push({
+      imageId: failed.id,
+      fingerprint: "fingerprint-3",
+      captureIndex: 2,
+      broker: "tiger",
+      layoutVersion: "tiger-orders-dark-v1",
+    });
+    const { onAction } = renderDialog({
+      state,
+      reviewImages: [...images, failed],
+    });
+    const failedImage = screen.getByRole("button", {
+      name: "选择 orders-3.png",
+    });
+
+    expect(failedImage.querySelector("img")).toHaveAttribute(
+      "src",
+      failed.previewUrl,
+    );
+    await user.click(failedImage);
+    const manualAdd = screen.getByRole("button", {
+      name: "手工补录成交",
+    });
+    expect(manualAdd).toBeEnabled();
+    await user.click(manualAdd);
+
+    expect(onAction).toHaveBeenCalledWith({
+      type: "add-draft",
+      imageId: failed.id,
+    });
+  });
+
+  it("disables manual add with supported inferred metadata while another image is unfinished", async () => {
+    const user = userEvent.setup();
+    const failed: ScreenshotReviewImage = {
+      id: "image-3",
+      fileName: "orders-3.png",
+      previewUrl: "blob:https://trade-review/image-3",
+      width: 1170,
+      height: 2532,
+      state: "failed",
+      completedTiles: 1,
+      totalTiles: 4,
+      tradeCount: 0,
+      issueCount: 1,
+      error: "OCR failed",
+    };
+    const queued: ScreenshotReviewImage = {
+      id: "image-4",
+      fileName: "orders-4.png",
+      previewUrl: "blob:https://trade-review/image-4",
+      width: 0,
+      height: 0,
+      state: "queued",
+      completedTiles: 0,
+      totalTiles: 0,
+      tradeCount: 0,
+      issueCount: 0,
+    };
+    const state = reviewState();
+    state.images.push({
+      imageId: failed.id,
+      fingerprint: "fingerprint-3",
+      captureIndex: 2,
+      broker: "tiger",
+      layoutVersion: "tiger-orders-dark-v1",
+    });
+    const { onAction } = renderDialog({
+      state,
+      reviewImages: [...images, failed, queued],
+    });
+
+    await user.click(
+      screen.getByRole("button", { name: "选择 orders-3.png" }),
+    );
+    const manualAdd = screen.getByRole("button", {
+      name: "手工补录成交",
+    });
+    expect(manualAdd).toBeDisabled();
+    await user.click(manualAdd);
+    expect(onAction).not.toHaveBeenCalled();
+  });
+
+  it("disables manual add for a failed image without supported metadata", async () => {
+    const user = userEvent.setup();
+    const failed: ScreenshotReviewImage = {
+      id: "image-3",
+      fileName: "orders-3.png",
+      previewUrl: "blob:https://trade-review/image-3",
+      width: 1170,
+      height: 2532,
+      state: "failed",
+      completedTiles: 1,
+      totalTiles: 4,
+      tradeCount: 0,
+      issueCount: 1,
+      error: "无法识别版式",
+    };
+    const { onAction } = renderDialog({
+      reviewImages: [...images, failed],
+    });
+
+    await user.click(
+      screen.getByRole("button", { name: "选择 orders-3.png" }),
+    );
+    const manualAdd = screen.getByRole("button", {
+      name: "手工补录成交",
+    });
+    expect(manualAdd).toBeDisabled();
+    await user.click(manualAdd);
+    expect(onAction).not.toHaveBeenCalled();
   });
 
   it("cancels from the button and Escape", async () => {

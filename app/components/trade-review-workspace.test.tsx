@@ -447,20 +447,15 @@ function screenshotDependencies(
   };
 }
 
-async function confirmScreenshotTimestamp(
-  user: ReturnType<typeof userEvent.setup>,
+function expectScreenshotTimestampAutomaticallyConfirmed(
   symbol: string,
   timestamp: string,
 ) {
-  await user.click(
-    screen.getByRole("cell", {
-      name: `${symbol} 成交时间 ${timestamp}，待确认`,
-    }),
-  );
-  await user.click(screen.getByRole("button", { name: "确认识别值" }));
-  await user.click(
-    screen.getByRole("button", { name: "关闭截图识别依据" }),
-  );
+  const timestampCell = screen.getByRole("cell", {
+    name: `${symbol} 成交时间 ${timestamp}`,
+  });
+
+  expect(timestampCell).not.toHaveAccessibleName(/待确认/);
 }
 
 describe("TradeReviewWorkspace", () => {
@@ -744,10 +739,22 @@ describe("TradeReviewWorkspace", () => {
     );
     await user.clear(screen.getByLabelText("交易账户"));
     await user.type(screen.getByLabelText("交易账户"), "截图测试账户");
-    await confirmScreenshotTimestamp(user, "NVDA", "2025-03-01 09:30:00");
-    await confirmScreenshotTimestamp(user, "MSFT", "2025-03-02 09:30:00");
-    await confirmScreenshotTimestamp(user, "TSLA", "2025-03-03 09:30:00");
-    await confirmScreenshotTimestamp(user, "AAPL", "2025-04-10 09:30:00");
+    expectScreenshotTimestampAutomaticallyConfirmed(
+      "NVDA",
+      "2025-03-01 09:30:00",
+    );
+    expectScreenshotTimestampAutomaticallyConfirmed(
+      "MSFT",
+      "2025-03-02 09:30:00",
+    );
+    expectScreenshotTimestampAutomaticallyConfirmed(
+      "TSLA",
+      "2025-03-03 09:30:00",
+    );
+    expectScreenshotTimestampAutomaticallyConfirmed(
+      "AAPL",
+      "2025-04-10 09:30:00",
+    );
 
     await user.click(
       screen.getByRole("cell", { name: "AAPL 价格 150，待确认" }),

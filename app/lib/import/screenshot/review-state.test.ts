@@ -14,6 +14,7 @@ import {
   screenshotReviewReducer,
   type ScreenshotReviewState,
 } from "./review-state";
+import { toStatementParseResult } from "./to-statement-result";
 
 const FIELDS: ScreenshotField[] = [
   "market",
@@ -183,6 +184,21 @@ describe("screenshotReviewReducer", () => {
     expect(current.deletedDraftIds.size).toBe(0);
     expect(next.deletedDraftIds).toEqual(new Set([blocked.id]));
     expect(reviewBlockers(next)).toEqual([]);
+  });
+
+  it("keeps an abandoned only row valid and excludes it from import", () => {
+    const next = screenshotReviewReducer(state(), {
+      type: "delete-draft",
+      draftId: "image-1:tiger:0",
+    });
+
+    expect(
+      reviewBlockers(next).some(
+        ({ draftId }) => draftId === "image-1:tiger:0",
+      ),
+    ).toBe(false);
+    expect(next.deletedDraftIds).toContain("image-1:tiger:0");
+    expect(toStatementParseResult(next).records).toEqual([]);
   });
 
   it("adds a blank manual row tied to the selected image", () => {

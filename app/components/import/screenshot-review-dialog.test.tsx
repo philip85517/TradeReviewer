@@ -515,6 +515,25 @@ describe("ScreenshotReviewDialog", () => {
     });
   });
 
+  it("abandons the row from low-confidence source evidence", async () => {
+    const user = userEvent.setup();
+    const { onAction } = renderDialog();
+
+    await user.click(
+      screen.getByRole("cell", {
+        name: "NVDA 价格 114.8，待确认",
+      }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: "放弃这条记录" }),
+    );
+
+    expect(onAction).toHaveBeenCalledWith({
+      type: "delete-draft",
+      draftId: "draft-nvda",
+    });
+  });
+
   it("opens a field with the keyboard and dispatches an edited price", async () => {
     const user = userEvent.setup();
     const { onAction } = renderDialog();

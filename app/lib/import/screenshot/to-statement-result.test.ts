@@ -320,13 +320,13 @@ describe("toStatementParseResult", () => {
     expect(toStatementParseResult(confirmed).records).toHaveLength(1);
   });
 
-  it("cannot bypass explicit confirmation of an exact-second timestamp", () => {
+  it("requires confirmation for an executedAt value below the confidence threshold", () => {
     const unconfirmedTime = draft("image-1:futu:4", {
       fieldEvidence: {
         ...draft("base").fieldEvidence,
         executedAt: {
           rawText: "24/06/05 14:41:08",
-          confidence: 1,
+          confidence: 0.8499,
           repaired: false,
           confirmedByUser: false,
         },
@@ -344,6 +344,24 @@ describe("toStatementParseResult", () => {
       field: "executedAt",
     });
     expect(toStatementParseResult(confirmed).records).toHaveLength(1);
+  });
+
+  it("converts an unconfirmed executedAt value at the confidence threshold", () => {
+    const current = state([
+      draft("image-1:futu:4", {
+        fieldEvidence: {
+          ...draft("base").fieldEvidence,
+          executedAt: {
+            rawText: "24/06/05 14:41:08",
+            confidence: 0.85,
+            repaired: false,
+            confirmedByUser: false,
+          },
+        },
+      }),
+    ]);
+
+    expect(toStatementParseResult(current).records).toHaveLength(1);
   });
 
   it("throws instead of converting when any blocker remains", () => {

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   FUTU_SCREENSHOT_OCR,
   TIGER_BRANDED_INSTRUMENT_FIRST_ONE_ROW_OCR,
+  TIGER_FILLED_ORDERS_SCREENSHOT_OCR,
   TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR,
   TIGER_SCREENSHOT_OCR,
   TIGER_UNBRANDED_SCREENSHOT_OCR,
@@ -14,6 +15,63 @@ import { parseTigerScreenshot } from "./tiger-screenshot";
 const TIGER_LAYOUT_LINES = TIGER_SCREENSHOT_OCR.lines.slice(0, 7);
 
 describe("Tiger dark order-history screenshots", () => {
+  it("parses compact filled-order rows with combined market and code identities", () => {
+    expect(
+      parseTigerScreenshot(TIGER_FILLED_ORDERS_SCREENSHOT_OCR),
+    ).toEqual([
+      expect.objectContaining({
+        broker: "tiger",
+        layoutVersion: "tiger-filled-orders-dark-v1",
+        market: "US",
+        symbol: "CTVA",
+        sourceName: "Corteva, Inc.",
+        side: "sell",
+        quantity: "100",
+        price: "88.76",
+        sourceTimestampText: "2026/07/29 23:01:17",
+      }),
+      expect.objectContaining({
+        broker: "tiger",
+        layoutVersion: "tiger-filled-orders-dark-v1",
+        market: "HK",
+        symbol: "06228",
+        sourceName: "招商证券",
+        side: "sell",
+        quantity: "200",
+        price: "26.380",
+        sourceTimestampText: "2026/06/26 10:22:37",
+      }),
+    ]);
+  });
+
+  it("parses a compact row when market and code arrive as adjacent OCR lines", () => {
+    const adjacent = image(
+      "tiger-filled-orders-adjacent-identity",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.flatMap((line) =>
+        line.text === "US CTVA"
+          ? [
+              ocrLine("US", line.sourceBounds.x, line.sourceBounds.y, 30, 22),
+              ocrLine(
+                "CTVA",
+                line.sourceBounds.x,
+                line.sourceBounds.y + 35,
+                50,
+                22,
+              ),
+            ]
+          : line,
+      ),
+    );
+
+    expect(parseTigerScreenshot(adjacent)[0]).toMatchObject({
+      market: "US",
+      symbol: "CTVA",
+      sourceName: "Corteva, Inc.",
+    });
+  });
+
   it("pairs jittered timestamp boxes by closest vertical center", () => {
     const [draft] = parseTigerScreenshot(
       image("tiger-jittered-timestamps", 1_220, 13_000, [

@@ -36,6 +36,14 @@ const TIGER_INSTRUMENT_FIRST_COLUMNS = {
   timestamp: [0.82, 1],
 } as const;
 
+const TIGER_FILLED_ORDERS_COLUMNS = {
+  anchorMinimumX: 0.2,
+  anchorMaximumX: 0.45,
+  instrument: [0, 0.3],
+  quantityAndPrice: [0.42, 0.72],
+  timestamp: [0.72, 1],
+} as const;
+
 function centerX(line: OcrTextLine, image: OcrImageResult): number {
   return (
     (line.sourceBounds.x + line.sourceBounds.width / 2) / image.width
@@ -92,7 +100,10 @@ function evidence(
   };
 }
 
-function numericValue(line: OcrTextLine | undefined): {
+function numericValue(
+  line: OcrTextLine | undefined,
+  preserveScale = false,
+): {
   value?: string;
   evidence?: ScreenshotFieldEvidence;
 } {
@@ -101,7 +112,9 @@ function numericValue(line: OcrTextLine | undefined): {
   const normalized = rawText.replaceAll(",", "");
   if (/^\d+(?:\.\d+)?$/.test(normalized)) {
     return {
-      value: new Decimal(normalized).abs().toString(),
+      value: preserveScale
+        ? normalized
+        : new Decimal(normalized).abs().toString(),
       evidence: evidence(rawText, [line]),
     };
   }
@@ -118,6 +131,79 @@ function numericValue(line: OcrTextLine | undefined): {
     };
   }
   return { evidence: evidence(rawText, [line]) };
+}
+
+type TigerInstrumentIdentity = {
+  market?: ScreenshotTradeDraft["market"];
+  symbol?: string;
+  symbolLines: OcrTextLine[];
+  nameLine?: OcrTextLine;
+};
+
+function explicitMarketCode(
+  value: string,
+): { market: "US" | "HK"; code: string } | undefined {
+  const match = /^(US|HK)\s+([A-Za-z0-9][A-Za-z0-9.-]{0,9})$/i.exec(
+    value.trim(),
+  );
+  if (!match) return undefined;
+  return {
+    market: match[1].toUpperCase() as "US" | "HK",
+    code: match[2].toUpperCase(),
+  };
+}
+
+function prefixedInstrumentIdentity(
+  instrumentLines: readonly OcrTextLine[],
+): TigerInstrumentIdentity | undefined {
+  const ordered = [...instrumentLines].sort(
+    (left, right) =>
+      left.sourceBounds.y - right.sourceBounds.y ||
+      left.sourceBounds.x - right.sourceBounds.x,
+  );
+  for (const line of ordered) {
+    const explicit = explicitMarketCode(line.text);
+    if (explicit) {
+      return {
+        market: explicit.market,
+        symbol: explicit.code,
+        symbolLines: [line],
+        nameLine: ordered.find((candidate) => candidate !== line),
+      };
+    }
+    const unknownPrefix = /^([A-Za-z]{2})\s+([A-Za-z0-9][A-Za-z0-9.-]{0,9})$/.exec(
+      line.text.trim(),
+    );
+    if (unknownPrefix) {
+      return {
+        symbolLines: [line],
+        nameLine: ordered.find((candidate) => candidate !== line),
+      };
+    }
+  }
+
+  for (let index = 0; index < ordered.length; index += 1) {
+    const marketLine = ordered[index];
+    const market = marketLine.text.trim().toUpperCase();
+    if (market !== "US" && market !== "HK") continue;
+    const codeLine = ordered[index + 1];
+    if (!codeLine || !/^[A-Za-z0-9][A-Za-z0-9.-]{0,9}$/.test(codeLine.text.trim())) {
+      return {
+        symbolLines: [marketLine],
+        nameLine: ordered.find((candidate) => candidate !== marketLine),
+      };
+    }
+    return {
+      market: market as "US" | "HK",
+      symbol: codeLine.text.trim().toUpperCase(),
+      symbolLines: [marketLine, codeLine],
+      nameLine: ordered.find(
+        (candidate) => candidate !== marketLine && candidate !== codeLine,
+      ),
+    };
+  }
+
+  return undefined;
 }
 
 function symbolMarket(
@@ -188,76 +274,106 @@ export function parseTigerScreenshot(
 
   const instrumentFirst =
     layout.layoutVersion === "tiger-instrument-first-dark-v1";
+  const filledOrders =
+    layout.layoutVersion === "tiger-filled-orders-dark-v1";
   const headers = selectScreenshotHeaders(
     image,
-    instrumentFirst
-      ? TIGER_INSTRUMENT_FIRST_HEADER_ALIASES
-      : TIGER_SCREENSHOT_HEADER_ALIASES,
-    instrumentFirst
-      ? { minimumNormalizedX: 0.47, maximumNormalizedX: 0.62 }
-      : { maximumNormalizedX: 0.15 },
+    filledOrders
+      ? [
+          ["代码｜名称", "代码|名称", "代码名称"],
+          ["方向"],
+          ["总量｜价格", "总量|价格", "总量价格"],
+          ["成交时间"],
+        ]
+      : instrumentFirst
+        ? TIGER_INSTRUMENT_FIRST_HEADER_ALIASES
+        : TIGER_SCREENSHOT_HEADER_ALIASES,
+    filledOrders
+      ? { minimumNormalizedX: 0.2, maximumNormalizedX: 0.45 }
+      : instrumentFirst
+        ? { minimumNormalizedX: 0.47, maximumNormalizedX: 0.62 }
+        : { maximumNormalizedX: 0.15 },
   );
   const sourceAccountSuffix = tigerAccountSuffix(
     image,
     headers.bounds?.top,
   );
   return anchorTradeRows(image, {
-    minimumNormalizedAnchorX: instrumentFirst
-      ? TIGER_INSTRUMENT_FIRST_COLUMNS.anchorMinimumX
-      : TIGER_SIDE_FIRST_COLUMNS.anchorMinimumX,
-    maximumNormalizedAnchorX: instrumentFirst
-      ? TIGER_INSTRUMENT_FIRST_COLUMNS.anchorMaximumX
-      : TIGER_SIDE_FIRST_COLUMNS.anchorMaximumX,
+    minimumNormalizedAnchorX: filledOrders
+      ? TIGER_FILLED_ORDERS_COLUMNS.anchorMinimumX
+      : instrumentFirst
+        ? TIGER_INSTRUMENT_FIRST_COLUMNS.anchorMinimumX
+        : TIGER_SIDE_FIRST_COLUMNS.anchorMinimumX,
+    maximumNormalizedAnchorX: filledOrders
+      ? TIGER_FILLED_ORDERS_COLUMNS.anchorMaximumX
+      : instrumentFirst
+        ? TIGER_INSTRUMENT_FIRST_COLUMNS.anchorMaximumX
+        : TIGER_SIDE_FIRST_COLUMNS.anchorMaximumX,
     minimumAnchorY: headers.bounds?.bottom ?? 0,
     isCorroboratingLine: (line) =>
-      (instrumentFirst
-        ? centerX(line, image) <
-          TIGER_INSTRUMENT_FIRST_COLUMNS.instrument[1]
-        : centerX(line, image) >=
-          TIGER_SIDE_FIRST_COLUMNS.instrument[0]) &&
+      (filledOrders
+        ? centerX(line, image) < TIGER_FILLED_ORDERS_COLUMNS.instrument[1]
+        : instrumentFirst
+          ? centerX(line, image) <
+            TIGER_INSTRUMENT_FIRST_COLUMNS.instrument[1]
+          : centerX(line, image) >= TIGER_SIDE_FIRST_COLUMNS.instrument[0]) &&
       !isStructuralScreenshotText(line.text),
   }).map((row) => {
     const instrumentLines = linesInColumn(
       image,
       row.lines,
-      instrumentFirst
-        ? TIGER_INSTRUMENT_FIRST_COLUMNS.instrument
-        : TIGER_SIDE_FIRST_COLUMNS.instrument,
+      filledOrders
+        ? TIGER_FILLED_ORDERS_COLUMNS.instrument
+        : instrumentFirst
+          ? TIGER_INSTRUMENT_FIRST_COLUMNS.instrument
+          : TIGER_SIDE_FIRST_COLUMNS.instrument,
     );
+    const prefixedIdentity = filledOrders
+      ? prefixedInstrumentIdentity(instrumentLines)
+      : undefined;
     const symbolLine =
+      prefixedIdentity?.symbolLines.at(-1) ??
       instrumentLines.find((line) => /^\d{1,6}$/.test(line.text.trim())) ??
       probableAlphabeticTickerLine(instrumentLines);
-    const nameLine = instrumentLines.find((line) => line !== symbolLine);
-    const identity = symbolMarket(symbolLine?.text);
+    const symbolLines = prefixedIdentity?.symbolLines ??
+      (symbolLine ? [symbolLine] : []);
+    const nameLine =
+      prefixedIdentity?.nameLine ??
+      instrumentLines.find((line) => !symbolLines.includes(line));
+    const identity = prefixedIdentity ?? symbolMarket(symbolLine?.text);
     const quantityAndPriceLines = linesInColumn(
       image,
       row.lines,
-      instrumentFirst
-        ? TIGER_INSTRUMENT_FIRST_COLUMNS.quantityAndPrice
-        : TIGER_SIDE_FIRST_COLUMNS.quantity,
+      filledOrders
+        ? TIGER_FILLED_ORDERS_COLUMNS.quantityAndPrice
+        : instrumentFirst
+          ? TIGER_INSTRUMENT_FIRST_COLUMNS.quantityAndPrice
+          : TIGER_SIDE_FIRST_COLUMNS.quantity,
     );
     const quantityLine = quantityAndPriceLines[0];
-    const priceLine = instrumentFirst
+    const priceLine = filledOrders || instrumentFirst
       ? quantityAndPriceLines[1]
       : linesInColumn(
           image,
           row.lines,
           TIGER_SIDE_FIRST_COLUMNS.price,
         )[0];
-    const quantity = numericValue(quantityLine);
-    const price = numericValue(priceLine);
+    const quantity = numericValue(quantityLine, filledOrders);
+    const price = numericValue(priceLine, filledOrders);
     const timestampLines = linesInColumn(
       image,
       row.lines,
-      instrumentFirst
-        ? TIGER_INSTRUMENT_FIRST_COLUMNS.timestamp
-        : TIGER_SIDE_FIRST_COLUMNS.timestamp,
+      filledOrders
+        ? TIGER_FILLED_ORDERS_COLUMNS.timestamp
+        : instrumentFirst
+          ? TIGER_INSTRUMENT_FIRST_COLUMNS.timestamp
+          : TIGER_SIDE_FIRST_COLUMNS.timestamp,
     );
     const timestamp = timestampValue(timestampLines);
     const usedLines = [
       row.anchor,
       nameLine,
-      symbolLine,
+      ...symbolLines,
       quantityLine,
       priceLine,
       ...timestampLines,
@@ -266,9 +382,13 @@ export function parseTigerScreenshot(
       side: evidence(row.anchor.text, [row.anchor]),
     };
     if (symbolLine) {
-      fieldEvidence.symbol = evidence(symbolLine.text.trim(), [symbolLine]);
+      fieldEvidence.symbol = evidence(symbolLine.text.trim(), symbolLines);
       if (identity.market) {
-        fieldEvidence.market = evidence(symbolLine.text.trim(), [symbolLine]);
+        fieldEvidence.market = evidence(
+          prefixedIdentity?.symbolLines[0]?.text.trim() ??
+            symbolLine.text.trim(),
+          prefixedIdentity?.symbolLines ?? [symbolLine],
+        );
       }
     }
     if (quantity.evidence) fieldEvidence.quantity = quantity.evidence;

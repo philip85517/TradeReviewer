@@ -177,6 +177,38 @@ describe("useScreenshotImport", () => {
   beforeEach(() => vi.clearAllMocks());
   afterEach(() => cleanup());
 
+  it("preserves the compact Tiger filled-orders layout in review metadata", async () => {
+    const { dependencies } = setupDependencies({
+      detectLayout: () => ({
+        matched: true,
+        broker: "tiger",
+        layoutVersion: "tiger-filled-orders-dark-v1",
+        confidence: 1,
+      }),
+    });
+    const { result } = renderHook(() =>
+      useScreenshotImport({
+        currentExecutions: () => [],
+        onPrepared: vi.fn(),
+        dependencies,
+      }),
+    );
+
+    await act(async () => {
+      await result.current.start([file("filled-orders.png")]);
+    });
+
+    expect(result.current.state?.images).toEqual([
+      {
+        imageId: "image-1",
+        fingerprint: "fingerprint-1",
+        captureIndex: 0,
+        broker: "tiger",
+        layoutVersion: "tiger-filled-orders-dark-v1",
+      },
+    ]);
+  });
+
   it("recognizes images sequentially in selection order without progress reordering", async () => {
     const first = deferred<OcrImageResult>();
     const second = deferred<OcrImageResult>();

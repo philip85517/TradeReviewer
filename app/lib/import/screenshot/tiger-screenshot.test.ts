@@ -92,6 +92,63 @@ describe("Tiger dark order-history screenshots", () => {
     ]);
   });
 
+  it("accepts separator OCR between market and code", () => {
+    const separated = image(
+      "tiger-filled-orders-separated-identity",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.map((line) =>
+        line.text === "US CTVA"
+          ? ocrLine("US|CTVA", line.sourceBounds.x, line.sourceBounds.y, 105, 22)
+          : line.text === "HK 06228"
+            ? ocrLine("HK|06228", line.sourceBounds.x, line.sourceBounds.y, 110, 22)
+            : line,
+      ),
+    );
+
+    expect(parseTigerScreenshot(separated)).toEqual([
+      expect.objectContaining({ market: "US", symbol: "CTVA" }),
+      expect.objectContaining({ market: "HK", symbol: "06228" }),
+    ]);
+  });
+
+  it("does not invent a market for an unknown prefixed identity", () => {
+    const unknown = image(
+      "tiger-filled-orders-unknown-market",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.map((line) =>
+        line.text === "US CTVA"
+          ? ocrLine("XX123", line.sourceBounds.x, line.sourceBounds.y, 105, 22)
+          : line,
+      ),
+    );
+
+    expect(parseTigerScreenshot(unknown)[0]).toMatchObject({
+      market: undefined,
+      symbol: undefined,
+      sourceName: "Corteva, Inc.",
+    });
+  });
+
+  it("preserves scale when repairing a compact price", () => {
+    const repaired = image(
+      "tiger-filled-orders-repaired-price",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.map((line) =>
+        line.text === "26.380"
+          ? ocrLine("26.38O", line.sourceBounds.x, line.sourceBounds.y, line.sourceBounds.width, line.sourceBounds.height)
+          : line,
+      ),
+    );
+
+    expect(parseTigerScreenshot(repaired)[1]).toMatchObject({
+      price: "26.380",
+      fieldEvidence: { price: { repaired: true } },
+    });
+  });
+
   it("pairs jittered timestamp boxes by closest vertical center", () => {
     const [draft] = parseTigerScreenshot(
       image("tiger-jittered-timestamps", 1_220, 13_000, [

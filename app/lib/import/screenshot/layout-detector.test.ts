@@ -97,6 +97,69 @@ describe("screenshot layout detection", () => {
     });
   });
 
+  it("accepts a split total and price header at the same column", () => {
+    const splitHeaders = image(
+      "tiger-filled-orders-split-header",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.flatMap((line) =>
+        line.text === "总量|价格"
+          ? [
+              ocrLine("总量", line.sourceBounds.x, line.sourceBounds.y, 54, 22),
+              ocrLine(
+                "价格",
+                line.sourceBounds.x,
+                line.sourceBounds.y + 28,
+                54,
+                22,
+              ),
+            ]
+          : line,
+      ),
+    );
+
+    expect(detectScreenshotLayout(splitHeaders)).toMatchObject({
+      matched: true,
+      layoutVersion: "tiger-filled-orders-dark-v1",
+    });
+  });
+
+  it("requires seconds in both timestamp rows", () => {
+    const minuteOnly = image(
+      "tiger-filled-orders-minute-only",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.map((line) =>
+        /^\d{2}:\d{2}:\d{2}$/.test(line.text)
+          ? ocrLine(line.text.slice(0, 5), line.sourceBounds.x, line.sourceBounds.y, line.sourceBounds.width, line.sourceBounds.height)
+          : line,
+      ),
+    );
+
+    expect(detectScreenshotLayout(minuteOnly)).toMatchObject({
+      matched: false,
+      code: "unsupported-screenshot-layout",
+    });
+  });
+
+  it("counts repairable numeric OCR as complete row evidence", () => {
+    const repairable = image(
+      "tiger-filled-orders-repairable-number",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.map((line) =>
+        line.text === "26.380"
+          ? ocrLine("26.38O", line.sourceBounds.x, line.sourceBounds.y, line.sourceBounds.width, line.sourceBounds.height)
+          : line,
+      ),
+    );
+
+    expect(detectScreenshotLayout(repairable)).toMatchObject({
+      matched: true,
+      layoutVersion: "tiger-filled-orders-dark-v1",
+    });
+  });
+
   it("does not identify an unbranded instrument-first layout from only one complete row", () => {
     expect(
       detectScreenshotLayout(

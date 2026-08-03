@@ -13,7 +13,7 @@ import {
   detectScreenshotLayout,
   isStructuralScreenshotText,
   selectScreenshotHeaders,
-  TIGER_FILLED_ORDERS_HEADER_ALIASES,
+  selectTigerFilledOrdersHeaders,
   TIGER_INSTRUMENT_FIRST_HEADER_ALIASES,
   TIGER_SCREENSHOT_HEADER_ALIASES,
 } from "./layout-detector";
@@ -127,7 +127,9 @@ function numericValue(
     /^\d+(?:\.\d+)?$/.test(repaired)
   ) {
     return {
-      value: new Decimal(repaired).abs().toString(),
+      value: preserveScale
+        ? repaired
+        : new Decimal(repaired).abs().toString(),
       evidence: evidence(rawText, [line], true),
     };
   }
@@ -144,26 +146,34 @@ type TigerInstrumentIdentity = {
 function explicitMarketCode(
   value: string,
 ): { market: "US" | "HK"; code: string } | undefined {
-  const match = /^(US|HK)\s*([A-Za-z0-9][A-Za-z0-9.-]{0,9})$/i.exec(
-    value.trim(),
-  );
+  const match = /^(US|HK)\s*(?:[|｜:：]\s*)?([A-Za-z0-9][A-Za-z0-9.-]{0,9})$/i.exec(value.trim());
   if (!match) return undefined;
+  const market = match[1].toUpperCase() as "US" | "HK";
+  const code = normalizePrefixedCode(match[2], market);
+  if (!code) return undefined;
   return {
-    market: match[1].toUpperCase() as "US" | "HK",
-    code: normalizePrefixedCode(
-      match[2],
-      match[1].toUpperCase() as "US" | "HK",
-    ),
+    market,
+    code,
   };
 }
 
-function normalizePrefixedCode(code: string, market: "US" | "HK"): string {
+function normalizePrefixedCode(
+  code: string,
+  market: "US" | "HK",
+): string | undefined {
   const normalized = code.trim().toUpperCase();
-  return market === "HK"
+  const repaired = market === "HK"
     ? normalized.replace(/[BOIl]/g, (character) =>
         ({ B: "8", O: "0", I: "1", l: "1" })[character] ?? character,
       )
     : normalized;
+  return market === "HK"
+    ? /^\d{1,5}$/.test(repaired)
+      ? repaired
+      : undefined
+    : /^[A-Z][A-Z0-9.-]{0,9}$/.test(repaired)
+      ? repaired
+      : undefined;
 }
 
 function prefixedInstrumentIdentity(
@@ -184,15 +194,6 @@ function prefixedInstrumentIdentity(
         nameLine: ordered.find((candidate) => candidate !== line),
       };
     }
-    const unknownPrefix = /^([A-Za-z]{2})\s+([A-Za-z0-9][A-Za-z0-9.-]{0,9})$/.exec(
-      line.text.trim(),
-    );
-    if (unknownPrefix) {
-      return {
-        symbolLines: [line],
-        nameLine: ordered.find((candidate) => candidate !== line),
-      };
-    }
   }
 
   for (let index = 0; index < ordered.length; index += 1) {
@@ -200,7 +201,10 @@ function prefixedInstrumentIdentity(
     const market = marketLine.text.trim().toUpperCase();
     if (market !== "US" && market !== "HK") continue;
     const codeLine = ordered[index + 1];
-    if (!codeLine || !/^[A-Za-z0-9][A-Za-z0-9.-]{0,9}$/.test(codeLine.text.trim())) {
+    const code = codeLine
+      ? normalizePrefixedCode(codeLine.text, market as "US" | "HK")
+      : undefined;
+    if (!code) {
       return {
         symbolLines: [marketLine],
         nameLine: ordered.find((candidate) => candidate !== marketLine),
@@ -208,14 +212,24 @@ function prefixedInstrumentIdentity(
     }
     return {
       market: market as "US" | "HK",
-      symbol: normalizePrefixedCode(
-        codeLine.text,
-        market as "US" | "HK",
-      ),
+      symbol: code,
       symbolLines: [marketLine, codeLine],
       nameLine: ordered.find(
         (candidate) => candidate !== marketLine && candidate !== codeLine,
       ),
+    };
+  }
+
+  const unknownPrefix = ordered.find(
+    (line) =>
+      /^([A-Za-z]{2})(?:\s+|[|｜:：])([A-Za-z0-9][A-Za-z0-9.-]{0,9})$/.test(
+        line.text.trim(),
+      ) || /^([A-Za-z]{2})([A-Za-z0-9.-]{2,})$/.test(line.text.trim()),
+  );
+  if (unknownPrefix) {
+    return {
+      symbolLines: [unknownPrefix],
+      nameLine: ordered.find((candidate) => candidate !== unknownPrefix),
     };
   }
 
@@ -292,19 +306,17 @@ export function parseTigerScreenshot(
     layout.layoutVersion === "tiger-instrument-first-dark-v1";
   const filledOrders =
     layout.layoutVersion === "tiger-filled-orders-dark-v1";
-  const headers = selectScreenshotHeaders(
-    image,
-    filledOrders
-      ? TIGER_FILLED_ORDERS_HEADER_ALIASES
-      : instrumentFirst
-        ? TIGER_INSTRUMENT_FIRST_HEADER_ALIASES
-        : TIGER_SCREENSHOT_HEADER_ALIASES,
-    filledOrders
-      ? { minimumNormalizedX: 0.48, maximumNormalizedX: 0.62 }
-      : instrumentFirst
-        ? { minimumNormalizedX: 0.47, maximumNormalizedX: 0.62 }
-        : { maximumNormalizedX: 0.15 },
-  );
+  const headers = filledOrders
+    ? selectTigerFilledOrdersHeaders(image)
+    : selectScreenshotHeaders(
+        image,
+        instrumentFirst
+          ? TIGER_INSTRUMENT_FIRST_HEADER_ALIASES
+          : TIGER_SCREENSHOT_HEADER_ALIASES,
+        instrumentFirst
+          ? { minimumNormalizedX: 0.47, maximumNormalizedX: 0.62 }
+          : { maximumNormalizedX: 0.15 },
+      );
   const sourceAccountSuffix = tigerAccountSuffix(
     image,
     headers.bounds?.top,
@@ -342,10 +354,12 @@ export function parseTigerScreenshot(
     const prefixedIdentity = filledOrders
       ? prefixedInstrumentIdentity(instrumentLines)
       : undefined;
-    const symbolLine =
-      prefixedIdentity?.symbolLines.at(-1) ??
-      instrumentLines.find((line) => /^\d{1,6}$/.test(line.text.trim())) ??
-      probableAlphabeticTickerLine(instrumentLines);
+    const symbolLine = prefixedIdentity
+      ? prefixedIdentity.symbol
+        ? prefixedIdentity.symbolLines.at(-1)
+        : undefined
+      : instrumentLines.find((line) => /^\d{1,6}$/.test(line.text.trim())) ??
+        probableAlphabeticTickerLine(instrumentLines);
     const symbolLines = prefixedIdentity?.symbolLines ??
       (symbolLine ? [symbolLine] : []);
     const nameLine =

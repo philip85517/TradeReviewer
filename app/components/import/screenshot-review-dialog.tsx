@@ -246,6 +246,7 @@ export function ScreenshotReviewDialog({
     ["queued", "recognizing", "failed"].includes(imageState),
   );
   const completeDisabled =
+    activeDrafts.length === 0 ||
     blockers.length > 0 ||
     unresolvedConflicts.length > 0 ||
     unfinishedImage;
@@ -567,12 +568,14 @@ export function ScreenshotReviewDialog({
 
         <footer className="modal-footer screenshot-review-footer">
           <p>
-            {blockers[0]?.message ??
-              (unresolvedConflicts.length > 0
-                ? `还有 ${unresolvedConflicts.length} 个冲突未处理`
-                : unfinishedImage
-                  ? "请先重试或移除未完成的截图"
-                  : "所有必填字段和冲突均已处理")}
+            {activeDrafts.length === 0
+              ? "没有可导入的成交记录"
+              : blockers[0]?.message ??
+                (unresolvedConflicts.length > 0
+                  ? `还有 ${unresolvedConflicts.length} 个冲突未处理`
+                  : unfinishedImage
+                    ? "请先重试或移除未完成的截图"
+                    : "所有必填字段和冲突均已处理")}
           </p>
           <button
             className="secondary-button"

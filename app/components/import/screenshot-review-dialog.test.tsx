@@ -919,4 +919,16 @@ describe("ScreenshotReviewDialog", () => {
       screen.getByRole("button", { name: "确认导入" }),
     ).toBeEnabled();
   });
+
+  it("blocks confirmation and explains when every draft has been deleted", () => {
+    const state = reviewState(false);
+    state.deletedDraftIds = new Set(state.drafts.map(({ id }) => id));
+
+    renderDialog({ state });
+
+    expect(
+      screen.getByRole("button", { name: "确认导入" }),
+    ).toBeDisabled();
+    expect(screen.getByText("没有可导入的成交记录")).toBeInTheDocument();
+  });
 });

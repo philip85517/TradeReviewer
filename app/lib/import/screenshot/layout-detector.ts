@@ -474,8 +474,8 @@ function tigerFilledOrdersScore(image: OcrImageResult): number {
         const x = lineCenterX(line) / image.width;
         return (
           sideFromTradeLabel(line.text) !== undefined &&
-          x >= 0.2 &&
-          x < 0.45
+          x >= 0.48 &&
+          x < 0.62
         );
       })
       .map((line) => line.sourceBounds.y),
@@ -501,22 +501,22 @@ function tigerFilledOrdersScore(image: OcrImageResult): number {
       )
     : 0;
   const completeRows = anchorTradeRows(image, {
-    minimumNormalizedAnchorX: 0.2,
-    maximumNormalizedAnchorX: 0.45,
+    minimumNormalizedAnchorX: 0.48,
+    maximumNormalizedAnchorX: 0.62,
     minimumAnchorY: headerBottom,
     isCorroboratingLine: (line) =>
       lineCenterX(line) / image.width > 0.1 &&
       !isStructuralScreenshotText(line.text),
   }).filter((row) => {
     const identityLines = row.lines.filter(
-      (line) => lineCenterX(line) / image.width < 0.3,
+      (line) => lineCenterX(line) / image.width < 0.42,
     );
     const quantityPriceLines = row.lines.filter((line) => {
       const x = lineCenterX(line) / image.width;
-      return x >= 0.42 && x < 0.72 && isNumericScreenshotValue(line.text);
+      return x >= 0.64 && x < 0.82 && isNumericScreenshotValue(line.text);
     });
     const timestampLines = row.lines.filter(
-      (line) => lineCenterX(line) / image.width >= 0.72,
+      (line) => lineCenterX(line) / image.width >= 0.82,
     );
     return (
       identityLines.length >= 2 &&

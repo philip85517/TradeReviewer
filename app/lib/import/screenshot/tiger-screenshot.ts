@@ -13,6 +13,7 @@ import {
   detectScreenshotLayout,
   isStructuralScreenshotText,
   selectScreenshotHeaders,
+  TIGER_FILLED_ORDERS_HEADER_ALIASES,
   TIGER_INSTRUMENT_FIRST_HEADER_ALIASES,
   TIGER_SCREENSHOT_HEADER_ALIASES,
 } from "./layout-detector";
@@ -37,11 +38,11 @@ const TIGER_INSTRUMENT_FIRST_COLUMNS = {
 } as const;
 
 const TIGER_FILLED_ORDERS_COLUMNS = {
-  anchorMinimumX: 0.2,
-  anchorMaximumX: 0.45,
-  instrument: [0, 0.3],
-  quantityAndPrice: [0.42, 0.72],
-  timestamp: [0.72, 1],
+  anchorMinimumX: 0.48,
+  anchorMaximumX: 0.62,
+  instrument: [0, 0.42],
+  quantityAndPrice: [0.64, 0.82],
+  timestamp: [0.82, 1],
 } as const;
 
 function centerX(line: OcrTextLine, image: OcrImageResult): number {
@@ -143,14 +144,26 @@ type TigerInstrumentIdentity = {
 function explicitMarketCode(
   value: string,
 ): { market: "US" | "HK"; code: string } | undefined {
-  const match = /^(US|HK)\s+([A-Za-z0-9][A-Za-z0-9.-]{0,9})$/i.exec(
+  const match = /^(US|HK)\s*([A-Za-z0-9][A-Za-z0-9.-]{0,9})$/i.exec(
     value.trim(),
   );
   if (!match) return undefined;
   return {
     market: match[1].toUpperCase() as "US" | "HK",
-    code: match[2].toUpperCase(),
+    code: normalizePrefixedCode(
+      match[2],
+      match[1].toUpperCase() as "US" | "HK",
+    ),
   };
+}
+
+function normalizePrefixedCode(code: string, market: "US" | "HK"): string {
+  const normalized = code.trim().toUpperCase();
+  return market === "HK"
+    ? normalized.replace(/[BOIl]/g, (character) =>
+        ({ B: "8", O: "0", I: "1", l: "1" })[character] ?? character,
+      )
+    : normalized;
 }
 
 function prefixedInstrumentIdentity(
@@ -195,7 +208,10 @@ function prefixedInstrumentIdentity(
     }
     return {
       market: market as "US" | "HK",
-      symbol: codeLine.text.trim().toUpperCase(),
+      symbol: normalizePrefixedCode(
+        codeLine.text,
+        market as "US" | "HK",
+      ),
       symbolLines: [marketLine, codeLine],
       nameLine: ordered.find(
         (candidate) => candidate !== marketLine && candidate !== codeLine,
@@ -279,17 +295,12 @@ export function parseTigerScreenshot(
   const headers = selectScreenshotHeaders(
     image,
     filledOrders
-      ? [
-          ["代码｜名称", "代码|名称", "代码名称"],
-          ["方向"],
-          ["总量｜价格", "总量|价格", "总量价格"],
-          ["成交时间"],
-        ]
+      ? TIGER_FILLED_ORDERS_HEADER_ALIASES
       : instrumentFirst
         ? TIGER_INSTRUMENT_FIRST_HEADER_ALIASES
         : TIGER_SCREENSHOT_HEADER_ALIASES,
     filledOrders
-      ? { minimumNormalizedX: 0.2, maximumNormalizedX: 0.45 }
+      ? { minimumNormalizedX: 0.48, maximumNormalizedX: 0.62 }
       : instrumentFirst
         ? { minimumNormalizedX: 0.47, maximumNormalizedX: 0.62 }
         : { maximumNormalizedX: 0.15 },

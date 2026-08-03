@@ -72,6 +72,26 @@ describe("Tiger dark order-history screenshots", () => {
     });
   });
 
+  it("normalizes OCR prefixes without spaces and repairs an HK B/8 confusion", () => {
+    const ocrLike = image(
+      "tiger-filled-orders-ocr-like",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.map((line) =>
+        line.text === "US CTVA"
+          ? ocrLine("USCTVA", line.sourceBounds.x, line.sourceBounds.y, 105, 22)
+          : line.text === "HK 06228"
+            ? ocrLine("HK0622B", line.sourceBounds.x, line.sourceBounds.y, 110, 22)
+            : line,
+      ),
+    );
+
+    expect(parseTigerScreenshot(ocrLike)).toEqual([
+      expect.objectContaining({ market: "US", symbol: "CTVA" }),
+      expect.objectContaining({ market: "HK", symbol: "06228" }),
+    ]);
+  });
+
   it("pairs jittered timestamp boxes by closest vertical center", () => {
     const [draft] = parseTigerScreenshot(
       image("tiger-jittered-timestamps", 1_220, 13_000, [

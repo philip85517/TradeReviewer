@@ -4,7 +4,10 @@ import type {
   ScreenshotField,
   ScreenshotTradeDraft,
 } from "./contracts";
-import { TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR } from "./__fixtures__/ocr-lines";
+import {
+  TIGER_FILLED_ORDERS_SCREENSHOT_OCR,
+  TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR,
+} from "./__fixtures__/ocr-lines";
 import { parseTigerScreenshot } from "./tiger-screenshot";
 import {
   reviewBlockers,
@@ -267,6 +270,35 @@ describe("screenshotReviewReducer", () => {
 });
 
 describe("reviewBlockers", () => {
+  it("accepts parsed compact Tiger filled-orders provenance for review", () => {
+    const [parsed] = parseTigerScreenshot(
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR,
+    );
+    const current: ScreenshotReviewState = {
+      batchId: "screenshot-batch:filled-orders",
+      images: [
+        {
+          imageId: TIGER_FILLED_ORDERS_SCREENSHOT_OCR.imageId,
+          fingerprint: "anonymous-fixture",
+          captureIndex: 0,
+          broker: "tiger",
+          layoutVersion: "tiger-filled-orders-dark-v1",
+        },
+      ],
+      drafts: [parsed],
+      deletedDraftIds: new Set(),
+      sourceTimezone: "Asia/Hong_Kong",
+      account: { id: "account-1", label: "Tiger account" },
+    };
+
+    expect(
+      reviewBlockers(current).filter(
+        ({ code, draftId, field }) =>
+          code === "invalid-field" && draftId === parsed.id && !field,
+      ),
+    ).toEqual([]);
+  });
+
   it("accepts parsed Tiger instrument-first provenance for review", () => {
     const [parsed] = parseTigerScreenshot(
       TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR,

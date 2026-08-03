@@ -97,7 +97,8 @@ type SupportedReviewLayout =
       broker: "tiger";
       layoutVersion:
         | "tiger-orders-dark-v1"
-        | "tiger-instrument-first-dark-v1";
+        | "tiger-instrument-first-dark-v1"
+        | "tiger-filled-orders-dark-v1";
     };
 
 type ImageMetadataOrigin = "matched" | "inferred";
@@ -235,7 +236,8 @@ function supportedReviewLayout(
   if (
     value?.broker === "tiger" &&
     (value.layoutVersion === "tiger-orders-dark-v1" ||
-      value.layoutVersion === "tiger-instrument-first-dark-v1")
+      value.layoutVersion === "tiger-instrument-first-dark-v1" ||
+      value.layoutVersion === "tiger-filled-orders-dark-v1")
   ) {
     return {
       broker: "tiger",

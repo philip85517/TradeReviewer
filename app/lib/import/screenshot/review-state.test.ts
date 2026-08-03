@@ -383,26 +383,42 @@ describe("reviewBlockers", () => {
     );
   });
 
-  it("requires explicit confirmation for an exact-second timestamp at any score", () => {
-    const unconfirmedTime = draft("image-1:tiger:0", {
+  it("blocks an unconfirmed exact-second timestamp below 0.85 confidence", () => {
+    const belowBoundary = draft("image-1:tiger:0", {
       fieldEvidence: {
         ...draft().fieldEvidence,
         executedAt: {
           rawText: "2024/06/05 14:39:25",
-          confidence: 1,
+          confidence: 0.8499,
           repaired: false,
           confirmedByUser: false,
         },
       },
     });
 
-    expect(reviewBlockers(state([unconfirmedTime]))).toContainEqual(
+    expect(reviewBlockers(state([belowBoundary]))).toContainEqual(
       expect.objectContaining({
         code: "unconfirmed-field",
-        draftId: unconfirmedTime.id,
+        draftId: belowBoundary.id,
         field: "executedAt",
       }),
     );
+  });
+
+  it("accepts an unconfirmed exact-second timestamp at 0.85 confidence", () => {
+    const atBoundary = draft("image-1:tiger:0", {
+      fieldEvidence: {
+        ...draft().fieldEvidence,
+        executedAt: {
+          rawText: "2024/06/05 14:39:25",
+          confidence: 0.85,
+          repaired: false,
+          confirmedByUser: false,
+        },
+      },
+    });
+
+    expect(reviewBlockers(state([atBoundary]))).toEqual([]);
   });
 
   it("blocks missing timezone and missing account at batch scope", () => {

@@ -375,8 +375,7 @@ export function reviewBlockers(
       if (
         !evidence ||
         (!evidence.confirmedByUser &&
-          (field === "executedAt" ||
-            !Number.isFinite(evidence.confidence) ||
+          (!Number.isFinite(evidence.confidence) ||
             evidence.confidence < SCREENSHOT_REVIEW_CONFIDENCE ||
             evidence.repaired))
       ) {

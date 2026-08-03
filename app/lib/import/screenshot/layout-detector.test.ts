@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   FUTU_SCREENSHOT_OCR,
   TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR,
+  TIGER_FILLED_ORDERS_SCREENSHOT_OCR,
   TIGER_SCREENSHOT_OCR,
   image,
   ocrLine,
@@ -48,6 +49,51 @@ describe("screenshot layout detection", () => {
       matched: true,
       broker: "tiger",
       layoutVersion: "tiger-orders-dark-v1",
+    });
+  });
+
+  it("detects the compact Tiger filled-orders table from its complete structural signals", () => {
+    expect(
+      detectScreenshotLayout(TIGER_FILLED_ORDERS_SCREENSHOT_OCR),
+    ).toMatchObject({
+      matched: true,
+      broker: "tiger",
+      layoutVersion: "tiger-filled-orders-dark-v1",
+    });
+  });
+
+  it("fails closed when the compact filled-orders filters or headers are incomplete", () => {
+    const withoutText = (text: string) =>
+      image(
+        `tiger-filled-orders-without-${text}`,
+        TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+        TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+        TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.filter(
+          (line) => line.text !== text,
+        ),
+      );
+
+    expect(
+      detectScreenshotLayout(withoutText("股票")),
+    ).not.toMatchObject({ layoutVersion: "tiger-filled-orders-dark-v1" });
+    expect(
+      detectScreenshotLayout(withoutText("成交时间")),
+    ).not.toMatchObject({ layoutVersion: "tiger-filled-orders-dark-v1" });
+  });
+
+  it("requires at least two compact Tiger filled-order rows", () => {
+    const oneRow = image(
+      "tiger-filled-orders-one-row",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.filter(
+        (line) => line.sourceBounds.y < 650,
+      ),
+    );
+
+    expect(detectScreenshotLayout(oneRow)).toMatchObject({
+      matched: false,
+      code: "unsupported-screenshot-layout",
     });
   });
 

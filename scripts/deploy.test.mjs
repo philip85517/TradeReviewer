@@ -584,11 +584,12 @@ describe("SQLite operations", () => {
     }
   });
 
-  test("provides SQLite operations without an apt repository dependency", async () => {
+  test("provides SQLite operations with a configurable runtime package source", async () => {
     const dockerfile = await readManifest("deploy/Dockerfile");
     const sqliteCli = await readManifest("deploy/ops/sqlite-cli.mjs");
 
-    expect(dockerfile).not.toContain("apt-get");
+    expect(dockerfile).toContain("ARG DEBIAN_MIRROR=mirrors.aliyun.com");
+    expect(dockerfile).toContain("apt-get -o Acquire::Retries=5 update");
     expect(dockerfile).toContain("sqlite-cli.mjs");
     expect(sqliteCli).toContain("node:sqlite");
     expect(sqliteCli).toContain("backup(");

@@ -31,19 +31,28 @@ import type {
 import { requiredMarketDataRange } from "../lib/market/sync-range";
 import type { DemoReplayFrame } from "../lib/demo/replay-frame";
 import type { EpisodeReviewRecord } from "../lib/reviews/types";
+import type { SqliteHttpClient } from "../lib/storage/sqlite-http-client";
+import type { BrowserStatePayload, StorageBootstrap } from "../lib/storage/sqlite-contracts";
 import { IndexedDbEpisodeReviewRepository } from "../lib/storage/indexeddb-episode-review-repository";
 import {
   loadImportedExecutions,
   saveImportedExecutions,
 } from "../lib/storage/import-library";
 import { loadImportHistory } from "../lib/storage/import-history";
-import * as importTransaction from "../lib/storage/import-transaction";
 import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-data-repository";
 import { saveReviewState } from "../lib/storage/review-storage";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeExecution } from "../lib/trades/types";
 import type { ScreenshotImportDependencies } from "./import/use-screenshot-import";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
+import { createLegacySqliteClient } from "./test-support/legacy-sqlite-client";
+
+const mockSqliteClient = vi.hoisted(() => ({ current: undefined as unknown }));
+
+vi.mock("../lib/storage/sqlite-http-client", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../lib/storage/sqlite-http-client")>()),
+  createSqliteHttpClient: () => mockSqliteClient.current,
+}));
 
 const globalStyles = postcss.parse(
   readFileSync(join(process.cwd(), "app/globals.css"), "utf8"),
@@ -438,20 +447,15 @@ function screenshotDependencies(
   };
 }
 
-async function confirmScreenshotTimestamp(
-  user: ReturnType<typeof userEvent.setup>,
+function expectScreenshotTimestampAutomaticallyConfirmed(
   symbol: string,
   timestamp: string,
 ) {
-  await user.click(
-    screen.getByRole("cell", {
-      name: `${symbol} 成交时间 ${timestamp}，待确认`,
-    }),
-  );
-  await user.click(screen.getByRole("button", { name: "确认识别值" }));
-  await user.click(
-    screen.getByRole("button", { name: "关闭截图识别依据" }),
-  );
+  const timestampCell = screen.getByRole("cell", {
+    name: `${symbol} 成交时间 ${timestamp}`,
+  });
+
+  expect(timestampCell).not.toHaveAccessibleName(/待确认/);
 }
 
 describe("TradeReviewWorkspace", () => {
@@ -477,16 +481,133 @@ describe("TradeReviewWorkspace", () => {
     mockDispatcher.mockReset();
     mockEnrichment.mockReset();
     mockMarketDataSync.mockReset();
+    mockSqliteClient.current = createLegacySqliteClient();
   });
 
-  it("keeps the statement input unchanged and exposes an independent multi-image screenshot input", () => {
+  it("boots from the SQLite bootstrap response without reading legacy execution storage", async () => {
+    const getBootstrap = vi.fn().mockResolvedValue({
+      schemaVersion: 1,
+      migration: null,
+      executions: [availabilityExecution({
+        id: "sqlite-xpev",
+        row: 1,
+        side: "buy",
+        executedAt: "2025-01-07T14:30:00.000Z",
+      })],
+      importHistory: [],
+      instruments: [availabilityInstrument],
+      reviews: [],
+      reviewStates: [],
+      tagSuggestions: [],
+      marketDataJobs: [],
+      settings: {
+        version: 1,
+        showGrid: true,
+        showVolume: true,
+        showExecutions: true,
+        showAverageCost: true,
+        colorScheme: "teal-red",
+      },
+    } satisfies StorageBootstrap);
+    const legacyRead = vi.spyOn(
+      await import("../lib/storage/import-library"),
+      "loadImportedExecutions",
+    );
+
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+        storageClient={{ ...createLegacySqliteClient(), getBootstrap } as SqliteHttpClient}
+      />,
+    );
+
+    expect(await screen.findByText("小鹏汽车")).toBeInTheDocument();
+    expect(getBootstrap).toHaveBeenCalledOnce();
+    expect(legacyRead).not.toHaveBeenCalled();
+  });
+
+  it("keeps XPEV absent when an empty SQLite bootstrap is used in production mode", async () => {
+    const bootstrap: StorageBootstrap = {
+      schemaVersion: 1, migration: null, executions: [], importHistory: [], instruments: [], reviews: [], reviewStates: [], tagSuggestions: [], marketDataJobs: [],
+      settings: { version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" },
+    };
+    const client = createLegacySqliteClient();
+    const putReviewState = vi.fn(client.putReviewState);
+    const exporter = vi.fn().mockResolvedValue(null);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={{ ...client, getBootstrap: vi.fn().mockResolvedValue(bootstrap), putReviewState } as SqliteHttpClient} legacyStateExporter={exporter} />);
+    expect(await screen.findByText("暂无导入股票，请先导入交易记录。")).toBeInTheDocument();
+    expect(screen.queryByText("小鹏汽车")).not.toBeInTheDocument();
+    expect(exporter).toHaveBeenCalledWith({ excludeDemo: true });
+    expect(putReviewState).not.toHaveBeenCalled();
+  });
+
+  it("does not export legacy browser state after the SQLite server confirms migration", async () => {
+    const exporter = vi.fn();
+    window.localStorage.setItem("trade-reviewer:sqlite-migration:complete:v1", JSON.stringify({ sourceFingerprint: "done", validationDigest: "digest" }));
+    const client = createLegacySqliteClient();
+    const getBootstrap = vi.fn().mockResolvedValue({
+      schemaVersion: 1,
+      migration: {
+        sourceFingerprint: "done",
+        inserted: 0,
+        duplicate: 0,
+        conflict: 0,
+        failed: 0,
+        validationDigest: "digest",
+      },
+      executions: [],
+      importHistory: [],
+      instruments: [],
+      reviews: [],
+      reviewStates: [],
+      tagSuggestions: [],
+      marketDataJobs: [],
+      settings: { version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" },
+    } satisfies StorageBootstrap);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={{ ...client, getBootstrap }} legacyStateExporter={exporter} />);
+    await screen.findByText("暂无导入股票，请先导入交易记录。");
+    expect(exporter).not.toHaveBeenCalled();
+  });
+
+  it("migrates legacy browser state when SQLite has no migration despite a local marker", async () => {
+    window.localStorage.setItem("trade-reviewer:sqlite-migration:complete:v1", JSON.stringify({ sourceFingerprint: "stale-browser-marker", validationDigest: "digest" }));
+    const client = createLegacySqliteClient();
+    const migrate = vi.fn(client.migrate);
+    const exporter = vi.fn().mockResolvedValue({
+      version: 1,
+      sourceClientId: "browser-a",
+      sourceFingerprint: "browser-a:empty",
+      executions: [],
+      importHistory: [],
+      instruments: [],
+      reviews: [],
+      reviewStates: [],
+      tagSuggestions: [],
+      marketDataJobs: [],
+      settings: { version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" },
+      dailyCandles: [],
+      marketCandles: [],
+      coverage: [],
+      intervalCoverage: [],
+      providerSymbols: [],
+    } satisfies BrowserStatePayload);
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={{ ...client, migrate }} legacyStateExporter={exporter} />);
+
+    await screen.findByText("暂无导入股票，请先导入交易记录。");
+    expect(exporter).toHaveBeenCalledOnce();
+    expect(migrate).toHaveBeenCalledOnce();
+  });
+
+  it("keeps the statement input unchanged and exposes an independent multi-image screenshot input", async () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
-    const statementInput = screen.getByLabelText("导入交易记录");
+    const statementInput = await screen.findByLabelText("导入交易记录");
     expect(statementInput).toHaveAttribute("accept", ".xlsx,.xls,.pdf");
     expect(statementInput).not.toHaveAttribute("multiple");
 
-    const screenshotInput = screen.getByLabelText("从截图恢复交易");
+    const screenshotInput = await screen.findByLabelText("从截图恢复交易");
     expect(screenshotInput).toHaveAttribute(
       "accept",
       "image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp",
@@ -494,9 +615,26 @@ describe("TradeReviewWorkspace", () => {
     expect(screenshotInput).toHaveAttribute("multiple");
   });
 
+  it("does not expose the bundled demo in production mode", async () => {
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+      />,
+    );
+
+    expect(
+      await screen.findByText("暂无导入股票，请先导入交易记录。"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("小鹏汽车")).not.toBeInTheDocument();
+    expect(screen.queryByText("演示行情")).not.toBeInTheDocument();
+  });
+
   it("reviews two screenshots and applies duplicate, use-incoming, and keep-both decisions through the existing import transaction", async () => {
     const user = userEvent.setup();
-    const persistSpy = vi.spyOn(importTransaction, "persistImportBatch");
+    const client = createLegacySqliteClient();
+    const mergeExecutions = vi.fn(client.mergeExecutions);
+    mockSqliteClient.current = { ...client, mergeExecutions };
     mockMarketDataSync.mockResolvedValue({
       source: "cache",
       status: "complete",
@@ -587,7 +725,7 @@ describe("TradeReviewWorkspace", () => {
       />,
     );
 
-    await user.upload(screen.getByLabelText("从截图恢复交易"), [
+    await user.upload(await screen.findByLabelText("从截图恢复交易"), [
       new File(["one"], "one.png", { type: "image/png" }),
       new File(["two"], "two.png", { type: "image/png" }),
     ]);
@@ -601,10 +739,22 @@ describe("TradeReviewWorkspace", () => {
     );
     await user.clear(screen.getByLabelText("交易账户"));
     await user.type(screen.getByLabelText("交易账户"), "截图测试账户");
-    await confirmScreenshotTimestamp(user, "NVDA", "2025-03-01 09:30:00");
-    await confirmScreenshotTimestamp(user, "MSFT", "2025-03-02 09:30:00");
-    await confirmScreenshotTimestamp(user, "TSLA", "2025-03-03 09:30:00");
-    await confirmScreenshotTimestamp(user, "AAPL", "2025-04-10 09:30:00");
+    expectScreenshotTimestampAutomaticallyConfirmed(
+      "NVDA",
+      "2025-03-01 09:30:00",
+    );
+    expectScreenshotTimestampAutomaticallyConfirmed(
+      "MSFT",
+      "2025-03-02 09:30:00",
+    );
+    expectScreenshotTimestampAutomaticallyConfirmed(
+      "TSLA",
+      "2025-03-03 09:30:00",
+    );
+    expectScreenshotTimestampAutomaticallyConfirmed(
+      "AAPL",
+      "2025-04-10 09:30:00",
+    );
 
     await user.click(
       screen.getByRole("cell", { name: "AAPL 价格 150，待确认" }),
@@ -665,33 +815,42 @@ describe("TradeReviewWorkspace", () => {
     expect(persisted.filter(({ instrument }) => instrument.symbol === "TSLA"))
       .toHaveLength(2);
     expect(persisted).toHaveLength(5);
-    expect(persistSpy).toHaveBeenCalledWith(
-      existing,
-      expect.arrayContaining([
-        expect.objectContaining({ id: "existing-nvda" }),
-      ]),
-      expect.objectContaining({
-        sourceKind: "screenshot",
-        captureCount: 2,
-        conflictTradeCount: 2,
-      }),
+    await waitFor(() =>
+      expect(mergeExecutions).toHaveBeenCalledWith(
+        expect.objectContaining({
+          executions: expect.arrayContaining([
+            expect.objectContaining({ id: "existing-nvda" }),
+          ]),
+          replaceExecutionIds: ["existing-msft"],
+          importHistory: expect.arrayContaining([
+            expect.objectContaining({
+              sourceKind: "screenshot",
+              captureCount: 2,
+              conflictTradeCount: 2,
+            }),
+          ]),
+        }),
+      ),
     );
-    expect(mockMarketDataSync).toHaveBeenCalledTimes(1);
-    expect(mockMarketDataSync).toHaveBeenCalledWith(
-      expect.objectContaining({
-        instrumentId: "US:AAPL",
-        required: requiredMarketDataRange(
-          "2025-04-10T01:30:00Z",
-          "2025-04-10T01:30:00Z",
-          { open: true, market: "US" },
-        ),
-      }),
+    await waitFor(() =>
+      expect(mockMarketDataSync).toHaveBeenCalledWith(
+        expect.objectContaining({
+          instrumentId: "US:AAPL",
+          required: requiredMarketDataRange(
+            "2025-04-10T01:30:00Z",
+            "2025-04-10T01:30:00Z",
+            { open: true, market: "US" },
+          ),
+        }),
+      ),
     );
   }, 15_000);
 
   it("does not persist when a prepared screenshot import preview is canceled", async () => {
     const user = userEvent.setup();
-    const persistSpy = vi.spyOn(importTransaction, "persistImportBatch");
+    const client = createLegacySqliteClient();
+    const mergeExecutions = vi.fn(client.mergeExecutions);
+    mockSqliteClient.current = { ...client, mergeExecutions };
     const draftsByImage = new Map([
       [
         "capture-1",
@@ -723,7 +882,7 @@ describe("TradeReviewWorkspace", () => {
       />,
     );
 
-    await user.upload(screen.getByLabelText("从截图恢复交易"),
+    await user.upload(await screen.findByLabelText("从截图恢复交易"),
       new File(["one"], "one.png", { type: "image/png" }),
     );
     await user.selectOptions(
@@ -736,7 +895,7 @@ describe("TradeReviewWorkspace", () => {
 
     expect(loadImportedExecutions()).toEqual([]);
     expect(loadImportHistory()).toEqual([]);
-    expect(persistSpy).not.toHaveBeenCalled();
+    expect(mergeExecutions).not.toHaveBeenCalled();
     expect(mockMarketDataSync).not.toHaveBeenCalled();
   });
 
@@ -795,7 +954,7 @@ describe("TradeReviewWorkspace", () => {
     );
 
     await user.upload(
-      screen.getByLabelText("从截图恢复交易"),
+      await screen.findByLabelText("从截图恢复交易"),
       new File(["synthetic"], "synthetic.png", { type: "image/png" }),
     );
     await user.selectOptions(
@@ -853,7 +1012,7 @@ describe("TradeReviewWorkspace", () => {
       />,
     );
 
-    await user.upload(screen.getByLabelText("从截图恢复交易"), [
+    await user.upload(await screen.findByLabelText("从截图恢复交易"), [
       new File(["one"], "one.png", { type: "image/png" }),
     ]);
     await user.selectOptions(
@@ -885,14 +1044,14 @@ describe("TradeReviewWorkspace", () => {
     const user = userEvent.setup();
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
-    const cursorBefore = screen.getByTestId("replay-cursor").textContent;
+    const cursorBefore = (await screen.findByTestId("replay-cursor")).textContent;
 
     expect(screen.queryByText("未来成交")).not.toBeInTheDocument();
     expect(screen.queryByText(/共 \d+ 根/)).not.toBeInTheDocument();
     expect(screen.getByText("尚未成交")).toBeInTheDocument();
 
     await user.click(
-      screen.getByRole("button", { name: "下一根 K 线" }),
+      await screen.findByRole("button", { name: "下一根 K 线" }),
     );
 
     expect(screen.getByTestId("replay-cursor").textContent).not.toBe(
@@ -918,7 +1077,7 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
     await user.click(
-      screen.getByRole("button", { name: "下一根 K 线" }),
+      await screen.findByRole("button", { name: "下一根 K 线" }),
     );
 
     expect(
@@ -1004,7 +1163,7 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
     expect(
-      screen.getByRole("heading", { name: "持仓统计" }),
+      await screen.findByRole("heading", { name: "持仓统计" }),
     ).toBeInTheDocument();
     expect(
       document.querySelector(".review-side-panel-desktop"),
@@ -1188,7 +1347,7 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
     await user.click(
-      screen.getByRole("button", { name: "行情数据详情" }),
+      await screen.findByRole("button", { name: "行情数据详情" }),
     );
     await user.click(
       screen.getByRole("button", { name: "刷新行情数据" }),
@@ -1218,10 +1377,10 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
     await user.click(
-      screen.getByRole("button", { name: "下一根 K 线" }),
+      await screen.findByRole("button", { name: "下一根 K 线" }),
     );
     await user.click(
-      screen.getByRole("button", { name: "行情数据详情" }),
+      await screen.findByRole("button", { name: "行情数据详情" }),
     );
 
     const refresh = screen.getByRole("button", {

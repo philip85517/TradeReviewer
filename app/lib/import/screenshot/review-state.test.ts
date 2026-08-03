@@ -4,13 +4,17 @@ import type {
   ScreenshotField,
   ScreenshotTradeDraft,
 } from "./contracts";
-import { TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR } from "./__fixtures__/ocr-lines";
+import {
+  TIGER_FILLED_ORDERS_SCREENSHOT_OCR,
+  TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR,
+} from "./__fixtures__/ocr-lines";
 import { parseTigerScreenshot } from "./tiger-screenshot";
 import {
   reviewBlockers,
   screenshotReviewReducer,
   type ScreenshotReviewState,
 } from "./review-state";
+import { toStatementParseResult } from "./to-statement-result";
 
 const FIELDS: ScreenshotField[] = [
   "market",
@@ -182,6 +186,21 @@ describe("screenshotReviewReducer", () => {
     expect(reviewBlockers(next)).toEqual([]);
   });
 
+  it("keeps an abandoned only row valid and excludes it from import", () => {
+    const next = screenshotReviewReducer(state(), {
+      type: "delete-draft",
+      draftId: "image-1:tiger:0",
+    });
+
+    expect(
+      reviewBlockers(next).some(
+        ({ draftId }) => draftId === "image-1:tiger:0",
+      ),
+    ).toBe(false);
+    expect(next.deletedDraftIds).toContain("image-1:tiger:0");
+    expect(toStatementParseResult(next).records).toEqual([]);
+  });
+
   it("adds a blank manual row tied to the selected image", () => {
     const current = state();
     const next = screenshotReviewReducer(current, {
@@ -267,6 +286,35 @@ describe("screenshotReviewReducer", () => {
 });
 
 describe("reviewBlockers", () => {
+  it("accepts parsed compact Tiger filled-orders provenance for review", () => {
+    const [parsed] = parseTigerScreenshot(
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR,
+    );
+    const current: ScreenshotReviewState = {
+      batchId: "screenshot-batch:filled-orders",
+      images: [
+        {
+          imageId: TIGER_FILLED_ORDERS_SCREENSHOT_OCR.imageId,
+          fingerprint: "anonymous-fixture",
+          captureIndex: 0,
+          broker: "tiger",
+          layoutVersion: "tiger-filled-orders-dark-v1",
+        },
+      ],
+      drafts: [parsed],
+      deletedDraftIds: new Set(),
+      sourceTimezone: "Asia/Hong_Kong",
+      account: { id: "account-1", label: "Tiger account" },
+    };
+
+    expect(
+      reviewBlockers(current).filter(
+        ({ code, draftId, field }) =>
+          code === "invalid-field" && draftId === parsed.id && !field,
+      ),
+    ).toEqual([]);
+  });
+
   it("accepts parsed Tiger instrument-first provenance for review", () => {
     const [parsed] = parseTigerScreenshot(
       TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR,
@@ -351,26 +399,42 @@ describe("reviewBlockers", () => {
     );
   });
 
-  it("requires explicit confirmation for an exact-second timestamp at any score", () => {
-    const unconfirmedTime = draft("image-1:tiger:0", {
+  it("blocks an unconfirmed exact-second timestamp below 0.85 confidence", () => {
+    const belowBoundary = draft("image-1:tiger:0", {
       fieldEvidence: {
         ...draft().fieldEvidence,
         executedAt: {
           rawText: "2024/06/05 14:39:25",
-          confidence: 1,
+          confidence: 0.8499,
           repaired: false,
           confirmedByUser: false,
         },
       },
     });
 
-    expect(reviewBlockers(state([unconfirmedTime]))).toContainEqual(
+    expect(reviewBlockers(state([belowBoundary]))).toContainEqual(
       expect.objectContaining({
         code: "unconfirmed-field",
-        draftId: unconfirmedTime.id,
+        draftId: belowBoundary.id,
         field: "executedAt",
       }),
     );
+  });
+
+  it("accepts an unconfirmed exact-second timestamp at 0.85 confidence", () => {
+    const atBoundary = draft("image-1:tiger:0", {
+      fieldEvidence: {
+        ...draft().fieldEvidence,
+        executedAt: {
+          rawText: "2024/06/05 14:39:25",
+          confidence: 0.85,
+          repaired: false,
+          confirmedByUser: false,
+        },
+      },
+    });
+
+    expect(reviewBlockers(state([atBoundary]))).toEqual([]);
   });
 
   it("blocks missing timezone and missing account at batch scope", () => {

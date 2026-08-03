@@ -1,3 +1,4 @@
+/** MIGRATION-ONLY: retired IndexedDB transaction retained for isolated tests. */
 import type { TagSuggestionRecord } from "../insights/types";
 import { normalizeEpisodeReviewRecord } from "../reviews/review-metrics";
 import type { EpisodeReviewRecord } from "../reviews/types";

@@ -81,6 +81,19 @@ function bitmap(width: number, height: number) {
   } as unknown as ImageBitmap;
 }
 
+function trackTileCanvases(): HTMLCanvasElement[] {
+  const canvases: HTMLCanvasElement[] = [];
+  const createElement = document.createElement.bind(document);
+  vi.spyOn(document, "createElement").mockImplementation((tagName, options) => {
+    const element = createElement(tagName, options);
+    if (tagName === "canvas") {
+      canvases.push(element as HTMLCanvasElement);
+    }
+    return element;
+  });
+  return canvases;
+}
+
 afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
@@ -122,6 +135,7 @@ describe("long screenshot image pipeline", () => {
     const recognize = vi
       .fn()
       .mockResolvedValueOnce({ width: 10, height: 2_048, lines: [] })
+      .mockResolvedValueOnce({ width: 10, height: 2_048, lines: [] })
       .mockResolvedValueOnce({
         width: 10,
         height: 244,
@@ -148,6 +162,92 @@ describe("long screenshot image pipeline", () => {
       [1, 2],
       [2, 2],
     ]);
+  });
+
+  it("retries an empty enhanced tile with its raw-color image and maps fallback lines to source coordinates", async () => {
+    installCanvas();
+    vi.mocked(HTMLCanvasElement.prototype.toBlob).mockImplementationOnce(
+      (callback) => callback(new Blob(["enhanced-first-tile"])),
+    ).mockImplementationOnce(
+      (callback) => callback(new Blob(["raw-first-tile"])),
+    ).mockImplementationOnce(
+      (callback) => callback(new Blob(["enhanced-second-tile"])),
+    ).mockImplementationOnce(
+      (callback) => callback(new Blob(["raw-second-tile"])),
+    );
+    vi.stubGlobal(
+      "createImageBitmap",
+      vi.fn().mockResolvedValue(bitmap(10, 2_100)),
+    );
+    const recognize = vi.fn(async (image: Blob) => ({
+      width: 10,
+      height: 2_048,
+      lines:
+        (await image.text()) === "raw-second-tile"
+          ? [line("AAPL", { x: 1, y: 10, width: 8, height: 20 }, 0.96)]
+          : [],
+    }));
+
+    const result = await recognizeScreenshot(
+      screenshotInput(),
+      { recognize, dispose: vi.fn() },
+      { signal: new AbortController().signal, onProgress: vi.fn() },
+    );
+
+    expect(await Promise.all(recognize.mock.calls.map(([image]) => image.text()))).toEqual([
+      "enhanced-first-tile",
+      "raw-first-tile",
+      "enhanced-second-tile",
+      "raw-second-tile",
+    ]);
+    expect(result.lines).toEqual([
+      line("AAPL", { x: 1, y: 1_866, width: 8, height: 20 }, 0.96),
+    ]);
+  });
+
+  it("resets every tile canvas after successful recognition", async () => {
+    installCanvas();
+    const canvases = trackTileCanvases();
+    vi.stubGlobal(
+      "createImageBitmap",
+      vi.fn().mockResolvedValue(bitmap(2, 4_100)),
+    );
+
+    await recognizeScreenshot(
+      screenshotInput(),
+      {
+        recognize: vi
+          .fn()
+          .mockResolvedValue({ width: 2, height: 2_048, lines: [] }),
+        dispose: vi.fn(),
+      },
+      { signal: new AbortController().signal, onProgress: vi.fn() },
+    );
+
+    expect(canvases).toHaveLength(6);
+    expect(canvases.every((canvas) => canvas.width === 0 && canvas.height === 0)).toBe(true);
+  });
+
+  it("resets the tile canvas when recognition rejects", async () => {
+    installCanvas();
+    const canvases = trackTileCanvases();
+    vi.stubGlobal(
+      "createImageBitmap",
+      vi.fn().mockResolvedValue(bitmap(2, 2)),
+    );
+
+    await expect(
+      recognizeScreenshot(
+        screenshotInput(),
+        { recognize: vi.fn().mockRejectedValue(new Error("OCR unavailable")), dispose: vi.fn() },
+        { signal: new AbortController().signal, onProgress: vi.fn() },
+      ),
+    ).rejects.toThrow("OCR unavailable");
+
+    expect(canvases).toHaveLength(2);
+    expect(
+      canvases.every((canvas) => canvas.width === 0 && canvas.height === 0),
+    ).toBe(true);
   });
 
   it("stops before later tiles after cancellation", async () => {

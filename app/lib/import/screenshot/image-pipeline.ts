@@ -188,7 +188,14 @@ async function recognizeCanvas(
 ): ReturnType<LocalOcrEngine["recognize"]> {
   const processedTile = await canvasBlob(canvas);
   abortIfNeeded(signal);
-  return engine.recognize(processedTile);
+  const result = await engine.recognize(processedTile);
+  abortIfNeeded(signal);
+  return result;
+}
+
+function resetCanvas(canvas: HTMLCanvasElement): void {
+  canvas.width = 0;
+  canvas.height = 0;
 }
 
 function remapLine(line: OcrTextLine, tileY: number): OcrTextLine {
@@ -221,37 +228,62 @@ export async function recognizeScreenshot(
 
     for (const tile of tiles) {
       abortIfNeeded(options.signal);
-      const canvas = document.createElement("canvas");
-      canvas.width = decoded.width;
-      canvas.height = tile.height;
-      const context = canvas.getContext("2d", { willReadFrequently: true });
-      if (!context) {
-        throw new Error("Canvas 2D rendering is unavailable");
-      }
-      context.drawImage(
-        decoded.source,
-        0,
-        tile.y,
-        decoded.width,
-        tile.height,
-        0,
-        0,
-        decoded.width,
-        tile.height,
-      );
-      const pixels = context.getImageData(
-        0,
-        0,
-        decoded.width,
-        tile.height,
-      );
-      preprocessPixels(pixels);
-      context.putImageData(pixels, 0, 0);
+      const sourceCanvas = document.createElement("canvas");
+      const enhancedCanvas = document.createElement("canvas");
+      try {
+        sourceCanvas.width = decoded.width;
+        sourceCanvas.height = tile.height;
+        const sourceContext = sourceCanvas.getContext("2d", {
+          willReadFrequently: true,
+        });
+        if (!sourceContext) {
+          throw new Error("Canvas 2D rendering is unavailable");
+        }
+        sourceContext.drawImage(
+          decoded.source,
+          0,
+          tile.y,
+          decoded.width,
+          tile.height,
+          0,
+          0,
+          decoded.width,
+          tile.height,
+        );
 
-      const result = await recognizeCanvas(canvas, engine, options.signal);
-      abortIfNeeded(options.signal);
-      lines.push(...result.lines.map((line) => remapLine(line, tile.y)));
-      options.onProgress(tile.index + 1, tiles.length);
+        enhancedCanvas.width = decoded.width;
+        enhancedCanvas.height = tile.height;
+        const enhancedContext = enhancedCanvas.getContext("2d", {
+          willReadFrequently: true,
+        });
+        if (!enhancedContext) {
+          throw new Error("Canvas 2D rendering is unavailable");
+        }
+        enhancedContext.drawImage(sourceCanvas, 0, 0);
+        const pixels = enhancedContext.getImageData(
+          0,
+          0,
+          decoded.width,
+          tile.height,
+        );
+        preprocessPixels(pixels);
+        enhancedContext.putImageData(pixels, 0, 0);
+
+        let result = await recognizeCanvas(
+          enhancedCanvas,
+          engine,
+          options.signal,
+        );
+        if (result.lines.length === 0) {
+          abortIfNeeded(options.signal);
+          result = await recognizeCanvas(sourceCanvas, engine, options.signal);
+        }
+        lines.push(...result.lines.map((line) => remapLine(line, tile.y)));
+        options.onProgress(tile.index + 1, tiles.length);
+      } finally {
+        resetCanvas(sourceCanvas);
+        resetCanvas(enhancedCanvas);
+      }
     }
 
     return {

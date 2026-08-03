@@ -79,16 +79,18 @@ timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
 backup_name="tradereview-${timestamp}-$$.sqlite"
 backup_path="$backups_dir/$backup_name"
 checksum_path="$backup_path.sha256"
+metadata_path="$backup_path.metadata.json"
 temporary_backup="$backups_dir/.${backup_name}.partial"
 temporary_checksum="$backups_dir/.${backup_name}.sha256.partial"
+temporary_metadata="$backups_dir/.${backup_name}.metadata.json.partial"
 container_backup_path="/var/lib/tradereview-backups/$(basename "$temporary_backup")"
 
 cleanup() {
   local status=$?
   trap - EXIT
-  rm -f -- "$temporary_backup" "$temporary_checksum"
+  rm -f -- "$temporary_backup" "$temporary_checksum" "$temporary_metadata"
   if [[ $status -ne 0 && ! -e "$backup_path" ]]; then
-    rm -f -- "$checksum_path"
+    rm -f -- "$checksum_path" "$metadata_path"
   fi
   exit "$status"
 }
@@ -108,13 +110,73 @@ integrity_result="$(
 )"
 [[ "${integrity_result//$'\r'/}" == "ok" ]] || fail "SQLite backup integrity check failed"
 
+sqlite_query_backup() {
+  local query="$1"
+  compose run --rm --no-deps --user "$(id -u):$(id -g)" \
+    --volume "$temporary_backup:/tmp/backup.sqlite:ro" app \
+    sqlite3 /tmp/backup.sqlite "$query"
+}
+
+sqlite_backup_table_names() {
+  sqlite_query_backup "select group_concat(name, '|') from sqlite_master where type = 'table';"
+}
+
+sqlite_backup_table_is_present() {
+  local table_names="|$1|"
+  local table_name="$2"
+  [[ "$table_names" == *"|$table_name|"* ]]
+}
+
+sqlite_backup_scalar() {
+  local query="$1"
+  local result
+  if result="$(sqlite_query_backup "$query")"; then
+    printf '%s' "${result//$'\r'/}"
+  else
+    printf '0'
+  fi
+}
+
+write_backup_metadata() {
+  local schema_version=0 data_migrations='[]' table_name count table_names
+  local -a business_tables=(
+    instruments import_batches executions reviews daily_candles market_candles coverage
+    interval_coverage provider_symbols tag_suggestions market_data_jobs app_settings
+  )
+  local record_counts='{'
+
+  table_names="$(sqlite_backup_table_names 2>/dev/null || true)"
+  if sqlite_backup_table_is_present "$table_names" schema_migrations; then
+    schema_version="$(sqlite_backup_scalar 'select coalesce(max(version), 0) from schema_migrations;')"
+  fi
+  if sqlite_backup_table_is_present "$table_names" data_migrations; then
+    data_migrations="$(sqlite_query_backup "select coalesce(json_group_array(json_object('version', version, 'status', status)), '[]') from data_migrations;")"
+  fi
+  for table_name in "${business_tables[@]}"; do
+    count=0
+    if sqlite_backup_table_is_present "$table_names" "$table_name"; then
+      count="$(sqlite_backup_scalar "select count(*) from $table_name;")"
+    fi
+    [[ "$record_counts" == '{' ]] || record_counts+=','
+    record_counts+="\"$table_name\":$count"
+  done
+  record_counts+='}'
+
+  printf '{\n  "schemaVersion": %s,\n  "dataMigrations": %s,\n  "recordCounts": %s\n}\n' \
+    "$schema_version" "$data_migrations" "$record_counts" > "$temporary_metadata"
+  chmod 600 "$temporary_metadata"
+}
+
+write_backup_metadata
+
 backup_digest="$(checksum_file "$temporary_backup" | awk 'NR == 1 { print $1 }')"
 [[ "$backup_digest" =~ ^[0-9a-fA-F]{64}$ ]] || fail "SQLite backup checksum could not be calculated"
 printf '%s  %s\n' "$backup_digest" "$backup_name" > "$temporary_checksum"
 chmod 600 "$temporary_checksum"
 
-# Publish the sidecar first so a visible backup is never momentarily unchecksummed.
+# Publish sidecars first so a visible backup is never momentarily missing metadata or a checksum.
 mv -- "$temporary_checksum" "$checksum_path"
+mv -- "$temporary_metadata" "$metadata_path"
 mv -- "$temporary_backup" "$backup_path"
 
 while IFS= read -r -d '' expired_backup; do
@@ -122,13 +184,17 @@ while IFS= read -r -d '' expired_backup; do
   [[ "$expired_name" =~ ^tradereview-[0-9]{8}T[0-9]{6}Z-[0-9]+\.sqlite$ ]] || continue
   [[ -f "$expired_backup" && ! -L "$expired_backup" ]] || continue
   expired_checksum="$expired_backup.sha256"
+  expired_metadata="$expired_backup.metadata.json"
   rm -- "$expired_backup"
   if [[ -f "$expired_checksum" && ! -L "$expired_checksum" ]]; then
     rm -- "$expired_checksum"
+  fi
+  if [[ -f "$expired_metadata" && ! -L "$expired_metadata" ]]; then
+    rm -- "$expired_metadata"
   fi
 done < <(
   find "$backups_dir" -mindepth 1 -maxdepth 1 -type f \
     -name 'tradereview-????????T??????Z-*.sqlite' -mtime "+$retention_days" -print0
 )
 
-printf 'backup: %s\nchecksum: %s\n' "$backup_path" "$checksum_path"
+printf 'backup: %s\nchecksum: %s\nmetadata: %s\n' "$backup_path" "$checksum_path" "$metadata_path"

@@ -87,33 +87,27 @@ import {
   episodePlanAtCursor,
 } from "../lib/reviews/review-metrics";
 import type { EpisodeReviewRecord } from "../lib/reviews/types";
+import type { ChartSettings } from "../lib/storage/chart-settings";
+import type { ImportHistoryEntry } from "../lib/storage/import-history";
 import {
-  loadChartSettings,
-  saveChartSettings,
-  type ChartSettings,
-} from "../lib/storage/chart-settings";
-import { IndexedDbEpisodeReviewRepository } from "../lib/storage/indexeddb-episode-review-repository";
-import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-data-repository";
-import { IndexedDbTagSuggestionRepository } from "../lib/storage/indexeddb-tag-suggestion-repository";
-import { persistSuggestionDecision } from "../lib/storage/indexeddb-suggestion-decision";
-import {
-  loadImportHistory,
-  type ImportHistoryEntry,
-} from "../lib/storage/import-history";
-import {
-  loadImportedExecutions,
   mergeExecutions,
-  saveImportedExecutions,
 } from "../lib/storage/import-library";
-import { persistImportBatch } from "../lib/storage/import-transaction";
+import type { EpisodeReviewState } from "../lib/storage/review-storage";
+import type { MarketDataRepository } from "../lib/storage/market-data-repository";
 import {
-  loadMarketDataJobs,
-  saveMarketDataJob,
-} from "../lib/storage/market-data-jobs";
+  ApiEpisodeReviewRepository,
+  ApiInstrumentMetadataRepository,
+  ApiMarketDataRepository,
+  ApiTagSuggestionRepository,
+} from "../lib/storage/sqlite-repositories";
 import {
-  loadReviewState,
-  saveReviewState,
-} from "../lib/storage/review-storage";
+  createSqliteHttpClient,
+  type SqliteHttpClient,
+} from "../lib/storage/sqlite-http-client";
+import { exportLegacyBrowserState } from "../lib/storage/browser-state-export";
+import {
+  migrateLegacyBrowserState,
+} from "../lib/storage/browser-state-migration";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
 import {
   buildInstrumentTradeSummaries,
@@ -148,7 +142,6 @@ import {
   type EpisodeOption,
   type ReviewChartViewModel,
 } from "./review/review-chart-workspace";
-import { IndexedDbInstrumentMetadataRepository } from "../lib/storage/indexeddb-instrument-metadata-repository";
 
 const REVIEW_ID = "demo-xpev-2025";
 const DEFAULT_THESIS =
@@ -187,8 +180,30 @@ type InstrumentMarketState = {
 
 type Props = {
   initialFrame: DemoReplayFrame;
+  showDemo?: boolean;
   screenshotImportDependencies?: Partial<ScreenshotImportDependencies>;
+  /** Injectable only for integration tests; production creates the HTTP client. */
+  storageClient?: SqliteHttpClient;
+  legacyStateExporter?: (options?: { excludeDemo?: boolean }) => Promise<import("../lib/storage/sqlite-contracts").BrowserStatePayload | null>;
 };
+
+const DEFAULT_CHART_SETTINGS: ChartSettings = {
+  version: 1,
+  showGrid: true,
+  showVolume: true,
+  showExecutions: true,
+  showAverageCost: true,
+  colorScheme: "teal-red",
+};
+
+function isChartSettings(value: Record<string, unknown>): value is ChartSettings {
+  return value.version === 1 &&
+    typeof value.showGrid === "boolean" &&
+    typeof value.showVolume === "boolean" &&
+    typeof value.showExecutions === "boolean" &&
+    typeof value.showAverageCost === "boolean" &&
+    (value.colorScheme === "teal-red" || value.colorScheme === "green-red" || value.colorScheme === "blue-orange");
+}
 
 function emptyMarketState(
   dailyStatus: MarketDataSyncStatus = "not-requested",
@@ -260,7 +275,7 @@ function episodeIntradaySyncRange(
 
 async function readInstrumentMarketState(
   summary: InstrumentTradeSummary,
-  repository: IndexedDbMarketDataRepository,
+  repository: MarketDataRepository,
 ): Promise<InstrumentMarketState> {
   const ranges = marketRanges(summary);
   const [daily, dailyCoverage, intraday, intradayCoverage] =
@@ -625,11 +640,34 @@ async function fetchDemoFrame(
 
 export function TradeReviewWorkspace({
   initialFrame,
+  showDemo = true,
   screenshotImportDependencies,
+  storageClient: storageClientOverride,
+  legacyStateExporter = exportLegacyBrowserState,
 }: Props) {
 function isAbortError(error: unknown) {
   return error instanceof DOMException && error.name === "AbortError";
 }
+
+  const [storageClient] = useState<SqliteHttpClient>(
+    () => storageClientOverride ?? createSqliteHttpClient(),
+  );
+  const marketDataRepository = useMemo(
+    () => new ApiMarketDataRepository(storageClient),
+    [storageClient],
+  );
+  const reviewRepository = useMemo(
+    () => new ApiEpisodeReviewRepository(storageClient),
+    [storageClient],
+  );
+  const suggestionRepository = useMemo(
+    () => new ApiTagSuggestionRepository(storageClient),
+    [storageClient],
+  );
+  const metadataRepository = useMemo(
+    () => new ApiInstrumentMetadataRepository(storageClient),
+    [storageClient],
+  );
 
   const [activeView, setActiveView] = useState<
     "review" | "library" | "insights"
@@ -653,13 +691,15 @@ function isAbortError(error: unknown) {
     "stats",
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [settings, setSettings] = useState<ChartSettings>(() =>
-    loadChartSettings(),
+  const [settings, setSettings] = useState<ChartSettings>(
+    DEFAULT_CHART_SETTINGS,
   );
   const [importedExecutions, setImportedExecutions] = useState<
     TradeExecution[]
   >([]);
-  const [selectedInstrumentId, setSelectedInstrumentId] = useState("demo");
+  const [selectedInstrumentId, setSelectedInstrumentId] = useState(
+    showDemo ? "demo" : "",
+  );
   const [selectedEpisodeId, setSelectedEpisodeId] = useState(REVIEW_ID);
   const [importedCursor, setImportedCursor] = useState(initialFrame.cursor);
   const [pendingImport, setPendingImport] = useState<ImportPreview | null>(
@@ -700,6 +740,14 @@ function isAbortError(error: unknown) {
   const [importPhase, setImportPhase] = useState<ImportPhase>("idle");
   const [retryingUnresolved, setRetryingUnresolved] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [storageState, setStorageState] = useState<
+    "loading" | "migration" | "ready" | "error"
+  >("loading");
+  const [storageError, setStorageError] = useState<string | null>(null);
+  const [bootstrapAttempt, setBootstrapAttempt] = useState(0);
+  const [reviewStates, setReviewStates] = useState<
+    Record<string, EpisodeReviewState>
+  >({});
   const replayRequestSequence = useRef(0);
   const importRequestSequence = useRef(0);
   const importedExecutionsRef = useRef<TradeExecution[] | null>(null);
@@ -707,15 +755,11 @@ function isAbortError(error: unknown) {
   const marketDataAbortControllers = useRef<
     Record<string, AbortController>
   >({});
-  const legacyDemoThesis = useRef(DEFAULT_THESIS);
   const [suggestionGeneratedAt] = useState(() => new Date().toISOString());
   const libraryTargetSequence = useRef(0);
 
   function currentExecutionSnapshot() {
-    if (importedExecutionsRef.current === null) {
-      importedExecutionsRef.current = loadImportedExecutions();
-    }
-    return importedExecutionsRef.current;
+    return importedExecutionsRef.current ?? [];
   }
 
   const screenshotImport = useScreenshotImport({
@@ -906,12 +950,16 @@ function isAbortError(error: unknown) {
   const searchableInstruments = useMemo(
     () =>
       [
-        {
-          id: "demo",
-          name: DEMO_INSTRUMENT.name,
-          symbol: DEMO_INSTRUMENT.symbol,
-          market: DEMO_INSTRUMENT.market,
-        },
+        ...(showDemo
+          ? [
+              {
+                id: "demo",
+                name: DEMO_INSTRUMENT.name,
+                symbol: DEMO_INSTRUMENT.symbol,
+                market: DEMO_INSTRUMENT.market,
+              },
+            ]
+          : []),
         ...importedInstruments.map(({ instrument }) => ({
           id: instrument.id,
           name: instrument.name,
@@ -919,7 +967,7 @@ function isAbortError(error: unknown) {
           market: instrument.market,
         })),
       ],
-    [importedInstruments],
+    [importedInstruments, showDemo],
   );
 
   const viewModel: ReviewChartViewModel = {
@@ -1058,7 +1106,7 @@ function isAbortError(error: unknown) {
     fallbackCursor: string,
     preferredTimeframe: Timeframe,
   ) {
-    const stored = loadReviewState(episodeId);
+    const stored = reviewStates[episodeId];
     setTimeframe(stored?.timeframe ?? preferredTimeframe);
     setImportedCursor(stored?.replayCursor ?? fallbackCursor);
     setActivePanelTab(stored?.activePanelTab ?? "stats");
@@ -1100,10 +1148,11 @@ function isAbortError(error: unknown) {
 
   function selectInstrument(instrumentId: string) {
     if (instrumentId === "demo") {
+      if (!showDemo) return;
       setPlaying(false);
       setSelectedInstrumentId("demo");
       setSelectedEpisodeId(REVIEW_ID);
-      const stored = loadReviewState(REVIEW_ID);
+      const stored = reviewStates[REVIEW_ID];
       setTimeframe(stored?.timeframe ?? "1D");
       setActivePanelTab(stored?.activePanelTab ?? "stats");
       setDrawingHistory(createDrawingHistory(stored?.drawings ?? []));
@@ -1172,90 +1221,112 @@ function isAbortError(error: unknown) {
   }
 
   useEffect(() => {
-    const animationFrame = window.requestAnimationFrame(() => {
-      const requestId = ++replayRequestSequence.current;
-      const storedExecutions = loadImportedExecutions();
-      importedExecutionsRef.current = storedExecutions;
-      const storedSummaries =
-        buildInstrumentTradeSummaries(storedExecutions);
-      const jobs = new Map(
-        loadMarketDataJobs().map((job) => [job.instrumentId, job.status]),
-      );
-      setImportedExecutions(storedExecutions);
-      setImportHistory(loadImportHistory());
-      setMarketStates(
-        Object.fromEntries(
-          storedSummaries.map((summary) => [
-            summary.instrument.id,
-            emptyMarketState(
-              jobs.get(summary.instrument.id) ?? "not-requested",
-            ),
-          ]),
-        ),
-      );
-
-      const firstSummary = storedSummaries[0];
-      const newestEpisode = sortedEpisodes(firstSummary)[0];
-      const storedDemo = loadReviewState(REVIEW_ID);
-      legacyDemoThesis.current =
-        storedDemo?.legacyThesis || DEFAULT_THESIS;
-      if (firstSummary && newestEpisode) {
-        setSelectedInstrumentId(firstSummary.instrument.id);
-        setSelectedEpisodeId(newestEpisode.id);
-        const stored = loadReviewState(newestEpisode.id);
-        setTimeframe(stored?.timeframe ?? "15m");
-        setImportedCursor(
-          stored?.replayCursor ?? newestEpisode.startedAt,
-        );
-        setActivePanelTab(stored?.activePanelTab ?? "stats");
-        setDrawingHistory(
-          createDrawingHistory(stored?.drawings ?? []),
-        );
-      } else if (storedDemo) {
-        setTimeframe(storedDemo.timeframe);
-        setActivePanelTab(storedDemo.activePanelTab);
-        setDrawingHistory(createDrawingHistory(storedDemo.drawings));
-      }
-
-      const restore = async () => {
-        try {
-          if (
-            storedDemo &&
-            storedDemo.replayCursor !== initialFrame.cursor
-          ) {
-            const restoredFrame = await fetchDemoFrame(
-              "restore",
-              storedDemo.replayCursor,
-            );
-            if (requestId === replayRequestSequence.current) {
-              setFrame(restoredFrame);
-            }
-          }
-        } catch {
-          if (requestId === replayRequestSequence.current) {
-            setReplayError(
-              "上次回放位置无法恢复，已从安全起点开始。",
-            );
-          }
-        } finally {
-          if (requestId === replayRequestSequence.current) {
-            setRestoring(false);
-            setHydrated(true);
+    let active = true;
+    const requestId = ++replayRequestSequence.current;
+    const bootstrapWorkspace = async () => {
+      try {
+        setStorageState("loading");
+        setStorageError(null);
+        let bootstrap = await storageClient.getBootstrap();
+        if (!bootstrap.migration) {
+          const legacyState = await legacyStateExporter({ excludeDemo: !showDemo });
+          if (legacyState) {
+            setStorageState("migration");
+            await migrateLegacyBrowserState(storageClient, legacyState, {
+              ignoreLocalMarker: true,
+            });
+            bootstrap = await storageClient.getBootstrap();
           }
         }
-      };
-      void restore();
-    });
+        if (!active) return;
+        const productionExecutions = showDemo
+          ? bootstrap.executions
+          : bootstrap.executions.filter((execution) => execution.source.platform !== "demo");
+        const storedSummaries = buildInstrumentTradeSummaries(
+          productionExecutions,
+        );
+        const jobs = new Map(
+          bootstrap.marketDataJobs.map((job) => [job.instrumentId, job.status]),
+        );
+        const states = Object.fromEntries(
+          bootstrap.reviewStates.filter((state) => showDemo || state.episodeId !== REVIEW_ID).map((state) => [state.episodeId, state]),
+        );
+        const reviews = Object.fromEntries(
+          bootstrap.reviews.filter((record) => showDemo || record.episodeId !== REVIEW_ID).map((record) => [record.episodeId, record]),
+        );
+        if (showDemo && !reviews[REVIEW_ID]) {
+          reviews[REVIEW_ID] = defaultReviewRecord(
+            REVIEW_ID,
+            DEMO_INSTRUMENT.id,
+            DEFAULT_THESIS,
+          );
+        }
+        importedExecutionsRef.current = productionExecutions;
+        setImportedExecutions(productionExecutions);
+        setImportHistory(bootstrap.importHistory);
+        setReviewStates(states);
+        setEpisodeReviews(reviews);
+        setReviewsHydrated(true);
+        setSuggestionDecisions(bootstrap.tagSuggestions.filter((suggestion) => showDemo || suggestion.episodeId !== REVIEW_ID));
+        setSuggestionsHydrated(true);
+        setSettings(isChartSettings(bootstrap.settings) ? bootstrap.settings : DEFAULT_CHART_SETTINGS);
+        setMarketStates(
+          Object.fromEntries(
+            storedSummaries.map((summary) => [
+              summary.instrument.id,
+              emptyMarketState(jobs.get(summary.instrument.id) ?? "not-requested"),
+            ]),
+          ),
+        );
+        const firstSummary = storedSummaries[0];
+        const newestEpisode = sortedEpisodes(firstSummary)[0];
+        const storedDemo = states[REVIEW_ID];
+        if (firstSummary && newestEpisode) {
+          const stored = states[newestEpisode.id];
+          setSelectedInstrumentId(firstSummary.instrument.id);
+          setSelectedEpisodeId(newestEpisode.id);
+          setTimeframe(stored?.timeframe ?? "15m");
+          setImportedCursor(stored?.replayCursor ?? newestEpisode.startedAt);
+          setActivePanelTab(stored?.activePanelTab ?? "stats");
+          setDrawingHistory(createDrawingHistory(stored?.drawings ?? []));
+        } else if (showDemo && storedDemo) {
+          setTimeframe(storedDemo.timeframe);
+          setActivePanelTab(storedDemo.activePanelTab);
+          setDrawingHistory(createDrawingHistory(storedDemo.drawings));
+        }
+        try {
+          if (showDemo && storedDemo?.replayCursor && storedDemo.replayCursor !== initialFrame.cursor) {
+            const restoredFrame = await fetchDemoFrame("restore", storedDemo.replayCursor);
+            if (active && requestId === replayRequestSequence.current) setFrame(restoredFrame);
+          }
+        } catch {
+          if (active && requestId === replayRequestSequence.current) {
+            setReplayError("上次回放位置无法恢复，已从安全起点开始。");
+          }
+        }
+        if (active && requestId === replayRequestSequence.current) {
+          setRestoring(false);
+          setHydrated(true);
+          setStorageState("ready");
+        }
+      } catch (error) {
+        if (!active || requestId !== replayRequestSequence.current) return;
+        setRestoring(false);
+        setStorageState("error");
+        setStorageError(error instanceof Error ? error.message : "无法连接 SQLite 存储");
+      }
+    };
+    void bootstrapWorkspace();
     return () => {
-      window.cancelAnimationFrame(animationFrame);
+      active = false;
       replayRequestSequence.current += 1;
     };
-  }, [initialFrame.cursor]);
+  }, [bootstrapAttempt, initialFrame.cursor, legacyStateExporter, showDemo, storageClient]);
 
   useEffect(() => {
     if (!hydrated || importedInstruments.length === 0) return;
     let active = true;
-    const repository = new IndexedDbMarketDataRepository();
+    const repository = marketDataRepository;
     void Promise.all(
       importedInstruments.map(async (summary) => {
         try {
@@ -1300,7 +1371,7 @@ function isAbortError(error: unknown) {
           selectedImportedInstrument.instrument.id,
       )?.state;
       if (!selectedState) return;
-      const stored = loadReviewState(selectedEpisode.id);
+      const stored = reviewStates[selectedEpisode.id];
       const availability = resolveEpisodeTimeframeAvailability(
         selectedState,
         selectedEpisode,
@@ -1341,79 +1412,25 @@ function isAbortError(error: unknown) {
   }, [
     hydrated,
     importedInstruments,
+    marketDataRepository,
+    reviewStates,
     selectedEpisode,
     selectedImportedInstrument,
   ]);
 
   useEffect(() => {
-    if (!hydrated) return;
-    let active = true;
-    void new IndexedDbEpisodeReviewRepository()
-      .getAll()
-      .then((records) => {
-        if (!active) return;
-        const reviews = Object.fromEntries(
-          records.map((record) => [record.episodeId, record]),
-        );
-        if (!reviews[REVIEW_ID]) {
-          reviews[REVIEW_ID] = defaultReviewRecord(
-            REVIEW_ID,
-            DEMO_INSTRUMENT.id,
-            legacyDemoThesis.current,
-          );
-        }
-        setEpisodeReviews(reviews);
-        setReviewsHydrated(true);
-      })
-      .catch(() => {
-        if (active) {
-          setEpisodeReviews({
-            [REVIEW_ID]: defaultReviewRecord(
-              REVIEW_ID,
-              DEMO_INSTRUMENT.id,
-              legacyDemoThesis.current,
-            ),
-          });
-          setReviewsHydrated(false);
-        }
-      });
-    return () => {
-      active = false;
-    };
-  }, [hydrated]);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    let active = true;
-    void new IndexedDbTagSuggestionRepository()
-      .getAll()
-      .then((records) => {
-        if (active) {
-          setSuggestionDecisions(records);
-          setSuggestionsHydrated(true);
-        }
-      })
-      .catch(() => {
-        if (active) {
-          setSuggestionDecisions([]);
-          setSuggestionsHydrated(false);
-        }
-      });
-    return () => {
-      active = false;
-    };
-  }, [hydrated]);
-
-  useEffect(() => {
-    if (!hydrated || restoring || !activeEpisodeId) return;
-    saveReviewState(activeEpisodeId, {
+    if (!hydrated || restoring || !activeEpisodeId || (!showDemo && !selectedImportedInstrument)) return;
+    const state: EpisodeReviewState = {
       version: 2,
       episodeId: activeEpisodeId,
       replayCursor: activeCursor,
       timeframe,
       activePanelTab,
       drawings: drawingHistory.present,
-    });
+    };
+    void storageClient.putReviewState(state)
+      .then(() => setReviewStates((current) => ({ ...current, [activeEpisodeId]: state })))
+      .catch(() => setImportError("复盘状态未能保存到 SQLite，请稍后重试。"));
   }, [
     activeCursor,
     activeEpisodeId,
@@ -1421,7 +1438,10 @@ function isAbortError(error: unknown) {
     drawingHistory.present,
     hydrated,
     restoring,
+    storageClient,
     timeframe,
+    showDemo,
+    selectedImportedInstrument,
   ]);
 
   useEffect(() => {
@@ -1529,7 +1549,7 @@ function isAbortError(error: unknown) {
         marketDataAbortControllers.current[instrumentId]?.abort();
         const abortController = new AbortController();
         marketDataAbortControllers.current[instrumentId] = abortController;
-        const repository = new IndexedDbMarketDataRepository();
+        const repository = marketDataRepository;
         let cached = marketStates[instrumentId] ?? emptyMarketState();
         try {
           cached = await readInstrumentMarketState(summary, repository);
@@ -1574,12 +1594,13 @@ function isAbortError(error: unknown) {
           ) ?? summaryEpisodes[0];
         const requestedAt = new Date().toISOString();
         try {
-          saveMarketDataJob({
+          await storageClient.putMarketDataJob({
             instrumentId,
             symbol: instrument.symbol,
             market: instrument.market,
             requestedAt,
             status: "syncing",
+            intervals: [{ interval: "1D", status: "syncing" }],
           });
         } catch {
           cached = {
@@ -1598,12 +1619,12 @@ function isAbortError(error: unknown) {
                 },
                 {
                   repository:
-                    new IndexedDbInstrumentMetadataRepository(),
+                    metadataRepository,
                   fetcher: fetch,
                   signal: abortController.signal,
                 },
               )
-                .then((metadata) => {
+                .then(async (metadata) => {
                   if (
                     !metadata ||
                     marketDataRequestSequences.current[instrumentId] !==
@@ -1627,7 +1648,9 @@ function isAbortError(error: unknown) {
                       : execution,
                   );
                   try {
-                    saveImportedExecutions(renamed);
+                    await storageClient.mergeExecutions({
+                      executions: renamed,
+                    });
                   } catch {
                     metadataPersistenceFailed = true;
                     setImportError(
@@ -1739,7 +1762,7 @@ function isAbortError(error: unknown) {
           return;
         }
         try {
-          saveMarketDataJob({
+          await storageClient.putMarketDataJob({
             instrumentId,
             symbol: instrument.symbol,
             market: instrument.market,
@@ -1748,6 +1771,13 @@ function isAbortError(error: unknown) {
             message: [next.dailyMessage, next.intradayMessage]
               .filter(Boolean)
               .join("；"),
+            intervals: [{
+              interval: "1D",
+              status: next.dailyStatus,
+              message: [next.dailyMessage, next.intradayMessage]
+                .filter(Boolean)
+                .join("；") || undefined,
+            }],
           });
         } catch {
           next.dailyStatus = "storage-error";
@@ -1846,7 +1876,7 @@ function isAbortError(error: unknown) {
       await Promise.resolve();
       setImportPhase("resolving");
       const rawEnriched = await enrichStatementImport(parsed, {
-        repository: new IndexedDbInstrumentMetadataRepository(),
+        repository: metadataRepository,
       });
       if (requestId !== importRequestSequence.current) return;
       const survivorReconciliation = reconcileExecutions(
@@ -1916,7 +1946,7 @@ function isAbortError(error: unknown) {
       await Promise.resolve();
       setImportPhase("resolving");
       const enriched = await enrichStatementImport(parsed, {
-        repository: new IndexedDbInstrumentMetadataRepository(),
+        repository: metadataRepository,
       });
       if (requestId !== importRequestSequence.current) return;
       const preview = previewForImport(file.name, enriched);
@@ -1952,7 +1982,7 @@ function isAbortError(error: unknown) {
     setImportError(null);
     try {
       const rawEnriched = await enrichStatementImport(pendingParsedImport, {
-        repository: new IndexedDbInstrumentMetadataRepository(),
+        repository: metadataRepository,
         forceRefresh: true,
         onlyInstrumentIds: instrumentIds,
         previous: pendingEnrichedImport,
@@ -2010,7 +2040,7 @@ function isAbortError(error: unknown) {
     }
   }
 
-  function confirmImport() {
+  async function confirmImport() {
     if (!pendingImport || pendingImport.blocked || retryingUnresolved) {
       return;
     }
@@ -2028,6 +2058,10 @@ function isAbortError(error: unknown) {
       mergeBase,
       pendingImport.records,
     );
+    const mergedIds = new Set(mergedExecutions.map((execution) => execution.id));
+    const replaceExecutionIds = currentExecutions
+      .filter((execution) => !mergedIds.has(execution.id))
+      .map((execution) => execution.id);
     const summaries = buildInstrumentTradeSummaries(mergedExecutions);
     const importedAt = new Date().toISOString();
     const historyEntry: ImportHistoryEntry = {
@@ -2056,14 +2090,15 @@ function isAbortError(error: unknown) {
         pendingImport.unresolvedInstrumentCount,
     };
     try {
-      persistImportBatch(
-        currentExecutions,
-        mergedExecutions,
-        historyEntry,
-      );
+      await storageClient.mergeExecutions({
+        executions: mergedExecutions,
+        instruments: summaries.map(({ instrument }) => instrument),
+        importHistory: [historyEntry],
+        ...(replaceExecutionIds.length > 0 ? { replaceExecutionIds } : {}),
+      });
     } catch {
       setImportError(
-        "浏览器未能保存这次导入，请检查隐私模式或本地存储空间后重试。",
+        "SQLite 未能保存这次导入，请检查服务状态后重试。",
       );
       setPendingImport(null);
       setPendingImportOriginalExecutions(null);
@@ -2177,20 +2212,14 @@ function isAbortError(error: unknown) {
         ...new Set([...current.confirmedTagIds, finalTagId]),
       ],
     };
-    const persistedReview = await persistSuggestionDecision({
-      suggestion: decided,
-      review,
-    });
-    if (!persistedReview) {
-      throw new Error("确认建议时未写入复盘记录");
-    }
+    await storageClient.putSuggestionDecision({ suggestion: decided, review });
     setSuggestionDecisions((records) => [
       ...records.filter(({ id }) => id !== decided.id),
       decided,
     ]);
     setEpisodeReviews((records) => ({
       ...records,
-      [persistedReview.episodeId]: persistedReview,
+      [review.episodeId]: review,
     }));
   }
 
@@ -2212,7 +2241,7 @@ function isAbortError(error: unknown) {
       finalTagId: null,
       decidedAt: new Date().toISOString(),
     };
-    await persistSuggestionDecision({ suggestion: decided });
+    await suggestionRepository.put(decided);
     setSuggestionDecisions((records) => [
       ...records.filter(({ id }) => id !== decided.id),
       decided,
@@ -2281,8 +2310,7 @@ function isAbortError(error: unknown) {
   }
 
   async function saveEpisodeReview(record: EpisodeReviewRecord) {
-    const persisted =
-      await new IndexedDbEpisodeReviewRepository().put(record);
+    const persisted = await reviewRepository.put(record);
     if (!persisted) return;
     setEpisodeReviews((current) => {
       const visible = current[record.episodeId];
@@ -2297,6 +2325,19 @@ function isAbortError(error: unknown) {
         [record.episodeId]: record,
       };
     });
+  }
+
+  if (storageState !== "ready") {
+    const failed = storageState === "error";
+    return (
+      <main className="trade-review-app" aria-live="polite">
+        <section className="review-workspace review-workspace-loading" aria-busy={!failed} aria-label="SQLite 存储状态">
+          <strong>{failed ? "无法打开交易数据" : storageState === "migration" ? "正在迁移浏览器交易数据" : "正在连接交易数据"}</strong>
+          <span>{failed ? storageError ?? "SQLite 存储暂时不可用。" : storageState === "migration" ? "首次升级会将现有浏览器数据安全迁移到 SQLite。" : "正在从 SQLite 读取交易记录…"}</span>
+          {failed && <button type="button" onClick={() => setBootstrapAttempt((value) => value + 1)}>重试</button>}
+        </section>
+      </main>
+    );
   }
 
   return (
@@ -2341,8 +2382,12 @@ function isAbortError(error: unknown) {
         </nav>
         <div className="header-actions">
           <span className="demo-chip">
-            <Sparkles size={13} />
-            {selectedImportedInstrument ? "本地导入" : "演示行情"}
+            {showDemo && <Sparkles size={13} />}
+            {selectedImportedInstrument
+              ? "本地导入"
+              : showDemo
+                ? "演示行情"
+                : "等待导入"}
           </span>
           <button className="icon-button mobile-menu" aria-label="打开菜单">
             <Menu size={19} />
@@ -2395,6 +2440,7 @@ function isAbortError(error: unknown) {
           <>
             <EpisodeSidebar
               importedInstruments={importedInstruments}
+              showDemo={showDemo}
               importing={importing}
               importPhase={importPhase}
               importError={importError}
@@ -2425,7 +2471,15 @@ function isAbortError(error: unknown) {
                 })
               }
             />
-            {selectedImportedInstrument &&
+            {!showDemo && !selectedImportedInstrument ? (
+              <section
+                className="review-workspace review-workspace-empty"
+                aria-label="交易复盘图表工作区"
+              >
+                <strong>暂无导入交易</strong>
+                <span>请先从左侧导入交易记录，再开始复盘。</span>
+              </section>
+            ) : selectedImportedInstrument &&
             !hydratedMarketIds.has(
               selectedImportedInstrument.instrument.id,
             ) ? (
@@ -2482,7 +2536,9 @@ function isAbortError(error: unknown) {
               onToggleLayers={() => setLayersOpen((open) => !open)}
               onSettingsChange={(next) => {
                 setSettings(next);
-                saveChartSettings(next);
+                void storageClient.putSettings(next).catch(() => {
+                  setImportError("图表设置未能保存到 SQLite，请稍后重试。");
+                });
               }}
               onToolChange={setActiveTool}
               onDrawingCommand={applyCommand}

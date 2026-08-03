@@ -82,6 +82,49 @@ function state(
 }
 
 describe("toStatementParseResult", () => {
+  it("converts compact Tiger filled-order provenance into a statement record", () => {
+    const compact = draft("image-1:tiger:0", {
+      broker: "tiger",
+      layoutVersion: "tiger-filled-orders-dark-v1",
+      market: "US",
+      symbol: "CTVA",
+      sourceName: "Corteva, Inc.",
+      side: "sell",
+      quantity: "100",
+      price: "88.76",
+      sourceTimestampText: "2026/07/29 23:01:17",
+    });
+    const current = state([compact]);
+    current.images = [
+      {
+        imageId: "image-1",
+        fingerprint: "image-fingerprint",
+        captureIndex: 2,
+        broker: "tiger",
+        layoutVersion: "tiger-filled-orders-dark-v1",
+      },
+    ];
+    current.account = { id: "tiger-account", label: "Tiger account" };
+
+    expect(toStatementParseResult(current).records[0]).toMatchObject({
+      source: {
+        platform: "tiger",
+        inputKind: "screenshot",
+        sourceTimestampText: "2026/07/29 23:01:17",
+      },
+      accountId: "tiger-account",
+      instrument: {
+        id: "US:CTVA",
+        symbol: "CTVA",
+        name: "Corteva, Inc.",
+        market: "US",
+      },
+      side: "sell",
+      quantity: "100",
+      price: "88.76",
+    });
+  });
+
   it("converts reviewed screenshot fields and exact source provenance", () => {
     expect(toStatementParseResult(state())).toEqual({
       broker: "futu",
@@ -134,6 +177,26 @@ describe("toStatementParseResult", () => {
       diagnostics: [],
       blocked: false,
     });
+  });
+
+  it("converts OCR-spaced timestamps without rewriting raw provenance", () => {
+    const rawTimestamp = "24/  06/05 14:  41:08";
+    const spacedTimestamp = draft("image-1:futu:4");
+    spacedTimestamp.sourceTimestampText = rawTimestamp;
+    spacedTimestamp.fieldEvidence.executedAt = {
+      ...spacedTimestamp.fieldEvidence.executedAt!,
+      rawText: rawTimestamp,
+    };
+
+    const result = toStatementParseResult(state([spacedTimestamp]));
+
+    expect(result.records[0]).toMatchObject({
+      executedAt: "2024-06-05T06:41:08Z",
+      source: { sourceTimestampText: rawTimestamp },
+    });
+    expect(spacedTimestamp.fieldEvidence.executedAt.rawText).toBe(
+      rawTimestamp,
+    );
   });
 
   it("uses explicit account selection instead of the parsed suffix", () => {
@@ -257,13 +320,13 @@ describe("toStatementParseResult", () => {
     expect(toStatementParseResult(confirmed).records).toHaveLength(1);
   });
 
-  it("cannot bypass explicit confirmation of an exact-second timestamp", () => {
+  it("requires confirmation for an executedAt value below the confidence threshold", () => {
     const unconfirmedTime = draft("image-1:futu:4", {
       fieldEvidence: {
         ...draft("base").fieldEvidence,
         executedAt: {
           rawText: "24/06/05 14:41:08",
-          confidence: 1,
+          confidence: 0.8499,
           repaired: false,
           confirmedByUser: false,
         },
@@ -281,6 +344,24 @@ describe("toStatementParseResult", () => {
       field: "executedAt",
     });
     expect(toStatementParseResult(confirmed).records).toHaveLength(1);
+  });
+
+  it("converts an unconfirmed executedAt value at the confidence threshold", () => {
+    const current = state([
+      draft("image-1:futu:4", {
+        fieldEvidence: {
+          ...draft("base").fieldEvidence,
+          executedAt: {
+            rawText: "24/06/05 14:41:08",
+            confidence: 0.85,
+            repaired: false,
+            confirmedByUser: false,
+          },
+        },
+      }),
+    ]);
+
+    expect(toStatementParseResult(current).records).toHaveLength(1);
   });
 
   it("throws instead of converting when any blocker remains", () => {

@@ -1,3 +1,4 @@
+/** MIGRATION-ONLY: retired IndexedDB repository for browser-state-export/tests. */
 import type {
   CoverageSegment,
   DailyCandleRecord,

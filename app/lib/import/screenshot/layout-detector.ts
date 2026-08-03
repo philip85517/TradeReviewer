@@ -10,7 +10,8 @@ export type ScreenshotLayoutDetection =
       layoutVersion:
         | "futu-orders-dark-v1"
         | "tiger-orders-dark-v1"
-        | "tiger-instrument-first-dark-v1";
+        | "tiger-instrument-first-dark-v1"
+        | "tiger-filled-orders-dark-v1";
       confidence: number;
     }
   | {
@@ -71,6 +72,13 @@ export const TIGER_INSTRUMENT_FIRST_HEADER_ALIASES = [
   ["成交时间"],
 ] as const;
 
+export const TIGER_FILLED_ORDERS_HEADER_ALIASES = [
+  ["代码｜名称", "代码|名称", "代码名称"],
+  ["方向"],
+  ["总量｜价格", "总量|价格", "总量价格"],
+  ["成交时间"],
+] as const;
+
 function compact(text: string): string {
   return text.replace(/\s+/g, "").trim().toLowerCase();
 }
@@ -83,6 +91,22 @@ function lineCenterY(line: OcrTextLine): number {
   return line.sourceBounds.y + line.sourceBounds.height / 2;
 }
 
+function rowAssociationWindowHeight(image: OcrImageResult): number {
+  const heights = image.lines
+    .map((line) => line.sourceBounds.height)
+    .filter((height) => Number.isFinite(height) && height > 0)
+    .sort((left, right) => left - right);
+  const middle = Math.floor(heights.length / 2);
+  const medianHeight =
+    heights.length === 0
+      ? 24
+      : heights.length % 2 === 0
+        ? (heights[middle - 1] + heights[middle]) / 2
+        : heights[middle];
+
+  return Math.min(Math.max(medianHeight * 4, 48), 120);
+}
+
 export function sideFromTradeLabel(
   text: string,
 ): "buy" | "sell" | undefined {
@@ -93,7 +117,7 @@ export function anchorTradeRows(
   image: OcrImageResult,
   options: AnchorTradeRowsOptions,
 ): AnchoredTradeRow[] {
-  const localRowHeight = image.height * 0.04;
+  const associationWindowHeight = rowAssociationWindowHeight(image);
   const anchors = image.lines
     .flatMap((line) => {
       const side = sideFromTradeLabel(line.text);
@@ -112,7 +136,8 @@ export function anchorTradeRows(
         return (
           candidate !== anchor &&
           candidateCenter >= anchor.sourceBounds.y &&
-          candidateCenter <= anchor.sourceBounds.y + localRowHeight &&
+          candidateCenter <=
+            anchor.sourceBounds.y + associationWindowHeight &&
           options.isCorroboratingLine(candidate)
         );
       }),
@@ -127,7 +152,7 @@ export function anchorTradeRows(
       index + 1 < anchors.length
         ? lineCenterY(anchors[index + 1].line)
         : undefined;
-    const fallbackHalfBand = image.height * 0.04;
+    const fallbackHalfBand = associationWindowHeight;
     const top =
       previousCenter === undefined
         ? center -
@@ -149,7 +174,14 @@ export function anchorTradeRows(
       anchor,
       lines: image.lines.filter((candidate) => {
         const candidateCenter = lineCenterY(candidate);
-        return candidateCenter >= top && candidateCenter < bottom;
+        return (
+          candidateCenter >= Math.max(top, anchor.sourceBounds.y) &&
+          candidateCenter <
+            Math.min(
+              bottom,
+              anchor.sourceBounds.y + associationWindowHeight,
+            )
+        );
       }),
     };
   });
@@ -258,6 +290,72 @@ export function selectScreenshotHeaders(
       ),
       bottom: Math.max(
         ...selectedLines.map(
+          (line) => line.sourceBounds.y + line.sourceBounds.height,
+        ),
+      ),
+    },
+  };
+}
+
+function firstSideAnchorY(
+  image: OcrImageResult,
+  minimumNormalizedX: number,
+  maximumNormalizedX: number,
+): number {
+  const yValues = image.lines
+    .filter((line) => {
+      const x = lineCenterX(line) / image.width;
+      return (
+        sideFromTradeLabel(line.text) !== undefined &&
+        x >= minimumNormalizedX &&
+        x < maximumNormalizedX
+      );
+    })
+    .map((line) => line.sourceBounds.y);
+  return yValues.length > 0 ? Math.min(...yValues) : Number.POSITIVE_INFINITY;
+}
+
+export function selectTigerFilledOrdersHeaders(
+  image: OcrImageResult,
+): ScreenshotHeaderSelection {
+  const selected = selectScreenshotHeaders(
+    image,
+    TIGER_FILLED_ORDERS_HEADER_ALIASES,
+    { minimumNormalizedX: 0.48, maximumNormalizedX: 0.62 },
+  );
+  if (selected.lines[2] !== undefined) return selected;
+
+  const firstSideY = firstSideAnchorY(image, 0.48, 0.62);
+  const beforeFirstSide = (line: OcrTextLine) =>
+    lineCenterY(line) < firstSideY;
+  const totalLine = image.lines.find(
+    (line) => compact(line.text) === "总量" && beforeFirstSide(line),
+  );
+  const priceLine = image.lines.find(
+    (line) => compact(line.text) === "价格" && beforeFirstSide(line),
+  );
+  if (
+    !totalLine ||
+    !priceLine ||
+    Math.abs(lineCenterX(totalLine) - lineCenterX(priceLine)) >
+      image.width * 0.08 ||
+    Math.abs(lineCenterY(totalLine) - lineCenterY(priceLine)) > 80
+  ) {
+    return selected;
+  }
+
+  const lines = [...selected.lines];
+  lines[2] = totalLine;
+  const boundsLines = [
+    ...lines.filter((line): line is OcrTextLine => line !== undefined),
+    priceLine,
+  ];
+  return {
+    lines,
+    bounds: {
+      top: Math.min(...boundsLines.map((line) => line.sourceBounds.y)),
+      bottom: Math.max(
+        ...boundsLines.map(
           (line) => line.sourceBounds.y + line.sourceBounds.height,
         ),
       ),
@@ -418,6 +516,74 @@ function tigerInstrumentFirstScore(image: OcrImageResult): number {
   );
 }
 
+function isNumericScreenshotValue(text: string): boolean {
+  const normalized = text.trim().replaceAll(",", "");
+  if (/^\d+(?:\.\d+)?$/.test(normalized)) return true;
+  const repaired = normalized.replace(/[Oo]/g, "0").replace(/[Il]/g, "1");
+  return (
+    repaired !== normalized &&
+    /^\d+(?:\.\d+)?$/.test(repaired)
+  );
+}
+
+function isScreenshotDate(text: string): boolean {
+  return /\d{2,4}\s*[/.-]\s*\d{1,2}\s*[/.-]\s*\d{1,2}/.test(
+    text,
+  );
+}
+
+function isScreenshotTime(text: string): boolean {
+  return /\d{1,2}\s*:\s*\d{2}\s*:\s*\d{2}/.test(text);
+}
+
+function tigerFilledOrdersScore(image: OcrImageResult): number {
+  const title = hasText(image, (text) => text === "订单");
+  const completedFilter = hasText(image, (text) => text.includes("已成交"));
+  const stockFilter = hasText(image, (text) => text === "股票");
+  const headerSelection = selectTigerFilledOrdersHeaders(image);
+  const headers = headerSelection.lines;
+  const orderedHeaders =
+    headers.every((line): line is OcrTextLine => line !== undefined) &&
+    headers.every(
+      (line, index) =>
+        index === 0 || lineCenterX(line) > lineCenterX(headers[index - 1]!),
+    );
+  const headerBottom = headerSelection.bounds?.bottom ?? 0;
+  const completeRows = anchorTradeRows(image, {
+    minimumNormalizedAnchorX: 0.48,
+    maximumNormalizedAnchorX: 0.62,
+    minimumAnchorY: headerBottom,
+    isCorroboratingLine: (line) =>
+      lineCenterX(line) / image.width > 0.1 &&
+      !isStructuralScreenshotText(line.text),
+  }).filter((row) => {
+    const identityLines = row.lines.filter(
+      (line) => lineCenterX(line) / image.width < 0.42,
+    );
+    const quantityPriceLines = row.lines.filter((line) => {
+      const x = lineCenterX(line) / image.width;
+      return x >= 0.64 && x < 0.82 && isNumericScreenshotValue(line.text);
+    });
+    const timestampLines = row.lines.filter(
+      (line) => lineCenterX(line) / image.width >= 0.82,
+    );
+    return (
+      identityLines.length >= 2 &&
+      quantityPriceLines.length >= 2 &&
+      timestampLines.some((line) => isScreenshotDate(line.text)) &&
+      timestampLines.some((line) => isScreenshotTime(line.text))
+    );
+  });
+
+  return [
+    title,
+    completedFilter,
+    stockFilter,
+    orderedHeaders,
+    completeRows.length >= 2,
+  ].filter(Boolean).length / 5;
+}
+
 export function isStructuralScreenshotText(text: string): boolean {
   const value = compact(text);
   return (
@@ -436,6 +602,17 @@ export function isStructuralScreenshotText(text: string): boolean {
       "方向",
       "成交数量",
       "成交价格",
+      "订单",
+      "状态",
+      "已成交",
+      "类型",
+      "股票",
+      "代码｜名称",
+      "代码|名称",
+      "代码名称",
+      "总量｜价格",
+      "总量|价格",
+      "总量价格",
     ].includes(value)
   );
 }
@@ -446,9 +623,25 @@ export function detectScreenshotLayout(
   const futu = futuScore(image);
   const tigerSideFirst = tigerSideFirstScore(image);
   const tigerInstrumentFirst = tigerInstrumentFirstScore(image);
+  const tigerFilledOrders = tigerFilledOrdersScore(image);
   const futuMatched = futu >= 0.85;
   const tigerSideFirstMatched = tigerSideFirst >= 0.85;
   const tigerInstrumentFirstMatched = tigerInstrumentFirst >= 0.85;
+  const tigerFilledOrdersMatched = tigerFilledOrders >= 0.85;
+  if (
+    tigerFilledOrdersMatched &&
+    (futuMatched || tigerSideFirstMatched || tigerInstrumentFirstMatched)
+  ) {
+    return UNSUPPORTED_LAYOUT;
+  }
+  if (tigerFilledOrdersMatched) {
+    return {
+      matched: true,
+      broker: "tiger",
+      layoutVersion: "tiger-filled-orders-dark-v1",
+      confidence: tigerFilledOrders,
+    };
+  }
   if (tigerSideFirstMatched && tigerInstrumentFirstMatched) {
     return UNSUPPORTED_LAYOUT;
   }

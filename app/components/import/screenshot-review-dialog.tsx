@@ -226,6 +226,9 @@ export function ScreenshotReviewDialog({
   const selectedImage = images.find(
     ({ id }) => id === effectiveSelectedImageId,
   );
+  const selectedImageMetadata = state.images.find(
+    ({ imageId }) => imageId === effectiveSelectedImageId,
+  );
   const filteredDrafts = activeDrafts.filter((draft) => {
     if (filter === "pending") return pendingDraftIds.has(draft.id);
     if (filter === "conflict") return conflictByDraftId.has(draft.id);
@@ -236,10 +239,14 @@ export function ScreenshotReviewDialog({
   const unresolvedConflicts = conflicts.filter(
     ({ id }) => !decisions.has(id),
   );
+  const batchConsensusPending = images.some(({ state: imageState }) =>
+    ["queued", "recognizing"].includes(imageState),
+  );
   const unfinishedImage = images.some(({ state: imageState }) =>
     ["queued", "recognizing", "failed"].includes(imageState),
   );
   const completeDisabled =
+    activeDrafts.length === 0 ||
     blockers.length > 0 ||
     unresolvedConflicts.length > 0 ||
     unfinishedImage;
@@ -388,8 +395,7 @@ export function ScreenshotReviewDialog({
                     }
                     onClick={() => setSelectedImageId(image.id)}
                   >
-                    {image.previewUrl.startsWith("blob:") &&
-                    image.state !== "failed" ? (
+                    {image.previewUrl.startsWith("blob:") ? (
                       // Object URLs stay in memory and are never converted.
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -450,7 +456,11 @@ export function ScreenshotReviewDialog({
             <button
               className="secondary-button screenshot-manual-add"
               type="button"
-              disabled={!selectedImage || selectedImage.state === "failed"}
+              disabled={
+                !selectedImage ||
+                !selectedImageMetadata ||
+                batchConsensusPending
+              }
               onClick={() =>
                 effectiveSelectedImageId &&
                 onAction({
@@ -558,12 +568,14 @@ export function ScreenshotReviewDialog({
 
         <footer className="modal-footer screenshot-review-footer">
           <p>
-            {blockers[0]?.message ??
-              (unresolvedConflicts.length > 0
-                ? `还有 ${unresolvedConflicts.length} 个冲突未处理`
-                : unfinishedImage
-                  ? "请先重试或移除未完成的截图"
-                  : "所有必填字段和冲突均已处理")}
+            {activeDrafts.length === 0
+              ? "没有可导入的成交记录"
+              : blockers[0]?.message ??
+                (unresolvedConflicts.length > 0
+                  ? `还有 ${unresolvedConflicts.length} 个冲突未处理`
+                  : unfinishedImage
+                    ? "请先重试或移除未完成的截图"
+                    : "所有必填字段和冲突均已处理")}
           </p>
           <button
             className="secondary-button"

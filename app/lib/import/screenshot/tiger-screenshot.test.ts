@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   FUTU_SCREENSHOT_OCR,
   TIGER_BRANDED_INSTRUMENT_FIRST_ONE_ROW_OCR,
+  TIGER_FILLED_ORDERS_SCREENSHOT_OCR,
   TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR,
   TIGER_SCREENSHOT_OCR,
   TIGER_UNBRANDED_SCREENSHOT_OCR,
@@ -14,6 +15,209 @@ import { parseTigerScreenshot } from "./tiger-screenshot";
 const TIGER_LAYOUT_LINES = TIGER_SCREENSHOT_OCR.lines.slice(0, 7);
 
 describe("Tiger dark order-history screenshots", () => {
+  it("parses compact filled-order rows with combined market and code identities", () => {
+    expect(
+      parseTigerScreenshot(TIGER_FILLED_ORDERS_SCREENSHOT_OCR),
+    ).toEqual([
+      expect.objectContaining({
+        broker: "tiger",
+        layoutVersion: "tiger-filled-orders-dark-v1",
+        market: "US",
+        symbol: "CTVA",
+        sourceName: "Corteva, Inc.",
+        side: "sell",
+        quantity: "100",
+        price: "88.76",
+        sourceTimestampText: "2026/07/29 23:01:17",
+      }),
+      expect.objectContaining({
+        broker: "tiger",
+        layoutVersion: "tiger-filled-orders-dark-v1",
+        market: "HK",
+        symbol: "06228",
+        sourceName: "招商证券",
+        side: "sell",
+        quantity: "200",
+        price: "26.380",
+        sourceTimestampText: "2026/06/26 10:22:37",
+      }),
+    ]);
+  });
+
+  it("parses a compact row when market and code arrive as adjacent OCR lines", () => {
+    const adjacent = image(
+      "tiger-filled-orders-adjacent-identity",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.flatMap((line) =>
+        line.text === "US CTVA"
+          ? [
+              ocrLine("US", line.sourceBounds.x, line.sourceBounds.y, 30, 22),
+              ocrLine(
+                "CTVA",
+                line.sourceBounds.x,
+                line.sourceBounds.y + 35,
+                50,
+                22,
+              ),
+            ]
+          : line,
+      ),
+    );
+
+    expect(parseTigerScreenshot(adjacent)[0]).toMatchObject({
+      market: "US",
+      symbol: "CTVA",
+      sourceName: "Corteva, Inc.",
+    });
+  });
+
+  it("normalizes OCR prefixes without spaces and repairs an HK B/8 confusion", () => {
+    const ocrLike = image(
+      "tiger-filled-orders-ocr-like",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.map((line) =>
+        line.text === "US CTVA"
+          ? ocrLine("USCTVA", line.sourceBounds.x, line.sourceBounds.y, 105, 22)
+          : line.text === "HK 06228"
+            ? ocrLine("HK0622B", line.sourceBounds.x, line.sourceBounds.y, 110, 22)
+            : line,
+      ),
+    );
+
+    expect(parseTigerScreenshot(ocrLike)).toEqual([
+      expect.objectContaining({ market: "US", symbol: "CTVA" }),
+      expect.objectContaining({ market: "HK", symbol: "06228" }),
+    ]);
+  });
+
+  it("accepts separator OCR between market and code", () => {
+    const separated = image(
+      "tiger-filled-orders-separated-identity",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.map((line) =>
+        line.text === "US CTVA"
+          ? ocrLine("US|CTVA", line.sourceBounds.x, line.sourceBounds.y, 105, 22)
+          : line.text === "HK 06228"
+            ? ocrLine("HK|06228", line.sourceBounds.x, line.sourceBounds.y, 110, 22)
+            : line,
+      ),
+    );
+
+    expect(parseTigerScreenshot(separated)).toEqual([
+      expect.objectContaining({ market: "US", symbol: "CTVA" }),
+      expect.objectContaining({ market: "HK", symbol: "06228" }),
+    ]);
+  });
+
+  it("does not invent a market for an unknown prefixed identity", () => {
+    const unknown = image(
+      "tiger-filled-orders-unknown-market",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.map((line) =>
+        line.text === "US CTVA"
+          ? ocrLine("XX123", line.sourceBounds.x, line.sourceBounds.y, 105, 22)
+          : line,
+      ),
+    );
+
+    expect(parseTigerScreenshot(unknown)[0]).toMatchObject({
+      market: undefined,
+      symbol: undefined,
+      sourceName: "Corteva, Inc.",
+    });
+  });
+
+  it("preserves scale when repairing a compact price", () => {
+    const repaired = image(
+      "tiger-filled-orders-repaired-price",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.map((line) =>
+        line.text === "26.380"
+          ? ocrLine("26.38O", line.sourceBounds.x, line.sourceBounds.y, line.sourceBounds.width, line.sourceBounds.height)
+          : line,
+      ),
+    );
+
+    expect(parseTigerScreenshot(repaired)[1]).toMatchObject({
+      price: "26.380",
+      fieldEvidence: { price: { repaired: true } },
+    });
+  });
+
+  it("pairs jittered timestamp boxes by closest vertical center", () => {
+    const [draft] = parseTigerScreenshot(
+      image("tiger-jittered-timestamps", 1_220, 13_000, [
+        ...TIGER_SCREENSHOT_OCR.lines.slice(0, 12),
+        ocrLine("2024/06/05", 1_010, 390, 150, 22),
+        ocrLine("14:39:25", 1_010, 389, 130, 22),
+        ocrLine("2025/06/06", 1_010, 436, 150, 22),
+        ocrLine("10:00:00", 1_010, 435, 130, 22),
+      ]),
+    );
+
+    expect(draft).toMatchObject({
+      sourceTimestampText: "2024/06/05 14:39:25",
+      fieldEvidence: {
+        executedAt: {
+          rawText: "2024/06/05 14:39:25",
+          sourceBounds: {
+            x: 1_010,
+            y: 389,
+            width: 150,
+            height: 23,
+          },
+        },
+      },
+    });
+  });
+
+  it("preserves internal OCR whitespace in timestamp source text and evidence", () => {
+    const [draft] = parseTigerScreenshot(
+      image("tiger-timestamp-whitespace", 1_220, 2_000, [
+        ...TIGER_SCREENSHOT_OCR.lines.slice(0, 12),
+        ocrLine("2024/  06/05", 1_010, 390, 150, 22),
+        ocrLine("14:  39:25", 1_010, 425, 130, 22),
+      ]),
+    );
+
+    expect(draft.sourceTimestampText).toBe(
+      "2024/  06/05 14:  39:25",
+    );
+    expect(draft.fieldEvidence.executedAt?.rawText).toBe(
+      "2024/  06/05 14:  39:25",
+    );
+  });
+
+  it("selects one closest date and time pair from a broad timestamp band", () => {
+    const [draft] = parseTigerScreenshot(
+      image("tiger-multiple-timestamps", 1_220, 13_000, [
+        ...TIGER_SCREENSHOT_OCR.lines.slice(0, 14),
+        ocrLine("2025/06/06", 1_010, 436, 150, 22),
+        ocrLine("10:00:00", 1_010, 458, 130, 20),
+      ]),
+    );
+
+    expect(draft).toMatchObject({
+      sourceTimestampText: "2025/06/06 10:00:00",
+      fieldEvidence: {
+        executedAt: {
+          rawText: "2025/06/06 10:00:00",
+          sourceBounds: {
+            x: 1_010,
+            y: 436,
+            width: 150,
+            height: 42,
+          },
+        },
+      },
+    });
+  });
+
   it("detects and parses one instrument-first row with Tiger branding above the headers", () => {
     expect(
       detectScreenshotLayout(

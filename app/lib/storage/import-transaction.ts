@@ -1,3 +1,4 @@
+/** MIGRATION-ONLY: legacy transactional browser writes retained for isolated tests. */
 import type { TradeExecution } from "../trades/types";
 import {
   IMPORT_HISTORY_STORAGE_KEY,

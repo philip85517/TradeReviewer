@@ -32,15 +32,10 @@ test("server-renders the historical trade review workspace", async () => {
 
   const html = await response.text();
   assert.match(html, /<title>TradeReview — 历史交易复盘<\/title>/i);
-  assert.match(html, /逐笔复盘/);
-  assert.match(html, /交易复盘图表工作区/);
-  assert.match(html, /持仓统计/);
-  assert.match(html, /图表工具栏/);
-  assert.match(html, /游标之后的数据未加载/);
-  assert.match(html, /导入交易记录/);
-  assert.match(html, /小鹏汽车/);
-  assert.match(html, /尚未成交/);
-  assert.doesNotMatch(html, /demo-buy-1|demo-buy-2|demo-sell-1/);
+  assert.match(html, /正在连接交易数据/);
+  assert.match(html, /正在从 SQLite 读取交易记录/);
+  assert.doesNotMatch(html, /小鹏汽车|XPEV|演示交易|演示行情|持仓统计|图表工具栏|尚未成交/);
+  assert.doesNotMatch(html, /demo-xpev-2025|demo-buy-1|demo-buy-2|demo-sell-1/);
   assert.doesNotMatch(html, /codex-preview|Building your site|react-loading-skeleton/i);
 });
 

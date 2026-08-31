@@ -216,14 +216,17 @@ Smoke status:
 
 - US daily `AAPL` `2025-01-02..2025-01-03`: HTTP `200`, provider `tiger`, `1` candle.
 - US `1h` `AAPL` `2026-08-25..2026-08-29`: HTTP `200`, provider `tiger`, `28` candles, first/last `2026-08-25T13:30:00Z` / `2026-08-28T19:30:00Z`.
-- HK daily `700` `2025-01-02..2025-01-03`: HTTP `200`, provider `tencent`, `2` candles after Tiger returned an empty result and public-source fallback engaged.
-- HK `1h` `700` `2026-08-25..2026-08-29`: HTTP `200`, provider `eastmoney`, `24` candles after Tiger returned an empty result and public-source fallback engaged.
+- HK daily `700` `2025-01-02..2025-01-03`: HTTP `200`, provider `tiger`, providerSymbol `00700`, `1` candle, tradingDate `2025-01-02`.
+- HK `1h` `700` `2026-08-25..2026-08-29`: HTTP `200`, provider `tiger`, providerSymbol `00700`, `24` candles, first/last `2026-08-25T01:30:00Z` / `2026-08-28T07:00:00Z`.
+- All controller-verified results stayed within the requested start/end range.
 - No external config values, credentials, account identifiers, raw SDK payloads, tracebacks, or other secret material were recorded in this report.
 
 `1h` boundary fix note:
 
-- The original naive datetime string handling caused a timezone boundary mismatch.
-- Commit `530dc0b` switched the Tiger request range to 13-digit UTC millisecond strings, and the controller-verified `1h` smoke above confirmed the corrected window.
+- The original naive datetime string handling caused a timezone boundary mismatch at the hourly boundary, and HK symbols also needed Tiger's five-digit padding format.
+- Commit `c31ac30` fixed HK provider symbol padding from four digits to five digits (`700` -> `00700`, `1810` -> `01810`).
+- Commit `5aa4220` changed HK daily trading-date handling to `Asia/Hong_Kong`, fixing the UTC previous-day boundary.
+- The controller-verified `1h` and daily smoke above confirmed the corrected request windows and HK daily trading date.
 
 Self-review:
 

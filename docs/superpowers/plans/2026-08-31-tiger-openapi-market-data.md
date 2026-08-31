@@ -133,7 +133,7 @@
 
 - [ ] **Step 3: Implement the Python helper**
 
-  Read `TIGER_OPENAPI_CONFIG` from the helper environment, parse the same properties format, and require `private_key_pk1` first, then `private_key_pk8`, plus `tiger_id` and `account`. Instantiate `TigerOpenClientConfig`, assign the parsed credentials and optional `license`/`env`, then create `QuoteClient` and call:
+  Read `TIGER_OPENAPI_CONFIG` from the helper environment and parse the same properties format only to validate non-empty `tiger_id`, `account`, and at least one private-key field; do not print or return parsed values. Instantiate `TigerOpenClientConfig(props_path=config_path)` and let the pinned official SDK remain the credential-format source of truth: `tigeropen==3.7.1` loads the adjacent config file and currently resolves `private_key_pk8` before `private_key_pk1`, while also loading an adjacent `tiger_openapi_token.properties` when required by an HK license. Then create `QuoteClient` and call:
 
   ```python
   bars = quote_client.get_bars(
@@ -278,7 +278,7 @@
   TIGER_OPENAPI_CONFIG=/absolute/path/tiger_openapi_config.properties npm run dev
   ```
 
-  Explain that the file stays outside the repository, `private_key_pk1` is preferred over `private_key_pk8`, and only US/HK daily/1H requests use Tiger. Do not add the user's path or any account/key value to the README.
+  Explain that the file stays outside the repository, the pinned official SDK resolves `private_key_pk8` before `private_key_pk1` when both fields exist, and only US/HK daily/1H requests use Tiger. Do not add the user's path or any account/key value to the README.
 
 - [ ] **Step 5: Run the complete verification suite**
 
@@ -316,4 +316,3 @@
 - [ ] **Step 7: Commit documentation and final verification**
 
   Run: `git add README.md app/api/market-data/daily/route.test.ts app/api/market-data/intraday/route.test.ts app/lib/market/sync-service.test.ts && git commit -m "docs: document Tiger market data setup"`
-

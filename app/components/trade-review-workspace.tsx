@@ -630,6 +630,7 @@ function providerLabel(
   provider: DailyCandleRecord["provider"] | undefined,
 ) {
   if (provider === "tencent") return "腾讯行情";
+  if (provider === "tiger") return "Tiger OpenAPI";
   if (provider === "eastmoney") return "东方财富";
   if (provider === "yahoo") return "Yahoo Finance";
   if (provider === "sina") return "新浪美股";

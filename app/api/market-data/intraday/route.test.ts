@@ -95,7 +95,7 @@ describe("GET /api/market-data/intraday", () => {
   ): IntradayProviderResult {
     return {
       provider: "tiger",
-      providerSymbol: "0700",
+      providerSymbol: "00700",
       fetchedAt: "2026-08-31T00:00:00.000Z",
       interval: "1h",
       warnings: [],
@@ -303,7 +303,7 @@ describe("GET /api/market-data/intraday", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({
       provider: "tiger",
-      providerSymbol: "0700",
+      providerSymbol: "00700",
       interval: "1h",
       adjustmentMode: "raw",
       request: {

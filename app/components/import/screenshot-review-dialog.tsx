@@ -134,7 +134,7 @@ function imageStatusLabel(image: ScreenshotReviewImage) {
     complete: "识别完成",
     "needs-review": "需复核",
   }[image.state];
-  return `${image.fileName}，${stateLabel}，${image.completedTiles}/${image.totalTiles} 个区域，${image.tradeCount} 笔成交，${image.issueCount} 个问题`;
+  return `${image.fileName}，${stateLabel}，${image.completedTiles}/${image.totalTiles} 个区域，${image.tradeCount} 笔成交，${image.issueCount} 行待确认`;
 }
 
 function ImageStateIcon({ state }: { state: ScreenshotReviewImage["state"] }) {
@@ -158,7 +158,7 @@ function ImageStateIcon({ state }: { state: ScreenshotReviewImage["state"] }) {
 
 function imageStateText(image: ScreenshotReviewImage) {
   if (image.state === "failed") return "识别失败";
-  if (image.state === "needs-review") return `${image.issueCount} 个问题`;
+  if (image.state === "needs-review") return `${image.issueCount} 行待确认`;
   if (image.state === "complete") return `${image.tradeCount} 笔成交`;
   if (image.state === "recognizing") {
     return `${image.completedTiles}/${image.totalTiles} 个区域`;
@@ -429,6 +429,9 @@ export function ScreenshotReviewDialog({
                       role="group"
                       aria-label={`恢复 ${image.fileName}`}
                     >
+                      <p className="failed-image-error">
+                        失败原因：{image.error || "未知错误"}
+                      </p>
                       <p className="failed-image-guidance">
                         重试或移除此截图后才能继续
                       </p>

@@ -138,11 +138,22 @@ function initialReviewState(
     images: [],
     drafts: [],
     deletedDraftIds: new Set(),
+    sourceTimezone: "Asia/Shanghai",
   };
 }
 
 function messageFor(error: unknown) {
   return error instanceof Error ? error.message : "截图识别失败";
+}
+
+type ImageProcessingPhase =
+  | "OCR 引擎初始化"
+  | "OCR 识别"
+  | "版式识别"
+  | "交易解析";
+
+function imageFailureMessage(phase: ImageProcessingPhase, error: unknown) {
+  return `${phase}失败：${messageFor(error)}`;
 }
 
 function isAbortError(error: unknown) {
@@ -412,8 +423,13 @@ function issueCountForImage(
       )
       .map(({ id }) => id),
   );
-  return reviewBlockers(state).filter(
-    ({ draftId }) => !draftId || imageDraftIds.has(draftId),
+  const blockedDraftIds = new Set(
+    reviewBlockers(state)
+      .map(({ draftId }) => draftId)
+      .filter((draftId): draftId is string => Boolean(draftId)),
+  );
+  return [...imageDraftIds].filter((draftId) =>
+    blockedDraftIds.has(draftId),
   ).length;
 }
 
@@ -612,6 +628,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
       const controller = new AbortController();
       session.active = { imageId, controller };
       let matchedLayout: SupportedReviewLayout | undefined;
+      let phase: ImageProcessingPhase = "OCR 引擎初始化";
 
       try {
         if (!session.enginePromise) {
@@ -630,6 +647,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
           throw error;
         }
         if (!isActive(session) || !session.resources.has(imageId)) return;
+        phase = "OCR 识别";
         const ocr = await session.dependencies.recognize(
           resource.input,
           engine,
@@ -648,10 +666,12 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
           },
         );
         if (!isActive(session) || !session.resources.has(imageId)) return;
+        phase = "版式识别";
         const layout = session.dependencies.detectLayout(ocr);
         if (!layout.matched) throw new Error(layout.message);
         matchedLayout = supportedReviewLayout(layout);
         if (!matchedLayout) throw new Error("暂不支持该截图版式");
+        phase = "交易解析";
         const drafts =
           layout.broker === "futu"
             ? session.dependencies.parseFutu(ocr)
@@ -686,7 +706,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
           updateStatus(imageId, (status) => ({
             ...status,
             state: "failed",
-            error: messageFor(error),
+            error: imageFailureMessage(phase, error),
           }));
           if (current && matchedLayout) {
             session.metadataOrigins.set(imageId, "matched");

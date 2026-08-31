@@ -87,4 +87,25 @@ describe("GET /api/market-data/daily", () => {
     });
     expect(body.candles[0].close).toBe("34.5");
   });
+
+  it("does not throttle direct localhost batch requests", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        Response.json({
+          data: {
+            hk01810: {
+              day: [["2025-01-02", "34.1", "34.5", "35", "33.8", "1200"]],
+            },
+          },
+        }),
+      ),
+    );
+    const url =
+      "http://localhost/api/market-data/daily?market=HK&symbol=1810&start=2025-01-01&end=2025-01-31";
+
+    for (let index = 0; index < 31; index += 1) {
+      expect((await GET(new Request(url))).status).toBe(200);
+    }
+  });
 });

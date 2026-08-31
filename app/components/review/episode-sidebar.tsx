@@ -15,6 +15,15 @@ import { marketDataStatusLabel } from "../../lib/market/sync-status";
 import type { InstrumentTradeSummary } from "../../lib/trades/instruments";
 import type { TradeExecution } from "../../lib/trades/types";
 
+export type MarketDataRefreshState = {
+  running: boolean;
+  total: number;
+  completed: number;
+  partial: number;
+  failed: number;
+  current?: string;
+};
+
 export type ImportPhase =
   | "idle"
   | "detecting"
@@ -37,6 +46,9 @@ type Props = {
   onSelectInstrument: (instrumentId: string) => void;
   marketDataStatuses: Record<string, MarketDataSyncStatus>;
   onUpdateMarketData: (instrumentId: string) => void;
+  onUpdateAllMarketData?: () => void;
+  onRetryFailedMarketData?: () => void;
+  marketDataRefresh?: MarketDataRefreshState;
 };
 
 function shortDate(value: string) {
@@ -61,6 +73,15 @@ export function EpisodeSidebar({
   onSelectInstrument,
   marketDataStatuses,
   onUpdateMarketData,
+  onUpdateAllMarketData,
+  onRetryFailedMarketData,
+  marketDataRefresh = {
+    running: false,
+    total: 0,
+    completed: 0,
+    partial: 0,
+    failed: 0,
+  },
 }: Props) {
   const revealedBuys = revealedDemoExecutions.filter(
     (execution) => execution.side === "buy",
@@ -207,6 +228,46 @@ export function EpisodeSidebar({
         <span>有成交的股票</span>
         <b>{importedInstruments.length + (showDemo ? 1 : 0)}</b>
       </div>
+      {importedInstruments.length > 0 && onUpdateAllMarketData && (
+        <div className="bulk-market-refresh">
+          <button
+            type="button"
+            className="bulk-market-refresh-button"
+            disabled={marketDataRefresh.running}
+            onClick={onUpdateAllMarketData}
+          >
+            <RefreshCw
+              size={14}
+              className={marketDataRefresh.running ? "spinning" : ""}
+            />
+            {marketDataRefresh.running ? "正在更新全部行情…" : "一键更新全部行情"}
+          </button>
+          {(marketDataRefresh.running || marketDataRefresh.completed > 0) && (
+            <p className="bulk-market-refresh-status" role="status" aria-live="polite">
+              {marketDataRefresh.running && marketDataRefresh.current
+                ? `正在处理：${marketDataRefresh.current}`
+                : `已完成 ${marketDataRefresh.completed}/${marketDataRefresh.total}`}
+              {marketDataRefresh.partial > 0
+                ? `，部分可用 ${marketDataRefresh.partial}`
+                : ""}
+              {marketDataRefresh.failed > 0
+                ? `，失败 ${marketDataRefresh.failed}`
+                : ""}
+            </p>
+          )}
+          {!marketDataRefresh.running &&
+            marketDataRefresh.failed > 0 &&
+            onRetryFailedMarketData && (
+              <button
+                type="button"
+                className="bulk-market-retry-button"
+                onClick={onRetryFailedMarketData}
+              >
+                重试失败项
+              </button>
+            )}
+        </div>
+      )}
       <div className="episode-list">
         {showDemo && (
           <button

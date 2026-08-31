@@ -9,7 +9,7 @@ import { normalizeDrawing, validateDrawing } from "../chart/drawings";
 import { compareExecutions, reconcileExecutions } from "../import/execution-reconciliation";
 import type { TagSuggestionRecord } from "../insights/types";
 import { createEmptyEpisodeReviewRecord } from "../reviews/review-metrics";
-import type { CoverageSegment, DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord } from "../market/contracts";
+import type { CoverageSegment, DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord, NativeMarketInterval } from "../market/contracts";
 import type { EpisodeReviewRecord } from "../reviews/types";
 import type { Instrument, TradeExecution } from "../trades/types";
 import type { ChartSettings } from "./chart-settings";
@@ -32,6 +32,10 @@ type IntervalCoverageRecord = IntervalCoverageSegment & {
   instrumentId: string;
   adjustmentMode?: "raw";
 };
+type IntervalCoverageInput = IntervalCoverageSegment & {
+  instrumentId?: string;
+  adjustmentMode?: "raw";
+};
 type NormalizedIntervalCoverageRecord = IntervalCoverageRecord & {
   adjustmentMode: "raw";
 };
@@ -39,11 +43,11 @@ type MarketDataCommitInput = {
   instrumentId: string;
   candles: DailyCandleRecord[];
   coverage: CoverageSegment[];
-  providerSymbol: { provider: string; symbol: string };
+  providerSymbol?: { provider: string; symbol: string };
 };
 type IntervalMarketDataCommitInput = {
   instrumentId: string;
-  interval: "15m" | "1D";
+  interval: "15m" | "1h" | "1D";
   candles: MarketCandleRecord[];
   coverage: IntervalCoverageSegment[];
   providerSymbol?: { provider: string; symbol: string };
@@ -197,9 +201,22 @@ function validateImportHistory(value: unknown): asserts value is ImportHistoryEn
   }
 }
 
+function isStoredMarketDataErrorDetail(value: unknown): boolean {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const error = value as { code?: unknown; message?: unknown };
+  return typeof error.code === "string" &&
+    error.code.length > 0 &&
+    typeof error.message === "string" &&
+    error.message.length > 0;
+}
+
 function validateJobInterval(value: unknown): void {
   const interval = asRecord(value, "market data job");
-  if (interval.interval !== "15m" && interval.interval !== "1D") {
+  if (
+    interval.interval !== "15m" &&
+    interval.interval !== "1h" &&
+    interval.interval !== "1D"
+  ) {
     throw new Error("Invalid market data job");
   }
   if (typeof interval.status !== "string" || !MARKET_DATA_STATUSES.has(interval.status)) {
@@ -210,6 +227,9 @@ function validateJobInterval(value: unknown): void {
     ["message", "coverageStart", "coverageEnd"],
     "market data job",
   );
+  if (interval.error !== undefined && !isStoredMarketDataErrorDetail(interval.error)) {
+    throw new Error("Invalid market data job");
+  }
 }
 
 function validateJob(value: unknown): asserts value is MarketDataJob {
@@ -220,6 +240,9 @@ function validateJob(value: unknown): asserts value is MarketDataJob {
     "market data job",
   );
   if (!MARKET_DATA_STATUSES.has(job.status as string) || !Array.isArray(job.intervals)) {
+    throw new Error("Invalid market data job");
+  }
+  if (job.error !== undefined && !isStoredMarketDataErrorDetail(job.error)) {
     throw new Error("Invalid market data job");
   }
   job.intervals.forEach(validateJobInterval);
@@ -275,11 +298,25 @@ function normalizeIntervalCoverage(value: IntervalCoverageRecord): NormalizedInt
   return { ...value, adjustmentMode: value.adjustmentMode ?? "raw" };
 }
 
+function intervalCoverageKey(value: IntervalCoverageSegment) {
+  return JSON.stringify({
+    interval: value.interval,
+    requestedStart: value.requestedStart,
+    requestedEnd: value.requestedEnd,
+    actualStart: value.actualStart,
+    actualEnd: value.actualEnd,
+    status: value.status,
+    provider: value.provider,
+    fetchedAt: value.fetchedAt,
+    reason: value.reason,
+  });
+}
+
 function validateIntervalCoverage(value: unknown): asserts value is IntervalCoverageRecord {
   const coverage = asRecord(value, "interval coverage");
   if (
     typeof coverage.instrumentId !== "string"
-    || (coverage.interval !== "15m" && coverage.interval !== "1D")
+    || !["15m", "1h", "1D"].includes(coverage.interval as string)
     || typeof coverage.requestedStart !== "string"
     || typeof coverage.requestedEnd !== "string"
     || typeof coverage.status !== "string"
@@ -473,12 +510,16 @@ function mapCoverageRow(row: Row): CoverageRecord {
   };
 }
 
-function mapIntervalCoverageRow(row: Row): NormalizedIntervalCoverageRecord {
-  return {
-    ...parseJson<IntervalCoverageSegment>(row.details_json, "interval coverage"),
-    instrumentId: asString(row.instrument_id, "instrument id"),
-    adjustmentMode: asString(row.adjustment_mode, "adjustment mode") as "raw",
-  };
+function mapIntervalCoverageRow(row: Row): NormalizedIntervalCoverageRecord[] {
+  const instrumentId = asString(row.instrument_id, "instrument id");
+  const adjustmentMode = asString(row.adjustment_mode, "adjustment mode") as "raw";
+  const parsed = parseJson<unknown>(row.details_json, "interval coverage");
+  const segments = Array.isArray(parsed) ? parsed : [parsed];
+  return segments.map((segment) => ({
+    ...segment as IntervalCoverageSegment,
+    instrumentId,
+    adjustmentMode,
+  }));
 }
 
 function mapProviderSymbolRow(row: Row): ProviderSymbolRecord {
@@ -588,7 +629,7 @@ export class SqliteStore {
     return typeof row.start_date === "string" && typeof row.end_date === "string" ? [{ startDate: row.start_date, endDate: row.end_date, status: "complete", missingTradingDates: [] }] : [];
   }
 
-  getCandles(instrumentId: string, interval: "15m" | "1D", start: string, end: string): MarketCandleRecord[] {
+  getCandles(instrumentId: string, interval: NativeMarketInterval, start: string, end: string): MarketCandleRecord[] {
     const generic = this.getMarketCandles(instrumentId, interval, start, end);
     if (interval !== "1D") return generic;
     const byTimestamp = new Map(generic.map((candle) => [candle.timestamp, candle]));
@@ -603,7 +644,7 @@ export class SqliteStore {
     const rows = this.database
       .prepare("select * from interval_coverage order by instrument_id, interval")
       .all() as Row[];
-    return rows.map(mapIntervalCoverageRow);
+    return rows.flatMap(mapIntervalCoverageRow);
   }
 
   getProviderSymbols(): ProviderSymbolRecord[] {
@@ -675,20 +716,20 @@ export class SqliteStore {
   }
 
   commitMarketData(result: MarketDataCommitInput): void {
-    if (!result || typeof result.instrumentId !== "string" || !Array.isArray(result.candles) || !Array.isArray(result.coverage) || !result.providerSymbol || typeof result.providerSymbol.provider !== "string" || typeof result.providerSymbol.symbol !== "string") throw new Error("Invalid market data");
+    if (!result || typeof result.instrumentId !== "string" || !Array.isArray(result.candles) || !Array.isArray(result.coverage) || (result.providerSymbol !== undefined && (typeof result.providerSymbol.provider !== "string" || typeof result.providerSymbol.symbol !== "string"))) throw new Error("Invalid market data");
     result.candles.forEach((candle) => { validateDailyCandle(candle); if (candle.instrumentId !== result.instrumentId) throw new Error("Invalid market data"); });
     result.coverage.forEach((segment) => { if (!segment || typeof segment.startDate !== "string" || typeof segment.endDate !== "string" || !COVERAGE_STATUSES.has(segment.status) || !Array.isArray(segment.missingTradingDates) || segment.missingTradingDates.some((date) => typeof date !== "string")) throw new Error("Invalid coverage"); });
     withSqliteTransaction(this.database, () => {
       result.candles.forEach((candle) => this.putDailyCandle(candle));
       this.putCoverageSegments(result.instrumentId, result.coverage);
-      this.putProviderSymbol({ instrumentId: result.instrumentId, provider: result.providerSymbol.provider, providerSymbol: result.providerSymbol.symbol });
+      if (result.providerSymbol) this.putProviderSymbol({ instrumentId: result.instrumentId, provider: result.providerSymbol.provider, providerSymbol: result.providerSymbol.symbol });
     });
   }
 
   commitIntervalMarketData(result: IntervalMarketDataCommitInput): void {
-    if (!result || typeof result.instrumentId !== "string" || (result.interval !== "15m" && result.interval !== "1D") || !Array.isArray(result.candles) || !Array.isArray(result.coverage)) throw new Error("Invalid market data");
+    if (!result || typeof result.instrumentId !== "string" || !["15m", "1h", "1D"].includes(result.interval) || !Array.isArray(result.candles) || !Array.isArray(result.coverage)) throw new Error("Invalid market data");
     result.candles.forEach((candle) => { validateMarketCandle(candle); if (candle.instrumentId !== result.instrumentId || candle.interval !== result.interval) throw new Error("Invalid market data"); }); result.coverage.forEach((coverage) => { if (coverage.interval !== result.interval) throw new Error("Invalid market data"); validateIntervalCoverage({ ...coverage, instrumentId: result.instrumentId }); });
-    withSqliteTransaction(this.database, () => { result.candles.forEach((candle) => this.putMarketCandle(candle)); result.coverage.forEach((coverage) => this.putIntervalCoverage({ ...coverage, instrumentId: result.instrumentId })); if (result.providerSymbol) this.putProviderSymbol({ instrumentId: result.instrumentId, provider: result.providerSymbol.provider, providerSymbol: result.providerSymbol.symbol }); });
+    withSqliteTransaction(this.database, () => { result.candles.forEach((candle) => this.putMarketCandle(candle)); this.putIntervalCoverageSegments(result.instrumentId, result.interval, result.coverage); if (result.providerSymbol) this.putProviderSymbol({ instrumentId: result.instrumentId, provider: result.providerSymbol.provider, providerSymbol: result.providerSymbol.symbol }); });
   }
 
   putMarketData(input: { dailyCandles?: DailyCandleRecord[]; marketCandles?: MarketCandleRecord[]; coverage?: CoverageRecord[]; intervalCoverage?: IntervalCoverageRecord[]; providerSymbols?: ProviderSymbolRecord[] }): void {
@@ -1070,13 +1111,21 @@ export class SqliteStore {
     validateJob(job);
     this.ensureInstrumentId(job.instrumentId);
     this.database.prepare(`
-      insert into market_data_jobs (id, instrument_id, provider, status, progress_json)
-      values (?, ?, ?, ?, ?)
+      insert into market_data_jobs (id, instrument_id, provider, status, progress_json, error_json)
+      values (?, ?, ?, ?, ?, ?)
       on conflict(id) do update set
         status = excluded.status,
         progress_json = excluded.progress_json,
+        error_json = excluded.error_json,
         updated_at = current_timestamp
-    `).run(job.instrumentId, job.instrumentId, "browser", job.status, json(job, "market data job"));
+    `).run(
+      job.instrumentId,
+      job.instrumentId,
+      "browser",
+      job.status,
+      json(job, "market data job"),
+      job.error ? json(job.error, "market data job error") : null,
+    );
   }
 
   private putDailyCandle(candle: DailyCandleRecord): void {
@@ -1180,7 +1229,28 @@ export class SqliteStore {
   private putIntervalCoverage(coverage: IntervalCoverageRecord): void {
     validateIntervalCoverage(coverage);
     const normalized = normalizeIntervalCoverage(coverage);
-    this.ensureInstrumentId(normalized.instrumentId);
+    const existing = this.getIntervalCoverage().filter(
+      (item) =>
+        item.instrumentId === normalized.instrumentId
+        && item.interval === normalized.interval
+        && item.adjustmentMode === normalized.adjustmentMode,
+    );
+    const segments = [...existing, normalized].filter(
+      (item, index, items) =>
+        items.findIndex((candidate) => intervalCoverageKey(candidate) === intervalCoverageKey(item)) === index,
+    );
+    this.putIntervalCoverageSegments(normalized.instrumentId, normalized.interval, segments);
+  }
+
+  private putIntervalCoverageSegments(
+    instrumentId: string,
+    interval: IntervalCoverageSegment["interval"],
+    coverage: IntervalCoverageInput[],
+  ): void {
+    this.ensureInstrumentId(instrumentId);
+    const normalized = coverage.map((item) => normalizeIntervalCoverage({ ...item, instrumentId, interval }));
+    const starts = normalized.map((item) => item.actualStart ?? item.requestedStart).sort();
+    const ends = normalized.map((item) => item.actualEnd ?? item.requestedEnd).sort();
     this.database.prepare(`
       insert into interval_coverage (
         instrument_id, interval, adjustment_mode, start_timestamp,
@@ -1192,11 +1262,11 @@ export class SqliteStore {
         details_json = excluded.details_json,
         updated_at = excluded.updated_at
     `).run(
-      normalized.instrumentId,
-      normalized.interval,
-      normalized.adjustmentMode,
-      normalized.actualStart ?? normalized.requestedStart,
-      normalized.actualEnd ?? normalized.requestedEnd,
+      instrumentId,
+      interval,
+      "raw",
+      starts[0] ?? null,
+      ends.at(-1) ?? null,
       json(normalized, "interval coverage"),
     );
   }

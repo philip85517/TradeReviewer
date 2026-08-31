@@ -118,6 +118,114 @@ describe("SqliteStore", () => {
     expect(store.getInstruments()).toEqual([instrument]);
   });
 
+  it("persists trade, market data, and refresh jobs across a database reopen", () => {
+    const directory = mkdtempSync(join(tmpdir(), "tradereview-reopen-"));
+    directories.push(directory);
+    const databasePath = join(directory, "store.sqlite");
+    const firstStore = new SqliteStore(openSqliteDatabase(databasePath));
+    const candle = {
+      instrumentId: instrument.id,
+      tradingDate: "2026-01-02",
+      open: "120",
+      high: "125",
+      low: "119",
+      close: "123.45",
+      volume: "1000",
+      currency: instrument.currency,
+      provider: "eastmoney" as const,
+      providerSymbol: "116.00700",
+      adjustmentMode: "raw" as const,
+      fetchedAt: "2026-01-03T00:00:00.000Z",
+    };
+    const job = {
+      instrumentId: instrument.id,
+      symbol: instrument.symbol,
+      market: instrument.market,
+      requestedAt: "2026-01-03T00:00:00.000Z",
+      status: "complete" as const,
+      intervals: [
+        { interval: "1D" as const, status: "complete" as const },
+        { interval: "15m" as const, status: "partial" as const, message: "部分区间无数据" },
+      ],
+    };
+
+    firstStore.mergeExecutions([execution]);
+    firstStore.commitMarketData({
+      instrumentId: instrument.id,
+      candles: [candle],
+      coverage: [{ startDate: "2026-01-02", endDate: "2026-01-02", status: "complete", missingTradingDates: [] }],
+      providerSymbol: { provider: "eastmoney", symbol: candle.providerSymbol },
+    });
+    firstStore.putMarketDataJob(job);
+    databaseFor(firstStore).close();
+
+    const reopenedStore = new SqliteStore(openSqliteDatabase(databasePath));
+    expect(reopenedStore.getExecutions()).toEqual([execution]);
+    expect(reopenedStore.getDailyCandles(instrument.id)).toEqual([candle]);
+    expect(reopenedStore.getCoverageSegments(instrument.id)).toEqual([
+      expect.objectContaining({ startDate: "2026-01-02", endDate: "2026-01-02", status: "complete" }),
+    ]);
+    expect(reopenedStore.getMarketDataJobs()).toEqual([job]);
+  });
+
+  it("persists refresh jobs that track the native 1h interval", () => {
+    const store = createStore();
+    store.mergeExecutions([execution]);
+    const job = {
+      instrumentId: instrument.id,
+      symbol: instrument.symbol,
+      market: instrument.market,
+      requestedAt: "2026-01-03T00:00:00.000Z",
+      status: "partial" as const,
+      intervals: [
+        { interval: "1D" as const, status: "complete" as const },
+        { interval: "1h" as const, status: "partial" as const },
+      ],
+    };
+
+    store.putMarketDataJob(job);
+
+    expect(store.getMarketDataJobs()).toEqual([job]);
+  });
+
+  it("persists the latest provider error both in the job payload and diagnostic column", () => {
+    const store = createStore();
+    store.mergeExecutions([execution]);
+    const job = {
+      instrumentId: instrument.id,
+      symbol: instrument.symbol,
+      market: instrument.market,
+      requestedAt: "2026-01-03T00:00:00.000Z",
+      status: "source-unavailable" as const,
+      error: {
+        code: "source-unavailable",
+        message: "百度行情源未返回该股票数据",
+      },
+      intervals: [
+        { interval: "1D" as const, status: "complete" as const },
+        {
+          interval: "1h" as const,
+          status: "source-unavailable" as const,
+          error: {
+            code: "source-unavailable",
+            message: "百度行情源未返回该股票数据",
+          },
+        },
+      ],
+    };
+
+    store.putMarketDataJob(job);
+
+    expect(store.getMarketDataJobs()).toEqual([job]);
+    expect(
+      databaseFor(store)
+        .prepare("select error_json from market_data_jobs where id = ?")
+        .get(instrument.id),
+    ).toEqual({
+      error_json: JSON.stringify(job.error),
+    });
+  });
+
   it("preserves resolved instrument metadata when later executions upsert the core instrument", () => {
     const store = createStore();
     const metadata = {
@@ -291,6 +399,112 @@ describe("SqliteStore", () => {
     expect(store.getCoverageSegments(instrument.id)).toHaveLength(1);
     expect(() => store.commitMarketData({ instrumentId: instrument.id, candles: [daily], coverage: [{ startDate: "bad", endDate: "bad", status: "complete", missingTradingDates: "bad" as never }], providerSymbol: { provider: "tencent", symbol: "700" } })).toThrow("Invalid coverage");
     expect(store.getDailyCandles(instrument.id)).toEqual([daily]);
+  });
+
+  it("commits daily coverage without inventing a provider symbol", () => {
+    const store = createStore();
+    store.mergeExecutions([execution]);
+
+    store.commitMarketData({
+      instrumentId: instrument.id,
+      candles: [],
+      coverage: [{
+        startDate: "2024-01-02",
+        endDate: "2024-01-02",
+        status: "partial",
+        missingTradingDates: [],
+        reason: "no-data",
+      }],
+    });
+
+    expect(store.getCoverageSegments(instrument.id)).toEqual([
+      expect.objectContaining({
+        startDate: "2024-01-02",
+        endDate: "2024-01-02",
+        reason: "no-data",
+      }),
+    ]);
+  });
+
+  it("persists native 1h candles and interval coverage", () => {
+    const store = createStore();
+    store.mergeExecutions([execution]);
+    const candle = {
+      instrumentId: instrument.id,
+      interval: "1h" as never,
+      timestamp: "2026-01-02T01:30:00.000Z",
+      open: "1",
+      high: "2",
+      low: "1",
+      close: "2",
+      volume: "3",
+      currency: "HKD",
+      provider: "yahoo" as const,
+      providerSymbol: "00700.HK",
+      adjustmentMode: "raw" as const,
+      fetchedAt: "2026-01-03T00:00:00.000Z",
+    };
+    const coverage = {
+      interval: "1h" as never,
+      requestedStart: "2026-01-02T01:30:00.000Z",
+      requestedEnd: "2026-01-02T02:30:00.000Z",
+      actualStart: "2026-01-02T01:30:00.000Z",
+      actualEnd: "2026-01-02T01:30:00.000Z",
+      status: "complete" as const,
+    };
+
+    store.commitIntervalMarketData({
+      instrumentId: instrument.id,
+      interval: "1h" as never,
+      candles: [candle],
+      coverage: [coverage],
+      providerSymbol: { provider: "yahoo", symbol: "00700.HK" },
+    });
+
+    expect(
+      store.getCandles(
+        instrument.id,
+        "1h" as never,
+        "2026-01-02T01:00:00.000Z",
+        "2026-01-02T03:00:00.000Z",
+      ),
+    ).toEqual([candle]);
+    expect(store.getIntervalCoverage()).toEqual([
+      expect.objectContaining({ instrumentId: instrument.id, interval: "1h" }),
+    ]);
+  });
+
+  it("persists every interval coverage segment instead of only the last upsert", () => {
+    const store = createStore();
+    store.mergeExecutions([execution]);
+    const first = {
+      interval: "1h" as const,
+      requestedStart: "2026-01-02T01:30:00.000Z",
+      requestedEnd: "2026-01-02T02:30:00.000Z",
+      actualStart: "2026-01-02T01:30:00.000Z",
+      actualEnd: "2026-01-02T01:30:00.000Z",
+      status: "complete" as const,
+    };
+    const second = {
+      interval: "1h" as const,
+      requestedStart: "2026-01-03T01:30:00.000Z",
+      requestedEnd: "2026-01-03T02:30:00.000Z",
+      actualStart: "2026-01-03T01:30:00.000Z",
+      actualEnd: "2026-01-03T01:30:00.000Z",
+      status: "complete" as const,
+    };
+
+    store.commitIntervalMarketData({
+      instrumentId: instrument.id,
+      interval: "1h",
+      candles: [],
+      coverage: [first, second],
+    });
+
+    expect(store.getIntervalCoverage()).toEqual([
+      expect.objectContaining(first),
+      expect.objectContaining(second),
+    ]);
   });
 
   it("rejects malformed API market-data batches without partial writes", () => {

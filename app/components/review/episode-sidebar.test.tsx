@@ -36,6 +36,14 @@ const baseProps = {
   onSelectInstrument: () => {},
   marketDataStatuses: {},
   onUpdateMarketData: () => {},
+  onUpdateAllMarketData: () => {},
+  marketDataRefresh: {
+    running: false,
+    total: 0,
+    completed: 0,
+    partial: 0,
+    failed: 0,
+  },
 };
 
 describe("EpisodeSidebar", () => {
@@ -66,5 +74,29 @@ describe("EpisodeSidebar", () => {
     expect(screen.getByText("雅迪控股")).toBeInTheDocument();
     expect(screen.queryByText("小鹏汽车")).not.toBeInTheDocument();
     expect(screen.getByText("1 只股票")).toBeInTheDocument();
+  });
+
+  it("offers a one-click refresh for all imported market data", () => {
+    render(
+      <EpisodeSidebar
+        {...baseProps}
+        showDemo={false}
+        importedInstruments={[summaryFor("HK:1585", "1585", "雅迪控股")]}
+        onUpdateAllMarketData={() => {}}
+        marketDataRefresh={{
+          running: false,
+          total: 1,
+          completed: 0,
+          partial: 0,
+          failed: 0,
+        }}
+      />,
+    );
+
+    expect(
+      screen
+        .getAllByRole("button", { name: "一键更新全部行情" })
+        .at(-1),
+    ).toBeEnabled();
   });
 });

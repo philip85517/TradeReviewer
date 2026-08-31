@@ -51,6 +51,7 @@ export type ReviewChartViewModel = {
   canGoForward: boolean;
   canGoToNextExecution: boolean;
   replayError: string | null;
+  replayNotice?: string | null;
   dataDetails: MarketDataDetails[];
   refreshDisabledReason: string | undefined;
 };
@@ -392,6 +393,11 @@ export function ReviewChartWorkspace({
                 {model.replayError && (
                   <span className="replay-error" role="alert">
                     {model.replayError}
+                  </span>
+                )}
+                {model.replayNotice && (
+                  <span className="replay-notice" role="alert">
+                    {model.replayNotice}
                   </span>
                 )}
                 <CalendarDays size={14} />

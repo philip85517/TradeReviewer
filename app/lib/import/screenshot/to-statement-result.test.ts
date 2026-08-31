@@ -149,8 +149,8 @@ describe("toStatementParseResult", () => {
               height: 57,
             },
           },
-          accountId: "screenshot:futu:4321",
-          accountLabel: "富途截图账户 · 4321",
+          accountId: "screenshot:futu",
+          accountLabel: "富途",
           instrument: {
             id: "HK:700",
             symbol: "700",
@@ -209,33 +209,17 @@ describe("toStatementParseResult", () => {
     });
   });
 
-  it("auto-resolves only one consistent broker and account suffix", () => {
+  it("auto-resolves one consistent broker without requiring an account suffix", () => {
     const consistent = state([
       draft("image-1:futu:4"),
       draft("image-1:futu:5", { sourceRowIndex: 5 }),
     ]);
     expect(toStatementParseResult(consistent).records).toHaveLength(2);
 
-    for (const invalidDrafts of [
-      [
-        draft("image-1:futu:4"),
-        draft("image-1:futu:5", {
-          sourceRowIndex: 5,
-          sourceAccountSuffix: "9876",
-        }),
-      ],
-      [
-        draft("image-1:futu:4"),
-        draft("image-1:futu:5", {
-          sourceRowIndex: 5,
-          sourceAccountSuffix: undefined,
-        }),
-      ],
-    ]) {
-      expect(() =>
-        toStatementParseResult(state(invalidDrafts)),
-      ).toThrow(/missing-account/);
-    }
+    const withoutSuffix = state([
+      draft("image-1:futu:4", { sourceAccountSuffix: undefined }),
+    ]);
+    expect(toStatementParseResult(withoutSuffix).records).toHaveLength(1);
   });
 
   it("keeps provenance distinct across a homogeneous multi-image batch", () => {

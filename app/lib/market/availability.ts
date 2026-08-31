@@ -2,6 +2,7 @@ import type {
   DailyCandleRecord,
   IntervalCoverageSegment,
   MarketCandleRecord,
+  NativeIntradayInterval,
 } from "./contracts";
 import type { Timeframe } from "./types";
 
@@ -37,35 +38,58 @@ export function resolveTimeframeAvailability(input: {
   intradayCandles: MarketCandleRecord[];
   dailyCandles: DailyCandleRecord[];
   intradayCoverage: IntervalCoverageSegment[];
+  intradayInterval?: NativeIntradayInterval;
 }): TimeframeAvailability {
+  const intradayInterval =
+    input.intradayInterval ??
+    (input.intradayCandles.some((candle) => candle.interval === "1h")
+      ? "1h"
+      : "15m");
   const hasIntraday = input.intradayCandles.some(
-    (candle) => candle.interval === "15m",
+    (candle) => candle.interval === intradayInterval,
   );
   const hasDaily = input.dailyCandles.length > 0;
-  const intraday = hasIntraday
+  const fifteenMinute = hasIntraday && intradayInterval === "15m"
     ? { enabled: true }
-    : { enabled: false, reason: intradayUnavailableReason(input.intradayCoverage) };
+    : {
+        enabled: false,
+        reason:
+          hasIntraday && intradayInterval === "1h"
+            ? "原生 1 小时行情无法生成 15 分钟数据"
+            : intradayUnavailableReason(input.intradayCoverage, "15m"),
+      };
+  const hourly = hasIntraday
+    ? { enabled: true }
+    : { enabled: false, reason: intradayUnavailableReason(input.intradayCoverage, intradayInterval) };
   const daily = hasDaily
     ? { enabled: true }
     : { enabled: false, reason: "尚未获取该周期行情" };
 
   return {
-    "15m": { ...intraday },
-    "1h": { ...intraday },
-    "4h": { ...intraday },
+    "15m": { ...fifteenMinute },
+    "1h": { ...hourly },
+    "4h": { ...hourly },
     "1D": { ...daily },
     "1W": { ...daily },
   };
 }
 
-function intradayUnavailableReason(coverage: IntervalCoverageSegment[]) {
-  const intradayCoverage = coverage.filter((item) => item.interval === "15m");
+function intradayUnavailableReason(
+  coverage: IntervalCoverageSegment[],
+  interval: NativeIntradayInterval,
+) {
+  const intradayCoverage = coverage.filter((item) => item.interval === interval);
   if (intradayCoverage.length === 0) return "尚未获取该周期行情";
 
   const reason = intradayCoverage.find(
     (item) => item.reason && INTRADAY_UNAVAILABLE_REASONS[item.reason],
   )?.reason;
-  if (reason) return INTRADAY_UNAVAILABLE_REASONS[reason];
+  if (reason) {
+    return INTRADAY_UNAVAILABLE_REASONS[reason].replace(
+      "15 分钟",
+      interval === "1h" ? "1 小时" : "15 分钟",
+    );
+  }
 
   const status = intradayCoverage.find(
     (item) => item.status !== "not-requested",

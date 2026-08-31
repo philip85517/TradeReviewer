@@ -12,6 +12,30 @@ afterEach(() => {
 });
 
 describe("parseIntradayCandleRequest", () => {
+  it("accepts a bounded native 1h request", () => {
+    expect(
+      parseIntradayCandleRequest(
+        new URL(
+          "http://local/api?market=CN-SH&symbol=600519&interval=1h&start=2025-01-01T00%3A00%3A00.000Z&end=2025-01-10T23%3A59%3A59.999Z",
+        ),
+      ),
+    ).toMatchObject({
+      market: "CN-SH",
+      symbol: "600519",
+      interval: "1h",
+    });
+  });
+
+  it("rejects a 1h request outside the public source history window", () => {
+    const overlongUrl = new URL(
+      "http://local/api?market=HK&symbol=1810&interval=1h&start=2024-01-01T00%3A00%3A00.000Z&end=2026-01-01T00%3A00%3A00.000Z",
+    );
+
+    expect(() => parseIntradayCandleRequest(overlongUrl)).toThrow(
+      "1 小时行情单次请求不能超过 730 个自然日",
+    );
+  });
+
   it("accepts only a bounded 15m request", () => {
     expect(
       parseIntradayCandleRequest(
@@ -32,11 +56,11 @@ describe("parseIntradayCandleRequest", () => {
     );
   });
 
-  it("rejects a non-15m interval", () => {
+  it("rejects an unsupported intraday interval", () => {
     expect(() =>
       parseIntradayCandleRequest(
         new URL(
-          "http://local/api?market=US&symbol=XPEV&interval=1h&start=2025-01-01T00%3A00%3A00.000Z&end=2025-01-01T00%3A15%3A00.000Z",
+          "http://local/api?market=US&symbol=XPEV&interval=5m&start=2025-01-01T00%3A00%3A00.000Z&end=2025-01-01T00%3A15%3A00.000Z",
         ),
       ),
     ).toThrow(InvalidMarketDataRequest);
@@ -129,6 +153,29 @@ describe("GET /api/market-data/intraday", () => {
       error: { code: "rate-limited" },
     });
     expect(otherClient.status).toBe(200);
+  });
+
+  it("does not throttle direct localhost batch requests", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        Response.json({
+          data: {
+            hk01810: {
+              m15: [
+                ["2025-01-02 09:30:00", "34.1", "34.5", "35", "33.8", "1200"],
+              ],
+            },
+          },
+        }),
+      ),
+    );
+    const url =
+      "http://localhost/api/market-data/intraday?market=HK&symbol=1810&interval=15m&start=2025-01-02T01%3A30%3A00.000Z&end=2025-01-02T01%3A30%3A00.000Z";
+
+    for (let index = 0; index < 31; index += 1) {
+      expect((await GET(new Request(url))).status).toBe(200);
+    }
   });
 
   it("aborts provider fetches after the 12 second deadline", async () => {

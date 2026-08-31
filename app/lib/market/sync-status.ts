@@ -50,3 +50,64 @@ export function coverageStatusForSegments(
     ) ?? "complete"
   );
 }
+
+export function combinedMarketDataStatus(
+  daily: MarketDataSyncStatus,
+  intraday: MarketDataSyncStatus,
+): MarketDataSyncStatus {
+  const normalize = (status: MarketDataSyncStatus) =>
+    status === "ready"
+      ? "complete"
+      : status === "error" || status === "needs-provider"
+        ? "source-unavailable"
+        : status;
+  const statuses = [normalize(daily), normalize(intraday)];
+  const aggregate = coverageStatusForSegments(
+    statuses.map((status) => ({ status })),
+  );
+  if (
+    aggregate === "storage-error" ||
+    aggregate === "invalid-response" ||
+    aggregate === "source-forbidden" ||
+    aggregate === "source-rate-limited" ||
+    aggregate === "source-unavailable" ||
+    aggregate === "syncing"
+  ) {
+    return aggregate;
+  }
+  if (statuses.includes("not-requested")) return "not-requested";
+  return aggregate;
+}
+
+export function displayMarketDataStatus(
+  daily: MarketDataSyncStatus,
+  intraday: MarketDataSyncStatus,
+  options: {
+    hasDailyData: boolean;
+    hasIntradayData: boolean;
+    intradayJobStatus?: MarketDataSyncStatus;
+  },
+): MarketDataSyncStatus {
+  const effectiveIntraday =
+    !options.hasIntradayData && intraday === "not-requested"
+      ? options.intradayJobStatus ?? intraday
+      : intraday;
+  const dailyFailedWithoutCache =
+    !options.hasDailyData &&
+    daily !== "not-requested" &&
+    daily !== "complete" &&
+    daily !== "partial" &&
+    daily !== "stale" &&
+    daily !== "ready";
+  if (
+    options.hasIntradayData &&
+    dailyFailedWithoutCache &&
+    (effectiveIntraday === "complete" || effectiveIntraday === "partial" || effectiveIntraday === "stale" || effectiveIntraday === "ready")
+  ) {
+    return "partial";
+  }
+  if (options.hasIntradayData && daily === "not-requested") {
+    return effectiveIntraday;
+  }
+  return combinedMarketDataStatus(daily, effectiveIntraday);
+}

@@ -94,7 +94,7 @@ function isDailyCandle(value: unknown): value is DailyCandleRecord {
 
 function isMarketCandle(value: unknown): value is MarketCandleRecord {
   const item = record(value);
-  return Boolean(item && strings(item, ["instrumentId", "interval", "timestamp", "open", "high", "low", "close", "volume", "currency", "provider", "providerSymbol", "adjustmentMode", "fetchedAt"]) && (item.interval === "15m" || item.interval === "1D") && item.adjustmentMode === "raw");
+  return Boolean(item && strings(item, ["instrumentId", "interval", "timestamp", "open", "high", "low", "close", "volume", "currency", "provider", "providerSymbol", "adjustmentMode", "fetchedAt"]) && (item.interval === "15m" || item.interval === "1h" || item.interval === "1D") && item.adjustmentMode === "raw");
 }
 
 function isCoverageSegment(value: unknown): value is CoverageSegment {
@@ -104,7 +104,7 @@ function isCoverageSegment(value: unknown): value is CoverageSegment {
 
 function isIntervalCoverageSegment(value: unknown): value is IntervalCoverageSegment {
   const item = record(value);
-  return Boolean(item && strings(item, ["interval", "requestedStart", "requestedEnd", "status"]) && (item.interval === "15m" || item.interval === "1D") && COVERAGE_STATUSES.has(item.status as string) && optionalStrings(item, ["actualStart", "actualEnd", "provider", "fetchedAt", "reason"]));
+  return Boolean(item && strings(item, ["interval", "requestedStart", "requestedEnd", "status"]) && (item.interval === "15m" || item.interval === "1h" || item.interval === "1D") && COVERAGE_STATUSES.has(item.status as string) && optionalStrings(item, ["actualStart", "actualEnd", "provider", "fetchedAt", "reason"]));
 }
 
 function optionalStrings(value: Record<string, unknown>, fields: readonly string[]) {
@@ -205,7 +205,7 @@ function intervalCoverageRecords(value: unknown): BrowserStatePayload["intervalC
   return records<{ instrumentId?: unknown; interval?: unknown; segments?: unknown }>(value).flatMap((record) => {
     const instrumentId = record.instrumentId;
     const interval = record.interval;
-    if (typeof instrumentId !== "string" || (interval !== "15m" && interval !== "1D") || !Array.isArray(record.segments) || record.segments.some((segment) => !isIntervalCoverageSegment(segment))) throw new Error("Invalid legacy interval coverage");
+    if (typeof instrumentId !== "string" || (interval !== "15m" && interval !== "1h" && interval !== "1D") || !Array.isArray(record.segments) || record.segments.some((segment) => !isIntervalCoverageSegment(segment))) throw new Error("Invalid legacy interval coverage");
     return (record.segments as IntervalCoverageSegment[]).map((segment) => ({
       instrumentId,
       adjustmentMode: "raw" as const,
@@ -293,7 +293,7 @@ export async function exportLegacyBrowserState(options: BrowserStateExportOption
     if (parsed.version !== 1 || typeof parsed.showGrid !== "boolean" || typeof parsed.showVolume !== "boolean" || typeof parsed.showExecutions !== "boolean" || typeof parsed.showAverageCost !== "boolean" || !["teal-red", "green-red", "blue-orange"].includes(parsed.colorScheme as string)) throw new Error("Invalid legacy chart settings");
   }
   const jobs = loadMarketDataJobs();
-  const payload = {
+  const rawPayload = {
     version: 1 as const,
     sourceClientId: clientId(),
     sourceFingerprint: "",
@@ -311,6 +311,7 @@ export async function exportLegacyBrowserState(options: BrowserStateExportOption
     intervalCoverage,
     providerSymbols: symbols,
   } satisfies BrowserStatePayload;
+  const payload = normalizeJsonSafe(rawPayload) as BrowserStatePayload;
   if (!options.excludeDemo) return { ...payload, sourceFingerprint: calculateBrowserStateFingerprint(payload) };
   const hasDemoXpevExecution = payload.executions.some((execution) => execution.instrument.id === DEMO_INSTRUMENT_ID && execution.source.platform === "demo");
   const hasRealXpevActivity = payload.executions.some((execution) => execution.instrument.id === DEMO_INSTRUMENT_ID && execution.source.platform !== "demo")
@@ -341,6 +342,38 @@ export async function exportLegacyBrowserState(options: BrowserStateExportOption
     providerSymbols: payload.providerSymbols.filter((item) => item.instrumentId !== DEMO_INSTRUMENT_ID || hasRealXpev),
   } satisfies BrowserStatePayload;
   return { ...filtered, sourceFingerprint: calculateBrowserStateFingerprint(filtered) };
+}
+
+function normalizeJsonSafe(value: unknown, ancestors = new Set<object>()): unknown {
+  if (value === undefined) return undefined;
+  if (value === null || typeof value === "boolean" || typeof value === "string") return value;
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) throw new Error("Browser migration payload is not JSON-safe");
+    return value;
+  }
+  if (typeof value !== "object") throw new Error("Browser migration payload is not JSON-safe");
+  if (ancestors.has(value)) throw new Error("Browser migration payload is not JSON-safe");
+  ancestors.add(value);
+  try {
+    if (Array.isArray(value)) {
+      return value.map((item) => {
+        const normalized = normalizeJsonSafe(item, ancestors);
+        return normalized === undefined ? null : normalized;
+      });
+    }
+    if (Object.getPrototypeOf(value) !== Object.prototype && Object.getPrototypeOf(value) !== null) {
+      throw new Error("Browser migration payload is not JSON-safe");
+    }
+    const objectValue = value as Record<string, unknown>;
+    const normalized: Record<string, unknown> = {};
+    for (const key of Object.keys(objectValue)) {
+      const item = normalizeJsonSafe(objectValue[key], ancestors);
+      if (item !== undefined) normalized[key] = item;
+    }
+    return normalized;
+  } finally {
+    ancestors.delete(value);
+  }
 }
 
 function canonicalize(value: unknown): string {
@@ -374,5 +407,5 @@ function sha256(message: string) {
 export function calculateBrowserStateFingerprint(payload: BrowserStatePayload) {
   const { sourceFingerprint, ...state } = payload;
   void sourceFingerprint;
-  return sha256(canonicalize(state));
+  return sha256(canonicalize(normalizeJsonSafe(state)));
 }

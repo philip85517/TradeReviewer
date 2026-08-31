@@ -15,6 +15,7 @@ import {
 } from "./calendar";
 import { coverageStatusForSegments } from "./sync-status";
 import { validateProviderCandles } from "./validation";
+import type { MarketDataSyncStatus } from "./sync-status";
 import type { MarketDataRepository } from "../storage/market-data-repository";
 
 type SyncMarketDataOptions = {
@@ -26,6 +27,7 @@ type SyncMarketDataOptions = {
   repository: MarketDataRepository;
   fetcher?: typeof fetch;
   signal?: AbortSignal;
+  retryUnavailable?: boolean;
 };
 
 type RouteResult = ProviderResult & {
@@ -33,8 +35,36 @@ type RouteResult = ProviderResult & {
   request: DailyCandleRequest;
 };
 
+type DailySyncFailureCode =
+  | MarketDataSyncStatus
+  | "source-timeout"
+  | "provider-history-limit"
+  | "no-data";
+
+export class MarketDataSyncError extends Error {
+  constructor(
+    readonly code: DailySyncFailureCode,
+    message: string,
+  ) {
+    super(message);
+    this.name = "MarketDataSyncError";
+  }
+}
+
+function isDailySyncFailureCode(value: unknown): value is DailySyncFailureCode {
+  return (
+    value === "source-rate-limited" ||
+    value === "source-forbidden" ||
+    value === "source-unavailable" ||
+    value === "invalid-response" ||
+    value === "source-timeout" ||
+    value === "provider-history-limit" ||
+    value === "no-data"
+  );
+}
+
 function isProvider(value: unknown): value is MarketDataProviderId {
-  return value === "tencent" || value === "eastmoney" || value === "yahoo";
+  return value === "tencent" || value === "eastmoney" || value === "yahoo" || value === "sina" || value === "baidu";
 }
 
 function shiftDate(date: string, days: number) {
@@ -55,7 +85,7 @@ function retainCoveragePart(
   );
   const resolvedPartial =
     segment.status === "partial" &&
-    segment.reason !== "calendar-out-of-range" &&
+    segment.reason === undefined &&
     missingTradingDates.length === 0;
   return {
     ...segment,
@@ -101,6 +131,42 @@ function preserveCoverageOutsideGap(
     }
     return retained;
   });
+}
+
+function isKnownMissingGapOutsideCandleHistory(
+  coverage: Awaited<ReturnType<MarketDataRepository["getCoverage"]>>,
+  gap: DateRange,
+  firstKnownDate: string | undefined,
+  lastKnownDate: string | undefined,
+) {
+  const today = new Date().toISOString().slice(0, 10);
+  const hasConfirmedNoDataAfterLastCandle =
+    lastKnownDate !== undefined &&
+    coverage.some(
+      (segment) =>
+        segment.reason === "no-data" &&
+        segment.startDate > lastKnownDate &&
+        segment.endDate < gap.startDate,
+    );
+  const outsideKnownHistory =
+    (firstKnownDate !== undefined && gap.endDate < firstKnownDate) ||
+    (lastKnownDate !== undefined &&
+      hasConfirmedNoDataAfterLastCandle &&
+      gap.startDate > lastKnownDate &&
+      gap.endDate < today);
+  if (!outsideKnownHistory) {
+    return false;
+  }
+  return coverage.some(
+    (segment) =>
+      segment.status === "partial" &&
+      segment.provider !== undefined &&
+      segment.startDate <= gap.startDate &&
+      segment.endDate >= gap.endDate &&
+      segment.missingTradingDates.some(
+        (date) => date >= gap.startDate && date <= gap.endDate,
+      ),
+  );
 }
 
 function parseRouteResult(
@@ -152,6 +218,7 @@ export async function syncMarketData({
   repository,
   fetcher = fetch,
   signal,
+  retryUnavailable = false,
 }: SyncMarketDataOptions) {
   const throwIfAborted = () => {
     if (signal?.aborted) {
@@ -160,7 +227,43 @@ export async function syncMarketData({
   };
   throwIfAborted();
   let coverage = await repository.getCoverage(instrumentId);
-  const gaps = planCoverageGaps(required, coverage);
+  const knownCandles = await repository.getDailyCandles(
+    instrumentId,
+    required.startDate,
+    required.endDate,
+  );
+  let firstKnownDate = knownCandles.reduce<string | undefined>(
+    (first, candle) =>
+      first === undefined || candle.tradingDate < first
+        ? candle.tradingDate
+        : first,
+    undefined,
+  );
+  let lastKnownDate = knownCandles.reduce<string | undefined>(
+    (last, candle) =>
+      last === undefined || candle.tradingDate > last
+        ? candle.tradingDate
+        : last,
+    undefined,
+  );
+  const planningCoverage = retryUnavailable
+    ? coverage.filter(
+        (segment) =>
+          !(
+            segment.status === "partial" &&
+            [
+              "no-data",
+              "provider-history-limit",
+              "source-unavailable",
+              "source-rate-limited",
+              "source-forbidden",
+              "invalid-response",
+            ].includes(segment.reason ?? "")
+          ) ||
+          (firstKnownDate !== undefined && segment.endDate < firstKnownDate),
+      )
+    : coverage;
+  const gaps = planCoverageGaps(required, planningCoverage);
 
   if (gaps.length === 0) {
     const relevantCoverage = coverage.filter(
@@ -182,6 +285,31 @@ export async function syncMarketData({
 
   for (const gap of gaps) {
     throwIfAborted();
+    if (
+      isKnownMissingGapOutsideCandleHistory(
+        coverage,
+        gap,
+        firstKnownDate,
+        lastKnownDate,
+      )
+    ) {
+      coverage = [
+        ...preserveCoverageOutsideGap(coverage, gap),
+        {
+          ...gap,
+          status: "partial",
+          fetchedAt: new Date().toISOString(),
+          missingTradingDates: [],
+          reason: "no-data",
+        },
+      ];
+      await repository.commitSyncResult({
+        instrumentId,
+        candles: [],
+        coverage,
+      });
+      continue;
+    }
     const query = new URLSearchParams({
       market,
       symbol,
@@ -193,9 +321,45 @@ export async function syncMarketData({
     });
     if (!response.ok) {
       const body = (await response.json().catch(() => undefined)) as
-        | { error?: { message?: string } }
+        | { error?: { code?: unknown; message?: string } }
         | undefined;
-      throw new Error(body?.error?.message ?? "行情更新失败");
+      const code = isDailySyncFailureCode(body?.error?.code)
+        ? body.error.code
+        : "source-unavailable";
+      const outsideKnownHistory =
+        code === "source-unavailable" &&
+        ((firstKnownDate !== undefined && gap.endDate < firstKnownDate) ||
+          (lastKnownDate !== undefined &&
+            gap.startDate > lastKnownDate &&
+            gap.endDate < new Date().toISOString().slice(0, 10)));
+      if (
+        code === "provider-history-limit" ||
+        code === "no-data" ||
+        outsideKnownHistory
+      ) {
+        const reason = outsideKnownHistory ? "no-data" : code;
+        coverage = [
+          ...preserveCoverageOutsideGap(coverage, gap),
+          {
+            ...gap,
+            status: "partial",
+            fetchedAt: new Date().toISOString(),
+            missingTradingDates: [],
+            reason,
+          },
+        ];
+        throwIfAborted();
+        await repository.commitSyncResult({
+          instrumentId,
+          candles: [],
+          coverage,
+        });
+        continue;
+      }
+      throw new MarketDataSyncError(
+        code,
+        body?.error?.message ?? "行情更新失败",
+      );
     }
     const result = parseRouteResult(await response.json(), gap, {
       instrumentId,
@@ -217,6 +381,14 @@ export async function syncMarketData({
       adjustmentMode: "raw",
       fetchedAt: result.fetchedAt,
     }));
+    for (const candle of candles) {
+      if (firstKnownDate === undefined || candle.tradingDate < firstKnownDate) {
+        firstKnownDate = candle.tradingDate;
+      }
+      if (lastKnownDate === undefined || candle.tradingDate > lastKnownDate) {
+        lastKnownDate = candle.tradingDate;
+      }
+    }
     let missingTradingDates: string[] = [];
     let segmentStatus: "complete" | "partial" = "complete";
     let reason: string | undefined;

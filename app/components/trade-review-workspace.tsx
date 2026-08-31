@@ -50,6 +50,7 @@ import type {
   DailyCandleRecord,
   IntervalCoverageSegment,
   MarketCandleRecord,
+  NativeIntradayInterval,
   SupportedMarket,
 } from "../lib/market/contracts";
 import {
@@ -57,7 +58,9 @@ import {
   type IntradayTimeRange,
 } from "../lib/market/intraday-sync-service";
 import {
+  combinedMarketDataStatus,
   coverageStatusForSegments,
+  displayMarketDataStatus,
   type MarketDataSyncStatus,
 } from "../lib/market/sync-status";
 import {
@@ -65,7 +68,12 @@ import {
   requiredMarketDataRange,
   requiredRangeExpanded,
 } from "../lib/market/sync-range";
-import { syncMarketData } from "../lib/market/sync-service";
+import { createMarketDataFetcher } from "../lib/market/market-data-fetch";
+import { runRefreshQueue } from "../lib/market/refresh-queue";
+import {
+  MarketDataSyncError,
+  syncMarketData,
+} from "../lib/market/sync-service";
 import { canonicalInstrumentId } from "../lib/instruments/display-name";
 import { refreshInstrumentMetadata } from "../lib/instruments/resolve-service";
 import {
@@ -89,6 +97,10 @@ import {
 import type { EpisodeReviewRecord } from "../lib/reviews/types";
 import type { ChartSettings } from "../lib/storage/chart-settings";
 import type { ImportHistoryEntry } from "../lib/storage/import-history";
+import type {
+  MarketDataErrorDetail,
+  MarketDataJob,
+} from "../lib/storage/market-data-jobs";
 import {
   mergeExecutions,
 } from "../lib/storage/import-library";
@@ -131,6 +143,7 @@ import {
 import {
   EpisodeSidebar,
   type ImportPhase,
+  type MarketDataRefreshState,
 } from "./review/episode-sidebar";
 import {
   TradeLibrary,
@@ -170,12 +183,15 @@ const ALL_TIMEFRAMES: TimeframeAvailability = {
 type InstrumentMarketState = {
   daily: DailyCandleRecord[];
   intraday: MarketCandleRecord[];
+  intradayInterval: NativeIntradayInterval;
   dailyStatus: MarketDataSyncStatus;
   intradayStatus: MarketDataSyncStatus;
   intradayCoverage: IntervalCoverageSegment[];
   dailyCoverage: CoverageSegment[];
   dailyMessage?: string;
   intradayMessage?: string;
+  dailyError?: MarketDataErrorDetail;
+  intradayError?: MarketDataErrorDetail;
 };
 
 type Props = {
@@ -206,15 +222,55 @@ function isChartSettings(value: Record<string, unknown>): value is ChartSettings
 }
 
 function emptyMarketState(
-  dailyStatus: MarketDataSyncStatus = "not-requested",
+  jobOrStatus: MarketDataJob | MarketDataSyncStatus = "not-requested",
 ): InstrumentMarketState {
+  const job = typeof jobOrStatus === "string" ? undefined : jobOrStatus;
+  const dailyJob = job?.intervals.find((item) => item.interval === "1D");
+  const intradayJob = job?.intervals.find((item) => item.interval === "1h");
   return {
     daily: [],
     intraday: [],
-    dailyStatus,
-    intradayStatus: "not-requested",
+    intradayInterval: "1h",
+    dailyStatus:
+      dailyJob?.status ??
+      (typeof jobOrStatus === "string" ? jobOrStatus : job?.status ?? "not-requested"),
+    intradayStatus: intradayJob?.status ?? "not-requested",
     intradayCoverage: [],
     dailyCoverage: [],
+    dailyMessage: dailyJob?.message ?? job?.message,
+    intradayMessage: intradayJob?.message,
+    dailyError: dailyJob?.error ?? job?.error,
+    intradayError: intradayJob?.error,
+  };
+}
+
+function applyPersistedMarketDataJob(
+  state: InstrumentMarketState,
+  job: MarketDataJob | undefined,
+): InstrumentMarketState {
+  if (!job) return state;
+  const dailyJob = job.intervals.find((item) => item.interval === "1D");
+  const intradayJob = job.intervals.find((item) => item.interval === "1h");
+  const hasDailyData = state.daily.length > 0 || state.dailyCoverage.length > 0;
+  const hasIntradayData =
+    state.intraday.length > 0 || state.intradayCoverage.length > 0;
+  return {
+    ...state,
+    dailyStatus:
+      state.dailyStatus === "not-requested" && dailyJob
+        ? dailyJob.status
+        : state.dailyStatus,
+    intradayStatus:
+      state.intradayStatus === "not-requested" && intradayJob
+        ? intradayJob.status
+        : state.intradayStatus,
+    dailyMessage: state.dailyMessage ?? dailyJob?.message ?? job.message,
+    intradayMessage: state.intradayMessage ?? intradayJob?.message,
+    dailyError: state.dailyError ?? dailyJob?.error ?? job.error,
+    intradayError: state.intradayError ?? intradayJob?.error,
+    ...(hasDailyData || hasIntradayData ? {} : {
+      dailyStatus: dailyJob?.status ?? job.status,
+    }),
   };
 }
 
@@ -259,6 +315,7 @@ function episodeIntradaySyncRange(
       startTime,
       endTime: containingIntradayBarEnd(
         episode.endedAt ?? lastExecutionAt,
+        "1h",
       ),
     };
   }
@@ -278,7 +335,7 @@ async function readInstrumentMarketState(
   repository: MarketDataRepository,
 ): Promise<InstrumentMarketState> {
   const ranges = marketRanges(summary);
-  const [daily, dailyCoverage, intraday, intradayCoverage] =
+  const [daily, dailyCoverage, hourly, hourlyCoverage, legacyIntraday, legacyCoverage] =
     await Promise.all([
       repository.getDailyCandles(
         summary.instrument.id,
@@ -288,18 +345,29 @@ async function readInstrumentMarketState(
       repository.getCoverage(summary.instrument.id),
       repository.getCandles(
         summary.instrument.id,
+        "1h",
+        ranges.intraday.startTime,
+        ranges.intraday.endTime,
+      ),
+      repository.getIntervalCoverage(summary.instrument.id, "1h"),
+      repository.getCandles(
+        summary.instrument.id,
         "15m",
         ranges.intraday.startTime,
         ranges.intraday.endTime,
       ),
       repository.getIntervalCoverage(summary.instrument.id, "15m"),
     ]);
+  const useHourly = hourly.length > 0 || hourlyCoverage.length > 0;
   return {
     daily,
-    intraday,
+    intraday: useHourly ? hourly : legacyIntraday,
+    intradayInterval: useHourly ? "1h" : "15m",
     dailyStatus: coverageStatusForSegments(dailyCoverage),
-    intradayStatus: coverageStatusForSegments(intradayCoverage),
-    intradayCoverage,
+    intradayStatus: coverageStatusForSegments(
+      useHourly ? hourlyCoverage : legacyCoverage,
+    ),
+    intradayCoverage: useHourly ? hourlyCoverage : legacyCoverage,
     dailyCoverage,
   };
 }
@@ -316,37 +384,74 @@ function sourceCandlesForTimeframe(
   marketState: InstrumentMarketState,
   timeframe: Timeframe,
 ) {
+  if (timeframe === "15m" && marketState.intradayInterval !== "15m") {
+    return [];
+  }
   return timeframe === "15m" || timeframe === "1h" || timeframe === "4h"
     ? marketState.intraday.map(intervalRecordToCandle)
     : marketState.daily.map(dailyRecordToKnowledgeCandle);
+}
+
+function replayCursorForEpisode(source: Candle[], episodeStartedAt: string) {
+  const sorted = [...source].sort(
+    (left, right) =>
+      Date.parse(candleKnowledgeAt(left)) -
+      Date.parse(candleKnowledgeAt(right)),
+  );
+  const prior = sorted.findLast(
+    (candle) => candleKnowledgeAt(candle) <= episodeStartedAt,
+  );
+  return prior
+    ? candleKnowledgeAt(prior)
+    : sorted[0] && Date.parse(sorted[0].time) > Date.parse(episodeStartedAt)
+      ? candleKnowledgeAt(sorted[0])
+      : episodeStartedAt;
+}
+
+function replayHistoryStartsAfter(source: Candle[], cursor: string) {
+  const first = [...source].sort(
+    (left, right) => Date.parse(left.time) - Date.parse(right.time),
+  )[0];
+  return Boolean(first && Date.parse(first.time) > Date.parse(cursor));
 }
 
 function aggregateVisibleCandles(
   source: Candle[],
   timeframe: Timeframe,
   market: string,
+  sourceInterval: NativeIntradayInterval,
 ) {
-  if (timeframe === "15m" || timeframe === "1D") {
+  if (
+    timeframe === "15m" ||
+    timeframe === "1D" ||
+    (timeframe === "1h" && sourceInterval === "1h")
+  ) {
     return [...source].sort((left, right) => left.time.localeCompare(right.time));
   }
   return aggregateCandles(source, timeframe, {
     sourceInterval:
-      timeframe === "1h" || timeframe === "4h" ? "15m" : "1D",
+      timeframe === "1h" || timeframe === "4h" ? sourceInterval : "1D",
     market,
   });
 }
 
-const INTRADAY_BAR_MILLISECONDS = 15 * 60 * 1000;
+const INTRADAY_BAR_MILLISECONDS: Record<NativeIntradayInterval, number> = {
+  "15m": 15 * 60 * 1000,
+  "1h": 60 * 60 * 1000,
+};
 const INTRADAY_PRE_ENTRY_CONTEXT_DAYS = 7;
 
-function containingIntradayBarEnd(timestamp: string) {
+function containingIntradayBarEnd(
+  timestamp: string,
+  interval: NativeIntradayInterval = "1h",
+) {
   const milliseconds = Date.parse(timestamp);
   if (!Number.isFinite(milliseconds)) return timestamp;
   const barStart =
-    Math.floor(milliseconds / INTRADAY_BAR_MILLISECONDS) *
-    INTRADAY_BAR_MILLISECONDS;
+    Math.floor(milliseconds / INTRADAY_BAR_MILLISECONDS[interval]) *
+    INTRADAY_BAR_MILLISECONDS[interval];
   return new Date(
-    barStart + INTRADAY_BAR_MILLISECONDS - 1,
+    barStart + INTRADAY_BAR_MILLISECONDS[interval] - 1,
   ).toISOString();
 }
 
@@ -379,6 +484,7 @@ function episodeWindow(
     episode.startedAt,
   );
   const holdingEnd = episode.endedAt ?? lastExecutionAt;
+  const intradayInterval = state.intradayInterval;
   const dailyRange = requiredMarketDataRange(
     episode.startedAt,
     holdingEnd,
@@ -386,13 +492,14 @@ function episodeWindow(
   // Seven calendar days normally provide roughly five completed sessions of
   // chart context without letting unrelated older episodes enable intraday.
   const intradayStart = intradayContextStart(episode.startedAt, market);
-  const holdingEndTime = containingIntradayBarEnd(holdingEnd);
+  const holdingEndTime = containingIntradayBarEnd(holdingEnd, intradayInterval);
   const holdingEndDate = marketTradingDate(holdingEnd, market);
 
   if (episode.status === "closed") {
     return {
       intradayStart,
       intradayEnd: holdingEndTime,
+      intradayInterval,
       dailyStartDate: dailyRange.startDate,
       dailyEndDate: dailyRange.endDate,
     };
@@ -401,10 +508,10 @@ function episodeWindow(
   const completeIntradayCoverage = state.intradayCoverage.flatMap(
     (segment) => {
       if (segment.actualEnd) {
-        return [containingIntradayBarEnd(segment.actualEnd)];
+        return [containingIntradayBarEnd(segment.actualEnd, intradayInterval)];
       }
       return segment.status === "complete"
-        ? [containingIntradayBarEnd(segment.requestedEnd)]
+        ? [containingIntradayBarEnd(segment.requestedEnd, intradayInterval)]
         : [];
     },
   );
@@ -414,7 +521,7 @@ function episodeWindow(
   const end = latestIso(
     [
       ...state.intraday.map((candle) =>
-        containingIntradayBarEnd(candle.timestamp),
+        containingIntradayBarEnd(candle.timestamp, intradayInterval),
       ),
       ...completeIntradayCoverage,
       ...state.daily.map((candle) =>
@@ -447,6 +554,7 @@ function episodeWindow(
   return {
     intradayStart,
     intradayEnd: end,
+    intradayInterval,
     dailyStartDate: dailyRange.startDate,
     dailyEndDate: endDate,
   };
@@ -457,7 +565,10 @@ function coverageOverlapsEpisode(
   window: ReturnType<typeof episodeWindow>,
 ) {
   const start = segment.requestedStart;
-  const end = containingIntradayBarEnd(segment.requestedEnd);
+  const end = containingIntradayBarEnd(
+    segment.requestedEnd,
+    window.intradayInterval,
+  );
   return (
     start <= window.intradayEnd &&
     end >= window.intradayStart
@@ -473,13 +584,14 @@ function resolveEpisodeTimeframeAvailability(
       intradayCandles: state.intraday,
       dailyCandles: state.daily,
       intradayCoverage: state.intradayCoverage,
+      intradayInterval: state.intradayInterval,
     });
   }
   const window = episodeWindow(state, episode);
   const intradayCandles = state.intraday.filter(
     (candle) =>
       candle.timestamp <= window.intradayEnd &&
-      containingIntradayBarEnd(candle.timestamp) >=
+      containingIntradayBarEnd(candle.timestamp, state.intradayInterval) >=
         window.intradayStart,
   );
   const dailyCandles = state.daily.filter(
@@ -494,6 +606,7 @@ function resolveEpisodeTimeframeAvailability(
     intradayCandles,
     dailyCandles,
     intradayCoverage,
+    intradayInterval: state.intradayInterval,
   });
   if (
     intradayCandles.length === 0 &&
@@ -503,7 +616,10 @@ function resolveEpisodeTimeframeAvailability(
     for (const timeframe of ["15m", "1h", "4h"] as const) {
       availability[timeframe] = {
         enabled: false,
-        reason: "该交易回合没有可用的 15 分钟行情",
+        reason:
+          state.intradayInterval === "1h"
+            ? "该交易回合没有可用的 1 小时行情"
+            : "该交易回合没有可用的 15 分钟行情",
       };
     }
   }
@@ -516,6 +632,8 @@ function providerLabel(
   if (provider === "tencent") return "腾讯行情";
   if (provider === "eastmoney") return "东方财富";
   if (provider === "yahoo") return "Yahoo Finance";
+  if (provider === "sina") return "新浪美股";
+  if (provider === "baidu") return "百度行情";
   return null;
 }
 
@@ -530,7 +648,7 @@ function marketDataDetails(
   return [
     {
       providerLabel: providerLabel(firstIntraday?.provider),
-      nativeInterval: "15m",
+      nativeInterval: state.intradayInterval,
       coverageStart:
         firstIntraday?.timestamp ??
         state.intradayCoverage.find((segment) => segment.actualStart)
@@ -546,9 +664,9 @@ function marketDataDetails(
       status: state.intradayStatus,
       limitationReason:
         state.intradayMessage ??
-        (availability["15m"].enabled
+        (availability[state.intradayInterval].enabled
           ? undefined
-          : availability["15m"].reason),
+          : availability[state.intradayInterval].reason),
       availableTimeframes: (
         ["15m", "1h", "4h"] as const
       ).filter((timeframe) => availability[timeframe].enabled),
@@ -638,6 +756,56 @@ async function fetchDemoFrame(
   return (await response.json()) as DemoReplayFrame;
 }
 
+const EMPTY_MARKET_DATA_REFRESH: MarketDataRefreshState = {
+  running: false,
+  total: 0,
+  completed: 0,
+  partial: 0,
+  failed: 0,
+};
+
+function isHardMarketDataFailure(status: unknown) {
+  return (
+    status === "source-rate-limited" ||
+    status === "source-forbidden" ||
+    status === "source-unavailable" ||
+    status === "invalid-response" ||
+    status === "storage-error" ||
+    status === "error" ||
+    status === "needs-provider"
+  );
+}
+
+function dailyStatusFromError(error: unknown): MarketDataSyncStatus {
+  if (error instanceof MarketDataSyncError) {
+    if (
+      error.code === "source-rate-limited" ||
+      error.code === "source-forbidden" ||
+      error.code === "source-unavailable" ||
+      error.code === "invalid-response"
+    ) {
+      return error.code;
+    }
+    if (
+      error.code === "provider-history-limit" ||
+      error.code === "no-data"
+    ) {
+      return "partial";
+    }
+  }
+  return error instanceof DOMException ? "storage-error" : "source-unavailable";
+}
+
+function marketDataErrorDetail(error: unknown): MarketDataErrorDetail {
+  if (error instanceof MarketDataSyncError) {
+    return { code: error.code, message: error.message };
+  }
+  if (error instanceof Error) {
+    return { code: "source-unavailable", message: error.message };
+  }
+  return { code: "source-unavailable", message: "行情更新失败" };
+}
+
 export function TradeReviewWorkspace({
   initialFrame,
   showDemo = true,
@@ -723,6 +891,12 @@ function isAbortError(error: unknown) {
   const [marketStates, setMarketStates] = useState<
     Record<string, InstrumentMarketState>
   >({});
+  const [marketDataJobs, setMarketDataJobs] = useState<
+    Record<string, MarketDataJob>
+  >({});
+  const [marketDataRefresh, setMarketDataRefresh] =
+    useState<MarketDataRefreshState>(EMPTY_MARKET_DATA_REFRESH);
+  const [failedMarketDataIds, setFailedMarketDataIds] = useState<string[]>([]);
   const [hydratedMarketIds, setHydratedMarketIds] = useState<Set<string>>(
     () => new Set(),
   );
@@ -752,6 +926,7 @@ function isAbortError(error: unknown) {
   const importRequestSequence = useRef(0);
   const importedExecutionsRef = useRef<TradeExecution[] | null>(null);
   const marketDataRequestSequences = useRef<Record<string, number>>({});
+  const marketDataJobsRef = useRef<Record<string, MarketDataJob>>({});
   const marketDataAbortControllers = useRef<
     Record<string, AbortController>
   >({});
@@ -804,8 +979,48 @@ function isAbortError(error: unknown) {
         : [],
     [selectedImportedInstrument, selectedMarketState, timeframe],
   );
+  const importedTimelineCandles = useMemo(
+    () =>
+      selectedImportedInstrument
+        ? aggregateVisibleCandles(
+            importedSourceCandles,
+          timeframe,
+          selectedImportedInstrument.instrument.market,
+          selectedMarketState.intradayInterval,
+        )
+        : [],
+    [
+      importedSourceCandles,
+      selectedImportedInstrument,
+      selectedMarketState.intradayInterval,
+      timeframe,
+    ],
+  );
+  const firstImportedKnownCursor = useMemo(() => {
+    const first = [...importedTimelineCandles].sort(
+      (left, right) =>
+        Date.parse(candleKnowledgeAt(left)) -
+        Date.parse(candleKnowledgeAt(right)),
+    )[0];
+    return first ? candleKnowledgeAt(first) : undefined;
+  }, [importedTimelineCandles]);
+  const importedCursorNeedsFallback = Boolean(
+    selectedImportedInstrument &&
+      firstImportedKnownCursor &&
+      replayHistoryStartsAfter(importedTimelineCandles, importedCursor),
+  );
+  const effectiveImportedCursor =
+    importedCursorNeedsFallback && firstImportedKnownCursor
+      ? firstImportedKnownCursor
+      : importedCursor;
+  const importedHistoryStartsAfterTrade = Boolean(
+    selectedImportedInstrument &&
+      selectedEpisode &&
+      firstImportedKnownCursor &&
+      firstImportedKnownCursor > selectedEpisode.startedAt,
+  );
   const activeCursor = selectedImportedInstrument
-    ? importedCursor
+    ? effectiveImportedCursor
     : frame.cursor;
   const importedVisibleSource = useMemo(
     () =>
@@ -813,17 +1028,6 @@ function isAbortError(error: unknown) {
         (candle) => candleKnowledgeAt(candle) <= activeCursor,
       ),
     [activeCursor, importedSourceCandles],
-  );
-  const importedTimelineCandles = useMemo(
-    () =>
-      selectedImportedInstrument
-        ? aggregateVisibleCandles(
-            importedSourceCandles,
-            timeframe,
-            selectedImportedInstrument.instrument.market,
-          )
-        : [],
-    [importedSourceCandles, selectedImportedInstrument, timeframe],
   );
   const importedDisplayCandles = useMemo(
     () =>
@@ -835,7 +1039,7 @@ function isAbortError(error: unknown) {
   const importedReplay = createImportedReplay({
     candles: importedTimelineCandles,
     executions: selectedEpisode?.executions ?? [],
-    storedCursor: importedCursor,
+    storedCursor: effectiveImportedCursor,
   });
   const importedCanGoBack = importedTimelineCandles.some(
     (candle) => candleKnowledgeAt(candle) < activeCursor,
@@ -924,13 +1128,25 @@ function isAbortError(error: unknown) {
   const marketDataStatuses = useMemo(
     () =>
       Object.fromEntries(
-        importedInstruments.map((summary) => [
-          summary.instrument.id,
-          marketStates[summary.instrument.id]?.dailyStatus ??
-            ("not-requested" satisfies MarketDataSyncStatus),
-        ]),
+        importedInstruments.map((summary) => {
+          const state = marketStates[summary.instrument.id];
+          return [
+            summary.instrument.id,
+            displayMarketDataStatus(
+              state?.dailyStatus ?? ("not-requested" satisfies MarketDataSyncStatus),
+              state?.intradayStatus ?? ("not-requested" satisfies MarketDataSyncStatus),
+              {
+                hasDailyData: Boolean(state?.daily.length || state?.dailyCoverage.length),
+                hasIntradayData: Boolean(state?.intraday.length || state?.intradayCoverage.length),
+                intradayJobStatus: marketDataJobs[summary.instrument.id]?.intervals.find(
+                  (item) => item.interval === "1h",
+                )?.status,
+              },
+            ),
+          ];
+        }),
       ),
-    [importedInstruments, marketStates],
+    [importedInstruments, marketDataJobs, marketStates],
   );
   const tradeLibraryEntries = useMemo(
     () =>
@@ -993,6 +1209,9 @@ function isAbortError(error: unknown) {
       ? importedCanGoToNextExecution
       : frame.canGoForward && !stepping && !restoring,
     replayError,
+    replayNotice: importedHistoryStartsAfterTrade
+      ? "行情历史晚于交易时间，已从首根可用 K 线开始回放"
+      : null,
     dataDetails: selectedImportedInstrument
       ? marketDataDetails(selectedMarketState, importedAvailability)
       : [
@@ -1105,10 +1324,18 @@ function isAbortError(error: unknown) {
     episodeId: string,
     fallbackCursor: string,
     preferredTimeframe: Timeframe,
+    source: Candle[] = [],
   ) {
     const stored = reviewStates[episodeId];
     setTimeframe(stored?.timeframe ?? preferredTimeframe);
-    setImportedCursor(stored?.replayCursor ?? fallbackCursor);
+    const storedCursor = stored?.replayCursor;
+    setImportedCursor(
+      storedCursor &&
+        source.length > 0 &&
+        replayHistoryStartsAfter(source, storedCursor)
+        ? replayCursorForEpisode(source, fallbackCursor)
+        : storedCursor ?? fallbackCursor,
+    );
     setActivePanelTab(stored?.activePanelTab ?? "stats");
     setDrawingHistory(createDrawingHistory(stored?.drawings ?? []));
     setActiveTool("cursor");
@@ -1131,19 +1358,15 @@ function isAbortError(error: unknown) {
       state,
       newest,
     );
-    const preferred = availability["15m"].enabled ? "15m" : "1D";
+    const preferred =
+      state.intradayInterval === "1h" && availability["1h"].enabled
+        ? "1h"
+        : availability["15m"].enabled
+          ? "15m"
+          : "1D";
     const source = sourceCandlesForTimeframe(state, preferred);
-    const fallback =
-      source.findLast(
-        (candle) => candleKnowledgeAt(candle) <= newest.startedAt,
-      )
-        ? candleKnowledgeAt(
-            source.findLast(
-              (candle) => candleKnowledgeAt(candle) <= newest.startedAt,
-            )!,
-          )
-        : newest.startedAt;
-    restoreEpisodeUi(newest.id, fallback, preferred);
+    const fallback = replayCursorForEpisode(source, newest.startedAt);
+    restoreEpisodeUi(newest.id, fallback, preferred, source);
   }
 
   function selectInstrument(instrumentId: string) {
@@ -1202,22 +1425,19 @@ function isAbortError(error: unknown) {
       selectedMarketState,
       episode,
     );
-    const preferred = availability["15m"].enabled ? "15m" : "1D";
+    const preferred =
+      selectedMarketState.intradayInterval === "1h" &&
+      availability["1h"].enabled
+        ? "1h"
+        : availability["15m"].enabled
+          ? "15m"
+          : "1D";
     const source = sourceCandlesForTimeframe(
       selectedMarketState,
       preferred,
     );
-    const fallback =
-      source.findLast(
-        (candle) => candleKnowledgeAt(candle) <= episode.startedAt,
-      )
-        ? candleKnowledgeAt(
-            source.findLast(
-              (candle) => candleKnowledgeAt(candle) <= episode.startedAt,
-            )!,
-          )
-        : episode.startedAt;
-    restoreEpisodeUi(episode.id, fallback, preferred);
+    const fallback = replayCursorForEpisode(source, episode.startedAt);
+    restoreEpisodeUi(episode.id, fallback, preferred, source);
   }
 
   useEffect(() => {
@@ -1245,9 +1465,10 @@ function isAbortError(error: unknown) {
         const storedSummaries = buildInstrumentTradeSummaries(
           productionExecutions,
         );
-        const jobs = new Map(
-          bootstrap.marketDataJobs.map((job) => [job.instrumentId, job.status]),
+        const jobs = Object.fromEntries(
+          bootstrap.marketDataJobs.map((job) => [job.instrumentId, job]),
         );
+        marketDataJobsRef.current = jobs;
         const states = Object.fromEntries(
           bootstrap.reviewStates.filter((state) => showDemo || state.episodeId !== REVIEW_ID).map((state) => [state.episodeId, state]),
         );
@@ -1270,11 +1491,12 @@ function isAbortError(error: unknown) {
         setSuggestionDecisions(bootstrap.tagSuggestions.filter((suggestion) => showDemo || suggestion.episodeId !== REVIEW_ID));
         setSuggestionsHydrated(true);
         setSettings(isChartSettings(bootstrap.settings) ? bootstrap.settings : DEFAULT_CHART_SETTINGS);
+        setMarketDataJobs(jobs);
         setMarketStates(
           Object.fromEntries(
             storedSummaries.map((summary) => [
               summary.instrument.id,
-              emptyMarketState(jobs.get(summary.instrument.id) ?? "not-requested"),
+              emptyMarketState(jobs[summary.instrument.id] ?? "not-requested"),
             ]),
           ),
         );
@@ -1332,7 +1554,10 @@ function isAbortError(error: unknown) {
         try {
           return {
             instrumentId: summary.instrument.id,
-            state: await readInstrumentMarketState(summary, repository),
+            state: applyPersistedMarketDataJob(
+              await readInstrumentMarketState(summary, repository),
+              marketDataJobsRef.current[summary.instrument.id],
+            ),
           };
         } catch {
           return {
@@ -1341,7 +1566,7 @@ function isAbortError(error: unknown) {
               ...emptyMarketState("storage-error"),
               intradayStatus: "storage-error" as const,
               dailyMessage: "无法读取本地日线缓存",
-              intradayMessage: "无法读取本地 15 分钟缓存",
+              intradayMessage: "无法读取本地 1 小时缓存",
             },
           };
         }
@@ -1377,7 +1602,9 @@ function isAbortError(error: unknown) {
         selectedEpisode,
       );
       const nextTimeframe = stored?.timeframe ??
-        (selectedState.intraday.length > 0 ? "15m" : "1D");
+        (selectedState.intraday.length > 0
+          ? selectedState.intradayInterval
+          : "1D");
       const availableTimeframe = availability[nextTimeframe].enabled
         ? nextTimeframe
         : availability["15m"].enabled
@@ -1386,23 +1613,20 @@ function isAbortError(error: unknown) {
             ? "1D"
             : nextTimeframe;
       setTimeframe(availableTimeframe);
+      const source = sourceCandlesForTimeframe(
+        selectedState,
+        availableTimeframe,
+      );
       if (!stored) {
-        const source = sourceCandlesForTimeframe(
-          selectedState,
-          availableTimeframe,
-        );
         setImportedCursor(
-          source.findLast(
-            (candle) =>
-              candleKnowledgeAt(candle) <= selectedEpisode.startedAt,
-          )
-            ? candleKnowledgeAt(
-                source.findLast(
-                  (candle) =>
-                    candleKnowledgeAt(candle) <= selectedEpisode.startedAt,
-                )!,
-              )
-            : selectedEpisode.startedAt,
+          replayCursorForEpisode(source, selectedEpisode.startedAt),
+        );
+      } else if (
+        source.length > 0 &&
+        replayHistoryStartsAfter(source, stored.replayCursor)
+      ) {
+        setImportedCursor(
+          replayCursorForEpisode(source, selectedEpisode.startedAt),
         );
       }
     });
@@ -1454,14 +1678,14 @@ function isAbortError(error: unknown) {
       const timeout = window.setTimeout(() => {
         const next =
           importedTimelineCandles.find(
-            (candle) => candleKnowledgeAt(candle) > importedCursor,
+            (candle) => candleKnowledgeAt(candle) > activeCursor,
           )
             ? candleKnowledgeAt(
                 importedTimelineCandles.find(
-                  (candle) => candleKnowledgeAt(candle) > importedCursor,
+                  (candle) => candleKnowledgeAt(candle) > activeCursor,
                 )!,
               )
-            : importedCursor;
+            : activeCursor;
         setImportedCursor(next);
         if (
           !importedTimelineCandles.some(
@@ -1500,7 +1724,7 @@ function isAbortError(error: unknown) {
     frame.canGoForward,
     frame.cursor,
     importedCanGoForward,
-    importedCursor,
+    activeCursor,
     importedTimelineCandles,
     playing,
     restoring,
@@ -1526,9 +1750,11 @@ function isAbortError(error: unknown) {
       executions?: TradeExecution[];
       refreshMetadata?: boolean;
       episodeIdsByInstrument?: Readonly<Record<string, string>>;
+      batch?: boolean;
     } = {},
   ) {
-    if (instrumentIds.length === 0) return;
+    const uniqueInstrumentIds = [...new Set(instrumentIds)];
+    if (uniqueInstrumentIds.length === 0) return;
     const executions = options.executions ?? importedExecutions;
     const episodeIdsByInstrument =
       options.episodeIdsByInstrument ?? {};
@@ -1538,11 +1764,30 @@ function isAbortError(error: unknown) {
         item,
       ]),
     );
+    const marketDataFetcher = options.batch
+      ? createMarketDataFetcher(fetch)
+      : fetch;
 
-    await Promise.all(
-      instrumentIds.map(async (instrumentId) => {
+    if (options.batch) {
+      setFailedMarketDataIds([]);
+      setMarketDataRefresh({
+        ...EMPTY_MARKET_DATA_REFRESH,
+        running: true,
+        total: uniqueInstrumentIds.length,
+      });
+    }
+
+    const results = await runRefreshQueue(
+      uniqueInstrumentIds,
+      async (instrumentId) => {
         const summary = summariesById.get(instrumentId);
-        if (!summary) return;
+        if (!summary) return undefined;
+        if (options.batch) {
+          setMarketDataRefresh((current) => ({
+            ...current,
+            current: summary.instrument.name,
+          }));
+        }
         const requestSequence =
           (marketDataRequestSequences.current[instrumentId] ?? 0) + 1;
         marketDataRequestSequences.current[instrumentId] = requestSequence;
@@ -1559,7 +1804,7 @@ function isAbortError(error: unknown) {
             dailyStatus: "storage-error",
             intradayStatus: "storage-error",
             dailyMessage: "无法读取本地日线缓存",
-            intradayMessage: "无法读取本地 15 分钟缓存",
+            intradayMessage: "无法读取本地 1 小时缓存",
           };
         }
         if (
@@ -1576,6 +1821,8 @@ function isAbortError(error: unknown) {
             intradayStatus: "syncing",
             dailyMessage: undefined,
             intradayMessage: undefined,
+            dailyError: undefined,
+            intradayError: undefined,
           },
         }));
 
@@ -1600,7 +1847,10 @@ function isAbortError(error: unknown) {
             market: instrument.market,
             requestedAt,
             status: "syncing",
-            intervals: [{ interval: "1D", status: "syncing" }],
+            intervals: [
+              { interval: "1D", status: "syncing" },
+              { interval: "1h", status: "syncing" },
+            ],
           });
         } catch {
           cached = {
@@ -1613,13 +1863,13 @@ function isAbortError(error: unknown) {
         const metadataRefresh =
           options.refreshMetadata && market
             ? refreshInstrumentMetadata(
-                {
-                  market,
-                  symbol: instrument.symbol,
-                },
-                {
-                  repository:
-                    metadataRepository,
+              {
+                market,
+                symbol: instrument.symbol,
+              },
+              {
+                repository:
+                  metadataRepository,
                   fetcher: fetch,
                   signal: abortController.signal,
                 },
@@ -1670,7 +1920,15 @@ function isAbortError(error: unknown) {
             dailyStatus: "source-unavailable",
             intradayStatus: "source-unavailable",
             dailyMessage: `暂不支持 ${instrument.market} 市场日线行情`,
-            intradayMessage: `暂不支持 ${instrument.market} 市场 15 分钟行情`,
+            intradayMessage: `暂不支持 ${instrument.market} 市场 1 小时行情`,
+            dailyError: {
+              code: "source-unavailable",
+              message: `暂不支持 ${instrument.market} 市场日线行情`,
+            },
+            intradayError: {
+              code: "source-unavailable",
+              message: `暂不支持 ${instrument.market} 市场 1 小时行情`,
+            },
           };
         } else {
           const [dailyResult, intradayResult] = await Promise.allSettled([
@@ -1681,8 +1939,9 @@ function isAbortError(error: unknown) {
               currency: instrument.currency,
               required: ranges.daily,
               repository,
-              fetcher: fetch,
+              fetcher: marketDataFetcher,
               signal: abortController.signal,
+              retryUnavailable: true,
             }),
             syncIntradayMarketData({
               instrumentId,
@@ -1693,8 +1952,9 @@ function isAbortError(error: unknown) {
                 ? episodeIntradaySyncRange(requestedEpisode, market)
                 : ranges.intraday,
               repository,
-              fetcher: fetch,
+              fetcher: marketDataFetcher,
               signal: abortController.signal,
+              interval: "1h",
             }),
           ]);
           if (
@@ -1708,6 +1968,7 @@ function isAbortError(error: unknown) {
           if (dailyResult.status === "fulfilled") {
             next.daily = dailyResult.value.candles;
             next.dailyStatus = dailyResult.value.status;
+            next.dailyError = undefined;
             next.dailyMessage =
               dailyResult.value.source === "cache"
                 ? "日线已使用本地缓存"
@@ -1721,10 +1982,8 @@ function isAbortError(error: unknown) {
               next.dailyMessage = "日线已获取但覆盖状态读取失败";
             }
           } else {
-            next.dailyStatus =
-              dailyResult.reason instanceof DOMException
-                ? "storage-error"
-                : "source-unavailable";
+            next.dailyStatus = dailyStatusFromError(dailyResult.reason);
+            next.dailyError = marketDataErrorDetail(dailyResult.reason);
             next.dailyMessage =
               dailyResult.reason instanceof Error
                 ? `日线：${dailyResult.reason.message}`
@@ -1734,19 +1993,23 @@ function isAbortError(error: unknown) {
             next.intraday = intradayResult.value.candles;
             next.intradayCoverage = intradayResult.value.coverage;
             next.intradayStatus = intradayResult.value.status;
+            next.intradayError = intradayResult.value.error;
             next.intradayMessage =
-              intradayResult.value.source === "cache"
-                ? "15 分钟行情已使用本地缓存"
-                : `15 分钟行情已请求 ${intradayResult.value.requestedRanges.length} 个区间`;
+              intradayResult.value.error
+                ? `1 小时：${intradayResult.value.error.message}`
+                : intradayResult.value.source === "cache"
+                ? "1 小时行情已使用本地缓存"
+                : `1 小时行情已请求 ${intradayResult.value.requestedRanges.length} 个区间`;
           } else {
             next.intradayStatus =
               intradayResult.reason instanceof DOMException
                 ? "storage-error"
                 : "source-unavailable";
+            next.intradayError = marketDataErrorDetail(intradayResult.reason);
             next.intradayMessage =
               intradayResult.reason instanceof Error
-                ? `15 分钟：${intradayResult.reason.message}`
-                : "15 分钟行情更新失败";
+                ? `1 小时：${intradayResult.reason.message}`
+                : "1 小时行情更新失败";
           }
         }
         await metadataRefresh;
@@ -1761,26 +2024,50 @@ function isAbortError(error: unknown) {
         ) {
           return;
         }
-        try {
-          await storageClient.putMarketDataJob({
-            instrumentId,
-            symbol: instrument.symbol,
-            market: instrument.market,
-            requestedAt,
-            status: next.dailyStatus,
-            message: [next.dailyMessage, next.intradayMessage]
-              .filter(Boolean)
-              .join("；"),
-            intervals: [{
+        let overallStatus = combinedMarketDataStatus(
+          next.dailyStatus,
+          next.intradayStatus,
+        );
+        const completedJob: MarketDataJob = {
+          instrumentId,
+          symbol: instrument.symbol,
+          market: instrument.market,
+          requestedAt,
+          status: overallStatus,
+          ...(next.dailyError ?? next.intradayError
+            ? { error: next.dailyError ?? next.intradayError }
+            : {}),
+          message: [next.dailyMessage, next.intradayMessage]
+            .filter(Boolean)
+            .join("；"),
+          intervals: [
+            {
               interval: "1D",
               status: next.dailyStatus,
-              message: [next.dailyMessage, next.intradayMessage]
-                .filter(Boolean)
-                .join("；") || undefined,
-            }],
-          });
+              message: next.dailyMessage,
+              ...(next.dailyError ? { error: next.dailyError } : {}),
+            },
+            {
+              interval: "1h",
+              status: next.intradayStatus,
+              message: next.intradayMessage,
+              ...(next.intradayError ? { error: next.intradayError } : {}),
+            },
+          ],
+        };
+        try {
+          await storageClient.putMarketDataJob(completedJob);
+          marketDataJobsRef.current[instrumentId] = completedJob;
+          setMarketDataJobs((current) => ({
+            ...current,
+            [instrumentId]: completedJob,
+          }));
         } catch {
           next.dailyStatus = "storage-error";
+          overallStatus = combinedMarketDataStatus(
+            next.dailyStatus,
+            next.intradayStatus,
+          );
           next.dailyMessage = "行情缓存保留，但同步状态写入失败";
         }
         setMarketStates((current) => ({
@@ -1793,8 +2080,43 @@ function isAbortError(error: unknown) {
         ) {
           delete marketDataAbortControllers.current[instrumentId];
         }
-      }),
+        return overallStatus;
+      },
+      {
+        concurrency: options.batch ? 1 : Math.min(2, uniqueInstrumentIds.length),
+        onItemSettled: options.batch
+          ? ({ completed, result }) => {
+              const status =
+                result.status === "fulfilled" ? result.value : undefined;
+              setMarketDataRefresh((current) => ({
+                ...current,
+                completed,
+                partial:
+                  current.partial + (status === "partial" ? 1 : 0),
+                failed:
+                  current.failed +
+                  (result.status === "rejected" ||
+                  isHardMarketDataFailure(status)
+                    ? 1
+                    : 0),
+              }));
+            }
+          : undefined,
+      },
     );
+
+    if (options.batch) {
+      const failedIds = results.flatMap((result) => {
+        if (result.status === "rejected") return [result.item];
+        return isHardMarketDataFailure(result.value) ? [result.item] : [];
+      });
+      setFailedMarketDataIds(failedIds);
+      setMarketDataRefresh((current) => ({
+        ...current,
+        running: false,
+        current: undefined,
+      }));
+    }
   }
 
   function previewForImport(
@@ -2166,6 +2488,7 @@ function isAbortError(error: unknown) {
     void startMarketDataUpdate(automaticSyncIds, {
       executions: mergedExecutions,
       episodeIdsByInstrument: automaticEpisodeIds,
+      batch: automaticSyncIds.length > 1,
     });
     setPendingImport(null);
     setPendingParsedImport(null);
@@ -2267,15 +2590,15 @@ function isAbortError(error: unknown) {
   }
 
   function previousImported() {
-    const exact = importedReplay.currentCursor === importedCursor;
+    const exact = importedReplay.currentCursor === activeCursor;
     const previous = exact
       ? importedReplay.previous()
       : importedTimelineCandles.findLast(
-          (candle) => candleKnowledgeAt(candle) < importedCursor,
+          (candle) => candleKnowledgeAt(candle) < activeCursor,
         )
         ? candleKnowledgeAt(
             importedTimelineCandles.findLast(
-              (candle) => candleKnowledgeAt(candle) < importedCursor,
+              (candle) => candleKnowledgeAt(candle) < activeCursor,
             )!,
           )
         : undefined;
@@ -2283,15 +2606,15 @@ function isAbortError(error: unknown) {
   }
 
   function nextImported() {
-    const exact = importedReplay.currentCursor === importedCursor;
+    const exact = importedReplay.currentCursor === activeCursor;
     const next = exact
       ? importedReplay.next()
       : importedTimelineCandles.find(
-          (candle) => candleKnowledgeAt(candle) > importedCursor,
+          (candle) => candleKnowledgeAt(candle) > activeCursor,
         )
         ? candleKnowledgeAt(
             importedTimelineCandles.find(
-              (candle) => candleKnowledgeAt(candle) > importedCursor,
+              (candle) => candleKnowledgeAt(candle) > activeCursor,
             )!,
           )
         : undefined;
@@ -2301,10 +2624,10 @@ function isAbortError(error: unknown) {
   function nextImportedExecution() {
     const fromReplay = importedReplay.nextExecution();
     const next =
-      fromReplay > importedCursor
+      fromReplay > activeCursor
         ? fromReplay
         : selectedEpisode?.executions.find(
-            (execution) => execution.executedAt > importedCursor,
+            (execution) => execution.executedAt > activeCursor,
           )?.executedAt;
     if (next) setImportedCursor(next);
   }
@@ -2470,6 +2793,19 @@ function isAbortError(error: unknown) {
                   refreshMetadata: true,
                 })
               }
+              onUpdateAllMarketData={() =>
+                void startMarketDataUpdate(
+                  importedInstruments.map((item) => item.instrument.id),
+                  { refreshMetadata: true, batch: true },
+                )
+              }
+              onRetryFailedMarketData={() =>
+                void startMarketDataUpdate(failedMarketDataIds, {
+                  refreshMetadata: true,
+                  batch: true,
+                })
+              }
+              marketDataRefresh={marketDataRefresh}
             />
             {!showDemo && !selectedImportedInstrument ? (
               <section

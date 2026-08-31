@@ -13,6 +13,7 @@ export type Candle = {
 };
 
 const FIFTEEN_MINUTES = 15 * 60 * 1000;
+const ONE_HOUR = 60 * 60 * 1000;
 
 export function candleKnowledgeAt(candle: Candle) {
   return candle.knowledgeAt ?? candle.time;
@@ -39,6 +40,8 @@ export function marketRecordToChartCandle(
     record.knowledgeAt ??
     (record.interval === "15m"
       ? new Date(Date.parse(record.timestamp) + FIFTEEN_MINUTES).toISOString()
+      : record.interval === "1h"
+        ? new Date(Date.parse(record.timestamp) + ONE_HOUR).toISOString()
       : `${record.timestamp.slice(0, 10)}T23:59:59.999Z`);
   return {
     time: record.timestamp,

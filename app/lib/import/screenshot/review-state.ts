@@ -298,23 +298,20 @@ export function screenshotReviewReducer(
 export function resolvedReviewAccount(
   state: ScreenshotReviewState,
 ): { id: string; label: string } | undefined {
-  if (state.account?.id.trim() && state.account.label.trim()) {
-    return state.account;
+  if (state.account) {
+    return state.account.id.trim() && state.account.label.trim()
+      ? state.account
+      : undefined;
   }
 
-  const accountKeys = new Set(
-    activeDrafts(state).map((draft) => {
-      const suffix = draft.sourceAccountSuffix?.trim();
-      return suffix ? `${draft.broker}\u0000${suffix}` : "";
-    }),
-  );
-  if (accountKeys.size !== 1 || accountKeys.has("")) return undefined;
+  const brokers = new Set(activeDrafts(state).map(({ broker }) => broker));
+  if (brokers.size !== 1) return undefined;
 
-  const [broker, suffix] = [...accountKeys][0].split("\u0000");
+  const broker = [...brokers][0];
   const brokerLabel = broker === "futu" ? "富途" : "老虎";
   return {
-    id: `screenshot:${broker}:${suffix}`,
-    label: `${brokerLabel}截图账户 · ${suffix}`,
+    id: `screenshot:${broker}`,
+    label: brokerLabel,
   };
 }
 

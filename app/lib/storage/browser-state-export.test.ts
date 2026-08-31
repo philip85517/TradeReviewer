@@ -134,11 +134,20 @@ describe("exportLegacyBrowserState", () => {
 
   it("skips malformed rebuildable market cache records without blocking migration", async () => {
     await seedStore(MARKET_CANDLES, { instrumentId: "HK:700", interval: "15m", timestamp: "2025-01-02T03:00:00.000Z", open: "1", high: "2", low: "0.5", close: "1.5", volume: "10", currency: "HKD", provider: "tencent", providerSymbol: "700", adjustmentMode: "raw", fetchedAt: "2025-01-02T03:04:05.000Z" });
-    await seedStore(MARKET_CANDLES, { instrumentId: "HK:700", interval: "1h", timestamp: "2025-01-02T04:00:00.000Z", open: "1", high: "2", low: "0.5", close: "1.5", volume: "10", currency: "HKD", provider: "tencent", providerSymbol: "700", adjustmentMode: "raw", fetchedAt: "2025-01-02T04:04:05.000Z" });
+    await seedStore(MARKET_CANDLES, { instrumentId: "HK:700", interval: "1h", timestamp: "2025-01-02T04:00:00.000Z", open: "1", high: "2", low: "0.5", close: "1.5", volume: "10", currency: "HKD", provider: "tencent", providerSymbol: 700, adjustmentMode: "raw", fetchedAt: "2025-01-02T04:04:05.000Z" });
 
     const payload = await exportLegacyBrowserState();
 
     expect(payload?.marketCandles).toEqual([expect.objectContaining({ interval: "15m" })]);
+  });
+
+  it("normalizes JSON-unsafe optional values from legacy IndexedDB records", async () => {
+    await seedStore(DAILY_CANDLES, { instrumentId: "HK:700", tradingDate: "2025-01-02", open: "1", high: "2", low: "0.5", close: "1.5", volume: "10", currency: "HKD", provider: "tencent", providerSymbol: "700", adjustmentMode: "raw", fetchedAt: "2025-01-02T03:04:05.000Z", legacyOptional: undefined });
+
+    const payload = await exportLegacyBrowserState({ excludeDemo: true });
+
+    expect(payload?.dailyCandles).toEqual([expect.objectContaining({ instrumentId: "HK:700" })]);
+    expect(payload?.dailyCandles[0]).not.toHaveProperty("legacyOptional");
   });
 
   it("rejects invalid coverage and tag records instead of silently dropping them", async () => {

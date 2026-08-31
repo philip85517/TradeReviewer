@@ -3,6 +3,7 @@ import type {
   IntervalCoverageSegment,
   MarketCandleRecord,
   MarketDataProviderId,
+  NativeIntradayInterval,
   ProviderMarketCandle,
   SupportedMarket,
 } from "./contracts";
@@ -28,7 +29,7 @@ type IntradayRouteResult = {
   provider: MarketDataProviderId;
   providerSymbol: string;
   fetchedAt: string;
-  interval: "15m";
+  interval: NativeIntradayInterval;
   adjustmentMode: "raw";
   candles: ProviderMarketCandle[];
   warnings: string[];
@@ -36,7 +37,7 @@ type IntradayRouteResult = {
     instrumentId: string;
     symbol: string;
     market: SupportedMarket;
-    interval: "15m";
+    interval: NativeIntradayInterval;
     startTime: string;
     endTime: string;
   };
@@ -50,13 +51,14 @@ export type SyncIntradayMarketDataOptions = {
   market: SupportedMarket;
   currency: string;
   required: IntradayTimeRange;
+  interval?: NativeIntradayInterval;
   repository: MarketDataRepository;
   fetcher?: typeof fetch;
   signal?: AbortSignal;
 };
 
 function isProvider(value: unknown): value is MarketDataProviderId {
-  return value === "tencent" || value === "eastmoney" || value === "yahoo";
+  return value === "tencent" || value === "eastmoney" || value === "yahoo" || value === "sina" || value === "baidu";
 }
 
 function abortError() {
@@ -67,8 +69,11 @@ function shiftTime(timestamp: string, milliseconds: number) {
   return new Date(new Date(timestamp).getTime() + milliseconds).toISOString();
 }
 
-function fifteenMinuteBarKnowledgeAt(timestamp: string) {
-  return shiftTime(timestamp, 15 * 60 * 1000);
+function intradayBarKnowledgeAt(
+  timestamp: string,
+  interval: NativeIntradayInterval,
+) {
+  return shiftTime(timestamp, interval === "1h" ? 60 * 60 * 1000 : 15 * 60 * 1000);
 }
 
 const MARKET_SESSIONS: Record<
@@ -93,6 +98,7 @@ const MARKET_SESSIONS: Record<
 function expectedIntradayTimestamps(
   range: IntradayTimeRange,
   market: SupportedMarket,
+  interval: NativeIntradayInterval,
 ) {
   let tradingDates: string[];
   try {
@@ -113,7 +119,7 @@ function expectedIntradayTimestamps(
       for (
         let minute = session.startMinute;
         minute < session.endMinute;
-        minute += 15
+        minute += interval === "1h" ? 60 : 15
       ) {
         const hour = Math.floor(minute / 60);
         const minuteWithinHour = minute % 60;
@@ -135,7 +141,10 @@ function expectedIntradayTimestamps(
   );
 }
 
-function contiguousCandleRuns(candles: MarketCandleRecord[]) {
+function contiguousCandleRuns(
+  candles: MarketCandleRecord[],
+  interval: NativeIntradayInterval,
+) {
   const sorted = [...candles].sort((left, right) =>
     left.timestamp.localeCompare(right.timestamp),
   );
@@ -147,7 +156,7 @@ function contiguousCandleRuns(candles: MarketCandleRecord[]) {
       !current ||
       !previous ||
       Date.parse(candle.timestamp) - Date.parse(previous.timestamp) !==
-        15 * 60 * 1000
+        (interval === "1h" ? 60 * 60 * 1000 : 15 * 60 * 1000)
     ) {
       runs.push([candle]);
     } else {
@@ -227,7 +236,7 @@ function parseRouteResult(
   expected: Pick<
     SyncIntradayMarketDataOptions,
     "instrumentId" | "symbol" | "market"
-  >,
+  > & { interval: NativeIntradayInterval },
 ) {
   if (!value || typeof value !== "object") {
     throw new Error("行情接口响应无效");
@@ -237,7 +246,7 @@ function parseRouteResult(
     !isProvider(result.provider) ||
     typeof result.providerSymbol !== "string" ||
     typeof result.fetchedAt !== "string" ||
-    result.interval !== "15m" ||
+    result.interval !== expected.interval ||
     result.adjustmentMode !== "raw" ||
     !Array.isArray(result.candles) ||
     !Array.isArray(result.warnings)
@@ -249,7 +258,7 @@ function parseRouteResult(
     result.request.instrumentId !== expected.instrumentId ||
       result.request.symbol !== expected.symbol ||
       result.request.market !== expected.market ||
-      result.request.interval !== "15m" ||
+      result.request.interval !== expected.interval ||
       result.request.startTime !== range.startTime ||
       result.request.endTime !== range.endTime
   ) {
@@ -306,6 +315,7 @@ export async function syncIntradayMarketData({
   market,
   currency,
   required,
+  interval = "15m",
   repository,
   fetcher = fetch,
   signal,
@@ -315,26 +325,32 @@ export async function syncIntradayMarketData({
   candles: MarketCandleRecord[];
   coverage: IntervalCoverageSegment[];
   requestedRanges: IntradayTimeRange[];
+  error?: { code: string; message: string };
 }> {
   const throwIfAborted = () => {
     if (signal?.aborted) throw abortError();
   };
   throwIfAborted();
-  let coverage = await repository.getIntervalCoverage(instrumentId, "15m");
+  let coverage = await repository.getIntervalCoverage(instrumentId, interval);
   const requestedRanges = coverageGaps(required, coverage).flatMap((range) =>
     splitIntradayRequestRange(range),
   );
-  const failureResult = async (status: CoverageStatus) => ({
+  let lastError: { code: string; message: string } | undefined;
+  const failureResult = async (
+    status: CoverageStatus,
+    error?: { code: string; message: string },
+  ) => ({
     source: "network" as const,
     status,
     candles: await repository.getCandles(
       instrumentId,
-      "15m",
+      interval,
       required.startTime,
       required.endTime,
     ),
     coverage,
     requestedRanges,
+    ...(error ? { error } : {}),
   });
 
   if (requestedRanges.length === 0) {
@@ -343,7 +359,7 @@ export async function syncIntradayMarketData({
       status: coverageStatusForSegments(coverageForRange(required, coverage)),
       candles: await repository.getCandles(
         instrumentId,
-        "15m",
+        interval,
         required.startTime,
         required.endTime,
       ),
@@ -357,7 +373,7 @@ export async function syncIntradayMarketData({
     const query = new URLSearchParams({
       market,
       symbol,
-      interval: "15m",
+      interval,
       start: range.startTime,
       end: range.endTime,
     });
@@ -367,23 +383,35 @@ export async function syncIntradayMarketData({
     throwIfAborted();
     if (!response.ok) {
       const body = (await response.json().catch(() => undefined)) as
-        | { error?: { code?: string } }
+        | { error?: { code?: string; message?: string } }
         | undefined;
       throwIfAborted();
-      if (body?.error?.code === "provider-history-limit") {
+      const responseError = body?.error;
+      if (
+        responseError?.code === "provider-history-limit" ||
+        responseError?.code === "no-data"
+      ) {
+        const reason = responseError.code;
+        const error = {
+          code: reason,
+          message:
+            responseError.message ??
+            `1 小时行情请求失败（${reason}）`,
+        };
         const segment: IntervalCoverageSegment = {
-          interval: "15m",
+          interval,
           requestedStart: range.startTime,
           requestedEnd: range.endTime,
           status: "partial",
           fetchedAt: new Date().toISOString(),
-          reason: "provider-history-limit",
+          reason,
         };
         coverage = [...replaceCoverageForRange(coverage, range), segment];
+        lastError = error;
         throwIfAborted();
         await repository.commitIntervalSyncResult({
           instrumentId,
-          interval: "15m",
+          interval,
           candles: [],
           coverage,
         });
@@ -397,6 +425,15 @@ export async function syncIntradayMarketData({
           reportedStatus === "source-unavailable"
           ? reportedStatus
           : "source-unavailable",
+        {
+          code:
+            typeof reportedStatus === "string"
+              ? reportedStatus
+              : "source-unavailable",
+          message:
+            body?.error?.message ??
+            "1 小时行情请求失败",
+        },
       );
     }
     let result: IntradayRouteResult;
@@ -405,11 +442,15 @@ export async function syncIntradayMarketData({
         instrumentId,
         symbol,
         market,
+        interval,
       });
     } catch (error) {
       throwIfAborted();
       if (error instanceof IntradayRouteIdentityError) throw error;
-      return failureResult("invalid-response");
+      return failureResult("invalid-response", {
+        code: "invalid-response",
+        message: error instanceof Error ? error.message : "行情接口响应无效",
+      });
     }
     throwIfAborted();
     const historyLimited =
@@ -417,9 +458,9 @@ export async function syncIntradayMarketData({
       result.warnings.includes("provider-history-limit");
     const candles: MarketCandleRecord[] = result.candles.map((candle) => ({
       instrumentId,
-      interval: "15m",
+      interval,
       timestamp: candle.timestamp,
-      knowledgeAt: candle.knowledgeAt ?? fifteenMinuteBarKnowledgeAt(candle.timestamp),
+      knowledgeAt: candle.knowledgeAt ?? intradayBarKnowledgeAt(candle.timestamp, interval),
       open: candle.open,
       high: candle.high,
       low: candle.low,
@@ -433,7 +474,7 @@ export async function syncIntradayMarketData({
     }));
     const expectedTimestamps = historyLimited
       ? undefined
-      : expectedIntradayTimestamps(range, market);
+      : expectedIntradayTimestamps(range, market, interval);
     const returnedTimestamps = new Set(
       candles.map((item) => item.timestamp),
     );
@@ -443,8 +484,8 @@ export async function syncIntradayMarketData({
     const sparse = Boolean(missingTimestamps?.length);
     const segments: IntervalCoverageSegment[] = sparse
       ? [
-          ...contiguousCandleRuns(candles).map((run) => ({
-            interval: "15m" as const,
+          ...contiguousCandleRuns(candles, interval).map((run) => ({
+            interval,
             requestedStart: run[0].timestamp,
             requestedEnd: run.at(-1)!.timestamp,
             actualStart: run[0].timestamp,
@@ -454,7 +495,7 @@ export async function syncIntradayMarketData({
             fetchedAt: result.fetchedAt,
           })),
           {
-            interval: "15m",
+            interval,
             requestedStart: range.startTime,
             requestedEnd: range.endTime,
             status: "partial",
@@ -465,7 +506,7 @@ export async function syncIntradayMarketData({
         ]
       : [
           {
-            interval: "15m",
+            interval,
             requestedStart: range.startTime,
             requestedEnd: range.endTime,
             ...(candles.length > 0
@@ -489,7 +530,7 @@ export async function syncIntradayMarketData({
     throwIfAborted();
     await repository.commitIntervalSyncResult({
       instrumentId,
-      interval: "15m",
+      interval,
       candles,
       coverage,
       providerSymbol: {
@@ -504,11 +545,12 @@ export async function syncIntradayMarketData({
     status: coverageStatusForSegments(coverageForRange(required, coverage)),
     candles: await repository.getCandles(
       instrumentId,
-      "15m",
+      interval,
       required.startTime,
       required.endTime,
     ),
     coverage,
     requestedRanges,
+    ...(lastError ? { error: lastError } : {}),
   };
 }

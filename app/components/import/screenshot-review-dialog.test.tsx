@@ -321,12 +321,12 @@ describe("ScreenshotReviewDialog", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("status", {
-        name: "orders-1.png，需复核，4/4 个区域，2 笔成交，1 个问题",
+        name: "orders-1.png，需复核，4/4 个区域，2 笔成交，1 行待确认",
       }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("status", {
-        name: "orders-2.png，识别完成，4/4 个区域，2 笔成交，0 个问题",
+        name: "orders-2.png，识别完成，4/4 个区域，2 笔成交，0 行待确认",
       }),
     ).toBeInTheDocument();
     expect(
@@ -334,6 +334,15 @@ describe("ScreenshotReviewDialog", () => {
         name: "批次统计：总成交 4，待确认 1，自动重复 1，冲突 1",
       }),
     ).toBeInTheDocument();
+  });
+
+  it("shows the inferred broker-only account label when no account was selected", () => {
+    const state = reviewState();
+    state.account = undefined;
+
+    renderDialog({ state });
+
+    expect(screen.getByLabelText("交易账户")).toHaveValue("老虎");
   });
 
   it("filters the total table by pending, conflict, and automatic duplicate status", async () => {
@@ -761,6 +770,7 @@ describe("ScreenshotReviewDialog", () => {
     const recovery = screen.getByRole("group", {
       name: "恢复 orders-3.png",
     });
+    expect(recovery).toHaveTextContent("失败原因：无法识别版式");
     expect(recovery).toHaveTextContent("重试或移除此截图后才能继续");
     await user.click(
       within(recovery).getByRole("button", { name: "重试 orders-3.png" }),

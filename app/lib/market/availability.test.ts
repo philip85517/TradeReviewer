@@ -38,6 +38,35 @@ const dailyRecord: DailyCandleRecord = {
 };
 
 describe("resolveTimeframeAvailability", () => {
+  it("enables hourly review from native 1h candles without claiming 15m support", () => {
+    const hourlyRecord: MarketCandleRecord = {
+      ...intradayRecord,
+      interval: "1h",
+      knowledgeAt: "2025-01-02T15:30:00.000Z",
+    };
+    const result = resolveTimeframeAvailability({
+      intradayCandles: [hourlyRecord],
+      dailyCandles: [dailyRecord],
+      intradayCoverage: [
+        {
+          interval: "1h",
+          requestedStart: hourlyRecord.timestamp,
+          requestedEnd: hourlyRecord.timestamp,
+          actualStart: hourlyRecord.timestamp,
+          actualEnd: hourlyRecord.timestamp,
+          status: "complete",
+        },
+      ],
+    });
+
+    expect(result["15m"]).toEqual({
+      enabled: false,
+      reason: "原生 1 小时行情无法生成 15 分钟数据",
+    });
+    expect(result["1h"].enabled).toBe(true);
+    expect(result["4h"].enabled).toBe(true);
+  });
+
   it("enables only periods backed by the required native data", () => {
     const result = resolveTimeframeAvailability({
       intradayCandles: [intradayRecord],

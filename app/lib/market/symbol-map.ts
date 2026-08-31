@@ -52,7 +52,14 @@ export function providerSymbolCandidates(
   if (provider === "eastmoney") {
     if (market === "CN-SH") return [`1.${normalized}`];
     if (market === "CN-SZ") return [`0.${normalized}`];
+    if (market === "HK") return [`116.${normalized.padStart(5, "0")}`];
+    if (market === "US") return [`105.${normalized}`];
     return [];
+  }
+
+  if (provider === "baidu") {
+    if (market === "HK") return [normalized.padStart(5, "0")];
+    return market === "US" ? [normalized] : [];
   }
 
   return market === "US" || market === "HK" ? [normalized] : [];

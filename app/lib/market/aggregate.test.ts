@@ -127,6 +127,19 @@ describe("aggregateCandles", () => {
     });
   });
 
+  it("uses a one-hour completion boundary for native hourly records", () => {
+    expect(
+      marketRecordToChartCandle({
+        ...intradayRecord,
+        interval: "1h",
+        knowledgeAt: undefined,
+      }),
+    ).toMatchObject({
+      time: "2025-01-02T14:30:00.000Z",
+      knowledgeAt: "2025-01-02T15:30:00.000Z",
+    });
+  });
+
   it("aggregates intraday candles without crossing an hourly boundary", () => {
     const hourly = aggregateCandles(fifteenMinuteCandles, "1h");
 
@@ -245,6 +258,45 @@ describe("aggregateCandles", () => {
         low: 9,
         close: 25,
         volume: 160,
+      },
+    ]);
+  });
+
+  it("aggregates native 1h candles into a 4h candle without shifting the session open", () => {
+    const fourHour = aggregateCandles(
+      [
+        {
+          time: "2025-01-02T14:30:00.000Z",
+          knowledgeAt: "2025-01-02T15:30:00.000Z",
+          open: 10,
+          high: 11,
+          low: 9,
+          close: 10.5,
+          volume: 100,
+        },
+        {
+          time: "2025-01-02T15:30:00.000Z",
+          knowledgeAt: "2025-01-02T16:30:00.000Z",
+          open: 10.5,
+          high: 12,
+          low: 10,
+          close: 11.5,
+          volume: 120,
+        },
+      ],
+      "4h",
+      { sourceInterval: "1h" as never, market: "US" },
+    );
+
+    expect(fourHour).toEqual([
+      {
+        time: "2025-01-02T14:30:00.000Z",
+        knowledgeAt: "2025-01-02T16:30:00.000Z",
+        open: 10,
+        high: 12,
+        low: 9,
+        close: 11.5,
+        volume: 220,
       },
     ]);
   });

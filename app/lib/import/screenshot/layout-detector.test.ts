@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   FUTU_SCREENSHOT_OCR,
   TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR,
+  TIGER_FILLED_ORDERS_SCREENSHOT_OCR,
   TIGER_SCREENSHOT_OCR,
   image,
   ocrLine,
@@ -48,6 +49,114 @@ describe("screenshot layout detection", () => {
       matched: true,
       broker: "tiger",
       layoutVersion: "tiger-orders-dark-v1",
+    });
+  });
+
+  it("detects the compact Tiger filled-orders table from its complete structural signals", () => {
+    expect(
+      detectScreenshotLayout(TIGER_FILLED_ORDERS_SCREENSHOT_OCR),
+    ).toMatchObject({
+      matched: true,
+      broker: "tiger",
+      layoutVersion: "tiger-filled-orders-dark-v1",
+    });
+  });
+
+  it("fails closed when the compact filled-orders filters or headers are incomplete", () => {
+    const withoutText = (text: string) =>
+      image(
+        `tiger-filled-orders-without-${text}`,
+        TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+        TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+        TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.filter(
+          (line) => line.text !== text,
+        ),
+      );
+
+    expect(
+      detectScreenshotLayout(withoutText("股票")),
+    ).not.toMatchObject({ layoutVersion: "tiger-filled-orders-dark-v1" });
+    expect(
+      detectScreenshotLayout(withoutText("成交时间")),
+    ).not.toMatchObject({ layoutVersion: "tiger-filled-orders-dark-v1" });
+  });
+
+  it("requires at least two compact Tiger filled-order rows", () => {
+    const oneRow = image(
+      "tiger-filled-orders-one-row",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.filter(
+        (line) => line.sourceBounds.y < 650,
+      ),
+    );
+
+    expect(detectScreenshotLayout(oneRow)).toMatchObject({
+      matched: false,
+      code: "unsupported-screenshot-layout",
+    });
+  });
+
+  it("accepts a split total and price header at the same column", () => {
+    const splitHeaders = image(
+      "tiger-filled-orders-split-header",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.flatMap((line) =>
+        line.text === "总量|价格"
+          ? [
+              ocrLine("总量", line.sourceBounds.x, line.sourceBounds.y, 54, 22),
+              ocrLine(
+                "价格",
+                line.sourceBounds.x,
+                line.sourceBounds.y + 28,
+                54,
+                22,
+              ),
+            ]
+          : line,
+      ),
+    );
+
+    expect(detectScreenshotLayout(splitHeaders)).toMatchObject({
+      matched: true,
+      layoutVersion: "tiger-filled-orders-dark-v1",
+    });
+  });
+
+  it("requires seconds in both timestamp rows", () => {
+    const minuteOnly = image(
+      "tiger-filled-orders-minute-only",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.map((line) =>
+        /^\d{2}:\d{2}:\d{2}$/.test(line.text)
+          ? ocrLine(line.text.slice(0, 5), line.sourceBounds.x, line.sourceBounds.y, line.sourceBounds.width, line.sourceBounds.height)
+          : line,
+      ),
+    );
+
+    expect(detectScreenshotLayout(minuteOnly)).toMatchObject({
+      matched: false,
+      code: "unsupported-screenshot-layout",
+    });
+  });
+
+  it("counts repairable numeric OCR as complete row evidence", () => {
+    const repairable = image(
+      "tiger-filled-orders-repairable-number",
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.width,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.height,
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR.lines.map((line) =>
+        line.text === "26.380"
+          ? ocrLine("26.38O", line.sourceBounds.x, line.sourceBounds.y, line.sourceBounds.width, line.sourceBounds.height)
+          : line,
+      ),
+    );
+
+    expect(detectScreenshotLayout(repairable)).toMatchObject({
+      matched: true,
+      layoutVersion: "tiger-filled-orders-dark-v1",
     });
   });
 

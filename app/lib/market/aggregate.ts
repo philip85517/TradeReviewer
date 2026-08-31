@@ -112,7 +112,7 @@ export function aggregateCandles(
   options?: AggregationOptions,
 ): Candle[] {
   if (
-    options?.sourceInterval === "15m" &&
+    (options?.sourceInterval === "15m" || options?.sourceInterval === "1h") &&
     !["15m", "1h", "4h"].includes(timeframe)
   ) {
     throw new Error(`不能从 ${options.sourceInterval} 生成 ${timeframe}`);
@@ -129,8 +129,12 @@ export function aggregateCandles(
 
   const sorted = [...candles].sort((a, b) => a.time.localeCompare(b.time));
 
+  if (options?.sourceInterval === "1h" && timeframe === "1h") {
+    return sorted.map((candle) => ({ ...candle }));
+  }
+
   if (
-    options?.sourceInterval === "15m" &&
+    (options?.sourceInterval === "15m" || options?.sourceInterval === "1h") &&
     (timeframe === "1h" || timeframe === "4h")
   ) {
     const groups = new Map<string, { time: string; candles: Candle[] }>();
@@ -153,7 +157,10 @@ export function aggregateCandles(
     return [...groups.values()]
       .sort((left, right) => left.time.localeCompare(right.time))
       .flatMap((group) =>
-        splitAtMissingSourceBars(group.candles).map((segment, index) =>
+        splitAtMissingSourceBars(
+          group.candles,
+          options.sourceInterval === "1h" ? HOUR : 15 * 60 * 1000,
+        ).map((segment, index) =>
           aggregateGroup(segment, index === 0 ? group.time : segment[0].time),
         ),
       );
@@ -186,7 +193,7 @@ export function aggregateCandles(
   return result;
 }
 
-function splitAtMissingSourceBars(candles: Candle[]) {
+function splitAtMissingSourceBars(candles: Candle[], sourceMilliseconds: number) {
   const segments: Candle[][] = [];
   for (const candle of candles) {
     const segment = segments.at(-1);
@@ -194,7 +201,7 @@ function splitAtMissingSourceBars(candles: Candle[]) {
     if (
       !segment ||
       !previous ||
-      Date.parse(candle.time) - Date.parse(previous.time) !== 15 * 60 * 1000
+      Date.parse(candle.time) - Date.parse(previous.time) !== sourceMilliseconds
     ) {
       segments.push([candle]);
     } else {

@@ -1,6 +1,7 @@
 import type {
   DailyCandleRequest,
   IntradayCandleRequest,
+  NativeIntradayInterval,
   SupportedMarket,
 } from "./contracts";
 import { normalizeMarketSymbol } from "./symbol-map";
@@ -8,6 +9,10 @@ import { normalizeMarketSymbol } from "./symbol-map";
 const MARKETS = new Set<SupportedMarket>(["US", "HK", "CN-SH", "CN-SZ"]);
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const DAY = 86_400_000;
+const INTRADAY_MAX_NATURAL_DAYS: Record<NativeIntradayInterval, number> = {
+  "15m": 60,
+  "1h": 730,
+};
 
 export class InvalidMarketDataRequest extends Error {}
 
@@ -80,9 +85,11 @@ export function parseIntradayCandleRequest(url: URL): IntradayCandleRequest {
     );
   }
 
-  if (url.searchParams.get("interval") !== "15m") {
-    throw new InvalidMarketDataRequest("仅支持 15 分钟行情");
+  const intervalValue = url.searchParams.get("interval");
+  if (intervalValue !== "15m" && intervalValue !== "1h") {
+    throw new InvalidMarketDataRequest("仅支持 15 分钟或 1 小时行情");
   }
+  const interval = intervalValue as NativeIntradayInterval;
   const startTime = url.searchParams.get("start") ?? "";
   const endTime = url.searchParams.get("end") ?? "";
   const start = parseIsoTimestamp(startTime);
@@ -93,9 +100,10 @@ export function parseIntradayCandleRequest(url: URL): IntradayCandleRequest {
 
   const startDay = Date.parse(`${startTime.slice(0, 10)}T00:00:00Z`);
   const endDay = Date.parse(`${endTime.slice(0, 10)}T00:00:00Z`);
-  if ((endDay - startDay) / DAY + 1 > 60) {
+  const maxDays = INTRADAY_MAX_NATURAL_DAYS[interval];
+  if ((endDay - startDay) / DAY + 1 > maxDays) {
     throw new InvalidMarketDataRequest(
-      "15 分钟行情单次请求不能超过 60 个自然日",
+      `${interval === "15m" ? "15 分钟" : "1 小时"}行情单次请求不能超过 ${maxDays} 个自然日`,
     );
   }
 
@@ -103,7 +111,7 @@ export function parseIntradayCandleRequest(url: URL): IntradayCandleRequest {
     instrumentId: `${market}:${symbol}`,
     market,
     symbol,
-    interval: "15m",
+    interval,
     startTime,
     endTime,
   };

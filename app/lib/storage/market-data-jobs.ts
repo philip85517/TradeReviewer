@@ -5,10 +5,29 @@ import type { NativeMarketInterval } from "../market/contracts";
 export const MARKET_DATA_JOBS_STORAGE_KEY =
   "trade-reviewer:market-data-jobs:v1";
 
+export type MarketDataErrorDetail = {
+  code: string;
+  message: string;
+};
+
+export function isMarketDataErrorDetail(
+  value: unknown,
+): value is MarketDataErrorDetail {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const error = value as Partial<MarketDataErrorDetail>;
+  return (
+    typeof error.code === "string" &&
+    error.code.length > 0 &&
+    typeof error.message === "string" &&
+    error.message.length > 0
+  );
+}
+
 export type MarketDataIntervalJob = {
   interval: NativeMarketInterval;
   status: MarketDataSyncStatus;
   message?: string;
+  error?: MarketDataErrorDetail;
   coverageStart?: string;
   coverageEnd?: string;
 };
@@ -20,6 +39,7 @@ export type MarketDataJob = {
   requestedAt: string;
   status: MarketDataSyncStatus;
   message?: string;
+  error?: MarketDataErrorDetail;
   intervals: MarketDataIntervalJob[];
 };
 
@@ -47,10 +67,11 @@ export function isLegacyMarketDataIntervalJob(value: unknown): value is MarketDa
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<MarketDataIntervalJob>;
   return (
-    (candidate.interval === "15m" || candidate.interval === "1D") &&
+    (candidate.interval === "15m" || candidate.interval === "1h" || candidate.interval === "1D") &&
     typeof candidate.status === "string" &&
     VALID_STATUSES.includes(candidate.status) &&
     (candidate.message === undefined || typeof candidate.message === "string") &&
+    (candidate.error === undefined || isMarketDataErrorDetail(candidate.error)) &&
     (candidate.coverageStart === undefined ||
       typeof candidate.coverageStart === "string") &&
     (candidate.coverageEnd === undefined ||
@@ -69,6 +90,7 @@ export function isLegacyMarketDataJobBase(value: unknown): value is Omit<MarketD
     typeof candidate.status === "string" &&
     VALID_STATUSES.includes(candidate.status) &&
     (candidate.message === undefined || typeof candidate.message === "string") &&
+    (candidate.error === undefined || isMarketDataErrorDetail(candidate.error)) &&
     (candidate.coverageStart === undefined || typeof candidate.coverageStart === "string") &&
     (candidate.coverageEnd === undefined || typeof candidate.coverageEnd === "string")
   );

@@ -11,7 +11,12 @@ export const SQLITE_DATABASE_PATH = "/var/lib/tradereview/tradereview.sqlite";
 const databases = new Map<string, DatabaseSync>();
 
 function resolveDatabasePath(path?: string): string {
-  const candidate = path ?? process.env.TRADEREVIEW_DB_PATH ?? SQLITE_DATABASE_PATH;
+  const candidate =
+    path ??
+    process.env.TRADEREVIEW_DB_PATH ??
+    (process.env.NODE_ENV === "production"
+      ? SQLITE_DATABASE_PATH
+      : resolve(process.cwd(), ".data/tradereview.sqlite"));
 
   if (!candidate || candidate.includes("\0") || !isAbsolute(candidate)) {
     throw new Error("SQLite database path must be a non-empty absolute path");

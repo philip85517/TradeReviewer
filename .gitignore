@@ -47,5 +47,6 @@ next-env.d.ts
 # Private brokerage exports and local app data
 /trades/
 /data/
+/.data/
 *.sqlite
 *.sqlite3

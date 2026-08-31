@@ -11,7 +11,7 @@ export type MarketDataCommit = {
   instrumentId: string;
   candles: DailyCandleRecord[];
   coverage: CoverageSegment[];
-  providerSymbol: {
+  providerSymbol?: {
     provider: MarketDataProviderId;
     symbol: string;
   };

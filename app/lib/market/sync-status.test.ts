@@ -4,7 +4,11 @@ import type {
   CoverageSegment,
   IntervalCoverageSegment,
 } from "./contracts";
-import { coverageStatusForSegments } from "./sync-status";
+import {
+  combinedMarketDataStatus,
+  coverageStatusForSegments,
+  displayMarketDataStatus,
+} from "./sync-status";
 
 describe("coverageStatusForSegments", () => {
   it("does not report a whole instrument complete while any segment is partial", () => {
@@ -38,5 +42,49 @@ describe("coverageStatusForSegments", () => {
     ];
 
     expect(coverageStatusForSegments(segments)).toBe("partial");
+  });
+});
+
+describe("combinedMarketDataStatus", () => {
+  it("does not report partial when the required intraday interval was never requested", () => {
+    expect(combinedMarketDataStatus("partial", "not-requested")).toBe(
+      "not-requested",
+    );
+  });
+
+  it("surfaces an intraday source failure above usable daily coverage", () => {
+    expect(
+      combinedMarketDataStatus("partial", "source-unavailable"),
+    ).toBe("source-unavailable");
+  });
+});
+
+describe("displayMarketDataStatus", () => {
+  it("keeps an available hourly cache visible when daily data is not requested", () => {
+    expect(
+      displayMarketDataStatus("not-requested", "complete", {
+        hasDailyData: false,
+        hasIntradayData: true,
+      }),
+    ).toBe("complete");
+  });
+
+  it("uses the persisted interval failure when no hourly cache exists", () => {
+    expect(
+      displayMarketDataStatus("not-requested", "not-requested", {
+        hasDailyData: false,
+        hasIntradayData: false,
+        intradayJobStatus: "source-unavailable",
+      }),
+    ).toBe("source-unavailable");
+  });
+
+  it("keeps hourly data usable when the daily task failed without daily cache", () => {
+    expect(
+      displayMarketDataStatus("source-unavailable", "complete", {
+        hasDailyData: false,
+        hasIntradayData: true,
+      }),
+    ).toBe("partial");
   });
 });

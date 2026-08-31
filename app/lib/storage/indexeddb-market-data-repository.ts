@@ -190,11 +190,13 @@ export class IndexedDbMarketDataRepository
         instrumentId: result.instrumentId,
         segments: result.coverage,
       });
-      transaction.objectStore(PROVIDER_SYMBOLS).put({
-        instrumentId: result.instrumentId,
-        provider: result.providerSymbol.provider,
-        symbol: result.providerSymbol.symbol,
-      });
+      if (result.providerSymbol) {
+        transaction.objectStore(PROVIDER_SYMBOLS).put({
+          instrumentId: result.instrumentId,
+          provider: result.providerSymbol.provider,
+          symbol: result.providerSymbol.symbol,
+        });
+      }
       await completion;
     } finally {
       database.close();

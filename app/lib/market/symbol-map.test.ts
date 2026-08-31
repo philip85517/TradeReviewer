@@ -42,4 +42,13 @@ describe("providerSymbolCandidates", () => {
       "0.000001",
     ]);
   });
+
+  it.each([
+    ["HK", "1810", ["116.01810"]],
+    ["US", "MSFT", ["105.MSFT"]],
+  ] as const)("maps %s %s to Eastmoney secids", (market, symbol, expected) => {
+    expect(providerSymbolCandidates("eastmoney", market, symbol)).toEqual(
+      expected,
+    );
+  });
 });

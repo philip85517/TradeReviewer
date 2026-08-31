@@ -42,7 +42,8 @@ export type ScreenshotReviewImage = ScreenshotReviewImageSource &
         broker: "tiger";
         layoutVersion:
           | "tiger-orders-dark-v1"
-          | "tiger-instrument-first-dark-v1";
+          | "tiger-instrument-first-dark-v1"
+          | "tiger-filled-orders-dark-v1";
       }
   );
 
@@ -85,7 +86,8 @@ function isSupportedReviewImage(
       image.layoutVersion === "futu-orders-dark-v1") ||
     (image?.broker === "tiger" &&
       (image.layoutVersion === "tiger-orders-dark-v1" ||
-        image.layoutVersion === "tiger-instrument-first-dark-v1"))
+        image.layoutVersion === "tiger-instrument-first-dark-v1" ||
+        image.layoutVersion === "tiger-filled-orders-dark-v1"))
   );
 }
 
@@ -296,23 +298,20 @@ export function screenshotReviewReducer(
 export function resolvedReviewAccount(
   state: ScreenshotReviewState,
 ): { id: string; label: string } | undefined {
-  if (state.account?.id.trim() && state.account.label.trim()) {
-    return state.account;
+  if (state.account) {
+    return state.account.id.trim() && state.account.label.trim()
+      ? state.account
+      : undefined;
   }
 
-  const accountKeys = new Set(
-    activeDrafts(state).map((draft) => {
-      const suffix = draft.sourceAccountSuffix?.trim();
-      return suffix ? `${draft.broker}\u0000${suffix}` : "";
-    }),
-  );
-  if (accountKeys.size !== 1 || accountKeys.has("")) return undefined;
+  const brokers = new Set(activeDrafts(state).map(({ broker }) => broker));
+  if (brokers.size !== 1) return undefined;
 
-  const [broker, suffix] = [...accountKeys][0].split("\u0000");
+  const broker = [...brokers][0];
   const brokerLabel = broker === "futu" ? "富途" : "老虎";
   return {
-    id: `screenshot:${broker}:${suffix}`,
-    label: `${brokerLabel}截图账户 · ${suffix}`,
+    id: `screenshot:${broker}`,
+    label: brokerLabel,
   };
 }
 
@@ -373,8 +372,7 @@ export function reviewBlockers(
       if (
         !evidence ||
         (!evidence.confirmedByUser &&
-          (field === "executedAt" ||
-            !Number.isFinite(evidence.confidence) ||
+          (!Number.isFinite(evidence.confidence) ||
             evidence.confidence < SCREENSHOT_REVIEW_CONFIDENCE ||
             evidence.repaired))
       ) {

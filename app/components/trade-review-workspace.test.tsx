@@ -447,22 +447,6 @@ function screenshotDependencies(
   };
 }
 
-async function confirmScreenshotTimestamp(
-  user: ReturnType<typeof userEvent.setup>,
-  symbol: string,
-  timestamp: string,
-) {
-  await user.click(
-    screen.getByRole("cell", {
-      name: `${symbol} 成交时间 ${timestamp}，待确认`,
-    }),
-  );
-  await user.click(screen.getByRole("button", { name: "确认识别值" }));
-  await user.click(
-    screen.getByRole("button", { name: "关闭截图识别依据" }),
-  );
-}
-
 describe("TradeReviewWorkspace", () => {
   afterEach(() => {
     cleanup();
@@ -530,6 +514,185 @@ describe("TradeReviewWorkspace", () => {
     expect(await screen.findByText("小鹏汽车")).toBeInTheDocument();
     expect(getBootstrap).toHaveBeenCalledOnce();
     expect(legacyRead).not.toHaveBeenCalled();
+  });
+
+  it("does not label daily-only partial coverage as overall market data availability", async () => {
+    const execution = availabilityExecution({
+      id: "daily-only-xpev",
+      row: 1,
+      side: "buy",
+      executedAt: "2025-01-07T14:30:00.000Z",
+    });
+    const repository = new IndexedDbMarketDataRepository();
+    await repository.commitSyncResult({
+      instrumentId: availabilityInstrument.id,
+      candles: [
+        {
+          instrumentId: availabilityInstrument.id,
+          tradingDate: "2025-01-07",
+          open: "10",
+          high: "11",
+          low: "9",
+          close: "10.5",
+          volume: "1000",
+          currency: "USD",
+          provider: "yahoo",
+          providerSymbol: "XPEV",
+          adjustmentMode: "raw",
+          fetchedAt: "2025-01-08T00:00:00.000Z",
+        },
+      ],
+      coverage: [
+        {
+          startDate: "2023-12-04",
+          endDate: "2025-02-11",
+          status: "partial",
+          provider: "yahoo",
+          fetchedAt: "2025-01-08T00:00:00.000Z",
+          missingTradingDates: ["2025-01-06"],
+        },
+      ],
+      providerSymbol: { provider: "yahoo", symbol: "XPEV" },
+    });
+    const client = createLegacySqliteClient();
+    const getBootstrap = vi.fn().mockResolvedValue({
+      schemaVersion: 1,
+      migration: {
+        sourceFingerprint: "daily-only",
+        inserted: 0,
+        duplicate: 0,
+        conflict: 0,
+        failed: 0,
+        validationDigest: "daily-only",
+      },
+      executions: [execution],
+      importHistory: [],
+      instruments: [availabilityInstrument],
+      reviews: [],
+      reviewStates: [],
+      tagSuggestions: [],
+      marketDataJobs: [],
+      settings: {
+        version: 1,
+        showGrid: true,
+        showVolume: true,
+        showExecutions: true,
+        showAverageCost: true,
+        colorScheme: "teal-red",
+      },
+    } satisfies StorageBootstrap);
+
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+        storageClient={{ ...client, getBootstrap } as SqliteHttpClient}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "切换到 1D" })).toBeEnabled(),
+    );
+    expect(
+      screen.getByRole("button", {
+        name: /小鹏汽车XPEV .*行情源待连接/,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows an hourly cache as available even when daily data is absent", async () => {
+    const execution = availabilityExecution({
+      id: "hourly-only-xpev",
+      row: 1,
+      side: "buy",
+      executedAt: "2025-01-07T14:30:00.000Z",
+    });
+    saveImportedExecutions([execution]);
+    await cacheAvailabilityCandles(["2025-01-07T14:30:00.000Z"]);
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "切换到 1h" }),
+      ).toBeEnabled(),
+    );
+    expect(
+      screen.getByRole("button", {
+        name: /小鹏汽车XPEV .*本地行情完整/,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps a persisted hourly provider failure visible when no cache exists", async () => {
+    const execution = availabilityExecution({
+      id: "hourly-failure-xpev",
+      row: 1,
+      side: "buy",
+      executedAt: "2025-01-07T14:30:00.000Z",
+    });
+    const client = createLegacySqliteClient();
+    const getMarketData = vi.spyOn(client, "getMarketData");
+    const getBootstrap = vi.fn().mockResolvedValue({
+      schemaVersion: 1,
+      migration: null,
+      executions: [execution],
+      importHistory: [],
+      instruments: [availabilityInstrument],
+      reviews: [],
+      reviewStates: [],
+      tagSuggestions: [],
+      marketDataJobs: [
+        {
+          instrumentId: availabilityInstrument.id,
+          symbol: availabilityInstrument.symbol,
+          market: availabilityInstrument.market,
+          requestedAt: "2025-01-08T00:00:00.000Z",
+          status: "source-unavailable",
+          error: {
+            code: "source-unavailable",
+            message: "百度行情源未返回该股票数据",
+          },
+          intervals: [
+            { interval: "1D", status: "not-requested" },
+            {
+              interval: "1h",
+              status: "source-unavailable",
+              message: "1 小时行情请求失败",
+              error: {
+                code: "source-unavailable",
+                message: "百度行情源未返回该股票数据",
+              },
+            },
+          ],
+        },
+      ],
+      settings: {
+        version: 1,
+        showGrid: true,
+        showVolume: true,
+        showExecutions: true,
+        showAverageCost: true,
+        colorScheme: "teal-red",
+      },
+    } satisfies StorageBootstrap);
+
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+        storageClient={{ ...client, getBootstrap } as SqliteHttpClient}
+      />,
+    );
+
+    await waitFor(() => expect(getMarketData).toHaveBeenCalledTimes(6));
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", {
+          name: /小鹏汽车XPEV .*行情源暂不可用/,
+        }),
+      ).toBeInTheDocument(),
+    );
   });
 
   it("keeps XPEV absent when an empty SQLite bootstrap is used in production mode", async () => {
@@ -744,11 +907,6 @@ describe("TradeReviewWorkspace", () => {
     );
     await user.clear(screen.getByLabelText("交易账户"));
     await user.type(screen.getByLabelText("交易账户"), "截图测试账户");
-    await confirmScreenshotTimestamp(user, "NVDA", "2025-03-01 09:30:00");
-    await confirmScreenshotTimestamp(user, "MSFT", "2025-03-02 09:30:00");
-    await confirmScreenshotTimestamp(user, "TSLA", "2025-03-03 09:30:00");
-    await confirmScreenshotTimestamp(user, "AAPL", "2025-04-10 09:30:00");
-
     await user.click(
       screen.getByRole("cell", { name: "AAPL 价格 150，待确认" }),
     );
@@ -1489,6 +1647,33 @@ describe("TradeReviewWorkspace", () => {
     );
   });
 
+  it("starts replay at the first known candle when history begins after the trade", async () => {
+    saveImportedExecutions([
+      availabilityExecution({
+        id: "late-history-open",
+        row: 2,
+        side: "buy",
+        executedAt: "2025-01-02T10:07:00.000Z",
+      }),
+    ]);
+    await cacheAvailabilityCandles(["2025-01-03T10:00:00.000Z"]);
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+
+    await waitFor(() =>
+      expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
+        "data-cursor",
+        "2025-01-03T10:15:00.000Z",
+      ),
+    );
+    expect(
+      screen.queryByText("No candle is available at or before the replay cursor."),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "行情历史晚于交易时间，已从首根可用 K 线开始回放",
+    );
+  });
+
   it("extends an open episode through cached data after its latest fill", async () => {
     saveImportedExecutions([
       availabilityExecution({
@@ -1587,7 +1772,7 @@ describe("TradeReviewWorkspace", () => {
       "2024-12-30T14:30:00.000Z",
     );
     expect(newestIntraday.searchParams.get("end")).toBe(
-      "2025-01-06T15:14:59.999Z",
+      "2025-01-06T15:59:59.999Z",
     );
 
     await user.selectOptions(
@@ -1621,7 +1806,7 @@ describe("TradeReviewWorkspace", () => {
       "2024-12-26T14:30:00.000Z",
     );
     expect(oldIntraday.searchParams.get("end")).toBe(
-      "2025-01-02T15:14:59.999Z",
+      "2025-01-02T15:59:59.999Z",
     );
   });
 
@@ -1727,7 +1912,7 @@ describe("TradeReviewWorkspace", () => {
       "2024-12-30T14:30:00.000Z",
     );
     expect(intradayRequest.searchParams.get("end")).toBe(
-      "2025-01-06T15:14:59.999Z",
+      "2025-01-06T15:59:59.999Z",
     );
   });
 
@@ -1843,7 +2028,7 @@ describe("TradeReviewWorkspace", () => {
       "2024-12-30T14:30:00.000Z",
     );
     expect(intradayRequest.searchParams.get("end")).toBe(
-      "2025-01-06T15:14:59.999Z",
+      "2025-01-06T15:59:59.999Z",
     );
   });
 
@@ -2668,7 +2853,7 @@ describe("TradeReviewWorkspace", () => {
     await waitFor(() =>
       expect(
         screen.getByRole("region", { name: "15m 行情详情" }),
-      ).toHaveTextContent("15 分钟：offline"),
+      ).toHaveTextContent("1 小时：offline"),
     );
     expect(
       screen.getByRole("region", { name: "1D 行情详情" }),

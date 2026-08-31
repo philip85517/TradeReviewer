@@ -177,6 +177,72 @@ describe("useScreenshotImport", () => {
   beforeEach(() => vi.clearAllMocks());
   afterEach(() => cleanup());
 
+  it("defaults screenshot review to Beijing time and counts pending rows once", async () => {
+    const pendingDraft = draft("image-1", {
+      fieldEvidence: {
+        ...draft("base").fieldEvidence,
+        price: {
+          rawText: "100?",
+          confidence: 0.72,
+          repaired: true,
+          confirmedByUser: false,
+        },
+      },
+    });
+    const { dependencies } = setupDependencies({
+      parseFutu: () => [pendingDraft],
+    });
+    const { result } = renderHook(() =>
+      useScreenshotImport({
+        currentExecutions: () => [],
+        onPrepared: vi.fn(),
+        dependencies,
+      }),
+    );
+
+    await act(async () => {
+      await result.current.start([file("one.png")]);
+    });
+
+    expect(result.current.state?.sourceTimezone).toBe("Asia/Shanghai");
+    expect(result.current.images[0]).toMatchObject({
+      state: "needs-review",
+      issueCount: 1,
+    });
+  });
+
+  it("preserves the compact Tiger filled-orders layout in review metadata", async () => {
+    const { dependencies } = setupDependencies({
+      detectLayout: () => ({
+        matched: true,
+        broker: "tiger",
+        layoutVersion: "tiger-filled-orders-dark-v1",
+        confidence: 1,
+      }),
+    });
+    const { result } = renderHook(() =>
+      useScreenshotImport({
+        currentExecutions: () => [],
+        onPrepared: vi.fn(),
+        dependencies,
+      }),
+    );
+
+    await act(async () => {
+      await result.current.start([file("filled-orders.png")]);
+    });
+
+    expect(result.current.state?.images).toEqual([
+      {
+        imageId: "image-1",
+        fingerprint: "fingerprint-1",
+        captureIndex: 0,
+        broker: "tiger",
+        layoutVersion: "tiger-filled-orders-dark-v1",
+      },
+    ]);
+  });
+
   it("recognizes images sequentially in selection order without progress reordering", async () => {
     const first = deferred<OcrImageResult>();
     const second = deferred<OcrImageResult>();
@@ -281,9 +347,10 @@ describe("useScreenshotImport", () => {
       await result.current.start([file("one.png"), file("two.png")]);
     });
     expect(result.current.images.map(({ state }) => state)).toEqual([
-      "needs-review",
+      "complete",
       "failed",
     ]);
+    expect(result.current.images[1].error).toBe("OCR 识别失败：OCR failed");
     const completedDraft = result.current.state?.drafts[0];
     expect(result.current.state?.drafts).toHaveLength(1);
 
@@ -291,11 +358,38 @@ describe("useScreenshotImport", () => {
       await result.current.retryImage("image-2");
     });
     expect(result.current.images.map(({ state }) => state)).toEqual([
-      "needs-review",
-      "needs-review",
+      "complete",
+      "complete",
     ]);
     expect(result.current.state?.drafts).toHaveLength(2);
     expect(result.current.state?.drafts[0]).toBe(completedDraft);
+  });
+
+  it("reports the layout detection phase when a screenshot has no supported layout", async () => {
+    const { dependencies } = setupDependencies({
+      detectLayout: () => ({
+        matched: false,
+        code: "unsupported-screenshot-layout",
+        message: "暂不支持该截图版式，请使用老虎或富途的交易历史截图",
+      }),
+    });
+    const { result } = renderHook(() =>
+      useScreenshotImport({
+        currentExecutions: () => [],
+        onPrepared: vi.fn(),
+        dependencies,
+      }),
+    );
+
+    await act(async () => {
+      await result.current.start([file("unsupported.png")]);
+    });
+
+    expect(result.current.images[0]).toMatchObject({
+      state: "failed",
+      error:
+        "版式识别失败：暂不支持该截图版式，请使用老虎或富途的交易历史截图",
+    });
   });
 
   it("backfills a first failed image after a later image establishes the shared layout", async () => {
@@ -321,7 +415,7 @@ describe("useScreenshotImport", () => {
 
     expect(result.current.images.map(({ state }) => state)).toEqual([
       "failed",
-      "needs-review",
+      "complete",
     ]);
     expect(result.current.state?.images).toContainEqual({
       imageId: "image-1",
@@ -449,9 +543,9 @@ describe("useScreenshotImport", () => {
     });
 
     expect(result.current.images.map(({ state }) => state)).toEqual([
-      "needs-review",
+      "complete",
       "failed",
-      "needs-review",
+      "complete",
     ]);
     expect(result.current.state?.images).toEqual([
       {
@@ -525,7 +619,7 @@ describe("useScreenshotImport", () => {
       await thirdStarted.promise;
     });
     expect(result.current.images.map(({ state }) => state)).toEqual([
-      "needs-review",
+      "complete",
       "failed",
       "recognizing",
     ]);
@@ -635,7 +729,7 @@ describe("useScreenshotImport", () => {
 
     expect(createOcrEngine).toHaveBeenCalledTimes(2);
     expect(recognize).toHaveBeenCalledTimes(1);
-    expect(result.current.images[0].state).toBe("needs-review");
+    expect(result.current.images[0].state).toBe("complete");
   });
 
   it("removing one image releases only its URL and drafts", async () => {
@@ -805,6 +899,15 @@ describe("useScreenshotImport", () => {
     );
     await act(async () => {
       await result.current.start([file("one.png")]);
+    });
+    act(() =>
+      result.current.dispatch({
+        type: "set-account",
+        accountId: "",
+        accountLabel: " ",
+      }),
+    );
+    await act(async () => {
       await result.current.completeReview();
     });
     expect(onPrepared).not.toHaveBeenCalled();

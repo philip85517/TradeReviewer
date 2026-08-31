@@ -1,10 +1,12 @@
 export type SupportedMarket = "US" | "HK" | "CN-SH" | "CN-SZ";
 
-export type MarketDataProviderId = "tencent" | "eastmoney" | "yahoo";
+export type MarketDataProviderId = "tencent" | "eastmoney" | "yahoo" | "sina" | "baidu";
 
 export type AdjustmentMode = "raw";
 
-export type NativeMarketInterval = "15m" | "1D";
+export type NativeIntradayInterval = "15m" | "1h";
+
+export type NativeMarketInterval = NativeIntradayInterval | "1D";
 
 export type DailyCandleRecord = {
   instrumentId: string;
@@ -115,7 +117,7 @@ export type IntradayCandleRequest = {
   instrumentId: string;
   symbol: string;
   market: SupportedMarket;
-  interval: "15m";
+  interval: NativeIntradayInterval;
   startTime: string;
   endTime: string;
 };
@@ -124,7 +126,7 @@ export type IntradayProviderResult = {
   provider: MarketDataProviderId;
   providerSymbol: string;
   fetchedAt: string;
-  interval: "15m";
+  interval: NativeIntradayInterval;
   candles: ProviderMarketCandle[];
   warnings: string[];
 };

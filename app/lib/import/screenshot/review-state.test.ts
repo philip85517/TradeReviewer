@@ -4,9 +4,13 @@ import type {
   ScreenshotField,
   ScreenshotTradeDraft,
 } from "./contracts";
-import { TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR } from "./__fixtures__/ocr-lines";
+import {
+  TIGER_FILLED_ORDERS_SCREENSHOT_OCR,
+  TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR,
+} from "./__fixtures__/ocr-lines";
 import { parseTigerScreenshot } from "./tiger-screenshot";
 import {
+  resolvedReviewAccount,
   reviewBlockers,
   screenshotReviewReducer,
   type ScreenshotReviewState,
@@ -267,6 +271,50 @@ describe("screenshotReviewReducer", () => {
 });
 
 describe("reviewBlockers", () => {
+  it("accepts parsed compact Tiger filled-orders provenance for review", () => {
+    const [parsed] = parseTigerScreenshot(
+      TIGER_FILLED_ORDERS_SCREENSHOT_OCR,
+    );
+    const current: ScreenshotReviewState = {
+      batchId: "screenshot-batch:filled-orders",
+      images: [
+        {
+          imageId: TIGER_FILLED_ORDERS_SCREENSHOT_OCR.imageId,
+          fingerprint: "anonymous-fixture",
+          captureIndex: 0,
+          broker: "tiger",
+          layoutVersion: "tiger-filled-orders-dark-v1",
+        },
+      ],
+      drafts: [parsed],
+      deletedDraftIds: new Set(),
+      sourceTimezone: "Asia/Hong_Kong",
+      account: { id: "account-1", label: "Tiger account" },
+    };
+
+    expect(
+      reviewBlockers(current).filter(
+        ({ code, draftId, field }) =>
+          code === "invalid-field" && draftId === parsed.id && !field,
+      ),
+    ).toEqual([]);
+  });
+
+  it("infers a broker-only account label when the screenshot has no account suffix", () => {
+    const current = state([
+      draft("image-1:tiger:0", { sourceAccountSuffix: undefined }),
+    ]);
+    current.account = undefined;
+
+    expect(resolvedReviewAccount(current)).toEqual({
+      id: "screenshot:tiger",
+      label: "老虎",
+    });
+    expect(reviewBlockers(current)).not.toContainEqual(
+      expect.objectContaining({ code: "missing-account" }),
+    );
+  });
+
   it("accepts parsed Tiger instrument-first provenance for review", () => {
     const [parsed] = parseTigerScreenshot(
       TIGER_INSTRUMENT_FIRST_SCREENSHOT_OCR,
@@ -351,7 +399,7 @@ describe("reviewBlockers", () => {
     );
   });
 
-  it("requires explicit confirmation for an exact-second timestamp at any score", () => {
+  it("auto-accepts an exact-second timestamp with sufficient confidence", () => {
     const unconfirmedTime = draft("image-1:tiger:0", {
       fieldEvidence: {
         ...draft().fieldEvidence,
@@ -364,16 +412,48 @@ describe("reviewBlockers", () => {
       },
     });
 
-    expect(reviewBlockers(state([unconfirmedTime]))).toContainEqual(
+    expect(reviewBlockers(state([unconfirmedTime]))).toEqual([]);
+  });
+
+  it("still requires confirmation for low-confidence or repaired timestamps", () => {
+    const lowConfidence = draft("image-1:tiger:0", {
+      fieldEvidence: {
+        ...draft().fieldEvidence,
+        executedAt: {
+          rawText: "2024/06/05 14:39:25",
+          confidence: 0.8499,
+          repaired: false,
+          confirmedByUser: false,
+        },
+      },
+    });
+    const repaired = draft("image-1:tiger:0", {
+      fieldEvidence: {
+        ...draft().fieldEvidence,
+        executedAt: {
+          rawText: "2024/06/05 14:39:25",
+          confidence: 1,
+          repaired: true,
+          confirmedByUser: false,
+        },
+      },
+    });
+
+    expect(reviewBlockers(state([lowConfidence]))).toContainEqual(
       expect.objectContaining({
         code: "unconfirmed-field",
-        draftId: unconfirmedTime.id,
+        field: "executedAt",
+      }),
+    );
+    expect(reviewBlockers(state([repaired]))).toContainEqual(
+      expect.objectContaining({
+        code: "unconfirmed-field",
         field: "executedAt",
       }),
     );
   });
 
-  it("blocks missing timezone and missing account at batch scope", () => {
+  it("blocks missing timezone at batch scope when the broker account is inferable", () => {
     const current = state([
       draft("image-1:tiger:0", { sourceAccountSuffix: undefined }),
     ]);
@@ -383,8 +463,10 @@ describe("reviewBlockers", () => {
     expect(reviewBlockers(current)).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ code: "missing-timezone" }),
-        expect.objectContaining({ code: "missing-account" }),
       ]),
+    );
+    expect(reviewBlockers(current)).not.toContainEqual(
+      expect.objectContaining({ code: "missing-account" }),
     );
   });
 

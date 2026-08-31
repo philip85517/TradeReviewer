@@ -124,6 +124,117 @@ describe("splitIntradayRequestRange", () => {
 });
 
 describe("syncIntradayMarketData", () => {
+  it("syncs native hourly candles and persists an hourly knowledge boundary", async () => {
+    const repo = repository();
+    const fetcher = vi.fn<typeof fetch>(async (input) => {
+      const url = new URL(String(input), "http://localhost");
+      return Response.json({
+        provider: "yahoo",
+        providerSymbol: "01810.HK",
+        fetchedAt: "2025-02-01T00:00:00.000Z",
+        interval: "1h",
+        adjustmentMode: "raw",
+        warnings: [],
+        request: {
+          instrumentId: "HK:1810",
+          symbol: "1810",
+          market: "HK",
+          interval: "1h",
+          startTime: url.searchParams.get("start"),
+          endTime: url.searchParams.get("end"),
+        },
+        candles: [
+          {
+            timestamp: "2025-01-02T02:30:00.000Z",
+            open: "34.1",
+            high: "35",
+            low: "33.8",
+            close: "34.5",
+            volume: "1200",
+          },
+        ],
+      });
+    });
+    const options = {
+      ...syncOptions(repo, fetcher),
+      interval: "1h" as never,
+    };
+
+    const result = await syncIntradayMarketData(options);
+
+    expect(fetcher.mock.calls[0]?.[0]).toContain("interval=1h");
+    expect(result).toMatchObject({
+      source: "network",
+      status: "complete",
+      candles: [
+        expect.objectContaining({
+          interval: "1h",
+          knowledgeAt: "2025-01-02T03:30:00.000Z",
+        }),
+      ],
+    });
+    expect(
+      await repo.getCandles(
+        "HK:1810",
+        "1h" as never,
+        "2025-01-02T02:00:00.000Z",
+        "2025-01-02T04:00:00.000Z",
+      ),
+    ).toHaveLength(1);
+  });
+
+  it("accepts and persists the Sina US hourly provider identity", async () => {
+    const repo = repository();
+    const fetcher = vi.fn<typeof fetch>(async (input) => {
+      const url = new URL(String(input), "http://localhost");
+      return Response.json({
+        provider: "sina",
+        providerSymbol: "MSFT",
+        fetchedAt: "2026-08-31T00:00:00.000Z",
+        interval: "1h",
+        adjustmentMode: "raw",
+        warnings: [],
+        request: {
+          instrumentId: "US:MSFT",
+          symbol: "MSFT",
+          market: "US",
+          interval: "1h",
+          startTime: url.searchParams.get("start"),
+          endTime: url.searchParams.get("end"),
+        },
+        candles: [{
+          timestamp: "2026-02-20T14:30:00.000Z",
+          open: "397.00",
+          high: "398.50",
+          low: "396.50",
+          close: "398.00",
+          volume: "1200",
+        }],
+      });
+    });
+
+    const result = await syncIntradayMarketData({
+      instrumentId: "US:MSFT",
+      symbol: "MSFT",
+      market: "US",
+      currency: "USD",
+      required: {
+        startTime: "2026-02-20T14:30:00.000Z",
+        endTime: "2026-02-20T14:30:00.000Z",
+      },
+      interval: "1h",
+      repository: repo,
+      fetcher,
+    });
+
+    expect(result).toMatchObject({
+      source: "network",
+      status: "complete",
+      candles: [expect.objectContaining({ provider: "sina", close: "398.00" })],
+    });
+    expect(await repo.getProviderSymbol("US:MSFT", "sina")).toBe("MSFT");
+  });
+
   it("does not request the network for complete cached 15m coverage", async () => {
     const repo = repository();
     await repo.commitIntervalSyncResult({
@@ -175,6 +286,31 @@ describe("syncIntradayMarketData", () => {
       source: "network",
       status: "source-unavailable",
       candles: [candle],
+    });
+  });
+
+  it("returns the provider error detail with retained candles", async () => {
+    const repo = repository();
+    const fetcher = vi.fn<typeof fetch>(async () =>
+      Response.json(
+        {
+          error: {
+            code: "source-unavailable",
+            message: "百度行情源未返回该股票数据",
+          },
+        },
+        { status: 502 },
+      ),
+    );
+
+    const result = await syncIntradayMarketData(syncOptions(repo, fetcher));
+
+    expect(result).toMatchObject({
+      status: "source-unavailable",
+      error: {
+        code: "source-unavailable",
+        message: "百度行情源未返回该股票数据",
+      },
     });
   });
 
@@ -533,6 +669,37 @@ describe("syncIntradayMarketData", () => {
     expect(second.source).toBe("cache");
     expect(second.status).toBe("partial");
     expect(noLoopFetcher).not.toHaveBeenCalled();
+  });
+
+  it("persists a no-data error as a stable partial coverage segment", async () => {
+    const repo = repository();
+    const fetcher = vi.fn<typeof fetch>(async () =>
+      Response.json(
+        { error: { code: "no-data", message: "该日期没有公开行情" } },
+        { status: 502 },
+      ),
+    );
+
+    const first = await syncIntradayMarketData(
+      syncOptions(repo, fetcher),
+    );
+
+    expect(first.status).toBe("partial");
+    expect(first.coverage).toEqual([
+      expect.objectContaining({
+        interval: "15m",
+        status: "partial",
+        reason: "no-data",
+      }),
+    ]);
+
+    const secondFetcher = vi.fn<typeof fetch>();
+    const second = await syncIntradayMarketData(
+      syncOptions(repo, secondFetcher),
+    );
+    expect(second.source).toBe("cache");
+    expect(second.status).toBe("partial");
+    expect(secondFetcher).not.toHaveBeenCalled();
   });
 
   it("rejects an intraday route response without echoed request identity", async () => {

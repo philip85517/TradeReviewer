@@ -1,8 +1,8 @@
-import { mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   initializeSqlite,
@@ -80,6 +80,30 @@ describe("SQLite storage foundation", () => {
     expect(() => openSqliteDatabase("/")).toThrow("unsafe");
     expect(() => openSqliteDatabase("relative.sqlite")).toThrow("absolute path");
     expect(() => openSqliteDatabase("/tmp/../unsafe.sqlite")).toThrow("unsafe");
+  });
+
+  it("uses a project-local database by default outside production", () => {
+    const directory = mkdtempSync(join(tmpdir(), "trade-review-dev-"));
+    temporaryDirectories.push(directory);
+    const previousCwd = process.cwd();
+    const previousDatabasePath = process.env.TRADEREVIEW_DB_PATH;
+
+    process.chdir(directory);
+    vi.stubEnv("NODE_ENV", "development");
+    delete process.env.TRADEREVIEW_DB_PATH;
+
+    try {
+      openSqliteDatabase();
+      expect(existsSync(join(directory, ".data", "tradereview.sqlite"))).toBe(true);
+    } finally {
+      process.chdir(previousCwd);
+      vi.unstubAllEnvs();
+      if (previousDatabasePath === undefined) {
+        delete process.env.TRADEREVIEW_DB_PATH;
+      } else {
+        process.env.TRADEREVIEW_DB_PATH = previousDatabasePath;
+      }
+    }
   });
 
   it("reopens a usable connection after a cached connection is closed", () => {

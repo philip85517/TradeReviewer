@@ -4,6 +4,7 @@ import {
   InvalidMarketDataRequest,
   parseDailyCandleRequest,
 } from "../../../lib/market/request-policy";
+import type { ProviderRouter } from "../../../lib/market/providers/router";
 
 const CACHE_CONTROL =
   "public, max-age=21600, stale-while-revalidate=86400";
@@ -51,84 +52,92 @@ function isRateLimited(request: Request) {
   return recent.length > MAX_REQUESTS_PER_MINUTE;
 }
 
-export async function GET(request: Request) {
-  let dailyRequest;
-  try {
-    dailyRequest = parseDailyCandleRequest(new URL(request.url));
-  } catch (error) {
-    return json(
-      {
-        error: {
-          code: "invalid-request",
-          message:
-            error instanceof InvalidMarketDataRequest
-              ? error.message
-              : "请求参数无效",
-        },
-      },
-      400,
-    );
-  }
+type RouterFactory = (providerFetch: typeof fetch) => ProviderRouter;
 
-  if (isRateLimited(request)) {
-    return json(
-      {
-        error: {
-          code: "rate-limited",
-          message: "请求过于频繁，请稍后再试",
-        },
-      },
-      429,
-    );
-  }
-
-  let timeout: ReturnType<typeof setTimeout> | undefined;
-  const controller = new AbortController();
-  const providerFetch: typeof fetch = (input, init) =>
-    fetch(input, { ...init, signal: controller.signal });
-  try {
-    const result = await Promise.race([
-      createProviderRouter(providerFetch).fetchDaily(dailyRequest),
-      new Promise<never>((_, reject) => {
-        timeout = setTimeout(
-          () => {
-            controller.abort();
-            reject(
-              new MarketDataProviderError(
-                "source-timeout",
-                "行情源响应超时",
-              ),
-            );
+export function createDailyGetForTest(
+  createRouter: RouterFactory = createProviderRouter,
+) {
+  return async function GET(request: Request) {
+    let dailyRequest;
+    try {
+      dailyRequest = parseDailyCandleRequest(new URL(request.url));
+    } catch (error) {
+      return json(
+        {
+          error: {
+            code: "invalid-request",
+            message:
+              error instanceof InvalidMarketDataRequest
+                ? error.message
+                : "请求参数无效",
           },
-          REQUEST_TIMEOUT_MS,
-        );
-      }),
-    ]);
-    return json({
-      ...result,
-      request: dailyRequest,
-      adjustmentMode: "raw",
-    });
-  } catch (error) {
-    const providerError =
-      error instanceof MarketDataProviderError ? error : undefined;
-    const status =
-      providerError?.code === "source-rate-limited"
-        ? 429
-        : providerError?.code === "source-forbidden"
-          ? 403
-          : 502;
-    return json(
-      {
-        error: {
-          code: providerError?.code ?? "source-unavailable",
-          message:
-            error instanceof Error ? error.message : "行情源暂时不可用",
         },
-      },
-      status,
-    );
-  } finally {
-    if (timeout) clearTimeout(timeout);
-  }
+        400,
+      );
+    }
+
+    if (isRateLimited(request)) {
+      return json(
+        {
+          error: {
+            code: "rate-limited",
+            message: "请求过于频繁，请稍后再试",
+          },
+        },
+        429,
+      );
+    }
+
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const controller = new AbortController();
+    const providerFetch: typeof fetch = (input, init) =>
+      fetch(input, { ...init, signal: controller.signal });
+    try {
+      const result = await Promise.race([
+        createRouter(providerFetch).fetchDaily(dailyRequest),
+        new Promise<never>((_, reject) => {
+          timeout = setTimeout(
+            () => {
+              controller.abort();
+              reject(
+                new MarketDataProviderError(
+                  "source-timeout",
+                  "行情源响应超时",
+                ),
+              );
+            },
+            REQUEST_TIMEOUT_MS,
+          );
+        }),
+      ]);
+      return json({
+        ...result,
+        request: dailyRequest,
+        adjustmentMode: "raw",
+      });
+    } catch (error) {
+      const providerError =
+        error instanceof MarketDataProviderError ? error : undefined;
+      const status =
+        providerError?.code === "source-rate-limited"
+          ? 429
+          : providerError?.code === "source-forbidden"
+            ? 403
+            : 502;
+      return json(
+        {
+          error: {
+            code: providerError?.code ?? "source-unavailable",
+            message:
+              error instanceof Error ? error.message : "行情源暂时不可用",
+          },
+        },
+        status,
+      );
+    } finally {
+      if (timeout) clearTimeout(timeout);
+    }
+  };
 }
+
+export const GET = createDailyGetForTest();

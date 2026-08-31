@@ -394,6 +394,111 @@ describe("syncMarketData", () => {
     expect(secondFetcher).not.toHaveBeenCalled();
   });
 
+  it("persists Tiger daily candles and avoids duplicate writes on a cache-only resync", async () => {
+    const repo = repository();
+    const commitSpy = vi.spyOn(repo, "commitSyncResult");
+    const fetcher = vi.fn<typeof fetch>(async () =>
+      Response.json({
+        provider: "tiger",
+        providerSymbol: "AAPL",
+        fetchedAt: "2026-08-31T00:00:00.000Z",
+        adjustmentMode: "raw",
+        warnings: [],
+        request: {
+          instrumentId: "US:AAPL",
+          symbol: "AAPL",
+          market: "US",
+          startDate: "2025-01-02",
+          endDate: "2025-01-03",
+        },
+        candles: [
+          {
+            tradingDate: "2025-01-02",
+            open: "100",
+            high: "101",
+            low: "99",
+            close: "100.5",
+            volume: "1200",
+          },
+          {
+            tradingDate: "2025-01-03",
+            open: "101",
+            high: "102",
+            low: "100",
+            close: "101.5",
+            volume: "1300",
+          },
+        ],
+      }),
+    );
+
+    const first = await syncMarketData({
+      instrumentId: "US:AAPL",
+      symbol: "AAPL",
+      market: "US",
+      currency: "USD",
+      required: { startDate: "2025-01-02", endDate: "2025-01-03" },
+      repository: repo,
+      fetcher,
+    });
+    const secondFetcher = vi.fn<typeof fetch>();
+    const second = await syncMarketData({
+      instrumentId: "US:AAPL",
+      symbol: "AAPL",
+      market: "US",
+      currency: "USD",
+      required: { startDate: "2025-01-02", endDate: "2025-01-03" },
+      repository: repo,
+      fetcher: secondFetcher,
+    });
+
+    expect(first).toMatchObject({ source: "network", status: "complete" });
+    expect(commitSpy).toHaveBeenCalledTimes(1);
+    expect(commitSpy).toHaveBeenCalledWith({
+      instrumentId: "US:AAPL",
+      candles: [
+        expect.objectContaining({
+          instrumentId: "US:AAPL",
+          tradingDate: "2025-01-02",
+          close: "100.5",
+          currency: "USD",
+          provider: "tiger",
+          providerSymbol: "AAPL",
+          adjustmentMode: "raw",
+          fetchedAt: "2026-08-31T00:00:00.000Z",
+        }),
+        expect.objectContaining({
+          instrumentId: "US:AAPL",
+          tradingDate: "2025-01-03",
+          provider: "tiger",
+          providerSymbol: "AAPL",
+        }),
+      ],
+      coverage: [
+        expect.objectContaining({
+          startDate: "2025-01-02",
+          endDate: "2025-01-03",
+          status: "complete",
+          provider: "tiger",
+          fetchedAt: "2026-08-31T00:00:00.000Z",
+          missingTradingDates: [],
+        }),
+      ],
+      providerSymbol: { provider: "tiger", symbol: "AAPL" },
+    });
+    expect(await repo.getDailyCandles("US:AAPL", "2025-01-02", "2025-01-03")).toEqual([
+      expect.objectContaining({ provider: "tiger", providerSymbol: "AAPL" }),
+      expect.objectContaining({ provider: "tiger", providerSymbol: "AAPL" }),
+    ]);
+    expect(await repo.getCoverage("US:AAPL")).toEqual([
+      expect.objectContaining({ provider: "tiger", status: "complete" }),
+    ]);
+    expect(await repo.getProviderSymbol("US:AAPL", "tiger")).toBe("AAPL");
+    expect(second).toMatchObject({ source: "cache", status: "complete" });
+    expect(secondFetcher).not.toHaveBeenCalled();
+    expect(commitSpy).toHaveBeenCalledTimes(1);
+  });
+
   it("keeps coverage partial when a provider omits an expected trading day", async () => {
     const repo = repository();
     const fetcher = vi.fn<typeof fetch>(async () =>

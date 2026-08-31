@@ -48,6 +48,19 @@ npm run dev
 
 打开 `http://localhost:3000/`。
 
+### Tiger OpenAPI 本地配置
+
+仅当需要 Tiger OpenAPI 作为已配置行情源时，额外执行以下命令：
+
+```bash
+python3 -m pip install -r requirements-tiger.txt
+TIGER_OPENAPI_CONFIG=/absolute/path/tiger_openapi_config.properties npm run dev
+```
+
+- Tiger 配置文件必须放在仓库外部，并通过 `TIGER_OPENAPI_CONFIG` 指向绝对路径。
+- 固定版本的官方 SDK 在 `private_key_pk8` 和 `private_key_pk1` 同时存在时，会优先解析 `private_key_pk8`。
+- 只有美股和港股的日线、`1h` 请求会优先尝试 Tiger；其他市场或周期继续走现有公开行情源。
+
 ## Docker Compose 部署
 
 生产部署使用 Docker Compose，默认目标为 `/Users/zhoulin/projects/TradeReview`。第一次 `make deploy` 会自动初始化本机配置、SQLite、备份、日志和目标侧运维入口；如需预先编辑配置，可先运行 `make deploy-config`。日常命令包括 `make deploy-code`、`make deploy-status`、`make deploy-backup`、`make deploy-restore BACKUP=/absolute/path/to/backup.sqlite`、`make deploy-rollback` 和 `make deploy-down`。完整的凭据排除、失败恢复、保留策略、备份事务和 SQLite/浏览器数据边界见 [部署指南](deploy/DEPLOYMENT.md)。
@@ -55,6 +68,7 @@ npm run dev
 ## 验证
 
 ```bash
+npm run test:unit -- app/api/market-data/daily/route.test.ts app/api/market-data/intraday/route.test.ts app/lib/market/sync-service.test.ts --run
 npm run test:unit
 npm run typecheck
 npm run lint

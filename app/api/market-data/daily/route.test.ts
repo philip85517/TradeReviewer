@@ -1,15 +1,46 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { GET } from "./route";
+import type { ProviderResult } from "../../../lib/market/contracts";
+import type { ProviderRouter } from "../../../lib/market/providers/router";
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.resetModules();
 });
 
 describe("GET /api/market-data/daily", () => {
+  async function loadRouteWithRouter(router: ProviderRouter) {
+    const routeModule = await import("./route");
+    return routeModule.createDailyGetForTest(() => router);
+  }
+
+  function dailyTigerResult(
+    overrides: Partial<ProviderResult> = {},
+  ): ProviderResult {
+    return {
+      provider: "tiger",
+      providerSymbol: "AAPL",
+      fetchedAt: "2026-08-31T00:00:00.000Z",
+      warnings: [],
+      candles: [
+        {
+          tradingDate: "2025-01-02",
+          open: "100",
+          high: "101",
+          low: "99",
+          close: "100.5",
+          volume: "1200",
+        },
+      ],
+      ...overrides,
+    };
+  }
+
   it("rejects unsupported markets before contacting a provider", async () => {
     const providerFetch = vi.fn();
     vi.stubGlobal("fetch", providerFetch);
+
+    const { GET } = await import("./route");
 
     const response = await GET(
       new Request(
@@ -28,6 +59,7 @@ describe("GET /api/market-data/daily", () => {
   });
 
   it("rejects requests longer than 500 natural days", async () => {
+    const { GET } = await import("./route");
     const response = await GET(
       new Request(
         "http://localhost/api/market-data/daily?market=US&symbol=XPEV&start=2023-01-01&end=2025-01-31",
@@ -56,6 +88,8 @@ describe("GET /api/market-data/daily", () => {
         }),
       ),
     );
+
+    const { GET } = await import("./route");
 
     const response = await GET(
       new Request(
@@ -101,11 +135,88 @@ describe("GET /api/market-data/daily", () => {
         }),
       ),
     );
+    const { GET } = await import("./route");
     const url =
       "http://localhost/api/market-data/daily?market=HK&symbol=1810&start=2025-01-01&end=2025-01-31";
 
     for (let index = 0; index < 31; index += 1) {
       expect((await GET(new Request(url))).status).toBe(200);
     }
+  });
+
+  it("returns the existing success shape for configured US Tiger requests", async () => {
+    const GET = await loadRouteWithRouter({
+      fetchDaily: vi.fn(async () => dailyTigerResult()),
+      fetchIntraday: vi.fn(),
+    });
+
+    const response = await GET(
+      new Request(
+        "http://localhost/api/market-data/daily?market=US&symbol=AAPL&start=2025-01-02&end=2025-01-03",
+      ),
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      provider: "tiger",
+      providerSymbol: "AAPL",
+      adjustmentMode: "raw",
+      request: {
+        instrumentId: "US:AAPL",
+        symbol: "AAPL",
+        market: "US",
+        startDate: "2025-01-02",
+        endDate: "2025-01-03",
+      },
+      candles: [{ tradingDate: "2025-01-02", close: "100.5" }],
+    });
+  });
+
+  it("returns the public provider path when Tiger is not configured", async () => {
+    const GET = await loadRouteWithRouter({
+      fetchDaily: vi.fn(async () =>
+        dailyTigerResult({
+          provider: "yahoo",
+          providerSymbol: "AAPL",
+        }),
+      ),
+      fetchIntraday: vi.fn(),
+    });
+
+    const response = await GET(
+      new Request(
+        "http://localhost/api/market-data/daily?market=US&symbol=AAPL&start=2025-01-02&end=2025-01-03",
+      ),
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      provider: "yahoo",
+      providerSymbol: "AAPL",
+    });
+  });
+
+  it("returns a public fallback result instead of 502 when Tiger fails upstream", async () => {
+    const GET = await loadRouteWithRouter({
+      fetchDaily: vi.fn(async () =>
+        dailyTigerResult({
+          provider: "yahoo",
+          providerSymbol: "AAPL",
+        }),
+      ),
+      fetchIntraday: vi.fn(),
+    });
+
+    const response = await GET(
+      new Request(
+        "http://localhost/api/market-data/daily?market=US&symbol=AAPL&start=2025-01-02&end=2025-01-03",
+      ),
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      provider: "yahoo",
+      candles: [{ tradingDate: "2025-01-02" }],
+    });
   });
 });

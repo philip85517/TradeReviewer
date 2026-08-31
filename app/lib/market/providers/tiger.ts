@@ -40,7 +40,7 @@ function normalizeTigerSymbol(
 ) {
   const normalized = normalizeMarketSymbol(market, symbol);
   if (market === "HK") {
-    return normalized.padStart(4, "0");
+    return normalized.padStart(5, "0");
   }
   return normalized;
 }

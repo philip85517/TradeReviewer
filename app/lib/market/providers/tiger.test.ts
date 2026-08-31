@@ -36,7 +36,7 @@ describe("Tiger provider", () => {
     });
   });
 
-  it("normalizes HK symbols to Tiger's raw four-digit contract code", async () => {
+  it("normalizes HK symbols to Tiger's raw five-digit contract code", async () => {
     const requests: Parameters<TigerRunBars>[0][] = [];
     const provider = new TigerProvider(
       { configPath: "/tmp/tiger.properties" },
@@ -63,12 +63,47 @@ describe("Tiger provider", () => {
     });
 
     expect(requests).toEqual([{
-      symbol: "0700",
+      symbol: "00700",
       period: "day",
       beginTime: "2025-01-01",
       endTime: "2025-01-03",
     }]);
-    expect(result.providerSymbol).toBe("0700");
+    expect(result.providerSymbol).toBe("00700");
+  });
+
+  it("normalizes four-digit HK symbols to Tiger's raw five-digit contract code", async () => {
+    const requests: Parameters<TigerRunBars>[0][] = [];
+    const provider = new TigerProvider(
+      { configPath: "/tmp/tiger.properties" },
+      async (request) => {
+        requests.push(request);
+        return [{
+          symbol: request.symbol,
+          time: Date.parse("2025-01-02T02:30:00.000Z"),
+          open: 510,
+          high: 515,
+          low: 508,
+          close: 512,
+          volume: 900,
+        }];
+      },
+    );
+
+    const result = await provider.fetchDaily({
+      instrumentId: "HK:1810",
+      symbol: "1810",
+      market: "HK",
+      startDate: "2025-01-01",
+      endDate: "2025-01-03",
+    });
+
+    expect(requests).toEqual([{
+      symbol: "01810",
+      period: "day",
+      beginTime: "2025-01-01",
+      endTime: "2025-01-03",
+    }]);
+    expect(result.providerSymbol).toBe("01810");
   });
 
   it("maps 1h requests to Tiger 60min bars with UTC millisecond boundaries", async () => {

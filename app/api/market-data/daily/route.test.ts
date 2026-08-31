@@ -1,6 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { ProviderResult } from "../../../lib/market/contracts";
+import type {
+  MarketDataProvider,
+  ProviderResult,
+  SupportedMarket,
+} from "../../../lib/market/contracts";
+import { MarketDataProviderError } from "../../../lib/market/providers/errors";
+import { createProviderRouter } from "../../../lib/market/providers/router";
 import type { ProviderRouter } from "../../../lib/market/providers/router";
 
 afterEach(() => {
@@ -12,6 +18,15 @@ describe("GET /api/market-data/daily", () => {
   async function loadRouteWithRouter(router: ProviderRouter) {
     const routeModule = await import("./route");
     return routeModule.createDailyGetForTest(() => router);
+  }
+
+  async function loadRouteWithRealRouter(
+    options?: Parameters<typeof createProviderRouter>[1],
+  ) {
+    const routeModule = await import("./route");
+    return routeModule.createDailyGetForTest((providerFetch) =>
+      createProviderRouter(providerFetch, options),
+    );
   }
 
   function dailyTigerResult(
@@ -33,6 +48,20 @@ describe("GET /api/market-data/daily", () => {
         },
       ],
       ...overrides,
+    };
+  }
+
+  function fakeTigerProvider(
+    fetchDaily: MarketDataProvider["fetchDaily"],
+    supportedMarkets: SupportedMarket[] = ["US", "HK"],
+  ): MarketDataProvider {
+    return {
+      id: "tiger",
+      supports: (market) => supportedMarkets.includes(market),
+      fetchDaily,
+      fetchIntraday: vi.fn(async () => {
+        throw new Error("unexpected intraday call");
+      }),
     };
   }
 
@@ -172,16 +201,45 @@ describe("GET /api/market-data/daily", () => {
     });
   });
 
-  it("returns the public provider path when Tiger is not configured", async () => {
-    const GET = await loadRouteWithRouter({
-      fetchDaily: vi.fn(async () =>
-        dailyTigerResult({
-          provider: "yahoo",
-          providerSymbol: "AAPL",
-        }),
-      ),
-      fetchIntraday: vi.fn(),
-    });
+  it("uses a public provider through createProviderRouter when Tiger is not configured", async () => {
+    const hosts: string[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (input) => {
+      const url = new URL(String(input));
+      hosts.push(url.host);
+      if (url.host === "web.ifzq.gtimg.cn") {
+        return Response.json({ data: {} });
+      }
+      if (url.host.includes("eastmoney.com")) {
+        return new Response("unavailable", { status: 503 });
+      }
+      if (url.host === "query1.finance.yahoo.com") {
+        return Response.json({
+          chart: {
+            result: [
+              {
+                meta: { symbol: "AAPL" },
+                timestamp: [1735776000],
+                indicators: {
+                  quote: [
+                    {
+                      open: [100],
+                      high: [101],
+                      low: [99],
+                      close: [100.5],
+                      volume: [1200],
+                    },
+                  ],
+                },
+              },
+            ],
+            error: null,
+          },
+        });
+      }
+      throw new Error(`unexpected provider host: ${url.host}`);
+    }));
+
+    const GET = await loadRouteWithRealRouter({ environment: {} });
 
     const response = await GET(
       new Request(
@@ -193,18 +251,60 @@ describe("GET /api/market-data/daily", () => {
     expect(await response.json()).toMatchObject({
       provider: "yahoo",
       providerSymbol: "AAPL",
+      candles: [{ tradingDate: "2025-01-02", close: "100.5" }],
     });
+    expect(hosts).toContain("web.ifzq.gtimg.cn");
+    expect(hosts).toContain("query1.finance.yahoo.com");
   });
 
-  it("returns a public fallback result instead of 502 when Tiger fails upstream", async () => {
-    const GET = await loadRouteWithRouter({
-      fetchDaily: vi.fn(async () =>
-        dailyTigerResult({
-          provider: "yahoo",
-          providerSymbol: "AAPL",
-        }),
-      ),
-      fetchIntraday: vi.fn(),
+  it("falls back to a public provider through createProviderRouter after a Tiger upstream error", async () => {
+    const tigerFetchDaily = vi.fn(async () => {
+      throw new MarketDataProviderError(
+        "source-unavailable",
+        "Tiger unavailable",
+      );
+    });
+    const hosts: string[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (input) => {
+      const url = new URL(String(input));
+      hosts.push(url.host);
+      if (url.host === "web.ifzq.gtimg.cn") {
+        return Response.json({ data: {} });
+      }
+      if (url.host.includes("eastmoney.com")) {
+        return new Response("unavailable", { status: 503 });
+      }
+      if (url.host === "query1.finance.yahoo.com") {
+        return Response.json({
+          chart: {
+            result: [
+              {
+                meta: { symbol: "AAPL" },
+                timestamp: [1735776000],
+                indicators: {
+                  quote: [
+                    {
+                      open: [100],
+                      high: [101],
+                      low: [99],
+                      close: [100.5],
+                      volume: [1200],
+                    },
+                  ],
+                },
+              },
+            ],
+            error: null,
+          },
+        });
+      }
+      throw new Error(`unexpected provider host: ${url.host}`);
+    }));
+
+    const GET = await loadRouteWithRealRouter({
+      environment: {},
+      tigerConfig: { configPath: "/tmp/tiger.properties" },
+      tigerProvider: fakeTigerProvider(tigerFetchDaily),
     });
 
     const response = await GET(
@@ -218,5 +318,8 @@ describe("GET /api/market-data/daily", () => {
       provider: "yahoo",
       candles: [{ tradingDate: "2025-01-02" }],
     });
+    expect(tigerFetchDaily).toHaveBeenCalledOnce();
+    expect(hosts).toContain("web.ifzq.gtimg.cn");
+    expect(hosts).toContain("query1.finance.yahoo.com");
   });
 });

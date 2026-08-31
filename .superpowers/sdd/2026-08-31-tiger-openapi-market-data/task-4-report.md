@@ -21,8 +21,8 @@ Changed files:
 Implementation summary:
 
 - Added route-level test seams that preserve the public `GET` handlers while allowing a fake provider router to be injected in tests.
-- Added daily route tests for configured Tiger success, unconfigured public-provider success, and public fallback success after Tiger upstream failure.
-- Added intraday route tests for configured Tiger `1h` success, unconfigured public-provider success, and public fallback success after Tiger upstream failure.
+- Added daily route tests for configured Tiger success plus deterministic `createProviderRouter` seam coverage for the unconfigured public-provider path and Tiger-error fallback path without real network access.
+- Added intraday route tests for configured Tiger `1h` success plus deterministic `createProviderRouter` seam coverage for the unconfigured public-provider path and Tiger-error fallback path without real network access.
 - Added a sync regression test proving Tiger daily candles, Tiger coverage/provider symbol persistence, and no duplicate write on a cache-only resync.
 - Documented local Tiger setup in the README with the required commands, external-config requirement, pinned SDK key precedence, and US/HK daily-plus-`1h` scope.
 
@@ -234,13 +234,13 @@ Smoke status:
 
 - Blocked before service startup and HTTP verification because the optional SDK install did not complete within the task window on this host.
 - No external config path, account data, private key data, raw SDK response, traceback, or credential-derived output was recorded.
-- No Tiger HTTP smoke requests were executed, so there is no provider/candle-count/timestamp/error-code summary to report.
+- No Tiger HTTP smoke requests were executed, so there is no provider/candle-count/timestamp/error-code summary to report. Real fallback smoke verification remains pending for a later controller-run HTTP pass.
 
 Self-review:
 
 - `git diff --check` returned no whitespace or patch-format issues.
 - The route changes keep the public `GET` exports intact and only add an internal test seam.
-- The new tests cover configured Tiger success, unconfigured public-provider success, Tiger-to-public fallback, and Tiger sync persistence/cached-resync behavior.
+- The new tests cover configured Tiger success plus deterministic `createProviderRouter` seam behavior for unconfigured public-provider selection and Tiger-to-public fallback; real HTTP smoke verification is still pending.
 
 Commit command:
 

@@ -1,6 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { IntradayProviderResult } from "../../../lib/market/contracts";
+import type {
+  IntradayProviderResult,
+  MarketDataProvider,
+  SupportedMarket,
+} from "../../../lib/market/contracts";
+import { MarketDataProviderError } from "../../../lib/market/providers/errors";
+import { createProviderRouter } from "../../../lib/market/providers/router";
 import type { ProviderRouter } from "../../../lib/market/providers/router";
 import {
   InvalidMarketDataRequest,
@@ -75,6 +81,15 @@ describe("GET /api/market-data/intraday", () => {
     return routeModule.createIntradayGetForTest(() => router);
   }
 
+  async function loadRouteWithRealRouter(
+    options?: Parameters<typeof createProviderRouter>[1],
+  ) {
+    const routeModule = await import("./route");
+    return routeModule.createIntradayGetForTest((providerFetch) =>
+      createProviderRouter(providerFetch, options),
+    );
+  }
+
   function tigerIntradayResult(
     overrides: Partial<IntradayProviderResult> = {},
   ): IntradayProviderResult {
@@ -95,6 +110,20 @@ describe("GET /api/market-data/intraday", () => {
         },
       ],
       ...overrides,
+    };
+  }
+
+  function fakeTigerProvider(
+    fetchIntraday: MarketDataProvider["fetchIntraday"],
+    supportedMarkets: SupportedMarket[] = ["US", "HK"],
+  ): MarketDataProvider {
+    return {
+      id: "tiger",
+      supports: (market) => supportedMarkets.includes(market),
+      fetchDaily: vi.fn(async () => {
+        throw new Error("unexpected daily call");
+      }),
+      fetchIntraday,
     };
   }
 
@@ -289,39 +318,74 @@ describe("GET /api/market-data/intraday", () => {
     });
   });
 
-  it("returns the public provider path when Tiger is not configured for US hourly", async () => {
-    const GET = await loadRouteWithRouter({
-      fetchDaily: vi.fn(),
-      fetchIntraday: vi.fn(async () =>
-        tigerIntradayResult({
-          provider: "sina",
-          providerSymbol: "AAPL",
-        }),
-      ),
-    });
+  it("uses a public provider through createProviderRouter when Tiger is not configured for HK hourly", async () => {
+    const hosts: string[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (input) => {
+      const url = new URL(String(input));
+      hosts.push(url.host);
+      if (url.host === "web.ifzq.gtimg.cn") {
+        return Response.json({ data: {} });
+      }
+      if (url.host.includes("eastmoney.com")) {
+        return Response.json({
+          data: {
+            code: "00700",
+            klines: ["2025-01-02 09:30:00,34.1,34.5,35,33.8,1200"],
+          },
+        });
+      }
+      throw new Error(`unexpected provider host: ${url.host}`);
+    }));
+
+    const GET = await loadRouteWithRealRouter({ environment: {} });
 
     const response = await GET(
       new Request(
-        "http://localhost/api/market-data/intraday?market=US&symbol=AAPL&interval=1h&start=2025-01-02T00%3A00%3A00.000Z&end=2025-01-03T23%3A59%3A59.000Z",
+        "http://localhost/api/market-data/intraday?market=HK&symbol=700&interval=1h&start=2025-01-02T00%3A00%3A00.000Z&end=2025-01-03T23%3A59%3A59.000Z",
       ),
     );
 
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({
-      provider: "sina",
-      providerSymbol: "AAPL",
+      provider: "eastmoney",
+      providerSymbol: "116.00700",
+      candles: [{ timestamp: "2025-01-02T01:30:00.000Z", close: "34.5" }],
     });
+    expect(hosts).toEqual([
+      "web.ifzq.gtimg.cn",
+      "33.push2his.eastmoney.com",
+    ]);
   });
 
-  it("returns a public fallback result instead of 502 when Tiger hourly fetch fails upstream", async () => {
-    const GET = await loadRouteWithRouter({
-      fetchDaily: vi.fn(),
-      fetchIntraday: vi.fn(async () =>
-        tigerIntradayResult({
-          provider: "yahoo",
-          providerSymbol: "0700.HK",
-        }),
-      ),
+  it("falls back to a public provider through createProviderRouter after a Tiger hourly fetch error", async () => {
+    const tigerFetchIntraday = vi.fn(async () => {
+      throw new MarketDataProviderError(
+        "source-unavailable",
+        "Tiger unavailable",
+      );
+    });
+    const hosts: string[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (input) => {
+      const url = new URL(String(input));
+      hosts.push(url.host);
+      if (url.host === "web.ifzq.gtimg.cn") {
+        return Response.json({ data: {} });
+      }
+      if (url.host.includes("eastmoney.com")) {
+        return Response.json({
+          data: {
+            code: "00700",
+            klines: ["2025-01-02 09:30:00,34.1,34.5,35,33.8,1200"],
+          },
+        });
+      }
+      throw new Error(`unexpected provider host: ${url.host}`);
+    }));
+
+    const GET = await loadRouteWithRealRouter({
+      environment: {},
+      tigerConfig: { configPath: "/tmp/tiger.properties" },
+      tigerProvider: fakeTigerProvider(tigerFetchIntraday),
     });
 
     const response = await GET(
@@ -332,8 +396,13 @@ describe("GET /api/market-data/intraday", () => {
 
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({
-      provider: "yahoo",
+      provider: "eastmoney",
       candles: [{ timestamp: "2025-01-02T01:30:00.000Z" }],
     });
+    expect(tigerFetchIntraday).toHaveBeenCalledOnce();
+    expect(hosts).toEqual([
+      "web.ifzq.gtimg.cn",
+      "33.push2his.eastmoney.com",
+    ]);
   });
 });

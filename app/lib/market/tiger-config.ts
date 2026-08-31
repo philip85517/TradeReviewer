@@ -1,5 +1,5 @@
 import * as fs from "node:fs";
-import path from "node:path";
+import * as path from "node:path";
 
 export type TigerPropertiesSummary = {
   hasPrivateKeyPk1: boolean;
@@ -12,6 +12,10 @@ export type TigerPropertiesSummary = {
 
 export type TigerOpenApiConfig = TigerPropertiesSummary & {
   configPath: string;
+};
+
+type TigerConfigEnvironment = {
+  TIGER_OPENAPI_CONFIG?: string;
 };
 
 const EMPTY_SUMMARY: TigerPropertiesSummary = {
@@ -87,7 +91,7 @@ function isValidTigerConfig(summary: TigerPropertiesSummary) {
 }
 
 export function readTigerOpenApiConfig(
-  environment: NodeJS.ProcessEnv = process.env,
+  environment: TigerConfigEnvironment = process.env as TigerConfigEnvironment,
 ): TigerOpenApiConfig | undefined {
   const configuredPath = environment.TIGER_OPENAPI_CONFIG?.trim();
   if (!configuredPath) {

@@ -3,6 +3,9 @@ import type {
   ChildProcess,
   SpawnOptionsWithoutStdio,
 } from "node:child_process";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { join, resolve } from "node:path";
+import { tmpdir } from "node:os";
 import { PassThrough, Writable } from "node:stream";
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -31,6 +34,8 @@ class FakeStdin extends Writable {
 }
 
 const originalTigerConfig = process.env.TIGER_OPENAPI_CONFIG;
+const originalPythonPath = process.env.PYTHONPATH;
+const tempDirs: string[] = [];
 
 type FakeChildProcess = ChildProcess & {
   stdout: PassThrough;
@@ -56,17 +61,67 @@ function sampleRequest(): TigerBarRequest {
   };
 }
 
+function createTempDir() {
+  const dir = mkdtempSync(join(tmpdir(), "tiger-process-test-"));
+  tempDirs.push(dir);
+  return dir;
+}
+
+function writeTigerSdkStub(rootDir: string) {
+  const tigeropenDir = join(rootDir, "tigeropen");
+  const quoteDir = join(tigeropenDir, "quote");
+  mkdirSync(quoteDir, { recursive: true });
+  writeFileSync(join(tigeropenDir, "__init__.py"), "", "utf8");
+  writeFileSync(join(quoteDir, "__init__.py"), "", "utf8");
+  writeFileSync(
+    join(tigeropenDir, "tiger_open_config.py"),
+    [
+      "class TigerOpenClientConfig:",
+      "    def __init__(self, props_path=None):",
+      "        self.props_path = props_path",
+    ].join("\n"),
+    "utf8",
+  );
+  writeFileSync(
+    join(quoteDir, "quote_client.py"),
+    [
+      "class QuoteClient:",
+      "    def __init__(self, client_config):",
+      "        self.client_config = client_config",
+      "",
+      "    def get_bars(self, *args, **kwargs):",
+      "        return None",
+    ].join("\n"),
+    "utf8",
+  );
+}
+
+function writeConfig(dir: string, contents: string) {
+  const configPath = join(dir, "tiger.properties");
+  writeFileSync(configPath, contents, "utf8");
+  return configPath;
+}
+
 describe("runTigerBars", () => {
   beforeEach(() => {
     process.env.TIGER_OPENAPI_CONFIG = "/tmp/tiger.properties";
+    delete process.env.PYTHONPATH;
   });
 
   afterEach(() => {
     if (originalTigerConfig === undefined) {
       delete process.env.TIGER_OPENAPI_CONFIG;
-      return;
+    } else {
+      process.env.TIGER_OPENAPI_CONFIG = originalTigerConfig;
     }
-    process.env.TIGER_OPENAPI_CONFIG = originalTigerConfig;
+    if (originalPythonPath === undefined) {
+      delete process.env.PYTHONPATH;
+    } else {
+      process.env.PYTHONPATH = originalPythonPath;
+    }
+    for (const dir of tempDirs.splice(0)) {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 
   it("writes the exact request JSON and returns parsed bars from a one-line response", async () => {
@@ -235,5 +290,61 @@ describe("runTigerBars", () => {
         message: "tiger SDK 未安装或不可用",
       }),
     );
+  });
+
+  it("fails when tiger_id is missing from the helper config without exposing values", async () => {
+    const stubDir = createTempDir();
+    writeTigerSdkStub(stubDir);
+    process.env.PYTHONPATH = stubDir;
+    process.env.TIGER_OPENAPI_CONFIG = writeConfig(
+      stubDir,
+      "account=acct-123\nprivate_key_pk8=fixture-secret-value\n",
+    );
+
+    const resultPromise = runTigerBars(sampleRequest(), {
+      helperPath: resolve("scripts/tiger-market-data.py"),
+    });
+
+    await expect(resultPromise).rejects.toEqual(
+      expect.objectContaining<Partial<MarketDataProviderError>>({
+        code: "source-unavailable",
+        message: "Tiger OpenAPI 行情暂时不可用",
+      }),
+    );
+
+    await resultPromise.catch((error: unknown) => {
+      const message = error instanceof Error ? error.message : String(error);
+      expect(message).not.toContain("fixture-secret-value");
+      expect(message).not.toContain("acct-123");
+      expect(message).not.toContain("tiger_id");
+    });
+  });
+
+  it("fails when the helper config has an empty private key without exposing values", async () => {
+    const stubDir = createTempDir();
+    writeTigerSdkStub(stubDir);
+    process.env.PYTHONPATH = stubDir;
+    process.env.TIGER_OPENAPI_CONFIG = writeConfig(
+      stubDir,
+      "tiger_id=20150338\naccount=acct-123\nprivate_key_pk8=   \nprivate_key_pk1=\n",
+    );
+
+    const resultPromise = runTigerBars(sampleRequest(), {
+      helperPath: resolve("scripts/tiger-market-data.py"),
+    });
+
+    await expect(resultPromise).rejects.toEqual(
+      expect.objectContaining<Partial<MarketDataProviderError>>({
+        code: "source-unavailable",
+        message: "Tiger OpenAPI 行情暂时不可用",
+      }),
+    );
+
+    await resultPromise.catch((error: unknown) => {
+      const message = error instanceof Error ? error.message : String(error);
+      expect(message).not.toContain("20150338");
+      expect(message).not.toContain("acct-123");
+      expect(message).not.toContain("private_key_pk8");
+    });
   });
 });

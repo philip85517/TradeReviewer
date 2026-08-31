@@ -10,6 +10,37 @@ def fail(category: str) -> "NoReturn":
     raise SystemExit(1)
 
 
+def parse_properties(contents: str):
+    properties = {}
+    for raw_line in contents.splitlines():
+      line = raw_line.strip()
+      if not line or line.startswith("#") or line.startswith(";"):
+          continue
+      separator_index = line.find("=")
+      if separator_index == -1:
+          continue
+      key = line[:separator_index].strip()
+      value = line[separator_index + 1 :].strip()
+      properties[key] = value
+    return properties
+
+
+def load_and_validate_properties(config_path: str):
+    try:
+        with open(config_path, "r", encoding="utf-8") as handle:
+            properties = parse_properties(handle.read())
+    except Exception:
+        fail("CONFIG_UNAVAILABLE")
+
+    tiger_id = properties.get("tiger_id", "")
+    account = properties.get("account", "")
+    private_key_pk8 = properties.get("private_key_pk8", "")
+    private_key_pk1 = properties.get("private_key_pk1", "")
+
+    if not tiger_id or not account or (not private_key_pk8 and not private_key_pk1):
+        fail("CONFIG_UNAVAILABLE")
+
+
 def load_sdk():
     try:
         from tigeropen.quote.quote_client import QuoteClient
@@ -59,6 +90,7 @@ def build_client():
     if not config_path:
         fail("CONFIG_UNAVAILABLE")
 
+    load_and_validate_properties(config_path)
     QuoteClient, TigerOpenClientConfig = load_sdk()
 
     try:

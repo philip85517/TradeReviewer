@@ -565,3 +565,59 @@ Output:
 
 ```text
 ```
+
+## Fix Round 2
+
+Date: 2026-09-01
+
+### Review Item Addressed
+
+- Replaced the remaining `"error" in result` branch in `app/lib/market/tiger-process.ts` with discriminant-based narrowing: `if (!result.ok) { reject(result.error); return; }`.
+
+### Verification
+
+Command:
+
+```bash
+npm run test:unit -- app/lib/market/tiger-process.test.ts --run
+```
+
+Output:
+
+```text
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/lib/market/tiger-process.test.ts --run
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/1024/TradeReview
+
+(node:65050) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  00:34:40
+   Duration  2.11s (transform 90ms, setup 245ms, import 68ms, tests 350ms, environment 1.09s)
+```
+
+Command:
+
+```bash
+npx eslint app/lib/market/tiger-process.ts app/lib/market/tiger-process.test.ts
+```
+
+Output:
+
+```text
+```
+
+Command:
+
+```bash
+npx tsc --noEmit --pretty false --project tsconfig.json
+```
+
+Output:
+
+```text
+```

@@ -171,7 +171,7 @@ export async function runTigerBars(
       child.stdout.removeAllListeners();
       child.stderr.removeAllListeners();
       child.removeAllListeners();
-      if ("error" in result) {
+      if (!result.ok) {
         reject(result.error);
         return;
       }

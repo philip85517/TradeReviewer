@@ -210,40 +210,29 @@ Build complete. Run `vinext start` to start the production server.
 
 Smoke verification:
 
-```bash
-python3 -m pip install -r requirements-tiger.txt
-```
-
-```text
-Defaulting to user installation because normal site-packages is not writeable
-Collecting tigeropen==3.7.1
-  Using cached tigeropen-3.7.1-py3-none-any.whl (600 kB)
-Collecting getmac
-  Downloading getmac-0.9.5-py2.py3-none-any.whl (35 kB)
-Collecting cryptography
-  Downloading cryptography-50.0.1.tar.gz (880 kB)
-  Installing build dependencies: finished with status 'done'
-  Getting requirements to build wheel: started
-  Getting requirements to build wheel: finished with status 'done'
-  Installing backend dependencies: started
-  Installing backend dependencies: finished with status 'done'
-  Preparing wheel metadata: started
-```
+Controller-verified local HTTP smoke summary with external Tiger config and `tigeropen==3.7.1`:
 
 Smoke status:
 
-- Blocked before service startup and HTTP verification because the optional SDK install did not complete within the task window on this host.
-- No external config path, account data, private key data, raw SDK response, traceback, or credential-derived output was recorded.
-- No Tiger HTTP smoke requests were executed, so there is no provider/candle-count/timestamp/error-code summary to report. Real fallback smoke verification remains pending for a later controller-run HTTP pass.
+- US daily `AAPL` `2025-01-02..2025-01-03`: HTTP `200`, provider `tiger`, `1` candle.
+- US `1h` `AAPL` `2026-08-25..2026-08-29`: HTTP `200`, provider `tiger`, `28` candles, first/last `2026-08-25T13:30:00Z` / `2026-08-28T19:30:00Z`.
+- HK daily `700` `2025-01-02..2025-01-03`: HTTP `200`, provider `tencent`, `2` candles after Tiger returned an empty result and public-source fallback engaged.
+- HK `1h` `700` `2026-08-25..2026-08-29`: HTTP `200`, provider `eastmoney`, `24` candles after Tiger returned an empty result and public-source fallback engaged.
+- No external config values, credentials, account identifiers, raw SDK payloads, tracebacks, or other secret material were recorded in this report.
+
+`1h` boundary fix note:
+
+- The original naive datetime string handling caused a timezone boundary mismatch.
+- Commit `530dc0b` switched the Tiger request range to 13-digit UTC millisecond strings, and the controller-verified `1h` smoke above confirmed the corrected window.
 
 Self-review:
 
 - `git diff --check` returned no whitespace or patch-format issues.
 - The route changes keep the public `GET` exports intact and only add an internal test seam.
-- The new tests cover configured Tiger success plus deterministic `createProviderRouter` seam behavior for unconfigured public-provider selection and Tiger-to-public fallback; real HTTP smoke verification is still pending.
+- The `c7b85c7` seam tests cover configured Tiger success plus deterministic `createProviderRouter` behavior for unconfigured public-provider selection and Tiger-to-public fallback without asserting real network fallback inside the route tests.
 
 Commit command:
 
 ```bash
-git add README.md app/api/market-data/daily/route.ts app/api/market-data/daily/route.test.ts app/api/market-data/intraday/route.ts app/api/market-data/intraday/route.test.ts app/lib/market/sync-service.test.ts .superpowers/sdd/2026-08-31-tiger-openapi-market-data/task-4-report.md && git commit -m "docs: document Tiger market data setup"
+git add .superpowers/sdd/2026-08-31-tiger-openapi-market-data/task-4-report.md && git commit -m "docs: update task 4 Tiger verification report"
 ```

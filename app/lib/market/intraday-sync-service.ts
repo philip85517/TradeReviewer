@@ -58,7 +58,7 @@ export type SyncIntradayMarketDataOptions = {
 };
 
 function isProvider(value: unknown): value is MarketDataProviderId {
-  return value === "tencent" || value === "eastmoney" || value === "yahoo" || value === "sina" || value === "baidu";
+  return value === "tencent" || value === "eastmoney" || value === "yahoo" || value === "sina" || value === "baidu" || value === "tiger";
 }
 
 function abortError() {

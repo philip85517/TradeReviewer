@@ -19,6 +19,7 @@ import { parseSinaUsIntraday, SinaUsProvider } from "./sina-us";
 import { parseBaiduDaily, parseBaiduIntraday, BaiduProvider } from "./baidu";
 import { createProviderRouter } from "./router";
 import { MarketDataProviderError } from "./errors";
+import { TigerProvider } from "./tiger";
 
 const BAIDU_INTRADAY_KEYS = [
   "timestamp",
@@ -637,6 +638,219 @@ describe("provider routing", () => {
       interval: "1h",
       candles: [expect.objectContaining({ close: "102" })],
     });
+  });
+
+  it("tries Tiger before public providers for US daily when configured", async () => {
+    const calls: string[] = [];
+    const tiger = new TigerProvider(
+      { configPath: "/tmp/tiger.properties" },
+      async (request) => {
+        calls.push(`tiger:${request.period}`);
+        return [{
+          symbol: request.symbol,
+          time: Date.parse("2025-01-02T14:30:00.000Z"),
+          open: 100,
+          high: 102,
+          low: 99,
+          close: 101,
+          volume: 800,
+        }];
+      },
+    );
+
+    const result = await createProviderRouter(fetch, {
+      tigerConfig: { configPath: "/tmp/tiger.properties" },
+      tigerProvider: tiger,
+    }).fetchDaily({
+      instrumentId: "US:AAPL",
+      symbol: "AAPL",
+      market: "US",
+      startDate: "2025-01-01",
+      endDate: "2025-01-03",
+    });
+
+    expect(calls).toEqual(["tiger:day"]);
+    expect(result.provider).toBe("tiger");
+  });
+
+  it("tries Tiger before public providers for HK hourly when configured", async () => {
+    const calls: string[] = [];
+    const tiger = new TigerProvider(
+      { configPath: "/tmp/tiger.properties" },
+      async (request) => {
+        calls.push(`tiger:${request.period}`);
+        return [{
+          symbol: request.symbol,
+          time: Date.parse("2025-01-02T01:30:00.000Z"),
+          open: 34.1,
+          high: 35,
+          low: 33.8,
+          close: 34.5,
+          volume: 1200,
+        }];
+      },
+    );
+
+    const result = await createProviderRouter(fetch, {
+      tigerConfig: { configPath: "/tmp/tiger.properties" },
+      tigerProvider: tiger,
+    }).fetchIntraday({
+      instrumentId: "HK:1810",
+      symbol: "1810",
+      market: "HK",
+      interval: "1h",
+      startTime: "2025-01-02T01:30:00.000Z",
+      endTime: "2025-01-02T01:30:00.000Z",
+    });
+
+    expect(calls).toEqual(["tiger:60min"]);
+    expect(result.provider).toBe("tiger");
+  });
+
+  it("falls back to public providers after a Tiger error", async () => {
+    const hosts: string[] = [];
+    const tiger = new TigerProvider(
+      { configPath: "/tmp/tiger.properties" },
+      async () => {
+        throw new MarketDataProviderError("source-unavailable", "Tiger unavailable");
+      },
+    );
+
+    const result = await createProviderRouter(async (input) => {
+      hosts.push(new URL(String(input)).host);
+      return Response.json({
+        chart: {
+          result: [
+            {
+              meta: { symbol: "AAPL" },
+              timestamp: [1735828200],
+              indicators: {
+                quote: [
+                  {
+                    open: [10],
+                    high: [12],
+                    low: [9],
+                    close: [11],
+                    volume: [100],
+                  },
+                ],
+              },
+            },
+          ],
+          error: null,
+        },
+      });
+    }, {
+      tigerConfig: { configPath: "/tmp/tiger.properties" },
+      tigerProvider: tiger,
+    }).fetchDaily({
+      instrumentId: "US:AAPL",
+      symbol: "AAPL",
+      market: "US",
+      startDate: "2025-01-01",
+      endDate: "2025-01-03",
+    });
+
+    expect(hosts[0]).toBe("web.ifzq.gtimg.cn");
+    expect(result.provider).toBe("yahoo");
+  });
+
+  it("never calls Tiger for CN requests even when configured", async () => {
+    const calls: string[] = [];
+    const tiger = new TigerProvider(
+      { configPath: "/tmp/tiger.properties" },
+      async (request) => {
+        calls.push(request.symbol);
+        return [];
+      },
+    );
+
+    await createProviderRouter(async (input) => {
+      if (String(input).includes("gtimg")) {
+        return new Response("limited", { status: 429 });
+      }
+      return Response.json({
+        data: { klines: ["2025-01-02,100,102,104,99,800"] },
+      });
+    }, {
+      tigerConfig: { configPath: "/tmp/tiger.properties" },
+      tigerProvider: tiger,
+    }).fetchDaily({
+      instrumentId: "CN-SH:600519",
+      symbol: "600519",
+      market: "CN-SH",
+      startDate: "2025-01-01",
+      endDate: "2025-01-03",
+    });
+
+    expect(calls).toEqual([]);
+  });
+
+  it("falls through a sparse Tiger hourly result to a fuller public provider", async () => {
+    const tiger = new TigerProvider(
+      { configPath: "/tmp/tiger.properties" },
+      async (request) => [{
+        symbol: request.symbol,
+        time: Date.parse("2026-02-20T14:30:00.000Z"),
+        open: 100,
+        high: 101,
+        low: 99,
+        close: 100.5,
+        volume: 100,
+      }],
+    );
+    const hosts: string[] = [];
+
+    const result = await createProviderRouter(async (input) => {
+      const url = new URL(String(input));
+      hosts.push(url.host);
+      if (url.host.includes("gtimg")) {
+        return Response.json({ data: {} });
+      }
+      if (url.host.includes("eastmoney.com")) {
+        return Response.json({
+          data: {
+            code: "TSLA",
+            klines: ["2026-02-20 09:30:00,100,101,102,99,100"],
+          },
+        });
+      }
+      if (url.host === "stock.finance.sina.com.cn") {
+        return Response.json([
+          {
+            d: "2026-02-20 10:30:00",
+            o: "100",
+            h: "101",
+            l: "99",
+            c: "100.5",
+            v: "100",
+          },
+          {
+            d: "2026-02-20 11:30:00",
+            o: "100.5",
+            h: "102",
+            l: "100",
+            c: "101.5",
+            v: "120",
+          },
+        ]);
+      }
+      throw new Error("unexpected provider");
+    }, {
+      tigerConfig: { configPath: "/tmp/tiger.properties" },
+      tigerProvider: tiger,
+    }).fetchIntraday({
+      instrumentId: "US:TSLA",
+      symbol: "TSLA",
+      market: "US",
+      interval: "1h",
+      startTime: "2026-02-20T14:30:00.000Z",
+      endTime: "2026-02-27T21:00:00.000Z",
+    });
+
+    expect(hosts).toContain("stock.finance.sina.com.cn");
+    expect(result.provider).toBe("sina");
+    expect(result.candles.length).toBeGreaterThan(1);
   });
 
   it("uses Tencent native hourly candles for mainland stocks before Eastmoney", async () => {

@@ -1,6 +1,6 @@
 export type SupportedMarket = "US" | "HK" | "CN-SH" | "CN-SZ";
 
-export type MarketDataProviderId = "tencent" | "eastmoney" | "yahoo" | "sina" | "baidu";
+export type MarketDataProviderId = "tencent" | "eastmoney" | "yahoo" | "sina" | "baidu" | "tiger";
 
 export type AdjustmentMode = "raw";
 

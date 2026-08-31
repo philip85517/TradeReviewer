@@ -64,7 +64,7 @@ function isDailySyncFailureCode(value: unknown): value is DailySyncFailureCode {
 }
 
 function isProvider(value: unknown): value is MarketDataProviderId {
-  return value === "tencent" || value === "eastmoney" || value === "yahoo" || value === "sina" || value === "baidu";
+  return value === "tencent" || value === "eastmoney" || value === "yahoo" || value === "sina" || value === "baidu" || value === "tiger";
 }
 
 function shiftDate(date: string, days: number) {

@@ -3,7 +3,24 @@ import { mkdirSync, rmSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+const tigerConfigTestState = vi.hoisted(() => ({
+  failReadFileSync: false,
+}));
+
+vi.mock("node:fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:fs")>();
+  return {
+    ...actual,
+    readFileSync(...args: Parameters<typeof actual.readFileSync>) {
+      if (tigerConfigTestState.failReadFileSync) {
+        throw new Error("simulated read failure");
+      }
+      return actual.readFileSync(...args);
+    },
+  };
+});
 
 import {
   parseTigerProperties,
@@ -13,6 +30,7 @@ import {
 const tempDirs: string[] = [];
 
 afterEach(() => {
+  tigerConfigTestState.failReadFileSync = false;
   for (const dir of tempDirs.splice(0)) {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -98,6 +116,20 @@ describe("readTigerOpenApiConfig", () => {
     const dir = createTempDir();
     const configPath = join(dir, "tiger.properties");
     writeFileSync(configPath, "tiger_id=123\naccount=acct\n", "utf8");
+
+    expect(
+      readTigerOpenApiConfig({
+        TIGER_OPENAPI_CONFIG: configPath,
+      }),
+    ).toBeUndefined();
+  });
+
+  it("returns undefined when reading the file fails after validation", () => {
+    const dir = createTempDir();
+    const configPath = join(dir, "tiger.properties");
+    writeFileSync(configPath, "private_key_pk8=key\ntiger_id=123\naccount=acct", "utf8");
+
+    tigerConfigTestState.failReadFileSync = true;
 
     expect(
       readTigerOpenApiConfig({

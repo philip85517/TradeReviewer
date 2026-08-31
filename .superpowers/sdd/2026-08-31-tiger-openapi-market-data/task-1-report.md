@@ -133,3 +133,37 @@ Exact output:
 ## Commit
 
 Commit hash: `524c57defd3b0df7b598195487fa2745e747f5ed`
+
+## Fix Round 1
+
+Reviewer finding addressed: `readTigerOpenApiConfig` could throw if `readFileSync` failed after a successful `statSync` check. The implementation now treats that late read failure as invalid config and returns `undefined`.
+
+### Changes
+
+- Added deterministic focused coverage for a read failure after path validation in `app/lib/market/tiger-config.test.ts`.
+- Updated `app/lib/market/tiger-config.ts` so both `statSync` and `readFileSync` run inside the same `try`/`catch`, preserving the brief’s `undefined` fallback for absent or invalid config.
+
+### Verification Command
+
+```bash
+npm run test:unit -- app/lib/market/tiger-config.test.ts --run
+```
+
+Exit code: `0`
+
+Exact output:
+
+```text
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/lib/market/tiger-config.test.ts --run
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/1024/TradeReview
+
+(node:61559) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  23:59:23
+   Duration  1.32s (transform 53ms, setup 161ms, import 47ms, tests 13ms, environment 800ms)
+```

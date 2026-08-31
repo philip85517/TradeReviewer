@@ -1,4 +1,4 @@
-import { readFileSync, statSync } from "node:fs";
+import * as fs from "node:fs";
 import path from "node:path";
 
 export type TigerPropertiesSummary = {
@@ -97,20 +97,19 @@ export function readTigerOpenApiConfig(
   const configPath = path.resolve(configuredPath);
 
   try {
-    if (!statSync(configPath).isFile()) {
+    if (!fs.statSync(configPath).isFile()) {
       return undefined;
     }
+    const summary = parseTigerProperties(fs.readFileSync(configPath, "utf8"));
+    if (!isValidTigerConfig(summary)) {
+      return undefined;
+    }
+
+    return {
+      configPath,
+      ...summary,
+    };
   } catch {
     return undefined;
   }
-
-  const summary = parseTigerProperties(readFileSync(configPath, "utf8"));
-  if (!isValidTigerConfig(summary)) {
-    return undefined;
-  }
-
-  return {
-    configPath,
-    ...summary,
-  };
 }

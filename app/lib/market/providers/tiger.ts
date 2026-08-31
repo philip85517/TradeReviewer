@@ -49,12 +49,12 @@ function supportsTigerMarket(market: SupportedMarket) {
   return market === "US" || market === "HK";
 }
 
-function tigerIsoDateTime(value: string) {
+function tigerUtcTimestamp(value: string) {
   const timestamp = new Date(value);
   if (!Number.isFinite(timestamp.getTime())) {
     throw new Error("Tiger OpenAPI 行情响应格式已变化");
   }
-  return timestamp.toISOString().replace("T", " ").slice(0, 19);
+  return String(timestamp.getTime());
 }
 
 function assertTigerNumber(value: unknown) {
@@ -188,8 +188,8 @@ export class TigerProvider implements MarketDataProvider {
         await this.runBars({
           symbol: providerSymbol,
           period: "60min",
-          beginTime: tigerIsoDateTime(request.startTime),
-          endTime: tigerIsoDateTime(request.endTime),
+          beginTime: tigerUtcTimestamp(request.startTime),
+          endTime: tigerUtcTimestamp(request.endTime),
         }),
         { ...request, providerSymbol },
       );

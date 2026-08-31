@@ -71,7 +71,7 @@ describe("Tiger provider", () => {
     expect(result.providerSymbol).toBe("0700");
   });
 
-  it("maps 1h requests to Tiger 60min bars", async () => {
+  it("maps 1h requests to Tiger 60min bars with UTC millisecond boundaries", async () => {
     const requests: Parameters<TigerRunBars>[0][] = [];
     const provider = new TigerProvider(
       { configPath: "/tmp/tiger.properties" },
@@ -101,8 +101,8 @@ describe("Tiger provider", () => {
     expect(requests).toEqual([{
       symbol: "AAPL",
       period: "60min",
-      beginTime: "2025-01-02 14:30:00",
-      endTime: "2025-01-02 14:30:00",
+      beginTime: String(Date.parse("2025-01-02T14:30:00.000Z")),
+      endTime: String(Date.parse("2025-01-02T14:30:00.000Z")),
     }]);
     expect(result).toMatchObject({
       provider: "tiger",

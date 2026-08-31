@@ -106,6 +106,34 @@ describe("Tiger provider", () => {
     expect(result.providerSymbol).toBe("01810");
   });
 
+  it("interprets HK daily bar times in the Hong Kong trading day", async () => {
+    const provider = new TigerProvider(
+      { configPath: "/tmp/tiger.properties" },
+      async (request) => [{
+        symbol: request.symbol,
+        time: Date.parse("2025-01-01T16:00:00.000Z"),
+        open: 510,
+        high: 515,
+        low: 508,
+        close: 512,
+        volume: 900,
+      }],
+    );
+
+    await expect(provider.fetchDaily({
+      instrumentId: "HK:700",
+      symbol: "700",
+      market: "HK",
+      startDate: "2025-01-02",
+      endDate: "2025-01-03",
+    })).resolves.toMatchObject({
+      provider: "tiger",
+      providerSymbol: "00700",
+      candles: [{ tradingDate: "2025-01-02", close: "512", volume: "900" }],
+      warnings: [],
+    });
+  });
+
   it("maps 1h requests to Tiger 60min bars with UTC millisecond boundaries", async () => {
     const requests: Parameters<TigerRunBars>[0][] = [];
     const provider = new TigerProvider(

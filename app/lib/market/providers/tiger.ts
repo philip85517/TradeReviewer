@@ -61,6 +61,24 @@ function assertTigerNumber(value: unknown) {
   return typeof value === "number" && Number.isFinite(value);
 }
 
+const hongKongTradingDateFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Asia/Hong_Kong",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+function tigerTradingDate(
+  timestamp: Date,
+  market: SupportedMarket,
+) {
+  if (market !== "HK") {
+    return timestamp.toISOString().slice(0, 10);
+  }
+
+  return hongKongTradingDateFormatter.format(timestamp);
+}
+
 function assertTigerIdentity(bar: TigerBar, providerSymbol: string) {
   if (bar.symbol !== providerSymbol) {
     throw new Error("Tiger OpenAPI 行情响应标的不匹配");
@@ -96,10 +114,9 @@ export function parseTigerBars(
     if (!Number.isFinite(timestamp.getTime())) {
       throw new Error("Tiger OpenAPI 行情响应格式已变化");
     }
-    const iso = timestamp.toISOString();
     if ("interval" in request) {
       return {
-        timestamp: iso,
+        timestamp: timestamp.toISOString(),
         open: String(bar.open),
         high: String(bar.high),
         low: String(bar.low),
@@ -108,7 +125,7 @@ export function parseTigerBars(
       };
     }
     return {
-      tradingDate: iso.slice(0, 10),
+      tradingDate: tigerTradingDate(timestamp, request.market),
       open: String(bar.open),
       high: String(bar.high),
       low: String(bar.low),

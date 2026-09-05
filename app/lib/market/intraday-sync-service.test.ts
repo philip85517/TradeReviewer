@@ -9,6 +9,7 @@ import type {
 import {
   splitIntradayRequestRange,
   syncIntradayMarketData,
+  syncIntradayMarketDataForRanges,
 } from "./intraday-sync-service";
 import { resolveTimeframeAvailability } from "./availability";
 import { IndexedDbMarketDataRepository } from "../storage/indexeddb-market-data-repository";
@@ -124,6 +125,65 @@ describe("splitIntradayRequestRange", () => {
 });
 
 describe("syncIntradayMarketData", () => {
+  it("syncs every requested range and returns their combined candles", async () => {
+    const repo = repository();
+    const fetcher = vi.fn<typeof fetch>(async (input) => {
+      const url = new URL(String(input), "http://localhost");
+      const timestamp = url.searchParams.get("start")!;
+      return Response.json({
+        provider: "yahoo",
+        providerSymbol: "01810.HK",
+        fetchedAt: "2025-02-01T00:00:00.000Z",
+        interval: "1h",
+        adjustmentMode: "raw",
+        warnings: [],
+        request: {
+          instrumentId: "HK:1810",
+          symbol: "1810",
+          market: "HK",
+          interval: "1h",
+          startTime: timestamp,
+          endTime: url.searchParams.get("end"),
+        },
+        candles: [{
+          timestamp,
+          open: "34.1",
+          high: "35",
+          low: "33.8",
+          close: "34.5",
+          volume: "1200",
+        }],
+      });
+    });
+
+    const result = await syncIntradayMarketDataForRanges({
+      instrumentId: "HK:1810",
+      symbol: "1810",
+      market: "HK",
+      currency: "HKD",
+      requiredRanges: [
+        {
+          startTime: "2025-01-02T01:30:00.000Z",
+          endTime: "2025-01-02T01:30:00.000Z",
+        },
+        {
+          startTime: "2025-01-03T01:30:00.000Z",
+          endTime: "2025-01-03T01:30:00.000Z",
+        },
+      ],
+      repository: repo,
+      fetcher,
+      interval: "1h",
+    });
+
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(result.status).toBe("complete");
+    expect(result.candles.map((item) => item.timestamp)).toEqual([
+      "2025-01-02T01:30:00.000Z",
+      "2025-01-03T01:30:00.000Z",
+    ]);
+  });
+
   it("syncs native hourly candles and persists an hourly knowledge boundary", async () => {
     const repo = repository();
     const fetcher = vi.fn<typeof fetch>(async (input) => {
@@ -603,6 +663,56 @@ describe("syncIntradayMarketData", () => {
         "2025-01-02T03:00:00.000Z",
       ),
     ).toEqual([]);
+  });
+
+  it("accepts a provider response keyed by a historical market-data symbol", async () => {
+    const repo = repository();
+    const fetcher = vi.fn<typeof fetch>(async () =>
+      Response.json({
+        provider: "baidu",
+        providerSymbol: "META",
+        fetchedAt: "2025-02-01T00:00:00.000Z",
+        interval: "1h",
+        adjustmentMode: "raw",
+        warnings: [],
+        request: {
+          instrumentId: "US:META",
+          symbol: "META",
+          market: "US",
+          interval: "1h",
+          startTime: "2025-01-02T14:30:00.000Z",
+          endTime: "2025-01-02T15:30:00.000Z",
+        },
+        candles: [{
+          timestamp: "2025-01-02T14:30:00.000Z",
+          open: "10",
+          high: "11",
+          low: "9",
+          close: "10.5",
+          volume: "1000",
+        }],
+      }),
+    );
+
+    const result = await syncIntradayMarketData({
+      instrumentId: "US:FB",
+      symbol: "META",
+      market: "US",
+      currency: "USD",
+      required: {
+        startTime: "2025-01-02T14:30:00.000Z",
+        endTime: "2025-01-02T15:30:00.000Z",
+      },
+      repository: repo,
+      fetcher,
+      interval: "1h",
+    });
+
+    expect(result.candles).toHaveLength(1);
+    expect(result.candles[0]).toMatchObject({
+      instrumentId: "US:FB",
+      providerSymbol: "META",
+    });
   });
 
   it("retries only the missing sides of capped actual coverage and then stabilizes no-data gaps", async () => {

@@ -55,12 +55,12 @@ type IntervalMarketDataCommitInput = {
 type MigrationCounts = Pick<MigrationReport, "inserted" | "duplicate" | "conflict">;
 
 const MARKET_DATA_STATUSES = new Set([
-  "not-requested", "syncing", "complete", "partial", "stale",
+  "not-requested", "syncing", "complete", "latest-available", "partial", "stale",
   "source-rate-limited", "source-forbidden", "source-unavailable",
   "invalid-response", "storage-error", "needs-provider", "ready", "error",
 ]);
 const COVERAGE_STATUSES = new Set([
-  "not-requested", "syncing", "complete", "partial", "stale",
+  "not-requested", "syncing", "complete", "latest-available", "partial", "stale",
   "source-rate-limited", "source-forbidden", "source-unavailable",
   "invalid-response", "storage-error",
 ]);
@@ -288,7 +288,7 @@ function validateCoverage(value: unknown): asserts value is CoverageRecord {
         || !Array.isArray(item.missingTradingDates)
         || item.missingTradingDates.some((date) => typeof date !== "string")
       ) throw new Error("Invalid coverage");
-      assertOptionalStringFields(item, ["provider", "fetchedAt", "reason"], "coverage segment");
+      assertOptionalStringFields(item, ["actualEndDate", "provider", "fetchedAt", "reason"], "coverage segment");
     }
     assertJsonSafe(coverage.segments, "coverage");
   }

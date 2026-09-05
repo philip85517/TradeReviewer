@@ -170,6 +170,26 @@ describe("runTigerBars", () => {
     expect(child.stdin.data).toBe(`${JSON.stringify(request)}\n`);
   });
 
+  it("uses an explicitly supplied config path instead of the process environment", async () => {
+    const child = createFakeChild();
+    const resultPromise = runTigerBars(sampleRequest(), {
+      configPath: "/tmp/explicit-tiger.properties",
+      helperPath: "/tmp/tiger-market-data.py",
+      spawn(_command, _args, options) {
+        expect(options?.env?.TIGER_OPENAPI_CONFIG).toBe(
+          "/tmp/explicit-tiger.properties",
+        );
+        queueMicrotask(() => {
+          child.stdout.end(JSON.stringify({ bars: [] }) + "\n");
+          child.emit("close", 0);
+        });
+        return child;
+      },
+    });
+
+    await expect(resultPromise).resolves.toEqual([]);
+  });
+
   it("maps malformed JSON output to an invalid-response error", async () => {
     const child = createFakeChild();
     const resultPromise = runTigerBars(sampleRequest(), {

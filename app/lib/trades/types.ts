@@ -15,6 +15,8 @@ export type TradeExecution = {
   id: string;
   source: {
     platform: string;
+    /** Explicitly confirmed session; absence must not imply grey-market trading. */
+    tradingSession?: "grey-market";
     sheet?: string;
     page?: number;
     row: number;

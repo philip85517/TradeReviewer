@@ -66,6 +66,34 @@ describe("planCoverageGaps", () => {
     ).toEqual([{ startDate: "2024-05-02", endDate: "2024-05-03" }]);
   });
 
+  it("keeps a legacy provider-latest tail retryable by default", () => {
+    const coverage: CoverageSegment[] = [
+      {
+        startDate: "2024-01-01",
+        endDate: "2024-01-04",
+        status: "partial",
+        provider: "tencent",
+        actualEndDate: "2024-01-03",
+        missingTradingDates: ["2024-01-04"],
+        reason: "provider-latest-available",
+      },
+    ];
+
+    expect(
+      planCoverageGaps(
+        { startDate: "2024-01-01", endDate: "2024-01-04" },
+        coverage,
+      ),
+    ).toEqual([{ startDate: "2024-01-04", endDate: "2024-01-04" }]);
+    expect(
+      planCoverageGaps(
+        { startDate: "2024-01-01", endDate: "2024-01-04" },
+        coverage,
+        { retryLatestAvailable: true },
+      ),
+    ).toEqual([{ startDate: "2024-01-04", endDate: "2024-01-04" }]);
+  });
+
   it("splits long gaps into requests of at most 500 natural days", () => {
     expect(
       planCoverageGaps(

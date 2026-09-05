@@ -13,9 +13,15 @@ import {
   CalendarOutOfRangeError,
   expectedTradingDates,
 } from "./calendar";
-import { coverageStatusForSegments } from "./sync-status";
+import { coverageStatusForDateRange } from "./sync-status";
+import {
+  MAX_PROVIDER_LATEST_TAIL_DATES,
+  normalizeProviderLatestTails,
+  reconcileDailyCoverage,
+} from "./coverage-tail";
 import { validateProviderCandles } from "./validation";
 import type { MarketDataSyncStatus } from "./sync-status";
+import { canonicalInstrumentId } from "../instruments/display-name";
 import type { MarketDataRepository } from "../storage/market-data-repository";
 
 type SyncMarketDataOptions = {
@@ -85,15 +91,27 @@ function retainCoveragePart(
   );
   const resolvedPartial =
     segment.status === "partial" &&
-    segment.reason === undefined &&
+    (segment.reason === undefined ||
+      segment.reason === "provider-latest-available") &&
     missingTradingDates.length === 0;
   return {
     ...segment,
     startDate,
     endDate,
+    actualEndDate:
+      segment.actualEndDate !== undefined &&
+      segment.actualEndDate >= startDate &&
+      segment.actualEndDate <= endDate
+        ? segment.actualEndDate
+        : undefined,
     status: resolvedPartial ? ("complete" as const) : segment.status,
     missingTradingDates,
-    reason: resolvedPartial ? undefined : segment.reason,
+    reason:
+      resolvedPartial ||
+      (segment.reason === "provider-latest-available" &&
+        missingTradingDates.length === 0)
+        ? undefined
+        : segment.reason,
   };
 }
 
@@ -193,7 +211,9 @@ function parseRouteResult(
   }
   if (
     !result.request ||
-    result.request.instrumentId !== expected.instrumentId ||
+    (result.request.instrumentId !== expected.instrumentId &&
+      result.request.instrumentId !==
+        canonicalInstrumentId(expected.symbol, expected.market)) ||
       result.request.symbol !== expected.symbol ||
       result.request.market !== expected.market ||
       result.request.startDate !== range.startDate ||
@@ -232,6 +252,21 @@ export async function syncMarketData({
     required.startDate,
     required.endDate,
   );
+  const normalizedCoverage = normalizeProviderLatestTails(
+    market,
+    reconcileDailyCoverage(market, required, coverage, knownCandles),
+    knownCandles,
+  );
+  const coverageWasNormalized =
+    JSON.stringify(normalizedCoverage) !== JSON.stringify(coverage);
+  if (coverageWasNormalized) {
+    coverage = normalizedCoverage;
+    await repository.commitSyncResult({
+      instrumentId,
+      candles: [],
+      coverage,
+    });
+  }
   let firstKnownDate = knownCandles.reduce<string | undefined>(
     (first, candle) =>
       first === undefined || candle.tradingDate < first
@@ -259,21 +294,17 @@ export async function syncMarketData({
               "source-forbidden",
               "invalid-response",
             ].includes(segment.reason ?? "")
-          ) ||
-          (firstKnownDate !== undefined && segment.endDate < firstKnownDate),
+          ),
       )
     : coverage;
-  const gaps = planCoverageGaps(required, planningCoverage);
+  const gaps = planCoverageGaps(required, planningCoverage, {
+    retryLatestAvailable: true,
+  });
 
   if (gaps.length === 0) {
-    const relevantCoverage = coverage.filter(
-      (segment) =>
-        segment.endDate >= required.startDate &&
-        segment.startDate <= required.endDate,
-    );
     return {
       source: "cache" as const,
-      status: coverageStatusForSegments(relevantCoverage),
+      status: coverageStatusForDateRange(required, coverage),
       candles: await repository.getDailyCandles(
         instrumentId,
         required.startDate,
@@ -286,6 +317,7 @@ export async function syncMarketData({
   for (const gap of gaps) {
     throwIfAborted();
     if (
+      !retryUnavailable &&
       isKnownMissingGapOutsideCandleHistory(
         coverage,
         gap,
@@ -318,6 +350,7 @@ export async function syncMarketData({
     });
     const response = await fetcher(`/api/market-data/daily?${query}`, {
       signal,
+      ...(retryUnavailable ? { cache: "no-store" as const } : {}),
     });
     if (!response.ok) {
       const body = (await response.json().catch(() => undefined)) as
@@ -326,26 +359,24 @@ export async function syncMarketData({
       const code = isDailySyncFailureCode(body?.error?.code)
         ? body.error.code
         : "source-unavailable";
-      const outsideKnownHistory =
-        code === "source-unavailable" &&
-        ((firstKnownDate !== undefined && gap.endDate < firstKnownDate) ||
-          (lastKnownDate !== undefined &&
-            gap.startDate > lastKnownDate &&
-            gap.endDate < new Date().toISOString().slice(0, 10)));
       if (
         code === "provider-history-limit" ||
-        code === "no-data" ||
-        outsideKnownHistory
+        code === "no-data"
       ) {
-        const reason = outsideKnownHistory ? "no-data" : code;
+        const reason = code;
+        const previousTail = coverage.find(segment =>
+          segment.reason === "provider-latest-available" && segment.actualEndDate &&
+          gap.startDate > segment.actualEndDate && gap.endDate <= segment.endDate);
         coverage = [
           ...preserveCoverageOutsideGap(coverage, gap),
           {
             ...gap,
             status: "partial",
             fetchedAt: new Date().toISOString(),
-            missingTradingDates: [],
-            reason,
+            missingTradingDates: previousTail
+              ? expectedTradingDates(market, gap.startDate, gap.endDate) : [],
+            actualEndDate: previousTail?.actualEndDate,
+            reason: previousTail ? "provider-latest-available" : reason,
           },
         ];
         throwIfAborted();
@@ -376,10 +407,10 @@ export async function syncMarketData({
       close: candle.close,
       volume: candle.volume,
       currency,
-      provider: result.provider,
-      providerSymbol: result.providerSymbol,
+      provider: result.candleSources?.[candle.tradingDate]?.provider ?? result.provider,
+      providerSymbol: result.candleSources?.[candle.tradingDate]?.providerSymbol ?? result.providerSymbol,
       adjustmentMode: "raw",
-      fetchedAt: result.fetchedAt,
+      fetchedAt: result.candleSources?.[candle.tradingDate]?.fetchedAt ?? result.fetchedAt,
     }));
     for (const candle of candles) {
       if (firstKnownDate === undefined || candle.tradingDate < firstKnownDate) {
@@ -392,6 +423,7 @@ export async function syncMarketData({
     let missingTradingDates: string[] = [];
     let segmentStatus: "complete" | "partial" = "complete";
     let reason: string | undefined;
+    let actualEndDate: string | undefined;
     if (result.warnings.includes("provider-history-limit")) {
       segmentStatus = "partial";
       reason = "provider-history-limit";
@@ -405,7 +437,16 @@ export async function syncMarketData({
         gap.startDate,
         gap.endDate,
       ).filter((date) => !returnedDates.has(date));
+      const isProviderLatestTail =
+        missingTradingDates.length > 0 &&
+        missingTradingDates.length <= MAX_PROVIDER_LATEST_TAIL_DATES &&
+        lastKnownDate !== undefined &&
+        missingTradingDates.every((date) => date > lastKnownDate!);
       if (missingTradingDates.length > 0) segmentStatus = "partial";
+      if (isProviderLatestTail && reason === undefined) {
+        reason = "provider-latest-available";
+        actualEndDate = lastKnownDate;
+      }
     } catch (error) {
       if (!(error instanceof CalendarOutOfRangeError)) throw error;
       segmentStatus = "partial";
@@ -418,6 +459,7 @@ export async function syncMarketData({
         status: segmentStatus,
         provider: result.provider,
         fetchedAt: result.fetchedAt,
+        actualEndDate,
         missingTradingDates,
         reason,
       },
@@ -436,9 +478,7 @@ export async function syncMarketData({
 
   return {
     source: "network" as const,
-    status: coverage.some((segment) => segment.status === "partial")
-      ? ("partial" as const)
-      : ("complete" as const),
+    status: coverageStatusForDateRange(required, coverage),
     candles: await repository.getDailyCandles(
       instrumentId,
       required.startDate,

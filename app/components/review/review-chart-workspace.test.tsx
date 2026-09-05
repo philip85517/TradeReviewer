@@ -166,6 +166,20 @@ describe("ReviewChartWorkspace", () => {
     expect(executionTimestampLabel(execution)).not.toMatch(/2099|23:59:59/);
   });
 
+  it("formats exact execution timestamps in Beijing time with seconds", () => {
+    expect(
+      executionTimestampLabel({
+        ...model.executions[0],
+        executedAt: "2025-01-21T20:00:00.000Z",
+        source: {
+          ...model.executions[0].source,
+          sourceTimestampText: "2025/01/22 04:00:00",
+          timePrecision: "second",
+        },
+      }),
+    ).toBe("2025年01月22日 04:00:00");
+  });
+
   it("renders the controlled replay, drawing, layer, execution, and review surfaces", async () => {
     const user = userEvent.setup();
     const onTimeframeChange = vi.fn();
@@ -333,5 +347,14 @@ describe("ReviewChartWorkspace", () => {
     );
     expect(screen.queryByDisplayValue("突破趋势")).not.toBeInTheDocument();
     expect(screen.queryByDisplayValue("未来趋势")).not.toBeInTheDocument();
+    const grey = { ...model.executions[0], source: { ...model.executions[0].source, tradingSession: "grey-market" as const } };
+    rerender(<ReviewChartWorkspace {...props} model={{ ...model, executions: [grey] }} />);
+    expect(screen.getByText("暗盘成交，暂无对应暗盘行情")).toBeVisible();
+    expect(screen.queryByText(/成交所在区间缺少行情/)).not.toBeInTheDocument();
+    expect(screen.getByText("开仓成交")).toBeVisible();
+    const missing = { ...model.executions[0], id: "missing", executedAt: "2024-01-01T02:00:00Z" };
+    rerender(<ReviewChartWorkspace {...props} model={{ ...model, executions: [grey, missing] }} />);
+    expect(screen.getByText(/1 笔成交无对应 K 线：成交所在区间缺少行情/)).toBeVisible();
+    expect(screen.getByText("暗盘成交，暂无对应暗盘行情")).toBeVisible();
   });
 });

@@ -301,4 +301,34 @@ describe("toStatementParseResult", () => {
     expect(result.candidates).toHaveLength(1);
     expect(result.records[0].instrument.symbol).toBe("700");
   });
+
+  it("converts mixed-market timestamps with each market's default timezone", () => {
+    const hk = draft("image-1:futu:4", {
+      market: "HK",
+      sourceTimestampText: "24/06/05 14:41:08",
+    });
+    const us = draft("image-1:futu:5", {
+      sourceRowIndex: 5,
+      market: "US",
+      sourceTimestampText: "24/06/05 14:41:08",
+    });
+    const current = state([hk, us]);
+    current.sourceTimezone = undefined;
+
+    expect(
+      toStatementParseResult(current).records.map((record) => ({
+        executedAt: record.executedAt,
+        sourceTimezone: record.source.sourceTimezone,
+      })),
+    ).toEqual([
+      {
+        executedAt: "2024-06-05T06:41:08Z",
+        sourceTimezone: "Asia/Hong_Kong",
+      },
+      {
+        executedAt: "2024-06-05T18:41:08Z",
+        sourceTimezone: "America/New_York",
+      },
+    ]);
+  });
 });

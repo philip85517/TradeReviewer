@@ -7,6 +7,8 @@ import type {
 import {
   combinedMarketDataStatus,
   coverageStatusForSegments,
+  coverageStatusForDateRange,
+  coverageStatusForTimeRanges,
   displayMarketDataStatus,
 } from "./sync-status";
 
@@ -42,6 +44,96 @@ describe("coverageStatusForSegments", () => {
     ];
 
     expect(coverageStatusForSegments(segments)).toBe("partial");
+  });
+});
+
+describe("coverageStatusForDateRange", () => {
+  it("reports a complete historical segment as stale when the required tail is missing", () => {
+    expect(
+      coverageStatusForDateRange(
+        { startDate: "2026-01-01", endDate: "2026-09-01" },
+        [
+          {
+            startDate: "2026-01-01",
+            endDate: "2026-04-01",
+            status: "complete",
+            missingTradingDates: [],
+          },
+        ],
+      ),
+    ).toBe("stale");
+  });
+
+  it("ignores an old partial segment outside the requested range", () => {
+    expect(
+      coverageStatusForDateRange(
+        { startDate: "2026-05-01", endDate: "2026-09-01" },
+        [
+          {
+            startDate: "2025-01-01",
+            endDate: "2025-12-31",
+            status: "partial",
+            missingTradingDates: ["2025-06-03"],
+          },
+          {
+            startDate: "2026-05-01",
+            endDate: "2026-09-01",
+            status: "complete",
+            missingTradingDates: [],
+          },
+        ],
+      ),
+    ).toBe("complete");
+  });
+
+  it("reports a contiguous provider-latest tail separately from a real partial gap", () => {
+    expect(
+      coverageStatusForDateRange(
+        { startDate: "2026-01-01", endDate: "2026-01-04" },
+        [
+          {
+            startDate: "2026-01-01",
+            endDate: "2026-01-04",
+            status: "partial",
+            actualEndDate: "2026-01-03",
+            missingTradingDates: ["2026-01-04"],
+            reason: "provider-latest-available",
+          },
+        ],
+      ),
+    ).toBe("latest-available");
+
+    expect(
+      coverageStatusForDateRange(
+        { startDate: "2026-01-01", endDate: "2026-01-04" },
+        [
+          {
+            startDate: "2026-01-01",
+            endDate: "2026-01-04",
+            status: "partial",
+            actualEndDate: "2026-01-03",
+            missingTradingDates: ["2026-01-02", "2026-01-04"],
+            reason: "provider-latest-available",
+          },
+        ],
+      ),
+    ).toBe("partial");
+  });
+
+  it("reports an hourly tail as stale when a complete segment covers only its prefix", () => {
+    expect(
+      coverageStatusForTimeRanges(
+        [{
+          startTime: "2026-01-02T00:00:00.000Z",
+          endTime: "2026-01-02T23:59:59.999Z",
+        }],
+        [{
+          requestedStart: "2026-01-02T10:00:00.000Z",
+          requestedEnd: "2026-01-02T10:00:00.000Z",
+          status: "complete",
+        }],
+      ),
+    ).toBe("stale");
   });
 });
 

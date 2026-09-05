@@ -63,7 +63,8 @@ export function buildTradeLibraryEntries(
       const marketDataStatus =
         marketDataStatuses[summary.instrument.id] ?? "not-requested";
       const hasCompleteMarketData =
-        marketDataStatus === "complete" || marketDataStatus === "ready";
+        marketDataStatus === "complete" ||
+        marketDataStatus === "ready";
       const episodes = buildTradeEpisodes(summary.executions)
         .map((episode) => {
           const latestExecution =

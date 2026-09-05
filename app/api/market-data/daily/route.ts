@@ -8,7 +8,9 @@ import type { ProviderRouter } from "../../../lib/market/providers/router";
 
 const CACHE_CONTROL =
   "public, max-age=21600, stale-while-revalidate=86400";
-const REQUEST_TIMEOUT_MS = 12_000;
+// Allow the bounded provider attempts to finish instead of cancelling fallback
+// at exactly the Tiger subprocess timeout.
+const REQUEST_TIMEOUT_MS = 55_000;
 const MAX_REQUESTS_PER_MINUTE = 30;
 const requestsByClient = new Map<string, number[]>();
 
@@ -110,11 +112,15 @@ export function createDailyGetForTest(
           );
         }),
       ]);
-      return json({
+      const response = json({
         ...result,
         request: dailyRequest,
         adjustmentMode: "raw",
       });
+      if (result.warnings.includes("missing-sessions") || result.candles.length === 0) {
+        response.headers.set("Cache-Control", "no-store");
+      }
+      return response;
     } catch (error) {
       const providerError =
         error instanceof MarketDataProviderError ? error : undefined;

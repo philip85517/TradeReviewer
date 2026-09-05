@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { Candle } from "../market/types";
 import type { TradeExecution } from "../trades/types";
 import { createReplaySnapshot } from "./replay-engine";
+import { mapExecutionsToCandles } from "./execution-markers";
 
 const candles: Candle[] = [
   { time: "2025-01-02T00:00:00.000Z", open: 10, high: 11, low: 9, close: 10, volume: 100 },
@@ -79,7 +80,7 @@ describe("createReplaySnapshot", () => {
     });
   });
 
-  it("does not reveal a provider bar until its explicit completion boundary", () => {
+  it("withholds a filled candle until its provider completion boundary", () => {
     const providerBar: Candle = {
       time: "2025-01-02T10:00:00.000Z",
       knowledgeAt: "2025-01-02T10:15:00.000Z",
@@ -115,5 +116,34 @@ describe("createReplaySnapshot", () => {
         cursor: "2025-01-02T10:15:00.000Z",
       }).candles,
     ).toEqual([providerBar]);
+  });
+
+  it("preserves the fill immediately but defers its candle marker until completion", () => {
+    const providerBar: Candle = {
+      time: "2025-01-02T10:00:00.000Z",
+      knowledgeAt: "2025-01-02T10:15:00.000Z",
+      open: 10,
+      high: 12,
+      low: 9,
+      close: 11,
+      volume: 100,
+    };
+    const fillAt1007 = {
+      ...executions[0],
+      executedAt: "2025-01-02T10:07:00.000Z",
+    };
+
+    const snapshot = createReplaySnapshot({
+      candles: [providerBar],
+      executions: [fillAt1007],
+      cursor: fillAt1007.executedAt,
+    });
+
+    expect(snapshot.candles).toEqual([]);
+    expect(snapshot.executions).toEqual([fillAt1007]);
+    expect(snapshot.position.unrealizedPnl).toBe("0");
+    expect(mapExecutionsToCandles(snapshot.candles, snapshot.executions)).toEqual([]);
+    const completed = createReplaySnapshot({ candles: [providerBar], executions: [fillAt1007], cursor: "2025-01-02T10:15:00.000Z" });
+    expect(mapExecutionsToCandles(completed.candles, completed.executions)).toEqual([{ executionId: "buy-1", candleTime: "2025-01-02T10:00:00.000Z" }]);
   });
 });

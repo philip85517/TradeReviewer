@@ -380,7 +380,8 @@ describe("provider routing", () => {
     expect(result.provider).toBe("tencent");
     expect(result.providerSymbol).toBe("usXPEV.OQ");
     expect(result.candles).toHaveLength(1);
-    expect(requested).toHaveLength(2);
+    expect(requested.filter(url => url.includes("gtimg.cn"))).toHaveLength(2);
+    expect(requested.length).toBeGreaterThan(2);
   });
 
   it("falls back to Eastmoney when Tencent is unavailable for A shares", async () => {
@@ -851,6 +852,35 @@ describe("provider routing", () => {
     expect(hosts).toContain("stock.finance.sina.com.cn");
     expect(result.provider).toBe("sina");
     expect(result.candles.length).toBeGreaterThan(1);
+  });
+
+  it("does not return an empty Tiger result after every public fallback fails", async () => {
+    const tiger = new TigerProvider(
+      { configPath: "/tmp/tiger.properties" },
+      async () => [],
+    );
+
+    await expect(
+      createProviderRouter(
+        async () => {
+          throw new Error("public source unavailable");
+        },
+        {
+          tigerConfig: { configPath: "/tmp/tiger.properties" },
+          tigerProvider: tiger,
+        },
+      ).fetchIntraday({
+        instrumentId: "US:ELEV",
+        symbol: "ELEV",
+        market: "US",
+        interval: "1h",
+        startTime: "2022-05-27T00:00:00.000Z",
+        endTime: "2022-05-27T23:59:59.999Z",
+      }),
+    ).rejects.toMatchObject({
+      code: "source-unavailable",
+      message: expect.stringContaining("tiger未返回该股票数据"),
+    });
   });
 
   it("uses Tencent native hourly candles for mainland stocks before Eastmoney", async () => {

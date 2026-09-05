@@ -31,6 +31,7 @@ type SpawnFunction = (
 ) => TigerChildProcess;
 
 export type TigerProcessOptions = {
+  configPath?: string;
   spawn?: SpawnFunction;
   pythonCommand?: string;
   helperPath?: string;
@@ -134,7 +135,8 @@ export async function runTigerBars(
   request: TigerBarRequest,
   options: TigerProcessOptions = {},
 ): Promise<TigerBar[]> {
-  const configPath = process.env.TIGER_OPENAPI_CONFIG?.trim();
+  const configPath =
+    options.configPath?.trim() || process.env.TIGER_OPENAPI_CONFIG?.trim();
   if (!configPath) {
     throw unavailableError();
   }

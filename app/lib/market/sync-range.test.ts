@@ -5,6 +5,7 @@ import {
   requiredMarketDataRange,
   requiredRangeExpanded,
 } from "./sync-range";
+import { expectedTradingDates } from "./calendar";
 
 describe("requiredMarketDataRange", () => {
   it("requests 400 calendar days before the first trade and 35 after the last", () => {
@@ -17,6 +18,34 @@ describe("requiredMarketDataRange", () => {
       startDate: "2024-02-07",
       endDate: "2025-04-24",
     });
+  });
+
+  it("requests 180 market sessions after the last trade when history is available", () => {
+    const range = requiredMarketDataRange(
+      "2025-03-13T07:07:12.000Z",
+      "2025-03-20T15:40:52.000Z",
+      {
+        market: "US",
+        now: new Date("2026-01-05T12:00:00.000Z"),
+      },
+    );
+
+    expect(
+      expectedTradingDates("US", "2025-03-21", range.endDate),
+    ).toHaveLength(180);
+  });
+
+  it("caps the forward daily request at the latest completed session", () => {
+    const range = requiredMarketDataRange(
+      "2026-08-31T02:00:00.000Z",
+      "2026-08-31T02:00:00.000Z",
+      {
+        market: "HK",
+        now: new Date("2026-09-02T12:00:00.000Z"),
+      },
+    );
+
+    expect(range.endDate).toBe("2026-09-01");
   });
 });
 

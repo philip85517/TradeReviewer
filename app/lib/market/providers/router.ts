@@ -16,6 +16,7 @@ import { SinaUsProvider } from "./sina-us";
 import { TencentProvider } from "./tencent";
 import { TigerProvider } from "./tiger";
 import { YahooProvider } from "./yahoo";
+import { fetchDailyWithCoverage } from "./daily-fallback";
 
 export type {
   IntradayCandleRequest,
@@ -94,6 +95,14 @@ async function fetchWithProviderFallback<
           candidate.supports(request.market as DailyCandleRequest["market"]),
         );
       if (shouldTryNext?.(result, request) && hasNextProvider) {
+        if (result.provider === "tiger" && result.candles.length === 0) {
+          const noDataError = new MarketDataProviderError(
+            "no-data",
+            `${provider.id}未返回该股票数据`,
+          );
+          providerErrors.push(noDataError);
+          failures.push(noDataError.message);
+        }
         if (!bestPartial || result.candles.length > bestPartial.candles.length) {
           bestPartial = result;
         }
@@ -120,7 +129,7 @@ async function fetchWithProviderFallback<
       );
     }
   }
-  if (bestPartial) return bestPartial;
+  if (bestPartial && bestPartial.candles.length > 0) return bestPartial;
   const selectedError = PROVIDER_ERROR_PRIORITY
     .map((code) => providerErrors.find((error) => error.code === code))
     .find((error) => error !== undefined);
@@ -152,13 +161,7 @@ export function createProviderRouter(
 
   return {
     fetchDaily: (request) =>
-      fetchWithProviderFallback(
-        dailyProviders,
-        request,
-        (provider, nextRequest) =>
-          provider.fetchDaily(nextRequest, fetcher),
-        (result) => shouldFallBackOnEmptyTigerResult(result),
-      ),
+      fetchDailyWithCoverage(dailyProviders, request, fetcher),
     fetchIntraday: (request) =>
       fetchWithProviderFallback(
         request.interval === "1h"

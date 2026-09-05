@@ -204,7 +204,7 @@ describe("useScreenshotImport", () => {
       await result.current.start([file("one.png")]);
     });
 
-    expect(result.current.state?.sourceTimezone).toBe("Asia/Shanghai");
+    expect(result.current.state?.sourceTimezone).toBeUndefined();
     expect(result.current.images[0]).toMatchObject({
       state: "needs-review",
       issueCount: 1,

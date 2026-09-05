@@ -19,7 +19,10 @@ import type { TimeframeAvailability } from "../../lib/market/availability";
 import type { Candle, Timeframe } from "../../lib/market/types";
 import type { PositionLedgerSnapshot } from "../../lib/replay/position-ledger";
 import type { PositionPathMetrics } from "../../lib/replay/position-path-metrics";
-import { formatReplayCursor } from "../../lib/replay/format-time";
+import {
+  formatBeijingDateTime,
+  formatReplayCursor,
+} from "../../lib/replay/format-time";
 import type {
   EpisodePlan,
   EpisodeReviewRecord,
@@ -32,12 +35,14 @@ import { DrawingToolbar } from "../chart/drawing-toolbar";
 import type { SearchableInstrument } from "../chart/instrument-search-popover";
 import type { MarketDataDetails } from "../chart/market-data-popover";
 import { ReplayChart } from "../chart/replay-chart";
+import { mapExecutionsToCandles } from "../../lib/replay/execution-markers";
 import { useFullscreen } from "../chart/use-fullscreen";
 import { ReplayControls } from "../replay/replay-controls";
 import { ReviewSidePanel } from "./review-side-panel";
 
 export type ReviewChartViewModel = {
   source: "demo" | "imported";
+  historyMode?: "history" | "replay";
   episodeId: string;
   instrument: Instrument;
   timeframe: Timeframe;
@@ -96,6 +101,7 @@ type Props = {
   onNext: () => void;
   onNextExecution: () => void;
   onTogglePlay: () => void;
+  onHistoryModeChange?: (mode: "history" | "replay") => void;
   onSpeedChange: (speed: number) => void;
   onActivePanelTabChange: (tab: "stats" | "notes") => void;
   onDrawerOpenChange: (open: boolean) => void;
@@ -112,13 +118,7 @@ function money(value: string, currency: string) {
 }
 
 function dateTime(value: string) {
-  return new Date(value).toLocaleString("zh-CN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatBeijingDateTime(value);
 }
 
 export function executionTimestampLabel(execution: TradeExecution) {
@@ -177,6 +177,7 @@ export function ReviewChartWorkspace({
   onNext,
   onNextExecution,
   onTogglePlay,
+  onHistoryModeChange,
   onSpeedChange,
   onActivePanelTabChange,
   onDrawerOpenChange,
@@ -220,6 +221,10 @@ export function ReviewChartWorkspace({
     model.timeframe,
   );
   const latestCandle = model.candles.at(-1);
+  const mappedExecutionIds = new Set(mapExecutionsToCandles(model.candles, model.executions).map(marker => marker.executionId));
+  const unmatchedExecutions = model.executions.filter(execution => !mappedExecutionIds.has(execution.id));
+  const greyMarketExecutions = unmatchedExecutions.filter(execution => execution.source.tradingSession === "grey-market");
+  const missingMarketExecutions = unmatchedExecutions.filter(execution => execution.source.tradingSession !== "grey-market");
   const pnlPositive = Number(model.position.netPnl) >= 0;
   const instrumentLabel = `${model.instrument.name}（${model.instrument.symbol}）`;
   const episodeStartedAt =
@@ -293,6 +298,20 @@ export function ReviewChartWorkspace({
             onClear={onClearDrawings}
           />
           <div className="chart-column">
+            {model.historyMode && (
+              <div className="history-mode-bar" aria-label="行情查看模式">
+                <button type="button" aria-pressed={model.historyMode === "history"} onClick={() => onHistoryModeChange?.("history")}>完整历史</button>
+                <button type="button" aria-pressed={model.historyMode === "replay"} onClick={() => onHistoryModeChange?.("replay")}>逐根回放</button>
+                <span>已展示 {model.candles.length} 根 K 线{model.candles.length ? ` · ${model.candles[0].time.slice(0, 10)} 至 ${latestCandle!.time.slice(0, 10)}` : ""}</span>
+                <span>{model.historyMode === "history" ? "成交标记：该标的全部成交；持仓统计：当前交易回合" : "成交标记与持仓统计：当前回放交易回合"}</span>
+              </div>
+            )}
+            {missingMarketExecutions.length > 0 && (
+              <p className="unmatched-execution-notice" role="status">{missingMarketExecutions.length} 笔成交无对应 K 线：成交所在区间缺少行情，未绘制箭头；成交明细仍保留。</p>
+            )}
+            {greyMarketExecutions.length > 0 && (
+              <p className="unmatched-execution-notice" role="status">{greyMarketExecutions.length} 笔暗盘成交：暂无对应暗盘行情，不绘制到普通 K 线上；成交明细仍保留。</p>
+            )}
             <div className="position-strip">
               <div className="position-primary">
                 <span className={`live-dot ${playing ? "playing" : ""}`} />
@@ -353,6 +372,8 @@ export function ReviewChartWorkspace({
 
             <ReplayChart
               episodeId={model.episodeId}
+              viewportKey={JSON.stringify([model.instrument.id, model.episodeId, model.timeframe, model.historyMode,
+                ...(model.historyMode === "history" ? [model.candles[0]?.time, latestCandle?.time, model.candles.length] : [])])}
               candles={model.candles}
               executions={model.executions}
               cursor={model.cursor}
@@ -377,7 +398,7 @@ export function ReviewChartWorkspace({
             )}
 
             <div className="chart-footer">
-              <ReplayControls
+              {model.historyMode !== "history" && <ReplayControls
                 playing={playing}
                 speed={speed}
                 canGoBack={model.canGoBack}
@@ -388,7 +409,7 @@ export function ReviewChartWorkspace({
                 onNextExecution={onNextExecution}
                 onTogglePlay={onTogglePlay}
                 onSpeedChange={onSpeedChange}
-              />
+              />}
               <div className="replay-status">
                 {model.replayError && (
                   <span className="replay-error" role="alert">
@@ -401,7 +422,7 @@ export function ReviewChartWorkspace({
                   </span>
                 )}
                 <CalendarDays size={14} />
-                <span>游标之后的数据未加载</span>
+                <span>{model.historyMode === "history" ? "完整历史：已展示本地已下载行情，不代表缺口已补齐" : "逐根回放：游标之后的数据已隐藏"}</span>
                 <span className="status-separator">·</span>
                 <CircleDollarSign size={14} />
                 <span>
@@ -410,7 +431,7 @@ export function ReviewChartWorkspace({
               </div>
             </div>
 
-            <details className="execution-details">
+            <details className="execution-details" open={unmatchedExecutions.length > 0 ? true : undefined}>
               <summary>当前游标成交明细（{model.executions.length}）</summary>
               {model.executions.length === 0 ? (
                 <p>游标之前尚无成交。</p>
@@ -429,6 +450,7 @@ export function ReviewChartWorkspace({
                           {executionTimestampLabel(execution)}
                         </time>
                         <b>{execution.side === "buy" ? "买入" : "卖出"}</b>
+                        {!mappedExecutionIds.has(execution.id) && <strong>{execution.source.tradingSession === "grey-market" ? "暗盘成交，暂无对应暗盘行情" : "未匹配行情，未绘制箭头"}</strong>}
                         <span>
                           {execution.quantity} × {execution.price}
                         </span>
@@ -440,7 +462,11 @@ export function ReviewChartWorkspace({
                           时区 {execution.source.sourceTimezone ?? "未记录"}
                         </small>
                         {!dateOnly && sourceTimestamp && (
-                          <small>{sourceTimestamp}</small>
+                          <small
+                            title={`原始时间（${execution.source.sourceTimezone ?? "来源时区"}）`}
+                          >
+                            {sourceTimestamp}
+                          </small>
                         )}
                       </li>
                     );

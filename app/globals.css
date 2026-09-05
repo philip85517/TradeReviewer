@@ -2784,8 +2784,16 @@ input:focus-visible {
 
 .library-execution-row > span:first-child {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
+}
+
+.library-execution-row > span:first-child small {
+  flex-basis: 100%;
+  margin-left: 18px;
+  color: var(--faint);
+  font-size: 8px;
 }
 
 .library-review-grid {
@@ -4222,4 +4230,35 @@ input:focus-visible {
   .review-side-panel-backdrop {
     animation: none;
   }
+}
+.history-mode-bar {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+.unmatched-execution-notice {
+  flex: 0 0 auto;
+  margin: 4px 12px;
+  padding: 8px;
+  border: 1px solid rgba(245, 166, 35, 0.3);
+  border-radius: 5px;
+  color: #f2c66d;
+  background: rgba(245, 166, 35, 0.1);
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: normal;
+}
+.history-mode-bar button {
+  padding: 6px 10px;
+  border: 1px solid #33465c;
+  border-radius: 6px;
+}
+.history-mode-bar button[aria-pressed="true"] {
+  background: #193858;
+  color: #fff;
+  border-color: #3988ee;
 }

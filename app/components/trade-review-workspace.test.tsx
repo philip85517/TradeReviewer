@@ -323,6 +323,14 @@ async function cacheAvailabilityCandles(timestamps: string[]) {
   });
 }
 
+function intradayRequests() {
+  return vi.mocked(fetch).mock.calls.flatMap(([input]) =>
+    String(input).includes("/api/market-data/intraday")
+      ? [new URL(String(input), "http://localhost")]
+      : [],
+  );
+}
+
 const screenshotFields: ScreenshotField[] = [
   "market",
   "symbol",
@@ -600,7 +608,7 @@ describe("TradeReviewWorkspace", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows an hourly cache as available even when daily data is absent", async () => {
+  it("marks a short hourly cache as updatable even when daily data is absent", async () => {
     const execution = availabilityExecution({
       id: "hourly-only-xpev",
       row: 1,
@@ -619,9 +627,77 @@ describe("TradeReviewWorkspace", () => {
     );
     expect(
       screen.getByRole("button", {
-        name: /小鹏汽车XPEV .*本地行情完整/,
+        name: /小鹏汽车XPEV .*行情可更新/,
       }),
     ).toBeInTheDocument();
+  });
+
+  it("does not block the selected replay on another stock's market data", async () => {
+    const otherInstrument = {
+      id: "US:ZZZ",
+      symbol: "ZZZ",
+      name: "后台加载标的",
+      market: "US" as const,
+      currency: "USD" as const,
+    };
+    const executions = [
+      availabilityExecution({
+        id: "selected-xpev",
+        row: 1,
+        side: "buy" as const,
+        executedAt: "2025-01-07T14:30:00.000Z",
+      }),
+      {
+        ...availabilityExecution({
+          id: "background-zzz",
+          row: 2,
+          side: "buy" as const,
+          executedAt: "2025-01-07T14:30:00.000Z",
+        }),
+        instrument: otherInstrument,
+      },
+    ];
+    const blocked = deferred<Awaited<ReturnType<SqliteHttpClient["getMarketData"]>>>();
+    const client = createLegacySqliteClient();
+    const getBootstrap = vi.fn().mockResolvedValue({
+      schemaVersion: 1,
+      migration: { sourceFingerprint: "hydration", inserted: 0, duplicate: 0, conflict: 0, failed: 0, validationDigest: "hydration" },
+      executions,
+      importHistory: [],
+      instruments: [availabilityInstrument, otherInstrument],
+      reviews: [],
+      reviewStates: [],
+      tagSuggestions: [],
+      marketDataJobs: [],
+      settings: {
+        version: 1,
+        showGrid: true,
+        showVolume: true,
+        showExecutions: true,
+        showAverageCost: true,
+        colorScheme: "teal-red",
+      },
+    } satisfies StorageBootstrap);
+    const getMarketData = vi.fn(async (input: Parameters<SqliteHttpClient["getMarketData"]>[0]) => {
+      if (input.instrumentId === otherInstrument.id) return blocked.promise;
+      return { candles: [], dailyCandles: [], intervalCoverage: [], coverage: [] };
+    });
+
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+        storageClient={{ ...client, getBootstrap, getMarketData } as SqliteHttpClient}
+      />,
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" }, { timeout: 500 }),
+    ).toBeInTheDocument();
+    expect(getMarketData).toHaveBeenCalledWith(
+      expect.objectContaining({ instrumentId: availabilityInstrument.id }),
+    );
+    blocked.resolve({ candles: [], dailyCandles: [], intervalCoverage: [], coverage: [] });
   });
 
   it("keeps a persisted hourly provider failure visible when no cache exists", async () => {
@@ -901,6 +977,11 @@ describe("TradeReviewWorkspace", () => {
       await screen.findByRole("heading", { name: "从截图恢复交易" }),
     ).toBeInTheDocument();
 
+    await user.selectOptions(
+      screen.getByLabelText("截图成交时区"),
+      "Asia/Shanghai",
+    );
+    await user.click(screen.getByRole("button", { name: "选择 two.png" }));
     await user.selectOptions(
       screen.getByLabelText("截图成交时区"),
       "Asia/Shanghai",
@@ -1647,7 +1728,55 @@ describe("TradeReviewWorkspace", () => {
     );
   });
 
+  it("does not describe confirmed grey-market trades as a regular-market history gap", async () => {
+    const fill = availabilityExecution({ id: "grey-anchor", row: 2, side: "buy", executedAt: "2025-01-02T10:07:00.000Z" });
+    saveImportedExecutions([{ ...fill, source: { ...fill.source, tradingSession: "grey-market" } }]);
+    await cacheAvailabilityCandles(["2025-01-03T10:00:00.000Z"]);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    await screen.findByText(/已展示 1 根 K 线/);
+    expect(screen.getByText("暗盘成交，暂无对应暗盘行情")).toBeVisible();
+    expect(screen.queryByText(/成交所在区间仍缺少行情/)).not.toBeInTheDocument();
+  });
+
+  it("shows all daily history by default and explains trades before the first candle", async () => {
+    const user = userEvent.setup();
+    saveImportedExecutions([availabilityExecution({ id: "missing-anchor", row: 2, side: "buy", executedAt: "2025-01-02T10:07:00.000Z" })]);
+    await cacheAvailabilityCandles(["2025-01-03T10:00:00.000Z"]);
+    await new IndexedDbMarketDataRepository().commitSyncResult({ instrumentId: "US:XPEV", candles: ["2025-01-03", "2025-01-06"].map(tradingDate => ({
+      instrumentId: "US:XPEV", tradingDate, open: "10", high: "11", low: "9", close: "10.5", volume: "1000", currency: "USD", provider: "yahoo" as const, providerSymbol: "XPEV", adjustmentMode: "raw" as const, fetchedAt: "2025-01-07T00:00:00Z"
+    })), coverage: [] });
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
+    await screen.findByText(/已展示 1 根 K 线/);
+    await user.click(screen.getByRole("button", { name: "切换到 1D" }));
+    expect(await screen.findByText(/已展示 2 根 K 线/)).toBeInTheDocument();
+    expect(screen.getByText(/1 笔成交无对应 K 线/)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "逐根回放" }));
+    await user.click(screen.getByRole("button", { name: "切换到 15m" }));
+    await user.click(screen.getByRole("button", { name: "切换到 1D" }));
+    expect(screen.getByText(/已展示 1 根 K 线/)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "完整历史" }));
+    expect(screen.getByText(/已展示 2 根 K 线/)).toBeInTheDocument();
+  });
+
+  it("shows all instrument executions in history but only the selected episode in replay", async () => {
+    const user = userEvent.setup();
+    saveImportedExecutions([
+      availabilityExecution({ id: "old-buy", row: 1, side: "buy", executedAt: "2025-01-02T10:01:00Z" }),
+      availabilityExecution({ id: "old-sell", row: 2, side: "sell", executedAt: "2025-01-02T10:05:00Z" }),
+      availabilityExecution({ id: "new-buy", row: 3, side: "buy", executedAt: "2025-01-03T10:01:00Z" }),
+    ]);
+    await cacheAvailabilityCandles(["2025-01-02T10:00:00Z", "2025-01-03T10:00:00Z"]);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
+    await screen.findByText(/已展示 2 根 K 线/);
+    expect(screen.getByText(/当前游标成交明细（3）/)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "逐根回放" }));
+    expect(screen.getByText(/当前游标成交明细（1）/)).toBeInTheDocument();
+  });
+
   it("starts replay at the first known candle when history begins after the trade", async () => {
+    const user = userEvent.setup();
     saveImportedExecutions([
       availabilityExecution({
         id: "late-history-open",
@@ -1669,6 +1798,7 @@ describe("TradeReviewWorkspace", () => {
     expect(
       screen.queryByText("No candle is available at or before the replay cursor."),
     ).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "逐根回放" }));
     expect(screen.getByRole("alert")).toHaveTextContent(
       "行情历史晚于交易时间，已从首根可用 K 线开始回放",
     );
@@ -1697,7 +1827,7 @@ describe("TradeReviewWorkspace", () => {
     );
   });
 
-  it("bounds intraday refresh to the selected episode and changes bounds after an episode switch", async () => {
+  it("refreshes every trade episode regardless of the selected episode", async () => {
     const user = userEvent.setup();
     const executions = [
       availabilityExecution({
@@ -1760,20 +1890,15 @@ describe("TradeReviewWorkspace", () => {
       ).toBe(true),
     );
 
-    const newestIntraday = new URL(
-      String(
-        vi.mocked(fetch).mock.calls.find(([input]) =>
-          String(input).includes("/api/market-data/intraday"),
-        )?.[0],
-      ),
-      "http://localhost",
-    );
-    expect(newestIntraday.searchParams.get("start")).toBe(
-      "2024-12-30T14:30:00.000Z",
-    );
-    expect(newestIntraday.searchParams.get("end")).toBe(
-      "2025-01-06T15:59:59.999Z",
-    );
+    await waitFor(() => expect(intradayRequests()).toHaveLength(1));
+    expect(
+      intradayRequests().map((request) => [
+        request.searchParams.get("start"),
+        request.searchParams.get("end"),
+      ]),
+    ).toEqual([
+      ["2024-12-26T14:30:00.000Z", "2025-01-06T15:59:59.999Z"],
+    ]);
 
     await user.selectOptions(
       screen.getByRole("combobox", { name: "交易回合" }),
@@ -1786,31 +1911,80 @@ describe("TradeReviewWorkspace", () => {
     await user.click(
       screen.getByRole("button", { name: "刷新行情数据" }),
     );
-    await waitFor(() =>
-      expect(
-        vi.mocked(fetch).mock.calls.filter(([input]) =>
-          String(input).includes("/api/market-data/"),
-        ),
-      ).toHaveLength(2),
+    await waitFor(() => expect(intradayRequests()).toHaveLength(1));
+    expect(
+      intradayRequests().map((request) => [
+        request.searchParams.get("start"),
+        request.searchParams.get("end"),
+      ]),
+    ).toEqual([
+      ["2024-12-26T14:30:00.000Z", "2025-01-06T15:59:59.999Z"],
+    ]);
+  });
+
+  it("uses META as the market-data symbol for historical FB trades", async () => {
+    const user = userEvent.setup();
+    const client = createLegacySqliteClient();
+    const mergeExecutions = vi.fn(client.mergeExecutions);
+    mockSqliteClient.current = { ...client, mergeExecutions };
+    saveImportedExecutions([
+      {
+        ...availabilityExecution({
+          id: "historical-fb",
+          row: 2,
+          side: "buy",
+          executedAt: "2019-01-31T18:28:15.000Z",
+        }),
+        instrument: {
+          id: "US:FB",
+          symbol: "FB",
+          name: "ProShares S&P 500 Dynamic Buffer ETF",
+          market: "US",
+          currency: "USD",
+        },
+      },
+    ]);
+    vi.mocked(fetch).mockImplementation(async (input) =>
+      String(input).includes("/api/market-data/")
+        ? Response.json(
+            { error: { code: "source-unavailable" } },
+            { status: 502 },
+          )
+        : Response.json(nextFrame),
     );
 
-    const oldIntraday = new URL(
-      String(
-        vi.mocked(fetch).mock.calls.find(([input]) =>
-          String(input).includes("/api/market-data/intraday"),
-        )?.[0],
+    render(
+      <TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />,
+    );
+    await screen.findByRole("combobox", { name: "交易回合" });
+    await user.click(
+      await screen.findByRole("button", { name: "行情数据详情" }),
+    );
+    await user.click(
+      await screen.findByRole("button", { name: "刷新行情数据" }),
+    );
+
+    await waitFor(() => expect(intradayRequests()).not.toHaveLength(0));
+    expect(
+      intradayRequests().every(
+        (request) => request.searchParams.get("symbol") === "META",
       ),
-      "http://localhost",
-    );
-    expect(oldIntraday.searchParams.get("start")).toBe(
-      "2024-12-26T14:30:00.000Z",
-    );
-    expect(oldIntraday.searchParams.get("end")).toBe(
-      "2025-01-02T15:59:59.999Z",
+    ).toBe(true);
+    await waitFor(() =>
+      expect(mergeExecutions).toHaveBeenCalledWith(
+        expect.objectContaining({
+          instruments: [
+            expect.objectContaining({
+              id: "US:FB",
+              name: "Meta Platforms, Inc. (historical FB)",
+            }),
+          ],
+        }),
+      ),
     );
   });
 
-  it("automatically syncs a newly imported later episode using that episode's bounds", async () => {
+  it("automatically syncs all episodes after importing a later episode", async () => {
     const user = userEvent.setup();
     saveImportedExecutions([
       availabilityExecution({
@@ -1900,23 +2074,18 @@ describe("TradeReviewWorkspace", () => {
       ).toBe(true),
     );
 
-    const intradayRequest = new URL(
-      String(
-        vi.mocked(fetch).mock.calls.find(([input]) =>
-          String(input).includes("/api/market-data/intraday"),
-        )?.[0],
-      ),
-      "http://localhost",
-    );
-    expect(intradayRequest.searchParams.get("start")).toBe(
-      "2024-12-30T14:30:00.000Z",
-    );
-    expect(intradayRequest.searchParams.get("end")).toBe(
-      "2025-01-06T15:59:59.999Z",
-    );
+    await waitFor(() => expect(intradayRequests()).toHaveLength(1));
+    expect(
+      intradayRequests().map((request) => [
+        request.searchParams.get("start"),
+        request.searchParams.get("end"),
+      ]),
+    ).toEqual([
+      ["2024-12-26T14:30:00.000Z", "2025-01-06T15:59:59.999Z"],
+    ]);
   });
 
-  it("automatically syncs a newer episode when the same import closes an open episode", async () => {
+  it("automatically syncs all episodes when an import closes and opens positions", async () => {
     const user = userEvent.setup();
     saveImportedExecutions([
       availabilityExecution({
@@ -2016,20 +2185,15 @@ describe("TradeReviewWorkspace", () => {
       ).toBe(true),
     );
 
-    const intradayRequest = new URL(
-      String(
-        vi.mocked(fetch).mock.calls.find(([input]) =>
-          String(input).includes("/api/market-data/intraday"),
-        )?.[0],
-      ),
-      "http://localhost",
-    );
-    expect(intradayRequest.searchParams.get("start")).toBe(
-      "2024-12-30T14:30:00.000Z",
-    );
-    expect(intradayRequest.searchParams.get("end")).toBe(
-      "2025-01-06T15:59:59.999Z",
-    );
+    await waitFor(() => expect(intradayRequests()).toHaveLength(1));
+    expect(
+      intradayRequests().map((request) => [
+        request.searchParams.get("start"),
+        request.searchParams.get("end"),
+      ]),
+    ).toEqual([
+      ["2024-12-26T14:30:00.000Z", "2025-01-06T15:59:59.999Z"],
+    ]);
   });
 
   it("uses the unified replay workspace for a cached imported episode", async () => {
@@ -2251,6 +2415,7 @@ describe("TradeReviewWorkspace", () => {
       await screen.findByRole("button", { name: "切换到 15m" }),
     ).toBeEnabled();
     expect(screen.getByRole("button", { name: "趋势线" })).toBeEnabled();
+    await user.click(screen.getByRole("button", { name: "逐根回放" }));
     expect(screen.getByText("最大盈利（MFE）")).toBeInTheDocument();
     expect(screen.getByText("计划风险").parentElement).toHaveTextContent(
       "HK$100.00",
@@ -2703,6 +2868,7 @@ describe("TradeReviewWorkspace", () => {
         name: "小米集团-W（1810）",
       });
 
+      await user.click(screen.getByRole("button", { name: "逐根回放" }));
       const nextCandle = screen.getByRole("button", {
         name: "下一根 K 线",
       });
@@ -2923,6 +3089,7 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
     await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
 
+    await user.click(screen.getByRole("button", { name: "逐根回放" }));
     await waitFor(() =>
       expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
         "data-cursor",
@@ -3119,6 +3286,7 @@ describe("TradeReviewWorkspace", () => {
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
     await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
+    await user.click(screen.getByRole("button", { name: "逐根回放" }));
     await waitFor(() =>
       expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
         "data-cursor",

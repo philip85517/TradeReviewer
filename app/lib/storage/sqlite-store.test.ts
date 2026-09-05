@@ -118,6 +118,19 @@ describe("SqliteStore", () => {
     expect(store.getInstruments()).toEqual([instrument]);
   });
 
+  it("preserves an explicitly confirmed grey-market session across reopening storage", () => {
+    const directory = mkdtempSync(join(tmpdir(), "tradereview-session-"));
+    directories.push(directory);
+    const path = join(directory, "store.sqlite");
+    const fill = { ...execution, source: { ...execution.source, tradingSession: "grey-market" as const } };
+    const first = new SqliteStore(openSqliteDatabase(path));
+    first.mergeExecutions([fill]);
+    databaseFor(first).close();
+    const reopened = new SqliteStore(openSqliteDatabase(path));
+    expect(reopened.getExecutions()).toEqual([fill]);
+    databaseFor(reopened).close();
+  });
+
   it("persists trade, market data, and refresh jobs across a database reopen", () => {
     const directory = mkdtempSync(join(tmpdir(), "tradereview-reopen-"));
     directories.push(directory);

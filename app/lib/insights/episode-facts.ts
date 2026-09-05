@@ -87,7 +87,10 @@ function exclusion(
 }
 
 function isComplete(status: MarketDataSyncStatus | undefined) {
-  return status === "complete" || status === "ready";
+  return (
+    status === "complete" ||
+    status === "ready"
+  );
 }
 
 function averageEntry(

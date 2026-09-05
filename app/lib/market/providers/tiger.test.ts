@@ -8,6 +8,45 @@ import {
 } from "./tiger";
 
 describe("Tiger provider", () => {
+  it("includes the requested final session when Tiger excludes its end date", async () => {
+    const provider = new TigerProvider({ configPath: "/tmp/tiger.properties" }, async request =>
+      ["2026-09-04", "2026-09-05"].filter(date => date < request.endTime).map(date => ({
+        symbol: request.symbol, time: Date.parse(`${date}T04:00:00Z`),
+        open: 100, high: 102, low: 99, close: 101, volume: 800,
+      })));
+    const result = await provider.fetchDaily({ instrumentId: "US:CWEB", symbol: "CWEB",
+      market: "US", startDate: "2026-09-04", endDate: "2026-09-04" });
+    expect(result.candles.map(candle => candle.tradingDate)).toEqual(["2026-09-04"]);
+  });
+  it("passes the detected config path to the Tiger runner", async () => {
+    let receivedConfigPath: string | undefined;
+    const provider = new TigerProvider(
+      { configPath: "/tmp/detected-tiger.properties" },
+      async (_request, options) => {
+        receivedConfigPath = options?.configPath;
+        return [{
+          symbol: "AAPL",
+          time: Date.parse("2025-01-02T14:30:00.000Z"),
+          open: 100,
+          high: 102,
+          low: 99,
+          close: 101,
+          volume: 800,
+        }];
+      },
+    );
+
+    await provider.fetchDaily({
+      instrumentId: "US:AAPL",
+      symbol: "AAPL",
+      market: "US",
+      startDate: "2025-01-01",
+      endDate: "2025-01-03",
+    });
+
+    expect(receivedConfigPath).toBe("/tmp/detected-tiger.properties");
+  });
+
   it("parses Tiger daily bars into provider candles", async () => {
     const provider = new TigerProvider(
       { configPath: "/tmp/tiger.properties" },
@@ -66,7 +105,7 @@ describe("Tiger provider", () => {
       symbol: "00700",
       period: "day",
       beginTime: "2025-01-01",
-      endTime: "2025-01-03",
+      endTime: "2025-01-04",
     }]);
     expect(result.providerSymbol).toBe("00700");
   });
@@ -101,7 +140,7 @@ describe("Tiger provider", () => {
       symbol: "01810",
       period: "day",
       beginTime: "2025-01-01",
-      endTime: "2025-01-03",
+      endTime: "2025-01-04",
     }]);
     expect(result.providerSymbol).toBe("01810");
   });

@@ -20,6 +20,7 @@ import type {
 } from "../../lib/insights/insight-engine";
 import type { TagSuggestionRecord } from "../../lib/insights/types";
 import { formatMarketTradingDate } from "../../lib/market/trading-date";
+import { formatBeijingDate } from "../../lib/replay/format-time";
 import {
   TagSuggestionPanel,
   type SuggestionEpisodeContext,
@@ -188,8 +189,8 @@ function InsightCard({
       <div className="insight-basis">
         <span>口径：{basisLabel(insight)}</span>
         <span>
-          {new Date(insight.timeRange.start).toLocaleDateString("zh-CN")}—
-          {new Date(insight.timeRange.end).toLocaleDateString("zh-CN")}
+          {formatBeijingDate(insight.timeRange.start)}—
+          {formatBeijingDate(insight.timeRange.end)}
         </span>
       </div>
       <div className="insight-metrics">
@@ -273,7 +274,7 @@ function ExclusionList({
             <span>
               <strong>{item.instrumentName}</strong>
               <small>
-                {new Date(item.startedAt).toLocaleDateString("zh-CN")}
+                {formatBeijingDate(item.startedAt)}
               </small>
             </span>
             <b>{item.reasonLabel}</b>

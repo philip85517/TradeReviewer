@@ -9,7 +9,11 @@ import type {
   SupportedMarket,
 } from "../contracts";
 import type { TigerOpenApiConfig } from "../tiger-config";
-import { runTigerBars, type TigerBar } from "../tiger-process";
+import {
+  runTigerBars,
+  type TigerBar,
+  type TigerProcessOptions,
+} from "../tiger-process";
 import { normalizeMarketSymbol } from "../symbol-map";
 import {
   validateProviderCandles,
@@ -32,6 +36,7 @@ export type TigerRunBars = (
     beginTime: string;
     endTime: string;
   },
+  options?: Pick<TigerProcessOptions, "configPath">,
 ) => Promise<TigerBar[]>;
 
 function normalizeTigerSymbol(
@@ -160,13 +165,19 @@ export class TigerProvider implements MarketDataProvider {
 
     const providerSymbol = normalizeTigerSymbol(request.market, request.symbol);
     try {
+      // Tiger excludes the ending trading date; our daily API is inclusive.
+      const exclusiveEnd = new Date(`${request.endDate}T00:00:00Z`);
+      exclusiveEnd.setUTCDate(exclusiveEnd.getUTCDate() + 1);
       const candles = parseTigerBars(
-        await this.runBars({
-          symbol: providerSymbol,
-          period: "day",
-          beginTime: request.startDate,
-          endTime: request.endDate,
-        }),
+        await this.runBars(
+          {
+            symbol: providerSymbol,
+            period: "day",
+            beginTime: request.startDate,
+            endTime: exclusiveEnd.toISOString().slice(0, 10),
+          },
+          { configPath: this.config.configPath },
+        ),
         { ...request, providerSymbol },
       );
       validateProviderCandles(candles, request.startDate, request.endDate);
@@ -202,12 +213,15 @@ export class TigerProvider implements MarketDataProvider {
     const providerSymbol = normalizeTigerSymbol(request.market, request.symbol);
     try {
       const candles = parseTigerBars(
-        await this.runBars({
-          symbol: providerSymbol,
-          period: "60min",
-          beginTime: tigerUtcTimestamp(request.startTime),
-          endTime: tigerUtcTimestamp(request.endTime),
-        }),
+        await this.runBars(
+          {
+            symbol: providerSymbol,
+            period: "60min",
+            beginTime: tigerUtcTimestamp(request.startTime),
+            endTime: tigerUtcTimestamp(request.endTime),
+          },
+          { configPath: this.config.configPath },
+        ),
         { ...request, providerSymbol },
       );
       validateProviderMarketCandles(

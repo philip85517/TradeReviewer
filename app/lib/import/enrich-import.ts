@@ -12,6 +12,7 @@ import {
   resolveInstrumentMetadataBatch,
   type ResolveBatchResult,
 } from "../instruments/resolve-service";
+import { resolveHistoricalInstrumentIdentity } from "../instruments/historical-instrument-identity";
 import type { InstrumentMetadataRepository } from "../storage/instrument-metadata-repository";
 import type { TradeExecution } from "../trades/types";
 import type {
@@ -280,16 +281,51 @@ export async function enrichStatementImport(
       }),
     );
   }
+  const recordsByInstrument = new Map<string, TradeExecution[]>();
+  for (const record of parsed.records) {
+    const instrumentId = canonicalInstrumentId(
+      record.instrument.symbol,
+      record.instrument.market,
+    );
+    const records = recordsByInstrument.get(instrumentId) ?? [];
+    records.push(record);
+    recordsByInstrument.set(instrumentId, records);
+  }
   const proposedStatementMetadata = new Map<
     string,
     ResolvedInstrument
   >();
+  const historicalInstrumentIds = new Set<string>();
   const lookups: InstrumentLookup[] = [];
   const resolvedAt = new Date(
     (options.clock ?? Date.now)(),
   ).toISOString();
 
   for (const [instrumentId, candidate] of candidates) {
+    const historicalIdentity = resolveHistoricalInstrumentIdentity({
+      market: candidate.market,
+      symbol: candidate.symbol,
+      name: candidate.sourceName,
+      executedAt: (recordsByInstrument.get(instrumentId) ?? []).map(
+        (record) => record.executedAt,
+      ),
+    });
+    if (historicalIdentity) {
+      historicalInstrumentIds.add(instrumentId);
+      proposedStatementMetadata.set(instrumentId, {
+        market: candidate.market,
+        symbol: canonicalInstrumentSymbol(
+          candidate.symbol,
+          candidate.market,
+        ),
+        name: historicalIdentity.displayName,
+        assetType: "stock",
+        source: "statement",
+        confidence: "statement",
+        resolvedAt,
+      });
+      continue;
+    }
     const statementName = usableStatementName(candidate);
     if (statementName) {
       proposedStatementMetadata.set(instrumentId, {
@@ -326,7 +362,9 @@ export async function enrichStatementImport(
   for (const [instrumentId, proposed] of proposedStatementMetadata) {
     trustedMetadata.set(
       instrumentId,
-      cachedStatementMetadata.get(instrumentId) ?? proposed,
+      historicalInstrumentIds.has(instrumentId)
+        ? proposed
+        : cachedStatementMetadata.get(instrumentId) ?? proposed,
     );
   }
 
@@ -334,7 +372,12 @@ export async function enrichStatementImport(
     await Promise.all(
       [...proposedStatementMetadata.entries()].map(
         async ([instrumentId, metadata]) => {
-          if (cachedStatementMetadata.has(instrumentId)) return;
+          if (
+            cachedStatementMetadata.has(instrumentId) &&
+            !historicalInstrumentIds.has(instrumentId)
+          ) {
+            return;
+          }
           try {
             await options.repository?.put(metadata);
           } catch {
@@ -406,16 +449,6 @@ export async function enrichStatementImport(
 
   const unresolved: InstrumentMetadataFailure[] = [];
   const importable: TradeExecution[] = [];
-  const recordsByInstrument = new Map<string, TradeExecution[]>();
-  for (const record of parsed.records) {
-    const instrumentId = canonicalInstrumentId(
-      record.instrument.symbol,
-      record.instrument.market,
-    );
-    const records = recordsByInstrument.get(instrumentId) ?? [];
-    records.push(record);
-    recordsByInstrument.set(instrumentId, records);
-  }
 
   for (const [instrumentId, candidate] of candidates) {
     const records = recordsByInstrument.get(instrumentId) ?? [];

@@ -268,6 +268,22 @@ describe("screenshotReviewReducer", () => {
       label: "Existing account",
     });
   });
+
+  it("uses each market's default source timezone when the batch has mixed markets", () => {
+    const hk = draft("image-1:tiger:0", {
+      market: "HK",
+      sourceTimestampText: "24/06/05 14:41:08",
+    });
+    const us = draft("image-1:tiger:1", {
+      sourceRowIndex: 1,
+      market: "US",
+      sourceTimestampText: "24/06/05 14:41:08",
+    });
+    const current = state([hk, us]);
+    current.sourceTimezone = undefined;
+
+    expect(reviewBlockers(current)).toEqual([]);
+  });
 });
 
 describe("reviewBlockers", () => {
@@ -453,17 +469,15 @@ describe("reviewBlockers", () => {
     );
   });
 
-  it("blocks missing timezone at batch scope when the broker account is inferable", () => {
+  it("does not require manual timezone selection for a supported market", () => {
     const current = state([
       draft("image-1:tiger:0", { sourceAccountSuffix: undefined }),
     ]);
     current.sourceTimezone = undefined;
     current.account = undefined;
 
-    expect(reviewBlockers(current)).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ code: "missing-timezone" }),
-      ]),
+    expect(reviewBlockers(current)).not.toContainEqual(
+      expect.objectContaining({ code: "missing-timezone" }),
     );
     expect(reviewBlockers(current)).not.toContainEqual(
       expect.objectContaining({ code: "missing-account" }),

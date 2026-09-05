@@ -7,6 +7,7 @@ import type {
   DailyCandleRecord,
 } from "./contracts";
 import { syncMarketData } from "./sync-service";
+import { expectedTradingDates } from "./calendar";
 import { IndexedDbMarketDataRepository } from "../storage/indexeddb-market-data-repository";
 
 const databases: string[] = [];
@@ -46,6 +47,66 @@ afterEach(async () => {
 });
 
 describe("syncMarketData", () => {
+  it("does not let an old partial segment downgrade a newly complete required range", async () => {
+    const repo = repository();
+    await repo.commitSyncResult({
+      instrumentId: "HK:1810",
+      candles: [],
+      coverage: [{
+        startDate: "2024-01-01",
+        endDate: "2024-12-31",
+        status: "partial",
+        missingTradingDates: ["2024-06-03"],
+      }],
+    });
+    const fetcher = vi.fn<typeof fetch>(async () =>
+      Response.json({
+        provider: "tencent",
+        providerSymbol: "hk01810",
+        fetchedAt: "2026-08-31T00:00:00.000Z",
+        adjustmentMode: "raw",
+        warnings: [],
+        request: {
+          instrumentId: "HK:1810",
+          symbol: "1810",
+          market: "HK",
+          startDate: "2025-01-02",
+          endDate: "2025-01-03",
+        },
+        candles: [
+          {
+            tradingDate: "2025-01-02",
+            open: "34.1",
+            high: "35",
+            low: "33.8",
+            close: "34.5",
+            volume: "1200",
+          },
+          {
+            tradingDate: "2025-01-03",
+            open: "34.5",
+            high: "35.5",
+            low: "34",
+            close: "35",
+            volume: "1300",
+          },
+        ],
+      }),
+    );
+
+    const result = await syncMarketData({
+      instrumentId: "HK:1810",
+      symbol: "1810",
+      market: "HK",
+      currency: "HKD",
+      required: { startDate: "2025-01-02", endDate: "2025-01-03" },
+      repository: repo,
+      fetcher,
+    });
+
+    expect(result.status).toBe("complete");
+  });
+
   it("preserves the route error code at the daily synchronization boundary", async () => {
     const repo = repository();
     const fetcher = vi.fn<typeof fetch>(async () =>
@@ -179,7 +240,7 @@ describe("syncMarketData", () => {
         status: "partial",
         provider: "tencent",
         fetchedAt: "2025-02-01T00:00:00.000Z",
-        missingTradingDates: ["2024-01-02"],
+        missingTradingDates: expectedTradingDates("HK", "2024-01-02", "2024-12-31"),
       }],
       providerSymbol: { provider: "tencent", symbol: "hk01810" },
     });
@@ -215,7 +276,7 @@ describe("syncMarketData", () => {
     expect(await repo.getCoverage("HK:1810")).toContainEqual(
       expect.objectContaining({
         startDate: "2024-01-02",
-        endDate: "2024-01-02",
+        endDate: "2024-01-05",
         status: "partial",
         missingTradingDates: [],
         reason: "no-data",
@@ -287,7 +348,7 @@ describe("syncMarketData", () => {
     const repo = repository();
     const coverage: CoverageSegment = {
       startDate: "2025-01-01",
-      endDate: "2025-01-31",
+      endDate: "2025-01-02",
       status: "complete",
       provider: "tencent",
       fetchedAt: "2025-02-01T00:00:00.000Z",
@@ -306,7 +367,7 @@ describe("syncMarketData", () => {
       symbol: "1810",
       market: "HK",
       currency: "HKD",
-      required: { startDate: "2025-01-01", endDate: "2025-01-31" },
+      required: { startDate: "2025-01-01", endDate: "2025-01-02" },
       repository: repo,
       fetcher,
     });
@@ -499,7 +560,7 @@ describe("syncMarketData", () => {
     expect(commitSpy).toHaveBeenCalledTimes(1);
   });
 
-  it("keeps coverage partial when a provider omits an expected trading day", async () => {
+  it("marks a missing contiguous provider tail as latest-available", async () => {
     const repo = repository();
     const fetcher = vi.fn<typeof fetch>(async () =>
       Response.json({
@@ -538,13 +599,76 @@ describe("syncMarketData", () => {
       fetcher,
     });
 
-    expect(result.status).toBe("partial");
+    expect(result.status).toBe("latest-available");
     expect(await repo.getCoverage("HK:1810")).toEqual([
       expect.objectContaining({
         status: "partial",
+        actualEndDate: "2025-01-02",
         missingTradingDates: ["2025-01-03"],
+        reason: "provider-latest-available",
       }),
     ]);
+  });
+
+  it("retries a provider-latest tail during an explicit update", async () => {
+    const repo = repository();
+    await repo.commitSyncResult({
+      instrumentId: "HK:1810",
+      candles: [candle],
+      coverage: [{
+        startDate: "2025-01-01",
+        endDate: "2025-01-03",
+        status: "partial",
+        provider: "tencent",
+        fetchedAt: "2025-02-01T00:00:00.000Z",
+        actualEndDate: "2025-01-02",
+        missingTradingDates: ["2025-01-03"],
+        reason: "provider-latest-available",
+      }],
+      providerSymbol: { provider: "tencent", symbol: "hk01810" },
+    });
+    const fetcher = vi.fn<typeof fetch>(async () =>
+      Response.json({
+        provider: "tencent",
+        providerSymbol: "hk01810",
+        fetchedAt: "2025-02-02T00:00:00.000Z",
+        adjustmentMode: "raw",
+        warnings: [],
+        request: {
+          instrumentId: "HK:1810",
+          symbol: "1810",
+          market: "HK",
+          startDate: "2025-01-03",
+          endDate: "2025-01-03",
+        },
+        candles: [{
+          tradingDate: "2025-01-03",
+          open: "34.5",
+          high: "36",
+          low: "34",
+          close: "35.5",
+          volume: "1500",
+        }],
+      }),
+    );
+
+    const result = await syncMarketData({
+      instrumentId: "HK:1810",
+      symbol: "1810",
+      market: "HK",
+      currency: "HKD",
+      required: { startDate: "2025-01-01", endDate: "2025-01-03" },
+      repository: repo,
+      fetcher,
+      retryUnavailable: true,
+    });
+
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(String(fetcher.mock.calls[0][0])).toContain(
+      "start=2025-01-03&end=2025-01-03",
+    );
+    expect(result.status).toBe("complete");
+    expect(result.candles).toHaveLength(2);
   });
 
   it("preserves surrounding coverage after filling one missing day", async () => {
@@ -696,6 +820,50 @@ describe("syncMarketData", () => {
       }),
     ).rejects.toMatchObject({ name: "AbortError" });
     expect(await repo.getCoverage("HK:1810")).toEqual([]);
+  });
+
+  it("accepts a daily response keyed by a historical market-data symbol", async () => {
+    const repo = repository();
+    const fetcher = vi.fn<typeof fetch>(async () =>
+      Response.json({
+        provider: "baidu",
+        providerSymbol: "META",
+        fetchedAt: "2025-02-01T00:00:00.000Z",
+        adjustmentMode: "raw",
+        warnings: [],
+        request: {
+          instrumentId: "US:META",
+          symbol: "META",
+          market: "US",
+          startDate: "2025-01-02",
+          endDate: "2025-01-02",
+        },
+        candles: [{
+          tradingDate: "2025-01-02",
+          open: "10",
+          high: "11",
+          low: "9",
+          close: "10.5",
+          volume: "1000",
+        }],
+      }),
+    );
+
+    const result = await syncMarketData({
+      instrumentId: "US:FB",
+      symbol: "META",
+      market: "US",
+      currency: "USD",
+      required: { startDate: "2025-01-02", endDate: "2025-01-02" },
+      repository: repo,
+      fetcher,
+    });
+
+    expect(result.candles).toHaveLength(1);
+    expect(result.candles[0]).toMatchObject({
+      instrumentId: "US:FB",
+      providerSymbol: "META",
+    });
   });
 
   it("rejects a response for a different daily instrument before persistence", async () => {

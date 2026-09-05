@@ -19,6 +19,7 @@ export type ScreenshotReviewAction =
   | { type: "delete-draft"; draftId: string }
   | { type: "add-draft"; imageId: string }
   | { type: "set-time-zone"; timeZone: string }
+  | { type: "set-image-time-zone"; imageId: string; timeZone: string }
   | {
       type: "set-time-disambiguation";
       draftId: string;
@@ -53,6 +54,7 @@ export type ScreenshotReviewState = {
   drafts: ScreenshotTradeDraft[];
   deletedDraftIds: Set<string>;
   sourceTimezone?: string;
+  imageTimezones?: Record<string, string>;
   account?: { id: string; label: string };
 };
 
@@ -77,6 +79,24 @@ const REQUIRED_FIELDS: ScreenshotField[] = [
   "executedAt",
 ];
 const MARKETS = new Set(["US", "HK", "CN-SH", "CN-SZ"]);
+const MARKET_SOURCE_TIMEZONES: Record<string, string> = {
+  US: "America/New_York",
+  HK: "Asia/Hong_Kong",
+  "CN-SH": "Asia/Shanghai",
+  "CN-SZ": "Asia/Shanghai",
+};
+
+export function sourceTimezoneForDraft(
+  state: ScreenshotReviewState,
+  draft: ScreenshotTradeDraft,
+) {
+  return (
+    draft.sourceTimezone?.trim() ||
+    state.imageTimezones?.[draft.imageId]?.trim() ||
+    state.sourceTimezone?.trim() ||
+    (draft.market ? MARKET_SOURCE_TIMEZONES[draft.market] : undefined)
+  );
+}
 
 function isSupportedReviewImage(
   image: ScreenshotReviewImage | undefined,
@@ -282,6 +302,13 @@ export function screenshotReviewReducer(
     }
     case "set-time-zone":
       return { ...state, sourceTimezone: action.timeZone.trim() };
+    case "set-image-time-zone": {
+      const timeZone = action.timeZone.trim();
+      const imageTimezones = { ...(state.imageTimezones ?? {}) };
+      if (timeZone) imageTimezones[action.imageId] = timeZone;
+      else delete imageTimezones[action.imageId];
+      return { ...state, imageTimezones };
+    }
     case "set-time-disambiguation":
       return updateDraft(state, action.draftId, (draft) => ({
         ...draft,
@@ -321,12 +348,6 @@ export function reviewBlockers(
   const blockers: ScreenshotReviewBlocker[] = [];
   const drafts = activeDrafts(state);
 
-  if (!state.sourceTimezone?.trim()) {
-    blockers.push({
-      code: "missing-timezone",
-      message: "请选择截图成交时间所使用的时区",
-    });
-  }
   if (!resolvedReviewAccount(state)) {
     blockers.push({
       code: "missing-account",
@@ -385,13 +406,18 @@ export function reviewBlockers(
       }
     }
 
-    if (
-      state.sourceTimezone?.trim() &&
-      fieldIsValid(draft, "executedAt")
-    ) {
+    const sourceTimezone = sourceTimezoneForDraft(state, draft);
+    if (!sourceTimezone) {
+      blockers.push({
+        code: "missing-timezone",
+        draftId: draft.id,
+        field: "executedAt",
+        message: "无法根据市场确定截图成交时区，请为当前截图选择时区",
+      });
+    } else if (fieldIsValid(draft, "executedAt")) {
       const time = wallClockToInstant(
         draft.sourceTimestampText!,
-        state.sourceTimezone,
+        sourceTimezone,
         draft.timeDisambiguation,
       );
       if (!time.ok) {

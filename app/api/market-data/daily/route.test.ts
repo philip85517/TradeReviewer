@@ -134,7 +134,7 @@ describe("GET /api/market-data/daily", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe(
-      "public, max-age=21600, stale-while-revalidate=86400",
+      "no-store",
     );
     expect(body.provider).toBe("tencent");
     expect(body.providerSymbol).toBe("hk01810");

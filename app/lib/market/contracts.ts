@@ -67,6 +67,7 @@ export type CoverageStatus =
   | "not-requested"
   | "syncing"
   | "complete"
+  | "latest-available"
   | "partial"
   | "stale"
   | "source-rate-limited"
@@ -81,6 +82,8 @@ export type CoverageSegment = {
   status: CoverageStatus;
   provider?: MarketDataProviderId;
   fetchedAt?: string;
+  /** Last trading date actually returned by the provider for a latest-available tail. */
+  actualEndDate?: string;
   missingTradingDates: string[];
   reason?: string;
 };
@@ -111,6 +114,7 @@ export type ProviderResult = {
   fetchedAt: string;
   candles: ProviderDailyCandle[];
   warnings: string[];
+  candleSources?: Record<string, { provider: MarketDataProviderId; providerSymbol: string; fetchedAt: string }>;
 };
 
 export type IntradayCandleRequest = {

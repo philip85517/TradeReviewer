@@ -138,7 +138,6 @@ function initialReviewState(
     images: [],
     drafts: [],
     deletedDraftIds: new Set(),
-    sourceTimezone: "Asia/Shanghai",
   };
 }
 
@@ -369,6 +368,8 @@ function removeImageResult(state: ScreenshotReviewState, imageId: string) {
       .filter((draft) => draft.imageId === imageId)
       .map(({ id }) => id),
   );
+  const imageTimezones = { ...(state.imageTimezones ?? {}) };
+  delete imageTimezones[imageId];
   return {
     ...state,
     images: state.images.filter((image) => image.imageId !== imageId),
@@ -376,6 +377,7 @@ function removeImageResult(state: ScreenshotReviewState, imageId: string) {
     deletedDraftIds: new Set(
       [...state.deletedDraftIds].filter((id) => !removedDraftIds.has(id)),
     ),
+    imageTimezones,
   };
 }
 

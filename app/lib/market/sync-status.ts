@@ -1,9 +1,12 @@
-import type { CoverageStatus } from "./contracts";
+import type { CoverageSegment, CoverageStatus } from "./contracts";
+import type { DateRange } from "./coverage-planner";
+import { planCoverageGaps } from "./coverage-planner";
 
 export type MarketDataSyncStatus =
   | "not-requested"
   | "syncing"
   | "complete"
+  | "latest-available"
   | "partial"
   | "stale"
   | "source-rate-limited"
@@ -19,6 +22,7 @@ export type MarketDataSyncStatus =
 export function marketDataStatusLabel(status: MarketDataSyncStatus) {
   if (status === "syncing") return "正在更新行情";
   if (status === "complete" || status === "ready") return "本地行情完整";
+  if (status === "latest-available") return "尾部待补";
   if (status === "partial") return "行情部分可用";
   if (status === "stale") return "行情可更新";
   if (status === "source-rate-limited") return "行情源访问受限";
@@ -42,6 +46,7 @@ export function coverageStatusForSegments(
     "source-unavailable",
     "syncing",
     "partial",
+    "latest-available",
     "stale",
   ];
   return (
@@ -49,6 +54,83 @@ export function coverageStatusForSegments(
       segments.some((segment) => segment.status === status),
     ) ?? "complete"
   );
+}
+
+export function coverageStatusForDateRange(
+  required: DateRange,
+  segments: ReadonlyArray<CoverageSegment>,
+): CoverageStatus {
+  if (segments.length === 0) return "not-requested";
+  const relevant = segments.filter(
+    (segment) =>
+      segment.endDate >= required.startDate &&
+      segment.startDate <= required.endDate,
+  );
+  if (relevant.length === 0) return "stale";
+  const status = coverageStatusForSegments(relevant);
+  if (status !== "complete" && status !== "partial") return status;
+  const partials = relevant.filter(segment => segment.status === "partial");
+  const tailOnly = partials.length > 0 && partials.every(segment =>
+    segment.reason === "provider-latest-available" &&
+    typeof segment.actualEndDate === "string" &&
+    segment.missingTradingDates.length > 0 &&
+    segment.missingTradingDates.every(date => date > segment.actualEndDate!),
+  );
+  const planning = tailOnly ? relevant.map(segment => segment.status === "partial"
+    ? { ...segment, status: "complete" as const, missingTradingDates: [] } : segment) : relevant;
+  if (planCoverageGaps(required, [...planning]).length > 0) {
+    return status === "partial" ? "partial" : "stale";
+  }
+  const hasProviderLatestTail = relevant.some(
+    (segment) =>
+      segment.status === "partial" &&
+      segment.reason === "provider-latest-available" &&
+      typeof segment.actualEndDate === "string" &&
+      segment.missingTradingDates.length > 0 &&
+      segment.missingTradingDates.some(
+        (date) => date >= required.startDate && date <= required.endDate,
+      ) &&
+      segment.missingTradingDates
+        .filter(
+          (date) => date >= required.startDate && date <= required.endDate,
+        )
+        .every((date) => date > segment.actualEndDate!),
+  );
+  if (hasProviderLatestTail && tailOnly) return "latest-available";
+  return status === "complete" ? "complete" : "partial";
+}
+
+type TimeCoverageSegment = {
+  requestedStart: string;
+  requestedEnd: string;
+  status: CoverageStatus;
+};
+
+export function coverageStatusForTimeRanges(
+  required: ReadonlyArray<{ startTime: string; endTime: string }>,
+  segments: ReadonlyArray<TimeCoverageSegment>,
+): CoverageStatus {
+  if (required.length === 0) return "not-requested";
+  if (segments.length === 0) return "not-requested";
+  const relevant = segments.filter((segment) =>
+    required.some(
+      (range) =>
+        segment.requestedEnd >= range.startTime &&
+        segment.requestedStart <= range.endTime,
+    ),
+  );
+  if (relevant.length === 0) return "stale";
+  const status = coverageStatusForSegments(relevant);
+  if (status !== "complete") return status;
+  const covered = required.every((range) =>
+    relevant.some(
+      (segment) =>
+        segment.status === "complete" &&
+        segment.requestedStart <= range.startTime &&
+        segment.requestedEnd >= range.endTime,
+    ),
+  );
+  return covered ? status : "stale";
 }
 
 export function combinedMarketDataStatus(
@@ -96,13 +178,14 @@ export function displayMarketDataStatus(
     !options.hasDailyData &&
     daily !== "not-requested" &&
     daily !== "complete" &&
+    daily !== "latest-available" &&
     daily !== "partial" &&
     daily !== "stale" &&
     daily !== "ready";
   if (
     options.hasIntradayData &&
     dailyFailedWithoutCache &&
-    (effectiveIntraday === "complete" || effectiveIntraday === "partial" || effectiveIntraday === "stale" || effectiveIntraday === "ready")
+    (effectiveIntraday === "complete" || effectiveIntraday === "latest-available" || effectiveIntraday === "partial" || effectiveIntraday === "stale" || effectiveIntraday === "ready")
   ) {
     return "partial";
   }

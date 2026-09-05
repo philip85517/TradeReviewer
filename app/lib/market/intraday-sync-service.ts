@@ -18,7 +18,9 @@ import {
   marketTradingDate,
 } from "./trading-date";
 import { validateProviderMarketCandles } from "./validation";
+import { canonicalInstrumentId } from "../instruments/display-name";
 import type { MarketDataRepository } from "../storage/market-data-repository";
+import { mergeIntradayTimeRanges } from "./intraday-sync-ranges";
 
 export type IntradayTimeRange = {
   startTime: string;
@@ -55,6 +57,15 @@ export type SyncIntradayMarketDataOptions = {
   repository: MarketDataRepository;
   fetcher?: typeof fetch;
   signal?: AbortSignal;
+};
+
+export type IntradaySyncResult = {
+  source: "cache" | "network";
+  status: CoverageStatus;
+  candles: MarketCandleRecord[];
+  coverage: IntervalCoverageSegment[];
+  requestedRanges: IntradayTimeRange[];
+  error?: { code: string; message: string };
 };
 
 function isProvider(value: unknown): value is MarketDataProviderId {
@@ -230,6 +241,19 @@ function coverageForRange(
   );
 }
 
+function coverageForRanges(
+  ranges: ReadonlyArray<IntradayTimeRange>,
+  coverage: IntervalCoverageSegment[],
+) {
+  return coverage.filter((segment) =>
+    ranges.some(
+      (range) =>
+        segment.requestedEnd >= range.startTime &&
+        segment.requestedStart <= range.endTime,
+    ),
+  );
+}
+
 function parseRouteResult(
   value: unknown,
   range: IntradayTimeRange,
@@ -255,7 +279,9 @@ function parseRouteResult(
   }
   if (
     !result.request ||
-    result.request.instrumentId !== expected.instrumentId ||
+    (result.request.instrumentId !== expected.instrumentId &&
+      result.request.instrumentId !==
+        canonicalInstrumentId(expected.symbol, expected.market)) ||
       result.request.symbol !== expected.symbol ||
       result.request.market !== expected.market ||
       result.request.interval !== expected.interval ||
@@ -319,14 +345,7 @@ export async function syncIntradayMarketData({
   repository,
   fetcher = fetch,
   signal,
-}: SyncIntradayMarketDataOptions): Promise<{
-  source: "cache" | "network";
-  status: CoverageStatus;
-  candles: MarketCandleRecord[];
-  coverage: IntervalCoverageSegment[];
-  requestedRanges: IntradayTimeRange[];
-  error?: { code: string; message: string };
-}> {
+}: SyncIntradayMarketDataOptions): Promise<IntradaySyncResult> {
   const throwIfAborted = () => {
     if (signal?.aborted) throw abortError();
   };
@@ -552,5 +571,63 @@ export async function syncIntradayMarketData({
     coverage,
     requestedRanges,
     ...(lastError ? { error: lastError } : {}),
+  };
+}
+
+export async function syncIntradayMarketDataForRanges({
+  requiredRanges,
+  ...options
+}: Omit<SyncIntradayMarketDataOptions, "required"> & {
+  requiredRanges: ReadonlyArray<IntradayTimeRange>;
+}): Promise<IntradaySyncResult> {
+  const ranges = mergeIntradayTimeRanges(requiredRanges);
+  if (ranges.length === 0) {
+    return {
+      source: "cache",
+      status: "not-requested",
+      candles: [],
+      coverage: await options.repository.getIntervalCoverage(
+        options.instrumentId,
+        options.interval ?? "15m",
+      ),
+      requestedRanges: [],
+    };
+  }
+
+  const results: IntradaySyncResult[] = [];
+  for (const required of ranges) {
+    results.push(
+      await syncIntradayMarketData({
+        ...options,
+        required,
+      }),
+    );
+  }
+
+  const interval = options.interval ?? "15m";
+  const coverage = await options.repository.getIntervalCoverage(
+    options.instrumentId,
+    interval,
+  );
+  const candles = new Map<string, MarketCandleRecord>();
+  for (const result of results) {
+    for (const candle of result.candles) {
+      candles.set(candle.timestamp, candle);
+    }
+  }
+  return {
+    source: results.some((result) => result.source === "network")
+      ? "network"
+      : "cache",
+    status: coverageStatusForSegments([
+      ...coverageForRanges(ranges, coverage),
+      ...results.map((result) => ({ status: result.status })),
+    ]),
+    candles: [...candles.values()].sort((left, right) =>
+      left.timestamp.localeCompare(right.timestamp),
+    ),
+    coverage,
+    requestedRanges: results.flatMap((result) => result.requestedRanges),
+    error: results.find((result) => result.error)?.error,
   };
 }

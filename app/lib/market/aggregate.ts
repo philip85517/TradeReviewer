@@ -182,6 +182,7 @@ export function aggregateCandles(
     previous.low = Math.min(previous.low, candle.low);
     previous.close = candle.close;
     previous.volume += candle.volume;
+    if (candle.tradingDates) previous.tradingDates = [...(previous.tradingDates ?? []), ...candle.tradingDates];
     if (candle.knowledgeAt !== undefined || previous.knowledgeAt !== undefined) {
       previous.knowledgeAt =
         candleKnowledgeAt(candle) > candleKnowledgeAt(previous)
@@ -219,6 +220,7 @@ function aggregateGroup(candles: Candle[], time = candles[0]?.time): Candle {
     aggregated.low = Math.min(aggregated.low, candle.low);
     aggregated.close = candle.close;
     aggregated.volume += candle.volume;
+    if (candle.tradingDates) aggregated.tradingDates = [...(aggregated.tradingDates ?? []), ...candle.tradingDates];
     if (candle.knowledgeAt !== undefined || aggregated.knowledgeAt !== undefined) {
       aggregated.knowledgeAt =
         candleKnowledgeAt(candle) > candleKnowledgeAt(aggregated)

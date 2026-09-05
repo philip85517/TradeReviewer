@@ -5,6 +5,11 @@ export type DateRange = {
   endDate: string;
 };
 
+export type CoverageGapPlanOptions = {
+  /** Retry a provider-latest tail during an explicit user-triggered update. */
+  retryLatestAvailable?: boolean;
+};
+
 function shiftDate(date: string, days: number) {
   const value = new Date(`${date}T00:00:00Z`);
   value.setUTCDate(value.getUTCDate() + days);
@@ -39,6 +44,7 @@ function mergeCoverageRanges(
 export function planCoverageGaps(
   required: DateRange,
   coverage: CoverageSegment[],
+  options: CoverageGapPlanOptions = {},
 ) {
   let gaps: DateRange[] = [{ ...required }];
 
@@ -70,6 +76,11 @@ export function planCoverageGaps(
   const completeCoverage = mergeCoverageRanges(coverage, ["complete"]);
   const namedMissingDates = coverage
     .filter((segment) => segment.status === "partial")
+    .filter(
+      (segment) =>
+        options.retryLatestAvailable !== false ||
+        segment.reason !== "provider-latest-available",
+    )
     .flatMap((segment) => segment.missingTradingDates)
     .filter(
       (date) =>

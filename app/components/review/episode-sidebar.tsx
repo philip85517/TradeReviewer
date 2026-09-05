@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import type { MarketDataSyncStatus } from "../../lib/market/sync-status";
+import { formatBeijingDate } from "../../lib/replay/format-time";
 import { marketDataStatusLabel } from "../../lib/market/sync-status";
 import type { InstrumentTradeSummary } from "../../lib/trades/instruments";
 import type { TradeExecution } from "../../lib/trades/types";
@@ -45,6 +46,7 @@ type Props = {
   selectedInstrumentId: string;
   onSelectInstrument: (instrumentId: string) => void;
   marketDataStatuses: Record<string, MarketDataSyncStatus>;
+  marketDataLabels?: Record<string, string>;
   onUpdateMarketData: (instrumentId: string) => void;
   onUpdateAllMarketData?: () => void;
   onRetryFailedMarketData?: () => void;
@@ -52,11 +54,7 @@ type Props = {
 };
 
 function shortDate(value: string) {
-  return new Date(value).toLocaleDateString("zh-CN", {
-    year: "2-digit",
-    month: "2-digit",
-    day: "2-digit",
-  });
+  return formatBeijingDate(value);
 }
 
 export function EpisodeSidebar({
@@ -72,6 +70,7 @@ export function EpisodeSidebar({
   selectedInstrumentId,
   onSelectInstrument,
   marketDataStatuses,
+  marketDataLabels,
   onUpdateMarketData,
   onUpdateAllMarketData,
   onRetryFailedMarketData,
@@ -330,7 +329,7 @@ export function EpisodeSidebar({
                 </div>
                 <div className={`market-data-state ${status}`}>
                   <Database size={11} />
-                  {marketDataStatusLabel(status)}
+                  {marketDataLabels?.[item.instrument.id] ?? marketDataStatusLabel(status)}
                 </div>
               </button>
               <button

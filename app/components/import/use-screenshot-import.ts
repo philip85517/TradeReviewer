@@ -72,6 +72,7 @@ export type ScreenshotImportDependencies = {
 
 export type UseScreenshotImportOptions = {
   currentExecutions(): TradeExecution[];
+  transformRecords?: (records: TradeExecution[]) => TradeExecution[];
   onPrepared(prepared: PreparedScreenshotImport): Promise<void>;
   /** Test seam for browser decoding/OCR and deterministic fixtures. */
   dependencies?: Partial<ScreenshotImportDependencies>;
@@ -382,6 +383,7 @@ function removeImageResult(state: ScreenshotReviewState, imageId: string) {
 function reconciliationFor(
   state: ScreenshotReviewState,
   currentExecutions: () => TradeExecution[],
+  transformRecords: (records: TradeExecution[]) => TradeExecution[] = records => records,
 ): ExecutionReconciliation | undefined {
   const blockers = reviewBlockers(state);
   if (blockers.some(({ draftId }) => !draftId)) return undefined;
@@ -405,7 +407,7 @@ function reconciliationFor(
   try {
     return reconcileExecutions(
       currentExecutions(),
-      toStatementParseResult(normalizedState).records,
+      transformRecords(toStatementParseResult(normalizedState).records),
     );
   } catch {
     return undefined;
@@ -455,10 +457,12 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
   const callbacksRef = useRef({
     currentExecutions: options.currentExecutions,
     onPrepared: options.onPrepared,
+    transformRecords: options.transformRecords,
   });
   callbacksRef.current = {
     currentExecutions: options.currentExecutions,
     onPrepared: options.onPrepared,
+    transformRecords: options.transformRecords,
   };
   const mountedRef = useRef(true);
   const nextSessionIdRef = useRef(0);
@@ -510,6 +514,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
       const nextReconciliation = reconciliationFor(
         next,
         callbacksRef.current.currentExecutions,
+        callbacksRef.current.transformRecords,
       );
       reconciliationRef.current = nextReconciliation;
       if (mountedRef.current) setReconciliation(nextReconciliation);
@@ -921,6 +926,7 @@ export function useScreenshotImport(options: UseScreenshotImportOptions): {
       return;
     }
     const parsed = toStatementParseResult(current);
+    parsed.records = callbacksRef.current.transformRecords?.(parsed.records) ?? parsed.records;
     const currentExecutions = callbacksRef.current.currentExecutions();
     const latestReconciliation = reconcileExecutions(
       currentExecutions,

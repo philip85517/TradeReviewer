@@ -80,6 +80,7 @@ type Props = {
   visiblePlan?: EpisodePlan;
   activePanelTab: "stats" | "notes";
   drawerOpen: boolean;
+  onInspectData?: () => void;
   onEpisodeChange: (episodeId: string) => void;
   onTimeframeChange: (timeframe: Timeframe) => void;
   onSelectInstrument: (instrumentId: string) => void;
@@ -161,6 +162,7 @@ export function ReviewChartWorkspace({
   visiblePlan,
   activePanelTab,
   drawerOpen,
+  onInspectData,
   onEpisodeChange,
   onTimeframeChange,
   onSelectInstrument,
@@ -255,6 +257,7 @@ export function ReviewChartWorkspace({
               ))}
             </select>
           </label>
+          {onInspectData && <button className="stock-data-entry" onClick={onInspectData}>检查/修复数据</button>}
         </header>
 
         <ChartToolbar
@@ -294,6 +297,7 @@ export function ReviewChartWorkspace({
             onClear={onClearDrawings}
           />
           <div className="chart-column">
+            {model.replayNotice && <div className="replay-context-notice" role="alert">{model.replayNotice}{onInspectData && <button type="button" onClick={onInspectData}>检查历史行情</button>}</div>}
             <div className="position-strip">
               <div className="position-primary">
                 <span className={`live-dot ${playing ? "playing" : ""}`} />
@@ -362,11 +366,6 @@ export function ReviewChartWorkspace({
                 {model.replayError && (
                   <span className="replay-error" role="alert">
                     {model.replayError}
-                  </span>
-                )}
-                {model.replayNotice && (
-                  <span className="replay-notice" role="alert">
-                    {model.replayNotice}
                   </span>
                 )}
                 <CalendarDays size={14} />

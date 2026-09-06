@@ -41,7 +41,7 @@ function PanelContent(props: Props) {
       <button role="tab" id={`${notesId}-tab`} aria-selected={props.activeTab === "notes"} aria-controls={notesId} onClick={() => props.onActiveTabChange("notes")}>复盘笔记</button>
     </div>
     <div role="tabpanel" id={statsId} aria-labelledby={`${statsId}-tab`} hidden={props.activeTab !== "stats"}>
-      <PositionStatsPanel instrumentLabel={props.instrumentLabel} currency={props.currency} metrics={props.metrics} plan={props.visiblePlan ?? props.review?.plan} />
+      <PositionStatsPanel instrumentLabel={props.instrumentLabel} currency={props.currency} metrics={props.metrics} plan={props.visiblePlan ?? (props.review?.planRevisions ? undefined : props.review?.plan)} />
     </div>
     <div role="tabpanel" id={notesId} aria-labelledby={`${notesId}-tab`} hidden={props.activeTab !== "notes"}>
       <EpisodeNotesPanel replayComplete={props.replayComplete} episodeId={props.episodeId} instrumentId={props.instrumentId} record={props.review} knowledgeCursor={props.knowledgeCursor} episodeStartedAt={props.episodeStartedAt} onSave={props.onSaveReview} />

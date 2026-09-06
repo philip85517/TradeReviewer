@@ -46,6 +46,7 @@ import { saveReviewState } from "../lib/storage/review-storage";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeExecution } from "../lib/trades/types";
 import type { ScreenshotImportDependencies } from "./import/use-screenshot-import";
+import { tradeRepairClient } from "../lib/storage/trade-repair-client";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
 import { createLegacySqliteClient } from "./test-support/legacy-sqlite-client";
 
@@ -159,6 +160,15 @@ vi.mock("../lib/market/sync-service", async (importOriginal) => {
         ? mockMarketDataSync(...args)
         : actual.syncMarketData(...args),
   };
+});
+
+const chartProbe = vi.hoisted(() => ({ enabled: false, candles: [] as Array<{ time: string }> }));
+vi.mock("./chart/replay-chart", async importOriginal => {
+  const actual = await importOriginal<typeof import("./chart/replay-chart")>();
+  return { ...actual, ReplayChart: (props: Parameters<typeof actual.ReplayChart>[0]) => {
+    if (chartProbe.enabled) chartProbe.candles = props.candles;
+    return <actual.ReplayChart {...props}/>;
+  } };
 });
 
 const initialFrame: DemoReplayFrame = {
@@ -467,6 +477,7 @@ function screenshotDependencies(
   });
 
   beforeEach(async () => {
+    chartProbe.enabled = false; chartProbe.candles = [];
     window.localStorage.clear();
     await new Promise<void>((resolve, reject) => {
       const request = indexedDB.deleteDatabase("trade-reviewer");
@@ -484,6 +495,104 @@ function screenshotDependencies(
     mockEnrichment.mockReset();
     mockMarketDataSync.mockReset();
     mockSqliteClient.current = createLegacySqliteClient();
+  });
+
+  async function renderGoldReplay(priorDates: string[] = [], storedCursor?: string, entryTime = "2026-06-26T02:22:37Z", hourly = false) {
+    const instrument = { id: "HK:6228", symbol: "6228", name: "自由黄金-DRS", market: "HK", currency: "HKD" };
+    const execution: TradeExecution = { id: "gold-sale", instrument, accountId: "test", accountLabel: "测试账户", source: { platform: "tiger", row: 1 }, executedAt: entryTime, side: "sell", quantity: "200", price: "26.380", fee: "0" };
+    saveImportedExecutions([execution]);
+    if (storedCursor) saveReviewState(buildTradeEpisodes([execution])[0].id, {version:2,episodeId:buildTradeEpisodes([execution])[0].id,replayCursor:storedCursor,timeframe:"1D",activePanelTab:"stats",drawings:[]});
+    const repository = new IndexedDbMarketDataRepository();
+    await repository.commitSyncResult({ instrumentId: instrument.id, candles: [...priorDates,"2026-06-26"].map(tradingDate => ({ instrumentId:instrument.id,tradingDate,open:"26",high:"27",low:"25",close:"26.5",volume:"1000",currency:"HKD",provider:"tencent" as const,providerSymbol:"hk06228",adjustmentMode:"raw" as const,fetchedAt:"2026-09-06T00:00:00Z" })), coverage: [], providerSymbol: { provider:"tencent",symbol:"hk06228" } });
+    if (hourly) await repository.commitIntervalSyncResult({instrumentId:instrument.id,interval:"1h",candles:[{instrumentId:instrument.id,interval:"1h",timestamp:"2026-06-26T01:30:00Z",knowledgeAt:"2026-06-26T02:30:00Z",open:"26",high:"27",low:"25",close:"26.5",volume:"1000",currency:"HKD",provider:"tencent",providerSymbol:"hk06228",adjustmentMode:"raw",fetchedAt:"2026-09-06T00:00:00Z"}],coverage:[],providerSymbol:{provider:"tencent",symbol:"hk06228"}});
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false}/>);
+    await screen.findByRole("button", {name:"检查/修复数据"});
+  }
+
+  it("gold replay does not reveal the sale before the first bar is played", async () => {
+    await renderGoldReplay();
+    const navigation = screen.getByRole("complementary", {name:"当前股票交易导航"});
+    expect(within(navigation).queryByRole("button", {name:/定位卖出/})).not.toBeInTheDocument();
+  });
+
+  it("gold replay explains missing historical bars when stepping its first available day", async () => {
+    const user = userEvent.setup();
+    await renderGoldReplay();
+    await user.click(screen.getByRole("button", {name:"下一根 K 线"}));
+    expect(screen.getByText(/缺少首笔成交之前的历史行情/)).toBeInTheDocument();
+  });
+
+  it("gold replay keeps cached historical bars before and after its first step", async () => {
+    chartProbe.enabled = true;
+    const user = userEvent.setup();
+    await renderGoldReplay(["2026-06-24","2026-06-25"]);
+    expect(chartProbe.candles).toHaveLength(2);
+    const previousBars = chartProbe.candles.map(bar=>bar.time);
+    await user.click(screen.getByRole("button", {name:"下一根 K 线"}));
+    expect(chartProbe.candles).toHaveLength(3);
+    expect(chartProbe.candles.slice(0,2).map(bar=>bar.time)).toEqual(previousBars);
+  });
+
+  it("gold replay repairs the previously saved empty-chart entry cursor", async () => {
+    await renderGoldReplay([], "2026-06-26T02:22:37Z");
+    expect(screen.getByTestId("replay-cursor")).toHaveAttribute("data-cursor", "2026-06-26T02:22:36.999Z");
+    expect(within(screen.getByRole("complementary",{name:"当前股票交易导航"})).queryByRole("button",{name:/定位卖出/})).not.toBeInTheDocument();
+  });
+
+  it("gold replay preserves saved progress after its first completed bar", async () => {
+    await renderGoldReplay([], "2026-06-26T08:30:00.000Z");
+    expect(screen.getByTestId("replay-cursor")).toHaveAttribute("data-cursor", "2026-06-26T08:30:00.000Z");
+    expect(within(screen.getByRole("complementary",{name:"当前股票交易导航"})).getByRole("button",{name:/定位卖出/})).toBeInTheDocument();
+  });
+
+  it("gold replay next execution lands on a market-open fill rather than the first bar close", async () => {
+    const user = userEvent.setup();
+    await renderGoldReplay([], undefined, "2026-06-26T01:30:00Z", true);
+    await user.click(screen.getByRole("button",{name:"跳至下一笔成交"}));
+    expect(screen.getByTestId("replay-cursor")).toHaveAttribute("data-cursor", "2026-06-26T01:30:00Z");
+  });
+
+  it("restores the prior sidebar layout after focusing the chart without changing the cursor", async () => {
+    const user = userEvent.setup();
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await screen.findByRole("button", { name: "收起交易导航" });
+    const cursor = screen.getByTestId("replay-cursor").getAttribute("data-cursor");
+    await user.click(screen.getByRole("button", { name: "收起交易导航" }));
+    await user.click(screen.getByRole("button", { name: "专注图表" }));
+    expect(document.querySelector(".workspace")).toHaveClass("layout-left-hidden", "layout-right-hidden");
+    await user.click(screen.getByRole("button", { name: "恢复布局" }));
+    expect(document.querySelector(".workspace")).toHaveClass("layout-left-hidden");
+    expect(document.querySelector(".workspace")).not.toHaveClass("layout-right-hidden");
+    expect(screen.getByTestId("replay-cursor")).toHaveAttribute("data-cursor", cursor);
+  });
+
+  it("supplements only the selected stock account and retries the same audited request", async () => {
+    const user = userEvent.setup();
+    const original = availabilityExecution({ id: "scope-original", row: 1, side: "buy", executedAt: "2025-01-07T14:30:00.000Z" });
+    const added = { ...original, id: "scope-added", executedAt: "2025-01-08T14:30:00.000Z" };
+    saveImportedExecutions([original]);
+    const merge = vi.spyOn(mockSqliteClient.current as SqliteHttpClient, "mergeExecutions");
+    vi.spyOn(tradeRepairClient, "history").mockResolvedValue([]);
+    const revise = vi.spyOn(tradeRepairClient, "revise").mockRejectedValueOnce(new Error("请重试保存"));
+    revise.mockImplementationOnce(async request => ({ executions: [original, request.changes[0].after!], revision: { ...request, recordedAt: "2026-09-06T00:00:00Z" } }));
+    mockDispatcher.mockResolvedValue({ broker: "tiger", records: [added, {...added,id:"other-account",accountId:"other"}, {...added,id:"other-stock",instrument:{...added.instrument,id:"US:AAPL",symbol:"AAPL"}}], candidates: [], exclusions: [], diagnostics: [], blocked: false });
+    mockEnrichment.mockImplementation(async (parsed: StatementParseResult) => ({broker:parsed.broker,importable:parsed.records,unresolved:[],exclusions:[],diagnostics:[],cacheHits:0}));
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false}/>);
+    await user.click(await screen.findByRole("button", {name:"检查/修复数据"}));
+    await user.click(screen.getByRole("button", {name:"查看完整数据并暂停复盘"}));
+    await user.click(screen.getByRole("button", {name:"为本股补充文件"}));
+    merge.mockClear(); mockMarketDataSync.mockClear();
+    await user.upload(screen.getByLabelText("导入交易记录"), new File(["test"], "supplement.pdf", {type:"application/pdf"}));
+    const confirm = await screen.findByRole("button", {name:"确认补充当前股票成交"});
+    expect(screen.getByText(/范围外排除 2 笔/)).toBeInTheDocument();
+    expect(revise).not.toHaveBeenCalled();
+    await user.click(confirm);
+    await screen.findAllByText("请重试保存");
+    await user.click(screen.getByRole("button", {name:"确认补充当前股票成交"}));
+    await waitFor(()=>expect(revise).toHaveBeenCalledTimes(2));
+    expect(revise.mock.calls[0][0]).toEqual(revise.mock.calls[1][0]);
+    expect(revise.mock.calls[0][0].changes).toEqual([{before:null,after:expect.objectContaining({id:added.id,accountId:original.accountId,instrument:original.instrument})}]);
+    expect(merge).not.toHaveBeenCalled(); expect(mockMarketDataSync).not.toHaveBeenCalled();
   });
 
   it("boots from the SQLite bootstrap response without reading legacy execution storage", async () => {
@@ -524,7 +633,7 @@ function screenshotDependencies(
       />,
     );
 
-    expect(await screen.findByText("小鹏汽车")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "小鹏汽车" })).toBeInTheDocument();
     expect(getBootstrap).toHaveBeenCalledOnce();
     expect(legacyRead).not.toHaveBeenCalled();
   });
@@ -1693,12 +1802,12 @@ function screenshotDependencies(
     await waitFor(() =>
       expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
         "data-cursor",
-        "2025-01-02T10:07:00.000Z",
+        "2025-01-02T10:06:59.999Z",
       ),
     );
     expect(screen.getAllByText("当前回放位置尚无可用行情，推进后可查看路径统计。").length).toBeGreaterThan(0);
     expect(screen.getByRole("alert")).toHaveTextContent(
-      "行情历史晚于交易时间；请主动推进以查看后续行情",
+      "缺少首笔成交之前的历史行情背景",
     );
   });
 
@@ -2314,7 +2423,7 @@ function screenshotDependencies(
     expect(screen.getByRole("button", { name: "趋势线" })).toBeEnabled();
     expect(screen.getByText("最大盈利（MFE）")).toBeInTheDocument();
     expect(screen.getByText("计划风险").parentElement).toHaveTextContent(
-      "HK$100.00",
+      "—",
     );
     expect(screen.queryByText("未来失效条件")).not.toBeInTheDocument();
     expect(
@@ -2330,7 +2439,7 @@ function screenshotDependencies(
       screen.getByText("最大盈利（MFE）").parentElement?.textContent;
     expect(screen.queryByText("平仓成交")).not.toBeInTheDocument();
     expect(screen.getByText("计划风险").parentElement).toHaveTextContent(
-      "HK$100.00",
+      "—",
     );
 
     await user.click(
@@ -2344,6 +2453,7 @@ function screenshotDependencies(
       screen.getByText("最大盈利（MFE）").parentElement?.textContent,
     ).not.toBe(mfeBefore);
     expect(screen.queryByText("平仓成交")).not.toBeInTheDocument();
+    expect(screen.getByText("计划风险").parentElement).toHaveTextContent("HK$100.00");
 
     await user.click(
       screen.getByRole("button", { name: "下一根 K 线" }),
@@ -2777,6 +2887,11 @@ function screenshotDependencies(
       });
       expect(nextExecution).toBeEnabled();
 
+      if (!withCandle) {
+        await user.click(nextExecution);
+        expect(screen.getByTestId("replay-cursor")).toHaveAttribute("data-cursor", "2025-01-02T02:00:00.000Z");
+        expect(screen.queryByText("平仓成交")).not.toBeInTheDocument();
+      }
       await user.click(nextExecution);
 
       expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
@@ -2987,7 +3102,7 @@ function screenshotDependencies(
     await waitFor(() =>
       expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
         "data-cursor",
-        "2025-01-02T10:07:00.000Z",
+        "2025-01-02T10:06:59.999Z",
       ),
     );
     expect(

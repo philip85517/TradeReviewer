@@ -22,6 +22,9 @@ import { useModalFocus } from "./use-modal-focus";
 
 type Props = {
   preview: ImportPreview;
+  scopeNotice?: string;
+  saveError?: string;
+  saving?: boolean;
   onCancel: () => void;
   onConfirm: () => void;
   onRetryUnresolved: (instrumentIds: string[]) => void;
@@ -81,12 +84,13 @@ function attemptSummaries(
 
 export function ImportConfirmDialog({
   preview,
+  scopeNotice, saveError, saving = false,
   onCancel,
   onConfirm,
   onRetryUnresolved,
   retryingUnresolved = false,
 }: Props) {
-  const dialogRef = useModalFocus(onCancel);
+  const dialogRef = useModalFocus(() => { if (!saving) onCancel(); });
   const unresolvedIds = preview.unresolved.map((failure) =>
     canonicalInstrumentId(failure.symbol, failure.market),
   );
@@ -107,6 +111,8 @@ export function ImportConfirmDialog({
         aria-modal="true"
         aria-labelledby="import-dialog-title"
       >
+        {scopeNotice && <p role="status" className="navigation-notice">{scopeNotice}</p>}
+        {saveError && <p role="alert" className="navigation-notice">{saveError}</p>}
         <header className="modal-header">
           <div>
             <span className="eyebrow">自动解析完成</span>
@@ -115,7 +121,7 @@ export function ImportConfirmDialog({
           <button
             className="icon-button"
             aria-label="关闭导入确认"
-            onClick={onCancel}
+            onClick={() => { if (!saving) onCancel(); }}
           >
             <X size={18} />
           </button>
@@ -303,15 +309,15 @@ export function ImportConfirmDialog({
 
         <footer className="modal-footer">
           <p>仅完整成交会保存到此设备，并为新增股票启动行情更新。</p>
-          <button className="secondary-button" onClick={onCancel}>
+          <button className="secondary-button" onClick={() => { if (!saving) onCancel(); }}>
             取消
           </button>
           <button
             className="primary-button"
-            disabled={preview.blocked || retryingUnresolved}
-            onClick={onConfirm}
+            disabled={preview.blocked || retryingUnresolved || saving}
+            onClick={() => { if (!saving) onConfirm(); }}
           >
-            确认导入并开始更新行情
+            {saving ? "正在保存…" : scopeNotice ? "确认补充当前股票成交" : "确认导入并开始更新行情"}
           </button>
         </footer>
       </section>

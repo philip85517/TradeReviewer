@@ -38,6 +38,7 @@ import { useModalFocus } from "./use-modal-focus";
 export type { ScreenshotReviewImage } from "./screenshot-evidence-panel";
 
 export type ScreenshotReviewDialogProps = {
+  scopeNotice?: string;
   state: ScreenshotReviewState;
   images: ScreenshotReviewImage[];
   reconciliation?: ExecutionReconciliation;
@@ -167,6 +168,7 @@ function imageStateText(image: ScreenshotReviewImage) {
 }
 
 export function ScreenshotReviewDialog({
+  scopeNotice,
   state,
   images,
   reconciliation,
@@ -300,6 +302,7 @@ export function ScreenshotReviewDialog({
         aria-modal="true"
         aria-labelledby="screenshot-review-title"
       >
+        {scopeNotice && <p role="status" className="navigation-notice">{scopeNotice}</p>}
         <header className="modal-header screenshot-review-header">
           <div>
             <span className="eyebrow">本机 OCR · 原图不会保存</span>

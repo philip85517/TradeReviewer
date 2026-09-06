@@ -60,6 +60,7 @@ type Props = {
   timeframe: Timeframe;
   onTimeframeChange: (timeframe: Timeframe) => void;
   onOpenInReview: (instrumentId: string, episodeId: string) => void;
+  onInspectData?: (instrumentId: string, accountId: string) => void;
   onRefreshMarketData?: (instrumentId: string) => void;
   onSaveReview: (record: EpisodeReviewRecord) => void | Promise<void>;
   reviewsHydrated: boolean;
@@ -102,6 +103,7 @@ export function TradeLibrary({
   onTimeframeChange,
   onOpenInReview,
   onSaveReview,
+  onInspectData,
   onRefreshMarketData,
   reviewsHydrated,
   target,
@@ -262,6 +264,7 @@ export function TradeLibrary({
               {selectedEntry.episodeCount} 个回合
             </p>
           </div>
+          {onInspectData && <button className="stock-data-entry" onClick={() => onInspectData(selectedEntry.instrument.id, selectedEpisode.episode.accountId)}>检查/修复数据</button>}
           {onRefreshMarketData && <div className="library-market-actions">
             <button type="button" className="secondary-action" aria-label="更新当前股票行情" disabled={marketDataStatuses[selectedEntry.instrument.id] === "syncing"} onClick={() => onRefreshMarketData(selectedEntry.instrument.id)}><RefreshCw size={16} />{marketDataStatuses[selectedEntry.instrument.id] === "syncing" ? "正在更新…" : "更新行情"}</button>
             <span role="status">{marketDataStatusLabel(marketDataStatuses[selectedEntry.instrument.id] ?? "not-requested")}</span>

@@ -25,6 +25,7 @@ type Props = {
   knowledgeCursor?: string;
   episodeStartedAt?: string;
   activeTab: "stats" | "notes";
+  replayComplete?: boolean;
   onActiveTabChange: (tab: "stats" | "notes") => void;
   onSaveReview: (record: EpisodeReviewRecord) => Promise<void>;
   drawerOpen: boolean;
@@ -43,7 +44,7 @@ function PanelContent(props: Props) {
       <PositionStatsPanel instrumentLabel={props.instrumentLabel} currency={props.currency} metrics={props.metrics} plan={props.visiblePlan ?? props.review?.plan} />
     </div>
     <div role="tabpanel" id={notesId} aria-labelledby={`${notesId}-tab`} hidden={props.activeTab !== "notes"}>
-      <EpisodeNotesPanel episodeId={props.episodeId} instrumentId={props.instrumentId} record={props.review} knowledgeCursor={props.knowledgeCursor} episodeStartedAt={props.episodeStartedAt} onSave={props.onSaveReview} />
+      <EpisodeNotesPanel replayComplete={props.replayComplete} episodeId={props.episodeId} instrumentId={props.instrumentId} record={props.review} knowledgeCursor={props.knowledgeCursor} episodeStartedAt={props.episodeStartedAt} onSave={props.onSaveReview} />
     </div>
   </>;
 }

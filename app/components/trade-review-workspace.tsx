@@ -3,9 +3,10 @@
 import {
   BookOpenCheck,
   Menu,
+  X,
   Sparkles,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 
 import {
   applyDrawingCommand,
@@ -148,7 +149,10 @@ import {
 import {
   TradeLibrary,
   type TradeLibraryTarget,
+  type TradeLibraryBrowseState,
 } from "./library/trade-library";
+import { ImportActions } from "./import/import-actions";
+import { useModalFocus } from "./import/use-modal-focus";
 import { PatternInsights } from "./insights/pattern-insights";
 import {
   ReviewChartWorkspace,
@@ -401,11 +405,7 @@ function replayCursorForEpisode(source: Candle[], episodeStartedAt: string) {
   const prior = sorted.findLast(
     (candle) => candleKnowledgeAt(candle) <= episodeStartedAt,
   );
-  return prior
-    ? candleKnowledgeAt(prior)
-    : sorted[0] && Date.parse(sorted[0].time) > Date.parse(episodeStartedAt)
-      ? candleKnowledgeAt(sorted[0])
-      : episodeStartedAt;
+  return prior ? candleKnowledgeAt(prior) : episodeStartedAt;
 }
 
 function replayHistoryStartsAfter(source: Candle[], cursor: string) {
@@ -729,7 +729,7 @@ function sortedEpisodes(summary: InstrumentTradeSummary | undefined) {
     : [];
 }
 
-function episodeOptions(episodes: TradeEpisode[]): EpisodeOption[] {
+function episodeOptions(episodes: TradeEpisode[], reviews: Record<string, EpisodeReviewRecord>): EpisodeOption[] {
   const chronological = new Map(
     [...episodes]
       .sort((left, right) => left.startedAt.localeCompare(right.startedAt))
@@ -738,6 +738,7 @@ function episodeOptions(episodes: TradeEpisode[]): EpisodeOption[] {
   return episodes.map((episode) => ({
     id: episode.id,
     label: `第 ${chronological.get(episode.id) ?? 1} 次交易`,
+    contextLabel: `${marketTradingDate(episode.startedAt, episode.instrument.market)} · ${episode.executions[0]?.accountLabel ?? "账户未记录"} · ${reviews[episode.id]?.review.completed ? "已复盘" : "待复盘"}`,
     startedAt: episode.startedAt,
     endedAt: episode.endedAt,
     status: episode.status,
@@ -837,6 +838,19 @@ function isAbortError(error: unknown) {
     [storageClient],
   );
 
+  const [stockDrawerOpen, setStockDrawerOpen] = useState(false);
+  const stockDrawerRef = useModalFocus(() => setStockDrawerOpen(false), stockDrawerOpen);
+  const importFileRef = useRef<HTMLInputElement>(null);
+  const importScreenshotRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const media = window.matchMedia?.("(min-width: 1060px)");
+    if (!media) return;
+    const closeOnDesktop = () => { if (media.matches) setStockDrawerOpen(false); };
+    media.addEventListener("change", closeOnDesktop);
+    return () => media.removeEventListener("change", closeOnDesktop);
+  }, []);
+  const [libraryBrowseState, setLibraryBrowseState] = useState<TradeLibraryBrowseState>();
+  const [navigationNotice, setNavigationNotice] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<
     "review" | "library" | "insights"
   >("review");
@@ -953,9 +967,9 @@ function isAbortError(error: unknown) {
     () => sortedEpisodes(selectedImportedInstrument),
     [selectedImportedInstrument],
   );
-  const selectedEpisode =
-    episodes.find((episode) => episode.id === selectedEpisodeId) ??
-    episodes[0];
+  const selectedEpisode = selectedEpisodeId
+    ? episodes.find((episode) => episode.id === selectedEpisodeId)
+    : episodes[0];
   const selectedMarketState = useMemo(
     () =>
       selectedImportedInstrument
@@ -1004,15 +1018,7 @@ function isAbortError(error: unknown) {
     )[0];
     return first ? candleKnowledgeAt(first) : undefined;
   }, [importedTimelineCandles]);
-  const importedCursorNeedsFallback = Boolean(
-    selectedImportedInstrument &&
-      firstImportedKnownCursor &&
-      replayHistoryStartsAfter(importedTimelineCandles, importedCursor),
-  );
-  const effectiveImportedCursor =
-    importedCursorNeedsFallback && firstImportedKnownCursor
-      ? firstImportedKnownCursor
-      : importedCursor;
+  const effectiveImportedCursor = importedCursor;
   const importedHistoryStartsAfterTrade = Boolean(
     selectedImportedInstrument &&
       selectedEpisode &&
@@ -1210,7 +1216,7 @@ function isAbortError(error: unknown) {
       : frame.canGoForward && !stepping && !restoring,
     replayError,
     replayNotice: importedHistoryStartsAfterTrade
-      ? "行情历史晚于交易时间，已从首根可用 K 线开始回放"
+      ? "行情历史晚于交易时间；请主动推进以查看后续行情"
       : null,
     dataDetails: selectedImportedInstrument
       ? marketDataDetails(selectedMarketState, importedAvailability)
@@ -1235,6 +1241,7 @@ function isAbortError(error: unknown) {
         ? "正在读取演示回放数据"
         : undefined,
   };
+  const pendingReviewInstrumentIds = useMemo(() => tradeLibraryEntries.filter((entry) => entry.reviewedEpisodeCount < entry.episodeCount).map((entry) => entry.instrument.id), [tradeLibraryEntries]);
   const tagSuggestions = useMemo(
     () =>
       buildTagSuggestions(
@@ -1344,9 +1351,12 @@ function isAbortError(error: unknown) {
     setDrawerOpen(false);
   }
 
-  function selectImportedSummary(summary: InstrumentTradeSummary) {
-    const [newest] = sortedEpisodes(summary);
-    if (!newest) return;
+  function selectImportedSummary(summary: InstrumentTradeSummary, episodeId?: string) {
+    const availableEpisodes = sortedEpisodes(summary);
+    const newest = episodeId
+      ? availableEpisodes.find((episode) => episode.id === episodeId)
+      : availableEpisodes[0];
+    if (!newest) return false;
     setPlaying(false);
     replayRequestSequence.current += 1;
     setStepping(false);
@@ -1367,6 +1377,7 @@ function isAbortError(error: unknown) {
     const source = sourceCandlesForTimeframe(state, preferred);
     const fallback = replayCursorForEpisode(source, newest.startedAt);
     restoreEpisodeUi(newest.id, fallback, preferred, source);
+    return true;
   }
 
   function selectInstrument(instrumentId: string) {
@@ -1545,6 +1556,51 @@ function isAbortError(error: unknown) {
     };
   }, [bootstrapAttempt, initialFrame.cursor, legacyStateExporter, showDemo, storageClient]);
 
+  // Read the latest selection only when an inventory hydration completes. Saving a
+  // cursor or switching episodes must never re-read every instrument's cache.
+  const restoreHydratedEpisode = useEffectEvent((results: Array<{ instrumentId: string; state: InstrumentMarketState }>) => {
+      if (!selectedImportedInstrument || !selectedEpisode || hydratedMarketIds.has(selectedImportedInstrument.instrument.id)) return;
+      const selectedState = results.find(
+        (result) =>
+          result.instrumentId ===
+          selectedImportedInstrument.instrument.id,
+      )?.state;
+      if (!selectedState) return;
+      const stored = reviewStates[selectedEpisode.id];
+      const availability = resolveEpisodeTimeframeAvailability(
+        selectedState,
+        selectedEpisode,
+      );
+      const nextTimeframe = stored?.timeframe ??
+        (selectedState.intraday.length > 0
+          ? selectedState.intradayInterval
+          : "1D");
+      const availableTimeframe = availability[nextTimeframe].enabled
+        ? nextTimeframe
+        : availability["15m"].enabled
+          ? "15m"
+          : availability["1D"].enabled
+            ? "1D"
+            : nextTimeframe;
+      setTimeframe(availableTimeframe);
+      const source = sourceCandlesForTimeframe(
+        selectedState,
+        availableTimeframe,
+      );
+      if (!stored) {
+        setImportedCursor(
+          replayCursorForEpisode(source, selectedEpisode.startedAt),
+        );
+      } else if (
+        source.length > 0 &&
+        replayHistoryStartsAfter(source, stored.replayCursor)
+      ) {
+        setImportedCursor(
+          replayCursorForEpisode(source, selectedEpisode.startedAt),
+        );
+      }
+  });
+
   useEffect(() => {
     if (!hydrated || importedInstruments.length === 0) return;
     let active = true;
@@ -1589,46 +1645,7 @@ function isAbortError(error: unknown) {
             ...results.map((result) => result.instrumentId),
           ]),
       );
-      if (!selectedImportedInstrument || !selectedEpisode) return;
-      const selectedState = results.find(
-        (result) =>
-          result.instrumentId ===
-          selectedImportedInstrument.instrument.id,
-      )?.state;
-      if (!selectedState) return;
-      const stored = reviewStates[selectedEpisode.id];
-      const availability = resolveEpisodeTimeframeAvailability(
-        selectedState,
-        selectedEpisode,
-      );
-      const nextTimeframe = stored?.timeframe ??
-        (selectedState.intraday.length > 0
-          ? selectedState.intradayInterval
-          : "1D");
-      const availableTimeframe = availability[nextTimeframe].enabled
-        ? nextTimeframe
-        : availability["15m"].enabled
-          ? "15m"
-          : availability["1D"].enabled
-            ? "1D"
-            : nextTimeframe;
-      setTimeframe(availableTimeframe);
-      const source = sourceCandlesForTimeframe(
-        selectedState,
-        availableTimeframe,
-      );
-      if (!stored) {
-        setImportedCursor(
-          replayCursorForEpisode(source, selectedEpisode.startedAt),
-        );
-      } else if (
-        source.length > 0 &&
-        replayHistoryStartsAfter(source, stored.replayCursor)
-      ) {
-        setImportedCursor(
-          replayCursorForEpisode(source, selectedEpisode.startedAt),
-        );
-      }
+      restoreHydratedEpisode(results);
     });
     return () => {
       active = false;
@@ -1637,9 +1654,6 @@ function isAbortError(error: unknown) {
     hydrated,
     importedInstruments,
     marketDataRepository,
-    reviewStates,
-    selectedEpisode,
-    selectedImportedInstrument,
   ]);
 
   useEffect(() => {
@@ -2484,7 +2498,7 @@ function isAbortError(error: unknown) {
           : [];
       }),
     );
-    if (firstImported) selectImportedSummary(firstImported);
+    if (firstImported && activeView === "review") selectImportedSummary(firstImported);
     void startMarketDataUpdate(automaticSyncIds, {
       executions: mergedExecutions,
       episodeIdsByInstrument: automaticEpisodeIds,
@@ -2650,6 +2664,30 @@ function isAbortError(error: unknown) {
     });
   }
 
+  function startScreenshotImport(files: File[]) {
+
+                importRequestSequence.current += 1;
+                setImportError(null);
+                setPendingImport(null);
+                setPendingParsedImport(null);
+                setPendingEnrichedImport(null);
+                setPendingImportOriginalExecutions(null);
+                setPendingImportMergeBase(null);
+                setPendingScreenshotDecisions(null);
+                void screenshotImport.start(files).catch((error) => {
+                  setImportError(
+                    error instanceof Error ? error.message : "截图识别失败",
+                  );
+                });
+
+  }
+
+  const importActions = {
+    disabled: importing,
+    onFile: () => importFileRef.current?.click(),
+    onScreenshot: () => importScreenshotRef.current?.click(),
+  };
+
   if (storageState !== "ready") {
     const failed = storageState === "error";
     return (
@@ -2665,7 +2703,17 @@ function isAbortError(error: unknown) {
 
   return (
     <main className="trade-review-app">
-      <header className="app-header">
+      <input hidden ref={importFileRef} aria-label="导入交易记录" type="file" accept=".xlsx,.xls,.pdf" disabled={importing} onChange={(event) => {
+        const file = event.target.files?.[0];
+        if (file) void parseImport(file);
+        event.currentTarget.value = "";
+      }} />
+      <input hidden ref={importScreenshotRef} aria-label="从截图恢复交易" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" multiple disabled={importing} onChange={(event) => {
+        const files = Array.from(event.target.files ?? []);
+        if (files.length) startScreenshotImport(files);
+        event.currentTarget.value = "";
+      }} />
+      <header className="app-header" inert={stockDrawerOpen}>
         <div className="brand">
           <div className="brand-mark">
             <BookOpenCheck size={19} />
@@ -2712,15 +2760,17 @@ function isAbortError(error: unknown) {
                 ? "演示行情"
                 : "等待导入"}
           </span>
-          <button className="icon-button mobile-menu" aria-label="打开菜单">
-            <Menu size={19} />
-          </button>
+          <ImportActions {...importActions} compact />
+          {activeView === "review" && <button type="button" className="stock-list-trigger" aria-label="打开股票列表" aria-haspopup="dialog" aria-expanded={stockDrawerOpen} onClick={() => setStockDrawerOpen(true)}><Menu size={19} /><span>股票</span></button>}
           <div className="user-avatar">ZL</div>
         </div>
       </header>
 
+      {importError && <p role="alert" className="navigation-notice">{importError}</p>}
+      {importing && <p role="status" className="global-import-status">正在处理导入记录…</p>}
+      {navigationNotice && <p role="alert" className="navigation-notice">{navigationNotice}<button type="button" onClick={() => setNavigationNotice(null)}>关闭提示</button></p>}
       <div
-        className={`workspace ${
+        className={`workspace ${!showDemo && importedInstruments.length === 0 && activeView === "review" ? "empty-mode" : ""} ${
           activeView === "library"
             ? "library-mode"
             : activeView === "insights"
@@ -2731,18 +2781,27 @@ function isAbortError(error: unknown) {
         {activeView === "library" ? (
           <TradeLibrary
             key={libraryTarget?.requestId ?? 0}
+            initialBrowseState={libraryBrowseState}
+            onBrowseStateChange={setLibraryBrowseState}
             entries={tradeLibraryEntries}
             candlesByInstrument={marketDataCandles}
             marketDataStatuses={marketDataStatuses}
             timeframe={timeframe === "1W" ? "1W" : "1D"}
             onTimeframeChange={setTimeframe}
-            onOpenInReview={(instrumentId) => {
-              selectInstrument(instrumentId);
+            onOpenInReview={(instrumentId, episodeId) => {
+              const summary = importedInstruments.find((item) => item.instrument.id === instrumentId);
+              if (!summary || !selectImportedSummary(summary, episodeId)) {
+                setNavigationNotice("该交易回合已变化，请返回股票库重新选择。");
+                return;
+              }
+              setNavigationNotice(null);
+              setLibraryTarget(undefined);
               setActiveView("review");
             }}
             reviewsHydrated={reviewsHydrated}
             target={libraryTarget}
             onSaveReview={saveEpisodeReview}
+            onRefreshMarketData={(instrumentId) => void startMarketDataUpdate([instrumentId], { refreshMetadata: true })}
           />
         ) : activeView === "insights" ? (
           <PatternInsights
@@ -2761,32 +2820,23 @@ function isAbortError(error: unknown) {
           />
         ) : (
           <>
+            {stockDrawerOpen && <button type="button" className="stock-drawer-backdrop" aria-label="关闭股票列表遮罩" tabIndex={-1} onClick={() => setStockDrawerOpen(false)} />}
+            <aside ref={stockDrawerRef} className={`stock-sidebar-shell ${stockDrawerOpen ? "drawer-open" : ""}`} role={stockDrawerOpen ? "dialog" : undefined} aria-modal={stockDrawerOpen || undefined} aria-label={stockDrawerOpen ? "选择复盘股票" : undefined}>
+            {stockDrawerOpen && <header className="stock-drawer-heading"><strong>选择复盘股票</strong><button type="button" aria-label="关闭股票列表" onClick={() => setStockDrawerOpen(false)}><X size={20} /></button></header>}
             <EpisodeSidebar
+              hideImportActions
+              pendingReviewInstrumentIds={pendingReviewInstrumentIds}
               importedInstruments={importedInstruments}
               showDemo={showDemo}
               importing={importing}
               importPhase={importPhase}
-              importError={importError}
+              importError={null}
               onImport={parseImport}
-              onScreenshotImport={(files) => {
-                importRequestSequence.current += 1;
-                setImportError(null);
-                setPendingImport(null);
-                setPendingParsedImport(null);
-                setPendingEnrichedImport(null);
-                setPendingImportOriginalExecutions(null);
-                setPendingImportMergeBase(null);
-                setPendingScreenshotDecisions(null);
-                void screenshotImport.start(files).catch((error) => {
-                  setImportError(
-                    error instanceof Error ? error.message : "截图识别失败",
-                  );
-                });
-              }}
+              onScreenshotImport={startScreenshotImport}
               onOpenHistory={() => setShowImportHistory(true)}
               revealedDemoExecutions={demoSnapshot.executions}
               selectedInstrumentId={selectedInstrumentId}
-              onSelectInstrument={selectInstrument}
+              onSelectInstrument={(id) => { selectInstrument(id); setStockDrawerOpen(false); }}
               marketDataStatuses={marketDataStatuses}
               onUpdateMarketData={(instrumentId) =>
                 void startMarketDataUpdate([instrumentId], {
@@ -2807,13 +2857,24 @@ function isAbortError(error: unknown) {
               }
               marketDataRefresh={marketDataRefresh}
             />
+            </aside>
+            <div className="review-content" inert={stockDrawerOpen}>
             {!showDemo && !selectedImportedInstrument ? (
               <section
                 className="review-workspace review-workspace-empty"
-                aria-label="交易复盘图表工作区"
+                aria-label="开始交易复盘"
               >
-                <strong>暂无导入交易</strong>
-                <span>请先从左侧导入交易记录，再开始复盘。</span>
+                <BookOpenCheck size={36} />
+                <h1>从一笔真实交易开始复盘</h1>
+                <p>导入成交记录，选择交易回合，逐步回放当时的行情与判断。</p>
+                <ImportActions {...importActions} />
+                <p className="import-format-help">支持富途 Excel、Tiger PDF、招商证券 PDF；截图恢复支持已适配的 Tiger / 富途成交列表。</p>
+                <small>原文件在浏览器内解析，核对并确认后才会写入交易库。</small>
+              </section>
+            ) : selectedImportedInstrument && !selectedEpisode ? (
+              <section className="review-workspace review-workspace-empty" role="alert">
+                <p>原交易回合已变化，请重新选择。</p>
+                <button type="button" className="secondary-action" onClick={() => setActiveView("library")}>前往交易库选择回合</button>
               </section>
             ) : selectedImportedInstrument &&
             !hydratedMarketIds.has(
@@ -2831,7 +2892,7 @@ function isAbortError(error: unknown) {
               model={viewModel}
               episodeOptions={
                 selectedImportedInstrument
-                  ? episodeOptions(episodes)
+                  ? episodeOptions(episodes, episodeReviews)
                   : [
                       {
                         id: REVIEW_ID,
@@ -2946,6 +3007,7 @@ function isAbortError(error: unknown) {
               onSaveReview={saveEpisodeReview}
             />
             )}
+            </div>
           </>
         )}
       </div>

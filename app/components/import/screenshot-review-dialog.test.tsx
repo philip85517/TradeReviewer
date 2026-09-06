@@ -309,7 +309,7 @@ describe("ScreenshotReviewDialog", () => {
     expect(styles).toContain("gap: 16px");
     expect(styles).toContain("padding: 12px 22px");
     expect(styles).toContain("height: 34px");
-    expect(styles).toContain("font-size: 10px");
+    expect(styles).not.toMatch(/font-size:\s*(?:8|9|10)px/);
     expect(styles).toContain("font-size: 12px");
   });
 

@@ -62,6 +62,7 @@ export type EpisodeOption = {
   startedAt: string;
   endedAt?: string;
   status: "open" | "closed";
+  contextLabel?: string;
 };
 
 type Props = {
@@ -249,7 +250,7 @@ export function ReviewChartWorkspace({
             >
               {episodeOptions.map((episode) => (
                 <option key={episode.id} value={episode.id}>
-                  {episode.label} · {episode.status === "closed" ? "已平仓" : "持仓中"}
+                  {episode.label} · {episode.contextLabel ?? (episode.status === "closed" ? "已平仓" : "持仓中")}
                 </option>
               ))}
             </select>
@@ -308,46 +309,14 @@ export function ReviewChartWorkspace({
                 </span>
               </div>
               <div className="position-stats">
-                <span>
-                  持仓 <b>{model.position.quantity}</b>
-                </span>
-                <span>
-                  均价{" "}
-                  <b>{Number(model.position.averageCost).toFixed(2)}</b>
-                </span>
-                <span>
-                  浮动盈亏{" "}
-                  <b className={pnlPositive ? "positive" : "negative"}>
-                    {money(
-                      model.position.unrealizedPnl,
-                      model.instrument.currency,
-                    )}
-                  </b>
-                </span>
-                <span>
-                  已实现{" "}
-                  <b>
-                    {money(
-                      model.position.realizedPnl,
-                      model.instrument.currency,
-                    )}
-                  </b>
-                </span>
-                <span>
-                  净盈亏{" "}
-                  <b
-                    data-testid="net-pnl"
-                    className={pnlPositive ? "positive" : "negative"}
-                  >
-                    {money(model.position.netPnl, model.instrument.currency)}
-                  </b>
-                </span>
-                <span>
-                  收益率{" "}
-                  <b className={pnlPositive ? "positive" : "negative"}>
-                    {Number(model.position.returnPercent).toFixed(2)}%
-                  </b>
-                </span>
+                <span>持仓 <b>{model.position.quantity}</b></span>
+                <span>均价 <b>{Number(model.position.averageCost).toFixed(2)}</b></span>
+                <span>净盈亏 <b data-testid="net-pnl" className={pnlPositive ? "positive" : "negative"}>{money(model.position.netPnl, model.instrument.currency)}</b></span>
+                <details className="secondary-position-stats"><summary>更多指标</summary><div>
+                  <span>浮动盈亏 <b>{money(model.position.unrealizedPnl, model.instrument.currency)}</b></span>
+                  <span>已实现 <b>{money(model.position.realizedPnl, model.instrument.currency)}</b></span>
+                  <span>收益率 <b>{Number(model.position.returnPercent).toFixed(2)}%</b></span>
+                </div></details>
               </div>
             </div>
 
@@ -462,6 +431,7 @@ export function ReviewChartWorkspace({
         instrumentId={model.instrument.id}
         knowledgeCursor={model.cursor}
         episodeStartedAt={episodeStartedAt}
+        replayComplete={episodeOptions.find((episode) => episode.id === model.episodeId)?.status === "closed" && model.candles.length > 0 && !model.canGoForward && !model.canGoToNextExecution}
         activeTab={activePanelTab}
         onActiveTabChange={onActivePanelTabChange}
         onSaveReview={onSaveReview}

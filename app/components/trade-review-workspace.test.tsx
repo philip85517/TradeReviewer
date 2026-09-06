@@ -2,9 +2,11 @@ import "fake-indexeddb/auto";
 
 import {
   cleanup,
+  fireEvent,
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as XLSX from "xlsx";
@@ -1269,13 +1271,13 @@ function screenshotDependencies(
 
     expect(
       declarationsAt(".workspace", 1260).get("grid-template-columns"),
-    ).toBe("244px minmax(620px, 1fr) 290px");
+    ).toBe("260px minmax(0, 1fr) 320px");
     expect(
       declarationsAt(".review-side-panel-trigger", 1260).get("display"),
     ).toBe("none");
     expect(
       declarationsAt(".workspace", 1259).get("grid-template-columns"),
-    ).toBe("220px minmax(600px, 1fr)");
+    ).toBe("260px minmax(0, 1fr)");
     expect(
       declarationsAt(".review-side-panel-desktop", 1259).get("display"),
     ).toBe("none");
@@ -1284,7 +1286,7 @@ function screenshotDependencies(
     ).toBe("grid");
     expect(
       declarationsAt(".workspace", 1060).get("grid-template-columns"),
-    ).toBe("220px minmax(600px, 1fr)");
+    ).toBe("260px minmax(0, 1fr)");
     expect(
       declarationsAt(".workspace", 1059).get("grid-template-columns"),
     ).toBe("minmax(0, 1fr)");
@@ -1492,7 +1494,7 @@ function screenshotDependencies(
     ).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "搜索标的" }));
-    await user.type(screen.getByRole("searchbox"), "XPEV");
+    await user.type(screen.getByRole("searchbox", { name: "搜索标的" }), "XPEV");
     await user.click(
       screen.getByRole("option", { name: "小鹏汽车 XPEV US" }),
     );
@@ -1675,7 +1677,7 @@ function screenshotDependencies(
     );
   });
 
-  it("starts replay at the first known candle when history begins after the trade", async () => {
+  it("keeps the safe cursor when history begins after the trade", async () => {
     saveImportedExecutions([
       availabilityExecution({
         id: "late-history-open",
@@ -1691,14 +1693,12 @@ function screenshotDependencies(
     await waitFor(() =>
       expect(screen.getByTestId("replay-cursor")).toHaveAttribute(
         "data-cursor",
-        "2025-01-03T10:15:00.000Z",
+        "2025-01-02T10:07:00.000Z",
       ),
     );
-    expect(
-      screen.queryByText("No candle is available at or before the replay cursor."),
-    ).not.toBeInTheDocument();
+    expect(screen.getAllByText("当前回放位置尚无可用行情，推进后可查看路径统计。").length).toBeGreaterThan(0);
     expect(screen.getByRole("alert")).toHaveTextContent(
-      "行情历史晚于交易时间，已从首根可用 K 线开始回放",
+      "行情历史晚于交易时间；请主动推进以查看后续行情",
     );
   });
 
@@ -1836,6 +1836,39 @@ function screenshotDependencies(
     expect(oldIntraday.searchParams.get("end")).toBe(
       "2025-01-02T15:59:59.999Z",
     );
+  });
+
+  it("keeps library context through cancelled and confirmed imports with failed market refresh", async () => {
+    const user = userEvent.setup();
+    saveImportedExecutions([
+      availabilityExecution({ id: "library-open", row: 2, side: "buy", executedAt: "2025-01-02T14:30:00.000Z" }),
+      availabilityExecution({ id: "library-close", row: 3, side: "sell", executedAt: "2025-01-02T15:00:00.000Z" }),
+    ]);
+    vi.mocked(fetch).mockImplementation(async (input) => String(input).includes("/api/instruments/resolve")
+      ? Response.json({ market: "US", symbol: "XPEV", name: "小鹏汽车", assetType: "stock", source: "nasdaq", confidence: "official", resolvedAt: "2026-07-30T00:00:00.000Z" })
+      : Response.json({ error: { code: "source-unavailable" } }, { status: 502 }));
+    const merge = vi.spyOn(mockSqliteClient.current as SqliteHttpClient, "mergeExecutions");
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    await screen.findByRole("combobox", { name: "交易回合" });
+    await user.click(screen.getByRole("button", { name: "交易库" }));
+    await user.type(screen.getByRole("searchbox", { name: "搜索股票" }), "XPEV");
+    await user.click(screen.getByRole("button", { name: "打开小鹏汽车交易回合" }));
+    const file = futuImportFile([["2025-01-06 22:30:00", "富途", "acct", "证券", "XPEV 小鹏汽车", "US", "买入开仓", "20250106", "USD", "10", "10", "-100", "0", "-100"]]);
+    const input = screen.getByLabelText("导入交易记录");
+    merge.mockClear();
+    await user.upload(input, file);
+    await screen.findByRole("button", { name: "确认导入并开始更新行情" });
+    await user.click(screen.getByRole("button", { name: "取消" }));
+    expect(merge.mock.calls.flatMap(([payload]) => payload.executions)).toEqual([]);
+    merge.mockClear();
+    expect(screen.getByRole("heading", { name: "第 1 次交易" })).toBeInTheDocument();
+    await user.upload(input, file);
+    await user.click(await screen.findByRole("button", { name: "确认导入并开始更新行情" }));
+    await waitFor(() => expect(merge.mock.calls.some(([payload]) => payload.executions.length === 3)).toBe(true));
+    expect(screen.getByRole("heading", { name: "第 1 次交易" })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("button", { name: "更新当前股票行情" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "返回股票库" }));
+    expect(screen.getByRole("searchbox", { name: "搜索股票" })).toHaveValue("XPEV");
   });
 
   it("automatically syncs a newly imported later episode using that episode's bounds", async () => {
@@ -2343,7 +2376,7 @@ function screenshotDependencies(
       cursorBeforePeriodChange,
     );
     await user.click(screen.getByRole("button", { name: "搜索标的" }));
-    await user.type(screen.getByRole("searchbox"), "1810");
+    await user.type(screen.getByRole("searchbox", { name: "搜索标的" }), "1810");
     await user.click(
       screen.getByRole("option", {
         name: "小米集团-W 1810 HK",
@@ -2959,7 +2992,7 @@ function screenshotDependencies(
     );
     expect(
       screen.getAllByText(
-        "No candle is available at or before the replay cursor.",
+        "当前回放位置尚无可用行情，推进后可查看路径统计。",
       ).length,
     ).toBeGreaterThan(0);
 
@@ -3179,6 +3212,29 @@ function screenshotDependencies(
     expect(fetch).not.toHaveBeenCalled();
   });
 
+  it("opens the stock drawer and restores focus after Escape without resetting replay", async () => {
+    const user = userEvent.setup();
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    const trigger = await screen.findByRole("button", { name: "打开股票列表" });
+    const cursor = screen.getByTestId("replay-cursor").getAttribute("data-cursor");
+    await user.click(trigger);
+    const dialog = screen.getByRole("dialog", { name: "选择复盘股票" });
+    expect(within(dialog).getByRole("button", { name: "关闭股票列表" })).toHaveFocus();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog", { name: "选择复盘股票" })).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+    expect(screen.getByTestId("replay-cursor")).toHaveAttribute("data-cursor", cursor);
+  });
+
+  it("offers the import flow directly in the empty workspace", async () => {
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    const empty = await screen.findByRole("region", { name: "开始交易复盘" });
+    expect(within(empty).getByRole("button", { name: "导入交易记录" })).toBeEnabled();
+    expect(within(empty).getByRole("button", { name: "从截图恢复交易" })).toBeEnabled();
+    expect(screen.queryByText("请先从左侧导入交易记录，再开始复盘。")).not.toBeInTheDocument();
+    expect(screen.getAllByLabelText("导入交易记录", { selector: "input" })).toHaveLength(1);
+  });
+
   it("navigates through stock and episode library levels without requesting market data", async () => {
     const user = userEvent.setup();
     const instrument = {
@@ -3228,8 +3284,8 @@ function screenshotDependencies(
           row: 4,
           sourceTimestampText: "新回合买入",
         },
-        accountId: "acct",
-        accountLabel: "富途",
+        accountId: "acct-second",
+        accountLabel: "第二账户",
         instrument,
         side: "buy",
         executedAt: "2025-01-05T14:30:00.000Z",
@@ -3240,16 +3296,23 @@ function screenshotDependencies(
     ];
     saveImportedExecutions(imported);
     vi.mocked(fetch).mockClear();
+    const cacheReads = vi.spyOn(mockSqliteClient.current as SqliteHttpClient, "getMarketData");
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
     await screen.findByRole("heading", {
       name: "小鹏汽车（XPEV）",
     });
+    await screen.findByRole("combobox", { name: "交易回合" });
+    cacheReads.mockClear();
     await user.click(screen.getByRole("button", { name: "交易库" }));
 
     expect(
       await screen.findByRole("heading", { name: "股票交易库" }),
     ).toBeInTheDocument();
+    await user.type(screen.getByRole("searchbox", { name: "搜索股票" }), "XPEV");
+    await user.selectOptions(screen.getByRole("combobox", { name: "按市场筛选" }), "US");
+    await user.selectOptions(screen.getByRole("combobox", { name: "按年份筛选" }), "2025");
+    fireEvent.scroll(screen.getByRole("region", { name: "交易库" }), { target: { scrollTop: 240 } });
     await user.click(
       screen.getByRole("button", { name: "打开小鹏汽车交易回合" }),
     );
@@ -3258,12 +3321,23 @@ function screenshotDependencies(
     ).toBeInTheDocument();
     expect(screen.getByText("新回合买入")).toBeInTheDocument();
 
+    await user.click(screen.getByRole("button", { name: /第 1 次交易/ }));
+    const olderEpisode = buildTradeEpisodes(imported).find((episode) => episode.startedAt === "2025-01-02T14:30:00.000Z")!;
     await user.click(
       screen.getByRole("button", { name: "进入逐笔复盘" }),
     );
     expect(
       screen.getByRole("heading", { name: "小鹏汽车（XPEV）" }),
     ).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "交易回合" })).toHaveValue(olderEpisode.id);
+    await user.click(screen.getByRole("button", { name: "交易库" }));
+    expect(screen.getByRole("heading", { name: "第 1 次交易" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "返回股票库" }));
+    expect(screen.getByRole("searchbox", { name: "搜索股票" })).toHaveValue("XPEV");
+    expect(screen.getByRole("combobox", { name: "按市场筛选" })).toHaveValue("US");
+    expect(screen.getByRole("combobox", { name: "按年份筛选" })).toHaveValue("2025");
+    expect(screen.getByRole("region", { name: "交易库" }).scrollTop).toBe(240);
+    expect(cacheReads).not.toHaveBeenCalled();
     expect(fetch).not.toHaveBeenCalled();
   });
 

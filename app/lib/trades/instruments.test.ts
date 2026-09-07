@@ -63,4 +63,16 @@ describe("buildInstrumentTradeSummaries", () => {
       tradeCount: 2,
     });
   });
+
+  it("shows the historical identity for FB trades before the ETF existed", () => {
+    const summaries = buildInstrumentTradeSummaries([
+      execution("1", "FB", "US", "2019-01-31T18:28:15.000Z"),
+    ]);
+
+    expect(summaries[0].instrument).toMatchObject({
+      id: "US:FB",
+      symbol: "FB",
+      name: "Meta Platforms, Inc. (historical FB)",
+    });
+  });
 });

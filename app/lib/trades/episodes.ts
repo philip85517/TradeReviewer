@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { simulationScope } from "./trading-nature";
 
 import { canonicalInstrumentId } from "../instruments/display-name";
 import type { TradeEpisode, TradeExecution } from "./types";
@@ -15,13 +16,15 @@ function sortByExecutionTime(a: TradeExecution, b: TradeExecution) {
     (a.source.fileFingerprint ?? a.source.fileName ?? "").localeCompare(
       b.source.fileFingerprint ?? b.source.fileName ?? "",
     ) ||
-    a.source.row - b.source.row ||
+    (simulationScope(a) && simulationScope(b)
+      ? (a.source.sourceOrder ?? a.source.row) - (b.source.sourceOrder ?? b.source.row)
+      : a.source.row - b.source.row) ||
     a.id.localeCompare(b.id)
   );
 }
 
 function episodeKey(execution: TradeExecution) {
-  return `${execution.accountId}:${canonicalInstrumentId(
+  return `${simulationScope(execution) ? `${simulationScope(execution)}:` : ""}${execution.accountId}:${canonicalInstrumentId(
     execution.instrument.symbol,
     execution.instrument.market,
   )}`;

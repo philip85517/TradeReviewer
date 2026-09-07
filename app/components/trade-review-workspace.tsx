@@ -26,6 +26,9 @@ import {
   enrichStatementImport,
   type EnrichedImportResult,
 } from "../lib/import/enrich-import";
+import { TradingViewImportDialog } from "./import/tradingview-import-dialog";
+import { simulationScope, tradingNatureLabel } from "../lib/trades/trading-nature";
+import type { TradingViewInstrument } from "../lib/import/tradingview";
 import { parseBrokerStatement } from "../lib/import/dispatcher";
 import {
   applyReconciliationDecisions,
@@ -54,13 +57,18 @@ import type {
   SupportedMarket,
 } from "../lib/market/contracts";
 import {
-  syncIntradayMarketData,
+  syncIntradayMarketDataForRanges,
   type IntradayTimeRange,
 } from "../lib/market/intraday-sync-service";
+import { buildIntradaySyncRanges } from "../lib/market/intraday-sync-ranges";
+import { recoverStaleMarketDataJob } from "../lib/market/market-data-job-recovery";
+import { normalizeProviderLatestTails, reconcileDailyCoverage } from "../lib/market/coverage-tail";
 import {
   combinedMarketDataStatus,
-  coverageStatusForSegments,
+  coverageStatusForDateRange,
+  coverageStatusForTimeRanges,
   displayMarketDataStatus,
+  marketDataStatusLabel,
   type MarketDataSyncStatus,
 } from "../lib/market/sync-status";
 import {
@@ -75,6 +83,7 @@ import {
   syncMarketData,
 } from "../lib/market/sync-service";
 import { canonicalInstrumentId } from "../lib/instruments/display-name";
+import { resolveHistoricalInstrumentIdentity } from "../lib/instruments/historical-instrument-identity";
 import { refreshInstrumentMetadata } from "../lib/instruments/resolve-service";
 import {
   marketCalendarDateOffset,
@@ -88,6 +97,7 @@ import {
   type Timeframe,
 } from "../lib/market/types";
 import { createImportedReplay } from "../lib/replay/imported-replay";
+import { formatBeijingDate } from "../lib/replay/format-time";
 import { calculatePositionPathMetrics } from "../lib/replay/position-path-metrics";
 import { createReplaySnapshot } from "../lib/replay/replay-engine";
 import {
@@ -264,9 +274,9 @@ function applyPersistedMarketDataJob(
       state.intradayStatus === "not-requested" && intradayJob
         ? intradayJob.status
         : state.intradayStatus,
-    dailyMessage: state.dailyMessage ?? dailyJob?.message ?? job.message,
+    dailyMessage: state.dailyStatus === "complete" ? "日线覆盖已完整" : state.dailyMessage ?? dailyJob?.message ?? job.message,
     intradayMessage: state.intradayMessage ?? intradayJob?.message,
-    dailyError: state.dailyError ?? dailyJob?.error ?? job.error,
+    dailyError: state.dailyStatus === "complete" ? undefined : state.dailyError ?? dailyJob?.error ?? job.error,
     intradayError: state.intradayError ?? intradayJob?.error,
     ...(hasDailyData || hasIntradayData ? {} : {
       dailyStatus: dailyJob?.status ?? job.status,
@@ -298,43 +308,15 @@ function marketRanges(summary: InstrumentTradeSummary) {
   };
 }
 
-function episodeIntradaySyncRange(
-  episode: TradeEpisode,
-  market: SupportedMarket,
-): IntradayTimeRange {
-  const lastExecutionAt = latestIso(
-    episode.executions.map((execution) => execution.executedAt),
-    episode.startedAt,
-  );
-  const startTime = intradayContextStart(
-    episode.startedAt,
-    episode.instrument.market,
-  );
-  if (episode.status === "closed") {
-    return {
-      startTime,
-      endTime: containingIntradayBarEnd(
-        episode.endedAt ?? lastExecutionAt,
-        "1h",
-      ),
-    };
-  }
-  const latestCompletedSession = requiredMarketDataRange(
-    episode.startedAt,
-    lastExecutionAt,
-    { open: true, market },
-  ).endDate;
-  return {
-    startTime,
-    endTime: endOfIsoDate(latestCompletedSession),
-  };
-}
-
 async function readInstrumentMarketState(
   summary: InstrumentTradeSummary,
   repository: MarketDataRepository,
 ): Promise<InstrumentMarketState> {
   const ranges = marketRanges(summary);
+  const market = supportedMarket(summary.instrument.market);
+  const intradayRanges = market
+    ? buildIntradaySyncRanges(sortedEpisodes(summary), market)
+    : [ranges.intraday];
   const [daily, dailyCoverage, hourly, hourlyCoverage, legacyIntraday, legacyCoverage] =
     await Promise.all([
       repository.getDailyCandles(
@@ -359,16 +341,23 @@ async function readInstrumentMarketState(
       repository.getIntervalCoverage(summary.instrument.id, "15m"),
     ]);
   const useHourly = hourly.length > 0 || hourlyCoverage.length > 0;
+  const normalizedDailyCoverage = market
+    ? normalizeProviderLatestTails(market, reconcileDailyCoverage(market, ranges.daily, dailyCoverage, daily), daily)
+    : dailyCoverage;
   return {
     daily,
     intraday: useHourly ? hourly : legacyIntraday,
     intradayInterval: useHourly ? "1h" : "15m",
-    dailyStatus: coverageStatusForSegments(dailyCoverage),
-    intradayStatus: coverageStatusForSegments(
+    dailyStatus: coverageStatusForDateRange(
+      ranges.daily,
+      normalizedDailyCoverage,
+    ),
+    intradayStatus: coverageStatusForTimeRanges(
+      intradayRanges,
       useHourly ? hourlyCoverage : legacyCoverage,
     ),
     intradayCoverage: useHourly ? hourlyCoverage : legacyCoverage,
-    dailyCoverage,
+    dailyCoverage: normalizedDailyCoverage,
   };
 }
 
@@ -488,6 +477,7 @@ function episodeWindow(
   const dailyRange = requiredMarketDataRange(
     episode.startedAt,
     holdingEnd,
+    { market: supportedMarket(market) },
   );
   // Seven calendar days normally provide roughly five completed sessions of
   // chart context without letting unrelated older episodes enable intraday.
@@ -556,7 +546,7 @@ function episodeWindow(
     intradayEnd: end,
     intradayInterval,
     dailyStartDate: dailyRange.startDate,
-    dailyEndDate: endDate,
+    dailyEndDate: latestIso([dailyRange.endDate, endDate], dailyRange.endDate),
   };
 }
 
@@ -630,6 +620,7 @@ function providerLabel(
   provider: DailyCandleRecord["provider"] | undefined,
 ) {
   if (provider === "tencent") return "腾讯行情";
+  if (provider === "tiger") return "Tiger OpenAPI";
   if (provider === "eastmoney") return "东方财富";
   if (provider === "yahoo") return "Yahoo Finance";
   if (provider === "sina") return "新浪美股";
@@ -737,7 +728,7 @@ function episodeOptions(episodes: TradeEpisode[]): EpisodeOption[] {
   );
   return episodes.map((episode) => ({
     id: episode.id,
-    label: `第 ${chronological.get(episode.id) ?? 1} 次交易`,
+    label: `第 ${chronological.get(episode.id) ?? 1} 次交易${simulationScope(episode.executions[0]) ? ` · ${episode.accountLabel}` : ""}`,
     startedAt: episode.startedAt,
     endedAt: episode.endedAt,
     status: episode.status,
@@ -841,6 +832,7 @@ function isAbortError(error: unknown) {
     "review" | "library" | "insights"
   >("review");
   const [timeframe, setTimeframe] = useState<Timeframe>("1D");
+  const [historyMode, setHistoryMode] = useState<"history" | "replay">("history");
   const [frame, setFrame] = useState(initialFrame);
   const [playing, setPlaying] = useState(false);
   const [stepping, setStepping] = useState(false);
@@ -868,6 +860,7 @@ function isAbortError(error: unknown) {
   const [selectedInstrumentId, setSelectedInstrumentId] = useState(
     showDemo ? "demo" : "",
   );
+  const [tradingViewFile, setTradingViewFile] = useState<File | null>(null);
   const [selectedEpisodeId, setSelectedEpisodeId] = useState(REVIEW_ID);
   const [importedCursor, setImportedCursor] = useState(initialFrame.cursor);
   const [pendingImport, setPendingImport] = useState<ImportPreview | null>(
@@ -912,6 +905,7 @@ function isAbortError(error: unknown) {
     useState<TradeLibraryTarget>();
   const [importing, setImporting] = useState(false);
   const [importPhase, setImportPhase] = useState<ImportPhase>("idle");
+  const [savingImport, setSavingImport] = useState(false);
   const [retryingUnresolved, setRetryingUnresolved] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [storageState, setStorageState] = useState<
@@ -922,6 +916,8 @@ function isAbortError(error: unknown) {
   const [reviewStates, setReviewStates] = useState<
     Record<string, EpisodeReviewState>
   >({});
+  const reviewStatesRef = useRef(reviewStates);
+  useEffect(() => { reviewStatesRef.current = reviewStates; }, [reviewStates]);
   const replayRequestSequence = useRef(0);
   const importRequestSequence = useRef(0);
   const importedExecutionsRef = useRef<TradeExecution[] | null>(null);
@@ -1017,10 +1013,15 @@ function isAbortError(error: unknown) {
     selectedImportedInstrument &&
       selectedEpisode &&
       firstImportedKnownCursor &&
-      firstImportedKnownCursor > selectedEpisode.startedAt,
+      selectedEpisode.executions.some(execution =>
+        execution.source.tradingSession !== "grey-market" && execution.executedAt < firstImportedKnownCursor,
+      ),
   );
   const activeCursor = selectedImportedInstrument
-    ? effectiveImportedCursor
+    ? historyMode === "history"
+      ? [effectiveImportedCursor, ...importedTimelineCandles.map(candleKnowledgeAt),
+          ...(selectedEpisode?.executions.map(execution => execution.executedAt) ?? [])].sort().at(-1)!
+      : effectiveImportedCursor
     : frame.cursor;
   const importedVisibleSource = useMemo(
     () =>
@@ -1148,6 +1149,10 @@ function isAbortError(error: unknown) {
       ),
     [importedInstruments, marketDataJobs, marketStates],
   );
+  const marketDataLabels = Object.fromEntries(importedInstruments.map(({ instrument }) => {
+    const state = marketStates[instrument.id];
+    return [instrument.id, `日线：${marketDataStatusLabel(state?.dailyStatus ?? "not-requested")}；1H：${marketDataStatusLabel(state?.intradayStatus ?? "not-requested")}`];
+  }));
   const tradeLibraryEntries = useMemo(
     () =>
       buildTradeLibraryEntries(
@@ -1188,6 +1193,7 @@ function isAbortError(error: unknown) {
 
   const viewModel: ReviewChartViewModel = {
     source: selectedImportedInstrument ? "imported" : "demo",
+    historyMode: selectedImportedInstrument ? historyMode : undefined,
     episodeId: activeEpisodeId,
     instrument: activeInstrument,
     timeframe,
@@ -1196,7 +1202,11 @@ function isAbortError(error: unknown) {
       : ALL_TIMEFRAMES,
     cursor: activeCursor,
     candles: activeSnapshot.candles,
-    executions: activeSnapshot.executions,
+    executions: selectedImportedInstrument && historyMode === "history"
+      ? selectedImportedInstrument.executions.filter(execution => selectedEpisode?.executions[0]
+        ? simulationScope(execution) === simulationScope(selectedEpisode.executions[0])
+        : true)
+      : activeSnapshot.executions,
     position: activeSnapshot.position,
     pathMetrics: activeMetrics,
     canGoBack: selectedImportedInstrument
@@ -1210,7 +1220,9 @@ function isAbortError(error: unknown) {
       : frame.canGoForward && !stepping && !restoring,
     replayError,
     replayNotice: importedHistoryStartsAfterTrade
-      ? "行情历史晚于交易时间，已从首根可用 K 线开始回放"
+      ? historyMode === "history"
+        ? "行情历史晚于交易时间，成交所在区间仍缺少行情"
+        : "行情历史晚于交易时间，已从首根可用 K 线开始回放"
       : null,
     dataDetails: selectedImportedInstrument
       ? marketDataDetails(selectedMarketState, importedAvailability)
@@ -1253,7 +1265,7 @@ function isAbortError(error: unknown) {
   const insightFactResult = useMemo(
     () =>
       buildInsightEpisodeFacts(
-        tradeLibraryEntries,
+        tradeLibraryEntries.filter(entry=>!simulationScope(entry.executions[0])),
         marketDataCandles,
         marketDataStatuses,
         suggestionDecisions,
@@ -1284,9 +1296,9 @@ function isAbortError(error: unknown) {
               instrumentName: entry.instrument.name,
               instrumentSymbol: entry.instrument.symbol,
               episodeLabel: `第 ${entry.episodes.length - index} 次交易`,
-              dateRange: `${new Date(item.episode.startedAt).toLocaleDateString("zh-CN")}—${
+              dateRange: `${formatBeijingDate(item.episode.startedAt)}—${
                 item.episode.endedAt
-                  ? new Date(item.episode.endedAt).toLocaleDateString("zh-CN")
+                  ? formatBeijingDate(item.episode.endedAt)
                   : "持仓中"
               }`,
             },
@@ -1344,8 +1356,9 @@ function isAbortError(error: unknown) {
     setDrawerOpen(false);
   }
 
-  function selectImportedSummary(summary: InstrumentTradeSummary) {
-    const [newest] = sortedEpisodes(summary);
+  function selectImportedSummary(summary: InstrumentTradeSummary, episodeId?: string) {
+    const sorted = sortedEpisodes(summary);
+    const newest = sorted.find(episode=>episode.id===episodeId) ?? sorted[0];
     if (!newest) return;
     setPlaying(false);
     replayRequestSequence.current += 1;
@@ -1465,8 +1478,18 @@ function isAbortError(error: unknown) {
         const storedSummaries = buildInstrumentTradeSummaries(
           productionExecutions,
         );
+        const recoveredJobs = bootstrap.marketDataJobs.map((job) =>
+          recoverStaleMarketDataJob(job),
+        );
+        await Promise.allSettled(
+          recoveredJobs.flatMap((job, index) =>
+            job === bootstrap.marketDataJobs[index]
+              ? []
+              : [storageClient.putMarketDataJob(job)],
+          ),
+        );
         const jobs = Object.fromEntries(
-          bootstrap.marketDataJobs.map((job) => [job.instrumentId, job]),
+          recoveredJobs.map((job) => [job.instrumentId, job]),
         );
         marketDataJobsRef.current = jobs;
         const states = Object.fromEntries(
@@ -1549,62 +1572,43 @@ function isAbortError(error: unknown) {
     if (!hydrated || importedInstruments.length === 0) return;
     let active = true;
     const repository = marketDataRepository;
-    void Promise.all(
-      importedInstruments.map(async (summary) => {
-        try {
-          return {
-            instrumentId: summary.instrument.id,
-            state: applyPersistedMarketDataJob(
-              await readInstrumentMarketState(summary, repository),
-              marketDataJobsRef.current[summary.instrument.id],
-            ),
-          };
-        } catch {
-          return {
-            instrumentId: summary.instrument.id,
-            state: {
-              ...emptyMarketState("storage-error"),
-              intradayStatus: "storage-error" as const,
-              dailyMessage: "无法读取本地日线缓存",
-              intradayMessage: "无法读取本地 1 小时缓存",
-            },
-          };
-        }
-      }),
-    ).then((results) => {
+    const hydrateMarketState = async (summary: InstrumentTradeSummary) => {
+      let state: InstrumentMarketState;
+      try {
+        state = applyPersistedMarketDataJob(
+          await readInstrumentMarketState(summary, repository),
+          marketDataJobsRef.current[summary.instrument.id],
+        );
+      } catch {
+        state = {
+          ...emptyMarketState("storage-error"),
+          intradayStatus: "storage-error" as const,
+          dailyMessage: "无法读取本地日线缓存",
+          intradayMessage: "无法读取本地 1 小时缓存",
+        };
+      }
       if (!active) return;
       setMarketStates((current) => ({
         ...current,
-        ...Object.fromEntries(
-          results.map((result) => [
-            result.instrumentId,
-            result.state,
-          ]),
-        ),
+        [summary.instrument.id]: state,
       }));
-      setHydratedMarketIds(
-        (current) =>
-          new Set([
-            ...current,
-            ...results.map((result) => result.instrumentId),
-          ]),
-      );
-      if (!selectedImportedInstrument || !selectedEpisode) return;
-      const selectedState = results.find(
-        (result) =>
-          result.instrumentId ===
-          selectedImportedInstrument.instrument.id,
-      )?.state;
-      if (!selectedState) return;
-      const stored = reviewStates[selectedEpisode.id];
+      setHydratedMarketIds((current) => {
+        if (current.has(summary.instrument.id)) return current;
+        return new Set([...current, summary.instrument.id]);
+      });
+      if (
+        summary.instrument.id !== selectedImportedInstrument?.instrument.id ||
+        !selectedEpisode
+      ) {
+        return;
+      }
+      const stored = reviewStatesRef.current[selectedEpisode.id];
       const availability = resolveEpisodeTimeframeAvailability(
-        selectedState,
+        state,
         selectedEpisode,
       );
       const nextTimeframe = stored?.timeframe ??
-        (selectedState.intraday.length > 0
-          ? selectedState.intradayInterval
-          : "1D");
+        (state.intraday.length > 0 ? state.intradayInterval : "1D");
       const availableTimeframe = availability[nextTimeframe].enabled
         ? nextTimeframe
         : availability["15m"].enabled
@@ -1613,10 +1617,7 @@ function isAbortError(error: unknown) {
             ? "1D"
             : nextTimeframe;
       setTimeframe(availableTimeframe);
-      const source = sourceCandlesForTimeframe(
-        selectedState,
-        availableTimeframe,
-      );
+      const source = sourceCandlesForTimeframe(state, availableTimeframe);
       if (!stored) {
         setImportedCursor(
           replayCursorForEpisode(source, selectedEpisode.startedAt),
@@ -1629,7 +1630,20 @@ function isAbortError(error: unknown) {
           replayCursorForEpisode(source, selectedEpisode.startedAt),
         );
       }
-    });
+    };
+    const selectedSummary = importedInstruments.find(
+      (summary) => summary.instrument.id === selectedImportedInstrument?.instrument.id,
+    );
+    const backgroundSummaries = selectedSummary
+      ? importedInstruments.filter(
+          (summary) => summary.instrument.id !== selectedSummary.instrument.id,
+        )
+      : importedInstruments;
+    void (async () => {
+      if (selectedSummary) await hydrateMarketState(selectedSummary);
+      if (!active) return;
+      await Promise.all(backgroundSummaries.map(hydrateMarketState));
+    })();
     return () => {
       active = false;
     };
@@ -1637,9 +1651,8 @@ function isAbortError(error: unknown) {
     hydrated,
     importedInstruments,
     marketDataRepository,
-    reviewStates,
     selectedEpisode,
-    selectedImportedInstrument,
+    selectedImportedInstrument?.instrument.id,
   ]);
 
   useEffect(() => {
@@ -1647,7 +1660,7 @@ function isAbortError(error: unknown) {
     const state: EpisodeReviewState = {
       version: 2,
       episodeId: activeEpisodeId,
-      replayCursor: activeCursor,
+      replayCursor: selectedImportedInstrument ? effectiveImportedCursor : activeCursor,
       timeframe,
       activePanelTab,
       drawings: drawingHistory.present,
@@ -1657,6 +1670,7 @@ function isAbortError(error: unknown) {
       .catch(() => setImportError("复盘状态未能保存到 SQLite，请稍后重试。"));
   }, [
     activeCursor,
+    effectiveImportedCursor,
     activeEpisodeId,
     activePanelTab,
     drawingHistory.present,
@@ -1749,15 +1763,12 @@ function isAbortError(error: unknown) {
     options: {
       executions?: TradeExecution[];
       refreshMetadata?: boolean;
-      episodeIdsByInstrument?: Readonly<Record<string, string>>;
       batch?: boolean;
     } = {},
   ) {
     const uniqueInstrumentIds = [...new Set(instrumentIds)];
     if (uniqueInstrumentIds.length === 0) return;
     const executions = options.executions ?? importedExecutions;
-    const episodeIdsByInstrument =
-      options.episodeIdsByInstrument ?? {};
     const summariesById = new Map(
       buildInstrumentTradeSummaries(executions).map((item) => [
         item.instrument.id,
@@ -1828,17 +1839,21 @@ function isAbortError(error: unknown) {
 
         const { instrument } = summary;
         const market = supportedMarket(instrument.market);
+        const historicalIdentity = resolveHistoricalInstrumentIdentity({
+          market: instrument.market,
+          symbol: instrument.symbol,
+          name: instrument.name,
+          executedAt: summary.executions.map(
+            (execution) => execution.executedAt,
+          ),
+        });
+        const marketDataSymbol =
+          historicalIdentity?.marketDataSymbol ?? instrument.symbol;
         const ranges = marketRanges(summary);
         const summaryEpisodes = sortedEpisodes(summary);
-        const requestedEpisodeId =
-          episodeIdsByInstrument[instrumentId] ??
-          (instrumentId === selectedInstrumentId
-            ? selectedEpisodeId
-            : undefined);
-        const requestedEpisode =
-          summaryEpisodes.find(
-            (episode) => episode.id === requestedEpisodeId,
-          ) ?? summaryEpisodes[0];
+        const intradayRanges = market
+          ? buildIntradaySyncRanges(summaryEpisodes, market)
+          : [];
         const requestedAt = new Date().toISOString();
         try {
           await storageClient.putMarketDataJob({
@@ -1860,57 +1875,66 @@ function isAbortError(error: unknown) {
           };
         }
         let metadataPersistenceFailed = false;
-        const metadataRefresh =
-          options.refreshMetadata && market
-            ? refreshInstrumentMetadata(
-              {
-                market,
+        const persistInstrumentName = async (name: string) => {
+          if (
+            marketDataRequestSequences.current[instrumentId] !==
+            requestSequence
+          ) {
+            return;
+          }
+          const current = currentExecutionSnapshot();
+          const renamed = current.map((execution) =>
+            canonicalInstrumentId(
+              execution.instrument.symbol,
+              execution.instrument.market,
+            ) === instrumentId
+              ? {
+                  ...execution,
+                  instrument: {
+                    ...execution.instrument,
+                    name,
+                  },
+                }
+              : execution,
+          );
+          try {
+            await storageClient.mergeExecutions({
+              instruments: [{
+                id: instrumentId,
+                market: instrument.market,
                 symbol: instrument.symbol,
-              },
-              {
-                repository:
-                  metadataRepository,
+                name,
+                currency: instrument.currency,
+              }],
+              executions: renamed,
+            });
+          } catch {
+            metadataPersistenceFailed = true;
+            setImportError(
+              "已查询到证券新名称，但新名称未能保存；交易库仍保留原名称。",
+            );
+            return;
+          }
+          importedExecutionsRef.current = renamed;
+          setImportedExecutions(renamed);
+        };
+        const metadataRefresh = historicalIdentity
+          ? persistInstrumentName(historicalIdentity.displayName)
+          : options.refreshMetadata && market
+            ? refreshInstrumentMetadata(
+                {
+                  market,
+                  symbol: instrument.symbol,
+                },
+                {
+                  repository: metadataRepository,
                   fetcher: fetch,
                   signal: abortController.signal,
                 },
               )
-                .then(async (metadata) => {
-                  if (
-                    !metadata ||
-                    marketDataRequestSequences.current[instrumentId] !==
-                      requestSequence
-                  ) {
-                    return;
-                  }
-                  const current = currentExecutionSnapshot();
-                  const renamed = current.map((execution) =>
-                    canonicalInstrumentId(
-                      execution.instrument.symbol,
-                      execution.instrument.market,
-                    ) === instrumentId
-                      ? {
-                          ...execution,
-                          instrument: {
-                            ...execution.instrument,
-                            name: metadata.name,
-                          },
-                        }
-                      : execution,
-                  );
-                  try {
-                    await storageClient.mergeExecutions({
-                      executions: renamed,
-                    });
-                  } catch {
-                    metadataPersistenceFailed = true;
-                    setImportError(
-                      "已查询到证券新名称，但新名称未能保存；交易库仍保留原名称。",
-                    );
-                    return;
-                  }
-                  importedExecutionsRef.current = renamed;
-                  setImportedExecutions(renamed);
-                })
+                .then((metadata) =>
+                  metadata ? persistInstrumentName(metadata.name) : undefined,
+                )
                 .catch(() => undefined)
             : Promise.resolve();
         let next = { ...cached };
@@ -1934,7 +1958,7 @@ function isAbortError(error: unknown) {
           const [dailyResult, intradayResult] = await Promise.allSettled([
             syncMarketData({
               instrumentId,
-              symbol: instrument.symbol,
+              symbol: marketDataSymbol,
               market,
               currency: instrument.currency,
               required: ranges.daily,
@@ -1943,14 +1967,14 @@ function isAbortError(error: unknown) {
               signal: abortController.signal,
               retryUnavailable: true,
             }),
-            syncIntradayMarketData({
+            syncIntradayMarketDataForRanges({
               instrumentId,
-              symbol: instrument.symbol,
+              symbol: marketDataSymbol,
               market,
               currency: instrument.currency,
-              required: requestedEpisode
-                ? episodeIntradaySyncRange(requestedEpisode, market)
-                : ranges.intraday,
+              requiredRanges: intradayRanges.length
+                ? intradayRanges
+                : [ranges.intraday],
               repository,
               fetcher: marketDataFetcher,
               signal: abortController.signal,
@@ -1970,7 +1994,11 @@ function isAbortError(error: unknown) {
             next.dailyStatus = dailyResult.value.status;
             next.dailyError = undefined;
             next.dailyMessage =
-              dailyResult.value.source === "cache"
+              dailyResult.value.status === "latest-available"
+                ? "尾部仍待补齐，已保留本地行情；可再次更新重试"
+                : dailyResult.value.status === "partial"
+                ? "日线更新已完成，仍有缺口"
+                : dailyResult.value.source === "cache"
                 ? "日线已使用本地缓存"
                 : `日线已补齐 ${dailyResult.value.requestedRanges.length} 个缺口`;
             try {
@@ -1982,7 +2010,9 @@ function isAbortError(error: unknown) {
               next.dailyMessage = "日线已获取但覆盖状态读取失败";
             }
           } else {
-            next.dailyStatus = dailyStatusFromError(dailyResult.reason);
+            next.dailyStatus = next.daily.length > 0
+              ? coverageStatusForDateRange(ranges.daily, next.dailyCoverage)
+              : dailyStatusFromError(dailyResult.reason);
             next.dailyError = marketDataErrorDetail(dailyResult.reason);
             next.dailyMessage =
               dailyResult.reason instanceof Error
@@ -2083,7 +2113,10 @@ function isAbortError(error: unknown) {
         return overallStatus;
       },
       {
-        concurrency: options.batch ? 1 : Math.min(2, uniqueInstrumentIds.length),
+        concurrency: Math.min(
+          options.batch ? 3 : 2,
+          uniqueInstrumentIds.length,
+        ),
         onItemSettled: options.batch
           ? ({ completed, result }) => {
               const status =
@@ -2240,7 +2273,7 @@ function isAbortError(error: unknown) {
     }
   }
 
-  async function parseImport(file: File) {
+  async function parseImport(file: File, tradingViewInstrument?: TradingViewInstrument) {
     screenshotImport.cancel();
     const requestId = ++importRequestSequence.current;
     setImporting(true);
@@ -2255,13 +2288,23 @@ function isAbortError(error: unknown) {
     try {
       await Promise.resolve();
       setImportPhase("parsing");
-      const parsed = await parseBrokerStatement(file);
+      const parsed = tradingViewInstrument
+        ? await parseBrokerStatement(file, { tradingViewInstrument })
+        : await parseBrokerStatement(file);
       if (requestId !== importRequestSequence.current) return;
       if (parsed.broker === "unknown" || parsed.blocked) {
         const message = parsed.diagnostics.find(
           (diagnostic) => diagnostic.severity === "error",
         )?.message;
         throw new Error(message ?? "暂时无法识别这个交易记录");
+      }
+      if (tradingViewInstrument && parsed.broker !== "tradingview") throw new Error("请选择 TradingView 中文 CNY 回放交易 CSV");
+      if (parsed.broker === "tradingview") {
+        const incoming=parsed.records[0];
+        const contextConflict=currentExecutionSnapshot().some(existing=>existing.source.platform==='tradingview'
+          && existing.source.fileFingerprint===incoming.source.fileFingerprint
+          && existing.instrument.id!==incoming.instrument.id);
+        if(contextConflict) throw new Error("同一 CSV 已关联到另一证券，已停止导入。请核对原导入记录与本次证券代码。");
       }
       setPendingParsedImport(parsed);
       setImportPhase("classifying");
@@ -2363,7 +2406,7 @@ function isAbortError(error: unknown) {
   }
 
   async function confirmImport() {
-    if (!pendingImport || pendingImport.blocked || retryingUnresolved) {
+    if (!pendingImport || pendingImport.blocked || retryingUnresolved || savingImport) {
       return;
     }
     importRequestSequence.current += 1;
@@ -2390,6 +2433,7 @@ function isAbortError(error: unknown) {
       id: pendingImport.id,
       fileName: pendingImport.fileName,
       sourceLabel: pendingImport.sourceLabel,
+      ...(pendingImport.simulation ? { tradingNature: "simulated" as const, simulationRunId: pendingImport.records[0]?.source.simulationRunId } : {}),
       importedAt,
       firstTradeAt: pendingImport.firstTradeAt,
       lastTradeAt: pendingImport.lastTradeAt,
@@ -2411,6 +2455,8 @@ function isAbortError(error: unknown) {
       unresolvedInstrumentCount:
         pendingImport.unresolvedInstrumentCount,
     };
+    setSavingImport(true);
+    setImportError(null);
     try {
       await storageClient.mergeExecutions({
         executions: mergedExecutions,
@@ -2418,15 +2464,15 @@ function isAbortError(error: unknown) {
         importHistory: [historyEntry],
         ...(replaceExecutionIds.length > 0 ? { replaceExecutionIds } : {}),
       });
-    } catch {
+    } catch (error) {
       setImportError(
-        "SQLite 未能保存这次导入，请检查服务状态后重试。",
+        error instanceof Error && "code" in error && error.code === "conflict"
+          ? "同一 CSV 已关联另一证券，请核对已有导入记录。当前预览尚未保存。"
+          : "SQLite 未能保存这次导入，请检查服务状态后重试。",
       );
-      setPendingImport(null);
-      setPendingImportOriginalExecutions(null);
-      setPendingImportMergeBase(null);
-      setPendingScreenshotDecisions(null);
       return;
+    } finally {
+      setSavingImport(false);
     }
     importedExecutionsRef.current = mergedExecutions;
     setImportedExecutions(mergedExecutions);
@@ -2475,19 +2521,12 @@ function isAbortError(error: unknown) {
     const firstImported = summaries.find((item) =>
       importedIds.includes(item.instrument.id),
     );
-    const automaticEpisodeIds = Object.fromEntries(
-      summaries.flatMap((summary) => {
-        if (!automaticSyncIds.includes(summary.instrument.id)) return [];
-        const newestEpisode = sortedEpisodes(summary)[0];
-        return newestEpisode
-          ? [[summary.instrument.id, newestEpisode.id]]
-          : [];
-      }),
-    );
-    if (firstImported) selectImportedSummary(firstImported);
+    if (firstImported) {
+      const importedEpisode = sortedEpisodes(buildInstrumentTradeSummaries(pendingImport.records).find(item=>item.instrument.id===firstImported.instrument.id))[0];
+      selectImportedSummary(firstImported, importedEpisode?.id);
+    }
     void startMarketDataUpdate(automaticSyncIds, {
       executions: mergedExecutions,
-      episodeIdsByInstrument: automaticEpisodeIds,
       batch: automaticSyncIds.length > 1,
     });
     setPendingImport(null);
@@ -2584,6 +2623,15 @@ function isAbortError(error: unknown) {
       !importedAvailability[next].enabled
     ) {
       return;
+    }
+    if (selectedImportedInstrument) {
+      const timeline = aggregateVisibleCandles(
+        sourceCandlesForTimeframe(selectedMarketState, next), next,
+        selectedImportedInstrument.instrument.market, selectedMarketState.intradayInterval,
+      );
+      const first = timeline.map(candleKnowledgeAt).sort()[0];
+      // A coarser period may have no closed bar at the saved intraday cursor.
+      if (first && first > effectiveImportedCursor) setImportedCursor(first);
     }
     setTimeframe(next);
     setSelectedDrawingId(null);
@@ -2707,7 +2755,7 @@ function isAbortError(error: unknown) {
           <span className="demo-chip">
             {showDemo && <Sparkles size={13} />}
             {selectedImportedInstrument
-              ? "本地导入"
+              ? selectedEpisode?.executions[0] ? tradingNatureLabel(selectedEpisode.executions[0]) : "本地导入"
               : showDemo
                 ? "演示行情"
                 : "等待导入"}
@@ -2734,10 +2782,13 @@ function isAbortError(error: unknown) {
             entries={tradeLibraryEntries}
             candlesByInstrument={marketDataCandles}
             marketDataStatuses={marketDataStatuses}
+            marketDataLabels={marketDataLabels}
             timeframe={timeframe === "1W" ? "1W" : "1D"}
             onTimeframeChange={setTimeframe}
-            onOpenInReview={(instrumentId) => {
-              selectInstrument(instrumentId);
+            onOpenInReview={(instrumentId, episodeId) => {
+              const summary = importedInstruments.find(item=>item.instrument.id===instrumentId);
+              if (summary && episodeId) selectImportedSummary(summary, episodeId);
+              else selectInstrument(instrumentId);
               setActiveView("review");
             }}
             reviewsHydrated={reviewsHydrated}
@@ -2768,6 +2819,7 @@ function isAbortError(error: unknown) {
               importPhase={importPhase}
               importError={importError}
               onImport={parseImport}
+              onTradingViewImport={file=>{ screenshotImport.cancel(); importRequestSequence.current+=1; setPendingImport(null); setImportError(null); setTradingViewFile(file); }}
               onScreenshotImport={(files) => {
                 importRequestSequence.current += 1;
                 setImportError(null);
@@ -2788,6 +2840,7 @@ function isAbortError(error: unknown) {
               selectedInstrumentId={selectedInstrumentId}
               onSelectInstrument={selectInstrument}
               marketDataStatuses={marketDataStatuses}
+              marketDataLabels={marketDataLabels}
               onUpdateMarketData={(instrumentId) =>
                 void startMarketDataUpdate([instrumentId], {
                   refreshMetadata: true,
@@ -2940,6 +2993,10 @@ function isAbortError(error: unknown) {
                 else void requestFrame("next-execution");
               }}
               onTogglePlay={() => setPlaying((value) => !value)}
+              onHistoryModeChange={(mode) => {
+                setPlaying(false);
+                setHistoryMode(mode);
+              }}
               onSpeedChange={setSpeed}
               onActivePanelTabChange={setActivePanelTab}
               onDrawerOpenChange={setDrawerOpen}
@@ -2950,10 +3007,15 @@ function isAbortError(error: unknown) {
         )}
       </div>
 
+      {tradingViewFile && <TradingViewImportDialog file={tradingViewFile} instruments={importedInstruments.map(item=>item.instrument)}
+        onCancel={()=>setTradingViewFile(null)} onConfirm={instrument=>{ const file=tradingViewFile;setTradingViewFile(null);void parseImport(file,instrument); }} />}
       {pendingImport && (
         <ImportConfirmDialog
           preview={pendingImport}
+          saveError={importError}
+          saving={savingImport}
           onCancel={() => {
+            if (savingImport) return;
             importRequestSequence.current += 1;
             setRetryingUnresolved(false);
             setPendingImport(null);
@@ -2986,6 +3048,7 @@ function isAbortError(error: unknown) {
           }}
           onRemoveImage={screenshotImport.removeImage}
           onCancel={() => {
+            if (savingImport) return;
             importRequestSequence.current += 1;
             screenshotImport.cancel();
             setImporting(false);

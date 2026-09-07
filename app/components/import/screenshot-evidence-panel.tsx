@@ -279,15 +279,6 @@ function FieldEvidence({
         >
           保存修改
         </button>
-        <button
-          className="secondary-button screenshot-abandon-button"
-          type="button"
-          onClick={() =>
-            onAction({ type: "delete-draft", draftId: draft.id })
-          }
-        >
-          放弃这条记录
-        </button>
       </div>
     </>
   );

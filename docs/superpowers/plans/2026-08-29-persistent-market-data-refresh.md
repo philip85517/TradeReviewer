@@ -39,3 +39,4 @@ refresh for every persisted instrument.
 - One click updates every imported instrument, displays completed/failed
   counts, and permits retrying only failures.
 - Existing cache is not deleted or overwritten by a failed provider request.
+

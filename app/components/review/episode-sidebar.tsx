@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import type { MarketDataSyncStatus } from "../../lib/market/sync-status";
+import { formatBeijingDate } from "../../lib/replay/format-time";
 import { marketDataStatusLabel } from "../../lib/market/sync-status";
 import type { InstrumentTradeSummary } from "../../lib/trades/instruments";
 import type { TradeExecution } from "../../lib/trades/types";
@@ -39,12 +40,14 @@ type Props = {
   importPhase?: ImportPhase;
   importError: string | null;
   onImport: (file: File) => void;
+  onTradingViewImport?: (file: File) => void;
   onScreenshotImport: (files: File[]) => void;
   onOpenHistory: () => void;
   revealedDemoExecutions: TradeExecution[];
   selectedInstrumentId: string;
   onSelectInstrument: (instrumentId: string) => void;
   marketDataStatuses: Record<string, MarketDataSyncStatus>;
+  marketDataLabels?: Record<string, string>;
   onUpdateMarketData: (instrumentId: string) => void;
   onUpdateAllMarketData?: () => void;
   onRetryFailedMarketData?: () => void;
@@ -52,11 +55,7 @@ type Props = {
 };
 
 function shortDate(value: string) {
-  return new Date(value).toLocaleDateString("zh-CN", {
-    year: "2-digit",
-    month: "2-digit",
-    day: "2-digit",
-  });
+  return formatBeijingDate(value);
 }
 
 export function EpisodeSidebar({
@@ -66,12 +65,14 @@ export function EpisodeSidebar({
   importPhase = importing ? "parsing" : "idle",
   importError,
   onImport,
+  onTradingViewImport,
   onScreenshotImport,
   onOpenHistory,
   revealedDemoExecutions,
   selectedInstrumentId,
   onSelectInstrument,
   marketDataStatuses,
+  marketDataLabels,
   onUpdateMarketData,
   onUpdateAllMarketData,
   onRetryFailedMarketData,
@@ -142,6 +143,12 @@ export function EpisodeSidebar({
             }}
           />
         </label>
+        {onTradingViewImport && <label className="import-button" role="button" tabIndex={importing ? -1 : 0}
+          onKeyDown={event=>{if (event.key==='Enter'||event.key===' ') {event.preventDefault();event.currentTarget.querySelector('input')?.click();}}}>
+          <Upload size={16} />导入 TradingView 模拟交易
+          <input type="file" aria-label="导入 TradingView 模拟交易" accept=".csv,text/csv" disabled={importing}
+            onChange={event=>{const file=event.target.files?.[0];if(file) onTradingViewImport(file);event.currentTarget.value='';}} />
+        </label>}
         <label
           className="import-button"
           role="button"
@@ -330,7 +337,7 @@ export function EpisodeSidebar({
                 </div>
                 <div className={`market-data-state ${status}`}>
                   <Database size={11} />
-                  {marketDataStatusLabel(status)}
+                  {marketDataLabels?.[item.instrument.id] ?? marketDataStatusLabel(status)}
                 </div>
               </button>
               <button

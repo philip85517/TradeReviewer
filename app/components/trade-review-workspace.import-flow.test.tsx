@@ -1,3 +1,4 @@
+import { csv } from "../lib/import/__fixtures__/tradingview";
 import "fake-indexeddb/auto";
 
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
@@ -217,6 +218,33 @@ describe("TradeReviewWorkspace", () => {
       candles: [],
       requestedRanges: [],
     });
+  });
+
+  it("imports a real TradingView CSV through confirmation and restores its simulation identity", async () => {
+    const user=userEvent.setup();
+    const dispatcher=await vi.importActual<typeof import('../lib/import/dispatcher')>('../lib/import/dispatcher');
+    const enrichment=await vi.importActual<typeof import('../lib/import/enrich-import')>('../lib/import/enrich-import');
+    mockDispatcher.mockImplementation(dispatcher.parseBrokerStatement);
+    mockEnrichment.mockImplementation((parsed,options)=>enrichment.enrichStatementImport(parsed,{
+      ...options,
+      resolver:async () => ({resolved:new Map([['CN-SH:600330',{market:'CN-SH',symbol:'600330',name:'天通股份',assetType:'stock',source:'tencent',confidence:'portal',resolvedAt:'2026-09-07T00:00:00Z'}]]),unresolved:new Map(),cacheHits:0,backgroundRefresh:Promise.resolve()}),
+    }));
+    const view=render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    const file=new File([csv],'回放交易_SSE_600330_2026-09-03.csv',{type:'text/csv'});
+    Object.defineProperty(file,'arrayBuffer',{value:async()=>new TextEncoder().encode(csv).buffer});
+    await user.upload(await screen.findByLabelText('导入 TradingView 模拟交易'),file);
+    expect(await screen.findByRole('dialog',{name:'核对模拟交易证券'})).toBeInTheDocument();
+    expect(loadImportedExecutions()).toHaveLength(0);
+    await user.click(screen.getByRole('button',{name:'解析模拟交易'}));
+    expect(await screen.findByRole('heading',{name:'确认导入交易记录'})).toBeInTheDocument();
+    expect(screen.getByText(/配对总手续费在出场时计入一次/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button',{name:'确认导入并开始更新行情'}));
+    await waitFor(()=>expect(loadImportedExecutions()).toHaveLength(2));
+    expect(loadImportedExecutions()[0].source.tradingNature).toBe('simulated');
+    view.unmount();
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    expect((await screen.findAllByText(/TradingView · 模拟盘/)).length).toBeGreaterThan(0);
+    expect(loadImportHistory()[0].sourceLabel).toBe('TradingView · 模拟盘');
   });
 
   it("imports a recognized PDF locally without asking for stock names", async () => {

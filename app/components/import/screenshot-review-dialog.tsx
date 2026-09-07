@@ -229,6 +229,8 @@ export function ScreenshotReviewDialog({
   const selectedImageMetadata = state.images.find(
     ({ imageId }) => imageId === effectiveSelectedImageId,
   );
+  const selectedImageTimezone =
+    state.imageTimezones?.[effectiveSelectedImageId] ?? "auto";
   const filteredDrafts = activeDrafts.filter((draft) => {
     if (filter === "pending") return pendingDraftIds.has(draft.id);
     if (filter === "conflict") return conflictByDraftId.has(draft.id);
@@ -246,7 +248,6 @@ export function ScreenshotReviewDialog({
     ["queued", "recognizing", "failed"].includes(imageState),
   );
   const completeDisabled =
-    activeDrafts.length === 0 ||
     blockers.length > 0 ||
     unresolvedConflicts.length > 0 ||
     unfinishedImage;
@@ -321,21 +322,24 @@ export function ScreenshotReviewDialog({
 
         <div className="screenshot-review-context">
           <label>
-            <span>截图成交时区</span>
+            <span>当前截图成交时区</span>
             <select
               aria-label="截图成交时区"
-              value={state.sourceTimezone ?? ""}
+              value={selectedImageTimezone}
               onChange={(event) =>
                 onAction({
-                  type: "set-time-zone",
-                  timeZone: event.target.value,
+                  type: "set-image-time-zone",
+                  imageId: effectiveSelectedImageId,
+                  timeZone:
+                    event.target.value === "auto"
+                      ? ""
+                      : event.target.value,
                 })
               }
             >
-              <option value="" disabled>
-                选择时区
-              </option>
+              <option value="auto">按市场自动识别</option>
               <option value="Asia/Shanghai">中国标准时间</option>
+              <option value="Asia/Hong_Kong">香港时间</option>
               <option value="America/New_York">美国东部时间</option>
               <option value="America/Chicago">美国中部时间</option>
               <option value="America/Los_Angeles">美国太平洋时间</option>
@@ -571,14 +575,12 @@ export function ScreenshotReviewDialog({
 
         <footer className="modal-footer screenshot-review-footer">
           <p>
-            {activeDrafts.length === 0
-              ? "没有可导入的成交记录"
-              : blockers[0]?.message ??
-                (unresolvedConflicts.length > 0
-                  ? `还有 ${unresolvedConflicts.length} 个冲突未处理`
-                  : unfinishedImage
-                    ? "请先重试或移除未完成的截图"
-                    : "所有必填字段和冲突均已处理")}
+            {blockers[0]?.message ??
+              (unresolvedConflicts.length > 0
+                ? `还有 ${unresolvedConflicts.length} 个冲突未处理`
+                : unfinishedImage
+                  ? "请先重试或移除未完成的截图"
+                  : "所有必填字段和冲突均已处理")}
           </p>
           <button
             className="secondary-button"

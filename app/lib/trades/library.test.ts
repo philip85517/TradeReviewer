@@ -1,3 +1,5 @@
+import { parseBrokerStatement } from "../import/dispatcher";
+import { fileFor } from "../import/__fixtures__/tradingview";
 import { describe, expect, it } from "vitest";
 
 import type { DailyCandleRecord } from "../market/contracts";
@@ -216,3 +218,12 @@ describe("buildTradeLibraryEntries", () => {
     });
   });
 });
+
+ it("separates simulation statistics from live trades for the same security", async () => {
+   const {records}=await parseBrokerStatement(fileFor());
+   const live=records.map(r=>({...r,id:'live:'+r.id,source:{platform:'futu',row:r.source.row},accountId:'live'}));
+   const entries=buildTradeLibraryEntries(buildInstrumentTradeSummaries([...records,...live]),{},{});
+   expect(entries).toHaveLength(2);
+   expect(entries.map(e=>e.tradeCount)).toEqual([2,2]);
+   expect(entries.every(e=>e.netPnl==='99.4')).toBe(true);
+ });

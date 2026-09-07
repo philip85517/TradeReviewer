@@ -15,6 +15,9 @@
 - 绘图撤销、重做、清空以及保存到本机 SQLite
 - 交易计划、失效条件、目标区间和最大风险记录
 - 富途 XLS/XLSX、Tiger PDF 和招商证券 PDF 按文件内容自动识别，并在浏览器本地解析
+- 独立的“导入 TradingView 模拟交易”入口，支持中文 CNY 回放交易 CSV；核对上海证券代码后本地解析，持续标注模拟盘
+- 模拟盘按文件内容区分运行，支持多空、加仓和分批平仓；交易库按交易性质筛选并分别统计，重导同一文件不会新增成交
+- 配对总费用仅在出场计入一次；源报告指标在交易库完整结果中单独展示，日期精度记录不伪造盘中时刻
 - 独立的“导入成交截图”入口，支持已适配的 Tiger/富途成交截图版式以及 JPG、PNG、WebP 多文件选择
 - 截图导入会逐行复核账户、来源时区和 OCR 证据；低置信度或缺失字段必须确认或修正后才能导入
 - 逐行诊断、股票/ETF 分类、股票名称自动补全和交易回合分组
@@ -48,13 +51,29 @@ npm run dev
 
 打开 `http://localhost:3000/`。
 
+### Tiger OpenAPI 本地配置
+
+仅当需要 Tiger OpenAPI 作为已配置行情源时，额外执行以下命令：
+
+```bash
+python3 -m pip install -r requirements-tiger.txt
+TIGER_OPENAPI_CONFIG=/absolute/path/tiger_openapi_config.properties npm run dev
+```
+
+- Tiger 配置文件必须放在仓库外部，并通过 `TIGER_OPENAPI_CONFIG` 指向绝对路径。
+- 固定版本的官方 SDK 在 `private_key_pk8` 和 `private_key_pk1` 同时存在时，会优先解析 `private_key_pk8`。
+- 只有美股和港股的日线、`1h` 请求会优先尝试 Tiger；其他市场或周期继续走现有公开行情源。
+
 ## Docker Compose 部署
 
-生产部署使用 Docker Compose，默认目标为 `/Users/zhoulin/projects/TradeReview`，部署后访问 `http://localhost:4317/`。第一次 `make deploy` 会自动初始化本机配置、SQLite、备份、日志和目标侧运维入口；如需预先编辑配置，可先运行 `make deploy-config`。日常命令包括 `make deploy-code`、`make deploy-status`、`make deploy-backup`、`make deploy-restore BACKUP=/absolute/path/to/backup.sqlite`、`make deploy-rollback` 和 `make deploy-down`。完整的凭据排除、失败恢复、保留策略、备份事务和 SQLite/浏览器数据边界见 [部署指南](deploy/DEPLOYMENT.md)。
+生产部署使用 Docker Compose，默认目标为 `/Users/zhoulin/projects/TradeReview`。第一次 `make deploy` 会自动初始化本机配置、SQLite、备份、日志和目标侧运维入口；如需预先编辑配置，可先运行 `make deploy-config`。日常命令包括 `make deploy-code`、`make deploy-status`、`make deploy-backup`、`make deploy-restore BACKUP=/absolute/path/to/backup.sqlite`、`make deploy-rollback` 和 `make deploy-down`。完整的凭据排除、失败恢复、保留策略、备份事务和 SQLite/浏览器数据边界见 [部署指南](deploy/DEPLOYMENT.md)。
 
 ## 验证
 
+TradingView 自动测试使用最小冻结夹具；如需校验本地原始示例，可设置 `TRADINGVIEW_SAMPLE_DIR` 并运行 `npm run test:unit -- app/lib/import/tradingview-samples.test.ts`。原始 CSV 不纳入仓库。
+
 ```bash
+npm run test:unit -- app/api/market-data/daily/route.test.ts app/api/market-data/intraday/route.test.ts app/lib/market/sync-service.test.ts --run
 npm run test:unit
 npm run typecheck
 npm run lint
@@ -72,6 +91,8 @@ npm test
 - Vitest 与 Testing Library
 
 ## 当前限制
+
+- TradingView 当前适配中文 CNY、上海证券、仅日期的完整进出场配对 CSV。缺失配对、日期顺序有歧义和相反持仓重叠会排除整组并显示诊断；不同内容的重叠导出属于独立运行，不自动拼接。
 
 - 当前只识别已适配的富途、Tiger 和招商证券对账单版式；加密 PDF、扫描件或券商改版后的未知表格可能无法解析。
 - 截图导入目前只支持已适配的 Tiger/富途成交列表版式；未知版式会被拒绝。OCR 会受截图清晰度、裁剪、缩放、遮挡和券商界面改版影响，导入前仍需按证据图逐行核对，无法确认的低置信度字段不会自动猜测或放行。

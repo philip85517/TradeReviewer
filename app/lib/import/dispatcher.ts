@@ -1,3 +1,4 @@
+import { isTradingViewCsv, parseTradingViewCsv, type TradingViewInstrument } from "./tradingview";
 import type { ImportDiagnostic } from "./import-result";
 import type { PdfTextPage } from "./pdf-text";
 import { extractPdfPages } from "./pdf-text";
@@ -23,6 +24,7 @@ type ExtractPdfPages = (input: ArrayBuffer) => Promise<PdfTextPage[]>;
 
 export type ParseBrokerStatementOptions = {
   extractPdfPages?: ExtractPdfPages;
+  tradingViewInstrument?: TradingViewInstrument;
 };
 
 export type StatementDispatchFailure = {
@@ -78,6 +80,7 @@ export async function parseBrokerStatement(
   const arrayBuffer = await file.arrayBuffer();
   const bytes = new Uint8Array(arrayBuffer);
   const fileFingerprint = fingerprintBytes(bytes);
+  if (isTradingViewCsv(bytes)) return parseTradingViewCsv({fileName:file.name,bytes,fileFingerprint}, options.tradingViewInstrument);
   const futuDetection = detectFutuWorkbook(bytes);
 
   if (

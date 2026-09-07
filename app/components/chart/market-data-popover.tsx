@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, type RefObject } from "react";
 
 import type { NativeMarketInterval } from "../../lib/market/contracts";
 import type { Timeframe } from "../../lib/market/types";
+import { formatBeijingDateTime } from "../../lib/replay/format-time";
 import {
   marketDataStatusLabel,
   type MarketDataSyncStatus,
@@ -38,7 +39,11 @@ function coverageLabel(detail: MarketDataDetails) {
   if (detail.status === "complete" || detail.status === "ready") {
     return "请求已完成，但没有可用的行情数据";
   }
-  if (detail.status === "partial" || detail.status === "stale") {
+  if (
+    detail.status === "latest-available" ||
+    detail.status === "partial" ||
+    detail.status === "stale"
+  ) {
     return "请求已完成，但没有可用的实际覆盖区间";
   }
   return "行情请求未能完成，暂无实际覆盖区间";
@@ -119,7 +124,7 @@ export function MarketDataPopover({
             <dl>
               <div><dt>来源</dt><dd>{detail.providerLabel ?? "未连接行情源"}</dd></div>
               <div><dt>实际覆盖</dt><dd>{coverage}</dd></div>
-              <div><dt>获取时间</dt><dd>{detail.fetchedAt ?? "尚未获取"}</dd></div>
+              <div><dt>获取时间（北京时间）</dt><dd>{detail.fetchedAt ? formatBeijingDateTime(detail.fetchedAt) : "尚未获取"}</dd></div>
               <div><dt>状态</dt><dd>{marketDataStatusLabel(detail.status)}</dd></div>
               <div><dt>可用周期</dt><dd>{detail.availableTimeframes.length > 0 ? detail.availableTimeframes.join("、") : "暂无"}</dd></div>
               {detail.limitationReason ? <div><dt>周期限制</dt><dd>{detail.limitationReason}</dd></div> : null}

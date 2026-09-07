@@ -5,7 +5,7 @@ import { getSqliteStore } from "../../../lib/storage/sqlite-store";
 
 export const runtime = "nodejs";
 const intervals = new Set(["15m", "1h", "1D"]);
-const coverageStatuses = new Set(["not-requested", "syncing", "complete", "partial", "stale", "source-rate-limited", "source-forbidden", "source-unavailable", "invalid-response", "storage-error"]);
+const coverageStatuses = new Set(["not-requested", "syncing", "complete", "latest-available", "partial", "stale", "source-rate-limited", "source-forbidden", "source-unavailable", "invalid-response", "storage-error"]);
 function response(body: unknown, status = 200) { return Response.json(body, { status, headers: { "Cache-Control": "no-store" } }); }
 function invalid() { return response({ error: { code: "invalid-request", message: "invalid request" } }, 400); }
 function validId(value: string | null) { return Boolean(value?.trim()); }

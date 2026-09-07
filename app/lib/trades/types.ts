@@ -15,6 +15,15 @@ export type TradeExecution = {
   id: string;
   source: {
     platform: string;
+    tradingNature?: "simulated" | "live" | "unknown";
+    simulationRunId?: string;
+    simulationTradeId?: string;
+    simulationRole?: "entry" | "exit";
+    simulationSignal?: string;
+    /** Pair-level source report, never included in the progressively revealed ledger. */
+    simulationReport?: Record<string, string>;
+    /** Explicitly confirmed session; absence must not imply grey-market trading. */
+    tradingSession?: "grey-market";
     sheet?: string;
     page?: number;
     row: number;

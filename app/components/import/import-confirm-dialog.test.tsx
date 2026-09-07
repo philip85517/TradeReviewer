@@ -1,6 +1,6 @@
-import { render, screen, within } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { ImportPreview } from "../../lib/import/import-preview";
 import { EpisodeSidebar } from "../review/episode-sidebar";
@@ -192,3 +192,13 @@ describe("ImportConfirmDialog", () => {
     expect(screen.getAllByRole("button", { name: /导入记录/ })).toHaveLength(1);
   });
 });
+
+it("announces save failure inside the open preview and permits retry", async()=>{
+ const confirm=vi.fn();
+ render(<ImportConfirmDialog preview={preview} onCancel={()=>{}} onConfirm={confirm} onRetryUnresolved={()=>{}} saveError="SQLite 保存失败，请重试" />);
+ expect(screen.getByRole('alert')).toHaveTextContent('SQLite 保存失败');
+ await userEvent.setup().click(screen.getByRole('button',{name:'确认导入并开始更新行情'}));
+ expect(confirm).toHaveBeenCalledOnce();
+});
+
+afterEach(cleanup);

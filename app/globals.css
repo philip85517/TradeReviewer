@@ -2784,8 +2784,16 @@ input:focus-visible {
 
 .library-execution-row > span:first-child {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
+}
+
+.library-execution-row > span:first-child small {
+  flex-basis: 100%;
+  margin-left: 18px;
+  color: var(--faint);
+  font-size: 8px;
 }
 
 .library-review-grid {
@@ -3357,57 +3365,6 @@ input:focus-visible {
   margin: 5px 0 0;
   color: var(--muted);
   font-size: 9px;
-}
-
-.screenshot-review-context {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: flex-end;
-  gap: 16px;
-  padding: 12px 22px;
-  border-bottom: 1px solid var(--line);
-  background: #111a27;
-}
-
-.screenshot-review-context label {
-  min-width: 0;
-  display: grid;
-  gap: 6px;
-  color: var(--muted);
-  font-size: 10px;
-  line-height: 1.2;
-}
-
-.screenshot-review-context label:first-child {
-  flex: 0 1 300px;
-}
-
-.screenshot-review-context label:last-child {
-  flex: 0 1 240px;
-}
-
-.screenshot-review-context select,
-.screenshot-review-context input {
-  width: 100%;
-  min-width: 0;
-  height: 34px;
-  padding: 0 10px;
-  border: 1px solid #2b3b51;
-  border-radius: 8px;
-  outline: 0;
-  color: #d4deea;
-  background: #111b28;
-  font-size: 12px;
-  line-height: 1.2;
-}
-
-.screenshot-review-context select:focus,
-.screenshot-review-context input:focus {
-  border-color: #397dce;
-}
-
-.screenshot-review-context input::placeholder {
-  color: #66778f;
 }
 
 .screenshot-review-body {
@@ -4148,17 +4105,6 @@ input:focus-visible {
 }
 
 @media (max-width: 640px) {
-  .screenshot-review-context {
-    flex-wrap: wrap;
-    gap: 10px 12px;
-    padding: 10px 14px;
-  }
-
-  .screenshot-review-context label:first-child,
-  .screenshot-review-context label:last-child {
-    flex: 1 1 min(100%, 220px);
-  }
-
   .screenshot-review-body,
   .screenshot-review-body.has-evidence {
     grid-template-columns: minmax(0, 1fr);
@@ -4285,3 +4231,59 @@ input:focus-visible {
     animation: none;
   }
 }
+.history-mode-bar {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+.unmatched-execution-notice {
+  flex: 0 0 auto;
+  margin: 4px 12px;
+  padding: 8px;
+  border: 1px solid rgba(245, 166, 35, 0.3);
+  border-radius: 5px;
+  color: #f2c66d;
+  background: rgba(245, 166, 35, 0.1);
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: normal;
+}
+.history-mode-bar button {
+  padding: 6px 10px;
+  border: 1px solid #33465c;
+  border-radius: 6px;
+}
+.history-mode-bar button[aria-pressed="true"] {
+  background: #193858;
+  color: #fff;
+  border-color: #3988ee;
+}
+
+.simulation-badge {
+  display: inline-block;
+  color: var(--text-primary, #a8d8f0);
+  background: var(--surface-hover, #142b3a);
+  border: 1px solid var(--border, #355b70);
+  border-radius: 5px;
+  padding: 3px 7px;
+  font-size: 0.875rem;
+}
+.simulation-import-summary, .simulation-source-report {
+  padding: 16px;
+  margin-block: 12px;
+  border: 1px solid var(--border, #2d3d52);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.simulation-source-report dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.simulation-source-report dd { margin: 0; font-variant-numeric: tabular-nums; }
+.simulation-source-report summary { cursor: pointer; padding-block: 6px; }
+.tradingview-dialog form input { display: block; padding: 8px; margin-block: 8px; font-size: 1rem; }
+
+.tradingview-dialog { padding: 20px; }
+.tradingview-dialog input { background: #101d2b; color: #e3edf5; border: 1px solid #355b70; border-radius: 5px; }

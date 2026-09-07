@@ -51,6 +51,7 @@ const VALID_STATUSES: MarketDataSyncStatus[] = [
   "not-requested",
   "syncing",
   "complete",
+  "latest-available",
   "partial",
   "stale",
   "source-rate-limited",
@@ -117,7 +118,7 @@ function withIntervals(job: MarketDataJobInput): MarketDataJob {
   };
 }
 
-function recoverInterruptedJob(job: MarketDataJob): MarketDataJob {
+export function recoverInterruptedJob(job: MarketDataJob): MarketDataJob {
   if (job.status !== "syncing") return job;
   const message = "上次行情更新被中断，请重试。";
   return {

@@ -5,12 +5,18 @@ import type {
   MarketDataProvider,
   ProviderResult,
 } from "../contracts";
+import {
+  readTigerOpenApiConfig,
+  type TigerOpenApiConfig,
+} from "../tiger-config";
 import { EastmoneyProvider } from "./eastmoney";
 import { MarketDataProviderError } from "./errors";
 import { BaiduProvider } from "./baidu";
 import { SinaUsProvider } from "./sina-us";
 import { TencentProvider } from "./tencent";
+import { TigerProvider } from "./tiger";
 import { YahooProvider } from "./yahoo";
+import { fetchDailyWithCoverage } from "./daily-fallback";
 
 export type {
   IntradayCandleRequest,
@@ -33,9 +39,22 @@ const PROVIDER_ERROR_PRIORITY = [
 ] as const;
 
 type ProviderCandleResult = {
+  provider: string;
   candles: readonly unknown[];
   warnings: readonly string[];
 };
+
+type ProviderRouterOptions = {
+  environment?: Readonly<Record<string, string | undefined>>;
+  tigerConfig?: Pick<TigerOpenApiConfig, "configPath">;
+  tigerProvider?: MarketDataProvider;
+};
+
+function shouldFallBackOnEmptyTigerResult(
+  result: ProviderCandleResult,
+) {
+  return result.provider === "tiger" && result.candles.length === 0;
+}
 
 function likelySparseHourlyResult(
   request: IntradayCandleRequest,
@@ -76,10 +95,24 @@ async function fetchWithProviderFallback<
           candidate.supports(request.market as DailyCandleRequest["market"]),
         );
       if (shouldTryNext?.(result, request) && hasNextProvider) {
+        if (result.provider === "tiger" && result.candles.length === 0) {
+          const noDataError = new MarketDataProviderError(
+            "no-data",
+            `${provider.id}未返回该股票数据`,
+          );
+          providerErrors.push(noDataError);
+          failures.push(noDataError.message);
+        }
         if (!bestPartial || result.candles.length > bestPartial.candles.length) {
           bestPartial = result;
         }
         continue;
+      }
+      if (shouldTryNext?.(result, request) && result.candles.length === 0) {
+        throw new MarketDataProviderError(
+          "no-data",
+          `${provider.id}未返回该股票数据`,
+        );
       }
       return result;
     } catch (error) {
@@ -96,7 +129,7 @@ async function fetchWithProviderFallback<
       );
     }
   }
-  if (bestPartial) return bestPartial;
+  if (bestPartial && bestPartial.candles.length > 0) return bestPartial;
   const selectedError = PROVIDER_ERROR_PRIORITY
     .map((code) => providerErrors.find((error) => error.code === code))
     .find((error) => error !== undefined);
@@ -109,35 +142,53 @@ async function fetchWithProviderFallback<
 
 export function createProviderRouter(
   fetcher: typeof fetch = fetch,
+  options: ProviderRouterOptions = {},
 ): ProviderRouter {
+  const tigerConfig = options.tigerConfig ??
+    readTigerOpenApiConfig(options.environment);
+  const tigerProvider = tigerConfig
+    ? (options.tigerProvider ?? new TigerProvider(tigerConfig))
+    : undefined;
   const providers: MarketDataProvider[] = [
     new TencentProvider(),
     new EastmoneyProvider(),
     new YahooProvider(),
     new BaiduProvider(),
   ];
+  const dailyProviders = tigerProvider
+    ? [tigerProvider, ...providers]
+    : providers;
 
   return {
     fetchDaily: (request) =>
-      fetchWithProviderFallback(
-        providers,
-        request,
-        (provider, nextRequest) =>
-          provider.fetchDaily(nextRequest, fetcher),
-      ),
+      fetchDailyWithCoverage(dailyProviders, request, fetcher),
     fetchIntraday: (request) =>
       fetchWithProviderFallback(
         request.interval === "1h"
           ? request.market === "CN-SH" || request.market === "CN-SZ"
             ? [new TencentProvider(), new EastmoneyProvider(), new YahooProvider()]
             : request.market === "US"
-              ? [new TencentProvider(), new EastmoneyProvider(), new SinaUsProvider(), new YahooProvider(), new BaiduProvider()]
-              : [new TencentProvider(), new EastmoneyProvider(), new YahooProvider(), new BaiduProvider()]
+              ? [
+                ...(tigerProvider ? [tigerProvider] : []),
+                new TencentProvider(),
+                new EastmoneyProvider(),
+                new SinaUsProvider(),
+                new YahooProvider(),
+                new BaiduProvider(),
+              ]
+              : [
+                ...(tigerProvider ? [tigerProvider] : []),
+                new TencentProvider(),
+                new EastmoneyProvider(),
+                new YahooProvider(),
+                new BaiduProvider(),
+              ]
           : providers,
         request,
         (provider, nextRequest) =>
           provider.fetchIntraday(nextRequest, fetcher),
         (result, nextRequest) =>
+          shouldFallBackOnEmptyTigerResult(result) ||
           likelySparseHourlyResult(nextRequest, result),
       ),
   };

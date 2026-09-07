@@ -1,3 +1,4 @@
+import { simulationScope } from "../trades/trading-nature";
 import { Temporal } from "@js-temporal/polyfill";
 import Decimal from "decimal.js";
 
@@ -80,7 +81,7 @@ function executionInstrumentIdentity(execution: TradeExecution) {
 }
 
 export function executionCandidateKey(execution: TradeExecution) {
-  return `${executionInstrumentIdentity(execution)}|${
+  return `${simulationScope(execution) ? `${simulationScope(execution)}:${execution.source.simulationTradeId}:${execution.source.simulationRole}|` : ""}${executionInstrumentIdentity(execution)}|${
     executionInstantIdentity(execution.executedAt).value
   }`;
 }

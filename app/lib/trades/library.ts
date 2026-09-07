@@ -1,3 +1,5 @@
+import { simulationScope, tradingNature, tradingNatureLabel } from "./trading-nature";
+import { buildInstrumentTradeSummaries } from "./instruments";
 import Decimal from "decimal.js";
 
 import type { DailyCandleRecord } from "../market/contracts";
@@ -31,6 +33,8 @@ export type TradeLibraryEpisode = {
 };
 
 export type TradeLibraryEntry = {
+  groupId?: string;
+  tradingLabel?: string;
   instrument: Instrument;
   executions: TradeExecution[];
   episodes: TradeLibraryEpisode[];
@@ -53,7 +57,15 @@ export function buildTradeLibraryEntries(
   marketDataStatuses: Record<string, MarketDataSyncStatus>,
   reviewsByEpisode: Record<string, EpisodeReviewRecord> = {},
 ): TradeLibraryEntry[] {
-  return summaries
+  const separated = summaries.flatMap(summary => {
+    const groups = new Map<string, TradeExecution[]>();
+    for (const record of summary.executions) {
+      const key = simulationScope(record) || tradingNature(record);
+      groups.set(key, [...(groups.get(key) ?? []), record]);
+    }
+    return [...groups.values()].flatMap(buildInstrumentTradeSummaries);
+  });
+  return separated
     .map((summary) => {
       const latestCandle = [...(
         candlesByInstrument[summary.instrument.id] ?? []
@@ -63,7 +75,8 @@ export function buildTradeLibraryEntries(
       const marketDataStatus =
         marketDataStatuses[summary.instrument.id] ?? "not-requested";
       const hasCompleteMarketData =
-        marketDataStatus === "complete" || marketDataStatus === "ready";
+        marketDataStatus === "complete" ||
+        marketDataStatus === "ready";
       const episodes = buildTradeEpisodes(summary.executions)
         .map((episode) => {
           const latestExecution =
@@ -139,6 +152,10 @@ export function buildTradeLibraryEntries(
               .toString();
 
       return {
+        groupId: simulationScope(summary.executions[0])
+          ? `${summary.instrument.id}|${simulationScope(summary.executions[0])}`
+          : `${summary.instrument.id}|${tradingNature(summary.executions[0])}`,
+        tradingLabel: tradingNatureLabel(summary.executions[0]),
         instrument: summary.instrument,
         executions: summary.executions,
         episodes,

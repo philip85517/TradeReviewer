@@ -32,3 +32,10 @@ describe("storage trades route", () => {
     expect((await PUT(request({ executions: [execution, { bad: true }] }))).status).toBe(400);
   });
 });
+
+it("returns a conflict for an already-associated simulation CSV", async()=>{
+ mergeTradeData.mockImplementation(()=>{throw new Error('Simulation context conflict');});
+ const result=await PUT(request({executions:[execution]}));
+ expect(result.status).toBe(409);
+ expect(await result.json()).toMatchObject({error:{code:'conflict'}});
+});

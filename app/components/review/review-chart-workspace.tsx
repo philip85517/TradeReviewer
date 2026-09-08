@@ -122,6 +122,9 @@ function dateTime(value: string) {
 }
 
 export function executionTimestampLabel(execution: TradeExecution) {
+  if (execution.source.sourceTimeKind === "order") {
+    return `${execution.source.sourceTimestampText ?? execution.executedAt} · 原件为下单时间，不能定位成交分钟`;
+  }
   if (execution.source.timePrecision === "date-only") {
     return `${execution.source.sourceTimestampText ?? "日期未知"} · 对账单未提供成交时间`;
   }
@@ -226,6 +229,8 @@ export function ReviewChartWorkspace({
   const greyMarketExecutions = unmatchedExecutions.filter(execution => execution.source.tradingSession === "grey-market");
   const missingMarketExecutions = unmatchedExecutions.filter(execution => execution.source.tradingSession !== "grey-market");
   const pnlPositive = Number(model.position.netPnl) >= 0;
+  const pnlAvailable = !model.position.accuracy;
+  const quantityAvailable = model.position.quantityKnown !== false && !model.position.accuracy?.reasons.some(reason => ["ambiguous-opening", "ambiguous-event-order", "history-incomplete"].includes(reason));
   const instrumentLabel = `${model.instrument.name}（${model.instrument.symbol}）`;
   const episodeStartedAt =
     episodeOptions.find((episode) => episode.id === model.episodeId)
@@ -328,28 +333,28 @@ export function ReviewChartWorkspace({
               </div>
               <div className="position-stats">
                 <span>
-                  持仓 <b>{model.position.quantity}</b>
+                  持仓 <b>{quantityAvailable ? model.position.quantity : "待核对"}</b>
                 </span>
                 <span>
                   均价{" "}
-                  <b>{Number(model.position.averageCost).toFixed(2)}</b>
+                  <b>{pnlAvailable ? Number(model.position.averageCost).toFixed(2) : "待补齐成本"}</b>
                 </span>
                 <span>
                   浮动盈亏{" "}
                   <b className={pnlPositive ? "positive" : "negative"}>
-                    {money(
+                    {pnlAvailable ? money(
                       model.position.unrealizedPnl,
                       model.instrument.currency,
-                    )}
+                    ) : "—"}
                   </b>
                 </span>
                 <span>
                   已实现{" "}
                   <b>
-                    {money(
+                    {pnlAvailable ? money(
                       model.position.realizedPnl,
                       model.instrument.currency,
-                    )}
+                    ) : "—"}
                   </b>
                 </span>
                 <span>
@@ -358,18 +363,19 @@ export function ReviewChartWorkspace({
                     data-testid="net-pnl"
                     className={pnlPositive ? "positive" : "negative"}
                   >
-                    {money(model.position.netPnl, model.instrument.currency)}
+                    {pnlAvailable ? money(model.position.netPnl, model.instrument.currency) : "历史不完整"}
                   </b>
                 </span>
                 <span>
                   收益率{" "}
                   <b className={pnlPositive ? "positive" : "negative"}>
-                    {Number(model.position.returnPercent).toFixed(2)}%
+                    {pnlAvailable ? `${Number(model.position.returnPercent).toFixed(2)}%` : "—"}
                   </b>
                 </span>
               </div>
             </div>
 
+            {!pnlAvailable && <p role="status">持仓历史、成本或费用尚未补齐，盈亏及成本线暂不展示。{model.position.accuracy?.reasons.includes("ambiguous-opening") ? "首笔卖出缺少期初持仓或明确卖空依据，持仓方向待核对。" : ""}</p>}
             <ReplayChart
               episodeId={model.episodeId}
               viewportKey={JSON.stringify([model.instrument.id, model.episodeId, model.timeframe, model.historyMode,
@@ -380,7 +386,7 @@ export function ReviewChartWorkspace({
               averageCost={Number(model.position.averageCost)}
               drawings={chartDrawings}
               activeTool={activeTool}
-              settings={settings}
+              settings={pnlAvailable ? settings : { ...settings, showAverageCost: false }}
               selectedDrawingId={selectedDrawingId}
               plannedRiskAmount={visiblePlan?.plannedRiskAmount}
               currency={model.instrument.currency}
@@ -426,7 +432,7 @@ export function ReviewChartWorkspace({
                 <span className="status-separator">·</span>
                 <CircleDollarSign size={14} />
                 <span>
-                  费用 {money(model.position.fees, model.instrument.currency)}
+                  费用 {model.executions.some(e => e.source.feeStatus === "unknown") ? "待核对" : money(model.position.fees, model.instrument.currency)}
                 </span>
               </div>
             </div>
@@ -455,7 +461,7 @@ export function ReviewChartWorkspace({
                           {execution.quantity} × {execution.price}
                         </span>
                         <span>
-                          费用 {fee(execution.fee, model.instrument.currency)}
+                          费用 {execution.source.feeStatus === "unknown" ? "待核对" : fee(execution.fee, model.instrument.currency)}
                         </span>
                         <small>来源 {executionSource(execution)}</small>
                         <small>

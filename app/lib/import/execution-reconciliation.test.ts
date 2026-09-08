@@ -59,6 +59,90 @@ function fill(overrides: FillOverrides = {}): TradeExecution {
 }
 
 describe("execution reconciliation", () => {
+  it("does not retain an unknown duplicate alongside two conflicting reported fees", () => {
+    const unknown = fill({ fingerprint: "unknown", fee: "0" });
+    const first = fill({ fingerprint: "first", fee: "1" });
+    const second = fill({ fingerprint: "second", fee: "5" });
+    unknown.source.feeStatus = "unknown";
+    first.source.feeStatus = "reported";
+    second.source.feeStatus = "reported";
+
+    const result = reconcileExecutions([], [unknown, first, second]);
+    expect(result.acceptedIncoming).toEqual([first, second]);
+    expect(result.duplicates).toMatchObject([{ skipped: unknown }]);
+  });
+
+  it.each(["keep-existing", "use-incoming", "keep-both"] as const)("honors %s for reported-fee conflicts through a subsequent merge", decision => {
+    const existing = fill({ fingerprint: "old", fee: "1" });
+    const incoming = fill({ fingerprint: "new", fee: "5" });
+    existing.source.feeStatus = "reported";
+    incoming.source.feeStatus = "reported";
+    const reconciliation = reconcileExecutions([existing], [incoming]);
+    const resolved = applyReconciliationDecisions([existing], reconciliation, new Map([[reconciliation.conflicts[0].id, decision]]));
+    const merged = reconcileExecutions([], [...resolved.currentAfterReplacements, ...resolved.incomingToMerge]);
+    expect(merged.acceptedIncoming).toEqual(decision === "keep-existing" ? [existing] : decision === "use-incoming" ? [incoming] : [existing, incoming]);
+  });
+
+  it("deduplicates numerically equal reported fees", () => {
+    const existing = fill({ fingerprint: "old", fee: "1.00" });
+    const incoming = fill({ fingerprint: "new", fee: "1" });
+    existing.source.feeStatus = "reported";
+    incoming.source.feeStatus = "reported";
+    expect(reconcileExecutions([existing], [incoming])).toMatchObject({ conflicts: [], acceptedIncoming: [], duplicates: [{ kept: existing, skipped: incoming }] });
+  });
+
+  it.each([undefined, "allocated"] as const)("preserves legacy deduplication for a %s fee against a reported fee", status => {
+    const existing = fill({ fingerprint: "old", fee: "1" });
+    const incoming = fill({ fingerprint: "new", fee: "5" });
+    existing.source.feeStatus = status;
+    incoming.source.feeStatus = "reported";
+    expect(reconcileExecutions([existing], [incoming])).toMatchObject({ conflicts: [], acceptedIncoming: [], duplicates: [{ kept: existing, skipped: incoming }] });
+  });
+
+  it("preserves separate same-source fills with different reported fees", () => {
+    const first = fill({ fingerprint: "same", fee: "1" });
+    const second = fill({ fingerprint: "same", fee: "5" });
+    first.source.feeStatus = "reported";
+    second.source.feeStatus = "reported";
+    expect(reconcileExecutions([], [first, second])).toMatchObject({ acceptedIncoming: [first, second], duplicates: [], conflicts: [] });
+  });
+  it.each(["0", "2.05"])("enriches an explicitly unknown fee with reported %s without a conflict", fee => {
+    const unknown = fill({ fingerprint: "old", fee: "0" });
+    const reported = fill({ fingerprint: "new", fee });
+    unknown.source.feeStatus = "unknown";
+    reported.source.feeStatus = "reported";
+
+    const result = reconcileExecutions([unknown], [reported]);
+    expect(result.conflicts).toEqual([]);
+    expect(result.acceptedIncoming).toEqual([reported]);
+    expect(result.automaticReplacementIds).toEqual([unknown.id]);
+    expect(result.duplicates).toEqual([{ kept: reported, skipped: unknown }]);
+    expect(reconcileExecutions([reported], [unknown]).acceptedIncoming).toEqual([]);
+  });
+  it.each([["1", "5"], ["0", "5"], ["1.000000000000000001", "1.000000000000000002"]])(
+    "requires a choice between explicitly reported fees %s and %s",
+    (existingFee, incomingFee) => {
+      const existing = fill({ fingerprint: "old-statement", fee: existingFee });
+      const incoming = fill({ fingerprint: "new-statement", fee: incomingFee });
+      existing.source.feeStatus = "reported";
+      incoming.source.feeStatus = "reported";
+
+      const result = reconcileExecutions([existing], [incoming]);
+
+      expect(result.conflicts).toMatchObject([{ existing: [existing], incoming: [incoming] }]);
+      expect(result.acceptedIncoming).toEqual([]);
+      expect(result.duplicates).toEqual([]);
+      expect(result.automaticReplacementIds).toEqual([]);
+    },
+  );
+  it("isolates monthly statement fills by account but matches same-account legacy evidence", () => {
+    const legacy = fill({ fingerprint: "excel", accountId: "account-a" });
+    const monthly = fill({ fingerprint: "pdf", accountId: "account-b" });
+    monthly.source.statementMonth = "2026-07";
+    expect(reconcileExecutions([legacy], [monthly]).acceptedIncoming).toEqual([monthly]);
+    monthly.accountId = "account-a";
+    expect(reconcileExecutions([legacy], [monthly]).duplicates).toHaveLength(1);
+  });
   it("auto-deduplicates across sources when symbol, second, side, quantity, and price match", () => {
     const existing = fill({
       fingerprint: "xlsx-a",

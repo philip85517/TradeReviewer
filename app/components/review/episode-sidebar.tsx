@@ -40,6 +40,7 @@ type Props = {
   importPhase?: ImportPhase;
   importError: string | null;
   onImport: (file: File) => void;
+  onImportFiles?: (files: File[]) => void;
   onTradingViewImport?: (file: File) => void;
   onScreenshotImport: (files: File[]) => void;
   onOpenHistory: () => void;
@@ -65,6 +66,7 @@ export function EpisodeSidebar({
   importPhase = importing ? "parsing" : "idle",
   importError,
   onImport,
+  onImportFiles,
   onTradingViewImport,
   onScreenshotImport,
   onOpenHistory,
@@ -135,10 +137,12 @@ export function EpisodeSidebar({
             aria-label="导入交易记录"
             type="file"
             accept=".xlsx,.xls,.pdf"
+            multiple={Boolean(onImportFiles)}
             disabled={importing}
             onChange={(event) => {
-              const file = event.target.files?.[0];
-              if (file) onImport(file);
+              const files = Array.from(event.target.files ?? []);
+              if (onImportFiles) onImportFiles(files);
+              else if (files[0]) onImport(files[0]);
               event.currentTarget.value = "";
             }}
           />

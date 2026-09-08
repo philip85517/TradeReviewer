@@ -14,6 +14,7 @@ import type { EpisodeReviewRecord } from "../reviews/types";
 import type { Instrument, TradeExecution } from "../trades/types";
 import type { ChartSettings } from "./chart-settings";
 import type { ImportHistoryEntry } from "./import-history";
+import { isMonthlyStatement } from "../import/monthly-statement";
 import type { MarketDataJob } from "./market-data-jobs";
 import type { EpisodeReviewState } from "./review-storage";
 import type {
@@ -204,6 +205,7 @@ function validateTagSuggestion(value: unknown): asserts value is TagSuggestionRe
 
 function validateImportHistory(value: unknown): asserts value is ImportHistoryEntry {
   const entry = asRecord(value, "import history");
+  if (entry.monthly !== undefined && !isMonthlyStatement(entry.monthly)) throw new Error("Invalid monthly statement evidence");
   assertStringFields(entry, ["id", "fileName", "sourceLabel", "importedAt"], "import history");
   if (entry.tradingNature !== undefined && !["live","simulated","unknown"].includes(String(entry.tradingNature))) throw new Error("Invalid import trading nature");
   if (entry.tradingNature === "simulated" && (typeof entry.simulationRunId !== "string" || !entry.simulationRunId)) throw new Error("Invalid simulation import history");

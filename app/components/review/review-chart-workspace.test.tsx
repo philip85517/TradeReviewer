@@ -347,6 +347,15 @@ describe("ReviewChartWorkspace", () => {
     );
     expect(screen.queryByDisplayValue("突破趋势")).not.toBeInTheDocument();
     expect(screen.queryByDisplayValue("未来趋势")).not.toBeInTheDocument();
+    rerender(<ReviewChartWorkspace {...props} model={{
+      ...model,
+      executions: model.executions.map(execution => ({ ...execution, fee: "0", source: { ...execution.source, feeStatus: "unknown" } })),
+      position: { ...model.position, quantity: "-100", fees: "0", accuracy: { pnl: "unavailable", reasons: ["ambiguous-event-order", "unknown-fees"] } },
+    }} />);
+    expect(document.querySelector(".position-stats")).toHaveTextContent("持仓 待核对");
+    expect(document.querySelector(".position-stats")).not.toHaveTextContent("-100");
+    expect(screen.getAllByText("费用 待核对").length).toBeGreaterThan(0);
+    expect(screen.queryByText("费用 HK$0.00")).not.toBeInTheDocument();
     const grey = { ...model.executions[0], source: { ...model.executions[0].source, tradingSession: "grey-market" as const } };
     rerender(<ReviewChartWorkspace {...props} model={{ ...model, executions: [grey] }} />);
     expect(screen.getByText("暗盘成交，暂无对应暗盘行情")).toBeVisible();

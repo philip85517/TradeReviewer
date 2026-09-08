@@ -104,6 +104,20 @@ afterEach(() => {
 });
 
 describe("SqliteStore", () => {
+  it("persists monthly provenance and auxiliary evidence including no-trade months", () => {
+    const store = createStore();
+    const monthly = {
+      documentId: "statement-a", templateIds: ["futu-combined"], month: "2025-06", accountId: "account-1", timePolicy: "原件香港时间",
+      positions: [{ accountId: "account-1", market: "HK", symbol: "700", phase: "opening" as const, date: "2025-06-01", quantity: "100", source: [{ page: 2, row: 3 }] }],
+      events: [], reviewRequired: true,
+    };
+    const history = { id: "import:statement-a", fileName: "2025-06.pdf", sourceLabel: "富途", importedAt: "2025-07-01T00:00:00Z", tradeCount: 0, instrumentCount: 0, excludedInstrumentCount: 0, excludedRecordCount: 0, duplicateTradeCount: 0, unresolvedInstrumentCount: 0, monthly };
+    store.mergeTradeData({ executions: [], importHistory: [history] });
+    expect(store.getBootstrap().importHistory[0].monthly).toEqual(monthly);
+    store.mergeTradeData({ executions: [{ ...execution, source: { ...execution.source, timeEvidence: "user", templateId: "futu-legacy", openingPosition: monthly.positions[0] } }] });
+    expect(store.getExecutions()[0].source).toMatchObject({ timeEvidence: "user", templateId: "futu-legacy", openingPosition: monthly.positions[0] });
+    expect(() => store.mergeTradeData({ executions: [], importHistory: [{ ...history, monthly: { ...monthly, positions: [{ ...monthly.positions[0], quantity: 123 as unknown as string }] } }] })).toThrow("Invalid monthly statement evidence");
+  });
   it("roundtrips simulated source evidence and isolates reimports and runs", async () => {
     const store = createStore();
     const {records} = await parseBrokerStatement(fileFor());
@@ -161,7 +175,6 @@ describe("SqliteStore", () => {
     expect(()=>store.mergeExecutions([records[1],invalid])).toThrow(/simulation/i);
     expect(store.getExecutions()).toHaveLength(0);
   });
-
   it("returns a complete bootstrap with empty production data", () => {
     const bootstrap = createStore().getBootstrap();
 
@@ -329,6 +342,21 @@ describe("SqliteStore", () => {
     expect(store.mergeTradeData({ executions: [incoming], replaceExecutionIds: [existing.id] })).toEqual({ inserted: 1, duplicate: 0, conflict: 0 });
     expect(store.getExecutions().map((item) => item.id)).toEqual([incoming.id]);
     expect(store.getExecutions()[0]?.price).toBe("999");
+  });
+
+  it("retains both monthly conflict rows after an explicit keep-both replacement", () => {
+    const store = createStore();
+    const existing = { ...execution, id: "monthly-old", source: { ...execution.source, fileFingerprint: "old", statementMonth: "2026-01" } };
+    const incoming = { ...existing, id: "monthly-new", price: "999", source: { ...existing.source, fileFingerprint: "new" } };
+    store.mergeExecutions([existing]);
+    expect(store.mergeTradeData({ executions: [existing, incoming], replaceExecutionIds: [existing.id] })).toEqual({ inserted: 2, duplicate: 0, conflict: 0 });
+    expect(store.getExecutions().map(e => e.id).sort()).toEqual(["monthly-new", "monthly-old"]);
+  });
+
+  it("persists date-only monthly evidence without inventing a midnight instant", () => {
+    const store = createStore();
+    store.mergeExecutions([{ ...execution, executedAt: "2016-01-04", source: { ...execution.source, timePrecision: "date-only", sourceTimeKind: "date", statementMonth: "2016-01" } }]);
+    expect(store.getBootstrap().executions[0].executedAt).toBe("2016-01-04");
   });
 
   it("creates a placeholder review for a suggestion-only migration payload", () => {

@@ -40,6 +40,69 @@ function sumAllocatedFees(episodes: ReturnType<typeof buildTradeEpisodes>) {
 }
 
 describe("buildTradeEpisodes", () => {
+  it("orders an opening snapshot before a same-day date-only sale", () => {
+    const sale = execution("sell", "2025-01-01", "100", "12");
+    sale.source.openingPosition = { accountId: "acct-1", market: "US", symbol: "XPEV", phase: "opening", date: "2025-01-01", quantity: "100", source: [] };
+    const episodes = buildTradeEpisodes([sale]);
+    expect(episodes).toHaveLength(1);
+    expect(episodes[0]).toMatchObject({ direction: "long", status: "closed", remainingQuantity: "0" });
+  });
+  it("treats a monthly first sell as provisional unless explicitly opening short", () => {
+    const sale = execution("sell", "2025-01-09T14:30:00Z", "10", "12");
+    sale.source.statementMonth = "2025-01";
+    expect(buildTradeEpisodes([sale])[0].accuracy?.reasons).toContain("ambiguous-opening");
+    sale.source.positionEffect = "open-short";
+    expect(buildTradeEpisodes([sale])[0].accuracy).toBeUndefined();
+    expect(buildTradeEpisodes([sale])[0].direction).toBe("short");
+  });
+  it("preserves incomplete-history accuracy when an execution reverses direction", () => {
+    const buy = execution("buy", "2025-01-08T14:30:00Z", "10", "11");
+    const sale = execution("sell", "2025-01-09T14:30:00Z", "20", "12");
+    sale.source.historyIncomplete = ["statement"];
+    expect(buildTradeEpisodes([buy, sale]).every(e => e.accuracy?.reasons.includes("history-incomplete"))).toBe(true);
+  });
+  it("closes documented initial inventory without inventing a buy", () => {
+    const sale = execution("sell", "2025-01-09T14:30:00Z", "100", "12");
+    sale.source.openingPosition = { accountId: "acct-1", market: "US", symbol: "XPEV", phase: "opening", date: "2025-01-01", quantity: "100", source: [] };
+    const [episode] = buildTradeEpisodes([sale]);
+    expect(episode).toMatchObject({ direction: "long", status: "closed", remainingQuantity: "0", accuracy: { pnl: "unavailable" } });
+    expect(episode.executions).toHaveLength(1);
+    expect(episode.executions[0]).toMatchObject(sale);
+  });
+
+  it("applies a transfer once before sales and flags same-day uncertainty", () => {
+    const sale = execution("sell", "2025-01-09T14:30:00Z", "2", "12");
+    sale.source.positionEvents = [{ id: "transfer", accountId: "acct-1", market: "US", symbol: "XPEV", date: "2025-01-08", kind: "transfer-in", quantity: "2", description: "transfer", source: [] }];
+    expect(buildTradeEpisodes([sale])[0]).toMatchObject({ direction: "long", status: "closed" });
+    sale.source.positionEvents[0].date = "2025-01-09";
+    expect(buildTradeEpisodes([sale])[0].accuracy?.reasons).toContain("ambiguous-event-order");
+    expect(buildTradeEpisodes([sale])[0]).toMatchObject({ directionKnown: false, remainingQuantity: "0", status: "closed" });
+  });
+
+  it("reconciles repeated monthly snapshots without adding inventory twice", () => {
+    const first = execution("sell", "2025-01-09T14:30:00Z", "40", "12");
+    const second = execution("sell", "2025-02-09T14:30:00Z", "60", "12");
+    first.source.openingPosition = { accountId: "acct-1", market: "US", symbol: "XPEV", phase: "opening", date: "2025-01-01", quantity: "100", source: [] };
+    second.source.openingPosition = { ...first.source.openingPosition, date: "2025-02-01", quantity: "60" };
+    const episodes = buildTradeEpisodes([first, second, { ...second, id: "zero", quantity: "0" }]);
+    expect(episodes).toHaveLength(1);
+    expect(episodes[0]).toMatchObject({ direction: "long", status: "closed", openingQuantity: "100" });
+    second.source.openingPosition.quantity = "90";
+    expect(buildTradeEpisodes([first, second])[0].accuracy?.reasons).toContain("position-gap");
+  });
+
+  it("keeps genuinely short initial inventory short", () => {
+    const cover = execution("buy", "2025-01-09T14:30:00Z", "10", "12");
+    cover.source.openingPosition = { accountId: "acct-1", market: "US", symbol: "XPEV", phase: "opening", date: "2025-01-01", quantity: "-10", source: [] };
+    expect(buildTradeEpisodes([cover])[0]).toMatchObject({ direction: "short", status: "closed" });
+  });
+  it("marks a missing statement month even when the later quantity happens to reconcile", () => {
+    const buy = execution("buy", "2025-01-09T14:30:00Z", "10", "12");
+    const sale = execution("sell", "2025-03-09T14:30:00Z", "10", "13");
+    buy.source.statementMonth = "2025-01";
+    sale.source.openingPosition = { accountId: "acct-1", market: "US", symbol: "XPEV", phase: "opening", date: "2025-03-01", quantity: "10", source: [] };
+    expect(buildTradeEpisodes([buy, sale])[0].accuracy?.reasons).toContain("position-gap");
+  });
   it("groups partial buys and sells until the position returns to zero", () => {
     const episodes = buildTradeEpisodes([
       execution("buy", "2025-01-02T14:30:00Z", "100", "10"),

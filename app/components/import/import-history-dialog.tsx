@@ -53,6 +53,7 @@ export function ImportHistoryDialog({ entries, onClose }: Props) {
                 <FileClock size={18} />
                 <div>
                   <strong>{entry.fileName}</strong>
+                  {entry.monthly && <details><summary>{entry.monthly.month} 月结单证据</summary><p>{entry.monthly.templateIds.join(" / ")}</p><p>{entry.monthly.timePolicy}</p><p>持仓快照 {entry.monthly.positions.length} · 辅助流水 {entry.monthly.events.length}</p><ul>{entry.monthly.events.map(event => <li key={event.id}>{event.date} {event.symbol} {event.description}（第 {event.source.map(s => s.page).join(", ")} 页）</li>)}</ul></details>}
                   <span>
                     <CalendarRange size={12} />
                     {date(entry.firstTradeAt)} — {date(entry.lastTradeAt)}

@@ -1,8 +1,10 @@
 /** MIGRATION-ONLY: load/save access the retired browser rollback copy. */
+import { isMonthlyStatement, type MonthlyStatement } from "../import/monthly-statement";
 export const IMPORT_HISTORY_STORAGE_KEY =
   "trade-reviewer:import-history:v1";
 
 export type ImportHistoryEntry = {
+  monthly?: MonthlyStatement;
   id: string;
   fileName: string;
   sourceLabel: string;
@@ -39,6 +41,7 @@ const COUNT_FIELDS = [
 export function isLegacyImportHistoryEntry(value: unknown): value is ImportHistoryEntry {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   const candidate = value as Record<string, unknown>;
+  if (candidate.monthly !== undefined && !isMonthlyStatement(candidate.monthly)) return false;
   if (typeof candidate.id !== "string" || typeof candidate.fileName !== "string" || typeof candidate.importedAt !== "string" || typeof candidate.tradeCount !== "number" || !Number.isFinite(candidate.tradeCount) || candidate.tradeCount < 0 || typeof candidate.instrumentCount !== "number" || !Number.isFinite(candidate.instrumentCount) || candidate.instrumentCount < 0 || typeof candidate.excludedInstrumentCount !== "number" || !Number.isFinite(candidate.excludedInstrumentCount) || candidate.excludedInstrumentCount < 0) return false;
   if (candidate.sourceLabel !== undefined && typeof candidate.sourceLabel !== "string") return false;
   if (candidate.firstTradeAt !== undefined && typeof candidate.firstTradeAt !== "string") return false;
@@ -60,6 +63,7 @@ function parseEntry(value: unknown): ImportHistoryEntry | undefined {
   ) {
     return {
       id: candidate.id,
+      ...(isMonthlyStatement(candidate.monthly) ? { monthly: candidate.monthly } : {}),
       fileName: candidate.fileName,
       sourceLabel:
         typeof candidate.sourceLabel === "string" &&

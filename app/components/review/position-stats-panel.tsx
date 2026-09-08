@@ -51,6 +51,7 @@ export function PositionStatsPanel({
 }: Props) {
   const reason = metrics.unavailableReason;
   const current = metrics.current;
+  const quantityAvailable = current.quantityKnown !== false && !current.accuracy?.reasons.some(reason => ["ambiguous-opening", "ambiguous-event-order", "history-incomplete"].includes(reason));
   const currentAvailable = [
     current.quantity,
     current.grossCapitalDeployed,
@@ -58,7 +59,7 @@ export function PositionStatsPanel({
     current.fees,
   ].some((value) => Number(value) !== 0);
   const currentValue = (value: string, format: (input: string) => string) =>
-    currentAvailable ? format(value) : "—";
+    currentAvailable && !current.accuracy ? format(value) : "—";
   const path = (value: PositionPathMetrics["mfe"]) => ({
     value: amount(value?.amount, currency, true),
     detail: value?.percent === null || value === null ? reason : percentage(value.percent),
@@ -68,7 +69,7 @@ export function PositionStatsPanel({
     <section className="position-stats-panel" aria-label={`${instrumentLabel} 路径统计`}>
       <header><span className="eyebrow">Position path</span><h2>持仓统计</h2><span>{instrumentLabel}</span></header>
       <section aria-labelledby="current-state-heading"><h3 id="current-state-heading">当前状态</h3><dl>
-        <Metric label="持仓数量" value={currentAvailable ? current.quantity : "—"} detail={currentAvailable ? undefined : reason} />
+        <Metric label="持仓数量" value={!quantityAvailable ? "待核对" : currentAvailable ? current.quantity : "—"} detail={currentAvailable && quantityAvailable ? undefined : reason} />
         <Metric label="平均成本" value={currentValue(current.averageCost, (value) => amount(value, currency))} detail={currentAvailable ? undefined : reason} />
         <Metric label="已实现盈亏" value={currentValue(current.realizedPnl, (value) => amount(value, currency, true))} detail={currentAvailable ? undefined : reason} />
         <Metric label="浮动盈亏" value={currentValue(current.unrealizedPnl, (value) => amount(value, currency, true))} detail={currentAvailable ? undefined : reason} />

@@ -20,6 +20,8 @@ import {
 } from "./enrich-import";
 
 export type ImportPreview = {
+  monthly?: StatementParseResult["monthly"];
+  diagnostics?: StatementParseResult["diagnostics"];
   id: string;
   fileName: string;
   sourceLabel: string;
@@ -40,6 +42,7 @@ export type ImportPreview = {
   lastTradeAt?: string;
   simulation?: { rawRowCount: number; pairCount: number; episodeCount: number; diagnostics: string[] };
   blocked: boolean;
+  blockingReason?: string;
 };
 
 type CreateImportPreviewOptions = {
@@ -171,7 +174,7 @@ export function createImportPreview(
     (options.sourceKind === "screenshot"
       ? enriched.importable[0]?.source.batchId
       : undefined) ??
-    enriched.importable[0]?.source.fileFingerprint ??
+    enriched.monthly?.documentId ?? enriched.importable[0]?.source.fileFingerprint ??
     `${enriched.broker}:${fileName}:${enriched.importable.length}`;
   const unresolvedSymbols = new Set(
     enriched.unresolved.map((failure) =>
@@ -189,7 +192,9 @@ export function createImportPreview(
   );
 
   return {
-    id: `import:${enriched.importable[0]?.source.simulationRunId ?? fingerprint}`,
+    id: `import:${fingerprint}`,
+    monthly: result.monthly,
+    diagnostics: result.diagnostics,
     ...(enriched.broker === "tradingview" ? { simulation: {
       rawRowCount: enriched.importable.length + enriched.exclusions.reduce((sum,item)=>sum+item.count,0),
       pairCount: new Set(enriched.importable.map(item=>item.source.simulationTradeId)).size,
@@ -230,7 +235,7 @@ export function createImportPreview(
     firstTradeAt: times[0],
     lastTradeAt: times.at(-1),
     blocked:
-      enriched.importable.length === 0 ||
-      ("blocked" in result && result.blocked),
+      (enriched.importable.length === 0 && !result.monthly) ||
+      Boolean("blocked" in result && result.blocked),
   };
 }

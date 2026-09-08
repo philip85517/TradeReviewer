@@ -1,5 +1,6 @@
 import type { TradeExecution, TradeTimePrecision } from "../trades/types";
 import type { ImportDiagnostic } from "./import-result";
+import type { MonthlyStatement } from "./monthly-statement";
 
 export type StatementBroker = "futu" | "tiger" | "china-merchants" | "tradingview";
 
@@ -46,6 +47,7 @@ export type StatementParseResult = {
   exclusions: ImportExclusion[];
   diagnostics: ImportDiagnostic[];
   blocked: boolean;
+  monthly?: MonthlyStatement;
 };
 
 export type BrokerStatementParser = {

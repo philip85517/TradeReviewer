@@ -397,4 +397,12 @@ describe("import execution library", () => {
       ),
     ).toEqual(["cms:z", "cms:a"]);
   });
+
+  it("keeps calendar-only historical fills before later timestamped fills", () => {
+    const earlier = execution("date-only", "buy", "2019-06-03", "1");
+    earlier.source.timePrecision = "date-only";
+    const later = execution("timestamped", "sell", "2025-06-03T13:30:00Z", "1");
+    expect(mergeExecutions([], [later, earlier]).map(e => e.id)).toEqual(["date-only", "timestamped"]);
+    expect(earlier.executedAt).toBe("2019-06-03");
+  });
 });

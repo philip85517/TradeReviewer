@@ -844,12 +844,12 @@ describe("TradeReviewWorkspace", () => {
     expect(migrate).toHaveBeenCalledOnce();
   });
 
-  it("keeps the statement input unchanged and exposes an independent multi-image screenshot input", async () => {
+  it("supports multiple statements and an independent multi-image screenshot input", async () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
     const statementInput = await screen.findByLabelText("导入交易记录");
     expect(statementInput).toHaveAttribute("accept", ".xlsx,.xls,.pdf");
-    expect(statementInput).not.toHaveAttribute("multiple");
+    expect(statementInput).toHaveAttribute("multiple");
 
     const screenshotInput = await screen.findByLabelText("从截图恢复交易");
     expect(screenshotInput).toHaveAttribute(

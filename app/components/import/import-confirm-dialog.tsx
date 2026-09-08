@@ -20,6 +20,7 @@ import { canonicalInstrumentId } from "../../lib/instruments/display-name";
 import type { ImportPreview } from "../../lib/import/import-preview";
 import { formatBeijingDate } from "../../lib/replay/format-time";
 import { useModalFocus } from "./use-modal-focus";
+import type { ExecutionConflict, ReconciliationDecision } from "../../lib/import/execution-reconciliation";
 
 type Props = {
   preview: ImportPreview;
@@ -27,6 +28,9 @@ type Props = {
   onConfirm: () => void;
   onRetryUnresolved: (instrumentIds: string[]) => void;
   retryingUnresolved?: boolean;
+  conflicts?: ExecutionConflict[];
+  conflictDecisions?: ReadonlyMap<string, ReconciliationDecision>;
+  onConflictDecision?: (id: string, decision: ReconciliationDecision) => void;
   saveError?: string | null;
   saving?: boolean;
 };
@@ -88,6 +92,9 @@ export function ImportConfirmDialog({
   onConfirm,
   onRetryUnresolved,
   retryingUnresolved = false,
+  conflicts = [],
+  conflictDecisions,
+  onConflictDecision,
   saveError,
   saving = false,
 }: Props) {
@@ -135,6 +142,15 @@ export function ImportConfirmDialog({
           </div>
         </div>
 
+        {preview.monthly && <section className="import-category-panel"><strong>月结单证据将一并保存</strong><p>{preview.monthly.month} · {preview.monthly.templateIds.join(" / ")} · {preview.monthly.positions.length} 条持仓快照 · {preview.monthly.events.length} 条辅助流水</p><p>{preview.monthly.timePolicy}</p></section>}
+        {conflicts.length > 0 && <section className="import-category-panel" aria-label="月结单成交冲突"><h3>相同时刻的不同成交，请逐组核对</h3>{conflicts.map(conflict => <div key={conflict.id}>
+          <p>{conflict.incoming[0]?.instrument.symbol} · {conflict.incoming[0]?.executedAt}</p>
+          <p>已存：{conflict.existing.map(e => `${e.side} ${e.quantity} @ ${e.price}，费用 ${e.source.feeStatus === "unknown" ? "待核对" : `${e.fee} ${e.instrument.currency}`}（${e.source.fileName ?? "已有来源"}）`).join("；")}</p>
+          <p>本次：{conflict.incoming.map(e => `${e.side} ${e.quantity} @ ${e.price}，费用 ${e.source.feeStatus === "unknown" ? "待核对" : `${e.fee} ${e.instrument.currency}`}（第 ${e.source.page ?? "?"} 页）`).join("；")}</p>
+          <select aria-label={`冲突处理 ${conflict.id}`} value={conflictDecisions?.get(conflict.id) ?? ""} onChange={event => { const choice = event.target.value; if (choice === "keep-existing" || choice === "use-incoming" || choice === "keep-both") onConflictDecision?.(conflict.id, choice); }}>
+            <option value="" disabled>请选择处理方式</option><option value="keep-existing">保留已存，跳过本次</option><option value="use-incoming">使用本次，替换已存</option><option value="keep-both">确认为不同成交，两者保留</option>
+          </select>
+        </div>)}</section>}
         {preview.simulation && <section className="simulation-import-summary" aria-label="模拟交易导入说明">
           <strong className="simulation-badge">TradingView · 模拟盘</strong>
           <p>{preview.simulation.rawRowCount} 个原始数据行 · {preview.simulation.pairCount} 个有效交易配对 · {preview.simulation.episodeCount} 个交易回合</p>
@@ -310,19 +326,19 @@ export function ImportConfirmDialog({
         {preview.blocked && (
           <div className="import-warning">
             <AlertTriangle size={14} />
-            没有完整的股票或 ETF 成交可以导入。
+            {preview.blockingReason ?? "没有完整的股票或 ETF 成交可以导入。"}
           </div>
         )}
 
         {saveError && <div className="import-warning" role="alert">{saveError}</div>}
         <footer className="modal-footer">
-          <p>仅完整成交会保存到此设备，并为新增股票启动行情更新。</p>
+          <p>{preview.monthly ? "成交和月结单证据保存到本机；无成交月份也保留账期与持仓证据。" : "仅完整成交会保存到此设备，并为新增股票启动行情更新。"}</p>
           <button className="secondary-button" disabled={saving} onClick={onCancel}>
             取消
           </button>
           <button
             className="primary-button"
-            disabled={preview.blocked || retryingUnresolved || saving}
+            disabled={preview.blocked || retryingUnresolved || conflicts.some(c => !conflictDecisions?.has(c.id)) || saving}
             onClick={onConfirm}
           >
             {saving ? "正在保存…" : "确认导入并开始更新行情"}

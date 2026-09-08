@@ -26,6 +26,8 @@ export const UNRESOLVED_ASSET_EXCLUSION_LABEL =
   "无法确认属于股票或 ETF";
 
 export type EnrichedImportResult = {
+  monthly?: StatementParseResult["monthly"];
+  blocked?: boolean;
   broker: StatementParseResult["broker"];
   importable: TradeExecution[];
   unresolved: InstrumentMetadataFailure[];
@@ -223,6 +225,8 @@ export async function enrichStatementImport(
   const exclusions = parsed.exclusions.map((item) => ({ ...item }));
   if (parsed.blocked) {
     return {
+      monthly: parsed.monthly,
+      blocked: true,
       broker: parsed.broker,
       importable: [],
       unresolved: [],
@@ -495,6 +499,8 @@ export async function enrichStatementImport(
   return {
     broker: parsed.broker,
     importable,
+    monthly: parsed.monthly,
+    blocked: parsed.blocked,
     unresolved,
     exclusions,
     diagnostics: [...parsed.diagnostics],

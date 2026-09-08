@@ -62,7 +62,7 @@ export type TradeLibraryTarget = {
 };
 
 function money(value: string | null, currency: string) {
-  if (value === null) return "待行情";
+  if (value === null) return "数据待补齐";
   return new Intl.NumberFormat("zh-CN", {
     style: "currency",
     currency,
@@ -77,7 +77,7 @@ function episodeLabel(
 ) {
   const { episode, metrics } = item;
   return `第 ${chronologicalNumber} 次交易 · ${
-    episode.direction === "long" ? "多头" : "空头"
+    episode.directionKnown === false || episode.accuracy?.reasons.includes("ambiguous-opening") ? "方向待核对" : episode.direction === "long" ? "多头" : "空头"
   } · ${metrics.buyCount} 买 / ${metrics.sellCount} 卖`;
 }
 
@@ -301,7 +301,7 @@ export function TradeLibrary({
                   </span>
                   <div>
                     <span>
-                      {item.episode.direction === "long" ? "多头" : "空头"} ·{" "}
+                      {item.episode.directionKnown === false || item.episode.accuracy?.reasons.includes("ambiguous-opening") ? "方向待核对" : item.episode.direction === "long" ? "多头" : "空头"} ·{" "}
                       {item.metrics.buyCount} 买 / {item.metrics.sellCount} 卖
                     </span>
                     <b
@@ -329,7 +329,7 @@ export function TradeLibrary({
                 <h2>第 {selectedNumber} 次交易</h2>
                 <p>
                   {episode.accountLabel} ·{" "}
-                  {episode.direction === "long" ? "多头" : "空头"} ·{" "}
+                  {episode.directionKnown === false || episode.accuracy?.reasons.includes("ambiguous-opening") ? "方向待核对" : episode.direction === "long" ? "多头" : "空头"} ·{" "}
                   {episode.status === "open" ? "持仓中" : "已平仓"}
                 </p>
               </div>
@@ -366,7 +366,7 @@ export function TradeLibrary({
                 <span>收益率</span>
                 <strong>
                   {metrics.returnPercent === null
-                    ? "待行情"
+                    ? "数据待补齐"
                     : `${Number(metrics.returnPercent).toFixed(2)}%`}
                 </strong>
               </div>
@@ -378,7 +378,7 @@ export function TradeLibrary({
               </div>
               <div>
                 <span>费用</span>
-                <strong>{metrics.fees}</strong>
+                <strong>{episode.executions.some(e => e.source.feeStatus === "unknown") ? "待核对" : metrics.fees}</strong>
               </div>
               <div>
                 <span>R 倍数</span>
@@ -481,7 +481,7 @@ export function TradeLibrary({
                   </b>
                   <span>{execution.quantity}</span>
                   <span>{execution.price}</span>
-                  <span>{execution.fee}</span>
+                  <span>{execution.source.feeStatus === "unknown" ? "待核对" : execution.fee}</span>
                 </div>
               ))}
             </div>

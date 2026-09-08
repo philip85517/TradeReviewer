@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { Candle } from "../market/types";
 import type { TradeExecution } from "../trades/types";
 import { createReplaySnapshot } from "./replay-engine";
+import { buildTradeEpisodes } from "../trades/episodes";
 import { mapExecutionsToCandles } from "./execution-markers";
 
 const candles: Candle[] = [
@@ -40,6 +41,34 @@ const executions: TradeExecution[] = [
 ];
 
 describe("createReplaySnapshot", () => {
+  it("reveals date-only sales at day end after their same-day opening inventory", () => {
+    const sale: TradeExecution = { ...executions[1], executedAt: "2025-01-01", source: { ...executions[1].source, timePrecision: "date-only",
+      openingPosition: { accountId: "acct-1", market: "US", symbol: "XPEV", phase: "opening", date: "2025-01-01", quantity: "100", source: [] },
+    } };
+    const during = createReplaySnapshot({ candles: [], executions: [sale], cursor: "2025-01-01T12:00:00Z" });
+    expect(during.executions).toEqual([]);
+    expect(during.position.quantity).toBe("100");
+    const after = createReplaySnapshot({ candles: [], executions: [sale], cursor: "2025-01-01" });
+    expect(after.executions).toHaveLength(1);
+    expect(after.position.quantity).toBe("0");
+  });
+  it("reveals initial inventory before its first sale without revealing future trades or transfers", () => {
+    const sale: TradeExecution = { ...executions[1], source: { ...executions[1].source,
+      openingPosition: { accountId: "acct-1", market: "US", symbol: "XPEV", phase: "opening", date: "2025-01-01", quantity: "100", source: [] },
+      positionEvents: [{ id: "future", accountId: "acct-1", market: "US", symbol: "XPEV", kind: "transfer-in", date: "2025-01-09", quantity: "10", description: "transfer", source: [] }],
+    } };
+    const before = createReplaySnapshot({ candles, executions: [sale], cursor: "2025-01-06T00:00:00.000Z" });
+    expect(before.executions).toEqual([]);
+    expect(before.position).toMatchObject({ quantity: "100", costKnown: false });
+    expect(createReplaySnapshot({ candles, executions: [sale], cursor: "2025-01-08T00:00:00.000Z" }).position.quantity).toBe("0");
+  });
+  it("does not re-seed old opening inventory when replaying a reversed episode", () => {
+    const sale: TradeExecution = { ...executions[1], quantity: "150", source: { ...executions[1].source,
+      openingPosition: { accountId: "acct-1", market: "US", symbol: "XPEV", phase: "opening", date: "2025-01-01", quantity: "100", source: [] },
+    } };
+    const [, reversed] = buildTradeEpisodes([sale]);
+    expect(createReplaySnapshot({ candles, executions: reversed.executions, cursor: "2025-01-08T00:00:00.000Z" }).position.quantity).toBe("-50");
+  });
   it("returns only candles and executions at or before the replay cursor", () => {
     const snapshot = createReplaySnapshot({
       candles,

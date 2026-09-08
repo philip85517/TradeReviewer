@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { CHINA_MERCHANTS_PAGES } from "./__fixtures__/china-merchants-pages";
 import { TIGER_PAGES } from "./__fixtures__/tiger-pages";
 import { parseBrokerStatement } from "./dispatcher";
+import { STATEMENT_ADAPTERS } from "./statement-adapters";
 
 const FUTU_HEADERS = [
   "成交时间",
@@ -49,6 +50,15 @@ function pdfBytes() {
 }
 
 describe("parseBrokerStatement", () => {
+  it("keeps supported formats in the adapter registry", () => {
+    expect(STATEMENT_ADAPTERS.map((adapter) => adapter.id)).toEqual([
+      "futu/xlsx/trades-v1",
+      "futu/pdf/monthly-v1",
+      "tiger/pdf/monthly-v1",
+      "china-merchants/pdf/monthly-v1",
+    ]);
+  });
+
   it("detects a Futu workbook from its worksheet structure", async () => {
     const result = await parseBrokerStatement(
       new File([futuBytes()], "renamed.bin"),
@@ -74,6 +84,9 @@ describe("parseBrokerStatement", () => {
 
       expect(result.broker).toBe(broker);
       expect(extractPdfPages).toHaveBeenCalledOnce();
+      if (broker === "tiger") {
+        expect(result.records[0]?.source.formatRuleId).toBe("tiger/pdf/monthly-v1");
+      }
     },
   );
 

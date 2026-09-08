@@ -188,6 +188,90 @@ const cmsEnrichedResult: EnrichedImportResult = {
 };
 
 describe("TradeReviewWorkspace", () => {
+  it("reviews a monthly statement before enrichment and cancels without saving", async () => {
+    const user = userEvent.setup();
+    const monthly = { documentId: "monthly-test", month: "2025-06", templateIds: ["futu-combined"], positions: [], events: [], reviewRequired: true };
+    mockDispatcher.mockResolvedValue({ ...cmsParsedResult, broker: "futu", monthly, diagnostics: [{ severity: "warning", code: "zone", message: "请核对来源时区" }] });
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(await screen.findByLabelText("导入交易记录"), new File(["pdf"], "2025-06.pdf", { type: "application/pdf" }));
+    expect(await screen.findByRole("heading", { name: "核对月结单与时间口径" })).toBeInTheDocument();
+    expect(mockEnrichment).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "继续核对并导入" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "取消" }));
+    expect(loadImportedExecutions()).toEqual([]);
+    expect(loadImportHistory()).toEqual([]);
+  });
+
+  it("reparses missing source time and persists reviewed monthly evidence only on final confirmation", async () => {
+    const user = userEvent.setup();
+    const monthly = { documentId: "monthly-test", month: "2025-06", templateIds: ["futu-combined"], positions: [], events: [], reviewRequired: false };
+    mockDispatcher.mockResolvedValueOnce({ ...cmsParsedResult, broker: "futu", blocked: true, monthly, diagnostics: [{ severity: "error", code: "missing-statement-timezone", message: "时区缺失" }] })
+      .mockResolvedValueOnce({ ...cmsParsedResult, broker: "futu", monthly, diagnostics: [] });
+    mockEnrichment.mockResolvedValue({ ...cmsEnrichedResult, broker: "futu", monthly });
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(await screen.findByLabelText("导入交易记录"), new File(["pdf"], "2025-06.pdf", { type: "application/pdf" }));
+    await screen.findByRole("heading", { name: "核对月结单与时间口径" });
+    await user.selectOptions(screen.getByLabelText("月结单来源时区"), "Asia/Hong_Kong");
+    await user.click(screen.getByRole("button", { name: "按所选时间口径重新解析" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "继续核对并导入" })).toBeEnabled());
+    expect(mockDispatcher).toHaveBeenLastCalledWith(expect.any(File), { sourceTimezone: "Asia/Hong_Kong", overrideDocumentTimezone: true });
+    await user.click(screen.getByRole("button", { name: "继续核对并导入" }));
+    await screen.findByRole("heading", { name: "确认导入交易记录" });
+    expect(loadImportHistory()).toEqual([]);
+    await user.click(screen.getByRole("button", { name: "确认导入并开始更新行情" }));
+    await waitFor(() => expect(loadImportHistory()[0]?.monthly).toEqual(monthly));
+  });
+  it.each(["keep-existing", "use-incoming", "keep-both"] as const)("persists the explicit monthly conflict choice %s", async decision => {
+    const user = userEvent.setup();
+    const existing: TradeExecution = { ...cmsExecution, id: "old-fill", accountId: "futu:test",
+      instrument: { id: "US:TEST", symbol: "TEST", name: "Test", market: "US", currency: "USD" },
+      source: { platform: "futu", fileFingerprint: "old-doc", fileName: "old.pdf", row: 1, statementMonth: "2026-03" } };
+    const incoming: TradeExecution = { ...existing, id: "new-fill", quantity: "200", source: { ...existing.source, fileFingerprint: "new-doc" } };
+    saveImportedExecutions([existing]);
+    const monthly = { documentId: "new-doc", month: "2026-03", templateIds: ["F4"], positions: [], events: [], reviewRequired: false };
+    mockDispatcher.mockResolvedValue({ ...cmsParsedResult, broker: "futu", records: [incoming], monthly, diagnostics: [] });
+    mockEnrichment.mockResolvedValue({ ...cmsEnrichedResult, broker: "futu", importable: [incoming], monthly, unresolved: [], exclusions: [] });
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(await screen.findByLabelText("导入交易记录"), new File(["pdf"], "2026-03.pdf", { type: "application/pdf" }));
+    await user.click(await screen.findByRole("button", { name: "继续核对并导入" }));
+    const save = await screen.findByRole("button", { name: "确认导入并开始更新行情" });
+    expect(save).toBeDisabled();
+    await user.selectOptions(screen.getByRole("combobox", { name: /冲突处理/ }), decision);
+    await user.click(save);
+    const ids = decision === "keep-existing" ? ["old-fill"] : decision === "use-incoming" ? ["new-fill"] : ["new-fill", "old-fill"];
+    await waitFor(() => expect(loadImportedExecutions().map(e => e.id).sort()).toEqual(ids.sort()));
+  });
+
+  it("replaces corrected times when a broker-qualified document ID differs from its raw fingerprint", async () => {
+    const user = userEvent.setup();
+    const existing: TradeExecution = { ...cmsExecution, id: "same-fill", source: { ...cmsExecution.source, platform: "futu", fileFingerprint: "same-doc", statementMonth: "2026-03" } };
+    const incoming = { ...existing, executedAt: "2026-03-01T08:00:00.000Z" };
+    saveImportedExecutions([existing]);
+    const monthly = { documentId: "futu:same-doc", month: "2026-03", templateIds: ["F4"], positions: [], events: [], reviewRequired: false };
+    mockDispatcher.mockResolvedValue({ ...cmsParsedResult, broker: "futu", records: [incoming], monthly, diagnostics: [] });
+    mockEnrichment.mockResolvedValue({ ...cmsEnrichedResult, broker: "futu", importable: [incoming], monthly, unresolved: [], exclusions: [] });
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(await screen.findByLabelText("导入交易记录"), new File(["pdf"], "2026-03.pdf", { type: "application/pdf" }));
+    await user.click(await screen.findByRole("button", { name: "继续核对并导入" }));
+    await user.click(await screen.findByRole("button", { name: "确认导入并开始更新行情" }));
+    await waitFor(() => expect(loadImportedExecutions()[0]?.executedAt).toBe(incoming.executedAt));
+    expect(loadImportedExecutions()).toHaveLength(1);
+  });
+
+  it("blocks partial same-file replacement while stock classification remains unresolved", async () => {
+    const user = userEvent.setup();
+    const existing: TradeExecution = { ...cmsExecution, source: { ...cmsExecution.source, platform: "futu", fileFingerprint: "same-doc" } };
+    saveImportedExecutions([existing]);
+    const monthly = { documentId: "futu:same-doc", month: "2026-03", templateIds: ["F4"], positions: [], events: [], reviewRequired: false };
+    mockDispatcher.mockResolvedValue({ ...cmsParsedResult, broker: "futu", monthly, diagnostics: [] });
+    mockEnrichment.mockResolvedValue({ ...cmsEnrichedResult, broker: "futu", importable: [], monthly, unresolved: [{ market: "CN-SH", symbol: "600938", attempts: [] }] });
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(await screen.findByLabelText("导入交易记录"), new File(["pdf"], "2026-03.pdf", { type: "application/pdf" }));
+    await user.click(await screen.findByRole("button", { name: "继续核对并导入" }));
+    expect(await screen.findByRole("button", { name: "确认导入并开始更新行情" })).toBeDisabled();
+    expect(loadImportedExecutions()).toEqual([existing]);
+  });
+
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();

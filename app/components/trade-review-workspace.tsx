@@ -27,6 +27,10 @@ import {
   type EnrichedImportResult,
 } from "../lib/import/enrich-import";
 import { parseBrokerStatement } from "../lib/import/dispatcher";
+import { applyMonthlyHistoryEvidence } from "../lib/import/statement-evidence";
+import { belongsToMonthlyDocument } from "../lib/import/statement-identity";
+import type { StatementTimeOptions } from "../lib/import/monthly-statement";
+import { MonthlyStatementReview } from "./import/monthly-statement-review";
 import {
   applyReconciliationDecisions,
   reconcileExecutions,
@@ -64,10 +68,10 @@ import {
   type MarketDataSyncStatus,
 } from "../lib/market/sync-status";
 import {
-  hasOpenPosition,
   requiredMarketDataRange,
   requiredRangeExpanded,
 } from "../lib/market/sync-range";
+import { statementReplayBounds } from "../lib/market/statement-range";
 import { createMarketDataFetcher } from "../lib/market/market-data-fetch";
 import { runRefreshQueue } from "../lib/market/refresh-queue";
 import {
@@ -89,6 +93,7 @@ import {
 } from "../lib/market/types";
 import { createImportedReplay } from "../lib/replay/imported-replay";
 import { calculatePositionPathMetrics } from "../lib/replay/position-path-metrics";
+import { intradayReplayRestriction } from "../lib/replay/replay-precision";
 import { createReplaySnapshot } from "../lib/replay/replay-engine";
 import {
   createEmptyEpisodeReviewRecord,
@@ -281,11 +286,12 @@ function supportedMarket(value: string) {
 
 function marketRanges(summary: InstrumentTradeSummary) {
   const market = supportedMarket(summary.instrument.market);
+  const bounds = statementReplayBounds(summary);
   const daily = requiredMarketDataRange(
-    summary.firstTradeAt,
-    summary.lastTradeAt,
+    bounds.firstAt,
+    bounds.lastAt,
     {
-      open: hasOpenPosition(summary.executions),
+      open: bounds.open,
       market,
     },
   );
@@ -623,6 +629,10 @@ function resolveEpisodeTimeframeAvailability(
       };
     }
   }
+  const precisionRestriction = intradayReplayRestriction(episode);
+  if (precisionRestriction) {
+    for (const tf of ["15m", "1h", "4h"] as const) availability[tf] = { enabled: false, reason: precisionRestriction };
+  }
   return availability;
 }
 
@@ -875,6 +885,9 @@ function isAbortError(error: unknown) {
   );
   const [pendingParsedImport, setPendingParsedImport] =
     useState<StatementParseResult | null>(null);
+  const [monthlyReview, setMonthlyReview] = useState<{ file: File; parsed: StatementParseResult } | null>(null);
+  const [monthlyConflictDecisions, setMonthlyConflictDecisions] = useState<ReadonlyMap<string, ReconciliationDecision>>(new Map());
+  const importFileQueue = useRef<File[]>([]);
   const [pendingEnrichedImport, setPendingEnrichedImport] =
     useState<EnrichedImportResult | null>(null);
   const [pendingImportOriginalExecutions, setPendingImportOriginalExecutions] =
@@ -1459,9 +1472,10 @@ function isAbortError(error: unknown) {
           }
         }
         if (!active) return;
-        const productionExecutions = showDemo
+        const productionExecutions = applyMonthlyHistoryEvidence(showDemo
           ? bootstrap.executions
-          : bootstrap.executions.filter((execution) => execution.source.platform !== "demo");
+          : bootstrap.executions.filter((execution) => execution.source.platform !== "demo"),
+          bootstrap.importHistory.flatMap(entry => entry.monthly ? [entry.monthly] : []));
         const storedSummaries = buildInstrumentTradeSummaries(
           productionExecutions,
         );
@@ -2141,7 +2155,8 @@ function isAbortError(error: unknown) {
         : undefined,
     );
     if (screenshotMetadata) return basePreview;
-    const current = currentExecutionSnapshot();
+    const incompleteReplacement = Boolean(enriched.monthly && (enriched.unresolved.length > 0 || enriched.exclusions.some(exclusion => exclusion.category === "invalid-row")) && currentExecutionSnapshot().some(execution => belongsToMonthlyDocument(execution, enriched.monthly!)));
+    const current = currentExecutionSnapshot().filter(execution => !enriched.monthly || !belongsToMonthlyDocument(execution, enriched.monthly));
     const merged = mergeExecutions(current, enriched.importable);
     const retainedIncomingCount = Math.max(
       0,
@@ -2153,6 +2168,7 @@ function isAbortError(error: unknown) {
     );
     return {
       ...basePreview,
+      ...(incompleteReplacement ? { blocked: true, blockingReason: "同一月结单仍有证券分类未完成，暂不替换已存成交。请重试分类或取消；旧记录保持不变。" } : {}),
       duplicateTradeCount:
         basePreview.duplicateTradeCount + libraryDuplicateCount,
     };
@@ -2240,7 +2256,44 @@ function isAbortError(error: unknown) {
     }
   }
 
-  async function parseImport(file: File) {
+  async function prepareStatementPreview(file: File, parsed: StatementParseResult, requestId: number) {
+    setMonthlyConflictDecisions(new Map());
+    setPendingParsedImport(parsed);
+    setImportPhase("resolving");
+    const enriched = await enrichStatementImport(parsed, { repository: metadataRepository });
+    if (requestId !== importRequestSequence.current) return;
+    if (parsed.monthly) {
+      const current = currentExecutionSnapshot();
+      setPendingImportOriginalExecutions(current);
+      setPendingImportMergeBase(current.filter(e => !belongsToMonthlyDocument(e, parsed.monthly!)));
+    }
+    setPendingEnrichedImport(enriched);
+    setPendingImport(previewForImport(file.name, enriched));
+    setImportPhase("ready");
+  }
+
+  async function continueMonthlyReview() {
+    if (!monthlyReview || monthlyReview.parsed.blocked) return;
+    const requestId = ++importRequestSequence.current;
+    setImporting(true);
+    try {
+      await prepareStatementPreview(monthlyReview.file, monthlyReview.parsed, requestId);
+      if (requestId === importRequestSequence.current) setMonthlyReview(null);
+    } catch (error) {
+      if (requestId === importRequestSequence.current) {
+        setImportError(error instanceof Error ? error.message : "月结单分类失败，请重试");
+        setImportPhase("idle");
+      }
+    } finally { if (requestId === importRequestSequence.current) setImporting(false); }
+  }
+
+  function startStatementBatch(files: File[]) {
+    const [first, ...rest] = [...files].sort((a, b) => a.name.localeCompare(b.name));
+    importFileQueue.current = rest;
+    if (first) void parseImport(first);
+  }
+
+  async function parseImport(file: File, timeOptions: StatementTimeOptions = {}) {
     screenshotImport.cancel();
     const requestId = ++importRequestSequence.current;
     setImporting(true);
@@ -2252,29 +2305,26 @@ function isAbortError(error: unknown) {
     setPendingImportOriginalExecutions(null);
     setPendingImportMergeBase(null);
     setPendingScreenshotDecisions(null);
+    setMonthlyReview(null);
     try {
       await Promise.resolve();
       setImportPhase("parsing");
-      const parsed = await parseBrokerStatement(file);
+      const parsed = Object.keys(timeOptions).length > 0
+        ? await parseBrokerStatement(file, timeOptions)
+        : await parseBrokerStatement(file);
       if (requestId !== importRequestSequence.current) return;
+      if (parsed.broker !== "unknown" && parsed.monthly) {
+        setMonthlyReview({ file, parsed });
+        setImportPhase("ready");
+        return;
+      }
       if (parsed.broker === "unknown" || parsed.blocked) {
         const message = parsed.diagnostics.find(
           (diagnostic) => diagnostic.severity === "error",
         )?.message;
         throw new Error(message ?? "暂时无法识别这个交易记录");
       }
-      setPendingParsedImport(parsed);
-      setImportPhase("classifying");
-      await Promise.resolve();
-      setImportPhase("resolving");
-      const enriched = await enrichStatementImport(parsed, {
-        repository: metadataRepository,
-      });
-      if (requestId !== importRequestSequence.current) return;
-      const preview = previewForImport(file.name, enriched);
-      setPendingEnrichedImport(enriched);
-      setPendingImport(preview);
-      setImportPhase("ready");
+      await prepareStatementPreview(file, parsed, requestId);
     } catch (error) {
       if (requestId !== importRequestSequence.current) return;
       setImportError(
@@ -2369,24 +2419,37 @@ function isAbortError(error: unknown) {
     importRequestSequence.current += 1;
     const currentExecutions =
       pendingImportOriginalExecutions ?? currentExecutionSnapshot();
-    const mergeBase = pendingImportMergeBase ?? currentExecutions;
+    const mergeBase = pendingImport.monthly
+      ? currentExecutionSnapshot().filter(e => !belongsToMonthlyDocument(e, pendingImport.monthly!))
+      : pendingImportMergeBase ?? currentExecutions;
     const previousSummaries = new Map(
       buildInstrumentTradeSummaries(currentExecutions).map((item) => [
         item.instrument.id,
         item,
       ]),
     );
-    const mergedExecutions = mergeExecutions(
-      mergeBase,
-      pendingImport.records,
-    );
+    const reconciliation = pendingImport.monthly ? reconcileExecutions(mergeBase, pendingImport.records) : null;
+    if (reconciliation?.conflicts.some(c => !monthlyConflictDecisions.has(c.id))) return;
+    const resolvedMonthly = reconciliation ? applyReconciliationDecisions(mergeBase, reconciliation, monthlyConflictDecisions) : null;
+    const mergedExecutions = applyMonthlyHistoryEvidence(mergeExecutions(
+      resolvedMonthly?.currentAfterReplacements ?? mergeBase,
+      resolvedMonthly?.incomingToMerge ?? pendingImport.records,
+    ), [
+      ...importHistory.filter(entry => entry.monthly?.documentId !== pendingImport.monthly?.documentId)
+        .flatMap(entry => entry.monthly ? [entry.monthly] : []),
+      ...(pendingImport.monthly ? [pendingImport.monthly] : []),
+    ]);
     const mergedIds = new Set(mergedExecutions.map((execution) => execution.id));
+    // Reinsert explicitly retained conflicting rows together, so storage cannot
+    // reinterpret the user's keep-both decision as an unresolved conflict.
+    const decidedExistingIds = new Set(reconciliation?.conflicts.flatMap(c => c.existing.map(e => e.id)) ?? []);
     const replaceExecutionIds = currentExecutions
-      .filter((execution) => !mergedIds.has(execution.id))
+      .filter((execution) => !mergedIds.has(execution.id) || decidedExistingIds.has(execution.id) || Boolean(pendingImport.monthly && belongsToMonthlyDocument(execution, pendingImport.monthly)))
       .map((execution) => execution.id);
     const summaries = buildInstrumentTradeSummaries(mergedExecutions);
     const importedAt = new Date().toISOString();
     const historyEntry: ImportHistoryEntry = {
+      ...(pendingImport.monthly ? { monthly: pendingImport.monthly } : {}),
       id: pendingImport.id,
       fileName: pendingImport.fileName,
       sourceLabel: pendingImport.sourceLabel,
@@ -2437,28 +2500,16 @@ function isAbortError(error: unknown) {
     const importedIds = pendingImport.instruments.map(
       (item) => item.instrument.id,
     );
+    for (const evidence of [...(pendingImport.monthly?.positions ?? []), ...(pendingImport.monthly?.events ?? [])]) {
+      if (evidence.market && evidence.symbol) importedIds.push(canonicalInstrumentId(evidence.symbol, evidence.market));
+    }
     const automaticSyncIds = summaries
       .filter((summary) => importedIds.includes(summary.instrument.id))
       .filter((summary) => {
         const previous = previousSummaries.get(summary.instrument.id);
-        const market = supportedMarket(summary.instrument.market);
-        const range = requiredMarketDataRange(
-          summary.firstTradeAt,
-          summary.lastTradeAt,
-          {
-            open: hasOpenPosition(summary.executions),
-            market,
-          },
-        );
+        const range = marketRanges(summary).daily;
         const previousRange = previous
-          ? requiredMarketDataRange(
-              previous.firstTradeAt,
-              previous.lastTradeAt,
-              {
-                open: hasOpenPosition(previous.executions),
-                market,
-              },
-            )
+          ? marketRanges(previous).daily
           : undefined;
         const newestEpisode = sortedEpisodes(summary)[0];
         const previousNewestEpisode = sortedEpisodes(previous)[0];
@@ -2497,6 +2548,8 @@ function isAbortError(error: unknown) {
     setPendingImportMergeBase(null);
     setPendingScreenshotDecisions(null);
     setImportPhase("idle");
+    const nextFile = importFileQueue.current.shift();
+    if (nextFile) void parseImport(nextFile);
   }
 
   function openLibraryEpisode(instrumentId: string, episodeId: string) {
@@ -2767,7 +2820,8 @@ function isAbortError(error: unknown) {
               importing={importing}
               importPhase={importPhase}
               importError={importError}
-              onImport={parseImport}
+              onImport={(file) => startStatementBatch([file])}
+              onImportFiles={startStatementBatch}
               onScreenshotImport={(files) => {
                 importRequestSequence.current += 1;
                 setImportError(null);
@@ -2950,11 +3004,31 @@ function isAbortError(error: unknown) {
         )}
       </div>
 
+      {monthlyReview && (
+        <MonthlyStatementReview
+          fileName={monthlyReview.file.name}
+          parsed={monthlyReview.parsed}
+          busy={importing}
+          onReparse={options => void parseImport(monthlyReview.file, options)}
+          onContinue={() => void continueMonthlyReview()}
+          onCancel={() => {
+            importRequestSequence.current += 1;
+            importFileQueue.current = [];
+            setMonthlyReview(null);
+            setImporting(false);
+            setImportPhase("idle");
+          }}
+        />
+      )}
       {pendingImport && (
         <ImportConfirmDialog
           preview={pendingImport}
+          conflicts={pendingImport.monthly ? reconcileExecutions(currentExecutionSnapshot().filter(e => !belongsToMonthlyDocument(e, pendingImport.monthly!)), pendingImport.records).conflicts : []}
+          conflictDecisions={monthlyConflictDecisions}
+          onConflictDecision={(id, decision) => setMonthlyConflictDecisions(current => new Map(current).set(id, decision))}
           onCancel={() => {
             importRequestSequence.current += 1;
+            importFileQueue.current = [];
             setRetryingUnresolved(false);
             setPendingImport(null);
             setPendingParsedImport(null);

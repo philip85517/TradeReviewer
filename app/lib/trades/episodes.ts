@@ -2,6 +2,8 @@ import Decimal from "decimal.js";
 
 import { canonicalInstrumentId } from "../instruments/display-name";
 import type { TradeEpisode, TradeExecution } from "./types";
+import type { MonthlyStatement, StatementPosition, StatementEvent } from "../import/monthly-statement";
+import { hasStatementMonthGap, replayExecutionAt, replayCursorAt, statementPositionAt, statementEventAt } from "../import/statement-evidence";
 
 type EpisodeAccumulator = {
   episode: TradeEpisode;
@@ -89,17 +91,118 @@ function executionPart(
 
 export function buildTradeEpisodes(
   executions: TradeExecution[],
+  evidence: Pick<MonthlyStatement, "positions" | "events" | "month" | "accountId">[] = [],
 ): TradeEpisode[] {
   const active = new Map<string, EpisodeAccumulator>();
   const openingOccurrences = new Map<string, number>();
   const episodes: TradeEpisode[] = [];
+  const issues = new Map<string, Set<string>>();
+  const flag = (key: string, reason: string, episode?: TradeEpisode) => {
+    const reasons = issues.get(key) ?? new Set<string>();
+    reasons.add(reason);
+    issues.set(key, reasons);
+    if (episode) episode.accuracy = { pnl: "unavailable", reasons: [...new Set([...(episode.accuracy?.reasons ?? []), ...reasons])] };
+  };
+  const evidenceKey = (item: StatementPosition | StatementEvent) =>
+    item.symbol && item.market ? `${item.accountId}:${canonicalInstrumentId(item.symbol, item.market)}` : undefined;
+  type Entry = { at: string; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent };
+  const timeline: Entry[] = executions.filter(e => !new Decimal(e.quantity).isZero()).map(execution => ({ at: replayExecutionAt(execution), execution }));
+  const positions = [...new Map([...evidence.flatMap(e => e.positions), ...executions.flatMap(e => [...(e.source.statementPositions ?? []), ...(e.source.openingPosition ? [e.source.openingPosition] : [])])].map(p => [JSON.stringify([p.documentId, evidenceKey(p), p.phase, p.date, p.quantity]), p])).values()];
+  const events = [...evidence.flatMap(e => e.events), ...executions.flatMap(e => e.source.positionEvents ?? [])];
+  const seen = new Set<string>();
+  const lastActivity = new Map<string, string>();
+  const knownBoundary = new Set<string>();
+  const seenExecution = new Set<string>();
+  for (const position of positions) {
+    const id = JSON.stringify([evidenceKey(position), position.phase, position.date, position.quantity]);
+    if (seen.has(id)) continue;
+    seen.add(id);
+    timeline.push({ at: statementPositionAt(position), position });
+  }
+  for (const event of events) {
+    const id = `${event.accountId}:${event.id}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    timeline.push({ at: event.date.length === 10 ? `${event.date}T00:00:00.000Z` : statementEventAt(event), event });
+  }
+  const rank = (entry: Entry) => entry.position ? (entry.position.phase === "opening" ? 0 : 3) : entry.event ? 1 : 2;
+  timeline.sort((a, b) => a.at.localeCompare(b.at) || rank(a) - rank(b) || (a.execution && b.execution ? sortByExecutionTime(a.execution, b.execution) : 0));
 
-  for (const execution of [...executions].sort(sortByExecutionTime)) {
+  for (const entry of timeline) {
+    if (!entry.execution) {
+      const item = entry.position ?? entry.event!;
+      const key = evidenceKey(item);
+      if (!key) continue;
+      const template = executions.find(e => episodeKey(e) === key);
+      if (!template) continue; // Inventory-only instruments need an Instrument from the caller before rendering.
+      const existing = active.get(key);
+      let next = existing?.position ?? new Decimal(0);
+      if (entry.position) {
+        knownBoundary.add(key);
+        next = new Decimal(entry.position.quantity);
+        const covered = [...executions.filter(e => episodeKey(e) === key).flatMap(e => e.source.statementMonth ? [e.source.statementMonth] : []), ...positions.filter(p => evidenceKey(p) === key).map(p => p.date.slice(0, 7)), ...evidence.filter(e => e.accountId === item.accountId && e.month).map(e => e.month!)];
+        if (hasStatementMonthGap(lastActivity.get(key), entry.position.date, covered)) flag(key, "position-gap", existing?.episode);
+        lastActivity.set(key, entry.position.date);
+        if (existing && !next.eq(existing.position)) flag(key, "position-gap", existing.episode);
+        if (existing && next.eq(existing.position)) continue; // Snapshots are boundaries, never additions.
+      } else {
+        const event = entry.event!;
+        if (event.kind !== "transfer-in" && event.kind !== "transfer-out") {
+          if (existing) {
+            (existing.episode.positionEvents ??= []).push(event);
+            flag(key, "position-event", existing.episode);
+          }
+          continue; // IPO/distribution evidence never creates another fill or inventory lot.
+        }
+        const ambiguous = event.date.length === 10 && executions.some(e => episodeKey(e) === key && (e.source.tradingDate ?? e.source.marketCalendarDate ?? e.executedAt.slice(0, 10)) === event.date);
+        if (ambiguous) flag(key, "ambiguous-event-order", existing?.episode);
+        if (event.quantity === undefined) {
+          flag(key, "position-event", existing?.episode);
+          continue;
+        }
+        next = next.plus(new Decimal(event.quantity).abs().times(event.kind === "transfer-in" ? 1 : -1));
+        flag(key, "position-event", existing?.episode);
+      }
+      if (existing && (next.isZero() || next.isPositive() !== existing.position.isPositive())) {
+        existing.episode.status = "closed";
+        existing.episode.endedAt = entry.at;
+        existing.episode.remainingQuantity = "0";
+        flag(key, "position-gap", existing.episode);
+        episodes.push(existing.episode);
+        active.delete(key);
+      }
+      if (next.isZero()) continue;
+      let target = active.get(key);
+      if (!target) {
+        target = createEpisode(template, openingOccurrences);
+        target.episode.id += `:evidence:${encodeURIComponent(entry.at)}`;
+        target.episode.executions = [];
+        target.episode.startedAt = entry.at;
+        target.episode.direction = next.isNegative() ? "short" : "long";
+        target.openingQuantity = next.abs();
+        if (entry.position) target.episode.initialPosition = entry.position;
+        flag(key, "initial-position", target.episode);
+        active.set(key, target);
+      }
+      if (entry.event) (target.episode.positionEvents ??= []).push(entry.event);
+      target.position = next;
+      target.episode.openingQuantity = target.openingQuantity.toString();
+      target.episode.remainingQuantity = next.abs().toString();
+      flag(key, "unknown-cost", target.episode);
+      continue;
+    }
+    const execution = entry.execution;
     const key = episodeKey(execution);
+    lastActivity.set(key, execution.source.tradingDate ?? execution.executedAt);
     const existing = active.get(key);
+    if (!existing && !seenExecution.has(key) && !knownBoundary.has(key) && execution.side === "sell" && (execution.source.statementMonth || execution.source.templateId) && execution.source.positionEffect !== "open-short") flag(key, "ambiguous-opening");
+    seenExecution.add(key);
+    if (execution.source.feeStatus === "unknown") flag(key, "unknown-fees", existing?.episode);
+    if (execution.source.historyIncomplete?.length) flag(key, "history-incomplete", existing?.episode);
 
     if (!existing) {
       const created = createEpisode(execution, openingOccurrences);
+      if (issues.has(key)) created.episode.accuracy = { pnl: "unavailable", reasons: [...issues.get(key)!] };
       if (created.position.isZero()) continue;
       active.set(key, created);
       continue;
@@ -144,6 +247,7 @@ export function buildTradeEpisodes(
         reversingExecution,
         openingOccurrences,
       );
+      if (existing.episode.accuracy?.reasons.some(reason => ["ambiguous-event-order", "ambiguous-opening", "history-incomplete", "unknown-fees"].includes(reason))) reversed.episode.accuracy = existing.episode.accuracy;
       active.set(key, reversed);
       continue;
     }
@@ -164,6 +268,7 @@ export function buildTradeEpisodes(
       existing.episode.endedAt = execution.executedAt;
       episodes.push(existing.episode);
       active.delete(key);
+      if (!existing.episode.accuracy?.reasons.includes("ambiguous-event-order")) issues.delete(key);
     }
   }
 
@@ -171,5 +276,35 @@ export function buildTradeEpisodes(
     episodes.push(accumulator.episode);
   }
 
-  return episodes.sort((a, b) => a.startedAt.localeCompare(b.startedAt));
+  return episodes.filter(e => e.executions.length > 0).map(episode => {
+    // Episode replay starts at its own boundary. Reusing a pre-reversal snapshot
+    // on the new short episode would incorrectly seed the previous long again.
+    const start = Date.parse(episode.startedAt);
+    const end = episode.endedAt ? Date.parse(replayCursorAt(episode.endedAt)) : Infinity;
+    return { ...episode, ...(episode.accuracy?.reasons.some(r => r === "ambiguous-event-order" || r === "ambiguous-opening") ? { directionKnown: false as const } : {}), executions: episode.executions.map((execution, index) => {
+      const source = { ...execution.source };
+      if (index === 0 && episode.initialPosition) source.openingPosition = episode.initialPosition;
+      if (index === 0 && episode.positionEvents?.length) {
+        source.positionEvents = [...new Map([...(source.positionEvents ?? []), ...episode.positionEvents].map(event => [event.id, event])).values()];
+      }
+      if (source.openingPosition) {
+        const p = source.openingPosition;
+        const at = Date.parse(statementPositionAt(p));
+        if (at < start || at > end) delete source.openingPosition;
+      }
+      // Boundaries may follow the last fill, but cannot revive an already closed episode.
+      const statementPositions = positions.filter(p => evidenceKey(p) === episodeKey(execution) && Date.parse(statementPositionAt(p)) >= start && Date.parse(statementPositionAt(p)) <= end);
+      if (statementPositions.length) source.statementPositions = statementPositions;
+      else delete source.statementPositions;
+      if (source.positionEvents) {
+        source.positionEvents = source.positionEvents.filter(e => {
+          const at = Date.parse(e.date);
+          // Keep same-day uncertainty so chart callers receive its accuracy flag.
+          return (at >= start || e.date === episode.startedAt.slice(0, 10)) && at <= end;
+        });
+        if (!source.positionEvents.length) delete source.positionEvents;
+      }
+      return { ...execution, source };
+    }) };
+  }).sort((a, b) => a.startedAt.localeCompare(b.startedAt));
 }

@@ -32,6 +32,18 @@ function fill(
 }
 
 describe("summarizeTradeEpisode", () => {
+  it("does not certify net profit when a reported fee is missing", () => {
+    const buy = fill("buy", "2025-01-02T14:30:00Z", "1", "10", "0");
+    buy.source.feeStatus = "unknown";
+    const [episode] = buildTradeEpisodes([buy, fill("sell", "2025-01-09T14:30:00Z", "1", "12", "0")]);
+    expect(episode.accuracy?.reasons).toContain("unknown-fees");
+    expect(summarizeTradeEpisode(episode)).toMatchObject({ pnlAvailable: false, netPnl: null, returnPercent: null });
+  });
+  it("does not report sale proceeds as profit when acquisition history is missing", () => {
+    const sale = fill("sell", "2025-01-09T14:30:00Z", "100", "12", "3");
+    sale.source.openingPosition = { accountId: "acct-1", market: "US", symbol: "XPEV", phase: "opening", date: "2025-01-01", quantity: "100", source: [] };
+    expect(summarizeTradeEpisode(buildTradeEpisodes([sale])[0], "13")).toMatchObject({ pnlAvailable: false, netPnl: null, unrealizedPnl: null, returnPercent: null, holdingMilliseconds: null });
+  });
   it("calculates fee-adjusted PnL and return for a closed long episode", () => {
     const [episode] = buildTradeEpisodes([
       fill("buy", "2025-01-02T14:30:00Z", "100", "10", "2"),

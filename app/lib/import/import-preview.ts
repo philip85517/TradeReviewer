@@ -19,6 +19,8 @@ import {
 } from "./enrich-import";
 
 export type ImportPreview = {
+  monthly?: StatementParseResult["monthly"];
+  diagnostics?: StatementParseResult["diagnostics"];
   id: string;
   fileName: string;
   sourceLabel: string;
@@ -38,6 +40,7 @@ export type ImportPreview = {
   firstTradeAt?: string;
   lastTradeAt?: string;
   blocked: boolean;
+  blockingReason?: string;
 };
 
 type CreateImportPreviewOptions = {
@@ -168,7 +171,7 @@ export function createImportPreview(
     (options.sourceKind === "screenshot"
       ? enriched.importable[0]?.source.batchId
       : undefined) ??
-    enriched.importable[0]?.source.fileFingerprint ??
+    enriched.monthly?.documentId ?? enriched.importable[0]?.source.fileFingerprint ??
     `${enriched.broker}:${fileName}:${enriched.importable.length}`;
   const unresolvedSymbols = new Set(
     enriched.unresolved.map((failure) =>
@@ -187,6 +190,8 @@ export function createImportPreview(
 
   return {
     id: `import:${fingerprint}`,
+    monthly: result.monthly,
+    diagnostics: result.diagnostics,
     fileName,
     sourceLabel:
       options.sourceKind === "screenshot"
@@ -221,7 +226,7 @@ export function createImportPreview(
     firstTradeAt: times[0],
     lastTradeAt: times.at(-1),
     blocked:
-      enriched.importable.length === 0 ||
-      ("blocked" in result && result.blocked),
+      (enriched.importable.length === 0 && !result.monthly) ||
+      Boolean("blocked" in result && result.blocked),
   };
 }

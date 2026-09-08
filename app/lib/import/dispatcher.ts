@@ -1,19 +1,15 @@
 import type { ImportDiagnostic } from "./import-result";
 import type { PdfTextPage } from "./pdf-text";
 import { extractPdfPages } from "./pdf-text";
-import {
-  detectChinaMerchantsStatement,
-  parseChinaMerchantsPages,
-} from "./china-merchants";
-import type { StatementBroker, StatementParseResult } from "./contracts";
+import type { StatementParseResult } from "./contracts";
 import { fingerprintBytes } from "./file-fingerprint";
-import { detectFutuWorkbook, parseFutuWorkbook } from "./futu";
+import { attachStatementEvidence } from "./statement-evidence";
+import type { StatementTimeOptions } from "./monthly-statement";
 import {
-  detectTigerStatement,
-  parseTigerPages,
-} from "./tiger";
-
-const REQUIRED_CONFIDENCE = 0.8;
+  adaptersFor,
+  STATEMENT_DETECTION_THRESHOLD,
+  type StatementAdapterOptions,
+} from "./statement-adapters";
 
 type LocalStatementFile = Pick<File, "name" | "arrayBuffer"> & {
   type?: string;
@@ -21,7 +17,7 @@ type LocalStatementFile = Pick<File, "name" | "arrayBuffer"> & {
 
 type ExtractPdfPages = (input: ArrayBuffer) => Promise<PdfTextPage[]>;
 
-export type ParseBrokerStatementOptions = {
+export type ParseBrokerStatementOptions = StatementTimeOptions & {
   extractPdfPages?: ExtractPdfPages;
 };
 
@@ -78,23 +74,35 @@ export async function parseBrokerStatement(
   const arrayBuffer = await file.arrayBuffer();
   const bytes = new Uint8Array(arrayBuffer);
   const fileFingerprint = fingerprintBytes(bytes);
-  const futuDetection = detectFutuWorkbook(bytes);
+  const workbookDetections = adaptersFor("xlsx").map((adapter) => ({
+    adapter,
+    detection: adapter.detect(bytes),
+  }));
+  const workbookMatches = workbookDetections.filter(
+    ({ detection }) =>
+      detection.matched &&
+      detection.confidence >= STATEMENT_DETECTION_THRESHOLD,
+  );
 
-  if (
-    futuDetection.matched &&
-    futuDetection.confidence >= REQUIRED_CONFIDENCE
-  ) {
-    return parseFutuWorkbook(bytes, {
+  if (workbookMatches.length === 1) {
+    return workbookMatches[0].adapter.parse(bytes, {
       fileName: file.name,
-      sourceFileId: fileFingerprint,
+      fileFingerprint,
     });
+  }
+  if (workbookMatches.length > 1) {
+    return failure(
+      "ambiguous-statement-format",
+      "文件同时匹配多个工作表格式，为避免误导入已停止解析",
+      workbookDetections.flatMap(({ detection }) => detection.diagnostics ?? []),
+    );
   }
 
   if (!hasPdfSignature(bytes)) {
     return failure(
       "unsupported-statement-format",
-      "无法识别该文件，请导入富途 XLSX、Tiger PDF 或招商证券 PDF 对账单",
-      futuDetection.diagnostics,
+      "无法识别该文件，请导入富途 XLSX/PDF、Tiger PDF 或招商证券 PDF 对账单",
+      workbookDetections.flatMap(({ detection }) => detection.diagnostics ?? []),
     );
   }
 
@@ -108,20 +116,14 @@ export async function parseBrokerStatement(
     );
   }
 
-  const detections = [
-    {
-      broker: "tiger" as const,
-      detection: detectTigerStatement(pages),
-    },
-    {
-      broker: "china-merchants" as const,
-      detection: detectChinaMerchantsStatement(pages),
-    },
-  ];
+  const detections = adaptersFor("pdf").map((adapter) => ({
+    adapter,
+    detection: adapter.detect(pages),
+  }));
   const matches = detections.filter(
     ({ detection }) =>
       detection.matched &&
-      detection.confidence >= REQUIRED_CONFIDENCE,
+      detection.confidence >= STATEMENT_DETECTION_THRESHOLD,
   );
   const detectorDiagnostics = detections.flatMap(
     ({ detection }) => detection.diagnostics ?? [],
@@ -130,7 +132,7 @@ export async function parseBrokerStatement(
   if (matches.length === 0) {
     return failure(
       "unsupported-statement-format",
-      "无法识别该 PDF，请导入 Tiger 或招商证券的受支持对账单",
+      "无法识别该 PDF，请导入富途、Tiger 或招商证券的受支持对账单",
       detectorDiagnostics,
     );
   }
@@ -142,12 +144,24 @@ export async function parseBrokerStatement(
     );
   }
 
-  const broker: Exclude<StatementBroker, "futu"> = matches[0].broker;
-  const parseOptions = {
+  const parseOptions: StatementAdapterOptions = {
     fileName: file.name,
     fileFingerprint,
+    sourceTimezone: options.sourceTimezone,
+    overrideDocumentTimezone: options.overrideDocumentTimezone,
   };
-  return broker === "tiger"
-    ? parseTigerPages(pages, parseOptions)
-    : parseChinaMerchantsPages(pages, parseOptions);
+  const result = matches[0].adapter.parse(pages, parseOptions);
+  const withRuleEvidence = {
+    ...result,
+    records: result.records.map((record) => ({
+      ...record,
+      source: {
+        ...record.source,
+        formatRuleId: record.source.formatRuleId ?? matches[0].adapter.id,
+      },
+    })),
+  };
+  return withRuleEvidence.monthly
+    ? attachStatementEvidence(pages, withRuleEvidence)
+    : withRuleEvidence;
 }

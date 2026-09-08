@@ -19,6 +19,7 @@ import type { InstrumentMetadataSource } from "../../lib/instruments/metadata-co
 import { canonicalInstrumentId } from "../../lib/instruments/display-name";
 import type { ImportPreview } from "../../lib/import/import-preview";
 import { useModalFocus } from "./use-modal-focus";
+import type { ExecutionConflict, ReconciliationDecision } from "../../lib/import/execution-reconciliation";
 
 type Props = {
   preview: ImportPreview;
@@ -26,6 +27,9 @@ type Props = {
   onConfirm: () => void;
   onRetryUnresolved: (instrumentIds: string[]) => void;
   retryingUnresolved?: boolean;
+  conflicts?: ExecutionConflict[];
+  conflictDecisions?: ReadonlyMap<string, ReconciliationDecision>;
+  onConflictDecision?: (id: string, decision: ReconciliationDecision) => void;
 };
 
 const SOURCE_LABELS: Record<
@@ -85,6 +89,9 @@ export function ImportConfirmDialog({
   onConfirm,
   onRetryUnresolved,
   retryingUnresolved = false,
+  conflicts = [],
+  conflictDecisions,
+  onConflictDecision,
 }: Props) {
   const dialogRef = useModalFocus(onCancel);
   const unresolvedIds = preview.unresolved.map((failure) =>
@@ -128,6 +135,16 @@ export function ImportConfirmDialog({
             <span>已自动识别为 {preview.sourceLabel} 交易记录</span>
           </div>
         </div>
+
+        {preview.monthly && <section className="import-category-panel"><strong>月结单证据将一并保存</strong><p>{preview.monthly.month} · {preview.monthly.templateIds.join(" / ")} · {preview.monthly.positions.length} 条持仓快照 · {preview.monthly.events.length} 条辅助流水</p><p>{preview.monthly.timePolicy}</p></section>}
+        {conflicts.length > 0 && <section className="import-category-panel" aria-label="月结单成交冲突"><h3>相同时刻的不同成交，请逐组核对</h3>{conflicts.map(conflict => <div key={conflict.id}>
+          <p>{conflict.incoming[0]?.instrument.symbol} · {conflict.incoming[0]?.executedAt}</p>
+          <p>已存：{conflict.existing.map(e => `${e.side} ${e.quantity} @ ${e.price}，费用 ${e.source.feeStatus === "unknown" ? "待核对" : `${e.fee} ${e.instrument.currency}`}（${e.source.fileName ?? "已有来源"}）`).join("；")}</p>
+          <p>本次：{conflict.incoming.map(e => `${e.side} ${e.quantity} @ ${e.price}，费用 ${e.source.feeStatus === "unknown" ? "待核对" : `${e.fee} ${e.instrument.currency}`}（第 ${e.source.page ?? "?"} 页）`).join("；")}</p>
+          <select aria-label={`冲突处理 ${conflict.id}`} value={conflictDecisions?.get(conflict.id) ?? ""} onChange={event => { const choice = event.target.value; if (choice === "keep-existing" || choice === "use-incoming" || choice === "keep-both") onConflictDecision?.(conflict.id, choice); }}>
+            <option value="" disabled>请选择处理方式</option><option value="keep-existing">保留已存，跳过本次</option><option value="use-incoming">使用本次，替换已存</option><option value="keep-both">确认为不同成交，两者保留</option>
+          </select>
+        </div>)}</section>}
 
         <div className="import-stat-grid">
           <div>
@@ -297,18 +314,18 @@ export function ImportConfirmDialog({
         {preview.blocked && (
           <div className="import-warning">
             <AlertTriangle size={14} />
-            没有完整的股票或 ETF 成交可以导入。
+            {preview.blockingReason ?? "没有完整的股票或 ETF 成交可以导入。"}
           </div>
         )}
 
         <footer className="modal-footer">
-          <p>仅完整成交会保存到此设备，并为新增股票启动行情更新。</p>
+          <p>{preview.monthly ? "成交和月结单证据保存到本机；无成交月份也保留账期与持仓证据。" : "仅完整成交会保存到此设备，并为新增股票启动行情更新。"}</p>
           <button className="secondary-button" onClick={onCancel}>
             取消
           </button>
           <button
             className="primary-button"
-            disabled={preview.blocked || retryingUnresolved}
+            disabled={preview.blocked || retryingUnresolved || conflicts.some(c => !conflictDecisions?.has(c.id))}
             onClick={onConfirm}
           >
             确认导入并开始更新行情

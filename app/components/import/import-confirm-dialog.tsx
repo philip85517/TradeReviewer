@@ -144,6 +144,12 @@ export function ImportConfirmDialog({
             <span>已自动识别为 {preview.sourceLabel} 交易记录</span>
           </div>
         </div>
+        {preview.sourceKind === "tradingview" && (
+          <div className="tradingview-import-notice" role="status">
+            <strong>模拟盘 · TradingView</strong>
+            <span>文件只提供交易日期，回放不会伪造具体成交时刻；报告盈亏将在退出日期后显示。</span>
+          </div>
+        )}
 
         {preview.monthly && <section className="import-category-panel"><strong>月结单证据将一并保存</strong><p>{preview.monthly.month} · {preview.monthly.templateIds.join(" / ")} · {preview.monthly.positions.length} 条持仓快照 · {preview.monthly.events.length} 条辅助流水</p><p>{preview.monthly.timePolicy}</p></section>}
         {conflicts.length > 0 && <section className="import-category-panel" aria-label="月结单成交冲突"><h3>相同时刻的不同成交，请逐组核对</h3>{conflicts.map(conflict => <div key={conflict.id}>
@@ -154,12 +160,8 @@ export function ImportConfirmDialog({
             <option value="" disabled>请选择处理方式</option><option value="keep-existing">保留已存，跳过本次</option><option value="use-incoming">使用本次，替换已存</option><option value="keep-both">确认为不同成交，两者保留</option>
           </select>
         </div>)}</section>}
-        {preview.simulation && <section className="simulation-import-summary" aria-label="模拟交易导入说明">
-          <strong className="simulation-badge">TradingView · 模拟盘</strong>
-          <p>{preview.simulation.rawRowCount} 个原始数据行 · {preview.simulation.pairCount} 个有效交易配对 · {preview.simulation.episodeCount} 个交易回合</p>
-          <p>仅提供交易日期，未提供成交时刻。配对总手续费在出场时计入一次，进场费用不单独推断。</p>
-          <p>本次模拟运行独立保存，不与实盘或其他运行合并。源报告指标与系统重算结果分开展示。</p>
-          {preview.simulation.diagnostics.map((message,index)=><p key={index}>{message}</p>)}
+        {(preview.notices?.length ?? 0) > 0 && <section className="import-warning" aria-label="账单解析说明">
+          {preview.notices?.map(message=><p key={message}>{message}</p>)}
         </section>}
         <div className="import-stat-grid">
           <div>

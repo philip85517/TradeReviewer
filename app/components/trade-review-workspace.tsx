@@ -27,19 +27,20 @@ import type {
   DemoReplayFrame,
   DemoReplayMode,
 } from "../lib/demo/replay-frame";
-import type { StatementParseResult } from "../lib/import/contracts";
+import type {
+  StatementParseResult,
+  TradingViewSimulationContext,
+} from "../lib/import/contracts";
 import {
   enrichStatementImport,
   type EnrichedImportResult,
 } from "../lib/import/enrich-import";
-import { TradingViewImportDialog } from "./import/tradingview-import-dialog";
-import { simulationScope, tradingNatureLabel } from "../lib/trades/trading-nature";
-import type { TradingViewInstrument } from "../lib/import/tradingview";
 import { parseBrokerStatement } from "../lib/import/dispatcher";
 import { applyMonthlyHistoryEvidence } from "../lib/import/statement-evidence";
 import { belongsToMonthlyDocument } from "../lib/import/statement-identity";
 import type { StatementTimeOptions } from "../lib/import/monthly-statement";
 import { MonthlyStatementReview } from "./import/monthly-statement-review";
+import { TradingViewContextDialog } from "./import/tradingview-context-dialog";
 import {
   applyReconciliationDecisions,
   reconcileExecutions,
@@ -744,7 +745,7 @@ function episodeOptions(episodes: TradeEpisode[], reviews: Record<string, Episod
   );
   return episodes.map((episode) => ({
     id: episode.id,
-    label: `第 ${chronological.get(episode.id) ?? 1} 次交易${simulationScope(episode.executions[0]) ? ` · ${episode.accountLabel}` : ""}`,
+    label: `第 ${chronological.get(episode.id) ?? 1} 次交易${episode.tradeNature === "simulation" ? ` · ${episode.accountLabel}` : ""}`,
     contextLabel: `${marketTradingDate(episode.startedAt, episode.instrument.market)} · ${episode.executions[0]?.accountLabel ?? "账户未记录"} · ${reviews[episode.id]?.review.completed ? "已复盘" : "待复盘"}`,
     startedAt: episode.startedAt,
     endedAt: episode.endedAt,
@@ -902,7 +903,6 @@ function isAbortError(error: unknown) {
   const [selectedInstrumentId, setSelectedInstrumentId] = useState(
     showDemo ? "demo" : "",
   );
-  const [tradingViewFile, setTradingViewFile] = useState<File | null>(null);
   const [selectedEpisodeId, setSelectedEpisodeId] = useState(REVIEW_ID);
   const [importedCursor, setImportedCursor] = useState(initialFrame.cursor);
   const supplementScopeRef = useRef<SupplementScope | null>(null);
@@ -916,6 +916,8 @@ function isAbortError(error: unknown) {
   const [pendingImport, setPendingImport] = useState<ImportPreview | null>(
     null,
   );
+  const [pendingTradingViewFile, setPendingTradingViewFile] =
+    useState<File | null>(null);
   const [pendingParsedImport, setPendingParsedImport] =
     useState<StatementParseResult | null>(null);
   const [monthlyReview, setMonthlyReview] = useState<{ file: File; parsed: StatementParseResult } | null>(null);
@@ -969,8 +971,6 @@ function isAbortError(error: unknown) {
   const [reviewStates, setReviewStates] = useState<
     Record<string, EpisodeReviewState>
   >({});
-  const reviewStatesRef = useRef(reviewStates);
-  useEffect(() => { reviewStatesRef.current = reviewStates; }, [reviewStates]);
   const replayRequestSequence = useRef(0);
   const importRequestSequence = useRef(0);
   const importedExecutionsRef = useRef<TradeExecution[] | null>(null);
@@ -1244,6 +1244,12 @@ function isAbortError(error: unknown) {
 
   const viewModel: ReviewChartViewModel = {
     source: selectedImportedInstrument ? "imported" : "demo",
+    tradeNature: selectedImportedInstrument
+      ? selectedEpisode?.tradeNature ?? "unknown"
+      : undefined,
+    simulationRunId: selectedImportedInstrument
+      ? selectedEpisode?.simulationRunId
+      : undefined,
     historyMode: selectedImportedInstrument ? historyMode : undefined,
     episodeId: activeEpisodeId,
     instrument: activeInstrument,
@@ -1255,7 +1261,7 @@ function isAbortError(error: unknown) {
     candles: activeSnapshot.candles,
     executions: selectedImportedInstrument && historyMode === "history"
       ? selectedImportedInstrument.executions.filter(execution => selectedEpisode?.executions[0]
-        ? simulationScope(execution) === simulationScope(selectedEpisode.executions[0])
+        ? execution.source.tradeNature === selectedEpisode.executions[0].source.tradeNature && execution.source.simulationRunId === selectedEpisode.executions[0].source.simulationRunId
         : true)
       : activeSnapshot.executions,
     positionEvents: activePositionEvents,
@@ -1316,7 +1322,7 @@ function isAbortError(error: unknown) {
   const insightFactResult = useMemo(
     () =>
       buildInsightEpisodeFacts(
-        tradeLibraryEntries.filter(entry=>!simulationScope(entry.executions[0])),
+        tradeLibraryEntries.filter(entry=>entry.tradeNature !== "simulation"),
         marketDataCandles,
         marketDataStatuses,
         suggestionDecisions,
@@ -1641,9 +1647,7 @@ function isAbortError(error: unknown) {
         selectedEpisode,
       );
       const nextTimeframe = stored?.timeframe ??
-        (selectedState.intraday.length > 0
-          ? selectedState.intradayInterval
-          : "1D");
+        (selectedState.intraday.length > 0 ? selectedState.intradayInterval : "1D");
       const availableTimeframe = availability[nextTimeframe].enabled
         ? nextTimeframe
         : availability["15m"].enabled
@@ -1652,10 +1656,7 @@ function isAbortError(error: unknown) {
             ? "1D"
             : nextTimeframe;
       setTimeframe(availableTimeframe);
-      const source = sourceCandlesForTimeframe(
-        selectedState,
-        availableTimeframe,
-      );
+      const source = sourceCandlesForTimeframe(selectedState, availableTimeframe);
       if (!stored) {
         setImportedCursor(
           replayCursorForEpisode(source, selectedEpisode.startedAt),
@@ -2391,10 +2392,8 @@ function isAbortError(error: unknown) {
     if (first) void parseImport(first);
   }
 
-  async function parseImport(file: File, optionsOrInstrument: StatementTimeOptions | TradingViewInstrument = {}) {
-    const isTradingViewImport = "market" in optionsOrInstrument && "symbol" in optionsOrInstrument;
-    const tradingViewInstrument = isTradingViewImport ? optionsOrInstrument as TradingViewInstrument : undefined;
-    const timeOptions = isTradingViewImport ? {} : optionsOrInstrument as StatementTimeOptions;
+  async function parseImport(file: File, timeOptions: StatementTimeOptions = {}, tradingViewContext?: TradingViewSimulationContext) {
+    setPendingTradingViewFile(null);
     screenshotImport.cancel();
     const requestId = ++importRequestSequence.current;
     setImporting(true);
@@ -2410,8 +2409,8 @@ function isAbortError(error: unknown) {
     try {
       await Promise.resolve();
       setImportPhase("parsing");
-      const parsed = tradingViewInstrument
-        ? await parseBrokerStatement(file, { ...timeOptions, tradingViewInstrument })
+      const parsed = tradingViewContext
+        ? await parseBrokerStatement(file, { ...timeOptions, tradingViewContext })
         : Object.keys(timeOptions).length > 0
           ? await parseBrokerStatement(file, timeOptions)
           : await parseBrokerStatement(file);
@@ -2432,13 +2431,20 @@ function isAbortError(error: unknown) {
         return;
       }
       if (parsed.broker === "unknown" || parsed.blocked) {
+        const missingTradingViewContext = parsed.diagnostics.some(
+          (diagnostic) =>
+            diagnostic.code === "tradingview-missing-instrument-context",
+        );
+        if (missingTradingViewContext && !tradingViewContext) {
+          setPendingTradingViewFile(file);
+          setImporting(false);
+          setImportPhase("idle");
+          return;
+        }
         const message = parsed.diagnostics.find(
           (diagnostic) => diagnostic.severity === "error",
         )?.message;
         throw new Error(message ?? "暂时无法识别这个交易记录");
-      }
-      if (tradingViewInstrument && parsed.broker !== "tradingview") {
-        throw new Error("请选择 TradingView 中文 CNY 回放交易 CSV");
       }
       if (parsed.broker === "tradingview") {
         const incoming = parsed.records[0];
@@ -2460,7 +2466,7 @@ function isAbortError(error: unknown) {
       setImportError(
         error instanceof Error
           ? error.message
-          : "暂时无法识别这个文件。请确认它来自富途、Tiger 或招商证券。",
+          : "暂时无法识别这个文件。请确认它来自富途、Tiger 或 A股招商银行格式。",
       );
       setImportPhase("idle");
     } finally {
@@ -2602,7 +2608,6 @@ function isAbortError(error: unknown) {
       id: pendingImport.id,
       fileName: pendingImport.fileName,
       sourceLabel: pendingImport.sourceLabel,
-      ...(pendingImport.simulation ? { tradingNature: "simulated" as const, simulationRunId: pendingImport.records[0]?.source.simulationRunId } : {}),
       importedAt,
       firstTradeAt: pendingImport.firstTradeAt,
       lastTradeAt: pendingImport.lastTradeAt,
@@ -2614,12 +2619,20 @@ function isAbortError(error: unknown) {
         0,
       ),
       duplicateTradeCount: pendingImport.duplicateTradeCount,
+      ...(pendingImport.tradeNature
+        ? { tradeNature: pendingImport.tradeNature }
+        : {}),
+      ...(pendingImport.simulationRunId
+        ? { simulationRunId: pendingImport.simulationRunId }
+        : {}),
       ...(pendingImport.sourceKind === "screenshot"
         ? {
             sourceKind: "screenshot" as const,
             captureCount: pendingImport.captureCount ?? 0,
             conflictTradeCount: pendingImport.conflictTradeCount ?? 0,
           }
+        : pendingImport.sourceKind === "tradingview"
+          ? { sourceKind: "tradingview" as const }
         : {}),
       unresolvedInstrumentCount:
         pendingImport.unresolvedInstrumentCount,
@@ -2697,11 +2710,16 @@ function isAbortError(error: unknown) {
     if (nextFile) void parseImport(nextFile);
   }
 
-  function openLibraryEpisode(instrumentId: string, episodeId: string) {
+  function openLibraryEpisode(
+    instrumentId: string,
+    episodeId: string,
+    scopeKey?: string,
+  ) {
     setLibraryTarget({
       requestId: ++libraryTargetSequence.current,
       instrumentId,
       episodeId,
+      ...(scopeKey ? { scopeKey } : {}),
     });
     setActiveView("library");
   }
@@ -2904,7 +2922,7 @@ function isAbortError(error: unknown) {
       }} />
       <input hidden ref={tradingViewInputRef} aria-label="导入 TradingView 模拟交易" type="file" accept=".csv,text/csv" disabled={importing} onChange={event => {
         const file = event.target.files?.[0];
-        if (file) { screenshotImport.cancel(); importRequestSequence.current += 1; setPendingImport(null); setImportError(null); setTradingViewFile(file); }
+        if (file) { screenshotImport.cancel(); importRequestSequence.current += 1; setPendingImport(null); setImportError(null); void parseImport(file); }
         event.currentTarget.value = "";
       }} />
       <input hidden ref={importScreenshotRef} aria-label="从截图恢复交易" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" multiple disabled={importing} onChange={(event) => {
@@ -2954,7 +2972,7 @@ function isAbortError(error: unknown) {
           <span className="demo-chip">
             {showDemo && <Sparkles size={13} />}
             {selectedImportedInstrument
-              ? selectedEpisode?.executions[0] ? tradingNatureLabel(selectedEpisode.executions[0]) : "本地导入"
+              ? selectedEpisode?.executions[0] ? selectedEpisode.tradeNature === "simulation" ? "模拟盘" : selectedEpisode.tradeNature === "live" ? "实盘" : "来源未知" : "本地导入"
               : showDemo
                 ? "演示行情"
                 : "等待导入"}
@@ -3043,7 +3061,7 @@ function isAbortError(error: unknown) {
               importError={null}
               onImport={(file) => startStatementBatch([file])}
               onImportFiles={startStatementBatch}
-              onTradingViewImport={file=>{ screenshotImport.cancel(); importRequestSequence.current+=1; setPendingImport(null); setImportError(null); setTradingViewFile(file); }}
+              onTradingViewImport={file=>{ screenshotImport.cancel(); importRequestSequence.current+=1; setPendingImport(null); setImportError(null); void parseImport(file); }}
               onScreenshotImport={(files) => {
                 importRequestSequence.current += 1;
                 setImportError(null);
@@ -3256,19 +3274,6 @@ function isAbortError(error: unknown) {
       ].filter(id => !buildTradeEpisodes(importedExecutions).some(episode => episode.id === id)).map(episodeId => ({ episodeId, review: episodeReviews[episodeId], drawingCount: reviewStates[episodeId]?.drawings.length ?? 0, drawings: reviewStates[episodeId]?.drawings }))} />}
 
       {supplementScope && <div role="status" className="supplement-scope-notice">补充导入范围：{supplementScope.instrumentId} · {supplementScope.accountLabel}。截图成交将归入此账户；其他股票与文件中的其他账户已排除（{supplementExcluded} 笔）。{!pendingImport && !screenshotImport.open && !importing && <button onClick={clearSupplement}>取消补充导入</button>}</div>}
-      {tradingViewFile && (
-        <TradingViewImportDialog
-          file={tradingViewFile}
-          instruments={importedInstruments.map(item => item.instrument)}
-          onCancel={() => setTradingViewFile(null)}
-          onConfirm={instrument => {
-            const file = tradingViewFile;
-            if (!file) return;
-            setTradingViewFile(null);
-            void parseImport(file, instrument);
-          }}
-        />
-      )}
       {monthlyReview && (
         <MonthlyStatementReview
           fileName={monthlyReview.file.name}
@@ -3313,6 +3318,17 @@ function isAbortError(error: unknown) {
             void retryUnresolved(instrumentIds)
           }
           retryingUnresolved={retryingUnresolved}
+        />
+      )}
+      {pendingTradingViewFile && (
+        <TradingViewContextDialog
+          fileName={pendingTradingViewFile.name}
+          onCancel={() => setPendingTradingViewFile(null)}
+          onConfirm={(context) => {
+            const file = pendingTradingViewFile;
+            setPendingTradingViewFile(null);
+            void parseImport(file, {}, context);
+          }}
         />
       )}
       {screenshotImport.open &&

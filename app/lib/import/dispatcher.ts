@@ -1,4 +1,3 @@
-import { isTradingViewCsv, parseTradingViewCsv, type TradingViewInstrument } from "./tradingview";
 import type { ImportDiagnostic } from "./import-result";
 import type { PdfTextPage } from "./pdf-text";
 import { extractPdfPages } from "./pdf-text";
@@ -11,6 +10,11 @@ import {
   STATEMENT_DETECTION_THRESHOLD,
   type StatementAdapterOptions,
 } from "./statement-adapters";
+import {
+  detectTradingViewSimulationCsv,
+  parseTradingViewSimulationCsv,
+} from "./tradingview-simulation";
+import type { TradingViewSimulationContext } from "./contracts";
 
 type LocalStatementFile = Pick<File, "name" | "arrayBuffer"> & {
   type?: string;
@@ -20,7 +24,7 @@ type ExtractPdfPages = (input: ArrayBuffer) => Promise<PdfTextPage[]>;
 
 export type ParseBrokerStatementOptions = StatementTimeOptions & {
   extractPdfPages?: ExtractPdfPages;
-  tradingViewInstrument?: TradingViewInstrument;
+  tradingViewContext?: TradingViewSimulationContext;
 };
 
 export type StatementDispatchFailure = {
@@ -76,7 +80,18 @@ export async function parseBrokerStatement(
   const arrayBuffer = await file.arrayBuffer();
   const bytes = new Uint8Array(arrayBuffer);
   const fileFingerprint = fingerprintBytes(bytes);
-  if (isTradingViewCsv(bytes)) return parseTradingViewCsv({fileName:file.name,bytes,fileFingerprint}, options.tradingViewInstrument);
+  const tradingViewDetection = detectTradingViewSimulationCsv(bytes);
+
+  if (
+    tradingViewDetection.matched &&
+    tradingViewDetection.confidence >= STATEMENT_DETECTION_THRESHOLD
+  ) {
+    return parseTradingViewSimulationCsv(bytes, {
+      fileName: file.name,
+      sourceFileId: fileFingerprint,
+      context: options.tradingViewContext,
+    });
+  }
   const workbookDetections = adaptersFor("xlsx").map((adapter) => ({
     adapter,
     detection: adapter.detect(bytes),
@@ -104,7 +119,7 @@ export async function parseBrokerStatement(
   if (!hasPdfSignature(bytes)) {
     return failure(
       "unsupported-statement-format",
-      "无法识别该文件，请导入富途 XLSX/PDF、Tiger PDF 或招商证券 PDF 对账单",
+      "无法识别该文件，请导入TradingView 模拟 CSV、富途 XLSX/PDF、Tiger PDF 或A股招商银行 PDF 对账单",
       workbookDetections.flatMap(({ detection }) => detection.diagnostics ?? []),
     );
   }
@@ -135,7 +150,7 @@ export async function parseBrokerStatement(
   if (matches.length === 0) {
     return failure(
       "unsupported-statement-format",
-      "无法识别该 PDF，请导入富途、Tiger 或招商证券的受支持对账单",
+      "无法识别该 PDF，请导入富途、Tiger 或A股招商银行的受支持对账单",
       detectorDiagnostics,
     );
   }

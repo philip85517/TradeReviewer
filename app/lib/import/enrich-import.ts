@@ -29,6 +29,8 @@ export type EnrichedImportResult = {
   monthly?: StatementParseResult["monthly"];
   blocked?: boolean;
   broker: StatementParseResult["broker"];
+  tradeNature?: StatementParseResult["tradeNature"];
+  simulationRunId?: string;
   importable: TradeExecution[];
   unresolved: InstrumentMetadataFailure[];
   exclusions: ImportExclusion[];
@@ -228,6 +230,8 @@ export async function enrichStatementImport(
       monthly: parsed.monthly,
       blocked: true,
       broker: parsed.broker,
+      ...(parsed.tradeNature ? { tradeNature: parsed.tradeNature } : {}),
+      ...(parsed.simulationRunId ? { simulationRunId: parsed.simulationRunId } : {}),
       importable: [],
       unresolved: [],
       exclusions,
@@ -498,6 +502,8 @@ export async function enrichStatementImport(
 
   return {
     broker: parsed.broker,
+    ...(parsed.tradeNature ? { tradeNature: parsed.tradeNature } : {}),
+    ...(parsed.simulationRunId ? { simulationRunId: parsed.simulationRunId } : {}),
     importable,
     monthly: parsed.monthly,
     blocked: parsed.blocked,

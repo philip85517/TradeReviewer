@@ -164,8 +164,17 @@ function validateExecution(value: unknown): asserts value is TradeExecution {
   validateInstrument(item.instrument);
   if (!item.source || typeof item.source !== "object" || typeof item.source.platform !== "string" || typeof item.source.row !== "number") throw new Error("Invalid execution");
   const source = item.source;
+  if (source.settlement !== undefined) {
+    const settlement = asRecord(source.settlement, "cash settlement");
+    assertStringFields(settlement,["currency","quantity","grossAmount","netAmount"],"cash settlement");
+    const validDecimal = (value: unknown) => typeof value === "string" && /^-?\d+(?:\.\d+)?$/.test(value) && Number.isFinite(Number(value));
+    if (![settlement.quantity,settlement.grossAmount,settlement.netAmount].every(validDecimal)
+      || Number(settlement.quantity) <= 0 || Number(settlement.grossAmount) <= 0) throw new Error("Invalid cash settlement");
+    const fees=asRecord(settlement.fees,"settlement fees");
+    if (Object.values(fees).some(value=>!validDecimal(value)||Number(value)<0)) throw new Error("Invalid settlement fees");
+  }
   if (source.tradingNature !== undefined && !["simulated", "live", "unknown"].includes(source.tradingNature)) throw new Error("Invalid trading nature");
-  if (source.tradingNature === "simulated" || source.platform === "tradingview") {
+  if (source.tradingNature === "simulated" || source.simulationRole !== undefined) {
     if (source.platform !== "tradingview" || source.tradingNature !== "simulated"
       || typeof source.simulationRunId !== "string" || !source.simulationRunId
       || typeof source.simulationTradeId !== "string" || !/^\d+$/.test(source.simulationTradeId)
@@ -176,8 +185,27 @@ function validateExecution(value: unknown): asserts value is TradeExecution {
       if (source.simulationRole !== "exit" || !source.simulationReport || typeof source.simulationReport !== "object" || Array.isArray(source.simulationReport)
         || Object.values(source.simulationReport).some(value => typeof value !== "string" || !/^-?\d+(?:\.\d+)?$/.test(value))) throw new Error("Invalid simulation report");
     }
-  } else if ([source.simulationRunId, source.simulationTradeId, source.simulationRole, source.simulationReport].some(value => value !== undefined)) throw new Error("Invalid simulation evidence");
+  } else if (source.tradeNature !== "simulation" && [source.simulationRunId, source.simulationTradeId, source.simulationRole, source.simulationReport].some(value => value !== undefined)) throw new Error("Invalid simulation evidence");
+  validateTradeScope(source.tradeNature ?? (source.tradingNature === "simulated" ? "simulation" : source.tradingNature), source.simulationRunId, "simulation execution");
+}
 
+function validateTradeScope(
+  nature: unknown,
+  simulationRunId: unknown,
+  field: string,
+) {
+  if (nature !== undefined && nature !== "live" && nature !== "simulation" && nature !== "unknown") {
+    throw new Error(`Invalid ${field}`);
+  }
+  if (simulationRunId !== undefined && (typeof simulationRunId !== "string" || !simulationRunId.trim())) {
+    throw new Error(`Invalid ${field}`);
+  }
+  if (nature === "simulation" && (typeof simulationRunId !== "string" || !simulationRunId.trim())) {
+    throw new Error(`Invalid ${field}`);
+  }
+  if (nature !== "simulation" && simulationRunId !== undefined) {
+    throw new Error(`Invalid ${field}`);
+  }
 }
 
 function validateReview(value: unknown): asserts value is EpisodeReviewRecord {
@@ -222,6 +250,7 @@ function validateImportHistory(value: unknown): asserts value is ImportHistoryEn
       throw new Error("Invalid import history");
     }
   }
+  validateTradeScope(entry.tradeNature ?? (entry.tradingNature === "simulated" ? "simulation" : entry.tradingNature), entry.simulationRunId, "import history");
 }
 
 function isStoredMarketDataErrorDetail(value: unknown): boolean {
@@ -454,9 +483,19 @@ function mapExecutionRow(row: Row): TradeExecution {
       "execution evidence",
     )
     : undefined;
+  const source: TradeExecution["source"] = evidence?.source ?? {
+    platform: "unknown",
+    row: 0,
+  };
+  if (typeof row.trade_nature === "string" && source.tradeNature === undefined) {
+    source.tradeNature = row.trade_nature as TradeExecution["source"]["tradeNature"];
+  }
+  if (typeof row.simulation_run_id === "string" && source.simulationRunId === undefined) {
+    source.simulationRunId = row.simulation_run_id;
+  }
   return {
     id: asString(row.id, "execution id"),
-    source: evidence?.source ?? { platform: "unknown", row: 0 },
+    source,
     accountId: String(row.account ?? ""),
     accountLabel: evidence?.accountLabel ?? "",
     instrument: mapInstrumentRow({
@@ -1037,7 +1076,10 @@ export class SqliteStore {
     for(const execution of [...current,...incoming]) {
       if(execution.source.platform!=="tradingview") continue;
       const fingerprint=execution.source.fileFingerprint;
-      if(!fingerprint) throw new Error("Invalid simulation fingerprint");
+      if (!fingerprint) {
+        if (execution.source.tradingNature === "simulated") throw new Error("Invalid simulation fingerprint");
+        continue;
+      }
       const previous=simulationContexts.get(fingerprint);
       if(previous && previous!==execution.instrument.id) throw new Error("Simulation context conflict");
       simulationContexts.set(fingerprint,execution.instrument.id);
@@ -1083,8 +1125,9 @@ export class SqliteStore {
     this.database.prepare(`
       insert into executions (
         id, import_batch_id, instrument_id, account, side, executed_at,
-        quantity, price, fee, currency, evidence_json, updated_at
-      ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp)
+        quantity, price, fee, currency, trade_nature, simulation_run_id,
+        evidence_json, updated_at
+      ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp)
       on conflict(id) do update set
         import_batch_id = excluded.import_batch_id,
         instrument_id = excluded.instrument_id,
@@ -1095,6 +1138,8 @@ export class SqliteStore {
         price = excluded.price,
         fee = excluded.fee,
         currency = excluded.currency,
+        trade_nature = excluded.trade_nature,
+        simulation_run_id = excluded.simulation_run_id,
         evidence_json = excluded.evidence_json,
         updated_at = excluded.updated_at
     `).run(
@@ -1108,6 +1153,8 @@ export class SqliteStore {
       execution.price,
       execution.fee,
       execution.instrument.currency,
+      execution.source.tradeNature ?? null,
+      execution.source.simulationRunId ?? null,
       evidence,
     );
   }
@@ -1116,13 +1163,16 @@ export class SqliteStore {
     validateImportHistory(entry);
     this.database.prepare(`
       insert into import_batches (
-        id, source_name, source_type, imported_at, record_count, reconciliation_json
-      ) values (?, ?, ?, ?, ?, ?)
+        id, source_name, source_type, imported_at, record_count,
+        trade_nature, simulation_run_id, reconciliation_json
+      ) values (?, ?, ?, ?, ?, ?, ?, ?)
       on conflict(id) do update set
         source_name = excluded.source_name,
         source_type = excluded.source_type,
         imported_at = excluded.imported_at,
         record_count = excluded.record_count,
+        trade_nature = excluded.trade_nature,
+        simulation_run_id = excluded.simulation_run_id,
         reconciliation_json = excluded.reconciliation_json
     `).run(
       entry.id,
@@ -1130,6 +1180,8 @@ export class SqliteStore {
       entry.sourceKind ?? "statement",
       entry.importedAt,
       entry.tradeCount,
+      entry.tradeNature ?? null,
+      entry.simulationRunId ?? null,
       json(entry, "import history"),
     );
   }

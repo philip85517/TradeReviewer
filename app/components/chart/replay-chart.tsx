@@ -20,6 +20,7 @@ import {
   formatBeijingUnixSeconds,
 } from "../../lib/replay/format-time";
 import type { ChartSettings } from "../../lib/storage/chart-settings";
+import { mapExecutionsToCandles } from "../../lib/replay/execution-markers";
 import { displayTimeForCandle } from "../../lib/replay/display-time";
 import type { TradeExecution } from "../../lib/trades/types";
 import {
@@ -286,14 +287,15 @@ export function ReplayChart({
       })),
     );
 
+    const executionCandleTimes = new Map(mapExecutionsToCandles(candles, executions).map(marker => [marker.executionId, marker.candleTime]));
     const markers = settings.showExecutions
       ? [
           ...executions.map((execution) => {
-            const candleTime = displayTimeForCandle(candles, {
+            const candleTime = execution.source.displayTimePolicy === "session-open" ? displayTimeForCandle(candles, {
               at: execution.executedAt,
               policy: execution.source.displayTimePolicy,
               calendarDate: execution.source.marketCalendarDate ?? execution.source.tradingDate,
-            });
+            }) : executionCandleTimes.get(execution.id);
             if (!candleTime) return null;
             return {
               time: chartTime(candleTime),

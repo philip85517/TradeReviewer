@@ -43,6 +43,8 @@ import { ReviewSidePanel } from "./review-side-panel";
 
 export type ReviewChartViewModel = {
   source: "demo" | "imported";
+  tradeNature?: "live" | "simulation" | "unknown";
+  simulationRunId?: string;
   historyMode?: "history" | "replay";
   episodeId: string;
   instrument: Instrument;
@@ -237,6 +239,9 @@ export function ReviewChartWorkspace({
   const pnlAvailable = !model.position.accuracy;
   const quantityAvailable = model.position.quantityKnown !== false && !model.position.accuracy?.reasons.some(reason => ["ambiguous-opening", "ambiguous-event-order", "history-incomplete"].includes(reason));
   const instrumentLabel = `${model.instrument.name}（${model.instrument.symbol}）`;
+  const visibleSourceReport = [...model.executions]
+    .reverse()
+    .find((execution) => execution.source.sourceReport)?.source.sourceReport;
   const episodeStartedAt =
     episodeOptions.find((episode) => episode.id === model.episodeId)
       ?.startedAt ?? model.cursor;
@@ -251,7 +256,11 @@ export function ReviewChartWorkspace({
         <header className="review-chart-heading">
           <div>
             <span className="eyebrow">
-              {model.source === "demo" ? "演示回放" : "本地导入"}
+              {model.source === "demo"
+                ? "演示回放"
+                : model.tradeNature === "simulation"
+                  ? "TradingView · 模拟盘"
+                  : "本地导入"}
             </span>
             <h1>{instrumentLabel}</h1>
           </div>
@@ -271,6 +280,36 @@ export function ReviewChartWorkspace({
           </label>
           {onInspectData && <button className="stock-data-entry" onClick={onInspectData}>检查/修复数据</button>}
         </header>
+
+        {model.tradeNature === "simulation" && (
+          <div className="tradingview-replay-notice" data-testid="tradingview-replay-notice">
+            <strong>模拟盘回放</strong>
+            <span>
+              成交日期按 TradingView 导出记录保留；游标回放只显示当前时点已知的行情与成交。
+            </span>
+            {model.simulationRunId && <small>运行 {model.simulationRunId}</small>}
+          </div>
+        )}
+
+        {visibleSourceReport && model.tradeNature === "simulation" && (
+          <div className="tradingview-source-report" data-testid="tradingview-source-report">
+            <div>
+              <span>TradingView 报告净盈亏</span>
+              <strong className={Number(visibleSourceReport.netPnl) >= 0 ? "positive" : "negative"}>
+                {money(visibleSourceReport.netPnl, model.instrument.currency)}
+              </strong>
+            </div>
+            <div>
+              <span>报告收益率</span>
+              <strong>{visibleSourceReport.returnPercent}%</strong>
+            </div>
+            <div>
+              <span>持仓 K 线</span>
+              <strong>{visibleSourceReport.durationBars}</strong>
+            </div>
+            <small>报告字段仅作来源对照，不并入本地成交账本的计算。</small>
+          </div>
+        )}
 
         <ChartToolbar
           timeframe={model.timeframe}

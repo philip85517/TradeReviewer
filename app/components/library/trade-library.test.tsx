@@ -419,11 +419,11 @@ it("filters simulation groups and opens the selected run with source reports", a
   const entries=buildTradeLibraryEntries(buildInstrumentTradeSummaries([...records,...live]),{},{});
   const openReview=vi.fn();
   render(<TradeLibrary entries={entries} candlesByInstrument={{}} marketDataStatuses={{}} timeframe="1D" onTimeframeChange={()=>{}} onOpenInReview={openReview} onSaveReview={()=>{}} reviewsHydrated={true} />);
-  await user.selectOptions(screen.getByLabelText('按交易性质筛选'),'simulated');
+  await user.selectOptions(screen.getByLabelText('按交易性质筛选'),'simulation');
   expect(screen.getAllByRole('button',{name:/打开.*交易回合/})).toHaveLength(1);
   await user.click(screen.getByRole('button',{name:/打开.*交易回合/}));
   expect(screen.getByText('TradingView 源报告')).toBeInTheDocument();
   await user.click(screen.getByRole('button',{name:'进入逐笔复盘'}));
-  expect(openReview).toHaveBeenCalledWith('CN-SH:600330',entries.find(e=>e.executions[0].source.tradingNature==='simulated')!.episodes[0].episode.id);
+  expect(openReview).toHaveBeenCalledWith('CN-SH:600330',entries.find(e=>e.executions[0].source.tradeNature==='simulation')!.episodes[0].episode.id);
   expect(screen.getAllByText(/未提供成交时刻/).length).toBeGreaterThan(0);
 });

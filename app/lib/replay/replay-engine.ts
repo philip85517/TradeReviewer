@@ -38,6 +38,8 @@ export function createReplaySnapshot({
     .sort((a, b) => replayExecutionAt(a).localeCompare(replayExecutionAt(b)))
     .map(execution => {
       const source = { ...execution.source };
+      delete source.simulationReport;
+      delete source.sourceReport;
       if (source.openingPosition && statementPositionAt(source.openingPosition) > knowledgeAt) delete source.openingPosition;
       if (source.statementPositions) {
         source.statementPositions = source.statementPositions.filter(p => statementPositionAt(p) <= knowledgeAt);

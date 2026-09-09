@@ -650,3 +650,14 @@ describe("execution reconciliation", () => {
     expect(additions).toEqual([incoming]);
   });
 });
+
+it("keeps simulations separate from live fills and other runs in the same account", () => {
+  const live = fill({ fingerprint: "live", accountId: "shared", executedAt: "2025-01-01T00:00:00Z" });
+  live.source.timePrecision = "date-only";
+  const simulation = { ...live, id: "sim-a", source: { ...live.source, platform: "tradingview", fileFingerprint: "sim-a", tradeNature: "simulation" as const, simulationRunId: "run-a", sourceTradeId: "1" } };
+  const other = { ...simulation, id: "sim-b", source: { ...simulation.source, fileFingerprint: "sim-b", simulationRunId: "run-b" } };
+  const result = reconcileExecutions([live, simulation], [other]);
+  expect(result.acceptedIncoming).toEqual([other]);
+  expect(result.duplicates).toEqual([]);
+  expect(result.conflicts).toEqual([]);
+});

@@ -32,6 +32,19 @@ export type ExecutionGroup = {
     venue?: string;
   }>;
 };
+export type TradeNature = "live" | "simulation" | "unknown";
+
+export type TradingViewSourceReport = {
+  netPnl: string;
+  returnPercent: string;
+  favorableExcursion: string;
+  favorableExcursionPercent: string;
+  adverseExcursion: string;
+  adverseExcursionPercent: string;
+  cumulativePnl: string;
+  cumulativeReturnPercent: string;
+  durationBars: number;
+};
 
 export type Instrument = {
   id: string;
@@ -46,12 +59,22 @@ export type TradeExecution = {
   source: {
     platform: string;
     tradingNature?: "simulated" | "live" | "unknown";
-    simulationRunId?: string;
     simulationTradeId?: string;
     simulationRole?: "entry" | "exit";
     simulationSignal?: string;
     /** Pair-level source report, never included in the progressively revealed ledger. */
     simulationReport?: Record<string, string>;
+    /** Semantic identity within a statement, independent of file and page. */
+    statementRowFingerprint?: string;
+    formatLabel?: string;
+    /** Original settlement amounts, not recomputed from rounded display prices. */
+    settlement?: {
+      currency: string;
+      quantity: string;
+      grossAmount: string;
+      netAmount: string;
+      fees: Record<string,string>;
+    };
     /** Explicitly confirmed session; absence must not imply grey-market trading. */
     tradingSession?: "grey-market";
     sheet?: string;
@@ -92,10 +115,14 @@ export type TradeExecution = {
     positionEvents?: StatementEvent[];
     /** Statement IDs with unresolved inventory evidence affecting this execution. */
     historyIncomplete?: string[];
-    inputKind?: "statement" | "screenshot";
+    inputKind?: "statement" | "screenshot" | "tradingview";
     batchId?: string;
     captureIndex?: number;
     sourceBounds?: SourceBounds;
+    tradeNature?: TradeNature;
+    simulationRunId?: string;
+    sourceTradeId?: string;
+    sourceReport?: TradingViewSourceReport;
   };
   accountId: string;
   accountLabel: string;
@@ -118,6 +145,8 @@ export type TradeEpisode = {
   accountId: string;
   accountLabel: string;
   instrument: Instrument;
+  tradeNature?: TradeNature;
+  simulationRunId?: string;
   direction: "long" | "short";
   status: "open" | "closed";
   startedAt: string;
@@ -126,3 +155,14 @@ export type TradeEpisode = {
   remainingQuantity: string;
   executions: TradeExecution[];
 };
+
+export function tradeNatureOf(execution: TradeExecution): TradeNature {
+  return execution.source.tradeNature ?? (execution.source.tradingNature === "simulated" ? "simulation" : execution.source.tradingNature) ?? "unknown";
+}
+
+export function tradeScopeKey(execution: TradeExecution): string {
+  const nature = tradeNatureOf(execution);
+  return nature === "simulation"
+    ? `${nature}:${execution.source.simulationRunId ?? "unknown"}`
+    : nature;
+}

@@ -130,6 +130,66 @@ describe("buildTradeEpisodes", () => {
     expect(episodes[0].executions).toHaveLength(4);
   });
 
+  it("keeps live and simulated positions in separate episodes", () => {
+    const liveEntry = execution(
+      "buy",
+      "2025-01-02T14:30:00Z",
+      "100",
+      "10",
+    );
+    liveEntry.source = {
+      ...liveEntry.source,
+      tradeNature: "live",
+    };
+    const liveExit = execution(
+      "sell",
+      "2025-01-03T14:30:00Z",
+      "100",
+      "11",
+    );
+    liveExit.source = {
+      ...liveExit.source,
+      tradeNature: "live",
+    };
+    const simulatedEntry = {
+      ...execution("buy", "2025-01-02T14:30:00Z", "100", "10"),
+      id: "simulation-entry",
+      source: {
+        platform: "tradingview",
+        row: 2,
+        tradeNature: "simulation" as const,
+        simulationRunId: "tradingview:run-a",
+      },
+    };
+    const simulatedExit = {
+      ...execution("sell", "2025-01-03T14:30:00Z", "100", "11"),
+      id: "simulation-exit",
+      source: {
+        platform: "tradingview",
+        row: 3,
+        tradeNature: "simulation" as const,
+        simulationRunId: "tradingview:run-a",
+      },
+    };
+
+    const episodes = buildTradeEpisodes([
+      liveEntry,
+      liveExit,
+      simulatedEntry,
+      simulatedExit,
+    ]);
+
+    expect(episodes).toHaveLength(2);
+    expect(episodes.map((episode) => episode.tradeNature)).toEqual([
+      "live",
+      "simulation",
+    ]);
+    expect(episodes.map((episode) => episode.simulationRunId)).toEqual([
+      undefined,
+      "tradingview:run-a",
+    ]);
+  });
+
   it("closes a long and opens a short when one sell crosses through zero", () => {
     const episodes = buildTradeEpisodes([
       execution("buy", "2025-01-02T14:30:00Z", "100", "10"),
@@ -345,4 +405,41 @@ describe("buildTradeEpisodes", () => {
         .equals(reverse.fee),
     ).toBe(true);
   });
+});
+
+
+describe("statement evidence with simulation scopes", () => {
+  it("keeps broker opening inventory out of a simulation with the same account and symbol", () => {
+    const live = execution("sell", "2025-01-03T14:30:00Z", "100", "12");
+    live.source.tradeNature = "live";
+    const simulated = { ...live, id: "simulation-sale", source: { ...live.source, tradeNature: "simulation" as const, simulationRunId: "run-a" } };
+    const episodes = buildTradeEpisodes([simulated, live], [{ accountId: live.accountId, month: "2025-01", events: [], positions: [{ accountId: live.accountId, market: live.instrument.market, symbol: live.instrument.symbol, phase: "opening", date: "2025-01-01", quantity: "100", source: [] }] }]);
+    const actualEpisode = episodes.find(episode => episode.tradeNature === "live")!;
+    const simulationEpisode = episodes.find(episode => episode.tradeNature === "simulation")!;
+    expect(actualEpisode).toMatchObject({ direction: "long", status: "closed", accuracy: { pnl: "unavailable" } });
+    expect(simulationEpisode).toMatchObject({ direction: "short", status: "open", remainingQuantity: "100" });
+    expect(simulationEpisode.accuracy).toBeUndefined();
+    expect(simulationEpisode.executions[0].source.statementPositions).toBeUndefined();
+  });
+
+  it("normalizes legacy simulated evidence into the same scope as the new simulation API", () => {
+    const entry = execution("buy", "2025-01-02T14:30:00Z", "1", "10");
+    entry.source = { ...entry.source, tradingNature: "simulated", simulationRunId: "same-run" };
+    const exit = execution("sell", "2025-01-03T14:30:00Z", "1", "12");
+    exit.source = { ...exit.source, tradeNature: "simulation", simulationRunId: "same-run" };
+    expect(buildTradeEpisodes([entry, exit])).toMatchObject([{ tradeNature: "simulation", status: "closed", remainingQuantity: "0" }]);
+  });
+});
+
+
+it("preserves saved legacy simulation episode IDs and their review association", () => {
+  const entry = execution("buy", "2025-01-02T07:00:00.000Z", "1", "10");
+  entry.source = { ...entry.source, platform: "tradingview", tradingNature: "simulated", simulationRunId: "legacy-run", simulationRole: "entry" };
+  const savedId = `episode:${encodeURIComponent(JSON.stringify(["simulation:legacy-run:acct-1:US:XPEV", "2025-01-02T07:00:00.000Z", "buy", "1", "10"]))}:1`;
+  const savedReviews = { [savedId]: { note: "Existing review" } };
+  const [episode] = buildTradeEpisodes([entry]);
+  expect(episode.id).toBe(savedId);
+  expect(savedReviews[episode.id]).toEqual({ note: "Existing review" });
+  const modernEntry = { ...entry, source: { platform: "tradingview", row: 1, tradeNature: "simulation" as const, simulationRunId: "legacy-run" } };
+  expect(buildTradeEpisodes([modernEntry])[0].id).not.toBe(savedId);
 });

@@ -176,6 +176,13 @@ const apiCompletenessSql = `
 alter table coverage add column details_json text check (details_json is null or json_valid(details_json));
 `;
 
+const simulationScopeSql = `
+alter table import_batches add column trade_nature text;
+alter table import_batches add column simulation_run_id text;
+alter table executions add column trade_nature text;
+alter table executions add column simulation_run_id text;
+`;
+
 function migration(version: number, name: string, sql: string): SqliteMigration {
   return {
     version,
@@ -200,4 +207,5 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
     );
     create index trade_revisions_instrument on trade_revisions(instrument_id, recorded_at);
   `),
+  migration(5, "persist-trade-nature-and-simulation-scope", simulationScopeSql),
 ];

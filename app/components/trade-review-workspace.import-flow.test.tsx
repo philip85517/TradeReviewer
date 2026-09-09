@@ -317,14 +317,12 @@ describe("TradeReviewWorkspace", () => {
     const file=new File([csv],'回放交易_SSE_600330_2026-09-03.csv',{type:'text/csv'});
     Object.defineProperty(file,'arrayBuffer',{value:async()=>new TextEncoder().encode(csv).buffer});
     await user.upload(await screen.findByLabelText('导入 TradingView 模拟交易'),file);
-    expect(await screen.findByRole('dialog',{name:'核对模拟交易证券'})).toBeInTheDocument();
     expect(loadImportedExecutions()).toHaveLength(0);
-    await user.click(screen.getByRole('button',{name:'解析模拟交易'}));
     expect(await screen.findByRole('heading',{name:'确认导入交易记录'})).toBeInTheDocument();
-    expect(screen.getByText(/配对总手续费在出场时计入一次/)).toBeInTheDocument();
+    expect(screen.getByText(/文件只提供交易日期/)).toBeInTheDocument();
     await user.click(screen.getByRole('button',{name:'确认导入并开始更新行情'}));
     await waitFor(()=>expect(loadImportedExecutions()).toHaveLength(2));
-    expect(loadImportedExecutions()[0].source.tradingNature).toBe('simulated');
+    expect(loadImportedExecutions()[0].source.tradeNature).toBe('simulation');
     view.unmount();
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
     expect((await screen.findAllByText(/TradingView · 模拟盘/)).length).toBeGreaterThan(0);
@@ -420,7 +418,7 @@ describe("TradeReviewWorkspace", () => {
     );
     expect(loadImportHistory()).toEqual([
       expect.objectContaining({
-        sourceLabel: "招商证券",
+        sourceLabel: "A股招商银行",
         tradeCount: 1,
         instrumentCount: 1,
         unresolvedInstrumentCount: 1,

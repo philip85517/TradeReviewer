@@ -4,6 +4,7 @@ import {
   Check,
   Clock3,
   Database,
+  FileSpreadsheet,
   History,
   ImageUp,
   RefreshCw,
@@ -164,12 +165,32 @@ export function EpisodeSidebar({
             }}
           />
         </label>
-        {onTradingViewImport && <label className="import-button" role="button" tabIndex={importing ? -1 : 0}
-          onKeyDown={event=>{if (event.key==='Enter'||event.key===' ') {event.preventDefault();event.currentTarget.querySelector('input')?.click();}}}>
-          <Upload size={16} />导入 TradingView 模拟交易
-          <input type="file" aria-label="导入 TradingView 模拟交易" accept=".csv,text/csv" disabled={importing}
-            onChange={event=>{const file=event.target.files?.[0];if(file) onTradingViewImport(file);event.currentTarget.value='';}} />
-        </label>}
+        {onTradingViewImport && (
+          <label
+            className="import-button tradingview-import-button"
+            role="button"
+            tabIndex={importing ? -1 : 0}
+            onKeyDown={(event) => {
+              if (event.key !== "Enter" && event.key !== " ") return;
+              event.preventDefault();
+              event.currentTarget.querySelector("input")?.click();
+            }}
+          >
+            <FileSpreadsheet size={16} />
+            导入 TradingView 模拟 CSV
+            <input
+              aria-label="导入 TradingView 模拟 CSV"
+              type="file"
+              accept=".csv,text/csv"
+              disabled={importing}
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) onTradingViewImport(file);
+                event.currentTarget.value = "";
+              }}
+            />
+          </label>
+        )}
         <label
           className="import-button"
           role="button"

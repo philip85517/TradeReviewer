@@ -32,6 +32,22 @@ function fill(
 }
 
 describe("summarizeTradeEpisode", () => {
+  it("uses settlement amounts when statement average prices are rounded",()=>{
+    const buy=fill("buy","2025-01-01T07:00:00Z","300","76.087","5");
+    buy.source.settlement={currency:"USD",quantity:"300",grossAmount:"22826",netAmount:"-22831",fees:{commission:"5"}};
+    const sell=fill("sell","2025-01-02T07:00:00Z","300","80","5");
+    const [episode]=buildTradeEpisodes([buy,sell]);
+    expect(summarizeTradeEpisode(episode)).toMatchObject({grossExposure:"22826",netPnl:"1164"});
+  });
+  it("allocates original settlement across a split closing and reversing fill",()=>{
+    const buy=fill("buy","2025-01-01T07:00:00Z","100","10","0");
+    const sell=fill("sell","2025-01-02T07:00:00Z","200","11","0");
+    sell.source.settlement={currency:"USD",quantity:"200",grossAmount:"2201",netAmount:"2201",fees:{}};
+    const episodes=buildTradeEpisodes([buy,sell]);
+    expect(summarizeTradeEpisode(episodes[0]).netPnl).toBe("100.5");
+    expect(summarizeTradeEpisode(episodes[1]).grossExposure).toBe("1100.5");
+  });
+
   it("calculates fee-adjusted PnL and return for a closed long episode", () => {
     const [episode] = buildTradeEpisodes([
       fill("buy", "2025-01-02T14:30:00Z", "100", "10", "2"),

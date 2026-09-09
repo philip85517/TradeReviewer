@@ -136,6 +136,9 @@ export function ImportConfirmDialog({
           </div>
         )}
 
+        {(preview.notices?.length ?? 0) > 0 && <section className="import-warning" aria-label="账单解析说明">
+          {preview.notices?.map(message=><p key={message}>{message}</p>)}
+        </section>}
         <div className="import-stat-grid">
           <div>
             <CalendarRange size={17} />

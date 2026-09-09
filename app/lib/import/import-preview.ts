@@ -1,3 +1,4 @@
+import { STATEMENT_FORMATS } from "./statement-formats";
 import type { InstrumentMetadataFailure } from "../instruments/metadata-contracts";
 import {
   canonicalInstrumentId,
@@ -11,7 +12,6 @@ import type { TradeExecution } from "../trades/types";
 import type { TradeNature } from "../trades/types";
 import type {
   ImportExclusion,
-  StatementBroker,
   StatementParseResult,
 } from "./contracts";
 import {
@@ -40,6 +40,7 @@ export type ImportPreview = {
   excludedInstrumentCount: number;
   firstTradeAt?: string;
   lastTradeAt?: string;
+  notices?: string[];
   blocked: boolean;
 };
 
@@ -50,12 +51,6 @@ type CreateImportPreviewOptions = {
   conflictTradeCount?: number;
 };
 
-const BROKER_LABELS: Record<StatementBroker, string> = {
-  futu: "富途证券",
-  tiger: "Tiger 证券",
-  "china-merchants": "招商证券",
-  tradingview: "TradingView · 模拟盘",
-};
 
 function groupedExclusions(
   exclusions: ImportExclusion[],
@@ -205,7 +200,7 @@ export function createImportPreview(
             : "交易截图"
         : sourceKind === "tradingview"
           ? "TradingView · 模拟盘"
-          : BROKER_LABELS[enriched.broker],
+          : STATEMENT_FORMATS[enriched.broker].label,
     sourceKind,
     ...(source?.tradeNature || enriched.tradeNature
       ? { tradeNature: source?.tradeNature ?? enriched.tradeNature }
@@ -213,6 +208,11 @@ export function createImportPreview(
     ...(source?.simulationRunId || enriched.simulationRunId
       ? { simulationRunId: source?.simulationRunId ?? enriched.simulationRunId }
       : {}),
+    notices: [...new Set([
+      ...(enriched.importable.some(record=>record.source.timePrecision === "date-only") && !enriched.importable.some(record=>record.source.platform === "tradingview")
+        ? ["账单仅提供交易日期，未提供成交时刻；同日记录按账单顺序展示。"] : []),
+      ...enriched.diagnostics.filter(item=>item.severity !== "info").map(item=>item.message),
+    ])],
     ...(options.sourceKind === "screenshot" &&
     typeof options.captureCount === "number"
       ? { captureCount: options.captureCount }

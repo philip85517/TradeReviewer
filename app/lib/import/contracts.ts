@@ -38,6 +38,7 @@ export type TradingViewSimulationContext = {
 
 export type ImportExclusion = {
   category:
+    | "market"
     | "fund"
     | "fx"
     | "bond"

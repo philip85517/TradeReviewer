@@ -159,6 +159,16 @@ function validateExecution(value: unknown): asserts value is TradeExecution {
   if (item.side !== "buy" && item.side !== "sell") throw new Error("Invalid execution");
   validateInstrument(item.instrument);
   if (!item.source || typeof item.source !== "object" || typeof item.source.platform !== "string" || typeof item.source.row !== "number") throw new Error("Invalid execution");
+  const source = item.source;
+  if (source.settlement !== undefined) {
+    const settlement = asRecord(source.settlement, "cash settlement");
+    assertStringFields(settlement,["currency","quantity","grossAmount","netAmount"],"cash settlement");
+    const validDecimal = (value: unknown) => typeof value === "string" && /^-?\d+(?:\.\d+)?$/.test(value) && Number.isFinite(Number(value));
+    if (![settlement.quantity,settlement.grossAmount,settlement.netAmount].every(validDecimal)
+      || Number(settlement.quantity) <= 0 || Number(settlement.grossAmount) <= 0) throw new Error("Invalid cash settlement");
+    const fees=asRecord(settlement.fees,"settlement fees");
+    if (Object.values(fees).some(value=>!validDecimal(value)||Number(value)<0)) throw new Error("Invalid settlement fees");
+  }
   validateTradeScope(item.source.tradeNature, item.source.simulationRunId, "execution");
 }
 

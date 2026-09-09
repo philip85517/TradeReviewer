@@ -43,7 +43,6 @@ describe("China Merchants Securities PDF import", () => {
 
     expect(result.broker).toBe("china-merchants");
     expect(result.records.map((record) => record.instrument.symbol)).toEqual([
-      "700",
       "518880",
       "600938",
       "518880",
@@ -52,17 +51,10 @@ describe("China Merchants Securities PDF import", () => {
     expect(result.records.map((record) => record.side)).toEqual([
       "buy",
       "buy",
-      "buy",
       "sell",
       "sell",
     ]);
     expect(result.candidates).toEqual([
-      {
-        market: "HK",
-        symbol: "700",
-        sourceName: "匿名港股",
-        sourceAssetType: "unknown",
-      },
       {
         market: "CN-SH",
         symbol: "518880",
@@ -92,22 +84,22 @@ describe("China Merchants Securities PDF import", () => {
     const result = parseChinaMerchantsPages(CHINA_MERCHANTS_PAGES, options);
 
     expect(result.records[0]).toMatchObject({
-      executedAt: "2025-01-02T07:00:00.000Z",
-      quantity: "100",
-      price: "300",
-      fee: "6",
+      executedAt: "2025-01-03T07:00:00.000Z",
+      quantity: "1000",
+      price: "6.5",
+      fee: "3.2",
       source: {
         platform: "china-merchants",
         page: 2,
-        sourceOrder: 0,
+        sourceOrder: 1,
         timePrecision: "date-only",
-        sourceTimestampText: "20250102",
+        sourceTimestampText: "20250103",
         sourceTimezone: "Asia/Shanghai",
       },
     });
     expect(result.records.slice(0, 3).map((record) => record.source.sourceOrder))
-      .toEqual([0, 1, 2]);
-    expect(result.records[1]?.executedAt).toBe(result.records[2]?.executedAt);
+      .toEqual([1, 2, 3]);
+    expect(result.records[0]?.executedAt).toBe(result.records[1]?.executedAt);
   });
 
   it("preserves legitimate identical fills as separate executions", () => {
@@ -150,12 +142,6 @@ describe("China Merchants Securities PDF import", () => {
     );
 
     expect(result.candidates).toEqual([
-      {
-        market: "CN-SZ",
-        symbol: "150001",
-        sourceName: undefined,
-        sourceAssetType: "unknown",
-      },
       {
         market: "CN-SZ",
         symbol: "159001",

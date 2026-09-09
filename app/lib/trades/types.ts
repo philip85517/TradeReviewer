@@ -28,6 +28,17 @@ export type TradeExecution = {
   id: string;
   source: {
     platform: string;
+    /** Semantic identity within a statement, independent of file and page. */
+    statementRowFingerprint?: string;
+    formatLabel?: string;
+    /** Original settlement amounts, not recomputed from rounded display prices. */
+    settlement?: {
+      currency: string;
+      quantity: string;
+      grossAmount: string;
+      netAmount: string;
+      fees: Record<string,string>;
+    };
     /** Explicitly confirmed session; absence must not imply grey-market trading. */
     tradingSession?: "grey-market";
     sheet?: string;

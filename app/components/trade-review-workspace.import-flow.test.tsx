@@ -308,7 +308,7 @@ describe("TradeReviewWorkspace", () => {
     );
     expect(loadImportHistory()).toEqual([
       expect.objectContaining({
-        sourceLabel: "招商证券",
+        sourceLabel: "A股招商银行",
         tradeCount: 1,
         instrumentCount: 1,
         unresolvedInstrumentCount: 1,

@@ -7,6 +7,19 @@ import { EpisodeNotesPanel } from "./episode-notes-panel";
 describe("EpisodeNotesPanel", () => {
   afterEach(cleanup);
 
+  it("lets the user expand the summary without hiding or losing the plan draft", async () => {
+    const user = userEvent.setup();
+    render(<EpisodeNotesPanel episodeId="stage-1" instrumentId="HK:9868" onSave={vi.fn().mockResolvedValue(undefined)} />);
+    expect(screen.getByLabelText("买入理由")).toBeVisible();
+    expect(screen.getByLabelText("风险管理")).not.toBeVisible();
+    await user.type(screen.getByLabelText("买入理由"), "等待确认");
+    await user.click(screen.getByText("事后总结", { selector: "summary" }));
+    await user.type(screen.getByRole("textbox", { name: "风险管理" }), "控制风险");
+    expect(screen.getByRole("textbox", { name: "风险管理" })).toBeVisible();
+    expect(screen.getByLabelText("风险管理")).toBeVisible();
+    expect(screen.getByLabelText("买入理由")).toHaveValue("等待确认");
+  });
+
   it("keeps every plan and review field, tags, completion, and save status editable", async () => {
     const user = userEvent.setup();
     const onSave = vi.fn().mockResolvedValue(undefined);

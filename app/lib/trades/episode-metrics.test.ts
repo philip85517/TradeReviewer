@@ -32,6 +32,18 @@ function fill(
 }
 
 describe("summarizeTradeEpisode", () => {
+  it("does not certify net profit when a reported fee is missing", () => {
+    const buy = fill("buy", "2025-01-02T14:30:00Z", "1", "10", "0");
+    buy.source.feeStatus = "unknown";
+    const [episode] = buildTradeEpisodes([buy, fill("sell", "2025-01-09T14:30:00Z", "1", "12", "0")]);
+    expect(episode.accuracy?.reasons).toContain("unknown-fees");
+    expect(summarizeTradeEpisode(episode)).toMatchObject({ pnlAvailable: false, netPnl: null, returnPercent: null });
+  });
+  it("does not report sale proceeds as profit when acquisition history is missing", () => {
+    const sale = fill("sell", "2025-01-09T14:30:00Z", "100", "12", "3");
+    sale.source.openingPosition = { accountId: "acct-1", market: "US", symbol: "XPEV", phase: "opening", date: "2025-01-01", quantity: "100", source: [] };
+    expect(summarizeTradeEpisode(buildTradeEpisodes([sale])[0], "13")).toMatchObject({ pnlAvailable: false, netPnl: null, unrealizedPnl: null, returnPercent: null, holdingMilliseconds: null });
+  });
   it("uses settlement amounts when statement average prices are rounded",()=>{
     const buy=fill("buy","2025-01-01T07:00:00Z","300","76.087","5");
     buy.source.settlement={currency:"USD",quantity:"300",grossAmount:"22826",netAmount:"-22831",fees:{commission:"5"}};

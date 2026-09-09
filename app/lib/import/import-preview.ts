@@ -1,5 +1,4 @@
 import { STATEMENT_FORMATS } from "./statement-formats";
-import { buildTradeEpisodes } from "../trades/episodes";
 import type { InstrumentMetadataFailure } from "../instruments/metadata-contracts";
 import {
   canonicalInstrumentId,
@@ -10,6 +9,7 @@ import {
   type InstrumentTradeSummary,
 } from "../trades/instruments";
 import type { TradeExecution } from "../trades/types";
+import type { TradeNature } from "../trades/types";
 import type {
   ImportExclusion,
   StatementParseResult,
@@ -20,10 +20,14 @@ import {
 } from "./enrich-import";
 
 export type ImportPreview = {
+  monthly?: StatementParseResult["monthly"];
+  diagnostics?: StatementParseResult["diagnostics"];
   id: string;
   fileName: string;
   sourceLabel: string;
-  sourceKind: "statement" | "screenshot";
+  sourceKind: "statement" | "screenshot" | "tradingview";
+  tradeNature?: TradeNature;
+  simulationRunId?: string;
   captureCount?: number;
   records: TradeExecution[];
   instruments: InstrumentTradeSummary[];
@@ -39,12 +43,12 @@ export type ImportPreview = {
   firstTradeAt?: string;
   lastTradeAt?: string;
   notices?: string[];
-  simulation?: { rawRowCount: number; pairCount: number; episodeCount: number; diagnostics: string[] };
   blocked: boolean;
+  blockingReason?: string;
 };
 
 type CreateImportPreviewOptions = {
-  sourceKind?: "statement" | "screenshot";
+  sourceKind?: "statement" | "screenshot" | "tradingview";
   captureCount?: number;
   duplicateTradeCount?: number;
   conflictTradeCount?: number;
@@ -166,7 +170,7 @@ export function createImportPreview(
     (options.sourceKind === "screenshot"
       ? enriched.importable[0]?.source.batchId
       : undefined) ??
-    enriched.importable[0]?.source.fileFingerprint ??
+    enriched.monthly?.documentId ?? enriched.importable[0]?.source.fileFingerprint ??
     `${enriched.broker}:${fileName}:${enriched.importable.length}`;
   const unresolvedSymbols = new Set(
     enriched.unresolved.map((failure) =>
@@ -182,30 +186,38 @@ export function createImportPreview(
         ),
     ),
   );
+  const sourceKind =
+    options.sourceKind ??
+    (enriched.broker === "tradingview" ? "tradingview" : "statement");
+  const source = enriched.importable[0]?.source;
 
   return {
-    id: `import:${enriched.importable[0]?.source.simulationRunId ?? fingerprint}`,
-    ...(enriched.broker === "tradingview" ? { simulation: {
-      rawRowCount: enriched.importable.length + enriched.exclusions.reduce((sum,item)=>sum+item.count,0),
-      pairCount: new Set(enriched.importable.map(item=>item.source.simulationTradeId)).size,
-      episodeCount: buildTradeEpisodes(enriched.importable).length,
-      diagnostics: enriched.diagnostics.map(item=>item.message),
-    } } : {}),
+    id: `import:${fingerprint}`,
+    monthly: result.monthly,
+    diagnostics: result.diagnostics,
     fileName,
     sourceLabel:
-      options.sourceKind === "screenshot"
+      sourceKind === "screenshot"
         ? enriched.broker === "futu"
           ? "富途截图"
           : enriched.broker === "tiger"
             ? "老虎截图"
             : "交易截图"
-        : STATEMENT_FORMATS[enriched.broker].label,
+        : sourceKind === "tradingview"
+          ? "TradingView · 模拟盘"
+          : STATEMENT_FORMATS[enriched.broker].label,
+    sourceKind,
+    ...(source?.tradeNature || enriched.tradeNature
+      ? { tradeNature: source?.tradeNature ?? enriched.tradeNature }
+      : {}),
+    ...(source?.simulationRunId || enriched.simulationRunId
+      ? { simulationRunId: source?.simulationRunId ?? enriched.simulationRunId }
+      : {}),
     notices: [...new Set([
       ...(enriched.importable.some(record=>record.source.timePrecision === "date-only") && !enriched.importable.some(record=>record.source.platform === "tradingview")
         ? ["账单仅提供交易日期，未提供成交时刻；同日记录按账单顺序展示。"] : []),
       ...enriched.diagnostics.filter(item=>item.severity !== "info").map(item=>item.message),
     ])],
-    sourceKind: options.sourceKind ?? "statement",
     ...(options.sourceKind === "screenshot" &&
     typeof options.captureCount === "number"
       ? { captureCount: options.captureCount }
@@ -230,7 +242,7 @@ export function createImportPreview(
     firstTradeAt: times[0],
     lastTradeAt: times.at(-1),
     blocked:
-      enriched.importable.length === 0 ||
-      ("blocked" in result && result.blocked),
+      (enriched.importable.length === 0 && !result.monthly) ||
+      Boolean("blocked" in result && result.blocked),
   };
 }

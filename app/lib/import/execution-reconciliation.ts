@@ -1,9 +1,8 @@
-import { simulationScope } from "../trades/trading-nature";
 import { Temporal } from "@js-temporal/polyfill";
 import Decimal from "decimal.js";
 
 import { canonicalInstrumentId } from "../instruments/display-name";
-import type { TradeExecution } from "../trades/types";
+import { tradeNatureOf, tradeScopeKey, type TradeExecution } from "../trades/types";
 
 export type ReconciliationDecision =
   | "keep-existing"
@@ -81,7 +80,10 @@ function executionInstrumentIdentity(execution: TradeExecution) {
 }
 
 export function executionCandidateKey(execution: TradeExecution) {
-  return `${execution.source.timePrecision === "date-only" ? `account:${execution.accountId}|` : ""}${simulationScope(execution) ? `${simulationScope(execution)}:${execution.source.simulationTradeId}:${execution.source.simulationRole}|` : ""}${executionInstrumentIdentity(execution)}|${
+  const simulation = tradeNatureOf(execution) === "simulation"
+    ? `${tradeScopeKey(execution)}:${execution.source.sourceTradeId ?? execution.source.simulationTradeId ?? ""}|`
+    : "";
+  return `${simulation}${execution.source.timePrecision === "date-only" ? `account:${execution.accountId}|` : ""}${executionInstrumentIdentity(execution)}|${
     executionInstantIdentity(execution.executedAt).value
   }`;
 }
@@ -102,6 +104,17 @@ function executionCoreIdentity(execution: TradeExecution) {
 
 export function executionCoreKey(execution: TradeExecution) {
   return executionCoreIdentity(execution).value;
+}
+
+function reportedFeesDisagree(left: TradeExecution, right: TradeExecution) {
+  if (left.source.feeStatus !== "reported" || right.source.feeStatus !== "reported") return false;
+  try {
+    const leftFee = new Decimal(left.fee);
+    const rightFee = new Decimal(right.fee);
+    return leftFee.isFinite() && rightFee.isFinite() && !leftFee.eq(rightFee);
+  } catch {
+    return false;
+  }
 }
 
 export function executionSourceIdentity(execution: TradeExecution) {
@@ -133,6 +146,20 @@ export function compareExecutions(
   left: TradeExecution,
   right: TradeExecution,
 ) {
+  const isCalendarDate = (value: string) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    try { Temporal.PlainDate.from(value); return true; } catch { return false; }
+  };
+  // Date-only evidence belongs in its calendar day, not after every timestamp
+  // in the library. This ordering does not manufacture an execution instant.
+  if (isCalendarDate(left.executedAt) || isCalendarDate(right.executedAt)) {
+    const day = (execution: TradeExecution) => execution.executedAt.slice(0, 10);
+    const difference = day(left).localeCompare(day(right));
+    if (difference) return difference;
+    const precisionOrder = Number(isCalendarDate(right.executedAt)) - Number(isCalendarDate(left.executedAt));
+    if (precisionOrder) return precisionOrder;
+    return (left.source.sourceOrder ?? left.source.row) - (right.source.sourceOrder ?? right.source.row) || left.id.localeCompare(right.id);
+  }
   const leftKey = executionOrderKey(left);
   const rightKey = executionOrderKey(right);
   const categoryDifference = leftKey.timeCategory - rightKey.timeCategory;
@@ -223,6 +250,10 @@ export function compareExecutionEvidence(
   left: TradeExecution,
   right: TradeExecution,
 ) {
+  // A reported zero is evidence too; unknown placeholders must not outrank it.
+  // Leave records without explicit fee status on the legacy ranking path.
+  if (left.source.feeStatus === "reported" && right.source.feeStatus === "unknown") return 1;
+  if (right.source.feeStatus === "reported" && left.source.feeStatus === "unknown") return -1;
   const leftRank = evidenceRank(left);
   const rightRank = evidenceRank(right);
   const leftCount = leftRank[0] + leftRank[1] + leftRank[2];
@@ -339,7 +370,17 @@ export function reconcileExecutions(
     { current: TaggedExecution[]; incoming: TaggedExecution[] }
   >();
 
-  const candidateGroups = groupBy(tagged, ({ candidateKey }) => candidateKey);
+  const baseCandidateGroups = groupBy(tagged, ({ candidateKey }) => candidateKey);
+  const candidateGroups = new Map<string, TaggedExecution[]>();
+  for (const [key, group] of baseCandidateGroups) {
+    if (group.some(item => item.execution.source.statementMonth || item.execution.source.templateId)) {
+      // A monthly statement identifies an account. Do not collapse identical
+      // fills in distinct accounts, even when older screenshot imports did.
+      for (const [account, members] of groupBy(group, item => item.execution.accountId)) {
+        candidateGroups.set(`${key}|account:${account}`, members);
+      }
+    } else candidateGroups.set(key, group);
+  }
   for (const [candidateKey, candidateGroup] of [...candidateGroups].sort(
     ([left], [right]) => left.localeCompare(right),
   )) {
@@ -390,6 +431,28 @@ export function reconcileExecutions(
           continue;
         }
 
+        // Contradictory reported fees require the same explicit choice as a
+        // quantity/price conflict. Keep them intact when merging a decided batch.
+        const feeConflicts = automaticPair.filter(left => automaticPair.some(right =>
+          reportedFeesDisagree(left.execution, right.execution),
+        ));
+        if (feeConflicts.length > 0) {
+          const feeRepresentatives = [...groupBy(feeConflicts, record => new Decimal(record.execution.fee).toString()).values()]
+            .map(group => selectRepresentative(group, record => sourceMultiplicity.get(record.sourceInstanceId) ?? 0));
+          const retained = new Set(feeRepresentatives);
+          for (const record of feeRepresentatives) {
+            unmatched[record.origin].push(record);
+            if (record.origin === "incoming") acceptedIncoming.add(record);
+          }
+          for (const skipped of automaticPair.filter(record => !retained.has(record))) {
+            const kept = feeRepresentatives.find(record => skipped.execution.source.feeStatus === "reported" &&
+              !reportedFeesDisagree(record.execution, skipped.execution)) ?? selectRepresentative(feeRepresentatives);
+            duplicates.push({ kept: kept.execution, skipped: skipped.execution });
+            if (kept.origin === "incoming" && skipped.origin === "current") automaticReplacementIds.add(skipped.execution.id);
+          }
+          continue;
+        }
+
         const kept = selectRepresentative(
           automaticPair,
           ({ sourceInstanceId }) =>
@@ -422,7 +485,7 @@ export function reconcileExecutions(
           existing.coreVerified &&
           candidate.coreVerified &&
           existing.sourceInstanceId !== candidate.sourceInstanceId &&
-          existing.coreKey !== candidate.coreKey,
+          (existing.coreKey !== candidate.coreKey || reportedFeesDisagree(existing.execution, candidate.execution)),
       ),
     );
     if (conflictingIncoming.length === 0) continue;
@@ -436,7 +499,7 @@ export function reconcileExecutions(
           existing.coreVerified &&
           candidate.coreVerified &&
           existing.sourceInstanceId !== candidate.sourceInstanceId &&
-          existing.coreKey !== candidate.coreKey,
+          (existing.coreKey !== candidate.coreKey || reportedFeesDisagree(existing.execution, candidate.execution)),
       ),
     );
     for (const conflict of conflictingIncoming) {

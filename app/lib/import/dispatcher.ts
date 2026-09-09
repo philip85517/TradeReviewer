@@ -1,20 +1,20 @@
-import { isTradingViewCsv, parseTradingViewCsv, type TradingViewInstrument } from "./tradingview";
 import type { ImportDiagnostic } from "./import-result";
 import type { PdfTextPage } from "./pdf-text";
 import { extractPdfPages } from "./pdf-text";
-import {
-  detectChinaMerchantsStatement,
-  parseChinaMerchantsPages,
-} from "./china-merchants";
-import type { StatementBroker, StatementParseResult } from "./contracts";
+import type { StatementParseResult } from "./contracts";
 import { fingerprintBytes } from "./file-fingerprint";
-import { detectFutuWorkbook, parseFutuWorkbook } from "./futu";
+import { attachStatementEvidence } from "./statement-evidence";
+import type { StatementTimeOptions } from "./monthly-statement";
 import {
-  detectTigerStatement,
-  parseTigerPages,
-} from "./tiger";
-
-const REQUIRED_CONFIDENCE = 0.8;
+  adaptersFor,
+  STATEMENT_DETECTION_THRESHOLD,
+  type StatementAdapterOptions,
+} from "./statement-adapters";
+import {
+  detectTradingViewSimulationCsv,
+  parseTradingViewSimulationCsv,
+} from "./tradingview-simulation";
+import type { TradingViewSimulationContext } from "./contracts";
 
 type LocalStatementFile = Pick<File, "name" | "arrayBuffer"> & {
   type?: string;
@@ -22,9 +22,9 @@ type LocalStatementFile = Pick<File, "name" | "arrayBuffer"> & {
 
 type ExtractPdfPages = (input: ArrayBuffer) => Promise<PdfTextPage[]>;
 
-export type ParseBrokerStatementOptions = {
+export type ParseBrokerStatementOptions = StatementTimeOptions & {
   extractPdfPages?: ExtractPdfPages;
-  tradingViewInstrument?: TradingViewInstrument;
+  tradingViewContext?: TradingViewSimulationContext;
 };
 
 export type StatementDispatchFailure = {
@@ -80,24 +80,47 @@ export async function parseBrokerStatement(
   const arrayBuffer = await file.arrayBuffer();
   const bytes = new Uint8Array(arrayBuffer);
   const fileFingerprint = fingerprintBytes(bytes);
-  if (isTradingViewCsv(bytes)) return parseTradingViewCsv({fileName:file.name,bytes,fileFingerprint}, options.tradingViewInstrument);
-  const futuDetection = detectFutuWorkbook(bytes);
+  const tradingViewDetection = detectTradingViewSimulationCsv(bytes);
 
   if (
-    futuDetection.matched &&
-    futuDetection.confidence >= REQUIRED_CONFIDENCE
+    tradingViewDetection.matched &&
+    tradingViewDetection.confidence >= STATEMENT_DETECTION_THRESHOLD
   ) {
-    return parseFutuWorkbook(bytes, {
+    return parseTradingViewSimulationCsv(bytes, {
       fileName: file.name,
       sourceFileId: fileFingerprint,
+      context: options.tradingViewContext,
     });
+  }
+  const workbookDetections = adaptersFor("xlsx").map((adapter) => ({
+    adapter,
+    detection: adapter.detect(bytes),
+  }));
+  const workbookMatches = workbookDetections.filter(
+    ({ detection }) =>
+      detection.matched &&
+      detection.confidence >= STATEMENT_DETECTION_THRESHOLD,
+  );
+
+  if (workbookMatches.length === 1) {
+    return workbookMatches[0].adapter.parse(bytes, {
+      fileName: file.name,
+      fileFingerprint,
+    });
+  }
+  if (workbookMatches.length > 1) {
+    return failure(
+      "ambiguous-statement-format",
+      "文件同时匹配多个工作表格式，为避免误导入已停止解析",
+      workbookDetections.flatMap(({ detection }) => detection.diagnostics ?? []),
+    );
   }
 
   if (!hasPdfSignature(bytes)) {
     return failure(
       "unsupported-statement-format",
-      "无法识别该文件，请导入富途 XLSX、Tiger PDF 或A股招商银行 PDF 对账单",
-      futuDetection.diagnostics,
+      "无法识别该文件，请导入TradingView 模拟 CSV、富途 XLSX/PDF、Tiger PDF 或A股招商银行 PDF 对账单",
+      workbookDetections.flatMap(({ detection }) => detection.diagnostics ?? []),
     );
   }
 
@@ -111,20 +134,14 @@ export async function parseBrokerStatement(
     );
   }
 
-  const detections = [
-    {
-      broker: "tiger" as const,
-      detection: detectTigerStatement(pages),
-    },
-    {
-      broker: "china-merchants" as const,
-      detection: detectChinaMerchantsStatement(pages),
-    },
-  ];
+  const detections = adaptersFor("pdf").map((adapter) => ({
+    adapter,
+    detection: adapter.detect(pages),
+  }));
   const matches = detections.filter(
     ({ detection }) =>
       detection.matched &&
-      detection.confidence >= REQUIRED_CONFIDENCE,
+      detection.confidence >= STATEMENT_DETECTION_THRESHOLD,
   );
   const detectorDiagnostics = detections.flatMap(
     ({ detection }) => detection.diagnostics ?? [],
@@ -133,7 +150,7 @@ export async function parseBrokerStatement(
   if (matches.length === 0) {
     return failure(
       "unsupported-statement-format",
-      "无法识别该 PDF，请导入 Tiger 或 A股招商银行的受支持对账单",
+      "无法识别该 PDF，请导入富途、Tiger 或A股招商银行的受支持对账单",
       detectorDiagnostics,
     );
   }
@@ -145,12 +162,24 @@ export async function parseBrokerStatement(
     );
   }
 
-  const broker: Exclude<StatementBroker, "futu"> = matches[0].broker;
-  const parseOptions = {
+  const parseOptions: StatementAdapterOptions = {
     fileName: file.name,
     fileFingerprint,
+    sourceTimezone: options.sourceTimezone,
+    overrideDocumentTimezone: options.overrideDocumentTimezone,
   };
-  return broker === "tiger"
-    ? parseTigerPages(pages, parseOptions)
-    : parseChinaMerchantsPages(pages, parseOptions);
+  const result = matches[0].adapter.parse(pages, parseOptions);
+  const withRuleEvidence = {
+    ...result,
+    records: result.records.map((record) => ({
+      ...record,
+      source: {
+        ...record.source,
+        formatRuleId: record.source.formatRuleId ?? matches[0].adapter.id,
+      },
+    })),
+  };
+  return withRuleEvidence.monthly
+    ? attachStatementEvidence(pages, withRuleEvidence)
+    : withRuleEvidence;
 }

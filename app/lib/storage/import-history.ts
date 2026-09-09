@@ -1,13 +1,16 @@
 /** MIGRATION-ONLY: load/save access the retired browser rollback copy. */
+import { isMonthlyStatement, type MonthlyStatement } from "../import/monthly-statement";
 export const IMPORT_HISTORY_STORAGE_KEY =
   "trade-reviewer:import-history:v1";
 
+import type { TradeNature } from "../trades/types";
+
 export type ImportHistoryEntry = {
+  monthly?: MonthlyStatement;
   id: string;
   fileName: string;
   sourceLabel: string;
   tradingNature?: "simulated" | "live" | "unknown";
-  simulationRunId?: string;
   importedAt: string;
   firstTradeAt?: string;
   lastTradeAt?: string;
@@ -17,7 +20,9 @@ export type ImportHistoryEntry = {
   excludedRecordCount: number;
   duplicateTradeCount: number;
   unresolvedInstrumentCount: number;
-  sourceKind?: "statement" | "screenshot";
+  sourceKind?: "statement" | "screenshot" | "tradingview";
+  tradeNature?: TradeNature;
+  simulationRunId?: string;
   captureCount?: number;
   conflictTradeCount?: number;
 };
@@ -39,11 +44,14 @@ const COUNT_FIELDS = [
 export function isLegacyImportHistoryEntry(value: unknown): value is ImportHistoryEntry {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   const candidate = value as Record<string, unknown>;
+  if (candidate.monthly !== undefined && !isMonthlyStatement(candidate.monthly)) return false;
   if (typeof candidate.id !== "string" || typeof candidate.fileName !== "string" || typeof candidate.importedAt !== "string" || typeof candidate.tradeCount !== "number" || !Number.isFinite(candidate.tradeCount) || candidate.tradeCount < 0 || typeof candidate.instrumentCount !== "number" || !Number.isFinite(candidate.instrumentCount) || candidate.instrumentCount < 0 || typeof candidate.excludedInstrumentCount !== "number" || !Number.isFinite(candidate.excludedInstrumentCount) || candidate.excludedInstrumentCount < 0) return false;
   if (candidate.sourceLabel !== undefined && typeof candidate.sourceLabel !== "string") return false;
   if (candidate.firstTradeAt !== undefined && typeof candidate.firstTradeAt !== "string") return false;
   if (candidate.lastTradeAt !== undefined && typeof candidate.lastTradeAt !== "string") return false;
-  if (candidate.sourceKind !== undefined && candidate.sourceKind !== "statement" && candidate.sourceKind !== "screenshot") return false;
+  if (candidate.sourceKind !== undefined && candidate.sourceKind !== "statement" && candidate.sourceKind !== "screenshot" && candidate.sourceKind !== "tradingview") return false;
+  if (candidate.tradeNature !== undefined && candidate.tradeNature !== "live" && candidate.tradeNature !== "simulation" && candidate.tradeNature !== "unknown") return false;
+  if (candidate.simulationRunId !== undefined && typeof candidate.simulationRunId !== "string") return false;
   return COUNT_FIELDS.every((field) => candidate[field] === undefined || (typeof candidate[field] === "number" && Number.isFinite(candidate[field]) && candidate[field] >= 0));
 }
 
@@ -60,6 +68,7 @@ function parseEntry(value: unknown): ImportHistoryEntry | undefined {
   ) {
     return {
       id: candidate.id,
+      ...(isMonthlyStatement(candidate.monthly) ? { monthly: candidate.monthly } : {}),
       fileName: candidate.fileName,
       sourceLabel:
         typeof candidate.sourceLabel === "string" &&
@@ -89,7 +98,17 @@ function parseEntry(value: unknown): ImportHistoryEntry | undefined {
         candidate.unresolvedInstrumentCount,
       ),
       sourceKind:
-        candidate.sourceKind === "screenshot" ? "screenshot" : "statement",
+        candidate.sourceKind === "screenshot"
+          ? "screenshot"
+          : candidate.sourceKind === "tradingview"
+            ? "tradingview"
+            : "statement",
+      ...(candidate.tradeNature === "live" || candidate.tradeNature === "simulation" || candidate.tradeNature === "unknown"
+        ? { tradeNature: candidate.tradeNature }
+        : {}),
+      ...(typeof candidate.simulationRunId === "string" && candidate.simulationRunId
+        ? { simulationRunId: candidate.simulationRunId }
+        : {}),
       captureCount: count(candidate.captureCount),
       conflictTradeCount: count(candidate.conflictTradeCount),
     };

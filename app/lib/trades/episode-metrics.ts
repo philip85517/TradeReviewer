@@ -3,6 +3,8 @@ import Decimal from "decimal.js";
 import type { TradeEpisode } from "./types";
 
 export type TradeEpisodeMetrics = {
+  /** False means realizedPnl/grossExposure must not be presented as reliable metrics. */
+  pnlAvailable?: false;
   buyCount: number;
   sellCount: number;
   boughtQuantity: string;
@@ -20,6 +22,7 @@ export function summarizeTradeEpisode(
   episode: TradeEpisode,
   markPrice?: string,
 ): TradeEpisodeMetrics {
+  const unavailable = Boolean(episode.accuracy) || episode.executions.some(e => e.source.feeStatus === "unknown" || e.source.historyIncomplete?.length);
   let boughtQuantity = new Decimal(0);
   let soldQuantity = new Decimal(0);
   let remainingQuantity = new Decimal(0);
@@ -110,17 +113,18 @@ export function summarizeTradeEpisode(
       : netPnl.div(grossExposure).times(100);
 
   return {
+    ...(unavailable ? { pnlAvailable: false as const } : {}),
     buyCount,
     sellCount,
     boughtQuantity: boughtQuantity.toString(),
     soldQuantity: soldQuantity.toString(),
     grossExposure: grossExposure.toString(),
     fees: fees.toString(),
-    realizedPnl: reportedRealizedPnl.toString(),
-    unrealizedPnl: unrealizedPnl?.toString() ?? null,
-    netPnl: netPnl?.toString() ?? null,
-    returnPercent: returnPercent?.toString() ?? null,
-    holdingMilliseconds: episode.endedAt
+    realizedPnl: unavailable ? "0" : reportedRealizedPnl.toString(),
+    unrealizedPnl: unavailable ? null : unrealizedPnl?.toString() ?? null,
+    netPnl: unavailable ? null : netPnl?.toString() ?? null,
+    returnPercent: unavailable ? null : returnPercent?.toString() ?? null,
+    holdingMilliseconds: episode.endedAt && !episode.accuracy
       ? new Date(episode.endedAt).getTime() -
         new Date(episode.startedAt).getTime()
       : null,

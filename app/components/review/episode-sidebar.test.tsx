@@ -1,8 +1,11 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import userEvent from "@testing-library/user-event";
 
 import type { InstrumentTradeSummary } from "../../lib/trades/instruments";
 import { EpisodeSidebar } from "./episode-sidebar";
+
+afterEach(cleanup);
 
 function summaryFor(
   id: string,
@@ -47,6 +50,29 @@ const baseProps = {
 };
 
 describe("EpisodeSidebar", () => {
+  it("finds and selects a stock among 81 entries without refreshing market data", async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    const onRefresh = vi.fn();
+    const entries = Array.from({ length: 81 }, (_, index) => ({
+      ...summaryFor(`HK:${index}`, String(index), `股票${index}`),
+      lastTradeAt: index === 80 ? "2026-01-01T00:00:00Z" : "2025-01-01T00:00:00Z",
+    }));
+    const { rerender } = render(<EpisodeSidebar {...baseProps} showDemo={false} importedInstruments={entries} pendingReviewInstrumentIds={["HK:80"]} onSelectInstrument={onSelect} onUpdateMarketData={onRefresh} />);
+    expect(screen.getAllByRole("button", { pressed: false })[0]).toHaveTextContent("股票80");
+    await user.type(screen.getByRole("searchbox", { name: "查找复盘股票" }), "不存在");
+    expect(screen.getByText("没有符合条件的股票")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "清除筛选" }));
+    await user.click(screen.getByRole("checkbox", { name: "仅看待复盘" }));
+    expect(screen.getAllByRole("button", { pressed: false })).toHaveLength(1);
+    await user.click(screen.getByRole("button", { pressed: false }));
+    expect(onSelect).toHaveBeenCalledWith("HK:80");
+    expect(onRefresh).not.toHaveBeenCalled();
+    rerender(<EpisodeSidebar {...baseProps} showDemo={false} importedInstruments={entries} pendingReviewInstrumentIds={[]} onSelectInstrument={onSelect} onUpdateMarketData={onRefresh} />);
+    expect(screen.getByText("没有符合条件的股票")).toBeInTheDocument();
+    expect(onSelect).toHaveBeenCalledTimes(1);
+  });
+
   it("hides the bundled demo and reports zero stocks when demo is disabled", () => {
     render(
       <EpisodeSidebar
@@ -76,7 +102,7 @@ describe("EpisodeSidebar", () => {
     expect(screen.getByText("1 只股票")).toBeInTheDocument();
   });
 
-  it("offers a one-click refresh for all imported market data", () => {
+  it("offers a one-click refresh for all imported market data", async () => {
     render(
       <EpisodeSidebar
         {...baseProps}
@@ -93,6 +119,7 @@ describe("EpisodeSidebar", () => {
       />,
     );
 
+    await userEvent.click(screen.getByText("行情维护"));
     expect(
       screen
         .getAllByRole("button", { name: "一键更新全部行情" })

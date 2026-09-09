@@ -1,9 +1,12 @@
-import type { TradeExecution } from './types';
+import { tradeNatureOf, type TradeExecution } from './types';
 
 export type TradingNature = 'simulated' | 'live' | 'unknown';
 
 export function tradingNature(execution: TradeExecution): TradingNature {
-  if (execution.source.tradingNature) return execution.source.tradingNature;
+  if (execution.source.tradeNature || execution.source.tradingNature) {
+    const nature = tradeNatureOf(execution);
+    return nature === 'simulation' ? 'simulated' : nature;
+  }
   if (execution.source.platform === 'tradingview') return 'simulated';
   return ['futu', 'tiger', 'china-merchants'].includes(execution.source.platform) ? 'live' : 'unknown';
 }

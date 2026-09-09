@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { Candle } from "../market/types";
 import type { TradeExecution } from "../trades/types";
 import { createReplaySnapshot } from "./replay-engine";
+import { buildTradeEpisodes } from "../trades/episodes";
 import { mapExecutionsToCandles } from "./execution-markers";
 
 const candles: Candle[] = [
@@ -40,6 +41,34 @@ const executions: TradeExecution[] = [
 ];
 
 describe("createReplaySnapshot", () => {
+  it("reveals date-only sales at day end after their same-day opening inventory", () => {
+    const sale: TradeExecution = { ...executions[1], executedAt: "2025-01-01", source: { ...executions[1].source, timePrecision: "date-only",
+      openingPosition: { accountId: "acct-1", market: "US", symbol: "XPEV", phase: "opening", date: "2025-01-01", quantity: "100", source: [] },
+    } };
+    const during = createReplaySnapshot({ candles: [], executions: [sale], cursor: "2025-01-01T12:00:00Z" });
+    expect(during.executions).toEqual([]);
+    expect(during.position.quantity).toBe("100");
+    const after = createReplaySnapshot({ candles: [], executions: [sale], cursor: "2025-01-01" });
+    expect(after.executions).toHaveLength(1);
+    expect(after.position.quantity).toBe("0");
+  });
+  it("reveals initial inventory before its first sale without revealing future trades or transfers", () => {
+    const sale: TradeExecution = { ...executions[1], source: { ...executions[1].source,
+      openingPosition: { accountId: "acct-1", market: "US", symbol: "XPEV", phase: "opening", date: "2025-01-01", quantity: "100", source: [] },
+      positionEvents: [{ id: "future", accountId: "acct-1", market: "US", symbol: "XPEV", kind: "transfer-in", date: "2025-01-09", quantity: "10", description: "transfer", source: [] }],
+    } };
+    const before = createReplaySnapshot({ candles, executions: [sale], cursor: "2025-01-06T00:00:00.000Z" });
+    expect(before.executions).toEqual([]);
+    expect(before.position).toMatchObject({ quantity: "100", costKnown: false });
+    expect(createReplaySnapshot({ candles, executions: [sale], cursor: "2025-01-08T00:00:00.000Z" }).position.quantity).toBe("0");
+  });
+  it("does not re-seed old opening inventory when replaying a reversed episode", () => {
+    const sale: TradeExecution = { ...executions[1], quantity: "150", source: { ...executions[1].source,
+      openingPosition: { accountId: "acct-1", market: "US", symbol: "XPEV", phase: "opening", date: "2025-01-01", quantity: "100", source: [] },
+    } };
+    const [, reversed] = buildTradeEpisodes([sale]);
+    expect(createReplaySnapshot({ candles, executions: reversed.executions, cursor: "2025-01-08T00:00:00.000Z" }).position.quantity).toBe("-50");
+  });
   it("returns only candles and executions at or before the replay cursor", () => {
     const snapshot = createReplaySnapshot({
       candles,
@@ -145,5 +174,24 @@ describe("createReplaySnapshot", () => {
     expect(mapExecutionsToCandles(snapshot.candles, snapshot.executions)).toEqual([]);
     const completed = createReplaySnapshot({ candles: [providerBar], executions: [fillAt1007], cursor: "2025-01-02T10:15:00.000Z" });
     expect(mapExecutionsToCandles(completed.candles, completed.executions)).toEqual([{ executionId: "buy-1", candleTime: "2025-01-02T10:00:00.000Z" }]);
+  });
+});
+
+
+describe("merged settlement and simulation evidence", () => {
+  it("uses original settlement unit costs in replay", () => {
+    const fill = { ...executions[0], quantity: "300", price: "76.087", fee: "5", source: { ...executions[0].source, settlement: { currency: "USD", quantity: "300", grossAmount: "22826", netAmount: "-22831", fees: { commission: "5" } } } };
+    const snapshot = createReplaySnapshot({ candles: [{ time: fill.executedAt, open: 80, high: 80, low: 80, close: 80, volume: 1 }], executions: [fill], cursor: fill.executedAt });
+    expect(snapshot.position).toMatchObject({ grossCapitalDeployed: "22826", unrealizedPnl: "1174", netPnl: "1169" });
+  });
+
+  it("redacts both simulation report formats and ignores broker inventory in simulation replay", () => {
+    const fill: TradeExecution = { ...executions[0], source: { ...executions[0].source, tradeNature: "simulation", simulationRunId: "run-a", simulationReport: { netPnl: "9999" }, sourceReport: { netPnl: "9999", returnPercent: "99", favorableExcursion: "1", favorableExcursionPercent: "1", adverseExcursion: "1", adverseExcursionPercent: "1", cumulativePnl: "9999", cumulativeReturnPercent: "99", durationBars: 9 } } };
+    const snapshot = createReplaySnapshot({ candles: [], executions: [fill], cursor: fill.executedAt, evidence: [{ accountId: fill.accountId, month: "2025-01", events: [], positions: [{ accountId: fill.accountId, market: fill.instrument.market, symbol: fill.instrument.symbol, phase: "opening", date: "2025-01-01", quantity: "50", source: [] }] }] });
+    expect(snapshot.position.quantity).toBe("100");
+    expect(snapshot.position.accuracy).toBeUndefined();
+    expect(snapshot.executions[0].source.sourceReport).toBeUndefined();
+    expect(snapshot.executions[0].source.simulationReport).toBeUndefined();
+    expect(fill.source.sourceReport?.netPnl).toBe("9999");
   });
 });

@@ -2,6 +2,7 @@
 
 import {
   ChartNoAxesCombined,
+  Ellipsis,
   ArrowDownUp,
   ArrowUpRight,
   BoxSelect,
@@ -17,6 +18,8 @@ import {
   Type,
   Undo2,
 } from "lucide-react";
+
+import { useRef } from "react";
 
 import type { DrawingTool } from "../../lib/chart/drawings";
 
@@ -61,9 +64,8 @@ export function DrawingToolbar({
   onClear,
   onToggleLock,
 }: Props) {
-  return (
-    <div className="drawing-toolbar" aria-label="绘图工具">
-      {tools.map((tool) => {
+  const moreRef = useRef<HTMLDetailsElement>(null);
+  const renderTool = (tool: (typeof tools)[number]) => {
         const Icon = tool.icon;
         return (
           <button
@@ -72,12 +74,19 @@ export function DrawingToolbar({
             aria-label={tool.label}
             aria-pressed={activeTool === tool.value}
             title={tool.label}
-            onClick={() => onToolChange(tool.value)}
+            onClick={() => { onToolChange(tool.value); if (moreRef.current) moreRef.current.open = false; }}
           >
             <Icon size={19} />
           </button>
         );
-      })}
+      };
+  return (
+    <div className="drawing-toolbar" aria-label="绘图工具">
+      {tools.slice(0, 3).map(renderTool)}
+      <details className="drawing-more" ref={moreRef} onKeyDown={(event) => { if (event.key === "Escape") { event.currentTarget.open = false; event.currentTarget.querySelector("summary")?.focus(); } }}>
+        <summary title="更多绘图工具"><Ellipsis size={19} /><span className="sr-only">更多绘图工具</span></summary>
+        <div className="drawing-more-tools">{tools.slice(3).map(renderTool)}</div>
+      </details>
       <div className="drawing-divider" />
       <button
         className={allLocked ? "active" : ""}

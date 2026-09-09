@@ -13,6 +13,7 @@ import type {
   NormalizedDrawing,
 } from "../../lib/chart/drawings";
 import type { DrawingCommand } from "../../lib/chart/drawing-commands";
+import type { StatementEvent } from "../../lib/import/monthly-statement";
 import type { Candle } from "../../lib/market/types";
 import {
   formatBeijingDateTime,
@@ -20,6 +21,7 @@ import {
 } from "../../lib/replay/format-time";
 import type { ChartSettings } from "../../lib/storage/chart-settings";
 import { mapExecutionsToCandles } from "../../lib/replay/execution-markers";
+import { displayTimeForCandle } from "../../lib/replay/display-time";
 import type { TradeExecution } from "../../lib/trades/types";
 import {
   DrawingCanvas,
@@ -29,6 +31,7 @@ import {
 type Props = {
   candles: Candle[];
   executions: TradeExecution[];
+  positionEvents?: StatementEvent[];
   cursor: string;
   averageCost: number;
   drawings: NormalizedDrawing[];
@@ -42,6 +45,8 @@ type Props = {
   onSelectDrawing: (id: string | null) => void;
   onCommand: (command: DrawingCommand) => void;
 };
+
+const EMPTY_POSITION_EVENTS: StatementEvent[] = [];
 
 type CrosshairCandle = Pick<
   Candle,
@@ -65,6 +70,7 @@ function chartTimeLabel(time: Time) {
 export function ReplayChart({
   candles,
   executions,
+  positionEvents = EMPTY_POSITION_EVENTS,
   cursor,
   averageCost,
   drawings,
@@ -225,10 +231,12 @@ export function ReplayChart({
         setChartReady(true);
 
         observer = new ResizeObserver(() => {
+          const range = chart.timeScale().getVisibleLogicalRange();
           chart.applyOptions({
             width: container.clientWidth,
             height: container.clientHeight,
           });
+          if (range && container.clientWidth > 0) chart.timeScale().setVisibleLogicalRange(range);
           setCoordinateVersion((version) => version + 1);
         });
         observer.observe(container);
@@ -279,32 +287,50 @@ export function ReplayChart({
       })),
     );
 
-    const executionById = new Map(
-      executions.map((execution) => [execution.id, execution]),
-    );
-    const markers = (settings.showExecutions
-      ? mapExecutionsToCandles(candles, executions)
-      : []
-    )
-      .map((mapped) => {
-        const execution = executionById.get(mapped.executionId);
-        if (!execution) return null;
-        return {
-          time: chartTime(mapped.candleTime),
-          position:
-            execution.side === "buy"
-              ? ("belowBar" as const)
-              : ("aboveBar" as const),
-          color: execution.side === "buy" ? "#26a69a" : "#ef5350",
-          shape:
-            execution.side === "buy"
-              ? ("arrowUp" as const)
-              : ("arrowDown" as const),
-          text: `${execution.side === "buy" ? "买" : "卖"} ${execution.quantity}`,
-        };
-      })
-      .filter((marker) => marker !== null)
-      .sort((a, b) => Number(a.time) - Number(b.time));
+    const executionCandleTimes = new Map(mapExecutionsToCandles(candles, executions).map(marker => [marker.executionId, marker.candleTime]));
+    const markers = settings.showExecutions
+      ? [
+          ...executions.map((execution) => {
+            const candleTime = execution.source.displayTimePolicy === "session-open" ? displayTimeForCandle(candles, {
+              at: execution.executedAt,
+              policy: execution.source.displayTimePolicy,
+              calendarDate: execution.source.marketCalendarDate ?? execution.source.tradingDate,
+            }) : executionCandleTimes.get(execution.id);
+            if (!candleTime) return null;
+            return {
+              time: chartTime(candleTime),
+              position:
+                execution.side === "buy"
+                  ? ("belowBar" as const)
+                  : ("aboveBar" as const),
+              color: execution.side === "buy" ? "#26a69a" : "#ef5350",
+              shape:
+                execution.side === "buy"
+                  ? ("arrowUp" as const)
+                  : ("arrowDown" as const),
+              text: `${execution.side === "buy" ? "买" : "卖"} ${execution.quantity}${execution.source.venue ? ` · ${execution.source.venue}` : ""}`,
+            };
+          }),
+          ...[...new Map(positionEvents.map(event => [event.id, event])).values()]
+            .filter((event) => event.kind === "ipo" && event.quantity && event.displayTimePolicy === "session-open")
+            .map((event) => {
+              const candleTime = displayTimeForCandle(candles, {
+                at: event.date,
+                policy: event.displayTimePolicy,
+              });
+              if (!candleTime) return null;
+              return {
+                time: chartTime(candleTime),
+                position: "belowBar" as const,
+                color: "#a78bfa",
+                shape: "arrowUp" as const,
+                text: `配售 ${event.quantity}`,
+              };
+            }),
+        ]
+          .filter((marker) => marker !== null)
+          .sort((a, b) => Number(a.time) - Number(b.time))
+      : [];
     (
       markerPluginRef.current as {
         setMarkers: (nextMarkers: typeof markers) => void;
@@ -333,6 +359,7 @@ export function ReplayChart({
     chartReady,
     viewportKey,
     executions,
+    positionEvents,
     settings.showAverageCost,
     settings.showExecutions,
   ]);

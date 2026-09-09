@@ -24,6 +24,7 @@ import type { ExecutionConflict, ReconciliationDecision } from "../../lib/import
 
 type Props = {
   preview: ImportPreview;
+  scopeNotice?: string;
   onCancel: () => void;
   onConfirm: () => void;
   onRetryUnresolved: (instrumentIds: string[]) => void;
@@ -88,6 +89,7 @@ function attemptSummaries(
 
 export function ImportConfirmDialog({
   preview,
+  scopeNotice,
   onCancel,
   onConfirm,
   onRetryUnresolved,
@@ -98,7 +100,7 @@ export function ImportConfirmDialog({
   saveError,
   saving = false,
 }: Props) {
-  const dialogRef = useModalFocus(()=>{if(!saving) onCancel();});
+  const dialogRef = useModalFocus(() => { if (!saving) onCancel(); });
   const unresolvedIds = preview.unresolved.map((failure) =>
     canonicalInstrumentId(failure.symbol, failure.market),
   );
@@ -119,6 +121,7 @@ export function ImportConfirmDialog({
         aria-modal="true"
         aria-labelledby="import-dialog-title"
       >
+        {scopeNotice && <p role="status" className="navigation-notice">{scopeNotice}</p>}
         <header className="modal-header">
           <div>
             <span className="eyebrow">自动解析完成</span>
@@ -128,7 +131,7 @@ export function ImportConfirmDialog({
             className="icon-button"
             disabled={saving}
             aria-label="关闭导入确认"
-            onClick={onCancel}
+            onClick={() => { if (!saving) onCancel(); }}
           >
             <X size={18} />
           </button>
@@ -339,9 +342,9 @@ export function ImportConfirmDialog({
           <button
             className="primary-button"
             disabled={preview.blocked || retryingUnresolved || conflicts.some(c => !conflictDecisions?.has(c.id)) || saving}
-            onClick={onConfirm}
+            onClick={() => { if (!saving) onConfirm(); }}
           >
-            {saving ? "正在保存…" : "确认导入并开始更新行情"}
+            {saving ? "正在保存…" : scopeNotice ? "确认补充当前股票成交" : "确认导入并开始更新行情"}
           </button>
         </footer>
       </section>

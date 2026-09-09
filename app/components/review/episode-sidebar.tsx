@@ -10,6 +10,8 @@ import {
   Upload,
 } from "lucide-react";
 
+import { useMemo, useState } from "react";
+
 import type { MarketDataSyncStatus } from "../../lib/market/sync-status";
 import { formatBeijingDate } from "../../lib/replay/format-time";
 import { marketDataStatusLabel } from "../../lib/market/sync-status";
@@ -34,6 +36,8 @@ export type ImportPhase =
   | "ready";
 
 type Props = {
+  hideImportActions?: boolean;
+  pendingReviewInstrumentIds?: string[];
   importedInstruments: InstrumentTradeSummary[];
   showDemo?: boolean;
   importing: boolean;
@@ -60,6 +64,8 @@ function shortDate(value: string) {
 }
 
 export function EpisodeSidebar({
+  hideImportActions = false,
+  pendingReviewInstrumentIds,
   importedInstruments,
   showDemo = true,
   importing,
@@ -86,6 +92,17 @@ export function EpisodeSidebar({
     failed: 0,
   },
 }: Props) {
+  const [query, setQuery] = useState("");
+  const [pendingOnly, setPendingOnly] = useState(false);
+  const pendingIds = useMemo(() => new Set(pendingReviewInstrumentIds ?? importedInstruments.map((item) => item.instrument.id)), [pendingReviewInstrumentIds, importedInstruments]);
+  const filteredInstruments = useMemo(() => {
+    const needle = query.trim().toLocaleLowerCase();
+    return importedInstruments.filter((item) =>
+      (!pendingOnly || pendingIds.has(item.instrument.id)) &&
+      (!needle || `${item.instrument.name} ${item.instrument.symbol}`.toLocaleLowerCase().includes(needle))
+    ).sort((a, b) => b.lastTradeAt.localeCompare(a.lastTradeAt) || a.instrument.id.localeCompare(b.instrument.id));
+  }, [importedInstruments, pendingIds, pendingOnly, query]);
+  const clearFilters = () => { setQuery(""); setPendingOnly(false); };
   const revealedBuys = revealedDemoExecutions.filter(
     (execution) => execution.side === "buy",
   ).length;
@@ -120,7 +137,7 @@ export function EpisodeSidebar({
         </span>
       </div>
 
-      <div className="import-actions">
+      {!hideImportActions && <div className="import-actions">
         <label
           className="import-button"
           role="button"
@@ -179,6 +196,7 @@ export function EpisodeSidebar({
           />
         </label>
       </div>
+      }
       {importing && (
         <ol
           className="import-progress"
@@ -226,21 +244,20 @@ export function EpisodeSidebar({
           })}
         </ol>
       )}
-      <p className="privacy-note">
-        自动识别已适配格式，确认前不会写入交易库。
-      </p>
+      {!hideImportActions && <p className="privacy-note">自动识别已适配格式，确认前不会写入交易库。</p>}
       {importError && (
         <p className="sidebar-import-error" role="alert">
           {importError}
         </p>
       )}
 
-      <div className="stock-list-heading">
-        <span>有成交的股票</span>
-        <b>{importedInstruments.length + (showDemo ? 1 : 0)}</b>
+      <div className="stock-list-filters">
+        <label><span className="sr-only">查找复盘股票</span><input type="search" aria-label="查找复盘股票" placeholder="搜索名称或代码" value={query} onChange={(event) => setQuery(event.target.value)} /></label>
+        <label className="pending-review-filter"><input type="checkbox" checked={pendingOnly} onChange={(event) => setPendingOnly(event.target.checked)} />仅看待复盘</label>
+        <span className="stock-sort-hint">最近交易优先</span>
       </div>
       {importedInstruments.length > 0 && onUpdateAllMarketData && (
-        <div className="bulk-market-refresh">
+        <details className="bulk-market-refresh"><summary>行情维护</summary>
           <button
             type="button"
             className="bulk-market-refresh-button"
@@ -277,10 +294,10 @@ export function EpisodeSidebar({
                 重试失败项
               </button>
             )}
-        </div>
+        </details>
       )}
       <div className="episode-list">
-        {showDemo && (
+        {showDemo && (!query || "小鹏汽车 XPEV".toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())) && !pendingOnly && (
           <button
             className={`stock-card ${selectedInstrumentId === "demo" ? "active" : ""}`}
             aria-pressed={selectedInstrumentId === "demo"}
@@ -313,7 +330,8 @@ export function EpisodeSidebar({
           </p>
         )}
 
-        {importedInstruments.map((item) => {
+        {filteredInstruments.length === 0 && importedInstruments.length > 0 && <div className="stock-filter-empty"><p>没有符合条件的股票</p><button type="button" onClick={clearFilters}>清除筛选</button></div>}
+        {filteredInstruments.map((item) => {
           const status =
             marketDataStatuses[item.instrument.id] ?? "needs-provider";
           return (
@@ -329,13 +347,13 @@ export function EpisodeSidebar({
                 <div className="stock-card-title">
                   <span className="market-chip">{item.instrument.market}</span>
                   <div>
-                    <strong>{item.instrument.name}</strong>
+                    <strong title={item.instrument.name}>{item.instrument.name}</strong>
                     <span>{item.instrument.symbol}</span>
                   </div>
                 </div>
                 <div className="stock-card-meta">
                   <span>
-                    {shortDate(item.firstTradeAt)}—{shortDate(item.lastTradeAt)}
+                    最近 {shortDate(item.lastTradeAt)}
                   </span>
                   <b>{item.tradeCount} 笔成交</b>
                 </div>

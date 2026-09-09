@@ -69,6 +69,7 @@ export type EpisodeOption = {
   startedAt: string;
   endedAt?: string;
   status: "open" | "closed";
+  contextLabel?: string;
 };
 
 type Props = {
@@ -86,6 +87,7 @@ type Props = {
   visiblePlan?: EpisodePlan;
   activePanelTab: "stats" | "notes";
   drawerOpen: boolean;
+  onInspectData?: () => void;
   onEpisodeChange: (episodeId: string) => void;
   onTimeframeChange: (timeframe: Timeframe) => void;
   onSelectInstrument: (instrumentId: string) => void;
@@ -165,6 +167,7 @@ export function ReviewChartWorkspace({
   visiblePlan,
   activePanelTab,
   drawerOpen,
+  onInspectData,
   onEpisodeChange,
   onTimeframeChange,
   onSelectInstrument,
@@ -261,11 +264,12 @@ export function ReviewChartWorkspace({
             >
               {episodeOptions.map((episode) => (
                 <option key={episode.id} value={episode.id}>
-                  {episode.label} · {episode.status === "closed" ? "已平仓" : "持仓中"}
+                  {episode.label} · {episode.contextLabel ?? (episode.status === "closed" ? "已平仓" : "持仓中")}
                 </option>
               ))}
             </select>
           </label>
+          {onInspectData && <button className="stock-data-entry" onClick={onInspectData}>检查/修复数据</button>}
         </header>
 
         <ChartToolbar
@@ -319,6 +323,7 @@ export function ReviewChartWorkspace({
             {greyMarketExecutions.length > 0 && (
               <p className="unmatched-execution-notice" role="status">{greyMarketExecutions.length} 笔暗盘成交：暂无对应暗盘行情，不绘制到普通 K 线上；成交明细仍保留。</p>
             )}
+            {model.replayNotice && <div className="replay-context-notice" role="alert">{model.replayNotice}{onInspectData && <button type="button" onClick={onInspectData}>检查历史行情</button>}</div>}
             <div className="position-strip">
               <div className="position-primary">
                 <span className={`live-dot ${playing ? "playing" : ""}`} />
@@ -334,46 +339,14 @@ export function ReviewChartWorkspace({
                 </span>
               </div>
               <div className="position-stats">
-                <span>
-                  持仓 <b>{quantityAvailable ? model.position.quantity : "待核对"}</b>
-                </span>
-                <span>
-                  均价{" "}
-                  <b>{pnlAvailable ? Number(model.position.averageCost).toFixed(2) : "待补齐成本"}</b>
-                </span>
-                <span>
-                  浮动盈亏{" "}
-                  <b className={pnlPositive ? "positive" : "negative"}>
-                    {pnlAvailable ? money(
-                      model.position.unrealizedPnl,
-                      model.instrument.currency,
-                    ) : "—"}
-                  </b>
-                </span>
-                <span>
-                  已实现{" "}
-                  <b>
-                    {pnlAvailable ? money(
-                      model.position.realizedPnl,
-                      model.instrument.currency,
-                    ) : "—"}
-                  </b>
-                </span>
-                <span>
-                  净盈亏{" "}
-                  <b
-                    data-testid="net-pnl"
-                    className={pnlPositive ? "positive" : "negative"}
-                  >
-                    {pnlAvailable ? money(model.position.netPnl, model.instrument.currency) : "历史不完整"}
-                  </b>
-                </span>
-                <span>
-                  收益率{" "}
-                  <b className={pnlPositive ? "positive" : "negative"}>
-                    {pnlAvailable ? `${Number(model.position.returnPercent).toFixed(2)}%` : "—"}
-                  </b>
-                </span>
+                <span>持仓 <b>{quantityAvailable ? model.position.quantity : "待核对"}</b></span>
+                <span>均价 <b>{pnlAvailable ? Number(model.position.averageCost).toFixed(2) : "待补齐成本"}</b></span>
+                <span>净盈亏 <b data-testid="net-pnl" className={pnlPositive ? "positive" : "negative"}>{pnlAvailable ? money(model.position.netPnl, model.instrument.currency) : "历史不完整"}</b></span>
+                <details className="secondary-position-stats"><summary>更多指标</summary><div>
+                  <span>浮动盈亏 <b>{pnlAvailable ? money(model.position.unrealizedPnl, model.instrument.currency) : "—"}</b></span>
+                  <span>已实现 <b>{pnlAvailable ? money(model.position.realizedPnl, model.instrument.currency) : "—"}</b></span>
+                  <span>收益率 <b>{pnlAvailable ? `${Number(model.position.returnPercent).toFixed(2)}%` : "—"}</b></span>
+                </div></details>
               </div>
             </div>
 
@@ -423,11 +396,6 @@ export function ReviewChartWorkspace({
                 {model.replayError && (
                   <span className="replay-error" role="alert">
                     {model.replayError}
-                  </span>
-                )}
-                {model.replayNotice && (
-                  <span className="replay-notice" role="alert">
-                    {model.replayNotice}
                   </span>
                 )}
                 <CalendarDays size={14} />
@@ -497,6 +465,7 @@ export function ReviewChartWorkspace({
         instrumentId={model.instrument.id}
         knowledgeCursor={model.cursor}
         episodeStartedAt={episodeStartedAt}
+        replayComplete={episodeOptions.find((episode) => episode.id === model.episodeId)?.status === "closed" && model.candles.length > 0 && !model.canGoForward && !model.canGoToNextExecution}
         activeTab={activePanelTab}
         onActiveTabChange={onActivePanelTabChange}
         onSaveReview={onSaveReview}

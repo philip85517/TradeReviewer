@@ -230,10 +230,12 @@ export function ReplayChart({
         setChartReady(true);
 
         observer = new ResizeObserver(() => {
+          const range = chart.timeScale().getVisibleLogicalRange();
           chart.applyOptions({
             width: container.clientWidth,
             height: container.clientHeight,
           });
+          if (range && container.clientWidth > 0) chart.timeScale().setVisibleLogicalRange(range);
           setCoordinateVersion((version) => version + 1);
         });
         observer.observe(container);

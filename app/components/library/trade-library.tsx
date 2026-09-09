@@ -8,8 +8,9 @@ import {
   Clock3,
   Database,
   Search,
+  RefreshCw,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import Decimal from "decimal.js";
 import { tradingNature } from "../../lib/trades/trading-nature";
 
@@ -40,14 +41,31 @@ import type {
 import { ReplayChart } from "../chart/replay-chart";
 import { EpisodeReviewEditor } from "../review/episode-review-editor";
 
+export type TradeLibraryBrowseState = {
+  selectedInstrumentId: string | null;
+  selectedEpisodeId: string | null;
+  query: string;
+  market: string;
+  account: string;
+  year: string;
+  positionStatus: string;
+  dataStatus: string;
+  tag: string;
+  scrollTop: number;
+};
+
 type Props = {
+  initialBrowseState?: TradeLibraryBrowseState;
+  onBrowseStateChange?: (state: TradeLibraryBrowseState) => void;
   entries: TradeLibraryEntry[];
   candlesByInstrument: Record<string, DailyCandleRecord[]>;
   marketDataStatuses: Record<string, MarketDataSyncStatus>;
   marketDataLabels?: Record<string, string>;
   timeframe: Timeframe;
   onTimeframeChange: (timeframe: Timeframe) => void;
-  onOpenInReview: (instrumentId: string, episodeId?: string) => void;
+  onOpenInReview: (instrumentId: string, episodeId: string) => void;
+  onInspectData?: (instrumentId: string, accountId: string) => void;
+  onRefreshMarketData?: (instrumentId: string) => void;
   onSaveReview: (record: EpisodeReviewRecord) => void | Promise<void>;
   reviewsHydrated: boolean;
   target?: TradeLibraryTarget;
@@ -90,33 +108,48 @@ export function TradeLibrary({
   onTimeframeChange,
   onOpenInReview,
   onSaveReview,
+  onInspectData,
+  onRefreshMarketData,
   reviewsHydrated,
   target,
+  initialBrowseState,
+  onBrowseStateChange,
 }: Props) {
   const [selectedInstrumentId, setSelectedInstrumentId] = useState<
     string | null
-  >(target?.instrumentId ?? null);
+  >(target?.instrumentId ?? initialBrowseState?.selectedInstrumentId ?? null);
   const [selectedEpisodeId, setSelectedEpisodeId] = useState<
     string | null
-  >(target?.episodeId ?? null);
+  >(target?.episodeId ?? initialBrowseState?.selectedEpisodeId ?? null);
+  const [query, setQuery] = useState(initialBrowseState?.query ?? "");
+  const [market, setMarket] = useState<FilterValue>(initialBrowseState?.market ?? "all");
+  const [account, setAccount] = useState<FilterValue>(initialBrowseState?.account ?? "all");
+  const [year, setYear] = useState<FilterValue>(initialBrowseState?.year ?? "all");
   const [nature, setNature] = useState("all");
-  const [query, setQuery] = useState("");
-  const [market, setMarket] = useState<FilterValue>("all");
-  const [account, setAccount] = useState<FilterValue>("all");
-  const [year, setYear] = useState<FilterValue>("all");
   const [positionStatus, setPositionStatus] =
-    useState<FilterValue>("all");
-  const [dataStatus, setDataStatus] = useState<FilterValue>("all");
-  const [tag, setTag] = useState<FilterValue>("all");
+    useState<FilterValue>(initialBrowseState?.positionStatus ?? "all");
+  const [dataStatus, setDataStatus] = useState<FilterValue>(initialBrowseState?.dataStatus ?? "all");
+  const [tag, setTag] = useState<FilterValue>(initialBrowseState?.tag ?? "all");
+
+  const [scrollTop, setScrollTop] = useState(initialBrowseState?.scrollTop ?? 0);
+  const sectionRef = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    onBrowseStateChange?.({ selectedInstrumentId, selectedEpisodeId, query, market, account, year, positionStatus, dataStatus, tag, scrollTop });
+  }, [selectedInstrumentId, selectedEpisodeId, query, market, account, year, positionStatus, dataStatus, tag, scrollTop, onBrowseStateChange]);
+  useLayoutEffect(() => {
+    if (!selectedInstrumentId && sectionRef.current) sectionRef.current.scrollTop = scrollTop;
+    // Restore only when returning to the list; scrolling itself must not reposition it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedInstrumentId]);
 
   const selectedEntry = entries.find(
     (entry) => (entry.groupId ?? entry.instrument.id) === selectedInstrumentId
       || (entry.instrument.id === selectedInstrumentId && (!selectedEpisodeId || entry.episodes.some(item=>item.episode.id===selectedEpisodeId))),
   );
-  const selectedEpisode =
-    selectedEntry?.episodes.find(
-      ({ episode }) => episode.id === selectedEpisodeId,
-    ) ?? selectedEntry?.episodes[0];
+  const selectedEpisode = selectedEpisodeId
+    ? selectedEntry?.episodes.find(({ episode }) => episode.id === selectedEpisodeId)
+    : selectedEntry?.episodes[0];
+  const selectionMissing = Boolean(selectedInstrumentId && (!selectedEntry || !selectedEpisode));
 
   const filterOptions = useMemo(
     () => ({
@@ -242,12 +275,15 @@ export function TradeLibrary({
               {selectedEntry.episodeCount} 个回合
             </p>
           </div>
+          {onInspectData && <button className="stock-data-entry" onClick={() => onInspectData(selectedEntry.instrument.id, selectedEpisode.episode.accountId)}>检查/修复数据</button>}
+          {onRefreshMarketData && <div className="library-market-actions">
+            <button type="button" className="secondary-action" aria-label="更新当前股票行情" disabled={marketDataStatuses[selectedEntry.instrument.id] === "syncing"} onClick={() => onRefreshMarketData(selectedEntry.instrument.id)}><RefreshCw size={16} />{marketDataStatuses[selectedEntry.instrument.id] === "syncing" ? "正在更新…" : "更新行情"}</button>
+            <span role="status">{marketDataStatusLabel(marketDataStatuses[selectedEntry.instrument.id] ?? "not-requested")}</span>
+          </div>}
           <button
             className="library-open-review"
             onClick={() =>
-              tradingNature(episode.executions[0]) === "simulated"
-                ? onOpenInReview(selectedEntry.instrument.id, episode.id)
-                : onOpenInReview(selectedEntry.instrument.id)
+              onOpenInReview(selectedEntry.instrument.id, episode.id)
             }
           >
             <BookOpenCheck size={15} />
@@ -425,7 +461,7 @@ export function TradeLibrary({
               <div className="library-chart-empty">
                 <Database size={20} />
                 <strong>本地尚无行情</strong>
-                <span>返回逐笔复盘后可手动更新这只股票。</span>
+                <span>使用上方“更新行情”补齐这只股票的数据。</span>
               </div>
             )}
 
@@ -511,7 +547,8 @@ export function TradeLibrary({
   }
 
   return (
-    <section className="trade-library" aria-label="交易库">
+    <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}>
+      {selectionMissing && <p role="alert" className="navigation-notice">原股票或交易回合已变化，请重新选择。<button type="button" onClick={() => { setSelectedInstrumentId(null); setSelectedEpisodeId(null); }}>重新选择</button></p>}
       <header className="library-header">
         <div>
           <span className="eyebrow">Trade Library</span>
@@ -629,7 +666,7 @@ export function TradeLibrary({
           </strong>
           <span>
             {entries.length === 0
-              ? "请先在逐笔复盘中导入券商成交记录。"
+              ? "使用上方“导入记录”添加券商成交记录。"
               : "调整搜索词或筛选条件后再试。"}
           </span>
         </div>

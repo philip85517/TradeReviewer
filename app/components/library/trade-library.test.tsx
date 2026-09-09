@@ -76,6 +76,7 @@ function candle(
 function setup(
   options: {
     reviewed?: boolean;
+    marketStatus?: "syncing" | "partial" | "source-unavailable";
     reviewsHydrated?: boolean;
     target?: {
       requestId: number;
@@ -147,18 +148,20 @@ function setup(
   );
   const onOpenInReview = vi.fn();
   const onSaveReview = vi.fn();
+  const onRefreshMarketData = vi.fn();
   render(
     <TradeLibrary
       entries={entries}
       candlesByInstrument={candlesByInstrument}
       marketDataStatuses={{
-        "US:XPEV": "complete",
+        "US:XPEV": options.marketStatus ?? "complete",
         "HK:1810": "partial",
       }}
       timeframe="1D"
       onTimeframeChange={vi.fn()}
       onOpenInReview={onOpenInReview}
       onSaveReview={onSaveReview}
+      onRefreshMarketData={onRefreshMarketData}
       reviewsHydrated={options.reviewsHydrated ?? true}
       target={options.target}
     />,
@@ -166,6 +169,7 @@ function setup(
   return {
     onOpenInReview,
     onSaveReview,
+    onRefreshMarketData,
     xpevEpisodeId: latestXpevEpisode?.id,
     olderXpevEpisodeId: baseEntries.find(
       (entry) => entry.instrument.id === "US:XPEV",
@@ -175,6 +179,40 @@ function setup(
 
 describe("TradeLibrary", () => {
   afterEach(() => cleanup());
+
+  it("asks for a new selection when the requested episode no longer exists", async () => {
+    const user = userEvent.setup();
+    const { onOpenInReview } = setup({ target: { requestId: 1, instrumentId: "US:XPEV", episodeId: "removed-episode" } });
+    expect(screen.getByRole("alert")).toHaveTextContent("原股票或交易回合已变化");
+    expect(screen.queryByRole("button", { name: "进入逐笔复盘" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "重新选择" }));
+    expect(screen.getByRole("button", { name: "打开小鹏汽车交易回合" })).toBeInTheDocument();
+    expect(onOpenInReview).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["syncing", "正在更新行情", true],
+    ["partial", "行情部分可用", false],
+    ["source-unavailable", "行情源暂不可用", false],
+  ] as const)("keeps the episode visible with market status %s", async (marketStatus, label, disabled) => {
+    const user = userEvent.setup();
+    setup({ marketStatus });
+    await user.click(screen.getByRole("button", { name: "打开小鹏汽车交易回合" }));
+    await user.click(screen.getByRole("button", { name: /第 1 次交易/ }));
+    expect(screen.getByRole("heading", { name: "第 1 次交易" })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(label);
+    expect(screen.getByRole("button", { name: "更新当前股票行情" }).hasAttribute("disabled")).toBe(disabled);
+  });
+
+  it("updates the selected stock from the library without leaving its episode", async () => {
+    const user = userEvent.setup();
+    const { onRefreshMarketData } = setup();
+    await user.click(screen.getByRole("button", { name: "打开小鹏汽车交易回合" }));
+    await user.click(screen.getByRole("button", { name: /第 1 次交易/ }));
+    await user.click(screen.getByRole("button", { name: "更新当前股票行情" }));
+    expect(onRefreshMarketData).toHaveBeenCalledWith("US:XPEV");
+    expect(screen.getByRole("heading", { name: "第 1 次交易" })).toBeInTheDocument();
+  });
 
   it("filters the stock level and opens a stock's recent-first episode detail", async () => {
     const user = userEvent.setup();
@@ -291,7 +329,7 @@ describe("TradeLibrary", () => {
 
   it("hands the selected stock back to replay without requesting data", async () => {
     const user = userEvent.setup();
-    const { onOpenInReview } = setup();
+    const { onOpenInReview, olderXpevEpisodeId } = setup();
 
     await user.click(
       screen.getByRole("button", { name: "打开小鹏汽车交易回合" }),
@@ -300,7 +338,9 @@ describe("TradeLibrary", () => {
       screen.getByRole("button", { name: "进入逐笔复盘" }),
     );
 
-    expect(onOpenInReview).toHaveBeenCalledWith("US:XPEV");
+    await user.click(screen.getByRole("button", { name: /第 1 次交易/ }));
+    await user.click(screen.getByRole("button", { name: "进入逐笔复盘" }));
+    expect(onOpenInReview).toHaveBeenLastCalledWith("US:XPEV", olderXpevEpisodeId);
   });
 
   it("shows persisted review facts and saves the selected episode", async () => {

@@ -1,5 +1,8 @@
 import "server-only";
 
+import Decimal from "decimal.js";
+import { Temporal } from "@js-temporal/polyfill";
+import { canonicalRecord, type TradeRevision, type TradeRevisionRequest, type TradeRevisionResult } from "./trade-revisions";
 import { createHash } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 
@@ -706,6 +709,75 @@ export class SqliteStore {
       const result = this.mergeExecutionsInTransaction(input.executions);
       for (const entry of input.importHistory ?? []) this.putImportHistory(entry);
       return result;
+    });
+  }
+
+  getTradeRevisions(instrumentId: string): TradeRevision[] {
+    return (this.database.prepare("select revision_json from trade_revisions where instrument_id = ? order by recorded_at desc, rowid desc").all(instrumentId) as Row[]).map((row) => parseJson<TradeRevision>(row.revision_json, "trade revision"));
+  }
+
+  reviseTrades(value: unknown): TradeRevisionResult {
+    const input = value as TradeRevisionRequest;
+    if (!input || typeof input !== "object" || typeof input.id !== "string" || !input.id || input.id.length > 200 || typeof input.instrumentId !== "string" || !input.instrumentId || typeof input.accountId !== "string" || !input.accountId || typeof input.reason !== "string" || !input.reason.trim() || input.reason.length > 2000 || !Array.isArray(input.changes) || input.changes.length === 0 || input.changes.length > 500) throw new Error("Invalid trade revision");
+    json(input, "trade revision");
+    if (input.importHistory) {
+      validateImportHistory(input.importHistory);
+      if (input.importHistory.instrumentCount !== 1 || !input.expectedScope) throw new Error("Invalid supplement batch");
+    }
+    const ids = new Set<string>();
+    for (const change of input.changes) {
+      if (!change || typeof change !== "object" || !("before" in change) || !("after" in change) || (!change.before && !change.after)) throw new Error("Invalid trade change");
+      for (const record of [change.before, change.after]) {
+        if (record === null) continue;
+        validateExecution(record);
+        if (record.instrument.id !== input.instrumentId || record.accountId !== input.accountId) throw new Error("Invalid trade scope");
+      }
+      if (change.after) {
+        try {
+          Temporal.Instant.from(change.after.executedAt);
+          for (const field of ["quantity", "price", "fee"] as const) {
+            const value = new Decimal(change.after[field]);
+            if (!value.isFinite() || (field === "fee" ? value.lt(0) : value.lte(0))) throw new Error();
+          }
+        } catch { throw new Error("Invalid trade values"); }
+      }
+      const id = (change.before ?? change.after)!.id;
+      if (ids.has(id) || (change.before && change.after && change.before.id !== change.after.id)) throw new Error("Invalid trade identity");
+      ids.add(id);
+    }
+    return withSqliteTransaction(this.database, () => {
+      const requestJson = canonicalRecord(input);
+      const existing = this.database.prepare("select request_json, revision_json from trade_revisions where id = ?").get(input.id) as Row | undefined;
+      if (existing) {
+        if (existing.request_json !== requestJson) throw new Error("Trade revision conflict");
+        return { executions: this.getExecutions(), revision: parseJson<TradeRevision>(existing.revision_json, "revision") };
+      }
+      const current = new Map(this.getExecutions().map((execution) => [execution.id, execution]));
+      const instrument = this.getInstruments().find(instrument => instrument.id === input.instrumentId);
+      if (!instrument) throw new Error("Invalid trade instrument");
+      for (const change of input.changes) {
+        if (change.after && (["symbol", "market", "currency"] as const).some(key => change.after!.instrument[key] !== instrument[key])) throw new Error("Invalid trade instrument");
+      }
+      if (input.expectedScope !== undefined) {
+        if (!Array.isArray(input.expectedScope)) throw new Error("Invalid scope snapshot");
+        const actual = [...current.values()].filter(e => e.instrument.id === input.instrumentId && e.accountId === input.accountId);
+        const ordered = (records: TradeExecution[]) => records.slice().sort((a,b)=>a.id.localeCompare(b.id));
+        if (canonicalRecord(ordered(actual)) !== canonicalRecord(ordered(input.expectedScope))) throw new Error("Trade revision conflict");
+      }
+      if (![...current.values()].some((execution) => execution.instrument.id === input.instrumentId && execution.accountId === input.accountId) && !this.getTradeRevisions(input.instrumentId).some((revision) => revision.accountId === input.accountId)) throw new Error("Invalid trade account");
+      for (const change of input.changes) {
+        const id = (change.before ?? change.after)!.id;
+        const original = current.get(id);
+        if (change.before ? !original || canonicalRecord(original) !== canonicalRecord(change.before) : Boolean(original)) throw new Error("Trade revision conflict");
+      }
+      const revision: TradeRevision = { ...input, recordedAt: new Date().toISOString() };
+      for (const change of input.changes) {
+        if (change.before) this.database.prepare("delete from executions where id = ?").run(change.before.id);
+        if (change.after) this.writeExecution(change.after);
+      }
+      if (input.importHistory) this.putImportHistory(input.importHistory);
+      this.database.prepare("insert into trade_revisions(id, instrument_id, account_id, request_json, revision_json, recorded_at) values (?, ?, ?, ?, ?, ?)").run(input.id, input.instrumentId, input.accountId, requestJson, json(revision, "trade revision"), revision.recordedAt);
+      return { executions: this.getExecutions(), revision };
     });
   }
 

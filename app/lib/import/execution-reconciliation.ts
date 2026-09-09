@@ -81,7 +81,7 @@ function executionInstrumentIdentity(execution: TradeExecution) {
 }
 
 export function executionCandidateKey(execution: TradeExecution) {
-  return `${simulationScope(execution) ? `${simulationScope(execution)}:${execution.source.simulationTradeId}:${execution.source.simulationRole}|` : ""}${executionInstrumentIdentity(execution)}|${
+  return `${execution.source.timePrecision === "date-only" ? `account:${execution.accountId}|` : ""}${simulationScope(execution) ? `${simulationScope(execution)}:${execution.source.simulationTradeId}:${execution.source.simulationRole}|` : ""}${executionInstrumentIdentity(execution)}|${
     executionInstantIdentity(execution.executedAt).value
   }`;
 }
@@ -94,6 +94,7 @@ function executionCoreIdentity(execution: TradeExecution) {
       execution.side,
       quantity.value,
       price.value,
+      ...(execution.source.timePrecision === "date-only" ? [execution.source.statementRowFingerprint ?? "", new Decimal(execution.fee || 0).toString()] : []),
     ].join("|"),
     verified: quantity.verified && price.verified,
   };

@@ -15,6 +15,17 @@ export type TradeExecution = {
   id: string;
   source: {
     platform: string;
+    /** Semantic identity within a statement, independent of file and page. */
+    statementRowFingerprint?: string;
+    formatLabel?: string;
+    /** Original settlement amounts, not recomputed from rounded display prices. */
+    settlement?: {
+      currency: string;
+      quantity: string;
+      grossAmount: string;
+      netAmount: string;
+      fees: Record<string,string>;
+    };
     tradingNature?: "simulated" | "live" | "unknown";
     simulationRunId?: string;
     simulationTradeId?: string;

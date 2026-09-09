@@ -96,7 +96,7 @@ export async function parseBrokerStatement(
   if (!hasPdfSignature(bytes)) {
     return failure(
       "unsupported-statement-format",
-      "无法识别该文件，请导入富途 XLSX、Tiger PDF 或招商证券 PDF 对账单",
+      "无法识别该文件，请导入富途 XLSX、Tiger PDF 或A股招商银行 PDF 对账单",
       futuDetection.diagnostics,
     );
   }
@@ -133,7 +133,7 @@ export async function parseBrokerStatement(
   if (matches.length === 0) {
     return failure(
       "unsupported-statement-format",
-      "无法识别该 PDF，请导入 Tiger 或招商证券的受支持对账单",
+      "无法识别该 PDF，请导入 Tiger 或 A股招商银行的受支持对账单",
       detectorDiagnostics,
     );
   }

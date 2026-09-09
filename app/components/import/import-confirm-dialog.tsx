@@ -135,6 +135,9 @@ export function ImportConfirmDialog({
           </div>
         </div>
 
+        {(preview.notices?.length ?? 0) > 0 && <section className="import-warning" aria-label="账单解析说明">
+          {preview.notices?.map(message=><p key={message}>{message}</p>)}
+        </section>}
         {preview.simulation && <section className="simulation-import-summary" aria-label="模拟交易导入说明">
           <strong className="simulation-badge">TradingView · 模拟盘</strong>
           <p>{preview.simulation.rawRowCount} 个原始数据行 · {preview.simulation.pairCount} 个有效交易配对 · {preview.simulation.episodeCount} 个交易回合</p>

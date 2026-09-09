@@ -2323,7 +2323,7 @@ function isAbortError(error: unknown) {
       setImportError(
         error instanceof Error
           ? error.message
-          : "暂时无法识别这个文件。请确认它来自富途、Tiger 或招商证券。",
+          : "暂时无法识别这个文件。请确认它来自富途、Tiger 或 A股招商银行格式。",
       );
       setImportPhase("idle");
     } finally {

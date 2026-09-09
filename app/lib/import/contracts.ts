@@ -25,6 +25,7 @@ export type ParsedInstrumentCandidate = {
 
 export type ImportExclusion = {
   category:
+    | "market"
     | "fund"
     | "fx"
     | "bond"

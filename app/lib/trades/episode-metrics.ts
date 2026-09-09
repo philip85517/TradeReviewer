@@ -33,7 +33,10 @@ export function summarizeTradeEpisode(
 
   for (const execution of episode.executions) {
     const quantity = new Decimal(execution.quantity).abs();
-    const price = new Decimal(execution.price);
+    const settlement = execution.source.settlement;
+    const price = settlement && settlement.currency === execution.instrument.currency
+      ? new Decimal(settlement.grossAmount).div(settlement.quantity)
+      : new Decimal(execution.price);
     fees = fees.plus(execution.fee || 0);
     const executionValue = quantity.times(price);
     signedCashFlow = signedCashFlow.plus(

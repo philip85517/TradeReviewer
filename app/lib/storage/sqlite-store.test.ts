@@ -1,3 +1,7 @@
+import { columnStatement } from "../import/__fixtures__/china-merchants-columns";
+import { enrichStatementImport } from "../import/enrich-import";
+import { createImportPreview } from "../import/import-preview";
+import { parseBrokerStatement } from "../import/dispatcher";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -97,6 +101,34 @@ afterEach(() => {
   for (const directory of directories.splice(0)) {
     rmSync(directory, { recursive: true, force: true });
   }
+});
+
+describe("A股招商银行 import persistence",()=>{
+  it("rejects malformed settlement evidence before saving a trade",async()=>{
+    const parsed=await parseBrokerStatement({name:"test.pdf",arrayBuffer:async()=>new TextEncoder().encode("%PDF-test").buffer},{extractPdfPages:async()=>columnStatement()});
+    const record=parsed.records[0];
+    const store=createStore();
+    const malformed={...record,source:{...record.source,settlement:{...record.source.settlement!,grossAmount:"NaN"}}};
+    expect(()=>store.mergeExecutions([malformed])).toThrow();
+    expect(store.getExecutions()).toEqual([]);
+    databaseFor(store).close();
+  });
+
+  it("dispatches, previews and persists settlement and format evidence without duplicate rows",async()=>{
+    const pages=columnStatement();
+    const parsed=await parseBrokerStatement({name:"statement.pdf",arrayBuffer:async()=>new TextEncoder().encode("%PDF-test").buffer},{extractPdfPages:async()=>pages});
+    if (parsed.broker==='unknown') throw new Error('Expected recognized format');
+    const enriched=await enrichStatementImport(parsed,{resolver:async()=>{throw new Error('No external lookup needed');}});
+    const preview=createImportPreview("statement.pdf",enriched);
+    const store=createStore();
+    expect(preview.sourceLabel).toBe("A股招商银行");
+    store.mergeExecutions(preview.records);
+    expect(store.getExecutions()).toEqual(preview.records);
+    store.mergeExecutions(preview.records);
+    expect(store.getExecutions()).toHaveLength(2);
+    expect(store.getExecutions()[0].source.settlement?.grossAmount).toBe("4000");
+    databaseFor(store).close();
+  });
 });
 
 describe("SqliteStore", () => {

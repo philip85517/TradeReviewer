@@ -3,6 +3,7 @@
 import { CalendarRange, FileClock, X } from "lucide-react";
 
 import type { ImportHistoryEntry } from "../../lib/storage/import-history";
+import { formatBeijingDate } from "../../lib/replay/format-time";
 import { useModalFocus } from "./use-modal-focus";
 
 type Props = {
@@ -12,7 +13,7 @@ type Props = {
 
 function date(value?: string) {
   if (!value) return "—";
-  return new Date(value).toLocaleDateString("zh-CN");
+  return formatBeijingDate(value);
 }
 
 export function ImportHistoryDialog({ entries, onClose }: Props) {

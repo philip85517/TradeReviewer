@@ -71,7 +71,8 @@ export function buildTradeLibraryEntries(
       const marketDataStatus =
         marketDataStatuses[summary.instrument.id] ?? "not-requested";
       const hasCompleteMarketData =
-        marketDataStatus === "complete" || marketDataStatus === "ready";
+        marketDataStatus === "complete" ||
+        marketDataStatus === "ready";
       const allEpisodes = buildTradeEpisodes(summary.executions);
       const episodesByScope = new Map<string, TradeEpisode[]>();
       for (const episode of allEpisodes) {

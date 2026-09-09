@@ -18,6 +18,7 @@ import {
 import type { InstrumentMetadataSource } from "../../lib/instruments/metadata-contracts";
 import { canonicalInstrumentId } from "../../lib/instruments/display-name";
 import type { ImportPreview } from "../../lib/import/import-preview";
+import { formatBeijingDate } from "../../lib/replay/format-time";
 import { useModalFocus } from "./use-modal-focus";
 
 type Props = {
@@ -42,7 +43,7 @@ const SOURCE_LABELS: Record<
 
 function date(value?: string) {
   if (!value) return "—";
-  return new Date(value).toLocaleDateString("zh-CN");
+  return formatBeijingDate(value);
 }
 
 function safeAttemptCode(code: string) {

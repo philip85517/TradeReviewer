@@ -32,7 +32,7 @@ const DATABASE_NAME = "trade-reviewer";
 const CLIENT_ID_KEY = "trade-reviewer:sqlite-migration:client-id:v1";
 const REVIEW_PREFIXES = ["trade-reviewer:review:v2:", "trade-reviewer:review:v1:"] as const;
 const COVERAGE_STATUSES = new Set([
-  "not-requested", "syncing", "complete", "partial", "stale",
+  "not-requested", "syncing", "complete", "latest-available", "partial", "stale",
   "source-rate-limited", "source-forbidden", "source-unavailable",
   "invalid-response", "storage-error",
 ]);
@@ -99,7 +99,7 @@ function isMarketCandle(value: unknown): value is MarketCandleRecord {
 
 function isCoverageSegment(value: unknown): value is CoverageSegment {
   const item = record(value);
-  return Boolean(item && strings(item, ["startDate", "endDate", "status"]) && COVERAGE_STATUSES.has(item.status as string) && Array.isArray(item.missingTradingDates) && item.missingTradingDates.every((date) => typeof date === "string") && optionalStrings(item, ["provider", "fetchedAt", "reason"]));
+  return Boolean(item && strings(item, ["startDate", "endDate", "status"]) && COVERAGE_STATUSES.has(item.status as string) && Array.isArray(item.missingTradingDates) && item.missingTradingDates.every((date) => typeof date === "string") && optionalStrings(item, ["actualEndDate", "provider", "fetchedAt", "reason"]));
 }
 
 function isIntervalCoverageSegment(value: unknown): value is IntervalCoverageSegment {

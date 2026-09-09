@@ -10,6 +10,7 @@ import type {
 import {
   resolvedReviewAccount,
   reviewBlockers,
+  sourceTimezoneForDraft,
   type ScreenshotReviewState,
 } from "./review-state";
 import { wallClockToInstant } from "./time";
@@ -49,9 +50,13 @@ export function toStatementParseResult(
       draft.market!,
     );
     const instrumentId = canonicalInstrumentId(symbol, draft.market!);
+    const sourceTimezone = sourceTimezoneForDraft(state, draft);
+    if (!sourceTimezone) {
+      throw new Error("Screenshot review blocked: missing-timezone");
+    }
     const time = wallClockToInstant(
       draft.sourceTimestampText!,
-      state.sourceTimezone!,
+      sourceTimezone,
       draft.timeDisambiguation,
     );
     if (!time.ok) {
@@ -75,7 +80,7 @@ export function toStatementParseResult(
         timePrecision: "second" as const,
         fileFingerprint: image.fingerprint,
         sourceTimestampText: draft.sourceTimestampText,
-        sourceTimezone: state.sourceTimezone,
+        sourceTimezone,
         inputKind: "screenshot" as const,
         batchId: state.batchId,
         captureIndex: image.captureIndex,

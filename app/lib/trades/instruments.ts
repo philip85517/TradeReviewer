@@ -3,6 +3,7 @@ import {
   canonicalInstrumentSymbol,
   instrumentDisplayName,
 } from "../instruments/display-name";
+import { resolveHistoricalInstrumentIdentity } from "../instruments/historical-instrument-identity";
 import type { Instrument, TradeExecution } from "./types";
 
 export type InstrumentTradeSummary = {
@@ -37,12 +38,18 @@ export function buildInstrumentTradeSummaries(
         sourceInstrument.symbol,
         sourceInstrument.market,
       );
+      const historicalIdentity = resolveHistoricalInstrumentIdentity({
+        market: sourceInstrument.market,
+        symbol,
+        name: sourceInstrument.name,
+        executedAt: sorted.map((record) => record.executedAt),
+      });
       return {
         instrument: {
           ...sourceInstrument,
           id: canonicalInstrumentId(symbol, sourceInstrument.market),
           symbol,
-          name: instrumentDisplayName(
+          name: historicalIdentity?.displayName ?? instrumentDisplayName(
             symbol,
             sourceInstrument.market,
             sourceInstrument.name,

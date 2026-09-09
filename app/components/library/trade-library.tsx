@@ -21,6 +21,7 @@ import {
   formatMarketTradingDate,
   marketTradingDate,
 } from "../../lib/market/trading-date";
+import { formatBeijingDateTime } from "../../lib/replay/format-time";
 import type { EpisodeReviewRecord } from "../../lib/reviews/types";
 import {
   reviewTagLabel,
@@ -41,6 +42,7 @@ type Props = {
   entries: TradeLibraryEntry[];
   candlesByInstrument: Record<string, DailyCandleRecord[]>;
   marketDataStatuses: Record<string, MarketDataSyncStatus>;
+  marketDataLabels?: Record<string, string>;
   timeframe: Timeframe;
   onTimeframeChange: (timeframe: Timeframe) => void;
   onOpenInReview: (instrumentId: string, scopeKey?: string) => void;
@@ -90,6 +92,7 @@ export function TradeLibrary({
   entries,
   candlesByInstrument,
   marketDataStatuses,
+  marketDataLabels,
   timeframe,
   onTimeframeChange,
   onOpenInReview,
@@ -177,7 +180,9 @@ export function TradeLibrary({
     return entries.filter((entry) => {
       const status =
         marketDataStatuses[entry.instrument.id] ?? "not-requested";
-      const dataIsComplete = status === "complete" || status === "ready";
+      const dataIsComplete =
+        status === "complete" ||
+        status === "ready";
       return (
         (!normalizedQuery ||
           entry.instrument.name
@@ -481,8 +486,14 @@ export function TradeLibrary({
                 >
                   <span>
                     <Clock3 size={12} />
-                    {execution.source.sourceTimestampText ??
-                      new Date(execution.executedAt).toLocaleString("zh-CN")}
+                    {formatBeijingDateTime(execution.executedAt)}
+                    {execution.source.sourceTimestampText && (
+                      <small
+                        title={`原始时间（${execution.source.sourceTimezone ?? "来源时区"}）`}
+                      >
+                        {execution.source.sourceTimestampText}
+                      </small>
+                    )}
                   </span>
                   <b
                     className={
@@ -738,7 +749,7 @@ export function TradeLibrary({
                   <b className={entry.status}>
                     {entry.status === "open" ? "持仓中" : "已平仓"}
                   </b>
-                  <small>{marketDataStatusLabel(status)}</small>
+                  <small>{marketDataLabels?.[entry.instrument.id] ?? marketDataStatusLabel(status)}</small>
                 </span>
                 <span className="library-stock-pnl">
                   <strong

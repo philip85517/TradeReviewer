@@ -567,4 +567,54 @@ describe("enrichStatementImport", () => {
       }),
     );
   });
+
+  it("uses Meta's historical identity for pre-inception FB trades", async () => {
+    const records = [
+      {
+        ...execution(
+          "US",
+          "FB",
+          "ProShares S&P 500 Dynamic Buffer ETF",
+          "fb-2019",
+        ),
+        executedAt: "2019-01-31T18:28:15.000Z",
+      },
+      {
+        ...execution(
+          "US",
+          "FB",
+          "ProShares S&P 500 Dynamic Buffer ETF",
+          "fb-2022",
+        ),
+        executedAt: "2022-04-25T14:04:11.000Z",
+      },
+    ];
+    const resolver = vi.fn(async () => resolution([]));
+    const parsed: StatementParseResult = {
+      broker: "tiger",
+      records,
+      candidates: [
+        {
+          market: "US",
+          symbol: "FB",
+          sourceName: "ProShares S&P 500 Dynamic Buffer ETF",
+          sourceAssetType: "etf",
+        },
+      ],
+      exclusions: [],
+      diagnostics: [],
+      blocked: false,
+    };
+
+    const result = await enrichStatementImport(parsed, { resolver });
+
+    expect(resolver).not.toHaveBeenCalled();
+    expect(result.importable).toHaveLength(2);
+    expect(
+      result.importable.every(
+        (item) =>
+          item.instrument.name === "Meta Platforms, Inc. (historical FB)",
+      ),
+    ).toBe(true);
+  });
 });

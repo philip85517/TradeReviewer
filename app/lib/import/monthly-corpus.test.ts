@@ -43,6 +43,15 @@ it.skipIf(!root)("audits original monthly PDFs through extraction, dispatch, and
         expect(Number(r.price)).toBeGreaterThan(0);
         expect(r.source.fragments?.length).toBeGreaterThan(0);
       }
+      if (folder === "富途/港股" && name === "2022-12.pdf") {
+        expect(result.records.filter(record => record.instrument.symbol === "00753")).toHaveLength(7);
+      }
+      if (folder === "富途/港股" && name === "2020-08.pdf") {
+        expect(result.records.find(record => record.instrument.symbol === "03347")).toMatchObject({ source: { venue: "FUTU OTC", displayTimePolicy: "session-open" } });
+      }
+      if (folder === "富途/港股" && name === "2020-09.pdf") {
+        expect(result.records.find(record => record.instrument.symbol === "02101")).toMatchObject({ source: { venue: "FUTU OTC", displayTimePolicy: "session-open" } });
+      }
       totals.files++; totals.pages += pageCount; totals.records += result.records.length;
       totals.positions += result.monthly?.positions.length ?? 0;
       totals.events += result.monthly?.events.length ?? 0;

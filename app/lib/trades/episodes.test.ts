@@ -79,6 +79,14 @@ describe("buildTradeEpisodes", () => {
     expect(buildTradeEpisodes([sale])[0]).toMatchObject({ directionKnown: false, remainingQuantity: "0", status: "closed" });
   });
 
+  it("attaches an IPO allotment event that predates the first execution to the episode", () => {
+    const buy = execution("buy", "2025-01-20T14:30:00Z", "100", "10");
+    buy.source.positionEvents = [{ id: "ipo", accountId: "acct-1", market: "US", symbol: "XPEV", date: "2025-01-10", kind: "ipo", quantity: "100", description: "IPO allotment", displayTimePolicy: "session-open", source: [] }];
+    const [episode] = buildTradeEpisodes([buy]);
+    expect(episode.positionEvents).toContainEqual(expect.objectContaining({ id: "ipo", kind: "ipo", displayTimePolicy: "session-open" }));
+    expect(episode.executions[0].source.positionEvents).toContainEqual(expect.objectContaining({ id: "ipo", kind: "ipo" }));
+  });
+
   it("reconciles repeated monthly snapshots without adding inventory twice", () => {
     const first = execution("sell", "2025-01-09T14:30:00Z", "40", "12");
     const second = execution("sell", "2025-02-09T14:30:00Z", "60", "12");

@@ -42,7 +42,7 @@ describe('Futu PDF evidence parsing',()=>{
   ])('retains explicit position effect for %s without inferring generic direction', (direction,side,effect)=>{
     const pages=legacy('F3');pages[0].items.find(i=>i.text==='補回')!.text=direction!;
     const r=parseFutuPdfPages(pages,{...options,sourceTimezone:'Asia/Hong_Kong'});
-    expect(r.blocked).toBe(false);expect(r.records).toHaveLength(2);
+    expect(r.blocked).toBe(false);expect(r.records).toHaveLength(1);
     for(const record of r.records){expect(record.side).toBe(side);expect(record.source.positionEffect).toBe(effect);}
   });
   it('detects content rather than a filename and accepts summary months',()=>{
@@ -52,7 +52,8 @@ describe('Futu PDF evidence parsing',()=>{
   it('preserves cross-page children and assigns each reported net fee exactly once',()=>{
     const r=parseFutuPdfPages(f4(),options);
     expect(r.blocked).toBe(false);
-    expect(r.records.map(x=>[x.quantity,x.fee,x.side])).toEqual([['100','1','sell'],['200','2','sell']]);
+    expect(r.records.map(x=>[x.quantity,x.price,x.fee,x.side])).toEqual([['300','10','3','sell']]);
+    expect(r.records[0].source.executionGroup).toMatchObject({ kind: 'order', fillCount: 2, quantity: '300' });
     expect(r.records[0].source.fragments?.map(x=>x.page)).toContain(1);
     expect(r.records[0].source.sourceTimezone).toBe('Asia/Hong_Kong');
     expect(r.monthly?.month).toBe('2025-06');
@@ -76,9 +77,22 @@ describe('Futu PDF evidence parsing',()=>{
   });
   it('does not import order totals and conserves allocated fees',()=>{
     const r=parseFutuPdfPages(legacy('F3'),{...options,sourceTimezone:'America/New_York'});
-    expect(r.records.map(x=>x.quantity)).toEqual(['100','40']);
-    expect(r.records.map(x=>x.fee)).toEqual(['1.42857143','0.57142857']);
-    expect(new Set(r.records.map(x=>x.id)).size).toBe(2);
+    expect(r.records.map(x=>[x.quantity,x.price,x.fee])).toEqual([['140','10','2']]);
+    expect(r.records[0].source.executionGroup).toMatchObject({ kind: 'order', fillCount: 2, reportedQuantity: '140' });
+    expect(new Set(r.records.map(x=>x.id)).size).toBe(1);
+  });
+
+  it('preserves an OTC venue while anchoring its chart marker to the session open',()=>{
+    const pages=legacy('F1');
+    pages[0].items.push({x:20,y:145,text:'市場：FUTU OTC',width:80,height:8});
+    const r=parseFutuPdfPages(pages,{...options,sourceTimezone:'Asia/Hong_Kong'});
+    expect(r.records[0].source).toMatchObject({venue:'FUTU OTC',displayTimePolicy:'session-open'});
+  });
+  it('recognizes dark-pool sections as session-open display evidence',()=>{
+    const pages=legacy('F1');
+    pages[0].items.find(i=>i.text==='交易明細')!.text='暗盤交易明細';
+    const r=parseFutuPdfPages(pages,{...options,sourceTimezone:'Asia/Hong_Kong'});
+    expect(r.records[0].source.displayTimePolicy).toBe('session-open');
   });
   it('blocks broken group quantities instead of silently accepting a partial month',()=>{
     const pages=f4(); pages[1].items.find(i=>i.text==='200')!.text='150';
@@ -95,15 +109,27 @@ describe('Futu PDF evidence parsing',()=>{
     const r=parseFutuPdfPages(pages,{...options,sourceTimezone:'Asia/Hong_Kong'});
     expect(r.records[0]).toMatchObject({instrument:{symbol:'01234',market:'HK'},fee:'2',source:{feeStatus:'reported'}});
   });
-  it('keeps identical executions as distinct source rows',()=>{
+  it('aggregates order child fills into one transaction with source evidence',()=>{
     const pages=legacy('F3');
     const items=pages[0].items;
     items.find(i=>i.text==='140')!.text='200';items.find(i=>i.text==='1400.00')!.text='2000.00';
     const second=items.find(i=>i.text==='40')!;second.text='100';second.x-=4;second.width+=4;
     const amount=items.find(i=>i.text==='400.00')!;amount.text='1000.00';amount.x-=4;amount.width+=4;
     const r=parseFutuPdfPages(pages,{...options,sourceTimezone:'America/New_York'});
-    expect(r.records.map(x=>x.quantity)).toEqual(['100','100']);
-    expect(new Set(r.records.map(x=>x.id)).size).toBe(2);
+    expect(r.records.map(x=>x.quantity)).toEqual(['200']);
+    expect(r.records[0].source.executionGroup).toMatchObject({ fillCount: 2, quantity: '200' });
+  });
+  it('aggregates repeated direction rows when the broker repeats the same order number',()=>{
+    const pages=legacy('F1'),items=pages[0].items;
+    const originalDirection=items.find(i=>i.text==='補回')!;
+    const y=originalDirection.y+54;
+    const second=(text:string,x:number): typeof originalDirection => ({ x, y, text, width:text.length*4, height:8 });
+    items.push(second('買入',23),second('90001',83),second('2020/01/27 11:30:42',290),second('60',404),second('10.00',439),second('600.00',486),second('-602.00',544));
+    items.find(i=>i.text==='期末總覽')!.y=y+18;
+    const r=parseFutuPdfPages(pages,{...options,sourceTimezone:'Asia/Hong_Kong'});
+    expect(r.records).toHaveLength(1);
+    expect(r.records[0]).toMatchObject({ side:'buy', quantity:'200', price:'10', fee:'2' });
+    expect(r.records[0].source.executionGroup).toMatchObject({ orderReference:'90001', fillCount:2, quantity:'200' });
   });
   it('marks missing fees unknown instead of claiming a reported zero',()=>{
     const pages=legacy('F1');pages[0].items=pages[0].items.filter(i=>!/佣金|交收費|小計/.test(i.text));
@@ -150,15 +176,12 @@ describe('Futu PDF evidence parsing',()=>{
     const r=parseFutuPdfPages(pages,options);
     expect(r.blocked).toBe(false);
     expect(r.diagnostics.some(d=>d.code==='futu-time-evidence-conflict')).toBe(false);
-    expect(r.records).toHaveLength(2);
+    expect(r.records).toHaveLength(1);
     expect(r.records[0]).toMatchObject({
       executedAt:'2025-06-25T16:10:38Z',
       source:{sourceTimezone:'America/New_York',timeEvidence:'inferred',timeConfidence:0.93},
     });
-    expect(r.records[1]).toMatchObject({
-      executedAt:'2025-06-25T14:03:16Z',
-      source:{sourceTimezone:'Asia/Hong_Kong',timeEvidence:'inferred',timeConfidence:0.78},
-    });
+    expect(r.records[0].source.executionGroup?.fills[1]).toMatchObject({ sourceTimestampText: '2025/06/25 22:03:16' });
   });
   it('blocks contradictory document legends until an explicit reviewed override',()=>{
     const pages=f4();pages[1].items.push({x:20,y:800,text:'本結單所展示的時間按照當地證券市場時間顯示',width:300,height:8});
@@ -179,7 +202,7 @@ describe('Futu PDF evidence parsing',()=>{
     items.find(i=>i.text==='2020/01/27')!.text='2024/03/10';
     const clocks=items.filter(i=>i.text==='11:30:42');clocks[0].text='02:30:00';clocks[1].text='03:30:00';
     const r=parseFutuPdfPages(pages,{...options,sourceTimezone:'America/New_York'});
-    expect(r.records).toHaveLength(1);expect(r.records[0].fee).toBe('0.57142857');
+    expect(r.records).toHaveLength(0);expect(r.blocked).toBe(true);
   });
   it('blocks inconsistent consolidated cash instead of hiding it through allocation',()=>{
     const pages=f4();pages[1].items.find(i=>i.text==='999')!.text='990';

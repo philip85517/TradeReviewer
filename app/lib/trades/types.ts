@@ -4,6 +4,34 @@ import type { TimeCandidateEvidence } from "../import/statement-rules";
 
 export type TradeSide = "buy" | "sell";
 export type TradeTimePrecision = "second" | "date-only";
+export type TradeDisplayTimePolicy = "execution-time" | "session-open";
+
+export type ExecutionGroup = {
+  kind: "order";
+  orderReference?: string;
+  fillCount: number;
+  quantity: string;
+  grossAmount: string;
+  reportedQuantity?: string;
+  reportedPrice?: string;
+  reportedGrossAmount?: string;
+  fills: Array<{
+    page: number;
+    row: number;
+    sourceTimestampText?: string;
+    executedAt?: string;
+    sourceTimezone?: string;
+    marketCalendarDate?: string;
+    timePrecision?: TradeTimePrecision;
+    timeEvidence?: "row" | "document" | "user" | "inferred";
+    timeConfidence?: number;
+    quantity: string;
+    price: string;
+    grossAmount: string;
+    settlementDate?: string;
+    venue?: string;
+  }>;
+};
 
 export type Instrument = {
   id: string;
@@ -44,6 +72,10 @@ export type TradeExecution = {
     grossAmount?: string;
     cashChange?: string;
     feeStatus?: "reported" | "allocated" | "unknown";
+    venue?: string;
+    displayTimePolicy?: TradeDisplayTimePolicy;
+    /** One broker order represented by one normalized transaction and its fill evidence. */
+    executionGroup?: ExecutionGroup;
     fragments?: StatementFragment[];
     openingPosition?: StatementPosition;
     /** All relevant statement boundaries, including months after this fill; apply only at the replay cursor. */

@@ -8,14 +8,19 @@ import { inferFutuTransactionTimezone } from './futu-time-policy';
 import { futuTemplateRuleId, resolveFutuTemplate } from './futu-template-profile';
 
 type Row = { page: number; row: number; items: PdfTextItem[]; text: string };
-type Layout = { identity: number; timeEnd: number; settlement?: number; numericEnds: number[]; family: string };
-type Fill = { row: Row; time: string; quantity: string; price: string; gross: string; cash?: string; settlement?: string; fragments: StatementFragment[] };
-type Group = { row: Row; identity: string; side: 'buy'|'sell'; positionEffect?: 'open-short'|'close-short'; family: string; date?: string; currency?: string; market?: 'US'|'HK'; total?: Fill; fills: Fill[]; fees: Decimal[]; subtotal?: Decimal; settlement?: string; fragments: StatementFragment[] };
+type Layout = { identity: number; order?: number; timeEnd: number; settlement?: number; numericEnds: number[]; family: string };
+type Fill = { row: Row; time: string; quantity: string; price: string; gross: string; cash?: string; settlement?: string; venue?: string; fragments: StatementFragment[] };
+type Group = { row: Row; identity: string; orderReference?: string; side: 'buy'|'sell'; positionEffect?: 'open-short'|'close-short'; family: string; date?: string; currency?: string; market?: 'US'|'HK'; venue?: string; displayTimePolicy?: 'session-open'; total?: Fill; fills: Fill[]; fees: Decimal[]; subtotal?: Decimal; settlement?: string; fragments: StatementFragment[] };
 const compact = (s: string) => s.replace(/\s+/g,'');
 const numberPattern = /^[+-]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?$/;
 const datePattern = /\d{4}[/-]\d{2}[/-]\d{2}/;
 const timePattern = /\d{2}:\d{2}:\d{2}/;
 const fragment = (r: Row, role: string): StatementFragment => ({page:r.page,row:r.row,role});
+function venueFromText(text: string): string | undefined {
+  const named = text.match(/市場[：:]\s*([A-Za-z]+(?:\s+[A-Za-z]+)?)/i)?.[1];
+  const venue = named ?? text.match(/\b(FUTU\s+OTC|SEHK|HKEX|NASDAQ|NYSE|EDGX|OCEA)\b/i)?.[1];
+  return venue?.replace(/\s+/g, ' ').trim().toUpperCase();
+}
 
 function rowsOf(pages: PdfTextPage[]): Row[] {
   return pages.flatMap(p=>groupItemsIntoRows(p.items.filter(i=>i.text.trim()),2).map((r,index)=>{
@@ -64,7 +69,7 @@ export function parseFutuPdfPages(pages: PdfTextPage[], options: {fileName:strin
     :documentTimezone??'inferred:market-default';
   const overnight=/20:00.{0,15}04:00.{0,80}T\+1/.test(text);
   const documentMarket=/(?:美股).{0,10}[賬账]戶/.test(top)?'US':/(?:港股).{0,10}[賬账]戶/.test(top)?'HK':undefined;
-  let layout:Layout|undefined, group:Group|undefined, pendingIdentity='', pendingDate='', active=false, excluded:'fund'|'unknown-asset'|undefined;
+  let layout:Layout|undefined, group:Group|undefined, pendingIdentity='', pendingDate='', active=false, darkPoolActive=false, excluded:'fund'|'unknown-asset'|undefined;
   const consumed=new Set<Row>();
   let pendingFragments:StatementFragment[]=[];
   const templates=new Set<string>();
@@ -91,30 +96,41 @@ export function parseFutuPdfPages(pages: PdfTextPage[], options: {fileName:strin
     if(!fee)warn('unknown-futu-fee','未找到费用证据；费用状态未知',g.row);
     const netFees=g.family==='F4'&&g.fills.every(f=>f.cash!==undefined)?g.fills.map(f=>g.side==='buy'?new Decimal(f.cash!).neg().minus(f.gross):new Decimal(f.gross).minus(f.cash!)):undefined;
     if(fee&&netFees&&!netFees.reduce((a,b)=>a.plus(b),new Decimal(0)).eq(fee))warn('futu-cash-mismatch','综合成交净现金与成交金额、组费用不守恒',g.row,'error');
-    const useNet=fee&&netFees&&netFees.every(f=>f.gte(0))&&netFees.reduce((a,b)=>a.plus(b),new Decimal(0)).eq(fee);
-    let allocated=new Decimal(0);
-    g.fills.forEach((f,index)=>{
-      // Allocate against every source execution, including unresolved timestamps.
-      // Otherwise a rejected child would donate its costs to a valid sibling.
-      let fillFee=new Decimal(0);
-      if(fee){
-        fillFee=useNet?netFees![index]:index===g.fills.length-1?fee.minus(allocated):fee.mul(f.quantity).div(sum('quantity')).toDecimalPlaces(8);
-        allocated=allocated.plus(fillFee);
-      }
+    const resolved = g.fills.map((f) => {
       const rawTime=f.time || g.date || '';
-      if(g.family!=='F0'&&!timePattern.test(rawTime)){warn('missing-futu-clock','交易时间列缺少时钟片段，不能自动降级为日期成交',f.row,'error');return;}
-      const inference=inferFutuTransactionTimezone({text:rawTime,market,documentTimezone,venue:f.row.text.match(/\b(?:EDGX|OCEA|SEHK)\b/)?.[0]});
+      if(g.family!=='F0'&&g.family!=='F2'&&!timePattern.test(rawTime)) {
+        warn('missing-futu-clock','交易时间列缺少时钟片段，不能自动降级为日期成交',f.row,'error');
+        return undefined;
+      }
+      const inference=inferFutuTransactionTimezone({text:rawTime,market,documentTimezone,venue:f.venue ?? g.venue ?? venueFromText(f.row.text)});
       const time=resolveStatementTime({text:rawTime,market,kind:g.family==='F0'?'date':g.family==='F2'?'order':'execution',documentTimezone,options,overnightNextDay:overnight,
         inferredTimezone:inference?.timezone,inferenceConfidence:inference?.confidence,inferenceReason:inference?.reason,inferenceRuleId:inference?.ruleId,inferenceCandidates:inference?.candidates,inferenceOverridesDocument:inference?.overridesDocumentTimezone});
-      if(!time.ok){warn(time.code,time.message,f.row,'error');return;}
+      if(!time.ok){warn(time.code,time.message,f.row,'error');return undefined;}
       if(g.family==='F0')warn('futu-contract-date-only','原件合约仅报告交易日，无法进行秒级回放',f.row);
       if(g.family==='F2')warn('futu-order-time','原件为下单时间，仅保留日级时间精度',f.row);
-      const instrument={id:`${market}:${symbol}`,symbol,name:m[2].replace(/[）)]$/,''),market,currency:market==='HK'?'HKD':'USD'};
-      const sourceOrder=result.records.length;
-      const positionEvidence=g.positionEffect?{positionEffect:g.positionEffect}:{};
-      result.records.push({id:`futu:${options.fileFingerprint}:${f.row.page}:${f.row.row}`,accountId,accountLabel:options.accountLabel??'富途',instrument,side:g.side,executedAt:time.executedAt,quantity:f.quantity,price:f.price,fee:fillFee.toString(),source:{...positionEvidence,platform:'futu',inputKind:'statement',fileName:options.fileName,fileFingerprint:options.fileFingerprint,page:f.row.page,row:f.row.row,sourceOrder,templateId:g.family,formatRuleId:futuTemplateRuleId(g.family as Parameters<typeof futuTemplateRuleId>[0]),statementMonth:result.monthly!.month,sourceTimestampText:rawTime,sourceTimezone:time.sourceTimezone,timePrecision:time.timePrecision,timeEvidence:time.timeEvidence,timeConfidence:time.timeConfidence,timeInferenceReason:time.timeInferenceReason,timeRuleId:time.timeRuleId,timeCandidates:time.timeCandidates,sourceTimeKind:time.sourceTimeKind,marketCalendarDate:time.marketCalendarDate,tradingDate:time.tradingDate,timeRuleVersion:time.timeRuleVersion,settlementDate:f.settlement??g.settlement,grossAmount:f.gross,cashChange:f.cash,feeStatus:fee?(useNet||g.fills.length===1?'reported':'allocated'):'unknown',fragments:[...g.fragments,...f.fragments]}});
-      if(!result.candidates.some(c=>c.market===market&&c.symbol===symbol))result.candidates.push({market,symbol,sourceName:instrument.name,sourceAssetType:'unknown'});
+      return { fill: f, time };
     });
+    if(resolved.some(item => item === undefined)) return;
+    const resolvedFills = resolved as Array<NonNullable<typeof resolved[number]>>;
+    const representative = resolvedFills.find(item => timePattern.test(item.fill.time)) ?? resolvedFills[0];
+    const aggregateQuantity=sum('quantity');
+    const aggregateGross=sum('gross');
+    const aggregatePrice=aggregateQuantity.isZero() ? representative.fill.price : aggregateGross.div(aggregateQuantity).toDecimalPlaces(8).toString();
+    const instrument={id:`${market}:${symbol}`,symbol,name:m[2].replace(/[）)]$/,''),market,currency:market==='HK'?'HKD':'USD'};
+    const sourceOrder=result.records.length;
+    const positionEvidence=g.positionEffect?{positionEffect:g.positionEffect}:{};
+    const displayTimePolicy=g.displayTimePolicy ?? (g.venue?.includes('OTC') || g.fragments.some(item => item.role === 'dark-pool') ? 'session-open' as const : 'execution-time' as const);
+    const executionGroup=g.fills.length > 1 || Boolean(g.total) ? {
+      kind: 'order' as const,
+      ...(g.orderReference ? { orderReference: g.orderReference } : {}),
+      fillCount: g.fills.length,
+      quantity: aggregateQuantity.toString(),
+      grossAmount: aggregateGross.toString(),
+      ...(g.total ? { reportedQuantity: g.total.quantity, reportedPrice: g.total.price, reportedGrossAmount: g.total.gross } : {}),
+      fills: resolvedFills.map(({ fill, time }) => ({ page: fill.row.page, row: fill.row.row, ...(fill.time ? { sourceTimestampText: fill.time } : {}), executedAt: time.executedAt, sourceTimezone: time.sourceTimezone, marketCalendarDate: time.marketCalendarDate, timePrecision: time.timePrecision, timeEvidence: time.timeEvidence, ...(time.timeConfidence !== undefined ? { timeConfidence: time.timeConfidence } : {}), quantity: fill.quantity, price: fill.price, grossAmount: fill.gross, ...(fill.settlement ?? g.settlement ? { settlementDate: fill.settlement ?? g.settlement } : {}), ...(fill.venue ? { venue: fill.venue } : {}) })),
+    } : undefined;
+    result.records.push({id:`futu:${options.fileFingerprint}:${g.row.page}:${g.row.row}`,accountId,accountLabel:options.accountLabel??'富途',instrument,side:g.side,executedAt:representative.time.executedAt,quantity:aggregateQuantity.toString(),price:aggregatePrice,fee:(fee??new Decimal(0)).toString(),source:{...positionEvidence,platform:'futu',inputKind:'statement',fileName:options.fileName,fileFingerprint:options.fileFingerprint,page:g.row.page,row:g.row.row,sourceOrder,templateId:g.family,formatRuleId:futuTemplateRuleId(g.family as Parameters<typeof futuTemplateRuleId>[0]),statementMonth:result.monthly!.month,sourceTimestampText:representative.fill.time,sourceTimezone:representative.time.sourceTimezone,timePrecision:representative.time.timePrecision,timeEvidence:representative.time.timeEvidence,timeConfidence:representative.time.timeConfidence,timeInferenceReason:representative.time.timeInferenceReason,timeRuleId:representative.time.timeRuleId,timeCandidates:representative.time.timeCandidates,sourceTimeKind:representative.time.sourceTimeKind,marketCalendarDate:representative.time.marketCalendarDate,tradingDate:representative.time.tradingDate,timeRuleVersion:representative.time.timeRuleVersion,settlementDate:representative.fill.settlement??g.settlement,grossAmount:aggregateGross.toString(),cashChange:g.fills.every(fill => fill.cash !== undefined) ? g.fills.reduce((total, fill) => total.plus(fill.cash!), new Decimal(0)).toString() : undefined,feeStatus:fee?'reported':'unknown',...(g.venue ? { venue: g.venue } : {}),displayTimePolicy, ...(executionGroup ? { executionGroup } : {}),fragments:[...g.fragments,...g.fills.flatMap(fill => fill.fragments)]}});
+    if(!result.candidates.some(c=>c.market===market&&c.symbol===symbol))result.candidates.push({market,symbol,sourceName:instrument.name,sourceAssetType:'unknown'});
   }
 
   if(resolveFutuTemplate({documentText:text}).id === 'F0') {
@@ -126,11 +142,12 @@ export function parseFutuPdfPages(pages: PdfTextPage[], options: {fileName:strin
   for(let index=0;index<rows.length;index++){
     const r=rows[index], c=compact(r.text);
     if(consumed.has(r))continue;
-    if(/^(?:期初|期末|資產總覽|资产总览|資金進出|资金进出|資金流水|资金流水|現金|现金|公司行動|公司行动|融資總覽|融券總覽|其他|備註|备注)/.test(c)) {finish();active=false;pendingIdentity='';pendingDate='';pendingFragments=[];continue;}
+    if(/^(?:期初|期末|資產總覽|资产总览|資金進出|资金进出|資金流水|资金流水|現金|现金|公司行動|公司行动|融資總覽|融券總覽|其他|備註|备注)/.test(c)) {finish();active=false;darkPoolActive=false;pendingIdentity='';pendingDate='';pendingFragments=[];continue;}
     if(/^(?:交易-|交易－|股票订单|股票訂單|基金订单|基金訂單|期权订单|期權訂單)/.test(c)) {
-      finish(); pendingIdentity='';pendingDate='';pendingFragments=[];excluded=/基金/.test(c)?'fund':/^(?:期权|期權)/.test(c)?'unknown-asset':undefined;active=true;
+      finish(); pendingIdentity='';pendingDate='';pendingFragments=[];darkPoolActive=false;excluded=/基金/.test(c)?'fund':/^(?:期权|期權)/.test(c)?'unknown-asset':undefined;active=true;
     }
-    if(c==='交易明細'||c==='交易明细') {finish();active=true;excluded=undefined;pendingIdentity='';continue;}
+    if(c==='暗盤交易明細'||c==='暗盘交易明细') {finish();active=true;darkPoolActive=true;excluded=undefined;pendingIdentity='';pendingDate='';pendingFragments=[fragment(r,'dark-pool')];continue;}
+    if(c==='交易明細'||c==='交易明细') {finish();active=true;darkPoolActive=false;excluded=undefined;pendingIdentity='';continue;}
     if(/(?:方向|成交方向)/.test(c)&&/(?:價格|价格|成交金額|成交金额)/.test(c)){
       const find=(re:RegExp)=>r.items.find(i=>re.test(compact(i.text)));
       const nearby=rows.slice(Math.max(0,index-1),index+2).filter(a=>a.page===r.page).flatMap(a=>a.items);
@@ -150,7 +167,7 @@ export function parseFutuPdfPages(pages: PdfTextPage[], options: {fileName:strin
         continue;
       }
       const family=template.id;
-      layout={identity:identity.x,timeEnd:time.x+time.width,settlement:find(/^交收日期$/)?.x,numericEnds:[quantity,price,gross,cash].map(i=>i.x+i.width),family};
+      layout={identity:identity.x,order:find(/^(?:單號|订单号|訂單編號|订单编号)$/)?.x,timeEnd:time.x+time.width,settlement:find(/^交收日期$/)?.x,numericEnds:[quantity,price,gross,cash].map(i=>i.x+i.width),family};
       templates.add(family);active=true;
       if(family==='F4a')warn('unsupported-futu-f4a','订单日期综合变体尚未验证明细恢复规则',r,'error');
       continue;
@@ -171,12 +188,21 @@ export function parseFutuPdfPages(pages: PdfTextPage[], options: {fileName:strin
       if(pendingIdentity){pendingIdentity+=identityParts;pendingFragments.push(fragment(r,'identity'));}else if(group){group.identity+=identityParts;group.fragments.push(fragment(r,'identity'));}
     }
     if(direction){
-      finish();
       if(excluded){result.exclusions.push({category:excluded,label:'非股票交易分区',count:1});pendingIdentity='';continue;}
-      group={row:r,identity:pendingIdentity?pendingIdentity+identityParts:identityParts,date:pendingDate||undefined,side:/買|买|補|补/.test(direction.text)?'buy':'sell',family:layout.family,currency:r.items.find(i=>/^(?:HKD|USD)$/.test(i.text))?.text,fills:[],fees:[],fragments:[...pendingFragments,fragment(r,'identity')]};
+      const side=/買|买|補|补/.test(direction.text)?'buy':'sell' as const;
+      const candidateIdentity=compact(pendingIdentity+identityParts);
+      const orderReference=layout!.order === undefined ? undefined : r.items.find(i=>i.x>=layout!.order!-4&&i.x<layout!.identity-4&&/^\d{4,}$/.test(compact(i.text)))?.text.trim();
+      const sameIdentity=!candidateIdentity || compact(group?.identity ?? '') === candidateIdentity || compact(group?.identity ?? '').startsWith(candidateIdentity) || candidateIdentity.startsWith(compact(group?.identity ?? ''));
+      const sameOrder=Boolean(group && orderReference && group.orderReference === orderReference && group.side === side && sameIdentity);
+      if(!sameOrder) {
+        finish();
+        group={row:r,identity:pendingIdentity?pendingIdentity+identityParts:identityParts,orderReference,date:pendingDate||undefined,side,family:layout.family,currency:r.items.find(i=>/^(?:HKD|USD)$/.test(i.text))?.text,venue:venueFromText(r.text),...(darkPoolActive ? { displayTimePolicy: 'session-open' as const } : {}),fills:[],fees:[],fragments:[...pendingFragments,fragment(r,'identity')]};
+      } else if (group && venueFromText(r.text)) {
+        group.venue=venueFromText(r.text);
+      }
       const explicit=compact(direction.text);
-      if(/^(?:沽空|賣空|卖空|賣出開倉|卖出开仓)$/.test(explicit))group.positionEffect='open-short';
-      if(/^(?:補回|补回|買入平倉|买入平仓)$/.test(explicit))group.positionEffect='close-short';
+      if(group && !group.positionEffect && /^(?:沽空|賣空|卖空|賣出開倉|卖出开仓)$/.test(explicit))group.positionEffect='open-short';
+      if(group && !group.positionEffect && /^(?:補回|补回|買入平倉|买入平仓)$/.test(explicit))group.positionEffect='close-short';
       pendingIdentity='';pendingDate='';pendingFragments=[];
     }
     const dateAbove=r.items.find(i=>i.x>layout!.identity+25&&i.x<layout!.timeEnd+4&&datePattern.test(i.text));
@@ -188,6 +214,8 @@ export function parseFutuPdfPages(pages: PdfTextPage[], options: {fileName:strin
       if(timePattern.test(c)&&r.items.some(i=>numberPattern.test(i.text.trim())))warn('orphan-futu-execution','成交行缺少有界订单身份',r,'error');
       continue;
     }
+    const rowVenue=venueFromText(r.text);
+    if(rowVenue) group.venue=rowVenue;
     const feeMatches=[...r.text.matchAll(/([^\s:：]+)\s*[:：]\s*([+-]?[\d,]+(?:\.\d+)?)/g)].filter(m=>/佣金|費|费|稅|税|小計|小计/.test(m[1]));
     if(!feeMatches.length&&/佣金[：:]/.test(c)&&/小計[：:]/.test(c)){
       const subtotalX=r.items.find(i=>/小計/.test(i.text))!.x;
@@ -224,7 +252,7 @@ export function parseFutuPdfPages(pages: PdfTextPage[], options: {fileName:strin
       if(new Decimal(quantity!).lte(0)||new Decimal(price!).lt(0)||new Decimal(gross!).lt(0)||(!isTotal&&new Decimal(quantity!).mul(price!).minus(gross!).abs().gt('0.02'))){warn('invalid-futu-amount','成交数量、价格与金额不守恒',r,'error');continue;}
       const settlement=layout.settlement?r.items.filter(i=>i.x>=layout!.settlement!-2&&i.x<layout!.numericEnds[0]-50).map(i=>i.text).join(' ').match(datePattern)?.[0]:undefined;
       const sourceDate=date??group.date;
-      const fill:Fill={row:r,quantity:quantity!,price:price!,gross:gross!,cash,time:sourceDate?`${sourceDate}${clock?' '+clock:''}`:'',settlement:settlement?.replaceAll('/','-'),fragments:[fragment(r,'execution')]};
+      const fill:Fill={row:r,quantity:quantity!,price:price!,gross:gross!,cash,time:sourceDate?`${sourceDate}${clock?' '+clock:''}`:'',settlement:settlement?.replaceAll('/','-'),venue:venueFromText(r.text),fragments:[fragment(r,'execution')]};
       if(direction&&(layout.family==='F3'||layout.family==='F4'))group.total=fill;
       else group.fills.push(fill);
     } else if(clock&&group.fills.length){

@@ -1098,6 +1098,10 @@ function isAbortError(error: unknown) {
     DEMO_INSTRUMENT;
   const activeReview = episodeReviews[activeEpisodeId];
   const activePlan = episodePlanAtCursor(activeReview, activeCursor);
+  const activePositionEvents = useMemo(
+    () => [...new Map(activeSnapshot.executions.flatMap(execution => execution.source.positionEvents ?? []).map(event => [event.id, event])).values()],
+    [activeSnapshot.executions],
+  );
   const activeMetrics = useMemo(
     () =>
       calculatePositionPathMetrics({
@@ -1210,6 +1214,7 @@ function isAbortError(error: unknown) {
     cursor: activeCursor,
     candles: activeSnapshot.candles,
     executions: activeSnapshot.executions,
+    positionEvents: activePositionEvents,
     position: activeSnapshot.position,
     pathMetrics: activeMetrics,
     canGoBack: selectedImportedInstrument

@@ -15,6 +15,8 @@ import type {
 import type { DrawingCommand } from "../../lib/chart/drawing-commands";
 import type { Candle } from "../../lib/market/types";
 import type { ChartSettings } from "../../lib/storage/chart-settings";
+import type { StatementEvent } from "../../lib/import/monthly-statement";
+import { displayTimeForCandle } from "../../lib/replay/display-time";
 import type { TradeExecution } from "../../lib/trades/types";
 import {
   DrawingCanvas,
@@ -24,6 +26,7 @@ import {
 type Props = {
   candles: Candle[];
   executions: TradeExecution[];
+  positionEvents?: StatementEvent[];
   cursor: string;
   averageCost: number;
   drawings: NormalizedDrawing[];
@@ -49,6 +52,7 @@ function chartTime(time: string) {
 export function ReplayChart({
   candles,
   executions,
+  positionEvents = [],
   cursor,
   averageCost,
   drawings,
@@ -257,30 +261,49 @@ export function ReplayChart({
       })),
     );
 
-    const markers = (settings.showExecutions ? executions : [])
-      .map((execution) => {
-        const candle =
-          [...candles]
-            .reverse()
-            .find((item) => item.time <= execution.executedAt) ??
-          candles[0];
-        if (!candle) return null;
-        return {
-          time: chartTime(candle.time),
-          position:
-            execution.side === "buy"
-              ? ("belowBar" as const)
-              : ("aboveBar" as const),
-          color: execution.side === "buy" ? "#26a69a" : "#ef5350",
-          shape:
-            execution.side === "buy"
-              ? ("arrowUp" as const)
-              : ("arrowDown" as const),
-          text: `${execution.side === "buy" ? "买" : "卖"} ${execution.quantity}`,
-        };
-      })
-      .filter((marker) => marker !== null)
-      .sort((a, b) => Number(a.time) - Number(b.time));
+    const markers = settings.showExecutions
+      ? [
+          ...executions.map((execution) => {
+            const candleTime = displayTimeForCandle(candles, {
+              at: execution.executedAt,
+              policy: execution.source.displayTimePolicy,
+              calendarDate: execution.source.marketCalendarDate ?? execution.source.tradingDate,
+            });
+            if (!candleTime) return null;
+            return {
+              time: chartTime(candleTime),
+              position:
+                execution.side === "buy"
+                  ? ("belowBar" as const)
+                  : ("aboveBar" as const),
+              color: execution.side === "buy" ? "#26a69a" : "#ef5350",
+              shape:
+                execution.side === "buy"
+                  ? ("arrowUp" as const)
+                  : ("arrowDown" as const),
+              text: `${execution.side === "buy" ? "买" : "卖"} ${execution.quantity}${execution.source.venue ? ` · ${execution.source.venue}` : ""}`,
+            };
+          }),
+          ...[...new Map(positionEvents.map(event => [event.id, event])).values()]
+            .filter((event) => event.kind === "ipo" && event.quantity && event.displayTimePolicy === "session-open")
+            .map((event) => {
+              const candleTime = displayTimeForCandle(candles, {
+                at: event.date,
+                policy: event.displayTimePolicy,
+              });
+              if (!candleTime) return null;
+              return {
+                time: chartTime(candleTime),
+                position: "belowBar" as const,
+                color: "#a78bfa",
+                shape: "arrowUp" as const,
+                text: `配售 ${event.quantity}`,
+              };
+            }),
+        ]
+          .filter((marker) => marker !== null)
+          .sort((a, b) => Number(a.time) - Number(b.time))
+      : [];
     (
       markerPluginRef.current as {
         setMarkers: (nextMarkers: typeof markers) => void;
@@ -301,6 +324,7 @@ export function ReplayChart({
     candles,
     chartReady,
     executions,
+    positionEvents,
     settings.showAverageCost,
     settings.showExecutions,
   ]);

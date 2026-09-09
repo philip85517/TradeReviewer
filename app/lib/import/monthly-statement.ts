@@ -25,6 +25,8 @@ export type StatementEvent = {
   quantity?: string;
   amount?: string;
   currency?: string;
+  /** IPO allotments are displayed on the first candle of the trading session. */
+  displayTimePolicy?: "session-open";
   description: string;
   source: StatementFragment[];
 };
@@ -58,5 +60,5 @@ export function isMonthlyStatement(value: unknown): value is MonthlyStatement {
   if (item.incompleteInstruments !== undefined && (!Array.isArray(item.incompleteInstruments) || !item.incompleteInstruments.every(i => i && typeof i === "object" && typeof i.market === "string" && typeof i.symbol === "string"))) return false;
   if (typeof item.documentId !== "string" || !Array.isArray(item.templateIds) || !item.templateIds.every(t => typeof t === "string") || typeof item.reviewRequired !== "boolean" || !["month", "accountId", "timePolicy"].every(k => optionalString(item, k))) return false;
   if (!Array.isArray(item.positions) || !item.positions.every(p => p && typeof p === "object" && ["accountId", "market", "symbol", "date", "quantity"].every(k => typeof p[k] === "string") && (p.phase === "opening" || p.phase === "closing") && ["cost", "documentId"].every(k => optionalString(p, k)) && fragments(p.source))) return false;
-  return Array.isArray(item.events) && item.events.every(e => e && typeof e === "object" && ["id", "accountId", "date", "description"].every(k => typeof e[k] === "string") && ["transfer-in", "transfer-out", "distribution", "fee", "ipo", "corporate-action", "other"].includes(e.kind) && ["market", "symbol", "quantity", "amount", "currency", "documentId"].every(k => optionalString(e, k)) && fragments(e.source));
+  return Array.isArray(item.events) && item.events.every(e => e && typeof e === "object" && ["id", "accountId", "date", "description"].every(k => typeof e[k] === "string") && ["transfer-in", "transfer-out", "distribution", "fee", "ipo", "corporate-action", "other"].includes(e.kind) && ["market", "symbol", "quantity", "amount", "currency", "documentId"].every(k => optionalString(e, k)) && (e.displayTimePolicy === undefined || e.displayTimePolicy === "session-open") && fragments(e.source));
 }

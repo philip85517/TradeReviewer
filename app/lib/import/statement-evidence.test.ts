@@ -212,8 +212,8 @@ describe("attachStatementEvidence", () => {
       [[54, "2025/01/28"], [122, "增加"], [210, "基金贖回"], [341, "HKD"], [480, "+425.60"], [525, "Fund Redemption"]],
       [[59, "重要通知"]], [[54, "2025/01/29 公司行動 F/D <SEHK 2382 EXAMPLE>"]],
     ])], result());
-    expect(parsed.monthly?.events.map(e => [e.kind, e.symbol, e.amount, e.quantity])).toEqual([
-      ["ipo", "02050", "-68271.65", undefined], ["distribution", "02382", "425.60", undefined], ["fee", "02382", "-12.00", undefined],
+    expect(parsed.monthly?.events.map(e => [e.kind, e.symbol, e.amount, e.quantity, e.displayTimePolicy])).toEqual([
+      ["ipo", "02050", "-68271.65", undefined, undefined], ["distribution", "02382", "425.60", undefined, undefined], ["fee", "02382", "-12.00", undefined, undefined],
     ]);
   });
 
@@ -233,7 +233,7 @@ describe("attachStatementEvidence", () => {
       [[52, "股票和股票期權"]],
       [[54, "2025/01/19"], [122, "增加"], [210, "港股IPO公開發售"], [290, "2050(示例)"], [410, "HKD"], [480, "+500"], [560, "+11265"], [620, "IPO Allotment Qty - #02050"]],
     ]);
-    expect(attachStatementEvidence([p], result()).monthly?.events[0]).toMatchObject({ symbol: "02050", kind: "ipo", quantity: "500" });
+    expect(attachStatementEvidence([p], result()).monthly?.events[0]).toMatchObject({ symbol: "02050", kind: "ipo", quantity: "500", displayTimePolicy: "session-open" });
   });
 
   it("attaches an earlier no-trade month's closing boundary across missing months, scoped by account", () => {

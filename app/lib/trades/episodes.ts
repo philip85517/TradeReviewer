@@ -110,6 +110,14 @@ export function buildTradeEpisodes(
   const positions = [...new Map([...evidence.flatMap(e => e.positions), ...executions.flatMap(e => [...(e.source.statementPositions ?? []), ...(e.source.openingPosition ? [e.source.openingPosition] : [])])].map(p => [JSON.stringify([p.documentId, evidenceKey(p), p.phase, p.date, p.quantity]), p])).values()];
   const events = [...evidence.flatMap(e => e.events), ...executions.flatMap(e => e.source.positionEvents ?? [])];
   const seen = new Set<string>();
+  const pendingEvents = new Map<string, StatementEvent[]>();
+  const attachPendingEvents = (key: string, target: TradeEpisode) => {
+    const pending = pendingEvents.get(key);
+    if (!pending?.length) return;
+    target.positionEvents = [...new Map([...(target.positionEvents ?? []), ...pending].map(event => [event.id, event])).values()];
+    pendingEvents.delete(key);
+    flag(key, "position-event", target);
+  };
   const lastActivity = new Map<string, string>();
   const knownBoundary = new Set<string>();
   const seenExecution = new Set<string>();
@@ -151,6 +159,10 @@ export function buildTradeEpisodes(
           if (existing) {
             (existing.episode.positionEvents ??= []).push(event);
             flag(key, "position-event", existing.episode);
+          } else {
+            const pending = pendingEvents.get(key) ?? [];
+            if (!pending.some(item => item.id === event.id)) pending.push(event);
+            pendingEvents.set(key, pending);
           }
           continue; // IPO/distribution evidence never creates another fill or inventory lot.
         }
@@ -181,6 +193,7 @@ export function buildTradeEpisodes(
         target.episode.direction = next.isNegative() ? "short" : "long";
         target.openingQuantity = next.abs();
         if (entry.position) target.episode.initialPosition = entry.position;
+        attachPendingEvents(key, target.episode);
         flag(key, "initial-position", target.episode);
         active.set(key, target);
       }
@@ -203,6 +216,7 @@ export function buildTradeEpisodes(
     if (!existing) {
       const created = createEpisode(execution, openingOccurrences);
       if (issues.has(key)) created.episode.accuracy = { pnl: "unavailable", reasons: [...issues.get(key)!] };
+      attachPendingEvents(key, created.episode);
       if (created.position.isZero()) continue;
       active.set(key, created);
       continue;
@@ -297,10 +311,13 @@ export function buildTradeEpisodes(
       if (statementPositions.length) source.statementPositions = statementPositions;
       else delete source.statementPositions;
       if (source.positionEvents) {
+        const episodeEventIds = new Set((episode.positionEvents ?? []).map(event => event.id));
         source.positionEvents = source.positionEvents.filter(e => {
           const at = Date.parse(e.date);
           // Keep same-day uncertainty so chart callers receive its accuracy flag.
-          return (at >= start || e.date === episode.startedAt.slice(0, 10)) && at <= end;
+          // Events attached before the first execution (notably IPO allotments)
+          // are contextual evidence for this episode and must remain visible.
+          return episodeEventIds.has(e.id) || ((at >= start || e.date === episode.startedAt.slice(0, 10)) && at <= end);
         });
         if (!source.positionEvents.length) delete source.positionEvents;
       }

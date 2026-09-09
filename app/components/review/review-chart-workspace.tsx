@@ -26,6 +26,7 @@ import type {
 } from "../../lib/reviews/types";
 import type { ChartSettings } from "../../lib/storage/chart-settings";
 import type { Instrument, TradeExecution } from "../../lib/trades/types";
+import type { StatementEvent } from "../../lib/import/monthly-statement";
 import { ChartToolbar } from "../chart/chart-toolbar";
 import { DrawingLayersPanel } from "../chart/drawing-layers-panel";
 import { DrawingToolbar } from "../chart/drawing-toolbar";
@@ -45,6 +46,7 @@ export type ReviewChartViewModel = {
   cursor: string;
   candles: Candle[];
   executions: TradeExecution[];
+  positionEvents?: StatementEvent[];
   position: PositionLedgerSnapshot;
   pathMetrics: PositionPathMetrics;
   canGoBack: boolean;
@@ -361,6 +363,7 @@ export function ReviewChartWorkspace({
               episodeId={model.episodeId}
               candles={model.candles}
               executions={model.executions}
+              positionEvents={model.positionEvents}
               cursor={model.cursor}
               averageCost={Number(model.position.averageCost)}
               drawings={chartDrawings}

@@ -173,7 +173,7 @@ export function attachStatementEvidence(pages: PdfTextPage[], result: StatementP
         date = month;
       }
       if (!kind || !date || (section === "cash" && amount === undefined)) continue;
-      events.push({ documentId: monthly.documentId, id: `${monthly.documentId}:evidence:${page.pageNumber}:${row.number}`, accountId, ...instrument, date, kind, ...(quantity !== undefined ? { quantity } : {}), ...(amount !== undefined ? { amount } : {}), currency: row.items.find(i => /^(USD|HKD|CNH|CNY)$/.test(i.text))?.text, description: row.text, source });
+      events.push({ documentId: monthly.documentId, id: `${monthly.documentId}:evidence:${page.pageNumber}:${row.number}`, accountId, ...instrument, date, kind, ...(quantity !== undefined ? { quantity } : {}), ...(amount !== undefined ? { amount } : {}), ...(kind === "ipo" && quantity !== undefined ? { displayTimePolicy: "session-open" as const } : {}), currency: row.items.find(i => /^(USD|HKD|CNH|CNY)$/.test(i.text))?.text, description: row.text, source });
     }
   }
   const positionKeys = new Set(monthly.positions.map(p => JSON.stringify([p.accountId, p.market, p.symbol, p.date, p.phase, p.quantity])));

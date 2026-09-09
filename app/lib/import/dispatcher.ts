@@ -9,6 +9,10 @@ import type { StatementBroker, StatementParseResult } from "./contracts";
 import { fingerprintBytes } from "./file-fingerprint";
 import { detectFutuWorkbook, parseFutuWorkbook } from "./futu";
 import {
+  detectTradingViewSimulationCsv,
+  parseTradingViewSimulationCsv,
+} from "./tradingview-simulation";
+import {
   detectTigerStatement,
   parseTigerPages,
 } from "./tiger";
@@ -79,6 +83,17 @@ export async function parseBrokerStatement(
   const bytes = new Uint8Array(arrayBuffer);
   const fileFingerprint = fingerprintBytes(bytes);
   const futuDetection = detectFutuWorkbook(bytes);
+  const tradingViewDetection = detectTradingViewSimulationCsv(bytes);
+
+  if (
+    tradingViewDetection.matched &&
+    tradingViewDetection.confidence >= REQUIRED_CONFIDENCE
+  ) {
+    return parseTradingViewSimulationCsv(bytes, {
+      fileName: file.name,
+      sourceFileId: fileFingerprint,
+    });
+  }
 
   if (
     futuDetection.matched &&
@@ -93,8 +108,11 @@ export async function parseBrokerStatement(
   if (!hasPdfSignature(bytes)) {
     return failure(
       "unsupported-statement-format",
-      "无法识别该文件，请导入富途 XLSX、Tiger PDF 或招商证券 PDF 对账单",
-      futuDetection.diagnostics,
+      "无法识别该文件，请导入 TradingView 模拟 CSV、富途 XLSX、Tiger PDF 或招商证券 PDF 对账单",
+      [
+        ...(futuDetection.diagnostics ?? []),
+        ...(tradingViewDetection.diagnostics ?? []),
+      ],
     );
   }
 

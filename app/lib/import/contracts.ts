@@ -1,7 +1,15 @@
-import type { TradeExecution, TradeTimePrecision } from "../trades/types";
+import type {
+  TradeExecution,
+  TradeNature,
+  TradeTimePrecision,
+} from "../trades/types";
 import type { ImportDiagnostic } from "./import-result";
 
-export type StatementBroker = "futu" | "tiger" | "china-merchants";
+export type StatementBroker =
+  | "futu"
+  | "tiger"
+  | "china-merchants"
+  | "tradingview";
 
 export type StatementInput = {
   fileName: string;
@@ -21,6 +29,11 @@ export type ParsedInstrumentCandidate = {
   symbol: string;
   sourceName?: string;
   sourceAssetType?: "stock" | "etf" | "unknown";
+};
+
+export type TradingViewSimulationContext = {
+  market: "CN-SH" | "CN-SZ";
+  symbol: string;
 };
 
 export type ImportExclusion = {
@@ -46,6 +59,8 @@ export type StatementParseResult = {
   exclusions: ImportExclusion[];
   diagnostics: ImportDiagnostic[];
   blocked: boolean;
+  tradeNature?: TradeNature;
+  simulationRunId?: string;
 };
 
 export type BrokerStatementParser = {

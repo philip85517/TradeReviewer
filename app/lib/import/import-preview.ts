@@ -51,6 +51,7 @@ const BROKER_LABELS: Record<StatementBroker, string> = {
   futu: "富途证券",
   tiger: "Tiger 证券",
   "china-merchants": "招商证券",
+  tradingview: "TradingView · 模拟盘",
 };
 
 function groupedExclusions(

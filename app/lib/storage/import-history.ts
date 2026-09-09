@@ -8,6 +8,8 @@ export type ImportHistoryEntry = {
   id: string;
   fileName: string;
   sourceLabel: string;
+  tradingNature?: "simulated" | "live" | "unknown";
+  simulationRunId?: string;
   importedAt: string;
   firstTradeAt?: string;
   lastTradeAt?: string;
@@ -68,6 +70,8 @@ function parseEntry(value: unknown): ImportHistoryEntry | undefined {
         candidate.sourceLabel.trim()
           ? candidate.sourceLabel
           : "历史导入",
+      ...(candidate.tradingNature ? {tradingNature:candidate.tradingNature} : {}),
+      ...(candidate.simulationRunId ? {simulationRunId:candidate.simulationRunId} : {}),
       importedAt: candidate.importedAt,
       ...(typeof candidate.firstTradeAt === "string"
         ? { firstTradeAt: candidate.firstTradeAt }

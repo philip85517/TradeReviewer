@@ -1,3 +1,7 @@
+import { createEmptyEpisodeReviewRecord } from "../reviews/review-metrics";
+import { parseBrokerStatement } from "../import/dispatcher";
+import { csv, fileFor } from "../import/__fixtures__/tradingview";
+import { buildTradeEpisodes } from "../trades/episodes";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -114,6 +118,63 @@ describe("SqliteStore", () => {
     expect(store.getExecutions()[0].source).toMatchObject({ timeEvidence: "user", templateId: "futu-legacy", openingPosition: monthly.positions[0] });
     expect(() => store.mergeTradeData({ executions: [], importHistory: [{ ...history, monthly: { ...monthly, positions: [{ ...monthly.positions[0], quantity: 123 as unknown as string }] } }] })).toThrow("Invalid monthly statement evidence");
   });
+  it("roundtrips simulated source evidence and isolates reimports and runs", async () => {
+    const store = createStore();
+    const {records} = await parseBrokerStatement(fileFor());
+    const other = await parseBrokerStatement(fileFor(csv.replaceAll('signal, quoted','new run')));
+    store.mergeExecutions(records);
+    store.mergeExecutions(records);
+    store.mergeExecutions(other.records);
+    const restored=store.getBootstrap().executions;
+    expect(restored).toHaveLength(4);
+    expect(restored.find(r=>r.id===records[1].id)?.source).toEqual(records[1].source);
+    expect(buildTradeEpisodes(restored)).toHaveLength(2);
+  });
+
+  it("restores simulation notes and drawings for the exact episode after reopening SQLite", async () => {
+    const directory=mkdtempSync(join(tmpdir(), 'simulation-reopen-'));
+    directories.push(directory);
+    const path=join(directory,'store.sqlite');
+    const first=new SqliteStore(openSqliteDatabase(path));
+    const {records}=await parseBrokerStatement(fileFor());
+    first.mergeExecutions(records);
+    const episode=buildTradeEpisodes(records)[0];
+    const review=createEmptyEpisodeReviewRecord(episode.id,episode.instrument.id,'2026-09-07T00:00:00Z');
+    review.plan.thesis='等待突破后再入场';
+    first.putReview(review);
+    const state={version:2 as const,episodeId:episode.id,replayCursor:episode.startedAt,timeframe:'1D' as const,activePanelTab:'notes' as const,drawings:[{version:2 as const,id:'simulation-line',episodeId:episode.id,name:'风险线',tool:'horizontal-line' as const,anchors:[{time:episode.startedAt,price:9}],style:{color:'#fff',lineWidth:1,opacity:1},zIndex:0,hidden:false,locked:false,visibleOn:'all' as const,stage:'during-replay' as const,createdAtCursor:episode.startedAt}]};
+    first.putReviewState(state);
+    const other=await parseBrokerStatement(fileFor(csv.replaceAll('signal, quoted','another run')));
+    first.mergeExecutions(other.records);
+    databaseFor(first).close();
+    const reopened=new SqliteStore(openSqliteDatabase(path));
+    expect(reopened.getBootstrap().reviews).toEqual([review]);
+    expect(reopened.getBootstrap().reviewStates).toEqual([state]);
+    const restoredEpisodes=buildTradeEpisodes(reopened.getExecutions());
+    expect(restoredEpisodes.map(e=>e.id)).toContain(episode.id);
+    expect(restoredEpisodes).toHaveLength(2);
+    databaseFor(reopened).close();
+  });
+
+  it("rejects stale-client CSV security conflicts against persisted and incoming records", async () => {
+    const store=createStore();
+    const a=await parseBrokerStatement(fileFor());
+    const b=await parseBrokerStatement(fileFor(csv,'回放交易_SSE_600869.csv'));
+    store.mergeExecutions(a.records);
+    expect(()=>store.mergeExecutions(b.records)).toThrow(/simulation.*context/i);
+    expect(store.getExecutions()).toEqual(a.records);
+    const empty=createStore();
+    expect(()=>empty.mergeExecutions([...a.records,...b.records])).toThrow(/simulation.*context/i);
+    expect(empty.getExecutions()).toHaveLength(0);
+  });
+
+  it("rejects invalid simulation evidence atomically", async () => {
+    const store=createStore();
+    const {records}=await parseBrokerStatement(fileFor());
+    const invalid={...records[0], source:{...records[0].source,simulationRunId:undefined}};
+    expect(()=>store.mergeExecutions([records[1],invalid])).toThrow(/simulation/i);
+    expect(store.getExecutions()).toHaveLength(0);
+  });
   it("returns a complete bootstrap with empty production data", () => {
     const bootstrap = createStore().getBootstrap();
 
@@ -130,6 +191,19 @@ describe("SqliteStore", () => {
     expect(store.mergeExecutions([execution])).toEqual({ inserted: 1, duplicate: 0, conflict: 0 });
     expect(store.getExecutions()).toEqual([execution]);
     expect(store.getInstruments()).toEqual([instrument]);
+  });
+
+  it("preserves an explicitly confirmed grey-market session across reopening storage", () => {
+    const directory = mkdtempSync(join(tmpdir(), "tradereview-session-"));
+    directories.push(directory);
+    const path = join(directory, "store.sqlite");
+    const fill = { ...execution, source: { ...execution.source, tradingSession: "grey-market" as const } };
+    const first = new SqliteStore(openSqliteDatabase(path));
+    first.mergeExecutions([fill]);
+    databaseFor(first).close();
+    const reopened = new SqliteStore(openSqliteDatabase(path));
+    expect(reopened.getExecutions()).toEqual([fill]);
+    databaseFor(reopened).close();
   });
 
   it("persists trade, market data, and refresh jobs across a database reopen", () => {

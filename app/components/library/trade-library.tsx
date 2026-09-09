@@ -10,6 +10,8 @@ import {
   Search,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import Decimal from "decimal.js";
+import { tradingNature } from "../../lib/trades/trading-nature";
 
 import { aggregateCandles } from "../../lib/market/aggregate";
 import type { DailyCandleRecord } from "../../lib/market/contracts";
@@ -21,6 +23,7 @@ import {
   formatMarketTradingDate,
   marketTradingDate,
 } from "../../lib/market/trading-date";
+import { formatBeijingDateTime } from "../../lib/replay/format-time";
 import type { EpisodeReviewRecord } from "../../lib/reviews/types";
 import {
   reviewTagLabel,
@@ -41,9 +44,10 @@ type Props = {
   entries: TradeLibraryEntry[];
   candlesByInstrument: Record<string, DailyCandleRecord[]>;
   marketDataStatuses: Record<string, MarketDataSyncStatus>;
+  marketDataLabels?: Record<string, string>;
   timeframe: Timeframe;
   onTimeframeChange: (timeframe: Timeframe) => void;
-  onOpenInReview: (instrumentId: string) => void;
+  onOpenInReview: (instrumentId: string, episodeId?: string) => void;
   onSaveReview: (record: EpisodeReviewRecord) => void | Promise<void>;
   reviewsHydrated: boolean;
   target?: TradeLibraryTarget;
@@ -81,6 +85,7 @@ export function TradeLibrary({
   entries,
   candlesByInstrument,
   marketDataStatuses,
+  marketDataLabels,
   timeframe,
   onTimeframeChange,
   onOpenInReview,
@@ -94,6 +99,7 @@ export function TradeLibrary({
   const [selectedEpisodeId, setSelectedEpisodeId] = useState<
     string | null
   >(target?.episodeId ?? null);
+  const [nature, setNature] = useState("all");
   const [query, setQuery] = useState("");
   const [market, setMarket] = useState<FilterValue>("all");
   const [account, setAccount] = useState<FilterValue>("all");
@@ -104,7 +110,8 @@ export function TradeLibrary({
   const [tag, setTag] = useState<FilterValue>("all");
 
   const selectedEntry = entries.find(
-    (entry) => entry.instrument.id === selectedInstrumentId,
+    (entry) => (entry.groupId ?? entry.instrument.id) === selectedInstrumentId
+      || (entry.instrument.id === selectedInstrumentId && (!selectedEpisodeId || entry.episodes.some(item=>item.episode.id===selectedEpisodeId))),
   );
   const selectedEpisode =
     selectedEntry?.episodes.find(
@@ -148,7 +155,9 @@ export function TradeLibrary({
     return entries.filter((entry) => {
       const status =
         marketDataStatuses[entry.instrument.id] ?? "not-requested";
-      const dataIsComplete = status === "complete" || status === "ready";
+      const dataIsComplete =
+        status === "complete" ||
+        status === "ready";
       return (
         (!normalizedQuery ||
           entry.instrument.name
@@ -157,6 +166,7 @@ export function TradeLibrary({
           entry.instrument.symbol
             .toLocaleLowerCase()
             .includes(normalizedQuery)) &&
+        (nature === "all" || tradingNature(entry.executions[0]) === nature) &&
         (market === "all" || entry.instrument.market === market) &&
         (account === "all" ||
           entry.executions.some(
@@ -178,6 +188,7 @@ export function TradeLibrary({
       );
     });
   }, [
+    nature,
     account,
     dataStatus,
     entries,
@@ -226,7 +237,7 @@ export function TradeLibrary({
               {selectedEntry.instrument.symbol}）
             </h1>
             <p>
-              {selectedEntry.accountCount} 个账户 ·{" "}
+              {selectedEntry.tradingLabel} · {selectedEntry.executions[0]?.accountLabel} · {selectedEntry.accountCount} 个账户 ·{" "}
               {selectedEntry.tradeCount} 笔成交 ·{" "}
               {selectedEntry.episodeCount} 个回合
             </p>
@@ -234,7 +245,9 @@ export function TradeLibrary({
           <button
             className="library-open-review"
             onClick={() =>
-              onOpenInReview(selectedEntry.instrument.id)
+              tradingNature(episode.executions[0]) === "simulated"
+                ? onOpenInReview(selectedEntry.instrument.id, episode.id)
+                : onOpenInReview(selectedEntry.instrument.id)
             }
           >
             <BookOpenCheck size={15} />
@@ -416,6 +429,15 @@ export function TradeLibrary({
               </div>
             )}
 
+            {episode.executions.some(execution=>execution.source.simulationReport) && <section className="simulation-source-report" aria-label="模拟交易源报告">
+              <h3>TradingView 源报告</h3>
+              <p>系统净盈亏按成交重算；配对总手续费在出场时计入一次。源报告可能采用不同口径或舍入，累计损益不逐行相加。</p>
+              <p>本次运行配对净损益合计：{selectedEntry.executions.filter(e=>e.source.simulationReport).reduce((sum,e)=>sum.plus(e.source.simulationReport?.['净损益 CNY'] ?? '0'),new Decimal(0)).toFixed(2)} CNY · 源报告末项累计损益：{selectedEntry.executions.filter(e=>e.source.simulationReport).sort((a,b)=>Number(a.source.simulationTradeId)-Number(b.source.simulationTradeId)).at(-1)?.source.simulationReport?.['累计损益 CNY']} CNY</p>
+              {episode.executions.filter(execution=>execution.source.simulationReport).map(execution=><details key={execution.id}>
+                <summary>交易 {execution.source.simulationTradeId} · {execution.source.simulationSignal} · 源净损益 {execution.source.simulationReport?.['净损益 CNY']} CNY</summary>
+                <dl>{Object.entries(execution.source.simulationReport ?? {}).map(([label,value])=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+              </details>)}
+            </section>}
             <div className="library-section-heading">
               <div>
                 <strong>成交明细</strong>
@@ -439,8 +461,16 @@ export function TradeLibrary({
                 >
                   <span>
                     <Clock3 size={12} />
-                    {execution.source.sourceTimestampText ??
-                      new Date(execution.executedAt).toLocaleString("zh-CN")}
+                    {execution.source.timePrecision === "date-only"
+                      ? `${formatMarketTradingDate(execution.executedAt, execution.instrument.market)} · 未提供成交时刻`
+                      : formatBeijingDateTime(execution.executedAt)}
+                    {execution.source.sourceTimestampText && (
+                      <small
+                        title={`原始时间（${execution.source.sourceTimezone ?? "来源时区"}）`}
+                      >
+                        {execution.source.sourceTimestampText}
+                      </small>
+                    )}
                   </span>
                   <b
                     className={
@@ -502,6 +532,9 @@ export function TradeLibrary({
             onChange={(event) => setQuery(event.target.value)}
           />
         </label>
+        <label><span>交易性质</span><select aria-label="按交易性质筛选" value={nature} onChange={event=>setNature(event.target.value)}>
+          <option value="all">全部（分别统计）</option><option value="live">实盘</option><option value="simulated">模拟盘</option><option value="unknown">未知</option>
+        </select></label>
         <label>
           <span>市场</span>
           <select
@@ -617,9 +650,9 @@ export function TradeLibrary({
               <button
                 className="library-stock-row"
                 aria-label={`打开${entry.instrument.name}交易回合`}
-                key={entry.instrument.id}
+                key={entry.groupId ?? entry.instrument.id}
                 onClick={() => {
-                  setSelectedInstrumentId(entry.instrument.id);
+                  setSelectedInstrumentId(entry.groupId ?? entry.instrument.id);
                   setSelectedEpisodeId(
                     entry.episodes[0]?.episode.id ?? null,
                   );
@@ -634,6 +667,7 @@ export function TradeLibrary({
                 </span>
                 <span className="library-stock-meta">
                   <span>
+                    {entry.tradingLabel && <span className="simulation-badge">{entry.tradingLabel} · {entry.executions[0]?.source.simulationRunId?.split(':')[0].slice(0,8)}</span>}
                     {entry.accountCount} 个账户 · {entry.tradeCount} 笔成交 ·{" "}
                     {entry.episodeCount} 个回合
                   </span>
@@ -663,7 +697,7 @@ export function TradeLibrary({
                   <b className={entry.status}>
                     {entry.status === "open" ? "持仓中" : "已平仓"}
                   </b>
-                  <small>{marketDataStatusLabel(status)}</small>
+                  <small>{marketDataLabels?.[entry.instrument.id] ?? marketDataStatusLabel(status)}</small>
                 </span>
                 <span className="library-stock-pnl">
                   <strong

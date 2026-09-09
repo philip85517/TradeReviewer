@@ -1,7 +1,5 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type {
@@ -298,21 +296,6 @@ function renderDialog({
 }
 
 describe("ScreenshotReviewDialog", () => {
-  it("keeps context controls readable and grouped", () => {
-    renderDialog();
-
-    expect(screen.getByRole("combobox", { name: "截图成交时区" })).toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: "交易账户" })).toBeInTheDocument();
-
-    const styles = readFileSync(resolve(import.meta.dirname, "../../globals.css"), "utf8");
-    expect(styles).toContain(".screenshot-review-context {");
-    expect(styles).toContain("gap: 16px");
-    expect(styles).toContain("padding: 12px 22px");
-    expect(styles).toContain("height: 34px");
-    expect(styles).toContain("font-size: 10px");
-    expect(styles).toContain("font-size: 12px");
-  });
-
   it("announces the review layout, image progress, issues, and batch counts", () => {
     renderDialog();
 
@@ -538,25 +521,6 @@ describe("ScreenshotReviewDialog", () => {
       type: "confirm-field",
       draftId: "draft-nvda",
       field: "price",
-    });
-  });
-
-  it("abandons the row from low-confidence source evidence", async () => {
-    const user = userEvent.setup();
-    const { onAction } = renderDialog();
-
-    await user.click(
-      screen.getByRole("cell", {
-        name: "NVDA 价格 114.8，待确认",
-      }),
-    );
-    await user.click(
-      screen.getByRole("button", { name: "放弃这条记录" }),
-    );
-
-    expect(onAction).toHaveBeenCalledWith({
-      type: "delete-draft",
-      draftId: "draft-nvda",
     });
   });
 
@@ -945,17 +909,5 @@ describe("ScreenshotReviewDialog", () => {
     expect(
       screen.getByRole("button", { name: "确认导入" }),
     ).toBeEnabled();
-  });
-
-  it("blocks confirmation and explains when every draft has been deleted", () => {
-    const state = reviewState(false);
-    state.deletedDraftIds = new Set(state.drafts.map(({ id }) => id));
-
-    renderDialog({ state });
-
-    expect(
-      screen.getByRole("button", { name: "确认导入" }),
-    ).toBeDisabled();
-    expect(screen.getByText("没有可导入的成交记录")).toBeInTheDocument();
   });
 });

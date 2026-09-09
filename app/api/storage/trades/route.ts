@@ -36,6 +36,7 @@ export async function PUT(request: Request) {
   if (!input) return failure("invalid-request", 400);
   try { return response(getSqliteStore(openSqliteDatabase()).mergeTradeData(input)); }
   catch (error) {
+    if (error instanceof Error && error.message === "Simulation context conflict") return failure("conflict", 409);
     if (error instanceof Error && error.message.startsWith("Unknown instrument:")) return failure("not-found", 404);
     if (validation(error)) return failure("invalid-request", 400);
     return failure("storage-unavailable", 503);

@@ -13,9 +13,13 @@ import type {
   NormalizedDrawing,
 } from "../../lib/chart/drawings";
 import type { DrawingCommand } from "../../lib/chart/drawing-commands";
-import type { Candle } from "../../lib/market/types";
-import type { ChartSettings } from "../../lib/storage/chart-settings";
 import type { StatementEvent } from "../../lib/import/monthly-statement";
+import type { Candle } from "../../lib/market/types";
+import {
+  formatBeijingDateTime,
+  formatBeijingUnixSeconds,
+} from "../../lib/replay/format-time";
+import type { ChartSettings } from "../../lib/storage/chart-settings";
 import { displayTimeForCandle } from "../../lib/replay/display-time";
 import type { TradeExecution } from "../../lib/trades/types";
 import {
@@ -33,12 +37,15 @@ type Props = {
   activeTool: DrawingTool;
   settings: ChartSettings;
   episodeId: string;
+  viewportKey?: string;
   selectedDrawingId: string | null;
   plannedRiskAmount: string | undefined;
   currency: string;
   onSelectDrawing: (id: string | null) => void;
   onCommand: (command: DrawingCommand) => void;
 };
+
+const EMPTY_POSITION_EVENTS: StatementEvent[] = [];
 
 type CrosshairCandle = Pick<
   Candle,
@@ -49,16 +56,27 @@ function chartTime(time: string) {
   return Math.floor(new Date(time).getTime() / 1000) as Time;
 }
 
+function chartTimeLabel(time: Time) {
+  if (typeof time === "number") return formatBeijingUnixSeconds(time);
+  if (typeof time === "string") return formatBeijingDateTime(time);
+  return formatBeijingDateTime(
+    `${time.year.toString().padStart(4, "0")}-${time.month
+      .toString()
+      .padStart(2, "0")}-${time.day.toString().padStart(2, "0")}T00:00:00.000Z`,
+  );
+}
+
 export function ReplayChart({
   candles,
   executions,
-  positionEvents = [],
+  positionEvents = EMPTY_POSITION_EVENTS,
   cursor,
   averageCost,
   drawings,
   activeTool,
   settings,
   episodeId,
+  viewportKey = episodeId,
   selectedDrawingId,
   plannedRiskAmount,
   currency,
@@ -71,7 +89,7 @@ export function ReplayChart({
   const volumeSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
   const markerPluginRef = useRef<unknown>(null);
   const costLineRef = useRef<IPriceLine | null>(null);
-  const fittedRef = useRef(false);
+  const fittedRef = useRef<string | null>(null);
   const [chartReady, setChartReady] = useState(false);
   const [coordinateVersion, setCoordinateVersion] = useState(0);
   const [crosshair, setCrosshair] = useState<CrosshairCandle | null>(
@@ -142,12 +160,17 @@ export function ReplayChart({
             borderColor: "#273345",
             scaleMargins: { top: 0.08, bottom: 0.2 },
           },
+          localization: {
+            locale: "zh-CN",
+            timeFormatter: chartTimeLabel,
+          },
           timeScale: {
             borderColor: "#273345",
             timeVisible: true,
             secondsVisible: false,
             rightOffset: 4,
             barSpacing: 8,
+            tickMarkFormatter: (time: Time) => chartTimeLabel(time),
           },
         });
         const candleSeries = chart.addSeries(CandlestickSeries, {
@@ -314,15 +337,23 @@ export function ReplayChart({
       price: averageCost > 0 ? averageCost : candles.at(-1)?.close ?? 0,
       axisLabelVisible: settings.showAverageCost && averageCost > 0,
     });
-    if (!fittedRef.current && candles.length > 0) {
+    if (fittedRef.current !== viewportKey && candles.length > 0) {
       chartRef.current?.timeScale().fitContent();
-      fittedRef.current = true;
+      // Leave room for arrows/text on the first and last bars as well.
+      const padding = Math.max(3, Math.ceil(candles.length * 0.04));
+      chartRef.current?.timeScale().setVisibleLogicalRange({
+        from: -padding,
+        to: candles.length - 1 + padding,
+      });
+      fittedRef.current = viewportKey;
+      setCrosshair(null);
     }
     setCoordinateVersion((version) => version + 1);
   }, [
     averageCost,
     candles,
     chartReady,
+    viewportKey,
     executions,
     positionEvents,
     settings.showAverageCost,
@@ -390,7 +421,7 @@ export function ReplayChart({
       <div className="chart-ohlc">
         <span>
           {crosshair
-            ? new Date(crosshair.time).toLocaleString("zh-CN")
+            ? formatBeijingDateTime(crosshair.time)
             : "当前 K 线"}
         </span>
         {displayCandle && (

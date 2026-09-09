@@ -1,3 +1,4 @@
+import { buildTradeEpisodes } from "../trades/episodes";
 import type { InstrumentMetadataFailure } from "../instruments/metadata-contracts";
 import {
   canonicalInstrumentId,
@@ -39,6 +40,7 @@ export type ImportPreview = {
   excludedInstrumentCount: number;
   firstTradeAt?: string;
   lastTradeAt?: string;
+  simulation?: { rawRowCount: number; pairCount: number; episodeCount: number; diagnostics: string[] };
   blocked: boolean;
   blockingReason?: string;
 };
@@ -51,6 +53,7 @@ type CreateImportPreviewOptions = {
 };
 
 const BROKER_LABELS: Record<StatementBroker, string> = {
+  tradingview: "TradingView · 模拟盘",
   futu: "富途证券",
   tiger: "Tiger 证券",
   "china-merchants": "招商证券",
@@ -192,6 +195,12 @@ export function createImportPreview(
     id: `import:${fingerprint}`,
     monthly: result.monthly,
     diagnostics: result.diagnostics,
+    ...(enriched.broker === "tradingview" ? { simulation: {
+      rawRowCount: enriched.importable.length + enriched.exclusions.reduce((sum,item)=>sum+item.count,0),
+      pairCount: new Set(enriched.importable.map(item=>item.source.simulationTradeId)).size,
+      episodeCount: buildTradeEpisodes(enriched.importable).length,
+      diagnostics: enriched.diagnostics.map(item=>item.message),
+    } } : {}),
     fileName,
     sourceLabel:
       options.sourceKind === "screenshot"

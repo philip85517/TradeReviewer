@@ -22,7 +22,7 @@ describe("MarketDataPopover", () => {
             nativeInterval: "15m",
             coverageStart: "2025-01-02",
             coverageEnd: "2025-01-31",
-            fetchedAt: "2025-02-01 09:30",
+            fetchedAt: "2025-02-01T01:30:00.000Z",
             status: "partial",
             limitationReason: "公开行情源未覆盖更早日期",
             availableTimeframes: ["15m", "1h", "4h"],
@@ -33,7 +33,7 @@ describe("MarketDataPopover", () => {
 
     expect(screen.getByText("腾讯行情")).toBeVisible();
     expect(screen.getByText("2025-01-02 至 2025-01-31")).toBeVisible();
-    expect(screen.getByText("2025-02-01 09:30")).toBeVisible();
+    expect(screen.getByText("2025年02月01日 09:30:00")).toBeVisible();
     expect(screen.getByText("公开行情源未覆盖更早日期")).toBeVisible();
     expect(screen.getByText("15m、1h、4h")).toBeVisible();
     await user.click(screen.getByRole("button", { name: "刷新行情数据" }));

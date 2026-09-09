@@ -18,6 +18,7 @@ import {
 import type { InstrumentMetadataSource } from "../../lib/instruments/metadata-contracts";
 import { canonicalInstrumentId } from "../../lib/instruments/display-name";
 import type { ImportPreview } from "../../lib/import/import-preview";
+import { formatBeijingDate } from "../../lib/replay/format-time";
 import { useModalFocus } from "./use-modal-focus";
 import type { ExecutionConflict, ReconciliationDecision } from "../../lib/import/execution-reconciliation";
 
@@ -30,6 +31,8 @@ type Props = {
   conflicts?: ExecutionConflict[];
   conflictDecisions?: ReadonlyMap<string, ReconciliationDecision>;
   onConflictDecision?: (id: string, decision: ReconciliationDecision) => void;
+  saveError?: string | null;
+  saving?: boolean;
 };
 
 const SOURCE_LABELS: Record<
@@ -46,7 +49,7 @@ const SOURCE_LABELS: Record<
 
 function date(value?: string) {
   if (!value) return "—";
-  return new Date(value).toLocaleDateString("zh-CN");
+  return formatBeijingDate(value);
 }
 
 function safeAttemptCode(code: string) {
@@ -92,8 +95,10 @@ export function ImportConfirmDialog({
   conflicts = [],
   conflictDecisions,
   onConflictDecision,
+  saveError,
+  saving = false,
 }: Props) {
-  const dialogRef = useModalFocus(onCancel);
+  const dialogRef = useModalFocus(()=>{if(!saving) onCancel();});
   const unresolvedIds = preview.unresolved.map((failure) =>
     canonicalInstrumentId(failure.symbol, failure.market),
   );
@@ -121,6 +126,7 @@ export function ImportConfirmDialog({
           </div>
           <button
             className="icon-button"
+            disabled={saving}
             aria-label="关闭导入确认"
             onClick={onCancel}
           >
@@ -145,7 +151,13 @@ export function ImportConfirmDialog({
             <option value="" disabled>请选择处理方式</option><option value="keep-existing">保留已存，跳过本次</option><option value="use-incoming">使用本次，替换已存</option><option value="keep-both">确认为不同成交，两者保留</option>
           </select>
         </div>)}</section>}
-
+        {preview.simulation && <section className="simulation-import-summary" aria-label="模拟交易导入说明">
+          <strong className="simulation-badge">TradingView · 模拟盘</strong>
+          <p>{preview.simulation.rawRowCount} 个原始数据行 · {preview.simulation.pairCount} 个有效交易配对 · {preview.simulation.episodeCount} 个交易回合</p>
+          <p>仅提供交易日期，未提供成交时刻。配对总手续费在出场时计入一次，进场费用不单独推断。</p>
+          <p>本次模拟运行独立保存，不与实盘或其他运行合并。源报告指标与系统重算结果分开展示。</p>
+          {preview.simulation.diagnostics.map((message,index)=><p key={index}>{message}</p>)}
+        </section>}
         <div className="import-stat-grid">
           <div>
             <CalendarRange size={17} />
@@ -318,17 +330,18 @@ export function ImportConfirmDialog({
           </div>
         )}
 
+        {saveError && <div className="import-warning" role="alert">{saveError}</div>}
         <footer className="modal-footer">
           <p>{preview.monthly ? "成交和月结单证据保存到本机；无成交月份也保留账期与持仓证据。" : "仅完整成交会保存到此设备，并为新增股票启动行情更新。"}</p>
-          <button className="secondary-button" onClick={onCancel}>
+          <button className="secondary-button" disabled={saving} onClick={onCancel}>
             取消
           </button>
           <button
             className="primary-button"
-            disabled={preview.blocked || retryingUnresolved || conflicts.some(c => !conflictDecisions?.has(c.id))}
+            disabled={preview.blocked || retryingUnresolved || conflicts.some(c => !conflictDecisions?.has(c.id)) || saving}
             onClick={onConfirm}
           >
-            确认导入并开始更新行情
+            {saving ? "正在保存…" : "确认导入并开始更新行情"}
           </button>
         </footer>
       </section>

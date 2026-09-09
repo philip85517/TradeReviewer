@@ -1,6 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { GET } from "./route";
+import type {
+  IntradayProviderResult,
+  MarketDataProvider,
+  SupportedMarket,
+} from "../../../lib/market/contracts";
+import { MarketDataProviderError } from "../../../lib/market/providers/errors";
+import { createProviderRouter } from "../../../lib/market/providers/router";
+import type { ProviderRouter } from "../../../lib/market/providers/router";
 import {
   InvalidMarketDataRequest,
   parseIntradayCandleRequest,
@@ -9,6 +16,7 @@ import {
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.useRealTimers();
+  vi.resetModules();
 });
 
 describe("parseIntradayCandleRequest", () => {
@@ -68,6 +76,57 @@ describe("parseIntradayCandleRequest", () => {
 });
 
 describe("GET /api/market-data/intraday", () => {
+  async function loadRouteWithRouter(router: ProviderRouter) {
+    const routeModule = await import("./route");
+    return routeModule.createIntradayGetForTest(() => router);
+  }
+
+  async function loadRouteWithRealRouter(
+    options?: Parameters<typeof createProviderRouter>[1],
+  ) {
+    const routeModule = await import("./route");
+    return routeModule.createIntradayGetForTest((providerFetch) =>
+      createProviderRouter(providerFetch, options),
+    );
+  }
+
+  function tigerIntradayResult(
+    overrides: Partial<IntradayProviderResult> = {},
+  ): IntradayProviderResult {
+    return {
+      provider: "tiger",
+      providerSymbol: "00700",
+      fetchedAt: "2026-08-31T00:00:00.000Z",
+      interval: "1h",
+      warnings: [],
+      candles: [
+        {
+          timestamp: "2025-01-02T01:30:00.000Z",
+          open: "34.1",
+          high: "35",
+          low: "33.8",
+          close: "34.5",
+          volume: "1200",
+        },
+      ],
+      ...overrides,
+    };
+  }
+
+  function fakeTigerProvider(
+    fetchIntraday: MarketDataProvider["fetchIntraday"],
+    supportedMarkets: SupportedMarket[] = ["US", "HK"],
+  ): MarketDataProvider {
+    return {
+      id: "tiger",
+      supports: (market) => supportedMarkets.includes(market),
+      fetchDaily: vi.fn(async () => {
+        throw new Error("unexpected daily call");
+      }),
+      fetchIntraday,
+    };
+  }
+
   it("returns normalized raw 15 minute candles with public transient caching", async () => {
     vi.stubGlobal(
       "fetch",
@@ -83,6 +142,8 @@ describe("GET /api/market-data/intraday", () => {
         }),
       ),
     );
+
+    const { GET } = await import("./route");
 
     const response = await GET(
       new Request(
@@ -136,6 +197,7 @@ describe("GET /api/market-data/intraday", () => {
         }),
       ),
     );
+    const { GET } = await import("./route");
     const url =
       "http://localhost/api/market-data/intraday?market=HK&symbol=1810&interval=15m&start=2025-01-02T01%3A30%3A00.000Z&end=2025-01-02T01%3A30%3A00.000Z";
     const sameClient = { headers: { "x-forwarded-for": "intraday-busy" } };
@@ -170,6 +232,7 @@ describe("GET /api/market-data/intraday", () => {
         }),
       ),
     );
+    const { GET } = await import("./route");
     const url =
       "http://localhost/api/market-data/intraday?market=HK&symbol=1810&interval=15m&start=2025-01-02T01%3A30%3A00.000Z&end=2025-01-02T01%3A30%3A00.000Z";
 
@@ -188,6 +251,8 @@ describe("GET /api/market-data/intraday", () => {
         return new Promise<Response>(() => {});
       }),
     );
+
+    const { GET } = await import("./route");
 
     const pending = GET(
       new Request(
@@ -208,6 +273,8 @@ describe("GET /api/market-data/intraday", () => {
   it("returns a public provider error code", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response("limited", { status: 429 })));
 
+    const { GET } = await import("./route");
+
     const response = await GET(
       new Request(
         "http://localhost/api/market-data/intraday?market=HK&symbol=1810&interval=15m&start=2025-01-02T01%3A30%3A00.000Z&end=2025-01-02T01%3A30%3A00.000Z",
@@ -219,5 +286,123 @@ describe("GET /api/market-data/intraday", () => {
     expect(await response.json()).toMatchObject({
       error: { code: "source-rate-limited" },
     });
+  });
+
+  it("returns the existing success shape for configured HK Tiger 1h requests", async () => {
+    const GET = await loadRouteWithRouter({
+      fetchDaily: vi.fn(),
+      fetchIntraday: vi.fn(async () => tigerIntradayResult()),
+    });
+
+    const response = await GET(
+      new Request(
+        "http://localhost/api/market-data/intraday?market=HK&symbol=700&interval=1h&start=2025-01-02T00%3A00%3A00.000Z&end=2025-01-03T23%3A59%3A59.000Z",
+      ),
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      provider: "tiger",
+      providerSymbol: "00700",
+      interval: "1h",
+      adjustmentMode: "raw",
+      request: {
+        instrumentId: "HK:700",
+        symbol: "700",
+        market: "HK",
+        interval: "1h",
+        startTime: "2025-01-02T00:00:00.000Z",
+        endTime: "2025-01-03T23:59:59.000Z",
+      },
+      candles: [{ timestamp: "2025-01-02T01:30:00.000Z", close: "34.5" }],
+    });
+  });
+
+  it("uses a public provider through createProviderRouter when Tiger is not configured for HK hourly", async () => {
+    const hosts: string[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (input) => {
+      const url = new URL(String(input));
+      hosts.push(url.host);
+      if (url.host === "web.ifzq.gtimg.cn") {
+        return Response.json({ data: {} });
+      }
+      if (url.host.includes("eastmoney.com")) {
+        return Response.json({
+          data: {
+            code: "00700",
+            klines: ["2025-01-02 09:30:00,34.1,34.5,35,33.8,1200"],
+          },
+        });
+      }
+      throw new Error(`unexpected provider host: ${url.host}`);
+    }));
+
+    const GET = await loadRouteWithRealRouter({ environment: {} });
+
+    const response = await GET(
+      new Request(
+        "http://localhost/api/market-data/intraday?market=HK&symbol=700&interval=1h&start=2025-01-02T00%3A00%3A00.000Z&end=2025-01-03T23%3A59%3A59.000Z",
+      ),
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      provider: "eastmoney",
+      providerSymbol: "116.00700",
+      candles: [{ timestamp: "2025-01-02T01:30:00.000Z", close: "34.5" }],
+    });
+    expect(hosts).toEqual([
+      "web.ifzq.gtimg.cn",
+      "33.push2his.eastmoney.com",
+    ]);
+  });
+
+  it("falls back to a public provider through createProviderRouter after a Tiger hourly fetch error", async () => {
+    const tigerFetchIntraday = vi.fn(async () => {
+      throw new MarketDataProviderError(
+        "source-unavailable",
+        "Tiger unavailable",
+      );
+    });
+    const hosts: string[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (input) => {
+      const url = new URL(String(input));
+      hosts.push(url.host);
+      if (url.host === "web.ifzq.gtimg.cn") {
+        return Response.json({ data: {} });
+      }
+      if (url.host.includes("eastmoney.com")) {
+        return Response.json({
+          data: {
+            code: "00700",
+            klines: ["2025-01-02 09:30:00,34.1,34.5,35,33.8,1200"],
+          },
+        });
+      }
+      throw new Error(`unexpected provider host: ${url.host}`);
+    }));
+
+    const GET = await loadRouteWithRealRouter({
+      environment: {},
+      tigerConfig: { configPath: "/tmp/tiger.properties" },
+      tigerProvider: fakeTigerProvider(tigerFetchIntraday),
+    });
+
+    const response = await GET(
+      new Request(
+        "http://localhost/api/market-data/intraday?market=HK&symbol=700&interval=1h&start=2025-01-02T00%3A00%3A00.000Z&end=2025-01-03T23%3A59%3A59.000Z",
+      ),
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      provider: "eastmoney",
+      candles: [{ timestamp: "2025-01-02T01:30:00.000Z" }],
+    });
+    expect(tigerFetchIntraday).toHaveBeenCalledOnce();
+    expect(hosts).toEqual([
+      "web.ifzq.gtimg.cn",
+      "33.push2his.eastmoney.com",
+    ]);
   });
 });

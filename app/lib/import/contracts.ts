@@ -2,7 +2,7 @@ import type { TradeExecution, TradeTimePrecision } from "../trades/types";
 import type { ImportDiagnostic } from "./import-result";
 import type { MonthlyStatement } from "./monthly-statement";
 
-export type StatementBroker = "futu" | "tiger" | "china-merchants";
+export type StatementBroker = "futu" | "tiger" | "china-merchants" | "tradingview";
 
 export type StatementInput = {
   fileName: string;

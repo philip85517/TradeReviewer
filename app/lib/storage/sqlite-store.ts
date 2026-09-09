@@ -56,12 +56,12 @@ type IntervalMarketDataCommitInput = {
 type MigrationCounts = Pick<MigrationReport, "inserted" | "duplicate" | "conflict">;
 
 const MARKET_DATA_STATUSES = new Set([
-  "not-requested", "syncing", "complete", "partial", "stale",
+  "not-requested", "syncing", "complete", "latest-available", "partial", "stale",
   "source-rate-limited", "source-forbidden", "source-unavailable",
   "invalid-response", "storage-error", "needs-provider", "ready", "error",
 ]);
 const COVERAGE_STATUSES = new Set([
-  "not-requested", "syncing", "complete", "partial", "stale",
+  "not-requested", "syncing", "complete", "latest-available", "partial", "stale",
   "source-rate-limited", "source-forbidden", "source-unavailable",
   "invalid-response", "storage-error",
 ]);
@@ -160,6 +160,21 @@ function validateExecution(value: unknown): asserts value is TradeExecution {
   if (item.side !== "buy" && item.side !== "sell") throw new Error("Invalid execution");
   validateInstrument(item.instrument);
   if (!item.source || typeof item.source !== "object" || typeof item.source.platform !== "string" || typeof item.source.row !== "number") throw new Error("Invalid execution");
+  const source = item.source;
+  if (source.tradingNature !== undefined && !["simulated", "live", "unknown"].includes(source.tradingNature)) throw new Error("Invalid trading nature");
+  if (source.tradingNature === "simulated" || source.platform === "tradingview") {
+    if (source.platform !== "tradingview" || source.tradingNature !== "simulated"
+      || typeof source.simulationRunId !== "string" || !source.simulationRunId
+      || typeof source.simulationTradeId !== "string" || !/^\d+$/.test(source.simulationTradeId)
+      || !["entry", "exit"].includes(source.simulationRole ?? "")
+      || source.timePrecision !== "date-only" || source.sourceTimezone !== "Asia/Shanghai") throw new Error("Invalid simulation evidence");
+    if (source.simulationSignal !== undefined && typeof source.simulationSignal !== "string") throw new Error("Invalid simulation signal");
+    if (source.simulationReport !== undefined) {
+      if (source.simulationRole !== "exit" || !source.simulationReport || typeof source.simulationReport !== "object" || Array.isArray(source.simulationReport)
+        || Object.values(source.simulationReport).some(value => typeof value !== "string" || !/^-?\d+(?:\.\d+)?$/.test(value))) throw new Error("Invalid simulation report");
+    }
+  } else if ([source.simulationRunId, source.simulationTradeId, source.simulationRole, source.simulationReport].some(value => value !== undefined)) throw new Error("Invalid simulation evidence");
+
 }
 
 function validateReview(value: unknown): asserts value is EpisodeReviewRecord {
@@ -192,6 +207,9 @@ function validateImportHistory(value: unknown): asserts value is ImportHistoryEn
   const entry = asRecord(value, "import history");
   if (entry.monthly !== undefined && !isMonthlyStatement(entry.monthly)) throw new Error("Invalid monthly statement evidence");
   assertStringFields(entry, ["id", "fileName", "sourceLabel", "importedAt"], "import history");
+  if (entry.tradingNature !== undefined && !["live","simulated","unknown"].includes(String(entry.tradingNature))) throw new Error("Invalid import trading nature");
+  if (entry.tradingNature === "simulated" && (typeof entry.simulationRunId !== "string" || !entry.simulationRunId)) throw new Error("Invalid simulation import history");
+
   for (const field of [
     "tradeCount", "instrumentCount", "excludedInstrumentCount", "excludedRecordCount",
     "duplicateTradeCount", "unresolvedInstrumentCount", "captureCount", "conflictTradeCount",
@@ -290,7 +308,7 @@ function validateCoverage(value: unknown): asserts value is CoverageRecord {
         || !Array.isArray(item.missingTradingDates)
         || item.missingTradingDates.some((date) => typeof date !== "string")
       ) throw new Error("Invalid coverage");
-      assertOptionalStringFields(item, ["provider", "fetchedAt", "reason"], "coverage segment");
+      assertOptionalStringFields(item, ["actualEndDate", "provider", "fetchedAt", "reason"], "coverage segment");
     }
     assertJsonSafe(coverage.segments, "coverage");
   }
@@ -942,7 +960,17 @@ export class SqliteStore {
     incoming: readonly TradeExecution[],
   ): ExecutionMergeReport {
     incoming.forEach(validateExecution);
-    const reconciliation = reconcileExecutions(this.getExecutions(), incoming);
+    const current=this.getExecutions();
+    const simulationContexts=new Map<string,string>();
+    for(const execution of [...current,...incoming]) {
+      if(execution.source.platform!=="tradingview") continue;
+      const fingerprint=execution.source.fileFingerprint;
+      if(!fingerprint) throw new Error("Invalid simulation fingerprint");
+      const previous=simulationContexts.get(fingerprint);
+      if(previous && previous!==execution.instrument.id) throw new Error("Simulation context conflict");
+      simulationContexts.set(fingerprint,execution.instrument.id);
+    }
+    const reconciliation = reconcileExecutions(current, incoming);
     for (const id of reconciliation.automaticReplacementIds) {
       this.database.prepare("delete from executions where id = ?").run(id);
     }

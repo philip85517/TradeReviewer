@@ -30,7 +30,7 @@ export function createReplaySnapshot({
   evidence,
 }: ReplayInput): ReplaySnapshot {
   const knowledgeAt = replayCursorAt(cursor);
-  const revealedCandles = candles
+  const knowledgeVisibleCandles = candles
     .filter((candle) => replayCursorAt(candleKnowledgeAt(candle)) <= knowledgeAt)
     .sort((a, b) => a.time.localeCompare(b.time));
   const revealedExecutions = executions
@@ -50,13 +50,13 @@ export function createReplaySnapshot({
       return { ...execution, source };
     });
   const latestClose =
-    revealedCandles.at(-1)?.close ??
+    knowledgeVisibleCandles.at(-1)?.close ??
     revealedExecutions.at(-1)?.price ??
     0;
 
   return {
     cursor,
-    candles: revealedCandles,
+    candles: knowledgeVisibleCandles,
     executions: revealedExecutions,
     position: replayPositionAtPrice({
       executions,

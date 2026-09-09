@@ -3,7 +3,9 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   loadMarketDataJobs,
   saveMarketDataJob,
+  type MarketDataJob,
 } from "./market-data-jobs";
+import { recoverStaleMarketDataJob } from "../market/market-data-job-recovery";
 
 describe("market data jobs", () => {
   beforeEach(() => window.localStorage.clear());
@@ -117,5 +119,46 @@ describe("market data jobs", () => {
         window.localStorage.getItem("trade-reviewer:market-data-jobs:v1") ?? "{}",
       ),
     ).toMatchObject({ version: 2 });
+  });
+});
+
+describe("recoverStaleMarketDataJob", () => {
+  const syncingJob: MarketDataJob = {
+    instrumentId: "HK:700",
+    symbol: "700",
+    market: "HK",
+    requestedAt: "2026-09-01T10:00:00.000Z",
+    status: "syncing",
+    intervals: [
+      { interval: "1D", status: "syncing" },
+      { interval: "1h", status: "syncing" },
+    ],
+  };
+
+  it("turns an abandoned SQLite syncing job into a retryable error", () => {
+    expect(
+      recoverStaleMarketDataJob(
+        syncingJob,
+        new Date("2026-09-01T10:10:00.000Z"),
+      ),
+    ).toMatchObject({
+      status: "error",
+      error: {
+        code: "market-data-job-interrupted",
+      },
+      intervals: [
+        { interval: "1D", status: "error" },
+        { interval: "1h", status: "error" },
+      ],
+    });
+  });
+
+  it("keeps a recently started job syncing", () => {
+    expect(
+      recoverStaleMarketDataJob(
+        syncingJob,
+        new Date("2026-09-01T10:01:00.000Z"),
+      ),
+    ).toBe(syncingJob);
   });
 });

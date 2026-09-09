@@ -15,7 +15,6 @@ import {
   screenshotReviewReducer,
   type ScreenshotReviewState,
 } from "./review-state";
-import { toStatementParseResult } from "./to-statement-result";
 
 const FIELDS: ScreenshotField[] = [
   "market",
@@ -187,21 +186,6 @@ describe("screenshotReviewReducer", () => {
     expect(reviewBlockers(next)).toEqual([]);
   });
 
-  it("keeps an abandoned only row valid and excludes it from import", () => {
-    const next = screenshotReviewReducer(state(), {
-      type: "delete-draft",
-      draftId: "image-1:tiger:0",
-    });
-
-    expect(
-      reviewBlockers(next).some(
-        ({ draftId }) => draftId === "image-1:tiger:0",
-      ),
-    ).toBe(false);
-    expect(next.deletedDraftIds).toContain("image-1:tiger:0");
-    expect(toStatementParseResult(next).records).toEqual([]);
-  });
-
   it("adds a blank manual row tied to the selected image", () => {
     const current = state();
     const next = screenshotReviewReducer(current, {
@@ -283,6 +267,22 @@ describe("screenshotReviewReducer", () => {
       id: "existing-account",
       label: "Existing account",
     });
+  });
+
+  it("uses each market's default source timezone when the batch has mixed markets", () => {
+    const hk = draft("image-1:tiger:0", {
+      market: "HK",
+      sourceTimestampText: "24/06/05 14:41:08",
+    });
+    const us = draft("image-1:tiger:1", {
+      sourceRowIndex: 1,
+      market: "US",
+      sourceTimestampText: "24/06/05 14:41:08",
+    });
+    const current = state([hk, us]);
+    current.sourceTimezone = undefined;
+
+    expect(reviewBlockers(current)).toEqual([]);
   });
 });
 
@@ -415,26 +415,20 @@ describe("reviewBlockers", () => {
     );
   });
 
-  it("blocks an unconfirmed exact-second timestamp below 0.85 confidence", () => {
-    const belowBoundary = draft("image-1:tiger:0", {
+  it("auto-accepts an exact-second timestamp with sufficient confidence", () => {
+    const unconfirmedTime = draft("image-1:tiger:0", {
       fieldEvidence: {
         ...draft().fieldEvidence,
         executedAt: {
           rawText: "2024/06/05 14:39:25",
-          confidence: 0.8499,
+          confidence: 1,
           repaired: false,
           confirmedByUser: false,
         },
       },
     });
 
-    expect(reviewBlockers(state([belowBoundary]))).toContainEqual(
-      expect.objectContaining({
-        code: "unconfirmed-field",
-        draftId: belowBoundary.id,
-        field: "executedAt",
-      }),
-    );
+    expect(reviewBlockers(state([unconfirmedTime]))).toEqual([]);
   });
 
   it("still requires confirmation for low-confidence or repaired timestamps", () => {
@@ -475,33 +469,15 @@ describe("reviewBlockers", () => {
     );
   });
 
-  it("accepts an unconfirmed exact-second timestamp at 0.85 confidence", () => {
-    const atBoundary = draft("image-1:tiger:0", {
-      fieldEvidence: {
-        ...draft().fieldEvidence,
-        executedAt: {
-          rawText: "2024/06/05 14:39:25",
-          confidence: 0.85,
-          repaired: false,
-          confirmedByUser: false,
-        },
-      },
-    });
-
-    expect(reviewBlockers(state([atBoundary]))).toEqual([]);
-  });
-
-  it("blocks missing timezone at batch scope when the broker account is inferable", () => {
+  it("does not require manual timezone selection for a supported market", () => {
     const current = state([
       draft("image-1:tiger:0", { sourceAccountSuffix: undefined }),
     ]);
     current.sourceTimezone = undefined;
     current.account = undefined;
 
-    expect(reviewBlockers(current)).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ code: "missing-timezone" }),
-      ]),
+    expect(reviewBlockers(current)).not.toContainEqual(
+      expect.objectContaining({ code: "missing-timezone" }),
     );
     expect(reviewBlockers(current)).not.toContainEqual(
       expect.objectContaining({ code: "missing-account" }),

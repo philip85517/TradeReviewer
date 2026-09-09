@@ -129,6 +129,12 @@ export function ImportConfirmDialog({
             <span>已自动识别为 {preview.sourceLabel} 交易记录</span>
           </div>
         </div>
+        {preview.sourceKind === "tradingview" && (
+          <div className="tradingview-import-notice" role="status">
+            <strong>模拟盘 · TradingView</strong>
+            <span>文件只提供交易日期，回放不会伪造具体成交时刻；报告盈亏将在退出日期后显示。</span>
+          </div>
+        )}
 
         <div className="import-stat-grid">
           <div>

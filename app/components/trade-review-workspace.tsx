@@ -21,12 +21,16 @@ import type {
   DemoReplayFrame,
   DemoReplayMode,
 } from "../lib/demo/replay-frame";
-import type { StatementParseResult } from "../lib/import/contracts";
+import type {
+  StatementParseResult,
+  TradingViewSimulationContext,
+} from "../lib/import/contracts";
 import {
   enrichStatementImport,
   type EnrichedImportResult,
 } from "../lib/import/enrich-import";
 import { parseBrokerStatement } from "../lib/import/dispatcher";
+import { TradingViewContextDialog } from "./import/tradingview-context-dialog";
 import {
   applyReconciliationDecisions,
   reconcileExecutions,
@@ -862,6 +866,8 @@ function isAbortError(error: unknown) {
   const [pendingImport, setPendingImport] = useState<ImportPreview | null>(
     null,
   );
+  const [pendingTradingViewFile, setPendingTradingViewFile] =
+    useState<File | null>(null);
   const [pendingParsedImport, setPendingParsedImport] =
     useState<StatementParseResult | null>(null);
   const [pendingEnrichedImport, setPendingEnrichedImport] =
@@ -1188,6 +1194,12 @@ function isAbortError(error: unknown) {
 
   const viewModel: ReviewChartViewModel = {
     source: selectedImportedInstrument ? "imported" : "demo",
+    tradeNature: selectedImportedInstrument
+      ? selectedEpisode?.tradeNature ?? "unknown"
+      : undefined,
+    simulationRunId: selectedImportedInstrument
+      ? selectedEpisode?.simulationRunId
+      : undefined,
     historyMode: selectedImportedInstrument ? historyMode : undefined,
     episodeId: activeEpisodeId,
     instrument: activeInstrument,
@@ -2265,7 +2277,11 @@ function isAbortError(error: unknown) {
     }
   }
 
-  async function parseImport(file: File) {
+  async function parseImport(
+    file: File,
+    tradingViewContext?: TradingViewSimulationContext,
+  ) {
+    setPendingTradingViewFile(null);
     screenshotImport.cancel();
     const requestId = ++importRequestSequence.current;
     setImporting(true);
@@ -2280,9 +2296,21 @@ function isAbortError(error: unknown) {
     try {
       await Promise.resolve();
       setImportPhase("parsing");
-      const parsed = await parseBrokerStatement(file);
+      const parsed = tradingViewContext
+        ? await parseBrokerStatement(file, { tradingViewContext })
+        : await parseBrokerStatement(file);
       if (requestId !== importRequestSequence.current) return;
       if (parsed.broker === "unknown" || parsed.blocked) {
+        const missingTradingViewContext = parsed.diagnostics.some(
+          (diagnostic) =>
+            diagnostic.code === "tradingview-missing-instrument-context",
+        );
+        if (missingTradingViewContext && !tradingViewContext) {
+          setPendingTradingViewFile(file);
+          setImporting(false);
+          setImportPhase("idle");
+          return;
+        }
         const message = parsed.diagnostics.find(
           (diagnostic) => diagnostic.severity === "error",
         )?.message;
@@ -2426,12 +2454,20 @@ function isAbortError(error: unknown) {
         0,
       ),
       duplicateTradeCount: pendingImport.duplicateTradeCount,
+      ...(pendingImport.tradeNature
+        ? { tradeNature: pendingImport.tradeNature }
+        : {}),
+      ...(pendingImport.simulationRunId
+        ? { simulationRunId: pendingImport.simulationRunId }
+        : {}),
       ...(pendingImport.sourceKind === "screenshot"
         ? {
             sourceKind: "screenshot" as const,
             captureCount: pendingImport.captureCount ?? 0,
             conflictTradeCount: pendingImport.conflictTradeCount ?? 0,
           }
+        : pendingImport.sourceKind === "tradingview"
+          ? { sourceKind: "tradingview" as const }
         : {}),
       unresolvedInstrumentCount:
         pendingImport.unresolvedInstrumentCount,
@@ -2514,11 +2550,16 @@ function isAbortError(error: unknown) {
     setImportPhase("idle");
   }
 
-  function openLibraryEpisode(instrumentId: string, episodeId: string) {
+  function openLibraryEpisode(
+    instrumentId: string,
+    episodeId: string,
+    scopeKey?: string,
+  ) {
     setLibraryTarget({
       requestId: ++libraryTargetSequence.current,
       instrumentId,
       episodeId,
+      ...(scopeKey ? { scopeKey } : {}),
     });
     setActiveView("library");
   }
@@ -2761,8 +2802,17 @@ function isAbortError(error: unknown) {
             marketDataLabels={marketDataLabels}
             timeframe={timeframe === "1W" ? "1W" : "1D"}
             onTimeframeChange={setTimeframe}
-            onOpenInReview={(instrumentId) => {
+            onOpenInReview={(instrumentId, scopeKey) => {
               selectInstrument(instrumentId);
+              if (scopeKey) {
+                const targetEntry = tradeLibraryEntries.find(
+                  (entry) =>
+                    entry.instrument.id === instrumentId &&
+                    entry.scopeKey === scopeKey,
+                );
+                const newestEpisode = targetEntry?.episodes[0]?.episode;
+                if (newestEpisode) setSelectedEpisodeId(newestEpisode.id);
+              }
               setActiveView("review");
             }}
             reviewsHydrated={reviewsHydrated}
@@ -2793,6 +2843,9 @@ function isAbortError(error: unknown) {
               importPhase={importPhase}
               importError={importError}
               onImport={parseImport}
+              onTradingViewImport={(file) => {
+                void parseImport(file);
+              }}
               onScreenshotImport={(files) => {
                 importRequestSequence.current += 1;
                 setImportError(null);
@@ -2999,6 +3052,17 @@ function isAbortError(error: unknown) {
             void retryUnresolved(instrumentIds)
           }
           retryingUnresolved={retryingUnresolved}
+        />
+      )}
+      {pendingTradingViewFile && (
+        <TradingViewContextDialog
+          fileName={pendingTradingViewFile.name}
+          onCancel={() => setPendingTradingViewFile(null)}
+          onConfirm={(context) => {
+            const file = pendingTradingViewFile;
+            setPendingTradingViewFile(null);
+            void parseImport(file, context);
+          }}
         />
       )}
       {screenshotImport.open &&

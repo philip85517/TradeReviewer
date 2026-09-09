@@ -1,7 +1,12 @@
 import Decimal from "decimal.js";
 
 import { canonicalInstrumentId } from "../instruments/display-name";
-import type { TradeEpisode, TradeExecution } from "./types";
+import {
+  tradeNatureOf,
+  tradeScopeKey,
+  type TradeEpisode,
+  type TradeExecution,
+} from "./types";
 
 type EpisodeAccumulator = {
   episode: TradeEpisode;
@@ -24,7 +29,7 @@ function episodeKey(execution: TradeExecution) {
   return `${execution.accountId}:${canonicalInstrumentId(
     execution.instrument.symbol,
     execution.instrument.market,
-  )}`;
+  )}:${tradeScopeKey(execution)}`;
 }
 
 function signedQuantity(execution: TradeExecution) {
@@ -61,6 +66,10 @@ function createEpisode(
       accountId: execution.accountId,
       accountLabel: execution.accountLabel,
       instrument: execution.instrument,
+      tradeNature: tradeNatureOf(execution),
+      ...(execution.source.simulationRunId
+        ? { simulationRunId: execution.source.simulationRunId }
+        : {}),
       direction,
       status: "open",
       startedAt: execution.executedAt,

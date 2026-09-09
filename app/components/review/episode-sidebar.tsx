@@ -4,6 +4,7 @@ import {
   Check,
   Clock3,
   Database,
+  FileSpreadsheet,
   History,
   ImageUp,
   RefreshCw,
@@ -40,6 +41,7 @@ type Props = {
   importPhase?: ImportPhase;
   importError: string | null;
   onImport: (file: File) => void;
+  onTradingViewImport?: (file: File) => void;
   onScreenshotImport: (files: File[]) => void;
   onOpenHistory: () => void;
   revealedDemoExecutions: TradeExecution[];
@@ -64,6 +66,7 @@ export function EpisodeSidebar({
   importPhase = importing ? "parsing" : "idle",
   importError,
   onImport,
+  onTradingViewImport,
   onScreenshotImport,
   onOpenHistory,
   revealedDemoExecutions,
@@ -141,6 +144,32 @@ export function EpisodeSidebar({
             }}
           />
         </label>
+        {onTradingViewImport && (
+          <label
+            className="import-button tradingview-import-button"
+            role="button"
+            tabIndex={importing ? -1 : 0}
+            onKeyDown={(event) => {
+              if (event.key !== "Enter" && event.key !== " ") return;
+              event.preventDefault();
+              event.currentTarget.querySelector("input")?.click();
+            }}
+          >
+            <FileSpreadsheet size={16} />
+            导入 TradingView 模拟 CSV
+            <input
+              aria-label="导入 TradingView 模拟 CSV"
+              type="file"
+              accept=".csv,text/csv"
+              disabled={importing}
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) onTradingViewImport(file);
+                event.currentTarget.value = "";
+              }}
+            />
+          </label>
+        )}
         <label
           className="import-button"
           role="button"

@@ -159,6 +159,23 @@ function validateExecution(value: unknown): asserts value is TradeExecution {
   if (item.side !== "buy" && item.side !== "sell") throw new Error("Invalid execution");
   validateInstrument(item.instrument);
   if (!item.source || typeof item.source !== "object" || typeof item.source.platform !== "string" || typeof item.source.row !== "number") throw new Error("Invalid execution");
+  validateTradeScope(item.source.tradeNature, item.source.simulationRunId, "execution");
+}
+
+function validateTradeScope(
+  nature: unknown,
+  simulationRunId: unknown,
+  field: string,
+) {
+  if (nature !== undefined && nature !== "live" && nature !== "simulation" && nature !== "unknown") {
+    throw new Error(`Invalid ${field}`);
+  }
+  if (simulationRunId !== undefined && (typeof simulationRunId !== "string" || !simulationRunId.trim())) {
+    throw new Error(`Invalid ${field}`);
+  }
+  if (nature !== "simulation" && simulationRunId !== undefined) {
+    throw new Error(`Invalid ${field}`);
+  }
 }
 
 function validateReview(value: unknown): asserts value is EpisodeReviewRecord {
@@ -199,6 +216,7 @@ function validateImportHistory(value: unknown): asserts value is ImportHistoryEn
       throw new Error("Invalid import history");
     }
   }
+  validateTradeScope(entry.tradeNature, entry.simulationRunId, "import history");
 }
 
 function isStoredMarketDataErrorDetail(value: unknown): boolean {
@@ -431,9 +449,19 @@ function mapExecutionRow(row: Row): TradeExecution {
       "execution evidence",
     )
     : undefined;
+  const source: TradeExecution["source"] = evidence?.source ?? {
+    platform: "unknown",
+    row: 0,
+  };
+  if (typeof row.trade_nature === "string" && source.tradeNature === undefined) {
+    source.tradeNature = row.trade_nature as TradeExecution["source"]["tradeNature"];
+  }
+  if (typeof row.simulation_run_id === "string" && source.simulationRunId === undefined) {
+    source.simulationRunId = row.simulation_run_id;
+  }
   return {
     id: asString(row.id, "execution id"),
-    source: evidence?.source ?? { platform: "unknown", row: 0 },
+    source,
     accountId: String(row.account ?? ""),
     accountLabel: evidence?.accountLabel ?? "",
     instrument: mapInstrumentRow({
@@ -981,8 +1009,9 @@ export class SqliteStore {
     this.database.prepare(`
       insert into executions (
         id, import_batch_id, instrument_id, account, side, executed_at,
-        quantity, price, fee, currency, evidence_json, updated_at
-      ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp)
+        quantity, price, fee, currency, trade_nature, simulation_run_id,
+        evidence_json, updated_at
+      ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp)
       on conflict(id) do update set
         import_batch_id = excluded.import_batch_id,
         instrument_id = excluded.instrument_id,
@@ -993,6 +1022,8 @@ export class SqliteStore {
         price = excluded.price,
         fee = excluded.fee,
         currency = excluded.currency,
+        trade_nature = excluded.trade_nature,
+        simulation_run_id = excluded.simulation_run_id,
         evidence_json = excluded.evidence_json,
         updated_at = excluded.updated_at
     `).run(
@@ -1006,6 +1037,8 @@ export class SqliteStore {
       execution.price,
       execution.fee,
       execution.instrument.currency,
+      execution.source.tradeNature ?? null,
+      execution.source.simulationRunId ?? null,
       evidence,
     );
   }
@@ -1014,13 +1047,16 @@ export class SqliteStore {
     validateImportHistory(entry);
     this.database.prepare(`
       insert into import_batches (
-        id, source_name, source_type, imported_at, record_count, reconciliation_json
-      ) values (?, ?, ?, ?, ?, ?)
+        id, source_name, source_type, imported_at, record_count,
+        trade_nature, simulation_run_id, reconciliation_json
+      ) values (?, ?, ?, ?, ?, ?, ?, ?)
       on conflict(id) do update set
         source_name = excluded.source_name,
         source_type = excluded.source_type,
         imported_at = excluded.imported_at,
         record_count = excluded.record_count,
+        trade_nature = excluded.trade_nature,
+        simulation_run_id = excluded.simulation_run_id,
         reconciliation_json = excluded.reconciliation_json
     `).run(
       entry.id,
@@ -1028,6 +1064,8 @@ export class SqliteStore {
       entry.sourceKind ?? "statement",
       entry.importedAt,
       entry.tradeCount,
+      entry.tradeNature ?? null,
+      entry.simulationRunId ?? null,
       json(entry, "import history"),
     );
   }

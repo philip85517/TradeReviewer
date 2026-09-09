@@ -59,6 +59,66 @@ describe("buildTradeEpisodes", () => {
     expect(episodes[0].executions).toHaveLength(4);
   });
 
+  it("keeps live and simulated positions in separate episodes", () => {
+    const liveEntry = execution(
+      "buy",
+      "2025-01-02T14:30:00Z",
+      "100",
+      "10",
+    );
+    liveEntry.source = {
+      ...liveEntry.source,
+      tradeNature: "live",
+    };
+    const liveExit = execution(
+      "sell",
+      "2025-01-03T14:30:00Z",
+      "100",
+      "11",
+    );
+    liveExit.source = {
+      ...liveExit.source,
+      tradeNature: "live",
+    };
+    const simulatedEntry = {
+      ...execution("buy", "2025-01-02T14:30:00Z", "100", "10"),
+      id: "simulation-entry",
+      source: {
+        platform: "tradingview",
+        row: 2,
+        tradeNature: "simulation" as const,
+        simulationRunId: "tradingview:run-a",
+      },
+    };
+    const simulatedExit = {
+      ...execution("sell", "2025-01-03T14:30:00Z", "100", "11"),
+      id: "simulation-exit",
+      source: {
+        platform: "tradingview",
+        row: 3,
+        tradeNature: "simulation" as const,
+        simulationRunId: "tradingview:run-a",
+      },
+    };
+
+    const episodes = buildTradeEpisodes([
+      liveEntry,
+      liveExit,
+      simulatedEntry,
+      simulatedExit,
+    ]);
+
+    expect(episodes).toHaveLength(2);
+    expect(episodes.map((episode) => episode.tradeNature)).toEqual([
+      "live",
+      "simulation",
+    ]);
+    expect(episodes.map((episode) => episode.simulationRunId)).toEqual([
+      undefined,
+      "tradingview:run-a",
+    ]);
+  });
+
   it("closes a long and opens a short when one sell crosses through zero", () => {
     const episodes = buildTradeEpisodes([
       execution("buy", "2025-01-02T14:30:00Z", "100", "10"),

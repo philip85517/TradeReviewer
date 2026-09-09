@@ -104,7 +104,7 @@ describe("SqliteStore", () => {
     const bootstrap = createStore().getBootstrap();
 
     expect(bootstrap).toMatchObject({
-      schemaVersion: 3,
+      schemaVersion: 4,
       executions: [], importHistory: [], instruments: [], reviews: [],
       tagSuggestions: [], marketDataJobs: [], settings: {},
     });
@@ -116,6 +116,53 @@ describe("SqliteStore", () => {
     expect(store.mergeExecutions([execution])).toEqual({ inserted: 1, duplicate: 0, conflict: 0 });
     expect(store.getExecutions()).toEqual([execution]);
     expect(store.getInstruments()).toEqual([instrument]);
+  });
+
+  it("round-trips simulated trade scope and import history", () => {
+    const store = createStore();
+    const simulated = {
+      ...execution,
+      id: "simulation-execution-1",
+      source: {
+        ...execution.source,
+        platform: "tradingview",
+        inputKind: "tradingview" as const,
+        tradeNature: "simulation" as const,
+        simulationRunId: "tradingview:run-a",
+        sourceTradeId: "1",
+      },
+    };
+    const history = {
+      id: "tradingview:run-a",
+      fileName: "回放交易_SSE_600330_2026-09-03.csv",
+      sourceLabel: "TradingView · 模拟盘",
+      importedAt: "2026-09-09T00:00:00.000Z",
+      tradeCount: 2,
+      instrumentCount: 1,
+      excludedInstrumentCount: 0,
+      excludedRecordCount: 0,
+      duplicateTradeCount: 0,
+      unresolvedInstrumentCount: 0,
+      sourceKind: "tradingview" as const,
+      tradeNature: "simulation" as const,
+      simulationRunId: "tradingview:run-a",
+    };
+
+    store.mergeTradeData({
+      instruments: [instrument],
+      executions: [simulated],
+      importHistory: [history],
+    });
+
+    expect(store.getExecutions()).toEqual([simulated]);
+    expect(store.getImportHistory()).toEqual([history]);
+    expect(
+      databaseFor(store)
+        .prepare("select trade_nature, simulation_run_id from executions")
+        .all(),
+    ).toEqual([
+      { trade_nature: "simulation", simulation_run_id: "tradingview:run-a" },
+    ]);
   });
 
   it("preserves an explicitly confirmed grey-market session across reopening storage", () => {

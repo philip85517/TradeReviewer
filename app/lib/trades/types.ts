@@ -2,6 +2,19 @@ import type { SourceBounds } from "../import/screenshot/contracts";
 
 export type TradeSide = "buy" | "sell";
 export type TradeTimePrecision = "second" | "date-only";
+export type TradeNature = "live" | "simulation" | "unknown";
+
+export type TradingViewSourceReport = {
+  netPnl: string;
+  returnPercent: string;
+  favorableExcursion: string;
+  favorableExcursionPercent: string;
+  adverseExcursion: string;
+  adverseExcursionPercent: string;
+  cumulativePnl: string;
+  cumulativeReturnPercent: string;
+  durationBars: number;
+};
 
 export type Instrument = {
   id: string;
@@ -26,10 +39,14 @@ export type TradeExecution = {
     fileFingerprint?: string;
     sourceTimestampText?: string;
     sourceTimezone?: string;
-    inputKind?: "statement" | "screenshot";
+    inputKind?: "statement" | "screenshot" | "tradingview";
     batchId?: string;
     captureIndex?: number;
     sourceBounds?: SourceBounds;
+    tradeNature?: TradeNature;
+    simulationRunId?: string;
+    sourceTradeId?: string;
+    sourceReport?: TradingViewSourceReport;
   };
   accountId: string;
   accountLabel: string;
@@ -46,6 +63,8 @@ export type TradeEpisode = {
   accountId: string;
   accountLabel: string;
   instrument: Instrument;
+  tradeNature?: TradeNature;
+  simulationRunId?: string;
   direction: "long" | "short";
   status: "open" | "closed";
   startedAt: string;
@@ -54,3 +73,14 @@ export type TradeEpisode = {
   remainingQuantity: string;
   executions: TradeExecution[];
 };
+
+export function tradeNatureOf(execution: TradeExecution): TradeNature {
+  return execution.source.tradeNature ?? "unknown";
+}
+
+export function tradeScopeKey(execution: TradeExecution): string {
+  const nature = tradeNatureOf(execution);
+  return nature === "simulation"
+    ? `${nature}:${execution.source.simulationRunId ?? "unknown"}`
+    : nature;
+}

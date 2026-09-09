@@ -18,7 +18,12 @@ import {
 } from "./episode-metrics";
 import { buildTradeEpisodes } from "./episodes";
 import type { InstrumentTradeSummary } from "./instruments";
-import type { Instrument, TradeEpisode, TradeExecution } from "./types";
+import {
+  tradeScopeKey,
+  type Instrument,
+  type TradeEpisode,
+  type TradeExecution,
+} from "./types";
 
 export type TradeLibraryEpisode = {
   episode: TradeEpisode;
@@ -31,6 +36,9 @@ export type TradeLibraryEpisode = {
 };
 
 export type TradeLibraryEntry = {
+  scopeKey?: string;
+  tradeNature?: "live" | "simulation" | "unknown";
+  simulationRunId?: string;
   instrument: Instrument;
   executions: TradeExecution[];
   episodes: TradeLibraryEpisode[];
@@ -54,7 +62,7 @@ export function buildTradeLibraryEntries(
   reviewsByEpisode: Record<string, EpisodeReviewRecord> = {},
 ): TradeLibraryEntry[] {
   return summaries
-    .map((summary) => {
+    .flatMap((summary) => {
       const latestCandle = [...(
         candlesByInstrument[summary.instrument.id] ?? []
       )].sort((a, b) =>
@@ -65,8 +73,22 @@ export function buildTradeLibraryEntries(
       const hasCompleteMarketData =
         marketDataStatus === "complete" ||
         marketDataStatus === "ready";
-      const episodes = buildTradeEpisodes(summary.executions)
-        .map((episode) => {
+      const allEpisodes = buildTradeEpisodes(summary.executions);
+      const episodesByScope = new Map<string, TradeEpisode[]>();
+      for (const episode of allEpisodes) {
+        const key = tradeScopeKey(episode.executions[0]);
+        episodesByScope.set(key, [
+          ...(episodesByScope.get(key) ?? []),
+          episode,
+        ]);
+      }
+
+      return [...episodesByScope.entries()].map(([scopeKey, scopeEpisodes]) => {
+        const scopedExecutions = summary.executions.filter(
+          (execution) => tradeScopeKey(execution) === scopeKey,
+        );
+        const episodes = scopeEpisodes
+          .map((episode) => {
           const latestExecution =
             episode.executions.at(-1) ?? episode.executions[0];
           const latestExecutionTradingDate = marketTradingDate(
@@ -97,13 +119,13 @@ export function buildTradeLibraryEntries(
               review?.plan.plannedRiskAmount ?? "",
             ),
           };
-        })
-        .sort(
+          })
+          .sort(
           (a, b) =>
             b.episode.startedAt.localeCompare(a.episode.startedAt) ||
             b.episode.id.localeCompare(a.episode.id),
-        );
-      const metricsAreComplete = episodes.every(
+          );
+        const metricsAreComplete = episodes.every(
         ({ metrics }) => metrics.netPnl !== null,
       );
       const netPnl = metricsAreComplete
@@ -139,34 +161,42 @@ export function buildTradeLibraryEntries(
               )
               .toString();
 
-      return {
-        instrument: summary.instrument,
-        executions: summary.executions,
-        episodes,
-        accountCount: new Set(
-          summary.executions.map((execution) => execution.accountId),
-        ).size,
-        tradeCount: summary.tradeCount,
-        episodeCount: episodes.length,
-        firstTradeAt: summary.firstTradeAt,
-        lastTradeAt: summary.lastTradeAt,
-        status: episodes.some(
-          ({ episode }) => episode.status === "open",
-        )
-          ? ("open" as const)
-          : ("closed" as const),
-        netPnl: netPnl?.toString() ?? null,
-        returnPercent: returnPercent?.toString() ?? null,
-        reviewedEpisodeCount: episodes.filter(
-          ({ reviewStatus }) => reviewStatus === "completed",
-        ).length,
-        confirmedTagIds,
-        cumulativeR,
-      };
+        const nature = scopeEpisodes[0]?.tradeNature ?? "unknown";
+        return {
+          ...(nature !== "unknown" ? { scopeKey } : {}),
+          tradeNature: nature,
+          ...(scopeEpisodes[0]?.simulationRunId
+            ? { simulationRunId: scopeEpisodes[0].simulationRunId }
+            : {}),
+          instrument: summary.instrument,
+          executions: scopedExecutions,
+          episodes,
+          accountCount: new Set(
+            scopedExecutions.map((execution) => execution.accountId),
+          ).size,
+          tradeCount: scopedExecutions.length,
+          episodeCount: episodes.length,
+          firstTradeAt: scopedExecutions[0]?.executedAt ?? summary.firstTradeAt,
+          lastTradeAt: scopedExecutions.at(-1)?.executedAt ?? summary.lastTradeAt,
+          status: episodes.some(
+            ({ episode }) => episode.status === "open",
+          )
+            ? ("open" as const)
+            : ("closed" as const),
+          netPnl: netPnl?.toString() ?? null,
+          returnPercent: returnPercent?.toString() ?? null,
+          reviewedEpisodeCount: episodes.filter(
+            ({ reviewStatus }) => reviewStatus === "completed",
+          ).length,
+          confirmedTagIds,
+          cumulativeR,
+        };
+      });
     })
     .sort(
       (a, b) =>
         b.lastTradeAt.localeCompare(a.lastTradeAt) ||
-        a.instrument.symbol.localeCompare(b.instrument.symbol),
+        a.instrument.symbol.localeCompare(b.instrument.symbol) ||
+        (a.scopeKey ?? "").localeCompare(b.scopeKey ?? ""),
     );
 }

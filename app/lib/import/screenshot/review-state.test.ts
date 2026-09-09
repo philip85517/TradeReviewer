@@ -15,6 +15,7 @@ import {
   screenshotReviewReducer,
   type ScreenshotReviewState,
 } from "./review-state";
+import { toStatementParseResult } from "./to-statement-result";
 
 const FIELDS: ScreenshotField[] = [
   "market",
@@ -184,6 +185,21 @@ describe("screenshotReviewReducer", () => {
     expect(current.deletedDraftIds.size).toBe(0);
     expect(next.deletedDraftIds).toEqual(new Set([blocked.id]));
     expect(reviewBlockers(next)).toEqual([]);
+  });
+
+  it("keeps an abandoned only row valid and excludes it from import", () => {
+    const next = screenshotReviewReducer(state(), {
+      type: "delete-draft",
+      draftId: "image-1:tiger:0",
+    });
+
+    expect(
+      reviewBlockers(next).some(
+        ({ draftId }) => draftId === "image-1:tiger:0",
+      ),
+    ).toBe(false);
+    expect(next.deletedDraftIds).toContain("image-1:tiger:0");
+    expect(toStatementParseResult(next).records).toEqual([]);
   });
 
   it("adds a blank manual row tied to the selected image", () => {
@@ -415,20 +431,26 @@ describe("reviewBlockers", () => {
     );
   });
 
-  it("auto-accepts an exact-second timestamp with sufficient confidence", () => {
-    const unconfirmedTime = draft("image-1:tiger:0", {
+  it("blocks an unconfirmed exact-second timestamp below 0.85 confidence", () => {
+    const belowBoundary = draft("image-1:tiger:0", {
       fieldEvidence: {
         ...draft().fieldEvidence,
         executedAt: {
           rawText: "2024/06/05 14:39:25",
-          confidence: 1,
+          confidence: 0.8499,
           repaired: false,
           confirmedByUser: false,
         },
       },
     });
 
-    expect(reviewBlockers(state([unconfirmedTime]))).toEqual([]);
+    expect(reviewBlockers(state([belowBoundary]))).toContainEqual(
+      expect.objectContaining({
+        code: "unconfirmed-field",
+        draftId: belowBoundary.id,
+        field: "executedAt",
+      }),
+    );
   });
 
   it("still requires confirmation for low-confidence or repaired timestamps", () => {
@@ -469,7 +491,23 @@ describe("reviewBlockers", () => {
     );
   });
 
-  it("does not require manual timezone selection for a supported market", () => {
+  it("accepts an unconfirmed exact-second timestamp at 0.85 confidence", () => {
+    const atBoundary = draft("image-1:tiger:0", {
+      fieldEvidence: {
+        ...draft().fieldEvidence,
+        executedAt: {
+          rawText: "2024/06/05 14:39:25",
+          confidence: 0.85,
+          repaired: false,
+          confirmedByUser: false,
+        },
+      },
+    });
+
+    expect(reviewBlockers(state([atBoundary]))).toEqual([]);
+  });
+
+  it("does not require manual timezone selection for a supported market when the broker account is inferable", () => {
     const current = state([
       draft("image-1:tiger:0", { sourceAccountSuffix: undefined }),
     ]);

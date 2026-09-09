@@ -52,6 +52,9 @@ export function ImportHistoryDialog({ entries, onClose }: Props) {
                 <FileClock size={18} />
                 <div>
                   <strong>{entry.fileName}</strong>
+                  {entry.sourceKind === "tradingview" && (
+                    <span className="history-source-badge">TradingView · 模拟盘</span>
+                  )}
                   <span>
                     <CalendarRange size={12} />
                     {date(entry.firstTradeAt)} — {date(entry.lastTradeAt)}

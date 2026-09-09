@@ -67,6 +67,41 @@ function candle(
 }
 
 describe("buildTradeLibraryEntries", () => {
+  it("keeps live and simulated summaries separate for the same instrument", () => {
+    const liveEntry = fill(xpev, "a", "buy", "2025-01-02T14:30:00Z", "100", "10");
+    liveEntry.source.tradeNature = "live";
+    const liveExit = fill(xpev, "a", "sell", "2025-01-03T14:30:00Z", "100", "11");
+    liveExit.source.tradeNature = "live";
+    const simulationEntry = fill(xpev, "simulation-account", "buy", "2025-01-02T14:30:00Z", "100", "10");
+    simulationEntry.source = {
+      ...simulationEntry.source,
+      platform: "tradingview",
+      tradeNature: "simulation",
+      simulationRunId: "tradingview:run-a",
+    };
+    const simulationExit = fill(xpev, "simulation-account", "sell", "2025-01-03T14:30:00Z", "100", "12");
+    simulationExit.source = {
+      ...simulationExit.source,
+      platform: "tradingview",
+      tradeNature: "simulation",
+      simulationRunId: "tradingview:run-a",
+    };
+
+    const entries = buildTradeLibraryEntries(
+      buildInstrumentTradeSummaries([liveEntry, liveExit, simulationEntry, simulationExit]),
+      {},
+      { "US:XPEV": "complete" },
+    );
+
+    expect(entries).toHaveLength(2);
+    expect(entries.map((entry) => entry.tradeNature).sort()).toEqual([
+      "live",
+      "simulation",
+    ]);
+    expect(entries.map((entry) => entry.tradeCount).sort()).toEqual([2, 2]);
+    expect(entries.map((entry) => entry.netPnl).sort()).toEqual(["100", "200"]);
+  });
+
   it("separates account episodes, rolls up marked PnL, and sorts recent stocks first", () => {
     const summaries = buildInstrumentTradeSummaries([
       fill(xpev, "a", "buy", "2025-01-02T14:30:00Z", "100", "10"),

@@ -12,6 +12,7 @@ import {
   detectTradingViewSimulationCsv,
   parseTradingViewSimulationCsv,
 } from "./tradingview-simulation";
+import type { TradingViewSimulationContext } from "./contracts";
 import {
   detectTigerStatement,
   parseTigerPages,
@@ -27,6 +28,7 @@ type ExtractPdfPages = (input: ArrayBuffer) => Promise<PdfTextPage[]>;
 
 export type ParseBrokerStatementOptions = {
   extractPdfPages?: ExtractPdfPages;
+  tradingViewContext?: TradingViewSimulationContext;
 };
 
 export type StatementDispatchFailure = {
@@ -92,6 +94,7 @@ export async function parseBrokerStatement(
     return parseTradingViewSimulationCsv(bytes, {
       fileName: file.name,
       sourceFileId: fileFingerprint,
+      context: options.tradingViewContext,
     });
   }
 

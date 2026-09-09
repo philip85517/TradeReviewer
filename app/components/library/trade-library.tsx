@@ -43,7 +43,7 @@ type Props = {
   marketDataStatuses: Record<string, MarketDataSyncStatus>;
   timeframe: Timeframe;
   onTimeframeChange: (timeframe: Timeframe) => void;
-  onOpenInReview: (instrumentId: string) => void;
+  onOpenInReview: (instrumentId: string, scopeKey?: string) => void;
   onSaveReview: (record: EpisodeReviewRecord) => void | Promise<void>;
   reviewsHydrated: boolean;
   target?: TradeLibraryTarget;
@@ -51,10 +51,19 @@ type Props = {
 
 type FilterValue = "all" | string;
 
+function entryKey(entry: TradeLibraryEntry) {
+  return `${entry.instrument.id}|${entry.scopeKey ?? "legacy"}`;
+}
+
+function natureLabel(nature: TradeLibraryEntry["tradeNature"]) {
+  return nature === "simulation" ? "模拟盘" : nature === "live" ? "实盘" : "来源未知";
+}
+
 export type TradeLibraryTarget = {
   requestId: number;
   instrumentId: string;
   episodeId: string;
+  scopeKey?: string;
 };
 
 function money(value: string | null, currency: string) {
@@ -88,9 +97,15 @@ export function TradeLibrary({
   reviewsHydrated,
   target,
 }: Props) {
-  const [selectedInstrumentId, setSelectedInstrumentId] = useState<
-    string | null
-  >(target?.instrumentId ?? null);
+  const [selectedEntryKey, setSelectedEntryKey] = useState<string | null>(() => {
+    if (!target) return null;
+    const targetScope =
+      target.scopeKey ??
+      entries.find((entry) => entry.instrument.id === target.instrumentId)
+        ?.scopeKey ??
+      "legacy";
+    return `${target.instrumentId}|${targetScope}`;
+  });
   const [selectedEpisodeId, setSelectedEpisodeId] = useState<
     string | null
   >(target?.episodeId ?? null);
@@ -102,10 +117,10 @@ export function TradeLibrary({
     useState<FilterValue>("all");
   const [dataStatus, setDataStatus] = useState<FilterValue>("all");
   const [tag, setTag] = useState<FilterValue>("all");
+  const [tradeNature, setTradeNature] = useState<FilterValue>("all");
+  const [simulationRunId, setSimulationRunId] = useState<FilterValue>("all");
 
-  const selectedEntry = entries.find(
-    (entry) => entry.instrument.id === selectedInstrumentId,
-  );
+  const selectedEntry = entries.find((entry) => entryKey(entry) === selectedEntryKey);
   const selectedEpisode =
     selectedEntry?.episodes.find(
       ({ episode }) => episode.id === selectedEpisodeId,
@@ -139,6 +154,20 @@ export function TradeLibrary({
           ),
         ),
       ].sort((a, b) => b.localeCompare(a)),
+      simulationRuns: [
+        ...new Map(
+          entries
+            .filter(
+              (entry) =>
+                entry.tradeNature === "simulation" &&
+                entry.simulationRunId,
+            )
+            .map((entry) => [
+              entry.simulationRunId as string,
+              entry.simulationRunId as string,
+            ]),
+        ).values(),
+      ],
     }),
     [entries],
   );
@@ -171,6 +200,8 @@ export function TradeLibrary({
           )) &&
         (positionStatus === "all" ||
           entry.status === positionStatus) &&
+        (tradeNature === "all" || entry.tradeNature === tradeNature) &&
+        (simulationRunId === "all" || entry.simulationRunId === simulationRunId) &&
         (tag === "all" || entry.confirmedTagIds.includes(tag)) &&
         (dataStatus === "all" ||
           (dataStatus === "complete" && dataIsComplete) ||
@@ -185,6 +216,8 @@ export function TradeLibrary({
     marketDataStatuses,
     positionStatus,
     query,
+    simulationRunId,
+    tradeNature,
     tag,
     year,
   ]);
@@ -212,7 +245,7 @@ export function TradeLibrary({
             className="library-back"
             aria-label="返回股票库"
             onClick={() => {
-              setSelectedInstrumentId(null);
+              setSelectedEntryKey(null);
               setSelectedEpisodeId(null);
             }}
           >
@@ -220,7 +253,9 @@ export function TradeLibrary({
             返回股票库
           </button>
           <div>
-            <span className="eyebrow">股票交易库 · 持仓回合</span>
+            <span className="eyebrow">
+              股票交易库 · {natureLabel(selectedEntry.tradeNature)}
+            </span>
             <h1>
               {selectedEntry.instrument.name}（
               {selectedEntry.instrument.symbol}）
@@ -233,9 +268,16 @@ export function TradeLibrary({
           </div>
           <button
             className="library-open-review"
-            onClick={() =>
-              onOpenInReview(selectedEntry.instrument.id)
-            }
+            onClick={() => {
+              if (selectedEntry.scopeKey) {
+                onOpenInReview(
+                  selectedEntry.instrument.id,
+                  selectedEntry.scopeKey,
+                );
+              } else {
+                onOpenInReview(selectedEntry.instrument.id);
+              }
+            }}
           >
             <BookOpenCheck size={15} />
             进入逐笔复盘
@@ -560,6 +602,36 @@ export function TradeLibrary({
           </select>
         </label>
         <label>
+          <span>交易性质</span>
+          <select
+            aria-label="按交易性质筛选"
+            value={tradeNature}
+            onChange={(event) => setTradeNature(event.target.value)}
+          >
+            <option value="all">全部性质</option>
+            <option value="live">实盘</option>
+            <option value="simulation">模拟盘</option>
+            <option value="unknown">来源未知</option>
+          </select>
+        </label>
+        {filterOptions.simulationRuns.length > 1 && (
+          <label>
+            <span>模拟运行</span>
+            <select
+              aria-label="按模拟运行筛选"
+              value={simulationRunId}
+              onChange={(event) => setSimulationRunId(event.target.value)}
+            >
+              <option value="all">全部运行</option>
+              {filterOptions.simulationRuns.map((value) => (
+                <option value={value} key={value}>
+                  {value.slice(-12)}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        <label>
           <span>行情</span>
           <select
             aria-label="按行情完整性筛选"
@@ -617,9 +689,9 @@ export function TradeLibrary({
               <button
                 className="library-stock-row"
                 aria-label={`打开${entry.instrument.name}交易回合`}
-                key={entry.instrument.id}
+                key={entryKey(entry)}
                 onClick={() => {
-                  setSelectedInstrumentId(entry.instrument.id);
+                  setSelectedEntryKey(entryKey(entry));
                   setSelectedEpisodeId(
                     entry.episodes[0]?.episode.id ?? null,
                   );
@@ -631,6 +703,9 @@ export function TradeLibrary({
                     <strong>{entry.instrument.name}</strong>
                     <small>{entry.instrument.symbol}</small>
                   </span>
+                  <em className={`trade-nature-badge ${entry.tradeNature ?? "unknown"}`}>
+                    {natureLabel(entry.tradeNature)}
+                  </em>
                 </span>
                 <span className="library-stock-meta">
                   <span>

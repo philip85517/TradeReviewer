@@ -26,6 +26,8 @@ export const UNRESOLVED_ASSET_EXCLUSION_LABEL =
 
 export type EnrichedImportResult = {
   broker: StatementParseResult["broker"];
+  tradeNature?: StatementParseResult["tradeNature"];
+  simulationRunId?: string;
   importable: TradeExecution[];
   unresolved: InstrumentMetadataFailure[];
   exclusions: ImportExclusion[];
@@ -223,6 +225,8 @@ export async function enrichStatementImport(
   if (parsed.blocked) {
     return {
       broker: parsed.broker,
+      ...(parsed.tradeNature ? { tradeNature: parsed.tradeNature } : {}),
+      ...(parsed.simulationRunId ? { simulationRunId: parsed.simulationRunId } : {}),
       importable: [],
       unresolved: [],
       exclusions,
@@ -461,6 +465,8 @@ export async function enrichStatementImport(
 
   return {
     broker: parsed.broker,
+    ...(parsed.tradeNature ? { tradeNature: parsed.tradeNature } : {}),
+    ...(parsed.simulationRunId ? { simulationRunId: parsed.simulationRunId } : {}),
     importable,
     unresolved,
     exclusions,

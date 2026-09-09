@@ -2,6 +2,8 @@
 export const IMPORT_HISTORY_STORAGE_KEY =
   "trade-reviewer:import-history:v1";
 
+import type { TradeNature } from "../trades/types";
+
 export type ImportHistoryEntry = {
   id: string;
   fileName: string;
@@ -15,7 +17,9 @@ export type ImportHistoryEntry = {
   excludedRecordCount: number;
   duplicateTradeCount: number;
   unresolvedInstrumentCount: number;
-  sourceKind?: "statement" | "screenshot";
+  sourceKind?: "statement" | "screenshot" | "tradingview";
+  tradeNature?: TradeNature;
+  simulationRunId?: string;
   captureCount?: number;
   conflictTradeCount?: number;
 };
@@ -41,7 +45,9 @@ export function isLegacyImportHistoryEntry(value: unknown): value is ImportHisto
   if (candidate.sourceLabel !== undefined && typeof candidate.sourceLabel !== "string") return false;
   if (candidate.firstTradeAt !== undefined && typeof candidate.firstTradeAt !== "string") return false;
   if (candidate.lastTradeAt !== undefined && typeof candidate.lastTradeAt !== "string") return false;
-  if (candidate.sourceKind !== undefined && candidate.sourceKind !== "statement" && candidate.sourceKind !== "screenshot") return false;
+  if (candidate.sourceKind !== undefined && candidate.sourceKind !== "statement" && candidate.sourceKind !== "screenshot" && candidate.sourceKind !== "tradingview") return false;
+  if (candidate.tradeNature !== undefined && candidate.tradeNature !== "live" && candidate.tradeNature !== "simulation" && candidate.tradeNature !== "unknown") return false;
+  if (candidate.simulationRunId !== undefined && typeof candidate.simulationRunId !== "string") return false;
   return COUNT_FIELDS.every((field) => candidate[field] === undefined || (typeof candidate[field] === "number" && Number.isFinite(candidate[field]) && candidate[field] >= 0));
 }
 
@@ -85,7 +91,17 @@ function parseEntry(value: unknown): ImportHistoryEntry | undefined {
         candidate.unresolvedInstrumentCount,
       ),
       sourceKind:
-        candidate.sourceKind === "screenshot" ? "screenshot" : "statement",
+        candidate.sourceKind === "screenshot"
+          ? "screenshot"
+          : candidate.sourceKind === "tradingview"
+            ? "tradingview"
+            : "statement",
+      ...(candidate.tradeNature === "live" || candidate.tradeNature === "simulation" || candidate.tradeNature === "unknown"
+        ? { tradeNature: candidate.tradeNature }
+        : {}),
+      ...(typeof candidate.simulationRunId === "string" && candidate.simulationRunId
+        ? { simulationRunId: candidate.simulationRunId }
+        : {}),
       captureCount: count(candidate.captureCount),
       conflictTradeCount: count(candidate.conflictTradeCount),
     };

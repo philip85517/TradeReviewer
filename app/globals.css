@@ -271,6 +271,80 @@ input:focus-visible {
   display: none;
 }
 
+.tradingview-import-button {
+  border-color: rgba(91, 208, 192, 0.45);
+  color: #9ee8dc;
+}
+
+.trade-nature-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #273341;
+  color: #aab8c9;
+  font-size: 10px;
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.trade-nature-badge.simulation {
+  background: rgba(91, 208, 192, 0.16);
+  color: #9ee8dc;
+}
+
+.trade-nature-badge.live {
+  background: rgba(116, 157, 221, 0.16);
+  color: #b1c9f0;
+}
+
+.tradingview-replay-notice,
+.tradingview-source-report {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 18px 12px;
+  padding: 9px 12px;
+  border: 1px solid rgba(91, 208, 192, 0.2);
+  border-radius: 10px;
+  background: rgba(91, 208, 192, 0.06);
+  color: #b6c8c7;
+  font-size: 12px;
+}
+
+.tradingview-replay-notice strong {
+  color: #9ee8dc;
+  white-space: nowrap;
+}
+
+.tradingview-replay-notice small {
+  margin-left: auto;
+  color: #789390;
+  white-space: nowrap;
+}
+
+.tradingview-source-report {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(110px, 1fr)) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.tradingview-source-report div {
+  display: grid;
+  gap: 3px;
+}
+
+.tradingview-source-report span,
+.tradingview-source-report small {
+  color: #789390;
+}
+
+.tradingview-source-report strong {
+  color: #d8e5e3;
+}
+
 .privacy-note {
   margin: 6px 0 15px;
   color: var(--faint);

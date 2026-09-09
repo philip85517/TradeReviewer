@@ -8,6 +8,7 @@ import {
   type InstrumentTradeSummary,
 } from "../trades/instruments";
 import type { TradeExecution } from "../trades/types";
+import type { TradeNature } from "../trades/types";
 import type {
   ImportExclusion,
   StatementBroker,
@@ -22,7 +23,9 @@ export type ImportPreview = {
   id: string;
   fileName: string;
   sourceLabel: string;
-  sourceKind: "statement" | "screenshot";
+  sourceKind: "statement" | "screenshot" | "tradingview";
+  tradeNature?: TradeNature;
+  simulationRunId?: string;
   captureCount?: number;
   records: TradeExecution[];
   instruments: InstrumentTradeSummary[];
@@ -41,7 +44,7 @@ export type ImportPreview = {
 };
 
 type CreateImportPreviewOptions = {
-  sourceKind?: "statement" | "screenshot";
+  sourceKind?: "statement" | "screenshot" | "tradingview";
   captureCount?: number;
   duplicateTradeCount?: number;
   conflictTradeCount?: number;
@@ -185,19 +188,31 @@ export function createImportPreview(
         ),
     ),
   );
+  const sourceKind =
+    options.sourceKind ??
+    (enriched.broker === "tradingview" ? "tradingview" : "statement");
+  const source = enriched.importable[0]?.source;
 
   return {
     id: `import:${fingerprint}`,
     fileName,
     sourceLabel:
-      options.sourceKind === "screenshot"
+      sourceKind === "screenshot"
         ? enriched.broker === "futu"
           ? "富途截图"
           : enriched.broker === "tiger"
             ? "老虎截图"
             : "交易截图"
-        : BROKER_LABELS[enriched.broker],
-    sourceKind: options.sourceKind ?? "statement",
+        : sourceKind === "tradingview"
+          ? "TradingView · 模拟盘"
+          : BROKER_LABELS[enriched.broker],
+    sourceKind,
+    ...(source?.tradeNature || enriched.tradeNature
+      ? { tradeNature: source?.tradeNature ?? enriched.tradeNature }
+      : {}),
+    ...(source?.simulationRunId || enriched.simulationRunId
+      ? { simulationRunId: source?.simulationRunId ?? enriched.simulationRunId }
+      : {}),
     ...(options.sourceKind === "screenshot" &&
     typeof options.captureCount === "number"
       ? { captureCount: options.captureCount }

@@ -23,6 +23,7 @@ import type { ChartSettings } from "../../lib/storage/chart-settings";
 import { mapExecutionsToCandles } from "../../lib/replay/execution-markers";
 import { displayTimeForCandle } from "../../lib/replay/display-time";
 import type { TradeExecution } from "../../lib/trades/types";
+import { episodeViewport, type EpisodeViewport } from "../../lib/reviews/episode-viewport";
 import {
   DrawingCanvas,
   type ChartCoordinateAdapter,
@@ -39,6 +40,7 @@ type Props = {
   settings: ChartSettings;
   episodeId: string;
   viewportKey?: string;
+  focusRange?: EpisodeViewport;
   selectedDrawingId: string | null;
   plannedRiskAmount: string | undefined;
   currency: string;
@@ -78,6 +80,7 @@ export function ReplayChart({
   settings,
   episodeId,
   viewportKey = episodeId,
+  focusRange,
   selectedDrawingId,
   plannedRiskAmount,
   currency,
@@ -345,7 +348,7 @@ export function ReplayChart({
       chartRef.current?.timeScale().fitContent();
       // Leave room for arrows/text on the first and last bars as well.
       const padding = Math.max(3, Math.ceil(candles.length * 0.04));
-      chartRef.current?.timeScale().setVisibleLogicalRange({
+      chartRef.current?.timeScale().setVisibleLogicalRange(focusRange ? episodeViewport(candles, focusRange) : {
         from: -padding,
         to: candles.length - 1 + padding,
       });
@@ -354,6 +357,7 @@ export function ReplayChart({
     }
     setCoordinateVersion((version) => version + 1);
   }, [
+    focusRange,
     averageCost,
     candles,
     chartReady,

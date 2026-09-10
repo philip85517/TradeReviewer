@@ -1,7 +1,8 @@
 "use client";
 
 import { CalendarDays, CircleDollarSign } from "lucide-react";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
+import type { EpisodeNotesProps } from "./episode-notes-panel";
 
 import type {
   DrawingCommand,
@@ -53,6 +54,7 @@ export type ReviewChartViewModel = {
   cursor: string;
   candles: Candle[];
   executions: TradeExecution[];
+  focusedExecutions?: TradeExecution[];
   positionEvents?: StatementEvent[];
   position: PositionLedgerSnapshot;
   pathMetrics: PositionPathMetrics;
@@ -75,6 +77,8 @@ export type EpisodeOption = {
 };
 
 type Props = {
+  onCompleteReview?: () => void;
+  reviewExtras?: Pick<EpisodeNotesProps, "ruleContent" | "suggestions">;
   model: ReviewChartViewModel;
   episodeOptions: EpisodeOption[];
   playing: boolean;
@@ -192,7 +196,13 @@ export function ReviewChartWorkspace({
   onActivePanelTabChange,
   onDrawerOpenChange,
   onSaveReview,
+  onCompleteReview,
+  reviewExtras,
 }: Props) {
+  const [overview, setOverview] = useState<{episodeId: string; showAll: boolean}>({episodeId:"",showAll:false});
+  const showAll = overview.episodeId === model.episodeId && overview.showAll;
+  const focusedEpisode = episodeOptions.find(episode => episode.id === model.episodeId);
+  const focusRange = !showAll && focusedEpisode ? {start:focusedEpisode.startedAt, end:focusedEpisode.endedAt} : undefined;
   const workspaceRef = useRef<HTMLElement>(null);
   const fullscreen = useFullscreen(workspaceRef);
   const knowledgeVisibleDrawings = useMemo(
@@ -353,7 +363,8 @@ export function ReviewChartWorkspace({
                 <button type="button" aria-pressed={model.historyMode === "history"} onClick={() => onHistoryModeChange?.("history")}>完整历史</button>
                 <button type="button" aria-pressed={model.historyMode === "replay"} onClick={() => onHistoryModeChange?.("replay")}>逐根回放</button>
                 <span>已展示 {model.candles.length} 根 K 线{model.candles.length ? ` · ${model.candles[0].time.slice(0, 10)} 至 ${latestCandle!.time.slice(0, 10)}` : ""}</span>
-                <span>{model.historyMode === "history" ? "成交标记：当前交易范围；持仓统计：当前交易回合" : "成交标记与持仓统计：当前回放交易回合"}</span>
+                <button type="button" aria-pressed={!showAll} onClick={() => setOverview({episodeId:model.episodeId,showAll:!showAll})}>{showAll ? "聚焦本回合" : "展开全部行情"}</button>
+                <span>{model.historyMode === "history" ? "快速回顾 · 当前回合；需要重新判断时可进入逐根回放" : "决策训练 · 游标之后的数据已隐藏"}</span>
               </div>
             )}
             {missingMarketExecutions.length > 0 && (
@@ -392,10 +403,11 @@ export function ReviewChartWorkspace({
             {!pnlAvailable && <p role="status">持仓历史、成本或费用尚未补齐，盈亏及成本线暂不展示。{model.position.accuracy?.reasons.includes("ambiguous-opening") ? "首笔卖出缺少期初持仓或明确卖空依据，持仓方向待核对。" : ""}</p>}
             <ReplayChart
               episodeId={model.episodeId}
-              viewportKey={JSON.stringify([model.instrument.id, model.episodeId, model.timeframe, model.historyMode,
+              focusRange={focusRange}
+              viewportKey={JSON.stringify([model.instrument.id, model.episodeId, model.timeframe, model.historyMode,showAll,
                 ...(model.historyMode === "history" ? [model.candles[0]?.time, latestCandle?.time, model.candles.length] : [])])}
               candles={model.candles}
-              executions={model.executions}
+              executions={model.historyMode === "history" && !showAll ? model.focusedExecutions ?? model.executions : model.executions}
               positionEvents={model.positionEvents}
               cursor={model.cursor}
               averageCost={Number(model.position.averageCost)}
@@ -508,6 +520,8 @@ export function ReviewChartWorkspace({
         activeTab={activePanelTab}
         onActiveTabChange={onActivePanelTabChange}
         onSaveReview={onSaveReview}
+        onComplete={onCompleteReview}
+        reviewExtras={reviewExtras}
         drawerOpen={drawerOpen}
         onDrawerOpenChange={onDrawerOpenChange}
       />

@@ -180,6 +180,19 @@ function setup(
 describe("TradeLibrary", () => {
   afterEach(() => cleanup());
 
+  it("completes a queued review then advances inside the selected account", async () => {
+    const user = userEvent.setup();
+    const { onSaveReview, xpevEpisodeId } = setup();
+    await user.click(screen.getByRole("button", {name:"回合待复盘"}));
+    await user.selectOptions(screen.getByLabelText("复盘账户"), "acct-main");
+    await user.click(screen.getByRole("button", {name:"开始复盘"}));
+    await user.type(screen.getByLabelText("下次行动"), "等待确认再行动");
+    await user.click(screen.getByRole("button", {name:"完成并下一回合"}));
+    expect(onSaveReview).toHaveBeenCalledWith(expect.objectContaining({episodeId:xpevEpisodeId, review:expect.objectContaining({completed:true,reusableRule:"等待确认再行动"})}));
+    expect(screen.getByRole("heading", {name:"第 1 次交易"})).toBeInTheDocument();
+    expect(screen.getByLabelText("下次行动")).toHaveValue("");
+  });
+
   it("asks for a new selection when the requested episode no longer exists", async () => {
     const user = userEvent.setup();
     const { onOpenInReview } = setup({ target: { requestId: 1, instrumentId: "US:XPEV", episodeId: "removed-episode" } });
@@ -221,7 +234,7 @@ describe("TradeLibrary", () => {
     expect(
       screen.getByRole("heading", { name: "股票交易库" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("2 只股票")).toBeInTheDocument();
+    expect(screen.getByText("2 个标的")).toBeInTheDocument();
     expect(screen.getByText(/2 个回合/)).toBeInTheDocument();
     expect(
       screen.getAllByText("累计 R — · 标签待确认").length,
@@ -364,12 +377,12 @@ describe("TradeLibrary", () => {
 
     expect(screen.getAllByText("已复盘").length).toBeGreaterThan(0);
     expect(screen.getAllByText("1R").length).toBeGreaterThan(0);
+    await user.click(screen.getByText("补充分析 · 原始计划、风险与标签"));
     expect(screen.getByRole("checkbox", { name: "回踩" })).toBeChecked();
     expect(screen.getByLabelText("买入理由")).toHaveValue("等待回踩确认");
 
-    await user.click(
-      screen.getByRole("button", { name: "保存当前回合复盘" }),
-    );
+    await user.type(screen.getByLabelText("下次行动"), "等待回踩确认");
+    await screen.findByText("已自动保存");
     expect(onSaveReview).toHaveBeenCalledWith(
       expect.objectContaining({
         episodeId: xpevEpisodeId,

@@ -148,7 +148,8 @@ import {
   type InstrumentTradeSummary,
 } from "../lib/trades/instruments";
 import { buildTradeLibraryEntries } from "../lib/trades/library";
-import { tradingNatureLabel } from "../lib/trades/trading-nature";
+import { tradingNatureLabel, displayTradeNature } from "../lib/trades/trading-nature";
+import { buildReviewQueue } from "../lib/reviews/review-queue";
 import type {
   Instrument,
   TradeEpisode,
@@ -746,7 +747,7 @@ function episodeOptions(episodes: TradeEpisode[], reviews: Record<string, Episod
   );
   return episodes.map((episode) => ({
     id: episode.id,
-    label: `第 ${chronological.get(episode.id) ?? 1} 次交易${episode.tradeNature === "simulation" ? ` · ${episode.accountLabel}` : ""}`,
+    label: `第 ${chronological.get(episode.id) ?? 1} 次交易${displayTradeNature(episode.executions[0]) === "simulation" ? ` · ${episode.accountLabel}` : ""}`,
     contextLabel: `${marketTradingDate(episode.startedAt, episode.instrument.market)} · ${episode.executions[0]?.accountLabel ?? "账户未记录"} · ${reviews[episode.id]?.review.completed ? "已复盘" : "待复盘"}`,
     startedAt: episode.startedAt,
     endedAt: episode.endedAt,
@@ -871,10 +872,11 @@ function isAbortError(error: unknown) {
     return () => media.removeEventListener("change", closeOnDesktop);
   }, []);
   const [libraryBrowseState, setLibraryBrowseState] = useState<TradeLibraryBrowseState>();
+  const [reviewQueueIds, setReviewQueueIds] = useState<string[]>();
   const [navigationNotice, setNavigationNotice] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<
     "review" | "library" | "insights"
-  >("review");
+  >(showDemo ? "review" : "library");
   const [timeframe, setTimeframe] = useState<Timeframe>("1D");
   const [historyMode, setHistoryMode] = useState<"history" | "replay">("history");
   const [frame, setFrame] = useState(initialFrame);
@@ -1256,7 +1258,7 @@ function isAbortError(error: unknown) {
   const viewModel: ReviewChartViewModel = {
     source: selectedImportedInstrument ? "imported" : "demo",
     tradeNature: selectedImportedInstrument
-      ? selectedEpisode?.tradeNature ?? "unknown"
+      ? selectedEpisode?.executions[0] ? displayTradeNature(selectedEpisode.executions[0]) : "unknown"
       : undefined,
     simulationRunId: selectedImportedInstrument
       ? selectedEpisode?.simulationRunId
@@ -1269,6 +1271,7 @@ function isAbortError(error: unknown) {
       ? importedAvailability
       : ALL_TIMEFRAMES,
     cursor: activeCursor,
+    focusedExecutions: selectedEpisode?.executions,
     candles: activeSnapshot.candles,
     executions: selectedImportedInstrument && historyMode === "history"
       ? selectedImportedInstrument.executions.filter(execution => selectedEpisode?.executions[0]
@@ -2737,6 +2740,24 @@ function isAbortError(error: unknown) {
     setActiveView("library");
   }
 
+  function continueFromReview() {
+    const next = buildReviewQueue(tradeLibraryEntries, {status:"pending", ...(reviewQueueIds ? {} : {account:selectedEpisode?.accountId})})
+      .find(row => row.item.episode.id !== activeEpisodeId && (!reviewQueueIds || reviewQueueIds.includes(row.item.episode.id)));
+    if (next) {
+      const summary = importedInstruments.find(item => item.instrument.id === next.entry.instrument.id);
+      if (summary && selectImportedSummary(summary, next.item.episode.id)) {
+        setActivePanelTab("notes");
+        setPlaying(false);
+        return;
+      }
+    }
+    setReviewQueueIds(undefined);
+    setLibraryTarget(undefined);
+    setLibraryBrowseState(current => current ? {...current,selectedInstrumentId:null,selectedEpisodeId:null,mode:"queue"} : undefined);
+    setNavigationNotice("本轮复盘已完成，可以到阶段总结整理下一步。");
+    setActiveView("library");
+  }
+
   async function acceptSuggestion(
     suggestion: TagSuggestionRecord,
     finalTagId: string,
@@ -3019,6 +3040,7 @@ function isAbortError(error: unknown) {
       >
         {activeView === "library" ? (
           <TradeLibrary
+            defaultMode={showDemo ? "stocks" : "queue"}
             key={libraryTarget?.requestId ?? 0}
             initialBrowseState={libraryBrowseState}
             onBrowseStateChange={setLibraryBrowseState}
@@ -3028,13 +3050,15 @@ function isAbortError(error: unknown) {
             marketDataLabels={marketDataLabels}
             timeframe={timeframe === "1W" ? "1W" : "1D"}
             onTimeframeChange={setTimeframe}
-            onOpenInReview={(instrumentId, episodeId) => {
+            onOpenInReview={(instrumentId, episodeId, queueIds) => {
               const summary = importedInstruments.find((item) => item.instrument.id === instrumentId);
               if (!summary || !selectImportedSummary(summary, episodeId)) {
                 setNavigationNotice("该交易回合已变化，请返回股票库重新选择。");
                 return;
               }
               setNavigationNotice(null);
+              setReviewQueueIds(queueIds);
+              setActivePanelTab("notes");
               setLibraryTarget(undefined);
               setActiveView("review");
             }}
@@ -3269,6 +3293,7 @@ function isAbortError(error: unknown) {
               onActivePanelTabChange={setActivePanelTab}
               onDrawerOpenChange={setDrawerOpen}
               onSaveReview={saveEpisodeReview}
+              onCompleteReview={selectedImportedInstrument ? continueFromReview : undefined}
             />
             )}
             </div>

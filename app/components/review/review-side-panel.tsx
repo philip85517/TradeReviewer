@@ -9,12 +9,14 @@ import type {
   EpisodeReviewRecord,
 } from "../../lib/reviews/types";
 import { useModalFocus } from "../import/use-modal-focus";
-import { EpisodeNotesPanel } from "./episode-notes-panel";
+import { EpisodeNotesPanel, type EpisodeNotesProps } from "./episode-notes-panel";
 import { PositionStatsPanel } from "./position-stats-panel";
 
 const desktopReviewPanelQuery = "(min-width: 1260px)";
 
 type Props = {
+  onComplete?: () => void;
+  reviewExtras?: Pick<EpisodeNotesProps, "ruleContent" | "suggestions">;
   instrumentLabel: string;
   currency: string;
   metrics: PositionPathMetrics;
@@ -44,7 +46,7 @@ function PanelContent(props: Props) {
       <PositionStatsPanel instrumentLabel={props.instrumentLabel} currency={props.currency} metrics={props.metrics} plan={props.visiblePlan ?? (props.review?.planRevisions ? undefined : props.review?.plan)} />
     </div>
     <div role="tabpanel" id={notesId} aria-labelledby={`${notesId}-tab`} hidden={props.activeTab !== "notes"}>
-      <EpisodeNotesPanel replayComplete={props.replayComplete} episodeId={props.episodeId} instrumentId={props.instrumentId} record={props.review} knowledgeCursor={props.knowledgeCursor} episodeStartedAt={props.episodeStartedAt} onSave={props.onSaveReview} />
+      <EpisodeNotesPanel replayComplete={props.replayComplete} episodeId={props.episodeId} instrumentId={props.instrumentId} record={props.review} knowledgeCursor={props.knowledgeCursor} episodeStartedAt={props.episodeStartedAt} onSave={props.onSaveReview} onComplete={props.onComplete} {...props.reviewExtras} />
     </div>
   </>;
 }

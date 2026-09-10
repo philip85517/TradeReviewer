@@ -1316,13 +1316,11 @@ describe("TradeReviewWorkspace", () => {
       "等待突破",
     );
     expect(screen.getAllByText("已复盘").length).toBeGreaterThan(0);
+    await user.click(screen.getByText("补充分析 · 原始计划、风险与标签"));
     await user.clear(screen.getByLabelText("买入理由"));
     await user.type(screen.getByLabelText("买入理由"), "等待回踩");
-    await user.click(
-      screen.getByRole("button", { name: "保存当前回合复盘" }),
-    );
 
-    expect(await screen.findByText("已保存在本机")).toBeInTheDocument();
+    expect(await screen.findByText("已自动保存")).toBeInTheDocument();
     expect((await reviews.get(episode.id))?.plan.thesis).toBe("等待回踩");
     expect(fetch).not.toHaveBeenCalled();
   });

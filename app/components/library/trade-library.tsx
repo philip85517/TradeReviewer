@@ -38,6 +38,10 @@ import type {
 } from "../../lib/trades/library";
 import { ReplayChart } from "../chart/replay-chart";
 import { EpisodeReviewEditor } from "../review/episode-review-editor";
+import type { EpisodeNotesProps } from "../review/episode-notes-panel";
+import type { TradeEpisode } from "../../lib/trades/types";
+import { buildReviewQueue, type ReviewQueueFilter, type ReviewQueueItem } from "../../lib/reviews/review-queue";
+import { ReviewQueue } from "./review-queue";
 
 export type TradeLibraryBrowseState = {
   selectedInstrumentId: string | null;
@@ -50,9 +54,13 @@ export type TradeLibraryBrowseState = {
   dataStatus: string;
   tag: string;
   scrollTop: number;
+  mode?: "queue" | "stocks";
+  queueFilter?: ReviewQueueFilter;
 };
 
 type Props = {
+  defaultMode?: "queue" | "stocks";
+  reviewExtras?: (episode: TradeEpisode) => Pick<EpisodeNotesProps, "ruleContent" | "suggestions">;
   initialBrowseState?: TradeLibraryBrowseState;
   onBrowseStateChange?: (state: TradeLibraryBrowseState) => void;
   entries: TradeLibraryEntry[];
@@ -61,7 +69,7 @@ type Props = {
   marketDataLabels?: Record<string, string>;
   timeframe: Timeframe;
   onTimeframeChange: (timeframe: Timeframe) => void;
-  onOpenInReview: (instrumentId: string, episodeId: string) => void;
+  onOpenInReview: (instrumentId: string, episodeId: string, queueIds?: string[]) => void;
   onInspectData?: (instrumentId: string, accountId: string) => void;
   onRefreshMarketData?: (instrumentId: string) => void;
   onSaveReview: (record: EpisodeReviewRecord) => void | Promise<void>;
@@ -121,7 +129,13 @@ export function TradeLibrary({
   target,
   initialBrowseState,
   onBrowseStateChange,
+  defaultMode = "stocks",
+  reviewExtras,
 }: Props) {
+  const [mode, setMode] = useState(initialBrowseState?.mode ?? defaultMode);
+  const [queueFilter, setQueueFilter] = useState<ReviewQueueFilter>(initialBrowseState?.queueFilter ?? {status:"pending"});
+  const [queueNotice, setQueueNotice] = useState("");
+  const processedIds = useRef(new Set<string>());
   const [selectedInstrumentId, setSelectedInstrumentId] = useState<
     string | null
   >(target?.instrumentId ?? initialBrowseState?.selectedInstrumentId ?? null);
@@ -140,8 +154,8 @@ export function TradeLibrary({
   const [scrollTop, setScrollTop] = useState(initialBrowseState?.scrollTop ?? 0);
   const sectionRef = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
-    onBrowseStateChange?.({ selectedInstrumentId, selectedEpisodeId, query, market, account, year, positionStatus, dataStatus, tag, scrollTop });
-  }, [selectedInstrumentId, selectedEpisodeId, query, market, account, year, positionStatus, dataStatus, tag, scrollTop, onBrowseStateChange]);
+    onBrowseStateChange?.({ selectedInstrumentId, selectedEpisodeId, query, market, account, year, positionStatus, dataStatus, tag, scrollTop, mode, queueFilter });
+  }, [selectedInstrumentId, selectedEpisodeId, query, market, account, year, positionStatus, dataStatus, tag, scrollTop, mode, queueFilter, onBrowseStateChange]);
   useLayoutEffect(() => {
     if (!selectedInstrumentId && sectionRef.current) sectionRef.current.scrollTop = scrollTop;
     // Restore only when returning to the list; scrolling itself must not reposition it.
@@ -257,6 +271,24 @@ export function TradeLibrary({
     year,
   ]);
 
+  const queueEntries = buildReviewQueue(entries, {...queueFilter,status:"pending"});
+  const openQueued = ({entry,item}: ReviewQueueItem) => {
+    setSelectedInstrumentId(entryKey(entry));
+    setSelectedEpisodeId(item.episode.id);
+    setQueueNotice("");
+  };
+  const continueReview = () => {
+    if (selectedEpisodeId) processedIds.current.add(selectedEpisodeId);
+    const next = queueEntries.find(row => row.item.episode.id !== selectedEpisode?.episode.id && !processedIds.current.has(row.item.episode.id));
+    if (next) openQueued(next);
+    else {
+      setSelectedInstrumentId(null);
+      setSelectedEpisodeId(null);
+      setMode("queue");
+      setQueueNotice("本轮复盘已完成。可以回看结论，或到阶段总结整理下一步。");
+    }
+  };
+
   if (selectedEntry && selectedEpisode) {
     const { episode, metrics } = selectedEpisode;
     const candles = candlesByInstrument[selectedEntry.instrument.id] ?? [];
@@ -309,7 +341,9 @@ export function TradeLibrary({
           <button
             className="library-open-review"
             onClick={() =>
-              onOpenInReview(selectedEntry.instrument.id, episode.id)
+              mode === "queue"
+                ? onOpenInReview(selectedEntry.instrument.id, episode.id, queueEntries.map(row => row.item.episode.id))
+                : onOpenInReview(selectedEntry.instrument.id, episode.id)
             }
           >
             <BookOpenCheck size={15} />
@@ -462,6 +496,7 @@ export function TradeLibrary({
                 </div>
                 <ReplayChart
                   episodeId={episode.id}
+                  focusRange={{start:episode.startedAt,end:episode.endedAt}}
                   candles={chartCandles}
                   executions={episode.executions}
                   cursor={cursor}
@@ -556,6 +591,8 @@ export function TradeLibrary({
                 netPnl={metrics.netPnl}
                 record={selectedEpisode.review}
                 onSave={onSaveReview}
+                onComplete={continueReview}
+                {...reviewExtras?.(episode)}
               />
             ) : (
               <section
@@ -572,6 +609,8 @@ export function TradeLibrary({
     );
   }
 
+  if (mode === "queue" && !selectionMissing) return <section className="trade-library" aria-label="交易库"><ReviewQueue entries={entries} filter={queueFilter} onFilter={next => {setQueueFilter(next);processedIds.current.clear();}} onOpen={openQueued} onBrowseStocks={() => setMode("stocks")} notice={queueNotice} /></section>;
+
   return (
     <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}>
       {selectionMissing && <p role="alert" className="navigation-notice">原股票或交易回合已变化，请重新选择。<button type="button" onClick={() => { setSelectedInstrumentId(null); setSelectedEpisodeId(null); }}>重新选择</button></p>}
@@ -581,7 +620,7 @@ export function TradeLibrary({
           <h1>股票交易库</h1>
           <p>先按股票聚合，再进入每一次买入到卖出的持仓回合。</p>
         </div>
-        <strong>{entries.length} 只股票</strong>
+        <div className="library-header-actions"><button type="button" onClick={() => {setMode("queue");processedIds.current.clear();}}>回合待复盘</button><strong>{entries.length} 个标的</strong></div>
       </header>
 
       <div className="library-filters">

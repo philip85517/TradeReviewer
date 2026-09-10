@@ -85,8 +85,8 @@ function basisLabel(insight: PatternInsight) {
 }
 
 function confidenceLabel(insight: PatternInsight) {
-  if (insight.confidence === "high-confidence") return "高可信洞察";
-  if (insight.confidence === "usable") return "可用洞察";
+  if (insight.confidence === "high-confidence") return "样本较多";
+  if (insight.confidence === "usable") return "可比较样本";
   return "早期线索";
 }
 
@@ -214,9 +214,9 @@ function InsightCard({
           <span>计划遵守 {percent(insight.planAdherenceRate)}</span>
         )}
       </div>
-      <div className="insight-version">{versionLabel(insight)}</div>
+      <details className="insight-version"><summary>计算口径与版本</summary>{versionLabel(insight)}</details>
       <div className="insight-evidence-grid">
-        <details open>
+        <details>
           <summary>证据交易（{evidence.length}）</summary>
           {evidence.map((fact) => (
             <EpisodeLink
@@ -229,7 +229,7 @@ function InsightCard({
           ))}
           {evidence.length === 0 && <p>当前样本没有正结果证据。</p>}
         </details>
-        <details open>
+        <details>
           <summary>反例（{counterexamples.length}）</summary>
           {counterexamples.map((fact) => (
             <EpisodeLink
@@ -331,6 +331,7 @@ export function PatternInsights({
         </div>
       </header>
 
+      <details className="insight-suggestions"><summary>待确认规则建议（{suggestions.filter(item => item.status === "suggested").length}）</summary>
       <TagSuggestionPanel
         suggestions={suggestions}
         episodeContexts={episodeContexts}
@@ -339,6 +340,8 @@ export function PatternInsights({
         onReject={onRejectSuggestion}
         onOpenEpisode={onOpenEpisode}
       />
+
+      </details>
 
       <nav className="insight-category-tabs" aria-label="洞察分类">
         {CATEGORY_OPTIONS.map((option) => (

@@ -143,7 +143,7 @@ describe("PatternInsights", () => {
     expect(
       screen.getByRole("heading", { name: "模式洞察" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("可用洞察")).toBeInTheDocument();
+    expect(screen.getByText("可比较样本")).toBeInTheDocument();
     expect(screen.getByText("5 个标签样本 · 3 个基准样本")).toBeInTheDocument();
     expect(screen.getByText("口径：计划风险 R")).toBeInTheDocument();
     expect(screen.getByText("中位 1.8R")).toBeInTheDocument();
@@ -161,6 +161,7 @@ describe("PatternInsights", () => {
     expect(screen.getByText("英伟达（NVDA）")).toBeInTheDocument();
     expect(screen.getByText("持仓回合尚未结束")).toBeInTheDocument();
 
+    await user.click(screen.getByText("证据交易（1）"));
     await user.click(
       screen.getByRole("button", {
         name: "查看证据 小鹏汽车 XPEV",
@@ -259,7 +260,7 @@ describe("PatternInsights", () => {
     );
     expect(screen.getByText("FOMO")).toBeInTheDocument();
     expect(screen.getByText("样本不足，仅供观察")).toBeInTheDocument();
-    expect(screen.queryByText("可用洞察")).not.toBeInTheDocument();
+    expect(screen.queryByText("可比较样本")).not.toBeInTheDocument();
   });
 
   it("uses the report basis for evidence rows even when R is available", () => {

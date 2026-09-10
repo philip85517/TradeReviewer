@@ -18,7 +18,7 @@ export type EpisodeNotesProps = {
   onSave: (record: EpisodeReviewRecord) => Promise<void>;
   onComplete?: () => void;
   ruleContent?: (draft: EpisodeReviewRecord, update: (checks: NonNullable<EpisodeReviewRecord["review"]["ruleChecks"]>) => void) => ReactNode;
-  suggestions?: ReactNode;
+  suggestions?: ReactNode | ((onBusyChange: (busy: boolean) => void) => ReactNode);
   netPnl?: string | null;
 };
 
@@ -30,7 +30,8 @@ export function EpisodeNotesPanel({ episodeId, instrumentId, record, knowledgeCu
   const { draft, status, error, updatePlan, updateReview, toggleTag, retry, saveReview, savingReview } = useEpisodeReviewAutosave({ episodeId, instrumentId, record, knowledgeCursor, episodeStartedAt, delayMs, onSave });
   const [actionState, setActionState] = useState<{episodeId: string; error: string | null; busy: boolean}>({episodeId, error: null, busy: false});
   const [deferReason, setDeferReason] = useState({ episodeId, value: "" });
-  const busy = savingReview || (actionState.episodeId === episodeId && actionState.busy);
+  const [suggestionBusy, setSuggestionBusy] = useState(false);
+  const busy = suggestionBusy || savingReview || (actionState.episodeId === episodeId && actionState.busy);
   const actionError = actionState.episodeId === episodeId ? actionState.error : null;
   const finish = async (deferred = false) => {
     if (busy) return;
@@ -65,7 +66,10 @@ export function EpisodeNotesPanel({ episodeId, instrumentId, record, knowledgeCu
         {draft.review.ruleTracking && <label><span>规则状态</span><select aria-label="规则状态" value={draft.review.ruleStatus ?? "observing"} onChange={event => updateReview("ruleStatus", event.target.value as "observing" | "adopted" | "revised")}><option value="observing">观察中</option><option value="adopted">继续采用</option><option value="revised">已调整</option></select></label>}
       </fieldset>
       {ruleContent?.(draft, checks => updateReview("ruleChecks", checks))}
-      {suggestions}
+      {suggestions && <fieldset disabled={status !== "idle" && status !== "saved"} className="review-suggestion-actions">
+        {status !== "idle" && status !== "saved" && <small>请先保存当前草稿，再处理标签建议。</small>}
+        {typeof suggestions === "function" ? suggestions(setSuggestionBusy) : suggestions}
+      </fieldset>}
       <details className="review-advanced" key={episodeId}><summary>补充分析 · 原始计划、风险与标签</summary>
         <p className="review-plan-note">历史计划可以留空。此处补记和回放中的判断，不代表真实交易前已记录的计划。</p>
       <div className="episode-review-sections" key={episodeId}>

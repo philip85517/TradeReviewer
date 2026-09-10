@@ -14,6 +14,11 @@ import type { TagSuggestionRecord } from "../insights/types";
 import { createEmptyEpisodeReviewRecord } from "../reviews/review-metrics";
 import type { CoverageSegment, DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord, NativeMarketInterval } from "../market/contracts";
 import type { EpisodeReviewRecord } from "../reviews/types";
+import {
+  isReviewSummaryNote,
+  reviewSummarySettingKey,
+  type ReviewSummaryNote,
+} from "../reviews/review-summary";
 import type { Instrument, TradeExecution } from "../trades/types";
 import type { ChartSettings } from "./chart-settings";
 import { validReviewExtensions } from "../reviews/review-metrics";
@@ -650,6 +655,19 @@ export class SqliteStore {
   getTagSuggestions(): TagSuggestionRecord[] { return (this.database.prepare("select evidence_json from tag_suggestions order by id").all() as Row[]).map((row) => parseJson<TagSuggestionRecord>(row.evidence_json, "tag suggestion")); }
   getMarketDataJobs(): MarketDataJob[] { return (this.database.prepare("select progress_json from market_data_jobs order by id").all() as Row[]).map((row) => parseJson<MarketDataJob>(row.progress_json, "market data job")); }
   getSettings(): Record<string, unknown> { return Object.fromEntries((this.database.prepare("select key, value_json from app_settings order by key").all() as Row[]).map((row) => [asString(row.key, "setting key"), parseJson(row.value_json, "setting value")])); }
+  getReviewSummary(
+    scopeId: string,
+    rangeId: string,
+  ): ReviewSummaryNote | undefined {
+    const key = reviewSummarySettingKey(scopeId, rangeId);
+    const row = this.database
+      .prepare("select value_json from app_settings where key = ?")
+      .get(key) as Row | undefined;
+    if (!row) return undefined;
+    const value = parseJson<unknown>(row.value_json, "review summary");
+    if (!isReviewSummaryNote(value)) throw new Error("Invalid review summary");
+    return value;
+  }
   getDailyCandles(instrumentId?: string, start?: string, end?: string): DailyCandleRecord[] {
     const clauses = [instrumentId ? "instrument_id = ?" : "", start ? "date >= ?" : "", end ? "date <= ?" : ""].filter(Boolean);
     const where = clauses.length ? `where ${clauses.join(" and ")}` : "";
@@ -885,6 +903,22 @@ export class SqliteStore {
     withSqliteTransaction(this.database, () => {
       for (const [key, value] of Object.entries(settings)) this.putSetting(key, value);
     });
+  }
+
+  putReviewSummary(record: ReviewSummaryNote): boolean {
+    if (!isReviewSummaryNote(record)) throw new Error("Invalid review summary");
+    const current = this.getReviewSummary(record.scopeId, record.rangeId);
+    if (
+      current &&
+      Date.parse(current.updatedAt) > Date.parse(record.updatedAt)
+    ) {
+      return false;
+    }
+    this.putSetting(
+      reviewSummarySettingKey(record.scopeId, record.rangeId),
+      record,
+    );
+    return true;
   }
 
   putMarketDataJob(job: MarketDataJob): void {

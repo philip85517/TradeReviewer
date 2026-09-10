@@ -176,6 +176,12 @@ import {
 } from "./library/trade-library";
 import { ImportActions } from "./import/import-actions";
 import { useModalFocus } from "./import/use-modal-focus";
+import { ReviewSummary, initialReviewSummaryFilters, type ReviewSummaryDrafts } from "./insights/review-summary";
+import { TagSuggestionPanel } from "./insights/tag-suggestion-panel";
+import { RuleChecks } from "./review/rule-checks";
+import type { EpisodeNotesProps } from "./review/episode-notes-panel";
+import { createReviewSummaryClient } from "../lib/storage/review-summary-client";
+import { filterTradeLibraryEntriesByScope, reviewScopeOptions, trackedRuleCandidates, type ReviewSummaryRange } from "../lib/reviews/review-summary";
 import { PatternInsights } from "./insights/pattern-insights";
 import {
   ReviewChartWorkspace,
@@ -1333,31 +1339,13 @@ function isAbortError(error: unknown) {
       tradeLibraryEntries,
     ],
   );
-  const insightFactResult = useMemo(
-    () =>
-      buildInsightEpisodeFacts(
-        tradeLibraryEntries.filter(entry=>entry.tradeNature !== "simulation"),
-        marketDataCandles,
-        marketDataStatuses,
-        suggestionDecisions,
-        dailyCoverageByInstrument,
-      ),
-    [
-      dailyCoverageByInstrument,
-      marketDataCandles,
-      marketDataStatuses,
-      suggestionDecisions,
-      tradeLibraryEntries,
-    ],
-  );
-  const insightReport = useMemo(
-    () =>
-      buildPatternInsightReport(
-        insightFactResult.facts,
-        insightFactResult.excluded,
-      ),
-    [insightFactResult],
-  );
+  const [summaryFilters, setSummaryFilters] = useState(initialReviewSummaryFilters);
+  const [summaryDrafts, setSummaryDrafts] = useState<ReviewSummaryDrafts>({});
+  const [requestedSummaryScope, setRequestedSummaryScope] = useState("");
+  const summaryClient = useMemo(() => createReviewSummaryClient(), []);
+  const summaryScopes = useMemo(() => reviewScopeOptions(tradeLibraryEntries), [tradeLibraryEntries]);
+  const summaryScope = summaryScopes.some(scope => scope.id === requestedSummaryScope)
+    ? requestedSummaryScope : summaryScopes[0]?.id ?? "";
   const insightEpisodeContexts = useMemo(
     () =>
       Object.fromEntries(
@@ -1380,6 +1368,26 @@ function isAbortError(error: unknown) {
       ),
     [tradeLibraryEntries],
   );
+  function renderScopedInsights(range: ReviewSummaryRange) {
+    const entries = filterTradeLibraryEntriesByScope(tradeLibraryEntries, summaryScope, range);
+    const ids = new Set(entries.flatMap(entry => entry.episodes.map(item => item.episode.id)));
+    const result = buildInsightEpisodeFacts(entries, marketDataCandles, marketDataStatuses, suggestionDecisions, dailyCoverageByInstrument);
+    return <details className="review-summary-patterns"><summary>查看本范围的模式洞察</summary><PatternInsights
+      report={buildPatternInsightReport(result.facts, result.excluded)} facts={result.facts}
+      suggestions={suggestionsHydrated && reviewsHydrated ? tagSuggestions.filter(suggestion => ids.has(suggestion.episodeId)) : []}
+      episodeContexts={insightEpisodeContexts} onConfirmSuggestion={confirmSuggestion}
+      onEditSuggestion={editSuggestion} onRejectSuggestion={rejectSuggestion} onOpenEpisode={openLibraryEpisode}
+    /></details>;
+  }
+  function reviewExtras(episode: TradeEpisode): Pick<EpisodeNotesProps, "ruleContent" | "suggestions"> {
+    const candidates = trackedRuleCandidates(tradeLibraryEntries, episode.id);
+    const suggestions = suggestionsHydrated && reviewsHydrated ? tagSuggestions.filter(item => item.episodeId === episode.id) : [];
+    return {
+      ruleContent: (draft, update) => <RuleChecks candidates={candidates} checks={draft.review.ruleChecks ?? []} onChange={update} onOpenSource={openLibraryEpisode} />,
+      suggestions: suggestions.length ? (onBusyChange) => <details className="review-episode-suggestions"><summary>本回合标签建议（{suggestions.filter(item => item.status === "suggested").length}）</summary><TagSuggestionPanel onBusyChange={onBusyChange} suggestions={suggestions} episodeContexts={insightEpisodeContexts} onConfirm={confirmSuggestion} onEdit={editSuggestion} onReject={rejectSuggestion} onOpenEpisode={openLibraryEpisode} /></details> : undefined,
+    };
+  }
+
 
   async function requestFrame(
     mode: DemoReplayMode,
@@ -3040,7 +3048,7 @@ function isAbortError(error: unknown) {
               : ""
         }`}
       >
-        {activeView === "library" ? (
+        {activeView === "library" && (showDemo || importedInstruments.length > 0) ? (
           <TradeLibrary
             defaultMode={showDemo ? "stocks" : "queue"}
             key={libraryTarget?.requestId ?? 0}
@@ -3067,24 +3075,14 @@ function isAbortError(error: unknown) {
             reviewsHydrated={reviewsHydrated}
             target={libraryTarget}
             onSaveReview={saveEpisodeReview}
+            reviewExtras={reviewExtras}
             onInspectData={openDataCheck}
             onRefreshMarketData={(instrumentId) => void startMarketDataUpdate([instrumentId], { refreshMetadata: true })}
           />
         ) : activeView === "insights" ? (
-          <PatternInsights
-            report={insightReport}
-            facts={insightFactResult.facts}
-            suggestions={
-              suggestionsHydrated && reviewsHydrated
-                ? tagSuggestions
-                : []
-            }
-            episodeContexts={insightEpisodeContexts}
-            onConfirmSuggestion={confirmSuggestion}
-            onEditSuggestion={editSuggestion}
-            onRejectSuggestion={rejectSuggestion}
-            onOpenEpisode={openLibraryEpisode}
-          />
+          <ReviewSummary filterStore={{filters:summaryFilters,setFilters:setSummaryFilters}} draftStore={{drafts:summaryDrafts,setDrafts:setSummaryDrafts}} entries={tradeLibraryEntries} scopeId={summaryScope} onScopeChange={setRequestedSummaryScope} client={summaryClient} onOpenEpisode={openLibraryEpisode}>
+            {renderScopedInsights}
+          </ReviewSummary>
         ) : (
           <>
             {stockDrawerOpen && <button type="button" className="stock-drawer-backdrop" aria-label="关闭股票列表遮罩" tabIndex={-1} onClick={() => setStockDrawerOpen(false)} />}
@@ -3296,6 +3294,7 @@ function isAbortError(error: unknown) {
               onDrawerOpenChange={setDrawerOpen}
               onSaveReview={saveEpisodeReview}
               onCompleteReview={selectedImportedInstrument ? continueFromReview : undefined}
+              reviewExtras={selectedEpisode ? reviewExtras(selectedEpisode) : undefined}
             />
             )}
             </div>

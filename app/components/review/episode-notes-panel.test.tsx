@@ -7,6 +7,16 @@ import { EpisodeNotesPanel } from "./episode-notes-panel";
 describe("EpisodeNotesPanel", () => {
   afterEach(cleanup);
 
+  it("blocks suggestion decisions until the current draft has saved", async () => {
+    const user = userEvent.setup();
+    const decide = vi.fn();
+    render(<EpisodeNotesPanel episodeId="suggestion-draft" instrumentId="US:A" delayMs={60000} onSave={vi.fn().mockResolvedValue(undefined)} suggestions={<button type="button" onClick={decide}>确认建议</button>} />);
+    await user.type(screen.getByLabelText("关键决策"), "draft");
+    expect(screen.getByRole("button", { name: "确认建议" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "确认建议" }));
+    expect(decide).not.toHaveBeenCalled();
+  });
+
   it("lets the user expand the summary without hiding or losing the plan draft", async () => {
     const user = userEvent.setup();
     render(<EpisodeNotesPanel episodeId="stage-1" instrumentId="HK:9868" onSave={vi.fn().mockResolvedValue(undefined)} />);

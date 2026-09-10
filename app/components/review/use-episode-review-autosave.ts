@@ -34,6 +34,11 @@ type RetainedDraft = {
 };
 
 const retainedDrafts = new Map<string, RetainedDraft>();
+type DraftEvent = Omit<RetainedDraft, "status"> & { status: Status };
+const draftListeners = new Set<(identity: string, state: DraftEvent) => void>();
+function notifyDraft(identity: string, state: DraftEvent) {
+  for (const listener of draftListeners) listener(identity, state);
+}
 const latestRevisions = new Map<string, number>();
 const latestSaveTimestamps = new Map<string, number>();
 
@@ -153,6 +158,7 @@ export function useEpisodeReviewAutosave(input: Input) {
       revision: number,
       retained: RetainedDraft,
     ) => {
+      notifyDraft(identity, retained);
       if (
         !mountedRef.current ||
         identity !== identityRef.current ||
@@ -172,6 +178,20 @@ export function useEpisodeReviewAutosave(input: Input) {
     },
     [setDraft, setError, setStatus],
   );
+
+  useEffect(() => {
+    const listener = (identity: string, state: DraftEvent) => {
+      if (!mountedRef.current || identity !== identityRef.current || state.revision !== revisionRef.current) return;
+      sourceRef.current = state.draft;
+      draftRef.current = displayRecordAtCursor(state.draft, cursorRef.current);
+      dirtyRef.current = state.status !== "saved";
+      setDraft(draftRef.current);
+      setStatus(state.status);
+      setError(state.error);
+    };
+    draftListeners.add(listener);
+    return () => { draftListeners.delete(listener); };
+  }, []);
 
   const persist = useCallback(
     async (
@@ -213,6 +233,7 @@ export function useEpisodeReviewAutosave(input: Input) {
         await onSaveRef.current(next);
         if (latestRevisions.get(identity) !== revision) return false;
         retainedDrafts.delete(identity);
+        notifyDraft(identity, {draft: next, revision, status: "saved", error: null});
         if (
           !mountedRef.current ||
           identity !== identityRef.current ||

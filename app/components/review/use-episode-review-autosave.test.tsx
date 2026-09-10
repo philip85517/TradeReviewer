@@ -20,6 +20,27 @@ function deferred<T>() {
 describe("useEpisodeReviewAutosave", () => {
   afterEach(() => vi.useRealTimers());
 
+  it.each(["resolve", "reject"] as const)("settles completion after remount: %s", async outcome => {
+    const pending = deferred<void>();
+    const onSave = vi.fn(() => pending.promise);
+    const input = {episodeId: `remount-action-${outcome}`, instrumentId: "US:TEST", onSave};
+    const first = renderHook(() => useEpisodeReviewAutosave(input));
+    let completion!: Promise<boolean>;
+    act(() => { completion = first.result.current.saveReview({completed: true}); });
+    first.unmount();
+    const second = renderHook(() => useEpisodeReviewAutosave(input));
+    expect(second.result.current.savingReview).toBe(true);
+    await act(async () => {
+      if (outcome === "resolve") pending.resolve();
+      else pending.reject(new Error("offline"));
+      expect(await completion).toBe(false); // A disposed editor must not advance navigation.
+    });
+    expect(second.result.current.savingReview).toBe(false);
+    expect(second.result.current.status).toBe(outcome === "resolve" ? "saved" : "error");
+    expect(second.result.current.draft.review.completed).toBe(outcome === "resolve");
+  });
+
+
   it.each(["edit", "retry"] as const)("rolls back a switched-away failed completion before %s", async recovery => {
     vi.useFakeTimers();
     const pending = deferred<void>();

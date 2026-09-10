@@ -126,7 +126,6 @@ describe("EpisodeReviewEditor", () => {
   });
 
   it("keeps a dirty draft when a persisted record arrives late", async () => {
-    const user = userEvent.setup();
     const onSave = vi.fn();
     const { rerender } = render(
       <EpisodeReviewEditor

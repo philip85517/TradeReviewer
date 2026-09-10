@@ -4666,3 +4666,49 @@ body { font-size: 14px; }
   .review-queue-start { padding: 16px; }
   .library-header-actions { flex-direction: column; align-items: end; }
 }
+
+.library-execution-details { margin-top: 16px; border-top: 1px solid var(--line); }
+.library-execution-details > summary { cursor: pointer; padding: 16px 0; color: var(--muted); font-size: 13px; }
+@media(min-width:1180px) {
+  .library-detail-layout { grid-template-columns: 215px minmax(0,1fr); }
+  .library-episode-content { display: grid; grid-template-columns: minmax(0,1fr) 340px; align-content: start; align-items: start; gap: 14px; }
+  .library-episode-summary, .library-metric-grid, .library-execution-details, .library-episode-content > .simulation-source-report { grid-column: 1/-1; }
+  .library-episode-content > .library-chart, .library-episode-content > .library-chart-empty { grid-column: 1; grid-row: 3; margin: 0; }
+  .library-episode-content > .episode-review-editor { grid-column: 2; grid-row: 3; margin: 0; padding: 14px; }
+  .library-chart .chart-stage { height: 430px; }
+}
+
+/* Scoped phase review and evidence-based rule checks. */
+.review-summary { width: min(1120px, 100%); margin: 0 auto; padding: 28px; }
+.review-summary > header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.review-summary h1 { margin: 6px 0; font-size: 26px; }
+.review-summary p, .review-summary small { color: var(--muted); }
+.review-summary fieldset, .review-suggestion-actions { border: 0; padding: 0; margin: 0; min-width: 0; }
+.review-summary-controls { display: flex; flex-wrap: wrap; align-items: end; gap: 16px; }
+.review-summary label { display: grid; gap: 8px; font-size: 13px; min-width: 0; }
+.review-summary select, .review-summary input[type=date], .review-summary textarea, .rule-checks select { color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px; max-width: 100%; }
+.review-summary-custom-range { display: flex; gap: 12px; }
+.review-summary-scope { margin-bottom: 4px; }
+.review-summary-basis { font-size: 12px; margin-top: 0; }
+.review-summary-metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin: 20px 0; }
+.review-summary-metrics article { padding: 16px; border: 1px solid var(--line-soft); border-radius: 10px; background: var(--surface); display: grid; gap: 10px; }
+.review-summary-metrics span { color: var(--muted); font-size: 12px; }
+.review-summary-metrics strong { font-size: 21px; }
+.review-summary-notes { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+.review-summary-notes textarea { min-height: 128px; resize: vertical; }
+.review-summary > details { margin: 18px 0; border-top: 1px solid var(--line); padding-top: 16px; }
+.review-summary summary, .rule-checks summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+.review-summary-evidence > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 12px 0; }
+.review-summary-evidence label { display: flex; align-items: center; }
+.review-summary button, .rule-checks button { border: 1px solid var(--line); background: var(--surface-elevated); color: var(--text); border-radius: 7px; padding: 8px 12px; display: inline-flex; align-items: center; gap: 7px; }
+.review-summary button:disabled, .review-summary fieldset:disabled { opacity: .55; }
+.review-summary > footer { display: flex; justify-content: flex-end; gap: 16px; align-items: center; margin-top: 16px; font-size: 12px; }
+.review-summary-patterns .pattern-insights { padding: 20px 0; }
+.rule-checks { padding: 14px; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 16px; }
+.rule-checks header { display: grid; gap: 6px; font-size: 13px; }
+.rule-checks header span, .rule-checks small { color: var(--muted); font-size: 12px; }
+.rule-check-list article { display: grid; gap: 10px; border-top: 1px solid var(--line-soft); margin-top: 12px; padding-top: 12px; }
+.rule-check-list p { margin: 0 0 6px; font-size: 13px; }
+.review-episode-suggestions, .insight-suggestions { margin: 16px 0; }
+.review-episode-suggestions .tag-suggestion-panel { margin-top: 12px; }
+@media (max-width: 680px) { .review-summary { padding: 18px 12px; } .review-summary-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); } .review-summary-notes { grid-template-columns: 1fr; } .review-summary-controls { display: grid; } }

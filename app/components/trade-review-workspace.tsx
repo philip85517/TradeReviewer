@@ -148,6 +148,7 @@ import {
   type InstrumentTradeSummary,
 } from "../lib/trades/instruments";
 import { buildTradeLibraryEntries } from "../lib/trades/library";
+import { tradingNatureLabel } from "../lib/trades/trading-nature";
 import type {
   Instrument,
   TradeEpisode,
@@ -1177,6 +1178,16 @@ function isAbortError(error: unknown) {
       ),
     [importedInstruments, marketStates],
   );
+  const dailyCoverageByInstrument = useMemo(
+    () =>
+      Object.fromEntries(
+        importedInstruments.map((summary) => [
+          summary.instrument.id,
+          marketStates[summary.instrument.id]?.dailyCoverage ?? [],
+        ]),
+      ),
+    [importedInstruments, marketStates],
+  );
   const marketDataStatuses = useMemo(
     () =>
       Object.fromEntries(
@@ -1326,8 +1337,10 @@ function isAbortError(error: unknown) {
         marketDataCandles,
         marketDataStatuses,
         suggestionDecisions,
+        dailyCoverageByInstrument,
       ),
     [
+      dailyCoverageByInstrument,
       marketDataCandles,
       marketDataStatuses,
       suggestionDecisions,
@@ -2972,7 +2985,7 @@ function isAbortError(error: unknown) {
           <span className="demo-chip">
             {showDemo && <Sparkles size={13} />}
             {selectedImportedInstrument
-              ? selectedEpisode?.executions[0] ? selectedEpisode.tradeNature === "simulation" ? "模拟盘" : selectedEpisode.tradeNature === "live" ? "实盘" : "来源未知" : "本地导入"
+              ? selectedEpisode?.executions[0] ? tradingNatureLabel(selectedEpisode.executions[0]) : "本地导入"
               : showDemo
                 ? "演示行情"
                 : "等待导入"}

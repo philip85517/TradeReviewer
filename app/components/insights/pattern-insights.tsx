@@ -74,8 +74,8 @@ function displayNumber(value: string) {
   }).format(number);
 }
 
-function percent(value: string) {
-  return `${displayNumber(value)}%`;
+function percent(value: string | null) {
+  return value === null ? "—" : `${displayNumber(value)}%`;
 }
 
 function basisLabel(insight: PatternInsight) {

@@ -172,6 +172,32 @@ describe("PatternInsights", () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
+  it("shows unavailable path aggregates as unknown rather than zero", () => {
+    render(
+      <PatternInsights
+        report={report({
+          formalInsights: [insight({
+            medianMfePercent: null,
+            medianMaePercent: null,
+            medianGivebackPercent: null,
+          })],
+          excluded: [],
+        })}
+        facts={facts}
+        suggestions={[]}
+        episodeContexts={{}}
+        onConfirmSuggestion={vi.fn()}
+        onEditSuggestion={vi.fn()}
+        onRejectSuggestion={vi.fn()}
+        onOpenEpisode={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("MFE —")).toBeInTheDocument();
+    expect(screen.getByText("MAE —")).toBeInTheDocument();
+    expect(screen.getByText("回吐 —")).toBeInTheDocument();
+  });
+
   it("filters categories and labels early-only data without promoting it", async () => {
     const user = userEvent.setup();
     const early = insight({

@@ -40,6 +40,46 @@ function fact(
 }
 
 describe("buildPatternInsightReport", () => {
+  it("aggregates only available path metrics and never substitutes zero", () => {
+    const facts = [
+      fact(0, { mfePercent: null, maePercent: null, givebackPercent: null }),
+      fact(1, { mfePercent: "10", maePercent: "-6", givebackPercent: "4" }),
+      fact(2, { mfePercent: "20", maePercent: "-2", givebackPercent: "8" }),
+    ];
+
+    const report = buildPatternInsightReport(facts, []);
+    const usMarket = [...report.formalInsights, ...report.earlySignals, ...report.descriptiveStatistics].find(
+      ({ dimension }) => dimension.value === "US",
+    );
+
+    expect(usMarket).toMatchObject({
+      medianMfePercent: "15",
+      medianMaePercent: "-4",
+      medianGivebackPercent: "6",
+    });
+  });
+
+  it("reports null path aggregates when no sample has eligible daily data", () => {
+    const facts = Array.from({ length: 3 }, (_, index) =>
+      fact(index, {
+        mfePercent: null,
+        maePercent: null,
+        givebackPercent: null,
+      }),
+    );
+
+    const report = buildPatternInsightReport(facts, []);
+    const usMarket = [...report.formalInsights, ...report.earlySignals, ...report.descriptiveStatistics].find(
+      ({ dimension }) => dimension.value === "US",
+    );
+
+    expect(usMarket).toMatchObject({
+      medianMfePercent: null,
+      medianMaePercent: null,
+      medianGivebackPercent: null,
+    });
+  });
+
   it("uses R at 80% coverage and keeps 3–4 samples as early signals", () => {
     const facts = Array.from({ length: 10 }, (_, index) =>
       fact(index, {

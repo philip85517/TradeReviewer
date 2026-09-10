@@ -271,8 +271,12 @@ export function TradeLibrary({
     year,
   ]);
 
-  const queueEntries = buildReviewQueue(entries, {...queueFilter,status:"pending"});
+  const detailFilter: ReviewQueueFilter = mode === "queue" ? queueFilter : {account,year,market,nature:tradeNature,simulationRunId};
+  const detailEntries = mode === "stocks" && selectedEntry ? [selectedEntry] : entries;
+  const queueEntries = buildReviewQueue(detailEntries, {...detailFilter,status:"pending"});
+  const detailIds = new Set(buildReviewQueue(detailEntries, {...detailFilter,status:"all"}).map(row => row.item.episode.id));
   const openQueued = ({entry,item}: ReviewQueueItem) => {
+    processedIds.current.delete(item.episode.id);
     setSelectedInstrumentId(entryKey(entry));
     setSelectedEpisodeId(item.episode.id);
     setQueueNotice("");
@@ -328,9 +332,7 @@ export function TradeLibrary({
               {selectedEntry.instrument.symbol}）
             </h1>
             <p>
-              {selectedEntry.tradingLabel} · {selectedEntry.executions[0]?.accountLabel} · {selectedEntry.accountCount} 个账户 ·{" "}
-              {selectedEntry.tradeCount} 笔成交 ·{" "}
-              {selectedEntry.episodeCount} 个回合
+              {selectedEntry.tradingLabel} · {episode.accountLabel} · 当前回合 {episode.executions.length} 笔成交
             </p>
           </div>
           {onInspectData && <button className="stock-data-entry" onClick={() => onInspectData(selectedEntry.instrument.id, selectedEpisode.episode.accountId)}>检查/修复数据</button>}
@@ -341,9 +343,7 @@ export function TradeLibrary({
           <button
             className="library-open-review"
             onClick={() =>
-              mode === "queue"
-                ? onOpenInReview(selectedEntry.instrument.id, episode.id, queueEntries.map(row => row.item.episode.id))
-                : onOpenInReview(selectedEntry.instrument.id, episode.id)
+              onOpenInReview(selectedEntry.instrument.id, episode.id, queueEntries.map(row => row.item.episode.id))
             }
           >
             <BookOpenCheck size={15} />
@@ -357,9 +357,9 @@ export function TradeLibrary({
               <span>交易回合</span>
               <b>最近优先</b>
             </div>
-            {selectedEntry.episodes.map((item, index) => {
+            {selectedEntry.episodes.filter(item => detailIds.has(item.episode.id)).map((item) => {
               const chronologicalNumber =
-                selectedEntry.episodeCount - index;
+                selectedEntry.episodeCount - selectedEntry.episodes.indexOf(item);
               const active = item.episode.id === episode.id;
               return (
                 <button
@@ -496,6 +496,7 @@ export function TradeLibrary({
                 </div>
                 <ReplayChart
                   episodeId={episode.id}
+                  viewportKey={`${episode.id}:${timeframe}:${chartCandles[0]?.time ?? ""}:${chartCandles.at(-1)?.time ?? ""}`}
                   focusRange={{start:episode.startedAt,end:episode.endedAt}}
                   candles={chartCandles}
                   executions={episode.executions}
@@ -590,7 +591,10 @@ export function TradeLibrary({
                 instrumentId={selectedEntry.instrument.id}
                 netPnl={metrics.netPnl}
                 record={selectedEpisode.review}
-                onSave={onSaveReview}
+                onSave={async record => {
+                  await onSaveReview(record);
+                  if (!record.review.completed && !record.review.deferredReason) processedIds.current.delete(record.episodeId);
+                }}
                 onComplete={continueReview}
                 {...reviewExtras?.(episode)}
               />
@@ -784,7 +788,7 @@ export function TradeLibrary({
                 onClick={() => {
                   setSelectedInstrumentId(entryKey(entry));
                   setSelectedEpisodeId(
-                    entry.episodes[0]?.episode.id ?? null,
+                    buildReviewQueue([entry], {account,year,market,nature:tradeNature,simulationRunId})[0]?.item.episode.id ?? null,
                   );
                 }}
               >

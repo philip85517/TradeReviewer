@@ -8,6 +8,7 @@ export type ReviewQueueFilter = {
   market?: string;
   year?: string;
   nature?: string;
+  simulationRunId?: string;
 };
 export type ReviewQueueItem = { entry: TradeLibraryEntry; item: TradeLibraryEpisode };
 
@@ -25,6 +26,7 @@ export function buildReviewQueue(entries: TradeLibraryEntry[], filter: ReviewQue
       return matches(filter.status, reviewState(item)) &&
         matches(filter.account, episode.accountId) && matches(filter.market, entry.instrument.market) &&
         matches(filter.nature, entry.tradeNature ?? "unknown") &&
+        matches(filter.simulationRunId, entry.simulationRunId) &&
         (!filter.year || filter.year === "all" || episode.executions.some(fill => marketTradingDate(fill.executedAt, entry.instrument.market).startsWith(filter.year!))) &&
         (!query || `${entry.instrument.name} ${entry.instrument.symbol}`.toLocaleLowerCase().includes(query));
     })

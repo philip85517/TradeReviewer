@@ -1,6 +1,6 @@
 import { parseBrokerStatement } from "../../lib/import/dispatcher";
 import { fileFor } from "../../lib/import/__fixtures__/tradingview";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -193,6 +193,34 @@ describe("TradeLibrary", () => {
     expect(screen.getByLabelText("下次行动")).toHaveValue("");
   });
 
+  it("keeps queue detail and navigation within its account and year", async () => {
+    const user = userEvent.setup();
+    const executions = [
+      fill(xpev,"buy","2025-01-02T14:30:00Z","queue-a-2025"),
+      fill(xpev,"sell","2025-01-03T14:30:00Z","queue-a-exit"),
+      {...fill(xpev,"buy","2026-01-02T14:30:00Z","queue-b"), accountId:"other",accountLabel:"其他账户"},
+    ];
+    const entries=buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions),{},{});
+    render(<TradeLibrary defaultMode="queue" entries={entries} candlesByInstrument={{}} marketDataStatuses={{}} timeframe="1D" onTimeframeChange={()=>{}} onOpenInReview={()=>{}} onSaveReview={async()=>{}} reviewsHydrated />);
+    await user.selectOptions(screen.getByLabelText("复盘账户"),"acct-main");
+    await user.click(screen.getByRole("button",{name:"开始复盘"}));
+    expect(within(screen.getByRole("complementary",{name:"交易回合列表"})).getAllByRole("button")).toHaveLength(1);
+    expect(screen.queryByText(/其他账户/)).not.toBeInTheDocument();
+  });
+
+  it("advances stock review within that stock instead of an unrelated saved queue", async () => {
+    const user=userEvent.setup();
+    setup();
+    await user.click(screen.getByRole("button",{name:"回合待复盘"}));
+    await user.selectOptions(screen.getByLabelText("复盘账户"),"acct-hk");
+    await user.click(screen.getByRole("button",{name:"按标的浏览"}));
+    await user.click(screen.getByRole("button",{name:"打开小鹏汽车交易回合"}));
+    await user.type(screen.getByLabelText("下次行动"),"只复盘当前标的");
+    await user.click(screen.getByRole("button",{name:"完成并下一回合"}));
+    expect(screen.getByRole("heading",{name:"小鹏汽车（XPEV）"})).toBeInTheDocument();
+    expect(screen.getByRole("heading",{name:"第 1 次交易"})).toBeInTheDocument();
+  });
+
   it("asks for a new selection when the requested episode no longer exists", async () => {
     const user = userEvent.setup();
     const { onOpenInReview } = setup({ target: { requestId: 1, instrumentId: "US:XPEV", episodeId: "removed-episode" } });
@@ -353,7 +381,7 @@ describe("TradeLibrary", () => {
 
     await user.click(screen.getByRole("button", { name: /第 1 次交易/ }));
     await user.click(screen.getByRole("button", { name: "进入逐笔复盘" }));
-    expect(onOpenInReview).toHaveBeenLastCalledWith("US:XPEV", olderXpevEpisodeId);
+    expect(onOpenInReview).toHaveBeenLastCalledWith("US:XPEV", olderXpevEpisodeId, expect.arrayContaining([olderXpevEpisodeId]));
   });
 
   it("shows persisted review facts and saves the selected episode", async () => {
@@ -437,6 +465,6 @@ it("filters simulation groups and opens the selected run with source reports", a
   await user.click(screen.getByRole('button',{name:/打开.*交易回合/}));
   expect(screen.getByText('TradingView 源报告')).toBeInTheDocument();
   await user.click(screen.getByRole('button',{name:'进入逐笔复盘'}));
-  expect(openReview).toHaveBeenCalledWith('CN-SH:600330',entries.find(e=>e.executions[0].source.tradeNature==='simulation')!.episodes[0].episode.id);
+  expect(openReview).toHaveBeenCalledWith('CN-SH:600330',entries.find(e=>e.executions[0].source.tradeNature==='simulation')!.episodes[0].episode.id, expect.any(Array));
   expect(screen.getAllByText(/未提供成交时刻/).length).toBeGreaterThan(0);
 });

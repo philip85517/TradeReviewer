@@ -1460,6 +1460,7 @@ function isAbortError(error: unknown) {
   }
 
   function selectInstrument(instrumentId: string) {
+    setReviewQueueIds(undefined);
     if (instrumentId === "demo") {
       if (!showDemo) return;
       setPlaying(false);
@@ -1507,6 +1508,7 @@ function isAbortError(error: unknown) {
   }
 
   function selectEpisode(episodeId: string) {
+    setReviewQueueIds(undefined);
     const episode = episodes.find((item) => item.id === episodeId);
     if (!episode) return;
     setPlaying(false);
@@ -2741,7 +2743,7 @@ function isAbortError(error: unknown) {
   }
 
   function continueFromReview() {
-    const next = buildReviewQueue(tradeLibraryEntries, {status:"pending", ...(reviewQueueIds ? {} : {account:selectedEpisode?.accountId})})
+    const next = buildReviewQueue(tradeLibraryEntries, {status:"pending", ...(reviewQueueIds ? {} : {account:selectedEpisode?.accountId, nature:selectedEpisode?.executions[0] ? displayTradeNature(selectedEpisode.executions[0]) : undefined, simulationRunId:selectedEpisode?.simulationRunId})})
       .find(row => row.item.episode.id !== activeEpisodeId && (!reviewQueueIds || reviewQueueIds.includes(row.item.episode.id)));
     if (next) {
       const summary = importedInstruments.find(item => item.instrument.id === next.entry.instrument.id);
@@ -2893,7 +2895,7 @@ function isAbortError(error: unknown) {
 
   async function saveEpisodeReview(record: EpisodeReviewRecord) {
     const persisted = await reviewRepository.put(record);
-    if (!persisted) return;
+    if (!persisted) throw new Error("复盘记录已更新，本次保存未被接受，请重新载入后重试");
     setEpisodeReviews((current) => {
       const visible = current[record.episodeId];
       if (

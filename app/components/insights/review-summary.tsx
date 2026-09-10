@@ -195,10 +195,14 @@ export function ReviewSummary({
     };
     try {
       const saved = await client.put(note);
-      setDrafts((all) => ({
-        ...all,
-        [key]: { note: saved, loaded: true, dirty: false },
-      }));
+      setDrafts((all) => {
+        // A remounted editor may already have a newer draft while this write finishes.
+        if (all[key]?.note !== current.note) return all;
+        return {
+          ...all,
+          [key]: { note: saved, loaded: true, dirty: false },
+        };
+      });
       setMessage("阶段总结已保存");
     } catch {
       setMessage("保存失败：记录已更新或本机存储不可用");

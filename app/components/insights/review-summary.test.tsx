@@ -230,4 +230,32 @@ describe("ReviewSummary", () => {
     expect(screen.getByLabelText("结束日期")).toHaveValue("2026-09-10");
   });
 
+  it("does not overwrite a remounted draft when an earlier save resolves", async () => {
+    const user = userEvent.setup();
+    let finish!: (value: ReviewSummaryNote) => void;
+    let sent!: ReviewSummaryNote;
+    const client = {
+      get: vi.fn().mockResolvedValue(undefined),
+      put: vi.fn((value: ReviewSummaryNote) => {
+        sent = value;
+        return new Promise<ReviewSummaryNote>(resolve => { finish = resolve; });
+      }),
+    };
+    function Host() {
+      const [drafts, setDrafts] = useState<ReviewSummaryDrafts>({});
+      const [show, setShow] = useState(true);
+      return <><button onClick={() => setShow(value => !value)}>切换页面</button>{show && <ReviewSummary entries={[entry()]} scopeId="review-scope:v1:account-a:US:live::USD" draftStore={{drafts, setDrafts}} onScopeChange={vi.fn()} client={client} onOpenEpisode={vi.fn()} />}</>;
+    }
+    render(<Host />);
+    await waitFor(() => expect(screen.getByLabelText("保持")).toBeEnabled());
+    await user.type(screen.getByLabelText("保持"), "第一版");
+    await user.click(screen.getByRole("button", {name: "保存阶段总结"}));
+    await user.click(screen.getByRole("button", {name: "切换页面"}));
+    await user.click(screen.getByRole("button", {name: "切换页面"}));
+    await user.type(screen.getByLabelText("保持"), "，返回后新增");
+    await act(async () => finish(sent));
+    expect(screen.getByLabelText("保持")).toHaveValue("第一版，返回后新增");
+    expect(client.put).toHaveBeenCalledTimes(1);
+  });
+
 });

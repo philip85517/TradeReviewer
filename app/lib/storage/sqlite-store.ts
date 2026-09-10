@@ -16,6 +16,7 @@ import type { CoverageSegment, DailyCandleRecord, IntervalCoverageSegment, Marke
 import type { EpisodeReviewRecord } from "../reviews/types";
 import type { Instrument, TradeExecution } from "../trades/types";
 import type { ChartSettings } from "./chart-settings";
+import { validReviewExtensions } from "../reviews/review-metrics";
 import type { ImportHistoryEntry } from "./import-history";
 import { isMonthlyStatement } from "../import/monthly-statement";
 import type { MarketDataJob } from "./market-data-jobs";
@@ -215,6 +216,7 @@ function validateReview(value: unknown): asserts value is EpisodeReviewRecord {
   for (const field of ["thesis", "expectedPath", "invalidationCondition", "targetRange", "plannedRiskAmount"] as const) asString(item.plan[field], "review plan");
   for (const field of ["riskManagement", "psychology", "reusableRule"] as const) asString(item.review[field], "review");
   if (typeof item.review.completed !== "boolean" || item.confirmedTagIds.some((tag) => typeof tag !== "string")) throw new Error("Invalid review");
+  if (!validReviewExtensions(item.review)) throw new Error("Invalid review extensions");
   json(item, "review");
 }
 

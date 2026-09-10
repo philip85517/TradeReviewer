@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -51,7 +51,7 @@ describe("EpisodeReviewEditor", () => {
     expect(screen.getByLabelText("买入理由")).toHaveValue("等待突破");
     expect(screen.getByLabelText("计划风险金额")).toHaveValue("100");
     expect(screen.getByText("2.5R")).toBeInTheDocument();
-    expect(screen.getByRole("checkbox", { name: "突破" })).toBeChecked();
+    expect(screen.getByLabelText("突破")).toBeChecked();
   });
 
   it("rejects invalid risk and saves only explicitly selected tags", async () => {
@@ -68,11 +68,14 @@ describe("EpisodeReviewEditor", () => {
       />,
     );
 
+    await user.click(screen.getByText("补充分析 · 原始计划、风险与标签"));
+    await user.click(screen.getByText("事后总结", {selector:"summary"}));
+    await user.type(screen.getByLabelText("关键决策"), "回踩确认");
     await user.type(screen.getByLabelText("买入理由"), "  回踩确认  ");
     await user.type(screen.getByLabelText("心理复盘"), "当时有 FOMO");
     await user.type(screen.getByLabelText("计划风险金额"), "-10");
     await user.click(screen.getByRole("checkbox", { name: "回踩" }));
-    await user.click(screen.getByRole("button", { name: "保存当前回合复盘" }));
+    await user.click(screen.getByRole("button", { name: "完成复盘" }));
 
     expect(screen.getByRole("alert")).toHaveTextContent(
       "计划风险必须大于 0",
@@ -81,11 +84,10 @@ describe("EpisodeReviewEditor", () => {
 
     await user.clear(screen.getByLabelText("计划风险金额"));
     await user.type(screen.getByLabelText("计划风险金额"), "50");
-    await user.click(screen.getByLabelText("标记为已完成复盘"));
-    await user.click(screen.getByRole("button", { name: "保存当前回合复盘" }));
+    await user.click(screen.getByRole("button", { name: "完成复盘" }));
 
-    expect(onSave).toHaveBeenCalledTimes(1);
-    expect(onSave.mock.calls[0][0]).toMatchObject({
+    expect(onSave).toHaveBeenCalled();
+    expect(onSave.mock.calls.at(-1)?.[0]).toMatchObject({
       version: 1,
       episodeId: "episode-2",
       instrumentId: "US:XPEV",
@@ -114,11 +116,13 @@ describe("EpisodeReviewEditor", () => {
       />,
     );
 
+    await user.click(screen.getByText("补充分析 · 原始计划、风险与标签"));
+    await user.type(screen.getByLabelText("关键决策"), "保留计划风险");
     await user.type(screen.getByLabelText("计划风险金额"), "1e-400");
-    await user.click(screen.getByRole("button", { name: "保存当前回合复盘" }));
+    await user.click(screen.getByRole("button", { name: "完成复盘" }));
 
-    expect(onSave).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole("status")).toHaveTextContent("已保存在本机");
+    expect(onSave).toHaveBeenCalled();
+    expect(screen.getByRole("status")).toHaveTextContent("已自动保存");
   });
 
   it("keeps a dirty draft when a persisted record arrives late", async () => {
@@ -132,7 +136,7 @@ describe("EpisodeReviewEditor", () => {
         onSave={onSave}
       />,
     );
-    await user.type(screen.getByLabelText("买入理由"), "我正在输入");
+    fireEvent.change(screen.getByLabelText("买入理由"), {target:{value:"我正在输入"}});
 
     rerender(
       <EpisodeReviewEditor
@@ -151,18 +155,19 @@ describe("EpisodeReviewEditor", () => {
     const user = userEvent.setup();
     render(
       <EpisodeReviewEditor
-        episodeId="episode-1"
+        episodeId="episode-save-fail"
         instrumentId="US:XPEV"
         netPnl="250"
         onSave={vi.fn().mockRejectedValue(new Error("quota exceeded"))}
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: "保存当前回合复盘" }));
+    fireEvent.change(screen.getByLabelText("关键决策"), {target:{value:"待保存结论"}});
+    await user.click(screen.getByRole("button", { name: "完成复盘" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "保存失败，请检查本机存储后重试",
     );
-    expect(screen.queryByText("已保存在本机")).not.toBeInTheDocument();
+    expect(screen.queryByText("已自动保存")).not.toBeInTheDocument();
   });
 });

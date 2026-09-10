@@ -17,6 +17,21 @@ import { SqliteStore } from "./sqlite-store";
 
 const directories: string[] = [];
 
+it("persists focused answers and rule evidence, and rejects malformed extensions", () => {
+  const store = createStore();
+  store.mergeExecutions([execution]);
+  const record = createEmptyEpisodeReviewRecord("focused-store", instrument.id);
+  record.review.keyDecision = "离场确认";
+  record.review.planAdherence = "no-plan";
+  record.review.ruleChecks = [{sourceEpisodeId:"prior", sourceUpdatedAt:"2026-09-01T00:00:00Z", ruleText:"等待确认", result:"followed"}];
+  store.putReview(record);
+  expect(store.getReview(record.episodeId)?.review).toMatchObject({keyDecision:"离场确认", planAdherence:"no-plan", ruleChecks:[{ruleText:"等待确认", result:"followed"}]});
+  const invalid = JSON.parse(JSON.stringify(record));
+  invalid.review.ruleChecks[0].result = "guessed";
+  expect(() => store.putReview(invalid)).toThrow("Invalid review");
+  expect(store.getReview(record.episodeId)?.review.ruleChecks?.[0].result).toBe("followed");
+});
+
 function createStore() {
   const directory = mkdtempSync(join(tmpdir(), "tradereview-store-"));
   directories.push(directory);

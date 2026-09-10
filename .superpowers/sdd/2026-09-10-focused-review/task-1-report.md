@@ -5,6 +5,7 @@
 - Closed episodes with reliable accounting now remain eligible insight facts when market data is unavailable. `netPnl`, return, R, holding, and tag facts remain available; MFE, MAE, and giveback are `null` when the episode lacks complete daily path coverage.
 - Closed episodes with incomplete accounting remain excluded with `missing-comparison-metric`, preserving the existing fee/history accuracy boundary.
 - `buildInsightEpisodeFacts` remains compatible with its four existing arguments and accepts an optional fifth per-instrument daily coverage map. Episode path eligibility uses the daily coverage intersecting that episode rather than the combined daily/hourly display status.
+- Broad partial daily segments are accepted when all named missing dates fall outside the episode, including provider-latest tails. In-episode gaps and overlapping failed coverage segments still make path metrics unavailable.
 - Pattern aggregation filters out unavailable path values independently and returns `null` when no eligible values exist. The insights UI renders unavailable path aggregates as `—`, never `0%`, and states the daily-path sample count separately from the accounting sample.
 - Trade library display nature uses one canonical broker/platform classification while scope keys and episode IDs continue to use the historical reconciliation nature.
 - Stock episode navigation uses `replayExecutionAt`/`replayCursorAt`, so date-only executions reveal at day end, locate to that boundary, and display the date with “未提供成交时刻”. Precise executions keep their original locate timestamp.
@@ -27,7 +28,7 @@ An additional render regression failed because `null` path aggregates displayed 
 
 - `npx vitest run app/lib/insights app/lib/trades/library.test.ts app/components/review/stock-episode-navigation.test.tsx app/components/insights/pattern-insights.test.tsx`
   - 6 test files passed
-  - 34 tests passed
+  - 36 tests passed
 - `npm run typecheck`
   - passed with exit code 0
 - `git diff --check`

@@ -1,10 +1,8 @@
 import Decimal from "decimal.js";
 
 import type { CoverageSegment, DailyCandleRecord } from "../market/contracts";
-import {
-  coverageStatusForDateRange,
-  type MarketDataSyncStatus,
-} from "../market/sync-status";
+import { planCoverageGaps, type DateRange } from "../market/coverage-planner";
+import type { MarketDataSyncStatus } from "../market/sync-status";
 import { marketTradingDate } from "../market/trading-date";
 import type { TradeLibraryEntry } from "../trades/library";
 import type { TagSuggestionRecord } from "./types";
@@ -94,6 +92,25 @@ function isComplete(status: MarketDataSyncStatus | undefined) {
     status === "complete" ||
     status === "ready"
   );
+}
+
+function hasCompleteDailyCoverage(
+  required: DateRange,
+  coverage: CoverageSegment[],
+) {
+  const relevant = coverage.filter(
+    ({ startDate, endDate }) =>
+      endDate >= required.startDate && startDate <= required.endDate,
+  );
+  if (
+    relevant.length === 0 ||
+    relevant.some(
+      ({ status }) => status !== "complete" && status !== "partial",
+    )
+  ) {
+    return false;
+  }
+  return planCoverageGaps(required, relevant).length === 0;
 }
 
 function averageEntry(
@@ -261,14 +278,11 @@ export function buildInsightEpisodeFacts(
           tradingDate >= startDate && tradingDate <= endDate,
       );
       const dailyCoverage = dailyCoverageByInstrument[entry.instrument.id];
-      const episodeDailyStatus = dailyCoverage
-        ? coverageStatusForDateRange(
-            { startDate, endDate },
-            dailyCoverage,
-          )
-        : status;
+      const episodeRange = { startDate, endDate };
       const hasCompleteEpisodePath =
-        isComplete(episodeDailyStatus) &&
+        (dailyCoverage
+          ? hasCompleteDailyCoverage(episodeRange, dailyCoverage)
+          : isComplete(status)) &&
         episodeCandles[0]?.tradingDate === startDate &&
         episodeCandles.at(-1)?.tradingDate === endDate;
 

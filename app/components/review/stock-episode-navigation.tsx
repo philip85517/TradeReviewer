@@ -18,12 +18,14 @@ type Props = {
   onLibrary: () => void;
 };
 const date = (value: string) => new Date(value).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false });
+const dateOnlyLabel = (execution: TradeEpisode["executions"][number]) =>
+  `${formatMarketTradingDate(replayExecutionAt(execution).slice(0, 10), execution.instrument.market)} · 未提供成交时刻`;
 const episodeDate = (episode: TradeEpisode) => {
   const execution = episode.executions[0];
   if (!execution || execution.source.timePrecision !== "date-only") {
     return date(episode.startedAt);
   }
-  return `${formatMarketTradingDate(execution.executedAt, execution.instrument.market)} · 未提供成交时刻`;
+  return dateOnlyLabel(execution);
 };
 export function StockEpisodeNavigation(props: Props) {
   const dialogRef = useModalFocus(() => props.onCloseMobile?.(), props.mobileOpen ?? false);
@@ -40,7 +42,7 @@ export function StockEpisodeNavigation(props: Props) {
     <h3>已揭示成交 <span>{revealed.length} 笔</span></h3>
     {selected && revealed.length === 0 && <p className="replay-entry-notice">当前尚未回放到首笔成交</p>}
     {!selected && <p>请选择股票和交易回合。</p>}
-    <ol className="stock-context-fills">{revealed.map((execution) => { const at = replayExecutionAt(execution); const dateOnly = execution.source.timePrecision === "date-only"; const label = dateOnly ? `${formatMarketTradingDate(execution.executedAt, execution.instrument.market)} · 未提供成交时刻` : date(execution.executedAt); return <li key={execution.id}><button aria-label={`定位${execution.side === "buy" ? "买入" : "卖出"} ${label}`} aria-current={at === knowledgeAt ? "step" : undefined} onClick={() => props.onLocate(dateOnly ? at : execution.executedAt)}><time>{label}</time><strong>{execution.side === "buy" ? "买入" : "卖出"} {execution.quantity} @ {execution.price}</strong></button></li>; })}</ol>
+    <ol className="stock-context-fills">{revealed.map((execution) => { const at = replayExecutionAt(execution); const dateOnly = execution.source.timePrecision === "date-only"; const label = dateOnly ? dateOnlyLabel(execution) : date(execution.executedAt); return <li key={execution.id}><button aria-label={`定位${execution.side === "buy" ? "买入" : "卖出"} ${label}`} aria-current={at === knowledgeAt ? "step" : undefined} onClick={() => props.onLocate(dateOnly ? at : execution.executedAt)}><time>{label}</time><strong>{execution.side === "buy" ? "买入" : "卖出"} {execution.quantity} @ {execution.price}</strong></button></li>; })}</ol>
     {hasNext && <button className="secondary-action" onClick={props.onNext}>下一成交</button>}
   </aside>;
 }

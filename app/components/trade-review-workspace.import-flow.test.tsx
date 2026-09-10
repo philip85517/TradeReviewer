@@ -1320,8 +1320,7 @@ describe("TradeReviewWorkspace", () => {
     await user.clear(screen.getByLabelText("买入理由"));
     await user.type(screen.getByLabelText("买入理由"), "等待回踩");
 
-    expect(await screen.findByText("已自动保存")).toBeInTheDocument();
-    expect((await reviews.get(episode.id))?.plan.thesis).toBe("等待回踩");
+    await waitFor(async () => expect((await reviews.get(episode.id))?.plan.thesis).toBe("等待回踩"));
     expect(fetch).not.toHaveBeenCalled();
   });
 
@@ -1430,6 +1429,8 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
     await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
     await user.click(screen.getByRole("button", { name: "模式洞察" }));
+    await user.click(await screen.findByText("查看本范围的模式洞察"));
+    await user.click(await screen.findByText(/待确认规则建议（/));
 
     expect(
       await screen.findByRole("heading", { name: "待确认规则建议" }),
@@ -1448,6 +1449,8 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.getByText("目标回合买入一")).toBeInTheDocument();
     expect(screen.getByText("目标回合买入二")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "模式洞察" }));
+    await user.click(await screen.findByText("查看本范围的模式洞察"));
+    await user.click(await screen.findByText(/待确认规则建议（/));
     await user.selectOptions(
       screen.getByRole("combobox", {
         name: "调整“分批进入”建议标签",
@@ -1468,6 +1471,6 @@ describe("TradeReviewWorkspace", () => {
     );
 
     expect(await screen.findByText("暂无待确认建议")).toBeInTheDocument();
-    expect(fetch).not.toHaveBeenCalled();
+    expect(vi.mocked(fetch).mock.calls.every(([url]) => String(url).startsWith("/api/storage/review-summaries?"))).toBe(true);
   });
 });

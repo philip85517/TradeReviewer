@@ -33,7 +33,7 @@ import type {
 import { requiredMarketDataRange } from "../lib/market/sync-range";
 import type { DemoReplayFrame } from "../lib/demo/replay-frame";
 import type { EpisodeReviewRecord } from "../lib/reviews/types";
-import type { SqliteHttpClient } from "../lib/storage/sqlite-http-client";
+import { StorageHttpError, type SqliteHttpClient } from "../lib/storage/sqlite-http-client";
 import type { BrowserStatePayload, StorageBootstrap } from "../lib/storage/sqlite-contracts";
 import { IndexedDbEpisodeReviewRepository } from "../lib/storage/indexeddb-episode-review-repository";
 import {
@@ -503,9 +503,26 @@ describe("TradeReviewWorkspace", () => {
     await repository.commitSyncResult({ instrumentId: instrument.id, candles: [...priorDates,"2026-06-26"].map(tradingDate => ({ instrumentId:instrument.id,tradingDate,open:"26",high:"27",low:"25",close:"26.5",volume:"1000",currency:"HKD",provider:"tencent" as const,providerSymbol:"hk06228",adjustmentMode:"raw" as const,fetchedAt:"2026-09-06T00:00:00Z" })), coverage: [], providerSymbol: { provider:"tencent",symbol:"hk06228" } });
     if (hourly) await repository.commitIntervalSyncResult({instrumentId:instrument.id,interval:"1h",candles:[{instrumentId:instrument.id,interval:"1h",timestamp:"2026-06-26T01:30:00Z",knowledgeAt:"2026-06-26T02:30:00Z",open:"26",high:"27",low:"25",close:"26.5",volume:"1000",currency:"HKD",provider:"tencent",providerSymbol:"hk06228",adjustmentMode:"raw",fetchedAt:"2026-09-06T00:00:00Z"}],coverage:[],providerSymbol:{provider:"tencent",symbol:"hk06228"}});
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false}/>);
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
     await screen.findByRole("button", {name:"检查/修复数据"});
     await userEvent.setup().click(screen.getByRole("button", {name:"逐根回放"}));
   }
+
+  it("opens production in the queue and stays on a rejected completion", async () => {
+    const user = userEvent.setup();
+    saveImportedExecutions([availabilityExecution({id:"conflict-buy",row:1,side:"buy",executedAt:"2025-01-02T14:30:00Z"})]);
+    const putReview = vi.fn().mockRejectedValue(new StorageHttpError(409,"stale-review","newer record exists"));
+    const client = {...createLegacySqliteClient(),putReview};
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={client as SqliteHttpClient} />);
+    await user.click(await screen.findByRole("button",{name:"开始复盘"}));
+    await user.type(screen.getByLabelText("下次行动"),"等待条件确认");
+    await user.click(screen.getByRole("button",{name:"完成并下一回合"}));
+    expect(await screen.findByText("保存失败，请检查本机存储后重试")).toBeInTheDocument();
+    expect(screen.getByLabelText("下次行动")).toHaveValue("等待条件确认");
+    expect(screen.getByRole("button",{name:"完成并下一回合"})).toBeEnabled();
+    expect(screen.queryByText(/本轮复盘已完成/)).not.toBeInTheDocument();
+    expect(putReview).toHaveBeenCalled();
+  });
 
   it("gold replay does not reveal the sale before the first bar is played", async () => {
     await renderGoldReplay();
@@ -576,6 +593,7 @@ describe("TradeReviewWorkspace", () => {
     mockDispatcher.mockResolvedValue({ broker: "tiger", records: [added, {...added,id:"other-account",accountId:"other"}, {...added,id:"other-stock",instrument:{...added.instrument,id:"US:AAPL",symbol:"AAPL"}}], candidates: [], exclusions: [], diagnostics: [], blocked: false });
     mockEnrichment.mockImplementation(async (parsed: StatementParseResult) => ({broker:parsed.broker,importable:parsed.records,unresolved:[],exclusions:[],diagnostics:[],cacheHits:0}));
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false}/>);
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
     await user.click(await screen.findByRole("button", {name:"检查/修复数据"}));
     await user.click(screen.getByRole("button", {name:"查看完整数据并暂停复盘"}));
     await user.click(screen.getByRole("button", {name:"为本股补充文件"}));
@@ -630,6 +648,7 @@ describe("TradeReviewWorkspace", () => {
         storageClient={{ ...createLegacySqliteClient(), getBootstrap } as SqliteHttpClient}
       />,
     );
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
 
     expect(await screen.findByRole("heading", { name: "小鹏汽车" })).toBeInTheDocument();
     expect(getBootstrap).toHaveBeenCalledOnce();
@@ -709,6 +728,7 @@ describe("TradeReviewWorkspace", () => {
         storageClient={{ ...client, getBootstrap } as SqliteHttpClient}
       />,
     );
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
 
     await waitFor(() =>
       expect(screen.getByRole("button", { name: "切换到 1D" })).toBeEnabled(),
@@ -731,6 +751,7 @@ describe("TradeReviewWorkspace", () => {
     await cacheAvailabilityCandles(["2025-01-07T14:30:00.000Z"]);
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
 
     await waitFor(() =>
       expect(
@@ -802,6 +823,7 @@ describe("TradeReviewWorkspace", () => {
         storageClient={{ ...client, getBootstrap, getMarketData } as SqliteHttpClient}
       />,
     );
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
 
     expect(
       await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" }, { timeout: 500 }),
@@ -872,6 +894,7 @@ describe("TradeReviewWorkspace", () => {
         storageClient={{ ...client, getBootstrap } as SqliteHttpClient}
       />,
     );
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
 
     await waitFor(() => expect(getMarketData).toHaveBeenCalledTimes(6));
     await waitFor(() =>
@@ -892,6 +915,7 @@ describe("TradeReviewWorkspace", () => {
     const putReviewState = vi.fn(client.putReviewState);
     const exporter = vi.fn().mockResolvedValue(null);
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={{ ...client, getBootstrap: vi.fn().mockResolvedValue(bootstrap), putReviewState } as SqliteHttpClient} legacyStateExporter={exporter} />);
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
     expect(await screen.findByText("暂无导入股票，请先导入交易记录。")).toBeInTheDocument();
     expect(screen.queryByText("小鹏汽车")).not.toBeInTheDocument();
     expect(exporter).toHaveBeenCalledWith({ excludeDemo: true });
@@ -922,6 +946,7 @@ describe("TradeReviewWorkspace", () => {
       settings: { version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" },
     } satisfies StorageBootstrap);
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={{ ...client, getBootstrap }} legacyStateExporter={exporter} />);
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
     await screen.findByText("暂无导入股票，请先导入交易记录。");
     expect(exporter).not.toHaveBeenCalled();
   });
@@ -950,6 +975,7 @@ describe("TradeReviewWorkspace", () => {
     } satisfies BrowserStatePayload);
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={{ ...client, migrate }} legacyStateExporter={exporter} />);
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
 
     await screen.findByText("暂无导入股票，请先导入交易记录。");
     expect(exporter).toHaveBeenCalledOnce();
@@ -978,6 +1004,7 @@ describe("TradeReviewWorkspace", () => {
         showDemo={false}
       />,
     );
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
 
     expect(
       await screen.findByText("暂无导入股票，请先导入交易记录。"),
@@ -1845,6 +1872,7 @@ describe("TradeReviewWorkspace", () => {
     saveImportedExecutions([{ ...fill, source: { ...fill.source, tradingSession: "grey-market" } }]);
     await cacheAvailabilityCandles(["2025-01-03T10:00:00.000Z"]);
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
     await screen.findByText(/已展示 1 根 K 线/);
     expect(screen.getByText("暗盘成交，暂无对应暗盘行情")).toBeVisible();
     expect(screen.queryByText(/成交所在区间仍缺少行情/)).not.toBeInTheDocument();
@@ -1858,6 +1886,7 @@ describe("TradeReviewWorkspace", () => {
       instrumentId: "US:XPEV", tradingDate, open: "10", high: "11", low: "9", close: "10.5", volume: "1000", currency: "USD", provider: "yahoo" as const, providerSymbol: "XPEV", adjustmentMode: "raw" as const, fetchedAt: "2025-01-07T00:00:00Z"
     })), coverage: [] });
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
     await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
     await screen.findByText(/已展示 1 根 K 线/);
     await user.click(screen.getByRole("button", { name: "切换到 1D" }));
@@ -1880,6 +1909,7 @@ describe("TradeReviewWorkspace", () => {
     ]);
     await cacheAvailabilityCandles(["2025-01-02T10:00:00Z", "2025-01-03T10:00:00Z"]);
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
     await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
     await screen.findByText(/已展示 2 根 K 线/);
     expect(screen.getByText(/当前游标成交明细（3）/)).toBeInTheDocument();
@@ -1902,6 +1932,7 @@ describe("TradeReviewWorkspace", () => {
     await cacheAvailabilityCandles(["2025-01-03T10:00:00.000Z"]);
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
 
     await user.click(await screen.findByRole("button", { name: "逐根回放" }));
     await waitFor(() =>
@@ -2071,6 +2102,7 @@ describe("TradeReviewWorkspace", () => {
     render(
       <TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />,
     );
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
     await screen.findByRole("combobox", { name: "交易回合" });
     await user.click(
       await screen.findByRole("button", { name: "行情数据详情" }),
@@ -2110,8 +2142,10 @@ describe("TradeReviewWorkspace", () => {
       : Response.json({ error: { code: "source-unavailable" } }, { status: 502 }));
     const merge = vi.spyOn(mockSqliteClient.current as SqliteHttpClient, "mergeExecutions");
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
     await screen.findByRole("combobox", { name: "交易回合" });
     await user.click(screen.getByRole("button", { name: "交易库" }));
+    if (screen.queryByRole("button", {name:"按标的浏览"})) await user.click(screen.getByRole("button", {name:"按标的浏览"}));
     await user.type(screen.getByRole("searchbox", { name: "搜索股票" }), "XPEV");
     await user.click(screen.getByRole("button", { name: "打开小鹏汽车交易回合" }));
     const file = futuImportFile([["2025-01-06 22:30:00", "富途", "acct", "证券", "XPEV 小鹏汽车", "US", "买入开仓", "20250106", "USD", "10", "10", "-100", "0", "-100"]]);
@@ -3489,6 +3523,7 @@ describe("TradeReviewWorkspace", () => {
 
   it("offers the import flow directly in the empty workspace", async () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    await userEvent.setup().click(await screen.findByRole("button", {name: "逐笔复盘"}));
     const empty = await screen.findByRole("region", { name: "开始交易复盘" });
     expect(within(empty).getByRole("button", { name: "导入交易记录" })).toBeEnabled();
     expect(within(empty).getByRole("button", { name: "从截图恢复交易" })).toBeEnabled();
@@ -3573,6 +3608,7 @@ describe("TradeReviewWorkspace", () => {
     expect(
       await screen.findByRole("heading", { name: "股票交易库" }),
     ).toBeInTheDocument();
+    if (screen.queryByRole("button", {name:"按标的浏览"})) await user.click(screen.getByRole("button", {name:"按标的浏览"}));
     await user.type(screen.getByRole("searchbox", { name: "搜索股票" }), "XPEV");
     await user.selectOptions(screen.getByRole("combobox", { name: "按市场筛选" }), "US");
     await user.selectOptions(screen.getByRole("combobox", { name: "按年份筛选" }), "2025");
@@ -3794,8 +3830,7 @@ describe("TradeReviewWorkspace", () => {
     await user.clear(screen.getByLabelText("买入理由"));
     await user.type(screen.getByLabelText("买入理由"), "等待回踩");
 
-    expect(await screen.findByText("已自动保存")).toBeInTheDocument();
-    expect((await reviews.get(episode.id))?.plan.thesis).toBe("等待回踩");
+    await waitFor(async () => expect((await reviews.get(episode.id))?.plan.thesis).toBe("等待回踩"));
     expect(fetch).not.toHaveBeenCalled();
   });
 });

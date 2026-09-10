@@ -528,6 +528,30 @@ export function TradeLibrary({
             )}
 
 
+            {reviewsHydrated ? (
+              <EpisodeReviewEditor
+                key={episode.id}
+                episodeId={episode.id}
+                instrumentId={selectedEntry.instrument.id}
+                netPnl={metrics.netPnl}
+                record={selectedEpisode.review}
+                onSave={async record => {
+                  await onSaveReview(record);
+                  if (!record.review.completed && !record.review.deferredReason) processedIds.current.delete(record.episodeId);
+                }}
+                onComplete={continueReview}
+                {...reviewExtras?.(episode)}
+              />
+            ) : (
+              <section
+                className="episode-review-editor"
+                aria-label="正在读取当前回合复盘"
+                aria-live="polite"
+              >
+                正在读取本机复盘记录…
+              </section>
+            )}
+
             {episode.executions.some(execution => execution.source.sourceReport) && <section className="simulation-source-report" aria-label="模拟交易源报告">
               <h3>TradingView 源报告</h3>
               <p>报告字段仅作来源对照，不并入本地成交账本的计算。</p>
@@ -536,13 +560,8 @@ export function TradeLibrary({
                 <dl><div><dt>报告收益率</dt><dd>{execution.source.sourceReport!.returnPercent}%</dd></div><div><dt>持仓 K 线</dt><dd>{execution.source.sourceReport!.durationBars}</dd></div></dl>
               </details>)}
             </section>}
-            <div className="library-section-heading">
-              <div>
-                <strong>成交明细</strong>
-                <span>仅显示当前持仓回合</span>
-              </div>
-              <b>{episode.executions.length} 笔</b>
-            </div>
+            <details className="library-execution-details">
+              <summary>成交明细 · 当前回合 {episode.executions.length} 笔</summary>
             <div className="library-execution-table">
               <div className="library-execution-head">
                 <span>时间</span>
@@ -583,30 +602,9 @@ export function TradeLibrary({
                 </div>
               ))}
             </div>
+            </details>
 
-            {reviewsHydrated ? (
-              <EpisodeReviewEditor
-                key={episode.id}
-                episodeId={episode.id}
-                instrumentId={selectedEntry.instrument.id}
-                netPnl={metrics.netPnl}
-                record={selectedEpisode.review}
-                onSave={async record => {
-                  await onSaveReview(record);
-                  if (!record.review.completed && !record.review.deferredReason) processedIds.current.delete(record.episodeId);
-                }}
-                onComplete={continueReview}
-                {...reviewExtras?.(episode)}
-              />
-            ) : (
-              <section
-                className="episode-review-editor"
-                aria-label="正在读取当前回合复盘"
-                aria-live="polite"
-              >
-                正在读取本机复盘记录…
-              </section>
-            )}
+
           </div>
         </div>
       </section>

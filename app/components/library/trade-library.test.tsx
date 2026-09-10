@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { parseBrokerStatement } from "../../lib/import/dispatcher";
 import { fileFor } from "../../lib/import/__fixtures__/tradingview";
 import { cleanup, render, screen, within } from "@testing-library/react";
@@ -219,6 +220,33 @@ describe("TradeLibrary", () => {
     await user.click(screen.getByRole("button",{name:"完成并下一回合"}));
     expect(screen.getByRole("heading",{name:"小鹏汽车（XPEV）"})).toBeInTheDocument();
     expect(screen.getByRole("heading",{name:"第 1 次交易"})).toBeInTheDocument();
+  });
+
+  it("returns reopened episodes to the next-review candidates", async () => {
+    const user=userEvent.setup();
+    const summaries=buildInstrumentTradeSummaries([
+      fill(xpev,"buy","2025-01-02T14:30:00Z","reopen-old-in"),fill(xpev,"sell","2025-01-03T14:30:00Z","reopen-old-out"),
+      fill(xpev,"buy","2025-02-02T14:30:00Z","reopen-new-in"),fill(xpev,"sell","2025-02-03T14:30:00Z","reopen-new-out"),
+    ]);
+    function Harness() {
+      const [reviews,setReviews]=useState<Record<string,EpisodeReviewRecord>>({});
+      const entries=buildTradeLibraryEntries(summaries,{},{},reviews);
+      return <TradeLibrary defaultMode="queue" entries={entries} candlesByInstrument={{}} marketDataStatuses={{}} timeframe="1D" onTimeframeChange={()=>{}} onOpenInReview={()=>{}} onSaveReview={async record=>{setReviews(current=>({...current,[record.episodeId]:record}));}} reviewsHydrated />;
+    }
+    render(<Harness/>);
+    await user.click(screen.getByRole("button",{name:"全部回合"}));
+    await user.click(screen.getByRole("button",{name:/复盘小鹏汽车 2025\/2\/2/}));
+    await user.type(screen.getByLabelText("下次行动"),"继续观察");
+    await user.click(screen.getByRole("button",{name:"完成并下一回合"}));
+    await user.click(screen.getByRole("button",{name:"返回股票库"}));
+    await user.click(screen.getByRole("button",{name:/复盘小鹏汽车 2025\/2\/2/}));
+    await user.click(screen.getByRole("button",{name:"重新打开复盘"}));
+    await user.click(screen.getByRole("button",{name:"返回股票库"}));
+    await user.click(screen.getByRole("button",{name:/复盘小鹏汽车 2025\/1\/2/}));
+    await user.type(screen.getByLabelText("下次行动"),"维持计划");
+    await user.click(screen.getByRole("button",{name:"完成并下一回合"}));
+    expect(screen.getByRole("heading",{name:"第 2 次交易"})).toBeInTheDocument();
+    expect(screen.getByLabelText("下次行动")).toHaveValue("继续观察");
   });
 
   it("asks for a new selection when the requested episode no longer exists", async () => {

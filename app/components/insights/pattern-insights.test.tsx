@@ -67,6 +67,7 @@ function insight(
     medianDifference: "1.2",
     winRate: "60",
     netPnl: "850",
+    pathSampleCount: 5,
     medianMfePercent: "8",
     medianMaePercent: "-3",
     medianGivebackPercent: "2",
@@ -177,6 +178,7 @@ describe("PatternInsights", () => {
       <PatternInsights
         report={report({
           formalInsights: [insight({
+            pathSampleCount: 0,
             medianMfePercent: null,
             medianMaePercent: null,
             medianGivebackPercent: null,
@@ -196,6 +198,7 @@ describe("PatternInsights", () => {
     expect(screen.getByText("MFE —")).toBeInTheDocument();
     expect(screen.getByText("MAE —")).toBeInTheDocument();
     expect(screen.getByText("回吐 —")).toBeInTheDocument();
+    expect(screen.getByText("路径样本 0 / 5 · 日线不完整")).toBeInTheDocument();
   });
 
   it("filters categories and labels early-only data without promoting it", async () => {

@@ -203,6 +203,10 @@ function InsightCard({
         </span>
         <span>胜率 {percent(insight.winRate)}</span>
         <span>净盈亏 {displayNumber(insight.netPnl)}</span>
+        <span>
+          路径样本 {insight.pathSampleCount} / {insight.sampleCount}
+          {insight.pathSampleCount < insight.sampleCount ? " · 日线不完整" : ""}
+        </span>
         <span>MFE {percent(insight.medianMfePercent)}</span>
         <span>MAE {percent(insight.medianMaePercent)}</span>
         <span>回吐 {percent(insight.medianGivebackPercent)}</span>

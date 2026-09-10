@@ -53,6 +53,7 @@ describe("buildPatternInsightReport", () => {
     );
 
     expect(usMarket).toMatchObject({
+      pathSampleCount: 2,
       medianMfePercent: "15",
       medianMaePercent: "-4",
       medianGivebackPercent: "6",
@@ -74,6 +75,7 @@ describe("buildPatternInsightReport", () => {
     );
 
     expect(usMarket).toMatchObject({
+      pathSampleCount: 0,
       medianMfePercent: null,
       medianMaePercent: null,
       medianGivebackPercent: null,

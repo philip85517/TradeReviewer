@@ -37,6 +37,7 @@ export type PatternInsight = {
   medianDifference: string | null;
   winRate: string;
   netPnl: string;
+  pathSampleCount: number;
   medianMfePercent: string | null;
   medianMaePercent: string | null;
   medianGivebackPercent: string | null;
@@ -344,6 +345,12 @@ function buildInsight(
         new Decimal(0),
       )
       .toString(),
+    pathSampleCount: sample.filter(
+      ({ mfePercent, maePercent, givebackPercent }) =>
+        mfePercent !== null &&
+        maePercent !== null &&
+        givebackPercent !== null,
+    ).length,
     medianMfePercent: nullableMedian(
       sample.map(({ mfePercent }) => mfePercent),
     ),

@@ -5,7 +5,7 @@
 - Closed episodes with reliable accounting now remain eligible insight facts when market data is unavailable. `netPnl`, return, R, holding, and tag facts remain available; MFE, MAE, and giveback are `null` when the episode lacks complete daily path coverage.
 - Closed episodes with incomplete accounting remain excluded with `missing-comparison-metric`, preserving the existing fee/history accuracy boundary.
 - `buildInsightEpisodeFacts` remains compatible with its four existing arguments and accepts an optional fifth per-instrument daily coverage map. Episode path eligibility uses the daily coverage intersecting that episode rather than the combined daily/hourly display status.
-- Pattern aggregation filters out unavailable path values independently and returns `null` when no eligible values exist. The insights UI renders unavailable path aggregates as `—`, never `0%`.
+- Pattern aggregation filters out unavailable path values independently and returns `null` when no eligible values exist. The insights UI renders unavailable path aggregates as `—`, never `0%`, and states the daily-path sample count separately from the accounting sample.
 - Trade library display nature uses one canonical broker/platform classification while scope keys and episode IDs continue to use the historical reconciliation nature.
 - Stock episode navigation uses `replayExecutionAt`/`replayCursorAt`, so date-only executions reveal at day end, locate to that boundary, and display the date with “未提供成交时刻”. Precise executions keep their original locate timestamp.
 - Workspace wiring passes daily coverage into insight facts and uses the same canonical trading-nature label in the header.

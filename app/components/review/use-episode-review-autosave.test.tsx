@@ -20,6 +20,63 @@ function deferred<T>() {
 describe("useEpisodeReviewAutosave", () => {
   afterEach(() => vi.useRealTimers());
 
+  it.each(["edit", "retry"] as const)("rolls back a switched-away failed completion before %s", async recovery => {
+    vi.useFakeTimers();
+    const pending = deferred<void>();
+    const saved: EpisodeReviewRecord[] = [];
+    const onSave = async (record: EpisodeReviewRecord) => {
+      if (record.review.completed) await pending.promise;
+      saved.push(record);
+    };
+    const episodeA = `failed-action-a-${recovery}`;
+    const {result, rerender} = renderHook(({episodeId}) => useEpisodeReviewAutosave({
+      episodeId, instrumentId: "US:TEST", onSave,
+    }), {initialProps: {episodeId: episodeA}});
+    act(() => result.current.updateReview("keyDecision", "A 的结论"));
+    let completion!: Promise<boolean>;
+    act(() => { completion = result.current.saveReview({completed: true, deferredReason: ""}); });
+    rerender({episodeId: `failed-action-b-${recovery}`});
+    act(() => result.current.updateReview("keyDecision", "B 的草稿"));
+    await act(async () => { pending.reject(new Error("offline")); expect(await completion).toBe(false); });
+    expect(result.current.draft.review.keyDecision).toBe("B 的草稿");
+    rerender({episodeId: episodeA});
+    expect(result.current.draft.review.completed).toBe(false);
+    expect(result.current.draft.review.keyDecision).toBe("A 的结论");
+    if (recovery === "edit") {
+      act(() => result.current.updateReview("psychology", "继续编辑"));
+      await act(async () => vi.advanceTimersByTimeAsync(600));
+    } else {
+      await act(async () => { await result.current.retry(); });
+    }
+    expect(saved.find(record => record.episodeId === episodeA)?.review.completed).toBe(false);
+    expect(result.current.status).toBe("saved");
+  });
+
+  it("ignores programmatic edits and duplicate actions while completion is pending", async () => {
+    const pending = deferred<void>();
+    const {result, rerender} = renderHook(({episodeId}) => useEpisodeReviewAutosave({
+      episodeId, instrumentId: "US:TEST", onSave: async () => pending.promise,
+    }), {initialProps: {episodeId: "action-guard-a"}});
+    act(() => result.current.updateReview("keyDecision", "原结论"));
+    let completion!: Promise<boolean>;
+    act(() => { completion = result.current.saveReview({completed: true}); });
+    rerender({episodeId: "action-guard-b"});
+    rerender({episodeId: "action-guard-a"});
+    act(() => {
+      result.current.updatePlan("thesis", "不应覆盖");
+      result.current.updateReview("keyDecision", "不应覆盖");
+      result.current.toggleTag("breakout");
+    });
+    expect(result.current.draft.review.keyDecision).toBe("原结论");
+    expect(result.current.draft.plan.thesis).toBe("");
+    expect(result.current.draft.confirmedTagIds).toEqual([]);
+    await act(async () => {
+      expect(await result.current.saveReview({completed: false})).toBe(false);
+      expect(await result.current.retry()).toBe(false);
+    });
+    await act(async () => { pending.resolve(); expect(await completion).toBe(true); });
+  });
+
   it("debounces normalized episode-scoped updates and reports saved", async () => {
     vi.useFakeTimers();
     const onSave = vi.fn().mockResolvedValue(undefined);

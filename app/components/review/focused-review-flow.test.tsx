@@ -1,4 +1,5 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createEmptyEpisodeReviewRecord } from "../../lib/reviews/review-metrics";
 import type { EpisodeReviewRecord } from "../../lib/reviews/types";
@@ -8,6 +9,44 @@ import { EpisodeReviewEditor } from "./episode-review-editor";
 afterEach(cleanup);
 
 describe("focused review completion", () => {
+  it("freezes detail, tag and supplied rule edits until completion persists", async () => {
+    const user = userEvent.setup();
+    const pending = Promise.withResolvers<void>();
+    const saved: EpisodeReviewRecord[] = [];
+    let advances = 0;
+    render(<EpisodeNotesPanel episodeId="focused-locked" instrumentId="US:TEST"
+      onSave={async value => { saved.push(value); await pending.promise; }}
+      onComplete={() => { advances++; }}
+      ruleContent={(_draft, update) => <button onClick={() => update([])}>规则核验</button>} />);
+    await user.click(screen.getByText("补充分析 · 原始计划、风险与标签"));
+    await user.type(screen.getByLabelText("关键决策"), "等待确认");
+    await user.click(screen.getByRole("button", { name: "完成并下一回合" }));
+    expect(screen.getByLabelText("买入理由")).toBeDisabled();
+    expect(screen.getByLabelText("突破")).toBeDisabled();
+    expect(screen.getByRole("button", {name: "规则核验"})).toBeDisabled();
+    await user.type(screen.getByLabelText("买入理由"), "不应改变");
+    await user.click(screen.getByLabelText("突破"));
+    await user.click(screen.getByRole("button", {name: "规则核验"}));
+    await act(async () => { pending.resolve(); await pending.promise; });
+    expect(advances).toBe(1);
+    expect(saved).toHaveLength(1);
+    expect(saved[0]).toMatchObject({plan: {thesis: ""}, confirmedTagIds: [], review: {completed: true}});
+  });
+
+  it("previews R from edited risk even before a rejected save", async () => {
+    const record = createEmptyEpisodeReviewRecord("focused-risk-preview", "US:TEST");
+    record.plan.plannedRiskAmount = "100";
+    render(<EpisodeReviewEditor episodeId={record.episodeId} instrumentId={record.instrumentId}
+      record={record} netPnl="250" onSave={async () => { throw new Error("offline"); }} />);
+    expect(screen.getByText("2.5R")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("计划风险金额"), {target: {value: "50"}});
+    expect(screen.getByText("5R")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("关键决策"), {target: {value: "等待确认"}});
+    await act(async () => fireEvent.click(screen.getByRole("button", {name: "完成复盘"})));
+    expect(screen.getByText("5R")).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent("保存失败");
+  });
+
   it("persists the three answers before advancing and retains the legacy plan", async () => {
     const record = createEmptyEpisodeReviewRecord("focused-complete", "US:TEST");
     record.plan.thesis = "原始计划";

@@ -3,6 +3,7 @@
 import { CheckCircle2, Tags } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { REVIEW_TAGS } from "../../lib/reviews/review-tags";
+import { calculateRMultiple } from "../../lib/reviews/review-metrics";
 import type { EpisodeReviewRecord, ReviewScore } from "../../lib/reviews/types";
 import { useEpisodeReviewAutosave } from "./use-episode-review-autosave";
 
@@ -18,17 +19,18 @@ export type EpisodeNotesProps = {
   onComplete?: () => void;
   ruleContent?: (draft: EpisodeReviewRecord, update: (checks: NonNullable<EpisodeReviewRecord["review"]["ruleChecks"]>) => void) => ReactNode;
   suggestions?: ReactNode;
+  netPnl?: string | null;
 };
 
 function score(value: string): ReviewScore | null {
   return value === "" ? null : Number(value) as ReviewScore;
 }
 
-export function EpisodeNotesPanel({ episodeId, instrumentId, record, knowledgeCursor, episodeStartedAt, delayMs, onSave, onComplete, ruleContent, suggestions }: EpisodeNotesProps) {
-  const { draft, status, error, updatePlan, updateReview, toggleTag, retry, saveReview } = useEpisodeReviewAutosave({ episodeId, instrumentId, record, knowledgeCursor, episodeStartedAt, delayMs, onSave });
+export function EpisodeNotesPanel({ episodeId, instrumentId, record, knowledgeCursor, episodeStartedAt, delayMs, onSave, onComplete, ruleContent, suggestions, netPnl }: EpisodeNotesProps) {
+  const { draft, status, error, updatePlan, updateReview, toggleTag, retry, saveReview, savingReview } = useEpisodeReviewAutosave({ episodeId, instrumentId, record, knowledgeCursor, episodeStartedAt, delayMs, onSave });
   const [actionState, setActionState] = useState<{episodeId: string; error: string | null; busy: boolean}>({episodeId, error: null, busy: false});
   const [deferReason, setDeferReason] = useState({ episodeId, value: "" });
-  const busy = actionState.episodeId === episodeId && actionState.busy;
+  const busy = savingReview || (actionState.episodeId === episodeId && actionState.busy);
   const actionError = actionState.episodeId === episodeId ? actionState.error : null;
   const finish = async (deferred = false) => {
     if (busy) return;
@@ -44,9 +46,12 @@ export function EpisodeNotesPanel({ episodeId, instrumentId, record, knowledgeCu
     if (saved) onComplete?.();
   };
   const completed = draft.review.completed && status !== "error";
+  const r = calculateRMultiple({netPnl: netPnl ?? null}, draft.plan.plannedRiskAmount);
   return (
     <section className="episode-notes-panel focused-review" aria-label="当前回合复盘" aria-busy={busy}>
       <header className="focused-review-heading"><strong>三问复盘</strong><span>留下一条能验证的改进</span></header>
+      {r !== null && <span className="episode-r-preview">{r}R</span>}
+      <fieldset disabled={busy} style={{display: "contents"}}>
       <fieldset className="focused-review-questions" disabled={busy}>
         <label><span>1 · 这笔最关键的决策是什么？</span><textarea aria-label="关键决策" placeholder="记一个决策，以及当时的依据" value={draft.review.keyDecision ?? ""} onChange={event => updateReview("keyDecision", event.target.value)} /></label>
         <div className="episode-review-row">
@@ -84,6 +89,7 @@ export function EpisodeNotesPanel({ episodeId, instrumentId, record, knowledgeCu
         {!completed && <details className="review-defer"><summary>暂不复盘</summary><label><span>暂不复盘的原因</span><input aria-label="暂不复盘的原因" value={deferReason.episodeId === episodeId ? deferReason.value : ""} onChange={event => setDeferReason({episodeId, value:event.target.value})} /></label><button type="button" disabled={busy} onClick={() => void finish(true)}>暂存原因并继续</button></details>}
         {draft.review.deferredReason && <p>暂不复盘：{draft.review.deferredReason} <button type="button" onClick={() => void saveReview({deferredReason:"", completed:false})}>返回待复盘</button></p>}
       </footer>
+      </fieldset>
     </section>
   );
 }

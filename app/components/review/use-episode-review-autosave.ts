@@ -30,6 +30,7 @@ type RetainedDraft = {
   status: Exclude<Status, "idle" | "saved">;
   error: string | null;
   revision: number;
+  savingReview?: boolean;
 };
 
 const retainedDrafts = new Map<string, RetainedDraft>();
@@ -177,6 +178,7 @@ export function useEpisodeReviewAutosave(input: Input) {
       identity: string,
       candidate: EpisodeReviewRecord,
       revision: number,
+      savingReview = false,
     ) => {
       if (!hasValidPlannedRiskAmounts(candidate)) {
         const retained: RetainedDraft = {
@@ -201,6 +203,7 @@ export function useEpisodeReviewAutosave(input: Input) {
         status: "saving",
         error: null,
         revision,
+        savingReview,
       };
       if (latestRevisions.get(identity) !== revision) return false;
       retainedDrafts.set(identity, saving);
@@ -262,6 +265,7 @@ export function useEpisodeReviewAutosave(input: Input) {
   const schedule = useCallback(
     (next: EpisodeReviewRecord) => {
       const identity = identityRef.current;
+      if (retainedDrafts.get(identity)?.savingReview) return;
       const revision = nextRevision(identity);
       const retained: RetainedDraft = {
         draft: next,
@@ -400,6 +404,7 @@ export function useEpisodeReviewAutosave(input: Input) {
   };
 
   const retry = async () => {
+    if (retainedDrafts.get(identityRef.current)?.savingReview) return false;
     if (timerRef.current !== null) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
@@ -417,6 +422,7 @@ export function useEpisodeReviewAutosave(input: Input) {
 
   // Completion is a save boundary: never navigate while a draft is pending.
   const saveReview = async (patch: Partial<EpisodeReviewRecord["review"]>) => {
+    if (retainedDrafts.get(identityRef.current)?.savingReview) return false;
     if (timerRef.current !== null) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
@@ -428,11 +434,11 @@ export function useEpisodeReviewAutosave(input: Input) {
     const next = { ...previous, review: { ...previous.review, ...patch } };
     sourceRef.current = next;
     dirtyRef.current = true;
-    const saved = await persist(identity, next, revision);
-    if (!saved && revisionRef.current === revision && identityRef.current === identity) {
+    const saved = await persist(identity, next, revision, true);
+    if (!saved && latestRevisions.get(identity) === revision) {
       // A failed completion must not silently become completed on the next edit.
       const retained = retainedDrafts.get(identity);
-      if (retained) {
+      if (retained?.revision === revision) {
         const review = { ...retained.draft.review };
         for (const key of Object.keys(patch) as Array<keyof typeof patch>) {
           Object.assign(review, { [key]: previous.review[key] });
@@ -454,5 +460,6 @@ export function useEpisodeReviewAutosave(input: Input) {
     toggleTag,
     retry,
     saveReview,
+    savingReview: retainedDrafts.get(initialIdentity)?.savingReview ?? false,
   };
 }

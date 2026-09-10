@@ -52,6 +52,6 @@
 
 ### Task 5: 集成验证与评审
 
-- [ ] Run `npx vitest run`, `npm run typecheck`, `npm run lint`, `npm run build` and runtime checks; fix regressions with focused tests.
-- [ ] Use an isolated copy of the current database for browser tests: baseline statistics, three questions → persisted completion → next episode, reload, rule follow-up and range summary. Verify no original execution mutations.
-- [ ] Independent review of implemented changes against spec and code quality; resolve material findings, document results and remaining limits.
+- [x] Run `npx vitest run`, `npm run typecheck`, `npm run lint`, `npm run build` and runtime checks; fix regressions with focused tests.
+- [x] Use an isolated copy of the current database for browser tests: baseline statistics, three questions → persisted completion → next episode, reload, rule follow-up and range summary. Verify no original execution mutations.
+- [x] Independent review of implemented changes against spec and code quality; resolve material findings, document results and remaining limits.

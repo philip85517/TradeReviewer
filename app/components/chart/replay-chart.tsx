@@ -22,6 +22,7 @@ import {
 import type { ChartSettings } from "../../lib/storage/chart-settings";
 import { displayTimeForCandle } from "../../lib/replay/display-time";
 import type { TradeExecution } from "../../lib/trades/types";
+import { episodeViewport, type EpisodeViewport } from "../../lib/reviews/episode-viewport";
 import {
   DrawingCanvas,
   type ChartCoordinateAdapter,
@@ -38,6 +39,7 @@ type Props = {
   settings: ChartSettings;
   episodeId: string;
   viewportKey?: string;
+  focusRange?: EpisodeViewport;
   selectedDrawingId: string | null;
   plannedRiskAmount: string | undefined;
   currency: string;
@@ -177,6 +179,7 @@ export function ReplayChart({
   settings,
   episodeId,
   viewportKey = episodeId,
+  focusRange,
   selectedDrawingId,
   plannedRiskAmount,
   currency,
@@ -374,6 +377,7 @@ export function ReplayChart({
     const volumeSeries = volumeSeriesRef.current;
     if (!chartReady || !candleSeries || !volumeSeries) return;
 
+    const validChartCandles = validCandles(candles);
     const validCandleData = chartCandleData(candles);
     // Clear markers before replacing the series data. lightweight-charts can
     // render a hit-test frame between these two mutations; stale markers may
@@ -412,16 +416,21 @@ export function ReplayChart({
       chartRef.current?.timeScale().fitContent();
       // Leave room for arrows/text on the first and last bars as well.
       const padding = Math.max(3, Math.ceil(validCandleData.length * 0.04));
-      chartRef.current?.timeScale().setVisibleLogicalRange({
-        from: -padding,
-        to: validCandleData.length - 1 + padding,
-      });
+      chartRef.current?.timeScale().setVisibleLogicalRange(
+        focusRange
+          ? episodeViewport(validChartCandles, focusRange)
+          : {
+              from: -padding,
+              to: validCandleData.length - 1 + padding,
+            },
+      );
       fittedRef.current = viewportKey;
       setCrosshair(null);
     }
     setCoordinateVersion((version) => version + 1);
     return () => window.clearTimeout(markerTimer);
   }, [
+    focusRange,
     averageCost,
     candles,
     chartReady,

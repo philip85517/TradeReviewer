@@ -1,4 +1,4 @@
-import { tradeNatureOf, type TradeExecution } from './types';
+import { tradeNatureOf, type TradeExecution, type TradeNature } from './types';
 
 export type TradingNature = 'simulated' | 'live' | 'unknown';
 
@@ -12,8 +12,14 @@ export function tradingNature(execution: TradeExecution): TradingNature {
 }
 
 export function tradingNatureLabel(execution: TradeExecution): string {
+  const nature = displayTradeNature(execution);
+  return nature === 'simulation' ? 'TradingView · 模拟盘' : nature === 'live' ? '实盘' : '交易性质未知';
+}
+
+/** Canonical nature for filters and labels; scope identity remains tradeNatureOf. */
+export function displayTradeNature(execution: TradeExecution): TradeNature {
   const nature = tradingNature(execution);
-  return nature === 'simulated' ? 'TradingView · 模拟盘' : nature === 'live' ? '实盘' : '交易性质未知';
+  return nature === 'simulated' ? 'simulation' : nature;
 }
 
 /** Empty for existing records so historical reconciliation/episode IDs stay stable. */

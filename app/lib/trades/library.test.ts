@@ -69,6 +69,33 @@ function candle(
 }
 
 describe("buildTradeLibraryEntries", () => {
+  it("uses the canonical broker nature for display without changing historical episode scope", () => {
+    const executions = [
+      fill(xpev, "a", "buy", "2025-01-02T14:30:00Z", "100", "10"),
+      fill(xpev, "a", "sell", "2025-01-03T14:30:00Z", "100", "11"),
+    ];
+    executions.forEach((execution) => {
+      execution.source.platform = "futu";
+    });
+    const historicalEpisode = buildTradeEpisodes(executions)[0];
+
+    const [entry] = buildTradeLibraryEntries(
+      buildInstrumentTradeSummaries(executions),
+      {},
+      { "US:XPEV": "source-unavailable" },
+    );
+
+    expect(entry).toMatchObject({
+      tradeNature: "live",
+      tradingLabel: "实盘",
+    });
+    expect(entry.scopeKey).toBeUndefined();
+    expect(entry.episodes[0].episode).toMatchObject({
+      id: historicalEpisode.id,
+      tradeNature: "unknown",
+    });
+  });
+
   it("keeps live and simulated summaries separate for the same instrument", () => {
     const liveEntry = fill(xpev, "a", "buy", "2025-01-02T14:30:00Z", "100", "10");
     liveEntry.source.tradeNature = "live";

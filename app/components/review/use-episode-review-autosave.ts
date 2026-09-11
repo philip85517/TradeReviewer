@@ -30,9 +30,15 @@ type RetainedDraft = {
   status: Exclude<Status, "idle" | "saved">;
   error: string | null;
   revision: number;
+  savingReview?: boolean;
 };
 
 const retainedDrafts = new Map<string, RetainedDraft>();
+type DraftEvent = Omit<RetainedDraft, "status"> & { status: Status };
+const draftListeners = new Set<(identity: string, state: DraftEvent) => void>();
+function notifyDraft(identity: string, state: DraftEvent) {
+  for (const listener of draftListeners) listener(identity, state);
+}
 const latestRevisions = new Map<string, number>();
 const latestSaveTimestamps = new Map<string, number>();
 
@@ -152,6 +158,7 @@ export function useEpisodeReviewAutosave(input: Input) {
       revision: number,
       retained: RetainedDraft,
     ) => {
+      notifyDraft(identity, retained);
       if (
         !mountedRef.current ||
         identity !== identityRef.current ||
@@ -172,11 +179,26 @@ export function useEpisodeReviewAutosave(input: Input) {
     [setDraft, setError, setStatus],
   );
 
+  useEffect(() => {
+    const listener = (identity: string, state: DraftEvent) => {
+      if (!mountedRef.current || identity !== identityRef.current || state.revision !== revisionRef.current) return;
+      sourceRef.current = state.draft;
+      draftRef.current = displayRecordAtCursor(state.draft, cursorRef.current);
+      dirtyRef.current = state.status !== "saved";
+      setDraft(draftRef.current);
+      setStatus(state.status);
+      setError(state.error);
+    };
+    draftListeners.add(listener);
+    return () => { draftListeners.delete(listener); };
+  }, []);
+
   const persist = useCallback(
     async (
       identity: string,
       candidate: EpisodeReviewRecord,
       revision: number,
+      savingReview = false,
     ) => {
       if (!hasValidPlannedRiskAmounts(candidate)) {
         const retained: RetainedDraft = {
@@ -189,7 +211,7 @@ export function useEpisodeReviewAutosave(input: Input) {
           retainedDrafts.set(identity, retained);
           showRetainedState(identity, revision, retained);
         }
-        return;
+        return false;
       }
 
       const next = normalizeEpisodeReviewRecord({
@@ -201,21 +223,23 @@ export function useEpisodeReviewAutosave(input: Input) {
         status: "saving",
         error: null,
         revision,
+        savingReview,
       };
-      if (latestRevisions.get(identity) !== revision) return;
+      if (latestRevisions.get(identity) !== revision) return false;
       retainedDrafts.set(identity, saving);
       showRetainedState(identity, revision, saving);
 
       try {
         await onSaveRef.current(next);
-        if (latestRevisions.get(identity) !== revision) return;
+        if (latestRevisions.get(identity) !== revision) return false;
         retainedDrafts.delete(identity);
+        notifyDraft(identity, {draft: next, revision, status: "saved", error: null});
         if (
           !mountedRef.current ||
           identity !== identityRef.current ||
           revision !== revisionRef.current
         ) {
-          return;
+          return false;
         }
         sourceRef.current = next;
         draftRef.current = displayRecordAtCursor(
@@ -226,8 +250,9 @@ export function useEpisodeReviewAutosave(input: Input) {
         setDraft(draftRef.current);
         setStatus("saved");
         setError(null);
+        return true;
       } catch {
-        if (latestRevisions.get(identity) !== revision) return;
+        if (latestRevisions.get(identity) !== revision) return false;
         const failed: RetainedDraft = {
           draft: next,
           status: "error",
@@ -236,6 +261,7 @@ export function useEpisodeReviewAutosave(input: Input) {
         };
         retainedDrafts.set(identity, failed);
         showRetainedState(identity, revision, failed);
+        return false;
       }
     },
     [setDraft, setError, setStatus, showRetainedState],
@@ -260,6 +286,7 @@ export function useEpisodeReviewAutosave(input: Input) {
   const schedule = useCallback(
     (next: EpisodeReviewRecord) => {
       const identity = identityRef.current;
+      if (retainedDrafts.get(identity)?.savingReview) return;
       const revision = nextRevision(identity);
       const retained: RetainedDraft = {
         draft: next,
@@ -398,6 +425,7 @@ export function useEpisodeReviewAutosave(input: Input) {
   };
 
   const retry = async () => {
+    if (retainedDrafts.get(identityRef.current)?.savingReview) return false;
     if (timerRef.current !== null) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
@@ -410,7 +438,38 @@ export function useEpisodeReviewAutosave(input: Input) {
     revisionRef.current = revision;
     latestRevisions.set(identity, revision);
     dirtyRef.current = true;
-    await persist(identity, candidate, revision);
+    return persist(identity, candidate, revision);
+  };
+
+  // Completion is a save boundary: never navigate while a draft is pending.
+  const saveReview = async (patch: Partial<EpisodeReviewRecord["review"]>) => {
+    if (retainedDrafts.get(identityRef.current)?.savingReview) return false;
+    if (timerRef.current !== null) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    const identity = identityRef.current;
+    const revision = nextRevision(identity);
+    revisionRef.current = revision;
+    const previous = sourceRef.current;
+    const next = { ...previous, review: { ...previous.review, ...patch } };
+    sourceRef.current = next;
+    dirtyRef.current = true;
+    const saved = await persist(identity, next, revision, true);
+    if (!saved && latestRevisions.get(identity) === revision) {
+      // A failed completion must not silently become completed on the next edit.
+      const retained = retainedDrafts.get(identity);
+      if (retained?.revision === revision) {
+        const review = { ...retained.draft.review };
+        for (const key of Object.keys(patch) as Array<keyof typeof patch>) {
+          Object.assign(review, { [key]: previous.review[key] });
+        }
+        const restored = { ...retained, draft: { ...retained.draft, review } };
+        retainedDrafts.set(identity, restored);
+        showRetainedState(identity, revision, restored);
+      }
+    }
+    return saved;
   };
 
   return {
@@ -421,5 +480,7 @@ export function useEpisodeReviewAutosave(input: Input) {
     updateReview,
     toggleTag,
     retry,
+    saveReview,
+    savingReview: retainedDrafts.get(initialIdentity)?.savingReview ?? false,
   };
 }

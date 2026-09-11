@@ -1,4 +1,4 @@
-import { tradingNatureLabel } from "./trading-nature";
+import { displayTradeNature, tradingNatureLabel } from "./trading-nature";
 import Decimal from "decimal.js";
 
 import type { DailyCandleRecord } from "../market/contracts";
@@ -164,9 +164,12 @@ export function buildTradeLibraryEntries(
               )
               .toString();
 
-        const nature = scopeEpisodes[0]?.tradeNature ?? "unknown";
+        const scopeNature = scopeEpisodes[0]?.tradeNature ?? "unknown";
+        const nature = scopedExecutions[0]
+          ? displayTradeNature(scopedExecutions[0])
+          : scopeNature;
         return {
-          ...(nature !== "unknown" ? { scopeKey } : {}),
+          ...(scopeNature !== "unknown" ? { scopeKey } : {}),
           tradeNature: nature,
           groupId: `${summary.instrument.id}|${scopeKey}`,
           tradingLabel: tradingNatureLabel(scopedExecutions[0]),

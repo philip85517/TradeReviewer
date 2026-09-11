@@ -149,6 +149,8 @@ import {
   type InstrumentTradeSummary,
 } from "../lib/trades/instruments";
 import { buildTradeLibraryEntries } from "../lib/trades/library";
+import { tradingNatureLabel, displayTradeNature } from "../lib/trades/trading-nature";
+import { buildReviewQueue } from "../lib/reviews/review-queue";
 import type {
   Instrument,
   TradeEpisode,
@@ -175,6 +177,12 @@ import {
 } from "./library/trade-library";
 import { ImportActions } from "./import/import-actions";
 import { useModalFocus } from "./import/use-modal-focus";
+import { ReviewSummary, initialReviewSummaryFilters, type ReviewSummaryDrafts } from "./insights/review-summary";
+import { TagSuggestionPanel } from "./insights/tag-suggestion-panel";
+import { RuleChecks } from "./review/rule-checks";
+import type { EpisodeNotesProps } from "./review/episode-notes-panel";
+import { createReviewSummaryClient } from "../lib/storage/review-summary-client";
+import { filterTradeLibraryEntriesByScope, reviewScopeOptions, trackedRuleCandidates, type ReviewSummaryRange } from "../lib/reviews/review-summary";
 import { PatternInsights } from "./insights/pattern-insights";
 import {
   ReviewChartWorkspace,
@@ -746,7 +754,7 @@ function episodeOptions(episodes: TradeEpisode[], reviews: Record<string, Episod
   );
   return episodes.map((episode) => ({
     id: episode.id,
-    label: `第 ${chronological.get(episode.id) ?? 1} 次交易${episode.tradeNature === "simulation" ? ` · ${episode.accountLabel}` : ""}`,
+    label: `第 ${chronological.get(episode.id) ?? 1} 次交易${displayTradeNature(episode.executions[0]) === "simulation" ? ` · ${episode.accountLabel}` : ""}`,
     contextLabel: `${marketTradingDate(episode.startedAt, episode.instrument.market)} · ${episode.executions[0]?.accountLabel ?? "账户未记录"} · ${reviews[episode.id]?.review.completed ? "已复盘" : "待复盘"}`,
     startedAt: episode.startedAt,
     endedAt: episode.endedAt,
@@ -871,10 +879,11 @@ function isAbortError(error: unknown) {
     return () => media.removeEventListener("change", closeOnDesktop);
   }, []);
   const [libraryBrowseState, setLibraryBrowseState] = useState<TradeLibraryBrowseState>();
+  const [reviewQueueIds, setReviewQueueIds] = useState<string[]>();
   const [navigationNotice, setNavigationNotice] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<
     "review" | "library" | "insights"
-  >("review");
+  >(showDemo ? "review" : "library");
   const [timeframe, setTimeframe] = useState<Timeframe>("1D");
   const [historyMode, setHistoryMode] = useState<"history" | "replay">("history");
   const [frame, setFrame] = useState(initialFrame);
@@ -1178,6 +1187,16 @@ function isAbortError(error: unknown) {
       ),
     [importedInstruments, marketStates],
   );
+  const dailyCoverageByInstrument = useMemo(
+    () =>
+      Object.fromEntries(
+        importedInstruments.map((summary) => [
+          summary.instrument.id,
+          marketStates[summary.instrument.id]?.dailyCoverage ?? [],
+        ]),
+      ),
+    [importedInstruments, marketStates],
+  );
   const marketDataStatuses = useMemo(
     () =>
       Object.fromEntries(
@@ -1246,7 +1265,7 @@ function isAbortError(error: unknown) {
   const viewModel: ReviewChartViewModel = {
     source: selectedImportedInstrument ? "imported" : "demo",
     tradeNature: selectedImportedInstrument
-      ? selectedEpisode?.tradeNature ?? "unknown"
+      ? selectedEpisode?.executions[0] ? displayTradeNature(selectedEpisode.executions[0]) : "unknown"
       : undefined,
     simulationRunId: selectedImportedInstrument
       ? selectedEpisode?.simulationRunId
@@ -1259,6 +1278,7 @@ function isAbortError(error: unknown) {
       ? importedAvailability
       : ALL_TIMEFRAMES,
     cursor: activeCursor,
+    focusedExecutions: selectedEpisode?.executions,
     candles: activeSnapshot.candles,
     executions: selectedImportedInstrument && historyMode === "history"
       ? selectedImportedInstrument.executions.filter(execution => selectedEpisode?.executions[0]
@@ -1320,29 +1340,13 @@ function isAbortError(error: unknown) {
       tradeLibraryEntries,
     ],
   );
-  const insightFactResult = useMemo(
-    () =>
-      buildInsightEpisodeFacts(
-        tradeLibraryEntries.filter(entry=>entry.tradeNature !== "simulation"),
-        marketDataCandles,
-        marketDataStatuses,
-        suggestionDecisions,
-      ),
-    [
-      marketDataCandles,
-      marketDataStatuses,
-      suggestionDecisions,
-      tradeLibraryEntries,
-    ],
-  );
-  const insightReport = useMemo(
-    () =>
-      buildPatternInsightReport(
-        insightFactResult.facts,
-        insightFactResult.excluded,
-      ),
-    [insightFactResult],
-  );
+  const [summaryFilters, setSummaryFilters] = useState(initialReviewSummaryFilters);
+  const [summaryDrafts, setSummaryDrafts] = useState<ReviewSummaryDrafts>({});
+  const [requestedSummaryScope, setRequestedSummaryScope] = useState("");
+  const summaryClient = useMemo(() => createReviewSummaryClient(), []);
+  const summaryScopes = useMemo(() => reviewScopeOptions(tradeLibraryEntries), [tradeLibraryEntries]);
+  const summaryScope = summaryScopes.some(scope => scope.id === requestedSummaryScope)
+    ? requestedSummaryScope : summaryScopes[0]?.id ?? "";
   const insightEpisodeContexts = useMemo(
     () =>
       Object.fromEntries(
@@ -1365,6 +1369,26 @@ function isAbortError(error: unknown) {
       ),
     [tradeLibraryEntries],
   );
+  function renderScopedInsights(range: ReviewSummaryRange) {
+    const entries = filterTradeLibraryEntriesByScope(tradeLibraryEntries, summaryScope, range);
+    const ids = new Set(entries.flatMap(entry => entry.episodes.map(item => item.episode.id)));
+    const result = buildInsightEpisodeFacts(entries, marketDataCandles, marketDataStatuses, suggestionDecisions, dailyCoverageByInstrument);
+    return <details className="review-summary-patterns"><summary>查看本范围的模式洞察</summary><PatternInsights
+      report={buildPatternInsightReport(result.facts, result.excluded)} facts={result.facts}
+      suggestions={suggestionsHydrated && reviewsHydrated ? tagSuggestions.filter(suggestion => ids.has(suggestion.episodeId)) : []}
+      episodeContexts={insightEpisodeContexts} onConfirmSuggestion={confirmSuggestion}
+      onEditSuggestion={editSuggestion} onRejectSuggestion={rejectSuggestion} onOpenEpisode={openLibraryEpisode}
+    /></details>;
+  }
+  function reviewExtras(episode: TradeEpisode): Pick<EpisodeNotesProps, "ruleContent" | "suggestions"> {
+    const candidates = trackedRuleCandidates(tradeLibraryEntries, episode.id);
+    const suggestions = suggestionsHydrated && reviewsHydrated ? tagSuggestions.filter(item => item.episodeId === episode.id) : [];
+    return {
+      ruleContent: (draft, update) => <RuleChecks candidates={candidates} checks={draft.review.ruleChecks ?? []} onChange={update} onOpenSource={openLibraryEpisode} />,
+      suggestions: suggestions.length ? (onBusyChange) => <details className="review-episode-suggestions"><summary>本回合标签建议（{suggestions.filter(item => item.status === "suggested").length}）</summary><TagSuggestionPanel onBusyChange={onBusyChange} suggestions={suggestions} episodeContexts={insightEpisodeContexts} onConfirm={confirmSuggestion} onEdit={editSuggestion} onReject={rejectSuggestion} onOpenEpisode={openLibraryEpisode} /></details> : undefined,
+    };
+  }
+
 
   async function requestFrame(
     mode: DemoReplayMode,
@@ -1445,6 +1469,7 @@ function isAbortError(error: unknown) {
   }
 
   function selectInstrument(instrumentId: string) {
+    setReviewQueueIds(undefined);
     if (instrumentId === "demo") {
       if (!showDemo) return;
       setPlaying(false);
@@ -1492,6 +1517,7 @@ function isAbortError(error: unknown) {
   }
 
   function selectEpisode(episodeId: string) {
+    setReviewQueueIds(undefined);
     const episode = episodes.find((item) => item.id === episodeId);
     if (!episode) return;
     setPlaying(false);
@@ -2770,6 +2796,24 @@ function isAbortError(error: unknown) {
     setActiveView("library");
   }
 
+  function continueFromReview() {
+    const next = buildReviewQueue(tradeLibraryEntries, {status:"pending", ...(reviewQueueIds ? {} : {account:selectedEpisode?.accountId, nature:selectedEpisode?.executions[0] ? displayTradeNature(selectedEpisode.executions[0]) : undefined, simulationRunId:selectedEpisode?.simulationRunId})})
+      .find(row => row.item.episode.id !== activeEpisodeId && (!reviewQueueIds || reviewQueueIds.includes(row.item.episode.id)));
+    if (next) {
+      const summary = importedInstruments.find(item => item.instrument.id === next.entry.instrument.id);
+      if (summary && selectImportedSummary(summary, next.item.episode.id)) {
+        setActivePanelTab("notes");
+        setPlaying(false);
+        return;
+      }
+    }
+    setReviewQueueIds(undefined);
+    setLibraryTarget(undefined);
+    setLibraryBrowseState(current => current ? {...current,selectedInstrumentId:null,selectedEpisodeId:null,mode:"queue"} : undefined);
+    setNavigationNotice("本轮复盘已完成，可以到阶段总结整理下一步。");
+    setActiveView("library");
+  }
+
   async function acceptSuggestion(
     suggestion: TagSuggestionRecord,
     finalTagId: string,
@@ -2905,7 +2949,7 @@ function isAbortError(error: unknown) {
 
   async function saveEpisodeReview(record: EpisodeReviewRecord) {
     const persisted = await reviewRepository.put(record);
-    if (!persisted) return;
+    if (!persisted) throw new Error("复盘记录已更新，本次保存未被接受，请重新载入后重试");
     setEpisodeReviews((current) => {
       const visible = current[record.episodeId];
       if (
@@ -3018,7 +3062,7 @@ function isAbortError(error: unknown) {
           <span className="demo-chip">
             {showDemo && <Sparkles size={13} />}
             {selectedImportedInstrument
-              ? selectedEpisode?.executions[0] ? selectedEpisode.tradeNature === "simulation" ? "模拟盘" : selectedEpisode.tradeNature === "live" ? "实盘" : "来源未知" : "本地导入"
+              ? selectedEpisode?.executions[0] ? tradingNatureLabel(selectedEpisode.executions[0]) : "本地导入"
               : showDemo
                 ? "演示行情"
                 : "等待导入"}
@@ -3050,8 +3094,9 @@ function isAbortError(error: unknown) {
               : ""
         }`}
       >
-        {activeView === "library" ? (
+        {activeView === "library" && (showDemo || importedInstruments.length > 0) ? (
           <TradeLibrary
+            defaultMode={showDemo ? "stocks" : "queue"}
             key={libraryTarget?.requestId ?? 0}
             initialBrowseState={libraryBrowseState}
             onBrowseStateChange={setLibraryBrowseState}
@@ -3061,37 +3106,29 @@ function isAbortError(error: unknown) {
             marketDataLabels={marketDataLabels}
             timeframe={timeframe === "1W" ? "1W" : "1D"}
             onTimeframeChange={setTimeframe}
-            onOpenInReview={(instrumentId, episodeId) => {
+            onOpenInReview={(instrumentId, episodeId, queueIds) => {
               const summary = importedInstruments.find((item) => item.instrument.id === instrumentId);
               if (!summary || !selectImportedSummary(summary, episodeId)) {
                 setNavigationNotice("该交易回合已变化，请返回股票库重新选择。");
                 return;
               }
               setNavigationNotice(null);
+              setReviewQueueIds(queueIds);
+              setActivePanelTab("notes");
               setLibraryTarget(undefined);
               setActiveView("review");
             }}
             reviewsHydrated={reviewsHydrated}
             target={libraryTarget}
             onSaveReview={saveEpisodeReview}
+            reviewExtras={reviewExtras}
             onInspectData={openDataCheck}
             onRefreshMarketData={(instrumentId) => void startMarketDataUpdate([instrumentId], { refreshMetadata: true })}
           />
         ) : activeView === "insights" ? (
-          <PatternInsights
-            report={insightReport}
-            facts={insightFactResult.facts}
-            suggestions={
-              suggestionsHydrated && reviewsHydrated
-                ? tagSuggestions
-                : []
-            }
-            episodeContexts={insightEpisodeContexts}
-            onConfirmSuggestion={confirmSuggestion}
-            onEditSuggestion={editSuggestion}
-            onRejectSuggestion={rejectSuggestion}
-            onOpenEpisode={openLibraryEpisode}
-          />
+          <ReviewSummary filterStore={{filters:summaryFilters,setFilters:setSummaryFilters}} draftStore={{drafts:summaryDrafts,setDrafts:setSummaryDrafts}} entries={tradeLibraryEntries} scopeId={summaryScope} onScopeChange={setRequestedSummaryScope} client={summaryClient} onOpenEpisode={openLibraryEpisode}>
+            {renderScopedInsights}
+          </ReviewSummary>
         ) : (
           <>
             {stockDrawerOpen && <button type="button" className="stock-drawer-backdrop" aria-label="关闭股票列表遮罩" tabIndex={-1} onClick={() => setStockDrawerOpen(false)} />}
@@ -3302,6 +3339,8 @@ function isAbortError(error: unknown) {
               onActivePanelTabChange={setActivePanelTab}
               onDrawerOpenChange={setDrawerOpen}
               onSaveReview={saveEpisodeReview}
+              onCompleteReview={selectedImportedInstrument ? continueFromReview : undefined}
+              reviewExtras={selectedEpisode ? reviewExtras(selectedEpisode) : undefined}
             />
             )}
             </div>

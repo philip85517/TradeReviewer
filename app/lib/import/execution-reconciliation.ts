@@ -1,9 +1,8 @@
-import { simulationScope } from "../trades/trading-nature";
 import { Temporal } from "@js-temporal/polyfill";
 import Decimal from "decimal.js";
 
 import { canonicalInstrumentId } from "../instruments/display-name";
-import type { TradeExecution } from "../trades/types";
+import { tradeNatureOf, tradeScopeKey, type TradeExecution } from "../trades/types";
 
 export type ReconciliationDecision =
   | "keep-existing"
@@ -81,7 +80,10 @@ function executionInstrumentIdentity(execution: TradeExecution) {
 }
 
 export function executionCandidateKey(execution: TradeExecution) {
-  return `${simulationScope(execution) ? `${simulationScope(execution)}:${execution.source.simulationTradeId}:${execution.source.simulationRole}|` : ""}${executionInstrumentIdentity(execution)}|${
+  const simulation = tradeNatureOf(execution) === "simulation"
+    ? `${tradeScopeKey(execution)}:${execution.source.sourceTradeId ?? execution.source.simulationTradeId ?? ""}|`
+    : "";
+  return `${simulation}${execution.source.timePrecision === "date-only" ? `account:${execution.accountId}|` : ""}${executionInstrumentIdentity(execution)}|${
     executionInstantIdentity(execution.executedAt).value
   }`;
 }
@@ -94,6 +96,7 @@ function executionCoreIdentity(execution: TradeExecution) {
       execution.side,
       quantity.value,
       price.value,
+      ...(execution.source.timePrecision === "date-only" ? [execution.source.statementRowFingerprint ?? "", new Decimal(execution.fee || 0).toString()] : []),
     ].join("|"),
     verified: quantity.verified && price.verified,
   };

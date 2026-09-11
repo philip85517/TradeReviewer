@@ -254,9 +254,23 @@ export function replayCursorAt(value: string): string {
 }
 
 export function replayExecutionAt(execution: TradeExecution): string {
-  return execution.executedAt.length === 10 || execution.source.timePrecision === "date-only"
-    ? replayCursorAt(execution.source.marketCalendarDate ?? execution.source.tradingDate ?? execution.executedAt.slice(0, 10))
-    : replayCursorAt(execution.executedAt);
+  if (execution.executedAt.length !== 10 && execution.source.timePrecision !== "date-only") {
+    return replayCursorAt(execution.executedAt);
+  }
+  let calendarDate = execution.source.marketCalendarDate ?? execution.source.tradingDate;
+  const sourceDate = execution.source.sourceTimestampText?.trim();
+  if (!calendarDate && sourceDate && /^\d{4}-\d{2}-\d{2}$/.test(sourceDate)) calendarDate = sourceDate;
+  if (!calendarDate && execution.executedAt.length !== 10 && execution.source.sourceTimezone) {
+    try {
+      const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", {
+        timeZone: execution.source.sourceTimezone, year: "numeric", month: "2-digit", day: "2-digit",
+      }).formatToParts(new Date(execution.executedAt)).map(part => [part.type, part.value]));
+      calendarDate = `${parts.year}-${parts.month}-${parts.day}`;
+    } catch {
+      // Unrecognized historical zone labels retain the prior UTC-date fallback.
+    }
+  }
+  return replayCursorAt(calendarDate ?? execution.executedAt.slice(0, 10));
 }
 
 export function statementPositionAt(position: StatementPosition): string {

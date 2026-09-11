@@ -2,6 +2,9 @@ import { createEmptyEpisodeReviewRecord } from "../reviews/review-metrics";
 import { parseBrokerStatement } from "../import/dispatcher";
 import { csv, fileFor } from "../import/__fixtures__/tradingview";
 import { buildTradeEpisodes } from "../trades/episodes";
+import { columnStatement } from "../import/__fixtures__/china-merchants-columns";
+import { enrichStatementImport } from "../import/enrich-import";
+import { createImportPreview } from "../import/import-preview";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -13,6 +16,21 @@ import type { BrowserStatePayload } from "./sqlite-contracts";
 import { SqliteStore } from "./sqlite-store";
 
 const directories: string[] = [];
+
+it("persists focused answers and rule evidence, and rejects malformed extensions", () => {
+  const store = createStore();
+  store.mergeExecutions([execution]);
+  const record = createEmptyEpisodeReviewRecord("focused-store", instrument.id);
+  record.review.keyDecision = "离场确认";
+  record.review.planAdherence = "no-plan";
+  record.review.ruleChecks = [{sourceEpisodeId:"prior", sourceUpdatedAt:"2026-09-01T00:00:00Z", ruleText:"等待确认", result:"followed"}];
+  store.putReview(record);
+  expect(store.getReview(record.episodeId)?.review).toMatchObject({keyDecision:"离场确认", planAdherence:"no-plan", ruleChecks:[{ruleText:"等待确认", result:"followed"}]});
+  const invalid = JSON.parse(JSON.stringify(record));
+  invalid.review.ruleChecks[0].result = "guessed";
+  expect(() => store.putReview(invalid)).toThrow("Invalid review");
+  expect(store.getReview(record.episodeId)?.review.ruleChecks?.[0].result).toBe("followed");
+});
 
 function createStore() {
   const directory = mkdtempSync(join(tmpdir(), "tradereview-store-"));
@@ -103,6 +121,34 @@ afterEach(() => {
   }
 });
 
+describe("A股招商银行 import persistence",()=>{
+  it("rejects malformed settlement evidence before saving a trade",async()=>{
+    const parsed=await parseBrokerStatement({name:"test.pdf",arrayBuffer:async()=>new TextEncoder().encode("%PDF-test").buffer},{extractPdfPages:async()=>columnStatement()});
+    const record=parsed.records[0];
+    const store=createStore();
+    const malformed={...record,source:{...record.source,settlement:{...record.source.settlement!,grossAmount:"NaN"}}};
+    expect(()=>store.mergeExecutions([malformed])).toThrow();
+    expect(store.getExecutions()).toEqual([]);
+    databaseFor(store).close();
+  });
+
+  it("dispatches, previews and persists settlement and format evidence without duplicate rows",async()=>{
+    const pages=columnStatement();
+    const parsed=await parseBrokerStatement({name:"statement.pdf",arrayBuffer:async()=>new TextEncoder().encode("%PDF-test").buffer},{extractPdfPages:async()=>pages});
+    if (parsed.broker==='unknown') throw new Error('Expected recognized format');
+    const enriched=await enrichStatementImport(parsed,{resolver:async()=>{throw new Error('No external lookup needed');}});
+    const preview=createImportPreview("statement.pdf",enriched);
+    const store=createStore();
+    expect(preview.sourceLabel).toBe("A股招商银行");
+    store.mergeExecutions(preview.records);
+    expect(store.getExecutions()).toEqual(preview.records);
+    store.mergeExecutions(preview.records);
+    expect(store.getExecutions()).toHaveLength(2);
+    expect(store.getExecutions()[0].source.settlement?.grossAmount).toBe("4000");
+    databaseFor(store).close();
+  });
+});
+
 describe("SqliteStore", () => {
   it("persists monthly provenance and auxiliary evidence including no-trade months", () => {
     const store = createStore();
@@ -179,7 +225,7 @@ describe("SqliteStore", () => {
     const bootstrap = createStore().getBootstrap();
 
     expect(bootstrap).toMatchObject({
-      schemaVersion: 3,
+      schemaVersion: 5,
       executions: [], importHistory: [], instruments: [], reviews: [],
       tagSuggestions: [], marketDataJobs: [], settings: {},
     });
@@ -191,6 +237,53 @@ describe("SqliteStore", () => {
     expect(store.mergeExecutions([execution])).toEqual({ inserted: 1, duplicate: 0, conflict: 0 });
     expect(store.getExecutions()).toEqual([execution]);
     expect(store.getInstruments()).toEqual([instrument]);
+  });
+
+  it("round-trips simulated trade scope and import history", () => {
+    const store = createStore();
+    const simulated = {
+      ...execution,
+      id: "simulation-execution-1",
+      source: {
+        ...execution.source,
+        platform: "tradingview",
+        inputKind: "tradingview" as const,
+        tradeNature: "simulation" as const,
+        simulationRunId: "tradingview:run-a",
+        sourceTradeId: "1",
+      },
+    };
+    const history = {
+      id: "tradingview:run-a",
+      fileName: "回放交易_SSE_600330_2026-09-03.csv",
+      sourceLabel: "TradingView · 模拟盘",
+      importedAt: "2026-09-09T00:00:00.000Z",
+      tradeCount: 2,
+      instrumentCount: 1,
+      excludedInstrumentCount: 0,
+      excludedRecordCount: 0,
+      duplicateTradeCount: 0,
+      unresolvedInstrumentCount: 0,
+      sourceKind: "tradingview" as const,
+      tradeNature: "simulation" as const,
+      simulationRunId: "tradingview:run-a",
+    };
+
+    store.mergeTradeData({
+      instruments: [instrument],
+      executions: [simulated],
+      importHistory: [history],
+    });
+
+    expect(store.getExecutions()).toEqual([simulated]);
+    expect(store.getImportHistory()).toEqual([history]);
+    expect(
+      databaseFor(store)
+        .prepare("select trade_nature, simulation_run_id from executions")
+        .all(),
+    ).toEqual([
+      { trade_nature: "simulation", simulation_run_id: "tradingview:run-a" },
+    ]);
   });
 
   it("preserves an explicitly confirmed grey-market session across reopening storage", () => {

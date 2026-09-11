@@ -24,6 +24,8 @@ describe("ReplayControls", () => {
       />,
     );
 
+    expect(screen.getByText("已到可用行情终点")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "开始回放" })).toHaveTextContent("开始回放");
     expect(
       screen.getByRole("button", { name: "下一根 K 线" }),
     ).toBeDisabled();

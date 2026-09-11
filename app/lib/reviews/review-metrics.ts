@@ -94,6 +94,21 @@ function clean(value: string) {
   return value.trim();
 }
 
+export function validReviewExtensions(review: EpisodeReviewRecord["review"]): boolean {
+  if ([review.keyDecision, review.deferredReason, review.evidenceAt].some(value => value !== undefined && typeof value !== "string")) return false;
+  if (review.evidenceAt && !Number.isFinite(Date.parse(review.evidenceAt))) return false;
+  if (review.decisionStage !== undefined && !["entry", "management", "exit"].includes(review.decisionStage)) return false;
+  if (review.planAdherence !== undefined && !["followed", "deviated", "no-plan", "unassessed"].includes(review.planAdherence)) return false;
+  if (review.ruleStatus !== undefined && !["observing", "adopted", "revised"].includes(review.ruleStatus)) return false;
+  if (review.ruleTracking !== undefined && typeof review.ruleTracking !== "boolean") return false;
+  if (review.ruleChecks !== undefined && (!Array.isArray(review.ruleChecks) || !review.ruleChecks.every(check =>
+    check && typeof check.sourceEpisodeId === "string" && check.sourceEpisodeId.trim() &&
+    typeof check.sourceUpdatedAt === "string" && Number.isFinite(Date.parse(check.sourceUpdatedAt)) &&
+    typeof check.ruleText === "string" && check.ruleText.trim() &&
+    ["followed", "deviated", "not-applicable"].includes(check.result)))) return false;
+  return true;
+}
+
 function normalizePlan(plan: EpisodePlan): EpisodePlan {
   return {
     ...plan,
@@ -182,6 +197,8 @@ export function normalizeEpisodeReviewRecord(
       riskManagement: clean(record.review.riskManagement),
       psychology: clean(record.review.psychology),
       reusableRule: clean(record.review.reusableRule),
+      ...(record.review.keyDecision !== undefined ? {keyDecision: clean(record.review.keyDecision)} : {}),
+      ...(record.review.deferredReason !== undefined ? {deferredReason: clean(record.review.deferredReason)} : {}),
     },
     confirmedTagIds: [
       ...new Set(record.confirmedTagIds.map(clean).filter(Boolean)),

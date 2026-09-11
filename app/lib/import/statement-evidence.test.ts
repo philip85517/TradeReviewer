@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyMonthlyHistoryEvidence, attachStatementEvidence } from "./statement-evidence";
+import { applyMonthlyHistoryEvidence, attachStatementEvidence, replayExecutionAt } from "./statement-evidence";
 import type { StatementParseResult } from "./contracts";
 import type { PdfTextPage } from "./pdf-text";
 import type { TradeExecution } from "../trades/types";
@@ -248,5 +248,30 @@ describe("attachStatementEvidence", () => {
     expect(attached.source.openingPosition).toMatchObject({ phase: "closing", date: "2025-01-31", quantity: "2" });
     expect(execution.source).not.toHaveProperty("openingPosition");
     expect(applyMonthlyHistoryEvidence([attached], [monthly])).toEqual([attached]);
+  });
+});
+
+
+describe("persisted date-only simulation knowledge", () => {
+  const simulation: TradeExecution = {
+    id: "persisted-simulation", accountId: "simulation-run", accountLabel: "Simulation",
+    instrument: { id: "CN-SH:600000", market: "CN-SH", symbol: "600000", name: "Test", currency: "CNY" },
+    source: { platform: "tradingview", row: 1, tradeNature: "simulation", simulationRunId: "run", timePrecision: "date-only", sourceTimezone: "Asia/Shanghai" },
+    side: "buy", executedAt: "2025-01-02T16:00:00.000Z", quantity: "100", price: "10", fee: "0",
+  };
+  it("does not reveal a Shanghai midnight fill on the previous UTC calendar day", () => {
+    expect(replayExecutionAt(simulation)).toBe("2025-01-03T23:59:59.999Z");
+    const before = createReplaySnapshot({ candles: [], executions: [simulation], cursor: "2025-01-02" });
+    expect(before.executions).toEqual([]);
+    expect(before.position.quantity).toBe("0");
+    const after = createReplaySnapshot({ candles: [], executions: [simulation], cursor: "2025-01-03" });
+    expect(after.executions).toHaveLength(1);
+    expect(after.position.quantity).toBe("100");
+  });
+  it("preserves explicit date evidence and second-precision instants", () => {
+    expect(replayExecutionAt({ ...simulation, source: { ...simulation.source, marketCalendarDate: "2025-01-04" } })).toBe("2025-01-04T23:59:59.999Z");
+    expect(replayExecutionAt({ ...simulation, source: { ...simulation.source, sourceTimezone: undefined, sourceTimestampText: "2025-01-03" } })).toBe("2025-01-03T23:59:59.999Z");
+    expect(replayExecutionAt({ ...simulation, source: { ...simulation.source, timePrecision: "second" } })).toBe(simulation.executedAt);
+    expect(replayExecutionAt({ ...simulation, executedAt: "2025-01-03" })).toBe("2025-01-03T23:59:59.999Z");
   });
 });

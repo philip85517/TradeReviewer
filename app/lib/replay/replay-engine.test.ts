@@ -176,3 +176,22 @@ describe("createReplaySnapshot", () => {
     expect(mapExecutionsToCandles(completed.candles, completed.executions)).toEqual([{ executionId: "buy-1", candleTime: "2025-01-02T10:00:00.000Z" }]);
   });
 });
+
+
+describe("merged settlement and simulation evidence", () => {
+  it("uses original settlement unit costs in replay", () => {
+    const fill = { ...executions[0], quantity: "300", price: "76.087", fee: "5", source: { ...executions[0].source, settlement: { currency: "USD", quantity: "300", grossAmount: "22826", netAmount: "-22831", fees: { commission: "5" } } } };
+    const snapshot = createReplaySnapshot({ candles: [{ time: fill.executedAt, open: 80, high: 80, low: 80, close: 80, volume: 1 }], executions: [fill], cursor: fill.executedAt });
+    expect(snapshot.position).toMatchObject({ grossCapitalDeployed: "22826", unrealizedPnl: "1174", netPnl: "1169" });
+  });
+
+  it("redacts both simulation report formats and ignores broker inventory in simulation replay", () => {
+    const fill: TradeExecution = { ...executions[0], source: { ...executions[0].source, tradeNature: "simulation", simulationRunId: "run-a", simulationReport: { netPnl: "9999" }, sourceReport: { netPnl: "9999", returnPercent: "99", favorableExcursion: "1", favorableExcursionPercent: "1", adverseExcursion: "1", adverseExcursionPercent: "1", cumulativePnl: "9999", cumulativeReturnPercent: "99", durationBars: 9 } } };
+    const snapshot = createReplaySnapshot({ candles: [], executions: [fill], cursor: fill.executedAt, evidence: [{ accountId: fill.accountId, month: "2025-01", events: [], positions: [{ accountId: fill.accountId, market: fill.instrument.market, symbol: fill.instrument.symbol, phase: "opening", date: "2025-01-01", quantity: "50", source: [] }] }] });
+    expect(snapshot.position.quantity).toBe("100");
+    expect(snapshot.position.accuracy).toBeUndefined();
+    expect(snapshot.executions[0].source.sourceReport).toBeUndefined();
+    expect(snapshot.executions[0].source.simulationReport).toBeUndefined();
+    expect(fill.source.sourceReport?.netPnl).toBe("9999");
+  });
+});

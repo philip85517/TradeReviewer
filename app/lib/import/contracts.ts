@@ -1,8 +1,16 @@
-import type { TradeExecution, TradeTimePrecision } from "../trades/types";
+import type {
+  TradeExecution,
+  TradeNature,
+  TradeTimePrecision,
+} from "../trades/types";
 import type { ImportDiagnostic } from "./import-result";
 import type { MonthlyStatement } from "./monthly-statement";
 
-export type StatementBroker = "futu" | "tiger" | "china-merchants" | "tradingview";
+export type StatementBroker =
+  | "futu"
+  | "tiger"
+  | "china-merchants"
+  | "tradingview";
 
 export type StatementInput = {
   fileName: string;
@@ -24,8 +32,14 @@ export type ParsedInstrumentCandidate = {
   sourceAssetType?: "stock" | "etf" | "unknown";
 };
 
+export type TradingViewSimulationContext = {
+  market: "CN-SH" | "CN-SZ";
+  symbol: string;
+};
+
 export type ImportExclusion = {
   category:
+    | "market"
     | "fund"
     | "fx"
     | "bond"
@@ -48,6 +62,8 @@ export type StatementParseResult = {
   diagnostics: ImportDiagnostic[];
   blocked: boolean;
   monthly?: MonthlyStatement;
+  tradeNature?: TradeNature;
+  simulationRunId?: string;
 };
 
 export type BrokerStatementParser = {

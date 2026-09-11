@@ -374,14 +374,12 @@ describe("TradeReviewWorkspace", () => {
     const file=new File([csv],'回放交易_SSE_600330_2026-09-03.csv',{type:'text/csv'});
     Object.defineProperty(file,'arrayBuffer',{value:async()=>new TextEncoder().encode(csv).buffer});
     await user.upload(await screen.findByLabelText('导入 TradingView 模拟交易'),file);
-    expect(await screen.findByRole('dialog',{name:'核对模拟交易证券'})).toBeInTheDocument();
     expect(loadImportedExecutions()).toHaveLength(0);
-    await user.click(screen.getByRole('button',{name:'解析模拟交易'}));
     expect(await screen.findByRole('heading',{name:'确认导入交易记录'})).toBeInTheDocument();
-    expect(screen.getByText(/配对总手续费在出场时计入一次/)).toBeInTheDocument();
+    expect(screen.getByText(/文件只提供交易日期/)).toBeInTheDocument();
     await user.click(screen.getByRole('button',{name:'确认导入并开始更新行情'}));
     await waitFor(()=>expect(loadImportedExecutions()).toHaveLength(2));
-    expect(loadImportedExecutions()[0].source.tradingNature).toBe('simulated');
+    expect(loadImportedExecutions()[0].source.tradeNature).toBe('simulation');
     view.unmount();
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
     expect((await screen.findAllByText(/TradingView · 模拟盘/)).length).toBeGreaterThan(0);
@@ -509,7 +507,7 @@ describe("TradeReviewWorkspace", () => {
     );
     expect(loadImportHistory()).toEqual([
       expect.objectContaining({
-        sourceLabel: "招商证券",
+        sourceLabel: "A股招商银行",
         tradeCount: 1,
         instrumentCount: 1,
         unresolvedInstrumentCount: 1,
@@ -1407,14 +1405,11 @@ describe("TradeReviewWorkspace", () => {
       "等待突破",
     );
     expect(screen.getAllByText("已复盘").length).toBeGreaterThan(0);
+    await user.click(screen.getByText("补充分析 · 原始计划、风险与标签"));
     await user.clear(screen.getByLabelText("买入理由"));
     await user.type(screen.getByLabelText("买入理由"), "等待回踩");
-    await user.click(
-      screen.getByRole("button", { name: "保存当前回合复盘" }),
-    );
 
-    expect(await screen.findByText("已保存在本机")).toBeInTheDocument();
-    expect((await reviews.get(episode.id))?.plan.thesis).toBe("等待回踩");
+    await waitFor(async () => expect((await reviews.get(episode.id))?.plan.thesis).toBe("等待回踩"));
     expect(fetch).not.toHaveBeenCalled();
   });
 
@@ -1523,6 +1518,8 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
     await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
     await user.click(screen.getByRole("button", { name: "模式洞察" }));
+    await user.click(await screen.findByText("查看本范围的模式洞察"));
+    await user.click(await screen.findByText(/待确认规则建议（/));
 
     expect(
       await screen.findByRole("heading", { name: "待确认规则建议" }),
@@ -1541,6 +1538,8 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.getByText("目标回合买入一")).toBeInTheDocument();
     expect(screen.getByText("目标回合买入二")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "模式洞察" }));
+    await user.click(await screen.findByText("查看本范围的模式洞察"));
+    await user.click(await screen.findByText(/待确认规则建议（/));
     await user.selectOptions(
       screen.getByRole("combobox", {
         name: "调整“分批进入”建议标签",
@@ -1561,6 +1560,6 @@ describe("TradeReviewWorkspace", () => {
     );
 
     expect(await screen.findByText("暂无待确认建议")).toBeInTheDocument();
-    expect(fetch).not.toHaveBeenCalled();
+    expect(vi.mocked(fetch).mock.calls.every(([url]) => String(url).startsWith("/api/storage/review-summaries?"))).toBe(true);
   });
 });

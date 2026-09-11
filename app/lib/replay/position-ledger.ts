@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 
-import type { TradeExecution } from "../trades/types";
+import { tradeNatureOf, type TradeExecution } from "../trades/types";
 import type { MonthlyStatement, StatementPosition, StatementEvent } from "../import/monthly-statement";
 import { canonicalInstrumentId } from "../instruments/display-name";
 import { hasStatementMonthGap, isExecutionBackedIpoAllocation, replayCursorAt, replayExecutionAt, statementPositionAt, statementEventAt } from "../import/statement-evidence";
@@ -38,7 +38,7 @@ export function replayPositionAtPrice(input: {
   let grossCapitalDeployed = new Decimal(0);
   const reasons = new Set<string>();
   const matches = (item: StatementPosition | StatementEvent) => input.executions.some(e =>
-    e.accountId === item.accountId && item.symbol && item.market &&
+    tradeNatureOf(e) !== "simulation" && e.accountId === item.accountId && item.symbol && item.market &&
     canonicalInstrumentId(e.instrument.symbol, e.instrument.market) === canonicalInstrumentId(item.symbol, item.market));
   type Entry = { at: string; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent; pendingTransfer?: StatementEvent };
   const timeline: Entry[] = input.executions.map(execution => ({ at: replayExecutionAt(execution), execution }));
@@ -163,7 +163,10 @@ export function replayPositionAtPrice(input: {
     lastActivity = execution.source.tradingDate ?? execution.executedAt;
     hasHistory = true;
     const size = new Decimal(execution.quantity).abs();
-    const price = new Decimal(execution.price);
+    const settlement = execution.source.settlement;
+    const price = settlement && settlement.currency === execution.instrument.currency
+      ? new Decimal(settlement.grossAmount).div(settlement.quantity)
+      : new Decimal(execution.price);
     fees = fees.plus(execution.fee || 0);
 
     if (execution.side === "buy") {

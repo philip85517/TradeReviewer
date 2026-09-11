@@ -2,9 +2,14 @@ import Decimal from "decimal.js";
 import { simulationScope } from "./trading-nature";
 
 import { canonicalInstrumentId } from "../instruments/display-name";
-import type { TradeEpisode, TradeExecution } from "./types";
 import type { MonthlyStatement, StatementPosition, StatementEvent } from "../import/monthly-statement";
 import { hasStatementMonthGap, isExecutionBackedIpoAllocation, replayExecutionAt, replayCursorAt, statementPositionAt, statementEventAt } from "../import/statement-evidence";
+import {
+  tradeNatureOf,
+  tradeScopeKey,
+  type TradeEpisode,
+  type TradeExecution,
+} from "./types";
 
 type EpisodeAccumulator = {
   episode: TradeEpisode;
@@ -26,10 +31,10 @@ function sortByExecutionTime(a: TradeExecution, b: TradeExecution) {
 }
 
 function episodeKey(execution: TradeExecution) {
-  return `${simulationScope(execution) ? `${simulationScope(execution)}:` : ""}${execution.accountId}:${canonicalInstrumentId(
+  return `${execution.accountId}:${canonicalInstrumentId(
     execution.instrument.symbol,
     execution.instrument.market,
-  )}`;
+  )}${tradeNatureOf(execution) === "unknown" ? "" : `:${tradeScopeKey(execution)}`}`;
 }
 
 function signedQuantity(execution: TradeExecution) {
@@ -38,8 +43,15 @@ function signedQuantity(execution: TradeExecution) {
 }
 
 function stableOpeningKey(execution: TradeExecution) {
+  // Persisted legacy simulation reviews use a prefixed scope. Keep their
+  // identity while using the canonical scope for episode accumulation.
+  const legacySimulation = tradeNatureOf(execution) === "simulation" &&
+    (execution.source.tradingNature === "simulated" || execution.source.simulationRole !== undefined);
+  const openingScope = legacySimulation
+    ? `${simulationScope(execution)}:${execution.accountId}:${canonicalInstrumentId(execution.instrument.symbol, execution.instrument.market)}`
+    : episodeKey(execution);
   return JSON.stringify([
-    episodeKey(execution),
+    openingScope,
     execution.executedAt,
     execution.side,
     new Decimal(execution.quantity).abs().toString(),
@@ -66,6 +78,10 @@ function createEpisode(
       accountId: execution.accountId,
       accountLabel: execution.accountLabel,
       instrument: execution.instrument,
+      tradeNature: tradeNatureOf(execution),
+      ...(execution.source.simulationRunId
+        ? { simulationRunId: execution.source.simulationRunId }
+        : {}),
       direction,
       status: "open",
       startedAt: execution.executedAt,
@@ -106,8 +122,13 @@ export function buildTradeEpisodes(
     issues.set(key, reasons);
     if (episode) episode.accuracy = { pnl: "unavailable", reasons: [...new Set([...(episode.accuracy?.reasons ?? []), ...reasons])] };
   };
-  const evidenceKey = (item: StatementPosition | StatementEvent) =>
-    item.symbol && item.market ? `${item.accountId}:${canonicalInstrumentId(item.symbol, item.market)}` : undefined;
+  const evidenceKey = (item: StatementPosition | StatementEvent) => {
+    // Broker inventory is evidence for actual fills only, never a simulation run.
+    const template = executions.find(execution =>
+      tradeNatureOf(execution) !== "simulation" && execution.accountId === item.accountId &&
+      item.symbol && item.market && canonicalInstrumentId(execution.instrument.symbol, execution.instrument.market) === canonicalInstrumentId(item.symbol, item.market));
+    return template ? episodeKey(template) : undefined;
+  };
   type Entry = { at: string; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent };
   const timeline: Entry[] = executions.filter(e => !new Decimal(e.quantity).isZero()).map(execution => ({ at: replayExecutionAt(execution), execution }));
   const positions = [...new Map([...evidence.flatMap(e => e.positions), ...executions.flatMap(e => [...(e.source.statementPositions ?? []), ...(e.source.openingPosition ? [e.source.openingPosition] : [])])].map(p => [JSON.stringify([p.documentId, evidenceKey(p), p.phase, p.date, p.quantity]), p])).values()];

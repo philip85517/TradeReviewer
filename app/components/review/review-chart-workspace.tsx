@@ -1,7 +1,8 @@
 "use client";
 
 import { CalendarDays, CircleDollarSign } from "lucide-react";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
+import type { EpisodeNotesProps } from "./episode-notes-panel";
 
 import type {
   DrawingCommand,
@@ -43,6 +44,8 @@ import { ReviewSidePanel } from "./review-side-panel";
 
 export type ReviewChartViewModel = {
   source: "demo" | "imported";
+  tradeNature?: "live" | "simulation" | "unknown";
+  simulationRunId?: string;
   historyMode?: "history" | "replay";
   episodeId: string;
   instrument: Instrument;
@@ -51,6 +54,7 @@ export type ReviewChartViewModel = {
   cursor: string;
   candles: Candle[];
   executions: TradeExecution[];
+  focusedExecutions?: TradeExecution[];
   positionEvents?: StatementEvent[];
   position: PositionLedgerSnapshot;
   pathMetrics: PositionPathMetrics;
@@ -69,9 +73,12 @@ export type EpisodeOption = {
   startedAt: string;
   endedAt?: string;
   status: "open" | "closed";
+  contextLabel?: string;
 };
 
 type Props = {
+  onCompleteReview?: () => void;
+  reviewExtras?: Pick<EpisodeNotesProps, "ruleContent" | "suggestions">;
   model: ReviewChartViewModel;
   episodeOptions: EpisodeOption[];
   playing: boolean;
@@ -86,6 +93,7 @@ type Props = {
   visiblePlan?: EpisodePlan;
   activePanelTab: "stats" | "notes";
   drawerOpen: boolean;
+  onInspectData?: () => void;
   onEpisodeChange: (episodeId: string) => void;
   onTimeframeChange: (timeframe: Timeframe) => void;
   onSelectInstrument: (instrumentId: string) => void;
@@ -165,6 +173,7 @@ export function ReviewChartWorkspace({
   visiblePlan,
   activePanelTab,
   drawerOpen,
+  onInspectData,
   onEpisodeChange,
   onTimeframeChange,
   onSelectInstrument,
@@ -187,7 +196,13 @@ export function ReviewChartWorkspace({
   onActivePanelTabChange,
   onDrawerOpenChange,
   onSaveReview,
+  onCompleteReview,
+  reviewExtras,
 }: Props) {
+  const [overview, setOverview] = useState<{episodeId: string; showAll: boolean}>({episodeId:"",showAll:false});
+  const showAll = overview.episodeId === model.episodeId && overview.showAll;
+  const focusedEpisode = episodeOptions.find(episode => episode.id === model.episodeId);
+  const focusRange = !showAll && focusedEpisode ? {start:focusedEpisode.startedAt, end:focusedEpisode.endedAt} : undefined;
   const workspaceRef = useRef<HTMLElement>(null);
   const fullscreen = useFullscreen(workspaceRef);
   const knowledgeVisibleDrawings = useMemo(
@@ -234,6 +249,9 @@ export function ReviewChartWorkspace({
   const pnlAvailable = !model.position.accuracy;
   const quantityAvailable = model.position.quantityKnown !== false && !model.position.accuracy?.reasons.some(reason => ["ambiguous-opening", "ambiguous-event-order", "history-incomplete"].includes(reason));
   const instrumentLabel = `${model.instrument.name}（${model.instrument.symbol}）`;
+  const visibleSourceReport = [...model.executions]
+    .reverse()
+    .find((execution) => execution.source.sourceReport)?.source.sourceReport;
   const episodeStartedAt =
     episodeOptions.find((episode) => episode.id === model.episodeId)
       ?.startedAt ?? model.cursor;
@@ -248,7 +266,11 @@ export function ReviewChartWorkspace({
         <header className="review-chart-heading">
           <div>
             <span className="eyebrow">
-              {model.source === "demo" ? "演示回放" : "本地导入"}
+              {model.source === "demo"
+                ? "演示回放"
+                : model.tradeNature === "simulation"
+                  ? "TradingView · 模拟盘"
+                  : "本地导入"}
             </span>
             <h1>{instrumentLabel}</h1>
           </div>
@@ -261,12 +283,43 @@ export function ReviewChartWorkspace({
             >
               {episodeOptions.map((episode) => (
                 <option key={episode.id} value={episode.id}>
-                  {episode.label} · {episode.status === "closed" ? "已平仓" : "持仓中"}
+                  {episode.label} · {episode.contextLabel ?? (episode.status === "closed" ? "已平仓" : "持仓中")}
                 </option>
               ))}
             </select>
           </label>
+          {onInspectData && <button className="stock-data-entry" onClick={onInspectData}>检查/修复数据</button>}
         </header>
+
+        {model.tradeNature === "simulation" && (
+          <div className="tradingview-replay-notice" data-testid="tradingview-replay-notice">
+            <strong>模拟盘回放</strong>
+            <span>
+              成交日期按 TradingView 导出记录保留；游标回放只显示当前时点已知的行情与成交。
+            </span>
+            {model.simulationRunId && <small>运行 {model.simulationRunId}</small>}
+          </div>
+        )}
+
+        {visibleSourceReport && model.tradeNature === "simulation" && (
+          <div className="tradingview-source-report" data-testid="tradingview-source-report">
+            <div>
+              <span>TradingView 报告净盈亏</span>
+              <strong className={Number(visibleSourceReport.netPnl) >= 0 ? "positive" : "negative"}>
+                {money(visibleSourceReport.netPnl, model.instrument.currency)}
+              </strong>
+            </div>
+            <div>
+              <span>报告收益率</span>
+              <strong>{visibleSourceReport.returnPercent}%</strong>
+            </div>
+            <div>
+              <span>持仓 K 线</span>
+              <strong>{visibleSourceReport.durationBars}</strong>
+            </div>
+            <small>报告字段仅作来源对照，不并入本地成交账本的计算。</small>
+          </div>
+        )}
 
         <ChartToolbar
           timeframe={model.timeframe}
@@ -310,7 +363,8 @@ export function ReviewChartWorkspace({
                 <button type="button" aria-pressed={model.historyMode === "history"} onClick={() => onHistoryModeChange?.("history")}>完整历史</button>
                 <button type="button" aria-pressed={model.historyMode === "replay"} onClick={() => onHistoryModeChange?.("replay")}>逐根回放</button>
                 <span>已展示 {model.candles.length} 根 K 线{model.candles.length ? ` · ${model.candles[0].time.slice(0, 10)} 至 ${latestCandle!.time.slice(0, 10)}` : ""}</span>
-                <span>{model.historyMode === "history" ? "成交标记：当前交易范围；持仓统计：当前交易回合" : "成交标记与持仓统计：当前回放交易回合"}</span>
+                <button type="button" aria-pressed={!showAll} onClick={() => setOverview({episodeId:model.episodeId,showAll:!showAll})}>{showAll ? "聚焦本回合" : "展开全部行情"}</button>
+                <span>{model.historyMode === "history" ? "快速回顾 · 当前回合；需要重新判断时可进入逐根回放" : "决策训练 · 游标之后的数据已隐藏"}</span>
               </div>
             )}
             {missingMarketExecutions.length > 0 && (
@@ -319,6 +373,7 @@ export function ReviewChartWorkspace({
             {greyMarketExecutions.length > 0 && (
               <p className="unmatched-execution-notice" role="status">{greyMarketExecutions.length} 笔暗盘成交：暂无对应暗盘行情，不绘制到普通 K 线上；成交明细仍保留。</p>
             )}
+            {model.replayNotice && <div className="replay-context-notice" role="alert">{model.replayNotice}{onInspectData && <button type="button" onClick={onInspectData}>检查历史行情</button>}</div>}
             <div className="position-strip">
               <div className="position-primary">
                 <span className={`live-dot ${playing ? "playing" : ""}`} />
@@ -334,56 +389,25 @@ export function ReviewChartWorkspace({
                 </span>
               </div>
               <div className="position-stats">
-                <span>
-                  持仓 <b>{quantityAvailable ? model.position.quantity : "待核对"}</b>
-                </span>
-                <span>
-                  均价{" "}
-                  <b>{pnlAvailable ? Number(model.position.averageCost).toFixed(2) : "待补齐成本"}</b>
-                </span>
-                <span>
-                  浮动盈亏{" "}
-                  <b className={pnlPositive ? "positive" : "negative"}>
-                    {pnlAvailable ? money(
-                      model.position.unrealizedPnl,
-                      model.instrument.currency,
-                    ) : "—"}
-                  </b>
-                </span>
-                <span>
-                  已实现{" "}
-                  <b>
-                    {pnlAvailable ? money(
-                      model.position.realizedPnl,
-                      model.instrument.currency,
-                    ) : "—"}
-                  </b>
-                </span>
-                <span>
-                  净盈亏{" "}
-                  <b
-                    data-testid="net-pnl"
-                    className={pnlPositive ? "positive" : "negative"}
-                  >
-                    {pnlAvailable ? money(model.position.netPnl, model.instrument.currency) : "历史不完整"}
-                  </b>
-                </span>
-                <span>
-                  收益率{" "}
-                  <b className={pnlPositive ? "positive" : "negative"}>
-                    {pnlAvailable ? `${Number(model.position.returnPercent).toFixed(2)}%` : "—"}
-                  </b>
-                </span>
+                <span>持仓 <b>{quantityAvailable ? model.position.quantity : "待核对"}</b></span>
+                <span>均价 <b>{pnlAvailable ? Number(model.position.averageCost).toFixed(2) : "待补齐成本"}</b></span>
+                <span>净盈亏 <b data-testid="net-pnl" className={pnlPositive ? "positive" : "negative"}>{pnlAvailable ? money(model.position.netPnl, model.instrument.currency) : "历史不完整"}</b></span>
+                <details className="secondary-position-stats"><summary>更多指标</summary><div>
+                  <span>浮动盈亏 <b>{pnlAvailable ? money(model.position.unrealizedPnl, model.instrument.currency) : "—"}</b></span>
+                  <span>已实现 <b>{pnlAvailable ? money(model.position.realizedPnl, model.instrument.currency) : "—"}</b></span>
+                  <span>收益率 <b>{pnlAvailable ? `${Number(model.position.returnPercent).toFixed(2)}%` : "—"}</b></span>
+                </div></details>
               </div>
             </div>
 
             {!pnlAvailable && <p role="status">持仓历史、成本或费用尚未补齐，盈亏及成本线暂不展示。{model.position.accuracy?.reasons.includes("ambiguous-opening") ? "首笔卖出缺少期初持仓或明确卖空依据，持仓方向待核对。" : ""}</p>}
             <ReplayChart
               episodeId={model.episodeId}
-              viewportKey={JSON.stringify([model.instrument.id, model.episodeId, model.timeframe, model.historyMode,
+              focusRange={focusRange}
+              viewportKey={JSON.stringify([model.instrument.id, model.episodeId, model.timeframe, model.historyMode,showAll,
                 ...(model.historyMode === "history" ? [model.candles[0]?.time, latestCandle?.time, model.candles.length] : [])])}
               candles={model.candles}
-              executions={model.executions}
+              executions={model.historyMode === "history" && !showAll ? model.focusedExecutions ?? model.executions : model.executions}
               positionEvents={model.positionEvents}
               cursor={model.cursor}
               averageCost={Number(model.position.averageCost)}
@@ -423,11 +447,6 @@ export function ReviewChartWorkspace({
                 {model.replayError && (
                   <span className="replay-error" role="alert">
                     {model.replayError}
-                  </span>
-                )}
-                {model.replayNotice && (
-                  <span className="replay-notice" role="alert">
-                    {model.replayNotice}
                   </span>
                 )}
                 <CalendarDays size={14} />
@@ -497,9 +516,12 @@ export function ReviewChartWorkspace({
         instrumentId={model.instrument.id}
         knowledgeCursor={model.cursor}
         episodeStartedAt={episodeStartedAt}
+        replayComplete={episodeOptions.find((episode) => episode.id === model.episodeId)?.status === "closed" && model.candles.length > 0 && !model.canGoForward && !model.canGoToNextExecution}
         activeTab={activePanelTab}
         onActiveTabChange={onActivePanelTabChange}
         onSaveReview={onSaveReview}
+        onComplete={onCompleteReview}
+        reviewExtras={reviewExtras}
         drawerOpen={drawerOpen}
         onDrawerOpenChange={onDrawerOpenChange}
       />

@@ -1,6 +1,6 @@
 import { render, waitFor, cleanup } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-import { ReplayChart } from "./replay-chart";
+import { buildReplayChartMarkers, ReplayChart } from "./replay-chart";
 import type { ComponentProps } from "react";
 
 const engine = vi.hoisted(() => ({ data: [] as { time: number }[], visible: [] as number[], range: { from: 0, to: 0 } }));
@@ -18,6 +18,29 @@ vi.mock("lightweight-charts", () => ({
   }),
 }));
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+
+it("only builds finite markers that point at valid chart candles", () => {
+  const candle = (time: string) => ({ time, open: 1, high: 2, low: 1, close: 2, volume: 10 });
+  const execution = {
+    id: "fill-1",
+    source: { platform: "futu", row: 1, displayTimePolicy: "execution-time" as const },
+    accountId: "account",
+    accountLabel: "富途",
+    instrument: { id: "US:TEST", symbol: "TEST", name: "Test", market: "US", currency: "USD" },
+    side: "buy" as const,
+    executedAt: "2025-01-02T14:30:00.000Z",
+    quantity: "1",
+    price: "1",
+    fee: "0",
+  };
+
+  expect(buildReplayChartMarkers(
+    [candle("2025-01-02T00:00:00.000Z"), candle("not-a-date")],
+    [execution],
+  )).toEqual([
+    expect.objectContaining({ time: 1735776000 }),
+  ]);
+});
 
 it("refits the rendered range after changing stock/period, but keeps zoom on ordinary rerenders", async () => {
   vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });

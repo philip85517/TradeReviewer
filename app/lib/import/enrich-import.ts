@@ -168,10 +168,16 @@ function applyMetadata(
   execution: TradeExecution,
   metadata: ResolvedInstrument | { name: string },
 ): TradeExecution {
+  const symbol = canonicalInstrumentSymbol(
+    execution.instrument.symbol,
+    execution.instrument.market,
+  );
   return {
     ...execution,
     instrument: {
       ...execution.instrument,
+      id: canonicalInstrumentId(symbol, execution.instrument.market),
+      symbol,
       name: metadata.name,
     },
   };

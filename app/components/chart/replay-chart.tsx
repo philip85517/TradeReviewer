@@ -53,7 +53,107 @@ type CrosshairCandle = Pick<
 >;
 
 function chartTime(time: string) {
-  return Math.floor(new Date(time).getTime() / 1000) as Time;
+  const milliseconds = Date.parse(time);
+  return Number.isFinite(milliseconds)
+    ? Math.floor(milliseconds / 1000) as Time
+    : null;
+}
+
+type ChartCandleData = {
+  time: Time;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+};
+
+type ReplayChartMarker = {
+  time: Time;
+  position: "belowBar" | "aboveBar";
+  color: string;
+  shape: "arrowUp" | "arrowDown";
+  text: string;
+};
+
+function validCandles(candles: readonly Candle[]): Candle[] {
+  return candles
+    .filter((candle) => {
+      const time = chartTime(candle.time);
+      return time !== null &&
+        [candle.open, candle.high, candle.low, candle.close, candle.volume].every(Number.isFinite);
+    })
+    .sort((left, right) => Number(chartTime(left.time)) - Number(chartTime(right.time)))
+    .filter((candle, index, sorted) =>
+      index === 0 || chartTime(candle.time) !== chartTime(sorted[index - 1].time),
+    );
+}
+
+function chartCandleData(candles: readonly Candle[]): ChartCandleData[] {
+  return validCandles(candles).flatMap((candle) => {
+    const time = chartTime(candle.time);
+    if (time === null) return [];
+    return [{
+      time,
+      open: candle.open,
+      high: candle.high,
+      low: candle.low,
+      close: candle.close,
+      volume: candle.volume,
+    }];
+  });
+}
+
+export function buildReplayChartMarkers(
+  candles: readonly Candle[],
+  executions: readonly TradeExecution[],
+  positionEvents: readonly StatementEvent[] = [],
+): ReplayChartMarker[] {
+  const validChartCandles = validCandles(candles);
+  const validChartTimes = new Set(
+    validChartCandles.flatMap((candle) => {
+      const time = chartTime(candle.time);
+      return time === null ? [] : [time];
+    }),
+  );
+  const markers = [
+    ...executions.map((execution): ReplayChartMarker | null => {
+      const candleTime = displayTimeForCandle(validChartCandles, {
+        at: execution.executedAt,
+        policy: execution.source.displayTimePolicy,
+        calendarDate: execution.source.marketCalendarDate ?? execution.source.tradingDate,
+      });
+      const time = candleTime ? chartTime(candleTime) : null;
+      if (time === null || !validChartTimes.has(time)) return null;
+      return {
+        time,
+        position: execution.side === "buy" ? "belowBar" : "aboveBar",
+        color: execution.side === "buy" ? "#26a69a" : "#ef5350",
+        shape: execution.side === "buy" ? "arrowUp" : "arrowDown",
+        text: `${execution.side === "buy" ? "买" : "卖"} ${execution.quantity}${execution.source.venue ? ` · ${execution.source.venue}` : ""}`,
+      };
+    }),
+    ...[...new Map(positionEvents.map((event) => [event.id, event])).values()]
+      .filter((event) => event.kind === "ipo" && event.quantity && event.displayTimePolicy === "session-open")
+      .map((event): ReplayChartMarker | null => {
+        const candleTime = displayTimeForCandle(validChartCandles, {
+          at: event.date,
+          policy: event.displayTimePolicy,
+        });
+        const time = candleTime ? chartTime(candleTime) : null;
+        if (time === null || !validChartTimes.has(time)) return null;
+        return {
+          time,
+          position: "belowBar",
+          color: "#a78bfa",
+          shape: "arrowUp",
+          text: `配售 ${event.quantity}`,
+        };
+      }),
+  ];
+  return markers
+    .filter((marker): marker is ReplayChartMarker => marker !== null)
+    .sort((left, right) => Number(left.time) - Number(right.time));
 }
 
 function chartTimeLabel(time: Time) {
@@ -98,10 +198,12 @@ export function ReplayChart({
 
   const coordinateAdapter = useMemo<ChartCoordinateAdapter>(
     () => ({
-      timeToX: (time) =>
-        chartRef.current
-          ?.timeScale()
-          .timeToCoordinate(chartTime(time)) ?? null,
+      timeToX: (time) => {
+        const timestamp = chartTime(time);
+        return timestamp === null
+          ? null
+          : chartRef.current?.timeScale().timeToCoordinate(timestamp) ?? null;
+      },
       priceToY: (price) =>
         seriesRef.current?.priceToCoordinate(price) ?? null,
       xToTime: (x) => {
@@ -135,7 +237,13 @@ export function ReplayChart({
       }) => {
         if (disposed) return;
         const chart = createChart(container, {
-          autoSize: true,
+          // The chart is sized by the observer below. Mixing autoSize with
+          // explicit width/height updates leaves a zero-height price scale
+          // during an update, which makes marker hit-testing throw when the
+          // series is refreshed.
+          autoSize: false,
+          width: Math.max(1, container.clientWidth),
+          height: Math.max(1, container.clientHeight),
           layout: {
             background: { type: ColorType.Solid, color: "#101722" },
             textColor: "#8392a7",
@@ -231,8 +339,8 @@ export function ReplayChart({
 
         observer = new ResizeObserver(() => {
           chart.applyOptions({
-            width: container.clientWidth,
-            height: container.clientHeight,
+            width: Math.max(1, container.clientWidth),
+            height: Math.max(1, container.clientHeight),
           });
           setCoordinateVersion((version) => version + 1);
         });
@@ -264,18 +372,18 @@ export function ReplayChart({
     const volumeSeries = volumeSeriesRef.current;
     if (!chartReady || !candleSeries || !volumeSeries) return;
 
-    candleSeries.setData(
-      candles.map((candle) => ({
-        time: chartTime(candle.time),
-        open: candle.open,
-        high: candle.high,
-        low: candle.low,
-        close: candle.close,
-      })),
-    );
+    const validCandleData = chartCandleData(candles);
+    // Clear markers before replacing the series data. lightweight-charts can
+    // render a hit-test frame between these two mutations; stale markers may
+    // then point at a bar that no longer exists and throw from its renderer.
+    const markerPlugin = markerPluginRef.current as {
+      setMarkers: (nextMarkers: readonly ReplayChartMarker[]) => void;
+    } | null;
+    markerPlugin?.setMarkers([]);
+    candleSeries.setData(validCandleData);
     volumeSeries.setData(
-      candles.map((candle) => ({
-        time: chartTime(candle.time),
+      validCandleData.map((candle) => ({
+        time: candle.time,
         value: candle.volume,
         color:
           candle.close >= candle.open
@@ -285,70 +393,32 @@ export function ReplayChart({
     );
 
     const markers = settings.showExecutions
-      ? [
-          ...executions.map((execution) => {
-            const candleTime = displayTimeForCandle(candles, {
-              at: execution.executedAt,
-              policy: execution.source.displayTimePolicy,
-              calendarDate: execution.source.marketCalendarDate ?? execution.source.tradingDate,
-            });
-            if (!candleTime) return null;
-            return {
-              time: chartTime(candleTime),
-              position:
-                execution.side === "buy"
-                  ? ("belowBar" as const)
-                  : ("aboveBar" as const),
-              color: execution.side === "buy" ? "#26a69a" : "#ef5350",
-              shape:
-                execution.side === "buy"
-                  ? ("arrowUp" as const)
-                  : ("arrowDown" as const),
-              text: `${execution.side === "buy" ? "买" : "卖"} ${execution.quantity}${execution.source.venue ? ` · ${execution.source.venue}` : ""}`,
-            };
-          }),
-          ...[...new Map(positionEvents.map(event => [event.id, event])).values()]
-            .filter((event) => event.kind === "ipo" && event.quantity && event.displayTimePolicy === "session-open")
-            .map((event) => {
-              const candleTime = displayTimeForCandle(candles, {
-                at: event.date,
-                policy: event.displayTimePolicy,
-              });
-              if (!candleTime) return null;
-              return {
-                time: chartTime(candleTime),
-                position: "belowBar" as const,
-                color: "#a78bfa",
-                shape: "arrowUp" as const,
-                text: `配售 ${event.quantity}`,
-              };
-            }),
-        ]
-          .filter((marker) => marker !== null)
-          .sort((a, b) => Number(a.time) - Number(b.time))
+      ? buildReplayChartMarkers(candles, executions, positionEvents)
       : [];
-    (
-      markerPluginRef.current as {
-        setMarkers: (nextMarkers: typeof markers) => void;
-      }
-    )?.setMarkers(markers);
+    // Defer installing markers until the series has completed its data
+    // mutation. This also protects the transient empty-data frame while a
+    // market-data request replaces the current instrument's candles.
+    const markerTimer = window.setTimeout(() => {
+      markerPlugin?.setMarkers(markers);
+    }, 0);
 
     costLineRef.current?.applyOptions({
-      price: averageCost > 0 ? averageCost : candles.at(-1)?.close ?? 0,
+      price: averageCost > 0 ? averageCost : validCandleData.at(-1)?.close ?? 0,
       axisLabelVisible: settings.showAverageCost && averageCost > 0,
     });
-    if (fittedRef.current !== viewportKey && candles.length > 0) {
+    if (fittedRef.current !== viewportKey && validCandleData.length > 0) {
       chartRef.current?.timeScale().fitContent();
       // Leave room for arrows/text on the first and last bars as well.
-      const padding = Math.max(3, Math.ceil(candles.length * 0.04));
+      const padding = Math.max(3, Math.ceil(validCandleData.length * 0.04));
       chartRef.current?.timeScale().setVisibleLogicalRange({
         from: -padding,
-        to: candles.length - 1 + padding,
+        to: validCandleData.length - 1 + padding,
       });
       fittedRef.current = viewportKey;
       setCrosshair(null);
     }
     setCoordinateVersion((version) => version + 1);
+    return () => window.clearTimeout(markerTimer);
   }, [
     averageCost,
     candles,

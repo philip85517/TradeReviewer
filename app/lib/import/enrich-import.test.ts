@@ -196,6 +196,41 @@ describe("enrichStatementImport", () => {
     ).toBe(true);
   });
 
+  it("normalizes broker-padded Hong Kong symbols on every enriched execution", async () => {
+    const parsed: StatementParseResult = {
+      broker: "futu",
+      records: [execution("HK", "06969", undefined, "padded-hk-fill")],
+      candidates: [
+        { market: "HK", symbol: "06969", sourceAssetType: "unknown" },
+      ],
+      exclusions: [],
+      diagnostics: [],
+      blocked: false,
+    };
+
+    const result = await enrichStatementImport(parsed, {
+      resolver: vi.fn(async () =>
+        resolution([
+          {
+            market: "HK",
+            symbol: "6969",
+            name: "思摩尔国际",
+            assetType: "stock",
+            source: "hkex",
+            confidence: "official",
+            resolvedAt,
+          },
+        ]),
+      ),
+    });
+
+    expect(result.importable[0]?.instrument).toMatchObject({
+      id: "HK:6969",
+      symbol: "6969",
+      name: "思摩尔国际",
+    });
+  });
+
   it("returns the complete import after a targeted unresolved retry succeeds", async () => {
     const parsed: StatementParseResult = {
       broker: "tiger",

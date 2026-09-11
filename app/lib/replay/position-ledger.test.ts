@@ -58,6 +58,64 @@ describe("replayPositionAtPrice", () => {
     expect(replayPositionAtPrice({ executions: [sale], markPrice: "11" })).toMatchObject({ quantity: "60", costKnown: false, accuracy: { pnl: "unavailable", reasons: expect.arrayContaining(["unknown-cost"]) }, realizedPnl: "0", netPnl: "0" });
   });
 
+  it("uses a dated IPO allotment as known-cost inventory before a later sale", () => {
+    const sale = fill("sell", "2025-06-24T05:20:12.000Z", "500", "24", "0");
+    sale.source.positionEvents = [{
+      id: "ipo-allotment",
+      accountId: "account-1",
+      market: "US",
+      symbol: "TEST",
+      date: "2025-06-19",
+      kind: "ipo",
+      quantity: "500",
+      amount: "11265",
+      displayTimePolicy: "session-open",
+      description: "IPO allotment",
+      source: [],
+    }];
+
+    expect(
+      replayPositionAtPrice({
+        executions: [sale],
+        markPrice: "24",
+      }),
+    ).toMatchObject({
+      quantity: "0",
+      averageCost: "0",
+      realizedPnl: "735",
+      netPnl: "735",
+      grossCapitalDeployed: "11265",
+    });
+  });
+
+  it("does not add an IPO evidence row twice when the allotment is also a buy fill", () => {
+    const buy = fill("buy", "2025-06-10T01:00:00.000Z", "100", "10", "0");
+    const sale = fill("sell", "2025-06-12T01:00:00.000Z", "100", "12", "0");
+    const allotment = {
+      id: "ipo-allotment",
+      accountId: "account-1",
+      market: "US" as const,
+      symbol: "TEST",
+      date: "2025-06",
+      kind: "ipo" as const,
+      quantity: "100",
+      amount: "1000",
+      displayTimePolicy: "session-open" as const,
+      description: "IPO allotment repeated in the asset table",
+      source: [],
+    };
+    buy.source.grossAmount = "1000";
+    buy.source.positionEvents = [allotment];
+    sale.source.positionEvents = [allotment];
+
+    expect(replayPositionAtPrice({ executions: [buy, sale], markPrice: "12" })).toMatchObject({
+      quantity: "0",
+      averageCost: "0",
+      realizedPnl: "200",
+      netPnl: "200",
+    });
+  });
+
   it("deduplicates source transfers and reconciles later opening snapshots", () => {
     const first = fill("sell", "2025-01-03T14:30:00Z", "1", "12", "0");
     const second = fill("sell", "2025-02-03T14:30:00Z", "1", "12", "0");

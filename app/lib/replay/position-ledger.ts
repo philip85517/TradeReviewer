@@ -3,7 +3,7 @@ import Decimal from "decimal.js";
 import type { TradeExecution } from "../trades/types";
 import type { MonthlyStatement, StatementPosition, StatementEvent } from "../import/monthly-statement";
 import { canonicalInstrumentId } from "../instruments/display-name";
-import { hasStatementMonthGap, replayCursorAt, replayExecutionAt, statementPositionAt, statementEventAt } from "../import/statement-evidence";
+import { hasStatementMonthGap, isExecutionBackedIpoAllocation, replayCursorAt, replayExecutionAt, statementPositionAt, statementEventAt } from "../import/statement-evidence";
 
 export type PositionLedgerSnapshot = {
   /** With unavailable accuracy, numeric PnL/cost fields are compatibility placeholders. */
@@ -90,7 +90,19 @@ export function replayPositionAtPrice(input: {
     }
     if (entry.event) {
       const event = entry.event;
-      reasons.add("position-event");
+      if (isExecutionBackedIpoAllocation(event, input.executions)) continue;
+      const isIpoAllocation = event.kind === "ipo" && event.quantity !== undefined;
+      const sameDayExecution = event.date.length === 10 && input.executions.some(e =>
+        e.accountId === event.accountId &&
+        canonicalInstrumentId(e.instrument.symbol, e.instrument.market) === canonicalInstrumentId(event.symbol ?? "", event.market ?? "") &&
+        (e.source.tradingDate ?? e.source.marketCalendarDate ?? e.executedAt.slice(0, 10)) === event.date,
+      );
+      const sameMonthExecution = event.date.length === 7 && input.executions.some(e =>
+        e.accountId === event.accountId &&
+        canonicalInstrumentId(e.instrument.symbol, e.instrument.market) === canonicalInstrumentId(event.symbol ?? "", event.market ?? "") &&
+        (e.source.tradingDate ?? e.source.marketCalendarDate ?? e.executedAt.slice(0, 10)).startsWith(event.date),
+      );
+      if ((sameDayExecution || sameMonthExecution) && isIpoAllocation) reasons.add("ambiguous-event-order");
       if (event.kind === "transfer-in" || event.kind === "transfer-out") {
         const sameDay = event.date.length === 10 && input.executions.some(e => e.accountId === event.accountId && e.instrument.symbol === event.symbol && (e.source.tradingDate ?? e.source.marketCalendarDate ?? e.executedAt.slice(0, 10)) === event.date);
         pendingTransfers.delete(`${event.accountId}:${event.id}`);
@@ -103,6 +115,37 @@ export function replayPositionAtPrice(input: {
         quantity = quantity.plus(new Decimal(event.quantity).abs().times(event.kind === "transfer-in" ? 1 : -1));
         averageCost = new Decimal(0);
         reasons.add("unknown-cost");
+      } else if (isIpoAllocation) {
+        const size = new Decimal(event.quantity!).abs();
+        let allocationCost: Decimal | undefined;
+        if (event.amount !== undefined) {
+          try {
+            const amount = new Decimal(event.amount).abs();
+            if (amount.isFinite() && amount.gte(0) && size.gt(0)) allocationCost = amount.div(size);
+          } catch {
+            allocationCost = undefined;
+          }
+        }
+        if (!allocationCost) reasons.add("unknown-cost");
+        if (quantity.gte(0)) {
+          const newQuantity = quantity.plus(size);
+          if (allocationCost) {
+            averageCost = newQuantity.isZero()
+              ? new Decimal(0)
+              : averageCost.mul(quantity).plus(allocationCost.mul(size)).div(newQuantity);
+            grossCapitalDeployed = grossCapitalDeployed.plus(allocationCost.mul(size));
+          }
+          quantity = newQuantity;
+        } else {
+          const covered = Decimal.min(quantity.abs(), size);
+          if (allocationCost) realizedPnl = realizedPnl.plus(averageCost.minus(allocationCost).mul(covered));
+          quantity = quantity.plus(size);
+          if (quantity.isPositive() && allocationCost) {
+            averageCost = allocationCost;
+            grossCapitalDeployed = grossCapitalDeployed.plus(allocationCost.mul(quantity));
+          }
+          if (quantity.isZero()) averageCost = new Decimal(0);
+        }
       }
       hasHistory = true;
       continue;

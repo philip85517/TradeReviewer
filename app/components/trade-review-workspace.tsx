@@ -32,6 +32,7 @@ import type { TradingViewInstrument } from "../lib/import/tradingview";
 import { parseBrokerStatement } from "../lib/import/dispatcher";
 import { applyMonthlyHistoryEvidence } from "../lib/import/statement-evidence";
 import { belongsToMonthlyDocument } from "../lib/import/statement-identity";
+import { assessMonthlyReimport } from "../lib/import/monthly-reimport";
 import type { StatementTimeOptions } from "../lib/import/monthly-statement";
 import { MonthlyStatementReview } from "./import/monthly-statement-review";
 import {
@@ -2179,6 +2180,7 @@ function isAbortError(error: unknown) {
       duplicateTradeCount: number;
       conflictTradeCount: number;
     },
+    options?: { allowIncompleteMonthlyReimport?: boolean },
   ) {
     const basePreview = createImportPreview(
       fileName,
@@ -2193,8 +2195,22 @@ function isAbortError(error: unknown) {
         : undefined,
     );
     if (screenshotMetadata) return basePreview;
-    const incompleteReplacement = Boolean(enriched.monthly && (enriched.unresolved.length > 0 || enriched.exclusions.some(exclusion => exclusion.category === "invalid-row")) && currentExecutionSnapshot().some(execution => belongsToMonthlyDocument(execution, enriched.monthly!)));
-    const current = currentExecutionSnapshot().filter(execution => !enriched.monthly || !belongsToMonthlyDocument(execution, enriched.monthly));
+    const incompleteReplacement = Boolean(
+      enriched.monthly &&
+        !options?.allowIncompleteMonthlyReimport &&
+        (enriched.unresolved.length > 0 ||
+          enriched.exclusions.some(
+            (exclusion) => exclusion.category === "invalid-row",
+          )) &&
+        currentExecutionSnapshot().some((execution) =>
+          belongsToMonthlyDocument(execution, enriched.monthly!),
+        ),
+    );
+    const current = currentExecutionSnapshot().filter(
+      (execution) =>
+        !enriched.monthly ||
+        !belongsToMonthlyDocument(execution, enriched.monthly),
+    );
     const merged = mergeExecutions(current, enriched.importable);
     const retainedIncomingCount = Math.max(
       0,
@@ -2298,15 +2314,34 @@ function isAbortError(error: unknown) {
     setMonthlyConflictDecisions(new Map());
     setPendingParsedImport(parsed);
     setImportPhase("resolving");
-    const enriched = await enrichStatementImport(parsed, { repository: metadataRepository });
+    const rawEnriched = await enrichStatementImport(parsed, { repository: metadataRepository });
     if (requestId !== importRequestSequence.current) return;
     if (parsed.monthly) {
       const current = currentExecutionSnapshot();
+      const reimport = assessMonthlyReimport(
+        current,
+        parsed.records,
+        rawEnriched,
+        parsed.monthly,
+      );
       setPendingImportOriginalExecutions(current);
-      setPendingImportMergeBase(current.filter(e => !belongsToMonthlyDocument(e, parsed.monthly!)));
+      setPendingImportMergeBase(
+        reimport.idempotent
+          ? current
+          : current.filter((e) => !belongsToMonthlyDocument(e, parsed.monthly!)),
+      );
+      setPendingEnrichedImport(reimport.enriched);
+      setPendingImport(
+        previewForImport(file.name, reimport.enriched, undefined, {
+          allowIncompleteMonthlyReimport: reimport.idempotent,
+        }),
+      );
+      setImportPhase("ready");
+      return;
     }
-    setPendingEnrichedImport(enriched);
-    setPendingImport(previewForImport(file.name, enriched));
+    setPendingImportMergeBase(null);
+    setPendingEnrichedImport(rawEnriched);
+    setPendingImport(previewForImport(file.name, rawEnriched));
     setImportPhase("ready");
   }
 
@@ -2480,20 +2515,31 @@ function isAbortError(error: unknown) {
     const currentExecutions =
       pendingImportOriginalExecutions ?? currentExecutionSnapshot();
     const mergeBase = pendingImport.monthly
-      ? currentExecutionSnapshot().filter(e => !belongsToMonthlyDocument(e, pendingImport.monthly!))
+      ? pendingImportMergeBase ??
+        currentExecutionSnapshot().filter(
+          (e) => !belongsToMonthlyDocument(e, pendingImport.monthly!),
+        )
       : pendingImportMergeBase ?? currentExecutions;
+    const importBatchId = pendingImport.id;
+    const recordsForStorage = pendingImport.records.map((execution) => ({
+      ...execution,
+      source: {
+        ...execution.source,
+        batchId: importBatchId,
+      },
+    }));
     const previousSummaries = new Map(
       buildInstrumentTradeSummaries(currentExecutions).map((item) => [
         item.instrument.id,
         item,
       ]),
     );
-    const reconciliation = pendingImport.monthly ? reconcileExecutions(mergeBase, pendingImport.records) : null;
+    const reconciliation = pendingImport.monthly ? reconcileExecutions(mergeBase, recordsForStorage) : null;
     if (reconciliation?.conflicts.some(c => !monthlyConflictDecisions.has(c.id))) return;
     const resolvedMonthly = reconciliation ? applyReconciliationDecisions(mergeBase, reconciliation, monthlyConflictDecisions) : null;
     const mergedExecutions = applyMonthlyHistoryEvidence(mergeExecutions(
       resolvedMonthly?.currentAfterReplacements ?? mergeBase,
-      resolvedMonthly?.incomingToMerge ?? pendingImport.records,
+      resolvedMonthly?.incomingToMerge ?? recordsForStorage,
     ), [
       ...importHistory.filter(entry => entry.monthly?.documentId !== pendingImport.monthly?.documentId)
         .flatMap(entry => entry.monthly ? [entry.monthly] : []),

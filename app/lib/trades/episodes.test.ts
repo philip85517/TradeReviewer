@@ -87,6 +87,59 @@ describe("buildTradeEpisodes", () => {
     expect(episode.executions[0].source.positionEvents).toContainEqual(expect.objectContaining({ id: "ipo", kind: "ipo" }));
   });
 
+  it("opens a long episode from a dated IPO allotment before its first sale", () => {
+    const sale = execution("sell", "2025-06-24T05:20:12.000Z", "500", "24");
+    sale.source.statementMonth = "2025-06";
+    sale.source.positionEvents = [{
+      id: "ipo-allotment",
+      accountId: "acct-1",
+      market: "US",
+      symbol: "XPEV",
+      date: "2025-06-19",
+      kind: "ipo",
+      quantity: "500",
+      amount: "11265",
+      displayTimePolicy: "session-open",
+      description: "IPO allotment",
+      source: [],
+    }];
+
+    expect(buildTradeEpisodes([sale])[0]).toMatchObject({
+      direction: "long",
+      status: "closed",
+      openingQuantity: "500",
+      remainingQuantity: "0",
+    });
+    expect(buildTradeEpisodes([sale])[0].accuracy?.reasons).not.toContain(
+      "ambiguous-opening",
+    );
+  });
+
+  it("keeps an IPO allotment evidence row from duplicating its matching buy fill", () => {
+    const buy = execution("buy", "2025-06-10T01:00:00.000Z", "100", "10");
+    const sale = execution("sell", "2025-06-12T01:00:00.000Z", "100", "12");
+    const allotment = {
+      id: "ipo-allotment",
+      accountId: "acct-1",
+      market: "US" as const,
+      symbol: "XPEV",
+      date: "2025-06",
+      kind: "ipo" as const,
+      quantity: "100",
+      amount: "1000",
+      displayTimePolicy: "session-open" as const,
+      description: "IPO allotment repeated in the asset table",
+      source: [],
+    };
+    buy.source.grossAmount = "1000";
+    buy.source.positionEvents = [allotment];
+    sale.source.positionEvents = [allotment];
+
+    expect(buildTradeEpisodes([buy, sale])).toMatchObject([
+      { status: "closed", openingQuantity: "100", remainingQuantity: "0" },
+    ]);
+  });
+
   it("reconciles repeated monthly snapshots without adding inventory twice", () => {
     const first = execution("sell", "2025-01-09T14:30:00Z", "40", "12");
     const second = execution("sell", "2025-02-09T14:30:00Z", "60", "12");

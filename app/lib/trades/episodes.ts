@@ -3,7 +3,7 @@ import { simulationScope } from "./trading-nature";
 
 import { canonicalInstrumentId } from "../instruments/display-name";
 import type { MonthlyStatement, StatementPosition, StatementEvent } from "../import/monthly-statement";
-import { hasStatementMonthGap, replayExecutionAt, replayCursorAt, statementPositionAt, statementEventAt } from "../import/statement-evidence";
+import { hasStatementMonthGap, isExecutionBackedIpoAllocation, replayExecutionAt, replayCursorAt, statementPositionAt, statementEventAt } from "../import/statement-evidence";
 import {
   tradeNatureOf,
   tradeScopeKey,
@@ -179,7 +179,9 @@ export function buildTradeEpisodes(
         if (existing && next.eq(existing.position)) continue; // Snapshots are boundaries, never additions.
       } else {
         const event = entry.event!;
-        if (event.kind !== "transfer-in" && event.kind !== "transfer-out") {
+        if (isExecutionBackedIpoAllocation(event, executions)) continue;
+        const isIpoAllocation = event.kind === "ipo" && event.quantity !== undefined;
+        if (event.kind !== "transfer-in" && event.kind !== "transfer-out" && !isIpoAllocation) {
           if (existing) {
             (existing.episode.positionEvents ??= []).push(event);
             flag(key, "position-event", existing.episode);
@@ -188,16 +190,21 @@ export function buildTradeEpisodes(
             if (!pending.some(item => item.id === event.id)) pending.push(event);
             pendingEvents.set(key, pending);
           }
-          continue; // IPO/distribution evidence never creates another fill or inventory lot.
+          continue; // Non-inventory evidence never creates another fill or inventory lot.
         }
-        const ambiguous = event.date.length === 10 && executions.some(e => episodeKey(e) === key && (e.source.tradingDate ?? e.source.marketCalendarDate ?? e.executedAt.slice(0, 10)) === event.date);
+        const ambiguous = (event.date.length === 10
+          && executions.some(e => episodeKey(e) === key && (e.source.tradingDate ?? e.source.marketCalendarDate ?? e.executedAt.slice(0, 10)) === event.date))
+          || (event.date.length === 7
+            && executions.some(e => episodeKey(e) === key && (e.source.tradingDate ?? e.source.marketCalendarDate ?? e.executedAt.slice(0, 10)).startsWith(event.date)));
         if (ambiguous) flag(key, "ambiguous-event-order", existing?.episode);
         if (event.quantity === undefined) {
           flag(key, "position-event", existing?.episode);
           continue;
         }
-        next = next.plus(new Decimal(event.quantity).abs().times(event.kind === "transfer-in" ? 1 : -1));
-        flag(key, "position-event", existing?.episode);
+        const isAddition = event.kind === "transfer-in" || isIpoAllocation;
+        next = next.plus(new Decimal(event.quantity).abs().times(isAddition ? 1 : -1));
+        const knownIpoCost = isIpoAllocation && event.amount !== undefined;
+        if (!knownIpoCost) flag(key, "position-event", existing?.episode);
       }
       if (existing && (next.isZero() || next.isPositive() !== existing.position.isPositive())) {
         existing.episode.status = "closed";
@@ -225,7 +232,10 @@ export function buildTradeEpisodes(
       target.position = next;
       target.episode.openingQuantity = target.openingQuantity.toString();
       target.episode.remainingQuantity = next.abs().toString();
-      flag(key, "unknown-cost", target.episode);
+      const eventHasKnownCost = entry.event?.kind === "ipo"
+        && entry.event.quantity !== undefined
+        && entry.event.amount !== undefined;
+      if (!eventHasKnownCost) flag(key, "unknown-cost", target.episode);
       continue;
     }
     const execution = entry.execution;

@@ -2,6 +2,8 @@ import type { StatementParseResult } from "./contracts";
 import type { MonthlyStatement, StatementEvent, StatementPosition } from "./monthly-statement";
 import type { PdfTextItem, PdfTextPage } from "./pdf-text";
 import type { TradeExecution } from "../trades/types";
+import Decimal from "decimal.js";
+import { canonicalInstrumentId } from "../instruments/display-name";
 
 type Row = { y: number; items: PdfTextItem[]; number: number; text: string };
 const compact = (text: string) => text.replace(/\s+/g, "");
@@ -276,7 +278,47 @@ export function statementPositionAt(position: StatementPosition): string {
 }
 
 export function statementEventAt(event: StatementEvent): string {
+  if (event.kind === "ipo" && event.quantity !== undefined && event.displayTimePolicy === "session-open") {
+    return event.date.length === 7
+      ? `${event.date}-01T00:00:00.000Z`
+      : `${event.date}T00:00:00.000Z`;
+  }
   return event.date.length === 7
     ? new Date(Date.UTC(Number(event.date.slice(0, 4)), Number(event.date.slice(5)), 0, 23, 59, 59, 999)).toISOString()
     : replayCursorAt(event.date);
+}
+
+function sameMonthOrDate(event: StatementEvent, execution: TradeExecution): boolean {
+  const executionDate = execution.source.tradingDate ?? execution.source.marketCalendarDate ?? execution.executedAt.slice(0, 10);
+  return event.date.length === 7
+    ? executionDate.startsWith(event.date)
+    : executionDate === event.date;
+}
+
+function closeEnough(left: string, right: string): boolean {
+  try {
+    return new Decimal(left).minus(right).abs().lte("0.01");
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Some broker statements repeat an IPO allotment in both the asset-event table
+ * and the ordinary buy blotter. Keep the event for evidence/chart markers, but
+ * do not count it as a second inventory addition when the reported amount and
+ * quantity identify the same buy.
+ */
+export function isExecutionBackedIpoAllocation(
+  event: StatementEvent,
+  executions: readonly TradeExecution[],
+): boolean {
+  if (event.kind !== "ipo" || event.quantity === undefined || event.amount === undefined || !event.symbol || !event.market) return false;
+  return executions.some((execution) => {
+    if (execution.side !== "buy" || execution.accountId !== event.accountId || !sameMonthOrDate(event, execution)) return false;
+    if (canonicalInstrumentId(execution.instrument.symbol, execution.instrument.market) !== canonicalInstrumentId(event.symbol!, event.market!)) return false;
+    if (!closeEnough(execution.quantity, event.quantity!)) return false;
+    const gross = execution.source.grossAmount ?? new Decimal(execution.quantity).mul(execution.price).toString();
+    return closeEnough(gross, new Decimal(event.amount!).abs().toString());
+  });
 }

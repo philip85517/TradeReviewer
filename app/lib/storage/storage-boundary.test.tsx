@@ -233,7 +233,15 @@ describe("SQLite production storage boundary", () => {
     await waitFor(() => {
       expect(client.mergeExecutions).toHaveBeenCalledWith(
         expect.objectContaining({
-          executions: [importedExecution],
+          executions: [
+            expect.objectContaining({
+              ...importedExecution,
+              source: expect.objectContaining({
+                ...importedExecution.source,
+                batchId: expect.any(String),
+              }),
+            }),
+          ],
           importHistory: [expect.objectContaining({ fileName: "boundary.pdf" })],
         }),
       );

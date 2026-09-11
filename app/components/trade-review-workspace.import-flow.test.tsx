@@ -273,6 +273,63 @@ describe("TradeReviewWorkspace", () => {
     expect(loadImportedExecutions()).toEqual([existing]);
   });
 
+  it("allows an idempotent same-file retry when unresolved rows are already stored", async () => {
+    const user = userEvent.setup();
+    const existing: TradeExecution = {
+      ...cmsExecution,
+      id: "same-file-fill",
+      instrument: {
+        id: "US:ACB",
+        symbol: "ACB",
+        name: "名称待行情源补充",
+        market: "US",
+        currency: "USD",
+      },
+      source: {
+        ...cmsExecution.source,
+        platform: "futu",
+        fileFingerprint: "same-file",
+        fileName: "2020-12.pdf",
+        statementMonth: "2020-12",
+      },
+    };
+    const monthly = {
+      documentId: "futu:same-file",
+      month: "2020-12",
+      templateIds: ["F4"],
+      positions: [],
+      events: [],
+      reviewRequired: false,
+    };
+    const parsed = {
+      ...cmsParsedResult,
+      broker: "futu" as const,
+      records: [existing],
+      candidates: [{ market: "US" as const, symbol: "ACB", sourceAssetType: "unknown" as const }],
+      monthly,
+    };
+    mockDispatcher.mockResolvedValue(parsed);
+    mockEnrichment.mockResolvedValue({
+      broker: "futu",
+      monthly,
+      importable: [],
+      unresolved: [{ market: "US", symbol: "ACB", attempts: [] }],
+      exclusions: [{ category: "unknown-asset", label: "无法确认属于股票或 ETF", count: 1, instrumentSymbol: "ACB" }],
+      diagnostics: [],
+      cacheHits: 0,
+    });
+    saveImportedExecutions([existing]);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await user.upload(await screen.findByLabelText("导入交易记录"), new File(["pdf"], "2020-12.pdf", { type: "application/pdf" }));
+    await user.click(await screen.findByRole("button", { name: "继续核对并导入" }));
+    const confirm = await screen.findByRole("button", { name: "确认导入并开始更新行情" });
+    expect(confirm).toBeEnabled();
+    await user.click(confirm);
+    await waitFor(() => expect(loadImportedExecutions()).toHaveLength(1));
+    expect(loadImportedExecutions()[0]).toMatchObject({ id: existing.id, instrument: existing.instrument });
+  });
+
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
@@ -355,6 +412,38 @@ describe("TradeReviewWorkspace", () => {
         ([input]) => !String(input).includes("招商证券.pdf"),
       ),
     ).toBe(true);
+  });
+
+  it("links statement executions to the import batch persisted with the history entry", async () => {
+    const user = userEvent.setup();
+    const client = createLegacySqliteClient();
+    const mergeExecutions = vi.spyOn(client, "mergeExecutions");
+    mockSqliteClient.current = client;
+    mockDispatcher.mockResolvedValue(cmsParsedResult);
+    mockEnrichment.mockResolvedValue(cmsEnrichedResult);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await user.upload(
+      await screen.findByLabelText("导入交易记录"),
+      new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], "招商证券.pdf", {
+        type: "application/pdf",
+      }),
+    );
+    await user.click(
+      await screen.findByRole("button", {
+        name: "确认导入并开始更新行情",
+      }),
+    );
+
+    await waitFor(() => expect(mergeExecutions).toHaveBeenCalledOnce());
+    const input = mergeExecutions.mock.calls[0][0];
+    expect(input.importHistory?.[0]?.id).toBe("import:cms-fixture");
+    expect(input.executions).toEqual([
+      expect.objectContaining({
+        id: "cms:fixture:7",
+        source: expect.objectContaining({ batchId: "import:cms-fixture" }),
+      }),
+    ]);
   });
 
   it("persists only complete records and starts cache-first gap sync for the imported instrument", async () => {

@@ -84,6 +84,30 @@ describe("replayPositionAtPrice", () => {
     buy.source.feeStatus = "unknown";
     expect(replayPositionAtPrice({ executions: [buy], markPrice: "11" })).toMatchObject({ accuracy: { pnl: "unavailable", reasons: ["unknown-fees"] }, netPnl: "0" });
   });
+  it("blocks mixed quote and settlement currencies from producing PnL", () => {
+    const buy = fill("buy", "2025-01-03T14:30:00Z", "2", "10", "1", {
+      instrument: fixtureInstrument,
+    });
+    buy.source.settlement = {
+      currency: "CNY",
+      quantity: "2",
+      grossAmount: "20",
+      netAmount: "-21",
+      fees: { commission: "1" },
+    };
+
+    expect(replayPositionAtPrice({ executions: [buy], markPrice: "11" })).toMatchObject({
+      accuracy: {
+        pnl: "unavailable",
+        reasons: expect.arrayContaining(["settlement-currency-mismatch"]),
+      },
+      quantity: "2",
+      realizedPnl: "0",
+      unrealizedPnl: "0",
+      netPnl: "0",
+      fees: "1",
+    });
+  });
   it("uses initial inventory and returns unavailable accuracy rather than false zero-cost profit", () => {
     const sale = fill("sell", "2025-01-03T14:30:00Z", "40", "12", "1");
     sale.source.openingPosition = { accountId: "fixture-account", market: "US", symbol: "TEST", phase: "opening", date: "2025-01-01", quantity: "100", source: [] };

@@ -356,6 +356,21 @@ describe("ReviewChartWorkspace", () => {
     expect(document.querySelector(".position-stats")).not.toHaveTextContent("-100");
     expect(screen.getAllByText("费用 待核对").length).toBeGreaterThan(0);
     expect(screen.queryByText("费用 HK$0.00")).not.toBeInTheDocument();
+    const cnySettlement = {
+      currency: "CNY",
+      quantity: "100",
+      grossAmount: "3450",
+      netAmount: "-3458",
+      fees: { commission: "8" },
+    };
+    rerender(<ReviewChartWorkspace {...props} model={{
+      ...model,
+      executions: [{ ...model.executions[0], source: { ...model.executions[0].source, settlement: cnySettlement } }],
+      position: { ...model.position, fees: "8", accuracy: { pnl: "unavailable", reasons: ["settlement-currency-mismatch"] } },
+    }} />);
+    expect(screen.getAllByText("费用 ¥8.00").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("币种待换算").length).toBeGreaterThan(0);
+    expect(screen.getByText(/报价币种与结算币种不同/)).toBeInTheDocument();
     const grey = { ...model.executions[0], source: { ...model.executions[0].source, tradingSession: "grey-market" as const } };
     rerender(<ReviewChartWorkspace {...props} model={{ ...model, executions: [grey] }} />);
     expect(screen.getByText("暗盘成交，暂无对应暗盘行情")).toBeVisible();

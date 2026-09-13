@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { StatementParseResult } from "../../lib/import/contracts";
 import type { StatementTimeOptions } from "../../lib/import/monthly-statement";
+import { executionFeeCurrency } from "../../lib/trades/types";
 import { useModalFocus } from "./use-modal-focus";
 
 type Props = {
@@ -36,7 +37,7 @@ export function MonthlyStatementReview({ fileName, parsed, busy, onReparse, onCo
       <button className="secondary-button" disabled={busy} onClick={() => { setAcknowledged(false); onReparse(zone ? { sourceTimezone: zone, overrideDocumentTimezone: true } : {}); }}>按所选时间口径重新解析</button>
     </section>
     <details className="import-category-panel"><summary>核对逐笔成交与来源（{parsed.records.length}）</summary>
-      <div style={{ overflowX: "auto", maxHeight: 320 }}><table><thead><tr><th>证券 / 市场</th><th>原时间与语义</th><th>标准化时间</th><th>方向 / 数量 / 价格</th><th>费用</th><th>来源页</th></tr></thead><tbody>{parsed.records.map(r => <tr key={r.id}><td>{r.instrument.symbol} / {r.instrument.market}</td><td>{r.source.sourceTimestampText} · {r.source.sourceTimeKind === "order" ? "下单时间；仅日期级" : r.source.timePrecision === "date-only" ? "仅日期" : "成交时间"} · {r.source.sourceTimezone}{r.source.timeEvidence === "inferred" ? ` · 推断 ${Math.round((r.source.timeConfidence ?? 0) * 100)}%` : ""}</td><td>{r.executedAt}</td><td>{r.side === "buy" ? "买入" : "卖出"} / {r.quantity} / {r.price}</td><td>{r.source.feeStatus === "unknown" ? "未知" : r.fee}</td><td>{r.source.fragments?.map(f => f.page).filter((p, i, all) => all.indexOf(p) === i).join(", ") ?? r.source.page}</td></tr>)}</tbody></table></div>
+      <div style={{ overflowX: "auto", maxHeight: 320 }}><table><thead><tr><th>证券 / 市场</th><th>原时间与语义</th><th>标准化时间</th><th>方向 / 数量 / 价格</th><th>费用</th><th>来源页</th></tr></thead><tbody>{parsed.records.map(r => <tr key={r.id}><td>{r.instrument.symbol} / {r.instrument.market}</td><td>{r.source.sourceTimestampText} · {r.source.sourceTimeKind === "order" ? "下单时间；仅日期级" : r.source.timePrecision === "date-only" ? "仅日期" : "成交时间"} · {r.source.sourceTimezone}{r.source.timeEvidence === "inferred" ? ` · 推断 ${Math.round((r.source.timeConfidence ?? 0) * 100)}%` : ""}</td><td>{r.executedAt}</td><td>{r.side === "buy" ? "买入" : "卖出"} / {r.quantity} / {r.price}</td><td>{r.source.feeStatus === "unknown" ? "未知" : `${r.fee} ${executionFeeCurrency(r)}`}</td><td>{r.source.fragments?.map(f => f.page).filter((p, i, all) => all.indexOf(p) === i).join(", ") ?? r.source.page}</td></tr>)}</tbody></table></div>
     </details>
     <details className="import-category-panel"><summary>持仓与辅助流水证据</summary><ul>{monthly?.positions.map((p, i) => <li key={`p${i}`}>{p.date} {p.phase === "opening" ? "期初" : "期末"} {p.market}:{p.symbol} {p.quantity} 股 · {p.cost ? `原件成本 ${p.cost}` : "历史成本未知"}</li>)}{monthly?.events.map(e => <li key={e.id}>{e.date} {e.symbol} {e.kind} · {e.description}</li>)}</ul></details>
     {needsAcknowledgement && <label><input type="checkbox" checked={acknowledged} onChange={e => setAcknowledged(e.target.checked)} />我已核对上述警告和数据范围；未知成本及日期精度限制将保留</label>}

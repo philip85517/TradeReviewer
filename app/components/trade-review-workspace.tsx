@@ -112,7 +112,10 @@ import {
   type Candle,
   type Timeframe,
 } from "../lib/market/types";
-import { createImportedReplay } from "../lib/replay/imported-replay";
+import {
+  createImportedReplay,
+  latestImportedHistoryCursor,
+} from "../lib/replay/imported-replay";
 import { formatBeijingDate } from "../lib/replay/format-time";
 import { calculatePositionPathMetrics } from "../lib/replay/position-path-metrics";
 import { intradayReplayRestriction } from "../lib/replay/replay-precision";
@@ -1105,8 +1108,11 @@ function isAbortError(error: unknown) {
   );
   const activeCursor = selectedImportedInstrument
     ? historyMode === "history"
-      ? [effectiveImportedCursor, ...importedTimelineCandles.map(candleKnowledgeAt),
-          ...(selectedEpisode?.executions.map(execution => execution.executedAt) ?? [])].sort().at(-1)!
+      ? latestImportedHistoryCursor(
+          effectiveImportedCursor,
+          importedTimelineCandles,
+          selectedEpisode?.executions ?? [],
+        )
       : effectiveImportedCursor
     : frame.cursor;
   const importedVisibleSource = useMemo(

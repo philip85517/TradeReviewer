@@ -28,6 +28,33 @@ describe("monthly statement review", () => {
     expect(screen.getByText("2020/01/27 11:30:42 · 成交时间 · America/New_York · 推断 93%" )).toBeInTheDocument();
   });
 
+  it("labels a settlement fee with its settlement currency", () => {
+    const parsed = {
+      ...result(),
+      diagnostics: [],
+      records: [{
+        id: "hk-fill-1",
+        accountId: "acct-hk",
+        accountLabel: "港股通账户",
+        instrument: { id: "HK:1810", symbol: "1810", name: "小米集团-W", market: "HK", currency: "HKD" },
+        side: "buy" as const,
+        executedAt: "2025-03-18T07:00:00Z",
+        quantity: "2",
+        price: "54",
+        fee: "8",
+        source: {
+          platform: "china-merchants",
+          row: 1,
+          feeStatus: "reported" as const,
+          settlement: { currency: "CNY", quantity: "2", grossAmount: "108", netAmount: "-116", fees: { commission: "8" } },
+        },
+      }],
+      monthly: { ...result().monthly!, reviewRequired: false },
+    };
+    render(<MonthlyStatementReview fileName="hk-connect.pdf" parsed={parsed} onReparse={vi.fn()} onContinue={vi.fn()} onCancel={vi.fn()} />);
+    expect(screen.getByText("8 CNY")).toBeInTheDocument();
+  });
+
   it("requires explicit warning acknowledgement and preserves a user timezone selection", () => {
     const reparse = vi.fn(); const next = vi.fn();
     render(<MonthlyStatementReview fileName="2025-06.pdf" parsed={result()} onReparse={reparse} onContinue={next} onCancel={vi.fn()} />);

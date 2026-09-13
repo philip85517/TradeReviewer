@@ -84,7 +84,6 @@ describe("A-share statement column layouts", () => {
   });
   it("excludes overseas trades, bonds, non-ETF funds and unclassified securities", () => {
     const cases = [
-      ["沪港通", "00700", "腾讯控股"],
       ["上海", "113001", "转债"],
       ["深圳", "160001", "LOF基金"],
       ["上海", "999999", "未知证券"],
@@ -110,9 +109,9 @@ describe("A-share statement column layouts", () => {
     ]);
     const result = parseChinaMerchantsPages(columnStatement({ rows }), options);
     expect(result.records).toEqual([]);
-    expect(result.exclusions.reduce((sum, x) => sum + x.count, 0)).toBe(4);
+    expect(result.exclusions.reduce((sum, x) => sum + x.count, 0)).toBe(3);
     expect(result.exclusions.map((x) => x.category)).toEqual(
-      expect.arrayContaining(["market", "bond", "fund", "unknown-asset"]),
+      expect.arrayContaining(["bond", "fund", "unknown-asset"]),
     );
   });
   it("blocks missing asset account instead of grouping by a security subaccount", () => {
@@ -146,6 +145,103 @@ describe("A-share statement column layouts", () => {
     const reconciled = reconcileExecutions(first, changed);
     expect(reconciled.duplicates).toHaveLength(1);
     expect(reconciled.conflicts).toHaveLength(1);
+  });
+
+  it("imports HK Connect quotes in HKD while preserving CNY settlement evidence", () => {
+    const rows = [[
+      "20250318",
+      "沪港通",
+      "人民币",
+      "农业银行",
+      "A000000001",
+      "01810",
+      "小米集团－Ｗ",
+      "证券买入",
+      "600.00",
+      "54.0000",
+      "30202.63",
+      "90.61",
+      "30.76",
+      "4.43",
+      "-30328.43",
+      "145791.34",
+      "600.00",
+    ]];
+    const result = parseChinaMerchantsPages(columnStatement({ rows }), options);
+
+    expect(result.records).toHaveLength(1);
+    expect(result.records[0]).toMatchObject({
+      side: "buy",
+      quantity: "600",
+      price: "54",
+      fee: "125.8",
+      instrument: {
+        id: "HK:1810",
+        symbol: "1810",
+        market: "HK",
+        currency: "HKD",
+      },
+      source: {
+        feeStatus: "reported",
+        settlement: {
+          currency: "CNY",
+          quantity: "600",
+          grossAmount: "30202.63",
+          netAmount: "-30328.43",
+          fees: {
+            commission: "90.61",
+            stampDuty: "30.76",
+            otherFee: "4.43",
+          },
+        },
+      },
+    });
+    expect(result.candidates).toEqual([
+      {
+        market: "HK",
+        symbol: "1810",
+        sourceName: "小米集团－Ｗ",
+        sourceAssetType: "stock",
+      },
+    ]);
+  });
+
+  it("deduplicates HK rows by account and stable statement fingerprint", () => {
+    const rows = [[
+      "20250318",
+      "沪港通",
+      "人民币",
+      "测试银行",
+      "A000000001",
+      "01810",
+      "小米集团－Ｗ",
+      "证券买入",
+      "2",
+      "54",
+      "108",
+      "1",
+      "0",
+      "0",
+      "-109",
+      "1000",
+      "2",
+    ]];
+    const first = parseChinaMerchantsPages(columnStatement({ rows }), {
+      ...options,
+      fileFingerprint: "hk-first",
+    }).records;
+    const repeat = parseChinaMerchantsPages(columnStatement({ rows }), {
+      ...options,
+      fileFingerprint: "hk-repeat",
+    }).records;
+    const otherAccount = parseChinaMerchantsPages(
+      columnStatement({ rows, account: "0000000002" }),
+      { ...options, fileFingerprint: "hk-other-account" },
+    ).records;
+
+    expect(reconcileExecutions(first, repeat).duplicates).toHaveLength(1);
+    expect(otherAccount[0]?.accountId).not.toBe(first[0]?.accountId);
+    expect(reconcileExecutions(first, otherAccount).acceptedIncoming).toHaveLength(1);
   });
 
   it("recognizes exchange ETF codes even when the abbreviated name contains 基金", () => {

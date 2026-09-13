@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import type { Candle } from "../market/types";
 import type { TradeExecution } from "../trades/types";
-import { createImportedReplay } from "./imported-replay";
+import {
+  createImportedReplay,
+  latestImportedHistoryCursor,
+} from "./imported-replay";
+import { createReplaySnapshot } from "./replay-engine";
 
 function candle(time: string): Candle {
   return { time, open: 10, high: 11, low: 9, close: 10, volume: 100 };
@@ -149,5 +153,41 @@ describe("createImportedReplay", () => {
         (bar) => bar.knowledgeAt <= replay.currentCursor,
       ),
     ).toEqual([]);
+  });
+
+  it("uses day-end knowledge for date-only executions in complete history", () => {
+    const sale = fill("2025-09-24T15:00:00.000Z");
+    sale.side = "sell";
+    sale.source.timePrecision = "date-only";
+    sale.source.sourceTimestampText = "20250924";
+    sale.source.tradingDate = "2025-09-24";
+
+    expect(latestImportedHistoryCursor("2025-09-01T00:00:00.000Z", [], [sale]))
+      .toBe("2025-09-24T23:59:59.999Z");
+  });
+
+  it("reveals a final date-only sale at the complete-history cursor", () => {
+    const buy = fill("2025-09-15T15:00:00.000Z");
+    buy.source.timePrecision = "date-only";
+    buy.source.sourceTimestampText = "20250915";
+    buy.source.tradingDate = "2025-09-15";
+    const sale = fill("2025-09-24T15:00:00.000Z");
+    sale.side = "sell";
+    sale.source.timePrecision = "date-only";
+    sale.source.sourceTimestampText = "20250924";
+    sale.source.tradingDate = "2025-09-24";
+    const cursor = latestImportedHistoryCursor(
+      "2025-09-01T00:00:00.000Z",
+      [candle("2025-09-01T15:00:00.000Z")],
+      [buy, sale],
+    );
+    const snapshot = createReplaySnapshot({
+      candles: [candle("2025-09-01T15:00:00.000Z")],
+      executions: [buy, sale],
+      cursor,
+    });
+
+    expect(snapshot.executions).toHaveLength(2);
+    expect(snapshot.position.quantity).toBe("0");
   });
 });

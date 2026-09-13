@@ -8,6 +8,13 @@ export type InstrumentLookup = {
   symbol: string;
 };
 
+export type LocalizedInstrumentName = {
+  name: string;
+  locale: "zh-CN";
+  source: string;
+  resolvedAt: string;
+};
+
 export type InstrumentAssetType = "stock" | "etf";
 export type InstrumentMetadataSource =
   | "statement"
@@ -24,6 +31,7 @@ export type InstrumentMetadataConfidence =
 
 export type ResolvedInstrument = InstrumentLookup & {
   name: string;
+  localizedName?: LocalizedInstrumentName;
   assetType: InstrumentAssetType;
   source: InstrumentMetadataSource;
   confidence: InstrumentMetadataConfidence;
@@ -68,6 +76,41 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
+const HAN_CHARACTER = /\p{Script=Han}/u;
+const CONTROL_CHARACTER = /[\u0000-\u001f\u007f]/u;
+const MARKUP_CHARACTER = /[<>]/u;
+
+export function validateLocalizedInstrumentName(
+  value: unknown,
+): LocalizedInstrumentName {
+  if (!isRecord(value)) invalidResolvedInstrument();
+  const name = typeof value.name === "string" ? value.name.trim() : "";
+  const source = typeof value.source === "string" ? value.source.trim() : "";
+  const resolvedAt =
+    typeof value.resolvedAt === "string" ? value.resolvedAt.trim() : "";
+  if (
+    value.locale !== "zh-CN" ||
+    !name ||
+    !HAN_CHARACTER.test(name) ||
+    CONTROL_CHARACTER.test(name) ||
+    MARKUP_CHARACTER.test(name) ||
+    name.length > 200 ||
+    !source ||
+    CONTROL_CHARACTER.test(source) ||
+    source.length > 100 ||
+    !resolvedAt ||
+    !Number.isFinite(Date.parse(resolvedAt))
+  ) {
+    invalidResolvedInstrument();
+  }
+  return {
+    name,
+    locale: "zh-CN",
+    source,
+    resolvedAt: new Date(resolvedAt).toISOString(),
+  };
+}
+
 export function validateResolvedInstrument(
   value: unknown,
   lookup: InstrumentLookup,
@@ -92,6 +135,11 @@ export function validateResolvedInstrument(
     invalidResolvedInstrument();
   }
 
+  const localizedName =
+    value.localizedName === undefined
+      ? undefined
+      : validateLocalizedInstrumentName(value.localizedName);
+
   if (
     !ASSET_TYPES.has(value.assetType as InstrumentAssetType) ||
     !SOURCES.has(value.source as InstrumentMetadataSource) ||
@@ -105,6 +153,7 @@ export function validateResolvedInstrument(
     market: normalizedMarket,
     symbol: normalizedSymbol,
     name,
+    ...(localizedName ? { localizedName } : {}),
     assetType: value.assetType as InstrumentAssetType,
     source: value.source as InstrumentMetadataSource,
     confidence: value.confidence as InstrumentMetadataConfidence,

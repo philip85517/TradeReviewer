@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type {
   InstrumentLookup,
@@ -35,6 +35,10 @@ function provider(
 }
 
 describe("instrument metadata router", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("uses the market-specific fallback order and returns the first success", async () => {
     const calls: string[] = [];
     const failingNasdaq = provider("nasdaq", async () => {
@@ -57,7 +61,15 @@ describe("instrument metadata router", () => {
       US: [failingNasdaq, successfulTencent, unusedSec],
     });
 
-    await expect(router.resolve(LOOKUP)).resolves.toEqual(RESOLVED);
+    await expect(router.resolve(LOOKUP)).resolves.toEqual({
+      ...RESOLVED,
+      localizedName: {
+        name: RESOLVED.name,
+        locale: "zh-CN",
+        source: RESOLVED.source,
+        resolvedAt: RESOLVED.resolvedAt,
+      },
+    });
     expect(calls).toEqual(["nasdaq", "tencent"]);
   });
 
@@ -71,6 +83,143 @@ describe("instrument metadata router", () => {
     await router.resolve(LOOKUP);
 
     expect(resolve).toHaveBeenCalledWith(LOOKUP, fetcher);
+  });
+
+  it("adds a verified Tencent Chinese name without replacing the primary metadata", async () => {
+    const primary = provider("nasdaq", async () => ({
+      ...LOOKUP,
+      name: "NVIDIA Corporation",
+      assetType: "stock",
+      source: "nasdaq",
+      confidence: "official",
+      resolvedAt: "2026-07-29T00:00:00.000Z",
+    }));
+    const localized = provider("tencent", async () => ({
+      ...LOOKUP,
+      name: "英伟达",
+      assetType: "stock",
+      source: "tencent",
+      confidence: "portal",
+      resolvedAt: "2026-07-29T00:01:00.000Z",
+    }));
+
+    await expect(
+      createMetadataRouter(fetch, Date.now, { US: [primary, localized] }).resolve(LOOKUP),
+    ).resolves.toMatchObject({
+      name: "NVIDIA Corporation",
+      localizedName: {
+        name: "英伟达",
+        locale: "zh-CN",
+        source: "tencent",
+        resolvedAt: "2026-07-29T00:01:00.000Z",
+      },
+    });
+  });
+
+  it("derives an overlay when Tencent is the successful Hong Kong fallback", async () => {
+    const lookup: InstrumentLookup = { market: "HK", symbol: "700" };
+    const primary = provider("hkex", async () => {
+      throw new InstrumentMetadataProviderError("no-data", "HKEX 无数据");
+    });
+    const localized = provider("tencent", async () => ({
+      ...lookup,
+      name: "腾讯控股",
+      assetType: "stock",
+      source: "tencent",
+      confidence: "portal",
+      resolvedAt: "2026-07-29T00:01:00.000Z",
+    }));
+
+    await expect(
+      createMetadataRouter(fetch, Date.now, { HK: [primary, localized] }).resolve(
+        lookup,
+      ),
+    ).resolves.toMatchObject({
+      name: "腾讯控股",
+      localizedName: {
+        name: "腾讯控股",
+        locale: "zh-CN",
+        source: "tencent",
+      },
+    });
+  });
+
+  it("keeps valid primary metadata when Chinese lookup fails", async () => {
+    const primary = provider("nasdaq", async () => ({
+      ...LOOKUP,
+      name: "NVIDIA Corporation",
+      assetType: "stock",
+      source: "nasdaq",
+      confidence: "official",
+      resolvedAt: "2026-07-29T00:00:00.000Z",
+    }));
+    const localized = provider("tencent", async () => {
+      throw new InstrumentMetadataProviderError("source-timeout", "timeout");
+    });
+
+    await expect(
+      createMetadataRouter(fetch, Date.now, { US: [primary, localized] }).resolve(LOOKUP),
+    ).resolves.toEqual({
+      ...LOOKUP,
+      name: "NVIDIA Corporation",
+      assetType: "stock",
+      source: "nasdaq",
+      confidence: "official",
+      resolvedAt: "2026-07-29T00:00:00.000Z",
+    });
+  });
+
+  it("keeps a valid primary when the optional Chinese provider aborts the shared request", async () => {
+    const primary = provider("nasdaq", async () => ({
+      ...LOOKUP,
+      name: "NVIDIA Corporation",
+      assetType: "stock",
+      source: "nasdaq",
+      confidence: "official",
+      resolvedAt: "2026-07-29T00:00:00.000Z",
+    }));
+    const localized = provider("tencent", async () => {
+      throw new InstrumentMetadataProviderError(
+        "source-timeout",
+        "optional lookup aborted",
+      );
+    });
+    const controller = new AbortController();
+    const originalResolve = localized.resolve;
+    localized.resolve = async (...args) => {
+      controller.abort(new Error("optional lookup aborted"));
+      return originalResolve(...args);
+    };
+
+    await expect(
+      createMetadataRouter(fetch, Date.now, { US: [primary, localized] }).resolve(
+        LOOKUP,
+        controller.signal,
+      ),
+    ).resolves.toMatchObject({ name: "NVIDIA Corporation" });
+  });
+
+  it("returns the valid primary before a hanging optional Chinese lookup reaches the route deadline", async () => {
+    vi.useFakeTimers();
+    const primary = provider("nasdaq", async () => ({
+      ...LOOKUP,
+      name: "NVIDIA Corporation",
+      assetType: "stock",
+      source: "nasdaq",
+      confidence: "official",
+      resolvedAt: "2026-07-29T00:00:00.000Z",
+    }));
+    const localized = provider("tencent", async () => new Promise<never>(() => {}));
+    const pending = createMetadataRouter(fetch, Date.now, {
+      US: [primary, localized],
+    }).resolve(LOOKUP);
+
+    await vi.advanceTimersByTimeAsync(2_100);
+
+    await expect(pending).resolves.toMatchObject({
+      name: "NVIDIA Corporation",
+      source: "nasdaq",
+    });
   });
 
   it("treats a provider result that violates the contract as an invalid response", async () => {

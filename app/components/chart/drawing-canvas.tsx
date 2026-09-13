@@ -278,7 +278,7 @@ export function DrawingCanvas({
 
   function emitReplace(drawing: NormalizedDrawing) {
     const normalizedDrawing =
-      withCanonicalRiskRewardGeometry(drawing);
+      withCanonicalRiskRewardGeometry({ ...drawing, createdAtCursor: cursor });
     const message = validationMessage(normalizedDrawing);
     if (message) {
       setValidationError(message);

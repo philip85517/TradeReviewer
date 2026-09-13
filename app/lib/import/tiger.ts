@@ -54,6 +54,7 @@ type HeaderField =
   | "assetType"
   | "direction"
   | "quantity"
+  | "multiplier"
   | "price"
   | "amount"
   | "interest"
@@ -108,6 +109,22 @@ type PrintedFeeTotal = {
   value?: string;
 };
 
+type PositionEffect = NonNullable<TradeExecution["source"]["positionEffect"]>;
+
+type TigerPositionEffectEvidence = {
+  kind: "explicit" | "inferred";
+  confidence: "high" | "medium";
+  reason: string;
+  sourceLabel?: string;
+  realizedPnl?: string;
+  fragments?: Array<{ page: number; row: number; role?: string }>;
+};
+
+type TigerTradeSource = TradeExecution["source"] & {
+  positionEffectEvidence?: TigerPositionEffectEvidence;
+  statementRealizedPnl?: string;
+};
+
 const HEADER_ALIASES: Record<HeaderField, readonly string[]> = {
   code: ["代碼", "证券代码", "股票代码", "代码"],
   name: ["证券名称", "股票名称", "名称"],
@@ -116,6 +133,7 @@ const HEADER_ALIASES: Record<HeaderField, readonly string[]> = {
   assetType: ["證券類型", "证券类型", "产品类型", "资产类型"],
   direction: ["交易類型", "交易类型", "买卖方向", "方向", "买卖"],
   quantity: ["數量", "成交数量", "数量"],
+  multiplier: ["乘数", "乘數"],
   price: ["交易價格", "交易价格", "成交價格", "成交价格", "价格"],
   amount: ["成交額", "成交额"],
   interest: ["成交應計利息", "成交应计利息"],
@@ -718,6 +736,272 @@ function sideFor(
   return null;
 }
 
+function positionEffectForLabel(
+  labelValue: string | undefined,
+  signedQuantity?: Decimal,
+): PositionEffect | undefined {
+  const label = compact(labelValue);
+  if (label.includes("开仓做空") || label.includes("開倉做空")) return "open-short";
+  if (label.includes("平仓空头") || label.includes("平倉空頭")) return "close-short";
+  if (label.includes("开仓做多") || label.includes("開倉做多")) return "open-long";
+  if (label.includes("平仓多头") || label.includes("平倉多頭")) return "close-long";
+  if (label === "平仓" || label === "平倉") {
+    if (signedQuantity?.isPositive()) return "close-short";
+    if (signedQuantity?.isNegative()) return "close-long";
+  }
+  return undefined;
+}
+
+function explicitPositionEffectEvidence(
+  labelValue: string | undefined,
+  signedQuantity?: Decimal,
+): TigerPositionEffectEvidence | undefined {
+  const effect = positionEffectForLabel(labelValue, signedQuantity);
+  if (!effect) return undefined;
+  const sourceLabel = labelValue?.trim();
+  return {
+    kind: "explicit",
+    confidence: "high",
+    sourceLabel,
+    reason:
+      sourceLabel === "平仓" || sourceLabel === "平倉"
+        ? `原件交易类型明确标记为${sourceLabel}，按原始数量符号识别为${effect}`
+        : `原件交易类型明确标记为${sourceLabel ?? effect}`,
+  };
+}
+
+function positionColumns(row: PdfTextRow): HeaderColumn[] | null {
+  const columns = row.items.flatMap((item) => {
+    const field = fieldForHeader(item.text);
+    return field ? [{ field, x: item.x + item.width / 2 }] : [];
+  });
+  const fields = new Set(columns.map((column) => column.field));
+  return fields.has("code") && fields.has("quantity")
+    ? columns.sort((left, right) => left.x - right.x)
+    : null;
+}
+
+type PositionSnapshot = {
+  quantity: Decimal;
+  rawQuantity: string;
+  fragments: Array<{ page: number; row: number; role?: string }>;
+};
+
+type PositionSnapshotEvidence = {
+  snapshots: Map<string, PositionSnapshot>;
+  hasUnknownInventoryAdjustments: boolean;
+};
+
+function positionSnapshots(
+  pages: readonly PdfTextPage[],
+): PositionSnapshotEvidence {
+  const snapshots = new Map<string, PositionSnapshot>();
+  let hasUnknownInventoryAdjustments = false;
+  for (const page of pages) {
+    let inPositionSection = false;
+    let columns: HeaderColumn[] | undefined;
+    for (const row of groupItemsIntoRows(page.items, 2)) {
+      const text = compact(row.items.map((item) => item.text).join(" "));
+      if (/(?:头寸转账|頭寸轉賬|公司行动|公司行動)/.test(text)) {
+        hasUnknownInventoryAdjustments = true;
+        inPositionSection = false;
+        columns = undefined;
+        continue;
+      }
+      if (/^期末持[仓倉]|^持[仓倉](?:明细|明細)?$/.test(text)) {
+        inPositionSection = true;
+        columns = undefined;
+        continue;
+      }
+      if (!inPositionSection) continue;
+      const isPositionStockSubsection = text === "股票" || text.toLowerCase() === "stocks";
+      if (
+        (isStockSection(text) && !isPositionStockSubsection) ||
+        isFundSection(text) ||
+        /^(?:头寸转账|頭寸轉賬|现金|現金|股息|分红|分紅|利息|公司行动|公司行動|IPO|费用|費用)$/.test(text)
+      ) {
+        inPositionSection = false;
+        columns = undefined;
+        continue;
+      }
+      const possibleColumns = positionColumns(row);
+      if (possibleColumns) {
+        columns = possibleColumns;
+        continue;
+      }
+      if (!columns) continue;
+      const cells = rowCells(row, columns);
+      let quantity: Decimal;
+      try {
+        quantity = decimal(cells.quantity);
+      } catch {
+        continue;
+      }
+      const identity = parseIdentity(
+        cells.code,
+        cells.name,
+        cells.market,
+        cells.currency,
+      );
+      if (identity) {
+        snapshots.set(`${identity.market}:${identity.symbol}`, {
+          quantity,
+          rawQuantity: cells.quantity?.trim() ?? quantity.toString(),
+          fragments: [{ page: page.pageNumber, row: Math.round(row.y), role: "position" }],
+        });
+      }
+    }
+  }
+  return { snapshots, hasUnknownInventoryAdjustments };
+}
+
+function numericRealized(value: string | undefined): Decimal | undefined {
+  if (!compact(value)) return undefined;
+  try {
+    const result = decimal(value);
+    return result.isFinite() ? result : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function legacyPositionEffects(
+  rows: readonly ParsedLayoutRow[],
+  pages: readonly PdfTextPage[],
+): Map<number, { effect: PositionEffect; evidence: TigerPositionEffectEvidence }> {
+  const effects = new Map<number, { effect: PositionEffect; evidence: TigerPositionEffectEvidence }>();
+  const { snapshots, hasUnknownInventoryAdjustments } = positionSnapshots(pages);
+  const facts = rows.flatMap((row) => {
+    const identity = parseIdentity(
+      row.cells.code,
+      row.cells.name,
+      row.cells.market,
+      row.cells.currency,
+    );
+    if (!identity) return [];
+    let signedQuantity: Decimal;
+    try {
+      signedQuantity = decimal(row.cells.quantity);
+    } catch {
+      return [];
+    }
+    if (positionEffectForLabel(row.cells.direction, signedQuantity)) return [];
+    return [{
+      row,
+      identityKey: `${identity.market}:${identity.symbol}`,
+      signedQuantity,
+      realized: numericRealized(row.cells.realized),
+      rawRealized: row.cells.realized?.trim(),
+      fragments: row.fragments,
+    }];
+  });
+
+  for (const [identityKey, snapshot] of hasUnknownInventoryAdjustments ? [] : snapshots) {
+    if (!snapshot.quantity.isNegative()) continue;
+    const identityFacts = facts.filter((fact) => fact.identityKey === identityKey);
+    const snapshotFragment = snapshot.fragments[0];
+    const lastFact = identityFacts.at(-1)?.row;
+    const snapshotIsAfterAllTargetTrades = Boolean(
+      snapshotFragment &&
+      lastFact &&
+      (snapshotFragment.page > lastFact.page ||
+        (snapshotFragment.page === lastFact.page && snapshotFragment.row >= lastFact.row)),
+    );
+    if (!snapshotIsAfterAllTargetTrades) continue;
+    const net = identityFacts.reduce(
+      (total, fact) => total.plus(fact.signedQuantity),
+      new Decimal(0),
+    );
+    let position = snapshot.quantity.minus(net);
+    for (const fact of identityFacts) {
+      const nextPosition = position.plus(fact.signedQuantity);
+      const isPureShortOpen =
+        fact.signedQuantity.isNegative() &&
+        position.lte(0) &&
+        nextPosition.lt(position);
+      const isPureShortClose =
+        fact.signedQuantity.isPositive() &&
+        position.lt(0) &&
+        nextPosition.lte(0);
+      if (isPureShortOpen) {
+        if (fact.realized && !fact.realized.isZero()) {
+          position = nextPosition;
+          continue;
+        }
+        effects.set(fact.row.sourceOrder, {
+          effect: "open-short",
+          evidence: {
+            kind: "inferred",
+            confidence: "high",
+            realizedPnl: fact.rawRealized,
+            fragments: [...fact.fragments, ...snapshot.fragments],
+            reason: `按成交时间模拟本月全部目标成交净流：期初库存为${position.toString()}，该卖出使空头库存增加；无卖出行long-closing信号，期末原件持仓为${snapshot.rawQuantity}`,
+          },
+        });
+      } else if (isPureShortClose) {
+        effects.set(fact.row.sourceOrder, {
+          effect: "close-short",
+          evidence: {
+            kind: "inferred",
+            confidence: "high",
+            realizedPnl: fact.rawRealized,
+            fragments: [...fact.fragments, ...snapshot.fragments],
+            reason: `按成交时间模拟：该买入从负库存${position.toString()}回补且未越过零；期末原件持仓为${snapshot.rawQuantity}`,
+          },
+        });
+      }
+      position = nextPosition;
+    }
+  }
+
+  for (const close of facts) {
+    if (!close.signedQuantity.isPositive() || !close.realized || close.realized.isZero()) {
+      continue;
+    }
+    if (effects.has(close.row.sourceOrder)) continue;
+    effects.set(close.row.sourceOrder, {
+      effect: "close-short",
+      evidence: {
+        kind: "inferred",
+        confidence: "high",
+        realizedPnl: close.rawRealized,
+        fragments: close.fragments,
+        reason: "原件买入行给出非零已实现盈亏，支持其为回补空头；未把普通卖出转换为做空开仓",
+      },
+    });
+    const prior = facts.filter((candidate) => candidate.row.sourceOrder < close.row.sourceOrder);
+    const openingCandidates = prior.filter(
+      (candidate) =>
+        candidate.identityKey === close.identityKey &&
+        candidate.signedQuantity.isNegative() &&
+        candidate.signedQuantity.abs().eq(close.signedQuantity),
+    );
+    const priorSameIdentity = prior.filter((candidate) => candidate.identityKey === close.identityKey);
+    const hasConflictingInventory = priorSameIdentity.some((candidate) => candidate.signedQuantity.isPositive());
+    const hasLongClosingSignal = priorSameIdentity.some(
+      (candidate) =>
+        candidate.signedQuantity.isNegative() &&
+        candidate.realized &&
+        !candidate.realized.isZero(),
+    );
+    if (openingCandidates.length === 1 && !hasConflictingInventory && !hasLongClosingSignal) {
+      const opening = openingCandidates[0];
+      effects.set(opening.row.sourceOrder, {
+        effect: "open-short",
+        evidence: {
+          kind: "inferred",
+          confidence: "medium",
+          realizedPnl: close.rawRealized,
+          fragments: [...opening.row.fragments, ...close.fragments],
+          reason: "唯一的同证券负数量卖出与原件非零已实现盈亏买入按时间和数量唯一配对；存在其他候选时保持unknown",
+        },
+      });
+    }
+  }
+
+  return effects;
+}
+
 function parseIdentity(
   codeValue: string | undefined,
   nameValue: string | undefined,
@@ -877,7 +1161,9 @@ export function parseTigerPages(
     | undefined;
 
   const feeTotals: PrintedFeeTotal[] = [];
-  for (const layoutRow of positionedRows(pages, feeTotals)) {
+  const layoutRows = positionedRows(pages, feeTotals);
+  const legacyEffects = legacyPositionEffects(layoutRows, pages);
+  for (const layoutRow of layoutRows) {
     const { cells } = layoutRow;
     const parsedIdentity = parseIdentity(
       cells.code,
@@ -946,6 +1232,13 @@ export function parseTigerPages(
       const quantity = signedQuantity.abs();
       const price = decimal(cells.price).abs();
       const side = sideFor(cells.direction, signedQuantity);
+      const explicitEffect = positionEffectForLabel(cells.direction, signedQuantity);
+      const inferredEffect = legacyEffects.get(layoutRow.sourceOrder);
+      const positionEffect = explicitEffect ?? inferredEffect?.effect;
+      const explicitEvidence = explicitPositionEffectEvidence(cells.direction, signedQuantity);
+      const positionEffectEvidence = explicitEvidence
+        ? { ...explicitEvidence, fragments: layoutRow.fragments }
+        : inferredEffect?.evidence;
       if (identity.market !== "US" && identity.market !== "HK") throw new Error("unsupported market");
       const executionTime = resolveStatementTime({
         text: cells.executedAt?.trim() ?? "",
@@ -987,31 +1280,36 @@ export function parseTigerPages(
       };
       candidates.set(`${candidate.market}:${candidate.symbol}`, candidate);
 
+      const recordId = `tiger:${options.fileFingerprint}:${layoutRow.page}:${layoutRow.sourceOrder}`;
+      const source: TigerTradeSource = {
+        platform: "tiger",
+        page: layoutRow.page,
+        row: layoutRow.row,
+        sourceOrder: layoutRow.sourceOrder,
+        timePrecision: executionTime.timePrecision,
+        fileName: options.fileName,
+        fileFingerprint: options.fileFingerprint,
+        sourceTimestampText: cells.executedAt?.trim(),
+        // Preserve the printed zone spelling for existing consumers; UTC conversion uses the shared resolver.
+        sourceTimezone: cells.executedAt?.match(/\d{1,2}:\d{2}:\d{2}\s*,?\s*(.+)$/)?.[1]?.trim() || executionTime.sourceTimezone,
+        sourceTimeKind: executionTime.sourceTimeKind,
+        timeEvidence: executionTime.timeEvidence,
+        timeRuleVersion: executionTime.timeRuleVersion,
+        marketCalendarDate: executionTime.marketCalendarDate,
+        tradingDate: executionTime.tradingDate,
+        templateId,
+        statementMonth: month,
+        settlementDate: cells.settlementDate?.trim(),
+        grossAmount: cells.amount ? decimal(cells.amount).toString() : undefined,
+        feeStatus: compact(cells.fee) ? "reported" : "unknown",
+        statementRealizedPnl: cells.realized?.trim() || undefined,
+        ...(positionEffect ? { positionEffect } : {}),
+        ...(positionEffectEvidence ? { positionEffectEvidence } : {}),
+        fragments: layoutRow.fragments,
+      };
       records.push({
-        id: `tiger:${options.fileFingerprint}:${layoutRow.page}:${layoutRow.sourceOrder}`,
-        source: {
-          platform: "tiger",
-          page: layoutRow.page,
-          row: layoutRow.row,
-          sourceOrder: layoutRow.sourceOrder,
-          timePrecision: executionTime.timePrecision,
-          fileName: options.fileName,
-          fileFingerprint: options.fileFingerprint,
-          sourceTimestampText: cells.executedAt?.trim(),
-          // Preserve the printed zone spelling for existing consumers; UTC conversion uses the shared resolver.
-          sourceTimezone: cells.executedAt?.match(/\d{1,2}:\d{2}:\d{2}\s*,?\s*(.+)$/)?.[1]?.trim() || executionTime.sourceTimezone,
-          sourceTimeKind: executionTime.sourceTimeKind,
-          timeEvidence: executionTime.timeEvidence,
-          timeRuleVersion: executionTime.timeRuleVersion,
-          marketCalendarDate: executionTime.marketCalendarDate,
-          tradingDate: executionTime.tradingDate,
-          templateId,
-          statementMonth: month,
-          settlementDate: cells.settlementDate?.trim(),
-          grossAmount: cells.amount ? decimal(cells.amount).toString() : undefined,
-          feeStatus: compact(cells.fee) ? "reported" : "unknown",
-          fragments: layoutRow.fragments,
-        },
+        id: recordId,
+        source,
         accountId,
         accountLabel: options.accountLabel ?? "Tiger 账户",
         instrument: {

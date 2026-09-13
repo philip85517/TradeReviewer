@@ -19,14 +19,52 @@ describe("instrument metadata contracts", () => {
           market: "HK",
           symbol: "700",
           name: "腾讯控股",
+          localizedName: {
+            name: " 腾讯控股 ",
+            locale: "zh-CN",
+            source: " tencent ",
+            resolvedAt: "2026-07-29T00:00:00.000Z",
+          },
           assetType: "stock",
           source: "tencent",
           confidence: "portal",
           resolvedAt: "2026-07-29T00:00:00.000Z",
         },
         lookup,
-      ).name,
-    ).toBe("腾讯控股");
+      ),
+    ).toMatchObject({
+      name: "腾讯控股",
+      localizedName: {
+        name: "腾讯控股",
+        locale: "zh-CN",
+        source: "tencent",
+      },
+    });
+  });
+
+  it("rejects malformed localized metadata without changing the original name", () => {
+    for (const localizedName of [
+      { name: "Apple", locale: "zh-CN", source: "tencent", resolvedAt: "2026-07-29T00:00:00.000Z" },
+      { name: "苹果", locale: "en-US", source: "tencent", resolvedAt: "2026-07-29T00:00:00.000Z" },
+      { name: "苹果", locale: "zh-CN", source: "", resolvedAt: "2026-07-29T00:00:00.000Z" },
+      { name: "苹果", locale: "zh-CN", source: "tencent", resolvedAt: "not-a-time" },
+    ]) {
+      expect(() =>
+        validateResolvedInstrument(
+          {
+            market: "US",
+            symbol: "AAPL",
+            name: "Apple Inc.",
+            localizedName,
+            assetType: "stock",
+            source: "nasdaq",
+            confidence: "official",
+            resolvedAt: "2026-07-29T00:00:00.000Z",
+          },
+          { market: "US", symbol: "AAPL" },
+        ),
+      ).toThrow();
+    }
   });
 
   it("rejects a mismatched code, blank name, or unsupported type", () => {

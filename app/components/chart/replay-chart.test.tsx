@@ -1,11 +1,12 @@
 import { render, waitFor, cleanup } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-import { buildReplayChartMarkers, ReplayChart } from "./replay-chart";
+import { buildReplayChartMarkers, chartTickLabel, ReplayChart } from "./replay-chart";
 import type { ComponentProps } from "react";
 
 const engine = vi.hoisted(() => ({ data: [] as { time: number }[], visible: [] as number[], range: { from: 0, to: 0 } }));
 vi.mock("./drawing-canvas", () => ({ DrawingCanvas: () => null }));
 vi.mock("lightweight-charts", () => ({
+  TickMarkType: { Year: 0, Month: 1, DayOfMonth: 2, Time: 3, TimeWithSeconds: 4 },
   CandlestickSeries: "candle", HistogramSeries: "volume", ColorType: { Solid: "solid" }, CrosshairMode: { MagnetOHLC: 1 }, LineStyle: { Dashed: 1 },
   createSeriesMarkers: () => ({ setMarkers: () => {} }),
   createChart: () => ({
@@ -18,6 +19,15 @@ vi.mock("lightweight-charts", () => ({
   }),
 }));
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+
+it("keeps axis ticks short while preserving Beijing dates across midnight", () => {
+  const time = "2025-12-31T20:30:45Z";
+  expect(chartTickLabel(time, "year")).toBe("2026");
+  expect(chartTickLabel(time, "date")).toBe("01-01");
+  expect(chartTickLabel(time, "time")).toBe("04:30");
+  expect(chartTickLabel(time, "seconds")).toBe("04:30:45");
+  expect(chartTickLabel({ year: 2026, month: 9, day: 12 }, "date")).toBe("09-12");
+});
 
 it("only builds finite markers that point at valid chart candles", () => {
   const candle = (time: string) => ({ time, open: 1, high: 2, low: 1, close: 2, volume: 10 });

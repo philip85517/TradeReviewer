@@ -1,6 +1,7 @@
 import type { SourceBounds } from "../import/screenshot/contracts";
 import type { StatementFragment, StatementPosition, StatementEvent } from "../import/monthly-statement";
 import type { TimeCandidateEvidence } from "../import/statement-rules";
+import type { LocalizedInstrumentName } from "../instruments/metadata-contracts";
 
 export type TradeSide = "buy" | "sell";
 export type TradeTimePrecision = "second" | "date-only";
@@ -52,6 +53,7 @@ export type Instrument = {
   name: string;
   market: string;
   currency: string;
+  localizedName?: LocalizedInstrumentName;
 };
 
 export type TradeExecution = {
@@ -90,6 +92,17 @@ export type TradeExecution = {
     formatRuleId?: string;
     /** Explicit broker direction; generic sell does not establish a short opening. */
     positionEffect?: "open-long" | "close-long" | "open-short" | "close-short";
+    /** Source-backed direction evidence; confidence describes evidence strength, not probability. */
+    positionEffectEvidence?: {
+      kind: "explicit" | "inferred";
+      confidence: "high" | "medium";
+      reason: string;
+      sourceLabel?: string;
+      realizedPnl?: string;
+      fragments?: Array<{ page: number; row: number; role?: string }>;
+    };
+    /** Realized PnL explicitly reported by the statement for this trade/history. */
+    statementRealizedPnl?: string;
     statementMonth?: string;
     sourceTimeKind?: "execution" | "order" | "date";
     timeEvidence?: "row" | "document" | "user" | "inferred";
@@ -139,6 +152,10 @@ export type TradeEpisode = {
   directionKnown?: false;
   /** Numeric legacy PnL fields are placeholders whenever this flag is present. */
   accuracy?: { pnl: "unavailable"; reasons: string[] };
+  /** Non-blocking evidence warnings that consumers may show alongside reliable PnL. */
+  warnings?: Array<{ code: "statement-coverage-gap"; from: string; to: string }>;
+  /** Complete cash-chain IDs approved for each acquisition; missing evidence fails closed. */
+  ipoCostEvidence?: Array<{ allocationId: string; evidenceIds: string[] }>;
   initialPosition?: StatementPosition;
   positionEvents?: StatementEvent[];
   id: string;

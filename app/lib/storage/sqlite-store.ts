@@ -19,11 +19,12 @@ import {
   reviewSummarySettingKey,
   type ReviewSummaryNote,
 } from "../reviews/review-summary";
-import type { Instrument, TradeExecution } from "../trades/types";
+import { tradeNatureOf, type Instrument, type TradeExecution } from "../trades/types";
 import type { ChartSettings } from "./chart-settings";
 import { validReviewExtensions } from "../reviews/review-metrics";
 import type { ImportHistoryEntry } from "./import-history";
 import { isMonthlyStatement } from "../import/monthly-statement";
+import { validateLocalizedInstrumentName } from "../instruments/metadata-contracts";
 import type { MarketDataJob } from "./market-data-jobs";
 import type { EpisodeReviewState } from "./review-storage";
 import type {
@@ -142,6 +143,141 @@ function sameJson(left: unknown, right: unknown) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 
+type AccountCorrection = {
+  originalAccountId: string;
+  canonicalAccountId: string;
+  reason: string;
+  [key: string]: unknown;
+};
+
+type StoredExecutionEvidence = Record<string, unknown> & {
+  accountCorrection: AccountCorrection;
+};
+
+function validateAccountCorrection(value: unknown): AccountCorrection {
+  const correction = asRecord(value, "account correction");
+  assertStringFields(
+    correction,
+    ["originalAccountId", "canonicalAccountId", "reason"],
+    "account correction",
+  );
+  const originalAccountId = correction.originalAccountId;
+  const canonicalAccountId = correction.canonicalAccountId;
+  const reason = correction.reason;
+  if (
+    typeof originalAccountId !== "string" ||
+    typeof canonicalAccountId !== "string" ||
+    typeof reason !== "string" ||
+    !originalAccountId.trim() ||
+    !canonicalAccountId.trim() ||
+    !reason.trim() ||
+    originalAccountId === canonicalAccountId
+  ) {
+    throw new Error("Invalid account correction");
+  }
+  assertJsonSafe(correction, "account correction");
+  return correction as AccountCorrection;
+}
+
+function executionCorrectionIdentity(execution: TradeExecution): string {
+  const decimal = (value: string) => {
+    try {
+      const normalized = new Decimal(value);
+      return normalized.isFinite() ? normalized.toString() : `invalid:${value}`;
+    } catch {
+      return `invalid:${value}`;
+    }
+  };
+  return canonicalRecord({
+    instrumentId: execution.instrument.id,
+    side: execution.side,
+    executedAt: execution.executedAt,
+    quantity: decimal(execution.quantity),
+    price: decimal(execution.price),
+  });
+}
+
+function executionSourceDocument(execution: TradeExecution): string | undefined {
+  const platform = execution.source.platform.trim();
+  const fingerprint = execution.source.fileFingerprint?.trim();
+  if (platform && fingerprint) return `fingerprint:${platform}|${fingerprint}`;
+  const fileName = execution.source.fileName?.trim();
+  if (platform && fileName) return `file:${platform}|${fileName}`;
+  return undefined;
+}
+
+function executionSourceOrderReference(execution: TradeExecution): string | undefined {
+  return execution.source.executionGroup?.orderReference?.trim() || undefined;
+}
+
+function sameTrustedSourceProvenance(
+  existing: TradeExecution,
+  incoming: TradeExecution,
+): boolean {
+  if (
+    existing.source.platform.trim() !== incoming.source.platform.trim() ||
+    existing.instrument.currency.trim().toUpperCase() !== incoming.instrument.currency.trim().toUpperCase() ||
+    tradeNatureOf(existing) !== tradeNatureOf(incoming)
+  ) return false;
+  const nature = tradeNatureOf(existing);
+  if (nature === "simulation" && existing.source.simulationRunId !== incoming.source.simulationRunId) return false;
+
+  const existingDocument = executionSourceDocument(existing);
+  const incomingDocument = executionSourceDocument(incoming);
+  if (!existingDocument || existingDocument !== incomingDocument) return false;
+
+  const provenanceChecks: boolean[] = [];
+  const existingRowFingerprint = existing.source.statementRowFingerprint?.trim();
+  const incomingRowFingerprint = incoming.source.statementRowFingerprint?.trim();
+  if (existingRowFingerprint && incomingRowFingerprint) {
+    provenanceChecks.push(existingRowFingerprint === incomingRowFingerprint);
+  }
+  if (typeof existing.source.page === "number" && typeof incoming.source.page === "number") {
+    provenanceChecks.push(
+      Number.isFinite(existing.source.page) &&
+      Number.isFinite(incoming.source.page) &&
+      existing.source.page === incoming.source.page &&
+      existing.source.row === incoming.source.row,
+    );
+  }
+  if (
+    typeof existing.source.sourceOrder === "number" &&
+    typeof incoming.source.sourceOrder === "number"
+  ) {
+    provenanceChecks.push(
+      Number.isFinite(existing.source.sourceOrder) &&
+      Number.isFinite(incoming.source.sourceOrder) &&
+      existing.source.sourceOrder === incoming.source.sourceOrder,
+    );
+  }
+  const existingOrderReference = executionSourceOrderReference(existing);
+  const incomingOrderReference = executionSourceOrderReference(incoming);
+  if (existingOrderReference && incomingOrderReference) {
+    provenanceChecks.push(existingOrderReference === incomingOrderReference);
+  }
+  if (provenanceChecks.length === 0) {
+    provenanceChecks.push(
+      Number.isFinite(existing.source.row) &&
+      Number.isFinite(incoming.source.row) &&
+      existing.source.row === incoming.source.row,
+    );
+  }
+  return provenanceChecks.length > 0 && provenanceChecks.every(Boolean);
+}
+
+function canCarryAccountCorrection(
+  existing: TradeExecution,
+  incoming: TradeExecution,
+  correction: AccountCorrection,
+): boolean {
+  return (
+    (incoming.accountId === correction.originalAccountId ||
+      incoming.accountId === correction.canonicalAccountId) &&
+    executionCorrectionIdentity(existing) === executionCorrectionIdentity(incoming) &&
+    sameTrustedSourceProvenance(existing, incoming)
+  );
+}
+
 function validateInstrument(value: unknown): asserts value is StoredInstrument {
   const instrument = asRecord(value, "instrument");
   assertStringFields(
@@ -149,11 +285,17 @@ function validateInstrument(value: unknown): asserts value is StoredInstrument {
     ["id", "symbol", "name", "market", "currency"],
     "instrument",
   );
+  if (instrument.localizedName !== undefined) {
+    validateLocalizedInstrumentName(instrument.localizedName);
+  }
   if (instrument.metadata !== undefined) {
     const metadata = asRecord(instrument.metadata, "instrument metadata");
     assertStringFields(metadata, ["market", "symbol", "name", "assetType", "source", "confidence", "resolvedAt"], "instrument metadata");
-    if (metadata.market !== instrument.market || metadata.symbol !== instrument.symbol || metadata.name !== instrument.name) {
+    if (metadata.market !== instrument.market || metadata.symbol !== instrument.symbol) {
       throw new Error("Invalid instrument metadata");
+    }
+    if (metadata.localizedName !== undefined) {
+      validateLocalizedInstrumentName(metadata.localizedName);
     }
     assertJsonSafe(metadata, "instrument metadata");
   }
@@ -471,15 +613,20 @@ function migrationReport(row: Row): MigrationReport {
 }
 
 function mapInstrumentRow(row: Row): StoredInstrument {
+  const metadata = row.metadata_json
+    ? parseJson<StoredInstrument["metadata"]>(row.metadata_json, "instrument metadata")
+    : undefined;
+  const localizedName = row.localized_name_json
+    ? parseJson<StoredInstrument["localizedName"]>(row.localized_name_json, "localized instrument name")
+    : metadata?.localizedName;
   return {
     id: asString(row.id, "instrument id"),
     symbol: asString(row.symbol, "symbol"),
     name: asString(row.name, "name"),
     market: asString(row.market, "market"),
     currency: asString(row.currency, "currency"),
-    ...(row.metadata_json
-      ? { metadata: parseJson<StoredInstrument["metadata"]>(row.metadata_json, "instrument metadata") }
-      : {}),
+    ...(localizedName ? { localizedName } : {}),
+    ...(metadata ? { metadata } : {}),
   };
 }
 
@@ -500,23 +647,68 @@ function mapExecutionRow(row: Row): TradeExecution {
   if (typeof row.simulation_run_id === "string" && source.simulationRunId === undefined) {
     source.simulationRunId = row.simulation_run_id;
   }
+  const storedInstrument = mapInstrumentRow({
+    id: row.instrument_id,
+    symbol: row.symbol,
+    name: row.name,
+    market: row.market,
+    currency: row.currency,
+    metadata_json: row.metadata_json,
+    localized_name_json: row.localized_name_json,
+  });
+  const { metadata: _metadata, ...instrument } = storedInstrument;
   return {
     id: asString(row.id, "execution id"),
     source,
     accountId: String(row.account ?? ""),
     accountLabel: evidence?.accountLabel ?? "",
-    instrument: mapInstrumentRow({
-      id: row.instrument_id,
-      symbol: row.symbol,
-      name: row.name,
-      market: row.market,
-      currency: row.currency,
-    }),
+    instrument,
     side: asString(row.side, "side") as TradeExecution["side"],
     executedAt: asString(row.executed_at, "executed at"),
     quantity: asString(row.quantity, "quantity"),
     price: asString(row.price, "price"),
     fee: typeof row.fee === "string" ? row.fee : "",
+  };
+}
+
+function withoutLocalizedInstrumentName(execution: TradeExecution): TradeExecution {
+  const { localizedName: _localizedName, ...instrument } = execution.instrument;
+  return { ...execution, instrument };
+}
+
+function revisionComparableRequest(input: TradeRevisionRequest): TradeRevisionRequest {
+  return {
+    ...input,
+    changes: input.changes.map((change) => ({
+      before: change.before
+        ? withoutLocalizedInstrumentName(change.before)
+        : null,
+      after: change.after
+        ? withoutLocalizedInstrumentName(change.after)
+        : null,
+    })),
+    ...(input.expectedScope
+      ? {
+          expectedScope: input.expectedScope.map(withoutLocalizedInstrumentName),
+        }
+      : {}),
+  };
+}
+
+function executionForRevisionWrite(
+  execution: TradeExecution,
+  current: TradeExecution | undefined,
+): TradeExecution {
+  const { localizedName: _snapshotLocalizedName, ...instrument } = execution.instrument;
+  const currentLocalizedName = current?.instrument.localizedName;
+  return {
+    ...execution,
+    instrument: {
+      ...instrument,
+      ...(currentLocalizedName
+        ? { localizedName: currentLocalizedName }
+        : {}),
+    },
   };
 }
 
@@ -630,13 +822,13 @@ export class SqliteStore {
 
   getInstruments(): StoredInstrument[] {
     const rows = this.database
-      .prepare("select id, symbol, name, market, currency, metadata_json from instruments order by id")
+      .prepare("select id, symbol, name, market, currency, metadata_json, localized_name_json from instruments order by id")
       .all() as Row[];
     return rows.map(mapInstrumentRow);
   }
 
   getExecutions(): TradeExecution[] {
-    const rows = this.database.prepare("select e.*, i.symbol, i.name, i.market, i.currency from executions e join instruments i on i.id = e.instrument_id").all() as Row[];
+    const rows = this.database.prepare("select e.*, i.symbol, i.name, i.market, i.currency, i.metadata_json, i.localized_name_json from executions e join instruments i on i.id = e.instrument_id").all() as Row[];
     return rows.map(mapExecutionRow).sort(compareExecutions);
   }
 
@@ -764,8 +956,14 @@ export class SqliteStore {
     if (input.replaceExecutionIds !== undefined && (!Array.isArray(input.replaceExecutionIds) || input.replaceExecutionIds.some((id) => typeof id !== "string" || !id))) throw new Error("Invalid execution replacements");
     return withSqliteTransaction(this.database, () => {
       for (const instrument of input.instruments ?? []) this.putInstrument(instrument);
+      const current = this.getExecutions();
+      const replacementEvidence = this.prepareExplicitReplacementEvidence(
+        current,
+        input.executions,
+        input.replaceExecutionIds ?? [],
+      );
       for (const id of input.replaceExecutionIds ?? []) this.database.prepare("delete from executions where id = ?").run(id);
-      const result = this.mergeExecutionsInTransaction(input.executions);
+      const result = this.mergeExecutionsInTransaction(input.executions, replacementEvidence);
       for (const entry of input.importHistory ?? []) this.putImportHistory(entry);
       return result;
     });
@@ -805,13 +1003,14 @@ export class SqliteStore {
       ids.add(id);
     }
     return withSqliteTransaction(this.database, () => {
-      const requestJson = canonicalRecord(input);
+      const requestJson = canonicalRecord(revisionComparableRequest(input));
       const existing = this.database.prepare("select request_json, revision_json from trade_revisions where id = ?").get(input.id) as Row | undefined;
       if (existing) {
         if (existing.request_json !== requestJson) throw new Error("Trade revision conflict");
         return { executions: this.getExecutions(), revision: parseJson<TradeRevision>(existing.revision_json, "revision") };
       }
       const current = new Map(this.getExecutions().map((execution) => [execution.id, execution]));
+      const currentEvidence = this.protectedExecutionEvidence([...current.values()]);
       const instrument = this.getInstruments().find(instrument => instrument.id === input.instrumentId);
       if (!instrument) throw new Error("Invalid trade instrument");
       for (const change of input.changes) {
@@ -821,18 +1020,26 @@ export class SqliteStore {
         if (!Array.isArray(input.expectedScope)) throw new Error("Invalid scope snapshot");
         const actual = [...current.values()].filter(e => e.instrument.id === input.instrumentId && e.accountId === input.accountId);
         const ordered = (records: TradeExecution[]) => records.slice().sort((a,b)=>a.id.localeCompare(b.id));
-        if (canonicalRecord(ordered(actual)) !== canonicalRecord(ordered(input.expectedScope))) throw new Error("Trade revision conflict");
+        if (canonicalRecord(ordered(actual).map(withoutLocalizedInstrumentName)) !== canonicalRecord(ordered(input.expectedScope).map(withoutLocalizedInstrumentName))) throw new Error("Trade revision conflict");
       }
       if (![...current.values()].some((execution) => execution.instrument.id === input.instrumentId && execution.accountId === input.accountId) && !this.getTradeRevisions(input.instrumentId).some((revision) => revision.accountId === input.accountId)) throw new Error("Invalid trade account");
       for (const change of input.changes) {
         const id = (change.before ?? change.after)!.id;
         const original = current.get(id);
-        if (change.before ? !original || canonicalRecord(original) !== canonicalRecord(change.before) : Boolean(original)) throw new Error("Trade revision conflict");
+        if (change.before ? !original || canonicalRecord(withoutLocalizedInstrumentName(original)) !== canonicalRecord(withoutLocalizedInstrumentName(change.before)) : Boolean(original)) throw new Error("Trade revision conflict");
       }
       const revision: TradeRevision = { ...input, recordedAt: new Date().toISOString() };
       for (const change of input.changes) {
         if (change.before) this.database.prepare("delete from executions where id = ?").run(change.before.id);
-        if (change.after) this.writeExecution(change.after);
+        if (change.after) {
+          const currentExecution = change.before
+            ? current.get(change.before.id)
+            : undefined;
+          this.writeExecution(
+            executionForRevisionWrite(change.after, currentExecution),
+            currentExecution ? currentEvidence.get(currentExecution.id) : undefined,
+          );
+        }
       }
       if (input.importHistory) this.putImportHistory(input.importHistory);
       this.database.prepare("insert into trade_revisions(id, instrument_id, account_id, request_json, revision_json, recorded_at) values (?, ?, ?, ?, ?, ?)").run(input.id, input.instrumentId, input.accountId, requestJson, json(revision, "trade revision"), revision.recordedAt);
@@ -1073,16 +1280,20 @@ export class SqliteStore {
 
   private putInstrument(instrument: StoredInstrument): boolean {
     validateInstrument(instrument);
+    const localizedName = instrument.localizedName
+      ? validateLocalizedInstrumentName(instrument.localizedName)
+      : undefined;
     const existed = this.hasInstrument(instrument.id);
     this.database.prepare(`
-      insert into instruments (id, symbol, name, market, currency, metadata_json, updated_at)
-      values (?, ?, ?, ?, ?, ?, current_timestamp)
+      insert into instruments (id, symbol, name, market, currency, metadata_json, localized_name_json, updated_at)
+      values (?, ?, ?, ?, ?, ?, ?, current_timestamp)
       on conflict(id) do update set
         symbol = excluded.symbol,
         name = excluded.name,
         market = excluded.market,
         currency = excluded.currency,
         metadata_json = coalesce(excluded.metadata_json, instruments.metadata_json),
+        localized_name_json = coalesce(excluded.localized_name_json, instruments.localized_name_json),
         updated_at = excluded.updated_at
     `).run(
       instrument.id,
@@ -1091,6 +1302,9 @@ export class SqliteStore {
       instrument.market,
       instrument.currency,
       instrument.metadata ? json(instrument.metadata, "instrument metadata") : null,
+      localizedName
+        ? json(localizedName, "localized instrument name")
+        : null,
     );
     return !existed;
   }
@@ -1103,13 +1317,112 @@ export class SqliteStore {
     if (!this.hasInstrument(id)) throw new Error(`Unknown instrument: ${id}`);
   }
 
+  private storedExecutionEvidenceById(
+    ids: readonly string[],
+  ): Map<string, StoredExecutionEvidence> {
+    const uniqueIds = [...new Set(ids)];
+    if (uniqueIds.length === 0) return new Map();
+    const evidenceById = new Map<string, StoredExecutionEvidence>();
+    for (let start = 0; start < uniqueIds.length; start += 500) {
+      const batch = uniqueIds.slice(start, start + 500);
+      const placeholders = batch.map(() => "?").join(", ");
+      const rows = this.database
+        .prepare(`select id, evidence_json from executions where id in (${placeholders})`)
+        .all(...batch) as Row[];
+      for (const row of rows) {
+        if (typeof row.id !== "string" || typeof row.evidence_json !== "string") continue;
+        const evidence = asRecord(
+          parseJson<unknown>(row.evidence_json, "execution evidence"),
+          "execution evidence",
+        );
+        if (evidence.accountCorrection === undefined) continue;
+        const accountCorrection = validateAccountCorrection(evidence.accountCorrection);
+        evidenceById.set(row.id, { ...evidence, accountCorrection } as StoredExecutionEvidence);
+      }
+    }
+    return evidenceById;
+  }
+
+  private protectedExecutionEvidence(
+    executions: readonly TradeExecution[],
+  ): Map<string, StoredExecutionEvidence> {
+    const evidenceById = this.storedExecutionEvidenceById(
+      executions.map((execution) => execution.id),
+    );
+    const protectedEvidence = new Map<string, StoredExecutionEvidence>();
+    for (const execution of executions) {
+      const evidence = evidenceById.get(execution.id);
+      if (!evidence) continue;
+      if (evidence.accountCorrection.canonicalAccountId !== execution.accountId) {
+        throw new Error("Invalid stored account correction");
+      }
+      protectedEvidence.set(execution.id, evidence);
+    }
+    return protectedEvidence;
+  }
+
+  private prepareExplicitReplacementEvidence(
+    current: readonly TradeExecution[],
+    incoming: readonly TradeExecution[],
+    replacementIds: readonly string[],
+  ): Map<string, StoredExecutionEvidence> {
+    const currentById = new Map(current.map((execution) => [execution.id, execution]));
+    const protectedEvidence = this.protectedExecutionEvidence(
+      current.filter((execution) => replacementIds.includes(execution.id)),
+    );
+    const replacementEvidence = new Map<string, StoredExecutionEvidence>();
+    for (const [id, evidence] of protectedEvidence) {
+      const existing = currentById.get(id)!;
+      const matches = incoming.filter((candidate) =>
+        canCarryAccountCorrection(existing, candidate, evidence.accountCorrection),
+      );
+      if (matches.length !== 1) {
+        throw new Error("Account correction replacement identity conflict");
+      }
+      const [match] = matches;
+      if (replacementEvidence.has(match.id)) {
+        throw new Error("Account correction replacement identity conflict");
+      }
+      replacementEvidence.set(match.id, evidence);
+    }
+    return replacementEvidence;
+  }
+
   private mergeExecutionsInTransaction(
     incoming: readonly TradeExecution[],
+    initialPreservedEvidence: ReadonlyMap<string, StoredExecutionEvidence> = new Map(),
   ): ExecutionMergeReport {
     incoming.forEach(validateExecution);
     const current=this.getExecutions();
+    const currentById = new Map(current.map((execution) => [execution.id, execution]));
+    const currentEvidence = this.protectedExecutionEvidence(current);
+    const preservedEvidence = new Map(initialPreservedEvidence);
+    const preparedIncoming = incoming.map((execution) => {
+      const evidence = preservedEvidence.get(execution.id);
+      if (evidence) {
+        return {
+          ...execution,
+          accountId: evidence.accountCorrection.canonicalAccountId,
+        };
+      }
+      const existing = currentById.get(execution.id);
+      const existingEvidence = existing ? currentEvidence.get(existing.id) : undefined;
+      if (existing && existingEvidence) {
+        if (canCarryAccountCorrection(existing, execution, existingEvidence.accountCorrection)) {
+          preservedEvidence.set(execution.id, existingEvidence);
+          return {
+            ...execution,
+            accountId: existingEvidence.accountCorrection.canonicalAccountId,
+          };
+        }
+        if (execution.accountId === existingEvidence.accountCorrection.canonicalAccountId) {
+          throw new Error("Account correction identity conflict");
+        }
+      }
+      return execution;
+    });
     const simulationContexts=new Map<string,string>();
-    for(const execution of [...current,...incoming]) {
+    for(const execution of [...current,...preparedIncoming]) {
       if(execution.source.platform!=="tradingview") continue;
       const fingerprint=execution.source.fileFingerprint;
       if (!fingerprint) {
@@ -1120,21 +1433,50 @@ export class SqliteStore {
       if(previous && previous!==execution.instrument.id) throw new Error("Simulation context conflict");
       simulationContexts.set(fingerprint,execution.instrument.id);
     }
-    const reconciliation = reconcileExecutions(current, incoming);
+    const reconciliation = reconcileExecutions(current, preparedIncoming);
+    const acceptedIncoming = reconciliation.acceptedIncoming.map((execution) => {
+      const evidence = preservedEvidence.get(execution.id);
+      if (!evidence) return execution;
+      return {
+        ...execution,
+        accountId: evidence.accountCorrection.canonicalAccountId,
+      };
+    });
     for (const id of reconciliation.automaticReplacementIds) {
       this.database.prepare("delete from executions where id = ?").run(id);
     }
-    for (const execution of reconciliation.acceptedIncoming) {
-      this.writeExecution(execution);
+    for (const id of reconciliation.automaticReplacementIds) {
+      const existing = currentById.get(id);
+      const evidence = currentEvidence.get(id);
+      if (!existing || !evidence) continue;
+      const matches = acceptedIncoming.filter((candidate) =>
+        canCarryAccountCorrection(existing, candidate, evidence.accountCorrection),
+      );
+      if (matches.length !== 1) {
+        throw new Error("Account correction replacement identity conflict");
+      }
+      const [match] = matches;
+      if (preservedEvidence.has(match.id) && preservedEvidence.get(match.id) !== evidence) {
+        throw new Error("Account correction replacement identity conflict");
+      }
+      preservedEvidence.set(match.id, evidence);
+    }
+    for (const execution of acceptedIncoming) {
+      const evidence = preservedEvidence.get(execution.id);
+      this.writeExecution(execution, evidence);
     }
     return {
-      inserted: reconciliation.acceptedIncoming.length,
+      inserted: acceptedIncoming.length,
       duplicate: reconciliation.duplicates.length,
       conflict: reconciliation.conflicts.length,
     };
   }
 
-  private writeExecution(execution: TradeExecution): void {
+  private writeExecution(
+    execution: TradeExecution,
+    preservedEvidence?: StoredExecutionEvidence,
+  ): void {
+    const persistedAccountId = preservedEvidence?.accountCorrection.canonicalAccountId ?? execution.accountId;
     this.ensureInstrument(execution.instrument);
     const batchId = execution.source.batchId;
     if (batchId) {
@@ -1155,7 +1497,11 @@ export class SqliteStore {
     }
 
     const evidence = json(
-      { source: execution.source, accountLabel: execution.accountLabel },
+      {
+        ...(preservedEvidence ?? {}),
+        source: execution.source,
+        accountLabel: execution.accountLabel,
+      },
       "execution evidence",
     );
     this.database.prepare(`
@@ -1182,7 +1528,7 @@ export class SqliteStore {
       execution.id,
       batchId ?? null,
       execution.instrument.id,
-      execution.accountId,
+      persistedAccountId,
       execution.side,
       execution.executedAt,
       execution.quantity,

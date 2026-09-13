@@ -95,8 +95,12 @@ import {
   syncMarketData,
 } from "../lib/market/sync-service";
 import { canonicalInstrumentId } from "../lib/instruments/display-name";
+import type { ResolvedInstrument } from "../lib/instruments/metadata-contracts";
 import { resolveHistoricalInstrumentIdentity } from "../lib/instruments/historical-instrument-identity";
-import { refreshInstrumentMetadata } from "../lib/instruments/resolve-service";
+import { resolveInstrumentMetadataBatch, refreshInstrumentMetadata } from "../lib/instruments/resolve-service";
+import {
+  LocalizedMetadataHydrationQueue,
+} from "../lib/reviews/localized-metadata-hydration";
 import {
   marketCalendarDateOffset,
   marketTradingDate,
@@ -151,11 +155,13 @@ import {
 import { buildTradeLibraryEntries } from "../lib/trades/library";
 import { tradingNatureLabel, displayTradeNature } from "../lib/trades/trading-nature";
 import { buildReviewQueue } from "../lib/reviews/review-queue";
+import { localizedInstrumentOverlay, overlayStoredInstrumentMetadata } from "../lib/reviews/instrument-display-overlay";
 import type {
   Instrument,
   TradeEpisode,
   TradeExecution,
 } from "../lib/trades/types";
+import type { StoredInstrument } from "../lib/storage/sqlite-contracts";
 import type { MarketDataDetails } from "./chart/market-data-popover";
 import { ImportConfirmDialog } from "./import/import-confirm-dialog";
 import { ImportHistoryDialog } from "./import/import-history-dialog";
@@ -855,7 +861,7 @@ function isAbortError(error: unknown) {
     [storageClient],
   );
 
-  const [storedInstruments, setStoredInstruments] = useState<Instrument[]>([]);
+  const [storedInstruments, setStoredInstruments] = useState<StoredInstrument[]>([]);
   const [mobileTradesOpen, setMobileTradesOpen] = useState(false);
   const [dataTarget, setDataTarget] = useState<{ instrument: Instrument; accountId: string; cursor?: string }>();
   const [layout, setLayout] = useState({ left: true, right: true });
@@ -885,6 +891,7 @@ function isAbortError(error: unknown) {
     "review" | "library" | "insights"
   >(showDemo ? "review" : "library");
   const [timeframe, setTimeframe] = useState<Timeframe>("1D");
+  const [legacyTimeframe, setLegacyTimeframe] = useState<"1D" | "1W">("1D");
   const [historyMode, setHistoryMode] = useState<"history" | "replay">("history");
   const [frame, setFrame] = useState(initialFrame);
   const [playing, setPlaying] = useState(false);
@@ -981,10 +988,25 @@ function isAbortError(error: unknown) {
   const [reviewStates, setReviewStates] = useState<
     Record<string, EpisodeReviewState>
   >({});
+  const drawingDraftsRef = useRef<Record<string, EpisodeReviewState>>({});
+  const drawingSaveQueuesRef = useRef<Record<string, Promise<void>>>({});
+  const drawingSaveSequencesRef = useRef<Record<string, number>>({});
+  const drawingSaveErrorsRef = useRef<Record<string, string>>({});
+  const drawingEpisodeRef = useRef<string | undefined>(
+    showDemo ? REVIEW_ID : undefined,
+  );
+  const [drawingSaveErrors, setDrawingSaveErrors] = useState<Record<string, string>>({});
+  const [drawingSavePending, setDrawingSavePending] = useState<Record<string, boolean>>({});
   const replayRequestSequence = useRef(0);
   const importRequestSequence = useRef(0);
   const importedExecutionsRef = useRef<TradeExecution[] | null>(null);
   const marketDataRequestSequences = useRef<Record<string, number>>({});
+  const metadataRefreshes = useRef<Record<string, Promise<ResolvedInstrument | undefined>>>({});
+  const localizedHydrationAttempted = useRef(new Set<string>());
+  const localizedHydrationQueue = useRef<LocalizedMetadataHydrationQueue | null>(null);
+  if (!localizedHydrationQueue.current) {
+    localizedHydrationQueue.current = new LocalizedMetadataHydrationQueue(localizedHydrationAttempted.current);
+  }
   const marketDataJobsRef = useRef<Record<string, MarketDataJob>>({});
   const marketDataAbortControllers = useRef<
     Record<string, AbortController>
@@ -1005,9 +1027,16 @@ function isAbortError(error: unknown) {
     },
     dependencies: screenshotImportDependencies,
   });
-  const importedInstruments = useMemo(
+  const rawImportedInstruments = useMemo(
     () => buildInstrumentTradeSummaries(importedExecutions),
     [importedExecutions],
+  );
+  const importedInstruments = useMemo(
+    () => overlayStoredInstrumentMetadata(rawImportedInstruments, storedInstruments),
+    [rawImportedInstruments, storedInstruments],
+  );
+  const selectedRawImportedInstrument = rawImportedInstruments.find(
+    (item) => item.instrument.id === selectedInstrumentId,
   );
   const selectedImportedInstrument = importedInstruments.find(
     (item) => item.instrument.id === selectedInstrumentId,
@@ -1139,6 +1168,8 @@ function isAbortError(error: unknown) {
   const activeEpisodeId = selectedImportedInstrument
     ? selectedEpisode?.id ?? selectedEpisodeId
     : REVIEW_ID;
+  const activeDrawingSaveError = drawingSaveErrors[activeEpisodeId];
+  const activeDrawingSavePending = Boolean(drawingSavePending[activeEpisodeId]);
   const activeInstrument = selectedImportedInstrument?.instrument ??
     DEMO_INSTRUMENT;
   const activeReview = episodeReviews[activeEpisodeId];
@@ -1239,6 +1270,10 @@ function isAbortError(error: unknown) {
       marketDataStatuses,
     ],
   );
+  const currentEpisodeIds = useMemo(
+    () => new Set(tradeLibraryEntries.flatMap(entry => entry.episodes.map(({ episode }) => episode.id))),
+    [tradeLibraryEntries],
+  );
   const searchableInstruments = useMemo(
     () =>
       [
@@ -1282,7 +1317,7 @@ function isAbortError(error: unknown) {
     candles: activeSnapshot.candles,
     executions: selectedImportedInstrument && historyMode === "history"
       ? selectedImportedInstrument.executions.filter(execution => selectedEpisode?.executions[0]
-        ? execution.source.tradeNature === selectedEpisode.executions[0].source.tradeNature && execution.source.simulationRunId === selectedEpisode.executions[0].source.simulationRunId
+        ? execution.accountId === selectedEpisode.accountId && execution.source.tradeNature === selectedEpisode.executions[0].source.tradeNature && execution.source.simulationRunId === selectedEpisode.executions[0].source.simulationRunId
         : true)
       : activeSnapshot.executions,
     positionEvents: activePositionEvents,
@@ -1421,7 +1456,8 @@ function isAbortError(error: unknown) {
     source: Candle[] = [],
     episodeStartedAt = fallbackCursor,
   ) {
-    const stored = reviewStates[episodeId];
+    const stored = drawingDraftsRef.current[episodeId] ?? reviewStates[episodeId];
+    drawingEpisodeRef.current = episodeId;
     setTimeframe(stored?.timeframe ?? preferredTimeframe);
     const storedCursor = stored?.replayCursor;
     setImportedCursor(
@@ -1475,7 +1511,8 @@ function isAbortError(error: unknown) {
       setPlaying(false);
       setSelectedInstrumentId("demo");
       setSelectedEpisodeId(REVIEW_ID);
-      const stored = reviewStates[REVIEW_ID];
+      const stored = drawingDraftsRef.current[REVIEW_ID] ?? reviewStates[REVIEW_ID];
+      drawingEpisodeRef.current = REVIEW_ID;
       setTimeframe(stored?.timeframe ?? "1D");
       setActivePanelTab(stored?.activePanelTab ?? "stats");
       setDrawingHistory(createDrawingHistory(stored?.drawings ?? []));
@@ -1618,6 +1655,7 @@ function isAbortError(error: unknown) {
         const storedDemo = states[REVIEW_ID];
         if (firstSummary && newestEpisode) {
           const stored = states[newestEpisode.id];
+          drawingEpisodeRef.current = newestEpisode.id;
           setSelectedInstrumentId(firstSummary.instrument.id);
           setSelectedEpisodeId(newestEpisode.id);
           setTimeframe(stored?.timeframe ?? "15m");
@@ -1625,6 +1663,7 @@ function isAbortError(error: unknown) {
           setActivePanelTab(stored?.activePanelTab ?? "stats");
           setDrawingHistory(createDrawingHistory(stored?.drawings ?? []));
         } else if (showDemo && storedDemo) {
+          drawingEpisodeRef.current = REVIEW_ID;
           setTimeframe(storedDemo.timeframe);
           setActivePanelTab(storedDemo.activePanelTab);
           setDrawingHistory(createDrawingHistory(storedDemo.drawings));
@@ -1657,6 +1696,26 @@ function isAbortError(error: unknown) {
       replayRequestSequence.current += 1;
     };
   }, [bootstrapAttempt, initialFrame.cursor, legacyStateExporter, showDemo, storageClient]);
+
+  useEffect(() => {
+    if (!hydrated || storedInstruments.length === 0) return;
+    localizedHydrationQueue.current?.enqueue(storedInstruments);
+  }, [hydrated, storedInstruments]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const controller = new AbortController();
+    const queue = localizedHydrationQueue.current;
+    if (!queue) return () => controller.abort();
+    void queue.run({
+      repository: metadataRepository,
+      fetcher: fetch,
+      signal: controller.signal,
+      reload: async () => (await storageClient.getBootstrap()).instruments,
+      onProgress: setStoredInstruments,
+    }).catch(() => undefined);
+    return () => controller.abort();
+  }, [hydrated, metadataRepository, storageClient]);
 
   // Read the latest selection only when an inventory hydration completes. Saving a
   // cursor or switching episodes must never re-read every instrument's cache.
@@ -1701,7 +1760,7 @@ function isAbortError(error: unknown) {
   const selectedHydrationInstrument = useEffectEvent(() => selectedImportedInstrument?.instrument.id);
 
   useEffect(() => {
-    if (!hydrated || importedInstruments.length === 0) return;
+    if (!hydrated || rawImportedInstruments.length === 0) return;
     let active = true;
     const repository = marketDataRepository;
     const hydrateMarketState = async (summary: InstrumentTradeSummary) => {
@@ -1728,8 +1787,8 @@ function isAbortError(error: unknown) {
       setHydratedMarketIds(current => new Set([...current, summary.instrument.id]));
     };
     const priorityInstrumentId = selectedHydrationInstrument();
-    const selectedSummary = importedInstruments.find(summary => summary.instrument.id === priorityInstrumentId);
-    const backgroundSummaries = importedInstruments.filter(summary => summary !== selectedSummary);
+    const selectedSummary = rawImportedInstruments.find(summary => summary.instrument.id === priorityInstrumentId);
+    const backgroundSummaries = rawImportedInstruments.filter(summary => summary !== selectedSummary);
     void (async () => {
       if (selectedSummary) await hydrateMarketState(selectedSummary);
       if (active) await Promise.all(backgroundSummaries.map(hydrateMarketState));
@@ -1739,12 +1798,98 @@ function isAbortError(error: unknown) {
     };
   }, [
     hydrated,
-    importedInstruments,
+    rawImportedInstruments,
     marketDataRepository,
   ]);
 
+  function setDrawingSaveError(episodeId: string, message: string) {
+    drawingSaveErrorsRef.current[episodeId] = message;
+    setDrawingSaveErrors((current) => ({ ...current, [episodeId]: message }));
+  }
+
+  function clearDrawingSaveError(episodeId: string) {
+    delete drawingSaveErrorsRef.current[episodeId];
+    setDrawingSaveErrors((current) => {
+      if (!(episodeId in current)) return current;
+      const next = { ...current };
+      delete next[episodeId];
+      return next;
+    });
+  }
+
+  function enqueueDrawingState(state: EpisodeReviewState): Promise<void> {
+    const episodeId = state.episodeId;
+    drawingDraftsRef.current[episodeId] = state;
+    const sequence = (drawingSaveSequencesRef.current[episodeId] ?? 0) + 1;
+    drawingSaveSequencesRef.current[episodeId] = sequence;
+    setDrawingSavePending((current) => ({ ...current, [episodeId]: true }));
+
+    const previous = drawingSaveQueuesRef.current[episodeId] ?? Promise.resolve();
+    const operation = previous
+      .catch(() => undefined)
+      .then(async () => {
+        if (drawingSaveSequencesRef.current[episodeId] !== sequence) return;
+        await storageClient.putReviewState(state);
+        if (drawingSaveSequencesRef.current[episodeId] !== sequence) return;
+        setReviewStates((current) => ({ ...current, [episodeId]: state }));
+        clearDrawingSaveError(episodeId);
+      });
+    drawingSaveQueuesRef.current[episodeId] = operation;
+    void operation.then(
+      () => {
+        if (drawingSaveSequencesRef.current[episodeId] === sequence) {
+          setDrawingSavePending((current) => ({ ...current, [episodeId]: false }));
+        }
+      },
+      (error) => {
+        if (drawingSaveSequencesRef.current[episodeId] === sequence) {
+          setDrawingSavePending((current) => ({ ...current, [episodeId]: false }));
+          setDrawingSaveError(
+            episodeId,
+            error instanceof Error && error.message
+              ? `复盘状态未能保存到 SQLite：${error.message}`
+              : "复盘状态未能保存到 SQLite，请点击“重试保存复盘状态”。",
+          );
+        }
+      },
+    );
+    return operation;
+  }
+
+  function retryDrawingState(episodeId: string): Promise<void> {
+    const draft = drawingDraftsRef.current[episodeId];
+    return draft ? enqueueDrawingState(draft) : Promise.resolve();
+  }
+
+  async function flushLatestDrawingState(state: EpisodeReviewState) {
+    let operation = enqueueDrawingState(state);
+    let expectedSequence = drawingSaveSequencesRef.current[state.episodeId] ?? 0;
+    for (;;) {
+      await operation;
+      const latestOperation = drawingSaveQueuesRef.current[state.episodeId];
+      const latestSequence = drawingSaveSequencesRef.current[state.episodeId] ?? 0;
+      if (latestSequence === expectedSequence && latestOperation === operation) {
+        return;
+      }
+      if (latestOperation && latestOperation !== operation) {
+        operation = latestOperation;
+        expectedSequence = latestSequence;
+        continue;
+      }
+      const candidate = drawingDraftsRef.current[state.episodeId] ?? state;
+      operation = enqueueDrawingState(candidate);
+      expectedSequence = drawingSaveSequencesRef.current[state.episodeId] ?? 0;
+    }
+  }
+
   useEffect(() => {
-    if (!hydrated || restoring || !activeEpisodeId || (!showDemo && !selectedImportedInstrument)) return;
+    if (
+      !hydrated ||
+      restoring ||
+      !activeEpisodeId ||
+      drawingEpisodeRef.current !== activeEpisodeId ||
+      (!showDemo && !selectedRawImportedInstrument)
+    ) return;
     const state: EpisodeReviewState = {
       version: 2,
       episodeId: activeEpisodeId,
@@ -1753,9 +1898,7 @@ function isAbortError(error: unknown) {
       activePanelTab,
       drawings: drawingHistory.present,
     };
-    void storageClient.putReviewState(state)
-      .then(() => setReviewStates((current) => ({ ...current, [activeEpisodeId]: state })))
-      .catch(() => setImportError("复盘状态未能保存到 SQLite，请稍后重试。"));
+    void enqueueDrawingState(state);
   }, [
     activeCursor,
     effectiveImportedCursor,
@@ -1767,8 +1910,19 @@ function isAbortError(error: unknown) {
     storageClient,
     timeframe,
     showDemo,
-    selectedImportedInstrument,
+    selectedRawImportedInstrument,
   ]);
+
+  useEffect(() => {
+    if (activeView !== "review" || !activeEpisodeId) return;
+    const draft = drawingDraftsRef.current[activeEpisodeId];
+    if (!draft) return;
+    setDrawingHistory((current) =>
+      current.present === draft.drawings
+        ? current
+        : createDrawingHistory(draft.drawings),
+    );
+  }, [activeEpisodeId, activeView]);
 
   useEffect(() => {
     if (!playing) return;
@@ -2009,21 +2163,46 @@ function isAbortError(error: unknown) {
         const metadataRefresh = historicalIdentity
           ? persistInstrumentName(historicalIdentity.displayName)
           : options.refreshMetadata && market
-            ? refreshInstrumentMetadata(
-                {
-                  market,
-                  symbol: instrument.symbol,
-                },
-                {
-                  repository: metadataRepository,
-                  fetcher: fetch,
-                  signal: abortController.signal,
-                },
-              )
-                .then((metadata) =>
-                  metadata ? persistInstrumentName(metadata.name) : undefined,
-                )
-                .catch(() => undefined)
+            ? (() => {
+                const existingRefresh = metadataRefreshes.current[instrumentId];
+                const refresh = existingRefresh ?? refreshInstrumentMetadata(
+                  {
+                    market,
+                    symbol: instrument.symbol,
+                  },
+                  {
+                    repository: metadataRepository,
+                    fetcher: fetch,
+                    signal: abortController.signal,
+                  },
+                ).catch(() => undefined);
+                if (!existingRefresh) {
+                  metadataRefreshes.current[instrumentId] = refresh;
+                  void refresh.finally(() => {
+                    if (metadataRefreshes.current[instrumentId] === refresh) {
+                      delete metadataRefreshes.current[instrumentId];
+                    }
+                  });
+                }
+                return refresh.then((metadata) => {
+                  if (!metadata) return undefined;
+                  if (metadata.localizedName) {
+                    setStoredInstruments((current) => {
+                      const existing = current.findIndex((item) => item.id === instrumentId);
+                      const base = existing >= 0 ? current[existing] : instrument;
+                      const projected = localizedInstrumentOverlay(base, metadata);
+                      if (existing < 0) return [...current, projected];
+                      return current.map((item, index) => index === existing ? projected : item);
+                    });
+                    // A localized response is an additive display overlay;
+                    // do not rewrite any execution's original name.
+                    return undefined;
+                  }
+                  // Preserve the pre-existing canonical-name refresh behavior
+                  // for providers that have not supplied a localized overlay.
+                  return persistInstrumentName(metadata.name);
+                });
+              })()
             : Promise.resolve();
         let next = { ...cached };
         if (!market) {
@@ -2787,6 +2966,16 @@ function isAbortError(error: unknown) {
     episodeId: string,
     scopeKey?: string,
   ) {
+    const summary = importedInstruments.find((item) => item.instrument.id === instrumentId);
+    if (summary && selectImportedSummary(summary, episodeId)) {
+      setHistoryMode("history");
+      setReviewQueueIds(undefined);
+      setActivePanelTab("notes");
+      setLibraryTarget(undefined);
+      setNavigationNotice(null);
+      setActiveView("review");
+      return;
+    }
     setLibraryTarget({
       requestId: ++libraryTargetSequence.current,
       instrumentId,
@@ -2796,9 +2985,24 @@ function isAbortError(error: unknown) {
     setActiveView("library");
   }
 
+  function returnToLibrary() {
+    setPlaying(false);
+    setLibraryTarget(undefined);
+    setLibraryBrowseState((current) =>
+      current
+        ? { ...current, selectedInstrumentId: null, selectedEpisodeId: null }
+        : current,
+    );
+    setActiveView("library");
+  }
+
   function continueFromReview() {
-    const next = buildReviewQueue(tradeLibraryEntries, {status:"pending", ...(reviewQueueIds ? {} : {account:selectedEpisode?.accountId, nature:selectedEpisode?.executions[0] ? displayTradeNature(selectedEpisode.executions[0]) : undefined, simulationRunId:selectedEpisode?.simulationRunId})})
-      .find(row => row.item.episode.id !== activeEpisodeId && (!reviewQueueIds || reviewQueueIds.includes(row.item.episode.id)));
+    const candidates = buildReviewQueue(tradeLibraryEntries, {status:"pending", ...(reviewQueueIds ? {} : {account:selectedEpisode?.accountId, nature:selectedEpisode?.executions[0] ? displayTradeNature(selectedEpisode.executions[0]) : undefined, simulationRunId:selectedEpisode?.simulationRunId})});
+    const next = reviewQueueIds
+      ? candidates
+        .filter(row => reviewQueueIds.indexOf(row.item.episode.id) > reviewQueueIds.indexOf(activeEpisodeId))
+        .sort((left, right) => reviewQueueIds.indexOf(left.item.episode.id) - reviewQueueIds.indexOf(right.item.episode.id))[0]
+      : candidates.find(row => row.item.episode.id !== activeEpisodeId);
     if (next) {
       const summary = importedInstruments.find(item => item.instrument.id === next.entry.instrument.id);
       if (summary && selectImportedSummary(summary, next.item.episode.id)) {
@@ -2879,7 +3083,7 @@ function isAbortError(error: unknown) {
 
   function applyCommand(command: DrawingCommand) {
     setDrawingHistory((history) =>
-      applyDrawingCommand(history, command),
+      applyDrawingCommand(history, command, activeCursor),
     );
     if (command.type === "add") setActiveTool("cursor");
   }
@@ -2890,15 +3094,6 @@ function isAbortError(error: unknown) {
       !importedAvailability[next].enabled
     ) {
       return;
-    }
-    if (selectedImportedInstrument) {
-      const timeline = aggregateVisibleCandles(
-        sourceCandlesForTimeframe(selectedMarketState, next), next,
-        selectedImportedInstrument.instrument.market, selectedMarketState.intradayInterval,
-      );
-      const first = timeline.map(candleKnowledgeAt).sort()[0];
-      // A coarser period may have no closed bar at the saved intraday cursor.
-      if (first && first > effectiveImportedCursor) setImportedCursor(first);
     }
     setTimeframe(next);
     setSelectedDrawingId(null);
@@ -2948,6 +3143,32 @@ function isAbortError(error: unknown) {
   }
 
   async function saveEpisodeReview(record: EpisodeReviewRecord) {
+    const requiresDrawingFlush = Boolean(
+      record.review.completed || record.review.deferredReason?.trim(),
+    );
+    if (requiresDrawingFlush && record.episodeId === activeEpisodeId) {
+      if (drawingSaveErrorsRef.current[record.episodeId]) {
+        throw new Error(
+          "复盘状态尚未保存，请点击“重试保存复盘状态”后再完成本回合。",
+        );
+      }
+      try {
+        await flushLatestDrawingState({
+          version: 2,
+          episodeId: record.episodeId,
+          replayCursor: selectedImportedInstrument
+            ? effectiveImportedCursor
+            : activeCursor,
+          timeframe,
+          activePanelTab,
+          drawings: drawingHistory.present,
+        });
+      } catch {
+        throw new Error(
+          "复盘状态尚未保存，请点击“重试保存复盘状态”后再完成本回合。",
+        );
+      }
+    }
     const persisted = await reviewRepository.put(record);
     if (!persisted) throw new Error("复盘记录已更新，本次保存未被接受，请重新载入后重试");
     setEpisodeReviews((current) => {
@@ -3034,7 +3255,13 @@ function isAbortError(error: unknown) {
           <button
             className={activeView === "review" ? "active" : ""}
             aria-current={activeView === "review" ? "page" : undefined}
-            onClick={() => setActiveView("review")}
+            onClick={() => {
+              setPlaying(false);
+              setHistoryMode("replay");
+              const draft = drawingDraftsRef.current[activeEpisodeId];
+              if (draft) setDrawingHistory(createDrawingHistory(draft.drawings));
+              setActiveView("review");
+            }}
           >
             逐笔复盘
           </button>
@@ -3042,10 +3269,7 @@ function isAbortError(error: unknown) {
             className={activeView === "library" ? "active" : ""}
             aria-current={activeView === "library" ? "page" : undefined}
             onClick={() => {
-              if (timeframe !== "1D" && timeframe !== "1W") {
-                setTimeframe("1D");
-              }
-              setActiveView("library");
+              returnToLibrary();
             }}
           >
             交易库
@@ -3081,6 +3305,7 @@ function isAbortError(error: unknown) {
       </div>}
       {mobileTradesOpen && <button className="stock-drawer-backdrop" aria-label="关闭本股交易遮罩" onClick={() => setMobileTradesOpen(false)} />}
       {importError && <p role="alert" className="navigation-notice">{importError}</p>}
+      {activeDrawingSaveError && <p role="alert" className="navigation-notice">{activeDrawingSaveError}<button type="button" disabled={activeDrawingSavePending} onClick={() => void retryDrawingState(activeEpisodeId).catch(() => undefined)}>重试保存复盘状态</button></p>}
       {importing && <p role="status" className="global-import-status">正在处理导入记录…</p>}
       {storedInstruments.some(instrument => !importedInstruments.some(item=>item.instrument.id===instrument.id)) && <details className="navigation-notice"><summary>查看已无成交股票的保留记录</summary>{storedInstruments.filter(instrument => !importedInstruments.some(item=>item.instrument.id===instrument.id)).map(instrument => <button key={instrument.id} onClick={() => openDataCheck(instrument.id, "")}>{instrument.name}（{instrument.symbol}）数据记录</button>)}</details>}
       {navigationNotice && <p role="alert" className="navigation-notice">{navigationNotice}<button type="button" onClick={() => setNavigationNotice(null)}>关闭提示</button></p>}
@@ -3104,8 +3329,10 @@ function isAbortError(error: unknown) {
             candlesByInstrument={marketDataCandles}
             marketDataStatuses={marketDataStatuses}
             marketDataLabels={marketDataLabels}
-            timeframe={timeframe === "1W" ? "1W" : "1D"}
-            onTimeframeChange={setTimeframe}
+            timeframe={legacyTimeframe}
+            onTimeframeChange={(next) => {
+              if (next === "1D" || next === "1W") setLegacyTimeframe(next);
+            }}
             onOpenInReview={(instrumentId, episodeId, queueIds) => {
               const summary = importedInstruments.find((item) => item.instrument.id === instrumentId);
               if (!summary || !selectImportedSummary(summary, episodeId)) {
@@ -3114,6 +3341,7 @@ function isAbortError(error: unknown) {
               }
               setNavigationNotice(null);
               setReviewQueueIds(queueIds);
+              setHistoryMode("history");
               setActivePanelTab("notes");
               setLibraryTarget(undefined);
               setActiveView("review");
@@ -3187,7 +3415,7 @@ function isAbortError(error: unknown) {
             />
             </aside>
             <div className="review-content" inert={stockDrawerOpen || Boolean(dataTarget)}>
-            {(showDemo || selectedImportedInstrument) && <div className={`stock-context-shell ${mobileTradesOpen ? "mobile-trades-open" : ""}`}><StockEpisodeNavigation mobileOpen={mobileTradesOpen} onCloseMobile={() => setMobileTradesOpen(false)} instrument={selectedImportedInstrument?.instrument} episodes={episodes} selectedEpisodeId={selectedEpisode?.id} cursor={activeCursor} onSelectEpisode={id => { selectEpisode(id); setMobileTradesOpen(false); }} onLocate={(cursor) => { setPlaying(false); setImportedCursor(cursor); setMobileTradesOpen(false); }} onNext={nextImportedExecution} onSwitchStock={() => { setMobileTradesOpen(false); setStockDrawerOpen(true); }} onLibrary={() => { setMobileTradesOpen(false); setActiveView("library"); }} /></div>}
+            {(showDemo || selectedImportedInstrument) && <div className={`stock-context-shell ${mobileTradesOpen ? "mobile-trades-open" : ""}`}><StockEpisodeNavigation mobileOpen={mobileTradesOpen} onCloseMobile={() => setMobileTradesOpen(false)} instrument={selectedImportedInstrument?.instrument} episodes={episodes} selectedEpisodeId={selectedEpisode?.id} cursor={activeCursor} onSelectEpisode={id => { selectEpisode(id); setMobileTradesOpen(false); }} onLocate={(cursor) => { setPlaying(false); setImportedCursor(cursor); setMobileTradesOpen(false); }} onNext={nextImportedExecution} onSwitchStock={() => { setMobileTradesOpen(false); setStockDrawerOpen(true); }} onLibrary={() => { setMobileTradesOpen(false); returnToLibrary(); }} /></div>}
             {!showDemo && !selectedImportedInstrument ? (
               <section
                 className="review-workspace review-workspace-empty"
@@ -3203,7 +3431,7 @@ function isAbortError(error: unknown) {
             ) : selectedImportedInstrument && !selectedEpisode ? (
               <section className="review-workspace review-workspace-empty" role="alert">
                 <p>原交易回合已变化，请重新选择。</p>
-                <button type="button" className="secondary-action" onClick={() => setActiveView("library")}>前往交易库选择回合</button>
+                <button type="button" className="secondary-action" onClick={returnToLibrary}>前往交易库选择回合</button>
               </section>
             ) : selectedImportedInstrument &&
             !hydratedMarketIds.has(
@@ -3356,7 +3584,7 @@ function isAbortError(error: unknown) {
         ...(marketStates[dataTarget.instrument.id]?.intradayCoverage ?? []).map(segment => `小时线覆盖：${segment.actualStart ?? segment.requestedStart} 至 ${segment.actualEnd ?? segment.requestedEnd}，${marketDataStatusLabel(segment.status)}`),
       ]} refreshing={marketDataStatuses[dataTarget.instrument.id] === "syncing"} onRefresh={() => void startMarketDataUpdate([dataTarget.instrument.id], { refreshMetadata: true })} onClose={() => setDataTarget(undefined)} onRevise={reviseCurrentTrades} loadHistory={tradeRepairClient.history} onSupplement={(accountId, kind) => { const scope = { instrumentId: dataTarget.instrument.id, accountId, accountLabel: importedExecutions.find(e=>e.accountId===accountId)?.accountLabel ?? accountId, kind }; supplementScopeRef.current = scope; setSupplementScope(scope); setDataTarget(undefined); if (kind === "file") importFileRef.current?.click(); else importScreenshotRef.current?.click(); }} retainedReviews={[
         ...new Set([...Object.values(episodeReviews).filter(review => review.instrumentId === dataTarget.instrument.id).map(review => review.episodeId), ...Object.keys(reviewStates).filter(id => id.includes(encodeURIComponent(dataTarget.instrument.id)))])
-      ].filter(id => !buildTradeEpisodes(importedExecutions).some(episode => episode.id === id)).map(episodeId => ({ episodeId, review: episodeReviews[episodeId], drawingCount: reviewStates[episodeId]?.drawings.length ?? 0, drawings: reviewStates[episodeId]?.drawings }))} />}
+      ].filter(id => !currentEpisodeIds.has(id)).map(episodeId => ({ episodeId, review: episodeReviews[episodeId], drawingCount: reviewStates[episodeId]?.drawings.length ?? 0, drawings: reviewStates[episodeId]?.drawings }))} />}
 
       {supplementScope && <div role="status" className="supplement-scope-notice">补充导入范围：{supplementScope.instrumentId} · {supplementScope.accountLabel}。截图成交将归入此账户；其他股票与文件中的其他账户已排除（{supplementExcluded} 笔）。{!pendingImport && !screenshotImport.open && !importing && <button onClick={clearSupplement}>取消补充导入</button>}</div>}
       {monthlyReview && (

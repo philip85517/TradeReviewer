@@ -6,6 +6,7 @@ import type {
   IPriceLine,
   ISeriesApi,
   Time,
+  TickMarkType,
 } from "lightweight-charts";
 
 import type {
@@ -168,6 +169,15 @@ function chartTimeLabel(time: Time) {
   );
 }
 
+export function chartTickLabel(time: Time, unit: "year" | "date" | "time" | "seconds") {
+  const label = chartTimeLabel(time);
+  const parts = /^(\d+)年(\d+)月(\d+)日 (\d+:\d+):(\d+)$/.exec(label);
+  if (!parts) return label;
+  if (unit === "year") return parts[1];
+  if (unit === "date") return `${parts[2]}-${parts[3]}`;
+  return unit === "seconds" ? `${parts[4]}:${parts[5]}` : parts[4];
+}
+
 export function ReplayChart({
   candles,
   executions,
@@ -235,6 +245,7 @@ export function ReplayChart({
         CrosshairMode,
         HistogramSeries,
         LineStyle,
+        TickMarkType,
         createChart,
         createSeriesMarkers,
       }) => {
@@ -281,7 +292,10 @@ export function ReplayChart({
             secondsVisible: false,
             rightOffset: 4,
             barSpacing: 8,
-            tickMarkFormatter: (time: Time) => chartTimeLabel(time),
+            tickMarkFormatter: (time: Time, type: TickMarkType) => chartTickLabel(time,
+              type === TickMarkType.Year ? "year" :
+              type === TickMarkType.Time ? "time" :
+              type === TickMarkType.TimeWithSeconds ? "seconds" : "date"),
           },
         });
         const candleSeries = chart.addSeries(CandlestickSeries, {

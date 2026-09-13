@@ -40,7 +40,7 @@ import { ReplayChart } from "../chart/replay-chart";
 import { EpisodeReviewEditor } from "../review/episode-review-editor";
 import type { EpisodeNotesProps } from "../review/episode-notes-panel";
 import type { TradeEpisode } from "../../lib/trades/types";
-import { buildReviewQueue, type ReviewQueueFilter, type ReviewQueueItem } from "../../lib/reviews/review-queue";
+import { buildReviewQueue, reviewState, type ReviewQueueFilter, type ReviewQueueItem } from "../../lib/reviews/review-queue";
 import { ReviewQueue } from "./review-queue";
 
 export type TradeLibraryBrowseState = {
@@ -136,6 +136,7 @@ export function TradeLibrary({
   const [queueFilter, setQueueFilter] = useState<ReviewQueueFilter>(initialBrowseState?.queueFilter ?? {status:"pending"});
   const [queueNotice, setQueueNotice] = useState("");
   const processedIds = useRef(new Set<string>());
+  const reopenedIds = useRef(new Set<string>());
   const [selectedInstrumentId, setSelectedInstrumentId] = useState<
     string | null
   >(target?.instrumentId ?? initialBrowseState?.selectedInstrumentId ?? null);
@@ -273,17 +274,26 @@ export function TradeLibrary({
 
   const detailFilter: ReviewQueueFilter = mode === "queue" ? queueFilter : {account,year,market,nature:tradeNature,simulationRunId};
   const detailEntries = mode === "stocks" && selectedEntry ? [selectedEntry] : entries;
-  const queueEntries = buildReviewQueue(detailEntries, {...detailFilter,status:"pending"});
-  const detailIds = new Set(buildReviewQueue(detailEntries, {...detailFilter,status:"all"}).map(row => row.item.episode.id));
+  const queueRows = buildReviewQueue(detailEntries, {...detailFilter,status:"all"});
+  const queueEntries = queueRows.filter(row => reviewState(row.item) === "pending");
+  const detailIds = new Set(queueRows.map(row => row.item.episode.id));
   const openQueued = ({entry,item}: ReviewQueueItem) => {
+    if (processedIds.current.has(item.episode.id)) reopenedIds.current.add(item.episode.id);
     processedIds.current.delete(item.episode.id);
     setSelectedInstrumentId(entryKey(entry));
     setSelectedEpisodeId(item.episode.id);
     setQueueNotice("");
+    onOpenInReview(
+      entry.instrument.id,
+      item.episode.id,
+      queueRows.map(row => row.item.episode.id),
+    );
   };
   const continueReview = () => {
     if (selectedEpisodeId) processedIds.current.add(selectedEpisodeId);
-    const next = queueEntries.find(row => row.item.episode.id !== selectedEpisode?.episode.id && !processedIds.current.has(row.item.episode.id));
+    const currentIndex = queueRows.findIndex(row => row.item.episode.id === selectedEpisode?.episode.id);
+    const next = queueRows.slice(Math.max(currentIndex + 1, 0)).find(row => reviewState(row.item) === "pending" && !processedIds.current.has(row.item.episode.id))
+      ?? queueRows.slice(0, Math.max(currentIndex, 0)).find(row => reopenedIds.current.has(row.item.episode.id) && reviewState(row.item) === "pending");
     if (next) openQueued(next);
     else {
       setSelectedInstrumentId(null);
@@ -343,11 +353,11 @@ export function TradeLibrary({
           <button
             className="library-open-review"
             onClick={() =>
-              onOpenInReview(selectedEntry.instrument.id, episode.id, queueEntries.map(row => row.item.episode.id))
+              onOpenInReview(selectedEntry.instrument.id, episode.id, queueRows.map(row => row.item.episode.id))
             }
           >
             <BookOpenCheck size={15} />
-            进入逐笔复盘
+            打开统一工作台
           </button>
         </header>
 
@@ -611,7 +621,7 @@ export function TradeLibrary({
     );
   }
 
-  if (mode === "queue" && !selectionMissing) return <section className="trade-library" aria-label="交易库"><ReviewQueue entries={entries} filter={queueFilter} onFilter={next => {setQueueFilter(next);processedIds.current.clear();}} onOpen={openQueued} onBrowseStocks={() => setMode("stocks")} notice={queueNotice} /></section>;
+  if (mode === "queue" && !selectionMissing) return <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}><ReviewQueue entries={entries} filter={queueFilter} onFilter={next => {setQueueFilter(next);processedIds.current.clear();reopenedIds.current.clear();}} onOpen={openQueued} onBrowseStocks={() => setMode("stocks")} notice={queueNotice} /></section>;
 
   return (
     <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}>
@@ -784,10 +794,29 @@ export function TradeLibrary({
                 aria-label={`打开${entry.instrument.name}交易回合`}
                 key={entryKey(entry)}
                 onClick={() => {
-                  setSelectedInstrumentId(entryKey(entry));
-                  setSelectedEpisodeId(
-                    buildReviewQueue([entry], {account,year,market,nature:tradeNature,simulationRunId})[0]?.item.episode.id ?? null,
-                  );
+                  const stockEpisodes = buildReviewQueue([entry], {
+                    account,
+                    year,
+                    market,
+                    nature: tradeNature,
+                    simulationRunId,
+                    status: "all",
+                  });
+                  const episode = stockEpisodes[0]?.item.episode;
+                  if (episode) {
+                    onOpenInReview(
+                      entry.instrument.id,
+                      episode.id,
+                      buildReviewQueue([entry], {
+                        account,
+                        year,
+                        market,
+                        nature: tradeNature,
+                        simulationRunId,
+                        status: "all",
+                      }).map((row) => row.item.episode.id),
+                    );
+                  }
                 }}
               >
                 <span className="library-stock-identity">

@@ -59,7 +59,7 @@ test("dev server exposes a working SQLite storage API", async () => {
     const response = await waitForServer(child, `http://localhost:${port}`);
     assert.equal(response.status, 200);
     const body = await response.json();
-    assert.equal(body.schemaVersion, 5);
+    assert.equal(body.schemaVersion, 6);
   } finally {
     child.kill("SIGTERM");
     await new Promise((resolve) => child.once("exit", resolve));

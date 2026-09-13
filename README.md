@@ -91,6 +91,8 @@ TIGER_OPENAPI_CONFIG=/absolute/path/tiger_openapi_config.properties npm run dev
 
 ## 验证
 
+项目默认采用[协调者 + Luna 分布式开发与预览交付流程](docs/agents/development-workflow.md)：Luna 负责实现，协调者独立验收，并在聊天交付已启动、可打开的预览链接。
+
 TradingView 自动测试使用最小冻结夹具；如需校验本地原始示例，可设置 `TRADINGVIEW_SAMPLE_DIR` 并运行 `npm run test:unit -- app/lib/import/tradingview-samples.test.ts`。原始 CSV 不纳入仓库。
 
 ```bash

@@ -150,6 +150,441 @@ describe("A股招商银行 import persistence",()=>{
 });
 
 describe("SqliteStore", () => {
+  it("preserves a confirmed account correction when a richer duplicate reimport replaces the row", () => {
+    const store = createStore();
+    const correction = {
+      originalAccountId: "account-1",
+      canonicalAccountId: "account-canonical",
+      reason: "User confirmed the account identity",
+      confirmedOn: "2026-09-12",
+      confirmedBy: "user",
+    };
+    const corrected = { ...execution, accountId: correction.canonicalAccountId };
+    store.mergeExecutions([corrected]);
+    databaseFor(store).prepare("update executions set evidence_json = ? where id = ?").run(
+      JSON.stringify({
+        source: corrected.source,
+        accountLabel: corrected.accountLabel,
+        accountCorrection: correction,
+        importAudit: { sourceVersion: "original-parser" },
+      }),
+      corrected.id,
+    );
+
+    const reimport = {
+      ...execution,
+      source: { ...execution.source, inputKind: "statement" as const, feeStatus: "reported" as const },
+    };
+    expect(store.mergeExecutions([reimport])).toEqual({ inserted: 1, duplicate: 1, conflict: 0 });
+    expect(store.getExecutions()[0]).toMatchObject({
+      id: execution.id,
+      accountId: correction.canonicalAccountId,
+      source: reimport.source,
+    });
+    expect(databaseFor(store).prepare("select evidence_json from executions where id = ?").get(execution.id)).toEqual({
+      evidence_json: JSON.stringify({
+        source: reimport.source,
+        accountLabel: reimport.accountLabel,
+        accountCorrection: correction,
+        importAudit: { sourceVersion: "original-parser" },
+      }),
+    });
+    expect(store.mergeExecutions([reimport])).toEqual({ inserted: 0, duplicate: 1, conflict: 0 });
+    expect(databaseFor(store).prepare("select evidence_json from executions where id = ?").get(execution.id)).toEqual({
+      evidence_json: JSON.stringify({
+        source: reimport.source,
+        accountLabel: reimport.accountLabel,
+        accountCorrection: correction,
+        importAudit: { sourceVersion: "original-parser" },
+      }),
+    });
+  });
+
+  it("fails closed when a same-id reimport changes the corrected trade quantity", () => {
+    const store = createStore();
+    const correction = {
+      originalAccountId: "account-1",
+      canonicalAccountId: "account-canonical",
+      reason: "User confirmed the account identity",
+      confirmedOn: "2026-09-12",
+    };
+    const corrected = { ...execution, accountId: correction.canonicalAccountId };
+    store.mergeExecutions([corrected]);
+    const evidence = {
+      source: corrected.source,
+      accountLabel: corrected.accountLabel,
+      accountCorrection: correction,
+    };
+    databaseFor(store).prepare("update executions set evidence_json = ? where id = ?").run(
+      JSON.stringify(evidence),
+      corrected.id,
+    );
+
+    const changedQuantity = {
+      ...execution,
+      quantity: "101",
+      source: { ...execution.source, inputKind: "statement" as const },
+    };
+    expect(() => store.mergeExecutions([changedQuantity])).toThrow(
+      "Account correction replacement identity conflict",
+    );
+    expect(store.getExecutions()[0]).toMatchObject({
+      id: execution.id,
+      accountId: correction.canonicalAccountId,
+      quantity: corrected.quantity,
+    });
+    expect(databaseFor(store).prepare("select evidence_json from executions where id = ?").get(execution.id)).toEqual({
+      evidence_json: JSON.stringify(evidence),
+    });
+  });
+
+  it("carries a confirmed account correction through an explicit execution replacement", () => {
+    const store = createStore();
+    const correction = {
+      originalAccountId: "account-1",
+      canonicalAccountId: "account-canonical",
+      reason: "User confirmed the account identity",
+      confirmedOn: "2026-09-12",
+      evidenceVersion: 1,
+    };
+    const oldExecution = { ...execution, id: "old-execution", accountId: correction.canonicalAccountId };
+    store.mergeExecutions([oldExecution]);
+    const oldEvidence = {
+      source: oldExecution.source,
+      accountLabel: oldExecution.accountLabel,
+      accountCorrection: correction,
+      importAudit: { sourceVersion: "original-parser" },
+    };
+    databaseFor(store).prepare("update executions set evidence_json = ? where id = ?").run(
+      JSON.stringify(oldEvidence),
+      oldExecution.id,
+    );
+
+    const replacement = {
+      ...execution,
+      id: "replacement-execution",
+      source: { ...execution.source, inputKind: "screenshot" as const },
+    };
+    expect(store.mergeTradeData({ executions: [replacement], replaceExecutionIds: [oldExecution.id] })).toEqual({
+      inserted: 1,
+      duplicate: 0,
+      conflict: 0,
+    });
+    expect(store.getExecutions()).toHaveLength(1);
+    expect(store.getExecutions()[0]).toMatchObject({
+      id: replacement.id,
+      accountId: correction.canonicalAccountId,
+      source: replacement.source,
+    });
+    expect(databaseFor(store).prepare("select evidence_json from executions where id = ?").get(replacement.id)).toEqual({
+      evidence_json: JSON.stringify({
+        ...oldEvidence,
+        source: replacement.source,
+        accountLabel: replacement.accountLabel,
+      }),
+    });
+  });
+
+  it("fails closed instead of inheriting a correction across different documents with the same trade values", () => {
+    const store = createStore();
+    const correction = {
+      originalAccountId: "account-1",
+      canonicalAccountId: "account-canonical",
+      reason: "User confirmed the account identity",
+      confirmedOn: "2026-09-12",
+    };
+    const oldExecution = { ...execution, id: "automatic-old", accountId: correction.canonicalAccountId };
+    store.mergeExecutions([oldExecution]);
+    const oldEvidence = {
+      source: oldExecution.source,
+      accountLabel: oldExecution.accountLabel,
+      accountCorrection: correction,
+    };
+    databaseFor(store).prepare("update executions set evidence_json = ? where id = ?").run(
+      JSON.stringify(oldEvidence),
+      oldExecution.id,
+    );
+
+    const replacement = {
+      ...execution,
+      id: "automatic-new",
+      source: { ...execution.source, fileName: "different-document.csv", inputKind: "statement" as const },
+    };
+    expect(() => store.mergeExecutions([replacement])).toThrow(
+      "Account correction replacement identity conflict",
+    );
+    expect(store.getExecutions()).toEqual([
+      expect.objectContaining({ id: oldExecution.id, accountId: correction.canonicalAccountId }),
+    ]);
+    expect(databaseFor(store).prepare("select evidence_json from executions where id = ?").get(oldExecution.id)).toEqual({
+      evidence_json: JSON.stringify(oldEvidence),
+    });
+  });
+
+  it("fails closed when source platform, currency, trade scope, simulation run, or row provenance changes", () => {
+    const cases = [
+      {
+        name: "platform",
+        incoming: {
+          ...execution,
+          source: { ...execution.source, platform: "other-broker", inputKind: "statement" as const },
+        },
+      },
+      {
+        name: "currency",
+        incoming: {
+          ...execution,
+          instrument: { ...instrument, currency: "USD" },
+          source: { ...execution.source, inputKind: "statement" as const },
+        },
+      },
+      {
+        name: "trade scope",
+        incoming: {
+          ...execution,
+          source: { ...execution.source, tradeNature: "live" as const, inputKind: "statement" as const },
+        },
+      },
+      {
+        name: "row provenance",
+        incoming: {
+          ...execution,
+          source: { ...execution.source, row: 2, inputKind: "statement" as const },
+        },
+      },
+    ];
+
+    for (const { name, incoming } of cases) {
+      const store = createStore();
+      const correction = {
+        originalAccountId: "account-1",
+        canonicalAccountId: "account-canonical",
+        reason: `User confirmed the account identity for ${name}`,
+        confirmedOn: "2026-09-12",
+      };
+      const corrected = { ...execution, accountId: correction.canonicalAccountId };
+      store.mergeExecutions([corrected]);
+      const evidence = {
+        source: corrected.source,
+        accountLabel: corrected.accountLabel,
+        accountCorrection: correction,
+      };
+      databaseFor(store).prepare("update executions set evidence_json = ? where id = ?").run(
+        JSON.stringify(evidence),
+        corrected.id,
+      );
+
+      expect(() => store.mergeExecutions([incoming])).toThrow(
+        "Account correction replacement identity conflict",
+      );
+      expect(store.getExecutions()).toMatchObject([
+        expect.objectContaining({ id: corrected.id, accountId: correction.canonicalAccountId }),
+      ]);
+    }
+
+    const simulationStore = createStore();
+    const simulationSource = {
+      platform: "tradingview",
+      row: 1,
+      fileName: "simulation.csv",
+      fileFingerprint: "simulation-file",
+      inputKind: "tradingview" as const,
+      tradingNature: "simulated" as const,
+      tradeNature: "simulation" as const,
+      simulationRunId: "run-a",
+      simulationTradeId: "1",
+      simulationRole: "entry" as const,
+      timePrecision: "date-only" as const,
+      sourceTimezone: "Asia/Shanghai",
+    };
+    const simulationExecution = {
+      ...execution,
+      id: "simulation-corrected",
+      executedAt: "2026-01-02",
+      accountId: "account-canonical",
+      source: simulationSource,
+    };
+    simulationStore.mergeExecutions([simulationExecution]);
+    const simulationEvidence = {
+      source: simulationSource,
+      accountLabel: simulationExecution.accountLabel,
+      accountCorrection: {
+        originalAccountId: "account-1",
+        canonicalAccountId: "account-canonical",
+        reason: "User confirmed the simulated account identity",
+        confirmedOn: "2026-09-12",
+      },
+    };
+    databaseFor(simulationStore).prepare("update executions set evidence_json = ? where id = ?").run(
+      JSON.stringify(simulationEvidence),
+      simulationExecution.id,
+    );
+    const differentRun = {
+      ...simulationExecution,
+      accountId: "account-1",
+      source: { ...simulationSource, simulationRunId: "run-b", inputKind: "statement" as const },
+    };
+    expect(() => simulationStore.mergeExecutions([differentRun])).toThrow(
+      "Account correction replacement identity conflict",
+    );
+    expect(simulationStore.getExecutions()).toMatchObject([
+      expect.objectContaining({ id: simulationExecution.id, accountId: "account-canonical" }),
+    ]);
+  });
+
+  it("fails closed in ordinary mergeExecutions when a canonical same-id source changes", () => {
+    const store = createStore();
+    const correction = {
+      originalAccountId: "account-1",
+      canonicalAccountId: "account-canonical",
+      reason: "User confirmed the account identity",
+      confirmedOn: "2026-09-12",
+    };
+    const corrected = { ...execution, accountId: correction.canonicalAccountId };
+    store.mergeExecutions([corrected]);
+    const evidence = {
+      source: corrected.source,
+      accountLabel: corrected.accountLabel,
+      accountCorrection: correction,
+    };
+    databaseFor(store).prepare("update executions set evidence_json = ? where id = ?").run(
+      JSON.stringify(evidence),
+      corrected.id,
+    );
+
+    const changedSource = {
+      ...corrected,
+      source: { ...corrected.source, platform: "other-broker", row: 2, inputKind: "statement" as const },
+    };
+    expect(() => store.mergeExecutions([changedSource])).toThrow(
+      "Account correction identity conflict",
+    );
+    expect(store.getExecutions()).toMatchObject([
+      expect.objectContaining({ id: corrected.id, accountId: correction.canonicalAccountId, source: corrected.source }),
+    ]);
+    expect(databaseFor(store).prepare("select evidence_json from executions where id = ?").get(corrected.id)).toEqual({
+      evidence_json: JSON.stringify(evidence),
+    });
+  });
+
+  it("fails closed in mergeTradeData without replacements when a canonical same-id scope changes", () => {
+    const store = createStore();
+    const correction = {
+      originalAccountId: "account-1",
+      canonicalAccountId: "account-canonical",
+      reason: "User confirmed the account identity",
+      confirmedOn: "2026-09-12",
+    };
+    const corrected = { ...execution, accountId: correction.canonicalAccountId };
+    store.mergeExecutions([corrected]);
+    const evidence = {
+      source: corrected.source,
+      accountLabel: corrected.accountLabel,
+      accountCorrection: correction,
+    };
+    databaseFor(store).prepare("update executions set evidence_json = ? where id = ?").run(
+      JSON.stringify(evidence),
+      corrected.id,
+    );
+
+    const changedScope = {
+      ...corrected,
+      source: { ...corrected.source, tradeNature: "live" as const, inputKind: "statement" as const },
+    };
+    expect(() => store.mergeTradeData({ executions: [changedScope] })).toThrow(
+      "Account correction identity conflict",
+    );
+    expect(store.getExecutions()).toMatchObject([
+      expect.objectContaining({ id: corrected.id, accountId: correction.canonicalAccountId, source: corrected.source }),
+    ]);
+    expect(databaseFor(store).prepare("select evidence_json from executions where id = ?").get(corrected.id)).toEqual({
+      evidence_json: JSON.stringify(evidence),
+    });
+  });
+
+  it("preserves a confirmed account correction when reviseTrades rewrites the same execution", () => {
+    const store = createStore();
+    const correction = {
+      originalAccountId: "account-1",
+      canonicalAccountId: "account-canonical",
+      reason: "User confirmed the account identity",
+      confirmedOn: "2026-09-12",
+    };
+    const corrected = { ...execution, accountId: correction.canonicalAccountId };
+    store.mergeExecutions([corrected]);
+    const evidence = {
+      source: corrected.source,
+      accountLabel: corrected.accountLabel,
+      accountCorrection: correction,
+      importAudit: { sourceVersion: "original-parser" },
+    };
+    databaseFor(store).prepare("update executions set evidence_json = ? where id = ?").run(
+      JSON.stringify(evidence),
+      corrected.id,
+    );
+
+    const after = { ...corrected, quantity: "101" };
+    store.reviseTrades({
+      id: "revision-preserves-correction",
+      instrumentId: instrument.id,
+      accountId: correction.canonicalAccountId,
+      reason: "Correct the reported quantity",
+      changes: [{ before: corrected, after }],
+    });
+
+    expect(store.getExecutions()[0]).toMatchObject({
+      id: corrected.id,
+      accountId: correction.canonicalAccountId,
+      quantity: "101",
+    });
+    expect(databaseFor(store).prepare("select evidence_json from executions where id = ?").get(corrected.id)).toEqual({
+      evidence_json: JSON.stringify({
+        ...evidence,
+        source: after.source,
+        accountLabel: after.accountLabel,
+      }),
+    });
+  });
+
+  it("does not inherit a correction for a different explicit replacement trade", () => {
+    const store = createStore();
+    const correction = {
+      originalAccountId: "account-1",
+      canonicalAccountId: "account-canonical",
+      reason: "User confirmed the account identity",
+      confirmedOn: "2026-09-12",
+    };
+    const oldExecution = { ...execution, id: "old-corrected-execution", accountId: correction.canonicalAccountId };
+    store.mergeExecutions([oldExecution]);
+    const oldEvidence = {
+      source: oldExecution.source,
+      accountLabel: oldExecution.accountLabel,
+      accountCorrection: correction,
+    };
+    databaseFor(store).prepare("update executions set evidence_json = ? where id = ?").run(
+      JSON.stringify(oldEvidence),
+      oldExecution.id,
+    );
+
+    const differentTrade = {
+      ...execution,
+      id: "different-replacement-execution",
+      quantity: "101",
+      source: { ...execution.source, inputKind: "screenshot" as const },
+    };
+    expect(() => store.mergeTradeData({ executions: [differentTrade], replaceExecutionIds: [oldExecution.id] })).toThrow(
+      "Account correction replacement identity conflict",
+    );
+    expect(store.getExecutions()[0]).toMatchObject({
+      id: oldExecution.id,
+      accountId: correction.canonicalAccountId,
+      quantity: oldExecution.quantity,
+    });
+    expect(databaseFor(store).prepare("select evidence_json from executions where id = ?").get(oldExecution.id)).toEqual({
+      evidence_json: JSON.stringify(oldEvidence),
+    });
+  });
+
   it("persists monthly provenance and auxiliary evidence including no-trade months", () => {
     const store = createStore();
     const monthly = {
@@ -225,7 +660,7 @@ describe("SqliteStore", () => {
     const bootstrap = createStore().getBootstrap();
 
     expect(bootstrap).toMatchObject({
-      schemaVersion: 5,
+      schemaVersion: 6,
       executions: [], importHistory: [], instruments: [], reviews: [],
       tagSuggestions: [], marketDataJobs: [], settings: {},
     });
@@ -500,6 +935,74 @@ describe("SqliteStore", () => {
     }));
 
     expect(store.getBootstrap().instruments).toEqual([{ ...instrument, metadata }]);
+  });
+
+  it("projects localized metadata through bootstrap without changing the canonical instrument name", () => {
+    const store = createStore();
+    const localizedName = {
+      name: "苹果公司",
+      locale: "zh-CN" as const,
+      source: "tencent",
+      resolvedAt: "2026-01-01T00:00:00.000Z",
+    };
+    const original = {
+      ...instrument,
+      id: "US:AAPL",
+      symbol: "AAPL",
+      market: "US",
+      currency: "USD",
+      name: "Apple Inc.",
+    };
+    const metadata = {
+      market: "US" as const,
+      symbol: "AAPL",
+      name: "Apple Inc.",
+      localizedName,
+      assetType: "stock" as const,
+      source: "nasdaq" as const,
+      confidence: "official" as const,
+      resolvedAt: "2026-01-01T00:00:00.000Z",
+    };
+
+    store.mergeTradeData({ instruments: [{ ...original, metadata }], executions: [] });
+
+    expect(store.getBootstrap().instruments).toEqual([
+      { ...original, localizedName, metadata },
+    ]);
+    store.mergeExecutions([{ ...execution, instrument: original }]);
+    expect(store.getExecutions()[0]?.instrument).toEqual({
+      ...original,
+      localizedName,
+    });
+  });
+
+  it("restores the localized projection after reopening the SQLite database", () => {
+    const directory = mkdtempSync(join(tmpdir(), "localized-reopen-"));
+    directories.push(directory);
+    const databasePath = join(directory, "store.sqlite");
+    const localizedName = {
+      name: "苹果公司",
+      locale: "zh-CN" as const,
+      source: "tencent",
+      resolvedAt: "2026-01-01T00:00:00.000Z",
+    };
+    const original = {
+      ...instrument,
+      id: "US:AAPL",
+      symbol: "AAPL",
+      market: "US",
+      currency: "USD",
+      name: "Apple Inc.",
+      localizedName,
+    };
+
+    const first = new SqliteStore(openSqliteDatabase(databasePath));
+    first.mergeTradeData({ instruments: [original], executions: [] });
+    databaseFor(first).close();
+
+    const reopened = new SqliteStore(openSqliteDatabase(databasePath));
+    expect(reopened.getBootstrap().instruments).toEqual([original]);
+    databaseFor(reopened).close();
   });
 
   it("deduplicates a repeated browser migration by source fingerprint", () => {

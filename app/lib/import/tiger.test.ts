@@ -95,6 +95,164 @@ describe("Tiger fee reconciliation", () => {
 });
 
 describe("Tiger historical monthly evidence", () => {
+  it("does not infer a short opening from an ordinary legacy sell", () => {
+    const result = parseTigerPages(legacyPages({ quantity: "-3" }), options);
+
+    expect(result.records[0]?.side).toBe("sell");
+    expect(result.records[0]?.source.positionEffect).toBeUndefined();
+  });
+
+  it("uses legacy realized-P&L evidence to classify a short pair", () => {
+    const pages = legacyPages({ quantity: "-3" });
+    pages[0].items.push(
+      ...legacyRow(330, [
+        "SYNX", "US", "NASDAQ", "", "3", "9", "27", "0", "0", "72.52", "",
+        "2020-12-09 10:20:30, US/Eastern", "2020-12-11", "USD",
+      ]),
+    );
+
+    const result = parseTigerPages(pages, options);
+
+    expect(result.records).toHaveLength(2);
+    expect(result.records.map((record) => record.source.positionEffect)).toEqual([
+      "open-short",
+      "close-short",
+    ]);
+    expect(result.records[1]?.source).toMatchObject({
+      statementRealizedPnl: "72.52",
+      positionEffectEvidence: {
+        kind: "inferred",
+        confidence: "high",
+        realizedPnl: "72.52",
+      },
+    });
+  });
+
+  it("uses a negative legacy position snapshot to classify a zero-P&L close", () => {
+    const pages = legacyPages({ quantity: "-3" });
+    pages[0].items.push(
+      ...legacyRow(330, [
+        "SYNX", "US", "NASDAQ", "", "3", "9", "27", "0", "0", "0", "",
+        "2020-12-09 10:20:30, US/Eastern", "2020-12-11", "USD",
+      ]),
+      legacyItem("期末持仓", 30, 410),
+      legacyItem("股票", 30, 425),
+      ...legacyRow(440, ["代码", "", "", "", "数量", "成本价格", "", "", "", "", "", "", "", "币种"]),
+      ...legacyRow(470, ["SYNX", "", "", "", "-3", "10", "", "", "", "", "", "", "", "USD"]),
+    );
+
+    const result = parseTigerPages(pages, options);
+
+    expect(result.records.map((record) => record.source.positionEffect)).toEqual([
+      "open-short",
+      "close-short",
+    ]);
+    expect(result.records[1]?.source.statementRealizedPnl).toBe("0");
+  });
+
+  it("does not merge the position multiplier into the snapshot quantity", () => {
+    const pages = legacyPages({ quantity: "-3" });
+    pages[0].items.push(
+      ...legacyRow(330, [
+        "SYNX", "US", "NASDAQ", "", "3", "9", "27", "0", "0", "0", "",
+        "2020-12-09 10:20:30, US/Eastern", "2020-12-11", "USD",
+      ]),
+      legacyItem("期末持仓", 30, 410),
+      legacyItem("股票", 30, 425),
+      ...legacyRow(440, ["代码", "", "", "", "数量", "乘数", "成本价格", "", "", "", "", "", "", "币种"]),
+      ...legacyRow(470, ["SYNX", "", "", "", "-3", "", "10", "", "", "", "", "", "", "USD"]),
+      legacyItem("1.0", 440, 470),
+    );
+
+    const result = parseTigerPages(pages, options);
+
+    expect(result.records.map((record) => record.source.positionEffect)).toEqual([
+      "open-short",
+      "close-short",
+    ]);
+  });
+
+  it.each(["头寸转账", "公司行动"])("does not trust a position snapshot when %s is present", (adjustment) => {
+    const pages = legacyPages({ quantity: "-3" });
+    pages[0].items.push(
+      ...legacyRow(330, [
+        "SYNX", "US", "NASDAQ", "", "3", "9", "27", "0", "0", "0", "",
+        "2020-12-09 10:20:30, US/Eastern", "2020-12-11", "USD",
+      ]),
+      legacyItem(adjustment, 30, 410),
+      ...legacyRow(440, ["代码", "", "", "", "数量", "成本价格", "", "", "", "", "", "", "", "币种"]),
+      ...legacyRow(470, ["SYNX", "", "", "", "-3", "10", "", "", "", "", "", "", "", "USD"]),
+    );
+
+    const result = parseTigerPages(pages, options);
+
+    expect(result.records.map((record) => record.source.positionEffect)).toEqual([
+      undefined,
+      undefined,
+    ]);
+    expect(result.records[1]?.source.statementRealizedPnl).toBe("0");
+  });
+
+  it("does not match a later short opening to an earlier long-closing sell", () => {
+    const pages = legacyPages({ quantity: "-2" });
+    pages[0].items = pages[0].items.map((item) =>
+      item.y === 250 && item.x === 800 ? { ...item, text: "5" } : item,
+    );
+    pages[0].items.push(
+      ...legacyRow(330, [
+        "SYNX", "US", "NASDAQ", "", "-2", "9", "-18", "0", "0", "0", "",
+        "2020-12-09 10:20:30, US/Eastern", "2020-12-11", "USD",
+      ]),
+      ...legacyRow(370, [
+        "SYNX", "US", "NASDAQ", "", "2", "9", "18", "0", "0", "0", "",
+        "2020-12-10 10:20:30, US/Eastern", "2020-12-12", "USD",
+      ]),
+      legacyItem("期末持仓", 30, 410),
+      legacyItem("股票", 30, 425),
+      ...legacyRow(440, ["代码", "", "", "", "数量", "成本价格", "", "", "", "", "", "", "", "币种"]),
+      ...legacyRow(470, ["SYNX", "", "", "", "-2", "10", "", "", "", "", "", "", "", "USD"]),
+    );
+
+    const result = parseTigerPages(pages, options);
+
+    expect(result.records.map((record) => record.source.positionEffect)).toEqual([
+      undefined,
+      "open-short",
+      "close-short",
+    ]);
+  });
+
+  it("keeps same-quantity legacy matching unknown after a prior realized sell", () => {
+    const pages = legacyPages({ quantity: "-2" });
+    pages[0].items = pages[0].items.map((item) =>
+      item.y === 250 && item.x === 800 ? { ...item, text: "5" } : item,
+    );
+    pages[0].items.push(
+      ...legacyRow(330, [
+        "SYNX", "US", "NASDAQ", "", "-2", "9", "-18", "0", "0", "0", "",
+        "2020-12-09 10:20:30, US/Eastern", "2020-12-11", "USD",
+      ]),
+      ...legacyRow(370, [
+        "SYNX", "US", "NASDAQ", "", "2", "9", "18", "0", "0", "72.52", "",
+        "2020-12-10 10:20:30, US/Eastern", "2020-12-12", "USD",
+      ]),
+    );
+
+    const result = parseTigerPages(pages, options);
+
+    expect(result.records.map((record) => record.source.positionEffect)).toEqual([
+      undefined,
+      undefined,
+      "close-short",
+    ]);
+    expect(result.records[2]?.source.positionEffectEvidence).toMatchObject({
+      kind: "inferred",
+      confidence: "high",
+      realizedPnl: "72.52",
+      reason: expect.stringContaining("未把普通卖出转换为做空开仓"),
+    });
+  });
+
   it("recognizes Limited and signed quantities with blank direction, excluding totals", () => {
     const result = parseTigerPages(legacyPages(), options);
     expect(result.records).toHaveLength(1);
@@ -242,6 +400,18 @@ describe("Tiger PDF import", () => {
         timePrecision: "second",
       },
     });
+    expect(
+      result.records.find(
+        (execution) =>
+          execution.side === "sell" && execution.price === "410",
+      ),
+    ).toMatchObject({ source: { positionEffect: "open-short" } });
+    expect(
+      result.records.find(
+        (execution) =>
+          execution.side === "buy" && execution.price === "400",
+      ),
+    ).toMatchObject({ source: { positionEffect: "close-short" } });
     expect(result.candidates).toContainEqual({
       market: "US",
       symbol: "SPY",
@@ -275,6 +445,72 @@ describe("Tiger PDF import", () => {
       status: "closed",
       openingQuantity: "800",
       remainingQuantity: "0",
+    });
+  });
+
+  it("preserves explicit long and short position effects with source evidence", () => {
+    const pages = TIGER_SHORT_PAGES.map((page) => ({
+      ...page,
+      items: page.items.map((item) =>
+        item.text === "开仓做空"
+          ? { ...item, text: "开仓做多" }
+          : item.text === "平仓空头"
+            ? { ...item, text: "平仓多头" }
+            : item,
+      ),
+    }));
+
+    const result = parseTigerPages(pages, options);
+
+    expect(result.records.map((record) => record.source.positionEffect)).toEqual([
+      "open-long",
+      "close-long",
+    ]);
+    expect(result.records.map((record) => record.source.positionEffectEvidence)).toEqual([
+      expect.objectContaining({ kind: "explicit", confidence: "high", sourceLabel: "开仓做多" }),
+      expect.objectContaining({ kind: "explicit", confidence: "high", sourceLabel: "平仓多头" }),
+    ]);
+  });
+
+  it("maps a plain closing label by signed quantity without realized P&L", () => {
+    const closeShortPages = TIGER_SHORT_PAGES.map((page) => ({
+      ...page,
+      items: page.items.map((item) =>
+        item.text === "平仓空头" ? { ...item, text: "平仓" } : item,
+      ),
+    }));
+    const closeLongPages = closeShortPages.map((page) => ({
+      ...page,
+      items: page.items.map((item) =>
+        item.text === "开仓做空"
+          ? { ...item, text: "开仓做多" }
+          : item.text === "800" && item.y === 118 + 24
+            ? { ...item, text: "-800" }
+            : item,
+      ),
+    }));
+
+    expect(parseTigerPages(closeShortPages, options).records[1]).toMatchObject({
+      side: "buy",
+      source: {
+        positionEffect: "close-short",
+        positionEffectEvidence: {
+          kind: "explicit",
+          confidence: "high",
+          sourceLabel: "平仓",
+        },
+      },
+    });
+    expect(parseTigerPages(closeLongPages, options).records[1]).toMatchObject({
+      side: "sell",
+      source: {
+        positionEffect: "close-long",
+        positionEffectEvidence: {
+          kind: "explicit",
+          confidence: "high",
+          sourceLabel: "平仓",
+        },
+      },
     });
   });
 

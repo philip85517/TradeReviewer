@@ -7,7 +7,10 @@ import type {
   InstrumentMetadataFailure,
   ResolvedInstrument,
 } from "../instruments/metadata-contracts";
-import { validateResolvedInstrument } from "../instruments/metadata-contracts";
+import {
+  validateLocalizedInstrumentName,
+  validateResolvedInstrument,
+} from "../instruments/metadata-contracts";
 import {
   resolveInstrumentMetadataBatch,
   type ResolveBatchResult,
@@ -141,6 +144,23 @@ function unknownFailure(
   };
 }
 
+function statementLocalizedName(
+  sourceName: string | undefined,
+  resolvedAt: string,
+) {
+  if (!sourceName) return undefined;
+  try {
+    return validateLocalizedInstrumentName({
+      name: sourceName,
+      locale: "zh-CN",
+      source: "statement",
+      resolvedAt,
+    });
+  } catch {
+    return undefined;
+  }
+}
+
 function addUnknownExclusion(
   exclusions: ImportExclusion[],
   candidate: ParsedInstrumentCandidate,
@@ -168,7 +188,10 @@ function addUnknownExclusion(
 
 function applyMetadata(
   execution: TradeExecution,
-  metadata: ResolvedInstrument | { name: string },
+  metadata: {
+    name: string;
+    localizedName?: ResolvedInstrument["localizedName"];
+  },
 ): TradeExecution {
   const symbol = canonicalInstrumentSymbol(
     execution.instrument.symbol,
@@ -181,6 +204,9 @@ function applyMetadata(
       id: canonicalInstrumentId(symbol, execution.instrument.market),
       symbol,
       name: metadata.name,
+      ...(metadata.localizedName
+        ? { localizedName: metadata.localizedName }
+        : {}),
     },
   };
 }
@@ -316,6 +342,10 @@ export async function enrichStatementImport(
   ).toISOString();
 
   for (const [instrumentId, candidate] of candidates) {
+    const localizedName = statementLocalizedName(
+      candidate.sourceName,
+      resolvedAt,
+    );
     const historicalIdentity = resolveHistoricalInstrumentIdentity({
       market: candidate.market,
       symbol: candidate.symbol,
@@ -333,6 +363,7 @@ export async function enrichStatementImport(
           candidate.market,
         ),
         name: historicalIdentity.displayName,
+        ...(localizedName ? { localizedName } : {}),
         assetType: "stock",
         source: "statement",
         confidence: "statement",
@@ -349,6 +380,7 @@ export async function enrichStatementImport(
           candidate.market,
         ),
         name: statementName,
+        ...(localizedName ? { localizedName } : {}),
         assetType: candidate.sourceAssetType as "stock" | "etf",
         source: "statement",
         confidence: "statement",

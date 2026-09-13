@@ -15,6 +15,6 @@ test("ships the focused stock review interface", () => {
   assert.match(workspace, /focusedExecutions/);
   assert.match(workspace, /专注图表/);
   assert.match(chart, /focusRange/);
-  assert.match(library, /进入逐笔复盘/);
+  assert.match(library, /打开统一工作台/);
   assert.match(queue, /回合复盘队列/);
 });

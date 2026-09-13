@@ -34,6 +34,35 @@ function memoryRepository(seed: ResolvedInstrument[] = []) {
 }
 
 describe("resolveInstrumentMetadataBatch", () => {
+  it.each([true, false])("uses HTTP no-store only for forced refresh: %s", async (forceRefresh) => {
+    const repository = memoryRepository();
+    const controller = new AbortController();
+    const fresh: ResolvedInstrument = {
+      market: "US", symbol: "SNDK", name: "Sandisk Corporation",
+      assetType: "stock", source: "nasdaq", confidence: "official",
+      resolvedAt: "2026-09-12T00:00:00.000Z",
+      localizedName: {
+        name: "闪迪", locale: "zh-CN", source: "tencent",
+        resolvedAt: "2026-09-12T00:00:00.000Z",
+      },
+    };
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(Response.json(fresh));
+
+    const result = await resolveInstrumentMetadataBatch(
+      [{ market: "US", symbol: "SNDK" }],
+      { repository, fetcher, forceRefresh, signal: controller.signal },
+    );
+
+    expect(fetcher).toHaveBeenCalledWith(
+      "/api/instruments/resolve?market=US&symbol=SNDK",
+      forceRefresh
+        ? { signal: controller.signal, cache: "no-store" }
+        : { signal: controller.signal },
+    );
+    expect(repository.put).toHaveBeenCalledWith(fresh);
+    expect(result.resolved.get("US:SNDK")?.localizedName).toEqual(fresh.localizedName);
+  });
+
   it("returns fresh cached portal records without network requests", async () => {
     const fetcher = vi.fn();
     const seededRepository = memoryRepository([
@@ -170,6 +199,57 @@ describe("resolveInstrumentMetadataBatch", () => {
     expect(result.resolved.get("US:AAPL")?.name).toBe("Cached Apple");
     expect(result.unresolved.size).toBe(0);
     expect(repository.put).not.toHaveBeenCalled();
+  });
+
+  it("retains cached localized metadata when a refresh only returns primary metadata", async () => {
+    const localizedName = {
+      name: "苹果公司",
+      locale: "zh-CN" as const,
+      source: "tencent",
+      resolvedAt: "2026-07-20T00:00:00.000Z",
+    };
+    const repository = memoryRepository([
+      {
+        market: "US",
+        symbol: "AAPL",
+        name: "Old Apple",
+        localizedName,
+        assetType: "stock",
+        source: "nasdaq",
+        confidence: "official",
+        resolvedAt: "2026-07-01T00:00:00.000Z",
+      },
+    ]);
+    const fetcher = vi.fn(async () =>
+      Response.json({
+        market: "US",
+        symbol: "AAPL",
+        name: "Apple Inc.",
+        assetType: "stock",
+        source: "nasdaq",
+        confidence: "official",
+        resolvedAt: "2026-07-29T00:00:00.000Z",
+      }),
+    );
+
+    const result = await resolveInstrumentMetadataBatch(
+      [{ market: "US", symbol: "AAPL" }],
+      {
+        repository,
+        fetcher,
+        clock: () => Date.parse("2026-07-29T12:00:00.000Z"),
+      },
+    );
+
+    await result.backgroundRefresh;
+
+    expect(result.resolved.get("US:AAPL")).toMatchObject({
+      name: "Apple Inc.",
+      localizedName,
+    });
+    expect(repository.put).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "Apple Inc.", localizedName }),
+    );
   });
 
   it("deduplicates lookups, caps concurrency, and caches successes", async () => {
@@ -350,6 +430,10 @@ describe("resolveInstrumentMetadataBatch", () => {
     );
 
     expect(result?.name).toBe("Apple Inc.");
+    expect(fetcher).toHaveBeenCalledWith(
+      "/api/instruments/resolve?market=US&symbol=AAPL",
+      { signal: undefined, cache: "no-store" },
+    );
     expect(repository.getMany).not.toHaveBeenCalled();
     expect(repository.put).toHaveBeenCalledOnce();
   });

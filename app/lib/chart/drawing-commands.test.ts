@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import type { NormalizedDrawing } from "./drawings";
+import {
+  visibleDrawingsAtCursor,
+  type NormalizedDrawing,
+} from "./drawings";
 import {
   applyDrawingCommand,
   canRedoDrawingAtCursor,
@@ -116,6 +119,96 @@ describe("drawing command history", () => {
     history = redoDrawingCommand(history);
     expect(history.present[0].name).toBe("下降趋势线");
     expect(history.present[0]).not.toBe(renamed);
+  });
+
+  it("re-records knowledge time for replacement, rename, and layer moves", () => {
+    const early = drawing("early", {
+      createdAtCursor: "2025-01-02T00:00:00.000Z",
+    });
+    const neighbor = drawing("neighbor", {
+      createdAtCursor: "2025-01-02T00:00:00.000Z",
+      zIndex: 1,
+    });
+    const editCursor = "2025-01-10T00:00:00.000Z";
+    let history = createDrawingHistory([early, neighbor]);
+
+    history = applyDrawingCommand(
+      history,
+      {
+        type: "replace",
+        drawing: { ...early, anchors: [{ ...early.anchors[0], price: 11 }, early.anchors[1]] },
+      },
+      editCursor,
+    );
+    expect(history.present[0].createdAtCursor).toBe(editCursor);
+
+    history = applyDrawingCommand(
+      history,
+      { type: "rename", id: early.id, name: "事后名称" },
+      editCursor,
+    );
+    expect(history.present[0]).toMatchObject({
+      name: "事后名称",
+      createdAtCursor: editCursor,
+    });
+
+    history = applyDrawingCommand(
+      history,
+      { type: "move", id: early.id, direction: "up" },
+      editCursor,
+    );
+    expect(history.present.map(({ id }) => id)).toEqual(["neighbor", "early"]);
+    expect(history.present.map(({ createdAtCursor }) => createdAtCursor)).toEqual([
+      editCursor,
+      editCursor,
+    ]);
+
+    const legacyCall = applyDrawingCommand(
+      createDrawingHistory([early]),
+      { type: "rename", id: early.id, name: "兼容调用" },
+    );
+    expect(legacyCall.present[0].createdAtCursor).toBe(early.createdAtCursor);
+  });
+
+  it("keeps edited drawings and redo unavailable before the edit cursor after restore", () => {
+    const t1 = "2025-01-02T00:00:00.000Z";
+    const t2 = "2025-01-10T00:00:00.000Z";
+    const early = drawing("early", {
+      tool: "text",
+      anchors: [{ time: t1, price: 10 }],
+      text: "早期观察",
+      createdAtCursor: t1,
+    });
+    const neighbor = drawing("neighbor", {
+      createdAtCursor: t1,
+      zIndex: 1,
+    });
+    let history = createDrawingHistory([early, neighbor]);
+
+    history = applyDrawingCommand(
+      history,
+      {
+        type: "replace",
+        drawing: { ...early, text: "事后已知" },
+      },
+      t2,
+    );
+    history = applyDrawingCommand(
+      history,
+      { type: "move", id: neighbor.id, direction: "down" },
+      t2,
+    );
+
+    expect(
+      visibleDrawingsAtCursor(history.present, t1, "15m"),
+    ).toEqual([]);
+    const serialized = JSON.stringify(history.present);
+    const restored = createDrawingHistory(JSON.parse(serialized));
+    expect(visibleDrawingsAtCursor(restored.present, t1, "15m")).toEqual([]);
+
+    history = undoDrawingAtCursor(history, t2, "15m");
+    expect(canRedoDrawingAtCursor(history, t1, "15m")).toBe(false);
+    expect(redoDrawingAtCursor(history, t1, "15m")).toBe(history);
   });
 
   it("keeps future-only history unavailable until its creation cursor", () => {

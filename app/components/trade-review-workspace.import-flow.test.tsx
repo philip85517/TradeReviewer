@@ -991,6 +991,7 @@ describe("TradeReviewWorkspace", () => {
     expect(metadataRequest).toBeDefined();
     expect(metadataRequest?.[1]).toEqual({
       signal: expect.any(AbortSignal),
+      cache: "no-store",
     });
     expect(metadataRequest?.[1]).not.toHaveProperty("body");
     expect(metadataRequest?.[1]).not.toHaveProperty("method");
@@ -1132,7 +1133,7 @@ describe("TradeReviewWorkspace", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("navigates through stock and episode library levels without requesting market data", async () => {
+  it("opens a stock library entry in the shared workbench without requesting market data", async () => {
     const user = userEvent.setup();
     const instrument = {
       id: "US:XPEV",
@@ -1206,17 +1207,8 @@ describe("TradeReviewWorkspace", () => {
     await user.click(
       screen.getByRole("button", { name: "打开小鹏汽车交易回合" }),
     );
-    expect(
-      screen.getByRole("button", { name: /第 2 次交易/ }),
-    ).toBeInTheDocument();
+    expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
     expect(screen.getByText("新回合买入")).toBeInTheDocument();
-
-    await user.click(
-      screen.getByRole("button", { name: "进入逐笔复盘" }),
-    );
-    expect(
-      screen.getByRole("heading", { name: "小鹏汽车（XPEV）" }),
-    ).toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
   });
 
@@ -1316,10 +1308,8 @@ describe("TradeReviewWorkspace", () => {
       screen.getByRole("button", { name: "打开小鹏汽车交易回合" }),
     );
 
-    expect(
-      await screen.findByText("日线 · 本地缓存 · 买卖点"),
-    ).toBeInTheDocument();
-    expect(screen.queryByText("本地尚无行情")).not.toBeInTheDocument();
+    expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "行情数据详情" })).toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
   });
 
@@ -1404,7 +1394,6 @@ describe("TradeReviewWorkspace", () => {
     expect(await screen.findByLabelText("买入理由")).toHaveValue(
       "等待突破",
     );
-    expect(screen.getAllByText("已复盘").length).toBeGreaterThan(0);
     await user.click(screen.getByText("补充分析 · 原始计划、风险与标签"));
     await user.clear(screen.getByLabelText("买入理由"));
     await user.type(screen.getByLabelText("买入理由"), "等待回踩");
@@ -1533,7 +1522,7 @@ describe("TradeReviewWorkspace", () => {
       }),
     );
     expect(
-      await screen.findByRole("heading", { name: "第 1 次交易" }),
+      await screen.findByLabelText("图表工具栏"),
     ).toBeInTheDocument();
     expect(screen.getByText("目标回合买入一")).toBeInTheDocument();
     expect(screen.getByText("目标回合买入二")).toBeInTheDocument();

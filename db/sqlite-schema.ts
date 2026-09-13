@@ -183,6 +183,10 @@ alter table executions add column trade_nature text;
 alter table executions add column simulation_run_id text;
 `;
 
+const localizedInstrumentNameSql = `
+alter table instruments add column localized_name_json text check (localized_name_json is null or json_valid(localized_name_json));
+`;
+
 function migration(version: number, name: string, sql: string): SqliteMigration {
   return {
     version,
@@ -208,4 +212,5 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
     create index trade_revisions_instrument on trade_revisions(instrument_id, recorded_at);
   `),
   migration(5, "persist-trade-nature-and-simulation-scope", simulationScopeSql),
+  migration(6, "persist-localized-instrument-names", localizedInstrumentNameSql),
 ];

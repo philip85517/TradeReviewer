@@ -37,6 +37,15 @@ function cloneDrawings(drawings: NormalizedDrawing[]) {
   return drawings.map(cloneDrawing);
 }
 
+function withKnowledgeCursor(
+  drawing: NormalizedDrawing,
+  knowledgeCursor: string | undefined,
+) {
+  return knowledgeCursor === undefined
+    ? drawing
+    : { ...drawing, createdAtCursor: knowledgeCursor };
+}
+
 function withZIndices(drawings: NormalizedDrawing[]) {
   return drawings.map((drawing, index) => ({ ...drawing, zIndex: index }));
 }
@@ -58,6 +67,7 @@ export function createDrawingHistory(
 export function applyDrawingCommand(
   history: DrawingHistory,
   command: DrawingCommand,
+  knowledgeCursor?: string,
 ): DrawingHistory {
   const present = history.present;
   if (command.type === "add") {
@@ -90,12 +100,18 @@ export function applyDrawingCommand(
   if (command.type === "replace") {
     if (current.locked) return history;
     const next = [...present];
-    next[index] = { ...cloneDrawing(command.drawing), zIndex: current.zIndex };
+    next[index] = {
+      ...withKnowledgeCursor(cloneDrawing(command.drawing), knowledgeCursor),
+      zIndex: current.zIndex,
+    };
     return commit(history, next);
   }
   if (command.type === "rename") {
     const next = [...present];
-    next[index] = { ...current, name: command.name };
+    next[index] = withKnowledgeCursor(
+      { ...current, name: command.name },
+      knowledgeCursor,
+    );
     return commit(history, next);
   }
   if (command.type === "toggle-hidden") {
@@ -128,6 +144,10 @@ export function applyDrawingCommand(
   if (target < 0 || target >= present.length) return history;
   const next = [...present];
   [next[index], next[target]] = [next[target], next[index]];
+  if (knowledgeCursor !== undefined) {
+    next[index] = withKnowledgeCursor(next[index], knowledgeCursor);
+    next[target] = withKnowledgeCursor(next[target], knowledgeCursor);
+  }
   return commit(history, next);
 }
 
@@ -182,6 +202,22 @@ function sameKnowledgeSnapshot(
   );
 }
 
+function changesKnownDrawingToFuture(
+  from: NormalizedDrawing[],
+  to: NormalizedDrawing[],
+  cursor: string,
+) {
+  const fromById = new Map(from.map((drawing) => [drawing.id, drawing]));
+  return to.some((drawing) => {
+    const previous = fromById.get(drawing.id);
+    return Boolean(
+      previous &&
+        previous.createdAtCursor <= cursor &&
+        drawing.createdAtCursor > cursor,
+    );
+  });
+}
+
 export function canUndoDrawingAtCursor(
   history: DrawingHistory,
   cursor: string,
@@ -190,6 +226,7 @@ export function canUndoDrawingAtCursor(
   const previous = history.past.at(-1);
   return Boolean(
     previous &&
+      !changesKnownDrawingToFuture(history.present, previous, cursor) &&
       !sameKnowledgeSnapshot(
         previous,
         history.present,
@@ -207,6 +244,7 @@ export function canRedoDrawingAtCursor(
   const next = history.future[0];
   return Boolean(
     next &&
+      !changesKnownDrawingToFuture(history.present, next, cursor) &&
       !sameKnowledgeSnapshot(
         next,
         history.present,

@@ -48,3 +48,46 @@ it("rejects a changed scope snapshot and forged instrument identity", () => {
   expect(store.getExecutions()).toHaveLength(2);
   expect(store.getTradeRevisions(instrument.id)).toHaveLength(1);
 });
+it("does not let localized display metadata create a revision conflict", () => {
+  const { store } = setup();
+  const localizedName = {
+    name: "科尔特瓦",
+    locale: "zh-CN" as const,
+    source: "tencent",
+    resolvedAt: "2026-07-29T00:00:00.000Z",
+  };
+  const displaySnapshot = {
+    ...execution,
+    instrument: { ...instrument, localizedName },
+  };
+
+  store.mergeTradeData({
+    instruments: [{ ...instrument, localizedName }],
+    executions: [],
+  });
+
+  expect(store.getExecutions()[0]?.instrument.localizedName).toEqual(localizedName);
+  store.reviseTrades({
+    id: "localized-display",
+    instrumentId: instrument.id,
+    accountId: "a",
+    reason: "修正数量",
+    expectedScope: [displaySnapshot],
+    changes: [{
+      before: displaySnapshot,
+      after: { ...displaySnapshot, quantity: "200" },
+    }],
+  });
+  expect(store.getExecutions()[0]?.quantity).toBe("200");
+
+  expect(() => store.reviseTrades({
+    id: "localized-stale",
+    instrumentId: instrument.id,
+    accountId: "a",
+    reason: "使用旧交易快照",
+    changes: [{
+      before: displaySnapshot,
+      after: { ...displaySnapshot, quantity: "300" },
+    }],
+  })).toThrow(/conflict/i);
+});

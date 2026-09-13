@@ -32,6 +32,12 @@ describe("IndexedDbInstrumentMetadataRepository", () => {
       market: "US",
       symbol: "SPY",
       name: "SPDR S&P 500 ETF Trust",
+      localizedName: {
+        name: "标普500指数基金",
+        locale: "zh-CN",
+        source: "tencent",
+        resolvedAt: "2026-07-29T00:00:00.000Z",
+      },
       assetType: "etf",
       source: "nasdaq",
       confidence: "official",
@@ -39,6 +45,7 @@ describe("IndexedDbInstrumentMetadataRepository", () => {
     });
     await expect(repository.get("US:SPY")).resolves.toMatchObject({
       name: "SPDR S&P 500 ETF Trust",
+      localizedName: { name: "标普500指数基金", locale: "zh-CN" },
       assetType: "etf",
     });
   });

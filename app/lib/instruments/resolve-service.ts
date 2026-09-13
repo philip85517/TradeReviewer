@@ -225,6 +225,7 @@ export async function resolveInstrumentMetadataBatch(
     try {
       response = await fetcher(`/api/instruments/resolve?${query}`, {
         signal: options.signal,
+        ...(options.forceRefresh ? { cache: "no-store" as const } : {}),
       });
     } catch (error) {
       recordFailure(
@@ -269,6 +270,14 @@ export async function resolveInstrumentMetadataBatch(
         clientFailure(lookup, "invalid-response", "证券元数据响应无效"),
       );
       return;
+    }
+
+    const cachedRecord = resolved.get(instrumentId);
+    if (cachedRecord?.localizedName && !record.localizedName) {
+      record = {
+        ...record,
+        localizedName: cachedRecord.localizedName,
+      };
     }
 
     try {

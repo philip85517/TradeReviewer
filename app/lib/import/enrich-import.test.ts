@@ -196,6 +196,50 @@ describe("enrichStatementImport", () => {
     ).toBe(true);
   });
 
+  it("adds localized metadata without replacing the imported original name", async () => {
+    const source = execution("US", "AAPL", "Apple Inc.", "localized-fill");
+    const parsed: StatementParseResult = {
+      broker: "tiger",
+      records: [source],
+      candidates: [
+        { market: "US", symbol: "AAPL", sourceAssetType: "unknown" },
+      ],
+      exclusions: [],
+      diagnostics: [],
+      blocked: false,
+    };
+    const localizedName = {
+      name: "苹果公司",
+      locale: "zh-CN" as const,
+      source: "tencent",
+      resolvedAt,
+    };
+
+    const result = await enrichStatementImport(parsed, {
+      resolver: vi.fn(async () =>
+        resolution([
+          {
+            market: "US",
+            symbol: "AAPL",
+            name: "Apple Inc.",
+            localizedName,
+            assetType: "stock",
+            source: "nasdaq",
+            confidence: "official",
+            resolvedAt,
+          },
+        ]),
+      ),
+    });
+
+    expect(result.importable[0]?.instrument).toMatchObject({
+      name: "Apple Inc.",
+      localizedName,
+    });
+    expect(source.instrument).not.toHaveProperty("localizedName");
+    expect(source.instrument.name).toBe("Apple Inc.");
+  });
+
   it("normalizes broker-padded Hong Kong symbols on every enriched execution", async () => {
     const parsed: StatementParseResult = {
       broker: "futu",
@@ -334,6 +378,12 @@ describe("enrichStatementImport", () => {
       market: "HK",
       symbol: "700",
       name: "腾讯控股",
+      localizedName: {
+        name: "腾讯控股",
+        locale: "zh-CN",
+        source: "statement",
+        resolvedAt,
+      },
       assetType: "stock",
       source: "statement",
       confidence: "statement",
@@ -365,6 +415,57 @@ describe("enrichStatementImport", () => {
     } finally {
       vi.unstubAllGlobals();
     }
+  });
+
+  it("records a Chinese statement name as localized metadata while preserving it as the original name", async () => {
+    const stored = new Map<string, ResolvedInstrument>();
+    const repository: InstrumentMetadataRepository = {
+      get: async (instrumentId) => stored.get(instrumentId),
+      getMany: async (instrumentIds) =>
+        new Map(
+          instrumentIds.flatMap((instrumentId) => {
+            const item = stored.get(instrumentId);
+            return item ? [[instrumentId, item] as const] : [];
+          }),
+        ),
+      put: async (record) => {
+        stored.set(`${record.market}:${record.symbol}`, record);
+      },
+    };
+    const parsed: StatementParseResult = {
+      broker: "tiger",
+      records: [execution("HK", "700", "腾讯控股")],
+      candidates: [
+        {
+          market: "HK",
+          symbol: "700",
+          sourceName: "腾讯控股",
+          sourceAssetType: "stock",
+        },
+      ],
+      exclusions: [],
+      diagnostics: [],
+      blocked: false,
+    };
+
+    const result = await enrichStatementImport(parsed, { repository });
+
+    expect(result.importable[0]?.instrument).toMatchObject({
+      name: "腾讯控股",
+      localizedName: {
+        name: "腾讯控股",
+        locale: "zh-CN",
+        source: "statement",
+      },
+    });
+    expect(stored.get("HK:700")).toMatchObject({
+      name: "腾讯控股",
+      localizedName: {
+        name: "腾讯控股",
+        locale: "zh-CN",
+        source: "statement",
+      },
+    });
   });
 
   it("prefers a valid official cache record over conflicting statement metadata", async () => {

@@ -178,6 +178,7 @@ function sourceAssetType(
   name: string | undefined,
 ): NonNullable<ParsedInstrumentCandidate["sourceAssetType"]> {
   if (obviousEtf(symbol, name)) return "etf";
+  if (market === "HK") return "stock";
   if (market === "CN-SH" && /^(?:600|601|603|605|688|689)\d{3}$/.test(symbol)) {
     return "stock";
   }
@@ -295,7 +296,7 @@ export function parseChinaMerchantsPages(
       continue;
     }
 
-    if (!/^(上海|深圳|沪A|深A)$/.test(layoutRow.marketLabel)) {
+    if (!/^(上海|深圳|沪A|深A|港股通|沪港通|深港通)$/.test(compact(layoutRow.marketLabel))) {
       addExclusion(
         exclusions,
         "market",
@@ -315,6 +316,9 @@ export function parseChinaMerchantsPages(
 
     try {
       const market = cmsMarket(layoutRow.marketLabel);
+      const settlementCurrency = currencyCode(layoutRow.currencyLabel);
+      if (settlementCurrency !== "CNY")
+        throw new Error("unsupported settlement currency");
       if (layoutRow.cells) {
         const cells = layoutRow.cells;
         const signedQuantity = decimal(cells.quantity);
@@ -360,8 +364,6 @@ export function parseChinaMerchantsPages(
         );
         continue;
       }
-      if (currencyCode(layoutRow.currencyLabel) !== "CNY")
-        throw new Error("unsupported settlement currency");
       if (decimal(layoutRow.price).lte(0)) throw new Error("invalid price");
       const candidate: ParsedInstrumentCandidate = {
         market,
@@ -378,6 +380,7 @@ export function parseChinaMerchantsPages(
           formatLabel: STATEMENT_FORMATS["china-merchants"].label,
           ...(layoutRow.cells
             ? {
+                feeStatus: "reported",
                 statementRowFingerprint: fingerprintBytes(
                   new TextEncoder().encode(
                     JSON.stringify([
@@ -401,7 +404,7 @@ export function parseChinaMerchantsPages(
                   ),
                 ),
                 settlement: {
-                  currency: "CNY",
+                  currency: settlementCurrency,
                   quantity: quantity.toString(),
                   grossAmount: amount.toString(),
                   netAmount: decimal(layoutRow.cells.cashChange).toString(),
@@ -435,7 +438,7 @@ export function parseChinaMerchantsPages(
             parsedIdentity.sourceName,
           ),
           market,
-          currency: currencyCode(layoutRow.currencyLabel),
+          currency: market === "HK" ? "HKD" : settlementCurrency,
         },
         side,
         executedAt: executionDate(layoutRow.dateText),

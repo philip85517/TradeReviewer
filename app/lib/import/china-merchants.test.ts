@@ -43,6 +43,7 @@ describe("China Merchants Securities PDF import", () => {
 
     expect(result.broker).toBe("china-merchants");
     expect(result.records.map((record) => record.instrument.symbol)).toEqual([
+      "700",
       "518880",
       "600938",
       "518880",
@@ -51,10 +52,17 @@ describe("China Merchants Securities PDF import", () => {
     expect(result.records.map((record) => record.side)).toEqual([
       "buy",
       "buy",
+      "buy",
       "sell",
       "sell",
     ]);
     expect(result.candidates).toEqual([
+      {
+        market: "HK",
+        symbol: "700",
+        sourceName: "匿名港股",
+        sourceAssetType: "stock",
+      },
       {
         market: "CN-SH",
         symbol: "518880",
@@ -83,7 +91,7 @@ describe("China Merchants Securities PDF import", () => {
   it("marks missing times as date-only and preserves physical source order", () => {
     const result = parseChinaMerchantsPages(CHINA_MERCHANTS_PAGES, options);
 
-    expect(result.records[0]).toMatchObject({
+    expect(result.records[1]).toMatchObject({
       executedAt: "2025-01-03T07:00:00.000Z",
       quantity: "1000",
       price: "6.5",
@@ -98,8 +106,8 @@ describe("China Merchants Securities PDF import", () => {
       },
     });
     expect(result.records.slice(0, 3).map((record) => record.source.sourceOrder))
-      .toEqual([1, 2, 3]);
-    expect(result.records[0]?.executedAt).toBe(result.records[1]?.executedAt);
+      .toEqual([0, 1, 2]);
+    expect(result.records[1]?.executedAt).toBe(result.records[2]?.executedAt);
   });
 
   it("preserves legitimate identical fills as separate executions", () => {

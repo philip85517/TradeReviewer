@@ -147,6 +147,37 @@ export type TradeExecution = {
   fee: string;
 };
 
+function normalizedCurrency(value: string | undefined): string {
+  const currency = value?.trim().toUpperCase() ?? "";
+  if (currency === "人民币" || currency === "RMB") return "CNY";
+  if (currency === "港币" || currency === "HK$" || currency === "HKD") return "HKD";
+  if (currency === "美元" || currency === "US$" || currency === "USD") return "USD";
+  return currency;
+}
+
+/** Currency used by the source settlement, falling back to the quote currency. */
+export function executionSettlementCurrency(execution: TradeExecution): string {
+  const settlementCurrency = execution.source.settlement?.currency?.trim();
+  return normalizedCurrency(
+    settlementCurrency || execution.instrument.currency,
+  );
+}
+
+/** Fees belong to the source settlement currency when settlement evidence exists. */
+export function executionFeeCurrency(execution: TradeExecution): string {
+  return executionSettlementCurrency(execution);
+}
+
+/** True when a source cash settlement cannot be safely treated as quote currency. */
+export function hasSettlementCurrencyMismatch(execution: TradeExecution): boolean {
+  const settlementCurrency = execution.source.settlement?.currency?.trim();
+  return Boolean(
+    settlementCurrency &&
+      normalizedCurrency(settlementCurrency) !==
+        normalizedCurrency(execution.instrument.currency),
+  );
+}
+
 export type TradeEpisode = {
   /** Direction is provisional when date-only inventory events cannot be ordered against fills. */
   directionKnown?: false;

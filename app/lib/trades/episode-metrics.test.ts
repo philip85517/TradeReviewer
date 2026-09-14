@@ -52,6 +52,45 @@ describe("summarizeTradeEpisode", () => {
     expect(summarizeTradeEpisode(episode)).toMatchObject({grossExposure:"22826",netPnl:"1164"});
   });
 
+  it("does not calculate PnL across HKD quotes and CNY settlements", () => {
+    const instrument = {
+      id: "HK:1810",
+      symbol: "1810",
+      name: "小米集团-W",
+      market: "HK",
+      currency: "HKD",
+    };
+    const buy = fill("buy", "2025-01-01T07:00:00Z", "2", "10", "1");
+    buy.instrument = instrument;
+    buy.source.settlement = {
+      currency: "CNY",
+      quantity: "2",
+      grossAmount: "20",
+      netAmount: "-21",
+      fees: { commission: "1" },
+    };
+    const sell = fill("sell", "2025-01-02T07:00:00Z", "2", "12", "1");
+    sell.instrument = instrument;
+    sell.source.settlement = {
+      currency: "CNY",
+      quantity: "2",
+      grossAmount: "24",
+      netAmount: "23",
+      fees: { commission: "1" },
+    };
+
+    const [episode] = buildTradeEpisodes([buy, sell]);
+    expect(summarizeTradeEpisode(episode)).toMatchObject({
+      pnlAvailable: false,
+      fees: "2",
+      realizedPnl: "0",
+      netPnl: null,
+      unrealizedPnl: null,
+      returnPercent: null,
+      holdingMilliseconds: null,
+    });
+  });
+
   it("preserves source-row order for same-timestamp executions", () => {
     const buy = fill("buy", "2025-01-01T07:00:00Z", "1", "10", "0");
     buy.source.row = 1;

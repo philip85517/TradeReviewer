@@ -40,6 +40,7 @@ import { ReplayChart } from "../chart/replay-chart";
 import { EpisodeReviewEditor } from "../review/episode-review-editor";
 import type { EpisodeNotesProps } from "../review/episode-notes-panel";
 import type { TradeEpisode } from "../../lib/trades/types";
+import { executionFeeCurrency } from "../../lib/trades/types";
 import { buildReviewQueue, reviewState, type ReviewQueueFilter, type ReviewQueueItem } from "../../lib/reviews/review-queue";
 import { ReviewQueue } from "./review-queue";
 
@@ -102,6 +103,17 @@ function money(value: string | null, currency: string) {
     maximumFractionDigits: 2,
     signDisplay: "always",
   }).format(Number(value));
+}
+
+function feeCurrency(executions: TradeEpisode["executions"]): string | undefined {
+  const currencies = new Set(executions.map(executionFeeCurrency));
+  return currencies.size === 1 ? [...currencies][0] : undefined;
+}
+
+function feeLabel(execution: TradeEpisode["executions"][number]) {
+  return execution.source.feeStatus === "unknown"
+    ? "待核对"
+    : `${execution.fee} ${executionFeeCurrency(execution)}`;
 }
 
 function episodeLabel(
@@ -484,7 +496,7 @@ export function TradeLibrary({
               </div>
               <div>
                 <span>费用</span>
-                <strong>{episode.executions.some(e => e.source.feeStatus === "unknown") ? "待核对" : metrics.fees}</strong>
+                <strong>{episode.executions.some(e => e.source.feeStatus === "unknown") ? "待核对" : feeCurrency(episode.executions) ? `${metrics.fees} ${feeCurrency(episode.executions)}` : "币种待核对"}</strong>
               </div>
               <div>
                 <span>R 倍数</span>
@@ -608,7 +620,7 @@ export function TradeLibrary({
                   </b>
                   <span>{execution.quantity}</span>
                   <span>{execution.price}</span>
-                  <span>{execution.source.feeStatus === "unknown" ? "待核对" : execution.fee}</span>
+                  <span>{feeLabel(execution)}</span>
                 </div>
               ))}
             </div>

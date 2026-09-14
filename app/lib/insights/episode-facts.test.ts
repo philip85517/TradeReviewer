@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { DailyCandleRecord } from "../market/contracts";
+import type { CoverageSegment, DailyCandleRecord } from "../market/contracts";
 import type { MarketDataSyncStatus } from "../market/sync-status";
 import type { EpisodeReviewRecord } from "../reviews/types";
 import type {
@@ -204,6 +204,215 @@ function confirmedSuggestion(
 }
 
 describe("buildInsightEpisodeFacts", () => {
+  it("keeps reliable accounting facts when daily path data is unavailable", () => {
+    const executions = [
+      execution(xpev, "no-path-open", "buy", "2025-01-02T15:00:00Z", "10", "10"),
+      execution(xpev, "no-path-close", "sell", "2025-01-03T15:00:00Z", "10", "12"),
+    ];
+    const episode = libraryEpisode({
+      id: "episode-no-path",
+      direction: "long",
+      executions,
+      netPnl: "20",
+      returnPercent: "20",
+      rMultiple: "2",
+    });
+
+    const result = buildInsightEpisodeFacts(
+      [entry(xpev, [episode])],
+      {},
+      { "US:XPEV": "source-unavailable" },
+      [],
+    );
+
+    expect(result.excluded).toEqual([]);
+    expect(result.facts).toEqual([
+      expect.objectContaining({
+        episodeId: "episode-no-path",
+        netPnl: "20",
+        returnPercent: "20",
+        mfePercent: null,
+        maePercent: null,
+        givebackPercent: null,
+      }),
+    ]);
+  });
+
+  it("uses complete daily coverage for the episode despite a combined hourly failure", () => {
+    const executions = [
+      execution(xpev, "daily-open", "buy", "2025-01-02T15:00:00Z", "10", "10"),
+      execution(xpev, "daily-close", "sell", "2025-01-03T15:00:00Z", "10", "12"),
+    ];
+    const episode = libraryEpisode({
+      id: "episode-daily-complete",
+      direction: "long",
+      executions,
+      netPnl: "20",
+      returnPercent: "20",
+      rMultiple: "2",
+    });
+    const dailyCoverage: CoverageSegment = {
+      startDate: "2025-01-02",
+      endDate: "2025-01-03",
+      status: "complete",
+      missingTradingDates: [],
+    };
+
+    const result = buildInsightEpisodeFacts(
+      [entry(xpev, [episode])],
+      {
+        "US:XPEV": [
+          candle("2025-01-02", "11", "9", "10"),
+          candle("2025-01-03", "13", "11", "12"),
+        ],
+      },
+      { "US:XPEV": "source-unavailable" },
+      [],
+      { "US:XPEV": [dailyCoverage] },
+    );
+
+    expect(result.facts[0]).toMatchObject({
+      episodeId: "episode-daily-complete",
+      mfePercent: "20",
+      maePercent: "0",
+      givebackPercent: "0",
+    });
+  });
+
+  it("accepts partial daily segments whose missing dates are outside the episode", () => {
+    const executions = [
+      execution(xpev, "outside-gap-open", "buy", "2025-01-02T15:00:00Z", "10", "10"),
+      execution(xpev, "outside-gap-close", "sell", "2025-01-03T15:00:00Z", "10", "12"),
+    ];
+    const episode = libraryEpisode({
+      id: "episode-outside-gap",
+      direction: "long",
+      executions,
+      netPnl: "20",
+      returnPercent: "20",
+      rMultiple: "2",
+    });
+    const inputs: CoverageSegment[] = [
+      {
+        startDate: "2025-01-01",
+        endDate: "2025-02-28",
+        status: "partial",
+        missingTradingDates: ["2025-02-03"],
+      },
+      {
+        startDate: "2025-01-01",
+        endDate: "2025-02-28",
+        actualEndDate: "2025-02-27",
+        status: "partial",
+        reason: "provider-latest-available",
+        missingTradingDates: ["2025-02-28"],
+      },
+    ];
+
+    for (const coverage of inputs) {
+      const result = buildInsightEpisodeFacts(
+        [entry(xpev, [episode])],
+        {
+          "US:XPEV": [
+            candle("2025-01-02", "11", "9", "10"),
+            candle("2025-01-03", "13", "11", "12"),
+          ],
+        },
+        { "US:XPEV": "source-unavailable" },
+        [],
+        { "US:XPEV": [coverage] },
+      );
+
+      expect(result.facts[0]).toMatchObject({
+        episodeId: "episode-outside-gap",
+        mfePercent: "20",
+        maePercent: "0",
+        givebackPercent: "0",
+      });
+    }
+  });
+
+  it("rejects daily path coverage with an in-episode gap or failure", () => {
+    const executions = [
+      execution(xpev, "inside-gap-open", "buy", "2025-01-02T15:00:00Z", "10", "10"),
+      execution(xpev, "inside-gap-close", "sell", "2025-01-03T15:00:00Z", "10", "12"),
+    ];
+    const episode = libraryEpisode({
+      id: "episode-inside-gap",
+      direction: "long",
+      executions,
+      netPnl: "20",
+      returnPercent: "20",
+      rMultiple: "2",
+    });
+    const inputs: CoverageSegment[] = [
+      {
+        startDate: "2025-01-01",
+        endDate: "2025-02-28",
+        status: "partial",
+        missingTradingDates: ["2025-01-03"],
+      },
+      {
+        startDate: "2025-01-01",
+        endDate: "2025-02-28",
+        status: "source-unavailable",
+        missingTradingDates: [],
+      },
+    ];
+
+    for (const coverage of inputs) {
+      const result = buildInsightEpisodeFacts(
+        [entry(xpev, [episode])],
+        {
+          "US:XPEV": [
+            candle("2025-01-02", "11", "9", "10"),
+            candle("2025-01-03", "13", "11", "12"),
+          ],
+        },
+        { "US:XPEV": "complete" },
+        [],
+        { "US:XPEV": [coverage] },
+      );
+
+      expect(result.facts[0]).toMatchObject({
+        episodeId: "episode-inside-gap",
+        mfePercent: null,
+        maePercent: null,
+        givebackPercent: null,
+      });
+    }
+  });
+
+  it("excludes a closed episode whose accounting is incomplete", () => {
+    const executions = [
+      execution(xpev, "incomplete-open", "buy", "2025-01-02T15:00:00Z", "10", "10"),
+      execution(xpev, "incomplete-close", "sell", "2025-01-03T15:00:00Z", "10", "12"),
+    ];
+    const episode = libraryEpisode({
+      id: "episode-incomplete-accounting",
+      direction: "long",
+      executions,
+      netPnl: null,
+      returnPercent: null,
+      rMultiple: null,
+    });
+
+    const result = buildInsightEpisodeFacts(
+      [entry(xpev, [episode])],
+      {},
+      { "US:XPEV": "source-unavailable" },
+      [],
+    );
+
+    expect(result.facts).toEqual([]);
+    expect(result.excluded).toEqual([
+      expect.objectContaining({
+        episodeId: "episode-incomplete-accounting",
+        reason: "missing-comparison-metric",
+      }),
+    ]);
+  });
+
   it("calculates direction-aware excursions without applying later scale-in basis backwards", () => {
     const longExecutions = [
       execution(
@@ -417,22 +626,27 @@ describe("buildInsightEpisodeFacts", () => {
       [],
     );
 
-    expect(result.facts).toEqual([]);
+    expect(result.facts).toEqual([
+      expect.objectContaining({
+        episodeId: "episode-missing-candles",
+        netPnl: "10",
+        mfePercent: null,
+        maePercent: null,
+        givebackPercent: null,
+      }),
+      expect.objectContaining({
+        episodeId: "episode-partial",
+        netPnl: "10",
+        mfePercent: null,
+        maePercent: null,
+        givebackPercent: null,
+      }),
+    ]);
     expect(result.excluded).toEqual([
       expect.objectContaining({
         episodeId: "episode-open",
         reason: "open-episode",
         reasonLabel: "持仓回合尚未结束",
-      }),
-      expect.objectContaining({
-        episodeId: "episode-missing-candles",
-        reason: "missing-episode-candles",
-        reasonLabel: "回合起止日期缺少完整 K 线",
-      }),
-      expect.objectContaining({
-        episodeId: "episode-partial",
-        reason: "incomplete-market-data",
-        reasonLabel: "本地行情覆盖不完整",
       }),
     ]);
   });

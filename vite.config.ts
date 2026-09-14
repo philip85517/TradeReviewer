@@ -1,5 +1,6 @@
 import vinext from "vinext";
 import { defineConfig } from "vite";
+import { realpathSync } from "node:fs";
 import hostingConfig from "./.openai/hosting.json";
 import { sites } from "./build/sites-vite-plugin";
 
@@ -53,9 +54,14 @@ export default defineConfig(async ({ command }) => {
   }
 
   return {
-    server: isCodexSeatbeltSandbox
-      ? { watch: { useFsEvents: false, usePolling: true } }
-      : undefined,
+    server: {
+      // Worktrees may share dependencies through a symlink. PDF workers are
+      // served directly from that dependency directory during development.
+      fs: { allow: [process.cwd(), realpathSync("node_modules")] },
+      ...(isCodexSeatbeltSandbox
+        ? { watch: { useFsEvents: false, usePolling: true } }
+        : {}),
+    },
     plugins,
   };
 });

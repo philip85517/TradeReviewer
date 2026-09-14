@@ -7,7 +7,10 @@ import type {
   InstrumentMetadataFailure,
   ResolvedInstrument,
 } from "../instruments/metadata-contracts";
-import { validateResolvedInstrument } from "../instruments/metadata-contracts";
+import {
+  validateLocalizedInstrumentName,
+  validateResolvedInstrument,
+} from "../instruments/metadata-contracts";
 import {
   resolveInstrumentMetadataBatch,
   type ResolveBatchResult,
@@ -26,7 +29,11 @@ export const UNRESOLVED_ASSET_EXCLUSION_LABEL =
   "无法确认属于股票或 ETF";
 
 export type EnrichedImportResult = {
+  monthly?: StatementParseResult["monthly"];
+  blocked?: boolean;
   broker: StatementParseResult["broker"];
+  tradeNature?: StatementParseResult["tradeNature"];
+  simulationRunId?: string;
   importable: TradeExecution[];
   unresolved: InstrumentMetadataFailure[];
   exclusions: ImportExclusion[];
@@ -137,6 +144,23 @@ function unknownFailure(
   };
 }
 
+function statementLocalizedName(
+  sourceName: string | undefined,
+  resolvedAt: string,
+) {
+  if (!sourceName) return undefined;
+  try {
+    return validateLocalizedInstrumentName({
+      name: sourceName,
+      locale: "zh-CN",
+      source: "statement",
+      resolvedAt,
+    });
+  } catch {
+    return undefined;
+  }
+}
+
 function addUnknownExclusion(
   exclusions: ImportExclusion[],
   candidate: ParsedInstrumentCandidate,
@@ -164,13 +188,25 @@ function addUnknownExclusion(
 
 function applyMetadata(
   execution: TradeExecution,
-  metadata: ResolvedInstrument | { name: string },
+  metadata: {
+    name: string;
+    localizedName?: ResolvedInstrument["localizedName"];
+  },
 ): TradeExecution {
+  const symbol = canonicalInstrumentSymbol(
+    execution.instrument.symbol,
+    execution.instrument.market,
+  );
   return {
     ...execution,
     instrument: {
       ...execution.instrument,
+      id: canonicalInstrumentId(symbol, execution.instrument.market),
+      symbol,
       name: metadata.name,
+      ...(metadata.localizedName
+        ? { localizedName: metadata.localizedName }
+        : {}),
     },
   };
 }
@@ -223,7 +259,11 @@ export async function enrichStatementImport(
   const exclusions = parsed.exclusions.map((item) => ({ ...item }));
   if (parsed.blocked) {
     return {
+      monthly: parsed.monthly,
+      blocked: true,
       broker: parsed.broker,
+      ...(parsed.tradeNature ? { tradeNature: parsed.tradeNature } : {}),
+      ...(parsed.simulationRunId ? { simulationRunId: parsed.simulationRunId } : {}),
       importable: [],
       unresolved: [],
       exclusions,
@@ -302,6 +342,10 @@ export async function enrichStatementImport(
   ).toISOString();
 
   for (const [instrumentId, candidate] of candidates) {
+    const localizedName = statementLocalizedName(
+      candidate.sourceName,
+      resolvedAt,
+    );
     const historicalIdentity = resolveHistoricalInstrumentIdentity({
       market: candidate.market,
       symbol: candidate.symbol,
@@ -319,6 +363,7 @@ export async function enrichStatementImport(
           candidate.market,
         ),
         name: historicalIdentity.displayName,
+        ...(localizedName ? { localizedName } : {}),
         assetType: "stock",
         source: "statement",
         confidence: "statement",
@@ -335,6 +380,7 @@ export async function enrichStatementImport(
           candidate.market,
         ),
         name: statementName,
+        ...(localizedName ? { localizedName } : {}),
         assetType: candidate.sourceAssetType as "stock" | "etf",
         source: "statement",
         confidence: "statement",
@@ -494,7 +540,11 @@ export async function enrichStatementImport(
 
   return {
     broker: parsed.broker,
+    ...(parsed.tradeNature ? { tradeNature: parsed.tradeNature } : {}),
+    ...(parsed.simulationRunId ? { simulationRunId: parsed.simulationRunId } : {}),
     importable,
+    monthly: parsed.monthly,
+    blocked: parsed.blocked,
     unresolved,
     exclusions,
     diagnostics: [...parsed.diagnostics],

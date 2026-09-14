@@ -27,6 +27,7 @@ type Props = {
   ) => void | Promise<void>;
   onReject: (suggestion: TagSuggestionRecord) => void | Promise<void>;
   onOpenEpisode: (instrumentId: string, episodeId: string) => void;
+  onBusyChange?: (busy: boolean) => void;
 };
 
 function evidenceLabel(suggestion: TagSuggestionRecord) {
@@ -48,6 +49,7 @@ export function TagSuggestionPanel({
   onEdit,
   onReject,
   onOpenEpisode,
+  onBusyChange,
 }: Props) {
   const [resolved, setResolved] = useState<Set<string>>(() => new Set());
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -63,6 +65,7 @@ export function TagSuggestionPanel({
     suggestion: TagSuggestionRecord,
     action: (suggestion: TagSuggestionRecord) => void | Promise<void>,
   ) => {
+    onBusyChange?.(true);
     setBusyId(suggestion.id);
     setError(null);
     try {
@@ -72,6 +75,7 @@ export function TagSuggestionPanel({
       setError("建议处理失败，请检查本机存储后重试");
     } finally {
       setBusyId(null);
+      onBusyChange?.(false);
     }
   };
 
@@ -101,7 +105,7 @@ export function TagSuggestionPanel({
             const instrumentName =
               context?.instrumentName ?? suggestion.instrumentId;
             const episodeLabel = context?.episodeLabel ?? "该回合";
-            const disabled = busyId === suggestion.id;
+            const disabled = busyId !== null;
             const selectedTagId =
               selectedTagIds[suggestion.id] ?? suggestion.tagId;
             const selectedTagLabel = reviewTagLabel(selectedTagId);
@@ -120,9 +124,9 @@ export function TagSuggestionPanel({
                   <b>{tagLabel}</b>
                 </div>
                 <p>{evidenceLabel(suggestion)}</p>
-                <small>
+                <details><summary>计算规则</summary><small>
                   规则 {suggestion.ruleId} · v{suggestion.ruleVersion}
-                </small>
+                </small></details>
                 <label className="suggestion-tag-edit">
                   <span>最终标签</span>
                   <select

@@ -61,6 +61,18 @@ export function initializeSqlite(database: DatabaseSync): void {
     "insert into schema_migrations (version, name, checksum) values (?, ?, ?)",
   );
 
+  // The feature branch shipped simulation columns as migration 4, while
+  // master shipped audited revisions under that number. Recognize only the
+  // exact published simulation checksum before promoting its history to 5.
+  const simulationMigration = SQLITE_MIGRATIONS.find(m => m.name === "persist-trade-nature-and-simulation-scope")!;
+  const legacy = applied.get(4) as { checksum: string } | undefined;
+  if (legacy?.checksum === simulationMigration.checksum && !applied.get(simulationMigration.version)) {
+    withSqliteTransaction(database, () => {
+      database.prepare("update schema_migrations set version = ? where version = 4 and checksum = ?")
+        .run(simulationMigration.version, simulationMigration.checksum);
+    });
+  }
+
   for (const migration of SQLITE_MIGRATIONS) {
     const existing = applied.get(migration.version) as { checksum: string } | undefined;
     if (existing) {

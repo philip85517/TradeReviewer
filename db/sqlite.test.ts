@@ -1,4 +1,5 @@
 import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { DatabaseSync } from "node:sqlite";
 import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -113,6 +114,24 @@ describe("SQLite storage foundation", () => {
 
     const reopenedDatabase = openSqliteDatabase(databasePath);
     expect(reopenedDatabase.prepare("select 1 as value").get()).toEqual({ value: 1 });
+  });
+
+  it.each(["master", "feature"])("upgrades the %s migration history without losing stored data", (branch) => {
+    const database = new DatabaseSync(tempDatabasePath());
+    database.exec("create table schema_migrations (version integer primary key, name text not null, checksum text not null)");
+    const prior = SQLITE_MIGRATIONS.filter(m => m.version <= 3 || m.version === (branch === "master" ? 4 : 5));
+    for (const migration of prior) {
+      database.exec(migration.sql);
+      database.prepare("insert into schema_migrations values (?, ?, ?)").run(migration.version === 5 ? 4 : migration.version, migration.name, migration.checksum);
+    }
+    database.prepare("insert into app_settings (key, value_json) values (?, ?)").run("preserved", '{"value":42}');
+    initializeSqlite(database);
+    initializeSqlite(database);
+    expect(database.prepare("select value_json from app_settings where key='preserved'").get()).toEqual({ value_json: '{"value":42}' });
+    expect(database.prepare("select count(*) as count from trade_revisions").get()).toEqual({ count: 0 });
+    expect(database.prepare("select trade_nature, simulation_run_id from executions").all()).toEqual([]);
+    expect(database.prepare("select version, checksum from schema_migrations order by version").all()).toEqual(SQLITE_MIGRATIONS.map(m => ({ version: m.version, checksum: m.checksum })));
+    database.close();
   });
 
   it("rejects a changed checksum for an already-applied migration", () => {

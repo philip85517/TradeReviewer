@@ -6,6 +6,7 @@ import type {
   IPriceLine,
   ISeriesApi,
   Time,
+  TickMarkType,
 } from "lightweight-charts";
 
 import type {
@@ -13,14 +14,16 @@ import type {
   NormalizedDrawing,
 } from "../../lib/chart/drawings";
 import type { DrawingCommand } from "../../lib/chart/drawing-commands";
+import type { StatementEvent } from "../../lib/import/monthly-statement";
 import type { Candle } from "../../lib/market/types";
 import {
   formatBeijingDateTime,
   formatBeijingUnixSeconds,
 } from "../../lib/replay/format-time";
 import type { ChartSettings } from "../../lib/storage/chart-settings";
-import { mapExecutionsToCandles } from "../../lib/replay/execution-markers";
+import { displayTimeForCandle } from "../../lib/replay/display-time";
 import type { TradeExecution } from "../../lib/trades/types";
+import { episodeViewport, type EpisodeViewport } from "../../lib/reviews/episode-viewport";
 import {
   DrawingCanvas,
   type ChartCoordinateAdapter,
@@ -29,6 +32,7 @@ import {
 type Props = {
   candles: Candle[];
   executions: TradeExecution[];
+  positionEvents?: StatementEvent[];
   cursor: string;
   averageCost: number;
   drawings: NormalizedDrawing[];
@@ -36,6 +40,7 @@ type Props = {
   settings: ChartSettings;
   episodeId: string;
   viewportKey?: string;
+  focusRange?: EpisodeViewport;
   selectedDrawingId: string | null;
   plannedRiskAmount: string | undefined;
   currency: string;
@@ -43,13 +48,115 @@ type Props = {
   onCommand: (command: DrawingCommand) => void;
 };
 
+const EMPTY_POSITION_EVENTS: StatementEvent[] = [];
+
 type CrosshairCandle = Pick<
   Candle,
   "time" | "open" | "high" | "low" | "close"
 >;
 
 function chartTime(time: string) {
-  return Math.floor(new Date(time).getTime() / 1000) as Time;
+  const milliseconds = Date.parse(time);
+  return Number.isFinite(milliseconds)
+    ? Math.floor(milliseconds / 1000) as Time
+    : null;
+}
+
+type ChartCandleData = {
+  time: Time;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+};
+
+type ReplayChartMarker = {
+  time: Time;
+  position: "belowBar" | "aboveBar";
+  color: string;
+  shape: "arrowUp" | "arrowDown";
+  text: string;
+};
+
+function validCandles(candles: readonly Candle[]): Candle[] {
+  return candles
+    .filter((candle) => {
+      const time = chartTime(candle.time);
+      return time !== null &&
+        [candle.open, candle.high, candle.low, candle.close, candle.volume].every(Number.isFinite);
+    })
+    .sort((left, right) => Number(chartTime(left.time)) - Number(chartTime(right.time)))
+    .filter((candle, index, sorted) =>
+      index === 0 || chartTime(candle.time) !== chartTime(sorted[index - 1].time),
+    );
+}
+
+function chartCandleData(candles: readonly Candle[]): ChartCandleData[] {
+  return validCandles(candles).flatMap((candle) => {
+    const time = chartTime(candle.time);
+    if (time === null) return [];
+    return [{
+      time,
+      open: candle.open,
+      high: candle.high,
+      low: candle.low,
+      close: candle.close,
+      volume: candle.volume,
+    }];
+  });
+}
+
+export function buildReplayChartMarkers(
+  candles: readonly Candle[],
+  executions: readonly TradeExecution[],
+  positionEvents: readonly StatementEvent[] = [],
+): ReplayChartMarker[] {
+  const validChartCandles = validCandles(candles);
+  const validChartTimes = new Set(
+    validChartCandles.flatMap((candle) => {
+      const time = chartTime(candle.time);
+      return time === null ? [] : [time];
+    }),
+  );
+  const markers = [
+    ...executions.map((execution): ReplayChartMarker | null => {
+      const candleTime = displayTimeForCandle(validChartCandles, {
+        at: execution.executedAt,
+        policy: execution.source.displayTimePolicy,
+        calendarDate: execution.source.marketCalendarDate ?? execution.source.tradingDate,
+      });
+      const time = candleTime ? chartTime(candleTime) : null;
+      if (time === null || !validChartTimes.has(time)) return null;
+      return {
+        time,
+        position: execution.side === "buy" ? "belowBar" : "aboveBar",
+        color: execution.side === "buy" ? "#26a69a" : "#ef5350",
+        shape: execution.side === "buy" ? "arrowUp" : "arrowDown",
+        text: `${execution.side === "buy" ? "买" : "卖"} ${execution.quantity}${execution.source.venue ? ` · ${execution.source.venue}` : ""}`,
+      };
+    }),
+    ...[...new Map(positionEvents.map((event) => [event.id, event])).values()]
+      .filter((event) => event.kind === "ipo" && event.quantity && event.displayTimePolicy === "session-open")
+      .map((event): ReplayChartMarker | null => {
+        const candleTime = displayTimeForCandle(validChartCandles, {
+          at: event.date,
+          policy: event.displayTimePolicy,
+        });
+        const time = candleTime ? chartTime(candleTime) : null;
+        if (time === null || !validChartTimes.has(time)) return null;
+        return {
+          time,
+          position: "belowBar",
+          color: "#a78bfa",
+          shape: "arrowUp",
+          text: `配售 ${event.quantity}`,
+        };
+      }),
+  ];
+  return markers
+    .filter((marker): marker is ReplayChartMarker => marker !== null)
+    .sort((left, right) => Number(left.time) - Number(right.time));
 }
 
 function chartTimeLabel(time: Time) {
@@ -62,9 +169,19 @@ function chartTimeLabel(time: Time) {
   );
 }
 
+export function chartTickLabel(time: Time, unit: "year" | "date" | "time" | "seconds") {
+  const label = chartTimeLabel(time);
+  const parts = /^(\d+)年(\d+)月(\d+)日 (\d+:\d+):(\d+)$/.exec(label);
+  if (!parts) return label;
+  if (unit === "year") return parts[1];
+  if (unit === "date") return `${parts[2]}-${parts[3]}`;
+  return unit === "seconds" ? `${parts[4]}:${parts[5]}` : parts[4];
+}
+
 export function ReplayChart({
   candles,
   executions,
+  positionEvents = EMPTY_POSITION_EVENTS,
   cursor,
   averageCost,
   drawings,
@@ -72,6 +189,7 @@ export function ReplayChart({
   settings,
   episodeId,
   viewportKey = episodeId,
+  focusRange,
   selectedDrawingId,
   plannedRiskAmount,
   currency,
@@ -93,10 +211,12 @@ export function ReplayChart({
 
   const coordinateAdapter = useMemo<ChartCoordinateAdapter>(
     () => ({
-      timeToX: (time) =>
-        chartRef.current
-          ?.timeScale()
-          .timeToCoordinate(chartTime(time)) ?? null,
+      timeToX: (time) => {
+        const timestamp = chartTime(time);
+        return timestamp === null
+          ? null
+          : chartRef.current?.timeScale().timeToCoordinate(timestamp) ?? null;
+      },
       priceToY: (price) =>
         seriesRef.current?.priceToCoordinate(price) ?? null,
       xToTime: (x) => {
@@ -125,12 +245,19 @@ export function ReplayChart({
         CrosshairMode,
         HistogramSeries,
         LineStyle,
+        TickMarkType,
         createChart,
         createSeriesMarkers,
       }) => {
         if (disposed) return;
         const chart = createChart(container, {
-          autoSize: true,
+          // The chart is sized by the observer below. Mixing autoSize with
+          // explicit width/height updates leaves a zero-height price scale
+          // during an update, which makes marker hit-testing throw when the
+          // series is refreshed.
+          autoSize: false,
+          width: Math.max(1, container.clientWidth),
+          height: Math.max(1, container.clientHeight),
           layout: {
             background: { type: ColorType.Solid, color: "#101722" },
             textColor: "#8392a7",
@@ -165,7 +292,10 @@ export function ReplayChart({
             secondsVisible: false,
             rightOffset: 4,
             barSpacing: 8,
-            tickMarkFormatter: (time: Time) => chartTimeLabel(time),
+            tickMarkFormatter: (time: Time, type: TickMarkType) => chartTickLabel(time,
+              type === TickMarkType.Year ? "year" :
+              type === TickMarkType.Time ? "time" :
+              type === TickMarkType.TimeWithSeconds ? "seconds" : "date"),
           },
         });
         const candleSeries = chart.addSeries(CandlestickSeries, {
@@ -225,10 +355,12 @@ export function ReplayChart({
         setChartReady(true);
 
         observer = new ResizeObserver(() => {
+          const range = chart.timeScale().getVisibleLogicalRange();
           chart.applyOptions({
-            width: container.clientWidth,
-            height: container.clientHeight,
+            width: Math.max(1, container.clientWidth),
+            height: Math.max(1, container.clientHeight),
           });
+          if (range && container.clientWidth > 0) chart.timeScale().setVisibleLogicalRange(range);
           setCoordinateVersion((version) => version + 1);
         });
         observer.observe(container);
@@ -259,18 +391,19 @@ export function ReplayChart({
     const volumeSeries = volumeSeriesRef.current;
     if (!chartReady || !candleSeries || !volumeSeries) return;
 
-    candleSeries.setData(
-      candles.map((candle) => ({
-        time: chartTime(candle.time),
-        open: candle.open,
-        high: candle.high,
-        low: candle.low,
-        close: candle.close,
-      })),
-    );
+    const validChartCandles = validCandles(candles);
+    const validCandleData = chartCandleData(candles);
+    // Clear markers before replacing the series data. lightweight-charts can
+    // render a hit-test frame between these two mutations; stale markers may
+    // then point at a bar that no longer exists and throw from its renderer.
+    const markerPlugin = markerPluginRef.current as {
+      setMarkers: (nextMarkers: readonly ReplayChartMarker[]) => void;
+    } | null;
+    markerPlugin?.setMarkers([]);
+    candleSeries.setData(validCandleData);
     volumeSeries.setData(
-      candles.map((candle) => ({
-        time: chartTime(candle.time),
+      validCandleData.map((candle) => ({
+        time: candle.time,
         value: candle.volume,
         color:
           candle.close >= candle.open
@@ -279,60 +412,45 @@ export function ReplayChart({
       })),
     );
 
-    const executionById = new Map(
-      executions.map((execution) => [execution.id, execution]),
-    );
-    const markers = (settings.showExecutions
-      ? mapExecutionsToCandles(candles, executions)
-      : []
-    )
-      .map((mapped) => {
-        const execution = executionById.get(mapped.executionId);
-        if (!execution) return null;
-        return {
-          time: chartTime(mapped.candleTime),
-          position:
-            execution.side === "buy"
-              ? ("belowBar" as const)
-              : ("aboveBar" as const),
-          color: execution.side === "buy" ? "#26a69a" : "#ef5350",
-          shape:
-            execution.side === "buy"
-              ? ("arrowUp" as const)
-              : ("arrowDown" as const),
-          text: `${execution.side === "buy" ? "买" : "卖"} ${execution.quantity}`,
-        };
-      })
-      .filter((marker) => marker !== null)
-      .sort((a, b) => Number(a.time) - Number(b.time));
-    (
-      markerPluginRef.current as {
-        setMarkers: (nextMarkers: typeof markers) => void;
-      }
-    )?.setMarkers(markers);
+    const markers = settings.showExecutions
+      ? buildReplayChartMarkers(candles, executions, positionEvents)
+      : [];
+    // Defer installing markers until the series has completed its data
+    // mutation. This also protects the transient empty-data frame while a
+    // market-data request replaces the current instrument's candles.
+    const markerTimer = window.setTimeout(() => {
+      markerPlugin?.setMarkers(markers);
+    }, 0);
 
     costLineRef.current?.applyOptions({
-      price: averageCost > 0 ? averageCost : candles.at(-1)?.close ?? 0,
+      price: averageCost > 0 ? averageCost : validCandleData.at(-1)?.close ?? 0,
       axisLabelVisible: settings.showAverageCost && averageCost > 0,
     });
-    if (fittedRef.current !== viewportKey && candles.length > 0) {
+    if (fittedRef.current !== viewportKey && validCandleData.length > 0) {
       chartRef.current?.timeScale().fitContent();
       // Leave room for arrows/text on the first and last bars as well.
-      const padding = Math.max(3, Math.ceil(candles.length * 0.04));
-      chartRef.current?.timeScale().setVisibleLogicalRange({
-        from: -padding,
-        to: candles.length - 1 + padding,
-      });
+      const padding = Math.max(3, Math.ceil(validCandleData.length * 0.04));
+      chartRef.current?.timeScale().setVisibleLogicalRange(
+        focusRange
+          ? episodeViewport(validChartCandles, focusRange)
+          : {
+              from: -padding,
+              to: validCandleData.length - 1 + padding,
+            },
+      );
       fittedRef.current = viewportKey;
       setCrosshair(null);
     }
     setCoordinateVersion((version) => version + 1);
+    return () => window.clearTimeout(markerTimer);
   }, [
+    focusRange,
     averageCost,
     candles,
     chartReady,
     viewportKey,
     executions,
+    positionEvents,
     settings.showAverageCost,
     settings.showExecutions,
   ]);

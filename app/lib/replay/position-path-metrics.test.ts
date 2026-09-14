@@ -42,6 +42,22 @@ function fill(
 }
 
 describe("calculatePositionPathMetrics", () => {
+  it("does not turn unknown opening cost into zero-cost path profits", () => {
+    const execution = fill("sell", "2025-01-02T14:30:00Z", "2", "10");
+    execution.source.openingPosition = {
+      accountId: "account-1", market: "US", symbol: "TEST", phase: "opening",
+      date: "2025-01-01", quantity: "2", source: [{ page: 1, row: 1 }],
+    };
+    const metrics = calculatePositionPathMetrics({
+      candles: [candle("2025-01-02T15:00:00Z", 10, 12, 8, 11)],
+      executions: [execution], cursor: "2025-01-02T16:00:00Z",
+      episodeStartedAt: execution.executedAt,
+    });
+    expect(metrics.current.accuracy?.pnl).toBe("unavailable");
+    expect(metrics.mfe).toBeNull();
+    expect(metrics.maximumDrawdown).toBeNull();
+    expect(metrics.rMultiple).toBeNull();
+  });
   it("calculates long MFE, MAE, drawdown, giveback, and R multiple through the cursor", () => {
     const metrics = calculatePositionPathMetrics({
       candles: [

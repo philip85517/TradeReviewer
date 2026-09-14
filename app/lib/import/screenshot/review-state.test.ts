@@ -469,7 +469,23 @@ describe("reviewBlockers", () => {
     );
   });
 
-  it("does not require manual timezone selection for a supported market", () => {
+  it("accepts an unconfirmed exact-second timestamp at 0.85 confidence", () => {
+    const atBoundary = draft("image-1:tiger:0", {
+      fieldEvidence: {
+        ...draft().fieldEvidence,
+        executedAt: {
+          rawText: "2024/06/05 14:39:25",
+          confidence: 0.85,
+          repaired: false,
+          confirmedByUser: false,
+        },
+      },
+    });
+
+    expect(reviewBlockers(state([atBoundary]))).toEqual([]);
+  });
+
+  it("does not require manual timezone selection for a supported market when the broker account is inferable", () => {
     const current = state([
       draft("image-1:tiger:0", { sourceAccountSuffix: undefined }),
     ]);

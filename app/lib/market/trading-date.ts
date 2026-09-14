@@ -46,6 +46,8 @@ export function marketCalendarDateOffset(
 }
 
 export function marketTradingDate(timestamp: string, market: string) {
+  // Date-only evidence is already a calendar label, not midnight in UTC.
+  if (/^\d{4}-\d{2}-\d{2}$/.test(timestamp)) return timestamp;
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone:
       marketTimeZone(market),

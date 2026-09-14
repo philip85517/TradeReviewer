@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -296,6 +298,21 @@ function renderDialog({
 }
 
 describe("ScreenshotReviewDialog", () => {
+  it("keeps context controls readable and grouped", () => {
+    renderDialog();
+
+    expect(screen.getByRole("combobox", { name: "截图成交时区" })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "交易账户" })).toBeInTheDocument();
+
+    const styles = readFileSync(resolve(import.meta.dirname, "../../globals.css"), "utf8");
+    expect(styles).toContain(".screenshot-review-context {");
+    expect(styles).toContain("gap: 16px");
+    expect(styles).toContain("padding: 12px 22px");
+    expect(styles).toContain("height: 34px");
+    expect(styles).not.toMatch(/font-size:\s*(?:8|9|10)px/);
+    expect(styles).toContain("font-size: 12px");
+  });
+
   it("announces the review layout, image progress, issues, and batch counts", () => {
     renderDialog();
 

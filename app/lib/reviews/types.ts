@@ -14,6 +14,13 @@ export type EpisodePlanRevision = {
   plan: EpisodePlan;
 };
 
+export type RuleCheck = {
+  sourceEpisodeId: string;
+  sourceUpdatedAt: string;
+  ruleText: string;
+  result: "followed" | "deviated" | "not-applicable";
+};
+
 export type EpisodeReviewRecord = {
   version: 1;
   tagDictionaryVersion?: number;
@@ -29,6 +36,14 @@ export type EpisodeReviewRecord = {
     psychology: string;
     reusableRule: string;
     completed: boolean;
+    keyDecision?: string;
+    decisionStage?: "entry" | "management" | "exit";
+    evidenceAt?: string;
+    planAdherence?: "followed" | "deviated" | "no-plan" | "unassessed";
+    deferredReason?: string;
+    ruleStatus?: "observing" | "adopted" | "revised";
+    ruleTracking?: boolean;
+    ruleChecks?: RuleCheck[];
   };
   confirmedTagIds: string[];
 };

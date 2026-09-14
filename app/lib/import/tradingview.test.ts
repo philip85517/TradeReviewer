@@ -14,8 +14,8 @@ describe('TradingView CSV import through the dispatcher', () => {
     expect(result.blocked).toBe(false);
     expect(result.records.map(r=>r.side)).toEqual(['buy','sell']);
     expect(result.records.map(r=>r.fee)).toEqual(['0','0.6']);
-    expect(result.records[0].source).toMatchObject({ tradingNature:'simulated', timePrecision:'date-only', sourceTimezone:'Asia/Shanghai' });
-    expect(result.records[0].executedAt).toBe('2021-02-19T07:00:00.000Z');
+    expect(result.records[0].source).toMatchObject({ tradeNature:'simulation', timePrecision:'date-only', sourceTimezone:'Asia/Shanghai' });
+    expect(result.records[0].executedAt).toBe('2021-02-18T16:00:00.000Z');
     expect(replayPositionAtPrice({ executions:result.records, markPrice:'11' }).netPnl).toBe('99.4');
   });
   it('retains identical entry portions for separate partial exits and supports shorts', async () => {
@@ -55,7 +55,7 @@ it('hides pair report results and exit fees before exit is revealed', async()=>{
  const {records}=await parseBrokerStatement(fileFor());
  const snapshot=createReplaySnapshot({candles:[],executions:records,cursor:'2021-02-20T07:00:00.000Z'});
  expect(snapshot.executions).toHaveLength(1);
- expect(snapshot.executions[0].source.simulationReport).toBeUndefined();
+ expect(snapshot.executions[0].source.sourceReport).toBeUndefined();
  expect(snapshot.position.fees).toBe('0');
  expect(snapshot.position.realizedPnl).toBe('0');
 });
@@ -71,7 +71,7 @@ it('rejects ambiguous same-day transitions while accepting one same-day pair', a
 
 it('preserves Shenzhen identity from filename and manual confirmation on renamed files', async () => {
  const inferred = await parseBrokerStatement(fileFor(csv, '回放交易_SZSE_300857_2026-09-13.csv'));
- const manual = await parseBrokerStatement(fileFor(csv, 'renamed.csv'), { tradingViewInstrument: { market: 'CN-SZ', symbol: '300857' } });
+ const manual = await parseBrokerStatement(fileFor(csv, 'renamed.csv'), { tradingViewContext: { market: 'CN-SZ', symbol: '300857' } });
  for (const parsed of [inferred, manual]) {
   expect(parsed.blocked).toBe(false);
   expect(parsed.records).toHaveLength(2);
@@ -80,4 +80,11 @@ it('preserves Shenzhen identity from filename and manual confirmation on renamed
   expect(parsed.records[0].source.simulationRunId).toContain(':CN-SZ:300857');
  }
  expect(mergeExecutions(inferred.records, manual.records)).toHaveLength(2);
+});
+
+it('orders a same-day pair by its entry and exit roles when the CSV lists exit first', async()=>{
+ const text=[header,row(1,'多头出场','2021-02-19','11'),row(1,'多头进场','2021-02-19','10')].join('\n');
+ const parsed=await parseBrokerStatement(fileFor(text));
+ expect(parsed.records.map(r=>r.side)).toEqual(['buy','sell']);
+ expect(buildTradeEpisodes(parsed.records)[0]).toMatchObject({direction:'long',status:'closed'});
 });

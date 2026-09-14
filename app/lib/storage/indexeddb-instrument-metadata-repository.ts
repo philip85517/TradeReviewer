@@ -19,6 +19,7 @@ function resolvedInstrument(
     market: record.market,
     symbol: record.symbol,
     name: record.name,
+    ...(record.localizedName ? { localizedName: record.localizedName } : {}),
     assetType: record.assetType,
     source: record.source,
     confidence: record.confidence,

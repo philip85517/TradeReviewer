@@ -189,6 +189,147 @@ const cmsEnrichedResult: EnrichedImportResult = {
 };
 
 describe("TradeReviewWorkspace", () => {
+  it("reviews a monthly statement before enrichment and cancels without saving", async () => {
+    const user = userEvent.setup();
+    const monthly = { documentId: "monthly-test", month: "2025-06", templateIds: ["futu-combined"], positions: [], events: [], reviewRequired: true };
+    mockDispatcher.mockResolvedValue({ ...cmsParsedResult, broker: "futu", monthly, diagnostics: [{ severity: "warning", code: "zone", message: "请核对来源时区" }] });
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(await screen.findByLabelText("导入交易记录"), new File(["pdf"], "2025-06.pdf", { type: "application/pdf" }));
+    expect(await screen.findByRole("heading", { name: "核对月结单与时间口径" })).toBeInTheDocument();
+    expect(mockEnrichment).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "继续核对并导入" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "取消" }));
+    expect(loadImportedExecutions()).toEqual([]);
+    expect(loadImportHistory()).toEqual([]);
+  });
+
+  it("reparses missing source time and persists reviewed monthly evidence only on final confirmation", async () => {
+    const user = userEvent.setup();
+    const monthly = { documentId: "monthly-test", month: "2025-06", templateIds: ["futu-combined"], positions: [], events: [], reviewRequired: false };
+    mockDispatcher.mockResolvedValueOnce({ ...cmsParsedResult, broker: "futu", blocked: true, monthly, diagnostics: [{ severity: "error", code: "missing-statement-timezone", message: "时区缺失" }] })
+      .mockResolvedValueOnce({ ...cmsParsedResult, broker: "futu", monthly, diagnostics: [] });
+    mockEnrichment.mockResolvedValue({ ...cmsEnrichedResult, broker: "futu", monthly });
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(await screen.findByLabelText("导入交易记录"), new File(["pdf"], "2025-06.pdf", { type: "application/pdf" }));
+    await screen.findByRole("heading", { name: "核对月结单与时间口径" });
+    await user.selectOptions(screen.getByLabelText("月结单来源时区"), "Asia/Hong_Kong");
+    await user.click(screen.getByRole("button", { name: "按所选时间口径重新解析" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "继续核对并导入" })).toBeEnabled());
+    expect(mockDispatcher).toHaveBeenLastCalledWith(expect.any(File), { sourceTimezone: "Asia/Hong_Kong", overrideDocumentTimezone: true });
+    await user.click(screen.getByRole("button", { name: "继续核对并导入" }));
+    await screen.findByRole("heading", { name: "确认导入交易记录" });
+    expect(loadImportHistory()).toEqual([]);
+    await user.click(screen.getByRole("button", { name: "确认导入并开始更新行情" }));
+    await waitFor(() => expect(loadImportHistory()[0]?.monthly).toEqual(monthly));
+  });
+  it.each(["keep-existing", "use-incoming", "keep-both"] as const)("persists the explicit monthly conflict choice %s", async decision => {
+    const user = userEvent.setup();
+    const existing: TradeExecution = { ...cmsExecution, id: "old-fill", accountId: "futu:test",
+      instrument: { id: "US:TEST", symbol: "TEST", name: "Test", market: "US", currency: "USD" },
+      source: { platform: "futu", fileFingerprint: "old-doc", fileName: "old.pdf", row: 1, statementMonth: "2026-03" } };
+    const incoming: TradeExecution = { ...existing, id: "new-fill", quantity: "200", source: { ...existing.source, fileFingerprint: "new-doc" } };
+    saveImportedExecutions([existing]);
+    const monthly = { documentId: "new-doc", month: "2026-03", templateIds: ["F4"], positions: [], events: [], reviewRequired: false };
+    mockDispatcher.mockResolvedValue({ ...cmsParsedResult, broker: "futu", records: [incoming], monthly, diagnostics: [] });
+    mockEnrichment.mockResolvedValue({ ...cmsEnrichedResult, broker: "futu", importable: [incoming], monthly, unresolved: [], exclusions: [] });
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(await screen.findByLabelText("导入交易记录"), new File(["pdf"], "2026-03.pdf", { type: "application/pdf" }));
+    await user.click(await screen.findByRole("button", { name: "继续核对并导入" }));
+    const save = await screen.findByRole("button", { name: "确认导入并开始更新行情" });
+    expect(save).toBeDisabled();
+    await user.selectOptions(screen.getByRole("combobox", { name: /冲突处理/ }), decision);
+    await user.click(save);
+    const ids = decision === "keep-existing" ? ["old-fill"] : decision === "use-incoming" ? ["new-fill"] : ["new-fill", "old-fill"];
+    await waitFor(() => expect(loadImportedExecutions().map(e => e.id).sort()).toEqual(ids.sort()));
+  });
+
+  it("replaces corrected times when a broker-qualified document ID differs from its raw fingerprint", async () => {
+    const user = userEvent.setup();
+    const existing: TradeExecution = { ...cmsExecution, id: "same-fill", source: { ...cmsExecution.source, platform: "futu", fileFingerprint: "same-doc", statementMonth: "2026-03" } };
+    const incoming = { ...existing, executedAt: "2026-03-01T08:00:00.000Z" };
+    saveImportedExecutions([existing]);
+    const monthly = { documentId: "futu:same-doc", month: "2026-03", templateIds: ["F4"], positions: [], events: [], reviewRequired: false };
+    mockDispatcher.mockResolvedValue({ ...cmsParsedResult, broker: "futu", records: [incoming], monthly, diagnostics: [] });
+    mockEnrichment.mockResolvedValue({ ...cmsEnrichedResult, broker: "futu", importable: [incoming], monthly, unresolved: [], exclusions: [] });
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(await screen.findByLabelText("导入交易记录"), new File(["pdf"], "2026-03.pdf", { type: "application/pdf" }));
+    await user.click(await screen.findByRole("button", { name: "继续核对并导入" }));
+    await user.click(await screen.findByRole("button", { name: "确认导入并开始更新行情" }));
+    await waitFor(() => expect(loadImportedExecutions()[0]?.executedAt).toBe(incoming.executedAt));
+    expect(loadImportedExecutions()).toHaveLength(1);
+  });
+
+  it("blocks partial same-file replacement while stock classification remains unresolved", async () => {
+    const user = userEvent.setup();
+    const existing: TradeExecution = { ...cmsExecution, source: { ...cmsExecution.source, platform: "futu", fileFingerprint: "same-doc" } };
+    saveImportedExecutions([existing]);
+    const monthly = { documentId: "futu:same-doc", month: "2026-03", templateIds: ["F4"], positions: [], events: [], reviewRequired: false };
+    mockDispatcher.mockResolvedValue({ ...cmsParsedResult, broker: "futu", monthly, diagnostics: [] });
+    mockEnrichment.mockResolvedValue({ ...cmsEnrichedResult, broker: "futu", importable: [], monthly, unresolved: [{ market: "CN-SH", symbol: "600938", attempts: [] }] });
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    await user.upload(await screen.findByLabelText("导入交易记录"), new File(["pdf"], "2026-03.pdf", { type: "application/pdf" }));
+    await user.click(await screen.findByRole("button", { name: "继续核对并导入" }));
+    expect(await screen.findByRole("button", { name: "确认导入并开始更新行情" })).toBeDisabled();
+    expect(loadImportedExecutions()).toEqual([existing]);
+  });
+
+  it("allows an idempotent same-file retry when unresolved rows are already stored", async () => {
+    const user = userEvent.setup();
+    const existing: TradeExecution = {
+      ...cmsExecution,
+      id: "same-file-fill",
+      instrument: {
+        id: "US:ACB",
+        symbol: "ACB",
+        name: "名称待行情源补充",
+        market: "US",
+        currency: "USD",
+      },
+      source: {
+        ...cmsExecution.source,
+        platform: "futu",
+        fileFingerprint: "same-file",
+        fileName: "2020-12.pdf",
+        statementMonth: "2020-12",
+      },
+    };
+    const monthly = {
+      documentId: "futu:same-file",
+      month: "2020-12",
+      templateIds: ["F4"],
+      positions: [],
+      events: [],
+      reviewRequired: false,
+    };
+    const parsed = {
+      ...cmsParsedResult,
+      broker: "futu" as const,
+      records: [existing],
+      candidates: [{ market: "US" as const, symbol: "ACB", sourceAssetType: "unknown" as const }],
+      monthly,
+    };
+    mockDispatcher.mockResolvedValue(parsed);
+    mockEnrichment.mockResolvedValue({
+      broker: "futu",
+      monthly,
+      importable: [],
+      unresolved: [{ market: "US", symbol: "ACB", attempts: [] }],
+      exclusions: [{ category: "unknown-asset", label: "无法确认属于股票或 ETF", count: 1, instrumentSymbol: "ACB" }],
+      diagnostics: [],
+      cacheHits: 0,
+    });
+    saveImportedExecutions([existing]);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await user.upload(await screen.findByLabelText("导入交易记录"), new File(["pdf"], "2020-12.pdf", { type: "application/pdf" }));
+    await user.click(await screen.findByRole("button", { name: "继续核对并导入" }));
+    const confirm = await screen.findByRole("button", { name: "确认导入并开始更新行情" });
+    expect(confirm).toBeEnabled();
+    await user.click(confirm);
+    await waitFor(() => expect(loadImportedExecutions()).toHaveLength(1));
+    expect(loadImportedExecutions()[0]).toMatchObject({ id: existing.id, instrument: existing.instrument });
+  });
+
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
@@ -233,14 +374,12 @@ describe("TradeReviewWorkspace", () => {
     const file=new File([csv],'回放交易_SSE_600330_2026-09-03.csv',{type:'text/csv'});
     Object.defineProperty(file,'arrayBuffer',{value:async()=>new TextEncoder().encode(csv).buffer});
     await user.upload(await screen.findByLabelText('导入 TradingView 模拟交易'),file);
-    expect(await screen.findByRole('dialog',{name:'核对模拟交易证券'})).toBeInTheDocument();
     expect(loadImportedExecutions()).toHaveLength(0);
-    await user.click(screen.getByRole('button',{name:'解析模拟交易'}));
     expect(await screen.findByRole('heading',{name:'确认导入交易记录'})).toBeInTheDocument();
-    expect(screen.getByText(/配对总手续费在出场时计入一次/)).toBeInTheDocument();
+    expect(screen.getByText(/文件只提供交易日期/)).toBeInTheDocument();
     await user.click(screen.getByRole('button',{name:'确认导入并开始更新行情'}));
     await waitFor(()=>expect(loadImportedExecutions()).toHaveLength(2));
-    expect(loadImportedExecutions()[0].source.tradingNature).toBe('simulated');
+    expect(loadImportedExecutions()[0].source.tradeNature).toBe('simulation');
     view.unmount();
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
     expect((await screen.findAllByText(/TradingView · 模拟盘/)).length).toBeGreaterThan(0);
@@ -273,6 +412,38 @@ describe("TradeReviewWorkspace", () => {
         ([input]) => !String(input).includes("招商证券.pdf"),
       ),
     ).toBe(true);
+  });
+
+  it("links statement executions to the import batch persisted with the history entry", async () => {
+    const user = userEvent.setup();
+    const client = createLegacySqliteClient();
+    const mergeExecutions = vi.spyOn(client, "mergeExecutions");
+    mockSqliteClient.current = client;
+    mockDispatcher.mockResolvedValue(cmsParsedResult);
+    mockEnrichment.mockResolvedValue(cmsEnrichedResult);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+
+    await user.upload(
+      await screen.findByLabelText("导入交易记录"),
+      new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], "招商证券.pdf", {
+        type: "application/pdf",
+      }),
+    );
+    await user.click(
+      await screen.findByRole("button", {
+        name: "确认导入并开始更新行情",
+      }),
+    );
+
+    await waitFor(() => expect(mergeExecutions).toHaveBeenCalledOnce());
+    const input = mergeExecutions.mock.calls[0][0];
+    expect(input.importHistory?.[0]?.id).toBe("import:cms-fixture");
+    expect(input.executions).toEqual([
+      expect.objectContaining({
+        id: "cms:fixture:7",
+        source: expect.objectContaining({ batchId: "import:cms-fixture" }),
+      }),
+    ]);
   });
 
   it("persists only complete records and starts cache-first gap sync for the imported instrument", async () => {
@@ -336,7 +507,7 @@ describe("TradeReviewWorkspace", () => {
     );
     expect(loadImportHistory()).toEqual([
       expect.objectContaining({
-        sourceLabel: "招商证券",
+        sourceLabel: "A股招商银行",
         tradeCount: 1,
         instrumentCount: 1,
         unresolvedInstrumentCount: 1,
@@ -820,6 +991,7 @@ describe("TradeReviewWorkspace", () => {
     expect(metadataRequest).toBeDefined();
     expect(metadataRequest?.[1]).toEqual({
       signal: expect.any(AbortSignal),
+      cache: "no-store",
     });
     expect(metadataRequest?.[1]).not.toHaveProperty("body");
     expect(metadataRequest?.[1]).not.toHaveProperty("method");
@@ -961,7 +1133,7 @@ describe("TradeReviewWorkspace", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("navigates through stock and episode library levels without requesting market data", async () => {
+  it("opens a stock library entry in the shared workbench without requesting market data", async () => {
     const user = userEvent.setup();
     const instrument = {
       id: "US:XPEV",
@@ -1035,17 +1207,8 @@ describe("TradeReviewWorkspace", () => {
     await user.click(
       screen.getByRole("button", { name: "打开小鹏汽车交易回合" }),
     );
-    expect(
-      screen.getByRole("button", { name: /第 2 次交易/ }),
-    ).toBeInTheDocument();
+    expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
     expect(screen.getByText("新回合买入")).toBeInTheDocument();
-
-    await user.click(
-      screen.getByRole("button", { name: "进入逐笔复盘" }),
-    );
-    expect(
-      screen.getByRole("heading", { name: "小鹏汽车（XPEV）" }),
-    ).toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
   });
 
@@ -1145,10 +1308,8 @@ describe("TradeReviewWorkspace", () => {
       screen.getByRole("button", { name: "打开小鹏汽车交易回合" }),
     );
 
-    expect(
-      await screen.findByText("日线 · 本地缓存 · 买卖点"),
-    ).toBeInTheDocument();
-    expect(screen.queryByText("本地尚无行情")).not.toBeInTheDocument();
+    expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "行情数据详情" })).toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
   });
 
@@ -1233,15 +1394,11 @@ describe("TradeReviewWorkspace", () => {
     expect(await screen.findByLabelText("买入理由")).toHaveValue(
       "等待突破",
     );
-    expect(screen.getAllByText("已复盘").length).toBeGreaterThan(0);
+    await user.click(screen.getByText("补充分析 · 原始计划、风险与标签"));
     await user.clear(screen.getByLabelText("买入理由"));
     await user.type(screen.getByLabelText("买入理由"), "等待回踩");
-    await user.click(
-      screen.getByRole("button", { name: "保存当前回合复盘" }),
-    );
 
-    expect(await screen.findByText("已保存在本机")).toBeInTheDocument();
-    expect((await reviews.get(episode.id))?.plan.thesis).toBe("等待回踩");
+    await waitFor(async () => expect((await reviews.get(episode.id))?.plan.thesis).toBe("等待回踩"));
     expect(fetch).not.toHaveBeenCalled();
   });
 
@@ -1350,6 +1507,8 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
     await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
     await user.click(screen.getByRole("button", { name: "模式洞察" }));
+    await user.click(await screen.findByText("查看本范围的模式洞察"));
+    await user.click(await screen.findByText(/待确认规则建议（/));
 
     expect(
       await screen.findByRole("heading", { name: "待确认规则建议" }),
@@ -1363,11 +1522,13 @@ describe("TradeReviewWorkspace", () => {
       }),
     );
     expect(
-      await screen.findByRole("heading", { name: "第 1 次交易" }),
+      await screen.findByLabelText("图表工具栏"),
     ).toBeInTheDocument();
     expect(screen.getByText("目标回合买入一")).toBeInTheDocument();
     expect(screen.getByText("目标回合买入二")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "模式洞察" }));
+    await user.click(await screen.findByText("查看本范围的模式洞察"));
+    await user.click(await screen.findByText(/待确认规则建议（/));
     await user.selectOptions(
       screen.getByRole("combobox", {
         name: "调整“分批进入”建议标签",
@@ -1388,6 +1549,6 @@ describe("TradeReviewWorkspace", () => {
     );
 
     expect(await screen.findByText("暂无待确认建议")).toBeInTheDocument();
-    expect(fetch).not.toHaveBeenCalled();
+    expect(vi.mocked(fetch).mock.calls.every(([url]) => String(url).startsWith("/api/storage/review-summaries?"))).toBe(true);
   });
 });

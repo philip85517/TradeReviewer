@@ -74,8 +74,8 @@ function displayNumber(value: string) {
   }).format(number);
 }
 
-function percent(value: string) {
-  return `${displayNumber(value)}%`;
+function percent(value: string | null) {
+  return value === null ? "—" : `${displayNumber(value)}%`;
 }
 
 function basisLabel(insight: PatternInsight) {
@@ -85,8 +85,8 @@ function basisLabel(insight: PatternInsight) {
 }
 
 function confidenceLabel(insight: PatternInsight) {
-  if (insight.confidence === "high-confidence") return "高可信洞察";
-  if (insight.confidence === "usable") return "可用洞察";
+  if (insight.confidence === "high-confidence") return "样本较多";
+  if (insight.confidence === "usable") return "可比较样本";
   return "早期线索";
 }
 
@@ -203,6 +203,10 @@ function InsightCard({
         </span>
         <span>胜率 {percent(insight.winRate)}</span>
         <span>净盈亏 {displayNumber(insight.netPnl)}</span>
+        <span>
+          路径样本 {insight.pathSampleCount} / {insight.sampleCount}
+          {insight.pathSampleCount < insight.sampleCount ? " · 日线不完整" : ""}
+        </span>
         <span>MFE {percent(insight.medianMfePercent)}</span>
         <span>MAE {percent(insight.medianMaePercent)}</span>
         <span>回吐 {percent(insight.medianGivebackPercent)}</span>
@@ -210,9 +214,9 @@ function InsightCard({
           <span>计划遵守 {percent(insight.planAdherenceRate)}</span>
         )}
       </div>
-      <div className="insight-version">{versionLabel(insight)}</div>
+      <details className="insight-version"><summary>计算口径与版本</summary>{versionLabel(insight)}</details>
       <div className="insight-evidence-grid">
-        <details open>
+        <details>
           <summary>证据交易（{evidence.length}）</summary>
           {evidence.map((fact) => (
             <EpisodeLink
@@ -225,7 +229,7 @@ function InsightCard({
           ))}
           {evidence.length === 0 && <p>当前样本没有正结果证据。</p>}
         </details>
-        <details open>
+        <details>
           <summary>反例（{counterexamples.length}）</summary>
           {counterexamples.map((fact) => (
             <EpisodeLink
@@ -327,6 +331,7 @@ export function PatternInsights({
         </div>
       </header>
 
+      <details className="insight-suggestions"><summary>待确认规则建议（{suggestions.filter(item => item.status === "suggested").length}）</summary>
       <TagSuggestionPanel
         suggestions={suggestions}
         episodeContexts={episodeContexts}
@@ -335,6 +340,8 @@ export function PatternInsights({
         onReject={onRejectSuggestion}
         onOpenEpisode={onOpenEpisode}
       />
+
+      </details>
 
       <nav className="insight-category-tabs" aria-label="洞察分类">
         {CATEGORY_OPTIONS.map((option) => (

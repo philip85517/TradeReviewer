@@ -126,14 +126,30 @@ export class ApiInstrumentMetadataRepository implements InstrumentMetadataReposi
   }
 
   async put(record: ResolvedInstrument): Promise<void> {
+    const existing = (await this.client.getBootstrap()).instruments.find(
+      (instrument) => instrument.id === canonicalInstrumentId(record.symbol, record.market),
+    );
+    const effectiveLocalizedName =
+      record.localizedName ??
+      existing?.localizedName ??
+      existing?.metadata?.localizedName;
     await this.client.mergeExecutions({
       instruments: [{
+        ...existing,
         id: canonicalInstrumentId(record.symbol, record.market),
         market: record.market,
         symbol: record.symbol,
-        name: record.name,
+        name: existing?.name ?? record.name,
         currency: marketCurrency(record.market),
-        metadata: record,
+        ...(effectiveLocalizedName
+          ? { localizedName: effectiveLocalizedName }
+          : {}),
+        metadata: {
+          ...record,
+          ...(effectiveLocalizedName
+            ? { localizedName: effectiveLocalizedName }
+            : {}),
+        },
       }],
       executions: [],
     });

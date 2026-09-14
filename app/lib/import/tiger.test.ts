@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { buildTradeEpisodes } from "../trades/episodes";
+import { legacyItem, legacyPages, legacyRow } from "./__fixtures__/tiger-legacy-pages";
 import {
   NON_TIGER_PAGES,
   TIGER_IDENTICAL_FILL_PAGES,
@@ -23,6 +24,343 @@ const options = {
   fileName: "Tiger_2025.pdf",
   fileFingerprint: "tiger-fixture",
 };
+
+describe("Tiger fee reconciliation", () => {
+  const subtotal = (amount: string, currency = "USD", y = 340) =>
+    legacyRow(y, ["合计", "", "", "", "", "", "", "", amount, "", "", "", "", currency]);
+
+  it.each(["其他代收", "其它代收", "Other Charges"])("includes %s before other fee components", label => {
+    const pages = legacyPages({ fee: "平台费: -1" });
+    pages[0].items.push(legacyItem(`${label}: -2`, 710, 241), ...subtotal("-3"));
+    const result = parseTigerPages(pages, options);
+    expect(result.records[0]?.fee).toBe("3");
+    expect(result.blocked).toBe(false);
+    expect(result.monthly?.reviewRequired).toBe(false);
+  });
+
+  it("blocks an omitted unknown component against the printed currency total", () => {
+    const pages = legacyPages({ fee: "平台费: -1" });
+    pages[0].items.push(legacyItem("未识别项目: -2", 710, 241), ...subtotal("-3"));
+    const result = parseTigerPages(pages, options);
+    expect(result.blocked).toBe(true);
+    expect(result.monthly?.reviewRequired).toBe(true);
+    expect(result.diagnostics).toContainEqual(expect.objectContaining({
+      severity: "error", code: "tiger-fee-total-mismatch", page: 1, row: 340,
+      message: expect.stringContaining("USD"),
+    }));
+    // Retain the parsed evidence for review; never distribute the unexplained difference.
+    expect(result.records[0]?.fee).toBe("1");
+  });
+
+  it("reconciles currencies separately and ignores base-currency conversion totals", () => {
+    const pages = legacyPages();
+    pages[0].items.push(...subtotal("-2"));
+    pages[0].items.push(...legacyRow(380, ["01888", "HK", "SEHK", "", "3", "10", "-30", "0", "-5", "0", "", "2020-12-08 10:20:30, GMT+8", "2020-12-10", "HKD"]));
+    pages[0].items.push(...subtotal("-5", "HKD", 420));
+    pages[0].items.push(...legacyRow(450, ["合计（基础币种）", "", "", "", "", "", "", "", "-999", "", "", "", "", "USD"]));
+    expect(parseTigerPages(pages, options).blocked).toBe(false);
+    pages[0].items = pages[0].items.map(i => i.y === 420 && i.x === 710 ? { ...i, text: "-6" } : i);
+    expect(parseTigerPages(pages, options)).toMatchObject({ blocked: true, monthly: { reviewRequired: true } });
+  });
+
+  it("joins a fee list split over a repeated page header and reconciles its total", () => {
+    const first = legacyPages()[0];
+    first.items = first.items.filter(i => i.y <= 210);
+    first.items.push(legacyItem("其他代收: -2", 710, 790));
+    const second = legacyPages({ fee: "平台费: -1" })[0];
+    second.pageNumber = 2;
+    second.items.push(...subtotal("-3"));
+    const result = parseTigerPages([first, second], options);
+    expect(result.records).toHaveLength(1);
+    expect(result.records[0]?.fee).toBe("3");
+    expect(result.blocked).toBe(false);
+    expect(new Set(result.records[0]?.source.fragments?.filter(f => f.role === "fee").map(f => f.page))).toEqual(new Set([1, 2]));
+  });
+
+  it("blocks an unreadable printed currency fee subtotal", () => {
+    const pages = legacyPages();
+    pages[0].items.push(...subtotal("unreadable"));
+    expect(parseTigerPages(pages, options)).toMatchObject({ blocked: true, diagnostics: [expect.objectContaining({ code: "invalid-tiger-fee-total" })] });
+  });
+
+  it("blocks missing or inconsistent fee evidence even without a currency subtotal", () => {
+    expect(parseTigerPages(legacyPages({ fee: "" }), options).blocked).toBe(true);
+    const pages = legacyPages({ fee: "佣金: -2" });
+    pages[0].items.push(legacyItem("小计: -9", 710, 259));
+    expect(parseTigerPages(pages, options)).toMatchObject({
+      blocked: true, monthly: { reviewRequired: true },
+      diagnostics: [expect.objectContaining({ severity: "error", code: "invalid-tiger-fee" })],
+    });
+  });
+});
+
+describe("Tiger historical monthly evidence", () => {
+  it("does not infer a short opening from an ordinary legacy sell", () => {
+    const result = parseTigerPages(legacyPages({ quantity: "-3" }), options);
+
+    expect(result.records[0]?.side).toBe("sell");
+    expect(result.records[0]?.source.positionEffect).toBeUndefined();
+  });
+
+  it("uses legacy realized-P&L evidence to classify a short pair", () => {
+    const pages = legacyPages({ quantity: "-3" });
+    pages[0].items.push(
+      ...legacyRow(330, [
+        "SYNX", "US", "NASDAQ", "", "3", "9", "27", "0", "0", "72.52", "",
+        "2020-12-09 10:20:30, US/Eastern", "2020-12-11", "USD",
+      ]),
+    );
+
+    const result = parseTigerPages(pages, options);
+
+    expect(result.records).toHaveLength(2);
+    expect(result.records.map((record) => record.source.positionEffect)).toEqual([
+      "open-short",
+      "close-short",
+    ]);
+    expect(result.records[1]?.source).toMatchObject({
+      statementRealizedPnl: "72.52",
+      positionEffectEvidence: {
+        kind: "inferred",
+        confidence: "high",
+        realizedPnl: "72.52",
+      },
+    });
+  });
+
+  it("uses a negative legacy position snapshot to classify a zero-P&L close", () => {
+    const pages = legacyPages({ quantity: "-3" });
+    pages[0].items.push(
+      ...legacyRow(330, [
+        "SYNX", "US", "NASDAQ", "", "3", "9", "27", "0", "0", "0", "",
+        "2020-12-09 10:20:30, US/Eastern", "2020-12-11", "USD",
+      ]),
+      legacyItem("期末持仓", 30, 410),
+      legacyItem("股票", 30, 425),
+      ...legacyRow(440, ["代码", "", "", "", "数量", "成本价格", "", "", "", "", "", "", "", "币种"]),
+      ...legacyRow(470, ["SYNX", "", "", "", "-3", "10", "", "", "", "", "", "", "", "USD"]),
+    );
+
+    const result = parseTigerPages(pages, options);
+
+    expect(result.records.map((record) => record.source.positionEffect)).toEqual([
+      "open-short",
+      "close-short",
+    ]);
+    expect(result.records[1]?.source.statementRealizedPnl).toBe("0");
+  });
+
+  it("does not merge the position multiplier into the snapshot quantity", () => {
+    const pages = legacyPages({ quantity: "-3" });
+    pages[0].items.push(
+      ...legacyRow(330, [
+        "SYNX", "US", "NASDAQ", "", "3", "9", "27", "0", "0", "0", "",
+        "2020-12-09 10:20:30, US/Eastern", "2020-12-11", "USD",
+      ]),
+      legacyItem("期末持仓", 30, 410),
+      legacyItem("股票", 30, 425),
+      ...legacyRow(440, ["代码", "", "", "", "数量", "乘数", "成本价格", "", "", "", "", "", "", "币种"]),
+      ...legacyRow(470, ["SYNX", "", "", "", "-3", "", "10", "", "", "", "", "", "", "USD"]),
+      legacyItem("1.0", 440, 470),
+    );
+
+    const result = parseTigerPages(pages, options);
+
+    expect(result.records.map((record) => record.source.positionEffect)).toEqual([
+      "open-short",
+      "close-short",
+    ]);
+  });
+
+  it.each(["头寸转账", "公司行动"])("does not trust a position snapshot when %s is present", (adjustment) => {
+    const pages = legacyPages({ quantity: "-3" });
+    pages[0].items.push(
+      ...legacyRow(330, [
+        "SYNX", "US", "NASDAQ", "", "3", "9", "27", "0", "0", "0", "",
+        "2020-12-09 10:20:30, US/Eastern", "2020-12-11", "USD",
+      ]),
+      legacyItem(adjustment, 30, 410),
+      ...legacyRow(440, ["代码", "", "", "", "数量", "成本价格", "", "", "", "", "", "", "", "币种"]),
+      ...legacyRow(470, ["SYNX", "", "", "", "-3", "10", "", "", "", "", "", "", "", "USD"]),
+    );
+
+    const result = parseTigerPages(pages, options);
+
+    expect(result.records.map((record) => record.source.positionEffect)).toEqual([
+      undefined,
+      undefined,
+    ]);
+    expect(result.records[1]?.source.statementRealizedPnl).toBe("0");
+  });
+
+  it("does not match a later short opening to an earlier long-closing sell", () => {
+    const pages = legacyPages({ quantity: "-2" });
+    pages[0].items = pages[0].items.map((item) =>
+      item.y === 250 && item.x === 800 ? { ...item, text: "5" } : item,
+    );
+    pages[0].items.push(
+      ...legacyRow(330, [
+        "SYNX", "US", "NASDAQ", "", "-2", "9", "-18", "0", "0", "0", "",
+        "2020-12-09 10:20:30, US/Eastern", "2020-12-11", "USD",
+      ]),
+      ...legacyRow(370, [
+        "SYNX", "US", "NASDAQ", "", "2", "9", "18", "0", "0", "0", "",
+        "2020-12-10 10:20:30, US/Eastern", "2020-12-12", "USD",
+      ]),
+      legacyItem("期末持仓", 30, 410),
+      legacyItem("股票", 30, 425),
+      ...legacyRow(440, ["代码", "", "", "", "数量", "成本价格", "", "", "", "", "", "", "", "币种"]),
+      ...legacyRow(470, ["SYNX", "", "", "", "-2", "10", "", "", "", "", "", "", "", "USD"]),
+    );
+
+    const result = parseTigerPages(pages, options);
+
+    expect(result.records.map((record) => record.source.positionEffect)).toEqual([
+      undefined,
+      "open-short",
+      "close-short",
+    ]);
+  });
+
+  it("keeps same-quantity legacy matching unknown after a prior realized sell", () => {
+    const pages = legacyPages({ quantity: "-2" });
+    pages[0].items = pages[0].items.map((item) =>
+      item.y === 250 && item.x === 800 ? { ...item, text: "5" } : item,
+    );
+    pages[0].items.push(
+      ...legacyRow(330, [
+        "SYNX", "US", "NASDAQ", "", "-2", "9", "-18", "0", "0", "0", "",
+        "2020-12-09 10:20:30, US/Eastern", "2020-12-11", "USD",
+      ]),
+      ...legacyRow(370, [
+        "SYNX", "US", "NASDAQ", "", "2", "9", "18", "0", "0", "72.52", "",
+        "2020-12-10 10:20:30, US/Eastern", "2020-12-12", "USD",
+      ]),
+    );
+
+    const result = parseTigerPages(pages, options);
+
+    expect(result.records.map((record) => record.source.positionEffect)).toEqual([
+      undefined,
+      undefined,
+      "close-short",
+    ]);
+    expect(result.records[2]?.source.positionEffectEvidence).toMatchObject({
+      kind: "inferred",
+      confidence: "high",
+      realizedPnl: "72.52",
+      reason: expect.stringContaining("未把普通卖出转换为做空开仓"),
+    });
+  });
+
+  it("recognizes Limited and signed quantities with blank direction, excluding totals", () => {
+    const result = parseTigerPages(legacyPages(), options);
+    expect(result.records).toHaveLength(1);
+    expect(result.records[0]).toMatchObject({ side: "buy", quantity: "3", fee: "2", accountId: "tiger:SYNTH001", source: { grossAmount: "-30", settlementDate: "2020-12-10", timeEvidence: "row" } });
+    expect(parseTigerPages(legacyPages({ quantity: "-3" }), options).records[0]?.side).toBe("sell");
+    expect(result.monthly).toMatchObject({ month: "2020-12", accountId: "tiger:SYNTH001", positions: [], events: [], reviewRequired: false });
+  });
+  it("recognizes a documented no-stock month without claiming unsupported layout", () => {
+    expect(parseTigerPages(legacyPages({ empty: true }), options)).toMatchObject({ blocked: false, records: [], monthly: { month: "2020-12", reviewRequired: false } });
+  });
+  it("preserves identical blank-direction fills at separate source rows", () => {
+    const pages = legacyPages();
+    pages[0].items.push(...legacyRow(330, ["SYNX", "US", "NASDAQ", "", "3", "10", "-30", "0", "-2", "0", "", "2020-12-08 10:20:30, US/Eastern", "2020-12-10", "USD"]));
+    const result = parseTigerPages(pages, options);
+    expect(result.records).toHaveLength(2);
+    expect(new Set(result.records.map(r => r.id)).size).toBe(2);
+  });
+  it.each([
+    ["2024-11-03 01:30:00, US/Eastern", "ambiguous-wall-clock"],
+    ["2024-03-10 02:30:00, US/Eastern", "nonexistent-wall-clock"],
+    ["2024-02-30 10:20:30, GMT+8", "invalid-statement-time"],
+    ["bad date", "invalid-statement-time"],
+    ["2024-04-01 10:20:30", "missing-statement-timezone"],
+  ])("rejects %s visibly", (time, code) => {
+    const result = parseTigerPages(legacyPages({ time }), options);
+    expect(result.records).toHaveLength(0);
+    expect(result.diagnostics).toContainEqual(expect.objectContaining({ code }));
+    expect(result.monthly?.reviewRequired).toBe(true);
+    expect(result.blocked).toBe(true);
+  });
+  it("uses explicit user timezone for an otherwise unevidenced row", () => {
+    const result = parseTigerPages(legacyPages({ time: "2020-12-08 10:20:30" }), { ...options, sourceTimezone: "America/New_York" });
+    expect(result.records[0]).toMatchObject({ executedAt: "2020-12-08T15:20:30.000Z", source: { timeEvidence: "user" } });
+  });
+  it("keeps missing fee distinct from reported zero", () => {
+    expect(parseTigerPages(legacyPages({ fee: "" }), options)).toMatchObject({ monthly: { reviewRequired: true }, records: [{ source: { feeStatus: "unknown" } }] });
+    expect(parseTigerPages(legacyPages({ fee: "0" }), options)).toMatchObject({ monthly: { reviewRequired: false }, records: [{ source: { feeStatus: "reported" } }] });
+  });
+  it("isolates document accounts and respects explicit account mapping", () => {
+    expect(parseTigerPages(legacyPages({ account: "SYNTH002" }), options).records[0]?.accountId).toBe("tiger:SYNTH002");
+    expect(parseTigerPages(legacyPages(), { ...options, accountId: "mapped" }).records[0]?.accountId).toBe("mapped");
+  });
+  it("preserves repeated code-only fills with explicit direction", () => {
+    const pages = legacyPages();
+    pages[0].items.push(legacyItem("买入", 290, 250));
+    pages[0].items.push(...legacyRow(330, ["SYNX", "US", "NASDAQ", "买入", "3", "10", "-30", "0", "-2", "0", "", "2020-12-08 10:20:30, US/Eastern", "2020-12-10", "USD"]));
+    expect(parseTigerPages(pages, options).records).toHaveLength(2);
+  });
+  it("does not add a fee subtotal a second time", () => {
+    const pages = legacyPages({ fee: "佣金: -2" });
+    pages[0].items.push(legacyItem("平台费: -1", 710, 259), legacyItem("小计: -3", 710, 268));
+    expect(parseTigerPages(pages, options).records[0]?.fee).toBe("3");
+  });
+  it("refuses inconsistent fee totals with a visible row diagnostic", () => {
+    const pages = legacyPages({ fee: "佣金: -2" });
+    pages[0].items.push(legacyItem("小计: -9", 710, 259));
+    const result = parseTigerPages(pages, options);
+    expect(result.records).toHaveLength(0);
+    expect(result.monthly?.reviewRequired).toBe(true);
+  });
+  it("ends execution context at other sections and excludes fund tables", () => {
+    const pages = legacyPages();
+    pages[0].items.push(legacyItem("期末持仓", 30, 310));
+    pages[0].items.push(...legacyRow(330, ["OTHER", "US", "NASDAQ", "", "4", "11", "-44", "0", "-2", "0", "", "2020-12-08 10:20:30, US/Eastern", "2020-12-10", "USD"]));
+    expect(parseTigerPages(pages, options).records).toHaveLength(1);
+    const fund = legacyPages();
+    fund[0].items = fund[0].items.map(i => i.text === "股票" ? { ...i, text: "基金" } : i);
+    expect(parseTigerPages(fund, options)).toMatchObject({ records: [], exclusions: [expect.objectContaining({ category: "fund" })] });
+  });
+  it("retains fragments of suppressed display continuations", () => {
+    const result = parseTigerPages(TIGER_TRADITIONAL_CROSS_PAGE_DUPLICATE, options);
+    expect(new Set(result.records[0]?.source.fragments?.map(f => f.page))).toEqual(new Set([1, 2]));
+  });
+  it("surfaces a damaged stock row whose quantity is missing", () => {
+    const result = parseTigerPages(legacyPages({ quantity: "" }), options);
+    expect(result.records).toHaveLength(0);
+    expect(result.monthly?.reviewRequired).toBe(true);
+  });
+  it("recognizes no-trade months that contain a stock holdings section", () => {
+    const pages = legacyPages({ empty: true });
+    pages[0].items.push(legacyItem("股票", 30, 180), legacyItem("代码", 30, 210), legacyItem("期末数量", 370, 210));
+    expect(parseTigerPages(pages, options)).toMatchObject({ blocked: false, records: [], monthly: { reviewRequired: false } });
+  });
+  it("ignores subsequent unrelated table headers and explanatory prose", () => {
+    const pages = legacyPages();
+    pages[0].items.push(...legacyRow(330, ["代码", "申购数量(股)", "申购类型", "申购截止时间", "上市时间", "利息收取时间", "记息天数", "", "", "", "", "IPO利率", "", "币种"]));
+    expect(parseTigerPages(pages, options).monthly?.reviewRequired).toBe(false);
+  });
+  it("retains the prior-page date fragment for a split timestamp", () => {
+    const pages = legacyPages();
+    pages[0].items.push(legacyItem("2020-12-09", 1010, 790));
+    const continuation = legacyPages({ time: "11:20:30, US/Eastern" })[0];
+    continuation.pageNumber = 2;
+    const result = parseTigerPages([...pages, continuation], options);
+    expect(result.records[1]?.executedAt).toBe("2020-12-09T16:20:30.000Z");
+    expect(result.records[1]?.source.fragments).toContainEqual({ page: 1, row: 790, role: "execution-date" });
+  });
+  it("does not carry a fund date into a stock execution", () => {
+    const fund = legacyPages();
+    fund[0].items = fund[0].items.map(i => i.text === "股票" ? { ...i, text: "基金" } : i);
+    fund[0].items.push(legacyItem("2020-12-09", 1010, 790));
+    const stock = legacyPages({ time: "11:20:30, US/Eastern" })[0];
+    stock.pageNumber = 2;
+    const result = parseTigerPages([...fund, stock], options);
+    expect(result.records).toHaveLength(0);
+    expect(result.monthly?.reviewRequired).toBe(true);
+  });
+});
 
 describe("Tiger PDF import", () => {
   it("requires both the broker heading and a stock table header", () => {
@@ -62,6 +400,18 @@ describe("Tiger PDF import", () => {
         timePrecision: "second",
       },
     });
+    expect(
+      result.records.find(
+        (execution) =>
+          execution.side === "sell" && execution.price === "410",
+      ),
+    ).toMatchObject({ source: { positionEffect: "open-short" } });
+    expect(
+      result.records.find(
+        (execution) =>
+          execution.side === "buy" && execution.price === "400",
+      ),
+    ).toMatchObject({ source: { positionEffect: "close-short" } });
     expect(result.candidates).toContainEqual({
       market: "US",
       symbol: "SPY",
@@ -95,6 +445,72 @@ describe("Tiger PDF import", () => {
       status: "closed",
       openingQuantity: "800",
       remainingQuantity: "0",
+    });
+  });
+
+  it("preserves explicit long and short position effects with source evidence", () => {
+    const pages = TIGER_SHORT_PAGES.map((page) => ({
+      ...page,
+      items: page.items.map((item) =>
+        item.text === "开仓做空"
+          ? { ...item, text: "开仓做多" }
+          : item.text === "平仓空头"
+            ? { ...item, text: "平仓多头" }
+            : item,
+      ),
+    }));
+
+    const result = parseTigerPages(pages, options);
+
+    expect(result.records.map((record) => record.source.positionEffect)).toEqual([
+      "open-long",
+      "close-long",
+    ]);
+    expect(result.records.map((record) => record.source.positionEffectEvidence)).toEqual([
+      expect.objectContaining({ kind: "explicit", confidence: "high", sourceLabel: "开仓做多" }),
+      expect.objectContaining({ kind: "explicit", confidence: "high", sourceLabel: "平仓多头" }),
+    ]);
+  });
+
+  it("maps a plain closing label by signed quantity without realized P&L", () => {
+    const closeShortPages = TIGER_SHORT_PAGES.map((page) => ({
+      ...page,
+      items: page.items.map((item) =>
+        item.text === "平仓空头" ? { ...item, text: "平仓" } : item,
+      ),
+    }));
+    const closeLongPages = closeShortPages.map((page) => ({
+      ...page,
+      items: page.items.map((item) =>
+        item.text === "开仓做空"
+          ? { ...item, text: "开仓做多" }
+          : item.text === "800" && item.y === 118 + 24
+            ? { ...item, text: "-800" }
+            : item,
+      ),
+    }));
+
+    expect(parseTigerPages(closeShortPages, options).records[1]).toMatchObject({
+      side: "buy",
+      source: {
+        positionEffect: "close-short",
+        positionEffectEvidence: {
+          kind: "explicit",
+          confidence: "high",
+          sourceLabel: "平仓",
+        },
+      },
+    });
+    expect(parseTigerPages(closeLongPages, options).records[1]).toMatchObject({
+      side: "sell",
+      source: {
+        positionEffect: "close-long",
+        positionEffectEvidence: {
+          kind: "explicit",
+          confidence: "high",
+          sourceLabel: "平仓",
+        },
+      },
     });
   });
 

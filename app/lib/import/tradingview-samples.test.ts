@@ -20,12 +20,12 @@ describe.skipIf(!sampleDirectory)('local TradingView reference exports',()=>{
     expect(result.blocked).toBe(false);
     expect(result.diagnostics).toEqual([]);
     expect(result.records).toHaveLength(sample.rows);
-    expect(new Set(result.records.map(r=>r.source.simulationTradeId)).size).toBe(sample.pairs);
+    expect(new Set(result.records.map(r=>r.source.sourceTradeId)).size).toBe(sample.pairs);
     const episodes=buildTradeEpisodes(result.records);
     expect(episodes).toHaveLength(sample.episodes);
     expect(episodes.every(e=>e.status==='closed')).toBe(true);
     expect(result.records.reduce((sum,r)=>sum.plus(r.fee),new Decimal(0)).toString()).toBe(sample.fees);
-    expect(result.records.reduce((sum,r)=>sum.plus(r.source.simulationReport?.['净损益 CNY']??'0'),new Decimal(0)).toString()).toBe(sample.net);
+    expect(result.records.reduce((sum,r)=>sum.plus(r.source.sourceReport?.netPnl ?? '0'),new Decimal(0)).toString()).toBe(sample.net);
     expect(episodes.reduce((sum,e)=>sum.plus(replayPositionAtPrice({executions:e.executions,markPrice:e.executions.at(-1)!.price}).netPnl),new Decimal(0)).toString()).toBe(sample.net);
   });
 });

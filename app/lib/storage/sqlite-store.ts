@@ -1,5 +1,8 @@
 import "server-only";
 
+import Decimal from "decimal.js";
+import { Temporal } from "@js-temporal/polyfill";
+import { canonicalRecord, type TradeRevision, type TradeRevisionRequest, type TradeRevisionResult } from "./trade-revisions";
 import { createHash } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 
@@ -11,9 +14,17 @@ import type { TagSuggestionRecord } from "../insights/types";
 import { createEmptyEpisodeReviewRecord } from "../reviews/review-metrics";
 import type { CoverageSegment, DailyCandleRecord, IntervalCoverageSegment, MarketCandleRecord, NativeMarketInterval } from "../market/contracts";
 import type { EpisodeReviewRecord } from "../reviews/types";
-import type { Instrument, TradeExecution } from "../trades/types";
+import {
+  isReviewSummaryNote,
+  reviewSummarySettingKey,
+  type ReviewSummaryNote,
+} from "../reviews/review-summary";
+import { tradeNatureOf, type Instrument, type TradeExecution } from "../trades/types";
 import type { ChartSettings } from "./chart-settings";
+import { validReviewExtensions } from "../reviews/review-metrics";
 import type { ImportHistoryEntry } from "./import-history";
+import { isMonthlyStatement } from "../import/monthly-statement";
+import { validateLocalizedInstrumentName } from "../instruments/metadata-contracts";
 import type { MarketDataJob } from "./market-data-jobs";
 import type { EpisodeReviewState } from "./review-storage";
 import type {
@@ -132,6 +143,141 @@ function sameJson(left: unknown, right: unknown) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 
+type AccountCorrection = {
+  originalAccountId: string;
+  canonicalAccountId: string;
+  reason: string;
+  [key: string]: unknown;
+};
+
+type StoredExecutionEvidence = Record<string, unknown> & {
+  accountCorrection: AccountCorrection;
+};
+
+function validateAccountCorrection(value: unknown): AccountCorrection {
+  const correction = asRecord(value, "account correction");
+  assertStringFields(
+    correction,
+    ["originalAccountId", "canonicalAccountId", "reason"],
+    "account correction",
+  );
+  const originalAccountId = correction.originalAccountId;
+  const canonicalAccountId = correction.canonicalAccountId;
+  const reason = correction.reason;
+  if (
+    typeof originalAccountId !== "string" ||
+    typeof canonicalAccountId !== "string" ||
+    typeof reason !== "string" ||
+    !originalAccountId.trim() ||
+    !canonicalAccountId.trim() ||
+    !reason.trim() ||
+    originalAccountId === canonicalAccountId
+  ) {
+    throw new Error("Invalid account correction");
+  }
+  assertJsonSafe(correction, "account correction");
+  return correction as AccountCorrection;
+}
+
+function executionCorrectionIdentity(execution: TradeExecution): string {
+  const decimal = (value: string) => {
+    try {
+      const normalized = new Decimal(value);
+      return normalized.isFinite() ? normalized.toString() : `invalid:${value}`;
+    } catch {
+      return `invalid:${value}`;
+    }
+  };
+  return canonicalRecord({
+    instrumentId: execution.instrument.id,
+    side: execution.side,
+    executedAt: execution.executedAt,
+    quantity: decimal(execution.quantity),
+    price: decimal(execution.price),
+  });
+}
+
+function executionSourceDocument(execution: TradeExecution): string | undefined {
+  const platform = execution.source.platform.trim();
+  const fingerprint = execution.source.fileFingerprint?.trim();
+  if (platform && fingerprint) return `fingerprint:${platform}|${fingerprint}`;
+  const fileName = execution.source.fileName?.trim();
+  if (platform && fileName) return `file:${platform}|${fileName}`;
+  return undefined;
+}
+
+function executionSourceOrderReference(execution: TradeExecution): string | undefined {
+  return execution.source.executionGroup?.orderReference?.trim() || undefined;
+}
+
+function sameTrustedSourceProvenance(
+  existing: TradeExecution,
+  incoming: TradeExecution,
+): boolean {
+  if (
+    existing.source.platform.trim() !== incoming.source.platform.trim() ||
+    existing.instrument.currency.trim().toUpperCase() !== incoming.instrument.currency.trim().toUpperCase() ||
+    tradeNatureOf(existing) !== tradeNatureOf(incoming)
+  ) return false;
+  const nature = tradeNatureOf(existing);
+  if (nature === "simulation" && existing.source.simulationRunId !== incoming.source.simulationRunId) return false;
+
+  const existingDocument = executionSourceDocument(existing);
+  const incomingDocument = executionSourceDocument(incoming);
+  if (!existingDocument || existingDocument !== incomingDocument) return false;
+
+  const provenanceChecks: boolean[] = [];
+  const existingRowFingerprint = existing.source.statementRowFingerprint?.trim();
+  const incomingRowFingerprint = incoming.source.statementRowFingerprint?.trim();
+  if (existingRowFingerprint && incomingRowFingerprint) {
+    provenanceChecks.push(existingRowFingerprint === incomingRowFingerprint);
+  }
+  if (typeof existing.source.page === "number" && typeof incoming.source.page === "number") {
+    provenanceChecks.push(
+      Number.isFinite(existing.source.page) &&
+      Number.isFinite(incoming.source.page) &&
+      existing.source.page === incoming.source.page &&
+      existing.source.row === incoming.source.row,
+    );
+  }
+  if (
+    typeof existing.source.sourceOrder === "number" &&
+    typeof incoming.source.sourceOrder === "number"
+  ) {
+    provenanceChecks.push(
+      Number.isFinite(existing.source.sourceOrder) &&
+      Number.isFinite(incoming.source.sourceOrder) &&
+      existing.source.sourceOrder === incoming.source.sourceOrder,
+    );
+  }
+  const existingOrderReference = executionSourceOrderReference(existing);
+  const incomingOrderReference = executionSourceOrderReference(incoming);
+  if (existingOrderReference && incomingOrderReference) {
+    provenanceChecks.push(existingOrderReference === incomingOrderReference);
+  }
+  if (provenanceChecks.length === 0) {
+    provenanceChecks.push(
+      Number.isFinite(existing.source.row) &&
+      Number.isFinite(incoming.source.row) &&
+      existing.source.row === incoming.source.row,
+    );
+  }
+  return provenanceChecks.length > 0 && provenanceChecks.every(Boolean);
+}
+
+function canCarryAccountCorrection(
+  existing: TradeExecution,
+  incoming: TradeExecution,
+  correction: AccountCorrection,
+): boolean {
+  return (
+    (incoming.accountId === correction.originalAccountId ||
+      incoming.accountId === correction.canonicalAccountId) &&
+    executionCorrectionIdentity(existing) === executionCorrectionIdentity(incoming) &&
+    sameTrustedSourceProvenance(existing, incoming)
+  );
+}
+
 function validateInstrument(value: unknown): asserts value is StoredInstrument {
   const instrument = asRecord(value, "instrument");
   assertStringFields(
@@ -139,11 +285,17 @@ function validateInstrument(value: unknown): asserts value is StoredInstrument {
     ["id", "symbol", "name", "market", "currency"],
     "instrument",
   );
+  if (instrument.localizedName !== undefined) {
+    validateLocalizedInstrumentName(instrument.localizedName);
+  }
   if (instrument.metadata !== undefined) {
     const metadata = asRecord(instrument.metadata, "instrument metadata");
     assertStringFields(metadata, ["market", "symbol", "name", "assetType", "source", "confidence", "resolvedAt"], "instrument metadata");
-    if (metadata.market !== instrument.market || metadata.symbol !== instrument.symbol || metadata.name !== instrument.name) {
+    if (metadata.market !== instrument.market || metadata.symbol !== instrument.symbol) {
       throw new Error("Invalid instrument metadata");
+    }
+    if (metadata.localizedName !== undefined) {
+      validateLocalizedInstrumentName(metadata.localizedName);
     }
     assertJsonSafe(metadata, "instrument metadata");
   }
@@ -160,8 +312,17 @@ function validateExecution(value: unknown): asserts value is TradeExecution {
   validateInstrument(item.instrument);
   if (!item.source || typeof item.source !== "object" || typeof item.source.platform !== "string" || typeof item.source.row !== "number") throw new Error("Invalid execution");
   const source = item.source;
+  if (source.settlement !== undefined) {
+    const settlement = asRecord(source.settlement, "cash settlement");
+    assertStringFields(settlement,["currency","quantity","grossAmount","netAmount"],"cash settlement");
+    const validDecimal = (value: unknown) => typeof value === "string" && /^-?\d+(?:\.\d+)?$/.test(value) && Number.isFinite(Number(value));
+    if (![settlement.quantity,settlement.grossAmount,settlement.netAmount].every(validDecimal)
+      || Number(settlement.quantity) <= 0 || Number(settlement.grossAmount) <= 0) throw new Error("Invalid cash settlement");
+    const fees=asRecord(settlement.fees,"settlement fees");
+    if (Object.values(fees).some(value=>!validDecimal(value)||Number(value)<0)) throw new Error("Invalid settlement fees");
+  }
   if (source.tradingNature !== undefined && !["simulated", "live", "unknown"].includes(source.tradingNature)) throw new Error("Invalid trading nature");
-  if (source.tradingNature === "simulated" || source.platform === "tradingview") {
+  if (source.tradingNature === "simulated" || source.simulationRole !== undefined) {
     if (source.platform !== "tradingview" || source.tradingNature !== "simulated"
       || typeof source.simulationRunId !== "string" || !source.simulationRunId
       || typeof source.simulationTradeId !== "string" || !/^\d+$/.test(source.simulationTradeId)
@@ -172,8 +333,27 @@ function validateExecution(value: unknown): asserts value is TradeExecution {
       if (source.simulationRole !== "exit" || !source.simulationReport || typeof source.simulationReport !== "object" || Array.isArray(source.simulationReport)
         || Object.values(source.simulationReport).some(value => typeof value !== "string" || !/^-?\d+(?:\.\d+)?$/.test(value))) throw new Error("Invalid simulation report");
     }
-  } else if ([source.simulationRunId, source.simulationTradeId, source.simulationRole, source.simulationReport].some(value => value !== undefined)) throw new Error("Invalid simulation evidence");
+  } else if (source.tradeNature !== "simulation" && [source.simulationRunId, source.simulationTradeId, source.simulationRole, source.simulationReport].some(value => value !== undefined)) throw new Error("Invalid simulation evidence");
+  validateTradeScope(source.tradeNature ?? (source.tradingNature === "simulated" ? "simulation" : source.tradingNature), source.simulationRunId, "simulation execution");
+}
 
+function validateTradeScope(
+  nature: unknown,
+  simulationRunId: unknown,
+  field: string,
+) {
+  if (nature !== undefined && nature !== "live" && nature !== "simulation" && nature !== "unknown") {
+    throw new Error(`Invalid ${field}`);
+  }
+  if (simulationRunId !== undefined && (typeof simulationRunId !== "string" || !simulationRunId.trim())) {
+    throw new Error(`Invalid ${field}`);
+  }
+  if (nature === "simulation" && (typeof simulationRunId !== "string" || !simulationRunId.trim())) {
+    throw new Error(`Invalid ${field}`);
+  }
+  if (nature !== "simulation" && simulationRunId !== undefined) {
+    throw new Error(`Invalid ${field}`);
+  }
 }
 
 function validateReview(value: unknown): asserts value is EpisodeReviewRecord {
@@ -183,6 +363,7 @@ function validateReview(value: unknown): asserts value is EpisodeReviewRecord {
   for (const field of ["thesis", "expectedPath", "invalidationCondition", "targetRange", "plannedRiskAmount"] as const) asString(item.plan[field], "review plan");
   for (const field of ["riskManagement", "psychology", "reusableRule"] as const) asString(item.review[field], "review");
   if (typeof item.review.completed !== "boolean" || item.confirmedTagIds.some((tag) => typeof tag !== "string")) throw new Error("Invalid review");
+  if (!validReviewExtensions(item.review)) throw new Error("Invalid review extensions");
   json(item, "review");
 }
 
@@ -204,6 +385,7 @@ function validateTagSuggestion(value: unknown): asserts value is TagSuggestionRe
 
 function validateImportHistory(value: unknown): asserts value is ImportHistoryEntry {
   const entry = asRecord(value, "import history");
+  if (entry.monthly !== undefined && !isMonthlyStatement(entry.monthly)) throw new Error("Invalid monthly statement evidence");
   assertStringFields(entry, ["id", "fileName", "sourceLabel", "importedAt"], "import history");
   if (entry.tradingNature !== undefined && !["live","simulated","unknown"].includes(String(entry.tradingNature))) throw new Error("Invalid import trading nature");
   if (entry.tradingNature === "simulated" && (typeof entry.simulationRunId !== "string" || !entry.simulationRunId)) throw new Error("Invalid simulation import history");
@@ -217,6 +399,7 @@ function validateImportHistory(value: unknown): asserts value is ImportHistoryEn
       throw new Error("Invalid import history");
     }
   }
+  validateTradeScope(entry.tradeNature ?? (entry.tradingNature === "simulated" ? "simulation" : entry.tradingNature), entry.simulationRunId, "import history");
 }
 
 function isStoredMarketDataErrorDetail(value: unknown): boolean {
@@ -430,15 +613,20 @@ function migrationReport(row: Row): MigrationReport {
 }
 
 function mapInstrumentRow(row: Row): StoredInstrument {
+  const metadata = row.metadata_json
+    ? parseJson<StoredInstrument["metadata"]>(row.metadata_json, "instrument metadata")
+    : undefined;
+  const localizedName = row.localized_name_json
+    ? parseJson<StoredInstrument["localizedName"]>(row.localized_name_json, "localized instrument name")
+    : metadata?.localizedName;
   return {
     id: asString(row.id, "instrument id"),
     symbol: asString(row.symbol, "symbol"),
     name: asString(row.name, "name"),
     market: asString(row.market, "market"),
     currency: asString(row.currency, "currency"),
-    ...(row.metadata_json
-      ? { metadata: parseJson<StoredInstrument["metadata"]>(row.metadata_json, "instrument metadata") }
-      : {}),
+    ...(localizedName ? { localizedName } : {}),
+    ...(metadata ? { metadata } : {}),
   };
 }
 
@@ -449,23 +637,78 @@ function mapExecutionRow(row: Row): TradeExecution {
       "execution evidence",
     )
     : undefined;
+  const source: TradeExecution["source"] = evidence?.source ?? {
+    platform: "unknown",
+    row: 0,
+  };
+  if (typeof row.trade_nature === "string" && source.tradeNature === undefined) {
+    source.tradeNature = row.trade_nature as TradeExecution["source"]["tradeNature"];
+  }
+  if (typeof row.simulation_run_id === "string" && source.simulationRunId === undefined) {
+    source.simulationRunId = row.simulation_run_id;
+  }
+  const storedInstrument = mapInstrumentRow({
+    id: row.instrument_id,
+    symbol: row.symbol,
+    name: row.name,
+    market: row.market,
+    currency: row.currency,
+    metadata_json: row.metadata_json,
+    localized_name_json: row.localized_name_json,
+  });
+  const { metadata: _metadata, ...instrument } = storedInstrument;
   return {
     id: asString(row.id, "execution id"),
-    source: evidence?.source ?? { platform: "unknown", row: 0 },
+    source,
     accountId: String(row.account ?? ""),
     accountLabel: evidence?.accountLabel ?? "",
-    instrument: mapInstrumentRow({
-      id: row.instrument_id,
-      symbol: row.symbol,
-      name: row.name,
-      market: row.market,
-      currency: row.currency,
-    }),
+    instrument,
     side: asString(row.side, "side") as TradeExecution["side"],
     executedAt: asString(row.executed_at, "executed at"),
     quantity: asString(row.quantity, "quantity"),
     price: asString(row.price, "price"),
     fee: typeof row.fee === "string" ? row.fee : "",
+  };
+}
+
+function withoutLocalizedInstrumentName(execution: TradeExecution): TradeExecution {
+  const { localizedName: _localizedName, ...instrument } = execution.instrument;
+  return { ...execution, instrument };
+}
+
+function revisionComparableRequest(input: TradeRevisionRequest): TradeRevisionRequest {
+  return {
+    ...input,
+    changes: input.changes.map((change) => ({
+      before: change.before
+        ? withoutLocalizedInstrumentName(change.before)
+        : null,
+      after: change.after
+        ? withoutLocalizedInstrumentName(change.after)
+        : null,
+    })),
+    ...(input.expectedScope
+      ? {
+          expectedScope: input.expectedScope.map(withoutLocalizedInstrumentName),
+        }
+      : {}),
+  };
+}
+
+function executionForRevisionWrite(
+  execution: TradeExecution,
+  current: TradeExecution | undefined,
+): TradeExecution {
+  const { localizedName: _snapshotLocalizedName, ...instrument } = execution.instrument;
+  const currentLocalizedName = current?.instrument.localizedName;
+  return {
+    ...execution,
+    instrument: {
+      ...instrument,
+      ...(currentLocalizedName
+        ? { localizedName: currentLocalizedName }
+        : {}),
+    },
   };
 }
 
@@ -579,13 +822,13 @@ export class SqliteStore {
 
   getInstruments(): StoredInstrument[] {
     const rows = this.database
-      .prepare("select id, symbol, name, market, currency, metadata_json from instruments order by id")
+      .prepare("select id, symbol, name, market, currency, metadata_json, localized_name_json from instruments order by id")
       .all() as Row[];
     return rows.map(mapInstrumentRow);
   }
 
   getExecutions(): TradeExecution[] {
-    const rows = this.database.prepare("select e.*, i.symbol, i.name, i.market, i.currency from executions e join instruments i on i.id = e.instrument_id").all() as Row[];
+    const rows = this.database.prepare("select e.*, i.symbol, i.name, i.market, i.currency, i.metadata_json, i.localized_name_json from executions e join instruments i on i.id = e.instrument_id").all() as Row[];
     return rows.map(mapExecutionRow).sort(compareExecutions);
   }
 
@@ -604,6 +847,19 @@ export class SqliteStore {
   getTagSuggestions(): TagSuggestionRecord[] { return (this.database.prepare("select evidence_json from tag_suggestions order by id").all() as Row[]).map((row) => parseJson<TagSuggestionRecord>(row.evidence_json, "tag suggestion")); }
   getMarketDataJobs(): MarketDataJob[] { return (this.database.prepare("select progress_json from market_data_jobs order by id").all() as Row[]).map((row) => parseJson<MarketDataJob>(row.progress_json, "market data job")); }
   getSettings(): Record<string, unknown> { return Object.fromEntries((this.database.prepare("select key, value_json from app_settings order by key").all() as Row[]).map((row) => [asString(row.key, "setting key"), parseJson(row.value_json, "setting value")])); }
+  getReviewSummary(
+    scopeId: string,
+    rangeId: string,
+  ): ReviewSummaryNote | undefined {
+    const key = reviewSummarySettingKey(scopeId, rangeId);
+    const row = this.database
+      .prepare("select value_json from app_settings where key = ?")
+      .get(key) as Row | undefined;
+    if (!row) return undefined;
+    const value = parseJson<unknown>(row.value_json, "review summary");
+    if (!isReviewSummaryNote(value)) throw new Error("Invalid review summary");
+    return value;
+  }
   getDailyCandles(instrumentId?: string, start?: string, end?: string): DailyCandleRecord[] {
     const clauses = [instrumentId ? "instrument_id = ?" : "", start ? "date >= ?" : "", end ? "date <= ?" : ""].filter(Boolean);
     const where = clauses.length ? `where ${clauses.join(" and ")}` : "";
@@ -700,10 +956,94 @@ export class SqliteStore {
     if (input.replaceExecutionIds !== undefined && (!Array.isArray(input.replaceExecutionIds) || input.replaceExecutionIds.some((id) => typeof id !== "string" || !id))) throw new Error("Invalid execution replacements");
     return withSqliteTransaction(this.database, () => {
       for (const instrument of input.instruments ?? []) this.putInstrument(instrument);
+      const current = this.getExecutions();
+      const replacementEvidence = this.prepareExplicitReplacementEvidence(
+        current,
+        input.executions,
+        input.replaceExecutionIds ?? [],
+      );
       for (const id of input.replaceExecutionIds ?? []) this.database.prepare("delete from executions where id = ?").run(id);
-      const result = this.mergeExecutionsInTransaction(input.executions);
+      const result = this.mergeExecutionsInTransaction(input.executions, replacementEvidence);
       for (const entry of input.importHistory ?? []) this.putImportHistory(entry);
       return result;
+    });
+  }
+
+  getTradeRevisions(instrumentId: string): TradeRevision[] {
+    return (this.database.prepare("select revision_json from trade_revisions where instrument_id = ? order by recorded_at desc, rowid desc").all(instrumentId) as Row[]).map((row) => parseJson<TradeRevision>(row.revision_json, "trade revision"));
+  }
+
+  reviseTrades(value: unknown): TradeRevisionResult {
+    const input = value as TradeRevisionRequest;
+    if (!input || typeof input !== "object" || typeof input.id !== "string" || !input.id || input.id.length > 200 || typeof input.instrumentId !== "string" || !input.instrumentId || typeof input.accountId !== "string" || !input.accountId || typeof input.reason !== "string" || !input.reason.trim() || input.reason.length > 2000 || !Array.isArray(input.changes) || input.changes.length === 0 || input.changes.length > 500) throw new Error("Invalid trade revision");
+    json(input, "trade revision");
+    if (input.importHistory) {
+      validateImportHistory(input.importHistory);
+      if (input.importHistory.instrumentCount !== 1 || !input.expectedScope) throw new Error("Invalid supplement batch");
+    }
+    const ids = new Set<string>();
+    for (const change of input.changes) {
+      if (!change || typeof change !== "object" || !("before" in change) || !("after" in change) || (!change.before && !change.after)) throw new Error("Invalid trade change");
+      for (const record of [change.before, change.after]) {
+        if (record === null) continue;
+        validateExecution(record);
+        if (record.instrument.id !== input.instrumentId || record.accountId !== input.accountId) throw new Error("Invalid trade scope");
+      }
+      if (change.after) {
+        try {
+          Temporal.Instant.from(change.after.executedAt);
+          for (const field of ["quantity", "price", "fee"] as const) {
+            const value = new Decimal(change.after[field]);
+            if (!value.isFinite() || (field === "fee" ? value.lt(0) : value.lte(0))) throw new Error();
+          }
+        } catch { throw new Error("Invalid trade values"); }
+      }
+      const id = (change.before ?? change.after)!.id;
+      if (ids.has(id) || (change.before && change.after && change.before.id !== change.after.id)) throw new Error("Invalid trade identity");
+      ids.add(id);
+    }
+    return withSqliteTransaction(this.database, () => {
+      const requestJson = canonicalRecord(revisionComparableRequest(input));
+      const existing = this.database.prepare("select request_json, revision_json from trade_revisions where id = ?").get(input.id) as Row | undefined;
+      if (existing) {
+        if (existing.request_json !== requestJson) throw new Error("Trade revision conflict");
+        return { executions: this.getExecutions(), revision: parseJson<TradeRevision>(existing.revision_json, "revision") };
+      }
+      const current = new Map(this.getExecutions().map((execution) => [execution.id, execution]));
+      const currentEvidence = this.protectedExecutionEvidence([...current.values()]);
+      const instrument = this.getInstruments().find(instrument => instrument.id === input.instrumentId);
+      if (!instrument) throw new Error("Invalid trade instrument");
+      for (const change of input.changes) {
+        if (change.after && (["symbol", "market", "currency"] as const).some(key => change.after!.instrument[key] !== instrument[key])) throw new Error("Invalid trade instrument");
+      }
+      if (input.expectedScope !== undefined) {
+        if (!Array.isArray(input.expectedScope)) throw new Error("Invalid scope snapshot");
+        const actual = [...current.values()].filter(e => e.instrument.id === input.instrumentId && e.accountId === input.accountId);
+        const ordered = (records: TradeExecution[]) => records.slice().sort((a,b)=>a.id.localeCompare(b.id));
+        if (canonicalRecord(ordered(actual).map(withoutLocalizedInstrumentName)) !== canonicalRecord(ordered(input.expectedScope).map(withoutLocalizedInstrumentName))) throw new Error("Trade revision conflict");
+      }
+      if (![...current.values()].some((execution) => execution.instrument.id === input.instrumentId && execution.accountId === input.accountId) && !this.getTradeRevisions(input.instrumentId).some((revision) => revision.accountId === input.accountId)) throw new Error("Invalid trade account");
+      for (const change of input.changes) {
+        const id = (change.before ?? change.after)!.id;
+        const original = current.get(id);
+        if (change.before ? !original || canonicalRecord(withoutLocalizedInstrumentName(original)) !== canonicalRecord(withoutLocalizedInstrumentName(change.before)) : Boolean(original)) throw new Error("Trade revision conflict");
+      }
+      const revision: TradeRevision = { ...input, recordedAt: new Date().toISOString() };
+      for (const change of input.changes) {
+        if (change.before) this.database.prepare("delete from executions where id = ?").run(change.before.id);
+        if (change.after) {
+          const currentExecution = change.before
+            ? current.get(change.before.id)
+            : undefined;
+          this.writeExecution(
+            executionForRevisionWrite(change.after, currentExecution),
+            currentExecution ? currentEvidence.get(currentExecution.id) : undefined,
+          );
+        }
+      }
+      if (input.importHistory) this.putImportHistory(input.importHistory);
+      this.database.prepare("insert into trade_revisions(id, instrument_id, account_id, request_json, revision_json, recorded_at) values (?, ?, ?, ?, ?, ?)").run(input.id, input.instrumentId, input.accountId, requestJson, json(revision, "trade revision"), revision.recordedAt);
+      return { executions: this.getExecutions(), revision };
     });
   }
 
@@ -770,6 +1110,22 @@ export class SqliteStore {
     withSqliteTransaction(this.database, () => {
       for (const [key, value] of Object.entries(settings)) this.putSetting(key, value);
     });
+  }
+
+  putReviewSummary(record: ReviewSummaryNote): boolean {
+    if (!isReviewSummaryNote(record)) throw new Error("Invalid review summary");
+    const current = this.getReviewSummary(record.scopeId, record.rangeId);
+    if (
+      current &&
+      Date.parse(current.updatedAt) > Date.parse(record.updatedAt)
+    ) {
+      return false;
+    }
+    this.putSetting(
+      reviewSummarySettingKey(record.scopeId, record.rangeId),
+      record,
+    );
+    return true;
   }
 
   putMarketDataJob(job: MarketDataJob): void {
@@ -924,16 +1280,20 @@ export class SqliteStore {
 
   private putInstrument(instrument: StoredInstrument): boolean {
     validateInstrument(instrument);
+    const localizedName = instrument.localizedName
+      ? validateLocalizedInstrumentName(instrument.localizedName)
+      : undefined;
     const existed = this.hasInstrument(instrument.id);
     this.database.prepare(`
-      insert into instruments (id, symbol, name, market, currency, metadata_json, updated_at)
-      values (?, ?, ?, ?, ?, ?, current_timestamp)
+      insert into instruments (id, symbol, name, market, currency, metadata_json, localized_name_json, updated_at)
+      values (?, ?, ?, ?, ?, ?, ?, current_timestamp)
       on conflict(id) do update set
         symbol = excluded.symbol,
         name = excluded.name,
         market = excluded.market,
         currency = excluded.currency,
         metadata_json = coalesce(excluded.metadata_json, instruments.metadata_json),
+        localized_name_json = coalesce(excluded.localized_name_json, instruments.localized_name_json),
         updated_at = excluded.updated_at
     `).run(
       instrument.id,
@@ -942,6 +1302,9 @@ export class SqliteStore {
       instrument.market,
       instrument.currency,
       instrument.metadata ? json(instrument.metadata, "instrument metadata") : null,
+      localizedName
+        ? json(localizedName, "localized instrument name")
+        : null,
     );
     return !existed;
   }
@@ -954,35 +1317,166 @@ export class SqliteStore {
     if (!this.hasInstrument(id)) throw new Error(`Unknown instrument: ${id}`);
   }
 
+  private storedExecutionEvidenceById(
+    ids: readonly string[],
+  ): Map<string, StoredExecutionEvidence> {
+    const uniqueIds = [...new Set(ids)];
+    if (uniqueIds.length === 0) return new Map();
+    const evidenceById = new Map<string, StoredExecutionEvidence>();
+    for (let start = 0; start < uniqueIds.length; start += 500) {
+      const batch = uniqueIds.slice(start, start + 500);
+      const placeholders = batch.map(() => "?").join(", ");
+      const rows = this.database
+        .prepare(`select id, evidence_json from executions where id in (${placeholders})`)
+        .all(...batch) as Row[];
+      for (const row of rows) {
+        if (typeof row.id !== "string" || typeof row.evidence_json !== "string") continue;
+        const evidence = asRecord(
+          parseJson<unknown>(row.evidence_json, "execution evidence"),
+          "execution evidence",
+        );
+        if (evidence.accountCorrection === undefined) continue;
+        const accountCorrection = validateAccountCorrection(evidence.accountCorrection);
+        evidenceById.set(row.id, { ...evidence, accountCorrection } as StoredExecutionEvidence);
+      }
+    }
+    return evidenceById;
+  }
+
+  private protectedExecutionEvidence(
+    executions: readonly TradeExecution[],
+  ): Map<string, StoredExecutionEvidence> {
+    const evidenceById = this.storedExecutionEvidenceById(
+      executions.map((execution) => execution.id),
+    );
+    const protectedEvidence = new Map<string, StoredExecutionEvidence>();
+    for (const execution of executions) {
+      const evidence = evidenceById.get(execution.id);
+      if (!evidence) continue;
+      if (evidence.accountCorrection.canonicalAccountId !== execution.accountId) {
+        throw new Error("Invalid stored account correction");
+      }
+      protectedEvidence.set(execution.id, evidence);
+    }
+    return protectedEvidence;
+  }
+
+  private prepareExplicitReplacementEvidence(
+    current: readonly TradeExecution[],
+    incoming: readonly TradeExecution[],
+    replacementIds: readonly string[],
+  ): Map<string, StoredExecutionEvidence> {
+    const currentById = new Map(current.map((execution) => [execution.id, execution]));
+    const protectedEvidence = this.protectedExecutionEvidence(
+      current.filter((execution) => replacementIds.includes(execution.id)),
+    );
+    const replacementEvidence = new Map<string, StoredExecutionEvidence>();
+    for (const [id, evidence] of protectedEvidence) {
+      const existing = currentById.get(id)!;
+      const matches = incoming.filter((candidate) =>
+        canCarryAccountCorrection(existing, candidate, evidence.accountCorrection),
+      );
+      if (matches.length !== 1) {
+        throw new Error("Account correction replacement identity conflict");
+      }
+      const [match] = matches;
+      if (replacementEvidence.has(match.id)) {
+        throw new Error("Account correction replacement identity conflict");
+      }
+      replacementEvidence.set(match.id, evidence);
+    }
+    return replacementEvidence;
+  }
+
   private mergeExecutionsInTransaction(
     incoming: readonly TradeExecution[],
+    initialPreservedEvidence: ReadonlyMap<string, StoredExecutionEvidence> = new Map(),
   ): ExecutionMergeReport {
     incoming.forEach(validateExecution);
     const current=this.getExecutions();
+    const currentById = new Map(current.map((execution) => [execution.id, execution]));
+    const currentEvidence = this.protectedExecutionEvidence(current);
+    const preservedEvidence = new Map(initialPreservedEvidence);
+    const preparedIncoming = incoming.map((execution) => {
+      const evidence = preservedEvidence.get(execution.id);
+      if (evidence) {
+        return {
+          ...execution,
+          accountId: evidence.accountCorrection.canonicalAccountId,
+        };
+      }
+      const existing = currentById.get(execution.id);
+      const existingEvidence = existing ? currentEvidence.get(existing.id) : undefined;
+      if (existing && existingEvidence) {
+        if (canCarryAccountCorrection(existing, execution, existingEvidence.accountCorrection)) {
+          preservedEvidence.set(execution.id, existingEvidence);
+          return {
+            ...execution,
+            accountId: existingEvidence.accountCorrection.canonicalAccountId,
+          };
+        }
+        if (execution.accountId === existingEvidence.accountCorrection.canonicalAccountId) {
+          throw new Error("Account correction identity conflict");
+        }
+      }
+      return execution;
+    });
     const simulationContexts=new Map<string,string>();
-    for(const execution of [...current,...incoming]) {
+    for(const execution of [...current,...preparedIncoming]) {
       if(execution.source.platform!=="tradingview") continue;
       const fingerprint=execution.source.fileFingerprint;
-      if(!fingerprint) throw new Error("Invalid simulation fingerprint");
+      if (!fingerprint) {
+        if (execution.source.tradingNature === "simulated") throw new Error("Invalid simulation fingerprint");
+        continue;
+      }
       const previous=simulationContexts.get(fingerprint);
       if(previous && previous!==execution.instrument.id) throw new Error("Simulation context conflict");
       simulationContexts.set(fingerprint,execution.instrument.id);
     }
-    const reconciliation = reconcileExecutions(current, incoming);
+    const reconciliation = reconcileExecutions(current, preparedIncoming);
+    const acceptedIncoming = reconciliation.acceptedIncoming.map((execution) => {
+      const evidence = preservedEvidence.get(execution.id);
+      if (!evidence) return execution;
+      return {
+        ...execution,
+        accountId: evidence.accountCorrection.canonicalAccountId,
+      };
+    });
     for (const id of reconciliation.automaticReplacementIds) {
       this.database.prepare("delete from executions where id = ?").run(id);
     }
-    for (const execution of reconciliation.acceptedIncoming) {
-      this.writeExecution(execution);
+    for (const id of reconciliation.automaticReplacementIds) {
+      const existing = currentById.get(id);
+      const evidence = currentEvidence.get(id);
+      if (!existing || !evidence) continue;
+      const matches = acceptedIncoming.filter((candidate) =>
+        canCarryAccountCorrection(existing, candidate, evidence.accountCorrection),
+      );
+      if (matches.length !== 1) {
+        throw new Error("Account correction replacement identity conflict");
+      }
+      const [match] = matches;
+      if (preservedEvidence.has(match.id) && preservedEvidence.get(match.id) !== evidence) {
+        throw new Error("Account correction replacement identity conflict");
+      }
+      preservedEvidence.set(match.id, evidence);
+    }
+    for (const execution of acceptedIncoming) {
+      const evidence = preservedEvidence.get(execution.id);
+      this.writeExecution(execution, evidence);
     }
     return {
-      inserted: reconciliation.acceptedIncoming.length,
+      inserted: acceptedIncoming.length,
       duplicate: reconciliation.duplicates.length,
       conflict: reconciliation.conflicts.length,
     };
   }
 
-  private writeExecution(execution: TradeExecution): void {
+  private writeExecution(
+    execution: TradeExecution,
+    preservedEvidence?: StoredExecutionEvidence,
+  ): void {
+    const persistedAccountId = preservedEvidence?.accountCorrection.canonicalAccountId ?? execution.accountId;
     this.ensureInstrument(execution.instrument);
     const batchId = execution.source.batchId;
     if (batchId) {
@@ -1003,14 +1497,19 @@ export class SqliteStore {
     }
 
     const evidence = json(
-      { source: execution.source, accountLabel: execution.accountLabel },
+      {
+        ...(preservedEvidence ?? {}),
+        source: execution.source,
+        accountLabel: execution.accountLabel,
+      },
       "execution evidence",
     );
     this.database.prepare(`
       insert into executions (
         id, import_batch_id, instrument_id, account, side, executed_at,
-        quantity, price, fee, currency, evidence_json, updated_at
-      ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp)
+        quantity, price, fee, currency, trade_nature, simulation_run_id,
+        evidence_json, updated_at
+      ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp)
       on conflict(id) do update set
         import_batch_id = excluded.import_batch_id,
         instrument_id = excluded.instrument_id,
@@ -1021,19 +1520,23 @@ export class SqliteStore {
         price = excluded.price,
         fee = excluded.fee,
         currency = excluded.currency,
+        trade_nature = excluded.trade_nature,
+        simulation_run_id = excluded.simulation_run_id,
         evidence_json = excluded.evidence_json,
         updated_at = excluded.updated_at
     `).run(
       execution.id,
       batchId ?? null,
       execution.instrument.id,
-      execution.accountId,
+      persistedAccountId,
       execution.side,
       execution.executedAt,
       execution.quantity,
       execution.price,
       execution.fee,
       execution.instrument.currency,
+      execution.source.tradeNature ?? null,
+      execution.source.simulationRunId ?? null,
       evidence,
     );
   }
@@ -1042,13 +1545,16 @@ export class SqliteStore {
     validateImportHistory(entry);
     this.database.prepare(`
       insert into import_batches (
-        id, source_name, source_type, imported_at, record_count, reconciliation_json
-      ) values (?, ?, ?, ?, ?, ?)
+        id, source_name, source_type, imported_at, record_count,
+        trade_nature, simulation_run_id, reconciliation_json
+      ) values (?, ?, ?, ?, ?, ?, ?, ?)
       on conflict(id) do update set
         source_name = excluded.source_name,
         source_type = excluded.source_type,
         imported_at = excluded.imported_at,
         record_count = excluded.record_count,
+        trade_nature = excluded.trade_nature,
+        simulation_run_id = excluded.simulation_run_id,
         reconciliation_json = excluded.reconciliation_json
     `).run(
       entry.id,
@@ -1056,6 +1562,8 @@ export class SqliteStore {
       entry.sourceKind ?? "statement",
       entry.importedAt,
       entry.tradeCount,
+      entry.tradeNature ?? null,
+      entry.simulationRunId ?? null,
       json(entry, "import history"),
     );
   }

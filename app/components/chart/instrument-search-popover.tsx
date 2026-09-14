@@ -58,6 +58,13 @@ export function InstrumentSearchPopover({
 
   useEffect(() => {
     if (!open) return;
+    popoverRef.current
+      ?.querySelector<HTMLElement>('[role="option"][aria-selected="true"]')
+      ?.scrollIntoView?.({ block: "nearest" });
+  }, [open, activeIndex, query]);
+
+  useEffect(() => {
+    if (!open) return;
     const onPointerDown = (event: PointerEvent) => {
       const target = event.target as Node;
       if (

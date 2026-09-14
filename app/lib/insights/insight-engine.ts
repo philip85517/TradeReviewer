@@ -37,9 +37,10 @@ export type PatternInsight = {
   medianDifference: string | null;
   winRate: string;
   netPnl: string;
-  medianMfePercent: string;
-  medianMaePercent: string;
-  medianGivebackPercent: string;
+  pathSampleCount: number;
+  medianMfePercent: string | null;
+  medianMaePercent: string | null;
+  medianGivebackPercent: string | null;
   planAdherenceRate: string | null;
   evidenceEpisodeIds: string[];
   counterexampleEpisodeIds: string[];
@@ -95,6 +96,11 @@ function median(values: string[]) {
   const middle = Math.floor(sorted.length / 2);
   if (sorted.length % 2 === 1) return sorted[middle];
   return sorted[middle - 1].plus(sorted[middle]).div(2);
+}
+
+function nullableMedian(values: Array<string | null>) {
+  const available = values.filter((value): value is string => value !== null);
+  return available.length > 0 ? median(available).toString() : null;
 }
 
 function displayMetric(value: Decimal) {
@@ -339,15 +345,21 @@ function buildInsight(
         new Decimal(0),
       )
       .toString(),
-    medianMfePercent: median(
+    pathSampleCount: sample.filter(
+      ({ mfePercent, maePercent, givebackPercent }) =>
+        mfePercent !== null &&
+        maePercent !== null &&
+        givebackPercent !== null,
+    ).length,
+    medianMfePercent: nullableMedian(
       sample.map(({ mfePercent }) => mfePercent),
-    ).toString(),
-    medianMaePercent: median(
+    ),
+    medianMaePercent: nullableMedian(
       sample.map(({ maePercent }) => maePercent),
-    ).toString(),
-    medianGivebackPercent: median(
+    ),
+    medianGivebackPercent: nullableMedian(
       sample.map(({ givebackPercent }) => givebackPercent),
-    ).toString(),
+    ),
     planAdherenceRate:
       plannedCount === 0
         ? null

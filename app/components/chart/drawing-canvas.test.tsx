@@ -356,6 +356,7 @@ describe("drawing interactions", () => {
       tool: "text",
       text: "原注释",
       anchors: [{ time: candles[0].time, price: 100 }],
+      createdAtCursor: candles[0].time,
       style: { color: "#2f80ed", lineWidth: 1.5, opacity: 1 },
       hidden: false,
       locked: false,
@@ -377,7 +378,11 @@ describe("drawing interactions", () => {
 
     expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
       type: "replace",
-      drawing: expect.objectContaining({ id: "text-1", text: "更新注释" }),
+      drawing: expect.objectContaining({
+        id: "text-1",
+        text: "更新注释",
+        createdAtCursor: candles[1].time,
+      }),
     }));
   });
 

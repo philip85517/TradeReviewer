@@ -7,6 +7,31 @@ import { EpisodeNotesPanel } from "./episode-notes-panel";
 describe("EpisodeNotesPanel", () => {
   afterEach(cleanup);
 
+  it("blocks suggestion decisions until the current draft has saved", async () => {
+    const user = userEvent.setup();
+    const decide = vi.fn();
+    render(<EpisodeNotesPanel episodeId="suggestion-draft" instrumentId="US:A" delayMs={60000} onSave={vi.fn().mockResolvedValue(undefined)} suggestions={<button type="button" onClick={decide}>确认建议</button>} />);
+    await user.type(screen.getByLabelText("关键决策"), "draft");
+    expect(screen.getByRole("button", { name: "确认建议" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "确认建议" }));
+    expect(decide).not.toHaveBeenCalled();
+  });
+
+  it("lets the user expand the summary without hiding or losing the plan draft", async () => {
+    const user = userEvent.setup();
+    render(<EpisodeNotesPanel episodeId="stage-1" instrumentId="HK:9868" onSave={vi.fn().mockResolvedValue(undefined)} />);
+    expect(screen.getByLabelText("关键决策")).toBeVisible();
+    await user.click(screen.getByText("补充分析 · 原始计划、风险与标签"));
+    expect(screen.getByLabelText("买入理由")).toBeVisible();
+    expect(screen.getByLabelText("风险管理")).not.toBeVisible();
+    await user.type(screen.getByLabelText("买入理由"), "等待确认");
+    await user.click(screen.getByText("事后总结", { selector: "summary" }));
+    await user.type(screen.getByRole("textbox", { name: "风险管理" }), "控制风险");
+    expect(screen.getByRole("textbox", { name: "风险管理" })).toBeVisible();
+    expect(screen.getByLabelText("风险管理")).toBeVisible();
+    expect(screen.getByLabelText("买入理由")).toHaveValue("等待确认");
+  });
+
   it("keeps every plan and review field, tags, completion, and save status editable", async () => {
     const user = userEvent.setup();
     const onSave = vi.fn().mockResolvedValue(undefined);
@@ -30,16 +55,17 @@ describe("EpisodeNotesPanel", () => {
       "执行质量",
       "风险管理",
       "心理复盘",
-      "可复用规则",
-      "标记为已完成复盘",
+      "下次行动",
     ]) {
       expect(screen.getByLabelText(label)).toBeInTheDocument();
     }
+    await user.click(screen.getByText("补充分析 · 原始计划、风险与标签"));
     expect(screen.getByRole("checkbox", { name: "突破" })).toBeInTheDocument();
 
     await user.type(screen.getByLabelText("买入理由"), "等待回踩");
     await user.click(screen.getByRole("checkbox", { name: "突破" }));
-    await user.click(screen.getByLabelText("标记为已完成复盘"));
+    await user.type(screen.getByLabelText("下次行动"), "等待回踩确认");
+    await user.click(screen.getByRole("button", {name:"完成复盘"}));
     expect(await screen.findByRole("status")).toHaveTextContent("已自动保存");
     expect(onSave).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -61,7 +87,7 @@ describe("EpisodeNotesPanel", () => {
       />,
     );
 
-    await user.type(screen.getByLabelText("买入理由"), "等待回踩");
+    await user.type(screen.getByLabelText("关键决策"), "等待回踩");
 
     expect(screen.getByRole("status")).toHaveTextContent("等待自动保存");
   });

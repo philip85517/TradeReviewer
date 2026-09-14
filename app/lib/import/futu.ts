@@ -17,21 +17,12 @@ import type {
   StatementParseResult,
 } from "./contracts";
 import { fingerprintBytes } from "./file-fingerprint";
-
-const TRADE_SHEET = "证券-交易流水";
-const REQUIRED_HEADERS = [
-  "成交时间",
-  "账户名称",
-  "账户号码",
-  "品类",
-  "代码名称",
-  "交易所/市场",
-  "方向",
-  "币种",
-  "数量/面值",
-  "价格",
-  "总费用",
-] as const;
+import {
+  FUTU_TRADE_SHEET,
+  canonicalizeFutuWorkbookRow,
+  resolveFutuTradeSheetName,
+  resolveFutuWorkbookHeaders,
+} from "./futu-workbook-profile";
 
 type FutuRow = Record<string, string | number | null | undefined>;
 export type FutuSourceTimezone =
@@ -185,17 +176,15 @@ export function detectFutuWorkbook(
 ): DetectionResult {
   try {
     const workbook = XLSX.read(input, { type: "array", cellDates: false });
-    const sheet = workbook.Sheets[TRADE_SHEET];
+    const sheetName = resolveFutuTradeSheetName(workbook.SheetNames);
+    const sheet = sheetName ? workbook.Sheets[sheetName] : undefined;
     if (!sheet) return { matched: false, confidence: 0 };
     const rows = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
       header: 1,
       defval: "",
       raw: false,
     });
-    const headers = new Set((rows[0] ?? []).map(text));
-    const missingHeaders = REQUIRED_HEADERS.filter(
-      (header) => !headers.has(header),
-    );
+    const missingHeaders = resolveFutuWorkbookHeaders(rows[0] ?? []).missing;
     if (missingHeaders.length > 0) {
       return {
         matched: false,
@@ -205,7 +194,7 @@ export function detectFutuWorkbook(
             severity: "error",
             code: "invalid-futu-trade-sheet",
             message: `富途交易工作表缺少必要列：${missingHeaders.join("、")}`,
-            sheet: TRADE_SHEET,
+            sheet: sheetName,
             row: 1,
           },
         ],
@@ -226,7 +215,8 @@ export function parseFutuWorkbook(
   const sourceFileId =
     options.sourceFileId ?? fingerprintBytes(input);
   const workbook = XLSX.read(input, { type: "array", cellDates: false });
-  const sheet = workbook.Sheets[TRADE_SHEET];
+  const sheetName = resolveFutuTradeSheetName(workbook.SheetNames);
+  const sheet = sheetName ? workbook.Sheets[sheetName] : undefined;
   const diagnostics: ImportDiagnostic[] = [];
   const exclusions: ImportExclusion[] = [];
   const candidates = new Map<string, ParsedInstrumentCandidate>();
@@ -241,21 +231,19 @@ export function parseFutuWorkbook(
         {
           severity: "error",
           code: "missing-trade-sheet",
-          message: `缺少“${TRADE_SHEET}”工作表`,
+          message: `缺少“${FUTU_TRADE_SHEET}”工作表`,
         },
       ],
       blocked: true,
     };
   }
 
-  const rows = XLSX.utils.sheet_to_json<FutuRow>(sheet, {
+  const rawRows = XLSX.utils.sheet_to_json<FutuRow>(sheet, {
     defval: "",
     raw: false,
   });
-  const firstRow = rows[0] ?? {};
-  const missingHeaders = REQUIRED_HEADERS.filter(
-    (header) => !(header in firstRow),
-  );
+  const headerResolution = resolveFutuWorkbookHeaders(Object.keys(rawRows[0] ?? {}));
+  const missingHeaders = headerResolution.missing;
 
   if (missingHeaders.length > 0) {
     return {
@@ -266,15 +254,26 @@ export function parseFutuWorkbook(
       diagnostics: [
         {
           severity: "error",
+          code: "unsupported-futu-workbook-profile",
+          message: `富途工作表未匹配已验证字段：${missingHeaders.join("、")}`,
+          sheet: sheetName,
+          row: 1,
+        },
+        {
+          severity: "error",
           code: "missing-required-columns",
           message: `缺少必要列：${missingHeaders.join("、")}`,
-          sheet: TRADE_SHEET,
+          sheet: sheetName,
           row: 1,
         },
       ],
       blocked: true,
     };
   }
+
+  const rows = rawRows.map((row) =>
+    canonicalizeFutuWorkbookRow(row, headerResolution.map!),
+  ) as FutuRow[];
 
   const records: TradeExecution[] = [];
   rows.forEach((row, index) => {
@@ -294,7 +293,7 @@ export function parseFutuWorkbook(
         severity: "info",
         code: "unsupported-asset-class",
         message: `已跳过${text(row["品类"]) || "未知"}记录`,
-        sheet: TRADE_SHEET,
+        sheet: sheetName,
         row: sourceRow,
         instrumentSymbol: rawInstrumentSymbol || undefined,
         assetClass: text(row["品类"]),
@@ -308,7 +307,7 @@ export function parseFutuWorkbook(
         severity: "warning",
         code: "missing-instrument-symbol",
         message: "股票代码为空，已跳过该行",
-        sheet: TRADE_SHEET,
+        sheet: sheetName,
         row: sourceRow,
         assetClass: text(row["品类"]),
       });
@@ -332,7 +331,7 @@ export function parseFutuWorkbook(
         severity: "warning",
         code: "invalid-trade-row",
         message: "成交方向或成交时间无法识别",
-        sheet: TRADE_SHEET,
+        sheet: sheetName,
         row: sourceRow,
         instrumentSymbol: rawInstrumentSymbol,
         assetClass: text(row["品类"]),
@@ -361,7 +360,7 @@ export function parseFutuWorkbook(
         severity: "warning",
         code: "invalid-numeric-field",
         message: "数量、价格或费用无法识别，已跳过该行",
-        sheet: TRADE_SHEET,
+        sheet: sheetName,
         row: sourceRow,
         instrumentSymbol: rawInstrumentSymbol,
         assetClass: text(row["品类"]),
@@ -382,7 +381,7 @@ export function parseFutuWorkbook(
         severity: "warning",
         code: "unsupported-market",
         message: "交易市场无法识别，已跳过该行",
-        sheet: TRADE_SHEET,
+        sheet: sheetName,
         row: sourceRow,
         instrumentSymbol: rawInstrumentSymbol,
         assetClass: text(row["品类"]),
@@ -406,10 +405,11 @@ export function parseFutuWorkbook(
     );
 
     records.push({
-      id: `futu:${sourceFileId}:${TRADE_SHEET}:${sourceRow}`,
+      id: `futu:${sourceFileId}:${FUTU_TRADE_SHEET}:${sourceRow}`,
       source: {
         platform: "futu",
-        sheet: TRADE_SHEET,
+        sheet: sheetName,
+        formatRuleId: "futu/xlsx/trades-v1",
         row: sourceRow,
         fileName: sourceFileName,
         fileFingerprint: sourceFileId,

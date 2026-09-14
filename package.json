@@ -9,7 +9,7 @@
     "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log node scripts/start-local.mjs --dev",
     "build": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log node scripts/start-local.mjs",
-    "test": "npm run build && node --test tests/rendered-html.test.mjs tests/local-dev-storage.test.mjs",
+    "test": "npm run build && node --test tests/rendered-html.test.mjs tests/local-dev-storage.test.mjs tests/focused-review-ui.test.mjs",
     "test:unit": "vitest run",
     "test:runtime": "node --test tests/local-dev-storage.test.mjs",
     "test:watch": "vitest",

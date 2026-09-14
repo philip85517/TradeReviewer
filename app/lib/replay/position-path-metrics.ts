@@ -114,9 +114,22 @@ export function calculatePositionPathMetrics(
   }
 
   const current = replayPositionAtPrice({
-    executions,
+    executions: input.executions,
+    cursor: input.cursor,
     markPrice: String(usableCandles.at(-1)!.close),
   });
+  if (current.accuracy) {
+    return {
+      current,
+      holdingMilliseconds: null,
+      mfe: null,
+      mae: null,
+      maximumDrawdown: null,
+      profitGiveback: null,
+      rMultiple: null,
+      unavailableReason: "持仓历史或成本不完整，暂不计算收益及路径风险。",
+    };
+  }
   let mfe: Decimal | undefined;
   let mae: Decimal | undefined;
   let maximumDrawdown = new Decimal(0);
@@ -130,7 +143,8 @@ export function calculatePositionPathMetrics(
     if (candleExecutions.length === 0) continue;
 
     const closePosition = replayPositionAtPrice({
-      executions: candleExecutions,
+      executions: input.executions,
+      cursor: candleKnowledgeAt(candle),
       markPrice: String(candle.close),
     });
     const quantity = new Decimal(closePosition.quantity);
@@ -164,13 +178,15 @@ export function calculatePositionPathMetrics(
     const adversePrice = quantity.isPositive() ? candle.low : candle.high;
     const favorablePnl = new Decimal(
       replayPositionAtPrice({
-        executions: candleExecutions,
+        executions: input.executions,
+        cursor: candleKnowledgeAt(candle),
         markPrice: String(favorablePrice),
       }).netPnl,
     );
     const adversePnl = new Decimal(
       replayPositionAtPrice({
-        executions: candleExecutions,
+        executions: input.executions,
+        cursor: candleKnowledgeAt(candle),
         markPrice: String(adversePrice),
       }).netPnl,
     );

@@ -2,7 +2,7 @@ import * as XLSX from "xlsx";
 import { describe, expect, it } from "vitest";
 
 import { fingerprintBytes } from "./file-fingerprint";
-import { parseFutuWorkbook } from "./futu";
+import { detectFutuWorkbook, parseFutuWorkbook } from "./futu";
 
 const headers = [
   "成交时间",
@@ -22,9 +22,13 @@ const headers = [
 ];
 
 function workbookBuffer(rows: unknown[][]) {
+  return workbookBufferWithLabels("证券-交易流水", headers, rows);
+}
+
+function workbookBufferWithLabels(sheetName: string, labels: string[], rows: unknown[][]) {
   const workbook = XLSX.utils.book_new();
-  const sheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-  XLSX.utils.book_append_sheet(workbook, sheet, "证券-交易流水");
+  const sheet = XLSX.utils.aoa_to_sheet([labels, ...rows]);
+  XLSX.utils.book_append_sheet(workbook, sheet, sheetName);
   return XLSX.write(workbook, { type: "array", bookType: "xlsx" });
 }
 
@@ -39,6 +43,24 @@ function missingTradeSheetBuffer() {
 }
 
 describe("parseFutuWorkbook", () => {
+  it("accepts harmless Unicode and whitespace differences through the workbook profile", () => {
+    const variantHeaders = headers.map((header) => ` ${header.replaceAll("/", "／")} `);
+    const bytes = workbookBufferWithLabels("证券－交易流水", variantHeaders, [[
+      "2025-03-13 00:38:57", "美股账户", "0855", "证券", "BABA", "US", "买入开仓", "20250313", "USD", "20", "137.65", "-2753", "2.05", "-2755.05",
+    ]]);
+    expect(detectFutuWorkbook(bytes)).toMatchObject({ matched: true });
+    const result = parseFutuWorkbook(bytes);
+    expect(result.blocked).toBe(false);
+    expect(result.records[0].source.sheet).toBe("证券－交易流水");
+  });
+
+  it("blocks a changed workbook semantic instead of guessing a field mapping", () => {
+    const changedHeaders = headers.map((header) => header === "成交时间" ? "成交时刻" : header);
+    const result = parseFutuWorkbook(workbookBufferWithLabels("证券-交易流水", changedHeaders, []));
+    expect(result.blocked).toBe(true);
+    expect(result.diagnostics).toContainEqual(expect.objectContaining({ code: "unsupported-futu-workbook-profile" }));
+  });
+
   it("imports securities trades and reports skipped fund activity", () => {
     const bytes = workbookBuffer([
       [

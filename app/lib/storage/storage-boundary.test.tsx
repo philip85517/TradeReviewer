@@ -233,13 +233,25 @@ describe("SQLite production storage boundary", () => {
     await waitFor(() => {
       expect(client.mergeExecutions).toHaveBeenCalledWith(
         expect.objectContaining({
-          executions: [importedExecution],
+          executions: [
+            expect.objectContaining({
+              ...importedExecution,
+              source: expect.objectContaining({
+                ...importedExecution.source,
+                batchId: expect.any(String),
+              }),
+            }),
+          ],
           importHistory: [expect.objectContaining({ fileName: "boundary.pdf" })],
         }),
       );
     });
 
+    await user.click(await screen.findByRole("button", { name: "交易库" }));
+    await user.click(await screen.findByRole("button", { name: "开始复盘" }));
     await user.click(await screen.findByRole("tab", { name: "复盘笔记" }));
+    await user.click(screen.getByText("补充分析 · 原始计划、风险与标签"));
+    await user.click(screen.getByText("事后总结"));
     await user.type(
       await screen.findByLabelText("心理复盘"),
       "边界测试复盘记录",

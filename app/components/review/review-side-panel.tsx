@@ -9,12 +9,14 @@ import type {
   EpisodeReviewRecord,
 } from "../../lib/reviews/types";
 import { useModalFocus } from "../import/use-modal-focus";
-import { EpisodeNotesPanel } from "./episode-notes-panel";
+import { EpisodeNotesPanel, type EpisodeNotesProps } from "./episode-notes-panel";
 import { PositionStatsPanel } from "./position-stats-panel";
 
 const desktopReviewPanelQuery = "(min-width: 1260px)";
 
 type Props = {
+  onComplete?: () => void;
+  reviewExtras?: Pick<EpisodeNotesProps, "ruleContent" | "suggestions">;
   instrumentLabel: string;
   currency: string;
   metrics: PositionPathMetrics;
@@ -25,6 +27,7 @@ type Props = {
   knowledgeCursor?: string;
   episodeStartedAt?: string;
   activeTab: "stats" | "notes";
+  replayComplete?: boolean;
   onActiveTabChange: (tab: "stats" | "notes") => void;
   onSaveReview: (record: EpisodeReviewRecord) => Promise<void>;
   drawerOpen: boolean;
@@ -40,10 +43,10 @@ function PanelContent(props: Props) {
       <button role="tab" id={`${notesId}-tab`} aria-selected={props.activeTab === "notes"} aria-controls={notesId} onClick={() => props.onActiveTabChange("notes")}>复盘笔记</button>
     </div>
     <div role="tabpanel" id={statsId} aria-labelledby={`${statsId}-tab`} hidden={props.activeTab !== "stats"}>
-      <PositionStatsPanel instrumentLabel={props.instrumentLabel} currency={props.currency} metrics={props.metrics} plan={props.visiblePlan ?? props.review?.plan} />
+      <PositionStatsPanel instrumentLabel={props.instrumentLabel} currency={props.currency} metrics={props.metrics} plan={props.visiblePlan ?? (props.review?.planRevisions ? undefined : props.review?.plan)} />
     </div>
     <div role="tabpanel" id={notesId} aria-labelledby={`${notesId}-tab`} hidden={props.activeTab !== "notes"}>
-      <EpisodeNotesPanel episodeId={props.episodeId} instrumentId={props.instrumentId} record={props.review} knowledgeCursor={props.knowledgeCursor} episodeStartedAt={props.episodeStartedAt} onSave={props.onSaveReview} />
+      <EpisodeNotesPanel replayComplete={props.replayComplete} episodeId={props.episodeId} instrumentId={props.instrumentId} record={props.review} knowledgeCursor={props.knowledgeCursor} episodeStartedAt={props.episodeStartedAt} onSave={props.onSaveReview} onComplete={props.onComplete} {...props.reviewExtras} />
     </div>
   </>;
 }

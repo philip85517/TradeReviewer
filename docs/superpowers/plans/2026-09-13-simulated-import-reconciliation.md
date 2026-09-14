@@ -18,3 +18,7 @@
 - Browser acceptance currently uses isolated SQLite on 127.0.0.1:3017; production DB destination remains unconfirmed. Original deployed database was read-only backed up; not mutated.
 
 - Final: user selected existing formal SQLite. Four CSVs imported via browser at 4317; original 35 + new 82 =117, 17 instruments, 6 batches. Formal reconciliation 2341/2341 passes, original executions/history/reviews preserved, integrity and FK checks pass. Real/simulated filtering and restart/reimport verified. Stable native production runtime under deployment directory; Docker unavailable, no auto-start configured.
+
+## Master integration (2026-09-15)
+
+The original feature commit is feb60e4. Master subsequently replaced the original import dialog and dispatcher with TradingViewContextDialog and the tradingview-simulation adapter. Integration preserves that current workflow, removes the obsolete dialog/test, and ports the added Shenzhen and four-file acceptance checks to tradingViewContext, sourceTradeId, and sourceReport.netPnl. The earlier formal import evidence describes the production build used on 2026-09-13, not a redeployment of this integrated tree.

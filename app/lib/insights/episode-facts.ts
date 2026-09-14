@@ -1,6 +1,7 @@
 import Decimal from "decimal.js";
 
-import type { DailyCandleRecord } from "../market/contracts";
+import type { CoverageSegment, DailyCandleRecord } from "../market/contracts";
+import { planCoverageGaps, type DateRange } from "../market/coverage-planner";
 import type { MarketDataSyncStatus } from "../market/sync-status";
 import { marketTradingDate } from "../market/trading-date";
 import type { TradeLibraryEntry } from "../trades/library";
@@ -47,9 +48,9 @@ export type InsightEpisodeFact = {
   averageEntryPrice: string;
   openingExecutionCount: number;
   addOnCount: number;
-  mfePercent: string;
-  maePercent: string;
-  givebackPercent: string;
+  mfePercent: string | null;
+  maePercent: string | null;
+  givebackPercent: string | null;
   confirmedTagIds: string[];
   tagDictionaryVersion: number;
   confirmedRuleVersions: ConfirmedRuleVersion[];
@@ -91,6 +92,25 @@ function isComplete(status: MarketDataSyncStatus | undefined) {
     status === "complete" ||
     status === "ready"
   );
+}
+
+function hasCompleteDailyCoverage(
+  required: DateRange,
+  coverage: CoverageSegment[],
+) {
+  const relevant = coverage.filter(
+    ({ startDate, endDate }) =>
+      endDate >= required.startDate && startDate <= required.endDate,
+  );
+  if (
+    relevant.length === 0 ||
+    relevant.some(
+      ({ status }) => status !== "complete" && status !== "partial",
+    )
+  ) {
+    return false;
+  }
+  return planCoverageGaps(required, relevant).length === 0;
 }
 
 function averageEntry(
@@ -216,6 +236,7 @@ export function buildInsightEpisodeFacts(
   candlesByInstrument: Record<string, DailyCandleRecord[]>,
   marketDataStatuses: Record<string, MarketDataSyncStatus>,
   suggestionDecisions: TagSuggestionRecord[],
+  dailyCoverageByInstrument: Record<string, CoverageSegment[]> = {},
 ): InsightEpisodeFactResult {
   const facts: InsightEpisodeFact[] = [];
   const excluded: InsightEpisodeExclusion[] = [];
@@ -227,17 +248,19 @@ export function buildInsightEpisodeFacts(
     ].sort((a, b) => a.tradingDate.localeCompare(b.tradingDate));
 
     for (const item of entry.episodes) {
-      if (
-        item.episode.status !== "closed" ||
-        !item.episode.endedAt ||
-        item.metrics.holdingMilliseconds === null
-      ) {
+      if (item.episode.status !== "closed" || !item.episode.endedAt) {
         excluded.push(exclusion(entry, item, "open-episode"));
         continue;
       }
-      if (!isComplete(status)) {
+
+      const entryBasis = averageEntry(item);
+      if (
+        !entryBasis ||
+        item.metrics.netPnl === null ||
+        item.metrics.holdingMilliseconds === null
+      ) {
         excluded.push(
-          exclusion(entry, item, "incomplete-market-data"),
+          exclusion(entry, item, "missing-comparison-metric"),
         );
         continue;
       }
@@ -254,22 +277,14 @@ export function buildInsightEpisodeFacts(
         ({ tradingDate }) =>
           tradingDate >= startDate && tradingDate <= endDate,
       );
-      if (
-        episodeCandles[0]?.tradingDate !== startDate ||
-        episodeCandles.at(-1)?.tradingDate !== endDate
-      ) {
-        excluded.push(
-          exclusion(entry, item, "missing-episode-candles"),
-        );
-        continue;
-      }
-      const entryBasis = averageEntry(item);
-      if (!entryBasis || item.metrics.netPnl === null) {
-        excluded.push(
-          exclusion(entry, item, "missing-comparison-metric"),
-        );
-        continue;
-      }
+      const dailyCoverage = dailyCoverageByInstrument[entry.instrument.id];
+      const episodeRange = { startDate, endDate };
+      const hasCompleteEpisodePath =
+        (dailyCoverage
+          ? hasCompleteDailyCoverage(episodeRange, dailyCoverage)
+          : isComplete(status)) &&
+        episodeCandles[0]?.tradingDate === startDate &&
+        episodeCandles.at(-1)?.tradingDate === endDate;
 
       const confirmedRuleVersions = suggestionDecisions
         .filter(
@@ -289,14 +304,20 @@ export function buildInsightEpisodeFacts(
             a.tagId.localeCompare(b.tagId) ||
             a.ruleId.localeCompare(b.ruleId),
         );
-      const excursions = excursionMetrics(
-        item,
-        episodeCandles.filter(
-          ({ tradingDate }) =>
-            tradingDate > startDate && tradingDate < endDate,
-        ),
-        item.metrics.returnPercent,
-      );
+      const excursions = hasCompleteEpisodePath
+        ? excursionMetrics(
+            item,
+            episodeCandles.filter(
+              ({ tradingDate }) =>
+                tradingDate > startDate && tradingDate < endDate,
+            ),
+            item.metrics.returnPercent,
+          )
+        : {
+            mfePercent: null,
+            maePercent: null,
+            givebackPercent: null,
+          };
 
       facts.push({
         episodeId: item.episode.id,

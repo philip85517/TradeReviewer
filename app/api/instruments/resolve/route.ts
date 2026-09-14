@@ -7,9 +7,10 @@ import {
   InvalidInstrumentLookup,
   parseInstrumentLookup,
 } from "../../../lib/instruments/metadata-request-policy";
+import { composeAbortSignals } from "../../../lib/instruments/abort-signal";
+import { METADATA_REQUEST_TIMEOUT_MS } from "../../../lib/instruments/metadata-timeouts";
 
 const CACHE_CONTROL = "public, max-age=21600, stale-while-revalidate=86400";
-const REQUEST_TIMEOUT_MS = 12_000;
 const MAX_REQUESTS_PER_MINUTE = 30;
 const requestsByClient = new Map<
   string,
@@ -105,7 +106,10 @@ export async function GET(request: Request) {
 
   const controller = new AbortController();
   const providerFetch: typeof fetch = (input, init) =>
-    fetch(input, { ...init, signal: controller.signal });
+    fetch(input, {
+      ...init,
+      signal: composeAbortSignals(controller.signal, init?.signal),
+    });
   let timeout: ReturnType<typeof setTimeout> | undefined;
 
   try {
@@ -119,7 +123,7 @@ export async function GET(request: Request) {
           );
           controller.abort(timeoutError);
           reject(timeoutError);
-        }, REQUEST_TIMEOUT_MS);
+        }, METADATA_REQUEST_TIMEOUT_MS);
       }),
     ]);
     return json(result);

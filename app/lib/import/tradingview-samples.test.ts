@@ -11,6 +11,8 @@ const sampleDirectory = process.env.TRADINGVIEW_SAMPLE_DIR;
 describe.skipIf(!sampleDirectory)('local TradingView reference exports',()=>{
   for (const sample of [
     {file:'回放交易_SSE_600330_2026-09-03.csv',rows:34,pairs:17,episodes:12,fees:'0',net:'20580'},
+    {file:'回放交易_SSE_600737_2026-09-11.csv',rows:12,pairs:6,episodes:6,fees:'0',net:'-690'},
+    {file:'回放交易_SZSE_300857_2026-09-07.csv',rows:12,pairs:6,episodes:4,fees:'0',net:'-10500'},
     {file:'回放交易_SSE_600869_2026-09-04.csv',rows:24,pairs:12,episodes:10,fees:'9.6',net:'21290.4'},
   ]) it(`accepts ${sample.file}`, async()=>{
     const bytes=readFileSync(join(sampleDirectory!,sample.file));

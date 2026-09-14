@@ -3,12 +3,12 @@ import { Temporal } from '@js-temporal/polyfill';
 import type { StatementInput, StatementParseResult } from './contracts';
 import type { TradeExecution } from '../trades/types';
 
-export type TradingViewInstrument = { market: 'CN-SH'; symbol: string };
+export type TradingViewInstrument = { market: 'CN-SH' | 'CN-SZ'; symbol: string };
 const columns = ['交易编号','类型','日期和时间','信号','价格 CNY','大小（数量）','大小（价值）','净损益 CNY','回报 %','手续费 CNY','有利波动 CNY','有利波动 %','不利波动 CNY','不利波动 %','累计损益 CNY','累计损益 %','持续时间（K线）'];
 
 export function tradingViewInstrumentFromName(fileName: string): TradingViewInstrument | undefined {
-  const match = fileName.match(/(?:^|_)SSE_(\d{6})(?=_|\.|$)/i);
-  return match ? { market: 'CN-SH', symbol: match[1] } : undefined;
+  const match = fileName.match(/(?:^|_)(SSE|SZSE)_(\d{6})(?=_|\.|$)/i);
+  return match ? { market: match[1].toUpperCase() === 'SZSE' ? 'CN-SZ' : 'CN-SH', symbol: match[2] } : undefined;
 }
 
 // A strict local CSV reader; quotes and embedded newlines do not shift source rows.
@@ -44,7 +44,7 @@ export function parseTradingViewCsv(input: StatementInput, selected?: TradingVie
   const result: StatementParseResult = { broker:'tradingview', records:[], candidates:[], diagnostics:[], exclusions:[], blocked:false };
   try {
     const instrument = selected ?? tradingViewInstrumentFromName(input.fileName);
-    if (!instrument || instrument.market !== 'CN-SH' || !/^\d{6}$/.test(instrument.symbol)) throw new Error('请核对并选择该 CSV 对应的上海证券代码');
+    if (!instrument || !['CN-SH', 'CN-SZ'].includes(instrument.market) || !/^\d{6}$/.test(instrument.symbol)) throw new Error('请核对并选择该 CSV 对应的沪深证券市场和六位代码');
     const table = readCsv(new TextDecoder('utf-8',{fatal:true}).decode(input.bytes));
     const headers = table.shift()?.cells ?? [];
     if (new Set(headers).size !== headers.length || columns.some(c=>!headers.includes(c))) throw new Error('不支持的 TradingView CSV 表头：需要中文 CNY 回放交易格式');
@@ -89,7 +89,7 @@ export function parseTradingViewCsv(input: StatementInput, selected?: TradingVie
           source:{ platform:'tradingview',inputKind:'statement',tradingNature:'simulated', simulationRunId:runId,simulationTradeId:id, simulationRole:index===0?'entry':'exit', simulationSignal:r.data['信号'], ...(index===1 ? { simulationReport:Object.fromEntries(columns.slice(6).map(c=>[c,r.data[c]])) } : {}),
             fileName:input.fileName,fileFingerprint:input.fileFingerprint,row:r.row,timePrecision:'date-only',sourceTimestampText:r.data['日期和时间'],sourceTimezone:'Asia/Shanghai' },
           accountId:`tradingview:${runId}`, accountLabel:`TradingView · 模拟盘 · ${input.fileFingerprint.slice(0,8)}`,
-          instrument:{id:`CN-SH:${instrument.symbol}`,market:'CN-SH',symbol:instrument.symbol,name:'名称待行情源补充',currency:'CNY'},
+          instrument:{id:`${instrument.market}:${instrument.symbol}`,market:instrument.market,symbol:instrument.symbol,name:'名称待行情源补充',currency:'CNY'},
           side:['多头进场','空头出场'].includes(r.data['类型'])?'buy':'sell',
           executedAt:`${r.data['日期和时间']}T07:00:00.000Z`,quantity:new Decimal(r.data['大小（数量）']).toString(), price:new Decimal(r.data['价格 CNY']).toString(),fee:index===0?'0':new Decimal(r.data['手续费 CNY']).toString(),
         }));

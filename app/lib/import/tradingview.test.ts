@@ -68,3 +68,16 @@ it('rejects ambiguous same-day transitions while accepting one same-day pair', a
  expect(ambiguous.blocked).toBe(true);
  expect(ambiguous.records).toHaveLength(0);
 });
+
+it('preserves Shenzhen identity from filename and manual confirmation on renamed files', async () => {
+ const inferred = await parseBrokerStatement(fileFor(csv, '回放交易_SZSE_300857_2026-09-13.csv'));
+ const manual = await parseBrokerStatement(fileFor(csv, 'renamed.csv'), { tradingViewInstrument: { market: 'CN-SZ', symbol: '300857' } });
+ for (const parsed of [inferred, manual]) {
+  expect(parsed.blocked).toBe(false);
+  expect(parsed.records).toHaveLength(2);
+  expect(parsed.records[0].instrument).toMatchObject({id:'CN-SZ:300857',market:'CN-SZ',symbol:'300857'});
+  expect(parsed.candidates[0]).toMatchObject({market:'CN-SZ',symbol:'300857'});
+  expect(parsed.records[0].source.simulationRunId).toContain(':CN-SZ:300857');
+ }
+ expect(mergeExecutions(inferred.records, manual.records)).toHaveLength(2);
+});

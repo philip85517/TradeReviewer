@@ -1,4 +1,5 @@
 import { candleKnowledgeAt, type Candle } from "../market/types";
+import { replayExecutionAt } from "../import/statement-evidence";
 import type { TradeExecution } from "../trades/types";
 
 export type ImportedReplay = {
@@ -16,6 +17,23 @@ type ImportedReplayInput = {
   executions: TradeExecution[];
   storedCursor?: string;
 };
+
+/**
+ * Complete history must advance through the knowledge timestamp of a
+ * date-only execution. Its stored execution timestamp is only a display
+ * anchor and must not hide the row before the source date is complete.
+ */
+export function latestImportedHistoryCursor(
+  storedCursor: string,
+  candles: readonly Candle[],
+  executions: readonly TradeExecution[],
+): string {
+  return [
+    storedCursor,
+    ...candles.map(candleKnowledgeAt),
+    ...executions.map(replayExecutionAt),
+  ].sort((left, right) => Date.parse(left) - Date.parse(right)).at(-1) ?? storedCursor;
+}
 
 export function createImportedReplay(
   input: ImportedReplayInput,

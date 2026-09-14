@@ -1,6 +1,10 @@
 import Decimal from "decimal.js";
 
-import { tradeNatureOf, type TradeExecution } from "../trades/types";
+import {
+  hasSettlementCurrencyMismatch,
+  tradeNatureOf,
+  type TradeExecution,
+} from "../trades/types";
 import type { MonthlyStatement, StatementPosition, StatementEvent } from "../import/monthly-statement";
 import { canonicalInstrumentId } from "../instruments/display-name";
 import { isExecutionBackedIpoAllocation, replayCursorAt, replayExecutionAt, statementPositionAt, statementEventAt } from "../import/statement-evidence";
@@ -259,6 +263,9 @@ export function replayPositionAtPrice(input: {
       quantityUncertain = true;
     }
     if (execution.source.feeStatus === "unknown") reasons.add("unknown-fees");
+    if (hasSettlementCurrencyMismatch(execution)) {
+      reasons.add("settlement-currency-mismatch");
+    }
     if (execution.source.historyIncomplete?.length) {
       reasons.add("history-incomplete");
       quantityUncertain = true;

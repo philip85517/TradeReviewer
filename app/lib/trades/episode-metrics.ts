@@ -2,7 +2,7 @@ import Decimal from "decimal.js";
 
 import { isExecutionBackedIpoAllocation, replayExecutionAt, statementEventAt } from "../import/statement-evidence";
 import { resolveIpoAcquisitionCost } from "./ipo-cost";
-import type { TradeEpisode } from "./types";
+import { hasSettlementCurrencyMismatch, type TradeEpisode } from "./types";
 
 export type TradeEpisodeMetrics = {
   /** False means realizedPnl/grossExposure must not be presented as reliable metrics. */
@@ -24,7 +24,11 @@ export function summarizeTradeEpisode(
   episode: TradeEpisode,
   markPrice?: string,
 ): TradeEpisodeMetrics {
-  let unavailable = Boolean(episode.accuracy) || episode.executions.some(e => e.source.feeStatus === "unknown" || e.source.historyIncomplete?.length);
+  let unavailable = Boolean(episode.accuracy) || episode.executions.some(e =>
+    e.source.feeStatus === "unknown" ||
+    e.source.historyIncomplete?.length ||
+    hasSettlementCurrencyMismatch(e),
+  );
   const evidenceIds = new Set((episode.positionEvents ?? []).map(event => event.id));
   if (episode.ipoCostEvidence?.some(chain => !evidenceIds.has(chain.allocationId)
     || chain.evidenceIds.some(id => !evidenceIds.has(id)))) unavailable = true;

@@ -3760,7 +3760,7 @@ function isAbortError(error: unknown) {
     }
     setReviewQueueIds(undefined);
     setLibraryTarget(undefined);
-    setLibraryBrowseState(current => current ? {...current,selectedInstrumentId:null,selectedEpisodeId:null,mode:"queue"} : undefined);
+    setLibraryBrowseState(current => current ? {...current,selectedInstrumentId:null,selectedEpisodeId:null} : undefined);
     setNavigationNotice("本轮复盘已完成，可以到阶段总结整理下一步。");
     setActiveView("library");
   }
@@ -4118,7 +4118,7 @@ function isAbortError(error: unknown) {
         </div>
         {activeView !== "dashboard" && activeView === "library" && (showDemo || importedInstruments.length > 0) ? (
           <TradeLibrary
-            defaultMode={showDemo ? "stocks" : "queue"}
+            defaultMode="stocks"
             key={libraryTarget?.requestId ?? 0}
             initialBrowseState={libraryBrowseState}
             onBrowseStateChange={setLibraryBrowseState}

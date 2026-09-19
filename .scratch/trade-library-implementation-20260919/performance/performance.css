@@ -1,0 +1,1 @@
+body{margin:0;display:flex;min-height:100vh}#root{width:100%;height:100vh;display:flex;flex-direction:column}#harness-toolbar{padding:8px;display:flex;gap:14px;background:#16202d;flex-shrink:0}#root>.trade-library{flex:1;overflow:auto;min-height:0}#harness-results{max-height:100px;overflow:auto;flex-shrink:0;font-size:10px}#measurements{white-space:pre-wrap}

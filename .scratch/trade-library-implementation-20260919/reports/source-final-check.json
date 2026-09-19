@@ -1,0 +1,27 @@
+{
+  "executions": {
+    "count": 1857,
+    "sha256": "11a2d210344f22d6ec46aabe93812db5f14dcb51beb010058176f0d74e734104",
+    "unchanged": true
+  },
+  "instruments": {
+    "count": 236,
+    "sha256": "900f40efd09ad4ef6626a3ca53e872ffbb8b9914d0970e201569a17ed5ca53fb",
+    "unchanged": true
+  },
+  "reviews": {
+    "count": 130,
+    "sha256": "17424b867b8295d3cbd68d803bb5c4cfb414eee9ed0ab7eeba4d4ca6a3a52232",
+    "unchanged": true
+  },
+  "import_batches": {
+    "count": 208,
+    "sha256": "ee0f5029730c4db8e14da4b18f366d55cf558c144d7e796e7f12e27dc909107f",
+    "unchanged": true
+  },
+  "trade_revisions": {
+    "count": 6,
+    "sha256": "7ee71d7f63f11371390367383a092cdabc6f098ab3011db6db4cbcd94f47ed67",
+    "unchanged": true
+  }
+}

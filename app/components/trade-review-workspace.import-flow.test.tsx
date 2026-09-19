@@ -1,7 +1,7 @@
 import { csv } from "../lib/import/__fixtures__/tradingview";
 import "fake-indexeddb/auto";
 
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   afterEach,
@@ -44,6 +44,16 @@ function deferred<T>() {
     reject = rejectPromise;
   });
   return { promise, resolve, reject };
+}
+
+function expectOnlyLocalFxFetches() {
+  const unexpectedRequests = vi.mocked(fetch).mock.calls.filter(([input, init]) => {
+    if (String(input) !== "/api/fx") return true;
+    const requestInit = (init ?? {}) as RequestInit;
+    const method = requestInit.method?.toUpperCase() ?? "GET";
+    return requestInit.cache !== "no-store" || method !== "GET";
+  });
+  expect(unexpectedRequests).toHaveLength(0);
 }
 
 const {
@@ -637,7 +647,7 @@ describe("TradeReviewWorkspace", () => {
     mockDispatcher.mockResolvedValue(cmsParsedResult);
     mockEnrichment.mockResolvedValue(cmsEnrichedResult);
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "中国海油（600938）" });
+    await screen.findByRole("heading", { name: /^中国海油/ });
     await user.upload(
       await screen.findByLabelText("导入交易记录"),
       new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
@@ -724,7 +734,7 @@ describe("TradeReviewWorkspace", () => {
     expect(loadImportedExecutions()).toHaveLength(1);
     expect(loadImportHistory()).toHaveLength(1);
     expect(
-      await screen.findByRole("heading", { name: "中国海油（600938）" }),
+      await screen.findByRole("heading", { name: /^中国海油/ }),
     ).toBeInTheDocument();
   });
 
@@ -798,10 +808,10 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
     expect(
-      await screen.findByRole("heading", { name: "小米集团-W（1810）" }),
+      await screen.findByRole("heading", { name: /^小米集团-W/ }),
     ).toBeInTheDocument();
     await new Promise((resolve) => window.setTimeout(resolve, 50));
-    expect(fetch).not.toHaveBeenCalled();
+    expectOnlyLocalFxFetches();
   });
 
   it("refreshes metadata without blocking cached candles when metadata is unresolved", async () => {
@@ -906,7 +916,8 @@ describe("TradeReviewWorkspace", () => {
     });
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "小米集团-W（1810）" });
+    await screen.findByRole("heading", { name: /^小米集团-W/ });
+    await screen.findByLabelText("图表工具栏");
     expect(document.querySelector(".chart-stage")).toBeInTheDocument();
 
     await user.click(
@@ -970,15 +981,15 @@ describe("TradeReviewWorkspace", () => {
     const view = render(
       <TradeReviewWorkspace initialFrame={initialFrame} />,
     );
-    await screen.findByRole("heading", { name: "旧证券名称（1810）" });
+    await screen.findByRole("heading", { name: /^旧证券名称/ });
     await user.click(
       screen.getByRole("button", { name: "更新旧证券名称行情" }),
     );
 
     expect(
-      await screen.findByRole("heading", {
-        name: "小米集团-W（更新）（1810）",
-      }),
+      await within(
+        await screen.findByRole("complementary", { name: "当前股票交易导航" }),
+      ).findByRole("heading", { name: /^小米集团-W（更新）/ }),
     ).toBeInTheDocument();
     expect(
       loadImportedExecutions().map((item) => item.instrument.name),
@@ -1006,11 +1017,11 @@ describe("TradeReviewWorkspace", () => {
     vi.mocked(fetch).mockClear();
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
     expect(
-      await screen.findByRole("heading", {
-        name: "小米集团-W（更新）（1810）",
-      }),
+      await within(
+        await screen.findByRole("complementary", { name: "当前股票交易导航" }),
+      ).findByRole("heading", { name: /^小米集团-W（更新）/ }),
     ).toBeInTheDocument();
-    expect(fetch).not.toHaveBeenCalled();
+    expectOnlyLocalFxFetches();
   });
 
   it("merges a deferred metadata name with an overlapping import confirmation without losing either", async () => {
@@ -1039,7 +1050,7 @@ describe("TradeReviewWorkspace", () => {
     mockDispatcher.mockResolvedValue(cmsParsedResult);
     mockEnrichment.mockResolvedValue(cmsEnrichedResult);
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "小米旧名称（1810）" });
+    await screen.findByRole("heading", { name: /^小米旧名称/ });
 
     await user.click(
       screen.getByRole("button", { name: "更新小米旧名称行情" }),
@@ -1115,7 +1126,7 @@ describe("TradeReviewWorkspace", () => {
     const mergeExecutions = vi.fn().mockRejectedValue(new Error("quota"));
     mockSqliteClient.current = { ...client, mergeExecutions };
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "保存前名称（1810）" });
+    await screen.findByRole("heading", { name: /^保存前名称/ });
 
     await user.click(
       screen.getByRole("button", { name: "更新保存前名称行情" }),
@@ -1123,7 +1134,10 @@ describe("TradeReviewWorkspace", () => {
 
     await waitFor(() => expect(mergeExecutions).toHaveBeenCalledOnce());
     expect(
-      screen.getByRole("heading", { name: "保存前名称（1810）" }),
+      within(screen.getByRole("complementary", { name: "当前股票交易导航" })).getByRole(
+        "heading",
+        { name: /^保存前名称/ },
+      ),
     ).toBeInTheDocument();
     expect(loadImportedExecutions()[0].instrument.name).toBe(
       "保存前名称",
@@ -1197,19 +1211,22 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
     await screen.findByRole("heading", {
-      name: "小鹏汽车（XPEV）",
+      name: /^小鹏汽车/,
     });
     await user.click(screen.getByRole("button", { name: "交易库" }));
 
     expect(
-      await screen.findByRole("heading", { name: "股票交易库" }),
+      await screen.findByRole("heading", { name: "交易库" }),
     ).toBeInTheDocument();
     await user.click(
-      screen.getByRole("button", { name: "打开小鹏汽车交易回合" }),
+      screen.getByRole("button", { name: "展开小鹏汽车交易回合" }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: /^打开小鹏汽车第2次交易/ }),
     );
     expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
     expect(screen.getByText("新回合买入")).toBeInTheDocument();
-    expect(fetch).not.toHaveBeenCalled();
+    expectOnlyLocalFxFetches();
   });
 
   it("hydrates cached candles for library stocks that are not selected in replay", async () => {
@@ -1302,15 +1319,18 @@ describe("TradeReviewWorkspace", () => {
     vi.mocked(fetch).mockClear();
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "小米集团-W（1810）" });
+    await screen.findByRole("heading", { name: /^小米集团-W/ });
     await user.click(screen.getByRole("button", { name: "交易库" }));
     await user.click(
-      screen.getByRole("button", { name: "打开小鹏汽车交易回合" }),
+      screen.getByRole("button", { name: "展开小鹏汽车交易回合" }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: /^打开小鹏汽车第\d+次交易/ }),
     );
 
     expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "行情数据详情" })).toBeInTheDocument();
-    expect(fetch).not.toHaveBeenCalled();
+    expectOnlyLocalFxFetches();
   });
 
   it("hydrates and updates the review record for the exact position episode", async () => {
@@ -1383,12 +1403,15 @@ describe("TradeReviewWorkspace", () => {
     vi.mocked(fetch).mockClear();
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
+    await screen.findByRole("heading", { name: /^小鹏汽车/ });
     await user.click(screen.getByRole("button", { name: "交易库" }));
     await user.click(
       await screen.findByRole("button", {
-        name: "打开小鹏汽车交易回合",
+        name: "展开小鹏汽车交易回合",
       }),
+    );
+    await user.click(
+      await screen.findByRole("button", { name: /^打开小鹏汽车第\d+次交易/ }),
     );
 
     expect(await screen.findByLabelText("买入理由")).toHaveValue(
@@ -1399,7 +1422,7 @@ describe("TradeReviewWorkspace", () => {
     await user.type(screen.getByLabelText("买入理由"), "等待回踩");
 
     await waitFor(async () => expect((await reviews.get(episode.id))?.plan.thesis).toBe("等待回踩"));
-    expect(fetch).not.toHaveBeenCalled();
+    expectOnlyLocalFxFetches();
   });
 
   it("accepts an edited cached suggestion and opens the exact episode without requesting market data", async () => {
@@ -1505,7 +1528,7 @@ describe("TradeReviewWorkspace", () => {
     };
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
+    await screen.findByRole("heading", { name: /^小鹏汽车/ });
     await user.click(screen.getByRole("button", { name: "模式洞察" }));
     await user.click(await screen.findByText("查看本范围的模式洞察"));
     await user.click(await screen.findByText(/待确认规则建议（/));

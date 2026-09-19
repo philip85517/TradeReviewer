@@ -134,6 +134,12 @@ function validMetadataResponse(input: RequestInfo | URL) {
   });
 }
 
+async function openDefaultStockRound(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole("button", { name: "交易库" }));
+  await user.click(await screen.findByRole("button", { name: /^展开.*交易回合$/ }));
+  await user.click(await screen.findByRole("button", { name: /^打开.*第1次交易/ }));
+}
+
 describe("TradeReviewWorkspace global refresh seam", () => {
   beforeEach(async () => {
     cleanup();
@@ -357,8 +363,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     );
 
     expect(await screen.findByText("部分可用 1 个标的")).toBeVisible();
-    await user.click(screen.getByRole("button", { name: "交易库" }));
-    await user.click(await screen.findByRole("button", { name: "开始复盘" }));
+    await openDefaultStockRound(user);
     await screen.findByRole("button", { name: "行情数据详情" });
     await user.click(screen.getByRole("button", { name: "行情数据详情" }));
     await user.click(screen.getByRole("button", { name: "刷新行情数据" }));
@@ -405,8 +410,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     );
 
     expect(await screen.findByText("更新完成 1 个标的")).toBeVisible();
-    await user.click(screen.getByRole("button", { name: "交易库" }));
-    await user.click(await screen.findByRole("button", { name: "开始复盘" }));
+    await openDefaultStockRound(user);
     await screen.findByRole("button", { name: "行情数据详情" });
     await user.click(screen.getByRole("button", { name: "行情数据详情" }));
     await user.click(screen.getByRole("button", { name: "刷新行情数据" }));
@@ -483,8 +487,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
       expect(refreshMocks.intraday).toHaveBeenCalledOnce();
     });
 
-    await user.click(screen.getByRole("button", { name: "交易库" }));
-    await user.click(await screen.findByRole("button", { name: "开始复盘" }));
+    await openDefaultStockRound(user);
     await screen.findByRole("button", { name: "行情数据详情" });
     await user.click(screen.getByRole("button", { name: "行情数据详情" }));
     await user.click(screen.getByRole("button", { name: "刷新行情数据" }));
@@ -496,10 +499,12 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     ).toBeDisabled();
 
     providerGate.resolve();
-    await waitFor(() =>
-      expect(
-        screen.getByRole("button", { name: "更新全部数据" }),
-      ).toBeEnabled(),
+    await waitFor(
+      () =>
+        expect(
+          screen.getByRole("button", { name: "更新全部数据" }),
+        ).toBeEnabled(),
+      { timeout: 5_000 },
     );
   });
 

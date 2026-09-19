@@ -136,7 +136,7 @@ describe("SqliteStore", () => {
     const bootstrap = createStore().getBootstrap();
 
     expect(bootstrap).toMatchObject({
-      schemaVersion: 4,
+      schemaVersion: 5,
       executions: [], importHistory: [], instruments: [], reviews: [],
       tagSuggestions: [], marketDataJobs: [], settings: {},
     });

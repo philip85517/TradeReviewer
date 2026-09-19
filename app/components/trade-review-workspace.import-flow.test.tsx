@@ -30,6 +30,26 @@ import { createLegacySqliteClient } from "./test-support/legacy-sqlite-client";
 
 const mockSqliteClient = vi.hoisted(() => ({ current: undefined as unknown }));
 
+const mockRecallRepository = vi.hoisted(() => ({
+  documents: new Map<string, unknown>(),
+}));
+
+vi.mock("../lib/recall/repository", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../lib/recall/repository")>();
+  return {
+    ...actual,
+    createRecallRepository: () => ({
+      load: async (episodeId: string) => mockRecallRepository.documents.get(episodeId) ?? null,
+      fetch: async (episodeId: string) => mockRecallRepository.documents.get(episodeId) ?? null,
+      save: async (document: Record<string, unknown> & { episodeId: string; revision: number }) => {
+        const saved = { ...document, revision: document.revision + 1 };
+        mockRecallRepository.documents.set(document.episodeId, saved);
+        return saved;
+      },
+    }),
+  };
+});
+
 vi.mock("../lib/storage/sqlite-http-client", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../lib/storage/sqlite-http-client")>()),
   createSqliteHttpClient: () => mockSqliteClient.current,
@@ -187,6 +207,36 @@ const cmsEnrichedResult: EnrichedImportResult = {
   cacheHits: 0,
 };
 
+type TestUser = ReturnType<typeof userEvent.setup>;
+
+async function openImportManagement(user: TestUser) {
+  await waitFor(() => {
+    if (
+      screen.queryByRole("button", { name: "打开导入与数据管理" }) ||
+      screen.queryByLabelText("导入交易记录", { selector: "input" })
+    ) {
+      return;
+    }
+    throw new Error("import entry is not ready");
+  });
+  const trigger = screen.queryByRole("button", {
+    name: "打开导入与数据管理",
+  });
+  if (trigger) {
+    await user.click(trigger);
+    await screen.findByRole("dialog", { name: "导入与数据管理" });
+  }
+}
+
+async function uploadStatement(user: TestUser, file: File) {
+  await openImportManagement(user);
+  await user.click(screen.getByRole("button", { name: /^导入交易记录/ }));
+  await user.upload(
+    screen.getByLabelText("导入交易记录", { selector: "input" }),
+    file,
+  );
+}
+
 describe("TradeReviewWorkspace", () => {
   afterEach(() => {
     cleanup();
@@ -195,6 +245,7 @@ describe("TradeReviewWorkspace", () => {
 
   beforeEach(async () => {
     window.localStorage.clear();
+    mockRecallRepository.documents.clear();
     await new Promise<void>((resolve, reject) => {
       const request = indexedDB.deleteDatabase("trade-reviewer");
       request.onsuccess = () => resolve();
@@ -225,8 +276,8 @@ describe("TradeReviewWorkspace", () => {
     mockEnrichment.mockResolvedValue(cmsEnrichedResult);
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
-    await user.upload(
-      await screen.findByLabelText("导入交易记录"),
+    await uploadStatement(
+      user,
       new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], "招商证券.pdf", {
         type: "application/pdf",
       }),
@@ -268,8 +319,8 @@ describe("TradeReviewWorkspace", () => {
     });
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
-    await user.upload(
-      await screen.findByLabelText("导入交易记录"),
+    await uploadStatement(
+      user,
       new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], "招商证券.pdf", {
         type: "application/pdf",
       }),
@@ -340,8 +391,8 @@ describe("TradeReviewWorkspace", () => {
       .mockResolvedValueOnce(cmsEnrichedResult);
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
-    await user.upload(
-      await screen.findByLabelText("导入交易记录"),
+    await uploadStatement(
+      user,
       new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], "招商证券.pdf", {
         type: "application/pdf",
       }),
@@ -360,7 +411,7 @@ describe("TradeReviewWorkspace", () => {
       }),
     );
     expect(
-      (await screen.findAllByText("中国海油（600938）")).length,
+      (await screen.findAllByText(/中国海油/)).length,
     ).toBeGreaterThan(0);
     expect(screen.getByText("1 笔已跳过")).toBeInTheDocument();
   });
@@ -378,8 +429,8 @@ describe("TradeReviewWorkspace", () => {
       })
       .mockReturnValueOnce(pendingRetry.promise);
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await user.upload(
-      await screen.findByLabelText("导入交易记录"),
+    await uploadStatement(
+      user,
       new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
     );
     await user.click(
@@ -410,8 +461,8 @@ describe("TradeReviewWorkspace", () => {
       })
       .mockReturnValueOnce(pendingRetry.promise);
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await user.upload(
-      await screen.findByLabelText("导入交易记录"),
+    await uploadStatement(
+      user,
       new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
     );
     await user.click(
@@ -438,9 +489,9 @@ describe("TradeReviewWorkspace", () => {
     mockDispatcher.mockResolvedValue(cmsParsedResult);
     mockEnrichment.mockResolvedValue(cmsEnrichedResult);
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "中国海油（600938）" });
-    await user.upload(
-      await screen.findByLabelText("导入交易记录"),
+    await screen.findByRole("heading", { name: /中国海油/ });
+    await uploadStatement(
+      user,
       new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
     );
 
@@ -486,8 +537,8 @@ describe("TradeReviewWorkspace", () => {
       importable: incoming,
     });
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await user.upload(
-      await screen.findByLabelText("导入交易记录"),
+    await uploadStatement(
+      user,
       new File(["pdf"], "重叠区间.pdf", { type: "application/pdf" }),
     );
 
@@ -512,8 +563,8 @@ describe("TradeReviewWorkspace", () => {
       new Error("公开行情暂不可用"),
     );
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await user.upload(
-      await screen.findByLabelText("导入交易记录"),
+    await uploadStatement(
+      user,
       new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
     );
     await user.click(
@@ -525,7 +576,7 @@ describe("TradeReviewWorkspace", () => {
     expect(loadImportedExecutions()).toHaveLength(1);
     expect(loadImportHistory()).toHaveLength(1);
     expect(
-      await screen.findByRole("heading", { name: "中国海油（600938）" }),
+      await screen.findByRole("heading", { name: /中国海油/ }),
     ).toBeInTheDocument();
   });
 
@@ -599,7 +650,7 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
     expect(
-      await screen.findByRole("heading", { name: "小米集团-W（1810）" }),
+      await screen.findByRole("heading", { name: /小米集团-W/ }),
     ).toBeInTheDocument();
     await new Promise((resolve) => window.setTimeout(resolve, 50));
     expect(fetch).not.toHaveBeenCalled();
@@ -707,12 +758,11 @@ describe("TradeReviewWorkspace", () => {
     });
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "小米集团-W（1810）" });
+    await screen.findByRole("heading", { name: /小米集团-W/ });
     expect(document.querySelector(".chart-stage")).toBeInTheDocument();
 
-    await user.click(
-      screen.getByRole("button", { name: "更新小米集团-W行情" }),
-    );
+    await user.click(screen.getByRole("button", { name: "行情数据详情" }));
+    await user.click(screen.getByRole("button", { name: "刷新行情数据" }));
 
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(
@@ -771,14 +821,13 @@ describe("TradeReviewWorkspace", () => {
     const view = render(
       <TradeReviewWorkspace initialFrame={initialFrame} />,
     );
-    await screen.findByRole("heading", { name: "旧证券名称（1810）" });
-    await user.click(
-      screen.getByRole("button", { name: "更新旧证券名称行情" }),
-    );
+    await screen.findByRole("heading", { name: /旧证券名称/ });
+    await user.click(screen.getByRole("button", { name: "行情数据详情" }));
+    await user.click(screen.getByRole("button", { name: "刷新行情数据" }));
 
     expect(
       await screen.findByRole("heading", {
-        name: "小米集团-W（更新）（1810）",
+        name: /小米集团-W（更新）/,
       }),
     ).toBeInTheDocument();
     expect(
@@ -807,7 +856,7 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
     expect(
       await screen.findByRole("heading", {
-        name: "小米集团-W（更新）（1810）",
+        name: /小米集团-W（更新）/,
       }),
     ).toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
@@ -839,13 +888,12 @@ describe("TradeReviewWorkspace", () => {
     mockDispatcher.mockResolvedValue(cmsParsedResult);
     mockEnrichment.mockResolvedValue(cmsEnrichedResult);
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "小米旧名称（1810）" });
+    await screen.findByRole("heading", { name: /小米旧名称/ });
 
-    await user.click(
-      screen.getByRole("button", { name: "更新小米旧名称行情" }),
-    );
-    await user.upload(
-      screen.getByLabelText("导入交易记录"),
+    await user.click(screen.getByRole("button", { name: "行情数据详情" }));
+    await user.click(screen.getByRole("button", { name: "刷新行情数据" }));
+    await uploadStatement(
+      user,
       new File(["pdf"], "招商证券.pdf", { type: "application/pdf" }),
     );
     await user.click(
@@ -915,15 +963,14 @@ describe("TradeReviewWorkspace", () => {
     const mergeExecutions = vi.fn().mockRejectedValue(new Error("quota"));
     mockSqliteClient.current = { ...client, mergeExecutions };
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "保存前名称（1810）" });
+    await screen.findByRole("heading", { name: /保存前名称/ });
 
-    await user.click(
-      screen.getByRole("button", { name: "更新保存前名称行情" }),
-    );
+    await user.click(screen.getByRole("button", { name: "行情数据详情" }));
+    await user.click(screen.getByRole("button", { name: "刷新行情数据" }));
 
     await waitFor(() => expect(mergeExecutions).toHaveBeenCalledOnce());
     expect(
-      screen.getByRole("heading", { name: "保存前名称（1810）" }),
+      screen.getByRole("heading", { name: /保存前名称/ }),
     ).toBeInTheDocument();
     expect(loadImportedExecutions()[0].instrument.name).toBe(
       "保存前名称",
@@ -997,7 +1044,7 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
     await screen.findByRole("heading", {
-      name: "小鹏汽车（XPEV）",
+      name: /小鹏汽车/,
     });
     await user.click(screen.getByRole("button", { name: "交易库" }));
 
@@ -1016,7 +1063,7 @@ describe("TradeReviewWorkspace", () => {
       screen.getByRole("button", { name: "进入逐笔复盘" }),
     );
     expect(
-      screen.getByRole("heading", { name: "小鹏汽车（XPEV）" }),
+      screen.getByRole("heading", { name: /小鹏汽车/ }),
     ).toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
   });
@@ -1111,7 +1158,7 @@ describe("TradeReviewWorkspace", () => {
     vi.mocked(fetch).mockClear();
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "小米集团-W（1810）" });
+    await screen.findByRole("heading", { name: /小米集团-W/ });
     await user.click(screen.getByRole("button", { name: "交易库" }));
     await user.click(
       screen.getByRole("button", { name: "打开小鹏汽车交易回合" }),
@@ -1194,7 +1241,7 @@ describe("TradeReviewWorkspace", () => {
     vi.mocked(fetch).mockClear();
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
+    await screen.findByRole("heading", { name: /小鹏汽车/ });
     await user.click(screen.getByRole("button", { name: "交易库" }));
     await user.click(
       await screen.findByRole("button", {
@@ -1320,7 +1367,7 @@ describe("TradeReviewWorkspace", () => {
     };
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
-    await screen.findByRole("heading", { name: "小鹏汽车（XPEV）" });
+    await screen.findByRole("heading", { name: /小鹏汽车/ });
     await user.click(screen.getByRole("button", { name: "模式洞察" }));
 
     expect(

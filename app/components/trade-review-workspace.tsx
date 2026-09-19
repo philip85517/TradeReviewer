@@ -145,6 +145,7 @@ import type {
 import type { MarketDataDetails } from "./chart/market-data-popover";
 import { ImportConfirmDialog } from "./import/import-confirm-dialog";
 import { ImportHistoryDialog } from "./import/import-history-dialog";
+import { ImportManagementDrawer } from "./import/import-management-drawer";
 import { ScreenshotReviewDialog } from "./import/screenshot-review-dialog";
 import {
   useScreenshotImport,
@@ -166,6 +167,7 @@ import {
   type EpisodeOption,
   type ReviewChartViewModel,
 } from "./review/review-chart-workspace";
+import { RecallWorkspace } from "./recall/recall-workspace";
 
 const REVIEW_ID = "demo-xpev-2025";
 const DEFAULT_THESIS =
@@ -852,6 +854,7 @@ function isAbortError(error: unknown) {
     "stats",
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [importManagementOpen, setImportManagementOpen] = useState(false);
   const [settings, setSettings] = useState<ChartSettings>(
     DEFAULT_CHART_SETTINGS,
   );
@@ -992,6 +995,23 @@ function isAbortError(error: unknown) {
       selectedMarketState.intradayInterval,
       timeframe,
     ],
+  );
+  const recallCandlesByTimeframe = useMemo<Partial<Record<Timeframe, Candle[]>>>(
+    () => {
+      if (!selectedImportedInstrument) return {};
+      return Object.fromEntries(
+        (Object.keys(ALL_TIMEFRAMES) as Timeframe[]).map((nextTimeframe) => [
+          nextTimeframe,
+          aggregateVisibleCandles(
+            sourceCandlesForTimeframe(selectedMarketState, nextTimeframe),
+            nextTimeframe,
+            selectedImportedInstrument.instrument.market,
+            selectedMarketState.intradayInterval,
+          ),
+        ]),
+      );
+    },
+    [selectedImportedInstrument, selectedMarketState],
   );
   const firstImportedKnownCursor = useMemo(() => {
     const first = [...importedTimelineCandles].sort(
@@ -1389,6 +1409,7 @@ function isAbortError(error: unknown) {
   function selectInstrument(instrumentId: string) {
     if (instrumentId === "demo") {
       if (!showDemo) return;
+      setImportManagementOpen(false);
       setPlaying(false);
       setSelectedInstrumentId("demo");
       setSelectedEpisodeId(REVIEW_ID);
@@ -2715,6 +2736,59 @@ function isAbortError(error: unknown) {
     });
   }
 
+  const episodeSidebar = (
+    <EpisodeSidebar
+      importedInstruments={importedInstruments}
+      showDemo={showDemo}
+      importing={importing}
+      importPhase={importPhase}
+      importError={importError}
+      onImport={parseImport}
+      onTradingViewImport={(file) => {
+        void parseImport(file);
+      }}
+      onScreenshotImport={(files) => {
+        importRequestSequence.current += 1;
+        setImportError(null);
+        setPendingImport(null);
+        setPendingParsedImport(null);
+        setPendingEnrichedImport(null);
+        setPendingImportOriginalExecutions(null);
+        setPendingImportMergeBase(null);
+        setPendingScreenshotDecisions(null);
+        void screenshotImport.start(files).catch((error) => {
+          setImportError(
+            error instanceof Error ? error.message : "截图识别失败",
+          );
+        });
+      }}
+      onOpenHistory={() => setShowImportHistory(true)}
+      revealedDemoExecutions={demoSnapshot.executions}
+      selectedInstrumentId={selectedInstrumentId}
+      onSelectInstrument={selectInstrument}
+      marketDataStatuses={marketDataStatuses}
+      marketDataLabels={marketDataLabels}
+      onUpdateMarketData={(instrumentId) =>
+        void startMarketDataUpdate([instrumentId], {
+          refreshMetadata: true,
+        })
+      }
+      onUpdateAllMarketData={() =>
+        void startMarketDataUpdate(
+          importedInstruments.map((item) => item.instrument.id),
+          { refreshMetadata: true, batch: true },
+        )
+      }
+      onRetryFailedMarketData={() =>
+        void startMarketDataUpdate(failedMarketDataIds, {
+          refreshMetadata: true,
+          batch: true,
+        })
+      }
+      marketDataRefresh={marketDataRefresh}
+    />
+  );
+
   if (storageState !== "ready") {
     const failed = storageState === "error";
     return (
@@ -2769,6 +2843,18 @@ function isAbortError(error: unknown) {
           </button>
         </nav>
         <div className="header-actions">
+          {selectedImportedInstrument && activeView === "review" && (
+            <button
+              type="button"
+              className="header-data-management"
+              aria-label="打开导入与数据管理"
+              aria-haspopup="dialog"
+              aria-controls="import-management-dialog"
+              onClick={() => setImportManagementOpen(true)}
+            >
+              数据管理
+            </button>
+          )}
           <span className="demo-chip">
             {showDemo && <Sparkles size={13} />}
             {selectedImportedInstrument
@@ -2836,56 +2922,7 @@ function isAbortError(error: unknown) {
           />
         ) : (
           <>
-            <EpisodeSidebar
-              importedInstruments={importedInstruments}
-              showDemo={showDemo}
-              importing={importing}
-              importPhase={importPhase}
-              importError={importError}
-              onImport={parseImport}
-              onTradingViewImport={(file) => {
-                void parseImport(file);
-              }}
-              onScreenshotImport={(files) => {
-                importRequestSequence.current += 1;
-                setImportError(null);
-                setPendingImport(null);
-                setPendingParsedImport(null);
-                setPendingEnrichedImport(null);
-                setPendingImportOriginalExecutions(null);
-                setPendingImportMergeBase(null);
-                setPendingScreenshotDecisions(null);
-                void screenshotImport.start(files).catch((error) => {
-                  setImportError(
-                    error instanceof Error ? error.message : "截图识别失败",
-                  );
-                });
-              }}
-              onOpenHistory={() => setShowImportHistory(true)}
-              revealedDemoExecutions={demoSnapshot.executions}
-              selectedInstrumentId={selectedInstrumentId}
-              onSelectInstrument={selectInstrument}
-              marketDataStatuses={marketDataStatuses}
-              marketDataLabels={marketDataLabels}
-              onUpdateMarketData={(instrumentId) =>
-                void startMarketDataUpdate([instrumentId], {
-                  refreshMetadata: true,
-                })
-              }
-              onUpdateAllMarketData={() =>
-                void startMarketDataUpdate(
-                  importedInstruments.map((item) => item.instrument.id),
-                  { refreshMetadata: true, batch: true },
-                )
-              }
-              onRetryFailedMarketData={() =>
-                void startMarketDataUpdate(failedMarketDataIds, {
-                  refreshMetadata: true,
-                  batch: true,
-                })
-              }
-              marketDataRefresh={marketDataRefresh}
-            />
+            {!selectedImportedInstrument && episodeSidebar}
             {!showDemo && !selectedImportedInstrument ? (
               <section
                 className="review-workspace review-workspace-empty"
@@ -2905,6 +2942,44 @@ function isAbortError(error: unknown) {
               >
                 正在读取本地行情与回放状态…
               </section>
+            ) : selectedImportedInstrument ? (
+            <div className="recall-review-host">
+              <RecallWorkspace
+                episode={selectedEpisode!}
+                episodes={episodes}
+                instrument={selectedImportedInstrument.instrument}
+                instruments={searchableInstruments}
+                timeframeAvailability={importedAvailability}
+                importedTimelineCandles={importedTimelineCandles}
+                candlesByTimeframe={recallCandlesByTimeframe}
+                settings={settings}
+                initialDrawings={drawingHistory.present}
+                dataDetails={marketDataDetails(selectedMarketState, importedAvailability)}
+                onEpisodeChange={selectEpisode}
+                onInstrumentChange={selectInstrument}
+                onTimeframeChange={(nextTimeframe) => setTimeframe(nextTimeframe)}
+                onSettingsChange={(next) => {
+                  setSettings(next);
+                  void storageClient.putSettings(next).catch(() => {
+                    setImportError("图表设置未能保存到 SQLite，请稍后重试。");
+                  });
+                }}
+                onRefreshMarketData={() => {
+                  void startMarketDataUpdate([
+                    selectedImportedInstrument.instrument.id,
+                  ], {
+                    refreshMetadata: true,
+                  });
+                }}
+              />
+              {importManagementOpen && (
+                <ImportManagementDrawer
+                  onClose={() => setImportManagementOpen(false)}
+                >
+                  {episodeSidebar}
+                </ImportManagementDrawer>
+              )}
+            </div>
             ) : (
             <ReviewChartWorkspace
               model={viewModel}
@@ -2937,17 +3012,7 @@ function isAbortError(error: unknown) {
               onEpisodeChange={selectEpisode}
               onTimeframeChange={setReviewTimeframe}
               onSelectInstrument={selectInstrument}
-              onRefreshMarketData={() => {
-                if (selectedImportedInstrument) {
-                  void startMarketDataUpdate([
-                    selectedImportedInstrument.instrument.id,
-                  ], {
-                    refreshMetadata: true,
-                  });
-                } else {
-                  void requestFrame("restore", frame.cursor);
-                }
-              }}
+              onRefreshMarketData={() => void requestFrame("restore", frame.cursor)}
               onToggleLayers={() => setLayersOpen((open) => !open)}
               onSettingsChange={(next) => {
                 setSettings(next);

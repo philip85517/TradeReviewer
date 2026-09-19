@@ -1,5 +1,9 @@
 import { marketTradingDate } from "../market/trading-date";
 import { instrumentPresentation } from "../instruments/instrument-presentation";
+import {
+  dashboardMarketLabel,
+  marketFilterMatchesRow,
+} from "./dashboard";
 import type { TradeLibraryEntry, TradeLibraryEpisode } from "../trades/library";
 import Decimal from "decimal.js";
 
@@ -44,6 +48,7 @@ export type ReviewQueueItem = { entry: TradeLibraryEntry; item: TradeLibraryEpis
 export type ReviewQueueBrokerTag = { id: string; label: string };
 
 export function reviewQueueMarketLabel(market: string): string {
+  if (market === "a-share" || market === "hk-connect") return dashboardMarketLabel(market);
   if (market === "HK") return "港股";
   if (market === "US") return "美股";
   return market.trim() || "未知市场";
@@ -213,7 +218,7 @@ export function buildReviewQueue(entries: TradeLibraryEntry[], filter: ReviewQue
         reviewQueueBrokerTags({ entry, item }).map(({ id }) => id),
       );
       return matches(filter.status, reviewState(item)) &&
-        accountMatches && brokerMatches && matches(filter.market, entry.instrument.market) &&
+        accountMatches && brokerMatches && marketFilterMatchesRow({ entry, item }, filter.market) &&
         matches(filter.nature, reviewQueueTradeNature({ entry, item })) &&
         matches(filter.simulationRunId, reviewQueueSimulationRunId({ entry, item })) &&
         (!filter.year || filter.year === "all" || episode.executions.some(fill => marketTradingDate(fill.executedAt, entry.instrument.market).startsWith(filter.year!))) &&

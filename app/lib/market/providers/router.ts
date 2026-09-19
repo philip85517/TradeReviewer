@@ -48,6 +48,8 @@ type ProviderRouterOptions = {
   environment?: Readonly<Record<string, string | undefined>>;
   tigerConfig?: Pick<TigerOpenApiConfig, "configPath">;
   tigerProvider?: MarketDataProvider;
+  /** Native historical source, supplied by the server composition root. */
+  baostockProvider?: MarketDataProvider;
 };
 
 function shouldFallBackOnEmptyTigerResult(
@@ -166,7 +168,12 @@ export function createProviderRouter(
       fetchWithProviderFallback(
         request.interval === "1h"
           ? request.market === "CN-SH" || request.market === "CN-SZ"
-            ? [new TencentProvider(), new EastmoneyProvider(), new YahooProvider()]
+            ? [
+                new TencentProvider(),
+                ...(options.baostockProvider ? [options.baostockProvider] : []),
+                new EastmoneyProvider(),
+                new YahooProvider(),
+              ]
             : request.market === "US"
               ? [
                 ...(tigerProvider ? [tigerProvider] : []),

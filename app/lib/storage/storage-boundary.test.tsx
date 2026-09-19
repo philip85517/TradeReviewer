@@ -191,7 +191,7 @@ describe("SQLite production storage boundary", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("暂无导入股票，请先导入交易记录。")).toBeInTheDocument();
+      expect(screen.getByText("导入交易后查看统计总览")).toBeInTheDocument();
     });
     expect(client.getBootstrap).toHaveBeenCalledOnce();
     expect(readLegacyStorage).not.toHaveBeenCalled();

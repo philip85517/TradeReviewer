@@ -21,7 +21,9 @@ export function displayTimeForCandle(
   if (!candles.length) return undefined;
   const ordered = [...candles].sort((left, right) => left.time.localeCompare(right.time));
   if (input.policy !== "session-open") {
-    return ordered.filter(candle => candle.time <= input.at).at(-1)?.time ?? ordered[0].time;
+    // A source instant before the loaded window must remain unmatched. Using
+    // the first candle would silently move a fill to an unrelated day.
+    return ordered.filter(candle => candle.time <= input.at).at(-1)?.time;
   }
 
   const anchor = input.calendarDate ?? input.at.slice(0, 10);
@@ -30,7 +32,14 @@ export function displayTimeForCandle(
     : ordered.find(candle => datePart(candle.time) === anchor);
   if (first) return first.time;
 
-  // Sparse market history may start after the source date. Keep the event
-  // visible at the nearest future candle rather than dropping the marker.
-  return ordered.find(candle => candle.time.slice(0, anchor.length) >= anchor)?.time ?? ordered[0].time;
+  // A legacy month-only statement event can arrive with a representative day
+  // in `at` but without `calendarDate`. Preserve the month anchor for those
+  // events; fill location uses the strict execution-marker mapper above.
+  if (!input.calendarDate && anchor.length === 10) {
+    return ordered.find(candle => candle.time.slice(0, 7) === anchor.slice(0, 7))?.time;
+  }
+
+  // Sparse history has no evidence for this source date. Leave the marker
+  // unmatched so the caller can request a daily fallback or show the gap.
+  return undefined;
 }

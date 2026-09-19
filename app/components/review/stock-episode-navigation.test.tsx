@@ -48,9 +48,36 @@ it("reveals date-only fills only at day end and labels their missing time", asyn
   const { rerender } = render(<StockEpisodeNavigation {...props} />);
 
   expect(screen.getByText("当前尚未回放到首笔成交")).toBeInTheDocument();
-  expect(screen.getByText("2026/7/24 · 未提供成交时刻")).toBeInTheDocument();
+  expect(screen.getByText("2026/7/24 · 仅日期，日线定位")).toBeInTheDocument();
 
   rerender(<StockEpisodeNavigation {...props} cursor="2026-07-24T23:59:59.999Z" />);
   await userEvent.click(screen.getByRole("button", { name: /定位买入/ }));
   expect(onLocate).toHaveBeenCalledWith("2026-07-24T23:59:59.999Z");
+});
+
+it("emits a stable locate request without changing the legacy cursor callback", async () => {
+  const user = userEvent.setup();
+  const onLocate = vi.fn();
+  const onLocateRequest = vi.fn();
+  const props = {
+    instrument,
+    episodes: [episode],
+    selectedEpisodeId: episode.id,
+    cursor: "2026-07-30T00:00:00Z",
+    onSelectEpisode: vi.fn(),
+    onLocate,
+    onLocateRequest,
+    onNext: vi.fn(),
+    onSwitchStock: vi.fn(),
+    onLibrary: vi.fn(),
+  };
+  render(<StockEpisodeNavigation {...props} />);
+  await user.click(screen.getByRole("button", { name: /定位买入/ }));
+  expect(onLocate).not.toHaveBeenCalled();
+  expect(onLocateRequest).toHaveBeenCalledWith(expect.objectContaining({
+    requestId: expect.stringContaining("episode-1:buy:"),
+    instrumentId: instrument.id,
+    episodeId: episode.id,
+    executionId: "buy",
+  }));
 });

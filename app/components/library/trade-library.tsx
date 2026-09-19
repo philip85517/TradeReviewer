@@ -42,6 +42,10 @@ import type { EpisodeNotesProps } from "../review/episode-notes-panel";
 import type { TradeEpisode } from "../../lib/trades/types";
 import { executionFeeCurrency } from "../../lib/trades/types";
 import { buildReviewQueue, reviewState, type ReviewQueueFilter, type ReviewQueueItem } from "../../lib/reviews/review-queue";
+import {
+  dashboardMarketFilterOptions,
+  marketFilterMatchesEntry,
+} from "../../lib/reviews/dashboard";
 import { ReviewQueue } from "./review-queue";
 
 export type TradeLibraryBrowseState = {
@@ -189,6 +193,7 @@ export function TradeLibrary({
   const filterOptions = useMemo(
     () => ({
       markets: [...new Set(entries.map((entry) => entry.instrument.market))],
+      marketOptions: dashboardMarketFilterOptions(entries),
       accounts: [
         ...new Map(
           entries
@@ -248,7 +253,7 @@ export function TradeLibrary({
           entry.instrument.symbol
             .toLocaleLowerCase()
             .includes(normalizedQuery)) &&
-        (market === "all" || entry.instrument.market === market) &&
+        marketFilterMatchesEntry(entry, market) &&
         (account === "all" ||
           entry.executions.some(
             (execution) => execution.accountId === account,
@@ -287,7 +292,6 @@ export function TradeLibrary({
   const detailFilter: ReviewQueueFilter = mode === "queue" ? queueFilter : {account,year,market,nature:tradeNature,simulationRunId};
   const detailEntries = mode === "stocks" && selectedEntry ? [selectedEntry] : entries;
   const queueRows = buildReviewQueue(detailEntries, {...detailFilter,status:"all"});
-  const queueEntries = queueRows.filter(row => reviewState(row.item) === "pending");
   const detailIds = new Set(queueRows.map(row => row.item.episode.id));
   const openQueued = ({entry,item}: ReviewQueueItem) => {
     if (processedIds.current.has(item.episode.id)) reopenedIds.current.add(item.episode.id);
@@ -667,9 +671,9 @@ export function TradeLibrary({
             onChange={(event) => setMarket(event.target.value)}
           >
             <option value="all">全部市场</option>
-            {filterOptions.markets.map((value) => (
+            {filterOptions.marketOptions.filter(({ value }) => value !== "all").map(({ value, label }) => (
               <option value={value} key={value}>
-                {value}
+                {label}
               </option>
             ))}
           </select>

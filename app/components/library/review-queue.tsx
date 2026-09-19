@@ -18,6 +18,11 @@ import {
   type ReviewQueueItem,
 } from "../../lib/reviews/review-queue";
 import { buildReviewQueueSummary } from "../../lib/reviews/review-queue-summary";
+import {
+  dashboardMarketFilterOptions,
+  dashboardRowMarketSourceLabel,
+  exclusionReasonLabel,
+} from "../../lib/reviews/dashboard";
 import type { TradeLibraryEntry } from "../../lib/trades/library";
 
 type Props = {
@@ -36,6 +41,15 @@ function money(value: string | null, currency: string) {
     currency,
     maximumFractionDigits: 2,
     signDisplay: "always",
+  }).format(Number(value));
+}
+
+function amount(value: string | null, currency: string) {
+  if (value === null) return "不可用";
+  return new Intl.NumberFormat("zh-CN", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 2,
   }).format(Number(value));
 }
 
@@ -109,10 +123,15 @@ function QueueSummary({ rows, year }: { rows: ReviewQueueItem[]; year?: string }
         <dl>
           <div><dt>净盈亏</dt><dd>{selectedGroup.netPnl === null ? "不可用" : money(selectedGroup.netPnl, selectedGroup.currency)}</dd></div>
           <div><dt>胜率</dt><dd>{selectedGroup.winRate ? `${selectedGroup.winRate.denominator ? `${Math.round(selectedGroup.winRate.wins / selectedGroup.winRate.denominator * 100)}%` : "不可用"} · ${selectedGroup.winRate.wins} / ${selectedGroup.winRate.denominator}` : "不可用"}</dd></div>
+          <div><dt>平均盈利</dt><dd>{selectedGroup.averageWin === null ? "不可用" : money(selectedGroup.averageWin, selectedGroup.currency)}</dd></div>
+          <div><dt>平均亏损额</dt><dd>{selectedGroup.averageLoss === null ? "不可用" : amount(selectedGroup.averageLoss, selectedGroup.currency)}</dd></div>
+          <div><dt>盈亏比</dt><dd title={selectedGroup.payoffReason ?? undefined}>{selectedGroup.payoff === null ? `不可用${selectedGroup.payoffReason ? `（${selectedGroup.payoffReason}）` : ""}` : `${Number(selectedGroup.payoff).toFixed(2)}`}</dd></div>
+          <div><dt>利润因子</dt><dd title={selectedGroup.profitFactorReason ?? undefined}>{selectedGroup.profitFactor === null ? `不可用${selectedGroup.profitFactorReason ? `（${selectedGroup.profitFactorReason}）` : ""}` : `${Number(selectedGroup.profitFactor).toFixed(2)}`}</dd></div>
           <div><dt>保本</dt><dd>{selectedGroup.breakEven}</dd></div>
           <div><dt>排除</dt><dd>{selectedGroup.excludedCount}</dd></div>
         </dl>
         <small>按入选完整回合统计；净盈亏已扣已知费用{year && year !== "all" ? "；年份筛选仅筛选回合，不代表年度现金流" : ""}</small>
+        {Object.keys(selectedGroup.exclusionReasons).length > 0 && <small>排除原因：{Object.entries(selectedGroup.exclusionReasons).map(([reason, count]) => `${exclusionReasonLabel(reason)} ${count}`).join("；")}</small>}
         {selectedGroup.winRate && selectedGroup.trustedClosedCount > 0 && selectedGroup.trustedClosedCount < 5 && <small>样本有限</small>}
       </div>}
       {!selectedGroup && <p className="review-queue-summary-empty">当前范围暂无可汇总回合。</p>}
@@ -129,7 +148,7 @@ export function ReviewQueue({ entries, filter, onFilter, onOpen, onBrowseStocks,
   const brokerOptions = reviewQueueBrokerOptions(entries);
   const selectedBrokers = filter.brokers ?? [];
   const years = [...new Set(entries.flatMap(entry => entry.executions.map(fill => formatMarketTradingDate(fill.executedAt, entry.instrument.market).slice(0, 4))))].sort().reverse();
-  const markets = [...new Set(entries.map(entry => entry.instrument.market))].sort((left, right) => left.localeCompare(right));
+  const markets = dashboardMarketFilterOptions(entries);
   const simulationRuns = [...new Set(entries.map(entry => entry.simulationRunId).filter((value): value is string => Boolean(value)))].sort();
   const advancedExpanded = filter.advancedExpanded === true;
   const advancedCount = advancedFilterCount(filter);
@@ -154,9 +173,8 @@ export function ReviewQueue({ entries, filter, onFilter, onOpen, onBrowseStocks,
       </nav>
 
       <nav className="review-market-tabs" aria-label="按市场筛选">
-        {["all", ...markets].map(market => {
-          const label = market === "all" ? "全部" : reviewQueueMarketLabel(market);
-          return <button key={market} type="button" aria-pressed={(filter.market ?? "all") === market} onClick={() => onFilter({ ...filter, market })}>{label}</button>;
+        {markets.map(({ value, label }) => {
+          return <button key={value} type="button" aria-pressed={(filter.market ?? "all") === value} onClick={() => onFilter({ ...filter, market: value })}>{label}</button>;
         })}
       </nav>
 
@@ -174,7 +192,7 @@ export function ReviewQueue({ entries, filter, onFilter, onOpen, onBrowseStocks,
           <button type="button" className="review-queue-advanced-toggle" aria-expanded={advancedExpanded} aria-controls="review-queue-advanced-filters" onClick={() => onFilter({ ...filter, advancedExpanded: !advancedExpanded })}>更多筛选{advancedCount > 0 ? `（${advancedCount}）` : ""}</button>
         </div>
         <div className="review-queue-active-filters" aria-label="当前启用筛选">
-          {filter.market && filter.market !== "all" && <span className="review-queue-filter-tag">市场：{reviewQueueMarketLabel(filter.market)}<button type="button" aria-label={`移除市场筛选 ${reviewQueueMarketLabel(filter.market)}`} onClick={() => onFilter({ ...filter, market: "all" })}>×</button></span>}
+          {filter.market && filter.market !== "all" && <span className="review-queue-filter-tag">市场：{markets.find(option => option.value === filter.market)?.label ?? reviewQueueMarketLabel(filter.market)}<button type="button" aria-label={`移除市场筛选 ${markets.find(option => option.value === filter.market)?.label ?? reviewQueueMarketLabel(filter.market)}`} onClick={() => onFilter({ ...filter, market: "all" })}>×</button></span>}
           {selectedBrokers.map(id => <span className="review-queue-filter-tag" key={id}>券商：{brokerOptions.find(option => option.id === id)?.label ?? id}<button type="button" aria-label={`移除券商筛选 ${brokerOptions.find(option => option.id === id)?.label ?? id}`} onClick={() => onFilter({ ...filter, brokers: selectedBrokers.filter(value => value !== id) })}>×</button></span>)}
           {selectedAccounts.map(id => <span className="review-queue-filter-tag" key={id}>账户：{accountDisplayLabels.get(id) ?? id}<button type="button" aria-label={`移除账户筛选 ${accountDisplayLabels.get(id) ?? id}`} onClick={() => onFilter({ ...filter, accounts: selectedAccounts.filter(value => value !== id), account: undefined })}>×</button></span>)}
           {filter.query?.trim() && <span className="review-queue-filter-tag">搜索：{filter.query.trim()}</span>}
@@ -210,14 +228,15 @@ export function ReviewQueue({ entries, filter, onFilter, onOpen, onBrowseStocks,
               ? "positive"
               : Number(item.metrics.netPnl) < 0 ? "negative" : "neutral";
           const coverageWarning = coverageWarningDetails(item.episode.warnings);
-          const accessibleName = `复盘${presentation.primaryName} ${formatMarketTradingDate(item.episode.startedAt, entry.instrument.market)} ${accountDisplayLabel}（${reviewQueueMarketLabel(entry.instrument.market)}，原名：${presentation.originalName}，${presentation.secondaryName}）`;
+          const sourceLabel = dashboardRowMarketSourceLabel({ entry, item });
+          const accessibleName = `复盘${presentation.primaryName} ${formatMarketTradingDate(item.episode.startedAt, entry.instrument.market)} ${accountDisplayLabel}（${reviewQueueMarketLabel(entry.instrument.market)}${sourceLabel ? `，${sourceLabel}` : ""}，原名：${presentation.originalName}，${presentation.secondaryName}）`;
           const previousCurrency = rows[index - 1]?.entry.instrument.currency;
           return <Fragment key={item.episode.id}>
             {showCurrencyGroups && previousCurrency !== entry.instrument.currency && <h3 className="review-queue-currency-heading">{entry.instrument.currency} · 金额排序分组</h3>}
             <div className="review-queue-row-shell">
             <div role="button" tabIndex={0} className="review-queue-row" onClick={() => onOpen(row, queueIds)} onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onOpen(row, queueIds); } }} aria-label={accessibleName}>
               <span className="review-queue-identity"><strong title={presentation.originalName}>{presentation.primaryName}</strong><small>{presentation.secondaryName}{presentation.hasChineseName ? "" : " · 中文名未补全"}</small></span>
-              <span className="review-queue-window"><strong>{formatMarketTradingDate(item.episode.startedAt, entry.instrument.market)}—{item.episode.endedAt ? formatMarketTradingDate(item.episode.endedAt, entry.instrument.market) : "持仓中"}</strong><small>{reviewQueueMarketLabel(entry.instrument.market)} · {item.metrics.buyCount + item.metrics.sellCount} 笔成交{brokerTags.length > 0 && <span className="review-queue-broker-tags" aria-label="来源券商">{brokerTags.map(tag => <span key={tag.id}>{tag.label}</span>)}</span>}</small></span>
+              <span className="review-queue-window"><strong>{formatMarketTradingDate(item.episode.startedAt, entry.instrument.market)}—{item.episode.endedAt ? formatMarketTradingDate(item.episode.endedAt, entry.instrument.market) : "持仓中"}</strong><small>{reviewQueueMarketLabel(entry.instrument.market)}{sourceLabel && <> · {sourceLabel}</>} · {item.metrics.buyCount + item.metrics.sellCount} 笔成交{brokerTags.length > 0 && <span className="review-queue-broker-tags" aria-label="来源券商">{brokerTags.map(tag => <span key={tag.id}>{tag.label}</span>)}</span>}</small></span>
               <span className={`review-queue-result ${resultClass}`}><strong>{pnl}</strong><small>{item.episode.status === "open" ? "最终盈亏未定 · 持仓中" : `${percent(trusted ? item.metrics.returnPercent : null)} · ${holding(item.metrics.holdingMilliseconds, false)}`}{coverageWarning && <> {" · "}<span title={coverageWarning.title} aria-label={coverageWarning.ariaLabel}>账单缺月，持仓边界一致</span></>}</small></span>
               <span className="review-queue-status"><strong>{reviewLabel(item)}</strong><small>{state === "completed" ? "结论已保存" : state === "deferred" ? item.review?.review.deferredReason : "可开始复盘"}</small></span>
             </div>

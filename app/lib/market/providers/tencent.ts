@@ -26,16 +26,58 @@ function marketTimeZone(market: DailyCandleRequest["market"]) {
   return "Asia/Shanghai";
 }
 
-type TencentEnvelope = {
-  data?: Record<
-    string,
-    {
-      day?: unknown;
-      m15?: unknown;
-      m60?: unknown;
-    }
-  >;
+type TencentSymbolData = {
+  day?: unknown;
+  m15?: unknown;
+  m60?: unknown;
 };
+
+type TencentEnvelope = {
+  code?: unknown;
+  msg?: unknown;
+  data?: unknown;
+};
+
+function tencentSymbolData(value: unknown, providerSymbol: string) {
+  const data = (value as TencentEnvelope)?.data;
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
+    return undefined;
+  }
+  return (data as Record<string, TencentSymbolData>)[providerSymbol];
+}
+
+function isEmptyTencentData(value: unknown) {
+  const data = (value as TencentEnvelope)?.data;
+  return Array.isArray(data) && data.length === 0;
+}
+
+function tencentResponseError(value: unknown) {
+  const envelope = value as TencentEnvelope;
+  const details = [
+    typeof envelope.code === "number" || typeof envelope.code === "string"
+      ? `code=${envelope.code}`
+      : undefined,
+    typeof envelope.msg === "string" && envelope.msg.length > 0
+      ? `msg=${envelope.msg}`
+      : undefined,
+  ].filter((detail): detail is string => detail !== undefined);
+  return details.length > 0
+    ? `腾讯行情接口返回错误（${details.join(", ")}）`
+    : undefined;
+}
+
+function isTencentUnsupportedMarketResponse(
+  value: unknown,
+  market: DailyCandleRequest["market"],
+) {
+  const envelope = value as TencentEnvelope;
+  return (
+    (market === "HK" || market === "US") &&
+    String(envelope.code) === "-1" &&
+    envelope.msg === "param error" &&
+    isEmptyTencentData(value)
+  );
+}
 
 function intradayKey(interval: NativeIntradayInterval) {
   return interval === "1h" ? "m60" : "m15";
@@ -52,7 +94,7 @@ export function parseTencentDaily(
   value: unknown,
   providerSymbol: string,
 ): ProviderDailyCandle[] {
-  const rows = (value as TencentEnvelope)?.data?.[providerSymbol]?.day;
+  const rows = tencentSymbolData(value, providerSymbol)?.day;
   if (!Array.isArray(rows)) {
     throw new Error("腾讯行情响应格式已变化");
   }
@@ -76,9 +118,7 @@ export function parseTencentIntraday(
   timeZone: string,
   interval: NativeIntradayInterval = "15m",
 ): ProviderMarketCandle[] {
-  const rows = (value as TencentEnvelope)?.data?.[providerSymbol]?.[
-    intradayKey(interval)
-  ];
+  const rows = tencentSymbolData(value, providerSymbol)?.[intradayKey(interval)];
   if (!Array.isArray(rows)) {
     throw new Error("腾讯行情响应格式已变化");
   }
@@ -169,83 +209,35 @@ export class TencentProvider implements MarketDataProvider {
     fetcher: typeof fetch = fetch,
   ): Promise<IntradayProviderResult> {
     let hasUnavailableHistory = false;
+    let noDataReason: string | undefined;
     const timeZone = marketTimeZone(request.market);
-    const startTime = utcIsoToMarketLocal(request.startTime, timeZone);
-    const endTime = utcIsoToMarketLocal(request.endTime, timeZone);
+    utcIsoToMarketLocal(request.startTime, timeZone);
+    utcIsoToMarketLocal(request.endTime, timeZone);
     for (const providerSymbol of providerSymbolCandidates(
       this.id,
       request.market,
       request.symbol,
     )) {
-      if (request.interval === "1h") {
-        const params = [
-          providerSymbol,
-          "m60",
-          startTime,
-          endTime,
-          "500",
-          "",
-        ].join(",");
-        const response = await fetcher(
-          `https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=${encodeURIComponent(params)}`,
-        );
-        const value = await readProviderJson(response, "腾讯行情");
-        let parsed;
-        try {
-          parsed = parseTencentIntraday(
-            value,
-            providerSymbol,
-            timeZone,
-            request.interval,
-          );
-        } catch (error) {
-          throw new MarketDataProviderError(
-            "invalid-response",
-            error instanceof Error ? error.message : "腾讯行情响应无效",
-          );
-        }
-        const candles = parsed.filter(
-          (candle) =>
-            candle.timestamp >= request.startTime && candle.timestamp <= request.endTime,
-        );
-        if (candles.length === 0) {
-          hasUnavailableHistory ||= parsed.length > 0;
-          continue;
-        }
-        try {
-          validateProviderMarketCandles(
-            candles,
-            request.startTime,
-            request.endTime,
-          );
-        } catch (error) {
-          throw new MarketDataProviderError(
-            "invalid-response",
-            error instanceof Error ? error.message : "腾讯行情响应无效",
-          );
-        }
-        return {
-          provider: this.id,
-          providerSymbol,
-          fetchedAt: new Date().toISOString(),
-          interval: request.interval,
-          candles,
-          warnings:
-            parsed.length >= 500 ? ["provider-history-limit"] : [],
-        };
-      }
       const params = [
         providerSymbol,
-        "m15",
-        startTime,
-        endTime,
-        "500",
+        intradayKey(request.interval),
         "",
+        "500",
       ].join(",");
       const response = await fetcher(
-        `https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=${encodeURIComponent(params)}`,
+        `https://ifzq.gtimg.cn/appstock/app/kline/mkline?param=${encodeURIComponent(params)}`,
       );
       const value = await readProviderJson(response, "腾讯行情");
+      if (isEmptyTencentData(value)) {
+        if (isTencentUnsupportedMarketResponse(value, request.market)) {
+          noDataReason = tencentResponseError(value);
+          continue;
+        }
+        throw new MarketDataProviderError(
+          "invalid-response",
+          tencentResponseError(value) ?? "腾讯行情响应格式已变化",
+        );
+      }
       let parsed;
       try {
         parsed = parseTencentIntraday(
@@ -262,7 +254,8 @@ export class TencentProvider implements MarketDataProvider {
       }
       const candles = parsed.filter(
         (candle) =>
-          candle.timestamp >= request.startTime && candle.timestamp <= request.endTime,
+          candle.timestamp >= request.startTime &&
+          candle.timestamp <= request.endTime,
       );
       if (candles.length === 0) {
         hasUnavailableHistory ||= parsed.length > 0;
@@ -284,7 +277,7 @@ export class TencentProvider implements MarketDataProvider {
         provider: this.id,
         providerSymbol,
         fetchedAt: new Date().toISOString(),
-        interval: "15m",
+        interval: request.interval,
         candles,
         warnings:
           parsed.length >= 500 ? ["provider-history-limit"] : [],
@@ -294,7 +287,9 @@ export class TencentProvider implements MarketDataProvider {
       hasUnavailableHistory ? "provider-history-limit" : "no-data",
       hasUnavailableHistory
         ? `腾讯行情不提供该时间范围的 ${request.interval === "1h" ? "1 小时" : "15 分钟"}数据`
-        : "腾讯行情未返回该股票数据",
+        : noDataReason
+          ? `${noDataReason}；腾讯行情未返回该股票数据`
+          : "腾讯行情未返回该股票数据",
     );
   }
 }

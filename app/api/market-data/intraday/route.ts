@@ -1,5 +1,6 @@
 import { MarketDataProviderError } from "../../../lib/market/providers/errors";
 import { createProviderRouter } from "../../../lib/market/providers/router";
+import { BaoStockProvider } from "../../../lib/market/providers/baostock";
 import {
   InvalidMarketDataRequest,
   parseIntradayCandleRequest,
@@ -51,10 +52,13 @@ function isRateLimited(request: Request) {
   return recent.length > MAX_REQUESTS_PER_MINUTE;
 }
 
-type RouterFactory = (providerFetch: typeof fetch) => ProviderRouter;
+type RouterFactory = (providerFetch: typeof fetch, signal: AbortSignal) => ProviderRouter;
 
 export function createIntradayGetForTest(
-  createRouter: RouterFactory = createProviderRouter,
+  createRouter: RouterFactory = (providerFetch, signal) => createProviderRouter(
+    providerFetch,
+    { baostockProvider: new BaoStockProvider({ signal }) },
+  ),
 ) {
   return async function GET(request: Request) {
     let intradayRequest;
@@ -89,11 +93,14 @@ export function createIntradayGetForTest(
 
     let timeout: ReturnType<typeof setTimeout> | undefined;
     const controller = new AbortController();
+    const cancel = () => controller.abort(request.signal.reason);
+    request.signal.addEventListener("abort", cancel, { once: true });
+    if (request.signal.aborted) cancel();
     const providerFetch: typeof fetch = (input, init) =>
       fetch(input, { ...init, signal: controller.signal });
     try {
       const result = await Promise.race([
-        createRouter(providerFetch).fetchIntraday(intradayRequest),
+        createRouter(providerFetch, controller.signal).fetchIntraday(intradayRequest),
         new Promise<never>((_, reject) => {
           timeout = setTimeout(() => {
             controller.abort();
@@ -129,6 +136,7 @@ export function createIntradayGetForTest(
       );
     } finally {
       if (timeout) clearTimeout(timeout);
+      request.signal.removeEventListener("abort", cancel);
     }
   };
 }

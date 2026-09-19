@@ -182,6 +182,33 @@ export function displayMarketDataStatus(
     daily !== "partial" &&
     daily !== "stale" &&
     daily !== "ready";
+  const usableStatuses = new Set<MarketDataSyncStatus>([
+    "complete",
+    "latest-available",
+    "partial",
+    "stale",
+    "ready",
+  ]);
+  const hardStatuses = new Set<MarketDataSyncStatus>([
+    "storage-error",
+    "invalid-response",
+    "source-forbidden",
+    "source-rate-limited",
+    "source-unavailable",
+    "error",
+    "needs-provider",
+  ]);
+  const dailyUsable = options.hasDailyData || usableStatuses.has(daily);
+  const intradayUsable = options.hasIntradayData || usableStatuses.has(effectiveIntraday);
+  // A provider can fail one interval while the other interval remains
+  // available. Surface that instrument as partially usable so a failed hourly
+  // source does not hide a valid daily refresh (and vice versa).
+  if (
+    (hardStatuses.has(daily) && intradayUsable) ||
+    (hardStatuses.has(effectiveIntraday) && dailyUsable)
+  ) {
+    return "partial";
+  }
   if (
     options.hasIntradayData &&
     dailyFailedWithoutCache &&

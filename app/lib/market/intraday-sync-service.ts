@@ -21,6 +21,10 @@ import { validateProviderMarketCandles } from "./validation";
 import { canonicalInstrumentId } from "../instruments/display-name";
 import type { MarketDataRepository } from "../storage/market-data-repository";
 import { mergeIntradayTimeRanges } from "./intraday-sync-ranges";
+import type {
+  MarketDataFailedRange,
+  MarketDataSyncErrorDetail,
+} from "./sync-service";
 
 export type IntradayTimeRange = {
   startTime: string;
@@ -57,6 +61,8 @@ export type SyncIntradayMarketDataOptions = {
   repository: MarketDataRepository;
   fetcher?: typeof fetch;
   signal?: AbortSignal;
+  /** Bypass the browser HTTP cache for an explicit user refresh. */
+  forceRefresh?: boolean;
 };
 
 export type IntradaySyncResult = {
@@ -65,15 +71,89 @@ export type IntradaySyncResult = {
   candles: MarketCandleRecord[];
   coverage: IntervalCoverageSegment[];
   requestedRanges: IntradayTimeRange[];
-  error?: { code: string; message: string };
+  error?: MarketDataSyncErrorDetail;
+  failedRanges?: MarketDataFailedRange[];
 };
 
 function isProvider(value: unknown): value is MarketDataProviderId {
-  return value === "tencent" || value === "eastmoney" || value === "yahoo" || value === "sina" || value === "baidu" || value === "tiger";
+  return value === "tencent" || value === "eastmoney" || value === "yahoo" || value === "sina" || value === "baidu" || value === "tiger" || value === "baostock";
 }
 
 function abortError() {
   return new DOMException("行情同步已被较新的请求取代", "AbortError");
+}
+
+function isAbortError(error: unknown) {
+  return (
+    (error instanceof DOMException && error.name === "AbortError") ||
+    (error instanceof Error && error.name === "AbortError")
+  );
+}
+
+function failureMessage(error: unknown, fallback: string) {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
+
+function failedRange(
+  range: IntradayTimeRange,
+  code: string,
+  message: string,
+): MarketDataFailedRange {
+  return {
+    start: range.startTime,
+    end: range.endTime,
+    code,
+    message,
+  };
+}
+
+function failureDetail(
+  failures: readonly MarketDataFailedRange[],
+): MarketDataSyncErrorDetail | undefined {
+  if (failures.length === 0) return undefined;
+  const messages = [...new Set(failures.map((failure) => failure.message))];
+  const message = failures.length === 1
+    ? `${failures[0]!.message}（${failures[0]!.start} 至 ${failures[0]!.end}）`
+    : `${failures.length} 个 1 小时区间更新失败（${failures
+        .map((failure) => `${failure.start} 至 ${failure.end}`)
+        .join("、")}）：${messages.join("；")}`;
+  return {
+    code: failures[0]!.code,
+    message,
+    failedCount: failures.length,
+    failedRanges: [...failures],
+  };
+}
+
+function isHardFailure(code: string) {
+  return !["provider-history-limit", "no-data"].includes(code);
+}
+
+function normalizeFailureCode(value: unknown) {
+  return value === "invalid-response" ||
+    value === "source-rate-limited" ||
+    value === "source-forbidden" ||
+    value === "source-unavailable" ||
+    value === "source-timeout" ||
+    value === "provider-history-limit" ||
+    value === "no-data"
+    ? value
+    : "source-unavailable";
+}
+
+function failedCoverageSegment(
+  interval: NativeIntradayInterval,
+  range: IntradayTimeRange,
+  code: string,
+): IntervalCoverageSegment {
+  return {
+    interval,
+    requestedStart: range.startTime,
+    requestedEnd: range.endTime,
+    status: "partial",
+    fetchedAt: new Date().toISOString(),
+    reason: code,
+  };
 }
 
 function shiftTime(timestamp: string, milliseconds: number) {
@@ -180,16 +260,44 @@ function contiguousCandleRuns(
 function coverageGaps(
   required: IntradayTimeRange,
   coverage: IntervalCoverageSegment[],
+  options: { retryUnavailable?: boolean } = {},
 ) {
   let gaps = [{ ...required }];
   const segments = coverage
-    .filter(
-      (segment) =>
-        (segment.status === "complete" || segment.status === "partial") &&
-        segment.reason !== "missing-candles" &&
-        segment.requestedEnd >= required.startTime &&
-        segment.requestedStart <= required.endTime,
-    )
+    .filter((segment) => {
+      if (
+        (segment.status !== "complete" && segment.status !== "partial") ||
+        segment.reason === "missing-candles" ||
+        segment.requestedEnd < required.startTime ||
+        segment.requestedStart > required.endTime
+      ) {
+        return false;
+      }
+      const reason = segment.reason ?? "";
+      const retryableSourceFailure = [
+        "source-unavailable",
+        "source-rate-limited",
+        "source-forbidden",
+        "source-timeout",
+        "invalid-response",
+      ].includes(reason);
+      const retryableKnownNegative =
+        options.retryUnavailable &&
+        ["no-data", "provider-history-limit"].includes(reason);
+      // A source failure never confirms coverage. Known negative provider
+      // results are stable cache markers until an explicit refresh asks us
+      // to retry them. If a history-limit response included actual bars,
+      // retain that confirmed subrange while retrying only its gaps.
+      if (retryableSourceFailure) return false;
+      if (retryableKnownNegative && !(
+        segment.status === "partial" &&
+        segment.actualStart &&
+        segment.actualEnd
+      )) {
+        return false;
+      }
+      return true;
+    })
     .map((segment) => ({
       startTime:
         segment.status === "partial" &&
@@ -345,34 +453,20 @@ export async function syncIntradayMarketData({
   repository,
   fetcher = fetch,
   signal,
+  forceRefresh = false,
 }: SyncIntradayMarketDataOptions): Promise<IntradaySyncResult> {
   const throwIfAborted = () => {
     if (signal?.aborted) throw abortError();
   };
   throwIfAborted();
   let coverage = await repository.getIntervalCoverage(instrumentId, interval);
-  const requestedRanges = coverageGaps(required, coverage).flatMap((range) =>
+  const plannedRanges = coverageGaps(required, coverage, {
+    retryUnavailable: forceRefresh,
+  }).flatMap((range) =>
     splitIntradayRequestRange(range),
   );
-  let lastError: { code: string; message: string } | undefined;
-  const failureResult = async (
-    status: CoverageStatus,
-    error?: { code: string; message: string },
-  ) => ({
-    source: "network" as const,
-    status,
-    candles: await repository.getCandles(
-      instrumentId,
-      interval,
-      required.startTime,
-      required.endTime,
-    ),
-    coverage,
-    requestedRanges,
-    ...(error ? { error } : {}),
-  });
 
-  if (requestedRanges.length === 0) {
+  if (plannedRanges.length === 0) {
     return {
       source: "cache",
       status: coverageStatusForSegments(coverageForRange(required, coverage)),
@@ -387,7 +481,9 @@ export async function syncIntradayMarketData({
     };
   }
 
-  for (const range of requestedRanges) {
+  const attemptedRanges: IntradayTimeRange[] = [];
+  const failures: MarketDataFailedRange[] = [];
+  for (const range of plannedRanges) {
     throwIfAborted();
     const query = new URLSearchParams({
       market,
@@ -396,27 +492,51 @@ export async function syncIntradayMarketData({
       start: range.startTime,
       end: range.endTime,
     });
-    const response = await fetcher(`/api/market-data/intraday?${query}`, {
-      signal,
-    });
+    attemptedRanges.push({ ...range });
+    let response: Response;
+    try {
+      response = await fetcher(`/api/market-data/intraday?${query}`, {
+        signal,
+        ...(forceRefresh ? { cache: "no-store" as const } : {}),
+      });
+    } catch (error) {
+      throwIfAborted();
+      if (isAbortError(error)) throw error;
+      const code = "source-unavailable";
+      const message = failureMessage(error, "1 小时行情请求失败");
+      failures.push(failedRange(range, code, message));
+      coverage = [
+        ...replaceCoverageForRange(coverage, range),
+        failedCoverageSegment(interval, range, code),
+      ];
+      throwIfAborted();
+      await repository.commitIntervalSyncResult({
+        instrumentId,
+        interval,
+        candles: [],
+        coverage,
+      });
+      continue;
+    }
     throwIfAborted();
     if (!response.ok) {
-      const body = (await response.json().catch(() => undefined)) as
+      let body:
         | { error?: { code?: string; message?: string } }
         | undefined;
+      try {
+        body = (await response.json()) as
+          | { error?: { code?: string; message?: string } }
+          | undefined;
+      } catch (error) {
+        if (isAbortError(error)) throw error;
+      }
       throwIfAborted();
       const responseError = body?.error;
-      if (
-        responseError?.code === "provider-history-limit" ||
-        responseError?.code === "no-data"
-      ) {
-        const reason = responseError.code;
-        const error = {
-          code: reason,
-          message:
-            responseError.message ??
-            `1 小时行情请求失败（${reason}）`,
-        };
+      const code = normalizeFailureCode(responseError?.code);
+      const message = responseError?.message ?? "1 小时行情请求失败";
+      failures.push(failedRange(range, code, message));
+      if (code === "provider-history-limit" || code === "no-data") {
+        const reason = code;
         const segment: IntervalCoverageSegment = {
           interval,
           requestedStart: range.startTime,
@@ -426,7 +546,6 @@ export async function syncIntradayMarketData({
           reason,
         };
         coverage = [...replaceCoverageForRange(coverage, range), segment];
-        lastError = error;
         throwIfAborted();
         await repository.commitIntervalSyncResult({
           instrumentId,
@@ -436,24 +555,18 @@ export async function syncIntradayMarketData({
         });
         continue;
       }
-      const reportedStatus = body?.error?.code;
-      return failureResult(
-        reportedStatus === "invalid-response" ||
-          reportedStatus === "source-rate-limited" ||
-          reportedStatus === "source-forbidden" ||
-          reportedStatus === "source-unavailable"
-          ? reportedStatus
-          : "source-unavailable",
-        {
-          code:
-            typeof reportedStatus === "string"
-              ? reportedStatus
-              : "source-unavailable",
-          message:
-            body?.error?.message ??
-            "1 小时行情请求失败",
-        },
-      );
+      coverage = [
+        ...replaceCoverageForRange(coverage, range),
+        failedCoverageSegment(interval, range, code),
+      ];
+      throwIfAborted();
+      await repository.commitIntervalSyncResult({
+        instrumentId,
+        interval,
+        candles: [],
+        coverage,
+      });
+      continue;
     }
     let result: IntradayRouteResult;
     try {
@@ -465,11 +578,23 @@ export async function syncIntradayMarketData({
       });
     } catch (error) {
       throwIfAborted();
+      if (isAbortError(error)) throw error;
       if (error instanceof IntradayRouteIdentityError) throw error;
-      return failureResult("invalid-response", {
-        code: "invalid-response",
-        message: error instanceof Error ? error.message : "行情接口响应无效",
+      const code = "invalid-response";
+      const message = failureMessage(error, "行情接口响应无效");
+      failures.push(failedRange(range, code, message));
+      coverage = [
+        ...replaceCoverageForRange(coverage, range),
+        failedCoverageSegment(interval, range, code),
+      ];
+      throwIfAborted();
+      await repository.commitIntervalSyncResult({
+        instrumentId,
+        interval,
+        candles: [],
+        coverage,
       });
+      continue;
     }
     throwIfAborted();
     const historyLimited =
@@ -559,18 +684,30 @@ export async function syncIntradayMarketData({
     });
   }
 
+  const candles = await repository.getCandles(
+    instrumentId,
+    interval,
+    required.startTime,
+    required.endTime,
+  );
+  const error = failureDetail(failures);
+  const hardFailure = failures.find((failure) => isHardFailure(failure.code));
+  const hardStatus: CoverageStatus = hardFailure?.code === "invalid-response" ||
+    hardFailure?.code === "source-rate-limited" ||
+    hardFailure?.code === "source-forbidden" ||
+    hardFailure?.code === "source-unavailable"
+    ? hardFailure.code
+    : "source-unavailable";
+  const status = hardFailure && candles.length === 0
+    ? hardStatus
+    : coverageStatusForSegments(coverageForRange(required, coverage));
   return {
     source: "network",
-    status: coverageStatusForSegments(coverageForRange(required, coverage)),
-    candles: await repository.getCandles(
-      instrumentId,
-      interval,
-      required.startTime,
-      required.endTime,
-    ),
+    status,
+    candles,
     coverage,
-    requestedRanges,
-    ...(lastError ? { error: lastError } : {}),
+    requestedRanges: attemptedRanges,
+    ...(error ? { error, failedRanges: error.failedRanges } : {}),
   };
 }
 
@@ -615,19 +752,30 @@ export async function syncIntradayMarketDataForRanges({
       candles.set(candle.timestamp, candle);
     }
   }
+  const failures = results.flatMap((result) => result.failedRanges ?? []);
+  const error = failureDetail(failures);
+  const hardFailure = results.find((result) =>
+    result.status === "invalid-response" ||
+    result.status === "source-rate-limited" ||
+    result.status === "source-forbidden" ||
+    result.status === "source-unavailable"
+  );
+  const coverageStatus = coverageStatusForSegments(
+    coverageForRanges(ranges, coverage),
+  );
+  const status = hardFailure && candles.size === 0
+    ? hardFailure.status
+    : coverageStatus;
   return {
     source: results.some((result) => result.source === "network")
       ? "network"
       : "cache",
-    status: coverageStatusForSegments([
-      ...coverageForRanges(ranges, coverage),
-      ...results.map((result) => ({ status: result.status })),
-    ]),
+    status,
     candles: [...candles.values()].sort((left, right) =>
       left.timestamp.localeCompare(right.timestamp),
     ),
     coverage,
     requestedRanges: results.flatMap((result) => result.requestedRanges),
-    error: results.find((result) => result.error)?.error,
+    ...(error ? { error, failedRanges: error.failedRanges } : {}),
   };
 }

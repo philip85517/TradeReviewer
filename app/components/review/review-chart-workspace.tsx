@@ -41,7 +41,14 @@ import { DrawingToolbar } from "../chart/drawing-toolbar";
 import type { SearchableInstrument } from "../chart/instrument-search-popover";
 import type { MarketDataDetails } from "../chart/market-data-popover";
 import { ReplayChart } from "../chart/replay-chart";
-import { mapExecutionsToCandles } from "../../lib/replay/execution-markers";
+import {
+  groupExecutionsByCandle,
+  mapExecutionsToCandles,
+} from "../../lib/replay/execution-markers";
+import type {
+  ReviewChartLocateRequest,
+  ReviewChartLocateResult,
+} from "../../lib/replay/chart-location";
 import { useFullscreen } from "../chart/use-fullscreen";
 import { ReplayControls } from "../replay/replay-controls";
 import { ReviewSidePanel } from "./review-side-panel";
@@ -70,6 +77,8 @@ export type ReviewChartViewModel = {
   dataDetails: MarketDataDetails[];
   refreshDisabledReason: string | undefined;
 };
+
+export type { ReviewChartLocateRequest, ReviewChartLocateResult } from "../../lib/replay/chart-location";
 
 export type EpisodeOption = {
   id: string;
@@ -120,6 +129,10 @@ type Props = {
   onActivePanelTabChange: (tab: "stats" | "notes") => void;
   onDrawerOpenChange: (open: boolean) => void;
   onSaveReview: (record: EpisodeReviewRecord) => Promise<void>;
+  /** Optional direct location request from the stock rail. */
+  locateRequest?: ReviewChartLocateRequest;
+  onLocateResult?: (result: ReviewChartLocateResult) => void;
+  onLocateTimeframeChange?: (timeframe: Timeframe) => void;
 };
 
 function money(value: string, currency: string) {
@@ -136,11 +149,11 @@ function dateTime(value: string) {
 }
 
 export function executionTimestampLabel(execution: TradeExecution) {
+  if (execution.source.timePrecision === "date-only") {
+    return `${execution.source.sourceTimestampText ?? "日期未知"} · 仅日期，日线定位`;
+  }
   if (execution.source.sourceTimeKind === "order") {
     return `${execution.source.sourceTimestampText ?? execution.executedAt} · 原件为下单时间，不能定位成交分钟`;
-  }
-  if (execution.source.timePrecision === "date-only") {
-    return `${execution.source.sourceTimestampText ?? "日期未知"} · 对账单未提供成交时间`;
   }
   return dateTime(execution.executedAt);
 }
@@ -202,11 +215,21 @@ export function ReviewChartWorkspace({
   onSaveReview,
   onCompleteReview,
   reviewExtras,
+  locateRequest,
+  onLocateResult,
+  onLocateTimeframeChange,
 }: Props) {
   const [overview, setOverview] = useState<{episodeId: string; showAll: boolean}>({episodeId:"",showAll:false});
   const showAll = overview.episodeId === model.episodeId && overview.showAll;
   const focusedEpisode = episodeOptions.find(episode => episode.id === model.episodeId);
-  const focusRange = !showAll && focusedEpisode ? {start:focusedEpisode.startedAt, end:focusedEpisode.endedAt} : undefined;
+  const focusRangeStart = !showAll ? focusedEpisode?.startedAt : undefined;
+  const focusRangeEnd = !showAll ? focusedEpisode?.endedAt : undefined;
+  const focusRange = useMemo(
+    () => focusRangeStart
+      ? { start: focusRangeStart, end: focusRangeEnd }
+      : undefined,
+    [focusRangeEnd, focusRangeStart],
+  );
   const workspaceRef = useRef<HTMLElement>(null);
   const fullscreen = useFullscreen(workspaceRef);
   const knowledgeVisibleDrawings = useMemo(
@@ -246,6 +269,10 @@ export function ReviewChartWorkspace({
   );
   const latestCandle = model.candles.at(-1);
   const mappedExecutionIds = new Set(mapExecutionsToCandles(model.candles, model.executions).map(marker => marker.executionId));
+  const executionGroups = useMemo(
+    () => groupExecutionsByCandle(model.candles, model.executions),
+    [model.candles, model.executions],
+  );
   const unmatchedExecutions = model.executions.filter(execution => !mappedExecutionIds.has(execution.id));
   const greyMarketExecutions = unmatchedExecutions.filter(execution => execution.source.tradingSession === "grey-market");
   const missingMarketExecutions = unmatchedExecutions.filter(execution => execution.source.tradingSession !== "grey-market");
@@ -266,6 +293,14 @@ export function ReviewChartWorkspace({
   const episodeStartedAt =
     episodeOptions.find((episode) => episode.id === model.episodeId)
       ?.startedAt ?? model.cursor;
+  const [locateResult, setLocateResult] = useState<ReviewChartLocateResult | null>(null);
+  const activeLocateResult = locateResult?.requestId === locateRequest?.requestId
+    ? locateResult
+    : null;
+  const handleLocateResult = (result: ReviewChartLocateResult) => {
+    setLocateResult(result);
+    onLocateResult?.(result);
+  };
 
   return (
     <>
@@ -415,8 +450,8 @@ export function ReviewChartWorkspace({
             <ReplayChart
               episodeId={model.episodeId}
               focusRange={focusRange}
-              viewportKey={JSON.stringify([model.instrument.id, model.episodeId, model.timeframe, model.historyMode,showAll,
-                ...(model.historyMode === "history" ? [model.candles[0]?.time, latestCandle?.time, model.candles.length] : [])])}
+              timeframe={model.timeframe}
+              viewportKey={JSON.stringify([model.instrument.id, model.episodeId, model.timeframe, model.historyMode, showAll])}
               candles={model.candles}
               executions={model.historyMode === "history" && !showAll ? model.focusedExecutions ?? model.executions : model.executions}
               positionEvents={model.positionEvents}
@@ -428,9 +463,30 @@ export function ReviewChartWorkspace({
               selectedDrawingId={selectedDrawingId}
               plannedRiskAmount={visiblePlan?.plannedRiskAmount}
               currency={model.instrument.currency}
+              locateRequest={locateRequest}
+              onLocateResult={handleLocateResult}
+              onLocateTimeframeChange={onLocateTimeframeChange}
               onSelectDrawing={onSelectDrawing}
               onCommand={onDrawingCommand}
             />
+            {activeLocateResult && (
+              <p
+                className="chart-location-status"
+                data-testid="chart-location-status"
+                role="status"
+              >
+                {activeLocateResult.status === "located"
+                  ? `已定位到 ${activeLocateResult.timeframe === "1D" ? "目标交易日" : "目标成交 K 线"}，已高亮成交。`
+                  : activeLocateResult.status === "needs-daily"
+                    ? "当前周期无法可靠定位成交，正在请求目标交易日的日线。"
+                    : activeLocateResult.status === "missing"
+                      ? <>
+                          <span>目标交易日缺少日线行情，未跳转到邻近日。</span>
+                          <button type="button" className="secondary-action" onClick={onRefreshMarketData}>更新此股数据</button>
+                        </>
+                      : "该成交当前不可见，未改变回放可见边界。"}
+              </p>
+            )}
 
             {layersOpen && (
               <DrawingLayersPanel
@@ -470,6 +526,36 @@ export function ReviewChartWorkspace({
               </div>
             </div>
 
+            {executionGroups.length > 0 && (
+              <details className="execution-marker-groups">
+                <summary>图表标记（{executionGroups.length} 组，按 K 线与方向）</summary>
+                <ol>
+                  {executionGroups.map((group) => (
+                    <li
+                      key={`${group.candleTime}:${group.side}:${group.accountId}:${group.scopeKey}`}
+                      data-candle-time={group.candleTime}
+                    >
+                      <details>
+                        <summary>
+                          <b>{group.side === "buy" ? "B" : "S"}{group.fillCount > 1 ? ` ×${group.fillCount}` : ""}</b>
+                          <span> · {group.candleTime.slice(0, 10)} · {group.fillCount} 笔成交</span>
+                        </summary>
+                        <ol>
+                          {group.executions.map((execution) => (
+                            <li key={execution.id} data-execution-id={execution.id}>
+                              <b>{execution.side === "buy" ? "买入" : "卖出"}</b>
+                              <span>{execution.quantity} × {execution.price}</span>
+                              <small>原件 {executionSource(execution)}</small>
+                            </li>
+                          ))}
+                        </ol>
+                      </details>
+                    </li>
+                  ))}
+                </ol>
+              </details>
+            )}
+
             <details className="execution-details" open={unmatchedExecutions.length > 0 ? true : undefined}>
               <summary>当前游标成交明细（{model.executions.length}）</summary>
               {model.executions.length === 0 ? (
@@ -482,7 +568,12 @@ export function ReviewChartWorkspace({
                     const sourceTimestamp =
                       execution.source.sourceTimestampText;
                     return (
-                      <li key={execution.id}>
+                      <li
+                        key={execution.id}
+                        data-execution-id={execution.id}
+                        data-locate-highlighted={locateRequest?.executionId === execution.id ? "true" : undefined}
+                        aria-current={locateRequest?.executionId === execution.id ? "location" : undefined}
+                      >
                         <time
                           dateTime={dateOnly ? undefined : execution.executedAt}
                         >

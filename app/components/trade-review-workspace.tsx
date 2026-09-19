@@ -73,7 +73,6 @@ import {
   type IntradayTimeRange,
 } from "../lib/market/intraday-sync-service";
 import { buildIntradaySyncRanges } from "../lib/market/intraday-sync-ranges";
-import { recoverStaleMarketDataJob } from "../lib/market/market-data-job-recovery";
 import { normalizeProviderLatestTails, reconcileDailyCoverage } from "../lib/market/coverage-tail";
 import {
   combinedMarketDataStatus,
@@ -89,7 +88,17 @@ import {
 } from "../lib/market/sync-range";
 import { statementReplayBounds } from "../lib/market/statement-range";
 import { createMarketDataFetcher } from "../lib/market/market-data-fetch";
-import { runRefreshQueue } from "../lib/market/refresh-queue";
+import {
+  failedRefreshItems,
+  runRefreshQueue,
+} from "../lib/market/refresh-queue";
+import {
+  classifyMarketDataRefreshStatus,
+  failureDetailForReason,
+  summarizePersistedMarketDataJobs,
+  type GlobalMarketRefreshInventoryItem,
+  type GlobalMarketRefreshFailureDetail,
+} from "../lib/market/refresh-summary";
 import {
   MarketDataSyncError,
   syncMarketData,
@@ -177,7 +186,6 @@ import {
 import {
   EpisodeSidebar,
   type ImportPhase,
-  type MarketDataRefreshState,
 } from "./review/episode-sidebar";
 import {
   TradeLibrary,
@@ -187,6 +195,7 @@ import {
 import { ImportActions } from "./import/import-actions";
 import { useModalFocus } from "./import/use-modal-focus";
 import { ReviewSummary, initialReviewSummaryFilters, type ReviewSummaryDrafts } from "./insights/review-summary";
+import { ReviewDashboard } from "./dashboard/review-dashboard";
 import { TagSuggestionPanel } from "./insights/tag-suggestion-panel";
 import { RuleChecks } from "./review/rule-checks";
 import type { EpisodeNotesProps } from "./review/episode-notes-panel";
@@ -198,6 +207,18 @@ import {
   type EpisodeOption,
   type ReviewChartViewModel,
 } from "./review/review-chart-workspace";
+import type {
+  ReviewChartLocateRequest,
+  ReviewChartLocateResult,
+} from "../lib/replay/chart-location";
+import {
+  EMPTY_GLOBAL_MARKET_REFRESH,
+  GlobalMarketRefresh,
+  type GlobalMarketRefreshState,
+} from "./global-market-refresh";
+import { RefreshCancellationService } from "../lib/market/refresh-cancellation";
+import { withGlobalMarketRefreshLock } from "../lib/market/refresh-lock";
+import { composeAbortSignals } from "../lib/instruments/abort-signal";
 
 const REVIEW_ID = "demo-xpev-2025";
 const DEFAULT_THESIS =
@@ -264,6 +285,23 @@ function isChartSettings(value: Record<string, unknown>): value is ChartSettings
     (value.colorScheme === "teal-red" || value.colorScheme === "green-red" || value.colorScheme === "blue-orange");
 }
 
+function displaySavedMarketDataStatus(status: MarketDataSyncStatus) {
+  return status === "syncing" ? "not-requested" as const : status;
+}
+
+function isUnfinishedMarketDataJob(job: MarketDataJob | undefined) {
+  return Boolean(
+    job &&
+      (job.status === "syncing" ||
+        job.status === "not-requested" ||
+        job.intervals.some(
+          (interval) =>
+            interval.status === "syncing" ||
+            interval.status === "not-requested",
+        )),
+  );
+}
+
 function emptyMarketState(
   jobOrStatus: MarketDataJob | MarketDataSyncStatus = "not-requested",
 ): InstrumentMarketState {
@@ -275,13 +313,17 @@ function emptyMarketState(
     intraday: [],
     intradayInterval: "1h",
     dailyStatus:
-      dailyJob?.status ??
-      (typeof jobOrStatus === "string" ? jobOrStatus : job?.status ?? "not-requested"),
-    intradayStatus: intradayJob?.status ?? "not-requested",
+      displaySavedMarketDataStatus(dailyJob?.status ??
+        (typeof jobOrStatus === "string" ? jobOrStatus : job?.status ?? "not-requested")),
+    intradayStatus: displaySavedMarketDataStatus(intradayJob?.status ?? "not-requested"),
     intradayCoverage: [],
     dailyCoverage: [],
-    dailyMessage: dailyJob?.message ?? job?.message,
-    intradayMessage: intradayJob?.message,
+    dailyMessage: dailyJob?.status === "syncing"
+      ? "上次日线更新未结束，可重新尝试"
+      : dailyJob?.message ?? job?.message,
+    intradayMessage: intradayJob?.status === "syncing"
+      ? "上次 1 小时更新未结束，可重新尝试"
+      : intradayJob?.message,
     dailyError: dailyJob?.error ?? job?.error,
     intradayError: intradayJob?.error,
   };
@@ -301,18 +343,23 @@ function applyPersistedMarketDataJob(
     ...state,
     dailyStatus:
       state.dailyStatus === "not-requested" && dailyJob
-        ? dailyJob.status
+        ? dailyJob.status === "syncing" ? "not-requested" : dailyJob.status
         : state.dailyStatus,
     intradayStatus:
       state.intradayStatus === "not-requested" && intradayJob
-        ? intradayJob.status
+        ? intradayJob.status === "syncing" ? "not-requested" : intradayJob.status
         : state.intradayStatus,
-    dailyMessage: state.dailyStatus === "complete" ? "日线覆盖已完整" : state.dailyMessage ?? dailyJob?.message ?? job.message,
+    dailyMessage: state.dailyStatus === "complete"
+      ? "日线覆盖已完整"
+      : state.dailyMessage ??
+        (dailyJob?.status === "syncing"
+          ? "上次日线更新未结束，可重新尝试"
+          : dailyJob?.message ?? job.message),
     intradayMessage: state.intradayMessage ?? intradayJob?.message,
     dailyError: state.dailyStatus === "complete" ? undefined : state.dailyError ?? dailyJob?.error ?? job.error,
     intradayError: state.intradayError ?? intradayJob?.error,
     ...(hasDailyData || hasIntradayData ? {} : {
-      dailyStatus: dailyJob?.status ?? job.status,
+      dailyStatus: displaySavedMarketDataStatus(dailyJob?.status ?? job.status),
     }),
   };
 }
@@ -656,6 +703,7 @@ function providerLabel(
 ) {
   if (provider === "tencent") return "腾讯行情";
   if (provider === "tiger") return "Tiger OpenAPI";
+  if (provider === "baostock") return "BaoStock";
   if (provider === "eastmoney") return "东方财富";
   if (provider === "yahoo") return "Yahoo Finance";
   if (provider === "sina") return "新浪美股";
@@ -783,12 +831,38 @@ async function fetchDemoFrame(
   return (await response.json()) as DemoReplayFrame;
 }
 
-const EMPTY_MARKET_DATA_REFRESH: MarketDataRefreshState = {
-  running: false,
-  total: 0,
-  completed: 0,
-  partial: 0,
-  failed: 0,
+const EMPTY_MARKET_DATA_REFRESH: GlobalMarketRefreshState =
+  EMPTY_GLOBAL_MARKET_REFRESH;
+
+type ActiveMarketRefreshRun = {
+  key: string;
+  controller: AbortController;
+  promise: Promise<void>;
+  snapshotIds: ReadonlySet<string>;
+  batch: boolean;
+};
+
+type MarketDataUpdateOptions = {
+  executions?: TradeExecution[];
+  refreshMetadata?: boolean;
+  batch?: boolean;
+};
+
+type MarketHydrationInFlight = {
+  key: string;
+  runId: number;
+};
+
+type MarketDataRefreshOutcome = {
+  status: MarketDataSyncStatus;
+  /** At least one interval failed and can be retried for this instrument. */
+  retryable: boolean;
+};
+
+type MarketDataRefreshSnapshot = {
+  state: InstrumentMarketState;
+  sequence: number;
+  job?: MarketDataJob;
 };
 
 function isHardMarketDataFailure(status: unknown) {
@@ -891,8 +965,8 @@ function isAbortError(error: unknown) {
   const [reviewQueueIds, setReviewQueueIds] = useState<string[]>();
   const [navigationNotice, setNavigationNotice] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<
-    "review" | "library" | "insights"
-  >(showDemo ? "review" : "library");
+    "dashboard" | "review" | "library" | "insights"
+  >(showDemo ? "review" : "dashboard");
   const [timeframe, setTimeframe] = useState<Timeframe>("1D");
   const [legacyTimeframe, setLegacyTimeframe] = useState<"1D" | "1W">("1D");
   const [historyMode, setHistoryMode] = useState<"history" | "replay">("history");
@@ -924,6 +998,7 @@ function isAbortError(error: unknown) {
     showDemo ? "demo" : "",
   );
   const [selectedEpisodeId, setSelectedEpisodeId] = useState(REVIEW_ID);
+  const [locateRequest, setLocateRequest] = useState<ReviewChartLocateRequest>();
   const [importedCursor, setImportedCursor] = useState(initialFrame.cursor);
   const supplementScopeRef = useRef<SupplementScope | null>(null);
   const [supplementScope, setSupplementScope] = useState<SupplementScope | null>(null);
@@ -963,7 +1038,7 @@ function isAbortError(error: unknown) {
     Record<string, MarketDataJob>
   >({});
   const [marketDataRefresh, setMarketDataRefresh] =
-    useState<MarketDataRefreshState>(EMPTY_MARKET_DATA_REFRESH);
+    useState<GlobalMarketRefreshState>(EMPTY_MARKET_DATA_REFRESH);
   const [failedMarketDataIds, setFailedMarketDataIds] = useState<string[]>([]);
   const [hydratedMarketIds, setHydratedMarketIds] = useState<Set<string>>(
     () => new Set(),
@@ -1014,6 +1089,11 @@ function isAbortError(error: unknown) {
   const marketDataAbortControllers = useRef<
     Record<string, AbortController>
   >({});
+  const refreshCancellation = useRef(new RefreshCancellationService());
+  const activeMarketRefreshRuns = useRef(new Map<string, ActiveMarketRefreshRun>());
+  const marketHydrationKeys = useRef(new Map<string, string>());
+  const marketHydrationInFlight = useRef(new Map<string, MarketHydrationInFlight>());
+  const marketHydrationRunSequence = useRef(0);
   const [suggestionGeneratedAt] = useState(() => new Date().toISOString());
   const libraryTargetSequence = useRef(0);
 
@@ -1033,6 +1113,15 @@ function isAbortError(error: unknown) {
   const rawImportedInstruments = useMemo(
     () => buildInstrumentTradeSummaries(importedExecutions),
     [importedExecutions],
+  );
+  // Metadata overlays can update an execution's display name without changing
+  // the market-data range. Keep that update out of the inventory hydration
+  // dependency so one rename cannot restart reads for every instrument.
+  const rawImportedInstrumentHydrationKey = useMemo(
+    () => rawImportedInstruments
+      .map((summary) => `${summary.instrument.id}:${summary.tradeCount}:${summary.firstTradeAt}:${summary.lastTradeAt}`)
+      .join("|"),
+    [rawImportedInstruments],
   );
   const importedInstruments = useMemo(
     () => overlayStoredInstrumentMetadata(rawImportedInstruments, storedInstruments),
@@ -1245,11 +1334,13 @@ function isAbortError(error: unknown) {
               state?.dailyStatus ?? ("not-requested" satisfies MarketDataSyncStatus),
               state?.intradayStatus ?? ("not-requested" satisfies MarketDataSyncStatus),
               {
-                hasDailyData: Boolean(state?.daily.length || state?.dailyCoverage.length),
-                hasIntradayData: Boolean(state?.intraday.length || state?.intradayCoverage.length),
-                intradayJobStatus: marketDataJobs[summary.instrument.id]?.intervals.find(
-                  (item) => item.interval === "1h",
-                )?.status,
+                hasDailyData: Boolean(state?.daily.length),
+                hasIntradayData: Boolean(state?.intraday.length),
+                intradayJobStatus: displaySavedMarketDataStatus(
+                  marketDataJobs[summary.instrument.id]?.intervals.find(
+                    (item) => item.interval === "1h",
+                  )?.status ?? "not-requested",
+                ),
               },
             ),
           ];
@@ -1491,6 +1582,7 @@ function isAbortError(error: unknown) {
     replayRequestSequence.current += 1;
     setStepping(false);
     setReplayError(null);
+    setLocateRequest(undefined);
     setSelectedInstrumentId(summary.instrument.id);
     setSelectedEpisodeId(newest.id);
     const state = marketStates[summary.instrument.id] ?? emptyMarketState();
@@ -1517,6 +1609,7 @@ function isAbortError(error: unknown) {
       setPlaying(false);
       setSelectedInstrumentId("demo");
       setSelectedEpisodeId(REVIEW_ID);
+      setLocateRequest(undefined);
       const stored = drawingDraftsRef.current[REVIEW_ID] ?? reviewStates[REVIEW_ID];
       drawingEpisodeRef.current = REVIEW_ID;
       setTimeframe(stored?.timeframe ?? "1D");
@@ -1564,6 +1657,7 @@ function isAbortError(error: unknown) {
     const episode = episodes.find((item) => item.id === episodeId);
     if (!episode) return;
     setPlaying(false);
+    setLocateRequest(undefined);
     setSelectedEpisodeId(episode.id);
     const availability = resolveEpisodeTimeframeAvailability(
       selectedMarketState,
@@ -1582,6 +1676,26 @@ function isAbortError(error: unknown) {
     );
     const fallback = replayCursorForEpisode(source, episode.startedAt);
     restoreEpisodeUi(episode.id, fallback, preferred, source, episode.startedAt);
+  }
+
+  function requestExecutionLocation(request: ReviewChartLocateRequest) {
+    if (
+      request.instrumentId !== selectedImportedInstrument?.instrument.id ||
+      request.episodeId !== selectedEpisode?.id
+    ) {
+      return;
+    }
+    setNavigationNotice(null);
+    setLocateRequest(request);
+  }
+
+  function handleLocateResult(result: ReviewChartLocateResult) {
+    if (result.requestId !== locateRequest?.requestId) return;
+    if (result.status === "missing") {
+      setNavigationNotice("目标交易日缺少日线行情，未跳转到邻近日；可先更新该股票行情。");
+    } else if (result.status === "unavailable") {
+      setNavigationNotice(result.reason ?? "该成交当前不可定位，请先补齐行情。");
+    }
   }
 
   useEffect(() => {
@@ -1611,20 +1725,28 @@ function isAbortError(error: unknown) {
         const storedSummaries = buildInstrumentTradeSummaries(
           productionExecutions,
         );
-        const recoveredJobs = bootstrap.marketDataJobs.map((job) =>
-          recoverStaleMarketDataJob(job),
-        );
-        await Promise.allSettled(
-          recoveredJobs.flatMap((job, index) =>
-            job === bootstrap.marketDataJobs[index]
-              ? []
-              : [storageClient.putMarketDataJob(job)],
-          ),
-        );
+        // A saved `syncing` job is an unfinished snapshot. Loading the page
+        // must not turn it into a terminal failure or write a new job; the
+        // user can decide whether to recover it after seeing its last attempt.
+        const savedJobs = bootstrap.marketDataJobs;
         const jobs = Object.fromEntries(
-          recoveredJobs.map((job) => [job.instrumentId, job]),
+          savedJobs.map((job) => [job.instrumentId, job]),
         );
         marketDataJobsRef.current = jobs;
+        const inventory = storedSummaries.map(({ instrument }) => ({
+          instrumentId: instrument.id,
+          symbol: instrument.symbol,
+          market: instrument.market,
+        }));
+        const savedRefreshSummary = summarizePersistedMarketDataJobs(
+          savedJobs,
+          inventory,
+        );
+        const hasSavedMarketDataJobs = savedJobs.some((job) =>
+          storedSummaries.some(
+            (summary) => summary.instrument.id === job.instrumentId,
+          ),
+        );
         const states = Object.fromEntries(
           bootstrap.reviewStates.filter((state) => showDemo || state.episodeId !== REVIEW_ID).map((state) => [state.episodeId, state]),
         );
@@ -1648,6 +1770,28 @@ function isAbortError(error: unknown) {
         setSuggestionsHydrated(true);
         setSettings(isChartSettings(bootstrap.settings) ? bootstrap.settings : DEFAULT_CHART_SETTINGS);
         setMarketDataJobs(jobs);
+        setFailedMarketDataIds(
+          hasSavedMarketDataJobs
+            ? savedRefreshSummary.retryableInstrumentIds
+            : [],
+        );
+        setMarketDataRefresh(
+          hasSavedMarketDataJobs
+            ? {
+                ...EMPTY_MARKET_DATA_REFRESH,
+                total: savedRefreshSummary.total,
+                processed: savedRefreshSummary.processed,
+                completed: savedRefreshSummary.completed,
+                partial: savedRefreshSummary.partial,
+                failed: savedRefreshSummary.failed,
+                retryable: savedRefreshSummary.retryable,
+                failureDetails: savedRefreshSummary.failureDetails,
+                unfinishedInstrumentIds: savedRefreshSummary.unfinishedInstrumentIds,
+                unfinishedDetails: savedRefreshSummary.unfinishedDetails,
+                restored: true,
+              }
+            : EMPTY_MARKET_DATA_REFRESH,
+        );
         setMarketStates(
           Object.fromEntries(
             storedSummaries.map((summary) => [
@@ -1766,10 +1910,40 @@ function isAbortError(error: unknown) {
   const selectedHydrationInstrument = useEffectEvent(() => selectedImportedInstrument?.instrument.id);
 
   useEffect(() => {
-    if (!hydrated || rawImportedInstruments.length === 0) return;
+    if (!hydrated) return;
+    if (rawImportedInstruments.length === 0) {
+      marketHydrationKeys.current.clear();
+      return;
+    }
     let active = true;
     const repository = marketDataRepository;
+    const currentHydrationKeys = new Map(
+      rawImportedInstruments.map((summary) => [
+        summary.instrument.id,
+        `${summary.instrument.id}:${summary.tradeCount}:${summary.firstTradeAt}:${summary.lastTradeAt}`,
+      ]),
+    );
+    const summariesToHydrate = rawImportedInstruments.filter((summary) => {
+      const id = summary.instrument.id;
+      const key = currentHydrationKeys.get(id);
+      return (
+        marketHydrationKeys.current.get(id) !== key &&
+        marketHydrationInFlight.current.get(id)?.key !== key
+      );
+    });
+    if (summariesToHydrate.length === 0) return;
+    const runId = ++marketHydrationRunSequence.current;
+    const ownedKeys = new Map(
+      summariesToHydrate.map((summary) => {
+        const id = summary.instrument.id;
+        const key = currentHydrationKeys.get(id)!;
+        marketHydrationInFlight.current.set(id, { key, runId });
+        return [id, key] as const;
+      }),
+    );
     const hydrateMarketState = async (summary: InstrumentTradeSummary) => {
+      const id = summary.instrument.id;
+      const key = ownedKeys.get(id);
       let state: InstrumentMarketState;
       try {
         state = applyPersistedMarketDataJob(
@@ -1784,27 +1958,44 @@ function isAbortError(error: unknown) {
           intradayMessage: "无法读取本地 1 小时缓存",
         };
       }
-      if (!active) return;
+      if (
+        !active ||
+        !key ||
+        marketHydrationInFlight.current.get(id)?.runId !== runId
+      ) {
+        return;
+      }
+      // Only a successfully owned read may advance the durable hydration key.
+      // Cleanup removes this ownership, so an interrupted read is retried by
+      // the next inventory effect.
+      marketHydrationKeys.current.set(id, key);
+      marketHydrationInFlight.current.delete(id);
       setMarketStates((current) => ({
         ...current,
-        [summary.instrument.id]: state,
+        [id]: state,
       }));
-      restoreHydratedEpisode([{ instrumentId: summary.instrument.id, state }]);
-      setHydratedMarketIds(current => new Set([...current, summary.instrument.id]));
+      restoreHydratedEpisode([{ instrumentId: id, state }]);
+      setHydratedMarketIds(current => new Set([...current, id]));
     };
     const priorityInstrumentId = selectedHydrationInstrument();
-    const selectedSummary = rawImportedInstruments.find(summary => summary.instrument.id === priorityInstrumentId);
-    const backgroundSummaries = rawImportedInstruments.filter(summary => summary !== selectedSummary);
+    const selectedSummary = summariesToHydrate.find(summary => summary.instrument.id === priorityInstrumentId);
+    const backgroundSummaries = summariesToHydrate.filter(summary => summary !== selectedSummary);
     void (async () => {
       if (selectedSummary) await hydrateMarketState(selectedSummary);
       if (active) await Promise.all(backgroundSummaries.map(hydrateMarketState));
     })();
     return () => {
       active = false;
+      for (const [id, key] of ownedKeys) {
+        const current = marketHydrationInFlight.current.get(id);
+        if (current?.runId === runId && current.key === key) {
+          marketHydrationInFlight.current.delete(id);
+        }
+      }
     };
   }, [
     hydrated,
-    rawImportedInstruments,
+    rawImportedInstrumentHydrationKey,
     marketDataRepository,
   ]);
 
@@ -1997,6 +2188,7 @@ function isAbortError(error: unknown) {
 
   useEffect(
     () => () => {
+      refreshCancellation.current.cancelAll();
       for (const controller of Object.values(
         marketDataAbortControllers.current,
       )) {
@@ -2006,17 +2198,129 @@ function isAbortError(error: unknown) {
     [],
   );
 
+  function refreshSavedGlobalMarketSummary() {
+    const inventory: GlobalMarketRefreshInventoryItem[] =
+      buildInstrumentTradeSummaries(currentExecutionSnapshot()).map(
+        ({ instrument }) => ({
+          instrumentId: instrument.id,
+          symbol: instrument.symbol,
+          market: instrument.market,
+        }),
+      );
+    const summary = summarizePersistedMarketDataJobs(
+      Object.values(marketDataJobsRef.current),
+      inventory,
+    );
+    setFailedMarketDataIds((current) =>
+      activeMarketRefreshRuns.current.has("all")
+        ? current
+        : summary.retryableInstrumentIds,
+    );
+    setMarketDataRefresh((current) => {
+      // A single-stock completion may race an explicitly running global
+      // batch. Its durable job is still useful for the next batch summary,
+      // but it must never replace the batch progress in the header.
+      if (
+        current.running ||
+        activeMarketRefreshRuns.current.has("all")
+      ) {
+        return current;
+      }
+      return {
+        ...EMPTY_MARKET_DATA_REFRESH,
+        total: summary.total,
+        processed: summary.processed,
+        completed: summary.completed,
+        partial: summary.partial,
+        failed: summary.failed,
+        retryable: summary.retryable,
+        failureDetails: summary.failureDetails,
+        unfinishedInstrumentIds: summary.unfinishedInstrumentIds,
+        unfinishedDetails: summary.unfinishedDetails,
+        // The terminal counts are reconstructed from durable per-instrument
+        // jobs. Keep the label explicit so it cannot be read as a new batch
+        // total when this was a single-stock refresh or a retry subset.
+        restored: true,
+      };
+    });
+  }
+
+  function cancelMarketDataUpdate() {
+    const run = activeMarketRefreshRuns.current.get("all");
+    if (!run) return;
+    refreshCancellation.current.cancel("all");
+    for (const instrumentId of run.snapshotIds) {
+      marketDataAbortControllers.current[instrumentId]?.abort();
+    }
+  }
+
   async function startMarketDataUpdate(
-    instrumentIds: string[],
-    options: {
-      executions?: TradeExecution[];
-      refreshMetadata?: boolean;
-      batch?: boolean;
-    } = {},
+    instrumentIds?: readonly string[],
+    options: MarketDataUpdateOptions = {},
   ) {
-    const uniqueInstrumentIds = [...new Set(instrumentIds)];
+    return withGlobalMarketRefreshLock(
+      () => runMarketDataUpdate(instrumentIds, options),
+      () => setNavigationNotice(
+        activeMarketRefreshRuns.current.size > 0
+          ? "当前页面正在更新行情，请等待完成。"
+          : "其他页面正在更新行情，请稍后再试。",
+      ),
+    );
+  }
+
+  async function runMarketDataUpdate(
+    instrumentIds?: readonly string[],
+    options: MarketDataUpdateOptions = {},
+  ) {
+    // Snapshot both the inventory and its derived summaries before any
+    // provider work starts. Imports completed during this run are reported and
+    // picked up by the next explicit batch instead of changing the work set
+    // underneath the queue.
+    const snapshotExecutions = options.executions ?? currentExecutionSnapshot();
+    const snapshotSummaries = buildInstrumentTradeSummaries(snapshotExecutions);
+    const uniqueInstrumentIds = [
+      ...new Set(
+        instrumentIds ?? snapshotSummaries.map((summary) => summary.instrument.id),
+      ),
+    ];
     if (uniqueInstrumentIds.length === 0) return;
-    const executions = options.executions ?? importedExecutions;
+    // The full inventory is the baseline for "new imports" even when this
+    // run is a retry subset. A retry should not report every untouched stock
+    // as newly imported merely because it was outside its target set.
+    const inventorySnapshotIds = new Set(
+      snapshotSummaries.map((summary) => summary.instrument.id),
+    );
+    const key = options.batch
+      ? "all"
+      : `instrument:${[...uniqueInstrumentIds].sort().join(",")}`;
+    const globalRun = activeMarketRefreshRuns.current.get("all");
+    if (
+      globalRun &&
+      !options.batch &&
+      uniqueInstrumentIds.some((id) => globalRun.snapshotIds.has(id))
+    ) {
+      return globalRun.promise;
+    }
+    const existingRun = activeMarketRefreshRuns.current.get(key);
+    if (existingRun) return existingRun.promise;
+    const cancellation = refreshCancellation.current.begin(key);
+    if (cancellation.duplicate) {
+      return activeMarketRefreshRuns.current.get(key)?.promise;
+    }
+    const snapshotIds = new Set(uniqueInstrumentIds);
+    let resolveCompletion!: () => void;
+    const completion = new Promise<void>((resolve) => {
+      resolveCompletion = resolve;
+    });
+    activeMarketRefreshRuns.current.set(key, {
+      key,
+      controller: cancellation.controller,
+      promise: completion,
+      snapshotIds,
+      batch: Boolean(options.batch),
+    });
+    try {
+    const executions = snapshotExecutions;
     const summariesById = new Map(
       buildInstrumentTradeSummaries(executions).map((item) => [
         item.instrument.id,
@@ -2024,8 +2328,13 @@ function isAbortError(error: unknown) {
       ]),
     );
     const marketDataFetcher = options.batch
-      ? createMarketDataFetcher(fetch)
+      ? createMarketDataFetcher((input, init) =>
+          fetch(input, { ...init, cache: "no-store" }),
+        )
       : fetch;
+    const refreshSnapshots = new Map<string, MarketDataRefreshSnapshot>();
+    const cancelledRestoreWrites: Promise<void>[] = [];
+    const cancelledRestoreStorageFailures = new Set<string>();
 
     if (options.batch) {
       setFailedMarketDataIds([]);
@@ -2036,11 +2345,141 @@ function isAbortError(error: unknown) {
       });
     }
 
-    const results = await runRefreshQueue(
+    const restoreCancelledSnapshot = (instrumentId: string) => {
+      const snapshot = refreshSnapshots.get(instrumentId);
+      if (
+        !snapshot ||
+        marketDataRequestSequences.current[instrumentId] !== snapshot.sequence
+      ) {
+        return;
+      }
+      const restoreStatus = (
+        status: MarketDataSyncStatus,
+        hasData: boolean,
+      ): MarketDataSyncStatus =>
+        status === "syncing"
+          ? hasData
+            ? "stale"
+            : "not-requested"
+          : status;
+      const restored = {
+        ...snapshot.state,
+        dailyStatus: restoreStatus(
+          snapshot.state.dailyStatus,
+          Boolean(
+            snapshot.state.daily.length || snapshot.state.dailyCoverage.length,
+          ),
+        ),
+        intradayStatus: restoreStatus(
+          snapshot.state.intradayStatus,
+          Boolean(
+            snapshot.state.intraday.length ||
+              snapshot.state.intradayCoverage.length,
+          ),
+        ),
+        dailyMessage:
+          snapshot.state.dailyMessage ?? "行情更新已取消，保留原有日线缓存。",
+        intradayMessage:
+          snapshot.state.intradayMessage ?? "行情更新已取消，保留原有小时线缓存。",
+      };
+      setMarketStates((current) =>
+        marketDataRequestSequences.current[instrumentId] === snapshot.sequence
+          ? { ...current, [instrumentId]: restored }
+          : current,
+      );
+      const summary = summariesById.get(instrumentId);
+      if (!summary) return;
+      const cancelledMessage = "本次行情更新已取消，原有本地缓存已保留；可再次恢复。";
+      const previousJob = snapshot.job;
+      // A cancelled recovery must remain recoverable. Preserve a terminal
+      // saved job exactly; for a missing or unfinished job, record the new
+      // attempt as not-requested so it remains outside failed/retry counts.
+      const job: MarketDataJob = previousJob &&
+        !isUnfinishedMarketDataJob(previousJob)
+        ? previousJob
+        : {
+            instrumentId,
+            symbol: summary.instrument.symbol,
+            market: summary.instrument.market,
+            requestedAt: new Date().toISOString(),
+            status: "not-requested",
+            message: cancelledMessage,
+            intervals: (previousJob?.intervals.length
+              ? previousJob.intervals
+              : [
+                  { interval: "1D" as const, status: "not-requested" as const },
+                  { interval: "1h" as const, status: "not-requested" as const },
+                ]
+            ).map((interval) =>
+              interval.status === "syncing" || interval.status === "not-requested"
+                ? {
+                    ...interval,
+                    status: "not-requested" as const,
+                    message: cancelledMessage,
+                    error: undefined,
+                  }
+                : interval,
+            ),
+          };
+      if (marketDataRequestSequences.current[instrumentId] !== snapshot.sequence) {
+        return;
+      }
+      marketDataJobsRef.current[instrumentId] = job;
+      setMarketDataJobs((current) => ({ ...current, [instrumentId]: job }));
+      const persistRestore = async () => {
+        if (marketDataRequestSequences.current[instrumentId] !== snapshot.sequence) {
+          return;
+        }
+        try {
+          await storageClient.putMarketDataJob(job);
+        } catch {
+          if (marketDataRequestSequences.current[instrumentId] !== snapshot.sequence) {
+            return;
+          }
+          const message = "行情缓存已保留，但取消后的同步状态未能保存；请重试该标的。";
+          cancelledRestoreStorageFailures.add(instrumentId);
+          const failedJob: MarketDataJob = {
+            ...job,
+            status: "storage-error",
+            message,
+            intervals: job.intervals.map((interval) => ({
+              ...interval,
+              status: "storage-error",
+              message,
+            })),
+          };
+          marketDataJobsRef.current[instrumentId] = failedJob;
+          setMarketDataJobs((current) => ({
+            ...current,
+            [instrumentId]: failedJob,
+          }));
+          setMarketStates((current) => {
+            const state = current[instrumentId];
+            if (!state) return current;
+            return {
+              ...current,
+              [instrumentId]: {
+                ...state,
+                dailyStatus: "storage-error",
+                intradayStatus: "storage-error",
+                dailyMessage: message,
+                intradayMessage: message,
+              },
+            };
+          });
+          setImportError(message);
+        }
+      };
+      cancelledRestoreWrites.push(persistRestore());
+    };
+
+    const results = await runRefreshQueue<string, MarketDataRefreshOutcome>(
       uniqueInstrumentIds,
       async (instrumentId) => {
         const summary = summariesById.get(instrumentId);
-        if (!summary) return undefined;
+        if (!summary) {
+          throw new Error(`找不到待更新的标的：${instrumentId}`);
+        }
         if (options.batch) {
           setMarketDataRefresh((current) => ({
             ...current,
@@ -2053,6 +2492,17 @@ function isAbortError(error: unknown) {
         marketDataAbortControllers.current[instrumentId]?.abort();
         const abortController = new AbortController();
         marketDataAbortControllers.current[instrumentId] = abortController;
+        if (options.batch) {
+          refreshSnapshots.set(instrumentId, {
+            state: marketStates[instrumentId] ?? emptyMarketState(),
+            sequence: requestSequence,
+            job: marketDataJobsRef.current[instrumentId],
+          });
+        }
+        const requestSignal = composeAbortSignals(
+          cancellation.signal,
+          abortController.signal,
+        );
         const repository = marketDataRepository;
         let cached = marketStates[instrumentId] ?? emptyMarketState();
         try {
@@ -2067,10 +2517,14 @@ function isAbortError(error: unknown) {
           };
         }
         if (
+          cancellation.signal.aborted ||
           marketDataRequestSequences.current[instrumentId] !==
           requestSequence
         ) {
-          return;
+          if (cancellation.signal.aborted) {
+            throw cancellation.signal.reason ?? new DOMException("行情更新已取消", "AbortError");
+          }
+          throw new DOMException("行情更新已被较新的请求取代", "AbortError");
         }
         setMarketStates((current) => ({
           ...current,
@@ -2179,7 +2633,7 @@ function isAbortError(error: unknown) {
                   {
                     repository: metadataRepository,
                     fetcher: fetch,
-                    signal: abortController.signal,
+                    signal: requestSignal,
                   },
                 ).catch(() => undefined);
                 if (!existingRefresh) {
@@ -2237,7 +2691,7 @@ function isAbortError(error: unknown) {
               required: ranges.daily,
               repository,
               fetcher: marketDataFetcher,
-              signal: abortController.signal,
+              signal: requestSignal,
               retryUnavailable: true,
             }),
             syncIntradayMarketDataForRanges({
@@ -2250,8 +2704,9 @@ function isAbortError(error: unknown) {
                 : [ranges.intraday],
               repository,
               fetcher: marketDataFetcher,
-              signal: abortController.signal,
+              signal: requestSignal,
               interval: "1h",
+              forceRefresh: Boolean(options.refreshMetadata || options.batch),
             }),
           ]);
           if (
@@ -2260,20 +2715,30 @@ function isAbortError(error: unknown) {
             (intradayResult.status === "rejected" &&
               isAbortError(intradayResult.reason))
           ) {
-            return;
+            if (cancellation.signal.aborted) {
+              throw cancellation.signal.reason ?? new DOMException("行情更新已取消", "AbortError");
+            }
+            throw new DOMException("行情更新已被较新的请求取代", "AbortError");
           }
           if (dailyResult.status === "fulfilled") {
-            next.daily = dailyResult.value.candles;
-            next.dailyStatus = dailyResult.value.status;
-            next.dailyError = undefined;
-            next.dailyMessage =
-              dailyResult.value.status === "latest-available"
+            // The range worker may return a partial value with an error
+            // alongside usable candles. Keep that optional error when it is
+            // present so the persisted job can expose the failed range.
+            const dailyValue = dailyResult.value as typeof dailyResult.value & {
+              error?: MarketDataErrorDetail;
+            };
+            next.daily = dailyValue.candles;
+            next.dailyStatus = dailyValue.status;
+            next.dailyError = dailyValue.error;
+            next.dailyMessage = dailyValue.error
+              ? `日线：${dailyValue.error.message}`
+              : dailyValue.status === "latest-available"
                 ? "尾部仍待补齐，已保留本地行情；可再次更新重试"
-                : dailyResult.value.status === "partial"
+                : dailyValue.status === "partial"
                 ? "日线更新已完成，仍有缺口"
-                : dailyResult.value.source === "cache"
+                : dailyValue.source === "cache"
                 ? "日线已使用本地缓存"
-                : `日线已补齐 ${dailyResult.value.requestedRanges.length} 个缺口`;
+                : `日线已补齐 ${dailyValue.requestedRanges.length} 个缺口`;
             try {
               next.dailyCoverage = await repository.getCoverage(
                 instrumentId,
@@ -2293,8 +2758,17 @@ function isAbortError(error: unknown) {
                 : "日线行情更新失败";
           }
           if (intradayResult.status === "fulfilled") {
-            next.intraday = intradayResult.value.candles;
-            next.intradayCoverage = intradayResult.value.coverage;
+            // An unavailable hourly refresh must not erase usable legacy
+            // 15-minute candles already displayed by this review.
+            if (
+              intradayResult.value.candles.length > 0 ||
+              next.intraday.length === 0 ||
+              next.intradayInterval === "1h"
+            ) {
+              next.intradayInterval = "1h";
+              next.intraday = intradayResult.value.candles;
+              next.intradayCoverage = intradayResult.value.coverage;
+            }
             next.intradayStatus = intradayResult.value.status;
             next.intradayError = intradayResult.value.error;
             next.intradayMessage =
@@ -2316,6 +2790,9 @@ function isAbortError(error: unknown) {
           }
         }
         await metadataRefresh;
+        if (cancellation.signal.aborted) {
+          throw cancellation.signal.reason ?? new DOMException("行情更新已取消", "AbortError");
+        }
         if (metadataPersistenceFailed) {
           next.dailyStatus = "storage-error";
           next.dailyMessage =
@@ -2325,11 +2802,17 @@ function isAbortError(error: unknown) {
           marketDataRequestSequences.current[instrumentId] !==
           requestSequence
         ) {
-          return;
+          throw new DOMException("行情更新已被较新的请求取代", "AbortError");
         }
-        let overallStatus = combinedMarketDataStatus(
+        let overallStatus = displayMarketDataStatus(
           next.dailyStatus,
           next.intradayStatus,
+          {
+            hasDailyData: Boolean(next.daily.length),
+            hasIntradayData: Boolean(
+              next.intraday.length,
+            ),
+          },
         );
         const completedJob: MarketDataJob = {
           instrumentId,
@@ -2348,28 +2831,42 @@ function isAbortError(error: unknown) {
               interval: "1D",
               status: next.dailyStatus,
               message: next.dailyMessage,
+              coverageStart: ranges.daily.startDate,
+              coverageEnd: ranges.daily.endDate,
               ...(next.dailyError ? { error: next.dailyError } : {}),
             },
             {
               interval: "1h",
               status: next.intradayStatus,
               message: next.intradayMessage,
+              coverageStart:
+                intradayRanges[0]?.startTime ?? ranges.intraday.startTime,
+              coverageEnd:
+                intradayRanges.at(-1)?.endTime ?? ranges.intraday.endTime,
               ...(next.intradayError ? { error: next.intradayError } : {}),
             },
           ],
         };
+        let persistedTerminalJob = false;
         try {
           await storageClient.putMarketDataJob(completedJob);
           marketDataJobsRef.current[instrumentId] = completedJob;
+          persistedTerminalJob = true;
           setMarketDataJobs((current) => ({
             ...current,
             [instrumentId]: completedJob,
           }));
         } catch {
           next.dailyStatus = "storage-error";
-          overallStatus = combinedMarketDataStatus(
+          overallStatus = displayMarketDataStatus(
             next.dailyStatus,
             next.intradayStatus,
+            {
+              hasDailyData: Boolean(next.daily.length),
+              hasIntradayData: Boolean(
+                next.intraday.length,
+              ),
+            },
           );
           next.dailyMessage = "行情缓存保留，但同步状态写入失败";
         }
@@ -2377,52 +2874,296 @@ function isAbortError(error: unknown) {
           ...current,
           [instrumentId]: next,
         }));
+        if (persistedTerminalJob && !options.batch) {
+          refreshSavedGlobalMarketSummary();
+        }
         if (
           marketDataAbortControllers.current[instrumentId] ===
           abortController
         ) {
           delete marketDataAbortControllers.current[instrumentId];
         }
-        return overallStatus;
+        return {
+          status: overallStatus,
+          retryable:
+            Boolean(next.dailyError || next.intradayError) ||
+            isHardMarketDataFailure(overallStatus),
+        } satisfies MarketDataRefreshOutcome;
       },
       {
         concurrency: Math.min(
           options.batch ? 3 : 2,
           uniqueInstrumentIds.length,
         ),
-        onItemSettled: options.batch
-          ? ({ completed, result }) => {
-              const status =
-                result.status === "fulfilled" ? result.value : undefined;
+        onItemStarted: options.batch
+          ? ({ item, active }) => {
+              const summary = summariesById.get(item);
               setMarketDataRefresh((current) => ({
                 ...current,
-                completed,
-                partial:
-                  current.partial + (status === "partial" ? 1 : 0),
-                failed:
-                  current.failed +
-                  (result.status === "rejected" ||
-                  isHardMarketDataFailure(status)
-                    ? 1
-                    : 0),
+                active,
+                current: summary?.instrument.name ?? item,
               }));
             }
           : undefined,
+              onItemSettled: options.batch
+          ? ({ completed, active, result }) => {
+              const outcome =
+                result.status === "fulfilled" ? result.value : undefined;
+              const status = outcome?.status;
+              const retryable = Boolean(
+                outcome?.retryable ||
+                (status && isHardMarketDataFailure(status)) ||
+                result.status === "rejected",
+              );
+              const category = result.status === "fulfilled"
+                ? classifyMarketDataRefreshStatus(status)
+                : result.status === "rejected"
+                  ? "failed" as const
+                  : undefined;
+              setMarketDataRefresh((current) => ({
+                ...current,
+                // `processed` is the queue's settled count. The result
+                // counters below are mutually exclusive; retryable is an
+                // independent action count and may overlap partial results.
+                processed: completed,
+                completed:
+                  current.completed +
+                  (category === "complete" ? 1 : 0),
+                active,
+                partial:
+                  current.partial + (category === "partial" ? 1 : 0),
+                failed:
+                  current.failed +
+                  (category === "failed" ? 1 : 0),
+                retryable:
+                  (current.retryable ?? current.failed) +
+                  (retryable ? 1 : 0),
+                cancelled:
+                  (current.cancelled ?? 0) +
+                  (result.status === "cancelled" ? 1 : 0),
+              }));
+              if (result.status === "cancelled") {
+                restoreCancelledSnapshot(result.item);
+              }
+              refreshSnapshots.delete(result.item);
+            }
+          : undefined,
+        signal: options.batch ? cancellation.signal : undefined,
       },
     );
 
+    // A cancelled worker first restores the in-memory state and then queues a
+    // terminal job write. Wait for every such write before exposing the batch
+    // as idle, otherwise a subsequent refresh can be overwritten by the old
+    // fire-and-forget cancellation write.
+    if (cancelledRestoreWrites.length > 0) {
+      await Promise.allSettled(cancelledRestoreWrites);
+    }
+
     if (options.batch) {
-      const failedIds = results.flatMap((result) => {
-        if (result.status === "rejected") return [result.item];
-        return isHardMarketDataFailure(result.value) ? [result.item] : [];
-      });
-      setFailedMarketDataIds(failedIds);
+      const failedIds = [
+        ...new Set([
+          ...failedRefreshItems(
+            results,
+            (outcome: MarketDataRefreshOutcome) =>
+              outcome.retryable || isHardMarketDataFailure(outcome.status),
+          ),
+          ...cancelledRestoreStorageFailures,
+        ]),
+      ];
+      const cancelled = results.filter((result) => result.status === "cancelled").length;
+      const currentIds = new Set(
+        buildInstrumentTradeSummaries(currentExecutionSnapshot()).map(
+          (summary) => summary.instrument.id,
+        ),
+      );
+      const newlyImported = [...currentIds].filter(
+        (id) => !inventorySnapshotIds.has(id),
+      ).length;
+      const persistedRefreshSummary = summarizePersistedMarketDataJobs(
+        uniqueInstrumentIds
+          .map((id) => marketDataJobsRef.current[id])
+          .filter((job): job is MarketDataJob => Boolean(job)),
+        uniqueInstrumentIds,
+      );
+      const persistedFailureDetails = new Map(
+        persistedRefreshSummary.failureDetails.map((detail) => [
+          detail.instrumentId,
+          detail,
+        ]),
+      );
+      const failureDetails: GlobalMarketRefreshFailureDetail[] = [];
+      for (const result of results) {
+        if (result.status === "cancelled") {
+          const detail = persistedFailureDetails.get(result.item);
+          if (detail) failureDetails.push(detail);
+          continue;
+        }
+        const outcome = result.status === "fulfilled" ? result.value : undefined;
+        const isRetryable = Boolean(
+          outcome?.retryable ||
+          (outcome?.status && isHardMarketDataFailure(outcome.status)) ||
+          result.status === "rejected",
+        );
+        if (!isRetryable && !cancelledRestoreStorageFailures.has(result.item)) {
+          continue;
+        }
+        const persisted = persistedFailureDetails.get(result.item);
+        if (persisted) {
+          failureDetails.push(persisted);
+          continue;
+        }
+        const summary = summariesById.get(result.item);
+        if (!summary) continue;
+        const reason = result.status === "rejected"
+          ? result.reason instanceof Error
+            ? result.reason.message
+            : "行情更新失败"
+          : outcome?.status
+            ? `行情更新状态：${outcome.status}`
+            : "该标的行情更新未完成";
+        failureDetails.push(
+          failureDetailForReason({
+            instrumentId: result.item,
+            symbol: summary.instrument.symbol,
+            market: summary.instrument.market,
+            reason,
+            status: result.status === "fulfilled" ? outcome?.status : "error",
+          }),
+        );
+      }
+      const finalInventory: GlobalMarketRefreshInventoryItem[] =
+        buildInstrumentTradeSummaries(currentExecutionSnapshot()).map(
+          ({ instrument }) => ({
+            instrumentId: instrument.id,
+            symbol: instrument.symbol,
+            market: instrument.market,
+          }),
+        );
+      const finalSummary = summarizePersistedMarketDataJobs(
+        Object.values(marketDataJobsRef.current),
+        finalInventory,
+      );
+      const finalFailureDetails = new Map(
+        finalSummary.failureDetails.map((detail) => [
+          detail.instrumentId,
+          detail,
+        ]),
+      );
+      for (const detail of failureDetails) {
+        if (!finalFailureDetails.has(detail.instrumentId)) {
+          finalFailureDetails.set(detail.instrumentId, detail);
+        }
+      }
+      const finalRetryableIds = [
+        ...new Set([
+          ...finalSummary.retryableInstrumentIds,
+          ...failedIds,
+        ]),
+      ];
+      setFailedMarketDataIds(finalRetryableIds);
       setMarketDataRefresh((current) => ({
         ...current,
         running: false,
         current: undefined,
+        active: 0,
+        cancelled,
+        newlyImported,
+        total: finalSummary.total || current.total,
+        processed: finalSummary.total > 0 ? finalSummary.processed : current.processed,
+        completed: finalSummary.total > 0 ? finalSummary.completed : current.completed,
+        partial: finalSummary.total > 0 ? finalSummary.partial : current.partial,
+        failed: finalSummary.total > 0
+          ? finalSummary.failed
+          : current.failed + cancelledRestoreStorageFailures.size,
+        retryable: finalSummary.total > 0
+          ? finalRetryableIds.length
+          : (current.retryable ?? current.failed) + cancelledRestoreStorageFailures.size,
+        unfinishedInstrumentIds: finalSummary.unfinishedInstrumentIds,
+        unfinishedDetails: finalSummary.unfinishedDetails,
+        failureDetails: [...finalFailureDetails.values()],
+        // This is the saved per-instrument inventory after the queue settles;
+        // it is not a claim that every row belonged to this run.
+        restored: true,
       }));
     }
+    } finally {
+      refreshCancellation.current.finish(key, cancellation.controller);
+      activeMarketRefreshRuns.current.delete(key);
+      resolveCompletion();
+    }
+  }
+
+  async function recoverUnfinishedMarketData() {
+    if (activeMarketRefreshRuns.current.size > 0) {
+      setNavigationNotice("当前页面正在更新行情，请等待完成。");
+      return;
+    }
+
+    await withGlobalMarketRefreshLock(
+      async () => {
+        if (activeMarketRefreshRuns.current.size > 0) {
+          setNavigationNotice("当前页面正在更新行情，请等待完成。");
+          return;
+        }
+        let bootstrap;
+        try {
+          bootstrap = await storageClient.getBootstrap();
+        } catch {
+          setNavigationNotice("无法读取已保存的行情状态，请稍后再试。");
+          return;
+        }
+        const inventory: GlobalMarketRefreshInventoryItem[] =
+          buildInstrumentTradeSummaries(currentExecutionSnapshot()).map(
+            ({ instrument }) => ({
+              instrumentId: instrument.id,
+              symbol: instrument.symbol,
+              market: instrument.market,
+            }),
+          );
+        const jobs = Object.fromEntries(
+          bootstrap.marketDataJobs.map((job) => [job.instrumentId, job]),
+        );
+        const summary = summarizePersistedMarketDataJobs(
+          bootstrap.marketDataJobs,
+          inventory,
+        );
+        marketDataJobsRef.current = jobs;
+        setMarketDataJobs(jobs);
+        setFailedMarketDataIds(summary.retryableInstrumentIds);
+        if (summary.unfinishedInstrumentIds.length === 0) {
+          setMarketDataRefresh((current) =>
+            current.running
+              ? current
+              : {
+                  ...EMPTY_MARKET_DATA_REFRESH,
+                  total: summary.total,
+                  processed: summary.processed,
+                  completed: summary.completed,
+                  partial: summary.partial,
+                  failed: summary.failed,
+                  retryable: summary.retryable,
+                  failureDetails: summary.failureDetails,
+                  unfinishedInstrumentIds: summary.unfinishedInstrumentIds,
+                  unfinishedDetails: summary.unfinishedDetails,
+                  restored: true,
+                },
+          );
+          setNavigationNotice("没有仍未完成的行情任务，已刷新已保存状态。");
+          return;
+        }
+        setNavigationNotice(null);
+        await runMarketDataUpdate(summary.unfinishedInstrumentIds, {
+          refreshMetadata: true,
+          batch: true,
+        });
+      },
+      () => setNavigationNotice(
+        activeMarketRefreshRuns.current.size > 0
+          ? "当前页面正在更新行情，请等待完成。"
+          : "其他页面正在更新行情，请稍后再试。",
+      ),
+    );
   }
 
   function previewForImport(
@@ -3259,17 +4000,14 @@ function isAbortError(error: unknown) {
         </div>
         <nav className="app-nav" aria-label="主导航">
           <button
-            className={activeView === "review" ? "active" : ""}
-            aria-current={activeView === "review" ? "page" : undefined}
+            className={activeView === "dashboard" ? "active" : ""}
+            aria-current={activeView === "dashboard" ? "page" : undefined}
             onClick={() => {
               setPlaying(false);
-              setHistoryMode("replay");
-              const draft = drawingDraftsRef.current[activeEpisodeId];
-              if (draft) setDrawingHistory(createDrawingHistory(draft.drawings));
-              setActiveView("review");
+              setActiveView("dashboard");
             }}
           >
-            逐笔复盘
+            统计总览
           </button>
           <button
             className={activeView === "library" ? "active" : ""}
@@ -3297,6 +4035,29 @@ function isAbortError(error: unknown) {
                 ? "演示行情"
                 : "等待导入"}
           </span>
+          <GlobalMarketRefresh
+            instrumentCount={importedInstruments.length}
+            state={marketDataRefresh}
+            onRefresh={() => void startMarketDataUpdate(undefined, {
+              refreshMetadata: true,
+              batch: true,
+            })}
+            onCancel={cancelMarketDataUpdate}
+            onRetryFailed={() => void startMarketDataUpdate(failedMarketDataIds, {
+              refreshMetadata: true,
+              batch: true,
+            })}
+            onRecoverUnfinished={() => void recoverUnfinishedMarketData()}
+          />
+          {showDemo && activeView !== "review" && (
+            <button
+              type="button"
+              className="secondary-action"
+              onClick={() => setActiveView("review")}
+            >
+              返回演示复盘
+            </button>
+          )}
           <ImportActions {...importActions} compact />
           {activeView === "review" && <button type="button" className="stock-list-trigger" aria-label="打开股票列表" aria-haspopup="dialog" aria-expanded={stockDrawerOpen} onClick={() => setStockDrawerOpen(true)}><Menu size={19} /><span>股票</span></button>}
           <div className="user-avatar">ZL</div>
@@ -3318,14 +4079,44 @@ function isAbortError(error: unknown) {
       <div
         inert={Boolean(dataTarget)}
         className={`workspace ${activeView === "review" ? `${layout.left ? "" : "layout-left-hidden"} ${layout.right ? "" : "layout-right-hidden"}` : ""} ${!showDemo && importedInstruments.length === 0 && activeView === "review" ? "empty-mode" : ""} ${
-          activeView === "library"
+          activeView === "dashboard"
+            ? "dashboard-mode"
+            : activeView === "library"
             ? "library-mode"
             : activeView === "insights"
               ? "insights-mode"
               : ""
         }`}
       >
-        {activeView === "library" && (showDemo || importedInstruments.length > 0) ? (
+        <div
+          aria-hidden={activeView !== "dashboard"}
+          style={{
+            display: activeView === "dashboard" ? "block" : "none",
+            gridColumn: "1 / -1",
+            minWidth: 0,
+            minHeight: 0,
+            overflow: "auto",
+          }}
+        >
+          <ReviewDashboard
+            entries={tradeLibraryEntries}
+            colorScheme={settings.colorScheme}
+            onOpenInReview={(instrumentId, episodeId, queueIds) => {
+              const summary = importedInstruments.find((item) => item.instrument.id === instrumentId);
+              if (!summary || !selectImportedSummary(summary, episodeId)) {
+                setNavigationNotice("该交易回合已变化，请返回统计总览重新选择。");
+                return;
+              }
+              setNavigationNotice(null);
+              setReviewQueueIds(queueIds);
+              setHistoryMode("history");
+              setActivePanelTab("notes");
+              setLibraryTarget(undefined);
+              setActiveView("review");
+            }}
+          />
+        </div>
+        {activeView !== "dashboard" && activeView === "library" && (showDemo || importedInstruments.length > 0) ? (
           <TradeLibrary
             defaultMode={showDemo ? "stocks" : "queue"}
             key={libraryTarget?.requestId ?? 0}
@@ -3359,11 +4150,11 @@ function isAbortError(error: unknown) {
             onInspectData={openDataCheck}
             onRefreshMarketData={(instrumentId) => void startMarketDataUpdate([instrumentId], { refreshMetadata: true })}
           />
-        ) : activeView === "insights" ? (
+        ) : activeView !== "dashboard" && activeView === "insights" ? (
           <ReviewSummary filterStore={{filters:summaryFilters,setFilters:setSummaryFilters}} draftStore={{drafts:summaryDrafts,setDrafts:setSummaryDrafts}} entries={tradeLibraryEntries} scopeId={summaryScope} onScopeChange={setRequestedSummaryScope} client={summaryClient} onOpenEpisode={openLibraryEpisode}>
             {renderScopedInsights}
           </ReviewSummary>
-        ) : (
+        ) : activeView === "review" ? (
           <>
             {stockDrawerOpen && <button type="button" className="stock-drawer-backdrop" aria-label="关闭股票列表遮罩" tabIndex={-1} onClick={() => setStockDrawerOpen(false)} />}
             <aside ref={stockDrawerRef} className={`stock-sidebar-shell stock-picker-shell ${stockDrawerOpen ? "drawer-open" : ""}`} role={stockDrawerOpen ? "dialog" : undefined} aria-modal={stockDrawerOpen || undefined} aria-label={stockDrawerOpen ? "选择复盘股票" : undefined}>
@@ -3421,7 +4212,7 @@ function isAbortError(error: unknown) {
             />
             </aside>
             <div className="review-content" inert={stockDrawerOpen || Boolean(dataTarget)}>
-            {(showDemo || selectedImportedInstrument) && <div className={`stock-context-shell ${mobileTradesOpen ? "mobile-trades-open" : ""}`}><StockEpisodeNavigation mobileOpen={mobileTradesOpen} onCloseMobile={() => setMobileTradesOpen(false)} instrument={selectedImportedInstrument?.instrument} episodes={episodes} selectedEpisodeId={selectedEpisode?.id} cursor={activeCursor} onSelectEpisode={id => { selectEpisode(id); setMobileTradesOpen(false); }} onLocate={(cursor) => { setPlaying(false); setImportedCursor(cursor); setMobileTradesOpen(false); }} onNext={nextImportedExecution} onSwitchStock={() => { setMobileTradesOpen(false); setStockDrawerOpen(true); }} onLibrary={() => { setMobileTradesOpen(false); returnToLibrary(); }} /></div>}
+            {(showDemo || selectedImportedInstrument) && <div className={`stock-context-shell ${mobileTradesOpen ? "mobile-trades-open" : ""}`}><StockEpisodeNavigation mobileOpen={mobileTradesOpen} onCloseMobile={() => setMobileTradesOpen(false)} instrument={selectedImportedInstrument?.instrument} episodes={episodes} selectedEpisodeId={selectedEpisode?.id} cursor={activeCursor} onSelectEpisode={id => { selectEpisode(id); setMobileTradesOpen(false); }} onLocate={(cursor) => { setPlaying(false); setImportedCursor(cursor); setMobileTradesOpen(false); }} onLocateRequest={requestExecutionLocation} onNext={nextImportedExecution} onSwitchStock={() => { setMobileTradesOpen(false); setStockDrawerOpen(true); }} onLibrary={() => { setMobileTradesOpen(false); returnToLibrary(); }} /></div>}
             {!showDemo && !selectedImportedInstrument ? (
               <section
                 className="review-workspace review-workspace-empty"
@@ -3572,6 +4363,9 @@ function isAbortError(error: unknown) {
               onSpeedChange={setSpeed}
               onActivePanelTabChange={setActivePanelTab}
               onDrawerOpenChange={setDrawerOpen}
+              locateRequest={locateRequest}
+              onLocateResult={handleLocateResult}
+              onLocateTimeframeChange={setReviewTimeframe}
               onSaveReview={saveEpisodeReview}
               onCompleteReview={selectedImportedInstrument ? continueFromReview : undefined}
               reviewExtras={selectedEpisode ? reviewExtras(selectedEpisode) : undefined}
@@ -3579,7 +4373,7 @@ function isAbortError(error: unknown) {
             )}
             </div>
           </>
-        )}
+        ) : null}
       </div>
 
       {dataTarget && <StockDataDialog instrument={dataTarget.instrument} initialAccountId={dataTarget.accountId} cursor={dataTarget.cursor} executions={importedExecutions.filter(execution => execution.instrument.id === dataTarget.instrument.id)} marketSummary={marketDataStatusLabel(marketDataStatuses[dataTarget.instrument.id] ?? "not-requested")} marketDetails={[

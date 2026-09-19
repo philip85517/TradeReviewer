@@ -68,11 +68,12 @@ input:focus-visible {
 }
 
 .app-header {
-  height: 58px;
-  flex: 0 0 58px;
+  min-height: 58px;
+  height: auto;
+  flex: 0 0 auto;
   display: flex;
-  align-items: center;
-  padding: 0 16px;
+  align-items: flex-start;
+  padding: 13px 16px;
   border-bottom: 1px solid var(--line);
   background: rgba(11, 16, 24, 0.94);
   backdrop-filter: blur(14px);
@@ -114,7 +115,8 @@ input:focus-visible {
 }
 
 .app-nav {
-  align-self: stretch;
+  align-self: flex-start;
+  min-height: 32px;
   display: flex;
   align-items: stretch;
   gap: 6px;
@@ -149,7 +151,7 @@ input:focus-visible {
 .header-actions {
   margin-left: auto;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
 }
 

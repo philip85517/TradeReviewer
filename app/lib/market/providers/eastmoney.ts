@@ -21,10 +21,11 @@ import {
 } from "./errors";
 
 type EastmoneyEnvelope = {
+  rc?: unknown;
   data?: {
     code?: unknown;
     klines?: unknown;
-  };
+  } | null;
 };
 
 const EASTMONEY_PUSH_TOKEN = "7eea3edcaed734bea9cbfc24409ed989";
@@ -37,6 +38,14 @@ function klineEndpoint(market: SupportedMarket) {
     return "https://63.push2his.eastmoney.com/api/qt/stock/kline/get";
   }
   return "https://push2his.eastmoney.com/api/qt/stock/kline/get";
+}
+
+function isExplicitEastmoneyNoDataResponse(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return false;
+  }
+  const envelope = value as { rc?: unknown; data?: unknown };
+  return envelope.rc === 0 && envelope.data === null;
 }
 
 function validateEastmoneyIdentity(value: unknown, providerSymbol: string) {
@@ -148,6 +157,12 @@ export class EastmoneyProvider implements MarketDataProvider {
       `${klineEndpoint(request.market)}?${query}`,
     );
     const value = await readProviderJson(response, "东方财富行情");
+    if (isExplicitEastmoneyNoDataResponse(value)) {
+      throw new MarketDataProviderError(
+        "no-data",
+        "东方财富未返回该股票数据",
+      );
+    }
     try {
       validateEastmoneyIdentity(value, providerSymbol);
       const candles = parseEastmoneyDaily(value);
@@ -210,6 +225,12 @@ export class EastmoneyProvider implements MarketDataProvider {
       `${klineEndpoint(request.market)}?${query}`,
     );
     const value = await readProviderJson(response, "东方财富行情");
+    if (isExplicitEastmoneyNoDataResponse(value)) {
+      throw new MarketDataProviderError(
+        "no-data",
+        "东方财富未返回该股票数据",
+      );
+    }
     try {
       validateEastmoneyIdentity(value, providerSymbol);
       const parsed = parseEastmoneyIntraday(value, timeZone);

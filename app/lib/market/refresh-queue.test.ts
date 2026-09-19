@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { runRefreshQueue } from "./refresh-queue";
+import { failedRefreshItems, runRefreshQueue } from "./refresh-queue";
+import { RefreshCancellationService } from "./refresh-cancellation";
 
 describe("runRefreshQueue", () => {
   it("keeps active refreshes within the configured concurrency and preserves order", async () => {
@@ -48,5 +49,77 @@ describe("runRefreshQueue", () => {
       status: "fulfilled",
       value: "ok-2",
     });
+  });
+
+  it("keeps thrown and hard-status items retryable while excluding cancellations", () => {
+    const results = [
+      { item: "thrown", status: "rejected", reason: new Error("offline") },
+      { item: "hard-status", status: "fulfilled", value: "source-unavailable" },
+      { item: "partial", status: "fulfilled", value: "partial" },
+      { item: "cancelled", status: "cancelled", reason: new DOMException("cancelled", "AbortError") },
+    ] as const;
+
+    expect(
+      failedRefreshItems(results, (status) => status === "source-unavailable"),
+    ).toEqual(["thrown", "hard-status"]);
+  });
+
+  it("cancels queued items and passes the signal to active workers", async () => {
+    const controller = new AbortController();
+    let releaseFirst!: () => void;
+    const firstFinished = new Promise<void>((resolve) => {
+      releaseFirst = resolve;
+    });
+    const started: number[] = [];
+    const settled: string[] = [];
+    const run = runRefreshQueue(
+      [1, 2, 3, 4, 5],
+      async (item, _index, signal) => {
+        started.push(item);
+        expect(signal).toBe(controller.signal);
+        if (item <= 2) {
+          await firstFinished;
+          if (signal?.aborted) throw signal.reason;
+        }
+        return item;
+      },
+      {
+        concurrency: 2,
+        signal: controller.signal,
+        onItemSettled: ({ result }) => settled.push(`${result.item}:${result.status}`),
+      },
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    controller.abort();
+    releaseFirst();
+
+    const result = await run;
+    expect(started).toEqual([1, 2]);
+    expect(result.map((item) => item.status)).toEqual([
+      "cancelled",
+      "cancelled",
+      "cancelled",
+      "cancelled",
+      "cancelled",
+    ]);
+    expect(settled).toHaveLength(5);
+  });
+
+  it("does not let a late completion remove a newer cancellation run", () => {
+    const service = new RefreshCancellationService();
+    const first = service.begin("all");
+    const duplicate = service.begin("all");
+    expect(duplicate.duplicate).toBe(true);
+    expect(duplicate.controller).toBe(first.controller);
+
+    expect(service.cancel("all")).toBe(true);
+    const second = service.begin("all");
+    expect(second.duplicate).toBe(false);
+    expect(second.controller).not.toBe(first.controller);
+    expect(service.finish("all", first.controller)).toBe(false);
+    expect(service.isRunning("all")).toBe(true);
+    expect(service.finish("all", second.controller)).toBe(true);
+    expect(service.isRunning("all")).toBe(false);
   });
 });

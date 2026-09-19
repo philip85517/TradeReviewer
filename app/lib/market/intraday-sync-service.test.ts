@@ -124,7 +124,226 @@ describe("splitIntradayRequestRange", () => {
   });
 });
 
+describe("syncIntradayMarketData cache policy", () => {
+  it("bypasses the browser HTTP cache for an explicit refresh", async () => {
+    const repo = repository();
+    const fetcher = vi.fn<typeof fetch>(async (_input, init) => {
+      expect(init).toMatchObject({ cache: "no-store" });
+      return intradayResponse();
+    });
+
+    await syncIntradayMarketData({
+      ...syncOptions(repo, fetcher),
+      forceRefresh: true,
+    });
+  });
+});
+
 describe("syncIntradayMarketData", () => {
+  it("continues after an unavailable historical gap and retains both outcomes", async () => {
+    const repo = repository();
+    await repo.commitIntervalSyncResult({
+      instrumentId: "CN-SZ:000519",
+      interval: "1h",
+      candles: [],
+      coverage: [{
+        interval: "1h",
+        requestedStart: "2023-03-08T00:00:00.000Z",
+        requestedEnd: "2026-09-09T23:59:59.999Z",
+        status: "complete",
+        provider: "tencent",
+        fetchedAt: "2026-09-15T00:00:00.000Z",
+      }],
+    });
+    const fetcher = vi.fn<typeof fetch>(async (input) => {
+      const url = new URL(String(input), "http://localhost");
+      if (fetcher.mock.calls.length === 1) {
+        return Response.json(
+          { error: { code: "source-unavailable", message: "历史区间不可用" } },
+          { status: 502 },
+        );
+      }
+      return Response.json({
+        provider: "tencent",
+        providerSymbol: "sz000519",
+        fetchedAt: "2026-09-15T00:00:00.000Z",
+        interval: "1h",
+        adjustmentMode: "raw",
+        warnings: [],
+        request: {
+          instrumentId: "CN-SZ:000519",
+          symbol: "000519",
+          market: "CN-SZ",
+          interval: "1h",
+          startTime: url.searchParams.get("start"),
+          endTime: url.searchParams.get("end"),
+        },
+        candles: [
+          {
+            timestamp: "2026-09-10T01:30:00.000Z",
+            open: "10",
+            high: "11",
+            low: "9",
+            close: "10.5",
+            volume: "1000",
+          },
+          {
+            timestamp: "2026-09-10T02:30:00.000Z",
+            open: "10.5",
+            high: "11.5",
+            low: "10",
+            close: "11",
+            volume: "1100",
+          },
+        ],
+      });
+    });
+
+    const result = await syncIntradayMarketData({
+      instrumentId: "CN-SZ:000519",
+      symbol: "000519",
+      market: "CN-SZ",
+      currency: "CNY",
+      required: {
+        startTime: "2023-03-07T01:00:00.000Z",
+        endTime: "2026-09-10T03:00:00.000Z",
+      },
+      interval: "1h",
+      repository: repo,
+      fetcher,
+    });
+
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(String(fetcher.mock.calls[0]?.[0])).toContain(
+      "start=2023-03-07T01%3A00%3A00.000Z",
+    );
+    expect(String(fetcher.mock.calls[1]?.[0])).toContain(
+      "start=2026-09-10T00%3A00%3A00.000Z",
+    );
+    expect(result).toMatchObject({
+      source: "network",
+      status: "partial",
+      error: {
+        code: "source-unavailable",
+        failedCount: 1,
+        failedRanges: [{
+          start: "2023-03-07T01:00:00.000Z",
+          end: "2023-03-07T23:59:59.999Z",
+          code: "source-unavailable",
+        }],
+      },
+      candles: [
+        expect.objectContaining({
+          instrumentId: "CN-SZ:000519",
+          timestamp: "2026-09-10T01:30:00.000Z",
+        }),
+        expect.objectContaining({
+          instrumentId: "CN-SZ:000519",
+          timestamp: "2026-09-10T02:30:00.000Z",
+        }),
+      ],
+    });
+    expect(result.coverage).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        requestedStart: "2023-03-07T01:00:00.000Z",
+        status: "partial",
+        reason: "source-unavailable",
+      }),
+      expect.objectContaining({
+        requestedStart: "2026-09-10T00:00:00.000Z",
+        status: "complete",
+      }),
+    ]));
+    expect(await repo.getCandles(
+      "CN-SZ:000519",
+      "1h",
+      "2026-09-10T00:00:00.000Z",
+      "2026-09-10T03:00:00.000Z",
+    )).toEqual(expect.arrayContaining([
+      expect.objectContaining({ timestamp: "2026-09-10T01:30:00.000Z" }),
+      expect.objectContaining({ timestamp: "2026-09-10T02:30:00.000Z" }),
+    ]));
+
+    const retryFetcher = vi.fn<typeof fetch>(async (input, init) => {
+      expect(init).toMatchObject({ cache: "no-store" });
+      const url = new URL(String(input), "http://localhost");
+      expect(url.searchParams.get("start")).toBe(
+        "2023-03-07T01:00:00.000Z",
+      );
+      expect(url.searchParams.get("end")).toBe(
+        "2023-03-07T23:59:59.999Z",
+      );
+      return Response.json({
+        provider: "tencent",
+        providerSymbol: "sz000519",
+        fetchedAt: "2026-09-15T00:01:00.000Z",
+        interval: "1h",
+        adjustmentMode: "raw",
+        warnings: [],
+        request: {
+          instrumentId: "CN-SZ:000519",
+          symbol: "000519",
+          market: "CN-SZ",
+          interval: "1h",
+          startTime: url.searchParams.get("start"),
+          endTime: url.searchParams.get("end"),
+        },
+        candles: [
+          "2023-03-07T01:30:00.000Z",
+          "2023-03-07T02:30:00.000Z",
+          "2023-03-07T03:30:00.000Z",
+          "2023-03-07T05:00:00.000Z",
+          "2023-03-07T06:00:00.000Z",
+        ].map((timestamp) => ({
+          timestamp,
+          open: "10",
+          high: "11",
+          low: "9",
+          close: "10.5",
+          volume: "1000",
+        })),
+      });
+    });
+
+    const retried = await syncIntradayMarketData({
+      instrumentId: "CN-SZ:000519",
+      symbol: "000519",
+      market: "CN-SZ",
+      currency: "CNY",
+      required: {
+        startTime: "2023-03-07T01:00:00.000Z",
+        endTime: "2026-09-10T03:00:00.000Z",
+      },
+      interval: "1h",
+      repository: repo,
+      fetcher: retryFetcher,
+      forceRefresh: true,
+    });
+
+    expect(retryFetcher).toHaveBeenCalledTimes(1);
+    expect(retried).toMatchObject({
+      source: "network",
+      status: "complete",
+      requestedRanges: [{
+        startTime: "2023-03-07T01:00:00.000Z",
+        endTime: "2023-03-07T23:59:59.999Z",
+      }],
+    });
+    expect(retried.error).toBeUndefined();
+    expect(retried.failedRanges).toBeUndefined();
+    expect(retried.coverage).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        requestedStart: "2023-03-07T01:00:00.000Z",
+        requestedEnd: "2023-03-07T23:59:59.999Z",
+        status: "complete",
+      }),
+      expect.objectContaining({
+        requestedStart: "2026-09-10T00:00:00.000Z",
+        status: "complete",
+      }),
+    ]));
+  });
+
   it("syncs every requested range and returns their combined candles", async () => {
     const repo = repository();
     const fetcher = vi.fn<typeof fetch>(async (input) => {
@@ -344,9 +563,15 @@ describe("syncIntradayMarketData", () => {
 
     expect(result).toMatchObject({
       source: "network",
-      status: "source-unavailable",
+      status: "partial",
       candles: [candle],
     });
+    expect(result.coverage).toEqual([
+      expect.objectContaining({
+        status: "partial",
+        reason: "source-unavailable",
+      }),
+    ]);
   });
 
   it("returns the provider error detail with retained candles", async () => {
@@ -369,7 +594,7 @@ describe("syncIntradayMarketData", () => {
       status: "source-unavailable",
       error: {
         code: "source-unavailable",
-        message: "百度行情源未返回该股票数据",
+        message: expect.stringContaining("百度行情源未返回该股票数据"),
       },
     });
   });
@@ -429,6 +654,20 @@ describe("syncIntradayMarketData", () => {
         "2025-01-02T03:00:00.000Z",
       ),
     ).toEqual([]);
+    expect(await repo.getIntervalCoverage("HK:1810", "15m")).toEqual([]);
+  });
+
+  it("fails fast when parsing raises AbortError without an aborted signal", async () => {
+    const repo = repository();
+    const response = new Response();
+    vi.spyOn(response, "json").mockRejectedValue(
+      new DOMException("route body aborted", "AbortError"),
+    );
+    const fetcher = vi.fn<typeof fetch>(async () => response);
+
+    await expect(
+      syncIntradayMarketData(syncOptions(repo, fetcher)),
+    ).rejects.toMatchObject({ name: "AbortError" });
     expect(await repo.getIntervalCoverage("HK:1810", "15m")).toEqual([]);
   });
 

@@ -1,0 +1,595 @@
+.dashboard {
+  --dashboard-page: var(--page, #f4f7f8);
+  --dashboard-ink: var(--text, #17202b);
+  --dashboard-muted: var(--muted, #6b7785);
+  --dashboard-line: var(--line, #e4e9ee);
+  --dashboard-line-soft: var(--line-soft, #edf0f2);
+  --dashboard-soft: var(--surface-soft, #f6f8fa);
+  --dashboard-card: var(--surface, #ffffff);
+  --dashboard-card-elevated: var(--surface-elevated, #ffffff);
+  --dashboard-positive: var(--green, #0d806d);
+  --dashboard-negative: var(--red, #bc4b4b);
+  min-height: 100%;
+  width: 100%;
+  max-width: 1420px;
+  margin: 0 auto;
+  padding: 30px clamp(18px, 3vw, 48px) 60px;
+  color: var(--dashboard-ink);
+  background: var(--dashboard-page);
+  box-sizing: border-box;
+}
+
+.header,
+.sectionHeading,
+.filterHeading,
+.scopeNotice,
+.drilldown > div,
+.calendarControls,
+.groupRow,
+.periodRow,
+.drilldownRow {
+  display: flex;
+  align-items: center;
+}
+
+.header {
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 26px;
+}
+
+.eyebrow {
+  display: block;
+  color: var(--dashboard-muted);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.header h1,
+.sectionHeading h2,
+.drilldown h3 {
+  margin: 4px 0 0;
+  letter-spacing: -.025em;
+}
+
+.header h1 {
+  font-size: clamp(27px, 3vw, 38px);
+}
+
+.header p,
+.sectionHeading p {
+  margin: 8px 0 0;
+  color: var(--dashboard-muted);
+  font-size: 13px;
+}
+
+.headerMeta {
+  display: grid;
+  gap: 4px;
+  text-align: right;
+  color: var(--dashboard-muted);
+  font-size: 12px;
+}
+
+.headerMeta strong {
+  color: var(--dashboard-ink);
+  font-size: 15px;
+}
+
+.filters,
+.metricsSection,
+.calendarSection,
+.groupSection {
+  border: 1px solid var(--dashboard-line);
+  border-radius: 18px;
+  background: var(--dashboard-card);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+}
+
+.filters {
+  padding: 17px;
+  margin-bottom: 17px;
+}
+
+.filterHeading {
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 13px;
+}
+
+.filterHeading > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filterHeading > div span {
+  color: var(--dashboard-muted);
+  font-size: 12px;
+}
+
+.filterHeading button,
+.textButton {
+  border: 0;
+  background: transparent;
+  color: var(--blue, #32758b);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: minmax(190px, 1.5fr) repeat(4, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.filterField,
+.searchField {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  color: var(--dashboard-muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.filterField select,
+.filterField input,
+.searchField input {
+  min-width: 0;
+  height: 35px;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 9px;
+  padding: 0 10px;
+  color: var(--dashboard-ink);
+  background: var(--dashboard-card-elevated);
+  font: inherit;
+  font-size: 12px;
+}
+
+.searchField > div {
+  display: flex;
+  align-items: center;
+  height: 35px;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 9px;
+  padding: 0 9px;
+  color: var(--dashboard-muted);
+  background: var(--dashboard-card-elevated);
+}
+
+.searchField input {
+  width: 100%;
+  height: 31px;
+  border: 0;
+  outline: 0;
+  padding-left: 7px;
+}
+
+.filterHint {
+  display: block;
+  margin-top: 11px;
+  color: var(--dashboard-muted);
+  font-size: 11px;
+}
+
+.scopeNotice {
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 17px;
+  border: 1px solid rgba(243, 186, 47, .35);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: rgba(243, 186, 47, .08);
+}
+
+.scopeNotice > div {
+  display: grid;
+  gap: 3px;
+}
+
+.scopeNotice span,
+.scopeNotice label {
+  color: var(--gold, #c49c3d);
+  font-size: 12px;
+}
+
+.scopeNotice label {
+  display: grid;
+  gap: 4px;
+}
+
+.scopeNotice select {
+  min-width: 240px;
+  height: 32px;
+  border: 1px solid rgba(243, 186, 47, .35);
+  border-radius: 8px;
+  background: var(--dashboard-card-elevated);
+  padding: 0 8px;
+  color: var(--dashboard-ink);
+  font: inherit;
+  font-size: 12px;
+}
+
+.countGrid,
+.metricGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.countHeading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 9px;
+}
+
+.countHeading > div {
+  display: grid;
+  gap: 3px;
+}
+
+.countHeading strong {
+  font-size: 18px;
+}
+
+.countHeading small {
+  color: var(--dashboard-muted);
+  font-size: 11px;
+  text-align: right;
+}
+
+.countGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 17px;
+}
+
+.metricGrid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.metricCard {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 13px;
+  padding: 14px;
+  background: var(--dashboard-soft);
+}
+
+.countGrid .metricCard {
+  border: 0;
+  background: var(--dashboard-soft);
+}
+
+.metricCard > span {
+  color: var(--dashboard-muted);
+  font-size: 11px;
+}
+
+.metricCard > strong {
+  min-height: 24px;
+  overflow-wrap: anywhere;
+  color: var(--dashboard-ink);
+  font-size: clamp(17px, 2vw, 23px);
+  letter-spacing: -.02em;
+}
+
+.metricCard > small {
+  min-height: 15px;
+  color: var(--dashboard-muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.positive { color: var(--dashboard-positive) !important; }
+.negative { color: var(--dashboard-negative) !important; }
+.neutral { color: var(--dashboard-muted) !important; }
+
+.metricsSection,
+.calendarSection,
+.groupSection {
+  margin-bottom: 17px;
+  padding: 20px;
+}
+
+.sectionHeading {
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 17px;
+}
+
+.sectionHeading > span {
+  max-width: 55%;
+  color: var(--dashboard-muted);
+  font-size: 11px;
+  text-align: right;
+}
+
+.sectionHeading h2 {
+  font-size: 20px;
+}
+
+.exclusionDetails {
+  margin-top: 13px;
+  color: var(--dashboard-muted);
+  font-size: 11px;
+}
+
+.exclusionDetails summary {
+  cursor: pointer;
+}
+
+.exclusionDetails > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 15px;
+  margin-top: 10px;
+}
+
+.calendarControls {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.calendarControls > button:not(.textButton),
+.periodTabs button {
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 8px;
+  background: var(--dashboard-card-elevated);
+  color: var(--dashboard-ink);
+  cursor: pointer;
+  font: inherit;
+}
+
+.calendarControls > button:not(.textButton) {
+  width: 30px;
+  height: 30px;
+}
+
+.calendarControls strong {
+  min-width: 100px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.periodTabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 13px;
+}
+
+.periodTabs button {
+  padding: 6px 13px;
+  color: var(--dashboard-muted);
+  font-size: 11px;
+}
+
+.periodTabs button[aria-pressed="true"] {
+  border-color: var(--blue, #8db7c2);
+  background: var(--blue-soft, #eef8fa);
+  color: var(--dashboard-ink);
+}
+
+.weekdayRow,
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.weekdayRow {
+  margin-bottom: 5px;
+  color: var(--dashboard-muted);
+  font-size: 10px;
+  text-align: center;
+}
+
+.calendarCell,
+.calendarBlank {
+  min-width: 0;
+  min-height: 74px;
+}
+
+.calendarCell {
+  display: grid;
+  align-content: space-between;
+  gap: 3px;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 9px;
+  padding: 8px;
+  background: var(--dashboard-card-elevated);
+  color: var(--dashboard-ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.calendarCell > span {
+  color: var(--dashboard-muted);
+  font-size: 11px;
+}
+
+.calendarCell > strong {
+  overflow: hidden;
+  color: var(--dashboard-ink);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendarCell > small {
+  color: var(--dashboard-muted);
+  font-size: 9px;
+}
+
+.calendarCell.statepositive,
+.periodRow.statepositive { background: color-mix(in srgb, var(--dashboard-positive) 12%, var(--dashboard-card)); }
+.calendarCell.statenegative,
+.periodRow.statenegative { background: color-mix(in srgb, var(--dashboard-negative) 12%, var(--dashboard-card)); }
+.calendarCell.statebreak-even,
+.periodRow.statebreak-even { background: var(--dashboard-soft); }
+.calendarCell.stateunavailable,
+.periodRow.stateunavailable { background: color-mix(in srgb, var(--gold, #f3ba2f) 12%, var(--dashboard-card)); }
+.calendarCell.selected,
+.periodRow.selected,
+.groupRow.selected { border-color: var(--blue, #4e9bab); box-shadow: 0 0 0 2px color-mix(in srgb, var(--blue, #4e9bab) 25%, transparent); }
+
+.periodList {
+  display: grid;
+  gap: 7px;
+}
+
+.periodRow {
+  width: 100%;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 10px;
+  padding: 11px 13px;
+  background: var(--dashboard-card-elevated);
+  color: var(--dashboard-ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.periodRow > span:first-child,
+.periodRow > small {
+  display: grid;
+  gap: 3px;
+}
+
+.periodRow strong { font-size: 12px; }
+.periodRow small { color: var(--dashboard-muted); font-size: 10px; }
+
+.emptyCalendar,
+.emptyState {
+  margin: 0;
+  color: var(--dashboard-muted);
+  font-size: 12px;
+}
+
+.emptyCalendar { padding: 15px 4px; }
+
+.drilldown {
+  margin-top: 15px;
+  border-top: 1px solid var(--dashboard-line);
+  padding-top: 15px;
+}
+
+.drilldown > div:first-child {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.drilldown h3 { font-size: 15px; }
+.drilldown > div:first-child > span { font-size: 15px; font-weight: 750; }
+.drilldown > p { color: var(--gold, #c49c3d); font-size: 11px; }
+.warning,
+.warningText { color: var(--gold, #a56e14) !important; }
+
+.drilldownRows {
+  display: grid;
+  gap: 6px;
+  margin-top: 11px;
+}
+
+.drilldownRow {
+  justify-content: space-between;
+  gap: 15px;
+  border-bottom: 1px solid var(--dashboard-line);
+  padding: 8px 0;
+}
+
+.drilldownRow > div:first-child,
+.drilldownRow > div:last-child {
+  display: grid;
+  align-items: center;
+  gap: 4px;
+}
+
+.drilldownRow > div:last-child {
+  grid-template-columns: auto auto;
+  justify-items: end;
+}
+
+.drilldownRow strong { font-size: 12px; }
+.drilldownRow small { color: var(--dashboard-muted); font-size: 10px; }
+.drilldownRow button { border: 0; background: transparent; color: var(--blue, #32758b); cursor: pointer; font: inherit; font-size: 11px; }
+
+.groupList { display: grid; gap: 7px; }
+
+.groupRow {
+  width: 100%;
+  gap: 15px;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 10px;
+  padding: 11px 13px;
+  background: var(--dashboard-card-elevated);
+  color: var(--dashboard-ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.groupRow > span:first-child {
+  display: grid;
+  flex: 1 1 28%;
+  gap: 3px;
+}
+
+.groupRow > span:nth-child(2),
+.groupRow > span:nth-child(4) {
+  color: var(--dashboard-muted);
+  font-size: 10px;
+}
+
+.groupRow > strong { min-width: 100px; font-size: 12px; }
+.groupRow small { color: var(--dashboard-muted); font-size: 10px; }
+
+@media (max-width: 1000px) {
+  .filterGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .metricGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .groupRow { flex-wrap: wrap; }
+  .groupRow > span:first-child { flex-basis: 45%; }
+}
+
+@media (max-width: 620px) {
+  .dashboard { padding: 20px 13px 40px; }
+  .header { align-items: flex-start; }
+  .headerMeta { display: none; }
+  .filters,
+  .metricsSection,
+  .calendarSection,
+  .groupSection { border-radius: 13px; padding: 14px; }
+  .filterGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .searchField { grid-column: 1 / -1; }
+  .countGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .countHeading { align-items: flex-start; flex-direction: column; gap: 5px; }
+  .countHeading small { text-align: left; }
+  .metricGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .metricCard { padding: 11px; }
+  .metricCard > strong { font-size: 16px; }
+  .scopeNotice { align-items: flex-start; flex-direction: column; }
+  .scopeNotice select { min-width: min(100%, 320px); }
+  .sectionHeading { display: grid; }
+  .sectionHeading > span { max-width: 100%; text-align: left; }
+  .calendarControls { justify-content: flex-start; }
+  .calendarCell { min-height: 62px; padding: 6px; }
+  .calendarCell > strong { font-size: 9px; }
+  .calendarCell > small { font-size: 8px; }
+  .periodRow { display: grid; grid-template-columns: 1fr auto auto; }
+  .groupRow { align-items: flex-start; display: grid; grid-template-columns: 1fr auto; }
+  .groupRow > span:first-child { grid-column: 1 / -1; }
+  .groupRow > span:nth-child(2) { grid-column: 1; }
+  .groupRow > strong { grid-column: 2; grid-row: 2 / span 2; min-width: 0; }
+  .groupRow > span:nth-child(4) { grid-column: 1 / -1; }
+  .groupRow > svg { grid-column: 2; grid-row: 1; }
+}

@@ -45,6 +45,34 @@ const YAHOO_RETRYABLE_ERRORS = new Set([
   "source-unavailable",
 ]);
 
+function yahooHistoryLimitDescription(value: unknown) {
+  const description = (value as YahooEnvelope)?.chart?.error?.description;
+  return typeof description === "string" &&
+    /requested range must be within the last \d+ days/i.test(description)
+    ? description
+    : undefined;
+}
+
+async function readYahooJson(response: Response) {
+  if (response.status === 422) {
+    let value: unknown;
+    try {
+      value = await response.clone().json();
+    } catch {
+      value = undefined;
+    }
+    const description = yahooHistoryLimitDescription(value);
+    if (description) {
+      throw new MarketDataProviderError(
+        "provider-history-limit",
+        `Yahoo 行情历史范围受上游限制：${description}`,
+        response.status,
+      );
+    }
+  }
+  return readProviderJson(response, "Yahoo 行情");
+}
+
 async function fetchYahooChart(
   fetcher: typeof fetch,
   providerSymbol: string,
@@ -56,7 +84,7 @@ async function fetchYahooChart(
       const response = await fetcher(
         `https://${host}/v8/finance/chart/${encodeURIComponent(providerSymbol)}?${query}`,
       );
-      return await readProviderJson(response, "Yahoo 行情");
+      return await readYahooJson(response);
     } catch (error) {
       if (
         error instanceof MarketDataProviderError &&

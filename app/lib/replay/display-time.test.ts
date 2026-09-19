@@ -35,4 +35,20 @@ describe("displayTimeForCandle", () => {
       }),
     ).toBe("2025-01-10T01:30:00.000Z");
   });
+
+  it("does not borrow an adjacent candle when the source date is absent", () => {
+    expect(
+      displayTimeForCandle(candles, {
+        at: "2025-01-12T05:30:00.000Z",
+        policy: "session-open",
+        calendarDate: "2025-01-12",
+      }),
+    ).toBeUndefined();
+    expect(
+      displayTimeForCandle(candles, {
+        at: "2025-01-09T05:30:00.000Z",
+        policy: "execution-time",
+      }),
+    ).toBeUndefined();
+  });
 });

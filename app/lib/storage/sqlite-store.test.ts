@@ -1100,6 +1100,112 @@ describe("SqliteStore", () => {
     expect(store.getDailyCandles(instrument.id)).toEqual([daily]);
   });
 
+  it("keeps daily and interval bars when a provider alias belongs to another instrument", () => {
+    const store = createStore();
+    const historical = {
+      id: "US:FB",
+      symbol: "FB",
+      name: "Meta Platforms, Inc. (historical FB)",
+      market: "US" as const,
+      currency: "USD",
+    };
+    const current = {
+      id: "US:META",
+      symbol: "META",
+      name: "Meta Platforms, Inc. - Class A Common Stock",
+      market: "US" as const,
+      currency: "USD",
+    };
+    store.mergeTradeData({ instruments: [historical, current], executions: [] });
+
+    const providerSymbol = { provider: "tencent" as const, symbol: "usMETA.OQ" };
+    const daily = {
+      instrumentId: historical.id,
+      tradingDate: "2026-01-02",
+      open: "1",
+      high: "2",
+      low: "1",
+      close: "2",
+      volume: "3",
+      currency: historical.currency,
+      provider: providerSymbol.provider,
+      providerSymbol: providerSymbol.symbol,
+      adjustmentMode: "raw" as const,
+      fetchedAt: "2026-01-03T00:00:00.000Z",
+    };
+    store.commitMarketData({
+      instrumentId: historical.id,
+      candles: [daily],
+      coverage: [{
+        startDate: daily.tradingDate,
+        endDate: daily.tradingDate,
+        status: "complete",
+        missingTradingDates: [],
+      }],
+      providerSymbol,
+    });
+    store.putMarketData({
+      providerSymbols: [{
+        instrumentId: current.id,
+        provider: providerSymbol.provider,
+        providerSymbol: "usMETA.OLD",
+      }],
+    });
+    expect(() => store.putMarketData({
+      providerSymbols: [{
+        instrumentId: current.id,
+        provider: providerSymbol.provider,
+        providerSymbol: providerSymbol.symbol,
+      }],
+    })).toThrow("UNIQUE constraint failed");
+
+    const currentDaily = { ...daily, instrumentId: current.id, currency: current.currency };
+    expect(() => store.commitMarketData({
+      instrumentId: current.id,
+      candles: [currentDaily],
+      coverage: [{
+        startDate: currentDaily.tradingDate,
+        endDate: currentDaily.tradingDate,
+        status: "complete",
+        missingTradingDates: [],
+      }],
+      providerSymbol,
+    })).not.toThrow();
+
+    const hourly = {
+      instrumentId: current.id,
+      interval: "1h" as const,
+      timestamp: "2026-01-02T01:00:00.000Z",
+      open: "1",
+      high: "2",
+      low: "1",
+      close: "2",
+      volume: "3",
+      currency: current.currency,
+      provider: providerSymbol.provider,
+      providerSymbol: providerSymbol.symbol,
+      adjustmentMode: "raw" as const,
+      fetchedAt: "2026-01-03T00:00:00.000Z",
+    };
+    expect(() => store.commitIntervalMarketData({
+      instrumentId: current.id,
+      interval: hourly.interval,
+      candles: [hourly],
+      coverage: [{
+        interval: hourly.interval,
+        requestedStart: hourly.timestamp,
+        requestedEnd: hourly.timestamp,
+        status: "complete",
+      }],
+      providerSymbol,
+    })).not.toThrow();
+
+    expect(store.getDailyCandles(current.id)).toEqual([currentDaily]);
+    expect(store.getCandles(current.id, "1h", hourly.timestamp, hourly.timestamp)).toEqual([hourly]);
+    expect(store.getProviderSymbol(historical.id, providerSymbol.provider)).toBe(providerSymbol.symbol);
+    expect(store.getProviderSymbol(current.id, providerSymbol.provider)).toBe("usMETA.OLD");
+  });
+
   it("commits daily coverage without inventing a provider symbol", () => {
     const store = createStore();
     store.mergeExecutions([execution]);

@@ -323,7 +323,7 @@ describe("GET /api/market-data/intraday", () => {
     vi.stubGlobal("fetch", vi.fn(async (input) => {
       const url = new URL(String(input));
       hosts.push(url.host);
-      if (url.host === "web.ifzq.gtimg.cn") {
+      if (url.host === "ifzq.gtimg.cn") {
         return Response.json({ data: {} });
       }
       if (url.host.includes("eastmoney.com")) {
@@ -352,7 +352,7 @@ describe("GET /api/market-data/intraday", () => {
       candles: [{ timestamp: "2025-01-02T01:30:00.000Z", close: "34.5" }],
     });
     expect(hosts).toEqual([
-      "web.ifzq.gtimg.cn",
+      "ifzq.gtimg.cn",
       "33.push2his.eastmoney.com",
     ]);
   });
@@ -368,7 +368,7 @@ describe("GET /api/market-data/intraday", () => {
     vi.stubGlobal("fetch", vi.fn(async (input) => {
       const url = new URL(String(input));
       hosts.push(url.host);
-      if (url.host === "web.ifzq.gtimg.cn") {
+      if (url.host === "ifzq.gtimg.cn") {
         return Response.json({ data: {} });
       }
       if (url.host.includes("eastmoney.com")) {
@@ -401,7 +401,7 @@ describe("GET /api/market-data/intraday", () => {
     });
     expect(tigerFetchIntraday).toHaveBeenCalledOnce();
     expect(hosts).toEqual([
-      "web.ifzq.gtimg.cn",
+      "ifzq.gtimg.cn",
       "33.push2his.eastmoney.com",
     ]);
   });

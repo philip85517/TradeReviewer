@@ -20,6 +20,7 @@ import { parseBaiduDaily, parseBaiduIntraday, BaiduProvider } from "./baidu";
 import { createProviderRouter } from "./router";
 import { MarketDataProviderError } from "./errors";
 import { TigerProvider } from "./tiger";
+import { EASTMONEY_NO_DATA } from "../../instruments/providers/__fixtures__/provider-responses";
 
 const BAIDU_INTRADAY_KEYS = [
   "timestamp",
@@ -346,7 +347,7 @@ describe("provider routing", () => {
       }),
     ).rejects.toMatchObject({ code: "source-unavailable" });
 
-    expect(hosts[0]).toBe("web.ifzq.gtimg.cn");
+    expect(hosts[0]).toBe("ifzq.gtimg.cn");
   });
 
   it("uses the first Tencent US symbol candidate that returns candles", async () => {
@@ -473,7 +474,7 @@ describe("provider routing", () => {
     });
 
     expect(hosts).toEqual([
-      "web.ifzq.gtimg.cn",
+      "ifzq.gtimg.cn",
       "33.push2his.eastmoney.com",
     ]);
     expect(result).toMatchObject({
@@ -515,7 +516,7 @@ describe("provider routing", () => {
     });
 
     expect(hosts).toEqual([
-      "web.ifzq.gtimg.cn",
+      "ifzq.gtimg.cn",
       "33.push2his.eastmoney.com",
       "query1.finance.yahoo.com",
       "query2.finance.yahoo.com",
@@ -569,7 +570,7 @@ describe("provider routing", () => {
     });
 
     expect(hosts).toEqual([
-      "web.ifzq.gtimg.cn",
+      "ifzq.gtimg.cn",
       "63.push2his.eastmoney.com",
       "stock.finance.sina.com.cn",
     ]);
@@ -626,7 +627,7 @@ describe("provider routing", () => {
     });
 
     expect(hosts).toEqual([
-      "web.ifzq.gtimg.cn",
+      "ifzq.gtimg.cn",
       "63.push2his.eastmoney.com",
       "stock.finance.sina.com.cn",
       "query1.finance.yahoo.com",
@@ -905,7 +906,7 @@ describe("provider routing", () => {
       endTime: "2025-01-02T01:30:00.000Z",
     });
 
-    expect(hosts).toEqual(["web.ifzq.gtimg.cn"]);
+    expect(hosts).toEqual(["ifzq.gtimg.cn"]);
     expect(result).toMatchObject({
       provider: "tencent",
       interval: "1h",
@@ -1344,9 +1345,9 @@ describe("intraday provider requests", () => {
       fetcher,
     );
 
-    expect(requestedUrl?.searchParams.get("param")).toBe(
-      "hk01810,m15,2025-01-02 09:30:00,2025-01-02 09:45:00,500,",
-    );
+    expect(requestedUrl?.host).toBe("ifzq.gtimg.cn");
+    expect(requestedUrl?.pathname).toBe("/appstock/app/kline/mkline");
+    expect(requestedUrl?.searchParams.get("param")).toBe("hk01810,m15,,500");
   });
 
   it("asks Eastmoney for local bounds across the Shanghai date boundary", async () => {
@@ -1446,9 +1447,10 @@ describe("intraday provider requests", () => {
       },
     );
 
-    expect(requestedUrl?.pathname).toBe("/appstock/app/fqkline/get");
+    expect(requestedUrl?.host).toBe("ifzq.gtimg.cn");
+    expect(requestedUrl?.pathname).toBe("/appstock/app/kline/mkline");
     expect(requestedUrl?.searchParams.get("param")).toBe(
-      "sh600519,m60,2025-01-02 09:30:00,2025-01-02 09:30:00,500,",
+      "sh600519,m60,,500",
     );
     expect(result).toMatchObject({
       provider: "tencent",
@@ -1456,6 +1458,114 @@ describe("intraday provider requests", () => {
       interval: "1h",
       candles: [expect.objectContaining({ close: "1705" })],
     });
+  });
+
+  it("treats Tencent unsupported-market mkline errors as no-data", async () => {
+    await expect(
+      new TencentProvider().fetchIntraday(
+        {
+          instrumentId: "HK:1810",
+          symbol: "1810",
+          market: "HK",
+          interval: "1h",
+          startTime: "2025-01-02T01:30:00.000Z",
+          endTime: "2025-01-02T01:30:00.000Z",
+        },
+        async () =>
+          Response.json({ code: -1, msg: "param error", data: [] }),
+      ),
+    ).rejects.toEqual(
+      expect.objectContaining<Partial<MarketDataProviderError>>({
+        code: "no-data",
+      }),
+    );
+  });
+
+  it("does not hide a Tencent parameter contract error as no-data", async () => {
+    await expect(
+      new TencentProvider().fetchIntraday(
+        {
+          instrumentId: "CN-SH:518880",
+          symbol: "518880",
+          market: "CN-SH",
+          interval: "1h",
+          startTime: "2025-01-02T01:30:00.000Z",
+          endTime: "2025-01-02T01:30:00.000Z",
+        },
+        async () =>
+          Response.json({ code: 0, msg: "param error", data: [] }),
+      ),
+    ).rejects.toEqual(
+      expect.objectContaining<Partial<MarketDataProviderError>>({
+        code: "invalid-response",
+        message: "腾讯行情接口返回错误（code=0, msg=param error）",
+      }),
+    );
+  });
+
+  it("classifies Eastmoney's explicit rc=0 data=null envelope as no-data", async () => {
+    const request = {
+      instrumentId: "US:DIDIY",
+      symbol: "DIDIY",
+      market: "US" as const,
+      startDate: "2026-09-10",
+      endDate: "2026-09-11",
+    };
+
+    await expect(
+      new EastmoneyProvider().fetchDaily(
+        request,
+        async () => Response.json(JSON.parse(EASTMONEY_NO_DATA)),
+      ),
+    ).rejects.toEqual(
+      expect.objectContaining<Partial<MarketDataProviderError>>({
+        code: "no-data",
+        message: "东方财富未返回该股票数据",
+      }),
+    );
+
+    await expect(
+      new EastmoneyProvider().fetchIntraday(
+        {
+          instrumentId: request.instrumentId,
+          symbol: request.symbol,
+          market: request.market,
+          interval: "1h",
+          startTime: "2026-09-10T13:30:00.000Z",
+          endTime: "2026-09-10T14:30:00.000Z",
+        },
+        async () => Response.json(JSON.parse(EASTMONEY_NO_DATA)),
+      ),
+    ).rejects.toEqual(
+      expect.objectContaining<Partial<MarketDataProviderError>>({
+        code: "no-data",
+        message: "东方财富未返回该股票数据",
+      }),
+    );
+  });
+
+  it.each([
+    ["missing rc", { data: null }],
+    ["non-zero rc", { rc: 1, data: null }],
+    ["missing data", { rc: 0 }],
+  ])("keeps Eastmoney %s envelopes as invalid responses", async (_label, payload) => {
+    await expect(
+      new EastmoneyProvider().fetchDaily(
+        {
+          instrumentId: "US:DIDIY",
+          symbol: "DIDIY",
+          market: "US",
+          startDate: "2026-09-10",
+          endDate: "2026-09-11",
+        },
+        async () => Response.json(payload),
+      ),
+    ).rejects.toEqual(
+      expect.objectContaining<Partial<MarketDataProviderError>>({
+        code: "invalid-response",
+        message: "东方财富行情响应格式已变化",
+      }),
+    );
   });
 
   it("marks a Tencent 500-row intraday response as truncated", async () => {

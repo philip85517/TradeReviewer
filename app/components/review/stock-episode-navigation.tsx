@@ -1,8 +1,10 @@
 "use client";
 import { useModalFocus } from "../import/use-modal-focus";
+import { useRef } from "react";
 import { replayCursorAt, replayExecutionAt } from "../../lib/import/statement-evidence";
 import { formatMarketTradingDate } from "../../lib/market/trading-date";
 import type { Instrument, TradeEpisode } from "../../lib/trades/types";
+import type { ReviewChartLocateRequest } from "../../lib/replay/chart-location";
 
 type Props = {
   mobileOpen?: boolean;
@@ -13,13 +15,15 @@ type Props = {
   cursor: string;
   onSelectEpisode: (id: string) => void;
   onLocate: (cursor: string) => void;
+  /** Preferred location path; leaves the replay cursor untouched in history mode. */
+  onLocateRequest?: (request: ReviewChartLocateRequest) => void;
   onNext: () => void;
   onSwitchStock: () => void;
   onLibrary: () => void;
 };
 const date = (value: string) => new Date(value).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false });
 const dateOnlyLabel = (execution: TradeEpisode["executions"][number]) =>
-  `${formatMarketTradingDate(replayExecutionAt(execution).slice(0, 10), execution.instrument.market)} · 未提供成交时刻`;
+  `${formatMarketTradingDate(replayExecutionAt(execution).slice(0, 10), execution.instrument.market)} · 仅日期，日线定位`;
 const episodeDate = (episode: TradeEpisode) => {
   const execution = episode.executions[0];
   if (!execution || execution.source.timePrecision !== "date-only") {
@@ -29,6 +33,7 @@ const episodeDate = (episode: TradeEpisode) => {
 };
 export function StockEpisodeNavigation(props: Props) {
   const dialogRef = useModalFocus(() => props.onCloseMobile?.(), props.mobileOpen ?? false);
+  const locateSequence = useRef(0);
   const selected = props.episodes.find((episode) => episode.id === props.selectedEpisodeId);
   const knowledgeAt = replayCursorAt(props.cursor);
   const revealed = selected?.executions.filter((execution) => replayExecutionAt(execution) <= knowledgeAt) ?? [];
@@ -42,7 +47,7 @@ export function StockEpisodeNavigation(props: Props) {
     <h3>已揭示成交 <span>{revealed.length} 笔</span></h3>
     {selected && revealed.length === 0 && <p className="replay-entry-notice">当前尚未回放到首笔成交</p>}
     {!selected && <p>请选择股票和交易回合。</p>}
-    <ol className="stock-context-fills">{revealed.map((execution) => { const at = replayExecutionAt(execution); const dateOnly = execution.source.timePrecision === "date-only"; const label = dateOnly ? dateOnlyLabel(execution) : date(execution.executedAt); return <li key={execution.id}><button aria-label={`定位${execution.side === "buy" ? "买入" : "卖出"} ${label}`} aria-current={at === knowledgeAt ? "step" : undefined} onClick={() => props.onLocate(dateOnly ? at : execution.executedAt)}><time>{label}</time><strong>{execution.side === "buy" ? "买入" : "卖出"} {execution.quantity} @ {execution.price}</strong></button></li>; })}</ol>
+    <ol className="stock-context-fills">{revealed.map((execution) => { const at = replayExecutionAt(execution); const dateOnly = execution.source.timePrecision === "date-only"; const label = dateOnly ? dateOnlyLabel(execution) : date(execution.executedAt); return <li key={execution.id}><button aria-label={`定位${execution.side === "buy" ? "买入" : "卖出"} ${label}`} aria-current={at === knowledgeAt ? "step" : undefined} onClick={() => { const request: ReviewChartLocateRequest = { requestId: `${props.selectedEpisodeId ?? "episode"}:${execution.id}:${++locateSequence.current}`, instrumentId: execution.instrument.id, episodeId: props.selectedEpisodeId ?? "", executionId: execution.id }; if (props.onLocateRequest) props.onLocateRequest(request); else props.onLocate(dateOnly ? at : execution.executedAt); }}><time>{label}</time><strong>{execution.side === "buy" ? "买入" : "卖出"} {execution.quantity} @ {execution.price}</strong></button></li>; })}</ol>
     {hasNext && <button className="secondary-action" onClick={props.onNext}>下一成交</button>}
   </aside>;
 }

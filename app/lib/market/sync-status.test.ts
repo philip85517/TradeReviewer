@@ -179,4 +179,13 @@ describe("displayMarketDataStatus", () => {
       }),
     ).toBe("partial");
   });
+
+  it("keeps daily data visible as partial when the hourly provider is forbidden", () => {
+    expect(
+      displayMarketDataStatus("complete", "source-forbidden", {
+        hasDailyData: true,
+        hasIntradayData: false,
+      }),
+    ).toBe("partial");
+  });
 });

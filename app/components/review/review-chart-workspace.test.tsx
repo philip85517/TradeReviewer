@@ -161,9 +161,13 @@ describe("ReviewChartWorkspace", () => {
     };
 
     expect(executionTimestampLabel(execution)).toBe(
-      "20250102 · 对账单未提供成交时间",
+      "20250102 · 仅日期，日线定位",
     );
     expect(executionTimestampLabel(execution)).not.toMatch(/2099|23:59:59/);
+    expect(executionTimestampLabel({
+      ...execution,
+      source: { ...execution.source, sourceTimeKind: "order" },
+    })).toBe("20250102 · 仅日期，日线定位");
   });
 
   it("formats exact execution timestamps in Beijing time with seconds", () => {

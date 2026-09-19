@@ -36,15 +36,42 @@ it("does not hide a middle no-data gap behind a pending tail", () => {
 it("manual refresh retries historical no-data and never converts an outage into absent history", async () => {
   const repo = new IndexedDbMarketDataRepository(`retry-${crypto.randomUUID()}`);
   const required = { startDate: "2026-09-03", endDate: "2026-09-04" };
+  const retainedCandle = { instrumentId: "US:CWEB",
+    tradingDate: "2026-09-04", open: "1", high: "2", low: "1", close: "2", volume: "100",
+    currency: "USD", provider: "tiger" as const, providerSymbol: "CWEB", adjustmentMode: "raw" as const, fetchedAt: "2026-09-05T00:00:00Z" };
   const coverage = [{ startDate: "2026-09-03", endDate: "2026-09-03", status: "partial" as const,
     missingTradingDates: [], reason: "no-data" as const },
     { startDate: "2026-09-04", endDate: "2026-09-04", status: "complete" as const, missingTradingDates: [] }];
-  await repo.commitSyncResult({ instrumentId: "US:CWEB", coverage, candles: [{ instrumentId: "US:CWEB",
-    tradingDate: "2026-09-04", open: "1", high: "2", low: "1", close: "2", volume: "100",
-    currency: "USD", provider: "tiger", providerSymbol: "CWEB", adjustmentMode: "raw", fetchedAt: "2026-09-05T00:00:00Z" }] });
-  await expect(syncMarketData({ instrumentId: "US:CWEB", symbol: "CWEB", market: "US", currency: "USD",
+  await repo.commitSyncResult({ instrumentId: "US:CWEB", coverage, candles: [retainedCandle] });
+  const result = await syncMarketData({ instrumentId: "US:CWEB", symbol: "CWEB", market: "US", currency: "USD",
     required, repository: repo, retryUnavailable: true,
     fetcher: async () => Response.json({ error: { code: "source-unavailable" } }, { status: 502 })
-  })).rejects.toMatchObject({ code: "source-unavailable" });
-  expect(await repo.getCoverage("US:CWEB")).toEqual(coverage);
+  });
+  expect(result).toMatchObject({
+    source: "network",
+    status: "partial",
+    candles: [retainedCandle],
+    error: {
+      code: "source-unavailable",
+      failedCount: 1,
+      failedRanges: [{
+        start: "2026-09-03",
+        end: "2026-09-03",
+        code: "source-unavailable",
+      }],
+    },
+  });
+  expect(await repo.getCoverage("US:CWEB")).toEqual(expect.arrayContaining([
+    expect.objectContaining({
+      startDate: "2026-09-03",
+      endDate: "2026-09-03",
+      status: "partial",
+      reason: "source-unavailable",
+    }),
+    expect.objectContaining({
+      startDate: "2026-09-04",
+      endDate: "2026-09-04",
+      status: "complete",
+    }),
+  ]));
 });

@@ -1080,14 +1080,14 @@ export class SqliteStore {
     withSqliteTransaction(this.database, () => {
       result.candles.forEach((candle) => this.putDailyCandle(candle));
       this.putCoverageSegments(result.instrumentId, result.coverage);
-      if (result.providerSymbol) this.putProviderSymbol({ instrumentId: result.instrumentId, provider: result.providerSymbol.provider, providerSymbol: result.providerSymbol.symbol });
+      if (result.providerSymbol) this.putProviderSymbol({ instrumentId: result.instrumentId, provider: result.providerSymbol.provider, providerSymbol: result.providerSymbol.symbol }, { skipConflictingAlias: true });
     });
   }
 
   commitIntervalMarketData(result: IntervalMarketDataCommitInput): void {
     if (!result || typeof result.instrumentId !== "string" || !["15m", "1h", "1D"].includes(result.interval) || !Array.isArray(result.candles) || !Array.isArray(result.coverage)) throw new Error("Invalid market data");
     result.candles.forEach((candle) => { validateMarketCandle(candle); if (candle.instrumentId !== result.instrumentId || candle.interval !== result.interval) throw new Error("Invalid market data"); }); result.coverage.forEach((coverage) => { if (coverage.interval !== result.interval) throw new Error("Invalid market data"); validateIntervalCoverage({ ...coverage, instrumentId: result.instrumentId }); });
-    withSqliteTransaction(this.database, () => { result.candles.forEach((candle) => this.putMarketCandle(candle)); this.putIntervalCoverageSegments(result.instrumentId, result.interval, result.coverage); if (result.providerSymbol) this.putProviderSymbol({ instrumentId: result.instrumentId, provider: result.providerSymbol.provider, providerSymbol: result.providerSymbol.symbol }); });
+    withSqliteTransaction(this.database, () => { result.candles.forEach((candle) => this.putMarketCandle(candle)); this.putIntervalCoverageSegments(result.instrumentId, result.interval, result.coverage); if (result.providerSymbol) this.putProviderSymbol({ instrumentId: result.instrumentId, provider: result.providerSymbol.provider, providerSymbol: result.providerSymbol.symbol }, { skipConflictingAlias: true }); });
   }
 
   putMarketData(input: { dailyCandles?: DailyCandleRecord[]; marketCandles?: MarketCandleRecord[]; coverage?: CoverageRecord[]; intervalCoverage?: IntervalCoverageRecord[]; providerSymbols?: ProviderSymbolRecord[] }): void {
@@ -1807,9 +1807,24 @@ export class SqliteStore {
     );
   }
 
-  private putProviderSymbol(record: ProviderSymbolRecord): void {
+  private putProviderSymbol(
+    record: ProviderSymbolRecord,
+    options: { skipConflictingAlias?: boolean } = {},
+  ): void {
     validateProviderSymbol(record);
     this.ensureInstrumentId(record.instrumentId);
+    // Provider symbols are an optional lookup cache. The market-data commit
+    // methods may keep the first mapping when a historical instrument shares
+    // an alias with its renamed successor (for example FB and META), while
+    // migration and explicit browser-state writes remain strict by default.
+    if (options.skipConflictingAlias) {
+      const conflicting = this.database.prepare(
+        `select instrument_id from provider_symbols
+         where provider = ? and provider_symbol = ? and instrument_id <> ?
+         limit 1`,
+      ).get(record.provider, record.providerSymbol, record.instrumentId) as Row | undefined;
+      if (conflicting) return;
+    }
     this.database.prepare(`
       insert into provider_symbols (
         instrument_id, provider, provider_symbol, metadata_json, updated_at

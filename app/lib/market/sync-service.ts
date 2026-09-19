@@ -24,7 +24,7 @@ import type { MarketDataSyncStatus } from "./sync-status";
 import { canonicalInstrumentId } from "../instruments/display-name";
 import type { MarketDataRepository } from "../storage/market-data-repository";
 
-type SyncMarketDataOptions = {
+export type SyncMarketDataOptions = {
   instrumentId: string;
   symbol: string;
   market: SupportedMarket;
@@ -41,20 +41,114 @@ type RouteResult = ProviderResult & {
   request: DailyCandleRequest;
 };
 
+class DailyRouteIdentityError extends Error {}
+
 type DailySyncFailureCode =
   | MarketDataSyncStatus
   | "source-timeout"
   | "provider-history-limit"
   | "no-data";
 
+export type MarketDataFailedRange = {
+  /** Inclusive range that was sent to the market-data route. */
+  start: string;
+  end: string;
+  code: string;
+  message: string;
+};
+
+export type MarketDataSyncErrorDetail = {
+  code: string;
+  message: string;
+  failedCount: number;
+  failedRanges: MarketDataFailedRange[];
+};
+
 export class MarketDataSyncError extends Error {
   constructor(
     readonly code: DailySyncFailureCode,
     message: string,
+    readonly failedRanges: MarketDataFailedRange[] = [],
   ) {
     super(message);
     this.name = "MarketDataSyncError";
   }
+}
+
+function isAbortError(error: unknown) {
+  return (
+    (error instanceof DOMException && error.name === "AbortError") ||
+    (error instanceof Error && error.name === "AbortError")
+  );
+}
+
+function failureMessage(error: unknown, fallback: string) {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
+
+function failedRange(
+  range: DateRange,
+  code: string,
+  message: string,
+): MarketDataFailedRange {
+  return {
+    start: range.startDate,
+    end: range.endDate,
+    code,
+    message,
+  };
+}
+
+function failureDetail(
+  failures: readonly MarketDataFailedRange[],
+): MarketDataSyncErrorDetail | undefined {
+  if (failures.length === 0) return undefined;
+  const messages = [...new Set(failures.map((failure) => failure.message))];
+  const message = failures.length === 1
+    ? `${failures[0]!.message}（${failures[0]!.start} 至 ${failures[0]!.end}）`
+    : `${failures.length} 个日线区间更新失败（${failures
+        .map((failure) => `${failure.start} 至 ${failure.end}`)
+        .join("、")}）：${messages.join("；")}`;
+  return {
+    code: failures[0]!.code,
+    message,
+    failedCount: failures.length,
+    failedRanges: [...failures],
+  };
+}
+
+function isHardFailure(code: string) {
+  return !["provider-history-limit", "no-data"].includes(code);
+}
+
+function missingTradingDatesForRange(
+  market: SupportedMarket,
+  range: DateRange,
+) {
+  try {
+    return expectedTradingDates(market, range.startDate, range.endDate);
+  } catch (error) {
+    if (error instanceof CalendarOutOfRangeError) return [];
+    throw error;
+  }
+}
+
+function failedCoverageSegment(
+  market: SupportedMarket,
+  range: DateRange,
+  code: string,
+) {
+  return {
+    ...range,
+    status: "partial" as const,
+    fetchedAt: new Date().toISOString(),
+    missingTradingDates: missingTradingDatesForRange(market, range),
+    reason: code,
+  };
+}
+
+function isDailyRouteIdentityError(error: unknown): boolean {
+  return error instanceof DailyRouteIdentityError;
 }
 
 function isDailySyncFailureCode(value: unknown): value is DailySyncFailureCode {
@@ -70,7 +164,7 @@ function isDailySyncFailureCode(value: unknown): value is DailySyncFailureCode {
 }
 
 function isProvider(value: unknown): value is MarketDataProviderId {
-  return value === "tencent" || value === "eastmoney" || value === "yahoo" || value === "sina" || value === "baidu" || value === "tiger";
+  return value === "tencent" || value === "eastmoney" || value === "yahoo" || value === "sina" || value === "baidu" || value === "tiger" || value === "baostock";
 }
 
 function shiftDate(date: string, days: number) {
@@ -219,7 +313,7 @@ function parseRouteResult(
       result.request.startDate !== range.startDate ||
       result.request.endDate !== range.endDate
   ) {
-    throw new Error("行情接口响应标的不匹配");
+    throw new DailyRouteIdentityError("行情接口响应标的不匹配");
   }
   validateProviderCandles(
     result.candles,
@@ -281,22 +375,32 @@ export async function syncMarketData({
         : last,
     undefined,
   );
-  const planningCoverage = retryUnavailable
-    ? coverage.filter(
-        (segment) =>
-          !(
-            segment.status === "partial" &&
-            [
-              "no-data",
-              "provider-history-limit",
-              "source-unavailable",
-              "source-rate-limited",
-              "source-forbidden",
-              "invalid-response",
-            ].includes(segment.reason ?? "")
-          ),
-      )
-    : coverage;
+  const planningCoverage = coverage.filter((segment) => {
+    if (segment.status !== "partial") return true;
+    const reason = segment.reason ?? "";
+    // A source or response failure never proves that this date range is
+    // covered. Leave it in the next automatic plan so a transient failure
+    // cannot turn into a cache-only result that hides the error.
+    if ([
+      "source-unavailable",
+      "source-rate-limited",
+      "source-forbidden",
+      "source-timeout",
+      "invalid-response",
+    ].includes(reason)) {
+      return false;
+    }
+    if (
+      retryUnavailable &&
+      ["no-data", "provider-history-limit"].includes(reason)
+    ) {
+      // A provider history-limit response can still carry known candles. In
+      // that case retain the segment so planCoverageGaps retries only its
+      // named missing dates; with no named dates, retry the whole range.
+      return segment.missingTradingDates.length > 0;
+    }
+    return true;
+  });
   const gaps = planCoverageGaps(required, planningCoverage, {
     retryLatestAvailable: true,
   });
@@ -314,6 +418,8 @@ export async function syncMarketData({
     };
   }
 
+  const attemptedRanges: DateRange[] = [];
+  const failures: MarketDataFailedRange[] = [];
   for (const gap of gaps) {
     throwIfAborted();
     if (
@@ -348,17 +454,48 @@ export async function syncMarketData({
       start: gap.startDate,
       end: gap.endDate,
     });
-    const response = await fetcher(`/api/market-data/daily?${query}`, {
-      signal,
-      ...(retryUnavailable ? { cache: "no-store" as const } : {}),
-    });
+    attemptedRanges.push({ ...gap });
+    let response: Response;
+    try {
+      response = await fetcher(`/api/market-data/daily?${query}`, {
+        signal,
+        ...(retryUnavailable ? { cache: "no-store" as const } : {}),
+      });
+    } catch (error) {
+      throwIfAborted();
+      if (isAbortError(error)) throw error;
+      const code = "source-unavailable";
+      const message = failureMessage(error, "行情请求失败");
+      failures.push(failedRange(gap, code, message));
+      coverage = [
+        ...preserveCoverageOutsideGap(coverage, gap),
+        failedCoverageSegment(market, gap, code),
+      ];
+      throwIfAborted();
+      await repository.commitSyncResult({
+        instrumentId,
+        candles: [],
+        coverage,
+      });
+      continue;
+    }
+    throwIfAborted();
     if (!response.ok) {
-      const body = (await response.json().catch(() => undefined)) as
+      let body:
         | { error?: { code?: unknown; message?: string } }
         | undefined;
+      try {
+        body = (await response.json()) as
+          | { error?: { code?: unknown; message?: string } }
+          | undefined;
+      } catch (error) {
+        if (isAbortError(error)) throw error;
+      }
       const code = isDailySyncFailureCode(body?.error?.code)
         ? body.error.code
         : "source-unavailable";
+      const message = body?.error?.message ?? "行情更新失败";
+      failures.push(failedRange(gap, code, message));
       if (
         code === "provider-history-limit" ||
         code === "no-data"
@@ -387,16 +524,44 @@ export async function syncMarketData({
         });
         continue;
       }
-      throw new MarketDataSyncError(
-        code,
-        body?.error?.message ?? "行情更新失败",
-      );
+      coverage = [
+        ...preserveCoverageOutsideGap(coverage, gap),
+        failedCoverageSegment(market, gap, code),
+      ];
+      throwIfAborted();
+      await repository.commitSyncResult({
+        instrumentId,
+        candles: [],
+        coverage,
+      });
+      continue;
     }
-    const result = parseRouteResult(await response.json(), gap, {
-      instrumentId,
-      symbol,
-      market,
-    });
+    let result: RouteResult;
+    try {
+      result = parseRouteResult(await response.json(), gap, {
+        instrumentId,
+        symbol,
+        market,
+      });
+    } catch (error) {
+      throwIfAborted();
+      if (isAbortError(error)) throw error;
+      if (isDailyRouteIdentityError(error)) throw error;
+      const code = "invalid-response";
+      const message = failureMessage(error, "行情接口响应无效");
+      failures.push(failedRange(gap, code, message));
+      coverage = [
+        ...preserveCoverageOutsideGap(coverage, gap),
+        failedCoverageSegment(market, gap, code),
+      ];
+      throwIfAborted();
+      await repository.commitSyncResult({
+        instrumentId,
+        candles: [],
+        coverage,
+      });
+      continue;
+    }
     throwIfAborted();
     const candles: DailyCandleRecord[] = result.candles.map((candle) => ({
       instrumentId,
@@ -476,14 +641,28 @@ export async function syncMarketData({
     });
   }
 
+  const candles = await repository.getDailyCandles(
+    instrumentId,
+    required.startDate,
+    required.endDate,
+  );
+  const error = failureDetail(failures);
+  if (
+    error &&
+    candles.length === 0 &&
+    failures.some((failure) => isHardFailure(failure.code))
+  ) {
+    throw new MarketDataSyncError(
+      error.code as DailySyncFailureCode,
+      error.message,
+      failures,
+    );
+  }
   return {
     source: "network" as const,
     status: coverageStatusForDateRange(required, coverage),
-    candles: await repository.getDailyCandles(
-      instrumentId,
-      required.startDate,
-      required.endDate,
-    ),
-    requestedRanges: gaps,
+    candles,
+    requestedRanges: attemptedRanges,
+    ...(error ? { error, failedRanges: error.failedRanges } : {}),
   };
 }

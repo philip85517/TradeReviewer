@@ -1,0 +1,438 @@
+.root {
+  --refresh-border: rgba(117, 181, 255, 0.32);
+  --refresh-surface: rgba(47, 128, 237, 0.08);
+  --refresh-muted: #aebdd0;
+  min-width: 0;
+  width: min(34vw, 360px);
+  position: relative;
+  display: grid;
+  align-content: center;
+}
+
+.actionRow {
+  min-width: 0;
+  min-height: 29px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.refreshButton,
+.cancelButton,
+.retryButton,
+.recoverButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.refreshButton {
+  min-height: 29px;
+  padding: 5px 8px;
+  border: 1px solid var(--refresh-border);
+  color: #b7d2f5;
+  background: var(--refresh-surface);
+  font-size: 12px;
+}
+
+.refreshButton:hover:not(:disabled),
+.cancelButton:hover,
+.retryButton:hover,
+.recoverButton:hover {
+  color: #fff;
+  background: rgba(47, 128, 237, 0.18);
+}
+
+.refreshButton:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.buttonText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scope {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--refresh-muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cancelButton {
+  min-height: 26px;
+  margin-left: auto;
+  padding: 4px 7px;
+  border: 1px solid rgba(239, 83, 80, 0.35);
+  color: #ffaaa7;
+  background: rgba(239, 83, 80, 0.08);
+  font-size: 11px;
+}
+
+.statusArea {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  z-index: 30;
+  min-width: min(100%, 290px);
+  max-width: min(100vw - 24px, 360px);
+  min-height: 0;
+  padding: 6px 8px;
+  display: grid;
+  gap: 3px;
+  border: 1px solid var(--refresh-border);
+  border-radius: 6px;
+  background: #111b29;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+  color: var(--refresh-muted);
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+/* A saved/terminal result belongs to the header flow so it cannot cover the
+ * navigation or the page title. Running progress keeps its anchored panel to
+ * avoid moving adjacent controls while work is in flight. */
+.idleStatusArea {
+  position: static;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  margin-top: 5px;
+}
+
+.idleStatusArea .statusLine > span:first-child {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.statusArea:empty {
+  display: none;
+}
+
+.statusLine {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+}
+
+.statusLine > span:first-child {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resultSummary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  color: #d8e3f1;
+  font-size: 10px;
+}
+
+.resultSummary > span {
+  min-width: 0;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.resultSummary > span:nth-child(2) {
+  color: #e7c76f;
+}
+
+.resultSummary > span:nth-child(3) {
+  color: #f4aaa6;
+}
+
+.resultSummary > span:nth-child(4) {
+  color: #b7d2f5;
+}
+
+.failure {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #f4aaa6;
+  white-space: nowrap;
+}
+
+.progressTrack {
+  height: 3px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(174, 189, 208, 0.18);
+}
+
+.progressValue {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #3d92f7, #64b9aa);
+  transition: width 160ms ease;
+}
+
+.muted {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  overflow: hidden;
+  color: #91a3ba;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.failureDetails {
+  min-width: 0;
+  border-top: 1px solid rgba(174, 189, 208, 0.16);
+  padding-top: 3px;
+}
+
+.failureDetails > summary {
+  cursor: pointer;
+  color: #f4aaa6;
+}
+
+.retryHint {
+  margin: 0;
+  color: #91a3ba;
+  font-size: 10px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.failureList,
+.failureIntervals {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.failureList {
+  max-height: 220px;
+  overflow: auto;
+  display: grid;
+  gap: 5px;
+}
+
+.failureItem {
+  min-width: 0;
+  padding: 4px 5px;
+  border-radius: 4px;
+  background: rgba(239, 83, 80, 0.06);
+}
+
+.failureInstrument {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.failureInstrument strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #f4aaa6;
+  white-space: nowrap;
+}
+
+.failureInstrument span,
+.failureInstrument small {
+  color: #aebdd0;
+  font-size: 10px;
+}
+
+.failureInstrument small {
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.failureInstrument .failureAttempt {
+  flex-basis: 100%;
+  margin-left: 0;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.failureIntervals {
+  display: grid;
+  gap: 2px;
+  color: #d4aead;
+  font-size: 10px;
+}
+
+.failureIntervals li {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 43px minmax(0, 1fr);
+  gap: 4px;
+}
+
+.failureIntervals li > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.unfinishedDetails {
+  min-width: 0;
+  border-top: 1px solid rgba(174, 189, 208, 0.16);
+  padding-top: 3px;
+}
+
+.unfinishedDetails > summary {
+  cursor: pointer;
+  color: #b7d2f5;
+  font-size: 10px;
+}
+
+.unfinishedList {
+  max-height: 180px;
+  overflow: auto;
+  margin: 4px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+  list-style: none;
+}
+
+.unfinishedItem {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1px 5px;
+  padding: 4px 5px;
+  border-radius: 4px;
+  background: rgba(47, 128, 237, 0.06);
+}
+
+.unfinishedItem > span,
+.unfinishedItem > small {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.unfinishedItem > span:first-child {
+  color: #d8e3f1;
+}
+
+.unfinishedItem > span:nth-child(2) {
+  color: #e7c76f;
+  text-align: right;
+}
+
+.unfinishedItem > small {
+  grid-column: 1 / -1;
+  color: #91a3ba;
+  font-size: 10px;
+}
+
+.retryButton {
+  width: fit-content;
+  padding: 4px 7px;
+  border: 1px solid rgba(231, 199, 111, 0.32);
+  color: #e7c76f;
+  background: rgba(231, 199, 111, 0.08);
+  font-size: 11px;
+}
+
+.recoverButton {
+  width: fit-content;
+  padding: 4px 7px;
+  border: 1px solid rgba(183, 210, 245, 0.32);
+  color: #b7d2f5;
+  background: rgba(47, 128, 237, 0.08);
+  font-size: 11px;
+}
+
+.spin {
+  animation: spin 900ms linear infinite;
+}
+
+:global(.header-actions .import-menu) {
+  flex: 0 0 auto;
+}
+
+:global(.header-actions .import-menu > button) {
+  min-width: max-content;
+  white-space: nowrap;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1180px) {
+  .root {
+    width: min(29vw, 280px);
+  }
+
+  .scope {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .root {
+    width: auto;
+    flex: 1 1 auto;
+  }
+
+  .refreshButton {
+    min-width: max-content;
+    padding: 5px 8px;
+  }
+
+  .statusArea {
+    top: 58px;
+    left: 8px;
+    right: 8px;
+    min-width: 0;
+    min-height: 0;
+    max-width: none;
+    padding: 5px 8px;
+    border-radius: 0 0 6px 6px;
+  }
+
+  .idleStatusArea {
+    position: static;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: 100%;
+    max-width: none;
+    margin-top: 5px;
+    border-radius: 6px;
+  }
+
+  .resultSummary {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .resultSummary > span {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+}

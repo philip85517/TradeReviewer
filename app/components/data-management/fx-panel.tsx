@@ -1,6 +1,6 @@
 "use client";
 
-import type { FxState } from "../../lib/fx/contracts";
+import type { FxState } from "../../lib/fx/room-contracts";
 
 export type FxPanelProps = {
   state: FxState | null;

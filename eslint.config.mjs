@@ -13,6 +13,8 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     ".worktrees/**",
+    // Generated local performance bundle; its source remains linted.
+    ".scratch/**/performance-dist/**",
     // Version-pinned third-party OCR runtime modules are copied verbatim.
     "public/ocr/ort/**",
   ]),

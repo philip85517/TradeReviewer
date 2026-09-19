@@ -249,7 +249,8 @@ describe("SQLite production storage boundary", () => {
     });
 
     await user.click(await screen.findByRole("button", { name: "交易库" }));
-    await user.click(await screen.findByRole("button", { name: "开始复盘" }));
+    await user.click(await screen.findByRole("button", { name: "展开中国海油交易回合" }));
+    await user.click(await screen.findByRole("button", { name: /打开中国海油第1次交易/ }));
     await user.click(await screen.findByRole("tab", { name: "复盘笔记" }));
     await user.click(screen.getByText("补充分析 · 原始计划、风险与标签"));
     await user.click(screen.getByText("事后总结"));

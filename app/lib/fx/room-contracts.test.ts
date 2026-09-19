@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { emptyFxState, fxStatusForRates, toRoomFxSnapshot } from "./contracts";
+import { emptyFxState, fxStatusForRates, toRoomFxSnapshot } from "./room-contracts";
 
-describe("FX contracts", () => {
+describe("trading-room FX contracts", () => {
   it("keeps CNY as the base and only exposes a complete room snapshot", () => {
     const state = {
       ...emptyFxState(),

@@ -133,8 +133,7 @@ export class LocalizedMetadataHydrationQueue {
   }
 
   private start(options: HydrationRunOptions): Promise<void> {
-    let operation: Promise<void>;
-    operation = this.runLoop(options).finally(() => {
+    const operation: Promise<void> = this.runLoop(options).finally(() => {
       if (this.running === operation) {
         this.running = undefined;
         this.runningSignal = undefined;

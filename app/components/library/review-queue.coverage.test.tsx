@@ -1,8 +1,10 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { TradeLibraryEntry } from "../../lib/trades/library";
 import type { TradeEpisode } from "../../lib/trades/types";
+import { buildReviewQueue } from "../../lib/reviews/review-queue";
 import { ReviewQueue } from "./review-queue";
 
 afterEach(cleanup);
@@ -105,6 +107,31 @@ function renderQueue(warnings: TradeEpisode["warnings"]) {
   );
 }
 
+function pagedEntries(count: number): TradeLibraryEntry[] {
+  return Array.from({ length: count }, (_, index) => {
+    const source = entry([]);
+    const sourceEpisode = source.episodes[0]!;
+    const pagedInstrument = { ...instrument, id: `HK:700-${index}`, symbol: `700-${index}` };
+    const executions = sourceEpisode.episode.executions.map((fill) => ({
+      ...fill,
+      id: `${fill.id}-${index}`,
+      instrument: pagedInstrument,
+    }));
+    const episode = {
+      ...sourceEpisode.episode,
+      id: `episode-coverage-${index}`,
+      instrument: pagedInstrument,
+      executions,
+    };
+    return {
+      ...source,
+      instrument: pagedInstrument,
+      executions,
+      episodes: [{ ...sourceEpisode, episode }],
+    };
+  });
+}
+
 function expectRowNetPnl() {
   const row = screen.getByRole("button", { name: /复盘腾讯控股/ });
   expect(within(row).getByText("+HK$1,298.00")).toBeInTheDocument();
@@ -128,5 +155,51 @@ describe("ReviewQueue coverage warnings", () => {
 
     expect(screen.queryByText("账单缺月，持仓边界一致")).not.toBeInTheDocument();
     expectRowNetPnl();
+  });
+
+  it("exposes date, CNY PnL, and return sort headers with direction", async () => {
+    const onFilter = vi.fn();
+    render(
+      <ReviewQueue
+        entries={[entry([])]}
+        filter={{ status: "all", sort: "newest" }}
+        onFilter={onFilter}
+        onOpen={() => {}}
+        onBrowseStocks={() => {}}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "按成交时间排序（降序）" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "按 CNY 净盈亏排序（未排序）" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "按加权收益率排序（未排序）" })).toBeInTheDocument();
+
+    await userEvent.setup().click(screen.getByRole("button", { name: "按成交时间排序（降序）" }));
+    expect(onFilter).toHaveBeenCalledWith(expect.objectContaining({ sort: "oldest" }));
+  });
+
+  it("renders only one hundred rounds per page while keeping the total and page controls", async () => {
+    const user = userEvent.setup();
+    const onPageChange = vi.fn();
+    const rows = buildReviewQueue(pagedEntries(205), { status: "all", sort: "newest" });
+    render(
+      <ReviewQueue
+        entries={[]}
+        rows={rows}
+        pendingRows={[]}
+        filter={{ status: "all", sort: "newest" }}
+        onFilter={() => {}}
+        onOpen={() => {}}
+        onBrowseStocks={() => {}}
+        page={1}
+        onPageChange={onPageChange}
+      />,
+    );
+
+    expect(screen.getAllByRole("button", { name: /复盘腾讯控股/ })).toHaveLength(100);
+    expect(screen.getByText("显示第 1–100 个，共 205 个回合")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "上一页" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "下一页" })).toBeEnabled();
+
+    await user.click(screen.getByRole("button", { name: "下一页" }));
+    expect(onPageChange).toHaveBeenCalledWith(2);
   });
 });

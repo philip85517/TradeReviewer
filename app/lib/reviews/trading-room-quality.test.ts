@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { FxState } from "../fx/contracts";
+import type { FxState } from "../fx/room-contracts";
 import type { MarketDataJob } from "../storage/market-data-jobs";
 import type { TradingRoomHoldingRow, TradingRoomHoldingsModel } from "./trading-room-holdings";
 import type { RoomFxSnapshot, RoomScope, TradingRoomRow } from "./trading-room-scope";

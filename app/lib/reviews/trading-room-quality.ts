@@ -1,6 +1,6 @@
 import type { DailyCandleRecord } from "../market/contracts";
 import type { MarketDataSyncStatus } from "../market/sync-status";
-import type { FxState } from "../fx/contracts";
+import type { FxState } from "../fx/room-contracts";
 import type { MarketDataJob } from "../storage/market-data-jobs";
 import { dashboardStableShortId } from "./dashboard";
 import type { TradingRoomHoldingRow, TradingRoomHoldingsModel } from "./trading-room-holdings";

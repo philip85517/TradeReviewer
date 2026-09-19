@@ -34,11 +34,11 @@ describe("useFxRates", () => {
     expect(fetcher).not.toHaveBeenCalled();
     hook.rerender({ enabled: true });
     await waitFor(() => expect(hook.result.current.state?.id).toBe(state.id));
-    expect(fetcher).toHaveBeenCalledWith("/api/fx", expect.objectContaining({ method: "GET", cache: "no-store" }));
+    expect(fetcher).toHaveBeenCalledWith("/api/trading-room/fx", expect.objectContaining({ method: "GET", cache: "no-store" }));
 
     await act(async () => { await hook.result.current.refresh(); });
     expect(hook.result.current.state?.id).toBe("boc:next");
-    expect(fetcher).toHaveBeenLastCalledWith("/api/fx", expect.objectContaining({ method: "POST", cache: "no-store" }));
+    expect(fetcher).toHaveBeenLastCalledWith("/api/trading-room/fx", expect.objectContaining({ method: "POST", cache: "no-store" }));
   });
 
   it("surfaces a transient API error without replacing a prior snapshot", async () => {

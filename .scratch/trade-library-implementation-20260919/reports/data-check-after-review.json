@@ -1,0 +1,46 @@
+{
+  "source": {
+    "executions": {
+      "count": 1857,
+      "matches_baseline": true
+    },
+    "instruments": {
+      "count": 236,
+      "matches_baseline": true
+    },
+    "reviews": {
+      "count": 130,
+      "matches_baseline": true
+    },
+    "import_batches": {
+      "count": 208,
+      "matches_baseline": true
+    },
+    "trade_revisions": {
+      "count": 6,
+      "matches_baseline": true
+    }
+  },
+  "isolated": {
+    "executions": {
+      "count": 1857,
+      "matches_baseline": true
+    },
+    "instruments": {
+      "count": 236,
+      "matches_baseline": false
+    },
+    "reviews": {
+      "count": 131,
+      "matches_baseline": false
+    },
+    "import_batches": {
+      "count": 208,
+      "matches_baseline": true
+    },
+    "trade_revisions": {
+      "count": 6,
+      "matches_baseline": true
+    }
+  }
+}

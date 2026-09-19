@@ -78,7 +78,7 @@ describe("review queue", () => {
       ],
     }]);
     expect(options).toEqual([
-      { id: "china-merchants", label: "china-merchants" },
+      { id: "china-merchants", label: "招商证券" },
       { id: "futu", label: "富途" },
       { id: "tiger", label: "Tiger" },
     ]);

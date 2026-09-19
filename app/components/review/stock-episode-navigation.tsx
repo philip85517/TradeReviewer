@@ -20,6 +20,7 @@ type Props = {
   onNext: () => void;
   onSwitchStock: () => void;
   onLibrary: () => void;
+  returnLabel?: string;
 };
 const date = (value: string) => new Date(value).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false });
 const dateOnlyLabel = (execution: TradeEpisode["executions"][number]) =>
@@ -41,7 +42,7 @@ export function StockEpisodeNavigation(props: Props) {
   return <aside ref={dialogRef} className="stock-context" role={props.mobileOpen ? "dialog" : undefined} aria-modal={props.mobileOpen || undefined} aria-label="当前股票交易导航">
     {props.mobileOpen && <button onClick={props.onCloseMobile}>关闭本股交易</button>}
     <header><small>当前股票</small><h2>{props.instrument?.name ?? "演示复盘"}</h2><span>{props.instrument?.symbol}</span></header>
-    <div className="stock-context-actions"><button onClick={props.onSwitchStock}>切换股票</button><button onClick={props.onLibrary}>返回交易库</button></div>
+    <div className="stock-context-actions"><button onClick={props.onSwitchStock}>切换股票</button><button onClick={props.onLibrary}>{props.returnLabel ?? "返回交易库"}</button></div>
     <h3>交易回合</h3>
     <div className="stock-context-episodes">{props.episodes.map((episode, index) => <button key={episode.id} aria-pressed={episode.id === props.selectedEpisodeId} onClick={() => props.onSelectEpisode(episode.id)}><strong>第 {props.episodes.length - index} 次交易</strong><span>{episode.accountLabel}</span><time>{episodeDate(episode)}</time></button>)}</div>
     <h3>已揭示成交 <span>{revealed.length} 笔</span></h3>

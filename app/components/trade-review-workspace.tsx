@@ -224,7 +224,7 @@ import {
 import { RefreshCancellationService } from "../lib/market/refresh-cancellation";
 import { withGlobalMarketRefreshLock } from "../lib/market/refresh-lock";
 import { composeAbortSignals } from "../lib/instruments/abort-signal";
-import { toRoomFxSnapshot } from "../lib/fx/contracts";
+import { toRoomFxSnapshot } from "../lib/fx/room-contracts";
 import { useFxRates } from "../lib/fx/use-fx-rates";
 import type {
   TradingRoomQualityDimensionId,
@@ -280,6 +280,8 @@ type Props = {
   storageClient?: SqliteHttpClient;
   legacyStateExporter?: (options?: { excludeDemo?: boolean }) => Promise<import("../lib/storage/sqlite-contracts").BrowserStatePayload | null>;
 };
+
+type ReviewReturnView = "dashboard" | "library";
 
 const DEFAULT_CHART_SETTINGS: ChartSettings = {
   version: 1,
@@ -1017,6 +1019,9 @@ export function TradeReviewWorkspace({
   const [activeView, setActiveView] = useState<
     "dashboard" | "review" | "library" | "insights" | "data"
   >(showDemo ? "review" : "dashboard");
+  const [reviewReturnView, setReviewReturnView] = useState<ReviewReturnView>(
+    showDemo ? "library" : "dashboard",
+  );
   const fxRates = useFxRates({
     enabled: !showDemo,
   });
@@ -3879,6 +3884,7 @@ export function TradeReviewWorkspace({
     episodeId: string,
     scopeKey?: string,
   ) {
+    setReviewReturnView("library");
     const summary = importedInstruments.find((item) => item.instrument.id === instrumentId);
     if (summary && selectImportedSummary(summary, episodeId)) {
       setHistoryMode("history");
@@ -3909,6 +3915,16 @@ export function TradeReviewWorkspace({
     setActiveView("library");
   }
 
+  function returnFromReview() {
+    if (reviewReturnView === "dashboard") {
+      setPlaying(false);
+      setLibraryTarget(undefined);
+      setActiveView("dashboard");
+      return;
+    }
+    returnToLibrary();
+  }
+
   function continueFromReview() {
     const candidates = buildReviewQueue(tradeLibraryEntries, {status:"pending", ...(reviewQueueIds ? {} : {account:selectedEpisode?.accountId, nature:selectedEpisode?.executions[0] ? displayTradeNature(selectedEpisode.executions[0]) : undefined, simulationRunId:selectedEpisode?.simulationRunId})});
     const next = reviewQueueIds
@@ -3926,9 +3942,11 @@ export function TradeReviewWorkspace({
     }
     setReviewQueueIds(undefined);
     setLibraryTarget(undefined);
-    setLibraryBrowseState(current => current ? {...current,selectedInstrumentId:null,selectedEpisodeId:null,mode:"queue"} : undefined);
+    if (reviewReturnView === "library") {
+      setLibraryBrowseState(current => current ? {...current,selectedInstrumentId:null,selectedEpisodeId:null} : undefined);
+    }
     setNavigationNotice("本轮复盘已完成，可以到阶段总结整理下一步。");
-    setActiveView("library");
+    setActiveView(reviewReturnView);
   }
 
   async function acceptSuggestion(
@@ -4285,6 +4303,7 @@ export function TradeReviewWorkspace({
               setReviewQueueIds(queueIds);
               setHistoryMode("history");
               setActivePanelTab("notes");
+              setReviewReturnView("dashboard");
               setLibraryTarget(undefined);
               setActiveView("review");
             }}
@@ -4341,7 +4360,7 @@ export function TradeReviewWorkspace({
         </div>
         {activeView !== "dashboard" && activeView === "library" && (showDemo || importedInstruments.length > 0) ? (
           <TradeLibrary
-            defaultMode={showDemo ? "stocks" : "queue"}
+            defaultMode="stocks"
             key={libraryTarget?.requestId ?? 0}
             initialBrowseState={libraryBrowseState}
             onBrowseStateChange={setLibraryBrowseState}
@@ -4363,6 +4382,7 @@ export function TradeReviewWorkspace({
               setReviewQueueIds(queueIds);
               setHistoryMode("history");
               setActivePanelTab("notes");
+              setReviewReturnView("library");
               setLibraryTarget(undefined);
               setActiveView("review");
             }}
@@ -4435,7 +4455,7 @@ export function TradeReviewWorkspace({
             />
             </aside>
             <div className="review-content" inert={stockDrawerOpen || Boolean(dataTarget)}>
-            {(showDemo || selectedImportedInstrument) && <div className={`stock-context-shell ${mobileTradesOpen ? "mobile-trades-open" : ""}`}><StockEpisodeNavigation mobileOpen={mobileTradesOpen} onCloseMobile={() => setMobileTradesOpen(false)} instrument={selectedImportedInstrument?.instrument} episodes={episodes} selectedEpisodeId={selectedEpisode?.id} cursor={activeCursor} onSelectEpisode={id => { selectEpisode(id); setMobileTradesOpen(false); }} onLocate={(cursor) => { setPlaying(false); setImportedCursor(cursor); setMobileTradesOpen(false); }} onLocateRequest={requestExecutionLocation} onNext={nextImportedExecution} onSwitchStock={() => { setMobileTradesOpen(false); setStockDrawerOpen(true); }} onLibrary={() => { setMobileTradesOpen(false); returnToLibrary(); }} /></div>}
+            {(showDemo || selectedImportedInstrument) && <div className={`stock-context-shell ${mobileTradesOpen ? "mobile-trades-open" : ""}`}><StockEpisodeNavigation mobileOpen={mobileTradesOpen} onCloseMobile={() => setMobileTradesOpen(false)} instrument={selectedImportedInstrument?.instrument} episodes={episodes} selectedEpisodeId={selectedEpisode?.id} cursor={activeCursor} onSelectEpisode={id => { selectEpisode(id); setMobileTradesOpen(false); }} onLocate={(cursor) => { setPlaying(false); setImportedCursor(cursor); setMobileTradesOpen(false); }} onLocateRequest={requestExecutionLocation} onNext={nextImportedExecution} onSwitchStock={() => { setMobileTradesOpen(false); setStockDrawerOpen(true); }} onLibrary={() => { setMobileTradesOpen(false); returnFromReview(); }} returnLabel={reviewReturnView === "dashboard" ? "返回交易室" : undefined} /></div>}
             {!showDemo && !selectedImportedInstrument ? (
               <section
                 className="review-workspace review-workspace-empty"

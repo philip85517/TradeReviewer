@@ -1,0 +1,21 @@
+{
+  "source": "/Users/zhoulin/.codex/worktrees/review-dashboard/TradeReview/.scratch/range-refresh-recovery/acceptance.sqlite",
+  "copy": "/Users/zhoulin/.codex/worktrees/e7ec/TradeReview/.data/library-ux/acceptance.sqlite",
+  "tableCounts": {
+    "app_settings": 6,
+    "coverage": 234,
+    "daily_candles": 152320,
+    "data_migrations": 1,
+    "executions": 1857,
+    "import_batches": 208,
+    "instruments": 236,
+    "interval_coverage": 163,
+    "market_candles": 43305,
+    "market_data_jobs": 236,
+    "provider_symbols": 392,
+    "reviews": 130,
+    "schema_migrations": 6,
+    "tag_suggestions": 0,
+    "trade_revisions": 6
+  }
+}

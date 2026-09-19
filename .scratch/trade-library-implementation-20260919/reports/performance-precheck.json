@@ -1,0 +1,23 @@
+{
+  "stage": "intermediate integration, before pagination",
+  "build_log": "/tmp/tradereview-e7ec-perf-integration-build.log",
+  "url": "http://127.0.0.1:3032/?rounds=5000",
+  "rounds": 5000,
+  "stockGroups": 1530,
+  "viewport": [
+    1280,
+    720
+  ],
+  "method": "native input capture to two requestAnimationFrame callbacks, excludes tool RPC",
+  "samples": [
+    {
+      "action": "search Tencent; 1530 to14 stocks",
+      "milliseconds": 260.80000001192093
+    },
+    {
+      "action": "keyboard clear search;14 to1530 stocks",
+      "milliseconds": 1802
+    }
+  ],
+  "verdict": "single-sample diagnostics only; full-range restoration too slow, pagination assigned; final20samples pending"
+}

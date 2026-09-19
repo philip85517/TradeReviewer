@@ -6,12 +6,14 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { DailyCandleRecord } from "../../lib/market/contracts";
+import type { MarketDataSyncStatus } from "../../lib/market/sync-status";
 import type { EpisodeReviewRecord } from "../../lib/reviews/types";
 import { createEmptyEpisodeReviewRecord } from "../../lib/reviews/review-metrics";
 import { buildInstrumentTradeSummaries } from "../../lib/trades/instruments";
 import { buildTradeLibraryEntries } from "../../lib/trades/library";
 import type { Instrument, TradeExecution } from "../../lib/trades/types";
-import { TradeLibrary } from "./trade-library";
+import { DEFAULT_TRADE_LIBRARY_BROWSE_STATE } from "./library-browse-state";
+import { selectLibraryDisplayMetricRows, TradeLibrary } from "./trade-library";
 
 const xpev: Instrument = {
   id: "US:XPEV",
@@ -39,6 +41,7 @@ function fill(
     id: `${instrument.id}-${label}`,
     source: {
       platform: "fixture",
+      tradingNature: "live",
       row: 1,
       sourceTimestampText: label,
       sourceTimezone: "Asia/Shanghai",
@@ -155,25 +158,30 @@ function setup(
   const onOpenInReview = vi.fn();
   const onSaveReview = vi.fn();
   const onRefreshMarketData = vi.fn();
-  render(
+  const viewProps = {
+    entries,
+    candlesByInstrument,
+    marketDataStatuses: {
+      "US:XPEV": options.marketStatus ?? "complete",
+      "HK:1810": "partial",
+    } satisfies Record<string, MarketDataSyncStatus>,
+    timeframe: "1D" as const,
+    onTimeframeChange: vi.fn(),
+    onOpenInReview,
+    onSaveReview,
+    onRefreshMarketData,
+    reviewsHydrated: options.reviewsHydrated ?? true,
+    target: browseTarget,
+  };
+  const renderResult = render(
     <TradeLibrary
-      entries={entries}
-      candlesByInstrument={candlesByInstrument}
-      marketDataStatuses={{
-        "US:XPEV": options.marketStatus ?? "complete",
-        "HK:1810": "partial",
-      }}
-      timeframe="1D"
-      onTimeframeChange={vi.fn()}
-      onOpenInReview={onOpenInReview}
-      onSaveReview={onSaveReview}
-      onRefreshMarketData={onRefreshMarketData}
-      reviewsHydrated={options.reviewsHydrated ?? true}
-      target={browseTarget}
+      {...viewProps}
     />,
   );
   return {
     entries,
+    rerenderWithEntries: (nextEntries: typeof entries) =>
+      renderResult.rerender(<TradeLibrary {...viewProps} entries={nextEntries} />),
     onOpenInReview,
     onSaveReview,
     onRefreshMarketData,
@@ -187,13 +195,101 @@ function setup(
 describe("TradeLibrary", () => {
   afterEach(() => cleanup());
 
+  it("selects display metrics from the current page and expanded stock rows only", () => {
+    const entries = buildTradeLibraryEntries(
+      buildInstrumentTradeSummaries([
+        fill(xpev, "buy", "2025-01-02T14:30:00Z", "metric-xpev-in"),
+        fill(xpev, "sell", "2025-01-03T14:30:00Z", "metric-xpev-out"),
+        fill(xiaomi, "buy", "2025-01-04T02:00:00Z", "metric-xiaomi-in"),
+        fill(xiaomi, "sell", "2025-01-05T02:00:00Z", "metric-xiaomi-out"),
+      ]),
+      {},
+      {},
+    );
+    const rows = entries.flatMap(entry => entry.episodes.map(item => ({ entry, item })));
+    const groups = entries.map(entry => ({
+      entry,
+      rows: rows.filter(row => row.entry.instrument.id === entry.instrument.id),
+      allRows: rows.filter(row => row.entry.instrument.id === entry.instrument.id),
+    }));
+
+    const selected = selectLibraryDisplayMetricRows({
+      mode: "stocks",
+      queueRows: rows,
+      roundPage: 1,
+      stockGroups: groups,
+      stockPage: 1,
+      expandedStockIds: [entries[0]!.instrument.id],
+      includeReviewedStockIds: [],
+      reviewStatus: "all",
+    });
+
+    expect(selected.map(row => row.item.episode.id)).toEqual(
+      groups[0]!.rows.map(row => row.item.episode.id),
+    );
+  });
+
+  it("invalidates a cached range when the entries and review progress change", async () => {
+    const user = userEvent.setup();
+    const { entries, rerenderWithEntries } = setup();
+    const search = screen.getByRole("searchbox", { name: "搜索股票" });
+
+    expect(screen.getByText(/已复盘 0\/3 个/)).toBeVisible();
+    await user.type(search, "小鹏");
+    await user.clear(search);
+    expect(screen.getByText(/已复盘 0\/3 个/)).toBeVisible();
+
+    const reviewedEpisode = entries.find(entry => entry.instrument.id === "US:XPEV")?.episodes[0]?.episode;
+    expect(reviewedEpisode).toBeDefined();
+    const review = createEmptyEpisodeReviewRecord(
+      reviewedEpisode!.id,
+      reviewedEpisode!.instrument.id,
+      "2025-02-02T00:00:00.000Z",
+    );
+    review.review.completed = true;
+    const updatedEntries = buildTradeLibraryEntries(
+      buildInstrumentTradeSummaries(entries.flatMap(entry => entry.executions)),
+      {},
+      { "US:XPEV": "complete", "HK:1810": "partial" },
+      { [review.episodeId]: review },
+    );
+
+    rerenderWithEntries(updatedEntries);
+    expect(screen.getByText(/已复盘 1\/3 个/)).toBeVisible();
+  });
+
+  it("resets persisted list pages when a shared scope filter changes", async () => {
+    const user = userEvent.setup();
+    const entries = setup().entries;
+    const states: Array<{ stockPage: number; roundPage: number }> = [];
+    cleanup();
+    render(
+      <TradeLibrary
+        entries={entries}
+        candlesByInstrument={{}}
+        marketDataStatuses={{}}
+        timeframe="1D"
+        onTimeframeChange={() => {}}
+        onOpenInReview={() => {}}
+        onSaveReview={() => {}}
+        reviewsHydrated
+        initialBrowseState={{ ...DEFAULT_TRADE_LIBRARY_BROWSE_STATE, stockPage: 4, roundPage: 7 }}
+        onBrowseStateChange={state => states.push({ stockPage: state.stockPage, roundPage: state.roundPage })}
+      />,
+    );
+
+    await user.selectOptions(screen.getByRole("combobox", { name: "按市场筛选" }), "US");
+    expect(states.at(-1)).toMatchObject({ stockPage: 1, roundPage: 1 });
+  });
+
   it("completes a queued review then advances inside the selected account", async () => {
     const user = userEvent.setup();
     const { onSaveReview, xpevEpisodeId } = setup();
-    await user.click(screen.getByRole("button", {name:"回合待复盘"}));
-    await user.click(screen.getByRole("button", { name: "更多筛选" }));
-    await user.click(screen.getByRole("checkbox", { name: "账户筛选 主账户" }));
-    await user.click(screen.getByRole("button", {name:"开始复盘"}));
+    await user.click(screen.getByRole("tab", {name:"按回合浏览"}));
+    await user.click(screen.getByRole("button", { name: "高级筛选" }));
+    await user.click(screen.getByRole("checkbox", { name: "主账户" }));
+    await user.click(screen.getByRole("button", { name: "应用筛选" }));
+    await user.click(screen.getByRole("button", {name:/^开始复盘/}));
     await user.type(screen.getByLabelText("下次行动"), "等待确认再行动");
     await user.click(screen.getByRole("button", {name:"完成并下一回合"}));
     expect(onSaveReview).toHaveBeenCalledWith(expect.objectContaining({episodeId:xpevEpisodeId, review:expect.objectContaining({completed:true,reusableRule:"等待确认再行动"})}));
@@ -210,9 +306,10 @@ describe("TradeLibrary", () => {
     ];
     const entries=buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions),{},{});
     render(<TradeLibrary defaultMode="queue" entries={entries} candlesByInstrument={{}} marketDataStatuses={{}} timeframe="1D" onTimeframeChange={()=>{}} onOpenInReview={()=>{}} onSaveReview={async()=>{}} reviewsHydrated />);
-    await user.click(screen.getByRole("button", { name: "更多筛选" }));
-    await user.click(screen.getByRole("checkbox", { name: "账户筛选 主账户" }));
-    await user.click(screen.getByRole("button",{name:"开始复盘"}));
+    await user.click(screen.getByRole("button", { name: "高级筛选" }));
+    await user.click(screen.getByRole("checkbox", { name: "主账户" }));
+    await user.click(screen.getByRole("button", { name: "应用筛选" }));
+    await user.click(screen.getByRole("button",{name:/^开始复盘/}));
     expect(within(screen.getByRole("complementary",{name:"交易回合列表"})).getAllByRole("button")).toHaveLength(1);
     expect(screen.queryByText(/其他账户/)).not.toBeInTheDocument();
   });
@@ -247,15 +344,18 @@ describe("TradeLibrary", () => {
     expect(screen.getByRole("region", { name: "交易库" }).scrollTop).toBe(241.5);
   });
 
-  it("opens a stock review within that stock instead of an unrelated saved queue", async () => {
+  it("keeps the selected account range when switching to stock browsing", async () => {
     const user=userEvent.setup();
     const { onOpenInReview } = setup();
-    await user.click(screen.getByRole("button",{name:"回合待复盘"}));
-    await user.click(screen.getByRole("button", { name: "更多筛选" }));
-    await user.click(screen.getByRole("checkbox", { name: "账户筛选 港股账户" }));
-    await user.click(screen.getByRole("button",{name:"按标的浏览"}));
-    await user.click(screen.getByRole("button",{name:"打开小鹏汽车交易回合"}));
-    expect(onOpenInReview).toHaveBeenCalledWith("US:XPEV", expect.any(String), expect.any(Array));
+    await user.click(screen.getByRole("tab",{name:"按回合浏览"}));
+    await user.click(screen.getByRole("button", { name: "高级筛选" }));
+    await user.click(screen.getByRole("checkbox", { name: "港股账户" }));
+    await user.click(screen.getByRole("button", { name: "应用筛选" }));
+    await user.click(screen.getByRole("tab",{name:"按标的浏览"}));
+    expect(screen.queryByRole("button",{name:"展开小鹏汽车交易回合"})).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button",{name:"展开小米集团-W交易回合"}));
+    await user.click(screen.getByRole("button",{name:/打开小米集团-W第/}));
+    expect(onOpenInReview).toHaveBeenCalledWith("HK:1810", expect.any(String), expect.any(Array));
   });
 
   it("returns reopened episodes to the next-review candidates", async () => {
@@ -270,7 +370,7 @@ describe("TradeLibrary", () => {
       return <TradeLibrary defaultMode="queue" entries={entries} candlesByInstrument={{}} marketDataStatuses={{}} timeframe="1D" onTimeframeChange={()=>{}} onOpenInReview={()=>{}} onSaveReview={async record=>{setReviews(current=>({...current,[record.episodeId]:record}));}} reviewsHydrated />;
     }
     render(<Harness/>);
-    await user.click(screen.getByRole("button",{name:"全部回合"}));
+    await user.selectOptions(screen.getByRole("combobox", { name: "按复盘状态筛选" }), "all");
     await user.click(screen.getByRole("button",{name:/复盘小鹏汽车 2025\/2\/2/}));
     await user.type(screen.getByLabelText("下次行动"),"继续观察");
     await user.click(screen.getByRole("button",{name:"完成并下一回合"}));
@@ -291,7 +391,7 @@ describe("TradeLibrary", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("原股票或交易回合已变化");
     expect(screen.queryByRole("button", { name: "打开统一工作台" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "重新选择" }));
-    expect(screen.getByRole("button", { name: "打开小鹏汽车交易回合" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "展开小鹏汽车交易回合" })).toBeInTheDocument();
     expect(onOpenInReview).not.toHaveBeenCalled();
   });
 
@@ -322,29 +422,28 @@ describe("TradeLibrary", () => {
     const { onOpenInReview } = setup();
 
     expect(
-      screen.getByRole("heading", { name: "股票交易库" }),
+      screen.getByRole("heading", { name: "交易库" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("2 个标的")).toBeInTheDocument();
-    expect(screen.getByText(/2 个回合/)).toBeInTheDocument();
+    expect(screen.getByText(/2 个标的 ·/)).toBeInTheDocument();
+    expect(screen.getByText("2 个标的 · 3 个回合")).toBeInTheDocument();
     expect(
       screen.getAllByText("累计 R — · 标签待确认").length,
     ).toBeGreaterThan(0);
-    expect(
-      screen.getByRole("combobox", { name: "按标签筛选" }),
-    ).toBeEnabled();
+    expect(screen.getByRole("button", { name: "高级筛选" })).toBeEnabled();
 
     await user.type(
       screen.getByRole("searchbox", { name: "搜索股票" }),
       "小米",
     );
     expect(
-      screen.queryByRole("button", { name: "打开小鹏汽车交易回合" }),
+      screen.queryByRole("button", { name: "展开小鹏汽车交易回合" }),
     ).not.toBeInTheDocument();
     await user.clear(screen.getByRole("searchbox", { name: "搜索股票" }));
 
     await user.click(
-      screen.getByRole("button", { name: "打开小鹏汽车交易回合" }),
+      screen.getByRole("button", { name: "展开小鹏汽车交易回合" }),
     );
+    await user.click(screen.getAllByRole("button", { name: /打开小鹏汽车第/ })[0]);
     expect(onOpenInReview).toHaveBeenCalledWith("US:XPEV", expect.any(String), expect.any(Array));
     expect(screen.queryByRole("heading", { name: "小鹏汽车（XPEV）" })).not.toBeInTheDocument();
   });
@@ -354,8 +453,9 @@ describe("TradeLibrary", () => {
     const { onOpenInReview, xpevEpisodeId } = setup();
 
     await user.click(
-      screen.getByRole("button", { name: "打开小鹏汽车交易回合" }),
+      screen.getByRole("button", { name: "展开小鹏汽车交易回合" }),
     );
+    await user.click(screen.getAllByRole("button", { name: /打开小鹏汽车第/ })[0]);
 
     expect(onOpenInReview).toHaveBeenCalledWith(
       "US:XPEV",
@@ -371,27 +471,11 @@ describe("TradeLibrary", () => {
     const user = userEvent.setup();
     setup();
 
-    await user.click(screen.getByRole("button", { name: "回合待复盘" }));
+    await user.click(screen.getByRole("tab", { name: "按回合浏览" }));
 
-    expect(screen.getByRole("button", { name: "全部" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    expect(screen.getByRole("button", { name: "港股" })).toHaveAttribute(
-      "aria-pressed",
-      "false",
-    );
-    expect(screen.getByRole("button", { name: "美股" })).toHaveAttribute(
-      "aria-pressed",
-      "false",
-    );
-
-    await user.click(screen.getByRole("button", { name: "港股" }));
-
-    expect(screen.getByRole("button", { name: "港股" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
+    expect(screen.getByRole("combobox", { name: "按市场筛选" })).toHaveValue("all");
+    await user.selectOptions(screen.getByRole("combobox", { name: "按市场筛选" }), "HK");
+    expect(screen.getByRole("combobox", { name: "按市场筛选" })).toHaveValue("HK");
     expect(screen.queryByRole("button", { name: /复盘小鹏汽车/ })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: /复盘小米集团-W/ })).toBeInTheDocument();
   });
@@ -408,45 +492,35 @@ describe("TradeLibrary", () => {
     render(<TradeLibrary defaultMode="queue" entries={entries} candlesByInstrument={{}} marketDataStatuses={{}} timeframe="1D" onTimeframeChange={() => {}} onOpenInReview={() => {}} onSaveReview={() => {}} reviewsHydrated />);
 
     expect(screen.queryByLabelText("队列汇总范围")).not.toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "当前筛选汇总" })).toHaveTextContent("美股 · 实盘 · USD");
-    expect(screen.getByRole("button", { name: "富途" })).toHaveAttribute("aria-pressed", "false");
-    expect(screen.getByRole("button", { name: "Tiger" })).toHaveAttribute("aria-pressed", "false");
-    await user.click(screen.getByRole("button", { name: "富途" }));
-    expect(screen.getByRole("button", { name: "富途" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("region", { name: "当前筛选绩效汇总" })).toHaveTextContent("当前统计组：实盘");
+    await user.click(screen.getByRole("button", { name: "高级筛选" }));
+    await user.click(screen.getByRole("checkbox", { name: "富途" }));
+    await user.click(screen.getByRole("button", { name: "应用筛选" }));
+    expect(screen.getByRole("button", { name: "移除来源平台：富途" })).toBeInTheDocument();
     const futuRow = screen.getByRole("button", { name: /复盘小鹏汽车 2025\/1\/2/ });
     expect(futuRow).toBeInTheDocument();
     expect(futuRow.querySelector(".review-queue-window")).not.toHaveTextContent("账户：");
     expect(futuRow.parentElement).toHaveTextContent("账户：账户甲");
     expect(screen.queryByRole("button", { name: /复盘小鹏汽车 2025\/2\/2/ })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "更多筛选" }));
-    const advancedFilters = screen.getByRole("group", { name: "高级筛选" });
-    const accountRow = advancedFilters.querySelector<HTMLElement>(".review-queue-accounts-row");
-    expect(accountRow).not.toBeNull();
-    expect(accountRow).toContainElement(screen.getByRole("group", { name: "账户标签" }));
-    expect(accountRow).toContainElement(screen.getByRole("button", { name: "清除账户标签" }));
-    const accountTag = screen.getByRole("checkbox", { name: "账户筛选 账户乙" });
-    await user.click(accountTag);
-    await user.selectOptions(screen.getByLabelText("复盘年份"), "2025");
-    await user.click(screen.getByRole("button", { name: "清除账户标签" }));
-    expect(screen.getByRole("checkbox", { name: "账户筛选 账户乙" })).not.toBeChecked();
-    expect(screen.getByLabelText("复盘年份")).toHaveValue("2025");
-    expect(screen.getByRole("button", { name: "富途" })).toHaveAttribute("aria-pressed", "true");
-
-    await user.click(screen.getByRole("button", { name: /更多筛选（1）/ }));
-    expect(screen.queryByRole("button", { name: "移除账户筛选 账户乙" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "富途" })).toHaveAttribute("aria-pressed", "true");
-
-    await user.click(screen.getByRole("button", { name: /更多筛选（1）/ }));
-    await user.click(screen.getByRole("button", { name: "清除高级条件" }));
-    expect(screen.getByLabelText("复盘年份")).toHaveValue("all");
-    expect(screen.getByRole("button", { name: "富途" })).toHaveAttribute("aria-pressed", "true");
+    await user.click(screen.getByRole("button", { name: "高级筛选（1）" }));
+    await user.click(screen.getByRole("checkbox", { name: "账户乙" }));
+    await user.selectOptions(screen.getByLabelText("年份"), "2025");
+    await user.click(screen.getByRole("button", { name: "应用筛选" }));
+    expect(screen.getByRole("button", { name: "移除账户：账户乙" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "移除年份：2025" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "移除来源平台：富途" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "移除账户：账户乙" }));
+    expect(screen.queryByRole("button", { name: "移除账户：账户乙" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "移除年份：2025" }));
+    expect(screen.queryByRole("button", { name: "移除年份：2025" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "移除来源平台：富途" })).toBeInTheDocument();
   });
 
   it("opens a queue row from the keyboard without changing the captured queue order", async () => {
     const user = userEvent.setup();
     const { onOpenInReview } = setup();
-    await user.click(screen.getByRole("button", { name: "回合待复盘" }));
+    await user.click(screen.getByRole("tab", { name: "按回合浏览" }));
 
     const row = screen.getByRole("button", { name: /复盘小米集团-W/ });
     row.focus();
@@ -462,30 +536,27 @@ describe("TradeLibrary", () => {
   it("keeps advanced filters independent, visible when collapsed, and preserves search/account/sort", async () => {
     const user = userEvent.setup();
     setup();
-    await user.click(screen.getByRole("button", { name: "回合待复盘" }));
+    await user.click(screen.getByRole("tab", { name: "按回合浏览" }));
     await user.type(screen.getByLabelText("搜索复盘回合"), "XPEV");
-    await user.selectOptions(screen.getByLabelText("回合排序"), "oldest");
-    await user.click(screen.getByRole("button", { name: "更多筛选" }));
-    await user.click(screen.getByRole("checkbox", { name: "账户筛选 主账户" }));
-    await user.selectOptions(screen.getByLabelText("复盘年份"), "2025");
-    expect(screen.getByText(/按入选完整回合统计；净盈亏已扣已知费用；年份筛选仅筛选回合/)).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "更多筛选（2）" }));
-
-    expect(screen.queryByLabelText("复盘年份")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "更多筛选（2）" })).toHaveAttribute("aria-expanded", "false");
+    await user.selectOptions(screen.getByLabelText("交易库排序"), "oldest");
+    await user.click(screen.getByRole("button", { name: "高级筛选" }));
+    await user.click(screen.getByRole("checkbox", { name: "主账户" }));
+    await user.selectOptions(screen.getByLabelText("年份"), "2025");
+    await user.click(screen.getByRole("button", { name: "应用筛选" }));
+    expect(screen.getByText(/当前筛选：.*个证券.*个回合/)).toBeInTheDocument();
     expect(screen.getByLabelText("搜索复盘回合")).toHaveValue("XPEV");
-    expect(screen.getByRole("button", { name: "移除账户筛选 主账户" })).toBeInTheDocument();
-    expect(screen.getByLabelText("回合排序")).toHaveValue("oldest");
+    expect(screen.getByRole("button", { name: "移除账户：主账户" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "移除年份：2025" })).toBeInTheDocument();
+    expect(screen.getByLabelText("交易库排序")).toHaveValue("oldest");
 
-    await user.click(screen.getByRole("button", { name: "更多筛选（2）" }));
-    await user.click(screen.getByRole("button", { name: "清除账户标签" }));
-    expect(screen.getByLabelText("复盘年份")).toHaveValue("2025");
-    expect(screen.queryByRole("button", { name: "移除账户筛选 主账户" })).not.toBeInTheDocument();
-
+    await user.click(screen.getByRole("button", { name: "移除账户：主账户" }));
+    expect(screen.queryByRole("button", { name: "移除账户：主账户" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "高级筛选（1）" }));
     await user.click(screen.getByRole("button", { name: "清除高级条件" }));
-    expect(screen.getByLabelText("复盘年份")).toHaveValue("all");
+    await user.click(screen.getByRole("button", { name: "应用筛选" }));
+    expect(screen.getByRole("button", { name: "高级筛选" })).toBeInTheDocument();
     expect(screen.getByLabelText("搜索复盘回合")).toHaveValue("XPEV");
-    expect(screen.getByLabelText("回合排序")).toHaveValue("oldest");
+    expect(screen.getByLabelText("交易库排序")).toHaveValue("oldest");
   });
 
   it("preserves controlled queue filters across the account/status/search/sort sequence", async () => {
@@ -518,20 +589,21 @@ describe("TradeLibrary", () => {
     );
     render(<TradeLibrary defaultMode="queue" entries={entries} candlesByInstrument={{}} marketDataStatuses={{}} timeframe="1D" onTimeframeChange={() => {}} onOpenInReview={() => {}} onSaveReview={() => {}} reviewsHydrated />);
 
-    await user.click(screen.getByRole("button", { name: "更多筛选" }));
-    await user.click(screen.getByRole("checkbox", { name: "账户筛选 富途" }));
-    await user.click(screen.getByRole("button", { name: "美股" }));
-    await user.selectOptions(screen.getByLabelText("回合排序"), "return-high");
-    await user.selectOptions(screen.getByLabelText("回合排序"), "return-low");
-    await user.click(screen.getByRole("button", { name: "全部回合" }));
-    await user.click(screen.getByRole("button", { name: "移除账户筛选 富途" }));
+    await user.click(screen.getByRole("button", { name: "高级筛选" }));
+    await user.click(screen.getByRole("checkbox", { name: "富途" }));
+    await user.click(screen.getByRole("button", { name: "应用筛选" }));
+    await user.selectOptions(screen.getByRole("combobox", { name: "按市场筛选" }), "US");
+    await user.selectOptions(screen.getByLabelText("交易库排序"), "return-high");
+    await user.selectOptions(screen.getByLabelText("交易库排序"), "return-low");
+    await user.selectOptions(screen.getByRole("combobox", { name: "按复盘状态筛选" }), "all");
+    await user.click(screen.getByRole("button", { name: "移除账户：富途" }));
     await user.type(screen.getByLabelText("搜索复盘回合"), "NVDA");
-    await user.selectOptions(screen.getByLabelText("回合排序"), "completed-first");
+    await user.selectOptions(screen.getByLabelText("交易库排序"), "completed-first");
 
-    expect(screen.getByRole("button", { name: "美股" })).toHaveAttribute("aria-pressed", "true");
-    expect(screen.queryByRole("button", { name: "移除账户筛选 富途" })).not.toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "按市场筛选" })).toHaveValue("US");
+    expect(screen.queryByRole("button", { name: "移除账户：富途" })).not.toBeInTheDocument();
     expect(screen.getByLabelText("搜索复盘回合")).toHaveValue("NVDA");
-    expect(screen.getByLabelText("回合排序")).toHaveValue("completed-first");
+    expect(screen.getByLabelText("交易库排序")).toHaveValue("completed-first");
     expect(screen.getAllByRole("button", { name: /复盘NVIDIA Corporation/ })).toHaveLength(2);
   });
 
@@ -553,18 +625,21 @@ describe("TradeLibrary", () => {
     const entries = buildTradeLibraryEntries(buildInstrumentTradeSummaries(executions), {}, {});
     render(<TradeLibrary defaultMode="queue" entries={entries} candlesByInstrument={{}} marketDataStatuses={{}} timeframe="1D" onTimeframeChange={() => {}} onOpenInReview={() => {}} onSaveReview={() => {}} reviewsHydrated />);
 
-    const summary = screen.getByRole("region", { name: "当前筛选汇总" });
+    const summary = screen.getByRole("region", { name: "当前筛选绩效汇总" });
     expect(screen.queryByLabelText("队列汇总范围")).not.toBeInTheDocument();
-    expect(summary).toHaveTextContent("美股 · 实盘 · USD");
+    expect(summary).toHaveTextContent("当前统计组：实盘");
 
-    await user.click(screen.getByRole("button", { name: "更多筛选" }));
-    expect(screen.getByRole("checkbox", { name: "账户筛选 富途（账户1）" })).toBeInTheDocument();
-    expect(screen.getByRole("checkbox", { name: "账户筛选 富途（账户2）" })).toBeInTheDocument();
-    await user.click(screen.getByRole("checkbox", { name: "账户筛选 富途（账户1）" }));
+    await user.click(screen.getByRole("button", { name: "高级筛选" }));
+    expect(screen.getByRole("checkbox", { name: "富途（账户1）" })).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: "富途（账户2）" })).toBeInTheDocument();
+    await user.click(screen.getByRole("checkbox", { name: "富途（账户1）" }));
+    await user.click(screen.getByRole("button", { name: "应用筛选" }));
     expect(screen.getByRole("button", { name: /复盘小鹏汽车 2025\/1\/2 富途（账户1）/ })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /复盘小鹏汽车 2025\/2\/2/ })).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "移除账户筛选 富途（账户1）" }));
-    await user.click(screen.getByRole("checkbox", { name: "账户筛选 富途（账户2）" }));
+    await user.click(screen.getByRole("button", { name: "移除账户：富途（账户1）" }));
+    await user.click(screen.getByRole("button", { name: "高级筛选" }));
+    await user.click(screen.getByRole("checkbox", { name: "富途（账户2）" }));
+    await user.click(screen.getByRole("button", { name: "应用筛选" }));
     expect(screen.getByRole("button", { name: /复盘小鹏汽车 2025\/2\/2 富途（账户2）/ })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /复盘小鹏汽车 2025\/1\/2/ })).not.toBeInTheDocument();
   });
@@ -572,16 +647,17 @@ describe("TradeLibrary", () => {
   it("starts the first episode in the selected sorted queue order and exposes full names accessibly", async () => {
     const user = userEvent.setup();
     const { onOpenInReview, olderXpevEpisodeId } = setup();
-    await user.click(screen.getByRole("button", { name: "回合待复盘" }));
-    await user.click(screen.getByRole("button", { name: "更多筛选" }));
-    await user.click(screen.getByRole("checkbox", { name: "账户筛选 主账户" }));
-    await user.selectOptions(screen.getByLabelText("回合排序"), "oldest");
+    await user.click(screen.getByRole("tab", { name: "按回合浏览" }));
+    await user.click(screen.getByRole("button", { name: "高级筛选" }));
+    await user.click(screen.getByRole("checkbox", { name: "主账户" }));
+    await user.click(screen.getByRole("button", { name: "应用筛选" }));
+    await user.selectOptions(screen.getByLabelText("交易库排序"), "oldest");
     const firstRow = screen.getAllByRole("button", { name: /复盘小鹏汽车/ })[0];
     expect(firstRow).toHaveAccessibleName(/复盘小鹏汽车 2025\/1\/2/);
     expect(firstRow).toHaveAccessibleName(/原名：小鹏汽车/);
     await user.click(screen.getAllByText("查看完整原名")[0]);
     expect(screen.getAllByText("原名：小鹏汽车")[0]).toBeVisible();
-    await user.click(screen.getByRole("button", { name: "开始复盘" }));
+    await user.click(screen.getByRole("button", { name: /^开始复盘/ }));
     expect(onOpenInReview).toHaveBeenCalledWith("US:XPEV", olderXpevEpisodeId, expect.any(Array));
   });
 
@@ -601,13 +677,13 @@ describe("TradeLibrary", () => {
       {},
     );
     render(<TradeLibrary defaultMode="queue" entries={entries} candlesByInstrument={{}} marketDataStatuses={{}} timeframe="1D" onTimeframeChange={() => {}} onOpenInReview={() => {}} onSaveReview={() => {}} reviewsHydrated />);
-    await user.click(screen.getByRole("button", { name: "全部回合" }));
+    await user.selectOptions(screen.getByRole("combobox", { name: "按复盘状态筛选" }), "all");
 
     const openRow = screen.getByRole("button", { name: /复盘小鹏汽车/ });
     expect(openRow).toHaveTextContent("持仓中 · 最终盈亏未定");
     expect(openRow.querySelector(".review-queue-result")).toHaveClass("neutral");
     const unknownRow = screen.getByRole("button", { name: /复盘小米集团-W/ });
-    expect(unknownRow).toHaveTextContent("盈亏待核对");
+    expect(unknownRow).toHaveTextContent("没有可信已平仓盈亏");
     expect(unknownRow.querySelector(".review-queue-result")).toHaveClass("neutral");
   });
 
@@ -615,9 +691,9 @@ describe("TradeLibrary", () => {
     const user = userEvent.setup();
     setup();
     const xpevButton = () =>
-      screen.queryByRole("button", { name: "打开小鹏汽车交易回合" });
+      screen.queryByRole("button", { name: "展开小鹏汽车交易回合" });
     const xiaomiButton = () =>
-      screen.queryByRole("button", { name: "打开小米集团-W交易回合" });
+      screen.queryByRole("button", { name: "展开小米集团-W交易回合" });
 
     await user.selectOptions(
       screen.getByRole("combobox", { name: "按市场筛选" }),
@@ -630,43 +706,30 @@ describe("TradeLibrary", () => {
       "all",
     );
 
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "按账户筛选" }),
-      "acct-hk",
-    );
+    await user.click(screen.getByRole("button", { name: "高级筛选" }));
+    await user.click(screen.getByRole("checkbox", { name: "港股账户" }));
+    await user.click(screen.getByRole("button", { name: "应用筛选" }));
     expect(xpevButton()).not.toBeInTheDocument();
     expect(xiaomiButton()).toBeInTheDocument();
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "按账户筛选" }),
-      "all",
-    );
+    await user.click(screen.getByRole("button", { name: "移除账户：港股账户" }));
 
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "按年份筛选" }),
-      "2024",
-    );
+    await user.click(screen.getByRole("button", { name: "高级筛选" }));
+    await user.selectOptions(screen.getByLabelText("年份"), "2024");
+    await user.click(screen.getByRole("button", { name: "应用筛选" }));
     expect(xpevButton()).not.toBeInTheDocument();
     expect(xiaomiButton()).toBeInTheDocument();
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "按年份筛选" }),
-      "all",
-    );
+    await user.click(screen.getByRole("button", { name: "移除年份：2024" }));
 
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "按持仓状态筛选" }),
-      "open",
-    );
+    await user.click(screen.getByRole("button", { name: "高级筛选" }));
+    await user.selectOptions(screen.getByLabelText("持仓状态"), "open");
+    await user.click(screen.getByRole("button", { name: "应用筛选" }));
     expect(xpevButton()).toBeInTheDocument();
     expect(xiaomiButton()).not.toBeInTheDocument();
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "按持仓状态筛选" }),
-      "all",
-    );
+    await user.click(screen.getByRole("button", { name: "移除持仓状态：持仓中" }));
 
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "按行情完整性筛选" }),
-      "incomplete",
-    );
+    await user.click(screen.getByRole("button", { name: "高级筛选" }));
+    await user.selectOptions(screen.getByLabelText("行情状态"), "incomplete");
+    await user.click(screen.getByRole("button", { name: "应用筛选" }));
     expect(xpevButton()).not.toBeInTheDocument();
     expect(xiaomiButton()).toBeInTheDocument();
   });
@@ -702,7 +765,6 @@ describe("TradeLibrary", () => {
   });
 
   it("does not open an editable blank review before persistence hydration", async () => {
-    const user = userEvent.setup();
     setup({ reviewsHydrated: false, openDetail: true });
 
     expect(
@@ -734,13 +796,14 @@ describe("TradeLibrary", () => {
 it("filters simulation groups and opens the selected run in the shared workbench", async () => {
   const user=userEvent.setup();
   const {records}=await parseBrokerStatement(fileFor());
-  const live=records.map(r=>({...r,id:'live:'+r.id,source:{platform:'futu',row:r.source.row},accountId:'live'}));
+  const live=records.map(r=>({...r,id:'live:'+r.id,source:{platform:'futu',row:r.source.row,tradingNature:'live' as const},accountId:'live'}));
   const entries=buildTradeLibraryEntries(buildInstrumentTradeSummaries([...records,...live]),{},{});
   const openReview=vi.fn();
   render(<TradeLibrary entries={entries} candlesByInstrument={{}} marketDataStatuses={{}} timeframe="1D" onTimeframeChange={()=>{}} onOpenInReview={openReview} onSaveReview={()=>{}} reviewsHydrated={true} />);
   await user.selectOptions(screen.getByLabelText('按交易性质筛选'),'simulation');
-  expect(screen.getAllByRole('button',{name:/打开.*交易回合/})).toHaveLength(1);
-  await user.click(screen.getByRole('button',{name:/打开.*交易回合/}));
+  expect(screen.getAllByRole('button',{name:/展开.*交易回合/})).toHaveLength(1);
+  await user.click(screen.getByRole('button',{name:/展开.*交易回合/}));
+  await user.click(screen.getByRole('button',{name:/打开.*第/}));
   expect(openReview).toHaveBeenCalledWith('CN-SH:600330',entries.find(e=>e.executions[0].source.tradeNature==='simulation')!.episodes[0].episode.id, expect.any(Array));
   expect(screen.queryByText('TradingView 源报告')).not.toBeInTheDocument();
 });

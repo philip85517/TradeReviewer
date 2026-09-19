@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { FxState } from "./contracts";
+import type { FxState } from "./room-contracts";
 
 export type UseFxRatesOptions = {
   enabled?: boolean;
@@ -39,7 +39,7 @@ function errorMessage(error: unknown): string {
 }
 
 async function fetchFxState(method: "GET" | "POST", signal: AbortSignal): Promise<FxState> {
-  const response = await fetch("/api/fx", {
+  const response = await fetch("/api/trading-room/fx", {
     method,
     cache: "no-store",
     signal,

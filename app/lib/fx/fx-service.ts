@@ -9,7 +9,7 @@ import {
   fxStatusForRates,
   REQUIRED_FOREIGN_CURRENCIES,
   type FxState,
-} from "./contracts";
+} from "./room-contracts";
 import { parseBocRates, type ParsedBocRate } from "./boc-parser";
 
 export type FxSettingsStore = {

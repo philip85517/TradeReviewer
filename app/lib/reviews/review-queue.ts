@@ -47,6 +47,30 @@ export type ReviewQueueFilter = {
 export type ReviewQueueItem = { entry: TradeLibraryEntry; item: TradeLibraryEpisode };
 export type ReviewQueueBrokerTag = { id: string; label: string };
 
+const BROKER_ALIASES: Readonly<Record<string, string>> = {
+  "中国招商证券": "china-merchants",
+  "招商证券": "china-merchants",
+  cmb: "china-merchants",
+  "china-merchants": "china-merchants",
+  futu: "futu",
+  "富途": "futu",
+  tiger: "tiger",
+  tradingview: "tradingview",
+  "trading-view": "tradingview",
+  "trading view": "tradingview",
+};
+
+export function normalizeBrokerId(value: string | undefined): string {
+  const trimmed = value?.trim() ?? "";
+  if (!trimmed) return "unknown";
+  const normalized = trimmed.toLocaleLowerCase().replace(/[\s_]+/g, "-");
+  return BROKER_ALIASES[normalized] ?? normalized;
+}
+
+export function normalizeBrokerIds(values: readonly string[]): string[] {
+  return [...new Set(values.map((value) => normalizeBrokerId(value)))];
+}
+
 export function reviewQueueMarketLabel(market: string): string {
   if (market === "a-share" || market === "hk-connect") return dashboardMarketLabel(market);
   if (market === "HK") return "港股";
@@ -58,10 +82,13 @@ function brokerTagForExecution(execution: TradeLibraryEpisode["episode"]["execut
   const platform = typeof execution.source?.platform === "string"
     ? execution.source.platform.trim()
     : "";
-  if (!platform) return { id: "unknown", label: "来源未知" };
-  if (platform === "futu") return { id: platform, label: "富途" };
-  if (platform === "tiger") return { id: platform, label: "Tiger" };
-  return { id: platform, label: platform };
+  const id = normalizeBrokerId(platform);
+  if (id === "unknown") return { id, label: "来源未知" };
+  if (id === "futu") return { id, label: "富途" };
+  if (id === "tiger") return { id, label: "Tiger" };
+  if (id === "china-merchants") return { id, label: "招商证券" };
+  if (id === "tradingview") return { id, label: "TradingView" };
+  return { id, label: platform };
 }
 
 function sortBrokerTags(left: ReviewQueueBrokerTag, right: ReviewQueueBrokerTag) {

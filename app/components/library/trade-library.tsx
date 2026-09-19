@@ -4,16 +4,15 @@ import {
   ArrowLeft,
   BarChart3,
   BookOpenCheck,
-  ChevronRight,
   Clock3,
   Database,
-  Search,
   RefreshCw,
 } from "lucide-react";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { aggregateCandles } from "../../lib/market/aggregate";
 import type { DailyCandleRecord } from "../../lib/market/contracts";
+import type { FxSnapshot } from "../../lib/fx/contracts";
 import {
   marketDataStatusLabel,
   type MarketDataSyncStatus,
@@ -24,10 +23,7 @@ import {
 } from "../../lib/market/trading-date";
 import { formatBeijingDateTime } from "../../lib/replay/format-time";
 import type { EpisodeReviewRecord } from "../../lib/reviews/types";
-import {
-  reviewTagLabel,
-  REVIEW_TAGS,
-} from "../../lib/reviews/review-tags";
+import { reviewTagLabel } from "../../lib/reviews/review-tags";
 import {
   dailyRecordToChartCandle,
   type Timeframe,
@@ -41,27 +37,51 @@ import { EpisodeReviewEditor } from "../review/episode-review-editor";
 import type { EpisodeNotesProps } from "../review/episode-notes-panel";
 import type { TradeEpisode } from "../../lib/trades/types";
 import { executionFeeCurrency } from "../../lib/trades/types";
-import { buildReviewQueue, reviewState, type ReviewQueueFilter, type ReviewQueueItem } from "../../lib/reviews/review-queue";
+import {
+  REVIEW_QUEUE_SORT_OPTIONS,
+  reviewState,
+  type ReviewQueueFilter,
+  type ReviewQueueItem,
+  type ReviewQueueSort,
+} from "../../lib/reviews/review-queue";
+import {
+  canSortLibraryPerformance,
+  sortLibraryItems,
+} from "../../lib/reviews/library-sorting";
+import {
+  summarizeLibraryPerformance,
+  type LibraryPerformanceSummary,
+} from "../../lib/reviews/library-performance";
 import {
   dashboardMarketFilterOptions,
-  marketFilterMatchesEntry,
 } from "../../lib/reviews/dashboard";
 import { ReviewQueue } from "./review-queue";
+import { LibraryFilterDrawer } from "./library-filter-drawer";
+import {
+  buildLibraryFilterOptions,
+  formatBrokerLabel,
+  formatSimulationRunLabel,
+} from "./library-filter-options";
+import {
+  buildTradeLibraryStockGroups,
+  LibraryStockRounds,
+  type TradeLibraryStockGroup,
+} from "./library-stock-rounds";
+import {
+  aggregateTradeLibraryStockDisplayEntries,
+  applyTradeNature,
+  buildTradeLibraryBrowseRows,
+  createTradeLibraryBrowseCache,
+  normalizeTradeLibraryBrowseState,
+  resetTradeLibraryBrowseState,
+  reviewQueueFilterForBrowseState,
+  tradeLibraryBrowseRangeKey,
+  type TradeLibraryBrowseState,
+} from "./library-browse-state";
+import { FxRatesControl } from "./fx-rates-control";
+import { LibraryPerformanceSummaryView } from "./library-performance-summary";
 
-export type TradeLibraryBrowseState = {
-  selectedInstrumentId: string | null;
-  selectedEpisodeId: string | null;
-  query: string;
-  market: string;
-  account: string;
-  year: string;
-  positionStatus: string;
-  dataStatus: string;
-  tag: string;
-  scrollTop: number;
-  mode?: "queue" | "stocks";
-  queueFilter?: ReviewQueueFilter;
-};
+export type { TradeLibraryBrowseState } from "./library-browse-state";
 
 type Props = {
   defaultMode?: "queue" | "stocks";
@@ -82,8 +102,6 @@ type Props = {
   target?: TradeLibraryTarget;
 };
 
-type FilterValue = "all" | string;
-
 function entryKey(entry: TradeLibraryEntry) {
   return `${entry.instrument.id}|${entry.scopeKey ?? "legacy"}`;
 }
@@ -98,6 +116,46 @@ export type TradeLibraryTarget = {
   episodeId: string;
   scopeKey?: string;
 };
+
+type AdvancedFilterKind = "broker" | "account" | "year" | "simulationRunId" | "positionStatus" | "dataStatus" | "tag";
+type AppliedFilterChip = {
+  key: string;
+  label: string;
+  kind: AdvancedFilterKind;
+  value?: string;
+};
+
+const PAGINATION_RESET_KEYS: ReadonlySet<keyof TradeLibraryBrowseState> = new Set([
+  "query",
+  "market",
+  "account",
+  "accounts",
+  "brokers",
+  "year",
+  "tradeNature",
+  "simulationRunId",
+  "reviewStatus",
+  "sort",
+  "positionStatus",
+  "dataStatus",
+  "tag",
+]);
+
+function AppliedFilterChips({
+  chips,
+  onRemove,
+}: {
+  chips: AppliedFilterChip[];
+  onRemove: (kind: AdvancedFilterKind, value?: string) => void;
+}) {
+  if (chips.length === 0) return null;
+  return <div className="library-active-filter-chips" aria-label="已应用筛选">
+    {chips.map(({ key, label, kind, value }) => <span className="library-filter-chip" key={key}>
+      {label}
+      <button type="button" aria-label={`移除${label}`} onClick={() => onRemove(kind, value)}>×</button>
+    </span>)}
+  </div>;
+}
 
 function money(value: string | null, currency: string) {
   if (value === null) return "数据待补齐";
@@ -120,6 +178,10 @@ function feeLabel(execution: TradeEpisode["executions"][number]) {
     : `${execution.fee} ${executionFeeCurrency(execution)}`;
 }
 
+function isPerformanceSort(sort: ReviewQueueSort) {
+  return sort === "net-profit" || sort === "net-loss" || sort === "return-high" || sort === "return-low";
+}
+
 function episodeLabel(
   item: TradeLibraryEpisode,
   chronologicalNumber: number,
@@ -129,6 +191,91 @@ function episodeLabel(
     episode.directionKnown === false || episode.accuracy?.reasons.includes("ambiguous-opening") ? "方向待核对" : episode.direction === "long" ? "多头" : "空头"
   } · ${metrics.buyCount} 买 / ${metrics.sellCount} 卖`;
 }
+
+const LIBRARY_DISPLAY_PAGE_SIZE = 100;
+
+function pageSlice<T>(items: readonly T[], page: number) {
+  const currentPage = Number.isInteger(page) && page > 0 ? page : 1;
+  const start = (currentPage - 1) * LIBRARY_DISPLAY_PAGE_SIZE;
+  return items.slice(start, start + LIBRARY_DISPLAY_PAGE_SIZE);
+}
+
+export type LibraryDisplayMetricSelection = {
+  mode: "queue" | "stocks";
+  queueRows: ReviewQueueItem[];
+  roundPage: number;
+  stockGroups: TradeLibraryStockGroup[];
+  stockPage: number;
+  expandedStockIds: readonly string[];
+  includeReviewedStockIds: readonly string[];
+  reviewStatus: TradeLibraryBrowseState["reviewStatus"];
+};
+
+/**
+ * Select rows whose financial values are visible in the current list state.
+ * Full rows remain available to summaries, sorting and review traversal; this
+ * bounded set prevents hidden pages from doing display-only metric work.
+ */
+export function selectLibraryDisplayMetricRows({
+  mode,
+  queueRows,
+  roundPage,
+  stockGroups,
+  stockPage,
+  expandedStockIds,
+  includeReviewedStockIds,
+  reviewStatus,
+}: LibraryDisplayMetricSelection): ReviewQueueItem[] {
+  if (mode === "queue") return pageSlice(queueRows, roundPage);
+
+  const expanded = new Set(expandedStockIds);
+  const rows: ReviewQueueItem[] = [];
+  for (const group of pageSlice(stockGroups, stockPage)) {
+    const instrumentId = group.entry.instrument.id;
+    if (!expanded.has(instrumentId)) continue;
+    const locallyIncluded = reviewStatus !== "all" && includeReviewedStockIds.includes(instrumentId);
+    rows.push(...(locallyIncluded ? group.allRows : group.rows));
+  }
+  return rows;
+}
+
+function displayEpisodePerformance(
+  rows: readonly ReviewQueueItem[],
+  fxSnapshot: FxSnapshot | null,
+) {
+  const performance = new Map<string, LibraryPerformanceSummary>();
+  for (const row of rows) {
+    performance.set(
+      row.item.episode.id,
+      summarizeLibraryPerformance([row], fxSnapshot ?? undefined),
+    );
+  }
+  return performance;
+}
+
+function displayInstrumentPerformance(
+  groups: readonly TradeLibraryStockGroup[],
+  fxSnapshot: FxSnapshot | null,
+) {
+  const performance = new Map<string, LibraryPerformanceSummary>();
+  for (const group of groups) {
+    performance.set(
+      group.entry.instrument.id,
+      summarizeLibraryPerformance(group.rows, fxSnapshot ?? undefined),
+    );
+  }
+  return performance;
+}
+
+type TradeLibraryBrowseDerivedModel = {
+  browseRows: ReviewQueueItem[];
+  allStatusBrowseRows: ReviewQueueItem[];
+  filteredEntries: TradeLibraryEntry[];
+  rawStockGroups: TradeLibraryStockGroup[];
+  performanceSummary: LibraryPerformanceSummary;
+  performanceSortAvailability: ReturnType<typeof canSortLibraryPerformance>;
+  reviewedCount: number;
+};
 
 export function TradeLibrary({
   entries,
@@ -148,31 +295,58 @@ export function TradeLibrary({
   defaultMode = "stocks",
   reviewExtras,
 }: Props) {
-  const [mode, setMode] = useState(initialBrowseState?.mode ?? defaultMode);
-  const [queueFilter, setQueueFilter] = useState<ReviewQueueFilter>(initialBrowseState?.queueFilter ?? {status:"pending"});
+  const [browseState, setBrowseState] = useState<TradeLibraryBrowseState>(() => {
+    const normalized = normalizeTradeLibraryBrowseState(initialBrowseState, defaultMode);
+    return target
+      ? {
+          ...normalized,
+          selectedInstrumentId: target.instrumentId,
+          selectedEpisodeId: target.episodeId,
+        }
+      : normalized;
+  });
+  const {
+    mode,
+    selectedInstrumentId,
+    selectedEpisodeId,
+    expandedStockIds,
+    includeReviewedStockIds,
+    query,
+    market,
+    account,
+    accounts,
+    brokers,
+    year,
+    tradeNature,
+    simulationRunId,
+    reviewStatus,
+    sort,
+    positionStatus,
+    dataStatus,
+    tag,
+    scrollTop,
+    stockPage,
+    roundPage,
+  } = browseState;
+  const updateBrowseState = (patch: Partial<TradeLibraryBrowseState>) =>
+    setBrowseState(current => {
+      const next = { ...current, ...patch };
+      const filterChanged = Object.keys(patch).some(key => PAGINATION_RESET_KEYS.has(key as keyof TradeLibraryBrowseState));
+      if (filterChanged) {
+        next.stockPage = 1;
+        next.roundPage = 1;
+      }
+      return next;
+    });
   const [queueNotice, setQueueNotice] = useState("");
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const [fxSnapshot, setFxSnapshot] = useState<FxSnapshot | null>(null);
   const processedIds = useRef(new Set<string>());
   const reopenedIds = useRef(new Set<string>());
-  const [selectedInstrumentId, setSelectedInstrumentId] = useState<
-    string | null
-  >(target?.instrumentId ?? initialBrowseState?.selectedInstrumentId ?? null);
-  const [selectedEpisodeId, setSelectedEpisodeId] = useState<
-    string | null
-  >(target?.episodeId ?? initialBrowseState?.selectedEpisodeId ?? null);
-  const [query, setQuery] = useState(initialBrowseState?.query ?? "");
-  const [market, setMarket] = useState<FilterValue>(initialBrowseState?.market ?? "all");
-  const [account, setAccount] = useState<FilterValue>(initialBrowseState?.account ?? "all");
-  const [year, setYear] = useState<FilterValue>(initialBrowseState?.year ?? "all");
-  const [positionStatus, setPositionStatus] =
-    useState<FilterValue>(initialBrowseState?.positionStatus ?? "all");
-  const [dataStatus, setDataStatus] = useState<FilterValue>(initialBrowseState?.dataStatus ?? "all");
-  const [tag, setTag] = useState<FilterValue>(initialBrowseState?.tag ?? "all");
-
-  const [scrollTop, setScrollTop] = useState(initialBrowseState?.scrollTop ?? 0);
   const sectionRef = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
-    onBrowseStateChange?.({ selectedInstrumentId, selectedEpisodeId, query, market, account, year, positionStatus, dataStatus, tag, scrollTop, mode, queueFilter });
-  }, [selectedInstrumentId, selectedEpisodeId, query, market, account, year, positionStatus, dataStatus, tag, scrollTop, mode, queueFilter, onBrowseStateChange]);
+    onBrowseStateChange?.(browseState);
+  }, [browseState, onBrowseStateChange]);
   useLayoutEffect(() => {
     if (!selectedInstrumentId && sectionRef.current) sectionRef.current.scrollTop = scrollTop;
     // Restore only when returning to the list; scrolling itself must not reposition it.
@@ -187,8 +361,6 @@ export function TradeLibrary({
     ? selectedEntry?.episodes.find(({ episode }) => episode.id === selectedEpisodeId)
     : selectedEntry?.episodes[0];
   const selectionMissing = Boolean(selectedInstrumentId && (!selectedEntry || !selectedEpisode));
-  const [tradeNature, setTradeNature] = useState<FilterValue>("all");
-  const [simulationRunId, setSimulationRunId] = useState<FilterValue>("all");
 
   const filterOptions = useMemo(
     () => ({
@@ -236,73 +408,205 @@ export function TradeLibrary({
     }),
     [entries],
   );
+  const advancedOptions = useMemo(
+    () => buildLibraryFilterOptions(entries),
+    [entries],
+  );
 
-  const filteredEntries = useMemo(() => {
-    const normalizedQuery = query.trim().toLocaleLowerCase();
-    return entries.filter((entry) => {
-      const status =
-        marketDataStatuses[entry.instrument.id] ?? "not-requested";
-      const dataIsComplete =
-        status === "complete" ||
-        status === "ready";
-      return (
-        (!normalizedQuery ||
-          entry.instrument.name
-            .toLocaleLowerCase()
-            .includes(normalizedQuery) ||
-          entry.instrument.symbol
-            .toLocaleLowerCase()
-            .includes(normalizedQuery)) &&
-        marketFilterMatchesEntry(entry, market) &&
-        (account === "all" ||
-          entry.executions.some(
-            (execution) => execution.accountId === account,
-          )) &&
-        (year === "all" ||
-          entry.executions.some((execution) =>
-            marketTradingDate(
-              execution.executedAt,
-              execution.instrument.market,
-            ).startsWith(year),
-          )) &&
-        (positionStatus === "all" ||
-          entry.status === positionStatus) &&
-        (tradeNature === "all" || entry.tradeNature === tradeNature) &&
-        (simulationRunId === "all" || entry.simulationRunId === simulationRunId) &&
-        (tag === "all" || entry.confirmedTagIds.includes(tag)) &&
-        (dataStatus === "all" ||
-          (dataStatus === "complete" && dataIsComplete) ||
-          (dataStatus === "incomplete" && !dataIsComplete))
-      );
-    });
+  // Keep expansion, selection and scroll state out of the filter derivation.
+  // Those interactions should not rebuild the 5,000-row browse model.
+  const browseFilterState = useMemo<TradeLibraryBrowseState>(
+    () => ({
+      mode: "stocks",
+      selectedInstrumentId: null,
+      selectedEpisodeId: null,
+      expandedStockIds: [],
+      includeReviewedStockIds: [],
+      query,
+      market,
+      account,
+      accounts: [...accounts],
+      brokers: [...brokers],
+      year,
+      tradeNature,
+      simulationRunId,
+      reviewStatus,
+      sort,
+      positionStatus,
+      dataStatus,
+      tag,
+      advancedExpanded: false,
+      scrollTop: 0,
+      stockPage: 1,
+      roundPage: 1,
+    }),
+    [
+      account,
+      accounts,
+      brokers,
+      dataStatus,
+      market,
+      positionStatus,
+      query,
+      reviewStatus,
+      simulationRunId,
+      sort,
+      tag,
+      tradeNature,
+      year,
+    ],
+  );
+  const allStatusFilterState = useMemo<TradeLibraryBrowseState>(
+    () => ({ ...browseFilterState, reviewStatus: "all" }),
+    [browseFilterState],
+  );
+
+  const browseModelSource = useMemo(
+    () => ({ entries, fxSnapshot, marketDataStatuses, reviewsHydrated }),
+    [entries, fxSnapshot, marketDataStatuses, reviewsHydrated],
+  );
+  // Recreate the bounded cache whenever source identities change; this is the
+  // invalidation boundary for reviews, market status and FX values.
+  const browseModelCache = useMemo(
+    () => createTradeLibraryBrowseCache<TradeLibraryBrowseDerivedModel>(8),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [browseModelSource],
+  );
+  const browseModel = useMemo(() => {
+    const key = tradeLibraryBrowseRangeKey(browseFilterState);
+    const cached = browseModelCache.get(key);
+    if (cached) return cached;
+
+    const browseRows = buildTradeLibraryBrowseRows(
+      entries,
+      browseFilterState,
+      marketDataStatuses,
+      fxSnapshot,
+    );
+    const allStatusBrowseRows = reviewStatus === "all"
+      ? browseRows
+      : buildTradeLibraryBrowseRows(
+          entries,
+          allStatusFilterState,
+          marketDataStatuses,
+          fxSnapshot,
+        );
+    const filteredEntries = aggregateTradeLibraryStockDisplayEntries(browseRows);
+    const model: TradeLibraryBrowseDerivedModel = {
+      browseRows,
+      allStatusBrowseRows,
+      filteredEntries,
+      rawStockGroups: buildTradeLibraryStockGroups(
+        browseRows,
+        allStatusBrowseRows,
+        filteredEntries,
+      ),
+      performanceSummary: summarizeLibraryPerformance(
+        browseRows,
+        fxSnapshot ?? undefined,
+      ),
+      performanceSortAvailability: canSortLibraryPerformance(
+        browseRows,
+        simulationRunId,
+      ),
+      reviewedCount: allStatusBrowseRows.filter(
+        row => reviewState(row.item) === "completed",
+      ).length,
+    };
+    browseModelCache.set(key, model);
+    return model;
   }, [
-    account,
-    dataStatus,
+    allStatusFilterState,
+    browseFilterState,
+    browseModelCache,
     entries,
-    market,
+    fxSnapshot,
     marketDataStatuses,
-    positionStatus,
-    query,
+    reviewStatus,
     simulationRunId,
-    tradeNature,
-    tag,
-    year,
   ]);
-
-  const detailFilter: ReviewQueueFilter = mode === "queue" ? queueFilter : {account,year,market,nature:tradeNature,simulationRunId};
-  const detailEntries = mode === "stocks" && selectedEntry ? [selectedEntry] : entries;
-  const queueRows = buildReviewQueue(detailEntries, {...detailFilter,status:"all"});
+  const {
+    browseRows,
+    allStatusBrowseRows,
+    filteredEntries,
+    rawStockGroups,
+    performanceSummary,
+    performanceSortAvailability,
+    reviewedCount,
+  } = browseModel;
+  const pendingBrowseRows = useMemo(
+    () => browseRows.filter(row => reviewState(row.item) === "pending"),
+    [browseRows],
+  );
+  const effectiveSort = isPerformanceSort(sort) && !performanceSortAvailability.allowed
+    ? "newest"
+    : sort;
+  const queueFilter = reviewQueueFilterForBrowseState({ ...browseState, sort: effectiveSort });
+  const stockGroups = useMemo(
+    () => sortLibraryItems(
+      rawStockGroups.map(group => ({
+        id: group.entry.instrument.id,
+        rows: group.rows,
+        value: group,
+      })),
+      effectiveSort,
+      fxSnapshot ?? undefined,
+    ).map(({ value }) => value),
+    [effectiveSort, fxSnapshot, rawStockGroups],
+  );
+  const visibleStockGroups = useMemo(
+    () => pageSlice(stockGroups, stockPage),
+    [stockGroups, stockPage],
+  );
+  const displayMetricRows = useMemo(
+    () => selectLibraryDisplayMetricRows({
+      mode,
+      queueRows: browseRows,
+      roundPage,
+      stockGroups,
+      stockPage,
+      expandedStockIds,
+      includeReviewedStockIds,
+      reviewStatus,
+    }),
+    [browseRows, expandedStockIds, includeReviewedStockIds, mode, reviewStatus, roundPage, stockGroups, stockPage],
+  );
+  const performanceByInstrument = useMemo(
+    () => mode === "stocks"
+      ? displayInstrumentPerformance(visibleStockGroups, fxSnapshot)
+      : new Map<string, LibraryPerformanceSummary>(),
+    [fxSnapshot, mode, visibleStockGroups],
+  );
+  const performanceByEpisode = useMemo(
+    () => displayEpisodePerformance(displayMetricRows, fxSnapshot),
+    [displayMetricRows, fxSnapshot],
+  );
+  const performanceGroupLabels = useMemo(
+    () => Object.fromEntries(
+      advancedOptions.simulationRuns.map(option => [
+        `simulation|${encodeURIComponent(option.id)}`,
+        option.label,
+      ]),
+    ),
+    [advancedOptions.simulationRuns],
+  );
+  const detailRows = mode === "stocks" && selectedEntry
+    ? browseRows.filter(row => entryKey(row.entry) === entryKey(selectedEntry))
+    : browseRows;
+  const queueRows = detailRows;
   const detailIds = new Set(queueRows.map(row => row.item.episode.id));
-  const openQueued = ({entry,item}: ReviewQueueItem) => {
+  const openQueued = ({entry,item}: ReviewQueueItem, requestedQueueIds?: string[]) => {
     if (processedIds.current.has(item.episode.id)) reopenedIds.current.add(item.episode.id);
     processedIds.current.delete(item.episode.id);
-    setSelectedInstrumentId(entryKey(entry));
-    setSelectedEpisodeId(item.episode.id);
+    updateBrowseState({
+      selectedInstrumentId: entryKey(entry),
+      selectedEpisodeId: item.episode.id,
+    });
     setQueueNotice("");
     onOpenInReview(
       entry.instrument.id,
       item.episode.id,
-      queueRows.map(row => row.item.episode.id),
+      requestedQueueIds ?? queueRows.map(row => row.item.episode.id),
     );
   };
   const continueReview = () => {
@@ -312,12 +616,326 @@ export function TradeLibrary({
       ?? queueRows.slice(0, Math.max(currentIndex, 0)).find(row => reopenedIds.current.has(row.item.episode.id) && reviewState(row.item) === "pending");
     if (next) openQueued(next);
     else {
-      setSelectedInstrumentId(null);
-      setSelectedEpisodeId(null);
-      setMode("queue");
+      updateBrowseState({
+        selectedInstrumentId: null,
+        selectedEpisodeId: null,
+        mode: "queue",
+      });
       setQueueNotice("本轮复盘已完成。可以回看结论，或到阶段总结整理下一步。");
     }
   };
+
+  const updateSort = (next: ReviewQueueSort) => {
+    if (isPerformanceSort(next)) {
+      const availability = canSortLibraryPerformance(browseRows, simulationRunId);
+      if (!availability.allowed) {
+        updateBrowseState({ sort: "newest" });
+        setQueueNotice(`当前范围无法按绩效排序：${availability.reason ?? "请缩小统计范围"}。`);
+        return;
+      }
+    }
+    updateBrowseState({ sort: next });
+    setQueueNotice("");
+  };
+
+  const updateQueueFilter = (next: ReviewQueueFilter) => {
+    const accounts = next.accounts ?? (
+      next.account && next.account !== "all" ? [next.account] : []
+    );
+    const nextRun = next.simulationRunId ?? "all";
+    const clearedSimulationRun = nextRun === "all" && browseState.simulationRunId !== "all";
+    updateBrowseState({
+      query: next.query ?? "",
+      market: next.market ?? "all",
+      account: accounts.length === 1 ? accounts[0] : "all",
+      accounts,
+      brokers: next.brokers ?? [],
+      year: next.year ?? "all",
+      tradeNature: (next.nature ?? "all") as TradeLibraryBrowseState["tradeNature"],
+      simulationRunId: nextRun,
+      reviewStatus: next.status ?? "all",
+      sort: clearedSimulationRun && isPerformanceSort(sort) ? "newest" : next.sort ?? "newest",
+      advancedExpanded: next.advancedExpanded ?? false,
+    });
+    processedIds.current.clear();
+    reopenedIds.current.clear();
+  };
+
+  const changeTradeNature = (value: TradeLibraryBrowseState["tradeNature"]) => {
+    const changed = applyTradeNature(browseState, value, entries);
+    if (isPerformanceSort(sort) && changed.cleared.some(label => label.startsWith("模拟运行"))) {
+      changed.state.sort = "newest";
+    }
+    const friendlyCleared = changed.cleared.map(label => {
+      if (label.startsWith("账户 ")) {
+        const id = label.slice("账户 ".length);
+        return `账户 ${accountLabels.get(id) ?? id}`;
+      }
+      if (label.startsWith("模拟运行 ")) {
+        const id = label.slice("模拟运行 ".length);
+        return `模拟运行 ${runLabels.get(id) ?? formatSimulationRunLabel(id)}`;
+      }
+      return label;
+    });
+    updateBrowseState(changed.state);
+    setQueueNotice(
+      friendlyCleared.length > 0
+        ? `已切换为${value === "live" ? "实盘" : value === "simulation" ? "模拟盘" : value === "unknown" ? "来源未知" : "全部性质"}，已清除：${friendlyCleared.join("、")}`
+        : "",
+    );
+    processedIds.current.clear();
+    reopenedIds.current.clear();
+  };
+
+  const resetBrowseFilters = () => {
+    updateBrowseState(resetTradeLibraryBrowseState(browseState));
+    setQueueNotice("");
+    processedIds.current.clear();
+    reopenedIds.current.clear();
+  };
+
+  const applyAdvancedFilters = (patch: Partial<TradeLibraryBrowseState>) => {
+    const accounts = patch.accounts ?? browseState.accounts;
+    const clearedSimulationRun = patch.simulationRunId === "all" && browseState.simulationRunId !== "all";
+    updateBrowseState({
+      ...patch,
+      accounts,
+      account: patch.account ?? (accounts.length === 1 ? accounts[0] : "all"),
+      sort: clearedSimulationRun && isPerformanceSort(sort) ? "newest" : patch.sort ?? sort,
+    });
+    processedIds.current.clear();
+    reopenedIds.current.clear();
+    setQueueNotice("");
+    setFilterDrawerOpen(false);
+  };
+
+  const advancedFilterCount = [
+    ...browseState.brokers,
+    ...browseState.accounts,
+    browseState.year !== "all" ? browseState.year : "",
+    browseState.simulationRunId !== "all" ? browseState.simulationRunId : "",
+    browseState.positionStatus !== "all" ? browseState.positionStatus : "",
+    browseState.dataStatus !== "all" ? browseState.dataStatus : "",
+    browseState.tag !== "all" ? browseState.tag : "",
+  ].filter(Boolean).length;
+
+  const startReview = () => {
+    const firstPending = pendingBrowseRows[0];
+    if (!firstPending) return;
+    openQueued(firstPending, browseRows.map(row => row.item.episode.id));
+  };
+
+  const removeAdvancedFilter = (
+    kind: AdvancedFilterKind,
+    value?: string,
+  ) => {
+    const patch: Partial<TradeLibraryBrowseState> = {};
+    if (kind === "broker" && value) patch.brokers = browseState.brokers.filter(id => id !== value);
+    if (kind === "account" && value) {
+      const accounts = browseState.accounts.filter(id => id !== value);
+      patch.accounts = accounts;
+      patch.account = accounts.length === 1 ? accounts[0] : "all";
+    }
+    if (kind === "year") patch.year = "all";
+    if (kind === "simulationRunId") {
+      patch.simulationRunId = "all";
+      if (sort === "net-profit" || sort === "net-loss" || sort === "return-high" || sort === "return-low") {
+        patch.sort = "newest";
+      }
+    }
+    if (kind === "positionStatus") patch.positionStatus = "all";
+    if (kind === "dataStatus") patch.dataStatus = "all";
+    if (kind === "tag") patch.tag = "all";
+    updateBrowseState(patch);
+    setQueueNotice("");
+    processedIds.current.clear();
+    reopenedIds.current.clear();
+  };
+
+  const accountLabels = new Map(advancedOptions.accounts.map(option => [option.id, option.label]));
+  const runLabels = new Map(advancedOptions.simulationRuns.map(option => [option.id, option.label]));
+  const appliedFilterChips = [
+    ...browseState.brokers.map(id => ({
+      key: `broker:${id}`,
+      label: `来源平台：${advancedOptions.brokers.find(option => option.id === id)?.label ?? formatBrokerLabel(id)}`,
+      kind: "broker" as const,
+      value: id,
+    })),
+    ...browseState.accounts.map(id => ({
+      key: `account:${id}`,
+      label: `账户：${accountLabels.get(id) ?? id}`,
+      kind: "account" as const,
+      value: id,
+    })),
+    ...(browseState.year !== "all" ? [{
+      key: "year",
+      label: `年份：${browseState.year}`,
+      kind: "year" as const,
+    }] : []),
+    ...(browseState.simulationRunId !== "all" ? [{
+      key: "simulationRunId",
+      label: `模拟运行：${runLabels.get(browseState.simulationRunId) ?? formatSimulationRunLabel(browseState.simulationRunId)}`,
+      kind: "simulationRunId" as const,
+      value: browseState.simulationRunId,
+    }] : []),
+    ...(browseState.positionStatus !== "all" ? [{
+      key: "positionStatus",
+      label: `持仓状态：${browseState.positionStatus === "open" ? "持仓中" : "已平仓"}`,
+      kind: "positionStatus" as const,
+    }] : []),
+    ...(browseState.dataStatus !== "all" ? [{
+      key: "dataStatus",
+      label: `行情：${browseState.dataStatus === "complete" ? "完整" : "待补齐"}`,
+      kind: "dataStatus" as const,
+    }] : []),
+    ...(browseState.tag !== "all" ? [{
+      key: "tag",
+      label: `标签：${reviewTagLabel(browseState.tag)}`,
+      kind: "tag" as const,
+      value: browseState.tag,
+    }] : []),
+  ] satisfies AppliedFilterChip[];
+
+  const toggleExpandedStock = (instrumentId: string) => {
+    const expanded = expandedStockIds.includes(instrumentId)
+      ? expandedStockIds.filter(id => id !== instrumentId)
+      : [...expandedStockIds, instrumentId];
+    updateBrowseState({ expandedStockIds: expanded });
+  };
+
+  const toggleIncludeReviewedStock = (instrumentId: string) => {
+    const included = includeReviewedStockIds.includes(instrumentId)
+      ? includeReviewedStockIds.filter(id => id !== instrumentId)
+      : [...includeReviewedStockIds, instrumentId];
+    updateBrowseState({ includeReviewedStockIds: included });
+  };
+
+  const sharedBrowseControls = (
+    <>
+      <div className="library-shared-browse-controls" aria-label="交易库常用筛选">
+        <div className="library-view-tabs" role="tablist" aria-label="交易库浏览视图">
+          <button type="button" role="tab" aria-selected={mode === "stocks"} onClick={() => updateBrowseState({ mode: "stocks" })}>按标的浏览</button>
+          <button type="button" role="tab" aria-selected={mode === "queue"} onClick={() => updateBrowseState({ mode: "queue" })}>按回合浏览</button>
+        </div>
+      <label>
+        <span>交易性质</span>
+        <select
+          aria-label="按交易性质筛选"
+          value={tradeNature}
+          onChange={(event) => changeTradeNature(event.target.value as TradeLibraryBrowseState["tradeNature"])}
+        >
+          <option value="all">全部性质</option>
+          <option value="live">实盘</option>
+          <option value="simulation">模拟盘</option>
+          <option value="unknown">来源未知</option>
+        </select>
+      </label>
+      <label>
+        <span>市场</span>
+        <select
+          aria-label="按市场筛选"
+          value={market}
+          onChange={(event) => updateBrowseState({ market: event.target.value })}
+        >
+          {filterOptions.marketOptions.map(({ value, label }) => (
+            <option value={value} key={value}>{label}</option>
+          ))}
+        </select>
+      </label>
+      <label className="library-shared-search">
+        <span>搜索</span>
+        <input
+          type="search"
+          aria-label={mode === "stocks" ? "搜索股票" : "搜索复盘回合"}
+          placeholder="名称或代码"
+          value={query}
+          onChange={(event) => updateBrowseState({ query: event.target.value })}
+        />
+      </label>
+      <label>
+        <span>复盘状态</span>
+        <select
+          aria-label="按复盘状态筛选"
+          value={reviewStatus}
+          onChange={(event) => updateBrowseState({ reviewStatus: event.target.value as TradeLibraryBrowseState["reviewStatus"] })}
+        >
+          <option value="all">全部回合</option>
+          <option value="pending">待复盘</option>
+          <option value="completed">已复盘</option>
+        </select>
+      </label>
+      <label>
+        <span>排序</span>
+        <select
+          aria-label="交易库排序"
+          value={effectiveSort}
+          onChange={(event) => updateSort(event.target.value as ReviewQueueSort)}
+        >
+          {REVIEW_QUEUE_SORT_OPTIONS.map(option => (
+            <option value={option.value} key={option.value}>
+              {option.value === "newest" ? "最近成交在前" : option.value === "oldest" ? "最早成交在前" : option.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <button type="button" className="primary-action" onClick={startReview} disabled={!pendingBrowseRows[0]}>
+        开始复盘{pendingBrowseRows.length > 0 ? `（${pendingBrowseRows.length}）` : ""}
+      </button>
+      <button type="button" className="secondary-action" onClick={resetBrowseFilters}>
+        重置筛选
+      </button>
+      <button type="button" className="secondary-action" onClick={() => setFilterDrawerOpen(true)}>
+        高级筛选{advancedFilterCount > 0 ? `（${advancedFilterCount}）` : ""}
+      </button>
+      </div>
+      <AppliedFilterChips chips={appliedFilterChips} onRemove={removeAdvancedFilter} />
+      {isPerformanceSort(sort) && !performanceSortAvailability.allowed && <p role="status" className="review-queue-notice">绩效排序不可用：{performanceSortAvailability.reason ?? "请缩小范围"}。</p>}
+      {queueNotice && <p role="status" className="review-queue-notice">{queueNotice}</p>}
+    </>
+  );
+  const filterDrawer = filterDrawerOpen ? (
+    <LibraryFilterDrawer
+      value={browseState}
+      entries={entries}
+      options={advancedOptions}
+      onApply={applyAdvancedFilters}
+      onClose={() => setFilterDrawerOpen(false)}
+    />
+  ) : null;
+  const fxRatesStrip = (
+    <div className="library-fx-strip" aria-label="交易库人民币折算">
+      <div>
+        <strong>人民币折算</strong>
+        <span>{fxSnapshot
+          ? `${fxSnapshot.cacheStatus === "cached" ? "缓存汇率" : "最新汇率"} · ${fxSnapshot.rateDate}`
+          : "尚无汇率快照"}</span>
+      </div>
+      <details>
+        <summary>汇率设置</summary>
+        <FxRatesControl onSnapshotChange={setFxSnapshot} />
+      </details>
+    </div>
+  );
+  const performanceSummaryView = (
+    <LibraryPerformanceSummaryView
+      summary={performanceSummary}
+      stockCount={filteredEntries.length}
+      roundCount={browseRows.length}
+      reviewedCount={reviewedCount}
+      progressTotal={allStatusBrowseRows.length}
+      groupLabels={performanceGroupLabels}
+    />
+  );
+  const libraryHeader = (
+    <header className="library-header">
+      <div>
+        <span className="eyebrow">Trade Library</span>
+        <h1>交易库</h1>
+        <p>先按股票聚合，再进入每一次买入到卖出的持仓回合。</p>
+      </div>
+      <div className="library-header-actions"><strong>{filteredEntries.length} 个标的 · {browseRows.length} 个回合</strong></div>
+    </header>
+  );
 
   if (selectedEntry && selectedEpisode) {
     const { episode, metrics } = selectedEpisode;
@@ -342,8 +960,10 @@ export function TradeLibrary({
             className="library-back"
             aria-label="返回股票库"
             onClick={() => {
-              setSelectedInstrumentId(null);
-              setSelectedEpisodeId(null);
+              updateBrowseState({
+                selectedInstrumentId: null,
+                selectedEpisodeId: null,
+              });
             }}
           >
             <ArrowLeft size={15} />
@@ -393,7 +1013,7 @@ export function TradeLibrary({
                   className={`library-episode-card ${active ? "active" : ""}`}
                   aria-label={episodeLabel(item, chronologicalNumber)}
                   onClick={() =>
-                    setSelectedEpisodeId(item.episode.id)
+                    updateBrowseState({ selectedEpisodeId: item.episode.id })
                   }
                 >
                   <div>
@@ -637,147 +1257,17 @@ export function TradeLibrary({
     );
   }
 
-  if (mode === "queue" && !selectionMissing) return <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}><ReviewQueue entries={entries} filter={queueFilter} onFilter={next => {setQueueFilter(next);processedIds.current.clear();reopenedIds.current.clear();}} onOpen={openQueued} onBrowseStocks={() => setMode("stocks")} notice={queueNotice} /></section>;
+  if (mode === "queue" && !selectionMissing) return <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => updateBrowseState({ scrollTop: event.currentTarget.scrollTop })}>{filterDrawer}{libraryHeader}{sharedBrowseControls}{fxRatesStrip}{performanceSummaryView}<ReviewQueue compact entries={entries} rows={browseRows} pendingRows={pendingBrowseRows} filter={queueFilter} onFilter={updateQueueFilter} onSort={updateSort} performanceSortAvailability={performanceSortAvailability} onOpen={openQueued} onBrowseStocks={() => updateBrowseState({ mode: "stocks" })} notice={queueNotice} performanceByEpisode={performanceByEpisode} page={roundPage} onPageChange={page => updateBrowseState({ roundPage: page })} /></section>;
 
   return (
-    <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}>
-      {selectionMissing && <p role="alert" className="navigation-notice">原股票或交易回合已变化，请重新选择。<button type="button" onClick={() => { setSelectedInstrumentId(null); setSelectedEpisodeId(null); }}>重新选择</button></p>}
-      <header className="library-header">
-        <div>
-          <span className="eyebrow">Trade Library</span>
-          <h1>股票交易库</h1>
-          <p>先按股票聚合，再进入每一次买入到卖出的持仓回合。</p>
-        </div>
-        <div className="library-header-actions"><button type="button" onClick={() => {setMode("queue");processedIds.current.clear();}}>回合待复盘</button><strong>{entries.length} 个标的</strong></div>
-      </header>
+    <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => updateBrowseState({ scrollTop: event.currentTarget.scrollTop })}>
+      {filterDrawer}
+      {selectionMissing && <p role="alert" className="navigation-notice">原股票或交易回合已变化，请重新选择。<button type="button" onClick={() => updateBrowseState({ selectedInstrumentId: null, selectedEpisodeId: null })}>重新选择</button></p>}
+      {libraryHeader}
 
-      <div className="library-filters">
-        <label className="library-search">
-          <Search size={15} />
-          <input
-            type="search"
-            aria-label="搜索股票"
-            placeholder="搜索股票名或代码"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-        </label>
-
-        <label>
-          <span>市场</span>
-          <select
-            aria-label="按市场筛选"
-            value={market}
-            onChange={(event) => setMarket(event.target.value)}
-          >
-            <option value="all">全部市场</option>
-            {filterOptions.marketOptions.filter(({ value }) => value !== "all").map(({ value, label }) => (
-              <option value={value} key={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          <span>账户</span>
-          <select
-            aria-label="按账户筛选"
-            value={account}
-            onChange={(event) => setAccount(event.target.value)}
-          >
-            <option value="all">全部账户</option>
-            {filterOptions.accounts.map((value) => (
-              <option value={value.id} key={value.id}>
-                {value.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          <span>年份</span>
-          <select
-            aria-label="按年份筛选"
-            value={year}
-            onChange={(event) => setYear(event.target.value)}
-          >
-            <option value="all">全部年份</option>
-            {filterOptions.years.map((value) => (
-              <option value={value} key={value}>
-                {value}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          <span>状态</span>
-          <select
-            aria-label="按持仓状态筛选"
-            value={positionStatus}
-            onChange={(event) => setPositionStatus(event.target.value)}
-          >
-            <option value="all">全部状态</option>
-            <option value="open">持仓中</option>
-            <option value="closed">已平仓</option>
-          </select>
-        </label>
-        <label>
-          <span>交易性质</span>
-          <select
-            aria-label="按交易性质筛选"
-            value={tradeNature}
-            onChange={(event) => setTradeNature(event.target.value)}
-          >
-            <option value="all">全部性质</option>
-            <option value="live">实盘</option>
-            <option value="simulation">模拟盘</option>
-            <option value="unknown">来源未知</option>
-          </select>
-        </label>
-        {filterOptions.simulationRuns.length > 1 && (
-          <label>
-            <span>模拟运行</span>
-            <select
-              aria-label="按模拟运行筛选"
-              value={simulationRunId}
-              onChange={(event) => setSimulationRunId(event.target.value)}
-            >
-              <option value="all">全部运行</option>
-              {filterOptions.simulationRuns.map((value) => (
-                <option value={value} key={value}>
-                  {value.slice(-12)}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-        <label>
-          <span>行情</span>
-          <select
-            aria-label="按行情完整性筛选"
-            value={dataStatus}
-            onChange={(event) => setDataStatus(event.target.value)}
-          >
-            <option value="all">全部行情</option>
-            <option value="complete">完整</option>
-            <option value="incomplete">待补齐</option>
-          </select>
-        </label>
-        <label>
-          <span>标签</span>
-          <select
-            aria-label="按标签筛选"
-            value={tag}
-            onChange={(event) => setTag(event.target.value)}
-          >
-            <option value="all">全部标签</option>
-            {REVIEW_TAGS.map(({ id, label }) => (
-              <option value={id} key={id}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+      {sharedBrowseControls}
+      {fxRatesStrip}
+      {performanceSummaryView}
 
       {filteredEntries.length === 0 ? (
         <div className="library-empty">
@@ -792,113 +1282,29 @@ export function TradeLibrary({
           </span>
         </div>
       ) : (
-        <div className="library-stock-list">
-          <div className="library-stock-head">
-            <span>股票</span>
-            <span>账户 / 成交 / 回合</span>
-            <span>交易区间</span>
-            <span>状态</span>
-            <span>净盈亏 / 收益率</span>
-            <span />
-          </div>
-          {filteredEntries.map((entry) => {
-            const status =
-              marketDataStatuses[entry.instrument.id] ?? "not-requested";
-            return (
-              <button
-                className="library-stock-row"
-                aria-label={`打开${entry.instrument.name}交易回合`}
-                key={entryKey(entry)}
-                onClick={() => {
-                  const stockEpisodes = buildReviewQueue([entry], {
-                    account,
-                    year,
-                    market,
-                    nature: tradeNature,
-                    simulationRunId,
-                    status: "all",
-                  });
-                  const episode = stockEpisodes[0]?.item.episode;
-                  if (episode) {
-                    onOpenInReview(
-                      entry.instrument.id,
-                      episode.id,
-                      buildReviewQueue([entry], {
-                        account,
-                        year,
-                        market,
-                        nature: tradeNature,
-                        simulationRunId,
-                        status: "all",
-                      }).map((row) => row.item.episode.id),
-                    );
-                  }
-                }}
-              >
-                <span className="library-stock-identity">
-                  <b>{entry.instrument.market}</b>
-                  <span>
-                    <strong>{entry.instrument.name}</strong>
-                    <small>{entry.instrument.symbol}</small>
-                  </span>
-                  <em className={`trade-nature-badge ${entry.tradeNature ?? "unknown"}`}>
-                    {natureLabel(entry.tradeNature)}
-                  </em>
-                </span>
-                <span className="library-stock-meta">
-                  <span>
-                    {entry.accountCount} 个账户 · {entry.tradeCount} 笔成交 ·{" "}
-                    {entry.episodeCount} 个回合
-                  </span>
-                  <small>
-                    {entry.cumulativeR === null
-                      ? "累计 R —"
-                      : `累计 ${entry.cumulativeR}R`}{" "}
-                    ·{" "}
-                    {entry.confirmedTagIds.length === 0
-                      ? "标签待确认"
-                      : entry.confirmedTagIds
-                          .map(reviewTagLabel)
-                          .join("、")}
-                  </small>
-                </span>
-                <span>
-                  {formatMarketTradingDate(
-                    entry.firstTradeAt,
-                    entry.instrument.market,
-                  )}—
-                  {formatMarketTradingDate(
-                    entry.lastTradeAt,
-                    entry.instrument.market,
-                  )}
-                </span>
-                <span className="library-stock-status">
-                  <b className={entry.status}>
-                    {entry.status === "open" ? "持仓中" : "已平仓"}
-                  </b>
-                  <small>{marketDataLabels?.[entry.instrument.id] ?? marketDataStatusLabel(status)}</small>
-                </span>
-                <span className="library-stock-pnl">
-                  <strong
-                    className={
-                      Number(entry.netPnl ?? 0) >= 0
-                        ? "positive"
-                        : "negative"
-                    }
-                  >
-                    {money(entry.netPnl, entry.instrument.currency)}
-                  </strong>
-                  <small>
-                    {entry.returnPercent === null
-                      ? "收益率待行情"
-                      : `${Number(entry.returnPercent).toFixed(2)}%`}
-                  </small>
-                </span>
-                <ChevronRight size={16} />
-              </button>
-            );
-          })}
-        </div>
+        <LibraryStockRounds
+          groups={stockGroups}
+          expandedStockIds={expandedStockIds}
+          includeReviewedStockIds={includeReviewedStockIds}
+          reviewStatus={reviewStatus}
+          performanceByInstrument={performanceByInstrument}
+          performanceByEpisode={performanceByEpisode}
+          fxSnapshot={fxSnapshot}
+          sort={effectiveSort}
+          onSort={updateSort}
+          performanceSortAvailability={performanceSortAvailability}
+          page={stockPage}
+          onPageChange={page => updateBrowseState({ stockPage: page })}
+          marketDataLabels={marketDataLabels}
+          marketDataStatuses={marketDataStatuses}
+          onToggleExpanded={toggleExpandedStock}
+          onToggleIncludeReviewed={toggleIncludeReviewedStock}
+          onOpenRound={(row, queueIds) => onOpenInReview(row.entry.instrument.id, row.item.episode.id, queueIds)}
+          money={money}
+          natureLabel={natureLabel}
+          marketDataStatusLabel={marketDataStatusLabel}
+          reviewTagLabel={reviewTagLabel}
+        />
       )}
     </section>
   );

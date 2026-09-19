@@ -1,69 +1,97 @@
-import type { RoomFxSnapshot } from "../reviews/trading-room-scope";
+export const FX_CURRENCIES = ["CNY", "HKD", "USD"] as const;
 
-export const FX_SETTINGS_KEY = "trading-room.fx" as const;
-export const BOC_FX_SOURCE_URL = "https://www.boc.cn/sourcedb/whpj/" as const;
-export const FX_SOURCE = "BOC" as const;
-export const FX_BASE_CURRENCY = "CNY" as const;
-export const REQUIRED_FOREIGN_CURRENCIES = ["USD", "HKD"] as const;
+export type FxCurrency = (typeof FX_CURRENCIES)[number];
 
-export type RequiredForeignCurrency = (typeof REQUIRED_FOREIGN_CURRENCIES)[number];
-export type FxStatus = "complete" | "partial" | "missing";
+export type FxRates = Readonly<Record<FxCurrency, number>>;
 
-export type FxState = {
-  id: string;
-  baseCurrency: typeof FX_BASE_CURRENCY;
-  source: typeof FX_SOURCE;
-  publishedAt: string | null;
-  publishedAtByCurrency: Readonly<Record<string, string>>;
-  fetchedAt: string | null;
-  rates: Readonly<Record<string, string>>;
-  lastAttemptDay: string | null;
-  status: FxStatus;
-  error: string | null;
+export type FxSource = Readonly<{
+  id: "frankfurter-ecb";
+  label: string;
+  url: string;
+  attributionUrl: string;
+}>;
+
+export type FxSnapshot = {
+  version: 1;
+  baseCurrency: "CNY";
+  rates: FxRates;
+  source: FxSource;
+  rateDate: string;
+  fetchedAt: string;
+  lastAttemptedAt: string;
+  cacheStatus: "fresh" | "cached";
+  lastError?: string;
 };
 
-export type FxStateResponse = FxState;
+export type FxRefreshStatus = "fresh" | "cached" | "unavailable";
 
-export function fxStatusForRates(rates: Readonly<Record<string, unknown>>): FxStatus {
-  const count = REQUIRED_FOREIGN_CURRENCIES.filter((currency) => {
-    const value = rates[currency];
-    return typeof value === "string" && value.trim().length > 0;
-  }).length;
-  if (count === REQUIRED_FOREIGN_CURRENCIES.length) return "complete";
-  if (count > 0) return "partial";
-  return "missing";
+export type FxProblem = {
+  code: string;
+  message: string;
+};
+
+export type FxReadResponse = {
+  snapshot: FxSnapshot | null;
+};
+
+export type FxRefreshResponse = FxReadResponse & {
+  status: FxRefreshStatus;
+  error?: FxProblem;
+};
+
+export function isFxCurrency(value: unknown): value is FxCurrency {
+  return typeof value === "string" && (FX_CURRENCIES as readonly string[]).includes(value);
 }
 
-export function toRoomFxSnapshot(state: FxState | null | undefined): RoomFxSnapshot | undefined {
-  if (!state || !state.publishedAt && !state.fetchedAt) return undefined;
-  if (state.status === "missing" || Object.keys(state.rates).length === 0) return undefined;
-  const rates: Record<string, string> = {};
-  for (const currency of REQUIRED_FOREIGN_CURRENCIES) {
-    const rate = state.rates[currency];
-    if (typeof rate !== "string" || !rate.trim()) return undefined;
-    rates[`${currency}/CNY`] = rate;
+export function isIsoDate(value: unknown): value is string {
+  if (typeof value !== "string") return false;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return false;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  if (month < 1 || month > 12 || day < 1) return false;
+  const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const daysInMonth = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return day <= daysInMonth[month - 1];
+}
+
+export function isIsoTimestamp(value: unknown): value is string {
+  return typeof value === "string" && Number.isFinite(Date.parse(value));
+}
+
+export function isFxRates(value: unknown): value is FxRates {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const rates = value as Record<string, unknown>;
+  return FX_CURRENCIES.every((currency) => {
+    const rate = rates[currency];
+    return typeof rate === "number" && Number.isFinite(rate) && rate > 0;
+  }) && rates.CNY === 1;
+}
+
+export function isFxSnapshot(value: unknown): value is FxSnapshot {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const snapshot = value as Record<string, unknown>;
+  const source = snapshot.source;
+  return snapshot.version === 1 &&
+    snapshot.baseCurrency === "CNY" &&
+    isFxRates(snapshot.rates) &&
+    Boolean(source) &&
+    typeof source === "object" &&
+    !Array.isArray(source) &&
+    (source as Record<string, unknown>).id === "frankfurter-ecb" &&
+    typeof (source as Record<string, unknown>).label === "string" &&
+    typeof (source as Record<string, unknown>).url === "string" &&
+    typeof (source as Record<string, unknown>).attributionUrl === "string" &&
+    isIsoDate(snapshot.rateDate) &&
+    isIsoTimestamp(snapshot.fetchedAt) &&
+    isIsoTimestamp(snapshot.lastAttemptedAt) &&
+    (snapshot.cacheStatus === "fresh" || snapshot.cacheStatus === "cached") &&
+    (snapshot.lastError === undefined || typeof snapshot.lastError === "string");
+}
+
+export function assertFxSnapshot(value: unknown): asserts value is FxSnapshot {
+  if (!isFxSnapshot(value)) {
+    throw new Error("FX snapshot is incomplete or invalid");
   }
-  return {
-    id: state.id,
-    baseCurrency: FX_BASE_CURRENCY,
-    asOf: state.publishedAt ?? state.fetchedAt ?? "",
-    source: state.source,
-    status: state.status,
-    rates,
-  };
-}
-
-export function emptyFxState(): FxState {
-  return {
-    id: "fx:empty",
-    baseCurrency: FX_BASE_CURRENCY,
-    source: FX_SOURCE,
-    publishedAt: null,
-    publishedAtByCurrency: {},
-    fetchedAt: null,
-    rates: {},
-    lastAttemptDay: null,
-    status: "missing",
-    error: null,
-  };
 }

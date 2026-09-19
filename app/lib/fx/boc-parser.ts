@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 
-import type { RequiredForeignCurrency } from "./contracts";
+import type { RequiredForeignCurrency } from "./room-contracts";
 
 export type ParsedBocRate = {
   currency: RequiredForeignCurrency;

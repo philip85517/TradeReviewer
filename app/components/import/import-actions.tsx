@@ -3,7 +3,7 @@
 import { ImageUp, Upload } from "lucide-react";
 import { useState } from "react";
 
-type Props = {
+export type ImportActionsProps = {
   disabled?: boolean;
   compact?: boolean;
   onTradingView?: () => void;
@@ -12,7 +12,7 @@ type Props = {
 };
 
 /** All entry points open the workspace's one pair of file inputs. */
-export function ImportActions({ disabled, compact, onFile, onScreenshot, onTradingView }: Props) {
+export function ImportActions({ disabled, compact, onFile, onScreenshot, onTradingView }: ImportActionsProps) {
   const [open, setOpen] = useState(false);
   if (compact) return <div className="import-menu" onKeyDown={event => {if(event.key === "Escape") setOpen(false);}} onBlur={event => {if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);}}>
     <button type="button" className="primary-action" disabled={disabled} aria-expanded={open} onClick={() => setOpen(!open)}><Upload size={16} />导入</button>

@@ -79,6 +79,7 @@
 }
 
 .filters,
+.roomScopeSection,
 .metricsSection,
 .calendarSection,
 .groupSection {
@@ -91,6 +92,136 @@
 .filters {
   padding: 17px;
   margin-bottom: 17px;
+}
+
+.roomScopeSection {
+  margin-bottom: 17px;
+  padding: 20px;
+}
+
+.roomScopeHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 17px;
+}
+
+.roomScopeHeading h2 {
+  margin: 4px 0 0;
+  font-size: 22px;
+  letter-spacing: -.025em;
+}
+
+.roomScopeHeading p {
+  margin: 8px 0 0;
+  color: var(--dashboard-muted);
+  font-size: 12px;
+}
+
+.roomScopeBadge {
+  color: var(--dashboard-muted);
+  font-size: 11px;
+  text-align: right;
+}
+
+.roomScopeBadgeGroup {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+}
+
+.roomIdentityBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.identityLive {
+  color: #247b88;
+  background: #e9f7f8;
+}
+
+.identitySimulation {
+  color: #7753a5;
+  background: #f1ebff;
+}
+
+.identityUnknown {
+  color: #65717e;
+  background: #eef1f3;
+}
+
+.roomScopeControls,
+.roomCustomPeriod,
+.roomAdvancedGrid {
+  display: grid;
+  gap: 10px;
+}
+
+.roomScopeControls {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.roomCustomPeriod {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 10px;
+  max-width: 520px;
+}
+
+.roomAdvancedDetails {
+  margin-top: 13px;
+  border-top: 1px solid var(--dashboard-line-soft);
+  padding-top: 12px;
+  color: var(--dashboard-muted);
+  font-size: 11px;
+}
+
+.roomAdvancedDetails summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+
+.roomAdvancedGrid {
+  grid-template-columns: minmax(190px, 1.5fr) repeat(3, minmax(120px, 1fr));
+  align-items: end;
+  margin-top: 11px;
+}
+
+.roomClearButton {
+  height: 35px;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 9px;
+  background: var(--dashboard-card-elevated);
+  color: var(--blue, #32758b);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+}
+
+.roomScopeHint {
+  margin: 11px 0 0;
+  color: var(--dashboard-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.roomSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.roomScopeWarning {
+  margin: 11px 0 0;
+  color: var(--gold, #a56e14);
+  font-size: 11px;
 }
 
 .filterHeading {
@@ -556,6 +687,9 @@
 
 @media (max-width: 1000px) {
   .filterGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .roomScopeControls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .roomAdvancedGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .roomSummaryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .metricGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .groupRow { flex-wrap: wrap; }
   .groupRow > span:first-child { flex-basis: 45%; }
@@ -566,10 +700,18 @@
   .header { align-items: flex-start; }
   .headerMeta { display: none; }
   .filters,
+  .roomScopeSection,
   .metricsSection,
   .calendarSection,
   .groupSection { border-radius: 13px; padding: 14px; }
   .filterGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .roomScopeHeading { display: grid; }
+  .roomScopeBadgeGroup { justify-items: start; }
+  .roomScopeBadge { text-align: left; }
+  .roomScopeControls,
+  .roomAdvancedGrid,
+  .roomCustomPeriod,
+  .roomSummaryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .searchField { grid-column: 1 / -1; }
   .countGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .countHeading { align-items: flex-start; flex-direction: column; gap: 5px; }

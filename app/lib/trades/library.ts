@@ -36,6 +36,16 @@ export type TradeLibraryEpisode = {
   rMultiple: string | null;
 };
 
+/** Latest source-backed close, exposed for read-only holdings views. */
+export type TradeLibraryQuoteProjection = {
+  price: string;
+  currency: string;
+  quoteDate: string;
+  fetchedAt: string;
+  provider: DailyCandleRecord["provider"];
+  status: MarketDataSyncStatus;
+};
+
 export type TradeLibraryEntry = {
   groupId?: string;
   tradingLabel?: string;
@@ -56,6 +66,7 @@ export type TradeLibraryEntry = {
   reviewedEpisodeCount: number;
   confirmedTagIds: string[];
   cumulativeR: string | null;
+  latestQuote?: TradeLibraryQuoteProjection;
 };
 
 export function buildTradeLibraryEntries(
@@ -198,6 +209,16 @@ export function buildTradeLibraryEntries(
           ).length,
           confirmedTagIds,
           cumulativeR,
+          ...(latestCandle ? {
+            latestQuote: {
+              price: latestCandle.close,
+              currency: latestCandle.currency,
+              quoteDate: latestCandle.tradingDate,
+              fetchedAt: latestCandle.fetchedAt,
+              provider: latestCandle.provider,
+              status: marketDataStatus,
+            },
+          } : {}),
         };
       });
     })

@@ -48,7 +48,11 @@ import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeExecution } from "../lib/trades/types";
 import type { ScreenshotImportDependencies } from "./import/use-screenshot-import";
 import { tradeRepairClient } from "../lib/storage/trade-repair-client";
-import { TradeReviewWorkspace } from "./trade-review-workspace";
+import {
+  accountIdForQualityCheck,
+  defaultAccountIdForInstrument,
+  TradeReviewWorkspace,
+} from "./trade-review-workspace";
 import { createLegacySqliteClient } from "./test-support/legacy-sqlite-client";
 
 const mockSqliteClient = vi.hoisted(() => ({ current: undefined as unknown }));
@@ -495,6 +499,119 @@ describe("TradeReviewWorkspace", () => {
     mockSqliteClient.current = createLegacySqliteClient();
   });
 
+  it("loads the FX snapshot when the production workspace opens on the dashboard", async () => {
+    const fxState = {
+      id: "fx:test-home-dashboard",
+      baseCurrency: "CNY",
+      source: "BOC",
+      publishedAt: "2026-09-19T02:00:00.000Z",
+      publishedAtByCurrency: {
+        USD: "2026-09-19T02:00:00.000Z",
+        HKD: "2026-09-19T02:00:00.000Z",
+      },
+      fetchedAt: "2026-09-19T02:01:00.000Z",
+      rates: { USD: "6.7521", HKD: "0.8606" },
+      lastAttemptDay: "2026-09-19",
+      status: "complete",
+      error: null,
+    } as const;
+    vi.mocked(fetch).mockImplementation(async (input) => {
+      if (String(input) === "/api/fx") {
+        return Response.json(fxState);
+      }
+      return {
+        ok: true,
+        json: async () => nextFrame,
+      } as Response;
+    });
+
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+        fxSlot={<output aria-label="外部汇率插槽" />}
+      />,
+    );
+
+    expect(await screen.findByLabelText("外部汇率插槽")).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(
+        "/api/fx",
+        expect.objectContaining({
+          method: "GET",
+          cache: "no-store",
+        }),
+      );
+    });
+  });
+
+  it("starts a quality data check in the first existing account for the instrument", () => {
+    const instrument = {
+      id: "US:MSFT",
+      symbol: "MSFT",
+      name: "微软",
+      market: "US",
+      currency: "USD",
+    };
+    const execution = (id: string, accountId: string): TradeExecution => ({
+      id,
+      instrument,
+      accountId,
+      accountLabel: accountId || "未命名账户",
+      source: { platform: "fixture", row: 1 },
+      executedAt: "2026-09-18T14:30:00.000Z",
+      side: "buy",
+      quantity: "1",
+      price: "100",
+      fee: "0",
+    });
+
+    expect(defaultAccountIdForInstrument("US:MSFT", [
+      execution("missing-account", ""),
+      execution("msft-account", "fixture-msft"),
+      execution("other-instrument", "fixture-other"),
+    ])).toBe("fixture-msft");
+  });
+
+  it("prefers the issue episode account when the instrument has multiple accounts", () => {
+    const instrument = {
+      id: "US:MSFT",
+      symbol: "MSFT",
+      name: "微软",
+      market: "US",
+      currency: "USD",
+    };
+    const executions: TradeExecution[] = [
+      {
+        id: "msft-primary",
+        instrument,
+        accountId: "fixture-primary",
+        accountLabel: "主账户",
+        source: { platform: "fixture", row: 1 },
+        executedAt: "2026-09-18T14:30:00.000Z",
+        side: "buy",
+        quantity: "1",
+        price: "100",
+        fee: "0",
+      },
+      {
+        id: "msft-secondary",
+        instrument,
+        accountId: "fixture-secondary",
+        accountLabel: "副账户",
+        source: { platform: "fixture", row: 2 },
+        executedAt: "2026-09-18T15:30:00.000Z",
+        side: "sell",
+        quantity: "1",
+        price: "101",
+        fee: "0",
+      },
+    ];
+
+    expect(accountIdForQualityCheck("US:MSFT", executions, "fixture-secondary")).toBe("fixture-secondary");
+  });
+
   async function renderGoldReplay(priorDates: string[] = [], storedCursor?: string, entryTime = "2026-06-26T02:22:37Z", hourly = false, storageClient: SqliteHttpClient = createLegacySqliteClient()) {
     const instrument = { id: "HK:6228", symbol: "6228", name: "自由黄金-DRS", market: "HK", currency: "HKD" };
     const execution: TradeExecution = { id: "gold-sale", instrument, accountId: "test", accountLabel: "测试账户", source: { platform: "tiger", row: 1 }, executedAt: entryTime, side: "sell", quantity: "200", price: "26.380", fee: "0" };
@@ -521,7 +638,7 @@ describe("TradeReviewWorkspace", () => {
       const recentMonth = within(dashboard).queryByRole("button", { name: "最近有记录" });
       if (recentMonth) await user.click(recentMonth);
       const populatedDays = within(dashboard)
-        .getAllByRole("button", { name: /^\d{4}-\d{2}-\d{2}，/ })
+        .queryAllByRole("button", { name: /^\d{4}-\d{2}-\d{2}，/ })
         .filter((button) => {
           const label = button.getAttribute("aria-label") ?? "";
           return !label.includes("无已平仓回合") && !label.includes("不可用");
@@ -572,8 +689,7 @@ describe("TradeReviewWorkspace", () => {
 
   async function expectEmptyProductionDashboard() {
     const dashboard = await screen.findByRole("region", { name: "统计总览" });
-    expect(within(dashboard).getByText("导入交易后查看统计总览")).toBeInTheDocument();
-    expect(within(dashboard).getByText("已有交易数据会自动出现在这里。")).toBeInTheDocument();
+    expect(within(dashboard).getAllByText("导入交易后查看统计总览；已有交易数据会按来源平仓日显示。").length).toBeGreaterThan(0);
     expect(screen.queryByText("演示行情")).not.toBeInTheDocument();
   }
 
@@ -3892,18 +4008,74 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.getByTestId("replay-cursor")).toHaveAttribute("data-cursor", cursor);
   });
 
-  it("offers the import flow directly in the empty workspace", async () => {
+  it("offers the import flow in data management from the empty workspace", async () => {
     const user = userEvent.setup();
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
     await expectEmptyProductionDashboard();
-    await user.click(screen.getByRole("button", { name: "导入" }));
-    const importMenu = screen.getByLabelText("导入方式");
-    expect(within(importMenu).getByRole("button", { name: "导入记录 · PDF / Excel" })).toBeEnabled();
-    expect(within(importMenu).getByRole("button", { name: "截图恢复" })).toBeEnabled();
-    expect(within(importMenu).getByRole("button", { name: "导入 TradingView 模拟交易" })).toBeEnabled();
+    await user.click(screen.getByRole("button", { name: "数据管理" }));
+    await screen.findByRole("region", { name: "数据管理" });
+    expect(screen.getByRole("button", { name: "导入交易记录" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "从截图恢复交易" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "导入 TradingView 模拟交易" })).toBeEnabled();
     expect(screen.getByLabelText("导入交易记录", { selector: "input" })).toHaveAttribute("multiple");
     expect(screen.getByLabelText("导入 TradingView 模拟交易", { selector: "input" })).toHaveAttribute("accept", ".csv,text/csv");
     expect(screen.getAllByLabelText("导入交易记录", { selector: "input" })).toHaveLength(1);
+  });
+
+  it("passes stored instrument metadata into the trading room scope", async () => {
+    const etfInstrument = {
+      ...availabilityInstrument,
+      id: "US:ROOM-ETF",
+      symbol: "ROOM-ETF",
+      name: "交易室ETF",
+    };
+    const execution: TradeExecution = {
+      ...availabilityExecution({
+        id: "room-etf-open",
+        row: 1,
+        side: "buy",
+        executedAt: "2026-09-10T14:30:00.000Z",
+      }),
+      instrument: etfInstrument,
+    };
+    const bootstrap: StorageBootstrap = {
+      schemaVersion: 1,
+      migration: null,
+      executions: [execution],
+      importHistory: [],
+      instruments: [{
+        ...etfInstrument,
+        metadata: {
+          market: "US",
+          symbol: etfInstrument.symbol,
+          name: etfInstrument.name,
+          assetType: "etf",
+          source: "statement",
+          confidence: "statement",
+          resolvedAt: "2026-09-10T00:00:00.000Z",
+        },
+      }],
+      reviews: [],
+      reviewStates: [],
+      tagSuggestions: [],
+      marketDataJobs: [],
+      settings: { version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" },
+    };
+    const client = createLegacySqliteClient();
+    const storageClient = {
+      ...client,
+      getBootstrap: vi.fn().mockResolvedValue(bootstrap),
+    } as SqliteHttpClient;
+    const user = userEvent.setup();
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={storageClient} />);
+
+    const room = await screen.findByRole("region", { name: "交易室范围" });
+    await user.selectOptions(
+      within(room).getByRole("combobox", { name: "交易室分类筛选" }),
+      "etf",
+    );
+    expect(within(room).getByText("1 个回合进入范围")).toBeVisible();
   });
 
   it("opens stock entries in the shared workbench and preserves library browsing state", async () => {

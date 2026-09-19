@@ -11,7 +11,7 @@ import { StockDataDialog } from "./review/stock-data-dialog";
 import { tradeRepairClient } from "../lib/storage/trade-repair-client";
 import type { TradeRevisionRequest } from "../lib/storage/trade-revisions";
 import { StockEpisodeNavigation } from "./review/stock-episode-navigation";
-import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState, type ReactNode } from "react";
 
 import {
   applyDrawingCommand,
@@ -169,6 +169,10 @@ import { tradingNatureLabel, displayTradeNature } from "../lib/trades/trading-na
 import { buildReviewQueue } from "../lib/reviews/review-queue";
 import { localizedInstrumentOverlay, overlayStoredInstrumentMetadata } from "../lib/reviews/instrument-display-overlay";
 import type {
+  TradingRoomInstrumentMetadata,
+  TradingRoomMetadataInput,
+} from "../lib/reviews/trading-room-scope";
+import type {
   Instrument,
   TradeEpisode,
   TradeExecution,
@@ -192,7 +196,9 @@ import {
   type TradeLibraryTarget,
   type TradeLibraryBrowseState,
 } from "./library/trade-library";
-import { ImportActions } from "./import/import-actions";
+import { DataManagement } from "./data-management/data-management";
+import { FxPanel } from "./data-management/fx-panel";
+import { QualityDetails } from "./data-management/quality-details";
 import { useModalFocus } from "./import/use-modal-focus";
 import { ReviewSummary, initialReviewSummaryFilters, type ReviewSummaryDrafts } from "./insights/review-summary";
 import { ReviewDashboard } from "./dashboard/review-dashboard";
@@ -213,12 +219,18 @@ import type {
 } from "../lib/replay/chart-location";
 import {
   EMPTY_GLOBAL_MARKET_REFRESH,
-  GlobalMarketRefresh,
   type GlobalMarketRefreshState,
 } from "./global-market-refresh";
 import { RefreshCancellationService } from "../lib/market/refresh-cancellation";
 import { withGlobalMarketRefreshLock } from "../lib/market/refresh-lock";
 import { composeAbortSignals } from "../lib/instruments/abort-signal";
+import { toRoomFxSnapshot } from "../lib/fx/contracts";
+import { useFxRates } from "../lib/fx/use-fx-rates";
+import type {
+  TradingRoomQualityDimensionId,
+  TradingRoomQualityModel,
+} from "../lib/reviews/trading-room-quality";
+import type { TradingRoomQuote } from "../lib/reviews/trading-room-holdings";
 
 const REVIEW_ID = "demo-xpev-2025";
 const DEFAULT_THESIS =
@@ -261,6 +273,8 @@ type InstrumentMarketState = {
 type Props = {
   initialFrame: DemoReplayFrame;
   showDemo?: boolean;
+  /** Optional future data-management module, such as the FX updater. */
+  fxSlot?: ReactNode;
   screenshotImportDependencies?: Partial<ScreenshotImportDependencies>;
   /** Injectable only for integration tests; production creates the HTTP client. */
   storageClient?: SqliteHttpClient;
@@ -907,17 +921,47 @@ function marketDataErrorDetail(error: unknown): MarketDataErrorDetail {
   return { code: "source-unavailable", message: "行情更新失败" };
 }
 
-export function TradeReviewWorkspace({
-  initialFrame,
-  showDemo = true,
-  screenshotImportDependencies,
-  storageClient: storageClientOverride,
-  legacyStateExporter = exportLegacyBrowserState,
-}: Props) {
+/** Select an existing account before opening a quality check for an instrument.
+ * Quality actions currently carry instrument ids only, so use the first
+ * concrete imported account as the dialog's starting scope instead of the
+ * empty id which would hide that account's executions and repair actions.
+ */
+export function defaultAccountIdForInstrument(
+  instrumentId: string,
+  executions: ReadonlyArray<TradeExecution>,
+): string {
+  return executions.find(
+    execution =>
+      execution.instrument.id === instrumentId &&
+      execution.accountId.trim().length > 0,
+  )?.accountId ?? "";
+}
+
+export function accountIdForQualityCheck(
+  instrumentId: string,
+  executions: ReadonlyArray<TradeExecution>,
+  episodeAccountId?: string,
+): string {
+  const accountId = episodeAccountId?.trim();
+  return accountId || defaultAccountIdForInstrument(instrumentId, executions);
+}
+
 function isAbortError(error: unknown) {
   return error instanceof DOMException && error.name === "AbortError";
 }
 
+function qualityModelSignature(model: TradingRoomQualityModel): string {
+  return JSON.stringify(model);
+}
+
+export function TradeReviewWorkspace({
+  initialFrame,
+  showDemo = true,
+  fxSlot,
+  screenshotImportDependencies,
+  storageClient: storageClientOverride,
+  legacyStateExporter = exportLegacyBrowserState,
+}: Props) {
   const [storageClient] = useState<SqliteHttpClient>(
     () => storageClientOverride ?? createSqliteHttpClient(),
   );
@@ -964,9 +1008,30 @@ function isAbortError(error: unknown) {
   const [libraryBrowseState, setLibraryBrowseState] = useState<TradeLibraryBrowseState>();
   const [reviewQueueIds, setReviewQueueIds] = useState<string[]>();
   const [navigationNotice, setNavigationNotice] = useState<string | null>(null);
+  const [qualityModel, setQualityModel] = useState<TradingRoomQualityModel | null>(null);
+  const updateQualityModel = useCallback((next: TradingRoomQualityModel) => {
+    setQualityModel(current => current && qualityModelSignature(current) === qualityModelSignature(next)
+      ? current
+      : next);
+  }, []);
   const [activeView, setActiveView] = useState<
-    "dashboard" | "review" | "library" | "insights"
+    "dashboard" | "review" | "library" | "insights" | "data"
   >(showDemo ? "review" : "dashboard");
+  const fxRates = useFxRates({
+    enabled: !showDemo,
+  });
+  const fxSnapshot = useMemo(() => toRoomFxSnapshot(fxRates.state), [fxRates.state]);
+  const resolvedFxSlot = fxSlot ?? (
+    !showDemo ? (
+      <FxPanel
+        state={fxRates.state}
+        loading={fxRates.loading}
+        refreshing={fxRates.refreshing}
+        error={fxRates.error}
+        onRefresh={fxRates.refresh}
+      />
+    ) : undefined
+  );
   const [timeframe, setTimeframe] = useState<Timeframe>("1D");
   const [legacyTimeframe, setLegacyTimeframe] = useState<"1D" | "1W">("1D");
   const [historyMode, setHistoryMode] = useState<"history" | "replay">("history");
@@ -1127,6 +1192,19 @@ function isAbortError(error: unknown) {
     () => overlayStoredInstrumentMetadata(rawImportedInstruments, storedInstruments),
     [rawImportedInstruments, storedInstruments],
   );
+  const instrumentMetadata = useMemo<TradingRoomMetadataInput>(() => {
+    const metadata = new Map<string, TradingRoomInstrumentMetadata>();
+    for (const storedInstrument of storedInstruments) {
+      const resolved = storedInstrument.metadata;
+      if (!resolved) continue;
+      metadata.set(storedInstrument.id, {
+        market: resolved.market,
+        symbol: resolved.symbol,
+        assetType: resolved.assetType,
+      });
+    }
+    return metadata;
+  }, [storedInstruments]);
   const selectedRawImportedInstrument = rawImportedInstruments.find(
     (item) => item.instrument.id === selectedInstrumentId,
   );
@@ -1348,10 +1426,20 @@ function isAbortError(error: unknown) {
       ),
     [importedInstruments, marketDataJobs, marketStates],
   );
-  const marketDataLabels = Object.fromEntries(importedInstruments.map(({ instrument }) => {
-    const state = marketStates[instrument.id];
-    return [instrument.id, `日线：${marketDataStatusLabel(state?.dailyStatus ?? "not-requested")}；1H：${marketDataStatusLabel(state?.intradayStatus ?? "not-requested")}`];
-  }));
+  const marketDataLabels = useMemo(
+    () => Object.fromEntries(importedInstruments.map(({ instrument }) => {
+      const state = marketStates[instrument.id];
+      return [instrument.id, `日线：${marketDataStatusLabel(state?.dailyStatus ?? "not-requested")}；1H：${marketDataStatusLabel(state?.intradayStatus ?? "not-requested")}`];
+    })),
+    [importedInstruments, marketStates],
+  );
+  const marketDataDailyStatuses = useMemo(
+    () => Object.fromEntries(importedInstruments.map(({ instrument }) => [
+      instrument.id,
+      marketStates[instrument.id]?.dailyStatus ?? ("not-requested" satisfies MarketDataSyncStatus),
+    ])),
+    [importedInstruments, marketStates],
+  );
   const tradeLibraryEntries = useMemo(
     () =>
       buildTradeLibraryEntries(
@@ -1367,6 +1455,37 @@ function isAbortError(error: unknown) {
       marketDataStatuses,
     ],
   );
+  const qualityInput = useMemo(
+    () => ({
+      marketDataStatuses,
+      marketDataDailyStatuses,
+      marketDataCandles,
+      marketDataLabels,
+      marketDataJobs,
+      fxState: fxRates.state,
+      fxSnapshot,
+    }),
+    [fxRates.state, fxSnapshot, marketDataCandles, marketDataDailyStatuses, marketDataJobs, marketDataLabels, marketDataStatuses],
+  );
+  const holdingsQuotesByInstrument = useMemo<Readonly<Record<string, TradingRoomQuote | undefined>>>(
+    () => Object.fromEntries(
+      tradeLibraryEntries.map(entry => [
+        entry.instrument.id,
+        entry.latestQuote
+          ? {
+              price: entry.latestQuote.price,
+              currency: entry.latestQuote.currency,
+              quoteDate: entry.latestQuote.quoteDate,
+              fetchedAt: entry.latestQuote.fetchedAt,
+              provider: entry.latestQuote.provider,
+              freshness: "current" as const,
+            }
+          : undefined,
+      ]),
+    ),
+    [tradeLibraryEntries],
+  );
+  const holdingsAsOf = useMemo(() => new Date().toISOString(), []);
   const currentEpisodeIds = useMemo(
     () => new Set(tradeLibraryEntries.flatMap(entry => entry.episodes.map(({ episode }) => episode.id))),
     [tradeLibraryEntries],
@@ -3311,6 +3430,53 @@ function isAbortError(error: unknown) {
     setPlaying(false); setDrawerOpen(false); setStockDrawerOpen(false);
     setDataTarget({ instrument, accountId, ...(activeView === "review" ? { cursor: activeCursor } : {}) });
   }
+  function openQualityDetails(model: TradingRoomQualityModel) {
+    setQualityModel(model);
+    setPlaying(false);
+    setActiveView("data");
+  }
+  function retryDataQuality(
+    dimension: TradingRoomQualityDimensionId,
+    instrumentIds: readonly string[],
+  ) {
+    if (dimension === "fx") {
+      void fxRates.refresh();
+      return;
+    }
+    if (dimension !== "historical" && dimension !== "holdings") return;
+    if (instrumentIds.length === 0) return;
+    const ids = [...new Set(instrumentIds)].filter(id =>
+      importedInstruments.some(item => item.instrument.id === id),
+    );
+    if (ids.length === 0) return;
+    void startMarketDataUpdate(ids.length > 0 ? ids : undefined, {
+      refreshMetadata: true,
+      batch: false,
+    });
+  }
+  function openQualityDataCheck(
+    _dimension: TradingRoomQualityDimensionId,
+    ids: readonly string[],
+    episodeId?: string,
+  ) {
+    const instrumentId = ids.find(id =>
+      importedInstruments.some(item => item.instrument.id === id) ||
+      storedInstruments.some(item => item.id === id),
+    );
+    setActiveView("data");
+    if (instrumentId) {
+      const episodeAccountId = episodeId
+        ? tradeLibraryEntries
+            .find(entry => entry.instrument.id === instrumentId)
+            ?.episodes.find(item => item.episode.id === episodeId)
+            ?.episode.accountId
+        : undefined;
+      openDataCheck(
+        instrumentId,
+        accountIdForQualityCheck(instrumentId, importedExecutions, episodeAccountId),
+      );
+    }
+  }
   function applyCorrectedExecutions(executions: TradeExecution[]) {
     importedExecutionsRef.current = executions;
     setImportedExecutions(executions);
@@ -4007,7 +4173,7 @@ function isAbortError(error: unknown) {
               setActiveView("dashboard");
             }}
           >
-            统计总览
+            我的交易室
           </button>
           <button
             className={activeView === "library" ? "active" : ""}
@@ -4025,6 +4191,16 @@ function isAbortError(error: unknown) {
           >
             模式洞察
           </button>
+          <button
+            className={activeView === "data" ? "active" : ""}
+            aria-current={activeView === "data" ? "page" : undefined}
+            onClick={() => {
+              setPlaying(false);
+              setActiveView("data");
+            }}
+          >
+            数据管理
+          </button>
         </nav>
         <div className="header-actions">
           <span className="demo-chip">
@@ -4035,20 +4211,6 @@ function isAbortError(error: unknown) {
                 ? "演示行情"
                 : "等待导入"}
           </span>
-          <GlobalMarketRefresh
-            instrumentCount={importedInstruments.length}
-            state={marketDataRefresh}
-            onRefresh={() => void startMarketDataUpdate(undefined, {
-              refreshMetadata: true,
-              batch: true,
-            })}
-            onCancel={cancelMarketDataUpdate}
-            onRetryFailed={() => void startMarketDataUpdate(failedMarketDataIds, {
-              refreshMetadata: true,
-              batch: true,
-            })}
-            onRecoverUnfinished={() => void recoverUnfinishedMarketData()}
-          />
           {showDemo && activeView !== "review" && (
             <button
               type="button"
@@ -4058,7 +4220,6 @@ function isAbortError(error: unknown) {
               返回演示复盘
             </button>
           )}
-          <ImportActions {...importActions} compact />
           {activeView === "review" && <button type="button" className="stock-list-trigger" aria-label="打开股票列表" aria-haspopup="dialog" aria-expanded={stockDrawerOpen} onClick={() => setStockDrawerOpen(true)}><Menu size={19} /><span>股票</span></button>}
           <div className="user-avatar">ZL</div>
         </div>
@@ -4071,11 +4232,10 @@ function isAbortError(error: unknown) {
         <button aria-pressed={focusedChart} onClick={toggleFocus}>{focusedChart ? "恢复布局" : "专注图表"}</button>
       </div>}
       {mobileTradesOpen && <button className="stock-drawer-backdrop" aria-label="关闭本股交易遮罩" onClick={() => setMobileTradesOpen(false)} />}
-      {importError && <p role="alert" className="navigation-notice">{importError}</p>}
+      {importError && activeView !== "data" && <p role="alert" className="navigation-notice">{importError}</p>}
       {activeDrawingSaveError && <p role="alert" className="navigation-notice">{activeDrawingSaveError}<button type="button" disabled={activeDrawingSavePending} onClick={() => void retryDrawingState(activeEpisodeId).catch(() => undefined)}>重试保存复盘状态</button></p>}
       {importing && <p role="status" className="global-import-status">正在处理导入记录…</p>}
-      {storedInstruments.some(instrument => !importedInstruments.some(item=>item.instrument.id===instrument.id)) && <details className="navigation-notice"><summary>查看已无成交股票的保留记录</summary>{storedInstruments.filter(instrument => !importedInstruments.some(item=>item.instrument.id===instrument.id)).map(instrument => <button key={instrument.id} onClick={() => openDataCheck(instrument.id, "")}>{instrument.name}（{instrument.symbol}）数据记录</button>)}</details>}
-      {navigationNotice && <p role="alert" className="navigation-notice">{navigationNotice}<button type="button" onClick={() => setNavigationNotice(null)}>关闭提示</button></p>}
+      {navigationNotice && activeView !== "data" && <p role="alert" className="navigation-notice">{navigationNotice}<button type="button" onClick={() => setNavigationNotice(null)}>关闭提示</button></p>}
       <div
         inert={Boolean(dataTarget)}
         className={`workspace ${activeView === "review" ? `${layout.left ? "" : "layout-left-hidden"} ${layout.right ? "" : "layout-right-hidden"}` : ""} ${!showDemo && importedInstruments.length === 0 && activeView === "review" ? "empty-mode" : ""} ${
@@ -4085,6 +4245,8 @@ function isAbortError(error: unknown) {
             ? "library-mode"
             : activeView === "insights"
               ? "insights-mode"
+              : activeView === "data"
+                ? "data-management-mode"
               : ""
         }`}
       >
@@ -4101,6 +4263,18 @@ function isAbortError(error: unknown) {
           <ReviewDashboard
             entries={tradeLibraryEntries}
             colorScheme={settings.colorScheme}
+            instrumentMetadata={instrumentMetadata}
+            fxSnapshot={fxSnapshot}
+            principalEnabled={!showDemo}
+            holdingsQuotesByInstrument={holdingsQuotesByInstrument}
+            holdingsCandlesByInstrument={marketDataCandles}
+            holdingsAsOf={holdingsAsOf}
+            holdingsStaleAfterDays={3}
+            qualityInput={!showDemo ? qualityInput : undefined}
+            onQualityModelChange={updateQualityModel}
+            onOpenDataManagement={openQualityDetails}
+            onRetryDataQuality={retryDataQuality}
+            onOpenDataCheck={openQualityDataCheck}
             onOpenInReview={(instrumentId, episodeId, queueIds) => {
               const summary = importedInstruments.find((item) => item.instrument.id === instrumentId);
               if (!summary || !selectImportedSummary(summary, episodeId)) {
@@ -4114,6 +4288,55 @@ function isAbortError(error: unknown) {
               setLibraryTarget(undefined);
               setActiveView("review");
             }}
+          />
+        </div>
+        <div
+          aria-hidden={activeView !== "data"}
+          className="data-management-page"
+          style={{
+            display: activeView === "data" ? "block" : "none",
+            gridColumn: "1 / -1",
+            minWidth: 0,
+            minHeight: 0,
+            overflow: "auto",
+          }}
+        >
+          <DataManagement
+            importActions={importActions}
+            marketRefresh={{
+              instrumentCount: importedInstruments.length,
+              state: marketDataRefresh,
+              onRefresh: () => void startMarketDataUpdate(undefined, {
+                refreshMetadata: true,
+                batch: true,
+              }),
+              onCancel: cancelMarketDataUpdate,
+              onRetryFailed: () => void startMarketDataUpdate(failedMarketDataIds, {
+                refreshMetadata: true,
+                batch: true,
+              }),
+              onRecoverUnfinished: () => void recoverUnfinishedMarketData(),
+            }}
+            retainedInstruments={storedInstruments}
+            activeInstrumentIds={importedInstruments.map((item) => item.instrument.id)}
+            onOpenDataCheck={(instrumentId) => openDataCheck(instrumentId, "")}
+            importHistoryCount={importHistory.length}
+            onOpenImportHistory={() => setShowImportHistory(true)}
+            importError={importError}
+            navigationNotice={navigationNotice}
+            onDismissNotice={() => {
+              setImportError(null);
+              setNavigationNotice(null);
+            }}
+            qualitySlot={qualityModel ? (
+              <QualityDetails
+                model={qualityModel}
+                onOpenDataManagement={openQualityDetails}
+                onRetryDataQuality={retryDataQuality}
+                onOpenDataCheck={openQualityDataCheck}
+              />
+            ) : undefined}
+            fxSlot={resolvedFxSlot}
           />
         </div>
         {activeView !== "dashboard" && activeView === "library" && (showDemo || importedInstruments.length > 0) ? (
@@ -4220,10 +4443,8 @@ function isAbortError(error: unknown) {
               >
                 <BookOpenCheck size={36} />
                 <h1>{importedInstruments.length ? "请选择其他股票继续复盘" : "从一笔真实交易开始复盘"}</h1>
-                {importedInstruments.length ? <button onClick={() => setStockDrawerOpen(true)}>选择复盘股票</button> : <p>导入成交记录，选择交易回合，逐步回放当时的行情与判断。</p>}
-                <ImportActions {...importActions} />
-                <p className="import-format-help">支持富途 Excel、Tiger PDF、招商证券 PDF；截图恢复支持已适配的 Tiger / 富途成交列表。</p>
-                <small>原文件在浏览器内解析，核对并确认后才会写入交易库。</small>
+                {importedInstruments.length ? <button onClick={() => setStockDrawerOpen(true)}>选择复盘股票</button> : <p>前往数据管理导入成交记录，选择交易回合，逐步回放当时的行情与判断。</p>}
+                <button type="button" className="primary-action" onClick={() => setActiveView("data")}>前往数据管理</button>
               </section>
             ) : selectedImportedInstrument && !selectedEpisode ? (
               <section className="review-workspace review-workspace-empty" role="alert">
@@ -4377,6 +4598,7 @@ function isAbortError(error: unknown) {
       </div>
 
       {dataTarget && <StockDataDialog instrument={dataTarget.instrument} initialAccountId={dataTarget.accountId} cursor={dataTarget.cursor} executions={importedExecutions.filter(execution => execution.instrument.id === dataTarget.instrument.id)} marketSummary={marketDataStatusLabel(marketDataStatuses[dataTarget.instrument.id] ?? "not-requested")} marketDetails={[
+        `当前行情状态：${marketDataLabels[dataTarget.instrument.id] ?? "行情源待连接"}`,
         marketStates[dataTarget.instrument.id]?.dailyMessage ?? "",
         marketStates[dataTarget.instrument.id]?.intradayMessage ?? "",
         `本地日线：${marketStates[dataTarget.instrument.id]?.daily.length ?? 0} 根；小时线：${marketStates[dataTarget.instrument.id]?.intraday.length ?? 0} 根`,

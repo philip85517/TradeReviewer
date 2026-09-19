@@ -1,7 +1,7 @@
 import { csv } from "../lib/import/__fixtures__/tradingview";
 import "fake-indexeddb/auto";
 
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   afterEach,
@@ -1065,8 +1065,10 @@ describe("TradeReviewWorkspace", () => {
       }),
     );
 
+    const stockSidebar = screen.getByRole("heading", { name: "我的交易" }).closest("aside");
+    expect(stockSidebar).not.toBeNull();
     expect(
-      await screen.findByText("小米并发更新名称"),
+      await within(stockSidebar!).findByText("小米并发更新名称"),
     ).toBeInTheDocument();
     expect(
       loadImportedExecutions().map((item) => [

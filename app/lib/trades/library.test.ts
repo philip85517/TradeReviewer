@@ -201,6 +201,27 @@ describe("buildTradeLibraryEntries", () => {
     expect(partial.netPnl).toBeNull();
   });
 
+  it("projects the latest quote without changing financial metrics", () => {
+    const summaries = buildInstrumentTradeSummaries([
+      fill(xpev, "a", "buy", "2025-01-02T14:30:00Z", "100", "10"),
+    ]);
+
+    const [entry] = buildTradeLibraryEntries(
+      summaries,
+      { "US:XPEV": [candle("US:XPEV", "2025-01-06", "22")] },
+      { "US:XPEV": "partial" },
+    );
+
+    expect(entry.latestQuote).toMatchObject({
+      price: "22",
+      currency: "USD",
+      quoteDate: "2025-01-06",
+      provider: "tencent",
+      status: "partial",
+    });
+    expect(entry.netPnl).toBeNull();
+  });
+
   it("requires a complete mark on or after the latest add-on trading day", () => {
     const summaries = buildInstrumentTradeSummaries([
       fill(xpev, "a", "buy", "2025-01-10T14:30:00Z", "100", "10"),

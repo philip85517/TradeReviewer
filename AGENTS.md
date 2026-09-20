@@ -4,6 +4,8 @@ For implementation work, follow [the project development workflow](docs/agents/d
 
 Preserve existing work and original trade data. Use an isolated database for browser tests that write. Do not push, merge, or publish without the user's request.
 
+When the user says “提交修改至远端，并同步到基线” or equivalent, follow the remote integration workflow in [the project development workflow](docs/agents/development-workflow.md): commit on the task branch, push that branch first, create or reuse a PR targeting remote `master`, merge the PR after required checks/review, verify the remote merge, then safely fast-forward local master. That request authorizes the whole sequence; do not substitute a local master merge followed by a direct master push. Report the PR URL and synchronization result. Explicit instructions for the current task override this default.
+
 A completed UI delivery must include a clickable preview URL in the current chat, freshly checked in a real browser with its local service still running, plus verification results and startup instructions. Never claim completion solely from a worker report.
 
 Use [local Markdown task tracking](docs/agents/issue-tracker.md). Follow the user's explicit instructions when they override the default workflow.

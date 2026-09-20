@@ -1,6 +1,6 @@
 import "fake-indexeddb/auto";
 
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -17,6 +17,26 @@ const refreshMocks = vi.hoisted(() => ({
   daily: vi.fn(),
   intraday: vi.fn(),
 }));
+
+const mockRecallRepository = vi.hoisted(() => ({
+  documents: new Map<string, unknown>(),
+}));
+
+vi.mock("../lib/recall/repository", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../lib/recall/repository")>();
+  return {
+    ...actual,
+    createRecallRepository: () => ({
+      load: async (episodeId: string) => mockRecallRepository.documents.get(episodeId) ?? null,
+      fetch: async (episodeId: string) => mockRecallRepository.documents.get(episodeId) ?? null,
+      save: async (document: Record<string, unknown> & { episodeId: string; revision: number }) => {
+        const saved = { ...document, revision: document.revision + 1 };
+        mockRecallRepository.documents.set(document.episodeId, saved);
+        return saved;
+      },
+    }),
+  };
+});
 
 vi.mock("../lib/market/sync-service", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../lib/market/sync-service")>();
@@ -135,16 +155,20 @@ function validMetadataResponse(input: RequestInfo | URL) {
 }
 
 async function openDefaultStockRound(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole("button", { name: "我的交易室" }));
+  await screen.findByRole("region", { name: "统计总览" });
   await user.click(screen.getByRole("button", { name: "交易库" }));
-  const stockToggle = await screen.findByRole("button", { name: /^(展开|收起).*交易回合$/ });
+  const library = await screen.findByRole("region", { name: "交易库" });
+  const stockToggle = within(library).getByRole("button", { name: /^(展开|收起).*交易回合$/ });
   if (stockToggle.getAttribute("aria-expanded") !== "true") await user.click(stockToggle);
-  await user.click(await screen.findByRole("button", { name: /^打开.*第1次交易/ }));
+  await user.click(await within(library).findByRole("button", { name: /^打开.*第1次交易/ }));
 }
 
 describe("TradeReviewWorkspace global refresh seam", () => {
   beforeEach(async () => {
     cleanup();
     vi.clearAllMocks();
+    mockRecallRepository.documents.clear();
     window.localStorage.removeItem("trade-reviewer:market-data-jobs:v1");
     await new Promise<void>((resolve, reject) => {
       const request = indexedDB.deleteDatabase("trade-reviewer");

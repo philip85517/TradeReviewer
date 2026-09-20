@@ -108,7 +108,7 @@ describe("drawing interactions", () => {
     );
 
     for (const name of [
-      "趋势线", "水平线", "垂直线", "矩形区间", "箭头", "价格标注",
+      "趋势线", "水平线", "垂直线", "矩形区间", "箭头", "平行通道", "斐波那契回撤", "价格标注",
       "文字标注", "区间测量", "做多盈亏比", "做空盈亏比",
     ]) {
       expect(screen.getByRole("button", { name })).toBeEnabled();
@@ -147,6 +147,27 @@ describe("drawing interactions", () => {
     expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
       type: "add",
       drawing: expect.objectContaining({ tool: "text", text: "突破确认" }),
+    }));
+  });
+
+  it("toggles text placement from the inline style bar without closing the editor", () => {
+    const onCommand = vi.fn();
+    const { canvas } = renderCanvas({ activeTool: "text", onCommand });
+
+    fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 10, clientY: 100 });
+    const editor = screen.getByRole("textbox", { name: "文字标注" });
+    const placementButton = screen.getByRole("button", { name: "改为自由文字" });
+    fireEvent.pointerDown(placementButton, { pointerId: 1 });
+    fireEvent.click(placementButton);
+
+    expect(screen.getByRole("textbox", { name: "文字标注" })).toBe(editor);
+    expect(screen.getByRole("button", { name: "改为锚定文字" })).toBeInTheDocument();
+    fireEvent.change(editor, { target: { value: "固定在画布" } });
+    fireEvent.keyDown(editor, { key: "Enter" });
+
+    expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
+      type: "add",
+      drawing: expect.objectContaining({ placement: "canvas", text: "固定在画布" }),
     }));
   });
 
@@ -382,6 +403,34 @@ describe("drawing interactions", () => {
         id: "text-1",
         text: "更新注释",
         createdAtCursor: candles[1].time,
+      }),
+    }));
+  });
+
+  it("moves an existing text drawing when the opening gesture becomes a drag", () => {
+    const onCommand = vi.fn();
+    const drawing = savedDrawing({
+      id: "drag-text",
+      tool: "text",
+      text: "移动我",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      style: { color: "#2f80ed", lineWidth: 1.5, opacity: 1 },
+    });
+    const { stage } = renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      onCommand,
+    });
+
+    fireEvent.pointerDown(stage, { pointerId: 15, clientX: 10, clientY: 100 });
+    fireEvent.pointerMove(stage, { pointerId: 15, clientX: 20, clientY: 90 });
+    fireEvent.pointerUp(stage, { pointerId: 15, clientX: 20, clientY: 90 });
+
+    expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
+      type: "replace",
+      drawing: expect.objectContaining({
+        id: "drag-text",
+        anchors: [{ time: candles[0].time, price: 110 }],
       }),
     }));
   });

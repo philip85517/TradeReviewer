@@ -181,6 +181,7 @@ import type { StoredInstrument } from "../lib/storage/sqlite-contracts";
 import type { MarketDataDetails } from "./chart/market-data-popover";
 import { ImportConfirmDialog } from "./import/import-confirm-dialog";
 import { ImportHistoryDialog } from "./import/import-history-dialog";
+import { ImportManagementDrawer } from "./import/import-management-drawer";
 import { ScreenshotReviewDialog } from "./import/screenshot-review-dialog";
 import {
   useScreenshotImport,
@@ -213,6 +214,7 @@ import {
   type EpisodeOption,
   type ReviewChartViewModel,
 } from "./review/review-chart-workspace";
+import { RecallWorkspace } from "./recall/recall-workspace";
 import type {
   ReviewChartLocateRequest,
   ReviewChartLocateResult,
@@ -1058,6 +1060,7 @@ export function TradeReviewWorkspace({
     "stats",
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [importManagementOpen, setImportManagementOpen] = useState(false);
   const [settings, setSettings] = useState<ChartSettings>(
     DEFAULT_CHART_SETTINGS,
   );
@@ -1262,6 +1265,23 @@ export function TradeReviewWorkspace({
       selectedMarketState.intradayInterval,
       timeframe,
     ],
+  );
+  const recallCandlesByTimeframe = useMemo<Partial<Record<Timeframe, Candle[]>>>(
+    () => {
+      if (!selectedImportedInstrument) return {};
+      return Object.fromEntries(
+        (Object.keys(ALL_TIMEFRAMES) as Timeframe[]).map((nextTimeframe) => [
+          nextTimeframe,
+          aggregateVisibleCandles(
+            sourceCandlesForTimeframe(selectedMarketState, nextTimeframe),
+            nextTimeframe,
+            selectedImportedInstrument.instrument.market,
+            selectedMarketState.intradayInterval,
+          ),
+        ]),
+      );
+    },
+    [selectedImportedInstrument, selectedMarketState],
   );
   const firstImportedKnownCursor = useMemo(() => {
     const first = [...importedTimelineCandles].sort(
@@ -1578,8 +1598,12 @@ export function TradeReviewWorkspace({
     refreshDisabledReason:
       !selectedImportedInstrument && (stepping || restoring)
         ? "正在读取演示回放数据"
-        : undefined,
+      : undefined,
   };
+  // The legacy chart remains available for the demo branch below. Keep an
+  // alias so its callbacks retain the imported-data behavior if that branch
+  // is reached without narrowing the outer Recall branch to `never`.
+  const legacySelectedImportedInstrument = selectedImportedInstrument;
   const pendingReviewInstrumentIds = useMemo(() => tradeLibraryEntries.filter((entry) => entry.reviewedEpisodeCount < entry.episodeCount).map((entry) => entry.instrument.id), [tradeLibraryEntries]);
   const tagSuggestions = useMemo(
     () =>
@@ -1702,6 +1726,7 @@ export function TradeReviewWorkspace({
       ? availableEpisodes.find((episode) => episode.id === episodeId)
       : availableEpisodes[0];
     if (!newest) return false;
+    setImportManagementOpen(false);
     setPlaying(false);
     replayRequestSequence.current += 1;
     setStepping(false);
@@ -1730,6 +1755,7 @@ export function TradeReviewWorkspace({
     setReviewQueueIds(undefined);
     if (instrumentId === "demo") {
       if (!showDemo) return;
+      setImportManagementOpen(false);
       setPlaying(false);
       setSelectedInstrumentId("demo");
       setSelectedEpisodeId(REVIEW_ID);
@@ -3905,6 +3931,7 @@ export function TradeReviewWorkspace({
   }
 
   function returnToLibrary() {
+    setImportManagementOpen(false);
     setPlaying(false);
     setLibraryTarget(undefined);
     setLibraryBrowseState((current) =>
@@ -4142,6 +4169,55 @@ export function TradeReviewWorkspace({
     onScreenshot: () => { clearSupplement(); importScreenshotRef.current?.click(); },
   };
 
+  const episodeSidebar = (
+    <EpisodeSidebar
+      pendingReviewInstrumentIds={pendingReviewInstrumentIds}
+      importedInstruments={importedInstruments}
+      showDemo={showDemo}
+      importing={importing}
+      importPhase={importPhase}
+      importError={importError}
+      onImport={(file) => startStatementBatch([file])}
+      onImportFiles={startStatementBatch}
+      onTradingViewImport={(file) => {
+        screenshotImport.cancel();
+        importRequestSequence.current += 1;
+        setPendingImport(null);
+        setImportError(null);
+        void parseImport(file);
+      }}
+      onScreenshotImport={startScreenshotImport}
+      onOpenHistory={() => setShowImportHistory(true)}
+      revealedDemoExecutions={demoSnapshot.executions}
+      selectedInstrumentId={selectedInstrumentId}
+      onSelectInstrument={(id) => {
+        selectInstrument(id);
+        setImportManagementOpen(false);
+        setStockDrawerOpen(false);
+      }}
+      marketDataStatuses={marketDataStatuses}
+      marketDataLabels={marketDataLabels}
+      onUpdateMarketData={(instrumentId) =>
+        void startMarketDataUpdate([instrumentId], {
+          refreshMetadata: true,
+        })
+      }
+      onUpdateAllMarketData={() =>
+        void startMarketDataUpdate(
+          importedInstruments.map((item) => item.instrument.id),
+          { refreshMetadata: true, batch: true },
+        )
+      }
+      onRetryFailedMarketData={() =>
+        void startMarketDataUpdate(failedMarketDataIds, {
+          refreshMetadata: true,
+          batch: true,
+        })
+      }
+      marketDataRefresh={marketDataRefresh}
+    />
+  );
+
   if (storageState !== "ready") {
     const failed = storageState === "error";
     return (
@@ -4221,6 +4297,28 @@ export function TradeReviewWorkspace({
           </button>
         </nav>
         <div className="header-actions">
+          {selectedImportedInstrument && selectedEpisode && activeView === "review" && (
+            <button
+              type="button"
+              className="header-data-check"
+              aria-label="检查/修复数据"
+              onClick={() => openDataCheck(selectedImportedInstrument.instrument.id, selectedEpisode.accountId)}
+            >
+              检查/修复数据
+            </button>
+          )}
+          {selectedImportedInstrument && activeView === "review" && (
+            <button
+              type="button"
+              className="header-data-management"
+              aria-label="打开导入与数据管理"
+              aria-haspopup="dialog"
+              aria-controls="import-management-dialog"
+              onClick={() => setImportManagementOpen(true)}
+            >
+              数据管理
+            </button>
+          )}
           <span className="demo-chip">
             {showDemo && <Sparkles size={13} />}
             {selectedImportedInstrument
@@ -4482,6 +4580,44 @@ export function TradeReviewWorkspace({
               >
                 正在读取本地行情与回放状态…
               </section>
+            ) : selectedImportedInstrument ? (
+              <div className="recall-review-host">
+                <RecallWorkspace
+                  episode={selectedEpisode!}
+                  episodes={episodes}
+                  instrument={selectedImportedInstrument.instrument}
+                  instruments={searchableInstruments}
+                  timeframeAvailability={importedAvailability}
+                  importedTimelineCandles={importedTimelineCandles}
+                  candlesByTimeframe={recallCandlesByTimeframe}
+                  settings={settings}
+                  initialDrawings={drawingHistory.present}
+                  dataDetails={marketDataDetails(selectedMarketState, importedAvailability)}
+                  onEpisodeChange={selectEpisode}
+                  onInstrumentChange={selectInstrument}
+                  onTimeframeChange={(nextTimeframe) => setTimeframe(nextTimeframe)}
+                  onSettingsChange={(next) => {
+                    setSettings(next);
+                    void storageClient.putSettings(next).catch(() => {
+                      setImportError("图表设置未能保存到 SQLite，请稍后重试。");
+                    });
+                  }}
+                  onRefreshMarketData={() => {
+                    void startMarketDataUpdate([
+                      selectedImportedInstrument.instrument.id,
+                    ], {
+                      refreshMetadata: true,
+                    });
+                  }}
+                />
+                {importManagementOpen && (
+                  <ImportManagementDrawer
+                    onClose={() => setImportManagementOpen(false)}
+                  >
+                    {episodeSidebar}
+                  </ImportManagementDrawer>
+                )}
+              </div>
             ) : (
             <ReviewChartWorkspace
               model={viewModel}
@@ -4511,14 +4647,14 @@ export function TradeReviewWorkspace({
               visiblePlan={activePlan}
               activePanelTab={activePanelTab}
               drawerOpen={drawerOpen}
-              onInspectData={selectedImportedInstrument && selectedEpisode ? () => openDataCheck(selectedImportedInstrument.instrument.id, selectedEpisode.accountId) : undefined}
+              onInspectData={legacySelectedImportedInstrument && selectedEpisode ? () => openDataCheck(legacySelectedImportedInstrument.instrument.id, selectedEpisode.accountId) : undefined}
               onEpisodeChange={selectEpisode}
               onTimeframeChange={setReviewTimeframe}
               onSelectInstrument={selectInstrument}
               onRefreshMarketData={() => {
-                if (selectedImportedInstrument) {
+                if (legacySelectedImportedInstrument) {
                   void startMarketDataUpdate([
-                    selectedImportedInstrument.instrument.id,
+                    legacySelectedImportedInstrument.instrument.id,
                   ], {
                     refreshMetadata: true,
                   });

@@ -140,6 +140,44 @@ describe("drawing contracts", () => {
       createdAtCursor: "2025-01-10T00:00:00.000Z",
     });
   });
+
+  it("keeps free text placement and style fields while normalizing", () => {
+    const normalized = normalizeDrawing(
+      {
+        id: "free-note",
+        tool: "text",
+        anchors: [],
+        placement: "canvas",
+        canvasX: 0.72,
+        canvasY: 0.18,
+        text: "两行\n回忆",
+        textWidth: 240,
+        fontSize: 18,
+        background: "rgba(0,0,0,.5)",
+        recallOwnerId: "decision-1",
+        textRevision: 3,
+        style,
+        hidden: false,
+        locked: false,
+        visibleOn: "all",
+        stage: "during-replay",
+      },
+      "episode-1",
+      "2025-01-10T00:00:00.000Z",
+      4,
+    );
+
+    expect(normalized).toMatchObject({
+      placement: "canvas",
+      canvasX: 0.72,
+      canvasY: 0.18,
+      textWidth: 240,
+      fontSize: 18,
+      background: "rgba(0,0,0,.5)",
+      recallOwnerId: "decision-1",
+      textRevision: 3,
+    });
+  });
 });
 
 describe("calculateRiskReward", () => {

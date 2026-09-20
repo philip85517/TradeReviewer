@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import { parseBocRates } from "./boc-parser";
 
 const fixture = readFileSync(
-  resolve(process.cwd(), ".scratch/trading-room-implementation/reports/boc-source.html"),
+  resolve(process.cwd(), "app/lib/fx/__fixtures__/boc-source.html"),
   "utf8",
 );
 

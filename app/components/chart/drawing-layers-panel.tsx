@@ -13,7 +13,7 @@ type Props = {
 };
 
 const labels: Record<NormalizedDrawing["tool"], string> = {
-  "trend-line": "趋势线", "horizontal-line": "水平线", "vertical-line": "垂直线", rectangle: "矩形区间", arrow: "箭头", "price-label": "价格标注", text: "文字标注", measure: "区间测量", "long-risk-reward": "做多盈亏比", "short-risk-reward": "做空盈亏比",
+  "trend-line": "趋势线", "horizontal-line": "水平线", "vertical-line": "垂直线", rectangle: "矩形区间", arrow: "箭头", "parallel-channel": "平行通道", fibonacci: "斐波那契回撤", "price-label": "价格标注", text: "文字标注", measure: "区间测量", "long-risk-reward": "做多盈亏比", "short-risk-reward": "做空盈亏比",
 };
 
 export function DrawingLayersPanel({ drawings, onCommand, onSelectDrawing, selectedDrawingId }: Props) {

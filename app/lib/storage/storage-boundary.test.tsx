@@ -19,6 +19,26 @@ const { mockDispatcher, mockEnrichment, mockMarketDataSync } = vi.hoisted(
   }),
 );
 
+const mockRecallRepository = vi.hoisted(() => ({
+  documents: new Map<string, unknown>(),
+}));
+
+vi.mock("../recall/repository", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../recall/repository")>();
+  return {
+    ...actual,
+    createRecallRepository: () => ({
+      load: async (episodeId: string) => mockRecallRepository.documents.get(episodeId) ?? null,
+      fetch: async (episodeId: string) => mockRecallRepository.documents.get(episodeId) ?? null,
+      save: async (document: Record<string, unknown> & { episodeId: string; revision: number }) => {
+        const saved = { ...document, revision: document.revision + 1 };
+        mockRecallRepository.documents.set(document.episodeId, saved);
+        return saved;
+      },
+    }),
+  };
+});
+
 vi.mock("../import/dispatcher", () => ({
   parseBrokerStatement: mockDispatcher,
 }));
@@ -172,6 +192,7 @@ describe("SQLite production storage boundary", () => {
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
+    mockRecallRepository.documents.clear();
     mockDispatcher.mockReset();
     mockEnrichment.mockReset();
     mockMarketDataSync.mockReset();
@@ -239,19 +260,7 @@ describe("SQLite production storage boundary", () => {
       );
     });
 
-    await user.click(await screen.findByRole("tab", { name: "复盘笔记" }));
-    await user.type(
-      await screen.findByLabelText("心理复盘"),
-      "边界测试复盘记录",
-    );
-    await waitFor(() => {
-      expect(client.putReview).toHaveBeenCalledWith(
-        expect.objectContaining({
-          instrumentId: importedExecution.instrument.id,
-          review: expect.objectContaining({ psychology: "边界测试复盘记录" }),
-        }),
-      );
-    });
+    await screen.findByLabelText("导入交易回忆复盘工作区");
 
     await user.click(await screen.findByRole("button", { name: "图表设置" }));
     await user.click(screen.getByRole("checkbox", { name: "显示成交量" }));

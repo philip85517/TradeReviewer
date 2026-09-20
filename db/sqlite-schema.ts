@@ -183,6 +183,16 @@ alter table executions add column trade_nature text;
 alter table executions add column simulation_run_id text;
 `;
 
+const recallWorkspaceSql = `
+create table if not exists recall_documents (
+  episode_id text primary key,
+  draft_json text not null check (json_valid(draft_json)),
+  finalized_json text check (finalized_json is null or json_valid(finalized_json)),
+  revision integer not null default 0 check (revision >= 0),
+  updated_at text not null
+);
+`;
+
 function migration(version: number, name: string, sql: string): SqliteMigration {
   return {
     version,
@@ -197,4 +207,5 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
   migration(2, "preserve-repository-provenance", repositoryCompletenessSql),
   migration(3, "preserve-api-coverage-details", apiCompletenessSql),
   migration(4, "persist-trade-nature-and-simulation-scope", simulationScopeSql),
+  migration(5, "persist-recall-workspace-drafts-and-finalized-versions", recallWorkspaceSql),
 ];

@@ -15,12 +15,12 @@ const json = (body: unknown, status = 200) =>
 describe("createSqliteHttpClient", () => {
   it("uses same-origin no-store GET requests and parses storage status", async () => {
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
-      json({ schemaVersion: 4, migration: null, counts: { executions: 2 } }),
+      json({ schemaVersion: 5, migration: null, counts: { executions: 2 } }),
     );
     const client = createSqliteHttpClient(fetcher);
 
     await expect(client.getStatus()).resolves.toEqual({
-      schemaVersion: 4,
+      schemaVersion: 5,
       migration: null,
       counts: { executions: 2 },
     });

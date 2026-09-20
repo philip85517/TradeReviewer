@@ -1,0 +1,7 @@
+# Local databases and raw acceptance artifacts
+*.sqlite*
+/reports/*.log
+/reports/*.txt
+/reports/*.json
+/reports/*.png
+/reports/*.html

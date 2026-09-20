@@ -66,7 +66,8 @@ function deferred<T>() {
 
 function expectOnlyLocalFxFetches() {
   const unexpectedRequests = vi.mocked(fetch).mock.calls.filter(([input, init]) => {
-    if (String(input) !== "/api/fx") return true;
+    const path = String(input);
+    if (path !== "/api/fx" && path !== "/api/trading-room/fx") return true;
     const requestInit = (init ?? {}) as RequestInit;
     const method = requestInit.method?.toUpperCase() ?? "GET";
     return requestInit.cache !== "no-store" || method !== "GET";
@@ -1124,8 +1125,10 @@ describe("TradeReviewWorkspace", () => {
       }),
     );
 
+    const stockSidebar = screen.getByRole("heading", { name: "我的交易" }).closest("aside");
+    expect(stockSidebar).not.toBeNull();
     expect(
-      await screen.findByText("小米并发更新名称"),
+      await within(stockSidebar!).findByText("小米并发更新名称"),
     ).toBeInTheDocument();
     expect(
       loadImportedExecutions().map((item) => [

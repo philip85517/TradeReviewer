@@ -1,0 +1,116 @@
+.panel {
+  display: grid;
+  gap: 16px;
+  margin-top: 18px;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 18px;
+  padding: 18px;
+  background: var(--dashboard-card);
+}
+
+.heading,
+.rowHeading,
+.group h3 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.heading h2 {
+  margin: 4px 0 5px;
+  font-size: 20px;
+}
+
+.heading p,
+.quoteDetail,
+.statusReason,
+.empty {
+  margin: 0;
+  color: var(--dashboard-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.eyebrow {
+  color: var(--dashboard-muted);
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.count,
+.group h3 small {
+  color: var(--dashboard-muted);
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.groups,
+.rows {
+  display: grid;
+  gap: 12px;
+}
+
+.group {
+  display: grid;
+  gap: 7px;
+}
+
+.group h3 {
+  margin: 0;
+  align-items: baseline;
+  font-size: 13px;
+}
+
+.row {
+  display: grid;
+  gap: 9px;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--dashboard-card-elevated);
+}
+
+.rowHeading strong,
+.rowHeading span {
+  display: block;
+}
+
+.rowHeading strong { font-size: 13px; }
+.rowHeading span { margin-top: 3px; color: var(--dashboard-muted); font-size: 10px; }
+
+.reviewButton {
+  border: 0;
+  border-radius: 8px;
+  padding: 6px 8px;
+  background: var(--dashboard-soft);
+  color: var(--blue, #32758b);
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.values {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.values div { min-width: 0; }
+.values dt { color: var(--dashboard-muted); font-size: 10px; }
+.values dd { margin: 3px 0 0; font-size: 12px; font-weight: 650; overflow-wrap: anywhere; }
+.available { color: var(--dashboard-positive); }
+.unavailable { color: var(--gold, #a56e14); }
+.statusReason { color: var(--gold, #a56e14); }
+
+@media (max-width: 620px) {
+  .panel { margin-top: 14px; border-radius: 13px; padding: 14px; }
+  .heading { display: grid; gap: 6px; }
+  .values { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rowHeading { display: grid; gap: 8px; }
+  .reviewButton { justify-self: start; }
+}

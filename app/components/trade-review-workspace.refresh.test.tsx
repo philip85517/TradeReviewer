@@ -1,6 +1,6 @@
 import "fake-indexeddb/auto";
 
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -17,6 +17,26 @@ const refreshMocks = vi.hoisted(() => ({
   daily: vi.fn(),
   intraday: vi.fn(),
 }));
+
+const mockRecallRepository = vi.hoisted(() => ({
+  documents: new Map<string, unknown>(),
+}));
+
+vi.mock("../lib/recall/repository", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../lib/recall/repository")>();
+  return {
+    ...actual,
+    createRecallRepository: () => ({
+      load: async (episodeId: string) => mockRecallRepository.documents.get(episodeId) ?? null,
+      fetch: async (episodeId: string) => mockRecallRepository.documents.get(episodeId) ?? null,
+      save: async (document: Record<string, unknown> & { episodeId: string; revision: number }) => {
+        const saved = { ...document, revision: document.revision + 1 };
+        mockRecallRepository.documents.set(document.episodeId, saved);
+        return saved;
+      },
+    }),
+  };
+});
 
 vi.mock("../lib/market/sync-service", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../lib/market/sync-service")>();
@@ -135,15 +155,20 @@ function validMetadataResponse(input: RequestInfo | URL) {
 }
 
 async function openDefaultStockRound(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole("button", { name: "我的交易室" }));
+  await screen.findByRole("region", { name: "统计总览" });
   await user.click(screen.getByRole("button", { name: "交易库" }));
-  await user.click(await screen.findByRole("button", { name: /^展开.*交易回合$/ }));
-  await user.click(await screen.findByRole("button", { name: /^打开.*第1次交易/ }));
+  const library = await screen.findByRole("region", { name: "交易库" });
+  const stockToggle = within(library).getByRole("button", { name: /^(展开|收起).*交易回合$/ });
+  if (stockToggle.getAttribute("aria-expanded") !== "true") await user.click(stockToggle);
+  await user.click(await within(library).findByRole("button", { name: /^打开.*第1次交易/ }));
 }
 
 describe("TradeReviewWorkspace global refresh seam", () => {
   beforeEach(async () => {
     cleanup();
     vi.clearAllMocks();
+    mockRecallRepository.documents.clear();
     window.localStorage.removeItem("trade-reviewer:market-data-jobs:v1");
     await new Promise<void>((resolve, reject) => {
       const request = indexedDB.deleteDatabase("trade-reviewer");
@@ -158,6 +183,13 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     cleanup();
     vi.restoreAllMocks();
   });
+
+  async function openDataManagement() {
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole("button", { name: "数据管理" }));
+    await screen.findByRole("region", { name: "数据管理" });
+    return user;
+  }
 
   it("cancels a running batch, persists a terminal job, and waits before the next batch", async () => {
     const providerGate = deferred<void>();
@@ -212,10 +244,10 @@ describe("TradeReviewWorkspace global refresh seam", () => {
       />,
     );
 
+    const user = await openDataManagement();
     const updateButton = await screen.findByRole("button", {
       name: "更新全部数据",
     });
-    const user = userEvent.setup();
     await user.click(updateButton);
     await waitFor(() => {
       expect(refreshMocks.daily).toHaveBeenCalledOnce();
@@ -299,6 +331,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
       />,
     );
 
+    await openDataManagement();
     expect(await screen.findByText(/已保存行情状态/)).toBeVisible();
     expect(screen.getByText("更新完成 0 个标的")).toBeVisible();
     expect(screen.getByText("部分可用 1 个标的")).toBeVisible();
@@ -362,6 +395,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
       />,
     );
 
+    await openDataManagement();
     expect(await screen.findByText("部分可用 1 个标的")).toBeVisible();
     await openDefaultStockRound(user);
     await screen.findByRole("button", { name: "行情数据详情" });
@@ -372,10 +406,15 @@ describe("TradeReviewWorkspace global refresh seam", () => {
       expect(refreshMocks.daily).toHaveBeenCalledOnce();
       expect(refreshMocks.intraday).toHaveBeenCalledOnce();
     });
+    await user.click(screen.getByRole("button", { name: "数据管理" }));
+    await screen.findByRole("region", { name: "数据管理" });
     await waitFor(() =>
       expect(screen.getByText("更新完成 1 个标的")).toBeVisible(),
     );
     expect(screen.getByText("部分可用 0 个标的")).toBeVisible();
+    await openDefaultStockRound(user);
+    await screen.findByRole("button", { name: "行情数据详情" });
+    await user.click(screen.getByRole("button", { name: "行情数据详情" }));
     expect(screen.getByRole("region", { name: "1h 行情详情" })).toBeVisible();
     expect(screen.queryByRole("region", { name: "15m 行情详情" })).not.toBeInTheDocument();
     expect(screen.queryByText("待重试 0 个标的")).not.toBeInTheDocument();
@@ -409,6 +448,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
       />,
     );
 
+    await openDataManagement();
     expect(await screen.findByText("更新完成 1 个标的")).toBeVisible();
     await openDefaultStockRound(user);
     await screen.findByRole("button", { name: "行情数据详情" });
@@ -419,6 +459,8 @@ describe("TradeReviewWorkspace global refresh seam", () => {
       expect(refreshMocks.daily).toHaveBeenCalledOnce();
       expect(refreshMocks.intraday).toHaveBeenCalledOnce();
     });
+    await user.click(screen.getByRole("button", { name: "数据管理" }));
+    await screen.findByRole("region", { name: "数据管理" });
     await waitFor(() =>
       expect(screen.getByText("更新失败 1 个标的")).toBeVisible(),
     );
@@ -478,6 +520,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
       />,
     );
 
+    await openDataManagement();
     const globalRefresh = await screen.findByRole("button", {
       name: "更新全部数据",
     });
@@ -494,6 +537,8 @@ describe("TradeReviewWorkspace global refresh seam", () => {
 
     expect(refreshMocks.daily).toHaveBeenCalledOnce();
     expect(refreshMocks.intraday).toHaveBeenCalledOnce();
+    await user.click(screen.getByRole("button", { name: "数据管理" }));
+    await screen.findByRole("region", { name: "数据管理" });
     expect(
       screen.getByRole("button", { name: "正在更新全部行情" }),
     ).toBeDisabled();
@@ -509,7 +554,6 @@ describe("TradeReviewWorkspace global refresh seam", () => {
   });
 
   it("offers recovery for a saved snapshot with two unfinished instruments and requests only those two", async () => {
-    const user = userEvent.setup();
     const complete = refreshExecutionFor("COMPLETE");
     const pendingOne = refreshExecutionFor("PENDING1");
     const pendingTwo = refreshExecutionFor("PENDING2");
@@ -549,6 +593,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
       />,
     );
 
+    const user = await openDataManagement();
     expect(await screen.findByText("未完成 2 个标的")).toBeVisible();
     const recover = screen.getByRole("button", { name: "恢复未完成行情" });
     expect(recover).toBeEnabled();
@@ -569,7 +614,6 @@ describe("TradeReviewWorkspace global refresh seam", () => {
   });
 
   it("shows and recovers an inventory instrument with no saved job", async () => {
-    const user = userEvent.setup();
     const complete = refreshExecutionFor("COMPLETE");
     const missing = refreshExecutionFor("MISSING");
     saveImportedExecutions([complete, missing]);
@@ -606,6 +650,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
       />,
     );
 
+    const user = await openDataManagement();
     expect(await screen.findByText("未完成 1 个标的")).toBeVisible();
     await user.click(screen.getByRole("button", { name: "恢复未完成行情" }));
     await waitFor(() => {

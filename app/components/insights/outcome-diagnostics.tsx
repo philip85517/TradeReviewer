@@ -101,7 +101,7 @@ function DiagnosticCard({
         时间范围：{diagnostic.timeRange.start}—{diagnostic.timeRange.end}
       </p>
       <p style={{ margin: "6px 0", color: "#8fa5bd", fontSize: 11 }}>
-        阈值：同侧样本至少 {diagnostic.threshold.minimumSideSampleCount} 笔；尾部占比 {diagnostic.threshold.tailSharePercent}%；广度阈值 {diagnostic.threshold.breadthThresholdPercent}%；最大/中位绝对收益率至少 {diagnostic.threshold.maxToMedianRatio} 倍。
+        阈值：同侧样本至少 {diagnostic.threshold.minimumSideSampleCount} 笔；尾部占比 {diagnostic.threshold.tailSharePercent}%；亏损广度至少/低于 {diagnostic.threshold.breadthThresholdPercent}% 的边界按规则区分普遍与集中；最大/中位绝对收益率至少 {diagnostic.threshold.maxToMedianRatio} 倍时可独立触发尾部诊断。
       </p>
       <p style={{ margin: "6px 0", color: "#8fa5bd", fontSize: 11 }}>计算 v{diagnostic.calculationVersion} · 口径：费用后收益率 · 尾部方法：最差/最佳 20% 按绝对收益率取整</p>
       <div style={{ display: "grid", gap: 5, marginTop: 10 }}>

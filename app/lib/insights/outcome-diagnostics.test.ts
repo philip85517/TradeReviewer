@@ -122,4 +122,21 @@ describe("buildOutcomeDiagnosticsReport", () => {
     expect(report.metrics.lossBreadthPercent).toBe("40");
     expect(report.metrics.profitBreadthPercent).toBe("40");
   });
+
+  it("does not call a 50% broad loss sample tail-driven without the outlier rule", () => {
+    const facts = [
+      ...Array.from({ length: 4 }, (_, index) => fact(`large-loss-${index}`, "-3.9", index + 1)),
+      ...Array.from({ length: 7 }, (_, index) => fact(`medium-loss-${index}`, "-1.6", index + 5)),
+      ...Array.from({ length: 9 }, (_, index) => fact(`small-loss-${index}`, "-0.01", index + 12)),
+      ...Array.from({ length: 20 }, (_, index) => fact(`profit-${index}`, "1", index + 21)),
+    ];
+    const report = buildOutcomeDiagnosticsReport(
+      buildOutcomeStructureReport(facts, []),
+      facts,
+    );
+
+    expect(report.metrics.lossBreadthPercent).toBe("50");
+    expect(Number(report.metrics.lossTailConcentrationPercent)).toBeGreaterThan(50);
+    expect(report.diagnostics.some(({ id }) => id === "loss-tail")).toBe(false);
+  });
 });

@@ -184,7 +184,7 @@ function buildSideDiagnostic(
   const hasOutlier = !medianAbsolute.isZero() && maximum.div(medianAbsolute).gte(MAX_TO_MEDIAN_RATIO);
 
   if (side === "loss") {
-    if (hasLargeTail || hasOutlier) {
+    if ((hasLargeTail && breadth.lt(BREADTH_THRESHOLD_PERCENT)) || hasOutlier) {
       return makeDiagnostic(
         "loss-tail",
         side,

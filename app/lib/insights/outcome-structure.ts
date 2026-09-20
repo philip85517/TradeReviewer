@@ -22,8 +22,23 @@ export type OutcomeHistogramBin = {
   label: string;
   startPercent: string;
   endPercent: string;
+  tone: "loss" | "flat" | "profit" | "mixed";
   count: number;
   episodeIds: string[];
+};
+
+export type OutcomeOddsWinRatePoint = {
+  id: string;
+  label: string;
+  sampleCount: number;
+  winRatePercent: string | null;
+  odds: string | null;
+  episodeIds: string[];
+};
+
+export type OutcomeBreakEvenPoint = {
+  winRatePercent: string;
+  odds: string;
 };
 
 export type OutcomeStructureReport = {
@@ -61,7 +76,12 @@ export type OutcomeStructureReport = {
   };
   histogram: {
     zeroBoundaryPercent: "0";
+    zeroPositionPercent: string | null;
     bins: OutcomeHistogramBin[];
+  };
+  oddsWinRate: {
+    point: OutcomeOddsWinRatePoint;
+    breakEvenLine: OutcomeBreakEvenPoint[];
   };
   buckets: OutcomeBucket[];
   calculationVersion: 1;
@@ -83,6 +103,23 @@ function percentOf(count: number, total: number) {
   return total === 0
     ? null
     : new Decimal(count).div(total).times(100).toString();
+}
+
+function histogramTone(start: Decimal, end: Decimal): OutcomeHistogramBin["tone"] {
+  if (end.lt(0)) return "loss";
+  if (start.gt(0)) return "profit";
+  if (start.eq(0) && end.eq(0)) return "flat";
+  return "mixed";
+}
+
+function breakEvenLine(): OutcomeBreakEvenPoint[] {
+  return ["10", "25", "40", "50", "60", "75", "90"].map((winRatePercent) => {
+    const winRate = new Decimal(winRatePercent);
+    return {
+      winRatePercent,
+      odds: new Decimal(100).minus(winRate).div(winRate).toString(),
+    };
+  });
 }
 
 function bucket(
@@ -118,6 +155,7 @@ function buildHistogram(facts: InsightEpisodeFact[]) {
         label: `${displayBoundary(min)}% 至 ${displayBoundary(max)}%`,
         startPercent: min.toString(),
         endPercent: max.toString(),
+        tone: histogramTone(min, max),
         count: facts.length,
         episodeIds: facts.map(({ episodeId }) => episodeId),
       },
@@ -133,6 +171,7 @@ function buildHistogram(facts: InsightEpisodeFact[]) {
       label: `${displayBoundary(start)}% 至 ${displayBoundary(end)}%`,
       startPercent: start.toString(),
       endPercent: end.toString(),
+      tone: histogramTone(start, end),
       count: 0,
       episodeIds: [] as string[],
     } satisfies OutcomeHistogramBin;
@@ -151,6 +190,7 @@ function buildHistogram(facts: InsightEpisodeFact[]) {
 export function buildOutcomeStructureReport(
   inputFacts: InsightEpisodeFact[],
   upstreamExclusions: InsightEpisodeExclusion[],
+  label = "总体",
 ): OutcomeStructureReport {
   const excluded = [...upstreamExclusions];
   const facts = inputFacts.filter((fact) => {
@@ -200,6 +240,14 @@ export function buildOutcomeStructureReport(
   const averageProfit = profitValues.length > 0 ? totalProfit.div(profitValues.length) : null;
   const averageLoss = lossValues.length > 0 ? lossValues.reduce((total, value) => total.plus(value), new Decimal(0)).div(lossValues.length) : null;
   const nonFlatCount = profit.length + loss.length;
+  const values = facts.map(({ returnPercent }) => new Decimal(returnPercent as string));
+  const minimum = values.length > 0 ? Decimal.min(...values) : null;
+  const maximum = values.length > 0 ? Decimal.max(...values) : null;
+  const zeroPositionPercent = minimum !== null && maximum !== null && minimum.lte(0) && maximum.gte(0)
+    ? minimum.equals(maximum)
+      ? "50"
+      : new Decimal(0).minus(minimum).div(maximum.minus(minimum)).times(100).toString()
+    : null;
   return {
     metricBasis: "return-percent",
     sampleCount: facts.length,
@@ -230,7 +278,23 @@ export function buildOutcomeStructureReport(
     },
     histogram: {
       zeroBoundaryPercent: "0",
+      zeroPositionPercent,
       bins: buildHistogram(facts),
+    },
+    oddsWinRate: {
+      point: {
+        id: label,
+        label,
+        sampleCount: facts.length,
+        winRatePercent: nonFlatCount === 0
+          ? null
+          : percentOf(profit.length, nonFlatCount),
+        odds: averageProfit && averageLoss && !averageLoss.isZero()
+          ? averageProfit.div(averageLoss.abs()).toString()
+          : null,
+        episodeIds: facts.map(({ episodeId }) => episodeId),
+      },
+      breakEvenLine: breakEvenLine(),
     },
     buckets: [
       bucket("small-loss", "小亏", "loss", smallLoss, facts.length),

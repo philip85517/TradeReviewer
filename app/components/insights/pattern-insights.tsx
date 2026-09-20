@@ -323,6 +323,15 @@ export function PatternInsights({
   const descriptive = report.descriptiveStatistics.filter(matches);
   const hasAny =
     formal.length > 0 || early.length > 0 || descriptive.length > 0;
+  const outcomeExclusions = report.outcomeStructure?.excluded ?? [];
+  const exclusions = Array.from(
+    new Map(
+      [...report.excluded, ...outcomeExclusions].map((item) => [
+        `${item.episodeId}:${item.reason}`,
+        item,
+      ]),
+    ).values(),
+  );
 
   return (
     <section className="pattern-insights" aria-label="模式洞察页面">
@@ -522,7 +531,7 @@ export function PatternInsights({
         </section>
       )}
 
-      <ExclusionList exclusions={report.excluded} />
+      <ExclusionList exclusions={exclusions} />
     </section>
   );
 }

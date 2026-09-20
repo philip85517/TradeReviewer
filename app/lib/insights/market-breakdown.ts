@@ -6,6 +6,10 @@ import {
   buildOutcomeStructureReport,
   type OutcomeStructureReport,
 } from "./outcome-structure";
+import {
+  buildOutcomeDiagnosticsReport,
+  type OutcomeDiagnosticsReport,
+} from "./outcome-diagnostics";
 
 export type MarketBreakdownMarket = "US" | "HK" | "CN-SH" | "CN-SZ" | "unknown";
 
@@ -15,6 +19,7 @@ export type MarketBreakdownGroup = {
   description: string;
   facts: InsightEpisodeFact[];
   report: OutcomeStructureReport;
+  diagnostics: OutcomeDiagnosticsReport;
   excluded: InsightEpisodeExclusion[];
   sampleCount: number;
   descriptiveOnly: boolean;
@@ -70,11 +75,12 @@ export function buildMarketBreakdownReport(
         (exclusion) => exclusionMarket(exclusion) === definition.market,
       ),
     ];
-    const report = buildOutcomeStructureReport(facts, excluded);
+    const report = buildOutcomeStructureReport(facts, excluded, definition.label);
     return {
       ...definition,
       facts,
       report,
+      diagnostics: buildOutcomeDiagnosticsReport(report, facts),
       excluded: report.excluded,
       sampleCount: report.sampleCount,
       descriptiveOnly: report.sampleCount < 3,

@@ -16,4 +16,3 @@
 - [ ] 验收前后核对隔离数据库中的原始交易数量与内容摘要不变
 
 **验收口径：** 详见 [../spec.md](../spec.md) 的 User Stories、Implementation Decisions 和 Testing Decisions。实现完成后必须由协调者在真实浏览器中独立检查图表、分组筛选、证据跳转、窄屏可读性和控制台错误，再声明完成。
-

@@ -58,6 +58,97 @@ function Metric({ label, value }: { label: string; value: string | null }) {
   );
 }
 
+function plotCoordinate(value: string, maximum: number) {
+  const number = Number(value);
+  return Number.isFinite(number) ? Math.max(0, Math.min(100, number / maximum * 100)) : null;
+}
+
+function OddsWinRatePlot({
+  report,
+  factsByEpisode,
+  onOpenEpisode,
+}: {
+  report: OutcomeStructureReport;
+  factsByEpisode: Map<string, InsightEpisodeFact>;
+  onOpenEpisode: Props["onOpenEpisode"];
+}) {
+  const point = report.oddsWinRate.point;
+  const maximumOdds = Math.max(
+    5,
+    ...report.oddsWinRate.breakEvenLine.map(({ odds }) => Number(odds)),
+    Number(point.odds ?? 0),
+  );
+  const toSvgPoint = (winRatePercent: string, odds: string) => {
+    const x = plotCoordinate(winRatePercent, 100);
+    const y = plotCoordinate(odds, maximumOdds);
+    return x === null || y === null ? null : `${x},${100 - y}`;
+  };
+  const linePoints = report.oddsWinRate.breakEvenLine
+    .map(({ winRatePercent, odds }) => toSvgPoint(winRatePercent, odds))
+    .filter((value): value is string => value !== null)
+    .join(" ");
+  const pointCoordinates = point.winRatePercent !== null && point.odds !== null
+    ? toSvgPoint(point.winRatePercent, point.odds)
+    : null;
+  const firstFact = point.episodeIds.map((id) => factsByEpisode.get(id)).find(Boolean);
+  const openPoint = () => {
+    if (firstFact) onOpenEpisode(firstFact.instrumentId, firstFact.episodeId);
+  };
+
+  return (
+    <div className={styles.oddsPlot}>
+      <h4>胜率—赔率关系</h4>
+      <svg
+        viewBox="0 0 100 100"
+        role="img"
+        aria-label="胜率—赔率散点图，含盈亏平衡线"
+      >
+        <line className={styles.oddsPlotGrid} x1="0" x2="100" y1="25" y2="25" />
+        <line className={styles.oddsPlotGrid} x1="0" x2="100" y1="50" y2="50" />
+        <line className={styles.oddsPlotGrid} x1="0" x2="100" y1="75" y2="75" />
+        <polyline
+          className={styles.breakEvenLine}
+          points={linePoints}
+          aria-label="盈亏平衡线"
+        />
+        {pointCoordinates && (
+          <circle
+            className={styles.oddsPoint}
+            cx={pointCoordinates.split(",")[0]}
+            cy={pointCoordinates.split(",")[1]}
+            r="3"
+            role="button"
+            tabIndex={0}
+            aria-label={`${point.label}，非持平胜率 ${displayNumber(point.winRatePercent, "%")}，赔率 ${displayNumber(point.odds)}，${point.sampleCount} 个回合`}
+            onClick={openPoint}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                openPoint();
+              }
+            }}
+          />
+        )}
+      </svg>
+      <p className={styles.plotNote}>
+        横轴：非持平胜率；纵轴：平均盈利 ÷ 平均亏损绝对值。虚线为盈亏平衡线，点为{point.label}（{point.sampleCount} 笔）；点击点可打开代表性回合。
+      </p>
+      <table className={styles.accessibleTable}>
+        <caption>胜率—赔率关系的可读替代表格</caption>
+        <thead><tr><th>分组</th><th>非持平胜率</th><th>赔率</th><th>样本</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>{point.label}</td>
+            <td>{displayNumber(point.winRatePercent, "%")}</td>
+            <td>{displayNumber(point.odds)}</td>
+            <td>{point.sampleCount}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export function OutcomeStructure({ report, facts, onOpenEpisode }: Props) {
   const factsByEpisode = new Map(facts.map((fact) => [fact.episodeId, fact]));
   const maxBinCount = Math.max(1, ...report.histogram.bins.map((bin) => bin.count));
@@ -92,32 +183,49 @@ export function OutcomeStructure({ report, facts, onOpenEpisode }: Props) {
 
       <div className={styles.subsection}>
         <h3>收益率分布（零收益线：0%）</h3>
-        <div className={styles.histogram} aria-label="费用后收益率直方图">
-          {report.histogram.bins.map((bin) => (
-            <details key={bin.id}>
-              <summary>{bin.label} · {bin.count} 笔</summary>
-              <div className={styles.barArea}>
-                <div className={styles.bar} style={{ height: Math.max(5, (bin.count / maxBinCount) * 100) + "%" }} aria-hidden="true" />
-              </div>
-              <span className={styles.barLabel}>点击展开回合</span>
-              {bin.episodeIds.map((episodeId) => {
-                const fact = factsByEpisode.get(episodeId);
-                if (!fact) return null;
-                return (
-                  <button className={styles.episode} key={episodeId} type="button" aria-label={"查看分布区间 " + fact.instrumentName + " " + fact.instrumentSymbol} onClick={() => onOpenEpisode(fact.instrumentId, fact.episodeId)}>
-                    <span>{fact.instrumentName}（{fact.instrumentSymbol}）</span>
-                    <b>{displayNumber(fact.returnPercent, "%")}</b>
-                  </button>
-                );
-              })}
-            </details>
-          ))}
+        <div className={styles.histogramFrame}>
+          {report.histogram.zeroPositionPercent !== null && (
+            <div className={styles.zeroLine} style={{ left: `${report.histogram.zeroPositionPercent}%` }} aria-label="零收益参考线 0%"><span>0%</span></div>
+          )}
+          <div className={styles.histogram} aria-label="费用后收益率直方图">
+            {report.histogram.bins.map((bin) => {
+              const barClass = {
+                loss: styles.barLoss,
+                flat: styles.barFlat,
+                profit: styles.barProfit,
+                mixed: styles.barMixed,
+              }[bin.tone];
+              return (
+                <details key={bin.id}>
+                  <summary>{bin.label} · {bin.count} 笔</summary>
+                  <div className={styles.barArea}>
+                    <div className={`${styles.bar} ${barClass}`} style={{ height: Math.max(5, (bin.count / maxBinCount) * 100) + "%" }} aria-hidden="true" />
+                  </div>
+                  <span className={styles.barLabel}>点击展开回合</span>
+                  {bin.episodeIds.map((episodeId) => {
+                    const fact = factsByEpisode.get(episodeId);
+                    if (!fact) return null;
+                    return (
+                      <button className={styles.episode} key={episodeId} type="button" aria-label={"查看分布区间 " + fact.instrumentName + " " + fact.instrumentSymbol} onClick={() => onOpenEpisode(fact.instrumentId, fact.episodeId)}>
+                        <span>{fact.instrumentName}（{fact.instrumentSymbol}）</span>
+                        <b>{displayNumber(fact.returnPercent, "%")}</b>
+                      </button>
+                    );
+                  })}
+                </details>
+              );
+            })}
+          </div>
         </div>
         <table className={styles.accessibleTable}>
           <caption>收益率分布的可读替代表格</caption>
           <thead><tr><th>区间</th><th>笔数</th><th>回合入口</th></tr></thead>
           <tbody>{report.histogram.bins.map((bin) => <tr key={bin.id + "-row"}><td>{bin.label}</td><td>{bin.count}</td><td>{bin.episodeIds.length ? "可展开查看" : "—"}</td></tr>)}</tbody>
         </table>
+      </div>
+
+      <div className={styles.subsection}>
+        <OddsWinRatePlot report={report} factsByEpisode={factsByEpisode} onOpenEpisode={onOpenEpisode} />
       </div>
 
       <div className={styles.subsection}>
@@ -136,7 +244,22 @@ export function OutcomeStructure({ report, facts, onOpenEpisode }: Props) {
         </div>
       </div>
 
-      {report.excluded.length > 0 && <p className={styles.note}>另有 {report.excluded.length} 个回合未进入收益结构统计；缺失收益率显示为未知，不按 0 计入。</p>}
+      {report.excluded.length > 0 && (
+        <details className={styles.subsection}>
+          <summary className={styles.note}>另有 {report.excluded.length} 个回合未进入收益结构统计；缺失收益率显示为未知，不按 0 计入。</summary>
+          <div className={styles.bucketBody}>
+            {report.excluded.map((item) => {
+              const fact = factsByEpisode.get(item.episodeId);
+              return (
+                <div key={`${item.episodeId}:${item.reason}`} className={styles.episode}>
+                  <span>{item.instrumentName} · {item.reasonLabel}</span>
+                  {fact && <button type="button" onClick={() => onOpenEpisode(fact.instrumentId, fact.episodeId)}>查看回合</button>}
+                </div>
+              );
+            })}
+          </div>
+        </details>
+      )}
     </section>
   );
 }

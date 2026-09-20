@@ -3,7 +3,7 @@
 ## 基线
 
 - 工作区：`/Users/zhoulin/.codex/worktrees/cc9c/TradeReview`
-- 分支：由当前 Codex worktree 管理；未推送、未合并
+- 分支：`codex/trade-outcome-distribution-insights`；已推送 PR，等待最终合并
 - 原始父任务和规格：`.scratch/trade-outcome-distribution-insights/`，保持不修改
 - 依赖：已执行 `npm ci`
 - 定向单测基线：`npm run test:unit -- app/lib/insights/insight-engine.test.ts app/lib/insights/episode-facts.test.ts app/components/insights/pattern-insights.test.tsx` — 3 files / 20 tests passed
@@ -36,7 +36,7 @@
 
 ## 02/03/04 协调者复验
 
-- 相关 Vitest：10 files / 45 tests passed
+- 相关 Vitest：10 files / 47 tests passed（含 review 修复边界测试）
 - `npm run typecheck`：passed
 - 相关 ESLint：passed with 0 errors
 - `git diff --check`：passed
@@ -45,7 +45,9 @@
 ## 05 协调者整合与浏览器验收
 
 - 新增可访问分组切换：`总体`、`IPO / 非新股`、`市场`；当前只渲染选中分组，保留既有模式洞察分类、范围筛选与回合回调
-- 相关 Vitest：10 files / 46 tests passed
+- 增加胜率—赔率散点图、盈亏平衡线、收益率直方图零收益参考线和正负语义色
+- 分组补齐尾部诊断、收益桶回合入口和具体排除原因
+- 相关 Vitest：10 files / 47 tests passed
 - 类型检查：`npm run typecheck` — passed
 - 相关 ESLint：passed with 0 errors
 - `git diff --check` — passed

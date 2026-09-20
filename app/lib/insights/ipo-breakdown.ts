@@ -3,6 +3,10 @@ import {
   buildOutcomeStructureReport,
   type OutcomeStructureReport,
 } from "./outcome-structure";
+import {
+  buildOutcomeDiagnosticsReport,
+  type OutcomeDiagnosticsReport,
+} from "./outcome-diagnostics";
 
 export type IpoBreakdownGroupId = "ipo" | "non-ipo" | "unknown";
 
@@ -20,6 +24,8 @@ export type IpoBreakdownGroup = {
   comparableSampleCount: number;
   excludedCount: number;
   outcome: OutcomeStructureReport;
+  diagnostics: OutcomeDiagnosticsReport;
+  facts: InsightEpisodeFact[];
   excluded: IpoBreakdownExclusion[];
   evidence: Array<{ episodeId: string; evidenceIds: string[]; labels: string[] }>;
   reasons: Array<{ episodeId: string; reason: string }>;
@@ -57,6 +63,7 @@ function groupFor(facts: InsightEpisodeFact[], id: IpoBreakdownGroupId, total: n
         ? "IPO 成本证据链不完整，未进入正式收益比较"
         : "收益率不可用，未进入正式收益比较",
     }));
+  const outcome = buildOutcomeStructureReport(comparable, [], LABELS[id]);
   return {
     id,
     classificationLabel: LABELS[id],
@@ -64,7 +71,9 @@ function groupFor(facts: InsightEpisodeFact[], id: IpoBreakdownGroupId, total: n
     coveragePercent: percent(members.length, total),
     comparableSampleCount: comparable.length,
     excludedCount: excluded.length,
-    outcome: buildOutcomeStructureReport(comparable, []),
+    outcome,
+    diagnostics: buildOutcomeDiagnosticsReport(outcome, comparable),
+    facts: members,
     excluded,
     evidence: members
       .filter((fact) => (fact.ipoEvidence?.length ?? 0) > 0)

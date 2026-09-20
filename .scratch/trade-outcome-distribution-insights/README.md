@@ -4,6 +4,5 @@
 
 - 规格：[spec.md](spec.md)
 - 可领取任务：[issues/01-outcome-distribution-and-market-ipo-insights.md](issues/01-outcome-distribution-and-market-ipo-insights.md)
-- 状态：ready-for-agent
-- 当前阶段：已完成设计，等待实现
-
+- 状态：completed
+- 当前阶段：已完成实现、验证和浏览器验收

@@ -159,6 +159,9 @@ describe("PatternInsights", () => {
     expect(screen.getByText("总胜率（含持平）")).toBeInTheDocument();
     expect(screen.getByText("收益率分布的可读替代表格")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /收益率分布（零收益线：0%）/ })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "胜率—赔率散点图，含盈亏平衡线" })).toBeInTheDocument();
+    expect(screen.getByLabelText("零收益参考线 0%")).toBeInTheDocument();
+    expect(screen.getByText("胜率—赔率关系的可读替代表格")).toBeInTheDocument();
     expect(screen.getByText(/盈利侧：可可靠分类/)).toBeInTheDocument();
 
     await user.click(screen.getByText(/大赚 · 1 笔/));
@@ -238,7 +241,7 @@ describe("PatternInsights", () => {
       />,
     );
 
-    const odds = screen.getByText("赔率").parentElement;
+    const odds = screen.getByText("赔率", { selector: "dt" }).parentElement;
     expect(odds).toHaveTextContent("赔率—");
     expect(odds).not.toHaveTextContent("赔率0");
   });

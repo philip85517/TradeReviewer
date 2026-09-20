@@ -11,9 +11,8 @@
 
 ## 当前状态
 
-- 01：ready-for-agent，已派发给 Luna
-- 02：ready-for-agent，blocked by 01
-- 03：ready-for-agent，blocked by 01
-- 04：ready-for-agent，blocked by 01
-- 05：ready-for-agent，blocked by 02、03、04
-
+- 01：completed
+- 02：completed
+- 03：completed
+- 04：completed
+- 05：completed

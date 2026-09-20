@@ -3,6 +3,7 @@ import type {
   MarketBreakdownGroup,
   MarketBreakdownReport,
 } from "../../lib/insights/market-breakdown";
+import { OutcomeDiagnostics } from "./outcome-diagnostics";
 
 type Props = {
   report: MarketBreakdownReport;
@@ -24,6 +25,35 @@ function displayNumber(value: string | null, suffix = "") {
 
 function Metric({ label, value }: { label: string; value: string }) {
   return <span>{label}{value}</span>;
+}
+
+function BucketLinks({
+  group,
+  bucket,
+  onOpenEpisode,
+}: {
+  group: MarketBreakdownGroup;
+  bucket: MarketBreakdownGroup["report"]["buckets"][number];
+  onOpenEpisode: Props["onOpenEpisode"];
+}) {
+  const factsByEpisode = new Map(group.facts.map((fact) => [fact.episodeId, fact]));
+  const facts = bucket.episodeIds
+    .map((episodeId) => factsByEpisode.get(episodeId))
+    .filter((fact): fact is InsightEpisodeFact => Boolean(fact));
+  return facts.length === 0 ? <span>—</span> : (
+    <div>
+      {facts.map((fact) => (
+        <button
+          key={`${group.market}:${bucket.id}:${fact.episodeId}`}
+          type="button"
+          aria-label={`查看${group.label}${bucket.label} ${fact.instrumentName}`}
+          onClick={() => onOpenEpisode(fact.instrumentId, fact.episodeId)}
+        >
+          {fact.instrumentName} · {displayNumber(fact.returnPercent, "%")}
+        </button>
+      ))}
+    </div>
+  );
 }
 
 function GroupCard({
@@ -64,7 +94,25 @@ function GroupCard({
         <Metric label="最大亏损" value={displayNumber(group.report.metrics.maxLossPercent, "%")} />
       </dl>
       <p>结果分布：{group.report.buckets.map((bucket) => `${bucket.label} ${bucket.count} 笔`).join("；")}</p>
+      <details>
+        <summary>收益桶明细</summary>
+        <table>
+          <caption>{group.label}收益桶及回合入口</caption>
+          <thead><tr><th>类别</th><th>笔数</th><th>收益中位数</th><th>回合入口</th></tr></thead>
+          <tbody>
+            {group.report.buckets.map((bucket) => (
+              <tr key={bucket.id}>
+                <td>{bucket.label}</td>
+                <td>{bucket.count}</td>
+                <td>{displayNumber(bucket.medianReturnPercent, "%")}</td>
+                <td><BucketLinks group={group} bucket={bucket} onOpenEpisode={onOpenEpisode} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </details>
       <p>金额口径：跨币种不合并金额；仅在原币或 FX 可比较时显示。</p>
+      <OutcomeDiagnostics report={group.diagnostics} facts={group.facts} onOpenEpisode={onOpenEpisode} />
       <details>
         <summary>查看{group.label}交易回合（{group.facts.length}）</summary>
         {group.facts.map((fact) => (

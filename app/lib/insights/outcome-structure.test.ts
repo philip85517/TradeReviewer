@@ -148,7 +148,18 @@ describe("buildOutcomeStructureReport", () => {
 
     expect(report.excluded).toHaveLength(1);
     expect(report.histogram.zeroBoundaryPercent).toBe("0");
+    expect(report.histogram.zeroPositionPercent).toBe("28.571428571428571429");
     expect(report.histogram.bins.length).toBeGreaterThan(0);
+    expect(report.histogram.bins.every((bin) => ["loss", "flat", "profit", "mixed"].includes(bin.tone))).toBe(true);
+    expect(report.oddsWinRate.point).toMatchObject({
+      label: "总体",
+      sampleCount: 3,
+      winRatePercent: "66.666666666666666667",
+      odds: "1.5",
+    });
+    expect(report.oddsWinRate.breakEvenLine).toEqual(expect.arrayContaining([
+      { winRatePercent: "50", odds: "1" },
+    ]));
     expect(report.histogram.bins.flatMap((bin) => bin.episodeIds)).toEqual([
       "a",
       "b",
@@ -172,5 +183,6 @@ describe("buildOutcomeStructureReport", () => {
     expect(report.histogram.bins.every(({ startPercent, endPercent }) =>
       Number(startPercent) <= Number(endPercent),
     )).toBe(true);
+    expect(report.histogram.bins[0].tone).toBe("profit");
   });
 });

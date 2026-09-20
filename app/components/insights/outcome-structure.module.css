@@ -14,6 +14,30 @@
   gap: 10px;
 }
 
+.histogramFrame {
+  position: relative;
+}
+
+.zeroLine {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 2px dashed #f0c674;
+  pointer-events: none;
+}
+
+.zeroLine span {
+  position: absolute;
+  top: 0;
+  left: 4px;
+  padding: 0 4px;
+  color: #f0c674;
+  background: #0e1c2a;
+  font-size: 10px;
+}
+
 .header {
   grid-template-columns: 1fr auto;
   align-items: start;
@@ -102,7 +126,70 @@
 .bar {
   width: 100%;
   min-height: 3px;
-  background: #5798d5;
+}
+
+.barLoss {
+  background: #d86b72;
+}
+
+.barProfit {
+  background: #55b88a;
+}
+
+.barFlat {
+  background: #8fa5bd;
+}
+
+.barMixed {
+  background: linear-gradient(90deg, #d86b72 0 50%, #55b88a 50% 100%);
+}
+
+.oddsPlot {
+  position: relative;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #29425a;
+  border-radius: 7px;
+  background: #111f2e;
+}
+
+.oddsPlot svg {
+  display: block;
+  width: 100%;
+  min-height: 170px;
+  overflow: visible;
+}
+
+.oddsPlotGrid {
+  stroke: #29425a;
+  stroke-width: 0.5;
+}
+
+.breakEvenLine {
+  fill: none;
+  stroke: #f0c674;
+  stroke-dasharray: 2 2;
+  stroke-width: 1.25;
+}
+
+.oddsPoint {
+  fill: #7cd4c6;
+  stroke: #e0ebf7;
+  stroke-width: 1;
+  cursor: pointer;
+}
+
+.oddsPoint:focus,
+.oddsPoint:hover {
+  fill: #fff;
+  outline: none;
+}
+
+.plotNote {
+  margin: 6px 0 0;
+  color: #aebed1;
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 .barLabel {

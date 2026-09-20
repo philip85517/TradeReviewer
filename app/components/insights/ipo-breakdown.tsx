@@ -1,5 +1,6 @@
 import type { InsightEpisodeFact } from "../../lib/insights/episode-facts";
 import type { IpoBreakdownGroup, IpoBreakdownReport } from "../../lib/insights/ipo-breakdown";
+import { OutcomeDiagnostics } from "./outcome-diagnostics";
 
 type Props = {
   report: IpoBreakdownReport;
@@ -37,6 +38,36 @@ function EpisodeButton({
   );
 }
 
+function BucketLinks({
+  group,
+  bucket,
+  factsByEpisode,
+  onOpenEpisode,
+}: {
+  group: IpoBreakdownGroup;
+  bucket: IpoBreakdownGroup["outcome"]["buckets"][number];
+  factsByEpisode: Map<string, InsightEpisodeFact>;
+  onOpenEpisode: Props["onOpenEpisode"];
+}) {
+  const facts = bucket.episodeIds
+    .map((episodeId) => factsByEpisode.get(episodeId))
+    .filter((fact): fact is InsightEpisodeFact => Boolean(fact));
+  return facts.length === 0 ? (
+    <span>—</span>
+  ) : (
+    <div>
+      {facts.map((fact) => (
+        <EpisodeButton
+          key={`${group.id}:${bucket.id}:${fact.episodeId}`}
+          fact={fact}
+          label={`${group.classificationLabel}${bucket.label}`}
+          onOpenEpisode={onOpenEpisode}
+        />
+      ))}
+    </div>
+  );
+}
+
 function GroupCard({
   group,
   factsByEpisode,
@@ -68,18 +99,21 @@ function GroupCard({
         <summary>收益桶（{outcome.buckets.reduce((total, bucket) => total + bucket.count, 0)} 笔已分类）</summary>
         <table>
           <caption>{group.classificationLabel}收益桶</caption>
-          <thead><tr><th>类别</th><th>笔数</th><th>收益中位数</th></tr></thead>
+          <thead><tr><th>类别</th><th>笔数</th><th>收益中位数</th><th>回合入口</th></tr></thead>
           <tbody>
             {outcome.buckets.map((bucket) => (
               <tr key={bucket.id}>
                 <td>{bucket.label}</td>
                 <td>{bucket.count}</td>
                 <td>{display(bucket.medianReturnPercent, "%")}</td>
+                <td><BucketLinks group={group} bucket={bucket} factsByEpisode={factsByEpisode} onOpenEpisode={onOpenEpisode} /></td>
               </tr>
             ))}
           </tbody>
         </table>
       </details>
+
+      <OutcomeDiagnostics report={group.diagnostics} facts={group.facts} onOpenEpisode={onOpenEpisode} />
 
       {group.evidence.length > 0 && (
         <details open>

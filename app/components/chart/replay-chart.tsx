@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type {
   IChartApi,
   IPriceLine,
   ISeriesApi,
+  Logical,
   Time,
   TickMarkType,
 } from "lightweight-charts";
@@ -22,6 +23,7 @@ import {
 } from "../../lib/replay/format-time";
 import type { ChartSettings } from "../../lib/storage/chart-settings";
 import { displayTimeForCandle } from "../../lib/replay/display-time";
+import { textLayout } from "../../lib/chart/text-geometry";
 import type { TradeExecution } from "../../lib/trades/types";
 import {
   groupExecutionsByCandle,
@@ -35,7 +37,33 @@ import { episodeViewport, type EpisodeViewport } from "../../lib/reviews/episode
 import {
   DrawingCanvas,
   type ChartCoordinateAdapter,
+  type DrawingCanvasHandle,
 } from "./drawing-canvas";
+
+export type ChartViewport = {
+  version: 1;
+  logicalRange: { from: number; to: number } | null;
+  barSpacing: number;
+  rightOffset: number;
+  width: number;
+  height: number;
+};
+
+export type ChartCapture = {
+  imageDataUrl: string;
+  viewport: ChartViewport;
+  /** Present when visible text/drawings touch the capture boundary. */
+  warnings?: string[];
+};
+
+export type ChartHandle = {
+  capture: () => Promise<ChartCapture>;
+  /** Resolve after pending chart invalidations have been drawn synchronously. */
+  flush: () => Promise<void>;
+  getViewport: () => ChartViewport;
+  restoreViewport: (viewport: ChartViewport) => void;
+  fitAll: () => void;
+};
 
 type Props = {
   candles: Candle[];
@@ -53,6 +81,7 @@ type Props = {
   locateRequest?: ReviewChartLocateRequest;
   onLocateResult?: (result: ReviewChartLocateResult) => void;
   onLocateTimeframeChange?: (timeframe: Timeframe) => void;
+  onReady?: (handle: ChartHandle | null) => void;
   selectedDrawingId: string | null;
   plannedRiskAmount: string | undefined;
   currency: string;
@@ -311,13 +340,95 @@ function chartTimeLabel(time: Time) {
   );
 }
 
-export function chartTickLabel(time: Time, unit: "year" | "date" | "time" | "seconds") {
-  const label = chartTimeLabel(time);
-  const parts = /^(\d+)年(\d+)月(\d+)日 (\d+:\d+):(\d+)$/.exec(label);
-  if (!parts) return label;
-  if (unit === "year") return parts[1];
-  if (unit === "date") return `${parts[2]}-${parts[3]}`;
-  return unit === "seconds" ? `${parts[4]}:${parts[5]}` : parts[4];
+export function chartTickLabel(
+  time: Time,
+  unit: "year" | "date" | "time" | "seconds",
+): string;
+export function chartTickLabel(
+  time: Time,
+  tickMarkType?: TickMarkType,
+  timeframe?: string,
+): string;
+export function chartTickLabel(
+  time: Time,
+  unitOrType: "year" | "date" | "time" | "seconds" | TickMarkType = 2 as TickMarkType,
+  timeframe?: string,
+) {
+  if (typeof unitOrType === "string") {
+    const label = chartTimeLabel(time);
+    const parts = /^(\d+)年(\d+)月(\d+)日 (\d+:\d+):(\d+)$/.exec(label);
+    if (!parts) return label;
+    if (unitOrType === "year") return parts[1];
+    if (unitOrType === "date") return `${parts[2]}-${parts[3]}`;
+    return unitOrType === "seconds" ? `${parts[4]}:${parts[5]}` : parts[4];
+  }
+
+  const iso = typeof time === "number"
+    ? new Date(time * 1000).toISOString()
+    : typeof time === "string"
+      ? new Date(time).toISOString()
+      : `${time.year.toString().padStart(4, "0")}-${time.month
+        .toString()
+        .padStart(2, "0")}-${time.day.toString().padStart(2, "0")}T00:00:00.000Z`;
+  const full = formatBeijingDateTime(iso);
+  const match = full.match(/^(\d{4})年(\d{2})月(\d{2})日(?:\s+(.*))?$/);
+  const year = match?.[1] ?? "日期未知";
+  const month = match?.[2] ?? "";
+  const day = match?.[3] ?? "";
+  const clock = match?.[4] ?? "";
+  // Lightweight Charts tells us what kind of tick it is. Keep this axis
+  // label compact; the full exchange timestamp remains in the crosshair.
+  if (unitOrType === 0) return `${year}年`;
+  if (unitOrType === 1) return month ? `${month}月` : "日期未知";
+  if (unitOrType === 2) return month && day ? `${month}/${day}` : "日期未知";
+  if (unitOrType === 4) return clock;
+  if (unitOrType === 3) return clock.slice(0, 5);
+  return timeframe === "1D" || timeframe === "1W"
+    ? month && day ? `${month}/${day}` : "日期未知"
+    : clock.slice(0, 5);
+}
+
+function timeframeFromViewportKey(key: string) {
+  try {
+    const parsed: unknown = JSON.parse(key);
+    if (Array.isArray(parsed) && typeof parsed[2] === "string") return parsed[2];
+  } catch {
+    // Opaque keys remain supported; tick kind supplies the compact format.
+  }
+  const parts = key.split(":");
+  return parts.length >= 2 ? parts[1] : undefined;
+}
+
+/**
+ * Older callers include replay/history mode in viewportKey. Mode is a data
+ * visibility concern, so fitting is keyed only by instrument/episode/period
+ * when the key uses the workspace's JSON tuple shape.
+ */
+function viewportIdentity(key: string) {
+  try {
+    const parsed: unknown = JSON.parse(key);
+    if (Array.isArray(parsed) && parsed.length >= 3) {
+      return JSON.stringify(parsed.slice(0, 3));
+    }
+  } catch {
+    // Keep opaque keys backwards compatible.
+  }
+  // The review workspace's legacy key is colon separated and appends the
+  // current candle bounds. Keep the stable episode/timeframe/snapshot prefix
+  // while ignoring those bounds so replay/history transitions preserve view.
+  const parts = key.split(":");
+  if (parts.length >= 4) return parts.slice(0, 3).join(":");
+  return key;
+}
+
+function fitChartToCandles(chart: IChartApi, candleCount: number) {
+  if (candleCount <= 0) return;
+  chart.timeScale().fitContent();
+  const padding = Math.max(3, Math.ceil(candleCount * 0.04));
+  chart.timeScale().setVisibleLogicalRange({
+    from: -padding,
+    to: candleCount - 1 + padding,
+  });
 }
 
 export function ReplayChart({
@@ -336,6 +447,7 @@ export function ReplayChart({
   locateRequest,
   onLocateResult,
   onLocateTimeframeChange,
+  onReady,
   selectedDrawingId,
   plannedRiskAmount,
   currency,
@@ -348,6 +460,24 @@ export function ReplayChart({
   const volumeSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
   const markerPluginRef = useRef<unknown>(null);
   const costLineRef = useRef<IPriceLine | null>(null);
+  const drawingCanvasRef = useRef<DrawingCanvasHandle | null>(null);
+  const chartHandleRef = useRef<ChartHandle | null>(null);
+  const candlesRef = useRef(candles);
+  const drawingsRef = useRef(drawings);
+  const viewportKeyRef = useRef(viewportKey);
+  const coordinateAdapterRef = useRef<ChartCoordinateAdapter | null>(null);
+  const chartSizeRef = useRef({ width: 0, height: 0 });
+  const initialFitDoneRef = useRef(false);
+  const waitingForUsableSizeRef = useRef(false);
+  const captureRef = useRef<ChartHandle["capture"]>(async () => {
+    throw new Error("图表尚未就绪");
+  });
+  const flushRef = useRef<ChartHandle["flush"]>(async () => undefined);
+  const getViewportRef = useRef<ChartHandle["getViewport"]>(() => {
+    throw new Error("图表尚未就绪");
+  });
+  const restoreViewportRef = useRef<ChartHandle["restoreViewport"]>(() => undefined);
+  const fitAllRef = useRef<ChartHandle["fitAll"]>(() => undefined);
   const fittedRef = useRef<string | null>(null);
   const locatedRequestRef = useRef<string | null>(null);
   const unresolvedLocationAttemptRef = useRef<string | null>(null);
@@ -367,23 +497,54 @@ export function ReplayChart({
     () => ({
       timeToX: (time) => {
         const timestamp = chartTime(time);
-        return timestamp === null
-          ? null
-          : chartRef.current?.timeScale().timeToCoordinate(timestamp) ?? null;
+        const timeScale = chartRef.current?.timeScale();
+        if (timestamp === null) return null;
+        const projected = timeScale?.timeToCoordinate(timestamp);
+        if (projected !== null && projected !== undefined) return projected;
+        // Lightweight Charts has no timeToLogical helper and may return null
+        // for a timestamp beyond the loaded data. Map that timestamp through
+        // logicalToCoordinate so drawing anchors can occupy blank space while
+        // the series remains limited to the revealed candles.
+        if (candles.length < 2) return null;
+        const first = Date.parse(candles[0].time);
+        const delta = Date.parse(candles[1].time) - first;
+        const target = Date.parse(time);
+        if (!Number.isFinite(first) || !Number.isFinite(delta) || delta <= 0 || !Number.isFinite(target)) return null;
+        const logical = (target - first) / delta;
+        return timeScale?.logicalToCoordinate(logical as Logical) ?? null;
       },
       priceToY: (price) =>
         seriesRef.current?.priceToCoordinate(price) ?? null,
       xToTime: (x) => {
-        const time = chartRef.current?.timeScale().coordinateToTime(x);
+        const timeScale = chartRef.current?.timeScale();
+        const time = timeScale?.coordinateToTime(x);
         return typeof time === "number"
           ? new Date(time * 1000).toISOString()
-          : null;
+          : (() => {
+              // Lightweight Charts returns null for logical cells beyond the
+              // last loaded bar. Extrapolate the existing candle interval so
+              // blank-space annotations remain editable without revealing
+              // future candles.
+              const logical = timeScale?.coordinateToLogical(x);
+              if (logical === null || logical === undefined || candles.length < 2) return null;
+              const first = Date.parse(candles[0].time);
+              const delta = Date.parse(candles[1].time) - first;
+              if (!Number.isFinite(first) || !Number.isFinite(delta) || delta <= 0) return null;
+              return new Date(first + Number(logical) * delta).toISOString();
+            })();
       },
       yToPrice: (y) =>
         seriesRef.current?.coordinateToPrice(y) ?? null,
     }),
-    [],
+    [candles],
   );
+
+  useLayoutEffect(() => {
+    candlesRef.current = candles;
+    drawingsRef.current = drawings;
+    viewportKeyRef.current = viewportKey;
+    coordinateAdapterRef.current = coordinateAdapter;
+  }, [candles, coordinateAdapter, drawings, viewportKey]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -399,7 +560,6 @@ export function ReplayChart({
         CrosshairMode,
         HistogramSeries,
         LineStyle,
-        TickMarkType,
         createChart,
         createSeriesMarkers,
       }) => {
@@ -446,10 +606,12 @@ export function ReplayChart({
             secondsVisible: false,
             rightOffset: 4,
             barSpacing: 8,
-            tickMarkFormatter: (time: Time, type: TickMarkType) => chartTickLabel(time,
-              type === TickMarkType.Year ? "year" :
-              type === TickMarkType.Time ? "time" :
-              type === TickMarkType.TimeWithSeconds ? "seconds" : "date"),
+            tickMarkFormatter: (time: Time, tickMarkType: TickMarkType) =>
+              chartTickLabel(
+                time,
+                tickMarkType,
+                timeframeFromViewportKey(viewportKeyRef.current),
+              ),
           },
         });
         const candleSeries = chart.addSeries(CandlestickSeries, {
@@ -509,12 +671,28 @@ export function ReplayChart({
         setChartReady(true);
 
         observer = new ResizeObserver(() => {
-          const range = chart.timeScale().getVisibleLogicalRange();
+          const width = Math.max(1, container.clientWidth);
+          const height = Math.max(1, container.clientHeight);
+          const range = chart.timeScale().getVisibleLogicalRange?.();
           chart.applyOptions({
-            width: Math.max(1, container.clientWidth),
-            height: Math.max(1, container.clientHeight),
+            width,
+            height,
           });
-          if (range && container.clientWidth > 0) chart.timeScale().setVisibleLogicalRange(range);
+          if (range && width > 0) chart.timeScale().setVisibleLogicalRange(range);
+          const previousWidth = chartSizeRef.current.width;
+          chartSizeRef.current = { width, height };
+          const usable = width >= 400 && height >= 180;
+          if (!usable) {
+            waitingForUsableSizeRef.current = true;
+          } else if (
+            waitingForUsableSizeRef.current ||
+            (!initialFitDoneRef.current && previousWidth === 0)
+          ) {
+            fitChartToCandles(chart, candlesRef.current.length);
+            initialFitDoneRef.current = candlesRef.current.length > 0;
+            waitingForUsableSizeRef.current = false;
+            fittedRef.current = viewportIdentity(viewportKeyRef.current);
+          }
           setCoordinateVersion((version) => version + 1);
         });
         observer.observe(container);
@@ -573,7 +751,19 @@ export function ReplayChart({
     ? `${focusRange.start}\u0001${focusRange.end}`
     : "";
 
-  useEffect(() => {
+  const fitAll = useCallback(() => {
+    if (!chartRef.current || candlesRef.current.length === 0) return;
+    // Leave room for arrows/text on the first and last bars as well.
+    fitChartToCandles(chartRef.current, candlesRef.current.length);
+    fittedRef.current = viewportIdentity(viewportKeyRef.current);
+    const usable = chartSizeRef.current.width >= 400 && chartSizeRef.current.height >= 180;
+    initialFitDoneRef.current = usable;
+    waitingForUsableSizeRef.current = !usable;
+    setCrosshair(null);
+    setCoordinateVersion((version) => version + 1);
+  }, []);
+
+  useLayoutEffect(() => {
     const candleSeries = seriesRef.current;
     const volumeSeries = volumeSeriesRef.current;
     if (!chartReady || !candleSeries || !volumeSeries) return;
@@ -582,7 +772,7 @@ export function ReplayChart({
     // Capture the user's logical range before setData. lightweight-charts may
     // otherwise reset it while replacing a series, especially when a refresh
     // temporarily returns an empty array.
-    const preserveViewport = fittedRef.current === viewportKey;
+    const preserveViewport = fittedRef.current === viewportIdentity(viewportKey);
     if (!preserveViewport) lastViewSnapshotRef.current = null;
     const previousRange = preserveViewport
       ? scale?.getVisibleLogicalRange?.()
@@ -601,7 +791,15 @@ export function ReplayChart({
       setMarkers: (nextMarkers: readonly ReplayChartMarker[]) => void;
     } | null;
     markerPlugin?.setMarkers([]);
-    candleSeries.setData(validCandleData);
+    candleSeries.setData(
+      validCandleData.map(({ time, open, high, low, close }) => ({
+        time,
+        open,
+        high,
+        low,
+        close,
+      })),
+    );
     volumeSeries.setData(
       validCandleData.map((candle) => ({
         time: candle.time,
@@ -651,7 +849,7 @@ export function ReplayChart({
   useEffect(() => {
     const scale = chartRef.current?.timeScale();
     if (!chartReady || !scale || validCandleData.length === 0) return;
-    if (fittedRef.current === viewportKey) return;
+    if (fittedRef.current === viewportIdentity(viewportKey)) return;
     scale.fitContent();
     // Leave room for arrows/text on the first and last bars as well.
     const padding = Math.max(3, Math.ceil(validCandleData.length * 0.04));
@@ -663,7 +861,7 @@ export function ReplayChart({
             to: validCandleData.length - 1 + padding,
           },
     );
-    fittedRef.current = viewportKey;
+    fittedRef.current = viewportIdentity(viewportKey);
     setCrosshair(null);
     setCoordinateVersion((version) => version + 1);
   }, [
@@ -793,6 +991,136 @@ export function ReplayChart({
     settings.showVolume,
   ]);
 
+  const getViewport = useCallback((): ChartViewport => {
+    const chart = chartRef.current;
+    const stage = containerRef.current?.parentElement;
+    if (!chart || !stage) throw new Error("图表尚未就绪");
+    const scale = chart.timeScale();
+    const options = scale.options();
+    const rect = stage.getBoundingClientRect();
+    return {
+      version: 1,
+      logicalRange: scale.getVisibleLogicalRange()
+        ? { ...scale.getVisibleLogicalRange()! }
+        : null,
+      barSpacing: Number(options.barSpacing),
+      rightOffset: Number(options.rightOffset),
+      width: Math.round(rect.width || stage.clientWidth),
+      height: Math.round(rect.height || stage.clientHeight),
+    };
+  }, []);
+
+  const flush = useCallback(async () => {
+    const chart = chartRef.current;
+    if (!chart) throw new Error("图表尚未就绪");
+    // Lightweight Charts consumes its pending invalidation mask synchronously
+    // inside takeScreenshot(), so capture does not depend on a browser paint
+    // frame that may never run while the chart is hidden.
+    chart.takeScreenshot(false, false);
+  }, []);
+
+  const restoreViewport = useCallback((viewport: ChartViewport) => {
+    const chart = chartRef.current;
+    if (!chart || viewport.version !== 1) return;
+    const scale = chart.timeScale();
+    if (Number.isFinite(viewport.barSpacing) || Number.isFinite(viewport.rightOffset)) {
+      scale.applyOptions({
+        ...(Number.isFinite(viewport.barSpacing) ? { barSpacing: viewport.barSpacing } : {}),
+        ...(Number.isFinite(viewport.rightOffset) ? { rightOffset: viewport.rightOffset } : {}),
+      });
+    }
+    if (viewport.logicalRange) scale.setVisibleLogicalRange({ ...viewport.logicalRange });
+    setCoordinateVersion((version) => version + 1);
+  }, []);
+
+  const capture = useCallback(async (): Promise<ChartCapture> => {
+    const chart = chartRef.current;
+    const stage = containerRef.current?.parentElement;
+    if (!chart || !stage || typeof chart.takeScreenshot !== "function") {
+      throw new Error("图表截图不可用");
+    }
+    // A focused editor is still a working draft. Commit it before taking the
+    // base and overlay screenshots so the retained PNG and text state agree.
+    drawingCanvasRef.current?.commitText();
+    const fonts = typeof document !== "undefined" ? document.fonts?.ready : undefined;
+    if (fonts) await fonts;
+    await flush();
+    const rect = stage.getBoundingClientRect();
+    const width = Math.round(rect.width || stage.clientWidth);
+    const height = Math.round(rect.height || stage.clientHeight);
+    if (width <= 0 || height <= 0) throw new Error("图表尺寸无效，无法截图");
+    // Include the chart's top layer so execution markers remain in the
+    // retained image while the second argument keeps the crosshair out.
+    const base = chart.takeScreenshot(true, false);
+    if (!base) throw new Error("基础图表截图失败");
+    const overlay = await drawingCanvasRef.current?.captureOverlay(2);
+    if (!overlay) throw new Error("图表叠加层截图失败");
+    const output = document.createElement("canvas");
+    output.width = width * 2;
+    output.height = height * 2;
+    const context = output.getContext("2d");
+    if (!context) throw new Error("无法合成图表截图");
+    context.drawImage(base, 0, 0, output.width, output.height);
+    context.drawImage(overlay, 0, 0, output.width, output.height);
+    const imageDataUrl = output.toDataURL("image/png");
+    if (!imageDataUrl) throw new Error("图表截图为空");
+    const warnings = drawingsRef.current
+      .filter((drawing) => !drawing.hidden && drawing.tool === "text")
+      .flatMap((drawing) => {
+        const anchor = drawing.anchors[0];
+        const x = drawing.placement === "canvas" && Number.isFinite(drawing.canvasX)
+          ? Number(drawing.canvasX) * width
+          : anchor
+            ? coordinateAdapterRef.current?.timeToX(anchor.time) ?? -1
+            : -1;
+        const y = drawing.placement === "canvas" && Number.isFinite(drawing.canvasY)
+          ? Number(drawing.canvasY) * height
+          : anchor
+            ? coordinateAdapterRef.current?.priceToY(anchor.price) ?? -1
+            : -1;
+        const layout = textLayout(
+          drawing.text ?? "关键位",
+          drawing.textWidth ?? 180,
+          drawing.fontSize ?? 14,
+          width,
+        );
+        return x < 0 || y < 0 || x + layout.width > width || y + layout.height > height
+          ? ["截图文字被裁切"]
+          : [];
+      });
+    return {
+      imageDataUrl,
+      viewport: getViewport(),
+      ...(warnings.length ? { warnings: [...new Set(warnings)] } : {}),
+    };
+  }, [flush, getViewport]);
+
+  useEffect(() => {
+    captureRef.current = capture;
+    flushRef.current = flush;
+    getViewportRef.current = getViewport;
+    restoreViewportRef.current = restoreViewport;
+    fitAllRef.current = fitAll;
+  }, [capture, fitAll, flush, getViewport, restoreViewport]);
+
+  useEffect(() => {
+    if (!chartReady) {
+      onReady?.(null);
+      return;
+    }
+    if (!chartHandleRef.current) {
+      chartHandleRef.current = {
+        capture: () => captureRef.current(),
+        flush: () => flushRef.current(),
+        getViewport: () => getViewportRef.current(),
+        restoreViewport: (viewport) => restoreViewportRef.current(viewport),
+        fitAll: () => fitAllRef.current(),
+      };
+    }
+    onReady?.(chartHandleRef.current);
+    return () => onReady?.(null);
+  }, [chartReady, onReady]);
+
   const displayCandle = crosshair ?? candles.at(-1);
 
   return (
@@ -835,7 +1163,10 @@ export function ReplayChart({
       </div>
       <div ref={containerRef} className="lightweight-chart" />
       <DrawingCanvas
+        ref={drawingCanvasRef}
         episodeId={episodeId}
+        allowFutureAnchors
+        multilineText
         candles={candles}
         cursor={cursor}
         drawings={drawings}

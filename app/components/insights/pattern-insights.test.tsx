@@ -210,7 +210,7 @@ describe("PatternInsights", () => {
     expect(screen.getByRole("tab", { name: "IPO / 非新股" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("region", { name: "新股来源拆分" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "新股 / 非新股来源拆分" })).toBeInTheDocument();
-    expect(screen.getByText("无法判定")).toBeInTheDocument();
+    expect(screen.getByRole("article", { name: "无法判定" })).toBeInTheDocument();
     expect(screen.queryByRole("region", { name: "收益结构" })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("tab", { name: "市场" }));

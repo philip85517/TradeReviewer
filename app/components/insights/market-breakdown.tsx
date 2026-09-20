@@ -4,6 +4,7 @@ import type {
   MarketBreakdownReport,
 } from "../../lib/insights/market-breakdown";
 import { OutcomeDiagnostics } from "./outcome-diagnostics";
+import { OddsWinRatePlot } from "./outcome-structure";
 
 type Props = {
   report: MarketBreakdownReport;
@@ -93,6 +94,11 @@ function GroupCard({
         <Metric label="最大盈利" value={displayNumber(group.report.metrics.maxProfitPercent, "%")} />
         <Metric label="最大亏损" value={displayNumber(group.report.metrics.maxLossPercent, "%")} />
       </dl>
+      <OddsWinRatePlot
+        report={group.report}
+        factsByEpisode={new Map(group.facts.map((fact) => [fact.episodeId, fact]))}
+        onOpenEpisode={onOpenEpisode}
+      />
       <p>结果分布：{group.report.buckets.map((bucket) => `${bucket.label} ${bucket.count} 笔`).join("；")}</p>
       <details>
         <summary>收益桶明细</summary>

@@ -397,6 +397,46 @@ describe("buildInsightEpisodeFacts", () => {
     }
   });
 
+  it("keeps giveback unknown when the return percentage is unavailable", () => {
+    const episode = libraryEpisode({
+      id: "episode-missing-return",
+      direction: "long",
+      executions: [
+        execution(xpev, "missing-return-open", "buy", "2025-01-02T15:00:00Z", "10", "10"),
+        execution(xpev, "missing-return-close", "sell", "2025-01-03T15:00:00Z", "10", "12"),
+      ],
+      netPnl: "20",
+      returnPercent: null,
+      rMultiple: null,
+    });
+    const result = buildInsightEpisodeFacts(
+      [entry(xpev, [episode])],
+      {
+        "US:XPEV": [
+          candle("2025-01-02", "11", "9", "10"),
+          candle("2025-01-03", "13", "11", "12"),
+        ],
+      },
+      { "US:XPEV": "complete" },
+      [],
+      {
+        "US:XPEV": [{
+          startDate: "2025-01-02",
+          endDate: "2025-01-03",
+          status: "complete",
+          missingTradingDates: [],
+        }],
+      },
+    );
+
+    expect(result.facts[0]).toMatchObject({
+      episodeId: "episode-missing-return",
+      returnPercent: null,
+      mfePercent: "20",
+      givebackPercent: null,
+    });
+  });
+
   it("rejects daily path coverage with an in-episode gap or failure", () => {
     const executions = [
       execution(xpev, "inside-gap-open", "buy", "2025-01-02T15:00:00Z", "10", "10"),

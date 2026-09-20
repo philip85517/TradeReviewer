@@ -63,7 +63,7 @@ function plotCoordinate(value: string, maximum: number) {
   return Number.isFinite(number) ? Math.max(0, Math.min(100, number / maximum * 100)) : null;
 }
 
-function OddsWinRatePlot({
+export function OddsWinRatePlot({
   report,
   factsByEpisode,
   onOpenEpisode,
@@ -145,6 +145,9 @@ function OddsWinRatePlot({
           </tr>
         </tbody>
       </table>
+      <p className={styles.plotNote}>
+        盈亏平衡参考点：{report.oddsWinRate.breakEvenLine.map(({ winRatePercent, odds }) => `${displayNumber(winRatePercent, "%")} / ${displayNumber(odds)}`).join("、")}。
+      </p>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import type { InsightEpisodeFact } from "../../lib/insights/episode-facts";
 import type { IpoBreakdownGroup, IpoBreakdownReport } from "../../lib/insights/ipo-breakdown";
 import { OutcomeDiagnostics } from "./outcome-diagnostics";
+import { OddsWinRatePlot } from "./outcome-structure";
 
 type Props = {
   report: IpoBreakdownReport;
@@ -94,6 +95,11 @@ function GroupCard({
         <Metric label="中位亏损" value={display(outcome.metrics.medianLossPercent, "%")} />
         <Metric label="赔率" value={display(outcome.metrics.odds)} />
       </dl>
+      <OddsWinRatePlot
+        report={outcome}
+        factsByEpisode={new Map(group.facts.map((fact) => [fact.episodeId, fact]))}
+        onOpenEpisode={onOpenEpisode}
+      />
 
       <details>
         <summary>收益桶（{outcome.buckets.reduce((total, bucket) => total + bucket.count, 0)} 笔已分类）</summary>

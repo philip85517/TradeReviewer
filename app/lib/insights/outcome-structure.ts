@@ -243,10 +243,18 @@ export function buildOutcomeStructureReport(
   const values = facts.map(({ returnPercent }) => new Decimal(returnPercent as string));
   const minimum = values.length > 0 ? Decimal.min(...values) : null;
   const maximum = values.length > 0 ? Decimal.max(...values) : null;
-  const zeroPositionPercent = minimum !== null && maximum !== null && minimum.lte(0) && maximum.gte(0)
+  const zeroPositionPercent = minimum !== null && maximum !== null
     ? minimum.equals(maximum)
-      ? "50"
-      : new Decimal(0).minus(minimum).div(maximum.minus(minimum)).times(100).toString()
+      ? minimum.gt(0)
+        ? "0"
+        : minimum.lt(0)
+          ? "100"
+          : "50"
+      : minimum.gt(0)
+        ? "0"
+        : maximum.lt(0)
+          ? "100"
+          : new Decimal(0).minus(minimum).div(maximum.minus(minimum)).times(100).toString()
     : null;
   return {
     metricBasis: "return-percent",

@@ -68,9 +68,9 @@ describe("IpoBreakdown", () => {
     );
 
     expect(screen.getByRole("heading", { name: "新股 / 非新股来源拆分" })).toBeVisible();
-    expect(screen.getByText("新股 / IPO")).toBeVisible();
-    expect(screen.getByText("非新股")).toBeVisible();
-    expect(screen.getByText("无法判定")).toBeVisible();
+    expect(screen.getByRole("article", { name: "新股 / IPO" })).toBeVisible();
+    expect(screen.getByRole("article", { name: "非新股" })).toBeVisible();
+    expect(screen.getByRole("article", { name: "无法判定" })).toBeVisible();
     expect(screen.getByText(/历史库存缺口/)).toBeVisible();
     expect(screen.getByText(/IPO 配售 \/ 获配/)).toBeVisible();
 

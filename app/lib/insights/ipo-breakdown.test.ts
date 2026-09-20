@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { InsightEpisodeFact } from "./episode-facts";
+import type { InsightEpisodeExclusion, InsightEpisodeFact } from "./episode-facts";
 import { buildIpoBreakdownReport } from "./ipo-breakdown";
 
 function fact(
@@ -111,5 +111,23 @@ describe("buildIpoBreakdownReport", () => {
     ]);
     expect(report.groups[0].outcome.histogram.bins[0].episodeIds).toEqual(["ipo-a"]);
     expect(report.groups[1].outcome.histogram.bins[0].episodeIds).toEqual(["ordinary-b"]);
+  });
+
+  it("preserves upstream exclusions in the unknown-source audit trail", () => {
+    const facts = [fact("unknown", "unknown", "4")];
+    const exclusion: InsightEpisodeExclusion = {
+      episodeId: "open-source",
+      instrumentId: "US:open-source",
+      instrumentName: "开放来源",
+      startedAt: "2026-01-03T00:00:00.000Z",
+      endedAt: null,
+      reason: "open-episode",
+      reasonLabel: "持仓回合尚未结束",
+    };
+
+    const report = buildIpoBreakdownReport(facts, [exclusion]);
+
+    expect(report.excluded).toEqual([exclusion]);
+    expect(report.groups[2].excluded).toEqual([exclusion]);
   });
 });

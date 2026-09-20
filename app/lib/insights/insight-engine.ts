@@ -505,7 +505,7 @@ export function buildPatternInsightReport(
       buildOutcomeStructureReport(inputFacts, upstreamExclusions),
       inputFacts,
     ),
-    ipoBreakdown: buildIpoBreakdownReport(inputFacts),
+    ipoBreakdown: buildIpoBreakdownReport(inputFacts, upstreamExclusions),
     marketBreakdown: buildMarketBreakdownReport(
       inputFacts,
       upstreamExclusions,

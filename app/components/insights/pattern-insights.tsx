@@ -324,9 +324,11 @@ export function PatternInsights({
   const hasAny =
     formal.length > 0 || early.length > 0 || descriptive.length > 0;
   const outcomeExclusions = report.outcomeStructure?.excluded ?? [];
+  const ipoExclusions = report.ipoBreakdown?.excluded ?? [];
+  const marketExclusions = report.marketBreakdown?.groups.flatMap((group) => group.excluded) ?? [];
   const exclusions = Array.from(
     new Map(
-      [...report.excluded, ...outcomeExclusions].map((item) => [
+      [...report.excluded, ...outcomeExclusions, ...ipoExclusions, ...marketExclusions].map((item) => [
         `${item.episodeId}:${item.reason}`,
         item,
       ]),

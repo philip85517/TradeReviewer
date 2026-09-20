@@ -184,5 +184,6 @@ describe("buildOutcomeStructureReport", () => {
       Number(startPercent) <= Number(endPercent),
     )).toBe(true);
     expect(report.histogram.bins[0].tone).toBe("profit");
+    expect(report.histogram.zeroPositionPercent).toBe("0");
   });
 });

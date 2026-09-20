@@ -36,7 +36,7 @@
 
 ## 02/03/04 协调者复验
 
-- 相关 Vitest：10 files / 47 tests passed（含 review 修复边界测试）
+- 相关 Vitest：10 files / 49 tests passed（含 review 修复边界测试）
 - `npm run typecheck`：passed
 - 相关 ESLint：passed with 0 errors
 - `git diff --check`：passed
@@ -47,7 +47,8 @@
 - 新增可访问分组切换：`总体`、`IPO / 非新股`、`市场`；当前只渲染选中分组，保留既有模式洞察分类、范围筛选与回合回调
 - 增加胜率—赔率散点图、盈亏平衡线、收益率直方图零收益参考线和正负语义色
 - 分组补齐尾部诊断、收益桶回合入口和具体排除原因
-- 相关 Vitest：10 files / 47 tests passed
+- 缺失收益率时保持路径回吐指标为未知；IPO/市场分组补齐散点图、上游排除和页面级审计链路
+- 相关 Vitest：10 files / 49 tests passed
 - 类型检查：`npm run typecheck` — passed
 - 相关 ESLint：passed with 0 errors
 - `git diff --check` — passed

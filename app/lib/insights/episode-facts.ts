@@ -16,7 +16,8 @@ export type InsightExclusionReason =
   | "incomplete-market-data"
   | "missing-episode-candles"
   | "missing-comparison-metric"
-  | "ambiguous-tag-provenance";
+  | "ambiguous-tag-provenance"
+  | "ipo-cost-incomplete";
 
 export type InsightEpisodeExclusion = {
   episodeId: string;
@@ -77,6 +78,7 @@ const REASON_LABELS: Record<InsightExclusionReason, string> = {
   "missing-comparison-metric": "缺少当前统计口径所需指标",
   "ambiguous-tag-provenance":
     "标签版本归属不唯一，未进入该标签比较",
+  "ipo-cost-incomplete": "IPO 成本证据链不完整，未进入正式收益比较",
 };
 
 function exclusion(
@@ -230,12 +232,12 @@ function excursionMetrics(
 
   const giveback =
     returnPercent === null
-      ? new Decimal(0)
+      ? null
       : Decimal.max(0, mfe.minus(returnPercent));
   return {
     mfePercent: mfe.toString(),
     maePercent: mae.toString(),
-    givebackPercent: giveback.toString(),
+    givebackPercent: giveback?.toString() ?? null,
   };
 }
 

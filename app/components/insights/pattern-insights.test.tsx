@@ -7,6 +7,8 @@ import type {
   PatternInsight,
   PatternInsightReport,
 } from "../../lib/insights/insight-engine";
+import { buildPatternInsightReport } from "../../lib/insights/insight-engine";
+import { buildOutcomeStructureReport } from "../../lib/insights/outcome-structure";
 import { PatternInsights } from "./pattern-insights";
 
 function fact(
@@ -14,6 +16,7 @@ function fact(
   instrumentName: string,
   symbol: string,
   returnPercent: string,
+  overrides: Partial<InsightEpisodeFact> = {},
 ): InsightEpisodeFact {
   return {
     episodeId,
@@ -39,6 +42,7 @@ function fact(
     tagDictionaryVersion: 1,
     confirmedRuleVersions: [],
     calculationVersion: 1,
+    ...overrides,
   };
 }
 
@@ -120,6 +124,126 @@ describe("PatternInsights", () => {
   afterEach(() => {
     cleanup();
     vi.unstubAllGlobals();
+  });
+
+  it("shows the return structure summary, accessible distribution table, and opens a bucket episode", async () => {
+    const user = userEvent.setup();
+    const onOpenEpisode = vi.fn();
+    const outcomeFacts = [
+      fact("episode-win", "小鹏汽车", "XPEV", "2"),
+      fact("episode-loss", "英伟达", "NVDA", "-1"),
+      fact("episode-base", "小米集团-W", "1810", "0.5"),
+      fact("episode-profit-small", "腾讯控股", "0700", "1"),
+      fact("episode-loss-2", "苹果", "AAPL", "-2"),
+      fact("episode-loss-3", "微软", "MSFT", "-3"),
+    ];
+
+    render(
+      <PatternInsights
+        report={report({
+          outcomeStructure: buildOutcomeStructureReport(outcomeFacts, []),
+        })}
+        facts={outcomeFacts}
+        suggestions={[]}
+        episodeContexts={{}}
+        onConfirmSuggestion={vi.fn()}
+        onEditSuggestion={vi.fn()}
+        onRejectSuggestion={vi.fn()}
+        onOpenEpisode={onOpenEpisode}
+      />,
+    );
+
+    expect(screen.getByRole("region", { name: "收益结构" })).toBeInTheDocument();
+    expect(screen.getByText("主口径：已平仓且费用后收益率可用的回合；描述统计不代表因果或交易建议。")).toBeInTheDocument();
+    expect(screen.getByText("盈利 / 亏损 / 持平")).toBeInTheDocument();
+    expect(screen.getByText("总胜率（含持平）")).toBeInTheDocument();
+    expect(screen.getByText("收益率分布的可读替代表格")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /收益率分布（零收益线：0%）/ })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "胜率—赔率散点图，含盈亏平衡线" })).toBeInTheDocument();
+    expect(screen.getByLabelText("零收益参考线 0%")).toBeInTheDocument();
+    expect(screen.getByText("胜率—赔率关系的可读替代表格")).toBeInTheDocument();
+    expect(screen.getByText(/盈利侧：可可靠分类/)).toBeInTheDocument();
+
+    await user.click(screen.getByText(/大赚 · 1 笔/));
+    await user.click(screen.getByRole("button", { name: "查看大赚 小鹏汽车 XPEV" }));
+    expect(onOpenEpisode).toHaveBeenCalledWith("US:XPEV", "episode-win");
+  });
+
+  it("shows the complete outcome analysis with diagnostics, IPO groups, and market groups", async () => {
+    const user = userEvent.setup();
+    const onOpenEpisode = vi.fn();
+    const analysisFacts = [
+      fact("profit-1", "盈利一", "P1", "1", { ipoClassification: "ipo", ipoEvidence: [{ id: "ipo-1", label: "配售" }] }),
+      fact("profit-2", "盈利二", "P2", "2", { ipoClassification: "ipo", ipoEvidence: [{ id: "ipo-2", label: "获配" }] }),
+      fact("profit-3", "盈利三", "P3", "3", { ipoClassification: "non-ipo" }),
+      fact("profit-4", "盈利四", "P4", "4", { ipoClassification: "non-ipo" }),
+      fact("profit-5", "盈利五", "P5", "5", { market: "JP", ipoClassification: "unknown", ipoClassificationReason: "库存来源不明确" }),
+      fact("loss-1", "亏损一", "L1", "-1", { ipoClassification: "non-ipo" }),
+      fact("loss-2", "亏损二", "L2", "-2", { ipoClassification: "non-ipo" }),
+      fact("loss-3", "亏损三", "L3", "-3", { ipoClassification: "unknown", ipoClassificationReason: "历史缺口" }),
+      fact("loss-4", "亏损四", "L4", "-4", { ipoClassification: "unknown", ipoClassificationReason: "库存冲突" }),
+      fact("loss-5", "亏损五", "L5", "-20", { ipoClassification: "non-ipo" }),
+    ];
+
+    render(
+      <PatternInsights
+        report={buildPatternInsightReport(analysisFacts, [])}
+        facts={analysisFacts}
+        suggestions={[]}
+        episodeContexts={{}}
+        onConfirmSuggestion={vi.fn()}
+        onEditSuggestion={vi.fn()}
+        onRejectSuggestion={vi.fn()}
+        onOpenEpisode={onOpenEpisode}
+      />,
+    );
+
+    expect(screen.getByRole("tablist", { name: "收益结构分析分组" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "总体" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("region", { name: "收益结构" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "尾部结构诊断" })).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "新股来源拆分" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "分市场收益结构" })).not.toBeInTheDocument();
+    expect(screen.getAllByText(/不代表因果或交易建议/).length).toBeGreaterThan(0);
+
+    await user.click(screen.getByRole("tab", { name: "IPO / 非新股" }));
+    expect(screen.getByRole("tab", { name: "IPO / 非新股" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("region", { name: "新股来源拆分" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "新股 / 非新股来源拆分" })).toBeInTheDocument();
+    expect(screen.getByRole("article", { name: "无法判定" })).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "收益结构" })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("tab", { name: "市场" }));
+    expect(screen.getByRole("tab", { name: "市场" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("region", { name: "分市场收益结构" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "分市场表现" })).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "新股来源拆分" })).not.toBeInTheDocument();
+
+    await user.click(screen.getByText(/查看未知市场交易回合/));
+    await user.click(screen.getByRole("button", { name: "查看未知市场 盈利五" }));
+    expect(onOpenEpisode).toHaveBeenCalledWith("US:P5", "profit-5");
+  });
+
+  it("renders unavailable outcome metrics as a dash instead of zero", () => {
+    const outcomeFacts = [fact("episode-win", "小鹏汽车", "XPEV", "2")];
+    render(
+      <PatternInsights
+        report={report({
+          outcomeStructure: buildOutcomeStructureReport(outcomeFacts, []),
+        })}
+        facts={outcomeFacts}
+        suggestions={[]}
+        episodeContexts={{}}
+        onConfirmSuggestion={vi.fn()}
+        onEditSuggestion={vi.fn()}
+        onRejectSuggestion={vi.fn()}
+        onOpenEpisode={vi.fn()}
+      />,
+    );
+
+    const odds = screen.getByText("赔率", { selector: "dt" }).parentElement;
+    expect(odds).toHaveTextContent("赔率—");
+    expect(odds).not.toHaveTextContent("赔率0");
   });
 
   it("shows explainable formal metrics, evidence, counterexamples, and exclusions", async () => {

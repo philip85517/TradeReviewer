@@ -1,0 +1,288 @@
+.section {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid #2f4d65;
+  border-radius: 12px;
+  background: rgba(14, 28, 42, 0.96);
+}
+
+.header,
+.metricGrid,
+.bucketGrid,
+.histogram {
+  display: grid;
+  gap: 10px;
+}
+
+.histogramFrame {
+  position: relative;
+}
+
+.zeroLine {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 2px dashed #f0c674;
+  pointer-events: none;
+}
+
+.zeroLine span {
+  position: absolute;
+  top: 0;
+  left: 4px;
+  padding: 0 4px;
+  color: #f0c674;
+  background: #0e1c2a;
+  font-size: 10px;
+}
+
+.header {
+  grid-template-columns: 1fr auto;
+  align-items: start;
+}
+
+.header h2 {
+  margin: 3px 0 4px;
+  font-size: 16px;
+}
+
+.header p,
+.note,
+.classification {
+  margin: 0;
+  color: #aebed1;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.sample {
+  color: #7cd4c6;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.metricGrid {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  margin-top: 14px;
+}
+
+.metric {
+  min-height: 48px;
+  padding: 9px;
+  border-radius: 7px;
+  background: #101d2b;
+}
+
+.metric dt {
+  color: #8fa5bd;
+  font-size: 11px;
+}
+
+.metric dd {
+  margin: 4px 0 0;
+  color: #e0ebf7;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.subsection {
+  margin-top: 16px;
+}
+
+.subsection h3 {
+  margin: 0 0 8px;
+  color: #d7e5f5;
+  font-size: 13px;
+}
+
+.histogram {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  align-items: end;
+}
+
+.histogram details,
+.bucket {
+  border: 1px solid #29425a;
+  border-radius: 7px;
+  background: #111f2e;
+}
+
+.histogram summary,
+.bucket summary {
+  padding: 8px;
+  color: #c1d4e9;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.barArea {
+  height: 70px;
+  padding: 8px 10px 0;
+  border-bottom: 1px solid #c78e5c;
+}
+
+.bar {
+  width: 100%;
+  min-height: 3px;
+}
+
+.barLoss {
+  background: #d86b72;
+}
+
+.barProfit {
+  background: #55b88a;
+}
+
+.barFlat {
+  background: #8fa5bd;
+}
+
+.barMixed {
+  background: linear-gradient(90deg, #d86b72 0 50%, #55b88a 50% 100%);
+}
+
+.oddsPlot {
+  position: relative;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #29425a;
+  border-radius: 7px;
+  background: #111f2e;
+}
+
+.oddsPlot svg {
+  display: block;
+  width: 100%;
+  min-height: 170px;
+  overflow: visible;
+}
+
+.oddsPlotGrid {
+  stroke: #29425a;
+  stroke-width: 0.5;
+}
+
+.breakEvenLine {
+  fill: none;
+  stroke: #f0c674;
+  stroke-dasharray: 2 2;
+  stroke-width: 1.25;
+}
+
+.oddsPoint {
+  fill: #7cd4c6;
+  stroke: #e0ebf7;
+  stroke-width: 1;
+  cursor: pointer;
+}
+
+.oddsPoint:focus,
+.oddsPoint:hover {
+  fill: #fff;
+  outline: none;
+}
+
+.plotNote {
+  margin: 6px 0 0;
+  color: #aebed1;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.barLabel {
+  display: block;
+  padding: 5px 8px 8px;
+  color: #92a9c2;
+  font-size: 11px;
+}
+
+.bucketGrid {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.bucket {
+  padding: 0;
+}
+
+.bucket summary {
+  list-style: none;
+}
+
+.bucket summary::-webkit-details-marker {
+  display: none;
+}
+
+.bucketBody {
+  padding: 0 8px 8px;
+}
+
+.episode {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  border: 0;
+  border-top: 1px solid #23374d;
+  color: #c9d8e9;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-size: 11px;
+}
+
+.episode:hover,
+.episode:focus-visible {
+  color: #fff;
+}
+
+.episode span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accessibleTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  color: #c9d8e9;
+  font-size: 12px;
+}
+
+.accessibleTable caption {
+  margin-bottom: 6px;
+  color: #aebed1;
+  text-align: left;
+}
+
+.accessibleTable th,
+.accessibleTable td {
+  padding: 7px 6px;
+  border-bottom: 1px solid #23374d;
+  text-align: left;
+}
+
+.accessibleTable th {
+  color: #8fa5bd;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .header {
+    grid-template-columns: 1fr;
+  }
+
+  .sample {
+    white-space: normal;
+  }
+
+  .accessibleTable {
+    display: block;
+    overflow-x: auto;
+  }
+}

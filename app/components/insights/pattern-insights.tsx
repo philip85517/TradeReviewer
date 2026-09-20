@@ -25,8 +25,13 @@ import {
   TagSuggestionPanel,
   type SuggestionEpisodeContext,
 } from "./tag-suggestion-panel";
+import { OutcomeStructure } from "./outcome-structure";
+import { OutcomeDiagnostics } from "./outcome-diagnostics";
+import { IpoBreakdown } from "./ipo-breakdown";
+import { MarketBreakdown } from "./market-breakdown";
 
 type Category = "all" | InsightCategory;
+type OutcomeView = "overall" | "ipo" | "market";
 
 type Props = {
   report: PatternInsightReport;
@@ -63,6 +68,12 @@ const CATEGORY_OPTIONS: Array<{
     label: "执行与心理",
     ariaLabel: "只看执行与心理",
   },
+];
+
+const OUTCOME_VIEW_OPTIONS: Array<{ id: OutcomeView; label: string }> = [
+  { id: "overall", label: "总体" },
+  { id: "ipo", label: "IPO / 非新股" },
+  { id: "market", label: "市场" },
 ];
 
 function displayNumber(value: string) {
@@ -300,6 +311,7 @@ export function PatternInsights({
   onOpenEpisode,
 }: Props) {
   const [category, setCategory] = useState<Category>("all");
+  const [outcomeView, setOutcomeView] = useState<OutcomeView>("overall");
   const factsByEpisode = useMemo(
     () => new Map(facts.map((fact) => [fact.episodeId, fact])),
     [facts],
@@ -311,6 +323,17 @@ export function PatternInsights({
   const descriptive = report.descriptiveStatistics.filter(matches);
   const hasAny =
     formal.length > 0 || early.length > 0 || descriptive.length > 0;
+  const outcomeExclusions = report.outcomeStructure?.excluded ?? [];
+  const ipoExclusions = report.ipoBreakdown?.excluded ?? [];
+  const marketExclusions = report.marketBreakdown?.groups.flatMap((group) => group.excluded) ?? [];
+  const exclusions = Array.from(
+    new Map(
+      [...report.excluded, ...outcomeExclusions, ...ipoExclusions, ...marketExclusions].map((item) => [
+        `${item.episodeId}:${item.reason}`,
+        item,
+      ]),
+    ).values(),
+  );
 
   return (
     <section className="pattern-insights" aria-label="模式洞察页面">
@@ -330,6 +353,88 @@ export function PatternInsights({
           </b>
         </div>
       </header>
+
+      {(report.outcomeStructure || report.ipoBreakdown || report.marketBreakdown) && (
+        <section aria-label="收益结构分析" style={{ marginTop: 18 }}>
+          <div
+            role="tablist"
+            aria-label="收益结构分析分组"
+            style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}
+          >
+            {OUTCOME_VIEW_OPTIONS.map((option) => {
+              const available =
+                option.id === "overall"
+                  ? Boolean(report.outcomeStructure)
+                  : option.id === "ipo"
+                    ? Boolean(report.ipoBreakdown)
+                    : Boolean(report.marketBreakdown);
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  role="tab"
+                  id={`outcome-view-tab-${option.id}`}
+                  aria-selected={outcomeView === option.id}
+                  aria-controls={`outcome-view-panel-${option.id}`}
+                  disabled={!available}
+                  onClick={() => setOutcomeView(option.id)}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {outcomeView === "overall" && report.outcomeStructure && (
+            <div
+              role="tabpanel"
+              id="outcome-view-panel-overall"
+              aria-labelledby="outcome-view-tab-overall"
+            >
+              <OutcomeStructure
+                report={report.outcomeStructure}
+                facts={facts}
+                onOpenEpisode={onOpenEpisode}
+              />
+              {report.outcomeDiagnostics && (
+                <OutcomeDiagnostics
+                  report={report.outcomeDiagnostics}
+                  facts={facts}
+                  onOpenEpisode={onOpenEpisode}
+                />
+              )}
+            </div>
+          )}
+
+          {outcomeView === "ipo" && report.ipoBreakdown && (
+            <div
+              role="tabpanel"
+              id="outcome-view-panel-ipo"
+              aria-labelledby="outcome-view-tab-ipo"
+            >
+              <IpoBreakdown
+                report={report.ipoBreakdown}
+                facts={facts}
+                onOpenEpisode={onOpenEpisode}
+              />
+            </div>
+          )}
+
+          {outcomeView === "market" && report.marketBreakdown && (
+            <div
+              role="tabpanel"
+              id="outcome-view-panel-market"
+              aria-labelledby="outcome-view-tab-market"
+            >
+              <MarketBreakdown
+                report={report.marketBreakdown}
+                facts={facts}
+                onOpenEpisode={onOpenEpisode}
+              />
+            </div>
+          )}
+        </section>
+      )}
 
       <details className="insight-suggestions"><summary>待确认规则建议（{suggestions.filter(item => item.status === "suggested").length}）</summary>
       <TagSuggestionPanel
@@ -428,7 +533,7 @@ export function PatternInsights({
         </section>
       )}
 
-      <ExclusionList exclusions={report.excluded} />
+      <ExclusionList exclusions={exclusions} />
     </section>
   );
 }

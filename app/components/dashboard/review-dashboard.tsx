@@ -12,7 +12,6 @@ import {
 } from "../../lib/reviews/trading-room-quality";
 import {
   buildPrincipalReferenceSummary,
-  principalScopeKey,
   type PrincipalScope,
 } from "../../lib/principal/principal-model";
 import { usePrincipalSettings } from "../../lib/principal/use-principal-settings";
@@ -23,8 +22,6 @@ import {
   RoomHoldingsPanel,
 } from "./room-holdings";
 import { RoomPerformance } from "./room-performance";
-import { RoomQuality } from "./room-quality";
-import { RoomPrincipal } from "./room-principal";
 import type { TradingRoomQuote } from "../../lib/reviews/trading-room-holdings";
 import { buildTradingRoomHoldings } from "../../lib/reviews/trading-room-holdings";
 import type { TradeLibraryEntry } from "../../lib/trades/library";
@@ -40,7 +37,6 @@ import {
   type RoomTradeNature,
   type TradingRoomMetadataInput,
 } from "../../lib/reviews/trading-room-scope";
-import { RoomDataQuality } from "./room-data-quality";
 import styles from "./review-dashboard.module.css";
 
 export type ReviewDashboardProps = {
@@ -244,15 +240,16 @@ function roomNatureIdentity(value: RoomTradeNature): { icon: string; className: 
 }
 
 function roomMoneyLabel(view: ReturnType<typeof buildTradingRoomModel>["summary"]["money"]): string {
-  if (view.convertedCny !== null) return money(view.convertedCny, "CNY");
   const values = Object.entries(view.originalByCurrency);
-  if (values.length === 0) return "不可用";
+  if (values.length === 0) return "暂无样本";
+  if (view.convertedCny !== null) return money(view.convertedCny, "CNY");
+  if (values.length > 1) return "无法合计";
   return values.map(([currency, value]) => money(value, currency)).join(" · ");
 }
 
 function roomMoneyDetail(view: ReturnType<typeof buildTradingRoomModel>["summary"]["money"]): string {
   const values = Object.entries(view.originalByCurrency);
-  if (values.length === 0) return view.note.includes("金额缺失") ? view.note : "暂无已平仓样本";
+  if (values.length === 0) return view.note.includes("金额缺失") ? "数据不足" : "暂无样本";
   const original = values.length > 0
     ? `原币小计：${values.map(([currency, value]) => money(value, currency)).join(" · ")}`
     : null;
@@ -263,7 +260,10 @@ function roomMoneyDetail(view: ReturnType<typeof buildTradingRoomModel>["summary
 }
 
 function percentLabel(value: string | null): string {
-  return value === null ? "不可计算" : `${value}%`;
+  if (value === null) return "数据不足";
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) return "数据不足";
+  return `${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(numericValue)}%`;
 }
 
 function trendColors(colorScheme: ChartSettings["colorScheme"]) {
@@ -286,8 +286,6 @@ export function ReviewDashboard({
   principalEnabled = false,
   qualityInput,
   onOpenDataManagement,
-  onRetryDataQuality,
-  onOpenDataCheck,
   onQualityModelChange,
 }: ReviewDashboardProps) {
   const [roomScope, setRoomScope] = useState<RoomScope>(() => createDefaultRoomScope());
@@ -447,8 +445,8 @@ export function ReviewDashboard({
       <section className={styles.roomScopeSection} aria-label="交易室范围">
         <div className={styles.roomScopeHeading}>
           <div>
-            <span className={styles.eyebrow}>Scope</span>
-            <h2>统一统计范围</h2>
+            <span className={styles.eyebrow}>Performance scope</span>
+            <h2>收益概览</h2>
             <p>{roomNatureLabel(roomScope.nature)} · {roomCategoryLabel(roomScope.assetCategory)} · {roomScope.period.startDate} 至 {roomScope.period.endDate}</p>
           </div>
           <div className={styles.roomScopeBadgeGroup}>
@@ -460,19 +458,66 @@ export function ReviewDashboard({
           </div>
         </div>
         <div className={styles.roomScopeControls}>
-          <FilterSelect label="性质" ariaLabel="交易室性质筛选" value={roomScope.nature} options={[{ value: "live", label: "实盘" }, { value: "simulation", label: "模拟盘" }, { value: "unknown", label: "来源未知" }]} onChange={value => updateRoomScope({ nature: value as RoomTradeNature })} />
+          <div className={styles.roomNatureControl}>
+            <span>交易性质</span>
+            <div className={styles.segmentedControl} role="group" aria-label="交易室性质">
+              {([
+                ["live", "实盘"],
+                ["simulation", "模拟盘"],
+                ["unknown", "来源未知"],
+              ] as const).map(([value, label]) => (
+                <button
+                  type="button"
+                  key={value}
+                  className={styles.segmentedButton}
+                  aria-pressed={roomScope.nature === value}
+                  onClick={() => updateRoomScope({ nature: value as RoomTradeNature })}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
           <FilterSelect label="分类" ariaLabel="交易室分类筛选" value={roomScope.assetCategory} options={[{ value: "all", label: "全部分类" }, { value: "a-share-stock", label: "A股股票" }, { value: "us-stock", label: "美股股票" }, { value: "hk-stock", label: "港股股票" }, { value: "etf", label: "ETF" }, { value: "unknown", label: "未知资产类型" }]} onChange={value => updateRoomScope({ assetCategory: value as RoomAssetCategory, markets: value === "etf" ? roomMarkets : [] })} />
-          <FilterSelect label="期间" ariaLabel="交易室期间筛选" value={roomScope.period.preset} options={[{ value: "month", label: "本月" }, { value: "last-3-months", label: "近3个自然月" }, { value: "ytd", label: "今年至今" }, { value: "custom", label: "自定义" }]} onChange={value => updateRoomPeriod(value as RoomPeriodPreset)} />
+          <div className={styles.roomPeriodControl}>
+            <span>统计期间</span>
+            <div className={styles.periodTabs} role="tablist" aria-label="交易室期间">
+              {([
+                ["month", "本月"],
+                ["last-3-months", "近3个自然月"],
+                ["ytd", "今年至今"],
+              ] as const).map(([value, label]) => (
+                <button
+                  type="button"
+                  key={value}
+                  role="tab"
+                  className={styles.periodTab}
+                  aria-selected={roomScope.period.preset === value}
+                  onClick={() => updateRoomPeriod(value as RoomPeriodPreset)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              className={styles.customPeriodButton}
+              aria-pressed={roomScope.period.preset === "custom"}
+              onClick={() => updateRoomPeriod("custom")}
+            >
+              更多期间
+            </button>
+          </div>
           {roomScope.nature === "simulation" && <FilterSelect label="模拟运行" ariaLabel="交易室模拟运行筛选" value={roomScope.simulationRunId ?? ""} options={[{ value: "", label: "请选择运行" }, ...simulationRunOptions]} onChange={value => updateRoomScope({ simulationRunId: value || null })} />}
         </div>
-        {roomScope.period.preset === "custom" && <div className={styles.roomCustomPeriod}>
-          <label className={styles.filterField}><span>自定义起始日期</span><input aria-label="交易室自定义起始日期" type="date" value={roomCustomStartDate} onChange={event => { const value = event.target.value; setRoomCustomStartDate(value); applyRoomCustomPeriod(value, roomCustomEndDate); }} /></label>
-          <label className={styles.filterField}><span>自定义结束日期</span><input aria-label="交易室自定义结束日期" type="date" value={roomCustomEndDate} onChange={event => { const value = event.target.value; setRoomCustomEndDate(value); applyRoomCustomPeriod(roomCustomStartDate, value); }} /></label>
-        </div>}
         {roomPeriodError && <p className={styles.roomScopeWarning}>{roomPeriodError}</p>}
         <details className={styles.roomAdvancedDetails}>
           <summary>更多筛选{roomFilterCount > 0 ? ` · ${roomFilterCount} 项已启用` : ""}</summary>
           <div className={styles.roomAdvancedGrid}>
+            {roomScope.period.preset === "custom" && <div className={styles.roomCustomPeriod}>
+              <label className={styles.filterField}><span>自定义起始日期</span><input aria-label="交易室自定义起始日期" type="date" value={roomCustomStartDate} onChange={event => { const value = event.target.value; setRoomCustomStartDate(value); applyRoomCustomPeriod(value, roomCustomEndDate); }} /></label>
+              <label className={styles.filterField}><span>自定义结束日期</span><input aria-label="交易室自定义结束日期" type="date" value={roomCustomEndDate} onChange={event => { const value = event.target.value; setRoomCustomEndDate(value); applyRoomCustomPeriod(roomCustomStartDate, value); }} /></label>
+            </div>}
             <label className={styles.searchField}><span>标的</span><div><Search size={15} /><input aria-label="交易室标的筛选" type="search" placeholder="名称或代码" value={roomScope.query ?? ""} onChange={event => updateRoomScope({ query: event.target.value })} /></div></label>
             <FilterSelect label="账户" ariaLabel="交易室账户筛选" value={roomScope.accountIds[0] ?? "all"} options={[{ value: "all", label: "全部账户" }, ...accountOptions]} onChange={value => updateRoomScope({ accountIds: value === "all" ? [] : [value] })} />
             {roomScope.assetCategory === "etf" && <FilterSelect label="ETF市场" ariaLabel="交易室ETF市场筛选" value={roomMarkets[0] ?? "all"} options={[{ value: "all", label: "全部市场" }, ...marketOptions]} onChange={value => updateRoomScope({ markets: value === "all" ? [] : [value] })} />}
@@ -494,14 +539,16 @@ export function ReviewDashboard({
             principalSummary.mode === "principal"
               ? `已填本金 · ${roomMoneyLabel(principalSummary.principal)}`
               : principalSummary.fallbackReason ?? `${principalSummary.costReturn.applicableCount} 个适用回合 · ${principalSummary.costReturn.excludedCount} 个排除回合`,
-            principalSummary.mode === "principal"
-              ? signedClass(principalSummary.principalReturnPercent)
-              : signedClass(principalSummary.costReturn.costReturnPercent),
+              principalSummary.mode === "principal"
+                ? signedClass(principalSummary.principalReturnPercent)
+                : signedClass(principalSummary.costReturn.costReturnPercent),
           )}
-          {principalSummary.mode === "principal" && metricCard("交易成本收益率", percentLabel(principalSummary.costReturn.costReturnPercent), `${principalSummary.costReturn.applicableCount} 个适用回合 · ${principalSummary.costReturn.excludedCount} 个排除回合`, signedClass(principalSummary.costReturn.costReturnPercent))}
-          {metricCard("已平仓排除样本", String(roomModel.summary.excludedCount), "费用、历史或盈亏不可用；未平仓与未知资产另列", styles.neutral)}
-          {metricCard("未知资产类型", String(roomModel.summary.unknownAssetEpisodeCount), roomModel.summary.unknownAssetEpisodeCount ? `${roomModel.summary.unknownAssetCount} 个标的，未纳入四类合计` : "暂无未知资产类型", styles.neutral)}
         </div>
+        {(roomModel.summary.excludedCount > 0 || roomModel.summary.unknownAssetEpisodeCount > 0) && <p className={styles.roomScopeStatus}>
+          {roomModel.summary.excludedCount > 0 && `排除样本 ${roomModel.summary.excludedCount} 个`}
+          {roomModel.summary.excludedCount > 0 && roomModel.summary.unknownAssetEpisodeCount > 0 && " · "}
+          {roomModel.summary.unknownAssetEpisodeCount > 0 && `未知资产 ${roomModel.summary.unknownAssetEpisodeCount} 个，未纳入四类合计`}
+        </p>}
         {roomScope.nature === "simulation" && !roomScope.simulationRunId && <p className={styles.roomScopeWarning}>请选择一个模拟运行后查看该运行的独立统计；不会跨运行合并。</p>}
         {roomRows.length === 0 && !(roomScope.nature === "simulation" && !roomScope.simulationRunId) && <p className={styles.emptyCalendar}>{emptyRoomMessage}</p>}
       </section>
@@ -531,28 +578,10 @@ export function ReviewDashboard({
       />
 
       {roomDataQuality && (
-        <RoomDataQuality
-          model={roomDataQuality}
-          onOpenDataManagement={onOpenDataManagement}
-          onRetryDataQuality={onRetryDataQuality}
-          onOpenDataCheck={onOpenDataCheck}
-        />
-      )}
-
-      <RoomQuality costReturn={roomMetrics.costReturn} monthlyWinRate={roomMetrics.monthlyWinRate} />
-
-      {principalEnabled && (
-        <RoomPrincipal
-          key={principalScopeKey(principalScope)}
-          scopeKey={principalScopeKey(principalScope)}
-          config={principalSettings.config}
-          summary={principalSummary}
-          loading={principalSettings.loading}
-          saving={principalSettings.saving}
-          error={principalSettings.error}
-          onSave={principalSettings.save}
-          onClear={principalSettings.clear}
-        />
+        <div className={styles.roomDataStatus} role="status" aria-label="数据状态">
+          <span>数据状态：{roomDataQuality.summary}</span>
+          {onOpenDataManagement && <button type="button" onClick={() => onOpenDataManagement(roomDataQuality)}>打开数据管理</button>}
+        </div>
       )}
     </section>
   );

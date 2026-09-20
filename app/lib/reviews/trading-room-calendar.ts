@@ -23,6 +23,7 @@ import {
 import type { TradeLibraryEntry } from "../trades/library";
 
 export type TradingRoomCalendarLevel = "month" | "year" | "all-years";
+export type TradingRoomTrendLevel = "month" | "week" | "day";
 
 export type TradingRoomCalendarState = "positive" | "negative" | "break-even" | "empty" | "unavailable" | "future";
 
@@ -46,9 +47,16 @@ export type TradingRoomTrendPoint = {
   label: string;
   startDate: string;
   endDate: string;
+  periodMoney: RoomMoneyView;
+  periodValue: string | null;
   money: RoomMoneyView;
   value: string | null;
   rawByCurrency: Readonly<Record<string, string>>;
+  trustedClosedCount: number;
+  wins: number;
+  losses: number;
+  breakEven: number;
+  availability: "available" | "empty" | "insufficient" | "not-combinable";
 };
 
 export type TradingRoomTrendModel = {
@@ -72,6 +80,7 @@ export type TradingRoomCalendarSummary = {
 export type TradingRoomCalendarOptions = {
   scope: RoomScope;
   level?: TradingRoomCalendarLevel;
+  trendLevel?: TradingRoomTrendLevel;
   /** Date used for year/all-years drilldown; date-only or an ISO instant. */
   anchorDate?: string;
   /** Injected in tests and by the view so future dates use one local day. */
@@ -178,6 +187,31 @@ function dayBuckets(startDate: string, endDate: string): Bucket[] {
   const buckets: Bucket[] = [];
   for (let cursor = startDate; cursor <= endDate; cursor = addDays(cursor, 1)) {
     buckets.push({ key: cursor, label: cursor, startDate: cursor, endDate: cursor });
+  }
+  return buckets;
+}
+
+function startOfWeek(value: string): string {
+  const date = dateFromKey(value);
+  const day = date.getUTCDay();
+  date.setUTCDate(date.getUTCDate() - ((day + 6) % 7));
+  return dateKey(date);
+}
+
+function weekBuckets(startDate: string, endDate: string): Bucket[] {
+  const buckets: Bucket[] = [];
+  let cursor = startOfWeek(startDate);
+  while (cursor <= endDate) {
+    const naturalEnd = addDays(cursor, 6);
+    const start = cursor < startDate ? startDate : cursor;
+    const finish = naturalEnd > endDate ? endDate : naturalEnd;
+    buckets.push({
+      key: cursor,
+      label: `${start.slice(5)}至${finish.slice(5)}`,
+      startDate: start,
+      endDate: finish,
+    });
+    cursor = addDays(cursor, 7);
   }
   return buckets;
 }
@@ -360,12 +394,32 @@ function formatRawTotals(totals: ReadonlyMap<string, Decimal>): Readonly<Record<
   return Object.fromEntries([...totals.entries()].map(([currency, amount]) => [currency, amount.toString()]));
 }
 
+function trendBuckets(scope: RoomScope, level: TradingRoomTrendLevel, asOfDate: string): Bucket[] {
+  if (level === "day") {
+    const endDate = scope.period.endDate > asOfDate ? asOfDate : scope.period.endDate;
+    return dayBuckets(scope.period.startDate, endDate);
+  }
+  if (level === "week") return weekBuckets(scope.period.startDate, scope.period.endDate > asOfDate ? asOfDate : scope.period.endDate);
+  return monthBuckets(scope.period.startDate, scope.period.endDate > asOfDate ? asOfDate : scope.period.endDate, "month");
+}
+
+function trendAvailability(
+  periodMoney: RoomMoneyView,
+  trustedClosedCount: number,
+  excludedCount: number,
+): TradingRoomTrendPoint["availability"] {
+  if (trustedClosedCount === 0) return excludedCount > 0 ? "insufficient" : "empty";
+  if (periodMoney.convertedCny === null && Object.keys(periodMoney.originalByCurrency).length > 1) return "not-combinable";
+  return "available";
+}
+
 export function buildTradingRoomCalendar(
   entries: readonly TradeLibraryEntry[],
   options: TradingRoomCalendarOptions,
 ): TradingRoomCalendarModel {
   const level = options.level ?? "month";
   const asOfDate = dateOnly(options.asOf) ?? roomTodayKey(new Date());
+  const trendLevel = options.trendLevel ?? (options.scope.period.preset === "month" ? "day" : "month");
   const metadata = options.instrumentMetadata;
   const selectedRows = filterPerformanceRows(entries, options.scope, metadata, level === "all-years");
   // Keep the row-to-value conversion explicit so metadata remains a read-only projection.
@@ -399,23 +453,43 @@ export function buildTradingRoomCalendar(
     } satisfies TradingRoomCalendarCell;
   });
 
-  const trendBuckets = buckets.filter(bucket => bucket.startDate <= asOfDate);
+  const trendRange = trendBuckets(options.scope, trendLevel, asOfDate);
+  const trendRows = effectiveValues;
   const cumulative = new Map<string, Decimal>(
-    [...new Set(effectiveValues.filter(value => value.value !== null).map(value => value.currency))]
+    [...new Set(trendRows.filter(value => value.value !== null).map(value => value.currency))]
       .map(currency => [currency, new Decimal(0)]),
   );
-  const trendPoints = trendBuckets.map(bucket => {
-    const bucketValues = effectiveValues.filter(value => bucketForDate(value.date, [bucket]) !== undefined);
+  const trendPoints = trendRange.map(bucket => {
+    const bucketValues = trendRows.filter(value => bucketForDate(value.date, [bucket]) !== undefined);
+    const trusted = bucketValues.filter(value => value.value !== null);
+    const excluded = bucketValues.filter(value => value.value === null);
+    const periodMoney = buildRoomMoneyView(amountsFor(bucketValues), options.fxSnapshot);
     addRawTotals(cumulative, bucketValues);
     const money = moneyFromTotals(cumulative, options.fxSnapshot);
+    let wins = 0;
+    let losses = 0;
+    let breakEven = 0;
+    for (const value of trusted) {
+      const decimal = new Decimal(value.value!);
+      if (decimal.gt(0)) wins += 1;
+      else if (decimal.lt(0)) losses += 1;
+      else breakEven += 1;
+    }
     return {
       key: bucket.key,
       label: bucket.label,
       startDate: bucket.startDate,
       endDate: bucket.endDate,
+      periodMoney,
+      periodValue: valueForMoney(periodMoney),
       money,
       value: valueForMoney(money),
       rawByCurrency: formatRawTotals(cumulative),
+      trustedClosedCount: trusted.length,
+      wins,
+      losses,
+      breakEven,
+      availability: trendAvailability(periodMoney, trusted.length, excluded.length),
     } satisfies TradingRoomTrendPoint;
   });
   const summary = buildSummary(effectiveValues, options.fxSnapshot);

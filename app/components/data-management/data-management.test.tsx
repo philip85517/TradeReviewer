@@ -81,6 +81,13 @@ describe("DataManagement", () => {
     expect(screen.getByLabelText("数据质量内容")).toHaveTextContent("数据质量明细内容");
   });
 
+  it("renders principal configuration in its own data-management slot", () => {
+    renderPage({ principalSlot: <output aria-label="本金配置内容">本金配置表单</output> });
+
+    expect(screen.getByRole("region", { name: "本金与参考收益率配置" })).toBeInTheDocument();
+    expect(screen.getByLabelText("本金配置内容")).toHaveTextContent("本金配置表单");
+  });
+
   it("keeps refresh controls available for cancellation, retry, and unfinished recovery", async () => {
     const user = userEvent.setup();
     const state: GlobalMarketRefreshState = {

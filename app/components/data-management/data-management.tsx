@@ -26,6 +26,8 @@ export type DataManagementProps = {
   onDismissNotice?: () => void;
   /** Current-scope quality details supplied by the trading-room dashboard. */
   qualitySlot?: ReactNode;
+  /** Principal configuration supplied by the trading-room workspace. */
+  principalSlot?: ReactNode;
   /** A real future data-management module, such as the FX updater. */
   fxSlot?: ReactNode;
 };
@@ -48,6 +50,7 @@ export function DataManagement({
   navigationNotice,
   onDismissNotice,
   qualitySlot,
+  principalSlot,
   fxSlot,
 }: DataManagementProps) {
   const retained = retainedInstruments.filter(
@@ -122,6 +125,19 @@ export function DataManagement({
               <span>按当前交易室范围定位影响</span>
             </div>
             {qualitySlot}
+          </section>
+        )}
+
+        {principalSlot && (
+          <section className="data-management-card" aria-label="本金与参考收益率配置">
+            <div className="data-management-card-heading">
+              <div>
+                <span className="eyebrow">Principal</span>
+                <h2>本金与参考收益率配置</h2>
+              </div>
+              <span>用于收益参考，不代表账户净值</span>
+            </div>
+            {principalSlot}
           </section>
         )}
 

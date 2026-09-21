@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/Users/zhoulin/.codex/worktrees/5a37/TradeReview/docs/adr/architecture.json",
+  "output": "/Users/zhoulin/.codex/worktrees/5a37/TradeReview/docs/adr/architecture.html",
+  "specification": {
+    "sha256": "ce5393a014ace58c677d372bb3f28377e4df459cb8aa3b3c4eb096698f0e8770",
+    "bytes": 4046
+  },
+  "artifact": {
+    "sha256": "7ff3aad2c94eaa44584cb3cca687016d0761d65bec08fa859df6c24224df1693",
+    "bytes": 807585
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}

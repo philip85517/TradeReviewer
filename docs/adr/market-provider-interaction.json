@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "行情来源 · 日线补缺与盘中降级",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1080,
+      560
+    ]
+  },
+  "participants": [
+    {
+      "id": "request-api",
+      "type": "backend",
+      "label": "行情 API",
+      "sublabel": "校验与请求时限"
+    },
+    {
+      "id": "router-policy",
+      "type": "backend",
+      "label": "路由与覆盖策略",
+      "sublabel": "过滤不支持的市场"
+    },
+    {
+      "id": "candidate",
+      "type": "external",
+      "label": "当前候选来源",
+      "sublabel": "按路由顺序调用"
+    },
+    {
+      "id": "next-candidate",
+      "type": "external",
+      "label": "后续候选来源",
+      "sublabel": "仅在需要时尝试"
+    }
+  ],
+  "segments": [
+    {
+      "from": 148,
+      "to": 310,
+      "label": "日线 · 累计补缺"
+    },
+    {
+      "from": 316,
+      "to": 484,
+      "label": "盘中 · 选择结果"
+    }
+  ],
+  "messages": [
+    {
+      "id": "daily-request",
+      "from": "request-api",
+      "to": "router-policy",
+      "y": 160,
+      "label": "日线：交易日区间",
+      "variant": "default"
+    },
+    {
+      "id": "daily-source",
+      "from": "router-policy",
+      "to": "candidate",
+      "y": 188,
+      "label": "请求区间（单源 9 秒）",
+      "variant": "default"
+    },
+    {
+      "id": "daily-partial",
+      "from": "candidate",
+      "to": "router-policy",
+      "y": 216,
+      "label": "校验 K 线并逐日累计",
+      "variant": "return"
+    },
+    {
+      "id": "daily-fill",
+      "from": "router-policy",
+      "to": "next-candidate",
+      "y": 244,
+      "label": "仍有缺日：请求缺日首尾区间",
+      "variant": "default"
+    },
+    {
+      "id": "daily-merge",
+      "from": "next-candidate",
+      "to": "router-policy",
+      "y": 272,
+      "label": "仅填空缺，保留优先来源",
+      "variant": "return"
+    },
+    {
+      "id": "daily-return",
+      "from": "router-policy",
+      "to": "request-api",
+      "y": 300,
+      "label": "合并 K 线及逐日来源",
+      "variant": "return"
+    },
+    {
+      "id": "intraday-request",
+      "from": "request-api",
+      "to": "router-policy",
+      "y": 328,
+      "label": "盘中：15m 或 1h",
+      "variant": "default"
+    },
+    {
+      "id": "intraday-source",
+      "from": "router-policy",
+      "to": "candidate",
+      "y": 356,
+      "label": "调用支持市场的候选源",
+      "variant": "default"
+    },
+    {
+      "id": "intraday-partial",
+      "from": "candidate",
+      "to": "router-policy",
+      "y": 384,
+      "label": "成功或空 / 稀疏 / 错误",
+      "variant": "return"
+    },
+    {
+      "id": "intraday-fallback",
+      "from": "router-policy",
+      "to": "next-candidate",
+      "y": 412,
+      "label": "异常或覆盖不足：继续候选链",
+      "variant": "default"
+    },
+    {
+      "id": "intraday-result",
+      "from": "next-candidate",
+      "to": "router-policy",
+      "y": 440,
+      "label": "返回该来源的结果",
+      "variant": "return"
+    },
+    {
+      "id": "intraday-return",
+      "from": "router-policy",
+      "to": "request-api",
+      "y": 468,
+      "label": "可接受结果 / 最佳部分 / 错误",
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "日线来源顺序",
+      "items": [
+        "可选 Tiger → 腾讯 → 东方财富 → Yahoo → 百度",
+        "Tiger 与百度仅美港股；其余来源支持 A / 港 / 美",
+        "按交易日合并，完整即停止后续来源"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "1h 来源顺序",
+      "items": [
+        "A 股：腾讯 → BaoStock → 东方财富 → Yahoo",
+        "美股：可选 Tiger → 腾讯 → 东方财富 → 新浪 → Yahoo → 百度",
+        "港股：可选 Tiger → 腾讯 → 东方财富 → Yahoo → 百度"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "15m 与失败边界",
+      "items": [
+        "腾讯 → 东方财富 → Yahoo（A / 港 / 美）",
+        "百度在链中，但其适配器不支持 15m",
+        "日线总限时 55 秒；盘中总限时 12 秒"
+      ]
+    }
+  ]
+}

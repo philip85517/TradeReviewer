@@ -126,6 +126,52 @@ describe("RoomPerformance", () => {
     expect(container.querySelector("line")?.getAttribute("y1")).not.toBe("95");
   });
 
+  it("labels trend axes and exposes period and cumulative values for every point", () => {
+    const first = entry("2026-09-02", "100");
+    const second = entry("2026-09-03", "200", { id: "second" });
+    render(
+      <RoomPerformance
+        entries={[first, second]}
+        scope={scope(buildRoomDateRange("custom", "2026-09-03", { startDate: "2026-09-02", endDate: "2026-09-03" }))}
+        instrumentMetadata={metadata([first, second])}
+        onScopeChange={() => undefined}
+        onOpenInReview={() => undefined}
+        asOf="2026-09-03T08:00:00.000Z"
+      />,
+    );
+
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    expect(panel).toHaveTextContent("横轴");
+    expect(panel).toHaveTextContent("纵轴");
+    expect(panel).toHaveTextContent("期间收益");
+    expect(panel).toHaveTextContent("累计收益");
+    expect(panel).toHaveTextContent("+¥100.00");
+    expect(panel).toHaveTextContent("+¥300.00");
+  });
+
+  it("switches the trend to natural-week buckets without changing the room scope", async () => {
+    const user = userEvent.setup();
+    const first = entry("2026-07-02", "100");
+    const second = entry("2026-08-03", "200", { id: "second" });
+    const onScopeChange = vi.fn();
+    render(
+      <RoomPerformance
+        entries={[first, second]}
+        scope={scope(buildRoomDateRange("last-3-months", "2026-09-19"))}
+        instrumentMetadata={metadata([first, second])}
+        onScopeChange={onScopeChange}
+        onOpenInReview={() => undefined}
+        asOf="2026-09-19T08:00:00.000Z"
+      />,
+    );
+
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    await user.click(within(panel).getByRole("button", { name: "周" }));
+    expect(within(panel).getByRole("button", { name: "周" })).toHaveAttribute("aria-pressed", "true");
+    expect(panel).toHaveTextContent("自然周");
+    expect(onScopeChange).not.toHaveBeenCalled();
+  });
+
   it("renders a visible point when the selected range has one trend bucket", () => {
     const value = entry("2026-09-02", "100");
     const { container } = render(

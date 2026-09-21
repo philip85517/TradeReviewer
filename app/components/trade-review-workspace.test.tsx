@@ -4136,10 +4136,7 @@ describe("TradeReviewWorkspace", () => {
 
     const dashboard = await screen.findByRole("region", { name: "统计总览" });
     const scope = within(dashboard).getByRole("region", { name: "交易室范围" });
-    await user.selectOptions(
-      within(scope).getByRole("combobox", { name: "交易室期间筛选" }),
-      "last-3-months",
-    );
+    await user.click(within(scope).getByRole("tab", { name: "近3个自然月" }));
     await user.click(within(scope).getByText("更多筛选"));
     await user.selectOptions(
       within(scope).getByRole("combobox", { name: "交易室币种筛选" }),
@@ -4157,7 +4154,7 @@ describe("TradeReviewWorkspace", () => {
 
     const returnedDashboard = await screen.findByRole("region", { name: "统计总览" });
     const returnedScope = within(returnedDashboard).getByRole("region", { name: "交易室范围" });
-    expect(within(returnedScope).getByRole("combobox", { name: "交易室期间筛选" })).toHaveValue("last-3-months");
+    expect(within(returnedScope).getByRole("tab", { name: "近3个自然月" })).toHaveAttribute("aria-selected", "true");
     expect(within(returnedScope).getByText("更多筛选 · 1 项已启用")).toBeInTheDocument();
     expect(within(returnedScope).getByRole("combobox", { name: "交易室币种筛选" })).toHaveValue("USD");
     expect(

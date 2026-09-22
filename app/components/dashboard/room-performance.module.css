@@ -28,8 +28,9 @@
 .empty,
 .notice,
 .detailRow small,
-.detailHeading span { margin: 0; color: var(--dashboard-muted); font-size: 11px; line-height: 1.5; }
+.detailHeading span { margin: 0; color: var(--dashboard-muted); font-size: 12px; line-height: 1.5; }
 .eyebrow { color: var(--dashboard-muted); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.visuallyHidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .viewTabs,
 .levelTabs { display: flex; gap: 5px; }
 .viewTabs button,
@@ -38,12 +39,13 @@
 .detailRow button {
   border: 1px solid var(--dashboard-line);
   border-radius: 8px;
-  padding: 6px 9px;
+  min-height: 44px;
+  padding: 8px 12px;
   background: var(--dashboard-card-elevated);
   color: var(--dashboard-ink);
   cursor: pointer;
   font: inherit;
-  font-size: 11px;
+  font-size: 14px;
 }
 .viewTabs button[aria-pressed="true"],
 .levelTabs button[aria-pressed="true"] { border-color: var(--blue, #4e9bab); background: var(--dashboard-soft); color: var(--blue, #32758b); }
@@ -54,37 +56,54 @@
 .trendToolbar { align-items: end; }
 .trendMeta { color: var(--dashboard-muted); font-size: 11px; }
 .chartFrame { position: relative; display: grid; gap: 8px; min-height: 240px; border: 1px solid var(--dashboard-line); border-radius: 12px; padding: 9px; background: var(--dashboard-card-elevated); }
-.chartAxisLayout { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; }
+.chartAxisLayout { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 8px; }
 .chartPlotArea { min-width: 0; }
 .chartFrame svg { display: block; width: 100%; height: 180px; }
-.axisY { display: grid; align-content: space-between; padding: 0 0 3px; color: var(--dashboard-muted); font-size: 9px; text-align: right; }
+.axisY { position: relative; height: 180px; color: var(--dashboard-muted); font-size: 12px; text-align: right; }
+.axisY span { position: absolute; right: 0; transform: translateY(-50%); white-space: nowrap; }
+.axisY span { transform: translateY(-50%); }
 .axisY span:first-child,
 .axisX span:first-child { color: var(--dashboard-ink); font-weight: 700; }
-.axisX { display: flex; justify-content: space-between; gap: 8px; overflow: hidden; color: var(--dashboard-muted); font-size: 9px; white-space: nowrap; }
-.axisX span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.trendValueLegend { display: flex; gap: 14px; color: var(--dashboard-muted); font-size: 10px; }
+.axisX { position: relative; height: 18px; overflow: hidden; color: var(--dashboard-muted); font-size: 12px; white-space: nowrap; }
+.axisX span { position: absolute; min-width: 0; max-width: 25%; overflow: hidden; transform: translateX(-50%); text-overflow: ellipsis; }
+.axisX span:first-child { transform: translateX(0); }
+.axisX span:last-child { transform: translateX(-100%); }
+.trendValueLegend { display: flex; gap: 14px; color: var(--dashboard-muted); font-size: 12px; }
 .trendValueLegend span::before { content: "•"; margin-right: 4px; color: var(--dashboard-positive); }
-.trendDetails { border-top: 1px solid var(--dashboard-line-soft); padding-top: 7px; color: var(--dashboard-muted); font-size: 10px; }
-.trendDetails summary { cursor: pointer; }
+.trendDetails { border-top: 1px solid var(--dashboard-line-soft); padding-top: 7px; color: var(--dashboard-muted); font-size: 12px; }
+.trendDetails summary { display: flex; align-items: center; min-height: 44px; cursor: pointer; }
 .trendPointList { display: grid; gap: 7px; max-height: 230px; overflow: auto; margin-top: 8px; }
 .trendPointList > div { display: grid; grid-template-columns: minmax(100px, 1fr) repeat(2, minmax(100px, auto)); align-items: center; gap: 8px; border-bottom: 1px solid var(--dashboard-line-soft); padding: 5px 0; }
 .trendPointList strong { color: var(--dashboard-ink); }
 .trendPointList small { grid-column: 1 / -1; }
-.zeroLine { stroke: var(--dashboard-line); stroke-dasharray: 3 3; }
-.legend { display: flex; flex-wrap: wrap; gap: 8px 14px; padding: 4px 8px 0; color: var(--dashboard-muted); font-size: 10px; }
+.zeroLine { stroke: var(--dashboard-ink); stroke-dasharray: 3 3; stroke-width: 1.5; }
+.gridLine { stroke: var(--dashboard-line-soft); stroke-width: 1; }
+.selectedTrend { margin: 0; padding: 8px; border: 1px solid var(--dashboard-line); border-radius: 8px; color: var(--dashboard-ink); font-size: 14px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 14px; padding: 4px 8px 0; color: var(--dashboard-muted); font-size: 12px; }
 .legend span { display: inline-flex; align-items: center; gap: 4px; }
 .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
+.legendPositive { background: var(--dashboard-positive); }
+.legendNegative { background: var(--dashboard-negative); }
+.legendBreakEven { background: var(--blue, #4e9bab); }
+.legendUnavailable { background: var(--gold, #f3ba2f); }
+.legendEmpty { background: var(--dashboard-line); }
+.legendFuture { background: var(--dashboard-muted); }
 .notice { margin: 0; padding: 0 8px 7px; }
 .calendarWrap { display: grid; gap: 10px; }
 .calendarNav { justify-content: center; }
-.calendarNav button { width: 30px; padding: 5px; font-size: 17px; line-height: 1; }
+.calendarNav button { width: 44px; padding: 5px; font-size: 17px; line-height: 1; }
 .calendarGrid { display: grid; gap: 7px; }
 .dailyGrid { grid-template-columns: repeat(7, minmax(0, 1fr)); }
 .periodGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.weekdays { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 7px; color: var(--dashboard-muted); font-size: 12px; text-align: center; }
+.leadingBlank { min-height: 70px; }
+.breadcrumb { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--dashboard-muted); font-size: 12px; }
+.breadcrumb button { min-height: 44px; border: 0; background: transparent; color: var(--blue, #32758b); cursor: pointer; font: inherit; }
 .cell { min-height: 70px; display: grid; align-content: space-between; gap: 4px; border: 1px solid var(--dashboard-line); border-radius: 10px; padding: 8px; background: var(--dashboard-card-elevated); color: var(--dashboard-ink); cursor: pointer; text-align: left; }
-.cell strong { font-size: 11px; }
-.cell span { font-size: 11px; font-weight: 700; }
-.cell small { color: var(--dashboard-muted); font-size: 9px; }
+.cell strong { font-size: 12px; }
+.cell span { font-size: 12px; font-weight: 700; }
+.cell small { color: var(--dashboard-muted); font-size: 12px; }
+.fullDate { display: none; }
 .state-positive { background: color-mix(in srgb, var(--dashboard-positive) 12%, var(--dashboard-card)); }
 .state-negative { background: color-mix(in srgb, var(--dashboard-negative) 12%, var(--dashboard-card)); }
 .state-break-even { background: var(--dashboard-soft); }
@@ -103,11 +122,16 @@
   .heading { display: grid; gap: 8px; }
   .trendToolbar { align-items: flex-start; display: grid; gap: 8px; }
   .summaryLine { align-items: flex-start; display: grid; gap: 4px; }
-  .dailyGrid { gap: 4px; }
-  .cell { min-height: 64px; padding: 6px; }
-  .cell span { font-size: 9px; }
+  .weekdays, .leadingBlank { display: none; }
+  .dailyGrid { display: grid; grid-template-columns: 1fr; gap: 4px; }
+  .dailyGrid .cell { min-height: 54px; display: grid; grid-template-columns: minmax(104px, 1fr) minmax(max-content, auto) auto; align-items: center; gap: 8px; padding: 8px; }
+  .dailyGrid .dayNumber { display: none; }
+  .dailyGrid .fullDate { display: inline; font-size: 12px; }
+  .dailyGrid .cell span { font-size: 12px; white-space: nowrap; }
+  .dailyGrid .cell small { font-size: 11px; white-space: nowrap; }
+  .breadcrumb { align-items: flex-start; }
   .periodGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .chartAxisLayout { grid-template-columns: 54px minmax(0, 1fr); }
+  .chartAxisLayout { grid-template-columns: 86px minmax(0, 1fr); }
   .trendPointList > div { grid-template-columns: 1fr; gap: 3px; }
   .trendPointList small { grid-column: auto; }
   .detailRow { align-items: flex-start; }

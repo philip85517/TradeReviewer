@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import Decimal from "decimal.js";
 
 import type { TradeLibraryEntry } from "../../lib/trades/library";
 import {
@@ -41,6 +42,30 @@ function money(value: string | null, currency: string | null | undefined): strin
   }
 }
 
+function price(value: string | null, currency: string | null | undefined): string {
+  if (value === null) return "不可用";
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 0) return "不可用";
+  const decimals = value.split(".")[1]?.length ?? 0;
+  if (decimals > 100) return "高精度报价（见技术证据）";
+  try {
+    return new Intl.NumberFormat("zh-CN", {
+      style: "currency", currency: currencyCode(currency),
+      minimumFractionDigits: decimals, maximumFractionDigits: decimals,
+      signDisplay: "never",
+    }).format(Number(value));
+  } catch {
+    return `${Number(value).toFixed(decimals)} ${currencyCode(currency)}`;
+  }
+}
+
+function averageCost(value: string | null, currency: string | null | undefined): string {
+  if (value === null) return "待核对";
+  if (!/^\d+(?:\.\d+)?$/.test(value) || Number(value) < 0) return "待核对";
+  const display = new Decimal(value).toDecimalPlaces(6).toString();
+  return price(display, currency);
+}
+
 function number(value: string | null, fractionDigits = 8): string {
   if (value === null) return "待核对";
   const parsed = Number(value);
@@ -65,19 +90,28 @@ function pnlLabel(row: TradingRoomHoldingRow): string {
   return `浮盈亏不可用 · ${row.statusReason ?? "持仓证据待核对"}`;
 }
 
+function pnlTone(row: TradingRoomHoldingRow): "positive" | "negative" | "unavailable" {
+  if (row.unrealizedPnlStatus !== "available" || row.unrealizedPnl === null) return "unavailable";
+  return Number(row.unrealizedPnl) < 0 ? "negative" : "positive";
+}
+
 function quoteDetail(row: TradingRoomHoldingRow): string {
-  const latestTrade = row.latestTradeDate ?? "最近交易日未知";
-  if (!row.quote) return `最近交易日 ${latestTrade} · 缺少行情，未计算浮盈亏`;
-  const date = row.quote.quoteDate ?? "行情日期未知";
-  const fetchedAt = row.quote.fetchedAt ?? "采集时间未知";
-  const provider = row.quote.provider ?? "来源未知";
-  return `最近交易日 ${latestTrade} · ${date} · 采集 ${fetchedAt} · ${provider} · ${quoteFreshnessLabel(row)}`;
+  if (!row.quote) return "缺少行情，未计算浮盈亏";
+  return quoteFreshnessLabel(row);
 }
 
 function assetLabel(row: TradingRoomHoldingRow): string {
   if (row.assetType === "etf") return "ETF";
   if (row.assetType === "stock") return "股票";
   return "资产类型待核对";
+}
+
+function directionLabel(row: TradingRoomHoldingRow): string {
+  const episode = row.row.item.episode;
+  if (episode.directionKnown === false) return "方向待核对";
+  if (episode.direction === "short") return "空头";
+  if (episode.direction === "long") return "多头";
+  return "方向待核对";
 }
 
 function accountDisplayLabels(rows: readonly TradingRoomHoldingRow[]): ReadonlyMap<string, string> {
@@ -102,11 +136,13 @@ function HoldingRow({
   row,
   queueIds,
   accountLabel,
+  viewedDate,
   onOpenInReview,
 }: {
   row: TradingRoomHoldingRow;
   queueIds: string[];
   accountLabel: string;
+  viewedDate: string;
   onOpenInReview: RoomHoldingsPanelProps["onOpenInReview"];
 }) {
   const costCurrency = row.settlementCurrency ?? row.row.entry.instrument.currency;
@@ -115,7 +151,7 @@ function HoldingRow({
       <div className={styles.rowHeading}>
         <div>
           <strong>{row.instrumentName}</strong>
-          <span>{row.symbol} · {assetLabel(row)} · {accountLabel}</span>
+          <span>{row.symbol} · {assetLabel(row)} · {accountLabel} · 方向：{directionLabel(row)}</span>
         </div>
         <button
           type="button"
@@ -126,16 +162,23 @@ function HoldingRow({
         </button>
       </div>
       <dl className={styles.values}>
-        <div><dt>持仓数量</dt><dd>{number(row.quantity)}</dd></div>
-        <div><dt>可用成本</dt><dd>{row.averageCost === null ? "待核对" : money(row.averageCost, costCurrency)}</dd></div>
-        <div><dt>行情价格</dt><dd>{row.quote?.price === null || !row.quote ? "不可用" : money(row.quote.price, row.quote.currency)}</dd></div>
-        <div><dt>浮盈亏</dt><dd className={row.unrealizedPnlStatus === "available" ? styles.available : styles.unavailable}>{pnlLabel(row)}</dd></div>
+        <div><dt>持仓数量</dt><dd><span className={styles.amount}>{number(row.quantity)}</span></dd></div>
+        <div><dt>持仓均价</dt><dd title={row.averageCost ?? undefined}><span className={styles.amount}>{averageCost(row.averageCost, costCurrency)}</span></dd></div>
+        <div><dt>估值价</dt><dd><span className={styles.amount}>{row.quote?.price === null || !row.quote ? "不可用" : price(row.quote.price, row.quote.currency)}</span>{row.quote?.freshness === "stale" && <small className={styles.staleLabel}>过期参考价</small>}</dd></div>
+        <div><dt>浮盈亏</dt><dd className={styles[pnlTone(row)]}>{row.unrealizedPnlStatus === "available" ? <span className={styles.amount}>{pnlLabel(row)}</span> : pnlLabel(row)}</dd></div>
       </dl>
       <p className={styles.quoteDetail}>
-        行情：{quoteDetail(row)}
+        行情：{quoteDetail(row)} · 行情日期 {row.quote?.quoteDate ?? "未知"}
         {row.quote?.price !== null && row.quote ? ` · ${row.quote.currency}` : ""}
       </p>
-      {row.statusReason && row.unrealizedPnlStatus !== "available" && <p className={styles.statusReason}>{row.statusReason}</p>}
+      <details className={styles.evidence}>
+        <summary>技术证据</summary>
+        {row.statusReason && row.unrealizedPnlStatus !== "available" && <p className={styles.statusReason}>{row.statusReason}</p>}
+        <p>持仓均价完整值：{row.averageCost ?? "待核对"}</p>
+        {row.quote?.price && row.quote.price.split(".")[1]?.length > 100 && <p>估值价原始值：{row.quote.price}</p>}
+        <p>方向证据：{row.row.item.episode.directionKnown === false ? "来源未确认，未按数量正负推断" : "回合方向字段"} · 行情来源：{row.quote?.provider ?? "未知"} · 采集时间：{row.quote?.fetchedAt ?? "未知"}</p>
+        <p>流水覆盖截止：{row.latestTradeDate ?? "未知"} · 查看日：{viewedDate}</p>
+      </details>
     </article>
   );
 }
@@ -145,33 +188,49 @@ export function RoomHoldingsPanel({
   onOpenInReview,
   ...options
 }: RoomHoldingsPanelProps) {
+  const [sort, setSort] = useState<"recent" | "pnl">("recent");
   const model = useMemo(
     () => buildTradingRoomHoldings(entries, options),
     [entries, options],
   );
   const queueIds = model.rows.map(row => row.episodeId);
   const accountLabels = accountDisplayLabels(model.rows);
+  const currencies = new Set(model.rows.map(row => row.settlementCurrency ?? row.quote?.currency).filter(Boolean));
+  const canSortPnl = currencies.size <= 1;
+  const sortedRows = useMemo(() => {
+    if (sort !== "pnl" || !canSortPnl) return model.rows;
+    return [...model.rows].sort((left, right) => {
+      if (left.unrealizedPnlStatus !== "available") return right.unrealizedPnlStatus === "available" ? 1 : right.episodeId.localeCompare(left.episodeId);
+      if (right.unrealizedPnlStatus !== "available") return -1;
+      return Number(right.unrealizedPnl) - Number(left.unrealizedPnl) || right.lastActivityAt.localeCompare(left.lastActivityAt);
+    });
+  }, [canSortPnl, model.rows, sort]);
+  const groups = useMemo(() => model.groups.map(group => ({ ...group, rows: sortedRows.filter(row => row.market === group.market) })), [model.groups, sortedRows]);
 
   return (
-    <section className={styles.panel} aria-label="当前持仓">
+    <section className={styles.panel} aria-label="当前持仓" data-current-date={model.asOf}>
       <header className={styles.heading}>
         <div>
-          <span className={styles.eyebrow}>Open positions</span>
           <h2>当前持仓，截至 {model.asOf}</h2>
-          <p>根据已导入交易流水和持仓证据推导；已导入流水最新交易日 {model.latestImportedTradeDate ?? "未知"}。日收盘价仅作估值，不等同券商实时持仓。</p>
+          <p>根据已导入交易流水和持仓证据推导；流水覆盖截止 {model.latestImportedTradeDate ?? "未知"}，查看日 {model.asOf}。日收盘价仅作估值，不等同券商实时持仓。</p>
         </div>
-        <span className={styles.count}>{model.rows.length} 个未平仓回合</span>
+        <div className={styles.headerActions}>
+          <label>排序持仓 <select aria-label="排序持仓" value={sort} onChange={event => setSort(event.target.value as "recent" | "pnl")}><option value="recent">最近成交</option><option value="pnl" disabled={!canSortPnl}>浮盈亏</option></select></label>
+          <span className={styles.count}>{model.rows.length} 个未平仓回合</span>
+        </div>
       </header>
+      {sort === "pnl" && !canSortPnl && <p className={styles.sortNote}>币种不可直接比较，已保留最近成交顺序。</p>}
+      {sort === "pnl" && canSortPnl && <p className={styles.sortNote}>仅在同币种内比较浮盈亏；不可用项置后。</p>}
       {model.rows.length === 0 ? (
         <p className={styles.empty}>当前范围暂无未平仓回合。</p>
       ) : (
         <div className={styles.groups}>
-          {model.groups.map(group => (
+          {groups.map(group => (
             <section className={styles.group} aria-label={`${group.label}持仓`} key={group.market}>
               <h3>{group.label}<small>{group.rows.length} 个回合</small></h3>
               <div className={styles.rows}>
                 {group.rows.map(row => (
-                  <HoldingRow key={row.episodeId} row={row} queueIds={queueIds} accountLabel={accountLabels.get(row.accountId) ?? "账户"} onOpenInReview={onOpenInReview} />
+                  <HoldingRow key={row.episodeId} row={row} queueIds={queueIds} accountLabel={accountLabels.get(row.accountId) ?? "账户"} viewedDate={model.asOf} onOpenInReview={onOpenInReview} />
                 ))}
               </div>
             </section>

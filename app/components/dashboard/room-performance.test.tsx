@@ -141,9 +141,8 @@ describe("RoomPerformance", () => {
     );
 
     const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
-    expect(panel).toHaveTextContent("横轴");
-    expect(panel).toHaveTextContent("纵轴");
-    expect(panel).toHaveTextContent("期间收益");
+    expect(within(panel).getByLabelText("趋势图横轴")).toBeInTheDocument();
+    expect(within(panel).getByLabelText("趋势图纵轴")).toBeInTheDocument();
     expect(panel).toHaveTextContent("累计收益");
     expect(panel).toHaveTextContent("+¥100.00");
     expect(panel).toHaveTextContent("+¥300.00");
@@ -251,6 +250,31 @@ describe("RoomPerformance", () => {
     expect(panel).toHaveTextContent("HK$20.00");
   });
 
+  it("uses the selected original currency in incomplete-FX point readouts", async () => {
+    const user = userEvent.setup();
+    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = entry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    render(<RoomPerformance entries={[usd, hkd]} scope={scope(buildRoomDateRange("custom", "2026-09-03", { startDate: "2026-09-02", endDate: "2026-09-03" }))}
+      instrumentMetadata={metadata([usd, hkd])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-03T08:00:00.000Z" />);
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    await user.click(within(panel).getByRole("button", { name: /2026-09-02.*USD/ }));
+    expect(panel).toHaveTextContent("期间 +US$100.00");
+    await user.click(within(panel).getByRole("button", { name: /2026-09-03.*HKD/ }));
+    expect(panel).toHaveTextContent("期间 +HK$20.00");
+  });
+
+  it("does not show another currency when the selected series has no period value", async () => {
+    const user = userEvent.setup();
+    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = entry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    render(<RoomPerformance entries={[usd, hkd]} scope={scope(buildRoomDateRange("custom", "2026-09-03", { startDate: "2026-09-02", endDate: "2026-09-03" }))}
+      instrumentMetadata={metadata([usd, hkd])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-03T08:00:00.000Z" />);
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    await user.click(within(panel).getByRole("button", { name: /2026-09-03.*USD/ }));
+    expect(panel).toHaveTextContent("期间 该币种无成交");
+    expect(panel).not.toHaveTextContent("期间 +HK$20.00 · 累计");
+  });
+
   it("shows three natural month summaries before drilling into a selected month", async () => {
     const user = userEvent.setup();
     const values = [
@@ -294,5 +318,76 @@ describe("RoomPerformance", () => {
     );
     expect(container.querySelectorAll("svg path")).toHaveLength(1);
     expect(screen.getByRole("region", { name: "业绩趋势与日历" })).toHaveTextContent("按同一汇率快照换算为人民币合计");
+  });
+
+  it("keeps no-trade buckets as a known plateau and exposes keyboard point readouts", async () => {
+    const user = userEvent.setup();
+    const first = entry("2026-09-02", "100");
+    const last = entry("2026-09-04", "-50", { id: "last" });
+    render(
+      <RoomPerformance
+        entries={[first, last]}
+        scope={scope(buildRoomDateRange("custom", "2026-09-04", { startDate: "2026-09-02", endDate: "2026-09-04" }))}
+        instrumentMetadata={metadata([first, last])}
+        onScopeChange={() => undefined}
+        onOpenInReview={() => undefined}
+        asOf="2026-09-04T08:00:00.000Z"
+      />,
+    );
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    expect(panel.querySelectorAll("svg path")).toHaveLength(1);
+    const point = within(panel).getByRole("button", { name: /2026-09-02.*期间收益.*累计收益/ });
+    point.focus();
+    await user.keyboard("{Enter}");
+    expect(panel).toHaveTextContent("2026-09-02 · 期间 +¥100.00 · 累计 +¥100.00");
+    expect(point).toHaveAttribute("tabindex", "0");
+  });
+
+  it("breaks the trend across an unavailable bucket", () => {
+    const first = entry("2026-09-02", "100");
+    const unknown = entry("2026-09-03", "20", { id: "unknown", instrument: { id: "UNKNOWN:TEST", symbol: "TEST", name: "未知测试", market: "XX", currency: "CNY" } });
+    const last = entry("2026-09-04", "-50", { id: "last" });
+    const { container } = render(
+      <RoomPerformance
+        entries={[first, unknown, last]}
+        scope={scope(buildRoomDateRange("custom", "2026-09-04", { startDate: "2026-09-02", endDate: "2026-09-04" }))}
+        instrumentMetadata={metadata([first, last])}
+        onScopeChange={() => undefined}
+        onOpenInReview={() => undefined}
+        asOf="2026-09-04T08:00:00.000Z"
+      />,
+    );
+    expect(container.querySelectorAll("svg path")).toHaveLength(0);
+  });
+
+  it("aligns daily cells under Monday through Sunday with leading blanks", async () => {
+    const user = userEvent.setup();
+    const value = entry("2026-09-01", "100");
+    const { container } = render(
+      <RoomPerformance entries={[value]} scope={scope()} instrumentMetadata={metadata([value])}
+        onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-19T08:00:00.000Z" />,
+    );
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    await user.click(within(panel).getByRole("button", { name: "日历" }));
+    expect(panel).toHaveTextContent("周一");
+    expect(panel).toHaveTextContent("周日");
+    expect(container.querySelectorAll('[aria-hidden="true"]').length).toBeGreaterThanOrEqual(1);
+    expect(within(panel).getByRole("button", { name: /2026-09-01，\+¥100\.00/ })).toBeInTheDocument();
+  });
+
+  it("marks cross-month calendar as a summary and returns from a drilled month", async () => {
+    const user = userEvent.setup();
+    const july = entry("2026-07-02", "10");
+    const august = entry("2026-08-02", "20", { id: "aug" });
+    const onScopeChange = vi.fn();
+    render(<RoomPerformance entries={[july, august]} scope={scope(buildRoomDateRange("custom", "2026-08-02", { startDate: "2026-07-01", endDate: "2026-08-02" }))}
+      instrumentMetadata={metadata([july, august])} onScopeChange={onScopeChange} onOpenInReview={() => undefined} asOf="2026-09-19T08:00:00.000Z" />);
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    await user.click(within(panel).getByRole("button", { name: "日历" }));
+    expect(within(panel).getByRole("button", { name: "所选期间·按月汇总" })).toHaveAttribute("aria-pressed", "false");
+    await user.click(within(panel).getByRole("button", { name: /2026年7月/ }));
+    expect(onScopeChange).toHaveBeenLastCalledWith({ period: { preset: "custom", startDate: "2026-07-01", endDate: "2026-07-31" } });
+    await user.click(within(panel).getByRole("button", { name: "返回上一范围" }));
+    expect(onScopeChange).toHaveBeenLastCalledWith({ period: { preset: "custom", startDate: "2026-07-01", endDate: "2026-08-02" } });
   });
 });

@@ -177,6 +177,7 @@ function hasFineFilter(scope: RoomScope): boolean {
     scope.query?.trim() ||
     scope.accountIds.length > 0 ||
     scope.instrumentIds.length > 0 ||
+    (scope.assetType ?? "all") !== "all" ||
     scope.markets.length > 0 ||
     scope.currencies.length > 0 ||
     scope.reviewStatuses.length > 0,

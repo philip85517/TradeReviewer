@@ -18,6 +18,8 @@ import type {
 import { fingerprintBytes } from "./file-fingerprint";
 import { groupItemsIntoRows } from "./pdf-layout";
 import { extractPdfPages, type PdfTextPage } from "./pdf-text";
+import { applyMonthlyHistoryEvidence } from "./statement-evidence";
+import type { MonthlyStatement, StatementFragment, StatementPosition } from "./monthly-statement";
 
 import {
   readChinaMerchantsTable,
@@ -77,6 +79,15 @@ function decimal(value: string | undefined): Decimal {
   const parsed = new Decimal(normalized);
   if (!parsed.isFinite()) throw new Error("non-finite number");
   return parsed;
+}
+
+function optionalDecimal(value: string | undefined): Decimal | undefined {
+  if (value === undefined || value.trim() === "") return undefined;
+  try {
+    return decimal(value);
+  } catch {
+    return undefined;
+  }
 }
 
 function feeTotal(values: readonly string[]): string {
@@ -252,6 +263,13 @@ export function parseChinaMerchantsPages(
   const diagnostics: StatementParseResult["diagnostics"] = [];
   const statementAccountId =
     options.accountId ?? maskedAccountId(pages, options.fileFingerprint);
+  const evidenceRows: Array<{
+    record: TradeExecution;
+    securityBalance?: string;
+    source: StatementFragment;
+  }> = [];
+  const incompleteInstrumentKeys = new Set<string>();
+  let reviewRequired = false;
 
   for (const layoutRow of readChinaMerchantsTable(pages)) {
     const parsedIdentity = layoutRow.instrumentSymbol
@@ -373,7 +391,7 @@ export function parseChinaMerchantsPages(
       };
       candidates.set(`${market}:${symbol}`, candidate);
 
-      records.push({
+      const record: TradeExecution = {
         id: `china-merchants:${options.fileFingerprint}:${layoutRow.page}:${layoutRow.sourceOrder}`,
         source: {
           platform: "china-merchants",
@@ -398,8 +416,8 @@ export function parseChinaMerchantsPages(
                         layoutRow.otherFee,
                         layoutRow.cells.cashChange,
                         layoutRow.cells.cashBalance,
-                        layoutRow.cells.securityBalance,
                       ].map((value) => decimal(value).toString()),
+                      optionalDecimal(layoutRow.cells.securityBalance)?.toString() ?? "missing",
                     ]),
                   ),
                 ),
@@ -449,7 +467,32 @@ export function parseChinaMerchantsPages(
           layoutRow.stampDuty ?? "0",
           layoutRow.otherFee ?? "0",
         ]),
+      };
+      records.push(record);
+      const securityBalance = optionalDecimal(layoutRow.cells?.securityBalance);
+      const source: StatementFragment = {
+        page: layoutRow.page,
+        row: layoutRow.row,
+        role: "transaction-position",
+      };
+      evidenceRows.push({
+        record,
+        source,
+        ...(securityBalance ? { securityBalance: securityBalance.toString() } : {}),
       });
+      if (!securityBalance) {
+        reviewRequired = true;
+        incompleteInstrumentKeys.add(`${market}:${symbol}`);
+        diagnostics.push({
+          severity: "warning",
+          code: "missing-china-merchants-security-balance",
+          message: "招商证券成交行缺少可解析的证券余额，无法确认成交前持仓；收益需要复核。",
+          page: layoutRow.page,
+          row: layoutRow.row,
+          sourceOrder: layoutRow.sourceOrder,
+          instrumentSymbol: symbol,
+        });
+      }
     } catch {
       addExclusion(
         exclusions,
@@ -469,13 +512,81 @@ export function parseChinaMerchantsPages(
     }
   }
 
+  const documentId = `china-merchants:${options.fileFingerprint}`;
+  const positions: StatementPosition[] = [];
+  const groupedEvidence = new Map<string, typeof evidenceRows>();
+  for (const row of evidenceRows) {
+    const key = `${row.record.accountId}:${row.record.instrument.market}:${row.record.instrument.symbol}`;
+    const group = groupedEvidence.get(key) ?? [];
+    group.push(row);
+    groupedEvidence.set(key, group);
+  }
+  for (const group of groupedEvidence.values()) {
+    const first = group[0]!;
+    const firstBalance = optionalDecimal(first.securityBalance);
+    if (firstBalance) {
+      const signedQuantity = new Decimal(first.record.quantity).times(first.record.side === "buy" ? 1 : -1);
+      const openingQuantity = firstBalance.minus(signedQuantity);
+      const isChinaMarket = first.record.instrument.market === "CN-SH" || first.record.instrument.market === "CN-SZ";
+      if (openingQuantity.isNegative() && isChinaMarket) {
+        reviewRequired = true;
+        incompleteInstrumentKeys.add(`${first.record.instrument.market}:${first.record.instrument.symbol}`);
+        diagnostics.push({
+          severity: "warning",
+          code: "inconsistent-china-merchants-security-balance",
+          message: "证券余额与成交数量推导出 A股 负向期初库存；未将其解释为空头，需核对原始账单。",
+          page: first.source.page,
+          row: first.source.row,
+          instrumentSymbol: first.record.instrument.symbol,
+        });
+      } else {
+        positions.push({
+          documentId,
+          accountId: first.record.accountId,
+          market: first.record.instrument.market,
+          symbol: first.record.instrument.symbol,
+          phase: "opening",
+          date: first.record.executedAt.slice(0, 10),
+          quantity: openingQuantity.toString(),
+          source: [first.source],
+        });
+      }
+    }
+    for (const row of group) {
+      if (row.securityBalance === undefined) continue;
+      positions.push({
+        documentId,
+        accountId: row.record.accountId,
+        market: row.record.instrument.market,
+        symbol: row.record.instrument.symbol,
+        phase: "closing",
+        date: row.record.executedAt.slice(0, 10),
+        quantity: row.securityBalance,
+        source: [row.source],
+      });
+    }
+  }
+  positions.sort((a, b) => a.date.localeCompare(b.date) || (a.phase === b.phase ? 0 : a.phase === "opening" ? -1 : 1));
+  const monthly: MonthlyStatement = {
+    documentId,
+    templateIds: ["china-merchants/pdf/monthly-v1"],
+    accountId: statementAccountId,
+    positions,
+    events: [],
+    reviewRequired,
+    ...(reviewRequired && incompleteInstrumentKeys.size > 0
+      ? { incompleteInstruments: [...incompleteInstrumentKeys].map(key => { const [market, symbol] = key.split(":"); return { market, symbol }; }) }
+      : {}),
+    ...(reviewRequired ? { historyIncomplete: true } : {}),
+  };
   return {
     broker: "china-merchants",
-    records,
+    records: applyMonthlyHistoryEvidence(records, [monthly]),
     candidates: [...candidates.values()],
     exclusions,
     diagnostics,
     blocked: false,
+    monthly,
   };
 }
 

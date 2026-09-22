@@ -1,0 +1,25 @@
+# 交易室布局重构进度
+
+- 基线 HEAD：2836a51；隔离 worktree：ccc5；保留已有未跟踪文件。
+- 01 实现者：Luna / Volta / 01a0c21c-06b1-7ef3-974b-17106a79edde。
+- 基线 typecheck 通过；数据管理、交易库、模式洞察、阶段总结四组单测 46/46 通过。
+- 原始数据：.data/validation/review.sqlite，1857 executions / 236 instruments。
+- executions 按 id 排序导出的 SHA256：59d30c24be886fb241495c0fb5bdbb78a8a2e017e95327b51d0588898886e9cb。
+- SQLite backup 验收副本：.data/validation/layout-review.sqlite。
+- 验收服务：3002，session 55348；3001 原服务保持运行。
+- 浏览器基线：实盘/全部分类/今年至今，62 个可信已平仓回合，33胜29负，53.23%，成本收益率7.37%；人民币估算29146.06（随汇率变化）；原币 CNY12413.45/USD-8467.97/HKD85877.50。
+- 协调方式：遵守项目 Luna 实现+协调者独立验收；按用户要求保持简约，任务和验收记录留在本地跟踪目录。
+- 01 独立审查修正CSS媒体查询嵌套和重复页面顶栏；新增导航行为测试1通过，桌面1280/390菜单及无溢出验证通过。复盘回归留到最终集成。
+- 02：Mencius / 01a0c227-14ee-7400-b7ea-2a0c3aa9b34a，拥有trade-library及其tests。
+- 03：Godel / 01a0c227-15f5-79b0-9d0a-6d327fe4e628，拥有review-summary、pattern-insights及其tests。
+- 04：Aristotle / 01a0c227-16f0-7271-883a-859ca9b21528，拥有data-management及其tests。
+- Volta继续独占workspace、globals.css及workspace tests负责接线；协调者只做文档、独立审查与浏览器验收。
+- 接口：ReviewSummary activeTab summary/patterns + onTabChange/onImport；DataManagement activeTab import/quality/settings + onTabChange；TradeLibrary onImport。主工作区保存tab状态，质量入口定向quality。
+- 初次生产构建通过；生产服务3002 session91324。Node runtime/server-rendered测试5/5通过。
+- 全量单测首轮：198文件通过、6失败、2跳过；1826测试通过、15失败、5跳过。失败包含缺失boc-source.html fixture、持仓测试写死2026-09-19日期、并行超时和旧导航断言。保留首轮失败，正在单worker独立复验，不放宽项目默认配置。
+- 独立review Newton发现：洞察复盘返回错误来源、模式分析多余水平缩进；已交workspace owner最小修复。
+- 单worker复验（默认5秒timeout不变）：4文件110通过/2失败，剩余均为import-flow旧顶栏/旧details断言；原先并行超时均消失。
+- HEAD归档基线 /tmp/tradereview-layout-baseline.AmdTsL 独立测试：workspace/import/refresh109通过；room-holdings日期硬编码失败、boc-source.html缺失同样复现，属既有测试问题，保留不扩大改造。
+- 05 界面优化由 Luna / Planck、Ohm、Hooke 分工完成：模式洞察与数据管理统一 Tab 语义和键盘行为；窄屏选择器、摘要卡与交易室筛选对齐修复；收益配置状态文字对比度修复；质量页重复标题去重。
+- 05 组件测试36/36通过；typecheck、scoped eslint、build通过；集成回归1843通过、0失败、5跳过，两个基线无关测试文件仍按原记录排除。
+- 05 浏览器复核1280/390/320通过，预览服务3002重启后仍运行，原始交易数据与隔离副本未改动。

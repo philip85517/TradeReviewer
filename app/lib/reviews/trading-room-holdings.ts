@@ -2,7 +2,9 @@ import Decimal from "decimal.js";
 
 import type { DailyCandleRecord } from "../market/contracts";
 import { marketTradingDate } from "../market/trading-date";
+import type { MarketDataSyncStatus } from "../market/sync-status";
 import { replayPositionAtPrice, type PositionLedgerSnapshot } from "../replay/position-ledger";
+import type { StatementPosition } from "../import/monthly-statement";
 import {
   classifyTradingRoomAsset,
   filterRoomRows,
@@ -19,6 +21,7 @@ import {
   type DashboardRow,
 } from "./dashboard";
 import type { TradeLibraryEntry, TradeLibraryQuoteProjection } from "../trades/library";
+import type { MarketDataJob } from "../storage/market-data-jobs";
 import { executionSettlementCurrency, type TradeEpisode } from "../trades/types";
 
 export type TradingRoomQuoteFreshness = "current" | "stale" | "future";
@@ -33,12 +36,75 @@ export type TradingRoomQuote = {
 };
 
 export type TradingRoomHoldingValueStatus = "available" | "unavailable" | "stale" | "missing";
+export type TradingRoomHoldingDirection = "long" | "short" | "unknown";
+export type TradingRoomHoldingPositionEvidenceStatus =
+  | "verified-long"
+  | "verified-short"
+  | "unverified-negative"
+  | "unavailable";
+export type TradingRoomHoldingPositionEvidence = {
+  status: TradingRoomHoldingPositionEvidenceStatus;
+  summary: string;
+  missing: readonly string[];
+  sourceFormatRuleIds: readonly string[];
+};
+export type TradingRoomHoldingDiagnostic =
+  | "available"
+  | "position-evidence"
+  | "missing-quote"
+  | "stale-quote"
+  | "future-quote"
+  | "pre-trade-quote"
+  | "currency-mismatch"
+  | "invalid-quote"
+  | "source-unavailable"
+  | "source-unsupported"
+  | "market-data-pending"
+  | "market-data-storage-error";
+
+export type TradingRoomMarketDataDiagnostic = {
+  reason: string;
+  sourceUnsupported: boolean;
+};
+
+export function diagnoseTradingRoomMarketData(
+  status: MarketDataSyncStatus | undefined,
+  label: string | undefined,
+  job: MarketDataJob | undefined,
+): TradingRoomMarketDataDiagnostic | null {
+  const sourceText = `${label ?? ""} ${job?.message ?? ""}`;
+  if (status === "needs-provider" || status === "source-forbidden" || (status === undefined && /源待连接|未连接|不支持/.test(sourceText))) {
+    return { reason: "行情源不支持或尚未连接", sourceUnsupported: true };
+  }
+  if (status === "source-unavailable" || job?.status === "source-unavailable") {
+    const detail = job?.error?.message ?? job?.message;
+    return { reason: detail ? `行情源暂不可用：${detail}` : "行情源暂不可用", sourceUnsupported: false };
+  }
+  if (status === "storage-error" || job?.status === "storage-error") {
+    const detail = job?.error?.message ?? job?.message;
+    return { reason: detail ? `行情状态读取失败：${detail}` : "行情状态读取失败", sourceUnsupported: false };
+  }
+  if (status === "syncing" || job?.status === "syncing") {
+    return { reason: "行情更新进行中", sourceUnsupported: false };
+  }
+  if (status === "not-requested" || !status && !job) {
+    return { reason: "尚未开始行情更新", sourceUnsupported: false };
+  }
+  if (status === "stale" || status === "latest-available" || status === "partial") {
+    return { reason: "行情覆盖不完整或已过期", sourceUnsupported: false };
+  }
+  return null;
+}
 
 export type TradingRoomHoldingsOptions = {
   scope: RoomScope;
   instrumentMetadata?: TradingRoomMetadataInput;
   quotesByInstrument?: Readonly<Record<string, TradingRoomQuote | undefined>>;
   candlesByInstrument?: Readonly<Record<string, readonly DailyCandleRecord[] | undefined>>;
+  marketDataStatuses?: Readonly<Record<string, MarketDataSyncStatus | undefined>>;
+  marketDataDailyStatuses?: Readonly<Record<string, MarketDataSyncStatus | undefined>>;
+  marketDataLabels?: Readonly<Record<string, string | undefined>>;
+  marketDataJobs?: Readonly<Record<string, MarketDataJob | undefined>>;
   positionSnapshotsByEpisode?: Readonly<Record<string, PositionLedgerSnapshot | undefined>>;
   /** The local as-of instant used to classify candle age; injected for deterministic UI/tests. */
   asOf?: string;
@@ -73,6 +139,9 @@ export type TradingRoomHoldingRow = {
   unrealizedPnl: string | null;
   unrealizedPnlStatus: TradingRoomHoldingValueStatus;
   statusReason: string | null;
+  direction: TradingRoomHoldingDirection;
+  positionEvidence: TradingRoomHoldingPositionEvidence;
+  diagnostic: TradingRoomHoldingDiagnostic;
 };
 
 export type TradingRoomHoldingGroup = {
@@ -396,22 +465,163 @@ function preserveEpisodeAccuracy(
   };
 }
 
+function negativeStatementPosition(position: StatementPosition | undefined): boolean {
+  if (!position || position.phase !== "opening") return false;
+  try {
+    return new Decimal(position.quantity).lt(0);
+  } catch {
+    return false;
+  }
+}
+
+function positionEvidenceFor(
+  row: DashboardRow,
+  position: PositionLedgerSnapshot | null,
+): TradingRoomHoldingPositionEvidence {
+  const episode = row.item.episode;
+  const executions = episode.executions;
+  const sourceFormatRuleIds = [...new Set(
+    executions
+      .map(execution => execution.source.formatRuleId)
+      .filter((value): value is string => Boolean(value)),
+  )];
+  const hasExplicitOpenShort = executions.some(execution =>
+    execution.source.positionEffect === "open-short" &&
+    execution.source.positionEffectEvidence?.kind !== "inferred",
+  );
+  const hasNegativeOpeningPosition = Boolean(
+    negativeStatementPosition(episode.initialPosition) ||
+      executions.some(execution =>
+        negativeStatementPosition(execution.source.openingPosition) ||
+        (execution.source.statementPositions ?? []).some(negativeStatementPosition)),
+  );
+  if (!position || position.quantityKnown === false) {
+    return {
+      status: "unavailable",
+      summary: "持仓证据不足，方向待核对",
+      missing: ["positionEffect", "openingPosition", "statementPositions"],
+      sourceFormatRuleIds,
+    };
+  }
+  let quantity: Decimal;
+  try {
+    quantity = new Decimal(position.quantity);
+  } catch {
+    return {
+      status: "unavailable",
+      summary: "持仓证据不足，方向待核对",
+      missing: ["positionEffect", "openingPosition", "statementPositions"],
+      sourceFormatRuleIds,
+    };
+  }
+  if (quantity.gt(0)) {
+    return {
+      status: "verified-long",
+      summary: "成交证据支持当前多头数量",
+      missing: [],
+      sourceFormatRuleIds,
+    };
+  }
+  if (quantity.lt(0) && (hasExplicitOpenShort || hasNegativeOpeningPosition)) {
+    return {
+      status: "verified-short",
+      summary: hasExplicitOpenShort
+        ? "成交证据明确标记开空"
+        : "来源持仓证据包含可信期初负仓",
+      missing: [],
+      sourceFormatRuleIds,
+    };
+  }
+  if (quantity.lt(0)) {
+    const missing = [
+      "positionEffect",
+      "openingPosition",
+      "statementPositions",
+      ...(executions.some(execution => execution.source.statementMonth) ? [] : ["statementMonth"]),
+      ...(executions.some(execution => execution.source.templateId) ? [] : ["templateId"]),
+    ];
+    const ruleDetail = sourceFormatRuleIds.length > 0
+      ? `；来源规则 ${sourceFormatRuleIds.join("、")}`
+      : "";
+    return {
+      status: "unverified-negative",
+      summary: `负仓差额待核对：成交证据未证明开空或可信期初负仓${ruleDetail}`,
+      missing,
+      sourceFormatRuleIds,
+    };
+  }
+  return {
+    status: "unavailable",
+    summary: "持仓证据不足，方向待核对",
+    missing: ["positionEffect", "openingPosition", "statementPositions"],
+    sourceFormatRuleIds,
+  };
+}
+
 function reasonFor(
   position: PositionLedgerSnapshot | null,
+  positionEvidence: TradingRoomHoldingPositionEvidence,
   quote: TradingRoomQuote | null,
   quoteStatus: TradingRoomHoldingValueStatus,
   settlementCurrency: string | null,
   quoteReason?: string | null,
+  marketDataReason?: string | null,
 ): string | null {
+  if (positionEvidence.status === "unverified-negative") return positionEvidence.summary;
   if (!position) return "持仓证据不足，数量与成本待核对";
   if (position.quantityKnown === false) return "持仓数量待核对";
   if (position.costKnown === false || position.accuracy) return "可用成本待核对";
   if (settlementCurrency === null) return "结算币种不明确，成本与浮盈亏待核对";
+  if (marketDataReason) return marketDataReason;
   if (quoteReason) return quoteReason;
   if (quoteStatus === "missing") return "缺少行情，无法计算浮盈亏";
   if (quoteStatus === "stale") return "行情已过期，无法计算当前浮盈亏";
   if (!quote || quote.price === null) return "行情价格无效，无法计算浮盈亏";
   return null;
+}
+
+function directionFor(
+  row: DashboardRow,
+  position: PositionLedgerSnapshot | null,
+  positionEvidence: TradingRoomHoldingPositionEvidence,
+): TradingRoomHoldingDirection {
+  if (positionEvidence.status === "verified-short") return "short";
+  if (positionEvidence.status === "unverified-negative") return "unknown";
+  if (!position || position.quantityKnown === false || row.item.episode.directionKnown === false) return "unknown";
+  try {
+    const quantity = new Decimal(position.quantity);
+    if (quantity.lt(0)) return "unknown";
+    if (quantity.gt(0)) return "long";
+  } catch {
+    return "unknown";
+  }
+  // A zero position is not an open short. Do not let the episode's historical
+  // direction relabel a currently non-negative holding after it was closed.
+  return "unknown";
+}
+
+function diagnosticFor(
+  position: PositionLedgerSnapshot | null,
+  positionEvidence: TradingRoomHoldingPositionEvidence,
+  quote: TradingRoomQuote | null,
+  quoteStatus: TradingRoomHoldingValueStatus,
+  settlementCurrency: string | null,
+  quoteReason: string | null,
+  marketDataDiagnostic: TradingRoomMarketDataDiagnostic | null,
+): TradingRoomHoldingDiagnostic {
+  if (positionEvidence.status === "unverified-negative" || positionEvidence.status === "unavailable") return "position-evidence";
+  if (!position || position.quantityKnown === false || position.costKnown === false || position.accuracy || settlementCurrency === null) return "position-evidence";
+  if (marketDataDiagnostic?.sourceUnsupported) return "source-unsupported";
+  if (marketDataDiagnostic?.reason === "行情更新进行中") return "market-data-pending";
+  if (marketDataDiagnostic?.reason.startsWith("行情状态读取失败")) return "market-data-storage-error";
+  if (marketDataDiagnostic) return "source-unavailable";
+  if (quoteReason?.includes("币种")) return "currency-mismatch";
+  if (quoteReason?.includes("早于")) return "pre-trade-quote";
+  if (quoteReason?.includes("晚于")) return "future-quote";
+  if (quoteStatus === "missing") return "missing-quote";
+  if (quoteStatus === "stale") return "stale-quote";
+  if (!quote || quote.price === null) return "invalid-quote";
+  return "available";
 }
 
 function compareRows(left: TradingRoomHoldingRow, right: TradingRoomHoldingRow): number {
@@ -454,12 +664,25 @@ export function buildTradingRoomHoldings(
         : quote?.freshness === "future"
           ? "行情日期晚于当前截点，无法计算浮盈亏"
           : null;
+    const marketDataStatus = options.marketDataDailyStatuses?.[episode.instrument.id]
+      ?? options.marketDataStatuses?.[episode.instrument.id];
+    const hasMarketDataDiagnosticInput = marketDataStatus !== undefined ||
+      options.marketDataLabels?.[episode.instrument.id] !== undefined ||
+      options.marketDataJobs?.[episode.instrument.id] !== undefined;
+    const marketDataDiagnostic = (quote?.price === null || !quote) && hasMarketDataDiagnosticInput
+      ? diagnoseTradingRoomMarketData(
+        marketDataStatus,
+        options.marketDataLabels?.[episode.instrument.id],
+        options.marketDataJobs?.[episode.instrument.id],
+      )
+      : null;
     const quoteStatus: TradingRoomHoldingValueStatus = quote
       ? quoteReason || quote.price === null ? "unavailable" : quote.freshness === "stale" ? "stale" : "available"
       : "missing";
     const position = derivePosition(row, quote, options.positionSnapshotsByEpisode?.[episode.id]);
+    const positionEvidence = positionEvidenceFor(row, position);
     const quantityUnavailable = !position || position.quantityKnown === false;
-    const costUnavailable = !position || position.costKnown === false || Boolean(position.accuracy) || settlementCurrency === null;
+    const costUnavailable = !position || position.costKnown === false || Boolean(position.accuracy) || settlementCurrency === null || positionEvidence.status === "unverified-negative";
     const pnlUnavailable = quantityUnavailable || costUnavailable || quoteStatus !== "available";
     const pnlStatus: TradingRoomHoldingValueStatus = pnlUnavailable
       ? !position || quantityUnavailable || costUnavailable || quoteStatus === "unavailable" ? "unavailable" : quoteStatus
@@ -491,7 +714,10 @@ export function buildTradingRoomHoldings(
       quoteStatus,
       unrealizedPnl: pnlUnavailable ? null : position.unrealizedPnl,
       unrealizedPnlStatus: pnlStatus,
-      statusReason: reasonFor(position, quote, pnlStatus === "stale" ? "stale" : quoteStatus, settlementCurrency, quoteReason),
+      statusReason: reasonFor(position, positionEvidence, quote, pnlStatus === "stale" ? "stale" : quoteStatus, settlementCurrency, quoteReason, marketDataDiagnostic?.reason),
+      direction: directionFor(row, position, positionEvidence),
+      positionEvidence,
+      diagnostic: diagnosticFor(position, positionEvidence, quote, quoteStatus, settlementCurrency, quoteReason, marketDataDiagnostic),
     } satisfies TradingRoomHoldingRow;
   }).sort(compareRows);
   const groups = [...new Set(rows.map(row => row.market))]

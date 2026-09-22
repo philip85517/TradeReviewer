@@ -151,11 +151,12 @@
   .summaryLine { align-items: flex-start; display: grid; gap: 4px; }
   .weekdays, .leadingBlank { display: none; }
   .dailyGrid { display: grid; grid-template-columns: 1fr; gap: 4px; }
-  .dailyGrid .cell { min-height: 54px; display: grid; grid-template-columns: minmax(104px, 1fr) minmax(max-content, auto) auto; align-items: center; gap: 8px; padding: 8px; }
+  .dailyGrid .cell { min-height: 54px; display: grid; grid-template-columns: minmax(90px, 1fr) minmax(0, max-content); align-items: center; gap: 4px 8px; padding: 8px; }
   .dailyGrid .dayNumber { display: none; }
   .dailyGrid .fullDate { display: inline; font-size: 12px; }
   .dailyGrid .cell span { font-size: 12px; white-space: nowrap; }
   .dailyGrid .cell small { font-size: 11px; white-space: nowrap; }
+  .dailyGrid .cell small { grid-column: 1 / -1; }
   .breadcrumb { align-items: flex-start; }
   .dailyGrid { gap: 4px; }
   .cell { min-height: 64px; gap: 3px; padding: 6px; }

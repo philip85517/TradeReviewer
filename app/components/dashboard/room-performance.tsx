@@ -281,10 +281,12 @@ export function RoomPerformance({
   const asOfDate = model.asOf;
   const queueIds = model.rows.map(row => row.item.episode.id);
   const displayMoney = (value: RoomMoneyView) => renderMoney ? renderMoney(value) : moneyLabel(value);
-  const details = selectedKey ? model.detailFor(selectedKey) : [];
-  const selectedTrend = selectedTrendKey ? model.trend.points.find(point => point.key === selectedTrendKey.split(":").at(-1)) ?? null : null;
-  const selectedTrendCurrency = selectedTrendKey?.split(":")[0];
-  const selectedCell = selectedKey ? model.cells.find(cell => cell.key === selectedKey && cell.state !== "future") ?? null : null;
+  const validSelectedKey = selectedKey && model.cells.some(cell => cell.key === selectedKey && cell.state !== "future") ? selectedKey : null;
+  const validSelectedTrendKey = selectedTrendKey && model.trend.points.some(point => point.key === selectedTrendKey.split(":").at(-1)) ? selectedTrendKey : null;
+  const details = validSelectedKey ? model.detailFor(validSelectedKey) : [];
+  const selectedTrend = validSelectedTrendKey ? model.trend.points.find(point => point.key === validSelectedTrendKey.split(":").at(-1)) ?? null : null;
+  const selectedTrendCurrency = validSelectedTrendKey?.split(":")[0];
+  const selectedCell = validSelectedKey ? model.cells.find(cell => cell.key === validSelectedKey && cell.state !== "future") ?? null : null;
   const isDailyCalendar = level === "month" && model.cells.every(cell => cell.startDate === cell.endDate);
   const isCrossMonthSummary = level === "month" && scope.period.startDate.slice(0, 7) !== scope.period.endDate.slice(0, 7);
   const weekdayOffset = isDailyCalendar && model.cells.length > 0
@@ -338,15 +340,6 @@ export function RoomPerformance({
       previousScopePeriodSignatureRef.current = scopePeriodSignature;
     }
   }, [scopeFilterSignature, scopePeriodSignature]);
-
-  useEffect(() => {
-    if (selectedKey && !model.cells.some(cell => cell.key === selectedKey && cell.state !== "future")) {
-      setSelectedKey(null);
-    }
-    if (selectedTrendKey && !model.trend.points.some(point => point.key === selectedTrendKey.split(":").at(-1))) {
-      setSelectedTrendKey(null);
-    }
-  }, [model, selectedKey, selectedTrendKey]);
 
   const chartStageRef = useCallback((element: HTMLDivElement | null) => {
     resizeObserverRef.current?.disconnect();

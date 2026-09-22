@@ -6,6 +6,7 @@ import Decimal from "decimal.js";
 import type { TradeLibraryEntry } from "../../lib/trades/library";
 import {
   buildTradingRoomHoldings,
+  type TradingRoomHoldingDiagnostic,
   type TradingRoomHoldingRow,
   type TradingRoomHoldingsOptions,
 } from "../../lib/reviews/trading-room-holdings";
@@ -18,6 +19,8 @@ export type RoomHoldingsPanelProps = TradingRoomHoldingsOptions & {
     episodeId: string,
     queueIds?: string[],
   ) => void;
+  onRetryQuote?: (instrumentId: string) => void | Promise<void>;
+  onOpenDataCheck?: (instrumentId: string, episodeId: string) => void;
 };
 
 function currencyCode(value: string | null | undefined): string {
@@ -60,13 +63,13 @@ function price(value: string | null, currency: string | null | undefined): strin
 }
 
 function averageCost(value: string | null, currency: string | null | undefined): string {
-  if (value === null) return "待核对";
+  if (value === null) return "可用成本待核对";
   if (!/^\d+(?:\.\d+)?$/.test(value) || Number(value) < 0) return "待核对";
   const display = new Decimal(value).toDecimalPlaces(6).toString();
   return price(display, currency);
 }
 
-function number(value: string | null, fractionDigits = 8): string {
+function number(value: string | null, fractionDigits = 2): string {
   if (value === null) return "待核对";
   const parsed = Number(value);
   if (!Number.isFinite(parsed)) return "待核对";
@@ -87,7 +90,7 @@ function pnlLabel(row: TradingRoomHoldingRow): string {
   }
   if (row.unrealizedPnlStatus === "stale") return "浮盈亏不可用 · 行情已过期";
   if (row.quoteStatus === "missing") return "浮盈亏不可用 · 缺少行情";
-  return `浮盈亏不可用 · ${row.statusReason ?? "持仓证据待核对"}`;
+  return "浮盈亏不可用";
 }
 
 function pnlTone(row: TradingRoomHoldingRow): "positive" | "negative" | "unavailable" {
@@ -107,11 +110,38 @@ function assetLabel(row: TradingRoomHoldingRow): string {
 }
 
 function directionLabel(row: TradingRoomHoldingRow): string {
-  const episode = row.row.item.episode;
-  if (episode.directionKnown === false) return "方向待核对";
-  if (episode.direction === "short") return "空头";
-  if (episode.direction === "long") return "多头";
+  if (row.direction === "short") return "空头";
+  if (row.direction === "long") return "多头";
   return "方向待核对";
+}
+
+function diagnosticLabel(diagnostic: TradingRoomHoldingDiagnostic): string {
+  switch (diagnostic) {
+    case "missing-quote": return "缺少行情";
+    case "stale-quote": return "行情已过期";
+    case "future-quote": return "行情晚于统计截点";
+    case "pre-trade-quote": return "行情早于最近交易";
+    case "currency-mismatch": return "行情币种不匹配";
+    case "invalid-quote": return "行情价格无效";
+    case "source-unavailable": return "行情源暂不可用";
+    case "source-unsupported": return "行情源不支持或未连接";
+    case "market-data-pending": return "行情更新进行中";
+    case "market-data-storage-error": return "行情状态读取失败";
+    case "position-evidence": return "持仓证据待核对";
+    default: return "行情可用";
+  }
+}
+
+type RetryFeedback = "idle" | "running" | "settled" | "success" | "still-unavailable" | "failed";
+
+function retryFeedbackLabel(value: RetryFeedback): string | null {
+  switch (value) {
+    case "running": return "行情重试进行中";
+    case "success": return "行情重试成功";
+    case "still-unavailable": return "行情重试完成，仍不可用";
+    case "failed": return "行情重试失败";
+    default: return null;
+  }
 }
 
 function accountDisplayLabels(rows: readonly TradingRoomHoldingRow[]): ReadonlyMap<string, string> {
@@ -138,14 +168,41 @@ function HoldingRow({
   accountLabel,
   viewedDate,
   onOpenInReview,
+  onRetryQuote,
+  onOpenDataCheck,
 }: {
   row: TradingRoomHoldingRow;
   queueIds: string[];
   accountLabel: string;
   viewedDate: string;
   onOpenInReview: RoomHoldingsPanelProps["onOpenInReview"];
+  onRetryQuote?: RoomHoldingsPanelProps["onRetryQuote"];
+  onOpenDataCheck?: RoomHoldingsPanelProps["onOpenDataCheck"];
 }) {
+  const [retryFeedback, setRetryFeedback] = useState<RetryFeedback>("idle");
   const costCurrency = row.settlementCurrency ?? row.row.entry.instrument.currency;
+
+  async function retryQuote() {
+    if (!onRetryQuote || retryFeedback === "running") return;
+    setRetryFeedback("running");
+    try {
+      const result = onRetryQuote(row.instrumentId);
+      if (!result || typeof result.then !== "function") {
+        setRetryFeedback("failed");
+        return;
+      }
+      await result;
+      setRetryFeedback("settled");
+    } catch {
+      setRetryFeedback("failed");
+    }
+  }
+  const visibleRetryFeedback = retryFeedback === "settled"
+    ? row.diagnostic === "available" ? "success" : "still-unavailable"
+    : retryFeedback === "still-unavailable" && row.diagnostic === "available"
+      ? "success"
+      : retryFeedback;
+  const retryLabel = retryFeedbackLabel(visibleRetryFeedback);
   return (
     <article className={styles.row}>
       <div className={styles.rowHeading}>
@@ -171,14 +228,28 @@ function HoldingRow({
         行情：{quoteDetail(row)} · 行情日期 {row.quote?.quoteDate ?? "未知"}
         {row.quote?.price !== null && row.quote ? ` · ${row.quote.currency}` : ""}
       </p>
-      <details className={styles.evidence}>
+      <details className={styles.evidence} role="group" aria-label="行情详情">
         <summary>技术证据</summary>
         {row.statusReason && row.unrealizedPnlStatus !== "available" && <p className={styles.statusReason}>{row.statusReason}</p>}
         <p>持仓均价完整值：{row.averageCost ?? "待核对"}</p>
         {row.quote?.price && row.quote.price.split(".")[1]?.length > 100 && <p>估值价原始值：{row.quote.price}</p>}
-        <p>方向证据：{row.row.item.episode.directionKnown === false ? "来源未确认，未按数量正负推断" : "回合方向字段"} · 行情来源：{row.quote?.provider ?? "未知"} · 采集时间：{row.quote?.fetchedAt ?? "未知"}</p>
+        <p>行情日期：{row.quote?.quoteDate ?? "未知"} · 行情来源：{row.quote?.provider ?? "未知"} · 采集时间：{row.quote?.fetchedAt ?? "未知"} · 方向证据：{row.row.item.episode.directionKnown === false ? "来源未确认，未按数量正负推断" : "回合方向字段"}</p>
         <p>流水覆盖截止：{row.latestTradeDate ?? "未知"} · 查看日：{viewedDate}</p>
       </details>
+      {row.diagnostic !== "available" && <div className={styles.diagnosticActions}>
+        <span className={styles.diagnosticLabel}>{diagnosticLabel(row.diagnostic)}</span>
+        {(["missing-quote", "stale-quote", "source-unavailable", "market-data-pending", "market-data-storage-error"] as TradingRoomHoldingDiagnostic[]).includes(row.diagnostic) && onRetryQuote && <button type="button" disabled={retryFeedback === "running"} onClick={() => void retryQuote()}>{retryFeedback === "running" ? "重试行情进行中" : "重试行情"}</button>}
+        {onOpenDataCheck && <button type="button" onClick={() => onOpenDataCheck(row.instrumentId, row.episodeId)}>查看数据</button>}
+      </div>}
+      {retryLabel && <p className={styles.retryFeedback} role="status">{retryLabel}</p>}
+      {row.statusReason && row.unrealizedPnlStatus !== "available" && <details className={styles.diagnosticDetails}>
+        <summary>查看诊断详情</summary>
+        <p className={styles.statusReason}>{row.statusReason}</p>
+        {row.positionEvidence.status === "unverified-negative" && <p className={styles.statusReason}>
+          缺失证据字段：{row.positionEvidence.missing.join("、") || "无"}
+          {row.positionEvidence.sourceFormatRuleIds.length > 0 ? `；来源规则：${row.positionEvidence.sourceFormatRuleIds.join("、")}` : ""}
+        </p>}
+      </details>}
     </article>
   );
 }
@@ -186,6 +257,8 @@ function HoldingRow({
 export function RoomHoldingsPanel({
   entries,
   onOpenInReview,
+  onRetryQuote,
+  onOpenDataCheck,
   ...options
 }: RoomHoldingsPanelProps) {
   const [sort, setSort] = useState<"recent" | "pnl">("recent");
@@ -230,7 +303,7 @@ export function RoomHoldingsPanel({
               <h3>{group.label}<small>{group.rows.length} 个回合</small></h3>
               <div className={styles.rows}>
                 {group.rows.map(row => (
-                  <HoldingRow key={row.episodeId} row={row} queueIds={queueIds} accountLabel={accountLabels.get(row.accountId) ?? "账户"} viewedDate={model.asOf} onOpenInReview={onOpenInReview} />
+                  <HoldingRow key={row.episodeId} row={row} queueIds={queueIds} accountLabel={accountLabels.get(row.accountId) ?? "账户"} viewedDate={model.asOf} onOpenInReview={onOpenInReview} onRetryQuote={onRetryQuote} onOpenDataCheck={onOpenDataCheck} />
                 ))}
               </div>
             </section>

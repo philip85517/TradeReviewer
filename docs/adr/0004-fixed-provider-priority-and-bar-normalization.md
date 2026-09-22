@@ -1,5 +1,7 @@
 # ADR-0004：固定行情源优先级与 1H 时间口径
 
+> 实施前审查提示：本记录的“四源最小性”、统一减 60m 和可知时间推断存在反例，见 [架构审查](0005-market-platform-architecture-review.md)。原决策保留供追溯，这些规则不可直接实施；后续设计确认后替代。
+
 - 状态：已决策，待实现
 - 日期：2026-09-21
 - 依据：[ADR-0003 实测报告](0003-market-source-validation-and-priority.md)
@@ -109,4 +111,3 @@ enabled / canaryRequired
 3. 修复 Eastmoney SPY，并完成美股 ETF 日线/1H canary。
 4. 将 router 硬编码顺序迁移到 `ProviderPolicy`，验证每个矩阵键最多三个候选。
 5. Tiger 只有完成真实账号 1D/1H canary 后，才允许作为 feature flag 候选接入；仍不支持 15m。
-

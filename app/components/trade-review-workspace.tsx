@@ -68,10 +68,7 @@ import type {
   NativeIntradayInterval,
   SupportedMarket,
 } from "../lib/market/contracts";
-import {
-  syncIntradayMarketDataForRanges,
-  type IntradayTimeRange,
-} from "../lib/market/intraday-sync-service";
+import type { IntradayTimeRange } from "../lib/market/intraday-sync-service";
 import { buildIntradaySyncRanges } from "../lib/market/intraday-sync-ranges";
 import { normalizeProviderLatestTails, reconcileDailyCoverage } from "../lib/market/coverage-tail";
 import {
@@ -99,10 +96,7 @@ import {
   type GlobalMarketRefreshInventoryItem,
   type GlobalMarketRefreshFailureDetail,
 } from "../lib/market/refresh-summary";
-import {
-  MarketDataSyncError,
-  syncMarketData,
-} from "../lib/market/sync-service";
+import { refreshMarketData } from "../lib/market/market-data-service";
 import { canonicalInstrumentId } from "../lib/instruments/display-name";
 import type { ResolvedInstrument } from "../lib/instruments/metadata-contracts";
 import { resolveHistoricalInstrumentIdentity } from "../lib/instruments/historical-instrument-identity";
@@ -209,7 +203,7 @@ import { RuleChecks } from "./review/rule-checks";
 import type { EpisodeNotesProps } from "./review/episode-notes-panel";
 import { createReviewSummaryClient } from "../lib/storage/review-summary-client";
 import { filterTradeLibraryEntriesByScope, reviewScopeOptions, trackedRuleCandidates, type ReviewSummaryRange } from "../lib/reviews/review-summary";
-import { PatternInsights } from "./insights/pattern-insights";
+import { PatternInsights, type Category } from "./insights/pattern-insights";
 import {
   ReviewChartWorkspace,
   type EpisodeOption,
@@ -226,6 +220,7 @@ import {
 } from "./global-market-refresh";
 import { RefreshCancellationService } from "../lib/market/refresh-cancellation";
 import { withGlobalMarketRefreshLock } from "../lib/market/refresh-lock";
+import { retryMarketData } from "../lib/market/retry-market-data";
 import { composeAbortSignals } from "../lib/instruments/abort-signal";
 import { toRoomFxSnapshot } from "../lib/fx/room-contracts";
 import { useFxRates } from "../lib/fx/use-fx-rates";
@@ -284,7 +279,7 @@ type Props = {
   legacyStateExporter?: (options?: { excludeDemo?: boolean }) => Promise<import("../lib/storage/sqlite-contracts").BrowserStatePayload | null>;
 };
 
-type ReviewReturnView = "dashboard" | "library";
+type ReviewReturnView = "dashboard" | "library" | "insights";
 
 const DEFAULT_CHART_SETTINGS: ChartSettings = {
   version: 1,
@@ -896,36 +891,6 @@ function isHardMarketDataFailure(status: unknown) {
   );
 }
 
-function dailyStatusFromError(error: unknown): MarketDataSyncStatus {
-  if (error instanceof MarketDataSyncError) {
-    if (
-      error.code === "source-rate-limited" ||
-      error.code === "source-forbidden" ||
-      error.code === "source-unavailable" ||
-      error.code === "invalid-response"
-    ) {
-      return error.code;
-    }
-    if (
-      error.code === "provider-history-limit" ||
-      error.code === "no-data"
-    ) {
-      return "partial";
-    }
-  }
-  return error instanceof DOMException ? "storage-error" : "source-unavailable";
-}
-
-function marketDataErrorDetail(error: unknown): MarketDataErrorDetail {
-  if (error instanceof MarketDataSyncError) {
-    return { code: error.code, message: error.message };
-  }
-  if (error instanceof Error) {
-    return { code: "source-unavailable", message: error.message };
-  }
-  return { code: "source-unavailable", message: "行情更新失败" };
-}
-
 /** Select an existing account before opening a quality check for an instrument.
  * Quality actions currently carry instrument ids only, so use the first
  * concrete imported account as the dialog's starting scope instead of the
@@ -949,10 +914,6 @@ export function accountIdForQualityCheck(
 ): string {
   const accountId = episodeAccountId?.trim();
   return accountId || defaultAccountIdForInstrument(instrumentId, executions);
-}
-
-function isAbortError(error: unknown) {
-  return error instanceof DOMException && error.name === "AbortError";
 }
 
 function qualityModelSignature(model: TradingRoomQualityModel): string {
@@ -989,6 +950,7 @@ export function TradeReviewWorkspace({
 
   const [storedInstruments, setStoredInstruments] = useState<StoredInstrument[]>([]);
   const [mobileTradesOpen, setMobileTradesOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [dataTarget, setDataTarget] = useState<{ instrument: Instrument; accountId: string; cursor?: string }>();
   const [layout, setLayout] = useState({ left: true, right: true });
   const [focusedChart, setFocusedChart] = useState(false);
@@ -1623,6 +1585,9 @@ export function TradeReviewWorkspace({
   );
   const [summaryFilters, setSummaryFilters] = useState(initialReviewSummaryFilters);
   const [summaryDrafts, setSummaryDrafts] = useState<ReviewSummaryDrafts>({});
+  const [insightsTab, setInsightsTab] = useState<"summary" | "patterns">("summary");
+  const [patternCategory, setPatternCategory] = useState<Category>("all");
+  const [dataTab, setDataTab] = useState<"import" | "quality" | "settings">("import");
   const [requestedSummaryScope, setRequestedSummaryScope] = useState("");
   const summaryClient = useMemo(() => createReviewSummaryClient(), []);
   const summaryScopes = useMemo(() => reviewScopeOptions(tradeLibraryEntries), [tradeLibraryEntries]);
@@ -1654,12 +1619,13 @@ export function TradeReviewWorkspace({
     const entries = filterTradeLibraryEntriesByScope(tradeLibraryEntries, summaryScope, range);
     const ids = new Set(entries.flatMap(entry => entry.episodes.map(item => item.episode.id)));
     const result = buildInsightEpisodeFacts(entries, marketDataCandles, marketDataStatuses, suggestionDecisions, dailyCoverageByInstrument);
-    return <details className="review-summary-patterns"><summary>查看本范围的模式洞察</summary><PatternInsights
+    return <PatternInsights
       report={buildPatternInsightReport(result.facts, result.excluded)} facts={result.facts}
       suggestions={suggestionsHydrated && reviewsHydrated ? tagSuggestions.filter(suggestion => ids.has(suggestion.episodeId)) : []}
       episodeContexts={insightEpisodeContexts} onConfirmSuggestion={confirmSuggestion}
-      onEditSuggestion={editSuggestion} onRejectSuggestion={rejectSuggestion} onOpenEpisode={openLibraryEpisode}
-    /></details>;
+      onEditSuggestion={editSuggestion} onRejectSuggestion={rejectSuggestion} onOpenEpisode={(instrumentId, episodeId) => openLibraryEpisode(instrumentId, episodeId, undefined, "insights")}
+      category={patternCategory} onCategoryChange={setPatternCategory}
+    />;
   }
   function reviewExtras(episode: TradeEpisode): Pick<EpisodeNotesProps, "ruleContent" | "suggestions"> {
     const candidates = trackedRuleCandidates(tradeLibraryEntries, episode.id);
@@ -2408,15 +2374,20 @@ export function TradeReviewWorkspace({
   async function startMarketDataUpdate(
     instrumentIds?: readonly string[],
     options: MarketDataUpdateOptions = {},
-  ) {
-    return withGlobalMarketRefreshLock(
-      () => runMarketDataUpdate(instrumentIds, options),
+  ): Promise<boolean> {
+    let started = false;
+    await withGlobalMarketRefreshLock(
+      async () => {
+        started = true;
+        await runMarketDataUpdate(instrumentIds, options);
+      },
       () => setNavigationNotice(
         activeMarketRefreshRuns.current.size > 0
           ? "当前页面正在更新行情，请等待完成。"
           : "其他页面正在更新行情，请稍后再试。",
       ),
     );
+    return started;
   }
 
   async function runMarketDataUpdate(
@@ -2833,112 +2804,59 @@ export function TradeReviewWorkspace({
             },
           };
         } else {
-          const [dailyResult, intradayResult] = await Promise.allSettled([
-            syncMarketData({
-              instrumentId,
-              symbol: marketDataSymbol,
-              market,
-              currency: instrument.currency,
-              required: ranges.daily,
-              repository,
-              fetcher: marketDataFetcher,
-              signal: requestSignal,
-              retryUnavailable: true,
-            }),
-            syncIntradayMarketDataForRanges({
-              instrumentId,
-              symbol: marketDataSymbol,
-              market,
-              currency: instrument.currency,
-              requiredRanges: intradayRanges.length
-                ? intradayRanges
-                : [ranges.intraday],
-              repository,
-              fetcher: marketDataFetcher,
-              signal: requestSignal,
-              interval: "1h",
-              forceRefresh: Boolean(options.refreshMetadata || options.batch),
-            }),
-          ]);
-          if (
-            (dailyResult.status === "rejected" &&
-              isAbortError(dailyResult.reason)) ||
-            (intradayResult.status === "rejected" &&
-              isAbortError(intradayResult.reason))
-          ) {
-            if (cancellation.signal.aborted) {
-              throw cancellation.signal.reason ?? new DOMException("行情更新已取消", "AbortError");
-            }
-            throw new DOMException("行情更新已被较新的请求取代", "AbortError");
-          }
-          if (dailyResult.status === "fulfilled") {
-            // The range worker may return a partial value with an error
-            // alongside usable candles. Keep that optional error when it is
-            // present so the persisted job can expose the failed range.
-            const dailyValue = dailyResult.value as typeof dailyResult.value & {
-              error?: MarketDataErrorDetail;
-            };
-            next.daily = dailyValue.candles;
-            next.dailyStatus = dailyValue.status;
-            next.dailyError = dailyValue.error;
-            next.dailyMessage = dailyValue.error
-              ? `日线：${dailyValue.error.message}`
-              : dailyValue.status === "latest-available"
+          const refreshed = await refreshMarketData({
+            instrumentId,
+            symbol: marketDataSymbol,
+            market,
+            currency: instrument.currency,
+            dailyRange: ranges.daily,
+            hourlyRanges: intradayRanges.length ? intradayRanges : [ranges.intraday],
+            repository,
+            fetcher: marketDataFetcher,
+            signal: requestSignal,
+            retryUnavailable: true,
+            forceRefresh: Boolean(options.refreshMetadata || options.batch),
+            previous: {
+              daily: next.daily,
+              dailyCoverage: next.dailyCoverage,
+              intraday: next.intraday,
+              intradayCoverage: next.intradayCoverage,
+              intradayInterval: next.intradayInterval,
+            },
+          });
+          next.daily = refreshed.daily.candles;
+          next.dailyCoverage = refreshed.daily.coverage;
+          next.dailyStatus = refreshed.daily.status;
+          next.dailyError = refreshed.daily.refreshErrorSource === "coverage-read"
+            ? refreshed.daily.refreshError ?? refreshed.daily.error
+            : refreshed.daily.error ?? refreshed.daily.refreshError;
+          next.dailyMessage = refreshed.daily.error
+            ? refreshed.daily.refreshErrorSource === "coverage-read"
+              ? `日线已获取但覆盖状态读取失败；${refreshed.daily.error.message}`
+              : `日线：${refreshed.daily.error.message}`
+            : refreshed.daily.refreshErrorSource === "coverage-read"
+              ? "日线已获取但覆盖状态读取失败"
+              : refreshed.daily.refreshError
+                ? `日线：${refreshed.daily.refreshError.message}`
+              : refreshed.daily.status === "latest-available"
                 ? "尾部仍待补齐，已保留本地行情；可再次更新重试"
-                : dailyValue.status === "partial"
-                ? "日线更新已完成，仍有缺口"
-                : dailyValue.source === "cache"
-                ? "日线已使用本地缓存"
-                : `日线已补齐 ${dailyValue.requestedRanges.length} 个缺口`;
-            try {
-              next.dailyCoverage = await repository.getCoverage(
-                instrumentId,
-              );
-            } catch {
-              next.dailyStatus = "storage-error";
-              next.dailyMessage = "日线已获取但覆盖状态读取失败";
-            }
-          } else {
-            next.dailyStatus = next.daily.length > 0
-              ? coverageStatusForDateRange(ranges.daily, next.dailyCoverage)
-              : dailyStatusFromError(dailyResult.reason);
-            next.dailyError = marketDataErrorDetail(dailyResult.reason);
-            next.dailyMessage =
-              dailyResult.reason instanceof Error
-                ? `日线：${dailyResult.reason.message}`
-                : "日线行情更新失败";
-          }
-          if (intradayResult.status === "fulfilled") {
-            // An unavailable hourly refresh must not erase usable legacy
-            // 15-minute candles already displayed by this review.
-            if (
-              intradayResult.value.candles.length > 0 ||
-              next.intraday.length === 0 ||
-              next.intradayInterval === "1h"
-            ) {
-              next.intradayInterval = "1h";
-              next.intraday = intradayResult.value.candles;
-              next.intradayCoverage = intradayResult.value.coverage;
-            }
-            next.intradayStatus = intradayResult.value.status;
-            next.intradayError = intradayResult.value.error;
-            next.intradayMessage =
-              intradayResult.value.error
-                ? `1 小时：${intradayResult.value.error.message}`
-                : intradayResult.value.source === "cache"
-                ? "1 小时行情已使用本地缓存"
-                : `1 小时行情已请求 ${intradayResult.value.requestedRanges.length} 个区间`;
-          } else {
-            next.intradayStatus =
-              intradayResult.reason instanceof DOMException
-                ? "storage-error"
-                : "source-unavailable";
-            next.intradayError = marketDataErrorDetail(intradayResult.reason);
-            next.intradayMessage =
-              intradayResult.reason instanceof Error
-                ? `1 小时：${intradayResult.reason.message}`
-                : "1 小时行情更新失败";
-          }
+                : refreshed.daily.status === "partial"
+                  ? "日线更新已完成，仍有缺口"
+                  : refreshed.daily.source === "cache"
+                    ? "日线已使用本地缓存"
+                    : `日线已补齐 ${refreshed.daily.requestedRanges.length} 个缺口`;
+          next.intradayInterval = refreshed.hourly.interval;
+          next.intraday = refreshed.hourly.candles;
+          next.intradayCoverage = refreshed.hourly.coverage;
+          next.intradayStatus = refreshed.hourly.status;
+          next.intradayError = refreshed.hourly.error ?? refreshed.hourly.refreshError;
+          next.intradayMessage = refreshed.hourly.error
+            ? `1 小时：${refreshed.hourly.error.message}`
+            : refreshed.hourly.refreshError
+              ? `1 小时：${refreshed.hourly.refreshError.message}`
+              : refreshed.hourly.source === "cache"
+              ? "1 小时行情已使用本地缓存"
+              : `1 小时行情已请求 ${refreshed.hourly.requestedRanges.length} 个区间`;
         }
         await metadataRefresh;
         if (cancellation.signal.aborted) {
@@ -3465,25 +3383,37 @@ export function TradeReviewWorkspace({
   function openQualityDetails(model: TradingRoomQualityModel) {
     setQualityModel(model);
     setPlaying(false);
+    setDataTab("quality");
     setActiveView("data");
   }
-  function retryDataQuality(
+  async function retryDataQuality(
     dimension: TradingRoomQualityDimensionId,
     instrumentIds: readonly string[],
-  ) {
+  ): Promise<void> {
     if (dimension === "fx") {
-      void fxRates.refresh();
+      await fxRates.refresh();
       return;
     }
-    if (dimension !== "historical" && dimension !== "holdings") return;
-    if (instrumentIds.length === 0) return;
+    if (dimension !== "historical" && dimension !== "holdings") {
+      throw new Error("该数据质量项没有可执行的重试动作");
+    }
+    if (instrumentIds.length === 0) {
+      throw new Error("没有可重试的行情标的");
+    }
     const ids = [...new Set(instrumentIds)].filter(id =>
       importedInstruments.some(item => item.instrument.id === id),
     );
-    if (ids.length === 0) return;
-    void startMarketDataUpdate(ids.length > 0 ? ids : undefined, {
-      refreshMetadata: true,
-      batch: false,
+    if (ids.length === 0) {
+      throw new Error("可重试标的不在当前导入范围内");
+    }
+    await retryMarketData({
+      dimension,
+      instrumentIds: ids,
+      start: () => startMarketDataUpdate(ids, {
+        refreshMetadata: true,
+        batch: false,
+      }),
+      jobFor: id => marketDataJobsRef.current[id],
     });
   }
   function openQualityDataCheck(
@@ -3495,6 +3425,7 @@ export function TradeReviewWorkspace({
       importedInstruments.some(item => item.instrument.id === id) ||
       storedInstruments.some(item => item.id === id),
     );
+    setDataTab("quality");
     setActiveView("data");
     if (instrumentId) {
       const episodeAccountId = episodeId
@@ -3910,8 +3841,9 @@ export function TradeReviewWorkspace({
     instrumentId: string,
     episodeId: string,
     scopeKey?: string,
+    returnView: ReviewReturnView = "library",
   ) {
-    setReviewReturnView("library");
+    setReviewReturnView(returnView);
     const summary = importedInstruments.find((item) => item.instrument.id === instrumentId);
     if (summary && selectImportedSummary(summary, episodeId)) {
       setHistoryMode("history");
@@ -3948,6 +3880,12 @@ export function TradeReviewWorkspace({
       setPlaying(false);
       setLibraryTarget(undefined);
       setActiveView("dashboard");
+      return;
+    }
+    if (reviewReturnView === "insights") {
+      setPlaying(false);
+      setLibraryTarget(undefined);
+      setActiveView("insights");
       return;
     }
     returnToLibrary();
@@ -4249,7 +4187,7 @@ export function TradeReviewWorkspace({
         if (files.length) startScreenshotImport(files);
         event.currentTarget.value = "";
       }} />
-      <header className="app-header" inert={stockDrawerOpen || Boolean(dataTarget)}>
+      <aside className={`app-header app-sidebar ${mobileNavOpen ? "mobile-nav-open" : ""}`} inert={stockDrawerOpen || Boolean(dataTarget)} aria-label="主导航">
         <div className="brand">
           <div className="brand-mark">
             <BookOpenCheck size={19} />
@@ -4259,12 +4197,24 @@ export function TradeReviewWorkspace({
             <span>历史交易复盘</span>
           </div>
         </div>
-        <nav className="app-nav" aria-label="主导航">
+        <button
+          type="button"
+          className="mobile-nav-trigger"
+          aria-label="导航"
+          aria-expanded={mobileNavOpen}
+          aria-controls="primary-navigation"
+          onClick={() => setMobileNavOpen((open) => !open)}
+        >
+          <Menu size={18} />
+          <span>导航</span>
+        </button>
+        <nav id="primary-navigation" className="app-nav" aria-label="主导航">
           <button
             className={activeView === "dashboard" ? "active" : ""}
             aria-current={activeView === "dashboard" ? "page" : undefined}
             onClick={() => {
               setPlaying(false);
+              setMobileNavOpen(false);
               setActiveView("dashboard");
             }}
           >
@@ -4275,6 +4225,7 @@ export function TradeReviewWorkspace({
             aria-current={activeView === "library" ? "page" : undefined}
             onClick={() => {
               returnToLibrary();
+              setMobileNavOpen(false);
             }}
           >
             交易库
@@ -4282,7 +4233,10 @@ export function TradeReviewWorkspace({
           <button
             className={activeView === "insights" ? "active" : ""}
             aria-current={activeView === "insights" ? "page" : undefined}
-            onClick={() => setActiveView("insights")}
+            onClick={() => {
+              setMobileNavOpen(false);
+              setActiveView("insights");
+            }}
           >
             模式洞察
           </button>
@@ -4291,12 +4245,17 @@ export function TradeReviewWorkspace({
             aria-current={activeView === "data" ? "page" : undefined}
             onClick={() => {
               setPlaying(false);
+              setMobileNavOpen(false);
               setActiveView("data");
             }}
           >
             数据管理
           </button>
         </nav>
+      </aside>
+
+      <div className="app-content">
+      {activeView === "review" && (showDemo || selectedImportedInstrument) && <header className="page-header review-page-header" aria-label="页面顶栏" inert={stockDrawerOpen || Boolean(dataTarget)}>
         <div className="header-actions">
           {selectedImportedInstrument && selectedEpisode && activeView === "review" && (
             <button
@@ -4328,20 +4287,15 @@ export function TradeReviewWorkspace({
                 ? "演示行情"
                 : "等待导入"}
           </span>
-          {showDemo && activeView !== "review" && (
-            <button
-              type="button"
-              className="secondary-action"
-              onClick={() => setActiveView("review")}
-            >
-              返回演示复盘
-            </button>
-          )}
           {activeView === "review" && <button type="button" className="stock-list-trigger" aria-label="打开股票列表" aria-haspopup="dialog" aria-expanded={stockDrawerOpen} onClick={() => setStockDrawerOpen(true)}><Menu size={19} /><span>股票</span></button>}
           <div className="user-avatar">ZL</div>
         </div>
-      </header>
-
+      </header>}
+      {showDemo && activeView !== "review" && <header className="page-header" aria-label="页面顶栏" inert={stockDrawerOpen || Boolean(dataTarget)}>
+        <div className="header-actions">
+          <button type="button" className="secondary-action" onClick={() => setActiveView("review")}>返回演示复盘</button>
+        </div>
+      </header>}
       {activeView === "review" && (showDemo || selectedImportedInstrument) && <div className="review-layout-controls" inert={stockDrawerOpen || Boolean(dataTarget)} aria-label="复盘布局">
         <button className="mobile-trades-toggle" aria-expanded={mobileTradesOpen} onClick={() => setMobileTradesOpen(value=>!value)}>{mobileTradesOpen ? "收起本股交易" : "本股交易"}</button>
         <button className="desktop-left-toggle" aria-expanded={layout.left} onClick={() => { setFocusedChart(false); setLayout((value) => ({ ...value, left: !value.left })); }}>{layout.left ? "收起交易导航" : "展开交易导航"}</button>
@@ -4390,6 +4344,11 @@ export function TradeReviewWorkspace({
             qualityInput={!showDemo ? qualityInput : undefined}
             onQualityModelChange={updateQualityModel}
             onOpenDataManagement={openQualityDetails}
+            onOpenPrincipalSettings={() => {
+              setPlaying(false);
+              setDataTab("settings");
+              setActiveView("data");
+            }}
             onRetryDataQuality={retryDataQuality}
             onOpenDataCheck={openQualityDataCheck}
             onOpenInReview={(instrumentId, episodeId, queueIds) => {
@@ -4420,6 +4379,8 @@ export function TradeReviewWorkspace({
           }}
         >
           <DataManagement
+            activeTab={dataTab}
+            onTabChange={setDataTab}
             importActions={importActions}
             marketRefresh={{
               instrumentCount: importedInstruments.length,
@@ -4465,7 +4426,7 @@ export function TradeReviewWorkspace({
             fxSlot={resolvedFxSlot}
           />
         </div>
-        {activeView !== "dashboard" && activeView === "library" && (showDemo || importedInstruments.length > 0) ? (
+        {activeView === "library" ? (
           <TradeLibrary
             defaultMode="stocks"
             key={libraryTarget?.requestId ?? 0}
@@ -4499,9 +4460,16 @@ export function TradeReviewWorkspace({
             reviewExtras={reviewExtras}
             onInspectData={openDataCheck}
             onRefreshMarketData={(instrumentId) => void startMarketDataUpdate([instrumentId], { refreshMetadata: true })}
+            onImport={() => {
+              setDataTab("import");
+              setActiveView("data");
+            }}
           />
         ) : activeView !== "dashboard" && activeView === "insights" ? (
-          <ReviewSummary filterStore={{filters:summaryFilters,setFilters:setSummaryFilters}} draftStore={{drafts:summaryDrafts,setDrafts:setSummaryDrafts}} entries={tradeLibraryEntries} scopeId={summaryScope} onScopeChange={setRequestedSummaryScope} client={summaryClient} onOpenEpisode={openLibraryEpisode}>
+          <ReviewSummary activeTab={insightsTab} onTabChange={setInsightsTab} onImport={() => {
+            setDataTab("import");
+            setActiveView("data");
+          }} filterStore={{filters:summaryFilters,setFilters:setSummaryFilters}} draftStore={{drafts:summaryDrafts,setDrafts:setSummaryDrafts}} entries={tradeLibraryEntries} scopeId={summaryScope} onScopeChange={setRequestedSummaryScope} client={summaryClient} onOpenEpisode={(instrumentId, episodeId) => openLibraryEpisode(instrumentId, episodeId, undefined, "insights")}>
             {renderScopedInsights}
           </ReviewSummary>
         ) : activeView === "review" ? (
@@ -4562,7 +4530,7 @@ export function TradeReviewWorkspace({
             />
             </aside>
             <div className="review-content" inert={stockDrawerOpen || Boolean(dataTarget)}>
-            {(showDemo || selectedImportedInstrument) && <div className={`stock-context-shell ${mobileTradesOpen ? "mobile-trades-open" : ""}`}><StockEpisodeNavigation mobileOpen={mobileTradesOpen} onCloseMobile={() => setMobileTradesOpen(false)} instrument={selectedImportedInstrument?.instrument} episodes={episodes} selectedEpisodeId={selectedEpisode?.id} cursor={activeCursor} onSelectEpisode={id => { selectEpisode(id); setMobileTradesOpen(false); }} onLocate={(cursor) => { setPlaying(false); setImportedCursor(cursor); setMobileTradesOpen(false); }} onLocateRequest={requestExecutionLocation} onNext={nextImportedExecution} onSwitchStock={() => { setMobileTradesOpen(false); setStockDrawerOpen(true); }} onLibrary={() => { setMobileTradesOpen(false); returnFromReview(); }} returnLabel={reviewReturnView === "dashboard" ? "返回交易室" : undefined} /></div>}
+            {(showDemo || selectedImportedInstrument) && <div className={`stock-context-shell ${mobileTradesOpen ? "mobile-trades-open" : ""}`}><StockEpisodeNavigation mobileOpen={mobileTradesOpen} onCloseMobile={() => setMobileTradesOpen(false)} instrument={selectedImportedInstrument?.instrument} episodes={episodes} selectedEpisodeId={selectedEpisode?.id} cursor={activeCursor} onSelectEpisode={id => { selectEpisode(id); setMobileTradesOpen(false); }} onLocate={(cursor) => { setPlaying(false); setImportedCursor(cursor); setMobileTradesOpen(false); }} onLocateRequest={requestExecutionLocation} onNext={nextImportedExecution} onSwitchStock={() => { setMobileTradesOpen(false); setStockDrawerOpen(true); }} onLibrary={() => { setMobileTradesOpen(false); returnFromReview(); }} returnLabel={reviewReturnView === "dashboard" ? "返回交易室" : reviewReturnView === "insights" ? "返回模式洞察" : undefined} /></div>}
             {!showDemo && !selectedImportedInstrument ? (
               <section
                 className="review-workspace review-workspace-empty"
@@ -4874,6 +4842,7 @@ export function TradeReviewWorkspace({
           onClose={() => setShowImportHistory(false)}
         />
       )}
+      </div>
     </main>
   );
 }

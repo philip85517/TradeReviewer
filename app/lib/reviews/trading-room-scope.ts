@@ -14,6 +14,7 @@ import type { TradeLibraryEntry } from "../trades/library";
 export type RoomTradeNature = TradeNature;
 
 export type RoomAssetType = "stock" | "etf" | "unknown";
+export type RoomAssetTypeFilter = "all" | "stock" | "etf";
 
 /**
  * These are display/query categories. They do not become an Instrument market
@@ -40,6 +41,8 @@ export type RoomReviewStatus = "pending" | "completed" | "deferred";
 export type RoomScope = {
   nature: RoomTradeNature;
   assetCategory: RoomAssetCategory;
+  /** Secondary filter; market remains the primary attribution dimension. */
+  assetType?: RoomAssetTypeFilter;
   period: RoomDateRange;
   simulationRunId: string | null;
   query?: string;
@@ -198,6 +201,7 @@ export function createDefaultRoomScope(today: string = roomTodayKey()): RoomScop
   return {
     nature: "live",
     assetCategory: "all",
+    assetType: "all",
     period: buildRoomDateRange("month", today),
     simulationRunId: null,
     accountIds: [],
@@ -216,6 +220,7 @@ export function createDefaultRoomScope(today: string = roomTodayKey()): RoomScop
 export const DEFAULT_ROOM_SCOPE: RoomScope = {
   nature: "live",
   assetCategory: "all",
+  assetType: "all",
   get period() {
     return buildRoomDateRange("month");
   },
@@ -280,44 +285,27 @@ export function classifyTradingRoomAsset(
   metadata?: TradingRoomInstrumentMetadata,
 ): TradingRoomAssetProjection {
   const instrumentMarket = canonicalMarket(instrument.market);
+  const category = instrumentMarket === "CN-SH" || instrumentMarket === "CN-SZ"
+    ? "a-share-stock"
+    : instrumentMarket === "US"
+      ? "us-stock"
+      : instrumentMarket === "HK"
+        ? "hk-stock"
+        : null;
+  if (!category) {
+    return { category: "unknown", assetType: "unknown", reason: "市场不在交易室支持范围" };
+  }
   if (!metadata || !validMetadata(metadata)) {
-    return {
-      category: "unknown",
-      assetType: "unknown",
-      reason: "缺少可信资产类型元数据",
-    };
+    return { category, assetType: "unknown", reason: "缺少可信资产类型元数据" };
   }
   if (canonicalMarket(metadata.market) !== instrumentMarket) {
-    return {
-      category: "unknown",
-      assetType: "unknown",
-      reason: "资产元数据市场与交易身份不一致",
-    };
+    return { category, assetType: "unknown", reason: "资产元数据市场与交易身份不一致" };
   }
   if (normalizedSymbol(metadata.symbol) !== normalizedSymbol(instrument.symbol)) {
-    return {
-      category: "unknown",
-      assetType: "unknown",
-      reason: "资产元数据代码与交易身份不一致",
-    };
+    return { category, assetType: "unknown", reason: "资产元数据代码与交易身份不一致" };
   }
-  if (metadata.assetType === "etf") {
-    return { category: "etf", assetType: "etf", reason: null };
-  }
-  if (instrumentMarket === "CN-SH" || instrumentMarket === "CN-SZ") {
-    return { category: "a-share-stock", assetType: "stock", reason: null };
-  }
-  if (instrumentMarket === "US") {
-    return { category: "us-stock", assetType: "stock", reason: null };
-  }
-  if (instrumentMarket === "HK") {
-    return { category: "hk-stock", assetType: "stock", reason: null };
-  }
-  return {
-    category: "unknown",
-    assetType: "unknown",
-    reason: "市场不在交易室支持范围",
-  };
+  const assetType = metadata.assetType;
+  return { category, assetType, reason: null };
 }
 
 function decimal(value: string | number | null | undefined): Decimal | null {
@@ -473,6 +461,7 @@ function flattenRows(input: readonly DashboardRow[] | readonly TradeLibraryEntry
 function normalizedScope(scope: RoomScope): RoomScope {
   return {
     ...scope,
+    assetType: scope.assetType ?? "all",
     simulationRunId: scope.simulationRunId?.trim() || null,
     query: scope.query?.trim() || undefined,
     accountIds: scope.accountIds.map(value => value.trim()).filter(Boolean),
@@ -504,7 +493,13 @@ export function filterRoomRows(
     }
     if (!rowMatchesQuery(row, normalized.query)) return false;
     const projection = classifyTradingRoomAsset(row.item.episode.instrument, metadata.get(rowInstrumentId(row)));
-    if (normalized.assetCategory !== "all" && projection.category !== normalized.assetCategory) return false;
+    const legacyEtfCategory = normalized.assetCategory === "etf";
+    if (!legacyEtfCategory && normalized.assetCategory !== "all" && projection.category !== normalized.assetCategory) return false;
+    if (legacyEtfCategory || normalized.assetType === "etf") {
+      if (projection.assetType !== "etf") return false;
+    } else if (normalized.assetType === "stock" && projection.assetType !== "stock") {
+      return false;
+    }
     if (normalized.accountIds.length > 0 && !normalized.accountIds.includes(rowAccountId(row))) return false;
     if (normalized.instrumentIds.length > 0 && !normalized.instrumentIds.includes(rowInstrumentId(row))) return false;
     if (normalized.markets.length > 0 && !normalized.markets.includes(canonicalMarket(row.item.episode.instrument.market))) return false;
@@ -516,9 +511,9 @@ export function filterRoomRows(
 
 function categoryLabel(category: Exclude<RoomAssetCategory, "all">): string {
   switch (category) {
-    case "a-share-stock": return "A股股票";
-    case "us-stock": return "美股股票";
-    case "hk-stock": return "港股股票";
+    case "a-share-stock": return "A股";
+    case "us-stock": return "美股";
+    case "hk-stock": return "港股";
     case "etf": return "ETF";
     case "unknown": return "未知资产类型";
   }
@@ -601,7 +596,7 @@ export function buildTradingRoomModel(
       assetReason: projection.reason,
     };
   });
-  const order: Array<Exclude<RoomAssetCategory, "all">> = ["a-share-stock", "us-stock", "hk-stock", "etf", "unknown"];
+  const order: Array<Exclude<RoomAssetCategory, "all">> = ["a-share-stock", "us-stock", "hk-stock", "unknown"];
   const categories = order
     .map(id => roomRows.filter(row => row.assetCategory === id))
     .filter(categoryRows => categoryRows.length > 0)

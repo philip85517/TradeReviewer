@@ -13,10 +13,11 @@ services:
     environment:
       HOSTNAME: 0.0.0.0
       PORT: 3000
+      TRADEREVIEW_DB_PATH: /var/lib/tradereview/tradereview.sqlite
     ports:
-      - "${APP_BIND:-127.0.0.1}:${APP_PORT:-3000}:3000"
+      - "${APP_BIND:-127.0.0.1}:${APP_PORT:-3022}:3000"
     volumes:
-      - ./data/sqlite:/var/lib/tradereview
+      - "${SQLITE_HOST_DIR:-./data/sqlite}:/var/lib/tradereview"
     healthcheck:
       test:
         - CMD

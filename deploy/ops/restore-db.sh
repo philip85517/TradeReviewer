@@ -5,11 +5,8 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 deploy_root="$(cd -- "$script_dir/.." && pwd -P)"
 config_dir="$deploy_root/config"
 data_dir="$deploy_root/data"
-sqlite_dir="$data_dir/sqlite"
-database_path="$sqlite_dir/tradereview.sqlite"
+source "$script_dir/sqlite-path.sh"
 database_container_path="/var/lib/tradereview/tradereview.sqlite"
-database_wal_path="$database_path-wal"
-database_shm_path="$database_path-shm"
 
 fail() {
   printf 'restore-db: %s\n' "$*" >&2
@@ -71,6 +68,10 @@ backup_path="$1"
 assert_safe_directory "$deploy_root"
 assert_safe_directory "$config_dir"
 assert_safe_directory "$data_dir"
+resolve_sqlite_dir
+database_path="$sqlite_dir/tradereview.sqlite"
+database_wal_path="$database_path-wal"
+database_shm_path="$database_path-shm"
 assert_safe_directory "$sqlite_dir"
 [[ -f "$config_dir/.env" && ! -L "$config_dir/.env" ]] || fail "configuration is missing or unsafe"
 verify_checksum_when_present "$backup_path"
@@ -161,6 +162,29 @@ check_database_file "$restore_temp" /tmp/restored-database.sqlite
 
 compose stop app
 app_stopped=1
+assert_database_not_in_use() {
+  command -v lsof >/dev/null 2>&1 || fail "cannot verify database consumers: lsof is unavailable; stop all consumers before restore"
+  local open_files lsof_status lsof_error_file
+  local -a database_paths=("$database_path")
+  [[ -e "$database_wal_path" || -L "$database_wal_path" ]] && database_paths+=("$database_wal_path")
+  [[ -e "$database_shm_path" || -L "$database_shm_path" ]] && database_paths+=("$database_shm_path")
+  lsof_error_file="$(mktemp "${TMPDIR:-/tmp}/tradereview-lsof.XXXXXX")" || fail "cannot verify database consumers: unable to create lsof diagnostic"
+  set +e
+  open_files="$(lsof -t -- "${database_paths[@]}" 2>"$lsof_error_file")"
+  lsof_status=$?
+  set -e
+  if [[ "$lsof_status" -ne 0 && "$lsof_status" -ne 1 ]]; then
+    rm -f -- "$lsof_error_file"
+    fail "cannot verify database consumers: lsof failed with status $lsof_status"
+  fi
+  if [[ -s "$lsof_error_file" ]]; then
+    rm -f -- "$lsof_error_file"
+    fail "cannot verify database consumers: lsof reported an error"
+  fi
+  rm -f -- "$lsof_error_file"
+  [[ -z "$open_files" ]] || fail "database is still in use; stop all consumers before restore: $open_files"
+}
+assert_database_not_in_use
 mv "$database_path" "$original_database"
 swap_started=1
 if [[ -f "$database_wal_path" ]]; then

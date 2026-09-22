@@ -30,7 +30,7 @@ import { OutcomeDiagnostics } from "./outcome-diagnostics";
 import { IpoBreakdown } from "./ipo-breakdown";
 import { MarketBreakdown } from "./market-breakdown";
 
-type Category = "all" | InsightCategory;
+export type Category = "all" | InsightCategory;
 type OutcomeView = "overall" | "ipo" | "market";
 
 type Props = {
@@ -49,6 +49,8 @@ type Props = {
     suggestion: TagSuggestionRecord,
   ) => void | Promise<void>;
   onOpenEpisode: (instrumentId: string, episodeId: string) => void;
+  category?: Category;
+  onCategoryChange?: (category: Category) => void;
 };
 
 const CATEGORY_OPTIONS: Array<{
@@ -309,8 +311,15 @@ export function PatternInsights({
   onEditSuggestion,
   onRejectSuggestion,
   onOpenEpisode,
+  category: controlledCategory,
+  onCategoryChange,
 }: Props) {
-  const [category, setCategory] = useState<Category>("all");
+  const [localCategory, setLocalCategory] = useState<Category>("all");
+  const category = controlledCategory ?? localCategory;
+  const changeCategory = (next: Category) => {
+    if (controlledCategory === undefined) setLocalCategory(next);
+    onCategoryChange?.(next);
+  };
   const [outcomeView, setOutcomeView] = useState<OutcomeView>("overall");
   const factsByEpisode = useMemo(
     () => new Map(facts.map((fact) => [fact.episodeId, fact])),
@@ -456,7 +465,7 @@ export function PatternInsights({
             className={category === option.id ? "active" : ""}
             aria-label={option.ariaLabel}
             aria-current={category === option.id ? "page" : undefined}
-            onClick={() => setCategory(option.id)}
+            onClick={() => changeCategory(option.id)}
           >
             {option.label}
           </button>

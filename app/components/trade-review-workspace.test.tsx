@@ -602,6 +602,28 @@ describe("TradeReviewWorkspace", () => {
     mockSqliteClient.current = createLegacySqliteClient();
   });
 
+  it("uses one shared primary navigation and reuses it from the narrow-screen menu", async () => {
+    const user = userEvent.setup();
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+
+    const sidebar = await screen.findByRole("complementary", { name: "主导航" });
+    expect(within(sidebar).getByRole("button", { name: "我的交易室" })).toHaveAttribute("aria-current", "page");
+    expect(sidebar).toHaveClass("app-sidebar");
+    expect(screen.queryByRole("banner", { name: "页面顶栏" })).not.toBeInTheDocument();
+
+    const menuButton = screen.getByRole("button", { name: "导航" });
+    menuButton.focus();
+    expect(document.activeElement).toBe(menuButton);
+    expect(menuButton).toHaveAttribute("aria-expanded", "false");
+    await user.click(menuButton);
+    expect(menuButton).toHaveAttribute("aria-expanded", "true");
+
+    await user.click(within(sidebar).getByRole("button", { name: "模式洞察" }));
+    expect(within(sidebar).getByRole("button", { name: "模式洞察" })).toHaveAttribute("aria-current", "page");
+    expect(menuButton).toHaveAttribute("aria-expanded", "false");
+  });
+
   it("loads the FX snapshot when the production workspace opens on the dashboard", async () => {
     const fxState = {
       id: "fx:test-home-dashboard",
@@ -1270,7 +1292,8 @@ describe("TradeReviewWorkspace", () => {
     await userEvent.setup().click(
       await screen.findByRole("button", { name: "行情数据详情" }),
     );
-    expect(screen.getByText("行情源暂不可用")).toBeInTheDocument();
+    const dataDetails = screen.getByRole("dialog", { name: "行情数据详情" });
+    expect(within(dataDetails).getAllByText("行情源暂不可用").length).toBeGreaterThan(0);
   });
 
   it("keeps XPEV absent when an empty SQLite bootstrap is used in production mode", async () => {
@@ -1899,6 +1922,10 @@ describe("TradeReviewWorkspace", () => {
     await user.clear(layerName);
     await user.type(layerName, "队列稳定性");
     await user.keyboard("{Enter}");
+    await waitFor(() =>
+      expect(screen.getByText("自动保存将在 1 秒后执行")).toBeInTheDocument(),
+    );
+    await waitFor(() => expect(screen.getByText("已保存")).toBeInTheDocument());
     await waitFor(() => {
       const saved = [...mockRecallRepository.documents.values()].some((value) =>
         (value as { working?: { drawings?: Array<{ name?: string }> } }).working?.drawings?.some(
@@ -2494,6 +2521,12 @@ describe("TradeReviewWorkspace", () => {
     );
 
     await waitFor(() => expect(intradayRequests()).toHaveLength(1));
+    // The first refresh also persists terminal job/state asynchronously. Wait
+    // until the control is usable before switching episodes so the second
+    // refresh cannot race the first request's state transition.
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "刷新行情数据" })).toBeEnabled(),
+    );
     expect(
       intradayRequests().map((request) => [
         request.searchParams.get("start"),
@@ -2507,12 +2540,24 @@ describe("TradeReviewWorkspace", () => {
       screen.getByRole("combobox", { name: "交易回合" }),
       oldEpisode.id,
     );
+    await waitFor(() =>
+      expect(screen.getByRole("combobox", { name: "交易回合" })).toHaveValue(oldEpisode.id),
+    );
     vi.mocked(fetch).mockClear();
-    if (!screen.queryByRole("dialog", { name: "行情数据详情" })) {
-      await user.click(screen.getByRole("button", { name: "行情数据详情" }));
+    await waitFor(() => {
+      const button = screen.getByRole("button", { name: "行情数据详情" });
+      expect(button).toBeVisible();
+      if (button.getAttribute("aria-expanded") === "true") {
+        expect(screen.getByRole("dialog", { name: "行情数据详情" })).toBeVisible();
+      }
+    });
+    const dataDetailsButton = screen.getByRole("button", { name: "行情数据详情" });
+    if (dataDetailsButton.getAttribute("aria-expanded") !== "true") {
+      await user.click(dataDetailsButton);
+      await waitFor(() => expect(screen.getByRole("dialog", { name: "行情数据详情" })).toBeVisible());
     }
     await user.click(
-      screen.getByRole("button", { name: "刷新行情数据" }),
+      await screen.findByRole("button", { name: "刷新行情数据" }),
     );
     await waitFor(() => expect(intradayRequests()).toHaveLength(1));
     expect(
@@ -4114,8 +4159,9 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={storageClient} />);
 
     const room = await screen.findByRole("region", { name: "交易室范围" });
+    await user.click(within(room).getByText("更多筛选", { exact: true }));
     await user.selectOptions(
-      within(room).getByRole("combobox", { name: "交易室分类筛选" }),
+      within(room).getByRole("combobox", { name: "交易室资产类型筛选" }),
       "etf",
     );
     expect(within(room).getByText("1 个回合进入范围")).toBeVisible();

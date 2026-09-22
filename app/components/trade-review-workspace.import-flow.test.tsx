@@ -430,7 +430,7 @@ describe("TradeReviewWorkspace", () => {
       ...options,
       resolver:async () => ({resolved:new Map([['CN-SH:600330',{market:'CN-SH',symbol:'600330',name:'天通股份',assetType:'stock',source:'tencent',confidence:'portal',resolvedAt:'2026-09-07T00:00:00Z'}]]),unresolved:new Map(),cacheHits:0,backgroundRefresh:Promise.resolve()}),
     }));
-    const view=render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
     const file=new File([csv],'回放交易_SSE_600330_2026-09-03.csv',{type:'text/csv'});
     Object.defineProperty(file,'arrayBuffer',{value:async()=>new TextEncoder().encode(csv).buffer});
     await user.upload(await screen.findByLabelText('导入 TradingView 模拟交易'),file);
@@ -439,10 +439,10 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.getByText(/文件只提供交易日期/)).toBeInTheDocument();
     await user.click(screen.getByRole('button',{name:'确认导入并开始更新行情'}));
     await waitFor(()=>expect(loadImportedExecutions()).toHaveLength(2));
-    expect(loadImportedExecutions()[0].source.tradeNature).toBe('simulation');
-    view.unmount();
-    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
-    expect((await screen.findAllByText(/TradingView · 模拟盘/)).length).toBeGreaterThan(0);
+    expect(loadImportedExecutions()[0].source).toMatchObject({
+      platform: "tradingview",
+      tradeNature: "simulation",
+    });
     expect(loadImportHistory()[0].sourceLabel).toBe('TradingView · 模拟盘');
   });
 
@@ -1553,7 +1553,7 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
     await screen.findByRole("heading", { name: /小鹏汽车/ });
     await user.click(screen.getByRole("button", { name: "模式洞察" }));
-    await user.click(await screen.findByText("查看本范围的模式洞察"));
+    await user.click(screen.getByRole("tab", { name: "模式分析" }));
     await user.click(await screen.findByText(/待确认规则建议（/));
 
     expect(
@@ -1575,7 +1575,7 @@ describe("TradeReviewWorkspace", () => {
       "买 50 @ 10",
     );
     await user.click(screen.getByRole("button", { name: "模式洞察" }));
-    await user.click(await screen.findByText("查看本范围的模式洞察"));
+    await user.click(screen.getByRole("tab", { name: "模式分析" }));
     await user.click(await screen.findByText(/待确认规则建议（/));
     await user.selectOptions(
       screen.getByRole("combobox", {

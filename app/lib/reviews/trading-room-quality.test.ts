@@ -53,7 +53,11 @@ function roomRow(
   };
 }
 
-function holdingsRow(instrumentId: string, status: TradingRoomHoldingRow["unrealizedPnlStatus"]): TradingRoomHoldingRow {
+function holdingsRow(
+  instrumentId: string,
+  status: TradingRoomHoldingRow["unrealizedPnlStatus"],
+  overrides: Partial<TradingRoomHoldingRow> = {},
+): TradingRoomHoldingRow {
   return {
     row: roomRow(instrumentId).row,
     instrumentId,
@@ -82,6 +86,15 @@ function holdingsRow(instrumentId: string, status: TradingRoomHoldingRow["unreal
     unrealizedPnl: status === "available" ? "2" : null,
     unrealizedPnlStatus: status,
     statusReason: status === "available" ? null : "缺少行情，无法计算浮盈亏",
+    direction: "unknown",
+    positionEvidence: {
+      status: "unavailable",
+      summary: "持仓证据不足，方向待核对",
+      missing: ["positionEffect", "openingPosition", "statementPositions"],
+      sourceFormatRuleIds: [],
+    },
+    diagnostic: status === "available" ? "available" : "missing-quote",
+    ...overrides,
   };
 }
 
@@ -156,6 +169,79 @@ describe("buildTradingRoomQuality", () => {
     });
   });
 
+  it("keeps a failed quote source diagnostic distinct from an unsupported source", () => {
+    const model = buildTradingRoomQuality({
+      scope,
+      rows: [],
+      holdings: holdings([holdingsRow("US:AAPL", "missing")]),
+      marketDataDailyStatuses: { "US:AAPL": "source-unavailable" },
+      marketDataLabels: { "US:AAPL": "行情源暂不可用" },
+      marketDataJobs: {
+        "US:AAPL": {
+          instrumentId: "US:AAPL",
+          symbol: "AAPL",
+          market: "US",
+          requestedAt: "2026-09-19T02:00:00.000Z",
+          status: "source-unavailable",
+          message: "上次行情更新被中断",
+          intervals: [],
+        },
+      },
+    });
+    const dimension = model.dimensions.find(item => item.id === "holdings");
+    expect(dimension?.issues).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        action: "retry",
+        reason: "缺少行情，无法计算浮盈亏；行情次级状态：行情源暂不可用：上次行情更新被中断",
+      }),
+    ]));
+    expect(dimension).toMatchObject({ action: "retry", sourceUnsupportedInstrumentIds: [] });
+  });
+
+  it("keeps negative-position evidence primary when the quote source also failed", () => {
+    const current = holdings([{
+      ...holdingsRow("US:AAPL", "missing"),
+      statusReason: "负仓差额待核对：成交证据未证明开空或可信期初负仓；来源规则 china-merchants/pdf/monthly-v1",
+      positionEvidence: {
+        status: "unverified-negative",
+        summary: "负仓差额待核对：成交证据未证明开空或可信期初负仓；来源规则 china-merchants/pdf/monthly-v1",
+        missing: ["positionEffect", "openingPosition", "statementPositions", "statementMonth", "templateId"],
+        sourceFormatRuleIds: ["china-merchants/pdf/monthly-v1"],
+      },
+      diagnostic: "position-evidence",
+    }]);
+    const model = buildTradingRoomQuality({
+      scope,
+      rows: [],
+      holdings: current,
+      marketDataDailyStatuses: { "US:AAPL": "source-unavailable" },
+      marketDataJobs: {
+        "US:AAPL": {
+          instrumentId: "US:AAPL",
+          symbol: "AAPL",
+          market: "US",
+          requestedAt: "2026-09-19T02:00:00.000Z",
+          status: "source-unavailable",
+          message: "上次行情更新被中断",
+          intervals: [],
+        },
+      },
+    });
+    const dimension = model.dimensions.find(item => item.id === "holdings");
+    const issue = dimension?.issues[0];
+
+    expect(issue).toMatchObject({
+      action: "open-data-check",
+      reason: "负仓差额待核对：成交证据未证明开空或可信期初负仓；来源规则 china-merchants/pdf/monthly-v1；行情次级状态：行情源暂不可用：上次行情更新被中断",
+    });
+    expect(dimension).toMatchObject({
+      action: "open-data-check",
+      retryableInstrumentIds: [],
+      supplementableInstrumentIds: [],
+      sourceUnsupportedInstrumentIds: [],
+    });
+  });
+
   it("treats unsupported history as a source decision and stale history as retryable", () => {
     const job: MarketDataJob = {
       instrumentId: "HK:0700",
@@ -179,6 +265,59 @@ describe("buildTradingRoomQuality", () => {
       expect.objectContaining({ instrumentId: "HK:0700", action: "source-unsupported" }),
       expect.objectContaining({ instrumentId: "US:SPY", action: "retry" }),
     ]));
+  });
+
+  it.each([
+    ["pre-trade-quote", "行情早于最近一笔交易，无法计算浮盈亏"],
+    ["future-quote", "行情日期晚于当前截点，无法计算浮盈亏"],
+    ["currency-mismatch", "行情币种与结算币种不一致，无法计算浮盈亏"],
+    ["invalid-quote", "行情价格无效，无法计算浮盈亏"],
+  ] as const)("keeps the holding diagnostic primary for %s", (diagnostic, statusReason) => {
+    const current = holdings([holdingsRow("US:TEST", "missing", {
+      diagnostic,
+      statusReason,
+    })]);
+    const model = buildTradingRoomQuality({
+      scope,
+      rows: [],
+      holdings: current,
+      marketDataDailyStatuses: { "US:TEST": "source-unavailable" },
+      marketDataJobs: {
+        "US:TEST": {
+          instrumentId: "US:TEST",
+          symbol: "TEST",
+          market: "US",
+          requestedAt: "2026-09-19T02:00:00.000Z",
+          status: "source-unavailable",
+          message: "上次行情更新被中断",
+          intervals: [],
+        },
+      },
+    });
+    const dimension = model.dimensions.find(item => item.id === "holdings");
+    const issue = dimension?.issues[0];
+
+    expect(issue).toMatchObject({
+      action: "open-data-check",
+      reason: `${statusReason}；行情次级状态：行情源暂不可用：上次行情更新被中断`,
+    });
+    expect(dimension?.retryableInstrumentIds).toEqual([]);
+  });
+
+  it("keeps a not-requested missing quote aligned with the holding row action", () => {
+    const current = holdings([holdingsRow("US:TEST", "missing", {
+      diagnostic: "missing-quote",
+      statusReason: "尚未开始行情更新",
+    })]);
+    const model = buildTradingRoomQuality({
+      scope,
+      rows: [],
+      holdings: current,
+      marketDataDailyStatuses: { "US:TEST": "not-requested" },
+    });
+    const issue = model.dimensions.find(item => item.id === "holdings")?.issues[0];
+
+    expect(issue).toMatchObject({ action: "retry", reason: "尚未开始行情更新" });
   });
 
   it("reports failed FX with complete old rates as a limited stale estimate", () => {
@@ -224,7 +363,10 @@ describe("buildTradingRoomQuality", () => {
   });
 
   it("does not queue a provider-unsupported holding for retry and includes current holdings in history", () => {
-    const current = holdings([holdingsRow("HK:0700", "missing")]);
+    const current = holdings([holdingsRow("HK:0700", "missing", {
+      diagnostic: "source-unsupported",
+      statusReason: "行情源不支持或尚未连接",
+    })]);
     const model = buildTradingRoomQuality({
       scope,
       rows: [],
@@ -245,9 +387,10 @@ describe("buildTradingRoomQuality", () => {
 
   it("uses independent daily status for holdings when the merged 1H status is unsupported", () => {
     const current = holdings([
-      holdingsRow("HK:0700", "missing"),
-      holdingsRow("HK:0701", "missing"),
-      holdingsRow("HK:0702", "missing"),
+      holdingsRow("HK:0700", "missing", { diagnostic: "stale-quote", statusReason: "当前行情已过期" }),
+      holdingsRow("HK:0701", "missing", { diagnostic: "source-unavailable", statusReason: "行情源暂不可用" }),
+      holdingsRow("HK:0702", "missing", { diagnostic: "source-unsupported", statusReason: "行情源不支持或尚未连接" }),
+      holdingsRow("HK:0703", "missing", { diagnostic: "stale-quote", statusReason: "当前行情已过期" }),
     ]);
     const model = buildTradingRoomQuality({
       scope,
@@ -258,11 +401,13 @@ describe("buildTradingRoomQuality", () => {
         "HK:0700": "needs-provider",
         "HK:0701": "needs-provider",
         "HK:0702": "needs-provider",
+        "HK:0703": "needs-provider",
       },
       marketDataLabels: {
         "HK:0700": "行情源待连接",
         "HK:0701": "行情源待连接",
         "HK:0702": "行情源待连接",
+        "HK:0703": "行情源待连接",
       },
       marketDataDailyStatuses: {
         "HK:0700": "stale",
@@ -277,6 +422,11 @@ describe("buildTradingRoomQuality", () => {
       expect.objectContaining({ instrumentId: "HK:0700", action: "retry" }),
       expect.objectContaining({ instrumentId: "HK:0701", action: "retry" }),
       expect.objectContaining({ instrumentId: "HK:0702", action: "source-unsupported" }),
+      expect.objectContaining({
+        instrumentId: "HK:0703",
+        action: "retry",
+        reason: "当前行情已过期；行情次级状态：行情源不支持或尚未连接",
+      }),
     ]));
     expect(dimension).toMatchObject({
       action: "source-unsupported",

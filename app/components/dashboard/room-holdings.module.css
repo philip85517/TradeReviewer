@@ -32,6 +32,7 @@
 .statusReason,
 .empty,
 .sortNote,
+.retryFeedback,
 .evidence p {
   margin: 0;
   color: var(--dashboard-muted);
@@ -131,6 +132,16 @@
 .sortNote { color: var(--dashboard-muted); }
 .evidence { border-top: 1px solid var(--dashboard-line); padding-top: 7px; }
 .evidence summary { min-height: 44px; color: var(--dashboard-muted); cursor: pointer; font-size: 14px; }
+.retryFeedback { color: var(--blue, #32758b); font-weight: 650; }
+.diagnosticActions { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 7px; color: var(--gold, #a56e14); font-size: 12px; }
+.diagnosticActions button { min-width: 44px; min-height: 44px; border: 0; border-radius: 8px; padding: 8px 10px; background: transparent; color: var(--blue, #32758b); cursor: pointer; font: inherit; font-size: 14px; font-weight: 700; }
+.diagnosticActions button:disabled { cursor: wait; opacity: .7; }
+.quoteDetails { color: var(--dashboard-muted); font-size: 10px; }
+.quoteDetails summary { width: fit-content; cursor: pointer; color: var(--blue, #32758b); font-weight: 650; }
+.quoteDetails[open] .quoteDetail { margin-top: 5px; }
+.diagnosticDetails { color: var(--dashboard-muted); font-size: 10px; }
+.diagnosticDetails summary { width: fit-content; cursor: pointer; color: var(--blue, #32758b); font-weight: 650; }
+.diagnosticDetails .statusReason { margin-top: 5px; }
 
 @media (max-width: 620px) {
   .panel { margin-top: 14px; border-radius: 13px; padding: 14px; }

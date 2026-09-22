@@ -24,6 +24,9 @@ function statementRow(
     stampDuty?: string;
     otherFee?: string;
     change?: string;
+    securityBalance?: string;
+    omitSecurityBalance?: boolean;
+    modern?: boolean;
     combineNameAndBusiness?: boolean;
   },
 ): PdfTextItem[] {
@@ -31,16 +34,30 @@ function statementRow(
     /^(\d{5,6})(?:\s+(.+))?$/,
   );
   const numericShift = values.combineNameAndBusiness ? 14 : 0;
+  const numeric = values.modern
+    ? { quantity: 464, price: 514, amount: 570, commission: 625, stampDuty: 670, otherFee: 715, change: 760, cash: 820, security: 875 }
+    : { quantity: 464 + numericShift, price: 514 + numericShift, amount: 552 + numericShift, commission: 600 + numericShift, stampDuty: 627 + numericShift, otherFee: 654 + numericShift, change: 684 + numericShift, cash: 736 + numericShift, security: 794 + numericShift };
   return [
-    item(`${values.date} ${values.market}`, 36, y),
-    item(
-      `人民币 匿名银行 A000000000${
-        parsedInstrument ? ` ${parsedInstrument[1]}` : ""
-      }`,
-      120,
-      y,
-    ),
-    ...(parsedInstrument?.[2]
+    ...(values.modern
+      ? [
+          item(values.date, 36, y),
+          item(values.market, 80, y),
+          item("人民币", 123, y),
+          item("匿名银行", 154, y),
+          item("A000000000", 210, y),
+          ...(parsedInstrument ? [item(parsedInstrument[1], 260, y)] : []),
+        ]
+      : [
+          item(`${values.date} ${values.market}`, 36, y),
+          item(
+            `人民币 匿名银行 A000000000${
+              parsedInstrument ? ` ${parsedInstrument[1]}` : ""
+            }`,
+            120,
+            y,
+          ),
+        ]),
+    ...(parsedInstrument?.[2] && !values.modern
       ? [
           item(
             values.combineNameAndBusiness
@@ -51,27 +68,30 @@ function statementRow(
           ),
         ]
       : []),
+    ...(parsedInstrument?.[2] && values.modern ? [item(parsedInstrument[2], 315, y)] : []),
     item("", 360, y),
     ...(!values.combineNameAndBusiness
       ? [item(values.business, 371, y)]
       : []),
     ...(values.quantity
-      ? [item(values.quantity, 464 + numericShift, y)]
+      ? [item(values.quantity, numeric.quantity, y)]
       : []),
-    ...(values.price ? [item(values.price, 514 + numericShift, y)] : []),
-    ...(values.amount ? [item(values.amount, 552 + numericShift, y)] : []),
+    ...(values.price ? [item(values.price, numeric.price, y)] : []),
+    ...(values.amount ? [item(values.amount, numeric.amount, y)] : []),
     ...(values.commission
-      ? [item(values.commission, 600 + numericShift, y)]
+      ? [item(values.commission, numeric.commission, y)]
       : []),
     ...(values.stampDuty
-      ? [item(values.stampDuty, 627 + numericShift, y)]
+      ? [item(values.stampDuty, numeric.stampDuty, y)]
       : []),
     ...(values.otherFee
-      ? [item(values.otherFee, 654 + numericShift, y)]
+      ? [item(values.otherFee, numeric.otherFee, y)]
       : []),
-    item(values.change ?? "9000.00", 684 + numericShift, y),
-    item("100000.00", 736 + numericShift, y),
-    item("0.00", 794 + numericShift, y),
+    item(values.change ?? "9000.00", numeric.change, y),
+    item("100000.00", numeric.cash, y),
+    ...(values.omitSecurityBalance || values.securityBalance === undefined
+      ? []
+      : [item(values.securityBalance, numeric.security, y)]),
   ];
 }
 
@@ -101,6 +121,151 @@ const tableHeader = [
   item("资金余额 证券余额", 794, 180),
 ];
 
+const modernTableHeader = [
+  item("流水明细", 36, 144),
+  item("对账日期： 20250101 ---- 20251231", 36, 162),
+  item("发生日期", 36, 180),
+  item("市场", 80, 180),
+  item("币种", 123, 180),
+  item("银行代码", 154, 180),
+  item("证券账号", 210, 180),
+  item("证券代码", 260, 180),
+  item("证券名称", 315, 180),
+  item("业务标志", 371, 180),
+  item("发生数量", 464, 180),
+  item("成交均价", 514, 180),
+  item("成交金额", 592, 180),
+  item("佣金", 636, 180),
+  item("印花税", 675, 180),
+  item("其他费", 720, 180),
+  item("变动金额", 782, 180),
+  item("资金余额", 853, 180),
+  item("证券余额", 897, 180),
+];
+
+export const CHINA_MERCHANTS_POSITION_EVIDENCE: PdfTextPage[] = [
+  headingPage,
+  {
+    pageNumber: 2,
+    width: 900,
+    height: 600,
+    items: [
+      ...modernTableHeader,
+      ...statementRow(216, {
+        date: "20250102",
+        market: "上海",
+        instrument: "510300 沪深300ETF",
+        business: "证券买入",
+        quantity: "1000",
+        price: "4.00",
+        amount: "-4000.00",
+        commission: "4.00",
+        stampDuty: "0.00",
+        otherFee: "0.00",
+        change: "-4004.00",
+        securityBalance: "1000.00",
+        modern: true,
+      }),
+      ...statementRow(234, {
+        date: "20250103",
+        market: "上海",
+        instrument: "510300 沪深300ETF",
+        business: "证券卖出",
+        quantity: "-1000",
+        price: "4.20",
+        amount: "4200.00",
+        commission: "4.00",
+        stampDuty: "4.20",
+        otherFee: "0.00",
+        change: "4191.80",
+        securityBalance: "0.00",
+        modern: true,
+      }),
+    ],
+  },
+];
+
+export const CHINA_MERCHANTS_MISSING_SECURITY_BALANCE: PdfTextPage[] = [
+  headingPage,
+  {
+    pageNumber: 2,
+    width: 900,
+    height: 600,
+    items: [
+      ...modernTableHeader,
+      ...statementRow(216, {
+        date: "20250102",
+        market: "上海",
+        instrument: "510300 沪深300ETF",
+        business: "证券卖出",
+        quantity: "-1000",
+        price: "4.00",
+        amount: "4000.00",
+        commission: "4.00",
+        stampDuty: "4.00",
+        otherFee: "0.00",
+        change: "3992.00",
+        omitSecurityBalance: true,
+        modern: true,
+      }),
+    ],
+  },
+];
+
+export const CHINA_MERCHANTS_FIRST_SELL: PdfTextPage[] = [
+  headingPage,
+  {
+    pageNumber: 2,
+    width: 900,
+    height: 600,
+    items: [
+      ...modernTableHeader,
+      ...statementRow(216, {
+        date: "20230105",
+        market: "上海",
+        instrument: "513010 港股科技ETF",
+        business: "证券卖出",
+        quantity: "-92400",
+        price: "0.60",
+        amount: "55440.00",
+        commission: "20.00",
+        stampDuty: "55.44",
+        otherFee: "0.00",
+        change: "55364.56",
+        securityBalance: "0.00",
+        modern: true,
+      }),
+    ],
+  },
+];
+
+export const CHINA_MERCHANTS_INCONSISTENT_SECURITY_BALANCE: PdfTextPage[] = [
+  headingPage,
+  {
+    pageNumber: 2,
+    width: 900,
+    height: 600,
+    items: [
+      ...modernTableHeader,
+      ...statementRow(216, {
+        date: "20250102",
+        market: "上海",
+        instrument: "510300 沪深300ETF",
+        business: "证券买入",
+        quantity: "100",
+        price: "4.00",
+        amount: "-400.00",
+        commission: "1.00",
+        stampDuty: "0.00",
+        otherFee: "0.00",
+        change: "-401.00",
+        securityBalance: "50.00",
+        modern: true,
+      }),
+    ],
+  },
+];
+
 export const CHINA_MERCHANTS_PAGES: PdfTextPage[] = [
   headingPage,
   {
@@ -120,6 +285,7 @@ export const CHINA_MERCHANTS_PAGES: PdfTextPage[] = [
         commission: "5.00",
         stampDuty: "0.00",
         otherFee: "1.00",
+        securityBalance: "100.00",
         combineNameAndBusiness: true,
       }),
       ...statementRow(234, {
@@ -133,6 +299,7 @@ export const CHINA_MERCHANTS_PAGES: PdfTextPage[] = [
         commission: "3.00",
         stampDuty: "0.00",
         otherFee: "0.20",
+        securityBalance: "1000.00",
       }),
       ...statementRow(252, {
         date: "20250103",
@@ -145,6 +312,7 @@ export const CHINA_MERCHANTS_PAGES: PdfTextPage[] = [
         commission: "5.00",
         stampDuty: "0.00",
         otherFee: "0.10",
+        securityBalance: "500.00",
       }),
       ...statementRow(270, {
         date: "20250104",
@@ -157,6 +325,7 @@ export const CHINA_MERCHANTS_PAGES: PdfTextPage[] = [
         commission: "3.00",
         stampDuty: "1.00",
         otherFee: "0.20",
+        securityBalance: "0.00",
       }),
       ...statementRow(288, {
         date: "20250104",
@@ -169,6 +338,7 @@ export const CHINA_MERCHANTS_PAGES: PdfTextPage[] = [
         commission: "5.00",
         stampDuty: "1.00",
         otherFee: "0.10",
+        securityBalance: "0.00",
       }),
       ...statementRow(306, {
         date: "20250105",
@@ -250,6 +420,7 @@ export const CHINA_MERCHANTS_IDENTICAL_FILLS: PdfTextPage[] = [
         commission: "5.00",
         stampDuty: "0.00",
         otherFee: "0.10",
+        securityBalance: "500.00",
       }),
       ...statementRow(234, {
         date: "20250103",
@@ -262,6 +433,7 @@ export const CHINA_MERCHANTS_IDENTICAL_FILLS: PdfTextPage[] = [
         commission: "5.00",
         stampDuty: "0.00",
         otherFee: "0.10",
+        securityBalance: "1000.00",
       }),
     ],
   },
@@ -284,6 +456,7 @@ export const CHINA_MERCHANTS_CODE_ONLY: PdfTextPage[] = [
         price: "40.00",
         amount: "-4000.00",
         commission: "5.00",
+        securityBalance: "100.00",
       }),
     ],
   },
@@ -306,6 +479,7 @@ export const CHINA_MERCHANTS_SHENZHEN_TYPE_BOUNDARY: PdfTextPage[] = [
         price: "1.00",
         amount: "-100.00",
         commission: "1.00",
+        securityBalance: "100.00",
       }),
       ...statementRow(234, {
         date: "20250104",
@@ -316,6 +490,7 @@ export const CHINA_MERCHANTS_SHENZHEN_TYPE_BOUNDARY: PdfTextPage[] = [
         price: "2.00",
         amount: "-200.00",
         commission: "1.00",
+        securityBalance: "100.00",
       }),
     ],
   },
@@ -339,6 +514,7 @@ export const CHINA_MERCHANTS_EMPTY_FEES: PdfTextPage[] = [
         amount: "-2000.00",
         stampDuty: "1.00",
         otherFee: "2.00",
+        securityBalance: "100.00",
       }),
       ...statementRow(234, {
         date: "20250104",
@@ -350,6 +526,7 @@ export const CHINA_MERCHANTS_EMPTY_FEES: PdfTextPage[] = [
         amount: "2100.00",
         commission: "3.00",
         otherFee: "2.00",
+        securityBalance: "0.00",
       }),
       ...statementRow(252, {
         date: "20250105",
@@ -361,6 +538,7 @@ export const CHINA_MERCHANTS_EMPTY_FEES: PdfTextPage[] = [
         amount: "-2050.00",
         commission: "3.00",
         stampDuty: "1.00",
+        securityBalance: "100.00",
       }),
     ],
   },
@@ -385,6 +563,7 @@ export const CHINA_MERCHANTS_CROSS_PAGE: PdfTextPage[] = [
         commission: "5.00",
         stampDuty: "1.00",
         otherFee: "0.20",
+        securityBalance: "100.00",
       }),
     ],
   },
@@ -402,6 +581,7 @@ export const CHINA_MERCHANTS_CROSS_PAGE: PdfTextPage[] = [
         price: "21.00",
         amount: "2100.00",
         commission: "5.00",
+        securityBalance: "0.00",
       }),
     ],
   },
@@ -424,6 +604,7 @@ export const CHINA_MERCHANTS_INVALID_DATE: PdfTextPage[] = [
         price: "20.00",
         amount: "-2000.00",
         commission: "5.00",
+        securityBalance: "100.00",
       }),
     ],
   },

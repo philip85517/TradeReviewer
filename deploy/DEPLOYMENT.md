@@ -1,6 +1,6 @@
 # Docker Compose 部署指南
 
-默认部署根目录是 `/Users/zhoulin/projects/TradeReview`；可在源代码工作副本中通过
+默认部署根目录是 `/Users/zhoulin/projects/交易空间/TradingReview`；可在源代码工作副本中通过
 `DEPLOY_ROOT=/绝对路径` 覆盖。目标目录不能是源仓库或其普通子目录。完整部署完成后，
 目标根目录也包含独立的 `Makefile` 和 `ops/deploy.sh`，因此状态、备份、恢复、回滚、
 停止以及基于当前 release 的再次部署可以直接在目标根目录执行。
@@ -16,8 +16,7 @@
 │   ├── .env
 │   └── .env.example
 ├── data/
-│   ├── sqlite/tradereview.sqlite
-│   └── backups/
+│   ├── backups/
 ├── logs/
 ├── ops/
 │   ├── deploy.sh
@@ -52,7 +51,8 @@ make deploy
 ```
 
 `deploy-config` 和重复的完整部署都不会覆盖已有 `config/.env`。完整部署也不会覆盖
-SQLite、备份或日志。默认只监听 `127.0.0.1:3000`；公网域名、HTTPS、反向代理及
+外置 `SQLITE_HOST_DIR` 中的 SQLite、备份或日志。未配置 `SQLITE_HOST_DIR` 的旧部署继续使用
+`./data/sqlite`。默认只监听 `127.0.0.1:3022`；公网域名、HTTPS、反向代理及
 `APP_BIND=0.0.0.0` 均需明确配置。
 
 Docker runtime 镜像默认使用 `mirrors.aliyun.com` 安装 SQLite CLI，以适配当前网络对
@@ -101,7 +101,7 @@ Compose 子命令、运维子进程、服务健康轮询和 HTTP 请求都有有
 
 `make deploy-code` 只创建应用 release 和执行健康门禁，不写入或删除
 `config/.env`、`data/sqlite/`、`data/backups/` 或 `logs/`。
-所有 release 都复用同一个 `data/sqlite/` 目录；发布应用代码不会创建另一套业务数据库。
+所有 release 都复用同一个 `SQLITE_HOST_DIR` 目录；发布应用代码不会创建另一套业务数据库。
 
 ## SQLite 备份与恢复
 
@@ -118,11 +118,13 @@ root 所有文件。
 `deploy-restore` 只接受绝对路径的普通非符号链接文件；存在 `.sha256` 时必须先通过
 校验。工具先创建当前数据库的一致性备份，在同目录临时数据库中恢复并检查完整性，然后
 停止应用并原子交换数据库。启动或健康检查失败会换回原数据库、重新启动原应用并再次
-检查健康；恢复失败和恢复过程的错误都会保留并报告。
+检查健康；恢复失败和恢复过程的错误都会保留并报告。恢复前必须停止所有使用该 SQLite
+文件、WAL 或 SHM 的数据库消费者；脚本会在停止 Compose 应用后检查仍打开的文件，无法
+检查或仍有消费者时拒绝交换并保持原库不变。
 
 ## 数据边界
 
-SQLite 通过 `./data/sqlite:/var/lib/tradereview` 与镜像层隔离，是交易、导入历史、复盘、
+SQLite 通过 `${SQLITE_HOST_DIR:-./data/sqlite}:/var/lib/tradereview` 与镜像层隔离，是交易、导入历史、复盘、
 行情、设置等业务数据的唯一持久化来源。升级后的浏览器会将旧
 `localStorage`/`IndexedDB` 数据一次性迁移到 SQLite；旧浏览器数据仅保留为短期只读回滚副本，
 正常运行不再读取或写入它。`make deploy-status` 会显示 active release、监听地址、数据库大小、

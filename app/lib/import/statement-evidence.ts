@@ -303,7 +303,7 @@ export function applyMonthlyHistoryEvidence(executions: TradeExecution[], monthl
     const statementPositions = [...new Map([...positions.filter(matches), ...(execution.source.statementPositions ?? []).filter(p => !superseded(p)), ...retainedPosition].filter(matches).map(p => [JSON.stringify([p.documentId, p.accountId, p.market, p.symbol, p.phase, p.date, p.quantity]), p])).values()];
     const openingPosition = statementPositions
       .filter(p => matches(p) && (p.phase === "opening" ? p.date <= day : p.date < day))
-      .sort((a, b) => b.date.localeCompare(a.date))[0];
+      .sort((a, b) => b.date.localeCompare(a.date) || (a.phase === b.phase ? 0 : a.phase === "closing" ? -1 : 1))[0];
     const positionEvents = [...new Map([...(execution.source.positionEvents ?? []).filter(e => !superseded(e)), ...events.filter(event => matches(event) || (!isSimulation && compatibleUnassignedFee(event, execution)))].map(event => [`${event.documentId ?? ""}:${event.accountId}:${event.id}`, event])).values()];
     const source = { ...execution.source };
     delete source.openingPosition;

@@ -38,6 +38,21 @@ describe("attachStatementEvidence", () => {
     const corrected = applyMonthlyHistoryEvidence(attached, [{ ...monthly, positions: [] }]);
     expect(corrected[0].source.statementPositions).toBeUndefined();
   });
+
+  it("prefers a same-day closing snapshot over the opening snapshot for a later trade day", () => {
+    const buy: TradeExecution = { id: "buy", accountId: "acct", accountLabel: "Test", instrument: { id: "CN-SH:510300", market: "CN-SH", symbol: "510300", name: "510300", currency: "CNY" }, source: { platform: "china-merchants", row: 1 }, side: "buy", executedAt: "2025-01-02T07:00:00Z", quantity: "1000", price: "4", fee: "0" };
+    const sell: TradeExecution = { ...buy, id: "sell", source: { ...buy.source, row: 2 }, side: "sell", executedAt: "2025-01-03T07:00:00Z", quantity: "200", price: "4.2" };
+    const monthly = { ...result().monthly!, documentId: "china-merchants:fixture", positions: [
+      { documentId: "china-merchants:fixture", accountId: "acct", market: "CN-SH", symbol: "510300", phase: "opening" as const, date: "2025-01-02", quantity: "1000", source: [] },
+      { documentId: "china-merchants:fixture", accountId: "acct", market: "CN-SH", symbol: "510300", phase: "closing" as const, date: "2025-01-02", quantity: "2000", source: [] },
+    ] };
+
+    const attached = applyMonthlyHistoryEvidence([buy, sell], [monthly]);
+
+    expect(attached[0].source.openingPosition?.quantity).toBe("1000");
+    expect(attached[1].source.openingPosition?.quantity).toBe("2000");
+  });
+
   it("caps closed episode evidence while retaining all snapshots on instrument-level executions", () => {
     const buy: TradeExecution = { id: "buy", accountId: "acct", accountLabel: "Test", instrument: { id: "US:LI", market: "US", symbol: "LI", name: "LI", currency: "USD" }, source: { platform: "tiger", row: 1 }, side: "buy", executedAt: "2025-01-10T14:30:00Z", quantity: "100", price: "30", fee: "0" };
     const sell: TradeExecution = { ...buy, id: "sell", side: "sell", executedAt: "2025-01-11T14:30:00Z" };

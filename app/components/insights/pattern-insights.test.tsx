@@ -1,5 +1,8 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { InsightEpisodeFact } from "../../lib/insights/episode-facts";
@@ -7,9 +10,16 @@ import type {
   PatternInsight,
   PatternInsightReport,
 } from "../../lib/insights/insight-engine";
+import type { TagSuggestionRecord } from "../../lib/insights/types";
 import { buildPatternInsightReport } from "../../lib/insights/insight-engine";
 import { buildOutcomeStructureReport } from "../../lib/insights/outcome-structure";
-import { PatternInsights } from "./pattern-insights";
+import { PatternInsights, type Category } from "./pattern-insights";
+
+const globalStyles = readFileSync(resolve(process.cwd(), "app/globals.css"), "utf8");
+const dashboardStyles = readFileSync(
+  resolve(process.cwd(), "app/components/dashboard/review-dashboard.module.css"),
+  "utf8",
+);
 
 function fact(
   episodeId: string,
@@ -488,5 +498,95 @@ describe("PatternInsights", () => {
       screen.getByText("至少需要 3 个可比较回合才会显示早期线索。"),
     ).toBeInTheDocument();
     expect(screen.queryByText("不代表因果")).not.toBeInTheDocument();
+  });
+
+  it("keeps insight controls and summary content shrinkable at narrow widths", () => {
+    expect(globalStyles).toMatch(/\.review-summary-controls select[^}]*\bwidth:\s*100%[^}]*\bmin-width:\s*0/);
+    expect(globalStyles).toMatch(/\.review-summary-controls > label[^}]*\bmin-width:\s*0/);
+    expect(globalStyles).toMatch(/\.insights-summary[^}]*\bmin-width:\s*0/);
+    expect(globalStyles).toMatch(/@media \(max-width: 680px\)[\s\S]*\.insights-header[^}]*\bflex-direction:\s*column/);
+    expect(dashboardStyles).toMatch(/\.roomNatureControl,\s*\.roomPeriodControl,\s*\.roomScopeControls > \.filterField[^}]*\balign-content:\s*start/);
+  });
+
+  it("keeps rule suggestions collapsed while category filtering remains available", async () => {
+    const user = userEvent.setup();
+    render(
+      <PatternInsights
+        report={report({ formalInsights: [], excluded: [] })}
+        facts={facts}
+        suggestions={[{
+          version: 1,
+          tagDictionaryVersion: 1,
+          id: "suggestion-1",
+          episodeId: "episode-win",
+          instrumentId: "US:XPEV",
+          tagId: "breakout",
+          finalTagId: null,
+          ruleId: "entry-20d-breakout",
+          ruleVersion: 1,
+          status: "suggested",
+          suggestedAt: "2025-06-01T00:00:00Z",
+          decidedAt: null,
+          evidence: [],
+        } satisfies TagSuggestionRecord]}
+        episodeContexts={{}}
+        onConfirmSuggestion={vi.fn()}
+        onEditSuggestion={vi.fn()}
+        onRejectSuggestion={vi.fn()}
+        onOpenEpisode={vi.fn()}
+      />,
+    );
+
+    const rules = screen.getByText("待确认规则建议（1）").closest("details");
+    expect(rules).not.toHaveAttribute("open");
+    await user.click(screen.getByRole("button", { name: "只看交易条件" }));
+    expect(screen.getByRole("button", { name: "只看交易条件" })).toHaveAttribute("aria-current", "page");
+    expect(rules).not.toHaveAttribute("open");
+  });
+
+  it("supports a controlled category filter", async () => {
+    const user = userEvent.setup();
+    const onCategoryChange = vi.fn();
+    function Host() {
+      const [category, setCategory] = useState<Category>("all");
+      return (
+        <PatternInsights
+          report={report({
+            formalInsights: [
+              insight(),
+              insight({
+                id: "direction:long",
+                category: "condition",
+                dimension: {
+                  kind: "direction",
+                  id: "direction",
+                  value: "long",
+                  label: "多头回合",
+                },
+              }),
+            ],
+            excluded: [],
+          })}
+          facts={facts}
+          suggestions={[]}
+          episodeContexts={{}}
+          category={category}
+          onCategoryChange={(next) => {
+            onCategoryChange(next);
+            setCategory(next);
+          }}
+          onConfirmSuggestion={vi.fn()}
+          onEditSuggestion={vi.fn()}
+          onRejectSuggestion={vi.fn()}
+          onOpenEpisode={vi.fn()}
+        />
+      );
+    }
+
+    render(<Host />);
+    await user.click(screen.getByRole("button", { name: "只看交易条件" }));
+    expect(onCategoryChange).toHaveBeenCalledWith("condition");
+    expect(screen.getByText("多头回合")).toBeInTheDocument();
+    expect(screen.queryByText("突破")).not.toBeInTheDocument();
   });
 });

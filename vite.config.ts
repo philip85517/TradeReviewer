@@ -55,6 +55,9 @@ export default defineConfig(async ({ command }) => {
 
   return {
     server: {
+      // Runtime port is authoritative; fail if it is already occupied instead
+      // of silently moving the preview to another port.
+      strictPort: true,
       // Worktrees may share dependencies through a symlink. PDF workers are
       // served directly from that dependency directory during development.
       fs: { allow: [process.cwd(), realpathSync("node_modules")] },

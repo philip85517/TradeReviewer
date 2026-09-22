@@ -155,11 +155,17 @@ const liveScope = (overrides: Partial<RoomScope> = {}): RoomScope => ({
 describe("trading room scope contracts", () => {
   it("projects metadata into four mutually exclusive categories and keeps unknown explicit", () => {
     const usEtf = instrument({ id: "US:ETF", symbol: "SPY" });
+    const hkEtf = instrument({ id: "HK:ETF", symbol: "02800", market: "HK", currency: "HKD" });
     const hkStock = instrument({ id: "HK:STOCK", symbol: "0700", market: "HK", currency: "HKD" });
     const cnStock = instrument({ id: "CN-SH:STOCK", symbol: "600000", market: "CN-SH", currency: "CNY" });
 
     expect(classifyTradingRoomAsset(usEtf, metadata("etf", usEtf))).toEqual({
-      category: "etf",
+      category: "us-stock",
+      assetType: "etf",
+      reason: null,
+    });
+    expect(classifyTradingRoomAsset(hkEtf, metadata("etf", hkEtf))).toEqual({
+      category: "hk-stock",
       assetType: "etf",
       reason: null,
     });
@@ -173,9 +179,13 @@ describe("trading room scope contracts", () => {
       assetType: "stock",
       reason: null,
     });
-    expect(classifyTradingRoomAsset(usEtf)).toMatchObject({ category: "unknown", assetType: "unknown" });
+    expect(classifyTradingRoomAsset(usEtf)).toEqual({
+      category: "us-stock",
+      assetType: "unknown",
+      reason: "缺少可信资产类型元数据",
+    });
     expect(classifyTradingRoomAsset(usEtf, { ...metadata("etf", usEtf), symbol: "WRONG" })).toMatchObject({
-      category: "unknown",
+      category: "us-stock",
       reason: expect.stringContaining("代码"),
     });
     expect(classifyTradingRoomAsset(instrument({ market: "OTHER" }), metadata("stock", instrument({ market: "OTHER" })))).toMatchObject({
@@ -293,18 +303,54 @@ describe("trading room scope contracts", () => {
     expect(selected.map(item => item.item.episode.id)).toEqual([simulationA.item.episode.id]);
   });
 
-  it("supports market narrowing inside the all-market ETF category", () => {
+  it("filters ETF as a secondary asset type without changing its market category", () => {
     const shEtf = instrument({ id: "CN-SH:ETF", symbol: "510300", market: "CN-SH", currency: "CNY" });
     const usEtf = instrument({ id: "US:ETF", symbol: "SPY", market: "US", currency: "USD" });
+    const stock = instrument({ id: "US:STOCK", symbol: "AAPL", market: "US", currency: "USD" });
     const selected = filterRoomRows(
-      [row(shEtf, "2026-09-10", "10"), row(usEtf, "2026-09-11", "20")],
-      liveScope({ assetCategory: "etf", markets: ["US"] }),
+      [row(shEtf, "2026-09-10", "10"), row(usEtf, "2026-09-11", "20"), row(stock, "2026-09-12", "30")],
+      liveScope({ assetCategory: "us-stock", assetType: "etf" }),
       { instrumentMetadata: new Map([
         [shEtf.id, metadata("etf", shEtf)],
         [usEtf.id, metadata("etf", usEtf)],
+        [stock.id, metadata("stock", stock)],
       ]) },
     );
     expect(selected.map(item => item.item.episode.instrument.id)).toEqual([usEtf.id]);
+  });
+
+  it("groups an A-share ETF with A-share performance instead of an ETF category", () => {
+    const cnEtf = instrument({ id: "CN-SH:ETF", symbol: "510300", market: "CN-SH", currency: "CNY" });
+    const cnStock = instrument({ id: "CN-SZ:STOCK", symbol: "000001", market: "CN-SZ", currency: "CNY" });
+    const model = buildTradingRoomModel(
+      [row(cnEtf, "2026-09-10", "10"), row(cnStock, "2026-09-11", "20")],
+      {
+        scope: liveScope(),
+        instrumentMetadata: new Map([
+          [cnEtf.id, metadata("etf", cnEtf)],
+          [cnStock.id, metadata("stock", cnStock)],
+        ]),
+      },
+    );
+
+    expect(model.categories.map(category => category.id)).toEqual(["a-share-stock"]);
+    expect(model.categories[0]?.label).toBe("A股");
+    expect(model.categories[0]?.rows.map(value => [value.assetType, value.assetCategory])).toEqual([
+      ["etf", "a-share-stock"],
+      ["stock", "a-share-stock"],
+    ]);
+    expect(model.categories[0]?.summary.money.originalByCurrency).toEqual({ CNY: "30" });
+  });
+
+  it("keeps legacy ETF category scopes as a compatibility asset-type filter", () => {
+    const etf = instrument({ id: "US:ETF", symbol: "SPY", market: "US", currency: "USD" });
+    const stock = instrument({ id: "US:STOCK", symbol: "AAPL", market: "US", currency: "USD" });
+    const selected = filterRoomRows(
+      [row(etf, "2026-09-10", "10"), row(stock, "2026-09-11", "20")],
+      liveScope({ assetCategory: "etf" }),
+      { instrumentMetadata: new Map([[etf.id, metadata("etf", etf)], [stock.id, metadata("stock", stock)]]) },
+    );
+    expect(selected.map(item => item.item.episode.instrument.id)).toEqual([etf.id]);
   });
 
   it("ignores the performance date for current holdings", () => {
@@ -319,7 +365,7 @@ describe("trading room scope contracts", () => {
   it("summarizes trusted rounds and reports unknown asset episodes separately", () => {
     const cn = instrument({ id: "CN-SH:STOCK", symbol: "600000", market: "CN-SH", currency: "CNY" });
     const etf = instrument({ id: "US:ETF", symbol: "SPY", market: "US", currency: "USD" });
-    const unknown = instrument({ id: "US:UNKNOWN", symbol: "UNK", market: "US", currency: "USD" });
+    const unknown = instrument({ id: "OTHER:UNKNOWN", symbol: "UNK", market: "OTHER", currency: "USD" });
     const rows = [row(cn, "2026-09-02", "100"), row(etf, "2026-09-03", "200"), row(unknown, "2026-09-04", "300")];
     const model = buildTradingRoomModel(rows, {
       scope: liveScope(),
@@ -334,7 +380,7 @@ describe("trading room scope contracts", () => {
     expect(model.summary.money.originalByCurrency).toEqual({ CNY: "100", USD: "200" });
     expect(model.categories.map(category => category.id)).toEqual([
       "a-share-stock",
-      "etf",
+      "us-stock",
       "unknown",
     ]);
   });

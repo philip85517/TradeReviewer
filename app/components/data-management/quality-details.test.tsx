@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -202,5 +202,51 @@ describe("QualityDetails", () => {
     await user.click(screen.getByRole("button", { name: "查看数据源" }));
     expect(onOpenDataCheck).toHaveBeenCalledWith("historical", ["HK:0700"], undefined);
     expect(onOpenDataManagement).not.toHaveBeenCalled();
+  });
+
+  it("disables an issue retry while its async callback is pending", async () => {
+    const user = userEvent.setup();
+    let resolveRetry!: () => void;
+    const onRetryDataQuality = vi.fn(() => new Promise<void>(resolve => { resolveRetry = resolve; }));
+
+    render(<QualityDetails model={model()} onRetryDataQuality={onRetryDataQuality} />);
+
+    const retryButton = screen.getByRole("button", { name: "重试人民币估算汇率" });
+    await user.click(retryButton);
+
+    expect(onRetryDataQuality).toHaveBeenCalledWith("fx", []);
+    expect(retryButton).toBeDisabled();
+    expect(screen.getByText("重试进行中…")).toBeInTheDocument();
+    expect(onRetryDataQuality).toHaveBeenCalledTimes(1);
+
+    resolveRetry();
+    await waitFor(() => expect(retryButton).not.toBeDisabled());
+    expect(screen.queryByText("重试失败，请稍后再试")).not.toBeInTheDocument();
+  });
+
+  it("shows failure feedback when a dimension retry rejects", async () => {
+    const user = userEvent.setup();
+    const onRetryDataQuality = vi.fn().mockRejectedValue(new Error("source down"));
+    const quality = model();
+    const retryableDimensionModel: TradingRoomQualityModel = {
+      ...quality,
+      dimensions: quality.dimensions.map(dimension => dimension.id === "transaction"
+        ? {
+            ...dimension,
+            action: "retry",
+            actionLabel: "重试交易盈亏可信度",
+            retryableInstrumentIds: ["US:AAPL"],
+          }
+        : dimension),
+    };
+
+    render(<QualityDetails model={retryableDimensionModel} onRetryDataQuality={onRetryDataQuality} />);
+
+    const retryButton = screen.getByRole("button", { name: "重试交易盈亏可信度" });
+    await user.click(retryButton);
+
+    expect(onRetryDataQuality).toHaveBeenCalledWith("transaction", ["US:AAPL"]);
+    expect(await screen.findByRole("alert")).toHaveTextContent("重试失败，请稍后再试");
+    expect(retryButton).not.toBeDisabled();
   });
 });

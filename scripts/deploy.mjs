@@ -1,12 +1,12 @@
 import { createHash, randomUUID } from "node:crypto";
 import { chmod, cp, lstat, mkdir, readFile, readdir, readlink, rename, rm, symlink, writeFile } from "node:fs/promises";
-import { realpathSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
 import { spawn } from "node:child_process";
 import { hostname as osHostname } from "node:os";
 import { basename, dirname, isAbsolute, join, parse, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const DEFAULT_DEPLOY_ROOT = "/Users/zhoulin/projects/TradeReview";
+export const DEFAULT_DEPLOY_ROOT = "/Users/zhoulin/projects/交易空间/TradingReview";
 
 const APPLICATION_ROOT_EXCLUSIONS = new Set([
   ".git",
@@ -21,6 +21,8 @@ const APPLICATION_ROOT_EXCLUSIONS = new Set([
   "trades",
   ".superpowers",
   ".worktrees",
+  ".scratch",
+  ".data",
 ]);
 
 const PRIVATE_CREDENTIAL_NAMES = new Set([
@@ -50,6 +52,7 @@ const TARGET_OPERATION_FILES = Object.freeze([
   "healthcheck.sh",
   "restore-db.sh",
   "run-command.mjs",
+  "sqlite-path.sh",
   "status.sh",
 ]);
 
@@ -304,9 +307,10 @@ async function initializeConfigFiles({ sourceDir, targetDir, paths }) {
 
 async function initializeFullDeployment({ sourceDir, targetDir, paths }) {
   await initializeConfigFiles({ sourceDir, targetDir, paths });
+  const configuredSqliteDir = await deploymentConfigValue(targetDir, "SQLITE_HOST_DIR");
+  const sqliteDir = await resolveConfiguredSqliteDir(targetDir, configuredSqliteDir, paths);
   for (const [path, label] of [
     [paths.dataDir, "Deployment data path"],
-    [join(paths.dataDir, "sqlite"), "Deployment SQLite path"],
     [paths.backupsDir, "Deployment backups path"],
     [paths.logsDir, "Deployment logs path"],
   ]) {
@@ -314,8 +318,13 @@ async function initializeFullDeployment({ sourceDir, targetDir, paths }) {
     await mkdir(path, { recursive: true, mode: 0o700 });
     await assertSafeStagingPath(path, targetDir, label);
   }
+  await mkdir(sqliteDir, { recursive: true, mode: 0o700 });
+  const sqliteDetails = await lstat(sqliteDir);
+  if (sqliteDetails.isSymbolicLink() || !sqliteDetails.isDirectory()) {
+    throw new Error("SQLITE_HOST_DIR must be a non-symlink directory");
+  }
 
-  const databasePath = join(paths.dataDir, "sqlite", "tradereview.sqlite");
+  const databasePath = join(sqliteDir, "tradereview.sqlite");
   try {
     await assertRegularFile(databasePath, "Deployment SQLite database");
   } catch (error) {
@@ -323,6 +332,27 @@ async function initializeFullDeployment({ sourceDir, targetDir, paths }) {
     await writeFile(databasePath, "", { flag: "wx", mode: 0o600 });
   }
   await chmod(databasePath, 0o600);
+}
+
+async function resolveConfiguredSqliteDir(targetDir, configuredValue, paths) {
+  const sqliteDir = configuredValue
+    ? (isAbsolute(configuredValue) ? resolve(configuredValue) : resolve(targetDir, configuredValue))
+    : resolve(join(paths.dataDir, "sqlite"));
+  if (sqliteDir === parse(sqliteDir).root) throw new Error("SQLITE_HOST_DIR must not be the filesystem root");
+  const targetPath = canonicalizePath(targetDir);
+  const sqlitePath = canonicalizePath(sqliteDir);
+  if (configuredValue && (sqlitePath === targetPath || isDescendant(sqlitePath, targetPath) || isDescendant(targetPath, sqlitePath))) {
+    throw new Error("SQLITE_HOST_DIR must not be inside or contain the deployment target");
+  }
+  try {
+    const details = await lstat(sqliteDir);
+    if (details.isSymbolicLink() || !details.isDirectory()) {
+      throw new Error("SQLITE_HOST_DIR must be a non-symlink directory");
+    }
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+  return sqliteDir;
 }
 
 async function assertSafeStagingPath(path, targetRoot, label) {
@@ -741,6 +771,14 @@ export function createComposeRunner({
   healthCommandTimeoutMs = 30_000,
 }) {
   const rootDir = resolve(targetDir);
+  let configuredSqliteHostDir;
+  try {
+    const contents = readFileSync(join(rootDir, "config", ".env"), "utf8");
+    configuredSqliteHostDir = parseDeploymentConfigValue(contents, "SQLITE_HOST_DIR");
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+  configuredSqliteHostDir = resolve(rootDir, configuredSqliteHostDir || join("data", "sqlite"));
   const composeArguments = [
     "compose",
     "--project-directory",
@@ -757,7 +795,11 @@ export function createComposeRunner({
       () =>
         commandRunner("docker", [...composeArguments, ...args], {
           cwd: rootDir,
-          env: { ...env, ...commandEnv },
+          env: {
+            ...env,
+            ...commandEnv,
+            SQLITE_HOST_DIR: configuredSqliteHostDir,
+          },
           timeoutMs,
         }),
       timeoutMs,
@@ -916,15 +958,20 @@ async function releaseDirectories(paths) {
 
 const MANAGED_RELEASE_PATTERN = /^\d{8}T\d{6}Z-[a-f0-9]{10}(?:-\d+)?$/;
 
+function parseDeploymentConfigValue(contents, key) {
+  for (const rawLine of contents.split(/\r?\n/)) {
+    const line = rawLine.replace(/^\s+/, "");
+    const prefix = line.match(new RegExp(`^${key}\\s*=`));
+    if (!prefix) continue;
+    return line.slice(prefix[0].length).replace(/^\s+/, "").replace(/[ \t]+$/, "").replace(/^['"]|['"]$/g, "");
+  }
+  return undefined;
+}
+
 async function deploymentConfigValue(targetDir, key) {
   try {
     const contents = await readFile(join(targetDir, "config", ".env"), "utf8");
-    for (const rawLine of contents.split(/\r?\n/)) {
-      const line = rawLine.trim();
-      if (!line || line.startsWith("#") || !line.startsWith(`${key}=`)) continue;
-      return line.slice(key.length + 1).replace(/^['"]|['"]$/g, "");
-    }
-    return undefined;
+    return parseDeploymentConfigValue(contents, key);
   } catch (error) {
     if (error.code === "ENOENT") return undefined;
     throw error;

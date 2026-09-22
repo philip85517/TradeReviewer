@@ -3,7 +3,11 @@ import type { MarketDataSyncStatus } from "../market/sync-status";
 import type { FxState } from "../fx/room-contracts";
 import type { MarketDataJob } from "../storage/market-data-jobs";
 import { dashboardStableShortId } from "./dashboard";
-import type { TradingRoomHoldingRow, TradingRoomHoldingsModel } from "./trading-room-holdings";
+import {
+  diagnoseTradingRoomMarketData,
+  type TradingRoomHoldingRow,
+  type TradingRoomHoldingsModel,
+} from "./trading-room-holdings";
 import type { RoomFxSnapshot, RoomScope, TradingRoomRow } from "./trading-room-scope";
 
 export type TradingRoomQualityDimensionId =
@@ -106,6 +110,7 @@ function scopeKey(scope: RoomScope): string {
     scope.period.preset,
     scope.period.startDate,
     scope.period.endDate,
+    scope.assetType ?? "all",
     scope.simulationRunId ?? "",
     scope.query ?? "",
     [...scope.accountIds].sort().join(","),
@@ -289,6 +294,8 @@ function buildTransactionDimension(rows: readonly TradingRoomRow[]): TradingRoom
 }
 
 function holdingReason(row: TradingRoomHoldingRow): string {
+  if (row.statusReason) return row.statusReason;
+  if (row.positionEvidence.status === "unverified-negative") return row.positionEvidence.summary;
   if (row.costStatus !== "available" || row.quantityStatus !== "available") {
     return row.costStatus !== "available" ? "成本或持仓数量证据不可用" : "持仓数量证据不可用";
   }
@@ -299,11 +306,26 @@ function holdingReason(row: TradingRoomHoldingRow): string {
   return row.statusReason ?? "浮盈亏不可用";
 }
 
+function hasCoreHoldingEvidenceIssue(row: TradingRoomHoldingRow): boolean {
+  return row.diagnostic === "position-evidence" || row.positionEvidence.status === "unverified-negative";
+}
+
+function holdingRetryableDiagnostic(row: TradingRoomHoldingRow): boolean {
+  return [
+    "missing-quote",
+    "stale-quote",
+    "source-unavailable",
+    "market-data-pending",
+    "market-data-storage-error",
+  ].includes(row.diagnostic);
+}
+
 function buildHoldingsDimension(
   holdings: TradingRoomHoldingsModel | undefined,
   statuses: TradingRoomQualityBuildOptions["marketDataStatuses"],
   dailyStatuses: TradingRoomQualityBuildOptions["marketDataDailyStatuses"],
   labels: TradingRoomQualityBuildOptions["marketDataLabels"],
+  jobs: TradingRoomQualityBuildOptions["marketDataJobs"],
 ): TradingRoomQualityDimension {
   const rows = holdings?.rows ?? [];
   const available = rows.filter(row =>
@@ -312,31 +334,49 @@ function buildHoldingsDimension(
   );
   const affected = rows.filter(row => !available.includes(row));
   const issues = affected.map(row => {
+    const coreEvidenceIssue = hasCoreHoldingEvidenceIssue(row);
     const quoteIssue = row.quoteStatus !== "available";
-    const useDailyStatus = dailyStatuses !== undefined;
-    const marketStatus = (useDailyStatus ? dailyStatuses?.[row.instrumentId] : statuses?.[row.instrumentId]);
-    const sourceUnsupported = quoteIssue && (
-      marketStatus === "needs-provider" ||
-      (!useDailyStatus && /源待连接|未连接|不支持/.test(labels?.[row.instrumentId] ?? ""))
-    );
-    const action: Exclude<TradingRoomQualityAction, "none"> = sourceUnsupported
+    const marketStatus = dailyStatuses?.[row.instrumentId] ?? statuses?.[row.instrumentId];
+    const marketDiagnostic = quoteIssue
+      ? diagnoseTradingRoomMarketData(marketStatus, labels?.[row.instrumentId], jobs?.[row.instrumentId])
+      : null;
+    const action: Exclude<TradingRoomQualityAction, "none"> = coreEvidenceIssue
+      ? "open-data-check"
+      : row.diagnostic === "source-unsupported"
       ? "source-unsupported"
-      : quoteIssue
+      : holdingRetryableDiagnostic(row)
         ? "retry"
-        : "supplement";
-    return issueForHolding("holdings", row, holdingReason(row), action, row.quote?.fetchedAt ?? row.latestTradeDate);
+        : row.diagnostic === "available"
+          ? "supplement"
+          : "open-data-check";
+    const primaryReason = holdingReason(row);
+    const reason = marketDiagnostic?.reason && marketDiagnostic.reason !== primaryReason
+      ? `${primaryReason}；行情次级状态：${marketDiagnostic.reason}`
+      : primaryReason;
+    return issueForHolding("holdings", row, reason, action, row.quote?.fetchedAt ?? row.latestTradeDate);
   });
   const affectedInstrumentIds = [...new Set(affected.map(row => row.instrumentId))];
   const retryableInstrumentIds = [...new Set(issues
     .filter(issue => issue.action === "retry")
     .map(issue => issue.instrumentId)
     .filter((id): id is string => Boolean(id)))];
-  const supplementableInstrumentIds = [...new Set(affected.filter(row => row.quoteStatus === "available").map(row => row.instrumentId))];
+  const supplementableInstrumentIds = [...new Set(affected
+    .filter(row => row.quoteStatus === "available" && !hasCoreHoldingEvidenceIssue(row))
+    .map(row => row.instrumentId))];
   const sourceUnsupportedInstrumentIds = [...new Set(issues
     .filter(issue => issue.action === "source-unsupported")
     .map(issue => issue.instrumentId)
     .filter((id): id is string => Boolean(id)))];
-  const action: TradingRoomQualityAction = sourceUnsupportedInstrumentIds.length > 0
+  const coreEvidenceIssueCount = affected.filter(hasCoreHoldingEvidenceIssue).length;
+  const dataCheckInstrumentIds = [...new Set(issues
+    .filter(issue => issue.action === "open-data-check")
+    .map(issue => issue.instrumentId)
+    .filter((id): id is string => Boolean(id)))];
+  const action: TradingRoomQualityAction = dataCheckInstrumentIds.length > 0
+    ? "open-data-check"
+    : coreEvidenceIssueCount > 0
+    ? "open-data-check"
+    : sourceUnsupportedInstrumentIds.length > 0
     ? "source-unsupported"
     : retryableInstrumentIds.length > 0
     ? "retry"
@@ -347,6 +387,8 @@ function buildHoldingsDimension(
     ? "当前范围暂无未平仓回合"
     : affected.length === 0
       ? "当前范围的持仓成本、数量和行情均可用"
+      : coreEvidenceIssueCount > 0
+        ? `${coreEvidenceIssueCount} 个持仓回合的方向或数量证据待核对；行情状态不会替代该核对`
       : `${affected.length} 个持仓回合的估值证据待核对`;
   return makeDimension("holdings", {
     status: issueStatus(available.length, rows.length),
@@ -556,7 +598,7 @@ function buildFxDimension(
 export function buildTradingRoomQuality(options: TradingRoomQualityBuildOptions): TradingRoomQualityModel {
   const dimensions = [
     buildTransactionDimension(options.rows),
-    buildHoldingsDimension(options.holdings, options.marketDataStatuses, options.marketDataDailyStatuses, options.marketDataLabels),
+    buildHoldingsDimension(options.holdings, options.marketDataStatuses, options.marketDataDailyStatuses, options.marketDataLabels, options.marketDataJobs),
     buildHistoricalDimension(
       options.rows,
       options.holdings,

@@ -468,8 +468,10 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     expect(screen.getByText(/待重试 1 个标的/)).toBeVisible();
 
     await user.click(screen.getByText(/查看失败明细/));
-    expect(screen.getByText(/日线服务不可用/)).toBeVisible();
-    expect(screen.getByText(/小时线服务不可用/)).toBeVisible();
+    const globalFailureDetails = screen.getByText(/查看失败明细/).closest("details");
+    expect(globalFailureDetails).not.toBeNull();
+    expect(within(globalFailureDetails!).getByText(/日线服务不可用/)).toBeVisible();
+    expect(within(globalFailureDetails!).getByText(/小时线服务不可用/)).toBeVisible();
   });
 
   it("keeps a running global batch in control when a single refresh is requested", async () => {

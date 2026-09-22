@@ -45,15 +45,143 @@ function renderPage(overrides: Partial<ComponentProps<typeof DataManagement>> = 
 }
 
 describe("DataManagement", () => {
+  it("defaults to import and switches visible content without writing business data", async () => {
+    const user = userEvent.setup();
+    const onTabChange = vi.fn();
+
+    renderPage({
+      onTabChange,
+      qualitySlot: <output aria-label="数据质量内容">数据质量明细内容</output>,
+      principalSlot: <output aria-label="本金配置内容">本金配置表单</output>,
+      fxSlot: <output aria-label="汇率内容">汇率表单</output>,
+    });
+
+    expect(screen.getByRole("tablist", { name: "数据管理分组" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "数据接入" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(screen.getByRole("tab", { name: "数据质量" })).toHaveAttribute(
+      "aria-selected",
+      "false",
+    );
+    expect(screen.getByRole("tabpanel", { name: "数据接入" })).toHaveAttribute(
+      "aria-labelledby",
+      screen.getByRole("tab", { name: "数据接入" }).id,
+    );
+    expect(screen.getByRole("region", { name: "导入交易数据" })).toBeVisible();
+    expect(screen.getByRole("region", { name: "数据质量明细", hidden: true })).not.toBeVisible();
+    expect(screen.getByRole("region", { name: "本金与参考收益率配置", hidden: true })).not.toBeVisible();
+
+    await user.click(screen.getByRole("tab", { name: "数据质量" }));
+
+    expect(onTabChange).toHaveBeenCalledWith("quality");
+    expect(screen.getByRole("region", { name: "数据质量明细" })).toBeVisible();
+    expect(screen.getByRole("region", { name: "待检查问题" })).toBeVisible();
+    expect(screen.getByRole("region", { name: "导入交易数据", hidden: true })).not.toBeVisible();
+    expect(screen.getByRole("region", { name: "本金与参考收益率配置", hidden: true })).not.toBeVisible();
+  });
+
+  it("moves the data-management tab selection with arrow, Home, and End keys", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const tabs = [
+      screen.getByRole("tab", { name: "数据接入" }),
+      screen.getByRole("tab", { name: "数据质量" }),
+      screen.getByRole("tab", { name: "收益配置" }),
+    ];
+    tabs[0].focus();
+    await user.keyboard("{ArrowRight}");
+    expect(tabs[1]).toHaveFocus();
+    expect(tabs[1]).toHaveAttribute("aria-selected", "true");
+    await user.keyboard("{ArrowRight}");
+    expect(tabs[2]).toHaveFocus();
+    await user.keyboard("{Home}");
+    expect(tabs[0]).toHaveFocus();
+    await user.keyboard("{End}");
+    expect(tabs[2]).toHaveFocus();
+    await user.keyboard("{ArrowLeft}");
+    expect(tabs[1]).toHaveFocus();
+  });
+
+  it("keeps one quality heading when the injected quality panel provides its own details heading", async () => {
+    const user = userEvent.setup();
+    renderPage({
+      qualitySlot: (
+        <section aria-label="数据质量明细">
+          <h2>数据质量明细</h2>
+          <p>质量内容</p>
+        </section>
+      ),
+    });
+
+    await user.click(screen.getByRole("tab", { name: "数据质量" }));
+    expect(screen.getAllByRole("heading", { name: "数据质量明细" })).toHaveLength(1);
+  });
+
+  it("keeps hidden configuration slots mounted so drafts survive tab changes", async () => {
+    const user = userEvent.setup();
+
+    renderPage({
+      qualitySlot: (
+        <label>
+          质量草稿
+          <input aria-label="质量草稿" defaultValue="未提交草稿" />
+        </label>
+      ),
+      principalSlot: <output aria-label="本金配置内容">本金配置表单</output>,
+    });
+
+    await user.click(screen.getByRole("tab", { name: "数据质量" }));
+    const draft = screen.getByRole("textbox", { name: "质量草稿" });
+    await user.clear(draft);
+    await user.type(draft, "保留中的草稿");
+    await user.click(screen.getByRole("tab", { name: "收益配置" }));
+    await user.click(screen.getByRole("tab", { name: "数据质量" }));
+
+    expect(screen.getByRole("textbox", { name: "质量草稿" })).toHaveValue("保留中的草稿");
+    expect(screen.getByRole("tabpanel", { name: "数据质量" })).toBeVisible();
+  });
+
+  it("supports a controlled active tab without changing it locally", async () => {
+    const user = userEvent.setup();
+    const onTabChange = vi.fn();
+
+    renderPage({
+      activeTab: "quality",
+      onTabChange,
+      qualitySlot: <output aria-label="数据质量内容">数据质量明细内容</output>,
+    });
+
+    expect(screen.getByRole("region", { name: "数据质量明细" })).toBeVisible();
+    await user.click(screen.getByRole("tab", { name: "收益配置" }));
+
+    expect(onTabChange).toHaveBeenCalledWith("settings");
+    expect(screen.getByRole("region", { name: "数据质量明细" })).toBeVisible();
+    expect(screen.getByRole("region", { name: "本金与参考收益率配置", hidden: true })).not.toBeVisible();
+  });
+
+  it("shows concise empty states when optional quality and settings slots are absent", async () => {
+    const user = userEvent.setup();
+
+    renderPage({ qualitySlot: undefined, principalSlot: undefined, fxSlot: undefined });
+
+    await user.click(screen.getByRole("tab", { name: "数据质量" }));
+    expect(screen.getByText("暂无数据质量明细。")).toBeVisible();
+    await user.click(screen.getByRole("tab", { name: "收益配置" }));
+    expect(screen.getByText("暂无本金配置。")).toBeVisible();
+    expect(screen.getByText("暂无汇率配置。")).toBeVisible();
+  });
+
   it("groups import, market refresh, and retained-data problems under one page", async () => {
     const user = userEvent.setup();
     const { props } = renderPage();
 
     expect(screen.getByRole("region", { name: "数据管理" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "数据管理" })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "导入交易数据" })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "行情数据更新" })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "待检查问题" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "导入交易数据" })).toBeVisible();
+    expect(screen.getByRole("region", { name: "行情数据更新" })).toBeVisible();
 
     await user.click(screen.getByRole("button", { name: "更新全部数据" }));
     expect(props.marketRefresh.onRefresh).toHaveBeenCalledOnce();
@@ -61,30 +189,38 @@ describe("DataManagement", () => {
     await user.click(screen.getByRole("button", { name: "导入交易记录" }));
     expect(props.importActions.onFile).toHaveBeenCalledOnce();
 
+    await user.click(screen.getByRole("tab", { name: "数据质量" }));
+    expect(screen.getByRole("region", { name: "待检查问题" })).toBeVisible();
     await user.click(screen.getByText("查看已无成交股票的保留记录"));
     await user.click(screen.getByRole("button", { name: "保留标的（RETAINED）数据记录" }));
     expect(props.onOpenDataCheck).toHaveBeenCalledWith(retainedInstrument.id);
   });
 
-  it("renders an injected FX slot without inventing an FX state", () => {
+  it("renders an injected FX slot without inventing an FX state", async () => {
+    const user = userEvent.setup();
     renderPage({ fxSlot: <output aria-label="后续汇率组件">由后续组件提供</output> });
 
-    expect(screen.getByRole("region", { name: "汇率" })).toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "收益配置" }));
+    expect(screen.getByRole("region", { name: "汇率" })).toBeVisible();
     expect(screen.getByLabelText("后续汇率组件")).toHaveTextContent("由后续组件提供");
     expect(screen.queryByText(/汇率已更新|暂无汇率/)).not.toBeInTheDocument();
   });
 
-  it("renders quality details in its own data-management slot", () => {
+  it("renders quality details in its own data-management slot", async () => {
+    const user = userEvent.setup();
     renderPage({ qualitySlot: <output aria-label="数据质量内容">数据质量明细内容</output> });
 
-    expect(screen.getByRole("region", { name: "数据质量明细" })).toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "数据质量" }));
+    expect(screen.getByRole("region", { name: "数据质量明细" })).toBeVisible();
     expect(screen.getByLabelText("数据质量内容")).toHaveTextContent("数据质量明细内容");
   });
 
-  it("renders principal configuration in its own data-management slot", () => {
+  it("renders principal configuration in its own data-management slot", async () => {
+    const user = userEvent.setup();
     renderPage({ principalSlot: <output aria-label="本金配置内容">本金配置表单</output> });
 
-    expect(screen.getByRole("region", { name: "本金与参考收益率配置" })).toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "收益配置" }));
+    expect(screen.getByRole("region", { name: "本金与参考收益率配置" })).toBeVisible();
     expect(screen.getByLabelText("本金配置内容")).toHaveTextContent("本金配置表单");
   });
 

@@ -182,7 +182,7 @@ describe("trading room holdings model", () => {
       positionSnapshotsByEpisode: { [entry.episodes[0].episode.id]: snapshot() },
     });
 
-    expect(model.groups[0]).toMatchObject({ market: "US", label: "美股", rows: [{ assetType: "etf", assetCategory: "etf" }] });
+    expect(model.groups[0]).toMatchObject({ market: "US", label: "美股", rows: [{ assetType: "etf", assetCategory: "us-stock" }] });
   });
 
   it("uses only unrealized PnL from the current quote and never open net PnL", () => {
@@ -230,7 +230,165 @@ describe("trading room holdings model", () => {
       quotesByInstrument: { [base.id]: quote({ price: "8" }) },
     });
 
-    expect(model.rows[0]).toMatchObject({ quantity: "-2", averageCost: "10", unrealizedPnl: "4", unrealizedPnlStatus: "available" });
+    expect(model.rows[0]).toMatchObject({
+      quantity: "-2",
+      averageCost: "10",
+      unrealizedPnl: "4",
+      unrealizedPnlStatus: "available",
+      direction: "short",
+      diagnostic: "available",
+      positionEvidence: { status: "verified-short" },
+    });
+  });
+
+  it("keeps a trusted negative opening position as a short without inventing its cost", () => {
+    const base = instrument();
+    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const episode = entry.episodes[0].episode;
+    const fill = episode.executions[0];
+    fill.side = "buy";
+    fill.quantity = "2";
+    fill.source.openingPosition = {
+      accountId: "account-1",
+      market: "US",
+      symbol: "TEST",
+      phase: "opening",
+      date: "2026-09-01",
+      quantity: "-10",
+      source: [{ page: 1, row: 2 }],
+    };
+    episode.direction = "short";
+    const model = buildTradingRoomHoldings([entry], {
+      scope: scope(),
+      quotesByInstrument: { [base.id]: quote({ price: "8" }) },
+    });
+
+    expect(model.rows[0]).toMatchObject({
+      quantity: "-8",
+      direction: "short",
+      positionEvidence: { status: "verified-short" },
+      unrealizedPnl: null,
+      unrealizedPnlStatus: "unavailable",
+    });
+  });
+
+  it("does not let a historical open-short marker override a currently non-negative position", () => {
+    const base = instrument();
+    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const episode = entry.episodes[0].episode;
+    const opening = episode.executions[0];
+    opening.side = "sell";
+    opening.source.positionEffect = "open-short";
+    episode.executions.push({
+      ...opening,
+      id: "cover",
+      side: "buy",
+      quantity: "4",
+      price: "9",
+      source: { ...opening.source, positionEffect: "close-short" },
+    });
+    entry.executions = episode.executions;
+    episode.direction = "long";
+    episode.remainingQuantity = "2";
+    const model = buildTradingRoomHoldings([entry], {
+      scope: scope(),
+      quotesByInstrument: { [base.id]: quote({ price: "12" }) },
+    });
+
+    expect(model.rows[0]).toMatchObject({
+      quantity: "2",
+      direction: "long",
+      positionEvidence: { status: "verified-long" },
+    });
+  });
+
+  it("does not treat a negative net difference as a legal short when position evidence is absent", () => {
+    const base = instrument();
+    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const episode = entry.episodes[0].episode;
+    const fill = episode.executions[0];
+    fill.side = "sell";
+    fill.quantity = "10000";
+    fill.source.formatRuleId = "china-merchants/pdf/monthly-v1";
+    fill.source.positionEffectEvidence = {
+      kind: "inferred",
+      confidence: "high",
+      reason: "由净成交数量推断",
+    };
+    fill.source.statementMonth = undefined;
+    fill.source.templateId = undefined;
+    episode.direction = "short";
+    episode.openingQuantity = "0";
+    episode.remainingQuantity = "-10000";
+    const model = buildTradingRoomHoldings([entry], {
+      scope: scope(),
+      quotesByInstrument: { [base.id]: quote({ price: "8" }) },
+    });
+
+    expect(model.rows[0]).toMatchObject({
+      quantity: "-10000",
+      direction: "unknown",
+      diagnostic: "position-evidence",
+      positionEvidence: {
+        status: "unverified-negative",
+        missing: expect.arrayContaining(["positionEffect", "openingPosition", "statementPositions"]),
+      },
+      averageCost: null,
+      unrealizedPnl: null,
+      unrealizedPnlStatus: "unavailable",
+    });
+    expect(model.rows[0].statusReason).toContain("未证明开空");
+  });
+
+  it("does not treat an inferred open-short marker as explicit evidence", () => {
+    const base = instrument();
+    const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
+    const episode = entry.episodes[0].episode;
+    const fill = episode.executions[0];
+    fill.side = "sell";
+    fill.quantity = "10000";
+    fill.source.formatRuleId = "china-merchants/pdf/monthly-v1";
+    fill.source.positionEffect = "open-short";
+    fill.source.positionEffectEvidence = {
+      kind: "inferred",
+      confidence: "high",
+      reason: "由净成交数量推断",
+    };
+    episode.direction = "short";
+    episode.remainingQuantity = "-10000";
+    const model = buildTradingRoomHoldings([entry], {
+      scope: scope(),
+      quotesByInstrument: { [base.id]: quote({ price: "8" }) },
+    });
+
+    expect(model.rows[0]).toMatchObject({
+      quantity: "-10000",
+      direction: "unknown",
+      positionEvidence: { status: "unverified-negative" },
+      diagnostic: "position-evidence",
+      averageCost: null,
+      unrealizedPnl: null,
+    });
+  });
+
+  it("keeps holding evidence and quote failure reasons distinct", () => {
+    const base = instrument();
+    const build = (quoteValue: TradingRoomQuote | undefined, overrides: Partial<PositionLedgerSnapshot> = {}) => {
+      const value = openEntry(base, "2026-09-10T01:00:00.000Z");
+      const episodeId = value.episodes[0].episode.id;
+      return buildTradingRoomHoldings([value], {
+        scope: scope(),
+        quotesByInstrument: quoteValue ? { [base.id]: quoteValue } : {},
+        positionSnapshotsByEpisode: { [episodeId]: snapshot(overrides) },
+      }).rows[0];
+    };
+
+    expect(build(undefined)).toMatchObject({ diagnostic: "missing-quote", statusReason: "缺少行情，无法计算浮盈亏" });
+    expect(build(quote({ freshness: "stale" }))).toMatchObject({ diagnostic: "stale-quote", statusReason: "行情已过期，无法计算当前浮盈亏" });
+    expect(build(quote({ quoteDate: "2026-09-08" }))).toMatchObject({ diagnostic: "pre-trade-quote", statusReason: "行情早于最近一笔交易，无法计算浮盈亏" });
+    expect(build(quote({ currency: "HKD" }))).toMatchObject({ diagnostic: "currency-mismatch", statusReason: "行情币种与结算币种不一致，无法计算浮盈亏" });
+    expect(build(quote({ price: "0" }))).toMatchObject({ diagnostic: "invalid-quote", statusReason: "行情价格无效，无法计算浮盈亏" });
+    expect(build(quote(), { quantityKnown: false })).toMatchObject({ direction: "unknown", diagnostic: "position-evidence", statusReason: "持仓数量待核对" });
   });
 
   it("shows explicit unavailable states for missing or stale quotes and uncertain inventory", () => {

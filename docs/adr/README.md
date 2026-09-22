@@ -1,5 +1,7 @@
 # 架构记录
 
+- [全市场行情架构审查与深化候选（待选择）](0005-market-platform-architecture-review.md)
+
 本目录记录 TradeReview 的架构回溯和可视化资料。当前入口是：
 
 - [0001：当前架构回溯记录](0001-current-architecture.md)

@@ -8,7 +8,7 @@ import {
   Database,
   RefreshCw,
 } from "lucide-react";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 
 import { aggregateCandles } from "../../lib/market/aggregate";
 import type { DailyCandleRecord } from "../../lib/market/contracts";
@@ -95,6 +95,7 @@ type Props = {
   timeframe: Timeframe;
   onTimeframeChange: (timeframe: Timeframe) => void;
   onOpenInReview: (instrumentId: string, episodeId: string, queueIds?: string[]) => void;
+  onImport?: () => void;
   onInspectData?: (instrumentId: string, accountId: string) => void;
   onRefreshMarketData?: (instrumentId: string) => void;
   onSaveReview: (record: EpisodeReviewRecord) => void | Promise<void>;
@@ -285,6 +286,7 @@ export function TradeLibrary({
   timeframe,
   onTimeframeChange,
   onOpenInReview,
+  onImport,
   onSaveReview,
   onInspectData,
   onRefreshMarketData,
@@ -344,9 +346,17 @@ export function TradeLibrary({
   const processedIds = useRef(new Set<string>());
   const reopenedIds = useRef(new Set<string>());
   const sectionRef = useRef<HTMLElement>(null);
+  const browseTabFocusMode = useRef<TradeLibraryBrowseState["mode"] | null>(null);
   useLayoutEffect(() => {
     onBrowseStateChange?.(browseState);
   }, [browseState, onBrowseStateChange]);
+  useLayoutEffect(() => {
+    if (!browseTabFocusMode.current) return;
+    sectionRef.current
+      ?.querySelector<HTMLButtonElement>(`[data-mode="${browseTabFocusMode.current}"]`)
+      ?.focus();
+    browseTabFocusMode.current = null;
+  }, [mode]);
   useLayoutEffect(() => {
     if (!selectedInstrumentId && sectionRef.current) sectionRef.current.scrollTop = scrollTop;
     // Restore only when returning to the list; scrolling itself must not reposition it.
@@ -810,13 +820,31 @@ export function TradeLibrary({
     updateBrowseState({ includeReviewedStockIds: included });
   };
 
+  const updateBrowseMode = (nextMode: TradeLibraryBrowseState["mode"]) => {
+    updateBrowseState({ mode: nextMode });
+  };
+
+  const handleBrowseTabKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    const tabs = [...event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const currentIndex = tabs.indexOf(event.target as HTMLButtonElement);
+    if (currentIndex < 0) return;
+    const nextIndex = event.key === "Home"
+      ? 0
+      : event.key === "End"
+        ? tabs.length - 1
+        : (currentIndex + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+    const nextTab = tabs[nextIndex];
+    const nextMode = nextTab?.dataset.mode as TradeLibraryBrowseState["mode"] | undefined;
+    if (!nextTab || !nextMode) return;
+    event.preventDefault();
+    browseTabFocusMode.current = nextMode;
+    updateBrowseMode(nextMode);
+  };
+
   const sharedBrowseControls = (
     <>
       <div className="library-shared-browse-controls" aria-label="交易库常用筛选">
-        <div className="library-view-tabs" role="tablist" aria-label="交易库浏览视图">
-          <button type="button" role="tab" aria-selected={mode === "stocks"} onClick={() => updateBrowseState({ mode: "stocks" })}>按标的浏览</button>
-          <button type="button" role="tab" aria-selected={mode === "queue"} onClick={() => updateBrowseState({ mode: "queue" })}>按回合浏览</button>
-        </div>
       <label>
         <span>交易性质</span>
         <select
@@ -931,11 +959,35 @@ export function TradeLibrary({
       <div>
         <span className="eyebrow">Trade Library</span>
         <h1>交易库</h1>
-        <p>先按股票聚合，再进入每一次买入到卖出的持仓回合。</p>
       </div>
       <div className="library-header-actions"><strong>{filteredEntries.length} 个标的 · {browseRows.length} 个回合</strong></div>
     </header>
   );
+  const libraryViewTabs = (
+    <div className="module-tabs" role="tablist" aria-label="交易库浏览视图" onKeyDown={handleBrowseTabKeyDown}>
+      <button type="button" role="tab" data-mode="stocks" aria-selected={mode === "stocks"} onClick={() => updateBrowseMode("stocks")}>按标的浏览</button>
+      <button type="button" role="tab" data-mode="queue" aria-selected={mode === "queue"} onClick={() => updateBrowseMode("queue")}>按回合浏览</button>
+    </div>
+  );
+  const emptyBrowseAction = entries.length === 0
+    ? onImport && <button type="button" className="primary-action" onClick={onImport}>去导入</button>
+    : <button type="button" className="secondary-action" onClick={resetBrowseFilters}>清除筛选</button>;
+  const emptyLibraryState = (
+    <div className="library-empty">
+      <strong>还没有导入交易</strong>
+      {emptyBrowseAction}
+    </div>
+  );
+
+  if (entries.length === 0) {
+    return (
+      <section ref={sectionRef} className="trade-library" aria-label="交易库">
+        {libraryHeader}
+        {libraryViewTabs}
+        {emptyLibraryState}
+      </section>
+    );
+  }
 
   if (selectedEntry && selectedEpisode) {
     const { episode, metrics } = selectedEpisode;
@@ -1257,13 +1309,14 @@ export function TradeLibrary({
     );
   }
 
-  if (mode === "queue" && !selectionMissing) return <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => updateBrowseState({ scrollTop: event.currentTarget.scrollTop })}>{filterDrawer}{libraryHeader}{sharedBrowseControls}{fxRatesStrip}{performanceSummaryView}<ReviewQueue compact entries={entries} rows={browseRows} pendingRows={pendingBrowseRows} filter={queueFilter} onFilter={updateQueueFilter} onSort={updateSort} performanceSortAvailability={performanceSortAvailability} onOpen={openQueued} onBrowseStocks={() => updateBrowseState({ mode: "stocks" })} notice={queueNotice} performanceByEpisode={performanceByEpisode} page={roundPage} onPageChange={page => updateBrowseState({ roundPage: page })} /></section>;
+  if (mode === "queue" && !selectionMissing) return <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => updateBrowseState({ scrollTop: event.currentTarget.scrollTop })}>{filterDrawer}{libraryHeader}{libraryViewTabs}{sharedBrowseControls}{fxRatesStrip}{performanceSummaryView}<ReviewQueue compact entries={entries} rows={browseRows} pendingRows={pendingBrowseRows} filter={queueFilter} onFilter={updateQueueFilter} onSort={updateSort} performanceSortAvailability={performanceSortAvailability} onOpen={openQueued} onBrowseStocks={() => updateBrowseMode("stocks")} notice={queueNotice} performanceByEpisode={performanceByEpisode} page={roundPage} onPageChange={page => updateBrowseState({ roundPage: page })} />{browseRows.length === 0 && emptyBrowseAction && <div className="library-empty-actions">{emptyBrowseAction}</div>}</section>;
 
   return (
     <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => updateBrowseState({ scrollTop: event.currentTarget.scrollTop })}>
       {filterDrawer}
       {selectionMissing && <p role="alert" className="navigation-notice">原股票或交易回合已变化，请重新选择。<button type="button" onClick={() => updateBrowseState({ selectedInstrumentId: null, selectedEpisodeId: null })}>重新选择</button></p>}
       {libraryHeader}
+      {libraryViewTabs}
 
       {sharedBrowseControls}
       {fxRatesStrip}
@@ -1277,9 +1330,10 @@ export function TradeLibrary({
           </strong>
           <span>
             {entries.length === 0
-              ? "使用上方“导入记录”添加券商成交记录。"
+              ? "使用下方“去导入”添加券商成交记录。"
               : "调整搜索词或筛选条件后再试。"}
           </span>
+          {emptyBrowseAction}
         </div>
       ) : (
         <LibraryStockRounds

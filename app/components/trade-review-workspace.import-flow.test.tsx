@@ -381,7 +381,7 @@ describe("TradeReviewWorkspace", () => {
       ...options,
       resolver:async () => ({resolved:new Map([['CN-SH:600330',{market:'CN-SH',symbol:'600330',name:'天通股份',assetType:'stock',source:'tencent',confidence:'portal',resolvedAt:'2026-09-07T00:00:00Z'}]]),unresolved:new Map(),cacheHits:0,backgroundRefresh:Promise.resolve()}),
     }));
-    const view=render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    const view = render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
     const file=new File([csv],'回放交易_SSE_600330_2026-09-03.csv',{type:'text/csv'});
     Object.defineProperty(file,'arrayBuffer',{value:async()=>new TextEncoder().encode(csv).buffer});
     await user.upload(await screen.findByLabelText('导入 TradingView 模拟交易'),file);
@@ -393,7 +393,13 @@ describe("TradeReviewWorkspace", () => {
     expect(loadImportedExecutions()[0].source.tradeNature).toBe('simulation');
     view.unmount();
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
-    expect((await screen.findAllByText(/TradingView · 模拟盘/)).length).toBeGreaterThan(0);
+    await user.click(await screen.findByRole('button', { name: '交易库' }));
+    const library = await screen.findByRole('region', { name: '交易库' });
+    const natureFilter = within(library).getByRole('combobox', { name: '按交易性质筛选' });
+    await user.selectOptions(natureFilter, 'simulation');
+    expect(await within(library).findByText('天通股份')).toBeInTheDocument();
+    expect(await within(library).findByText('模拟盘', { selector: 'em.trade-nature-badge.simulation' })).toBeInTheDocument();
+    expect(loadImportedExecutions()[0].source.tradeNature).toBe('simulation');
     expect(loadImportHistory()[0].sourceLabel).toBe('TradingView · 模拟盘');
   });
 
@@ -1533,7 +1539,11 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
     await screen.findByRole("heading", { name: /^小鹏汽车/ });
     await user.click(screen.getByRole("button", { name: "模式洞察" }));
-    await user.click(await screen.findByText("查看本范围的模式洞察"));
+    await user.click(await screen.findByText(/总结证据（/));
+    await user.click(await screen.findByRole("button", { name: "查看回合" }));
+    expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "返回模式洞察" }));
+    await user.click(await screen.findByRole("tab", { name: "模式分析" }));
     await user.click(await screen.findByText(/待确认规则建议（/));
 
     expect(
@@ -1552,8 +1562,7 @@ describe("TradeReviewWorkspace", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("目标回合买入一")).toBeInTheDocument();
     expect(screen.getByText("目标回合买入二")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "模式洞察" }));
-    await user.click(await screen.findByText("查看本范围的模式洞察"));
+    await user.click(screen.getByRole("button", { name: "返回模式洞察" }));
     await user.click(await screen.findByText(/待确认规则建议（/));
     await user.selectOptions(
       screen.getByRole("combobox", {

@@ -25,6 +25,7 @@
 .heading p,
 .quoteDetail,
 .statusReason,
+.retryFeedback,
 .empty {
   margin: 0;
   color: var(--dashboard-muted);
@@ -106,6 +107,16 @@
 .available { color: var(--dashboard-positive); }
 .unavailable { color: var(--gold, #a56e14); }
 .statusReason { color: var(--gold, #a56e14); }
+.retryFeedback { color: var(--blue, #32758b); font-weight: 650; }
+.diagnosticActions { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; color: var(--gold, #a56e14); font-size: 10px; }
+.diagnosticActions button { border: 0; padding: 0; background: transparent; color: var(--blue, #32758b); cursor: pointer; font: inherit; font-weight: 700; }
+.diagnosticActions button:disabled { cursor: wait; opacity: .7; }
+.quoteDetails { color: var(--dashboard-muted); font-size: 10px; }
+.quoteDetails summary { width: fit-content; cursor: pointer; color: var(--blue, #32758b); font-weight: 650; }
+.quoteDetails[open] .quoteDetail { margin-top: 5px; }
+.diagnosticDetails { color: var(--dashboard-muted); font-size: 10px; }
+.diagnosticDetails summary { width: fit-content; cursor: pointer; color: var(--blue, #32758b); font-weight: 650; }
+.diagnosticDetails .statusReason { margin-top: 5px; }
 
 @media (max-width: 620px) {
   .panel { margin-top: 14px; border-radius: 13px; padding: 14px; }

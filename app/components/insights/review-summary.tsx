@@ -1,7 +1,7 @@
 "use client";
 
 import { BookOpenCheck, ExternalLink, Save } from "lucide-react";
-import { useEffect, useMemo, useRef, useState, type ReactNode, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useMemo, useRef, useState, type Dispatch, type KeyboardEvent, type ReactNode, type SetStateAction } from "react";
 
 import {
   buildReviewPhaseSummary,
@@ -22,7 +22,12 @@ type Props = {
   onOpenEpisode: (instrumentId: string, episodeId: string) => void;
   today?: string;
   children?: (range: ReviewSummaryRange) => ReactNode;
+  activeTab?: ReviewSummaryTab;
+  onTabChange?: (tab: ReviewSummaryTab) => void;
+  onImport?: () => void;
 };
+
+export type ReviewSummaryTab = "summary" | "patterns";
 
 type Preset = "all" | "last-30" | "last-90" | "custom";
 export type ReviewSummaryFilters = { preset: Preset; customStart: string; customEnd: string };
@@ -103,8 +108,32 @@ export function ReviewSummary({
   onOpenEpisode,
   children,
   today = new Intl.DateTimeFormat("sv-SE").format(new Date()),
+  activeTab,
+  onTabChange,
+  onImport,
 }: Props) {
   const scopes = useMemo(() => reviewScopeOptions(entries), [entries]);
+  const [localActiveTab, setLocalActiveTab] = useState<ReviewSummaryTab>("summary");
+  const selectedTab = activeTab ?? localActiveTab;
+  const changeTab = (tab: ReviewSummaryTab) => {
+    if (activeTab === undefined) setLocalActiveTab(tab);
+    onTabChange?.(tab);
+  };
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    const tabs = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]'));
+    const currentIndex = tabs.indexOf(document.activeElement as HTMLElement);
+    if (currentIndex < 0) return;
+    const nextIndex = event.key === "Home"
+      ? 0
+      : event.key === "End"
+        ? tabs.length - 1
+        : (currentIndex + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+    event.preventDefault();
+    const nextTab = tabs[nextIndex];
+    nextTab.focus();
+    changeTab(nextTab.dataset.tab as ReviewSummaryTab);
+  };
   const [localFilters, setLocalFilters] = useState(() => initialReviewSummaryFilters(today));
   const { filters, setFilters } = filterStore ?? { filters: localFilters, setFilters: setLocalFilters };
   const { preset, customStart, customEnd } = filters;
@@ -211,19 +240,52 @@ export function ReviewSummary({
     }
   };
 
-  if (scopes.length === 0) return null;
-
   return (
-    <section className="review-summary" aria-label="阶段总结">
+    <section className="review-summary" aria-label="模式洞察">
       <header>
         <div>
-          <span className="eyebrow">Phase Review</span>
-          <h1>阶段总结</h1>
-          <p>基础结果来自可信已平仓成交，不依赖 K 线。</p>
+          <span className="eyebrow">Trading Insights</span>
+          <h1>模式洞察</h1>
         </div>
         <BookOpenCheck size={20} />
       </header>
 
+      <nav className="module-tabs" role="tablist" aria-label="模式洞察视图" onKeyDown={handleTabKeyDown}>
+        <button
+          type="button"
+          role="tab"
+          id="review-summary-tab-summary"
+          data-tab="summary"
+          aria-selected={selectedTab === "summary"}
+          aria-controls="review-summary-panel-summary"
+          onClick={() => changeTab("summary")}
+        >
+          阶段总结
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="review-summary-tab-patterns"
+          data-tab="patterns"
+          aria-selected={selectedTab === "patterns"}
+          aria-controls="review-summary-panel-patterns"
+          onClick={() => changeTab("patterns")}
+        >
+          模式分析
+        </button>
+      </nav>
+
+      {scopes.length === 0 ? (
+        <section className="review-summary-empty" aria-label="暂无交易范围">
+          <h2>还没有可用的交易范围</h2>
+          <p>导入交易数据后，才能查看阶段总结和模式分析。</p>
+          {onImport && (
+            <button type="button" onClick={onImport}>
+              导入交易数据
+            </button>
+          )}
+        </section>
+      ) : <>
       <fieldset disabled={saving} className="review-summary-controls">
         <label>
           <span>统计范围</span>
@@ -275,6 +337,12 @@ export function ReviewSummary({
       </fieldset>
 
       {!validRange && <p role="alert">开始日期不能晚于结束日期</p>}
+      <div
+        role="tabpanel"
+        id="review-summary-panel-summary"
+        aria-labelledby="review-summary-tab-summary"
+        hidden={selectedTab !== "summary"}
+      >
       <p className="review-summary-scope">
         {summary.scopeLabel} · {range.label} · 共 {summary.episodeCount} 个回合
       </p>
@@ -403,7 +471,14 @@ export function ReviewSummary({
           {saving ? "保存中…" : "保存阶段总结"}
         </button>
       </footer>
-      {validRange && children?.(range)}
+      </div>
+      <div
+        role="tabpanel"
+        id="review-summary-panel-patterns"
+        aria-labelledby="review-summary-tab-patterns"
+        hidden={selectedTab !== "patterns" || !validRange}
+      >{validRange ? children?.(range) : null}</div>
+      </>}
     </section>
   );
 }

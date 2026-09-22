@@ -26,7 +26,7 @@ import {
   type SuggestionEpisodeContext,
 } from "./tag-suggestion-panel";
 
-type Category = "all" | InsightCategory;
+export type Category = "all" | InsightCategory;
 
 type Props = {
   report: PatternInsightReport;
@@ -44,6 +44,8 @@ type Props = {
     suggestion: TagSuggestionRecord,
   ) => void | Promise<void>;
   onOpenEpisode: (instrumentId: string, episodeId: string) => void;
+  category?: Category;
+  onCategoryChange?: (category: Category) => void;
 };
 
 const CATEGORY_OPTIONS: Array<{
@@ -298,8 +300,15 @@ export function PatternInsights({
   onEditSuggestion,
   onRejectSuggestion,
   onOpenEpisode,
+  category: controlledCategory,
+  onCategoryChange,
 }: Props) {
-  const [category, setCategory] = useState<Category>("all");
+  const [localCategory, setLocalCategory] = useState<Category>("all");
+  const category = controlledCategory ?? localCategory;
+  const changeCategory = (next: Category) => {
+    if (controlledCategory === undefined) setLocalCategory(next);
+    onCategoryChange?.(next);
+  };
   const factsByEpisode = useMemo(
     () => new Map(facts.map((fact) => [fact.episodeId, fact])),
     [facts],
@@ -317,7 +326,7 @@ export function PatternInsights({
       <header className="insights-header">
         <div>
           <span className="eyebrow">Pattern Insights</span>
-          <h1>模式洞察</h1>
+          <h2>模式分析</h2>
           <p>
             只使用本机结构化事实与用户确认标签；结论描述相关性，不提供交易建议。
           </p>
@@ -351,7 +360,7 @@ export function PatternInsights({
             className={category === option.id ? "active" : ""}
             aria-label={option.ariaLabel}
             aria-current={category === option.id ? "page" : undefined}
-            onClick={() => setCategory(option.id)}
+            onClick={() => changeCategory(option.id)}
           >
             {option.label}
           </button>

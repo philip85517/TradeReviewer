@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -6,6 +9,8 @@ import type { PrincipalReferenceSummary } from "../../lib/principal/principal-mo
 import type { CostReturnSummary } from "../../lib/reviews/trading-room-metrics";
 import type { RoomMoneyView } from "../../lib/reviews/trading-room-scope";
 import { RoomPrincipal } from "./room-principal";
+
+const roomPrincipalCss = readFileSync(join(process.cwd(), "app/components/dashboard/room-principal.module.css"), "utf8");
 
 function money(originalByCurrency: Record<string, string>, convertedCny: string | null): RoomMoneyView {
   return {
@@ -49,6 +54,11 @@ const config: PrincipalConfig = {
 
 describe("RoomPrincipal", () => {
   afterEach(() => cleanup());
+
+  it("keeps unavailable summary states readable on light cards", () => {
+    expect(roomPrincipalCss).toMatch(/\.summary\s+strong\s*\{[\s\S]*?color:\s*#334155;/);
+    expect(roomPrincipalCss).toMatch(/\.unavailable\s*\{\s*color:\s*#8a4b0f;\s*\}/);
+  });
 
   it("shows principal and cost returns and saves a positive value", () => {
     const onSave = vi.fn(async () => true);

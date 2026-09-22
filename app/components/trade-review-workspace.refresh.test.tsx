@@ -1,6 +1,6 @@
 import "fake-indexeddb/auto";
 
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -17,6 +17,8 @@ const refreshMocks = vi.hoisted(() => ({
   daily: vi.fn(),
   intraday: vi.fn(),
 }));
+
+let restoreNavigatorLocks: (() => void) | undefined;
 
 vi.mock("../lib/market/sync-service", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../lib/market/sync-service")>();
@@ -156,6 +158,8 @@ describe("TradeReviewWorkspace global refresh seam", () => {
   });
 
   afterEach(() => {
+    restoreNavigatorLocks?.();
+    restoreNavigatorLocks = undefined;
     cleanup();
     vi.restoreAllMocks();
   });
@@ -328,6 +332,46 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     expect(screen.getByText(/小时线源暂不可用/)).toBeVisible();
   });
 
+  it("reports an unavailable refresh lock without treating the old terminal job as a new run", async () => {
+    saveMarketDataJob({
+      instrumentId: "US:REFRESH",
+      symbol: "REFRESH",
+      market: "US",
+      requestedAt: "2026-09-15T00:00:00.000Z",
+      status: "complete",
+      intervals: [
+        { interval: "1D", status: "complete" },
+        { interval: "1h", status: "complete" },
+      ],
+    });
+    const previousLocks = Object.getOwnPropertyDescriptor(window.navigator, "locks");
+    const request = vi.fn(async (_name: string, _options: unknown, callback: (lock: null) => unknown) => callback(null));
+    Object.defineProperty(window.navigator, "locks", {
+      configurable: true,
+      value: { request },
+    });
+    restoreNavigatorLocks = () => {
+      if (previousLocks) Object.defineProperty(window.navigator, "locks", previousLocks);
+      else Reflect.deleteProperty(window.navigator, "locks");
+    };
+
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+        storageClient={createLegacySqliteClient()}
+      />,
+    );
+
+    const user = await openDataManagement();
+    await user.click(screen.getByRole("button", { name: "更新全部数据" }));
+
+    expect(request).toHaveBeenCalledOnce();
+    expect(refreshMocks.daily).not.toHaveBeenCalled();
+    expect(refreshMocks.intraday).not.toHaveBeenCalled();
+    expect(await screen.findByRole("alert", { name: "数据管理提示" })).toHaveTextContent("其他页面正在更新行情，请稍后再试。");
+  });
+
   it("refreshes the global saved summary after a single instrument update", async () => {
     const user = userEvent.setup();
     saveMarketDataJob({
@@ -444,8 +488,10 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     expect(screen.getByText(/待重试 1 个标的/)).toBeVisible();
 
     await user.click(screen.getByText(/查看失败明细/));
-    expect(screen.getByText(/日线服务不可用/)).toBeVisible();
-    expect(screen.getByText(/小时线服务不可用/)).toBeVisible();
+    const globalFailureDetails = screen.getByText(/查看失败明细/).closest("details");
+    expect(globalFailureDetails).not.toBeNull();
+    expect(within(globalFailureDetails!).getByText(/日线服务不可用/)).toBeVisible();
+    expect(within(globalFailureDetails!).getByText(/小时线服务不可用/)).toBeVisible();
   });
 
   it("keeps a running global batch in control when a single refresh is requested", async () => {

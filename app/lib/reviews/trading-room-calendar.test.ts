@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { TradeLibraryEntry } from "../trades/library";
 import type { Instrument, TradeExecution } from "../trades/types";
@@ -8,7 +8,11 @@ import {
   type RoomScope,
   type TradingRoomInstrumentMetadata,
 } from "./trading-room-scope";
-import { buildTradingRoomCalendar } from "./trading-room-calendar";
+import { buildTradingRoomCalendar, findTradingRoomHistoryRange } from "./trading-room-calendar";
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 function instrument(overrides: Partial<Instrument> = {}): Instrument {
   return {
@@ -130,7 +134,7 @@ describe("buildTradingRoomCalendar", () => {
     expect(model.trend.points).toHaveLength(19);
     expect(model.trend.points[0]?.value).toBe("0");
     expect(model.trend.points.every(point => point.startDate <= "2026-09-19")).toBe(true);
-    expect(model.cells.find(cell => cell.key === "2026-09-02")).toMatchObject({ value: "100", state: "positive" });
+    expect(model.cells.find(cell => cell.key === "2026-09-02")).toMatchObject({ value: "100", state: "positive", wins: 1, losses: 0, breakEven: 0, winRatePercent: "100" });
     expect(model.cells.find(cell => cell.key === "2026-09-03")).toMatchObject({ value: "-40", state: "negative" });
     expect(model.cells.find(cell => cell.key === "2026-09-20")).toMatchObject({ value: null, state: "future" });
   });
@@ -199,7 +203,7 @@ describe("buildTradingRoomCalendar", () => {
     expect(model.cells.find(cell => cell.key === "2024-02")).toBeUndefined();
   });
 
-  it("uses all historical years without first applying the current-month date window", () => {
+  it("keeps the all-years model inside scope while discovering history separately", () => {
     const entries = [
       closedEntry("2024-12-31", "5"),
       closedEntry("2025-01-02", "10", { id: "US:2025" }),
@@ -211,9 +215,66 @@ describe("buildTradingRoomCalendar", () => {
       asOf: "2026-09-19T08:00:00.000Z",
       instrumentMetadata: metadata(entries),
     });
+    const historyRange = findTradingRoomHistoryRange(entries, scope(), {
+      asOf: "2026-09-19T08:00:00.000Z",
+      instrumentMetadata: metadata(entries),
+    });
+    const historyModel = buildTradingRoomCalendar(entries, {
+      scope: scope(historyRange),
+      level: "all-years",
+      asOf: "2026-09-19T08:00:00.000Z",
+      instrumentMetadata: metadata(entries),
+    });
 
-    expect(model.cells.map(cell => cell.key)).toEqual(["2024", "2025", "2026"]);
-    expect(model.summary.money.originalByCurrency).toEqual({ USD: "35" });
+    expect(model.cells.map(cell => cell.key)).toEqual(["2026"]);
+    expect(model.summary.money.originalByCurrency).toEqual({ USD: "20" });
+    expect(historyRange).toEqual({ preset: "custom", startDate: "2024-12-31", endDate: "2026-09-02" });
+    expect(historyModel.cells.map(cell => cell.key)).toEqual(["2024", "2025", "2026"]);
+    expect(historyModel.summary.money.originalByCurrency).toEqual({ USD: "35" });
+  });
+
+  it("uses today rather than a historical custom end when asOf is omitted", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-21T08:00:00.000Z"));
+    const entries = [
+      closedEntry("2025-09-02", "100", { id: "US:2025" }),
+      closedEntry("2026-09-20", "200", { id: "US:2026" }),
+    ];
+    const historicalScope = scope(buildRoomDateRange("custom", "2025-09-19", { startDate: "2025-01-01", endDate: "2025-09-19" }));
+
+    expect(findTradingRoomHistoryRange(entries, historicalScope, { instrumentMetadata: metadata(entries) })).toEqual({
+      preset: "custom",
+      startDate: "2025-09-02",
+      endDate: "2026-09-20",
+    });
+  });
+
+  it("stops using all-history rows when an external shortcut changes the period", () => {
+    const entries = [
+      closedEntry("2024-09-02", "50", { id: "US:2024" }),
+      closedEntry("2025-09-02", "100", { id: "US:2025" }),
+      closedEntry("2026-09-02", "200", { id: "US:2026" }),
+    ];
+    const allHistory = buildTradingRoomCalendar(entries, {
+      scope: scope(buildRoomDateRange("custom", "2026-09-19", { startDate: "2025-09-02", endDate: "2026-09-19" })),
+      level: "all-years",
+      asOf: "2026-09-19T08:00:00.000Z",
+      instrumentMetadata: metadata(entries),
+    });
+    const ytd = buildTradingRoomCalendar(entries, {
+      scope: scope(buildRoomDateRange("ytd", "2026-09-19")),
+      level: "all-years",
+      asOf: "2026-09-19T08:00:00.000Z",
+      instrumentMetadata: metadata(entries),
+    });
+
+    expect(allHistory.summary.money.originalByCurrency).toEqual({ USD: "300" });
+    expect(allHistory.cells.map(cell => cell.key)).toEqual(["2025", "2026"]);
+    expect(ytd.rows).toHaveLength(1);
+    expect(ytd.summary.money.originalByCurrency).toEqual({ USD: "200" });
+    expect(ytd.trend.endMoney.originalByCurrency).toEqual({ USD: "200" });
+    expect(ytd.trend.points.at(-1)?.money.originalByCurrency).toEqual({ USD: "200" });
+    expect(ytd.cells.map(cell => cell.key)).toEqual(["2026"]);
   });
 
   it("keeps zero, excluded, empty, future, and mixed-currency values explicit", () => {
@@ -237,7 +298,7 @@ describe("buildTradingRoomCalendar", () => {
   });
 
   it("keeps unknown assets out of closed-round exclusions while retaining their count", () => {
-    const unknown = closedEntry("2026-09-02", "100", { instrument: instrument({ id: "US:UNKNOWN", symbol: "UNKNOWN" }) });
+    const unknown = closedEntry("2026-09-02", "100", { instrument: instrument({ id: "OTHER:UNKNOWN", symbol: "UNKNOWN", market: "OTHER", currency: "CNY" }) });
     const model = buildTradingRoomCalendar([unknown], {
       scope: scope(),
       level: "month",

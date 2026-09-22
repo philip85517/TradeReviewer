@@ -195,6 +195,140 @@ function setup(
 describe("TradeLibrary", () => {
   afterEach(() => cleanup());
 
+  it("places the browse tabs directly below the library header and preserves shared filters", async () => {
+    const user = userEvent.setup();
+    setup();
+
+    const header = screen.getByRole("heading", { name: "交易库" }).closest("header");
+    expect(header?.nextElementSibling).toHaveClass("module-tabs");
+    expect(header?.nextElementSibling).toHaveAttribute("role", "tablist");
+    expect(document.querySelector(".library-view-tabs")).not.toBeInTheDocument();
+
+    const stocksTab = screen.getByRole("tab", { name: "按标的浏览" });
+    const queueTab = screen.getByRole("tab", { name: "按回合浏览" });
+    expect(stocksTab).toHaveAttribute("aria-selected", "true");
+    expect(queueTab).toHaveAttribute("aria-selected", "false");
+
+    await user.type(screen.getByRole("searchbox", { name: "搜索股票" }), "小米");
+    await user.selectOptions(screen.getByRole("combobox", { name: "按市场筛选" }), "HK");
+    await user.click(queueTab);
+    expect(screen.getByRole("searchbox", { name: "搜索复盘回合" })).toHaveValue("小米");
+    expect(screen.getByRole("combobox", { name: "按市场筛选" })).toHaveValue("HK");
+    expect(screen.getByRole("tab", { name: "按回合浏览" })).toHaveAttribute("aria-selected", "true");
+
+    await user.click(screen.getByRole("tab", { name: "按标的浏览" }));
+    expect(screen.getByRole("searchbox", { name: "搜索股票" })).toHaveValue("小米");
+    expect(screen.getByRole("tab", { name: "按标的浏览" })).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("selects browse tabs with arrow, Home, and End keys", async () => {
+    const user = userEvent.setup();
+    setup();
+    const tabs = screen.getAllByRole("tab");
+
+    tabs[0]!.focus();
+    await user.keyboard("{ArrowRight}");
+    expect(screen.getByRole("tab", { name: "按回合浏览" })).toHaveFocus();
+    expect(screen.getByRole("tab", { name: "按回合浏览" })).toHaveAttribute("aria-selected", "true");
+
+    await user.keyboard("{Home}");
+    expect(screen.getByRole("tab", { name: "按标的浏览" })).toHaveFocus();
+    await user.keyboard("{End}");
+    expect(screen.getByRole("tab", { name: "按回合浏览" })).toHaveFocus();
+    await user.keyboard("{ArrowLeft}");
+    expect(screen.getByRole("tab", { name: "按标的浏览" })).toHaveFocus();
+  });
+
+  it("does not render the browse tabs again in trade detail", async () => {
+    const user = userEvent.setup();
+    setup();
+
+    await user.click(screen.getByRole("tab", { name: "按回合浏览" }));
+    await user.click(screen.getAllByRole("button", { name: /复盘小鹏汽车/ })[0]);
+
+    expect(screen.queryByRole("tablist", { name: "交易库浏览视图" })).not.toBeInTheDocument();
+  });
+
+  it("offers import from an empty library when an import action is provided", async () => {
+    const user = userEvent.setup();
+    const onImport = vi.fn();
+    render(
+      <TradeLibrary
+        entries={[]}
+        candlesByInstrument={{}}
+        marketDataStatuses={{}}
+        timeframe="1D"
+        onTimeframeChange={() => {}}
+        onOpenInReview={() => {}}
+        onSaveReview={() => {}}
+        onImport={onImport}
+        reviewsHydrated
+      />,
+    );
+
+    expect(screen.getByRole("heading", { name: "交易库" })).toBeInTheDocument();
+    expect(screen.getByRole("tablist", { name: "交易库浏览视图" })).toBeInTheDocument();
+    expect(screen.getByText("还没有导入交易")).toBeInTheDocument();
+    expect(screen.queryByLabelText("交易库常用筛选")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("交易库人民币折算")).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "当前筛选绩效汇总" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "去导入" }));
+    expect(onImport).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText("使用下方“去导入”添加券商成交记录。")).not.toBeInTheDocument();
+  });
+
+  it("offers to clear filters when the library has no matching results", async () => {
+    const user = userEvent.setup();
+    setup();
+
+    await user.type(screen.getByRole("searchbox", { name: "搜索股票" }), "不存在的股票");
+    expect(screen.getByText("没有符合条件的股票")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "清除筛选" }));
+
+    expect(screen.getByText("2 个标的 · 3 个回合")).toBeInTheDocument();
+    expect(screen.getByRole("searchbox", { name: "搜索股票" })).toHaveValue("");
+  });
+
+  it("provides the same applicable empty actions in queue browsing", async () => {
+    const user = userEvent.setup();
+    const onImport = vi.fn();
+    render(
+      <TradeLibrary
+        defaultMode="queue"
+        entries={[]}
+        candlesByInstrument={{}}
+        marketDataStatuses={{}}
+        timeframe="1D"
+        onTimeframeChange={() => {}}
+        onOpenInReview={() => {}}
+        onSaveReview={() => {}}
+        onImport={onImport}
+        reviewsHydrated
+      />,
+    );
+
+    expect(screen.getByRole("heading", { name: "交易库" })).toBeInTheDocument();
+    expect(screen.getByRole("tablist", { name: "交易库浏览视图" })).toBeInTheDocument();
+    expect(screen.getByText("还没有导入交易")).toBeInTheDocument();
+    expect(screen.queryByLabelText("交易库常用筛选")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("交易库人民币折算")).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "当前筛选绩效汇总" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "去导入" }));
+    expect(onImport).toHaveBeenCalledTimes(1);
+  });
+
+  it("offers to clear filters from an empty queue result", async () => {
+    const user = userEvent.setup();
+    setup();
+    await user.click(screen.getByRole("tab", { name: "按回合浏览" }));
+    await user.type(screen.getByRole("searchbox", { name: "搜索复盘回合" }), "不存在的回合");
+
+    const clearButtons = screen.getAllByRole("button", { name: "清除筛选" });
+    expect(clearButtons).toHaveLength(1);
+    await user.click(clearButtons[0]!);
+    expect(screen.getByRole("searchbox", { name: "搜索复盘回合" })).toHaveValue("");
+  });
+
   it("selects display metrics from the current page and expanded stock rows only", () => {
     const entries = buildTradeLibraryEntries(
       buildInstrumentTradeSummaries([

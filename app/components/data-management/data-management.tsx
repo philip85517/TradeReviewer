@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type KeyboardEvent, type ReactNode } from "react";
 
 import type { StoredInstrument } from "../../lib/storage/sqlite-contracts";
 import {
@@ -13,6 +13,8 @@ import {
 } from "../import/import-actions";
 
 export type DataManagementProps = {
+  activeTab?: "import" | "quality" | "settings";
+  onTabChange?: (tab: "import" | "quality" | "settings") => void;
   importActions: Omit<ImportActionsProps, "compact">;
   marketRefresh: GlobalMarketRefreshProps;
   /** Instruments retained in storage without a matching imported execution. */
@@ -39,6 +41,8 @@ function hasInstrument(ids: DataManagementProps["activeInstrumentIds"], id: stri
 }
 
 export function DataManagement({
+  activeTab: controlledActiveTab,
+  onTabChange,
   importActions,
   marketRefresh,
   retainedInstruments = [],
@@ -53,6 +57,32 @@ export function DataManagement({
   principalSlot,
   fxSlot,
 }: DataManagementProps) {
+  const [uncontrolledActiveTab, setUncontrolledActiveTab] = useState<
+    "import" | "quality" | "settings"
+  >("import");
+  const activeTab = controlledActiveTab ?? uncontrolledActiveTab;
+
+  function changeTab(tab: "import" | "quality" | "settings") {
+    if (controlledActiveTab === undefined) setUncontrolledActiveTab(tab);
+    onTabChange?.(tab);
+  }
+
+  function handleTabKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    const tabs = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    const currentIndex = tabs.indexOf(document.activeElement as HTMLButtonElement);
+    if (currentIndex < 0) return;
+    const nextIndex = event.key === "Home"
+      ? 0
+      : event.key === "End"
+        ? tabs.length - 1
+        : (currentIndex + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+    event.preventDefault();
+    const nextTab = tabs[nextIndex];
+    nextTab.focus();
+    changeTab(nextTab.dataset.tab as "import" | "quality" | "settings");
+  }
+
   const retained = retainedInstruments.filter(
     (instrument) => !hasInstrument(activeInstrumentIds, instrument.id),
   );
@@ -63,7 +93,6 @@ export function DataManagement({
         <div>
           <span className="eyebrow">Data management</span>
           <h1>数据管理</h1>
-          <p>导入成交记录、更新行情，并处理需要核对的数据问题。</p>
         </div>
         <span className="data-management-scope">
           {marketRefresh.instrumentCount} 个已导入标的
@@ -81,7 +110,36 @@ export function DataManagement({
         </section>
       )}
 
-      <div className="data-management-grid">
+      <div className="module-tabs" role="tablist" aria-label="数据管理分组" onKeyDown={handleTabKeyDown}>
+        {([
+          ["import", "数据接入"],
+          ["quality", "数据质量"],
+          ["settings", "收益配置"],
+        ] as const).map(([tab, label]) => (
+          <button
+            type="button"
+            key={tab}
+            role="tab"
+            id={`data-management-tab-${tab}`}
+            data-tab={tab}
+            aria-selected={activeTab === tab}
+            aria-controls={`data-management-panel-${tab}`}
+            onClick={() => changeTab(tab)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div
+        className="data-management-grid"
+        role="tabpanel"
+        id="data-management-panel-import"
+        aria-labelledby="data-management-tab-import"
+        aria-label="数据接入"
+        hidden={activeTab !== "import"}
+        style={{ display: activeTab === "import" ? "grid" : "none" }}
+      >
         <section className="data-management-card" aria-label="导入交易数据">
           <div className="data-management-card-heading">
             <div>
@@ -114,45 +172,27 @@ export function DataManagement({
           <p>更新会保留本地缓存；取消、失败和未完成任务可在这里继续处理。</p>
           <GlobalMarketRefresh {...marketRefresh} />
         </section>
+      </div>
 
-        {qualitySlot && (
-          <section className="data-management-card" aria-label="数据质量明细">
-            <div className="data-management-card-heading">
-              <div>
-                <span className="eyebrow">Quality</span>
-                <h2>数据质量明细</h2>
-              </div>
-              <span>按当前交易室范围定位影响</span>
+      <div
+        className="data-management-grid"
+        role="tabpanel"
+        id="data-management-panel-quality"
+        aria-labelledby="data-management-tab-quality"
+        aria-label="数据质量"
+        hidden={activeTab !== "quality"}
+        style={{ display: activeTab === "quality" ? "grid" : "none" }}
+      >
+        <section className="data-management-card" aria-label="数据质量明细">
+          <div className="data-management-card-heading">
+            <div>
+              <span className="eyebrow">Quality</span>
+              {!qualitySlot && <h2>数据质量明细</h2>}
             </div>
-            {qualitySlot}
-          </section>
-        )}
-
-        {principalSlot && (
-          <section className="data-management-card" aria-label="本金与参考收益率配置">
-            <div className="data-management-card-heading">
-              <div>
-                <span className="eyebrow">Principal</span>
-                <h2>本金与参考收益率配置</h2>
-              </div>
-              <span>用于收益参考，不代表账户净值</span>
-            </div>
-            {principalSlot}
-          </section>
-        )}
-
-        {fxSlot && (
-          <section className="data-management-card" aria-label="汇率">
-            <div className="data-management-card-heading">
-              <div>
-                <span className="eyebrow">FX</span>
-                <h2>汇率</h2>
-              </div>
-              <span>人民币估算使用的最新汇率</span>
-            </div>
-            {fxSlot}
-          </section>
-        )}
+            <span>按当前交易室范围定位影响</span>
+          </div>
+          {qualitySlot ?? <p className="data-management-empty">暂无数据质量明细。</p>}
+        </section>
 
         <section className="data-management-card data-management-issues" aria-label="待检查问题">
           <div className="data-management-card-heading">
@@ -183,6 +223,38 @@ export function DataManagement({
               </details>
             </>
           )}
+        </section>
+      </div>
+
+      <div
+        className="data-management-grid"
+        role="tabpanel"
+        id="data-management-panel-settings"
+        aria-labelledby="data-management-tab-settings"
+        aria-label="收益配置"
+        hidden={activeTab !== "settings"}
+        style={{ display: activeTab === "settings" ? "grid" : "none" }}
+      >
+        <section className="data-management-card" aria-label="本金与参考收益率配置">
+          <div className="data-management-card-heading">
+            <div>
+              <span className="eyebrow">Principal</span>
+              <h2>本金与参考收益率配置</h2>
+            </div>
+            <span>用于收益参考，不代表账户净值</span>
+          </div>
+          {principalSlot ?? <p className="data-management-empty">暂无本金配置。</p>}
+        </section>
+
+        <section className="data-management-card" aria-label="汇率">
+          <div className="data-management-card-heading">
+            <div>
+              <span className="eyebrow">FX</span>
+              <h2>汇率</h2>
+            </div>
+            <span>人民币估算使用的最新汇率</span>
+          </div>
+          {fxSlot ?? <p className="data-management-empty">暂无汇率配置。</p>}
         </section>
       </div>
     </section>

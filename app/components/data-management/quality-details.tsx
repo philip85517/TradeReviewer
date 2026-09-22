@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import type { TradingRoomQualityModel } from "../../lib/reviews/trading-room-quality";
 import styles from "./quality-details.module.css";
 
@@ -8,7 +10,7 @@ type QualityDimensionId = "transaction" | "holdings" | "historical" | "fx";
 export type QualityDetailsProps = {
   model: TradingRoomQualityModel;
   onOpenDataManagement?: (model: TradingRoomQualityModel) => void;
-  onRetryDataQuality?: (dimension: QualityDimensionId, ids: readonly string[]) => void;
+  onRetryDataQuality?: (dimension: QualityDimensionId, ids: readonly string[]) => void | Promise<void>;
   onOpenDataCheck?: (
     dimension: QualityDimensionId,
     ids: readonly string[],
@@ -65,12 +67,35 @@ function denominatorUnit(dimension: QualityDetailsProps["model"]["dimensions"][n
   return dimension.id === "historical" ? "标的" : "回合";
 }
 
+type RetryState = "running" | "failed";
+
+function retryStatusMessage(state: RetryState): string {
+  return state === "running" ? "重试进行中…" : "重试失败，请稍后再试";
+}
+
 export function QualityDetails({
   model,
   onOpenDataManagement,
   onRetryDataQuality,
   onOpenDataCheck,
 }: QualityDetailsProps) {
+  const [retryStates, setRetryStates] = useState<Record<string, RetryState>>({});
+
+  const runRetry = async (key: string, dimension: QualityDimensionId, ids: readonly string[]) => {
+    if (retryStates[key] === "running") return;
+    setRetryStates(current => ({ ...current, [key]: "running" }));
+    try {
+      await onRetryDataQuality?.(dimension, ids);
+      setRetryStates(current => {
+        const next = { ...current };
+        delete next[key];
+        return next;
+      });
+    } catch {
+      setRetryStates(current => ({ ...current, [key]: "failed" }));
+    }
+  };
+
   return (
     <section className={styles.panel} aria-label="数据质量明细">
       <header className={styles.heading}>
@@ -105,9 +130,24 @@ export function QualityDetails({
               </dl>
 
               {renderDimensionAction && dimensionAction === "retry" && (
-                <button type="button" className={styles.action} onClick={() => onRetryDataQuality?.(dimension.id as QualityDimensionId, dimension.retryableInstrumentIds)}>
-                  重试{dimension.label}
-                </button>
+                <div className={styles.retryControl}>
+                  {(() => {
+                    const retryState = retryStates[`dimension:${dimension.id}`];
+                    return (
+                      <>
+                        <button
+                          type="button"
+                          className={styles.action}
+                          disabled={retryState === "running"}
+                          onClick={() => { void runRetry(`dimension:${dimension.id}`, dimension.id as QualityDimensionId, dimension.retryableInstrumentIds); }}
+                        >
+                          {retryState === "running" ? `重试${dimension.label}（进行中）` : `重试${dimension.label}`}
+                        </button>
+                        {retryState && <span className={styles.retryFeedback} role={retryState === "failed" ? "alert" : "status"}>{retryStatusMessage(retryState)}</span>}
+                      </>
+                    );
+                  })()}
+                </div>
               )}
               {renderDimensionAction && (dimensionAction === "open-data-management" || dimensionAction === "supplement" || dimensionAction === "source-unsupported") && (
                 <button type="button" className={styles.action} onClick={() => onOpenDataManagement?.(model)}>
@@ -132,9 +172,25 @@ export function QualityDetails({
                           <small>{issue.reason}{issue.at ? ` · ${formatAsOf(issue.at) ?? issue.at}` : ""}</small>
                         </div>
                         {issue.action === "retry" && (
-                          <button type="button" className={styles.issueAction} onClick={() => onRetryDataQuality?.(dimension.id as QualityDimensionId, issueIds)}>
-                            {issueActionName(dimension, issue)}
-                          </button>
+                          <div className={styles.retryControl}>
+                            {(() => {
+                              const retryState = retryStates[`issue:${issue.id}`];
+                              const actionName = issueActionName(dimension, issue);
+                              return (
+                                <>
+                                  <button
+                                    type="button"
+                                    className={styles.issueAction}
+                                    disabled={retryState === "running"}
+                                    onClick={() => { void runRetry(`issue:${issue.id}`, dimension.id as QualityDimensionId, issueIds); }}
+                                  >
+                                    {retryState === "running" ? `${actionName}（进行中）` : actionName}
+                                  </button>
+                                  {retryState && <span className={styles.retryFeedback} role={retryState === "failed" ? "alert" : "status"}>{retryStatusMessage(retryState)}</span>}
+                                </>
+                              );
+                            })()}
+                          </div>
                         )}
                         {(issue.action === "source-unsupported" || issue.action === "open-data-management" || issue.action === "supplement") && (
                           <button type="button" className={styles.issueAction} onClick={() => {

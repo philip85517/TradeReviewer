@@ -4,10 +4,14 @@ import {
   CHINA_MERCHANTS_CODE_ONLY,
   CHINA_MERCHANTS_CROSS_PAGE,
   CHINA_MERCHANTS_EMPTY_FEES,
+  CHINA_MERCHANTS_FIRST_SELL,
+  CHINA_MERCHANTS_INCONSISTENT_SECURITY_BALANCE,
   CHINA_MERCHANTS_IDENTICAL_FILLS,
   CHINA_MERCHANTS_INVALID_DATE,
   CHINA_MERCHANTS_OTHER_ACCOUNT,
   CHINA_MERCHANTS_PAGES,
+  CHINA_MERCHANTS_MISSING_SECURITY_BALANCE,
+  CHINA_MERCHANTS_POSITION_EVIDENCE,
   CHINA_MERCHANTS_SHENZHEN_TYPE_BOUNDARY,
   NON_CHINA_MERCHANTS_PAGES,
 } from "./__fixtures__/china-merchants-pages";
@@ -16,6 +20,7 @@ import {
   detectChinaMerchantsStatement,
   parseChinaMerchantsPages,
 } from "./china-merchants";
+import { buildTradeEpisodes } from "../trades/episodes";
 
 const options = {
   fileName: "招商证券.pdf",
@@ -86,6 +91,104 @@ describe("China Merchants Securities PDF import", () => {
         expect.objectContaining({ category: "fund", count: 1 }),
       ]),
     );
+  });
+
+  it("turns security balances into replayable opening and closing positions", () => {
+    const result = parseChinaMerchantsPages(CHINA_MERCHANTS_POSITION_EVIDENCE, options);
+
+    expect(result.monthly).toMatchObject({
+      documentId: "china-merchants:cms-fixture",
+      accountId: expect.any(String),
+      reviewRequired: false,
+      positions: [
+        expect.objectContaining({ phase: "opening", market: "CN-SH", symbol: "510300", date: "2025-01-02", quantity: "0" }),
+        expect.objectContaining({ phase: "closing", market: "CN-SH", symbol: "510300", date: "2025-01-02", quantity: "1000", source: [{ page: 2, row: 216, role: "transaction-position" }] }),
+        expect.objectContaining({ phase: "closing", market: "CN-SH", symbol: "510300", date: "2025-01-03", quantity: "0", source: [{ page: 2, row: 234, role: "transaction-position" }] }),
+      ],
+    });
+    expect(result.records[0]?.source.openingPosition).toMatchObject({
+      phase: "opening",
+      symbol: "510300",
+      quantity: "0",
+    });
+    expect(result.records[1]?.source.openingPosition).toMatchObject({
+      phase: "closing",
+      symbol: "510300",
+      quantity: "1000",
+    });
+    expect(result.records[1]?.source.statementPositions).toHaveLength(3);
+  });
+
+  it("keeps a trade but flags missing security balance as incomplete evidence", () => {
+    const result = parseChinaMerchantsPages(CHINA_MERCHANTS_MISSING_SECURITY_BALANCE, options);
+
+    expect(result.records).toHaveLength(1);
+    expect(result.monthly).toMatchObject({
+      reviewRequired: true,
+      historyIncomplete: true,
+      positions: [],
+    });
+    expect(result.diagnostics).toEqual(expect.arrayContaining([
+      expect.objectContaining({ code: "missing-china-merchants-security-balance", instrumentSymbol: "510300" }),
+    ]));
+    expect(result.records[0]?.source).not.toHaveProperty("openingPosition");
+  });
+
+  it("reconstructs a first A-share sell as a long inventory close, not a short", () => {
+    const result = parseChinaMerchantsPages(CHINA_MERCHANTS_FIRST_SELL, options);
+
+    expect(result.monthly).toMatchObject({
+      reviewRequired: false,
+      positions: [
+        expect.objectContaining({
+          phase: "opening",
+          market: "CN-SH",
+          symbol: "513010",
+          quantity: "92400",
+        }),
+        expect.objectContaining({
+          phase: "closing",
+          market: "CN-SH",
+          symbol: "513010",
+          quantity: "0",
+        }),
+      ],
+    });
+    expect(result.records[0]?.source.openingPosition).toMatchObject({
+      phase: "opening",
+      quantity: "92400",
+    });
+
+    const [episode] = buildTradeEpisodes(result.records);
+    expect(episode).toMatchObject({
+      direction: "long",
+      status: "closed",
+      openingQuantity: "92400",
+      remainingQuantity: "0",
+    });
+  });
+
+  it("does not convert an inconsistent A-share balance into a negative opening position", () => {
+    const result = parseChinaMerchantsPages(
+      CHINA_MERCHANTS_INCONSISTENT_SECURITY_BALANCE,
+      options,
+    );
+
+    expect(result.monthly).toMatchObject({
+      reviewRequired: true,
+      historyIncomplete: true,
+      positions: [
+        expect.objectContaining({ phase: "closing", quantity: "50" }),
+      ],
+    });
+    expect(result.monthly?.positions).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ phase: "opening", quantity: expect.stringMatching(/^-/) }),
+      ]),
+    );
+    expect(result.diagnostics).toEqual(expect.arrayContaining([
+      expect.objectContaining({ code: "inconsistent-china-merchants-security-balance" }),
+    ]));
   });
 
   it("marks missing times as date-only and preserves physical source order", () => {

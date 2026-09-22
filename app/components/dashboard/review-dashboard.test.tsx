@@ -80,6 +80,60 @@ function dashboardEntries(
   return entries;
 }
 
+function holdingDashboardEntry(): TradeLibraryEntry {
+  const instrument: Instrument = { id: "US:TEST", symbol: "TEST", name: "测试持仓", market: "US", currency: "USD" };
+  const execution: TradeExecution = {
+    id: "holding:buy",
+    accountId: "account-1",
+    accountLabel: "主账户",
+    instrument,
+    side: "buy",
+    executedAt: "2020-01-02T01:00:00.000Z",
+    quantity: "2",
+    price: "10",
+    fee: "0",
+    source: { platform: "fixture", row: 1 },
+  };
+  const episode = {
+    id: "episode:holding",
+    accountId: "account-1",
+    accountLabel: "主账户",
+    instrument,
+    tradeNature: "live" as const,
+    direction: "long" as const,
+    status: "open" as const,
+    startedAt: execution.executedAt,
+    openingQuantity: "2",
+    remainingQuantity: "2",
+    executions: [execution],
+  };
+  return {
+    groupId: "US:TEST|live:account-1",
+    tradeNature: "live",
+    instrument,
+    executions: [execution],
+    episodes: [{
+      episode,
+      metrics: { buyCount: 1, sellCount: 0, boughtQuantity: "2", soldQuantity: "0", grossExposure: "20", fees: "0", realizedPnl: "0", unrealizedPnl: "999", netPnl: "999", returnPercent: "999", holdingMilliseconds: null },
+      reviewStatus: "pending",
+      confirmedTagIds: [],
+      tagDictionaryVersion: 1,
+      rMultiple: null,
+    }],
+    accountCount: 1,
+    tradeCount: 1,
+    episodeCount: 1,
+    firstTradeAt: execution.executedAt,
+    lastTradeAt: execution.executedAt,
+    status: "open",
+    netPnl: "999",
+    returnPercent: "999",
+    reviewedEpisodeCount: 0,
+    confirmedTagIds: [],
+    cumulativeR: null,
+  };
+}
+
 function copyEntry(
   entry: TradeLibraryEntry,
   options: { prefix: string; tradeNature: "live" | "simulation" | "unknown"; simulationRunId?: string },
@@ -142,6 +196,91 @@ describe("ReviewDashboard", () => {
     }));
   });
 
+  it("forwards market-data diagnostics to holdings and its quality model", () => {
+    const onQualityModelChange = vi.fn();
+    const view = render(
+      <ReviewDashboard
+        entries={[holdingDashboardEntry()]}
+        holdingsQuotesByInstrument={{ "US:TEST": { price: null, currency: "USD", quoteDate: "2026-10-15", fetchedAt: "2026-10-15T08:00:00.000Z", provider: "fixture", freshness: "current" } }}
+        qualityInput={{
+          marketDataStatuses: { "US:TEST": "latest-available" },
+          marketDataDailyStatuses: { "US:TEST": "syncing" },
+          marketDataLabels: { "US:TEST": "fixture provider" },
+          marketDataJobs: {
+            "US:TEST": {
+              instrumentId: "US:TEST",
+              symbol: "TEST",
+              market: "US",
+              requestedAt: "2026-10-15T08:00:00.000Z",
+              status: "syncing",
+              intervals: [],
+            },
+          },
+        }}
+        onQualityModelChange={onQualityModelChange}
+        onOpenInReview={() => undefined}
+      />,
+    );
+
+    expect(screen.getByRole("region", { name: "当前持仓" })).toHaveTextContent("行情更新进行中");
+    const qualityModel = onQualityModelChange.mock.lastCall?.[0];
+    const holdingsDimension = qualityModel?.dimensions.find((dimension: { id: string }) => dimension.id === "holdings");
+    expect(holdingsDimension).toEqual(expect.objectContaining({
+      action: "retry",
+      issues: expect.arrayContaining([expect.objectContaining({ reason: "行情更新进行中", action: "retry" })]),
+    }));
+
+    view.rerender(
+      <ReviewDashboard
+        entries={[holdingDashboardEntry()]}
+        holdingsQuotesByInstrument={{ "US:TEST": { price: null, currency: "USD", quoteDate: "2026-10-15", fetchedAt: "2026-10-15T08:00:00.000Z", provider: "fixture", freshness: "current" } }}
+        qualityInput={{
+          marketDataStatuses: { "US:TEST": "complete" },
+          marketDataDailyStatuses: { "US:TEST": "complete" },
+          marketDataLabels: { "US:TEST": "fixture provider" },
+          marketDataJobs: {
+            "US:TEST": {
+              instrumentId: "US:TEST",
+              symbol: "TEST",
+              market: "US",
+              requestedAt: "2026-10-15T08:00:00.000Z",
+              status: "complete",
+              intervals: [],
+            },
+          },
+        }}
+        onQualityModelChange={onQualityModelChange}
+        onOpenInReview={() => undefined}
+      />,
+    );
+    const refreshedQualityModel = onQualityModelChange.mock.lastCall?.[0];
+    const refreshedHoldingsDimension = refreshedQualityModel?.dimensions.find((dimension: { id: string }) => dimension.id === "holdings");
+    expect(refreshedHoldingsDimension).toEqual(expect.objectContaining({
+      issues: expect.arrayContaining([expect.objectContaining({ reason: "行情价格无效，无法计算浮盈亏", action: "open-data-check" })]),
+    }));
+  });
+
+  it("forwards an async holdings retry through the dashboard callback", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    let resolveRetry!: () => void;
+    const onRetryDataQuality = vi.fn(() => new Promise<void>(resolve => { resolveRetry = resolve; }));
+    render(
+      <ReviewDashboard
+        entries={[holdingDashboardEntry()]}
+        qualityInput={{ marketDataDailyStatuses: { "US:TEST": "not-requested" } }}
+        onRetryDataQuality={onRetryDataQuality}
+        onOpenInReview={() => undefined}
+      />,
+    );
+
+    const holdings = screen.getByRole("region", { name: "当前持仓" });
+    await user.click(within(holdings).getByRole("button", { name: "重试行情" }));
+    expect(onRetryDataQuality).toHaveBeenCalledWith("holdings", ["US:TEST"]);
+    expect(holdings).toHaveTextContent("行情重试进行中");
+    resolveRetry();
+    expect(await screen.findByText("行情重试完成，仍不可用")).toBeInTheDocument();
+  });
+
   it("starts with live, all categories and the current natural month", () => {
     const etf: Instrument = { ...shanghai, id: "US:SPY", symbol: "SPY", name: "标普ETF", market: "US", currency: "USD" };
     const unknown: Instrument = { ...shanghai, id: "US:UNKNOWN", symbol: "UNKNOWN", name: "未知资产", market: "US", currency: "USD" };
@@ -155,18 +294,121 @@ describe("ReviewDashboard", () => {
 
     const room = screen.getByRole("region", { name: "交易室范围" });
     expect(within(room).getByRole("button", { name: "实盘" })).toHaveAttribute("aria-pressed", "true");
-    expect(within(room).getByLabelText("实盘身份")).toHaveTextContent("实盘");
-    expect(within(room).getByRole("combobox", { name: "交易室分类筛选" })).toHaveValue("all");
+    expect(within(room).getByRole("button", { name: "实盘" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(room).getByRole("combobox", { name: "交易室市场分类筛选" })).toHaveValue("all");
+    expect(room).toHaveTextContent("全部市场");
     expect(within(room).getByRole("tab", { name: "本月" })).toHaveAttribute("aria-selected", "true");
     expect(within(room).getByRole("tablist", { name: "交易室期间" })).toHaveTextContent("近3个自然月");
     expect(room).toHaveTextContent("收益概览");
     expect(room).not.toHaveTextContent("统一统计范围");
     expect(room).toHaveTextContent("未知资产类型");
-    expect(room).toHaveTextContent("未纳入四类合计");
+    expect(room).toHaveTextContent("不纳入 A股 / 美股 / 港股合计");
     expect(room).toHaveTextContent("可信已平仓回合");
   });
 
-  it("keeps original currency subtotals beside the converted summary", () => {
+  it("puts nature controls beside the scope heading and exposes a holdings focus action", () => {
+    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
+
+    const scope = screen.getByRole("region", { name: "交易室范围" });
+    expect(within(scope).getByRole("button", { name: "实盘" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(scope).getByRole("button", { name: "模拟盘" })).toHaveAttribute("aria-pressed", "false");
+    expect(within(scope).getByRole("button", { name: "当前持仓" })).toHaveAttribute("aria-controls", "trading-room-holdings");
+    expect(document.getElementById("trading-room-holdings")).toBeInTheDocument();
+    expect(within(scope).queryByText("交易性质")).not.toBeInTheDocument();
+  });
+
+  it("keeps the summary and trend inside one visual performance block", () => {
+    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
+
+    const scope = screen.getByRole("region", { name: "交易室范围" });
+    expect(within(scope).getByRole("region", { name: "业绩趋势与日历" })).toBeInTheDocument();
+  });
+
+  it("keeps full PnL context behind a compact keyboard-accessible disclosure", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
+
+    const scope = screen.getByRole("region", { name: "交易室范围" });
+    const card = within(scope).getByText("已平仓回合净盈亏").closest("div");
+    expect(card?.querySelector("small")).toHaveTextContent("2026-10-01");
+    const disclosure = within(card as HTMLElement).getByText("查看原币与汇率详情");
+    expect(disclosure.closest("details")).not.toHaveAttribute("open");
+    disclosure.focus();
+    expect(document.activeElement).toBe(disclosure);
+    await user.click(disclosure);
+    expect(disclosure.closest("details")).toHaveAttribute("open");
+    expect(card).toHaveTextContent("2026-10-01 至 2026-10-15");
+  });
+
+  it("labels a pure CNY summary as original currency instead of an FX conversion", () => {
+    const trustedEntries = dashboardEntries().map(entry => ({
+      ...entry,
+      episodes: entry.episodes.map(item => ({
+        ...item,
+        metrics: { ...item.metrics, pnlAvailable: undefined },
+        reviewStatus: "completed" as const,
+      })),
+    }));
+    render(
+      <ReviewDashboard
+        entries={trustedEntries}
+        instrumentMetadata={new Map([[shanghai.id, metadata(shanghai, "stock")]])}
+        onOpenInReview={() => undefined}
+      />,
+    );
+
+    const scope = screen.getByRole("region", { name: "交易室范围" });
+    const card = within(scope).getByText("已平仓回合净盈亏").closest("div");
+    expect(card?.querySelector("small")).toHaveTextContent("CNY 原币");
+    expect(card?.querySelector("small")).not.toHaveTextContent("汇率快照");
+  });
+
+  it("labels the primary category filter as market category without offering unknown as a choice", () => {
+    const unknown: Instrument = { ...shanghai, id: "US:UNKNOWN", symbol: "UNKNOWN", name: "未知资产", market: "US", currency: "USD" };
+    render(<ReviewDashboard entries={[...dashboardEntries(), ...dashboardEntries(unknown, "2026-10", "unknown-")]} onOpenInReview={() => undefined} />);
+
+    const scope = screen.getByRole("region", { name: "交易室范围" });
+    const category = within(scope).getByRole("combobox", { name: "交易室市场分类筛选" });
+    expect(category).toHaveValue("all");
+    expect(within(category).queryByRole("option", { name: "未知资产类型" })).not.toBeInTheDocument();
+    expect(within(category).queryByRole("option", { name: "ETF" })).not.toBeInTheDocument();
+    expect(within(scope).getByRole("combobox", { name: "交易室资产类型筛选" })).toHaveValue("all");
+    expect(within(scope).getByRole("combobox", { name: "交易室资产类型筛选" })).toHaveTextContent("ETF");
+    expect(scope).toHaveTextContent("未知资产类型");
+  });
+
+  it("opens, applies, cancels and validates a custom period in place", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
+
+    const scope = screen.getByRole("region", { name: "交易室范围" });
+    await user.click(within(scope).getByRole("button", { name: "更多期间" }));
+    expect(within(scope).getByLabelText("交易室自定义起始日期")).toBeVisible();
+    expect(within(scope).getByLabelText("交易室自定义结束日期")).toBeVisible();
+
+    fireEvent.change(within(scope).getByLabelText("交易室自定义起始日期"), { target: { value: "2026-10-05" } });
+    fireEvent.change(within(scope).getByLabelText("交易室自定义结束日期"), { target: { value: "2026-10-10" } });
+    await user.click(within(scope).getByRole("button", { name: "应用期间" }));
+    expect(scope).toHaveTextContent("2026-10-05 至 2026-10-10");
+
+    await user.click(within(scope).getByRole("button", { name: "更多期间" }));
+    fireEvent.change(within(scope).getByLabelText("交易室自定义起始日期"), { target: { value: "2026-11-01" } });
+    await user.click(within(scope).getByRole("button", { name: "取消" }));
+    expect(scope).toHaveTextContent("2026-10-05 至 2026-10-10");
+
+    await user.click(within(scope).getByRole("button", { name: "更多期间" }));
+    fireEvent.change(within(scope).getByLabelText("交易室自定义结束日期"), { target: { value: "2026-10-01" } });
+    await user.click(within(scope).getByRole("button", { name: "应用期间" }));
+    expect(scope).toHaveTextContent("自定义期间起止日期无效");
+    expect(scope).toHaveTextContent("2026-10-05 至 2026-10-10");
+
+    await user.click(within(scope).getByRole("tab", { name: "今年至今" }));
+    expect(within(scope).queryByLabelText("交易室自定义起始日期")).not.toBeInTheDocument();
+    expect(scope).not.toHaveTextContent("自定义期间起止日期无效");
+  });
+
+  it("keeps original currency subtotals beside the converted summary", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     const usd: Instrument = { ...shanghai, id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" };
     const entries = [dashboardEntries(shanghai), dashboardEntries(usd, "2026-10", "usd-")].flat();
     render(
@@ -182,6 +424,10 @@ describe("ReviewDashboard", () => {
     );
 
     const room = screen.getByRole("region", { name: "交易室范围" });
+    const disclosure = within(room).getByText("查看原币与汇率详情");
+    expect(disclosure.closest("details")).not.toHaveAttribute("open");
+    await user.click(disclosure);
+    expect(disclosure.closest("details")).toHaveAttribute("open");
     expect(room).toHaveTextContent("原币小计");
     expect(room).toHaveTextContent("US$");
   });
@@ -197,11 +443,15 @@ describe("ReviewDashboard", () => {
       />,
     );
     const room = screen.getByRole("region", { name: "交易室范围" });
+    const performance = within(room).getByRole("region", { name: "业绩趋势与日历" });
+    await user.click(within(performance).getByRole("button", { name: "日历" }));
     await user.click(within(room).getByRole("tab", { name: "近3个自然月" }));
     expect(room).toHaveTextContent("2026-08-01 至 2026-10-15");
-    await user.selectOptions(within(room).getByRole("combobox", { name: "交易室分类筛选" }), "etf");
+    expect(within(room).getByRole("heading", { name: "盈亏日历" })).toBeInTheDocument();
+    await user.selectOptions(within(room).getByRole("combobox", { name: "交易室市场分类筛选" }), "us-stock");
     expect(room).toHaveTextContent("4 个回合进入范围");
     expect(room).toHaveTextContent("可信已平仓回合");
+    expect(within(room).getByRole("heading", { name: "盈亏日历" })).toBeInTheDocument();
   });
 
   it("requires a simulation run and never combines runs", async () => {
@@ -212,7 +462,7 @@ describe("ReviewDashboard", () => {
     render(<ReviewDashboard entries={[runA, runB]} onOpenInReview={() => undefined} />);
     const room = screen.getByRole("region", { name: "交易室范围" });
     await user.click(within(room).getByRole("button", { name: "模拟盘" }));
-    expect(within(room).getByLabelText("模拟盘身份")).toHaveTextContent("模拟盘");
+    expect(within(room).getByRole("button", { name: "模拟盘" })).toHaveAttribute("aria-pressed", "true");
     expect(room).toHaveTextContent("请选择一个模拟运行");
     const runSelect = within(room).getByRole("combobox", { name: "交易室模拟运行筛选" });
     await user.selectOptions(runSelect, "run-a");
@@ -236,7 +486,7 @@ describe("ReviewDashboard", () => {
     expect(room).toHaveTextContent("当前交易室范围没有回合");
     await user.click(within(room).getByRole("button", { name: "清除交易室筛选" }));
     expect(within(room).getByRole("button", { name: "实盘" })).toHaveAttribute("aria-pressed", "true");
-    expect(within(room).getByRole("combobox", { name: "交易室分类筛选" })).toHaveValue("all");
+    expect(within(room).getByRole("combobox", { name: "交易室市场分类筛选" })).toHaveValue("all");
     expect(within(room).getByRole("tab", { name: "今年至今" })).toHaveAttribute("aria-selected", "true");
     expect(room).toHaveTextContent("4 个回合进入范围");
   });
@@ -247,6 +497,7 @@ describe("ReviewDashboard", () => {
     const room = screen.getByRole("region", { name: "交易室范围" });
     await user.click(within(room).getByRole("button", { name: "更多期间" }));
     fireEvent.change(within(room).getByLabelText("交易室自定义起始日期"), { target: { value: "2026-11-01" } });
+    await user.click(within(room).getByRole("button", { name: "应用期间" }));
     expect(room).toHaveTextContent("自定义期间起止日期无效");
     expect(room).toHaveTextContent("2026-10-01 至 2026-10-15");
     expect(room).toHaveTextContent("4 个回合进入范围");
@@ -291,11 +542,11 @@ describe("ReviewDashboard", () => {
     expect(within(performance).getByRole("button", { name: "全部年份" })).toHaveAttribute("aria-pressed", "true");
     await user.click(within(screen.getByRole("region", { name: "交易室范围" })).getByRole("tab", { name: "今年至今" }));
     expect(screen.getByRole("region", { name: "交易室范围" })).toHaveTextContent("2026-01-01 至 2026-10-15");
-    expect(within(screen.getByRole("region", { name: "业绩趋势与日历" })).getByRole("heading", { name: "累计盈亏趋势" })).toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "业绩趋势与日历" })).getByRole("heading", { name: "盈亏日历" })).toBeInTheDocument();
     expect(screen.queryByRole("region", { name: "日历日期详情" })).not.toBeInTheDocument();
   });
 
-  it("syncs custom date drafts after calendar period drilldown", async () => {
+  it("does not open the custom editor after calendar period drilldown", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     const entries = [
       ...dashboardEntries(shanghai, "2026-09"),
@@ -315,10 +566,9 @@ describe("ReviewDashboard", () => {
 
     const room = screen.getByRole("region", { name: "交易室范围" });
     expect(room).toHaveTextContent("2026-08-01 至 2026-08-31");
-    expect(within(room).getByRole("button", { name: "更多期间" })).toHaveAttribute("aria-pressed", "true");
-    expect(within(room).getByLabelText("交易室自定义起始日期")).toHaveValue("2026-08-01");
-    expect(within(room).getByLabelText("交易室自定义结束日期")).toHaveValue("2026-08-31");
-    });
+    expect(within(room).getByRole("button", { name: "更多期间" })).toHaveAttribute("aria-pressed", "false");
+    expect(within(room).queryByLabelText("交易室自定义起始日期")).not.toBeInTheDocument();
+    expect(within(room).queryByLabelText("交易室自定义结束日期")).not.toBeInTheDocument();
   });
 
   it("keeps diagnostics and principal configuration out of the homepage", async () => {
@@ -341,3 +591,4 @@ describe("ReviewDashboard", () => {
     await user.click(within(status).getByRole("button", { name: "打开数据管理" }));
     expect(onOpenDataManagement).toHaveBeenCalledOnce();
   });
+});

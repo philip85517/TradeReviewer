@@ -36,6 +36,10 @@ export type TradingRoomCalendarCell = {
   value: string | null;
   state: TradingRoomCalendarState;
   trustedClosedCount: number;
+  wins: number;
+  losses: number;
+  breakEven: number;
+  winRatePercent: string | null;
   excludedCount: number;
   unavailableReason: string | null;
   episodeIds: string[];
@@ -239,17 +243,30 @@ function historyRange(rows: readonly DashboardRow[], fallback: RoomDateRange): R
   return { preset: "custom", startDate: dates[0], endDate: dates.at(-1)! };
 }
 
+export function findTradingRoomHistoryRange(
+  entries: readonly TradeLibraryEntry[],
+  scope: RoomScope,
+  options: Pick<TradingRoomCalendarOptions, "asOf" | "instrumentMetadata"> = {},
+): RoomDateRange {
+  const asOfDate = dateOnly(options.asOf) ?? roomTodayKey(new Date());
+  const rows = filterRoomRows(
+    entries,
+    {
+      ...scope,
+      period: { preset: "custom", startDate: "0000-01-01", endDate: asOfDate },
+    },
+    { instrumentMetadata: options.instrumentMetadata },
+  ).filter(row => row.item.episode.status === "closed");
+  return historyRange(rows, scope.period);
+}
+
 function filterPerformanceRows(
   entries: readonly TradeLibraryEntry[],
   scope: RoomScope,
   metadata: TradingRoomMetadataInput,
-  allHistory: boolean,
 ): DashboardRow[] {
   const rows = allRows(entries);
-  const filterScope = allHistory
-    ? { ...scope, period: historyRange(rows, scope.period) }
-    : scope;
-  return filterRoomRows(rows, filterScope, { instrumentMetadata: metadata })
+  return filterRoomRows(rows, scope, { instrumentMetadata: metadata })
     .filter(row => row.item.episode.status === "closed");
 }
 
@@ -421,7 +438,7 @@ export function buildTradingRoomCalendar(
   const asOfDate = dateOnly(options.asOf) ?? roomTodayKey(new Date());
   const trendLevel = options.trendLevel ?? (options.scope.period.preset === "month" ? "day" : "month");
   const metadata = options.instrumentMetadata;
-  const selectedRows = filterPerformanceRows(entries, options.scope, metadata, level === "all-years");
+  const selectedRows = filterPerformanceRows(entries, options.scope, metadata);
   // Keep the row-to-value conversion explicit so metadata remains a read-only projection.
   const rowValues = selectedRows.map(row => rowValue(row, metadata));
   const effectiveValues = rowValues.filter(value => value.date <= asOfDate);
@@ -432,6 +449,15 @@ export function buildTradingRoomCalendar(
     const bucketValues = effectiveValues.filter(value => bucketForDate(value.date, [bucket]) !== undefined);
     const trusted = bucketValues.filter(value => value.value !== null);
     const excluded = bucketValues.filter(value => value.value === null);
+    let wins = 0;
+    let losses = 0;
+    let breakEven = 0;
+    for (const value of trusted) {
+      const decimal = new Decimal(value.value!);
+      if (decimal.gt(0)) wins += 1;
+      else if (decimal.lt(0)) losses += 1;
+      else breakEven += 1;
+    }
     const money = buildRoomMoneyView(amountsFor(bucketValues), options.fxSnapshot);
     const future = bucket.startDate > asOfDate;
     const reasons = [...new Set(excluded.map(value => value.exclusionReason).filter((value): value is string => Boolean(value)))];
@@ -444,6 +470,12 @@ export function buildTradingRoomCalendar(
       value: future ? null : valueForMoney(money),
       state: stateFor(money, trusted.length, excluded.length, future),
       trustedClosedCount: trusted.length,
+      wins,
+      losses,
+      breakEven,
+      winRatePercent: trusted.length > 0
+        ? new Decimal(wins).dividedBy(trusted.length).times(100).toString()
+        : null,
       excludedCount: excluded.length,
       unavailableReason: excluded.length > 0 && trusted.length === 0
         ? reasons.map(reason => exclusionReasonLabel(reason)).join("、") || "结果不可用"

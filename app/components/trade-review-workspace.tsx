@@ -194,6 +194,7 @@ import {
 import { DataManagement } from "./data-management/data-management";
 import { FxPanel } from "./data-management/fx-panel";
 import { QualityDetails } from "./data-management/quality-details";
+import { TradingRoomPrincipalSlot } from "./data-management/trading-room-principal-slot";
 import { useModalFocus } from "./import/use-modal-focus";
 import { ReviewSummary, initialReviewSummaryFilters, type ReviewSummaryDrafts } from "./insights/review-summary";
 import { ReviewDashboard } from "./dashboard/review-dashboard";
@@ -4358,6 +4359,14 @@ export function TradeReviewWorkspace({
                 onOpenDataManagement={openQualityDetails}
                 onRetryDataQuality={retryDataQuality}
                 onOpenDataCheck={openQualityDataCheck}
+              />
+            ) : undefined}
+            principalSlot={!showDemo ? (
+              <TradingRoomPrincipalSlot
+                entries={tradeLibraryEntries}
+                instrumentMetadata={instrumentMetadata}
+                fxSnapshot={fxSnapshot}
+                enabled
               />
             ) : undefined}
             fxSlot={resolvedFxSlot}

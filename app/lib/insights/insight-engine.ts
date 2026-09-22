@@ -5,6 +5,22 @@ import type {
   InsightEpisodeExclusion,
   InsightEpisodeFact,
 } from "./episode-facts";
+import {
+  buildOutcomeStructureReport,
+  type OutcomeStructureReport,
+} from "./outcome-structure";
+import {
+  buildOutcomeDiagnosticsReport,
+  type OutcomeDiagnosticsReport,
+} from "./outcome-diagnostics";
+import {
+  buildIpoBreakdownReport,
+  type IpoBreakdownReport,
+} from "./ipo-breakdown";
+import {
+  buildMarketBreakdownReport,
+  type MarketBreakdownReport,
+} from "./market-breakdown";
 
 export type InsightMetricBasis = "r-multiple" | "return-percent";
 export type InsightConfidence =
@@ -57,6 +73,10 @@ export type PatternInsightReport = {
   earlySignals: PatternInsight[];
   descriptiveStatistics: PatternInsight[];
   excluded: InsightEpisodeExclusion[];
+  outcomeStructure?: OutcomeStructureReport;
+  outcomeDiagnostics?: OutcomeDiagnosticsReport;
+  ipoBreakdown?: IpoBreakdownReport;
+  marketBreakdown?: MarketBreakdownReport;
   calculationVersion: 1;
 };
 
@@ -477,6 +497,19 @@ export function buildPatternInsightReport(
       )
       .sort(rank),
     excluded: [...upstreamExclusions, ...missing, ...ambiguous],
+    outcomeStructure: buildOutcomeStructureReport(
+      inputFacts,
+      upstreamExclusions,
+    ),
+    outcomeDiagnostics: buildOutcomeDiagnosticsReport(
+      buildOutcomeStructureReport(inputFacts, upstreamExclusions),
+      inputFacts,
+    ),
+    ipoBreakdown: buildIpoBreakdownReport(inputFacts, upstreamExclusions),
+    marketBreakdown: buildMarketBreakdownReport(
+      inputFacts,
+      upstreamExclusions,
+    ),
     calculationVersion: 1,
   };
 }

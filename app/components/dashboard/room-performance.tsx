@@ -13,6 +13,8 @@ import {
   buildTradingRoomCalendar,
   type TradingRoomCalendarCell,
   type TradingRoomCalendarLevel,
+  type TradingRoomTrendLevel,
+  type TradingRoomTrendPoint,
 } from "../../lib/reviews/trading-room-calendar";
 import { classifyTradingRoomAsset, normalizeRoomMetadata } from "../../lib/reviews/trading-room-scope";
 import { dashboardEpisodeDate, dashboardRowExclusionReason, exclusionReasonLabel } from "../../lib/reviews/dashboard";
@@ -101,20 +103,22 @@ function linePath(points: readonly { value: string | null }[], width: number, he
   return coordinates.length > 1 ? `M${coordinates.join(" L")}` : "";
 }
 
-function pointCoordinate(
+function pointCoordinates(
   points: readonly { value: string | null }[],
   width: number,
   height: number,
   domain: ValueDomain,
-): { x: number; y: number } | null {
-  const index = points.findIndex(point => point.value !== null && Number.isFinite(Number(point.value)));
-  if (index < 0) return null;
-  const value = Number(points[index].value);
+): Array<{ x: number; y: number; value: string }> {
   const span = domain.max - domain.min || 1;
-  return {
-    x: points.length <= 1 ? width / 2 : (index / (points.length - 1)) * width,
-    y: height - ((value - domain.min) / span) * height,
-  };
+  return points.flatMap((point, index) => {
+    if (point.value === null || !Number.isFinite(Number(point.value))) return [];
+    const value = Number(point.value);
+    return [{
+      x: points.length <= 1 ? width / 2 : (index / (points.length - 1)) * width,
+      y: height - ((value - domain.min) / span) * height,
+      value: point.value,
+    }];
+  });
 }
 
 function zeroLinePosition(domain: ValueDomain, height: number): number {
@@ -161,6 +165,30 @@ function lineColor(index: number): string {
   return ["#4e9bab", "#9a6ec7", "#d48b47", "#638b5a"][index % 4];
 }
 
+function defaultTrendLevel(scope: RoomScope): TradingRoomTrendLevel {
+  if (scope.period.preset === "last-3-months" || scope.period.preset === "ytd") return "month";
+  return scope.period.startDate.slice(0, 7) === scope.period.endDate.slice(0, 7) ? "day" : "month";
+}
+
+function trendLevelLabel(level: TradingRoomTrendLevel): string {
+  if (level === "day") return "自然日";
+  if (level === "week") return "自然周";
+  return "自然月";
+}
+
+function trendPointMoney(point: TradingRoomTrendPoint, cumulative: boolean): string {
+  const view = cumulative ? point.money : point.periodMoney;
+  if (view.convertedCny !== null) return money(view.convertedCny, "CNY");
+  const values = Object.entries(view.originalByCurrency);
+  if (values.length === 0) return point.availability === "empty" ? "暂无样本" : "数据不足";
+  if (values.length > 1) return "无法合计";
+  return values.map(([currency, value]) => money(value, currency)).join(" · ");
+}
+
+function trendPointLabel(point: TradingRoomTrendPoint): string {
+  return `${point.label}，期间收益 ${trendPointMoney(point, false)}，累计收益 ${trendPointMoney(point, true)}`;
+}
+
 export function RoomPerformance({
   entries,
   scope,
@@ -173,15 +201,18 @@ export function RoomPerformance({
 }: RoomPerformanceProps) {
   const [view, setView] = useState<"trend" | "calendar">("trend");
   const [level, setLevel] = useState<TradingRoomCalendarLevel>("month");
+  const [trendLevelOverride, setTrendLevelOverride] = useState<TradingRoomTrendLevel | null>(null);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const trendLevel = trendLevelOverride ?? defaultTrendLevel(scope);
   const metadata = useMemo(() => normalizeRoomMetadata(instrumentMetadata), [instrumentMetadata]);
   const model = useMemo(() => buildTradingRoomCalendar(entries, {
     scope,
     level,
+    trendLevel,
     asOf,
     instrumentMetadata,
     fxSnapshot,
-  }), [asOf, entries, fxSnapshot, instrumentMetadata, level, scope]);
+  }), [asOf, entries, fxSnapshot, instrumentMetadata, level, scope, trendLevel]);
   const allYears = useMemo(() => buildTradingRoomCalendar(entries, {
     scope,
     level: "all-years",
@@ -291,24 +322,55 @@ export function RoomPerformance({
 
       {view === "trend" ? (
         <div className={styles.trendWrap}>
-          <div className={styles.trendMeta}>
-            <span>区间累计末值</span>
-            <strong>{displayMoney(model.trend.endMoney)}</strong>
+          <div className={styles.trendToolbar}>
+            <div className={styles.trendMeta}>
+              <span>区间累计末值 · {trendLevelLabel(trendLevel)}</span>
+              <strong>{displayMoney(model.trend.endMoney)}</strong>
+            </div>
+            <div className={styles.levelTabs} role="group" aria-label="趋势分桶">
+              {(["day", "week", "month"] as const).map(value => <button type="button" key={value} aria-pressed={trendLevel === value} onClick={() => { setTrendLevelOverride(value); setSelectedKey(null); }}>{value === "day" ? "日" : value === "week" ? "周" : "月"}</button>)}
+            </div>
           </div>
           {model.trend.points.length === 0 || model.summary.trustedClosedCount === 0 ? (
             <p className={styles.empty}>当前范围暂无可绘制的已平仓回合。</p>
           ) : (
             <div className={styles.chartFrame}>
-              <svg role="img" aria-label="累计盈亏趋势图" viewBox="0 0 640 190" preserveAspectRatio="none">
-                <line x1="0" x2="640" y1={zeroY} y2={zeroY} className={styles.zeroLine} />
-                {chartSeries.map((series, index) => {
-                  const point = pointCoordinate(series.points, 640, 180, trendDomain);
-                  return <g key={series.key}>
-                    <path d={linePath(series.points, 640, 180, trendDomain)} fill="none" stroke={lineColor(index)} strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-                    {point && <circle cx={point.x} cy={point.y} r="4" fill={lineColor(index)} />}
-                  </g>;
-                })}
-              </svg>
+              <div className={styles.chartAxisLayout}>
+                <div className={styles.axisY} aria-label="趋势图纵轴">
+                  <span>纵轴</span>
+                  <span>{money(String(trendDomain.max), aggregateTrend ? "CNY" : model.trend.currencies[0] ?? "CNY")}</span>
+                  <span>{money(String((trendDomain.max + trendDomain.min) / 2), aggregateTrend ? "CNY" : model.trend.currencies[0] ?? "CNY")}</span>
+                  <span>{money(String(trendDomain.min), aggregateTrend ? "CNY" : model.trend.currencies[0] ?? "CNY")}</span>
+                </div>
+                <div className={styles.chartPlotArea}>
+                  <svg role="img" aria-label="累计盈亏趋势图" viewBox="0 0 640 190" preserveAspectRatio="none">
+                    <line x1="0" x2="640" y1={zeroY} y2={zeroY} className={styles.zeroLine} />
+                    {chartSeries.map((series, index) => {
+                      const points = pointCoordinates(series.points, 640, 180, trendDomain);
+                      return <g key={series.key}>
+                        <path d={linePath(series.points, 640, 180, trendDomain)} fill="none" stroke={lineColor(index)} strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+                        {points.map((point, pointIndex) => <circle key={`${series.key}-${pointIndex}`} cx={point.x} cy={point.y} r="4" fill={lineColor(index)}><title>{series.key} · {point.value}</title></circle>)}
+                      </g>;
+                    })}
+                  </svg>
+                  <div className={styles.axisX} aria-label="趋势图横轴">
+                    <span>横轴</span>
+                    {model.trend.points.filter((point, index) => index === 0 || index === model.trend.points.length - 1 || index % Math.max(1, Math.floor(model.trend.points.length / 5)) === 0).map(point => <span key={point.key}>{point.label}</span>)}
+                  </div>
+                </div>
+              </div>
+              <div className={styles.trendValueLegend}><span>期间收益</span><span>累计收益</span></div>
+              <details className={styles.trendDetails}>
+                <summary>查看趋势数据</summary>
+                <div className={styles.trendPointList} aria-label="趋势数据">
+                  {model.trend.points.map(point => <div key={point.key} aria-label={trendPointLabel(point)}>
+                    <strong>{point.label}</strong>
+                    <span>期间 {trendPointMoney(point, false)}</span>
+                    <span>累计 {trendPointMoney(point, true)}</span>
+                    <small>{point.trustedClosedCount} 个可信回合 · {point.wins} 胜 / {point.losses} 负 · {point.startDate} 至 {point.endDate}</small>
+                  </div>)}
+                </div>
+              </details>
               {model.trend.currencies.length > 1 && model.trend.endMoney.convertedCny === null && <>
                 <div className={styles.legend} aria-label="趋势币种图例">{model.trend.currencies.map((currency, index) => <span key={currency}><i style={{ backgroundColor: lineColor(index) }} />{currency}</span>)}</div>
                 <p className={styles.notice}>多币种暂不可合计，趋势按原币分别显示（共用同一数值尺度）。</p>

@@ -5,6 +5,10 @@ import { planCoverageGaps, type DateRange } from "../market/coverage-planner";
 import type { MarketDataSyncStatus } from "../market/sync-status";
 import { marketTradingDate } from "../market/trading-date";
 import type { TradeLibraryEntry } from "../trades/library";
+import { canonicalInstrumentId } from "../instruments/display-name";
+import { isExecutionBackedIpoAllocation } from "../import/statement-evidence";
+import { resolveIpoAcquisitionCost } from "../trades/ipo-cost";
+import type { TradeEpisode } from "../trades/types";
 import type { TagSuggestionRecord } from "./types";
 
 export type InsightExclusionReason =
@@ -12,7 +16,8 @@ export type InsightExclusionReason =
   | "incomplete-market-data"
   | "missing-episode-candles"
   | "missing-comparison-metric"
-  | "ambiguous-tag-provenance";
+  | "ambiguous-tag-provenance"
+  | "ipo-cost-incomplete";
 
 export type InsightEpisodeExclusion = {
   episodeId: string;
@@ -54,6 +59,10 @@ export type InsightEpisodeFact = {
   confirmedTagIds: string[];
   tagDictionaryVersion: number;
   confirmedRuleVersions: ConfirmedRuleVersion[];
+  ipoClassification?: "ipo" | "non-ipo" | "unknown";
+  ipoEvidence?: Array<{ id: string; label: string }>;
+  ipoClassificationReason?: string | null;
+  ipoCostComplete?: boolean;
   calculationVersion: 1;
 };
 
@@ -69,6 +78,7 @@ const REASON_LABELS: Record<InsightExclusionReason, string> = {
   "missing-comparison-metric": "缺少当前统计口径所需指标",
   "ambiguous-tag-provenance":
     "标签版本归属不唯一，未进入该标签比较",
+  "ipo-cost-incomplete": "IPO 成本证据链不完整，未进入正式收益比较",
 };
 
 function exclusion(
@@ -222,12 +232,108 @@ function excursionMetrics(
 
   const giveback =
     returnPercent === null
-      ? new Decimal(0)
+      ? null
       : Decimal.max(0, mfe.minus(returnPercent));
   return {
     mfePercent: mfe.toString(),
     maePercent: mae.toString(),
-    givebackPercent: giveback.toString(),
+    givebackPercent: giveback?.toString() ?? null,
+  };
+}
+
+export function classifyIpoSource(episode: TradeEpisode): {
+  classification: InsightEpisodeFact["ipoClassification"];
+  evidence: Array<{ id: string; label: string }>;
+  reason: string | null;
+  costComplete: boolean;
+} {
+  const scopedEvents = (episode.positionEvents ?? []).filter((event) =>
+    event.accountId === episode.accountId &&
+    event.market === episode.instrument.market &&
+    event.symbol !== undefined &&
+    canonicalInstrumentId(event.symbol, event.market) ===
+      canonicalInstrumentId(episode.instrument.symbol, episode.instrument.market),
+  );
+  const positiveIpoEvents = [...scopedEvents
+    .filter((event) => event.kind === "ipo" && event.quantity !== undefined)
+    .filter((event) => {
+      try { return new Decimal(event.quantity as string).isPositive(); } catch { return false; }
+    })
+    .reduce((unique, event) => {
+      const key = JSON.stringify([
+        event.accountId,
+        event.market,
+        event.symbol,
+        event.date,
+        event.quantity,
+        event.amount,
+      ]);
+      if (!unique.has(key)) unique.set(key, event);
+      return unique;
+    }, new Map<string, typeof scopedEvents[number]>()).values()];
+  const hasInventoryConflict = Boolean(episode.initialPosition) ||
+    episode.executions.some((execution) => (execution.source.historyIncomplete?.length ?? 0) > 0) ||
+    (episode.accuracy?.reasons ?? []).some((reason) => [
+      "position-event",
+      "position-gap",
+      "ambiguous-opening",
+      "ambiguous-event-order",
+      "history-incomplete",
+    ].includes(reason)) ||
+    scopedEvents.some((event) => event.kind !== "ipo" && event.kind !== "fee") ||
+    (episode.positionEvents ?? []).some((event) =>
+      event.accountId === episode.accountId &&
+      event.kind === "ipo" &&
+      (event.market !== episode.instrument.market ||
+        event.symbol === undefined ||
+        canonicalInstrumentId(event.symbol, event.market ?? "") !== canonicalInstrumentId(episode.instrument.symbol, episode.instrument.market)),
+    );
+
+  const evidence = positiveIpoEvents.map((event) => ({
+    id: event.id,
+    label: isExecutionBackedIpoAllocation(event, episode.executions)
+      ? "IPO 执行背书"
+      : "IPO 配售 / 获配",
+  }));
+  if (hasInventoryConflict) {
+    return {
+      classification: "unknown",
+      evidence,
+      reason: episode.initialPosition ? "初始持仓" : "库存事件冲突或历史缺口",
+      costComplete: false,
+    };
+  }
+  if (positiveIpoEvents.length > 0) {
+    const costComplete = positiveIpoEvents.every((event) =>
+      isExecutionBackedIpoAllocation(event, episode.executions) ||
+      Boolean(
+        episode.ipoCostEvidence?.some((chain) =>
+          chain.allocationId === event.id &&
+          chain.evidenceIds.every((id) => scopedEvents.some((candidate) => candidate.id === id)) &&
+          resolveIpoAcquisitionCost(
+            event,
+            episode.positionEvents ?? [],
+            episode.executions,
+            episode.instrument.currency,
+          ),
+        ),
+      ),
+    );
+    return {
+      classification: "ipo",
+      evidence,
+      reason: costComplete ? null : "IPO 成本证据链不完整",
+      costComplete,
+    };
+  }
+  if (!episode.initialPosition && !episode.accuracy && !episode.executions.some((execution) => execution.source.historyIncomplete?.length)) {
+    return { classification: "non-ipo", evidence: [], reason: null, costComplete: true };
+  }
+  return {
+    classification: "unknown",
+    evidence: [],
+    reason: "证据不足，无法确认来源",
+    costComplete: false,
   };
 }
 
@@ -317,7 +423,8 @@ export function buildInsightEpisodeFacts(
             mfePercent: null,
             maePercent: null,
             givebackPercent: null,
-          };
+        };
+      const ipoSource = classifyIpoSource(item.episode);
 
       facts.push({
         episodeId: item.episode.id,
@@ -344,6 +451,10 @@ export function buildInsightEpisodeFacts(
         confirmedTagIds: [...item.confirmedTagIds],
         tagDictionaryVersion: item.tagDictionaryVersion,
         confirmedRuleVersions,
+        ipoClassification: ipoSource.classification,
+        ipoEvidence: ipoSource.evidence,
+        ipoClassificationReason: ipoSource.reason,
+        ipoCostComplete: ipoSource.costComplete,
         calculationVersion: 1,
       });
     }

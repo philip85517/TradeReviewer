@@ -12,7 +12,7 @@ import type {
   TradeExecution,
 } from "../trades/types";
 import type { TagSuggestionRecord } from "./types";
-import { buildInsightEpisodeFacts } from "./episode-facts";
+import { buildInsightEpisodeFacts, classifyIpoSource } from "./episode-facts";
 
 const xpev: Instrument = {
   id: "US:XPEV",
@@ -204,6 +204,71 @@ function confirmedSuggestion(
 }
 
 describe("buildInsightEpisodeFacts", () => {
+  it("classifies a scoped positive IPO allocation once and preserves its evidence", () => {
+    const buy = execution(xpev, "ipo-buy", "buy", "2025-01-10T15:00:00Z", "10", "10");
+    buy.source.positionEffect = "open-long";
+    buy.source.displayTimePolicy = "session-open";
+    const allocation = {
+      id: "ipo-allocation",
+      accountId: "account-1",
+      market: "US",
+      symbol: "XPEV",
+      date: "2025-01-10",
+      kind: "ipo" as const,
+      quantity: "10",
+      amount: "100",
+      description: "IPO allotment",
+      source: [],
+    };
+    const episode = libraryEpisode({
+      id: "ipo-episode",
+      direction: "long",
+      executions: [buy, execution(xpev, "ipo-sell", "sell", "2025-01-11T15:00:00Z", "10", "12")],
+      netPnl: "20",
+      returnPercent: "20",
+      rMultiple: "2",
+    });
+    episode.episode.positionEvents = [allocation, { ...allocation, id: "ipo-allocation-duplicate" }];
+
+    const result = classifyIpoSource(episode.episode);
+    expect(result).toMatchObject({ classification: "ipo", costComplete: true });
+    expect(result.evidence).toEqual([
+      { id: "ipo-allocation", label: "IPO 执行背书" },
+    ]);
+  });
+
+  it("keeps ordinary fills non-IPO but refuses to guess around initial inventory or history gaps", () => {
+    const ordinary = libraryEpisode({
+      id: "ordinary-episode",
+      direction: "long",
+      executions: [
+        execution(xpev, "ordinary-buy", "buy", "2025-01-10T15:00:00Z", "10", "10"),
+        execution(xpev, "ordinary-sell", "sell", "2025-01-11T15:00:00Z", "10", "12"),
+      ],
+      netPnl: "20",
+      returnPercent: "20",
+      rMultiple: "2",
+    });
+    expect(classifyIpoSource(ordinary.episode)).toMatchObject({
+      classification: "non-ipo",
+      evidence: [],
+    });
+
+    ordinary.episode.initialPosition = {
+      accountId: "account-1",
+      market: "US",
+      symbol: "XPEV",
+      phase: "opening",
+      date: "2025-01-01",
+      quantity: "10",
+      source: [],
+    };
+    expect(classifyIpoSource(ordinary.episode)).toMatchObject({
+      classification: "unknown",
+      reason: "初始持仓",
+    });
+  });
+
   it("keeps reliable accounting facts when daily path data is unavailable", () => {
     const executions = [
       execution(xpev, "no-path-open", "buy", "2025-01-02T15:00:00Z", "10", "10"),
@@ -330,6 +395,46 @@ describe("buildInsightEpisodeFacts", () => {
         givebackPercent: "0",
       });
     }
+  });
+
+  it("keeps giveback unknown when the return percentage is unavailable", () => {
+    const episode = libraryEpisode({
+      id: "episode-missing-return",
+      direction: "long",
+      executions: [
+        execution(xpev, "missing-return-open", "buy", "2025-01-02T15:00:00Z", "10", "10"),
+        execution(xpev, "missing-return-close", "sell", "2025-01-03T15:00:00Z", "10", "12"),
+      ],
+      netPnl: "20",
+      returnPercent: null,
+      rMultiple: null,
+    });
+    const result = buildInsightEpisodeFacts(
+      [entry(xpev, [episode])],
+      {
+        "US:XPEV": [
+          candle("2025-01-02", "11", "9", "10"),
+          candle("2025-01-03", "13", "11", "12"),
+        ],
+      },
+      { "US:XPEV": "complete" },
+      [],
+      {
+        "US:XPEV": [{
+          startDate: "2025-01-02",
+          endDate: "2025-01-03",
+          status: "complete",
+          missingTradingDates: [],
+        }],
+      },
+    );
+
+    expect(result.facts[0]).toMatchObject({
+      episodeId: "episode-missing-return",
+      returnPercent: null,
+      mfePercent: "20",
+      givebackPercent: null,
+    });
   });
 
   it("rejects daily path coverage with an in-episode gap or failure", () => {

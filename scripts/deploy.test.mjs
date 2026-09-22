@@ -91,7 +91,7 @@ const operationIndex = args.findIndex((argument) => operations.has(argument));
 const operation = args[operationIndex];
 const envFileIndex = args.indexOf("--env-file");
 const envText = envFileIndex >= 0 ? readFileSync(args[envFileIndex + 1], "utf8") : "";
-const configuredSqlite = envText.match(/^SQLITE_HOST_DIR=(.*)$/m)?.[1]?.replace(/^['"]|['"]$/g, "");
+const configuredSqlite = envText.match(/^\\s*SQLITE_HOST_DIR\\s*=\\s*(.*)$/m)?.[1]?.trim().replace(/^['"]|['"]$/g, "");
 const mappings = [[configuredSqlite || join(deployRoot, "data", "sqlite"), "/var/lib/tradereview"]];
 
 for (let index = 0; index < args.length; index += 1) {
@@ -312,6 +312,28 @@ describe("deployment templates", () => {
       await rm(targetDir, { recursive: true, force: true });
     }
   });
+
+  test("pins Compose SQLite interpolation to the deployment env file", async () => {
+    const sandbox = await mkdtemp(join(tmpdir(), "tradereview-compose-env-"));
+    const targetDir = join(sandbox, "target");
+    try {
+      await mkdir(join(targetDir, "config"), { recursive: true });
+      await writeFile(join(targetDir, "config", ".env"), 'SQLITE_HOST_DIR = "/tmp/database-A"\n');
+      let observedEnv;
+      const composeRunner = createComposeRunner({
+        targetDir,
+        env: { SQLITE_HOST_DIR: "/tmp/database-B" },
+        commandRunner: async (_command, _args, options) => {
+          observedEnv = options.env;
+          return { exitCode: 0, stdout: "[]" };
+        },
+      });
+      await composeRunner(["ps"]);
+      expect(observedEnv.SQLITE_HOST_DIR).toBe("/tmp/database-A");
+    } finally {
+      await rm(sandbox, { recursive: true, force: true });
+    }
+  });
 });
 
 describe("SQLite operations", () => {
@@ -447,34 +469,78 @@ describe("SQLite operations", () => {
     const fixture = await createSqliteOperationalSandbox();
     const externalDir = join(fixture.sandbox, "数据库 with spaces");
     const externalDatabase = join(externalDir, "tradereview.sqlite");
+    const conflictingDir = join(fixture.sandbox, "database-B");
+    const conflictingDatabase = join(conflictingDir, "tradereview.sqlite");
     const restorePath = join(fixture.sandbox, "restore external.sqlite");
     const healthServer = await startHealthServer();
 
     try {
       await mkdir(externalDir, { recursive: true });
+      await mkdir(conflictingDir, { recursive: true });
       await runProcess("/usr/bin/sqlite3", [externalDatabase, "CREATE TABLE state(value TEXT NOT NULL); INSERT INTO state VALUES('external-before');"]);
+      await runProcess("/usr/bin/sqlite3", [conflictingDatabase, "CREATE TABLE state(value TEXT NOT NULL); INSERT INTO state VALUES('wrong-process-env');"]);
       await runProcess("/usr/bin/sqlite3", [fixture.databasePath, "DELETE FROM state; INSERT INTO state VALUES('stale-old-directory');"]);
       await writeFile(
         join(fixture.targetDir, "config", ".env"),
-        `APP_BIND=127.0.0.1\nAPP_PORT=${healthServer.port}\nSQLITE_HOST_DIR="${externalDir}"\nBACKUP_RETENTION_DAYS=30\n`,
+        `APP_BIND=127.0.0.1\nAPP_PORT=${healthServer.port}\nSQLITE_HOST_DIR = "${externalDir}"   \nBACKUP_RETENTION_DAYS=30\n`,
       );
 
-      const backup = await runOperationalScript(join(fixture.targetDir, "ops", "backup-db.sh"), [], fixture.binDir);
+      const conflictingEnvironment = { SQLITE_HOST_DIR: conflictingDir };
+      const backup = await runOperationalScript(join(fixture.targetDir, "ops", "backup-db.sh"), [], fixture.binDir, conflictingEnvironment);
       expect(backup.exitCode).toBe(0);
       const backupName = (await readdir(join(fixture.targetDir, "data", "backups"))).find((entry) => entry.endsWith(".sqlite"));
       expect(backupName).toBeDefined();
       await expect(runProcess("/usr/bin/sqlite3", [join(fixture.targetDir, "data", "backups", backupName), "SELECT value FROM state;"])).resolves.toMatchObject({ stdout: "external-before\n" });
 
       await runProcess("/usr/bin/sqlite3", [restorePath, "CREATE TABLE state(value TEXT NOT NULL); INSERT INTO state VALUES('restored-external');"]);
-      const restored = await runOperationalScript(join(fixture.targetDir, "ops", "restore-db.sh"), [restorePath], fixture.binDir);
+      const restored = await runOperationalScript(join(fixture.targetDir, "ops", "restore-db.sh"), [restorePath], fixture.binDir, conflictingEnvironment);
       expect(restored.exitCode).toBe(0);
       await expect(runProcess("/usr/bin/sqlite3", [externalDatabase, "SELECT value FROM state;"])).resolves.toMatchObject({ stdout: "restored-external\n" });
+      await expect(runProcess("/usr/bin/sqlite3", [conflictingDatabase, "SELECT value FROM state;"])).resolves.toMatchObject({ stdout: "wrong-process-env\n" });
       await expect(runProcess("/usr/bin/sqlite3", [fixture.databasePath, "SELECT value FROM state;"])).resolves.toMatchObject({ stdout: "stale-old-directory\n" });
     } finally {
       await healthServer.close();
       await rm(fixture.sandbox, { recursive: true, force: true });
     }
   }, 30000);
+
+  test("refuses restore while another process holds the live database open", async () => {
+    const fixture = await createSqliteOperationalSandbox();
+    const restorePath = join(fixture.sandbox, "restore-held-open.sqlite");
+    const heldOpen = spawn(
+      process.execPath,
+      ["-e", "const fs = require('node:fs'); fs.openSync(process.argv[1], 'r'); setInterval(() => {}, 1000);", fixture.databasePath],
+      { stdio: "ignore" },
+    );
+
+    try {
+      await new Promise((resolveWait) => setTimeout(resolveWait, 150));
+      await runProcess("/usr/bin/sqlite3", [restorePath, "CREATE TABLE state(value TEXT NOT NULL); INSERT INTO state VALUES('must-not-restore');"]);
+      const result = await runOperationalScript(join(fixture.targetDir, "ops", "restore-db.sh"), [restorePath], fixture.binDir);
+      expect(result.exitCode).not.toBe(0);
+      expect(result.stderr).toMatch(/still in use|consumers/i);
+      await expect(runProcess("/usr/bin/sqlite3", [fixture.databasePath, "SELECT value FROM state;"])).resolves.toMatchObject({ stdout: "before\n" });
+    } finally {
+      heldOpen.kill("SIGTERM");
+      await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  }, 15000);
+
+  test("fails closed when the database consumer checker errors", async () => {
+    const fixture = await createSqliteOperationalSandbox();
+    const restorePath = join(fixture.sandbox, "restore-checker-error.sqlite");
+    try {
+      await writeFile(join(fixture.binDir, "lsof"), "#!/usr/bin/env bash\nexit 2\n");
+      await chmod(join(fixture.binDir, "lsof"), 0o755);
+      await runProcess("/usr/bin/sqlite3", [restorePath, "CREATE TABLE state(value TEXT NOT NULL); INSERT INTO state VALUES('must-not-restore');"]);
+      const result = await runOperationalScript(join(fixture.targetDir, "ops", "restore-db.sh"), [restorePath], fixture.binDir);
+      expect(result.exitCode).not.toBe(0);
+      expect(result.stderr).toMatch(/cannot verify database consumers|lsof failed/i);
+      await expect(runProcess("/usr/bin/sqlite3", [fixture.databasePath, "SELECT value FROM state;"])).resolves.toMatchObject({ stdout: "before\n" });
+    } finally {
+      await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  }, 15000);
 
   test("failed restore keeps the original database and returns the app to health", async () => {
     const fixture = await createSqliteOperationalSandbox();

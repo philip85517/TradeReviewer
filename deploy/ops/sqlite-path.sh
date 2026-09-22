@@ -7,6 +7,7 @@ env_value() {
       sub(/^[[:space:]]+/, "", line)
       if (line ~ ("^" key "[[:space:]]*=")) {
         sub("^[^=]*=[[:space:]]*", "", line)
+        sub(/[[:space:]]+$/, "", line)
         if (line ~ /^".*"$/ || line ~ /^'"'"'.*'"'"'$/) line = substr(line, 2, length(line) - 2)
         print line
         exit
@@ -31,4 +32,5 @@ resolve_sqlite_dir() {
   [[ -z "$configured" || ("$sqlite_path" != "$deploy_path" && "$sqlite_path" != "$deploy_path"/* && "$deploy_path" != "$sqlite_path"/*) ]] ||
     fail "SQLITE_HOST_DIR must not be inside or contain the deployment target"
   sqlite_dir="$sqlite_path"
+  export SQLITE_HOST_DIR="$sqlite_path"
 }

@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { chmod, cp, lstat, mkdir, readFile, readdir, readlink, rename, rm, symlink, writeFile } from "node:fs/promises";
-import { realpathSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
 import { spawn } from "node:child_process";
 import { hostname as osHostname } from "node:os";
 import { basename, dirname, isAbsolute, join, parse, relative, resolve, sep } from "node:path";
@@ -771,6 +771,14 @@ export function createComposeRunner({
   healthCommandTimeoutMs = 30_000,
 }) {
   const rootDir = resolve(targetDir);
+  let configuredSqliteHostDir;
+  try {
+    const contents = readFileSync(join(rootDir, "config", ".env"), "utf8");
+    configuredSqliteHostDir = parseDeploymentConfigValue(contents, "SQLITE_HOST_DIR");
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+  configuredSqliteHostDir = resolve(rootDir, configuredSqliteHostDir || join("data", "sqlite"));
   const composeArguments = [
     "compose",
     "--project-directory",
@@ -787,7 +795,11 @@ export function createComposeRunner({
       () =>
         commandRunner("docker", [...composeArguments, ...args], {
           cwd: rootDir,
-          env: { ...env, ...commandEnv },
+          env: {
+            ...env,
+            ...commandEnv,
+            SQLITE_HOST_DIR: configuredSqliteHostDir,
+          },
           timeoutMs,
         }),
       timeoutMs,
@@ -946,15 +958,20 @@ async function releaseDirectories(paths) {
 
 const MANAGED_RELEASE_PATTERN = /^\d{8}T\d{6}Z-[a-f0-9]{10}(?:-\d+)?$/;
 
+function parseDeploymentConfigValue(contents, key) {
+  for (const rawLine of contents.split(/\r?\n/)) {
+    const line = rawLine.replace(/^\s+/, "");
+    const prefix = line.match(new RegExp(`^${key}\\s*=`));
+    if (!prefix) continue;
+    return line.slice(prefix[0].length).replace(/^\s+/, "").replace(/[ \t]+$/, "").replace(/^['"]|['"]$/g, "");
+  }
+  return undefined;
+}
+
 async function deploymentConfigValue(targetDir, key) {
   try {
     const contents = await readFile(join(targetDir, "config", ".env"), "utf8");
-    for (const rawLine of contents.split(/\r?\n/)) {
-      const line = rawLine.trim();
-      if (!line || line.startsWith("#") || !line.startsWith(`${key}=`)) continue;
-      return line.slice(key.length + 1).replace(/^['"]|['"]$/g, "");
-    }
-    return undefined;
+    return parseDeploymentConfigValue(contents, key);
   } catch (error) {
     if (error.code === "ENOENT") return undefined;
     throw error;

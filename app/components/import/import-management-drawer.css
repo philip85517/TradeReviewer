@@ -1,0 +1,86 @@
+.import-management-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(3, 8, 15, 0.58);
+  backdrop-filter: blur(2px);
+}
+
+.import-management-dialog {
+  width: min(380px, calc(100vw - 24px));
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-left: 1px solid #2d3d52;
+  background: #0f1722;
+  box-shadow: -18px 0 52px rgba(0, 0, 0, 0.42);
+}
+
+.import-management-header {
+  flex: 0 0 auto;
+  padding: 16px 18px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(15, 23, 34, 0.97);
+}
+
+.import-management-header h2 {
+  margin: 0;
+  color: #d9e5f4;
+  font-size: 16px;
+}
+
+.import-management-content {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+}
+
+.import-management-content > .episode-sidebar {
+  min-height: 100%;
+  border-right: 0;
+}
+
+.recall-review-host {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  grid-column: 1 / -1;
+  display: flex;
+}
+
+.recall-review-host > .recall-workspace {
+  width: 100%;
+  flex: 1;
+  height: auto;
+}
+
+.header-data-management {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--line, #243145);
+  border-radius: 6px;
+  background: #111b29;
+  color: var(--muted, #8291a6);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.header-data-management:hover,
+.header-data-management:focus-visible {
+  border-color: #3b5374;
+  color: var(--text, #e7edf6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .import-management-backdrop,
+  .import-management-dialog {
+    animation: none;
+  }
+}

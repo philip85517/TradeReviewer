@@ -9,6 +9,8 @@ export type DrawingTool =
   | "vertical-line"
   | "rectangle"
   | "arrow"
+  | "parallel-channel"
+  | "fibonacci"
   | "price-label"
   | "text"
   | "measure"
@@ -24,6 +26,18 @@ export type CanonicalDrawingTool = Exclude<
   DrawingTool,
   "cursor"
 >;
+
+export const DEFAULT_FIBONACCI_LEVELS = [
+  0,
+  0.236,
+  0.382,
+  0.5,
+  0.618,
+  0.786,
+  1,
+] as const;
+
+export const FIBONACCI_LEVELS = DEFAULT_FIBONACCI_LEVELS;
 
 export type LegacyDrawing = {
   version?: 1 | 2;
@@ -48,6 +62,14 @@ export type LegacyDrawing = {
    * every newly committed drawing receives the current cursor.
    */
   createdAtCursor?: string;
+  placement?: "canvas" | "anchor";
+  canvasX?: number;
+  canvasY?: number;
+  textWidth?: number;
+  fontSize?: 12 | 14 | 16 | 18 | 24 | 32;
+  background?: string;
+  recallOwnerId?: string;
+  textRevision?: number;
 };
 
 export type NormalizedDrawing = Omit<
@@ -60,6 +82,18 @@ export type NormalizedDrawing = Omit<
   tool: CanonicalDrawingTool;
   zIndex: number;
   createdAtCursor: string;
+  /** Text placement is additive; legacy text is anchored by default. */
+  placement?: "canvas" | "anchor";
+  /** Normalized canvas coordinates for free text (0..1 where possible). */
+  canvasX?: number;
+  canvasY?: number;
+  /** Text dimensions/styles are CSS values and survive viewport changes. */
+  textWidth?: number;
+  fontSize?: 12 | 14 | 16 | 18 | 24 | 32;
+  background?: string;
+  /** Recall metadata is optional so chart callers remain independent. */
+  recallOwnerId?: string;
+  textRevision?: number;
 };
 
 export type RiskRewardInput = {
@@ -91,6 +125,8 @@ const anchorCounts: Record<DrawingTool | "risk-reward", number> = {
   "vertical-line": 1,
   rectangle: 2,
   arrow: 2,
+  "parallel-channel": 3,
+  fibonacci: 2,
   "price-label": 1,
   text: 1,
   measure: 2,
@@ -115,7 +151,12 @@ function canonicalTool(
 export function validateDrawing(
   drawing: LegacyDrawing | NormalizedDrawing,
 ) {
-  if (drawing.anchors.length !== requiredAnchorCount(drawing.tool)) {
+  const canvasText =
+    drawing.tool === "text" && drawing.placement === "canvas";
+  if (
+    (!canvasText && drawing.anchors.length !== requiredAnchorCount(drawing.tool)) ||
+    (canvasText && drawing.anchors.length > 1)
+  ) {
     throw new Error(`绘图锚点数量必须为 ${requiredAnchorCount(drawing.tool)}`);
   }
   if (
@@ -168,6 +209,10 @@ export function normalizeDrawing(
       drawing.visibleOn === "all" ? "all" : [...drawing.visibleOn],
     zIndex: drawing.version === 2 ? (drawing.zIndex ?? zIndex) : zIndex,
     createdAtCursor: drawing.createdAtCursor ?? replayCursor,
+    placement:
+      drawing.tool === "text"
+        ? (drawing.placement ?? "anchor")
+        : drawing.placement,
   };
   validateDrawing(normalized);
   return normalized;

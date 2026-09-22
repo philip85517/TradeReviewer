@@ -1,12 +1,15 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TradeLibraryEntry } from "../../lib/trades/library";
 import { buildRoomDateRange, createDefaultRoomScope, type TradingRoomInstrumentMetadata } from "../../lib/reviews/trading-room-scope";
 import { RoomHoldingsPanel } from "./room-holdings";
 
-afterEach(cleanup);
+afterEach(() => {
+  vi.useRealTimers();
+  cleanup();
+});
 
 function entry(accountId = "account-1"): TradeLibraryEntry {
   const instrument = { id: "US:TEST", symbol: "TEST", name: "测试标的", market: "US", currency: "USD" };
@@ -34,6 +37,11 @@ function entry(accountId = "account-1"): TradeLibraryEntry {
 }
 
 describe("RoomHoldingsPanel", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-09-19T12:00:00.000Z"));
+  });
+
   it("shows holding status and opens the exact episode", async () => {
     const user = userEvent.setup();
     const onOpenInReview = vi.fn();

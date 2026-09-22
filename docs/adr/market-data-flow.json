@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "行情数据 · 缓存、补齐与使用",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1080,
+      560
+    ]
+  },
+  "participants": [
+    {
+      "id": "workspace",
+      "type": "frontend",
+      "label": "图表工作区",
+      "sublabel": "导入 / 切换 / 刷新"
+    },
+    {
+      "id": "sync",
+      "type": "frontend",
+      "label": "行情同步器",
+      "sublabel": "区间与缺口调度"
+    },
+    {
+      "id": "store",
+      "type": "database",
+      "label": "存储 API / SQLite",
+      "sublabel": "行情与 coverage"
+    },
+    {
+      "id": "market-api",
+      "type": "backend",
+      "label": "行情 API",
+      "sublabel": "daily / intraday"
+    },
+    {
+      "id": "source-router",
+      "type": "backend",
+      "label": "来源路由器",
+      "sublabel": "市场 / 原生周期"
+    },
+    {
+      "id": "external",
+      "type": "external",
+      "label": "行情提供方",
+      "sublabel": "HTTP / TCP / Python"
+    }
+  ],
+  "messages": [
+    {
+      "id": "trigger",
+      "from": "workspace",
+      "to": "sync",
+      "y": 160,
+      "label": "请求所需历史区间",
+      "variant": "default"
+    },
+    {
+      "id": "read-cache",
+      "from": "sync",
+      "to": "store",
+      "y": 188,
+      "label": "读取行情与覆盖状态",
+      "variant": "default"
+    },
+    {
+      "id": "cached-bars",
+      "from": "store",
+      "to": "sync",
+      "y": 216,
+      "label": "缓存 / 覆盖 / 缺口",
+      "variant": "return"
+    },
+    {
+      "id": "cache-hit",
+      "from": "sync",
+      "to": "workspace",
+      "y": 244,
+      "label": "完整命中：直接使用",
+      "variant": "return"
+    },
+    {
+      "id": "request-gaps",
+      "from": "sync",
+      "to": "market-api",
+      "y": 272,
+      "label": "缺口或强刷：GET /api/market-data/*",
+      "variant": "emphasis"
+    },
+    {
+      "id": "route-source",
+      "from": "market-api",
+      "to": "source-router",
+      "y": 300,
+      "label": "校验参数后选择来源",
+      "variant": "default"
+    },
+    {
+      "id": "fetch-provider",
+      "from": "source-router",
+      "to": "external",
+      "y": 328,
+      "label": "按序调用支持的来源",
+      "variant": "default"
+    },
+    {
+      "id": "provider-result",
+      "from": "external",
+      "to": "source-router",
+      "y": 356,
+      "label": "K 线 / 来源 / 警告",
+      "variant": "return"
+    },
+    {
+      "id": "routed-result",
+      "from": "source-router",
+      "to": "market-api",
+      "y": 384,
+      "label": "日线补缺或盘中择优",
+      "variant": "return"
+    },
+    {
+      "id": "response-bars",
+      "from": "market-api",
+      "to": "sync",
+      "y": 412,
+      "label": "标准化行情与来源信息",
+      "variant": "return"
+    },
+    {
+      "id": "commit-cache",
+      "from": "sync",
+      "to": "store",
+      "y": 440,
+      "label": "事务提交并重读缓存",
+      "variant": "default"
+    },
+    {
+      "id": "render-chart",
+      "from": "sync",
+      "to": "workspace",
+      "y": 468,
+      "label": "聚合周期 / 限制可用范围",
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "何时请求外部来源",
+      "items": [
+        "完整缓存命中跳过中间补齐步骤",
+        "强制刷新同时绕过浏览器 HTTP 缓存"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "如何使用行情",
+      "items": [
+        "15m、原生 1h 与日线按覆盖选择",
+        "聚合 1H / 4H / 1W，供回放与成交标记"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "失败与部分数据",
+      "items": [
+        "失败保留旧 K 线，记录缺口原因",
+        "同步由浏览器协调，并非独立后台任务"
+      ]
+    }
+  ]
+}

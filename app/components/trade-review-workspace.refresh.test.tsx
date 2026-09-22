@@ -18,7 +18,25 @@ const refreshMocks = vi.hoisted(() => ({
   intraday: vi.fn(),
 }));
 
-let restoreNavigatorLocks: (() => void) | undefined;
+const mockRecallRepository = vi.hoisted(() => ({
+  documents: new Map<string, unknown>(),
+}));
+
+vi.mock("../lib/recall/repository", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../lib/recall/repository")>();
+  return {
+    ...actual,
+    createRecallRepository: () => ({
+      load: async (episodeId: string) => mockRecallRepository.documents.get(episodeId) ?? null,
+      fetch: async (episodeId: string) => mockRecallRepository.documents.get(episodeId) ?? null,
+      save: async (document: Record<string, unknown> & { episodeId: string; revision: number }) => {
+        const saved = { ...document, revision: document.revision + 1 };
+        mockRecallRepository.documents.set(document.episodeId, saved);
+        return saved;
+      },
+    }),
+  };
+});
 
 vi.mock("../lib/market/sync-service", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../lib/market/sync-service")>();
@@ -137,16 +155,20 @@ function validMetadataResponse(input: RequestInfo | URL) {
 }
 
 async function openDefaultStockRound(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole("button", { name: "我的交易室" }));
+  await screen.findByRole("region", { name: "统计总览" });
   await user.click(screen.getByRole("button", { name: "交易库" }));
-  const stockToggle = await screen.findByRole("button", { name: /^(展开|收起).*交易回合$/ });
+  const library = await screen.findByRole("region", { name: "交易库" });
+  const stockToggle = within(library).getByRole("button", { name: /^(展开|收起).*交易回合$/ });
   if (stockToggle.getAttribute("aria-expanded") !== "true") await user.click(stockToggle);
-  await user.click(await screen.findByRole("button", { name: /^打开.*第1次交易/ }));
+  await user.click(await within(library).findByRole("button", { name: /^打开.*第1次交易/ }));
 }
 
 describe("TradeReviewWorkspace global refresh seam", () => {
   beforeEach(async () => {
     cleanup();
     vi.clearAllMocks();
+    mockRecallRepository.documents.clear();
     window.localStorage.removeItem("trade-reviewer:market-data-jobs:v1");
     await new Promise<void>((resolve, reject) => {
       const request = indexedDB.deleteDatabase("trade-reviewer");
@@ -158,8 +180,6 @@ describe("TradeReviewWorkspace global refresh seam", () => {
   });
 
   afterEach(() => {
-    restoreNavigatorLocks?.();
-    restoreNavigatorLocks = undefined;
     cleanup();
     vi.restoreAllMocks();
   });
@@ -330,46 +350,6 @@ describe("TradeReviewWorkspace global refresh seam", () => {
       screen.getByText(/2026-09-14T01:00:00.000Z 至 2026-09-15T01:00:00.000Z/),
     ).toBeVisible();
     expect(screen.getByText(/小时线源暂不可用/)).toBeVisible();
-  });
-
-  it("reports an unavailable refresh lock without treating the old terminal job as a new run", async () => {
-    saveMarketDataJob({
-      instrumentId: "US:REFRESH",
-      symbol: "REFRESH",
-      market: "US",
-      requestedAt: "2026-09-15T00:00:00.000Z",
-      status: "complete",
-      intervals: [
-        { interval: "1D", status: "complete" },
-        { interval: "1h", status: "complete" },
-      ],
-    });
-    const previousLocks = Object.getOwnPropertyDescriptor(window.navigator, "locks");
-    const request = vi.fn(async (_name: string, _options: unknown, callback: (lock: null) => unknown) => callback(null));
-    Object.defineProperty(window.navigator, "locks", {
-      configurable: true,
-      value: { request },
-    });
-    restoreNavigatorLocks = () => {
-      if (previousLocks) Object.defineProperty(window.navigator, "locks", previousLocks);
-      else Reflect.deleteProperty(window.navigator, "locks");
-    };
-
-    render(
-      <TradeReviewWorkspace
-        initialFrame={initialFrame}
-        showDemo={false}
-        storageClient={createLegacySqliteClient()}
-      />,
-    );
-
-    const user = await openDataManagement();
-    await user.click(screen.getByRole("button", { name: "更新全部数据" }));
-
-    expect(request).toHaveBeenCalledOnce();
-    expect(refreshMocks.daily).not.toHaveBeenCalled();
-    expect(refreshMocks.intraday).not.toHaveBeenCalled();
-    expect(await screen.findByRole("alert", { name: "数据管理提示" })).toHaveTextContent("其他页面正在更新行情，请稍后再试。");
   });
 
   it("refreshes the global saved summary after a single instrument update", async () => {

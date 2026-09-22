@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "TradeReview · 当前系统架构",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1200,
+      650
+    ]
+  },
+  "components": [
+    {
+      "id": "local-import",
+      "type": "frontend",
+      "label": "文件解析与人工核对",
+      "sublabel": "XLSX / PDF / CSV / OCR",
+      "pos": [
+        55,
+        75
+      ],
+      "size": [
+        220,
+        80
+      ]
+    },
+    {
+      "id": "review-ui",
+      "type": "frontend",
+      "label": "交易库与 Recall 工作区",
+      "sublabel": "React · 图表 · 决策快照",
+      "pos": [
+        55,
+        290
+      ],
+      "size": [
+        220,
+        80
+      ]
+    },
+    {
+      "id": "local-export",
+      "type": "frontend",
+      "label": "复盘导出",
+      "sublabel": "Markdown / PNG / ZIP",
+      "pos": [
+        55,
+        505
+      ],
+      "size": [
+        220,
+        80
+      ]
+    },
+    {
+      "id": "node-api",
+      "type": "backend",
+      "label": "同源 API 与业务服务",
+      "sublabel": "vinext / Node.js",
+      "pos": [
+        485,
+        290
+      ],
+      "size": [
+        230,
+        80
+      ]
+    },
+    {
+      "id": "market-adapters",
+      "type": "backend",
+      "label": "行情与证券资料适配",
+      "sublabel": "缺口补齐 · 超时与来源降级",
+      "pos": [
+        485,
+        75
+      ],
+      "size": [
+        230,
+        80
+      ]
+    },
+    {
+      "id": "providers",
+      "type": "external",
+      "label": "外部行情来源",
+      "sublabel": "公开接口 / 可选 Tiger SDK",
+      "pos": [
+        925,
+        75
+      ],
+      "size": [
+        220,
+        80
+      ]
+    },
+    {
+      "id": "sqlite-store",
+      "type": "database",
+      "label": "本机 SQLite",
+      "sublabel": "成交 · 复盘 · 行情 · 设置",
+      "pos": [
+        925,
+        290
+      ],
+      "size": [
+        220,
+        80
+      ]
+    },
+    {
+      "id": "legacy-migration",
+      "type": "frontend",
+      "label": "旧浏览器数据迁移",
+      "sublabel": "IndexedDB / localStorage",
+      "pos": [
+        485,
+        505
+      ],
+      "size": [
+        230,
+        80
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "import-confirm",
+      "from": "local-import",
+      "to": "review-ui",
+      "label": "确认结构化记录",
+      "labelAt": [
+        165,
+        222
+      ]
+    },
+    {
+      "id": "ui-api",
+      "from": "review-ui",
+      "to": "node-api",
+      "label": "HTTP / JSON",
+      "variant": "emphasis"
+    },
+    {
+      "id": "api-store",
+      "from": "node-api",
+      "to": "sqlite-store",
+      "label": "事务读写",
+      "variant": "emphasis"
+    },
+    {
+      "id": "api-market",
+      "from": "node-api",
+      "to": "market-adapters",
+      "label": "行情与资料请求"
+    },
+    {
+      "id": "market-source",
+      "from": "market-adapters",
+      "to": "providers",
+      "label": "服务端请求"
+    },
+    {
+      "id": "ui-export",
+      "from": "review-ui",
+      "to": "local-export",
+      "label": "选择留存版本",
+      "labelAt": [
+        165,
+        437
+      ]
+    },
+    {
+      "id": "migration-api",
+      "from": "legacy-migration",
+      "to": "node-api",
+      "label": "一次性迁移"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "浏览器边界",
+      "items": [
+        "原始文件、截图与完整 OCR 文本留在浏览器",
+        "确认后的结构化业务数据写入本机服务"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "事实与缓存",
+      "items": [
+        "SQLite 为当前业务数据源；完整行情缓存优先",
+        "真实成交、模拟交易和演示数据保持隔离"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "运行边界",
+      "items": [
+        "单机单用户；Docker Compose 挂载数据库",
+        "图中为逻辑模块，不表示独立微服务"
+      ]
+    }
+  ]
+}

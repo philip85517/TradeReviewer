@@ -331,7 +331,7 @@ describe("ReviewDashboard", () => {
     const scope = screen.getByRole("region", { name: "交易室范围" });
     const card = within(scope).getByText("已平仓回合净盈亏").closest("div");
     expect(card?.querySelector("small")).toHaveTextContent("2026-10-01");
-    const disclosure = within(card as HTMLElement).getByText("查看原币与汇率详情");
+    const disclosure = within(scope).getByText("查看原币与汇率详情");
     expect(disclosure.closest("details")).not.toHaveAttribute("open");
     disclosure.focus();
     expect(document.activeElement).toBe(disclosure);
@@ -484,7 +484,7 @@ describe("ReviewDashboard", () => {
     expect(room).toHaveTextContent("1 项已启用");
     await user.type(within(room).getByRole("searchbox", { name: "交易室标的筛选" }), "不存在");
     expect(room).toHaveTextContent("当前交易室范围没有回合");
-    await user.click(within(room).getByRole("button", { name: "清除交易室筛选" }));
+    await user.click(within(room).getByRole("button", { name: "清除附加筛选" }));
     expect(within(room).getByRole("button", { name: "实盘" })).toHaveAttribute("aria-pressed", "true");
     expect(within(room).getByRole("combobox", { name: "交易室市场分类筛选" })).toHaveValue("all");
     expect(within(room).getByRole("tab", { name: "今年至今" })).toHaveAttribute("aria-selected", "true");
@@ -501,6 +501,79 @@ describe("ReviewDashboard", () => {
     expect(room).toHaveTextContent("自定义期间起止日期无效");
     expect(room).toHaveTextContent("2026-10-01 至 2026-10-15");
     expect(room).toHaveTextContent("4 个回合进入范围");
+  });
+
+  it("stages a custom period and restores the applied range on cancel", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
+    const room = screen.getByRole("region", { name: "交易室范围" });
+    await user.click(within(room).getByRole("button", { name: "更多期间" }));
+    fireEvent.change(within(room).getByLabelText("交易室自定义起始日期"), { target: { value: "2026-10-05" } });
+    fireEvent.change(within(room).getByLabelText("交易室自定义结束日期"), { target: { value: "2026-10-10" } });
+    expect(room).toHaveTextContent("2026-10-01 至 2026-10-15");
+    await user.click(within(room).getByRole("button", { name: "取消" }));
+    expect(room).toHaveTextContent("2026-10-01 至 2026-10-15");
+    expect(within(room).queryByLabelText("交易室自定义起始日期")).not.toBeInTheDocument();
+  });
+
+  it("rejects a future custom end date without changing the applied range", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
+    const room = screen.getByRole("region", { name: "交易室范围" });
+    await user.click(within(room).getByRole("button", { name: "更多期间" }));
+    fireEvent.change(within(room).getByLabelText("交易室自定义结束日期"), { target: { value: "2026-10-16" } });
+    await user.click(within(room).getByRole("button", { name: "应用期间" }));
+    expect(room).toHaveTextContent("自定义期间起止日期无效");
+    expect(room).toHaveTextContent("2026-10-01 至 2026-10-15");
+  });
+
+  it("keeps the applied range when no scoped closed month can be found", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
+    const room = screen.getByRole("region", { name: "交易室范围" });
+    await user.click(within(room).getByText("更多筛选"));
+    await user.type(within(room).getByRole("searchbox", { name: "交易室标的筛选" }), "不存在");
+    await user.click(within(room).getByRole("button", { name: "更多期间" }));
+    await user.click(within(room).getByRole("button", { name: "最近有平仓回合的月份" }));
+    expect(room).toHaveTextContent("当前筛选没有可用的已平仓回合");
+    expect(room).toHaveTextContent("2026-10-01 至 2026-10-15");
+  });
+
+  it("shows active scope filters as individually removable chips", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
+    const room = screen.getByRole("region", { name: "交易室范围" });
+    await user.click(within(room).getByText("更多筛选"));
+    await user.selectOptions(within(room).getByRole("combobox", { name: "交易室账户筛选" }), "account-1");
+    expect(within(room).getByRole("list", { name: "已启用交易室筛选" })).toHaveTextContent("账户：主账户");
+    await user.click(within(room).getByRole("button", { name: "移除账户筛选" }));
+    expect(within(room).queryByRole("list", { name: "已启用交易室筛选" })).not.toBeInTheDocument();
+  });
+
+  it("shows and removes the active asset type filter", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
+    const room = screen.getByRole("region", { name: "交易室范围" });
+    await user.click(within(room).getByText("更多筛选"));
+    await user.selectOptions(within(room).getByRole("combobox", { name: "交易室资产类型筛选" }), "etf");
+    const chips = within(room).getByRole("list", { name: "已启用交易室筛选" });
+    expect(chips).toHaveTextContent("资产类型：ETF");
+    await user.click(within(chips).getByRole("button", { name: "移除资产类型筛选" }));
+    expect(within(room).queryByRole("list", { name: "已启用交易室筛选" })).not.toBeInTheDocument();
+  });
+
+  it("keeps quality dimensions scoped and visible beside the summary", () => {
+    render(
+      <ReviewDashboard
+        entries={dashboardEntries()}
+        qualityInput={{}}
+        onOpenInReview={() => undefined}
+      />,
+    );
+    const quality = screen.getByRole("region", { name: "数据质量摘要" });
+    expect(quality).toHaveTextContent("交易盈亏可信度");
+    expect(quality).toHaveTextContent("交易盈亏可信度 0/0");
+    expect(quality).toHaveTextContent("持仓估值行情");
   });
 
   it("opens a calendar episode using the unified room rows and compatible callback", async () => {
@@ -583,12 +656,30 @@ describe("ReviewDashboard", () => {
       />,
     );
 
-    expect(screen.queryByRole("region", { name: "数据质量摘要" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("region", { name: "收益质量" })).not.toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "数据质量摘要" })).toBeInTheDocument();
+    expect(screen.getByTestId("room-quality-metrics")).toBeInTheDocument();
     expect(screen.queryByRole("region", { name: "本金与参考收益率" })).not.toBeInTheDocument();
-    const status = screen.getByRole("status", { name: "数据状态" });
+    const status = screen.getByRole("region", { name: "数据质量摘要" });
     expect(status).toHaveTextContent("数据");
-    await user.click(within(status).getByRole("button", { name: "打开数据管理" }));
+    await user.click(within(status).getByRole("button", { name: "前往数据管理检查数据" }));
     expect(onOpenDataManagement).toHaveBeenCalledOnce();
   });
+  it("integrates collapsed return and quality details without expanding the homepage", () => {
+    render(
+      <ReviewDashboard
+        entries={dashboardEntries()}
+        qualityInput={{}}
+        principalEnabled
+        onOpenDataManagement={() => undefined}
+        onOpenInReview={() => undefined}
+      />,
+    );
+    const returnDetails = screen.getByTestId("room-return-details");
+    const qualityDetails = screen.getByTestId("room-quality-metrics");
+    expect(returnDetails).not.toHaveAttribute("open");
+    expect(qualityDetails).not.toHaveAttribute("open");
+    expect(returnDetails).toHaveTextContent("查看收益率口径与样本");
+    expect(qualityDetails).toHaveTextContent("收益质量详情");
+  });
+
 });

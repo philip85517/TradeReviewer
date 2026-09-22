@@ -13,7 +13,7 @@
   width: 100%;
   max-width: 1420px;
   margin: 0 auto;
-  padding: 30px clamp(18px, 3vw, 48px) 60px;
+  padding: 10px clamp(18px, 3vw, 48px) 36px;
   color: var(--dashboard-ink);
   background: var(--dashboard-page);
   box-sizing: border-box;
@@ -34,8 +34,8 @@
 
 .header {
   justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 26px;
+  gap: 12px;
+  margin-bottom: 6px;
 }
 
 .eyebrow {
@@ -55,8 +55,10 @@
 }
 
 .header h1 {
-  font-size: clamp(27px, 3vw, 38px);
+  font-size: clamp(22px, 2.2vw, 28px);
 }
+
+.compactSectionTitle { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 .header p,
 .sectionHeading p {
@@ -95,8 +97,8 @@
 }
 
 .roomScopeSection {
-  margin-bottom: 17px;
-  padding: 20px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
 }
 
 .roomScopeHeading {
@@ -104,31 +106,32 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 15px;
-  margin-bottom: 17px;
+  margin-bottom: 7px;
 }
 
 .roomScopeHeading h2 {
   margin: 4px 0 0;
-  font-size: 22px;
+  font-size: 18px;
   letter-spacing: -.025em;
 }
 
 .roomScopeHeading p {
-  margin: 8px 0 0;
+  margin: 4px 0 0;
   color: var(--dashboard-muted);
   font-size: 12px;
 }
 
 .roomScopeBadge {
   color: var(--dashboard-muted);
-  font-size: 11px;
+  font-size: 12px;
   text-align: right;
 }
 
 .roomScopeBadgeGroup {
-  display: grid;
-  justify-items: end;
-  gap: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .scopeViewControl {
@@ -147,7 +150,7 @@
   border: 1px solid currentColor;
   border-radius: 999px;
   padding: 4px 8px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -202,7 +205,7 @@
 .periodTabs {
   display: flex;
   min-width: 0;
-  overflow: auto;
+  flex-wrap: wrap;
   gap: 3px;
   border: 1px solid var(--dashboard-line);
   border-radius: 10px;
@@ -213,7 +216,7 @@
 .segmentedButton,
 .periodTab,
 .customPeriodButton {
-  min-height: 34px;
+  min-height: 44px;
   border: 0;
   border-radius: 7px;
   padding: 0 10px;
@@ -221,7 +224,7 @@
   color: var(--dashboard-muted);
   cursor: pointer;
   font: inherit;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -249,6 +252,53 @@
 .roomPeriodControl > span {
   grid-column: 1 / -1;
 }
+
+.roomPeriodControl > span { align-self: center; }
+
+.roomAncillaryRow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+  gap: 6px 10px;
+}
+
+.roomAncillaryRow > .roomAdvancedDetails,
+.roomAncillaryRow > .filterChips,
+.roomAncillaryRow > .roomScopeStatus,
+.roomAncillaryRow > .roomScopeWarning,
+.roomAncillaryRow > .emptyCalendar { grid-column: 1 / -1; }
+
+.roomAncillaryRow > .roomAdvancedDetails,
+.roomAncillaryRow > .filterChips,
+.roomAncillaryRow > .roomScopeNotes,
+.roomAncillaryRow > .roomMoneyDetails,
+.roomAncillaryRow > [data-testid="room-return-details"] { order: 2; }
+
+.roomAncillaryRow > .roomAdvancedDetails { grid-column: span 1; }
+.roomAncillaryRow > .roomAdvancedDetails[open] { grid-column: 1 / -1; }
+.roomAncillaryRow > details[open] { grid-column: 1 / -1; }
+
+.roomAncillaryRow > .roomSummaryGrid { grid-column: 1 / -1; order: 1; }
+.roomAncillaryRow > .qualitySummary { grid-column: 1 / -1; order: 3; }
+.roomAncillaryRow > .roomScopeStatus,
+.roomAncillaryRow > .roomScopeWarning,
+.roomAncillaryRow > .emptyCalendar { order: 3; }
+
+.roomAncillaryRow > .roomScopeNotes,
+.roomAncillaryRow > .roomMoneyDetails,
+.roomAncillaryRow > :global([data-testid="room-return-details"]),
+.roomAncillaryRow > .qualitySummary { min-width: 0; margin-top: 0 !important; }
+.roomAncillaryRow > .roomAdvancedDetails,
+.roomAncillaryRow > .roomScopeNotes,
+.roomAncillaryRow > .roomMoneyDetails,
+.roomAncillaryRow > [data-testid="room-return-details"] { margin-top: 0 !important; }
+.roomAncillaryRow > [data-testid="room-return-details"] { border-top: 0; padding-top: 0; }
+.roomAncillaryRow > details { padding-top: 0; }
+.roomAncillaryRow > .roomAdvancedDetails > summary,
+.roomAncillaryRow > .roomScopeNotes > summary,
+.roomAncillaryRow > .roomMoneyDetails > summary { display: flex; align-items: center; min-height: 44px; font-size: 14px; }
+.roomAncillaryRow > .roomScopeNotes[open],
+.roomAncillaryRow > .roomMoneyDetails[open] { grid-column: 1 / -1; }
 
 .customPeriodButton {
   border: 1px solid var(--dashboard-line);
@@ -312,11 +362,11 @@
 }
 
 .roomAdvancedDetails {
-  margin-top: 13px;
+  margin-top: 4px;
   border-top: 1px solid var(--dashboard-line-soft);
   padding-top: 12px;
   color: var(--dashboard-muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .roomAdvancedDetails summary {
@@ -331,15 +381,131 @@
 }
 
 .roomClearButton {
-  height: 35px;
+  min-height: 44px;
   border: 1px solid var(--dashboard-line);
   border-radius: 9px;
   background: var(--dashboard-card-elevated);
   color: var(--blue, #32758b);
   cursor: pointer;
   font: inherit;
-  font-size: 11px;
+  font-size: 14px;
 }
+
+.customPeriodActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  grid-column: 1 / -1;
+}
+
+.customPeriodActions button,
+.filterChips button,
+.qualitySummary button {
+  min-height: 44px;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: var(--dashboard-card-elevated);
+  color: var(--blue, #32758b);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+}
+
+.customPeriodActions button:first-child {
+  background: var(--blue-soft, #eef8fa);
+  border-color: var(--blue, #32758b);
+}
+
+.filterChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.filterChips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 36px;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 999px;
+  padding-left: 11px;
+  background: var(--dashboard-soft);
+  color: var(--dashboard-ink);
+  font-size: 12px;
+}
+
+.filterChips button {
+  width: 44px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.qualitySummary {
+  margin-top: 8px;
+  border-top: 1px solid var(--dashboard-line);
+  padding-top: 8px;
+  background: var(--dashboard-soft);
+}
+
+.qualitySummaryHeading {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.qualitySummaryHeading strong { font-size: 14px; }
+.qualitySummaryHeading span { min-width: 0; flex: 1; color: var(--dashboard-muted); font-size: 12px; line-height: 1.35; }
+.qualitySummaryHeading button { min-height: 44px; font-size: 14px; }
+
+:global([data-testid="room-return-details"] > summary),
+:global([data-testid="room-quality-metrics"] > summary) {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.roomMoneyDetails,
+.roomSummarySectionDetails {
+  margin-top: 8px;
+  color: var(--dashboard-muted);
+  font-size: 12px;
+}
+
+.roomMoneyDetails summary,
+.roomSummarySectionDetails summary { cursor: pointer; }
+.roomMoneyDetails p { margin: 6px 0 0; }
+
+.customPeriodPanel {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 10px;
+  padding: 10px;
+  background: var(--dashboard-soft);
+}
+
+.roomScopeNotes {
+  margin-top: 8px;
+  color: var(--dashboard-muted);
+  font-size: 12px;
+}
+
+.roomScopeNotes summary { cursor: pointer; }
+.roomScopeNotes p { margin: 6px 0 0; }
 
 .roomScopeHint {
   margin: 11px 0 0;
@@ -381,8 +547,8 @@
 .roomSummaryGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 14px;
+  gap: 6px;
+  margin-top: 4px;
 }
 
 .roomScopeWarning {
@@ -438,14 +604,14 @@
 .filterField input,
 .searchField input {
   min-width: 0;
-  height: 35px;
+  height: 44px;
   border: 1px solid var(--dashboard-line);
   border-radius: 9px;
   padding: 0 10px;
   color: var(--dashboard-ink);
   background: var(--dashboard-card-elevated);
   font: inherit;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .roomScopeControls > .filterField select {
@@ -456,7 +622,7 @@
 .searchField > div {
   display: flex;
   align-items: center;
-  height: 35px;
+  height: 44px;
   border: 1px solid var(--dashboard-line);
   border-radius: 9px;
   padding: 0 9px;
@@ -466,7 +632,7 @@
 
 .searchField input {
   width: 100%;
-  height: 31px;
+  height: 40px;
   border: 0;
   outline: 0;
   padding-left: 7px;
@@ -497,7 +663,7 @@
 .scopeNotice span,
 .scopeNotice label {
   color: var(--gold, #c49c3d);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .scopeNotice label {
@@ -557,11 +723,11 @@
 
 .metricCard {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
   border: 1px solid var(--dashboard-line);
   border-radius: 13px;
-  padding: 14px;
+  padding: 8px 10px;
   background: var(--dashboard-soft);
 }
 
@@ -621,6 +787,9 @@
   margin-top: 4px;
   overflow-wrap: anywhere;
 }
+
+.metricCard > span { font-size: 12px; }
+.metricCard > small { font-size: 12px; }
 
 .positive { color: var(--dashboard-positive) !important; }
 .negative { color: var(--dashboard-negative) !important; }
@@ -911,7 +1080,7 @@
   .groupSection { border-radius: 13px; padding: 14px; }
   .filterGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .roomScopeHeading { display: grid; }
-  .roomScopeBadgeGroup { justify-items: start; }
+  .roomScopeBadgeGroup { justify-content: flex-start; flex-wrap: wrap; }
   .roomScopeBadge { text-align: left; }
   .roomDataStatus { align-items: flex-start; flex-direction: column; }
   .roomScopeControls,
@@ -919,6 +1088,14 @@
   .roomCustomPeriod,
   .roomCustomPeriodEditor,
   .roomSummaryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .roomAncillaryRow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .roomAncillaryRow > .roomAdvancedDetails[open],
+  .roomAncillaryRow > .filterChips,
+  .roomAncillaryRow > .roomScopeStatus,
+  .roomAncillaryRow > .roomScopeWarning,
+  .roomAncillaryRow > .emptyCalendar,
+  .roomAncillaryRow > .roomSummaryGrid,
+  .roomAncillaryRow > .qualitySummary { grid-column: 1 / -1; }
   .roomPeriodControl { grid-column: 1 / -1; grid-template-columns: 1fr; }
   .roomPeriodControl > span { grid-column: auto; }
   .periodTabs { width: 100%; }
@@ -949,4 +1126,5 @@
   .groupRow > strong { grid-column: 2; grid-row: 2 / span 2; min-width: 0; }
   .groupRow > span:nth-child(4) { grid-column: 1 / -1; }
   .groupRow > svg { grid-column: 2; grid-row: 1; }
+  .qualitySummaryHeading { align-items: flex-start; flex-direction: column; }
 }

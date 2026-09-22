@@ -1,0 +1,12 @@
+.panel { margin-top: 14px; border: 1px solid var(--dashboard-line, #d8dee8); border-radius: 14px; padding: 14px; background: var(--dashboard-card, #fff); }
+.panel summary { cursor: pointer; font-size: 14px; font-weight: 650; min-height: 44px; display: flex; align-items: center; }
+.content { display: grid; gap: 12px; padding-top: 8px; }
+.note, .empty, .currency p { margin: 0; color: var(--dashboard-muted, #667085); font-size: 12px; line-height: 1.5; }
+.currency { border-top: 1px solid var(--dashboard-line, #d8dee8); padding-top: 10px; }
+.currency h3 { margin: 0 0 8px; font-size: 14px; }
+.currency dl { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.currency dl div { padding: 9px; border-radius: 9px; background: var(--dashboard-card-elevated, #f6f8fb); min-width: 0; }
+.currency dt { color: var(--dashboard-muted, #667085); font-size: 12px; }
+.currency dd { margin: 4px 0 0; font-size: 14px; overflow-wrap: anywhere; }
+@media (max-width: 680px) { .currency dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) { .currency dl { grid-template-columns: 1fr; } }

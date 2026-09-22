@@ -255,7 +255,7 @@ describe("RoomPerformance", () => {
 
     await user.click(screen.getByRole("button", { name: "外部YTD" }));
     expect(panel).toHaveTextContent("+¥200.00");
-    expect(within(panel).getByRole("button", { name: "月" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(panel).getByRole("button", { name: "所选期间·按月汇总" })).toHaveAttribute("aria-pressed", "false");
     expect(within(panel).getByRole("button", { name: /2026年9月/ })).toBeInTheDocument();
     expect(within(panel).queryByRole("button", { name: /2025/ })).not.toBeInTheDocument();
 
@@ -268,11 +268,10 @@ describe("RoomPerformance", () => {
     expect(within(panel).getByRole("button", { name: /2026-09-02/ })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "外部近3月" }));
-    expect(within(panel).getByRole("button", { name: "月" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(panel).getByRole("button", { name: "所选期间·按月汇总" })).toHaveAttribute("aria-pressed", "false");
     expect(within(panel).getByRole("button", { name: /2026年7月/ })).toBeInTheDocument();
     expect(within(panel).getByRole("button", { name: /2026年9月/ })).toBeInTheDocument();
 
-    await user.click(within(panel).getByRole("button", { name: "月" }));
     expect(panel).toHaveTextContent("+¥200.00");
     expect(within(panel).queryByRole("button", { name: /2025/ })).not.toBeInTheDocument();
   });
@@ -442,6 +441,63 @@ describe("RoomPerformance", () => {
     );
     expect(container.querySelectorAll("svg path")).toHaveLength(1);
     expect(screen.getByRole("region", { name: "业绩趋势与日历" })).toHaveTextContent("按同一汇率快照换算为人民币合计");
+  });
+
+  it("keeps selected original currency readouts isolated", async () => {
+    const user = userEvent.setup();
+    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = entry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    render(<RoomPerformance entries={[usd, hkd]} scope={scope(buildRoomDateRange("custom", "2026-09-03", { startDate: "2026-09-02", endDate: "2026-09-03" }))} instrumentMetadata={metadata([usd, hkd])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-03T08:00:00.000Z" />);
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    await user.click(within(panel).getByRole("button", { name: /USD.*2026-09-02/ }));
+    const detail = within(panel).getByRole("status", { name: "趋势点详情" });
+    expect(detail).toHaveTextContent("期间收益 +US$100.00");
+    expect(detail).not.toHaveTextContent("+HK$20.00");
+  });
+
+  it("keeps no-trade buckets as a known plateau and exposes keyboard readouts", async () => {
+    const user = userEvent.setup();
+    const first = entry("2026-09-02", "100");
+    const last = entry("2026-09-04", "-50", { id: "last" });
+    render(<RoomPerformance entries={[first, last]} scope={scope(buildRoomDateRange("custom", "2026-09-04", { startDate: "2026-09-02", endDate: "2026-09-04" }))} instrumentMetadata={metadata([first, last])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-04T08:00:00.000Z" />);
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    const point = within(panel).getByRole("button", { name: /2026-09-02.*期间收益.*累计收益/ });
+    point.focus();
+    await user.keyboard("{Enter}");
+    expect(panel).toHaveTextContent("2026-09-02");
+  });
+
+  it("breaks the trend across an unavailable bucket", () => {
+    const first = entry("2026-09-02", "100");
+    const unknown = entry("2026-09-03", "20", { id: "unknown", instrument: { id: "UNKNOWN:TEST", symbol: "TEST", name: "未知测试", market: "XX", currency: "CNY" } });
+    const last = entry("2026-09-04", "-50", { id: "last" });
+    const { container } = render(<RoomPerformance entries={[first, unknown, last]} scope={scope(buildRoomDateRange("custom", "2026-09-04", { startDate: "2026-09-02", endDate: "2026-09-04" }))} instrumentMetadata={metadata([first, last])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-04T08:00:00.000Z" />);
+    expect(container.querySelectorAll("svg path")).toHaveLength(1);
+  });
+
+  it("aligns daily cells under Monday through Sunday with leading blanks", async () => {
+    const user = userEvent.setup();
+    const value = entry("2026-09-01", "100");
+    const { container } = render(<RoomPerformance entries={[value]} scope={scope()} instrumentMetadata={metadata([value])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-19T08:00:00.000Z" />);
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    await user.click(within(panel).getByRole("button", { name: "日历" }));
+    expect(panel).toHaveTextContent("周一");
+    expect(panel).toHaveTextContent("周日");
+    expect(container.querySelectorAll('[aria-hidden="true"]').length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("marks cross-month calendar as a summary and returns from a drilled month", async () => {
+    const user = userEvent.setup();
+    const july = entry("2026-07-02", "10");
+    const august = entry("2026-08-02", "20", { id: "aug" });
+    const onScopeChange = vi.fn();
+    render(<RoomPerformance entries={[july, august]} scope={scope(buildRoomDateRange("custom", "2026-08-02", { startDate: "2026-07-01", endDate: "2026-08-02" }))} instrumentMetadata={metadata([july, august])} onScopeChange={onScopeChange} onOpenInReview={() => undefined} asOf="2026-09-19T08:00:00.000Z" />);
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    await user.click(within(panel).getByRole("button", { name: "日历" }));
+    expect(within(panel).getByRole("button", { name: "所选期间·按月汇总" })).toHaveAttribute("aria-pressed", "false");
+    await user.click(within(panel).getByRole("button", { name: /2026年7月/ }));
+    await user.click(within(panel).getByRole("button", { name: "返回上一范围" }));
+    expect(onScopeChange).toHaveBeenLastCalledWith({ period: { preset: "custom", startDate: "2026-07-01", endDate: "2026-08-02" } });
   });
 
   it("keeps each currency point paired with its own date when a series starts later", () => {

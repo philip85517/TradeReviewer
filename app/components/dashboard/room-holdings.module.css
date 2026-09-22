@@ -6,6 +6,7 @@
   border-radius: 18px;
   padding: 18px;
   background: var(--dashboard-card);
+  font-size: 14px;
 }
 
 .heading,
@@ -17,6 +18,10 @@
   gap: 14px;
 }
 
+.headerActions { display: grid; justify-items: end; gap: 6px; }
+.headerActions label { color: var(--dashboard-muted); font-size: 14px; }
+.headerActions select { min-height: 44px; margin-left: 6px; border: 1px solid var(--dashboard-line); border-radius: 7px; padding: 4px 7px; background: var(--dashboard-card); color: inherit; font: inherit; }
+
 .heading h2 {
   margin: 4px 0 5px;
   font-size: 20px;
@@ -25,17 +30,19 @@
 .heading p,
 .quoteDetail,
 .statusReason,
+.empty,
+.sortNote,
 .retryFeedback,
-.empty {
+.evidence p {
   margin: 0;
   color: var(--dashboard-muted);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
 .eyebrow {
   color: var(--dashboard-muted);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: .08em;
   text-transform: uppercase;
 }
@@ -43,7 +50,7 @@
 .count,
 .group h3 small {
   color: var(--dashboard-muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
 }
@@ -67,6 +74,8 @@
 
 .row {
   display: grid;
+  grid-template-columns: minmax(210px, 1.1fr) minmax(0, 3fr);
+  align-items: center;
   gap: 9px;
   border: 1px solid var(--dashboard-line);
   border-radius: 12px;
@@ -74,23 +83,28 @@
   background: var(--dashboard-card-elevated);
 }
 
+.rowHeading { grid-column: 1; grid-row: 1; }
+.values { grid-column: 2; grid-row: 1; }
+.quoteDetail, .statusReason, .evidence { grid-column: 1 / -1; }
+
 .rowHeading strong,
 .rowHeading span {
   display: block;
 }
 
-.rowHeading strong { font-size: 13px; }
-.rowHeading span { margin-top: 3px; color: var(--dashboard-muted); font-size: 10px; }
+.rowHeading strong { font-size: 14px; }
+.rowHeading span { margin-top: 3px; color: var(--dashboard-muted); font-size: 12px; }
 
 .reviewButton {
   border: 0;
   border-radius: 8px;
-  padding: 6px 8px;
+  min-height: 44px;
+  padding: 8px 10px;
   background: var(--dashboard-soft);
   color: var(--blue, #32758b);
   cursor: pointer;
   font: inherit;
-  font-size: 10px;
+  font-size: 14px;
   white-space: nowrap;
 }
 
@@ -102,14 +116,25 @@
 }
 
 .values div { min-width: 0; }
-.values dt { color: var(--dashboard-muted); font-size: 10px; }
-.values dd { margin: 3px 0 0; font-size: 12px; font-weight: 650; overflow-wrap: anywhere; }
-.available { color: var(--dashboard-positive); }
+.values dt { color: var(--dashboard-muted); font-size: 12px; }
+.values dd { margin: 3px 0 0; font-size: 14px; font-weight: 650; overflow-wrap: anywhere; }
+.values dd { font-variant-numeric: tabular-nums; }
+.amount { white-space: nowrap; }
+.values dd.negative,
+.values dd.positive,
+.values dd.unavailable { overflow-wrap: anywhere; }
+.values dd small { display: block; margin-top: 3px; font-size: 12px; font-weight: 500; }
+.positive { color: var(--dashboard-positive); }
+.negative { color: var(--dashboard-negative, #b34b4b); }
 .unavailable { color: var(--gold, #a56e14); }
 .statusReason { color: var(--gold, #a56e14); }
+.staleLabel { color: var(--gold, #a56e14); font-size: 12px; }
+.sortNote { color: var(--dashboard-muted); }
+.evidence { border-top: 1px solid var(--dashboard-line); padding-top: 7px; }
+.evidence summary { min-height: 44px; color: var(--dashboard-muted); cursor: pointer; font-size: 14px; }
 .retryFeedback { color: var(--blue, #32758b); font-weight: 650; }
-.diagnosticActions { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; color: var(--gold, #a56e14); font-size: 10px; }
-.diagnosticActions button { border: 0; padding: 0; background: transparent; color: var(--blue, #32758b); cursor: pointer; font: inherit; font-weight: 700; }
+.diagnosticActions { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 7px; color: var(--gold, #a56e14); font-size: 12px; }
+.diagnosticActions button { min-width: 44px; min-height: 44px; border: 0; border-radius: 8px; padding: 8px 10px; background: transparent; color: var(--blue, #32758b); cursor: pointer; font: inherit; font-size: 14px; font-weight: 700; }
 .diagnosticActions button:disabled { cursor: wait; opacity: .7; }
 .quoteDetails { color: var(--dashboard-muted); font-size: 10px; }
 .quoteDetails summary { width: fit-content; cursor: pointer; color: var(--blue, #32758b); font-weight: 650; }
@@ -121,7 +146,10 @@
 @media (max-width: 620px) {
   .panel { margin-top: 14px; border-radius: 13px; padding: 14px; }
   .heading { display: grid; gap: 6px; }
+  .headerActions { justify-items: stretch; }
   .values { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .rowHeading { display: grid; gap: 8px; }
+  .row { grid-template-columns: 1fr; }
+  .rowHeading, .values { grid-column: 1; grid-row: auto; }
   .reviewButton { justify-self: start; }
 }

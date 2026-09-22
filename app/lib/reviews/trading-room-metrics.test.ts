@@ -8,6 +8,7 @@ import type { TradeLibraryEntry, TradeLibraryEpisode } from "../trades/library";
 import {
   buildCostReturnSummary,
   buildMonthlyWinRate,
+  buildTradeQualitySummary,
   buildTradingRoomMetrics,
 } from "./trading-room-metrics";
 
@@ -142,6 +143,56 @@ const completeFx: RoomFxSnapshot = {
 };
 
 describe("trading room metrics", () => {
+  it("includes trusted short rounds in quality while cost return excludes them", () => {
+    const result = buildTradeQualitySummary([row({ id: "short", closeDate: "2026-09-10", direction: "short", netPnl: "100" })]);
+    expect(result.sampleCount).toBe(1);
+    expect(result.wins).toBe(1);
+    expect(buildCostReturnSummary([row({ id: "short", closeDate: "2026-09-10", direction: "short", netPnl: "100" })]).applicableCount).toBe(0);
+  });
+
+  it("keeps complete FX quality comparable and incomplete, zero, or negative rates separate", () => {
+    const usd = row({ id: "usd", closeDate: "2026-09-10", netPnl: "100" });
+    const hk = { ...row({ id: "hk", closeDate: "2026-09-11", netPnl: "100" }), row: { ...usd.row, item: { ...usd.row.item, episode: { ...usd.row.item.episode, id: "hk", instrument: { ...usd.row.item.episode.instrument, currency: "HKD" } } } } };
+    const complete = buildTradeQualitySummary([usd, hk], { ...completeFx, status: "complete", rates: { "USD/CNY": "7", "HKD/CNY": "0.9" } });
+    expect(complete.comparable).toBe(true);
+    expect(complete.currency).toBe("CNY");
+    expect(complete.profitFactor).toBeNull();
+    for (const rates of [{ "USD/CNY": "7" }, { "USD/CNY": "0" }, { "USD/CNY": "-1" }]) {
+      expect(buildTradeQualitySummary([usd, hk], { ...completeFx, status: "partial", rates }).comparable).toBe(false);
+    }
+  });
+
+  it("normalizes the 人民币 currency alias without requiring FX", () => {
+    const base = row({ id: "cny", closeDate: "2026-09-10", netPnl: "100" });
+    const aliased = { ...base, row: { ...base.row, item: { ...base.row.item, episode: { ...base.row.item.episode, instrument: { ...base.row.item.episode.instrument, currency: "人民币" } } } } };
+    const result = buildTradeQualitySummary([aliased]);
+    expect(result.currency).toBe("CNY");
+    expect(result.comparable).toBe(true);
+  });
+  it("computes payoff and profit factor with Decimal values and keeps ties out of averages", () => {
+    const result = buildTradeQualitySummary([
+      row({ id: "win-a", closeDate: "2026-09-10", netPnl: "200" }),
+      row({ id: "loss-a", closeDate: "2026-09-11", netPnl: "-100" }),
+      row({ id: "win-b", closeDate: "2026-09-12", netPnl: "200" }),
+      row({ id: "loss-b", closeDate: "2026-09-13", netPnl: "-0" }),
+    ]);
+    expect(result.averageWin).toBe("200");
+    expect(result.averageLoss).toBe("100");
+    expect(result.payoffRatio).toBe("2");
+    expect(result.profitFactor).toBe("4");
+    expect(result.wins).toBe(2);
+    expect(result.losses).toBe(1);
+    expect(result.breakEven).toBe(1);
+  });
+
+  it("explains undefined ratios for an all-win sample", () => {
+    const result = buildTradeQualitySummary([row({ id: "win", closeDate: "2026-09-10", netPnl: "200" })]);
+    expect(result.payoffRatio).toBeNull();
+    expect(result.profitFactor).toBeNull();
+    expect(result.payoffReason).toContain("无亏损样本");
+    expect(result.profitFactorReason).toContain("无亏损样本");
+  });
+
   it("uses the same complete episodes for a weighted 1% cost return, including pre-period buys", () => {
     const rows = [
       row({ id: "cross-period", closeDate: "2026-09-10", netPnl: "100", grossExposure: "10000" }),

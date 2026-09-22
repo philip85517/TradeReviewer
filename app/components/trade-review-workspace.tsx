@@ -4344,6 +4344,11 @@ export function TradeReviewWorkspace({
             qualityInput={!showDemo ? qualityInput : undefined}
             onQualityModelChange={updateQualityModel}
             onOpenDataManagement={openQualityDetails}
+            onOpenPrincipalSettings={() => {
+              setPlaying(false);
+              setDataTab("settings");
+              setActiveView("data");
+            }}
             onRetryDataQuality={retryDataQuality}
             onOpenDataCheck={openQualityDataCheck}
             onOpenInReview={(instrumentId, episodeId, queueIds) => {

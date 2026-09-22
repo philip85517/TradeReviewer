@@ -60,6 +60,29 @@ export type TradingRoomMetrics = {
   monthlyWinRate: MonthlyWinRateSummary;
 };
 
+export type TradeQualityCurrencySummary = {
+  currency: string;
+  sampleCount: number;
+  wins: number;
+  losses: number;
+  breakEven: number;
+  grossProfit: string;
+  grossLoss: string;
+  averageWin: string | null;
+  averageLoss: string | null;
+  payoffRatio: string | null;
+  profitFactor: string | null;
+  payoffReason: string | null;
+  profitFactorReason: string | null;
+};
+
+export type TradeQualitySummary = TradeQualityCurrencySummary & {
+  currencies: readonly TradeQualityCurrencySummary[];
+  excludedCount: number;
+  fxSnapshotId: string | null;
+  comparable: boolean;
+};
+
 export type BuildTradingRoomMetricsOptions = {
   period: RoomDateRange;
   fxSnapshot?: RoomFxSnapshot;
@@ -364,6 +387,84 @@ export function buildMonthlyWinRate(
     ratePercent: denominator > 0
       ? percentage(new Decimal(wins), new Decimal(denominator))
       : null,
+  };
+}
+
+function qualityReason(kind: "payoff" | "profitFactor", wins: number, losses: number): string | null {
+  if (wins === 0) return kind === "payoff" ? "无盈利样本，无法计算盈亏比" : "无盈利样本，无法计算利润因子";
+  if (losses === 0) return kind === "payoff" ? "无亏损样本，无法计算盈亏比" : "无亏损样本，无法计算利润因子";
+  return null;
+}
+
+function buildCurrencyQuality(currencyCode: string, values: readonly Decimal[]): TradeQualityCurrencySummary {
+  const wins = values.filter(value => value.gt(0));
+  const losses = values.filter(value => value.lt(0)).map(value => value.abs());
+  const breakEven = values.length - wins.length - losses.length;
+  const grossProfit = wins.reduce((sum, value) => sum.plus(value), new Decimal(0));
+  const grossLoss = losses.reduce((sum, value) => sum.plus(value), new Decimal(0));
+  const averageWin = wins.length ? grossProfit.div(wins.length).toString() : null;
+  const averageLoss = losses.length ? grossLoss.div(losses.length).toString() : null;
+  const payoffRatio = averageWin !== null && averageLoss !== null && !new Decimal(averageLoss).isZero()
+    ? new Decimal(averageWin).div(averageLoss).toString()
+    : null;
+  const profitFactor = wins.length > 0 && losses.length > 0 && !grossLoss.isZero()
+    ? grossProfit.div(grossLoss).toString()
+    : null;
+  return {
+    currency: currencyCode,
+    sampleCount: values.length,
+    wins: wins.length,
+    losses: losses.length,
+    breakEven,
+    grossProfit: grossProfit.toString(),
+    grossLoss: grossLoss.toString(),
+    averageWin,
+    averageLoss,
+    payoffRatio,
+    profitFactor,
+    payoffReason: payoffRatio === null ? qualityReason("payoff", wins.length, losses.length) : null,
+    profitFactorReason: profitFactor === null ? qualityReason("profitFactor", wins.length, losses.length) : null,
+  };
+}
+
+/** Build quality metrics from the full trusted, known-asset, closed-round sample. */
+export function buildTradeQualitySummary(
+  rows: readonly TradingRoomRow[],
+  fxSnapshot?: RoomFxSnapshot,
+): TradeQualitySummary {
+  const trustedAmounts = rows
+    .filter(row => row.assetCategory !== "unknown" && row.row.item.episode.status === "closed" && row.trustedPnl !== null)
+    .map(row => ({ currency: row.row.item.episode.instrument.currency, amount: row.trustedPnl }));
+  const trustedViews = trustedAmounts.map(amount => buildRoomMoneyView([amount], fxSnapshot));
+  const trustedMoney = trustedViews.length > 0 && trustedViews.every(view => view.convertedCny !== null)
+    ? buildRoomMoneyView(trustedAmounts, fxSnapshot)
+    : buildRoomMoneyView(trustedAmounts, undefined);
+  const grouped = new Map<string, Decimal[]>();
+  for (const row of rows) {
+    if (row.assetCategory === "unknown" || row.row.item.episode.status !== "closed" || row.trustedPnl === null) continue;
+    const value = decimal(row.trustedPnl);
+    if (!value) continue;
+    const code = currency(row.row.item.episode.instrument.currency);
+    const bucket = grouped.get(code) ?? [];
+    bucket.push(value);
+    grouped.set(code, bucket);
+  }
+  const currencies = [...grouped.keys()].sort().map(code => buildCurrencyQuality(code, grouped.get(code) ?? []));
+  const comparable = currencies.length <= 1 || trustedMoney.convertedCny !== null;
+  const primary = currencies.length === 1 ? currencies[0] : (() => {
+    if (!comparable) return buildCurrencyQuality("CNY", []);
+    return buildCurrencyQuality("CNY", trustedViews.flatMap(view => {
+      const value = decimal(view.convertedCny);
+      return value ? [value] : [];
+    }));
+  })();
+  const excludedCount = rows.filter(row => row.assetCategory !== "unknown" && row.row.item.episode.status === "closed" && row.trustedPnl === null).length;
+  return {
+    ...primary,
+    currencies,
+    excludedCount,
+    fxSnapshotId: fxSnapshot?.id ?? null,
+    comparable,
   };
 }
 

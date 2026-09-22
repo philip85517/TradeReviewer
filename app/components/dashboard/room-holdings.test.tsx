@@ -213,4 +213,93 @@ describe("RoomHoldingsPanel", () => {
     expect(holdings).not.toHaveTextContent("account-1");
     expect(holdings).not.toHaveTextContent("account-2");
   });
+
+  it("keeps source price precision and makes average cost detail available", () => {
+    const value = entry();
+    const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
+    render(
+      <RoomHoldingsPanel
+        entries={[value]}
+        scope={scope}
+        quotesByInstrument={{ "US:TEST": { price: "1.104", currency: "USD", quoteDate: "2026-09-19", fetchedAt: "2026-09-19T08:00:00.000Z", provider: "fixture", freshness: "current" } }}
+        positionSnapshotsByEpisode={{ "episode:holding": { quantity: "2", averageCost: "1.103456789", realizedPnl: "0", unrealizedPnl: "0.001", netPnl: "0.001", fees: "0", grossCapitalDeployed: "2.206913578", returnPercent: "0.05" } }}
+        onOpenInReview={() => undefined}
+      />,
+    );
+    const holdings = screen.getByRole("region", { name: "当前持仓" });
+    expect(holdings).toHaveTextContent("US$1.104");
+    expect(holdings).toHaveTextContent("US$1.103457");
+    expect(holdings).toHaveTextContent("持仓均价完整值：1.103456789");
+    expect(holdings).toHaveAttribute("data-current-date", "2026-09-19");
+    expect(holdings).toHaveTextContent("方向：多头");
+  });
+
+  it("labels stale quotes inline and separates imported, quote, and viewed dates", () => {
+    const value = entry();
+    const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
+    render(
+      <RoomHoldingsPanel
+        entries={[value]}
+        scope={scope}
+        asOf="2026-09-19T12:00:00.000Z"
+        staleAfterDays={3}
+        quotesByInstrument={{ "US:TEST": { price: "1.103", currency: "USD", quoteDate: "2026-09-10", fetchedAt: "2026-09-10T08:00:00.000Z", provider: "fixture", freshness: "stale" } }}
+        onOpenInReview={() => undefined}
+      />,
+    );
+    const holdings = screen.getByRole("region", { name: "当前持仓" });
+    expect(holdings).toHaveTextContent("过期参考价");
+    expect(holdings).toHaveTextContent("流水覆盖截止 2020-01-01");
+    expect(holdings).toHaveTextContent("行情日期 2026-09-10");
+    expect(holdings).toHaveTextContent("查看日 2026-09-19");
+  });
+
+  it("keeps the stale reference warning when the quote predates the latest execution", () => {
+    const value = entry();
+    value.episodes[0].episode.executions[0].executedAt = "2026-09-18T01:00:00.000Z";
+    value.firstTradeAt = value.episodes[0].episode.executions[0].executedAt;
+    value.lastTradeAt = value.firstTradeAt;
+    const scope = { ...createDefaultRoomScope("2026-09-22"), period: buildRoomDateRange("month", "2026-09-22") };
+    render(
+      <RoomHoldingsPanel
+        entries={[value]}
+        scope={scope}
+        asOf="2026-09-22T12:00:00.000Z"
+        staleAfterDays={3}
+        quotesByInstrument={{ "US:TEST": { price: "1.103", currency: "USD", quoteDate: "2026-09-10", fetchedAt: "2026-09-10T08:00:00.000Z", provider: "fixture", freshness: "stale" } }}
+        onOpenInReview={() => undefined}
+      />,
+    );
+    const holdings = screen.getByRole("region", { name: "当前持仓" });
+    expect(holdings).toHaveTextContent("行情不可用");
+    expect(holdings).toHaveTextContent("过期参考价");
+    expect(holdings).toHaveTextContent("浮盈亏不可用");
+  });
+
+  it("offers PnL sorting only within currency and keeps unknown values last", async () => {
+    const user = userEvent.setup();
+    const first = entry("account-1");
+    const second = entry("account-2");
+    second.episodes[0].episode.executions[0].executedAt = "2020-01-03T01:00:00.000Z";
+    const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
+    render(<RoomHoldingsPanel entries={[first, second]} scope={scope} onOpenInReview={() => undefined} />);
+    await user.selectOptions(screen.getByLabelText("排序持仓"), "pnl");
+    expect(screen.getByRole("region", { name: "当前持仓" })).toHaveTextContent("仅在同币种内比较浮盈亏");
+  });
+
+  it("uses loss styling and keeps the negative sign for negative PnL", () => {
+    const value = entry();
+    const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
+    render(
+      <RoomHoldingsPanel
+        entries={[value]}
+        scope={scope}
+        quotesByInstrument={{ "US:TEST": { price: "9", currency: "USD", quoteDate: "2026-09-19", fetchedAt: "2026-09-19T08:00:00.000Z", provider: "fixture", freshness: "current" } }}
+        positionSnapshotsByEpisode={{ "episode:holding": { quantity: "2", averageCost: "10", realizedPnl: "0", unrealizedPnl: "-2", netPnl: "-2", fees: "0", grossCapitalDeployed: "20", returnPercent: "-10" } }}
+        onOpenInReview={() => undefined}
+      />,
+    );
+    const pnl = screen.getByText("-US$2.00");
+    expect(pnl.closest("dd")?.className).toContain("negative");
+  });
 });

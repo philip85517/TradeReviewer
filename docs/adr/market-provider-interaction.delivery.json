@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/zhoulin/.codex/worktrees/5a37/TradeReview/docs/adr/market-provider-interaction.json",
+  "output": "/Users/zhoulin/.codex/worktrees/5a37/TradeReview/docs/adr/market-provider-interaction.html",
+  "specification": {
+    "sha256": "02d58f7ef705f780cf2e486da6c2816718fcb16084ec3e1a346f253d7917c4c6",
+    "bytes": 4330
+  },
+  "artifact": {
+    "sha256": "39d4c55cb98f73c6d805ece640777d0eb5a347300896cac6153de3e22b518db2",
+    "bytes": 807671
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}

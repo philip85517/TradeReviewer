@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/zhoulin/.codex/worktrees/5a37/TradeReview/docs/adr/market-data-flow.json",
+  "output": "/Users/zhoulin/.codex/worktrees/5a37/TradeReview/docs/adr/market-data-flow.html",
+  "specification": {
+    "sha256": "87d536e48cb83a5b78f9b41467286185d43217523750ff993219e8c6bbe47a4a",
+    "bytes": 3936
+  },
+  "artifact": {
+    "sha256": "960d89e3d59dc72842f21285fb9e0db7303d4030221ee30805b0dddd617963a1",
+    "bytes": 808735
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}

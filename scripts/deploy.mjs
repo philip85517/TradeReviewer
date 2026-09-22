@@ -6,7 +6,7 @@ import { hostname as osHostname } from "node:os";
 import { basename, dirname, isAbsolute, join, parse, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const DEFAULT_DEPLOY_ROOT = "/Users/zhoulin/projects/TradeReview";
+export const DEFAULT_DEPLOY_ROOT = "/Users/zhoulin/projects/交易空间/TradingReview";
 
 const APPLICATION_ROOT_EXCLUSIONS = new Set([
   ".git",
@@ -21,6 +21,8 @@ const APPLICATION_ROOT_EXCLUSIONS = new Set([
   "trades",
   ".superpowers",
   ".worktrees",
+  ".scratch",
+  ".data",
 ]);
 
 const PRIVATE_CREDENTIAL_NAMES = new Set([
@@ -50,6 +52,7 @@ const TARGET_OPERATION_FILES = Object.freeze([
   "healthcheck.sh",
   "restore-db.sh",
   "run-command.mjs",
+  "sqlite-path.sh",
   "status.sh",
 ]);
 
@@ -304,9 +307,10 @@ async function initializeConfigFiles({ sourceDir, targetDir, paths }) {
 
 async function initializeFullDeployment({ sourceDir, targetDir, paths }) {
   await initializeConfigFiles({ sourceDir, targetDir, paths });
+  const configuredSqliteDir = await deploymentConfigValue(targetDir, "SQLITE_HOST_DIR");
+  const sqliteDir = await resolveConfiguredSqliteDir(targetDir, configuredSqliteDir, paths);
   for (const [path, label] of [
     [paths.dataDir, "Deployment data path"],
-    [join(paths.dataDir, "sqlite"), "Deployment SQLite path"],
     [paths.backupsDir, "Deployment backups path"],
     [paths.logsDir, "Deployment logs path"],
   ]) {
@@ -314,8 +318,13 @@ async function initializeFullDeployment({ sourceDir, targetDir, paths }) {
     await mkdir(path, { recursive: true, mode: 0o700 });
     await assertSafeStagingPath(path, targetDir, label);
   }
+  await mkdir(sqliteDir, { recursive: true, mode: 0o700 });
+  const sqliteDetails = await lstat(sqliteDir);
+  if (sqliteDetails.isSymbolicLink() || !sqliteDetails.isDirectory()) {
+    throw new Error("SQLITE_HOST_DIR must be a non-symlink directory");
+  }
 
-  const databasePath = join(paths.dataDir, "sqlite", "tradereview.sqlite");
+  const databasePath = join(sqliteDir, "tradereview.sqlite");
   try {
     await assertRegularFile(databasePath, "Deployment SQLite database");
   } catch (error) {
@@ -323,6 +332,27 @@ async function initializeFullDeployment({ sourceDir, targetDir, paths }) {
     await writeFile(databasePath, "", { flag: "wx", mode: 0o600 });
   }
   await chmod(databasePath, 0o600);
+}
+
+async function resolveConfiguredSqliteDir(targetDir, configuredValue, paths) {
+  const sqliteDir = configuredValue
+    ? (isAbsolute(configuredValue) ? resolve(configuredValue) : resolve(targetDir, configuredValue))
+    : resolve(join(paths.dataDir, "sqlite"));
+  if (sqliteDir === parse(sqliteDir).root) throw new Error("SQLITE_HOST_DIR must not be the filesystem root");
+  const targetPath = canonicalizePath(targetDir);
+  const sqlitePath = canonicalizePath(sqliteDir);
+  if (configuredValue && (sqlitePath === targetPath || isDescendant(sqlitePath, targetPath) || isDescendant(targetPath, sqlitePath))) {
+    throw new Error("SQLITE_HOST_DIR must not be inside or contain the deployment target");
+  }
+  try {
+    const details = await lstat(sqliteDir);
+    if (details.isSymbolicLink() || !details.isDirectory()) {
+      throw new Error("SQLITE_HOST_DIR must be a non-symlink directory");
+    }
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+  return sqliteDir;
 }
 
 async function assertSafeStagingPath(path, targetRoot, label) {

@@ -59,13 +59,23 @@
 5. 如环境使服务无法持续运行或浏览器无法打开，明确报告为未完成/受阻，不承诺能打开。
 6. 最终必须在当前聊天通知用户，包含可点击的预览页面链接、已验收结果、已知限制、启动/重启方式及 workflow 链接。通知发生在验收后；不另建自动化消息或发往外部系统。
 
-当前本机工作区的已导入数据位于 `.data/validation/tradereview.sqlite`。它不是所有部署的通用默认路径；以后必须核实目标数据存在及符合当前任务。恢复本工作区预览的命令（先在目标工作区运行并确认端口空闲）：
+## 本机统一业务入口（2026-09-22）
+
+正式业务库固定为 `/Users/zhoulin/projects/交易空间/database/TradingReview/tradereview.sqlite`，采用已核对完整性的原 3022 数据集。正式应用部署到 `/Users/zhoulin/projects/交易空间/TradingReview`，入口为 http://127.0.0.1:3022/。旧工作树中的数据库和旧部署目录只作历史保留，不再作为正式启动来源。
+
+项目配置 [`conf/runtime.json`](../../conf/runtime.json) 持久记录 `databasePath`、`port` 和 `hostname`，所有包含此配置版本的并行工作树默认连接同一绝对物理路径，不在各自工作树新建业务库。启动器和 SQLite 层共享解析逻辑：显式 `TRADEREVIEW_DB_PATH` → 显式 `TRADEREVIEW_RUNTIME_CONFIG` → 项目 `conf/runtime.json` → 本机 `~/.config/tradereview/runtime.json` → 兼容默认值。配置主库必须已存在，错误配置不得静默回退或创建空库。测试模式跳过隐式项目及本机业务配置，显式测试配置仍可使用。
+
+新分支/工作树必须包含本次配置及解析代码；旧分支不会自动获得未提交或未同步的改动。并行开发若需要写入验收，必须显式指定独立备份库，不能为了“同址”让测试写入主库。容器继续显式指定容器内数据库路径，经卷挂载连接同一宿主机主库。
+
+正式启动使用新部署目录的 `ops/start-native.command`。端口占用必须核实已有进程，不得悄悄改端口生成另一业务入口。正式库备份使用 SQLite backup API，不能仅复制活跃数据库文件。
+
+需要会写入的开发、浏览器验收或并行任务时，先从主库创建一致性备份，再显式指定独立数据库及空闲端口，例如：
 
 ```bash
-TRADEREVIEW_DB_PATH="$PWD/.data/validation/tradereview.sqlite" npm run dev -- --hostname 127.0.0.1 --port 3001
+TRADEREVIEW_DB_PATH="$PWD/.scratch/<task>/acceptance.sqlite" npm run dev -- --hostname 127.0.0.1 --port 3031
 ```
 
-对应预览为 [http://localhost:3001/](http://localhost:3001/)。服务停止后链接不再可用，不能把此文档中的固定示例当作未来服务已启动的证据。Node.js 版本要求以项目 package.json 为准。
+3031 仅是隔离验收示例，不是第二个正式入口。不要在设置了本机业务配置后直接运行无隔离参数的浏览器写入测试。容器部署使用 `SQLITE_HOST_DIR` 挂载相同主库目录，容器内路径仍为 `/var/lib/tradereview/tradereview.sqlite`；本次本机使用 Node 生产服务，Docker 模板验证不等于容器实际运行。
 
 ## 完成记录模板
 

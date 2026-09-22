@@ -2494,6 +2494,12 @@ describe("TradeReviewWorkspace", () => {
     );
 
     await waitFor(() => expect(intradayRequests()).toHaveLength(1));
+    // The first refresh also persists terminal job/state asynchronously. Wait
+    // until the control is usable before switching episodes so the second
+    // refresh cannot race the first request's state transition.
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "刷新行情数据" })).toBeEnabled(),
+    );
     expect(
       intradayRequests().map((request) => [
         request.searchParams.get("start"),
@@ -2509,10 +2515,11 @@ describe("TradeReviewWorkspace", () => {
     );
     vi.mocked(fetch).mockClear();
     if (!screen.queryByRole("dialog", { name: "行情数据详情" })) {
-      await user.click(screen.getByRole("button", { name: "行情数据详情" }));
+      await user.click(await screen.findByRole("button", { name: "行情数据详情" }));
     }
+    await screen.findByRole("dialog", { name: "行情数据详情" });
     await user.click(
-      screen.getByRole("button", { name: "刷新行情数据" }),
+      await screen.findByRole("button", { name: "刷新行情数据" }),
     );
     await waitFor(() => expect(intradayRequests()).toHaveLength(1));
     expect(

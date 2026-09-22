@@ -1,22 +1,18 @@
 import "server-only";
 
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import { dirname, isAbsolute, parse, resolve, sep } from "node:path";
 
 import { SQLITE_MIGRATIONS } from "./sqlite-schema";
+import { resolveRuntimeConfig } from "../scripts/runtime-config.mjs";
 
 export const SQLITE_DATABASE_PATH = "/var/lib/tradereview/tradereview.sqlite";
 
 const databases = new Map<string, DatabaseSync>();
 
 function resolveDatabasePath(path?: string): string {
-  const candidate =
-    path ??
-    process.env.TRADEREVIEW_DB_PATH ??
-    (process.env.NODE_ENV === "production"
-      ? SQLITE_DATABASE_PATH
-      : resolve(process.cwd(), ".data/tradereview.sqlite"));
+  const candidate = path ?? resolveRuntimeConfig().databasePath;
 
   if (!candidate || candidate.includes("\0") || !isAbsolute(candidate)) {
     throw new Error("SQLite database path must be a non-empty absolute path");
@@ -99,6 +95,12 @@ export function openSqliteDatabase(path?: string): DatabaseSync {
     databases.delete(databasePath);
   }
 
+  if (!path && !process.env.TRADEREVIEW_DB_PATH?.trim()) {
+    const runtime = resolveRuntimeConfig();
+    if (runtime.databasePathSource === "config" && !existsSync(databasePath)) {
+      throw new Error(`Configured SQLite database does not exist: ${databasePath}`);
+    }
+  }
   ensureDatabaseDirectory(databasePath);
   const database = new DatabaseSync(databasePath);
   try {

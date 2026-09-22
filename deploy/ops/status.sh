@@ -5,10 +5,8 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 deploy_root="$(cd -- "$script_dir/.." && pwd -P)"
 config_dir="$deploy_root/config"
 data_dir="$deploy_root/data"
-sqlite_dir="$data_dir/sqlite"
 backups_dir="$data_dir/backups"
-database_path="$sqlite_dir/tradereview.sqlite"
-database_container_path="/var/lib/tradereview/tradereview.sqlite"
+source "$script_dir/sqlite-path.sh"
 current_link="$deploy_root/app/current"
 releases_dir="$deploy_root/app/releases"
 
@@ -36,19 +34,6 @@ compose() {
     --file "$deploy_root/compose.yaml" \
     --env-file "$config_dir/.env" \
     "$@"
-}
-
-env_value() {
-  local key="$1"
-  awk -v key="$key" '
-    index($0, key "=") == 1 {
-      value = substr($0, length(key) + 2)
-      gsub(/\r$/, "", value)
-      gsub(/^"|"$/, "", value)
-      print value
-      exit
-    }
-  ' "$config_dir/.env"
 }
 
 file_size() {
@@ -138,6 +123,9 @@ report_sqlite_business_state() {
 assert_safe_directory "$deploy_root"
 assert_safe_directory "$config_dir"
 assert_safe_directory "$data_dir"
+resolve_sqlite_dir allow-missing
+database_path="$sqlite_dir/tradereview.sqlite"
+database_container_path="/var/lib/tradereview/tradereview.sqlite"
 [[ -f "$config_dir/.env" && ! -L "$config_dir/.env" ]] || fail "configuration is missing or unsafe"
 
 active_release="none"

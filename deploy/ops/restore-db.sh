@@ -5,11 +5,8 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 deploy_root="$(cd -- "$script_dir/.." && pwd -P)"
 config_dir="$deploy_root/config"
 data_dir="$deploy_root/data"
-sqlite_dir="$data_dir/sqlite"
-database_path="$sqlite_dir/tradereview.sqlite"
+source "$script_dir/sqlite-path.sh"
 database_container_path="/var/lib/tradereview/tradereview.sqlite"
-database_wal_path="$database_path-wal"
-database_shm_path="$database_path-shm"
 
 fail() {
   printf 'restore-db: %s\n' "$*" >&2
@@ -71,6 +68,10 @@ backup_path="$1"
 assert_safe_directory "$deploy_root"
 assert_safe_directory "$config_dir"
 assert_safe_directory "$data_dir"
+resolve_sqlite_dir
+database_path="$sqlite_dir/tradereview.sqlite"
+database_wal_path="$database_path-wal"
+database_shm_path="$database_path-shm"
 assert_safe_directory "$sqlite_dir"
 [[ -f "$config_dir/.env" && ! -L "$config_dir/.env" ]] || fail "configuration is missing or unsafe"
 verify_checksum_when_present "$backup_path"

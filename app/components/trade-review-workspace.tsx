@@ -68,10 +68,7 @@ import type {
   NativeIntradayInterval,
   SupportedMarket,
 } from "../lib/market/contracts";
-import {
-  syncIntradayMarketDataForRanges,
-  type IntradayTimeRange,
-} from "../lib/market/intraday-sync-service";
+import type { IntradayTimeRange } from "../lib/market/intraday-sync-service";
 import { buildIntradaySyncRanges } from "../lib/market/intraday-sync-ranges";
 import { normalizeProviderLatestTails, reconcileDailyCoverage } from "../lib/market/coverage-tail";
 import {
@@ -99,10 +96,7 @@ import {
   type GlobalMarketRefreshInventoryItem,
   type GlobalMarketRefreshFailureDetail,
 } from "../lib/market/refresh-summary";
-import {
-  MarketDataSyncError,
-  syncMarketData,
-} from "../lib/market/sync-service";
+import { refreshMarketData } from "../lib/market/market-data-service";
 import { canonicalInstrumentId } from "../lib/instruments/display-name";
 import type { ResolvedInstrument } from "../lib/instruments/metadata-contracts";
 import { resolveHistoricalInstrumentIdentity } from "../lib/instruments/historical-instrument-identity";
@@ -897,36 +891,6 @@ function isHardMarketDataFailure(status: unknown) {
   );
 }
 
-function dailyStatusFromError(error: unknown): MarketDataSyncStatus {
-  if (error instanceof MarketDataSyncError) {
-    if (
-      error.code === "source-rate-limited" ||
-      error.code === "source-forbidden" ||
-      error.code === "source-unavailable" ||
-      error.code === "invalid-response"
-    ) {
-      return error.code;
-    }
-    if (
-      error.code === "provider-history-limit" ||
-      error.code === "no-data"
-    ) {
-      return "partial";
-    }
-  }
-  return error instanceof DOMException ? "storage-error" : "source-unavailable";
-}
-
-function marketDataErrorDetail(error: unknown): MarketDataErrorDetail {
-  if (error instanceof MarketDataSyncError) {
-    return { code: error.code, message: error.message };
-  }
-  if (error instanceof Error) {
-    return { code: "source-unavailable", message: error.message };
-  }
-  return { code: "source-unavailable", message: "行情更新失败" };
-}
-
 /** Select an existing account before opening a quality check for an instrument.
  * Quality actions currently carry instrument ids only, so use the first
  * concrete imported account as the dialog's starting scope instead of the
@@ -950,10 +914,6 @@ export function accountIdForQualityCheck(
 ): string {
   const accountId = episodeAccountId?.trim();
   return accountId || defaultAccountIdForInstrument(instrumentId, executions);
-}
-
-function isAbortError(error: unknown) {
-  return error instanceof DOMException && error.name === "AbortError";
 }
 
 function qualityModelSignature(model: TradingRoomQualityModel): string {
@@ -2844,112 +2804,59 @@ export function TradeReviewWorkspace({
             },
           };
         } else {
-          const [dailyResult, intradayResult] = await Promise.allSettled([
-            syncMarketData({
-              instrumentId,
-              symbol: marketDataSymbol,
-              market,
-              currency: instrument.currency,
-              required: ranges.daily,
-              repository,
-              fetcher: marketDataFetcher,
-              signal: requestSignal,
-              retryUnavailable: true,
-            }),
-            syncIntradayMarketDataForRanges({
-              instrumentId,
-              symbol: marketDataSymbol,
-              market,
-              currency: instrument.currency,
-              requiredRanges: intradayRanges.length
-                ? intradayRanges
-                : [ranges.intraday],
-              repository,
-              fetcher: marketDataFetcher,
-              signal: requestSignal,
-              interval: "1h",
-              forceRefresh: Boolean(options.refreshMetadata || options.batch),
-            }),
-          ]);
-          if (
-            (dailyResult.status === "rejected" &&
-              isAbortError(dailyResult.reason)) ||
-            (intradayResult.status === "rejected" &&
-              isAbortError(intradayResult.reason))
-          ) {
-            if (cancellation.signal.aborted) {
-              throw cancellation.signal.reason ?? new DOMException("行情更新已取消", "AbortError");
-            }
-            throw new DOMException("行情更新已被较新的请求取代", "AbortError");
-          }
-          if (dailyResult.status === "fulfilled") {
-            // The range worker may return a partial value with an error
-            // alongside usable candles. Keep that optional error when it is
-            // present so the persisted job can expose the failed range.
-            const dailyValue = dailyResult.value as typeof dailyResult.value & {
-              error?: MarketDataErrorDetail;
-            };
-            next.daily = dailyValue.candles;
-            next.dailyStatus = dailyValue.status;
-            next.dailyError = dailyValue.error;
-            next.dailyMessage = dailyValue.error
-              ? `日线：${dailyValue.error.message}`
-              : dailyValue.status === "latest-available"
+          const refreshed = await refreshMarketData({
+            instrumentId,
+            symbol: marketDataSymbol,
+            market,
+            currency: instrument.currency,
+            dailyRange: ranges.daily,
+            hourlyRanges: intradayRanges.length ? intradayRanges : [ranges.intraday],
+            repository,
+            fetcher: marketDataFetcher,
+            signal: requestSignal,
+            retryUnavailable: true,
+            forceRefresh: Boolean(options.refreshMetadata || options.batch),
+            previous: {
+              daily: next.daily,
+              dailyCoverage: next.dailyCoverage,
+              intraday: next.intraday,
+              intradayCoverage: next.intradayCoverage,
+              intradayInterval: next.intradayInterval,
+            },
+          });
+          next.daily = refreshed.daily.candles;
+          next.dailyCoverage = refreshed.daily.coverage;
+          next.dailyStatus = refreshed.daily.status;
+          next.dailyError = refreshed.daily.refreshErrorSource === "coverage-read"
+            ? refreshed.daily.refreshError ?? refreshed.daily.error
+            : refreshed.daily.error ?? refreshed.daily.refreshError;
+          next.dailyMessage = refreshed.daily.error
+            ? refreshed.daily.refreshErrorSource === "coverage-read"
+              ? `日线已获取但覆盖状态读取失败；${refreshed.daily.error.message}`
+              : `日线：${refreshed.daily.error.message}`
+            : refreshed.daily.refreshErrorSource === "coverage-read"
+              ? "日线已获取但覆盖状态读取失败"
+              : refreshed.daily.refreshError
+                ? `日线：${refreshed.daily.refreshError.message}`
+              : refreshed.daily.status === "latest-available"
                 ? "尾部仍待补齐，已保留本地行情；可再次更新重试"
-                : dailyValue.status === "partial"
-                ? "日线更新已完成，仍有缺口"
-                : dailyValue.source === "cache"
-                ? "日线已使用本地缓存"
-                : `日线已补齐 ${dailyValue.requestedRanges.length} 个缺口`;
-            try {
-              next.dailyCoverage = await repository.getCoverage(
-                instrumentId,
-              );
-            } catch {
-              next.dailyStatus = "storage-error";
-              next.dailyMessage = "日线已获取但覆盖状态读取失败";
-            }
-          } else {
-            next.dailyStatus = next.daily.length > 0
-              ? coverageStatusForDateRange(ranges.daily, next.dailyCoverage)
-              : dailyStatusFromError(dailyResult.reason);
-            next.dailyError = marketDataErrorDetail(dailyResult.reason);
-            next.dailyMessage =
-              dailyResult.reason instanceof Error
-                ? `日线：${dailyResult.reason.message}`
-                : "日线行情更新失败";
-          }
-          if (intradayResult.status === "fulfilled") {
-            // An unavailable hourly refresh must not erase usable legacy
-            // 15-minute candles already displayed by this review.
-            if (
-              intradayResult.value.candles.length > 0 ||
-              next.intraday.length === 0 ||
-              next.intradayInterval === "1h"
-            ) {
-              next.intradayInterval = "1h";
-              next.intraday = intradayResult.value.candles;
-              next.intradayCoverage = intradayResult.value.coverage;
-            }
-            next.intradayStatus = intradayResult.value.status;
-            next.intradayError = intradayResult.value.error;
-            next.intradayMessage =
-              intradayResult.value.error
-                ? `1 小时：${intradayResult.value.error.message}`
-                : intradayResult.value.source === "cache"
-                ? "1 小时行情已使用本地缓存"
-                : `1 小时行情已请求 ${intradayResult.value.requestedRanges.length} 个区间`;
-          } else {
-            next.intradayStatus =
-              intradayResult.reason instanceof DOMException
-                ? "storage-error"
-                : "source-unavailable";
-            next.intradayError = marketDataErrorDetail(intradayResult.reason);
-            next.intradayMessage =
-              intradayResult.reason instanceof Error
-                ? `1 小时：${intradayResult.reason.message}`
-                : "1 小时行情更新失败";
-          }
+                : refreshed.daily.status === "partial"
+                  ? "日线更新已完成，仍有缺口"
+                  : refreshed.daily.source === "cache"
+                    ? "日线已使用本地缓存"
+                    : `日线已补齐 ${refreshed.daily.requestedRanges.length} 个缺口`;
+          next.intradayInterval = refreshed.hourly.interval;
+          next.intraday = refreshed.hourly.candles;
+          next.intradayCoverage = refreshed.hourly.coverage;
+          next.intradayStatus = refreshed.hourly.status;
+          next.intradayError = refreshed.hourly.error ?? refreshed.hourly.refreshError;
+          next.intradayMessage = refreshed.hourly.error
+            ? `1 小时：${refreshed.hourly.error.message}`
+            : refreshed.hourly.refreshError
+              ? `1 小时：${refreshed.hourly.refreshError.message}`
+              : refreshed.hourly.source === "cache"
+              ? "1 小时行情已使用本地缓存"
+              : `1 小时行情已请求 ${refreshed.hourly.requestedRanges.length} 个区间`;
         }
         await metadataRefresh;
         if (cancellation.signal.aborted) {

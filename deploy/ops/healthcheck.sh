@@ -4,6 +4,8 @@ set -euo pipefail
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 deploy_root="$(cd -- "$script_dir/.." && pwd -P)"
 config_dir="$deploy_root/config"
+data_dir="$deploy_root/data"
+source "$script_dir/sqlite-path.sh"
 
 fail() {
   printf 'healthcheck: %s\n' "$*" >&2
@@ -38,6 +40,7 @@ env_value() {
 
 assert_safe_directory "$deploy_root"
 assert_safe_directory "$config_dir"
+resolve_sqlite_dir allow-missing
 [[ -f "$config_dir/.env" && ! -L "$config_dir/.env" ]] || fail "configuration is missing or unsafe"
 
 services="$(compose ps --format json)"

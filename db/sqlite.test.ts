@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
@@ -91,6 +91,7 @@ describe("SQLite storage foundation", () => {
 
     process.chdir(directory);
     vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("HOME", directory);
     delete process.env.TRADEREVIEW_DB_PATH;
 
     try {
@@ -104,6 +105,60 @@ describe("SQLite storage foundation", () => {
       } else {
         process.env.TRADEREVIEW_DB_PATH = previousDatabasePath;
       }
+    }
+  });
+
+  it("does not inspect the machine runtime config in tests", () => {
+    const directory = mkdtempSync(join(tmpdir(), "trade-review-test-default-"));
+    temporaryDirectories.push(directory);
+    const previousCwd = process.cwd();
+    const previousDatabasePath = process.env.TRADEREVIEW_DB_PATH;
+
+    process.chdir(directory);
+    vi.stubEnv("NODE_ENV", "test");
+    delete process.env.TRADEREVIEW_DB_PATH;
+
+    try {
+      openSqliteDatabase();
+      expect(existsSync(join(directory, ".data", "tradereview.sqlite"))).toBe(true);
+    } finally {
+      process.chdir(previousCwd);
+      vi.unstubAllEnvs();
+      if (previousDatabasePath === undefined) delete process.env.TRADEREVIEW_DB_PATH;
+      else process.env.TRADEREVIEW_DB_PATH = previousDatabasePath;
+    }
+  });
+
+  it("requires a configured main database to already exist", () => {
+    const directory = mkdtempSync(join(tmpdir(), "trade-review-configured-"));
+    temporaryDirectories.push(directory);
+    const configPath = join(directory, "runtime.json");
+    const databasePath = join(directory, "missing", "tradereview.sqlite");
+    const previousConfigPath = process.env.TRADEREVIEW_RUNTIME_CONFIG;
+    vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("TRADEREVIEW_RUNTIME_CONFIG", configPath);
+    vi.stubEnv("TRADEREVIEW_DB_PATH", "");
+    writeFileSync(configPath, JSON.stringify({ databasePath, port: 3022, hostname: "127.0.0.1" }));
+
+    try {
+      expect(() => openSqliteDatabase()).toThrow(/does not exist/i);
+    } finally {
+      vi.unstubAllEnvs();
+      if (previousConfigPath === undefined) delete process.env.TRADEREVIEW_RUNTIME_CONFIG;
+      else process.env.TRADEREVIEW_RUNTIME_CONFIG = previousConfigPath;
+    }
+  });
+
+  it("allows an explicit isolated database path despite malformed runtime config", () => {
+    const databasePath = tempDatabasePath();
+    const previousConfigPath = process.env.TRADEREVIEW_RUNTIME_CONFIG;
+    vi.stubEnv("TRADEREVIEW_RUNTIME_CONFIG", "/tmp/malformed-runtime.json");
+    try {
+      expect(() => openSqliteDatabase(databasePath)).not.toThrow();
+    } finally {
+      vi.unstubAllEnvs();
+      if (previousConfigPath === undefined) delete process.env.TRADEREVIEW_RUNTIME_CONFIG;
+      else process.env.TRADEREVIEW_RUNTIME_CONFIG = previousConfigPath;
     }
   });
 

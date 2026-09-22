@@ -1922,6 +1922,10 @@ describe("TradeReviewWorkspace", () => {
     await user.clear(layerName);
     await user.type(layerName, "队列稳定性");
     await user.keyboard("{Enter}");
+    await waitFor(() =>
+      expect(screen.getByText("自动保存将在 1 秒后执行")).toBeInTheDocument(),
+    );
+    await waitFor(() => expect(screen.getByText("已保存")).toBeInTheDocument());
     await waitFor(() => {
       const saved = [...mockRecallRepository.documents.values()].some((value) =>
         (value as { working?: { drawings?: Array<{ name?: string }> } }).working?.drawings?.some(
@@ -2517,6 +2521,12 @@ describe("TradeReviewWorkspace", () => {
     );
 
     await waitFor(() => expect(intradayRequests()).toHaveLength(1));
+    // The first refresh also persists terminal job/state asynchronously. Wait
+    // until the control is usable before switching episodes so the second
+    // refresh cannot race the first request's state transition.
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "刷新行情数据" })).toBeEnabled(),
+    );
     expect(
       intradayRequests().map((request) => [
         request.searchParams.get("start"),
@@ -2530,12 +2540,24 @@ describe("TradeReviewWorkspace", () => {
       screen.getByRole("combobox", { name: "交易回合" }),
       oldEpisode.id,
     );
+    await waitFor(() =>
+      expect(screen.getByRole("combobox", { name: "交易回合" })).toHaveValue(oldEpisode.id),
+    );
     vi.mocked(fetch).mockClear();
-    if (!screen.queryByRole("dialog", { name: "行情数据详情" })) {
-      await user.click(screen.getByRole("button", { name: "行情数据详情" }));
+    await waitFor(() => {
+      const button = screen.getByRole("button", { name: "行情数据详情" });
+      expect(button).toBeVisible();
+      if (button.getAttribute("aria-expanded") === "true") {
+        expect(screen.getByRole("dialog", { name: "行情数据详情" })).toBeVisible();
+      }
+    });
+    const dataDetailsButton = screen.getByRole("button", { name: "行情数据详情" });
+    if (dataDetailsButton.getAttribute("aria-expanded") !== "true") {
+      await user.click(dataDetailsButton);
+      await waitFor(() => expect(screen.getByRole("dialog", { name: "行情数据详情" })).toBeVisible());
     }
     await user.click(
-      screen.getByRole("button", { name: "刷新行情数据" }),
+      await screen.findByRole("button", { name: "刷新行情数据" }),
     );
     await waitFor(() => expect(intradayRequests()).toHaveLength(1));
     expect(

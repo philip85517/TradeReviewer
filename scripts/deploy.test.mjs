@@ -89,7 +89,10 @@ const deployRoot = rootIndex >= 0 ? args[rootIndex + 1] : process.cwd();
 const operations = new Set(["build", "down", "logs", "ps", "run", "stop", "up"]);
 const operationIndex = args.findIndex((argument) => operations.has(argument));
 const operation = args[operationIndex];
-const mappings = [[join(deployRoot, "data", "sqlite"), "/var/lib/tradereview"]];
+const envFileIndex = args.indexOf("--env-file");
+const envText = envFileIndex >= 0 ? readFileSync(args[envFileIndex + 1], "utf8") : "";
+const configuredSqlite = envText.match(/^\\s*SQLITE_HOST_DIR\\s*=\\s*(.*)$/m)?.[1]?.trim().replace(/^['"]|['"]$/g, "");
+const mappings = [[configuredSqlite || join(deployRoot, "data", "sqlite"), "/var/lib/tradereview"]];
 
 for (let index = 0; index < args.length; index += 1) {
   if (args[index] !== "--volume") continue;
@@ -168,23 +171,23 @@ if (operation === "up") {
 process.exit(0);
 `;
 
-async function createSqliteOperationalSandbox() {
+async function createSqliteOperationalSandbox(sqliteHostDir) {
   const sandbox = await mkdtemp(join(tmpdir(), "tradereview-sqlite-operations-"));
   const targetDir = join(sandbox, "target");
   const binDir = join(sandbox, "bin");
-  const databasePath = join(targetDir, "data", "sqlite", "tradereview.sqlite");
+  const databasePath = join(sqliteHostDir ?? join(targetDir, "data", "sqlite"), "tradereview.sqlite");
 
   await Promise.all([
     cp(join(root, "deploy", "ops"), join(targetDir, "ops"), { recursive: true }),
     mkdir(join(targetDir, "config"), { recursive: true }),
-    mkdir(join(targetDir, "data", "sqlite"), { recursive: true }),
+    mkdir(sqliteHostDir ?? join(targetDir, "data", "sqlite"), { recursive: true }),
     mkdir(join(targetDir, "data", "backups"), { recursive: true }),
     mkdir(binDir, { recursive: true }),
   ]);
   await Promise.all([
     writeFile(
       join(targetDir, "config", ".env"),
-      "APP_BIND=127.0.0.1\nAPP_PORT=3000\nBACKUP_RETENTION_DAYS=30\nSECRET=sentinel-secret\n",
+      `APP_BIND=127.0.0.1\nAPP_PORT=3000\nBACKUP_RETENTION_DAYS=30\n${sqliteHostDir ? `SQLITE_HOST_DIR="${sqliteHostDir}"\n` : ""}SECRET=sentinel-secret\n`,
     ),
     writeFile(join(targetDir, "compose.yaml"), "services: {}\n"),
     writeFile(join(targetDir, ".fake-compose-state"), "running\n"),
@@ -254,7 +257,7 @@ async function runMake(targetDir, target, env = {}) {
 describe("deployment templates", () => {
   test("provide the repository deployment contract", async () => {
     const [makefile, compose, envExample, dockerfile, dockerfileIgnore, contextIgnore] = await Promise.all([
-      readManifest("Makefile"),
+      readManifest("deploy/target/Makefile"),
       readManifest("deploy/compose.yaml"),
       readManifest("deploy/config/.env.example"),
       readManifest("deploy/Dockerfile"),
@@ -263,10 +266,14 @@ describe("deployment templates", () => {
     ]);
 
     expect(makefile).toContain("deploy-code:");
-    expect(makefile).toContain("/Users/zhoulin/projects/TradeReview");
+    expect(DEFAULT_DEPLOY_ROOT).toBe("/Users/zhoulin/projects/交易空间/TradingReview");
     expect(compose).toContain("name: ${COMPOSE_PROJECT_NAME:-tradereview}");
-    expect(compose).toContain("./data/sqlite:/var/lib/tradereview");
+    expect(compose).toContain("${SQLITE_HOST_DIR:-./data/sqlite}:/var/lib/tradereview");
+    expect(compose).toContain("/var/lib/tradereview/tradereview.sqlite");
+    expect(compose).toContain("TRADEREVIEW_DB_PATH: /var/lib/tradereview/tradereview.sqlite");
     expect(envExample).toContain("APP_BIND=127.0.0.1");
+    expect(envExample).toContain("APP_PORT=3022");
+    expect(envExample).toContain("SQLITE_HOST_DIR=/Users/zhoulin/projects/交易空间/database/TradingReview");
     expect(dockerfile).toContain("npm run assets:ocr");
     expect(dockerfile).toContain("apt-get -o Acquire::Retries=5 update");
     expect(dockerfileIgnore).toContain(".env");
@@ -276,6 +283,56 @@ describe("deployment templates", () => {
     expect(dockerfileIgnore).toContain("**/*.key");
     expect(dockerfileIgnore).not.toMatch(/^data$/m);
     expect(compose).toContain("restart: unless-stopped");
+  });
+
+  test("excludes scratch and local validation data from application releases", async () => {
+    const sourceDir = await mkdtemp(join(tmpdir(), "tradereview-copy-filter-"));
+    const targetDir = await mkdtemp(join(tmpdir(), "tradereview-copy-target-"));
+    try {
+      await Promise.all([
+        mkdir(join(sourceDir, ".scratch"), { recursive: true }),
+        mkdir(join(sourceDir, ".data"), { recursive: true }),
+        writeFile(join(sourceDir, ".scratch", "private.sqlite"), "private"),
+        writeFile(join(sourceDir, ".data", "validation.sqlite"), "private"),
+        writeFile(join(sourceDir, "README.md"), "publish"),
+      ]);
+      await expect(
+        runDeployment(
+          { mode: "code", sourceDir, targetDir },
+          { acceptRelease: true },
+        ),
+      ).resolves.toMatchObject({ accepted: true });
+      const releaseRoot = join(targetDir, "app", "releases");
+      const release = (await readdir(releaseRoot))[0];
+      await expect(stat(join(releaseRoot, release, "README.md"))).resolves.toBeTruthy();
+      await expect(stat(join(releaseRoot, release, ".scratch"))).rejects.toMatchObject({ code: "ENOENT" });
+      await expect(stat(join(releaseRoot, release, ".data"))).rejects.toMatchObject({ code: "ENOENT" });
+    } finally {
+      await rm(sourceDir, { recursive: true, force: true });
+      await rm(targetDir, { recursive: true, force: true });
+    }
+  });
+
+  test("pins Compose SQLite interpolation to the deployment env file", async () => {
+    const sandbox = await mkdtemp(join(tmpdir(), "tradereview-compose-env-"));
+    const targetDir = join(sandbox, "target");
+    try {
+      await mkdir(join(targetDir, "config"), { recursive: true });
+      await writeFile(join(targetDir, "config", ".env"), 'SQLITE_HOST_DIR = "/tmp/database-A"\n');
+      let observedEnv;
+      const composeRunner = createComposeRunner({
+        targetDir,
+        env: { SQLITE_HOST_DIR: "/tmp/database-B" },
+        commandRunner: async (_command, _args, options) => {
+          observedEnv = options.env;
+          return { exitCode: 0, stdout: "[]" };
+        },
+      });
+      await composeRunner(["ps"]);
+      expect(observedEnv.SQLITE_HOST_DIR).toBe("/tmp/database-A");
+    } finally {
+      await rm(sandbox, { recursive: true, force: true });
+    }
   });
 });
 
@@ -407,6 +464,83 @@ describe("SQLite operations", () => {
       await rm(fixture.sandbox, { recursive: true, force: true });
     }
   });
+
+  test("backup and restore resolve the quoted external SQLite directory", async () => {
+    const fixture = await createSqliteOperationalSandbox();
+    const externalDir = join(fixture.sandbox, "数据库 with spaces");
+    const externalDatabase = join(externalDir, "tradereview.sqlite");
+    const conflictingDir = join(fixture.sandbox, "database-B");
+    const conflictingDatabase = join(conflictingDir, "tradereview.sqlite");
+    const restorePath = join(fixture.sandbox, "restore external.sqlite");
+    const healthServer = await startHealthServer();
+
+    try {
+      await mkdir(externalDir, { recursive: true });
+      await mkdir(conflictingDir, { recursive: true });
+      await runProcess("/usr/bin/sqlite3", [externalDatabase, "CREATE TABLE state(value TEXT NOT NULL); INSERT INTO state VALUES('external-before');"]);
+      await runProcess("/usr/bin/sqlite3", [conflictingDatabase, "CREATE TABLE state(value TEXT NOT NULL); INSERT INTO state VALUES('wrong-process-env');"]);
+      await runProcess("/usr/bin/sqlite3", [fixture.databasePath, "DELETE FROM state; INSERT INTO state VALUES('stale-old-directory');"]);
+      await writeFile(
+        join(fixture.targetDir, "config", ".env"),
+        `APP_BIND=127.0.0.1\nAPP_PORT=${healthServer.port}\nSQLITE_HOST_DIR = "${externalDir}"   \nBACKUP_RETENTION_DAYS=30\n`,
+      );
+
+      const conflictingEnvironment = { SQLITE_HOST_DIR: conflictingDir };
+      const backup = await runOperationalScript(join(fixture.targetDir, "ops", "backup-db.sh"), [], fixture.binDir, conflictingEnvironment);
+      expect(backup.exitCode).toBe(0);
+      const backupName = (await readdir(join(fixture.targetDir, "data", "backups"))).find((entry) => entry.endsWith(".sqlite"));
+      expect(backupName).toBeDefined();
+      await expect(runProcess("/usr/bin/sqlite3", [join(fixture.targetDir, "data", "backups", backupName), "SELECT value FROM state;"])).resolves.toMatchObject({ stdout: "external-before\n" });
+
+      await runProcess("/usr/bin/sqlite3", [restorePath, "CREATE TABLE state(value TEXT NOT NULL); INSERT INTO state VALUES('restored-external');"]);
+      const restored = await runOperationalScript(join(fixture.targetDir, "ops", "restore-db.sh"), [restorePath], fixture.binDir, conflictingEnvironment);
+      expect(restored.exitCode).toBe(0);
+      await expect(runProcess("/usr/bin/sqlite3", [externalDatabase, "SELECT value FROM state;"])).resolves.toMatchObject({ stdout: "restored-external\n" });
+      await expect(runProcess("/usr/bin/sqlite3", [conflictingDatabase, "SELECT value FROM state;"])).resolves.toMatchObject({ stdout: "wrong-process-env\n" });
+      await expect(runProcess("/usr/bin/sqlite3", [fixture.databasePath, "SELECT value FROM state;"])).resolves.toMatchObject({ stdout: "stale-old-directory\n" });
+    } finally {
+      await healthServer.close();
+      await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  }, 30000);
+
+  test("refuses restore while another process holds the live database open", async () => {
+    const fixture = await createSqliteOperationalSandbox();
+    const restorePath = join(fixture.sandbox, "restore-held-open.sqlite");
+    const heldOpen = spawn(
+      process.execPath,
+      ["-e", "const fs = require('node:fs'); fs.openSync(process.argv[1], 'r'); setInterval(() => {}, 1000);", fixture.databasePath],
+      { stdio: "ignore" },
+    );
+
+    try {
+      await new Promise((resolveWait) => setTimeout(resolveWait, 150));
+      await runProcess("/usr/bin/sqlite3", [restorePath, "CREATE TABLE state(value TEXT NOT NULL); INSERT INTO state VALUES('must-not-restore');"]);
+      const result = await runOperationalScript(join(fixture.targetDir, "ops", "restore-db.sh"), [restorePath], fixture.binDir);
+      expect(result.exitCode).not.toBe(0);
+      expect(result.stderr).toMatch(/still in use|consumers/i);
+      await expect(runProcess("/usr/bin/sqlite3", [fixture.databasePath, "SELECT value FROM state;"])).resolves.toMatchObject({ stdout: "before\n" });
+    } finally {
+      heldOpen.kill("SIGTERM");
+      await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  }, 15000);
+
+  test("fails closed when the database consumer checker errors", async () => {
+    const fixture = await createSqliteOperationalSandbox();
+    const restorePath = join(fixture.sandbox, "restore-checker-error.sqlite");
+    try {
+      await writeFile(join(fixture.binDir, "lsof"), "#!/usr/bin/env bash\nexit 2\n");
+      await chmod(join(fixture.binDir, "lsof"), 0o755);
+      await runProcess("/usr/bin/sqlite3", [restorePath, "CREATE TABLE state(value TEXT NOT NULL); INSERT INTO state VALUES('must-not-restore');"]);
+      const result = await runOperationalScript(join(fixture.targetDir, "ops", "restore-db.sh"), [restorePath], fixture.binDir);
+      expect(result.exitCode).not.toBe(0);
+      expect(result.stderr).toMatch(/cannot verify database consumers|lsof failed/i);
+      await expect(runProcess("/usr/bin/sqlite3", [fixture.databasePath, "SELECT value FROM state;"])).resolves.toMatchObject({ stdout: "before\n" });
+    } finally {
+      await rm(fixture.sandbox, { recursive: true, force: true });
+    }
+  }, 15000);
 
   test("failed restore keeps the original database and returns the app to health", async () => {
     const fixture = await createSqliteOperationalSandbox();
@@ -690,7 +824,7 @@ describe("SQLite operations", () => {
 
 describe("deployment path planning", () => {
   test("uses the documented deployment root by default", () => {
-    expect(DEFAULT_DEPLOY_ROOT).toBe("/Users/zhoulin/projects/TradeReview");
+    expect(DEFAULT_DEPLOY_ROOT).toBe("/Users/zhoulin/projects/交易空间/TradingReview");
     expect(parseArgs([])).toMatchObject({
       mode: "full",
       targetDir: DEFAULT_DEPLOY_ROOT,
@@ -1572,6 +1706,10 @@ describe("deployment filesystem integration", () => {
       await Promise.all([
         writeFile(join(sourceDir, "package.json"), "{}\n"),
         writeFile(join(sourceDir, "deploy", "config", ".env"), "SECRET=must-not-deploy\n"),
+        writeFile(
+          join(sourceDir, "deploy", "config", ".env.example"),
+          `APP_BIND=127.0.0.1\nAPP_PORT=3022\nSQLITE_HOST_DIR="${join(sandbox, "database with spaces")}"\n`,
+        ),
         cp(join(root, "scripts", "deploy.mjs"), join(sourceDir, "scripts", "deploy.mjs")),
         cp(join(root, "Makefile"), join(sourceDir, "Makefile")),
       ]);
@@ -1594,7 +1732,7 @@ describe("deployment filesystem integration", () => {
         "APP_BIND=127.0.0.1",
       );
       expect((await stat(join(targetDir, "config", ".env"))).mode & 0o777).toBe(0o600);
-      expect((await stat(join(targetDir, "data", "sqlite", "tradereview.sqlite"))).mode & 0o777).toBe(0o600);
+      expect((await stat(join(sandbox, "database with spaces", "tradereview.sqlite"))).mode & 0o777).toBe(0o600);
       await expect(readdir(join(targetDir, "data", "backups"))).resolves.toEqual([]);
       await expect(readdir(join(targetDir, "logs"))).resolves.toEqual([]);
       await expect(readFile(join(targetDir, "compose.yaml"), "utf8")).resolves.toContain("services:");
@@ -1609,8 +1747,8 @@ describe("deployment filesystem integration", () => {
       });
 
       await Promise.all([
-        writeFile(join(targetDir, "config", ".env"), "APP_BIND=127.0.0.1\nAPP_PORT=4321\nSECRET=preserved\n"),
-        writeFile(join(targetDir, "data", "sqlite", "tradereview.sqlite"), "database-preserved"),
+        writeFile(join(targetDir, "config", ".env"), `APP_BIND=127.0.0.1\nAPP_PORT=4321\nSQLITE_HOST_DIR="${join(sandbox, "database with spaces")}"\nSECRET=preserved\n`),
+        writeFile(join(sandbox, "database with spaces", "tradereview.sqlite"), "database-preserved"),
         writeFile(join(targetDir, "data", "backups", "sentinel.sqlite"), "backup-preserved"),
         writeFile(join(targetDir, "logs", "app.log"), "log-preserved"),
       ]);
@@ -1622,9 +1760,9 @@ describe("deployment filesystem integration", () => {
         },
       );
       await expect(readFile(join(targetDir, "config", ".env"), "utf8")).resolves.toBe(
-        "APP_BIND=127.0.0.1\nAPP_PORT=4321\nSECRET=preserved\n",
+        `APP_BIND=127.0.0.1\nAPP_PORT=4321\nSQLITE_HOST_DIR="${join(sandbox, "database with spaces")}"\nSECRET=preserved\n`,
       );
-      await expect(readFile(join(targetDir, "data", "sqlite", "tradereview.sqlite"), "utf8")).resolves.toBe(
+      await expect(readFile(join(sandbox, "database with spaces", "tradereview.sqlite"), "utf8")).resolves.toBe(
         "database-preserved",
       );
       await expect(readFile(join(targetDir, "data", "backups", "sentinel.sqlite"), "utf8")).resolves.toBe(

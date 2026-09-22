@@ -553,7 +553,7 @@ export function RoomPerformance({
               {isDailyCalendar && <small className={styles.cellSecondaryShort}>{compactCellSecondaryLabel(cell)}</small>}
             </button>)}
           </div>
-          {selectedKey && <section className={styles.detail} aria-label="日历日期详情">
+          {validSelectedKey && <section className={styles.detail} aria-label="日历日期详情">
             <div className={styles.detailHeading}><strong>{selectedKey}</strong><span>{details.length} 个回合</span></div>
             {selectedCell && <div className={styles.detailSummary} aria-label="日历汇总详情">
               <div><span>期间金额</span><strong>{selectedCell.value !== null ? displayMoney(selectedCell.money) : cellLabel(selectedCell)}</strong></div>

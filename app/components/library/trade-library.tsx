@@ -80,6 +80,9 @@ import {
 } from "./library-browse-state";
 import { FxRatesControl } from "./fx-rates-control";
 import { LibraryPerformanceSummaryView } from "./library-performance-summary";
+import type { SharedScope } from "../../lib/reviews/shared-scope";
+import { SharedScopeBar } from "../scope/shared-scope-bar";
+import "./trade-library.css";
 
 export type { TradeLibraryBrowseState } from "./library-browse-state";
 
@@ -101,6 +104,9 @@ type Props = {
   onSaveReview: (record: EpisodeReviewRecord) => void | Promise<void>;
   reviewsHydrated: boolean;
   target?: TradeLibraryTarget;
+  sharedScope?: SharedScope;
+  onSharedScopeChange?: (patch: Partial<SharedScope>) => void;
+  sharedAccountOptions?: readonly { id: string; label: string }[];
 };
 
 function entryKey(entry: TradeLibraryEntry) {
@@ -296,6 +302,9 @@ export function TradeLibrary({
   onBrowseStateChange,
   defaultMode = "stocks",
   reviewExtras,
+  sharedScope,
+  onSharedScopeChange,
+  sharedAccountOptions,
 }: Props) {
   const [browseState, setBrowseState] = useState<TradeLibraryBrowseState>(() => {
     const normalized = normalizeTradeLibraryBrowseState(initialBrowseState, defaultMode);
@@ -423,6 +432,21 @@ export function TradeLibrary({
     [entries],
   );
 
+  // The workspace owns nature/account/run. Derive the browse state from that
+  // scope so the stock rows and queue cannot keep stale page-local values.
+  const effectiveTradeNature = (sharedScope?.nature ?? tradeNature) as TradeLibraryBrowseState["tradeNature"];
+  const sharedAccountIds = sharedScope?.accountIds;
+  const effectiveAccounts = useMemo(
+    () => sharedAccountIds ? [...sharedAccountIds] : accounts,
+    [accounts, sharedAccountIds],
+  );
+  const effectiveAccount = sharedScope
+    ? (sharedScope.accountIds.length === 1 ? sharedScope.accountIds[0]! : "all")
+    : account;
+  const effectiveSimulationRunId: TradeLibraryBrowseState["simulationRunId"] = sharedScope
+    ? (sharedScope.nature === "simulation" && sharedScope.simulationRunId ? sharedScope.simulationRunId : "all")
+    : simulationRunId;
+
   // Keep expansion, selection and scroll state out of the filter derivation.
   // Those interactions should not rebuild the 5,000-row browse model.
   const browseFilterState = useMemo<TradeLibraryBrowseState>(
@@ -434,12 +458,12 @@ export function TradeLibrary({
       includeReviewedStockIds: [],
       query,
       market,
-      account,
-      accounts: [...accounts],
+      account: effectiveAccount,
+      accounts: [...effectiveAccounts],
       brokers: [...brokers],
       year,
-      tradeNature,
-      simulationRunId,
+      tradeNature: effectiveTradeNature,
+      simulationRunId: effectiveSimulationRunId,
       reviewStatus,
       sort,
       positionStatus,
@@ -451,19 +475,19 @@ export function TradeLibrary({
       roundPage: 1,
     }),
     [
-      account,
-      accounts,
       brokers,
       dataStatus,
       market,
       positionStatus,
       query,
       reviewStatus,
-      simulationRunId,
       sort,
       tag,
-      tradeNature,
       year,
+      effectiveAccount,
+      effectiveAccounts,
+      effectiveSimulationRunId,
+      effectiveTradeNature,
     ],
   );
   const allStatusFilterState = useMemo<TradeLibraryBrowseState>(
@@ -517,7 +541,7 @@ export function TradeLibrary({
       ),
       performanceSortAvailability: canSortLibraryPerformance(
         browseRows,
-        simulationRunId,
+        effectiveSimulationRunId,
       ),
       reviewedCount: allStatusBrowseRows.filter(
         row => reviewState(row.item) === "completed",
@@ -533,7 +557,7 @@ export function TradeLibrary({
     fxSnapshot,
     marketDataStatuses,
     reviewStatus,
-    simulationRunId,
+    effectiveSimulationRunId,
   ]);
   const {
     browseRows,
@@ -551,7 +575,14 @@ export function TradeLibrary({
   const effectiveSort = isPerformanceSort(sort) && !performanceSortAvailability.allowed
     ? "newest"
     : sort;
-  const queueFilter = reviewQueueFilterForBrowseState({ ...browseState, sort: effectiveSort });
+  const queueFilter = reviewQueueFilterForBrowseState({
+    ...browseState,
+    sort: effectiveSort,
+    tradeNature: effectiveTradeNature,
+    simulationRunId: effectiveSimulationRunId,
+    accounts: [...effectiveAccounts],
+    account: effectiveAccount,
+  });
   const stockGroups = useMemo(
     () => sortLibraryItems(
       rawStockGroups.map(group => ({
@@ -713,6 +744,9 @@ export function TradeLibrary({
       account: patch.account ?? (accounts.length === 1 ? accounts[0] : "all"),
       sort: clearedSimulationRun && isPerformanceSort(sort) ? "newest" : patch.sort ?? sort,
     });
+    if (sharedScope && onSharedScopeChange && patch.accounts) {
+      onSharedScopeChange({ accountIds: [...accounts] });
+    }
     processedIds.current.clear();
     reopenedIds.current.clear();
     setQueueNotice("");
@@ -845,7 +879,7 @@ export function TradeLibrary({
   const sharedBrowseControls = (
     <>
       <div className="library-shared-browse-controls" aria-label="交易库常用筛选">
-      <label>
+      {!sharedScope && <label>
         <span>交易性质</span>
         <select
           aria-label="按交易性质筛选"
@@ -857,7 +891,7 @@ export function TradeLibrary({
           <option value="simulation">模拟盘</option>
           <option value="unknown">来源未知</option>
         </select>
-      </label>
+      </label>}
       <label>
         <span>市场</span>
         <select
@@ -933,13 +967,14 @@ export function TradeLibrary({
   const fxRatesStrip = (
     <div className="library-fx-strip" aria-label="交易库人民币折算">
       <div>
-        <strong>人民币折算</strong>
-        <span>{fxSnapshot
-          ? `${fxSnapshot.cacheStatus === "cached" ? "缓存汇率" : "最新汇率"} · ${fxSnapshot.rateDate}`
-          : "尚无汇率快照"}</span>
+        <strong>{sharedScope?.reportCurrency === "original" ? "原币金额" : "统计参考折算 · CNY"}</strong>
+        <span>{sharedScope?.reportCurrency === "original" ? "当前范围按原币显示，不合并不同币种" : fxSnapshot
+          ? `ECB 快照 · ${fxSnapshot.rateDate}${fxSnapshot.cacheStatus === "cached" ? " · 缓存" : ""}`
+          : "统计折算尚无 ECB 快照；原币金额仍可查看"}</span>
       </div>
       <details>
-        <summary>汇率设置</summary>
+        <summary>折算用途与快照</summary>
+        <p>此处使用 ECB 参考汇率统一展示，不代表各成交日的历史绩效汇率。数据页的中行汇率用于当前估值参考，两者独立更新。</p>
         <FxRatesControl onSnapshotChange={setFxSnapshot} />
       </details>
     </div>
@@ -952,6 +987,7 @@ export function TradeLibrary({
       reviewedCount={reviewedCount}
       progressTotal={allStatusBrowseRows.length}
       groupLabels={performanceGroupLabels}
+      reportCurrency={sharedScope?.reportCurrency ?? "CNY"}
     />
   );
   const libraryHeader = (
@@ -963,6 +999,9 @@ export function TradeLibrary({
       <div className="library-header-actions"><strong>{filteredEntries.length} 个标的 · {browseRows.length} 个回合</strong></div>
     </header>
   );
+  const sharedScopeControl = sharedScope && onSharedScopeChange
+    ? <SharedScopeBar scope={sharedScope} accountOptions={sharedAccountOptions} onChange={onSharedScopeChange} />
+    : null;
   const libraryViewTabs = (
     <div className="module-tabs" role="tablist" aria-label="交易库浏览视图" onKeyDown={handleBrowseTabKeyDown}>
       <button type="button" role="tab" data-mode="stocks" aria-selected={mode === "stocks"} onClick={() => updateBrowseMode("stocks")}>按标的浏览</button>
@@ -983,6 +1022,7 @@ export function TradeLibrary({
     return (
       <section ref={sectionRef} className="trade-library" aria-label="交易库">
         {libraryHeader}
+        {sharedScopeControl}
         {libraryViewTabs}
         {emptyLibraryState}
       </section>
@@ -1309,13 +1349,14 @@ export function TradeLibrary({
     );
   }
 
-  if (mode === "queue" && !selectionMissing) return <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => updateBrowseState({ scrollTop: event.currentTarget.scrollTop })}>{filterDrawer}{libraryHeader}{libraryViewTabs}{sharedBrowseControls}{fxRatesStrip}{performanceSummaryView}<ReviewQueue compact entries={entries} rows={browseRows} pendingRows={pendingBrowseRows} filter={queueFilter} onFilter={updateQueueFilter} onSort={updateSort} performanceSortAvailability={performanceSortAvailability} onOpen={openQueued} onBrowseStocks={() => updateBrowseMode("stocks")} notice={queueNotice} performanceByEpisode={performanceByEpisode} page={roundPage} onPageChange={page => updateBrowseState({ roundPage: page })} />{browseRows.length === 0 && emptyBrowseAction && <div className="library-empty-actions">{emptyBrowseAction}</div>}</section>;
+  if (mode === "queue" && !selectionMissing) return <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => updateBrowseState({ scrollTop: event.currentTarget.scrollTop })}>{filterDrawer}{libraryHeader}{sharedScopeControl}{libraryViewTabs}{sharedBrowseControls}{fxRatesStrip}{performanceSummaryView}<ReviewQueue compact entries={entries} rows={browseRows} pendingRows={pendingBrowseRows} filter={queueFilter} onFilter={updateQueueFilter} onSort={updateSort} performanceSortAvailability={performanceSortAvailability} onOpen={openQueued} onBrowseStocks={() => updateBrowseMode("stocks")} notice={queueNotice} performanceByEpisode={performanceByEpisode} page={roundPage} onPageChange={page => updateBrowseState({ roundPage: page })} reportCurrency={sharedScope?.reportCurrency ?? "CNY"} />{browseRows.length === 0 && emptyBrowseAction && <div className="library-empty-actions">{emptyBrowseAction}</div>}</section>;
 
   return (
     <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => updateBrowseState({ scrollTop: event.currentTarget.scrollTop })}>
       {filterDrawer}
       {selectionMissing && <p role="alert" className="navigation-notice">原股票或交易回合已变化，请重新选择。<button type="button" onClick={() => updateBrowseState({ selectedInstrumentId: null, selectedEpisodeId: null })}>重新选择</button></p>}
       {libraryHeader}
+      {sharedScopeControl}
       {libraryViewTabs}
 
       {sharedBrowseControls}

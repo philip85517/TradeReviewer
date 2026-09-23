@@ -6,6 +6,7 @@ import {
   buildRoomMoneyView,
   buildTradingRoomModel,
   classifyTradingRoomAsset,
+  createDefaultRoomScope,
   DEFAULT_ROOM_SCOPE,
   filterRoomRows,
   normalizeRoomMetadata,
@@ -218,6 +219,19 @@ describe("trading room scope contracts", () => {
       preset: "ytd",
       startDate: "2024-01-01",
       endDate: "2024-02-29",
+    });
+  });
+
+  it("defaults to year to date and supports an explicit all-history range", () => {
+    expect(createDefaultRoomScope("2026-09-19").period).toEqual({
+      preset: "ytd",
+      startDate: "2026-01-01",
+      endDate: "2026-09-19",
+    });
+    expect(buildRoomDateRange("all", "2026-09-19", { startDate: "2021-04-02", endDate: "2026-09-19" })).toEqual({
+      preset: "all",
+      startDate: "2021-04-02",
+      endDate: "2026-09-19",
     });
   });
 

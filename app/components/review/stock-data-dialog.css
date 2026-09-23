@@ -1,0 +1,24 @@
+.stock-data-dialog {
+  padding: 0;
+}
+
+.stock-data-dialog > header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 18px 24px 14px;
+  background: #101722;
+  border-bottom: 1px solid #2a3a50;
+}
+
+.stock-data-dialog > header h2 { margin-bottom: 0; }
+.stock-data-dialog > :not(header) { margin-left: 24px; margin-right: 24px; }
+.stock-data-dialog > :last-child { margin-bottom: 20px; }
+.stock-data-dialog > .trade-revision-history { margin-bottom: 20px; }
+.trade-correction { scroll-margin-top: 70px; }
+.trade-correction-footer { position: sticky; bottom: 0; z-index: 1; margin: 0 -16px -16px; padding: 10px 16px; background: rgba(25,39,57,.98); border-top: 1px solid #334861; }
+
+@media (max-width: 759px) {
+  .stock-data-dialog > header { padding-inline: 16px; }
+  .stock-data-dialog > :not(header) { margin-left: 16px; margin-right: 16px; }
+}

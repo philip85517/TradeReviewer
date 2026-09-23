@@ -11,6 +11,7 @@ import {
 } from "../../lib/reviews/review-summary";
 import type { ReviewSummaryClient } from "../../lib/storage/review-summary-client";
 import type { TradeLibraryEntry } from "../../lib/trades/library";
+import styles from "./review-summary.module.css";
 
 type Props = {
   entries: TradeLibraryEntry[];
@@ -86,15 +87,20 @@ function emptyNote(scopeId: string, rangeId: string): ReviewSummaryNote {
     change: "",
     next: "",
     evidenceEpisodeIds: [],
+    tag: "",
+    sentence: "",
+    observationVersion: "v1",
+    followUpStartDate: null,
+    followUpEndDate: null,
   };
 }
 
-function money(value: string, currency: string) {
+function money(value: string, currency: string, signDisplay: Intl.NumberFormatOptions["signDisplay"] = "always") {
   return new Intl.NumberFormat("zh-CN", {
     style: "currency",
     currency,
     maximumFractionDigits: 2,
-    signDisplay: "always",
+    signDisplay,
   }).format(Number(value));
 }
 
@@ -365,7 +371,7 @@ export function ReviewSummary({
         </article>
         <article>
           <span>费用</span>
-          <strong>{summary.trustedClosedCount ? money(summary.fees, scope?.scope.currency ?? "USD") : "—"}</strong>
+          <strong>{summary.trustedClosedCount ? money(summary.fees, scope?.scope.currency ?? "USD", "auto") : "—"}</strong>
         </article>
         <article>
           <span>胜 / 负</span>
@@ -404,31 +410,40 @@ export function ReviewSummary({
         </details>
       )}
 
-      <fieldset disabled={!current.loaded || saving || !validRange} className="review-summary-notes">
+      <fieldset disabled={!current.loaded || saving || !validRange} className={`${styles.notes} review-summary-notes`}>
         <label>
-          <span>保持</span>
-          <textarea
-            aria-label="保持"
-            value={current.note.keep}
-            onChange={(event) => update({ keep: event.target.value })}
+          <span>本期标签（可选）</span>
+          <input
+            aria-label="本期标签（可选）"
+            value={current.note.tag ?? ""}
+            onChange={(event) => update({ tag: event.target.value })}
           />
         </label>
         <label>
-          <span>修正</span>
+          <span>一句话判断（可选）</span>
           <textarea
-            aria-label="修正"
-            value={current.note.change}
-            onChange={(event) => update({ change: event.target.value })}
+            aria-label="一句话判断（可选）"
+            value={current.note.sentence ?? ""}
+            onChange={(event) => update({ sentence: event.target.value })}
           />
         </label>
         <label>
-          <span>下期重点</span>
-          <textarea
-            aria-label="下期重点"
-            value={current.note.next}
-            onChange={(event) => update({ next: event.target.value })}
-          />
+          <span>观察口径版本</span>
+          <input aria-label="观察口径版本" value={current.note.observationVersion ?? "v1"} onChange={event => update({ observationVersion: event.target.value })} />
         </label>
+        <label>
+          <span>后续观察期（可选）</span>
+          <span className={styles.followUpDates}>
+            <input aria-label="后续观察开始日期" type="date" value={current.note.followUpStartDate ?? ""} onChange={event => update({ followUpStartDate: event.target.value || null })} />
+            <input aria-label="后续观察结束日期" type="date" value={current.note.followUpEndDate ?? ""} onChange={event => update({ followUpEndDate: event.target.value || null })} />
+          </span>
+        </label>
+        <details className={styles.legacyDetails}>
+          <summary>兼容旧版三栏记录（可选）</summary>
+          <label><span>保持</span><textarea aria-label="保持" value={current.note.keep} onChange={(event) => update({ keep: event.target.value })} /></label>
+          <label><span>修正</span><textarea aria-label="修正" value={current.note.change} onChange={(event) => update({ change: event.target.value })} /></label>
+          <label><span>下期重点</span><textarea aria-label="下期重点" value={current.note.next} onChange={(event) => update({ next: event.target.value })} /></label>
+        </details>
       </fieldset>
 
       <details className="review-summary-evidence">

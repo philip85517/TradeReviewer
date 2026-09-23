@@ -1,7 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState, type CSSProperties, type FocusEvent, type KeyboardEvent } from "react";
 
 import { buildTradingRoomMetrics } from "../../lib/reviews/trading-room-metrics";
 import {
@@ -15,6 +15,8 @@ import {
   type PrincipalScope,
 } from "../../lib/principal/principal-model";
 import { usePrincipalSettings } from "../../lib/principal/use-principal-settings";
+import { buildReferenceReturnSummary } from "../../lib/principal/reference-capital-model";
+import { useReferenceCapital } from "../../lib/principal/use-reference-capital";
 import type { ChartSettings } from "../../lib/storage/chart-settings";
 import type { DailyCandleRecord } from "../../lib/market/contracts";
 import type { PositionLedgerSnapshot } from "../../lib/replay/position-ledger";
@@ -22,8 +24,6 @@ import {
   RoomHoldingsPanel,
 } from "./room-holdings";
 import { RoomPerformance } from "./room-performance";
-import { RoomReturnDetails } from "./room-return-details";
-import { RoomQualityMetrics } from "./room-quality-metrics";
 import type { TradingRoomQuote } from "../../lib/reviews/trading-room-holdings";
 import { buildTradingRoomHoldings } from "../../lib/reviews/trading-room-holdings";
 import type { TradeLibraryEntry } from "../../lib/trades/library";
@@ -40,7 +40,9 @@ import {
   type RoomTradeNature,
   type TradingRoomMetadataInput,
 } from "../../lib/reviews/trading-room-scope";
+import { dashboardEpisodeDate } from "../../lib/reviews/dashboard";
 import styles from "./review-dashboard.module.css";
+import type { SharedReportCurrency, SharedScope } from "../../lib/reviews/shared-scope";
 
 export type ReviewDashboardProps = {
   entries: TradeLibraryEntry[];
@@ -77,25 +79,35 @@ export type ReviewDashboardProps = {
     episodeId?: string,
   ) => void;
   onQualityModelChange?: (model: TradingRoomQualityModel) => void;
+  sharedScope?: SharedScope;
+  onSharedScopeChange?: (patch: Partial<SharedScope>) => void;
+  sharedAccountOptions?: readonly { id: string; label: string }[];
+  referenceCapitalEnabled?: boolean;
+  visible?: boolean;
 };
 
-type FilterSelectProps = {
+function RadioGroup({
+  label,
+  ariaLabel,
+  value,
+  options,
+  onChange,
+}: {
   label: string;
   ariaLabel: string;
   value: string;
-  options: Array<{ value: string; label: string }>;
+  options: DashboardFilterOption[];
   onChange: (value: string) => void;
-};
-
-function FilterSelect({ label, ariaLabel, value, options, onChange }: FilterSelectProps) {
-  return (
-    <label className={styles.filterField}>
-      <span>{label}</span>
-      <select aria-label={ariaLabel} value={value} onChange={event => onChange(event.target.value)}>
-        {options.map(option => <option value={option.value} key={option.value}>{option.label}</option>)}
-      </select>
-    </label>
-  );
+}) {
+  return <fieldset className={styles.radioField} aria-label={ariaLabel}>
+    <legend>{label}</legend>
+    <div className={styles.radioOptions}>
+      {options.map(option => <label className={styles.radioOption} key={option.value}>
+        <input type="radio" name={ariaLabel} value={option.value} checked={value === option.value} onChange={() => onChange(option.value)} />
+        <span>{option.label}</span>
+      </label>)}
+    </div>
+  </fieldset>;
 }
 
 function currencyCode(value: string | null | undefined): string {
@@ -126,6 +138,26 @@ function allEntryExecutions(entry: TradeLibraryEntry) {
     ...entry.executions,
     ...entry.episodes.flatMap(item => item.episode.executions),
   ];
+}
+
+function entryHasNature(entry: TradeLibraryEntry, nature: "live" | "simulation"): boolean {
+  return entry.episodes.some(({ episode }) => (entry.tradeNature ?? episode.tradeNature ?? "live") === nature);
+}
+
+function scopedEntriesForNature(entries: TradeLibraryEntry[], nature: "live" | "simulation"): TradeLibraryEntry[] {
+  return entries.filter(entry => entryHasNature(entry, nature));
+}
+
+function validAccountIds(entries: TradeLibraryEntry[], nature: "live" | "simulation", simulationRunId: string | null): string[] {
+  const ids = new Set<string>();
+  for (const entry of scopedEntriesForNature(entries, nature)) {
+    for (const { episode } of entry.episodes) {
+      if ((entry.tradeNature ?? episode.tradeNature ?? "live") !== nature) continue;
+      if (nature === "simulation" && simulationRunId && episode.simulationRunId !== simulationRunId) continue;
+      ids.add(episode.accountId);
+    }
+  }
+  return [...ids];
 }
 
 type DashboardFilterOption = { value: string; label: string };
@@ -282,10 +314,11 @@ function percentLabel(value: string | null): string {
   return `${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(numericValue)}%`;
 }
 
-function trendColors(colorScheme: ChartSettings["colorScheme"]) {
+function trendColors(colorScheme?: ChartSettings["colorScheme"]) {
   if (colorScheme === "green-red") return { positive: "#22c55e", negative: "#ef4444" };
   if (colorScheme === "blue-orange") return { positive: "#3b82f6", negative: "#f97316" };
-  return { positive: "#26a69a", negative: "#ef5350" };
+  if (colorScheme === "teal-red") return { positive: "#26a69a", negative: "#ef5350" };
+  return { positive: "#dc2626", negative: "#16a34a" };
 }
 
 export function ReviewDashboard({
@@ -301,40 +334,78 @@ export function ReviewDashboard({
   holdingsStaleAfterDays,
   principalEnabled = false,
   qualityInput,
-  onOpenDataManagement,
-  onOpenPrincipalSettings,
   onRetryDataQuality,
   onOpenDataCheck,
   onQualityModelChange,
+  sharedScope,
+  onSharedScopeChange,
+  referenceCapitalEnabled = true,
+  visible = true,
 }: ReviewDashboardProps) {
-  const [roomScope, setRoomScope] = useState<RoomScope>(() => createDefaultRoomScope());
-  const [roomCustomStartDate, setRoomCustomStartDate] = useState(() => createDefaultRoomScope().period.startDate);
-  const [roomCustomEndDate, setRoomCustomEndDate] = useState(() => createDefaultRoomScope().period.endDate);
-  const [roomCustomPeriodOpen, setRoomCustomPeriodOpen] = useState(false);
+  const [localRoomScope, setRoomScope] = useState<RoomScope>(() => createDefaultRoomScope());
+  const [localReportCurrency, setLocalReportCurrency] = useState<SharedReportCurrency>("original");
+  const [roomCustomPeriodDraft, setRoomCustomPeriodDraft] = useState<{ startDate: string; endDate: string; scopeKey: string } | null>(null);
   const [roomPeriodError, setRoomPeriodError] = useState<string | null>(null);
+  // The shell owns the cross-page scope. Derive the room scope during render so
+  // a nature/account/run change cannot briefly render stale live metrics.
+  const roomScope = useMemo<RoomScope>(() => {
+    const source = sharedScope ?? localRoomScope;
+    const nature = source.nature === "simulation" ? "simulation" : "live";
+    const candidateRun = nature === "simulation" ? source.simulationRunId : null;
+    const availableRuns = simulationFilterOptions(scopedEntriesForNature(entries, "simulation")).map(option => option.value);
+    const simulationRunId = candidateRun && availableRuns.includes(candidateRun) ? candidateRun : null;
+    const candidateAccounts = [...source.accountIds];
+    const validAccounts = new Set(validAccountIds(entries, nature, simulationRunId));
+    const nextScope: RoomScope = {
+      ...localRoomScope,
+      nature,
+      accountIds: candidateAccounts.filter(accountId => validAccounts.has(accountId)),
+      simulationRunId,
+    };
+    if (nextScope.period.preset !== "all") return nextScope;
+    const history = buildTradingRoomModel(entries, {
+      scope: { ...nextScope, period: buildRoomDateRange("custom", createDefaultRoomScope().period.endDate, "1900-01-01", createDefaultRoomScope().period.endDate) },
+      instrumentMetadata,
+    });
+    const today = createDefaultRoomScope().period.endDate;
+    const dates = history.rows.map(value => value.closeDate ?? dashboardEpisodeDate(value.row)).filter(value => value <= today).sort();
+    if (!dates[0] || !dates.at(-1)) return nextScope;
+    return { ...nextScope, period: buildRoomDateRange("all", today, { startDate: dates[0], endDate: dates.at(-1)! }) };
+  }, [entries, instrumentMetadata, localRoomScope, sharedScope]);
+  const reportCurrency = sharedScope?.reportCurrency ?? localReportCurrency;
+  const roomScopeKey = `${roomScope.nature}|${roomScope.simulationRunId ?? ""}|${roomScope.accountIds.join(",")}`;
+  const activeRoomCustomDraft = roomCustomPeriodDraft?.scopeKey === roomScopeKey ? roomCustomPeriodDraft : null;
+  const roomCustomStartDate = activeRoomCustomDraft?.startDate ?? roomScope.period.startDate;
+  const roomCustomEndDate = activeRoomCustomDraft?.endDate ?? roomScope.period.endDate;
+  const setRoomCustomStartDate = (startDate: string) => setRoomCustomPeriodDraft({ startDate, endDate: roomCustomEndDate, scopeKey: roomScopeKey });
+  const setRoomCustomEndDate = (endDate: string) => setRoomCustomPeriodDraft({ startDate: roomCustomStartDate, endDate, scopeKey: roomScopeKey });
+  const displayFxSnapshot = reportCurrency === "original" ? undefined : fxSnapshot;
+  const usableFxSnapshot = displayFxSnapshot?.status === "complete" && Object.keys(displayFxSnapshot.rates).length > 0
+    ? displayFxSnapshot
+    : undefined;
 
   const dashboardStyle = useMemo<CSSProperties>(() => {
-    const colors = trendColors(colorScheme ?? "teal-red");
+    const colors = trendColors(colorScheme);
     return {
       "--dashboard-positive": colors.positive,
       "--dashboard-negative": colors.negative,
     } as CSSProperties;
   }, [colorScheme]);
   const roomModel = useMemo(
-    () => buildTradingRoomModel(entries, { scope: roomScope, instrumentMetadata, fxSnapshot }),
-    [entries, fxSnapshot, instrumentMetadata, roomScope],
+    () => buildTradingRoomModel(entries, { scope: roomScope, instrumentMetadata, fxSnapshot: usableFxSnapshot }),
+    [entries, instrumentMetadata, roomScope, usableFxSnapshot],
   );
   const roomHistoryModel = useMemo(() => {
     const today = buildRoomDateRange("month").endDate;
     return buildTradingRoomModel(entries, {
       scope: { ...roomScope, period: buildRoomDateRange("custom", today, "1900-01-01", today) },
       instrumentMetadata,
-      fxSnapshot,
+      fxSnapshot: usableFxSnapshot,
     });
-  }, [entries, fxSnapshot, instrumentMetadata, roomScope]);
+  }, [entries, instrumentMetadata, roomScope, usableFxSnapshot]);
   const roomMetrics = useMemo(
-    () => buildTradingRoomMetrics(roomModel.rows, { period: roomScope.period, fxSnapshot }),
-    [fxSnapshot, roomModel.rows, roomScope.period],
+    () => buildTradingRoomMetrics(roomModel.rows, { period: roomScope.period, fxSnapshot: usableFxSnapshot }),
+    [roomModel.rows, roomScope.period, usableFxSnapshot],
   );
   const principalScope = useMemo<PrincipalScope>(
     () => ({ nature: roomScope.nature, simulationRunId: roomScope.simulationRunId }),
@@ -342,9 +413,37 @@ export function ReviewDashboard({
   );
   const principalSettings = usePrincipalSettings({ scope: principalScope, enabled: principalEnabled });
   const principalSummary = useMemo(
-    () => buildPrincipalReferenceSummary(roomModel.rows, roomScope, principalSettings.state, fxSnapshot),
-    [fxSnapshot, principalSettings.state, roomModel.rows, roomScope],
+    () => buildPrincipalReferenceSummary(roomModel.rows, roomScope, principalSettings.state, usableFxSnapshot),
+    [principalSettings.state, roomModel.rows, roomScope, usableFxSnapshot],
   );
+  const referenceCapital = useReferenceCapital({ enabled: referenceCapitalEnabled });
+  const { refresh: refreshReferenceCapital } = referenceCapital;
+  useEffect(() => {
+    if (visible && referenceCapitalEnabled) void refreshReferenceCapital();
+  }, [refreshReferenceCapital, referenceCapitalEnabled, visible]);
+  const referenceReturnSummary = useMemo(() => {
+    const pairs = [...new Map(roomModel.rows.map(({ row: value }) => {
+      const currency = value.item.episode.instrument.currency.trim().toUpperCase();
+      return [`${value.item.episode.accountId}:${currency}`, { accountId: value.item.episode.accountId, currency }];
+    })).values()];
+    const trustedClosedPnl = roomModel.rows
+      .filter(value => value.trustedPnl !== null && value.row.item.episode.status === "closed")
+      .map(value => ({
+        accountId: value.row.item.episode.accountId,
+        currency: value.row.item.episode.instrument.currency.trim().toUpperCase(),
+        amount: value.trustedPnl!,
+      }));
+    if (roomScope.nature === "unknown") return { status: "missing" as const, returnPercent: null, netPnlByPair: {}, capitalByPair: {}, reason: "性质未知，不能并入实盘或模拟盘参考资本" };
+    return buildReferenceReturnSummary(referenceCapital.state, {
+      nature: roomScope.nature === "simulation" ? "simulation" : "live",
+      simulationRunId: roomScope.nature === "simulation" ? roomScope.simulationRunId : null,
+      pairs,
+      fromDate: roomScope.period.startDate,
+      toDate: roomScope.period.endDate,
+      trustedClosedPnl,
+      fxRatesToCny: reportCurrency === "CNY" ? usableFxSnapshot?.rates : undefined,
+    });
+  }, [referenceCapital.state, reportCurrency, roomModel.rows, roomScope.nature, roomScope.period.endDate, roomScope.period.startDate, roomScope.simulationRunId, usableFxSnapshot]);
   const roomHoldingsModel = useMemo(
     () => buildTradingRoomHoldings(entries, {
       scope: roomScope,
@@ -381,22 +480,24 @@ export function ReviewDashboard({
         scope: roomScope,
         rows: roomModel.rows,
         holdings: roomHoldingsModel,
-        fxSnapshot: qualityInput.fxSnapshot ?? fxSnapshot,
+        fxSnapshot: qualityInput.fxSnapshot ?? usableFxSnapshot,
       })
       : null,
-    [fxSnapshot, qualityInput, roomHoldingsModel, roomModel.rows, roomScope],
+    [qualityInput, roomHoldingsModel, roomModel.rows, roomScope, usableFxSnapshot],
   );
   useEffect(() => {
     if (roomDataQuality) onQualityModelChange?.(roomDataQuality);
   }, [onQualityModelChange, roomDataQuality]);
   const roomMarkets = roomScope.markets ?? [];
+  const roomDateDraftDirty = roomCustomStartDate !== roomScope.period.startDate || roomCustomEndDate !== roomScope.period.endDate;
   const roomRows = useMemo(() => roomModel.rows.map(value => value.row), [roomModel.rows]);
-  const accountOptions = useMemo(() => accountFilterOptions(entries), [entries]);
-  const currencyOptions = useMemo(() => [...new Set(entries.map(entry => entry.instrument.currency.trim().toUpperCase()).filter(Boolean))]
+  const natureEntries = useMemo(() => scopedEntriesForNature(entries, roomScope.nature === "simulation" ? "simulation" : "live"), [entries, roomScope.nature]);
+  const accountOptions = useMemo(() => accountFilterOptions(natureEntries), [natureEntries]);
+  const currencyOptions = useMemo(() => [...new Set(natureEntries.map(entry => entry.instrument.currency.trim().toUpperCase()).filter(Boolean))]
     .sort()
-    .map(value => ({ value, label: value })), [entries]);
-  const marketOptions = useMemo(() => marketFilterOptions(entries), [entries]);
-  const simulationRunOptions = useMemo(() => simulationFilterOptions(entries), [entries]);
+    .map(value => ({ value, label: value })), [natureEntries]);
+  const marketOptions = useMemo(() => marketFilterOptions(natureEntries), [natureEntries]);
+  const simulationRunOptions = useMemo(() => simulationFilterOptions(natureEntries), [natureEntries]);
   const roomFilterCount = [
     roomScope.query,
     roomScope.accountIds.length,
@@ -410,28 +511,46 @@ export function ReviewDashboard({
   const roomScopeIsNarrowed = roomScope.nature !== "live"
     || roomScope.assetCategory !== "all"
     || (roomScope.assetType ?? "all") !== "all"
-    || roomScope.period.preset !== "month"
+    || roomScope.period.preset !== "ytd"
     || roomFilterCount > 0;
   const updateRoomScope = (patch: Partial<RoomScope>) => {
-    setRoomScope(current => ({ ...current, ...patch }));
-    setRoomCustomPeriodOpen(false);
-    setRoomPeriodError(null);
-    if (patch.period) {
-      setRoomCustomStartDate(patch.period.startDate);
-      setRoomCustomEndDate(patch.period.endDate);
+    const nextNature: "live" | "simulation" = patch.nature === "simulation" || (patch.nature === undefined && roomScope.nature === "simulation") ? "simulation" : "live";
+    const nextRun = patch.simulationRunId !== undefined ? patch.simulationRunId : roomScope.simulationRunId;
+    const natureChanged = patch.nature !== undefined && patch.nature !== roomScope.nature;
+    const requestedAccounts = natureChanged ? [] : [...(patch.accountIds ?? roomScope.accountIds)];
+    const compatibleAccounts = requestedAccounts.filter(accountId => validAccountIds(entries, nextNature, nextNature === "simulation" ? nextRun : null).includes(accountId));
+    setRoomScope(current => {
+      const next = { ...current, ...patch };
+      next.accountIds = compatibleAccounts;
+      if (patch.nature && patch.nature !== current.nature) {
+        next.simulationRunId = null;
+      }
+      return next;
+    });
+    if (onSharedScopeChange) {
+      const sharedPatch: Partial<SharedScope> = {};
+      if (patch.nature !== undefined) sharedPatch.nature = patch.nature;
+      if (patch.accountIds !== undefined || patch.nature !== undefined || patch.simulationRunId !== undefined) sharedPatch.accountIds = compatibleAccounts;
+      if (patch.simulationRunId !== undefined) sharedPatch.simulationRunId = patch.simulationRunId;
+      if (Object.keys(sharedPatch).length > 0) onSharedScopeChange(sharedPatch);
     }
+    setRoomPeriodError(null);
+    setRoomCustomPeriodDraft(null);
   };
   const updateRoomPeriod = (preset: RoomPeriodPreset) => {
+    if (preset === "all") {
+      applyRoomHistoryPeriod("all");
+      return;
+    }
     if (preset === "custom") {
       setRoomPeriodError(null);
-      setRoomCustomStartDate(roomScope.period.startDate);
-      setRoomCustomEndDate(roomScope.period.endDate);
-      setRoomCustomPeriodOpen(true);
+      setRoomCustomPeriodDraft({ startDate: roomScope.period.startDate, endDate: roomScope.period.endDate, scopeKey: roomScopeKey });
       return;
     }
     setRoomPeriodError(null);
-    setRoomCustomPeriodOpen(false);
-    updateRoomScope({ period: buildRoomDateRange(preset) });
+    const period = buildRoomDateRange(preset);
+    setRoomCustomPeriodDraft({ startDate: period.startDate, endDate: period.endDate, scopeKey: roomScopeKey });
+    updateRoomScope({ period });
   };
   const applyRoomCustomPeriod = (startDate = roomCustomStartDate, endDate = roomCustomEndDate) => {
     try {
@@ -440,13 +559,29 @@ export function ReviewDashboard({
       const period = buildRoomDateRange("custom", today, startDate, endDate);
       setRoomPeriodError(null);
       updateRoomScope({ period });
-      setRoomCustomPeriodOpen(false);
     } catch {
       setRoomPeriodError("自定义期间起止日期无效");
     }
   };
+  const handleRoomDateKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (!roomDateDraftDirty) return;
+      applyRoomCustomPeriod();
+    }
+  };
+  const handleRoomDateBlur = (event: FocusEvent<HTMLInputElement>) => {
+    if (!roomDateDraftDirty || !roomCustomPeriodDraft || roomCustomPeriodDraft.scopeKey !== roomScopeKey) return;
+    const nextTarget = event.relatedTarget;
+    if (nextTarget instanceof HTMLElement && nextTarget.closest('[role="tab"]')) return;
+    applyRoomCustomPeriod();
+  };
   const applyRoomHistoryPeriod = (mode: "all" | "recent") => {
-    const roomHistoryDates = roomHistoryModel.rows.map(row => row.closeDate).filter((value): value is string => Boolean(value)).sort();
+    const today = createDefaultRoomScope().period.endDate;
+    const roomHistoryDates = roomHistoryModel.rows
+      .map(value => value.closeDate ?? dashboardEpisodeDate(value.row))
+      .filter(value => value <= today)
+      .sort();
     const latest = roomHistoryDates.at(-1);
     const earliest = roomHistoryDates[0];
     if (!latest || !earliest) {
@@ -454,11 +589,17 @@ export function ReviewDashboard({
       return;
     }
     if (mode === "all") {
-      applyRoomCustomPeriod(earliest, latest);
+      try {
+        const period = buildRoomDateRange("all", today, { startDate: earliest, endDate: latest });
+        setRoomCustomPeriodDraft({ startDate: period.startDate, endDate: period.endDate, scopeKey: roomScopeKey });
+        updateRoomScope({ period });
+        setRoomPeriodError(null);
+      } catch {
+        setRoomPeriodError("当前筛选没有可用的有效历史期间");
+      }
       return;
     }
     const month = latest.slice(0, 7);
-    const today = createDefaultRoomScope().period.endDate;
     const end = new Date(`${month}-01T00:00:00.000Z`);
     end.setUTCMonth(end.getUTCMonth() + 1);
     end.setUTCDate(0);
@@ -468,24 +609,25 @@ export function ReviewDashboard({
   const resetRoomScope = () => {
     const next = createDefaultRoomScope();
     setRoomScope(next);
-    setRoomCustomStartDate(next.period.startDate);
-    setRoomCustomEndDate(next.period.endDate);
-    setRoomCustomPeriodOpen(false);
+    setRoomCustomPeriodDraft(null);
     setRoomPeriodError(null);
+    onSharedScopeChange?.({ nature: "live", accountIds: [], simulationRunId: null });
   };
   const clearRoomFilters = () => {
     setRoomScope(current => ({
       ...current,
       query: undefined,
       accountIds: [],
+      simulationRunId: null,
       instrumentIds: [],
       assetType: "all",
       markets: [],
       currencies: [],
       reviewStatuses: [],
     }));
+    onSharedScopeChange?.({ accountIds: [], simulationRunId: null });
     setRoomPeriodError(null);
-    setRoomCustomPeriodOpen(false);
+    setRoomCustomPeriodDraft(null);
   };
   const activeFilterChips = [
     roomScope.query ? { id: "query", label: `标的：${roomScope.query}`, remove: () => updateRoomScope({ query: undefined }) } : null,
@@ -496,7 +638,7 @@ export function ReviewDashboard({
     roomScope.reviewStatuses[0] ? { id: "review", label: `复盘：${roomScope.reviewStatuses[0] === "pending" ? "待复盘" : roomScope.reviewStatuses[0] === "completed" ? "已复盘" : "暂不复盘"}`, remove: () => updateRoomScope({ reviewStatuses: [] }) } : null,
   ].filter((value): value is { id: string; label: string; remove: () => void } => Boolean(value));
   const emptyRoomMessage = entries.length === 0
-    ? "导入交易后查看统计总览；已有交易数据会按来源平仓日显示。"
+    ? "导入交易后查看我的交易室；已有交易数据会按来源平仓日显示。"
     : roomRows.length === 0
       ? roomScopeIsNarrowed
         ? "当前交易室范围没有回合。调整期间、分类或高级筛选后重试。"
@@ -504,7 +646,7 @@ export function ReviewDashboard({
       : null;
 
   return (
-    <section className={styles.dashboard} style={dashboardStyle} aria-label="统计总览">
+    <section className={styles.dashboard} style={dashboardStyle} aria-label="我的交易室">
       <header className={styles.header}>
         <div>
           <h1>我的交易室</h1>
@@ -514,48 +656,30 @@ export function ReviewDashboard({
       <section className={styles.roomScopeSection} aria-label="交易室范围">
         <div className={styles.roomScopeHeading}>
           <div>
-            <h2 className={styles.compactSectionTitle}>收益概览</h2>
+            <h2 className={styles.compactSectionTitle}>交易表现（收益概览）</h2>
             <p>{roomNatureLabel(roomScope.nature)} · {roomCategoryLabel(roomScope.assetCategory)} · {roomScope.period.startDate} 至 {roomScope.period.endDate} · 账户：{roomScope.accountIds[0] ? (accountOptions.find(option => option.value === roomScope.accountIds[0])?.label ?? roomScope.accountIds[0]) : "全部"} · 币种：{roomScope.currencies[0] ?? "全部"}</p>
           </div>
           <div className={styles.roomScopeBadgeGroup}>
             <div className={styles.scopeViewControl} role="group" aria-label="交易室视图">
-              {(["live", "simulation"] as const).map(value => (
-                <button
-                  type="button"
-                  key={value}
-                  className={styles.segmentedButton}
-                  aria-pressed={roomScope.nature === value}
-                  onClick={() => updateRoomScope({ nature: value })}
-                >
-                  {value === "live" ? "实盘" : "模拟盘"}
-                </button>
-              ))}
-              <button
-                type="button"
-                className={styles.segmentedButton}
-                aria-controls="trading-room-holdings"
-                onClick={() => {
-                  const target = document.getElementById("trading-room-holdings");
-                  if (target && typeof target.scrollIntoView === "function") target.scrollIntoView({ behavior: "smooth", block: "start" });
-                  target?.focus({ preventScroll: true });
-                }}
-              >
-                当前持仓
-              </button>
+              {(["live", "simulation"] as const).map(value => <label className={styles.radioOption} key={value}>
+                <input type="radio" name="交易室性质" value={value} checked={roomScope.nature === value} onChange={() => updateRoomScope({ nature: value })} />
+                <span>{value === "live" ? "实盘" : "模拟盘"}</span>
+              </label>)}
+              <RadioGroup label="计价" ariaLabel="交易室计价" value={reportCurrency} options={[{ value: "original", label: "原币" }, { value: "CNY", label: "折算 CNY" }]} onChange={value => {
+                const next = value as SharedReportCurrency;
+                setLocalReportCurrency(next);
+                onSharedScopeChange?.({ reportCurrency: next });
+              }} />
+              <RadioGroup label="市场" ariaLabel="交易室市场分类筛选" value={roomScope.assetCategory} options={[{ value: "all", label: "全部市场" }, { value: "a-share-stock", label: "A股" }, { value: "us-stock", label: "美股" }, { value: "hk-stock", label: "港股" }]} onChange={value => updateRoomScope({ assetCategory: value as RoomAssetCategory, markets: [] })} />
             </div>
             <span className={styles.roomScopeBadge}>{roomRows.length} 个回合进入范围</span>
           </div>
         </div>
         <div className={styles.roomScopeControls}>
-          <FilterSelect label="市场分类" ariaLabel="交易室市场分类筛选" value={roomScope.assetCategory} options={[{ value: "all", label: "全部市场" }, { value: "a-share-stock", label: "A股" }, { value: "us-stock", label: "美股" }, { value: "hk-stock", label: "港股" }]} onChange={value => updateRoomScope({ assetCategory: value as RoomAssetCategory, markets: [] })} />
           <div className={styles.roomPeriodControl}>
-            <span>统计期间</span>
+            <span>统计期间{roomScope.period.preset === "custom" ? " · 自定义" : ""}{roomDateDraftDirty ? " · 编辑中" : ""}</span>
             <div className={styles.periodTabs} role="tablist" aria-label="交易室期间">
-              {([
-                ["month", "本月"],
-                ["last-3-months", "近3个自然月"],
-                ["ytd", "今年至今"],
-              ] as const).map(([value, label]) => (
+              {([['last-3-months', '近3个自然月'], ['ytd', '今年至今'], ['all', '全部']] as const).map(([value, label]) => (
                 <button
                   type="button"
                   key={value}
@@ -568,38 +692,24 @@ export function ReviewDashboard({
                 </button>
               ))}
             </div>
-            <button
-              type="button"
-              className={styles.customPeriodButton}
-              aria-pressed={roomCustomPeriodOpen}
-              onClick={() => updateRoomPeriod("custom")}
-            >
-              更多期间
-            </button>
+            <div className={styles.roomPeriodDates} role="group" aria-label="自定义统计期间">
+              <label className={styles.filterField}><span>起始日期</span><input aria-label="交易室起始日期" type="date" value={roomCustomStartDate} onChange={event => setRoomCustomStartDate(event.target.value)} onBlur={handleRoomDateBlur} onKeyDown={handleRoomDateKeyDown} /></label>
+              <label className={styles.filterField}><span>结束日期</span><input aria-label="交易室结束日期" type="date" value={roomCustomEndDate} onChange={event => setRoomCustomEndDate(event.target.value)} onBlur={handleRoomDateBlur} onKeyDown={handleRoomDateKeyDown} /></label>
+            </div>
           </div>
-          {roomScope.nature === "simulation" && <FilterSelect label="模拟运行" ariaLabel="交易室模拟运行筛选" value={roomScope.simulationRunId ?? ""} options={[{ value: "", label: "请选择运行" }, ...simulationRunOptions]} onChange={value => updateRoomScope({ simulationRunId: value || null })} />}
+          {roomScope.nature === "simulation" && <RadioGroup label="模拟运行" ariaLabel="交易室模拟运行筛选" value={roomScope.simulationRunId ?? ""} options={[{ value: "", label: "请选择运行" }, ...simulationRunOptions]} onChange={value => updateRoomScope({ simulationRunId: value || null })} />}
         </div>
-        {roomCustomPeriodOpen && <div className={styles.roomCustomPeriodEditor} id="custom-period-editor" role="group" aria-label="自定义统计期间">
-          <label className={styles.filterField}><span>自定义起始日期</span><input aria-label="交易室自定义起始日期" type="date" value={roomCustomStartDate} onChange={event => setRoomCustomStartDate(event.target.value)} /></label>
-          <label className={styles.filterField}><span>自定义结束日期</span><input aria-label="交易室自定义结束日期" type="date" value={roomCustomEndDate} onChange={event => setRoomCustomEndDate(event.target.value)} /></label>
-          <div className={styles.roomCustomPeriodActions}>
-            <button type="button" className={styles.customPeriodApply} onClick={() => applyRoomCustomPeriod()}>应用期间</button>
-            <button type="button" className={styles.customPeriodCancel} onClick={() => { setRoomCustomPeriodOpen(false); setRoomPeriodError(null); setRoomCustomStartDate(roomScope.period.startDate); setRoomCustomEndDate(roomScope.period.endDate); }}>取消</button>
-            <button type="button" className={styles.customPeriodCancel} onClick={() => applyRoomHistoryPeriod("all")}>全部历史</button>
-            <button type="button" className={styles.customPeriodCancel} onClick={() => applyRoomHistoryPeriod("recent")}>最近有平仓回合的月份</button>
-          </div>
-        </div>}
         {roomPeriodError && <p className={styles.roomScopeWarning}>{roomPeriodError}</p>}
         <div className={styles.roomAncillaryRow}>
         <details className={styles.roomAdvancedDetails}>
           <summary>更多筛选{roomFilterCount > 0 ? ` · ${roomFilterCount} 项已启用` : ""}</summary>
           <div className={styles.roomAdvancedGrid}>
             <label className={styles.searchField}><span>标的</span><div><Search size={15} /><input aria-label="交易室标的筛选" type="search" placeholder="名称或代码" value={roomScope.query ?? ""} onChange={event => updateRoomScope({ query: event.target.value })} /></div></label>
-            <FilterSelect label="账户" ariaLabel="交易室账户筛选" value={roomScope.accountIds[0] ?? "all"} options={[{ value: "all", label: "全部账户" }, ...accountOptions]} onChange={value => updateRoomScope({ accountIds: value === "all" ? [] : [value] })} />
-            <FilterSelect label="资产类型" ariaLabel="交易室资产类型筛选" value={roomScope.assetType ?? "all"} options={[{ value: "all", label: "全部资产" }, { value: "stock", label: "股票" }, { value: "etf", label: "ETF" }]} onChange={value => updateRoomScope({ assetType: value as RoomAssetTypeFilter })} />
-            <FilterSelect label="交易市场" ariaLabel="交易室交易市场筛选" value={roomMarkets[0] ?? "all"} options={[{ value: "all", label: "全部市场" }, ...marketOptions]} onChange={value => updateRoomScope({ markets: value === "all" ? [] : [value] })} />
-            <FilterSelect label="币种" ariaLabel="交易室币种筛选" value={roomScope.currencies[0] ?? "all"} options={[{ value: "all", label: "全部币种" }, ...currencyOptions]} onChange={value => updateRoomScope({ currencies: value === "all" ? [] : [value] })} />
-            <FilterSelect label="复盘状态" ariaLabel="交易室复盘状态筛选" value={roomScope.reviewStatuses[0] ?? "all"} options={[{ value: "all", label: "全部状态" }, { value: "pending", label: "待复盘" }, { value: "completed", label: "已复盘" }, { value: "deferred", label: "暂不复盘" }]} onChange={value => updateRoomScope({ reviewStatuses: value === "all" ? [] : [value as RoomReviewStatus] })} />
+            <RadioGroup label="账户" ariaLabel="交易室账户筛选" value={roomScope.accountIds[0] ?? "all"} options={[{ value: "all", label: "全部账户" }, ...accountOptions]} onChange={value => updateRoomScope({ accountIds: value === "all" ? [] : [value] })} />
+            <RadioGroup label="资产类型" ariaLabel="交易室资产类型筛选" value={roomScope.assetType ?? "all"} options={[{ value: "all", label: "全部资产" }, { value: "stock", label: "股票" }, { value: "etf", label: "ETF" }]} onChange={value => updateRoomScope({ assetType: value as RoomAssetTypeFilter })} />
+            <RadioGroup label="交易市场" ariaLabel="交易室交易市场筛选" value={roomMarkets[0] ?? "all"} options={[{ value: "all", label: "全部市场" }, ...marketOptions]} onChange={value => updateRoomScope({ markets: value === "all" ? [] : [value] })} />
+            <RadioGroup label="币种" ariaLabel="交易室币种筛选" value={roomScope.currencies[0] ?? "all"} options={[{ value: "all", label: "全部币种" }, ...currencyOptions]} onChange={value => updateRoomScope({ currencies: value === "all" ? [] : [value] })} />
+            <RadioGroup label="复盘状态" ariaLabel="交易室复盘状态筛选" value={roomScope.reviewStatuses[0] ?? "all"} options={[{ value: "all", label: "全部状态" }, { value: "pending", label: "待复盘" }, { value: "completed", label: "已复盘" }, { value: "deferred", label: "暂不复盘" }]} onChange={value => updateRoomScope({ reviewStatuses: value === "all" ? [] : [value as RoomReviewStatus] })} />
             {roomFilterCount > 0 && <button type="button" className={styles.roomClearButton} onClick={clearRoomFilters}>清除附加筛选</button>}
             <button type="button" className={styles.roomClearButton} onClick={resetRoomScope}>恢复默认范围</button>
           </div>
@@ -607,7 +717,7 @@ export function ReviewDashboard({
         {activeFilterChips.length > 0 && <ul className={styles.filterChips} aria-label="已启用交易室筛选">
           {activeFilterChips.map(chip => <li key={chip.id}><span>{chip.label}</span><button type="button" aria-label={`移除${chip.label.split("：")[0]}筛选`} onClick={chip.remove}>×</button></li>)}
         </ul>}
-        <details className={styles.roomScopeNotes}><summary>查看统计口径</summary><p className={styles.roomScopeHint}>收益按交易市场归属；ETF 只作为资产类型筛选，不按 ETF 内部成分重新归因。来源交易日按回合最后平仓日归属；未知资产类型保留提示，不纳入 A股 / 美股 / 港股合计。</p></details>
+        <details className={styles.roomScopeNotes}><summary>查看统计口径</summary><p className={styles.roomScopeHint}>累计盈亏按平仓日期统计，已扣交易费用，不含当前持仓浮盈亏；参考收益率使用已配置参考资本，不代表账户净值收益率。ETF 只作为资产类型筛选，不按 ETF 内部成分重新归因。原币模式保留各币种金额，不把不同币种直接相加；折算 CNY 使用现有汇率快照。未知资产类型保留提示，不纳入 A股 / 美股 / 港股合计。</p></details>
         <div className={styles.roomSummaryGrid} aria-label="交易室业绩摘要">
           {metricCard(
             "已平仓回合净盈亏",
@@ -618,32 +728,24 @@ export function ReviewDashboard({
           {metricCard("可信已平仓回合", String(roomModel.summary.trustedClosedCount), `${roomModel.summary.wins} 胜 · ${roomModel.summary.losses} 负 · 持平 ${roomModel.summary.breakEven}`)}
           {metricCard("合计胜率", percentLabel(roomMetrics.monthlyWinRate.ratePercent), `${roomMetrics.monthlyWinRate.wins}/${roomMetrics.monthlyWinRate.denominator} 个可信已平仓回合`)}
           {metricCard(
-            principalSummary.mode === "principal" ? "本金参考收益率" : "交易成本收益率",
-            principalSummary.mode === "principal"
-              ? percentLabel(principalSummary.principalReturnPercent)
-              : percentLabel(principalSummary.costReturn.costReturnPercent),
-            principalSummary.mode === "principal"
-              ? `已填本金 · ${roomMoneyLabel(principalSummary.principal)}`
-              : (principalSummary.fallbackReason?.includes("当前筛选") ? "当前筛选无对应本金" : "本金未完整，采用成本口径"),
-              principalSummary.mode === "principal"
-                ? signedClass(principalSummary.principalReturnPercent)
-                : signedClass(principalSummary.costReturn.costReturnPercent),
+            "交易成本收益率",
+            percentLabel(principalSummary.costReturn.costReturnPercent),
+            `仅完整成本样本：${principalSummary.costReturn.applicableCount} 个；净盈亏 ÷ 买入成本 · 非账户收益率`,
+            signedClass(principalSummary.costReturn.costReturnPercent),
+          )}
+          {metricCard(
+            "参考收益率",
+            referenceReturnSummary.status === "available" ? percentLabel(referenceReturnSummary.returnPercent) : "不可用",
+            referenceReturnSummary.status === "available"
+              ? "可信已平仓净盈亏 ÷ 已配置参考资本；不代表账户净值收益率"
+              : (referenceReturnSummary.reason ?? "当前范围未覆盖完整参考资本期间"),
+            referenceReturnSummary.status === "available" ? signedClass(referenceReturnSummary.returnPercent) : undefined,
           )}
         </div>
         <details className={styles.roomMoneyDetails}>
           <summary>查看原币与汇率详情</summary>
-          <p>人民币估算·按最新汇率；{roomMoneyDetail(roomModel.summary.money)}</p>
+          <p>{reportCurrency === "CNY" ? "人民币折算使用现有汇率快照；" : "原币显示保留各币种单位；"}{roomMoneyDetail(roomModel.summary.money)}</p>
         </details>
-        <RoomReturnDetails
-          summary={principalSummary}
-          trustedCount={roomModel.summary.trustedClosedCount}
-          onOpenPrincipal={principalEnabled && roomScope.nature === "live" && onOpenPrincipalSettings
-            ? onOpenPrincipalSettings
-            : undefined}
-        />
-        {roomDataQuality && <section className={styles.qualitySummary} aria-label="数据质量摘要">
-          <div className={styles.qualitySummaryHeading}><strong>数据质量</strong><span>{roomDataQuality.dimensions.map(dimension => `${dimension.label} ${dimension.availableCount}/${dimension.totalCount}${dimension.affectedCount > 0 ? `（受影响${dimension.affectedCount}）` : ""}`).join(" · ")}</span>{onOpenDataManagement && <button type="button" aria-label="前往数据管理检查数据" onClick={() => onOpenDataManagement(roomDataQuality)}>数据管理</button>}</div>
-        </section>}
         {(roomModel.summary.excludedCount > 0 || roomModel.summary.unknownAssetEpisodeCount > 0) && <p className={styles.roomScopeStatus}>
           {roomModel.summary.excludedCount > 0 && `排除样本 ${roomModel.summary.excludedCount} 个`}
           {roomModel.summary.excludedCount > 0 && roomModel.summary.unknownAssetEpisodeCount > 0 && " · "}
@@ -658,14 +760,14 @@ export function ReviewDashboard({
           embedded
           onScopeChange={patch => updateRoomScope(patch)}
           instrumentMetadata={instrumentMetadata}
-          fxSnapshot={fxSnapshot}
+          fxSnapshot={usableFxSnapshot}
           asOf={holdingsAsOf}
           onOpenInReview={onOpenInReview}
           renderMoney={view => roomMoneyLabel(view)}
         />
       </section>
 
-      <div id="trading-room-holdings" className={styles.holdingsAnchor} tabIndex={-1}>
+      {roomScope.nature === "live" && <div id="trading-room-holdings" className={styles.holdingsAnchor} tabIndex={-1}>
         <RoomHoldingsPanel
           entries={entries}
           scope={roomScope}
@@ -683,9 +785,9 @@ export function ReviewDashboard({
           onOpenDataCheck={(instrumentId, episodeId) => onOpenDataCheck?.("holdings", [instrumentId], episodeId)}
           onOpenInReview={onOpenInReview}
         />
-      </div>
+      </div>}
 
-      <RoomQualityMetrics rows={roomModel.rows} fxSnapshot={fxSnapshot} />
+
 
     </section>
   );

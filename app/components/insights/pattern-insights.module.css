@@ -1,0 +1,41 @@
+.observationList {
+  display: grid;
+  gap: 8px;
+}
+
+.observationCard {
+  padding: 12px 14px;
+}
+
+.observationCard :global(.insight-metrics) {
+  gap: 5px 12px;
+}
+
+.metricExclusions {
+  margin-top: 8px;
+  border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  padding-top: 7px;
+  font-size: 12px;
+}
+
+.metricExclusions summary {
+  cursor: pointer;
+  color: var(--dashboard-muted, #8fa5bd);
+}
+
+.metricExclusions > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.metricExclusions button {
+  border: 0;
+  background: transparent;
+  color: var(--blue, #32758b);
+  cursor: pointer;
+  font: inherit;
+  white-space: nowrap;
+}

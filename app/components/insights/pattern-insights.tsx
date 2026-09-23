@@ -29,6 +29,7 @@ import { OutcomeStructure } from "./outcome-structure";
 import { OutcomeDiagnostics } from "./outcome-diagnostics";
 import { IpoBreakdown } from "./ipo-breakdown";
 import { MarketBreakdown } from "./market-breakdown";
+import styles from "./pattern-insights.module.css";
 
 export type Category = "all" | InsightCategory;
 type OutcomeView = "overall" | "ipo" | "market";
@@ -46,6 +47,9 @@ type Props = {
     finalTagId: string,
   ) => void | Promise<void>;
   onRejectSuggestion: (
+    suggestion: TagSuggestionRecord,
+  ) => void | Promise<void>;
+  onRevokeSuggestion?: (
     suggestion: TagSuggestionRecord,
   ) => void | Promise<void>;
   onOpenEpisode: (instrumentId: string, episodeId: string) => void;
@@ -185,7 +189,7 @@ function InsightCard({
     .map((id) => factsByEpisode.get(id))
     .filter((item): item is InsightEpisodeFact => Boolean(item));
   return (
-    <article className={`insight-card ${early ? "early" : ""}`}>
+    <article className={`${styles.observationCard} insight-card ${early ? "early" : ""}`}>
       <header>
         <div>
           <span className="insight-confidence">
@@ -195,7 +199,8 @@ function InsightCard({
           <h3>{insight.dimension.label}</h3>
         </div>
         <span>
-          {insight.sampleCount} 个标签样本 · {insight.baselineCount} 个基准样本
+          <span>{insight.sampleCount} 个标签样本 · {insight.baselineCount} 个基准样本</span>
+          <small> · 范围 {insight.sampleChain?.rangeCount ?? insight.sampleCount} → 有效 {insight.sampleChain?.eligibleCount ?? insight.sampleCount} → 排除 {insight.sampleChain?.excludedCount ?? 0}</small>
         </span>
       </header>
       <p>{insight.conclusion}</p>
@@ -208,6 +213,7 @@ function InsightCard({
       </div>
       <div className="insight-metrics">
         <span>中位 {displayNumber(insight.medianTagged)}{suffix}</span>
+        {insight.medianDifference !== null && <span>中位差 {displayNumber(insight.medianDifference)}{insight.metricBasis === "r-multiple" ? "R" : "个百分点"}</span>}
         <span>
           基准{" "}
           {insight.medianBaseline === null
@@ -221,6 +227,7 @@ function InsightCard({
           {insight.pathSampleCount < insight.sampleCount ? " · 日线不完整" : ""}
         </span>
         <span>MFE {percent(insight.medianMfePercent)}</span>
+        <span>MFE 路径有效 {insight.pathSampleCount}/{insight.sampleCount}</span>
         <span>MAE {percent(insight.medianMaePercent)}</span>
         <span>回吐 {percent(insight.medianGivebackPercent)}</span>
         {insight.planAdherenceRate !== null && (
@@ -268,14 +275,25 @@ function InsightCard({
           ))}
         </details>
       </div>
+      {(insight.sampleChain?.excluded.length ?? 0) > 0 && <details className={styles.metricExclusions}>
+        <summary>此指标未纳入样本（{insight.sampleChain?.excluded.length}）</summary>
+        {insight.sampleChain?.excluded.map(item => {
+          const fact = factsByEpisode.get(item.episodeId);
+          return <div key={`${item.episodeId}:${item.reason}`}><span>{item.instrumentName} · {item.reasonLabel}</span><button type="button" onClick={() => onOpenEpisode(item.instrumentId, item.episodeId)}>查看回合</button></div>;
+        })}
+      </details>}
     </article>
   );
 }
 
 function ExclusionList({
   exclusions,
+  factsByEpisode,
+  onOpenEpisode,
 }: {
   exclusions: InsightEpisodeExclusion[];
+  factsByEpisode: Map<string, InsightEpisodeFact>;
+  onOpenEpisode: Props["onOpenEpisode"];
 }) {
   if (exclusions.length === 0) return null;
   return (
@@ -294,7 +312,10 @@ function ExclusionList({
                 {formatBeijingDate(item.startedAt)}
               </small>
             </span>
-            <b>{item.reasonLabel}</b>
+            <span>
+              <b>{item.reasonLabel}</b>
+              <button type="button" onClick={() => onOpenEpisode(item.instrumentId, item.episodeId)}>查看回合</button>
+            </span>
           </article>
         ))}
       </div>
@@ -310,6 +331,7 @@ export function PatternInsights({
   onConfirmSuggestion,
   onEditSuggestion,
   onRejectSuggestion,
+  onRevokeSuggestion,
   onOpenEpisode,
   category: controlledCategory,
   onCategoryChange,
@@ -452,6 +474,7 @@ export function PatternInsights({
         onConfirm={onConfirmSuggestion}
         onEdit={onEditSuggestion}
         onReject={onRejectSuggestion}
+        onRevoke={onRevokeSuggestion}
         onOpenEpisode={onOpenEpisode}
       />
 
@@ -481,13 +504,13 @@ export function PatternInsights({
       )}
 
       {formal.length > 0 && (
-        <section className="insight-section" aria-label="正式洞察">
+        <section className="insight-section" aria-label="已收录观察">
           <header>
             <BookOpenCheck size={16} />
-            <h2>正式洞察</h2>
-            <span>首页最多显示 5 条</span>
+            <h2>已收录观察</h2>
+            <span>描述性结果；首页最多显示 5 条</span>
           </header>
-          <div className="insight-card-list">
+          <div className={`${styles.observationList} insight-card-list`}>
             {formal.map((item) => (
               <InsightCard
                 key={item.id}
@@ -507,7 +530,7 @@ export function PatternInsights({
             <h2>早期线索</h2>
             <span>3–4 个样本</span>
           </header>
-          <div className="insight-card-list">
+          <div className={`${styles.observationList} insight-card-list`}>
             {early.map((item) => (
               <InsightCard
                 key={item.id}
@@ -542,7 +565,7 @@ export function PatternInsights({
         </section>
       )}
 
-      <ExclusionList exclusions={exclusions} />
+      <ExclusionList exclusions={exclusions} factsByEpisode={factsByEpisode} onOpenEpisode={onOpenEpisode} />
     </section>
   );
 }

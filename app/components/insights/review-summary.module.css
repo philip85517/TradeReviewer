@@ -1,0 +1,42 @@
+.notes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.notes label {
+  display: grid;
+  gap: 5px;
+}
+
+.legacyDetails {
+  grid-column: 1 / -1;
+}
+
+.followUpDates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+@media (max-width: 620px) {
+  .notes { grid-template-columns: 1fr; }
+  .legacyDetails { grid-column: auto; }
+  .followUpDates { grid-template-columns: 1fr; }
+}
+
+.notes input, .notes textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 9px 11px;
+  color: var(--text, #e7edf6);
+  background: #111a2b;
+  border: 1px solid #44546b;
+  border-radius: 7px;
+  font: inherit;
+}
+.notes label { align-content: start; }
+@media (max-width: 620px) {
+  .notes input { min-height: 44px; }
+}

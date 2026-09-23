@@ -156,9 +156,10 @@ function validMetadataResponse(input: RequestInfo | URL) {
 
 async function openDefaultStockRound(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole("button", { name: "我的交易室" }));
-  await screen.findByRole("region", { name: "统计总览" });
+  await screen.findByRole("region", { name: "我的交易室" });
   await user.click(screen.getByRole("button", { name: "交易库" }));
   const library = await screen.findByRole("region", { name: "交易库" });
+  await user.click(within(library).getByRole("tab", { name: "按标的浏览" }));
   const stockToggle = within(library).getByRole("button", { name: /^(展开|收起).*交易回合$/ });
   if (stockToggle.getAttribute("aria-expanded") !== "true") await user.click(stockToggle);
   await user.click(await within(library).findByRole("button", { name: /^打开.*第1次交易/ }));
@@ -186,7 +187,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
 
   async function openDataManagement() {
     const user = userEvent.setup();
-    await user.click(await screen.findByRole("button", { name: "数据管理" }));
+    await user.click(await screen.findByRole("button", { name: "数据" }));
     await screen.findByRole("region", { name: "数据管理" });
     return user;
   }
@@ -406,7 +407,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
       expect(refreshMocks.daily).toHaveBeenCalledOnce();
       expect(refreshMocks.intraday).toHaveBeenCalledOnce();
     });
-    await user.click(screen.getByRole("button", { name: "数据管理" }));
+    await user.click(screen.getByRole("button", { name: "数据" }));
     await screen.findByRole("region", { name: "数据管理" });
     await waitFor(() =>
       expect(screen.getByText("更新完成 1 个标的")).toBeVisible(),
@@ -459,7 +460,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
       expect(refreshMocks.daily).toHaveBeenCalledOnce();
       expect(refreshMocks.intraday).toHaveBeenCalledOnce();
     });
-    await user.click(screen.getByRole("button", { name: "数据管理" }));
+    await user.click(screen.getByRole("button", { name: "数据" }));
     await screen.findByRole("region", { name: "数据管理" });
     await waitFor(() =>
       expect(screen.getByText("更新失败 1 个标的")).toBeVisible(),
@@ -539,7 +540,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
 
     expect(refreshMocks.daily).toHaveBeenCalledOnce();
     expect(refreshMocks.intraday).toHaveBeenCalledOnce();
-    await user.click(screen.getByRole("button", { name: "数据管理" }));
+    await user.click(screen.getByRole("button", { name: "数据" }));
     await screen.findByRole("region", { name: "数据管理" });
     expect(
       screen.getByRole("button", { name: "正在更新全部行情" }),

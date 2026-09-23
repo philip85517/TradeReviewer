@@ -57,7 +57,11 @@ export function RoomReturnDetails({ summary, trustedCount, onOpenPrincipal }: Ro
         <p className={styles.note}>
           币种按原币显示；人民币金额为汇率快照估算。{summary.costReturn.buyCost.note}
         </p>
-        {!principalMode && summary.fallbackReason && <p className={styles.notice}>{summary.fallbackReason}</p>}
+        {!principalMode && summary.fallbackReason && (
+          <p className={styles.notice}>
+            本金参考收益率不可用；交易成本收益率保持独立口径，不替代本金回报。
+          </p>
+        )}
         {principalMode && <p className={styles.note}>同时保留交易成本收益率：{summary.costReturn.costReturnPercent === null ? "不可计算" : `${number(summary.costReturn.costReturnPercent)}%`}。</p>}
         {onOpenPrincipal && (
           <button type="button" className={styles.link} onClick={onOpenPrincipal}>前往数据管理配置本金</button>

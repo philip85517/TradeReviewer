@@ -28,7 +28,7 @@ export type RoomAssetCategory =
   | "etf"
   | "unknown";
 
-export type RoomPeriodPreset = "month" | "last-3-months" | "ytd" | "custom";
+export type RoomPeriodPreset = "month" | "last-3-months" | "ytd" | "all" | "custom";
 
 export type RoomDateRange = {
   preset: RoomPeriodPreset;
@@ -188,6 +188,14 @@ export function buildRoomDateRange(
     assertDateRange(startDate, end);
     return { preset, startDate, endDate: end };
   }
+  if (preset === "all") {
+    const startDate = typeof custom === "string" ? custom : custom?.startDate;
+    const end = typeof custom === "string" ? customEndDate : custom?.endDate;
+    if (!startDate || !end) throw new RangeError("全部历史范围不完整");
+    assertDateRange(startDate, end);
+    if (end > today) throw new RangeError("全部历史范围不能超过今天");
+    return { preset, startDate, endDate: end };
+  }
   const startDate = preset === "month"
     ? `${today.slice(0, 7)}-01`
     : preset === "last-3-months"
@@ -202,7 +210,7 @@ export function createDefaultRoomScope(today: string = roomTodayKey()): RoomScop
     nature: "live",
     assetCategory: "all",
     assetType: "all",
-    period: buildRoomDateRange("month", today),
+    period: buildRoomDateRange("ytd", today),
     simulationRunId: null,
     accountIds: [],
     instrumentIds: [],
@@ -222,7 +230,7 @@ export const DEFAULT_ROOM_SCOPE: RoomScope = {
   assetCategory: "all",
   assetType: "all",
   get period() {
-    return buildRoomDateRange("month");
+    return buildRoomDateRange("ytd");
   },
   simulationRunId: null,
   accountIds: [],

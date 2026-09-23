@@ -1,9 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --page: #0b1018;
-  --surface: #101722;
-  --surface-elevated: #151e2b;
+  color-scheme: dark;
+  --page: #0b1220;
+  --surface: #111a2b;
+  --surface-elevated: #182337;
   --surface-soft: #182333;
   --line: #243145;
   --line-soft: #1c2736;
@@ -15,6 +16,16 @@
   --green: #26a69a;
   --red: #ef5350;
   --gold: #f3ba2f;
+  --surface-raised: var(--surface-elevated);
+  --border-subtle: #44546b;
+  --text-muted: var(--muted);
+  --text-primary: var(--text);
+  --text-secondary: var(--muted);
+  --link: #8cbdff;
+  --dashboard-ink: var(--text);
+  --dashboard-muted: var(--muted);
+  --dashboard-line: #34445b;
+  --dashboard-card-elevated: var(--surface-elevated);
 }
 
 * {
@@ -5824,3 +5835,67 @@ body { font-size: 14px; }
     max-height: calc(100vh - 90px);
   }
 }
+
+/* Quant review: shared navigation and numeric presentation. */
+.mobile-navigation-backdrop { display: none; }
+button, input, select, textarea { accent-color: var(--blue); }
+button:focus-visible, a:focus-visible, summary:focus-visible, [tabindex]:focus-visible { outline: 2px solid #9ecaff; outline-offset: 3px; }
+@media (min-width: 1060px) {
+  .trade-review-app.is-review .app-sidebar { width: 80px; min-width: 80px; flex-basis: 80px; padding: 16px 8px; }
+  .trade-review-app.is-review .brand > div:last-child { display: none; }
+  .trade-review-app.is-review .app-nav button { padding: 0 6px; text-align: center; font-size: 13px; }
+}
+@media (max-width: 1059px) {
+  .app-sidebar { z-index: 71; min-height: 56px; padding: 6px 12px; }
+  .app-sidebar .mobile-nav-trigger { min-height: 44px; }
+  .app-sidebar.mobile-nav-open .app-nav { position: absolute; z-index: 72; top: 100%; right: 0; width: min(300px, 90vw); padding: 12px; border: 1px solid var(--border-subtle); background: var(--surface-elevated); box-shadow: 0 12px 32px #0008; }
+  .app-sidebar .app-nav button { min-height: 44px; }
+  .mobile-navigation-backdrop { display: block; position: fixed; inset: 56px 0 0; z-index: 70; border: 0; background: #0008; }
+}
+
+.workspace.recall-mode { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+.recall-mode .recall-review-host { grid-column: 1; grid-row: 1; min-height: 0; }
+.is-review .review-layout-controls { justify-content: space-between; min-height: 48px; }
+@media (max-width: 1059px) {
+  .workspace.recall-mode { display: flex; min-height: 0; }
+  .workspace.recall-mode .recall-review-host { width: 100%; }
+}
+
+/* Shared ledger scope stays compact and consistent across browsing pages. */
+.shared-scope-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px 16px;
+  margin: 0 0 12px;
+  padding: 8px 12px 12px;
+  min-width: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.shared-scope-bar legend { color: var(--text-muted); font-size: 12px; padding: 0 4px; }
+.shared-scope-bar label { display: grid; gap: 4px; min-width: 110px; font-size: 12px; }
+.shared-scope-bar select, .shared-scope-bar input {
+  min-height: 36px;
+  max-width: 100%;
+  padding: 6px 8px;
+  color: var(--text-primary);
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+}
+.scoped-insights-page { grid-column: 1 / -1; min-width: 0; overflow: auto; padding: 12px; }
+@media (max-width: 700px) {
+  .shared-scope-bar { gap: 8px; }
+  .shared-scope-bar label { flex: 1 1 125px; min-width: 0; }
+  .shared-scope-bar select, .shared-scope-bar input { min-height: 44px; width: 100%; }
+}
+.shared-scope-toggle { display: none; }
+@media (max-width: 700px) {
+  .shared-scope-toggle { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 44px; padding: 8px 10px; margin-bottom: 8px; background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 6px; font-size: 12px; }
+  .shared-scope-toggle span { color: var(--link); white-space: nowrap; }
+  .shared-scope-container:not(.expanded) .shared-scope-bar { display: none; }
+}
+
+#data-management-panel-quality, #data-management-panel-settings { grid-template-columns: minmax(0, 1fr); }

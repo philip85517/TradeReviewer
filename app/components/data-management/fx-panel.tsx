@@ -36,9 +36,11 @@ export function FxPanel({ state, loading, refreshing, error, onRefresh }: FxPane
   const staleError = state?.error;
 
   return (
-    <div className="data-management-fx" aria-label="人民币估算汇率">
+    <div className="data-management-fx" aria-label="当前估值参考汇率（中行）">
       <div className="data-management-fx-source">
+        <strong>当前估值参考汇率（中行）</strong>
         <span>中国银行 · 中行折算价（源报价每100单位外币，以下换算为1外币）</span>
+        <small>用于当前估值参考；不代表历史绩效折算快照。</small>
         {sourceTime && <span>最近源数据：{sourceTime}</span>}
       </div>
 

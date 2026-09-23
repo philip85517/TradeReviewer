@@ -46,6 +46,13 @@ export type ReviewSummaryNote = {
   change: string;
   next: string;
   evidenceEpisodeIds: string[];
+  /** Optional compact summary fields; legacy fields remain compatible. */
+  tag?: string;
+  sentence?: string;
+  /** Lightweight research bookkeeping; descriptive only, never a validation result. */
+  observationVersion?: string;
+  followUpStartDate?: string | null;
+  followUpEndDate?: string | null;
 };
 
 export type TrackedRuleSummary = TrackedRuleCandidate & {
@@ -398,7 +405,12 @@ export function isReviewSummaryNote(value: unknown): value is ReviewSummaryNote 
     Array.isArray(note.evidenceEpisodeIds) &&
     note.evidenceEpisodeIds.every(
       (episodeId) => typeof episodeId === "string" && episodeId.length > 0,
-    )
+    ) &&
+    (note.tag === undefined || typeof note.tag === "string") &&
+    (note.sentence === undefined || typeof note.sentence === "string")
+    && (note.observationVersion === undefined || typeof note.observationVersion === "string")
+    && (note.followUpStartDate === undefined || note.followUpStartDate === null || (typeof note.followUpStartDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(note.followUpStartDate)))
+    && (note.followUpEndDate === undefined || note.followUpEndDate === null || (typeof note.followUpEndDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(note.followUpEndDate)))
   );
 }
 

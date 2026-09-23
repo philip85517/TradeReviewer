@@ -9,6 +9,7 @@ import {
   nextRecallDecisionState,
   NO_REVEALED_EXECUTIONS,
   revealRecallBar,
+  revealableCandlesThroughCursor,
   revealRecallDecision,
   rewindRecallBar,
   type RecallReplayCursor,
@@ -97,13 +98,33 @@ describe("recall replay cursors", () => {
       decisions,
       decisionId: "decision-1",
     });
-    const next = revealRecallBar({ candles, executions, current: first });
+    const completedFirst = revealRecallBar({ candles, executions, current: first });
+    expect(completedFirst.revealedExecutions.map(({ id }) => id)).toEqual(["fill-1", "fill-2"]);
+    const next = revealRecallBar({ candles, executions, current: completedFirst });
     expect(next.cursor).toBe("2025-01-02T10:30:00.000Z");
     expect(next.revealedExecutions.map(({ id }) => id)).toEqual([
       "fill-1",
       "fill-2",
       "fill-3",
     ]);
+  });
+
+  it("does not reveal a trading-date-mapped fill after the candle knowledge cutoff", () => {
+    const datedCandles = [
+      { ...candle("2025-01-02T10:00:00.000Z", "2025-01-02T10:05:00.000Z"), tradingDates: ["2025-01-02"] },
+      { ...candle("2025-01-02T10:05:00.000Z", "2025-01-02T10:10:00.000Z"), tradingDates: ["2025-01-02"] },
+    ];
+    const future = fill("future", "2025-01-02T10:20:00.000Z", "sell");
+    const current: RecallReplayCursor = {
+      cursor: "2025-01-02T10:05:00.000Z",
+      executionCursor: NO_REVEALED_EXECUTIONS,
+      mode: "replay",
+      revealedCandles: [datedCandles[0]],
+      revealedExecutions: [],
+      currentCandle: datedCandles[0],
+    };
+    const next = revealRecallBar({ candles: datedCandles, executions: [future], current });
+    expect(next.revealedExecutions).toEqual([]);
   });
 
   it("rewinds the market and execution boundaries together", () => {
@@ -113,7 +134,8 @@ describe("recall replay cursors", () => {
       decisions,
       decisionId: "decision-1",
     });
-    const advanced = revealRecallBar({ candles, executions, current: first });
+    const completedFirst = revealRecallBar({ candles, executions, current: first });
+    const advanced = revealRecallBar({ candles, executions, current: completedFirst });
 
     expect(advanced.revealedExecutions.map(({ id }) => id)).toEqual([
       "fill-1",
@@ -188,4 +210,31 @@ describe("recall replay cursors", () => {
     expect(first.mode).toBe("replay");
     expect(first.executionCursor).toBe("fill-1");
   });
+
+  it("masks OHLCV for a candle whose knowledge boundary is still ahead of the replay cursor", () => {
+    const partial = revealRecallDecision({
+      candles,
+      executions,
+      decisions,
+      decisionId: "decision-1",
+    });
+    const persistedEarlyCursor: RecallReplayCursor = {
+      ...partial,
+      cursor: "2025-01-02T10:05:00.000Z",
+      currentCandle: candles[0],
+    };
+    expect(partial.currentCandle).toBeUndefined();
+    expect(partial.revealedCandles).toEqual([]);
+    const replayed = revealableCandlesThroughCursor(candles, persistedEarlyCursor.cursor);
+    expect(replayed).toEqual([]);
+  });
+  it("reveals the first completed bar when a decision has no visible candles yet", () => {
+    const initial = revealRecallDecision({ candles, executions, decisions, decisionId: "decision-1" });
+    expect(initial.revealedCandles).toEqual([]);
+    const next = revealRecallBar({ candles, executions, current: initial });
+    expect(next.revealedCandles).toEqual([candles[0]]);
+    expect(next.currentCandle).toEqual(candles[0]);
+    expect(next.cursor).toBe(candles[0].knowledgeAt);
+  });
+
 });

@@ -79,7 +79,7 @@
   gap: 9px;
   border: 1px solid var(--dashboard-line);
   border-radius: 12px;
-  padding: 12px;
+  padding: 10px 12px;
   background: var(--dashboard-card-elevated);
 }
 
@@ -122,10 +122,12 @@
 .amount { white-space: nowrap; }
 .values dd.negative,
 .values dd.positive,
+.values dd.neutral,
 .values dd.unavailable { overflow-wrap: anywhere; }
 .values dd small { display: block; margin-top: 3px; font-size: 12px; font-weight: 500; }
 .positive { color: var(--dashboard-positive); }
 .negative { color: var(--dashboard-negative, #b34b4b); }
+.neutral { color: var(--dashboard-muted); }
 .unavailable { color: var(--gold, #a56e14); }
 .statusReason { color: var(--gold, #a56e14); }
 .staleLabel { color: var(--gold, #a56e14); font-size: 12px; }
@@ -137,7 +139,7 @@
 .diagnosticActions button { min-width: 44px; min-height: 44px; border: 0; border-radius: 8px; padding: 8px 10px; background: transparent; color: var(--blue, #32758b); cursor: pointer; font: inherit; font-size: 14px; font-weight: 700; }
 .diagnosticActions button:disabled { cursor: wait; opacity: .7; }
 .quoteDetails { color: var(--dashboard-muted); font-size: 10px; }
-.quoteDetails summary { width: fit-content; cursor: pointer; color: var(--blue, #32758b); font-weight: 650; }
+.quoteDetails summary { width: fit-content; min-height: 30px; padding-top: 5px; cursor: pointer; color: var(--blue, #32758b); font-weight: 650; }
 .quoteDetails[open] .quoteDetail { margin-top: 5px; }
 .diagnosticDetails { color: var(--dashboard-muted); font-size: 10px; }
 .diagnosticDetails summary { width: fit-content; cursor: pointer; color: var(--blue, #32758b); font-weight: 650; }
@@ -152,4 +154,78 @@
   .row { grid-template-columns: 1fr; }
   .rowHeading, .values { grid-column: 1; grid-row: auto; }
   .reviewButton { justify-self: start; }
+}
+
+/* One aligned holdings row; evidence and repair actions expand in place. */
+.panel { border-radius: 8px; padding: 16px; }
+.rows { gap: 0; }
+.row { grid-template-columns: minmax(200px, 1.2fr) minmax(0, 2fr); gap: 12px; border: 0; border-bottom: 1px solid var(--dashboard-line); border-radius: 0; min-height: 56px; padding: 8px 4px; background: transparent; }
+.rowHeading { align-items: center; min-width: 0; }
+.rowHeading > div { min-width: 0; }
+.rowHeading strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rowHeading span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.values { text-align: right; }
+.quoteDetails { grid-column: 3; grid-row: 1; font-size: 12px; min-width: 0; }
+.quoteDetails summary { color: var(--link); min-height: 36px; display: flex; align-items: center; padding: 0; }
+.quoteDetails[open] { grid-column: 1 / -1; grid-row: 2; padding: 8px 12px; border: 1px solid var(--dashboard-line); border-radius: 6px; background: var(--dashboard-card-elevated); }
+.quoteDetails[open] > summary { font-weight: 600; }
+.diagnosticDetails { font-size: 12px; }
+.diagnosticLabel { display: none; }
+.reviewButton, .diagnosticActions button { color: var(--link); }
+@media (max-width: 850px) {
+  .row { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .rowHeading, .values, .quoteDetails { grid-column: 1; grid-row: auto; }
+  .rowHeading { display: flex; }
+  .values { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .quoteDetails[open] { grid-row: auto; }
+  .quoteDetails summary { min-height: 44px; }
+}
+@media (max-width: 500px) {
+  .values { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.holdingDate {
+  margin: 0 0 5px;
+  color: var(--dashboard-text, inherit);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.marketBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 3px 9px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.marketCN_SH { background: #e7f1f4; border-color: #9fc4ce; color: #245b6b; }
+.marketCN_SZ { background: #f4eee2; border-color: #d8bd88; color: #6d4b14; }
+.marketHK { background: #eee8f5; border-color: #c5b3d9; color: #543a70; }
+.marketUS { background: #e8f1e8; border-color: #a9c8a9; color: #2d5c32; }
+
+.quoteSummary {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  color: var(--dashboard-muted);
+  font-size: 12px;
+}
+.quoteStatus { color: var(--dashboard-text, inherit); font-weight: 700; }
+.quoteDate { font-variant-numeric: tabular-nums; }
+.sortOptions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 0; border: 0; padding: 0; color: var(--dashboard-muted); }
+.sortOptions legend { float: left; margin-right: 4px; font-size: 14px; }
+.sortOptions label { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; cursor: pointer; }
+.sortOptions input { accent-color: var(--link, #32758b); }
+.sortOptions input:disabled + * { opacity: .6; }
+.quoteSummary .quoteDetails { flex-basis: 100%; }
+.quoteSummary .quoteDetails summary { min-height: 32px; }
+.quoteSummary .statusReason { color: var(--gold, #a56e14); }
+
+@media (max-width: 850px) {
+  .quoteSummary { grid-column: 1; }
 }

@@ -26,6 +26,7 @@ type Props = {
     finalTagId: string,
   ) => void | Promise<void>;
   onReject: (suggestion: TagSuggestionRecord) => void | Promise<void>;
+  onRevoke?: (suggestion: TagSuggestionRecord) => void | Promise<void>;
   onOpenEpisode: (instrumentId: string, episodeId: string) => void;
   onBusyChange?: (busy: boolean) => void;
 };
@@ -34,7 +35,7 @@ function evidenceLabel(suggestion: TagSuggestionRecord) {
   const evidence = suggestion.evidence[0];
   if (!evidence) return "规则证据已记录";
   if (evidence.kind === "execution-count") {
-    return `同一回合有 ${evidence.observed} 笔开仓方向成交`;
+    return `同一回合记录到 ${evidence.observed} 笔开仓方向成交（可能是一个订单的多笔成交，需订单标识或人工核对）`;
   }
   if (evidence.kind === "breakout-pullback") {
     return `入场价 ${evidence.observed} 回到突破参考位 ${evidence.reference} 附近`;
@@ -48,10 +49,12 @@ export function TagSuggestionPanel({
   onConfirm,
   onEdit,
   onReject,
+  onRevoke,
   onOpenEpisode,
   onBusyChange,
 }: Props) {
   const [resolved, setResolved] = useState<Set<string>>(() => new Set());
+  const [showHistory, setShowHistory] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedTagIds, setSelectedTagIds] = useState<
@@ -88,8 +91,10 @@ export function TagSuggestionPanel({
         </div>
         <span>{pending.length} 条</span>
       </header>
+      {suggestions.some(item => item.status !== "suggested") && <button type="button" onClick={() => setShowHistory(value => !value)} aria-expanded={showHistory}>{showHistory ? "收起标签确认历史" : `查看标签确认历史（${suggestions.filter(item => item.status !== "suggested").length}）`}</button>}
+      {showHistory && <div className="suggestion-history" aria-label="标签确认历史">{suggestions.filter(item => item.status !== "suggested").map(item => <article key={item.id}><span>{reviewTagLabel(item.finalTagId ?? item.tagId)} · {item.status === "rejected" ? "已否决" : "已确认"}</span>{item.status !== "rejected" && onRevoke && <button type="button" disabled={busyId !== null} onClick={() => void decide(item, onRevoke)}>撤销确认</button>}</article>)}</div>}
       <p>
-        系统只根据成交与入场前 K 线提出建议；确认后才会进入正式统计。
+        系统只根据成交与入场前 K 线提出自动标签建议；确认标签只记录分类，不表示策略已验证。
       </p>
       {error && <p role="alert">{error}</p>}
       {pending.length === 0 ? (
@@ -128,7 +133,7 @@ export function TagSuggestionPanel({
                   规则 {suggestion.ruleId} · v{suggestion.ruleVersion}
                 </small></details>
                 <label className="suggestion-tag-edit">
-                  <span>最终标签</span>
+                  <span>最终标签（确认分类）</span>
                   <select
                     aria-label={`调整“${tagLabel}”建议标签`}
                     value={selectedTagId}
@@ -184,8 +189,8 @@ export function TagSuggestionPanel({
                     }
                     aria-label={
                       selectedTagId === suggestion.tagId
-                        ? `确认“${tagLabel}”`
-                        : `确认改为“${selectedTagLabel}”`
+                        ? `确认标签“${tagLabel}”`
+                        : `确认标签改为“${selectedTagLabel}”`
                     }
                   >
                     <Check size={13} />

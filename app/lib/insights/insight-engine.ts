@@ -21,6 +21,7 @@ import {
   buildMarketBreakdownReport,
   type MarketBreakdownReport,
 } from "./market-breakdown";
+import type { InsightSampleChain } from "./outcome-structure";
 
 export type InsightMetricBasis = "r-multiple" | "return-percent";
 export type InsightConfidence =
@@ -47,6 +48,7 @@ export type PatternInsight = {
   metricBasis: InsightMetricBasis;
   sampleCount: number;
   baselineCount: number;
+  sampleChain?: InsightSampleChain;
   timeRange: { start: string; end: string };
   medianTagged: string;
   medianBaseline: string | null;
@@ -73,6 +75,7 @@ export type PatternInsightReport = {
   earlySignals: PatternInsight[];
   descriptiveStatistics: PatternInsight[];
   excluded: InsightEpisodeExclusion[];
+  sampleChain?: InsightSampleChain;
   outcomeStructure?: OutcomeStructureReport;
   outcomeDiagnostics?: OutcomeDiagnosticsReport;
   ipoBreakdown?: IpoBreakdownReport;
@@ -289,6 +292,7 @@ function buildInsight(
   definition: CandidateDefinition,
   facts: InsightEpisodeFact[],
   basis: InsightMetricBasis,
+  upstreamExclusions: InsightEpisodeExclusion[] = [],
 ): PatternInsight | null {
   const eligibleFacts = definition.eligible
     ? facts.filter(definition.eligible)
@@ -332,7 +336,7 @@ function buildInsight(
   const conclusion =
     medianBaseline === null
       ? `${definition.dimension.label}当前仅显示描述统计，中位${metricLabel}为 ${displayMetric(medianTagged)}；基准样本不足，不比较差异。`
-      : `${definition.dimension.label}样本的中位${metricLabel}为 ${displayMetric(medianTagged)}，与基准组相差 ${displayMetric(difference as Decimal)}；这是相关性描述，不代表因果。`;
+      : `${definition.dimension.label}样本的中位${metricLabel}为 ${displayMetric(medianTagged)}，与基准组相差 ${displayMetric(difference as Decimal)}；这是描述性相关，不代表因果或未来结果。`;
   const isTag = definition.dimension.kind === "confirmed-tag";
 
   return {
@@ -343,6 +347,13 @@ function buildInsight(
     metricBasis: basis,
     sampleCount: sample.length,
     baselineCount: baseline.length,
+    sampleChain: {
+      rangeCount: new Set([...facts.map(({ episodeId }) => episodeId), ...upstreamExclusions.map(({ episodeId }) => episodeId)]).size,
+      eligibleCount: eligibleFacts.length,
+      excludedCount: upstreamExclusions.length + facts.length - eligibleFacts.length,
+      eligibleEpisodeIds: eligibleFacts.map(({ episodeId }) => episodeId),
+      excluded: upstreamExclusions,
+    },
     timeRange: {
       start: sample
         .map(({ startedAt }) => startedAt)
@@ -474,7 +485,7 @@ export function buildPatternInsightReport(
     ...conditionCandidates(facts),
     ...tagCandidates(facts),
   ]
-    .map((definition) => buildInsight(definition, facts, metricBasis))
+    .map((definition) => buildInsight(definition, facts, metricBasis, [...upstreamExclusions, ...missing, ...ambiguous]))
     .filter((insight): insight is PatternInsight => insight !== null);
 
   return {
@@ -497,6 +508,13 @@ export function buildPatternInsightReport(
       )
       .sort(rank),
     excluded: [...upstreamExclusions, ...missing, ...ambiguous],
+    sampleChain: {
+      rangeCount: new Set([...inputFacts.map(({ episodeId }) => episodeId), ...upstreamExclusions.map(({ episodeId }) => episodeId), ...missing.map(({ episodeId }) => episodeId), ...ambiguous.map(({ episodeId }) => episodeId)]).size,
+      eligibleCount: facts.length,
+      excludedCount: upstreamExclusions.length + missing.length + ambiguous.length,
+      eligibleEpisodeIds: facts.map(({ episodeId }) => episodeId),
+      excluded: [...upstreamExclusions, ...missing, ...ambiguous],
+    },
     outcomeStructure: buildOutcomeStructureReport(
       inputFacts,
       upstreamExclusions,

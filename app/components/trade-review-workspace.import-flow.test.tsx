@@ -67,12 +67,26 @@ function deferred<T>() {
 function expectOnlyLocalFxFetches() {
   const unexpectedRequests = vi.mocked(fetch).mock.calls.filter(([input, init]) => {
     const path = String(input);
-    if (path !== "/api/fx" && path !== "/api/trading-room/fx") return true;
+    if (path !== "/api/fx" && path !== "/api/trading-room/fx" && path !== "/api/trading-room/reference-capital") return true;
     const requestInit = (init ?? {}) as RequestInit;
     const method = requestInit.method?.toUpperCase() ?? "GET";
     return requestInit.cache !== "no-store" || method !== "GET";
   });
   expect(unexpectedRequests).toHaveLength(0);
+}
+
+function rejectNextDemoReplayRequest() {
+  const fetchMock = vi.mocked(fetch);
+  const fallback = fetchMock.getMockImplementation();
+  let rejected = false;
+  fetchMock.mockImplementation(async (input, init) => {
+    const path = String(input);
+    if (!rejected && path.startsWith("/api/demo-replay?")) {
+      rejected = true;
+      throw new Error("offline");
+    }
+    return fallback ? fallback(input, init) : Response.json({});
+  });
 }
 
 const {
@@ -821,7 +835,7 @@ describe("TradeReviewWorkspace", () => {
 
   it("stops replay and reports a recoverable message when a step fails", async () => {
     const user = userEvent.setup();
-    vi.mocked(fetch).mockRejectedValueOnce(new Error("offline"));
+    rejectNextDemoReplayRequest();
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
 
     await user.click(
@@ -1012,8 +1026,10 @@ describe("TradeReviewWorkspace", () => {
         executedAt: "2025-01-03T02:00:00.000Z",
       },
     ]);
-    vi.mocked(fetch).mockResolvedValue(
-      Response.json({
+    const fallbackFetch = vi.mocked(fetch).getMockImplementation();
+    vi.mocked(fetch).mockImplementation((input, init) =>
+      String(input) === "/api/instruments/resolve?market=HK&symbol=1810"
+        ? Promise.resolve(Response.json({
         market: "HK",
         symbol: "1810",
         name: "小米集团-W（更新）",
@@ -1021,7 +1037,8 @@ describe("TradeReviewWorkspace", () => {
         source: "hkex",
         confidence: "official",
         resolvedAt: "2026-07-29T00:00:00.000Z",
-      }),
+      }))
+        : fallbackFetch?.(input, init) ?? Promise.resolve(Response.json({})),
     );
     mockMarketDataSync.mockRejectedValueOnce(
       new Error("K 线更新失败"),
@@ -1095,7 +1112,12 @@ describe("TradeReviewWorkspace", () => {
       fee: "10",
     };
     saveImportedExecutions([existing]);
-    vi.mocked(fetch).mockReturnValue(metadataResponse.promise);
+    const fallbackFetch = vi.mocked(fetch).getMockImplementation();
+    vi.mocked(fetch).mockImplementation((input, init) =>
+      String(input) === "/api/instruments/resolve?market=HK&symbol=1810"
+        ? metadataResponse.promise
+        : fallbackFetch?.(input, init) ?? Promise.resolve(Response.json({})),
+    );
     mockDispatcher.mockResolvedValue(cmsParsedResult);
     mockEnrichment.mockResolvedValue(cmsEnrichedResult);
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
@@ -1162,8 +1184,10 @@ describe("TradeReviewWorkspace", () => {
       fee: "10",
     };
     saveImportedExecutions([existing]);
-    vi.mocked(fetch).mockResolvedValue(
-      Response.json({
+    const fallbackFetch = vi.mocked(fetch).getMockImplementation();
+    vi.mocked(fetch).mockImplementation((input, init) =>
+      String(input) === "/api/instruments/resolve?market=HK&symbol=1810"
+        ? Promise.resolve(Response.json({
         market: "HK",
         symbol: "1810",
         name: "无法持久化的新名称",
@@ -1171,10 +1195,15 @@ describe("TradeReviewWorkspace", () => {
         source: "hkex",
         confidence: "official",
         resolvedAt: "2026-07-29T00:00:00.000Z",
-      }),
+      }))
+        : fallbackFetch?.(input, init) ?? Promise.resolve(Response.json({})),
     );
     const client = createLegacySqliteClient();
-    const mergeExecutions = vi.fn().mockRejectedValue(new Error("quota"));
+    const mergeExecutions = vi.fn((input: { executions: TradeExecution[] }) =>
+      input.executions.length > 0
+        ? Promise.reject(new Error("quota"))
+        : Promise.resolve({ inserted: 0, duplicate: 0, conflict: 0 }),
+    );
     mockSqliteClient.current = { ...client, mergeExecutions };
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
     await screen.findAllByRole("heading", { name: /保存前名称/ });
@@ -1183,7 +1212,8 @@ describe("TradeReviewWorkspace", () => {
     await user.click(screen.getByRole("button", { name: "行情数据详情" }));
     await user.click(screen.getByRole("button", { name: "刷新行情数据" }));
 
-    await waitFor(() => expect(mergeExecutions).toHaveBeenCalledOnce());
+    await waitFor(() => expect(mergeExecutions).toHaveBeenCalledTimes(2));
+    expect(mergeExecutions.mock.calls.at(-1)?.[0].executions).toHaveLength(1);
     expect(
       screen.getAllByRole("heading", { name: /保存前名称/ }).length,
     ).toBeGreaterThan(0);
@@ -1266,6 +1296,7 @@ describe("TradeReviewWorkspace", () => {
     expect(
       await screen.findByRole("heading", { name: "交易库" }),
     ).toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "按标的浏览" }));
     await user.click(
       screen.getByRole("button", { name: "展开小鹏汽车交易回合" }),
     );
@@ -1372,6 +1403,7 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
     await screen.findByRole("heading", { name: /小米集团-W/ });
     await user.click(screen.getByRole("button", { name: "交易库" }));
+    await user.click(await screen.findByRole("tab", { name: "按标的浏览" }));
     await user.click(
       screen.getByRole("button", { name: "展开小鹏汽车交易回合" }),
     );
@@ -1430,6 +1462,7 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
     await screen.findByRole("heading", { name: /小鹏汽车/ });
     await user.click(screen.getByRole("button", { name: "交易库" }));
+    await user.click(await screen.findByRole("tab", { name: "按标的浏览" }));
     await user.click(
       await screen.findByRole("button", {
         name: "展开小鹏汽车交易回合",
@@ -1552,7 +1585,7 @@ describe("TradeReviewWorkspace", () => {
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
     await screen.findByRole("heading", { name: /小鹏汽车/ });
-    await user.click(screen.getByRole("button", { name: "模式洞察" }));
+    await user.click(screen.getByRole("button", { name: "分析" }));
     await user.click(screen.getByRole("tab", { name: "模式分析" }));
     await user.click(await screen.findByText(/待确认规则建议（/));
 
@@ -1574,7 +1607,7 @@ describe("TradeReviewWorkspace", () => {
     expect(document.querySelector(".recall-selected-fill")).toHaveTextContent(
       "买 50 @ 10",
     );
-    await user.click(screen.getByRole("button", { name: "模式洞察" }));
+    await user.click(screen.getByRole("button", { name: "分析" }));
     await user.click(screen.getByRole("tab", { name: "模式分析" }));
     await user.click(await screen.findByText(/待确认规则建议（/));
     await user.selectOptions(
@@ -1584,7 +1617,7 @@ describe("TradeReviewWorkspace", () => {
       "planned",
     );
     await user.click(
-      screen.getByRole("button", { name: "确认改为“计划内”" }),
+      screen.getByRole("button", { name: "确认标签改为“计划内”" }),
     );
 
     await waitFor(() =>
@@ -1597,6 +1630,9 @@ describe("TradeReviewWorkspace", () => {
     );
 
     expect(await screen.findByText("暂无待确认建议")).toBeInTheDocument();
-    expect(vi.mocked(fetch).mock.calls.every(([url]) => String(url).startsWith("/api/storage/review-summaries?"))).toBe(true);
+    expect(vi.mocked(fetch).mock.calls.every(([url]) => {
+      const path = String(url);
+      return path.startsWith("/api/storage/review-summaries?") || path === "/api/trading-room/reference-capital";
+    })).toBe(true);
   });
 });

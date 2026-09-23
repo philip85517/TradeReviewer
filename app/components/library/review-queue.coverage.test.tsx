@@ -176,6 +176,26 @@ describe("ReviewQueue coverage warnings", () => {
     expect(onFilter).toHaveBeenCalledWith(expect.objectContaining({ sort: "oldest" }));
   });
 
+  it("selects rows independently from navigation and opens the selected review queue", async () => {
+    const user = userEvent.setup();
+    const onOpen = vi.fn();
+    render(<ReviewQueue entries={[entry([])]} filter={{ status: "all" }} onFilter={() => {}} onOpen={onOpen} onBrowseStocks={() => {}} />);
+    await user.click(screen.getByRole("checkbox", { name: /选择复盘回合 腾讯控股/ }));
+    expect(screen.getByText("已选 1 个回合")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "加入本次复盘队列" }));
+    expect(onOpen).toHaveBeenCalledWith(expect.objectContaining({ item: expect.objectContaining({ episode: expect.objectContaining({ id: "episode-coverage-gap" }) }) }), ["episode-coverage-gap"]);
+  });
+
+  it("persists optional column preferences without changing the business row", async () => {
+    const user = userEvent.setup();
+    window.localStorage.removeItem("tradereview:review-queue-columns:v1");
+    renderQueue([]);
+    await user.click(screen.getByText("列设置"));
+    await user.click(screen.getByRole("checkbox", { name: "费用" }));
+    expect(JSON.parse(window.localStorage.getItem("tradereview:review-queue-columns:v1") ?? "{}")).toMatchObject({ fees: true });
+    expect(screen.getByRole("button", { name: /复盘腾讯控股/ })).toBeInTheDocument();
+  });
+
   it("renders only one hundred rounds per page while keeping the total and page controls", async () => {
     const user = userEvent.setup();
     const onPageChange = vi.fn();
@@ -201,5 +221,16 @@ describe("ReviewQueue coverage warnings", () => {
 
     await user.click(screen.getByRole("button", { name: "下一页" }));
     expect(onPageChange).toHaveBeenCalledWith(2);
+  });
+
+  it("keeps a selected round available to the batch action after paging", async () => {
+    const user = userEvent.setup();
+    const onOpen = vi.fn();
+    render(<ReviewQueue entries={pagedEntries(101)} filter={{ status: "all" }} onFilter={() => {}} onOpen={onOpen} onBrowseStocks={() => {}} />);
+    await user.click(screen.getAllByRole("checkbox", { name: /选择复盘回合/ })[0]!);
+    await user.click(screen.getByRole("button", { name: "下一页" }));
+    expect(screen.getByText("已选 1 个回合")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "加入本次复盘队列" }));
+    expect(onOpen).toHaveBeenCalledWith(expect.anything(), ["episode-coverage-0"]);
   });
 });

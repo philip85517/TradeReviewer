@@ -198,6 +198,8 @@ import { TradingRoomPrincipalSlot } from "./data-management/trading-room-princip
 import { useModalFocus } from "./import/use-modal-focus";
 import { ReviewSummary, initialReviewSummaryFilters, type ReviewSummaryDrafts } from "./insights/review-summary";
 import { ReviewDashboard } from "./dashboard/review-dashboard";
+import { SharedScopeBar } from "./scope/shared-scope-bar";
+import { DEFAULT_SHARED_SCOPE, normalizeSharedScope, filterEntriesBySharedScope, sharedScopeStorageKey, type SharedScope } from "../lib/reviews/shared-scope";
 import { TagSuggestionPanel } from "./insights/tag-suggestion-panel";
 import { RuleChecks } from "./review/rule-checks";
 import type { EpisodeNotesProps } from "./review/episode-notes-panel";
@@ -973,6 +975,25 @@ export function TradeReviewWorkspace({
     return () => media.removeEventListener("change", closeOnDesktop);
   }, []);
   const [libraryBrowseState, setLibraryBrowseState] = useState<TradeLibraryBrowseState>();
+  const [sharedScope, setSharedScope] = useState<SharedScope>(DEFAULT_SHARED_SCOPE);
+  const [sharedScopeRestored, setSharedScopeRestored] = useState(false);
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(sharedScopeStorageKey());
+      // Restore browser-only preferences after hydration so the server and first client render agree.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (saved) setSharedScope(normalizeSharedScope(JSON.parse(saved)));
+    } catch { /* A malformed or unavailable preference must not block the ledger. */ }
+    setSharedScopeRestored(true);
+  }, []);
+  useEffect(() => {
+    if (!sharedScopeRestored) return;
+    try { window.localStorage.setItem(sharedScopeStorageKey(), JSON.stringify(sharedScope)); } catch { /* Storage may be disabled. */ }
+  }, [sharedScope, sharedScopeRestored]);
+  const updateSharedScope = useCallback((patch: Partial<SharedScope>) => {
+    setSharedScope(current => normalizeSharedScope({ ...current, ...patch }));
+  }, []);
+
   const [reviewQueueIds, setReviewQueueIds] = useState<string[]>();
   const [navigationNotice, setNavigationNotice] = useState<string | null>(null);
   const [qualityModel, setQualityModel] = useState<TradingRoomQualityModel | null>(null);
@@ -981,9 +1002,24 @@ export function TradeReviewWorkspace({
       ? current
       : next);
   }, []);
-  const [activeView, setActiveView] = useState<
+  const [activeView, setActiveViewState] = useState<
     "dashboard" | "review" | "library" | "insights" | "data"
   >(showDemo ? "review" : "dashboard");
+  const recallLeaveGuardRef = useRef<(() => Promise<boolean>) | null>(null);
+  const navigationAttemptRef = useRef(0);
+  const registerRecallLeaveGuard = useCallback((guard: (() => Promise<boolean>) | null) => {
+    recallLeaveGuardRef.current = guard;
+  }, []);
+  function setActiveView(next: typeof activeView) {
+    const attempt = ++navigationAttemptRef.current;
+    if (activeView !== "review" || next === "review" || !recallLeaveGuardRef.current) {
+      setActiveViewState(next);
+      return;
+    }
+    void recallLeaveGuardRef.current().then(allowed => {
+      if (allowed && attempt === navigationAttemptRef.current) setActiveViewState(next);
+    }).catch(() => setNavigationNotice("复盘尚未保存，请重试保存后再离开。"));
+  }
   const [reviewReturnView, setReviewReturnView] = useState<ReviewReturnView>(
     showDemo ? "library" : "dashboard",
   );
@@ -1443,6 +1479,23 @@ export function TradeReviewWorkspace({
       marketDataStatuses,
     ],
   );
+  const scopedTradeLibraryEntries = useMemo(
+    () => filterEntriesBySharedScope(tradeLibraryEntries, sharedScope),
+    [tradeLibraryEntries, sharedScope],
+  );
+  const sharedAccountOptions = useMemo(() => {
+    const scopeEntries = filterEntriesBySharedScope(tradeLibraryEntries, { ...sharedScope, accountIds: [] });
+    const options = [...new Map(scopeEntries.flatMap(entry => entry.executions.map(execution =>
+      [execution.accountId, { id: execution.accountId, label: execution.accountLabel || "未命名账户" }] as const))).values()];
+    const counts = new Map<string, number>();
+    for (const option of options) counts.set(option.label, (counts.get(option.label) ?? 0) + 1);
+    const seen = new Map<string, number>();
+    return options.map(option => {
+      const ordinal = (seen.get(option.label) ?? 0) + 1;
+      seen.set(option.label, ordinal);
+      return { ...option, label: (counts.get(option.label) ?? 0) > 1 ? `${option.label} · 账户 ${ordinal}` : option.label };
+    });
+  }, [tradeLibraryEntries, sharedScope]);
   const qualityInput = useMemo(
     () => ({
       marketDataStatuses,
@@ -1590,7 +1643,7 @@ export function TradeReviewWorkspace({
   const [dataTab, setDataTab] = useState<"import" | "quality" | "settings">("import");
   const [requestedSummaryScope, setRequestedSummaryScope] = useState("");
   const summaryClient = useMemo(() => createReviewSummaryClient(), []);
-  const summaryScopes = useMemo(() => reviewScopeOptions(tradeLibraryEntries), [tradeLibraryEntries]);
+  const summaryScopes = useMemo(() => reviewScopeOptions(scopedTradeLibraryEntries), [scopedTradeLibraryEntries]);
   const summaryScope = summaryScopes.some(scope => scope.id === requestedSummaryScope)
     ? requestedSummaryScope : summaryScopes[0]?.id ?? "";
   const insightEpisodeContexts = useMemo(
@@ -1616,14 +1669,14 @@ export function TradeReviewWorkspace({
     [tradeLibraryEntries],
   );
   function renderScopedInsights(range: ReviewSummaryRange) {
-    const entries = filterTradeLibraryEntriesByScope(tradeLibraryEntries, summaryScope, range);
+    const entries = filterTradeLibraryEntriesByScope(scopedTradeLibraryEntries, summaryScope, range);
     const ids = new Set(entries.flatMap(entry => entry.episodes.map(item => item.episode.id)));
     const result = buildInsightEpisodeFacts(entries, marketDataCandles, marketDataStatuses, suggestionDecisions, dailyCoverageByInstrument);
     return <PatternInsights
       report={buildPatternInsightReport(result.facts, result.excluded)} facts={result.facts}
       suggestions={suggestionsHydrated && reviewsHydrated ? tagSuggestions.filter(suggestion => ids.has(suggestion.episodeId)) : []}
       episodeContexts={insightEpisodeContexts} onConfirmSuggestion={confirmSuggestion}
-      onEditSuggestion={editSuggestion} onRejectSuggestion={rejectSuggestion} onOpenEpisode={(instrumentId, episodeId) => openLibraryEpisode(instrumentId, episodeId, undefined, "insights")}
+      onEditSuggestion={editSuggestion} onRejectSuggestion={rejectSuggestion} onRevokeSuggestion={revokeSuggestion} onOpenEpisode={(instrumentId, episodeId) => openLibraryEpisode(instrumentId, episodeId, undefined, "insights")}
       category={patternCategory} onCategoryChange={setPatternCategory}
     />;
   }
@@ -1632,7 +1685,7 @@ export function TradeReviewWorkspace({
     const suggestions = suggestionsHydrated && reviewsHydrated ? tagSuggestions.filter(item => item.episodeId === episode.id) : [];
     return {
       ruleContent: (draft, update) => <RuleChecks candidates={candidates} checks={draft.review.ruleChecks ?? []} onChange={update} onOpenSource={openLibraryEpisode} />,
-      suggestions: suggestions.length ? (onBusyChange) => <details className="review-episode-suggestions"><summary>本回合标签建议（{suggestions.filter(item => item.status === "suggested").length}）</summary><TagSuggestionPanel onBusyChange={onBusyChange} suggestions={suggestions} episodeContexts={insightEpisodeContexts} onConfirm={confirmSuggestion} onEdit={editSuggestion} onReject={rejectSuggestion} onOpenEpisode={openLibraryEpisode} /></details> : undefined,
+      suggestions: suggestions.length ? (onBusyChange) => <details className="review-episode-suggestions"><summary>本回合标签建议（{suggestions.filter(item => item.status === "suggested").length}）</summary><TagSuggestionPanel onBusyChange={onBusyChange} suggestions={suggestions} episodeContexts={insightEpisodeContexts} onConfirm={confirmSuggestion} onEdit={editSuggestion} onReject={rejectSuggestion} onRevoke={revokeSuggestion} onOpenEpisode={openLibraryEpisode} /></details> : undefined,
     };
   }
 
@@ -2741,10 +2794,17 @@ export function TradeReviewWorkspace({
           }
           importedExecutionsRef.current = renamed;
           setImportedExecutions(renamed);
+          setStoredInstruments((current) => {
+            const index = current.findIndex((item) => item.id === instrumentId);
+            const base = index >= 0 ? current[index] : instrument;
+            const next = { ...base, name };
+            if (index < 0) return [...current, next];
+            return current.map((item, itemIndex) => itemIndex === index ? next : item);
+          });
         };
         const metadataRefresh = historicalIdentity
           ? persistInstrumentName(historicalIdentity.displayName)
-          : options.refreshMetadata && market
+            : options.refreshMetadata && market
             ? (() => {
                 const existingRefresh = metadataRefreshes.current[instrumentId];
                 const refresh = existingRefresh ?? refreshInstrumentMetadata(
@@ -3978,6 +4038,25 @@ export function TradeReviewWorkspace({
     ]);
   }
 
+  async function revokeSuggestion(suggestion: TagSuggestionRecord) {
+    const finalTagId = suggestion.finalTagId ?? suggestion.tagId;
+    const current = episodeReviews[suggestion.episodeId];
+    if (!current) throw new Error("该回合记录已变化，请刷新后重试。");
+    const supportedElsewhere = suggestionDecisions.some(item => item.id !== suggestion.id &&
+      item.episodeId === suggestion.episodeId && (item.status === "confirmed" || item.status === "edited") &&
+      (item.finalTagId ?? item.tagId) === finalTagId);
+    const decidedAt = new Date().toISOString();
+    const decided: TagSuggestionRecord = { ...suggestion, status: "rejected", finalTagId: null, decidedAt };
+    const review: EpisodeReviewRecord = {
+      ...current,
+      updatedAt: decidedAt,
+      confirmedTagIds: supportedElsewhere ? current.confirmedTagIds : current.confirmedTagIds.filter(id => id !== finalTagId),
+    };
+    await storageClient.putSuggestionDecision({ suggestion: decided, review });
+    setSuggestionDecisions(records => records.map(item => item.id === decided.id ? decided : item));
+    setEpisodeReviews(records => ({ ...records, [review.episodeId]: review }));
+  }
+
   function applyCommand(command: DrawingCommand) {
     setDrawingHistory((history) =>
       applyDrawingCommand(history, command, activeCursor),
@@ -4171,7 +4250,7 @@ export function TradeReviewWorkspace({
   }
 
   return (
-    <main className="trade-review-app">
+    <main className={`trade-review-app ${activeView === "review" ? "is-review" : ""}`}>
       <input hidden ref={importFileRef} aria-label="导入交易记录" type="file" accept=".xlsx,.xls,.pdf" multiple={!supplementScope} disabled={importing} onChange={(event) => {
         const files = Array.from(event.target.files ?? []);
         if (files.length) startStatementBatch(files);
@@ -4204,11 +4283,12 @@ export function TradeReviewWorkspace({
           aria-expanded={mobileNavOpen}
           aria-controls="primary-navigation"
           onClick={() => setMobileNavOpen((open) => !open)}
+          onKeyDown={event => { if (event.key === "Escape") setMobileNavOpen(false); }}
         >
           <Menu size={18} />
           <span>导航</span>
         </button>
-        <nav id="primary-navigation" className="app-nav" aria-label="主导航">
+        <nav id="primary-navigation" className="app-nav" aria-label="主导航" onKeyDown={event => { if (event.key === "Escape") { setMobileNavOpen(false); document.querySelector<HTMLButtonElement>(".mobile-nav-trigger")?.focus(); } }}>
           <button
             className={activeView === "dashboard" ? "active" : ""}
             aria-current={activeView === "dashboard" ? "page" : undefined}
@@ -4238,7 +4318,7 @@ export function TradeReviewWorkspace({
               setActiveView("insights");
             }}
           >
-            模式洞察
+            分析
           </button>
           <button
             className={activeView === "data" ? "active" : ""}
@@ -4249,24 +4329,15 @@ export function TradeReviewWorkspace({
               setActiveView("data");
             }}
           >
-            数据管理
+            数据
           </button>
         </nav>
       </aside>
 
+      {mobileNavOpen && <button className="mobile-navigation-backdrop" aria-label="关闭导航" onClick={() => setMobileNavOpen(false)} />}
       <div className="app-content">
       {activeView === "review" && (showDemo || selectedImportedInstrument) && <header className="page-header review-page-header" aria-label="页面顶栏" inert={stockDrawerOpen || Boolean(dataTarget)}>
         <div className="header-actions">
-          {selectedImportedInstrument && selectedEpisode && activeView === "review" && (
-            <button
-              type="button"
-              className="header-data-check"
-              aria-label="检查/修复数据"
-              onClick={() => openDataCheck(selectedImportedInstrument.instrument.id, selectedEpisode.accountId)}
-            >
-              检查/修复数据
-            </button>
-          )}
           {selectedImportedInstrument && activeView === "review" && (
             <button
               type="button"
@@ -4276,7 +4347,7 @@ export function TradeReviewWorkspace({
               aria-controls="import-management-dialog"
               onClick={() => setImportManagementOpen(true)}
             >
-              数据管理
+              数据
             </button>
           )}
           <span className="demo-chip">
@@ -4297,10 +4368,23 @@ export function TradeReviewWorkspace({
         </div>
       </header>}
       {activeView === "review" && (showDemo || selectedImportedInstrument) && <div className="review-layout-controls" inert={stockDrawerOpen || Boolean(dataTarget)} aria-label="复盘布局">
-        <button className="mobile-trades-toggle" aria-expanded={mobileTradesOpen} onClick={() => setMobileTradesOpen(value=>!value)}>{mobileTradesOpen ? "收起本股交易" : "本股交易"}</button>
-        <button className="desktop-left-toggle" aria-expanded={layout.left} onClick={() => { setFocusedChart(false); setLayout((value) => ({ ...value, left: !value.left })); }}>{layout.left ? "收起交易导航" : "展开交易导航"}</button>
-        <button className="desktop-right-toggle" aria-expanded={layout.right} onClick={() => { setFocusedChart(false); setLayout((value) => ({ ...value, right: !value.right })); }}>{layout.right ? "收起复盘面板" : "展开复盘面板"}</button>
-        <button aria-pressed={focusedChart} onClick={toggleFocus}>{focusedChart ? "恢复布局" : "专注图表"}</button>
+        {!showDemo && <button onClick={returnFromReview}>返回{reviewReturnView === "dashboard" ? "我的交易室" : reviewReturnView === "insights" ? "分析" : "交易库"}</button>}
+        {selectedImportedInstrument && selectedEpisode && activeView === "review" && (
+          <button
+            type="button"
+            className="header-data-check"
+            aria-label="检查/修复数据"
+            onClick={() => openDataCheck(selectedImportedInstrument.instrument.id, selectedEpisode.accountId)}
+          >
+            检查/修复数据
+          </button>
+        )}
+        {showDemo && <>
+          <button className="mobile-trades-toggle" aria-expanded={mobileTradesOpen} onClick={() => setMobileTradesOpen(value=>!value)}>{mobileTradesOpen ? "收起本股交易" : "本股交易"}</button>
+          <button className="desktop-left-toggle" aria-expanded={layout.left} onClick={() => { setFocusedChart(false); setLayout((value) => ({ ...value, left: !value.left })); }}>{layout.left ? "收起交易导航" : "展开交易导航"}</button>
+          <button className="desktop-right-toggle" aria-expanded={layout.right} onClick={() => { setFocusedChart(false); setLayout((value) => ({ ...value, right: !value.right })); }}>{layout.right ? "收起复盘面板" : "展开复盘面板"}</button>
+        </>}
+        <button aria-pressed={focusedChart} onClick={toggleFocus}>{focusedChart ? "标准布局" : "专注图表"}</button>
       </div>}
       {mobileTradesOpen && <button className="stock-drawer-backdrop" aria-label="关闭本股交易遮罩" onClick={() => setMobileTradesOpen(false)} />}
       {importError && activeView !== "data" && <p role="alert" className="navigation-notice">{importError}</p>}
@@ -4309,7 +4393,7 @@ export function TradeReviewWorkspace({
       {navigationNotice && activeView !== "data" && <p role="alert" className="navigation-notice">{navigationNotice}<button type="button" onClick={() => setNavigationNotice(null)}>关闭提示</button></p>}
       <div
         inert={Boolean(dataTarget)}
-        className={`workspace ${activeView === "review" ? `${layout.left ? "" : "layout-left-hidden"} ${layout.right ? "" : "layout-right-hidden"}` : ""} ${!showDemo && importedInstruments.length === 0 && activeView === "review" ? "empty-mode" : ""} ${
+        className={`workspace ${activeView === "review" && !showDemo && selectedImportedInstrument ? "recall-mode" : ""} ${activeView === "review" ? `${layout.left ? "" : "layout-left-hidden"} ${layout.right ? "" : "layout-right-hidden"}` : ""} ${!showDemo && importedInstruments.length === 0 && activeView === "review" ? "empty-mode" : ""} ${
           activeView === "dashboard"
             ? "dashboard-mode"
             : activeView === "library"
@@ -4332,6 +4416,10 @@ export function TradeReviewWorkspace({
           }}
         >
           <ReviewDashboard
+            visible={activeView === "dashboard"}
+            sharedScope={sharedScope}
+            onSharedScopeChange={updateSharedScope}
+            sharedAccountOptions={sharedAccountOptions}
             entries={tradeLibraryEntries}
             colorScheme={settings.colorScheme}
             instrumentMetadata={instrumentMetadata}
@@ -4354,7 +4442,7 @@ export function TradeReviewWorkspace({
             onOpenInReview={(instrumentId, episodeId, queueIds) => {
               const summary = importedInstruments.find((item) => item.instrument.id === instrumentId);
               if (!summary || !selectImportedSummary(summary, episodeId)) {
-                setNavigationNotice("该交易回合已变化，请返回统计总览重新选择。");
+                setNavigationNotice("该交易回合已变化，请返回我的交易室重新选择。");
                 return;
               }
               setNavigationNotice(null);
@@ -4378,6 +4466,7 @@ export function TradeReviewWorkspace({
             overflow: "auto",
           }}
         >
+          <SharedScopeBar scope={sharedScope} accountOptions={sharedAccountOptions} onChange={updateSharedScope} />
           <DataManagement
             activeTab={dataTab}
             onTabChange={setDataTab}
@@ -4415,9 +4504,9 @@ export function TradeReviewWorkspace({
                 onOpenDataCheck={openQualityDataCheck}
               />
             ) : undefined}
-            principalSlot={!showDemo ? (
-              <TradingRoomPrincipalSlot
-                entries={tradeLibraryEntries}
+            principalSlot={!showDemo ? (sharedScope.nature === "unknown" ? <p role="status">交易性质尚未核实，参考分配资本不可用。请先核对账本性质。</p> : <TradingRoomPrincipalSlot
+                entries={scopedTradeLibraryEntries}
+                sharedScope={{ nature: sharedScope.nature, simulationRunId: sharedScope.simulationRunId, accountIds: sharedScope.accountIds, reportCurrency: sharedScope.reportCurrency }}
                 instrumentMetadata={instrumentMetadata}
                 fxSnapshot={fxSnapshot}
                 enabled
@@ -4428,11 +4517,14 @@ export function TradeReviewWorkspace({
         </div>
         {activeView === "library" ? (
           <TradeLibrary
-            defaultMode="stocks"
+            sharedScope={sharedScope}
+            onSharedScopeChange={updateSharedScope}
+            sharedAccountOptions={sharedAccountOptions}
+            defaultMode="queue"
             key={libraryTarget?.requestId ?? 0}
             initialBrowseState={libraryBrowseState}
             onBrowseStateChange={setLibraryBrowseState}
-            entries={tradeLibraryEntries}
+            entries={scopedTradeLibraryEntries}
             candlesByInstrument={marketDataCandles}
             marketDataStatuses={marketDataStatuses}
             marketDataLabels={marketDataLabels}
@@ -4466,12 +4558,12 @@ export function TradeReviewWorkspace({
             }}
           />
         ) : activeView !== "dashboard" && activeView === "insights" ? (
-          <ReviewSummary activeTab={insightsTab} onTabChange={setInsightsTab} onImport={() => {
+          <div className="scoped-insights-page"><SharedScopeBar scope={sharedScope} accountOptions={sharedAccountOptions} onChange={updateSharedScope} /><ReviewSummary activeTab={insightsTab} onTabChange={setInsightsTab} onImport={() => {
             setDataTab("import");
             setActiveView("data");
-          }} filterStore={{filters:summaryFilters,setFilters:setSummaryFilters}} draftStore={{drafts:summaryDrafts,setDrafts:setSummaryDrafts}} entries={tradeLibraryEntries} scopeId={summaryScope} onScopeChange={setRequestedSummaryScope} client={summaryClient} onOpenEpisode={(instrumentId, episodeId) => openLibraryEpisode(instrumentId, episodeId, undefined, "insights")}>
+          }} filterStore={{filters:summaryFilters,setFilters:setSummaryFilters}} draftStore={{drafts:summaryDrafts,setDrafts:setSummaryDrafts}} entries={scopedTradeLibraryEntries} scopeId={summaryScope} onScopeChange={setRequestedSummaryScope} client={summaryClient} onOpenEpisode={(instrumentId, episodeId) => openLibraryEpisode(instrumentId, episodeId, undefined, "insights")}>
             {renderScopedInsights}
-          </ReviewSummary>
+          </ReviewSummary></div>
         ) : activeView === "review" ? (
           <>
             {stockDrawerOpen && <button type="button" className="stock-drawer-backdrop" aria-label="关闭股票列表遮罩" tabIndex={-1} onClick={() => setStockDrawerOpen(false)} />}
@@ -4530,7 +4622,7 @@ export function TradeReviewWorkspace({
             />
             </aside>
             <div className="review-content" inert={stockDrawerOpen || Boolean(dataTarget)}>
-            {(showDemo || selectedImportedInstrument) && <div className={`stock-context-shell ${mobileTradesOpen ? "mobile-trades-open" : ""}`}><StockEpisodeNavigation mobileOpen={mobileTradesOpen} onCloseMobile={() => setMobileTradesOpen(false)} instrument={selectedImportedInstrument?.instrument} episodes={episodes} selectedEpisodeId={selectedEpisode?.id} cursor={activeCursor} onSelectEpisode={id => { selectEpisode(id); setMobileTradesOpen(false); }} onLocate={(cursor) => { setPlaying(false); setImportedCursor(cursor); setMobileTradesOpen(false); }} onLocateRequest={requestExecutionLocation} onNext={nextImportedExecution} onSwitchStock={() => { setMobileTradesOpen(false); setStockDrawerOpen(true); }} onLibrary={() => { setMobileTradesOpen(false); returnFromReview(); }} returnLabel={reviewReturnView === "dashboard" ? "返回交易室" : reviewReturnView === "insights" ? "返回模式洞察" : undefined} /></div>}
+            {showDemo && <div className={`stock-context-shell ${mobileTradesOpen ? "mobile-trades-open" : ""}`}><StockEpisodeNavigation mobileOpen={mobileTradesOpen} onCloseMobile={() => setMobileTradesOpen(false)} instrument={selectedImportedInstrument?.instrument} episodes={episodes} selectedEpisodeId={selectedEpisode?.id} cursor={activeCursor} onSelectEpisode={id => { selectEpisode(id); setMobileTradesOpen(false); }} onLocate={(cursor) => { setPlaying(false); setImportedCursor(cursor); setMobileTradesOpen(false); }} onLocateRequest={requestExecutionLocation} onNext={nextImportedExecution} onSwitchStock={() => { setMobileTradesOpen(false); setStockDrawerOpen(true); }} onLibrary={() => { setMobileTradesOpen(false); returnFromReview(); }} returnLabel={reviewReturnView === "dashboard" ? "返回我的交易室" : reviewReturnView === "insights" ? "返回模式洞察" : undefined} /></div>}
             {!showDemo && !selectedImportedInstrument ? (
               <section
                 className="review-workspace review-workspace-empty"
@@ -4560,6 +4652,9 @@ export function TradeReviewWorkspace({
             ) : selectedImportedInstrument ? (
               <div className="recall-review-host">
                 <RecallWorkspace
+                  onLeaveGuardChange={registerRecallLeaveGuard}
+                  focused={focusedChart}
+                  onFocusedChange={setFocusedChart}
                   episode={selectedEpisode!}
                   episodes={episodes}
                   instrument={selectedImportedInstrument.instrument}

@@ -941,3 +941,41 @@ it("filters simulation groups and opens the selected run in the shared workbench
   expect(openReview).toHaveBeenCalledWith('CN-SH:600330',entries.find(e=>e.executions[0].source.tradeNature==='simulation')!.episodes[0].episode.id, expect.any(Array));
   expect(screen.queryByText('TradingView 源报告')).not.toBeInTheDocument();
 });
+
+it("derives browse rows from shared nature and account scope across rerenders", () => {
+  const initial = setup();
+  cleanup();
+  const simulationEntries = initial.entries.map(entry => ({
+    ...entry,
+    tradeNature: "simulation" as const,
+    simulationRunId: "run-a",
+    episodes: entry.episodes.map(item => ({
+      ...item,
+      episode: {
+        ...item.episode,
+        tradeNature: "simulation" as const,
+        simulationRunId: "run-a",
+      },
+    })),
+  }));
+  const props = {
+    entries: initial.entries,
+    candlesByInstrument: {},
+    marketDataStatuses: {},
+    timeframe: "1D" as const,
+    onTimeframeChange: vi.fn(),
+    onOpenInReview: vi.fn(),
+    onSaveReview: vi.fn(),
+    reviewsHydrated: true,
+    sharedScope: { nature: "live" as const, accountIds: ["acct-main"], reportCurrency: "original" as const, simulationRunId: null },
+    onSharedScopeChange: vi.fn(),
+  };
+  const view = render(<TradeLibrary {...props} />);
+  expect(screen.getAllByRole("button", { name: /展开.*交易回合/ })).toHaveLength(1);
+
+  view.rerender(<TradeLibrary {...props} entries={simulationEntries} sharedScope={{ ...props.sharedScope, nature: "simulation", simulationRunId: "run-a" }} />);
+  expect(screen.getAllByRole("button", { name: /展开.*交易回合/ })).toHaveLength(1);
+
+  view.rerender(<TradeLibrary {...props} entries={simulationEntries} sharedScope={{ ...props.sharedScope, nature: "simulation", accountIds: [], simulationRunId: null }} />);
+  expect(screen.getAllByRole("button", { name: /展开.*交易回合/ })).toHaveLength(2);
+});

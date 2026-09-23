@@ -10,6 +10,8 @@ import {
   buildOutcomeDiagnosticsReport,
   type OutcomeDiagnosticsReport,
 } from "./outcome-diagnostics";
+import Decimal from "decimal.js";
+import type { OutcomeHistogramDomain } from "./outcome-structure";
 
 export type MarketBreakdownMarket = "US" | "HK" | "CN-SH" | "CN-SZ" | "unknown";
 
@@ -66,6 +68,14 @@ export function buildMarketBreakdownReport(
   upstreamExclusions: InsightEpisodeExclusion[],
 ): MarketBreakdownReport {
   const overall = buildOutcomeStructureReport(inputFacts, upstreamExclusions);
+  const values = inputFacts
+    .map(({ returnPercent }) => returnPercent === null ? null : new Decimal(returnPercent))
+    .filter((value): value is Decimal => value !== null);
+  const histogramDomain: OutcomeHistogramDomain | undefined = values.length === 0 ? undefined : {
+    min: Decimal.min(...values).toString(),
+    max: Decimal.max(...values).toString(),
+    binCount: Math.min(7, Math.max(1, Math.ceil(Math.sqrt(values.length)))),
+  };
   const groups = GROUPS.map((definition) => {
     const facts = inputFacts.filter(
       (fact) => normalizeInsightMarket(fact.market) === definition.market,
@@ -75,7 +85,7 @@ export function buildMarketBreakdownReport(
         (exclusion) => exclusionMarket(exclusion) === definition.market,
       ),
     ];
-    const report = buildOutcomeStructureReport(facts, excluded, definition.label);
+    const report = buildOutcomeStructureReport(facts, excluded, definition.label, histogramDomain);
     return {
       ...definition,
       facts,

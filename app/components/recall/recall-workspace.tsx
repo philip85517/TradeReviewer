@@ -29,6 +29,7 @@ import {
   useState,
   type ComponentProps,
   type DragEvent,
+  type KeyboardEvent,
   type ReactElement,
 } from "react";
 import { flushSync } from "react-dom";
@@ -84,10 +85,12 @@ import {
   executionsThroughCursor,
   mapRecallExecutionToCandle,
   nextRecallDecisionState,
+  previousRecallDecisionState,
   recallExecutionCandleIndex,
   revealRecallBar,
   revealRecallDecision,
   revealRecallHistory,
+  revealableCandlesThroughCursor,
   NO_REVEALED_EXECUTIONS,
   rewindRecallBar,
   type RecallReplayCursor,
@@ -174,6 +177,11 @@ export type RecallWorkspaceProps = {
   onTimeframeChange?: (timeframe: Timeframe) => void;
   onSettingsChange: (settings: ChartSettings) => void;
   onRefreshMarketData?: () => void;
+  /** Parent navigation may await this guard before unmounting Recall. */
+  onLeaveGuardChange?: (guard: (() => Promise<boolean>) | null) => void;
+  /** Optional parent-owned focus layout state. */
+  focused?: boolean;
+  onFocusedChange?: (focused: boolean) => void;
   /** Export is intentionally an adapter. The export worker owns its dialog and format. */
   onExport?: (document: RecallDocument) => void;
 };
@@ -423,13 +431,14 @@ function mapCursorToTimeframe(
   candles: Candle[],
 ) {
   const lastExecution = replay.revealedExecutions.at(-1);
+  const visibilityCursor = lastExecution?.executedAt ?? replay.cursor;
   const mapped = lastExecution ? mapRecallExecutionToCandle(lastExecution, candles) : undefined;
   if (mapped) {
     return {
       ...replay,
       cursor: candleKnowledgeAt(mapped),
-      currentCandle: mapped,
-      revealedCandles: candles.filter((candle) => candle.time <= mapped.time),
+      currentCandle: Date.parse(candleKnowledgeAt(mapped)) <= Date.parse(visibilityCursor) ? mapped : undefined,
+      revealedCandles: revealableCandlesThroughCursor(candles, visibilityCursor),
     };
   }
   const sorted = [...candles].sort((left, right) => Date.parse(left.time) - Date.parse(right.time));
@@ -442,8 +451,8 @@ function mapCursorToTimeframe(
     cursor: replay.executionCursor === NO_REVEALED_EXECUTIONS
       ? replay.cursor
       : current ? candleKnowledgeAt(current) : replay.cursor,
-    currentCandle: current,
-    revealedCandles: current ? sorted.slice(0, sorted.findIndex((candle) => candle.time === current.time) + 1) : [],
+    currentCandle: current && Date.parse(candleKnowledgeAt(current)) <= Date.parse(visibilityCursor) ? current : undefined,
+    revealedCandles: revealableCandlesThroughCursor(sorted, visibilityCursor),
     revealedExecutions: executionsThroughCursor(executions, replay.executionCursor),
   };
 }
@@ -565,6 +574,9 @@ export function RecallWorkspace({
   onTimeframeChange,
   onSettingsChange,
   onRefreshMarketData,
+  onLeaveGuardChange,
+  focused,
+  onFocusedChange,
   onExport,
 }: RecallWorkspaceProps) {
   const fallbackTimeframe = firstEnabledTimeframe(timeframeAvailability, candlesByTimeframe);
@@ -596,6 +608,7 @@ export function RecallWorkspace({
   const [layersOpen, setLayersOpen] = useState(false);
   const [statsOpen, setStatsOpen] = useState(false);
   const [leftNavOpen, setLeftNavOpen] = useState(true);
+  const [mobileRecordsOpen, setMobileRecordsOpen] = useState(false);
   const [activeTool, setActiveTool] = useState<DrawingTool>("cursor");
   const [selectedDrawingId, setSelectedDrawingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -604,12 +617,16 @@ export function RecallWorkspace({
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [historyMode, setHistoryMode] = useState(false);
+  const [playing, setPlaying] = useState(false);
   const [editingSnapshotId, setEditingSnapshotId] = useState<string | null>(null);
   const [snapshotEditDirty, setSnapshotEditDirty] = useState(false);
   const [snapshotCandles, setSnapshotCandles] = useState<Candle[] | null>(null);
   const [splitDrafts, setSplitDrafts] = useState<SplitDraft[] | null>(null);
   const [deletedNotice, setDeletedNotice] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
+  const focusControlled = focused !== undefined;
+  const navOpen = focusControlled ? !focused : leftNavOpen;
+  const focusMode = !navOpen;
 
   const markDirty = useCallback(() => {
     draftGenerationRef.current += 1;
@@ -971,6 +988,17 @@ export function RecallWorkspace({
     saveDocumentRef.current = saveNow;
   }, [saveNow]);
 
+  const leaveGuard = useCallback(async () => {
+    if (!dirtyRef.current) return true;
+    await saveNow();
+    return !dirtyRef.current;
+  }, [saveNow]);
+
+  useEffect(() => {
+    onLeaveGuardChange?.(leaveGuard);
+    return () => onLeaveGuardChange?.(null);
+  }, [leaveGuard, onLeaveGuardChange]);
+
   useEffect(() => {
     let cancelled = false;
     const previousEpisodeId = previousEpisodeIdRef.current;
@@ -1000,6 +1028,17 @@ export function RecallWorkspace({
     return () => {
       if (dirtyRef.current) void saveDocumentRef.current?.();
     };
+  }, []);
+
+  useEffect(() => {
+    const guardExternalLeave = (event: BeforeUnloadEvent) => {
+      if (!dirtyRef.current) return;
+      event.preventDefault();
+      event.returnValue = "";
+      void saveDocumentRef.current?.();
+    };
+    window.addEventListener("beforeunload", guardExternalLeave);
+    return () => window.removeEventListener("beforeunload", guardExternalLeave);
   }, []);
 
   const applyCommand = useCallback((command: DrawingCommand) => {
@@ -1131,6 +1170,39 @@ export function RecallWorkspace({
     setWorking(revealRecallBar({ candles: allCandles, executions: currentExecutions, current: replay }));
   }, [allCandles, currentExecutions, replay, setWorking]);
 
+  useEffect(() => {
+    if (!playing || historyMode || editingSnapshotId || !replay) return;
+    const timer = window.setInterval(() => {
+      if (replay.revealedCandles.length >= allCandles.length) {
+        setPlaying(false);
+        return;
+      }
+      nextBar();
+    }, 800);
+    return () => window.clearInterval(timer);
+  }, [allCandles.length, editingSnapshotId, historyMode, nextBar, playing, replay]);
+
+  const handleWorkspaceKeyDown = useCallback((event: KeyboardEvent<HTMLElement>) => {
+    const target = event.target as HTMLElement | null;
+    if (event.nativeEvent.isComposing || event.keyCode === 229 || target?.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName ?? "")) return;
+    if (historyMode || editingSnapshotId || !replay) return;
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      nextBar();
+    } else if (event.key.toLowerCase() === "j") {
+      event.preventDefault();
+      const previous = previousRecallDecisionState({ candles: allCandles, executions: currentExecutions, decisions: document?.decisions ?? [], current: replay });
+      setSelectedDecisionId(decisionForExecution(document!, previous.executionCursor) ?? selectedDecisionId);
+      setWorking(previous, decisionForExecution(document!, previous.executionCursor) ?? selectedDecisionId);
+    } else if (event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      nextDecision();
+    } else if (event.key === " ") {
+      event.preventDefault();
+      setPlaying((current) => !current);
+    }
+  }, [allCandles, currentExecutions, document, editingSnapshotId, historyMode, nextBar, nextDecision, replay, selectedDecisionId, setWorking]);
+
   const toggleHistory = useCallback(() => {
     if (!replay) return;
     if (historyMode) {
@@ -1242,21 +1314,30 @@ export function RecallWorkspace({
       timeframe,
       viewport: chartHandleRef.current?.getViewport(),
     };
+    // A snapshot may have been captured from explicit retrospective mode. Its
+    // stored candles are still useful for the image, but reopening it as an
+    // editable step replay must respect the live knowledge boundary.
+    const snapshotCandles = replay.mode === "history"
+      ? snapshot.candles
+      : revealableCandlesThroughCursor(snapshot.candles, replay.cursor);
+    const snapshotExecutionCursor = replay.mode === "history"
+      ? snapshot.executionCursor
+      : replay.executionCursor;
     setEditingSnapshotId(snapshot.id);
     setSnapshotEditDirty(false);
-    setSnapshotCandles(snapshot.candles.map((candle) => ({ ...candle, tradingDates: candle.tradingDates ? [...candle.tradingDates] : undefined })));
+    setSnapshotCandles(snapshotCandles.map((candle) => ({ ...candle, tradingDates: candle.tradingDates ? [...candle.tradingDates] : undefined })));
     setTimeframe(snapshot.timeframe);
     setSelectedDecisionId(snapshot.decisionId === "global" ? "global" : snapshot.decisionId);
     const snapshotHistory = createDrawingHistory(snapshot.drawings);
     drawingHistoryRef.current = snapshotHistory;
     setDrawingHistory(snapshotHistory);
     setReplay({
-      cursor: snapshot.cursor,
-      executionCursor: snapshot.executionCursor,
+      cursor: replay.mode === "history" ? snapshot.cursor : replay.cursor,
+      executionCursor: snapshotExecutionCursor,
       mode: "replay",
-      revealedCandles: snapshot.candles,
-      revealedExecutions: executionsThroughCursor(currentExecutions, snapshot.executionCursor),
-      currentCandle: snapshot.candles.at(-1),
+      revealedCandles: snapshotCandles,
+      revealedExecutions: executionsThroughCursor(currentExecutions, snapshotExecutionCursor),
+      currentCandle: snapshotCandles.at(-1),
     });
     setError(null);
   }, [currentExecutions, document, drawingHistory.present, replay, selectedDecisionId, timeframe]);
@@ -1452,6 +1533,10 @@ export function RecallWorkspace({
 
   const complete = useCallback(async () => {
     if (!document || !replay) return;
+    if (historyMode) {
+      setError("请先返回逐步回放，再保存并完成回合复盘；完整历史仅用于事后查看。");
+      return;
+    }
     if (editingSnapshotId) {
       setError("请先返回工作图，再捕获全局总结。");
       return;
@@ -1613,7 +1698,7 @@ export function RecallWorkspace({
     } finally {
       setSaving(false);
     }
-  }, [capture, chartCandles, confirmCaptureWarnings, document, editingSnapshotId, episode, missing, replay, repository, selectedDecisionId, timeframe]);
+  }, [capture, chartCandles, confirmCaptureWarnings, document, editingSnapshotId, episode, historyMode, missing, replay, repository, selectedDecisionId, timeframe]);
 
   const handleChartReady = useCallback((handle: RecallChartHandle | null) => {
     chartHandleRef.current = handle;
@@ -1630,6 +1715,7 @@ export function RecallWorkspace({
       const viewport = pendingViewportRestoreRef.current;
       pendingViewportRestoreRef.current = null;
       window.requestAnimationFrame(() => chartHandleRef.current?.restoreViewport(viewport));
+      return;
     }
   }, [editingSnapshotId, snapshotEdit]);
 
@@ -1665,7 +1751,7 @@ export function RecallWorkspace({
         : "选择一笔成交";
 
   return (
-    <section className="recall-workspace" aria-label="导入交易回忆复盘工作区">
+    <section className="recall-workspace" data-layout={focusMode ? "focus" : "standard"} aria-label="导入交易回忆复盘工作区" tabIndex={-1} onKeyDown={handleWorkspaceKeyDown}>
       <header className="recall-header">
         <div className="recall-heading">
           <span className="eyebrow">{tradeNature === "simulation" ? "TradingView · 模拟盘" : "导入交易 · 回忆复盘"}</span>
@@ -1688,9 +1774,9 @@ export function RecallWorkspace({
               {episodes.map((item, index) => <option key={item.id} value={item.id}>第 {episodes.length - index} 次 · {item.status === "closed" ? "已平仓" : "持仓中"}</option>)}
             </select>
           </label>
-          <button type="button" className="recall-icon-button" aria-label={leftNavOpen ? "收起复盘导航" : "展开复盘导航"} onClick={() => setLeftNavOpen((open) => !open)}>
-            {leftNavOpen ? <PanelLeftClose size={17} /> : <PanelLeftOpen size={17} />}
-          </button>
+          {!focusControlled && <button type="button" className="recall-icon-button" title={focusMode ? "切换到标准布局" : "切换到专注布局"} aria-label={focusMode ? "展开复盘导航，切换到标准布局" : "收起复盘导航，切换到专注布局"} onClick={() => { const next = !focusMode; onFocusedChange?.(next); if (!focusControlled) setLeftNavOpen(!next); }}>
+            {navOpen ? <PanelLeftClose size={17} /> : <PanelLeftOpen size={17} />}
+          </button>}
           <button type="button" className="recall-icon-button" aria-label="统计" aria-pressed={statsOpen} onClick={() => setStatsOpen((open) => !open)}><BarChart3 size={17} /></button>
           <button type="button" className="recall-export-button" title="导出已留存内容" onClick={() => onExport ? onExport(document) : setExportOpen(true)}><Download size={15} />导出</button>
         </div>
@@ -1749,10 +1835,10 @@ export function RecallWorkspace({
         </section>
       )}
 
-      <div className={`recall-layout${leftNavOpen ? "" : " nav-collapsed"}`}>
-        {leftNavOpen && (
-          <aside className="recall-nav" aria-label="回合与决策导航">
-            <div className="recall-nav-title"><span>本回合记录</span><small>{document.decisions.length} 笔决策</small></div>
+      <div className={`recall-layout${navOpen ? "" : " nav-collapsed"}`}>
+        {navOpen && (
+          <aside className={`recall-nav${mobileRecordsOpen ? " mobile-records-open" : ""}`} aria-label="回合与决策导航">
+            <div className="recall-nav-title"><span>本回合记录</span><small>{document.decisions.length} 笔决策</small><button type="button" className="recall-nav-toggle" aria-expanded={mobileRecordsOpen} onClick={() => setMobileRecordsOpen((open) => !open)}>{mobileRecordsOpen ? "收起" : "展开"}</button></div>
             <button type="button" className={`recall-nav-item global${selectedDecisionId === "global" ? " selected" : ""}`} aria-current={selectedDecisionId === "global" ? "true" : undefined} onClick={() => selectDecision("global")}>
               <span className="recall-nav-icon"><ClipboardPenLine size={15} /></span><span><strong>全局总结</strong><small>{globalSnapshot ? "已有留存" : "尚未留存"}</small></span>
             </button>
@@ -1829,6 +1915,7 @@ export function RecallWorkspace({
                 viewportKey={`${episode.id}:${timeframe}:${editingSnapshotId ?? "working"}:${chartCandles[0]?.time ?? ""}:${chartCandles.at(-1)?.time ?? ""}`}
                 candles={chartCandles}
                 executions={chartExecutions}
+                focusRange={{ start: episode.startedAt, end: episode.endedAt ?? replay.cursor }}
                 cursor={replay.cursor}
                 averageCost={pnlAvailable ? Number(position.averageCost) : 0}
                 drawings={visibleDrawingsAtCursor(drawingHistory.present, replay.cursor, timeframe)}
@@ -1847,7 +1934,7 @@ export function RecallWorkspace({
           </div>
 
           <div className="recall-position-strip">
-            <div><span className={`live-dot${historyMode ? "" : " playing"}`} /><strong>{selectedLabel}</strong><small>{replay.cursor ? `行情截至 ${formatMarketCursor(replay.cursor, instrument.market)}` : "尚无行情游标"}</small></div>
+            <div><span className={`live-dot${historyMode ? "" : " playing"}`} /><strong>{historyMode ? "事后复盘" : "逐步回放"} · {selectedLabel}</strong><small>{historyMode ? "完整历史：当前回合成交全部显示" : replay.cursor ? `可知截止 ${formatMarketCursor(replay.cursor, instrument.market)}` : "尚无行情游标"}</small></div>
             <div className="recall-position-stats">
               <span>持仓 <b>{quantityAvailable ? position.quantity : "待核对"}</b></span>
               <span>均价 <b>{pnlAvailable ? Number(position.averageCost).toFixed(2) : settlementCurrencyMismatch ? "币种待换算" : "待补齐成本"}</b></span>
@@ -1859,13 +1946,12 @@ export function RecallWorkspace({
           {!pnlAvailable && <p role="status">持仓历史、成本或费用尚未补齐，盈亏及成本线暂不展示。{settlementCurrencyMismatch ? "报价币种与结算币种不同，未换算汇率，盈亏不可用。" : position.accuracy?.reasons.includes("ambiguous-opening") ? "首笔卖出缺少期初持仓或明确卖空依据，持仓方向待核对。" : ""}</p>}
 
           <div className="recall-controls" aria-label="回放控制">
-            <button type="button" aria-label="上一根 K 线" disabled={replay.revealedCandles.length <= 1 || historyMode} onClick={() => {
-              const previous = replay.revealedCandles.at(-2);
-              if (!previous) return;
+            <button type="button" aria-label="上一根 K 线" disabled={historyMode || replay.executionCursor === NO_REVEALED_EXECUTIONS} onClick={() => {
               setWorking(rewindRecallBar({ candles: allCandles, executions: currentExecutions, current: replay }));
             }}><ChevronLeft size={17} />上一根</button>
             <button type="button" className="primary" onClick={nextDecision} disabled={historyMode}><ChevronRight size={17} />下一笔决策</button>
             <button type="button" onClick={nextBar} disabled={historyMode || replay.revealedCandles.length >= allCandles.length}><ChevronDown size={17} />下一根 K 线</button>
+            <button type="button" className={playing ? "active" : ""} onClick={() => setPlaying((current) => !current)} disabled={historyMode || Boolean(editingSnapshotId)} aria-pressed={playing}>{playing ? "暂停" : "播放"}</button>
             <button type="button" onClick={toggleHistory} className={historyMode ? "active" : ""}>{historyMode ? <Undo2 size={15} /> : <History size={15} />}{historyMode ? "返回回放" : "完整历史"}</button>
             <span className="recall-control-spacer" />
             {editingSnapshotId ? <><button type="button" className="primary" onClick={() => void updateSnapshot()}><FileImage size={15} />更新此快照</button><button type="button" onClick={leaveSnapshotEdit}><X size={15} />返回工作图</button></> : <button type="button" className="primary" onClick={() => void retain()} disabled={!selectedDecisionId || historyMode}><Save size={15} />留存当前快照</button>}

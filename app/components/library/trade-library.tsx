@@ -81,7 +81,7 @@ import {
 import { FxRatesControl } from "./fx-rates-control";
 import { LibraryPerformanceSummaryView } from "./library-performance-summary";
 import type { SharedScope } from "../../lib/reviews/shared-scope";
-import { SharedScopeBar } from "../scope/shared-scope-bar";
+import { LibraryScopeControls } from "./library-scope-controls";
 import "./trade-library.css";
 
 export type { TradeLibraryBrowseState } from "./library-browse-state";
@@ -993,14 +993,13 @@ export function TradeLibrary({
   const libraryHeader = (
     <header className="library-header">
       <div>
-        <span className="eyebrow">Trade Library</span>
         <h1>交易库</h1>
       </div>
       <div className="library-header-actions"><strong>{filteredEntries.length} 个标的 · {browseRows.length} 个回合</strong></div>
     </header>
   );
   const sharedScopeControl = sharedScope && onSharedScopeChange
-    ? <SharedScopeBar scope={sharedScope} accountOptions={sharedAccountOptions} onChange={onSharedScopeChange} />
+    ? <LibraryScopeControls scope={sharedScope} accountOptions={sharedAccountOptions} onChange={onSharedScopeChange} />
     : null;
   const libraryViewTabs = (
     <div className="module-tabs" role="tablist" aria-label="交易库浏览视图" onKeyDown={handleBrowseTabKeyDown}>

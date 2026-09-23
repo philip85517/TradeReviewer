@@ -779,6 +779,7 @@ describe("TradeReviewWorkspace", () => {
       const navigation = await screen.findByRole("navigation", { name: "主导航" });
       await user.click(within(navigation).getByRole("button", { name: "交易库" }));
       const library = await screen.findByRole("region", { name: "交易库" });
+      await user.click(within(library).getByRole("tab", { name: "按回合浏览" }));
       await user.click(within(library).getByRole("button", { name: /复盘自由黄金-DRS/ }));
     } else {
       await enterImportedReviewFromDashboard();
@@ -815,17 +816,17 @@ describe("TradeReviewWorkspace", () => {
     // the hydrated dashboard here keeps this helper on the same user path as
     // production instead of racing the SQLite bootstrap response.
     if (!instrumentName) {
-      const recentMonth = within(dashboard).queryByRole("button", { name: "最近有记录" });
+      const recentMonth = within(dashboard).queryByRole("button", { name: "所选期间·按月汇总" });
       if (recentMonth) await user.click(recentMonth);
       const populatedDays = within(dashboard)
-        .queryAllByRole("button", { name: /^\d{4}-\d{2}-\d{2}，/ })
+        .queryAllByRole("button", { name: /，/ })
         .filter((button) => {
           const label = button.getAttribute("aria-label") ?? "";
-          return !label.includes("无已平仓回合") && !label.includes("不可用");
+          return !label.includes("无样本") && !label.includes("无已平仓回合") && !label.includes("不可用") && !label.includes("暂无样本");
         });
       for (const day of populatedDays) {
         await user.click(day);
-        const drilldown = within(dashboard).queryByRole("region", { name: "日历下钻明细" });
+        const drilldown = within(dashboard).queryByRole("region", { name: "日历日期详情" });
         const open = drilldown
           ? within(drilldown).queryByRole("button", { name: "打开复盘" })
           : null;
@@ -4204,7 +4205,6 @@ describe("TradeReviewWorkspace", () => {
         side: "buy",
         executedAt: "2026-09-10T14:30:00.000Z",
       }),
-      source: { platform: "futu", row: 1, tradeNature: "live" },
       instrument: etfInstrument,
     };
     const bootstrap: StorageBootstrap = {
@@ -4248,11 +4248,18 @@ describe("TradeReviewWorkspace", () => {
   it("retains alternate simulation runs when the complete room changes its shared scope", async () => {
     const user = userEvent.setup();
     const executions: TradeExecution[] = ["run-a", "run-b"].flatMap((run, index) => ([
-      { ...availabilityExecution({ id: `${run}-buy`, row: index * 2, side: "buy", executedAt: "2026-01-05T14:30:00.000Z" }), source: { platform: "tradingview", row: index, tradeNature: "simulation" as const, simulationRunId: run }, instrument: availabilityInstrument, accountId: run, accountLabel: run },
-      { ...availabilityExecution({ id: `${run}-sell`, row: index * 2 + 1, side: "sell", executedAt: "2026-01-06T14:30:00.000Z" }), source: { platform: "tradingview", row: index, tradeNature: "simulation" as const, simulationRunId: run }, instrument: availabilityInstrument, accountId: run, accountLabel: run },
+      { ...availabilityExecution({ id: `${run}-buy`, row: index * 2, side: "buy", executedAt: "2026-01-05T14:30:00.000Z" }), source: { platform: "tradingview" as const, tradeNature: "simulation" as const, simulationRunId: run, row: index }, accountId: run, accountLabel: run },
+      { ...availabilityExecution({ id: `${run}-sell`, row: index * 2 + 1, side: "sell", executedAt: "2026-01-06T14:30:00.000Z" }), source: { platform: "tradingview" as const, tradeNature: "simulation" as const, simulationRunId: run, row: index }, accountId: run, accountLabel: run },
     ]));
-    saveImportedExecutions(executions);
-    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    executions.push(availabilityExecution({ id: "room-live-ready", row: 99, side: "buy", executedAt: "2026-01-02T14:30:00.000Z" }));
+    const storageClient = createLegacySqliteClient();
+    storageClient.getBootstrap = vi.fn().mockResolvedValue({
+      schemaVersion: 1, migration: null, executions, importHistory: [], instruments: [],
+      reviews: [], reviewStates: [], tagSuggestions: [], marketDataJobs: [],
+      settings: { version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" },
+    } satisfies StorageBootstrap);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={storageClient} />);
+    await screen.findByText("1 个未平仓回合");
     const room = await screen.findByRole("region", { name: "我的交易室" });
     await user.click(within(room).getByRole("radio", { name: "模拟盘" }));
     const runs = within(room).getByRole("group", { name: "交易室模拟运行筛选" });
@@ -4270,17 +4277,23 @@ describe("TradeReviewWorkspace", () => {
 
   it("returns to the trading room with its filters, period, and calendar view after opening a holding review", async () => {
     const user = userEvent.setup();
-    saveImportedExecutions([
-      { ...availabilityExecution({
+    const executions = [
+      availabilityExecution({
         id: "room-holding-return",
         row: 2,
         side: "buy",
         executedAt: "2026-09-10T14:30:00.000Z",
-      }), source: { platform: "futu", row: 2, tradeNature: "live" } },
-    ]);
+      }),
+    ];
+    const storageClient = createLegacySqliteClient();
+    storageClient.getBootstrap = vi.fn().mockResolvedValue({
+      schemaVersion: 1, migration: null, executions, importHistory: [], instruments: [],
+      reviews: [], reviewStates: [], tagSuggestions: [], marketDataJobs: [],
+      settings: { version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" },
+    } satisfies StorageBootstrap);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={storageClient} />);
 
-    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
-
+    await screen.findByText("1 个未平仓回合");
     const dashboard = await screen.findByRole("region", { name: "我的交易室" });
     const scope = within(dashboard).getByRole("region", { name: "交易室范围" });
     await user.click(within(scope).getByRole("tab", { name: "近3个自然月" }));
@@ -4333,7 +4346,7 @@ describe("TradeReviewWorkspace", () => {
       ),
     );
     const library = await screen.findByRole("region", { name: "交易库" });
-    await user.click(within(library).getByRole("tab", { name: "按标的浏览" }));
+    expect(within(library).getByRole("tab", { name: "按标的浏览" })).toHaveAttribute("aria-selected", "true");
     const stock = within(library).getByRole("button", { name: /^(展开|收起)小鹏汽车交易回合$/ });
     if (stock.getAttribute("aria-expanded") !== "true") await user.click(stock);
     await user.click(await within(library).findByRole("button", { name: /^打开小鹏汽车第\d+次交易/ }));

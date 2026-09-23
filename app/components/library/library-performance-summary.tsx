@@ -247,8 +247,8 @@ export function LibraryPerformanceSummaryView({
       </details>
       <header className={styles.header}>
         <div>
-          <h2>当前筛选绩效</h2>
-          <p>当前筛选：{stockCount} 个证券 · {roundCount} 个回合 · 已复盘 {reviewedCount}/{progressTotal} 个</p>
+          <h2>绩效汇总</h2>
+          <p>{stockCount} 个标的 · {roundCount} 个回合 · {selectedLabel} · 已复盘 {reviewedCount}/{progressTotal}</p>
         </div>
         <div className={styles.scopeControl}>
           {groups.length > 1 ? (
@@ -261,11 +261,6 @@ export function LibraryPerformanceSummaryView({
           ) : <span className={styles.scopeBadge}>统计组：{selectedLabel}</span>}
         </div>
       </header>
-
-      <div className={styles.scopeLine}>
-        <strong>当前统计组：{selectedLabel}</strong>
-        <span>统计组：{metricGroup.sampleCount} 个回合 · 净盈亏样本 {metricGroup.netPnlSampleCount} · 收益率样本 {metricGroup.returnSampleCount}</span>
-      </div>
 
       {showingOriginal ? (
         <details className={styles.disclosure} aria-label="原币绩效汇总">

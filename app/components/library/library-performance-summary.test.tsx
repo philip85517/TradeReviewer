@@ -171,13 +171,13 @@ describe("LibraryPerformanceSummaryView", () => {
 
     render(<LibraryPerformanceSummaryView summary={input} stockCount={1} roundCount={2} reviewedCount={1} progressTotal={2} />);
 
-    expect(screen.getByRole("heading", { name: "当前筛选绩效" })).toBeInTheDocument();
-    expect(screen.getByText("当前筛选：1 个证券 · 2 个回合 · 已复盘 1/2 个")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "绩效汇总" })).toBeInTheDocument();
+    expect(screen.getByText("1 个标的 · 2 个回合 · 实盘 · 已复盘 1/2")).toBeInTheDocument();
     expect(within(screen.getByRole("article", { name: "已平仓净盈亏" })).getByText("+¥100.00")).toBeInTheDocument();
     expect(within(screen.getByRole("article", { name: "加权收益率（按开仓金额）" })).getByText("+0.10%")).toBeInTheDocument();
     expect(within(screen.getByRole("article", { name: "胜率" })).getByText("+50.00%")).toBeInTheDocument();
     expect(within(screen.getByRole("article", { name: "复盘进度" })).getByText("1/2")).toBeInTheDocument();
-    expect(screen.getByText(/当前统计组：实盘/).parentElement).toHaveTextContent("统计组：2 个回合 · 净盈亏样本 2 · 收益率样本 2");
+    expect(screen.getByText("净盈亏样本").closest("details")).toHaveTextContent(/净盈亏样本\s*2 个回合/);
     expect(within(screen.getByRole("article", { name: "胜率" })).getByText(/保本/)).toHaveTextContent("保本 1 个回合");
     expect(screen.getByText(/USD 浮盈亏/)).toHaveTextContent("· USD 浮盈亏 +USD 50.00");
     expect(screen.getAllByText(/USD/).length).toBeGreaterThan(0);
@@ -231,14 +231,14 @@ describe("LibraryPerformanceSummaryView", () => {
 
     const selector = screen.getByRole("combobox", { name: "统计范围" });
     expect(screen.getByText("模拟盘 · 策略 A")).toBeInTheDocument();
-    expect(screen.getByText("统计组：3 个回合 · 净盈亏样本 1 · 收益率样本 1")).toBeInTheDocument();
+    expect(screen.getByText("模拟盘 · 策略 A")).toBeInTheDocument();
     expect(within(screen.getByRole("article", { name: "已平仓净盈亏" })).getByText("+¥10.00")).toBeInTheDocument();
     expect(screen.queryByText("+¥30.00")).not.toBeInTheDocument();
 
     await user.selectOptions(selector, "simulation|run-b");
 
     expect(screen.getByText("模拟盘 · 策略 B")).toBeInTheDocument();
-    expect(screen.getByText("统计组：4 个回合 · 净盈亏样本 2 · 收益率样本 2")).toBeInTheDocument();
+    expect(screen.getByText("模拟盘 · 策略 B")).toBeInTheDocument();
     expect(within(screen.getByRole("article", { name: "已平仓净盈亏" })).getByText("+¥20.00")).toBeInTheDocument();
   });
 

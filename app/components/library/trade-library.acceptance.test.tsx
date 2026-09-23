@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -109,8 +109,9 @@ function renderLibrary(
 
 function expectFullSetSummary() {
   expect(screen.getByText("101 个标的 · 101 个回合")).toBeInTheDocument();
-  expect(screen.getByText("当前筛选：101 个证券 · 101 个回合 · 已复盘 0/101 个")).toBeInTheDocument();
+  expect(screen.getByText("101 个标的 · 101 个回合 · 实盘 · 已复盘 0/101")).toBeInTheDocument();
   const summary = screen.getByRole("region", { name: "当前筛选绩效汇总" });
+  fireEvent.click(screen.getByText("统计详情", { selector: "summary" }));
   expect(summary).toHaveTextContent("净盈亏样本 101");
   expect(summary).toHaveTextContent("收益率样本 101");
   expect(summary).toHaveTextContent("+¥101.00");
@@ -171,27 +172,35 @@ describe("TradeLibrary pagination acceptance", () => {
   });
 
   it("resets both page cursors when scope, sort, or reset changes", async () => {
-    const user = userEvent.setup();
     const entries = buildPaginationEntries();
     let latestState: TradeLibraryBrowseState | undefined;
     renderLibrary(entries, {
       mode: "queue",
+      initialBrowseState: {
+        ...initialState("queue"),
+        stockPage: 2,
+        roundPage: 2,
+      },
       onBrowseStateChange: (state) => {
         latestState = state;
       },
     });
 
-    await user.click(screen.getByRole("button", { name: "下一页" }));
+    await waitFor(() => {
+      expect(latestState?.roundPage).toBe(2);
+      expect(latestState?.stockPage).toBe(2);
+    });
+    fireEvent.change(screen.getByRole("combobox", { name: "按交易性质筛选" }), { target: { value: "all" } });
+    await waitFor(() => expect(latestState?.roundPage).toBe(1));
+
+    fireEvent.click(screen.getByRole("button", { name: "下一页" }));
     await waitFor(() => expect(latestState?.roundPage).toBe(2));
-    await user.selectOptions(screen.getByRole("combobox", { name: "按交易性质筛选" }), "all");
+    fireEvent.click(screen.getByRole("button", { name: "按成交时间排序（升序）" }));
     await waitFor(() => expect(latestState?.roundPage).toBe(1));
 
-    await user.click(screen.getByRole("button", { name: "下一页" }));
-    await user.click(screen.getByRole("button", { name: "按成交时间排序（升序）" }));
-    await waitFor(() => expect(latestState?.roundPage).toBe(1));
-
-    await user.click(screen.getByRole("button", { name: "下一页" }));
-    await user.click(screen.getByRole("button", { name: "重置筛选" }));
+    fireEvent.click(screen.getByRole("button", { name: "下一页" }));
+    await waitFor(() => expect(latestState?.roundPage).toBe(2));
+    fireEvent.click(screen.getByRole("button", { name: "重置筛选" }));
     await waitFor(() => {
       expect(latestState?.roundPage).toBe(1);
       expect(latestState?.stockPage).toBe(1);

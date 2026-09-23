@@ -2,6 +2,158 @@
    visual tokens; these selectors only tighten this component's density. */
 .trade-library {
   min-width: 0;
+  --library-content-width: min(1760px, 100%);
+}
+
+/* Keep every browse surface on one fluid content rail. The application shell
+   supplies the outer padding; this rail only prevents mismatched desktop
+   caps from splitting the header, summary and rows into separate columns. */
+.trade-library > .library-header,
+.trade-library > .library-scope-controls,
+.trade-library > .module-tabs,
+.trade-library > .library-shared-browse-controls,
+.trade-library > .library-active-filter-chips,
+.trade-library > .library-fx-strip,
+.trade-library > .library-performance-summary,
+.trade-library > .review-queue,
+.trade-library > .library-stock-list,
+.trade-library > .library-empty,
+.trade-library > .library-empty-actions {
+  width: var(--library-content-width);
+  max-width: none;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* The global shell has a narrower legacy FX cap. This local rail is the
+   source of truth for every library surface, including the disclosure strip. */
+.trade-library > .library-fx-strip {
+  width: var(--library-content-width) !important;
+}
+
+@media (min-width: 1060px) {
+  .trade-library > .library-shared-browse-controls {
+    /* The shell's legacy grid distributes spare width into every field. Keep
+       the toolbar content sized and leave unused desktop space at the end. */
+    display: flex !important;
+    align-items: flex-end;
+    flex-wrap: nowrap;
+  }
+
+  .trade-library .library-shared-browse-controls > label {
+    width: 150px;
+    flex: 0 0 150px;
+  }
+
+  .trade-library .library-shared-browse-controls > .library-shared-search {
+    width: clamp(260px, 25vw, 400px);
+    flex: 0 1 clamp(260px, 25vw, 400px);
+  }
+
+  .trade-library .library-shared-browse-controls > label:has(select[aria-label="按市场筛选"]) {
+    width: 110px;
+    flex-basis: 110px;
+  }
+
+  .trade-library .library-shared-browse-controls > label:has(select[aria-label="按复盘状态筛选"]) {
+    width: 160px;
+    flex-basis: 160px;
+  }
+
+  .trade-library .library-shared-browse-controls > button {
+    width: max-content;
+    min-width: 0;
+    justify-self: start;
+    flex: 0 0 auto;
+  }
+}
+
+.trade-library > .library-header {
+  min-height: 44px;
+}
+
+.trade-library .library-scope-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin-top: 8px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: rgba(15, 23, 34, 0.9);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.trade-library .library-scope-choice {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.trade-library .library-scope-choice legend {
+  float: left;
+  margin-right: 8px;
+  color: var(--faint);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.trade-library .library-scope-choice label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.trade-library .library-scope-choice input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: var(--blue);
+}
+
+.trade-library .library-scope-account,
+.trade-library .library-scope-run {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--faint);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.trade-library .library-scope-account select,
+.trade-library .library-scope-run input {
+  min-width: 150px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid #29394e;
+  border-radius: 6px;
+  color: var(--text);
+  background: #111b28;
+  font-size: 13px;
+}
+
+.trade-library .library-scope-run input {
+  min-width: 120px;
+}
+
+.trade-library > .module-tabs {
+  margin-top: 8px;
+}
+
+.trade-library > .library-performance-summary,
+.trade-library > .review-queue,
+.trade-library > .library-stock-list {
+  margin-top: 8px;
 }
 
 .trade-library .library-fx-strip {
@@ -75,6 +227,36 @@
     padding: 12px 10px 34px;
   }
 
+  .trade-library .library-scope-controls {
+    align-items: flex-start;
+    gap: 8px 12px;
+    padding: 8px;
+  }
+
+  .trade-library .library-scope-choice {
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .trade-library .library-scope-choice label,
+  .trade-library .library-scope-account,
+  .trade-library .library-scope-run {
+    min-height: 44px;
+  }
+
+  .trade-library .library-scope-account,
+  .trade-library .library-scope-run {
+    flex: 1 1 180px;
+  }
+
+  .trade-library .library-scope-account select,
+  .trade-library .library-scope-run input {
+    min-width: 0;
+    min-height: 44px;
+    height: 44px;
+    flex: 1 1 auto;
+  }
+
   .trade-library > .library-header {
     min-height: 44px;
     gap: 8px;
@@ -85,9 +267,8 @@
   }
 
   .trade-library > .library-header .library-header-actions strong {
-    max-width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    max-width: none;
+    white-space: normal;
   }
 
   .trade-library .library-shared-browse-controls {
@@ -143,24 +324,15 @@
 
   .trade-library .library-performance-summary .metricLabel,
   .trade-library .library-performance-summary .metricCard small {
-    overflow: hidden;
-    font-size: 10px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow: visible;
+    font-size: 13px;
+    line-height: 1.35;
+    text-overflow: clip;
+    white-space: normal;
   }
 
   .trade-library .library-performance-summary .metricValue {
     font-size: 0.85rem;
-  }
-
-  .trade-library .library-performance-summary .scopeLine {
-    overflow: hidden;
-    white-space: nowrap;
-  }
-
-  .trade-library .library-performance-summary .scopeLine span {
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
   /* Mobile's default row carries only the four decision fields. The existing
@@ -210,6 +382,26 @@
 
   .trade-library .review-queue-full-name {
     margin: 0 8px 8px;
+  }
+
+  /* The global mobile stock rule makes every direct span block-level. Keep
+     the identity row intact so the market badge cannot collide with the name. */
+  .trade-library .library-stock-row > .library-stock-identity {
+    display: flex !important;
+    align-items: center;
+    min-width: 0;
+    gap: 7px;
+  }
+
+  .trade-library .library-stock-row > .library-stock-identity > b,
+  .trade-library .library-stock-row .trade-nature-badge {
+    flex: 0 0 auto;
+    min-width: max-content;
+  }
+
+  .trade-library .library-stock-row > .library-stock-identity > span {
+    min-width: 0;
+    flex: 1 1 auto;
   }
 }
 

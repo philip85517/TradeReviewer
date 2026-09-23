@@ -213,7 +213,7 @@ describe("SQLite production storage boundary", () => {
 
     await waitFor(() => {
       expect(screen.getByRole("region", { name: "交易室范围" })).toHaveTextContent("收益概览");
-      expect(screen.getByText("导入交易后查看统计总览；已有交易数据会按来源平仓日显示。")).toBeInTheDocument();
+      expect(screen.getByText("导入交易后查看我的交易室；已有交易数据会按来源平仓日显示。")).toBeInTheDocument();
     });
     expect(client.getBootstrap).toHaveBeenCalledOnce();
     expect(readLegacyStorage).not.toHaveBeenCalled();
@@ -270,6 +270,7 @@ describe("SQLite production storage boundary", () => {
     });
 
     await user.click(await screen.findByRole("button", { name: "交易库" }));
+    await user.click(await screen.findByRole("tab", { name: "按标的浏览" }));
     await user.click(await screen.findByRole("button", { name: "展开中国海油交易回合" }));
     await user.click(await screen.findByRole("button", { name: /打开中国海油第1次交易/ }));
     const chartSettingsButton = screen.queryByRole("button", { name: "图表设置" });

@@ -114,10 +114,10 @@ describe("TagSuggestionPanel", () => {
     );
 
     await user.click(
-      screen.getByRole("button", { name: "确认“突破”" }),
+      screen.getByRole("button", { name: "确认标签“突破”" }),
     );
     expect(
-      screen.queryByRole("button", { name: "确认“突破”" }),
+      screen.queryByRole("button", { name: "确认标签“突破”" }),
     ).not.toBeInTheDocument();
 
     await user.click(
@@ -145,14 +145,14 @@ describe("TagSuggestionPanel", () => {
     );
 
     await user.click(
-      screen.getByRole("button", { name: "确认“突破”" }),
+      screen.getByRole("button", { name: "确认标签“突破”" }),
     );
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "建议处理失败，请检查本机存储后重试",
     );
     expect(
-      screen.getByRole("button", { name: "确认“突破”" }),
+      screen.getByRole("button", { name: "确认标签“突破”" }),
     ).toBeInTheDocument();
   });
 
@@ -181,9 +181,29 @@ describe("TagSuggestionPanel", () => {
       "pullback",
     );
     await user.click(
-      screen.getByRole("button", { name: "确认改为“回踩”" }),
+      screen.getByRole("button", { name: "确认标签改为“回踩”" }),
     );
 
     expect(onEdit).toHaveBeenCalledWith(item, "pullback");
+  });
+
+  it("shows confirmed history and routes revoke through busy/error handling", async () => {
+    const user = userEvent.setup();
+    const confirmed = { ...suggestion("entry-20d-breakout", "episode-breakout"), status: "confirmed" as const, finalTagId: "breakout" as const, decidedAt: "2026-08-01T00:00:00.000Z" };
+    const onRevoke = vi.fn().mockResolvedValue(undefined);
+    render(<TagSuggestionPanel suggestions={[confirmed]} episodeContexts={contexts} onConfirm={vi.fn()} onEdit={vi.fn()} onReject={vi.fn()} onRevoke={onRevoke} onOpenEpisode={vi.fn()} />);
+    await user.click(screen.getByRole("button", { name: /查看标签确认历史/ }));
+    await user.click(screen.getByRole("button", { name: "撤销确认" }));
+    expect(onRevoke).toHaveBeenCalledWith(confirmed);
+  });
+
+  it("keeps confirmed history visible and announces revoke failure", async () => {
+    const user = userEvent.setup();
+    const confirmed = { ...suggestion("entry-20d-breakout", "episode-breakout"), status: "confirmed" as const, finalTagId: "breakout" as const, decidedAt: "2026-08-01T00:00:00.000Z" };
+    render(<TagSuggestionPanel suggestions={[confirmed]} episodeContexts={contexts} onConfirm={vi.fn()} onEdit={vi.fn()} onReject={vi.fn()} onRevoke={vi.fn().mockRejectedValue(new Error("storage"))} onOpenEpisode={vi.fn()} />);
+    await user.click(screen.getByRole("button", { name: /查看标签确认历史/ }));
+    await user.click(screen.getByRole("button", { name: "撤销确认" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("建议处理失败");
+    expect(screen.getByText("突破 · 已确认")).toBeInTheDocument();
   });
 });

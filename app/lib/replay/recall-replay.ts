@@ -76,6 +76,15 @@ export function executionsThroughCursor(
   return boundary < 0 ? [] : ordered.slice(0, boundary + 1);
 }
 
+function completedCandleAtCursor(candle: Candle | undefined, cursor: string) {
+  if (!candle) return undefined;
+  const cursorTime = Date.parse(cursor);
+  const knowledgeTime = Date.parse(candleKnowledgeAt(candle));
+  return Number.isFinite(cursorTime) && Number.isFinite(knowledgeTime) && knowledgeTime <= cursorTime
+    ? candle
+    : undefined;
+}
+
 function mappedCandleMap(candles: Candle[], executions: TradeExecution[]) {
   return new Map(
     mapExecutionsToCandles(candles, executions).map((mapping) => [mapping.executionId, mapping.candleTime]),
@@ -109,11 +118,19 @@ function firstExecution(decision: RecallDecision, executions: TradeExecution[]) 
   return order.find(({ execution }) => ids.has(execution.id));
 }
 
-function candlesThrough(candles: Candle[], target: Candle | undefined) {
-  const ordered = sortedCandles(candles);
-  if (!target) return [];
-  const index = ordered.findIndex((candle) => candle.time === target.time);
-  return index < 0 ? [] : ordered.slice(0, index + 1);
+/**
+ * Project market data onto what was knowable at a replay cursor. A persisted
+ * cursor can fall inside a bar (for example after an imported execution), so
+ * the bar remains useful for time alignment while its future OHLCV fields are
+ * withheld until the provider's knowledge boundary.
+ */
+export function revealableCandlesThroughCursor(candles: Candle[], cursor: string): Candle[] {
+  const cursorTime = Date.parse(cursor);
+  if (!Number.isFinite(cursorTime)) return [];
+  return sortedCandles(candles).filter((candle) => {
+    const knowledgeTime = Date.parse(candleKnowledgeAt(candle));
+    return Date.parse(candle.time) <= cursorTime && Number.isFinite(knowledgeTime) && knowledgeTime <= cursorTime;
+  });
 }
 
 function result(
@@ -123,13 +140,14 @@ function result(
   executionCursor: string,
   mode: RecallReplayMode = "replay",
   currentCandle?: Candle,
+  visibilityCursor = cursor,
 ): RecallReplayCursor {
   return {
     cursor,
     executionCursor,
     mode,
-    currentCandle,
-    revealedCandles: mode === "history" ? sortedCandles(candles) : candlesThrough(candles, currentCandle),
+    currentCandle: mode === "history" ? currentCandle : completedCandleAtCursor(currentCandle, visibilityCursor),
+    revealedCandles: mode === "history" ? sortedCandles(candles) : revealableCandlesThroughCursor(candles, visibilityCursor),
     revealedExecutions: mode === "history" ? orderedExecutions(executions) : executionsThroughCursor(executions, executionCursor),
   };
 }
@@ -152,6 +170,7 @@ export function revealRecallDecision({
     first.execution.id,
     "replay",
     currentCandle,
+    first.execution.executedAt,
   );
 }
 
@@ -177,6 +196,34 @@ export function nextRecallDecisionState({
     nextDecision.first.execution.id,
     "replay",
     currentCandle,
+    nextDecision.first.execution.executedAt,
+  );
+}
+
+export function previousRecallDecisionState({
+  candles,
+  executions,
+  decisions,
+  current,
+}: RecallReplayInput & { current: RecallReplayCursor }): RecallReplayCursor {
+  const ordered = executionOrder(executions);
+  const boundary = executionBoundaryForCursor(ordered.map(({ execution }) => execution), current.executionCursor);
+  const currentIndex = boundary < 0 ? ordered.length : boundary;
+  const previousDecision = decisions
+    .map((decision) => ({ decision, first: firstExecution(decision, executions) }))
+    .filter((item): item is { decision: RecallDecision; first: { execution: TradeExecution; index: number } } => Boolean(item.first))
+    .filter((item) => item.first.index < currentIndex)
+    .at(-1);
+  if (!previousDecision) return current;
+  const currentCandle = mapRecallExecutionToCandle(previousDecision.first.execution, candles);
+  return result(
+    candles,
+    executions,
+    currentCandle ? candleKnowledgeAt(currentCandle) : previousDecision.first.execution.executedAt,
+    previousDecision.first.execution.id,
+    "replay",
+    currentCandle,
+    previousDecision.first.execution.executedAt,
   );
 }
 
@@ -186,10 +233,14 @@ export function revealRecallBar({
   current,
 }: Pick<RecallReplayInput, "candles" | "executions"> & { current: RecallReplayCursor }): RecallReplayCursor {
   const ordered = sortedCandles(candles);
-  const currentIndex = current.currentCandle
-    ? ordered.findIndex((candle) => candle.time === current.currentCandle?.time)
-    : ordered.findIndex((candle) => candleKnowledgeAt(candle) >= current.cursor);
-  const nextCandle = ordered[Math.max(0, currentIndex) + 1];
+  // A decision may align its chart cursor with a bar's close while its OHLCV
+  // remains withheld. Advance from the last actually revealed candle, not
+  // that alignment cursor, otherwise the first bar is skipped entirely.
+  const lastRevealed = current.revealedCandles.at(-1);
+  const currentIndex = lastRevealed
+    ? ordered.findIndex((candle) => candle.time === lastRevealed.time)
+    : -1;
+  const nextCandle = ordered[currentIndex + 1];
   if (!nextCandle) return current;
 
   const mappings = mappedCandleMap(candles, executions);
@@ -198,7 +249,9 @@ export function revealRecallBar({
   const throughMappedBar = orderedExecutions(executions).filter((execution) => {
     const mapped = mappings.get(execution.id);
     const mappedIndex = mapped ? ordered.findIndex((candle) => candle.time === mapped) : -1;
-    return mappedIndex >= 0 && mappedIndex <= nextIndex;
+    const mappedCandle = mappedIndex >= 0 ? ordered[mappedIndex] : undefined;
+    return mappedIndex >= 0 && mappedIndex <= nextIndex && mappedCandle !== undefined &&
+      Date.parse(execution.executedAt) <= Date.parse(candleKnowledgeAt(mappedCandle));
   });
   const revealed = [...new Map([...throughBar, ...throughMappedBar].map((execution) => [execution.id, execution])).values()]
     .sort((left, right) => {
@@ -230,9 +283,13 @@ export function rewindRecallBar({
   const ordered = sortedCandles(candles);
   const currentIndex = current.currentCandle
     ? ordered.findIndex((candle) => candle.time === current.currentCandle?.time)
-    : ordered.findIndex((candle) => candleKnowledgeAt(candle) >= current.cursor);
+    : ordered.findLastIndex((candle) => Date.parse(candleKnowledgeAt(candle)) <= Date.parse(current.cursor));
   const previousCandle = currentIndex > 0 ? ordered[currentIndex - 1] : undefined;
-  if (!previousCandle) return current;
+  if (!previousCandle) {
+    return current.executionCursor === NO_REVEALED_EXECUTIONS
+      ? current
+      : result(candles, executions, current.cursor, NO_REVEALED_EXECUTIONS, "replay");
+  }
 
   const mappings = mappedCandleMap(candles, executions);
   const previousIndex = currentIndex - 1;
@@ -240,7 +297,9 @@ export function rewindRecallBar({
   const throughMappedBar = orderedExecutions(executions).filter((execution) => {
     const mapped = mappings.get(execution.id);
     const mappedIndex = mapped ? ordered.findIndex((candle) => candle.time === mapped) : -1;
-    return mappedIndex >= 0 && mappedIndex <= previousIndex;
+    const mappedCandle = mappedIndex >= 0 ? ordered[mappedIndex] : undefined;
+    return mappedIndex >= 0 && mappedIndex <= previousIndex && mappedCandle !== undefined &&
+      Date.parse(execution.executedAt) <= Date.parse(candleKnowledgeAt(mappedCandle));
   });
   const throughKnowledgeBeforeNextBar = throughKnowledge.filter((execution) => {
     const mapped = mappings.get(execution.id);

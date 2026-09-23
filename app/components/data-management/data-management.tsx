@@ -91,8 +91,7 @@ export function DataManagement({
     <section className="data-management" aria-label="数据管理">
       <header className="data-management-header">
         <div>
-          <span className="eyebrow">Data management</span>
-          <h1>数据管理</h1>
+          <h1>数据</h1>
         </div>
         <span className="data-management-scope">
           {marketRefresh.instrumentCount} 个已导入标的
@@ -112,9 +111,9 @@ export function DataManagement({
 
       <div className="module-tabs" role="tablist" aria-label="数据管理分组" onKeyDown={handleTabKeyDown}>
         {([
-          ["import", "数据接入"],
-          ["quality", "数据质量"],
-          ["settings", "收益配置"],
+          ["import", "导入记录"],
+          ["quality", "数据健康"],
+          ["settings", "账户与计价"],
         ] as const).map(([tab, label]) => (
           <button
             type="button"
@@ -136,20 +135,19 @@ export function DataManagement({
         role="tabpanel"
         id="data-management-panel-import"
         aria-labelledby="data-management-tab-import"
-        aria-label="数据接入"
+        aria-label="导入记录"
         hidden={activeTab !== "import"}
         style={{ display: activeTab === "import" ? "grid" : "none" }}
       >
         <section className="data-management-card" aria-label="导入交易数据">
           <div className="data-management-card-heading">
             <div>
-              <span className="eyebrow">Import</span>
               <h2>导入交易数据</h2>
             </div>
             <span>确认后才会写入交易库</span>
           </div>
           <p>支持 PDF、Excel、TradingView 模拟交易和已适配的成交截图。</p>
-          <ImportActions {...importActions} />
+          <ImportActions {...importActions} compact />
           {onOpenImportHistory && (
             <button
               type="button"
@@ -164,7 +162,6 @@ export function DataManagement({
         <section className="data-management-card" aria-label="行情数据更新">
           <div className="data-management-card-heading">
             <div>
-              <span className="eyebrow">Market data</span>
               <h2>行情数据更新</h2>
             </div>
             <span>按当前已导入标的更新</span>
@@ -179,25 +176,23 @@ export function DataManagement({
         role="tabpanel"
         id="data-management-panel-quality"
         aria-labelledby="data-management-tab-quality"
-        aria-label="数据质量"
+        aria-label="数据健康"
         hidden={activeTab !== "quality"}
         style={{ display: activeTab === "quality" ? "grid" : "none" }}
       >
-        <section className="data-management-card" aria-label="数据质量明细">
+        <section className="data-management-card" aria-label="数据健康明细">
           <div className="data-management-card-heading">
             <div>
-              <span className="eyebrow">Quality</span>
               {!qualitySlot && <h2>数据质量明细</h2>}
             </div>
             <span>按当前交易室范围定位影响</span>
           </div>
-          {qualitySlot ?? <p className="data-management-empty">暂无数据质量明细。</p>}
+          {qualitySlot ?? <p className="data-management-empty">暂无数据健康明细。</p>}
         </section>
 
         <section className="data-management-card data-management-issues" aria-label="待检查问题">
           <div className="data-management-card-heading">
             <div>
-              <span className="eyebrow">Review data</span>
               <h2>待检查问题</h2>
             </div>
             <span>{retained.length} 个保留记录</span>
@@ -231,14 +226,13 @@ export function DataManagement({
         role="tabpanel"
         id="data-management-panel-settings"
         aria-labelledby="data-management-tab-settings"
-        aria-label="收益配置"
+        aria-label="账户与计价"
         hidden={activeTab !== "settings"}
         style={{ display: activeTab === "settings" ? "grid" : "none" }}
       >
         <section className="data-management-card" aria-label="本金与参考收益率配置">
           <div className="data-management-card-heading">
             <div>
-              <span className="eyebrow">Principal</span>
               <h2>本金与参考收益率配置</h2>
             </div>
             <span>用于收益参考，不代表账户净值</span>
@@ -249,7 +243,6 @@ export function DataManagement({
         <section className="data-management-card" aria-label="汇率">
           <div className="data-management-card-heading">
             <div>
-              <span className="eyebrow">FX</span>
               <h2>汇率</h2>
             </div>
             <span>人民币估算使用的最新汇率</span>

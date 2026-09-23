@@ -1,4 +1,5 @@
 import type { InsightEpisodeFact } from "../../lib/insights/episode-facts";
+import { useState } from "react";
 import type { OutcomeBucket, OutcomeStructureReport } from "../../lib/insights/outcome-structure";
 import styles from "./outcome-structure.module.css";
 
@@ -153,6 +154,8 @@ export function OddsWinRatePlot({
 }
 
 export function OutcomeStructure({ report, facts, onOpenEpisode }: Props) {
+  const [view, setView] = useState<"return" | "pnl">("return");
+  const smallSample = report.sampleCount < 8;
   const factsByEpisode = new Map(facts.map((fact) => [fact.episodeId, fact]));
   const maxBinCount = Math.max(1, ...report.histogram.bins.map((bin) => bin.count));
   const sizeLabel = (classification: "reliable" | "unreliable") =>
@@ -166,7 +169,12 @@ export function OutcomeStructure({ report, facts, onOpenEpisode }: Props) {
           <h2>收益结构</h2>
           <p>主口径：已平仓且费用后收益率可用的回合；描述统计不代表因果或交易建议。</p>
         </div>
-        <span className={styles.sample}>{report.sampleCount} 个合格回合</span>
+        <div>
+          <span className={styles.sample}>{report.sampleCount} 个合格回合</span>
+          <p className={styles.note} aria-label="收益结构样本链">
+            范围 {report.sampleChain.rangeCount} → 有效 {report.sampleChain.eligibleCount} → 排除 {report.sampleChain.excludedCount}（按真实资格原因）
+          </p>
+        </div>
       </div>
 
       <dl className={styles.metricGrid} aria-label="收益结构核心指标">
@@ -185,7 +193,32 @@ export function OutcomeStructure({ report, facts, onOpenEpisode }: Props) {
       </dl>
 
       <div className={styles.subsection}>
-        <h3>收益率分布（零收益线：0%）</h3>
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "baseline" }}>
+          <h3>逐回合收益点图</h3>
+          <div role="group" aria-label="收益分布口径">
+            <button type="button" aria-pressed={view === "return"} onClick={() => setView("return")}>收益率</button>
+            <button type="button" aria-pressed={view === "pnl"} onClick={() => setView("pnl")}>净盈亏贡献</button>
+          </div>
+        </div>
+        {view === "return" ? (
+          <div role="img" aria-label="逐回合费用后收益率点图，含零收益线和中位数线" style={{ position: "relative", height: 54, margin: "16px 8px" }}>
+            <div aria-hidden="true" style={{ position: "absolute", left: "0%", right: 0, top: 24, borderTop: "1px solid var(--border, #455)" }} />
+            <div aria-label="点图零收益参考线 0%" style={{ position: "absolute", left: `${report.histogram.zeroPositionPercent ?? 50}%`, top: 4, bottom: 4, borderLeft: "2px solid #d4a72c" }} />
+            {report.strip.points.map((point) => {
+              const fact = factsByEpisode.get(point.episodeId);
+              if (!fact) return null;
+              return <button className={styles.stripPoint} key={point.episodeId} type="button" title={`${displayNumber(point.returnPercent, "%")} · 查看回合`} aria-label={`查看收益率 ${displayNumber(point.returnPercent, "%")} ${fact.instrumentName}`} onClick={() => onOpenEpisode(fact.instrumentId, fact.episodeId)} style={{ position: "absolute", left: `${point.positionPercent}%`, top: 17, width: 14, height: 14, borderRadius: "50%", padding: 0, transform: "translateX(-50%)" }} />;
+            })}
+            {report.strip.medianPercent !== null && <span style={{ position: "absolute", left: `${report.strip.medianPositionPercent ?? 50}%`, top: 36, fontSize: 12 }}>中位 {displayNumber(report.strip.medianPercent, "%")}</span>}
+          </div>
+        ) : (
+          <p className={styles.note}>{report.netPnlContribution.currency === null ? "当前范围含多个币种，净盈亏贡献按原币分组；未合并不同币种。" : `分子：当前回合净盈亏；分母：${report.netPnlContribution.currency} 范围全部可用净盈亏合计（${displayNumber(report.netPnlContribution.totalNetPnl)}）。负分母时占比方向会随总额保留，不能当作账户收益率。`}</p>
+        )}
+        {view === "pnl" && <div className={styles.bucketBody}>{report.netPnlContribution.groups.map(group => <section key={group.currency} aria-label={`${group.currency} 净盈亏贡献`}><h4>{group.currency} 分组 · 合计 {displayNumber(group.totalNetPnl)}</h4>{group.points.map(point => { const fact = factsByEpisode.get(point.episodeId); return fact ? <button className={styles.episode} key={point.episodeId} type="button" aria-label={`查看净盈亏贡献 ${fact.instrumentName}`} onClick={() => onOpenEpisode(fact.instrumentId, fact.episodeId)}><span>{fact.instrumentName}（{fact.instrumentSymbol}）</span><b>{displayNumber(point.netPnl)} · {displayNumber(point.sharePercent, "%")}</b></button> : null; })}</section>)}</div>}
+      </div>
+
+      <details className={styles.subsection} open={!smallSample}>
+        <summary><h3 style={{ display: "inline" }}>收益率分布（零收益线：0%）</h3>{smallSample && <span className={styles.note}> · 小样本默认收起直方图区间</span>}</summary>
         <div className={styles.histogramFrame}>
           {report.histogram.zeroPositionPercent !== null && (
             <div className={styles.zeroLine} style={{ left: `${report.histogram.zeroPositionPercent}%` }} aria-label="零收益参考线 0%"><span>0%</span></div>
@@ -225,7 +258,7 @@ export function OutcomeStructure({ report, facts, onOpenEpisode }: Props) {
           <thead><tr><th>区间</th><th>笔数</th><th>回合入口</th></tr></thead>
           <tbody>{report.histogram.bins.map((bin) => <tr key={bin.id + "-row"}><td>{bin.label}</td><td>{bin.count}</td><td>{bin.episodeIds.length ? "可展开查看" : "—"}</td></tr>)}</tbody>
         </table>
-      </div>
+      </details>
 
       <div className={styles.subsection}>
         <OddsWinRatePlot report={report} factsByEpisode={factsByEpisode} onOpenEpisode={onOpenEpisode} />

@@ -186,4 +186,29 @@ describe("buildOutcomeStructureReport", () => {
     expect(report.histogram.bins[0].tone).toBe("profit");
     expect(report.histogram.zeroPositionPercent).toBe("0");
   });
+
+  it("keeps a truthful range-to-eligible sample chain and clickable strip points", () => {
+    const report = buildOutcomeStructureReport(
+      [fact("valid", "2"), fact("unknown", null)],
+      [{
+        episodeId: "outside",
+        instrumentId: "US:outside",
+        instrumentName: "outside",
+        startedAt: "2025-01-01T00:00:00Z",
+        endedAt: null,
+        reason: "open-episode",
+        reasonLabel: "持仓回合尚未结束",
+      }],
+    );
+
+    expect(report.sampleChain).toMatchObject({
+      rangeCount: 3,
+      eligibleCount: 1,
+      excludedCount: 2,
+      eligibleEpisodeIds: ["valid"],
+    });
+    expect(report.strip.points).toEqual([
+      { episodeId: "valid", returnPercent: "2", positionPercent: "100" },
+    ]);
+  });
 });

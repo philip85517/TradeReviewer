@@ -31,6 +31,9 @@ const note: ReviewSummaryNote = {
   change: "减少追价",
   next: "等待确认",
   evidenceEpisodeIds: ["episode-1"],
+  observationVersion: "v1.1",
+  followUpStartDate: "2026-09-11",
+  followUpEndDate: "2026-10-11",
 };
 
 describe("SQLite review summaries", () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import { formatMarketTradingDate } from "../../lib/market/trading-date";
 import { instrumentPresentation } from "../../lib/instruments/instrument-presentation";
@@ -43,9 +43,19 @@ type Props = {
   performanceSortAvailability?: { allowed: boolean; reason: string | null };
   page?: number;
   onPageChange?: (page: number) => void;
+  reportCurrency?: "original" | "CNY";
 };
 
 const REVIEW_QUEUE_PAGE_SIZE = 100;
+const REVIEW_QUEUE_COLUMNS_KEY = "tradereview:review-queue-columns:v1";
+type OptionalColumn = "fees" | "return" | "source" | "account";
+const OPTIONAL_COLUMNS: ReadonlyArray<{ id: OptionalColumn; label: string }> = [
+  { id: "fees", label: "费用" },
+  { id: "return", label: "收益率" },
+  { id: "source", label: "来源" },
+  { id: "account", label: "账户" },
+];
+const DEFAULT_COLUMNS: Record<OptionalColumn, boolean> = { fees: false, return: true, source: true, account: true };
 
 function money(value: string | null, currency: string) {
   if (value === null) return "待核对";
@@ -172,10 +182,22 @@ function QueueSummary({ rows, year }: { rows: ReviewQueueItem[]; year?: string }
   );
 }
 
-export function ReviewQueue({ entries, rows: suppliedRows, pendingRows: suppliedPendingRows, filter, onFilter, onOpen, onBrowseStocks, notice, compact = false, performanceByEpisode, onSort, performanceSortAvailability, page = 1, onPageChange }: Props) {
+export function ReviewQueue({ entries, rows: suppliedRows, pendingRows: suppliedPendingRows, filter, onFilter, onOpen, onBrowseStocks, notice, compact = false, performanceByEpisode, onSort, performanceSortAvailability, page = 1, onPageChange, reportCurrency = "CNY" }: Props) {
   const rows = suppliedRows ?? buildReviewQueue(entries, filter);
   const pending = suppliedPendingRows ?? buildReviewQueue(entries, { ...filter, status: "pending" });
   const [localPage, setLocalPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
+  const [visibleColumns, setVisibleColumns] = useState<Record<OptionalColumn, boolean>>(() => {
+    if (typeof window === "undefined") return DEFAULT_COLUMNS;
+    try {
+      const stored = JSON.parse(window.localStorage.getItem(REVIEW_QUEUE_COLUMNS_KEY) ?? "null") as Partial<Record<OptionalColumn, boolean>> | null;
+      return stored ? { ...DEFAULT_COLUMNS, ...Object.fromEntries(OPTIONAL_COLUMNS.map(({ id }) => [id, stored[id] === true])) } : DEFAULT_COLUMNS;
+    } catch { return DEFAULT_COLUMNS; }
+  });
+  const [columnsOpen, setColumnsOpen] = useState(false);
+  useEffect(() => {
+    try { window.localStorage.setItem(REVIEW_QUEUE_COLUMNS_KEY, JSON.stringify(visibleColumns)); } catch { /* optional storage */ }
+  }, [visibleColumns]);
   const pageCount = Math.max(1, Math.ceil(rows.length / REVIEW_QUEUE_PAGE_SIZE));
   const requestedPage = onPageChange ? page : localPage;
   const currentPage = Math.min(Math.max(requestedPage, 1), pageCount);
@@ -228,6 +250,16 @@ export function ReviewQueue({ entries, rows: suppliedRows, pendingRows: supplied
     return changeSort(activeSort === "return-high" ? "return-low" : "return-high");
   };
   const performanceSortDisabled = Boolean(performanceSortAvailability && !performanceSortAvailability.allowed);
+  const selectedRows = rows.filter(row => selectedIds.has(row.item.episode.id));
+  const toggleSelected = (id: string) => setSelectedIds(current => {
+    const next = new Set(current);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
+  const openSelected = () => {
+    if (!selectedRows[0]) return;
+    onOpen(selectedRows[0], selectedRows.map(row => row.item.episode.id));
+  };
 
   return (
     <section className="review-queue" aria-label="回合复盘队列">
@@ -286,6 +318,17 @@ export function ReviewQueue({ entries, rows: suppliedRows, pendingRows: supplied
       </>}
 
       {!compact && <QueueSummary rows={rows} year={filter.year} />}
+      <div className="review-queue-batch-toolbar" aria-label="批量复盘操作">
+        <span>已选 {selectedRows.length} 个回合</span>
+        <button type="button" onClick={() => setSelectedIds(new Set())} disabled={selectedIds.size === 0}>取消选择</button>
+        <button type="button" className="primary-action" onClick={openSelected} disabled={selectedRows.length === 0}>加入本次复盘队列</button>
+        <details open={columnsOpen} onToggle={event => setColumnsOpen(event.currentTarget.open)}>
+          <summary>列设置</summary>
+          <div role="group" aria-label="复盘队列列设置">
+            {OPTIONAL_COLUMNS.map(({ id, label }) => <label key={id}><input type="checkbox" checked={visibleColumns[id]} onChange={event => setVisibleColumns(current => ({ ...current, [id]: event.target.checked }))} />{label}</label>)}
+          </div>
+        </details>
+      </div>
       <div className="review-queue-head" role="row" aria-label="回合列表排序">
         <div className="review-queue-head-columns">
           <span role="columnheader">标的 / 账户</span>
@@ -293,8 +336,8 @@ export function ReviewQueue({ entries, rows: suppliedRows, pendingRows: supplied
             最近成交 <small aria-hidden="true">{sortDirection("date") === "降序" ? "↓" : sortDirection("date") === "升序" ? "↑" : "↕"}</small>
           </button></span>
           <span role="columnheader" className="review-queue-head-result">
-            <button type="button" aria-label={`按 CNY 净盈亏排序（${sortDirection("pnl")}）`} disabled={performanceSortDisabled} title={performanceSortDisabled ? performanceSortAvailability?.reason ?? undefined : undefined} onClick={() => toggleSort("pnl")}>
-              CNY 净盈亏 <small aria-hidden="true">{sortDirection("pnl") === "降序" ? "↓" : sortDirection("pnl") === "升序" ? "↑" : "↕"}</small>
+            <button type="button" aria-label={`按 ${reportCurrency === "original" ? "原币" : "CNY"} 净盈亏排序（${sortDirection("pnl")}）`} disabled={performanceSortDisabled} title={performanceSortDisabled ? performanceSortAvailability?.reason ?? undefined : undefined} onClick={() => toggleSort("pnl")}>
+              {reportCurrency === "original" ? "原币" : "CNY"} 净盈亏 <small aria-hidden="true">{sortDirection("pnl") === "降序" ? "↓" : sortDirection("pnl") === "升序" ? "↑" : "↕"}</small>
             </button>
             <button type="button" aria-label={`按加权收益率排序（${sortDirection("return")}）`} disabled={performanceSortDisabled} title={performanceSortDisabled ? performanceSortAvailability?.reason ?? undefined : undefined} onClick={() => toggleSort("return")}>
               加权收益率 <small aria-hidden="true">{sortDirection("return") === "降序" ? "↓" : sortDirection("return") === "升序" ? "↑" : "↕"}</small>
@@ -316,12 +359,15 @@ export function ReviewQueue({ entries, rows: suppliedRows, pendingRows: supplied
           const cny = performance?.cny.available && performance.cny.netPnl !== null
             ? performance.cny
             : null;
+          const rawGroup = performance?.rawCurrencyGroups.find(group => group.currency === entry.instrument.currency);
+          const originalPnl = rawGroup?.netPnl;
+          const originalReturn = rawGroup?.weightedReturn;
           const pnl = item.episode.status === "open"
             ? "持仓中 · 最终盈亏未定"
-            : cny ? money(cny.netPnl, "CNY") : performance
+            : reportCurrency === "original" && originalPnl !== null && originalPnl !== undefined ? money(originalPnl, entry.instrument.currency) : cny ? money(cny.netPnl, "CNY") : performance
               ? performanceUnavailableText(performance.cny.reason)
               : trusted ? money(item.metrics.netPnl, entry.instrument.currency) : "盈亏待核对";
-          const resultClass = !trusted || (Boolean(performance) && !cny)
+          const resultClass = !trusted || (reportCurrency !== "original" && Boolean(performance) && !cny)
             ? "neutral"
             : Number(item.metrics.netPnl) > 0
               ? "positive"
@@ -334,12 +380,13 @@ export function ReviewQueue({ entries, rows: suppliedRows, pendingRows: supplied
             {showCurrencyGroups && previousCurrency !== entry.instrument.currency && <h3 className="review-queue-currency-heading">{entry.instrument.currency} · 金额排序分组</h3>}
             <div className="review-queue-row-shell">
             <div role="button" tabIndex={0} className="review-queue-row" onClick={() => onOpen(row, queueIds)} onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onOpen(row, queueIds); } }} aria-label={accessibleName}>
-              <span className="review-queue-identity"><strong title={presentation.originalName}>{presentation.primaryName}</strong><small>{presentation.secondaryName}{presentation.hasChineseName ? "" : " · 中文名未补全"}</small></span>
-              <span className="review-queue-window"><strong>{formatMarketTradingDate(item.episode.startedAt, entry.instrument.market)}—{item.episode.endedAt ? formatMarketTradingDate(item.episode.endedAt, entry.instrument.market) : "持仓中"}</strong><small>{reviewQueueMarketLabel(entry.instrument.market)}{sourceLabel && <> · {sourceLabel}</>} · {item.metrics.buyCount + item.metrics.sellCount} 笔成交{brokerTags.length > 0 && <span className="review-queue-broker-tags" aria-label="来源券商">{brokerTags.map(tag => <span key={tag.id}>{tag.label}</span>)}</span>}</small></span>
-              <span className={`review-queue-result ${resultClass}`}><strong>{pnl}</strong><small>{item.episode.status === "open" ? "最终盈亏未定 · 持仓中" : performance && !cny ? `${performanceUnavailableText(performance.cny.reason)} · ${holding(item.metrics.holdingMilliseconds, false)}` : `${percent(cny ? cny.weightedReturn : trusted ? item.metrics.returnPercent : null)}${cny ? " · CNY" : ""} · ${holding(item.metrics.holdingMilliseconds, false)}`}{coverageWarning && <> {" · "}<span title={coverageWarning.title} aria-label={coverageWarning.ariaLabel}>账单缺月，持仓边界一致</span></>}</small></span>
+              <input type="checkbox" aria-label={`选择复盘回合 ${presentation.primaryName} ${formatMarketTradingDate(item.episode.startedAt, entry.instrument.market)}`} checked={selectedIds.has(item.episode.id)} onClick={event => event.stopPropagation()} onChange={() => toggleSelected(item.episode.id)} />
+              <span className="review-queue-identity"><strong title={presentation.originalName}>{presentation.primaryName}</strong><small>{presentation.secondaryName}{presentation.hasChineseName ? "" : " · 中文名未补全"}</small>{visibleColumns.account && <small data-column="account">账户 · {accountDisplayLabel}</small>}</span>
+              <span className="review-queue-window"><strong>{formatMarketTradingDate(item.episode.startedAt, entry.instrument.market)}—{item.episode.endedAt ? formatMarketTradingDate(item.episode.endedAt, entry.instrument.market) : "持仓中"}</strong><small>{reviewQueueMarketLabel(entry.instrument.market)}{visibleColumns.source && sourceLabel && <> · {sourceLabel}</>} · {item.metrics.buyCount + item.metrics.sellCount} 笔成交{visibleColumns.source && brokerTags.length > 0 && <span className="review-queue-broker-tags" aria-label="来源券商">{brokerTags.map(tag => <span key={tag.id}>{tag.label}</span>)}</span>}</small></span>
+              <span className={`review-queue-result ${resultClass}`}><strong>{pnl}</strong>{visibleColumns.return && <small data-column="return">{item.episode.status === "open" ? "最终盈亏未定 · 持仓中" : reportCurrency === "original" ? `${percent(originalReturn ?? (trusted ? item.metrics.returnPercent : null))} · ${entry.instrument.currency} · ${holding(item.metrics.holdingMilliseconds, false)}` : performance && !cny ? `${performanceUnavailableText(performance.cny.reason)} · ${holding(item.metrics.holdingMilliseconds, false)}` : `${percent(cny ? cny.weightedReturn : trusted ? item.metrics.returnPercent : null)}${cny ? " · CNY" : ""} · ${holding(item.metrics.holdingMilliseconds, false)}`}{coverageWarning && <> {" · "}<span title={coverageWarning.title} aria-label={coverageWarning.ariaLabel}>账单缺月，持仓边界一致</span></>}</small>}</span>
               <span className="review-queue-status"><strong>{reviewLabel(item)}</strong><small>{state === "completed" ? "结论已保存" : state === "deferred" ? item.review?.review.deferredReason : "可开始复盘"}</small></span>
             </div>
-            <details className="review-queue-full-name"><summary>查看完整原名</summary><p>原名：{presentation.originalName}</p><small>账户：{accountDisplayLabel}</small>{performance && <><small>原币净盈亏：{rawPerformanceText(performance)}</small><small>人民币折算：{cny ? money(cny.netPnl, "CNY") : performanceUnavailableText(performance.cny.reason)}</small></>}</details>
+            <details className="review-queue-full-name"><summary>查看完整原名</summary><p>原名：{presentation.originalName}</p><small>账户：{accountDisplayLabel}</small>{visibleColumns.fees && <small>已知费用：{item.metrics.fees ?? "不可用"}</small>}{performance && <><small>原币净盈亏：{rawPerformanceText(performance)}</small><small>人民币折算：{cny ? money(cny.netPnl, "CNY") : performanceUnavailableText(performance.cny.reason)}</small></>}</details>
             </div>
           </Fragment>;
         })}

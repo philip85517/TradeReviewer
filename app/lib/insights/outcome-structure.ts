@@ -27,6 +27,20 @@ export type OutcomeHistogramBin = {
   episodeIds: string[];
 };
 
+export type InsightSampleChain = {
+  rangeCount: number;
+  eligibleCount: number;
+  excludedCount: number;
+  eligibleEpisodeIds: string[];
+  excluded: InsightEpisodeExclusion[];
+};
+
+export type OutcomeStripPoint = {
+  episodeId: string;
+  returnPercent: string;
+  positionPercent: string;
+};
+
 export type OutcomeOddsWinRatePoint = {
   id: string;
   label: string;
@@ -45,6 +59,7 @@ export type OutcomeStructureReport = {
   metricBasis: "return-percent";
   sampleCount: number;
   excluded: InsightEpisodeExclusion[];
+  sampleChain: InsightSampleChain;
   distribution: {
     profitCount: number;
     lossCount: number;
@@ -79,6 +94,19 @@ export type OutcomeStructureReport = {
     zeroPositionPercent: string | null;
     bins: OutcomeHistogramBin[];
   };
+  strip: {
+    medianPercent: string | null;
+    medianPositionPercent: string | null;
+    points: OutcomeStripPoint[];
+  };
+  netPnlContribution: {
+    numeratorLabel: string;
+    denominatorLabel: string;
+    totalNetPnl: string;
+    currency: string | null;
+    points: Array<{ episodeId: string; netPnl: string; sharePercent: string | null }>;
+    groups: Array<{ currency: string; totalNetPnl: string; points: Array<{ episodeId: string; netPnl: string; sharePercent: string | null }> }>;
+  };
   oddsWinRate: {
     point: OutcomeOddsWinRatePoint;
     breakEvenLine: OutcomeBreakEvenPoint[];
@@ -86,6 +114,8 @@ export type OutcomeStructureReport = {
   buckets: OutcomeBucket[];
   calculationVersion: 1;
 };
+
+export type OutcomeHistogramDomain = { min: string; max: string; binCount: number };
 
 function median(values: Decimal[]) {
   const sorted = [...values].sort((a, b) => a.comparedTo(b));
@@ -143,11 +173,11 @@ function bucket(
   };
 }
 
-function buildHistogram(facts: InsightEpisodeFact[]) {
+function buildHistogram(facts: InsightEpisodeFact[], domain?: OutcomeHistogramDomain) {
   if (facts.length === 0) return [];
   const values = facts.map(({ returnPercent }) => new Decimal(returnPercent as string));
-  const min = Decimal.min(...values);
-  const max = Decimal.max(...values);
+  const min = domain ? new Decimal(domain.min) : Decimal.min(...values);
+  const max = domain ? new Decimal(domain.max) : Decimal.max(...values);
   if (max.equals(min)) {
     return [
       {
@@ -161,7 +191,7 @@ function buildHistogram(facts: InsightEpisodeFact[]) {
       },
     ];
   }
-  const binCount = Math.min(7, Math.max(1, Math.ceil(Math.sqrt(values.length))));
+  const binCount = domain?.binCount ?? Math.min(7, Math.max(1, Math.ceil(Math.sqrt(values.length))));
   const width = max.minus(min).div(binCount);
   const bins = Array.from({ length: binCount }, (_, index) => {
     const start = min.plus(width.times(index));
@@ -187,10 +217,33 @@ function buildHistogram(facts: InsightEpisodeFact[]) {
   return bins;
 }
 
+function buildStrip(facts: InsightEpisodeFact[]) {
+  if (facts.length === 0) return { medianPercent: null, medianPositionPercent: null, points: [] as OutcomeStripPoint[] };
+  const values = facts.map(({ returnPercent }) => new Decimal(returnPercent as string));
+  const minimum = Decimal.min(new Decimal(0), ...values);
+  const maximum = Decimal.max(new Decimal(0), ...values);
+  const span = maximum.minus(minimum);
+  const medianValue = median(values);
+  return {
+    medianPercent: medianValue.toString(),
+    medianPositionPercent: span.isZero() ? "50" : medianValue.minus(minimum).div(span).times(100).toString(),
+    points: facts.map((fact) => {
+      const value = new Decimal(fact.returnPercent as string);
+      const position = span.isZero() ? new Decimal(50) : value.minus(minimum).div(span).times(100);
+      return {
+        episodeId: fact.episodeId,
+        returnPercent: value.toString(),
+        positionPercent: position.toString(),
+      };
+    }),
+  };
+}
+
 export function buildOutcomeStructureReport(
   inputFacts: InsightEpisodeFact[],
   upstreamExclusions: InsightEpisodeExclusion[],
   label = "总体",
+  histogramDomain?: OutcomeHistogramDomain,
 ): OutcomeStructureReport {
   const excluded = [...upstreamExclusions];
   const facts = inputFacts.filter((fact) => {
@@ -260,6 +313,13 @@ export function buildOutcomeStructureReport(
     metricBasis: "return-percent",
     sampleCount: facts.length,
     excluded,
+    sampleChain: {
+      rangeCount: new Set([...facts.map(({ episodeId }) => episodeId), ...excluded.map(({ episodeId }) => episodeId)]).size,
+      eligibleCount: facts.length,
+      excludedCount: excluded.length,
+      eligibleEpisodeIds: facts.map(({ episodeId }) => episodeId),
+      excluded,
+    },
     distribution: {
       profitCount: profit.length,
       lossCount: loss.length,
@@ -287,7 +347,29 @@ export function buildOutcomeStructureReport(
     histogram: {
       zeroBoundaryPercent: "0",
       zeroPositionPercent,
-      bins: buildHistogram(facts),
+      bins: buildHistogram(facts, histogramDomain),
+    },
+    strip: buildStrip(facts),
+    netPnlContribution: {
+      numeratorLabel: "回合净盈亏",
+      denominatorLabel: "当前范围全部可用净盈亏合计",
+      currency: (() => { const currencies = new Set(facts.map(fact => fact.currency).filter(Boolean)); return currencies.size === 1 ? [...currencies][0] ?? null : null; })(),
+      totalNetPnl: (() => { const currencies = new Set(facts.map(fact => fact.currency).filter(Boolean)); return currencies.size === 1 ? facts.reduce((sum, fact) => sum.plus(fact.netPnl), new Decimal(0)).toString() : ""; })(),
+      points: facts.map((fact) => ({
+        episodeId: fact.episodeId,
+        netPnl: fact.netPnl,
+        sharePercent: (() => {
+          const currencies = new Set(facts.map(item => item.currency).filter(Boolean));
+          if (currencies.size !== 1) return null;
+          const total = facts.reduce((sum, item) => sum.plus(item.netPnl), new Decimal(0));
+          return total.isZero() ? null : new Decimal(fact.netPnl).div(total).times(100).toString();
+        })(),
+      })),
+      groups: [...new Set(facts.map(fact => fact.currency).filter((currency): currency is string => Boolean(currency)))].map(currency => {
+        const groupFacts = facts.filter(fact => fact.currency === currency);
+        const total = groupFacts.reduce((sum, fact) => sum.plus(fact.netPnl), new Decimal(0));
+        return { currency, totalNetPnl: total.toString(), points: groupFacts.map(fact => ({ episodeId: fact.episodeId, netPnl: fact.netPnl, sharePercent: total.isZero() ? null : new Decimal(fact.netPnl).div(total).times(100).toString() })) };
+      }),
     },
     oddsWinRate: {
       point: {

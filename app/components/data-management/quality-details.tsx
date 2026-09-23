@@ -67,6 +67,10 @@ function denominatorUnit(dimension: QualityDetailsProps["model"]["dimensions"][n
   return dimension.id === "historical" ? "标的" : "回合";
 }
 
+function coverageLabel(status: "available" | "limited" | "needs-check"): string {
+  return status === "available" ? "成功覆盖" : status === "limited" ? "部分覆盖" : "待处理";
+}
+
 type RetryState = "running" | "failed";
 
 function retryStatusMessage(state: RetryState): string {
@@ -110,6 +114,11 @@ export function QualityDetails({
       </header>
 
       <div className={styles.dimensions}>
+        <div className={styles.tableWrap}>
+          <table className={styles.coverageTable}><caption className={styles.srOnly}>数据覆盖摘要</caption><thead><tr><th>依赖</th><th>覆盖</th><th>业务影响</th><th>更新时间</th><th>下一步</th></tr></thead><tbody>
+            {model.dimensions.map(dimension => <tr key={dimension.id}><th scope="row">{dimension.label}（摘要）</th><td><span className={`${styles.status} ${styles[`status-${dimension.status}`]}`}>{coverageLabel(dimension.status)}</span><small>{dimension.availableCount}/{dimension.totalCount}</small></td><td>{dimension.impact}</td><td>{dimension.asOf ? formatAsOf(dimension.asOf) : "—"}</td><td>{dimension.actionLabel || "无需处理"}</td></tr>)}
+          </tbody></table>
+        </div>
         {model.dimensions.map(dimension => {
           const status = statusLabel[dimension.status];
           const dimensionAction = dimension.action;
@@ -124,6 +133,7 @@ export function QualityDetails({
                 <strong>已用 {dimension.availableCount} / {dimension.totalCount} 个{denominatorUnit(dimension)}；受影响 {dimension.affectedCount} 个</strong>
               </div>
               <p className={styles.impact}>{dimension.impact}</p>
+              <details className={styles.technical}><summary>技术详情与受影响对象</summary>
               <dl className={styles.meta}>
                 <div><dt>原因</dt><dd>{dimension.reason}</dd></div>
                 {dimension.asOf && <div><dt>更新时间</dt><dd>{formatAsOf(dimension.asOf) ?? dimension.asOf}</dd></div>}
@@ -209,7 +219,7 @@ export function QualityDetails({
                     );
                   })}
                 </ul>
-              )}
+              )}</details>
             </article>
           );
         })}

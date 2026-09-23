@@ -1,0 +1,19 @@
+.panel { display: grid; gap: 14px; color: var(--dashboard-ink, #17212b); }
+.panel header { display: flex; justify-content: space-between; gap: 12px; }
+.panel h2 { margin: 4px 0; font-size: 18px; }
+.panel p { margin: 0; color: var(--dashboard-muted, #69727f); font-size: 12px; line-height: 1.5; }
+.form { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; align-items: end; }
+.form label { display: grid; gap: 5px; font-size: 13px; }
+.form input, .form select, .form button, .panel button { min-height: 36px; border: 1px solid var(--dashboard-line, #d9dee5); border-radius: 6px; padding: 7px 9px; background: #182337; color: var(--text, #e7edf6); }
+.form button, .panel button { cursor: pointer; }
+.form button:disabled, .panel button:disabled { cursor: not-allowed; opacity: .55; }
+.formActions { display: flex; gap: 6px; align-items: end; }
+.formActions button { flex: 1; }
+.panel table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.panel th, .panel td { padding: 8px; border-bottom: 1px solid var(--dashboard-line, #d9dee5); text-align: left; }
+.panel caption { margin-bottom: 6px; text-align: left; font-weight: 600; }
+.rowActions { display: flex; gap: 5px; white-space: nowrap; }
+@media (max-width: 800px) { .form { grid-template-columns: repeat(2, minmax(0, 1fr)); } .formActions { grid-column: 1 / -1; } .panel { overflow-x: auto; } }
+
+.form input, .form select { color-scheme: dark; }
+@media (max-width: 800px) { .form input, .form select, .panel button { min-height: 44px; } }

@@ -61,7 +61,8 @@ describe("RoomHoldingsPanel", () => {
     );
 
     const holdings = screen.getByRole("region", { name: "当前持仓" });
-    expect(holdings).toHaveTextContent("当前持仓，截至 2026-09-19");
+    expect(holdings).toHaveTextContent("当前持仓");
+    expect(holdings).toHaveTextContent("持仓日期：2026-09-19");
     expect(holdings).toHaveTextContent("测试标的");
     expect(holdings).toHaveTextContent("持仓数量");
     expect(holdings).toHaveTextContent("+US$4.00");
@@ -85,13 +86,12 @@ describe("RoomHoldingsPanel", () => {
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(<RoomHoldingsPanel entries={[value]} scope={scope} onOpenInReview={() => undefined} />);
     const holdings = screen.getByRole("region", { name: "当前持仓" });
-    expect(holdings).toHaveTextContent("缺少行情");
-    expect(holdings).toHaveTextContent("浮盈亏不可用");
+    expect(holdings).toHaveTextContent("暂无可用报价");
+    expect(holdings).toHaveTextContent("暂不可用（缺少报价）");
     expect(holdings).not.toHaveTextContent("+US$999.00");
   });
 
-  it("labels a short position and exposes the existing data check action", async () => {
-    const user = userEvent.setup();
+  it("labels a short position without exposing a diagnostics link", async () => {
     const value = entry();
     const episode = value.episodes[0].episode;
     episode.executions[0].side = "sell";
@@ -103,9 +103,9 @@ describe("RoomHoldingsPanel", () => {
 
     const holdings = screen.getByRole("region", { name: "当前持仓" });
     expect(holdings).toHaveTextContent("空头");
-    expect(holdings).toHaveTextContent("缺少行情");
-    await user.click(within(holdings).getByRole("button", { name: "查看数据" }));
-    expect(onOpenDataCheck).toHaveBeenCalledWith("US:TEST", "episode:holding");
+    expect(holdings).toHaveTextContent("暂无可用报价");
+    expect(within(holdings).queryByRole("button", { name: "查看数据" })).not.toBeInTheDocument();
+    expect(onOpenDataCheck).not.toHaveBeenCalled();
   });
 
   it("offers a quote retry for stale holdings", async () => {
@@ -140,10 +140,10 @@ describe("RoomHoldingsPanel", () => {
 
     const holdings = screen.getByRole("region", { name: "当前持仓" });
     expect(holdings).toHaveTextContent("方向待核对");
-    expect(holdings).toHaveTextContent("负仓差额待核对");
+    expect(holdings).toHaveTextContent("持仓数量");
     expect(holdings).toHaveTextContent("-10,000");
     expect(holdings).toHaveTextContent("可用成本待核对");
-    expect(holdings).toHaveTextContent("浮盈亏不可用");
+    expect(holdings).toHaveTextContent("暂不可用");
     expect(holdings).not.toHaveTextContent("+US$20,000.00");
   });
 
@@ -186,7 +186,7 @@ describe("RoomHoldingsPanel", () => {
     expect(await screen.findByText("行情重试失败")).toBeInTheDocument();
   });
 
-  it("puts quote date, source, and fetch time behind an expandable details control", () => {
+  it("shows the quote date inline", () => {
     const value = entry();
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(
@@ -198,8 +198,7 @@ describe("RoomHoldingsPanel", () => {
       />,
     );
 
-    expect(screen.getByRole("group", { name: "行情详情" })).toBeInTheDocument();
-    expect(screen.getByText(/2026-09-19.*fixture/)).toBeInTheDocument();
+    expect(screen.getByText("报价时间：2026-09-19")).toBeInTheDocument();
   });
 
   it("disambiguates colliding account labels without exposing account IDs", () => {
@@ -229,7 +228,7 @@ describe("RoomHoldingsPanel", () => {
     const holdings = screen.getByRole("region", { name: "当前持仓" });
     expect(holdings).toHaveTextContent("US$1.104");
     expect(holdings).toHaveTextContent("US$1.103457");
-    expect(holdings).toHaveTextContent("持仓均价完整值：1.103456789");
+    expect(holdings).not.toHaveTextContent("持仓均价完整值");
     expect(holdings).toHaveAttribute("data-current-date", "2026-09-19");
     expect(holdings).toHaveTextContent("方向：多头");
   });
@@ -248,10 +247,8 @@ describe("RoomHoldingsPanel", () => {
       />,
     );
     const holdings = screen.getByRole("region", { name: "当前持仓" });
-    expect(holdings).toHaveTextContent("过期参考价");
-    expect(holdings).toHaveTextContent("流水覆盖截止 2020-01-01");
-    expect(holdings).toHaveTextContent("行情日期 2026-09-10");
-    expect(holdings).toHaveTextContent("查看日 2026-09-19");
+    expect(holdings).toHaveTextContent("旧报价");
+    expect(holdings).toHaveTextContent("报价时间：2026-09-10");
   });
 
   it("keeps the stale reference warning when the quote predates the latest execution", () => {
@@ -271,9 +268,8 @@ describe("RoomHoldingsPanel", () => {
       />,
     );
     const holdings = screen.getByRole("region", { name: "当前持仓" });
-    expect(holdings).toHaveTextContent("行情不可用");
-    expect(holdings).toHaveTextContent("过期参考价");
-    expect(holdings).toHaveTextContent("浮盈亏不可用");
+    expect(holdings).toHaveTextContent("旧报价");
+    expect(holdings).toHaveTextContent("暂不可用");
   });
 
   it("offers PnL sorting only within currency and keeps unknown values last", async () => {
@@ -283,7 +279,7 @@ describe("RoomHoldingsPanel", () => {
     second.episodes[0].episode.executions[0].executedAt = "2020-01-03T01:00:00.000Z";
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(<RoomHoldingsPanel entries={[first, second]} scope={scope} onOpenInReview={() => undefined} />);
-    await user.selectOptions(screen.getByLabelText("排序持仓"), "pnl");
+    await user.click(screen.getByRole("radio", { name: "浮盈亏" }));
     expect(screen.getByRole("region", { name: "当前持仓" })).toHaveTextContent("仅在同币种内比较浮盈亏");
   });
 
@@ -301,5 +297,44 @@ describe("RoomHoldingsPanel", () => {
     );
     const pnl = screen.getByText("-US$2.00");
     expect(pnl.closest("dd")?.className).toContain("negative");
+  });
+
+  it("uses neutral styling for a zero unrealized PnL", () => {
+    const value = entry();
+    const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
+    render(
+      <RoomHoldingsPanel
+        entries={[value]}
+        scope={scope}
+        quotesByInstrument={{ "US:TEST": { price: "10", currency: "USD", quoteDate: "2026-09-19", fetchedAt: "2026-09-19T08:00:00.000Z", provider: "fixture", freshness: "current" } }}
+        positionSnapshotsByEpisode={{ "episode:holding": { quantity: "2", averageCost: "10", realizedPnl: "0", unrealizedPnl: "0", netPnl: "0", fees: "0", grossCapitalDeployed: "20", returnPercent: "0" } }}
+        onOpenInReview={() => undefined}
+      />,
+    );
+    const pnl = screen.getByText("+US$0.00");
+    expect(pnl.closest("dd")?.className).toContain("neutral");
+    expect(pnl.closest("dd")?.className).not.toContain("positive");
+    expect(pnl.closest("dd")?.className).not.toContain("negative");
+  });
+
+  it("shows plain-language quote status and an explicit market badge", () => {
+    const value = entry();
+    value.instrument.market = "CN-SH";
+    const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
+    const metadata: ReadonlyMap<string, TradingRoomInstrumentMetadata> = new Map([[value.instrument.id, { market: "CN-SH", symbol: "TEST", assetType: "stock" }]]);
+    render(
+      <RoomHoldingsPanel
+        entries={[value]}
+        scope={scope}
+        instrumentMetadata={metadata}
+        quotesByInstrument={{ "US:TEST": { price: "12.3", currency: "CNY", quoteDate: "2026-09-19", fetchedAt: "2026-09-19T08:00:00.000Z", provider: "fixture", freshness: "stale" } }}
+        onOpenInReview={() => undefined}
+      />,
+    );
+    const holdings = screen.getByRole("region", { name: "当前持仓" });
+    expect(holdings).toHaveTextContent("沪市");
+    expect(holdings).toHaveTextContent("旧报价 · 非实时");
+    expect(holdings).toHaveTextContent("报价时间：2026-09-19");
+    expect(holdings).not.toHaveTextContent("技术证据");
   });
 });

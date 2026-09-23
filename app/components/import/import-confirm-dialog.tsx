@@ -145,6 +145,7 @@ export function ImportConfirmDialog({
             <span>已自动识别为 {preview.sourceLabel} 交易记录</span>
           </div>
         </div>
+        <p className="import-confirm-explanation">确认前请核对账户范围、原币种与交易日期精度。重复成交会按批次指纹跳过；费用未知会保留为未知，不会静默当作 0。</p>
         {preview.sourceKind === "tradingview" && (
           <div className="tradingview-import-notice" role="status">
             <strong>模拟盘 · TradingView</strong>

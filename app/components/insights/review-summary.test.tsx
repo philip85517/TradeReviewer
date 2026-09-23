@@ -10,6 +10,16 @@ import { ReviewSummary, initialReviewSummaryFilters, type ReviewSummaryDrafts } 
 
 afterEach(cleanup);
 
+it("formats fees as a cost without a gain-style plus sign, while retaining rebate minus signs", async () => {
+  const client = { get: vi.fn().mockResolvedValue(undefined), put: vi.fn() };
+  const view = render(<ReviewSummary entries={[entry()]} scopeId="review-scope:v1:account-a:US:live::USD" onScopeChange={vi.fn()} client={client} onOpenEpisode={vi.fn()} />);
+  expect(await view.findByText("US$1.00")).toBeInTheDocument();
+  const rebate = entry();
+  rebate.episodes[0].metrics.fees = "-1";
+  view.rerender(<ReviewSummary entries={[rebate]} scopeId="review-scope:v1:account-a:US:live::USD" onScopeChange={vi.fn()} client={client} onOpenEpisode={vi.fn()} />);
+  expect(await view.findByText("-US$1.00")).toBeInTheDocument();
+});
+
 function entry(): TradeLibraryEntry {
   const instrument = {
     id: "US:AAA",

@@ -1,0 +1,22 @@
+.root { display: grid; gap: 10px; min-width: 0; }
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 4px 2px; }
+.legend { display: flex; gap: 8px 18px; flex-wrap: wrap; align-items: center; color: var(--dashboard-muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.legendDate { flex-basis: 100%; color: var(--dashboard-ink); font-size: 14px; font-weight: 500; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 7px; height: 7px; border-radius: 50%; }
+.legend strong:not(.legendDate) { font-weight: 600; }
+.toggle { display: inline-flex; align-items: center; gap: 6px; color: var(--dashboard-muted); font-size: 14px; white-space: nowrap; }
+.toggle input { accent-color: #4b97ff; }
+.stage { position: relative; height: 360px; overflow: hidden; background: #101722; border: 1px solid #2a3546; border-radius: 4px; }
+.stage:focus-visible { outline: 2px solid #4b97ff; outline-offset: 2px; }
+.chart { position: absolute; inset: 0; }
+.overlay { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.overlayLabel { position: absolute; transform: translate(-50%, -50%); padding: 2px 5px; border-radius: 3px; background: rgba(16, 23, 34, .92); font-size: 13px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.positive { color: var(--dashboard-positive); }
+.negative { color: var(--dashboard-negative); }
+.zero, .unavailable { color: var(--dashboard-muted); }
+.selected { display: grid; gap: 5px; color: var(--dashboard-muted); font-size: 14px; font-variant-numeric: tabular-nums; padding: 3px 2px; }
+.currencyDetail { display: grid; grid-template-columns: 44px minmax(150px, 1fr) minmax(150px, 1fr); gap: 10px; max-width: 670px; }
+.currencyName { color: var(--dashboard-ink); }
+.selected small, .overlayNote { color: var(--dashboard-muted); font-size: 12px; line-height: 1.5; }
+@media (max-width: 620px) { .stage { height: 280px; } .currencyDetail { grid-template-columns: 36px 1fr; gap: 3px 8px; } .currencyDetail > span:last-child { grid-column: 2; } .legend { gap: 8px 14px; } }

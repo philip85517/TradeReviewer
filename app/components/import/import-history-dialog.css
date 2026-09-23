@@ -1,0 +1,29 @@
+.history-content { padding: 16px 20px 20px; display: grid; gap: 12px; }
+.history-filter { display: grid; gap: 5px; color: #aab8ca; font-size: 12px; }
+.history-filter input { min-height: 38px; padding: 8px 10px; border: 1px solid #334861; border-radius: 6px; background: #111d2c; color: #e7edf6; }
+.history-table-wrap { overflow: auto; border: 1px solid #293b53; border-radius: 8px; }
+.history-table { width: 100%; border-collapse: collapse; min-width: 620px; font-size: 12px; }
+.history-table th, .history-table td { padding: 9px 10px; border-bottom: 1px solid #26374b; text-align: left; white-space: nowrap; }
+.history-table th { color: #8ea0b7; font-size: 12px; letter-spacing: .04em; }
+.history-table th button { border: 0; padding: 0; color: inherit; background: transparent; font: inherit; cursor: pointer; }
+.history-table td { color: #e7edf6; }
+.history-table td small { display: block; margin-top: 3px; color: #8ea0b7; font-size: 12px; }
+.history-table tbody tr { cursor: pointer; }
+.history-table tbody tr:hover, .history-table tbody tr[aria-selected="true"] { background: #1b2c42; }
+.history-evidence { display: grid; gap: 6px; padding: 12px; border: 1px solid #334861; border-radius: 8px; color: #cbd7e7; font-size: 12px; }
+.history-evidence p { margin: 0; line-height: 1.55; }
+
+.history-dialog { width: min(1240px, calc(100vw - 32px)); }
+.history-content { min-height: 0; grid-template-columns: minmax(0, 1fr) 280px; overflow: hidden; }
+.history-filter { grid-column: 1 / -1; }
+.history-table-wrap { max-height: 62vh; }
+.history-table th { position: sticky; top: 0; background: #182337; z-index: 1; }
+.history-table td:first-child small { max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+.history-evidence { align-content: start; overflow: auto; max-height: 62vh; overflow-wrap: anywhere; }
+.history-evidence summary { min-height: 36px; cursor: pointer; }
+@media (max-width: 900px) {
+  .history-content { grid-template-columns: minmax(0, 1fr); }
+  .history-table-wrap { max-height: 42vh; }
+  .history-evidence { max-height: 25vh; }
+  .history-filter input { min-height: 44px; }
+}

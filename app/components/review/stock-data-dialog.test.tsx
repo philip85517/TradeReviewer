@@ -32,3 +32,28 @@ it("recovers the account from revision history after every execution was removed
  await waitFor(()=>expect(screen.getByRole("combobox",{name:"当前账户"})).toHaveValue("a"));
  await user.click(screen.getByRole("button",{name:"为本股补充文件"}));expect(onSupplement).toHaveBeenCalledWith("a","file");
 });
+
+it("keeps an unknown fee unknown and cancel does not write", async () => {
+ const user=userEvent.setup(); const onRevise=vi.fn(); const onClose=vi.fn();
+ const unknown={...execution, source:{...execution.source, feeStatus:"unknown" as const}};
+ render(<StockDataDialog instrument={instrument} initialAccountId="a" executions={[unknown]} marketSummary="本地行情完整" marketDetails={[]} refreshing={false} onRefresh={vi.fn()} onClose={onClose} onRevise={onRevise} loadHistory={vi.fn().mockResolvedValue([])} onSupplement={vi.fn()} retainedReviews={[]} />);
+ await user.click(screen.getByRole("button",{name:"编辑成交"}));
+ expect(screen.getByText("费用（未知）")).toBeInTheDocument();
+ await user.click(screen.getByRole("button",{name:"取消修改"}));
+ expect(onRevise).not.toHaveBeenCalled();
+});
+
+it("keeps date-only precision when changing the date and hides history while editing", async () => {
+ const user=userEvent.setup(); const onRevise=vi.fn().mockResolvedValue(undefined);
+ const dateOnly={...execution,source:{...execution.source,timePrecision:"date-only" as const,sourceTimestampText:"2026-07-24"},executedAt:"2026-07-24T00:00:00.000Z"};
+ const loadHistory=vi.fn().mockResolvedValue([{id:"r1",instrumentId:instrument.id,accountId:"a",reason:"旧修订",recordedAt:"2026-09-01T00:00:00Z",changes:[{before:dateOnly,after:null}]}]);
+ render(<StockDataDialog instrument={instrument} initialAccountId="a" executions={[dateOnly]} marketSummary="行情完整" marketDetails={Array.from({length:50},(_,i)=>`技术日志 ${i}`)} refreshing={false} onRefresh={vi.fn()} onClose={vi.fn()} onRevise={onRevise} loadHistory={loadHistory} onSupplement={vi.fn()} retainedReviews={[]} />);
+ expect(screen.getByText(/查看行情覆盖与技术诊断（50 项）/).closest("details")).not.toHaveAttribute("open");
+ await user.click(screen.getByRole("button",{name:"编辑成交"}));
+ expect(screen.queryByText(/修订历史（/)).not.toBeInTheDocument();
+ await user.clear(screen.getByLabelText("成交时间（交易所时区）")); await user.type(screen.getByLabelText("成交时间（交易所时区）"),"2026-07-25");
+ await user.type(screen.getByLabelText("修订原因"),"修正日期"); await user.click(screen.getByRole("button",{name:"预览修改"})); await user.click(screen.getByRole("button",{name:"确认保存修订"}));
+ await waitFor(() => expect(onRevise).toHaveBeenCalled());
+ expect(onRevise.mock.calls[0][0].changes[0].after).toMatchObject({source:{timePrecision:"date-only",sourceTimestampText:"2026-07-25"}});
+ expect(onRevise.mock.calls[0][0].changes[0].after?.source.feeStatus).toBeUndefined();
+});

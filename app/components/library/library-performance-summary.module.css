@@ -6,6 +6,10 @@
   color: var(--text, #e7edf6);
 }
 
+.mobileSummary {
+  display: none;
+}
+
 .header,
 .sectionHeading,
 .scopeLine {
@@ -112,6 +116,21 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 6px;
+}
+
+.originalSummary {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--line, #243145);
+  border-radius: 8px;
+  background: var(--surface-elevated, #151e2b);
+}
+
+.originalSummary > strong {
+  color: var(--muted, #adbbcf);
+  font-size: 0.78rem;
 }
 
 .metricCard {
@@ -360,5 +379,56 @@
 
   .rawIdentity {
     grid-column: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .summary > :not(.mobileSummary) {
+    display: none;
+  }
+
+  .mobileSummary {
+    display: block;
+    grid-column: 1 / -1;
+    padding: 8px 10px;
+    border: 1px solid var(--line, #243145);
+    border-radius: 8px;
+    background: var(--surface-elevated, #151e2b);
+    color: var(--text, #e7edf6);
+    font-size: 0.78rem;
+  }
+
+  .mobileSummary summary {
+    min-height: 28px;
+    cursor: pointer;
+  }
+
+  .mobileSummary span {
+    display: block;
+    padding-top: 6px;
+    color: var(--muted, #adbbcf);
+    font-size: 0.72rem;
+  }
+
+  .primaryGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .metricCard {
+    min-height: 58px;
+    padding: 5px 4px;
+  }
+
+  .metricLabel,
+  .metricCard small {
+    overflow: hidden;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .metricValue {
+    font-size: 0.85rem;
   }
 }

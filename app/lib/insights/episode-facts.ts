@@ -42,6 +42,7 @@ export type InsightEpisodeFact = {
   instrumentSymbol: string;
   instrumentName: string;
   market: string;
+  currency?: string;
   direction: "long" | "short";
   startedAt: string;
   endedAt: string;
@@ -85,6 +86,7 @@ function exclusion(
   entry: TradeLibraryEntry,
   item: TradeLibraryEntry["episodes"][number],
   reason: InsightExclusionReason,
+  reasonLabel = REASON_LABELS[reason],
 ): InsightEpisodeExclusion {
   return {
     episodeId: item.episode.id,
@@ -93,7 +95,7 @@ function exclusion(
     startedAt: item.episode.startedAt,
     endedAt: item.episode.endedAt ?? null,
     reason,
-    reasonLabel: REASON_LABELS[reason],
+    reasonLabel,
   };
 }
 
@@ -365,8 +367,13 @@ export function buildInsightEpisodeFacts(
         item.metrics.netPnl === null ||
         item.metrics.holdingMilliseconds === null
       ) {
+        const missing = [
+          !entryBasis ? "缺失成本基础" : null,
+          item.metrics.netPnl === null ? "缺失净盈亏" : null,
+          item.metrics.holdingMilliseconds === null ? "缺失持有时长" : null,
+        ].filter((label): label is string => label !== null);
         excluded.push(
-          exclusion(entry, item, "missing-comparison-metric"),
+          exclusion(entry, item, "missing-comparison-metric", missing.join("、")),
         );
         continue;
       }
@@ -432,6 +439,7 @@ export function buildInsightEpisodeFacts(
         instrumentSymbol: entry.instrument.symbol,
         instrumentName: entry.instrument.name,
         market: entry.instrument.market,
+        currency: entry.instrument.currency,
         direction: item.episode.direction,
         startedAt: item.episode.startedAt,
         endedAt: item.episode.endedAt,

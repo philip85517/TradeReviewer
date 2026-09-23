@@ -15,7 +15,7 @@ export type ImportActionsProps = {
 export function ImportActions({ disabled, compact, onFile, onScreenshot, onTradingView }: ImportActionsProps) {
   const [open, setOpen] = useState(false);
   if (compact) return <div className="import-menu" onKeyDown={event => {if(event.key === "Escape") setOpen(false);}} onBlur={event => {if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);}}>
-    <button type="button" className="primary-action" disabled={disabled} aria-expanded={open} onClick={() => setOpen(!open)}><Upload size={16} />导入</button>
+    <button type="button" className="primary-action" disabled={disabled} aria-expanded={open} onClick={() => setOpen(!open)}><Upload size={16} />导入交易记录</button>
     {open && <div className="import-menu-options" aria-label="导入方式"><button type="button" onClick={() => {setOpen(false);onFile();}}>导入记录 · PDF / Excel</button><button type="button" onClick={() => {setOpen(false);onScreenshot();}}>截图恢复</button>{onTradingView && <button type="button" onClick={() => {setOpen(false);onTradingView();}}>导入 TradingView 模拟交易</button>}</div>}
   </div>;
   return <div className={`shared-import-actions ${compact ? "compact" : ""}`}>

@@ -1,0 +1,230 @@
+/* Local layout guardrails for the library shell. The base application owns the
+   visual tokens; these selectors only tighten this component's density. */
+.trade-library {
+  min-width: 0;
+}
+
+.trade-library .library-fx-strip {
+  width: min(1420px, 100%);
+  margin: 8px auto 0;
+  min-height: 44px;
+}
+
+.trade-library .library-fx-strip > div {
+  min-width: 0;
+}
+
+.trade-library .library-fx-strip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Four primary figures stay on one compact line on desktop; methodology and
+   raw currency evidence remain available in the existing disclosures. */
+.trade-library .library-performance-summary {
+  min-width: 0;
+}
+
+.trade-library .review-queue-list {
+  min-width: 0;
+}
+
+.trade-library .review-queue-batch-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.trade-library .review-queue-batch-toolbar button {
+  min-height: 36px;
+}
+
+.trade-library .review-queue-batch-toolbar details {
+  position: relative;
+  margin-left: auto;
+}
+
+.trade-library .review-queue-batch-toolbar details > summary {
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.trade-library .review-queue-batch-toolbar details > div {
+  position: absolute;
+  right: 0;
+  z-index: 4;
+  display: grid;
+  gap: 7px;
+  min-width: 140px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-elevated);
+}
+
+@media (max-width: 600px) {
+  .trade-library {
+    padding: 12px 10px 34px;
+  }
+
+  .trade-library > .library-header {
+    min-height: 44px;
+    gap: 8px;
+  }
+
+  .trade-library > .library-header h1 {
+    font-size: 20px;
+  }
+
+  .trade-library > .library-header .library-header-actions strong {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .trade-library .library-shared-browse-controls {
+    margin-top: 8px;
+    padding: 8px;
+    gap: 7px;
+  }
+
+  .trade-library .library-shared-browse-controls > label {
+    min-width: 0;
+    flex-basis: calc(50% - 4px);
+  }
+
+  .trade-library .library-shared-browse-controls > .library-shared-search {
+    flex-basis: 100%;
+    min-width: 0;
+    order: -1;
+  }
+
+  .trade-library .library-shared-browse-controls > button {
+    min-height: 44px;
+    flex: 1 1 calc(50% - 4px);
+  }
+
+  .trade-library .library-fx-strip {
+    margin-top: 6px;
+    padding: 7px 8px;
+    gap: 7px;
+    font-size: 11px;
+  }
+
+  .trade-library .library-fx-strip details summary {
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Keep the primary figures visible without pushing the first real row below
+     the fold. Detail grids remain closed until explicitly requested. */
+  .trade-library .library-performance-summary {
+    margin: 6px 0 8px;
+  }
+
+  .trade-library .library-performance-summary .primaryGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .trade-library .library-performance-summary .metricCard {
+    min-height: 58px;
+    padding: 5px 4px;
+  }
+
+  .trade-library .library-performance-summary .metricLabel,
+  .trade-library .library-performance-summary .metricCard small {
+    overflow: hidden;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .trade-library .library-performance-summary .metricValue {
+    font-size: 0.85rem;
+  }
+
+  .trade-library .library-performance-summary .scopeLine {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .trade-library .library-performance-summary .scopeLine span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Mobile's default row carries only the four decision fields. The existing
+     full-name disclosure keeps account/source/performance evidence reachable. */
+  .trade-library .review-queue .review-queue-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 7px 10px;
+    min-height: 56px;
+    padding: 10px 8px;
+  }
+
+  .trade-library .review-queue-row > .review-queue-identity {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .trade-library .review-queue-row > .review-queue-window {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: right;
+  }
+
+  .trade-library .review-queue-row > .review-queue-result {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .trade-library .review-queue-row > .review-queue-status {
+    grid-column: 2;
+    grid-row: 2;
+    justify-items: end;
+  }
+
+  .trade-library .review-queue-row > span small {
+    display: none;
+  }
+
+  .trade-library .review-queue-batch-toolbar details {
+    margin-left: 0;
+  }
+
+  .trade-library .review-queue-window strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .trade-library .review-queue-full-name {
+    margin: 0 8px 8px;
+  }
+}
+
+.trade-library .review-queue-row { position: relative; padding-left: 46px; }
+.trade-library .review-queue-row > input[type="checkbox"] { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; margin: 0; accent-color: #5c9ef5; }
+.trade-library .review-queue-head-columns { padding-left: 46px; }
+@media (max-width: 600px) {
+  .trade-library > .library-header { flex-direction: row; align-items: center; margin-bottom: 6px; }
+  .trade-library > .library-header .eyebrow { display: none; }
+  .trade-library .library-header-actions strong { font-size: 12px; }
+  .trade-library .library-shared-browse-controls { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+  .trade-library .library-shared-browse-controls > .library-shared-search { order: initial; }
+  .trade-library .library-shared-browse-controls > button:last-child { grid-column: 1 / -1; }
+  .trade-library .review-queue .review-queue-row { padding-left: 38px; }
+  .trade-library .review-queue-row > input[type="checkbox"] { left: 8px; }
+  .trade-library .review-queue-batch-toolbar { gap: 5px; }
+  .trade-library .review-queue-batch-toolbar button, .trade-library .review-queue-batch-toolbar details > summary { min-height: 44px; padding: 5px 7px; }
+}

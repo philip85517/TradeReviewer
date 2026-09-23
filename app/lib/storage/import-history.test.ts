@@ -1,5 +1,5 @@
 import { createElement } from "react";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -116,10 +116,13 @@ describe("import history", () => {
       }),
     );
 
-    expect(screen.getByText("3 张截图")).toBeInTheDocument();
-    expect(screen.getByText("已处理 2 笔冲突")).toBeInTheDocument();
-    expect(screen.getAllByText(/截图/)).toHaveLength(2);
-    expect(screen.getAllByText(/冲突/)).toHaveLength(1);
+    const details = within(screen.getByLabelText("选中导入证据详情"));
+    expect(details.queryByText("3 张截图")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("row", { name: /富途截图/ }));
+    expect(details.getByText("3 张截图")).toBeVisible();
+    expect(details.getByText("已处理 2 笔冲突")).toBeVisible();
+    await user.click(screen.getByRole("row", { name: /富途证券/ }));
+    expect(details.queryByText("已处理 2 笔冲突")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "关闭导入记录" }));
   });
 });

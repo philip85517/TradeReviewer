@@ -286,3 +286,16 @@
     overflow-x: auto;
   }
 }
+
+.stripPoint {
+  background: #74b3ff !important;
+  border: 2px solid #c2ddff !important;
+  box-shadow: 0 0 0 1px #111a2b;
+  cursor: pointer;
+}
+.stripPoint:hover, .stripPoint:focus-visible {
+  background: #ffffff !important;
+  outline: 2px solid #f0c674;
+  outline-offset: 2px;
+  z-index: 2;
+}

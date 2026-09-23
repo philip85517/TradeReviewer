@@ -20,6 +20,7 @@ export type LibraryPerformanceSummaryViewProps = {
   reviewedCount: number;
   progressTotal: number;
   groupLabels?: Record<string, string>;
+  reportCurrency?: "original" | "CNY";
 };
 
 const EXCLUSION_LABELS: Record<string, string> = {
@@ -142,7 +143,7 @@ function MetricCard({
   tone?: string;
 }) {
   return (
-    <article className={styles.metricCard} aria-label={label}>
+    <article className={`${styles.metricCard} metricCard`} aria-label={label}>
       <span className={styles.metricLabel}>{label}</span>
       <strong className={`${styles.metricValue} ${tone ?? styles.neutral}`}>{value}</strong>
       <small>{detail}</small>
@@ -201,6 +202,7 @@ export function LibraryPerformanceSummaryView({
   reviewedCount,
   progressTotal,
   groupLabels,
+  reportCurrency = "CNY",
 }: LibraryPerformanceSummaryViewProps) {
   const groups = summary.comparableGroups;
   const [selectedGroupKey, setSelectedGroupKey] = useState(groups[0]?.key ?? "");
@@ -214,6 +216,7 @@ export function LibraryPerformanceSummaryView({
   const activeRawGroups = summary.rawCurrencyGroups.filter(group =>
     selectedGroup ? matchesScope(selectedGroup, group) : true,
   );
+  const showingOriginal = reportCurrency === "original";
   const open = openForGroup(summary.open, selectedGroup);
   const progressValue = progressTotal > 0 ? `${reviewedCount}/${progressTotal}` : "不可用";
   const hasMissingFx = (metricGroup.exclusionReasons["missing-fx"] ?? 0) > 0 ||
@@ -237,7 +240,11 @@ export function LibraryPerformanceSummaryView({
   const returnExclusionDetails = exclusionText(metricGroup.returnExclusionReasons);
 
   return (
-    <section className={styles.summary} aria-label="当前筛选绩效汇总">
+    <section className={`${styles.summary} library-performance-summary`} aria-label="当前筛选绩效汇总">
+      <details className={styles.mobileSummary}>
+        <summary>绩效摘要 · {metricGroup.netPnlSampleCount} 个可信已平仓回合 · {signedCurrency(reportCurrency === "original" ? null : metricGroup.netPnl)}</summary>
+        <span>展开统计详情与原币分组</span>
+      </details>
       <header className={styles.header}>
         <div>
           <h2>当前筛选绩效</h2>
@@ -260,7 +267,12 @@ export function LibraryPerformanceSummaryView({
         <span>统计组：{metricGroup.sampleCount} 个回合 · 净盈亏样本 {metricGroup.netPnlSampleCount} · 收益率样本 {metricGroup.returnSampleCount}</span>
       </div>
 
-      <div className={styles.primaryGrid}>
+      {showingOriginal ? (
+        <details className={styles.disclosure} aria-label="原币绩效汇总">
+          <summary>原币绩效汇总 <span>按币种分别显示，不合并混合币种</span></summary>
+          <RawCurrencyList groups={activeRawGroups} />
+        </details>
+      ) : <div className={`${styles.primaryGrid} primaryGrid`}>
         <MetricCard
           label="已平仓净盈亏"
           value={signedCurrency(metricGroup.netPnl)}
@@ -285,11 +297,11 @@ export function LibraryPerformanceSummaryView({
           detail="不受复盘状态筛选影响"
           tone={styles.neutral}
         />
-      </div>
+      </div>}
 
-      {reason && <p className={styles.notice} role="status">人民币绩效暂不可用：{reason}。原币金额仍可查。</p>}
+      {!showingOriginal && reason && <p className={styles.notice} role="status">人民币绩效暂不可用：{reason}。原币金额仍可查。</p>}
 
-      <details className={styles.disclosure}>
+      {!showingOriginal && <details className={styles.disclosure}>
         <summary>统计详情 <span>样本、次级指标、排除原因与持仓说明</span></summary>
         <section className={styles.details} aria-label="绩效详情">
           <div className={styles.sectionHeading}>
@@ -320,12 +332,12 @@ export function LibraryPerformanceSummaryView({
             </div>
           )}
         </section>
-      </details>
+      </details>}
 
-      <details className={styles.disclosure}>
+      {!showingOriginal && <details className={styles.disclosure}>
         <summary>原币金额 <span>按币种核对 CNY 折算</span></summary>
         <RawCurrencyList groups={activeRawGroups} />
-      </details>
+      </details>}
     </section>
   );
 }

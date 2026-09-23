@@ -179,6 +179,7 @@ function renderRecall(
     save: vi.fn().mockResolvedValue({ ...initial, revision: initial.revision + 1 }),
     fetch: vi.fn(),
   },
+  onLeaveGuardChange?: (guard: (() => Promise<boolean>) | null) => void,
 ) {
   return render(
     <RecallWorkspace
@@ -194,6 +195,7 @@ function renderRecall(
       onEpisodeChange={vi.fn()}
       onInstrumentChange={vi.fn()}
       onSettingsChange={vi.fn()}
+      onLeaveGuardChange={onLeaveGuardChange}
     />,
   );
 }
@@ -231,6 +233,23 @@ afterEach(() => {
 });
 
 describe("RecallWorkspace autosave reconciliation", () => {
+  it("exposes an awaitable leave guard that blocks navigation when saving fails", async () => {
+    const initial = createRecallDocument(episode, "2025-01-02T10:00:00.000Z");
+    const repository: RecallRepository = {
+      load: vi.fn().mockResolvedValue(initial),
+      save: vi.fn().mockRejectedValue(new Error("network unavailable")),
+      fetch: vi.fn(),
+    };
+    let guard: (() => Promise<boolean>) | null = null;
+    renderRecall(episode, initial, repository, (next) => { guard = next; });
+    await act(async () => { await Promise.resolve(); await Promise.resolve(); });
+    fireEvent.click(screen.getByRole("button", { name: "add drawing" }));
+    await waitFor(() => expect(guard).not.toBeNull());
+    await expect(guard!()).resolves.toBe(false);
+    await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("network unavailable"));
+    expect(repository.save).toHaveBeenCalled();
+  });
+
   it("keeps the newer local draft when an older save response arrives", () => {
     const original = createRecallDocument(episode, "2025-01-02T10:00:00.000Z");
     const retainedSnapshot = {
@@ -320,6 +339,9 @@ describe("RecallWorkspace autosave reconciliation", () => {
     renderRecall(replayEpisode, initial);
     await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toBeInTheDocument());
 
+    fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+    // The first candle is the current incomplete bar; one more step reveals
+    // the next completed bar and its execution boundary.
     fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
     await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-2"));
     const chart = screen.getByTestId("mock-replay-chart");
@@ -503,6 +525,7 @@ describe("RecallWorkspace accounting safeguards", () => {
     expect(screen.getByTestId("tradingview-replay-notice")).toHaveTextContent("运行 run-a");
     expect(screen.queryByTestId("tradingview-source-report")).not.toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
     fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
     await waitFor(() => expect(screen.getByTestId("tradingview-source-report")).toBeInTheDocument());
     expect(screen.getByTestId("tradingview-replay-notice")).toBeInTheDocument();

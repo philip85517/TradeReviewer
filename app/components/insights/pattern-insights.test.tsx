@@ -136,6 +136,25 @@ describe("PatternInsights", () => {
     vi.unstubAllGlobals();
   });
 
+  it("keeps excluded episode navigation available when facts omit the episode", async () => {
+    const user = userEvent.setup();
+    const onOpenEpisode = vi.fn();
+    render(
+      <PatternInsights
+        report={report()}
+        facts={[]}
+        suggestions={[]}
+        episodeContexts={{}}
+        onConfirmSuggestion={vi.fn()}
+        onEditSuggestion={vi.fn()}
+        onRejectSuggestion={vi.fn()}
+        onOpenEpisode={onOpenEpisode}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "查看回合" }));
+    expect(onOpenEpisode).toHaveBeenCalledWith("US:OPEN", "episode-open");
+  });
+
   it("shows the return structure summary, accessible distribution table, and opens a bucket episode", async () => {
     const user = userEvent.setup();
     const onOpenEpisode = vi.fn();

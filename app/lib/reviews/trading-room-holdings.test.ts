@@ -191,6 +191,7 @@ describe("trading room holdings model", () => {
     const episodeId = entry.episodes[0].episode.id;
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
+      asOf: "2026-09-22T00:00:00+08:00",
       instrumentMetadata: new Map([[base.id, metadataFor(base, "stock")]]),
       quotesByInstrument: { [base.id]: quote({ price: "12" }) },
       positionSnapshotsByEpisode: { [episodeId]: snapshot({ realizedPnl: "80", netPnl: "84", unrealizedPnl: "4" }) },
@@ -206,6 +207,7 @@ describe("trading room holdings model", () => {
     const episodeId = entry.episodes[0].episode.id;
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
+      asOf: "2026-09-22T00:00:00+08:00",
       instrumentMetadata: new Map([[base.id, metadataFor(base, "stock")]]),
       quotesByInstrument: { [base.id]: quote({ price: "13" }) },
       positionSnapshotsByEpisode: { [episodeId]: snapshot({ unrealizedPnl: "4", netPnl: "4" }) },
@@ -227,6 +229,7 @@ describe("trading room holdings model", () => {
     episode.remainingQuantity = "2";
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
+      asOf: "2026-09-22T00:00:00+08:00",
       quotesByInstrument: { [base.id]: quote({ price: "8" }) },
     });
 

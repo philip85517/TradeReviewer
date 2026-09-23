@@ -99,16 +99,14 @@
 .roomScopeSection {
   margin-bottom: 12px;
   padding: 10px 12px;
-  border-radius: 6px;
-  box-shadow: none;
 }
 
 .roomScopeHeading {
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: stretch;
-  gap: 8px;
-  margin-bottom: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 7px;
 }
 
 .roomScopeHeading h2 {
@@ -132,17 +130,18 @@
 .roomScopeBadgeGroup {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  justify-content: flex-start;
+  gap: 8px;
+  order: -1;
 }
-.roomScopeBadge { flex-shrink: 0; white-space: nowrap; }
-
 
 .scopeViewControl {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px 12px;
-  align-items: center;
+  gap: 3px;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 10px;
+  padding: 3px;
+  background: var(--dashboard-soft);
 }
 
 .roomIdentityBadge {
@@ -179,7 +178,7 @@
 }
 
 .roomScopeControls {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: stretch;
 }
 
@@ -255,7 +254,7 @@
 .radioField legend {
   margin-bottom: 5px;
   color: var(--dashboard-muted);
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 650;
 }
 
@@ -272,7 +271,7 @@
   gap: 5px;
   min-height: 30px;
   color: var(--dashboard-ink);
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -292,57 +291,19 @@
   border-left: 1px solid var(--dashboard-line);
 }
 
-.scopeViewControl > .radioField legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-.scopeViewControl > .radioField { padding-left: 14px; flex-shrink: 0; min-width: 0; }
+.scopeViewControl > .radioField legend { margin: 0; }
 
 .roomPeriodControl {
-  grid-column: 1 / -1;
-  grid-template-columns: max-content max-content minmax(0, 360px);
-  align-items: center;
-  gap: 12px;
+  grid-column: span 2;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
 }
 
-.roomPeriodControl > span { grid-column: auto; white-space: nowrap; }
+.roomPeriodControl > span {
+  grid-column: 1 / -1;
+}
 
 .roomPeriodControl > span { align-self: center; }
-
-.roomPeriodControl .periodTabs {
-  align-items: center;
-  gap: 2px;
-  border: 0;
-  background: transparent;
-  padding: 0;
-  margin: 0;
-}
-
-.roomPeriodControl .periodTab {
-  min-height: 34px;
-  height: 34px;
-  border-radius: 4px;
-  padding: 0 10px;
-  font-size: 14px;
-  border-color: transparent;
-  background: transparent;
-}
-.roomPeriodControl .periodTab[aria-selected="true"] { color: #69a6ff; background: #1c2e48; border-color: #365c8c; }
-
-.roomPeriodDates {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-}
-
-.roomPeriodDates .filterField { gap: 3px; }
-.roomPeriodDates .filterField > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-
-.roomPeriodDates .filterField input {
-  height: 34px;
-  min-height: 34px;
-  border-radius: 4px;
-  padding: 0 9px;
-  font-size: 14px;
-  font-weight: 500;
-}
 
 .roomAncillaryRow {
   display: grid;
@@ -415,6 +376,8 @@
   border-top: 1px solid var(--dashboard-line-soft);
   padding-top: 10px;
 }
+
+.roomCustomPeriodEditor .filterField input { height: 36px; }
 
 .roomCustomPeriodActions {
   display: flex;
@@ -640,6 +603,13 @@
   margin-top: 4px;
 }
 
+@media (min-width: 1101px) {
+  .roomScopeHeading { gap: 7px; }
+  .roomScopeBadgeGroup { align-items: center; }
+  .scopeViewControl { width: fit-content; }
+  .roomCustomPeriodEditor { margin-top: 5px; padding-top: 5px; }
+}
+
 .roomScopeWarning {
   margin: 11px 0 0;
   color: var(--gold, #a56e14);
@@ -702,8 +672,6 @@
   font: inherit;
   font-size: 14px;
 }
-
-.roomPeriodDates .filterField > span { font-size: 11px; }
 
 .roomScopeControls > .filterField select {
   width: 100%;
@@ -1170,7 +1138,7 @@
   .calendarSection,
   .groupSection { border-radius: 13px; padding: 14px; }
   .filterGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .roomScopeHeading { display: flex; }
+  .roomScopeHeading { display: grid; }
   .roomScopeBadgeGroup { justify-content: flex-start; flex-wrap: wrap; }
   .roomScopeBadge { text-align: left; }
   .roomDataStatus { align-items: flex-start; flex-direction: column; }
@@ -1193,7 +1161,7 @@
   .periodTab { flex: 1 1 auto; }
   .customPeriodButton { justify-self: start; }
   .roomCustomPeriodActions { grid-column: 1 / -1; justify-content: flex-start; }
-  .scopeViewControl { width: 100%; justify-content: flex-start; }
+  .scopeViewControl { width: 100%; overflow-x: auto; justify-content: flex-start; }
   .scopeViewControl .segmentedButton { flex: 0 0 auto; }
   .searchField { grid-column: 1 / -1; }
   .countGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }

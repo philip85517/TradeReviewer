@@ -4520,7 +4520,7 @@ export function TradeReviewWorkspace({
             sharedScope={sharedScope}
             onSharedScopeChange={updateSharedScope}
             sharedAccountOptions={sharedAccountOptions}
-            defaultMode="queue"
+            defaultMode="stocks"
             key={libraryTarget?.requestId ?? 0}
             initialBrowseState={libraryBrowseState}
             onBrowseStateChange={setLibraryBrowseState}

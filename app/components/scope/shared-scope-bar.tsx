@@ -28,4 +28,3 @@ export function SharedScopeBar({ scope, accountOptions = [], onChange }: SharedS
     </fieldset></div>
   );
 }
-

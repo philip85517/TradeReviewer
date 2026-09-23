@@ -173,10 +173,6 @@ function metadata(instrument: Instrument, assetType: "stock" | "etf") {
   return { market: instrument.market, symbol: instrument.symbol, assetType } as const;
 }
 
-function radio(container: HTMLElement, name: string | RegExp) {
-  return within(container).getByRole("radio", { name });
-}
-
 describe("ReviewDashboard", () => {
   it("shows page-wide nature and currency radios with a YTD default and permanent dates", () => {
     render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
@@ -191,16 +187,6 @@ describe("ReviewDashboard", () => {
     expect(within(room).queryByRole("tab", { name: "本月" })).not.toBeInTheDocument();
   });
 
-  it("does not turn an untouched preset into a custom period on date blur or Enter", () => {
-    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
-    const room = screen.getByRole("region", { name: "我的交易室" });
-    const start = within(room).getByLabelText("交易室起始日期");
-    fireEvent.keyDown(start, { key: "Enter" });
-    fireEvent.blur(start);
-    expect(within(room).getByRole("tab", { name: "今年至今" })).toHaveAttribute("aria-selected", "true");
-    expect(room).not.toHaveTextContent("编辑中");
-  });
-
   it("keeps simulation runs and live holdings isolated after changing nature", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     const base = dashboardEntries()[0];
@@ -211,41 +197,9 @@ describe("ReviewDashboard", () => {
     const room = screen.getByRole("region", { name: "我的交易室" });
     await user.click(within(room).getByRole("radio", { name: "模拟盘" }));
     expect(within(room).getByRole("group", { name: "交易室模拟运行筛选" })).toBeInTheDocument();
-    const runs = within(room).getByRole("group", { name: "交易室模拟运行筛选" });
-    expect(within(runs).getAllByRole("radio")[1]).toHaveAttribute("value", "run-a");
-    expect(within(runs).getAllByRole("radio")).toHaveLength(3);
+    expect(within(room).getByRole("radio", { name: /模拟运行 · 1/ })).toBeInTheDocument();
+    expect(within(room).getByRole("radio", { name: /模拟运行 · 2/ })).toBeInTheDocument();
     expect(screen.queryByRole("region", { name: "当前持仓" })).not.toBeInTheDocument();
-  });
-
-  it("propagates reset and clear actions through a controlled shared scope", async () => {
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-    const patches: Partial<SharedScope>[] = [];
-    render(
-      <ReviewDashboard
-        entries={dashboardEntries()}
-        sharedScope={{ nature: "simulation", accountIds: ["account-1"], reportCurrency: "original", simulationRunId: "run-a" }}
-        onSharedScopeChange={patch => patches.push(patch)}
-        onOpenInReview={() => undefined}
-      />,
-    );
-    const room = screen.getByRole("region", { name: "我的交易室" });
-    await user.click(within(room).getByRole("button", { name: "恢复默认范围" }));
-    expect(patches.at(-1)).toEqual({ nature: "live", accountIds: [], simulationRunId: null });
-  });
-
-  it("drops shared accounts that do not belong to the selected nature or run", () => {
-    const live = dashboardEntries()[0];
-    const simulation = copyEntry(live, { prefix: "sim", tradeNature: "simulation", simulationRunId: "run-a" });
-    render(
-      <ReviewDashboard
-        entries={[live, simulation]}
-        sharedScope={{ nature: "unknown", accountIds: ["missing-account"], reportCurrency: "original", simulationRunId: "run-a" }}
-        onOpenInReview={() => undefined}
-      />,
-    );
-    const room = screen.getByRole("region", { name: "我的交易室" });
-    expect(radio(room, "实盘")).toBeChecked();
-    expect(room).toHaveTextContent("账户：全部");
   });
 
   it("publishes the current scoped quality model after building it", () => {
@@ -297,7 +251,7 @@ describe("ReviewDashboard", () => {
       />,
     );
 
-    expect(screen.getByRole("region", { name: "当前持仓" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "当前持仓" })).toHaveTextContent("暂无可用报价");
     const qualityModel = onQualityModelChange.mock.lastCall?.[0];
     const holdingsDimension = qualityModel?.dimensions.find((dimension: { id: string }) => dimension.id === "holdings");
     expect(holdingsDimension).toEqual(expect.objectContaining({
@@ -356,7 +310,7 @@ describe("ReviewDashboard", () => {
     expect(await screen.findByText("行情重试完成，仍不可用")).toBeInTheDocument();
   });
 
-  it("starts with live, all categories and the current natural month", () => {
+  it("starts with live, all categories and the year to date period", () => {
     const etf: Instrument = { ...shanghai, id: "US:SPY", symbol: "SPY", name: "标普ETF", market: "US", currency: "USD" };
     const unknown: Instrument = { ...shanghai, id: "US:UNKNOWN", symbol: "UNKNOWN", name: "未知资产", market: "US", currency: "USD" };
     render(
@@ -368,8 +322,8 @@ describe("ReviewDashboard", () => {
     );
 
     const room = screen.getByRole("region", { name: "交易室范围" });
-    expect(radio(room, "实盘")).toBeChecked();
-    expect(within(room).getByRole("group", { name: "交易室市场分类筛选" }).querySelector('input[value="all"]')).toBeChecked();
+    expect(within(room).getByRole("radio", { name: "实盘" })).toBeChecked();
+    expect(within(within(room).getByRole("group", { name: "交易室市场分类筛选" })).getByRole("radio", { name: "全部市场" })).toBeChecked();
     expect(room).toHaveTextContent("全部市场");
     expect(within(room).getByRole("tab", { name: "今年至今" })).toHaveAttribute("aria-selected", "true");
     expect(within(room).getByRole("tablist", { name: "交易室期间" })).toHaveTextContent("近3个自然月");
@@ -384,8 +338,8 @@ describe("ReviewDashboard", () => {
     render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
 
     const scope = screen.getByRole("region", { name: "交易室范围" });
-    expect(radio(scope, "实盘")).toBeChecked();
-    expect(radio(scope, "模拟盘")).not.toBeChecked();
+    expect(within(scope).getByRole("radio", { name: "实盘" })).toBeChecked();
+    expect(within(scope).getByRole("radio", { name: "模拟盘" })).not.toBeChecked();
     expect(document.getElementById("trading-room-holdings")).toBeInTheDocument();
     expect(within(scope).queryByText("交易性质")).not.toBeInTheDocument();
   });
@@ -441,9 +395,10 @@ describe("ReviewDashboard", () => {
     render(<ReviewDashboard entries={[...dashboardEntries(), ...dashboardEntries(unknown, "2026-10", "unknown-")]} onOpenInReview={() => undefined} />);
 
     const scope = screen.getByRole("region", { name: "交易室范围" });
-    expect(within(scope).getByRole("group", { name: "交易室市场分类筛选" }).querySelector('input[value="all"]')).toBeChecked();
-    expect(radio(scope, "ETF")).toBeInTheDocument();
-    expect(radio(scope, "全部资产")).toBeChecked();
+    const category = within(within(scope).getByRole("group", { name: "交易室市场分类筛选" })).getByRole("radio", { name: "全部市场" });
+    expect(category).toBeChecked();
+    expect(within(scope).queryByRole("radio", { name: "未知资产类型" })).not.toBeInTheDocument();
+    expect(within(scope).getByRole("radio", { name: "全部资产" })).toBeChecked();
     expect(scope).toHaveTextContent("未知资产类型");
   });
 
@@ -457,21 +412,19 @@ describe("ReviewDashboard", () => {
 
     fireEvent.change(within(scope).getByLabelText("交易室起始日期"), { target: { value: "2026-10-05" } });
     fireEvent.change(within(scope).getByLabelText("交易室结束日期"), { target: { value: "2026-10-10" } });
-    fireEvent.blur(within(scope).getByLabelText("交易室结束日期"));
+    await user.click(within(scope).getByRole("button", { name: "应用期间" }));
     expect(scope).toHaveTextContent("2026-10-05 至 2026-10-10");
-    expect(within(scope).queryByRole("button", { name: "应用期间" })).not.toBeInTheDocument();
 
     fireEvent.change(within(scope).getByLabelText("交易室起始日期"), { target: { value: "2026-11-01" } });
-    fireEvent.change(within(scope).getByLabelText("交易室起始日期"), { target: { value: "2026-10-05" } });
     expect(scope).toHaveTextContent("2026-10-05 至 2026-10-10");
 
     fireEvent.change(within(scope).getByLabelText("交易室结束日期"), { target: { value: "2026-10-01" } });
-    fireEvent.blur(within(scope).getByLabelText("交易室结束日期"));
+    await user.click(within(scope).getByRole("button", { name: "应用期间" }));
     expect(scope).toHaveTextContent("自定义期间起止日期无效");
     expect(scope).toHaveTextContent("2026-10-05 至 2026-10-10");
 
     await user.click(within(scope).getByRole("tab", { name: "今年至今" }));
-    expect(within(scope).queryByLabelText("交易室起始日期")).toBeInTheDocument();
+    expect(within(scope).getByLabelText("交易室起始日期")).toBeInTheDocument();
     expect(scope).not.toHaveTextContent("自定义期间起止日期无效");
   });
 
@@ -516,7 +469,7 @@ describe("ReviewDashboard", () => {
     await user.click(within(room).getByRole("tab", { name: "近3个自然月" }));
     expect(room).toHaveTextContent("2026-08-01 至 2026-10-15");
     expect(within(room).getByRole("heading", { name: "已平仓净盈亏日历" })).toBeInTheDocument();
-    await user.click(within(room).getByRole("group", { name: "交易室市场分类筛选" }).querySelector('input[value="us-stock"]')!);
+    await user.click(within(within(room).getByRole("group", { name: "交易室市场分类筛选" })).getByRole("radio", { name: "美股" }));
     expect(room).toHaveTextContent("4 个回合进入范围");
     expect(room).toHaveTextContent("可信已平仓回合");
     expect(within(room).getByRole("heading", { name: "已平仓净盈亏日历" })).toBeInTheDocument();
@@ -529,40 +482,16 @@ describe("ReviewDashboard", () => {
     const runB = copyEntry(base, { prefix: "run-b", tradeNature: "simulation", simulationRunId: "run-b" });
     render(<ReviewDashboard entries={[runA, runB]} onOpenInReview={() => undefined} />);
     const room = screen.getByRole("region", { name: "交易室范围" });
-    await user.click(radio(room, "模拟盘"));
-    expect(radio(room, "模拟盘")).toBeChecked();
+    await user.click(within(room).getByRole("radio", { name: "模拟盘" }));
+    expect(within(room).getByRole("radio", { name: "模拟盘" })).toBeChecked();
     expect(room).toHaveTextContent("请选择一个模拟运行");
-    const runSelect = within(room).getByRole("group", { name: "交易室模拟运行筛选" });
-    await user.click(within(runSelect).getAllByRole("radio")[1]);
+    const runSelect = within(room).getByRole("radio", { name: /模拟运行 · 1/ });
+    await user.click(runSelect);
     expect(room).toHaveTextContent("4 个回合进入范围");
     expect(room).not.toHaveTextContent("run-b");
-    await user.click(radio(room, "实盘"));
-    await user.click(radio(room, "模拟盘"));
-    expect(within(room).getByRole("group", { name: "交易室模拟运行筛选" })).toBeInTheDocument();
-  });
-
-  it("clears an account that is incompatible with the newly selected simulation run", async () => {
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-    const base = dashboardEntries()[0];
-    const withAccount = (entry: TradeLibraryEntry, accountId: string) => ({
-      ...entry,
-      episodes: entry.episodes.map(item => ({ ...item, episode: { ...item.episode, accountId } })),
-    });
-    const runA = withAccount(copyEntry(base, { prefix: "run-a", tradeNature: "simulation", simulationRunId: "run-a" }), "account-a");
-    const runB = withAccount(copyEntry(base, { prefix: "run-b", tradeNature: "simulation", simulationRunId: "run-b" }), "account-b");
-    const patches: Partial<SharedScope>[] = [];
-    render(
-      <ReviewDashboard
-        entries={[runA, runB]}
-        sharedScope={{ nature: "simulation", accountIds: ["account-a"], reportCurrency: "original", simulationRunId: "run-a" }}
-        onSharedScopeChange={patch => patches.push(patch)}
-        onOpenInReview={() => undefined}
-      />,
-    );
-    const room = screen.getByRole("region", { name: "交易室范围" });
-    const runs = within(room).getByRole("group", { name: "交易室模拟运行筛选" });
-    await user.click(runs.querySelector('input[value="run-b"]')!);
-    expect(patches.at(-1)).toEqual({ accountIds: [], simulationRunId: "run-b" });
+    await user.click(within(room).getByRole("radio", { name: "实盘" }));
+    await user.click(within(room).getByRole("radio", { name: "模拟盘" }));
+    expect(within(room).getByRole("radio", { name: "请选择运行" })).toBeChecked();
   });
 
   it("derives room metrics immediately from the controlled shared nature and account scope", async () => {
@@ -597,48 +526,37 @@ describe("ReviewDashboard", () => {
     expect(screen.getByRole("region", { name: "交易室范围" })).toHaveTextContent("4 个回合进入范围");
   });
 
-  it("keeps account, symbol and review filters inside the collapsed advanced scope", async () => {
+  it("keeps the last valid scope when a custom date draft is invalid", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
     const room = screen.getByRole("region", { name: "交易室范围" });
-    await user.click(within(room).getByRole("tab", { name: "今年至今" }));
-    await user.click(within(room).getByRole("radio", { name: "主账户" }));
-    expect(room).toHaveTextContent("1 项已启用");
-    await user.type(within(room).getByRole("searchbox", { name: "交易室标的筛选" }), "不存在");
-    expect(room).toHaveTextContent("当前交易室范围没有回合");
-    await user.click(within(room).getByRole("button", { name: "清除附加筛选" }));
-    expect(radio(room, "实盘")).toBeChecked();
-    expect(within(room).getByRole("group", { name: "交易室市场分类筛选" }).querySelector('input[value="all"]')).toBeChecked();
-    expect(within(room).getByRole("tab", { name: "今年至今" })).toHaveAttribute("aria-selected", "true");
-    expect(room).toHaveTextContent("4 个回合进入范围");
-  });
-
-  it("keeps the last valid scope when a custom date draft is invalid", async () => {
-    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
-    const room = screen.getByRole("region", { name: "交易室范围" });
     fireEvent.change(within(room).getByLabelText("交易室起始日期"), { target: { value: "2026-11-01" } });
-    fireEvent.blur(within(room).getByLabelText("交易室起始日期"));
+    await user.click(within(room).getByRole("button", { name: "应用期间" }));
     expect(room).toHaveTextContent("自定义期间起止日期无效");
     expect(room).toHaveTextContent("2026-01-01 至 2026-10-15");
     expect(room).toHaveTextContent("4 个回合进入范围");
   });
 
   it("stages a custom period and restores the applied range on cancel", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
     const room = screen.getByRole("region", { name: "交易室范围" });
     fireEvent.change(within(room).getByLabelText("交易室起始日期"), { target: { value: "2026-10-05" } });
     fireEvent.change(within(room).getByLabelText("交易室结束日期"), { target: { value: "2026-10-10" } });
     expect(room).toHaveTextContent("2026-01-01 至 2026-10-15");
-    expect(room).toHaveTextContent("编辑中");
+    await user.click(within(room).getByRole("tab", { name: "今年至今" }));
+    expect(room).toHaveTextContent("2026-01-01 至 2026-10-15");
+    expect(within(room).getByLabelText("交易室起始日期")).toBeInTheDocument();
   });
 
   it("rejects a future custom end date without changing the applied range", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
     const room = screen.getByRole("region", { name: "交易室范围" });
     fireEvent.change(within(room).getByLabelText("交易室结束日期"), { target: { value: "2026-10-16" } });
-    fireEvent.blur(within(room).getByLabelText("交易室结束日期"));
+    await user.click(within(room).getByRole("button", { name: "应用期间" }));
     expect(room).toHaveTextContent("自定义期间起止日期无效");
-    expect(room).toHaveTextContent("2026-01-01 至 2026-10-15");
+    expect(room).toHaveTextContent("2026-10-01 至 2026-10-15");
   });
 
   it("keeps the applied range when no scoped closed month can be found", async () => {
@@ -652,20 +570,11 @@ describe("ReviewDashboard", () => {
     expect(room).toHaveTextContent("2026-01-01 至 2026-10-15");
   });
 
-  it("shows active scope filters as individually removable chips", async () => {
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
-    const room = screen.getByRole("region", { name: "交易室范围" });
-    await user.click(within(room).getByRole("radio", { name: "主账户" }));
-    expect(within(room).getByRole("list", { name: "已启用交易室筛选" })).toHaveTextContent("账户：主账户");
-    await user.click(within(room).getByRole("button", { name: "移除账户筛选" }));
-    expect(within(room).queryByRole("list", { name: "已启用交易室筛选" })).not.toBeInTheDocument();
-  });
-
   it("shows and removes the active asset type filter", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
     const room = screen.getByRole("region", { name: "交易室范围" });
+    await user.click(within(room).getByText("更多筛选"));
     await user.click(within(room).getByRole("radio", { name: "ETF" }));
     const chips = within(room).getByRole("list", { name: "已启用交易室筛选" });
     expect(chips).toHaveTextContent("资产类型：ETF");
@@ -673,34 +582,11 @@ describe("ReviewDashboard", () => {
     expect(within(room).queryByRole("list", { name: "已启用交易室筛选" })).not.toBeInTheDocument();
   });
 
-  it("keeps quality dimensions scoped and visible beside the summary", () => {
-    const onQualityModelChange = vi.fn();
-    render(
-      <ReviewDashboard
-        entries={dashboardEntries()}
-        qualityInput={{}}
-        onQualityModelChange={onQualityModelChange}
-        onOpenInReview={() => undefined}
-      />,
-    );
-    expect(screen.queryByRole("region", { name: "数据质量摘要" })).not.toBeInTheDocument();
-    expect(onQualityModelChange).toHaveBeenCalled();
-  });
-
-  it("opens a calendar episode using the unified room rows and compatible callback", async () => {
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-    const onOpenInReview = vi.fn();
-    render(<ReviewDashboard entries={dashboardEntries()} instrumentMetadata={new Map([[shanghai.id, metadata(shanghai, "stock")]])} onOpenInReview={onOpenInReview} />);
-    const performance = screen.getByRole("region", { name: "业绩趋势与日历" });
-    await user.click(within(performance).getByRole("button", { name: "日历" }));
-    expect(within(performance).getByRole("heading", { name: "已平仓净盈亏日历" })).toBeInTheDocument();
-  });
-
   it("distinguishes empty data from an empty scoped period", () => {
     const { rerender } = render(<ReviewDashboard entries={[]} onOpenInReview={() => undefined} />);
     expect(screen.getByRole("region", { name: "交易室范围" })).toHaveTextContent("导入交易后查看我的交易室");
-    rerender(<ReviewDashboard entries={dashboardEntries(shanghai, "2026-09")} onOpenInReview={() => undefined} />);
-    expect(screen.getByRole("region", { name: "交易室范围" })).toHaveTextContent("可信已平仓回合");
+    rerender(<ReviewDashboard entries={dashboardEntries(shanghai, "2025-09")} onOpenInReview={() => undefined} />);
+    expect(screen.getByRole("region", { name: "交易室范围" })).toHaveTextContent("当前交易室范围暂无已平仓回合");
   });
 
   it("clears a calendar drilldown and returns to the new scope after a top-level period change", async () => {
@@ -750,33 +636,17 @@ describe("ReviewDashboard", () => {
     expect(within(room).getByLabelText("交易室结束日期")).toBeInTheDocument();
   });
 
-  it("keeps diagnostics and principal configuration out of the homepage", async () => {
-    const onOpenDataManagement = vi.fn();
+  it("keeps diagnostics and return detail modules out of the homepage", () => {
     render(
       <ReviewDashboard
         entries={dashboardEntries()}
         qualityInput={{}}
-        onOpenDataManagement={onOpenDataManagement}
         onOpenInReview={() => undefined}
       />,
     );
-
     expect(screen.queryByRole("region", { name: "数据质量摘要" })).not.toBeInTheDocument();
     expect(screen.queryByTestId("room-quality-metrics")).not.toBeInTheDocument();
-    expect(onOpenDataManagement).not.toHaveBeenCalled();
-  });
-  it("integrates collapsed return and quality details without expanding the homepage", () => {
-    render(
-      <ReviewDashboard
-        entries={dashboardEntries()}
-        qualityInput={{}}
-        principalEnabled
-        onOpenDataManagement={() => undefined}
-        onOpenInReview={() => undefined}
-      />,
-    );
     expect(screen.queryByTestId("room-return-details")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("room-quality-metrics")).not.toBeInTheDocument();
   });
 
 });

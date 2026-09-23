@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { DailyCandleRecord } from "../../lib/market/contracts";
 import type { MarketDataSyncStatus } from "../../lib/market/sync-status";
 import type { EpisodeReviewRecord } from "../../lib/reviews/types";
+import type { SharedScope } from "../../lib/reviews/shared-scope";
 import { createEmptyEpisodeReviewRecord } from "../../lib/reviews/review-metrics";
 import { buildInstrumentTradeSummaries } from "../../lib/trades/instruments";
 import { buildTradeLibraryEntries } from "../../lib/trades/library";
@@ -89,6 +90,8 @@ function setup(
       instrumentId: string;
       episodeId: string;
     };
+    sharedScope?: SharedScope;
+    onSharedScopeChange?: (patch: Partial<SharedScope>) => void;
   } = {},
 ) {
   const candlesByInstrument = {
@@ -172,6 +175,8 @@ function setup(
     onRefreshMarketData,
     reviewsHydrated: options.reviewsHydrated ?? true,
     target: browseTarget,
+    sharedScope: options.sharedScope,
+    onSharedScopeChange: options.onSharedScopeChange,
   };
   const renderResult = render(
     <TradeLibrary
@@ -219,6 +224,22 @@ describe("TradeLibrary", () => {
     await user.click(screen.getByRole("tab", { name: "按标的浏览" }));
     expect(screen.getByRole("searchbox", { name: "搜索股票" })).toHaveValue("小米");
     expect(screen.getByRole("tab", { name: "按标的浏览" })).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("keeps shared nature and currency choices visible as compact controls", async () => {
+    const user = userEvent.setup();
+    const onSharedScopeChange = vi.fn();
+    setup({
+      sharedScope: { nature: "live", accountIds: [], reportCurrency: "original", simulationRunId: null },
+      onSharedScopeChange,
+    });
+
+    expect(screen.getByRole("group", { name: "交易性质" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "实盘" })).toBeChecked();
+    expect(screen.getByRole("radio", { name: "模拟盘" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "原币" })).toBeChecked();
+    await user.click(screen.getByRole("radio", { name: "CNY参考" }));
+    expect(onSharedScopeChange).toHaveBeenCalledWith({ reportCurrency: "CNY" });
   });
 
   it("selects browse tabs with arrow, Home, and End keys", async () => {
@@ -368,10 +389,10 @@ describe("TradeLibrary", () => {
     const { entries, rerenderWithEntries } = setup();
     const search = screen.getByRole("searchbox", { name: "搜索股票" });
 
-    expect(screen.getByText(/已复盘 0\/3 个/)).toBeVisible();
+    expect(screen.getByText(/个标的 · 3 个回合 · 实盘 · 已复盘 0\/3/)).toBeVisible();
     await user.type(search, "小鹏");
     await user.clear(search);
-    expect(screen.getByText(/已复盘 0\/3 个/)).toBeVisible();
+    expect(screen.getByText(/个标的 · 3 个回合 · 实盘 · 已复盘 0\/3/)).toBeVisible();
 
     const reviewedEpisode = entries.find(entry => entry.instrument.id === "US:XPEV")?.episodes[0]?.episode;
     expect(reviewedEpisode).toBeDefined();
@@ -389,7 +410,7 @@ describe("TradeLibrary", () => {
     );
 
     rerenderWithEntries(updatedEntries);
-    expect(screen.getByText(/已复盘 1\/3 个/)).toBeVisible();
+    expect(screen.getByText(/个标的 · 3 个回合 · 实盘 · 已复盘 1\/3/)).toBeVisible();
   });
 
   it("resets persisted list pages when a shared scope filter changes", async () => {
@@ -558,7 +579,7 @@ describe("TradeLibrary", () => {
     expect(
       screen.getByRole("heading", { name: "交易库" }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/2 个标的 ·/)).toBeInTheDocument();
+    expect(screen.getByText(/2 个标的 · 3 个回合 · 实盘/)).toBeInTheDocument();
     expect(screen.getByText("2 个标的 · 3 个回合")).toBeInTheDocument();
     expect(
       screen.getAllByText("累计 R — · 标签待确认").length,
@@ -626,7 +647,7 @@ describe("TradeLibrary", () => {
     render(<TradeLibrary defaultMode="queue" entries={entries} candlesByInstrument={{}} marketDataStatuses={{}} timeframe="1D" onTimeframeChange={() => {}} onOpenInReview={() => {}} onSaveReview={() => {}} reviewsHydrated />);
 
     expect(screen.queryByLabelText("队列汇总范围")).not.toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "当前筛选绩效汇总" })).toHaveTextContent("当前统计组：实盘");
+    expect(screen.getByRole("region", { name: "当前筛选绩效汇总" })).toHaveTextContent("实盘");
     await user.click(screen.getByRole("button", { name: "高级筛选" }));
     await user.click(screen.getByRole("checkbox", { name: "富途" }));
     await user.click(screen.getByRole("button", { name: "应用筛选" }));
@@ -677,7 +698,7 @@ describe("TradeLibrary", () => {
     await user.click(screen.getByRole("checkbox", { name: "主账户" }));
     await user.selectOptions(screen.getByLabelText("年份"), "2025");
     await user.click(screen.getByRole("button", { name: "应用筛选" }));
-    expect(screen.getByText(/当前筛选：.*个证券.*个回合/)).toBeInTheDocument();
+    expect(screen.getByText(/个标的.*个回合.*实盘/)).toBeInTheDocument();
     expect(screen.getByLabelText("搜索复盘回合")).toHaveValue("XPEV");
     expect(screen.getByRole("button", { name: "移除账户：主账户" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "移除年份：2025" })).toBeInTheDocument();
@@ -761,7 +782,7 @@ describe("TradeLibrary", () => {
 
     const summary = screen.getByRole("region", { name: "当前筛选绩效汇总" });
     expect(screen.queryByLabelText("队列汇总范围")).not.toBeInTheDocument();
-    expect(summary).toHaveTextContent("当前统计组：实盘");
+    expect(summary).toHaveTextContent("实盘");
 
     await user.click(screen.getByRole("button", { name: "高级筛选" }));
     expect(screen.getByRole("checkbox", { name: "富途（账户1）" })).toBeInTheDocument();

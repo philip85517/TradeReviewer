@@ -13,6 +13,8 @@
 
 ## 行情模块展开
 
+- [0007：长桥、AKShare、富途 Skill 与行情源可用性研究](0007-provider-skills-feasibility.md)
+- [0006：行情数据模块边界](0006-market-data-module-boundary.md)
 - [0002：行情获取、缓存与数据源交互](0002-market-data-flow.md)
 - [0003：行情源可用性、口径核验与优先级建议](0003-market-source-validation-and-priority.md)
 - [0004：固定行情源优先级与 1H 时间口径](0004-fixed-provider-priority-and-bar-normalization.md)

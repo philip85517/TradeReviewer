@@ -104,6 +104,16 @@ TIGER_OPENAPI_CONFIG=/absolute/path/tiger_openapi_config.properties npm run dev
 
 生产部署使用 Docker Compose，默认目标为 `/Users/zhoulin/projects/TradeReview`。第一次 `make deploy` 会自动初始化本机配置、SQLite、备份、日志和目标侧运维入口；如需预先编辑配置，可先运行 `make deploy-config`。日常命令包括 `make deploy-code`、`make deploy-status`、`make deploy-backup`、`make deploy-restore BACKUP=/absolute/path/to/backup.sqlite`、`make deploy-rollback` 和 `make deploy-down`。完整的凭据排除、失败恢复、保留策略、备份事务和 SQLite/浏览器数据边界见 [部署指南](deploy/DEPLOYMENT.md)。
 
+### macOS 桌面启动
+
+本机统一部署使用桌面启动器 `tradeReview.command`。更新桌面副本时运行：
+
+```bash
+install -m 755 deploy/ops/tradeReview.command "$HOME/Desktop/tradeReview.command"
+```
+
+双击桌面文件会启动正式部署的 3022 服务，并在只读健康检查通过后打开 TradeReview。服务已由正式部署运行时，只会打开现有页面；端口被其他程序占用时会提示并退出，不会停止该程序或改用其他端口。服务在启动器打开的 Terminal 窗口前台运行，关闭窗口会停止服务。
+
 ## 验证
 
 项目默认采用[协调者 + Luna 分布式开发与预览交付流程](docs/agents/development-workflow.md)：Luna 负责实现，协调者独立验收，并在聊天交付已启动、可打开的预览链接。

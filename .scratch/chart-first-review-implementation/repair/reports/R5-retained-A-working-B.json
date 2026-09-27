@@ -1,0 +1,28 @@
+{
+  "documentRevision": 23,
+  "snapshotId": "recall-snapshot-1790426381010-uh29nu",
+  "bundleId": "bundle-9d44182b-8166-4cce-b88b-b0061f4c9892",
+  "imageIdenticalToEarlierAudit": true,
+  "imageSha256": "c88250d6073efa5e1fcd283455d3c9bab27030b4a9e250a73d65821da7b54a3f",
+  "retainedText": "理性复盘 A：净收益6760，实际1.69R。\n第一笔减仓受情绪影响，需把入场判断与退出执行分开评价。",
+  "retainedTextRevision": 1,
+  "retainedManualTags": [
+    "position"
+  ],
+  "draftManualTags": [
+    "analysis"
+  ],
+  "workingText": "理性复盘 B：这是未留存的工作修改。\n已有 A 快照与其仓位标签必须保持不变。",
+  "workingTextRevision": 2,
+  "storyboard": {
+    "pre-entry": {
+      "snapshotId": "recall-snapshot-1790425465811-3h1c1v"
+    },
+    "holding": {
+      "snapshotId": "recall-snapshot-1790426056211-duxc3w"
+    },
+    "post-review": {
+      "snapshotId": "recall-snapshot-1790426381010-uh29nu"
+    }
+  }
+}

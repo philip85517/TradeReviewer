@@ -1,0 +1,8 @@
+[
+  {
+    "level": "error",
+    "message": "Error: Object is disposed\n    at n.get (http://127.0.0.1:3049/assets/lightweight-charts.production-CGUgTQi2.js:1:2778)\n    at n.resizeCanvasElement (http://127.0.0.1:3049/assets/lightweight-charts.production-CGUgTQi2.js:1:3268)\n    at nr.Ww (http://127.0.0.1:3049/assets/lightweight-charts.production-CGUgTQi2.js:1:122288)\n    at ir.DM (http://127.0.0.1:3049/assets/lightweight-charts.production-CGUgTQi2.js:1:131155)\n    at ir.dM (http://127.0.0.1:3049/assets/lightweight-charts.production-CGUgTQi2.js:1:133322)\n    at ir.VM (http://127.0.0.1:3049/assets/lightweight-charts.production-CGUgTQi2.js:1:132722)\n    at ir.MM (http://127.0.0.1:3049/assets/lightweight-charts.production-CGUgTQi2.js:1:131939)\n    at http://127.0.0.1:3049/assets/lightweight-charts.production-CGUgTQi2.js:1:132627",
+    "timestamp": "2026-09-26T22:13:20.782Z",
+    "url": "http://127.0.0.1:3049/assets/lightweight-charts.production-CGUgTQi2.js"
+  }
+]

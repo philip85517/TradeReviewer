@@ -1,0 +1,10 @@
+.recall-plan-revisions { border-top:1px solid var(--line, #243145); padding-top:16px; display:grid; gap:12px; min-width:0; }
+.recall-plan-revisions label {display:grid;gap:6px;font-size:13px}
+.recall-plan-revisions input,.recall-plan-revisions select,.recall-plan-revisions button {min-height:36px;max-width:100%;background:var(--surface, #111b29);color:var(--text, #e7edf6);border:1px solid var(--line, #243145);border-radius:6px;padding:6px}
+.recall-plan-revisions p {font-size:12px;overflow-wrap:anywhere}.recall-plan-revision-actions {display:flex;flex-wrap:wrap;gap:8px}
+@media(max-width:640px){.recall-plan-revisions button,.recall-plan-revisions input,.recall-plan-revisions select{min-height:44px}}
+
+.recall-plan-revisions select { color-scheme: dark; }
+.recall-plan-revisions option { color: var(--text, #e7edf6); background: var(--surface, #111b29); }
+.recall-plan-revisions :is(input, select, textarea, button, summary):focus-visible { outline: 2px solid var(--blue, #2f80ed); outline-offset: 2px; }
+.recall-plan-revisions :is(input, select, textarea, button):disabled { opacity: 1; color: var(--muted, #8291a6); -webkit-text-fill-color: var(--muted, #8291a6); background: var(--surface, #111b29); cursor: default; }

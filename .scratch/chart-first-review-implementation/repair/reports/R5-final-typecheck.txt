@@ -1,0 +1,5 @@
+
+> trade-reviewer@0.1.0 typecheck
+> tsc --noEmit
+
+app/components/chart/drawing-canvas.tsx(1271,13): error TS2783: 'height' is specified more than once, so this usage will be overwritten.

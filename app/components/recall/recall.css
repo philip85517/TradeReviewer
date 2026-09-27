@@ -1,6 +1,6 @@
 .recall-workspace {
   min-width: 0;
-  height: calc(100vh - 58px);
+  height: var(--recall-available-height, calc(100dvh - 58px));
   display: flex;
   flex-direction: column;
   background: #0b1018;
@@ -85,6 +85,8 @@
 .recall-chart-column .drawing-layers-panel { position: absolute; z-index: 5; top: 10px; right: 10px; width: min(360px, 55%); max-height: 250px; overflow: auto; }
 .recall-fit-all { align-self: flex-start; margin: 10px; padding: 6px 8px; border: 1px solid var(--line, #243145); border-radius: 5px; background: #111b29; color: var(--muted, #8291a6); font-size: 12px; cursor: pointer; }
 .recall-fit-all:hover { color: var(--text, #e7edf6); border-color: #3b5374; }
+.recall-plan-price-action { min-width: 36px; min-height: 36px; padding: 6px 8px; border: 1px solid var(--line, #243145); border-radius: 5px; background: #111b29; color: var(--muted, #8291a6); font-size: 12px; cursor: pointer; }
+.recall-plan-price-action:hover { color: var(--text, #e7edf6); border-color: #3b5374; }
 
 .recall-position-strip { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 9px; padding: 9px 12px; border: 1px solid var(--line, #243145); border-radius: 7px; background: #101722; }
 .recall-position-strip > div:first-child { min-width: 0; display: flex; align-items: baseline; gap: 8px; }
@@ -206,4 +208,1401 @@
   .recall-nav-title { min-height: 44px; padding-bottom: 0; gap: 8px; }
   .recall-nav-toggle { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 8px; border: 1px solid var(--line); border-radius: 6px; background: #182337; color: var(--text); }
   .recall-nav:not(.mobile-records-open) > :not(.recall-nav-title) { display: none; }
+}
+
+/* Chart-first phases retain the existing navy surfaces and chart controls. */
+.recall-header { min-height: 48px; padding: 6px 12px; gap: 10px; }
+.recall-heading { display: flex; align-items: center; gap: 8px; }
+.recall-heading .eyebrow { display: none; }
+.recall-heading h1 { margin: 0; font-size: 14px; max-width: 180px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.recall-status { margin: 0; font-size: 12px; }
+.recall-header-controls label > span { display: none; }
+.recall-header-controls select { min-width: 100px; max-width: 130px; }
+.recall-phases { display: flex; gap: 4px; flex-shrink: 0; }
+.recall-phases button { min-height: 36px; padding: 0 10px; color: var(--muted, #8291a6); border: 1px solid transparent; border-radius: 6px; background: transparent; cursor: pointer; }
+.recall-phases button[aria-pressed="true"] { color: #c3dbff; background: rgba(47,128,237,.16); border-color: #2f80ed; }
+.recall-phase-provenance { padding: 4px 12px; color: var(--muted, #8291a6); font-size: 12px; }
+.recall-controls { min-height: 48px; padding: 6px 10px; gap: 6px; }
+.recall-position-strip { padding: 5px 12px; min-height: 30px; }
+.recall-snapshot-panel { flex: 0 0 auto; max-height: min(42vh, 420px); overflow: auto; }
+.recall-snapshot-panel > summary {
+  cursor: pointer;
+  min-height: var(--recall-frame-control-height, 36px);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  color: var(--muted, #8291a6);
+  font-size: 12px;
+}
+.recall-snapshot-panel[open] { max-height: min(58vh, 560px); }
+.recall-workspace .drawing-toolbar { width: 48px; flex: 0 0 48px; }
+.recall-workspace .drawing-toolbar > button { width: 36px; height: 36px; }
+@media (max-width: 1100px) {
+  .recall-header { flex-wrap: wrap; }
+  .recall-header-controls { margin-left: auto; }
+  .recall-heading h1 { max-width: 150px; }
+}
+@media (max-width: 600px) {
+  .recall-header { gap: 4px; padding: 4px 8px; }
+  .recall-header-controls label { display: none; }
+  .recall-phases { order: 3; width: 100%; }
+  .recall-phases button { flex: 1; min-height: 44px; padding: 0 4px; }
+  .recall-workspace .drawing-toolbar { width: 44px; flex-basis: 44px; }
+  .recall-workspace .drawing-toolbar > button, .recall-workspace .drawing-more > summary { width: 44px; height: 44px; }
+  .recall-workspace .drawing-toolbar > button:nth-of-type(n+3) { display: none; }
+  .recall-workspace .drawing-toolbar .drawing-divider { display: none; }
+  .recall-controls button { min-height: 44px; }
+  .recall-position-strip { flex-wrap: wrap; }
+  .recall-position-stats { flex-wrap: wrap; }
+  .recall-chart-shell { min-height: 240px; }
+}
+.recall-header > .chart-toolbar { flex: 1; min-width: 0; padding: 0; border: 0; gap: 3px; background: transparent; }
+.recall-header .chart-toolbar .symbol-control, .recall-header .chart-toolbar .toolbar-divider, .recall-header .chart-toolbar .toolbar-spacer, .recall-header .chart-toolbar button[aria-label="进入全屏"] { display: none; }
+.recall-header .chart-toolbar .local-data-badge { font-size: 0; gap: 0; padding: 6px; }
+.recall-header .chart-toolbar .timeframe-group button { padding: 0 6px; }
+.recall-header-controls label:first-child { display: none; }
+.recall-heading { flex-direction: column; align-items: flex-start; gap: 0; }
+.recall-main { padding-top: 0; }
+.recall-controls { position: sticky; bottom: 0; z-index: 5; background: #101722; border-top: 1px solid var(--line, #243145); }
+.recall-chart-column .chart-stage { height: clamp(240px, calc(100dvh - 270px), 620px); min-height: 240px; }
+.recall-chart-shell, .recall-chart-shell .drawing-toolbar { min-height: 240px; }
+@media (min-width: 1101px) {
+  .recall-header { flex-wrap: nowrap; }
+  .recall-header-controls { flex-wrap: nowrap; }
+  .recall-heading h1 { max-width: 125px; }
+  .recall-phases button { padding: 0 7px; }
+}
+@media (max-width: 700px) {
+  .recall-header > .chart-toolbar { order: 4; flex-basis: 100%; }
+  .recall-chart-column .chart-stage { height: 260px; min-height: 240px; }
+  .recall-controls { position: static; }
+}
+
+@media (max-width: 900px) {
+  /* Override the legacy column+wrap header, which placed its last child in
+     an offscreen flex column once the available header height was filled. */
+  .recall-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 44px 44px 44px;
+    gap: 2px 6px;
+    align-items: center;
+    padding: 4px 8px;
+    flex: 0 0 auto;
+  }
+  .recall-header > .recall-heading { grid-column: 1; grid-row: 1; }
+  .recall-header > .recall-header-controls { grid-column: 2; grid-row: 1; width: auto; margin: 0; flex-wrap: nowrap; }
+  .recall-header-controls label { display: none; }
+  .recall-header > .recall-phases { grid-column: 1 / -1; grid-row: 2; width: 100%; }
+  .recall-phases button { flex: 1; min-height: 44px; padding: 0 4px; }
+  .recall-header > .chart-toolbar {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    height: 44px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0;
+    margin: 0;
+  }
+  .recall-header .chart-toolbar > button { flex: 0 0 44px; width: 44px; min-width: 44px; height: 44px; }
+  .recall-header .timeframe-group { flex: 0 0 auto; }
+  .recall-header .timeframe-group button { min-width: 44px; height: 44px; }
+  .recall-chart-shell { position: relative; }
+  .recall-chart-column { flex: 1 1 0; width: 0; }
+  .recall-fit-all { position: absolute; bottom: 8px; left: 52px; z-index: 3; margin: 0; }
+}
+
+@media (max-width: 900px) {
+  .recall-workspace .drawing-toolbar { position: relative; }
+  .recall-workspace .drawing-more { position: static; }
+  .recall-workspace .drawing-more-tools {
+    top: 4px;
+    left: 44px;
+    max-height: calc(100% - 8px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    grid-template-columns: repeat(4, 44px);
+    grid-auto-rows: 44px;
+    padding: 8px;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+  }
+  .recall-workspace .drawing-more-tools button { width: 44px; height: 44px; min-height: 44px; }
+}
+
+/* The breakpoint counts 640 plot + 84 axis + 48 tools + 14 gutter + 320 form. */
+.recall-main { container-type: inline-size; container-name: recall-work; }
+.recall-chart-and-plan { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; gap: 14px; }
+.recall-chart-and-plan.plan-open { grid-template-columns: minmax(0, 1fr) var(--recall-frame-sidebar-width, 320px); }
+.recall-chart-and-plan .recall-chart-shell { min-width: 0; position: relative; }
+.recall-plan-sidebar { min-width: 0; padding: 14px; background: var(--surface, #111a2b); border: 1px solid var(--line, #243145); border-radius: 8px; max-height: clamp(240px, calc(100dvh - 270px), 620px); overflow-y: auto; overscroll-behavior: contain; font-size: 14px; }
+.recall-plan-sidebar header { display: flex; justify-content: space-between; align-items: center; }
+.recall-plan-sidebar h2 { margin: 0; font-size: 16px; }
+.recall-plan-sidebar h3 { font-size: 14px; }
+.recall-plan-sidebar p { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.recall-plan-sidebar button { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; background: transparent; border: 1px solid var(--line); color: var(--text); border-radius: 6px; }
+.recall-plan-fields { display: grid; gap: 12px; }
+.recall-plan-fields label { display: grid; gap: 5px; min-width: 0; font-size: 12px; color: var(--muted); }
+.recall-plan-fields input, .recall-plan-fields select { width: 100%; min-width: 0; min-height: 36px; box-sizing: border-box; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; color: var(--text); background: var(--surface, #111b29); font-size: 14px; }
+.recall-plan-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+
+/* E10 keeps the three price fields readable while retaining direction and
+   quantity-unit as explicit, compact supplements. */
+.recall-plan-entry-row,
+.recall-plan-size-input {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.recall-plan-price-pair {
+  min-width: 0;
+}
+
+.recall-plan-supplementary-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(96px, 112px));
+  gap: 8px;
+  min-width: 0;
+}
+
+.recall-plan-compact-field {
+  width: 100%;
+  min-width: 0;
+}
+
+.recall-plan-field-note {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.recall-plan-sidebar dl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; }
+.recall-plan-sidebar dt { color: var(--muted); }
+.recall-plan-sidebar dd { margin: 0; text-align: right; overflow-wrap: anywhere; font-family: var(--font-geist-mono), monospace; }
+.recall-plan-metrics { border-top: 1px solid var(--line); padding-top: 12px; color: var(--gold, #f3ba2f); }
+.recall-plan-derived-metrics {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 7px;
+  margin: 2px 0 0;
+  padding-top: 9px;
+  border-top: 1px solid var(--line, #243145);
+}
+.recall-plan-sidebar dl.recall-plan-derived-metrics {
+  grid-template-columns: minmax(0, 1fr);
+}
+.recall-plan-derived-metrics > div {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: 8px;
+  min-width: 0;
+}
+.recall-plan-derived-metrics dt {
+  color: var(--muted, #8291a6);
+  font-size: 12px;
+}
+.recall-plan-derived-metrics dd {
+  min-width: 0;
+  margin: 0;
+  color: var(--gold, #f3ba2f);
+  font-family: var(--font-geist-mono, monospace);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.recall-plan-sidebar .recall-plan-error { color: var(--negative, #ef5350); overflow-wrap: anywhere; }
+@container recall-work (max-width: 1105px) {
+ .recall-chart-and-plan.plan-open { grid-template-columns: minmax(0, 1fr); }
+ .recall-chart-and-plan.plan-open .recall-chart-shell { position: sticky; top: 0; z-index: 3; }
+ .recall-chart-and-plan.plan-open .chart-stage { height: 220px; min-height: 200px; }
+ .recall-chart-and-plan.plan-open .recall-chart-shell, .recall-chart-and-plan.plan-open .drawing-toolbar { min-height: 220px; max-height: 220px; }
+ .recall-plan-sidebar { max-height: max(180px, calc(100dvh - 480px)); }
+ .recall-plan-fields input, .recall-plan-fields select, .recall-plan-sidebar button { min-height: 44px; }
+}
+
+/* Fit is an overlay at all widths, never a third flex column beside the axis. */
+.recall-fit-all { position: absolute; bottom: 8px; left: 52px; z-index: 3; margin: 0; }
+@container recall-work (max-width: 1105px) {
+  .recall-plan-sidebar { max-height: var(--recall-plan-form-height, 220px); box-sizing: border-box; }
+}
+
+/* Hidden overflow still permits native focus scrolling. These two shells
+   must clip, leaving only the main content and form as scroll containers. */
+.recall-workspace, .recall-layout { overflow: clip; }
+@media (max-width: 900px) {
+  .recall-layout { grid-template-rows: auto minmax(0, 1fr); }
+  .recall-layout.nav-collapsed { grid-template-rows: minmax(0, 1fr); }
+}
+
+/* A horizontal chart/form row shares the actual remaining workspace height.
+   Focus stays inside the form; the main shell is not another scroll container.
+   Thresholds include main padding and, when expanded, the Recall navigation
+   width. Query the layout so application navigation is already excluded. */
+.recall-layout { container-type: inline-size; container-name: recall-layout-size; }
+@container recall-layout-size (min-width: 1134px) {
+  .recall-layout.nav-collapsed .recall-main {
+    display: flex;
+    flex-direction: column;
+    overflow: clip;
+    padding-bottom: 6px;
+  }
+  .recall-layout.nav-collapsed .recall-main > .recall-chart-and-plan {
+    flex: 1 1 0;
+    min-height: 220px;
+  }
+  .recall-layout.nav-collapsed .recall-chart-and-plan .recall-chart-shell,
+  .recall-layout.nav-collapsed .recall-chart-and-plan .drawing-toolbar { min-height: 0; }
+  .recall-layout.nav-collapsed .recall-chart-and-plan .chart-stage { height: 100%; min-height: 0; }
+  .recall-layout.nav-collapsed .recall-plan-sidebar { min-height: 0; max-height: 100%; box-sizing: border-box; }
+  .recall-layout.nav-collapsed .recall-main > .recall-position-strip,
+  .recall-layout.nav-collapsed .recall-main > .recall-controls,
+  .recall-layout.nav-collapsed .recall-main > .recall-selected-fill { flex-shrink: 0; }
+  .recall-layout.nav-collapsed .recall-main > .recall-snapshot-panel {
+    flex: 0 0 auto;
+    margin-top: 5px;
+    padding: 0;
+  }
+}
+
+@container recall-layout-size (min-width: 1380px) {
+  .recall-main { display: flex; flex-direction: column; overflow: clip; padding-bottom: 6px; }
+  .recall-main > .recall-chart-and-plan { flex: 1 1 0; min-height: 220px; }
+  .recall-chart-and-plan .recall-chart-shell,
+  .recall-chart-and-plan .drawing-toolbar { min-height: 0; }
+  .recall-chart-and-plan .chart-stage { height: 100%; min-height: 0; }
+  .recall-plan-sidebar { min-height: 0; max-height: 100%; box-sizing: border-box; }
+  .recall-main > .recall-position-strip,
+  .recall-main > .recall-controls,
+  .recall-main > .recall-selected-fill { flex-shrink: 0; }
+  .recall-main > .recall-snapshot-panel { flex: 0 0 auto; margin-top: 5px; padding: 0; }
+}
+
+/* R1 frame contract. RecallWorkspace owns the matching JSX; these hooks keep
+   the first frame compact without creating a second application header. */
+.recall-workspace {
+  --recall-frame-control-height: 36px;
+  --recall-frame-gutter: 14px;
+  --recall-frame-sidebar-width: 320px;
+  font-size: 14px;
+}
+
+.recall-header {
+  box-sizing: border-box;
+  min-height: 48px;
+  padding: 6px 12px;
+  gap: 8px;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.recall-header > .recall-heading {
+  min-width: 0;
+  flex: 0 1 clamp(160px, 22vw, 280px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recall-header > .recall-heading .eyebrow {
+  display: none;
+}
+
+.recall-header > .recall-heading h1 {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.recall-header > .recall-heading h1 small,
+.recall-header > .recall-heading .recall-status {
+  font-size: 12px;
+}
+
+.recall-header > .chart-toolbar {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.recall-header .recall-phases {
+  flex: 0 1 auto;
+  min-width: 0;
+  gap: 4px;
+}
+
+.recall-header .recall-phases button,
+.recall-header .recall-header-controls > button,
+.recall-header .recall-header-controls select {
+  min-height: var(--recall-frame-control-height);
+  box-sizing: border-box;
+}
+
+.recall-header .recall-phases button {
+  padding: 0 8px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.recall-header .recall-header-controls {
+  min-width: 0;
+  flex: 0 1 auto;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+.recall-header .recall-header-controls label {
+  min-width: 0;
+}
+
+.recall-header .recall-header-controls select {
+  min-width: 110px;
+  max-width: 168px;
+  padding: 0 24px 0 9px;
+  font-size: 14px;
+}
+
+.recall-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.recall-header-action {
+  min-width: var(--recall-frame-control-height);
+  min-height: var(--recall-frame-control-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 9px;
+  border: 1px solid var(--line, #243145);
+  border-radius: 6px;
+  background: #111b29;
+  color: var(--muted, #8291a6);
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.recall-header-action:hover,
+.recall-header-action:focus-visible {
+  border-color: #3b5374;
+  color: var(--text, #e7edf6);
+}
+
+.recall-header-action--repair {
+  border-color: rgba(243, 186, 47, .38);
+  color: #eecf78;
+}
+
+/* The replay footer is one layout row. RecallWorkspace may keep position and
+   replay controls as semantic children, but their visual chrome is shared. */
+.recall-replay-bar,
+.recall-replay-footer {
+  min-height: 48px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  padding: 4px 8px;
+  border: 1px solid var(--line, #243145);
+  border-radius: 7px;
+  background: #101722;
+}
+
+.recall-replay-bar__primary,
+.recall-replay-bar__secondary,
+.recall-replay-footer__primary,
+.recall-replay-footer__secondary {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+.recall-replay-bar__secondary,
+.recall-replay-footer__secondary {
+  flex: 0 1 auto;
+  margin-left: auto;
+}
+
+.recall-replay-bar button,
+.recall-replay-footer button {
+  min-width: 36px;
+  min-height: var(--recall-frame-control-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 9px;
+  border: 1px solid var(--line, #243145);
+  border-radius: 6px;
+  background: #111b29;
+  color: var(--muted, #8291a6);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.recall-replay-bar button:hover:not(:disabled),
+.recall-replay-footer button:hover:not(:disabled) {
+  border-color: #3b5374;
+  color: var(--text, #e7edf6);
+}
+
+.recall-replay-bar > .recall-position-strip,
+.recall-replay-footer > .recall-position-strip,
+.recall-replay-bar > .recall-controls,
+.recall-replay-footer > .recall-controls {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.recall-replay-bar > .recall-position-strip,
+.recall-replay-footer > .recall-position-strip {
+  min-width: min(280px, 100%);
+  flex: 0 1 clamp(240px, 26vw, 360px);
+  padding: 0 4px;
+}
+
+.recall-replay-bar > .recall-position-strip > div:first-child,
+.recall-replay-footer > .recall-position-strip > div:first-child {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.recall-replay-bar .recall-replay-cutoff,
+.recall-replay-footer .recall-replay-cutoff {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recall-replay-bar > .recall-controls,
+.recall-replay-footer > .recall-controls {
+  position: static;
+  min-width: 0;
+  min-height: var(--recall-frame-control-height);
+  flex: 1 1 auto;
+  padding: 0;
+}
+
+.recall-replay-more {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.recall-replay-more__summary {
+  min-height: var(--recall-frame-control-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0 9px;
+  border: 1px solid var(--line, #243145);
+  border-radius: 6px;
+  background: #111b29;
+  color: var(--muted, #8291a6);
+  appearance: none;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  list-style: none;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.recall-replay-more__summary::-webkit-details-marker {
+  display: none;
+}
+
+.recall-replay-more__summary:hover,
+.recall-replay-more__summary:focus-visible {
+  border-color: #3b5374;
+  color: var(--text, #e7edf6);
+}
+
+.recall-replay-more[data-open="true"] {
+  flex: 1 1 100%;
+  min-width: 0;
+  min-height: 0;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-top: 6px;
+  border-top: 1px solid var(--line, #243145);
+  overflow: hidden;
+}
+
+.recall-replay-more__body {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  max-height: 100%;
+  gap: 8px;
+  padding-top: 8px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
+.recall-replay-more__body[hidden] {
+  display: none;
+}
+
+.recall-replay-more__body > .recall-replay-bar__secondary {
+  margin-left: 0;
+}
+
+.recall-position-details {
+  min-width: 0;
+  color: var(--muted, #8291a6);
+  font-size: 12px;
+}
+
+.recall-position-details .recall-position-stats {
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
+.recall-replay-more__panel {
+  margin: 0;
+}
+
+/* The phase summary carries the only compact numeric readout in the closed
+   replay bar. Keep that value slot intact; the contextual label/cutoff may
+   yield space first when the controls need room. */
+.recall-replay-bar > .recall-position-strip > .recall-replay-summary,
+.recall-replay-footer > .recall-position-strip > .recall-replay-summary {
+  flex: 0 0 auto;
+  min-width: max-content;
+  max-width: none;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.recall-replay-bar > .recall-position-strip > div:first-child,
+.recall-replay-footer > .recall-position-strip > div:first-child {
+  flex: 1 1 0;
+}
+
+.recall-replay-bar > .recall-position-strip strong,
+.recall-replay-footer > .recall-position-strip strong {
+  flex: 0 0 auto;
+  max-width: none;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+/* The 360px primary strip has a separate summary value beside it. Stack the
+   replay label and cutoff inside its own column so the market date keeps its
+   readable width instead of shrinking beside the label. */
+.recall-replay-bar > .recall-position-strip.recall-replay-bar__primary > div:first-child,
+.recall-replay-footer > .recall-position-strip.recall-replay-footer__primary > div:first-child {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: baseline;
+  column-gap: 8px;
+  row-gap: 1px;
+}
+
+.recall-replay-bar > .recall-position-strip.recall-replay-bar__primary > div:first-child > .live-dot,
+.recall-replay-footer > .recall-position-strip.recall-replay-footer__primary > div:first-child > .live-dot {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.recall-replay-bar > .recall-position-strip.recall-replay-bar__primary > div:first-child > strong,
+.recall-replay-footer > .recall-position-strip.recall-replay-footer__primary > div:first-child > strong {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.recall-replay-bar > .recall-position-strip.recall-replay-bar__primary > div:first-child > .recall-replay-cutoff,
+.recall-replay-footer > .recall-position-strip.recall-replay-footer__primary > div:first-child > .recall-replay-cutoff {
+  grid-column: 2;
+  grid-row: 2;
+  width: 100%;
+}
+
+/* The chart and plan are siblings in the grid. The sidebar participates in
+   layout, leaving the price axis and its 14px gutter in the chart column. */
+.recall-chart-and-plan {
+  column-gap: var(--recall-frame-gutter);
+}
+
+.recall-chart-and-plan.plan-open .recall-plan-sidebar {
+  position: static;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+}
+
+.recall-workspace input,
+.recall-workspace select,
+.recall-workspace textarea {
+  font-size: 14px;
+}
+
+.recall-workspace small,
+.recall-workspace label,
+.recall-workspace .recall-panel-heading,
+.recall-workspace .recall-phase-provenance {
+  font-size: max(12px, 1em);
+}
+
+.recall-plan-fields > label,
+.recall-plan-fields > .recall-plan-pair,
+.recall-plan-fields > .recall-size-mode {
+  min-width: 0;
+}
+
+.recall-size-mode {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.recall-size-mode legend {
+  padding: 0;
+  color: var(--muted, #8291a6);
+  font-size: 12px;
+}
+
+.recall-size-mode__buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 5px;
+}
+
+.recall-size-mode__buttons button {
+  min-width: 0;
+  min-height: 36px;
+  overflow: hidden;
+  padding: 0 8px;
+  border: 1px solid var(--line, #243145);
+  border-radius: 6px;
+  background: #111b29;
+  color: var(--muted, #8291a6);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recall-size-mode__buttons button[aria-pressed="true"] {
+  border-color: var(--blue, #2f80ed);
+  background: rgba(47, 128, 237, .16);
+  color: #c3dbff;
+}
+
+.recall-plan-compact-summary {
+  display: grid;
+  gap: 8px;
+  padding: 10px 0 2px;
+  border-bottom: 1px solid var(--line, #243145);
+}
+
+.recall-plan-compact-summary > div {
+  display: grid;
+  grid-template-columns: minmax(92px, .8fr) minmax(0, 1.2fr);
+  gap: 10px;
+  min-width: 0;
+  align-items: baseline;
+}
+
+.recall-plan-compact-summary > div > span {
+  color: var(--muted, #8291a6);
+  font-size: 12px;
+}
+
+.recall-plan-compact-summary strong {
+  min-width: 0;
+  color: var(--text, #e7edf6);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.recall-plan-detail-group,
+.recall-plan-secondary-group {
+  min-width: 0;
+  margin-top: 10px;
+  border-top: 1px solid var(--line, #243145);
+}
+
+.recall-plan-detail-group > summary,
+.recall-plan-secondary-group > summary {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  color: var(--muted, #8291a6);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.recall-plan-detail-group > dl {
+  margin-top: 10px;
+}
+
+.recall-plan-primary-content {
+  min-width: 0;
+}
+
+.recall-replay-cutoff {
+  display: inline-flex;
+  flex-wrap: wrap;
+  flex: 1 1 auto;
+  gap: 4px 10px;
+  min-width: 0;
+  overflow: visible;
+  white-space: normal;
+}
+
+.recall-replay-cutoff span {
+  white-space: nowrap;
+}
+
+.recall-plan-secondary-content {
+  min-width: 0;
+}
+
+@media (pointer: coarse) {
+  .recall-size-mode__buttons button,
+  .recall-plan-price-action,
+  .recall-plan-detail-group > summary,
+  .recall-plan-secondary-group > summary {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 900px) {
+  .recall-workspace {
+    --recall-frame-control-height: 44px;
+  }
+
+  .recall-header > .recall-heading h1 {
+    font-size: 16px;
+  }
+
+  .recall-header-actions {
+    flex-wrap: wrap;
+  }
+
+  .recall-replay-bar,
+  .recall-replay-footer {
+    align-items: stretch;
+  }
+
+  .recall-replay-bar__secondary,
+  .recall-replay-footer__secondary {
+    margin-left: 0;
+  }
+
+  .recall-replay-bar > .recall-position-strip,
+  .recall-replay-footer > .recall-position-strip,
+  .recall-replay-bar > .recall-controls,
+  .recall-replay-footer > .recall-controls {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+
+  /* Keep every replay action in one horizontally reachable 44px row on
+     narrow screens. The row scrolls as a unit instead of growing the footer
+     into several wrapped button lines; More remains the separate disclosure. */
+  .recall-replay-bar > .recall-controls,
+  .recall-replay-footer > .recall-controls {
+    flex: 0 0 100%;
+    min-width: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+
+  .recall-replay-bar > .recall-controls::-webkit-scrollbar,
+  .recall-replay-footer > .recall-controls::-webkit-scrollbar {
+    display: none;
+  }
+
+  .recall-replay-bar > .recall-controls > button,
+  .recall-replay-footer > .recall-controls > button {
+    flex: 0 0 auto;
+  }
+
+  .recall-replay-more {
+    flex: 1 1 auto;
+  }
+
+  .recall-chart-and-plan.plan-open .recall-plan-sidebar {
+    max-height: max(220px, calc(100dvh - 480px));
+  }
+
+  .recall-size-mode__buttons button {
+    min-height: 44px;
+    padding-inline: 4px;
+  }
+}
+
+/* Keep the desktop header readable at the 1280px review viewport. Controls
+   may give up spare width, but their labels and hit targets keep their normal
+   size and remain on one visual line. */
+@media (min-width: 1101px) and (max-width: 1320px) {
+  .recall-header {
+    gap: 6px;
+  }
+
+  .recall-header > .recall-heading {
+    flex-basis: 220px;
+  }
+
+  .recall-header > .recall-heading h1 {
+    max-width: 220px;
+  }
+
+  .recall-header > .chart-toolbar {
+    flex: 0 1 180px;
+    overflow: hidden;
+  }
+
+  .recall-header .chart-toolbar .timeframe-group,
+  .recall-header .recall-header-actions {
+    flex-wrap: nowrap;
+  }
+
+  .recall-header .chart-toolbar button,
+  .recall-header .recall-export-button,
+  .recall-header .recall-header-action {
+    white-space: nowrap;
+  }
+}
+
+/* R5 responsive header freeze. Keep the semantic order from RecallWorkspace
+   visible when the episode label is long: title, chart controls, phases, then
+   the episode/actions group. Action labels are atomic flex items so CJK text
+   cannot become a vertical button when the chart controls yield width. */
+.recall-header > .recall-heading,
+.recall-header > .chart-toolbar,
+.recall-header > .recall-phases,
+.recall-header > .recall-header-controls {
+  min-width: 0;
+}
+
+.recall-header > .recall-heading {
+  overflow: hidden;
+}
+
+.recall-header > .recall-heading h1 {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.recall-header .recall-header-controls {
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+
+.recall-header .recall-header-controls > label {
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.recall-header .recall-header-controls > .recall-icon-button {
+  flex: 0 0 var(--recall-frame-control-height, 36px);
+  width: var(--recall-frame-control-height, 36px);
+}
+
+.recall-header .recall-export-button,
+.recall-header .recall-header-action {
+  flex: 0 0 auto;
+  min-width: max-content;
+  white-space: nowrap;
+  writing-mode: horizontal-tb;
+}
+
+.recall-header .recall-export-button {
+  min-width: 64px;
+}
+
+.recall-header .recall-header-actions {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+@media (min-width: 901px) {
+  .recall-header {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  .recall-header > .recall-heading {
+    flex: 0 1 clamp(160px, 22vw, 280px);
+  }
+
+  .recall-header > .chart-toolbar {
+    flex: 1 1 0;
+    overflow: hidden;
+  }
+
+  .recall-header > .recall-phases {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .recall-header > .recall-header-controls {
+    flex: 0 1 auto;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .recall-header > .recall-header-controls::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  /* The auto-sized second column previously consumed the full intrinsic
+     action width and collapsed the title. Equal flexible tracks leave the
+     title readable while the action strip retains every action in a scroll
+     position. */
+  .recall-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: 44px 44px 44px;
+    gap: 2px 6px;
+    align-items: center;
+    padding: 4px 8px;
+    flex: 0 0 auto;
+  }
+
+  .recall-header > .recall-heading {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+  }
+
+  .recall-header > .recall-heading h1 {
+    font-size: 16px;
+    line-height: 1.3;
+  }
+
+  .recall-header > .recall-heading .recall-status {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .recall-header > .recall-header-controls {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    justify-content: flex-start;
+    gap: 4px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+
+  .recall-header > .recall-header-controls::-webkit-scrollbar {
+    display: none;
+  }
+
+  .recall-header .recall-header-controls > label {
+    display: none;
+  }
+
+  .recall-header .recall-header-controls > .recall-icon-button,
+  .recall-header .recall-export-button,
+  .recall-header .recall-header-action {
+    min-height: 44px;
+  }
+
+  .recall-header .recall-header-controls > .recall-icon-button {
+    flex-basis: 44px;
+    width: 44px;
+  }
+
+  .recall-header .recall-export-button {
+    min-width: 64px;
+  }
+
+  .recall-header > .recall-phases {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+  }
+
+  .recall-header > .chart-toolbar {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}
+
+/* R6 More / mobile budget freeze.  The main column is a bounded flex chain:
+   the chart keeps its 220px floor, the vertical plan form owns the remaining
+   space, and an opened More disclosure receives a definite grid track.  Its
+   body is the only child allowed to scroll, so the summary stays available. */
+.recall-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.recall-main > .recall-chart-and-plan {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 220px;
+}
+
+.recall-main > .recall-replay-bar {
+  flex: 0 0 auto;
+  min-width: 0;
+  min-height: 48px;
+}
+
+.recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) {
+  flex: 1 1 0;
+  min-height: var(--recall-frame-control-height, 36px);
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(240px, clamp(240px, 26vw, 360px)) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-position-strip {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-controls {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  width: 100%;
+  flex: 1 1 auto;
+}
+
+.recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-more {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  align-self: stretch;
+  min-width: 0;
+  min-height: 0;
+  max-height: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-more > .recall-replay-more__summary {
+  flex: 0 0 auto;
+}
+
+.recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-more > .recall-replay-more__body {
+  display: grid;
+  grid-auto-rows: max-content;
+  align-content: start;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  max-height: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-more > .recall-replay-more__body > .recall-replay-more__panel {
+  max-height: none;
+  overflow: visible;
+}
+
+.recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-bar__secondary {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  min-width: 0;
+  min-height: var(--recall-frame-control-height, 36px);
+  margin-left: 0;
+  overflow: hidden;
+}
+
+.recall-main > .recall-replay-bar > .recall-replay-bar__secondary > .recall-control-note {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recall-main > p[role="status"] {
+  flex: 0 0 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@container recall-work (max-width: 1105px) {
+  /* The plan form is a second bounded row.  Its contents scroll inside the
+     form instead of increasing the chart/workspace's intrinsic height. */
+  .recall-main > .recall-chart-and-plan.plan-open {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 220px minmax(0, 1fr);
+    min-height: 220px;
+    overflow: hidden;
+  }
+
+  .recall-main > .recall-chart-and-plan.plan-open .recall-chart-shell {
+    position: relative;
+    height: 220px;
+    min-height: 220px;
+    max-height: 220px;
+  }
+
+  .recall-main > .recall-chart-and-plan.plan-open .recall-plan-sidebar {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+
+  /* Keep the compact closed footer to three rows: state, controls, and the
+     More/status row.  Every actual button retains the 44px touch target. */
+  .recall-main > .recall-replay-bar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto auto;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  .recall-main > .recall-replay-bar > .recall-position-strip {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .recall-main > .recall-replay-bar > .recall-controls {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .recall-main > .recall-replay-bar > .recall-replay-more {
+    grid-column: 2;
+    grid-row: 3;
+    justify-self: end;
+    min-width: 0;
+  }
+
+  .recall-main > .recall-replay-bar > .recall-replay-bar__secondary {
+    grid-column: 1;
+    grid-row: 3;
+    min-width: 0;
+    min-height: var(--recall-frame-control-height, 44px);
+    margin-left: 0;
+  }
+
+  /* Once open, More takes the remaining bounded footer row.  The summary is
+     outside the scrolling body and the final status row stays below it. */
+  .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+  }
+
+  .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-position-strip,
+  .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-controls,
+  .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-more,
+  .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-bar__secondary {
+    grid-column: 1;
+  }
+
+  .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-position-strip {
+    grid-row: 1;
+  }
+
+  .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-controls {
+    grid-row: 2;
+  }
+
+  .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-more {
+    grid-row: 3;
+  }
+
+  .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-bar__secondary {
+    grid-row: 4;
+  }
+}
+
+/* R6 header/footer budget follow-up.  The chart toolbar is a single desktop
+   row; at the compact 1280 review width the frame uses two deliberate rows so
+   the toolbar cannot fragment into search/timeframe/settings rows. */
+@media (min-width: 901px) {
+  .recall-header > .chart-toolbar {
+    flex-wrap: nowrap;
+    flex: 0 1 auto;
+    height: 36px;
+    min-height: 36px;
+    overflow: hidden;
+  }
+
+  .recall-header > .recall-phases {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  .recall-header > .recall-phases > button {
+    flex: 0 0 auto;
+    min-height: 36px;
+  }
+}
+
+@media (min-width: 1101px) and (max-width: 1320px) {
+  .recall-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 36px 36px;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 6px 12px;
+  }
+
+  .recall-header > .recall-heading {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .recall-header > .recall-header-controls {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .recall-header > .chart-toolbar {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .recall-header > .recall-phases {
+    grid-column: 2;
+    grid-row: 2;
+    width: 100%;
+    justify-content: flex-end;
+    overflow: hidden;
+  }
+}
+
+/* In the narrow More view the top phase/status context already explains that
+   post-review history is revealed.  Remove the duplicate terminal status row
+   and disabled replay controls so the single More body gets the reclaimed
+   height; closing More restores the full replay controls and return action. */
+@media (max-width: 900px) {
+  .recall-main > .recall-replay-bar > .recall-replay-bar__secondary[role="status"] {
+    flex-wrap: nowrap;
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .recall-main > .recall-replay-bar > .recall-replay-bar__secondary[role="status"] > .recall-control-note {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .recall-main > .recall-replay-bar > .recall-replay-bar__secondary[role="status"] > .recall-return-pre-entry {
+    flex: 0 0 auto;
+    width: max-content;
+    min-width: max-content;
+    white-space: nowrap;
+  }
+
+  .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) {
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+
+  .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-bar__secondary[role="status"] {
+    display: none;
+  }
+
+  .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-controls {
+    min-height: 44px;
+    margin-top: 0;
+    padding-block: 0;
+  }
+
+  .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-controls > button:disabled {
+    display: none;
+  }
+}
+
+/* When More explicitly yields the narrow plan panel, the chart keeps its
+   220px trend floor and the replay bar receives the remaining main height.
+   Plan visibility itself is stateful (hidden/aria-expanded); this rule only
+   prevents a closed plan grid item from consuming the yielded space. */
+@container recall-work (max-width: 1105px) {
+  .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan {
+    flex: 0 0 220px;
+    height: 220px;
+    min-height: 220px;
+    max-height: 220px;
+    overflow: hidden;
+  }
+
+  .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan .recall-chart-shell,
+  .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan .recall-chart-shell .drawing-toolbar,
+  .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan .chart-stage {
+    height: 220px;
+    min-height: 220px;
+    max-height: 220px;
+  }
 }

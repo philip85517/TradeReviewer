@@ -1,0 +1,13 @@
+✔ ships the focused stock review interface (5.743539ms)
+✔ dev server exposes a working SQLite storage API (6176.20906ms)
+✔ server-renders the historical trade review workspace (413.819867ms)
+✔ client bundle contains no unrevealed demo executions (144.69524ms)
+✔ emits an importable same-origin ONNX Runtime JSEP module (3.302001ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6321.337006

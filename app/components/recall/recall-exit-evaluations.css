@@ -1,0 +1,25 @@
+.recall-exit-evaluations { display: grid; gap: 10px; min-width: 0; padding-block: 12px; border-top: 1px solid var(--line, #243145); }
+.recall-exit-evaluations h3, .recall-exit-evaluations p { margin: 0; }
+.recall-exit-evaluations label { display: grid; gap: 5px; min-width: 0; font-size: 12px; }
+.recall-exit-evaluations select, .recall-exit-evaluations textarea { min-width: 0; width: 100%; min-height: 36px; border: 1px solid var(--line, #243145); border-radius: 6px; padding: 7px; color: var(--text, #e7edf6); background: var(--surface, #111b29); font: inherit; font-size: 14px; }
+.recall-exit-evaluations textarea { resize: vertical; min-height: 65px; }
+.recall-exit-evaluations fieldset { display: grid; gap: 10px; padding: 0; margin: 0; min-width: 0; border: 0; }
+.recall-exit-evaluations fieldset:disabled { opacity: 1; }
+.recall-exit-evaluations .recall-exit-segmented { gap: 5px; }
+.recall-exit-evaluations .recall-exit-segmented-options { display: flex; flex-wrap: wrap; gap: 6px; }
+.recall-exit-evaluations .recall-exit-segmented-options label { position: relative; display: inline-flex; align-items: center; justify-content: center; min-height: 36px; min-width: 72px; border: 1px solid var(--line, #243145); border-radius: 6px; padding: 6px 10px; color: var(--text, #e7edf6); background: var(--surface, #111b29); font-size: 14px; cursor: pointer; }
+.recall-exit-evaluations .recall-exit-segmented-options input { position: absolute; inline-size: 1px; block-size: 1px; opacity: 0; }
+.recall-exit-evaluations .recall-exit-segmented-options label:has(input:checked) { border-color: var(--blue, #2f80ed); background: color-mix(in srgb, var(--blue, #2f80ed) 18%, var(--surface, #111b29)); }
+.recall-exit-evaluations .recall-exit-segmented-options label:focus-within { outline: 2px solid var(--blue, #2f80ed); outline-offset: 2px; }
+.recall-exit-evaluations .recall-exit-tags { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.recall-exit-evaluations .recall-exit-tags label, .recall-exit-evaluations .recall-exit-evidence { display: flex; align-items: center; gap: 7px; min-height: 36px; overflow-wrap: anywhere; }
+.recall-exit-evaluations legend { margin-bottom: 5px; font-size: 12px; }
+.recall-exit-evaluations summary { min-height: 36px; display: flex; align-items: center; cursor: pointer; font-size: 12px; }
+.recall-exit-note { color: var(--muted, #8291a6); font-size: 12px; line-height: 1.5; }
+.recall-exit-evaluations [role="alert"], .recall-exit-missing { color: var(--gold, #f3ba2f); font-size: 12px; line-height: 1.5; }
+@media (pointer: coarse), (max-width: 390px) { .recall-exit-evaluations select, .recall-exit-evaluations summary, .recall-exit-evaluations .recall-exit-tags label, .recall-exit-evaluations .recall-exit-evidence, .recall-exit-evaluations .recall-exit-segmented-options label { min-height: 44px; } .recall-exit-evaluations textarea { min-height: 88px; } }
+
+.recall-exit-evaluations select { color-scheme: dark; }
+.recall-exit-evaluations option { color: var(--text, #e7edf6); background: var(--surface, #111b29); }
+.recall-exit-evaluations :is(input, select, textarea, button, summary):focus-visible { outline: 2px solid var(--blue, #2f80ed); outline-offset: 2px; }
+.recall-exit-evaluations :is(input, select, textarea, button):disabled { opacity: 1; color: var(--muted, #8291a6); -webkit-text-fill-color: var(--muted, #8291a6); background: var(--surface, #111b29); cursor: default; }

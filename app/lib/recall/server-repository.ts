@@ -1,5 +1,12 @@
+import { validateRecallExitEvaluations } from "./exit-evaluations";
+import { rebuildRecallEvaluationProjections } from "./evaluation-projections";
+import { rebuildRecallManualEvaluationProjections } from "./manual-evaluation-projections";
+import { retainRecallActualMetrics } from "./metric-retention";
+import { rebuildRecallMetricProjections } from "./metric-projections";
 import "server-only";
 
+import { confirmRecallRetainedState } from "./retained-bundles";
+import { rebuildRecallPlanProjections } from "./plan-projections";
 import type { DatabaseSync } from "node:sqlite";
 
 import { withSqliteTransaction } from "../../../db/sqlite";
@@ -12,6 +19,7 @@ import {
   RecallValidationError,
   validateRecallDocument,
 } from "./document";
+import { reconcileRecallManualEvaluationAssociations, validateRecallManualEvaluationEvidenceChanges, validateRecallManualEvaluations } from "./manual-evaluations";
 import { summarizeRecallDocument, type RecallReviewSummary } from "./summary";
 import type {
   RecallCompletedVersion,
@@ -142,10 +150,19 @@ export function saveRecallDocument(
     // The client cannot replace the formal copy by echoing a different
     // `lastCompleted` value in an autosave payload.
     delete draft.lastCompleted;
+    const previous = existing ? rowDocument(existing) : undefined;
+    draft = reconcileRecallManualEvaluationAssociations(draft);
+    const needsEpisode = finalize || Boolean(draft.exitEvaluations?.drafts.length) || Boolean(draft.manualEvaluations?.drafts.length) || Boolean(draft.plans?.drafts.length) || (draft.retainedBundles ?? []).some(b => !previous?.retainedBundles?.some(old => old.id === b.id));
+    const authoritativeEpisode = needsEpisode ? currentEpisode(database, draft.episodeId) : undefined;
+    validateRecallExitEvaluations(draft, authoritativeEpisode);
+    validateRecallManualEvaluations(draft);
+    validateRecallManualEvaluationEvidenceChanges(previous, draft);
+    confirmRecallRetainedState(previous, draft, authoritativeEpisode, currentRevision + 1);
+    retainRecallActualMetrics(previous, draft);
     if (finalize) {
       // The server is the authority for closed/open status. The request cannot
       // turn an open episode into a completed record by setting a boolean.
-      const episode = currentEpisode(database, input.document.episodeId);
+      const episode = authoritativeEpisode ?? currentEpisode(database, input.document.episodeId);
       draft = completeRecallDocument(draft, episode, draft.completedAt ?? new Date().toISOString());
       formal = asFormal(draft);
     }
@@ -168,6 +185,11 @@ export function saveRecallDocument(
         revision = excluded.revision,
         updated_at = excluded.updated_at
     `).run(draft.episodeId, draftJson, formalJson, nextRevision, draft.updatedAt);
+    rebuildRecallPlanProjections(database, draft, "draft");
+    rebuildRecallEvaluationProjections(database, draft, "draft");
+    rebuildRecallManualEvaluationProjections(database, draft, "draft");
+    rebuildRecallMetricProjections(database, draft, "draft");
+    if (finalize && formal) { rebuildRecallPlanProjections(database, formal, "formal"); rebuildRecallEvaluationProjections(database, formal, "formal"); rebuildRecallManualEvaluationProjections(database, formal, "formal"); rebuildRecallMetricProjections(database, formal, "formal"); }
     if (formal) draft.lastCompleted = formal;
     validateRecallDocument(draft);
     return { document: draft, revision: nextRevision };
@@ -175,7 +197,6 @@ export function saveRecallDocument(
 }
 
 export const putRecallDocument = saveRecallDocument;
-
 
 /** Read current drafts only; old formal image/candle payloads never leave this layer. */
 export function listRecallReviewSummaries(database: DatabaseSync): RecallReviewSummary[] {

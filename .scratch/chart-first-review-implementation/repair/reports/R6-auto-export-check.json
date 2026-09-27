@@ -1,0 +1,69 @@
+{
+  "file": "/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/.scratch/chart-first-review-implementation/repair/reports/R6-export/999996-auto-draft.pptx",
+  "draftStoryboard": {
+    "pre-entry": {
+      "snapshotId": "recall-snapshot-1790425465811-3h1c1v"
+    },
+    "post-review": {
+      "snapshotId": "recall-snapshot-1790426381010-uh29nu"
+    }
+  },
+  "formalStoryboard": {
+    "pre-entry": {
+      "snapshotId": "recall-snapshot-1790425465811-3h1c1v"
+    },
+    "holding": {
+      "snapshotId": "recall-snapshot-1790426056211-duxc3w"
+    },
+    "post-review": {
+      "snapshotId": "recall-snapshot-1790426381010-uh29nu"
+    }
+  },
+  "checks": [
+    {
+      "snapshotId": "recall-snapshot-1790425465811-3h1c1v",
+      "sha256": "feb60259c63be89c7408f7716e305d9eaf0b5df74d903a4a9762aacd9abadb21",
+      "pptxMedia": [
+        "ppt/media/image-1-1.png"
+      ],
+      "formalSnapshotUnchanged": true
+    },
+    {
+      "snapshotId": "recall-snapshot-1790425542694-97sagm",
+      "sha256": "77578f9b9f1101af3d6b827224c9ff28b816ca2514b6b099f6ec761571dfee3d",
+      "pptxMedia": [
+        "ppt/media/image-2-1.png"
+      ],
+      "formalSnapshotUnchanged": true
+    }
+  ],
+  "working": {
+    "phase": "post-review",
+    "cursor": "2026-09-24T16:00:00.000Z",
+    "executionCursor": "synthetic-repair-fresh-replay-close"
+  },
+  "manifest": {
+    "source": "draft",
+    "revision": 28,
+    "stages": [
+      {
+        "phase": "pre-entry",
+        "snapshotId": "recall-snapshot-1790425465811-3h1c1v",
+        "warnings": []
+      },
+      {
+        "phase": "holding",
+        "snapshotId": "recall-snapshot-1790425542694-97sagm",
+        "warnings": []
+      },
+      {
+        "phase": "post-review",
+        "snapshotId": "recall-snapshot-1790426381010-uh29nu",
+        "warnings": [
+          "与入场前参考图的价格轴范围或刻度方向不同",
+          "与入场前参考图的时间窗口不同或无法核对"
+        ]
+      }
+    ]
+  }
+}

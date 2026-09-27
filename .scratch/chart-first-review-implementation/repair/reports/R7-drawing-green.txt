@@ -1,0 +1,85 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/f7a5/TradeReview
+
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > uses one shared primary navigation and reuses it from the narrow-screen menu
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > loads the FX snapshot when the production workspace opens on the dashboard
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > starts a quality data check in the first existing account for the instrument
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > prefers the issue episode account when the instrument has multiple accounts
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps imported replay in one compact frame and places review actions in Recall's header
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps Recall header actions wired to data management, repair, and return navigation
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps the parent review mounted until a failed navigation save is retried successfully
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > opens production in the queue and stays on a rejected completion
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > gold replay does not reveal the sale before the first bar is played
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > gold replay explains missing historical bars when stepping its first available day
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > gold replay keeps cached historical bars before and after its first step
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > gold replay repairs the previously saved empty-chart entry cursor
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > gold replay preserves saved progress after its first completed bar
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not advance the training cursor when the target timeframe has no known candle yet
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > gold replay next execution lands on a market-open fill rather than the first bar close
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > restores the prior sidebar layout after focusing the chart without changing the cursor
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > supplements only the selected stock account and retries the same audited request
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > boots from the SQLite bootstrap response without reading legacy execution storage
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not re-read every instrument market cache when metadata hydration updates presentation
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not label daily-only partial coverage as overall market data availability
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > marks a short hourly cache as updatable even when daily data is absent
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not block the selected replay on another stock's market data
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps a persisted hourly provider failure visible when no cache exists
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps XPEV absent when an empty SQLite bootstrap is used in production mode
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not export legacy browser state after the SQLite server confirms migration
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > migrates legacy browser state when SQLite has no migration despite a local marker
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > supports multiple statements and an independent multi-image screenshot input
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not expose the bundled demo in production mode
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > reviews two screenshots and applies duplicate, use-incoming, and keep-both decisions through the existing import transaction
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not persist when a prepared screenshot import preview is canceled
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps an existing conflict when the selected screenshot replacement does not survive enrichment
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > hides the frozen screenshot review while import preparation is pending
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > advances one candle without revealing the future and preserves the cursor across periods
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > preserves the review timeframe and cursor while top navigation re-enters training mode
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > pauses replay when returning to the library through top navigation
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retains a Recall drawing draft per episode and gates completion until a snapshot exists 4079ms
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps the latest Recall drawing draft while completion is gated
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > stops replay and reports a recoverable message when a step fails
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > switches from the desktop review panel to an operable narrow drawer
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > contains the toolbar and every chart popover within a 390px viewport
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > loads imported stocks after a page reload without starting a market request
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps demo reachable with imports and restores its saved server frame and UI state
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > refreshes the selected demo frame from the existing replay backend
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > disables demo refresh accessibly while a replay request is active
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > uses the containing 15 minute bar for non-aligned closed fills
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > accepts bounded pre-entry candles as episode chart context
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not use candles before the bounded pre-entry context
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not describe confirmed grey-market trades as a regular-market history gap
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > shows all daily history by default and explains trades before the first candle
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > scopes Recall history and replay to the selected episode
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > starts before entry and advances to the first known candle when history begins after the trade
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > extends an open episode through cached data after its latest fill
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > refreshes every trade episode regardless of the selected episode
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > uses META as the market-data symbol for historical FB trades
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps library context through cancelled and confirmed imports with failed market refresh
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > opens a library queue entry directly in the shared history workbench
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps complete-history executions within the selected account
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > automatically syncs all episodes after importing a later episode
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > automatically syncs all episodes when an import closes and opens positions
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > uses the unified replay workspace for a cached imported episode
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > exposes Recall snapshot controls for daily-only data
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > derives intraday availability from the selected episode window
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > reveals the next execution 'after the final cached candle' without enabling next-candle navigation
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > reveals the next execution 'without cached candles' without enabling next-candle navigation
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > preserves cached intervals and reports each failed refresh independently
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > reveals an imported provider candle only at its completed-bar knowledge boundary
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > restores the selected episode replay context independently
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > opens the stock drawer and restores focus after Escape without resetting replay
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > offers the import flow in data management from the empty workspace
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > passes stored instrument metadata into the trading room scope
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retains alternate simulation runs when the complete room changes its shared scope
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > returns to the trading room with its filters, period, and calendar view after opening a holding review
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > returns to the library with its expanded stock context after opening a library round
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > opens stock entries in the shared workbench and preserves library browsing state
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > hydrates cached candles for library stocks that are not selected in replay
+ ↓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > hydrates the review record for the exact position episode and exposes Recall capture controls
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 75 skipped (76)
+   Start at  05:51:35
+   Duration  8.73s (transform 2.48s, setup 187ms, import 3.36s, tests 4.08s, environment 887ms)
+

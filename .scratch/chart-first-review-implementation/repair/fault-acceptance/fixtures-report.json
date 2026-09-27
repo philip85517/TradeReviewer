@@ -1,0 +1,151 @@
+{
+  "createdAt": "2026-09-26T22:36:29.917923+00:00",
+  "source": "/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/.scratch/chart-first-review-implementation/repair/acceptance.sqlite",
+  "episodeId": "episode:%5B%22SYNTHETIC-REPAIR-fresh-replay%3ACN%3A999996%3Alive%22%2C%222026-08-10T02%3A00%3A00.000Z%22%2C%22buy%22%2C%221000%22%2C%2256%22%5D:1",
+  "sourceExecutionsBefore": {
+    "count": 25,
+    "sha256": "1fe6b60a3a2a878858172cf48fbf7cb01cbe6659ec7db6bc59471fb8724f94e2"
+  },
+  "sourceExecutionsAfter": {
+    "count": 25,
+    "sha256": "1fe6b60a3a2a878858172cf48fbf7cb01cbe6659ec7db6bc59471fb8724f94e2"
+  },
+  "legacyFixture": {
+    "path": "/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/.scratch/chart-first-review-implementation/repair/fault-acceptance/legacy-fixture.sqlite",
+    "executionCount": 25,
+    "executionSha256": "1fe6b60a3a2a878858172cf48fbf7cb01cbe6659ec7db6bc59471fb8724f94e2",
+    "integrityCheck": "ok",
+    "revision": 33,
+    "draftPointersBefore": [
+      {
+        "kind": "text",
+        "drawingId": "drawing-1790426055724-hn3sy",
+        "textRevision": 1,
+        "ownerId": "synthetic-repair-fresh-replay-partial"
+      },
+      {
+        "kind": "text",
+        "drawingId": "drawing-1790426055724-hn3sy",
+        "textRevision": 1,
+        "ownerId": "synthetic-repair-fresh-replay-partial"
+      },
+      {
+        "kind": "text",
+        "drawingId": "drawing-1790426055724-hn3sy",
+        "textRevision": 1,
+        "ownerId": "synthetic-repair-fresh-replay-partial"
+      }
+    ],
+    "formalPointersBefore": [
+      {
+        "kind": "text",
+        "drawingId": "drawing-1790426055724-hn3sy",
+        "textRevision": 1,
+        "ownerId": "synthetic-repair-fresh-replay-partial"
+      },
+      {
+        "kind": "text",
+        "drawingId": "drawing-1790426055724-hn3sy",
+        "textRevision": 1,
+        "ownerId": "synthetic-repair-fresh-replay-partial"
+      },
+      {
+        "kind": "text",
+        "drawingId": "drawing-1790426055724-hn3sy",
+        "textRevision": 1,
+        "ownerId": "synthetic-repair-fresh-replay-partial"
+      }
+    ],
+    "draftPointersAfter": [
+      {
+        "kind": "text",
+        "drawingId": "drawing-1790426055724-hn3sy",
+        "textRevision": 2,
+        "ownerId": "synthetic-repair-fresh-replay-partial"
+      },
+      {
+        "kind": "text",
+        "drawingId": "drawing-1790426055724-hn3sy",
+        "textRevision": 2,
+        "ownerId": "synthetic-repair-fresh-replay-partial"
+      },
+      {
+        "kind": "text",
+        "drawingId": "drawing-1790426055724-hn3sy",
+        "textRevision": 2,
+        "ownerId": "synthetic-repair-fresh-replay-partial"
+      }
+    ],
+    "formalPointersAfter": [
+      {
+        "kind": "text",
+        "drawingId": "drawing-1790426055724-hn3sy",
+        "textRevision": 2,
+        "ownerId": "synthetic-repair-fresh-replay-partial"
+      },
+      {
+        "kind": "text",
+        "drawingId": "drawing-1790426055724-hn3sy",
+        "textRevision": 2,
+        "ownerId": "synthetic-repair-fresh-replay-partial"
+      },
+      {
+        "kind": "text",
+        "drawingId": "drawing-1790426055724-hn3sy",
+        "textRevision": 2,
+        "ownerId": "synthetic-repair-fresh-replay-partial"
+      }
+    ],
+    "projectionRowsChanged": 6,
+    "drawingId": "drawing-1790426055724-hn3sy",
+    "drawingOwner": "synthetic-repair-fresh-replay-partial",
+    "availableDrawingRevision": 1,
+    "missingPointerRevision": 2
+  },
+  "needsConfirmationFixture": {
+    "path": "/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/.scratch/chart-first-review-implementation/repair/fault-acceptance/needs-confirmation-fixture.sqlite",
+    "executionCount": 25,
+    "executionSha256": "1fe6b60a3a2a878858172cf48fbf7cb01cbe6659ec7db6bc59471fb8724f94e2",
+    "integrityCheck": "ok",
+    "revision": 33,
+    "evaluationId": "manual-evaluation:episode:%5B%22SYNTHETIC-REPAIR-fresh-replay%3ACN%3A999996%3Alive%22%2C%222026-08-10T02%3A00%3A00.000Z%22%2C%22buy%22%2C%221000%22%2C%2256%22%5D:1",
+    "before": {
+      "status": "linked",
+      "decisionId": null,
+      "executionIds": [
+        "synthetic-repair-fresh-replay-close",
+        "synthetic-repair-fresh-replay-entry",
+        "synthetic-repair-fresh-replay-partial"
+      ],
+      "documentStatus": "completed"
+    },
+    "after": {
+      "status": "needs-confirmation",
+      "decisionId": null,
+      "executionIds": [
+        "synthetic-repair-fresh-replay-entry",
+        "synthetic-repair-fresh-replay-partial"
+      ],
+      "documentStatus": "needs-confirmation"
+    },
+    "formalAfter": {
+      "status": "linked",
+      "executionIds": [
+        "synthetic-repair-fresh-replay-close",
+        "synthetic-repair-fresh-replay-entry",
+        "synthetic-repair-fresh-replay-partial"
+      ],
+      "documentStatus": "completed"
+    },
+    "projectionExecutionIds": [
+      "synthetic-repair-fresh-replay-entry",
+      "synthetic-repair-fresh-replay-partial"
+    ],
+    "staleExecutionId": "synthetic-repair-fresh-replay-close"
+  },
+  "startup": {
+    "legacy": "TRADEREVIEW_DB_PATH=/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/.scratch/chart-first-review-implementation/repair/fault-acceptance/legacy-fixture.sqlite npm run dev -- --hostname 127.0.0.1 --port 3052",
+    "needsConfirmation": "TRADEREVIEW_DB_PATH=/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/.scratch/chart-first-review-implementation/repair/fault-acceptance/needs-confirmation-fixture.sqlite npm run dev -- --hostname 127.0.0.1 --port 3052"
+  },
+  "scope": "isolated UI fixture only; it does not prove a real import/reimport journey"
+}

@@ -45,6 +45,7 @@ const tools: Array<{
 ];
 
 type Props = {
+  compact?: boolean;
   activeTool: DrawingTool;
   canUndo: boolean;
   canRedo: boolean;
@@ -57,6 +58,7 @@ type Props = {
 };
 
 export function DrawingToolbar({
+  compact = false,
   activeTool,
   canUndo,
   canRedo,
@@ -68,6 +70,14 @@ export function DrawingToolbar({
   onToggleLock,
 }: Props) {
   const moreRef = useRef<HTMLDetailsElement>(null);
+  const compactPrimary: DrawingTool[] = [
+    "cursor",
+    "text",
+    "trend-line",
+    "horizontal-line",
+    "parallel-channel",
+    "long-risk-reward",
+  ];
   const renderTool = (tool: (typeof tools)[number]) => {
         const Icon = tool.icon;
         return (
@@ -85,10 +95,10 @@ export function DrawingToolbar({
       };
   return (
     <div className="drawing-toolbar" aria-label="绘图工具">
-      {tools.slice(0, 3).map(renderTool)}
+      {(compact ? compactPrimary.map(value => tools.find(tool => tool.value === value)!) : tools.slice(0, 3)).map(renderTool)}
       <details className="drawing-more" ref={moreRef} onKeyDown={(event) => { if (event.key === "Escape") { event.currentTarget.open = false; event.currentTarget.querySelector("summary")?.focus(); } }}>
         <summary title="更多绘图工具"><Ellipsis size={19} /><span className="sr-only">更多绘图工具</span></summary>
-        <div className="drawing-more-tools">{tools.slice(3).map(renderTool)}</div>
+        <div className="drawing-more-tools">{(compact ? tools.filter(tool => !compactPrimary.includes(tool.value)) : tools.slice(3)).map(renderTool)}</div>
       </details>
       <div className="drawing-divider" />
       <button

@@ -1303,7 +1303,9 @@ describe("TradeReviewWorkspace", () => {
       screen.getByRole("button", { name: /^打开小鹏汽车第2次交易/ }),
     );
     expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
-    expect(screen.getByText("当前决策首笔成交")).toBeInTheDocument();
+    expect(screen.queryByText("当前决策首笔成交")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "持仓过程" }));
+    expect(await screen.findByText("当前决策首笔成交")).toBeInTheDocument();
     expect(document.querySelector(".recall-selected-fill")).toHaveTextContent(
       "买 100 @ 11",
     );
@@ -1472,7 +1474,9 @@ describe("TradeReviewWorkspace", () => {
     );
 
     expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
-    expect(screen.getByText("当前决策首笔成交")).toBeInTheDocument();
+    expect(screen.queryByText("当前决策首笔成交")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "持仓过程" }));
+    expect(await screen.findByText("当前决策首笔成交")).toBeInTheDocument();
     expect(document.querySelector(".recall-selected-fill")).toHaveTextContent(
       "买 100 @ 10",
     );
@@ -1602,7 +1606,9 @@ describe("TradeReviewWorkspace", () => {
     expect(
       await screen.findByLabelText("图表工具栏"),
     ).toBeInTheDocument();
-    expect(screen.getByText("当前决策首笔成交")).toBeInTheDocument();
+    expect(screen.queryByText("当前决策首笔成交")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "持仓过程" }));
+    expect(await screen.findByText("当前决策首笔成交")).toBeInTheDocument();
     expect(document.querySelector(".recall-selected-fill")).toHaveTextContent(
       "买 50 @ 10",
     );

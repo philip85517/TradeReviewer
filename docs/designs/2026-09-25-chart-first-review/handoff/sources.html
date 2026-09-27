@@ -1,0 +1,89 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>风格与业务证据索引 · TradeReview</title><link rel="stylesheet" href="docs.css"></head><body><header><strong>TRADE / REVIEW</strong><span>DESIGN HANDOFF · v1.0 · 2026.09.25 · 待开发定稿</span></header><div class="layout"><nav class="sidebar" aria-label="开发交付导航"><a class="" href="index.html">交付总览</a><a class="" href="requirements.html">需求规格</a><a class="" href="elements.html">元素与视觉规范</a><a class="" href="demo/index.html#stage1">打开视觉 demo ↗</a><a class="" href="task.html">后续开发任务</a><a class="" href="verification.html">验收与实现边界</a><a class="active" href="sources.html">来源与项目工作流</a><a class="" href="readme.html">启动与文件说明</a><div class="toc"></div></nav><main><h1>风格与业务证据索引</h1>
+<p>核对日期：2026-09-25。源仓库 TradeReview，基线 b166d5626c72f2e0a4a7be98d89eb28bf1a036f3。下列为仓库相对路径；交付包只包含设计资料，不复制产品源码或交易数据库。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>证据</th>
+<th>仓库位置</th>
+<th>本期继承内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>全局样式</td>
+<td>app/globals.css</td>
+<td>深蓝灰表面、蓝色选中/焦点、圆角和应用响应式</td>
+</tr>
+<tr>
+<td>Recall 样式</td>
+<td>app/components/recall/recall.css</td>
+<td>顶栏、输入、指标、保存与导出对话框</td>
+</tr>
+<tr>
+<td>字体</td>
+<td>app/layout.tsx</td>
+<td>Geist Sans / Mono</td>
+</tr>
+<tr>
+<td>图表</td>
+<td>app/components/chart/replay-chart.tsx</td>
+<td>网格、坐标轴、用户显示与配色设置</td>
+</tr>
+<tr>
+<td>配色定义</td>
+<td>app/lib/storage/chart-settings.ts</td>
+<td>teal-red / green-red / blue-orange；保留已存设置</td>
+</tr>
+<tr>
+<td>工具栏</td>
+<td>app/components/chart/drawing-toolbar.tsx</td>
+<td>Lucide 图标及已有工具</td>
+</tr>
+<tr>
+<td>Text</td>
+<td>app/lib/chart/text-geometry.ts</td>
+<td>字号、行高、尺寸与既有用户样式</td>
+</tr>
+<tr>
+<td>Recall 文档</td>
+<td>app/lib/recall/types.ts</td>
+<td>回合/决策/快照、行情与成交双游标、版本</td>
+</tr>
+<tr>
+<td>Recall 工作区</td>
+<td>app/components/recall/recall-workspace.tsx</td>
+<td>现有主流程接入点</td>
+</tr>
+<tr>
+<td>旧计划 / 指标</td>
+<td>app/lib/reviews/types.ts / review-metrics.ts</td>
+<td>自由文本、手填风险与现有指标边界</td>
+</tr>
+<tr>
+<td>回放</td>
+<td>app/lib/replay/recall-replay.ts</td>
+<td>只揭示可知且已完成的 K 线</td>
+</tr>
+<tr>
+<td>持久化</td>
+<td>app/lib/recall/server-repository.ts</td>
+<td>SQLite 与版本检查</td>
+</tr>
+<tr>
+<td>保存契约</td>
+<td>app/api/storage/recall/route.test.ts</td>
+<td>复用已有集成切面</td>
+</tr>
+<tr>
+<td>导出</td>
+<td>app/lib/recall-export/manifest.ts / export.test.ts</td>
+<td>已留存内容与现有 Markdown/图片导出</td>
+</tr>
+<tr>
+<td>主路径测试</td>
+<td>app/components/recall/recall-integration.recall-review.test.tsx</td>
+<td>现有工作区用户流程</td>
+</tr>
+</tbody></table></div>
+<p>背景快照：<a href="references/CONTEXT.html">领域词汇</a>、<a href="references/TRADING-DOMAIN.html">指标口径</a>、<a href="references/EXISTING-RECALL.html">旧 Recall 规格</a>、<a href="references/WORKFLOW.html">项目工作流</a>、<a href="references/ISSUE-TRACKER.html">任务跟踪</a>。早期规格与当前运行代码有差异时，本期最终需求明确说明选择，不能从历史资料静默推翻。</p>
+<p>demo 无外部资源：自绘 SVG 蜡烛、线性图标、系统字体后备。正式实现复用现有图表/绘图组件、应用字体和 Lucide。浏览器校验图见 <a href="images/mobile-review.png">手机侧栏</a>。</p>
+<footer>TradeReview · v1.0 已确认设计。合成示例；实际数据库保存与 PPTX 导出待开发。</footer></main></div></body></html>

@@ -23,11 +23,13 @@
     "@paddleocr/paddleocr-js": "0.4.2",
     "decimal.js": "10.6.0",
     "drizzle-orm": "0.45.2",
+    "jszip": "3.10.2",
     "lightweight-charts": "5.2.0",
     "lucide-react": "1.26.0",
     "next": "16.2.11",
     "onnxruntime-web": "1.24.3",
     "pdfjs-dist": "6.1.200",
+    "pptxgenjs": "4.0.1",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"

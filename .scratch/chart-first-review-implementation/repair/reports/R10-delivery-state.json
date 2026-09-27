@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-09-26T23:16:32.167067+00:00",
+  "preview": "http://127.0.0.1:3049/",
+  "serviceSession": 64557,
+  "files": {
+    "app/components/chart/replay-chart.tsx": "2b24280ebf4d2c914ca8cc7d1866883ab6d41c4c27e203859b10431972ceb6a4",
+    "app/components/recall/recall-workspace.tsx": "9faa802ca27b8c2dca8c3e219e26301063e18938ef68e7a9b5dad5f01010d8e3",
+    "app/components/recall/recall.css": "d5f9a7259173f39eaba06c2082191e989992f8071371836953385550e0b8c4ba"
+  },
+  "status": "integration-pending",
+  "requiredUnverified": [
+    "real-device software keyboard for price and exit-reason/Chinese input"
+  ],
+  "noRemoteChanges": true
+}

@@ -1,0 +1,31 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>主图优先三阶段复盘：结构化计划、执行记录与演示导出 · TradeReview</title><link rel="stylesheet" href="docs.css"></head><body><header><strong>TRADE / REVIEW</strong><span>DESIGN HANDOFF · v1.0 · 2026.09.25 · 待开发定稿</span></header><div class="layout"><nav class="sidebar" aria-label="开发交付导航"><a class="" href="index.html">交付总览</a><a class="" href="requirements.html">需求规格</a><a class="" href="elements.html">元素与视觉规范</a><a class="" href="demo/index.html#stage1">打开视觉 demo ↗</a><a class="active" href="task.html">后续开发任务</a><a class="" href="verification.html">验收与实现边界</a><a class="" href="sources.html">来源与项目工作流</a><a class="" href="readme.html">启动与文件说明</a><div class="toc"><a class="" href="#section-1">What to build</a><a class="" href="#section-2">Blocked by</a><a class="" href="#section-3">Acceptance criteria</a><a class="" href="#section-4">Design delivery</a></div></nav><main><h1>主图优先三阶段复盘：结构化计划、执行记录与演示导出</h1>
+<p>ID: chart-first-review-01
+Status: ready-for-agent
+Labels: ready-for-agent
+Priority: high
+State: open
+Assignee: unassigned</p>
+<h2 id="section-1">What to build</h2>
+<p>以<a href="requirements.html">完整 UI 与数据规格</a>和<a href="demo/index.html">七页设计草案</a>为开发依据，实现主图优先工作区、三阶段快照组织、可查询的计划／执行数据和三图一表演示导出。用户已确认阶段拆分；以 v1.0 最终需求和<a href="elements.html">元素规范</a>为准。本票供后续启动产品开发，当前仅完成设计交付包。</p>
+<h2 id="section-2">Blocked by</h2>
+<p>无前置任务。后续实现先核对规格及现有工作区版本，并按项目协调者＋Luna 工作方式拆分有明确文件所有权的实施任务。</p>
+<h2 id="section-3">Acceptance criteria</h2>
+<ul>
+<li><input disabled="" type="checkbox"> 沿用现有深蓝灰/蓝色交互主题、Geist/Lucide 和用户图表设置，按元素规范验收。</li>
+<li><input disabled="" type="checkbox"> 主图优先，顶部和底部压缩，结构记录使用按阶段嵌入的侧栏。</li>
+<li><input disabled="" type="checkbox"> 买入前录入价格／仓位计划，持仓侧栏只读原计划，执行评价仅在事后复盘逐次填写。</li>
+<li><input disabled="" type="checkbox"> 侧栏展开时图表与价格轴仍可见，价格标签与右栏不重叠；关闭／切换保留草稿。</li>
+<li><input disabled="" type="checkbox"> 窄屏将侧栏下置，并保留紧凑价格上下文，不使用遮图全屏表单。</li>
+<li><input disabled="" type="checkbox"> 支持逐根揭示及图上 Text；输入法和图表快捷键互不干扰。</li>
+<li><input disabled="" type="checkbox"> 三阶段不替代逐笔交易决策与快照，旧快照保持独立。</li>
+<li><input disabled="" type="checkbox"> 计划／实际、仓位／资金基数、费用／净盈亏和计划 R／实际 R 口径明确。</li>
+<li><input disabled="" type="checkbox"> 支持部分退出、提前退出三态及原因、计划修订，保留原始成交。</li>
+<li><input disabled="" type="checkbox"> 结构化字段服务端持久化，可查询，具备修订与来源。</li>
+<li><input disabled="" type="checkbox"> 四页演示导出为三张阶段图＋可编辑汇总表，缺失阶段不伪造。</li>
+<li><input disabled="" type="checkbox"> 样例净盈亏为 6,760 CNY、实际 R 为 1.69，空值不能作为零。</li>
+<li><input disabled="" type="checkbox"> 通过完整用户路径、数值边界、保存恢复／冲突及导出验收。</li>
+<li><input disabled="" type="checkbox"> 写入验收使用独立数据库；协调者完成浏览器验收并提供运行中的预览入口。</li>
+</ul>
+<h2 id="section-4">Design delivery</h2>
+<p>本票发布即写入本地 Markdown，不创建远程 issue。ready-for-agent 是本地 triage 状态，未进行业务实现或远端发布。</p>
+<footer>TradeReview · v1.0 已确认设计。合成示例；实际数据库保存与 PPTX 导出待开发。</footer></main></div></body></html>

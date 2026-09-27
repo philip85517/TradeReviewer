@@ -1,0 +1,112 @@
+/* TradeReview visual alignment: app shell and Recall workspace tokens. */
+:root { color-scheme: dark;
+  --page: #0b1220; --surface: #111a2b; --surface-elevated: #182337;
+  --line: #243145; --text: #e7edf6; --muted: #adbbcf; --faint: #9cacc2;
+  --blue: #2f80ed; --blue-soft: rgba(47,128,237,.14); --gold: #f3ba2f;
+  --green: #26a69a; --red: #ef5350; --chart: #101722; --recall: #0b1018;
+  --input: #111b29; --tooltip: #151e2b;
+}
+
+html body { background: var(--page); color: var(--text); font-family: var(--font-geist-sans, system-ui), "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 14px; font-variant-numeric: tabular-nums; }
+html body .rail { background: var(--surface); border-color: var(--line); }
+html body .brand-mark { width: 32px; height: 32px; border-radius: 8px; background: var(--blue); color: #fff; box-shadow: none; }
+html body .brand, html body .rail h1 { font-family: var(--font-geist-sans, system-ui), "PingFang SC", sans-serif; }
+html body .rail h1 { font-size: 20px; color: var(--text); }
+html body .rail p, html body .subtle, html body .supporting-intro { color: var(--muted); }
+html body .nav a { color: var(--muted); border-radius: 6px; }
+html body .nav a:hover, html body .nav a.active { color: var(--text); background: var(--blue-soft); box-shadow: none; }
+html body .nav b, html body .number, html body .supporting-kicker { color: var(--faint); font-family: var(--font-geist-mono, ui-monospace), monospace; }
+html body .badge { border-color: var(--line); border-radius: 8px; background: var(--surface-elevated); color: var(--muted); }
+html body .badge strong { color: var(--text); }
+html body .page-head { border-color: var(--line); }
+html body .page-head h2, html body .stage-caption h3 { font-family: var(--font-geist-sans, system-ui), "PingFang SC", sans-serif; color: var(--text); }
+html body .page-head h2 { font-size: 29px; }
+html body .status span, html body .pill { border-color: var(--line); background: var(--surface-elevated); color: var(--muted); }
+html body .status span:nth-child(2) { border-color: rgba(243,186,47,.35); background: rgba(243,186,47,.08); color: #f2cf72; }
+html body .card, html body .legend { border-color: var(--line); border-radius: 8px; background: var(--surface); color: var(--text); box-shadow: none; }
+html body .card p, html body .eval, html body .legend, html body .legend li { color: var(--muted); }
+html body .legend { border-left-color: var(--blue); background: var(--surface-elevated); }
+html body .tag-rec, html body .pros { color: #8cbdff; border-color: rgba(47,128,237,.4); }
+html body .cons { color: #ffaaa7; }
+
+html body .workspace { border-radius: 8px; background: var(--recall); color: var(--text); box-shadow: none; }
+html body .wtop { background: var(--surface); border-color: var(--line); }
+html body .stage-tabs { background: var(--page); }
+html body .stage-tabs button { color: var(--muted); }
+html body .stage-tabs button.active, html body .stage-tabs button:hover { background: var(--blue-soft); color: var(--text); }
+html body .chart-wrap, html body .chart-column { background: var(--chart); }
+html body .chart { background: var(--chart); }
+html body .gridline { stroke: #1c2634; }
+html body .axis { fill: #8392a7; font-family: var(--font-geist-mono, ui-monospace), monospace; }
+html body .plan-line { stroke: var(--gold); }
+html body .actual-line { stroke: #72c6c9; }
+html body .actual-diamond { fill: #72c6c9; stroke: #d9ffff; }
+html body .price-tag rect { fill: #182337; }
+html body .price-label { fill: #f2cf72; }
+html body .drawbar { background: var(--surface-elevated); border-color: var(--line); border-radius: 6px; }
+html body .drawbar button { color: var(--muted); }
+html body .drawbar button:hover, html body .drawbar button.selected { background: var(--blue-soft); color: var(--text); }
+html body .bottom-tools { background: var(--surface); border-color: var(--line); color: var(--muted); }
+html body .bottom-tools button, html body .metric-chip { border-color: var(--line); background: var(--input); color: var(--muted); border-radius: 6px; }
+html body .bottom-tools button:hover, html body .metric-chip:hover { border-color: var(--blue); color: var(--text); }
+html body .metric-chip b, html body .metric b { color: #f2cf72; }
+html body .annot, html body .popover { background: var(--tooltip); border-color: rgba(243,186,47,.5); color: var(--text); box-shadow: none; }
+html body .annot.cyan { background: #152a33; border-color: #4e9da2; }
+html body .annot small { color: var(--muted); }
+html body .drawer, html body .phase-sidebar { background: var(--surface); border-color: var(--line); }
+html body .phase-sidebar { border-radius: 8px; min-height: 0; overflow: auto; }
+html body .phase-sidebar input, html body .phase-sidebar select, html body .fields input { min-height: 36px; padding: 7px; background: var(--input); border-color: var(--line); color: var(--text); border-radius: 6px; font-size: 14px; }
+html body .phase-sidebar .side-head h3, html body .phase-sidebar .side-summary b { color: var(--text); }
+html body .phase-sidebar .side-head small, html body .phase-sidebar p, html body .phase-sidebar .side-summary span { color: var(--muted); }
+html body .phase-sidebar .side-metrics div, html body .side-note { background: var(--surface-elevated); border-color: var(--line); }
+html body .record-modes button, html body .choices button, html body .record-stage-map button { border-color: var(--line); background: var(--input); color: var(--muted); border-radius: 6px; }
+html body .record-modes button.active, html body .choices button.active { border-color: var(--blue); background: var(--blue-soft); color: var(--text); }
+html body .record-stage-map { background: var(--line); }
+html body .record-stage-map article { background: var(--surface); border-color: var(--line); }
+html body .record-stage-map p { color: var(--muted); }
+html body .record-stage-map button { min-height: 36px; color: #b7d3ff; }
+html body .record-row { border-color: var(--line); color: var(--text); }
+html body .record-row span, html body .code, html body .notes li { color: var(--muted); }
+html body .code { background: var(--surface-elevated); border-color: var(--line); border-radius: 6px; }
+html body .user-note, html body .review-callout, html body .toast { background: var(--tooltip); border-color: var(--blue); color: var(--text); box-shadow: none; }
+html body .tool-hint { background: var(--blue-soft); color: #b7d3ff; }
+html body .att-tags span { background: var(--blue-soft); color: #b7d3ff; }
+
+html body button:focus-visible, html body input:focus-visible, html body select:focus-visible, html body [contenteditable="true"]:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+html body .supporting-board.supporting-board .supporting-title { color: var(--text); font: 24px/1.2 var(--font-geist-sans, system-ui), "PingFang SC", sans-serif; }
+html body .supporting-board.supporting-board .supporting-panel { background: var(--surface); border-color: var(--line); border-radius: 8px; box-shadow: none; }
+html body .supporting-board.supporting-board .supporting-panel h3, html body .supporting-board.supporting-board .panel-copy p { color: var(--text); }
+html body .supporting-board.supporting-board .panel-copy p, html body .supporting-board.supporting-board .panel-notes { color: var(--muted); }
+html body .supporting-board.supporting-board .panel-notes strong { color: #8cbdff; }
+html body .supporting-board.supporting-board .panel-stage { background: var(--chart); border-radius: 6px; }
+html body .supporting-board.supporting-board .panel-stage .float-card { background: var(--tooltip); border-color: rgba(243,186,47,.5); color: var(--text); box-shadow: none; }
+html body .supporting-board.supporting-board .panel-stage .right-card { background: rgba(17,26,43,.96); border-color: var(--line); }
+html body .supporting-board.supporting-board .supporting-legend { background: var(--surface-elevated); border-left-color: var(--blue); color: var(--muted); }
+html body .supporting-board.supporting-board .export-slide { background: var(--surface); border-color: var(--line); border-radius: 8px; box-shadow: none; }
+html body .supporting-board.supporting-board .export-slide .chart { background: var(--chart); }
+html body .supporting-board.supporting-board th { color: #b7d3ff; }
+html body .supporting-board.supporting-board td { color: var(--text); border-color: var(--line); }
+html body .supporting-board.supporting-board .table-note { color: var(--muted); }
+
+html body .chart-column .drawbar { transform: none; }
+html body .drawbar [data-tool="more"] { display: none; }
+html body .phase-sidebar, html body .drawer { scrollbar-width: thin; scrollbar-color: #3b5374 var(--surface); }
+html body button, html body select { min-height: 36px; }
+@media (max-width: 700px) {
+  html body .chart-column .drawbar { transform: none; }
+  html body .drawbar button { width: 44px; height: 44px; min-width: 44px; min-height: 44px; }
+  html body .drawbar [data-tool="0"], html body .drawbar [data-tool="1"], html body .drawbar [data-tool="more"] { display: grid; }
+  html body .drawbar button:not([data-tool="0"]):not([data-tool="1"]):not([data-tool="more"]) { display: none; }
+  html body .phase-sidebar input, html body .phase-sidebar select, html body button, html body select { min-height: 44px; }
+  html body .phase-sidebar { max-height: 310px; overflow-y: auto; }
+  html body .page-head h2 { font-size: 24px; }
+}
+
+/* Final handoff: readable auxiliary type and full-size tool hit targets. */
+html body .drawbar { width: 46px; }
+html body .drawbar button { width: 36px; min-width: 36px; height: 36px; display: grid; place-items: center; }
+html body .side-head small, html body .side-foot, html body .capital-details summary,
+html body .phase-sidebar .side-summary, html body .phase-sidebar .record-modes button,
+html body .phase-sidebar .choices button, html body .user-note small { font-size: 12px; }
+@media (max-width: 1000px) { html body .drawbar { width: auto; } }
+@media (max-width: 700px) { html body .drawbar button { width: 44px; min-width: 44px; height: 44px; } }

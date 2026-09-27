@@ -1,0 +1,26 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/f7a5/TradeReview
+
+ ❯ app/lib/recall-export/pptx.test.ts (11 tests | 1 failed | 10 skipped) 363ms
+     × declares only package parts that exist in the generated multi-slide presentation 361ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/recall-export/pptx.test.ts > PPTX frozen export > declares only package parts that exist in the generated multi-slide presentation
+AssertionError: /ppt/slideMasters/slideMaster2.xml: expected null not to be null
+ ❯ app/lib/recall-export/pptx.test.ts:61:77
+     59|         for (const override of Array.from(overrides)) {
+     60|             const partName = override.getAttribute('PartName')!;
+     61|             expect(archive.file(partName.replace(/^\//, '')), partName…
+       |                                                                             ^
+     62|         }
+     63|         expect(archive.file('ppt/slideMasters/slideMaster1.xml')).not.…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 skipped (11)
+   Start at  22:12:25
+   Duration  2.52s (transform 631ms, setup 227ms, import 601ms, tests 363ms, environment 1.04s)
+

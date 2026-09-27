@@ -1,0 +1,69 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/f7a5/TradeReview
+
+ ✓ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > fresh pre-entry next bar reveals one bar, playback timer reveals one more 615ms
+ ✓ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > fresh pre-entry next decision reaches first fill then second 345ms
+ ✓ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > selecting first decision then next bar increases candles 241ms
+ × .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > future navigation labels remain redacted before explicit reveal 100ms
+   → expected '第 1 次 · 已平仓' not to contain '平仓'
+ × .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > returning to pre-entry then next decision must reach first decision not last holding cursor 523ms
+   → expected 'fill-2' to be 'fill-1' // Object.is equality
+ × .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > marks exposure after selecting future decision and returning to pre-entry 156ms
+   → expected '复盘补记 · 买入事实尚未揭示' to contain '已看后续补记'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > future navigation labels remain redacted before explicit reveal
+AssertionError: expected '第 1 次 · 已平仓' not to contain '平仓'
+
+Expected: "平仓"
+Received: "第 1 次 · 已平仓"
+
+ ❯ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx:327:71
+    325|   if (!document.querySelector(".recall-decision-wrap")) fireEvent.clic…
+    326|   expect(decisionButton(2).textContent).not.toContain("卖出");
+    327|   expect(screen.getByRole("combobox", {name:"交易回合"}).textContent).not.…
+       |                                                                       ^
+    328|  });
+    329|  it("returning to pre-entry then next decision must reach first decisi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > returning to pre-entry then next decision must reach first decision not last holding cursor
+AssertionError: expected 'fill-2' to be 'fill-1' // Object.is equality
+
+Expected: "fill-1"
+Received: "fill-2"
+
+ ❯ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx:337:18
+    335|   expect(fill()).toBe(null);
+    336|   fireEvent.click(screen.getByRole("button", {name:"下一笔决策"})); await s…
+    337|   expect(fill()).toBe("fill-1");
+       |                  ^
+    338|  });
+    339|  it("marks exposure after selecting future decision and returning to p…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > marks exposure after selecting future decision and returning to pre-entry
+AssertionError: expected '复盘补记 · 买入事实尚未揭示' to contain '已看后续补记'
+
+Expected: "已看后续补记"
+Received: "复盘补记 · 买入事实尚未揭示"
+
+ ❯ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx:344:75
+    342|   fireEvent.click(decisionButton(2)); expect(fill()).toBe("fill-2");
+    343|   fireEvent.click(screen.getByRole("button", {name:"买入前判断",exact:true}…
+    344|   expect(document.querySelector(".recall-phase-provenance")?.textConte…
+       |                                                                           ^
+    345|  });
+    346|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 3 passed (6)
+   Start at  15:47:54
+   Duration  5.20s (transform 686ms, setup 402ms, import 970ms, tests 1.98s, environment 1.57s)
+

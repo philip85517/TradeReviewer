@@ -1,0 +1,31 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/f7a5/TradeReview
+
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > requires a comparable source plan for price risk only 12ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > uses corrected initial comparison prices even without a new risk 2ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > labels target realization net over gross and risk method 1ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > conserves the final minor-unit fee remainder 1ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > rejects cross currency and unknown cost or quantity 1ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > uses settlement gross exactly and never subtracts settlement fees twice 1ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > requires episode budget before second opening decision but permits split fills 3ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > rejects adjusted marks and incompatible plan prices 2ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > conserves gross cost through additions after partial exits 1ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > does not fall back past a retained correction missing risk 1ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > ignores a future correction beyond either cutoff 1ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > conserves exact golden partial fees and frozen R 1ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > does not reveal later fills from complete captured payload 1ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > keeps gross known when fees missing 1ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > does not let future episode accuracy contaminate an early visible ledger 0ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > rejects unknown episode budget execution cutoff 1ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > handles short mirror 1ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > hides all actual facts before entry 0ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > calculates a simulation episode when every visible execution belongs to the same run 2ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > rejects a visible execution from a different simulation run without returning zero metrics 0ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > rejects a visible live and simulation execution mixed in one episode without pseudo-zero output 0ms
+ ✓ app/lib/recall/actual-metrics.test.ts > actual metrics > ignores a future execution from a different run until that execution is revealed 1ms
+
+ Test Files  1 passed (1)
+      Tests  22 passed (22)
+   Start at  05:57:41
+   Duration  1.60s (transform 260ms, setup 181ms, import 301ms, tests 34ms, environment 880ms)
+

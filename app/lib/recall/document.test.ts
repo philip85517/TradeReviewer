@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { TradeEpisode, TradeExecution } from "../trades/types";
 import {
+  cloneRecallDocument,
   completeRecallDocument,
   createRecallDocument,
   deleteRecallSnapshot,
@@ -11,6 +12,7 @@ import {
   retainRecallSnapshot,
   reorderRecallSnapshots,
   resolveRecallReconciliation,
+  resolveRecallPhaseContext,
   splitRecallDecision,
   updateRecallSnapshot,
   validateRecallDocument,
@@ -269,4 +271,122 @@ describe("Recall document domain", () => {
     validateRecallDocument(resolved);
     expect(completeRecallDocument(resolved, refreshed, "2026-01-04T00:00:00.000Z").status).toBe("completed");
   });
+});
+
+describe("phase metadata", () => {
+  function phasedDocument() {
+    const document = createRecallDocument(episode([
+      execution("one", "2026-01-01"), execution("two", "2026-01-02"),
+    ]));
+    document.working.phase = "holding";
+    document.working.hasSeenFuture = true;
+    document.working.phaseContexts = { holding: {
+      mode: "decision", decisionId: "two", timeframe: "1D", cursor: "2026-01-02",
+      viewport: { version: 1, logicalRange: { from: 1, to: 8 }, barSpacing: 8, rightOffset: 4, width: 800, height: 400 },
+      executionCursor: "two", drawings: [{ ...drawing("note"), recallOwnerId: "two", recallHasSeenFuture: true }],
+    } };
+    return document;
+  }
+
+  it.each([
+    { phase: "future" }, { hasSeenFuture: "yes" },
+    { phaseContexts: { invalid: {} } },
+    { phaseContexts: { holding: { mode: "decision", decisionId: "missing", drawings: [], timeframe: "1D", cursor: "day", executionCursor: "fill" } } },
+  ])("rejects malformed phase metadata %j", (metadata) => {
+    const document = phasedDocument();
+    Object.assign(document.working, metadata);
+    expect(() => validateRecallDocument(document)).toThrow();
+  });
+
+  it("validates snapshot and drawing future evidence without fabricating legacy evidence", () => {
+    const document = phasedDocument();
+    const retained = retainRecallSnapshot(document, { ...snapshot("phase", "two"), phase: "holding", hasSeenFuture: false });
+    document.working.phaseContexts!.holding!.drawings[0].text = "changed";
+    expect(retained.working.phaseContexts!.holding!.drawings[0].text).toBe("note-note");
+    document.working.phaseContexts!.holding!.viewport!.logicalRange!.from = 99;
+    expect(retained.working.phaseContexts!.holding!.viewport!.logicalRange!.from).toBe(1);
+    expect(retained.snapshots[0].hasSeenFuture).toBe(false);
+    Object.assign(retained.snapshots[0], { phase: "invalid" });
+    expect(() => validateRecallDocument(retained)).toThrow();
+    const legacy = createRecallDocument(episode([execution("one", "2026-01-01")]));
+    expect(legacy.working).not.toHaveProperty("phase");
+    Object.assign(legacy.working, { drawings: [{ ...drawing("bad"), recallHasSeenFuture: "yes" }] });
+    expect(() => validateRecallDocument(legacy)).toThrow();
+  });
+
+  it("remaps phase contexts on merge and split using the execution boundary without mutation", () => {
+    const original = phasedDocument();
+    const merged = mergeRecallDecisions(original, ["one", "two"]);
+    expect(merged.working.phaseContexts!.holding!.decisionId).toBe("one");
+    expect(merged.working.phaseContexts!.holding!.drawings[0].recallOwnerId).toBe("one");
+    expect(original.working.phaseContexts!.holding!.decisionId).toBe("two");
+    const split = splitRecallDecision(merged, "one", [{ executionIds: ["one"] }, { id: "second", executionIds: ["two"] }]);
+    expect(split.working.phaseContexts!.holding!.decisionId).toBe("second");
+    expect(split.working.phaseContexts!.holding!.drawings[0].recallOwnerId).toBe("second");
+    expect(split.working.hasSeenFuture).toBe(true);
+    expect(() => validateRecallDocument(split)).not.toThrow();
+    merged.working.phaseContexts!.holding!.executionCursor = "legacy-date";
+    expect(splitRecallDecision(merged, "one", [{ executionIds: ["one"] }, { id: "second", executionIds: ["two"] }]).status).toBe("needs-confirmation");
+  });
+
+  it.each(["invalid", "2026-02-30T00:00:00Z", "2026-01-03T00:00:00Z", 123])("rejects invalid or future revealed candle boundary %s", (boundary) => {
+    const document = phasedDocument();
+    Object.assign(document.working.phaseContexts!.holding!, { revealedCandleCursor: boundary });
+    expect(() => validateRecallDocument(document)).toThrow(/revealedCandleCursor/);
+  });
+
+  it.each([null, "2026-01-01T00:00:00Z", "2026-01-02", "2026-01-02T08:00:00+08:00"])("round trips actual candle boundary %s independently of aligned cursor", (boundary) => {
+    const document = phasedDocument();
+    document.working.phaseContexts!.holding!.revealedCandleCursor = boundary;
+    expect(() => validateRecallDocument(document)).not.toThrow();
+    const copied = cloneRecallDocument(document);
+    document.working.phaseContexts!.holding!.revealedCandleCursor = "2025-12-31T00:00:00Z";
+    expect(copied.working.phaseContexts!.holding!.revealedCandleCursor).toBe(boundary);
+    expect(copied.working.phaseContexts!.holding!.cursor).toBe("2026-01-02");
+    expect(copied.working.phaseContexts!.holding!.executionCursor).toBe("two");
+  });
+
+  it("explicitly reassigns an orphan phase context to global before removing its decision", () => {
+    const reconciled = reconcileRecallDocument(phasedDocument(), episode([execution("one", "2026-01-01")])).document;
+    const original = reconciled.working.phaseContexts!.holding!;
+    const reassigned = resolveRecallPhaseContext(reconciled, "holding", "global");
+    const context = reassigned.working.phaseContexts!.holding!;
+    expect(context).toMatchObject({ mode: "global", decisionId: "global", cursor: original.cursor, executionCursor: original.executionCursor, viewport: original.viewport });
+    expect(context.drawings[0]).toMatchObject({ text: "note-note", recallOwnerId: "global", recallHasSeenFuture: true });
+    expect(original.decisionId).toBe("two");
+    expect(reassigned.reconciliation).toEqual(reconciled.reconciliation);
+    const resolved = resolveRecallReconciliation(reassigned, { removedExecutionIds: ["two"], decisionIdsToRemove: ["two"] });
+    expect(resolved.reconciliation!.stale).toBe(false);
+    expect(resolved.working.phaseContexts!.holding!.drawings[0].text).toBe("note-note");
+    expect(() => validateRecallDocument(resolved)).not.toThrow();
+  });
+
+  it("validates explicit phase reassignment and preserves unrelated drawing owners", () => {
+    const document = phasedDocument();
+    document.working.phaseContexts!.holding!.drawings.push({ ...drawing("global-note"), recallOwnerId: "global" });
+    expect(() => resolveRecallPhaseContext(document, "holding", "missing")).toThrow(/unknown decision/);
+    expect(() => resolveRecallPhaseContext(document, "pre-entry", "one")).toThrow(/phase context/);
+    const reassigned = resolveRecallPhaseContext(document, "holding", "one");
+    expect(reassigned.working.phaseContexts!.holding!).toMatchObject({ mode: "decision", decisionId: "one" });
+    expect(reassigned.working.phaseContexts!.holding!.drawings.map((item) => item.recallOwnerId)).toEqual(["one", "global"]);
+  });
+
+  it("requires explicit handling of phase content before removing a reconciled decision", () => {
+    const reconciled = reconcileRecallDocument(phasedDocument(), episode([execution("one", "2026-01-01")])).document;
+    expect(reconciled.working.phaseContexts!.holding!.drawings).toHaveLength(1);
+    expect(() => resolveRecallReconciliation(reconciled, { removedExecutionIds: ["two"], decisionIdsToRemove: ["two"] })).toThrow(/phase context/);
+  });
+});
+
+it('blocks completion of merged rated decisions until current evaluation is explicitly selected',()=>{
+ const e=episode([execution('a','2026-01-01'),execution('b','2026-01-02')]);
+ let d=createRecallDocument(e);d=mergeRecallDecisions(d,['a','b'],'a');
+ const first:import('./exit-evaluations').RecallExitEvaluationDraft={id:'draft-one',evaluationId:'one',decisionId:'a',earlyExit:'uncertain',adherence:'no-plan',reason:null,reasonDetail:null,comparedPlanVersionId:null,comparedTargetId:null,tags:[],tagDictionaryVersion:'manual-v1',evidence:[],source:'manual-retrospective',recordedBy:'user',recordedPhase:'post-review',recordedAt:'2026-01-03',knowledgeCutoff:{cursor:'2026-01-03',executionCursor:'b'},hasSeenFuture:true};
+ d.exitEvaluations={drafts:[first,{...first,id:'draft-two',evaluationId:'two'}],versions:[],associations:[{evaluationId:'one',decisionId:'a',status:'linked'},{evaluationId:'two',decisionId:'a',status:'linked'}]};
+ expect(()=>completeRecallDocument(d,e)).toThrow(/explicit current selection/);
+ d.exitEvaluations.activeEvaluationByDecision=[{decisionId:'a',evaluationId:'one'}];
+ expect(()=>completeRecallDocument(d,e)).toThrow(/missing retained snapshot/);
+ expect(d.exitEvaluations.drafts).toHaveLength(2);
+ d.exitEvaluations.activeEvaluationByDecision=[{decisionId:'a',evaluationId:'missing'}];
+ expect(()=>validateRecallDocument(d)).toThrow(/selection/);
 });

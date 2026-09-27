@@ -157,12 +157,18 @@ export function buildTradeEpisodes(
     const accuracyReasons = reasonsForAccuracy([...(episode?.accuracy?.reasons ?? []), ...reasons]);
     if (episode && accuracyReasons.length) episode.accuracy = { pnl: "unavailable", reasons: accuracyReasons };
   };
+  // Evidence objects recur throughout timeline and output assembly. Cache only
+  // for this build so first matching execution semantics and fresh data survive.
+  const evidenceKeys = new WeakMap<StatementPosition | StatementEvent, string | undefined>();
   const evidenceKey = (item: StatementPosition | StatementEvent) => {
+    if (evidenceKeys.has(item)) return evidenceKeys.get(item);
     // Broker inventory is evidence for actual fills only, never a simulation run.
     const template = executions.find(execution =>
       tradeNatureOf(execution) !== "simulation" && execution.accountId === item.accountId &&
       item.symbol && item.market && canonicalInstrumentId(execution.instrument.symbol, execution.instrument.market) === canonicalInstrumentId(item.symbol, item.market));
-    return template ? episodeKey(template) : undefined;
+    const key = template ? episodeKey(template) : undefined;
+    evidenceKeys.set(item, key);
+    return key;
   };
   type Entry = { at: string; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent; uncertaintyKey?: string };
   const timeline: Entry[] = executions.filter(e => !new Decimal(e.quantity).isZero()).map(execution => ({ at: replayExecutionAt(execution), execution }));

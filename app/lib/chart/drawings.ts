@@ -68,6 +68,7 @@ export type LegacyDrawing = {
   textWidth?: number;
   fontSize?: 12 | 14 | 16 | 18 | 24 | 32;
   background?: string;
+  recallHasSeenFuture?: boolean;
   recallOwnerId?: string;
   textRevision?: number;
 };
@@ -92,6 +93,7 @@ export type NormalizedDrawing = Omit<
   fontSize?: 12 | 14 | 16 | 18 | 24 | 32;
   background?: string;
   /** Recall metadata is optional so chart callers remain independent. */
+  recallHasSeenFuture?: boolean;
   recallOwnerId?: string;
   textRevision?: number;
 };
@@ -151,6 +153,9 @@ function canonicalTool(
 export function validateDrawing(
   drawing: LegacyDrawing | NormalizedDrawing,
 ) {
+  if (drawing.recallHasSeenFuture !== undefined && typeof drawing.recallHasSeenFuture !== "boolean") {
+    throw new Error("recallHasSeenFuture must be boolean");
+  }
   const canvasText =
     drawing.tool === "text" && drawing.placement === "canvas";
   if (

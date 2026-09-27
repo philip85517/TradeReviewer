@@ -1,0 +1,10 @@
+{
+  "database": "/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/.scratch/chart-first-review-implementation/repair/acceptance.sqlite",
+  "previousCount": 21,
+  "previousSha256": "24a9793c206dbea76d03211a18d387ea89f6acfc999b5845857f9abdae64384d",
+  "executionCount": 24,
+  "executionSha256": "e6fb7f410f9692fb3ce9e7bd05ec3456af61ba4e52bdb31563f779d01764cf55",
+  "quickCheck": "ok",
+  "freshInstrument": "CN:999999",
+  "reviewDocumentSeeded": false
+}

@@ -1,3 +1,10 @@
+import { validateRecallExitEvaluations, reconcileRecallExitEvaluationAssociations, getRecallExitEvaluationConflicts } from "./exit-evaluations";
+import { reconcileRecallManualEvaluationAssociations, validateRecallManualEvaluations } from "./manual-evaluations";
+import { validateRecallPlans, recallPlanAssociationBoundary } from "./plans";
+import { validateRecallRetainedState } from "./retained-bundles";
+import { validateRecallStoryboard } from "./storyboard";
+import { Temporal } from "@js-temporal/polyfill";
+
 import type { TradeEpisode } from "../trades/types";
 import {
   type RecallCandle,
@@ -5,6 +12,7 @@ import {
   type RecallDecision,
   type RecallDocument,
   type RecallDrawing,
+  type RecallPhase,
   type RecallReconciliation,
   type RecallReconciliationResolution,
   type RecallSnapshot,
@@ -160,6 +168,7 @@ function validateDrawings(value: unknown, field: string): asserts value is Recal
     if (item.version !== undefined && item.version !== 1 && item.version !== 2) {
       invalid(`${field}[${index}].version must be 1 or 2`);
     }
+    if (item.recallHasSeenFuture !== undefined && typeof item.recallHasSeenFuture !== "boolean") invalid(`${field}[${index}].recallHasSeenFuture must be boolean`);
     if (item.hidden !== undefined && typeof item.hidden !== "boolean") invalid(`${field}[${index}].hidden must be boolean`);
     if (item.locked !== undefined && typeof item.locked !== "boolean") invalid(`${field}[${index}].locked must be boolean`);
     if (item.visibleOn !== undefined && item.visibleOn !== "all" && (!Array.isArray(item.visibleOn) || item.visibleOn.some((timeframe) => !RECALL_TIMEFRAMES.includes(timeframe as (typeof RECALL_TIMEFRAMES)[number])))) {
@@ -198,8 +207,20 @@ function validateDecision(value: unknown, index: number): asserts value is Recal
   });
 }
 
+const RECALL_PHASES = ["pre-entry", "holding", "post-review"] as const;
+
+function validatePhaseMetadata(item: Record<string, unknown>, field: string): void {
+  if (item.phase !== undefined && !RECALL_PHASES.includes(item.phase as typeof RECALL_PHASES[number])) {
+    invalid(`${field}.phase is invalid`);
+  }
+  if (item.hasSeenFuture !== undefined && typeof item.hasSeenFuture !== "boolean") {
+    invalid(`${field}.hasSeenFuture must be boolean`);
+  }
+}
+
 function validateSnapshot(value: unknown, index: number): asserts value is RecallSnapshot {
   const snapshot = record(value, `snapshot ${index}`);
+  validatePhaseMetadata(snapshot, `snapshot ${index}`);
   nonEmptyString(snapshot.id, `snapshot ${index}.id`);
   const decisionId = nonEmptyString(snapshot.decisionId, `snapshot ${index}.decisionId`);
   if (decisionId !== "global" && decisionId !== "unassigned") {
@@ -221,6 +242,14 @@ function validateSnapshot(value: unknown, index: number): asserts value is Recal
 
 function validateWorking(value: unknown): asserts value is RecallWorkingState {
   const working = record(value, "working");
+  validatePhaseMetadata(working, "working");
+  if (working.phaseContexts !== undefined) {
+    const contexts = record(working.phaseContexts, "working.phaseContexts");
+    for (const [phase, context] of Object.entries(contexts)) {
+      if (!RECALL_PHASES.includes(phase as typeof RECALL_PHASES[number])) invalid(`working.phaseContexts.${phase} is invalid`);
+      if (context !== undefined) validateWorkingContext(context, `working.phaseContexts.${phase}`);
+    }
+  }
   validateDrawings(working.drawings, "working.drawings");
   validTimeframe(working.timeframe, "working");
   nonEmptyString(working.cursor, "working.cursor");
@@ -250,6 +279,19 @@ function validateWorking(value: unknown): asserts value is RecallWorkingState {
   assertRecallJsonSafe(working, "working");
 }
 
+function contextTimestamp(value: unknown, field: string): number {
+  const text = nonEmptyString(value, field);
+  try {
+    // Daily candles may use an ISO date; intraday boundaries require an offset.
+    const timestamp = /^\d{4}-\d{2}-\d{2}$/.test(text)
+      ? `${Temporal.PlainDate.from(text).toString()}T00:00:00Z`
+      : text;
+    return Temporal.Instant.from(timestamp).epochMilliseconds;
+  } catch {
+    return invalid(`${field} must be a valid ISO date or timestamp`);
+  }
+}
+
 function validateWorkingContext(value: unknown, field = "working.editingContext"): asserts value is RecallWorkingContext {
   const context = record(value, field);
   if (context.mode !== "global" && context.mode !== "decision") {
@@ -261,10 +303,17 @@ function validateWorkingContext(value: unknown, field = "working.editingContext"
   if (context.mode === "global" && context.decisionId !== "global") {
     invalid(`global editing context must use decisionId global`);
   }
+  if (context.viewport !== undefined) validateViewport(context.viewport);
   validateDrawings(context.drawings, `${field}.drawings`);
   validTimeframe(context.timeframe, field);
   nonEmptyString(context.cursor, `${field}.cursor`);
   nonEmptyString(context.executionCursor, `${field}.executionCursor`);
+  if (context.revealedCandleCursor !== undefined && context.revealedCandleCursor !== null) {
+    const boundary = contextTimestamp(context.revealedCandleCursor, `${field}.revealedCandleCursor`);
+    if (boundary > contextTimestamp(context.cursor, `${field}.cursor`)) {
+      invalid(`${field}.revealedCandleCursor must not be later than cursor`);
+    }
+  }
 }
 
 function validateBaseDocument(
@@ -306,6 +355,11 @@ function validateBaseDocument(
     }
   });
 
+  validateRecallPlans(document.plans, decisions as RecallDecision[]);
+  validateRecallExitEvaluations(document as RecallDocument);
+  validateRecallManualEvaluations(document as RecallDocument);
+  validateRecallRetainedState(document as unknown as RecallDocument);
+  validateRecallStoryboard(document.storyboard, snapshots as RecallSnapshot[]);
   validateWorking(document.working);
   if (
     document.working.selectedDecisionId !== null &&
@@ -314,6 +368,11 @@ function validateBaseDocument(
     !decisionIds.has(document.working.selectedDecisionId)
   ) {
     invalid(`working.selectedDecisionId references unknown decision ${document.working.selectedDecisionId}`);
+  }
+  for (const context of Object.values(document.working.phaseContexts ?? {})) {
+    if (context?.mode === "decision" && !decisionIds.has(context.decisionId)) {
+      invalid(`working.phaseContexts references unknown decision ${context.decisionId}`);
+    }
   }
   const editingContext = document.working.editingContext;
   if (editingContext?.mode === "decision" && !decisionIds.has(editingContext.decisionId)) {
@@ -468,6 +527,14 @@ export function reconcileRecallDocument(
     ...decision,
     executionIds: decision.executionIds.filter((id) => incoming.has(id)),
   }));
+  for (const association of next.planAssociations ?? []) {
+    const boundary = recallPlanAssociationBoundary(document, association.planId);
+    const owner = next.decisions.find(d => d.id === association.decisionId);
+    if (!owner?.executionIds.length || (boundary && !boundary.every(id => owner.executionIds.includes(id)))) {
+      association.decisionId = null;
+      association.status = "needs-confirmation";
+    }
+  }
   const ids = decisionIds(next);
   for (const executionId of newlyAddedExecutionIds) {
     const id = ids.has(executionId) ? `decision:${executionId}` : executionId;
@@ -475,6 +542,8 @@ export function reconcileRecallDocument(
     ids.add(id);
   }
 
+  next.exitEvaluations = reconcileRecallExitEvaluationAssociations(next).exitEvaluations;
+  next.manualEvaluations = reconcileRecallManualEvaluationAssociations(next).manualEvaluations;
   const changed = newlyAddedExecutionIds.length > 0 || newlyRemovedExecutionIds.length > 0;
   const remainsStale = Boolean(previousReconciliation?.stale) || addedExecutionIds.length > 0 || removedExecutionIds.length > 0;
   if (changed || remainsStale) {
@@ -545,6 +614,9 @@ export function resolveRecallReconciliation(
   for (const decisionId of decisionIdsToRemove) {
     const decision = requireDecision(document, decisionId);
     if (decision.executionIds.length > 0) invalid(`decision ${decisionId} still contains executions`);
+    if (Object.values(document.working.phaseContexts ?? {}).some((context) => context?.decisionId === decisionId)) {
+      invalid(`decision ${decisionId} still owns a phase context; reassign or delete it first`);
+    }
     if (document.snapshots.some((snapshot) => snapshot.decisionId === decisionId)) {
       invalid(`decision ${decisionId} still owns snapshots; reassign or delete them first`);
     }
@@ -570,6 +642,31 @@ export function resolveRecallReconciliation(
   };
   next.updatedAt = nowIso();
   return next;
+}
+
+/** Explicitly rescue a phase context before acknowledging an orphaned decision. */
+export function resolveRecallPhaseContext(
+  document: RecallDocument,
+  phase: RecallPhase,
+  targetDecisionId: string | "global",
+): RecallDocument {
+  validateRecallDocument(document);
+  if (!RECALL_PHASES.includes(phase)) invalid("unknown phase context");
+  const context = document.working.phaseContexts?.[phase];
+  if (!context) invalid(`missing phase context ${phase}`);
+  if (targetDecisionId !== "global") requireDecision(document, targetDecisionId);
+  const next = cloneRecallDocument(document);
+  const copied = next.working.phaseContexts![phase]!;
+  next.working.phaseContexts![phase] = {
+    ...copied,
+    mode: targetDecisionId === "global" ? "global" : "decision",
+    decisionId: targetDecisionId,
+    drawings: copied.drawings.map((drawing) => drawing.recallOwnerId === context.decisionId
+      ? { ...drawing, recallOwnerId: targetDecisionId }
+      : drawing),
+  };
+  // Reassignment itself never acknowledges the pending execution changes.
+  return touch(next);
 }
 
 export function missingDecisionIds(document: RecallDocument): string[] {
@@ -660,6 +757,7 @@ export function mergeRecallDecisions(
       : drawing;
   next.decisions = document.decisions.filter((decision) => !sourceSet.has(decision.id));
   next.decisions.splice(firstIndex, 0, merged);
+  for (const association of next.planAssociations ?? []) if (association.decisionId && sourceSet.has(association.decisionId)) association.decisionId = mergedId;
   next.snapshots = next.snapshots.map((snapshot) =>
     sourceSet.has(snapshot.decisionId)
       ? { ...snapshot, decisionId: mergedId, drawings: snapshot.drawings.map(remapDrawingOwner) }
@@ -669,7 +767,12 @@ export function mergeRecallDecisions(
   if (next.working.editingContext) {
     next.working.editingContext = remapWorkingContext(next.working.editingContext, sourceSet, mergedId, remapDrawingOwner);
   }
+  for (const phase of RECALL_PHASES) {
+    const context = next.working.phaseContexts?.[phase];
+    if (context) next.working.phaseContexts![phase] = remapWorkingContext(context, sourceSet, mergedId, remapDrawingOwner);
+  }
   next.working.decisionDrafts = mergeDecisionDrafts(next.working.decisionDrafts, sourceSet, mergedId, remapDrawingOwner);
+  next.exitEvaluations = reconcileRecallExitEvaluationAssociations(next).exitEvaluations;
   if (sourceSet.has(next.working.selectedDecisionId ?? "")) next.working.selectedDecisionId = mergedId;
   return document.status === "completed" ? markNeedsConfirmation(next) : touch(next);
 }
@@ -751,6 +854,15 @@ export function splitRecallDecision(
     1,
     ...normalizedGroups.map((group) => ({ id: group.id!, executionIds: [...group.executionIds] })),
   );
+  for (const association of next.planAssociations ?? []) {
+    if (association.decisionId !== decisionId) continue;
+    const version = [...next.plans?.versions ?? []].reverse().find(v => v.planId === association.planId);
+    const capture = version && next.retainedBundles?.find(b => b.planVersionIds.includes(version.id));
+    const boundary = association.executionIds ?? capture?.decisions.find(d => d.id === version?.decisionId)?.executionIds;
+    const matches = boundary?.length ? normalizedGroups.filter(g => boundary.every(id => g.executionIds.includes(id))) : [];
+    association.decisionId = matches.length === 1 ? matches[0].id! : null;
+    association.status = matches.length === 1 ? "linked" : "needs-confirmation";
+  }
   const targetBySnapshot = new Map<string, string>();
   normalizedGroups.forEach((group) => {
     for (const snapshotId of group.snapshotIds ?? []) targetBySnapshot.set(snapshotId, group.id!);
@@ -759,6 +871,20 @@ export function splitRecallDecision(
     if (!sourceSnapshotSet.has(snapshot.id)) return snapshot;
     return { ...snapshot, decisionId: targetBySnapshot.get(snapshot.id) ?? "unassigned" };
   });
+  let ambiguousPhase = false;
+  for (const phase of RECALL_PHASES) {
+    const context = next.working.phaseContexts?.[phase];
+    if (!context || context.mode !== "decision" || context.decisionId !== decisionId) continue;
+    const group = normalizedGroups.find((candidate) => candidate.executionIds.includes(context.executionCursor));
+    if (!group) {
+      ambiguousPhase = true;
+      continue;
+    }
+    next.working.phaseContexts![phase] = remapWorkingContext(context, new Set([decisionId]), group.id!,
+      (drawing) => drawing.recallOwnerId === decisionId ? { ...drawing, recallOwnerId: group.id! } : drawing);
+  }
+  next.exitEvaluations = reconcileRecallExitEvaluationAssociations(next).exitEvaluations;
+  if (ambiguousPhase) return markNeedsConfirmation(next);
   if (next.working.selectedDecisionId === decisionId) next.working.selectedDecisionId = decisionId;
   return document.status === "completed" ? markNeedsConfirmation(next) : touch(next);
 }
@@ -797,6 +923,9 @@ export function updateRecallSnapshot(
   const replacementIndex = next.snapshots.findIndex((candidate) => candidate.id === snapshot.id);
   if (replacementIndex < 0) invalid(`unknown snapshot ${snapshot.id}`);
   next.snapshots[replacementIndex] = clone(snapshot);
+  for (const phase of RECALL_PHASES) {
+    if (next.storyboard?.[phase]?.snapshotId === snapshot.id) delete next.storyboard[phase];
+  }
   return touch(next);
 }
 
@@ -853,6 +982,9 @@ export function completeRecallDocument(
     invalid(`orphaned decisions require explicit reconciliation: ${emptyDecisionIds.join(", ")}`);
   }
   const missing = missingDecisionIds(document);
+  if (getRecallExitEvaluationConflicts(document).length) invalid("merged evaluation lineages require an explicit current selection before completion");
+  if (document.exitEvaluations?.associations.some(a=>a.status==="needs-confirmation")) invalid("evaluation associations require explicit confirmation before completion");
+  if (document.planAssociations?.some(a => a.status === "needs-confirmation")) invalid("plan associations require explicit confirmation before completion");
   if (missing.length > 0) invalid(`missing retained snapshot for decisions: ${missing.join(", ")}`);
   if (!document.snapshots.some((snapshot) => snapshot.decisionId === "global")) {
     invalid("a global snapshot is required before completion");

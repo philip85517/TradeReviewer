@@ -46,7 +46,7 @@ export function LibraryScopeControls({
       </label>
       <fieldset className="library-scope-choice library-scope-currency" aria-label="报告计价">
         <legend>计价</legend>
-        {(["original", "CNY"] as const).map((currency) => (
+        {(["original", "CNY", "HKD"] as const).map((currency) => (
           <label key={currency}>
             <input
               type="radio"
@@ -55,7 +55,7 @@ export function LibraryScopeControls({
               checked={scope.reportCurrency === currency}
               onChange={() => onChange({ reportCurrency: currency })}
             />
-            <span>{currency === "original" ? "原币" : "CNY参考"}</span>
+            <span>{currency === "original" ? "原币" : `${currency}参考`}</span>
           </label>
         ))}
       </fieldset>

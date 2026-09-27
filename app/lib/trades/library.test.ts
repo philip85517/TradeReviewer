@@ -1,3 +1,4 @@
+import { createEmptyEpisodeReviewRecord } from "../reviews/review-metrics";
 import { parseBrokerStatement } from "../import/dispatcher";
 import { fileFor } from "../import/__fixtures__/tradingview";
 import { describe, expect, it } from "vitest";
@@ -310,3 +311,30 @@ describe("buildTradeLibraryEntries", () => {
    expect(entries.map(e=>e.tradeCount)).toEqual([2,2]);
    expect(entries.every(e=>e.netPnl==='99.4')).toBe(true);
  });
+
+describe("persisted Recall library projection", () => {
+  it.each(["completed", "in-progress", "needs-confirmation"] as const)("uses saved %s state over legacy completion", status => {
+    const fills = [fill(xpev, "a", "buy", "2026-09-01", "2", "10"), fill(xpev, "a", "sell", "2026-09-02", "2", "12")];
+    const summaries = buildInstrumentTradeSummaries(fills);
+    const episodeId = buildTradeEpisodes(fills)[0].id;
+    const recall = { episodeId, status, updatedAt: "2026-09-25T08:00:00Z", text: "保留趋势证据", snapshotCount: 2 };
+    const legacy = createEmptyEpisodeReviewRecord(episodeId, xpev.id);
+    legacy.review.completed = true;
+    const result = buildTradeLibraryEntries(summaries, {}, {}, { [episodeId]: legacy }, { [episodeId]: recall });
+    expect(result[0].episodes[0].recallReview).toEqual(recall);
+    expect(result[0].episodes[0].reviewStatus).toBe(status === "completed" ? "completed" : "pending");
+    expect(result[0].reviewedEpisodeCount).toBe(status === "completed" ? 1 : 0);
+  });
+});
+
+it("rejects mismatched Recall identity and retains legacy completion without a matching saved summary", () => {
+  const fills = [fill(xpev, "a", "buy", "2026-09-01", "2", "10"), fill(xpev, "a", "sell", "2026-09-02", "2", "12")];
+  const episodeId = buildTradeEpisodes(fills)[0].id;
+  const legacy = createEmptyEpisodeReviewRecord(episodeId, xpev.id);
+  legacy.review.completed = true;
+  const result = buildTradeLibraryEntries(buildInstrumentTradeSummaries(fills), {}, {}, { [episodeId]: legacy }, {
+    [episodeId]: { episodeId: "other-account-episode", status: "in-progress", updatedAt: "2026-09-25", text: "别的回合", snapshotCount: 1 },
+  });
+  expect(result[0].episodes[0].recallReview).toBeUndefined();
+  expect(result[0].episodes[0].reviewStatus).toBe("completed");
+});

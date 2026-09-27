@@ -115,6 +115,41 @@ function entry(items: TradeLibraryEpisode[]): TradeLibraryEntry {
   };
 }
 
+function sourceDateEpisode(): TradeLibraryEpisode {
+  const base = item("source-date-episode", "2026-09-10T01:00:00.000Z");
+  const usInstrument = {
+    ...instrument,
+    id: "US:NVDA",
+    symbol: "NVDA",
+    name: "英伟达",
+    currency: "USD",
+  };
+  const opening = {
+    ...base.episode.executions[0]!,
+    id: "source-date-open",
+    instrument: usInstrument,
+    executedAt: "2026-09-10T01:00:00.000Z",
+    source: { ...base.episode.executions[0]!.source, tradingDate: "2026-09-10" },
+  };
+  const closing = {
+    ...opening,
+    id: "source-date-close",
+    side: "sell" as const,
+    executedAt: "2026-09-18T01:00:00.000Z",
+    source: { ...opening.source, tradingDate: "2026-09-18" },
+  };
+  return {
+    ...base,
+    episode: {
+      ...base.episode,
+      instrument: usInstrument,
+      startedAt: opening.executedAt,
+      endedAt: closing.executedAt,
+      executions: [opening, closing],
+    },
+  };
+}
+
 function row(entryValue: TradeLibraryEntry, episode: TradeLibraryEpisode): ReviewQueueItem {
   return { entry: entryValue, item: episode };
 }
@@ -166,6 +201,18 @@ function renderGroups(rows: ReviewQueueItem[], allRows = rows, stocks = [rows[0]
 }
 
 describe("LibraryStockRounds", () => {
+  it("uses source trading dates for stock and round date windows", async () => {
+    const sourceEpisode = sourceDateEpisode();
+    const stock = entry([sourceEpisode]);
+    const rows = [row(stock, sourceEpisode)];
+    const { container } = renderGroups(rows);
+
+    const stockRow = within(container).getByRole("button", { name: "展开英伟达交易回合" });
+    expect(stockRow).toHaveTextContent("2026/9/10—2026/9/18");
+    await userEvent.setup().click(stockRow);
+    expect(within(container).getByRole("button", { name: /打开英伟达第1次交易/ })).toHaveTextContent("2026/9/10—2026/9/18");
+  });
+
   it("groups simulation rounds by run and opens the exact child episode", async () => {
     const live = item("live-episode", "2026-01-01T10:00:00Z");
     const runA = item("run-a-episode", "2026-02-01T10:00:00Z", { nature: "simulation", runId: "tradingview:alpha" });

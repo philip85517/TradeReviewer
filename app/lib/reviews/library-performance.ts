@@ -1,12 +1,16 @@
 import Decimal from "decimal.js";
 
 import type { FxSnapshot } from "../fx/contracts";
+import type { RoomFxSnapshot, RoomTargetCurrency } from "./trading-room-scope";
 import {
   hasSettlementCurrencyMismatch,
   tradeNatureOf as executionTradeNatureOf,
   type TradeNature,
 } from "../trades/types";
 import type { ReviewQueueItem } from "./review-queue";
+
+/** FX snapshots accepted by the library. Room data is the preferred shared source. */
+export type LibraryFxSnapshot = FxSnapshot | RoomFxSnapshot;
 
 /** Reasons are split between closed-PnL coverage and weighted-return coverage. */
 export type LibraryPerformanceExclusionReason =
@@ -86,10 +90,21 @@ export type LibraryPerformanceComparableGroup = LibraryPerformanceMetricSet & {
   openCount: number;
 };
 
+export type LibraryPerformanceTargetGroup = Omit<LibraryPerformanceComparableGroup, "currency"> & {
+  currency: RoomTargetCurrency;
+};
+
 export type LibraryPerformanceCnySummary = LibraryPerformanceComparableGroup & {
+  currency: "CNY";
   available: boolean;
   /** Why a single CNY metric cannot be displayed, when it is unavailable. */
   reason: "empty" | "multiple-scopes" | "missing-fx" | "no-trusted-closed" | null;
+  scopeCount: number;
+};
+
+export type LibraryPerformanceTargetSummary = LibraryPerformanceTargetGroup & {
+  available: boolean;
+  reason: LibraryPerformanceCnySummary["reason"];
   scopeCount: number;
 };
 
@@ -135,6 +150,8 @@ export type LibraryPerformanceSummary = {
   comparableGroups: LibraryPerformanceComparableGroup[];
   /** Top-level CNY metric, available only when all rows share one nature/run scope. */
   cny: LibraryPerformanceCnySummary;
+  /** Selected shared report target; CNY remains available in `cny` for compatibility. */
+  target?: LibraryPerformanceTargetSummary;
   open: LibraryPerformanceOpen;
 };
 
@@ -292,16 +309,46 @@ function assess(row: ReviewQueueItem): Assessment {
   };
 }
 
-function fxConversion(currency: string, snapshot?: FxSnapshot): Conversion {
-  if (currency === "CNY") return { rate: new Decimal(1) };
-  if (!snapshot) return { rate: null, reason: "missing-fx" };
+function isRoomFxSnapshot(snapshot: LibraryFxSnapshot): snapshot is RoomFxSnapshot {
+  return typeof snapshot.source === "string";
+}
+
+function parseRate(value: unknown): Decimal | null {
+  if (typeof value !== "number" && typeof value !== "string") return null;
+  if (typeof value === "string" && value.trim() === "") return null;
+  try {
+    const parsed = new Decimal(value);
+    return parsed.isFinite() && parsed.gt(0) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function snapshotRate(snapshot: LibraryFxSnapshot, currency: string): Decimal | null {
+  if (currency === "CNY") return new Decimal(1);
   const rates = snapshot.rates;
-  if (!rates || typeof rates !== "object") return { rate: null, reason: "invalid-fx" };
-  const rawRate = (rates as Readonly<Record<string, unknown>>)[currency];
-  if (typeof rawRate !== "number" || !Number.isFinite(rawRate) || rawRate <= 0) {
+  if (!rates || typeof rates !== "object") return null;
+  const keys = isRoomFxSnapshot(snapshot)
+    ? [`${currency}/CNY`, `${currency}:CNY`, currency]
+    : [currency];
+  const raw = keys
+    .map(key => (rates as Readonly<Record<string, unknown>>)[key])
+    .find(value => value !== undefined);
+  return parseRate(raw);
+}
+
+function fxConversion(currency: string, targetCurrency: RoomTargetCurrency, snapshot?: LibraryFxSnapshot): Conversion {
+  if (currency === targetCurrency) return { rate: new Decimal(1) };
+  if (!snapshot) return { rate: null, reason: "missing-fx" };
+  if (isRoomFxSnapshot(snapshot) && snapshot.status !== "complete") {
+    return { rate: null, reason: "missing-fx" };
+  }
+  const sourceRate = snapshotRate(snapshot, currency);
+  const targetRate = snapshotRate(snapshot, targetCurrency);
+  if (!sourceRate || !targetRate) {
     return { rate: null, reason: "invalid-fx" };
   }
-  return { rate: new Decimal(rawRate) };
+  return { rate: sourceRate.div(targetRate) };
 }
 
 function reasonText(kind: "payoff" | "profitFactor", wins: number, losses: number): string {
@@ -312,7 +359,7 @@ function reasonText(kind: "payoff" | "profitFactor", wins: number, losses: numbe
 
 function calculateMetricSet(
   assessments: Assessment[],
-  options: { toCny: boolean; snapshot?: FxSnapshot } = { toCny: false },
+  options: { targetCurrency?: RoomTargetCurrency; snapshot?: LibraryFxSnapshot } = {},
 ): LibraryPerformanceMetricSet {
   const metrics: LibraryPerformanceMetricSet = {
     ...EMPTY_METRIC_SET,
@@ -329,8 +376,8 @@ function calculateMetricSet(
   let breakEvenCount = 0;
   for (const assessment of assessments) {
     const isClosed = assessment.row.item.episode.status === "closed";
-    const conversion = options.toCny
-      ? fxConversion(assessment.currency, options.snapshot)
+    const conversion = options.targetCurrency
+      ? fxConversion(assessment.currency, options.targetCurrency, options.snapshot)
       : { rate: new Decimal(1) };
     let trustedForMetric = false;
     let convertedPnl: Decimal | null = null;
@@ -451,10 +498,10 @@ function rawGroup(
 function comparableGroup(
   key: string,
   assessments: Assessment[],
-  snapshot?: FxSnapshot,
+  snapshot?: LibraryFxSnapshot,
 ): LibraryPerformanceComparableGroup {
   const first = assessments[0];
-  const metrics = calculateMetricSet(assessments, { toCny: true, snapshot });
+  const metrics = calculateMetricSet(assessments, { targetCurrency: "CNY", snapshot });
   return {
     key,
     currency: "CNY",
@@ -465,6 +512,20 @@ function comparableGroup(
     closedCount: assessments.filter(({ row }) => row.item.episode.status === "closed").length,
     openCount: assessments.filter(({ row }) => row.item.episode.status === "open").length,
     ...metrics,
+  };
+}
+
+function targetGroup(
+  key: string,
+  assessments: Assessment[],
+  snapshot: LibraryFxSnapshot | undefined,
+  targetCurrency: RoomTargetCurrency,
+): LibraryPerformanceTargetGroup {
+  const group = comparableGroup(key, assessments, snapshot);
+  return {
+    ...group,
+    currency: targetCurrency,
+    ...calculateMetricSet(assessments, { targetCurrency, snapshot }),
   };
 }
 
@@ -493,6 +554,49 @@ function blankCnySummary(
     reason,
     scopeCount,
   };
+}
+
+function blankTargetSummary(
+  assessments: Assessment[],
+  targetCurrency: RoomTargetCurrency,
+  reason: LibraryPerformanceTargetSummary["reason"],
+  scopeCount: number,
+): LibraryPerformanceTargetSummary {
+  const sample = assessments.length;
+  const closed = assessments.filter(({ row }) => row.item.episode.status === "closed").length;
+  const first = assessments[0];
+  return {
+    key: targetCurrency.toLowerCase(),
+    currency: targetCurrency,
+    tradeNature: first?.scope.tradeNature ?? "unknown",
+    simulationRunId: first?.scope.simulationRunId ?? null,
+    sourceCurrencies: [...new Set(assessments.map(assessment => assessment.currency))].sort(),
+    sampleCount: sample,
+    closedCount: closed,
+    openCount: sample - closed,
+    ...EMPTY_METRIC_SET,
+    exclusionReasons: {},
+    returnExclusionReasons: {},
+    available: false,
+    reason,
+    scopeCount,
+  };
+}
+
+function summarizeTargetGroups(
+  assessments: Assessment[],
+  groups: LibraryPerformanceTargetGroup[],
+  targetCurrency: RoomTargetCurrency,
+): LibraryPerformanceTargetSummary {
+  if (groups.length === 0) return blankTargetSummary(assessments, targetCurrency, "empty", 0);
+  if (groups.length > 1) return blankTargetSummary(assessments, targetCurrency, "multiple-scopes", groups.length);
+  const group = groups[0];
+  const reason = group.netPnlSampleCount === 0
+    ? group.exclusionReasons["missing-fx"] !== undefined || group.exclusionReasons["invalid-fx"] !== undefined
+      ? "missing-fx" as const
+      : "no-trusted-closed" as const
+    : null;
+  return { ...group, available: reason === null, reason, scopeCount: 1 };
 }
 
 function openGroup(
@@ -524,7 +628,8 @@ function openGroup(
  */
 export function summarizeLibraryPerformance(
   rows: ReviewQueueItem[],
-  fxSnapshot?: FxSnapshot,
+  fxSnapshot?: LibraryFxSnapshot,
+  targetCurrency: RoomTargetCurrency = "CNY",
 ): LibraryPerformanceSummary {
   const assessments = rows.map(assess);
   const rawCurrencyGroups = [...groupAssessments(
@@ -536,6 +641,11 @@ export function summarizeLibraryPerformance(
   const comparableGroups = [...groupAssessments(assessments, assessment => assessment.scope.key).entries()]
     .map(([key, group]) => comparableGroup(key, group, fxSnapshot))
     .sort((left, right) => left.key.localeCompare(right.key));
+  const targetGroups: LibraryPerformanceTargetGroup[] = targetCurrency === "CNY"
+    ? comparableGroups
+    : [...groupAssessments(assessments, assessment => assessment.scope.key).entries()]
+      .map(([key, group]) => targetGroup(key, group, fxSnapshot, targetCurrency))
+      .sort((left, right) => left.key.localeCompare(right.key));
 
   let cny: LibraryPerformanceCnySummary;
   if (comparableGroups.length === 0) {
@@ -590,7 +700,8 @@ export function summarizeLibraryPerformance(
     groups: openGroups,
   };
 
-  return { sample, rawCurrencyGroups, comparableGroups, cny, open };
+  const target = targetCurrency === "CNY" ? cny : summarizeTargetGroups(assessments, targetGroups, targetCurrency);
+  return { sample, rawCurrencyGroups, comparableGroups, cny, target, open };
 }
 
 /** Alias for callers that name aggregate builders consistently with the queue. */

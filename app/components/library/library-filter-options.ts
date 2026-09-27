@@ -1,4 +1,3 @@
-import { marketTradingDate } from "../../lib/market/trading-date";
 import {
   normalizeBrokerId,
   normalizeBrokerIds,
@@ -6,7 +5,7 @@ import {
 } from "../../lib/reviews/review-queue";
 import { reviewTagLabel } from "../../lib/reviews/review-tags";
 import { dashboardStableShortId } from "../../lib/reviews/dashboard";
-import type { TradeLibraryEntry } from "../../lib/trades/library";
+import { tradeExecutionTradingDate, type TradeLibraryEntry } from "../../lib/trades/library";
 
 export type LibraryFilterOption = Readonly<{
   id: string;
@@ -140,7 +139,7 @@ function yearOptions(entries: TradeLibraryEntry[]): LibraryFilterOption[] {
   const years = new Set<string>();
   for (const entry of entries) {
     for (const execution of sourceExecutions(entry)) {
-      const year = marketTradingDate(execution.executedAt, entry.instrument.market).slice(0, 4);
+      const year = tradeExecutionTradingDate(execution).slice(0, 4);
       if (/^\d{4}$/.test(year)) years.add(year);
     }
   }

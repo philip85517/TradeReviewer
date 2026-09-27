@@ -34,6 +34,7 @@ function execution(
     tradeNature?: "live" | "simulation" | "unknown";
     simulationRunId?: string;
     platform?: string;
+    tradingDate?: string;
   } = {},
 ): TradeExecution {
   return {
@@ -45,6 +46,7 @@ function execution(
       ...(options.simulationRunId
         ? { simulationRunId: options.simulationRunId }
         : {}),
+      ...(options.tradingDate ? { tradingDate: options.tradingDate } : {}),
     },
     accountId: options.accountId ?? "account-live",
     accountLabel: options.accountLabel ?? "实盘账户",
@@ -66,6 +68,22 @@ function entriesFor(executions: TradeExecution[]) {
 }
 
 describe("trade library browse state", () => {
+  it("normalizes an unconstrained inherited room filter to null", () => {
+    const state = normalizeTradeLibraryBrowseState({
+      roomFilters: {
+        assetCategory: "all",
+        assetType: "all",
+        query: "  ",
+        instrumentIds: [],
+        markets: [],
+        currencies: [],
+        reviewStatuses: [],
+      },
+    });
+
+    expect(state.roomFilters).toBeNull();
+  });
+
   it("starts in live stock browsing with all rounds and newest execution ordering", () => {
     expect(DEFAULT_TRADE_LIBRARY_BROWSE_STATE).toMatchObject({
       mode: "stocks",
@@ -147,6 +165,73 @@ describe("trade library browse state", () => {
     expect(stocks[0]?.tradeCount).toBe(2);
     expect(stocks[0]?.episodes[0]?.episode.accountId).toBe("account-live");
     expect(stocks[0]?.executions.every(fill => fill.accountId === "account-live")).toBe(true);
+  });
+
+  it("filters by the final close trading date inclusively without using the opening year", () => {
+    const entries = entriesFor([
+      execution("buy", "2025-12-31T23:30:00Z", "cross-year-in"),
+      execution("sell", "2026-01-01T00:30:00Z", "cross-year-out", { tradingDate: "2026-01-01" }),
+      execution("buy", "2026-02-02T00:00:00Z", "outside-in"),
+      execution("sell", "2026-02-03T00:00:00Z", "outside-out", { tradingDate: "2026-02-03" }),
+    ]);
+
+    const rows = buildTradeLibraryBrowseRows(entries, {
+      ...DEFAULT_TRADE_LIBRARY_BROWSE_STATE,
+      closeDateFrom: "2026-01-01",
+      closeDateTo: "2026-01-01",
+      positionStatus: "closed",
+    }, {});
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.item.episode.executions.at(-1)?.source.tradingDate).toBe("2026-01-01");
+  });
+
+  it("keeps precise close dates in the range key and clears them with browse reset", () => {
+    const state = {
+      ...DEFAULT_TRADE_LIBRARY_BROWSE_STATE,
+      closeDateFrom: "2026-01-01",
+      closeDateTo: "2026-01-31",
+    };
+    expect(tradeLibraryBrowseRangeKey(state)).not.toBe(
+      tradeLibraryBrowseRangeKey({ ...state, closeDateFrom: "2026-02-01" }),
+    );
+    expect(resetTradeLibraryBrowseState(state)).toMatchObject({
+      closeDateFrom: null,
+      closeDateTo: null,
+      roundPage: 1,
+      stockPage: 1,
+    });
+  });
+
+  it("keeps inherited room filters in the range key and applies them to closed library rows", () => {
+    const entries = entriesFor([
+      execution("buy", "2025-01-02T00:00:00Z", "room-in"),
+      execution("sell", "2025-01-03T00:00:00Z", "room-out"),
+    ]);
+    const roomFilters = {
+      assetCategory: "us-stock" as const,
+      assetType: "stock" as const,
+      query: "TEST",
+      instrumentIds: ["US:TEST"],
+      markets: ["US"],
+      currencies: ["USD"],
+      reviewStatuses: ["pending" as const],
+    };
+    const state = {
+      ...DEFAULT_TRADE_LIBRARY_BROWSE_STATE,
+      positionStatus: "closed" as const,
+      roomFilters,
+    };
+    const metadata = new Map([["US:TEST", { market: "US", symbol: "TEST", assetType: "stock" as const }]]);
+    const rows = buildTradeLibraryBrowseRows(entries, state, {}, undefined, undefined, metadata);
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.item.episode.id).toBeDefined();
+    expect(tradeLibraryBrowseRangeKey(state)).not.toBe(
+      tradeLibraryBrowseRangeKey({ ...state, roomFilters: { ...roomFilters, markets: ["HK"] } }),
+    );
+    expect(tradeLibraryBrowseRangeKey(state, "CNY")).not.toBe(tradeLibraryBrowseRangeKey(state, "HKD"));
+    expect(resetTradeLibraryBrowseState(state).roomFilters).toBeNull();
   });
 
   it("keeps stock display aggregation free of legacy financial totals", () => {

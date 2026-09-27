@@ -17,6 +17,7 @@ import {
   type RoomMoneyAmount,
   type RoomMoneyView,
   type RoomScope,
+  type RoomTargetCurrency,
   type TradingRoomInstrumentMetadata,
   type TradingRoomMetadataInput,
 } from "./trading-room-scope";
@@ -91,6 +92,7 @@ export type TradingRoomCalendarOptions = {
   asOf?: string;
   instrumentMetadata?: TradingRoomMetadataInput;
   fxSnapshot?: RoomFxSnapshot;
+  targetCurrency?: RoomTargetCurrency;
 };
 
 export type TradingRoomCalendarModel = {
@@ -320,14 +322,16 @@ function addRawTotals(target: Map<string, Decimal>, values: readonly RowValue[])
   }
 }
 
-function moneyFromTotals(totals: ReadonlyMap<string, Decimal>, fxSnapshot?: RoomFxSnapshot): RoomMoneyView {
+function moneyFromTotals(totals: ReadonlyMap<string, Decimal>, fxSnapshot?: RoomFxSnapshot, targetCurrency?: RoomTargetCurrency): RoomMoneyView {
   return buildRoomMoneyView(
     [...totals.entries()].map(([currency, amount]) => ({ currency, amount: amount.toString() })),
     fxSnapshot,
+    targetCurrency,
   );
 }
 
 function valueForMoney(money: RoomMoneyView): string | null {
+  if (money.targetCurrency !== undefined || money.converted !== undefined) return money.converted ?? null;
   if (money.convertedCny !== null) return money.convertedCny;
   const values = Object.values(money.originalByCurrency);
   return values.length === 1 ? values[0] : null;
@@ -352,7 +356,7 @@ function stateFor(
   }
 }
 
-function buildSummary(values: readonly RowValue[], fxSnapshot?: RoomFxSnapshot): TradingRoomCalendarSummary {
+function buildSummary(values: readonly RowValue[], fxSnapshot?: RoomFxSnapshot, targetCurrency?: RoomTargetCurrency): TradingRoomCalendarSummary {
   const trusted = values.filter(value => value.value !== null);
   const excluded = values.filter(value => value.value === null && !value.unknownAsset);
   const unknownAssets = values.filter(value => value.unknownAsset);
@@ -371,7 +375,7 @@ function buildSummary(values: readonly RowValue[], fxSnapshot?: RoomFxSnapshot):
     else breakEven += 1;
   }
   return {
-    money: buildRoomMoneyView(amountsFor(values), fxSnapshot),
+    money: buildRoomMoneyView(amountsFor(values), fxSnapshot, targetCurrency),
     trustedClosedCount: trusted.length,
     excludedCount: excluded.length,
     unknownAssetCount: new Set(unknownAssets.map(value => value.row.item.episode.instrument.id)).size,
@@ -426,7 +430,7 @@ function trendAvailability(
   excludedCount: number,
 ): TradingRoomTrendPoint["availability"] {
   if (trustedClosedCount === 0) return excludedCount > 0 ? "insufficient" : "empty";
-  if (periodMoney.convertedCny === null && Object.keys(periodMoney.originalByCurrency).length > 1) return "not-combinable";
+  if (valueForMoney(periodMoney) === null && Object.keys(periodMoney.originalByCurrency).length > 1) return "not-combinable";
   return "available";
 }
 
@@ -458,7 +462,7 @@ export function buildTradingRoomCalendar(
       else if (decimal.lt(0)) losses += 1;
       else breakEven += 1;
     }
-    const money = buildRoomMoneyView(amountsFor(bucketValues), options.fxSnapshot);
+    const money = buildRoomMoneyView(amountsFor(bucketValues), options.fxSnapshot, options.targetCurrency);
     const future = bucket.startDate > asOfDate;
     const reasons = [...new Set(excluded.map(value => value.exclusionReason).filter((value): value is string => Boolean(value)))];
     return {
@@ -466,7 +470,7 @@ export function buildTradingRoomCalendar(
       label: bucket.label,
       startDate: bucket.startDate,
       endDate: bucket.endDate,
-      money: future ? buildRoomMoneyView([], options.fxSnapshot) : money,
+      money: future ? buildRoomMoneyView([], options.fxSnapshot, options.targetCurrency) : money,
       value: future ? null : valueForMoney(money),
       state: stateFor(money, trusted.length, excluded.length, future),
       trustedClosedCount: trusted.length,
@@ -495,9 +499,9 @@ export function buildTradingRoomCalendar(
     const bucketValues = trendRows.filter(value => bucketForDate(value.date, [bucket]) !== undefined);
     const trusted = bucketValues.filter(value => value.value !== null);
     const excluded = bucketValues.filter(value => value.value === null);
-    const periodMoney = buildRoomMoneyView(amountsFor(bucketValues), options.fxSnapshot);
+    const periodMoney = buildRoomMoneyView(amountsFor(bucketValues), options.fxSnapshot, options.targetCurrency);
     addRawTotals(cumulative, bucketValues);
-    const money = moneyFromTotals(cumulative, options.fxSnapshot);
+    const money = moneyFromTotals(cumulative, options.fxSnapshot, options.targetCurrency);
     let wins = 0;
     let losses = 0;
     let breakEven = 0;
@@ -524,7 +528,7 @@ export function buildTradingRoomCalendar(
       availability: trendAvailability(periodMoney, trusted.length, excluded.length),
     } satisfies TradingRoomTrendPoint;
   });
-  const summary = buildSummary(effectiveValues, options.fxSnapshot);
+  const summary = buildSummary(effectiveValues, options.fxSnapshot, options.targetCurrency);
   const currencies = [...new Set(effectiveValues.filter(value => value.value !== null).map(value => value.currency))].sort();
   return {
     scope: options.scope,

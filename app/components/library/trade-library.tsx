@@ -28,9 +28,10 @@ import {
   dailyRecordToChartCandle,
   type Timeframe,
 } from "../../lib/market/types";
-import type {
-  TradeLibraryEntry,
-  TradeLibraryEpisode,
+import {
+  tradeExecutionTradingDate,
+  type TradeLibraryEntry,
+  type TradeLibraryEpisode,
 } from "../../lib/trades/library";
 import { ReplayChart } from "../chart/replay-chart";
 import { EpisodeReviewEditor } from "../review/episode-review-editor";
@@ -50,6 +51,7 @@ import {
 } from "../../lib/reviews/library-sorting";
 import {
   summarizeLibraryPerformance,
+  type LibraryFxSnapshot,
   type LibraryPerformanceSummary,
 } from "../../lib/reviews/library-performance";
 import {
@@ -81,6 +83,8 @@ import {
 import { FxRatesControl } from "./fx-rates-control";
 import { LibraryPerformanceSummaryView } from "./library-performance-summary";
 import type { SharedScope } from "../../lib/reviews/shared-scope";
+import { pendingFinalCloseDate } from "../../lib/reviews/trading-room-pending";
+import type { RoomFxSnapshot, TradingRoomMetadataInput } from "../../lib/reviews/trading-room-scope";
 import { LibraryScopeControls } from "./library-scope-controls";
 import "./trade-library.css";
 
@@ -107,6 +111,10 @@ type Props = {
   sharedScope?: SharedScope;
   onSharedScopeChange?: (patch: Partial<SharedScope>) => void;
   sharedAccountOptions?: readonly { id: string; label: string }[];
+  /** Asset metadata required when inherited room filters select stock/ETF type. */
+  instrumentMetadata?: TradingRoomMetadataInput;
+  /** Shared room snapshot. `undefined` keeps the legacy library ECB control; null disables fallback. */
+  roomFxSnapshot?: RoomFxSnapshot | null;
 };
 
 function entryKey(entry: TradeLibraryEntry) {
@@ -124,7 +132,7 @@ export type TradeLibraryTarget = {
   scopeKey?: string;
 };
 
-type AdvancedFilterKind = "broker" | "account" | "year" | "simulationRunId" | "positionStatus" | "dataStatus" | "tag";
+type AdvancedFilterKind = "broker" | "account" | "year" | "simulationRunId" | "positionStatus" | "dataStatus" | "tag" | "closeDateRange" | "roomScope";
 type AppliedFilterChip = {
   key: string;
   label: string;
@@ -139,6 +147,9 @@ const PAGINATION_RESET_KEYS: ReadonlySet<keyof TradeLibraryBrowseState> = new Se
   "accounts",
   "brokers",
   "year",
+  "closeDateFrom",
+  "closeDateTo",
+  "roomFilters",
   "tradeNature",
   "simulationRunId",
   "reviewStatus",
@@ -164,6 +175,29 @@ function AppliedFilterChips({
   </div>;
 }
 
+function inheritedRoomFilterLabel(filters: NonNullable<TradeLibraryBrowseState["roomFilters"]>) {
+  const parts: string[] = [];
+  if (filters.assetCategory !== "all") {
+    parts.push({
+      "a-share-stock": "A股",
+      "us-stock": "美股",
+      "hk-stock": "港股",
+      etf: "ETF",
+      unknown: "未知资产",
+    }[filters.assetCategory] ?? filters.assetCategory);
+  }
+  if (filters.assetType !== "all") parts.push(filters.assetType === "stock" ? "股票" : "ETF");
+  if (filters.query) parts.push(`搜索 ${filters.query}`);
+  if (filters.instrumentIds.length > 0) parts.push(`${filters.instrumentIds.length} 个标的`);
+  if (filters.markets.length > 0) parts.push(`${filters.markets.join("、")} 市场`);
+  if (filters.currencies.length > 0) parts.push(`${filters.currencies.join("、")} 币种`);
+  if (filters.reviewStatuses.length > 0) {
+    const labels = filters.reviewStatuses.map(status => ({ pending: "待复盘", completed: "已复盘", deferred: "暂不复盘" }[status]));
+    parts.push(`复盘 ${labels.join("、")}`);
+  }
+  return `首页范围：${parts.join(" · ") || "交易室附加筛选"}`;
+}
+
 function money(value: string | null, currency: string) {
   if (value === null) return "数据待补齐";
   return new Intl.NumberFormat("zh-CN", {
@@ -183,6 +217,34 @@ function feeLabel(execution: TradeEpisode["executions"][number]) {
   return execution.source.feeStatus === "unknown"
     ? "待核对"
     : `${execution.fee} ${executionFeeCurrency(execution)}`;
+}
+
+function sourceTradingDate(execution: TradeEpisode["executions"][number]): string | null {
+  const date = execution.source.tradingDate?.trim() ?? execution.source.marketCalendarDate?.trim() ?? "";
+  return /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : null;
+}
+
+function episodeOpeningDate(episode: TradeEpisode): string {
+  const first = [...episode.executions].sort((left, right) => left.executedAt.localeCompare(right.executedAt))[0];
+  return sourceTradingDate(first) ?? marketTradingDate(first?.executedAt ?? episode.startedAt, episode.instrument.market);
+}
+
+function episodeClosingDate(episode: TradeEpisode): string {
+  return episode.status === "closed"
+    ? pendingFinalCloseDate(episode)
+    : marketTradingDate(episode.endedAt ?? episode.startedAt, episode.instrument.market);
+}
+
+function formatEpisodeExecutionDate(execution: TradeEpisode["executions"][number]): string {
+  const sourceDate = sourceTradingDate(execution);
+  if (!sourceDate) {
+    return execution.source.timePrecision === "date-only"
+      ? `${formatMarketTradingDate(execution.executedAt, execution.instrument.market)} · 未提供成交时刻`
+      : formatBeijingDateTime(execution.executedAt);
+  }
+  if (execution.source.timePrecision === "date-only") return `${formatMarketTradingDate(sourceDate, execution.instrument.market)} · 未提供成交时刻`;
+  const time = formatBeijingDateTime(execution.executedAt).match(/\d{2}:\d{2}:\d{2}$/)?.[0];
+  return `${formatMarketTradingDate(sourceDate, execution.instrument.market)}${time ? ` ${time}` : " · 来源交易日"}`;
 }
 
 function isPerformanceSort(sort: ReviewQueueSort) {
@@ -248,13 +310,14 @@ export function selectLibraryDisplayMetricRows({
 
 function displayEpisodePerformance(
   rows: readonly ReviewQueueItem[],
-  fxSnapshot: FxSnapshot | null,
+  fxSnapshot: LibraryFxSnapshot | null,
+  targetCurrency: "CNY" | "HKD" = "CNY",
 ) {
   const performance = new Map<string, LibraryPerformanceSummary>();
   for (const row of rows) {
     performance.set(
       row.item.episode.id,
-      summarizeLibraryPerformance([row], fxSnapshot ?? undefined),
+      summarizeLibraryPerformance([row], fxSnapshot ?? undefined, targetCurrency),
     );
   }
   return performance;
@@ -262,13 +325,14 @@ function displayEpisodePerformance(
 
 function displayInstrumentPerformance(
   groups: readonly TradeLibraryStockGroup[],
-  fxSnapshot: FxSnapshot | null,
+  fxSnapshot: LibraryFxSnapshot | null,
+  targetCurrency: "CNY" | "HKD" = "CNY",
 ) {
   const performance = new Map<string, LibraryPerformanceSummary>();
   for (const group of groups) {
     performance.set(
       group.entry.instrument.id,
-      summarizeLibraryPerformance(group.rows, fxSnapshot ?? undefined),
+      summarizeLibraryPerformance(group.rows, fxSnapshot ?? undefined, targetCurrency),
     );
   }
   return performance;
@@ -305,6 +369,8 @@ export function TradeLibrary({
   sharedScope,
   onSharedScopeChange,
   sharedAccountOptions,
+  instrumentMetadata,
+  roomFxSnapshot,
 }: Props) {
   const [browseState, setBrowseState] = useState<TradeLibraryBrowseState>(() => {
     const normalized = normalizeTradeLibraryBrowseState(initialBrowseState, defaultMode);
@@ -328,6 +394,9 @@ export function TradeLibrary({
     accounts,
     brokers,
     year,
+    closeDateFrom,
+    closeDateTo,
+    roomFilters,
     tradeNature,
     simulationRunId,
     reviewStatus,
@@ -402,10 +471,7 @@ export function TradeLibrary({
         ...new Set(
           entries.flatMap((entry) =>
             entry.executions.map((execution) =>
-              marketTradingDate(
-                execution.executedAt,
-                execution.instrument.market,
-              ).slice(0, 4),
+              tradeExecutionTradingDate(execution).slice(0, 4),
             ),
           ),
         ),
@@ -446,6 +512,11 @@ export function TradeLibrary({
   const effectiveSimulationRunId: TradeLibraryBrowseState["simulationRunId"] = sharedScope
     ? (sharedScope.nature === "simulation" && sharedScope.simulationRunId ? sharedScope.simulationRunId : "all")
     : simulationRunId;
+  const reportCurrency = sharedScope?.reportCurrency ?? "CNY";
+  const performanceTargetCurrency = reportCurrency === "HKD" ? "HKD" : "CNY";
+  const effectiveFxSnapshot: LibraryFxSnapshot | null = roomFxSnapshot === undefined
+    ? fxSnapshot
+    : roomFxSnapshot;
 
   // Keep expansion, selection and scroll state out of the filter derivation.
   // Those interactions should not rebuild the 5,000-row browse model.
@@ -462,6 +533,17 @@ export function TradeLibrary({
       accounts: [...effectiveAccounts],
       brokers: [...brokers],
       year,
+      closeDateFrom,
+      closeDateTo,
+      roomFilters: roomFilters
+        ? {
+            ...roomFilters,
+            instrumentIds: [...roomFilters.instrumentIds],
+            markets: [...roomFilters.markets],
+            currencies: [...roomFilters.currencies],
+            reviewStatuses: [...roomFilters.reviewStatuses],
+          }
+        : null,
       tradeNature: effectiveTradeNature,
       simulationRunId: effectiveSimulationRunId,
       reviewStatus,
@@ -483,6 +565,9 @@ export function TradeLibrary({
       reviewStatus,
       sort,
       tag,
+      closeDateFrom,
+      closeDateTo,
+      roomFilters,
       year,
       effectiveAccount,
       effectiveAccounts,
@@ -496,8 +581,8 @@ export function TradeLibrary({
   );
 
   const browseModelSource = useMemo(
-    () => ({ entries, fxSnapshot, marketDataStatuses, reviewsHydrated }),
-    [entries, fxSnapshot, marketDataStatuses, reviewsHydrated],
+    () => ({ entries, fxSnapshot: effectiveFxSnapshot, marketDataStatuses, reviewsHydrated, performanceTargetCurrency, instrumentMetadata }),
+    [effectiveFxSnapshot, entries, instrumentMetadata, marketDataStatuses, performanceTargetCurrency, reviewsHydrated],
   );
   // Recreate the bounded cache whenever source identities change; this is the
   // invalidation boundary for reviews, market status and FX values.
@@ -507,7 +592,7 @@ export function TradeLibrary({
     [browseModelSource],
   );
   const browseModel = useMemo(() => {
-    const key = tradeLibraryBrowseRangeKey(browseFilterState);
+    const key = tradeLibraryBrowseRangeKey(browseFilterState, performanceTargetCurrency);
     const cached = browseModelCache.get(key);
     if (cached) return cached;
 
@@ -515,7 +600,9 @@ export function TradeLibrary({
       entries,
       browseFilterState,
       marketDataStatuses,
-      fxSnapshot,
+      effectiveFxSnapshot,
+      performanceTargetCurrency,
+      instrumentMetadata,
     );
     const allStatusBrowseRows = reviewStatus === "all"
       ? browseRows
@@ -523,7 +610,9 @@ export function TradeLibrary({
           entries,
           allStatusFilterState,
           marketDataStatuses,
-          fxSnapshot,
+          effectiveFxSnapshot,
+          performanceTargetCurrency,
+          instrumentMetadata,
         );
     const filteredEntries = aggregateTradeLibraryStockDisplayEntries(browseRows);
     const model: TradeLibraryBrowseDerivedModel = {
@@ -537,7 +626,8 @@ export function TradeLibrary({
       ),
       performanceSummary: summarizeLibraryPerformance(
         browseRows,
-        fxSnapshot ?? undefined,
+        effectiveFxSnapshot ?? undefined,
+        performanceTargetCurrency,
       ),
       performanceSortAvailability: canSortLibraryPerformance(
         browseRows,
@@ -554,10 +644,12 @@ export function TradeLibrary({
     browseFilterState,
     browseModelCache,
     entries,
-    fxSnapshot,
+    effectiveFxSnapshot,
     marketDataStatuses,
+    instrumentMetadata,
     reviewStatus,
     effectiveSimulationRunId,
+    performanceTargetCurrency,
   ]);
   const {
     browseRows,
@@ -591,9 +683,10 @@ export function TradeLibrary({
         value: group,
       })),
       effectiveSort,
-      fxSnapshot ?? undefined,
+      effectiveFxSnapshot ?? undefined,
+      performanceTargetCurrency,
     ).map(({ value }) => value),
-    [effectiveSort, fxSnapshot, rawStockGroups],
+    [effectiveFxSnapshot, effectiveSort, performanceTargetCurrency, rawStockGroups],
   );
   const visibleStockGroups = useMemo(
     () => pageSlice(stockGroups, stockPage),
@@ -614,13 +707,13 @@ export function TradeLibrary({
   );
   const performanceByInstrument = useMemo(
     () => mode === "stocks"
-      ? displayInstrumentPerformance(visibleStockGroups, fxSnapshot)
+      ? displayInstrumentPerformance(visibleStockGroups, effectiveFxSnapshot, performanceTargetCurrency)
       : new Map<string, LibraryPerformanceSummary>(),
-    [fxSnapshot, mode, visibleStockGroups],
+    [effectiveFxSnapshot, mode, performanceTargetCurrency, visibleStockGroups],
   );
   const performanceByEpisode = useMemo(
-    () => displayEpisodePerformance(displayMetricRows, fxSnapshot),
-    [displayMetricRows, fxSnapshot],
+    () => displayEpisodePerformance(displayMetricRows, effectiveFxSnapshot, performanceTargetCurrency),
+    [displayMetricRows, effectiveFxSnapshot, performanceTargetCurrency],
   );
   const performanceGroupLabels = useMemo(
     () => Object.fromEntries(
@@ -668,7 +761,7 @@ export function TradeLibrary({
 
   const updateSort = (next: ReviewQueueSort) => {
     if (isPerformanceSort(next)) {
-      const availability = canSortLibraryPerformance(browseRows, simulationRunId);
+      const availability = canSortLibraryPerformance(browseRows, effectiveSimulationRunId);
       if (!availability.allowed) {
         updateBrowseState({ sort: "newest" });
         setQueueNotice(`当前范围无法按绩效排序：${availability.reason ?? "请缩小统计范围"}。`);
@@ -736,8 +829,8 @@ export function TradeLibrary({
   };
 
   const applyAdvancedFilters = (patch: Partial<TradeLibraryBrowseState>) => {
-    const accounts = patch.accounts ?? browseState.accounts;
-    const clearedSimulationRun = patch.simulationRunId === "all" && browseState.simulationRunId !== "all";
+    const accounts = patch.accounts ?? effectiveAccounts;
+    const clearedSimulationRun = patch.simulationRunId === "all" && effectiveSimulationRunId !== "all";
     updateBrowseState({
       ...patch,
       accounts,
@@ -747,6 +840,9 @@ export function TradeLibrary({
     if (sharedScope && onSharedScopeChange && patch.accounts) {
       onSharedScopeChange({ accountIds: [...accounts] });
     }
+    if (sharedScope && onSharedScopeChange && patch.simulationRunId !== undefined && sharedScope.nature === "simulation") {
+      onSharedScopeChange({ simulationRunId: patch.simulationRunId === "all" ? null : patch.simulationRunId });
+    }
     processedIds.current.clear();
     reopenedIds.current.clear();
     setQueueNotice("");
@@ -755,12 +851,15 @@ export function TradeLibrary({
 
   const advancedFilterCount = [
     ...browseState.brokers,
-    ...browseState.accounts,
+    ...effectiveAccounts,
     browseState.year !== "all" ? browseState.year : "",
-    browseState.simulationRunId !== "all" ? browseState.simulationRunId : "",
+    effectiveSimulationRunId !== "all" ? effectiveSimulationRunId : "",
     browseState.positionStatus !== "all" ? browseState.positionStatus : "",
     browseState.dataStatus !== "all" ? browseState.dataStatus : "",
     browseState.tag !== "all" ? browseState.tag : "",
+    browseState.closeDateFrom ?? "",
+    browseState.closeDateTo ?? "",
+    browseState.roomFilters ? "roomFilters" : "",
   ].filter(Boolean).length;
 
   const startReview = () => {
@@ -776,9 +875,10 @@ export function TradeLibrary({
     const patch: Partial<TradeLibraryBrowseState> = {};
     if (kind === "broker" && value) patch.brokers = browseState.brokers.filter(id => id !== value);
     if (kind === "account" && value) {
-      const accounts = browseState.accounts.filter(id => id !== value);
+      const accounts = effectiveAccounts.filter(id => id !== value);
       patch.accounts = accounts;
       patch.account = accounts.length === 1 ? accounts[0] : "all";
+      if (sharedScope && onSharedScopeChange) onSharedScopeChange({ accountIds: [...accounts] });
     }
     if (kind === "year") patch.year = "all";
     if (kind === "simulationRunId") {
@@ -786,17 +886,28 @@ export function TradeLibrary({
       if (sort === "net-profit" || sort === "net-loss" || sort === "return-high" || sort === "return-low") {
         patch.sort = "newest";
       }
+      if (sharedScope && onSharedScopeChange && sharedScope.nature === "simulation") {
+        onSharedScopeChange({ simulationRunId: null });
+      }
     }
     if (kind === "positionStatus") patch.positionStatus = "all";
     if (kind === "dataStatus") patch.dataStatus = "all";
     if (kind === "tag") patch.tag = "all";
+    if (kind === "closeDateRange") {
+      patch.closeDateFrom = null;
+      patch.closeDateTo = null;
+    }
+    if (kind === "roomScope") patch.roomFilters = null;
     updateBrowseState(patch);
     setQueueNotice("");
     processedIds.current.clear();
     reopenedIds.current.clear();
   };
 
-  const accountLabels = new Map(advancedOptions.accounts.map(option => [option.id, option.label]));
+  const accountLabels = new Map([
+    ...advancedOptions.accounts.map(option => [option.id, option.label] as const),
+    ...(sharedAccountOptions ?? []).map(option => [option.id, option.label] as const),
+  ]);
   const runLabels = new Map(advancedOptions.simulationRuns.map(option => [option.id, option.label]));
   const appliedFilterChips = [
     ...browseState.brokers.map(id => ({
@@ -805,7 +916,7 @@ export function TradeLibrary({
       kind: "broker" as const,
       value: id,
     })),
-    ...browseState.accounts.map(id => ({
+    ...effectiveAccounts.map(id => ({
       key: `account:${id}`,
       label: `账户：${accountLabels.get(id) ?? id}`,
       kind: "account" as const,
@@ -816,11 +927,11 @@ export function TradeLibrary({
       label: `年份：${browseState.year}`,
       kind: "year" as const,
     }] : []),
-    ...(browseState.simulationRunId !== "all" ? [{
+    ...(effectiveSimulationRunId !== "all" ? [{
       key: "simulationRunId",
-      label: `模拟运行：${runLabels.get(browseState.simulationRunId) ?? formatSimulationRunLabel(browseState.simulationRunId)}`,
+      label: `模拟运行：${runLabels.get(effectiveSimulationRunId) ?? formatSimulationRunLabel(effectiveSimulationRunId)}`,
       kind: "simulationRunId" as const,
-      value: browseState.simulationRunId,
+      value: effectiveSimulationRunId,
     }] : []),
     ...(browseState.positionStatus !== "all" ? [{
       key: "positionStatus",
@@ -837,6 +948,16 @@ export function TradeLibrary({
       label: `标签：${reviewTagLabel(browseState.tag)}`,
       kind: "tag" as const,
       value: browseState.tag,
+    }] : []),
+    ...((browseState.closeDateFrom || browseState.closeDateTo) ? [{
+      key: "closeDateRange",
+      label: `平仓日期：${browseState.closeDateFrom ?? "不限"} 至 ${browseState.closeDateTo ?? "不限"}`,
+      kind: "closeDateRange" as const,
+    }] : []),
+    ...(browseState.roomFilters ? [{
+      key: "roomScope",
+      label: inheritedRoomFilterLabel(browseState.roomFilters),
+      kind: "roomScope" as const,
     }] : []),
   ] satisfies AppliedFilterChip[];
 
@@ -957,25 +1078,41 @@ export function TradeLibrary({
   );
   const filterDrawer = filterDrawerOpen ? (
     <LibraryFilterDrawer
-      value={browseState}
+      value={{
+        ...browseState,
+        account: effectiveAccount,
+        accounts: [...effectiveAccounts],
+        tradeNature: effectiveTradeNature,
+        simulationRunId: effectiveSimulationRunId,
+      }}
       entries={entries}
       options={advancedOptions}
       onApply={applyAdvancedFilters}
       onClose={() => setFilterDrawerOpen(false)}
     />
   ) : null;
+  const fxSnapshotLabel = roomFxSnapshot === undefined
+    ? fxSnapshot
+      ? `ECB 快照 · ${fxSnapshot.rateDate}${fxSnapshot.cacheStatus === "cached" ? " · 缓存" : ""}`
+      : "独立 ECB 快照不可用；原币金额仍可查看"
+    : roomFxSnapshot
+      ? `共享 ${roomFxSnapshot.source} 快照 · ${roomFxSnapshot.asOf}${roomFxSnapshot.status === "complete" ? "" : " · 不完整"}`
+      : "共享汇率快照不可用；原币金额仍可查看";
+  const fxSnapshotDescription = roomFxSnapshot === undefined
+    ? "此处使用 ECB 参考汇率统一展示，不代表各成交日的历史绩效汇率。数据页的中行汇率用于当前估值参考，两者独立更新。"
+    : "此处沿用交易室共享汇率快照统一展示；来源与时间来自中行数据页，不代表各成交日的历史绩效汇率。";
   const fxRatesStrip = (
-    <div className="library-fx-strip" aria-label="交易库人民币折算">
+    <div className="library-fx-strip" aria-label={`交易库${reportCurrency === "original" ? "原币金额" : `${reportCurrency}折算`}`}>
       <div>
-        <strong>{sharedScope?.reportCurrency === "original" ? "原币金额" : "统计参考折算 · CNY"}</strong>
-        <span>{sharedScope?.reportCurrency === "original" ? "当前范围按原币显示，不合并不同币种" : fxSnapshot
-          ? `ECB 快照 · ${fxSnapshot.rateDate}${fxSnapshot.cacheStatus === "cached" ? " · 缓存" : ""}`
-          : "统计折算尚无 ECB 快照；原币金额仍可查看"}</span>
+        <strong>{reportCurrency === "original" ? "原币金额" : `统计参考折算 · ${reportCurrency}`}</strong>
+        <span>{reportCurrency === "original"
+          ? `当前范围按原币显示，不合并不同币种${roomFxSnapshot === undefined ? "" : ` · ${fxSnapshotLabel}`}`
+          : fxSnapshotLabel}</span>
       </div>
       <details>
         <summary>折算用途与快照</summary>
-        <p>此处使用 ECB 参考汇率统一展示，不代表各成交日的历史绩效汇率。数据页的中行汇率用于当前估值参考，两者独立更新。</p>
-        <FxRatesControl onSnapshotChange={setFxSnapshot} />
+        <p>{fxSnapshotDescription}</p>
+        {roomFxSnapshot === undefined && <FxRatesControl onSnapshotChange={setFxSnapshot} />}
       </details>
     </div>
   );
@@ -987,7 +1124,7 @@ export function TradeLibrary({
       reviewedCount={reviewedCount}
       progressTotal={allStatusBrowseRows.length}
       groupLabels={performanceGroupLabels}
-      reportCurrency={sharedScope?.reportCurrency ?? "CNY"}
+      reportCurrency={reportCurrency}
     />
   );
   const libraryHeader = (
@@ -1043,6 +1180,20 @@ export function TradeLibrary({
       (item) => item.episode.id === episode.id,
     );
     const selectedNumber = selectedEntry.episodeCount - selectedIndex;
+    const detailPerformance = summarizeLibraryPerformance(
+      [{ entry: selectedEntry, item: selectedEpisode }],
+      effectiveFxSnapshot ?? undefined,
+      performanceTargetCurrency,
+    );
+    const detailMetric = reportCurrency === "HKD" ? detailPerformance.target : detailPerformance.cny;
+    const detailPnl = reportCurrency === "original"
+      ? metrics.netPnl
+      : detailMetric?.available && detailMetric.netPnl !== null
+        ? detailMetric.netPnl
+        : null;
+    const detailPnlCurrency = reportCurrency === "original"
+      ? selectedEntry.instrument.currency
+      : detailMetric?.currency ?? reportCurrency;
 
     return (
       <section className="trade-library trade-library-detail" aria-label="交易库">
@@ -1116,15 +1267,9 @@ export function TradeLibrary({
                     </span>
                   </div>
                   <p>
-                    {formatMarketTradingDate(
-                      item.episode.startedAt,
-                      item.episode.instrument.market,
-                    )}—
-                    {item.episode.endedAt
-                      ? formatMarketTradingDate(
-                          item.episode.endedAt,
-                          item.episode.instrument.market,
-                        )
+                    {formatMarketTradingDate(episodeOpeningDate(item.episode), item.episode.instrument.market)}—
+                    {item.episode.status === "closed"
+                      ? formatMarketTradingDate(episodeClosingDate(item.episode), item.episode.instrument.market)
                       : "至今"}
                   </p>
                   <span className="library-review-status">
@@ -1192,8 +1337,9 @@ export function TradeLibrary({
                       : "negative"
                   }
                 >
-                  {money(metrics.netPnl, selectedEntry.instrument.currency)}
+                  {money(detailPnl, detailPnlCurrency)}
                 </strong>
+                {reportCurrency !== "original" && <small>原币 {money(metrics.netPnl, selectedEntry.instrument.currency)}</small>}
               </div>
               <div>
                 <span>收益率</span>
@@ -1315,9 +1461,7 @@ export function TradeLibrary({
                 >
                   <span>
                     <Clock3 size={12} />
-                    {execution.source.timePrecision === "date-only"
-                      ? `${formatMarketTradingDate(execution.executedAt, execution.instrument.market)} · 未提供成交时刻`
-                      : formatBeijingDateTime(execution.executedAt)}
+                    {formatEpisodeExecutionDate(execution)}
                     {execution.source.sourceTimestampText && (
                       <small
                         title={`原始时间（${execution.source.sourceTimezone ?? "来源时区"}）`}
@@ -1348,7 +1492,7 @@ export function TradeLibrary({
     );
   }
 
-  if (mode === "queue" && !selectionMissing) return <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => updateBrowseState({ scrollTop: event.currentTarget.scrollTop })}>{filterDrawer}{libraryHeader}{sharedScopeControl}{libraryViewTabs}{sharedBrowseControls}{fxRatesStrip}{performanceSummaryView}<ReviewQueue compact entries={entries} rows={browseRows} pendingRows={pendingBrowseRows} filter={queueFilter} onFilter={updateQueueFilter} onSort={updateSort} performanceSortAvailability={performanceSortAvailability} onOpen={openQueued} onBrowseStocks={() => updateBrowseMode("stocks")} notice={queueNotice} performanceByEpisode={performanceByEpisode} page={roundPage} onPageChange={page => updateBrowseState({ roundPage: page })} reportCurrency={sharedScope?.reportCurrency ?? "CNY"} />{browseRows.length === 0 && emptyBrowseAction && <div className="library-empty-actions">{emptyBrowseAction}</div>}</section>;
+  if (mode === "queue" && !selectionMissing) return <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => updateBrowseState({ scrollTop: event.currentTarget.scrollTop })}>{filterDrawer}{libraryHeader}{sharedScopeControl}{libraryViewTabs}{sharedBrowseControls}{fxRatesStrip}{performanceSummaryView}<ReviewQueue compact entries={entries} rows={browseRows} pendingRows={pendingBrowseRows} filter={queueFilter} onFilter={updateQueueFilter} onSort={updateSort} performanceSortAvailability={performanceSortAvailability} onOpen={openQueued} onBrowseStocks={() => updateBrowseMode("stocks")} notice={queueNotice} performanceByEpisode={performanceByEpisode} page={roundPage} onPageChange={page => updateBrowseState({ roundPage: page })} reportCurrency={reportCurrency} performanceSummary={performanceSummary} />{browseRows.length === 0 && emptyBrowseAction && <div className="library-empty-actions">{emptyBrowseAction}</div>}</section>;
 
   return (
     <section ref={sectionRef} className="trade-library" aria-label="交易库" onScroll={(event) => updateBrowseState({ scrollTop: event.currentTarget.scrollTop })}>
@@ -1383,7 +1527,7 @@ export function TradeLibrary({
           reviewStatus={reviewStatus}
           performanceByInstrument={performanceByInstrument}
           performanceByEpisode={performanceByEpisode}
-          fxSnapshot={fxSnapshot}
+          fxSnapshot={effectiveFxSnapshot}
           sort={effectiveSort}
           onSort={updateSort}
           performanceSortAvailability={performanceSortAvailability}
@@ -1398,6 +1542,7 @@ export function TradeLibrary({
           natureLabel={natureLabel}
           marketDataStatusLabel={marketDataStatusLabel}
           reviewTagLabel={reviewTagLabel}
+          reportCurrency={reportCurrency}
         />
       )}
     </section>

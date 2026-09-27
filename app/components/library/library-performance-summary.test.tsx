@@ -312,4 +312,26 @@ describe("LibraryPerformanceSummaryView", () => {
     expect(screen.queryByText("0.00%")).not.toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("没有可信的已平仓净盈亏样本");
   });
+
+  it("uses the shared HKD target while retaining raw currency groups", () => {
+    const base = cnySummary();
+    const input = summary({
+      cny: { ...base, netPnl: "30", netPnlSampleCount: 2 },
+      target: {
+        ...base,
+        key: "hkd",
+        currency: "HKD" as const,
+        netPnl: "34.285714",
+        netPnlSampleCount: 2,
+        available: true,
+        reason: null,
+        scopeCount: 1,
+      },
+    });
+
+    render(<LibraryPerformanceSummaryView summary={input} stockCount={2} roundCount={2} reviewedCount={0} progressTotal={2} reportCurrency="HKD" />);
+
+    expect(screen.getByText("+HKD 34.29")).toBeInTheDocument();
+    expect(screen.getByText(/HKD · 2 个可信已平仓回合/)).toBeInTheDocument();
+  });
 });

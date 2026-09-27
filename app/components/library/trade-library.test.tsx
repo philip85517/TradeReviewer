@@ -9,11 +9,16 @@ import type { DailyCandleRecord } from "../../lib/market/contracts";
 import type { MarketDataSyncStatus } from "../../lib/market/sync-status";
 import type { EpisodeReviewRecord } from "../../lib/reviews/types";
 import type { SharedScope } from "../../lib/reviews/shared-scope";
+import type { RoomFxSnapshot } from "../../lib/reviews/trading-room-scope";
 import { createEmptyEpisodeReviewRecord } from "../../lib/reviews/review-metrics";
 import { buildInstrumentTradeSummaries } from "../../lib/trades/instruments";
 import { buildTradeLibraryEntries } from "../../lib/trades/library";
 import type { Instrument, TradeExecution } from "../../lib/trades/types";
-import { DEFAULT_TRADE_LIBRARY_BROWSE_STATE } from "./library-browse-state";
+import {
+  DEFAULT_TRADE_LIBRARY_BROWSE_STATE,
+  normalizeTradeLibraryBrowseState,
+} from "./library-browse-state";
+import { formatSimulationRunLabel } from "./library-filter-options";
 import { selectLibraryDisplayMetricRows, TradeLibrary } from "./trade-library";
 
 const xpev: Instrument = {
@@ -92,6 +97,8 @@ function setup(
     };
     sharedScope?: SharedScope;
     onSharedScopeChange?: (patch: Partial<SharedScope>) => void;
+    roomFxSnapshot?: RoomFxSnapshot | null;
+    initialBrowseState?: Partial<import("./library-browse-state").TradeLibraryBrowseState>;
   } = {},
 ) {
   const candlesByInstrument = {
@@ -177,6 +184,10 @@ function setup(
     target: browseTarget,
     sharedScope: options.sharedScope,
     onSharedScopeChange: options.onSharedScopeChange,
+    roomFxSnapshot: options.roomFxSnapshot,
+    initialBrowseState: options.initialBrowseState
+      ? normalizeTradeLibraryBrowseState(options.initialBrowseState)
+      : undefined,
   };
   const renderResult = render(
     <TradeLibrary
@@ -238,8 +249,171 @@ describe("TradeLibrary", () => {
     expect(screen.getByRole("radio", { name: "实盘" })).toBeChecked();
     expect(screen.getByRole("radio", { name: "模拟盘" })).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "原币" })).toBeChecked();
+    expect(screen.getByRole("radio", { name: "HKD参考" })).toBeInTheDocument();
     await user.click(screen.getByRole("radio", { name: "CNY参考" }));
     expect(onSharedScopeChange).toHaveBeenCalledWith({ reportCurrency: "CNY" });
+    await user.click(screen.getByRole("radio", { name: "HKD参考" }));
+    expect(onSharedScopeChange).toHaveBeenCalledWith({ reportCurrency: "HKD" });
+  });
+
+  it("recomputes the same filtered browse range when the shared report target changes", () => {
+    const initial = setup();
+    cleanup();
+    const sharedBase = {
+      nature: "live" as const,
+      accountIds: [] as string[],
+      simulationRunId: null,
+    };
+    const props = {
+      entries: initial.entries,
+      candlesByInstrument: {},
+      marketDataStatuses: {},
+      timeframe: "1D" as const,
+      onTimeframeChange: vi.fn(),
+      onOpenInReview: vi.fn(),
+      onSaveReview: vi.fn(),
+      reviewsHydrated: true,
+      sharedScope: { ...sharedBase, reportCurrency: "CNY" as const },
+    };
+    const view = render(<TradeLibrary {...props} />);
+
+    const metric = () => within(screen.getByRole("article", { name: "已平仓净盈亏" }));
+    expect(metric().getByText("不可用")).toBeInTheDocument();
+
+    view.rerender(<TradeLibrary {...props} sharedScope={{ ...sharedBase, reportCurrency: "HKD" }} />);
+
+    expect(metric().getByText(/\+HKD/)).toBeInTheDocument();
+  });
+
+  it("uses the shared BOC snapshot for HKD library metrics and identifies its source", () => {
+    const roomFxSnapshot: RoomFxSnapshot = {
+      id: "boc:2026-01-01",
+      baseCurrency: "CNY",
+      asOf: "2026-01-01",
+      source: "BOC",
+      status: "complete",
+      rates: { "HKD/CNY": "0.9", "USD/CNY": "7" },
+    };
+    setup({
+      sharedScope: { nature: "live", accountIds: [], reportCurrency: "HKD", simulationRunId: null },
+      roomFxSnapshot,
+    });
+
+    expect(screen.getByText(/共享 BOC 快照 · 2026-01-01/)).toBeInTheDocument();
+    expect(screen.queryByText(/ECB/)).not.toBeInTheDocument();
+    expect(screen.getByRole("article", { name: "已平仓净盈亏" })).toHaveTextContent("HKD");
+  });
+
+  it("does not restore the legacy ECB control when the shared snapshot is explicitly null", async () => {
+    const user = userEvent.setup();
+    setup({
+      sharedScope: { nature: "live", accountIds: [], reportCurrency: "HKD", simulationRunId: null },
+      roomFxSnapshot: null,
+    });
+
+    expect(screen.getByText("共享汇率快照不可用；原币金额仍可查看")).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "人民币汇率" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "按回合浏览" }));
+    expect(screen.getAllByText("HKD暂无法折算").length).toBeGreaterThan(0);
+  });
+
+  it("labels applied account chips from the current shared scope", async () => {
+    const user = userEvent.setup();
+    const onSharedScopeChange = vi.fn();
+    setup({
+      sharedScope: { nature: "live", accountIds: ["acct-hk"], reportCurrency: "original", simulationRunId: null },
+      onSharedScopeChange,
+      initialBrowseState: {
+        ...DEFAULT_TRADE_LIBRARY_BROWSE_STATE,
+        account: "acct-main",
+        accounts: ["acct-main"],
+      },
+    });
+
+    expect(screen.getByText("账户：港股账户")).toBeInTheDocument();
+    expect(screen.queryByText("账户：主账户")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /高级筛选/ }));
+    const drawer = screen.getByRole("dialog", { name: "高级筛选" });
+    expect(within(drawer).getByRole("checkbox", { name: "港股账户" })).toBeChecked();
+    expect(within(drawer).getByRole("checkbox", { name: "主账户" })).not.toBeChecked();
+    await user.click(within(drawer).getByRole("button", { name: "关闭高级筛选" }));
+    await user.click(screen.getByRole("button", { name: "移除账户：港股账户" }));
+    expect(onSharedScopeChange).toHaveBeenCalledWith({ accountIds: [] });
+  });
+
+  it("labels applied simulation run chips from the current shared scope", async () => {
+    const onSharedScopeChange = vi.fn();
+    setup({
+      sharedScope: { nature: "simulation", accountIds: [], reportCurrency: "original", simulationRunId: "run-current" },
+      onSharedScopeChange,
+      initialBrowseState: {
+        ...DEFAULT_TRADE_LIBRARY_BROWSE_STATE,
+        tradeNature: "simulation",
+        simulationRunId: "run-stale",
+      },
+    });
+
+    expect(screen.getByText(`模拟运行：${formatSimulationRunLabel("run-current")}`)).toBeInTheDocument();
+    expect(screen.queryByText(`模拟运行：${formatSimulationRunLabel("run-stale")}`)).not.toBeInTheDocument();
+  });
+
+  it("shows inherited homepage filters as one clearable library constraint", async () => {
+    const user = userEvent.setup();
+    const initial = setup();
+    cleanup();
+    render(
+      <TradeLibrary
+        entries={initial.entries}
+        candlesByInstrument={{}}
+        marketDataStatuses={{}}
+        timeframe="1D"
+        onTimeframeChange={() => {}}
+        onOpenInReview={() => {}}
+        onSaveReview={() => {}}
+        reviewsHydrated
+        sharedScope={{ nature: "live", accountIds: [], reportCurrency: "original", simulationRunId: null }}
+        initialBrowseState={{
+          ...DEFAULT_TRADE_LIBRARY_BROWSE_STATE,
+          roomFilters: {
+            assetCategory: "us-stock",
+            assetType: "stock",
+            query: "小鹏",
+            instrumentIds: ["US:XPEV"],
+            markets: ["US"],
+            currencies: ["USD"],
+            reviewStatuses: ["pending"],
+          },
+        }}
+        instrumentMetadata={{ "US:XPEV": { market: "US", symbol: "XPEV", assetType: "stock" } }}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: /移除首页范围/ })).toBeInTheDocument();
+    expect(screen.getByText("1 个标的 · 2 个回合")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /移除首页范围/ }));
+    expect(screen.queryByRole("button", { name: /移除首页范围/ })).not.toBeInTheDocument();
+    expect(screen.getByText("2 个标的 · 3 个回合")).toBeInTheDocument();
+  });
+
+  it("does not show an empty inherited homepage filter as a chip or advanced count", () => {
+    setup({
+      initialBrowseState: {
+        ...DEFAULT_TRADE_LIBRARY_BROWSE_STATE,
+        roomFilters: {
+          assetCategory: "all",
+          assetType: "all",
+          query: "",
+          instrumentIds: [],
+          markets: [],
+          currencies: [],
+          reviewStatuses: [],
+        },
+      },
+    });
+
+    expect(screen.queryByRole("button", { name: /移除首页范围/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "高级筛选" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "高级筛选" })).not.toHaveTextContent("（1）");
   });
 
   it("selects browse tabs with arrow, Home, and End keys", async () => {

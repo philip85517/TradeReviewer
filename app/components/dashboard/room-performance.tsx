@@ -5,10 +5,13 @@ import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, 
 import type { TradeLibraryEntry } from "../../lib/trades/library";
 import type {
   RoomFxSnapshot,
+  RoomDisplayCurrency,
   RoomMoneyView,
   RoomScope,
+  RoomTargetCurrency,
   TradingRoomMetadataInput,
 } from "../../lib/reviews/trading-room-scope";
+import { roomMoneyValue } from "../../lib/reviews/trading-room-scope";
 import {
   buildTradingRoomCalendar,
   findTradingRoomHistoryRange,
@@ -17,7 +20,16 @@ import {
   type TradingRoomTrendLevel,
   type TradingRoomTrendPoint,
 } from "../../lib/reviews/trading-room-calendar";
-import { classifyTradingRoomAsset, normalizeRoomMetadata } from "../../lib/reviews/trading-room-scope";
+import {
+  applyTradingRoomCalendarPeriod,
+  calendarMonthBounds,
+  createTradingRoomCalendarState,
+  moveTradingRoomCalendarMonth,
+  selectTradingRoomCalendarDate,
+  type TradingRoomCalendarState,
+} from "../../lib/reviews/trading-room-time";
+import { buildMonthlyWinRate } from "../../lib/reviews/trading-room-metrics";
+import { buildRoomMoneyView, buildTradingRoomModel, classifyTradingRoomAsset, normalizeRoomMetadata } from "../../lib/reviews/trading-room-scope";
 import { dashboardEpisodeDate, dashboardRowExclusionReason, exclusionReasonLabel } from "../../lib/reviews/dashboard";
 import {
   chartAxisLabels,
@@ -34,12 +46,25 @@ export type RoomPerformanceProps = {
   entries: readonly TradeLibraryEntry[];
   scope: RoomScope;
   embedded?: boolean;
+  /** B2 keeps the performance, contribution and calendar visible together. */
+  layout?: "tabs" | "workspace";
+  contributionSlot?: ReactNode;
   onScopeChange: (patch: Partial<RoomScope>) => void;
   instrumentMetadata?: TradingRoomMetadataInput;
   fxSnapshot?: RoomFxSnapshot;
   asOf?: string;
   onOpenInReview: (instrumentId: string, episodeId: string, queueIds?: string[]) => void;
   renderMoney?: (money: RoomMoneyView) => ReactNode;
+  /** The report target selected by the shell; original keeps every raw currency visible. */
+  reportCurrency?: RoomDisplayCurrency;
+  /** Optional shell-owned calendar browse snapshot for cross-page restoration. */
+  calendarBrowseState?: RoomPerformanceCalendarBrowseState;
+  onCalendarBrowseStateChange?: (state: RoomPerformanceCalendarBrowseState) => void;
+};
+
+export type RoomPerformanceCalendarBrowseState = {
+  displayMonth: string;
+  selectedDate: string | null;
 };
 
 function currencyCode(value: string | null | undefined): string {
@@ -63,32 +88,51 @@ function money(value: string, currency: string): string {
   }
 }
 
-function moneyLabel(view: RoomMoneyView): string {
-  if (view.convertedCny !== null) return money(view.convertedCny, "CNY");
-  const values = Object.entries(view.originalByCurrency);
-  if (values.length === 0) return "不可用";
-  return values.map(([currency, value]) => money(value, currency)).join(" · ");
+function targetFor(display: RoomDisplayCurrency): RoomTargetCurrency | undefined {
+  return display === "original" ? undefined : display;
 }
 
-function moneyDetail(view: RoomMoneyView): string {
+function displayValue(view: RoomMoneyView, display: RoomDisplayCurrency): string | null {
+  if (display === "original") {
+    const values = Object.values(view.originalByCurrency);
+    return values.length === 1 ? values[0] : null;
+  }
+  if (view.targetCurrency === display) return roomMoneyValue(view);
+  // Legacy CNY views are still accepted while the shell migrates its adapter.
+  if (display === "CNY" && view.targetCurrency === undefined && view.converted === undefined) return view.convertedCny;
+  return null;
+}
+
+function moneyLabel(view: RoomMoneyView, display: RoomDisplayCurrency = "original"): string {
+  const target = displayValue(view, display);
+  if (display !== "original" && target !== null) return money(target, display);
+  const values = Object.entries(view.originalByCurrency);
+  if (values.length === 0) return "不可用";
+  const original = values.map(([currency, value]) => money(value, currency)).join(" · ");
+  return display === "original" ? original : `${original} · ${display}不可用（${view.note}）`;
+}
+
+function moneyDetail(view: RoomMoneyView, display: RoomDisplayCurrency = "original"): string {
   const values = Object.entries(view.originalByCurrency);
   if (values.length === 0) return view.note.includes("金额缺失") ? view.note : "暂无已平仓样本";
   const original = values.length > 0
     ? `原币小计：${values.map(([currency, value]) => money(value, currency)).join(" · ")}`
     : "暂无已平仓样本";
-  if (view.convertedCny !== null && values.length === 1 && values[0][0] === "CNY") return view.note;
-  return `${original}；${view.note}`;
+  if (display !== "original" && displayValue(view, display) !== null) return `${moneyLabel(view, display)}；${view.note}`;
+  return display === "original" ? original : `${original}；${display}不可用（${view.note}）`;
 }
 
-function cellLabel(cell: TradingRoomCalendarCell): string {
+function cellLabel(cell: TradingRoomCalendarCell, display: RoomDisplayCurrency = "original"): string {
   if (cell.state === "future") return "尚未发生";
-  if (cell.value !== null) return moneyLabel(cell.money);
+  if (cell.value !== null) return moneyLabel(cell.money, display);
   if (cell.state === "unavailable") return "不可用";
   return "无样本";
 }
 
-function pointValue(point: { value: string | null; rawByCurrency: Readonly<Record<string, string>> }, currency?: string): string | null {
-  if (point.value !== null && !currency) return point.value;
+function pointValue(point: TradingRoomTrendPoint, currency?: string, display: RoomDisplayCurrency = "original"): string | null {
+  const view = point.money;
+  if (!currency && display !== "original") return displayValue(view, display);
+  if (point.value !== null && !currency && display === "original") return point.value;
   if (!currency) return null;
   return point.rawByCurrency[currency] ?? null;
 }
@@ -129,26 +173,42 @@ function monthEnd(value: string): string {
   return dateKey(date);
 }
 
-function setPeriodForMonth(key: string, asOf: string): RoomScope["period"] {
-  const startDate = `${key.slice(0, 7)}-01`;
-  const naturalEnd = monthEnd(startDate);
-  const endDate = naturalEnd > asOf ? asOf : naturalEnd;
-  return { preset: "custom", startDate, endDate };
+function monthDates(month: string): string[] {
+  const dates: string[] = [];
+  for (let cursor = `${month}-01`; cursor <= monthEnd(`${month}-01`);) {
+    dates.push(cursor);
+    const next = dateFromKey(cursor);
+    next.setUTCDate(next.getUTCDate() + 1);
+    cursor = dateKey(next);
+  }
+  return dates;
 }
 
-function setPeriodForYear(key: string, asOf: string): RoomScope["period"] {
-  const startDate = `${key.slice(0, 4)}-01-01`;
-  const endDate = key.slice(0, 4) === asOf.slice(0, 4) ? asOf : `${key.slice(0, 4)}-12-31`;
-  return { preset: key.slice(0, 4) === asOf.slice(0, 4) ? "ytd" : "custom", startDate, endDate };
+function intersectPeriod(
+  period: RoomScope["period"],
+  startDate: string,
+  endDate: string,
+): RoomScope["period"] | null {
+  const start = period.startDate > startDate ? period.startDate : startDate;
+  const end = period.endDate < endDate ? period.endDate : endDate;
+  return start <= end ? { preset: "custom", startDate: start, endDate: end } : null;
 }
 
-function rowMoney(row: { item: { metrics: { netPnl: string | null }; episode: { instrument: { currency: string } } } }): string {
-  if (row.item.metrics.netPnl === null) return "不可用";
-  return money(row.item.metrics.netPnl, row.item.episode.instrument.currency);
+function calendarPeriod(
+  level: TradingRoomCalendarLevel,
+  period: RoomScope["period"],
+  displayMonth: string,
+  allYearsRange: RoomScope["period"],
+): RoomScope["period"] {
+  if (level === "all-years") return allYearsRange;
+  if (level === "year") {
+    return intersectPeriod(period, `${displayMonth.slice(0, 4)}-01-01`, `${displayMonth.slice(0, 4)}-12-31`) ?? period;
+  }
+  return intersectPeriod(period, `${displayMonth}-01`, monthEnd(`${displayMonth}-01`)) ?? period;
 }
 
 function lineColor(index: number): string {
-  return ["#4e9bab", "#9a6ec7", "#d48b47", "#638b5a"][index % 4];
+  return ["#b76be7", "#00d5b6", "#f1a35b", "#78a8ff"][index % 4];
 }
 
 function defaultTrendLevel(scope: RoomScope): TradingRoomTrendLevel {
@@ -181,29 +241,30 @@ function trendLevelLabel(level: TradingRoomTrendLevel): string {
   return "自然月";
 }
 
-function trendPointMoney(point: TradingRoomTrendPoint, cumulative: boolean, currency?: string): string {
+function trendPointMoney(point: TradingRoomTrendPoint, cumulative: boolean, currency?: string, display: RoomDisplayCurrency = "original"): string {
   const view = cumulative ? point.money : point.periodMoney;
   if (currency) {
     const value = view.originalByCurrency[currency];
     return value === undefined ? (cumulative ? "该币种无累计" : "该币种无成交") : money(value, currency);
   }
-  if (view.convertedCny !== null) return money(view.convertedCny, "CNY");
+  const target = displayValue(view, display);
+  if (display !== "original") return target === null ? `${display}不可用` : money(target, display);
   const values = Object.entries(view.originalByCurrency);
   if (values.length === 0) return point.availability === "empty" ? "暂无样本" : "数据不足";
   if (values.length > 1) return "无法合计";
   return values.map(([currency, value]) => money(value, currency)).join(" · ");
 }
 
-function trendPointLabel(point: TradingRoomTrendPoint, currency?: string): string {
-  return `${point.label}，本期盈亏 ${trendPointMoney(point, false, currency)}，累计盈亏 ${trendPointMoney(point, true, currency)}`;
+function trendPointLabel(point: TradingRoomTrendPoint, currency?: string, display: RoomDisplayCurrency = "original"): string {
+  return `${point.label}，本期盈亏 ${trendPointMoney(point, false, currency, display)}，累计盈亏 ${trendPointMoney(point, true, currency, display)}`;
 }
 
-function trendNumericValue(point: TradingRoomTrendPoint, cumulative: boolean, currency?: string): number | null {
+function trendNumericValue(point: TradingRoomTrendPoint, cumulative: boolean, currency?: string, display: RoomDisplayCurrency = "original"): number | null {
   const view = cumulative ? point.money : point.periodMoney;
   const raw = currency
     ? view.originalByCurrency[currency]
-    : view.convertedCny !== null
-      ? view.convertedCny
+    : display !== "original"
+      ? displayValue(view, display)
       : Object.keys(view.originalByCurrency).length === 1
         ? Object.values(view.originalByCurrency)[0]
         : undefined;
@@ -293,9 +354,9 @@ function visibleTrendLabelPlacements(
   return result;
 }
 
-function renderableTrendValue(point: TradingRoomTrendPoint, currency?: string): string | null {
+function renderableTrendValue(point: TradingRoomTrendPoint, currency?: string, display: RoomDisplayCurrency = "original"): string | null {
   if (point.availability === "insufficient") return null;
-  return pointValue(point, currency);
+  return pointValue(point, currency, display);
 }
 
 function trendAxisLabel(point: TradingRoomTrendPoint, level: TradingRoomTrendLevel): string {
@@ -319,13 +380,48 @@ function cellSecondaryLabel(cell: TradingRoomCalendarCell): string {
   return "暂无样本";
 }
 
-function compactCellValue(cell: TradingRoomCalendarCell): string {
+function compactNumeric(value: string): string {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return "不可用";
+  const sign = parsed > 0 ? "+" : parsed < 0 ? "−" : "";
+  const absolute = Math.abs(parsed);
+  if (absolute >= 1_000_000_000) return `${sign}${(absolute / 1_000_000_000).toFixed(1).replace(/\.0$/, "")}B`;
+  if (absolute >= 1_000_000) return `${sign}${(absolute / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  if (absolute >= 1_000) return `${sign}${(absolute / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
+  return `${sign}${Math.round(absolute)}`;
+}
+
+function compactMoneyValue(value: string, currency: string): string {
+  // The calendar header carries the selected unit. Keeping the cell to the
+  // signed short amount prevents a valid value from being ellipsized at the
+  // seven-column desktop breakpoint.
+  void currency;
+  return compactNumeric(value);
+}
+
+function compactCellValue(cell: TradingRoomCalendarCell, display: RoomDisplayCurrency): string {
   if (cell.state === "future") return "—";
+  if (cell.state === "empty") return "·";
+  if (cell.value !== null) {
+    if (display !== "original") {
+      const target = displayValue(cell.money, display);
+      if (target !== null) return compactMoneyValue(target, display);
+    }
+    const values = Object.entries(cell.money.originalByCurrency);
+    if (values.length === 1) return compactMoneyValue(values[0][1], values[0][0]);
+    if (values.length > 1) return "多币种";
+  }
+  if (cell.state === "unavailable") return "不可用";
+  return "无样本";
+}
+
+function compactCellStateLabel(cell: TradingRoomCalendarCell): string {
+  if (cell.state === "future") return "尚未发生";
   if (cell.state === "positive") return "盈";
   if (cell.state === "negative") return "亏";
   if (cell.state === "break-even") return "平";
-  if (cell.state === "unavailable") return "不可用";
-  return "—";
+  if (cell.state === "unavailable") return "金额不可用";
+  return "无样本";
 }
 
 function compactCellSecondaryLabel(cell: TradingRoomCalendarCell): string {
@@ -339,62 +435,108 @@ export function RoomPerformance({
   entries,
   scope,
   embedded = false,
-  onScopeChange,
+  layout = "tabs",
+  contributionSlot,
   instrumentMetadata,
   fxSnapshot,
   asOf,
   onOpenInReview,
   renderMoney,
+  reportCurrency: reportCurrencyProp,
+  calendarBrowseState,
+  onCalendarBrowseStateChange,
 }: RoomPerformanceProps) {
+  const [metric, setMetric] = useState<"pnl" | "win-rate">("pnl");
+  const workspace = layout === "workspace";
   const [view, setView] = useState<"trend" | "calendar">("trend");
   const [level, setLevel] = useState<TradingRoomCalendarLevel>("month");
   const [trendLevelOverride, setTrendLevelOverride] = useState<TradingRoomTrendLevel | null>(null);
-  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [selectedKeyState, setSelectedKey] = useState<string | null>(() => calendarBrowseState?.selectedDate ?? null);
   const [selectedTrendKey, setSelectedTrendKey] = useState<string | null>(null);
-  const [calendarHistory, setCalendarHistory] = useState<Array<{ level: TradingRoomCalendarLevel; period: RoomScope["period"] }>>([]);
+  const [calendarState, setCalendarState] = useState<TradingRoomCalendarState>(() => createTradingRoomCalendarState(scope.period));
+  const [calendarHistory, setCalendarHistory] = useState<Array<{ level: TradingRoomCalendarLevel; state: TradingRoomCalendarState; selectedKey: string | null }>>([]);
   const [chartWidth, setChartWidth] = useState(640);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const scopePeriodSignature = roomPeriodSignature(scope.period);
   const scopeFilterSignature = roomFilterSignature(scope);
   const previousScopePeriodSignatureRef = useRef(scopePeriodSignature);
   const previousScopeFilterSignatureRef = useRef(scopeFilterSignature);
-  const pendingInternalPeriodSignatureRef = useRef<string | null>(null);
   const trendLevel = trendLevelOverride ?? defaultTrendLevel(scope);
+  const reportCurrency = reportCurrencyProp ?? "original";
+  const targetCurrency = targetFor(reportCurrency);
+  const activeCalendarState: TradingRoomCalendarState = calendarBrowseState
+    ? { ...calendarState, displayMonth: calendarBrowseState.displayMonth, selectedDate: calendarBrowseState.selectedDate }
+    : calendarState;
+  const selectedKey = calendarBrowseState ? calendarBrowseState.selectedDate : selectedKeyState;
+  const publishCalendarState = useCallback((next: TradingRoomCalendarState) => {
+    setCalendarState(next);
+    onCalendarBrowseStateChange?.({ displayMonth: next.displayMonth, selectedDate: next.selectedDate });
+  }, [onCalendarBrowseStateChange]);
   const metadata = useMemo(() => normalizeRoomMetadata(instrumentMetadata), [instrumentMetadata]);
   const model = useMemo(() => buildTradingRoomCalendar(entries, {
     scope,
-    level,
+    level: "month",
     trendLevel,
     asOf,
     instrumentMetadata,
     fxSnapshot,
-  }), [asOf, entries, fxSnapshot, instrumentMetadata, level, scope, trendLevel]);
+    targetCurrency,
+  }), [asOf, entries, fxSnapshot, instrumentMetadata, scope, targetCurrency, trendLevel]);
+  const calendarUnit = reportCurrency === "original"
+    ? model.trend.currencies.length === 1 ? model.trend.currencies[0] : "原币"
+    : reportCurrency;
+  const monthlyWinRate = useMemo(() => buildMonthlyWinRate(
+    buildTradingRoomModel(entries, { scope: { ...scope, period: model.range }, instrumentMetadata, fxSnapshot }).rows,
+    model.range,
+  ), [entries, scope, model.range, instrumentMetadata, fxSnapshot]);
   const allYearsRange = useMemo(() => findTradingRoomHistoryRange(entries, scope, {
     asOf,
     instrumentMetadata,
   }), [asOf, entries, instrumentMetadata, scope]);
-  const asOfDate = model.asOf;
+  const browsedPeriod = useMemo(
+    () => calendarPeriod(level, scope.period, activeCalendarState.displayMonth, allYearsRange),
+    [activeCalendarState.displayMonth, allYearsRange, level, scope.period],
+  );
+  const calendarModel = useMemo(() => buildTradingRoomCalendar(entries, {
+    scope: { ...scope, period: browsedPeriod },
+    level,
+    trendLevel,
+    anchorDate: `${activeCalendarState.displayMonth}-01`,
+    asOf,
+    instrumentMetadata,
+    fxSnapshot,
+    targetCurrency,
+  }), [asOf, browsedPeriod, activeCalendarState.displayMonth, entries, fxSnapshot, instrumentMetadata, level, scope, targetCurrency, trendLevel]);
   const queueIds = model.rows.map(row => row.item.episode.id);
-  const displayMoney = (value: RoomMoneyView) => renderMoney ? renderMoney(value) : moneyLabel(value);
-  const validSelectedKey = selectedKey && model.cells.some(cell => cell.key === selectedKey && cell.state !== "future") ? selectedKey : null;
+  const displayMoney = (value: RoomMoneyView) => renderMoney ? renderMoney(value) : moneyLabel(value, reportCurrency);
+  const validSelectedKey = selectedKey && calendarModel.cells.some(cell => cell.key === selectedKey && cell.state !== "future") ? selectedKey : null;
   const validSelectedTrendKey = selectedTrendKey && model.trend.points.some(point => point.key === selectedTrendKey.split(":").at(-1)) ? selectedTrendKey : null;
-  const details = validSelectedKey ? model.detailFor(validSelectedKey) : [];
+  const details = validSelectedKey ? calendarModel.detailFor(validSelectedKey) : [];
   const selectedTrend = validSelectedTrendKey ? model.trend.points.find(point => point.key === validSelectedTrendKey.split(":").at(-1)) ?? null : null;
   const selectedTrendCurrency = validSelectedTrendKey?.split(":")[0];
-  const selectedCell = validSelectedKey ? model.cells.find(cell => cell.key === validSelectedKey && cell.state !== "future") ?? null : null;
-  const isDailyCalendar = level === "month" && model.cells.every(cell => cell.startDate === cell.endDate);
-  const isCrossMonthSummary = level === "month" && scope.period.startDate.slice(0, 7) !== scope.period.endDate.slice(0, 7);
-  const weekdayOffset = isDailyCalendar && model.cells.length > 0
-    ? (dateFromKey(model.cells[0].startDate).getUTCDay() + 6) % 7
+  const selectedCell = validSelectedKey ? calendarModel.cells.find(cell => cell.key === validSelectedKey && cell.state !== "future") ?? null : null;
+  const isDailyCalendar = level === "month" && calendarModel.cells.every(cell => cell.startDate === cell.endDate);
+  const weekdayOffset = isDailyCalendar
+    ? (dateFromKey(`${activeCalendarState.displayMonth}-01`).getUTCDay() + 6) % 7
     : 0;
-  const aggregateTrend = model.trend.endMoney.convertedCny !== null;
+  const calendarDisplayCells = isDailyCalendar
+    ? monthDates(activeCalendarState.displayMonth).map(date => {
+      const cell = calendarModel.cells.find(candidate => candidate.key === date);
+      if (date < scope.period.startDate || date > scope.period.endDate) return { kind: "outside" as const, date, cell: null };
+      return { kind: "cell" as const, date, cell: cell ?? null };
+    })
+    : calendarModel.cells.map(cell => ({ kind: "cell" as const, date: cell.startDate, cell }));
+  const aggregateTrend = reportCurrency !== "original"
+    ? displayValue(model.trend.endMoney, reportCurrency) !== null
+    : model.trend.currencies.length <= 1;
   const trendValues = aggregateTrend || model.trend.currencies.length <= 1
-    ? model.trend.points.map(point => renderableTrendValue(point))
-    : model.trend.currencies.flatMap(currency => model.trend.points.map(point => renderableTrendValue(point, currency)));
+    ? model.trend.points.map(point => renderableTrendValue(point, undefined, reportCurrency))
+    : model.trend.currencies.flatMap(currency => model.trend.points.map(point => renderableTrendValue(point, currency, reportCurrency)));
   const trendDomain = paddedValueDomain(trendValues);
+  const chartHeight = workspace ? 154 : chartWidth < 420 ? 240 : 320;
   const chartGeometry = createChartGeometry({
     width: chartWidth,
-    height: chartWidth < 420 ? 240 : 320,
+    height: chartHeight,
     padding: { top: 14, right: chartWidth < 240 ? 10 : 16, bottom: 42, left: 72 },
   });
   const zeroY = chartZeroY(trendDomain, chartGeometry);
@@ -403,14 +545,14 @@ export function RoomPerformance({
     .map(point => ({ ...point, label: trendAxisLabel(model.trend.points[point.index], trendLevel) }));
   const trendAxisTicks = visibleAxisTicks(chartAxisTicks(trendDomain, chartGeometry));
   const chartSeries = aggregateTrend || model.trend.currencies.length <= 1
-    ? [{ key: aggregateTrend ? "CNY" : model.trend.currencies[0] ?? "CNY", points: model.trend.points.map(point => ({ value: renderableTrendValue(point, aggregateTrend ? undefined : model.trend.currencies[0]) })) }]
+    ? [{ key: aggregateTrend ? reportCurrency === "original" ? model.trend.currencies[0] ?? "原币" : reportCurrency : model.trend.currencies[0] ?? "原币", points: model.trend.points.map(point => ({ value: renderableTrendValue(point, aggregateTrend ? undefined : model.trend.currencies[0], reportCurrency) })) }]
     : model.trend.currencies.map(currency => {
       let seenCurrency = false;
       return {
         key: currency,
         points: model.trend.points.map(point => {
           if (Object.prototype.hasOwnProperty.call(point.periodMoney.originalByCurrency, currency)) seenCurrency = true;
-          return { value: seenCurrency ? renderableTrendValue(point, currency) : null };
+          return { value: seenCurrency ? renderableTrendValue(point, currency, reportCurrency) : null };
         }),
       };
     });
@@ -418,7 +560,7 @@ export function RoomPerformance({
   const chartLabelPlacements = chartSeries.map(series => {
     const points = chartPointCoordinates(series.points, chartGeometry, trendDomain);
     const currency = aggregateTrend ? undefined : series.key;
-    const values = points.map(point => trendPointMoney(model.trend.points[point.index], true, currency));
+    const values = points.map(point => trendPointMoney(model.trend.points[point.index], true, currency, reportCurrency));
     const placements = visibleTrendLabelPlacements(
       points,
       values,
@@ -438,20 +580,20 @@ export function RoomPerformance({
       setSelectedKey(null);
       setSelectedTrendKey(null);
       setCalendarHistory([]);
+      const next = applyTradingRoomCalendarPeriod(calendarState, scope.period);
+      publishCalendarState(next);
       previousScopeFilterSignatureRef.current = scopeFilterSignature;
     }
     if (previousScopePeriodSignatureRef.current !== scopePeriodSignature) {
-      if (pendingInternalPeriodSignatureRef.current === scopePeriodSignature) {
-        pendingInternalPeriodSignatureRef.current = null;
-      } else {
-        setLevel("month");
-        setSelectedKey(null);
-        setSelectedTrendKey(null);
-        setCalendarHistory([]);
-      }
+      setLevel("month");
+      setSelectedKey(null);
+      setSelectedTrendKey(null);
+      setCalendarHistory([]);
+      const next = applyTradingRoomCalendarPeriod(calendarState, scope.period);
+      publishCalendarState(next);
       previousScopePeriodSignatureRef.current = scopePeriodSignature;
     }
-  }, [scopeFilterSignature, scopePeriodSignature]);
+  }, [calendarState, publishCalendarState, scope.period, scopeFilterSignature, scopePeriodSignature]);
 
   const chartStageRef = useCallback((element: HTMLDivElement | null) => {
     resizeObserverRef.current?.disconnect();
@@ -468,104 +610,95 @@ export function RoomPerformance({
     resizeObserverRef.current = observer;
   }, []);
 
-  const requestPeriodChange = (period: RoomScope["period"], nextLevel?: TradingRoomCalendarLevel) => {
-    pendingInternalPeriodSignatureRef.current = roomPeriodSignature(period);
-    if (nextLevel) setLevel(nextLevel);
-    onScopeChange({ period });
-  };
-
   const changeLevel = (next: TradingRoomCalendarLevel) => {
     setSelectedKey(null);
     setLevel(next);
-    if (next === "all-years") {
-      if (allYearsRange.startDate <= allYearsRange.endDate) {
-        requestPeriodChange(allYearsRange, "all-years");
-      }
-      return;
-    }
-    if (next === "year") {
-      const anchor = scope.period.endDate > asOfDate ? asOfDate : scope.period.endDate;
-      requestPeriodChange(setPeriodForYear(anchor, asOfDate), "year");
-      return;
-    }
-    if (scope.period.preset === "last-3-months") return;
-    const anchor = scope.period.endDate > asOfDate ? asOfDate : scope.period.endDate;
-    requestPeriodChange(setPeriodForMonth(anchor, asOfDate), "month");
   };
 
   const selectCell = (cell: TradingRoomCalendarCell) => {
     if (cell.state === "future") return;
     setSelectedKey(null);
     if (level === "all-years") {
-      setCalendarHistory(history => [...history, { level, period: scope.period }]);
-      requestPeriodChange(setPeriodForYear(cell.key, asOfDate), "year");
+      setCalendarHistory(history => [...history, { level, state: activeCalendarState, selectedKey }]);
+      publishCalendarState({ ...activeCalendarState, displayMonth: `${cell.key}-01`, selectedDate: null });
+      setLevel("year");
       return;
     }
     if (level === "year" || cell.key.length === 7) {
-      setCalendarHistory(history => [...history, { level, period: scope.period }]);
-      requestPeriodChange(setPeriodForMonth(cell.key, asOfDate), "month");
+      setCalendarHistory(history => [...history, { level, state: activeCalendarState, selectedKey }]);
+      publishCalendarState({ ...activeCalendarState, displayMonth: cell.key, selectedDate: null });
+      setLevel("month");
       return;
     }
     setSelectedKey(cell.key);
+    publishCalendarState(selectTradingRoomCalendarDate(activeCalendarState, cell.key));
   };
 
   const returnToPreviousRange = () => {
     const previous = calendarHistory.at(-1);
     if (!previous) return;
     setCalendarHistory(history => history.slice(0, -1));
-    setSelectedKey(null);
+    setSelectedKey(previous.selectedKey);
     setLevel(previous.level);
-    requestPeriodChange(previous.period, previous.level);
+    publishCalendarState(previous.state);
   };
 
   const movePeriod = (delta: number) => {
-    const base = dateFromKey(scope.period.endDate);
-    base.setUTCDate(1);
-    base.setUTCMonth(base.getUTCMonth() + delta);
-    const key = dateKey(base).slice(0, 7);
-    if (delta > 0 && `${key}-01` > asOfDate) return;
     setSelectedKey(null);
-    requestPeriodChange(setPeriodForMonth(key, asOfDate), "month");
+    publishCalendarState(moveTradingRoomCalendarMonth(activeCalendarState, delta));
   };
 
   const moveYear = (delta: number) => {
-    const year = Number(scope.period.endDate.slice(0, 4)) + delta;
-    if (delta > 0 && year > Number(asOfDate.slice(0, 4))) return;
-    requestPeriodChange(setPeriodForYear(`${year}-01-01`, asOfDate), "year");
+    setSelectedKey(null);
+    publishCalendarState(moveTradingRoomCalendarMonth(activeCalendarState, delta * 12));
   };
-  const nextPeriodStart = (() => {
-    const base = dateFromKey(scope.period.endDate);
-    base.setUTCDate(1);
-    base.setUTCMonth(base.getUTCMonth() + 1);
-    return dateKey(base);
-  })();
-  const nextDisabled = level === "year"
-    ? Number(scope.period.endDate.slice(0, 4)) >= Number(asOfDate.slice(0, 4))
-    : nextPeriodStart > asOfDate;
+  const monthBounds = calendarMonthBounds(activeCalendarState);
+  const nextDisabled = !monthBounds.nextAvailable;
 
   return (
     <section className={`${styles.panel} ${embedded ? styles.embeddedPanel : ""}`} aria-label="业绩趋势与日历">
-      <header className={styles.heading}>
+      {!workspace && <header className={styles.heading}>
         <div>
           <h2>{view === "trend" ? "累计盈亏" : "已平仓净盈亏日历"}</h2>
-          <p>{model.range.startDate} 至 {model.range.endDate} · {model.summary.trustedClosedCount} 个可信已平仓回合 · 排除 {model.summary.excludedCount} 个已平仓样本{model.summary.unknownAssetEpisodeCount ? ` · 未知资产 ${model.summary.unknownAssetEpisodeCount} 个另列` : ""}</p>
+          <p>{model.range.startDate} 至 {model.range.endDate} · {model.rows.filter(row => row.item.episode.status === "closed").length} 个完整回合 · {model.summary.trustedClosedCount} 个可信已平仓回合 · 排除 {model.summary.excludedCount} 个已平仓样本{model.summary.unknownAssetEpisodeCount ? ` · 未知资产 ${model.summary.unknownAssetEpisodeCount} 个另列` : ""}</p>
         </div>
         <div className={styles.viewTabs} role="group" aria-label="业绩视图">
           <button type="button" aria-pressed={view === "trend"} onClick={() => { setView("trend"); setSelectedKey(null); }}>趋势</button>
           <button type="button" aria-pressed={view === "calendar"} onClick={() => { setView("calendar"); setSelectedKey(null); }}>日历</button>
         </div>
-        {view === "trend" && <div className={styles.levelTabs} role="group" aria-label="趋势分桶">
+        {view === "trend" && metric === "pnl" && <div className={styles.levelTabs} role="group" aria-label="趋势分桶">
           {(["day", "week", "month"] as const).map(value => <button type="button" key={value} aria-label={value === "day" ? "日" : value === "week" ? "周" : "月"} aria-pressed={trendLevel === value} onClick={() => { setTrendLevelOverride(value); setSelectedKey(null); }}>{value === "day" ? "日" : value === "week" ? "周" : "月"}<span className={styles.visuallyHidden}>{trendLevelLabel(value)}</span></button>)}
         </div>}
-      </header>
+      </header>}
 
       {!embedded && <div className={styles.summaryLine} role="group" aria-label="区间收益摘要">
         <strong>{displayMoney(model.summary.money)}</strong>
         <span>{moneyDetail(model.summary.money)}</span>
       </div>}
 
-      {view === "trend" ? (
+      <div className={workspace ? styles.workspaceGrid : undefined}>
+      {(workspace || view === "trend") && (
         <div className={styles.trendWrap}>
+          {workspace && <div className={styles.cardHeading}>
+            <h3>已完成交易表现</h3>
+            {metric === "pnl" && <div className={styles.levelTabs} role="group" aria-label="趋势分桶">
+              {["day", "week", "month"].map(value => <button type="button" key={value} aria-label={value === "day" ? "日" : value === "week" ? "周" : "月"} aria-pressed={trendLevel === value} onClick={() => { setTrendLevelOverride(value as TradingRoomTrendLevel); setSelectedKey(null); }}>{value === "day" ? "日" : value === "week" ? "周" : "月"}</button>)}
+            </div>}
+          </div>}
+          <div className={styles.levelTabs} role="group" aria-label="历史表现指标">
+            <button type="button" aria-pressed={metric === "pnl"} onClick={() => setMetric("pnl")}>累计盈亏</button>
+            <button type="button" aria-pressed={metric === "win-rate"} onClick={() => setMetric("win-rate")}>自然月胜率</button>
+          </div>
+          {metric === "win-rate" ? <section className={styles.winRate} aria-label="自然月胜率表现">
+            <p>盈利回合 ÷ 可信已平仓回合；持平计入分母，无样本月份留缺口。</p>
+            <svg role="img" aria-label="自然月胜率趋势图" viewBox="0 0 640 240">
+              {[0, 50, 100].map(value => <g key={value}><line x1="45" x2="625" y1={215 - value * 1.9} y2={215 - value * 1.9} className={styles.axisGridLine} /><text x="5" y={219 - value * 1.9}>{value}%</text></g>)}
+              <path d={chartLinePath(monthlyWinRate.points.map(point => ({ value: point.ratePercent })), createChartGeometry({ width: 640, height: 240, padding: { left: 45, right: 15, top: 25, bottom: 25 } }), { min: 0, max: 100 })} fill="none" stroke="var(--dashboard-positive)" strokeWidth="2" />
+              {chartPointCoordinates(monthlyWinRate.points.map(point => ({ value: point.ratePercent })), createChartGeometry({ width: 640, height: 240, padding: { left: 45, right: 15, top: 25, bottom: 25 } }), { min: 0, max: 100 }).map(point => <circle key={point.index} cx={point.x} cy={point.y} r="4" data-month={monthlyWinRate.points[point.index].month} fill="var(--dashboard-positive)"><title>{monthlyWinRate.points[point.index].month} · {percentLabel(monthlyWinRate.points[point.index].ratePercent)}</title></circle>)}
+            </svg>
+            <ul>{monthlyWinRate.points.map(point => <li key={point.month}><strong>{point.month} · {point.ratePercent === null ? "无样本" : percentLabel(point.ratePercent)} · {point.wins}/{point.denominator}</strong><small>{point.coverageLabel}</small></li>)}</ul>
+          </section> : <>
+
           {model.trend.points.length === 0 || model.summary.trustedClosedCount === 0 ? (
             <p className={styles.empty}>当前范围暂无可绘制的已平仓回合。</p>
           ) : (
@@ -588,7 +721,7 @@ export function RoomPerformance({
                           const trendPoint = model.trend.points[point.index];
                           if (!trendPoint) return null;
                           const selectPoint = () => setSelectedTrendKey(`${series.key}:${trendPoint.key}`);
-                          const pointLabel = `${series.key} · ${trendPointLabel(trendPoint, aggregateTrend ? undefined : series.key)}`;
+                          const pointLabel = `${series.key} · ${trendPointLabel(trendPoint, aggregateTrend ? undefined : series.key, reportCurrency)}`;
                           const pointEvents = {
                             onMouseEnter: selectPoint,
                             onPointerEnter: selectPoint,
@@ -605,7 +738,7 @@ export function RoomPerformance({
                             <circle cx={point.x} cy={point.y} r="4" fill={lineColor(index)} data-chart-role="point-visible" pointerEvents="none"><title>{series.key} · {point.value}</title></circle>
                             {chartLabelPlacements[index].some(placement => placement.index === points.findIndex(value => value.index === point.index)) && (() => {
                               const placement = chartLabelPlacements[index].find(value => value.index === points.findIndex(item => item.index === point.index))!;
-                              return <text x={placement.x} y={placement.y} textAnchor={placement.textAnchor} className={styles[`amount-${amountTone(trendNumericValue(trendPoint, true, seriesCurrency))}`]} data-chart-role="point-label" data-tone={amountTone(trendNumericValue(trendPoint, true, seriesCurrency))}>{trendPointMoney(trendPoint, true, seriesCurrency)}</text>;
+                              return <text x={placement.x} y={placement.y} textAnchor={placement.textAnchor} className={styles[`amount-${amountTone(trendNumericValue(trendPoint, true, seriesCurrency, reportCurrency))}`]} data-chart-role="point-label" data-tone={amountTone(trendNumericValue(trendPoint, true, seriesCurrency, reportCurrency))}>{trendPointMoney(trendPoint, true, seriesCurrency, reportCurrency)}</text>;
                             })()}
                             <circle cx={point.x} cy={point.y} r="22" fill="transparent" role="button" tabIndex={0} aria-label={pointLabel} data-chart-role="point-hit-area" className={styles.chartPointHitArea} {...pointEvents} />
                           </g>;
@@ -614,7 +747,7 @@ export function RoomPerformance({
                     })}
                     </svg>
                     <div className={styles.axisYLabels} aria-label="趋势图纵轴刻度">
-                      {trendAxisTicks.map(tick => <span key={tick.value} style={{ top: `${(tick.y / chartGeometry.height) * 100}%`, left: `${(chartGeometry.padding.left / chartGeometry.width) * 100}%` }} data-chart-role="axis-y-label" data-value={tick.value}>{model.trend.currencies.length > 1 && !aggregateTrend ? new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2, signDisplay: "always" }).format(tick.value) : money(String(tick.value), aggregateTrend ? "CNY" : model.trend.currencies[0] ?? "CNY")}</span>)}
+                      {trendAxisTicks.map(tick => <span key={tick.value} style={{ top: `${(tick.y / chartGeometry.height) * 100}%`, left: `${(chartGeometry.padding.left / chartGeometry.width) * 100}%` }} data-chart-role="axis-y-label" data-value={tick.value}>{model.trend.currencies.length > 1 && !aggregateTrend ? new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2, signDisplay: "always" }).format(tick.value) : money(String(tick.value), aggregateTrend && reportCurrency !== "original" ? reportCurrency : model.trend.currencies[0] ?? "CNY")}</span>)}
                     </div>
                     <div className={styles.axisXLabels} aria-label="趋势图横轴">
                       {trendAxisLabels.map(point => <span className={point.index === 0 ? styles.axisXLabelStart : point.index === model.trend.points.length - 1 ? styles.axisXLabelEnd : undefined} key={point.key} style={{ left: `${(point.x / chartGeometry.width) * 100}%` }} data-chart-role="axis-x-tick" data-key={point.key} data-x={point.x}>{point.label}</span>)}
@@ -622,58 +755,80 @@ export function RoomPerformance({
                   </div>
                 </div>
               </div>
-              <div className={styles.trendValueLegend}><span><i style={{ backgroundColor: lineColor(0) }} />累计盈亏</span></div>
+              <div className={styles.trendFooter}>
+                <div className={styles.trendValueLegend}><span><i style={{ backgroundColor: lineColor(0) }} />累计盈亏</span></div>
+                {model.trend.currencies.length > 1 && !aggregateTrend && <>
+                  <div className={styles.legend} aria-label="趋势币种图例">{model.trend.currencies.map((currency, index) => <span key={currency}><i style={{ backgroundColor: lineColor(index) }} />{currency}</span>)}</div>
+                  <p className={styles.notice} title={reportCurrency === "original" ? "多币种暂不可合计：按原币分别显示（共用同一数值尺度）。" : `${reportCurrency}暂不可用，趋势保留原币分别显示（${model.trend.endMoney.note}）。`}>{reportCurrency === "original" ? "多币种暂不可合计：按原币分别显示（共用同一数值尺度）。" : `${reportCurrency}暂不可用，趋势保留原币分别显示（${model.trend.endMoney.note}）。`}</p>
+                </>}
+                {model.trend.currencies.length > 1 && aggregateTrend && reportCurrency !== "original" && <p className={styles.notice} title={`多币种已按同一汇率快照换算为${reportCurrency}合计。`}>多币种已按同一汇率快照换算为{reportCurrency}合计。</p>}
+              </div>
               {selectedTrend && <div className={styles.selectedTrendPoint} role="status" aria-label="趋势点详情" aria-live="polite">
                 <strong>{selectedTrend.label}</strong>
-                <span className={styles[`amount-${amountTone(trendNumericValue(selectedTrend, false, aggregateTrend ? undefined : selectedTrendCurrency))}`]}>本期盈亏 {trendPointMoney(selectedTrend, false, aggregateTrend ? undefined : selectedTrendCurrency)}</span>
-                <span className={styles[`amount-${amountTone(trendNumericValue(selectedTrend, true, aggregateTrend ? undefined : selectedTrendCurrency))}`]}>累计盈亏 {trendPointMoney(selectedTrend, true, aggregateTrend ? undefined : selectedTrendCurrency)}</span>
+                <span className={styles[`amount-${amountTone(trendNumericValue(selectedTrend, false, aggregateTrend ? undefined : selectedTrendCurrency, reportCurrency))}`]}>本期盈亏 {trendPointMoney(selectedTrend, false, aggregateTrend ? undefined : selectedTrendCurrency, reportCurrency)}</span>
+                <span className={styles[`amount-${amountTone(trendNumericValue(selectedTrend, true, aggregateTrend ? undefined : selectedTrendCurrency, reportCurrency))}`]}>累计盈亏 {trendPointMoney(selectedTrend, true, aggregateTrend ? undefined : selectedTrendCurrency, reportCurrency)}</span>
                 <small>{selectedTrend.trustedClosedCount} 个可信回合 · {selectedTrend.wins} 胜 / {selectedTrend.losses} 负 / 持平 {selectedTrend.breakEven} · {selectedTrend.startDate} 至 {selectedTrend.endDate}{selectedTrend.availability !== "available" ? ` · ${selectedTrend.availability === "not-combinable" ? "多币种无法合计" : selectedTrend.availability === "insufficient" ? "数据不足" : "暂无样本"}` : ""}</small>
               </div>}
               <details className={styles.trendDetails}>
                 <summary>查看趋势数据</summary>
                 <div className={styles.trendPointList} aria-label="趋势数据">
-                  {model.trend.points.map(point => <div key={point.key} aria-label={trendPointLabel(point)}>
+                  {model.trend.points.map(point => <div key={point.key} aria-label={trendPointLabel(point, undefined, reportCurrency)}>
                     <strong>{point.label}</strong>
-                    <span data-chart-role="trend-period-value" data-tone={amountTone(trendNumericValue(point, false))} className={styles[`amount-${amountTone(trendNumericValue(point, false))}`]}>本期盈亏 {trendPointMoney(point, false)}</span>
-                    <span data-chart-role="trend-cumulative-value" data-tone={amountTone(trendNumericValue(point, true))} className={styles[`amount-${amountTone(trendNumericValue(point, true))}`]}>累计盈亏 {trendPointMoney(point, true)}</span>
+                    <span data-chart-role="trend-period-value" data-tone={amountTone(trendNumericValue(point, false, undefined, reportCurrency))} className={styles[`amount-${amountTone(trendNumericValue(point, false, undefined, reportCurrency))}`]}>本期盈亏 {trendPointMoney(point, false, undefined, reportCurrency)}</span>
+                    <span data-chart-role="trend-cumulative-value" data-tone={amountTone(trendNumericValue(point, true, undefined, reportCurrency))} className={styles[`amount-${amountTone(trendNumericValue(point, true, undefined, reportCurrency))}`]}>累计盈亏 {trendPointMoney(point, true, undefined, reportCurrency)}</span>
                     <small>{point.trustedClosedCount} 个可信回合 · {point.wins} 胜 / {point.losses} 负 · {point.startDate} 至 {point.endDate}</small>
                   </div>)}
                 </div>
               </details>
-              {model.trend.currencies.length > 1 && model.trend.endMoney.convertedCny === null && <>
-                <div className={styles.legend} aria-label="趋势币种图例">{model.trend.currencies.map((currency, index) => <span key={currency}><i style={{ backgroundColor: lineColor(index) }} />{currency}</span>)}</div>
-                <p className={styles.notice}>多币种暂不可合计，趋势按原币分别显示（共用同一数值尺度）。</p>
-              </>}
-              {model.trend.currencies.length > 1 && aggregateTrend && <p className={styles.notice}>多币种已按同一汇率快照换算为人民币合计。</p>}
             </div>
           )}
+          </>}
         </div>
-      ) : (
-        <div className={styles.calendarWrap}>
-          <div className={styles.levelTabs} role="group" aria-label="日历层级">
-            {(["month", "year", "all-years"] as const).map(value => <button type="button" key={value} aria-label={value === "month" && !isCrossMonthSummary ? "月" : undefined} aria-pressed={level === value && !isCrossMonthSummary} onClick={() => changeLevel(value)}>{value === "month" ? (isCrossMonthSummary ? "所选期间·按月汇总" : "月") : value === "year" ? "年" : "全部年份"}</button>)}
-          </div>
-          {calendarHistory.length > 0 && <div className={styles.breadcrumb}><span>范围路径：{calendarHistory.map(item => item.level === "all-years" ? "全部年份" : item.level === "year" ? "年份" : "月份").join(" / ")} / 当前</span><button type="button" onClick={returnToPreviousRange}>返回上一范围</button></div>}
-          {level !== "all-years" && <div className={styles.calendarNav}>
+      )}
+      {workspace && contributionSlot && <div className={styles.contributionSlot}>{contributionSlot}</div>}
+      {(workspace || view === "calendar") && (
+        <div className={styles.calendarWrap} role="region" aria-label="盈亏日历">
+          {workspace ? <div className={styles.calendarHeader}>
+            <h3>盈亏日历 <small className={styles.calendarUnit}>单位：{calendarUnit}</small></h3>
+            <div className={styles.levelTabs} role="group" aria-label="日历层级">
+              {(["month", "year", "all-years"] as const).map(value => <button type="button" key={value} aria-label={value === "month" ? "月" : undefined} aria-pressed={level === value} onClick={() => changeLevel(value)}>{value === "month" ? "月" : value === "year" ? "年" : "全部年份"}</button>)}
+            </div>
+            {level !== "all-years" && <div className={styles.calendarNav}>
+              <button type="button" aria-label={level === "year" ? "上一年" : "上一个月"} onClick={() => level === "year" ? moveYear(-1) : movePeriod(-1)}>‹</button>
+              <span>{level === "month" ? `${activeCalendarState.displayMonth.slice(0, 4)}年${Number(activeCalendarState.displayMonth.slice(5, 7))}月` : `${browsedPeriod.startDate} 至 ${browsedPeriod.endDate}`}</span>
+              <button type="button" aria-label={level === "year" ? "下一年" : "下一个月"} disabled={nextDisabled} onClick={() => level === "year" ? moveYear(1) : movePeriod(1)}>›</button>
+            </div>}
+          </div> : <>
+            <div className={styles.levelTabs} role="group" aria-label="日历层级">
+              {(["month", "year", "all-years"] as const).map(value => <button type="button" key={value} aria-label={value === "month" ? "月" : undefined} aria-pressed={level === value} onClick={() => changeLevel(value)}>{value === "month" ? "月" : value === "year" ? "年" : "全部年份"}</button>)}
+            </div>
+            {level !== "all-years" && <div className={styles.calendarNav}>
             <button type="button" aria-label={level === "year" ? "上一年" : "上一个月"} onClick={() => level === "year" ? moveYear(-1) : movePeriod(-1)}>‹</button>
-            <span>{model.range.startDate} 至 {model.range.endDate}</span>
+            <span>{level === "month" ? `${activeCalendarState.displayMonth.slice(0, 4)}年${Number(activeCalendarState.displayMonth.slice(5, 7))}月` : `${browsedPeriod.startDate} 至 ${browsedPeriod.endDate}`}</span>
             <button type="button" aria-label={level === "year" ? "下一年" : "下一个月"} disabled={nextDisabled} onClick={() => level === "year" ? moveYear(1) : movePeriod(1)}>›</button>
-          </div>}
+            </div>}
+          </>}
+          {calendarHistory.length > 0 && <div className={styles.breadcrumb}><span>范围路径：{calendarHistory.map(item => item.level === "all-years" ? "全部年份" : item.level === "year" ? "年份" : "月份").join(" / ")} / 当前</span><button type="button" onClick={returnToPreviousRange}>返回上一范围</button></div>}
+          {level === "all-years" && <div className={styles.calendarSummary} aria-label="日历汇总"><strong>{displayMoney(calendarModel.summary.money)}</strong><span>{calendarModel.summary.trustedClosedCount} 个可信回合 · {calendarModel.summary.wins} 胜 / {calendarModel.summary.losses} 负 / 持平 {calendarModel.summary.breakEven}</span></div>}
           {isDailyCalendar && <div className={styles.weekdays} aria-hidden="true">{["一", "二", "三", "四", "五", "六", "日"].map(day => <span key={day}>周{day}</span>)}</div>}
           <div className={`${styles.calendarGrid} ${isDailyCalendar ? styles.dailyGrid : styles.periodGrid}`}>
             {isDailyCalendar && Array.from({ length: weekdayOffset }, (_, index) => <span key={`leading-${index}`} className={styles.leadingBlank} aria-hidden="true" />)}
-            {model.cells.map(cell => <button type="button" key={cell.key} className={`${styles.cell} ${styles[`state-${cell.state}`]}`} aria-label={`${cell.label}，${cellLabel(cell)}，${cellSecondaryLabel(cell)}`} disabled={cell.state === "future"} onClick={() => selectCell(cell)}>
-              <strong>{isDailyCalendar ? <><span className={styles.dayNumber}>{cell.startDate.slice(8)}</span><span className={styles.fullDate}>{cell.startDate}</span></> : cell.label}</strong>
-              <span className={styles.cellValueLong}>{cellLabel(cell)}</span>
-              {isDailyCalendar && <span className={styles.cellValueShort}>{compactCellValue(cell)}</span>}
-              <small className={styles.cellSecondaryLong}>{cellSecondaryLabel(cell)}</small>
-              {isDailyCalendar && <small className={styles.cellSecondaryShort}>{compactCellSecondaryLabel(cell)}</small>}
-            </button>)}
+            {calendarDisplayCells.map(item => item.kind === "outside"
+              ? <span key={`outside-${item.date}`} className={styles.outsideCell} aria-label={`${item.date}，范围外`}><strong>{item.date.slice(8)}</strong><small>范围外</small></span>
+              : item.cell === null
+                ? <span key={`empty-${item.date}`} className={`${styles.cell} ${styles["state-empty"]}`} aria-label={`${item.date}，无样本`}><strong>{item.date.slice(8)}</strong><span aria-hidden="true">·</span><span className={styles.visuallyHidden}>无样本</span><small className={styles.visuallyHidden}>暂无样本</small></span>
+              : <button type="button" key={item.cell!.key} className={`${styles.cell} ${styles[`state-${item.cell!.state}`]}`} aria-label={`${item.cell!.label}，${cellLabel(item.cell!, reportCurrency)}，${cellSecondaryLabel(item.cell!)}`} disabled={item.cell!.state === "future"} onClick={() => selectCell(item.cell!)}>
+                <strong>{isDailyCalendar ? <><span className={styles.dayNumber}>{item.cell.startDate.slice(8)}</span><span className={styles.fullDate}>{item.cell.startDate}</span></> : item.cell.label}</strong>
+                <span className={styles.cellValueLong}>{cellLabel(item.cell, reportCurrency)}</span>
+                {isDailyCalendar && <><span className={styles.cellValueShort}>{compactCellValue(item.cell, reportCurrency)}</span><span className={styles.visuallyHidden}>{compactCellStateLabel(item.cell)}</span></>}
+                <small className={styles.cellSecondaryLong}>{cellSecondaryLabel(item.cell)}</small>
+                {isDailyCalendar && <small className={styles.cellSecondaryShort}>{compactCellSecondaryLabel(item.cell)}</small>}
+              </button>)}
           </div>
           {validSelectedKey && <section className={styles.detail} aria-label="日历日期详情">
             <div className={styles.detailHeading}><strong>{selectedKey}</strong><span>{details.length} 个回合</span></div>
             {selectedCell && <div className={styles.detailSummary} aria-label="日历汇总详情">
-              <div><span>期间金额</span><strong>{selectedCell.value !== null ? displayMoney(selectedCell.money) : cellLabel(selectedCell)}</strong></div>
+              <div><span>期间金额</span><strong>{selectedCell.value !== null ? displayMoney(selectedCell.money) : cellLabel(selectedCell, reportCurrency)}</strong></div>
               <div><span>可信样本</span><strong>{selectedCell.trustedClosedCount}</strong></div>
               <div><span>胜率</span><strong>{percentLabel(selectedCell.winRatePercent)}</strong></div>
             </div>}
@@ -682,12 +837,20 @@ export function RoomPerformance({
               const excluded = projection.category === "unknown" ? "未知资产类型" : dashboardRowExclusionReason(row);
               return <div className={styles.detailRow} key={row.item.episode.id}>
                 <div><strong>{row.item.episode.instrument.name}（{row.item.episode.instrument.symbol}）</strong><small>{dashboardEpisodeDate(row)} · {row.item.episode.accountLabel}</small></div>
-                <div><strong>{excluded ? `不可用 · ${exclusionReasonLabel(excluded)}` : rowMoney(row)}</strong><button type="button" onClick={() => onOpenInReview(row.item.episode.instrument.id, row.item.episode.id, queueIds)}>打开复盘</button></div>
+                <div><strong>{excluded
+                  ? `不可用 · ${exclusionReasonLabel(excluded)}`
+                  : row.item.metrics.netPnl === null
+                    ? "不可用"
+                    : displayMoney(buildRoomMoneyView([{
+                      currency: row.item.episode.instrument.currency,
+                      amount: row.item.metrics.netPnl,
+                    }], fxSnapshot, targetCurrency))}</strong><button type="button" onClick={() => onOpenInReview(row.item.episode.instrument.id, row.item.episode.id, queueIds)}>打开复盘</button></div>
               </div>;
             })}</div>}
           </section>}
         </div>
       )}
+      </div>
     </section>
   );
 }

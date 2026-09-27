@@ -1,0 +1,64 @@
+.panel { border: 1px solid var(--dashboard-line); border-radius: 12px; padding: 14px; background: var(--dashboard-card); min-width: 0; }
+.panel header, .panel footer, .panel nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.panel h3 { margin: 0; font-size: 15px; }
+.panel button { border: 1px solid var(--dashboard-line); border-radius: 6px; padding: 5px 10px; color: var(--dashboard-ink); background: var(--dashboard-card-elevated); cursor: pointer; }
+.panel button:disabled { opacity: .4; cursor: default; }
+.note, .panel footer { color: var(--dashboard-muted); font-size: 11px; line-height: 1.6; }
+.tableWrap { overflow: auto; }
+.panel table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
+.panel th { color: var(--dashboard-muted); font-weight: 500; background: var(--dashboard-soft); }
+.panel th, .panel td { padding: 11px 8px; border-bottom: 1px solid var(--dashboard-line-soft); }
+.panel td:first-child, .panel td:last-child { white-space: nowrap; }
+.panel small { display: block; color: var(--dashboard-muted); margin-top: 3px; font-size: 11px; }
+.panel footer { margin-top: 12px; }
+.pageNumbers { display: inline-flex; align-items: center; gap: 4px; }
+.pageNumbers button { min-width: 28px; padding: 4px 7px; }
+.pageNumbers button[aria-current="page"] { opacity: 1; font-weight: 700; color: var(--dashboard-ink); background: var(--dashboard-soft); }
+.pending { padding: 3px 6px; border: 1px solid var(--dashboard-line); border-radius: 5px; white-space: nowrap; }
+.positive { color: var(--dashboard-positive, #26a69a); }
+.negative { color: var(--dashboard-negative, #ef5350); }
+.neutral { color: var(--dashboard-muted); }
+
+/* Keep every required pending-review field measurable at desktop and on the
+   narrow scroll surface. The quantity column remains a real column even
+   when the card is narrower than the eight-field table. */
+.panel table {
+  min-width: 760px;
+  table-layout: fixed;
+}
+.panel th:nth-child(1), .panel td:nth-child(1) { width: 12%; }
+.panel th:nth-child(2), .panel td:nth-child(2) { width: 18%; }
+.panel th:nth-child(3), .panel td:nth-child(3) { width: 12%; }
+.panel th:nth-child(4), .panel td:nth-child(4) { width: 14%; }
+.panel th:nth-child(5), .panel td:nth-child(5) { width: 10%; }
+.panel th:nth-child(6), .panel td:nth-child(6) { width: 15%; }
+.panel th:nth-child(7), .panel td:nth-child(7) { width: 9%; }
+.panel th:nth-child(8), .panel td:nth-child(8) { width: 10%; }
+
+/* Keep the homepage preview at the reference scan density while retaining
+   every column and the full diagnostic text in the row details. */
+@media (min-width: 821px) and (max-width: 1120px) {
+  .panel { gap: 5px; padding: 8px 9px; }
+  .panel header { gap: 6px; }
+  .panel h3 { font-size: 13px; line-height: 1.2; }
+  .note { font-size: 9px; line-height: 1.25; }
+  .panel table { font-size: 10.5px; }
+  .panel th, .panel td { padding: 4px 3px; line-height: 1.15; }
+  .panel th { font-size: 10px; }
+  .panel small { margin-top: 2px; font-size: 9px; line-height: 1.15; }
+  .panel button { min-height: 24px; padding: 4px 7px; font-size: 10px; }
+  .pending { padding: 2px 4px; font-size: 9px; }
+  .panel footer { margin-top: 4px; font-size: 9px; line-height: 1.2; }
+  .pageNumbers { gap: 2px; }
+  .pageNumbers button { min-width: 24px; padding: 3px 5px; }
+}
+
+@media (min-width: 821px) and (max-width: 1120px) {
+  .panel h3 { color: #edf5ff; font-size: 13px; }
+  .panel table { color: #dbe8f7; }
+  .panel th { color: #9ab0ca; }
+  .panel small, .note, .panel footer { color: #9ab0ca; }
+  .positive { color: #00d5b6; }
+  .negative { color: #ff6b78; }
+  .pending { border-color: #765b28; color: #f2c665; background: #2b2415; }
+}

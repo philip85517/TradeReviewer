@@ -209,6 +209,36 @@ describe("trading room metrics", () => {
     expect(result.buyCost.convertedCny).toBe("135042");
   });
 
+  it("uses the selected HKD target for cost return and quality totals", () => {
+    const source = row({ id: "hkd-target", closeDate: "2026-09-10", netPnl: "100", grossExposure: "10000" });
+    const fx = { ...completeFx, rates: { "USD/CNY": "7", "HKD/CNY": "1" } };
+    const cost = buildCostReturnSummary([source], fx, "HKD");
+    expect(cost.netPnl).toMatchObject({ targetCurrency: "HKD", converted: "700" });
+    expect(cost.buyCost).toMatchObject({ targetCurrency: "HKD", converted: "70000" });
+    expect(cost.costReturnPercent).toBe("1");
+    expect(buildTradeQualitySummary([source], fx, "HKD")).toMatchObject({ currency: "HKD", comparable: true, grossProfit: "700" });
+  });
+
+  it("does not call a single source currency comparable when an explicit target FX rate is missing", () => {
+    const source = row({ id: "hkd-target-missing-fx", closeDate: "2026-09-10", netPnl: "100" });
+    const result = buildTradeQualitySummary(
+      [source],
+      { ...completeFx, status: "complete", rates: { "USD/CNY": "7" } },
+      "HKD",
+    );
+
+    expect(result).toMatchObject({
+      currency: "HKD",
+      comparable: false,
+      sampleCount: 0,
+      grossProfit: "0",
+      grossLoss: "0",
+    });
+    expect(result.currencies).toEqual([
+      expect.objectContaining({ currency: "USD", sampleCount: 1, grossProfit: "100" }),
+    ]);
+  });
+
   it("excludes open, short, unknown-PnL, and initial-position samples with reasons", () => {
     const rows = [
       row({ id: "valid", closeDate: "2026-09-10", netPnl: "100", grossExposure: "10000" }),

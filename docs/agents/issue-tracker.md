@@ -8,6 +8,8 @@
 - 每个任务独立保存为 `.scratch/<feature-slug>/issues/<NN>-<slug>.md`，按依赖顺序编号，阻塞任务在前。
 - 功能目录的 `README.md` 可作为索引，不代替独立任务文件。
 - 每个任务包含 What to build、Blocked by、Status 和可勾选的验收标准；按需记录 Priority。
+- UI 功能目录同时记录 `visual-contract.md` 和 `acceptance.md`，使用 [UI 任务与验收模板](ui-task-templates.md)。截图保存在该功能目录并从验收记录链接；任务票链接到对应证据，避免重复维护多套结论。
+- 组件票通过不能自动关闭整页验收票。整页须分别记录功能、端到端、视觉结论；未验证项不勾选，主要差距未解决不得记为 accepted/closed。后续反例推翻结论时更新状态并链接复核记录，保留原始报告及修正说明。
 - 已确认、可由 agent 领取的任务使用 `Status: ready-for-agent`；存在 Blocked by 时仍须等待所列任务完成。
 - 发布任务即写入对应 Markdown 文件；读取任务时读取完整文件。
 - 任务依赖使用编号和标题表达，不因优先级或共享文件而添加人为阻塞。

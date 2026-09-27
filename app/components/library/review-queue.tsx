@@ -20,12 +20,18 @@ import {
 } from "../../lib/reviews/review-queue";
 import { buildReviewQueueSummary } from "../../lib/reviews/review-queue-summary";
 import type { LibraryPerformanceSummary } from "../../lib/reviews/library-performance";
+import type { RoomTargetCurrency } from "../../lib/reviews/trading-room-scope";
 import {
   dashboardMarketFilterOptions,
   dashboardRowMarketSourceLabel,
   exclusionReasonLabel,
 } from "../../lib/reviews/dashboard";
-import type { TradeLibraryEntry } from "../../lib/trades/library";
+import {
+  tradeEpisodeClosingTradingDate,
+  tradeEpisodeOpeningTradingDate,
+  tradeExecutionTradingDate,
+  type TradeLibraryEntry,
+} from "../../lib/trades/library";
 
 type Props = {
   entries: TradeLibraryEntry[];
@@ -43,7 +49,8 @@ type Props = {
   performanceSortAvailability?: { allowed: boolean; reason: string | null };
   page?: number;
   onPageChange?: (page: number) => void;
-  reportCurrency?: "original" | "CNY";
+  reportCurrency?: "original" | RoomTargetCurrency;
+  performanceSummary?: LibraryPerformanceSummary;
 };
 
 const REVIEW_QUEUE_PAGE_SIZE = 100;
@@ -80,8 +87,8 @@ function percent(value: string | null) {
   return value === null ? "待核对" : `${Number(value).toFixed(2)}%`;
 }
 
-function performanceUnavailableText(reason: string | null): string {
-  if (reason === "missing-fx" || reason === "invalid-fx") return "人民币暂无法折算";
+function performanceUnavailableText(reason: string | null, currency: RoomTargetCurrency = "CNY"): string {
+  if (reason === "missing-fx" || reason === "invalid-fx") return `${currency}暂无法折算`;
   if (reason === "multiple-scopes") return "绩效不可比较";
   if (reason === "no-trusted-closed") return "没有可信已平仓盈亏";
   return "绩效暂不可用";
@@ -145,10 +152,17 @@ function isPerformanceSort(sort: ReviewQueueSort) {
   return sort === "net-profit" || sort === "net-loss" || sort === "return-high" || sort === "return-low";
 }
 
-function QueueSummary({ rows, year }: { rows: ReviewQueueItem[]; year?: string }) {
+function QueueSummary({ rows, year, performanceSummary, reportCurrency }: { rows: ReviewQueueItem[]; year?: string; performanceSummary?: LibraryPerformanceSummary; reportCurrency: "original" | RoomTargetCurrency }) {
   const summary = buildReviewQueueSummary(rows);
   const [selectedGroupId, setSelectedGroupId] = useState("");
   const selectedGroup = summary.groups.find(group => group.id === selectedGroupId) ?? summary.groups[0];
+  const targetGroup = reportCurrency === "HKD" ? performanceSummary?.target : performanceSummary?.cny;
+  const displayGroup = reportCurrency === "original"
+    ? selectedGroup
+    : targetGroup ?? selectedGroup;
+  const displayCurrency = reportCurrency === "HKD"
+    ? "HKD"
+    : displayGroup?.currency ?? selectedGroup?.currency ?? "CNY";
   return (
     <section className="review-queue-summary" aria-label="当前筛选汇总">
       <div className="review-queue-summary-heading">
@@ -164,12 +178,12 @@ function QueueSummary({ rows, year }: { rows: ReviewQueueItem[]; year?: string }
         <strong className="review-queue-summary-scope">{selectedGroup.label}</strong>
         {summary.groups.length > 1 && <label><span>统计范围</span><select aria-label="队列汇总范围" value={selectedGroup.id} onChange={event => setSelectedGroupId(event.target.value)}>{summary.groups.map(group => <option key={group.id} value={group.id}>{group.label}</option>)}</select></label>}
         <dl>
-          <div><dt>净盈亏</dt><dd>{selectedGroup.netPnl === null ? "不可用" : money(selectedGroup.netPnl, selectedGroup.currency)}</dd></div>
+          <div><dt>净盈亏</dt><dd>{displayGroup?.netPnl === null || displayGroup?.netPnl === undefined ? performanceUnavailableText(reportCurrency === "HKD" ? performanceSummary?.target?.reason ?? null : null, displayCurrency as RoomTargetCurrency) : money(displayGroup.netPnl, displayCurrency)}</dd></div>
           <div><dt>胜率</dt><dd>{selectedGroup.winRate ? `${selectedGroup.winRate.denominator ? `${Math.round(selectedGroup.winRate.wins / selectedGroup.winRate.denominator * 100)}%` : "不可用"} · ${selectedGroup.winRate.wins} / ${selectedGroup.winRate.denominator}` : "不可用"}</dd></div>
-          <div><dt>平均盈利</dt><dd>{selectedGroup.averageWin === null ? "不可用" : money(selectedGroup.averageWin, selectedGroup.currency)}</dd></div>
-          <div><dt>平均亏损额</dt><dd>{selectedGroup.averageLoss === null ? "不可用" : amount(selectedGroup.averageLoss, selectedGroup.currency)}</dd></div>
-          <div><dt>盈亏比</dt><dd title={selectedGroup.payoffReason ?? undefined}>{selectedGroup.payoff === null ? `不可用${selectedGroup.payoffReason ? `（${selectedGroup.payoffReason}）` : ""}` : `${Number(selectedGroup.payoff).toFixed(2)}`}</dd></div>
-          <div><dt>利润因子</dt><dd title={selectedGroup.profitFactorReason ?? undefined}>{selectedGroup.profitFactor === null ? `不可用${selectedGroup.profitFactorReason ? `（${selectedGroup.profitFactorReason}）` : ""}` : `${Number(selectedGroup.profitFactor).toFixed(2)}`}</dd></div>
+          <div><dt>平均盈利</dt><dd>{displayGroup?.averageWin === null || displayGroup?.averageWin === undefined ? "不可用" : money(displayGroup.averageWin, displayCurrency)}</dd></div>
+          <div><dt>平均亏损额</dt><dd>{displayGroup?.averageLoss === null || displayGroup?.averageLoss === undefined ? "不可用" : amount(displayGroup.averageLoss, displayCurrency)}</dd></div>
+          <div><dt>盈亏比</dt><dd title={displayGroup?.payoffReason ?? undefined}>{displayGroup?.payoff === null || displayGroup?.payoff === undefined ? `不可用${displayGroup?.payoffReason ? `（${displayGroup.payoffReason}）` : ""}` : `${Number(displayGroup.payoff).toFixed(2)}`}</dd></div>
+          <div><dt>利润因子</dt><dd title={displayGroup?.profitFactorReason ?? undefined}>{displayGroup?.profitFactor === null || displayGroup?.profitFactor === undefined ? `不可用${displayGroup?.profitFactorReason ? `（${displayGroup.profitFactorReason}）` : ""}` : `${Number(displayGroup.profitFactor).toFixed(2)}`}</dd></div>
           <div><dt>保本</dt><dd>{selectedGroup.breakEven}</dd></div>
           <div><dt>排除</dt><dd>{selectedGroup.excludedCount}</dd></div>
         </dl>
@@ -182,7 +196,7 @@ function QueueSummary({ rows, year }: { rows: ReviewQueueItem[]; year?: string }
   );
 }
 
-export function ReviewQueue({ entries, rows: suppliedRows, pendingRows: suppliedPendingRows, filter, onFilter, onOpen, onBrowseStocks, notice, compact = false, performanceByEpisode, onSort, performanceSortAvailability, page = 1, onPageChange, reportCurrency = "CNY" }: Props) {
+export function ReviewQueue({ entries, rows: suppliedRows, pendingRows: suppliedPendingRows, filter, onFilter, onOpen, onBrowseStocks, notice, compact = false, performanceByEpisode, onSort, performanceSortAvailability, page = 1, onPageChange, reportCurrency = "CNY", performanceSummary }: Props) {
   const rows = suppliedRows ?? buildReviewQueue(entries, filter);
   const pending = suppliedPendingRows ?? buildReviewQueue(entries, { ...filter, status: "pending" });
   const [localPage, setLocalPage] = useState(1);
@@ -201,6 +215,9 @@ export function ReviewQueue({ entries, rows: suppliedRows, pendingRows: supplied
   const pageCount = Math.max(1, Math.ceil(rows.length / REVIEW_QUEUE_PAGE_SIZE));
   const requestedPage = onPageChange ? page : localPage;
   const currentPage = Math.min(Math.max(requestedPage, 1), pageCount);
+  useEffect(() => {
+    if (onPageChange && requestedPage !== currentPage) onPageChange(currentPage);
+  }, [currentPage, onPageChange, requestedPage]);
   const pageStart = (currentPage - 1) * REVIEW_QUEUE_PAGE_SIZE;
   const visibleRows = rows.slice(pageStart, pageStart + REVIEW_QUEUE_PAGE_SIZE);
   const changePage = (nextPage: number) => {
@@ -212,7 +229,7 @@ export function ReviewQueue({ entries, rows: suppliedRows, pendingRows: supplied
   const selectedAccounts = selectedAccountIds(filter);
   const brokerOptions = reviewQueueBrokerOptions(entries);
   const selectedBrokers = filter.brokers ?? [];
-  const years = [...new Set(entries.flatMap(entry => entry.executions.map(fill => formatMarketTradingDate(fill.executedAt, entry.instrument.market).slice(0, 4))))].sort().reverse();
+  const years = [...new Set(entries.flatMap(entry => entry.executions.map(fill => tradeExecutionTradingDate(fill).slice(0, 4))))].sort().reverse();
   const markets = dashboardMarketFilterOptions(entries);
   const simulationRuns = [...new Set(entries.map(entry => entry.simulationRunId).filter((value): value is string => Boolean(value)))].sort();
   const advancedExpanded = filter.advancedExpanded === true;
@@ -317,7 +334,7 @@ export function ReviewQueue({ entries, rows: suppliedRows, pendingRows: supplied
         </div>
       </>}
 
-      {!compact && <QueueSummary rows={rows} year={filter.year} />}
+      {!compact && <QueueSummary rows={rows} year={filter.year} performanceSummary={performanceSummary} reportCurrency={reportCurrency} />}
       <div className="review-queue-batch-toolbar" aria-label="批量复盘操作">
         <span>已选 {selectedRows.length} 个回合</span>
         <button type="button" onClick={() => setSelectedIds(new Set())} disabled={selectedIds.size === 0}>取消选择</button>
@@ -336,8 +353,8 @@ export function ReviewQueue({ entries, rows: suppliedRows, pendingRows: supplied
             最近成交 <small aria-hidden="true">{sortDirection("date") === "降序" ? "↓" : sortDirection("date") === "升序" ? "↑" : "↕"}</small>
           </button></span>
           <span role="columnheader" className="review-queue-head-result">
-            <button type="button" aria-label={`按 ${reportCurrency === "original" ? "原币" : "CNY"} 净盈亏排序（${sortDirection("pnl")}）`} disabled={performanceSortDisabled} title={performanceSortDisabled ? performanceSortAvailability?.reason ?? undefined : undefined} onClick={() => toggleSort("pnl")}>
-              {reportCurrency === "original" ? "原币" : "CNY"} 净盈亏 <small aria-hidden="true">{sortDirection("pnl") === "降序" ? "↓" : sortDirection("pnl") === "升序" ? "↑" : "↕"}</small>
+            <button type="button" aria-label={`按 ${reportCurrency === "original" ? "原币" : reportCurrency} 净盈亏排序（${sortDirection("pnl")}）`} disabled={performanceSortDisabled} title={performanceSortDisabled ? performanceSortAvailability?.reason ?? undefined : undefined} onClick={() => toggleSort("pnl")}>
+              {reportCurrency === "original" ? "原币" : reportCurrency} 净盈亏 <small aria-hidden="true">{sortDirection("pnl") === "降序" ? "↓" : sortDirection("pnl") === "升序" ? "↑" : "↕"}</small>
             </button>
             <button type="button" aria-label={`按加权收益率排序（${sortDirection("return")}）`} disabled={performanceSortDisabled} title={performanceSortDisabled ? performanceSortAvailability?.reason ?? undefined : undefined} onClick={() => toggleSort("return")}>
               加权收益率 <small aria-hidden="true">{sortDirection("return") === "降序" ? "↓" : sortDirection("return") === "升序" ? "↑" : "↕"}</small>
@@ -356,37 +373,40 @@ export function ReviewQueue({ entries, rows: suppliedRows, pendingRows: supplied
           const state = reviewState(item);
           const trusted = hasTrustedClosedMetrics(item);
           const performance = performanceByEpisode?.get(item.episode.id);
-          const cny = performance?.cny.available && performance.cny.netPnl !== null
-            ? performance.cny
-            : null;
+          const target = reportCurrency === "HKD" ? performance?.target : performance?.cny;
+          const converted = target?.available && target.netPnl !== null ? target : null;
           const rawGroup = performance?.rawCurrencyGroups.find(group => group.currency === entry.instrument.currency);
           const originalPnl = rawGroup?.netPnl;
           const originalReturn = rawGroup?.weightedReturn;
           const pnl = item.episode.status === "open"
             ? "持仓中 · 最终盈亏未定"
-            : reportCurrency === "original" && originalPnl !== null && originalPnl !== undefined ? money(originalPnl, entry.instrument.currency) : cny ? money(cny.netPnl, "CNY") : performance
-              ? performanceUnavailableText(performance.cny.reason)
+            : reportCurrency === "original" && originalPnl !== null && originalPnl !== undefined ? money(originalPnl, entry.instrument.currency) : converted ? money(converted.netPnl, converted.currency) : performance
+              ? performanceUnavailableText(target?.reason ?? performance.cny.reason, reportCurrency === "HKD" ? "HKD" : "CNY")
               : trusted ? money(item.metrics.netPnl, entry.instrument.currency) : "盈亏待核对";
-          const resultClass = !trusted || (reportCurrency !== "original" && Boolean(performance) && !cny)
+          const resultClass = !trusted || (reportCurrency !== "original" && Boolean(performance) && !converted)
             ? "neutral"
             : Number(item.metrics.netPnl) > 0
               ? "positive"
               : Number(item.metrics.netPnl) < 0 ? "negative" : "neutral";
           const coverageWarning = coverageWarningDetails(item.episode.warnings);
           const sourceLabel = dashboardRowMarketSourceLabel({ entry, item });
-          const accessibleName = `复盘${presentation.primaryName} ${formatMarketTradingDate(item.episode.startedAt, entry.instrument.market)} ${accountDisplayLabel}（${reviewQueueMarketLabel(entry.instrument.market)}${sourceLabel ? `，${sourceLabel}` : ""}，原名：${presentation.originalName}，${presentation.secondaryName}）`;
+          const openingDate = tradeEpisodeOpeningTradingDate(item.episode);
+          const closingDate = item.episode.endedAt ? tradeEpisodeClosingTradingDate(item.episode) : null;
+          const formattedOpeningDate = formatMarketTradingDate(openingDate, entry.instrument.market);
+          const formattedClosingDate = closingDate ? formatMarketTradingDate(closingDate, entry.instrument.market) : null;
+          const accessibleName = `复盘${presentation.primaryName} ${formattedOpeningDate} ${accountDisplayLabel}（${reviewQueueMarketLabel(entry.instrument.market)}${sourceLabel ? `，${sourceLabel}` : ""}，原名：${presentation.originalName}，${presentation.secondaryName}）`;
           const previousCurrency = visibleRows[index - 1]?.entry.instrument.currency;
           return <Fragment key={item.episode.id}>
             {showCurrencyGroups && previousCurrency !== entry.instrument.currency && <h3 className="review-queue-currency-heading">{entry.instrument.currency} · 金额排序分组</h3>}
             <div className="review-queue-row-shell">
             <div role="button" tabIndex={0} className="review-queue-row" onClick={() => onOpen(row, queueIds)} onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onOpen(row, queueIds); } }} aria-label={accessibleName}>
-              <input type="checkbox" aria-label={`选择复盘回合 ${presentation.primaryName} ${formatMarketTradingDate(item.episode.startedAt, entry.instrument.market)}`} checked={selectedIds.has(item.episode.id)} onClick={event => event.stopPropagation()} onChange={() => toggleSelected(item.episode.id)} />
+              <input type="checkbox" aria-label={`选择复盘回合 ${presentation.primaryName} ${formattedOpeningDate}`} checked={selectedIds.has(item.episode.id)} onClick={event => event.stopPropagation()} onChange={() => toggleSelected(item.episode.id)} />
               <span className="review-queue-identity"><strong title={presentation.originalName}>{presentation.primaryName}</strong><small>{presentation.secondaryName}{presentation.hasChineseName ? "" : " · 中文名未补全"}</small>{visibleColumns.account && <small data-column="account">账户 · {accountDisplayLabel}</small>}</span>
-              <span className="review-queue-window"><strong>{formatMarketTradingDate(item.episode.startedAt, entry.instrument.market)}—{item.episode.endedAt ? formatMarketTradingDate(item.episode.endedAt, entry.instrument.market) : "持仓中"}</strong><small>{reviewQueueMarketLabel(entry.instrument.market)}{visibleColumns.source && sourceLabel && <> · {sourceLabel}</>} · {item.metrics.buyCount + item.metrics.sellCount} 笔成交{visibleColumns.source && brokerTags.length > 0 && <span className="review-queue-broker-tags" aria-label="来源券商">{brokerTags.map(tag => <span key={tag.id}>{tag.label}</span>)}</span>}</small></span>
-              <span className={`review-queue-result ${resultClass}`}><strong>{pnl}</strong>{visibleColumns.return && <small data-column="return">{item.episode.status === "open" ? "最终盈亏未定 · 持仓中" : reportCurrency === "original" ? `${percent(originalReturn ?? (trusted ? item.metrics.returnPercent : null))} · ${entry.instrument.currency} · ${holding(item.metrics.holdingMilliseconds, false)}` : performance && !cny ? `${performanceUnavailableText(performance.cny.reason)} · ${holding(item.metrics.holdingMilliseconds, false)}` : `${percent(cny ? cny.weightedReturn : trusted ? item.metrics.returnPercent : null)}${cny ? " · CNY" : ""} · ${holding(item.metrics.holdingMilliseconds, false)}`}{coverageWarning && <> {" · "}<span title={coverageWarning.title} aria-label={coverageWarning.ariaLabel}>账单缺月，持仓边界一致</span></>}</small>}</span>
+              <span className="review-queue-window"><strong>{formattedOpeningDate}—{formattedClosingDate ?? "持仓中"}</strong><small>{reviewQueueMarketLabel(entry.instrument.market)}{visibleColumns.source && sourceLabel && <> · {sourceLabel}</>} · {item.metrics.buyCount + item.metrics.sellCount} 笔成交{visibleColumns.source && brokerTags.length > 0 && <span className="review-queue-broker-tags" aria-label="来源券商">{brokerTags.map(tag => <span key={tag.id}>{tag.label}</span>)}</span>}</small></span>
+              <span className={`review-queue-result ${resultClass}`}><strong>{pnl}</strong>{visibleColumns.return && <small data-column="return">{item.episode.status === "open" ? "最终盈亏未定 · 持仓中" : reportCurrency === "original" ? `${percent(originalReturn ?? (trusted ? item.metrics.returnPercent : null))} · ${entry.instrument.currency} · ${holding(item.metrics.holdingMilliseconds, false)}` : performance && !converted ? `${performanceUnavailableText(target?.reason ?? performance.cny.reason, reportCurrency === "HKD" ? "HKD" : "CNY")} · ${holding(item.metrics.holdingMilliseconds, false)}` : `${percent(converted ? converted.weightedReturn : trusted ? item.metrics.returnPercent : null)}${converted ? ` · ${converted.currency}` : ""} · ${holding(item.metrics.holdingMilliseconds, false)}`}{coverageWarning && <> {" · "}<span title={coverageWarning.title} aria-label={coverageWarning.ariaLabel}>账单缺月，持仓边界一致</span></>}</small>}</span>
               <span className="review-queue-status"><strong>{reviewLabel(item)}</strong><small>{state === "completed" ? "结论已保存" : state === "deferred" ? item.review?.review.deferredReason : "可开始复盘"}</small></span>
             </div>
-            <details className="review-queue-full-name"><summary>查看完整原名</summary><p>原名：{presentation.originalName}</p><small>账户：{accountDisplayLabel}</small>{visibleColumns.fees && <small>已知费用：{item.metrics.fees ?? "不可用"}</small>}{performance && <><small>原币净盈亏：{rawPerformanceText(performance)}</small><small>人民币折算：{cny ? money(cny.netPnl, "CNY") : performanceUnavailableText(performance.cny.reason)}</small></>}</details>
+            <details className="review-queue-full-name"><summary>查看完整原名</summary><p>原名：{presentation.originalName}</p><small>账户：{accountDisplayLabel}</small>{visibleColumns.fees && <small>已知费用：{item.metrics.fees ?? "不可用"}</small>}{performance && <><small>原币净盈亏：{rawPerformanceText(performance)}</small><small>{reportCurrency === "HKD" ? "HKD" : "CNY"}折算：{converted ? money(converted.netPnl, converted.currency) : performanceUnavailableText(target?.reason ?? performance.cny.reason, reportCurrency === "HKD" ? "HKD" : "CNY")}</small></>}</details>
             </div>
           </Fragment>;
         })}

@@ -7,6 +7,7 @@ import { summarizeTradeEpisode } from "../trades/episode-metrics";
 import type { TradeEpisode, TradeExecution } from "../trades/types";
 import type { ReviewQueueItem } from "./review-queue";
 import { summarizeLibraryPerformance } from "./library-performance";
+import type { RoomFxSnapshot } from "./trading-room-scope";
 
 const instrument = {
   id: "US:TEST",
@@ -174,6 +175,18 @@ function fxSnapshot(rates: Partial<FxSnapshot["rates"]> = {}): FxSnapshot {
   };
 }
 
+function roomFxSnapshot(overrides: Partial<RoomFxSnapshot> = {}): RoomFxSnapshot {
+  return {
+    id: "boc:2026-01-01",
+    baseCurrency: "CNY",
+    asOf: "2026-01-01",
+    source: "BOC",
+    status: "complete",
+    rates: { "HKD/CNY": "0.9", "USD/CNY": "7" },
+    ...overrides,
+  };
+}
+
 describe("library performance", () => {
   it("uses one trusted closed sample for net PnL and weighted return", () => {
     const summary = summarizeLibraryPerformance([
@@ -224,6 +237,45 @@ describe("library performance", () => {
       losses: 1,
       winRate: { wins: 1, denominator: 2 },
     });
+  });
+
+  it("exposes the same snapshot conversion in the selected HKD target", () => {
+    const summary = summarizeLibraryPerformance([
+      row("cny-winner", { currency: "CNY", netPnl: "100", grossExposure: "1000" }),
+      row("usd-loser", { currency: "USD", netPnl: "-10", grossExposure: "100" }),
+    ], fxSnapshot({ USD: 7, HKD: 0.875 }), "HKD");
+
+    expect(summary.cny.netPnl).toBe("30");
+    expect(summary.target).toMatchObject({
+      currency: "HKD",
+      available: true,
+      netPnl: "34.28571428571428571",
+      grossExposure: "1942.8571428571428571",
+      weightedReturn: "1.7647058823529411763",
+    });
+  });
+
+  it("converts the selected target from a shared BOC snapshot without an ECB snapshot", () => {
+    const summary = summarizeLibraryPerformance([
+      row("cny-winner", { currency: "CNY", netPnl: "100", grossExposure: "1000" }),
+      row("usd-loser", { currency: "USD", netPnl: "-10", grossExposure: "100" }),
+    ], roomFxSnapshot(), "HKD");
+
+    expect(summary.target).toMatchObject({
+      currency: "HKD",
+      available: true,
+      netPnl: "33.333333333333333332",
+      grossExposure: "1888.8888888888888889",
+    });
+  });
+
+  it("does not fall back to an unavailable shared BOC target rate", () => {
+    const summary = summarizeLibraryPerformance([
+      row("usd-loser", { currency: "USD", netPnl: "-10", grossExposure: "100" }),
+    ], roomFxSnapshot({ rates: { "USD/CNY": "7" } }), "HKD");
+
+    expect(summary.target).toMatchObject({ available: false, reason: "missing-fx" });
+    expect(summary.rawCurrencyGroups[0]).toMatchObject({ netPnl: "-10", currency: "USD" });
   });
 
   it("keeps raw foreign currency values and excludes missing FX symmetrically", () => {

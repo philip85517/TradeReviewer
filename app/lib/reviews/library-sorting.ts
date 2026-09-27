@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 
-import type { FxSnapshot } from "../fx/contracts";
+import type { RoomTargetCurrency } from "./trading-room-scope";
 import {
   tradeNatureOf as executionTradeNatureOf,
   type TradeNature,
@@ -10,7 +10,7 @@ import {
   type ReviewQueueItem,
   type ReviewQueueSort,
 } from "./review-queue";
-import { summarizeLibraryPerformance } from "./library-performance";
+import { summarizeLibraryPerformance, type LibraryFxSnapshot } from "./library-performance";
 
 export type LibrarySortableItem<T> = {
   id: string;
@@ -88,11 +88,12 @@ function reviewRank(rows: ReviewQueueItem[], sort: ReviewQueueSort): number {
 function prepare<T>(
   items: Array<LibrarySortableItem<T>>,
   sort: ReviewQueueSort,
-  fxSnapshot?: FxSnapshot,
+  fxSnapshot?: LibraryFxSnapshot,
+  targetCurrency?: RoomTargetCurrency,
 ): PreparedItem<T>[] {
   const performanceSort = sort === "net-profit" || sort === "net-loss" || sort === "return-high" || sort === "return-low";
   return items.map((item, index) => {
-    const performance = performanceSort ? summarizeLibraryPerformance(item.rows, fxSnapshot).cny : null;
+    const performance = performanceSort ? summarizeLibraryPerformance(item.rows, fxSnapshot, targetCurrency).target : null;
     return {
       item,
       index,
@@ -148,9 +149,10 @@ function comparePrepared<T>(left: PreparedItem<T>, right: PreparedItem<T>, sort:
 export function sortLibraryItems<T>(
   items: Array<LibrarySortableItem<T>>,
   sort: ReviewQueueSort,
-  fxSnapshot?: FxSnapshot,
+  fxSnapshot?: LibraryFxSnapshot,
+  targetCurrency?: RoomTargetCurrency,
 ): Array<LibrarySortableItem<T>> {
-  return prepare(items, sort, fxSnapshot)
+  return prepare(items, sort, fxSnapshot, targetCurrency)
     .sort((left, right) => comparePrepared(left, right, sort))
     .map(({ item }) => item);
 }

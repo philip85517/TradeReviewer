@@ -304,7 +304,12 @@ describe("ScreenshotReviewDialog", () => {
     expect(screen.getByRole("combobox", { name: "截图成交时区" })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "交易账户" })).toBeInTheDocument();
 
-    const styles = readFileSync(resolve(import.meta.dirname, "../../globals.css"), "utf8");
+    const stylesheet = readFileSync(resolve(import.meta.dirname, "../../globals.css"), "utf8");
+    // Only the screenshot context controls are governed by this assertion;
+    // unrelated dashboard chart labels may legitimately use smaller type.
+    const styles = [...stylesheet.matchAll(/\.screenshot-review-context[^{}]*\{[^}]*\}/g)]
+      .map(match => match[0])
+      .join("\n");
     expect(styles).toContain(".screenshot-review-context {");
     expect(styles).toContain("gap: 16px");
     expect(styles).toContain("padding: 12px 22px");

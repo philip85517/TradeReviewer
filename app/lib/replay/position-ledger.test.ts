@@ -503,3 +503,21 @@ describe("replayPositionAtPrice", () => {
     });
   });
 });
+
+it("uses an explicit inventory identity for evidence-only replay without admitting other accounts or instruments", () => {
+  const positions: StatementPosition[] = [
+    { accountId: "evidence-account", market: "US", symbol: "TEST", phase: "opening", date: "2026-09-17", quantity: "5", source: [] },
+    { accountId: "other-account", market: "US", symbol: "TEST", phase: "opening", date: "2026-09-17", quantity: "90", source: [] },
+    { accountId: "evidence-account", market: "US", symbol: "OTHER", phase: "opening", date: "2026-09-17", quantity: "80", source: [] },
+  ];
+  expect(replayPositionAtPrice({ executions: [], inventoryIdentity: { accountId: "evidence-account", symbol: "TEST", market: "US" }, evidence: [{ positions, events: [] }], cursor: "2026-09-17", markPrice: "12" })).toMatchObject({ quantity: "5", costKnown: false });
+  expect(replayPositionAtPrice({ executions: [], evidence: [{ positions, events: [] }], cursor: "2026-09-17", markPrice: "12" }).quantity).toBe("0");
+});
+
+it("scopes evidence-only inventory events and ignores identity overrides when real executions exist", () => {
+  const event = fixtureEvent({ id: "received", accountId: "evidence-account", symbol: "TEST", market: "US", date: "2026-09-17", kind: "transfer-in", quantity: "5", description: "received" });
+  const events = [event, { ...event, id: "other-account", accountId: "other-account", quantity: "90" }, { ...event, id: "other-instrument", symbol: "OTHER", quantity: "80" }];
+  expect(replayPositionAtPrice({ executions: [], inventoryIdentity: { accountId: "evidence-account", symbol: "TEST", market: "US" }, evidence: [{ positions: [], events }], cursor: "2026-09-17", markPrice: "12" })).toMatchObject({ quantity: "5", costKnown: false });
+  const execution = fill("buy", "2026-09-17", "2", "10", "0");
+  expect(replayPositionAtPrice({ executions: [execution], inventoryIdentity: { accountId: "evidence-account", symbol: "TEST", market: "US" }, evidence: [{ positions: [], events }], cursor: "2026-09-17", markPrice: "12" }).quantity).toBe("2");
+});

@@ -233,6 +233,8 @@ export type RecallWorkspaceProps = {
   onRefreshMarketData?: () => void;
   /** Parent navigation may await this guard before unmounting Recall. */
   onLeaveGuardChange?: (guard: (() => Promise<boolean>) | null) => void;
+  /** Notify the parent after any server-accepted draft or formal save. */
+  onSaved?: (document: RecallDocument) => void;
   /** Notify the parent only after the server accepts a formal completion. */
   onFormalCompletion?: (document: RecallDocument) => void;
   /** Optional parent-owned focus layout state. */
@@ -860,6 +862,7 @@ export function RecallWorkspace({
   onSettingsChange,
   onRefreshMarketData,
   onLeaveGuardChange,
+  onSaved,
   onFormalCompletion,
   focused,
   onFocusedChange,
@@ -1535,6 +1538,7 @@ export function RecallWorkspace({
       try {
         const saved = await repository.save(queuedCandidate, { expectedRevision: queuedCandidate.revision });
         acceptedQueuedSavesRef.current.set(saved.episodeId, { document: saved, generation: requestGeneration });
+        onSaved?.(saved);
         if (!isCurrentEpisode()) return;
         latestSavedDocumentRef.current = saved;
         latestSavedGenerationRef.current = requestGeneration;
@@ -1570,7 +1574,7 @@ export function RecallWorkspace({
     });
     saveQueueRef.current = saveTask.then(() => undefined, () => undefined);
     await saveTask;
-  }, [repository]);
+  }, [onSaved, repository]);
 
   useEffect(() => {
     saveDocumentRef.current = saveNow;
@@ -2623,6 +2627,7 @@ export function RecallWorkspace({
           }
         }
         acceptedQueuedSavesRef.current.set(saved.episodeId, { document: saved, generation: generationAtStart });
+        onSaved?.(saved);
         onFormalCompletion?.(saved);
         if (!isCurrentEpisode()) return;
         // Keep the in-flight editor usable while capture/finalization is
@@ -2658,7 +2663,7 @@ export function RecallWorkspace({
     } finally {
       if (isCurrentEpisode()) setSaving(false);
     }
-  }, [capture, candlesByTimeframe, chartCandles, confirmCaptureWarnings, currentExecutions, document, editingSnapshotId, episode, historyMode, importedTimelineCandles, missing, onFormalCompletion, replay, repository, selectedDecisionId, timeframe]);
+  }, [capture, candlesByTimeframe, chartCandles, confirmCaptureWarnings, currentExecutions, document, editingSnapshotId, episode, historyMode, importedTimelineCandles, missing, onFormalCompletion, onSaved, replay, repository, selectedDecisionId, timeframe]);
 
   const handleChartReady = useCallback((handle: RecallChartHandle | null) => {
     chartHandleRef.current = handle;

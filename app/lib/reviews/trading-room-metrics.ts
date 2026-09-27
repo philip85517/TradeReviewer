@@ -3,9 +3,11 @@ import Decimal from "decimal.js";
 import { dashboardEpisodeDate, type DashboardExclusionReason } from "./dashboard";
 import {
   buildRoomMoneyView,
+  roomMoneyValue,
   type RoomDateRange,
   type RoomFxSnapshot,
   type RoomMoneyView,
+  type RoomTargetCurrency,
   type TradingRoomRow,
 } from "./trading-room-scope";
 import { resolveIpoAcquisitionCost } from "../trades/ipo-cost";
@@ -86,6 +88,7 @@ export type TradeQualitySummary = TradeQualityCurrencySummary & {
 export type BuildTradingRoomMetricsOptions = {
   period: RoomDateRange;
   fxSnapshot?: RoomFxSnapshot;
+  targetCurrency?: RoomTargetCurrency;
 };
 
 type ParsedAmount = Decimal | null;
@@ -220,17 +223,19 @@ function emptyReasons(): Partial<Record<CostReturnExclusionReason, number>> {
   return {};
 }
 
-function ratioPercent(netPnl: RoomMoneyView, buyCost: RoomMoneyView): string | null {
+function ratioPercent(netPnl: RoomMoneyView, buyCost: RoomMoneyView, targetCurrency?: RoomTargetCurrency): string | null {
   const netCurrencies = Object.keys(netPnl.originalByCurrency);
   const costCurrencies = Object.keys(buyCost.originalByCurrency);
-  if (netCurrencies.length === 1 && costCurrencies.length === 1 && netCurrencies[0] === costCurrencies[0]) {
+  if (!targetCurrency && netCurrencies.length === 1 && costCurrencies.length === 1 && netCurrencies[0] === costCurrencies[0]) {
     const numerator = decimal(netPnl.originalByCurrency[netCurrencies[0]]);
     const denominator = decimal(buyCost.originalByCurrency[costCurrencies[0]]);
     if (numerator && denominator?.gt(0)) return percentage(numerator, denominator);
   }
-  if (netPnl.convertedCny === null || buyCost.convertedCny === null) return null;
-  const numerator = decimal(netPnl.convertedCny);
-  const denominator = decimal(buyCost.convertedCny);
+  const netValue = roomMoneyValue(netPnl);
+  const costValue = roomMoneyValue(buyCost);
+  if (netValue === null || costValue === null) return null;
+  const numerator = decimal(netValue);
+  const denominator = decimal(costValue);
   if (!numerator || !denominator || !denominator.gt(0)) return null;
   return percentage(numerator, denominator);
 }
@@ -243,7 +248,7 @@ function unavailableReason(
   summary: Pick<CostReturnSummary, "applicableCount" | "buyCost" | "costReturnPercent">,
 ): string | null {
   if (summary.applicableCount === 0) return "没有完整、可核验的已平仓回合样本";
-  if (summary.buyCost.convertedCny === null && summary.costReturnPercent === null) {
+  if (roomMoneyValue(summary.buyCost) === null && summary.costReturnPercent === null) {
     const currencies = Object.keys(summary.buyCost.originalByCurrency);
     if (currencies.length > 1) return "缺少完整汇率快照，无法合计跨币种比例";
   }
@@ -254,6 +259,7 @@ function unavailableReason(
 export function buildCostReturnSummary(
   rows: readonly TradingRoomRow[],
   fxSnapshot?: RoomFxSnapshot,
+  targetCurrency?: RoomTargetCurrency,
 ): CostReturnSummary {
   const pnlAmounts: Array<{ currency: string; amount: string }> = [];
   const costAmounts: Array<{ currency: string; amount: string }> = [];
@@ -281,9 +287,9 @@ export function buildCostReturnSummary(
     includedEpisodeIds.push(row.row.item.episode.id);
   }
 
-  const netPnl = buildRoomMoneyView(pnlAmounts, fxSnapshot);
-  const buyCost = buildRoomMoneyView(costAmounts, fxSnapshot);
-  const costReturnPercent = ratioPercent(netPnl, buyCost);
+  const netPnl = buildRoomMoneyView(pnlAmounts, fxSnapshot, targetCurrency);
+  const buyCost = buildRoomMoneyView(costAmounts, fxSnapshot, targetCurrency);
+  const costReturnPercent = ratioPercent(netPnl, buyCost, targetCurrency);
   const base = {
     netPnl,
     buyCost,
@@ -431,14 +437,18 @@ function buildCurrencyQuality(currencyCode: string, values: readonly Decimal[]):
 export function buildTradeQualitySummary(
   rows: readonly TradingRoomRow[],
   fxSnapshot?: RoomFxSnapshot,
+  targetCurrency?: RoomTargetCurrency,
 ): TradeQualitySummary {
   const trustedAmounts = rows
     .filter(row => row.assetCategory !== "unknown" && row.row.item.episode.status === "closed" && row.trustedPnl !== null)
     .map(row => ({ currency: row.row.item.episode.instrument.currency, amount: row.trustedPnl }));
-  const trustedViews = trustedAmounts.map(amount => buildRoomMoneyView([amount], fxSnapshot));
-  const trustedMoney = trustedViews.length > 0 && trustedViews.every(view => view.convertedCny !== null)
-    ? buildRoomMoneyView(trustedAmounts, fxSnapshot)
-    : buildRoomMoneyView(trustedAmounts, undefined);
+  const trustedViews = trustedAmounts.map(amount => buildRoomMoneyView([amount], fxSnapshot, targetCurrency));
+  const targetMoney = buildRoomMoneyView(trustedAmounts, fxSnapshot, targetCurrency);
+  const trustedMoney = targetCurrency
+    ? targetMoney
+    : trustedViews.length > 0 && trustedViews.every(view => roomMoneyValue(view) !== null)
+      ? targetMoney
+      : buildRoomMoneyView(trustedAmounts, undefined);
   const grouped = new Map<string, Decimal[]>();
   for (const row of rows) {
     if (row.assetCategory === "unknown" || row.row.item.episode.status !== "closed" || row.trustedPnl === null) continue;
@@ -450,11 +460,18 @@ export function buildTradeQualitySummary(
     grouped.set(code, bucket);
   }
   const currencies = [...grouped.keys()].sort().map(code => buildCurrencyQuality(code, grouped.get(code) ?? []));
-  const comparable = currencies.length <= 1 || trustedMoney.convertedCny !== null;
-  const primary = currencies.length === 1 ? currencies[0] : (() => {
-    if (!comparable) return buildCurrencyQuality("CNY", []);
-    return buildCurrencyQuality("CNY", trustedViews.flatMap(view => {
-      const value = decimal(view.convertedCny);
+  // An explicit report target is a conversion contract even when there is only
+  // one source currency.  The legacy single-currency shortcut is valid only
+  // for original-currency quality metrics; otherwise a missing target rate
+  // would turn a real sample into an apparently comparable empty target set.
+  const comparable = targetCurrency
+    ? currencies.length === 0 || roomMoneyValue(trustedMoney) !== null
+    : currencies.length <= 1 || roomMoneyValue(trustedMoney) !== null;
+  const primaryCurrency = targetCurrency ?? "CNY";
+  const primary = currencies.length === 1 && !targetCurrency ? currencies[0] : (() => {
+    if (!comparable) return buildCurrencyQuality(primaryCurrency, []);
+    return buildCurrencyQuality(primaryCurrency, trustedViews.flatMap(view => {
+      const value = decimal(roomMoneyValue(view));
       return value ? [value] : [];
     }));
   })();
@@ -473,7 +490,7 @@ export function buildTradingRoomMetrics(
   options: BuildTradingRoomMetricsOptions,
 ): TradingRoomMetrics {
   return {
-    costReturn: buildCostReturnSummary(rows, options.fxSnapshot),
+    costReturn: buildCostReturnSummary(rows, options.fxSnapshot, options.targetCurrency),
     monthlyWinRate: buildMonthlyWinRate(rows, options.period),
   };
 }

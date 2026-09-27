@@ -6,9 +6,11 @@ import {
 } from "../reviews/trading-room-metrics";
 import {
   buildRoomMoneyView,
+  roomMoneyValue,
   type RoomFxSnapshot,
   type RoomMoneyView,
   type RoomScope,
+  type RoomTargetCurrency,
   type TradingRoomRow,
   type RoomAssetCategory,
 } from "../reviews/trading-room-scope";
@@ -190,17 +192,19 @@ function requiredCategories(rows: readonly TradingRoomRow[], scope: RoomScope): 
   return PRINCIPAL_CATEGORIES.filter(category => rows.some(row => row.assetCategory === category));
 }
 
-function ratioPercent(netPnl: RoomMoneyView, principal: RoomMoneyView): string | null {
+function ratioPercent(netPnl: RoomMoneyView, principal: RoomMoneyView, targetCurrency?: RoomTargetCurrency): string | null {
   const netCurrencies = Object.keys(netPnl.originalByCurrency);
   const principalCurrencies = Object.keys(principal.originalByCurrency);
-  if (netCurrencies.length === 1 && principalCurrencies.length === 1 && netCurrencies[0] === principalCurrencies[0]) {
+  if (!targetCurrency && netCurrencies.length === 1 && principalCurrencies.length === 1 && netCurrencies[0] === principalCurrencies[0]) {
     const numerator = decimal(netPnl.originalByCurrency[netCurrencies[0]]);
     const denominator = decimal(principal.originalByCurrency[principalCurrencies[0]]);
     if (numerator && denominator?.gt(0)) return numerator.div(denominator).times(100).toDecimalPlaces(16).toString();
   }
-  if (netPnl.convertedCny === null || principal.convertedCny === null) return null;
-  const numerator = decimal(netPnl.convertedCny);
-  const denominator = decimal(principal.convertedCny);
+  const netValue = roomMoneyValue(netPnl);
+  const principalValue = roomMoneyValue(principal);
+  if (netValue === null || principalValue === null) return null;
+  const numerator = decimal(netValue);
+  const denominator = decimal(principalValue);
   if (!numerator || !denominator || !denominator.gt(0)) return null;
   return numerator.div(denominator).times(100).toDecimalPlaces(16).toString();
 }
@@ -224,12 +228,13 @@ function principalRows(rows: readonly TradingRoomRow[]): TradingRoomRow[] {
   return rows.filter(row => row.assetCategory !== "unknown" && row.trustedPnl !== null && row.row.item.episode.status === "closed");
 }
 
-function netPnlView(rows: readonly TradingRoomRow[], fxSnapshot?: RoomFxSnapshot): RoomMoneyView {
+function netPnlView(rows: readonly TradingRoomRow[], fxSnapshot?: RoomFxSnapshot, targetCurrency?: RoomTargetCurrency): RoomMoneyView {
   return buildRoomMoneyView(
     principalRows(rows).flatMap(row => row.trustedPnl === null
       ? []
       : [{ currency: row.row.item.episode.instrument.currency, amount: row.trustedPnl }]),
     fxSnapshot,
+    targetCurrency,
   );
 }
 
@@ -259,6 +264,7 @@ export function buildPrincipalReferenceSummary(
   scope: RoomScope,
   state: PrincipalState,
   fxSnapshot?: RoomFxSnapshot,
+  targetCurrency?: RoomTargetCurrency,
 ): PrincipalReferenceSummary {
   const config = principalConfigForScope(normalizePrincipalState(state), scope);
   const required = requiredCategories(rows, scope);
@@ -266,18 +272,19 @@ export function buildPrincipalReferenceSummary(
   const calculationCurrencies = [
     ...principalRows(rows).map(row => row.row.item.episode.instrument.currency),
     ...Object.values(values).map(value => value!.currency),
+    ...(targetCurrency ? [targetCurrency] : []),
   ];
   const calculationFxSnapshot = usableFxSnapshot(fxSnapshot, calculationCurrencies);
-  const costReturn = buildCostReturnSummary(rows, calculationFxSnapshot);
-  const netPnl = netPnlView(rows, calculationFxSnapshot);
+  const costReturn = buildCostReturnSummary(rows, calculationFxSnapshot, targetCurrency);
+  const netPnl = netPnlView(rows, calculationFxSnapshot, targetCurrency);
   const configuredCategories = PRINCIPAL_CATEGORIES.filter(category => Boolean(values[category]));
   const missingCategories = required.filter(category => !values[category]);
   const scopeUnavailable = scope.nature === "unknown" || (scope.nature === "simulation" && !scope.simulationRunId?.trim());
   const narrowed = hasFineFilter(scope);
   const principalAmounts = Object.values(values).map(value => ({ currency: value!.currency, amount: value!.amount }));
-  const principal = buildRoomMoneyView(principalAmounts, calculationFxSnapshot);
-  const directRatio = ratioPercent(netPnl, principal);
-  const exchangeUnavailable = directRatio === null && needsForeignExchange(rows, values) && (principal.convertedCny === null || netPnl.convertedCny === null);
+  const principal = buildRoomMoneyView(principalAmounts, calculationFxSnapshot, targetCurrency);
+  const directRatio = ratioPercent(netPnl, principal, targetCurrency);
+  const exchangeUnavailable = directRatio === null && (targetCurrency !== undefined && targetCurrency !== "CNY" || needsForeignExchange(rows, values)) && (roomMoneyValue(principal) === null || roomMoneyValue(netPnl) === null);
 
   let mode: PrincipalReturnMode = "principal";
   let fallbackReason: string | null = null;

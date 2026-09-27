@@ -222,6 +222,24 @@ describe("trading room scope contracts", () => {
     });
   });
 
+  it("keeps natural-month shortcuts stable at month ends and across leap years", () => {
+    expect(buildRoomDateRange("month", "2026-03-31")).toEqual({
+      preset: "month",
+      startDate: "2026-03-01",
+      endDate: "2026-03-31",
+    });
+    expect(buildRoomDateRange("last-3-months", "2026-03-31")).toEqual({
+      preset: "last-3-months",
+      startDate: "2026-01-01",
+      endDate: "2026-03-31",
+    });
+    expect(buildRoomDateRange("last-3-months", "2024-02-29")).toEqual({
+      preset: "last-3-months",
+      startDate: "2023-12-01",
+      endDate: "2024-02-29",
+    });
+  });
+
   it("defaults to year to date and supports an explicit all-history range", () => {
     expect(createDefaultRoomScope("2026-09-19").period).toEqual({
       preset: "ytd",
@@ -300,6 +318,73 @@ describe("trading room scope contracts", () => {
     expect(view).toMatchObject({ convertedCny: "100", conversion: "same-currency", fxSnapshotId: "fx:partial-cny" });
   });
 
+  it("converts a mixed CNY/USD/HKD report to HKD with the same FX snapshot", () => {
+    const view = buildRoomMoneyView(
+      [
+        { currency: "CNY", amount: "100" },
+        { currency: "USD", amount: "10" },
+        { currency: "HKD", amount: "20" },
+      ],
+      {
+        id: "fx:hkd",
+        baseCurrency: "CNY",
+        asOf: "2026-09-19T08:00:00.000Z",
+        source: "fixture",
+        status: "complete",
+        rates: { "USD/CNY": "7", "HKD/CNY": "0.875" },
+      },
+      "HKD",
+    );
+    expect(view).toMatchObject({
+      targetCurrency: "HKD",
+      converted: "214.28571428571428571",
+      convertedCny: "187.5",
+      convertedHkd: "214.28571428571428571",
+      conversion: "complete",
+      fxSnapshotId: "fx:hkd",
+    });
+  });
+
+  it("keeps zero and negative amounts convertible to HKD", () => {
+    const view = buildRoomMoneyView(
+      [{ currency: "CNY", amount: "0" }, { currency: "USD", amount: "-7" }],
+      {
+        id: "fx:hkd-signed",
+        baseCurrency: "CNY",
+        asOf: "2026-09-19T08:00:00.000Z",
+        source: "fixture",
+        status: "complete",
+        rates: { "USD/CNY": "7", "HKD/CNY": "0.875" },
+      },
+      "HKD",
+    );
+    expect(view.converted).toBe("-56");
+    expect(view.originalByCurrency).toEqual({ CNY: "0", USD: "-7" });
+  });
+
+  it("does not silently fall back to CNY when HKD FX is missing", () => {
+    const view = buildRoomMoneyView(
+      [{ currency: "USD", amount: "10" }],
+      {
+        id: "fx:hkd-missing",
+        baseCurrency: "CNY",
+        asOf: "2026-09-19T08:00:00.000Z",
+        source: "fixture",
+        status: "complete",
+        rates: { "USD/CNY": "7" },
+      },
+      "HKD",
+    );
+    expect(view).toMatchObject({
+      targetCurrency: "HKD",
+      converted: null,
+      convertedCny: "70",
+      convertedHkd: null,
+      conversion: "partial",
+    });
+    expect(view.note).toContain("HKD");
+  });
+
   it("filters simulation runs and keeps performance dates inclusive", () => {
     const live = row(instrument(), "2026-09-01", "10");
     const simulationA = row(instrument({ id: "US:SIM-A" }), "2026-09-19", "20", {
@@ -376,6 +461,34 @@ describe("trading room scope contracts", () => {
     expect(filterRoomRows([closedInRange], scope, { ignorePerformanceDates: true })).toHaveLength(0);
   });
 
+  it("skips only the date range for library scope reuse while retaining closed rows and filters", () => {
+    const old = instrument({ id: "US:OLD", symbol: "OLD" });
+    const other = instrument({ id: "HK:OTHER", symbol: "OTHER", market: "HK", currency: "HKD" });
+    const scope = liveScope({
+      assetCategory: "us-stock",
+      assetType: "stock",
+      query: "OLD",
+      instrumentIds: [old.id],
+      markets: ["US"],
+      currencies: ["USD"],
+      reviewStatuses: ["pending"],
+    });
+    const selected = filterRoomRows(
+      [row(old, "2020-01-01", "10"), row(other, "2020-01-01", "20")],
+      scope,
+      {
+        ignoreDateRange: true,
+        instrumentMetadata: new Map([
+          [old.id, metadata("stock", old)],
+          [other.id, metadata("stock", other)],
+        ]),
+      },
+    );
+    expect(selected).toHaveLength(1);
+    expect(selected[0]?.item.episode.instrument.id).toBe(old.id);
+    expect(selected[0]?.item.episode.status).toBe("closed");
+  });
+
   it("summarizes trusted rounds and reports unknown asset episodes separately", () => {
     const cn = instrument({ id: "CN-SH:STOCK", symbol: "600000", market: "CN-SH", currency: "CNY" });
     const etf = instrument({ id: "US:ETF", symbol: "SPY", market: "US", currency: "USD" });
@@ -415,4 +528,15 @@ describe("trading room scope contracts", () => {
     expect(model.summary.excludedCount).toBe(1);
     expect(model.summary.trustedClosedCount).toBe(0);
   });
+});
+
+it("filters by persisted Recall state instead of stale legacy status", () => {
+  const value = row(instrument(), "2026-09-19", "10");
+  value.item.recallReview = { episodeId: value.item.episode.id, status: "completed", updatedAt: "2026-09-25", text: "", snapshotCount: 1 };
+  const scope = createDefaultRoomScope("2026-09-25");
+  expect(filterRoomRows([value], { ...scope, reviewStatuses: ["pending"] })).toHaveLength(0);
+  expect(filterRoomRows([value], { ...scope, reviewStatuses: ["completed"] })).toHaveLength(1);
+  value.item.recallReview.status = "needs-confirmation";
+  expect(filterRoomRows([value], { ...scope, reviewStatuses: ["pending"] })).toHaveLength(1);
+  expect(filterRoomRows([value], { ...scope, reviewStatuses: ["completed"] })).toHaveLength(0);
 });

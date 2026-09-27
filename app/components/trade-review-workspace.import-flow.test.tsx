@@ -64,15 +64,15 @@ function deferred<T>() {
   return { promise, resolve, reject };
 }
 
-function expectOnlyLocalFxFetches() {
+function expectOnlyLocalRoomFetches() {
   const unexpectedRequests = vi.mocked(fetch).mock.calls.filter(([input, init]) => {
     const path = String(input);
-    if (path !== "/api/fx" && path !== "/api/trading-room/fx" && path !== "/api/trading-room/reference-capital") return true;
+    if (path !== "/api/fx" && path !== "/api/trading-room/fx" && path !== "/api/trading-room/reference-capital" && path !== "/api/storage/recall/summaries") return true;
     const requestInit = (init ?? {}) as RequestInit;
     const method = requestInit.method?.toUpperCase() ?? "GET";
     return requestInit.cache !== "no-store" || method !== "GET";
   });
-  expect(unexpectedRequests).toHaveLength(0);
+  expect(unexpectedRequests).toEqual([]);
 }
 
 function rejectNextDemoReplayRequest() {
@@ -418,10 +418,9 @@ describe("TradeReviewWorkspace", () => {
     });
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => nextFrame,
-      }),
+      vi.fn(async (input) => String(input) === "/api/storage/recall/summaries"
+        ? Response.json({ summaries: [] })
+        : { ok: true, json: async () => nextFrame }),
     );
     mockDispatcher.mockReset();
     mockEnrichment.mockReset();
@@ -875,7 +874,7 @@ describe("TradeReviewWorkspace", () => {
       await screen.findByRole("heading", { name: /小米集团-W/ }),
     ).toBeInTheDocument();
     await new Promise((resolve) => window.setTimeout(resolve, 50));
-    expectOnlyLocalFxFetches();
+    expectOnlyLocalRoomFetches();
   });
 
   it("refreshes metadata without blocking cached candles when metadata is unresolved", async () => {
@@ -1087,7 +1086,7 @@ describe("TradeReviewWorkspace", () => {
         name: /小米集团-W（更新）/,
       })).length,
     ).toBeGreaterThan(0);
-    expectOnlyLocalFxFetches();
+    expectOnlyLocalRoomFetches();
   });
 
   it("merges a deferred metadata name with an overlapping import confirmation without losing either", async () => {
@@ -1310,7 +1309,7 @@ describe("TradeReviewWorkspace", () => {
     expect(document.querySelector(".recall-selected-fill")).toHaveTextContent(
       "买 100 @ 11",
     );
-    expectOnlyLocalFxFetches();
+    expectOnlyLocalRoomFetches();
   });
 
   it("hydrates cached candles for library stocks that are not selected in replay", async () => {
@@ -1415,7 +1414,7 @@ describe("TradeReviewWorkspace", () => {
 
     expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "行情数据详情" })).toBeInTheDocument();
-    expectOnlyLocalFxFetches();
+    expectOnlyLocalRoomFetches();
   });
 
   it("opens the exact position episode in Recall without a side-note form", async () => {
@@ -1482,7 +1481,7 @@ describe("TradeReviewWorkspace", () => {
       "买 100 @ 10",
     );
     expect(screen.queryByLabelText("买入理由")).not.toBeInTheDocument();
-    expectOnlyLocalFxFetches();
+    expectOnlyLocalRoomFetches();
   });
 
   it("accepts an edited cached suggestion and opens the exact episode without requesting market data", async () => {
@@ -1638,7 +1637,7 @@ describe("TradeReviewWorkspace", () => {
     expect(await screen.findByText("暂无待确认建议")).toBeInTheDocument();
     expect(vi.mocked(fetch).mock.calls.every(([url]) => {
       const path = String(url);
-      return path.startsWith("/api/storage/review-summaries?") || path === "/api/trading-room/reference-capital";
+      return path.startsWith("/api/storage/review-summaries?") || path === "/api/trading-room/reference-capital" || path === "/api/storage/recall/summaries";
     })).toBe(true);
   });
 });

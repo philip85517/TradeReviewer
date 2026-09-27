@@ -1,3 +1,4 @@
+import type { RecallReviewSummary } from "../recall/summary";
 import { displayTradeNature, tradingNatureLabel } from "./trading-nature";
 import Decimal from "decimal.js";
 
@@ -30,6 +31,7 @@ export type TradeLibraryEpisode = {
   episode: TradeEpisode;
   metrics: TradeEpisodeMetrics;
   review?: EpisodeReviewRecord;
+  recallReview?: RecallReviewSummary;
   reviewStatus: EpisodeReviewStatus;
   confirmedTagIds: string[];
   tagDictionaryVersion: number;
@@ -69,11 +71,66 @@ export type TradeLibraryEntry = {
   latestQuote?: TradeLibraryQuoteProjection;
 };
 
+function validSourceTradingDate(value: string | undefined): string | null {
+  const candidate = value?.trim() ?? "";
+  return /^\d{4}-\d{2}-\d{2}$/.test(candidate) ? candidate : null;
+}
+
+/** Prefer the source exchange date; timestamps are only the compatibility fallback. */
+export function tradeExecutionTradingDate(execution: TradeExecution): string {
+  return validSourceTradingDate(execution.source.tradingDate) ??
+    validSourceTradingDate(execution.source.marketCalendarDate) ??
+    marketTradingDate(execution.executedAt, execution.instrument.market);
+}
+
+function chronologicalExecutions(executions: readonly TradeExecution[]) {
+  return [...executions].sort((left, right) =>
+    left.executedAt.localeCompare(right.executedAt) || left.id.localeCompare(right.id),
+  );
+}
+
+export function tradeEpisodeOpeningTradingDate(episode: TradeEpisode): string {
+  const first = chronologicalExecutions(episode.executions)[0];
+  return first
+    ? tradeExecutionTradingDate(first)
+    : marketTradingDate(episode.startedAt, episode.instrument.market);
+}
+
+export function tradeEpisodeClosingTradingDate(episode: TradeEpisode): string {
+  const executions = chronologicalExecutions(episode.executions);
+  const endedAt = episode.endedAt ? Date.parse(episode.endedAt) : Number.NaN;
+  const eligible = Number.isFinite(endedAt)
+    ? executions.filter(execution => {
+        const executedAt = Date.parse(execution.executedAt);
+        return Number.isFinite(executedAt) && executedAt <= endedAt;
+      })
+    : executions;
+  const closing = eligible.at(-1) ?? executions.at(-1);
+  return closing
+    ? tradeExecutionTradingDate(closing)
+    : marketTradingDate(episode.endedAt ?? episode.startedAt, episode.instrument.market);
+}
+
+export function tradeEntryOpeningTradingDate(entry: TradeLibraryEntry): string {
+  const first = chronologicalExecutions(entry.executions)[0];
+  return first
+    ? tradeExecutionTradingDate(first)
+    : marketTradingDate(entry.firstTradeAt, entry.instrument.market);
+}
+
+export function tradeEntryClosingTradingDate(entry: TradeLibraryEntry): string {
+  const closing = chronologicalExecutions(entry.executions).at(-1);
+  return closing
+    ? tradeExecutionTradingDate(closing)
+    : marketTradingDate(entry.lastTradeAt, entry.instrument.market);
+}
+
 export function buildTradeLibraryEntries(
   summaries: InstrumentTradeSummary[],
   candlesByInstrument: Record<string, DailyCandleRecord[]>,
   marketDataStatuses: Record<string, MarketDataSyncStatus>,
   reviewsByEpisode: Record<string, EpisodeReviewRecord> = {},
+  summariesByEpisode: Record<string, RecallReviewSummary> = {},
 ): TradeLibraryEntry[] {
   return summaries
     .flatMap((summary) => {
@@ -119,11 +176,17 @@ export function buildTradeLibraryEntries(
               : undefined,
           );
           const review = reviewsByEpisode[episode.id];
+          const candidate = summariesByEpisode[episode.id];
+          const recallReview = candidate?.episodeId === episode.id ? candidate : undefined;
+          const reviewStatus: EpisodeReviewStatus = recallReview
+            ? recallReview.status === "completed" ? "completed" : "pending"
+            : episodeReviewStatus(review);
           return {
             episode,
             metrics,
             review,
-            reviewStatus: episodeReviewStatus(review),
+            ...(recallReview ? { recallReview } : {}),
+            reviewStatus,
             confirmedTagIds: review?.confirmedTagIds ?? [],
             tagDictionaryVersion:
               review?.tagDictionaryVersion ??

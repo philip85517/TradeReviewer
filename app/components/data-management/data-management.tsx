@@ -32,6 +32,8 @@ export type DataManagementProps = {
   principalSlot?: ReactNode;
   /** A real future data-management module, such as the FX updater. */
   fxSlot?: ReactNode;
+  /** Current account/scope cash baseline editor supplied by the workspace. */
+  cashSlot?: ReactNode;
 };
 
 function hasInstrument(ids: DataManagementProps["activeInstrumentIds"], id: string) {
@@ -56,6 +58,7 @@ export function DataManagement({
   qualitySlot,
   principalSlot,
   fxSlot,
+  cashSlot,
 }: DataManagementProps) {
   const [uncontrolledActiveTab, setUncontrolledActiveTab] = useState<
     "import" | "quality" | "settings"
@@ -248,6 +251,16 @@ export function DataManagement({
             <span>人民币估算使用的最新汇率</span>
           </div>
           {fxSlot ?? <p className="data-management-empty">暂无汇率配置。</p>}
+        </section>
+
+        <section className="data-management-card" aria-label="现金基准">
+          <div className="data-management-card-heading">
+            <div>
+              <h2>现金基准</h2>
+            </div>
+            <span>余额按账户、原币和截至时间记录</span>
+          </div>
+          {cashSlot ?? <p className="data-management-empty">暂无现金基准配置。</p>}
         </section>
       </div>
     </section>

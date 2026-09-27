@@ -1,9 +1,18 @@
 "use client";
+import { summarizeRecallDocument, type RecallReviewSummary } from "../lib/recall/summary";
+import { fetchRecallReviewSummaries } from "../lib/recall/summary-client";
+import type { RecallDocument } from "../lib/recall/types";
+import { roomTodayKey } from "../lib/reviews/trading-room-scope";
 import { scopedRecords, supplementChanges, type SupplementScope } from "../lib/import/scoped-supplement";
 
 import {
+  BarChart3,
   BookOpenCheck,
+  Database,
+  LayoutDashboard,
   Menu,
+  Settings2,
+  Workflow,
   X,
   Sparkles,
 } from "lucide-react";
@@ -191,7 +200,9 @@ import {
   type TradeLibraryTarget,
   type TradeLibraryBrowseState,
 } from "./library/trade-library";
+import { normalizeTradeLibraryBrowseState } from "./library/library-browse-state";
 import { DataManagement } from "./data-management/data-management";
+import { CashBaselinePanel } from "./data-management/cash-baseline-panel";
 import { FxPanel } from "./data-management/fx-panel";
 import { QualityDetails } from "./data-management/quality-details";
 import { TradingRoomPrincipalSlot } from "./data-management/trading-room-principal-slot";
@@ -212,8 +223,6 @@ import {
   type ReviewChartViewModel,
 } from "./review/review-chart-workspace";
 import { RecallWorkspace } from "./recall/recall-workspace";
-import type { RecallDocument } from "../lib/recall/types";
-import { bridgeRecallCompletion } from "../lib/storage/recall-completion-bridge";
 import type {
   ReviewChartLocateRequest,
   ReviewChartLocateResult,
@@ -233,6 +242,23 @@ import type {
   TradingRoomQualityModel,
 } from "../lib/reviews/trading-room-quality";
 import type { TradingRoomQuote } from "../lib/reviews/trading-room-holdings";
+import {
+  parseCashBaselineState,
+  type CashBaselineDraft,
+  type CashBaselineState,
+  type CashSummary,
+  type CashNature,
+} from "../lib/cash/cash-model";
+import {
+  roomFiltersFromScope,
+  type PendingLibraryNavigationRequest,
+  type HistoryLibraryNavigationRequest,
+  type RoomPendingSourceSnapshot,
+} from "../lib/reviews/trading-room-pending";
+import type {
+  GlobalNotification,
+  GlobalSearchResult,
+} from "../lib/reviews/trading-room-global-entries";
 
 const REVIEW_ID = "demo-xpev-2025";
 const DEFAULT_THESIS =
@@ -924,6 +950,58 @@ function qualityModelSignature(model: TradingRoomQualityModel): string {
   return JSON.stringify(model);
 }
 
+async function readCashError(response: Response, fallback: string): Promise<string> {
+  try {
+    const body = await response.json() as { error?: { message?: string } };
+    return body.error?.message ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+async function readCashBaselineResponse(response: Response, fallback: string): Promise<CashBaselineState> {
+  if (!response.ok) throw new Error(await readCashError(response, fallback));
+  try {
+    return parseCashBaselineState(await response.json());
+  } catch {
+    throw new Error("现金基准响应无效");
+  }
+}
+
+type CashDataRequest = {
+  nature: CashNature;
+  simulationRunId: string | null;
+  targetCurrency: "CNY" | "HKD";
+  today: string;
+  accountIds: readonly string[];
+};
+
+type CashDataResponse = {
+  baselineState: CashBaselineState;
+  summary: CashSummary;
+};
+
+async function fetchCashData(request: CashDataRequest): Promise<CashDataResponse> {
+  const params = new URLSearchParams({
+    nature: request.nature,
+    targetCurrency: request.targetCurrency,
+    today: request.today,
+  });
+  if (request.simulationRunId) params.set("simulationRunId", request.simulationRunId);
+  if (request.accountIds.length > 0) params.set("accountIds", request.accountIds.join(","));
+
+  const [baselineResponse, summaryResponse] = await Promise.all([
+    fetch(`/api/trading-room/cash/baselines?${params.toString()}`, { cache: "no-store" }),
+    fetch(`/api/trading-room/cash?${params.toString()}`, { cache: "no-store" }),
+  ]);
+  if (!summaryResponse.ok) throw new Error(await readCashError(summaryResponse, "现金汇总暂时不可用"));
+  const [baselineState, summary] = await Promise.all([
+    readCashBaselineResponse(baselineResponse, "现金基准暂时不可用"),
+    summaryResponse.json() as Promise<CashSummary>,
+  ]);
+  return { baselineState, summary };
+}
+
 export function TradeReviewWorkspace({
   initialFrame,
   showDemo = true,
@@ -977,6 +1055,8 @@ export function TradeReviewWorkspace({
     return () => media.removeEventListener("change", closeOnDesktop);
   }, []);
   const [libraryBrowseState, setLibraryBrowseState] = useState<TradeLibraryBrowseState>();
+  const [librarySourceSnapshot, setLibrarySourceSnapshot] = useState<RoomPendingSourceSnapshot | null>(null);
+  const [dashboardRestoreContext, setDashboardRestoreContext] = useState<RoomPendingSourceSnapshot | null>(null);
   const [sharedScope, setSharedScope] = useState<SharedScope>(DEFAULT_SHARED_SCOPE);
   const [sharedScopeRestored, setSharedScopeRestored] = useState(false);
   useEffect(() => {
@@ -1007,6 +1087,7 @@ export function TradeReviewWorkspace({
   const [activeView, setActiveViewState] = useState<
     "dashboard" | "review" | "library" | "insights" | "data"
   >(showDemo ? "review" : "dashboard");
+  const [dashboardOpened, setDashboardOpened] = useState(!showDemo);
   const recallLeaveGuardRef = useRef<(() => Promise<boolean>) | null>(null);
   const navigationAttemptRef = useRef(0);
   const registerRecallLeaveGuard = useCallback((guard: (() => Promise<boolean>) | null) => {
@@ -1015,11 +1096,15 @@ export function TradeReviewWorkspace({
   function setActiveView(next: typeof activeView) {
     const attempt = ++navigationAttemptRef.current;
     if (activeView !== "review" || next === "review" || !recallLeaveGuardRef.current) {
+      if (next === "dashboard") setDashboardOpened(true);
       setActiveViewState(next);
       return;
     }
     void recallLeaveGuardRef.current().then(allowed => {
-      if (allowed && attempt === navigationAttemptRef.current) setActiveViewState(next);
+      if (allowed && attempt === navigationAttemptRef.current) {
+        if (next === "dashboard") setDashboardOpened(true);
+        setActiveViewState(next);
+      }
     }).catch(() => setNavigationNotice("复盘尚未保存，请重试保存后再离开。"));
   }
   const [reviewReturnView, setReviewReturnView] = useState<ReviewReturnView>(
@@ -1120,6 +1205,15 @@ export function TradeReviewWorkspace({
   const [episodeReviews, setEpisodeReviews] = useState<
     Record<string, EpisodeReviewRecord>
   >({});
+  const [recallSummariesByEpisode, setRecallSummariesByEpisode] = useState<Record<string, RecallReviewSummary>>({});
+  const recallSaveSequence = useRef(0);
+  const recallSavedEpisodes = useRef<Record<string, number>>({});
+  const recallSummariesRequested = useRef(false);
+  const handleRecallSaved = useCallback((document: RecallDocument) => {
+    const summary = summarizeRecallDocument(document);
+    recallSavedEpisodes.current[summary.episodeId] = ++recallSaveSequence.current;
+    setRecallSummariesByEpisode(current => ({ ...current, [summary.episodeId]: summary }));
+  }, []);
   const [reviewsHydrated, setReviewsHydrated] = useState(false);
   const [suggestionDecisions, setSuggestionDecisions] = useState<
     TagSuggestionRecord[]
@@ -1135,6 +1229,28 @@ export function TradeReviewWorkspace({
   const [storageState, setStorageState] = useState<
     "loading" | "migration" | "ready" | "error"
   >("loading");
+  useEffect(() => {
+    if (storageState !== "ready" || (activeView !== "dashboard" && recallSummariesRequested.current)) return;
+    recallSummariesRequested.current = true;
+    let cancelled = false;
+    const requestedAtSequence = recallSaveSequence.current;
+    void fetchRecallReviewSummaries().then(summaries => {
+      if (cancelled) return;
+      setRecallSummariesByEpisode(current => {
+        const next = { ...current };
+        for (const summary of summaries) {
+          // A slow response must not replace a document just saved in this session.
+          if ((recallSavedEpisodes.current[summary.episodeId] ?? 0) > requestedAtSequence) continue;
+          const previous = current[summary.episodeId];
+          if (!previous || Date.parse(summary.updatedAt) > Date.parse(previous.updatedAt)) next[summary.episodeId] = summary;
+        }
+        return next;
+      });
+    }).catch(() => {
+      // Summaries enhance the homepage; outages retain the last confirmed state.
+    });
+    return () => { cancelled = true; };
+  }, [activeView, storageState]);
   const [storageError, setStorageError] = useState<string | null>(null);
   const [bootstrapAttempt, setBootstrapAttempt] = useState(0);
   const [reviewStates, setReviewStates] = useState<
@@ -1227,18 +1343,6 @@ export function TradeReviewWorkspace({
   const selectedEpisode = selectedEpisodeId
     ? episodes.find((episode) => episode.id === selectedEpisodeId)
     : episodes[0];
-  function handleRecallFormalCompletion(document: RecallDocument) {
-    if (document.status !== "completed") return;
-    const completedEpisode = episodes.find((episode) => episode.id === document.episodeId);
-    setEpisodeReviews((current) => {
-      const bridged = bridgeRecallCompletion(
-        current[document.episodeId],
-        { episodeId: document.episodeId, updatedAt: document.updatedAt },
-        completedEpisode?.instrument.id,
-      );
-      return bridged ? { ...current, [document.episodeId]: bridged } : current;
-    });
-  }
   const selectedMarketState = useMemo(
     () =>
       selectedImportedInstrument
@@ -1485,9 +1589,11 @@ export function TradeReviewWorkspace({
         marketDataCandles,
         marketDataStatuses,
         episodeReviews,
+        recallSummariesByEpisode,
       ),
     [
       episodeReviews,
+      recallSummariesByEpisode,
       importedInstruments,
       marketDataCandles,
       marketDataStatuses,
@@ -1510,6 +1616,162 @@ export function TradeReviewWorkspace({
       return { ...option, label: (counts.get(option.label) ?? 0) > 1 ? `${option.label} · 账户 ${ordinal}` : option.label };
     });
   }, [tradeLibraryEntries, sharedScope]);
+  const cashNature: CashNature | null = sharedScope.nature === "simulation"
+    ? "simulation"
+    : sharedScope.nature === "live" ? "live" : null;
+  const cashSimulationRunId = cashNature === "simulation" ? sharedScope.simulationRunId : null;
+  const cashTargetCurrency = sharedScope.reportCurrency === "HKD" ? "HKD" as const : "CNY" as const;
+  const [cashTodayKey, setCashTodayKey] = useState(() => roomTodayKey());
+  useEffect(() => {
+    const refreshTodayKey = () => {
+      const next = roomTodayKey();
+      setCashTodayKey(current => current === next ? current : next);
+    };
+    refreshTodayKey();
+    const interval = window.setInterval(refreshTodayKey, 60_000);
+    document.addEventListener("visibilitychange", refreshTodayKey);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", refreshTodayKey);
+    };
+  }, []);
+  const cashExecutionRevision = useMemo(() => JSON.stringify(importedExecutions), [importedExecutions]);
+  const cashMetadataRevision = useMemo(
+    () => JSON.stringify((instrumentMetadata instanceof Map
+      ? [...instrumentMetadata.entries()]
+      : Object.entries(instrumentMetadata ?? {})).sort(([left], [right]) => left.localeCompare(right))),
+    [instrumentMetadata],
+  );
+  const cashFxRevision = useMemo(() => JSON.stringify({
+    status: fxSnapshot?.status,
+    asOf: fxSnapshot?.asOf,
+    rates: fxSnapshot?.rates,
+  }), [fxSnapshot]);
+  const cashScopeReady = !showDemo && Boolean(cashNature) && (cashNature === "live" || Boolean(cashSimulationRunId));
+  const cashScopeKey = useMemo(() => JSON.stringify({
+    nature: cashNature,
+    simulationRunId: cashSimulationRunId,
+    accountIds: [...sharedScope.accountIds].sort(),
+    targetCurrency: cashTargetCurrency,
+    today: cashTodayKey,
+    executionRevision: cashExecutionRevision,
+    metadataRevision: cashMetadataRevision,
+    fxRevision: cashFxRevision,
+  }), [cashExecutionRevision, cashFxRevision, cashMetadataRevision, cashNature, cashSimulationRunId, cashTargetCurrency, cashTodayKey, sharedScope.accountIds]);
+  const cashDataRequest = useMemo<CashDataRequest | null>(() => {
+    if (!cashScopeReady || !cashNature) return null;
+    return {
+      nature: cashNature,
+      simulationRunId: cashSimulationRunId,
+      targetCurrency: cashTargetCurrency,
+      today: cashTodayKey,
+      accountIds: [...sharedScope.accountIds],
+    };
+  }, [cashNature, cashScopeReady, cashSimulationRunId, cashTargetCurrency, cashTodayKey, sharedScope.accountIds]);
+  const [cashBaselineState, setCashBaselineState] = useState<CashBaselineState>({ version: 1, records: [] });
+  const [cashBaselineScopeKey, setCashBaselineScopeKey] = useState<string | null>(null);
+  const [cashSummary, setCashSummary] = useState<CashSummary | null>(null);
+  const [cashSummaryScopeKey, setCashSummaryScopeKey] = useState<string | null>(null);
+  const [cashLoading, setCashLoading] = useState(false);
+  const [cashSaving, setCashSaving] = useState(false);
+  const [cashError, setCashError] = useState<string | null>(null);
+  const cashRequestSequence = useRef(0);
+  const cashWriteSequence = useRef(0);
+  const cashScopeKeyRef = useRef(cashScopeKey);
+  // Keep reload state out of the effect's synchronous body: a repeated scope key
+  // must remain pending until the new request's own sequence settles.
+  const cashResolvedRequestSequence = useRef(0);
+  useEffect(() => {
+    cashScopeKeyRef.current = cashScopeKey;
+    const requestId = ++cashRequestSequence.current;
+    if (!cashDataRequest) {
+      return () => {
+        if (requestId === cashRequestSequence.current) cashRequestSequence.current += 1;
+      };
+    }
+    void fetchCashData(cashDataRequest).then(({ baselineState, summary }) => {
+      if (requestId !== cashRequestSequence.current) return;
+      cashResolvedRequestSequence.current = requestId;
+      setCashBaselineState(baselineState);
+      setCashBaselineScopeKey(cashScopeKey);
+      setCashSummary(summary);
+      setCashSummaryScopeKey(cashScopeKey);
+      setCashError(null);
+      setCashLoading(false);
+    }).catch(error => {
+      if (requestId !== cashRequestSequence.current) return;
+      cashResolvedRequestSequence.current = requestId;
+      setCashSummaryScopeKey(cashScopeKey);
+      setCashError(error instanceof Error ? error.message : "现金数据暂时不可用");
+      setCashSummary(null);
+      setCashLoading(false);
+    });
+    return () => {
+      if (requestId === cashRequestSequence.current) cashRequestSequence.current += 1;
+    };
+  }, [cashDataRequest, cashScopeKey]);
+  const refreshCashData = useCallback(async () => {
+    const requestId = ++cashRequestSequence.current;
+    if (!cashDataRequest) return;
+    setCashLoading(true);
+    setCashError(null);
+    setCashSummary(null);
+    setCashSummaryScopeKey(null);
+    try {
+      const { baselineState, summary } = await fetchCashData(cashDataRequest);
+      if (requestId !== cashRequestSequence.current || cashScopeKey !== cashScopeKeyRef.current) return;
+      cashResolvedRequestSequence.current = requestId;
+      setCashBaselineState(baselineState);
+      setCashBaselineScopeKey(cashScopeKey);
+      setCashSummary(summary);
+      setCashSummaryScopeKey(cashScopeKey);
+    } catch (error) {
+      if (requestId !== cashRequestSequence.current || cashScopeKey !== cashScopeKeyRef.current) return;
+      cashResolvedRequestSequence.current = requestId;
+      setCashSummaryScopeKey(cashScopeKey);
+      setCashError(error instanceof Error ? error.message : "现金数据暂时不可用");
+      setCashSummary(null);
+    } finally {
+      if (requestId === cashRequestSequence.current) setCashLoading(false);
+    }
+  }, [cashDataRequest, cashScopeKey]);
+  const saveCashBaseline = useCallback(async (draft: CashBaselineDraft): Promise<boolean> => {
+    const requestId = ++cashWriteSequence.current;
+    const scopeAtWrite = cashScopeKey;
+    setCashSaving(true);
+    setCashError(null);
+    try {
+      const response = await fetch("/api/trading-room/cash/baselines", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(draft),
+      });
+      if (!response.ok) throw new Error(await readCashError(response, "现金基准保存失败"));
+      const nextState = await readCashBaselineResponse(response, "现金基准保存失败");
+      if (requestId !== cashWriteSequence.current || scopeAtWrite !== cashScopeKeyRef.current) return false;
+      setCashBaselineState(nextState);
+      setCashBaselineScopeKey(cashScopeKey);
+      // The baseline changes both the editor state and the calculated total;
+      // re-read the summary through the same scope after the write succeeds.
+      await refreshCashData();
+      return true;
+    } catch (error) {
+      if (requestId === cashWriteSequence.current && scopeAtWrite === cashScopeKeyRef.current) setCashError(error instanceof Error ? error.message : "现金基准保存失败");
+      return false;
+    } finally {
+      if (requestId === cashWriteSequence.current) setCashSaving(false);
+    }
+  }, [cashScopeKey, refreshCashData]);
+  const cashRequestSettledForScope = cashScopeReady &&
+    cashScopeKeyRef.current === cashScopeKey &&
+    cashResolvedRequestSequence.current === cashRequestSequence.current &&
+    cashSummaryScopeKey === cashScopeKey;
+  const cashBaselineForScope = cashRequestSettledForScope && cashBaselineScopeKey === cashScopeKey
+    ? cashBaselineState
+    : { version: 1 as const, records: [] };
+  const cashSummaryForScope = cashRequestSettledForScope ? cashSummary : null;
+  const cashLoadingForScope = cashScopeReady && (cashLoading || !cashRequestSettledForScope);
+  const cashErrorForScope = cashRequestSettledForScope ? cashError : null;
   const qualityInput = useMemo(
     () => ({
       marketDataStatuses,
@@ -1540,7 +1802,19 @@ export function TradeReviewWorkspace({
     ),
     [tradeLibraryEntries],
   );
-  const holdingsAsOf = useMemo(() => new Date().toISOString(), []);
+  const [holdingsAsOf, setHoldingsAsOf] = useState(() => roomTodayKey());
+  useEffect(() => {
+    const refresh = () => setHoldingsAsOf(roomTodayKey());
+    const interval = window.setInterval(refresh, 60_000);
+    window.addEventListener("focus", refresh);
+    const onVisibilityChange = () => { if (document.visibilityState === "visible") refresh(); };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, []);
   const currentEpisodeIds = useMemo(
     () => new Set(tradeLibraryEntries.flatMap(entry => entry.episodes.map(({ episode }) => episode.id))),
     [tradeLibraryEntries],
@@ -3514,6 +3788,154 @@ export function TradeReviewWorkspace({
       );
     }
   }
+
+  function openGlobalSearchResult(result: GlobalSearchResult) {
+    setPlaying(false);
+    setNavigationNotice(null);
+    setLibrarySourceSnapshot(null);
+    setDashboardRestoreContext(null);
+    setLibraryTarget({
+      requestId: ++libraryTargetSequence.current,
+      instrumentId: result.instrumentId,
+      episodeId: result.episodeId,
+    });
+    // Global search is an identity entry point. Clear local library filters so
+    // an old query, year, or review queue cannot hide the selected instrument.
+    setLibraryBrowseState(current => normalizeTradeLibraryBrowseState({
+      ...current,
+      mode: "stocks",
+      selectedInstrumentId: null,
+      selectedEpisodeId: null,
+      expandedStockIds: [],
+      includeReviewedStockIds: [],
+      query: "",
+      market: "all",
+      account: "all",
+      accounts: [],
+      brokers: [],
+      year: "all",
+      closeDateFrom: null,
+      closeDateTo: null,
+      roomFilters: null,
+      tradeNature: sharedScope.nature === "simulation" ? "simulation" : "live",
+      simulationRunId: sharedScope.nature === "simulation"
+        ? sharedScope.simulationRunId ?? "all"
+        : "all",
+      reviewStatus: "all",
+      sort: "newest",
+      positionStatus: "all",
+      dataStatus: "all",
+      tag: "all",
+      advancedExpanded: false,
+      scrollTop: 0,
+      stockPage: 1,
+      roundPage: 1,
+    }, "stocks"));
+    setActiveView("library");
+  }
+
+  function openPendingLibrary(request: PendingLibraryNavigationRequest) {
+    const source = request.sourceSnapshot;
+    const nature = source?.sharedScope.nature === "simulation" ? "simulation" : "live";
+    if (source) updateSharedScope(source.sharedScope);
+    setPlaying(false);
+    setNavigationNotice(null);
+    setLibrarySourceSnapshot(source);
+    setLibraryTarget(undefined);
+    setLibraryBrowseState(current => normalizeTradeLibraryBrowseState({
+      ...current,
+      mode: "queue",
+      selectedInstrumentId: null,
+      selectedEpisodeId: null,
+      expandedStockIds: [],
+      includeReviewedStockIds: [],
+      query: "",
+      market: "all",
+      account: "all",
+      accounts: source ? [...source.sharedScope.accountIds] : [],
+      brokers: [],
+      year: "all",
+      closeDateFrom: request.closeDateFrom,
+      closeDateTo: request.closeDateTo,
+      roomFilters: roomFiltersFromScope(source?.roomScope),
+      tradeNature: nature,
+      simulationRunId: nature === "simulation" ? source?.sharedScope.simulationRunId ?? "all" : "all",
+      reviewStatus: "pending",
+      sort: "newest",
+      positionStatus: "closed",
+      dataStatus: "all",
+      tag: "all",
+      advancedExpanded: false,
+      scrollTop: 0,
+      stockPage: 1,
+      // A fresh “view all” destination always starts at page one. The source
+      // page is retained only in the snapshot used when returning home.
+      roundPage: 1,
+    }, "queue"));
+    setActiveView("library");
+  }
+
+  function openHistoryLibrary(request: HistoryLibraryNavigationRequest) {
+    const source = request.sourceSnapshot;
+    const nature = source?.sharedScope.nature === "simulation" ? "simulation" : "live";
+    if (source) updateSharedScope(source.sharedScope);
+    setPlaying(false);
+    setNavigationNotice(null);
+    setLibrarySourceSnapshot(source);
+    setLibraryTarget(undefined);
+    setLibraryBrowseState(current => normalizeTradeLibraryBrowseState({
+      ...current,
+      mode: "queue",
+      selectedInstrumentId: null,
+      selectedEpisodeId: null,
+      expandedStockIds: [],
+      includeReviewedStockIds: [],
+      query: "",
+      market: "all",
+      account: "all",
+      accounts: source ? [...source.sharedScope.accountIds] : [],
+      brokers: [],
+      year: "all",
+      closeDateFrom: request.closeDateFrom,
+      closeDateTo: request.closeDateTo,
+      roomFilters: roomFiltersFromScope(source?.roomScope),
+      tradeNature: nature,
+      simulationRunId: nature === "simulation" ? source?.sharedScope.simulationRunId ?? "all" : "all",
+      reviewStatus: "all",
+      sort: "newest",
+      positionStatus: "closed",
+      dataStatus: "all",
+      tag: "all",
+      advancedExpanded: false,
+      scrollTop: 0,
+      stockPage: 1,
+      roundPage: 1,
+    }, "queue"));
+    setActiveView("library");
+  }
+
+  function openGlobalNotification(item: GlobalNotification) {
+    if (!item.instrumentId) {
+      setNavigationNotice("该待处理事项缺少可定位的标的身份，请先在数据页核对导入记录。");
+      return;
+    }
+    setNavigationNotice(null);
+    if (item.action === "open-review" && item.episodeId) {
+      openLibraryEpisode(item.instrumentId, item.episodeId, undefined, "dashboard");
+      return;
+    }
+    if (item.action === "open-market-data") {
+      openQualityDataCheck("historical", [item.instrumentId]);
+      return;
+    }
+    openQualityDataCheck("transaction", [item.instrumentId], item.episodeId);
+  }
+
+  function openAccountAndCurrency() {
+    setPlaying(false);
+    setDataTab("settings");
+    setActiveView("data");
+  }
   function applyCorrectedExecutions(executions: TradeExecution[]) {
     importedExecutionsRef.current = executions;
     setImportedExecutions(executions);
@@ -3949,11 +4371,26 @@ export function TradeReviewWorkspace({
     setActiveView("library");
   }
 
+  function returnToDashboardSource() {
+    const source = librarySourceSnapshot;
+    if (!source) {
+      setActiveView("dashboard");
+      return;
+    }
+    updateSharedScope(source.sharedScope);
+    setDashboardRestoreContext(source);
+    setLibrarySourceSnapshot(null);
+    setLibraryTarget(undefined);
+    setPlaying(false);
+    setActiveView("dashboard");
+  }
+
   function returnFromReview() {
     if (reviewReturnView === "dashboard") {
       setPlaying(false);
       setLibraryTarget(undefined);
-      setActiveView("dashboard");
+      if (librarySourceSnapshot) returnToDashboardSource();
+      else setActiveView("dashboard");
       return;
     }
     if (reviewReturnView === "insights") {
@@ -4250,6 +4687,35 @@ export function TradeReviewWorkspace({
     />
   );
 
+  const marketStatusValues = Object.values(marketDataStatuses);
+  const appMarketStatus = marketStatusValues.length === 0
+    ? "not-requested" as const
+    : marketStatusValues.every(status => status === "complete" || status === "ready")
+      ? "complete" as const
+      : marketStatusValues.some(status => status === "syncing")
+        ? "syncing" as const
+        : "partial" as const;
+  const coveredMarkets = [...new Set(importedInstruments.map(({ instrument }) => instrument.market).filter(Boolean))].sort();
+  const fxFooterStatus = !fxSnapshot
+    ? "未接入"
+    : fxSnapshot.status === "complete"
+      ? `已更新 · ${fxSnapshot.asOf.slice(0, 10)}`
+      : fxSnapshot.status === "partial" ? "部分可用" : "待补齐";
+  const cashSlot = showDemo ? undefined : cashScopeReady && cashNature ? (
+    <CashBaselinePanel
+      state={cashBaselineForScope}
+      accounts={sharedAccountOptions}
+      nature={cashNature}
+      simulationRunId={cashSimulationRunId}
+      loading={cashLoadingForScope}
+      saving={cashSaving}
+      error={cashErrorForScope}
+      onSave={saveCashBaseline}
+    />
+  ) : (
+    <p role="status">{cashNature === "simulation" && !cashSimulationRunId ? "请先选择模拟运行后编辑现金基准。" : "当前交易性质尚未核实，现金基准暂不可用。"}</p>
+  );
+
   if (storageState !== "ready") {
     const failed = storageState === "error";
     return (
@@ -4262,39 +4728,6 @@ export function TradeReviewWorkspace({
       </main>
     );
   }
-
-  const recallFrameActive = activeView === "review" && !showDemo && Boolean(selectedImportedInstrument && selectedEpisode);
-  const recallFrameActions = recallFrameActive ? (
-    <div className="recall-header-actions" aria-label="复盘必要动作">
-      <button
-        type="button"
-        className="recall-header-action recall-header-action--back"
-        onClick={returnFromReview}
-      >
-        返回{reviewReturnView === "dashboard" ? "我的交易室" : reviewReturnView === "insights" ? "分析" : "交易库"}
-      </button>
-      <button
-        type="button"
-        className="recall-header-action recall-header-action--data"
-        aria-label="打开导入与数据管理"
-        aria-haspopup="dialog"
-        aria-controls="import-management-dialog"
-        onClick={() => setImportManagementOpen(true)}
-      >
-        数据
-      </button>
-      {selectedImportedInstrument && selectedEpisode && (
-        <button
-          type="button"
-          className="recall-header-action recall-header-action--repair"
-          aria-label="检查/修复数据"
-          onClick={() => openDataCheck(selectedImportedInstrument.instrument.id, selectedEpisode.accountId)}
-        >
-          检查/修复
-        </button>
-      )}
-    </div>
-  ) : undefined;
 
   return (
     <main className={`trade-review-app ${activeView === "review" ? "is-review" : ""}`}>
@@ -4337,27 +4770,34 @@ export function TradeReviewWorkspace({
         </button>
         <nav id="primary-navigation" className="app-nav" aria-label="主导航" onKeyDown={event => { if (event.key === "Escape") { setMobileNavOpen(false); document.querySelector<HTMLButtonElement>(".mobile-nav-trigger")?.focus(); } }}>
           <button
+            type="button"
             className={activeView === "dashboard" ? "active" : ""}
             aria-current={activeView === "dashboard" ? "page" : undefined}
             onClick={() => {
               setPlaying(false);
               setMobileNavOpen(false);
-              setActiveView("dashboard");
+              if (librarySourceSnapshot) returnToDashboardSource();
+              else setActiveView("dashboard");
             }}
           >
+            <LayoutDashboard size={16} aria-hidden="true" />
             我的交易室
           </button>
           <button
+            type="button"
             className={activeView === "library" ? "active" : ""}
             aria-current={activeView === "library" ? "page" : undefined}
             onClick={() => {
+              if (activeView !== "review") setLibrarySourceSnapshot(null);
               returnToLibrary();
               setMobileNavOpen(false);
             }}
           >
+            <BookOpenCheck size={16} aria-hidden="true" />
             交易库
           </button>
           <button
+            type="button"
             className={activeView === "insights" ? "active" : ""}
             aria-current={activeView === "insights" ? "page" : undefined}
             onClick={() => {
@@ -4365,9 +4805,11 @@ export function TradeReviewWorkspace({
               setActiveView("insights");
             }}
           >
+            <BarChart3 size={16} aria-hidden="true" />
             分析
           </button>
           <button
+            type="button"
             className={activeView === "data" ? "active" : ""}
             aria-current={activeView === "data" ? "page" : undefined}
             onClick={() => {
@@ -4376,14 +4818,31 @@ export function TradeReviewWorkspace({
               setActiveView("data");
             }}
           >
+            <Database size={16} aria-hidden="true" />
             数据
           </button>
+          <button type="button" className="app-nav-disabled" disabled aria-disabled="true" title="策略功能尚未开放">
+            <Workflow size={16} aria-hidden="true" />
+            <span>策略</span>
+            <small>未开放</small>
+          </button>
         </nav>
+        <div className="app-nav-secondary" aria-label="辅助导航">
+          <button type="button" className={activeView === "data" && dataTab === "settings" ? "active" : ""} aria-current={activeView === "data" && dataTab === "settings" ? "page" : undefined} onClick={() => {
+            setPlaying(false);
+            setDataTab("settings");
+            setMobileNavOpen(false);
+            setActiveView("data");
+          }}>
+            <Settings2 size={16} aria-hidden="true" />
+            设置
+          </button>
+        </div>
       </aside>
 
       {mobileNavOpen && <button className="mobile-navigation-backdrop" aria-label="关闭导航" onClick={() => setMobileNavOpen(false)} />}
       <div className="app-content">
-      {activeView === "review" && (showDemo || selectedImportedInstrument) && !recallFrameActive && <header className="page-header review-page-header" aria-label="页面顶栏" inert={stockDrawerOpen || Boolean(dataTarget)}>
+      {activeView === "review" && (showDemo || selectedImportedInstrument) && <header className="page-header review-page-header" aria-label="页面顶栏" inert={stockDrawerOpen || Boolean(dataTarget)}>
         <div className="header-actions">
           {selectedImportedInstrument && activeView === "review" && (
             <button
@@ -4414,7 +4873,7 @@ export function TradeReviewWorkspace({
           <button type="button" className="secondary-action" onClick={() => setActiveView("review")}>返回演示复盘</button>
         </div>
       </header>}
-      {activeView === "review" && (showDemo || selectedImportedInstrument) && !recallFrameActive && <div className="review-layout-controls" inert={stockDrawerOpen || Boolean(dataTarget)} aria-label="复盘布局">
+      {activeView === "review" && (showDemo || selectedImportedInstrument) && <div className="review-layout-controls" inert={stockDrawerOpen || Boolean(dataTarget)} aria-label="复盘布局">
         {!showDemo && <button onClick={returnFromReview}>返回{reviewReturnView === "dashboard" ? "我的交易室" : reviewReturnView === "insights" ? "分析" : "交易库"}</button>}
         {selectedImportedInstrument && selectedEpisode && activeView === "review" && (
           <button
@@ -4462,7 +4921,7 @@ export function TradeReviewWorkspace({
             overflow: "auto",
           }}
         >
-          <ReviewDashboard
+          {dashboardOpened && <ReviewDashboard
             visible={activeView === "dashboard"}
             sharedScope={sharedScope}
             onSharedScopeChange={updateSharedScope}
@@ -4486,6 +4945,16 @@ export function TradeReviewWorkspace({
             }}
             onRetryDataQuality={retryDataQuality}
             onOpenDataCheck={openQualityDataCheck}
+            onOpenSearchResult={openGlobalSearchResult}
+            onOpenGlobalNotification={openGlobalNotification}
+            onOpenAccountAndCurrency={openAccountAndCurrency}
+            onViewAllPending={openPendingLibrary}
+            onViewHistoryLibrary={openHistoryLibrary}
+            restoreBrowseContext={dashboardRestoreContext}
+            globalEntryStatus="ready"
+            cashSummary={cashSummaryForScope}
+            cashLoading={cashLoadingForScope}
+            cashError={cashErrorForScope}
             onOpenInReview={(instrumentId, episodeId, queueIds) => {
               const summary = importedInstruments.find((item) => item.instrument.id === instrumentId);
               if (!summary || !selectImportedSummary(summary, episodeId)) {
@@ -4500,7 +4969,7 @@ export function TradeReviewWorkspace({
               setLibraryTarget(undefined);
               setActiveView("review");
             }}
-          />
+          />}
         </div>
         <div
           aria-hidden={activeView !== "data"}
@@ -4560,9 +5029,12 @@ export function TradeReviewWorkspace({
               />
             ) : undefined}
             fxSlot={resolvedFxSlot}
+            cashSlot={cashSlot}
           />
         </div>
         {activeView === "library" ? (
+          <div className="library-page-shell">
+            {librarySourceSnapshot && <button type="button" className="library-source-return" onClick={returnToDashboardSource}>返回我的交易室</button>}
           <TradeLibrary
             sharedScope={sharedScope}
             onSharedScopeChange={updateSharedScope}
@@ -4572,6 +5044,8 @@ export function TradeReviewWorkspace({
             initialBrowseState={libraryBrowseState}
             onBrowseStateChange={setLibraryBrowseState}
             entries={scopedTradeLibraryEntries}
+            instrumentMetadata={instrumentMetadata}
+            roomFxSnapshot={fxSnapshot}
             candlesByInstrument={marketDataCandles}
             marketDataStatuses={marketDataStatuses}
             marketDataLabels={marketDataLabels}
@@ -4604,6 +5078,7 @@ export function TradeReviewWorkspace({
               setActiveView("data");
             }}
           />
+          </div>
         ) : activeView !== "dashboard" && activeView === "insights" ? (
           <div className="scoped-insights-page"><SharedScopeBar scope={sharedScope} accountOptions={sharedAccountOptions} onChange={updateSharedScope} /><ReviewSummary activeTab={insightsTab} onTabChange={setInsightsTab} onImport={() => {
             setDataTab("import");
@@ -4699,9 +5174,8 @@ export function TradeReviewWorkspace({
             ) : selectedImportedInstrument ? (
               <div className="recall-review-host">
                 <RecallWorkspace
-                  headerActions={recallFrameActions}
+                  onSaved={handleRecallSaved}
                   onLeaveGuardChange={registerRecallLeaveGuard}
-                  onFormalCompletion={handleRecallFormalCompletion}
                   focused={focusedChart}
                   onFocusedChange={setFocusedChart}
                   episode={selectedEpisode!}
@@ -4873,6 +5347,11 @@ export function TradeReviewWorkspace({
           </>
         ) : null}
       </div>
+
+      {activeView === "dashboard" && <footer className="app-status-bar" aria-label="行情与数据状态">
+        <div className="app-status-group"><span className={`app-status-dot ${appMarketStatus === "complete" ? "is-ok" : appMarketStatus === "syncing" ? "is-loading" : "is-warning"}`} aria-hidden="true" /><span>行情数据：{marketDataStatusLabel(appMarketStatus)}</span><span>覆盖市场：{coveredMarkets.length > 0 ? coveredMarkets.join(" · ") : "暂无"}</span></div>
+        <div className="app-status-group"><span>汇率：{fxFooterStatus}</span><span>数据仅供参考，不构成投资建议</span></div>
+      </footer>}
 
       {dataTarget && <StockDataDialog instrument={dataTarget.instrument} initialAccountId={dataTarget.accountId} cursor={dataTarget.cursor} executions={importedExecutions.filter(execution => execution.instrument.id === dataTarget.instrument.id)} marketSummary={marketDataStatusLabel(marketDataStatuses[dataTarget.instrument.id] ?? "not-requested")} marketDetails={[
         `当前行情状态：${marketDataLabels[dataTarget.instrument.id] ?? "行情源待连接"}`,

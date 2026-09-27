@@ -19,6 +19,11 @@ describe("shared scope", () => {
     expect(filterEntriesBySharedScope([entry("live"), entry("sim", "simulation")], scope)).toHaveLength(1);
   });
 
+  it("preserves the persisted HKD report currency", () => {
+    expect(normalizeSharedScope({ reportCurrency: "HKD" }).reportCurrency).toBe("HKD");
+    expect(normalizeSharedScope({ reportCurrency: "EUR" }).reportCurrency).toBe("original");
+  });
+
   it("projects matching episodes instead of leaking other accounts from the same instrument entry", () => {
     const original = entry("mixed", "live", "a");
     const other = { ...original.episodes[0], episode: { ...original.episodes[0].episode, id: "other", accountId: "b", accountLabel: "b" } };

@@ -20,6 +20,7 @@ import {
   validateRecallDocument,
 } from "./document";
 import { reconcileRecallManualEvaluationAssociations, validateRecallManualEvaluationEvidenceChanges, validateRecallManualEvaluations } from "./manual-evaluations";
+import { summarizeRecallDocument, type RecallReviewSummary } from "./summary";
 import type {
   RecallCompletedVersion,
   RecallDocument,
@@ -196,3 +197,15 @@ export function saveRecallDocument(
 }
 
 export const putRecallDocument = saveRecallDocument;
+
+/** Read current drafts only; old formal image/candle payloads never leave this layer. */
+export function listRecallReviewSummaries(database: DatabaseSync): RecallReviewSummary[] {
+  const rows = database.prepare(
+    "select draft_json, updated_at from recall_documents order by updated_at desc, episode_id asc",
+  ).all() as Row[];
+  return rows.map(row => {
+    const document = parseDocument(row.draft_json, "draft recall document");
+    if (typeof row.updated_at === "string") document.updatedAt = row.updated_at;
+    return summarizeRecallDocument(document);
+  });
+}

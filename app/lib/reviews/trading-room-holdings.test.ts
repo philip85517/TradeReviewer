@@ -1,3 +1,4 @@
+import { buildCurrentPortfolio } from "./trading-room-portfolio";
 import { describe, expect, it } from "vitest";
 
 import type { PositionLedgerSnapshot } from "../replay/position-ledger";
@@ -589,4 +590,80 @@ describe("trading room holdings model", () => {
 
     expect(model.rows[0]).toMatchObject({ quantity: "98", quantityStatus: "available", costStatus: "unavailable", unrealizedPnl: null });
   });
+});
+
+describe("statement-only current holdings", () => {
+  function evidenceEntry() {
+    const value = openEntry(instrument(), "2026-09-17");
+    value.executions = [];
+    value.episodes[0].episode.executions = [];
+    value.episodes[0].episode.initialPosition = {
+      accountId: "account-1", market: "US", symbol: "TEST", phase: "opening" as const,
+      date: "2026-09-17", quantity: "5", source: [],
+    };
+    return value;
+  }
+  const options = { scope: scope(), asOf: "2026-09-19", quotesByInstrument: { "US:TEST": quote() } };
+  it("keeps real opening quantity and quote available without inventing acquisition cost or executions", () => {
+    const value = evidenceEntry();
+    const row = buildTradingRoomHoldings([value], options).rows[0];
+    expect(row).toMatchObject({ quantity: "5", quantityStatus: "available", quoteStatus: "available", averageCost: null, unrealizedPnl: null, direction: "long" });
+    expect(row.position?.costKnown).toBe(false);
+    expect(buildCurrentPortfolio([value], options).rows[0]).toMatchObject({ marketValue: "60", cost: null, unrealizedPnl: null });
+    expect(value.episodes[0].episode.executions).toEqual([]);
+  });
+  it("replays only matching account and instrument events for statement-only inventory", () => {
+    const value = evidenceEntry();
+    const event = { id: "received", accountId: "account-1", symbol: "TEST", market: "US", date: "2026-09-18", kind: "transfer-in" as const, quantity: "2", description: "received", source: [] };
+    value.episodes[0].episode.positionEvents = [event, { ...event, id: "other-account", accountId: "other", quantity: "90" }, { ...event, id: "other-symbol", symbol: "OTHER", quantity: "80" }];
+    expect(buildTradingRoomHoldings([value], options).rows[0].quantity).toBe("7");
+    value.episodes[0].episode.initialPosition!.accountId = "other";
+    value.episodes[0].episode.positionEvents = [];
+    expect(buildTradingRoomHoldings([value], options).rows[0].quantity).toBeNull();
+  });
+  it("does not leak real statement inventory into a simulation run or turn absent evidence into zero", () => {
+    const value = evidenceEntry();
+    value.tradeNature = "simulation";
+    value.episodes[0].episode.tradeNature = "simulation";
+    value.episodes[0].episode.simulationRunId = "run-1";
+    const result = buildTradingRoomHoldings([value], { ...options, scope: scope({ nature: "simulation", simulationRunId: "run-1" }) });
+    expect(result.rows[0].quantity).toBeNull();
+    const future = evidenceEntry();
+    future.episodes[0].episode.initialPosition!.date = "2026-09-20";
+    expect(buildTradingRoomHoldings([future], options).rows[0].quantity).toBeNull();
+    const noEvidence = evidenceEntry();
+    noEvidence.episodes[0].episode.initialPosition = undefined;
+    expect(buildTradingRoomHoldings([noEvidence], options).rows[0].quantity).toBeNull();
+  });
+  it("does not turn non-inventory or unsupported evidence into a known zero position", () => {
+    const value = evidenceEntry();
+    value.episodes[0].episode.initialPosition = undefined;
+    const event = { id: "fee-only", accountId: "account-1", symbol: "TEST", market: "US", date: "2026-09-18", kind: "fee" as const, description: "custody", source: [] };
+    value.episodes[0].episode.positionEvents = [event];
+    expect(buildTradingRoomHoldings([value], options).rows[0].quantity).toBeNull();
+    value.episodes[0].episode.positionEvents = [{ ...event, kind: "corporate-action" }];
+    expect(buildTradingRoomHoldings([value], options).rows[0].quantity).toBeNull();
+  });
+
+  it.each(["future", "other-account", "other-symbol"] as const)("does not use %s negative opening evidence to authorize an unexplained outflow", kind => {
+    const value = evidenceEntry();
+    const opening = value.episodes[0].episode.initialPosition!;
+    opening.quantity = "-5";
+    if (kind === "future") opening.date = "2026-09-20";
+    if (kind === "other-account") opening.accountId = "other";
+    if (kind === "other-symbol") opening.symbol = "OTHER";
+    value.episodes[0].episode.positionEvents = [{ id: "outflow", accountId: "account-1", symbol: "TEST", market: "US", date: "2026-09-18", kind: "transfer-out", quantity: "2", description: "outflow", source: [] }];
+    const row = buildTradingRoomHoldings([value], options).rows[0];
+    expect(row.quantity).toBe("-2");
+    expect(row.direction).toBe("unknown");
+    expect(row.positionEvidence.status).toBe("unverified-negative");
+    expect(buildCurrentPortfolio([value], options).rows[0].marketValue).toBeNull();
+  });
+  it("still accepts matching visible negative opening evidence", () => {
+    const value = evidenceEntry();
+    value.episodes[0].episode.initialPosition!.quantity = "-5";
+    expect(buildTradingRoomHoldings([value], options).rows[0].direction).toBe("short");
+    expect(buildCurrentPortfolio([value], options).rows[0].marketValue).toBe("-60");
+  });
+
 });

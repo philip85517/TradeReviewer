@@ -441,3 +441,19 @@ describe("review queue", () => {
     });
   });
 });
+
+it("prioritizes persisted Recall state while retaining legacy deferred fallback", () => {
+  const item = queueFixtures()[0].episodes[0];
+  item.review = createEmptyEpisodeReviewRecord(item.episode.id, item.episode.instrument.id);
+  item.review.review.deferredReason = "等待资料";
+  expect(reviewState(item)).toBe("deferred");
+  item.recallReview = { episodeId: item.episode.id, status: "completed", updatedAt: "2026-09-25", text: "", snapshotCount: 1 };
+  expect(reviewState(item)).toBe("completed");
+  item.review.review.completed = true;
+  item.recallReview.status = "in-progress";
+  expect(reviewState(item)).toBe("pending");
+  item.recallReview.status = "needs-confirmation";
+  expect(reviewState(item)).toBe("pending");
+  delete item.recallReview;
+  expect(reviewState(item)).toBe("completed");
+});

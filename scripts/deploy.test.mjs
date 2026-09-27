@@ -1779,15 +1779,21 @@ describe("deployment filesystem integration", () => {
     const sourceDir = join(sandbox, "source");
     const targetDir = join(sandbox, "target");
     const binDir = join(sandbox, "bin");
+    const sqliteHostDir = join(sandbox, "database");
 
     try {
       await Promise.all([
         cp(join(root, "deploy"), join(sourceDir, "deploy"), { recursive: true }),
         mkdir(join(sourceDir, "scripts"), { recursive: true }),
+        mkdir(join(sourceDir, "conf"), { recursive: true }),
         mkdir(binDir, { recursive: true }),
       ]);
       await Promise.all([
         writeFile(join(sourceDir, "package.json"), "{}\n"),
+        // Deployment reads its copied template, not TRADEREVIEW_DB_PATH.
+        // Never inherit the repository's shared business database here.
+        writeFile(join(sourceDir, "deploy", "config", ".env.example"), `APP_BIND=127.0.0.1\nAPP_PORT=3022\nSQLITE_HOST_DIR="${sqliteHostDir}"\n`),
+        writeFile(join(sourceDir, "conf", "runtime.json"), JSON.stringify({ databasePath: join(sqliteHostDir, "tradereview.sqlite"), port: 3022, hostname: "127.0.0.1" })),
         cp(join(root, "scripts", "deploy.mjs"), join(sourceDir, "scripts", "deploy.mjs")),
         cp(join(root, "Makefile"), join(sourceDir, "Makefile")),
         writeFile(
@@ -1813,6 +1819,7 @@ describe("deployment filesystem integration", () => {
       expect(status.stdout).toContain("active release:");
       expect(code).toMatchObject({ exitCode: 0 });
       expect(down).toMatchObject({ exitCode: 0 });
+      expect((await stat(join(sqliteHostDir, "tradereview.sqlite"))).isFile()).toBe(true);
       expect(`${status.stderr}\n${code.stderr}\n${down.stderr}`).not.toContain("scripts/deploy.mjs");
     } finally {
       await rm(sandbox, { recursive: true, force: true });

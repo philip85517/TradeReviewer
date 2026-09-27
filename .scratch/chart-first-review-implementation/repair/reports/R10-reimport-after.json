@@ -1,0 +1,86 @@
+{
+  "database": "/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/.scratch/chart-first-review-implementation/repair/fault-acceptance/reimport-ui.sqlite",
+  "revision": 5,
+  "episodeId": "episode:%5B%22futu%3A900001%3AUS%3AFB%22%2C%222020-01-27T14%3A30%3A00Z%22%2C%22buy%22%2C%22100%22%2C%2210%22%5D:1",
+  "status": "needs-confirmation",
+  "manual": {
+    "drafts": [
+      {
+        "id": "manual-draft:episode:%5B%22futu%3A900001%3AUS%3AFB%22%2C%222020-01-27T14%3A30%3A00Z%22%2C%22buy%22%2C%22100%22%2C%2210%22%5D:1",
+        "evaluationId": "manual-evaluation:episode:%5B%22futu%3A900001%3AUS%3AFB%22%2C%222020-01-27T14%3A30%3A00Z%22%2C%22buy%22%2C%22100%22%2C%2210%22%5D:1",
+        "target": {
+          "scope": "episode",
+          "decisionId": null,
+          "episodeId": "episode:%5B%22futu%3A900001%3AUS%3AFB%22%2C%222020-01-27T14%3A30%3A00Z%22%2C%22buy%22%2C%22100%22%2C%2210%22%5D:1"
+        },
+        "tags": [
+          "analysis"
+        ],
+        "tagDictionaryVersion": "manual-v1",
+        "evidence": [],
+        "source": "manual-retrospective",
+        "recordedBy": "user",
+        "recordedPhase": "post-review",
+        "recordedAt": "2026-09-26T23:01:59.268Z",
+        "knowledgeCutoff": {
+          "cursor": "2020-10-12T20:00:00.000Z",
+          "executionCursor": "futu:6b7c31c834445e40:2:3"
+        },
+        "hasSeenFuture": true
+      }
+    ],
+    "versions": [],
+    "associations": [
+      {
+        "evaluationId": "manual-evaluation:episode:%5B%22futu%3A900001%3AUS%3AFB%22%2C%222020-01-27T14%3A30%3A00Z%22%2C%22buy%22%2C%22100%22%2C%2210%22%5D:1",
+        "decisionId": null,
+        "status": "linked",
+        "executionIds": [
+          "futu:583d57e98d25cad1:2:3",
+          "futu:6b7c31c834445e40:1:5"
+        ]
+      }
+    ]
+  },
+  "currentExecutions": [
+    {
+      "id": "futu:6b7c31c834445e40:1:5",
+      "import_batch_id": "import:futu:6b7c31c834445e40",
+      "instrument_id": "US:FB",
+      "account": "futu:900001",
+      "side": "buy",
+      "executed_at": "2020-01-27T14:30:00Z",
+      "quantity": "100",
+      "price": "10",
+      "fee": "1",
+      "currency": "USD",
+      "evidence_json": "{\"source\":{\"platform\":\"futu\",\"inputKind\":\"statement\",\"fileName\":\"futu-synthetic-monthly-v1.pdf\",\"fileFingerprint\":\"6b7c31c834445e40\",\"page\":1,\"row\":5,\"sourceOrder\":0,\"templateId\":\"F4\",\"formatRuleId\":\"futu/pdf/f4-cash-detail@1\",\"statementMonth\":\"2020-01\",\"sourceTimestampText\":\"2020/01/27 09:30:00\",\"sourceTimezone\":\"America/New_York\",\"timePrecision\":\"second\",\"timeEvidence\":\"inferred\",\"timeConfidence\":0.93,\"timeInferenceReason\":\"原件声明为当地市场时间，纽约市场时段与该笔时间一致（NASDAQ）\",\"timeRuleId\":\"futu/time/market-session@1\",\"timeCandidates\":[{\"timezone\":\"America/New_York\",\"score\":0.93,\"evidence\":[\"market-session\"]}],\"sourceTimeKind\":\"execution\",\"marketCalendarDate\":\"2020-01-27\",\"timeRuleVersion\":\"statement-time-v1\",\"settlementDate\":\"2020-01-30\",\"grossAmount\":\"1000\",\"cashChange\":\"-1001\",\"feeStatus\":\"reported\",\"venue\":\"NASDAQ\",\"displayTimePolicy\":\"execution-time\",\"executionGroup\":{\"kind\":\"order\",\"fillCount\":1,\"quantity\":\"100\",\"grossAmount\":\"1000\",\"reportedQuantity\":\"100\",\"reportedPrice\":\"10\",\"reportedGrossAmount\":\"1000\",\"fills\":[{\"page\":1,\"row\":6,\"sourceTimestampText\":\"2020/01/27 09:30:00\",\"executedAt\":\"2020-01-27T14:30:00Z\",\"sourceTimezone\":\"America/New_York\",\"marketCalendarDate\":\"2020-01-27\",\"timePrecision\":\"second\",\"timeEvidence\":\"inferred\",\"timeConfidence\":0.93,\"quantity\":\"100\",\"price\":\"10\",\"grossAmount\":\"1000\",\"settlementDate\":\"2020-01-30\",\"venue\":\"NASDAQ\"}]},\"fragments\":[{\"page\":1,\"row\":5,\"role\":\"identity\"},{\"page\":1,\"row\":8,\"role\":\"fee\"},{\"page\":1,\"row\":6,\"role\":\"execution\"},{\"page\":1,\"row\":7,\"role\":\"time\"}],\"batchId\":\"import:futu:6b7c31c834445e40\"},\"accountLabel\":\"富途\"}",
+      "created_at": "2026-09-26 23:00:53",
+      "updated_at": "2026-09-26 23:00:53",
+      "trade_nature": null,
+      "simulation_run_id": null
+    },
+    {
+      "id": "futu:583d57e98d25cad1:2:3",
+      "import_batch_id": "import:futu:583d57e98d25cad1",
+      "instrument_id": "US:FB",
+      "account": "futu:900001",
+      "side": "sell",
+      "executed_at": "2020-01-27T15:00:00Z",
+      "quantity": "80",
+      "price": "10",
+      "fee": "1",
+      "currency": "USD",
+      "evidence_json": "{\"source\":{\"platform\":\"futu\",\"inputKind\":\"statement\",\"fileName\":\"futu-synthetic-monthly-v2-corrected.pdf\",\"fileFingerprint\":\"583d57e98d25cad1\",\"page\":2,\"row\":3,\"sourceOrder\":1,\"templateId\":\"F4\",\"formatRuleId\":\"futu/pdf/f4-cash-detail@1\",\"statementMonth\":\"2020-01\",\"sourceTimestampText\":\"2020/01/27 10:00:00\",\"sourceTimezone\":\"America/New_York\",\"timePrecision\":\"second\",\"timeEvidence\":\"inferred\",\"timeConfidence\":0.93,\"timeInferenceReason\":\"原件声明为当地市场时间，纽约市场时段与该笔时间一致（NASDAQ）\",\"timeRuleId\":\"futu/time/market-session@1\",\"timeCandidates\":[{\"timezone\":\"America/New_York\",\"score\":0.93,\"evidence\":[\"market-session\"]}],\"sourceTimeKind\":\"execution\",\"marketCalendarDate\":\"2020-01-27\",\"timeRuleVersion\":\"statement-time-v1\",\"settlementDate\":\"2020-01-30\",\"grossAmount\":\"800\",\"cashChange\":\"799\",\"feeStatus\":\"reported\",\"venue\":\"NASDAQ\",\"displayTimePolicy\":\"execution-time\",\"executionGroup\":{\"kind\":\"order\",\"fillCount\":1,\"quantity\":\"80\",\"grossAmount\":\"800\",\"reportedQuantity\":\"80\",\"reportedPrice\":\"10\",\"reportedGrossAmount\":\"800\",\"fills\":[{\"page\":2,\"row\":4,\"sourceTimestampText\":\"2020/01/27 10:00:00\",\"executedAt\":\"2020-01-27T15:00:00Z\",\"sourceTimezone\":\"America/New_York\",\"marketCalendarDate\":\"2020-01-27\",\"timePrecision\":\"second\",\"timeEvidence\":\"inferred\",\"timeConfidence\":0.93,\"quantity\":\"80\",\"price\":\"10\",\"grossAmount\":\"800\",\"settlementDate\":\"2020-01-30\",\"venue\":\"NASDAQ\"}]},\"fragments\":[{\"page\":2,\"row\":3,\"role\":\"identity\"},{\"page\":2,\"row\":6,\"role\":\"fee\"},{\"page\":2,\"row\":4,\"role\":\"execution\"},{\"page\":2,\"row\":5,\"role\":\"time\"}],\"batchId\":\"import:futu:583d57e98d25cad1\"},\"accountLabel\":\"富途\"}",
+      "created_at": "2026-09-26 23:05:08",
+      "updated_at": "2026-09-26 23:05:08",
+      "trade_nature": null,
+      "simulation_run_id": null
+    }
+  ],
+  "originalSyntheticExecutions": {
+    "count": 25,
+    "sha256": "1b79e6e605b493b4e0ce7833094824c807680c972166a83a1a3f0b8aefd12b36"
+  },
+  "quickCheck": "ok"
+}

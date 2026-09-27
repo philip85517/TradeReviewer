@@ -1,0 +1,20 @@
+{
+  "database": "/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/.scratch/chart-first-review-implementation/repair/fault-acceptance/needs-confirmation-fixture.sqlite",
+  "readMode": "ro",
+  "revision": 36,
+  "association": [
+    {
+      "evaluationId": "manual-evaluation:episode:%5B%22SYNTHETIC-REPAIR-fresh-replay%3ACN%3A999996%3Alive%22%2C%222026-08-10T02%3A00%3A00.000Z%22%2C%22buy%22%2C%221000%22%2C%2256%22%5D:1",
+      "decisionId": null,
+      "status": "linked",
+      "executionIds": [
+        "synthetic-repair-fresh-replay-close",
+        "synthetic-repair-fresh-replay-entry",
+        "synthetic-repair-fresh-replay-partial"
+      ]
+    }
+  ],
+  "status": "needs-confirmation",
+  "rawCount": 25,
+  "note": "UI confirmed association only; independent overall market-change acknowledgement intentionally untouched"
+}

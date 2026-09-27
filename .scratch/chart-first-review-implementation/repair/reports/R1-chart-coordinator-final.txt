@@ -1,0 +1,10 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/f7a5/TradeReview
+
+················································
+
+ Test Files  4 passed (4)
+      Tests  48 passed (48)
+   Start at  18:06:09
+   Duration  12.25s (transform 587ms, setup 1.41s, import 936ms, tests 2.39s, environment 6.13s)
+

@@ -201,3 +201,21 @@ describe("calculateRiskReward", () => {
     });
   });
 });
+
+
+describe("drawing future provenance", () => {
+  it.each([true, false, undefined])("preserves %s through normalization and clamping", (evidence) => {
+    const drawing: LegacyDrawing = {
+      id: "note", tool: "text", anchors: [], placement: "canvas",
+      style: { color: "#fff", lineWidth: 1, opacity: 1 },
+      hidden: false, locked: false, visibleOn: "all", stage: "pre-trade",
+      ...(evidence === undefined ? {} : { recallHasSeenFuture: evidence }),
+    };
+    const normalized = normalizeDrawing(drawing, "episode", "day", 0);
+    expect(normalized.recallHasSeenFuture).toBe(evidence);
+    expect(clampDrawingToCursor(normalized, "earlier").recallHasSeenFuture).toBe(evidence);
+    if (evidence === undefined) expect(normalized).not.toHaveProperty("recallHasSeenFuture");
+    Object.assign(drawing, { recallHasSeenFuture: "yes" });
+    expect(() => normalizeDrawing(drawing, "episode", "day", 0)).toThrow(/boolean/);
+  });
+});

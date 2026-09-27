@@ -1,0 +1,2301 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/f7a5/TradeReview
+
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps the replay bar compact while preserving record actions behind More
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps the holding quantity in the closed replay summary slot
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps the pre-entry expected R and risk values in the closed replay summary slot
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > exposes an awaitable leave guard that blocks navigation when saving fails
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps the newer local draft when an older save response arrives
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps a local edit dirty when the first delayed save resolves
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > restores both replay cursors after visiting full history
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > restores a retained viewport while editing and the working viewport on exit
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps a saved phase viewport from being overwritten during the phase switch
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > does not restore the current future viewport when a phase has no saved viewport
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > ignores a phase restore callback after a newer replay reveal
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps a completed text draft marked as modified after autosave
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > waits for autosave and finalizes a fresh global capture with the returned revision
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace accounting safeguards > hides cost and PnL when a revealed HK Connect fill has a mismatched settlement currency
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace accounting safeguards > keeps the TradingView notice permanent while source reports follow the revealed boundary
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > orders the post-review sidebar as compact summary, evaluation, then folded details
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > keeps the execution cutoff separate from the aligned market-axis cutoff
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > captures a full post-review global summary and refits an offscreen same-timeframe viewport
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > uses the same post-review full-history boundary when completion starts from global
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > freezes full-history metrics and manual evidence for a decision completion while keeping Text ownership
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > keeps holding secondary details folded while retaining the revision entry
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > keeps the post-review manual tag entry available when an episode has no exits
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > adjusts holding prices without replacing the retained initial risk
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > keeps independent exit edits and blocks retention while another exit has an incomplete reason
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > saves a dragged entry price through the same plan as the numeric field
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > keeps invalid price text across closing and blocks capturing the stale valid draft
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > carries accepted capture stamps into a newer local edit without replacing a newer capture
+ ↓ app/components/recall/recall-workspace.test.tsx > shows the entry plan on exit selection but does not inject it into a legacy snapshot
+ ↓ app/components/recall/recall-workspace.test.tsx > autosaves a representative stage selection through the existing repository
+ ↓ app/components/recall/recall-workspace.test.tsx > keeps a server-stamped capture when Text changes during its save
+ ↓ app/components/recall/recall-workspace.test.tsx > reopens the later entry's own frozen plan instead of the first bundled entry plan
+ ↓ app/components/recall/recall-workspace.test.tsx > coalesces queued leave saves already acknowledged by the first save
+ ↓ app/components/recall/recall-workspace.test.tsx > serializes finalization with an autosave scheduled while chart capture is pending
+ × app/components/recall/recall-workspace.test.tsx > keeps a plan edit made during the final save dirty and saves it after the frozen formal candidate 1074ms
+   → Unable to find an accessible element with the role "button" and name `/保存并完成回合复盘/`
+
+Here are the accessible roles:
+
+  region:
+
+  Name "导入交易回忆复盘工作区":
+  [36m<section[39m
+    [33maria-label[39m=[32m"导入交易回忆复盘工作区"[39m
+    [33mclass[39m=[32m"recall-workspace trade-review-workspace--recall-frame"[39m
+    [33mdata-layout[39m=[32m"standard"[39m
+    [33mstyle[39m=[32m"--recall-available-height: 768px; --recall-plan-form-height: 522px;"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "紧凑计划摘要":
+  [36m<section[39m
+    [33maria-label[39m=[32m"紧凑计划摘要"[39m
+    [33mclass[39m=[32m"recall-plan-compact-summary"[39m
+  [36m/>[39m
+
+  Name "实际结果":
+  [36m<section[39m
+    [33maria-label[39m=[32m"实际结果"[39m
+    [33mclass[39m=[32m"recall-actual-metrics recall-actual-metrics--compact"[39m
+  [36m/>[39m
+
+  Name "实际结果":
+  [36m<section[39m
+    [33maria-label[39m=[32m"实际结果"[39m
+    [33mclass[39m=[32m"recall-actual-metrics"[39m
+  [36m/>[39m
+
+  Name "计划修订":
+  [36m<section[39m
+    [33maria-label[39m=[32m"计划修订"[39m
+    [33mclass[39m=[32m"recall-plan-revisions"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"recall-header recall-frame-header"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<header />[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Test TEST":
+  [36m<h1[39m
+    [33mtitle[39m=[32m"Test · TEST"[39m
+  [36m/>[39m
+
+  Name "原计划":
+  [36m<h2 />[39m
+
+  Name "当前执行":
+  [36m<h3 />[39m
+
+  Name "当前执行":
+  [36m<h3 />[39m
+
+  Name "计划修订与初始风险":
+  [36m<h3 />[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "买 1 @ 10":
+  [36m<strong[39m
+    [33mtitle[39m=[32m"买 1 @ 10"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "搜索标的":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"dialog"[39m
+    [33maria-label[39m=[32m"搜索标的"[39m
+    [33mclass[39m=[32m"icon-button"[39m
+  [36m/>[39m
+
+  Name "切换到 15m":
+  [36m<button[39m
+    [33maria-label[39m=[32m"切换到 15m"[39m
+    [33mclass[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "切换到 1h":
+  [36m<button[39m
+    [33maria-description[39m=[32m"no hourly"[39m
+    [33maria-label[39m=[32m"切换到 1h"[39m
+    [33mclass[39m=[32m""[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"no hourly"[39m
+  [36m/>[39m
+
+  Name "切换到 4h":
+  [36m<button[39m
+    [33maria-description[39m=[32m"no hourly"[39m
+    [33maria-label[39m=[32m"切换到 4h"[39m
+    [33mclass[39m=[32m""[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"no hourly"[39m
+  [36m/>[39m
+
+  Name "切换到 1D":
+  [36m<button[39m
+    [33maria-label[39m=[32m"切换到 1D"[39m
+    [33mclass[39m=[32m"active"[39m
+  [36m/>[39m
+
+  Name "切换到 1W":
+  [36m<button[39m
+    [33maria-label[39m=[32m"切换到 1W"[39m
+    [33mclass[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "行情数据详情":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"dialog"[39m
+    [33maria-label[39m=[32m"行情数据详情"[39m
+    [33mclass[39m=[32m"local-data-badge"[39m
+  [36m/>[39m
+
+  Name "图层":
+  [36m<button[39m
+    [33maria-description[39m=[32m"当前没有可见绘图"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"图层"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"icon-button"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"当前没有可见绘图"[39m
+  [36m/>[39m
+
+  Name "进入全屏":
+  [36m<button[39m
+    [33maria-description[39m=[32m"浏览器不支持全屏"[39m
+    [33maria-label[39m=[32m"进入全屏"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"icon-button"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"浏览器不支持全屏"[39m
+  [36m/>[39m
+
+  Name "图表设置":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"dialog"[39m
+    [33maria-label[39m=[32m"图表设置"[39m
+    [33mclass[39m=[32m"icon-button"[39m
+  [36m/>[39m
+
+  Name "买入前判断":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "持仓过程":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "事后复盘":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "收起复盘导航，切换到专注布局":
+  [36m<button[39m
+    [33maria-label[39m=[32m"收起复盘导航，切换到专注布局"[39m
+    [33mclass[39m=[32m"recall-icon-button"[39m
+    [33mtitle[39m=[32m"切换到专注布局"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "统计":
+  [36m<button[39m
+    [33maria-label[39m=[32m"统计"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"recall-icon-button"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "导出":
+  [36m<button[39m
+    [33mclass[39m=[32m"recall-export-button"[39m
+    [33mtitle[39m=[32m"导出已留存内容"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "展开":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"recall-nav-toggle"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "全局总结尚未留存":
+  [36m<button[39m
+    [33mclass[39m=[32m"recall-nav-item global"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "1买 1 @ 101 份快照":
+  [36m<button[39m
+    [33maria-current[39m=[32m"true"[39m
+    [33mclass[39m=[32m"recall-nav-item selected"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "选择":
+  [36m<button[39m
+    [33maria-label[39m=[32m"选择"[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mclass[39m=[32m"active"[39m
+    [33mtitle[39m=[32m"选择"[39m
+  [36m/>[39m
+
+  Name "文字标注":
+  [36m<button[39m
+    [33maria-label[39m=[32m"文字标注"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"文字标注"[39m
+  [36m/>[39m
+
+  Name "趋势线":
+  [36m<button[39m
+    [33maria-label[39m=[32m"趋势线"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"趋势线"[39m
+  [36m/>[39m
+
+  Name "水平线":
+  [36m<button[39m
+    [33maria-label[39m=[32m"水平线"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"水平线"[39m
+  [36m/>[39m
+
+  Name "平行通道":
+  [36m<button[39m
+    [33maria-label[39m=[32m"平行通道"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"平行通道"[39m
+  [36m/>[39m
+
+  Name "做多盈亏比":
+  [36m<button[39m
+    [33maria-label[39m=[32m"做多盈亏比"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"做多盈亏比"[39m
+  [36m/>[39m
+
+  Name "垂直线":
+  [36m<button[39m
+    [33maria-label[39m=[32m"垂直线"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"垂直线"[39m
+  [36m/>[39m
+
+  Name "矩形区间":
+  [36m<button[39m
+    [33maria-label[39m=[32m"矩形区间"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"矩形区间"[39m
+  [36m/>[39m
+
+  Name "箭头":
+  [36m<button[39m
+    [33maria-label[39m=[32m"箭头"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"箭头"[39m
+  [36m/>[39m
+
+  Name "斐波那契回撤":
+  [36m<button[39m
+    [33maria-label[39m=[32m"斐波那契回撤"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"斐波那契回撤"[39m
+  [36m/>[39m
+
+  Name "价格标注":
+  [36m<button[39m
+    [33maria-label[39m=[32m"价格标注"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"价格标注"[39m
+  [36m/>[39m
+
+  Name "区间测量":
+  [36m<button[39m
+    [33maria-label[39m=[32m"区间测量"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"区间测量"[39m
+  [36m/>[39m
+
+  Name "做空盈亏比":
+  [36m<button[39m
+    [33maria-label[39m=[32m"做空盈亏比"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"做空盈亏比"[39m
+  [36m/>[39m
+
+  Name "锁定全部图形":
+  [36m<button[39m
+    [33maria-label[39m=[32m"锁定全部图形"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"锁定全部图形"[39m
+  [36m/>[39m
+
+  Name "撤销绘图":
+  [36m<button[39m
+    [33maria-label[39m=[32m"撤销绘图"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"撤销"[39m
+  [36m/>[39m
+
+  Name "重做绘图":
+  [36m<button[39m
+    [33maria-label[39m=[32m"重做绘图"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"重做"[39m
+  [36m/>[39m
+
+  Name "清空绘图":
+  [36m<button[39m
+    [33maria-label[39m=[32m"清空绘图"[39m
+    [33mtitle[39m=[32m"清空绘图"[39m
+  [36m/>[39m
+
+  Name "add drawing":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "add Text":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "适应全部":
+  [36m<button[39m
+    [33maria-label[39m=[32m"适应全部"[39m
+    [33mclass[39m=[32m"recall-fit-all"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "关闭计划侧栏":
+  [36m<button[39m
+    [33maria-label[39m=[32m"关闭计划侧栏"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "调整持仓计划":
+  [36m<button[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "显式更正初始输入":
+  [36m<button[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "数量":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "名义金额":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "仓位比例（%）":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "上一根 K 线":
+  [36m<button[39m
+    [33maria-label[39m=[32m"上一根 K 线"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "播放":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "下一根 K 线":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "下一笔决策":
+  [36m<button[39m
+    [33mclass[39m=[32m"primary"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"已到最后一笔决策；可回到买入前判断重新检查计划。"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "留存当前快照":
+  [36m<button[39m
+    [33mclass[39m=[32m"primary"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "计划侧栏":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "更多 / 记录":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"recall-replay-more-body-episode-1"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"recall-replay-more__summary"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "回到买入前判断":
+  [36m<button[39m
+    [33mclass[39m=[32m"recall-return-pre-entry"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  navigation:
+
+  Name "复盘阶段":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"复盘阶段"[39m
+    [33mclass[39m=[32m"recall-phases recall-frame-actions"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "复盘标的":
+  [36m<select[39m
+    [33maria-label[39m=[32m"复盘标的"[39m
+  [36m/>[39m
+
+  Name "交易回合":
+  [36m<select[39m
+    [33maria-label[39m=[32m"交易回合"[39m
+  [36m/>[39m
+
+  Name "计划版本链":
+  [36m<select[39m
+    [33maria-label[39m=[32m"计划版本链"[39m
+  [36m/>[39m
+
+  Name "计划方向":
+  [36m<select[39m
+    [33maria-describedby[39m=[32m"recall-plan-direction-note"[39m
+    [33maria-label[39m=[32m"计划方向"[39m
+  [36m/>[39m
+
+  Name "计划数量单位":
+  [36m<select[39m
+    [33maria-label[39m=[32m"计划数量单位"[39m
+  [36m/>[39m
+
+  Name "计划价格口径":
+  [36m<select[39m
+    [33maria-label[39m=[32m"计划价格口径"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "Test · TEST":
+  [36m<option[39m
+    [33mvalue[39m=[32m"US:TEST"[39m
+  [36m/>[39m
+
+  Name "第 1 次":
+  [36m<option[39m
+    [33mvalue[39m=[32m"episode-1"[39m
+  [36m/>[39m
+
+  Name "决策 1 · 计划 1":
+  [36m<option[39m
+    [33mvalue[39m=[32m"plan-1"[39m
+  [36m/>[39m
+
+  Name "待选择":
+  [36m<option[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "做多":
+  [36m<option[39m
+    [33mvalue[39m=[32m"long"[39m
+  [36m/>[39m
+
+  Name "做空":
+  [36m<option[39m
+    [33mvalue[39m=[32m"short"[39m
+  [36m/>[39m
+
+  Name "股":
+  [36m<option[39m
+    [33mvalue[39m=[32m"share"[39m
+  [36m/>[39m
+
+  Name "单位":
+  [36m<option[39m
+    [33mvalue[39m=[32m"unit"[39m
+  [36m/>[39m
+
+  Name "待选择":
+  [36m<option[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "原始价格":
+  [36m<option[39m
+    [33mvalue[39m=[32m"raw"[39m
+  [36m/>[39m
+
+  Name "复权价格":
+  [36m<option[39m
+    [33mvalue[39m=[32m"adjusted"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  complementary:
+
+  Name "回合与决策导航":
+  [36m<aside[39m
+    [33maria-label[39m=[32m"回合与决策导航"[39m
+    [33mclass[39m=[32m"recall-nav"[39m
+  [36m/>[39m
+
+  Name "阶段计划":
+  [36m<aside[39m
+    [33maria-label[39m=[32m"阶段计划"[39m
+    [33mclass[39m=[32m"recall-plan-sidebar"[39m
+    [33mstyle[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  checkbox:
+
+  Name "选择决策 1 进行合并":
+  [36m<input[39m
+    [33maria-label[39m=[32m"选择决策 1 进行合并"[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"recall-phase-provenance"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"recall-replay-bar__secondary"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"drawing-more"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"recall-plan-detail-group"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details />[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"recall-plan-secondary-group"[39m
+    [33mopen[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details />[39m
+
+  Name "":
+  [36m<details />[39m
+
+  Name "规模方式":
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"recall-size-mode"[39m
+  [36m/>[39m
+
+  Name "规模方式切换":
+  [36m<div[39m
+    [33maria-label[39m=[32m"规模方式切换"[39m
+    [33mclass[39m=[32m"recall-size-mode__buttons"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"recall-plan-source"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"recall-actual-source"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"recall-actual-source"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"recall-plan-field-note"[39m
+    [33mid[39m=[32m"recall-plan-direction-note"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mstyle[39m=[32m"overflow-wrap: anywhere;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  term:
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "missing-direction":
+  [36m<dd[39m
+    [33mtitle[39m=[32m"missing-direction"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "修订理由":
+  [36m<input[39m
+    [33maria-label[39m=[32m"修订理由"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "计划入场":
+  [36m<input[39m
+    [33maria-label[39m=[32m"计划入场"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mvalue[39m=[32m"10"[39m
+  [36m/>[39m
+
+  Name "初始止损":
+  [36m<input[39m
+    [33maria-label[39m=[32m"初始止损"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "止盈目标":
+  [36m<input[39m
+    [33maria-label[39m=[32m"止盈目标"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "计划数量":
+  [36m<input[39m
+    [33maria-label[39m=[32m"计划数量"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "计划币种":
+  [36m<input[39m
+    [33maria-label[39m=[32m"计划币种"[39m
+    [33mreadonly[39m=[32m""[39m
+    [33mvalue[39m=[32m"USD"[39m
+  [36m/>[39m
+
+  Name "参考资金金额":
+  [36m<input[39m
+    [33maria-label[39m=[32m"参考资金金额"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "参考资金币种":
+  [36m<input[39m
+    [33maria-label[39m=[32m"参考资金币种"[39m
+    [33minputmode[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "参考资金时点":
+  [36m<input[39m
+    [33maria-label[39m=[32m"参考资金时点"[39m
+    [33minputmode[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "参考数量步长":
+  [36m<input[39m
+    [33maria-label[39m=[32m"参考数量步长"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mvalue[39m=[32m"1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-label[39m=[32m"导入交易回忆复盘工作区"[39m
+      [33mclass[39m=[32m"recall-workspace trade-review-workspace--recall-frame"[39m
+      [33mdata-layout[39m=[32m"standard"[39m
+      [33mstyle[39m=[32m"--recall-available-height: 768px; --recall-plan-form-height: 522px;"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"recall-header recall-frame-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"recall-heading"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"eyebrow"[39m
+          [36m>[39m
+            [0m导入交易 · 回忆复盘[0m
+          [36m</span>[39m
+          [36m<h1[39m
+            [33mtitle[39m=[32m"Test · TEST"[39m
+          [36m>[39m
+            [0mTest[0m
+            [0m [0m
+            [36m<small>[39m
+              [0mTEST[0m
+            [36m</small>[39m
+          [36m</h1>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"recall-status"[39m
+            [33mdata-status[39m=[32m"in-progress"[39m
+          [36m>[39m
+            [0m草稿[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"图表工具栏"[39m
+          [33mclass[39m=[32m"chart-toolbar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"symbol-control"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"symbol-avatar"[39m
+            [36m>[39m
+              [0mT[0m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<strong>[39m
+                [0mTEST[0m
+              [36m</strong>[39m
+              [36m<span>[39m
+                [0mTest[0m
+                [0m · [0m
+                [0mUS[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-chevron-down"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 9 6 6 6-6"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33maria-label[39m=[32m"搜索标的"[39m
+            [33mclass[39m=[32m"icon-button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-search"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"17"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"17"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m21 21-4.34-4.34"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"11"[39m
+                [33mcy[39m=[32m"11"[39m
+                [33mr[39m=[32m"8"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"toolbar-divider"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"K 线周期"[39m
+            [33mclass[39m=[32m"timeframe-group"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"切换到 15m"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m15m[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-description[39m=[32m"no hourly"[39m
+              [33maria-label[39m=[32m"切换到 1h"[39m
+              [33mclass[39m=[32m""[39m
+              [33mdisabled[39m=[32m""[39m
+              [33mtitle[39m=[32m"no hourly"[39m
+            [36m>[39m
+              [0m1H[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-description[39m=[32m"no hourly"[39m
+              [33maria-label[39m=[32m"切换到 4h"[39m
+              [33mclass[39m=[32m""[39m
+              [33mdisabled[39m=[32m""[39m
+              [33mtitle[39m=[32m"no hourly"[39m
+            [36m>[39m
+              [0m4H[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"切换到 1D"[39m
+              [33mclass[39m=[32m"active"[39m
+            [36m>[39m
+              [0m1D[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"切换到 1W"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m1W[0m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"toolbar-spacer"[39m
+          [36m/>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33maria-label[39m=[32m"行情数据详情"[39m
+            [33mclass[39m=[32m"local-data-badge"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-off"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M10.94 5.274A7 7 0 0 1 15.71 10h1.79a4.5 4.5 0 0 1 4.222 6.057"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18.796 18.81A4.5 4.5 0 0 1 17.5 19H...
+ ↓ app/components/recall/recall-workspace.test.tsx > preserves newer local edits and blocks leaving on a genuine external revision conflict
+ ↓ app/components/recall/recall-workspace.test.tsx > does not rebase a new episode onto an accepted save from another episode
+ ↓ app/components/recall/recall-workspace.test.tsx > leaves loading when market hydration restores the current draft after a cancelled episode load
+ ↓ app/components/recall/recall-workspace.test.tsx > keeps an orphaned pre-entry context unrevealed and explicitly unassigned after fill replacement
+ ↓ app/components/recall/recall-workspace.test.tsx > cancels first initial-plan freezing if that input changes during completion capture
+ ↓ app/components/recall/recall-workspace.test.tsx > rejects completion when a Text edit lands while the global flush is pending, then allows retry
+ ↓ app/components/recall/recall-workspace.test.tsx > does not install a previous episode's late completion as the current formal baseline
+ ↓ app/components/recall/recall-workspace.test.tsx > locks the original plan only while its first finalization request is pending and unlocks on failure
+ ↓ app/components/recall/recall-workspace.test.tsx > renders a retained post-review metric using its captured phase when opened from pre-entry
+ ↓ app/components/recall/recall-workspace.test.tsx > renders a retained post-review metric using its captured phase when opened from holding
+ ↓ app/components/recall/recall-workspace.test.tsx > uses a safe historical metric fallback for a legacy snapshot opened before entry
+ ↓ app/components/recall/recall-workspace.test.tsx > cancels retain when drawing changes after the chart scene was frozen
+ ↓ app/components/recall/recall-workspace.test.tsx > cancels retain when plan changes after the chart scene was frozen
+ ↓ app/components/recall/recall-workspace.test.tsx > cancels retain when evaluation changes after the chart scene was frozen
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels complete when drawing changes after the chart scene was frozen 462ms
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels complete when plan changes after the chart scene was frozen 402ms
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels complete when evaluation changes after the chart scene was frozen 485ms
+ ↓ app/components/recall/recall-workspace.test.tsx > accepts the synchronous Text commit performed before the chart freezes its scene
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/recall/recall-workspace.test.tsx > keeps a plan edit made during the final save dirty and saves it after the frozen formal candidate
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/保存并完成回合复盘/`
+
+Here are the accessible roles:
+
+  region:
+
+  Name "导入交易回忆复盘工作区":
+  [36m<section[39m
+    [33maria-label[39m=[32m"导入交易回忆复盘工作区"[39m
+    [33mclass[39m=[32m"recall-workspace trade-review-workspace--recall-frame"[39m
+    [33mdata-layout[39m=[32m"standard"[39m
+    [33mstyle[39m=[32m"--recall-available-height: 768px; --recall-plan-form-height: 522px;"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  Name "紧凑计划摘要":
+  [36m<section[39m
+    [33maria-label[39m=[32m"紧凑计划摘要"[39m
+    [33mclass[39m=[32m"recall-plan-compact-summary"[39m
+  [36m/>[39m
+
+  Name "实际结果":
+  [36m<section[39m
+    [33maria-label[39m=[32m"实际结果"[39m
+    [33mclass[39m=[32m"recall-actual-metrics recall-actual-metrics--compact"[39m
+  [36m/>[39m
+
+  Name "实际结果":
+  [36m<section[39m
+    [33maria-label[39m=[32m"实际结果"[39m
+    [33mclass[39m=[32m"recall-actual-metrics"[39m
+  [36m/>[39m
+
+  Name "计划修订":
+  [36m<section[39m
+    [33maria-label[39m=[32m"计划修订"[39m
+    [33mclass[39m=[32m"recall-plan-revisions"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"recall-header recall-frame-header"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<header />[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Test TEST":
+  [36m<h1[39m
+    [33mtitle[39m=[32m"Test · TEST"[39m
+  [36m/>[39m
+
+  Name "原计划":
+  [36m<h2 />[39m
+
+  Name "当前执行":
+  [36m<h3 />[39m
+
+  Name "当前执行":
+  [36m<h3 />[39m
+
+  Name "计划修订与初始风险":
+  [36m<h3 />[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "买 1 @ 10":
+  [36m<strong[39m
+    [33mtitle[39m=[32m"买 1 @ 10"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "搜索标的":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"dialog"[39m
+    [33maria-label[39m=[32m"搜索标的"[39m
+    [33mclass[39m=[32m"icon-button"[39m
+  [36m/>[39m
+
+  Name "切换到 15m":
+  [36m<button[39m
+    [33maria-label[39m=[32m"切换到 15m"[39m
+    [33mclass[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "切换到 1h":
+  [36m<button[39m
+    [33maria-description[39m=[32m"no hourly"[39m
+    [33maria-label[39m=[32m"切换到 1h"[39m
+    [33mclass[39m=[32m""[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"no hourly"[39m
+  [36m/>[39m
+
+  Name "切换到 4h":
+  [36m<button[39m
+    [33maria-description[39m=[32m"no hourly"[39m
+    [33maria-label[39m=[32m"切换到 4h"[39m
+    [33mclass[39m=[32m""[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"no hourly"[39m
+  [36m/>[39m
+
+  Name "切换到 1D":
+  [36m<button[39m
+    [33maria-label[39m=[32m"切换到 1D"[39m
+    [33mclass[39m=[32m"active"[39m
+  [36m/>[39m
+
+  Name "切换到 1W":
+  [36m<button[39m
+    [33maria-label[39m=[32m"切换到 1W"[39m
+    [33mclass[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "行情数据详情":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"dialog"[39m
+    [33maria-label[39m=[32m"行情数据详情"[39m
+    [33mclass[39m=[32m"local-data-badge"[39m
+  [36m/>[39m
+
+  Name "图层":
+  [36m<button[39m
+    [33maria-description[39m=[32m"当前没有可见绘图"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"图层"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"icon-button"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"当前没有可见绘图"[39m
+  [36m/>[39m
+
+  Name "进入全屏":
+  [36m<button[39m
+    [33maria-description[39m=[32m"浏览器不支持全屏"[39m
+    [33maria-label[39m=[32m"进入全屏"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"icon-button"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"浏览器不支持全屏"[39m
+  [36m/>[39m
+
+  Name "图表设置":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"dialog"[39m
+    [33maria-label[39m=[32m"图表设置"[39m
+    [33mclass[39m=[32m"icon-button"[39m
+  [36m/>[39m
+
+  Name "买入前判断":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "持仓过程":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "事后复盘":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "收起复盘导航，切换到专注布局":
+  [36m<button[39m
+    [33maria-label[39m=[32m"收起复盘导航，切换到专注布局"[39m
+    [33mclass[39m=[32m"recall-icon-button"[39m
+    [33mtitle[39m=[32m"切换到专注布局"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "统计":
+  [36m<button[39m
+    [33maria-label[39m=[32m"统计"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"recall-icon-button"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "导出":
+  [36m<button[39m
+    [33mclass[39m=[32m"recall-export-button"[39m
+    [33mtitle[39m=[32m"导出已留存内容"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "展开":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"recall-nav-toggle"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "全局总结尚未留存":
+  [36m<button[39m
+    [33mclass[39m=[32m"recall-nav-item global"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "1买 1 @ 101 份快照":
+  [36m<button[39m
+    [33maria-current[39m=[32m"true"[39m
+    [33mclass[39m=[32m"recall-nav-item selected"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "选择":
+  [36m<button[39m
+    [33maria-label[39m=[32m"选择"[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mclass[39m=[32m"active"[39m
+    [33mtitle[39m=[32m"选择"[39m
+  [36m/>[39m
+
+  Name "文字标注":
+  [36m<button[39m
+    [33maria-label[39m=[32m"文字标注"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"文字标注"[39m
+  [36m/>[39m
+
+  Name "趋势线":
+  [36m<button[39m
+    [33maria-label[39m=[32m"趋势线"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"趋势线"[39m
+  [36m/>[39m
+
+  Name "水平线":
+  [36m<button[39m
+    [33maria-label[39m=[32m"水平线"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"水平线"[39m
+  [36m/>[39m
+
+  Name "平行通道":
+  [36m<button[39m
+    [33maria-label[39m=[32m"平行通道"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"平行通道"[39m
+  [36m/>[39m
+
+  Name "做多盈亏比":
+  [36m<button[39m
+    [33maria-label[39m=[32m"做多盈亏比"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"做多盈亏比"[39m
+  [36m/>[39m
+
+  Name "垂直线":
+  [36m<button[39m
+    [33maria-label[39m=[32m"垂直线"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"垂直线"[39m
+  [36m/>[39m
+
+  Name "矩形区间":
+  [36m<button[39m
+    [33maria-label[39m=[32m"矩形区间"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"矩形区间"[39m
+  [36m/>[39m
+
+  Name "箭头":
+  [36m<button[39m
+    [33maria-label[39m=[32m"箭头"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"箭头"[39m
+  [36m/>[39m
+
+  Name "斐波那契回撤":
+  [36m<button[39m
+    [33maria-label[39m=[32m"斐波那契回撤"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"斐波那契回撤"[39m
+  [36m/>[39m
+
+  Name "价格标注":
+  [36m<button[39m
+    [33maria-label[39m=[32m"价格标注"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"价格标注"[39m
+  [36m/>[39m
+
+  Name "区间测量":
+  [36m<button[39m
+    [33maria-label[39m=[32m"区间测量"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"区间测量"[39m
+  [36m/>[39m
+
+  Name "做空盈亏比":
+  [36m<button[39m
+    [33maria-label[39m=[32m"做空盈亏比"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"做空盈亏比"[39m
+  [36m/>[39m
+
+  Name "锁定全部图形":
+  [36m<button[39m
+    [33maria-label[39m=[32m"锁定全部图形"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtitle[39m=[32m"锁定全部图形"[39m
+  [36m/>[39m
+
+  Name "撤销绘图":
+  [36m<button[39m
+    [33maria-label[39m=[32m"撤销绘图"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"撤销"[39m
+  [36m/>[39m
+
+  Name "重做绘图":
+  [36m<button[39m
+    [33maria-label[39m=[32m"重做绘图"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"重做"[39m
+  [36m/>[39m
+
+  Name "清空绘图":
+  [36m<button[39m
+    [33maria-label[39m=[32m"清空绘图"[39m
+    [33mtitle[39m=[32m"清空绘图"[39m
+  [36m/>[39m
+
+  Name "add drawing":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "add Text":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "适应全部":
+  [36m<button[39m
+    [33maria-label[39m=[32m"适应全部"[39m
+    [33mclass[39m=[32m"recall-fit-all"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "关闭计划侧栏":
+  [36m<button[39m
+    [33maria-label[39m=[32m"关闭计划侧栏"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "调整持仓计划":
+  [36m<button[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "显式更正初始输入":
+  [36m<button[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "数量":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "名义金额":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "仓位比例（%）":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "上一根 K 线":
+  [36m<button[39m
+    [33maria-label[39m=[32m"上一根 K 线"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "播放":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "下一根 K 线":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "下一笔决策":
+  [36m<button[39m
+    [33mclass[39m=[32m"primary"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtitle[39m=[32m"已到最后一笔决策；可回到买入前判断重新检查计划。"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "留存当前快照":
+  [36m<button[39m
+    [33mclass[39m=[32m"primary"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "计划侧栏":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "更多 / 记录":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"recall-replay-more-body-episode-1"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"recall-replay-more__summary"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "回到买入前判断":
+  [36m<button[39m
+    [33mclass[39m=[32m"recall-return-pre-entry"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  navigation:
+
+  Name "复盘阶段":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"复盘阶段"[39m
+    [33mclass[39m=[32m"recall-phases recall-frame-actions"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "复盘标的":
+  [36m<select[39m
+    [33maria-label[39m=[32m"复盘标的"[39m
+  [36m/>[39m
+
+  Name "交易回合":
+  [36m<select[39m
+    [33maria-label[39m=[32m"交易回合"[39m
+  [36m/>[39m
+
+  Name "计划版本链":
+  [36m<select[39m
+    [33maria-label[39m=[32m"计划版本链"[39m
+  [36m/>[39m
+
+  Name "计划方向":
+  [36m<select[39m
+    [33maria-describedby[39m=[32m"recall-plan-direction-note"[39m
+    [33maria-label[39m=[32m"计划方向"[39m
+  [36m/>[39m
+
+  Name "计划数量单位":
+  [36m<select[39m
+    [33maria-label[39m=[32m"计划数量单位"[39m
+  [36m/>[39m
+
+  Name "计划价格口径":
+  [36m<select[39m
+    [33maria-label[39m=[32m"计划价格口径"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "Test · TEST":
+  [36m<option[39m
+    [33mvalue[39m=[32m"US:TEST"[39m
+  [36m/>[39m
+
+  Name "第 1 次":
+  [36m<option[39m
+    [33mvalue[39m=[32m"episode-1"[39m
+  [36m/>[39m
+
+  Name "决策 1 · 计划 1":
+  [36m<option[39m
+    [33mvalue[39m=[32m"plan-1"[39m
+  [36m/>[39m
+
+  Name "待选择":
+  [36m<option[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "做多":
+  [36m<option[39m
+    [33mvalue[39m=[32m"long"[39m
+  [36m/>[39m
+
+  Name "做空":
+  [36m<option[39m
+    [33mvalue[39m=[32m"short"[39m
+  [36m/>[39m
+
+  Name "股":
+  [36m<option[39m
+    [33mvalue[39m=[32m"share"[39m
+  [36m/>[39m
+
+  Name "单位":
+  [36m<option[39m
+    [33mvalue[39m=[32m"unit"[39m
+  [36m/>[39m
+
+  Name "待选择":
+  [36m<option[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "原始价格":
+  [36m<option[39m
+    [33mvalue[39m=[32m"raw"[39m
+  [36m/>[39m
+
+  Name "复权价格":
+  [36m<option[39m
+    [33mvalue[39m=[32m"adjusted"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  complementary:
+
+  Name "回合与决策导航":
+  [36m<aside[39m
+    [33maria-label[39m=[32m"回合与决策导航"[39m
+    [33mclass[39m=[32m"recall-nav"[39m
+  [36m/>[39m
+
+  Name "阶段计划":
+  [36m<aside[39m
+    [33maria-label[39m=[32m"阶段计划"[39m
+    [33mclass[39m=[32m"recall-plan-sidebar"[39m
+    [33mstyle[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  checkbox:
+
+  Name "选择决策 1 进行合并":
+  [36m<input[39m
+    [33maria-label[39m=[32m"选择决策 1 进行合并"[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"recall-phase-provenance"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"recall-replay-bar__secondary"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"drawing-more"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"recall-plan-detail-group"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details />[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"recall-plan-secondary-group"[39m
+    [33mopen[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details />[39m
+
+  Name "":
+  [36m<details />[39m
+
+  Name "规模方式":
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"recall-size-mode"[39m
+  [36m/>[39m
+
+  Name "规模方式切换":
+  [36m<div[39m
+    [33maria-label[39m=[32m"规模方式切换"[39m
+    [33mclass[39m=[32m"recall-size-mode__buttons"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"recall-plan-source"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"recall-actual-source"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"recall-actual-source"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"recall-plan-field-note"[39m
+    [33mid[39m=[32m"recall-plan-direction-note"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mstyle[39m=[32m"overflow-wrap: anywhere;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  term:
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  Name "":
+  [36m<dt />[39m
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "missing-direction":
+  [36m<dd[39m
+    [33mtitle[39m=[32m"missing-direction"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "修订理由":
+  [36m<input[39m
+    [33maria-label[39m=[32m"修订理由"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "计划入场":
+  [36m<input[39m
+    [33maria-label[39m=[32m"计划入场"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mvalue[39m=[32m"10"[39m
+  [36m/>[39m
+
+  Name "初始止损":
+  [36m<input[39m
+    [33maria-label[39m=[32m"初始止损"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "止盈目标":
+  [36m<input[39m
+    [33maria-label[39m=[32m"止盈目标"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "计划数量":
+  [36m<input[39m
+    [33maria-label[39m=[32m"计划数量"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "计划币种":
+  [36m<input[39m
+    [33maria-label[39m=[32m"计划币种"[39m
+    [33mreadonly[39m=[32m""[39m
+    [33mvalue[39m=[32m"USD"[39m
+  [36m/>[39m
+
+  Name "参考资金金额":
+  [36m<input[39m
+    [33maria-label[39m=[32m"参考资金金额"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "参考资金币种":
+  [36m<input[39m
+    [33maria-label[39m=[32m"参考资金币种"[39m
+    [33minputmode[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "参考资金时点":
+  [36m<input[39m
+    [33maria-label[39m=[32m"参考资金时点"[39m
+    [33minputmode[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "参考数量步长":
+  [36m<input[39m
+    [33maria-label[39m=[32m"参考数量步长"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mvalue[39m=[32m"1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-label[39m=[32m"导入交易回忆复盘工作区"[39m
+      [33mclass[39m=[32m"recall-workspace trade-review-workspace--recall-frame"[39m
+      [33mdata-layout[39m=[32m"standard"[39m
+      [33mstyle[39m=[32m"--recall-available-height: 768px; --recall-plan-form-height: 522px;"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"recall-header recall-frame-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"recall-heading"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"eyebrow"[39m
+          [36m>[39m
+            [0m导入交易 · 回忆复盘[0m
+          [36m</span>[39m
+          [36m<h1[39m
+            [33mtitle[39m=[32m"Test · TEST"[39m
+          [36m>[39m
+            [0mTest[0m
+            [0m [0m
+            [36m<small>[39m
+              [0mTEST[0m
+            [36m</small>[39m
+          [36m</h1>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"recall-status"[39m
+            [33mdata-status[39m=[32m"in-progress"[39m
+          [36m>[39m
+            [0m草稿[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"图表工具栏"[39m
+          [33mclass[39m=[32m"chart-toolbar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"symbol-control"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"symbol-avatar"[39m
+            [36m>[39m
+              [0mT[0m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<strong>[39m
+                [0mTEST[0m
+              [36m</strong>[39m
+              [36m<span>[39m
+                [0mTest[0m
+                [0m · [0m
+                [0mUS[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-chevron-down"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 9 6 6 6-6"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33maria-label[39m=[32m"搜索标的"[39m
+            [33mclass[39m=[32m"icon-button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-search"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"17"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"17"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m21 21-4.34-4.34"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"11"[39m
+                [33mcy[39m=[32m"11"[39m
+                [33mr[39m=[32m"8"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"toolbar-divider"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"K 线周期"[39m
+            [33mclass[39m=[32m"timeframe-group"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"切换到 15m"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m15m[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-description[39m=[32m"no hourly"[39m
+              [33maria-label[39m=[32m"切换到 1h"[39m
+              [33mclass[39m=[32m""[39m
+              [33mdisabled[39m=[32m""[39m
+              [33mtitle[39m=[32m"no hourly"[39m
+            [36m>[39m
+              [0m1H[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-description[39m=[32m"no hourly"[39m
+              [33maria-label[39m=[32m"切换到 4h"[39m
+              [33mclass[39m=[32m""[39m
+              [33mdisabled[39m=[32m""[39m
+              [33mtitle[39m=[32m"no hourly"[39m
+            [36m>[39m
+              [0m4H[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"切换到 1D"[39m
+              [33mclass[39m=[32m"active"[39m
+            [36m>[39m
+              [0m1D[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"切换到 1W"[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m1W[0m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"toolbar-spacer"[39m
+          [36m/>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33maria-label[39m=[32m"行情数据详情"[39m
+            [33mclass[39m=[32m"local-data-badge"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-off"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M10.94 5.274A7 7 0 0 1 15.71 10h1.79a4.5 4.5 0 0 1 4.222 6.057"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18.796 18.81A4.5 4.5 0 0 1 17.5 19H...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/recall/recall-workspace.test.tsx:1421:26
+    1419|   openPlanSecondaryDetails();
+    1420|   const entryField = screen.getByLabelText("计划入场");
+    1421|   fireEvent.click(screen.getByRole("button", {name: /保存并完成回合复盘/}));
+       |                          ^
+    1422|   await act(async () => { await Promise.resolve(); });
+    1423|   fireEvent.change(entryField, {target: {value: "11"}});
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed | 48 skipped (52)
+   Start at  06:11:39
+   Duration  4.63s (transform 715ms, setup 173ms, import 977ms, tests 2.43s, environment 870ms)
+

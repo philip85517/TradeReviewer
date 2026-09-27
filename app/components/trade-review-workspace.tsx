@@ -212,6 +212,8 @@ import {
   type ReviewChartViewModel,
 } from "./review/review-chart-workspace";
 import { RecallWorkspace } from "./recall/recall-workspace";
+import type { RecallDocument } from "../lib/recall/types";
+import { bridgeRecallCompletion } from "../lib/storage/recall-completion-bridge";
 import type {
   ReviewChartLocateRequest,
   ReviewChartLocateResult,
@@ -1225,6 +1227,18 @@ export function TradeReviewWorkspace({
   const selectedEpisode = selectedEpisodeId
     ? episodes.find((episode) => episode.id === selectedEpisodeId)
     : episodes[0];
+  function handleRecallFormalCompletion(document: RecallDocument) {
+    if (document.status !== "completed") return;
+    const completedEpisode = episodes.find((episode) => episode.id === document.episodeId);
+    setEpisodeReviews((current) => {
+      const bridged = bridgeRecallCompletion(
+        current[document.episodeId],
+        { episodeId: document.episodeId, updatedAt: document.updatedAt },
+        completedEpisode?.instrument.id,
+      );
+      return bridged ? { ...current, [document.episodeId]: bridged } : current;
+    });
+  }
   const selectedMarketState = useMemo(
     () =>
       selectedImportedInstrument
@@ -4249,6 +4263,39 @@ export function TradeReviewWorkspace({
     );
   }
 
+  const recallFrameActive = activeView === "review" && !showDemo && Boolean(selectedImportedInstrument && selectedEpisode);
+  const recallFrameActions = recallFrameActive ? (
+    <div className="recall-header-actions" aria-label="复盘必要动作">
+      <button
+        type="button"
+        className="recall-header-action recall-header-action--back"
+        onClick={returnFromReview}
+      >
+        返回{reviewReturnView === "dashboard" ? "我的交易室" : reviewReturnView === "insights" ? "分析" : "交易库"}
+      </button>
+      <button
+        type="button"
+        className="recall-header-action recall-header-action--data"
+        aria-label="打开导入与数据管理"
+        aria-haspopup="dialog"
+        aria-controls="import-management-dialog"
+        onClick={() => setImportManagementOpen(true)}
+      >
+        数据
+      </button>
+      {selectedImportedInstrument && selectedEpisode && (
+        <button
+          type="button"
+          className="recall-header-action recall-header-action--repair"
+          aria-label="检查/修复数据"
+          onClick={() => openDataCheck(selectedImportedInstrument.instrument.id, selectedEpisode.accountId)}
+        >
+          检查/修复
+        </button>
+      )}
+    </div>
+  ) : undefined;
+
   return (
     <main className={`trade-review-app ${activeView === "review" ? "is-review" : ""}`}>
       <input hidden ref={importFileRef} aria-label="导入交易记录" type="file" accept=".xlsx,.xls,.pdf" multiple={!supplementScope} disabled={importing} onChange={(event) => {
@@ -4336,7 +4383,7 @@ export function TradeReviewWorkspace({
 
       {mobileNavOpen && <button className="mobile-navigation-backdrop" aria-label="关闭导航" onClick={() => setMobileNavOpen(false)} />}
       <div className="app-content">
-      {activeView === "review" && (showDemo || selectedImportedInstrument) && <header className="page-header review-page-header" aria-label="页面顶栏" inert={stockDrawerOpen || Boolean(dataTarget)}>
+      {activeView === "review" && (showDemo || selectedImportedInstrument) && !recallFrameActive && <header className="page-header review-page-header" aria-label="页面顶栏" inert={stockDrawerOpen || Boolean(dataTarget)}>
         <div className="header-actions">
           {selectedImportedInstrument && activeView === "review" && (
             <button
@@ -4367,7 +4414,7 @@ export function TradeReviewWorkspace({
           <button type="button" className="secondary-action" onClick={() => setActiveView("review")}>返回演示复盘</button>
         </div>
       </header>}
-      {activeView === "review" && (showDemo || selectedImportedInstrument) && <div className="review-layout-controls" inert={stockDrawerOpen || Boolean(dataTarget)} aria-label="复盘布局">
+      {activeView === "review" && (showDemo || selectedImportedInstrument) && !recallFrameActive && <div className="review-layout-controls" inert={stockDrawerOpen || Boolean(dataTarget)} aria-label="复盘布局">
         {!showDemo && <button onClick={returnFromReview}>返回{reviewReturnView === "dashboard" ? "我的交易室" : reviewReturnView === "insights" ? "分析" : "交易库"}</button>}
         {selectedImportedInstrument && selectedEpisode && activeView === "review" && (
           <button
@@ -4652,7 +4699,9 @@ export function TradeReviewWorkspace({
             ) : selectedImportedInstrument ? (
               <div className="recall-review-host">
                 <RecallWorkspace
+                  headerActions={recallFrameActions}
                   onLeaveGuardChange={registerRecallLeaveGuard}
+                  onFormalCompletion={handleRecallFormalCompletion}
                   focused={focusedChart}
                   onFocusedChange={setFocusedChart}
                   episode={selectedEpisode!}

@@ -1,0 +1,15 @@
+.recall-manual-evaluations { display: grid; gap: 10px; min-width: 0; padding-block: 12px; border-top: 1px solid var(--line, #243145); }
+.recall-manual-evaluations h3, .recall-manual-evaluations p { margin: 0; }
+.recall-manual-evaluations fieldset { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0; margin: 0; border: 0; }
+.recall-manual-evaluations legend { grid-column: 1 / -1; margin-bottom: 2px; color: var(--muted, #8291a6); font-size: 12px; }
+.recall-manual-evaluations label { display: flex; align-items: center; gap: 7px; min-height: 36px; color: var(--text, #e7edf6); font-size: 13px; }
+.recall-manual-evaluations input { accent-color: var(--blue, #2f80ed); }
+.recall-manual-evaluations summary { min-height: 36px; display: flex; align-items: center; color: var(--muted, #8291a6); font-size: 12px; cursor: pointer; }
+.recall-manual-evidence { overflow-wrap: anywhere; }
+.recall-manual-note { color: var(--muted, #8291a6); font-size: 12px; line-height: 1.5; }
+.recall-manual-evaluations [role="alert"], .recall-manual-missing { color: var(--gold, #f3ba2f); font-size: 12px; line-height: 1.5; }
+.recall-manual-pending { display:grid; gap:8px; }
+.recall-manual-pending button { min-height:36px; width:max-content; max-width:100%; border:1px solid var(--line, #243145); border-radius:6px; padding:7px 10px; color:var(--text, #e7edf6); background:var(--surface, #111b29); font:inherit; font-size:14px; cursor:pointer; }
+.recall-manual-pending button:focus-visible { outline:2px solid var(--blue, #2f80ed); outline-offset:2px; }
+.recall-manual-evaluations :is(input, summary, button):focus-visible { outline: 2px solid var(--blue, #2f80ed); outline-offset: 2px; }
+@media (pointer: coarse), (max-width: 390px) { .recall-manual-evaluations label, .recall-manual-evaluations summary, .recall-manual-pending button { min-height: 44px; } }

@@ -1,0 +1,9 @@
+{
+  "previousCount": 24,
+  "previousSha256": "e6fb7f410f9692fb3ce9e7bd05ec3456af61ba4e52bdb31563f779d01764cf55",
+  "executionCount": 25,
+  "executionSha256": "1b79e6e605b493b4e0ce7833094824c807680c972166a83a1a3f0b8aefd12b36",
+  "quickCheck": "ok",
+  "instrument": "CN:999990",
+  "scenario": "30 CNY entry below known candles near 50\u201356; no review seeded"
+}

@@ -27,6 +27,8 @@ import { isMonthlyStatement } from "../import/monthly-statement";
 import { validateLocalizedInstrumentName } from "../instruments/metadata-contracts";
 import type { MarketDataJob } from "./market-data-jobs";
 import type { EpisodeReviewState } from "./review-storage";
+import { buildTradeEpisodes } from "../trades/episodes";
+import { bridgeRecallCompletions, type RecallCompletionProjection } from "./recall-completion-bridge";
 import type {
   BrowserStatePayload,
   CoverageRecord,
@@ -836,8 +838,46 @@ export class SqliteStore {
     return (this.database.prepare("select reconciliation_json from import_batches order by imported_at desc, id").all() as Row[]).map((row) => parseJson<ImportHistoryEntry>(row.reconciliation_json, "import history"));
   }
 
-  getReviews(): EpisodeReviewRecord[] { return (this.database.prepare("select review_json from reviews where review_json is not null order by episode_id").all() as Row[]).map((row) => parseJson<EpisodeReviewRecord>(row.review_json, "review")); }
-  getReview(episodeId: string): EpisodeReviewRecord | undefined { const row = this.database.prepare("select review_json from reviews where episode_id = ?").get(episodeId) as Row | undefined; return row?.review_json ? parseJson<EpisodeReviewRecord>(row.review_json, "review") : undefined; }
+  private getLegacyReviews(): EpisodeReviewRecord[] {
+    return (this.database.prepare("select review_json from reviews where review_json is not null order by episode_id").all() as Row[])
+      .map((row) => parseJson<EpisodeReviewRecord>(row.review_json, "review"));
+  }
+
+  private getLegacyReview(episodeId: string): EpisodeReviewRecord | undefined {
+    const row = this.database.prepare("select review_json from reviews where episode_id = ?").get(episodeId) as Row | undefined;
+    return row?.review_json ? parseJson<EpisodeReviewRecord>(row.review_json, "review") : undefined;
+  }
+
+  private getFormalRecallCompletions(): RecallCompletionProjection[] {
+    const rows = this.database
+      .prepare("select episode_id, finalized_json from recall_documents where finalized_json is not null order by episode_id")
+      .all() as Row[];
+    return rows.flatMap((row) => {
+      const finalized = parseJson<Record<string, unknown>>(row.finalized_json, "finalized recall document");
+      if (finalized.status !== "completed" || typeof finalized.completedAt !== "string") return [];
+      return [{
+        episodeId: asString(row.episode_id, "recall episode id"),
+        updatedAt:
+          typeof finalized.updatedAt === "string"
+            ? finalized.updatedAt
+            : finalized.completedAt,
+      }];
+    });
+  }
+
+  getReviews(): EpisodeReviewRecord[] {
+    const legacy = this.getLegacyReviews();
+    const completions = this.getFormalRecallCompletions();
+    if (completions.length === 0) return legacy;
+    const instrumentIdsByEpisode = new Map(
+      buildTradeEpisodes(this.getExecutions()).map((episode) => [episode.id, episode.instrument.id] as const),
+    );
+    return bridgeRecallCompletions(legacy, completions, instrumentIdsByEpisode);
+  }
+
+  getReview(episodeId: string): EpisodeReviewRecord | undefined {
+    return this.getReviews().find((record) => record.episodeId === episodeId);
+  }
   getReviewStates(): EpisodeReviewState[] {
     const rows = this.database
       .prepare("select episode_id, cursor_json, drawings_json from reviews where cursor_json is not null order by episode_id")
@@ -1161,7 +1201,7 @@ export class SqliteStore {
         this.putImportHistory(entry);
       }
       for (const review of payload.reviews) {
-        const before = this.getReview(review.episodeId);
+        const before = this.getLegacyReview(review.episodeId);
         if (before && Date.parse(before.updatedAt) > Date.parse(review.updatedAt)) {
           counts.conflict += 1;
         } else {
@@ -1570,7 +1610,7 @@ export class SqliteStore {
 
   private putReviewInTransaction(record: EpisodeReviewRecord): boolean {
     validateReview(record);
-    const current = this.getReview(record.episodeId);
+    const current = this.getLegacyReview(record.episodeId);
     if (current && Date.parse(current.updatedAt) > Date.parse(record.updatedAt)) return false;
     this.ensureInstrumentId(record.instrumentId);
     this.database.prepare(`
@@ -1620,7 +1660,7 @@ export class SqliteStore {
   private putTagSuggestionInTransaction(record: TagSuggestionRecord): void {
     validateTagSuggestion(record);
     this.ensureInstrumentId(record.instrumentId);
-    if (!this.getReview(record.episodeId)) {
+    if (!this.getLegacyReview(record.episodeId)) {
       this.putReviewInTransaction(createEmptyEpisodeReviewRecord(record.episodeId, record.instrumentId, record.suggestedAt));
     }
     this.database.prepare(`

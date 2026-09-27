@@ -1,0 +1,52 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/f7a5/TradeReview
+
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > formats daily tick marks compactly while retaining Asia/Shanghai date conversion 91ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > passes real plot bounds to Text editing without shrinking the full chart 64ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > preserves the logical view when the replay/history mode changes 68ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > brings a newly revealed candle into a manually fixed price window without using unseen bars 76ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > brings a revealed execution fact into a manual price window when the request is a later cutoff 71ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > fits once after a zero-sized mount becomes usable 60ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > captures the real chart plus a 2x drawing overlay after committing focused Text 97ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > captures current data and overlays even when requestAnimationFrame never runs 72ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > freezes data, drawings, range and source viewport before awaiting fonts 67ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > commits an active Text state update before freezing its drawing revision 63ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > passes the live Text expansion state into canonical capture 62ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > disposes the isolated renderer on PNG failure and leaves source viewport unchanged 66ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > rejects concurrent capture while retaining one frozen scene 60ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > restores saved auto scale after the native explicit-range setter disables it 68ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > repositions plan controls after scale movement, edits, and resize 172ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > keeps the revealed last candle when a height resize races the async range commit 68ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > keeps a pending restored range authoritative during a same-frame width resize 66ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > lets reveal override a pending data-preservation range after setData shifts the getter 68ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > reapplies a stable range on a width-only resize when no range is pending 71ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > detaches chart primitives before removing the chart 56ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > ignores a resize delivery queued after chart cleanup 57ms
+ ✓ app/components/chart/replay-chart.recall-review.test.tsx > does not let a queued range notification read a removed chart 61ms
+ ✓ app/components/chart/replay-chart.test.tsx > keeps axis ticks short while preserving Beijing dates across midnight 3ms
+ ✓ app/components/chart/replay-chart.test.tsx > only builds finite markers that point at valid chart candles 4ms
+ ✓ app/components/chart/replay-chart.test.tsx > renders a filled diamond and real action text for each execution 1ms
+ ✓ app/components/chart/replay-chart.test.tsx > does not call an exit a liquidation when an earlier fill leaves inventory unknown 1ms
+ ✓ app/components/chart/replay-chart.test.tsx > keeps same-candle fills in authoritative execution order with one selectable marker per fill 1ms
+ ✓ app/components/chart/replay-chart.test.tsx > offers marker prices to lightweight-charts autoscale 1ms
+ ✓ app/components/chart/replay-chart.test.tsx > hit-tests the clamped diamond position at the pane boundary 1ms
+ ✓ app/components/chart/replay-chart.test.tsx > anchors a revealed execution in its actual whitespace time when the candle OHLC is still withheld 2ms
+ ✓ app/components/chart/replay-chart.test.tsx > moves the replay view to a revealed whitespace execution without adding its withheld candle 92ms
+ ✓ app/components/chart/replay-chart.test.tsx > follows a requested replay target once while preserving the current time span 69ms
+ ✓ app/components/chart/replay-chart.test.tsx > advances through sequential replay cutoffs after each candle open without losing the viewport 125ms
+ ✓ app/components/chart/replay-chart.test.tsx > routes a click on a revealed execution marker to its source execution 60ms
+ ✓ app/components/chart/replay-chart.test.tsx > refits the rendered range after changing stock/period, but keeps zoom on ordinary rerenders 68ms
+ ✓ app/components/chart/replay-chart.test.tsx > preserves the visible dates when a refresh prepends history 69ms
+ ✓ app/components/chart/replay-chart.test.tsx > preserves logical padding and fractional offsets when history is prepended 65ms
+ ✓ app/components/chart/replay-chart.test.tsx > keeps the logical span through replay rewind and forward reveal 73ms
+ ✓ app/components/chart/replay-chart.test.tsx > retries an unresolved location after daily data arrives, then keeps it one-shot 67ms
+ ✓ app/components/chart/replay-chart.test.tsx > does not reload or move the chart for equal candle values in new arrays 60ms
+ ✓ app/components/chart/replay-chart.test.tsx > adds optional plan price lines without refitting and removes replaced lines 27ms
+ ✓ app/components/chart/replay-chart.test.tsx > fits plan prices explicitly without changing time window or reading future candles 145ms
+ ✓ app/components/chart/replay-chart.test.tsx > drag shares plan callback, pauses interaction and cancellation restores original price 31ms
+
+ Test Files  2 passed (2)
+      Tests  43 passed (43)
+   Start at  06:24:21
+   Duration  5.75s (transform 321ms, setup 392ms, import 479ms, tests 2.58s, environment 1.85s)
+

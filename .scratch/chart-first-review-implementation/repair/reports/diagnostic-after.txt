@@ -1,0 +1,15 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/f7a5/TradeReview
+
+ ✓ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > fresh pre-entry next bar reveals one bar, playback timer reveals one more 918ms
+ ✓ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > fresh pre-entry next decision reaches first fill then second 447ms
+ ✓ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > selecting first decision then next bar increases candles 539ms
+ ✓ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > future navigation labels remain redacted before explicit reveal 225ms
+ ✓ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > returning to pre-entry then next decision must reach first decision not last holding cursor 899ms
+ ✓ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > marks exposure after selecting future decision and returning to pre-entry 336ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  16:17:25
+   Duration  6.45s (transform 828ms, setup 223ms, import 1.16s, tests 3.37s, environment 1.35s)
+

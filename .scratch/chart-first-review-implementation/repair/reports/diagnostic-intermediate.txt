@@ -1,0 +1,34 @@
+ × .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > fresh pre-entry next bar reveals one bar, playback timer reveals one more 714ms
+   → expected 1 to be 2 // Object.is equality
+ ✓ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > fresh pre-entry next decision reaches first fill then second 477ms
+ ✓ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > selecting first decision then next bar increases candles 388ms
+ ✓ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > future navigation labels remain redacted before explicit reveal 111ms
+ ✓ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > returning to pre-entry then next decision must reach first decision not last holding cursor 600ms
+ ✓ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > marks exposure after selecting future decision and returning to pre-entry 390ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx > DIAGNOSTIC actual Recall playback interaction > fresh pre-entry next bar reveals one bar, playback timer reveals one more
+AssertionError: expected 1 to be 2 // Object.is equality
+
+- Expected
++ Received
+
+- 2
++ 1
+
+ ❯ .scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx:306:19
+    304|   fireEvent.click(screen.getByRole("button", {name: "播放", exact:true})…
+    305|   await act(async () => { await vi.advanceTimersByTimeAsync(801); });
+    306|   expect(count()).toBe(2);
+       |                   ^
+    307|  });
+    308|  it("fresh pre-entry next decision reaches first fill then second", as…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  16:16:32
+   Duration  5.48s (transform 655ms, setup 187ms, import 934ms, tests 2.68s, environment 1.22s)

@@ -1,0 +1,12 @@
+
+> trade-reviewer@0.1.0 typecheck
+> tsc --noEmit
+
+app/components/chart/canonical-chart-capture.test.ts(62,29): error TS2339: Property 'mock' does not exist on type '(text: string, x: number, y: number, maxWidth?: number | undefined) => void'.
+app/components/chart/canonical-chart-capture.test.ts(62,46): error TS7031: Binding element 'value' implicitly has an 'any' type.
+app/components/chart/canonical-chart-capture.test.ts(66,22): error TS2339: Property 'mockClear' does not exist on type '(text: string, x: number, y: number, maxWidth?: number | undefined) => void'.
+app/components/chart/canonical-chart-capture.test.ts(68,29): error TS2339: Property 'mock' does not exist on type '(text: string, x: number, y: number, maxWidth?: number | undefined) => void'.
+app/components/chart/canonical-chart-capture.test.ts(68,46): error TS7031: Binding element 'value' implicitly has an 'any' type.
+app/components/chart/canonical-chart-capture.test.ts(72,22): error TS2339: Property 'mockClear' does not exist on type '(text: string, x: number, y: number, maxWidth?: number | undefined) => void'.
+app/components/chart/canonical-chart-capture.test.ts(74,29): error TS2339: Property 'mock' does not exist on type '(text: string, x: number, y: number, maxWidth?: number | undefined) => void'.
+app/components/chart/canonical-chart-capture.test.ts(74,46): error TS7031: Binding element 'value' implicitly has an 'any' type.

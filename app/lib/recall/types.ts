@@ -25,7 +25,14 @@ export type RecallDecision = {
   executionIds: string[];
 };
 
+export type RecallPhase = "pre-entry" | "holding" | "post-review";
+
 export type RecallSnapshot = {
+  /** Supplied only when the capture's market-data pipeline attests this basis. */
+  priceBasis?: "raw" | "adjusted";
+  retainedBundleId?: string;
+  phase?: RecallPhase;
+  hasSeenFuture?: boolean;
   id: string;
   /** `unassigned` is used only while an explicit split allocation is pending. */
   decisionId: string | "global" | "unassigned";
@@ -41,6 +48,9 @@ export type RecallSnapshot = {
 };
 
 export type RecallWorkingState = {
+  phase?: RecallPhase;
+  phaseContexts?: Partial<Record<RecallPhase, RecallWorkingContext>>;
+  hasSeenFuture?: boolean;
   drawings: RecallDrawing[];
   timeframe: Timeframe;
   cursor: string;
@@ -61,6 +71,9 @@ export type RecallWorkingState = {
 };
 
 export type RecallWorkingContext = {
+  /** Last actually revealed completed candle; null means no completed candle was visible. */
+  revealedCandleCursor?: string | null;
+  viewport?: RecallViewport;
   mode: "global" | "decision";
   decisionId: string | "global";
   drawings: RecallDrawing[];
@@ -90,6 +103,13 @@ export type RecallCompletedVersion = Omit<
 };
 
 export type RecallDocument = {
+  exitEvaluations?: import("./exit-evaluations").RecallExitEvaluationState;
+  /** Optional episode-level manual attribution, absent on legacy documents. */
+  manualEvaluations?: import("./manual-evaluations").RecallManualEvaluationState;
+  plans?: { drafts: RecallPlanDraft[]; versions: RecallPlanVersion[]; riskBaselines: RecallRiskBaseline[] };
+  retainedBundles?: RecallRetainedBundle[];
+  planAssociations?: RecallPlanAssociation[];
+  storyboard?: Partial<Record<RecallPhase, { snapshotId: string }>>;
   version: 1;
   episodeId: string;
   revision: number;
@@ -141,3 +161,50 @@ export type RecallSaveResult = {
 };
 
 export type RecallEpisode = TradeEpisode;
+
+export type RecallPlanInput = {
+  sizing?: import("./sizing").RecallSizingEvidence;
+  direction: "long" | "short" | null;
+  currency: string | null;
+  priceBasis: "raw" | "adjusted" | null;
+  entry: string | null;
+  initialStop: string | null;
+  targets: { id: string; price: string | null; quantity: string | null; ratio: string | null }[];
+  sizeInputMode: "quantity" | "amount" | "ratio";
+  sizeInputValue: string | null;
+  resolvedQuantity: string | null;
+  quantityUnit: "share" | "unit";
+  capital: { amount: string | null; currency: string | null; asOf: string | null; source: "manual-reference" | "account-snapshot"; snapshotRef?: string } | null;
+};
+export type RecallPlanDraft = {
+  id: string; planId: string; decisionId: string; parentVersionId?: string;
+  kind: "initial" | "adjustment" | "correction"; input: RecallPlanInput;
+  reason?: string; riskBudget?: RecallRiskBudget;
+  recordedPhase: RecallPhase; source: "retrospective"; recordedAt: string;
+  knowledgeCutoff: { cursor: string; executionCursor: string }; hasSeenFuture: boolean;
+};
+export type RecallPlanVersion = RecallPlanDraft & { retainedAt: string };
+export type RecallRiskBaseline = {
+  id: string; scope: "decision" | "episode"; decisionId?: string; planVersionId: string;
+  amount: string; currency: string; method: "planned-price-risk" | "fixed-budget";
+  methodVersion: "risk-v1"; frozenAt: string; correctsBaselineId?: string;
+};
+export type RecallPlanAssociation = { executionIds?: string[]; planId: string; decisionId: string | null; status: "linked" | "needs-confirmation" };
+export type RecallExecutionEvidence = {
+  version: 1; executionIds: string[]; digest: string;
+  payload: { episode: Omit<TradeEpisode, "executions" | "accountLabel" | "instrument"> & { instrument: Omit<TradeEpisode["instrument"], "name" | "localizedName"> };
+    executions: (Omit<TradeEpisode["executions"][number], "accountLabel" | "instrument"> & { instrument: Omit<TradeEpisode["instrument"], "name" | "localizedName"> })[] };
+};
+export type RecallRetainedBundle = {
+  actualMetrics?: import("./actual-metrics").RecallActualMetrics;
+  id: string; snapshotId: string; documentRevision: number; retainedAt: string;
+  /** Optional only on bundles accepted before visual-content binding was introduced. */
+  snapshotContentDigest?: string;
+  executionEvidence: RecallExecutionEvidence; decisions: RecallDecision[];
+  captureContext: Pick<RecallSnapshot, "phase" | "cursor" | "executionCursor" | "timeframe" | "viewport" | "hasSeenFuture" | "priceBasis">;
+  planVersionIds: string[]; riskBaselineIds: string[]; evaluationRevisionIds?: string[]; manualEvaluationRevisionIds?: string[];
+};
+export type RecallPlanMetric = { value: string | null; reason: string | null; currency: string | null; unit: string; methodVersion: "plan-v1" };
+export type RecallPlanCalculation = { initialRisk: RecallPlanMetric; targetReward: RecallPlanMetric; expectedR: RecallPlanMetric; issues: {field: string; message: string}[] };
+
+export type RecallRiskBudget = { amount: string; currency: string; scope: "decision" | "episode"; sourceDescription: string; evidenceReference: string | null; provenance: "retrospective" | "original-evidence"; effectiveKnowledgeCutoff: { cursor: string; executionCursor: string } };

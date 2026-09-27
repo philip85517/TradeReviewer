@@ -1,0 +1,15 @@
+
+/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/app/components/trade-review-workspace.tsx
+    75:3   warning  'combinedMarketDataStatus' is defined but never used                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   103:10  warning  'resolveInstrumentMetadataBatch' is defined but never used                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  2176:35  warning  The ref value 'marketHydrationInFlight.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'marketHydrationInFlight.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+  2180:6   warning  React Hook useEffect has a missing dependency: 'rawImportedInstruments'. Either include it or remove the dependency array                                                                                                                                                                      react-hooks/exhaustive-deps
+  2283:6   warning  React Hook useEffect has missing dependencies: 'enqueueDrawingState' and 'selectedImportedInstrument'. Either include them or remove the dependency array                                                                                                                                      react-hooks/exhaustive-deps
+
+/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/app/lib/storage/sqlite-store.ts
+  661:21  warning  '_metadata' is assigned a value but never used               @typescript-eslint/no-unused-vars
+  677:26  warning  '_localizedName' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  704:26  warning  '_snapshotLocalizedName' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 8 problems (0 errors, 8 warnings)
+

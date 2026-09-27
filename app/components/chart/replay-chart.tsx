@@ -1,14 +1,27 @@
 "use client";
 
+import { flushSync } from "react-dom";
+import {
+  CANONICAL_CAPTURE_FRAME,
+  copyChartOptions,
+  drawExecutionMarkers,
+  renderCanonicalChartCapture,
+  type CanonicalCaptureScene,
+  type CanonicalChartMarker,
+} from "./canonical-chart-capture";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type {
   IChartApi,
+  IPrimitivePaneRenderer,
+  IPrimitivePaneView,
   IPriceLine,
   ISeriesApi,
+  ISeriesPrimitive,
   Logical,
   Time,
   TickMarkType,
 } from "lightweight-charts";
+import type { CanvasRenderingTarget2D } from "fancy-canvas";
 
 import type {
   DrawingTool,
@@ -22,11 +35,12 @@ import {
   formatBeijingUnixSeconds,
 } from "../../lib/replay/format-time";
 import type { ChartSettings } from "../../lib/storage/chart-settings";
+import { markerDisplayGeometry, markerLogicalPosition, markerRightLabelBoundary, markerTimelineTimes } from "../../lib/chart/marker-geometry";
 import { displayTimeForCandle } from "../../lib/replay/display-time";
-import { textLayout } from "../../lib/chart/text-geometry";
 import type { TradeExecution } from "../../lib/trades/types";
+import { tradeScopeKey } from "../../lib/trades/types";
 import {
-  groupExecutionsByCandle,
+  mapExecutionsToCandles,
 } from "../../lib/replay/execution-markers";
 import type {
   ReviewChartLocateRequest,
@@ -37,6 +51,7 @@ import { episodeViewport, type EpisodeViewport } from "../../lib/reviews/episode
 import {
   DrawingCanvas,
   type ChartCoordinateAdapter,
+  type ChartPlotBounds,
   type DrawingCanvasHandle,
 } from "./drawing-canvas";
 
@@ -47,6 +62,9 @@ export type ChartViewport = {
   rightOffset: number;
   width: number;
   height: number;
+  priceRange?: { from: number; to: number };
+  priceScaleOptions?: { mode: number; invertScale: boolean; autoScale: boolean; scaleMargins: { top: number; bottom: number } };
+  imageFrame?: typeof CANONICAL_CAPTURE_FRAME;
 };
 
 export type ChartCapture = {
@@ -71,6 +89,11 @@ type Props = {
   positionEvents?: StatementEvent[];
   cursor: string;
   averageCost: number;
+  planLinesEditable?: boolean;
+  onPlanPriceChange?: (id: string, price: string) => void;
+  onPlanInteractionStart?: () => void;
+  onPlanPriceSelect?: (id: string) => void;
+  planPriceLines?: { id: string; price: number; title: string }[];
   drawings: NormalizedDrawing[];
   activeTool: DrawingTool;
   settings: ChartSettings;
@@ -78,9 +101,11 @@ type Props = {
   timeframe?: Timeframe;
   viewportKey?: string;
   focusRange?: EpisodeViewport;
+  revealRequest?: ReplayChartRevealRequest;
   locateRequest?: ReviewChartLocateRequest;
   onLocateResult?: (result: ReviewChartLocateResult) => void;
   onLocateTimeframeChange?: (timeframe: Timeframe) => void;
+  onExecutionSelect?: (executionId: string) => void;
   onReady?: (handle: ChartHandle | null) => void;
   selectedDrawingId: string | null;
   plannedRiskAmount: string | undefined;
@@ -112,16 +137,25 @@ type ChartCandleData = {
   volume: number;
 };
 
-export type ReplayChartMarker = {
+type ChartTimelineData = {
   time: Time;
-  position: "belowBar" | "aboveBar";
-  color: string;
-  shape: "arrowUp" | "arrowDown";
-  text: string;
+  open?: number;
+  high?: number;
+  low?: number;
+  close?: number;
+  volume?: number;
+};
+
+export type ReplayChartMarker = CanonicalChartMarker & {
   /** Source fills represented by this visual marker. */
   executionIds?: string[];
   fillCount?: number;
   side?: TradeExecution["side"];
+};
+
+export type ReplayChartRevealRequest = {
+  id: number;
+  time: string;
 };
 
 function validCandles(candles: readonly Candle[]): Candle[] {
@@ -188,6 +222,9 @@ function executionMarkerSignature(executions: readonly TradeExecution[]) {
       execution.source.simulationRunId ?? "",
       execution.source.marketCalendarDate ?? execution.source.tradingDate ?? "",
       execution.source.timePrecision ?? "",
+      execution.source.sourceTimeKind ?? "",
+      execution.source.positionEffect ?? "",
+      execution.source.tradingSession ?? "",
     ].join(","))
     .join("|");
 }
@@ -199,6 +236,13 @@ function positionEventSignature(positionEvents: readonly StatementEvent[]) {
 }
 
 type VisibleTimeRange = { from: Time; to: Time };
+type LogicalRange = { from: number; to: number };
+type ReplayChartClickParam = { hoveredInfo?: { objectId?: unknown }; hoveredObjectId?: unknown };
+
+function logicalRangesEqual(left: LogicalRange | null | undefined, right: LogicalRange | null | undefined) {
+  return left !== null && left !== undefined && right !== null && right !== undefined &&
+    Math.abs(left.from - right.from) < 0.0001 && Math.abs(left.to - right.to) < 0.0001;
+}
 
 function numericChartTime(time: Time) {
   if (typeof time === "number") return time;
@@ -209,7 +253,16 @@ function numericChartTime(time: Time) {
   return Date.UTC(time.year, time.month - 1, time.day) / 1000;
 }
 
-function nearestCandleIndex(candles: readonly ChartCandleData[], target: Time) {
+/** Project a known timestamp into the chart's logical timeline, including
+ * whitespace after the last revealed candle. No candle is fabricated. */
+function logicalPositionForTime(candles: readonly ChartTimelineData[], target: Time) {
+  const targetSeconds = numericChartTime(target);
+  return targetSeconds === null
+    ? null
+    : markerLogicalPosition(candles.map((candle) => Number(candle.time)), targetSeconds);
+}
+
+function nearestCandleIndex(candles: readonly ChartTimelineData[], target: Time) {
   const timestamp = numericChartTime(target);
   if (timestamp === null || candles.length === 0) return null;
   let nearest = 0;
@@ -225,8 +278,8 @@ function nearestCandleIndex(candles: readonly ChartCandleData[], target: Time) {
 }
 
 function logicalIndexByTime(
-  candles: readonly ChartCandleData[],
-  target: ChartCandleData,
+  candles: readonly ChartTimelineData[],
+  target: ChartTimelineData,
   fallback: number,
 ) {
   const exact = candles.findIndex((candle) => candle.time === target.time);
@@ -234,13 +287,14 @@ function logicalIndexByTime(
   return nearestCandleIndex(candles, target.time) ?? fallback;
 }
 
-/** Preserve logical padding/fractional bar offsets while refreshes add bars. */
+/** Preserve logical padding/fractional bar offsets while refreshes add or remove bars. */
 function logicalRangeForUpdatedCandles(
-  previousCandles: readonly ChartCandleData[],
-  nextCandles: readonly ChartCandleData[],
+  previousCandles: readonly ChartTimelineData[],
+  nextCandles: readonly ChartTimelineData[],
   range: { from: number; to: number },
 ) {
   if (previousCandles.length === 0 || nextCandles.length === 0) return null;
+  const previousSpan = Math.max(0, range.to - range.from);
   const lastPreviousIndex = previousCandles.length - 1;
   const mapCoordinate = (coordinate: number) => {
     if (coordinate < 0) {
@@ -257,13 +311,24 @@ function logicalRangeForUpdatedCandles(
     const upperIndex = logicalIndexByTime(nextCandles, previousCandles[upper], upper);
     return lowerIndex + (upperIndex - lowerIndex) * (coordinate - lower);
   };
-  const from = mapCoordinate(range.from);
-  const to = mapCoordinate(range.to);
-  return { from: Math.min(from, to), to: Math.max(from, to) };
+  const mappedFrom = mapCoordinate(range.from);
+  const mappedTo = mapCoordinate(range.to);
+  const from = Math.min(mappedFrom, mappedTo);
+  const to = Math.max(mappedFrom, mappedTo);
+  if (previousSpan > 0 && to - from < previousSpan) {
+    // When replay rewinds to a shorter known candle set, nearest-time mapping
+    // can map both old endpoints to the same final candle and collapse the
+    // user's spacing to one or two bars. Keep the latest known time anchor
+    // (including its fractional padding) and translate the original span
+    // around it; the reveal request can then move that preserved window to a
+    // newly known target without inventing future candles.
+    return { from: mappedTo - previousSpan, to: mappedTo };
+  }
+  return { from, to };
 }
 
 function logicalRangeForVisibleTimes(
-  candles: readonly ChartCandleData[],
+  candles: readonly ChartTimelineData[],
   range: VisibleTimeRange,
 ) {
   const from = nearestCandleIndex(candles, range.from);
@@ -273,6 +338,280 @@ function logicalRangeForVisibleTimes(
     : { from: Math.min(from, to), to: Math.max(from, to) };
 }
 
+function logicalRangeIncludingIndex(
+  current: { from: number; to: number } | null | undefined,
+  targetIndex: number,
+  candleCount: number,
+) {
+  if (!current || current.to <= current.from) {
+    const padding = Math.max(3, Math.ceil(candleCount * 0.04));
+    return { from: -padding, to: candleCount - 1 + padding };
+  }
+  const span = current.to - current.from;
+  if (targetIndex >= current.from && targetIndex <= current.to) return current;
+  if (current && targetIndex < current.from) {
+    return { from: targetIndex, to: targetIndex + span };
+  }
+  return { from: targetIndex - span, to: targetIndex };
+}
+
+function priceRangeIncludingValues(
+  current: { from: number; to: number } | null | undefined,
+  values: readonly number[],
+) {
+  const finiteValues = values.filter(Number.isFinite);
+  if (finiteValues.length === 0) return null;
+  const low = Math.min(...finiteValues);
+  const high = Math.max(...finiteValues);
+  if (current && current.to > current.from && [current.from, current.to].every(Number.isFinite)) {
+    if (low >= current.from && high <= current.to) return current;
+    const padding = Math.max((high - low) * 0.1, Math.abs(high) * 0.01, 0.000001);
+    const span = current.to - current.from;
+    if (high - low + padding * 2 >= span) return { from: low - padding, to: high + padding };
+    if (low < current.from) {
+      const from = low - padding;
+      return { from, to: from + span };
+    }
+    const to = high + padding;
+    return { from: to - span, to };
+  }
+  const padding = Math.max((high - low) * 0.1, Math.abs(high) * 0.01, 0.000001);
+  return { from: low - padding, to: high + padding };
+}
+
+type MarkerPositionState = {
+  long: number;
+  short: number;
+  unknown: boolean;
+  directionUnknown: boolean;
+};
+
+function markerQuantity(execution: TradeExecution) {
+  const quantity = Number(execution.quantity);
+  return Number.isFinite(quantity) && quantity > 0 ? quantity : null;
+}
+
+function markerDelta(execution: TradeExecution) {
+  const quantity = markerQuantity(execution);
+  if (quantity === null) return null;
+  switch (execution.source.positionEffect) {
+    case "open-long": return { long: quantity, short: 0, directionKnown: true };
+    case "close-long": return { long: -quantity, short: 0, directionKnown: true };
+    case "open-short": return { long: 0, short: quantity, directionKnown: true };
+    case "close-short": return { long: 0, short: -quantity, directionKnown: true };
+    default: return execution.side === "buy"
+      ? { long: quantity, short: 0, directionKnown: false }
+      : { long: -quantity, short: 0, directionKnown: false };
+  }
+}
+
+function actionLabelForExecution(
+  execution: TradeExecution,
+  before: MarkerPositionState,
+  after: MarkerPositionState,
+) {
+  const inventoryKnown = !before.unknown && !after.unknown && !before.directionUnknown && !after.directionUnknown;
+  switch (execution.source.positionEffect) {
+    case "open-long": return before.long > 0 && !before.unknown && !before.directionUnknown ? "加仓" : "买入";
+    case "close-long": return inventoryKnown && after.long <= 0 && before.long > 0 ? "清仓" : "减仓";
+    case "open-short": return before.short > 0 && !before.unknown && !before.directionUnknown ? "加空" : "卖出开仓";
+    case "close-short": return inventoryKnown && after.short <= 0 && before.short > 0 ? "买入平仓" : "减空";
+    default:
+      if (execution.side === "buy") return before.long > 0 && !before.unknown && !before.directionUnknown ? "加仓" : "买入";
+      if (before.long > 0 && !before.unknown && !before.directionUnknown) return inventoryKnown && after.long <= 0 ? "清仓" : "减仓";
+      return "卖出";
+  }
+}
+
+type ReplayExecutionMarkerPrimitive = ISeriesPrimitive<Time> & {
+  setMarkers: (markers: readonly ReplayChartMarker[]) => void;
+};
+
+export function createExecutionMarkerPrimitive(
+  getCandleData: () => readonly ChartTimelineData[],
+): ReplayExecutionMarkerPrimitive {
+  let chart: IChartApi | null = null;
+  let series: ISeriesApi<"Candlestick"> | null = null;
+  let requestUpdate: (() => void) | null = null;
+  let markers: readonly ReplayChartMarker[] = [];
+  const timeToX = (time: Time) => {
+    const candleData = getCandleData();
+    const seconds = numericChartTime(time);
+    if (seconds === null || !chart) return null;
+    const logical = markerLogicalPosition(candleData.map((candle) => Number(candle.time)), seconds);
+    if (logical === null) return null;
+    const exactCandleTime = Number.isInteger(logical);
+    return exactCandleTime
+      ? chart.timeScale().timeToCoordinate(time) ?? chart.timeScale().logicalToCoordinate(logical as Logical) ?? null
+      : chart.timeScale().logicalToCoordinate(logical as Logical) ?? null;
+  };
+  const renderer: IPrimitivePaneRenderer = {
+    draw(target: CanvasRenderingTarget2D) {
+      if (!chart || !series) return;
+      const liveChart = chart;
+      const liveSeries = series;
+      target.useMediaCoordinateSpace(({ context, mediaSize }) => {
+        const plotWidth = liveChart.timeScale().width?.();
+        const priceScaleWidth = liveSeries.priceScale().width?.();
+        drawExecutionMarkers(context, markers, {
+          timeToX,
+          priceToY: (price) => liveSeries.priceToCoordinate(price) ?? null,
+          maxX: Number.isFinite(plotWidth) && (plotWidth as number) > 0 ? plotWidth : mediaSize.width,
+          rightLabelBoundaryX: Number.isFinite(plotWidth) && (plotWidth as number) > 0
+            ? markerRightLabelBoundary(plotWidth as number, priceScaleWidth)
+            : mediaSize.width,
+        });
+      });
+    },
+  };
+  const view: IPrimitivePaneView = {
+    zOrder: () => "top",
+    renderer: () => renderer,
+  };
+  return {
+    setMarkers(nextMarkers: readonly ReplayChartMarker[]) {
+      markers = nextMarkers;
+      requestUpdate?.();
+    },
+    attached(parameters: { chart: IChartApi; series: ISeriesApi<"Candlestick">; requestUpdate: () => void }) {
+      chart = parameters.chart;
+      series = parameters.series;
+      requestUpdate = parameters.requestUpdate;
+    },
+    detached() {
+      chart = null;
+      series = null;
+      requestUpdate = null;
+    },
+    updateAllViews() {},
+    hitTest(x: number, y: number) {
+      if (!chart || !series) return null;
+      let nearest: { marker: ReplayChartMarker; distance: number } | null = null;
+      for (const marker of markers) {
+        const markerX = timeToX(marker.time);
+        const markerAnchorY = series.priceToCoordinate(marker.price);
+        if (markerX === null || markerAnchorY === null) continue;
+        const geometry = markerDisplayGeometry({
+          anchorX: markerX,
+          anchorY: markerAnchorY,
+          position: marker.position,
+          offsetX: marker.offsetX,
+          offsetY: marker.offsetY,
+          maxX: chart.timeScale().width?.(),
+        });
+        const distance = Math.hypot(x - geometry.x, y - geometry.y);
+        if (distance <= 14 && (!nearest || distance < nearest.distance)) nearest = { marker, distance };
+      }
+      const hit = nearest;
+      const executionId = hit?.marker.executionIds?.[0];
+      if (!hit || !executionId) return null;
+      return { externalId: executionId, distance: hit.distance, hitTestPriority: 2, cursorStyle: "pointer", zOrder: "top", itemType: "marker" };
+    },
+    autoscaleInfo(startTimePoint: Logical, endTimePoint: Logical) {
+      const candleTimes = getCandleData().map((candle) => Number(candle.time));
+      const prices = markers.flatMap((marker) => {
+        if (!Number.isFinite(marker.price)) return [];
+        const seconds = numericChartTime(marker.time);
+        const logical = seconds === null ? null : markerLogicalPosition(candleTimes, seconds);
+        return logical !== null && logical >= Number(startTimePoint) && logical <= Number(endTimePoint)
+          ? [marker.price]
+          : [];
+      });
+      if (prices.length === 0) return null;
+      const min = Math.min(...prices);
+      const max = Math.max(...prices);
+      const padding = Math.max((max - min) * 0.08, Math.abs(max) * 0.01, 0.000001);
+      return {
+        priceRange: {
+          minValue: min - padding,
+          maxValue: max + padding,
+        },
+      };
+    },
+    paneViews: () => [view],
+  } as unknown as ReplayExecutionMarkerPrimitive;
+}
+
+function isTimeAnchoredExecution(execution: TradeExecution) {
+  return execution.source.tradingSession !== "grey-market" &&
+    execution.source.timePrecision !== "date-only" &&
+    execution.source.sourceTimeKind !== "date" &&
+    execution.source.sourceTimeKind !== "order" &&
+    chartTime(execution.executedAt) !== null &&
+    Number.isFinite(Number(execution.price));
+}
+
+/**
+ * Build the exact time axis known to the replay. Unmapped timestamped fills
+ * are registered as Lightweight Charts whitespace points; they carry no OHLC
+ * and therefore cannot reveal a future candle.
+ */
+function chartTimelineData(
+  candles: readonly Candle[],
+  executions: readonly TradeExecution[],
+): ChartTimelineData[] {
+  const candleData = chartCandleData(candles);
+  const validCandleTimes = new Set(validCandles(candles).map((candle) => candle.time));
+  const mappedExecutionIds = new Set(
+    mapExecutionsToCandles(candles, executions)
+      .filter((marker) => validCandleTimes.has(marker.candleTime))
+      .map((marker) => marker.executionId),
+  );
+  const timeline = new Map<number, ChartTimelineData>(
+    candleData.map((candle) => [Number(candle.time), candle]),
+  );
+  for (const execution of executions) {
+    if (mappedExecutionIds.has(execution.id) || !isTimeAnchoredExecution(execution)) continue;
+    const time = chartTime(execution.executedAt);
+    if (time === null) continue;
+    const seconds = Number(time);
+    if (!timeline.has(seconds)) timeline.set(seconds, { time });
+  }
+  const axisTimes = markerTimelineTimes(
+    candleData.map((candle) => Number(candle.time)),
+    [...timeline.keys()].filter((time) => !candleData.some((candle) => Number(candle.time) === time)),
+  );
+  return axisTimes.flatMap((time) => {
+    const point = timeline.get(time);
+    return point ? [point] : [];
+  });
+}
+
+type MarkerExecutionFact = {
+  execution: TradeExecution;
+  inputIndex: number;
+  candleTime?: string;
+  time: Time;
+  candle?: Candle;
+};
+
+function executionMarkerFacts(
+  candles: readonly Candle[],
+  executions: readonly TradeExecution[],
+) {
+  const candleByTime = new Map(validCandles(candles).map((candle) => [candle.time, candle]));
+  const mapped = new Map(
+    mapExecutionsToCandles(candles, executions)
+      .filter((marker) => candleByTime.has(marker.candleTime))
+      .map((marker) => [marker.executionId, marker.candleTime]),
+  );
+  return executions
+    .map((execution, inputIndex): MarkerExecutionFact | null => {
+      const candleTime = mapped.get(execution.id);
+      const time = chartTime(candleTime ?? (isTimeAnchoredExecution(execution) ? execution.executedAt : ""));
+      if (time === null) return null;
+      return { execution, inputIndex, candleTime, time, candle: candleTime ? candleByTime.get(candleTime) : undefined };
+    })
+    .filter((fact): fact is MarkerExecutionFact => fact !== null)
+    .sort((left, right) => {
+      const leftTime = Date.parse(left.execution.executedAt);
+      const rightTime = Date.parse(right.execution.executedAt);
+      const leftOrder = Number.isFinite(leftTime) ? leftTime : Number.POSITIVE_INFINITY;
+      const rightOrder = Number.isFinite(rightTime) ? rightTime : Number.POSITIVE_INFINITY;
+      return leftOrder - rightOrder || left.inputIndex - right.inputIndex;
+    });
+}
+
 export function buildReplayChartMarkers(
   candles: readonly Candle[],
   executions: readonly TradeExecution[],
@@ -280,33 +619,77 @@ export function buildReplayChartMarkers(
   highlightedExecutionId?: string,
 ): ReplayChartMarker[] {
   const validChartCandles = validCandles(candles);
-  const validChartTimes = new Set(
-    validChartCandles.flatMap((candle) => {
-      const time = chartTime(candle.time);
-      return time === null ? [] : [time];
-    }),
-  );
-  const executionGroups = groupExecutionsByCandle(candles, executions);
+  const validChartTimes = new Set(validChartCandles.flatMap((candle) => {
+    const time = chartTime(candle.time);
+    return time === null ? [] : [time];
+  }));
+  const executionFacts = executionMarkerFacts(candles, executions);
+  const markerOffsetByExecutionId = new Map<string, number>();
+  const markerOffsetYByExecutionId = new Map<string, number>();
+  const sameTimeFacts = new Map<number, MarkerExecutionFact[]>();
+  for (const fact of executionFacts) {
+    const key = Number(fact.time);
+    const group = sameTimeFacts.get(key) ?? [];
+    group.push(fact);
+    sameTimeFacts.set(key, group);
+  }
+  for (const facts of sameTimeFacts.values()) {
+    const sideLanes = new Map<TradeExecution["side"], number>();
+    facts.forEach((fact, index) => {
+      const lane = sideLanes.get(fact.execution.side) ?? 0;
+      sideLanes.set(fact.execution.side, lane + 1);
+      markerOffsetByExecutionId.set(
+        fact.execution.id,
+        (index - (facts.length - 1) / 2) * 18,
+      );
+      markerOffsetYByExecutionId.set(
+        fact.execution.id,
+        fact.execution.side === "buy" ? lane * 22 : lane === 0 ? 0 : -lane * 22,
+      );
+    });
+  }
+  const stateByScope = new Map<string, MarkerPositionState>();
+  const executionMarkers = executionFacts.flatMap((fact): ReplayChartMarker[] => {
+    const { execution } = fact;
+    const stateKey = `${execution.accountId}:${tradeScopeKey(execution)}`;
+    const before = stateByScope.get(stateKey) ?? { long: 0, short: 0, unknown: false, directionUnknown: false };
+    const after = { ...before };
+    const delta = markerDelta(execution);
+    if (!delta) {
+      after.unknown = true;
+      if (!execution.source.positionEffect) after.directionUnknown = true;
+    } else {
+      if (!delta.directionKnown) after.directionUnknown = true;
+      if (execution.source.positionEffect === "open-short" || execution.source.positionEffect === "close-short") {
+        after.short = Math.max(0, after.short + delta.short);
+      } else {
+        after.long = Math.max(0, after.long + delta.long);
+      }
+    }
+    const actionLabel = actionLabelForExecution(execution, before, after);
+    stateByScope.set(stateKey, after);
+    const price = fact.candle
+      ? execution.side === "buy" ? fact.candle.low : fact.candle.high
+      : Number(execution.price);
+    if (!Number.isFinite(price)) return [];
+    const highlighted = highlightedExecutionId === execution.id;
+    return [{
+      time: fact.time,
+      price,
+      position: execution.side === "buy" ? "belowBar" : "aboveBar",
+      color: highlighted ? "#f3ba2f" : execution.side === "buy" ? "#26a69a" : "#ef5350",
+      shape: "diamond",
+      actionLabel,
+      text: `${highlighted ? "★ " : ""}${actionLabel}`,
+      executionIds: [execution.id],
+      fillCount: 1,
+      offsetX: markerOffsetByExecutionId.get(execution.id) ?? 0,
+      offsetY: markerOffsetYByExecutionId.get(execution.id) ?? 0,
+      side: execution.side,
+    }];
+  });
   const markers = [
-    ...executionGroups.map((group): ReplayChartMarker | null => {
-      const candleTime = group.candleTime;
-      const time = candleTime ? chartTime(candleTime) : null;
-      if (time === null || !validChartTimes.has(time)) return null;
-      const highlighted = highlightedExecutionId !== undefined &&
-        group.executionIds.includes(highlightedExecutionId);
-      const sideLabel = group.side === "buy" ? "B" : "S";
-      const countLabel = group.fillCount > 1 ? ` ×${group.fillCount}` : "";
-      return {
-        time,
-        position: group.side === "buy" ? "belowBar" : "aboveBar",
-        color: highlighted ? "#f3ba2f" : group.side === "buy" ? "#26a69a" : "#ef5350",
-        shape: group.side === "buy" ? "arrowUp" : "arrowDown",
-        text: `${highlighted ? "★ " : ""}${sideLabel}${countLabel}`,
-        executionIds: group.executionIds,
-        fillCount: group.fillCount,
-        side: group.side,
-      };
-    }),
+    ...executionMarkers,
     ...[...new Map(positionEvents.map((event) => [event.id, event])).values()]
       .filter((event) => event.kind === "ipo" && event.quantity && event.displayTimePolicy === "session-open")
       .map((event): ReplayChartMarker | null => {
@@ -316,11 +699,14 @@ export function buildReplayChartMarkers(
         });
         const time = candleTime ? chartTime(candleTime) : null;
         if (time === null || !validChartTimes.has(time)) return null;
+        const candle = validChartCandles.find((candidate) => candidate.time === candleTime);
         return {
           time,
+          price: candle?.low ?? 0,
           position: "belowBar",
           color: "#a78bfa",
-          shape: "arrowUp",
+          shape: "diamond",
+          actionLabel: "配售",
           text: `配售 ${event.quantity}`,
         };
       }),
@@ -421,11 +807,15 @@ function viewportIdentity(key: string) {
   return key;
 }
 
-function fitChartToCandles(chart: IChartApi, candleCount: number) {
+function fitChartToCandles(
+  chart: IChartApi,
+  candleCount: number,
+  setRange: (range: LogicalRange) => void = (range) => chart.timeScale().setVisibleLogicalRange(range),
+) {
   if (candleCount <= 0) return;
   chart.timeScale().fitContent();
   const padding = Math.max(3, Math.ceil(candleCount * 0.04));
-  chart.timeScale().setVisibleLogicalRange({
+  setRange({
     from: -padding,
     to: candleCount - 1 + padding,
   });
@@ -437,6 +827,11 @@ export function ReplayChart({
   positionEvents = EMPTY_POSITION_EVENTS,
   cursor,
   averageCost,
+  planPriceLines,
+  planLinesEditable = false,
+  onPlanPriceChange,
+  onPlanInteractionStart,
+  onPlanPriceSelect,
   drawings,
   activeTool,
   settings,
@@ -444,9 +839,11 @@ export function ReplayChart({
   timeframe = "1D",
   viewportKey = episodeId,
   focusRange,
+  revealRequest,
   locateRequest,
   onLocateResult,
   onLocateTimeframeChange,
+  onExecutionSelect,
   onReady,
   selectedDrawingId,
   plannedRiskAmount,
@@ -454,16 +851,22 @@ export function ReplayChart({
   onSelectDrawing,
   onCommand,
 }: Props) {
+  const planHitControls = useRef(new Map<string, HTMLButtonElement>());
+  const planDrag = useRef<{id:string;original:string;pointerId:number} | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const volumeSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
-  const markerPluginRef = useRef<unknown>(null);
+  const executionMarkerPrimitiveRef = useRef<ReplayExecutionMarkerPrimitive | null>(null);
   const costLineRef = useRef<IPriceLine | null>(null);
   const drawingCanvasRef = useRef<DrawingCanvasHandle | null>(null);
   const chartHandleRef = useRef<ChartHandle | null>(null);
   const candlesRef = useRef(candles);
   const drawingsRef = useRef(drawings);
+  const onExecutionSelectRef = useRef(onExecutionSelect);
+  const visibleExecutionIdsRef = useRef<Set<string>>(new Set());
+  const chartClickHandlerRef = useRef<((param: ReplayChartClickParam) => void) | null>(null);
+  const visibleLogicalRangeHandlerRef = useRef<(() => void) | null>(null);
   const viewportKeyRef = useRef(viewportKey);
   const coordinateAdapterRef = useRef<ChartCoordinateAdapter | null>(null);
   const chartSizeRef = useRef({ width: 0, height: 0 });
@@ -480,18 +883,34 @@ export function ReplayChart({
   const fitAllRef = useRef<ChartHandle["fitAll"]>(() => undefined);
   const fittedRef = useRef<string | null>(null);
   const locatedRequestRef = useRef<string | null>(null);
+  const revealedRequestRef = useRef<number | null>(null);
   const unresolvedLocationAttemptRef = useRef<string | null>(null);
-  const appliedCandleDataRef = useRef<ChartCandleData[]>([]);
+  const appliedCandleDataRef = useRef<ChartTimelineData[]>([]);
   const lastViewSnapshotRef = useRef<{
-    data: ChartCandleData[];
+    data: ChartTimelineData[];
     logicalRange?: { from: number; to: number } | null;
     timeRange?: VisibleTimeRange | null;
   } | null>(null);
+  // lightweight-charts applies target logical ranges during its next paint.
+  // ResizeObserver can run in that gap, so keep the latest chart-owned range
+  // as the authority instead of reading the still-old range back from LWC.
+  const pendingLogicalRangeRef = useRef<LogicalRange | null>(null);
+  const pendingLogicalRangeVersionRef = useRef(0);
   const [chartReady, setChartReady] = useState(false);
   const [coordinateVersion, setCoordinateVersion] = useState(0);
   const [crosshair, setCrosshair] = useState<CrosshairCandle | null>(
     null,
   );
+
+  const requestLogicalRange = useCallback((
+    scale: ReturnType<IChartApi["timeScale"]>,
+    range: LogicalRange,
+  ) => {
+    const next = { from: range.from, to: range.to };
+    pendingLogicalRangeRef.current = next;
+    pendingLogicalRangeVersionRef.current += 1;
+    scale.setVisibleLogicalRange(next);
+  }, []);
 
   const coordinateAdapter = useMemo<ChartCoordinateAdapter>(
     () => ({
@@ -539,12 +958,34 @@ export function ReplayChart({
     [candles],
   );
 
+  const [plotBounds, setPlotBounds] = useState<ChartPlotBounds | undefined>();
+
+  useLayoutEffect(() => {
+    if (!chartReady) return;
+    const chart = chartRef.current;
+    const fullWidth = chartSizeRef.current.width;
+    const fullHeight = chartSizeRef.current.height;
+    if (!chart || fullWidth <= 0 || fullHeight <= 0) return;
+    const measuredWidth = chart.timeScale().width?.();
+    const measuredHeight = chart.panes?.()[0]?.getHeight?.();
+    const nextBounds = {
+      width: Number.isFinite(measuredWidth) && (measuredWidth as number) > 0
+        ? Math.max(1, Math.min(fullWidth, measuredWidth as number))
+        : fullWidth,
+      height: Number.isFinite(measuredHeight) && (measuredHeight as number) > 0
+        ? Math.max(1, Math.min(fullHeight, measuredHeight as number))
+        : fullHeight,
+    };
+    setPlotBounds((current) => current?.width === nextBounds.width && current.height === nextBounds.height ? current : nextBounds);
+  }, [chartReady, coordinateVersion]);
+
   useLayoutEffect(() => {
     candlesRef.current = candles;
     drawingsRef.current = drawings;
     viewportKeyRef.current = viewportKey;
     coordinateAdapterRef.current = coordinateAdapter;
-  }, [candles, coordinateAdapter, drawings, viewportKey]);
+    onExecutionSelectRef.current = onExecutionSelect;
+  }, [candles, coordinateAdapter, drawings, onExecutionSelect, viewportKey]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -561,7 +1002,6 @@ export function ReplayChart({
         HistogramSeries,
         LineStyle,
         createChart,
-        createSeriesMarkers,
       }) => {
         if (disposed) return;
         const chart = createChart(container, {
@@ -594,6 +1034,7 @@ export function ReplayChart({
           },
           rightPriceScale: {
             borderColor: "#273345",
+            minimumWidth: 84,
             scaleMargins: { top: 0.08, bottom: 0.2 },
           },
           localization: {
@@ -632,7 +1073,10 @@ export function ReplayChart({
         volumeSeries.priceScale().applyOptions({
           scaleMargins: { top: 0.82, bottom: 0 },
         });
-        const markerPlugin = createSeriesMarkers(candleSeries, []);
+        const executionMarkerPrimitive = createExecutionMarkerPrimitive(
+          () => appliedCandleDataRef.current,
+        );
+        (candleSeries as ISeriesApi<"Candlestick"> & { attachPrimitive?: (primitive: ISeriesPrimitive<Time>) => void }).attachPrimitive?.(executionMarkerPrimitive);
         const costLine = candleSeries.createPriceLine({
           price: 0,
           color: "#f3ba2f",
@@ -643,6 +1087,7 @@ export function ReplayChart({
         });
 
         chart.subscribeCrosshairMove((param) => {
+          if (disposed) return;
           setCoordinateVersion((version) => version + 1);
           if (!param.time) {
             setCrosshair(null);
@@ -659,27 +1104,68 @@ export function ReplayChart({
             });
           }
         });
-        chart.timeScale().subscribeVisibleLogicalRangeChange(() => {
+        const handleChartClick = (param: ReplayChartClickParam) => {
+          const objectId = param.hoveredInfo?.objectId ?? param.hoveredObjectId;
+          if (typeof objectId === "string" && visibleExecutionIdsRef.current.has(objectId)) {
+            onExecutionSelectRef.current?.(objectId);
+          }
+        };
+        const clickCapableChart = chart as IChartApi & {
+          subscribeClick?: (handler: (param: ReplayChartClickParam) => void) => void;
+          unsubscribeClick?: (handler: (param: ReplayChartClickParam) => void) => void;
+        };
+        chartClickHandlerRef.current = handleChartClick;
+        clickCapableChart.subscribeClick?.(handleChartClick);
+        const handleVisibleLogicalRangeChange = () => {
+          if (disposed) return;
+          const pending = pendingLogicalRangeRef.current;
+          const current = chart.timeScale().getVisibleLogicalRange?.();
+          if (pending) {
+            const version = pendingLogicalRangeVersionRef.current;
+            if (logicalRangesEqual(pending, current)) {
+              pendingLogicalRangeRef.current = null;
+            } else {
+              // A range-change notification can be delivered before the
+              // browser's paint that applies the target. Defer mismatch
+              // handling so a same-frame resize can reassert the target first.
+              queueMicrotask(() => {
+                if (disposed || pendingLogicalRangeVersionRef.current !== version) return;
+                const latest = chart.timeScale().getVisibleLogicalRange?.();
+                if (!logicalRangesEqual(pendingLogicalRangeRef.current, latest)) {
+                  pendingLogicalRangeRef.current = null;
+                }
+              });
+            }
+          }
           setCoordinateVersion((version) => version + 1);
-        });
+        };
+        visibleLogicalRangeHandlerRef.current = handleVisibleLogicalRangeChange;
+        chart.timeScale().subscribeVisibleLogicalRangeChange(handleVisibleLogicalRangeChange);
 
         chartRef.current = chart;
         seriesRef.current = candleSeries;
         volumeSeriesRef.current = volumeSeries;
-        markerPluginRef.current = markerPlugin;
+        executionMarkerPrimitiveRef.current = executionMarkerPrimitive;
         costLineRef.current = costLine;
         setChartReady(true);
 
         observer = new ResizeObserver(() => {
+          if (disposed) return;
           const width = Math.max(1, container.clientWidth);
           const height = Math.max(1, container.clientHeight);
-          const range = chart.timeScale().getVisibleLogicalRange?.();
+          const previousWidth = chartSizeRef.current.width;
+          const widthChanged = previousWidth > 0 && width !== previousWidth;
+          const rangeBeforeResize = pendingLogicalRangeRef.current ?? chart.timeScale().getVisibleLogicalRange?.();
           chart.applyOptions({
             width,
             height,
           });
-          if (range && width > 0) chart.timeScale().setVisibleLogicalRange(range);
-          const previousWidth = chartSizeRef.current.width;
+          // Height changes do not alter the time scale. On a width change,
+          // preserve the chart-owned pending target when LWC's getter still
+          // exposes the pre-paint range; otherwise preserve the stable range.
+          if (widthChanged && width > 0) {
+            if (rangeBeforeResize) requestLogicalRange(chart.timeScale(), rangeBeforeResize);
+          }
           chartSizeRef.current = { width, height };
           const usable = width >= 400 && height >= 180;
           if (!usable) {
@@ -688,8 +1174,13 @@ export function ReplayChart({
             waitingForUsableSizeRef.current ||
             (!initialFitDoneRef.current && previousWidth === 0)
           ) {
-            fitChartToCandles(chart, candlesRef.current.length);
-            initialFitDoneRef.current = candlesRef.current.length > 0;
+            const timelineCount = appliedCandleDataRef.current.length || candlesRef.current.length;
+            if (pendingLogicalRangeRef.current) {
+              requestLogicalRange(chart.timeScale(), pendingLogicalRangeRef.current);
+            } else {
+              fitChartToCandles(chart, timelineCount, (range) => requestLogicalRange(chart.timeScale(), range));
+            }
+            initialFitDoneRef.current = timelineCount > 0;
             waitingForUsableSizeRef.current = false;
             fittedRef.current = viewportIdentity(viewportKeyRef.current);
           }
@@ -702,14 +1193,31 @@ export function ReplayChart({
     return () => {
       disposed = true;
       observer?.disconnect();
+      const clickCapableChart = chartRef.current as (IChartApi & {
+        unsubscribeClick?: (handler: (param: ReplayChartClickParam) => void) => void;
+      }) | null;
+      const chartClickHandler = chartClickHandlerRef.current;
+      if (clickCapableChart && chartClickHandler) clickCapableChart.unsubscribeClick?.(chartClickHandler);
+      chartClickHandlerRef.current = null;
+      const activeChart = chartRef.current;
+      const visibleLogicalRangeHandler = visibleLogicalRangeHandlerRef.current;
+      if (activeChart && visibleLogicalRangeHandler) {
+        activeChart.timeScale().unsubscribeVisibleLogicalRangeChange?.(visibleLogicalRangeHandler);
+      }
+      visibleLogicalRangeHandlerRef.current = null;
+      pendingLogicalRangeRef.current = null;
+      pendingLogicalRangeVersionRef.current += 1;
+      if (seriesRef.current && executionMarkerPrimitiveRef.current) {
+        (seriesRef.current as ISeriesApi<"Candlestick"> & { detachPrimitive?: (primitive: ISeriesPrimitive<Time>) => void }).detachPrimitive?.(executionMarkerPrimitiveRef.current);
+      }
       chartRef.current?.remove();
       chartRef.current = null;
       seriesRef.current = null;
       volumeSeriesRef.current = null;
-      markerPluginRef.current = null;
+      executionMarkerPrimitiveRef.current = null;
       costLineRef.current = null;
     };
-  }, []);
+  }, [requestLogicalRange]);
 
   useEffect(() => {
     chartRef.current?.applyOptions({
@@ -722,6 +1230,8 @@ export function ReplayChart({
   const mappingSignature = candleMappingSignature(candles);
   const validChartCandles = validCandles(candles);
   const validCandleData = chartCandleData(candles);
+  const timelineData = chartTimelineData(candles, settings.showExecutions ? executions : []);
+  const timelineSignature = [candleSignature, mappingSignature, executionMarkerSignature(executions), settings.showExecutions ? "on" : "off"].join("\u0001");
   const highlightedExecutionId = locateRequest?.episodeId === episodeId &&
     executions.some((execution) =>
       execution.id === locateRequest.executionId &&
@@ -729,14 +1239,17 @@ export function ReplayChart({
     )
     ? locateRequest.executionId
     : undefined;
-  const markerData = settings.showExecutions
-    ? buildReplayChartMarkers(
-        candles,
-        executions,
-        positionEvents,
-        highlightedExecutionId,
-      )
-    : [];
+  const markerData = useMemo(
+    () => settings.showExecutions
+      ? buildReplayChartMarkers(
+          candles,
+          executions,
+          positionEvents,
+          highlightedExecutionId,
+        )
+      : [],
+    [candles, executions, highlightedExecutionId, positionEvents, settings.showExecutions],
+  );
   // Marker and source signatures are deliberately value based. Refreshing
   // metadata often creates new arrays with the same bars; those updates must
   // not tear down the chart or move the user's viewport.
@@ -752,16 +1265,20 @@ export function ReplayChart({
     : "";
 
   const fitAll = useCallback(() => {
-    if (!chartRef.current || candlesRef.current.length === 0) return;
+    if (!chartRef.current || appliedCandleDataRef.current.length === 0) return;
     // Leave room for arrows/text on the first and last bars as well.
-    fitChartToCandles(chartRef.current, candlesRef.current.length);
+    fitChartToCandles(
+      chartRef.current,
+      appliedCandleDataRef.current.length,
+      (range) => requestLogicalRange(chartRef.current!.timeScale(), range),
+    );
     fittedRef.current = viewportIdentity(viewportKeyRef.current);
     const usable = chartSizeRef.current.width >= 400 && chartSizeRef.current.height >= 180;
     initialFitDoneRef.current = usable;
     waitingForUsableSizeRef.current = !usable;
     setCrosshair(null);
     setCoordinateVersion((version) => version + 1);
-  }, []);
+  }, [requestLogicalRange]);
 
   useLayoutEffect(() => {
     const candleSeries = seriesRef.current;
@@ -769,6 +1286,7 @@ export function ReplayChart({
     if (!chartReady || !candleSeries || !volumeSeries) return;
 
     const scale = chartRef.current?.timeScale();
+    if (!scale) return;
     // Capture the user's logical range before setData. lightweight-charts may
     // otherwise reset it while replacing a series, especially when a refresh
     // temporarily returns an empty array.
@@ -787,18 +1305,18 @@ export function ReplayChart({
         timeRange: previousTimeRange,
       };
     }
-    const markerPlugin = markerPluginRef.current as {
-      setMarkers: (nextMarkers: readonly ReplayChartMarker[]) => void;
-    } | null;
-    markerPlugin?.setMarkers([]);
+    executionMarkerPrimitiveRef.current?.setMarkers([]);
+    visibleExecutionIdsRef.current.clear();
     candleSeries.setData(
-      validCandleData.map(({ time, open, high, low, close }) => ({
-        time,
-        open,
-        high,
-        low,
-        close,
-      })),
+      timelineData.map((point) => point.open === undefined
+        ? { time: point.time }
+        : {
+            time: point.time,
+            open: point.open,
+            high: point.high!,
+            low: point.low!,
+            close: point.close!,
+          }),
     );
     volumeSeries.setData(
       validCandleData.map((candle) => ({
@@ -813,52 +1331,154 @@ export function ReplayChart({
     const snapshot = lastViewSnapshotRef.current;
     const restoredLogicalRange = snapshot?.logicalRange &&
       snapshot.data.length > 0 &&
-      logicalRangeForUpdatedCandles(snapshot.data, validCandleData, snapshot.logicalRange);
+      logicalRangeForUpdatedCandles(snapshot.data, timelineData, snapshot.logicalRange);
     const restoredTimeRange = snapshot?.timeRange &&
       snapshot.data.length > 0 &&
-      logicalRangeForVisibleTimes(validCandleData, snapshot.timeRange);
-    if (validCandleData.length > 0 && restoredLogicalRange) {
-      scale?.setVisibleLogicalRange(restoredLogicalRange);
-    } else if (validCandleData.length > 0 && restoredTimeRange) {
-      scale?.setVisibleLogicalRange(restoredTimeRange);
-    } else if (validCandleData.length > 0 && snapshot?.logicalRange) {
-      scale?.setVisibleLogicalRange(snapshot.logicalRange);
+      logicalRangeForVisibleTimes(timelineData, snapshot.timeRange);
+    if (timelineData.length > 0 && restoredLogicalRange) {
+      requestLogicalRange(scale!, restoredLogicalRange);
+    } else if (timelineData.length > 0 && restoredTimeRange) {
+      requestLogicalRange(scale!, restoredTimeRange);
+    } else if (timelineData.length > 0 && snapshot?.logicalRange) {
+      requestLogicalRange(scale!, snapshot.logicalRange);
     }
-    appliedCandleDataRef.current = validCandleData;
+    appliedCandleDataRef.current = timelineData;
     setCoordinateVersion((version) => version + 1);
   // Value signature dependencies intentionally ignore refreshed array identity.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chartReady, candleSignature, viewportKey]);
+  }, [chartReady, requestLogicalRange, timelineSignature, viewportKey]);
+
+  useLayoutEffect(() => {
+    const scale = chartRef.current?.timeScale();
+    if (!chartReady || !scale || !revealRequest || validCandleData.length === 0) return;
+    if (revealedRequestRef.current === revealRequest.id) return;
+    const targetTimestamp = chartTime(revealRequest.time);
+    if (targetTimestamp === null) return;
+    const targetSeconds = numericChartTime(targetTimestamp);
+    if (targetSeconds === null) return;
+    let targetIndex = -1;
+    for (let index = 0; index < validCandleData.length; index += 1) {
+      if (Number(validCandleData[index].time) <= targetSeconds) targetIndex = index;
+      else break;
+    }
+    // Do not navigate to a future candle when a request arrives before its data.
+    if (targetIndex < 0) return;
+    const targetCandle = validCandleData[targetIndex];
+    // The replay cursor is a knowledge cutoff (usually the candle close),
+    // while the chart axis registers a candle at its opening time. A cutoff
+    // after the last revealed candle therefore falls outside the axis. Keep
+    // the real candle time as the navigation anchor and only use the request
+    // time itself when it is an explicitly registered whitespace point (for
+    // example an execution whose candle is still withheld).
+    const targetCandleLogical = logicalPositionForTime(timelineData, targetCandle.time);
+    const requestedLogical = timelineData.some((point) => numericChartTime(point.time) === targetSeconds)
+      ? logicalPositionForTime(timelineData, targetTimestamp)
+      : null;
+    const latestKnownExecutionTime = markerData
+      .flatMap((marker) => {
+        if (!marker.executionIds?.length) return [];
+        const markerSeconds = numericChartTime(marker.time);
+        return markerSeconds !== null && markerSeconds <= targetSeconds ? [markerSeconds] : [];
+      })
+      .reduce((latest, time) => Math.max(latest, time), Number.NEGATIVE_INFINITY);
+    const latestKnownExecutionLogical = Number.isFinite(latestKnownExecutionTime)
+      ? logicalPositionForTime(timelineData, latestKnownExecutionTime as Time)
+      : null;
+    const targetLogicals = [targetCandleLogical, requestedLogical, latestKnownExecutionLogical]
+      .filter((logical): logical is number => logical !== null && Number.isFinite(logical));
+    const targetLogical = targetLogicals.length > 0 ? Math.max(...targetLogicals) : null;
+    if (targetLogical === null) return;
+    // setData can synchronously shift LWC's getter while the preceding data
+    // effect has already queued a preservation range for the next paint. The
+    // queued range is authoritative for this reveal transaction; reading the
+    // transient getter can make the target look visible and skip navigation.
+    const current = pendingLogicalRangeRef.current ?? scale.getVisibleLogicalRange?.();
+    // On the first commit lightweight-charts may report an empty range before
+    // its first layout. Seed that one request from the caller's revealed
+    // episode window so the initial navigation does not collapse to a single
+    // bar or let the later generic fit effect overwrite the requested focus.
+    const seedRange = current && current.to > current.from
+      ? current
+      : focusRange
+        ? episodeViewport(validChartCandles, focusRange)
+        : current;
+    const next = logicalRangeIncludingIndex(seedRange, targetLogical, timelineData.length);
+    if (next !== current) requestLogicalRange(scale, next);
+    const priceScale = seriesRef.current?.priceScale();
+    const priceScaleOptions = (priceScale as unknown as { options?: () => { autoScale?: boolean } } | undefined)?.options?.();
+    // The replay request is a knowledge cutoff, not necessarily the execution
+    // timestamp. Use the latest revealed execution at or before that cutoff,
+    // while leaving ordinary refreshes outside this one-shot effect.
+    const targetExecutionPrices = markerData
+      .flatMap((marker) => {
+        if (!marker.executionIds?.length || !Number.isFinite(marker.price)) return [];
+        const markerSeconds = numericChartTime(marker.time);
+        return markerSeconds !== null && markerSeconds <= targetSeconds
+          ? [{ time: markerSeconds, price: marker.price }]
+          : [];
+      });
+    const latestExecutionTime = Math.max(...targetExecutionPrices.map((item) => item.time), Number.NEGATIVE_INFINITY);
+    const latestExecutionPrices = targetExecutionPrices
+      .filter((item) => item.time === latestExecutionTime)
+      .map((item) => item.price);
+    const targetPriceValues = targetCandle
+      ? [targetCandle.low, targetCandle.high, ...latestExecutionPrices]
+      : latestExecutionPrices;
+    if (targetPriceValues.length > 0 && priceScaleOptions?.autoScale === false) {
+      const currentPriceRange = priceScale?.getVisibleRange?.();
+      const nextPriceRange = priceRangeIncludingValues(currentPriceRange, targetPriceValues);
+      if (nextPriceRange && nextPriceRange !== currentPriceRange) priceScale?.setVisibleRange(nextPriceRange);
+    }
+    revealedRequestRef.current = revealRequest.id;
+    fittedRef.current = viewportIdentity(viewportKeyRef.current);
+    // Let the layout transaction finish before clearing React state, avoiding
+    // a synchronous cascading render while still clearing before next paint.
+    queueMicrotask(() => {
+      setCrosshair(null);
+      setCoordinateVersion((version) => version + 1);
+    });
+  }, [
+    chartReady,
+    candleSignature,
+    revealRequest?.id,
+    revealRequest?.time,
+    focusRangeSignature,
+    focusRange,
+    revealRequest,
+    validCandleData,
+    validCandleData.length,
+    timelineData,
+    validChartCandles,
+    markerData,
+    requestLogicalRange,
+  ]);
 
   useEffect(() => {
-    const markerPlugin = markerPluginRef.current as {
-      setMarkers: (nextMarkers: readonly ReplayChartMarker[]) => void;
-    } | null;
-    if (!chartReady || !markerPlugin) return;
+    const markerPrimitive = executionMarkerPrimitiveRef.current;
+    if (!chartReady || !markerPrimitive) return;
     // Data and marker mutations happen in separate effects. Installing after
     // the data mutation avoids a transient marker hit-test against old bars.
-    markerPlugin.setMarkers([]);
-    const markerTimer = window.setTimeout(() => {
-      markerPlugin.setMarkers(markerData);
-    }, 0);
-    return () => window.clearTimeout(markerTimer);
+    visibleExecutionIdsRef.current = new Set(
+      markerData.flatMap((marker) => marker.executionIds ?? []),
+    );
+    markerPrimitive.setMarkers(markerData);
   // Marker values are derived from the signature; array identity is irrelevant.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartReady, markerSignature]);
 
   useEffect(() => {
     const scale = chartRef.current?.timeScale();
-    if (!chartReady || !scale || validCandleData.length === 0) return;
+    if (!chartReady || !scale || timelineData.length === 0 || validCandleData.length === 0) return;
     if (fittedRef.current === viewportIdentity(viewportKey)) return;
     scale.fitContent();
     // Leave room for arrows/text on the first and last bars as well.
-    const padding = Math.max(3, Math.ceil(validCandleData.length * 0.04));
-    scale.setVisibleLogicalRange(
+    const padding = Math.max(3, Math.ceil(timelineData.length * 0.04));
+    requestLogicalRange(scale,
       focusRange
         ? episodeViewport(validChartCandles, focusRange)
         : {
             from: -padding,
-            to: validCandleData.length - 1 + padding,
+            to: timelineData.length - 1 + padding,
           },
     );
     fittedRef.current = viewportIdentity(viewportKey);
@@ -869,8 +1489,10 @@ export function ReplayChart({
     candleSignature,
     focusRange,
     focusRangeSignature,
+    timelineData.length,
     validCandleData.length,
     validChartCandles,
+    requestLogicalRange,
     viewportKey,
   ]);
 
@@ -915,7 +1537,7 @@ export function ReplayChart({
       ? Math.max(8, currentRange.to - currentRange.from)
       : Math.max(16, Math.min(60, validCandleData.length * 0.24));
     const half = span / 2;
-    scale.setVisibleLogicalRange({
+    requestLogicalRange(scale, {
       from: targetIndex - half,
       to: targetIndex + half,
     });
@@ -936,11 +1558,19 @@ export function ReplayChart({
     onLocateResult,
     onLocateTimeframeChange,
     timeframe,
+    requestLogicalRange,
     candleSignature,
     mappingSignature,
     validCandleData,
     validChartCandles,
   ]);
+
+  useEffect(() => {
+    const series = seriesRef.current;
+    if (!chartReady || !series) return;
+    const lines = (planPriceLines ?? []).filter(line => Number.isFinite(line.price) && line.price > 0).map(line => series.createPriceLine({ price: line.price, title: line.title, color: "#f3ba2f", lineWidth: 1, lineStyle: 2, axisLabelVisible: true }));
+    return () => { for (const line of lines) series.removePriceLine(line); };
+  }, [chartReady, planPriceLines]);
 
   useEffect(() => {
     if (!chartReady) return;
@@ -1007,6 +1637,13 @@ export function ReplayChart({
       rightOffset: Number(options.rightOffset),
       width: Math.round(rect.width || stage.clientWidth),
       height: Math.round(rect.height || stage.clientHeight),
+      ...(seriesRef.current?.priceScale().getVisibleRange?.() ? { priceRange: {...seriesRef.current.priceScale().getVisibleRange()!} } : {}),
+      ...(seriesRef.current?.priceScale().options?.() ? { priceScaleOptions: {
+        mode: seriesRef.current.priceScale().options().mode,
+        invertScale: seriesRef.current.priceScale().options().invertScale,
+        autoScale: seriesRef.current.priceScale().options().autoScale,
+        scaleMargins: { ...seriesRef.current.priceScale().options().scaleMargins },
+      }} : {}),
     };
   }, []);
 
@@ -1029,71 +1666,57 @@ export function ReplayChart({
         ...(Number.isFinite(viewport.rightOffset) ? { rightOffset: viewport.rightOffset } : {}),
       });
     }
-    if (viewport.logicalRange) scale.setVisibleLogicalRange({ ...viewport.logicalRange });
+    if (viewport.logicalRange) requestLogicalRange(scale, { ...viewport.logicalRange });
+    if (viewport.priceScaleOptions) seriesRef.current?.priceScale().applyOptions(viewport.priceScaleOptions);
+    if (viewport.priceRange) seriesRef.current?.priceScale().setVisibleRange(viewport.priceRange);
+    // LWC's explicit-range setter disables auto scaling. Restore the saved
+    // mode last so revisiting an automatic viewport keeps following new bars.
+    if (viewport.priceScaleOptions) seriesRef.current?.priceScale().setAutoScale(viewport.priceScaleOptions.autoScale);
     setCoordinateVersion((version) => version + 1);
-  }, []);
+  }, [requestLogicalRange]);
 
+  const captureInputRef = useRef({ candles, markerData, planPriceLines, currency, plannedRiskAmount, timeframe });
+  useLayoutEffect(() => { captureInputRef.current = { candles, markerData, planPriceLines, currency, plannedRiskAmount, timeframe }; });
+  const capturePendingRef = useRef(false);
   const capture = useCallback(async (): Promise<ChartCapture> => {
+    if (capturePendingRef.current) throw new Error("图表截图正在进行");
     const chart = chartRef.current;
-    const stage = containerRef.current?.parentElement;
-    if (!chart || !stage || typeof chart.takeScreenshot !== "function") {
-      throw new Error("图表截图不可用");
-    }
-    // A focused editor is still a working draft. Commit it before taking the
-    // base and overlay screenshots so the retained PNG and text state agree.
-    drawingCanvasRef.current?.commitText();
-    const fonts = typeof document !== "undefined" ? document.fonts?.ready : undefined;
-    if (fonts) await fonts;
-    await flush();
-    const rect = stage.getBoundingClientRect();
-    const width = Math.round(rect.width || stage.clientWidth);
-    const height = Math.round(rect.height || stage.clientHeight);
-    if (width <= 0 || height <= 0) throw new Error("图表尺寸无效，无法截图");
-    // Include the chart's top layer so execution markers remain in the
-    // retained image while the second argument keeps the crosshair out.
-    const base = chart.takeScreenshot(true, false);
-    if (!base) throw new Error("基础图表截图失败");
-    const overlay = await drawingCanvasRef.current?.captureOverlay(2);
-    if (!overlay) throw new Error("图表叠加层截图失败");
-    const output = document.createElement("canvas");
-    output.width = width * 2;
-    output.height = height * 2;
-    const context = output.getContext("2d");
-    if (!context) throw new Error("无法合成图表截图");
-    context.drawImage(base, 0, 0, output.width, output.height);
-    context.drawImage(overlay, 0, 0, output.width, output.height);
-    const imageDataUrl = output.toDataURL("image/png");
-    if (!imageDataUrl) throw new Error("图表截图为空");
-    const warnings = drawingsRef.current
-      .filter((drawing) => !drawing.hidden && drawing.tool === "text")
-      .flatMap((drawing) => {
-        const anchor = drawing.anchors[0];
-        const x = drawing.placement === "canvas" && Number.isFinite(drawing.canvasX)
-          ? Number(drawing.canvasX) * width
-          : anchor
-            ? coordinateAdapterRef.current?.timeToX(anchor.time) ?? -1
-            : -1;
-        const y = drawing.placement === "canvas" && Number.isFinite(drawing.canvasY)
-          ? Number(drawing.canvasY) * height
-          : anchor
-            ? coordinateAdapterRef.current?.priceToY(anchor.price) ?? -1
-            : -1;
-        const layout = textLayout(
-          drawing.text ?? "关键位",
-          drawing.textWidth ?? 180,
-          drawing.fontSize ?? 14,
-          width,
-        );
-        return x < 0 || y < 0 || x + layout.width > width || y + layout.height > height
-          ? ["截图文字被裁切"]
-          : [];
-      });
-    return {
-      imageDataUrl,
-      viewport: getViewport(),
-      ...(warnings.length ? { warnings: [...new Set(warnings)] } : {}),
-    };
-  }, [flush, getViewport]);
+    const series = seriesRef.current;
+    const volume = volumeSeriesRef.current;
+    if (!chart || !series || !volume) throw new Error("图表截图不可用");
+    capturePendingRef.current = true;
+    try {
+      // Commands and React layout refs must commit before the immutable scene
+      // is frozen. No asynchronous boundary precedes this revision barrier.
+      flushSync(() => drawingCanvasRef.current?.commitText());
+      chart.takeScreenshot(false, false);
+      const viewport = getViewport();
+      if (!viewport.logicalRange || !viewport.priceRange) throw new Error("图表可见范围尚未就绪，无法截图");
+      if (viewport.width <= 0 || viewport.height <= 0) throw new Error("图表尺寸无效，无法截图");
+      const current = captureInputRef.current;
+      const chartOptions = { ...copyChartOptions(chart.options()), timeScale: {
+        ...copyChartOptions(chart.options().timeScale),
+        tickMarkFormatter: (time: Time, tickMarkType: TickMarkType) => chartTickLabel(time, tickMarkType, current.timeframe ?? "1D"),
+      }};
+      const scene: CanonicalCaptureScene = {
+        chartOptions, candleOptions: copyChartOptions(series.options()),
+        volumeOptions: copyChartOptions(volume.options()),
+        volumeScaleOptions: copyChartOptions(volume.priceScale().options()),
+        candles: structuredClone(validCandles(current.candles)),
+        markers: structuredClone(current.markerData),
+        priceLines: [copyChartOptions(costLineRef.current!.options()), ...(current.planPriceLines ?? []).filter(line => Number.isFinite(line.price) && line.price > 0).map(line => ({ price: line.price, title: line.title, color: "#f3ba2f", lineWidth: 1 as const, lineStyle: 2, axisLabelVisible: true }))],
+        drawings: structuredClone(drawingsRef.current),
+        logicalRange: { ...viewport.logicalRange }, priceRange: { ...viewport.priceRange },
+        currency: current.currency, plannedRiskAmount: current.plannedRiskAmount,
+        expandedTextIds: drawingCanvasRef.current?.getExpandedTextIds?.(),
+      };
+      if (!scene.candles.length) throw new Error("图表行情尚未就绪，无法截图");
+      const fonts = document.fonts?.ready;
+      if (fonts) await fonts;
+      const rendered = await renderCanonicalChartCapture(scene);
+      return { imageDataUrl: rendered.imageDataUrl, viewport: { ...viewport, imageFrame: { ...CANONICAL_CAPTURE_FRAME } }, ...(rendered.warnings.length ? { warnings: rendered.warnings } : {}) };
+    } finally { capturePendingRef.current = false; }
+  }, [getViewport]);
 
   useEffect(() => {
     captureRef.current = capture;
@@ -1123,6 +1746,35 @@ export function ReplayChart({
 
   const displayCandle = crosshair ?? candles.at(-1);
 
+  const safePlanLines = (planPriceLines ?? []).filter(
+    line => Number.isFinite(line.price) && line.price > 0,
+  );
+  // Position the HTML controls against the chart's committed external scale.
+  useLayoutEffect(() => {
+    for (const line of planPriceLines ?? []) {
+      const button = planHitControls.current.get(line.id);
+      if (!button) continue;
+      const y = seriesRef.current?.priceToCoordinate(line.price);
+      const visible = y != null && y >= 20 && y <= chartSizeRef.current.height - 20;
+      button.style.display = visible ? "" : "none";
+      if (visible) button.style.top = `${y - 18}px`;
+    }
+  }, [chartReady, coordinateVersion, planPriceLines]);
+  const fitPlanPrices = () => {
+    const revealedPrices = validChartCandles
+      .filter(candle => Date.parse(candle.time) <= Date.parse(cursor))
+      .flatMap(candle => [candle.low, candle.high]);
+    const prices = [...safePlanLines.map(line => line.price), ...revealedPrices];
+    if (!prices.length) return;
+    const low = Math.min(...prices);
+    const high = Math.max(...prices);
+    const padding = Math.max((high - low) * 0.1, high * 0.01);
+    seriesRef.current?.priceScale().setVisibleRange({
+      from: Math.max(0.000001, low - padding),
+      to: high + padding,
+    });
+    setCoordinateVersion(version => version + 1);
+  };
   return (
     <div
       className="chart-stage"
@@ -1162,6 +1814,69 @@ export function ReplayChart({
         )}
       </div>
       <div ref={containerRef} className="lightweight-chart" />
+      {safePlanLines.length > 0 && (
+        <button type="button" className="recall-plan-price-action" onClick={fitPlanPrices}
+          style={{ position: "absolute", left: 76, bottom: 48, zIndex: 8 }}>
+          显示计划价格
+        </button>
+      )}
+      {chartReady && safePlanLines.map(line => {
+        return (
+          <button key={line.id} type="button"
+            ref={element => {
+              if (element) planHitControls.current.set(line.id, element);
+              else planHitControls.current.delete(line.id);
+            }}
+            aria-label={`${line.title} ${line.price}，精确编辑`}
+            title={planLinesEditable ? "拖动调整；点击精确输入；Escape 取消拖动" : "查看计划"}
+            style={{
+              position: "absolute", left: 8, zIndex: 8,
+              minHeight: 36, touchAction: "none",
+              cursor: planLinesEditable ? "ns-resize" : "pointer",
+            }}
+            onClick={() => onPlanPriceSelect?.(line.id)}
+            onPointerDown={event => {
+              event.stopPropagation();
+              if (!planLinesEditable || !onPlanPriceChange) return;
+              onPlanInteractionStart?.();
+              planDrag.current = { id: line.id, original: String(line.price), pointerId: event.pointerId };
+              event.currentTarget.setPointerCapture?.(event.pointerId);
+            }}
+            onPointerMove={event => {
+              if (planDrag.current?.id !== line.id) return;
+              event.stopPropagation();
+              const rect = containerRef.current?.getBoundingClientRect();
+              if (!rect) return;
+              const price = seriesRef.current?.coordinateToPrice(event.clientY - rect.top);
+              if (price != null && Number.isFinite(price) && price > 0) {
+                onPlanPriceChange?.(line.id, price.toFixed(4).replace(/\.?0+$/, ""));
+              }
+            }}
+            onPointerUp={event => {
+              event.stopPropagation();
+              planDrag.current = null;
+              if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+                event.currentTarget.releasePointerCapture(event.pointerId);
+              }
+            }}
+            onPointerCancel={event => {
+              event.stopPropagation();
+              const drag = planDrag.current;
+              planDrag.current = null;
+              if (drag) onPlanPriceChange?.(drag.id, drag.original);
+            }}
+            onKeyDown={event => {
+              if (event.key === "Escape" && planDrag.current) {
+                event.stopPropagation();
+                onPlanPriceChange?.(planDrag.current.id, planDrag.current.original);
+                planDrag.current = null;
+              }
+            }}>
+            {line.title} {line.price}
+          </button>
+        );
+      })}
+
       <DrawingCanvas
         ref={drawingCanvasRef}
         episodeId={episodeId}
@@ -1178,6 +1893,7 @@ export function ReplayChart({
         onCommand={onCommand}
         coordinateAdapter={coordinateAdapter}
         coordinateVersion={coordinateVersion}
+        plotBounds={plotBounds}
       />
     </div>
   );

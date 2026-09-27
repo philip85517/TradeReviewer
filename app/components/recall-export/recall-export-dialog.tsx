@@ -20,6 +20,8 @@ import {
 } from "../../lib/recall-export";
 import type { RecallDocument } from "../../lib/recall/types";
 import type { TradeEpisode } from "../../lib/trades/types";
+import { createRecallPptxManifest, recallPptxGlobalChoices } from "../../lib/recall-export/pptx-manifest";
+import { createRecallPptxBlob } from "../../lib/recall-export/pptx";
 
 export type RecallExportDialogProps = {
   document: RecallDocument;
@@ -28,7 +30,7 @@ export type RecallExportDialogProps = {
   /** The source is supplied so draft ordering cannot overwrite formal history. */
   onOrderChange?: (order: RecallExportOrder, source: RecallExportSource) => void;
   onExported?: (
-    result: RecallDirectoryExportResult | { status: "zip"; fileName: string },
+    result: RecallDirectoryExportResult | { status: "zip" | "pptx"; fileName: string },
   ) => void;
   initialSource?: RecallExportSource;
   generatedAt?: string;
@@ -67,6 +69,10 @@ export function RecallExportDialog({
   const [directoryResult, setDirectoryResult] = useState<RecallDirectoryExportResult | null>(null);
   const [zipDownloaded, setZipDownloaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pptxBusy, setPptxBusy] = useState(false);
+  const [pptxDownloaded, setPptxDownloaded] = useState(false);
+  const [globalBundleId, setGlobalBundleId] = useState<string | undefined>();
+  const globalChoices = useMemo(() => recallPptxGlobalChoices(document, source), [document, source]);
 
   const manifestState = useMemo<{ manifest: RecallExportManifest | null; error: string | null }>(() => {
     try {
@@ -91,6 +97,8 @@ export function RecallExportDialog({
     setOrder(undefined);
     setDirectoryResult(null);
     setZipDownloaded(false);
+    setGlobalBundleId(undefined);
+    setPptxDownloaded(false);
   };
 
   const orderForManifest = (nextSnapshots: RecallExportManifest["snapshots"]): RecallExportOrder => ({
@@ -176,6 +184,24 @@ export function RecallExportDialog({
     });
   };
 
+  const downloadPptx = async () => {
+    if (pptxBusy) return;
+    setError(null); setPptxBusy(true); setPptxDownloaded(false);
+    try {
+      // Freeze synchronously at the click; async generation cannot absorb later edits.
+      const frozen = createRecallPptxManifest(document, { source, globalBundleId, ...(generatedAt ? { generatedAt } : {}) });
+      const blob = await createRecallPptxBlob(frozen);
+      const href = window.URL.createObjectURL(blob);
+      const anchor = window.document.createElement("a");
+      anchor.href = href; anchor.download = frozen.fileName; anchor.click();
+      window.setTimeout(() => window.URL.revokeObjectURL(href), 0);
+      setPptxDownloaded(true);
+      onExported?.({ status: "pptx", fileName: frozen.fileName });
+    } catch (reason) {
+      setError(`PPTX 导出失败：${reason instanceof Error ? reason.message : "请重试"}。复盘内容未改变。`);
+    } finally { setPptxBusy(false); }
+  };
+
   return (
     <section className="recall-export-dialog" role="dialog" aria-modal="true" aria-label="导出复盘">
       <header>
@@ -198,6 +224,17 @@ export function RecallExportDialog({
       </div>
 
       {(error ?? manifestState.error) && <p role="alert">{error ?? manifestState.error}</p>}
+      <div className="recall-export-pptx">
+        <p>三阶段图取代表快照；总结表只取已留存全局成果。导出不含当前未留存编辑。</p>
+        {globalChoices.length > 1 && <label>总结表版本
+          <select aria-label="总结表版本" value={globalBundleId ?? globalChoices[0]?.bundleId} onChange={event => setGlobalBundleId(event.target.value)} disabled={pptxBusy}>
+            {globalChoices.map(choice => <option key={choice.bundleId} value={choice.bundleId}>{choice.retainedAt} · 修订 {choice.revision} · {choice.snapshotId}</option>)}
+          </select>
+        </label>}
+        {globalChoices.length === 0 && <p>缺少已留存全局版本组合：PPTX 会明确标记总结缺失。</p>}
+        <button type="button" onClick={() => void downloadPptx()} disabled={pptxBusy}>{pptxBusy ? "正在生成 PPTX…" : "下载 PPTX"}</button>
+        {pptxDownloaded && <span role="status">PPTX 已开始下载</span>}
+      </div>
       {manifest && (
         <>
           <p>预览只包含已留存快照；拖动快照或文字可调整导出顺序。</p>

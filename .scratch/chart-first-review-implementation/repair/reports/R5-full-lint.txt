@@ -1,0 +1,55 @@
+
+> trade-reviewer@0.1.0 lint
+> eslint . --ignore-pattern dist --ignore-pattern .next
+
+
+/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/.scratch/chart-first-review-implementation/diagnosis/replay.diagnostic.test.tsx
+    1:51  warning  'waitFor' is defined but never used                 @typescript-eslint/no-unused-vars
+    5:56  warning  'validateRecallDocument' is defined but never used  @typescript-eslint/no-unused-vars
+   10:10  warning  'NO_REVEALED_EXECUTIONS' is defined but never used  @typescript-eslint/no-unused-vars
+  211:10  warning  'completedDocument' is defined but never used       @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/.scratch/chart-first-review-implementation/repair/baseline/app/components/trade-review-workspace.tsx
+    75:3   warning  'combinedMarketDataStatus' is defined but never used                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   103:10  warning  'resolveInstrumentMetadataBatch' is defined but never used                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  2162:35  warning  The ref value 'marketHydrationInFlight.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'marketHydrationInFlight.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+  2166:6   warning  React Hook useEffect has a missing dependency: 'rawImportedInstruments'. Either include it or remove the dependency array                                                                                                                                                                      react-hooks/exhaustive-deps
+  2269:6   warning  React Hook useEffect has missing dependencies: 'enqueueDrawingState' and 'selectedImportedInstrument'. Either include them or remove the dependency array                                                                                                                                      react-hooks/exhaustive-deps
+
+/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/.scratch/chart-first-review-implementation/repair/baseline/app/lib/storage/sqlite-store.ts
+  659:21  warning  '_metadata' is assigned a value but never used               @typescript-eslint/no-unused-vars
+  675:26  warning  '_localizedName' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  702:26  warning  '_snapshotLocalizedName' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/.scratch/trading-room-implementation/qa/seed-homepage-fixture.ts
+  158:21  warning  '_metadata' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/app/components/insights/pattern-insights.tsx
+  281:17  warning  'fact' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  291:3   warning  'factsByEpisode' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/app/components/trade-review-workspace.tsx
+    75:3   warning  'combinedMarketDataStatus' is defined but never used                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   103:10  warning  'resolveInstrumentMetadataBatch' is defined but never used                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  2162:35  warning  The ref value 'marketHydrationInFlight.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'marketHydrationInFlight.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+  2166:6   warning  React Hook useEffect has a missing dependency: 'rawImportedInstruments'. Either include it or remove the dependency array                                                                                                                                                                      react-hooks/exhaustive-deps
+  2269:6   warning  React Hook useEffect has missing dependencies: 'enqueueDrawingState' and 'selectedImportedInstrument'. Either include them or remove the dependency array                                                                                                                                      react-hooks/exhaustive-deps
+
+/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/app/lib/market/providers/tiger.ts
+  157:5  warning  '_fetcher' is defined but never used  @typescript-eslint/no-unused-vars
+  204:5  warning  '_fetcher' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/app/lib/reviews/localized-metadata-hydration.test.ts
+  115:10  warning  React Hook useEffect has a missing dependency: 'current'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  239:10  warning  React Hook useEffect has a missing dependency: 'current'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/app/lib/storage/sqlite-store.ts
+  659:21  warning  '_metadata' is assigned a value but never used               @typescript-eslint/no-unused-vars
+  675:26  warning  '_localizedName' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  702:26  warning  '_snapshotLocalizedName' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/app/lib/storage/storage-boundary.test.tsx
+  56:7  warning  'workspacePath' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 28 problems (0 errors, 28 warnings)
+

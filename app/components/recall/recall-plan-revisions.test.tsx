@@ -1,0 +1,24 @@
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, expect, it, vi } from 'vitest';
+import { RecallPlanRevisionSection } from './recall-plan-revisions';
+import { emptyRecallPlanInput } from './recall-plan-sidebar';
+import type { RecallDocument, RecallPlanDraft } from '../../lib/recall/types';
+import type { TradeEpisode } from '../../lib/trades/types';
+afterEach(cleanup);
+const draft: RecallPlanDraft = { id: 'adj', planId: 'p', decisionId: 'd', kind: 'adjustment', parentVersionId: 'v', reason: '移动止损', input: { ...emptyRecallPlanInput('USD'), direction: 'long', entry: '10', initialStop: '9', sizeInputValue: '2', resolvedQuantity: '2' }, recordedPhase: 'holding', recordedAt: '2026-01-02', source: 'retrospective', knowledgeCutoff: { cursor: '2026-01-02', executionCursor: 'd' }, hasSeenFuture: false };
+const document = { version: 1, episodeId: 'e', revision: 0, snapshots: [], working: { drawings: [], timeframe: '1D', cursor: '2026-01-02', executionCursor: 'd', selectedDecisionId: 'd' }, status: 'in-progress', updatedAt: '2026-01-02', decisions: [{ id: 'd', executionIds: ['fill'] }], plans: { drafts: [draft], versions: [{ ...draft, id: 'v', kind: 'initial', parentVersionId: undefined, retainedAt: '2026-01-01' }], riskBaselines: [] }, planAssociations: [{ planId: 'p', decisionId: 'd', status: 'linked' }] } as RecallDocument;
+it('preserves invalid revision text and reports it to capture guards', () => { const change = vi.fn(), validation = vi.fn(); render(<RecallPlanRevisionSection document={document} episode={{ instrument: { currency: 'USD' } } as TradeEpisode} phase="holding" knowledgeCutoff={draft.knowledgeCutoff} hasSeenFuture={false} onChangeDocument={change} onValidationChange={validation}/>); fireEvent.change(screen.getByLabelText('计划入场'), { target: { value: 'oops' } }); expect(screen.getByLabelText('计划入场')).toHaveValue('oops'); expect(change).not.toHaveBeenCalled(); expect(validation).toHaveBeenLastCalledWith(expect.any(String)); expect(screen.getByRole('alert')).toBeInTheDocument(); });
+it('requires explanation before starting a revision', () => { render(<RecallPlanRevisionSection document={document} episode={{ instrument: { currency: 'USD' } } as TradeEpisode} phase="holding" knowledgeCutoff={draft.knowledgeCutoff} hasSeenFuture={false} onChangeDocument={() => { }}/>); expect(screen.getByRole('button', { name: '调整持仓计划' })).toBeDisabled(); fireEvent.change(screen.getByLabelText('修订理由'), { target: { value: '风险收缩' } }); expect(screen.getByRole('button', { name: '调整持仓计划' })).toBeEnabled(); });
+it('keeps rejected text across unrelated renders and resets it on authoritative chart edits', () => {
+    const validation = vi.fn();
+    const props = { episode: { instrument: { currency: 'USD' } } as TradeEpisode, phase: 'holding' as const, knowledgeCutoff: draft.knowledgeCutoff, hasSeenFuture: false, onChangeDocument: vi.fn(), onValidationChange: validation };
+    const view = render(<RecallPlanRevisionSection {...props} document={document}/>);
+    fireEvent.change(screen.getByLabelText('计划入场'), { target: { value: 'oops' } });
+    view.rerender(<RecallPlanRevisionSection {...props} document={{ ...document, revision: 1 }}/>);
+    expect(screen.getByLabelText('计划入场')).toHaveValue('oops');
+    const updated = { ...document, plans: { ...document.plans!, drafts: [{ ...draft, input: { ...draft.input, entry: '11' } }] } };
+    view.rerender(<RecallPlanRevisionSection {...props} document={updated}/>);
+    expect(screen.getByLabelText('计划入场')).toHaveValue('11');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(validation).toHaveBeenLastCalledWith(null);
+});

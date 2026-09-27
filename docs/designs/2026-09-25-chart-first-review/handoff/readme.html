@@ -1,0 +1,68 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TradeReview · 主图优先复盘开发交付包 · TradeReview</title><link rel="stylesheet" href="docs.css"></head><body><header><strong>TRADE / REVIEW</strong><span>DESIGN HANDOFF · v1.0 · 2026.09.25 · 待开发定稿</span></header><div class="layout"><nav class="sidebar" aria-label="开发交付导航"><a class="" href="index.html">交付总览</a><a class="" href="requirements.html">需求规格</a><a class="" href="elements.html">元素与视觉规范</a><a class="" href="demo/index.html#stage1">打开视觉 demo ↗</a><a class="" href="task.html">后续开发任务</a><a class="" href="verification.html">验收与实现边界</a><a class="" href="sources.html">来源与项目工作流</a><a class="active" href="readme.html">启动与文件说明</a><div class="toc"><a class="" href="#section-1">已确认方案</a><a class="" href="#section-2">文件导航</a><a class="" href="#section-3">打开与启动</a><a class="" href="#section-4">审阅顺序</a><a class="" href="#section-5">实现边界与版本</a></div></nav><main><h1>TradeReview · 主图优先复盘开发交付包</h1>
+<p>v1.0 · 2026-09-25 · 用户已确认阶段拆分 · 待开发规格</p>
+<p>从 <a href="index.html">阅读入口</a> 开始。需求定义见 <a href="requirements.html">REQUIREMENTS.md</a>，元素和风格标准见 <a href="elements.html">UI-ELEMENTS.md</a>。HTML 与 Markdown 内容由同一来源生成。</p>
+<h2 id="section-1">已确认方案</h2>
+<p>买入前记录价格/仓位计划；持仓过程在图上记录心态并查看只读计划；事后按每次退出记录执行评价。侧栏参与布局，价格轴位于主图右缘、表单左侧。窄屏改为上方趋势＋下方独立滚动表单。</p>
+<p>保持现有深蓝灰、蓝色交互、Geist/Lucide 规范；图表继承用户显示和配色设置。demo 用默认青涨红跌，合成数据不代表真实账户。</p>
+<h2 id="section-2">文件导航</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>文件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>需求规格，44 条用户故事、数据字段与验收契约</td>
+<td><a href="requirements.html">HTML</a> / <a href="requirements.html">Markdown</a></td>
+</tr>
+<tr>
+<td>元素规范，22 类元素、令牌、尺寸与状态</td>
+<td><a href="elements.html">HTML</a> / <a href="elements.html">Markdown</a></td>
+</tr>
+<tr>
+<td>完整视觉 demo，含七个画板</td>
+<td><a href="demo/index.html#stage1">打开 demo</a></td>
+</tr>
+<tr>
+<td>七张最终图与一张窄屏验收图</td>
+<td>images/</td>
+</tr>
+<tr>
+<td>后续开发任务</td>
+<td><a href="task.html">TASK.md</a></td>
+</tr>
+<tr>
+<td>本轮检查与待开发边界</td>
+<td><a href="verification.html">VERIFICATION.md</a></td>
+</tr>
+<tr>
+<td>现有风格和业务证据</td>
+<td><a href="sources.html">SOURCES.md</a></td>
+</tr>
+<tr>
+<td>领域与工作流背景快照</td>
+<td>references/</td>
+</tr>
+<tr>
+<td>文件清单与 SHA-256</td>
+<td>manifest.json，verify.py</td>
+</tr>
+</tbody></table></div>
+<h2 id="section-3">打开与启动</h2>
+<p>解压后直接打开 index.html；HTML、图片和 demo 均是本地资源，无 CDN、网络字体或安装依赖。建议使用 Python 3 本机静态服务：</p>
+<pre><code class="language-bash">python3 serve.py --port 8855
+</code></pre>
+<p>打开终端打印的 <a href="http://127.0.0.1:8855/">http://127.0.0.1:8855/</a> 。使用 Ctrl+C 停止此服务。端口已占用时选择另一未占用端口，不终止其他程序。运行 <code>python3 verify.py</code> 校验全部包内文件。</p>
+<h2 id="section-4">审阅顺序</h2>
+<ol>
+<li>demo 的买入前与事后侧栏：直接改价、切换退出评价，观察主图仍可见。</li>
+<li>阅读需求中的阶段边界、字段字典、保存/版本/指标口径。</li>
+<li>对照元素规范和 images/ 审核尺寸、配色及响应式。</li>
+<li>根据 TASK.md 领取后续实施，产品写入验收需隔离数据库。</li>
+</ol>
+<h2 id="section-5">实现边界与版本</h2>
+<p>demo 的数字和文字仅在当前页面保存；刷新恢复样例。图上部分绘图按钮仅展示位置。导出画板是固定样例，未生成 PPTX；服务端持久化、冲突恢复、完整绘图/拖线、业务精度、数据库查询与真实手机键盘均待开发。</p>
+<p>本包是已确认设计的开发依据，不代表产品功能完成。A 是最终布局，B/C 仅为探索档案。以主规格确定行为，以元素规范确定外观；历史背景不能覆盖最终规格。若实施发现差异，应记录决策并升版。</p>
+<p>仓库权威文件：docs/specs/2026-09-25-chart-first-review-ui.md 与 docs/specs/2026-09-25-chart-first-review-ui-elements.md。本包为二者的 v1.0 便携快照，仅重写相对链接；基线 b166d5626c72f2e0a4a7be98d89eb28bf1a036f3。后续修订需同步源文档、demo、配图、manifest 与包版本。</p>
+<footer>TradeReview · v1.0 已确认设计。合成示例；实际数据库保存与 PPTX 导出待开发。</footer></main></div></body></html>

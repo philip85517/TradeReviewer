@@ -1,0 +1,513 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/f7a5/TradeReview
+
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > uses one shared primary navigation and reuses it from the narrow-screen menu 855ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > loads the FX snapshot when the production workspace opens on the dashboard 122ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > starts a quality data check in the first existing account for the instrument 1ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > prefers the issue episode account when the instrument has multiple accounts 1ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps imported replay in one compact frame and places review actions in Recall's header 1043ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps Recall header actions wired to data management, repair, and return navigation 1707ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps the parent review mounted until a failed navigation save is retried successfully 2058ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > opens production in the queue and stays on a rejected completion 1056ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > gold replay does not reveal the sale before the first bar is played 767ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > gold replay explains missing historical bars when stepping its first available day 1245ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > gold replay keeps cached historical bars before and after its first step 967ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > gold replay repairs the previously saved empty-chart entry cursor 702ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > gold replay preserves saved progress after its first completed bar 747ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not advance the training cursor when the target timeframe has no known candle yet 1256ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > gold replay next execution lands on a market-open fill rather than the first bar close 674ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > restores the prior sidebar layout after focusing the chart without changing the cursor 463ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > supplements only the selected stock account and retries the same audited request 1598ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > boots from the SQLite bootstrap response without reading legacy execution storage 91ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not re-read every instrument market cache when metadata hydration updates presentation 933ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not label daily-only partial coverage as overall market data availability 908ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > marks a short hourly cache as updatable even when daily data is absent 945ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not block the selected replay on another stock's market data 829ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps a persisted hourly provider failure visible when no cache exists 623ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps XPEV absent when an empty SQLite bootstrap is used in production mode 88ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not export legacy browser state after the SQLite server confirms migration 55ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > migrates legacy browser state when SQLite has no migration despite a local marker 84ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > supports multiple statements and an independent multi-image screenshot input 263ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not expose the bundled demo in production mode 96ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > reviews two screenshots and applies duplicate, use-incoming, and keep-both decisions through the existing import transaction 5039ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not persist when a prepared screenshot import preview is canceled 823ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps an existing conflict when the selected screenshot replacement does not survive enrichment 1697ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > hides the frozen screenshot review while import preparation is pending 1243ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > advances one candle without revealing the future and preserves the cursor across periods 401ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > preserves the review timeframe and cursor while top navigation re-enters training mode 1317ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > pauses replay when returning to the library through top navigation 571ms
+ × app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retains a Recall drawing draft per episode and gates completion until a snapshot exists 2366ms
+   → expected false to be true // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"trade-review-app is-review"[39m
+      [36m>[39m
+        [36m<input[39m
+          [33maccept[39m=[32m".xlsx,.xls,.pdf"[39m
+          [33maria-label[39m=[32m"导入交易记录"[39m
+          [33mhidden[39m=[32m""[39m
+          [33mmultiple[39m=[32m""[39m
+          [33mtype[39m=[32m"file"[39m
+        [36m/>[39m
+        [36m<input[39m
+          [33maccept[39m=[32m".csv,text/csv"[39m
+          [33maria-label[39m=[32m"导入 TradingView 模拟交易"[39m
+          [33mhidden[39m=[32m""[39m
+          [33mtype[39m=[32m"file"[39m
+        [36m/>[39m
+        [36m<input[39m
+          [33maccept[39m=[32m"image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"[39m
+          [33maria-label[39m=[32m"从截图恢复交易"[39m
+          [33mhidden[39m=[32m""[39m
+          [33mmultiple[39m=[32m""[39m
+          [33mtype[39m=[32m"file"[39m
+        [36m/>[39m
+        [36m<aside[39m
+          [33maria-label[39m=[32m"主导航"[39m
+          [33mclass[39m=[32m"app-header app-sidebar "[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"brand"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"brand-mark"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-book-open-check"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"19"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"19"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M12 5v16"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m16 12 2 2 4-4"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M22 6V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2h4.001A2 2 0 0022 17v-1.344"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<strong>[39m
+                [0mTradeReview[0m
+              [36m</strong>[39m
+              [36m<span>[39m
+                [0m历史交易复盘[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"primary-navigation"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-label[39m=[32m"导航"[39m
+            [33mclass[39m=[32m"mobile-nav-trigger"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-menu"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"18"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"18"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M4 5h16"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M4 12h16"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M4 19h16"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0m导航[0m
+            [36m</span>[39m
+          [36m</button>[39m
+          [36m<nav[39m
+            [33maria-label[39m=[32m"主导航"[39m
+            [33mclass[39m=[32m"app-nav"[39m
+            [33mid[39m=[32m"primary-navigation"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m我的交易室[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m交易库[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m分析[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m数据[0m
+            [36m</button>[39m
+          [36m</nav>[39m
+        [36m</aside>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"workspace recall-mode    "[39m
+          [36m>[39m
+            [36m<div[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mstyle[39m=[32m"display: none; grid-column: 1 / -1; min-width: 0px; min-height: 0px; overflow: auto;"[39m
+            [36m>[39m
+              [36m<section[39m
+                [33maria-label[39m=[32m"我的交易室"[39m
+                [33mclass[39m=[32m"_dashboard_3823b4"[39m
+                [33mstyle[39m=[32m"--dashboard-positive: #26a69a; --dashboard-negative: #ef5350;"[39m
+              [36m>[39m
+                [36m<header[39m
+                  [33mclass[39m=[32m"_header_3823b4"[39m
+                [36m>[39m
+                  [36m<div>[39m
+                    [36m<h1>[39m
+                      [0m我的交易室[0m
+                    [36m</h1>[39m
+                  [36m</div>[39m
+                [36m</header>[39m
+                [36m<section[39m
+                  [33maria-label[39m=[32m"交易室范围"[39m
+                  [33mclass[39m=[32m"_roomScopeSection_3823b4"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"_roomScopeHeading_3823b4"[39m
+                  [36m>[39m
+                    [36m<div>[39m
+                      [36m<h2[39m
+                        [33mclass[39m=[32m"_compactSectionTitle_3823b4"[39m
+                      [36m>[39m
+                        [0m交易表现（收益概览）[0m
+                      [36m</h2>[39m
+                      [36m<p>[39m
+                        [0m实盘[0m
+                        [0m · [0m
+                        [0m全部市场[0m
+                        [0m · [0...
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps the latest Recall drawing draft while completion is gated 2560ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > stops replay and reports a recoverable message when a step fails 289ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > switches from the desktop review panel to an operable narrow drawer 359ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > contains the toolbar and every chart popover within a 390px viewport 8ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > loads imported stocks after a page reload without starting a market request 135ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps demo reachable with imports and restores its saved server frame and UI state 700ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > refreshes the selected demo frame from the existing replay backend 377ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > disables demo refresh accessibly while a replay request is active 424ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > uses the containing 15 minute bar for non-aligned closed fills 445ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > accepts bounded pre-entry candles as episode chart context 410ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not use candles before the bounded pre-entry context 412ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > does not describe confirmed grey-market trades as a regular-market history gap 643ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > shows all daily history by default and explains trades before the first candle 1278ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > scopes Recall history and replay to the selected episode 1238ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > starts before entry and advances to the first known candle when history begins after the trade 828ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > extends an open episode through cached data after its latest fill 446ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > refreshes every trade episode regardless of the selected episode 1818ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > uses META as the market-data symbol for historical FB trades 898ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps library context through cancelled and confirmed imports with failed market refresh 2526ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > opens a library queue entry directly in the shared history workbench 1049ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps complete-history executions within the selected account 1030ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > automatically syncs all episodes after importing a later episode 1411ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > automatically syncs all episodes when an import closes and opens positions 1388ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > uses the unified replay workspace for a cached imported episode 2417ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > exposes Recall snapshot controls for daily-only data 647ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > derives intraday availability from the selected episode window 714ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > reveals the next execution 'after the final cached candle' without enabling next-candle navigation 811ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > reveals the next execution 'without cached candles' without enabling next-candle navigation 712ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > preserves cached intervals and reports each failed refresh independently 896ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > reveals an imported provider candle only at its completed-bar knowledge boundary 648ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > restores the selected episode replay context independently 745ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > opens the stock drawer and restores focus after Escape without resetting replay 279ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > offers the import flow in data management from the empty workspace 192ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > passes stored instrument metadata into the trading room scope 218ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retains alternate simulation runs when the complete room changes its shared scope 617ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > returns to the trading room with its filters, period, and calendar view after opening a holding review 737ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > returns to the library with its expanded stock context after opening a library round 803ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > opens stock entries in the shared workbench and preserves library browsing state 2038ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > hydrates cached candles for library stocks that are not selected in replay 791ms
+ ✓ app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > hydrates the review record for the exact position episode and exposes Recall capture controls 921ms
+ ✓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps the replay bar compact while preserving record actions behind More 527ms
+ ✓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps the holding quantity in the closed replay summary slot 74ms
+ ✓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps the pre-entry expected R and risk values in the closed replay summary slot 70ms
+ ✓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > exposes an awaitable leave guard that blocks navigation when saving fails 212ms
+ ✓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps the newer local draft when an older save response arrives 1ms
+ ✓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps a local edit dirty when the first delayed save resolves 429ms
+ ✓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > restores both replay cursors after visiting full history 509ms
+ ✓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > restores a retained viewport while editing and the working viewport on exit 519ms
+ ✓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps a saved phase viewport from being overwritten during the phase switch 1299ms
+ ✓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > does not restore the current future viewport when a phase has no saved viewport 1417ms
+ ✓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > ignores a phase restore callback after a newer replay reveal 343ms
+ ✓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps a completed text draft marked as modified after autosave 283ms
+ ✓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > waits for autosave and finalizes a fresh global capture with the returned revision 517ms
+ ✓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace accounting safeguards > hides cost and PnL when a revealed HK Connect fill has a mismatched settlement currency 155ms
+ ✓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace accounting safeguards > keeps the TradingView notice permanent while source reports follow the revealed boundary 309ms
+ ✓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > orders the post-review sidebar as compact summary, evaluation, then folded details 82ms
+ ✓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > keeps the execution cutoff separate from the aligned market-axis cutoff 240ms
+ ✓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > captures a full post-review global summary and refits an offscreen same-timeframe viewport 465ms
+ ✓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > uses the same post-review full-history boundary when completion starts from global 489ms
+ ✓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > freezes full-history metrics and manual evidence for a decision completion while keeping Text ownership 529ms
+ ✓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > keeps holding secondary details folded while retaining the revision entry 50ms
+ ✓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > keeps the post-review manual tag entry available when an episode has no exits 121ms
+ ✓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > adjusts holding prices without replacing the retained initial risk 1347ms
+ ✓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > keeps independent exit edits and blocks retention while another exit has an incomplete reason 1795ms
+ ✓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > saves a dragged entry price through the same plan as the numeric field 1272ms
+ ✓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > keeps invalid price text across closing and blocks capturing the stale valid draft 433ms
+ ✓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > carries accepted capture stamps into a newer local edit without replacing a newer capture 1ms
+ ✓ app/components/recall/recall-workspace.test.tsx > shows the entry plan on exit selection but does not inject it into a legacy snapshot 286ms
+ ✓ app/components/recall/recall-workspace.test.tsx > autosaves a representative stage selection through the existing repository 1226ms
+ ✓ app/components/recall/recall-workspace.test.tsx > keeps a server-stamped capture when Text changes during its save 394ms
+ ✓ app/components/recall/recall-workspace.test.tsx > reopens the later entry's own frozen plan instead of the first bundled entry plan 249ms
+ ✓ app/components/recall/recall-workspace.test.tsx > coalesces queued leave saves already acknowledged by the first save 180ms
+ ✓ app/components/recall/recall-workspace.test.tsx > serializes finalization with an autosave scheduled while chart capture is pending 429ms
+ ✓ app/components/recall/recall-workspace.test.tsx > keeps a plan edit made during the final save dirty and saves it after the frozen formal candidate 466ms
+ ✓ app/components/recall/recall-workspace.test.tsx > preserves newer local edits and blocks leaving on a genuine external revision conflict 357ms
+ ✓ app/components/recall/recall-workspace.test.tsx > does not rebase a new episode onto an accepted save from another episode 338ms
+ ✓ app/components/recall/recall-workspace.test.tsx > leaves loading when market hydration restores the current draft after a cancelled episode load 220ms
+ ✓ app/components/recall/recall-workspace.test.tsx > keeps an orphaned pre-entry context unrevealed and explicitly unassigned after fill replacement 204ms
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels first initial-plan freezing if that input changes during completion capture 316ms
+ ✓ app/components/recall/recall-workspace.test.tsx > rejects completion when a Text edit lands while the global flush is pending, then allows retry 702ms
+ ✓ app/components/recall/recall-workspace.test.tsx > does not install a previous episode's late completion as the current formal baseline 263ms
+ ✓ app/components/recall/recall-workspace.test.tsx > locks the original plan only while its first finalization request is pending and unlocks on failure 308ms
+ ✓ app/components/recall/recall-workspace.test.tsx > renders a retained post-review metric using its captured phase when opened from pre-entry 239ms
+ ✓ app/components/recall/recall-workspace.test.tsx > renders a retained post-review metric using its captured phase when opened from holding 234ms
+ ✓ app/components/recall/recall-workspace.test.tsx > uses a safe historical metric fallback for a legacy snapshot opened before entry 224ms
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels retain when drawing changes after the chart scene was frozen 260ms
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels retain when plan changes after the chart scene was frozen 219ms
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels retain when evaluation changes after the chart scene was frozen 261ms
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels complete when drawing changes after the chart scene was frozen 270ms
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels complete when plan changes after the chart scene was frozen 339ms
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels complete when evaluation changes after the chart scene was frozen 408ms
+ ✓ app/components/recall/recall-workspace.test.tsx > accepts the synchronous Text commit performed before the chart freezes its scene 347ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retains a Recall drawing draft per episode and gates completion until a snapshot exists
+AssertionError: expected false to be true // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"trade-review-app is-review"[39m
+      [36m>[39m
+        [36m<input[39m
+          [33maccept[39m=[32m".xlsx,.xls,.pdf"[39m
+          [33maria-label[39m=[32m"导入交易记录"[39m
+          [33mhidden[39m=[32m""[39m
+          [33mmultiple[39m=[32m""[39m
+          [33mtype[39m=[32m"file"[39m
+        [36m/>[39m
+        [36m<input[39m
+          [33maccept[39m=[32m".csv,text/csv"[39m
+          [33maria-label[39m=[32m"导入 TradingView 模拟交易"[39m
+          [33mhidden[39m=[32m""[39m
+          [33mtype[39m=[32m"file"[39m
+        [36m/>[39m
+        [36m<input[39m
+          [33maccept[39m=[32m"image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"[39m
+          [33maria-label[39m=[32m"从截图恢复交易"[39m
+          [33mhidden[39m=[32m""[39m
+          [33mmultiple[39m=[32m""[39m
+          [33mtype[39m=[32m"file"[39m
+        [36m/>[39m
+        [36m<aside[39m
+          [33maria-label[39m=[32m"主导航"[39m
+          [33mclass[39m=[32m"app-header app-sidebar "[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"brand"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"brand-mark"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-book-open-check"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"19"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"19"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M12 5v16"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m16 12 2 2 4-4"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M22 6V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2h4.001A2 2 0 0022 17v-1.344"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<strong>[39m
+                [0mTradeReview[0m
+              [36m</strong>[39m
+              [36m<span>[39m
+                [0m历史交易复盘[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"primary-navigation"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-label[39m=[32m"导航"[39m
+            [33mclass[39m=[32m"mobile-nav-trigger"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-menu"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"18"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"18"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M4 5h16"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M4 12h16"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M4 19h16"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0m导航[0m
+            [36m</span>[39m
+          [36m</button>[39m
+          [36m<nav[39m
+            [33maria-label[39m=[32m"主导航"[39m
+            [33mclass[39m=[32m"app-nav"[39m
+            [33mid[39m=[32m"primary-navigation"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m我的交易室[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m交易库[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m分析[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0m数据[0m
+            [36m</button>[39m
+          [36m</nav>[39m
+        [36m</aside>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-content"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"workspace recall-mode    "[39m
+          [36m>[39m
+            [36m<div[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mstyle[39m=[32m"display: none; grid-column: 1 / -1; min-width: 0px; min-height: 0px; overflow: auto;"[39m
+            [36m>[39m
+              [36m<section[39m
+                [33maria-label[39m=[32m"我的交易室"[39m
+                [33mclass[39m=[32m"_dashboard_3823b4"[39m
+                [33mstyle[39m=[32m"--dashboard-positive: #26a69a; --dashboard-negative: #ef5350;"[39m
+              [36m>[39m
+                [36m<header[39m
+                  [33mclass[39m=[32m"_header_3823b4"[39m
+                [36m>[39m
+                  [36m<div>[39m
+                    [36m<h1>[39m
+                      [0m我的交易室[0m
+                    [36m</h1>[39m
+                  [36m</div>[39m
+                [36m</header>[39m
+                [36m<section[39m
+                  [33maria-label[39m=[32m"交易室范围"[39m
+                  [33mclass[39m=[32m"_roomScopeSection_3823b4"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"_roomScopeHeading_3823b4"[39m
+                  [36m>[39m
+                    [36m<div>[39m
+                      [36m<h2[39m
+                        [33mclass[39m=[32m"_compactSectionTitle_3823b4"[39m
+                      [36m>[39m
+                        [0m交易表现（收益概览）[0m
+                      [36m</h2>[39m
+                      [36m<p>[39m
+                        [0m实盘[0m
+                        [0m · [0m
+                        [0m全部市场[0m
+                        [0m · [0...
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ app/components/trade-review-workspace.test.tsx:2030:21
+    2028|         ),
+    2029|       );
+    2030|       expect(saved).toBe(true);
+       |                     ^
+    2031|     });
+    2032|     await user.click(screen.getByRole("button", { name: "返回交易库" }));
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 127 passed (128)
+   Start at  05:44:51
+   Duration  97.75s (transform 2.63s, setup 483ms, import 3.86s, tests 90.73s, environment 2.25s)
+

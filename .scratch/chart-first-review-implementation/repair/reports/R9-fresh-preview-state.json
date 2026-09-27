@@ -1,0 +1,37 @@
+{
+  "revision": 6,
+  "input": {
+    "direction": "long",
+    "currency": "CNY",
+    "priceBasis": "raw",
+    "entry": "56",
+    "initialStop": "52",
+    "targets": [
+      {
+        "id": "target-1",
+        "price": "68",
+        "quantity": null,
+        "ratio": null
+      }
+    ],
+    "sizeInputMode": "quantity",
+    "sizeInputValue": "1000",
+    "resolvedQuantity": "1000",
+    "quantityUnit": "share",
+    "capital": null,
+    "sizing": {
+      "quantityStep": "1",
+      "stepSource": "manual-reference",
+      "rounding": "floor",
+      "derivedUnroundedQuantity": "1000",
+      "roundingDelta": "0"
+    }
+  },
+  "working": {
+    "phase": "pre-entry",
+    "cursor": "2026-08-10T01:59:59.999Z",
+    "executionCursor": "__recall_before_first_execution__",
+    "hasSeenFuture": false
+  },
+  "snapshots": 0
+}

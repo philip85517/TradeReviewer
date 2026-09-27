@@ -1,0 +1,273 @@
+{
+  "database": "/Users/zhoulin/.codex/worktrees/f7a5/TradeReview/.scratch/chart-first-review-implementation/repair/acceptance.sqlite",
+  "mode": "read-only",
+  "quickCheck": "ok",
+  "rawExecutions": {
+    "count": 25,
+    "sha256": "1b79e6e605b493b4e0ce7833094824c807680c972166a83a1a3f0b8aefd12b36",
+    "old24Sha256": "e6fb7f410f9692fb3ce9e7bd05ec3456af61ba4e52bdb31563f779d01764cf55",
+    "old21Sha256": "24a9793c206dbea76d03211a18d387ea89f6acfc999b5845857f9abdae64384d"
+  },
+  "revision": 28,
+  "draftStatus": "completed",
+  "formalStatus": "completed",
+  "working": {
+    "phase": "post-review",
+    "cursor": "2026-09-24T16:00:00.000Z",
+    "executionCursor": "synthetic-repair-fresh-replay-close",
+    "selectedDecisionId": "global",
+    "hasSeenFuture": true
+  },
+  "globalSnapshot": {
+    "id": "recall-snapshot-1790426382443-hemcvi",
+    "phase": "post-review",
+    "cursor": "2026-09-24T16:00:00.000Z",
+    "executionCursor": "synthetic-repair-fresh-replay-close",
+    "timeframe": "1D",
+    "hasSeenFuture": true,
+    "retainedBundleId": "bundle-d15cc875-c98e-4175-8209-cd090bd79d5d"
+  },
+  "globalBundle": {
+    "id": "bundle-d15cc875-c98e-4175-8209-cd090bd79d5d",
+    "captureContext": {
+      "phase": "post-review",
+      "cursor": "2026-09-24T16:00:00.000Z",
+      "executionCursor": "synthetic-repair-fresh-replay-close",
+      "timeframe": "1D",
+      "viewport": {
+        "version": 1,
+        "logicalRange": {
+          "from": -3,
+          "to": 64
+        },
+        "barSpacing": 17.61764705882353,
+        "rightOffset": 4,
+        "width": 1282,
+        "height": 218,
+        "priceRange": {
+          "from": 50.1,
+          "to": 65.69
+        },
+        "priceScaleOptions": {
+          "mode": 0,
+          "invertScale": false,
+          "autoScale": true,
+          "scaleMargins": {
+            "bottom": 0.2,
+            "top": 0.08
+          }
+        },
+        "imageFrame": {
+          "version": 1,
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 2
+        }
+      },
+      "hasSeenFuture": true,
+      "priceBasis": "raw"
+    },
+    "actualMetrics": {
+      "methodVersion": "actual-v1",
+      "source": {
+        "documentRevision": 24,
+        "evidenceDigest": "37ac4947c785397247fad49bf1fc3508189577822a9e65905953bcda902bdae6",
+        "bundleId": "bundle-d15cc875-c98e-4175-8209-cd090bd79d5d",
+        "computedAt": "2026-09-26T13:48:29.363Z"
+      },
+      "metrics": {
+        "remainingQuantity": {
+          "value": "0",
+          "reason": null,
+          "currency": null,
+          "unit": "quantity",
+          "methodVersion": "actual-v1"
+        },
+        "averageEntryPrice": {
+          "value": "56",
+          "reason": null,
+          "currency": "CNY",
+          "unit": "price",
+          "methodVersion": "actual-v1"
+        },
+        "weightedExitPrice": {
+          "value": "62.8",
+          "reason": null,
+          "currency": "CNY",
+          "unit": "price",
+          "methodVersion": "actual-v1"
+        },
+        "realizedGross": {
+          "value": "6800",
+          "reason": null,
+          "currency": "CNY",
+          "unit": "money",
+          "methodVersion": "actual-v1"
+        },
+        "realizedNet": {
+          "value": "6760",
+          "reason": null,
+          "currency": "CNY",
+          "unit": "money",
+          "methodVersion": "actual-v1"
+        },
+        "unrealizedGross": {
+          "value": "0",
+          "reason": null,
+          "currency": "CNY",
+          "unit": "money",
+          "methodVersion": "actual-v1"
+        },
+        "remainingEntryFee": {
+          "value": "0",
+          "reason": null,
+          "currency": "CNY",
+          "unit": "money",
+          "methodVersion": "actual-v1"
+        },
+        "totalFees": {
+          "value": "40",
+          "reason": null,
+          "currency": "CNY",
+          "unit": "money",
+          "methodVersion": "actual-v1"
+        },
+        "netPnl": {
+          "value": "6760",
+          "reason": null,
+          "currency": "CNY",
+          "unit": "money",
+          "methodVersion": "actual-v1"
+        },
+        "actualR": {
+          "value": "1.69",
+          "reason": null,
+          "currency": null,
+          "unit": "R",
+          "methodVersion": "actual-v1"
+        },
+        "entryPriceDeviation": {
+          "value": "0",
+          "reason": null,
+          "currency": "CNY",
+          "unit": "price",
+          "methodVersion": "actual-v1"
+        },
+        "quantityDeviation": {
+          "value": "0",
+          "reason": null,
+          "currency": null,
+          "unit": "ratio",
+          "methodVersion": "actual-v1"
+        },
+        "targetRealization": {
+          "value": "0.5633333333333333333333333333333333333333",
+          "reason": null,
+          "currency": null,
+          "unit": "ratio",
+          "methodVersion": "actual-v1"
+        }
+      },
+      "exitAllocations": [
+        {
+          "executionId": "synthetic-repair-fresh-replay-partial",
+          "decisionId": "synthetic-repair-fresh-replay-partial",
+          "quantity": "600",
+          "entryFee": {
+            "value": "12",
+            "reason": null,
+            "currency": "CNY",
+            "unit": "money",
+            "methodVersion": "actual-v1"
+          },
+          "exitFee": {
+            "value": "12",
+            "reason": null,
+            "currency": "CNY",
+            "unit": "money",
+            "methodVersion": "actual-v1"
+          },
+          "grossPnl": {
+            "value": "4800",
+            "reason": null,
+            "currency": "CNY",
+            "unit": "money",
+            "methodVersion": "actual-v1"
+          },
+          "netPnl": {
+            "value": "4776",
+            "reason": null,
+            "currency": "CNY",
+            "unit": "money",
+            "methodVersion": "actual-v1"
+          }
+        },
+        {
+          "executionId": "synthetic-repair-fresh-replay-close",
+          "decisionId": "synthetic-repair-fresh-replay-close",
+          "quantity": "400",
+          "entryFee": {
+            "value": "8",
+            "reason": null,
+            "currency": "CNY",
+            "unit": "money",
+            "methodVersion": "actual-v1"
+          },
+          "exitFee": {
+            "value": "8",
+            "reason": null,
+            "currency": "CNY",
+            "unit": "money",
+            "methodVersion": "actual-v1"
+          },
+          "grossPnl": {
+            "value": "2000",
+            "reason": null,
+            "currency": "CNY",
+            "unit": "money",
+            "methodVersion": "actual-v1"
+          },
+          "netPnl": {
+            "value": "1984",
+            "reason": null,
+            "currency": "CNY",
+            "unit": "money",
+            "methodVersion": "actual-v1"
+          }
+        }
+      ],
+      "denominator": {
+        "riskBaselineId": "bundle-b82ac763-5190-48f7-ada4-4bd1c2377882:risk:plan-draft-d7745e64-7709-4ecd-a147-3e08cb92189f",
+        "planVersionId": "bundle-b82ac763-5190-48f7-ada4-4bd1c2377882:plan:plan-draft-d7745e64-7709-4ecd-a147-3e08cb92189f",
+        "amount": "4000",
+        "currency": "CNY",
+        "scope": "decision",
+        "method": "planned-price-risk"
+      },
+      "executionIds": [
+        "synthetic-repair-fresh-replay-entry",
+        "synthetic-repair-fresh-replay-partial",
+        "synthetic-repair-fresh-replay-close"
+      ],
+      "planVersionIds": [
+        "bundle-b82ac763-5190-48f7-ada4-4bd1c2377882:plan:plan-draft-d7745e64-7709-4ecd-a147-3e08cb92189f",
+        "bundle-091276e9-d9b3-41b7-92d4-e2602f1e27c8:plan:76456d0a-3c6d-4a28-b36e-21bd3f520821"
+      ],
+      "riskBaselineIds": [
+        "bundle-b82ac763-5190-48f7-ada4-4bd1c2377882:risk:plan-draft-d7745e64-7709-4ecd-a147-3e08cb92189f"
+      ]
+    },
+    "exitEvaluationRevisionIds": null,
+    "manualEvaluationRevisionIds": [
+      "bundle-d15cc875-c98e-4175-8209-cd090bd79d5d:manual:manual-draft:episode:%5B%22SYNTHETIC-REPAIR-fresh-replay%3ACN%3A999996%3Alive%22%2C%222026-08-10T02%3A00%3A00.000Z%22%2C%22buy%22%2C%221000%22%2C%2256%22%5D:1"
+    ]
+  },
+  "storyboard": {
+    "pre-entry": {
+      "snapshotId": "recall-snapshot-1790425465811-3h1c1v"
+    },
+    "post-review": {
+      "snapshotId": "recall-snapshot-1790426381010-uh29nu"
+    }
+  }
+}

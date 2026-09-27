@@ -1,0 +1,471 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TradeReview 主图复盘 · 视觉与元素规范 · TradeReview</title><link rel="stylesheet" href="docs.css"></head><body><header><strong>TRADE / REVIEW</strong><span>DESIGN HANDOFF · v1.0 · 2026.09.25 · 待开发定稿</span></header><div class="layout"><nav class="sidebar" aria-label="开发交付导航"><a class="" href="index.html">交付总览</a><a class="" href="requirements.html">需求规格</a><a class="active" href="elements.html">元素与视觉规范</a><a class="" href="demo/index.html#stage1">打开视觉 demo ↗</a><a class="" href="task.html">后续开发任务</a><a class="" href="verification.html">验收与实现边界</a><a class="" href="sources.html">来源与项目工作流</a><a class="" href="readme.html">启动与文件说明</a><div class="toc"><a class="" href="#section-1">1. 设计依据与执行优先级</a><a class="" href="#section-2">2. 样式令牌</a><a class="" href="#section-3">3. 字体、尺寸与间距</a><a class="" href="#section-4">4. 已确认画面</a><a class="" href="#section-5">5. 元素规格与行为映射</a><a class="" href="#section-6">6. 布局、响应式与图表同步</a><a class="" href="#section-7">7. 状态与可访问性</a><a class="" href="#section-8">8. 视觉验收清单</a><a class="" href="#section-9">9. 现有实现证据</a></div></nav><main><h1>TradeReview 主图复盘 · 视觉与元素规范</h1>
+<p>版本：1.0 · 日期：2026-09-25 · 状态：待开发定稿</p>
+<p>用户已确认“买入前计划 / 持仓过程 / 事后执行评价”的拆分，以及主图、价格轴与右侧栏不重叠的布局。本规范沿用现有 TradeReview 样式体系，不引入新的产品主题。配套<a href="requirements.html">需求规格</a>定义行为与数据；本文件定义外观、布局、元素与状态。</p>
+<h2 id="section-1">1. 设计依据与执行优先级</h2>
+<ol>
+<li>已确认的阶段拆分与数据边界不可由视觉实现改变。</li>
+<li>颜色、字体、控件和图标复用现有应用规范；新增尺寸是本功能的布局约束。</li>
+<li>本文件的元素表、需求规格及验收条件是开发约束；图片展示默认样例，不能覆盖未知值、长文、冲突等状态规则。</li>
+<li>demo 是自包含的设计演示：SVG 展示合成行情，输入保存在内存；数据库、完整绘图及 PPTX 需要后续开发。</li>
+<li>文档导航、“设计说明”以及画板编号不进入产品常驻工作区。产品继续使用原有应用壳和 Recall 入口。</li>
+</ol>
+<h2 id="section-2">2. 样式令牌</h2>
+<p>以下为现有代码的真实取值。产品应引用既有语义变量，而非在新组件内重复维护一套同色常量。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>令牌 / 用途</th>
+<th>值</th>
+<th>使用规范</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>page</td>
+<td>#0b1220</td>
+<td>应用页面底色</td>
+</tr>
+<tr>
+<td>surface</td>
+<td>#111a2b</td>
+<td>侧栏、页头、普通容器</td>
+</tr>
+<tr>
+<td>surface-elevated</td>
+<td>#182337</td>
+<td>分组摘要、较高层表面</td>
+</tr>
+<tr>
+<td>surface-soft</td>
+<td>#182333</td>
+<td>次级分区</td>
+</tr>
+<tr>
+<td>Recall 工作面</td>
+<td>#0b1018</td>
+<td>图表工作区外层</td>
+</tr>
+<tr>
+<td>chart</td>
+<td>#101722</td>
+<td>行情绘图区</td>
+</tr>
+<tr>
+<td>input / secondary button</td>
+<td>#111b29</td>
+<td>表单与次级动作</td>
+</tr>
+<tr>
+<td>tooltip</td>
+<td>#151e2b</td>
+<td>图上文字编辑和提示</td>
+</tr>
+<tr>
+<td>line / line-soft</td>
+<td>#243145 / #1c2736</td>
+<td>1px 分隔，不叠加厚边框</td>
+</tr>
+<tr>
+<td>text</td>
+<td>#e7edf6</td>
+<td>主文案、重要数据</td>
+</tr>
+<tr>
+<td>muted / faint</td>
+<td>#adbbcf / #9cacc2</td>
+<td>次级文案；未知值仍需可读</td>
+</tr>
+<tr>
+<td>blue / blue-soft</td>
+<td>#2f80ed / rgba(47,128,237,.14)</td>
+<td>选中、焦点、主要操作；不表示盈亏</td>
+</tr>
+<tr>
+<td>link</td>
+<td>#8cbdff</td>
+<td>链接、原判断辅助线</td>
+</tr>
+<tr>
+<td>gold</td>
+<td>#f3ba2f</td>
+<td>计划价格虚线、计划指标、待确认提醒</td>
+</tr>
+<tr>
+<td>positive / negative</td>
+<td>#26a69a / #ef5350</td>
+<td>净盈亏正负，始终同时标示 + / −</td>
+</tr>
+<tr>
+<td>图表网格 / 轴边框</td>
+<td>#1c2634 / #273345</td>
+<td>沿用行情图配置</td>
+</tr>
+<tr>
+<td>轴文字</td>
+<td>#8392a7</td>
+<td>与输入区标签区分</td>
+</tr>
+<tr>
+<td>focus</td>
+<td>2px blue，offset 2px</td>
+<td>所有键盘可操作控件</td>
+</tr>
+</tbody></table></div>
+<p>K 线配色使用用户已保存的方案：默认 teal-red 为上涨 #26a69a、下跌 #ef5350；green-red 为 #22c55e / #ef4444；blue-orange 为 #3b82f6 / #f97316。不得把参考图的红涨绿跌写死。demo 使用现有默认 teal-red，并在画面注明。现有成交量仍使用默认青/红，现有财务正负色也独立；本期不借此改造全应用配色。</p>
+<p>保留 showGrid、showVolume、showExecutions、showAverageCost 与 colorScheme。成交标记可见条件为“已揭示且用户开启”，成本线还需成本有效。侧栏开关和阶段切换不得重置设置；图表设置继续经现有设置存储与保存入口，不另设 localStorage 权威副本。</p>
+<h2 id="section-3">3. 字体、尺寸与间距</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>规范</th>
+<th>继承 / 新增</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>中文 / 界面字体</td>
+<td>既有 Geist Sans，中文 PingFang SC / Microsoft YaHei 后备</td>
+<td>继承</td>
+</tr>
+<tr>
+<td>数字 / 价格 / R</td>
+<td>Geist Mono 或既有等宽后备，tabular-nums</td>
+<td>继承</td>
+</tr>
+<tr>
+<td>产品页标题</td>
+<td>18px / 600，手机 16px</td>
+<td>继承</td>
+</tr>
+<tr>
+<td>阶段和侧栏标题</td>
+<td>16–18px / 600</td>
+<td>复用层级</td>
+</tr>
+<tr>
+<td>字段输入 / 主数据</td>
+<td>14px，行高 1.4–1.5</td>
+<td>继承</td>
+</tr>
+<tr>
+<td>字段标签 / 辅助文案</td>
+<td>最低 12px；不以缩小文字解决拥挤</td>
+<td>继承</td>
+</tr>
+<tr>
+<td>图上 Text</td>
+<td>默认 14px，保留用户的字号、颜色、背景和尺寸</td>
+<td>继承</td>
+</tr>
+<tr>
+<td>Text 可用字号</td>
+<td>12 / 14 / 16 / 18 / 24 / 32px，行高 1.5</td>
+<td>继承</td>
+</tr>
+<tr>
+<td>桌面按钮 / select</td>
+<td>高度至少 36px</td>
+<td>继承</td>
+</tr>
+<tr>
+<td>触屏控件</td>
+<td>高度与命中区域至少 44px；工具过多时折叠</td>
+<td>继承</td>
+</tr>
+<tr>
+<td>图标</td>
+<td>线性 Lucide，主要绘图 19px，辅助动作 18px</td>
+<td>继承</td>
+</tr>
+<tr>
+<td>控件圆角</td>
+<td>6px，极小工具元素可沿用既有 4px</td>
+<td>继承</td>
+</tr>
+<tr>
+<td>工作容器圆角</td>
+<td>8px；导出对话框沿用 10px</td>
+<td>继承</td>
+</tr>
+<tr>
+<td>间距级数</td>
+<td>4 / 8 / 12 / 16 / 24px</td>
+<td>整理现有用法</td>
+</tr>
+<tr>
+<td>右侧栏</td>
+<td>默认 300px，可在 300–320px 范围适配</td>
+<td>本次新增</td>
+</tr>
+<tr>
+<td>价格轴到表单区</td>
+<td>图表内部预留 84–108px 价格轴/标签区，再隔 14px 沟槽进入侧栏</td>
+<td>本次新增</td>
+</tr>
+</tbody></table></div>
+<p>离线 demo 不下载字体，使用本机无衬线与等宽后备；产品使用应用已加载的 Geist 变量。demo 自包含 SVG 图标遵循现有线性风格；产品直接复用 Lucide 和已有 DrawingToolbar，不能复制 Unicode 字符作为正式图标。</p>
+<h2 id="section-4">4. 已确认画面</h2>
+<p>图 1：买入前计划。主图、价格轴、录入侧栏保持同屏。</p>
+<p><img src="images/02-chart-workspace.png" alt="图1 买入前计划"></p>
+<p>图 2：事后执行评价。原计划只读，按退出决策逐次记录。</p>
+<p><img src="images/05-final-review.png" alt="图2 事后执行评价"></p>
+<p>图 3：三阶段导出顺序与最后的结构化总结表。</p>
+<p><img src="images/06-export-storyboard.png" alt="图3 三图一表导出"></p>
+<h2 id="section-5">5. 元素规格与行为映射</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>图中位置 / 元素</th>
+<th>尺寸与视觉</th>
+<th>内容及动作</th>
+<th>必须验证</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>E01</td>
+<td>工作区顶栏</td>
+<td>48px 起，深蓝 surface，1px 底线</td>
+<td>标的、周期、来源/保存状态；不再显示大标题横幅</td>
+<td>长标的省略但可查看全名；不挤掉主动作</td>
+</tr>
+<tr>
+<td>E02</td>
+<td>顶栏右侧阶段导航</td>
+<td>36px 按钮，蓝色选中态</td>
+<td>买入前判断 / 持仓过程 / 事后复盘；当前位置可识别</td>
+<td>键盘、触控可用；回看恢复对应双游标</td>
+</tr>
+<tr>
+<td>E03</td>
+<td>主图左侧绘图工具</td>
+<td>48px 工具区，36px 桌面按钮</td>
+<td>选择、Text 优先；趋势/水平线/通道/盈亏比/更多/撤销</td>
+<td>title、aria-label、aria-pressed；更多不删旧功能</td>
+</tr>
+<tr>
+<td>E04</td>
+<td>K 线与成交量</td>
+<td>chart 底色，细网格</td>
+<td>只绘制可知行情；保留原缩放和平移能力</td>
+<td>不渲染透明未来 K，不用未来高低点定轴</td>
+</tr>
+<tr>
+<td>E05</td>
+<td>右侧价格轴和标签</td>
+<td>独立于表单，至少 14px 沟槽</td>
+<td>入场、止损、目标跟随价格映射；点标签定位字段</td>
+<td>轴/标签最右边界小于侧栏左边界；不因展开偏移价格语义</td>
+</tr>
+<tr>
+<td>E06</td>
+<td>原计划线</td>
+<td>gold 虚线，带名称与数值</td>
+<td>图形与价格输入共用同一计划对象</td>
+<td>做空方向反转；无效/未知价格不画伪造线</td>
+</tr>
+<tr>
+<td>E07</td>
+<td>实际成交标记</td>
+<td>实心菱形＋买入/减仓/清仓文字</td>
+<td>只读原始成交，点选定位决策</td>
+<td>操作含义不只靠颜色；必须受成交游标和显示设置约束</td>
+</tr>
+<tr>
+<td>E08</td>
+<td>图上 Text</td>
+<td>默认 14px，蓝色辅助描边/连接线</td>
+<td>T 后点图输入；有时间/价格或画布锚点</td>
+<td>中文 IME、换行、拖动与编辑不推进 K 线；旧快照独立</td>
+</tr>
+<tr>
+<td>E09</td>
+<td>右侧栏开关</td>
+<td>底栏入口常驻、侧栏右上关闭</td>
+<td>仅开关布局，主图始终可交互</td>
+<td>关闭/再开不丢输入，不改变观察游标；焦点返回入口</td>
+</tr>
+<tr>
+<td>E10</td>
+<td>买入前价格组</td>
+<td>标签在上；入场单行、止损/目标双列</td>
+<td>计划入场、初始止损、止盈目标</td>
+<td>精确输入、单位、方向校验；不出现退出评价</td>
+</tr>
+<tr>
+<td>E11</td>
+<td>计划规模组</td>
+<td>数量/金额/仓位三段切换，一次一个主输入</td>
+<td>切换按已有值换算；不偷偷归零</td>
+<td>基数未知时不能计算比例；最小交易单位舍入提示</td>
+</tr>
+<tr>
+<td>E12</td>
+<td>资金基数折叠项</td>
+<td>次级 details，12px 摘要</td>
+<td>金额、币种、时点、来源；手填显示参考资金</td>
+<td>来源未知时显示未提供，不能当作真实账户净值</td>
+</tr>
+<tr>
+<td>E13</td>
+<td>计划派生指标</td>
+<td>紧凑行，标签左、等宽数值右</td>
+<td>名义金额/仓位、初始风险/风险占比、预期 R</td>
+<td>3R 同时解释为收益:风险 3:1；缺项不写 0</td>
+</tr>
+<tr>
+<td>E14</td>
+<td>持仓只读侧栏</td>
+<td>同一布局，默认可收起</td>
+<td>原计划、当前可知仓位和成交摘要</td>
+<td>不包含最终评价；新计划调整创建修订</td>
+</tr>
+<tr>
+<td>E15</td>
+<td>事后只读摘要</td>
+<td>原计划/风险基准/实际建仓/结果</td>
+<td>每项明确来源；完整成交可展开</td>
+<td>与当前编辑的事前草稿区分，不能改写实际成交</td>
+</tr>
+<tr>
+<td>E16</td>
+<td>退出决策选择</td>
+<td>单选，显示日期＋动作＋数量＋价格</td>
+<td>每次减仓/清仓拥有独立评价</td>
+<td>D68 与 D74 切换不串值；不把原因当成决策列表</td>
+</tr>
+<tr>
+<td>E17</td>
+<td>是否提前退出</td>
+<td>是/否/不确定；未评价为未填状态</td>
+<td>对照被引用计划的退出条件</td>
+<td>未到目标不自动等于提前；提前不自动等于错误</td>
+</tr>
+<tr>
+<td>E18</td>
+<td>原因与执行符合度</td>
+<td>原因枚举＋“其他”短说明；紧凑选择</td>
+<td>原因、按计划/偏离/无原计划/未评价</td>
+<td>保存引用计划版本、决策 ID、评价时间和证据</td>
+</tr>
+<tr>
+<td>E19</td>
+<td>底部控制条</td>
+<td>48px 起，必要时换行</td>
+<td>逐根/播放/暂停/下一决策/留存；一行重要指标</td>
+<td>输入焦点不触发回放；留存不是继续揭示的门槛</td>
+</tr>
+<tr>
+<td>E20</td>
+<td>保存状态</td>
+<td>顶栏次级状态，错误用现有 alert</td>
+<td>保存中/已保存/失败/冲突/待确认</td>
+<td>状态来自真实请求；错误保留本地草稿</td>
+</tr>
+<tr>
+<td>E21</td>
+<td>导出</td>
+<td>沿用现有导出对话框与动作风格</td>
+<td>三张阶段图＋可编辑数据表，16:9</td>
+<td>不导出侧栏、工具、焦点框；缺阶段不伪造</td>
+</tr>
+<tr>
+<td>E22</td>
+<td>记录/快照列表</td>
+<td>原入口折叠展开</td>
+<td>三阶段内仍可访问每次决策与多快照</td>
+<td>阶段只是展示分组，不减少完整性要求</td>
+</tr>
+</tbody></table></div>
+<h2 id="section-6">6. 布局、响应式与图表同步</h2>
+<ul>
+<li>桌面打开侧栏时使用实际布局列，不用绝对定位遮罩。侧栏可以独立滚动；图表纵向高度稳定。1440×900 为视觉验收基准，1280×800 为紧凑桌面验收。</li>
+<li>产品沿用现有应用侧导航及窄屏折叠方式；本功能应按工作区可用宽度判断。当无法容纳约 640px 主绘图区、价格轴、14px 间隔和 300px 侧栏时，进入上下布局。按主绘图区、价格轴、沟槽、侧栏及实际内边距之和决定切换下限；绘图工具占用的区域也须计入。不得把 demo 的 1000px 视口近似值直接作为产品断点。</li>
+<li>下置表单时，上部约 200–240px 趋势区保持可见，下部表单独立滚动。价格轴仍在趋势图内，不能横向滑出屏幕。触控工具只留选择/Text/更多，不用缩放缩小命中区域。</li>
+<li>软件键盘出现后按实际可视区域重新分配上下两区。验收至少包含价格输入和下部退出原因输入；当前 demo 的桌面窄视口测试不替代真实手机键盘测试。</li>
+<li>原有周期、时间范围、价格范围、用户图形样式和显示设置保留。开关侧栏触发图表容器 resize，不推进任一游标，也不调用 fitContent 重新跳到全量数据。</li>
+<li>图上长文可折叠成摘要；编辑时仍不允许遮挡价格轴。批注位置随锚点/画布归一化规则恢复，不能通过硬编码截图坐标定位产品 Text。</li>
+<li>导出使用快照保存的构图和独立输出尺寸；用户当前是否展开侧栏不改变导出时间/价格窗口。</li>
+</ul>
+<h2 id="section-7">7. 状态与可访问性</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>状态</th>
+<th>表现</th>
+<th>数据行为</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>默认</td>
+<td>12px 标签、14px 输入，单位明确</td>
+<td>空值可留空，不阻断看图</td>
+</tr>
+<tr>
+<td>Hover</td>
+<td>边框沿用 #3b5374，文字提高到主文色</td>
+<td>不写入数据</td>
+</tr>
+<tr>
+<td>Focus</td>
+<td>2px blue 焦点环</td>
+<td>Tab 顺序按视觉顺序；Esc 关闭面板后回到开关</td>
+</tr>
+<tr>
+<td>选中</td>
+<td>blue-soft 背景＋blue 边框</td>
+<td>不使用绿色暗示“选择正确”</td>
+</tr>
+<tr>
+<td>只读</td>
+<td>普通数据文本与来源，不伪装可输入</td>
+<td>事后不得修改原计划或成交</td>
+</tr>
+<tr>
+<td>未知</td>
+<td>“待补充 / 未提供 / 未评价”＋缺项说明</td>
+<td>数据为 null/缺失，不是 0、false 或否</td>
+</tr>
+<tr>
+<td>无效</td>
+<td>现有红色 error 样式＋字段级原因</td>
+<td>草稿保留；无效数据不能保存为有效计划</td>
+</tr>
+<tr>
+<td>保存中</td>
+<td>次级状态文字，避免挡图 loading</td>
+<td>不阻断本地继续编辑</td>
+</tr>
+<tr>
+<td>失败 / 冲突</td>
+<td>沿用 alert/conflict 横条，提供重试/比较</td>
+<td>不静默覆盖远端或丢弃输入</td>
+</tr>
+<tr>
+<td>已看后续后补记</td>
+<td>来源标签明确</td>
+<td>不伪造成盲态事前记录</td>
+</tr>
+</tbody></table></div>
+<p>Enter、方向键、撤销、Text 编辑与 IME 组合按当前焦点解释。数字输入内的方向键不推进回放。图标须有可读名称；状态变化用适当 live region，不能只变颜色。表格支持键盘阅读，数值左侧标签不与颜色绑定。</p>
+<h2 id="section-8">8. 视觉验收清单</h2>
+<ul>
+<li><input disabled="" type="checkbox"> 所有产品区域复用现有深蓝灰、蓝色交互主色及字体；无米白卡纸或草绿选中主题混入。</li>
+<li><input disabled="" type="checkbox"> 计划输入旁可见图线与价格轴，价格轴/标签与右栏无交叠。</li>
+<li><input disabled="" type="checkbox"> 工具与表单按钮满足桌面/触控命中尺寸；文字不因窄屏缩至不可读。</li>
+<li><input disabled="" type="checkbox"> 买入前、持仓、事后三个阶段字段隔离；原计划、成交、评价有清晰来源。</li>
+<li><input disabled="" type="checkbox"> 已保存的图表设置与 Text 样式不被阶段、侧栏、导出操作重置。</li>
+<li><input disabled="" type="checkbox"> 桌面 1440/1280 和窄屏约 390px 验收，长中文、资金基数展开、数字较长、空值、错误与键盘场景均不遮轴。</li>
+<li><input disabled="" type="checkbox"> 默认合成例与图 1–3 一致；非默认数据按规则工作，不能只匹配截图。</li>
+</ul>
+<h2 id="section-9">9. 现有实现证据</h2>
+<p>规范基线提交：b166d5626c72f2e0a4a7be98d89eb28bf1a036f3。以下链接是代码定位线索，不代表要求复制整块 CSS：</p>
+<ul>
+<li><a href="sources.html">全局令牌与交互基线</a>：颜色、焦点、应用壳及后续响应式覆盖。</li>
+<li><a href="sources.html">Recall 现有元素规范</a>：面板、按钮、指标、导出对话框和移动控件尺寸。</li>
+<li><a href="sources.html">字体加载</a>：Geist Sans / Geist Mono 变量。</li>
+<li><a href="sources.html">图表配置</a>：画布、坐标轴、配色和显示设置应用。</li>
+<li><a href="sources.html">现有图表设置</a>：配色枚举和迁移边界；运行时设置权威仍在服务端。</li>
+<li><a href="sources.html">绘图工具</a>：Lucide 图标、可访问名称和已有工具集合。</li>
+<li><a href="sources.html">Text 几何</a>：文字尺寸与行高约束。</li>
+</ul>
+<footer>TradeReview · v1.0 已确认设计。合成示例；实际数据库保存与 PPTX 导出待开发。</footer></main></div></body></html>

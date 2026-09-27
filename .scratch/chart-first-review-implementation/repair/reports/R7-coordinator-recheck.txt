@@ -1,0 +1,61 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/f7a5/TradeReview
+
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps the replay bar compact while preserving record actions behind More
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps the holding quantity in the closed replay summary slot
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps the pre-entry expected R and risk values in the closed replay summary slot
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > exposes an awaitable leave guard that blocks navigation when saving fails
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps the newer local draft when an older save response arrives
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps a local edit dirty when the first delayed save resolves
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > restores both replay cursors after visiting full history
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > restores a retained viewport while editing and the working viewport on exit
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps a saved phase viewport from being overwritten during the phase switch
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > does not restore the current future viewport when a phase has no saved viewport
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > ignores a phase restore callback after a newer replay reveal
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > keeps a completed text draft marked as modified after autosave
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace autosave reconciliation > waits for autosave and finalizes a fresh global capture with the returned revision
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace accounting safeguards > hides cost and PnL when a revealed HK Connect fill has a mismatched settlement currency
+ ↓ app/components/recall/recall-workspace.test.tsx > RecallWorkspace accounting safeguards > keeps the TradingView notice permanent while source reports follow the revealed boundary
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > orders the post-review sidebar as compact summary, evaluation, then folded details
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > keeps the execution cutoff separate from the aligned market-axis cutoff
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > captures a full post-review global summary and refits an offscreen same-timeframe viewport
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > uses the same post-review full-history boundary when completion starts from global
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > freezes full-history metrics and manual evidence for a decision completion while keeping Text ownership
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > keeps holding secondary details folded while retaining the revision entry
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > keeps the post-review manual tag entry available when an episode has no exits
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > adjusts holding prices without replacing the retained initial risk
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > keeps independent exit edits and blocks retention while another exit has an incomplete reason
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > saves a dragged entry price through the same plan as the numeric field
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > keeps invalid price text across closing and blocks capturing the stale valid draft
+ ↓ app/components/recall/recall-workspace.test.tsx > structured plan sidebar > carries accepted capture stamps into a newer local edit without replacing a newer capture
+ ↓ app/components/recall/recall-workspace.test.tsx > shows the entry plan on exit selection but does not inject it into a legacy snapshot
+ ↓ app/components/recall/recall-workspace.test.tsx > autosaves a representative stage selection through the existing repository
+ ↓ app/components/recall/recall-workspace.test.tsx > keeps a server-stamped capture when Text changes during its save
+ ↓ app/components/recall/recall-workspace.test.tsx > reopens the later entry's own frozen plan instead of the first bundled entry plan
+ ↓ app/components/recall/recall-workspace.test.tsx > coalesces queued leave saves already acknowledged by the first save
+ ↓ app/components/recall/recall-workspace.test.tsx > serializes finalization with an autosave scheduled while chart capture is pending
+ ✓ app/components/recall/recall-workspace.test.tsx > keeps a plan edit made during the final save dirty and saves it after the frozen formal candidate 1030ms
+ ↓ app/components/recall/recall-workspace.test.tsx > preserves newer local edits and blocks leaving on a genuine external revision conflict
+ ↓ app/components/recall/recall-workspace.test.tsx > does not rebase a new episode onto an accepted save from another episode
+ ↓ app/components/recall/recall-workspace.test.tsx > leaves loading when market hydration restores the current draft after a cancelled episode load
+ ↓ app/components/recall/recall-workspace.test.tsx > keeps an orphaned pre-entry context unrevealed and explicitly unassigned after fill replacement
+ ↓ app/components/recall/recall-workspace.test.tsx > cancels first initial-plan freezing if that input changes during completion capture
+ ↓ app/components/recall/recall-workspace.test.tsx > rejects completion when a Text edit lands while the global flush is pending, then allows retry
+ ↓ app/components/recall/recall-workspace.test.tsx > does not install a previous episode's late completion as the current formal baseline
+ ↓ app/components/recall/recall-workspace.test.tsx > locks the original plan only while its first finalization request is pending and unlocks on failure
+ ↓ app/components/recall/recall-workspace.test.tsx > renders a retained post-review metric using its captured phase when opened from pre-entry
+ ↓ app/components/recall/recall-workspace.test.tsx > renders a retained post-review metric using its captured phase when opened from holding
+ ↓ app/components/recall/recall-workspace.test.tsx > uses a safe historical metric fallback for a legacy snapshot opened before entry
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels retain when drawing changes after the chart scene was frozen 301ms
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels retain when plan changes after the chart scene was frozen 255ms
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels retain when evaluation changes after the chart scene was frozen 321ms
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels complete when drawing changes after the chart scene was frozen 383ms
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels complete when plan changes after the chart scene was frozen 419ms
+ ✓ app/components/recall/recall-workspace.test.tsx > cancels complete when evaluation changes after the chart scene was frozen 412ms
+ ↓ app/components/recall/recall-workspace.test.tsx > accepts the synchronous Text commit performed before the chart freezes its scene
+
+ Test Files  1 passed (1)
+      Tests  7 passed | 45 skipped (52)
+   Start at  06:16:13
+   Duration  5.47s (transform 801ms, setup 192ms, import 1.07s, tests 3.12s, environment 870ms)
+

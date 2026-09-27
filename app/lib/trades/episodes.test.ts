@@ -705,3 +705,39 @@ it("preserves saved legacy simulation episode IDs and their review association",
   const modernEntry = { ...entry, source: { platform: "tradingview", row: 1, tradeNature: "simulation" as const, simulationRunId: "legacy-run" } };
   expect(buildTradeEpisodes([modernEntry])[0].id).not.toBe(savedId);
 });
+
+describe("statement evidence lookup work", () => {
+  it("bounds instrument reads when the same evidence is compared with many fills", () => {
+    let instrumentReads = 0;
+    const fills = Array.from({ length: 40 }, (_, index) => {
+      const fill = execution("buy", "2025-01-03T14:30:00Z", "1", "10");
+      fill.id = `lookup-${index}`;
+      fill.instrument = { ...fill.instrument, get symbol() { instrumentReads += 1; return `SYMBOL${index}`; } };
+      return fill;
+    });
+    const positions: StatementPosition[] = Array.from({ length: 10 }, (_, index) => ({ accountId: "acct-1", market: "US", symbol: "SYMBOL39", phase: "closing", date: `2025-01-${String(index + 10).padStart(2, "0")}`, quantity: "1", source: [] }));
+    const episodes = buildTradeEpisodes(fills, [{ accountId: "acct-1", positions, events: [] }]);
+    expect(episodes).toHaveLength(40);
+    // Repeated evidence comparisons must not rescan the entire fill collection.
+    expect(instrumentReads).toBeLessThan(3000);
+  });
+
+  it("preserves cross-instrument carried evidence and observes changes on later builds", () => {
+    const sale = execution("sell", "2025-01-03T14:30:00Z", "10", "12");
+    sale.source.tradeNature = "live";
+    const carrier = execution("buy", "2025-01-04T14:30:00Z", "1", "10");
+    carrier.instrument = { ...carrier.instrument, id: "US:OTHER", symbol: "OTHER" };
+    const position: StatementPosition = { accountId: "acct-1", market: "US", symbol: "XPEV", phase: "opening", date: "2025-01-01", quantity: "10", source: [] };
+    carrier.source.statementPositions = [position];
+    const carried = buildTradeEpisodes([carrier, sale]);
+    const cleanCarrier = { ...carrier, source: { ...carrier.source, statementPositions: undefined } };
+    expect(carried).toEqual(buildTradeEpisodes([cleanCarrier, sale], [{ accountId: "acct-1", positions: [position], events: [] }]));
+    expect(carried.find(item => item.instrument.symbol === "XPEV")?.status).toBe("closed");
+    position.quantity = "20";
+    const changed = buildTradeEpisodes([carrier, sale]);
+    expect(changed.find(item => item.instrument.symbol === "XPEV")?.remainingQuantity).toBe("10");
+    sale.source.tradeNature = "simulation";
+    sale.source.simulationRunId = "changed";
+    expect(buildTradeEpisodes([carrier, sale]).find(item => item.instrument.symbol === "XPEV")?.direction).toBe("short");
+  });
+});

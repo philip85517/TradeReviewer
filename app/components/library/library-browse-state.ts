@@ -1,7 +1,12 @@
 import Decimal from "decimal.js";
 
-import type { FxSnapshot } from "../../lib/fx/contracts";
 import type { MarketDataSyncStatus } from "../../lib/market/sync-status";
+import { filterRoomRows, type RoomScope, type RoomTargetCurrency, type TradingRoomMetadataInput } from "../../lib/reviews/trading-room-scope";
+import {
+  hasTradeLibraryRoomFilters,
+  pendingFinalCloseDate,
+  type TradeLibraryRoomFilters,
+} from "../../lib/reviews/trading-room-pending";
 import { displayTradeNature } from "../../lib/trades/trading-nature";
 import {
   buildReviewQueue,
@@ -16,6 +21,7 @@ import {
   canSortLibraryPerformance,
   sortLibraryItems,
 } from "../../lib/reviews/library-sorting";
+import type { LibraryFxSnapshot } from "../../lib/reviews/library-performance";
 import type {
   TradeLibraryEntry,
 } from "../../lib/trades/library";
@@ -42,6 +48,11 @@ export type TradeLibraryBrowseState = {
   accounts: string[];
   brokers: string[];
   year: TradeLibraryFilterValue;
+  /** Inclusive final-close trading-date range used by both stock and queue views. */
+  closeDateFrom?: string | null;
+  closeDateTo?: string | null;
+  /** Homepage-only room filters; shared nature/account/run stay in sharedScope. */
+  roomFilters?: TradeLibraryRoomFilters | null;
   tradeNature: TradeNature | "all";
   simulationRunId: TradeLibraryFilterValue;
   reviewStatus: TradeLibraryReviewStatus;
@@ -84,6 +95,9 @@ function defaultStateForMode(mode: TradeLibraryBrowseMode): TradeLibraryBrowseSt
     accounts: [],
     brokers: [],
     year: "all",
+    closeDateFrom: null,
+    closeDateTo: null,
+    roomFilters: null,
     tradeNature: "live",
     simulationRunId: "all",
     reviewStatus: "all",
@@ -100,6 +114,39 @@ function defaultStateForMode(mode: TradeLibraryBrowseMode): TradeLibraryBrowseSt
 
 function normalizePage(value: number | undefined, fallback: number) {
   return typeof value === "number" && Number.isInteger(value) && value > 0 ? value : fallback;
+}
+
+function normalizeDate(value: string | null | undefined): string | null {
+  return value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null;
+}
+
+function normalizeRoomFilters(value: TradeLibraryRoomFilters | null | undefined): TradeLibraryRoomFilters | null {
+  if (!value) return null;
+  const assetCategory = value.assetCategory === "a-share-stock" ||
+    value.assetCategory === "us-stock" ||
+    value.assetCategory === "hk-stock" ||
+    value.assetCategory === "etf" ||
+    value.assetCategory === "unknown"
+    ? value.assetCategory
+    : "all";
+  const assetType = value.assetType === "stock" || value.assetType === "etf" ? value.assetType : "all";
+  const values = (input: unknown): string[] => Array.isArray(input)
+    ? [...new Set(input.filter((item): item is string => typeof item === "string").map(item => item.trim()).filter(Boolean))]
+    : [];
+  const reviewStatuses = Array.isArray(value.reviewStatuses)
+    ? [...new Set(value.reviewStatuses.filter((status): status is TradeLibraryRoomFilters["reviewStatuses"][number] =>
+      status === "pending" || status === "completed" || status === "deferred"))]
+    : [];
+  const normalized: TradeLibraryRoomFilters = {
+    assetCategory,
+    assetType,
+    query: typeof value.query === "string" ? value.query.trim() : "",
+    instrumentIds: values(value.instrumentIds),
+    markets: values(value.markets),
+    currencies: values(value.currencies),
+    reviewStatuses,
+  };
+  return hasTradeLibraryRoomFilters(normalized) ? normalized : null;
 }
 
 export const DEFAULT_TRADE_LIBRARY_BROWSE_STATE = defaultStateForMode("stocks");
@@ -135,6 +182,9 @@ export function normalizeTradeLibraryBrowseState(
     accounts,
     brokers: normalizeBrokerIds(persisted.brokers ?? queueFilter?.brokers ?? defaults.brokers),
     year: persisted.year ?? queueFilter?.year ?? defaults.year,
+    closeDateFrom: normalizeDate(persisted.closeDateFrom ?? defaults.closeDateFrom),
+    closeDateTo: normalizeDate(persisted.closeDateTo ?? defaults.closeDateTo),
+    roomFilters: normalizeRoomFilters(persisted.roomFilters ?? defaults.roomFilters),
     tradeNature: (persisted.tradeNature ?? queueFilter?.nature ?? defaults.tradeNature) as TradeLibraryBrowseState["tradeNature"],
     simulationRunId: persisted.simulationRunId ?? queueFilter?.simulationRunId ?? defaults.simulationRunId,
     reviewStatus: persisted.reviewStatus ?? queueFilter?.status ?? defaults.reviewStatus,
@@ -180,7 +230,17 @@ export function reviewQueueFilterForBrowseState(
  */
 export function tradeLibraryBrowseRangeKey(
   state: TradeLibraryBrowseState,
+  targetCurrency: RoomTargetCurrency = "CNY",
 ) {
+  const roomFilters = state.roomFilters
+    ? {
+        ...state.roomFilters,
+        instrumentIds: [...state.roomFilters.instrumentIds].sort(),
+        markets: [...state.roomFilters.markets].sort(),
+        currencies: [...state.roomFilters.currencies].sort(),
+        reviewStatuses: [...state.roomFilters.reviewStatuses].sort(),
+      }
+    : null;
   return JSON.stringify([
     state.query,
     state.market,
@@ -188,6 +248,8 @@ export function tradeLibraryBrowseRangeKey(
     [...state.accounts].sort(),
     normalizeBrokerIds(state.brokers).sort(),
     state.year,
+    state.closeDateFrom,
+    state.closeDateTo,
     state.tradeNature,
     state.simulationRunId,
     state.reviewStatus,
@@ -195,6 +257,8 @@ export function tradeLibraryBrowseRangeKey(
     state.positionStatus,
     state.dataStatus,
     state.tag,
+    roomFilters,
+    targetCurrency,
   ]);
 }
 
@@ -256,8 +320,69 @@ function matchesDataStatus(
   return dataStatus === "complete" ? complete : !complete;
 }
 
+function matchesCloseDateRange(
+  item: ReviewQueueItem,
+  from: string | null | undefined,
+  to: string | null | undefined,
+) {
+  if (!from && !to) return true;
+  if (item.item.episode.status !== "closed") return false;
+  const date = pendingFinalCloseDate(item.item.episode);
+  return (!from || date >= from) && (!to || date <= to);
+}
+
 function isPerformanceSort(sort: ReviewQueueSort) {
   return sort === "net-profit" || sort === "net-loss" || sort === "return-high" || sort === "return-low";
+}
+
+function libraryRowKey(row: ReviewQueueItem) {
+  return `${row.entry.instrument.id}|${row.entry.scopeKey ?? "legacy"}|${row.item.episode.id}`;
+}
+
+function simulationRunIdForRow(row: ReviewQueueItem): string | null {
+  return row.item.episode.simulationRunId ??
+    row.entry.simulationRunId ??
+    row.item.episode.executions.find(execution => execution.source.simulationRunId)?.source.simulationRunId ??
+    null;
+}
+
+function roomFilterRowKeys(
+  entries: TradeLibraryEntry[],
+  state: TradeLibraryBrowseState,
+  instrumentMetadata?: TradingRoomMetadataInput,
+): Set<string> | null {
+  const filters = state.roomFilters;
+  if (!filters) return null;
+
+  const natures: Array<RoomScope["nature"]> = state.tradeNature === "all"
+    ? ["live", "simulation", "unknown"]
+    : [state.tradeNature];
+  const rows = entries.flatMap(entry => entry.episodes.map(item => ({ entry, item })));
+  const keys = new Set<string>();
+  for (const nature of natures) {
+    const runIds = nature === "simulation" && state.simulationRunId === "all"
+      ? [...new Set(rows.map(simulationRunIdForRow).filter((value): value is string => Boolean(value)))]
+      : [nature === "simulation" ? state.simulationRunId : null];
+    for (const simulationRunId of runIds) {
+      const scope: RoomScope = {
+        nature,
+        assetCategory: filters.assetCategory,
+        assetType: filters.assetType,
+        period: { preset: "all", startDate: "0001-01-01", endDate: "9999-12-31" },
+        simulationRunId,
+        query: filters.query,
+        accountIds: [],
+        instrumentIds: filters.instrumentIds,
+        markets: filters.markets,
+        currencies: filters.currencies,
+        reviewStatuses: filters.reviewStatuses,
+      };
+      for (const row of filterRoomRows(entries, scope, { ignoreDateRange: true, instrumentMetadata })) {
+        keys.add(`${row.entry.instrument.id}|${row.entry.scopeKey ?? "legacy"}|${row.item.episode.id}`);
+      }
+    }
+  }
+  return keys;
 }
 
 /** Build the canonical episode set consumed by both stock and queue views. */
@@ -265,13 +390,18 @@ export function buildTradeLibraryBrowseRows(
   entries: TradeLibraryEntry[],
   state: TradeLibraryBrowseState,
   marketDataStatuses: Record<string, MarketDataSyncStatus>,
-  fxSnapshot?: FxSnapshot | null,
+  fxSnapshot?: LibraryFxSnapshot | null,
+  targetCurrency?: RoomTargetCurrency,
+  instrumentMetadata?: TradingRoomMetadataInput,
 ): ReviewQueueItem[] {
   const filter = reviewQueueFilterForBrowseState(state);
   const brokerIds = normalizeBrokerIds(state.brokers);
+  const roomRowKeys = roomFilterRowKeys(entries, state, instrumentMetadata);
   const rows = buildReviewQueue(entries, { ...filter, brokers: [], sort: "newest" }).filter(({ entry, item }) =>
+    (roomRowKeys === null || roomRowKeys.has(libraryRowKey({ entry, item }))) &&
     (brokerIds.length === 0 || reviewQueueBrokerTags({ entry, item }).some(tag => brokerIds.includes(tag.id))) &&
     (state.positionStatus === "all" || item.episode.status === state.positionStatus) &&
+    matchesCloseDateRange({ entry, item }, state.closeDateFrom, state.closeDateTo) &&
     (state.tag === "all" || item.confirmedTagIds.includes(state.tag)) &&
     matchesDataStatus(entry, state.dataStatus, marketDataStatuses),
   );
@@ -283,6 +413,7 @@ export function buildTradeLibraryBrowseRows(
     rows.map(row => ({ id: row.item.episode.id, rows: [row], value: row })),
     effectiveSort,
     fxSnapshot ?? undefined,
+    targetCurrency,
   ).map(({ value }) => value);
 }
 
@@ -398,6 +529,9 @@ export function resetTradeLibraryBrowseState(
     accounts: [],
     brokers: [],
     year: "all",
+    closeDateFrom: null,
+    closeDateTo: null,
+    roomFilters: null,
     simulationRunId: "all",
     reviewStatus: "all",
     sort: "newest",

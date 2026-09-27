@@ -1187,3 +1187,370 @@
   .groupRow > svg { grid-column: 2; grid-row: 1; }
   .qualitySummaryHeading { align-items: flex-start; flex-direction: column; }
 }
+
+.workspace {
+  margin-top: 18px;
+  padding: 20px;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 12px;
+  background: linear-gradient(135deg, color-mix(in srgb, #147d96 5%, var(--dashboard-card)), var(--dashboard-card));
+  min-width: 0;
+}
+.workspaceHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.workspaceHeading h2 { margin: 0; font-size: 21px; letter-spacing: -.02em; }
+.workspaceHeading p, .workspaceHeading > span, .workspaceHint { color: var(--dashboard-muted); font-size: 12px; margin: 6px 0 0; }
+.observationControls { margin-bottom: 16px; }
+@media (max-width: 720px) {
+  .workspace { padding: 12px; margin-top: 12px; }
+  .workspaceHeading { align-items: flex-start; flex-direction: column; }
+}
+
+.holdingsOverviewGrid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); gap: 14px; margin: 16px 0; align-items: start; }
+.holdingsOverviewGrid > * { min-width: 0; }
+.returnDetails { margin: 8px 0; color: var(--dashboard-muted); font-size: 12px; }
+.returnDetails summary { cursor: pointer; }
+.returnGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+.roomSummaryGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 900px) { .holdingsOverviewGrid { grid-template-columns: minmax(0, 1fr); } .roomSummaryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .roomSummaryGrid, .returnGrid { grid-template-columns: minmax(0, 1fr); } }
+
+.sharedToolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; padding: 8px 12px; }
+.sharedToolbar .roomScopeHeading { display: contents; }
+.sharedToolbar .roomScopeHeading > div:first-child, .sharedToolbar .roomScopeBadge { display: none; }
+.sharedToolbar .roomScopeBadgeGroup { order: 0; }
+.sharedToolbar .roomScopeControls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.sharedToolbar .roomAncillaryRow { display: contents; }
+.sharedToolbar .roomAdvancedDetails > summary { min-height: 32px; }
+.sharedToolbar .roomAdvancedDetails[open] { flex-basis: 100%; }
+.sharedToolbar .filterChips { flex-basis: 100%; }
+.sharedToolbar .radioField legend { margin-bottom: 2px; }
+.observationControls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 12px 0; }
+.observationControls .roomPeriodControl { display: flex; align-items: center; gap: 10px; }
+.observationControls .workspaceHint { flex-basis: 100%; margin: 0; }
+.dateDetails { color: var(--dashboard-muted); font-size: 12px; margin: 6px 0; }
+.dateDetails summary { cursor: pointer; padding: 6px 0; }
+.dateDetails[open] { flex-basis: 100%; }
+@media (max-width: 720px) {
+  .sharedToolbar { gap: 8px; }
+  .sharedToolbar .scopeViewControl { flex-wrap: wrap; }
+  .observationControls .roomPeriodControl { align-items: flex-start; flex-direction: column; }
+}
+
+/* B2 reference shell. The first viewport carries identity controls, compact
+   summary cards, then the two-column holdings view without the old stacked
+   page header consuming a full row. */
+.dashboard {
+  max-width: none;
+  min-height: 100%;
+  padding: 12px 18px 34px;
+  color: #e7edf6;
+  background:
+    radial-gradient(circle at 64% -18%, rgba(47, 128, 237, .10), transparent 42%),
+    #0b1220;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 54px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #243145;
+  padding: 0 0 10px;
+}
+
+.topbarTitle { min-width: 172px; }
+.topbarEyebrow { display: block; color: #8092ab; font-size: 9px; letter-spacing: .08em; white-space: nowrap; }
+.topbarTitle h1 { margin: 3px 0 0; color: #f1f5fb; font-size: 19px; letter-spacing: -.03em; line-height: 1.1; }
+.topbarTitle p { margin: 3px 0 0; color: #8fa0b7; font-size: 10px; }
+.topbarRight { display: flex; align-items: center; justify-content: flex-end; gap: 9px; min-width: 0; }
+.topbarScope { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.topbarSegment { display: flex; align-items: center; gap: 3px; min-width: 0; margin: 0; border: 1px solid #34445b; border-radius: 7px; padding: 2px; background: #111a2b; }
+.topbarSegment legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.topbarSegment button { min-height: 26px; border: 0; border-radius: 5px; padding: 0 7px; color: #93a5be; background: transparent; cursor: pointer; font-size: 10px; white-space: nowrap; }
+.topbarSegment button[aria-pressed="true"] { color: #e8f2ff; background: #203b63; }
+.topbarSelect { display: grid; gap: 2px; min-width: 76px; color: #7f92ad; font-size: 9px; }
+.topbarSelect select { min-width: 0; height: 29px; border: 1px solid #34445b; border-radius: 6px; padding: 0 20px 0 7px; color: #e7edf6; background: #111a2b; font-size: 10px; }
+.topbarSelect select:focus-visible { outline-offset: 1px; }
+.topbarFilterToggle {
+  align-self: end;
+  min-height: 29px;
+  border: 1px solid #34445b;
+  border-radius: 6px;
+  padding: 0 7px;
+  color: #91a9c9;
+  background: #111a2b;
+  cursor: pointer;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.topbarFilterToggle:hover,
+.topbarFilterToggle[aria-expanded="true"] { color: #e7edf6; border-color: #4b79ad; background: #203b63; }
+.topbarFilterToggle:focus-visible { outline-offset: 1px; }
+.topbarUpdated {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  color: #9ab0ca;
+  font-size: 9px;
+  white-space: nowrap;
+}
+.topbarUpdated time { color: #b9cbe0; font-variant-numeric: tabular-nums; }
+.topbarUpdatedDot { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: #00d5b6; box-shadow: 0 0 0 2px rgba(0, 213, 182, .12); }
+
+.sharedToolbar.roomScopeSection {
+  margin: 0 0 8px;
+  border-color: #243145;
+  border-radius: 8px;
+  padding: 6px 9px;
+  background: rgba(17, 26, 43, .72);
+  box-shadow: none;
+}
+.sharedToolbar .roomScopeControls { gap: 7px; }
+.sharedToolbar .radioField { display: flex; align-items: center; gap: 6px; }
+.sharedToolbar .radioField legend { margin: 0; font-size: 9px; white-space: nowrap; }
+.sharedToolbar .radioOptions { gap: 2px; }
+.sharedToolbar .radioOption { min-height: 25px; padding: 0 6px; font-size: 10px; }
+.sharedToolbar .roomAdvancedDetails { border-top: 0; padding-top: 0; margin: 0; }
+.sharedToolbar .roomAdvancedDetails > summary { min-height: 25px; padding: 0 5px; border: 1px solid #34445b; border-radius: 6px; color: #91a9c9; background: #111a2b; font-size: 10px; line-height: 25px; }
+.sharedToolbar .filterChips {
+  flex-basis: auto;
+  gap: 4px;
+  margin: 0;
+}
+.sharedToolbar .filterChips li {
+  min-height: 25px;
+  padding-left: 7px;
+  border-color: #34445b;
+  font-size: 10px;
+}
+.sharedToolbar .filterChips button {
+  width: 24px;
+  min-height: 25px;
+  padding: 0;
+  font-size: 13px;
+}
+.sharedToolbar .roomScopeBadge {
+  display: inline-flex;
+  align-items: center;
+  color: #91a9c9;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.workspace {
+  margin-top: 8px;
+  padding: 12px;
+  border-color: #243145;
+  border-radius: 9px;
+  background: linear-gradient(135deg, rgba(20, 125, 150, .07), #111a2b 55%);
+}
+.workspaceHeading { gap: 8px; margin-bottom: 9px; }
+.workspaceHeading h2 { color: #f0f4fb; font-size: 19px; letter-spacing: -.02em; }
+.workspaceHeading p, .workspaceHeading > span, .workspaceHint { margin-top: 3px; color: #8fa0b7; font-size: 10px; }
+.historyLibraryButton {
+  min-height: 27px;
+  border: 1px solid #2d78b5;
+  border-radius: 6px;
+  padding: 0 8px;
+  color: #b9e7ff;
+  background: #102b47;
+  cursor: pointer;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.historyLibraryButton:hover { border-color: #54b7e9; background: #163b5e; }
+.historyLibraryButton:focus-visible { outline: 2px solid #53bbb4; outline-offset: 1px; }
+.visuallyHidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.observationControls { gap: 6px 10px; margin: 7px 0; }
+.observationControls .roomPeriodControl { gap: 7px; }
+.observationControls .roomPeriodControl > span { font-size: 10px; }
+.periodTabs { border-color: #34445b; border-radius: 6px; padding: 2px; }
+.periodTab { min-height: 25px; padding: 0 7px; color: #91a0b8; font-size: 10px; }
+.periodTab[aria-selected="true"] { color: #edf4ff; background: #203b63; box-shadow: none; }
+.dateDetails { margin: 0; font-size: 10px; }
+.dateDetails summary { padding: 3px 0; }
+.holdingsOverviewGrid { grid-template-columns: minmax(0, 2fr) minmax(190px, 1fr); gap: 8px; margin: 8px 0; }
+.roomSummaryGrid { gap: 6px; margin-top: 3px; }
+.roomMoneyDetails, .returnDetails, .roomScopeNotes { font-size: 10px; }
+.roomMoneyDetails summary, .roomSummarySectionDetails summary { min-height: 26px; }
+
+@media (max-width: 980px) and (min-width: 760px) {
+  .topbar { align-items: flex-start; }
+  .topbarRight { flex-wrap: wrap; }
+  .topbarScope { flex-wrap: wrap; justify-content: flex-end; }
+  .topbarScope .topbarSelect { min-width: 70px; }
+  .topbarRight :global(.trading-room-global-tools) { order: -1; flex-basis: 100%; justify-content: flex-end; }
+}
+
+@media (max-width: 759px) {
+  .dashboard { padding: 12px 10px 30px; }
+  .topbar { align-items: flex-start; flex-direction: column; }
+  .topbarRight { width: 100%; align-items: flex-start; flex-wrap: wrap; justify-content: flex-start; }
+  .topbarScope { flex-wrap: wrap; }
+  .topbarRight :global(.trading-room-global-tools) { width: 100%; order: -1; }
+  .topbarSelect { min-width: 94px; }
+  .workspace { padding: 10px; }
+  .holdingsOverviewGrid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Keep the financial state palette readable on touch widths as well. The
+   chart preference remains available through the real control, while the
+   homepage's positive/negative states retain the reference contrast. */
+@media (max-width: 820px) {
+  .dashboard {
+    --dashboard-positive: #00d5b6 !important;
+    --dashboard-negative: #ff6b78 !important;
+  }
+}
+
+/* The desktop homepage keeps the history range beside its heading.  This
+   leaves the four summary cards at the top of the section while the full
+   date editor and accounting notes remain discoverable on demand. */
+@media (min-width: 821px) {
+  .topbar {
+    position: relative;
+    margin-bottom: 16px;
+  }
+  .topbarUpdated {
+    position: absolute;
+    right: 4px;
+    bottom: -11px;
+    z-index: 1;
+  }
+  .dashboard {
+    /* The dashboard root receives chart-theme variables through an inline
+       style. Keep the desktop reference palette authoritative for financial
+       states so the inline theme does not wash positive values into gray. */
+    --dashboard-positive: #00d5b6 !important;
+    --dashboard-negative: #ff6b78 !important;
+    --dashboard-ink: #edf5ff;
+    --dashboard-muted: #9ab0ca;
+    --dashboard-line: #2a4667;
+    --dashboard-line-soft: #203955;
+    --dashboard-soft: #172b44;
+    --dashboard-card: #101d31;
+    --dashboard-card-elevated: #142740;
+    --blue: #168dff;
+    --link: #53a9ff;
+  }
+  .workspace {
+    border-color: #2a4d73;
+    background: linear-gradient(135deg, rgba(18, 116, 152, .12), #101d31 58%);
+    box-shadow: inset 0 1px rgba(103, 188, 220, .08);
+  }
+  .workspaceHeading { gap: 6px; margin-bottom: 6px; }
+  .historyPeriodControl { display: flex; align-items: center; gap: 4px; min-width: 0; margin-left: auto; }
+  .historyPeriodControl > span { color: #8fa0b7; font-size: 9px; white-space: nowrap; }
+  .historyPeriodControl .periodTabs { flex-wrap: nowrap; gap: 1px; padding: 2px; }
+  .historyPeriodControl .periodTab { min-height: 24px; padding: 0 6px; font-size: 9px; }
+  .workspaceHeading > .dateDetails { flex: 0 0 auto; margin: 0; font-size: 9px; }
+  .workspaceHeading > .dateDetails summary { padding: 2px 0; white-space: nowrap; }
+  .workspaceHeading > .dateDetails[open] { flex-basis: 100%; }
+  .workspace > .roomPeriodControl,
+  .workspace > .dateDetails { margin: 0; }
+  .workspace .roomAncillaryRow { gap: 2px 7px; }
+  .workspace .roomAncillaryRow > details > summary,
+  .workspace .roomAncillaryRow > [data-testid="room-return-details"] > summary { min-height: 24px; font-size: 9px; }
+  .workspace .roomSummaryGrid { gap: 5px; margin-top: 0; }
+  .workspace .metricCard { gap: 3px; min-height: 76px; padding: 7px 8px; }
+  .workspace .metricCard > span { font-size: 9px; }
+  .workspace .metricCard > strong { min-height: 20px; font-size: 18px; }
+  .workspace .metricCard > small { min-height: 12px; font-size: 9px; line-height: 1.25; }
+  .workspace .returnDetails,
+  .workspace .roomMoneyDetails,
+  .workspace .roomScopeNotes { font-size: 9px; }
+  .workspace .returnDetails > summary,
+  .workspace .roomMoneyDetails > summary,
+  .workspace .roomScopeNotes > summary { min-height: 24px; }
+
+  /* The history cards form one scan row. Closed accounting details stay
+     discoverable in the same row instead of adding three stacked bands. */
+  .workspace[aria-label="历史交易与复盘"] .roomAncillaryRow {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2px 7px;
+  }
+  .workspace[aria-label="历史交易与复盘"] .roomAncillaryRow > .roomSummaryGrid {
+    grid-column: 1 / -1;
+  }
+  .workspace[aria-label="历史交易与复盘"] .roomAncillaryRow > .roomScopeNotes,
+  .workspace[aria-label="历史交易与复盘"] .roomAncillaryRow > .roomMoneyDetails,
+  .workspace[aria-label="历史交易与复盘"] .roomAncillaryRow > .returnDetails {
+    min-width: 0;
+  }
+  .workspace[aria-label="历史交易与复盘"] .roomAncillaryRow > .roomScopeNotes > summary,
+  .workspace[aria-label="历史交易与复盘"] .roomAncillaryRow > .roomMoneyDetails > summary,
+  .workspace[aria-label="历史交易与复盘"] .roomAncillaryRow > .returnDetails > summary {
+    min-height: 20px;
+    padding: 1px 4px;
+    border: 1px solid #2b405c;
+    border-radius: 5px;
+    color: #9eb5d2;
+    background: rgba(16, 29, 48, .78);
+    font-size: 9px;
+    line-height: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .workspace[aria-label="历史交易与复盘"] .roomAncillaryRow > .roomDetailsSummary {
+    grid-column: 1 / -1;
+    order: 2;
+    min-width: 0;
+    margin: 0;
+    color: #9eb5d2;
+    font-size: 9px;
+  }
+  .workspace[aria-label="历史交易与复盘"] .roomDetailsSummary > summary {
+    display: flex;
+    align-items: center;
+    min-height: 20px;
+    padding: 1px 6px;
+    border: 1px solid #2b4f75;
+    border-radius: 5px;
+    color: #b9d8f8;
+    background: rgba(17, 39, 66, .86);
+    cursor: pointer;
+    font-size: 9px;
+    line-height: 18px;
+  }
+  .workspace[aria-label="历史交易与复盘"] .roomDetailsBody {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .workspace[aria-label="历史交易与复盘"] .roomDetailsBody > details { min-width: 0; }
+  .workspace[aria-label="历史交易与复盘"] .roomDetailsBody > details > summary {
+    min-height: 18px;
+    padding: 1px 4px;
+    color: #9eb5d2;
+    cursor: pointer;
+    font-size: 9px;
+    line-height: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .workspace[aria-label="历史交易与复盘"] .roomDetailsBody .roomScopeHint,
+  .workspace[aria-label="历史交易与复盘"] .roomDetailsBody .roomMoneyDetails p { margin: 4px 0 0; font-size: 9px; line-height: 1.3; }
+  .workspace[aria-label="历史交易与复盘"] .roomDetailsBody .returnGrid { gap: 4px; margin-top: 4px; }
+}
+
+/* Between the reference desktop and the narrow touch layout the content rail
+   is too small for the donut, legend, and chart controls to share a row. Keep
+   the surfaces in one readable column until the 1055px composition has room
+   for its two-column scan layout. */
+@media (max-width: 1054px) {
+  .holdingsOverviewGrid { grid-template-columns: minmax(0, 1fr); }
+}

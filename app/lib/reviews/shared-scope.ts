@@ -2,7 +2,7 @@ import type { TradeLibraryEntry } from "../trades/library";
 import Decimal from "decimal.js";
 
 export type SharedTradeNature = "live" | "simulation" | "unknown";
-export type SharedReportCurrency = "original" | "CNY";
+export type SharedReportCurrency = "original" | "CNY" | "HKD";
 
 /** Cross-page scope owned by the workspace shell. Page-local date/status/tag filters stay separate. */
 export type SharedScope = {
@@ -28,7 +28,9 @@ function entryEpisodeNature(entry: TradeLibraryEntry, episode: TradeLibraryEntry
 export function normalizeSharedScope(value: unknown): SharedScope {
   const candidate = value && typeof value === "object" ? value as Record<string, unknown> : {};
   const nature = candidate.nature === "simulation" || candidate.nature === "unknown" ? candidate.nature : "live";
-  const reportCurrency = candidate.reportCurrency === "CNY" ? "CNY" : "original";
+  const reportCurrency = candidate.reportCurrency === "CNY" || candidate.reportCurrency === "HKD"
+    ? candidate.reportCurrency
+    : "original";
   const accountIds = Array.isArray(candidate.accountIds) ? candidate.accountIds : [];
   const simulationRunId = nature === "simulation" && typeof candidate.simulationRunId === "string" && candidate.simulationRunId.length > 0
     ? candidate.simulationRunId

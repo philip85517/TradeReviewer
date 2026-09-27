@@ -1,0 +1,87 @@
+.panel { min-width: 0; border: 1px solid #243a55; border-radius: 9px; padding: 10px; background: linear-gradient(145deg, rgba(17, 38, 62, .86), rgba(15, 27, 44, .98)); }
+.header { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
+.panel h3 { margin: 0; color: #eaf3ff; font-size: 14px; line-height: 1.25; }
+.tabs, .currencyTabs { display: flex; flex-wrap: wrap; gap: 4px; }
+.tabs button, .currencyTabs button { min-height: 24px; border: 1px solid #2b4868; border-radius: 5px; padding: 0 7px; color: #91a9c9; background: #111d30; cursor: pointer; font: inherit; font-size: 10px; }
+.tabs button[aria-pressed="true"], .currencyTabs button[aria-selected="true"] { color: #edf6ff; border-color: #3797ff; background: #163d63; }
+.currencyTabs { margin: 8px 0 0; }
+.note { margin: 5px 0 0; color: #8ea1ba; font-size: 9px; line-height: 1.35; }
+.gapNote { margin: 4px 0 0; color: #efac65; font-size: 9px; line-height: 1.35; }
+.empty { margin: 14px 0; color: #9aacc4; font-size: 12px; }
+.distributionBody { display: grid; grid-template-columns: minmax(150px, 1.12fr) minmax(0, .88fr); gap: 6px; align-items: center; min-height: 150px; margin-top: 4px; }
+.chartColumn { display: grid; min-width: 0; place-items: center; }
+.donutWrap { display: grid; place-items: center; width: 100%; min-width: 0; }
+.donut { display: block; width: min(100%, 150px); height: auto; overflow: visible; }
+.donutValue { fill: #eef6ff; font-size: 12px; font-weight: 700; }
+.donutCaption { fill: #8ea1ba; font-size: 10px; }
+.unavailableChart { display: grid; place-items: center; align-content: center; gap: 4px; width: 118px; height: 118px; box-sizing: border-box; border: 12px solid #24364f; border-radius: 50%; color: #c7d4e7; text-align: center; }
+.unavailableChart strong { max-width: 104px; overflow-wrap: anywhere; font-size: 12px; }
+.unavailableChart span { color: #8ea1ba; font-size: 9px; }
+.signedChart { display: grid; place-items: center; align-content: center; gap: 3px; width: 100%; min-height: 116px; border: 1px dashed #38506e; border-radius: 9px; color: #d7e5f6; text-align: center; }
+.signedChart strong { font-size: 16px; font-variant-numeric: tabular-nums; }
+.signedChart span, .signedChart small { color: #8ea1ba; font-size: 9px; }
+.zeroAxis { width: 72%; height: 1px; margin-top: 6px; background: linear-gradient(90deg, transparent 49%, #6d829f 49%, #6d829f 51%, transparent 51%); }
+.legend { min-width: 0; }
+.legendTitle { display: block; margin-bottom: 5px; color: #bccce0; font-size: 11px; }
+.legend ul { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.legendItem { display: grid; gap: 2px; min-width: 0; color: #b9c9dc; font-size: 10px; }
+.legendHeading { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 3px 5px; min-width: 0; }
+.legendHeading > span:first-child { min-width: 0; white-space: nowrap; }
+.legendHeading strong { color: #e7f0fc; font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.legendHeading > span:last-child { grid-column: 1 / -1; justify-self: end; color: #94a8c0; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.legend i { display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; vertical-align: 1px; }
+.legendItem small { color: #8296b0; font-size: 9px; line-height: 1.35; }
+.sideValues { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; color: #879bb4; font-size: 9px; font-variant-numeric: tabular-nums; }
+.positiveText { color: var(--dashboard-positive, #3dc9ad); }
+.negativeText { color: var(--dashboard-negative, #f1727c); }
+.barTrack { position: relative; grid-column: 1 / -1; height: 5px; margin-top: 1px; background: linear-gradient(90deg, transparent 49.5%, #526984 49.5%, #526984 50.5%, transparent 50.5%); }
+.barTrack b { position: absolute; top: 0; height: 100%; border-radius: 2px; }
+.positiveBar { left: 50%; background: var(--dashboard-positive, #3dc9ad); }
+.negativeBar { right: 50%; background: var(--dashboard-negative, #f1727c); }
+.cashStrip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 6px; border-top: 1px solid #243a55; padding-top: 6px; }
+.cashField { display: grid; gap: 3px; min-width: 0; }
+.cashField span { color: #8296b0; font-size: 9px; }
+.cashField strong { min-width: 0; color: #e7f0fc; font-size: 11px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.cashField small, .cashMessage { margin: 0; color: #8296b0; font-size: 9px; line-height: 1.35; }
+.mutedValue { color: #a7b5c7 !important; }
+.cashMessage { padding: 3px 0; }
+
+@media (max-width: 760px) {
+  .distributionBody { grid-template-columns: minmax(140px, 1fr) minmax(0, 1fr); gap: 6px; }
+  .cashStrip { gap: 6px; }
+}
+
+@media (max-width: 460px) {
+  .header { align-items: flex-start; flex-direction: column; }
+  .distributionBody { grid-template-columns: 1fr; }
+  .donut { width: 150px; }
+  .signedChart { min-height: 110px; }
+}
+
+@media (min-width: 821px) {
+  .panel { padding: 7px 8px; }
+  .panel h3 { font-size: 13px; }
+  .tabs, .currencyTabs { gap: 2px; }
+  .tabs button, .currencyTabs button { min-height: 23px; padding: 0 5px; font-size: 9px; }
+  .currencyTabs { margin-top: 4px; }
+  .note, .gapNote { margin-top: 3px; font-size: 9px; line-height: 1.2; }
+  .distributionBody { grid-template-columns: minmax(150px, 1.12fr) minmax(0, .88fr); gap: 6px; min-height: 150px; margin-top: 2px; }
+  .donut { width: min(100%, 150px); }
+  .donutValue { font-size: 12px; }
+  .donutCaption { font-size: 10px; }
+  .unavailableChart { width: 126px; height: 126px; border-width: 11px; }
+  .signedChart { min-height: 122px; }
+  .signedChart strong { font-size: 16px; }
+  .signedChart span, .signedChart small { font-size: 9px; }
+  .legendTitle { margin-bottom: 3px; font-size: 10px; }
+  .legend ul { gap: 2px; }
+  .legendItem { gap: 1px; font-size: 9px; }
+  .legendHeading { gap: 2px 3px; }
+  .legendHeading strong, .legendHeading > span:last-child { font-size: 9px; }
+  .legendItem small { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 8px; line-height: 1.1; }
+  .sideValues { gap: 2px; font-size: 8px; }
+  .cashStrip { gap: 5px; margin-top: 4px; padding-top: 4px; }
+  .cashField { gap: 2px; }
+  .cashField span, .cashField small, .cashMessage { font-size: 9px; line-height: 1.15; }
+  .cashField strong { font-size: 10px; }
+}

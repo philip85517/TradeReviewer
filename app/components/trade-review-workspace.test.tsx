@@ -1,6 +1,7 @@
 import "fake-indexeddb/auto";
 
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -42,6 +43,7 @@ import {
   saveImportedExecutions,
 } from "../lib/storage/import-library";
 import { loadImportHistory } from "../lib/storage/import-history";
+import { loadMarketDataJobs } from "../lib/storage/market-data-jobs";
 import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-data-repository";
 import { saveReviewState } from "../lib/storage/review-storage";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
@@ -428,15 +430,15 @@ function intradayRequests() {
   );
 }
 
-function expectOnlyLocalFxFetches() {
+function expectOnlyLocalRoomFetches() {
   const unexpectedRequests = vi.mocked(fetch).mock.calls.filter(([input, init]) => {
     const path = String(input);
-    if (path !== "/api/fx" && path !== "/api/trading-room/fx" && path !== "/api/trading-room/reference-capital") return true;
+    if (path !== "/api/fx" && path !== "/api/trading-room/fx" && path !== "/api/trading-room/reference-capital" && path !== "/api/storage/recall/summaries") return true;
     const requestInit = (init ?? {}) as RequestInit;
     const method = requestInit.method?.toUpperCase() ?? "GET";
     return requestInit.cache !== "no-store" || method !== "GET";
   });
-  expect(unexpectedRequests).toHaveLength(0);
+  expect(unexpectedRequests).toEqual([]);
 }
 
 function rejectNextDemoReplayRequest() {
@@ -454,12 +456,12 @@ function rejectNextDemoReplayRequest() {
 }
 
 async function findImportConfirmation(timeout = 10_000) {
-  await screen.findByRole(
-    "heading",
+  const dialog = await screen.findByRole(
+    "dialog",
     { name: "确认导入交易记录" },
     { timeout },
   );
-  return screen.findByRole(
+  return within(dialog).findByRole(
     "button",
     { name: "确认导入并开始更新行情" },
     { timeout },
@@ -608,10 +610,9 @@ describe("TradeReviewWorkspace", () => {
     });
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => nextFrame,
-      }),
+      vi.fn(async (input) => String(input) === "/api/storage/recall/summaries"
+        ? Response.json({ summaries: [] })
+        : { ok: true, json: async () => nextFrame }),
     );
     mockDispatcher.mockReset();
     mockEnrichment.mockReset();
@@ -807,15 +808,24 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.queryByRole("region", { name: "导入交易回忆复盘工作区" })).not.toBeInTheDocument();
   });
 
-  async function enterImportedReviewFromDashboard(instrumentName?: string) {
+  async function findRecallWorkspace() {
+    const workspace = await screen.findByRole("region", { name: "导入交易回忆复盘工作区" });
+    await within(workspace).findByLabelText("图表工具栏");
+    return workspace;
+  }
+
+  async function enterImportedReviewFromDashboard(
+    instrumentName?: string,
+    waitForToolbar = true,
+  ) {
     const user = userEvent.setup();
     const navigation = await screen.findByRole("navigation", { name: "主导航" });
-    const dashboard = await screen.findByRole("region", { name: "我的交易室" });
 
     // A closed episode can be opened from the dashboard calendar.  Waiting for
     // the hydrated dashboard here keeps this helper on the same user path as
     // production instead of racing the SQLite bootstrap response.
     if (!instrumentName) {
+      const dashboard = await screen.findByRole("region", { name: "我的交易室" });
       const recentMonth = within(dashboard).queryByRole("button", { name: "所选期间·按月汇总" });
       if (recentMonth) await user.click(recentMonth);
       const populatedDays = within(dashboard)
@@ -832,7 +842,7 @@ describe("TradeReviewWorkspace", () => {
           : null;
         if (open) {
           await user.click(open);
-          await screen.findByLabelText("图表工具栏");
+          await findRecallWorkspace();
           return;
         }
       }
@@ -843,17 +853,22 @@ describe("TradeReviewWorkspace", () => {
     // the target selection explicit when a caller names an instrument instead
     // of relying on whichever row happens to sort first.
     await user.click(within(navigation).getByRole("button", { name: "交易库" }));
-    const library = await screen.findByRole("region", { name: "交易库" });
+    let library = await screen.findByRole("region", { name: "交易库" });
     // The library intentionally opens in the review queue; stock-round tests
     // opt into the stock view explicitly.
-    await user.click(within(library).getByRole("tab", { name: "按标的浏览" }));
+    const stockTab = within(library).getByRole("tab", { name: "按标的浏览" });
+    if (stockTab.getAttribute("aria-selected") !== "true") await user.click(stockTab);
+    library = screen.getByRole("region", { name: "交易库" });
     if (instrumentName) {
       await user.type(
         within(library).getByRole("searchbox", { name: "搜索股票" }),
         instrumentName,
       );
     }
-    const stockRows = within(library).getAllByRole("button", { name: /^(展开|收起).*交易回合$/ });
+    const stockRows = await waitFor(() => {
+      const currentLibrary = screen.getByRole("region", { name: "交易库" });
+      return within(currentLibrary).getAllByRole("button", { name: /^(展开|收起).*交易回合$/ });
+    });
     const target = instrumentName
       ? stockRows.find((button) => `${button.getAttribute("aria-label") ?? ""} ${button.textContent ?? ""}`.includes(instrumentName))
         : stockRows.length === 1
@@ -867,10 +882,11 @@ describe("TradeReviewWorkspace", () => {
       );
     }
     if (target.getAttribute("aria-expanded") !== "true") await user.click(target);
-    const round = within(library).getAllByRole("button", { name: /^打开.*第\d+次交易/ })[0];
+    const loadedLibrary = screen.getByRole("region", { name: "交易库" });
+    const round = within(loadedLibrary).getAllByRole("button", { name: /^打开.*第\d+次交易/ })[0];
     if (!round) throw new Error("目标标的没有可打开的交易回合");
     await user.click(round);
-    await screen.findByLabelText("图表工具栏");
+    if (waitForToolbar) await findRecallWorkspace();
   }
 
   async function expectEmptyProductionDashboard() {
@@ -1942,20 +1958,29 @@ describe("TradeReviewWorkspace", () => {
   it("retains a Recall drawing draft per episode and gates completion until a snapshot exists", async () => {
     const user = userEvent.setup();
     await renderGoldReplay([], "2026-06-26T08:30:00.000Z", "2026-06-26T02:22:37Z", true);
+    const workspace = screen.getByRole("region", { name: "导入交易回忆复盘工作区" });
     // A drawing needs a visible, completed candle to map its coordinates.
-    await user.click(screen.getByRole("button", { name: "下一根 K 线" }));
-    await user.click(screen.getByRole("button", { name: "文字标注" }));
-    const canvas = screen.getByRole("img", { name: "绘图画布" });
+    await user.click(within(workspace).getByRole("button", { name: "下一根 K 线" }));
+    await user.click(within(workspace).getByRole("button", { name: "文字标注" }));
+    const canvas = within(workspace).getByRole("img", { name: "绘图画布" });
     fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 40, clientY: 40 });
-    const editor = screen.getByRole("textbox", { name: "文字标注" });
+    const editor = within(workspace).getByRole("textbox", { name: "文字标注" });
     await user.type(editor, "QA故障注释");
     await user.keyboard("{Enter}");
-    await user.click(screen.getByRole("button", { name: "图层" }));
-    const layerName = screen.getByRole("textbox", { name: "重命名文字标注" });
+    await user.click(within(workspace).getByRole("button", { name: "图层" }));
+    const layerName = within(workspace).getByRole("textbox", { name: "重命名文字标注" });
     await user.clear(layerName);
     await user.type(layerName, "QA故障注释");
-    await user.keyboard("{Enter}");
-
+    vi.useFakeTimers();
+    try {
+      fireEvent.keyDown(layerName, { key: "Enter", code: "Enter" });
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1000);
+        await vi.runOnlyPendingTimersAsync();
+      });
+    } finally {
+      vi.useRealTimers();
+    }
     await waitFor(() => {
       const saved = [...mockRecallRepository.documents.values()].some((value) =>
         (value as { working?: { drawings?: Array<{ name?: string }> } }).working?.drawings?.some(
@@ -1965,14 +1990,17 @@ describe("TradeReviewWorkspace", () => {
       expect(saved).toBe(true);
     });
     await user.click(screen.getByRole("button", { name: "返回交易库" }));
-    await user.click(screen.getByRole("tab", { name: "按标的浏览" }));
-    const goldStock = await screen.findByRole("button", { name: /^(展开|收起)自由黄金-DRS交易回合$/ });
+    const library = await screen.findByRole("region", { name: "交易库" });
+    const stockTab = within(library).getByRole("tab", { name: "按标的浏览" });
+    if (stockTab.getAttribute("aria-selected") !== "true") await user.click(stockTab);
+    const goldStock = await within(library).findByRole("button", { name: /^(展开|收起)自由黄金-DRS交易回合$/ });
     if (goldStock.getAttribute("aria-expanded") !== "true") await user.click(goldStock);
-    await user.click(await screen.findByRole("button", { name: /^打开自由黄金-DRS第\d+次交易/ }));
-    await screen.findByLabelText("图表工具栏");
-    await user.click(screen.getByRole("button", { name: "图层" }));
-    expect(screen.getByDisplayValue("QA故障注释")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "保存并完成回合复盘" }));
+    await user.click(await within(library).findByRole("button", { name: /^打开自由黄金-DRS第\d+次交易/ }));
+    const reopenedWorkspace = await screen.findByRole("region", { name: "导入交易回忆复盘工作区" });
+    await within(reopenedWorkspace).findByLabelText("图表工具栏");
+    await user.click(within(reopenedWorkspace).getByRole("button", { name: "图层" }));
+    expect(within(reopenedWorkspace).getByDisplayValue("QA故障注释")).toBeInTheDocument();
+    await user.click(within(reopenedWorkspace).getByRole("button", { name: "保存并完成回合复盘" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(/仍缺少决策快照|尚未清仓/);
   });
 
@@ -2188,7 +2216,7 @@ describe("TradeReviewWorkspace", () => {
       await screen.findByRole("heading", { name: /小米集团-W/ }),
     ).toBeInTheDocument();
     await new Promise((resolve) => window.setTimeout(resolve, 50));
-    expectOnlyLocalFxFetches();
+    expectOnlyLocalRoomFetches();
   });
 
   it("keeps demo reachable with imports and restores its saved server frame and UI state", async () => {
@@ -2459,7 +2487,7 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.getByRole("complementary", { name: "当前统计" })).toHaveTextContent(
       "已揭示成交",
     );
-    await user.click(screen.getByRole("button", { name: "行情数据详情" }));
+    fireEvent.click(screen.getByRole("button", { name: "行情数据详情" }));
     await user.click(screen.getByRole("button", { name: "完整历史" }));
     expect(within(screen.getByRole("region", { name: "导入交易回忆复盘工作区" })).getByText("完整历史：当前回合成交全部显示；返回后恢复原回放边界。")).toBeInTheDocument();
   });
@@ -2577,28 +2605,27 @@ describe("TradeReviewWorkspace", () => {
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
     await enterImportedReviewFromDashboard();
-    await screen.findByRole("combobox", { name: "交易回合" });
-    await user.click(
-      await screen.findByRole("button", { name: "行情数据详情" }),
-    );
-    await user.click(
-      await screen.findByRole("button", { name: "刷新行情数据" }),
-    );
+    const firstToolbar = screen.getByLabelText("图表工具栏");
+    await user.click(within(firstToolbar).getByRole("button", { name: "行情数据详情" }));
+    await user.click(await within(firstToolbar).findByRole("button", { name: "刷新行情数据" }));
+    // The refresh action closes its details popover while the update finishes;
+    // observe both the request and the settled toolbar state before switching episodes.
     await waitFor(() =>
-      expect(
-        vi.mocked(fetch).mock.calls.some(([input]) =>
-          String(input).includes("/api/market-data/intraday"),
-        ),
-      ).toBe(true),
+      {
+        expect(intradayRequests()).toHaveLength(1);
+        expect(screen.getByRole("button", { name: "行情数据详情" })).toHaveAttribute("aria-expanded", "false");
+      },
     );
-
-    await waitFor(() => expect(intradayRequests()).toHaveLength(1));
-    // The first refresh also persists terminal job/state asynchronously. Wait
-    // until the control is usable before switching episodes so the second
-    // refresh cannot race the first request's state transition.
-    await waitFor(() =>
-      expect(screen.getByRole("button", { name: "刷新行情数据" })).toBeEnabled(),
-    );
+    await waitFor(() => {
+      const job = loadMarketDataJobs().find((item) => item.instrumentId === oldEpisode.instrument.id);
+      expect(job).toBeDefined();
+      expect(job?.status).not.toBe("syncing");
+      expect(job?.intervals.some((interval) => interval.status === "syncing")).toBe(false);
+    });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
     expect(
       intradayRequests().map((request) => [
         request.searchParams.get("start"),
@@ -2608,29 +2635,27 @@ describe("TradeReviewWorkspace", () => {
       ["2024-12-26T14:30:00.000Z", "2025-01-06T15:59:59.999Z"],
     ]);
 
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "交易回合" }),
-      oldEpisode.id,
-    );
+    const episodeSelect = screen.getByRole("combobox", { name: "交易回合" });
+    await user.selectOptions(episodeSelect, oldEpisode.id);
     await waitFor(() =>
       expect(screen.getByRole("combobox", { name: "交易回合" })).toHaveValue(oldEpisode.id),
     );
-    await screen.findByLabelText("图表工具栏");
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    const secondWorkspace = await findRecallWorkspace();
+    const secondToolbar = within(secondWorkspace).getByLabelText("图表工具栏");
     vi.mocked(fetch).mockClear();
-    const dataDetailsButton = screen.getByRole("button", { name: "行情数据详情" });
-    expect(dataDetailsButton).toBeVisible();
-    await waitFor(() => expect(dataDetailsButton).toHaveAttribute("aria-expanded", "false"));
-    if (!screen.queryByRole("dialog", { name: "行情数据详情" })) {
-      await user.click(dataDetailsButton);
-      if (dataDetailsButton.getAttribute("aria-expanded") !== "true") {
-        await user.click(screen.getByRole("button", { name: "行情数据详情" }));
-      }
-      await waitFor(() => expect(screen.getByRole("button", { name: "行情数据详情" })).toHaveAttribute("aria-expanded", "true"));
-    }
-    await waitFor(() => expect(screen.getByRole("dialog", { name: "行情数据详情" })).toBeVisible());
-    await user.click(
-      await screen.findByRole("button", { name: "刷新行情数据" }),
-    );
+    const secondDetailsButton = within(secondToolbar).getByRole("button", { name: "行情数据详情" });
+    expect(secondDetailsButton).toHaveAttribute("aria-expanded", "false");
+    await user.click(secondDetailsButton);
+    const secondDialog = await within(secondWorkspace).findByRole("dialog", { name: "行情数据详情" });
+    expect(secondDetailsButton).toHaveAttribute("aria-expanded", "true");
+    expect(secondDialog).toBeVisible();
+    const secondRefresh = within(secondDialog).getByRole("button", { name: "刷新行情数据" });
+    expect(secondRefresh).toBeEnabled();
+    await user.click(secondRefresh);
     await waitFor(() => expect(intradayRequests()).toHaveLength(1));
     expect(
       intradayRequests().map((request) => [
@@ -2716,31 +2741,26 @@ describe("TradeReviewWorkspace", () => {
       : Response.json({ error: { code: "source-unavailable" } }, { status: 502 }));
     const merge = vi.spyOn(mockSqliteClient.current as SqliteHttpClient, "mergeExecutions");
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
-    await enterImportedReviewFromDashboard();
-    await screen.findByRole("combobox", { name: "交易回合" });
-    await user.click(screen.getByRole("button", { name: "交易库" }));
-    await user.type(screen.getByRole("searchbox", { name: "搜索股票" }), "XPEV");
-    await user.click(screen.getByRole("tab", { name: "按标的浏览" }));
-    const xpevStock = screen.getByRole("button", { name: /^(展开|收起)小鹏汽车交易回合$/ });
-    if (xpevStock.getAttribute("aria-expanded") !== "true") await user.click(xpevStock);
-    await user.click(screen.getByRole("button", { name: /^打开小鹏汽车第\d+次交易/ }));
-    await screen.findByLabelText("图表工具栏");
+    await enterImportedReviewFromDashboard("XPEV");
     const file = futuImportFile([["2025-01-06 22:30:00", "富途", "acct", "证券", "XPEV 小鹏汽车", "US", "买入开仓", "20250106", "USD", "10", "10", "-100", "0", "-100"]]);
     const input = screen.getByLabelText("导入交易记录");
     merge.mockClear();
+    const cancelledConfirmation = findImportConfirmation();
     await user.upload(input, file);
-    await findImportConfirmation();
+    await cancelledConfirmation;
     await user.click(screen.getByRole("button", { name: "取消" }));
     expect(merge.mock.calls.flatMap(([payload]) => payload.executions)).toEqual([]);
     merge.mockClear();
     expect(screen.getByLabelText("图表工具栏")).toBeInTheDocument();
+    const confirmedImport = findImportConfirmation();
     await user.upload(input, file);
-    await user.click(await findImportConfirmation());
+    await user.click(await confirmedImport);
     await waitFor(() => expect(merge.mock.calls.some(([payload]) => payload.executions.length === 3)).toBe(true));
     expect(screen.getByLabelText("图表工具栏")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "返回交易库" }));
-    expect(screen.getByRole("heading", { name: "交易库" })).toBeInTheDocument();
-    expect(screen.getByRole("searchbox", { name: "搜索股票" })).toHaveValue("XPEV");
+    const library = await screen.findByRole("region", { name: "交易库" });
+    expect(within(library).getByRole("heading", { name: "交易库" })).toBeInTheDocument();
+    expect(within(library).getByRole("searchbox", { name: "搜索股票" })).toHaveValue("XPEV");
   });
 
   it("opens a library queue entry directly in the shared history workbench", async () => {
@@ -2762,10 +2782,13 @@ describe("TradeReviewWorkspace", () => {
         { name: "交易库" },
       ),
     );
-    await user.click(screen.getByRole("tab", { name: "按标的浏览" }));
+    const library = await screen.findByRole("region", { name: "交易库" });
+    const stockTab = within(library).getByRole("tab", { name: "按标的浏览" });
+    if (stockTab.getAttribute("aria-selected") !== "true") await user.click(stockTab);
     const xpevStock = await screen.findByRole("button", { name: /^(展开|收起)小鹏汽车交易回合$/ });
+    const loadedLibrary = screen.getByRole("region", { name: "交易库" });
     if (xpevStock.getAttribute("aria-expanded") !== "true") await user.click(xpevStock);
-    await user.click(await screen.findByRole("button", { name: /^打开小鹏汽车第\d+次交易/ }));
+    await user.click(await within(loadedLibrary).findByRole("button", { name: /^打开小鹏汽车第\d+次交易/ }));
 
     expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
     await waitFor(() => {
@@ -2812,6 +2835,7 @@ describe("TradeReviewWorkspace", () => {
         { name: "交易库" },
       ),
     );
+    const library = await screen.findByRole("region", { name: "交易库" });
     await user.click(await screen.findByRole("button", { name: "高级筛选" }));
     const filterDrawer = await screen.findByRole("dialog", {
       name: "高级筛选",
@@ -2830,10 +2854,12 @@ describe("TradeReviewWorkspace", () => {
     await user.click(
       within(filterDrawer).getByRole("button", { name: "应用筛选" }),
     );
-    await user.click(screen.getByRole("tab", { name: "按标的浏览" }));
-    const xpevStock = screen.getByRole("button", { name: /^(展开|收起)小鹏汽车交易回合$/ });
+    const stockTab = within(library).getByRole("tab", { name: "按标的浏览" });
+    if (stockTab.getAttribute("aria-selected") !== "true") await user.click(stockTab);
+    const xpevStock = await screen.findByRole("button", { name: /^(展开|收起)小鹏汽车交易回合$/ });
+    const loadedLibrary = screen.getByRole("region", { name: "交易库" });
     if (xpevStock.getAttribute("aria-expanded") !== "true") await user.click(xpevStock);
-    await user.click(screen.getByRole("button", { name: /^打开小鹏汽车第\d+次交易/ }));
+    await user.click(within(loadedLibrary).getByRole("button", { name: /^打开小鹏汽车第\d+次交易/ }));
 
     await screen.findByLabelText("图表工具栏");
     await user.click(screen.getByRole("button", { name: "完整历史" }));
@@ -3317,7 +3343,7 @@ describe("TradeReviewWorkspace", () => {
     expect(
       screen.getByRole("button", { name: "进入全屏" }),
     ).toHaveAttribute("title", "浏览器不支持全屏");
-    expectOnlyLocalFxFetches();
+    expectOnlyLocalRoomFetches();
   });
 
   it("exposes Recall snapshot controls for daily-only data", async () => {
@@ -3408,7 +3434,7 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.getByRole("region", { name: "阶段快照" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "留存当前快照" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "保存并完成回合复盘" })).toBeEnabled();
-    expect(vi.mocked(fetch).mock.calls.every(([url]) => String(url) === "/api/trading-room/reference-capital")).toBe(true);
+    expectOnlyLocalRoomFetches();
   });
 
   it("derives intraday availability from the selected episode window", async () => {
@@ -3553,6 +3579,7 @@ describe("TradeReviewWorkspace", () => {
     });
 
     render(<TradeReviewWorkspace initialFrame={initialFrame} />);
+    expect(screen.queryByRole("region", { name: "我的交易室", hidden: true })).not.toBeInTheDocument();
     await screen.findByRole("option", { name: /第 2 次/ });
     await waitFor(() =>
       expect(
@@ -4158,7 +4185,7 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.getByRole("button", { name: "图层" })).toBeInTheDocument();
     // Per-episode Recall drawings and snapshot persistence are covered by the
     // dedicated RecallWorkspace tests; this parent test verifies navigation.
-    expect(vi.mocked(fetch).mock.calls.every(([url]) => String(url) === "/api/trading-room/reference-capital")).toBe(true);
+    expectOnlyLocalRoomFetches();
   });
 
   it("opens the stock drawer and restores focus after Escape without resetting replay", async () => {
@@ -4240,6 +4267,7 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={storageClient} />);
 
     const room = await screen.findByRole("region", { name: "交易室范围" });
+    await user.click(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("button", { name: /^筛选/ }));
     await user.click(within(room).getByText("更多筛选", { exact: true }));
     await user.click(within(within(room).getByRole("group", { name: "交易室资产类型筛选" })).getByRole("radio", { name: "ETF" }));
     expect(within(room).getByText("1 个回合进入范围")).toBeVisible();
@@ -4261,7 +4289,8 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={storageClient} />);
     await screen.findByText("1 个未平仓回合");
     const room = await screen.findByRole("region", { name: "我的交易室" });
-    await user.click(within(room).getByRole("radio", { name: "模拟盘" }));
+    await user.click(within(room).getByRole("button", { name: "模拟盘" }));
+    await user.click(within(room).getByRole("button", { name: /^筛选/ }));
     const runs = within(room).getByRole("group", { name: "交易室模拟运行筛选" });
     const runA = await within(runs).findByRole("radio", { name: /模拟运行 · 1$/ });
     await user.click(runA);
@@ -4270,8 +4299,8 @@ describe("TradeReviewWorkspace", () => {
     await user.click(runB);
     expect(runB).toBeChecked();
     expect(within(runs).getByRole("radio", { name: /模拟运行 · 1$/ })).toBeInTheDocument();
-    expect(within(room).queryByRole("region", { name: "当前持仓" })).not.toBeInTheDocument();
-    await user.click(within(room).getByRole("radio", { name: "实盘" }));
+    expect(within(within(room).getByRole("region", { name: "当前持仓" })).getByText("当前范围暂无未平仓回合。")).toBeInTheDocument();
+    await user.click(within(room).getByRole("button", { name: "实盘" }));
     expect(within(room).queryByRole("group", { name: "交易室模拟运行筛选" })).not.toBeInTheDocument();
   });
 
@@ -4296,12 +4325,14 @@ describe("TradeReviewWorkspace", () => {
     await screen.findByText("1 个未平仓回合");
     const dashboard = await screen.findByRole("region", { name: "我的交易室" });
     const scope = within(dashboard).getByRole("region", { name: "交易室范围" });
+    await user.click(within(dashboard).getByRole("button", { name: /^筛选/ }));
     await user.click(within(scope).getByRole("tab", { name: "近3个自然月" }));
     await user.click(within(scope).getByText("更多筛选"));
     await user.click(await within(within(scope).getByRole("group", { name: "交易室币种筛选" })).findByRole("radio", { name: "USD" }));
     const performance = within(dashboard).getByRole("region", { name: "业绩趋势与日历" });
-    await user.click(within(performance).getByRole("button", { name: "日历" }));
-    expect(within(performance).getByRole("button", { name: "日历" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(performance).getByRole("region", { name: "盈亏日历" })).toBeInTheDocument();
+    await user.click(within(performance).getByRole("button", { name: "自然月胜率" }));
+    expect(within(performance).getByRole("button", { name: "自然月胜率" })).toHaveAttribute("aria-pressed", "true");
 
     const holdings = await screen.findByRole("region", { name: "当前持仓" });
     await within(holdings).findByText("1 个未平仓回合");
@@ -4317,8 +4348,9 @@ describe("TradeReviewWorkspace", () => {
     expect(
       within(
         within(returnedDashboard).getByRole("region", { name: "业绩趋势与日历" }),
-      ).getByRole("button", { name: "日历" }),
+      ).getByRole("button", { name: "自然月胜率" }),
     ).toHaveAttribute("aria-pressed", "true");
+    expect(within(returnedDashboard).getByRole("region", { name: "盈亏日历" })).toBeInTheDocument();
   });
 
   it("returns to the library with its expanded stock context after opening a library round", async () => {
@@ -4488,7 +4520,7 @@ describe("TradeReviewWorkspace", () => {
     );
     expect(screen.getByRole("region", { name: "交易库" }).scrollTop).toBe(240);
     expect(cacheReads).not.toHaveBeenCalled();
-    expectOnlyLocalFxFetches();
+    expectOnlyLocalRoomFetches();
   });
 
   it("hydrates cached candles for library stocks that are not selected in replay", async () => {
@@ -4590,7 +4622,7 @@ describe("TradeReviewWorkspace", () => {
 
     expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "行情数据详情" })).toBeInTheDocument();
-    expectOnlyLocalFxFetches();
+    expectOnlyLocalRoomFetches();
   });
 
   it("hydrates the review record for the exact position episode and exposes Recall capture controls", async () => {
@@ -4703,6 +4735,6 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.getByRole("combobox", { name: "交易回合" })).toHaveValue(episode.id);
     const retainButton = screen.getByRole("button", { name: "留存当前快照" });
     expect(retainButton).toBeEnabled();
-    expectOnlyLocalFxFetches();
+    expectOnlyLocalRoomFetches();
   });
 });

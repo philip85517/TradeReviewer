@@ -10,6 +10,7 @@ import {
   type TradingRoomMetadataInput,
 } from "../../lib/reviews/trading-room-scope";
 import type { TradeLibraryEntry } from "../../lib/trades/library";
+import type { SharedReportCurrency } from "../../lib/reviews/shared-scope";
 import { ReferenceCapitalPanel } from "./reference-capital-panel";
 import { useReferenceCapital } from "../../lib/principal/use-reference-capital";
 
@@ -18,7 +19,7 @@ export type TradingRoomPrincipalSlotProps = {
   instrumentMetadata?: TradingRoomMetadataInput;
   fxSnapshot?: RoomFxSnapshot;
   enabled?: boolean;
-  sharedScope?: { nature: "live" | "simulation"; simulationRunId: string | null; accountIds?: readonly string[]; reportCurrency?: "original" | "CNY" };
+  sharedScope?: { nature: "live" | "simulation"; simulationRunId: string | null; accountIds?: readonly string[]; reportCurrency?: SharedReportCurrency };
 };
 
 export function TradingRoomPrincipalSlot({

@@ -1,10 +1,12 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { buildCurrentPortfolio } from "../../lib/reviews/trading-room-portfolio";
 import type { TradeLibraryEntry } from "../../lib/trades/library";
 import { buildRoomDateRange, createDefaultRoomScope, type TradingRoomInstrumentMetadata } from "../../lib/reviews/trading-room-scope";
-import { RoomHoldingsPanel } from "./room-holdings";
+import { RoomHoldingsPanel, holdingsCsv, holdingPriceSeries } from "./room-holdings";
 
 afterEach(() => {
   vi.useRealTimers();
@@ -337,4 +339,131 @@ describe("RoomHoldingsPanel", () => {
     expect(holdings).toHaveTextContent("报价时间：2026-09-19");
     expect(holdings).not.toHaveTextContent("技术证据");
   });
+});
+
+describe("holdings table workflow", () => {
+ it("keeps every market in one table with one header and numbered five-row pages", async () => {
+  const entries = Array.from({length: 12}, (_, index) => {
+    const value = entry(`account-${index + 1}`);
+    value.instrument.id = `US:TEST-${index + 1}`;
+    value.instrument.symbol = `TEST${index + 1}`;
+    value.episodes[0].episode.instrument.id = value.instrument.id;
+    value.episodes[0].episode.instrument.symbol = value.instrument.symbol;
+    value.episodes[0].episode.executions[0].instrument.id = value.instrument.id;
+    value.episodes[0].episode.executions[0].instrument.symbol = value.instrument.symbol;
+    if (index === 1) {
+      value.instrument.market = "CN-SH";
+      value.episodes[0].episode.instrument.market = "CN-SH";
+      value.episodes[0].episode.executions[0].instrument.market = "CN-SH";
+    }
+    return value;
+  });
+  const view = render(<RoomHoldingsPanel entries={entries} scope={createDefaultRoomScope("2026-09-19")} onOpenInReview={() => undefined} />);
+  expect(screen.getAllByRole("table")).toHaveLength(1);
+  expect(screen.getAllByRole("columnheader", { name: "市场" })).toHaveLength(1);
+  expect(screen.getAllByRole("button", { name: "打开持仓回合复盘" })).toHaveLength(5);
+  expect(screen.getAllByText("美股").length).toBeGreaterThan(0);
+  expect(screen.getByText("A股·沪市")).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "第2页" })).toBeInTheDocument();
+  await userEvent.click(screen.getByRole("button", { name: "第2页" }));
+  expect(screen.getAllByRole("button", { name: "打开持仓回合复盘" })).toHaveLength(5);
+  expect(view.container.querySelectorAll("thead")).toHaveLength(1);
+ });
+
+ it("converts row values and CSV amounts to the selected report currency while prices stay local", () => {
+  const value = entry();
+  const fxSnapshot = { id: "fx-hkd", baseCurrency: "CNY" as const, asOf: "2026-09-19T00:00:00Z", source: "fixture", status: "complete" as const, rates: { "USD/CNY": "7", "HKD/CNY": "0.9", "CNY/CNY": "1" } };
+  const scope = createDefaultRoomScope("2026-09-19");
+  const model = buildCurrentPortfolio([value], { scope, asOf: "2026-09-19", quotesByInstrument: { "US:TEST": { price: "12", currency: "USD", quoteDate: "2026-09-19", fetchedAt: "2026-09-19T08:00:00.000Z", provider: "fixture", freshness: "current" } } });
+  render(<RoomHoldingsPanel entries={[value]} portfolioModel={model} scope={scope} asOf="2026-09-19" reportCurrency="HKD" fxSnapshot={fxSnapshot} onOpenInReview={() => undefined} />);
+  const holdings = screen.getByRole("region", { name: "当前持仓" });
+  expect(holdings).toHaveTextContent("HK$186.67");
+  expect(holdings).toHaveTextContent("US$10");
+  const csv = holdingsCsv(model.rows, "2026-09-19", { reportCurrency: "HKD", fxSnapshot });
+  expect(csv).toContain("HKD");
+  expect(csv).toContain("HK$186.67");
+  expect(csv).not.toContain("USD,\"$24.00\"");
+ });
+
+ it("keeps a missing target FX rate visible as unavailable instead of relabeling the source amount", () => {
+  const value = entry();
+  const scope = createDefaultRoomScope("2026-09-19");
+  const partialFx = { id: "fx-partial", baseCurrency: "CNY" as const, asOf: "2026-09-19T00:00:00Z", source: "fixture", status: "partial" as const, rates: { "USD/CNY": "7" } };
+  render(<RoomHoldingsPanel entries={[value]} scope={scope} asOf="2026-09-19" reportCurrency="HKD" fxSnapshot={partialFx} quotesByInstrument={{ "US:TEST": { price: "12", currency: "USD", quoteDate: "2026-09-19", fetchedAt: "2026-09-19T08:00:00.000Z", provider: "fixture", freshness: "current" } }} onOpenInReview={() => undefined} />);
+  const holdings = screen.getByRole("region", { name: "当前持仓" });
+  expect(holdings).toHaveTextContent("不可用（汇率快照不完整");
+  expect(holdings).toHaveTextContent("US$10");
+  expect(holdings).not.toHaveTextContent("HK$24");
+ });
+
+ it("shows an explicit empty state when search has no table matches", async () => {
+  render(<RoomHoldingsPanel entries={[entry()]} scope={createDefaultRoomScope("2026-09-19")} onOpenInReview={() => undefined} />);
+  await userEvent.type(screen.getByRole("searchbox", { name: "搜索持仓" }), "does-not-exist");
+  expect(screen.getByText("没有匹配的持仓")).toBeInTheDocument();
+  expect(screen.queryAllByRole("button", { name: "打开持仓回合复盘" })).toHaveLength(0);
+ });
+
+ it("exposes shell-owned query and one-based page changes for return navigation", async () => {
+  const onBrowseStateChange = vi.fn();
+  const entries = Array.from({ length: 7 }, (_, index) => entry(`account-${index + 1}`));
+  function ControlledHoldings() {
+    const [browseState, setBrowseState] = useState({ query: "", page: 1 });
+    return <RoomHoldingsPanel entries={entries} scope={createDefaultRoomScope("2026-09-19")} browseState={browseState} onBrowseStateChange={next => { onBrowseStateChange(next); setBrowseState(next); }} onOpenInReview={() => undefined} />;
+  }
+  render(<ControlledHoldings />);
+  await userEvent.click(screen.getByRole("button", { name: "第2页" }));
+  expect(onBrowseStateChange).toHaveBeenCalledWith({ query: "", page: 2 });
+  await userEvent.type(screen.getByRole("searchbox", { name: "搜索持仓" }), "account-7");
+  expect(onBrowseStateChange).toHaveBeenLastCalledWith({ query: "account-7", page: 1 });
+ });
+
+ it("searches locally, paginates, preserves search on updated review props and opens the selected account episode", async () => {
+  const entries=Array.from({length:7},(_,index)=>entry(`account-${index+1}`));
+  const scope=createDefaultRoomScope("2026-09-19"); const open=vi.fn();
+  const props={entries,scope,asOf:"2026-09-19",onOpenInReview:open};
+  const view=render(<RoomHoldingsPanel {...props} />);
+  expect(screen.getAllByRole("button",{name:"打开持仓回合复盘"})).toHaveLength(5);
+  await userEvent.click(screen.getByRole("button",{name:"下一页持仓"}));
+  expect(screen.getAllByRole("button",{name:"打开持仓回合复盘"})).toHaveLength(2);
+  await userEvent.type(screen.getByRole("searchbox",{name:"搜索持仓"}),"account-7");
+  expect(screen.getAllByRole("button",{name:"打开持仓回合复盘"})).toHaveLength(1);
+  await userEvent.click(screen.getByRole("button",{name:"打开持仓回合复盘"}));
+  expect(open).toHaveBeenCalledWith("US:TEST","episode:holding:account-7",["episode:holding:account-7"]);
+  entries[6].episodes[0].review={version:1,episodeId:"episode:holding:account-7",instrumentId:"US:TEST",updatedAt:"2026-09-19T10:00:00Z",plan:{thesis:"观察现金流",expectedPath:"",invalidationCondition:"",targetRange:"",plannedRiskAmount:"",confidence:null},review:{decisionQuality:null,executionQuality:null,riskManagement:"",psychology:"",reusableRule:"",completed:false,keyDecision:"保持仓位"},confirmedTagIds:[]};
+  view.rerender(<RoomHoldingsPanel {...props} entries={[...entries]} />);
+  expect(screen.getByRole("searchbox",{name:"搜索持仓"})).toHaveValue("account-7");
+  expect(screen.getByText("保持仓位")).toBeInTheDocument();
+  expect(screen.getByText("2026-09-19T10:00:00Z")).toBeInTheDocument();
+ });
+ it("exports every filtered row with unavailable fields, as-of and formula-safe text", () => {
+  const entries=Array.from({length:7},(_,index)=>entry(`account-${index+1}`));
+  entries[0].instrument.name='=HYPERLINK("bad")';
+  const model=buildCurrentPortfolio(entries,{scope:createDefaultRoomScope("2026-09-19"),asOf:"2026-09-19"});
+  const csv=holdingsCsv(model.rows,"2026-09-19");
+  expect(csv.split("\r\n")).toHaveLength(8);
+  expect(csv).toContain("'=HYPERLINK"); expect(csv).toContain("不可用");expect(csv).toContain("2026-09-19");expect(csv).toContain("USD");
+ });
+});
+
+it("uses only real raw 30-day prices and preserves missing sessions as gaps", () => {
+ const model=buildCurrentPortfolio([entry()],{scope:createDefaultRoomScope("2026-09-19"),asOf:"2026-09-19"});
+ const candle={instrumentId:"US:TEST",tradingDate:"2026-09-17",open:"11",high:"11",low:"11",close:"11",volume:"1",currency:"USD",provider:"yahoo" as const,providerSymbol:"TEST",adjustmentMode:"raw" as const,fetchedAt:"2026-09-19"};
+ const points=holdingPriceSeries(model.rows[0].holding,[candle,{...candle,tradingDate:"2026-09-21",close:"99"},{...candle,tradingDate:"2026-08-01",close:"88"}],"2026-09-19");
+ expect(points.find(point=>point.date==="2026-09-17")?.value).toBe(11);
+ expect(points.find(point=>point.date==="2026-09-18")?.value).toBeNull();
+ expect(points.filter(point=>point.value!==null)).toHaveLength(1);
+});
+
+it("refreshes the latest persisted Recall summary and snapshot fallback without a legacy review write", () => {
+  const value = entry();
+  value.episodes[0].recallReview = { episodeId: "episode:holding", status: "in-progress", updatedAt: "2026-09-19T09:00:00Z", text: "真实Recall记录", snapshotCount: 1 };
+  const props = { scope:createDefaultRoomScope("2026-09-19"), asOf:"2026-09-19", onOpenInReview:vi.fn() };
+  const view = render(<RoomHoldingsPanel {...props} entries={[value]} />);
+  expect(screen.getByText("真实Recall记录")).toBeInTheDocument();
+  expect(screen.getByText("2026-09-19T09:00:00Z")).toBeInTheDocument();
+  value.episodes[0].recallReview = { ...value.episodes[0].recallReview, status:"completed", updatedAt:"2026-09-19T10:00:00Z", text:"", snapshotCount:3 };
+  view.rerender(<RoomHoldingsPanel {...props} entries={[{...value}]} />);
+  expect(screen.getByText("已留存3份快照")).toBeInTheDocument();
+  expect(screen.queryByText("真实Recall记录")).not.toBeInTheDocument();
+  expect(value.episodes[0].review).toBeUndefined();
 });

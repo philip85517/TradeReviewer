@@ -1,0 +1,49 @@
+.panel { min-width: 0; height: 100%; padding: 9px; border: 1px solid var(--dashboard-line, #24394d); border-radius: 12px; background: var(--dashboard-card); }
+.panel h3 { margin: 0 0 8px; font-size: 14px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; }
+.tabs button { min-height: 30px; border: 1px solid var(--dashboard-line); border-radius: 7px; padding: 4px 7px; color: var(--dashboard-ink); background: var(--dashboard-card-elevated); cursor: pointer; font: inherit; font-size: 11px; }
+.tabs button[aria-pressed="true"] { border-color: #338caa; background: var(--dashboard-soft); }
+.note, .currencyGroup small { color: var(--dashboard-muted); font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; }
+.currencyGroup { min-width: 0; max-width: 100%; width: 100%; margin-top: 8px; font-size: 11px; }
+.currencyGroup > strong { font-variant-numeric: tabular-nums; }
+.currencyGroup ul { min-width: 0; max-width: 100%; list-style: none; padding: 0; margin: 7px 0; display: grid; gap: 7px; }
+.currencyGroup li { min-width: 0; max-width: 100%; }
+.rowLabel { min-width: 0; max-width: 100%; display: grid; grid-template-columns: minmax(24px, .8fr) minmax(0, 1fr) minmax(54px, auto); align-items: center; gap: 5px; }
+.rowLabel > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rowLabel b { min-width: 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; text-align: right; }
+.positive { color: var(--dashboard-positive, #26a69a); }
+.negative { color: var(--dashboard-negative, #ef5350); }
+.zero { color: var(--dashboard-muted); }
+.barTrack { position: relative; height: 7px; background: var(--dashboard-soft); }
+.barTrack::after { content: ""; position: absolute; left: 50%; top: -2px; height: 13px; border-left: 1px solid var(--dashboard-muted); }
+.barTrack i { position: absolute; height: 100%; background: currentColor; border-radius: 2px; }
+
+@media (min-width: 821px) {
+  .panel { padding: 7px 8px; }
+  .panel h3 { margin-bottom: 4px; font-size: 13px; }
+  .tabs { gap: 2px; }
+  .tabs button { min-height: 23px; padding: 2px 5px; font-size: 9px; }
+  .note, .currencyGroup small { font-size: 9px; line-height: 1.2; }
+  .currencyGroup { margin-top: 4px; font-size: 10px; }
+  .currencyGroup ul { gap: 3px; margin: 4px 0; }
+  .rowLabel { grid-template-columns: minmax(28px, .8fr) minmax(20px, 1fr) minmax(45px, auto); gap: 3px; font-size: 9px; }
+  .rowLabel b { font-size: 9px; }
+  .barTrack { height: 4px; }
+  .barTrack::after { height: 9px; top: -2px; }
+  .currencyGroup li small { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; line-height: 1.1; }
+}
+
+@media (min-width: 821px) {
+  .panel { display: flex; flex-direction: column; height: 100%; box-sizing: border-box; }
+  .panel h3 { font-size: 13px; color: #edf5ff; }
+  .note, .currencyGroup small { color: #9ab0ca; font-size: 9.5px; line-height: 1.25; }
+  .currencyGroup { flex: 1 1 auto; margin-top: 5px; font-size: 10px; }
+  .currencyGroup ul { gap: 5px; margin: 5px 0 0; }
+  .rowLabel { font-size: 10px; }
+  .rowLabel b { font-size: 10px; }
+  .rowLabel b.positive { color: #00d5b6; }
+  .rowLabel b.negative { color: #ff6b78; }
+  .positive { color: #00d5b6; }
+  .negative { color: #ff6b78; }
+  .barTrack { height: 5px; background: #1a3552; }
+}

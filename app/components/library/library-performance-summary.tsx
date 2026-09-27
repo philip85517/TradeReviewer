@@ -10,6 +10,7 @@ import type {
   LibraryPerformanceOpenGroup,
   LibraryPerformanceSummary,
 } from "../../lib/reviews/library-performance";
+import type { RoomTargetCurrency } from "../../lib/reviews/trading-room-scope";
 import { formatSimulationRunLabel } from "./library-filter-options";
 import styles from "./library-performance-summary.module.css";
 
@@ -20,7 +21,7 @@ export type LibraryPerformanceSummaryViewProps = {
   reviewedCount: number;
   progressTotal: number;
   groupLabels?: Record<string, string>;
-  reportCurrency?: "original" | "CNY";
+  reportCurrency?: "original" | RoomTargetCurrency;
 };
 
 const EXCLUSION_LABELS: Record<string, string> = {
@@ -207,31 +208,37 @@ export function LibraryPerformanceSummaryView({
   const groups = summary.comparableGroups;
   const [selectedGroupKey, setSelectedGroupKey] = useState(groups[0]?.key ?? "");
   const selectedGroup = groups.find(group => group.key === selectedGroupKey) ?? groups[0] ?? null;
-  const metricGroup: LibraryPerformanceComparableGroup = groups.length === 1
-    ? summary.cny
-    : selectedGroup ?? summary.cny;
+  const showingOriginal = reportCurrency === "original";
+  const targetGroup = reportCurrency === "HKD" ? summary.target : summary.cny;
+  const metricGroup = showingOriginal
+    ? selectedGroup ?? summary.cny
+    : groups.length === 1
+      ? targetGroup ?? summary.cny
+      : reportCurrency === "HKD"
+        ? summary.target ?? summary.cny
+        : selectedGroup ?? summary.cny;
   const selectedLabel = selectedGroup
     ? formatGroupLabel(selectedGroup, groupLabels, selectedGroup.key)
     : "当前统计组";
   const activeRawGroups = summary.rawCurrencyGroups.filter(group =>
     selectedGroup ? matchesScope(selectedGroup, group) : true,
   );
-  const showingOriginal = reportCurrency === "original";
   const open = openForGroup(summary.open, selectedGroup);
   const progressValue = progressTotal > 0 ? `${reviewedCount}/${progressTotal}` : "不可用";
   const hasMissingFx = (metricGroup.exclusionReasons["missing-fx"] ?? 0) > 0 ||
     (metricGroup.exclusionReasons["invalid-fx"] ?? 0) > 0;
+  const targetReason = reportCurrency === "HKD" ? summary.target?.reason : summary.cny.reason;
   const reason = metricGroup.netPnlSampleCount === 0
     ? hasMissingFx
       ? "缺少有效汇率，外币样本暂无法折算"
-      : !selectedGroup && summary.cny.reason === "multiple-scopes"
+      : targetReason === "multiple-scopes"
         ? "包含多个交易性质或模拟运行，请选择一个统计组"
-        : !selectedGroup && summary.cny.reason === "empty"
+        : targetReason === "empty"
           ? "当前范围没有可用绩效样本"
           : "没有可信的已平仓净盈亏样本"
     : null;
   const netPnlDetail = metricGroup.netPnlSampleCount > 0
-    ? `人民币 · ${metricGroup.netPnlSampleCount} 个可信已平仓回合`
+    ? `${metricGroup.currency} · ${metricGroup.netPnlSampleCount} 个可信已平仓回合`
     : reason ?? "没有可信已平仓样本";
   const returnDetail = `收益率样本 ${metricGroup.returnSampleCount}/${metricGroup.netPnlSampleCount}`;
   const winRate = metricGroup.winRate;
@@ -242,7 +249,7 @@ export function LibraryPerformanceSummaryView({
   return (
     <section className={`${styles.summary} library-performance-summary`} aria-label="当前筛选绩效汇总">
       <details className={styles.mobileSummary}>
-        <summary>绩效摘要 · {metricGroup.netPnlSampleCount} 个可信已平仓回合 · {signedCurrency(reportCurrency === "original" ? null : metricGroup.netPnl)}</summary>
+        <summary>绩效摘要 · {metricGroup.netPnlSampleCount} 个可信已平仓回合 · {signedCurrency(reportCurrency === "original" ? null : metricGroup.netPnl, metricGroup.currency)}</summary>
         <span>展开统计详情与原币分组</span>
       </details>
       <header className={styles.header}>
@@ -270,7 +277,7 @@ export function LibraryPerformanceSummaryView({
       ) : <div className={`${styles.primaryGrid} primaryGrid`}>
         <MetricCard
           label="已平仓净盈亏"
-          value={signedCurrency(metricGroup.netPnl)}
+          value={signedCurrency(metricGroup.netPnl, metricGroup.currency)}
           detail={netPnlDetail}
           tone={toneClass(metricGroup.netPnl)}
         />
@@ -294,7 +301,7 @@ export function LibraryPerformanceSummaryView({
         />
       </div>}
 
-      {!showingOriginal && reason && <p className={styles.notice} role="status">人民币绩效暂不可用：{reason}。原币金额仍可查。</p>}
+      {!showingOriginal && reason && <p className={styles.notice} role="status">{metricGroup.currency}绩效暂不可用：{reason}。原币金额仍可查。</p>}
 
       {!showingOriginal && <details className={styles.disclosure}>
         <summary>统计详情 <span>样本、次级指标、排除原因与持仓说明</span></summary>
@@ -306,8 +313,8 @@ export function LibraryPerformanceSummaryView({
           <dl className={styles.detailGrid}>
             <DetailItem label="净盈亏样本" value={`${metricGroup.netPnlSampleCount} 个回合`} />
             <DetailItem label="收益率样本" value={`${metricGroup.returnSampleCount} 个回合`} />
-            <DetailItem label="平均盈利" value={signedCurrency(metricGroup.averageWin)} />
-            <DetailItem label="平均亏损" value={signedCurrency(metricGroup.averageLoss, "CNY", metricGroup.averageLoss !== null)} />
+            <DetailItem label="平均盈利" value={signedCurrency(metricGroup.averageWin, metricGroup.currency)} />
+            <DetailItem label="平均亏损" value={signedCurrency(metricGroup.averageLoss, metricGroup.currency, metricGroup.averageLoss !== null)} />
             <DetailItem label="盈亏比" value={formatRatio(metricGroup.payoff)} title={metricGroup.payoffReason ?? undefined} />
             <DetailItem label="利润因子" value={formatRatio(metricGroup.profitFactor)} title={metricGroup.profitFactorReason ?? undefined} />
             <DetailItem label="持仓回合" value={open && open.count > 0 ? `${open.count} 个回合` : metricGroup.openCount > 0 ? `${metricGroup.openCount} 个回合` : "无"} />
@@ -330,7 +337,7 @@ export function LibraryPerformanceSummaryView({
       </details>}
 
       {!showingOriginal && <details className={styles.disclosure}>
-        <summary>原币金额 <span>按币种核对 CNY 折算</span></summary>
+        <summary>原币金额 <span>按币种核对 {metricGroup.currency} 折算</span></summary>
         <RawCurrencyList groups={activeRawGroups} />
       </details>}
     </section>

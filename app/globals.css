@@ -5106,6 +5106,26 @@ body { font-size: 14px; }
   flex-direction: column;
 }
 
+.library-page-shell {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.library-source-return {
+  align-self: flex-start;
+  margin: 8px 14px 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 5px 9px;
+  color: var(--link);
+  background: var(--blue-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+}
+
 .page-header {
   min-height: 58px;
   flex: 0 0 auto;
@@ -5899,3 +5919,154 @@ button:focus-visible, a:focus-visible, summary:focus-visible, [tabindex]:focus-v
 }
 
 #data-management-panel-quality, #data-management-panel-settings { grid-template-columns: minmax(0, 1fr); }
+
+/* B2 trading-room shell: keep the desktop sidebar at the reference width
+   through the 1055px acceptance viewport. The compact menu only becomes a
+   top bar at genuinely narrow phone widths. */
+@media (min-width: 760px) {
+  .trade-review-app {
+    min-width: 0;
+    height: 100vh;
+    flex-direction: row;
+  }
+
+  .app-sidebar {
+    position: relative;
+    /* The max-width:1059px rule above turns the sidebar into a grid for the
+       phone menu. At the 1055px acceptance viewport it is still a desktop
+       rail, so restore the original column flex layout here. Without this,
+       the implicit grid rows stretch and vertically center the brand/nav. */
+    display: flex;
+    width: clamp(148px, 14vw, 208px);
+    min-width: 148px;
+    max-width: 208px;
+    height: 100vh;
+    min-height: 0;
+    flex: 0 0 clamp(148px, 14vw, 208px);
+    align-items: stretch;
+    gap: 26px;
+    padding: 18px 10px;
+    border-right: 1px solid var(--line);
+    border-bottom: 0;
+  }
+
+  .app-sidebar .brand {
+    width: auto;
+    gap: 8px;
+  }
+
+  .app-sidebar .brand-mark {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+  }
+
+  .app-sidebar .brand strong { font-size: 13px; }
+  .app-sidebar .brand span { font-size: 10px; }
+
+  .app-sidebar .mobile-nav-trigger { display: none !important; }
+
+  .app-sidebar .app-nav {
+    display: grid !important;
+    align-content: start;
+    gap: 3px;
+    margin: 0;
+  }
+
+  .app-sidebar .app-nav button,
+  .app-nav-secondary button {
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 0 10px;
+    border-radius: 7px;
+    text-align: left;
+    font-size: 12px;
+  }
+
+  .app-sidebar .app-nav button svg,
+  .app-nav-secondary button svg { flex: 0 0 auto; color: #91a9c9; }
+  .app-sidebar .app-nav button.active svg,
+  .app-nav-secondary button.active svg { color: #8ec4ff; }
+
+  .app-sidebar .app-nav button.active::after,
+  .app-nav-secondary button.active::after {
+    top: 8px;
+    right: auto;
+    bottom: 8px;
+    left: 0;
+    width: 2px;
+    height: auto;
+    border-radius: 0 2px 2px 0;
+  }
+
+  .app-nav-secondary {
+    display: grid;
+    align-content: end;
+    gap: 3px;
+    margin-top: auto;
+  }
+
+  .app-nav-secondary button {
+    position: relative;
+    border: 0;
+    color: var(--muted);
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .app-nav-secondary button:hover,
+  .app-nav-secondary button.active {
+    color: var(--text);
+    background: var(--blue-soft);
+  }
+
+  .app-nav-secondary .app-nav-disabled {
+    cursor: not-allowed;
+    opacity: .62;
+  }
+
+  .app-nav-secondary .app-nav-disabled:hover { background: transparent; }
+  .app-nav-secondary small { margin-left: auto; color: #899bb6; font-size: 10px; }
+
+  .app-content {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .workspace.dashboard-mode {
+    display: block;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 0;
+  }
+}
+
+.app-status-bar {
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 0 0 auto;
+  padding: 6px 18px;
+  border-top: 1px solid var(--line);
+  color: #8fa0b7;
+  background: #0d1727;
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.app-status-group { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.app-status-group > span { white-space: nowrap; }
+.app-status-dot { width: 6px; height: 6px; flex: 0 0 6px; border-radius: 50%; background: #f3ba2f; }
+.app-status-dot.is-ok { background: #26a69a; box-shadow: 0 0 0 3px rgba(38, 166, 154, .12); }
+.app-status-dot.is-loading { background: #2f80ed; box-shadow: 0 0 0 3px rgba(47, 128, 237, .12); }
+.app-status-dot.is-warning { background: #f3ba2f; box-shadow: 0 0 0 3px rgba(243, 186, 47, .12); }
+
+@media (max-width: 759px) {
+  .app-status-bar { align-items: flex-start; flex-direction: column; gap: 4px; padding: 8px 12px; }
+  .app-status-group { flex-wrap: wrap; gap: 4px 9px; }
+}

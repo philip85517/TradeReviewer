@@ -83,6 +83,8 @@ export function replayPositionAtPrice(input: {
   executions: TradeExecution[];
   markPrice: string;
   cursor?: string;
+  /** Explicit identity for statement-only inventory; used only when no executions exist. */
+  inventoryIdentity?: { accountId: string; symbol: string; market: string };
   evidence?: Pick<MonthlyStatement, "positions" | "events" | "month" | "accountId">[];
 }): PositionLedgerSnapshot {
   let quantity = new Decimal(0);
@@ -94,7 +96,10 @@ export function replayPositionAtPrice(input: {
   const warnings: Array<{ code: "statement-coverage-gap"; from: string; to: string }> = [];
   const matches = (item: StatementPosition | StatementEvent) => input.executions.some(e =>
     tradeNatureOf(e) !== "simulation" && e.accountId === item.accountId && item.symbol && item.market &&
-    canonicalInstrumentId(e.instrument.symbol, e.instrument.market) === canonicalInstrumentId(item.symbol, item.market));
+    canonicalInstrumentId(e.instrument.symbol, e.instrument.market) === canonicalInstrumentId(item.symbol, item.market)) ||
+    Boolean(input.executions.length === 0 && input.inventoryIdentity && item.symbol && item.market &&
+      input.inventoryIdentity.accountId === item.accountId &&
+      canonicalInstrumentId(input.inventoryIdentity.symbol, input.inventoryIdentity.market) === canonicalInstrumentId(item.symbol, item.market));
   type Entry = { at: string; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent; pendingTransfer?: StatementEvent };
   const timeline: Entry[] = input.executions.map(execution => ({ at: replayExecutionAt(execution), execution }));
   const seen = new Set<string>();

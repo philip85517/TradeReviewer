@@ -326,6 +326,25 @@ describe("buildTradingRoomCalendar", () => {
     expect(new Set(model.trend.points.map(point => point.money.fxSnapshotId).filter(Boolean))).toEqual(new Set(["fx-1"]));
   });
 
+  it("uses the selected HKD target for calendar summary and trend values", () => {
+    const entries = [
+      closedEntry("2026-09-02", "10"),
+      closedEntry("2026-09-03", "20", { id: "HK:0700", instrument: instrument({ id: "HK:0700", symbol: "0700", market: "HK", currency: "HKD" }) }),
+    ];
+    const model = buildTradingRoomCalendar(entries, {
+      scope: scope(),
+      level: "month",
+      asOf: "2026-09-19T08:00:00.000Z",
+      instrumentMetadata: metadata(entries),
+      fxSnapshot: { id: "fx-hkd", baseCurrency: "CNY", asOf: "2026-09-19", source: "BOC", status: "complete", rates: { "HKD/CNY": "0.9", "USD/CNY": "7" } },
+      targetCurrency: "HKD",
+    });
+
+    expect(model.summary.money).toMatchObject({ targetCurrency: "HKD", converted: "97.777777777777777778" });
+    expect(model.trend.endMoney).toMatchObject({ targetCurrency: "HKD", converted: "97.777777777777777778" });
+    expect(model.cells.find(cell => cell.key === "2026-09-03")?.value).toBe("20");
+  });
+
   it("uses the Shanghai natural day at the UTC midnight boundary", () => {
     const model = buildTradingRoomCalendar([], {
       scope: scope(buildRoomDateRange("month", "2026-09-19")),

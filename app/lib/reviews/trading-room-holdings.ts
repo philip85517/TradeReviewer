@@ -4,6 +4,8 @@ import type { DailyCandleRecord } from "../market/contracts";
 import { marketTradingDate } from "../market/trading-date";
 import type { MarketDataSyncStatus } from "../market/sync-status";
 import { replayPositionAtPrice, type PositionLedgerSnapshot } from "../replay/position-ledger";
+import { canonicalInstrumentId } from "../instruments/display-name";
+import { statementPositionAt, statementEventAt } from "../import/statement-evidence";
 import type { StatementPosition } from "../import/monthly-statement";
 import {
   classifyTradingRoomAsset,
@@ -363,10 +365,12 @@ function derivePosition(
   row: DashboardRow,
   quote: TradingRoomQuote | null,
   explicit: PositionLedgerSnapshot | undefined,
+  asOfDate: string,
 ): PositionLedgerSnapshot | null {
   const episode = row.item.episode;
-  if (episode.executions.length === 0) return null;
-  const replayed = replayEvidencePosition(row, quote);
+  const replayed = replayEvidencePosition(row, quote, asOfDate);
+  // External snapshots cannot establish identity for an evidence-free episode.
+  if (episode.executions.length === 0) return replayed;
   if (explicit) {
     const preserved = preserveEpisodeAccuracy({
       ...explicit,
@@ -402,12 +406,42 @@ function refreshPositionAtQuote(position: PositionLedgerSnapshot, quote: Trading
   }
 }
 
+function admittedPosition(position: StatementPosition | undefined, episode: TradeEpisode, asOfDate: string): position is StatementPosition {
+  if (!position || position.accountId !== episode.accountId ||
+    canonicalInstrumentId(position.symbol, position.market) !== canonicalInstrumentId(episode.instrument.symbol, episode.instrument.market)) return false;
+  try {
+    return statementPositionAt(position) <= `${asOfDate}T23:59:59.999Z`;
+  } catch {
+    return false;
+  }
+}
+
 function replayEvidencePosition(
   row: DashboardRow,
   quote: TradingRoomQuote | null,
+  asOfDate: string,
 ): PositionLedgerSnapshot | null {
   const episode = row.item.episode;
   try {
+    if (episode.executions.length === 0) {
+      if (dashboardEpisodeNature(row) === "simulation") return null;
+      const matches = (item: { accountId: string; symbol?: string; market?: string }) =>
+        item.accountId === episode.accountId && Boolean(item.symbol && item.market &&
+          canonicalInstrumentId(item.symbol, item.market) === canonicalInstrumentId(episode.instrument.symbol, episode.instrument.market));
+      const cursor = `${asOfDate}T23:59:59.999Z`;
+      const positions = admittedPosition(episode.initialPosition, episode, asOfDate)
+        ? [episode.initialPosition] : [];
+      const events = (episode.positionEvents ?? []).filter(event => matches(event) &&
+        statementEventAt(event.date.length === 7 ? { ...event, displayTimePolicy: undefined } : event) <= cursor);
+      // No admitted inventory evidence means unknown, never the ledger compatibility zero.
+      const hasInventoryEvent = events.some(event => ["transfer-in", "transfer-out"].includes(event.kind) || event.kind === "ipo" && event.quantity !== undefined);
+      if (!positions.length && !hasInventoryEvent || events.some(event => event.kind === "corporate-action")) return null;
+      return preserveEpisodeAccuracy(replayPositionAtPrice({
+        executions: [], markPrice: quote?.price ?? "0", cursor: asOfDate,
+        inventoryIdentity: { accountId: episode.accountId, symbol: episode.instrument.symbol, market: episode.instrument.market },
+        evidence: [{ positions, events }],
+      }), episode);
+    }
     // The ledger establishes quantity/cost from source evidence. When a quote
     // is absent, zero is only a non-displayed mark; no PnL from this mark is
     // exposed to the user.
@@ -477,6 +511,7 @@ function negativeStatementPosition(position: StatementPosition | undefined): boo
 function positionEvidenceFor(
   row: DashboardRow,
   position: PositionLedgerSnapshot | null,
+  asOfDate: string,
 ): TradingRoomHoldingPositionEvidence {
   const episode = row.item.episode;
   const executions = episode.executions;
@@ -489,11 +524,13 @@ function positionEvidenceFor(
     execution.source.positionEffect === "open-short" &&
     execution.source.positionEffectEvidence?.kind !== "inferred",
   );
+  const admittedNegativeOpening = (position: StatementPosition | undefined) =>
+    dashboardEpisodeNature(row) !== "simulation" && admittedPosition(position, episode, asOfDate) && negativeStatementPosition(position);
   const hasNegativeOpeningPosition = Boolean(
-    negativeStatementPosition(episode.initialPosition) ||
+    admittedNegativeOpening(episode.initialPosition) ||
       executions.some(execution =>
-        negativeStatementPosition(execution.source.openingPosition) ||
-        (execution.source.statementPositions ?? []).some(negativeStatementPosition)),
+        admittedNegativeOpening(execution.source.openingPosition) ||
+        (execution.source.statementPositions ?? []).some(admittedNegativeOpening)),
   );
   if (!position || position.quantityKnown === false) {
     return {
@@ -679,8 +716,8 @@ export function buildTradingRoomHoldings(
     const quoteStatus: TradingRoomHoldingValueStatus = quote
       ? quoteReason || quote.price === null ? "unavailable" : quote.freshness === "stale" ? "stale" : "available"
       : "missing";
-    const position = derivePosition(row, quote, options.positionSnapshotsByEpisode?.[episode.id]);
-    const positionEvidence = positionEvidenceFor(row, position);
+    const position = derivePosition(row, quote, options.positionSnapshotsByEpisode?.[episode.id], asOfDate);
+    const positionEvidence = positionEvidenceFor(row, position, asOfDate);
     const quantityUnavailable = !position || position.quantityKnown === false;
     const costUnavailable = !position || position.costKnown === false || Boolean(position.accuracy) || settlementCurrency === null || positionEvidence.status === "unverified-negative";
     const pnlUnavailable = quantityUnavailable || costUnavailable || quoteStatus !== "available";

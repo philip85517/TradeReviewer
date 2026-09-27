@@ -6,6 +6,7 @@ import type { TradeEpisode, TradeExecution, TradeNature } from "../trades/types"
 import { createEmptyEpisodeReviewRecord } from "./review-metrics";
 import type { ReviewQueueItem, ReviewQueueSort } from "./review-queue";
 import { canSortLibraryPerformance, sortLibraryItems } from "./library-sorting";
+import type { RoomFxSnapshot } from "./trading-room-scope";
 
 const baseInstrument = {
   id: "US:TEST",
@@ -133,6 +134,15 @@ function fxSnapshot(rates: Partial<FxSnapshot["rates"]> = {}): FxSnapshot {
   };
 }
 
+const roomFxSnapshot: RoomFxSnapshot = {
+  id: "boc:2026-01-01",
+  baseCurrency: "CNY",
+  asOf: "2026-01-01",
+  source: "BOC",
+  status: "complete",
+  rates: { "HKD/CNY": "0.9", "USD/CNY": "7" },
+};
+
 function item(id: string, rows: ReviewQueueItem[]) {
   return { id, rows, value: { id } };
 }
@@ -164,6 +174,17 @@ describe("library sorting", () => {
     ], sort, fxSnapshot({ USD: 7 }));
 
     expect(sorted.map(({ id }) => id)).toEqual(expected);
+  });
+
+  it("sorts target performance using the shared BOC snapshot", () => {
+    const cny = row("cny", { currency: "CNY", netPnl: "100", grossExposure: "1000" });
+    const usd = row("usd", { currency: "USD", netPnl: "20", grossExposure: "1000" });
+    const sorted = sortLibraryItems([
+      item("cny", [cny]),
+      item("usd", [usd]),
+    ], "net-profit", roomFxSnapshot, "HKD");
+
+    expect(sorted.map(({ id }) => id)).toEqual(["usd", "cny"]);
   });
 
   it("sorts return by each item's weighted CNY return rather than averaging episode percentages", () => {

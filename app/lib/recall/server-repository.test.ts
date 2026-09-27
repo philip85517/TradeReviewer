@@ -1,7 +1,7 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { openSqliteDatabase } from "../../../db/sqlite";
 import { buildTradeEpisodes } from "../trades/episodes";
@@ -13,6 +13,7 @@ import {
 } from "./document";
 import {
   getRecallDocument,
+  listRecallReviewSummaries,
   RecallConflictError,
   saveRecallDocument,
 } from "./server-repository";
@@ -94,4 +95,26 @@ describe("Recall SQLite repository", () => {
     expect(getRecallDocument(db, tradeEpisode.id)?.lastCompleted).toMatchObject({ revision: 2 });
     expect(() => saveRecallDocument(db, { document: edited, expectedRevision: 2 })).toThrow(RecallConflictError);
   });
+});
+
+
+it("lists lightweight recall summaries from current drafts without loading old formal versions", () => {
+  const current = {
+    version: 1,
+    episodeId: "episode-summary",
+    revision: 1,
+    decisions: [],
+    snapshots: [],
+    working: { drawings: [], timeframe: "1D", cursor: "2026-09-17", executionCursor: "2026-09-17", selectedDecisionId: null },
+    status: "needs-confirmation",
+    updatedAt: "2026-09-24",
+  };
+  const all = vi.fn(() => [{ draft_json: JSON.stringify(current), updated_at: "2026-09-25" }]);
+  const prepare = vi.fn((sql: string) => {
+    expect(sql).toContain("from recall_documents");
+    return { all };
+  });
+  const database = { prepare } as unknown as Parameters<typeof listRecallReviewSummaries>[0];
+  expect(listRecallReviewSummaries(database)).toEqual([{ episodeId: "episode-summary", status: "needs-confirmation", updatedAt: "2026-09-25", text: "", snapshotCount: 0 }]);
+  expect(prepare.mock.calls[0][0]).not.toContain("finalized_json");
 });

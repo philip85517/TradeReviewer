@@ -107,6 +107,43 @@ function renderQueue(warnings: TradeEpisode["warnings"]) {
   );
 }
 
+function sourceDateEntry(): TradeLibraryEntry {
+  const base = entry([]);
+  const usInstrument = {
+    id: "US:NVDA",
+    symbol: "NVDA",
+    name: "英伟达",
+    market: "US" as const,
+    currency: "USD" as const,
+  };
+  const sourceEpisode = base.episodes[0]!;
+  const executions = sourceEpisode.episode.executions.map((execution, index) => ({
+    ...execution,
+    id: `source-date-${index}`,
+    instrument: usInstrument,
+    executedAt: index === 0 ? "2026-09-10T01:00:00.000Z" : "2026-09-18T01:00:00.000Z",
+    source: {
+      ...execution.source,
+      tradingDate: index === 0 ? "2026-09-10" : "2026-09-18",
+    },
+  }));
+  const episode = {
+    ...sourceEpisode.episode,
+    instrument: usInstrument,
+    startedAt: "2026-09-10T01:00:00.000Z",
+    endedAt: "2026-09-18T01:00:00.000Z",
+    executions,
+  };
+  return {
+    ...base,
+    instrument: usInstrument,
+    executions,
+    episodes: [{ ...sourceEpisode, episode }],
+    firstTradeAt: episode.startedAt,
+    lastTradeAt: episode.endedAt,
+  };
+}
+
 function pagedEntries(count: number): TradeLibraryEntry[] {
   return Array.from({ length: count }, (_, index) => {
     const source = entry([]);
@@ -138,6 +175,22 @@ function expectRowNetPnl() {
 }
 
 describe("ReviewQueue coverage warnings", () => {
+  it("uses source trading dates for the queue window and accessible row labels", () => {
+    render(
+      <ReviewQueue
+        entries={[sourceDateEntry()]}
+        filter={{ status: "all" }}
+        onFilter={() => {}}
+        onOpen={() => {}}
+        onBrowseStocks={() => {}}
+      />,
+    );
+
+    const row = screen.getByRole("button", { name: /复盘英伟达 2026\/9\/10/ });
+    expect(row).toHaveTextContent("2026/9/10—2026/9/18");
+    expect(screen.getByRole("checkbox", { name: "选择复盘回合 英伟达 2026/9/10" })).toBeInTheDocument();
+  });
+
   it("shows the short coverage warning and its missing-month range without hiding net PnL", () => {
     renderQueue([
       { code: "statement-coverage-gap", from: "2024-02", to: "2024-04" },

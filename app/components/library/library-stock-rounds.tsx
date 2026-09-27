@@ -3,7 +3,6 @@
 import { ChevronRight } from "lucide-react";
 import { useEffect } from "react";
 
-import type { FxSnapshot } from "../../lib/fx/contracts";
 import { formatMarketTradingDate } from "../../lib/market/trading-date";
 import type { MarketDataSyncStatus } from "../../lib/market/sync-status";
 import { instrumentPresentation } from "../../lib/instruments/instrument-presentation";
@@ -13,11 +12,19 @@ import {
   type ReviewQueueItem,
   type ReviewQueueSort,
 } from "../../lib/reviews/review-queue";
-import type { TradeLibraryEntry } from "../../lib/trades/library";
+import {
+  tradeEntryClosingTradingDate,
+  tradeEntryOpeningTradingDate,
+  tradeEpisodeClosingTradingDate,
+  tradeEpisodeOpeningTradingDate,
+  type TradeLibraryEntry,
+} from "../../lib/trades/library";
 import {
   summarizeLibraryPerformance,
+  type LibraryFxSnapshot,
   type LibraryPerformanceSummary,
 } from "../../lib/reviews/library-performance";
+import type { RoomTargetCurrency } from "../../lib/reviews/trading-room-scope";
 import { tradeNatureForReviewRow } from "./library-browse-state";
 import { formatSimulationRunLabel } from "./library-filter-options";
 import styles from "./library-stock-rounds.module.css";
@@ -37,7 +44,7 @@ export type LibraryStockRoundsProps = {
   marketDataStatuses: Record<string, MarketDataSyncStatus>;
   performanceByInstrument?: ReadonlyMap<string, LibraryPerformanceSummary>;
   performanceByEpisode?: ReadonlyMap<string, LibraryPerformanceSummary>;
-  fxSnapshot?: FxSnapshot | null;
+  fxSnapshot?: LibraryFxSnapshot | null;
   sort?: ReviewQueueSort;
   onSort?: (sort: ReviewQueueSort) => void;
   performanceSortAvailability?: { allowed: boolean; reason: string | null };
@@ -50,6 +57,7 @@ export type LibraryStockRoundsProps = {
   natureLabel: (nature: TradeLibraryEntry["tradeNature"]) => string;
   marketDataStatusLabel: (status: MarketDataSyncStatus) => string;
   reviewTagLabel: (tagId: string) => string;
+  reportCurrency?: "original" | RoomTargetCurrency;
 };
 
 function runIdForRow(row: ReviewQueueItem) {
@@ -106,36 +114,54 @@ function groupRoundRows(rows: ReviewQueueItem[]) {
 function displayPerformance(
   summary: LibraryPerformanceSummary | null | undefined,
   money: (value: string | null, currency: string) => string,
+  reportCurrency: "original" | RoomTargetCurrency = "CNY",
 ) {
-  const cny = summary?.cny;
+  const target = reportCurrency === "HKD" ? summary?.target : summary?.cny;
   const raw = summary?.rawCurrencyGroups.length === 1
     ? summary.rawCurrencyGroups[0]
     : null;
   const trustedRaw = raw && raw.netPnl !== null && raw.netPnlSampleCount > 0 ? raw : null;
   const rawCurrencies = summary ? [...new Set(summary.rawCurrencyGroups.map(group => group.currency))] : [];
-  const currency = raw?.currency ?? (rawCurrencies.length === 1 ? rawCurrencies[0] : rawCurrencies.length > 1 ? "多币种" : "CNY");
-  const rawPnlDetails = summary?.cny.reason === "multiple-scopes"
+  const currency = target?.currency ?? raw?.currency ?? (rawCurrencies.length === 1 ? rawCurrencies[0] : rawCurrencies.length > 1 ? "多币种" : reportCurrency === "HKD" ? "HKD" : "CNY");
+  const rawPnlDetails = target?.reason === "multiple-scopes"
     ? []
     : (summary?.rawCurrencyGroups ?? [])
-      .filter(group => group.netPnl !== null && group.netPnlSampleCount > 0 && (!cny?.available || group.currency !== "CNY"))
+      .filter(group => group.netPnl !== null && group.netPnlSampleCount > 0 && (!target?.available || group.currency !== target.currency))
       .map(group => `${group.currency} ${money(group.netPnl, group.currency)}`);
-  const sampleByGroup = summary?.cny.reason === "multiple-scopes";
-  if (cny?.available && cny.netPnl !== null) {
+  const sampleByGroup = target?.reason === "multiple-scopes";
+  if (reportCurrency !== "original" && target?.available && target.netPnl !== null) {
     return {
-      pnl: money(cny.netPnl, "CNY"),
-      pnlValue: cny.netPnl,
-      currency: "CNY",
-      returnValue: cny.weightedReturn,
-      pnlSampleCount: cny.netPnlSampleCount,
-      returnSampleCount: cny.returnSampleCount,
+      pnl: money(target.netPnl, target.currency),
+      pnlValue: target.netPnl,
+      currency: target.currency,
+      returnValue: target.weightedReturn,
+      pnlSampleCount: target.netPnlSampleCount,
+      returnSampleCount: target.returnSampleCount,
       cnyUnavailable: false,
       unavailableReason: null,
       rawPnlDetails,
       sampleByGroup: false,
       summaryPresent: true,
+      reportCurrency,
     };
   }
-  if (trustedRaw) {
+  if (reportCurrency === "original" && trustedRaw) {
+    return {
+      pnl: money(trustedRaw.netPnl, trustedRaw.currency),
+      pnlValue: trustedRaw.netPnl,
+      currency: trustedRaw.currency,
+      returnValue: trustedRaw.weightedReturn,
+      pnlSampleCount: trustedRaw.netPnlSampleCount,
+      returnSampleCount: trustedRaw.returnSampleCount,
+      cnyUnavailable: false,
+      unavailableReason: null,
+      rawPnlDetails,
+      sampleByGroup: false,
+      summaryPresent: Boolean(summary),
+      reportCurrency,
+    };
+  }
+  if (trustedRaw && reportCurrency !== "original") {
     return {
       pnl: money(trustedRaw.netPnl, trustedRaw.currency),
       pnlValue: trustedRaw.netPnl,
@@ -144,10 +170,11 @@ function displayPerformance(
       pnlSampleCount: trustedRaw.netPnlSampleCount,
       returnSampleCount: trustedRaw.returnSampleCount,
       cnyUnavailable: true,
-      unavailableReason: cny?.reason ?? null,
+      unavailableReason: target?.reason ?? null,
       rawPnlDetails,
       sampleByGroup: false,
       summaryPresent: Boolean(summary),
+      reportCurrency,
     };
   }
   return {
@@ -155,27 +182,29 @@ function displayPerformance(
     pnlValue: null,
     currency,
     returnValue: null,
-    pnlSampleCount: cny?.netPnlSampleCount ?? 0,
-    returnSampleCount: cny?.returnSampleCount ?? 0,
-    cnyUnavailable: Boolean(summary && !cny?.available),
-    unavailableReason: cny?.reason ?? null,
+    pnlSampleCount: target?.netPnlSampleCount ?? 0,
+    returnSampleCount: target?.returnSampleCount ?? 0,
+    cnyUnavailable: Boolean(summary && !target?.available),
+    unavailableReason: target?.reason ?? null,
     rawPnlDetails,
     sampleByGroup: Boolean(sampleByGroup),
     summaryPresent: Boolean(summary),
+    reportCurrency,
   };
 }
 
-function formatReturn(value: string | null, currency: string, cnyUnavailable: boolean) {
+function formatReturn(value: string | null, currency: string, cnyUnavailable: boolean, reportCurrency: "original" | RoomTargetCurrency) {
   if (value === null || !Number.isFinite(Number(value))) return "收益率暂不可用";
-  return `${Number(value).toFixed(2)}%${cnyUnavailable ? ` · ${currency}原币` : " · CNY"}`;
+  return `${Number(value).toFixed(2)}%${cnyUnavailable ? ` · ${currency}原币` : ` · ${reportCurrency === "original" ? currency : reportCurrency}`}`;
 }
 
 function weightedReturnLabel(
   value: string | null,
   currency: string,
   cnyUnavailable: boolean,
+  reportCurrency: "original" | RoomTargetCurrency,
 ) {
-  const formatted = formatReturn(value, currency, cnyUnavailable);
+  const formatted = formatReturn(value, currency, cnyUnavailable, reportCurrency);
   return formatted === "收益率暂不可用"
     ? "加权收益率（按开仓金额）暂不可用"
     : `加权收益率（按开仓金额）：${formatted}`;
@@ -183,14 +212,16 @@ function weightedReturnLabel(
 
 function performanceStatusLabel(metrics: ReturnType<typeof displayPerformance>) {
   if (!metrics.summaryPresent) return "统计数据暂不可用";
-  if (!metrics.cnyUnavailable) return "人民币已平仓净盈亏";
+  if (metrics.reportCurrency === "original" && !metrics.cnyUnavailable) return `${metrics.currency}原币已平仓净盈亏`;
+  const targetLabel = metrics.reportCurrency === "CNY" ? "人民币" : metrics.reportCurrency;
+  if (!metrics.cnyUnavailable) return `${targetLabel}已平仓净盈亏`;
   if (metrics.unavailableReason === "multiple-scopes") return "绩效按性质/模拟运行分组显示";
   if (metrics.unavailableReason === "missing-fx") {
-    return `原币 ${metrics.currency} · 人民币暂无法折算`;
+    return `原币 ${metrics.currency} · ${targetLabel}暂无法折算`;
   }
   if (metrics.unavailableReason === "no-trusted-closed") return "暂无可信已平仓样本";
   if (metrics.unavailableReason === "empty") return "暂无可用已平仓样本";
-  return "人民币暂无法折算";
+  return `${targetLabel}暂无法折算`;
 }
 
 function sampleCoverageLabel(metrics: ReturnType<typeof displayPerformance>) {
@@ -274,6 +305,7 @@ export function LibraryStockRounds({
   performanceByInstrument,
   performanceByEpisode,
   fxSnapshot,
+  reportCurrency = "CNY",
   sort = "newest",
   onSort,
   performanceSortAvailability = { allowed: true, reason: null },
@@ -357,7 +389,7 @@ export function LibraryStockRounds({
         const includeReviewed = includeReviewedStockIds.includes(instrumentId);
         const displayedRows = includeReviewed && reviewStatus !== "all" ? allRows : rows;
         const stockPerformance = performanceByInstrument?.get(instrumentId);
-        const stockMetrics = displayPerformance(stockPerformance, money);
+        const stockMetrics = displayPerformance(stockPerformance, money, reportCurrency);
         const stockOpenLabel = openSummaryLabel(stockPerformance, money);
         const pendingCount = allRows.filter((row) => reviewState(row.item) === "pending").length;
         const reviewedCount = allRows.filter((row) => reviewState(row.item) === "completed").length;
@@ -397,7 +429,7 @@ export function LibraryStockRounds({
                   <small>复盘进度 {reviewedCount}/{allRows.length || entry.episodeCount}</small>
                   {simulationRunCount > 1 && <small>{simulationRunCount} 个模拟运行 · 展开查看</small>}
                 </span>
-                <span>{formatMarketTradingDate(entry.firstTradeAt, entry.instrument.market)}—{formatMarketTradingDate(entry.lastTradeAt, entry.instrument.market)}</span>
+                <span>{formatMarketTradingDate(tradeEntryOpeningTradingDate(entry), entry.instrument.market)}—{formatMarketTradingDate(tradeEntryClosingTradingDate(entry), entry.instrument.market)}</span>
                 <span className="library-stock-status">
                   <b className={entry.status}>{statusLabel(entry.status)}</b>
                   <small>{marketDataLabels?.[instrumentId] ?? marketDataStatusLabel(status)}</small>
@@ -408,7 +440,7 @@ export function LibraryStockRounds({
                   </strong>
                   <small>{performanceStatusLabel(stockMetrics)}</small>
                   <small>{sampleCoverageLabel(stockMetrics)}</small>
-                  <small>{weightedReturnLabel(stockMetrics.returnValue, stockMetrics.currency, stockMetrics.cnyUnavailable)}</small>
+                  <small>{weightedReturnLabel(stockMetrics.returnValue, stockMetrics.currency, stockMetrics.cnyUnavailable, reportCurrency)}</small>
                   {rawPnlDetailsLabel(stockMetrics) && <small>{rawPnlDetailsLabel(stockMetrics)}</small>}
                   {stockOpenLabel && <small>{stockOpenLabel}</small>}
                 </span>
@@ -427,8 +459,8 @@ export function LibraryStockRounds({
                 {includeReviewed && <small className={styles.localScopeNotice}>仅此标的范围；全局统计与开始复盘不变。</small>}
               </header>
               {groupRoundRows(displayedRows).map(([runGroupId, runRows]) => {
-                const runSummary = summarizeLibraryPerformance(runRows, fxSnapshot ?? undefined);
-                const runMetrics = displayPerformance(runSummary, money);
+                const runSummary = summarizeLibraryPerformance(runRows, fxSnapshot ?? undefined, reportCurrency === "HKD" ? "HKD" : "CNY");
+                const runMetrics = displayPerformance(runSummary, money, reportCurrency);
                 const runLabelText = runGroupId === "live"
                   ? "实盘回合"
                   : runGroupId === "unknown"
@@ -441,7 +473,7 @@ export function LibraryStockRounds({
                     <div className={styles.runGroupMetrics}>
                       <strong className={metricSignClass(runMetrics)}>{runMetrics.pnl ?? "已平仓净盈亏暂不可用"}</strong>
                       <small>{performanceStatusLabel(runMetrics)}</small>
-                      <small>{sampleCoverageLabel(runMetrics)} · {weightedReturnLabel(runMetrics.returnValue, runMetrics.currency, runMetrics.cnyUnavailable)}</small>
+                      <small>{sampleCoverageLabel(runMetrics)} · {weightedReturnLabel(runMetrics.returnValue, runMetrics.currency, runMetrics.cnyUnavailable, reportCurrency)}</small>
                       {rawPnlDetailsLabel(runMetrics) && <small>{rawPnlDetailsLabel(runMetrics)}</small>}
                     </div>
                   </div>
@@ -450,7 +482,7 @@ export function LibraryStockRounds({
                     const childPresentation = instrumentPresentation(row.entry.instrument);
                     const brokerLabels = reviewQueueBrokerTags(row).map((tag) => tag.label).join("、");
                     const roundPerformance = performanceByEpisode?.get(episode.id);
-                    const roundMetrics = displayPerformance(roundPerformance, money);
+                    const roundMetrics = displayPerformance(roundPerformance, money, reportCurrency);
                     const roundOpenLabel = openValuesLabel(roundPerformance, money);
                     const locallyIncludedExtra = includeReviewed && reviewStatus !== "all" &&
                       !rows.some(candidate => candidate.item.episode.id === episode.id);
@@ -467,11 +499,11 @@ export function LibraryStockRounds({
                           onClick={() => onOpenRound(row, displayedRows.map((candidate) => candidate.item.episode.id))}
                         >
                           <span><strong>第 {ordinal} 次交易</strong><small>{episode.accountLabel}</small></span>
-                          <span><strong>{formatMarketTradingDate(episode.startedAt, episode.instrument.market)}—{episode.endedAt ? formatMarketTradingDate(episode.endedAt, episode.instrument.market) : "持仓中"}</strong><small>{episode.executions.length} 笔成交{brokerLabels ? ` · ${brokerLabels}` : ""}</small></span>
+                          <span><strong>{formatMarketTradingDate(tradeEpisodeOpeningTradingDate(episode), episode.instrument.market)}—{episode.endedAt ? formatMarketTradingDate(tradeEpisodeClosingTradingDate(episode), episode.instrument.market) : "持仓中"}</strong><small>{episode.executions.length} 笔成交{brokerLabels ? ` · ${brokerLabels}` : ""}</small></span>
                           <span><b className={episode.status}>{statusLabel(episode.status)}</b><small>{reviewLabel(row)}</small></span>
                           <span>
                             <strong className={episode.status === "open" ? undefined : metricSignClass(roundMetrics)}>{episode.status === "open" ? "持仓中" : roundMetrics.pnl ?? "已平仓净盈亏暂不可用"}</strong>
-                            <small>{episode.status === "open" ? (roundOpenLabel ?? "浮盈亏暂不可用") : weightedReturnLabel(roundMetrics.returnValue, roundMetrics.currency, roundMetrics.cnyUnavailable)}</small>
+                            <small>{episode.status === "open" ? (roundOpenLabel ?? "浮盈亏暂不可用") : weightedReturnLabel(roundMetrics.returnValue, roundMetrics.currency, roundMetrics.cnyUnavailable, reportCurrency)}</small>
                           </span>
                         </button>
                         {locallyIncludedExtra && <small className={styles.localExtraBadge}>局部额外显示 · 不计入当前统计</small>}

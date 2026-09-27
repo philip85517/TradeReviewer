@@ -177,6 +177,8 @@ export type RecallWorkspaceProps = {
   onTimeframeChange?: (timeframe: Timeframe) => void;
   onSettingsChange: (settings: ChartSettings) => void;
   onRefreshMarketData?: () => void;
+  /** Notifies the parent only after the repository confirms a persisted document. */
+  onSaved?: (document: RecallDocument) => void;
   /** Parent navigation may await this guard before unmounting Recall. */
   onLeaveGuardChange?: (guard: (() => Promise<boolean>) | null) => void;
   /** Optional parent-owned focus layout state. */
@@ -574,6 +576,7 @@ export function RecallWorkspace({
   onTimeframeChange,
   onSettingsChange,
   onRefreshMarketData,
+  onSaved,
   onLeaveGuardChange,
   focused,
   onFocusedChange,
@@ -952,6 +955,7 @@ export function RecallWorkspace({
       setSaving(true);
       try {
         const saved = await repository.save(candidate, { expectedRevision: candidate.revision });
+        onSaved?.(saved);
         latestSavedDocumentRef.current = saved;
         latestSavedGenerationRef.current = requestGeneration;
         setDocument((current) => {
@@ -982,7 +986,7 @@ export function RecallWorkspace({
     });
     saveQueueRef.current = saveTask.then(() => undefined, () => undefined);
     await saveTask;
-  }, [repository]);
+  }, [repository, onSaved]);
 
   useEffect(() => {
     saveDocumentRef.current = saveNow;
@@ -1674,6 +1678,7 @@ export function RecallWorkspace({
       const generationAtStart = draftGenerationRef.current;
       setSaving(true);
       const saved = await repository.save(completed, { expectedRevision: completionDocument.revision, finalize: true });
+      onSaved?.(saved);
       latestSavedDocumentRef.current = saved;
       latestSavedGenerationRef.current = generationAtStart;
       setFormalBaseline(saved.lastCompleted ?? saved);
@@ -1698,7 +1703,7 @@ export function RecallWorkspace({
     } finally {
       setSaving(false);
     }
-  }, [capture, chartCandles, confirmCaptureWarnings, document, editingSnapshotId, episode, historyMode, missing, replay, repository, selectedDecisionId, timeframe]);
+  }, [capture, chartCandles, confirmCaptureWarnings, document, editingSnapshotId, episode, historyMode, missing, onSaved, replay, repository, selectedDecisionId, timeframe]);
 
   const handleChartReady = useCallback((handle: RecallChartHandle | null) => {
     chartHandleRef.current = handle;

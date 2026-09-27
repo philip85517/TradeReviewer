@@ -1779,6 +1779,7 @@ describe("deployment filesystem integration", () => {
     const sourceDir = join(sandbox, "source");
     const targetDir = join(sandbox, "target");
     const binDir = join(sandbox, "bin");
+    const databaseDir = join(sandbox, "database");
 
     try {
       await Promise.all([
@@ -1795,7 +1796,18 @@ describe("deployment filesystem integration", () => {
           "#!/usr/bin/env bash\nif [[ \" $* \" == *\" --format json \"* ]]; then printf '[{\"Health\":\"healthy\"}]\\n'; else printf 'app running healthy\\n'; fi\n",
         ),
       ]);
+      const fixtureEnvPath = join(sourceDir, "deploy", "config", ".env.example");
+      const fixtureEnv = await readFile(fixtureEnvPath, "utf8");
+      await writeFile(
+        fixtureEnvPath,
+        fixtureEnv.replace(/^SQLITE_HOST_DIR=.*$/m, `SQLITE_HOST_DIR="${databaseDir}"`),
+      );
+      await mkdir(databaseDir, { recursive: true });
+      await writeFile(join(databaseDir, "tradereview.sqlite"), "fixture-database-preserved");
       await chmod(join(binDir, "docker"), 0o755);
+      // Fail before deployment if this fixture still points outside its sandbox.
+      expect(await readFile(join(sourceDir, "deploy", "config", ".env.example"), "utf8"))
+        .toContain(`SQLITE_HOST_DIR="${databaseDir}"`);
       await runDeployment(
         { mode: "full", sourceDir, targetDir },
         {
@@ -1804,6 +1816,9 @@ describe("deployment filesystem integration", () => {
         },
       );
 
+      expect(await readFile(join(targetDir, "config", ".env"), "utf8"))
+        .toContain(`SQLITE_HOST_DIR="${databaseDir}"`);
+      expect((await stat(join(databaseDir, "tradereview.sqlite"))).mode & 0o777).toBe(0o600);
       const environment = { PATH: `${binDir}:${process.env.PATH}` };
       const status = await runMake(targetDir, "deploy-status", environment);
       const code = await runMake(targetDir, "deploy-code", environment);
@@ -1813,6 +1828,8 @@ describe("deployment filesystem integration", () => {
       expect(status.stdout).toContain("active release:");
       expect(code).toMatchObject({ exitCode: 0 });
       expect(down).toMatchObject({ exitCode: 0 });
+      expect(await readFile(join(databaseDir, "tradereview.sqlite"), "utf8"))
+        .toBe("fixture-database-preserved");
       expect(`${status.stderr}\n${code.stderr}\n${down.stderr}`).not.toContain("scripts/deploy.mjs");
     } finally {
       await rm(sandbox, { recursive: true, force: true });

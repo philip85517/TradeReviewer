@@ -1,3 +1,4 @@
+import { reviewState } from "./review-queue";
 import Decimal from "decimal.js";
 
 import {
@@ -75,10 +76,19 @@ export type RoomFxSnapshot = {
   rates: Readonly<Record<string, string>>;
 };
 
+/** A report target with a supported rate in the room FX snapshot. */
+export type RoomTargetCurrency = "CNY" | "HKD";
+export type RoomReportCurrency = RoomTargetCurrency;
+export type RoomDisplayCurrency = "original" | RoomTargetCurrency;
+
 export type RoomMoneyView = {
   baseCurrency: "CNY";
   originalByCurrency: Readonly<Record<string, string>>;
   convertedCny: string | null;
+  /** Target-specific conversion. Legacy callers should continue using convertedCny. */
+  converted?: string | null;
+  convertedHkd?: string | null;
+  targetCurrency?: RoomTargetCurrency;
   conversion: "same-currency" | "complete" | "partial" | "missing";
   fxSnapshotId: string | null;
   note: string;
@@ -331,8 +341,9 @@ function formatDecimal(value: Decimal): string {
 }
 
 function rateFor(snapshot: RoomFxSnapshot, currency: string): Decimal | null {
-  if (currency === snapshot.baseCurrency) return new Decimal(1);
-  const candidates = [`${currency}/${snapshot.baseCurrency}`, `${currency}:${snapshot.baseCurrency}`];
+  const normalized = normalizedCurrency(currency);
+  if (normalized === snapshot.baseCurrency) return new Decimal(1);
+  const candidates = [`${normalized}/${snapshot.baseCurrency}`, `${normalized}:${snapshot.baseCurrency}`];
   for (const key of candidates) {
     const value = decimal(snapshot.rates[key]);
     if (value && value.gt(0)) return value;
@@ -340,9 +351,65 @@ function rateFor(snapshot: RoomFxSnapshot, currency: string): Decimal | null {
   return null;
 }
 
+function conversionForTarget(
+  original: ReadonlyMap<string, Decimal>,
+  currencies: readonly string[],
+  missingAmount: boolean,
+  snapshot: RoomFxSnapshot | undefined,
+  targetCurrency: RoomTargetCurrency,
+): { value: string | null; conversion: RoomMoneyView["conversion"]; note: string } {
+  if (currencies.length === 0) {
+    return {
+      value: null,
+      conversion: missingAmount ? "partial" : "same-currency",
+      note: missingAmount ? "部分原币金额缺失或无效" : "暂无可信原币金额",
+    };
+  }
+  if (missingAmount) {
+    return {
+      value: null,
+      conversion: "partial",
+      note: "部分原币金额缺失或无效，按已知币种小计",
+    };
+  }
+  if (currencies.length === 1 && currencies[0] === targetCurrency) {
+    return {
+      value: formatDecimal(original.get(targetCurrency)!),
+      conversion: "same-currency",
+      note: `原币为${targetCurrency}，无需汇率换算`,
+    };
+  }
+  if (!snapshot) {
+    return {
+      value: null,
+      conversion: "missing",
+      note: `尚无完整汇率快照，无法换算为${targetCurrency}，按币种显示原币小计`,
+    };
+  }
+  const targetRate = rateFor(snapshot, targetCurrency);
+  const sourceRates = currencies.map(currency => rateFor(snapshot, currency));
+  if (snapshot.status !== "complete" || targetRate === null || sourceRates.some(rate => rate === null)) {
+    return {
+      value: null,
+      conversion: "partial",
+      note: `汇率快照不完整，无法换算为${targetCurrency}，按币种显示原币小计`,
+    };
+  }
+  const converted = currencies.reduce(
+    (total, currency, index) => total.plus(original.get(currency)!.times(sourceRates[index]!).div(targetRate)),
+    new Decimal(0),
+  );
+  return {
+    value: formatDecimal(converted),
+    conversion: "complete",
+    note: `按最新汇率估算为${targetCurrency}（${snapshot.source}，${snapshot.asOf}）`,
+  };
+}
+
 export function buildRoomMoneyView(
   amounts: readonly RoomMoneyAmount[],
   snapshot?: RoomFxSnapshot,
+  targetCurrency?: RoomTargetCurrency,
 ): RoomMoneyView {
   const original = new Map<string, Decimal>();
   let missingAmount = false;
@@ -357,70 +424,28 @@ export function buildRoomMoneyView(
   }
   const originalByCurrency = Object.fromEntries([...original.entries()].map(([currency, value]) => [currency, formatDecimal(value)]));
   const currencies = [...original.keys()];
-  const baseValue = original.get("CNY");
-  if (currencies.length === 0) {
-    return {
-      baseCurrency: "CNY",
-      originalByCurrency,
-      convertedCny: null,
-      conversion: missingAmount ? "partial" : "same-currency",
-      fxSnapshotId: snapshot?.id ?? null,
-      note: missingAmount ? "部分原币金额缺失或无效" : "暂无可信原币金额",
-    };
-  }
-  if (!missingAmount && currencies.length === 1 && baseValue) {
-    return {
-      baseCurrency: "CNY",
-      originalByCurrency,
-      convertedCny: formatDecimal(baseValue),
-      conversion: "same-currency",
-      fxSnapshotId: snapshot?.id ?? null,
-      note: "原币为人民币，无需汇率换算",
-    };
-  }
-  if (missingAmount) {
-    return {
-      baseCurrency: "CNY",
-      originalByCurrency,
-      convertedCny: null,
-      conversion: "partial",
-      fxSnapshotId: snapshot?.id ?? null,
-      note: "部分原币金额缺失或无效，按已知币种小计",
-    };
-  }
-  if (!snapshot) {
-    return {
-      baseCurrency: "CNY",
-      originalByCurrency,
-      convertedCny: null,
-      conversion: "missing",
-      fxSnapshotId: null,
-      note: "尚无完整汇率快照，按币种显示原币小计",
-    };
-  }
-  const rates = currencies.map(currency => rateFor(snapshot, currency));
-  if (snapshot.status !== "complete" || rates.some(rate => rate === null)) {
-    return {
-      baseCurrency: "CNY",
-      originalByCurrency,
-      convertedCny: null,
-      conversion: "partial",
-      fxSnapshotId: snapshot.id,
-      note: "汇率快照不完整，按币种显示原币小计",
-    };
-  }
-  const converted = currencies.reduce(
-    (total, currency, index) => total.plus(original.get(currency)!.times(rates[index]!)),
-    new Decimal(0),
-  );
+  const cny = conversionForTarget(original, currencies, missingAmount, snapshot, "CNY");
+  const hkd = conversionForTarget(original, currencies, missingAmount, snapshot, "HKD");
+  const selected = targetCurrency === "HKD" ? hkd : cny;
+  const targetFields: Pick<RoomMoneyView, "converted" | "convertedHkd" | "targetCurrency"> = targetCurrency === undefined
+    ? {}
+    : { converted: selected.value, convertedHkd: hkd.value, targetCurrency };
   return {
     baseCurrency: "CNY",
     originalByCurrency,
-    convertedCny: formatDecimal(converted),
-    conversion: "complete",
-    fxSnapshotId: snapshot.id,
-    note: `按最新汇率估算（${snapshot.source}，${snapshot.asOf}）`,
+    convertedCny: cny.value,
+    ...targetFields,
+    conversion: selected.conversion,
+    fxSnapshotId: snapshot?.id ?? null,
+    note: selected.note,
   };
+}
+
+/** Read the selected report target while accepting legacy money fixtures. */
+export function roomMoneyValue(view: RoomMoneyView): string | null {
+  return view.targetCurrency !== undefined || view.converted !== undefined
+    ? view.converted ?? null
+    : view.convertedCny;
 }
 
 function rowAccountId(row: DashboardRow): string {
@@ -441,13 +466,12 @@ function rowCurrency(row: DashboardRow): string {
 }
 
 function reviewStatus(row: DashboardRow): RoomReviewStatus {
-  if (row.item.review?.review.completed) return "completed";
-  if (row.item.review?.review.deferredReason?.trim()) return "deferred";
-  return "pending";
+  return reviewState(row.item);
 }
 
-function rowMatchesDate(row: DashboardRow, period: RoomDateRange, ignorePerformanceDates: boolean): boolean {
+function rowMatchesDate(row: DashboardRow, period: RoomDateRange, ignorePerformanceDates: boolean, ignoreDateRange: boolean): boolean {
   if (ignorePerformanceDates) return row.item.episode.status === "open";
+  if (ignoreDateRange) return true;
   const date = rowCloseOrStartDate(row);
   return Boolean(date && date >= period.startDate && date <= period.endDate);
 }
@@ -482,6 +506,8 @@ function normalizedScope(scope: RoomScope): RoomScope {
 
 export type RoomRowFilterOptions = {
   ignorePerformanceDates?: boolean;
+  /** Skip only the period check while retaining open/closed and scope filters. */
+  ignoreDateRange?: boolean;
   instrumentMetadata?: TradingRoomMetadataInput;
 };
 
@@ -513,7 +539,7 @@ export function filterRoomRows(
     if (normalized.markets.length > 0 && !normalized.markets.includes(canonicalMarket(row.item.episode.instrument.market))) return false;
     if (normalized.currencies.length > 0 && !normalized.currencies.includes(rowCurrency(row))) return false;
     if (normalized.reviewStatuses.length > 0 && !normalized.reviewStatuses.includes(reviewStatus(row))) return false;
-    return rowMatchesDate(row, normalized.period, options.ignorePerformanceDates ?? false);
+    return rowMatchesDate(row, normalized.period, options.ignorePerformanceDates ?? false, options.ignoreDateRange ?? false);
   });
 }
 
@@ -531,6 +557,7 @@ function summaryForRows(
   rows: TradingRoomRow[],
   range: RoomDateRange,
   snapshot?: RoomFxSnapshot,
+  targetCurrency?: RoomTargetCurrency,
   includeUnknown = true,
 ): TradingRoomSummary {
   const money: RoomMoneyAmount[] = [];
@@ -566,7 +593,7 @@ function summaryForRows(
   }
   return {
     range,
-    money: buildRoomMoneyView(money, snapshot),
+    money: buildRoomMoneyView(money, snapshot, targetCurrency),
     trustedClosedCount,
     excludedCount,
     wins,
@@ -582,6 +609,7 @@ export type BuildTradingRoomModelOptions = {
   scope: RoomScope;
   instrumentMetadata?: TradingRoomMetadataInput;
   fxSnapshot?: RoomFxSnapshot;
+  targetCurrency?: RoomTargetCurrency;
 };
 
 export function buildTradingRoomModel(
@@ -614,13 +642,13 @@ export function buildTradingRoomModel(
         id,
         label: categoryLabel(id),
         rows: categoryRows,
-        summary: summaryForRows(categoryRows, options.scope.period, options.fxSnapshot),
+        summary: summaryForRows(categoryRows, options.scope.period, options.fxSnapshot, options.targetCurrency),
       };
     });
   return {
     scope: normalizedScope(options.scope),
     rows: roomRows,
     categories,
-    summary: summaryForRows(roomRows, options.scope.period, options.fxSnapshot),
+    summary: summaryForRows(roomRows, options.scope.period, options.fxSnapshot, options.targetCurrency),
   };
 }

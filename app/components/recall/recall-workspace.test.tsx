@@ -180,6 +180,7 @@ function renderRecall(
     fetch: vi.fn(),
   },
   onLeaveGuardChange?: (guard: (() => Promise<boolean>) | null) => void,
+  onSaved?: (document: RecallDocument) => void,
 ) {
   return render(
     <RecallWorkspace
@@ -196,6 +197,7 @@ function renderRecall(
       onInstrumentChange={vi.fn()}
       onSettingsChange={vi.fn()}
       onLeaveGuardChange={onLeaveGuardChange}
+      onSaved={onSaved}
     />,
   );
 }
@@ -241,13 +243,15 @@ describe("RecallWorkspace autosave reconciliation", () => {
       fetch: vi.fn(),
     };
     let guard: (() => Promise<boolean>) | null = null;
-    renderRecall(episode, initial, repository, (next) => { guard = next; });
+    const onSaved = vi.fn();
+    renderRecall(episode, initial, repository, (next) => { guard = next; }, onSaved);
     await act(async () => { await Promise.resolve(); await Promise.resolve(); });
     fireEvent.click(screen.getByRole("button", { name: "add drawing" }));
     await waitFor(() => expect(guard).not.toBeNull());
     await expect(guard!()).resolves.toBe(false);
     await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("network unavailable"));
     expect(repository.save).toHaveBeenCalled();
+    expect(onSaved).not.toHaveBeenCalled();
   });
 
   it("keeps the newer local draft when an older save response arrives", () => {
@@ -432,7 +436,8 @@ describe("RecallWorkspace autosave reconciliation", () => {
       }),
       fetch: vi.fn(),
     };
-    renderRecall(episode, withDecisionSnapshot, repository);
+    const onSaved = vi.fn();
+    renderRecall(episode, withDecisionSnapshot, repository, undefined, onSaved);
     await act(async () => {
       await Promise.resolve();
       await Promise.resolve();
@@ -442,6 +447,7 @@ describe("RecallWorkspace autosave reconciliation", () => {
       await vi.advanceTimersByTimeAsync(1000);
     });
     expect(repository.save).toHaveBeenCalledTimes(1);
+    expect(onSaved).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: /保存并完成回合复盘/ }));
     expect(repository.save).toHaveBeenCalledTimes(1);
     await act(async () => {
@@ -452,6 +458,9 @@ describe("RecallWorkspace autosave reconciliation", () => {
     });
     expect(repository.save).toHaveBeenCalledTimes(2);
     expect(vi.mocked(repository.save).mock.calls[1]?.[1]).toEqual({ expectedRevision: 1, finalize: true });
+    expect(onSaved).toHaveBeenCalledTimes(2);
+    expect(onSaved.mock.calls[0][0]).toMatchObject({ revision: 1 });
+    expect(onSaved.mock.calls[1][0]).toMatchObject({ revision: 9, status: "completed" });
     expect(replayChartHarness.handle.capture).toHaveBeenCalled();
     expect(screen.getByText(/已完成/)).toBeInTheDocument();
   });

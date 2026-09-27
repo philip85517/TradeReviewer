@@ -1,10 +1,13 @@
-import { marketTradingDate } from "../market/trading-date";
 import { instrumentPresentation } from "../instruments/instrument-presentation";
 import {
   dashboardMarketLabel,
   marketFilterMatchesRow,
 } from "./dashboard";
-import type { TradeLibraryEntry, TradeLibraryEpisode } from "../trades/library";
+import {
+  tradeExecutionTradingDate,
+  type TradeLibraryEntry,
+  type TradeLibraryEpisode,
+} from "../trades/library";
 import Decimal from "decimal.js";
 
 export type ReviewQueueSort =
@@ -152,6 +155,7 @@ export function stableAccountDisplayLabels(
 }
 
 export function reviewState(item: TradeLibraryEpisode) {
+  if (item.recallReview) return item.recallReview.status === "completed" ? "completed" : "pending";
   if (item.review?.review.completed) return "completed";
   return item.review?.review.deferredReason?.trim() ? "deferred" : "pending";
 }
@@ -248,7 +252,7 @@ export function buildReviewQueue(entries: TradeLibraryEntry[], filter: ReviewQue
         accountMatches && brokerMatches && marketFilterMatchesRow({ entry, item }, filter.market) &&
         matches(filter.nature, reviewQueueTradeNature({ entry, item })) &&
         matches(filter.simulationRunId, reviewQueueSimulationRunId({ entry, item })) &&
-        (!filter.year || filter.year === "all" || episode.executions.some(fill => marketTradingDate(fill.executedAt, entry.instrument.market).startsWith(filter.year!))) &&
+        (!filter.year || filter.year === "all" || episode.executions.some(fill => tradeExecutionTradingDate(fill).startsWith(filter.year!))) &&
         (!query || instrumentPresentation(entry.instrument).searchText.toLocaleLowerCase().includes(query));
     });
   return sortReviewQueueItems(rows, filter.sort);

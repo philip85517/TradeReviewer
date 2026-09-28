@@ -70,7 +70,7 @@
 .chartAxisLayout { display: block; }
 .chartPlotArea { min-width: 0; }
 .chartStage { position: relative; width: 100%; height: 320px; }
-.chartFrame svg { display: block; width: 100%; height: 320px; color: var(--dashboard-muted); font-size: 14px; }
+.chartFrame svg { display: block; width: 100%; height: 100%; color: var(--dashboard-muted); font-size: 14px; }
 .axisYLabels,
 .axisXLabels { position: absolute; inset: 0; pointer-events: none; color: var(--dashboard-muted); font-size: 14px; }
 .axisYLabels span,
@@ -161,7 +161,7 @@
   .heading { display: grid; gap: 8px; }
   .trendToolbar { align-items: flex-start; display: grid; gap: 8px; }
   .chartStage { height: 240px; }
-  .chartFrame svg { height: 240px; }
+  .chartFrame svg { height: 100%; }
   .chartFrame text { font-size: 13px; }
   .summaryLine { align-items: flex-start; display: grid; gap: 4px; }
   .weekdays, .leadingBlank { display: none; }
@@ -215,7 +215,7 @@
 .workspaceGrid:not(:has(.contributionSlot)) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .workspaceGrid .trendWrap,
 .workspaceGrid .contributionSlot,
-.workspaceGrid .calendarWrap { min-height: 234px; }
+.workspaceGrid .calendarWrap { min-height: 0; }
 .workspaceGrid .calendarWrap { border: 1px solid var(--dashboard-line); border-radius: 12px; padding: 9px; }
 .workspaceGrid h3 { margin: 0 0 8px; font-size: 14px; }
 .workspaceGrid .calendarNav { flex-wrap: wrap; gap: 6px; font-size: 11px; }
@@ -227,8 +227,8 @@
 .workspaceGrid .weekdays { gap: 3px; }
 .workspaceGrid .levelTabs button { min-height: 30px; padding: 4px 6px; }
 .workspaceGrid .chartFrame { min-height: 0; padding: 6px; }
-.workspaceGrid .chartStage { height: 154px; }
-.workspaceGrid .chartFrame svg { height: 154px; }
+.workspaceGrid .chartStage { height: 220px; }
+.workspaceGrid .chartFrame svg { height: 100%; }
 .workspaceGrid .trendDetails { display: none; }
 .winRate { border: 1px solid var(--dashboard-line); border-radius: 12px; padding: 10px; min-width: 0; }
 .winRate p, .winRate small { color: var(--dashboard-muted); font-size: 12px; }
@@ -237,6 +237,11 @@
 .winRate ul { list-style: none; padding: 0; display: grid; gap: 8px; max-height: 160px; overflow: auto; }
 .winRate li { display: grid; gap: 2px; font-size: 12px; }
 @media (max-width: 820px) { .workspaceGrid, .workspaceGrid:not(:has(.contributionSlot)) { grid-template-columns: minmax(0, 1fr); } }
+
+@media (max-width: 620px) {
+  .workspaceGrid .chartStage { height: 240px; }
+  .workspaceGrid .chartFrame svg { height: 100%; }
+}
 
 /* The homepage calendar is a compact scan surface. Keep the complete
    amount/status pair visible while using the short daily labels at desktop;
@@ -299,31 +304,28 @@
   .workspaceGrid .notice { padding: 0 4px 4px; font-size: 9px; }
 }
 
-/* Keep the three history surfaces on one reference-height rail.  The chart
-   and calendar retain their complete keyboard/aria content; only the default
-   scan labels are shortened for the seven-column desktop grid. */
+/* Keep the history surfaces aligned while letting the chart and calendar
+   determine the row height from their actual content. */
 @media (min-width: 821px) {
   .workspaceGrid { align-items: stretch; }
   .workspaceGrid > .trendWrap,
   .workspaceGrid > .contributionSlot,
   .workspaceGrid > .calendarWrap {
-    min-height: 234px;
-    height: 234px;
+    min-height: 0;
+    height: auto;
     box-sizing: border-box;
   }
   .workspaceGrid > .trendWrap {
     position: relative;
-    grid-template-rows: 25px 24px minmax(0, 1fr) auto;
+    grid-template-rows: auto auto auto;
     gap: 4px;
     overflow: visible;
   }
   .workspaceGrid .cardHeading { min-height: 25px; gap: 5px; }
   .workspaceGrid .cardHeading h3 { font-size: 13px; }
   .workspaceGrid .trendWrap > .levelTabs { gap: 2px; }
-  .workspaceGrid .trendWrap > .levelTabs button { min-height: 24px; padding: 3px 6px; font-size: 9px; }
-  .workspaceGrid .chartFrame { min-height: 0; height: auto; padding: 5px; box-sizing: border-box; overflow: hidden; }
-  .workspaceGrid .chartStage,
-  .workspaceGrid .chartFrame svg { height: 138px; }
+  .workspaceGrid .trendWrap > .levelTabs button { min-height: 28px; padding: 3px 6px; font-size: 11px; }
+  .workspaceGrid .chartFrame { min-height: 0; height: auto; padding: 5px; box-sizing: border-box; }
   .workspaceGrid .trendFooter { min-width: 0; min-height: 14px; display: flex; align-items: center; gap: 4px 8px; }
   .workspaceGrid .trendValueLegend { min-width: 0; min-height: 12px; color: #9db2cc; font-size: 9px; white-space: nowrap; }
   .workspaceGrid .trendFooter .legend { min-width: 0; flex: 0 1 auto; flex-wrap: nowrap; gap: 3px 6px; padding: 0; font-size: 9px; white-space: nowrap; }
@@ -511,5 +513,18 @@
   .workspaceGrid > .calendarWrap {
     height: auto;
     min-height: 234px;
+  }
+}
+
+@media (pointer: coarse) {
+  .panel .viewTabs button,
+  .panel .levelTabs button,
+  .panel .calendarNav button,
+  .workspaceGrid .trendWrap > .levelTabs button,
+  .workspaceGrid .cardHeading .levelTabs button,
+  .workspaceGrid .calendarHeader .levelTabs button,
+  .workspaceGrid .calendarWrap .calendarNav button {
+    min-width: 44px;
+    min-height: 44px;
   }
 }

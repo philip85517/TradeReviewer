@@ -1,0 +1,5 @@
+p51619
+n/Users/zhoulin/projects/\xe4\xba\xa4\xe6\x98\x93\xe7\xa9\xba\xe9\x97\xb4/database/TradingReview/tradereview.sqlite-shm
+n/Users/zhoulin/projects/\xe4\xba\xa4\xe6\x98\x93\xe7\xa9\xba\xe9\x97\xb4/database/TradingReview/tradereview.sqlite
+n/Users/zhoulin/projects/\xe4\xba\xa4\xe6\x98\x93\xe7\xa9\xba\xe9\x97\xb4/database/TradingReview/tradereview.sqlite-wal
+n/Users/zhoulin/projects/\xe4\xba\xa4\xe6\x98\x93\xe7\xa9\xba\xe9\x97\xb4/database/TradingReview/tradereview.sqlite-shm

@@ -202,8 +202,7 @@
   font-weight: 650;
 }
 
-.segmentedControl,
-.periodTabs {
+.segmentedControl {
   display: flex;
   min-width: 0;
   flex-wrap: wrap;
@@ -215,7 +214,6 @@
 }
 
 .segmentedButton,
-.periodTab,
 .customPeriodButton {
   min-height: 44px;
   border: 0;
@@ -230,15 +228,13 @@
   white-space: nowrap;
 }
 
-.segmentedButton[aria-pressed="true"],
-.periodTab[aria-selected="true"] {
+.segmentedButton[aria-pressed="true"] {
   background: var(--dashboard-card-elevated);
   color: var(--dashboard-ink);
   box-shadow: 0 2px 7px rgba(0, 0, 0, .1);
 }
 
 .segmentedButton:focus-visible,
-.periodTab:focus-visible,
 .customPeriodButton:focus-visible {
   outline: 2px solid var(--blue, #32758b);
   outline-offset: 1px;
@@ -902,8 +898,7 @@
   gap: 7px;
 }
 
-.calendarControls > button:not(.textButton),
-.periodTabs button {
+.calendarControls > button:not(.textButton) {
   display: inline-grid;
   place-items: center;
   border: 1px solid var(--dashboard-line);
@@ -923,24 +918,6 @@
   min-width: 100px;
   text-align: center;
   font-size: 13px;
-}
-
-.periodTabs {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 13px;
-}
-
-.periodTabs button {
-  padding: 6px 13px;
-  color: var(--dashboard-muted);
-  font-size: 11px;
-}
-
-.periodTabs button[aria-pressed="true"] {
-  border-color: var(--blue, #8db7c2);
-  background: var(--blue-soft, #eef8fa);
-  color: var(--dashboard-ink);
 }
 
 .weekdayRow,
@@ -1158,7 +1135,6 @@
   .roomPeriodControl { grid-column: 1 / -1; grid-template-columns: 1fr; }
   .roomPeriodControl > span { grid-column: auto; }
   .periodTabs { width: 100%; }
-  .periodTab { flex: 1 1 auto; }
   .customPeriodButton { justify-self: start; }
   .roomCustomPeriodActions { grid-column: 1 / -1; justify-content: flex-start; }
   .scopeViewControl { width: 100%; overflow-x: auto; justify-content: flex-start; }
@@ -1273,28 +1249,25 @@
 .topbarTitle p { margin: 3px 0 0; color: #8fa0b7; font-size: 10px; }
 .topbarRight { display: flex; align-items: center; justify-content: flex-end; gap: 9px; min-width: 0; }
 .topbarScope { display: flex; align-items: center; gap: 6px; min-width: 0; }
-.topbarSegment { display: flex; align-items: center; gap: 3px; min-width: 0; margin: 0; border: 1px solid #34445b; border-radius: 7px; padding: 2px; background: #111a2b; }
-.topbarSegment legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-.topbarSegment button { min-height: 26px; border: 0; border-radius: 5px; padding: 0 7px; color: #93a5be; background: transparent; cursor: pointer; font-size: 10px; white-space: nowrap; }
-.topbarSegment button[aria-pressed="true"] { color: #e8f2ff; background: #203b63; }
-.topbarSelect { display: grid; gap: 2px; min-width: 76px; color: #7f92ad; font-size: 9px; }
-.topbarSelect select { min-width: 0; height: 29px; border: 1px solid #34445b; border-radius: 6px; padding: 0 20px 0 7px; color: #e7edf6; background: #111a2b; font-size: 10px; }
-.topbarSelect select:focus-visible { outline-offset: 1px; }
+.topbarSelect { min-width: 76px; }
 .topbarFilterToggle {
   align-self: end;
-  min-height: 29px;
+  min-height: 34px;
   border: 1px solid #34445b;
   border-radius: 6px;
-  padding: 0 7px;
+  padding: 0 9px;
   color: #91a9c9;
   background: #111a2b;
   cursor: pointer;
-  font-size: 10px;
+  font-size: 12px;
   white-space: nowrap;
 }
 .topbarFilterToggle:hover,
 .topbarFilterToggle[aria-expanded="true"] { color: #e7edf6; border-color: #4b79ad; background: #203b63; }
 .topbarFilterToggle:focus-visible { outline-offset: 1px; }
+@media (pointer: coarse) {
+  .topbarFilterToggle { min-height: 44px; }
+}
 .topbarUpdated {
   display: inline-flex;
   align-items: center;
@@ -1374,9 +1347,7 @@
 .observationControls { gap: 6px 10px; margin: 7px 0; }
 .observationControls .roomPeriodControl { gap: 7px; }
 .observationControls .roomPeriodControl > span { font-size: 10px; }
-.periodTabs { border-color: #34445b; border-radius: 6px; padding: 2px; }
-.periodTab { min-height: 25px; padding: 0 7px; color: #91a0b8; font-size: 10px; }
-.periodTab[aria-selected="true"] { color: #edf4ff; background: #203b63; box-shadow: none; }
+.periodTabs { flex-wrap: nowrap; }
 .dateDetails { margin: 0; font-size: 10px; }
 .dateDetails summary { padding: 3px 0; }
 .holdingsOverviewGrid { grid-template-columns: minmax(0, 2fr) minmax(190px, 1fr); gap: 8px; margin: 8px 0; }
@@ -1451,8 +1422,7 @@
   .workspaceHeading { gap: 6px; margin-bottom: 6px; }
   .historyPeriodControl { display: flex; align-items: center; gap: 4px; min-width: 0; margin-left: auto; }
   .historyPeriodControl > span { color: #8fa0b7; font-size: 9px; white-space: nowrap; }
-  .historyPeriodControl .periodTabs { flex-wrap: nowrap; gap: 1px; padding: 2px; }
-  .historyPeriodControl .periodTab { min-height: 24px; padding: 0 6px; font-size: 9px; }
+  .historyPeriodControl .periodTabs { flex-wrap: nowrap; gap: 1px; }
   .workspaceHeading > .dateDetails { flex: 0 0 auto; margin: 0; font-size: 9px; }
   .workspaceHeading > .dateDetails summary { padding: 2px 0; white-space: nowrap; }
   .workspaceHeading > .dateDetails[open] { flex-basis: 100%; }

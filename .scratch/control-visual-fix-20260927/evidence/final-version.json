@@ -1,0 +1,27 @@
+{
+  "baseCommit": "1e4921fa16a90fc49dbe9da92f5ea54ca330f6ab",
+  "branch": "codex/control-visual-fix-20260927",
+  "productHash": "91321f525cdf2cb58b7ddb5fa913235194cbf2d7e6495aab7a383d24fb91fdd3",
+  "files": [
+    "app/components/dashboard/review-dashboard.module.css",
+    "app/components/dashboard/review-dashboard.test.tsx",
+    "app/components/dashboard/review-dashboard.tsx",
+    "app/components/dashboard/room-allocation.module.css",
+    "app/components/dashboard/room-allocation.test.tsx",
+    "app/components/dashboard/room-allocation.tsx",
+    "app/components/dashboard/room-holdings-history.module.css",
+    "app/components/dashboard/room-holdings-history.test.tsx",
+    "app/components/dashboard/room-holdings-history.tsx",
+    "app/components/dashboard/room-holdings.module.css",
+    "app/components/dashboard/room-holdings.tsx",
+    "app/components/dashboard/room-performance.module.css",
+    "app/components/dashboard/room-performance.test.tsx",
+    "app/components/dashboard/room-performance.tsx",
+    "app/components/dashboard/use-observed-chart-size.ts",
+    "app/components/library/library-scope-controls.tsx",
+    "app/components/library/trade-library.css",
+    "app/components/library/trade-library.test.tsx",
+    "app/components/scope/scope-control-primitives.module.css",
+    "app/components/scope/scope-control-primitives.tsx"
+  ]
+}

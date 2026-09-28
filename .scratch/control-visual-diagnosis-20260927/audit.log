@@ -1,0 +1,172 @@
+{
+  "minimalRed": [
+    {
+      "label": "日级持仓总市值曲线",
+      "ratio": 1.4788583126036485
+    },
+    {
+      "label": "累计盈亏趋势图",
+      "ratio": 1.1167658050895812
+    }
+  ],
+  "minimalMeet": [
+    {
+      "label": "日级持仓总市值曲线",
+      "ratio": 1
+    },
+    {
+      "label": "累计盈亏趋势图",
+      "ratio": 1
+    }
+  ],
+  "experiments": [
+    {
+      "label": "日级持仓总市值曲线",
+      "change": "only CSS height matched to viewBox aspect",
+      "ratio": 1.0000543202088699
+    },
+    {
+      "label": "日级持仓总市值曲线",
+      "change": "only preserveAspectRatio=meet",
+      "ratio": 1
+    },
+    {
+      "label": "累计盈亏趋势图",
+      "change": "only CSS height matched to viewBox aspect",
+      "ratio": 1.0000279418585807
+    },
+    {
+      "label": "累计盈亏趋势图",
+      "change": "only preserveAspectRatio=meet",
+      "ratio": 1
+    }
+  ],
+  "rows": [
+    49.296875,
+    49.296875,
+    49.296875,
+    49.296875,
+    49.296875
+  ],
+  "expandedRows": [
+    123.296875,
+    49.296875,
+    49.296875,
+    49.296875,
+    49.296875
+  ],
+  "library": [
+    {
+      "tag": "INPUT",
+      "type": "radio",
+      "label": null,
+      "height": 15,
+      "font": "13px",
+      "radius": "0px",
+      "color": "rgb(173, 187, 207)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "INPUT",
+      "type": "radio",
+      "label": null,
+      "height": 15,
+      "font": "13px",
+      "radius": "0px",
+      "color": "rgb(173, 187, 207)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "INPUT",
+      "type": "radio",
+      "label": null,
+      "height": 15,
+      "font": "13px",
+      "radius": "0px",
+      "color": "rgb(173, 187, 207)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "SELECT",
+      "type": "select-one",
+      "label": "共享账户",
+      "height": 32,
+      "font": "13px",
+      "radius": "6px",
+      "color": "rgb(231, 237, 246)",
+      "background": "rgb(17, 27, 40)"
+    },
+    {
+      "tag": "INPUT",
+      "type": "radio",
+      "label": null,
+      "height": 15,
+      "font": "13px",
+      "radius": "0px",
+      "color": "rgb(173, 187, 207)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "INPUT",
+      "type": "radio",
+      "label": null,
+      "height": 15,
+      "font": "13px",
+      "radius": "0px",
+      "color": "rgb(173, 187, 207)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "INPUT",
+      "type": "radio",
+      "label": null,
+      "height": 15,
+      "font": "13px",
+      "radius": "0px",
+      "color": "rgb(173, 187, 207)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "SELECT",
+      "type": "select-one",
+      "label": "按市场筛选",
+      "height": 35,
+      "font": "12px",
+      "radius": "7px",
+      "color": "rgb(231, 237, 246)",
+      "background": "rgb(17, 27, 40)"
+    },
+    {
+      "tag": "INPUT",
+      "type": "search",
+      "label": "搜索股票",
+      "height": 35,
+      "font": "12px",
+      "radius": "7px",
+      "color": "rgb(231, 237, 246)",
+      "background": "rgb(17, 27, 40)"
+    },
+    {
+      "tag": "SELECT",
+      "type": "select-one",
+      "label": "按复盘状态筛选",
+      "height": 35,
+      "font": "12px",
+      "radius": "7px",
+      "color": "rgb(231, 237, 246)",
+      "background": "rgb(17, 27, 40)"
+    },
+    {
+      "tag": "SELECT",
+      "type": "select-one",
+      "label": "交易库排序",
+      "height": 0,
+      "font": "12px",
+      "radius": "7px",
+      "color": "rgb(231, 237, 246)",
+      "background": "rgb(17, 27, 40)"
+    }
+  ]
+}
+PASS causal probes, allocation state comparison and holding expansion
+periodGroupPaddingOnly {"height":23,"font":"11px","padding":"2px 5px"}

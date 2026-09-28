@@ -1,0 +1,86 @@
+{
+  "checks": [
+    {
+      "name": "default holdings allocation density and document width",
+      "status": "PASS",
+      "evidence": {
+        "allocationHeight": 392.078125,
+        "columns": 11,
+        "disclosures": [
+          {
+            "open": false,
+            "summary": "查看原因",
+            "bodyHeight": 8.796875
+          },
+          {
+            "open": false,
+            "summary": "查看完整解释（6 条原因）",
+            "bodyHeight": 176
+          },
+          {
+            "open": false,
+            "summary": "查看完整解释（6 条原因）",
+            "bodyHeight": 36.421875
+          },
+          {
+            "open": false,
+            "summary": "查看完整解释（1777 条原因）",
+            "bodyHeight": 176
+          }
+        ],
+        "widths": [
+          {
+            "width": 1440,
+            "scroll": 1440
+          },
+          {
+            "width": 821,
+            "scroll": 821
+          },
+          {
+            "width": 820,
+            "scroll": 820
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          }
+        ]
+      }
+    },
+    {
+      "name": "library scope radio semantics and shared control alignment",
+      "status": "PASS",
+      "evidence": {
+        "legendAlignment": {
+          "legendTop": 82,
+          "legendBottom": 100,
+          "optionsTop": 74,
+          "optionsBottom": 108,
+          "verticalCenterDifference": 0,
+          "labels": [
+            {
+              "text": "实盘",
+              "height": 34
+            },
+            {
+              "text": "模拟盘",
+              "height": 34
+            },
+            {
+              "text": "来源未知",
+              "height": 34
+            }
+          ]
+        },
+        "accountHeight": 34,
+        "natureTransitions": [
+          "simulation",
+          "live",
+          "unknown"
+        ]
+      }
+    }
+  ],
+  "pageErrors": []
+}

@@ -45,6 +45,7 @@ import { RoomContribution } from "./room-contribution";
 import { RoomPendingReviews } from "./room-pending-reviews";
 import type { TradeLibraryEntry } from "../../lib/trades/library";
 import type { CashSummary } from "../../lib/cash/cash-model";
+import { ScopeChoiceGroup, ScopeSelect } from "../scope/scope-control-primitives";
 import {
   buildRoomDateRange,
   buildTradingRoomModel,
@@ -941,24 +942,42 @@ export function ReviewDashboard({
         </div>
         <div className={styles.topbarRight}>
           <div className={styles.topbarScope} aria-label="交易室共享范围">
-            <div className={styles.topbarSegment} aria-label="交易性质" role="group">
-              {(["live", "simulation"] as const).map(value => <button type="button" key={value} aria-pressed={roomScope.nature === value} onClick={() => updateRoomScope({ nature: value })}>
-                {value === "live" ? "实盘" : "模拟盘"}
-              </button>)}
-            </div>
-            <label className={styles.topbarSelect}><span>账户范围</span><select aria-label="账户范围" value={roomScope.accountIds[0] ?? "all"} onChange={event => updateRoomScope({ accountIds: event.target.value === "all" ? [] : [event.target.value] })}>
-              <option value="all">全部账户</option>{accountOptions.map(option => <option value={option.value} key={option.value}>{option.label}</option>)}
-            </select></label>
-            {roomScope.nature === "simulation" && <label className={styles.topbarSelect}><span>模拟运行</span><select aria-label="模拟运行" value={roomScope.simulationRunId ?? ""} onChange={event => updateRoomScope({ simulationRunId: event.target.value || null })}>
-              <option value="">请选择运行</option>{simulationRunOptions.map(option => <option value={option.value} key={option.value}>{option.label}</option>)}
-            </select></label>}
-            <label className={styles.topbarSelect}><span>计价币种</span><select aria-label="报告计价" value={reportCurrency} onChange={event => {
-              const next = event.target.value as SharedReportCurrency;
+            <ScopeChoiceGroup
+              mode="segmented"
+              ariaLabel="交易性质"
+              size="standard"
+              value={roomScope.nature === "simulation" ? "simulation" : "live"}
+              options={[{ value: "live", label: "实盘" }, { value: "simulation", label: "模拟盘" }]}
+              onChange={value => updateRoomScope({ nature: value as RoomTradeNature })}
+            />
+            <ScopeSelect
+              className={styles.topbarSelect}
+              label="账户范围"
+              ariaLabel="账户范围"
+              value={roomScope.accountIds[0] ?? "all"}
+              options={[{ value: "all", label: "全部账户" }, ...accountOptions.map(option => ({ value: option.value, label: option.label }))]}
+              onChange={value => updateRoomScope({ accountIds: value === "all" ? [] : [value] })}
+            />
+            {roomScope.nature === "simulation" && <ScopeSelect
+              className={styles.topbarSelect}
+              label="模拟运行"
+              ariaLabel="模拟运行"
+              value={roomScope.simulationRunId ?? ""}
+              options={[{ value: "", label: "请选择运行" }, ...simulationRunOptions.map(option => ({ value: option.value, label: option.label }))]}
+              onChange={value => updateRoomScope({ simulationRunId: value || null })}
+            />}
+            <ScopeSelect
+              className={styles.topbarSelect}
+              label="计价币种"
+              ariaLabel="报告计价"
+              value={reportCurrency}
+              options={[{ value: "original", label: "原币" }, { value: "HKD", label: "HKD" }, { value: "CNY", label: "CNY" }]}
+              onChange={value => {
+              const next = value as SharedReportCurrency;
               setLocalReportCurrency(next);
               onSharedScopeChange?.({ reportCurrency: next });
-            }}>
-              <option value="original">原币</option><option value="HKD">HKD</option><option value="CNY">CNY</option>
-            </select></label>
+            }}
+            />
             <button
               type="button"
               className={styles.topbarFilterToggle}
@@ -1032,9 +1051,20 @@ export function ReviewDashboard({
             reportCurrency={reportCurrency}
             periodLabel="持仓历史观察期间"
             periodControls={<div className={styles.observationControls}>{/* The range controls live in the chart card header. */}
-              <div className={styles.roomPeriodControl}><span>持仓历史观察期间</span><div className={styles.periodTabs} role="tablist" aria-label="持仓历史期间">
-                {([['month', '近1月', '本自然月'], ['last-3-months', '近3月', '近3个自然月'], ['ytd', '今年', '今年至今'], ['all', '全部', '全部']] as const).map(([value, label, fullLabel]) => <button type="button" role="tab" className={styles.periodTab} aria-selected={observationPeriod.preset === value} aria-label={`持仓历史：${fullLabel}`} key={value} onClick={() => updateObservationPeriod(value)}>{label}<span className={styles.visuallyHidden}>{fullLabel}</span></button>)}
-              </div></div>
+              <div className={styles.roomPeriodControl}><span>持仓历史观察期间</span><ScopeChoiceGroup
+                mode="tabs"
+                ariaLabel="持仓历史期间"
+                size="compact"
+                className={styles.periodTabs}
+                value={observationPeriod.preset}
+                options={[
+                  { value: "month", label: "近1月", ariaLabel: "持仓历史：本自然月" },
+                  { value: "last-3-months", label: "近3月", ariaLabel: "持仓历史：近3个自然月" },
+                  { value: "ytd", label: "今年", ariaLabel: "持仓历史：今年至今" },
+                  { value: "all", label: "全部", ariaLabel: "持仓历史：全部" },
+                ]}
+                onChange={value => updateObservationPeriod(value as "month" | "last-3-months" | "ytd" | "all")}
+              /></div>
               <details className={styles.dateDetails}><summary>自定义观察日期</summary>
                 <div className={styles.roomCustomPeriodEditor} role="group" aria-label="自定义持仓历史期间">
                   <label className={styles.filterField}><span>起始日期</span><input type="date" aria-label="持仓历史起始日期" value={effectiveObservationDraft.startDate} onChange={event => setObservationDraft({ ...effectiveObservationDraft, startDate: event.target.value })} /></label>
@@ -1085,21 +1115,19 @@ export function ReviewDashboard({
           })}>进入交易库 <span aria-hidden="true">→</span></button>}
           <div className={styles.historyPeriodControl}>
             <span>统计期间{roomScope.period.preset === "custom" || roomDateDraftDirty ? " · 自定义" : ""}{roomDateDraftDirty ? " · 待应用" : ""}</span>
-            <div className={styles.periodTabs} role="tablist" aria-label="交易室期间">
-              {([['last-3-months', '近3月', '近3个自然月'], ['ytd', '今年', '今年至今'], ['all', '全部', '全部']] as const).map(([value, label, fullLabel]) => (
-                <button
-                  type="button"
-                  key={value}
-                  role="tab"
-                  className={styles.periodTab}
-                  aria-label={fullLabel}
-                  aria-selected={roomScope.period.preset === value}
-                  onClick={() => updateRoomPeriod(value as RoomPeriodPreset)}
-                >
-                  {label}<span className={styles.visuallyHidden}>{fullLabel}</span>
-                </button>
-              ))}
-            </div>
+            <ScopeChoiceGroup
+              mode="tabs"
+              ariaLabel="交易室期间"
+              size="compact"
+              className={styles.periodTabs}
+              value={roomScope.period.preset}
+              options={[
+                { value: "last-3-months", label: "近3月", ariaLabel: "近3个自然月" },
+                { value: "ytd", label: "今年", ariaLabel: "今年至今" },
+                { value: "all", label: "全部", ariaLabel: "全部" },
+              ]}
+              onChange={value => updateRoomPeriod(value as RoomPeriodPreset)}
+            />
           </div>
           <details className={styles.dateDetails}><summary>自定义统计日期</summary>
             <div className={styles.roomCustomPeriodEditor} id="custom-period-editor" role="group" aria-label="自定义统计期间">

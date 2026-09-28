@@ -1,0 +1,1051 @@
+{
+  "time": "2026-09-27T15:11:37.546Z",
+  "url": "http://127.0.0.1:3044/",
+  "checks": [
+    {
+      "name": "real holding curve, mouse tooltip and close",
+      "status": "PASS",
+      "detail": {
+        "text": "2017-07-03\n×\n未实现盈亏\nCNY 0.00\n总市值\nCNY 0.00\n未实现盈亏率\n不可用 · 成本/币种覆盖不足或剩余成本非正\n当日盈亏\nCNY 0.00\n覆盖与数据说明"
+      }
+    },
+    {
+      "name": "holding keyboard date changes and Escape",
+      "status": "PASS",
+      "detail": {
+        "first": "2015-04-15",
+        "second": "2015-04-16",
+        "last": "2026-09-27"
+      }
+    },
+    {
+      "name": "holding granularity and metrics visible outcomes",
+      "status": "PASS",
+      "detail": [
+        {
+          "name": "周",
+          "label": "周级持仓总市值曲线",
+          "options": 599
+        },
+        {
+          "name": "月",
+          "label": "月级持仓总市值曲线",
+          "options": 139
+        },
+        {
+          "name": "日",
+          "label": "日级持仓总市值曲线",
+          "options": 4185
+        }
+      ]
+    },
+    {
+      "name": "performance mouse point and keyboard detail",
+      "status": "PASS",
+      "detail": {
+        "expected": "CNY · 2015年4月（覆盖04-27至04-30），本期盈亏 +¥269.75，累计盈亏 +¥269.75",
+        "mouse": "2015年4月（覆盖04-27至04-30）\n本期盈亏 +¥269.75\n累计盈亏 +¥269.75\n1 个可信回合 · 1 胜 / 0 负 / 持平 0 · 2015-04-27 至 2015-04-30",
+        "keyboard": "2015年4月（覆盖04-27至04-30）\n本期盈亏 +¥269.75\n累计盈亏 +¥269.75\n1 个可信回合 · 1 胜 / 0 负 / 持平 0 · 2015-04-27 至 2015-04-30",
+        "nextMouse": "2015年5月\n本期盈亏 +¥431.19\n累计盈亏 +¥700.94\n4 个可信回合 · 3 胜 / 1 负 / 持平 0 · 2015-05-01 至 2015-05-31",
+        "nextKeyboard": "2015年5月\n本期盈亏 +¥431.19\n累计盈亏 +¥700.94\n4 个可信回合 · 3 胜 / 1 负 / 持平 0 · 2015-05-01 至 2015-05-31"
+      }
+    },
+    {
+      "name": "performance daily weekly monthly bins",
+      "status": "PASS",
+      "detail": [
+        {
+          "name": "日",
+          "points": 4127
+        },
+        {
+          "name": "周",
+          "points": 589
+        },
+        {
+          "name": "月",
+          "points": 137
+        }
+      ]
+    },
+    {
+      "name": "calendar levels and bottom cells",
+      "status": "PASS",
+      "detail": [
+        {
+          "name": "年",
+          "text": "盈亏日历 单位：CNY\n月\n年\n全部年份\n‹\n2026-01-01 至 2026-08-27\n›\n2026年1月\n+¥5,623.96\n10 回合 · 胜率 60%\n2026年2月\n+¥70,305.87\n13 回合 · 胜率 76.92%\n2026年3月\n-¥5,307.23\n8 回合 · 胜率 37.5%\n2026年4月\n+¥17,056.73\n3 回合 · 胜率 100%\n2026年5月\n-¥55,941.54\n16 回合 · 胜率 37.5%\n2026年6月\n-¥2,675.98\n8 回合 · 胜率 50%\n2026年7月\n+¥2,658.97\n3 回合 · 胜率 33.33%\n2026年8月\n-¥2,559.25\n1 回合 · 胜率 0%\n2026年9月\n无样本\n暂无样本\n2026年10月\n尚未发生\n尚未发生\n2026年11月\n尚未发生\n尚未发生\n2026年12月\n尚未发生\n尚未发生"
+        },
+        {
+          "name": "全部年份",
+          "text": "盈亏日历 单位：CNY\n月\n年\n全部年份\n-¥13,830.48\n698 个可信回合 · 365 胜 / 333 负 / 持平 0\n2015\n-¥2,091.15\n16 回合 · 胜率 68.75%\n2016\n-¥10,442.10\n12 回合 · 胜率 25%\n2017\n-¥1,700.39\n11 回合 · 胜率 45.45%\n2018\n-¥30,881.10\n239 回合 · 胜率 58.58%\n2019\n-¥7,216.30\n34 回合 · 胜率 55.88%\n2020\n+¥35,308.16\n20 回合 · 胜率 70%\n2021\n+¥8,974.98\n28 回合 · 胜率 50%\n2022\n-¥21,659.06\n33 回合 · 胜率 36.36%\n2023\n-¥58,520.65\n75 回合 · 胜率 41.33%\n2024\n-¥81,068.18\n52 回合 · 胜率 32.69%\n2025\n+¥126,303.75\n116 回合 · 胜率 56.9%\n2026\n+¥29,161.54\n62 回合 · 胜率 53.23%"
+        },
+        {
+          "name": "月",
+          "text": "盈亏日历 单位：CNY\n月\n年\n全部年份\n‹\n2026年8月\n›\n周一\n周二\n周三\n周四\n周五\n周六\n周日\n01\n·\n无样本\n02\n·\n无样本\n03\n·\n无样本\n04\n·\n无样本\n05\n·\n无样本\n06\n·\n无样本\n07\n·\n无样本\n08\n·\n无样本\n09\n·\n无样本\n10\n·\n无样本\n11\n·\n无样本\n12\n−2.6K\n亏\n1笔\n13\n·\n无样本\n14\n·\n无样本\n15\n·\n无样本\n16\n·\n无样本\n17\n·\n无样本\n18\n·\n无样本\n19\n·\n无样本\n20\n·\n无样本\n21\n·\n无样本\n22\n·\n无样本\n23\n·\n无样本\n24\n·\n无样本\n25\n·\n无样本\n26\n·\n无样本\n27\n·\n无样本\n28\n范围外\n29\n范围外\n30\n范围外\n31\n范围外"
+        }
+      ]
+    },
+    {
+      "name": "chart geometry and selected state 1440",
+      "status": "PASS",
+      "detail": {
+        "rows": [
+          {
+            "label": "日级持仓总市值曲线",
+            "width": 758.9375,
+            "height": 220,
+            "viewBox": "0 0 758.9375 220",
+            "ratio": 1,
+            "paths": [
+              36203
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 88,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              395
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 88,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              396
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 88,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              396
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 88,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              392
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 88,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              377
+            ]
+          },
+          {
+            "label": "累计盈亏趋势图",
+            "width": 508.375,
+            "height": 220,
+            "viewBox": "0 0 508.375 220",
+            "ratio": 1,
+            "paths": [
+              1928
+            ]
+          }
+        ],
+        "axis": 744.9375,
+        "width": 758.9375,
+        "alignment": {
+          "cross": 56,
+          "highlight": 56
+        }
+      }
+    },
+    {
+      "name": "chart geometry and selected state 1920",
+      "status": "PASS",
+      "detail": {
+        "rows": [
+          {
+            "label": "日级持仓总市值曲线",
+            "width": 1074.65625,
+            "height": 220,
+            "viewBox": "0 0 1074.65625 220",
+            "ratio": 1,
+            "paths": [
+              36287
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 88,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              395
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 88,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              396
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 88,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              396
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 88,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              392
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 88,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              377
+            ]
+          },
+          {
+            "label": "累计盈亏趋势图",
+            "width": 721.5,
+            "height": 220,
+            "viewBox": "0 0 721.5 220",
+            "ratio": 1,
+            "paths": [
+              1931
+            ]
+          }
+        ],
+        "axis": 1060.65625,
+        "width": 1074.65625,
+        "alignment": {
+          "cross": 56,
+          "highlight": 56
+        }
+      }
+    },
+    {
+      "name": "chart geometry and selected state 1055",
+      "status": "PASS",
+      "detail": {
+        "rows": [
+          {
+            "label": "日级持仓总市值曲线",
+            "width": 538,
+            "height": 220,
+            "viewBox": "0 0 538 220",
+            "ratio": 1,
+            "paths": [
+              36077
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 68.25,
+            "height": 28,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              395
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 68.25,
+            "height": 28,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              396
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 68.25,
+            "height": 28,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              396
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 68.25,
+            "height": 28,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              392
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 68.25,
+            "height": 28,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              377
+            ]
+          },
+          {
+            "label": "累计盈亏趋势图",
+            "width": 359.25,
+            "height": 220,
+            "viewBox": "0 0 359.25 220",
+            "ratio": 1,
+            "paths": [
+              1923
+            ]
+          }
+        ],
+        "axis": 524,
+        "width": 538,
+        "alignment": {
+          "cross": 56,
+          "highlight": 56
+        }
+      }
+    },
+    {
+      "name": "chart geometry and selected state 821",
+      "status": "PASS",
+      "detail": {
+        "rows": [
+          {
+            "label": "日级持仓总市值曲线",
+            "width": 591,
+            "height": 220,
+            "viewBox": "0 0 591 220",
+            "ratio": 1,
+            "paths": [
+              36117
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 74,
+            "height": 28,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              395
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 74,
+            "height": 28,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              396
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 74,
+            "height": 28,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              396
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 74,
+            "height": 28,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              392
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 74,
+            "height": 28,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              377
+            ]
+          },
+          {
+            "label": "累计盈亏趋势图",
+            "width": 599,
+            "height": 220,
+            "viewBox": "0 0 599 220",
+            "ratio": 1,
+            "paths": [
+              1930
+            ]
+          }
+        ],
+        "axis": 577,
+        "width": 591,
+        "alignment": {
+          "cross": 56,
+          "highlight": 56
+        }
+      }
+    },
+    {
+      "name": "chart geometry and selected state 820",
+      "status": "PASS",
+      "detail": {
+        "rows": [
+          {
+            "label": "日级持仓总市值曲线",
+            "width": 584,
+            "height": 220,
+            "viewBox": "0 0 584 220",
+            "ratio": 1,
+            "paths": [
+              36112
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 73.6875,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              395
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 73.6875,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              396
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 73.6875,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              396
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 73.6875,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              392
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 73.6875,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              377
+            ]
+          },
+          {
+            "label": "累计盈亏趋势图",
+            "width": 596,
+            "height": 220,
+            "viewBox": "0 0 596 220",
+            "ratio": 1,
+            "paths": [
+              1930
+            ]
+          }
+        ],
+        "axis": 570,
+        "width": 584,
+        "alignment": {
+          "cross": 56,
+          "highlight": 56
+        }
+      }
+    },
+    {
+      "name": "chart geometry and selected state 390",
+      "status": "PASS",
+      "detail": {
+        "rows": [
+          {
+            "label": "日级持仓总市值曲线",
+            "width": 326,
+            "height": 190,
+            "viewBox": "0 0 326 190",
+            "ratio": 1,
+            "paths": [
+              35205
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 73.6875,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              395
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 73.6875,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              396
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 73.6875,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              396
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 73.6875,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              392
+            ]
+          },
+          {
+            "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+            "width": 73.6875,
+            "height": 32,
+            "viewBox": "0 0 100 32",
+            "ratio": 1,
+            "paths": [
+              377
+            ]
+          },
+          {
+            "label": "累计盈亏趋势图",
+            "width": 306,
+            "height": 240,
+            "viewBox": "0 0 306 240",
+            "ratio": 1,
+            "paths": [
+              1925
+            ]
+          }
+        ],
+        "axis": 312,
+        "width": 326,
+        "alignment": {
+          "cross": 56,
+          "highlight": 56
+        }
+      }
+    },
+    {
+      "name": "no pageerrors or HMR overlay",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "geometry": [
+    {
+      "width": 1440,
+      "rows": [
+        {
+          "label": "日级持仓总市值曲线",
+          "width": 758.9375,
+          "height": 220,
+          "viewBox": "0 0 758.9375 220",
+          "ratio": 1,
+          "paths": [
+            36203
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 88,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            395
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 88,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            396
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 88,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            396
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 88,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            392
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 88,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            377
+          ]
+        },
+        {
+          "label": "累计盈亏趋势图",
+          "width": 508.375,
+          "height": 220,
+          "viewBox": "0 0 508.375 220",
+          "ratio": 1,
+          "paths": [
+            1928
+          ]
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "rows": [
+        {
+          "label": "日级持仓总市值曲线",
+          "width": 1074.65625,
+          "height": 220,
+          "viewBox": "0 0 1074.65625 220",
+          "ratio": 1,
+          "paths": [
+            36287
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 88,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            395
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 88,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            396
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 88,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            396
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 88,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            392
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 88,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            377
+          ]
+        },
+        {
+          "label": "累计盈亏趋势图",
+          "width": 721.5,
+          "height": 220,
+          "viewBox": "0 0 721.5 220",
+          "ratio": 1,
+          "paths": [
+            1931
+          ]
+        }
+      ]
+    },
+    {
+      "width": 1055,
+      "rows": [
+        {
+          "label": "日级持仓总市值曲线",
+          "width": 538,
+          "height": 220,
+          "viewBox": "0 0 538 220",
+          "ratio": 1,
+          "paths": [
+            36077
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 68.25,
+          "height": 28,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            395
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 68.25,
+          "height": 28,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            396
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 68.25,
+          "height": 28,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            396
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 68.25,
+          "height": 28,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            392
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 68.25,
+          "height": 28,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            377
+          ]
+        },
+        {
+          "label": "累计盈亏趋势图",
+          "width": 359.25,
+          "height": 220,
+          "viewBox": "0 0 359.25 220",
+          "ratio": 1,
+          "paths": [
+            1923
+          ]
+        }
+      ]
+    },
+    {
+      "width": 821,
+      "rows": [
+        {
+          "label": "日级持仓总市值曲线",
+          "width": 591,
+          "height": 220,
+          "viewBox": "0 0 591 220",
+          "ratio": 1,
+          "paths": [
+            36117
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 74,
+          "height": 28,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            395
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 74,
+          "height": 28,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            396
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 74,
+          "height": 28,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            396
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 74,
+          "height": 28,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            392
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 74,
+          "height": 28,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            377
+          ]
+        },
+        {
+          "label": "累计盈亏趋势图",
+          "width": 599,
+          "height": 220,
+          "viewBox": "0 0 599 220",
+          "ratio": 1,
+          "paths": [
+            1930
+          ]
+        }
+      ]
+    },
+    {
+      "width": 820,
+      "rows": [
+        {
+          "label": "日级持仓总市值曲线",
+          "width": 584,
+          "height": 220,
+          "viewBox": "0 0 584 220",
+          "ratio": 1,
+          "paths": [
+            36112
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 73.6875,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            395
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 73.6875,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            396
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 73.6875,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            396
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 73.6875,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            392
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 73.6875,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            377
+          ]
+        },
+        {
+          "label": "累计盈亏趋势图",
+          "width": 596,
+          "height": 220,
+          "viewBox": "0 0 596 220",
+          "ratio": 1,
+          "paths": [
+            1930
+          ]
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "rows": [
+        {
+          "label": "日级持仓总市值曲线",
+          "width": 326,
+          "height": 190,
+          "viewBox": "0 0 326 190",
+          "ratio": 1,
+          "paths": [
+            35205
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 73.6875,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            395
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 73.6875,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            396
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 73.6875,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            396
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 73.6875,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            392
+          ]
+        },
+        {
+          "label": "近30日价格走势，12/19个交易日有报价，缺失处断开",
+          "width": 73.6875,
+          "height": 32,
+          "viewBox": "0 0 100 32",
+          "ratio": 1,
+          "paths": [
+            377
+          ]
+        },
+        {
+          "label": "累计盈亏趋势图",
+          "width": 306,
+          "height": 240,
+          "viewBox": "0 0 306 240",
+          "ratio": 1,
+          "paths": [
+            1925
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -18,6 +18,7 @@ import {
   createChartGeometry,
   valueDomain,
 } from "./room-performance-chart";
+import { useObservedChartSize } from "./use-observed-chart-size";
 import styles from "./room-holdings-history.module.css";
 
 export type RoomHoldingsHistoryProps = {
@@ -36,11 +37,6 @@ const metricLabels: Record<Metric, string> = {
 };
 const granularityLabels = { day: "日", week: "周", month: "月" };
 const targetLabels: Record<Exclude<RoomDisplayCurrency, "original">, string> = { CNY: "人民币", HKD: "港币" };
-const geometry = createChartGeometry({
-  width: 720,
-  height: 188,
-  padding: { left: 56, right: 14, top: 14, bottom: 28 },
-});
 
 function numberText(value: string, signed = false): string {
   try {
@@ -119,6 +115,12 @@ function axisNumber(value: number) {
 function History({ model, reportCurrency = "original", periodControls, periodLabel = "持仓历史观察期间" }: RoomHoldingsHistoryProps) {
   const [metric, setMetric] = useState<Metric>("marketValue");
   const [granularity, setGranularity] = useState<HoldingsHistoryGranularity>("day");
+  const [chartRef, plotSize] = useObservedChartSize<SVGSVGElement>({ width: 720, height: 220 });
+  const geometry = useMemo(() => createChartGeometry({
+    width: plotSize.width,
+    height: plotSize.height,
+    padding: { left: 56, right: 14, top: 14, bottom: 28 },
+  }), [plotSize]);
   const touchActive = useRef(false);
   const [selection, setSelection] = useState<Selection | null>(null);
   const [previousModel, setPreviousModel] = useState(model);
@@ -155,7 +157,7 @@ function History({ model, reportCurrency = "original", periodControls, periodLab
       ticks: chartAxisTicks(domain, geometry),
       labels: chartAxisLabels(samples.map(sample => ({ key: sample.periodStart, label: sample.actualDate })), geometry, 3),
     };
-  }, [samples, metric, reportCurrency]);
+  }, [samples, metric, reportCurrency, geometry]);
   const hasDrawablePoints = plot.series.some(series => series.coordinates.length > 0);
   const active = selection ? samples[selection.index] : undefined;
   const selected = active?.point;
@@ -217,7 +219,7 @@ function History({ model, reportCurrency = "original", periodControls, periodLab
     <div className={styles.interaction} role="group" aria-label="持仓曲线交互" tabIndex={0}
       onKeyDown={keySelect} aria-describedby="holdings-chart-help"
       onMouseLeave={() => setSelection(previous => previous?.source === "mouse" ? null : previous)}>
-      <svg viewBox={`0 0 ${geometry.width} ${geometry.height}`} preserveAspectRatio="none"
+      <svg ref={chartRef} viewBox={`0 0 ${geometry.width} ${geometry.height}`} preserveAspectRatio="none"
         role="img" aria-label={`${granularityLabels[granularity]}级持仓${metricLabels[metric]}曲线`}
         className={styles.chart}
         onPointerMove={event => { if (event.pointerType === "mouse") touchActive.current = false; }}

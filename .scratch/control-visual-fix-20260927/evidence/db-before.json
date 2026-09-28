@@ -1,0 +1,17 @@
+{
+  "databasePath": "/Users/zhoulin/projects/\u4ea4\u6613\u7a7a\u95f4/database/TradingReview/tradereview.sqlite",
+  "tables": {
+    "executions": {
+      "count": 1857,
+      "sha256": "bbbb71f2d788b004397a8c0c5f4559cfa59c21b67d5e4c0a76566a255a864e22"
+    },
+    "instruments": {
+      "count": 236,
+      "sha256": "afe4e549bfc5511152de96bbafcbf6f1efba2baaebc0e495addf03a526633c5e"
+    },
+    "import_batches": {
+      "count": 208,
+      "sha256": "6843a6dd9a46b880bb1d3571c0cbe47805b262c827ab578872a14b16a85a13b3"
+    }
+  }
+}

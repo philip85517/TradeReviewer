@@ -1,0 +1,14 @@
+{
+  "executions": {
+    "count": 1857,
+    "unchanged": true
+  },
+  "instruments": {
+    "count": 236,
+    "unchanged": false
+  },
+  "import_batches": {
+    "count": 208,
+    "unchanged": true
+  }
+}

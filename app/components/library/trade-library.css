@@ -97,26 +97,11 @@
   border: 0;
 }
 
-.trade-library .library-scope-choice legend {
-  float: left;
-  margin-right: 8px;
-  color: var(--faint);
-  font-size: 13px;
-  font-weight: 700;
-}
-
 .trade-library .library-scope-choice label {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   white-space: nowrap;
-}
-
-.trade-library .library-scope-choice input {
-  width: 15px;
-  height: 15px;
-  margin: 0;
-  accent-color: var(--blue);
 }
 
 .trade-library .library-scope-account,
@@ -126,24 +111,33 @@
   gap: 6px;
   min-width: 0;
   color: var(--faint);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 }
 
-.trade-library .library-scope-account select,
-.trade-library .library-scope-run input {
+.trade-library .library-scope-account select {
   min-width: 150px;
-  height: 32px;
-  padding: 0 8px;
-  border: 1px solid #29394e;
-  border-radius: 6px;
-  color: var(--text);
-  background: #111b28;
-  font-size: 13px;
 }
 
 .trade-library .library-scope-run input {
   min-width: 120px;
+  height: 34px;
+  box-sizing: border-box;
+  padding: 0 8px;
+  border: 1px solid var(--scope-control-border, #34445b);
+  border-radius: 6px;
+  color: #e7edf6;
+  background: var(--scope-control-background, #111a2b);
+  font-size: 13px;
+}
+
+.trade-library .library-scope-run input:focus-visible {
+  outline: 2px solid var(--scope-control-focus, #9ecaff);
+  outline-offset: 1px;
+}
+
+@media (pointer: coarse) {
+  .trade-library .library-scope-run input { min-height: 44px; height: 44px; }
 }
 
 .trade-library > .module-tabs {

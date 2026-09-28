@@ -240,20 +240,44 @@ describe("TradeLibrary", () => {
   it("keeps shared nature and currency choices visible as compact controls", async () => {
     const user = userEvent.setup();
     const onSharedScopeChange = vi.fn();
-    setup({
+    const initial = setup({
       sharedScope: { nature: "live", accountIds: [], reportCurrency: "original", simulationRunId: null },
       onSharedScopeChange,
     });
+    cleanup();
+    const props = {
+      entries: initial.entries,
+      candlesByInstrument: {},
+      marketDataStatuses: {},
+      timeframe: "1D" as const,
+      onTimeframeChange: vi.fn(),
+      onOpenInReview: vi.fn(),
+      onSaveReview: vi.fn(),
+      reviewsHydrated: true,
+      sharedScope: { nature: "live" as const, accountIds: [] as string[], reportCurrency: "original" as const, simulationRunId: null },
+      onSharedScopeChange,
+    };
+    const view = render(<TradeLibrary {...props} />);
 
     expect(screen.getByRole("group", { name: "交易性质" })).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "交易性质" })).toHaveAttribute("data-control-size", "standard");
     expect(screen.getByRole("radio", { name: "实盘" })).toBeChecked();
     expect(screen.getByRole("radio", { name: "模拟盘" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "来源未知" })).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "原币" })).toBeChecked();
     expect(screen.getByRole("radio", { name: "HKD参考" })).toBeInTheDocument();
     await user.click(screen.getByRole("radio", { name: "CNY参考" }));
     expect(onSharedScopeChange).toHaveBeenCalledWith({ reportCurrency: "CNY" });
     await user.click(screen.getByRole("radio", { name: "HKD参考" }));
     expect(onSharedScopeChange).toHaveBeenCalledWith({ reportCurrency: "HKD" });
+    await user.click(screen.getByRole("radio", { name: "模拟盘" }));
+    expect(onSharedScopeChange).toHaveBeenCalledWith({ nature: "simulation", accountIds: [], simulationRunId: null });
+    view.rerender(<TradeLibrary {...props} sharedScope={{ ...props.sharedScope, nature: "simulation" }} />);
+    await user.click(screen.getByRole("radio", { name: "实盘" }));
+    expect(onSharedScopeChange).toHaveBeenCalledWith({ nature: "live", accountIds: [], simulationRunId: null });
+    view.rerender(<TradeLibrary {...props} sharedScope={{ ...props.sharedScope, nature: "live" }} />);
+    await user.click(screen.getByRole("radio", { name: "来源未知" }));
+    expect(onSharedScopeChange).toHaveBeenCalledWith({ nature: "unknown", accountIds: [], simulationRunId: null });
   });
 
   it("recomputes the same filtered browse range when the shared report target changes", () => {

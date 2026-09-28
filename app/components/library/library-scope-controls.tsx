@@ -1,6 +1,7 @@
 "use client";
 
 import type { SharedScope } from "../../lib/reviews/shared-scope";
+import { ScopeChoiceGroup, ScopeSelect } from "../scope/scope-control-primitives";
 
 export type LibraryScopeControlsProps = {
   scope: SharedScope;
@@ -18,47 +19,46 @@ export function LibraryScopeControls({
 
   return (
     <div className="library-scope-controls" aria-label="交易库交易范围">
-      <fieldset className="library-scope-choice" aria-label="交易性质">
-        <legend>性质</legend>
-        {(["live", "simulation", "unknown"] as const).map((nature) => (
-          <label key={nature}>
-            <input
-              type="radio"
-              name="library-trade-nature"
-              value={nature}
-              checked={scope.nature === nature}
-              onChange={() => onChange({ nature, accountIds: [], simulationRunId: null })}
-            />
-            <span>{nature === "live" ? "实盘" : nature === "simulation" ? "模拟盘" : "来源未知"}</span>
-          </label>
-        ))}
-      </fieldset>
-      <label className="library-scope-account">
-        <span>账户</span>
-        <select
-          aria-label="共享账户"
-          value={selectedAccount}
-          onChange={(event) => onChange({ accountIds: event.target.value === "all" ? [] : [event.target.value] })}
-        >
-          <option value="all">全部账户</option>
-          {accountOptions.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
-        </select>
-      </label>
-      <fieldset className="library-scope-choice library-scope-currency" aria-label="报告计价">
-        <legend>计价</legend>
-        {(["original", "CNY", "HKD"] as const).map((currency) => (
-          <label key={currency}>
-            <input
-              type="radio"
-              name="library-report-currency"
-              value={currency}
-              checked={scope.reportCurrency === currency}
-              onChange={() => onChange({ reportCurrency: currency })}
-            />
-            <span>{currency === "original" ? "原币" : `${currency}参考`}</span>
-          </label>
-        ))}
-      </fieldset>
+      <ScopeChoiceGroup
+        mode="radio"
+        ariaLabel="交易性质"
+        legend="性质"
+        name="library-trade-nature"
+        value={scope.nature}
+        options={[
+          { value: "live", label: "实盘" },
+          { value: "simulation", label: "模拟盘" },
+          { value: "unknown", label: "来源未知" },
+        ]}
+        className="library-scope-choice"
+        onChange={nature => onChange({ nature, accountIds: [], simulationRunId: null })}
+      />
+      <ScopeSelect
+        label="账户"
+        ariaLabel="共享账户"
+        layout="inline"
+        value={selectedAccount}
+        options={[
+          { value: "all", label: "全部账户" },
+          ...accountOptions.map(option => ({ value: option.id, label: option.label })),
+        ]}
+        className="library-scope-account"
+        onChange={value => onChange({ accountIds: value === "all" ? [] : [value] })}
+      />
+      <ScopeChoiceGroup
+        mode="radio"
+        ariaLabel="报告计价"
+        legend="计价"
+        name="library-report-currency"
+        value={scope.reportCurrency}
+        options={[
+          { value: "original", label: "原币" },
+          { value: "CNY", label: "CNY参考" },
+          { value: "HKD", label: "HKD参考" },
+        ]}
+        className="library-scope-choice library-scope-currency"
+        onChange={reportCurrency => onChange({ reportCurrency })}
+      />
       {scope.nature === "simulation" && (
         <label className="library-scope-run">
           <span>模拟运行</span>

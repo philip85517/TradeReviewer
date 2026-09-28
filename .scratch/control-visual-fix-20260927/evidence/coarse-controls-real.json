@@ -1,0 +1,46 @@
+{
+  "input": "Playwright emulated touchscreen and coarse pointer, not physical touch",
+  "targets": [
+    {
+      "label": "实盘",
+      "width": 48,
+      "height": 42
+    },
+    {
+      "label": "模拟盘",
+      "width": 61,
+      "height": 42
+    },
+    {
+      "label": "筛选",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "label": "按市场",
+      "width": 51,
+      "height": 44
+    },
+    {
+      "label": "按资产类型",
+      "width": 73,
+      "height": 44
+    },
+    {
+      "label": "来源未知",
+      "width": 71,
+      "height": 44
+    },
+    {
+      "label": "共享账户",
+      "width": 174,
+      "height": 44
+    },
+    {
+      "label": "共享模拟运行",
+      "width": 192,
+      "height": 44
+    }
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,14 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/components/dashboard/room-holdings-history.test.tsx app/components/dashboard/room-performance.test.tsx app/components/dashboard/room-performance-chart.test.ts app/components/dashboard/review-dashboard.test.tsx app/components/dashboard/room-holdings.test.tsx app/components/dashboard/room-allocation.test.tsx app/components/library/trade-library.test.tsx
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/c414/TradeReview
+
+(node:63207) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  7 passed (7)
+      Tests  164 passed (164)
+   Start at  23:09:55
+   Duration  35.50s (transform 10.52s, setup 3.38s, import 14.01s, tests 57.85s, environment 17.42s)

@@ -16,14 +16,14 @@
 .metricControls { flex: 1 1 auto; }
 .periodSlot { flex: 0 1 auto; }
 .controls button, .metricControls button, .periodSlot button {
-  min-height: 25px;
-  padding: 3px 8px;
+  min-height: 28px;
+  padding: 3px 7px;
   border: 1px solid transparent;
   border-radius: 6px;
   color: var(--dashboard-muted, #94a3b8);
   background: transparent;
   cursor: pointer;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.1;
   white-space: nowrap;
 }
@@ -40,9 +40,9 @@
 .legend i { display: inline-block; width: 9px; height: 2px; margin: 0 4px 2px 0; background: currentColor; }
 .primary { color: #4cc3c3; }
 .secondary { color: #a48cde; }
-.interaction { position: relative; min-width: 0; height: 154px; outline-offset: 3px; }
+.interaction { position: relative; min-width: 0; outline-offset: 3px; }
 .interaction:focus-visible { outline: 2px solid #53bbb4; border-radius: 6px; }
-.chart { display: block; width: 100%; height: 154px; touch-action: pan-y; cursor: crosshair; }
+.chart { display: block; width: 100%; height: 220px; touch-action: pan-y; cursor: crosshair; }
 .gridLine { stroke: var(--dashboard-line, #28364a); stroke-dasharray: 3 5; opacity: .65; }
 .axisText { fill: var(--dashboard-muted, #94a3b8); font-size: 9px; }
 .crosshair { stroke: #c3d2e2; stroke-width: 1; stroke-dasharray: 4 4; pointer-events: none; }
@@ -106,8 +106,8 @@
   .headerControls { align-items: stretch; flex-wrap: wrap; }
   .metricControls { flex-basis: 100%; }
   .periodSlot { flex: 1 1 auto; }
-  .interaction { height: auto; min-height: 176px; }
-  .chart { height: 176px; }
+  .interaction { height: auto; }
+  .chart { height: 190px; }
   .tooltip { position: relative; top: auto; left: auto; right: auto; width: 100%; margin: 6px 0 0; }
   .tooltip .primaryValue dd { font-size: 18px; }
   .footer { align-items: flex-start; flex-direction: column; }
@@ -133,7 +133,7 @@
   .metricControls { flex: 0 1 auto; flex-wrap: nowrap; }
   .periodSlot { min-width: 0; flex: 1 1 auto; }
   .controls { flex-wrap: nowrap; }
-  .controls button, .metricControls button, .periodSlot button { min-height: 23px; padding: 2px 5px; font-size: 9px; }
+  .controls button, .metricControls button, .periodSlot button { min-height: 28px; padding: 3px 5px; font-size: 11px; }
   .periodSlot > div { display: flex; align-items: center; flex-wrap: nowrap; gap: 3px; min-width: 0; margin: 0; }
   .periodSlot > div > div { display: flex; align-items: center; flex-wrap: nowrap; gap: 3px; min-width: 0; }
   .periodSlot > div > div > span { display: none; }
@@ -143,7 +143,6 @@
   .periodSlot > div > details > summary { padding: 2px 0; }
   .periodSlot > div > p { flex: 0 1 auto; margin: 0; font-size: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .legend { min-height: 12px; gap: 3px 8px; font-size: 9px; }
-  .interaction, .chart { height: 134px; }
   .footer { min-height: 22px; gap: 5px; font-size: 9px; }
   .footer label, .footer select { font-size: 9px; }
   .methodDetails { display: none; }
@@ -154,10 +153,21 @@
   .secondary { color: #b76be7; }
   .titleBlock h3 { font-size: 13px; }
   .titleBlock p { font-size: 9px; }
-  .controls button, .metricControls button, .periodSlot button { font-size: 9.5px; }
+  .controls button, .metricControls button, .periodSlot button { font-size: 11px; }
   .axisText { fill: #9ab0ca; font-size: 9.5px; }
   .tooltip, .table table { font-size: 10px; }
   .note, .footer { font-size: 9.5px; }
+}
+
+@media (pointer: coarse) {
+  .panel .headerControls .metricControls button,
+  .panel .headerControls .periodSlot button,
+  .panel .headerControls .controls button,
+  .panel .tooltipHeader button,
+  .panel .footer select {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 /* Keep the chart controls discoverable when the intermediate content rail is

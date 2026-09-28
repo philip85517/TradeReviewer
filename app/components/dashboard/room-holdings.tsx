@@ -344,7 +344,7 @@ function HoldingRow({
     <td data-label="浮盈亏"><dl><dd className={styles[row.unrealizedPnlStatus === "available" && displayedPnl.value !== null ? pnlTone(row) : "unavailable"]}>{row.unrealizedPnlStatus === "available" ? displayMoneyLabel(value.unrealizedPnl, costCurrency, displayOptions) : pnlLabel(row)}</dd></dl><small>{reportUnit(displayOptions, costCurrency)}</small></td>
     <td data-label="盈亏率"><dl><dd className={styles[pnlTone(row)]}>{percent(value.unrealizedReturnPercent)}</dd></dl></td>
     <td data-label="近30日价格"><PriceTrend row={row} candles={candles} asOf={asOf}/></td>
-    <td data-label="最近记录">{updatedAt ? <><time dateTime={updatedAt} aria-label={`最近记录精确时间：${updatedAt}`} title={`精确时间：${updatedAt}`}>{shortRecordDate(updatedAt, asOf)}</time><span className={styles.visuallyHidden}>{updatedAt}</span><span className={styles.recordSummary} title={summary}>{summary.slice(0, 70)}</span></> : <span>暂无记录</span>}</td>
+    <td data-label="最近记录">{updatedAt ? <><span className={styles.recordDate}><time dateTime={updatedAt} aria-label={`最近记录精确时间：${updatedAt}`} title={`精确时间：${updatedAt}`}>{shortRecordDate(updatedAt, asOf)}</time><span className={styles.visuallyHidden}>{updatedAt}</span></span><span className={styles.recordSummary} title={summary}>{summary.slice(0, 70)}</span></> : <span>暂无记录</span>}</td>
     <td data-label="操作" className={styles.rowActions}>
       <button type="button" className={styles.reviewButton} aria-label="打开持仓回合复盘" onClick={() => onOpenInReview(row.instrumentId, row.episodeId, queueIds)}>看图·记录</button>
       {row.diagnostic !== "available" && <details className={styles.evidence}><summary>估值说明</summary><p>{value.reasons.join("；") || row.statusReason || "估值证据待核对"}</p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 
 import type { TradeLibraryEntry } from "../../lib/trades/library";
 import type {
@@ -40,6 +40,7 @@ import {
   createChartGeometry,
   valueDomain,
 } from "./room-performance-chart";
+import { useObservedChartSize } from "./use-observed-chart-size";
 import styles from "./room-performance.module.css";
 
 export type RoomPerformanceProps = {
@@ -455,8 +456,7 @@ export function RoomPerformance({
   const [selectedTrendKey, setSelectedTrendKey] = useState<string | null>(null);
   const [calendarState, setCalendarState] = useState<TradingRoomCalendarState>(() => createTradingRoomCalendarState(scope.period));
   const [calendarHistory, setCalendarHistory] = useState<Array<{ level: TradingRoomCalendarLevel; state: TradingRoomCalendarState; selectedKey: string | null }>>([]);
-  const [chartWidth, setChartWidth] = useState(640);
-  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const [chartStageRef, chartSize] = useObservedChartSize<HTMLDivElement>({ width: 640, height: 320 });
   const scopePeriodSignature = roomPeriodSignature(scope.period);
   const scopeFilterSignature = roomFilterSignature(scope);
   const previousScopePeriodSignatureRef = useRef(scopePeriodSignature);
@@ -533,14 +533,13 @@ export function RoomPerformance({
     ? model.trend.points.map(point => renderableTrendValue(point, undefined, reportCurrency))
     : model.trend.currencies.flatMap(currency => model.trend.points.map(point => renderableTrendValue(point, currency, reportCurrency)));
   const trendDomain = paddedValueDomain(trendValues);
-  const chartHeight = workspace ? 154 : chartWidth < 420 ? 240 : 320;
   const chartGeometry = createChartGeometry({
-    width: chartWidth,
-    height: chartHeight,
-    padding: { top: 14, right: chartWidth < 240 ? 10 : 16, bottom: 42, left: 72 },
+    width: chartSize.width,
+    height: chartSize.height,
+    padding: { top: 14, right: chartSize.width < 240 ? 10 : 16, bottom: 42, left: 72 },
   });
   const zeroY = chartZeroY(trendDomain, chartGeometry);
-  const maxTrendAxisLabels = chartWidth < 240 ? 2 : chartWidth < 360 ? 3 : 4;
+  const maxTrendAxisLabels = chartSize.width < 240 ? 2 : chartSize.width < 360 ? 3 : 4;
   const trendAxisLabels = chartAxisLabels(model.trend.points, chartGeometry, maxTrendAxisLabels)
     .map(point => ({ ...point, label: trendAxisLabel(model.trend.points[point.index], trendLevel) }));
   const trendAxisTicks = visibleAxisTicks(chartAxisTicks(trendDomain, chartGeometry));
@@ -556,6 +555,10 @@ export function RoomPerformance({
         }),
       };
     });
+  const trendHitTargets = chartSeries.flatMap(series => chartPointCoordinates(series.points, chartGeometry, trendDomain).flatMap(point => {
+    const trendPoint = model.trend.points[point.index];
+    return trendPoint ? [{ x: point.x, y: point.y, key: `${series.key}:${trendPoint.key}` }] : [];
+  }));
   const occupiedTrendLabels: TrendLabelPlacement[] = [];
   const chartLabelPlacements = chartSeries.map(series => {
     const points = chartPointCoordinates(series.points, chartGeometry, trendDomain);
@@ -594,21 +597,6 @@ export function RoomPerformance({
       previousScopePeriodSignatureRef.current = scopePeriodSignature;
     }
   }, [calendarState, publishCalendarState, scope.period, scopeFilterSignature, scopePeriodSignature]);
-
-  const chartStageRef = useCallback((element: HTMLDivElement | null) => {
-    resizeObserverRef.current?.disconnect();
-    resizeObserverRef.current = null;
-    if (!element) return;
-    const updateWidth = () => {
-      const measured = Math.round(element.getBoundingClientRect().width);
-      if (measured > 0) setChartWidth(current => current === measured ? current : measured);
-    };
-    updateWidth();
-    if (typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver(updateWidth);
-    observer.observe(element);
-    resizeObserverRef.current = observer;
-  }, []);
 
   const changeLevel = (next: TradingRoomCalendarLevel) => {
     setSelectedKey(null);
@@ -706,7 +694,7 @@ export function RoomPerformance({
               <div className={styles.chartAxisLayout}>
                 <div className={styles.chartPlotArea}>
                   <div className={styles.chartStage} ref={chartStageRef}>
-                    <svg role="img" aria-label="累计盈亏趋势图" width="100%" height={chartGeometry.height} data-mobile-height="240" viewBox={`0 0 ${chartGeometry.width} ${chartGeometry.height}`} preserveAspectRatio="none">
+                    <svg role="img" aria-label="累计盈亏趋势图" width="100%" height={chartGeometry.height} viewBox={`0 0 ${chartGeometry.width} ${chartGeometry.height}`} preserveAspectRatio="none">
                     {trendAxisTicks.map(tick => <g key={tick.value}>
                       <line x1={chartGeometry.padding.left} x2={chartGeometry.width - chartGeometry.padding.right} y1={tick.y} y2={tick.y} className={styles.axisGridLine} />
                       <line x1={chartGeometry.padding.left - 4} x2={chartGeometry.padding.left} y1={tick.y} y2={tick.y} className={styles.axisTickMark} data-chart-role="axis-y-tick" data-value={tick.value} y={tick.y} />
@@ -721,12 +709,39 @@ export function RoomPerformance({
                           const trendPoint = model.trend.points[point.index];
                           if (!trendPoint) return null;
                           const selectPoint = () => setSelectedTrendKey(`${series.key}:${trendPoint.key}`);
+                          const selectNearestPoint = (event: ReactMouseEvent<SVGCircleElement> | ReactPointerEvent<SVGCircleElement>) => {
+                            const svg = event.currentTarget.ownerSVGElement;
+                            const bounds = svg?.getBoundingClientRect();
+                            if (!svg || !bounds || bounds.width <= 0 || bounds.height <= 0) {
+                              selectPoint();
+                              return;
+                            }
+                            const pointerX = (event.clientX - bounds.left) * chartGeometry.width / bounds.width;
+                            const pointerY = (event.clientY - bounds.top) * chartGeometry.height / bounds.height;
+                            let nearestKey: string | null = null;
+                            let nearestDistanceSquared = Number.POSITIVE_INFINITY;
+                            for (const candidatePoint of trendHitTargets) {
+                              const dx = candidatePoint.x - pointerX;
+                              const dy = candidatePoint.y - pointerY;
+                              const distanceSquared = dx * dx + dy * dy;
+                              if (distanceSquared < nearestDistanceSquared) {
+                                nearestKey = candidatePoint.key;
+                                nearestDistanceSquared = distanceSquared;
+                              }
+                            }
+                            setSelectedTrendKey(nearestKey ?? `${series.key}:${trendPoint.key}`);
+                          };
                           const pointLabel = `${series.key} · ${trendPointLabel(trendPoint, aggregateTrend ? undefined : series.key, reportCurrency)}`;
                           const pointEvents = {
-                            onMouseEnter: selectPoint,
-                            onPointerEnter: selectPoint,
+                            onMouseEnter: selectNearestPoint,
+                            onMouseMove: selectNearestPoint,
+                            onPointerEnter: selectNearestPoint,
+                            onPointerMove: selectNearestPoint,
                             onFocus: selectPoint,
-                            onClick: selectPoint,
+                            onClick: (event: ReactMouseEvent<SVGCircleElement>) => {
+                              if (event.detail === 0) selectPoint();
+                              else selectNearestPoint(event);
+                            },
                             onKeyDown: (event: KeyboardEvent<SVGCircleElement>) => {
                               if (event.key === "Enter" || event.key === " ") {
                                 event.preventDefault();

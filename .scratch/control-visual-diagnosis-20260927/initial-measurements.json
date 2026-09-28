@@ -1,0 +1,93 @@
+[
+  {
+    "label": "日级持仓总市值曲线",
+    "width": 758.9375,
+    "height": 134,
+    "viewBox": "0 0 720 188",
+    "preserve": "none",
+    "scaleX": 1.054079861111111,
+    "scaleY": 0.7127659574468085,
+    "ratio": 1.4788583126036485,
+    "cssHeight": "134px",
+    "circles": 0,
+    "texts": 5
+  },
+  {
+    "label": "近30日价格走势，19/19个交易日有报价，缺失处断开",
+    "width": 88,
+    "height": 27,
+    "viewBox": "0 0 100 32",
+    "preserve": null,
+    "scaleX": 0.84375,
+    "scaleY": 0.84375,
+    "ratio": 1,
+    "cssHeight": "27px",
+    "circles": 19,
+    "texts": 0
+  },
+  {
+    "label": "近30日价格走势，19/19个交易日有报价，缺失处断开",
+    "width": 88,
+    "height": 27,
+    "viewBox": "0 0 100 32",
+    "preserve": null,
+    "scaleX": 0.84375,
+    "scaleY": 0.84375,
+    "ratio": 1,
+    "cssHeight": "27px",
+    "circles": 19,
+    "texts": 0
+  },
+  {
+    "label": "近30日价格走势，20/20个交易日有报价，缺失处断开",
+    "width": 88,
+    "height": 27,
+    "viewBox": "0 0 100 32",
+    "preserve": null,
+    "scaleX": 0.84375,
+    "scaleY": 0.84375,
+    "ratio": 1,
+    "cssHeight": "27px",
+    "circles": 20,
+    "texts": 0
+  },
+  {
+    "label": "近30日价格走势，20/20个交易日有报价，缺失处断开",
+    "width": 88,
+    "height": 27,
+    "viewBox": "0 0 100 32",
+    "preserve": null,
+    "scaleX": 0.84375,
+    "scaleY": 0.84375,
+    "ratio": 1,
+    "cssHeight": "27px",
+    "circles": 20,
+    "texts": 0
+  },
+  {
+    "label": "近30日价格走势，19/19个交易日有报价，缺失处断开",
+    "width": 88,
+    "height": 27,
+    "viewBox": "0 0 100 32",
+    "preserve": null,
+    "scaleX": 0.84375,
+    "scaleY": 0.84375,
+    "ratio": 1,
+    "cssHeight": "27px",
+    "circles": 19,
+    "texts": 0
+  },
+  {
+    "label": "累计盈亏趋势图",
+    "width": 508.375,
+    "height": 138,
+    "viewBox": "0 0 508 154",
+    "preserve": "none",
+    "scaleX": 1.000738188976378,
+    "scaleY": 0.8961038961038961,
+    "ratio": 1.1167658050895812,
+    "cssHeight": "138px",
+    "circles": 18,
+    "texts": 8
+  }
+]

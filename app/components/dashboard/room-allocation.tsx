@@ -69,6 +69,17 @@ function cashStatusLabel(status: CashSummaryStatus): string {
   }
 }
 
+function ReasonDetails({ reasons, ariaLabel, fullText }: { reasons: readonly string[]; ariaLabel: string; fullText?: string }) {
+  if (reasons.length === 0 && !fullText) return null;
+  const reasonCount = fullText ? fullText.split("；").length : reasons.length;
+  return <details className={styles.reasonDetails} aria-label={ariaLabel}>
+    <summary>查看完整解释（{reasonCount} 条原因）</summary>
+    {fullText
+      ? <div className={styles.reasonText}>{fullText}</div>
+      : <ul className={styles.reasonList}>{reasons.map((reason, index) => <li key={`${index}-${reason}`}>{reason}</li>)}</ul>}
+  </details>;
+}
+
 function itemAmount(item: RoomAllocationItem): string {
   return item.amount === null ? "不可用" : fixed(item.amount, item.amount.startsWith("-"));
 }
@@ -124,24 +135,25 @@ function LegendItem({ item, index, signed, showRatios, showCoverage }: { item: R
         <b className={styles.negativeBar} style={{ width: `${Math.min(50, Math.abs(Number(item.shortPercent ?? 0)) / 2)}%` }} />
       </div>}
     </div>}
-    {showCoverage && <small>{item.available === item.total ? "完整覆盖" : "可用小计"} {item.available}/{item.total} 个仓位{item.reason ? ` · ${item.reason}` : ""}</small>}
+    {showCoverage && <small>{item.available === item.total ? "完整覆盖" : "可用小计"} {item.available}/{item.total} 个仓位{item.reason && <details className={styles.itemReason} aria-label={`${item.label}分布原因`}>
+      <summary>查看原因</summary>
+      <div className={styles.reasonText}>{item.reason}</div>
+    </details>}</small>}
   </li>;
 }
 
-function CashField({ label, view, status, reportCurrency, reasons }: {
+function CashField({ label, view, status, reportCurrency }: {
   label: string;
   view: RoomMoneyView;
   status: CashSummaryStatus;
   reportCurrency: RoomDisplayCurrency;
-  reasons: readonly string[];
 }) {
   const display = amountLabel(view, reportCurrency, status);
   const unavailable = status === "unavailable" || display === "暂不可用";
-  const detail = unavailable ? reasons.join("；") || view.note : cashStatusLabel(status);
   return <div className={styles.cashField}>
     <span>{label}</span>
     <strong className={unavailable ? styles.mutedValue : undefined}>{display}</strong>
-    <small title={detail}>{detail}</small>
+    <small>{cashStatusLabel(status)}</small>
   </div>;
 }
 
@@ -154,9 +166,17 @@ function CashStrip({ summary, reportCurrency, loading, error }: {
   if (loading) return <div className={styles.cashStrip} aria-label="现金状态"><p className={styles.cashMessage}>现金数据加载中…</p></div>;
   if (error) return <div className={styles.cashStrip} aria-label="现金状态"><p className={styles.cashMessage}>{`现金数据读取失败：${error}`}</p></div>;
   if (!summary) return <div className={styles.cashStrip} aria-label="现金状态"><p className={styles.cashMessage}>现金数据暂不可用</p></div>;
+  const needsExplanation = summary.todayProceedsStatus === "unavailable"
+    || summary.cashTotalStatus === "unavailable"
+    || summary.coverage.missing > 0
+    || summary.coverage.excluded > 0;
+  const fullReasons = needsExplanation
+    ? [...new Set([...summary.missingReasons, summary.cashTotal.note, summary.todayProceeds.note].filter(Boolean))]
+    : [];
   return <div className={styles.cashStrip} aria-label="现金状态">
-    <CashField label="今日卖出回款" view={summary.todayProceeds} status={summary.todayProceedsStatus} reportCurrency={reportCurrency} reasons={summary.missingReasons} />
-    <CashField label="现金总额" view={summary.cashTotal} status={summary.cashTotalStatus} reportCurrency={reportCurrency} reasons={summary.missingReasons} />
+    <CashField label="今日卖出回款" view={summary.todayProceeds} status={summary.todayProceedsStatus} reportCurrency={reportCurrency} />
+    <CashField label="现金总额" view={summary.cashTotal} status={summary.cashTotalStatus} reportCurrency={reportCurrency} />
+    <ReasonDetails reasons={fullReasons} ariaLabel="现金数据完整解释" />
   </div>;
 }
 
@@ -200,8 +220,17 @@ export function RoomAllocation({
           <ul>{group.items.map((item, index) => <LegendItem key={item.label} item={item} index={index} signed={group.signed} showRatios={showRatios} showCoverage={!group.complete} />)}</ul>
         </div>
       </div>}
-      {reportCurrency === "original" && !allocation.globalComplete && <p className={styles.gapNote}>全卡缺口：{allocation.globalNote}。{allocation.globalMissingReasons.join("；")}</p>}
-      {group && (!group.complete || group.signed) && <p className={styles.note}>{group.note}</p>}
+      {reportCurrency === "original" && !allocation.globalComplete && <div className={styles.gapNote}>
+        <span>全卡缺口：{allocation.globalNote}</span>
+        <ReasonDetails reasons={allocation.globalMissingReasons} ariaLabel="资产分布完整覆盖说明" />
+      </div>}
+      {group && (!group.complete || group.signed || group.currency === "币种待核对") && <div className={styles.note}>
+        <span>{group.complete ? "完整覆盖" : `可用小计，比例不可用 · 覆盖 ${group.available}/${group.total} 个仓位`}</span>
+        {group.signed && <span>{group.complete
+          ? "空头以负条形表示，比例分母为多空绝对市值总敞口"
+          : "空头保留负号，多空可信小计分开"}</span>}
+        <ReasonDetails reasons={group.missingReasons} ariaLabel="当前分布完整解释" fullText={group.note} />
+      </div>}
       <CashStrip summary={cashSummary} reportCurrency={reportCurrency} loading={loading} error={error} />
     </section>
   );

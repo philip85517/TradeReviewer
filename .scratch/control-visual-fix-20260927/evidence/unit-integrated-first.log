@@ -1,0 +1,36 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/components/dashboard/room-holdings-history.test.tsx app/components/dashboard/room-performance.test.tsx app/components/dashboard/room-performance-chart.test.ts app/components/dashboard/review-dashboard.test.tsx app/components/dashboard/room-holdings.test.tsx app/components/dashboard/room-allocation.test.tsx app/components/library/trade-library.test.tsx
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/c414/TradeReview
+
+(node:56713) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/dashboard/review-dashboard.test.tsx (33 tests | 1 failed) 18245ms
+     × starts with live, all categories and the year to date period 705ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > starts with live, all categories and the year to date period
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  近3个自然月
+Received:
+  近3月今年全部
+ ❯ app/components/dashboard/review-dashboard.test.tsx:352:66
+    350|     expect(room).toHaveTextContent("全部市场");
+    351|     expect(within(room).getByRole("tab", { name: "今年至今" })).toHaveAttr…
+    352|     expect(within(room).getByRole("tablist", { name: "交易室期间" })).toHav…
+       |                                                                  ^
+    353|     expect(within(room).getByRole("region", { name: "历史交易与复盘" })).toBe…
+    354|     expect(room).not.toHaveTextContent("统一统计范围");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  1 failed | 161 passed (162)
+   Start at  22:51:38
+   Duration  23.36s (transform 5.42s, setup 2.72s, import 7.91s, tests 37.87s, environment 13.42s)

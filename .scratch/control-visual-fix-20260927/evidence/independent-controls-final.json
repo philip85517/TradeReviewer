@@ -1,0 +1,139 @@
+{
+  "time": "2026-09-27T15:04:56.707Z",
+  "checks": [
+    {
+      "name": "fresh library captions and real shared state navigation reload",
+      "status": "PASS",
+      "detail": {
+        "crossPageAndReload": true
+      }
+    },
+    {
+      "name": "library market and search visible result",
+      "status": "PASS",
+      "detail": {
+        "zeroResult": true
+      }
+    },
+    {
+      "name": "library geometry 1440",
+      "status": "PASS",
+      "detail": {
+        "select": [
+          {
+            "height": 34,
+            "font": "13px"
+          }
+        ],
+        "captions": [
+          {
+            "delta": 0
+          },
+          {
+            "delta": 0
+          }
+        ],
+        "scroll": 1440,
+        "client": 1440
+      }
+    },
+    {
+      "name": "library geometry 1920",
+      "status": "PASS",
+      "detail": {
+        "select": [
+          {
+            "height": 34,
+            "font": "13px"
+          }
+        ],
+        "captions": [
+          {
+            "delta": 0
+          },
+          {
+            "delta": 0
+          }
+        ],
+        "scroll": 1920,
+        "client": 1920
+      }
+    },
+    {
+      "name": "library geometry 1055",
+      "status": "PASS",
+      "detail": {
+        "select": [
+          {
+            "height": 34,
+            "font": "13px"
+          }
+        ],
+        "captions": [
+          {
+            "delta": 0
+          },
+          {
+            "delta": 0
+          }
+        ],
+        "scroll": 1055,
+        "client": 1055
+      }
+    },
+    {
+      "name": "library geometry 821",
+      "status": "PASS",
+      "detail": {
+        "select": [
+          {
+            "height": 34,
+            "font": "13px"
+          }
+        ],
+        "captions": [
+          {
+            "delta": 0
+          },
+          {
+            "delta": 0
+          }
+        ],
+        "scroll": 821,
+        "client": 821
+      }
+    },
+    {
+      "name": "library geometry 820",
+      "status": "PASS",
+      "detail": {
+        "select": [
+          {
+            "height": 34,
+            "font": "13px"
+          }
+        ],
+        "captions": [
+          {
+            "delta": 0
+          },
+          {
+            "delta": 0
+          }
+        ],
+        "scroll": 820,
+        "client": 820
+      }
+    },
+    {
+      "name": "library geometry 390",
+      "status": "FAIL",
+      "error": "The expression evaluated to a falsy value:\n\n  assert(dims.select.every(x=>x.height===34&&x.font==='13px'))\n"
+    },
+    {
+      "name": "no error overlay/pageexception",
+      "status": "PASS"
+    }
+  ],
+  "errors": []
+}

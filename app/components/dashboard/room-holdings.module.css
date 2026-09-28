@@ -76,7 +76,7 @@
 .table th:nth-child(9) { width: 9%; }
 .table th:nth-child(10) { width: 10%; }
 .table th:nth-child(11) { width: 7%; }
-.table td { height: 42px; padding: 5px; border-bottom: 1px solid var(--dashboard-line); vertical-align: middle; overflow-wrap: anywhere; }
+.table td { height: 48px; padding: 5px; border-bottom: 1px solid var(--dashboard-line); vertical-align: middle; overflow-wrap: anywhere; }
 .table td:first-child { overflow: hidden; }
 .table strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
 .table small,
@@ -90,10 +90,11 @@
 .marketUS { background: #e8f1e8; border-color: #a9c8a9; color: #2d5c32; }
 
 .trend { color: var(--dashboard-positive, #3dc9ad); }
-.trend svg { display: block; width: 88px; max-width: 100%; height: 27px; }
+.trend svg { display: block; width: 88px; max-width: 100%; height: 32px; }
 .trend circle { fill: currentColor; }
 .trendMissing { color: var(--dashboard-muted); font-size: 10px; }
 .recordSummary { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recordDate { position: relative; display: inline-block; max-width: 100%; }
 .rowActions { position: relative; }
 .reviewButton { min-height: 27px; color: var(--link, #6bb9ff); }
 .rowActions > button { display: block; margin-top: 3px; }
@@ -113,7 +114,7 @@
 .pagination { color: var(--dashboard-muted); font-size: 11px; }
 .pageButtons { display: flex; align-items: center; gap: 4px; }
 .pageButtons button[aria-current="page"] { border-color: var(--link, #6bb9ff); color: var(--dashboard-text, #fff); }
-.visuallyHidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; clip-path: inset(50%); }
+.visuallyHidden { position: absolute; top: 0; left: 0; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; clip-path: inset(50%); }
 
 @media (max-width: 760px) {
   .heading { align-items: flex-start; flex-direction: column; }
@@ -175,7 +176,7 @@
   .tableToolbar button, .pagination button, .rowActions > button, .rowActions details button { padding: 4px 6px; font-size: 9px; }
   .table { font-size: 9.5px; }
   .table th { padding: 5px 3px; font-size: 9px; line-height: 1.1; white-space: normal; }
-  .table td { height: 42px; padding: 4px 3px; line-height: 1.15; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .table td { height: 48px; padding: 4px 3px; line-height: 1.15; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
   .table td:first-child { white-space: normal; }
   .table td:first-child > small:nth-of-type(2) { display: none; }
   .table strong { font-size: 10.5px; line-height: 1.1; }
@@ -183,7 +184,7 @@
   .table dl { overflow: hidden; }
   .table dd { overflow: hidden; text-overflow: ellipsis; }
   .marketBadge { min-height: 17px; padding: 1px 4px; font-size: 9px; }
-  .trend svg { width: 70px; height: 21px; }
+  .trend svg { width: 70px; height: 28px; }
   .trendMissing { font-size: 8.5px; }
   .recordSummary { font-size: 8.5px; }
   .rowDetails, .evidence { margin-top: 1px; font-size: 8.5px; }
@@ -199,7 +200,7 @@
    existing details/title surfaces instead of expanding every row. */
 @media (min-width: 821px) {
   .table td {
-    height: 42px;
+    height: 48px;
     padding: 4px 5px;
     line-height: 1.15;
   }
@@ -236,14 +237,14 @@
   .tableToolbar button, .pagination button, .rowActions > button, .rowActions details button { padding: 4px 6px; font-size: 10px; }
   .table { font-size: 10.5px; }
   .table th { padding: 5px 3px; font-size: 10px; line-height: 1.1; }
-  .table td { height: 42px; padding: 4px 3px; line-height: 1.15; }
+  .table td { height: 48px; padding: 4px 3px; line-height: 1.15; }
   .table strong { font-size: 11px; line-height: 1.1; }
   .table small, .table time { margin-top: 1px; font-size: 9.5px; line-height: 1.1; }
   .rowQuoteReady td[data-label="估值价"] > small { display: none; }
   .rowQuoteReady td[data-label="估值价"] { cursor: help; }
   .rowQuoteIssue td[data-label="估值价"] > small { display: block; }
   .marketBadge { min-height: 18px; padding: 1px 4px; font-size: 9.5px; }
-  .trend svg { width: 74px; height: 23px; }
+  .trend svg { width: 74px; height: 28px; }
   .trendMissing { font-size: 9px; }
   .recordSummary { font-size: 9.5px; }
   .rowDetails, .evidence { margin-top: 1px; font-size: 9px; }

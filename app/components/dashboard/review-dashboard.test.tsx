@@ -193,6 +193,9 @@ describe("ReviewDashboard", () => {
   it("shows page-wide identity with YTD default and expandable custom dates", () => {
     render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
     const room = screen.getByRole("region", { name: "我的交易室" });
+    const nature = within(room).getByRole("group", { name: "交易性质" });
+    expect(nature).toHaveAttribute("data-control-mode", "segmented");
+    expect(nature).toHaveAttribute("data-control-size", "standard");
     expect(within(room).getByRole("button", { name: "实盘" })).toHaveAttribute("aria-pressed", "true");
     expect(within(room).getByRole("button", { name: "模拟盘" })).toHaveAttribute("aria-pressed", "false");
     expect(within(room).getByRole("combobox", { name: "报告计价" })).toHaveValue("original");
@@ -346,7 +349,7 @@ describe("ReviewDashboard", () => {
     expect(within(within(room).getByRole("group", { name: "交易室市场分类筛选" })).getByRole("radio", { name: "全部市场" })).toBeChecked();
     expect(room).toHaveTextContent("全部市场");
     expect(within(room).getByRole("tab", { name: "今年至今" })).toHaveAttribute("aria-selected", "true");
-    expect(within(room).getByRole("tablist", { name: "交易室期间" })).toHaveTextContent("近3个自然月");
+    expect(within(within(room).getByRole("tablist", { name: "交易室期间" })).getByRole("tab", { name: "近3个自然月" })).toBeInTheDocument();
     expect(within(room).getByRole("region", { name: "历史交易与复盘" })).toBeInTheDocument();
     expect(room).not.toHaveTextContent("统一统计范围");
     expect(room).toHaveTextContent("未知资产类型");

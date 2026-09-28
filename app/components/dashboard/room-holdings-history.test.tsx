@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { buildHoldingsHistory, type HoldingsHistoryModel } from "../../lib/reviews/trading-room-history";
 import { buildRoomMoneyView, createDefaultRoomScope } from "../../lib/reviews/trading-room-scope";
@@ -152,6 +152,50 @@ describe("RoomHoldingsHistory B2", () => {
     expect(screen.queryByText(/所选期间暂无完整/)).not.toBeInTheDocument();
     expect(document.querySelector("[data-history-series]")?.getAttribute("d")).toContain("L");
     expect(chart().querySelectorAll("line:not([data-history-crosshair])").length).toBeGreaterThan(0);
+  });
+
+  it("recomputes the path and date axis when observed plot width and height change", () => {
+    let resizeCallback: (() => void) | null = null;
+    let dimensions = { width: 720, height: 220 };
+    vi.stubGlobal("ResizeObserver", class {
+      constructor(callback: () => void) {
+        resizeCallback = callback;
+      }
+
+      observe(element: Element) {
+        Object.defineProperty(element, "getBoundingClientRect", {
+          configurable: true,
+          value: () => ({ ...dimensions, x: 0, y: 0, top: 0, right: dimensions.width, bottom: dimensions.height, left: 0, toJSON: () => ({}) }),
+        });
+        resizeCallback?.();
+      }
+
+      disconnect() {}
+    });
+
+    const { container } = render(<RoomHoldingsHistory model={model()} />);
+    const svg = chart();
+    expect(svg.getAttribute("viewBox")).toBe("0 0 720 220");
+    const series = container.querySelector("[data-history-series]") as SVGPathElement;
+    const initialPath = series.getAttribute("d");
+
+    dimensions = { width: 960, height: 248 };
+    act(() => resizeCallback?.());
+    expect(svg.getAttribute("viewBox")).toBe("0 0 960 248");
+    const widePath = series.getAttribute("d");
+    expect(widePath).not.toBe(initialPath);
+    const pathEndX = Number(widePath?.split("L").at(-1)?.split(",")[0]);
+    expect(pathEndX).toBeCloseTo(946, 2);
+    const lastDateLabel = [...svg.querySelectorAll("text")].find(label => label.textContent === "2026-09-19");
+    expect(Number(lastDateLabel?.getAttribute("x"))).toBeCloseTo(946, 2);
+
+    dimensions = { width: 960, height: 190 };
+    act(() => resizeCallback?.());
+    expect(svg.getAttribute("viewBox")).toBe("0 0 960 190");
+    const finalPath = series.getAttribute("d");
+    expect(finalPath).not.toBe(widePath);
+    const finalY = Number(finalPath?.split("L").at(-1)?.split(",")[1]);
+    expect(finalY).toBeCloseTo(14 + (190 - 14 - 28) * (1 - 80 / 120), 2);
   });
 
   it("renders the shell-owned period controls in the chart card slot", () => {

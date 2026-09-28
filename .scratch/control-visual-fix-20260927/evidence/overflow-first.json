@@ -1,0 +1,38 @@
+[
+  {
+    "w": 821,
+    "size": {
+      "scroll": 965,
+      "client": 821
+    },
+    "nodes": [],
+    "hiddenSpanProbe": {
+      "before": 965,
+      "after": 821
+    }
+  },
+  {
+    "w": 820,
+    "size": {
+      "scroll": 972,
+      "client": 820
+    },
+    "nodes": [],
+    "hiddenSpanProbe": {
+      "before": 972,
+      "after": 820
+    }
+  },
+  {
+    "w": 390,
+    "size": {
+      "scroll": 811,
+      "client": 390
+    },
+    "nodes": [],
+    "hiddenSpanProbe": {
+      "before": 811,
+      "after": 390
+    }
+  }
+]

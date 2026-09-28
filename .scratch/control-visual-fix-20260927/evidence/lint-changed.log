@@ -1,0 +1,6 @@
+
+/Users/zhoulin/.codex/worktrees/c414/TradeReview/app/components/dashboard/review-dashboard.test.tsx
+  492:11  warning  'performance' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  537:11  warning  'room' is assigned a value but never used         @typescript-eslint/no-unused-vars
+
+✖ 2 problems (0 errors, 2 warnings)

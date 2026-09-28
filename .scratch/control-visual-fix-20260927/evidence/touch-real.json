@@ -1,0 +1,87 @@
+{
+  "input": "Playwright emulated touch, NOT physical touchscreen",
+  "checks": [
+    "tap real chart opens aligned detail, tap close clears",
+    "coarse-pointer controls at least 42px high"
+  ],
+  "errors": [],
+  "coarse": true,
+  "targets": [
+    {
+      "label": "实盘",
+      "width": 48,
+      "height": 42
+    },
+    {
+      "label": "模拟盘",
+      "width": 61,
+      "height": 42
+    },
+    {
+      "label": "账户范围",
+      "width": 179,
+      "height": 44
+    },
+    {
+      "label": "报告计价",
+      "width": 94,
+      "height": 44
+    },
+    {
+      "label": "筛选",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "label": "总市值",
+      "width": 49,
+      "height": 44
+    },
+    {
+      "label": "未实现盈亏",
+      "width": 71,
+      "height": 44
+    },
+    {
+      "label": "未实现收益率",
+      "width": 82,
+      "height": 44
+    },
+    {
+      "label": "持仓历史：本自然月",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "label": "持仓历史：近3个自然月",
+      "width": 44.609375,
+      "height": 44
+    },
+    {
+      "label": "持仓历史：今年至今",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "label": "持仓历史：全部",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "label": "日",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "label": "周",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "label": "月",
+      "width": 44,
+      "height": 44
+    }
+  ],
+  "status": "PASS"
+}

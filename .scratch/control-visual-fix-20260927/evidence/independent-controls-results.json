@@ -1,0 +1,134 @@
+{
+  "time": "2026-09-27T15:00:17.837Z",
+  "checks": [
+    {
+      "name": "room scope nature and actual account/currency outcomes",
+      "status": "PASS",
+      "detail": {
+        "accountOptions": 8,
+        "select": {
+          "height": 34,
+          "width": 174,
+          "font": "13px"
+        }
+      }
+    },
+    {
+      "name": "holding preset and unapplied custom date survive resize",
+      "status": "PASS",
+      "detail": {
+        "tab": {
+          "height": 28,
+          "width": 34,
+          "font": "11px"
+        }
+      }
+    },
+    {
+      "name": "allocation dimensions and full explanations expand collapse",
+      "status": "PASS",
+      "detail": {
+        "before": 321.28125,
+        "after": 321.28125,
+        "fullExplanationCharacters": 77422,
+        "dimensionControl": {
+          "height": 28,
+          "width": 51,
+          "font": "11px"
+        }
+      }
+    },
+    {
+      "name": "holdings columns details search and paging actual results",
+      "status": "PASS",
+      "detail": {
+        "before": 83.140625,
+        "after": 136.296875,
+        "columns": 11,
+        "spark": {
+          "height": 32,
+          "width": 88,
+          "font": "11px"
+        }
+      }
+    },
+    {
+      "name": "room layout 1440",
+      "status": "PASS",
+      "detail": {
+        "scroll": 1440,
+        "client": 1440
+      }
+    },
+    {
+      "name": "room layout 1920",
+      "status": "PASS",
+      "detail": {
+        "scroll": 1920,
+        "client": 1920
+      }
+    },
+    {
+      "name": "room layout 1055",
+      "status": "PASS",
+      "detail": {
+        "scroll": 1055,
+        "client": 1055
+      }
+    },
+    {
+      "name": "room layout 821",
+      "status": "PASS",
+      "detail": {
+        "scroll": 821,
+        "client": 821
+      }
+    },
+    {
+      "name": "room layout 820",
+      "status": "PASS",
+      "detail": {
+        "scroll": 820,
+        "client": 820
+      }
+    },
+    {
+      "name": "room layout 390",
+      "status": "PASS",
+      "detail": {
+        "scroll": 390,
+        "client": 390
+      }
+    },
+    {
+      "name": "library nature semantics unknown simulation live",
+      "status": "PASS",
+      "detail": {
+        "unknownRetained": true
+      }
+    },
+    {
+      "name": "library account currency filters and cross page retained scope",
+      "status": "FAIL",
+      "error": "locator.click: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '交易库', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <button class=\"\" type=\"button\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - performing click action\u001b[22m\n"
+    }
+  ],
+  "errors": [],
+  "screens": [
+    "/Users/zhoulin/.codex/worktrees/c414/TradeReview/.scratch/control-visual-fix-20260927/evidence/independent-controls-allocation-expanded.png",
+    "/Users/zhoulin/.codex/worktrees/c414/TradeReview/.scratch/control-visual-fix-20260927/evidence/independent-controls-allocation-default.png",
+    "/Users/zhoulin/.codex/worktrees/c414/TradeReview/.scratch/control-visual-fix-20260927/evidence/independent-controls-holdings-expanded.png",
+    "/Users/zhoulin/.codex/worktrees/c414/TradeReview/.scratch/control-visual-fix-20260927/evidence/independent-controls-room-1440.png",
+    "/Users/zhoulin/.codex/worktrees/c414/TradeReview/.scratch/control-visual-fix-20260927/evidence/independent-controls-table-1440.png",
+    "/Users/zhoulin/.codex/worktrees/c414/TradeReview/.scratch/control-visual-fix-20260927/evidence/independent-controls-room-1920.png",
+    "/Users/zhoulin/.codex/worktrees/c414/TradeReview/.scratch/control-visual-fix-20260927/evidence/independent-controls-table-1920.png",
+    "/Users/zhoulin/.codex/worktrees/c414/TradeReview/.scratch/control-visual-fix-20260927/evidence/independent-controls-room-1055.png",
+    "/Users/zhoulin/.codex/worktrees/c414/TradeReview/.scratch/control-visual-fix-20260927/evidence/independent-controls-table-1055.png",
+    "/Users/zhoulin/.codex/worktrees/c414/TradeReview/.scratch/control-visual-fix-20260927/evidence/independent-controls-room-821.png",
+    "/Users/zhoulin/.codex/worktrees/c414/TradeReview/.scratch/control-visual-fix-20260927/evidence/independent-controls-table-821.png",
+    "/Users/zhoulin/.codex/worktrees/c414/TradeReview/.scratch/control-visual-fix-20260927/evidence/independent-controls-room-820.png",
+    "/Users/zhoulin/.codex/worktrees/c414/TradeReview/.scratch/control-visual-fix-20260927/evidence/independent-controls-table-820.png",
+    "/Users/zhoulin/.codex/worktrees/c414/TradeReview/.scratch/control-visual-fix-20260927/evidence/independent-controls-room-390.png",
+    "/Users/zhoulin/.codex/worktrees/c414/TradeReview/.scratch/control-visual-fix-20260927/evidence/independent-controls-table-390.png"
+  ]
+}

@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -225,22 +225,6 @@ describe("RoomPerformance", () => {
     );
 
     expect(container.querySelectorAll("[data-chart-role='point-label']")).toHaveLength(9);
-  });
-
-  it("uses a shorter but readable mobile plot target", () => {
-    const value = entry("2026-09-02", "100");
-    const { container } = render(
-      <RoomPerformance
-        entries={[value]}
-        scope={scope()}
-        instrumentMetadata={metadata([value])}
-        onScopeChange={() => undefined}
-        onOpenInReview={() => undefined}
-        asOf="2026-09-19T08:00:00.000Z"
-      />,
-    );
-
-    expect(container.querySelector("svg")?.getAttribute("data-mobile-height")).toBe("240");
   });
 
   it("avoids overlapping labels between nearby original-currency series", () => {
@@ -814,8 +798,9 @@ describe("RoomPerformance", () => {
     expect(panel.querySelector("[class*='dailyGrid']")).toHaveTextContent("+¥200.00");
   });
 
-  it("measures the chart when it appears after an initially empty scope", () => {
+  it("measures both chart dimensions when it appears and on height-only resize", () => {
     let resizeCallback: (() => void) | null = null;
+    let dimensions = { width: 320, height: 190 };
     vi.stubGlobal("ResizeObserver", class {
       constructor(callback: () => void) {
         resizeCallback = callback;
@@ -824,7 +809,7 @@ describe("RoomPerformance", () => {
       observe(element: Element) {
         Object.defineProperty(element, "getBoundingClientRect", {
           configurable: true,
-          value: () => ({ width: 320, height: 190, top: 0, right: 320, bottom: 190, left: 0 }),
+          value: () => ({ ...dimensions, top: 0, right: dimensions.width, bottom: dimensions.height, left: 0 }),
         });
         resizeCallback?.();
       }
@@ -856,9 +841,14 @@ describe("RoomPerformance", () => {
       />,
     );
 
-    expect(container.querySelector("svg")?.getAttribute("viewBox")).toBe("0 0 320 240");
+    const svg = container.querySelector("svg");
+    expect(svg?.getAttribute("viewBox")).toBe("0 0 320 190");
     const yLabel = container.querySelector("[data-chart-role='axis-y-label']") as HTMLElement | null;
     expect(Number.parseFloat(yLabel?.style.left ?? "0")).toBeGreaterThanOrEqual(21.8);
+
+    dimensions = { width: 320, height: 218 };
+    act(() => resizeCallback?.());
+    expect(svg?.getAttribute("viewBox")).toBe("0 0 320 218");
   });
 
   it("shows the same trend point detail on hover, focus, and click", async () => {
@@ -884,6 +874,55 @@ describe("RoomPerformance", () => {
     expect(detail).toHaveTextContent("累计盈亏");
     await user.click(point);
     expect(detail).toHaveTextContent("1 个可信回合");
+  });
+
+  it("resolves overlapping pointer targets to the nearest point while keyboard focus stays exact", () => {
+    const monthlyEntries = Array.from({ length: 15 }, (_, index) => {
+      const date = new Date(Date.UTC(2015, index, 2)).toISOString().slice(0, 10);
+      return entry(date, "100", { id: `monthly-${index}` });
+    });
+    const startDate = "2015-01-02";
+    const endDate = "2016-03-02";
+    const { container } = render(
+      <RoomPerformance
+        entries={monthlyEntries}
+        scope={scope(buildRoomDateRange("custom", endDate, { startDate, endDate }))}
+        instrumentMetadata={metadata(monthlyEntries)}
+        onScopeChange={() => undefined}
+        onOpenInReview={() => undefined}
+        asOf={`${endDate}T08:00:00.000Z`}
+      />,
+    );
+
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    const svg = container.querySelector("svg[aria-label='累计盈亏趋势图']") as SVGSVGElement;
+    Object.defineProperty(svg, "getBoundingClientRect", {
+      configurable: true,
+      value: () => ({ x: 0, y: 0, width: 640, height: 320, top: 0, right: 640, bottom: 320, left: 0, toJSON: () => ({}) }),
+    });
+    const hitAreas = [...container.querySelectorAll<SVGCircleElement>("circle[data-chart-role='point-hit-area']")];
+    const first = hitAreas[0];
+    const overlappingSecond = hitAreas[1];
+    expect(hitAreas).toHaveLength(15);
+    expect(Number(first?.getAttribute("r"))).toBe(22);
+    expect(Number(overlappingSecond?.getAttribute("r"))).toBe(22);
+    const firstX = Number(first?.getAttribute("cx"));
+    const firstY = Number(first?.getAttribute("cy"));
+    const secondX = Number(overlappingSecond?.getAttribute("cx"));
+    const secondY = Number(overlappingSecond?.getAttribute("cy"));
+    expect(Math.hypot(firstX - secondX, firstY - secondY)).toBeLessThan(44);
+
+    fireEvent.mouseEnter(overlappingSecond!, { clientX: firstX, clientY: firstY });
+    const detail = within(panel).getByRole("status", { name: "趋势点详情" });
+    expect(detail).toHaveTextContent("2015年1月");
+    fireEvent.mouseMove(overlappingSecond!, { clientX: secondX, clientY: secondY });
+    expect(detail).toHaveTextContent("2015年2月");
+    fireEvent.click(overlappingSecond!, { detail: 1, clientX: firstX, clientY: firstY });
+    expect(detail).toHaveTextContent("2015年1月");
+
+    fireEvent.focus(hitAreas[2]!);
+    fireEvent.keyDown(hitAreas[2]!, { key: "Enter" });
+    expect(detail).toHaveTextContent("2015年3月");
   });
 
   it("uses compact daily cells and keeps complete amount, sample, and win-rate details below", async () => {

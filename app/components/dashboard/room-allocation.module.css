@@ -2,11 +2,11 @@
 .header { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
 .panel h3 { margin: 0; color: #eaf3ff; font-size: 14px; line-height: 1.25; }
 .tabs, .currencyTabs { display: flex; flex-wrap: wrap; gap: 4px; }
-.tabs button, .currencyTabs button { min-height: 24px; border: 1px solid #2b4868; border-radius: 5px; padding: 0 7px; color: #91a9c9; background: #111d30; cursor: pointer; font: inherit; font-size: 10px; }
-.tabs button[aria-pressed="true"], .currencyTabs button[aria-selected="true"] { color: #edf6ff; border-color: #3797ff; background: #163d63; }
+.tabs button, .currencyTabs button { min-height: 28px; border: 1px solid var(--scope-control-border, #34445b); border-radius: 5px; padding: 0 8px; color: var(--scope-control-muted, #91a9c9); background: var(--scope-control-background, #111a2b); cursor: pointer; font: inherit; font-size: 11px; }
+.tabs button[aria-pressed="true"], .currencyTabs button[aria-selected="true"] { color: var(--scope-control-selected-text, #edf6ff); border-color: var(--scope-control-selected-border, #3797ff); background: var(--scope-control-selected, #163d63); }
 .currencyTabs { margin: 8px 0 0; }
 .note { margin: 5px 0 0; color: #8ea1ba; font-size: 9px; line-height: 1.35; }
-.gapNote { margin: 4px 0 0; color: #efac65; font-size: 9px; line-height: 1.35; }
+.gapNote { display: flex; align-items: center; flex-wrap: wrap; gap: 3px 8px; margin: 4px 0 0; color: #efac65; font-size: 9px; line-height: 1.35; }
 .empty { margin: 14px 0; color: #9aacc4; font-size: 12px; }
 .distributionBody { display: grid; grid-template-columns: minmax(150px, 1.12fr) minmax(0, .88fr); gap: 6px; align-items: center; min-height: 150px; margin-top: 4px; }
 .chartColumn { display: grid; min-width: 0; place-items: center; }
@@ -45,6 +45,15 @@
 .cashField small, .cashMessage { margin: 0; color: #8296b0; font-size: 9px; line-height: 1.35; }
 .mutedValue { color: #a7b5c7 !important; }
 .cashMessage { padding: 3px 0; }
+.reasonDetails { min-width: 0; color: #9bb5d1; font-size: 9px; line-height: 1.35; }
+.reasonDetails summary { width: fit-content; max-width: 100%; min-height: 22px; cursor: pointer; color: #9bbfe4; }
+.itemReason { display: inline; margin-left: 4px; color: #9bbfe4; }
+.itemReason summary { display: inline; cursor: pointer; color: #9bbfe4; }
+.itemReason .reasonText { display: block; }
+.reasonList { display: grid; gap: 3px; max-height: 176px; overflow: auto; margin: 3px 0 0; padding: 0 5px 0 18px; color: #b0bfd2; scrollbar-width: thin; }
+.reasonList li { overflow-wrap: anywhere; }
+.reasonText { max-height: 176px; overflow: auto; margin-top: 3px; color: #b0bfd2; overflow-wrap: anywhere; scrollbar-width: thin; }
+.cashStrip > .reasonDetails { grid-column: 1 / -1; }
 
 @media (max-width: 760px) {
   .distributionBody { grid-template-columns: minmax(140px, 1fr) minmax(0, 1fr); gap: 6px; }
@@ -62,7 +71,7 @@
   .panel { padding: 7px 8px; }
   .panel h3 { font-size: 13px; }
   .tabs, .currencyTabs { gap: 2px; }
-  .tabs button, .currencyTabs button { min-height: 23px; padding: 0 5px; font-size: 9px; }
+  .tabs button, .currencyTabs button { min-height: 28px; padding: 0 8px; font-size: 11px; }
   .currencyTabs { margin-top: 4px; }
   .note, .gapNote { margin-top: 3px; font-size: 9px; line-height: 1.2; }
   .distributionBody { grid-template-columns: minmax(150px, 1.12fr) minmax(0, .88fr); gap: 6px; min-height: 150px; margin-top: 2px; }
@@ -84,4 +93,8 @@
   .cashField { gap: 2px; }
   .cashField span, .cashField small, .cashMessage { font-size: 9px; line-height: 1.15; }
   .cashField strong { font-size: 10px; }
+}
+
+@media (pointer: coarse) {
+  .tabs button, .currencyTabs button { min-height: 44px; }
 }

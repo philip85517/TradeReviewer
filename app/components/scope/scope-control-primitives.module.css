@@ -1,0 +1,172 @@
+:global(:root) {
+  --scope-control-background: #111a2b;
+  --scope-control-border: #34445b;
+  --scope-control-text: #b8c5d6;
+  --scope-control-muted: #91a9c9;
+  --scope-control-selected: #163d63;
+  --scope-control-selected-border: #3797ff;
+  --scope-control-selected-text: #edf6ff;
+  --scope-control-focus: #9ecaff;
+}
+
+.radioGroup {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.radioLegend {
+  margin: 0;
+  padding: 0;
+  color: var(--scope-control-muted);
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.radioOptions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.radioOption {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 34px;
+  color: var(--scope-control-text);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.radioOption input {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  margin: 0;
+  accent-color: var(--scope-control-selected-border);
+}
+
+.segmentedGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid var(--scope-control-border);
+  border-radius: 7px;
+  padding: 2px;
+  background: var(--scope-control-background);
+}
+
+.segmentButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: var(--scope-choice-height, 32px);
+  border: 1px solid transparent;
+  border-radius: 5px;
+  padding: 0 var(--scope-choice-padding, 10px);
+  color: var(--scope-control-muted);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--scope-choice-font, 13px);
+  font-weight: 550;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.segmentButton[aria-pressed="true"],
+.segmentButton[aria-selected="true"] {
+  border-color: var(--scope-control-selected-border);
+  color: var(--scope-control-selected-text);
+  background: var(--scope-control-selected);
+}
+
+.segmentButton:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid var(--scope-control-focus);
+  outline-offset: 1px;
+}
+
+.selectField {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  color: var(--scope-control-muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.selectField > span {
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.selectField select {
+  width: 100%;
+  min-width: 0;
+  height: 34px;
+  box-sizing: border-box;
+  border: 1px solid var(--scope-control-border);
+  border-radius: 6px;
+  padding: 0 25px 0 8px;
+  color: #e7edf6;
+  background: var(--scope-control-background);
+  font: inherit;
+  font-size: 13px;
+}
+
+.selectField select:focus-visible {
+  outline: 2px solid var(--scope-control-focus);
+  outline-offset: 1px;
+}
+
+.inlineField {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.inlineField > span {
+  flex: 0 0 auto;
+}
+
+.standard {
+  --scope-choice-height: 32px;
+  --scope-choice-padding: 10px;
+  --scope-choice-font: 13px;
+}
+
+.compact {
+  --scope-choice-height: 28px;
+  --scope-choice-padding: 8px;
+  --scope-choice-font: 11px;
+}
+
+@media (pointer: coarse) {
+  .radioOption {
+    min-height: 44px;
+  }
+
+  .segmentButton {
+    min-height: 42px;
+  }
+
+  .selectField select {
+    height: 44px;
+  }
+}

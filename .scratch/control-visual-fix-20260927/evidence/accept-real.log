@@ -1,0 +1,16 @@
+PASS actual account and currency controls
+PASS first real chart geometry
+PASS holding metrics, granularity and keyboard readout
+PASS custom observation dates preserve applied state before apply
+PASS performance actual point selection and resize preserve period
+PASS allocation dimensions and long explanation disclosure
+PASS holdings expanded details, search and paging
+PASS geometry and page overflow 1440
+PASS geometry and page overflow 1920
+PASS geometry and page overflow 1055
+PASS geometry and page overflow 821
+PASS geometry and page overflow 820
+PASS geometry and page overflow 390
+PASS library filter navigation and shared visual sizes
+PASS return navigation and reload
+PASS no new page errors

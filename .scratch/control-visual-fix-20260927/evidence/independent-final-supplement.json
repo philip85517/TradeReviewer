@@ -1,0 +1,22 @@
+{
+  "time": "2026-09-27T15:18:00.906Z",
+  "errors": [],
+  "table": {
+    "parentScroll": 610,
+    "parentClient": 324,
+    "parentWidth": 934,
+    "lastCell": 287.84375,
+    "columns": 11
+  },
+  "library": {
+    "height": 44,
+    "font": "13px"
+  },
+  "explanations": {
+    "top": 26726,
+    "height": 176,
+    "total": 26902,
+    "last": "暂无可信原币金额"
+  },
+  "status": "PASS"
+}

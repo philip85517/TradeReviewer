@@ -1,7 +1,8 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, expect, it } from "vitest";
 import { buildCurrentPortfolio } from "../../lib/reviews/trading-room-portfolio";
+import { buildRoomAllocation } from "../../lib/reviews/trading-room-allocation";
 import { createDefaultRoomScope } from "../../lib/reviews/trading-room-scope";
 import { RoomAllocation } from "./room-allocation";
 import type { CashSummary } from "../../lib/cash/cash-model";
@@ -66,10 +67,65 @@ it("keeps a complete selected original-currency donut while exposing a missing o
     { holding: { market: "US", marketLabel: "美股", settlementCurrency: "USD", assetType: "stock", direction: "long" }, marketValue: "100" },
     { holding: { market: "HK", marketLabel: "港股", settlementCurrency: "HKD", assetType: "stock", direction: "long" }, marketValue: null },
   ] as never;
+  const expectedReason = buildRoomAllocation(model, { dimension: "market", reportCurrency: "original" }).globalMissingReasons[0];
   render(<RoomAllocation model={model} reportCurrency="original" />);
   expect(screen.getByTestId("allocation-donut")).toBeInTheDocument();
   expect(screen.getByText(/全卡缺口：/)).toBeInTheDocument();
+  const reasonDisclosure = screen.getByText(/查看完整解释/).closest("details");
+  expect(reasonDisclosure).not.toHaveAttribute("open");
+  expect(reasonDisclosure).toHaveTextContent(expectedReason);
+  fireEvent.click(reasonDisclosure!.querySelector("summary")!);
+  expect(reasonDisclosure).toHaveAttribute("open");
   expect(screen.getByText(/HKD/)).toBeInTheDocument();
+});
+
+it("preserves each long holding reason in a collapsed disclosure and keeps unknown-currency note facts", () => {
+  const model = buildCurrentPortfolio([], { scope: createDefaultRoomScope() });
+  const reason = "缺少可信行情证据；最近一次行情截点仍早于持仓日期；该仓位不纳入可用小计";
+  model.rows = [{
+    holding: { market: "US", marketLabel: "美股", settlementCurrency: null, assetType: "stock", direction: "long", statusReason: reason },
+    marketValue: null,
+  }] as never;
+  render(<RoomAllocation model={model} reportCurrency="original" />);
+
+  const itemDetails = screen.getByLabelText("美股分布原因");
+  expect(itemDetails).not.toHaveAttribute("open");
+  fireEvent.click(itemDetails.querySelector("summary")!);
+  expect(itemDetails).toHaveAttribute("open");
+  expect(itemDetails).toHaveTextContent(reason);
+
+  const groupNote = screen.getByLabelText("当前分布完整解释");
+  fireEvent.click(groupNote.querySelector("summary")!);
+  expect(groupNote).toHaveTextContent("未知币种不纳入已知币种分母");
+});
+
+it("keeps long cash diagnostics collapsed until the user opens the full explanation", () => {
+  const model = buildCurrentPortfolio([], { scope: createDefaultRoomScope() });
+  const money = { baseCurrency: "CNY", originalByCurrency: {}, convertedCny: null, converted: null, convertedHkd: null, targetCurrency: "CNY", conversion: "missing", fxSnapshotId: null, note: "缺少可信现金数据" } as const;
+  const missingReasons = Array.from({ length: 120 }, (_, index) => `成交现金证据 ${index + 1}：缺少可核对的原币金额`);
+  const cashSummary = {
+    todayProceeds: money,
+    cashTotal: money,
+    todayProceedsStatus: "unavailable",
+    cashTotalStatus: "unavailable",
+    coverage: { included: 0, excluded: 0, missing: missingReasons.length },
+    asOf: null,
+    missingReasons,
+    byScope: {},
+    updatedAt: null,
+  } satisfies CashSummary;
+  render(<RoomAllocation model={model} reportCurrency="CNY" cashSummary={cashSummary} />);
+
+  const disclosures = screen.getAllByText("查看完整解释（121 条原因）");
+  expect(disclosures).toHaveLength(1);
+  const details = disclosures[0].closest("details");
+  expect(details).not.toHaveAttribute("open");
+  expect(details).toHaveTextContent(missingReasons[119]);
+  fireEvent.click(details!.querySelector("summary")!);
+  expect(details).toHaveAttribute("open");
+  expect(details).toHaveTextContent(missingReasons[0]);
+  expect(details).toHaveTextContent(missingReasons[119]);
+  expect(details).toHaveTextContent("缺少可信现金数据");
 });
 
 it("hides ratio bars and ratio labels for partial signed coverage while keeping net and side subtotals", () => {

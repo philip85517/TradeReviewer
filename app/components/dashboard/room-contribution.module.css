@@ -1,7 +1,7 @@
 .panel { min-width: 0; height: 100%; padding: 9px; border: 1px solid var(--dashboard-line, #24394d); border-radius: 12px; background: var(--dashboard-card); }
 .panel h3 { margin: 0 0 8px; font-size: 14px; }
 .tabs { display: flex; flex-wrap: wrap; gap: 4px; }
-.tabs button { min-height: 30px; border: 1px solid var(--dashboard-line); border-radius: 7px; padding: 4px 7px; color: var(--dashboard-ink); background: var(--dashboard-card-elevated); cursor: pointer; font: inherit; font-size: 11px; }
+.tabs button { min-height: 36px; border: 1px solid var(--dashboard-line); border-radius: 7px; padding: 4px 7px; color: var(--dashboard-ink); background: var(--dashboard-card-elevated); cursor: pointer; font: inherit; font-size: 14px; }
 .tabs button[aria-pressed="true"] { border-color: #338caa; background: var(--dashboard-soft); }
 .note, .currencyGroup small { color: var(--dashboard-muted); font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; }
 .currencyGroup { min-width: 0; max-width: 100%; width: 100%; margin-top: 8px; font-size: 11px; }
@@ -17,6 +17,10 @@
 .barTrack { position: relative; height: 7px; background: var(--dashboard-soft); }
 .barTrack::after { content: ""; position: absolute; left: 50%; top: -2px; height: 13px; border-left: 1px solid var(--dashboard-muted); }
 .barTrack i { position: absolute; height: 100%; background: currentColor; border-radius: 2px; }
+
+@media (max-width: 759px), (pointer: coarse) {
+  .tabs button { min-height: 44px; font-size: 14px; }
+}
 
 @media (min-width: 821px) {
   .panel { padding: 7px 8px; }

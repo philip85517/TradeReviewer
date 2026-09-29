@@ -510,12 +510,14 @@ describe("independent Recall integration review", () => {
   it("preserves unsaved global working drawings when returning from a decision", async () => {
     const globalDraft = drawing("global-draft", "全局草稿");
     const globalRetained = drawing("global-retained", "旧全局留存");
+    const base = documentWithDecisionSnapshots(episode);
     const initial = {
-      ...documentWithDecisionSnapshots(episode),
+      ...base,
       working: {
-        ...documentWithDecisionSnapshots(episode).working,
+        ...base.working,
         selectedDecisionId: "global",
         drawings: [globalDraft],
+        cursor: candle.knowledgeAt!,
       },
       snapshots: [
         snapshot("snapshot-fill-1", "fill-1"),
@@ -539,12 +541,14 @@ describe("independent Recall integration review", () => {
     vi.useFakeTimers();
     const globalDraft = drawing("global-draft", "全局草稿");
     const stageDraft = drawing("stage-draft", "阶段草稿");
+    const base = documentWithDecisionSnapshots(episode);
     const initial = {
-      ...documentWithDecisionSnapshots(episode),
+      ...base,
       working: {
-        ...documentWithDecisionSnapshots(episode).working,
+        ...base.working,
         selectedDecisionId: "global",
         drawings: [globalDraft],
+        cursor: candle.knowledgeAt!,
       },
     } satisfies RecallDocument;
     let persisted = initial;
@@ -584,6 +588,25 @@ describe("independent Recall integration review", () => {
     const restoredGlobal = JSON.parse(screen.getByTestId("review-chart").getAttribute("data-drawings")!) as NormalizedDrawing[];
     expect(restoredGlobal.some((item) => item.id === "global-draft")).toBe(true);
     expect(restoredGlobal.some((item) => item.id === "stage-draft")).toBe(false);
+  });
+
+  it("keeps a future global drawing hidden before its replay cursor", async () => {
+    const futureDrawing = drawing("future-global", "尚未可知");
+    const base = documentWithDecisionSnapshots(episode);
+    const initial = {
+      ...base,
+      working: {
+        ...base.working,
+        selectedDecisionId: "global",
+        drawings: [futureDrawing],
+        cursor: candle.time,
+      },
+    } satisfies RecallDocument;
+    renderRecall(episode, initial, repositoryFor(initial));
+    await settleLoad();
+
+    const visible = JSON.parse(screen.getByTestId("review-chart").getAttribute("data-drawings")!) as NormalizedDrawing[];
+    expect(visible.some((item) => item.id === "future-global")).toBe(false);
   });
 
   it("captures the global working graph when completion starts from a decision overlay", async () => {

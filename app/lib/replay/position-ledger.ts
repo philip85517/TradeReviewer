@@ -83,6 +83,8 @@ export function replayPositionAtPrice(input: {
   executions: TradeExecution[];
   markPrice: string;
   cursor?: string;
+  /** Exact execution IDs selected by a dual-cursor replay boundary. */
+  visibleExecutionIds?: readonly string[];
   /** Explicit identity for statement-only inventory; used only when no executions exist. */
   inventoryIdentity?: { accountId: string; symbol: string; market: string };
   evidence?: Pick<MonthlyStatement, "positions" | "events" | "month" | "accountId">[];
@@ -123,7 +125,11 @@ export function replayPositionAtPrice(input: {
   const cursor = input.cursor ? replayCursorAt(input.cursor) : timeline.at(-1)?.at;
   const cursorTime = cursor ? Date.parse(cursor) : Number.POSITIVE_INFINITY;
   const visibleAt = (at: string) => Date.parse(at) <= cursorTime;
-  const visibleExecutions = input.executions.filter(execution => visibleAt(replayExecutionAt(execution)));
+  const visibleExecutionIds = input.visibleExecutionIds ? new Set(input.visibleExecutionIds) : undefined;
+  const selectedExecution = (execution: TradeExecution) => visibleExecutionIds
+    ? visibleExecutionIds.has(execution.id)
+    : visibleAt(replayExecutionAt(execution));
+  const visibleExecutions = input.executions.filter(selectedExecution);
   const actualVisibleExecutions = visibleExecutions.filter(execution => tradeNatureOf(execution) !== "simulation");
   const executionMatchesPosition = (execution: TradeExecution, position: StatementPosition) =>
     tradeNatureOf(execution) !== "simulation" &&
@@ -153,7 +159,9 @@ export function replayPositionAtPrice(input: {
   const pendingTransfers = new Set<string>();
 
   for (const entry of timeline) {
-    if (cursor && Date.parse(entry.at) > Date.parse(cursor)) continue;
+    if (entry.execution && visibleExecutionIds && !visibleExecutionIds.has(entry.execution.id)) continue;
+    if (cursor && Date.parse(entry.at) > Date.parse(cursor)
+      && !(entry.execution && visibleExecutionIds?.has(entry.execution.id))) continue;
     if (entry.pendingTransfer) {
       pendingTransfers.add(`${entry.pendingTransfer.accountId}:${entry.pendingTransfer.id}`);
       reasons.add("ambiguous-event-order");

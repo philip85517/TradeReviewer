@@ -98,7 +98,14 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
     const riskBaselines = input.riskBaselines.filter(b => planVersions.some(v => v.id === b.planVersionId));
     result.planVersionIds = planVersions.map(v => v.id);
     result.riskBaselineIds = riskBaselines.map(b => b.id);
-    const visible = ordered.filter((e, i) => i <= boundary && Date.parse(replayExecutionAt(e)) <= cutoff);
+    // A stable execution id is the authoritative second cursor. Its ordinal
+    // already represents the exact revealed decision, including date-only
+    // fills whose replay timestamp is the day-end fallback after the market
+    // candle's session-close knowledge boundary.
+    const hasStableExecutionCursor = ordered.some(e => e.id === context.executionCursor);
+    const visible = ordered.filter((e, i) => i <= boundary && (
+        hasStableExecutionCursor || Date.parse(replayExecutionAt(e)) <= cutoff
+    ));
     result.executionIds = visible.map(e => e.id);
     if (!visible.length)
         return result;
@@ -117,7 +124,15 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
     // The existing ledger is the evidence authority. Strip only fee incompleteness
     // for its gross-cost check; missing fees must not hide otherwise known gross PnL.
     const grossExecutions = visible.map(e => ({ ...e, fee: '0', source: { ...e.source, feeStatus: 'reported' as const } }));
-    const ledger = replayPositionAtPrice({ executions: grossExecutions, markPrice: '0', cursor: context.cursor });
+    // Keep the market cutoff for ancillary statement evidence, while allowing
+    // the exact selected execution IDs through when date-only replay times
+    // fall after the candle's session-close knowledge boundary.
+    const ledger = replayPositionAtPrice({
+        executions: grossExecutions,
+        markPrice: '0',
+        cursor: context.cursor,
+        visibleExecutionIds: visible.map(e => e.id),
+    });
     if (ledger.quantityKnown === false)
         return fail('unknown-quantity');
     const reason = ledger.accuracy?.reasons[0] ?? (ledger.costKnown === false ? 'unknown-cost' : null) ?? (visible.length === ordered.length ? episode.accuracy?.reasons.find(r => r !== 'unknown-fees') : undefined);

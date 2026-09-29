@@ -70,6 +70,17 @@ function closingFieldNote(reason: string | null, field: "price" | "quantity") {
   return null;
 }
 
+/** Keep the table compact without changing the source weighted-price value. */
+function formatWeightedPrice(value: string, currency: string) {
+  const display = new Decimal(value).toDecimalPlaces(6).toFixed();
+  if (new Decimal(value).eq(display)) return <span>{display} {currency}</span>;
+  const fullValue = `完整成交均价：${value} ${currency}`;
+  return <details className={styles.priceDetails} data-price-full-value={value}>
+    <summary title={fullValue} aria-label={fullValue}>{display} {currency}</summary>
+    <span className={styles.priceFullValue}>{fullValue}</span>
+  </details>;
+}
+
 export function RoomPendingReviews({ model, pageSize = 3, onOpenInReview, sourceSnapshot = null, onViewAllPending, page, onPageChange }: RoomPendingReviewsProps) {
   const [localPage, setLocalPage] = useState(1);
   const size = Number.isFinite(pageSize) && pageSize > 0 ? Math.max(1, Math.floor(pageSize)) : 3;
@@ -103,7 +114,7 @@ export function RoomPendingReviews({ model, pageSize = 3, onOpenInReview, source
         <td>{row.closeDate || "日期待核对"}</td>
         <td><strong>{row.instrumentName}</strong><small>{row.symbol} · {row.accountLabel}</small></td>
         <td>{directionLabel(row.closingSide)}</td>
-        <td>{row.closingWeightedPrice && row.closingCurrency ? `${row.closingWeightedPrice} ${row.closingCurrency}` : "不可用"}{closingFieldNote(row.closingUnavailableReason, "price") && <small>{closingFieldNote(row.closingUnavailableReason, "price")}</small>}</td>
+        <td>{row.closingWeightedPrice && row.closingCurrency ? formatWeightedPrice(row.closingWeightedPrice, row.closingCurrency) : "不可用"}{closingFieldNote(row.closingUnavailableReason, "price") && <small>{closingFieldNote(row.closingUnavailableReason, "price")}</small>}</td>
         <td>{row.closingQuantity ?? "不可用"}{closingFieldNote(row.closingUnavailableReason, "quantity") && <small>{closingFieldNote(row.closingUnavailableReason, "quantity")}</small>}</td>
         <td className={styles[tone(row.money, model.displayCurrency)]}>{row.money ? amount(row.money, model.displayCurrency) : "不可用"}{pendingReasonLabel(row.unavailableReason) && <small>{pendingReasonLabel(row.unavailableReason)}</small>}</td>
         <td><span className={styles.pending}>待复盘</span></td>

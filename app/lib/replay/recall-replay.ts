@@ -2,6 +2,7 @@ import { candleKnowledgeAt, type Candle } from "../market/types";
 import type { RecallDecision } from "../recall/types";
 import type { TradeExecution } from "../trades/types";
 import { mapExecutionsToCandles } from "./execution-markers";
+import { replayCursorAt, replayExecutionAt } from "../import/statement-evidence";
 
 export type RecallReplayMode = "replay" | "history";
 
@@ -41,13 +42,18 @@ function executionOrder(executions: TradeExecution[]) {
   // supports. Keep episode order as the tie-breaker for date-only and same-bar
   // fills instead of manufacturing an order from a floating timestamp.
   return executions.map((execution, index) => ({ execution, index })).sort((left, right) => {
-    const time = Date.parse(left.execution.executedAt) - Date.parse(right.execution.executedAt);
+    const time = Date.parse(replayExecutionAt(left.execution)) - Date.parse(replayExecutionAt(right.execution));
     return time || left.index - right.index;
   });
 }
 
 function orderedExecutions(executions: TradeExecution[]) {
   return executionOrder(executions).map(({ execution }) => execution);
+}
+
+/** Use the replay knowledge timestamp and episode order for every decision boundary. */
+export function orderedRecallExecutions(executions: TradeExecution[]): TradeExecution[] {
+  return orderedExecutions(executions);
 }
 
 export function executionBoundaryForCursor(
@@ -58,11 +64,13 @@ export function executionBoundaryForCursor(
   const ordered = orderedExecutions(executions);
   const byId = ordered.findIndex((execution) => execution.id === cursor);
   if (byId >= 0) return byId;
-  const cursorTime = Date.parse(cursor);
+  const parsedCursor = Date.parse(cursor);
+  if (!Number.isFinite(parsedCursor)) return -1;
+  const cursorTime = cursor.length === 10 ? Date.parse(replayCursorAt(cursor)) : parsedCursor;
   if (!Number.isFinite(cursorTime)) return -1;
   return ordered.reduce(
     (last, execution, index) =>
-      Date.parse(execution.executedAt) <= cursorTime ? index : last,
+      Date.parse(replayExecutionAt(execution)) <= cursorTime ? index : last,
     -1,
   );
 }

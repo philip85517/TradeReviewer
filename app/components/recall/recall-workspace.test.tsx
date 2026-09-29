@@ -176,12 +176,37 @@ const replayCandles = [
   { ...candle, time: "2025-01-02T10:15:00.000Z", knowledgeAt: "2025-01-02T10:30:00.000Z" },
   { ...candle, time: "2025-01-02T10:30:00.000Z", knowledgeAt: "2025-01-02T10:45:00.000Z" },
 ];
+const incompleteWeeklyCandle = {
+  ...candle,
+  time: "2025-01-01T00:00:00.000Z",
+  knowledgeAt: "2025-01-10T00:00:00.000Z",
+};
 const replayEpisode: TradeEpisode = {
   ...episode,
   executions: [
     episode.executions[0],
     { ...episode.executions[0], id: "fill-2", executedAt: "2025-01-02T10:16:00.000Z", side: "buy" },
     { ...episode.executions[0], id: "fill-3", executedAt: "2025-01-02T10:31:00.000Z", side: "sell" },
+  ],
+};
+
+const dateOnlyPreEntryEpisode: TradeEpisode = {
+  ...episode,
+  id: "date-only-pre-entry-episode",
+  executions: [
+    {
+      ...episode.executions[0],
+      id: "date-entry",
+      executedAt: "2025-01-02T08:00:00.000Z",
+      source: { ...episode.executions[0].source, timePrecision: "date-only" },
+    },
+    {
+      ...episode.executions[0],
+      id: "date-exit",
+      executedAt: "2025-01-02T07:00:00.000Z",
+      side: "sell",
+      source: { ...episode.executions[0].source, timePrecision: "date-only" },
+    },
   ],
 };
 
@@ -385,6 +410,43 @@ describe("RecallWorkspace autosave reconciliation", () => {
     expect(summary).toHaveAttribute("aria-label", "计划 · 3R / 风险 4000 CNY");
   });
 
+  it("keeps derived-number keyboard focus inside the plan sidebar", async () => {
+    let initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    initial.working.phase = "pre-entry";
+    initial = upsertRecallPlanDraft(initial, {
+      id: "keyboard-plan-draft",
+      planId: "keyboard-plan",
+      decisionId: initial.decisions[0].id,
+      kind: "initial",
+      input: {
+        ...emptyRecallPlanInput("CNY"),
+        sizing: undefined,
+        direction: "long",
+        entry: "56",
+        initialStop: "51.6",
+        targets: [{ id: "target-1", price: "76.6", quantity: null, ratio: null }],
+        sizeInputValue: "4200",
+        resolvedQuantity: "4200",
+      },
+      recordedPhase: "pre-entry",
+      recordedAt: "2025-01-02T09:00:00.000Z",
+      source: "retrospective",
+      knowledgeCutoff: { cursor: "2025-01-02T09:00:00.000Z", executionCursor: NO_REVEALED_EXECUTIONS },
+      hasSeenFuture: false,
+    });
+    renderRecall(replayEpisode, initial);
+
+    const chart = await waitFor(() => screen.getByTestId("mock-replay-chart"));
+    const cursor = chart.getAttribute("data-cursor");
+    const toggle = await waitFor(() => screen.getAllByRole("button", { name: "查看完整数值 4.6818181818181818182" }).find(button => button.textContent?.includes("R"))!);
+    fireEvent.keyDown(toggle, { key: " ", code: "Space" });
+    fireEvent.keyDown(toggle, { key: "ArrowRight", code: "ArrowRight" });
+    fireEvent.keyDown(toggle, { key: "j", code: "KeyJ" });
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", cursor);
+    fireEvent.click(toggle);
+    expect(toggle).toHaveTextContent("4.6818181818181818182R");
+  });
+
   it("exposes an awaitable leave guard that blocks navigation when saving fails", async () => {
     const initial = createRecallDocument(episode, "2025-01-02T10:00:00.000Z");
     const repository: RecallRepository = {
@@ -509,6 +571,54 @@ describe("RecallWorkspace autosave reconciliation", () => {
       expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", replayCursor);
       expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", replayExecutionCursor);
     });
+  });
+
+  it("keeps both replay cursors when switching to a timeframe with an incomplete bar", async () => {
+    const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    render(
+      <RecallWorkspace
+        episode={replayEpisode}
+        episodes={[replayEpisode]}
+        instrument={replayEpisode.instrument}
+        instruments={[{ ...replayEpisode.instrument, market: "US" }]}
+        timeframeAvailability={availability}
+        importedTimelineCandles={replayCandles}
+        candlesByTimeframe={{ "15m": replayCandles, "1D": replayCandles, "1W": [incompleteWeeklyCandle] }}
+        settings={settings}
+        repository={{ load: vi.fn().mockResolvedValue(initial), save: vi.fn().mockResolvedValue({ ...initial, revision: 1 }), fetch: vi.fn() }}
+        onEpisodeChange={vi.fn()}
+        onInstrumentChange={vi.fn()}
+        onSettingsChange={vi.fn()}
+      />,
+    );
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+    fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-2"));
+    const chart = screen.getByTestId("mock-replay-chart");
+    const marketCursor = chart.getAttribute("data-cursor");
+
+    fireEvent.click(screen.getByRole("button", { name: "切换到 1W" }));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-2"));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", marketCursor);
+  });
+
+  it("uses replay order for the pre-entry next-decision boundary", async () => {
+    const created = createRecallDocument(dateOnlyPreEntryEpisode, "2025-01-02T10:00:00.000Z");
+    const initial: RecallDocument = {
+      ...created,
+      working: {
+        ...created.working,
+        phase: "pre-entry",
+        cursor: "2025-01-01T23:59:59.999Z",
+        executionCursor: NO_REVEALED_EXECUTIONS,
+      },
+    };
+    renderRecall(dateOnlyPreEntryEpisode, initial);
+
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "下一笔决策" }));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "date-entry"));
   });
 
   it("restores a retained viewport while editing and the working viewport on exit", async () => {

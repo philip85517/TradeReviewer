@@ -1,0 +1,3816 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/0972/TradeReview
+
+(node:50338) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.test.tsx (76 tests | 12 failed) 94774ms
+     × keeps imported replay in one compact frame and places review actions in Recall's header 1369ms
+     × retains a Recall drawing draft per episode and gates completion until a snapshot exists 5025ms
+     × loads imported stocks after a page reload without starting a market request 141ms
+     × uses the unified replay workspace for a cached imported episode 2181ms
+     × exposes Recall snapshot controls for daily-only data 465ms
+     × restores the selected episode replay context independently 662ms
+     × passes stored instrument metadata into the trading room scope 176ms
+     × retains alternate simulation runs when the complete room changes its shared scope 917ms
+     × returns to the trading room with its filters, period, and calendar view after opening a holding review 415ms
+     × opens stock entries in the shared workbench and preserves library browsing state 1710ms
+     × hydrates cached candles for library stocks that are not selected in replay 722ms
+     × hydrates the review record for the exact position episode and exposes Recall capture controls 766ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps imported replay in one compact frame and places review actions in Recall's header
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <header
+  aria-label="页面顶栏"
+  class="page-header review-page-header"
+>
+  <div
+    class="header-actions"
+  >
+    <button
+      aria-controls="import-management-dialog"
+      aria-haspopup="dialog"
+      aria-label="打开导入与数据管理"
+      class="header-data-management"
+      type="button"
+    >
+      数据
+    </button>
+    <span
+      class="demo-chip"
+    >
+      实盘
+    </span>
+    <button
+      aria-expanded="false"
+      aria-haspopup="dialog"
+      aria-label="打开股票列表"
+      class="stock-list-trigger"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-menu"
+        fill="none"
+        height="19"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="19"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M4 5h16"
+        />
+        <path
+          d="M4 12h16"
+        />
+        <path
+          d="M4 19h16"
+        />
+      </svg>
+      <span>
+        股票
+      </span>
+    </button>
+    <div
+      class="user-avatar"
+    >
+      ZL
+    </div>
+  </div>
+</header> instead
+ ❯ app/components/trade-review-workspace.test.tsx:809:64
+    807|     await renderGoldReplay([], undefined, "2026-06-26T02:22:37Z", fals…
+    808|
+    809|     expect(screen.queryByRole("banner", { name: "页面顶栏" })).not.toBeInT…
+       |                                                                ^
+    810|     expect(screen.queryByLabelText("复盘布局")).not.toBeInTheDocument();
+    811|     expect(screen.getByRole("button", { name: "检查/修复数据" })).toBeVisibl…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retains a Recall drawing draft per episode and gates completion until a snapshot exists
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/trade-review-workspace.test.tsx:2007:3
+    2005|   });
+    2006|
+    2007|   it("retains a Recall drawing draft per episode and gates completion …
+       |   ^
+    2008|     const user = userEvent.setup();
+    2009|     await renderGoldReplay([], "2026-06-26T08:30:00.000Z", "2026-06-26…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > loads imported stocks after a page reload without starting a market request
+AssertionError: expected [ [ …(2) ] ] to have a length of +0 but got 1
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ expectOnlyLocalFxFetches app/components/trade-review-workspace.test.tsx:443:30
+    441|     return requestInit.cache !== "no-store" || method !== "GET";
+    442|   });
+    443|   expect(unexpectedRequests).toHaveLength(0);
+       |                              ^
+    444| }
+    445|
+ ❯ app/components/trade-review-workspace.test.tsx:2263:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > uses the unified replay workspace for a cached imported episode
+AssertionError: expected [ [ …(2) ] ] to have a length of +0 but got 1
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ expectOnlyLocalFxFetches app/components/trade-review-workspace.test.tsx:443:30
+    441|     return requestInit.cache !== "no-store" || method !== "GET";
+    442|   });
+    443|   expect(unexpectedRequests).toHaveLength(0);
+       |                              ^
+    444| }
+    445|
+ ❯ app/components/trade-review-workspace.test.tsx:3409:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > exposes Recall snapshot controls for daily-only data
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ app/components/trade-review-workspace.test.tsx:3501:113
+    3499|     openMoreRecords();
+    3500|     expect(screen.getByRole("button", { name: "保存并完成回合复盘" })).toBeEnab…
+    3501|     expect(vi.mocked(fetch).mock.calls.every(([url]) => String(url) ==…
+       |                                                                                                                 ^
+    3502|   });
+    3503|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > restores the selected episode replay context independently
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ app/components/trade-review-workspace.test.tsx:4251:113
+    4249|     // Per-episode Recall drawings and snapshot persistence are covere…
+    4250|     // dedicated RecallWorkspace tests; this parent test verifies navi…
+    4251|     expect(vi.mocked(fetch).mock.calls.every(([url]) => String(url) ==…
+       |                                                                                                                 ^
+    4252|   });
+    4253|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > passes stored instrument metadata into the trading room scope
+TestingLibraryElementError: Unable to find an element with the text: 更多筛选. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-label[39m=[32m"交易室范围"[39m
+[36m>[39m
+  [36m<section[39m
+    [33maria-label[39m=[32m"持仓照看"[39m
+    [33mclass[39m=[32m"_workspace_3823b4"[39m
+  [36m>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"_workspaceHeading_3823b4"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h2>[39m
+          [0m持仓照看[0m
+        [36m</h2>[39m
+        [36m<p>[39m
+          [0m关注当前仓位，回看历史持仓变化[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<span>[39m
+        [0m当前时点 · [0m
+        [0m2026-09-30[0m
+      [36m</span>[39m
+    [36m</header>[39m
+    [36m<section[39m
+      [33maria-label[39m=[32m"当前持仓概览"[39m
+      [33mclass[39m=[32m"_summary_bcecff"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_cards_bcecff"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_card_bcecff"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m持仓市值[0m
+          [36m</span>[39m
+          [36m<strong>[39m
+            [0m暂不可用[0m
+          [36m</strong>[39m
+          [36m<small[39m
+            [33mtitle[39m=[32m"可用小计 0/1 个仓位"[39m
+          [36m>[39m
+            [0m估值 [0m
+            [0m0[0m
+            [0m/[0m
+            [0m1[0m
+            [0m · 部分估值[0m
+          [36m</small>[39m
+          [36m<small[39m
+            [33mtitle[39m=[32m"完整覆盖 1/1 个仓位"[39m
+          [36m>[39m
+            [0m成本 [0m
+            [0mUSD 100.00[0m
+          [36m</small>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_card_bcecff"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m未实现盈亏[0m
+          [36m</span>[39m
+          [36m<strong>[39m
+            [0m暂不可用[0m
+          [36m</strong>[39m
+          [36m<small[39m
+            [33mtitle[39m=[32m"可用小计 0/1 个仓位"[39m
+          [36m>[39m
+            [0m盈亏 [0m
+            [0m0[0m
+            [0m/[0m
+            [0m1[0m
+            [0m · 可用小计[0m
+          [36m</small>[39m
+          [36m<small[39m
+            [33mtitle[39m=[32m"未实现收益率以剩余多头成本为分母"[39m
+          [36m>[39m
+            [0m收益率 [0m
+            [0m暂不可用[0m
+          [36m</small>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_card_bcecff"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m当日盈亏[0m
+          [36m</span>[39m
+          [36m<strong>[39m
+            [0m暂不可用[0m
+          [36m</strong>[39m
+          [36m<small[39m
+            [33mtitle[39m=[32m"前一应有交易日估值缺失或数量不可用；当日估值缺失或数量不可用"[39m
+          [36m>[39m
+            [0m前一应有交易日估值缺失或数量不可用；…[0m
+          [36m</small>[39m
+          [36m<small[39m
+            [33mtitle[39m=[32m"前一应有交易日估值缺失或数量不可用；当日估值缺失或数量不可用；当日净盈亏不可用"[39m
+          [36m>[39m
+            [0m当日百分比 [0m
+            [36m<b[39m
+              [33maria-label[39m=[32m"当日盈亏百分比暂不可用：前一应有交易日估值缺失或数量不可用；当日估值缺失或数量不可用；当日净盈亏不可用"[39m
+            [36m>[39m
+              [0m暂不可用[0m
+            [36m</b>[39m
+          [36m</small>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_card_bcecff"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m持仓标的数[0m
+          [36m</span>[39m
+          [36m<strong>[39m
+            [0m1[0m
+          [36m</strong>[39m
+          [36m<small>[39m
+            [0m股票 0 · ETF 1 · 类型待核对 0[0m
+          [36m</small>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_context_bcecff"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"_note_bcecff"[39m
+        [36m>[39m
+          [0m估值截点：[0m
+          [0m2026-09-30[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"_details_bcecff"[39m
+      [36m>[39m
+        [36m<summary>[39m
+          [0m核对估值组成与覆盖[0m
+        [36m</summary>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"_note_bcecff"[39m
+        [36m>[39m
+          [0m市值为多空净市值；成本为带符号的剩余持仓成本；未实现盈亏不扣交易费用；收益率仅支持多头剩余成本分母。[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"_note_bcecff"[39m
+        [36m>[39m
+          [0m当日依据：[0m
+          [0m前一应有交易日估值缺失或数量不可用；当日估值缺失或数量不可用[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"_note_bcecff"[39m
+        [36m>[39m
+          [0m市值：[0m
+          [0m可用小计 0/1 个仓位[0m
+          [0m；成本：[0m
+          [0m完整覆盖 1/1 个仓位[0m
+          [0m；盈亏：[0m
+          [0m可用小计 0/1 个仓位[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_scroll_bcecff"[39m
+        [36m>[39m
+          [36m<table>[39m
+            [36m<thead>[39m
+              [36m<tr>[39m
+                [36m<th>[39m
+                  [0m标的 / 账户[0m
+                [36m</th>[39m
+                [36m<th>[39m
+                  [0m数量[0m
+                [36m</th>[39m
+                [36m<th>[39m
+                  [0m行情日期[0m
+                [36m</th>[39m
+                [36m<th>[39m
+                  [0m原币净市值[0m
+                [36m</th>[39m
+                [36m<th>[39m
+                  [0m剩余成本[0m
+                [36m</th>[39m
+                [36m<th>[39m
+                  [0m未实现盈亏[0m
+                [36m</th>[39m
+                [36m<th>[39m
+                  [0m收益率 / 原因[0m
+                [36m</th>[39m
+              [36m</tr>[39m
+            [36m</thead>[39m
+            [36m<tbody>[39m
+              [36m<tr>[39m
+                [36m<td>[39m
+                  [0m交易室ETF[0m
+                  [0m · [0m
+                  [0m富途[0m
+                [36m</td>[39m
+                [36m<td>[39m
+                  [0m10[0m
+                [36m</td>[39m
+                [36m<td>[39m
+                  [0m无行情[0m
+                [36m</td>[39m
+                [36m<td>[39m
+                  [0m暂不可用[0m
+                [36m</td>[39m
+                [36m<td>[39m
+                  [0mUSD 100.00[0m
+                [36m</td>[39m
+                [36m<td>[39m
+                  [0m暂不可用[0m
+                [36m</td>[39m
+                [36m<td>[39m
+                  [0m暂不可用[0m
+                  [36m<small>[39m
+                    [0m尚未开始行情更新[0m
+                    [0m；请在持仓明细核对证据或更新行情[0m
+                  [36m</small>[39m
+                [36m</td>[39m
+              [36m</tr>[39m
+            [36m</tbody>[39m
+          [36m</table>[39m
+        [36m</div>[39m
+      [36m</details>[39m
+    [36m</section>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_holdingsOverviewGrid_3823b4"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33maria-label[39m=[32m"历史持仓估值"[39m
+        [33mclass[39m=[32m"_panel_92039f"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"_header_92039f"[39m
+        [36m>[39m
+     ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/trade-review-workspace.test.tsx:4333:35
+    4331|
+    4332|     const room = await screen.findByRole("region", { name: "交易室范围" });
+    4333|     await user.click(within(room).getByText("更多筛选", { exact: true }));
+       |                                   ^
+    4334|     await user.click(within(within(room).getByRole("group", { name: "交…
+    4335|     expect(within(room).getByText("1 个回合进入范围")).toBeVisible();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retains alternate simulation runs when the complete room changes its shared scope
+TestingLibraryElementError: Unable to find an accessible element with the role "radio" and name "模拟盘"
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"_topbar_3823b4"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "我的交易室":
+  [36m<h1 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "交易性质":
+  [36m<div[39m
+    [33maria-label[39m=[32m"交易性质"[39m
+    [33mclass[39m=[32m"_segmentedGroup_eb9172 _standard_eb9172"[39m
+    [33mdata-control-mode[39m=[32m"segmented"[39m
+    [33mdata-control-size[39m=[32m"standard"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "实盘":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mclass[39m=[32m"_segmentButton_eb9172"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "模拟盘":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"_segmentButton_eb9172"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "筛选":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"trading-room-scope-filters"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"_topbarFilterToggle_3823b4"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "打开待处理事项":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"打开待处理事项"[39m
+    [33mclass[39m=[32m"_iconButton_846bfb"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "打开本地用户菜单":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"打开本地用户菜单"[39m
+    [33mclass[39m=[32m"_userButton_846bfb "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "账户范围":
+  [36m<select[39m
+    [33maria-label[39m=[32m"账户范围"[39m
+    [33mdata-control-size[39m=[32m"standard"[39m
+  [36m/>[39m
+
+  Name "报告计价":
+  [36m<select[39m
+    [33maria-label[39m=[32m"报告计价"[39m
+    [33mdata-control-size[39m=[32m"standard"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "全部账户":
+  [36m<option[39m
+    [33mvalue[39m=[32m"all"[39m
+  [36m/>[39m
+
+  Name "富途":
+  [36m<option[39m
+    [33mvalue[39m=[32m"acct"[39m
+  [36m/>[39m
+
+  Name "原币":
+  [36m<option[39m
+    [33mvalue[39m=[32m"original"[39m
+  [36m/>[39m
+
+  Name "HKD":
+  [36m<option[39m
+    [33mvalue[39m=[32m"HKD"[39m
+  [36m/>[39m
+
+  Name "CNY":
+  [36m<option[39m
+    [33mvalue[39m=[32m"CNY"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  time:
+
+  Name "数据更新时间：2026-09-30":
+  [36m<time[39m
+    [33mdatetime[39m=[32m"2026-09-30"[39m
+    [33mtitle[39m=[32m"数据更新时间：2026-09-30"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  searchbox:
+
+  Name "搜索已导入标的":
+  [36m<input[39m
+    [33maria-controls[39m=[32m"trading-room-global-search-results"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"搜索已导入标的"[39m
+    [33mplaceholder[39m=[32m"搜索标的"[39m
+    [33mtype[39m=[32m"search"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------region:
+
+  Name "交易室范围":
+  [36m<section[39m
+    [33maria-label[39m=[32m"交易室范围"[39m
+  [36m/>[39m
+
+  Name "持仓照看":
+  [36m<section[39m
+    [33maria-label[39m=[32m"持仓照看"[39m
+    [33mclass[39m=[32m"_workspace_3823b4"[39m
+  [36m/>[39m
+
+  Name "当前持仓概览":
+  [36m<section[39m
+    [33maria-label[39m=[32m"当前持仓概览"[39m
+    [33mclass[39m=[32m"_summary_bcecff"[39m
+  [36m/>[39m
+
+  Name "历史持仓估值":
+  [36m<section[39m
+    [33maria-label[39m=[32m"历史持仓估值"[39m
+    [33mclass[39m=[32m"_panel_92039f"[39m
+  [36m/>[39m
+
+  Name "当前持仓资产分布":
+  [36m<section[39m
+    [33maria-label[39m=[32m"当前持仓资产分布"[39m
+    [33mclass[39m=[32m"_panel_a675ce"[39m
+  [36m/>[39m
+
+  Name "当前持仓":
+  [36m<section[39m
+    [33maria-label[39m=[32m"当前持仓"[39m
+    [33mclass[39m=[32m"_panel_a1a633"[39m
+    [33mdata-current-date[39m=[32m"2026-09-30"[39m
+  [36m/>[39m
+
+  Name "历史交易与复盘":
+  [36m<section[39m
+    [33maria-label[39m=[32m"历史交易与复盘"[39m
+    [33mclass[39m=[32m"_roomScopeSection_3823b4 _workspace_3823b4"[39m
+  [36m/>[39m
+
+  Name "业绩趋势与日历":
+  [36m<section[39m
+    [33maria-label[39m=[32m"业绩趋势与日历"[39m
+    [33mclass[39m=[32m"_panel_13d420 _embeddedPanel_13d420"[39m
+  [36m/>[39m
+
+  Name "盈亏贡献分解":
+  [36m<section[39m
+    [33maria-label[39m=[32m"盈亏贡献分解"[39m
+    [33mclass[39m=[32m"_panel_fa6ea8"[39m
+  [36m/>[39m
+
+  Name "盈亏日历":
+  [36m<div[39m
+    [33maria-label[39m=[32m"盈亏日历"[39m
+    [33mclass[39m=[32m"_calendarWrap_13d420"[39m
+    [33mrole[39m=[32m"region"[39m
+  [36m/>[39m
+
+  Name "待复盘的已完成交易":
+  [36m<section[39m
+    [33maria-label[39m=[32m"待复盘的已完成交易"[39m
+    [33mclass[39m=[32m"_panel_76745c"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"_workspaceHeading_3823b4"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"_header_92039f"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"_header_a675ce"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"_heading_a1a633"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"_workspaceHeading_3823b4"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<header />[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "持仓照看":
+  [36m<h2 />[39m
+
+  Name "持仓总览":
+  [36m<h3 />[39m
+
+  Name "资产分布（持仓市值）":
+  [36m<h3 />[39m
+
+  Name "当前持仓":
+  [36m<h2 />[39m
+
+  Name "历史交易与复盘":
+  [36m<h2 />[39m
+
+  Name "已完成交易表现":
+  [36m<h3 />[39m
+
+  Name "盈亏贡献分解":
+  [36m<h3 />[39m
+
+  Name "盈亏日历 单位：原币":
+  [36m<h3 />[39m
+
+  Name "待复盘的已完成交易（0）":
+  [36m<h3 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_note_bcecff"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_note_bcecff"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_note_bcecff"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_note_bcecff"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mid[39m=[32m"holdings-chart-help"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_note_92039f"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_note_a675ce"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_cashMessage_a675ce"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_holdingDate_a1a633"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_roomScopeHint_3823b4"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_empty_13d420"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_note_fa6ea8"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_note_fa6ea8"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_note_fa6ea8"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_note_76745c"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_note_76745c"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"_legendTitle_a675ce"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"_neutral_3823b4"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"_neutral_3823b4"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"_details_bcecff"[39m
+  [36m/>[39m
+
+  Name "持仓曲线指标":
+  [36m<div[39m
+    [33maria-label[39m=[32m"持仓曲线指标"[39m
+    [33mclass[39m=[32m"_metricControls_92039f"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "持仓历史观察期间":
+  [36m<div[39m
+    [33maria-label[39m=[32m"持仓历史观察期间"[39m
+    [33mclass[39m=[32m"_periodSlot_92039f"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"_dateDetails_3823b4"[39m
+  [36m/>[39m
+
+  Name "自定义持仓历史期间":
+  [36m<div[39m
+    [33maria-label[39m=[32m"自定义持仓历史期间"[39m
+    [33mclass[39m=[32m"_roomCustomPeriodEditor_3823b4"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "持仓曲线粒度":
+  [36m<div[39m
+    [33maria-label[39m=[32m"持仓曲线粒度"[39m
+    [33mclass[39m=[32m"_controls_92039f"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "持仓曲线交互":
+  [36m<div[39m
+    [33maria-describedby[39m=[32m"holdings-chart-help"[39m
+    [33maria-label[39m=[32m"持仓曲线交互"[39m
+    [33mclass[39m=[32m"_interaction_92039f"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"_methodDetails_92039f"[39m
+  [36m/>[39m
+
+  Name "美股分布原因":
+  [36m<details[39m
+    [33maria-label[39m=[32m"美股分布原因"[39m
+    [33mclass[39m=[32m"_itemReason_a675ce"[39m
+  [36m/>[39m
+
+  Name "资产分布完整覆盖说明":
+  [36m<details[39m
+    [33maria-label[39m=[32m"资产分布完整覆盖说明"[39m
+    [33mclass[39m=[32m"_reasonDetails_a675ce"[39m
+  [36m/>[39m
+
+  Name "当前分布完整解释":
+  [36m<details[39m
+    [33maria-label[39m=[32m"当前分布完整解释"[39m
+    [33mclass[39m=[32m"_reasonDetails_a675ce"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"_tableInfo_a1a633"[39m
+  [36m/>[39m
+
+  Name "排序持仓":
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"_sortOptions_a1a633"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"_rowDetails_a1a633"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"_evidence_a1a633"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"_dateDetails_3823b4"[39m
+  [36m/>[39m
+
+  Name "自定义统计期间":
+  [36m<div[39m
+    [33maria-label[39m=[32m"自定义统计期间"[39m
+    [33mclass[39m=[32m"_roomCustomPeriodEditor_3823b4"[39m
+    [33mid[39m=[32m"custom-period-editor"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"_roomDetailsSummary_3823b4"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"_roomScopeNotes_3823b4"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"_returnDetails_3823b4"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"_roomMoneyDetails_3823b4"[39m
+  [36m/>[39m
+
+  Name "趋势分桶":
+  [36m<div[39m
+    [33maria-label[39m=[32m"趋势分桶"[39m
+    [33mclass[39m=[32m"_levelTabs_13d420"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "历史表现指标":
+  [36m<div[39m
+    [33maria-label[39m=[32m"历史表现指标"[39m
+    [33mclass[39m=[32m"_levelTabs_13d420"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "贡献维度":
+  [36m<div[39m
+    [33maria-label[39m=[32m"贡献维度"[39m
+    [33mclass[39m=[32m"_tabs_fa6ea8"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "日历层级":
+  [36m<div[39m
+    [33maria-label[39m=[32m"日历层级"[39m
+    [33mclass[39m=[32m"_levelTabs_13d420"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  table:
+
+  Name "":
+  [36m<table />[39m
+
+  Name "":
+  [36m<table[39m
+    [33mclass[39m=[32m"_table_a1a633"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  rowgroup:
+
+  Name "":
+  [36m<thead />[39m
+
+  Name "":
+  [36m<tbody />[39m
+
+  Name "":
+  [36m<thead />[39m
+
+  Name "":
+  [36m<tbody />[39m
+
+  --------------------------------------------------
+  row:
+
+  Name "标的 / 账户 数量 行情日期 原币净市值 剩余成本 未实现盈亏 收益率 / 原因":
+  [36m<tr />[39m
+
+  Name "小鹏汽车 · 富途 10 无行情 暂不可用 USD 100.00 暂不可用 暂不可用尚未开始行情更新；请在持仓明细核对证据或更新行情":
+  [36m<tr />[39m
+
+  Name "证券 市场 持仓数量 持仓均价 估值价 持仓市值 未实现盈亏 盈亏率 近30日走势 最近记录 操作":
+  [36m<tr />[39m
+
+  Name "小鹏汽车XPEV · 资产类型待核对富途 · 方向：多头 详情 账户：富途；方向：多头 最近成交：2026-01-02T14:30:00.000Z 报价精确时间：未知 美股 10 US$10 不可用 暂无可用报价报价时间：未知 不可用（缺少可信金额） USD 暂不可用（缺少报价） USD 暂不可用 近30日价格暂无数据 暂无记录 看图·记录 估值说明 尚未开始行情更新 重试行情":
+  [36m<tr[39m
+    [33mclass[39m=[32m"_tableRow_a1a633 _rowQuoteIssue_a1a633"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  columnheader:
+
+  Name "标的 / 账户":
+  [36m<th />[39m
+
+  Name "数量":
+  [36m<th />[39m
+
+  Name "行情日期":
+  [36m<th />[39m
+
+  Name "原币净市值":
+  [36m<th />[39m
+
+  Name "剩余成本":
+  [36m<th />[39m
+
+  Name "未实现盈亏":
+  [36m<th />[39m
+
+  Name "收益率 / 原因":
+  [36m<th />[39m
+
+  Name "证券":
+  [36m<th />[39m
+
+  Name "市场":
+  [36m<th />[39m
+
+  Name "持仓数量":
+  [36m<th />[39m
+
+  Name "持仓均价":
+  [36m<th />[39m
+
+  Name "估值价":
+  [36m<th />[39m
+
+  Name "持仓市值":
+  [36m<th />[39m
+
+  Name "未实现盈亏":
+  [36m<th />[39m
+
+  Name "盈亏率":
+  [36m<th />[39m
+
+  Name "近30日走势":
+  [36m<th />[39m
+
+  Name "最近记录":
+  [36m<th />[39m
+
+  Name "操作":
+  [36m<th />[39m
+
+  --------------------------------------------------
+  cell:
+
+  Name "小鹏汽车 · 富途":
+  [36m<td />[39m
+
+  Name "10":
+  [36m<td />[39m
+
+  Name "无行情":
+  [36m<td />[39m
+
+  Name "暂不可用":
+  [36m<td />[39m
+
+  Name "USD 100.00":
+  [36m<td />[39m
+
+  Name "暂不可用":
+  [36m<td />[39m
+
+  Name "暂不可用尚未开始行情更新；请在持仓明细核对证据或更新行情":
+  [36m<td />[39m
+
+  Name "小鹏汽车XPEV · 资产类型待核对富途 · 方向：多头 详情 账户：富途；方向：多头 最近成交：2026-01-02T14:30:00.000Z 报价精确时间：未知":
+  [36m<td[39m
+    [33mdata-label[39m=[32m"证券"[39m
+  [36m/>[39m
+
+  Name "美股":
+  [36m<td[39m
+    [33mdata-label[39m=[32m"市场"[39m
+  [36m/>[39m
+
+  Name "10":
+  [36m<td[39m
+    [33mdata-label[39m=[32m"持仓数量"[39m
+  [36m/>[39m
+
+  Name "US$10":
+  [36m<td[39m
+    [33mdata-label[39m=[32m"持仓均价"[39m
+  [36m/>[39m
+
+  Name "不可用 暂无可用报价报价时间：未知":
+  [36m<td[39m
+    [33mdata-label[39m=[32m"估值价"[39m
+    [33mtitle[39m=[32m"暂无可用报价；报价时间：未知"[39m
+  [36m/>[39m
+
+  Name "不可用（缺少可信金额） USD":
+  [36m<td[39m
+    [33mdata-label[39m=[32m"持仓市值"[39m
+  [36m/>[39m
+
+  Name "暂不可用（缺少报价） USD":
+  [36m<td[39m
+    [33mdata-label[39m=[32m"浮盈亏"[39m
+  [36m/>[39m
+
+  Name "暂不可用":
+  [36m<td[39m
+    [33mdata-label[39m=[32m"盈亏率"[39m
+  [36m/>[39m
+
+  Name "近30日价格暂无数据":
+  [36m<td[39m
+    [33mdata-label[39m=[32m"近30日价格"[39m
+  [36m/>[39m
+
+  Name "暂无记录":
+  [36m<td[39m
+    [33mdata-label[39m=[32m"最近记录"[39m
+  [36m/>[39m
+
+  Name "看图·记录 估值说明 尚未开始行情更新 重试行情":
+  [36m<td[39m
+    [33mclass[39m=[32m"_rowActions_a1a633"[39m
+    [33mdata-label[39m=[32m"操作"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "总市值":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "未实现盈亏":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "未实现收益率":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "应用观察期间":
+  [36m<button[39m
+    [33mclass[39m=[32m"_customPeriodApply_3823b4"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "日":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "周":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "月":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "按市场":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "按资产类型":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "导出当前筛选 CSV（1）":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "打开持仓回合复盘":
+  [36m<button[39m
+    [33maria-label[39m=[32m"打开持仓回合复盘"[39m
+    [33mclass[39m=[32m"_reviewButton_a1a633"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "重试行情":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "上一页持仓":
+  [36m<button[39m
+    [33maria-label[39m=[32m"上一页持仓"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "第1页":
+  [36m<button[39m
+    [33maria-current[39m=[32m"page"[39m
+    [33maria-label[39m=[32m"第1页"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "下一页持仓":
+  [36m<button[39m
+    [33maria-label[39m=[32m"下一页持仓"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "进入交易库":
+  [36m<button[39m
+    [33mclass[39m=[32m"_historyLibraryButton_3823b4"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "应用期间":
+  [36m<button[39m
+    [33mclass[39m=[32m"_customPeriodApply_3823b4"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "全部历史":
+  [36m<button[39m
+    [33mclass[39m=[32m"_customPeriodCancel_3823b4"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "日":
+  [36m<button[39m
+    [33maria-label[39m=[32m"日"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "周":
+  [36m<button[39m
+    [33maria-label[39m=[32m"周"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "月":
+  [36m<button[39m
+    [33maria-label[39m=[32m"月"[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "累计盈亏":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "自然月胜率":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "市场":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "标的":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "账户":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "月":
+  [36m<button[39m
+    [33maria-label[39m=[32m"月"[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "年":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "全部年份":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "上一个月":
+  [36m<button[39m
+    [33maria-label[39m=[32m"上一个月"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "下一个月":
+  [36m<button[39m
+    [33maria-label[39m=[32m"下一个月"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-01，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-01，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-02，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-02，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-03，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-03，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-04，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-04，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-05，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-05，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-06，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-06，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-07，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-07，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-08，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-08，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-09，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-09，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-10，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-10，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-11，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-11，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-12，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-12，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-13，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-13，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-14，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-14，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-15，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-15，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-16，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-16，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-17，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-17，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-18，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-18，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-19，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-19，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-20，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-20，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-21，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-21，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-22，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-22，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-23，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-23，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-24，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-24，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-25，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-25，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-26，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-26，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-27，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-27，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-28，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-28，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-29，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-29，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2026-09-30，无样本，暂无样本":
+  [36m<button[39m
+    [33maria-label[39m=[32m"2026-09-30，无样本，暂无样本"[39m
+    [33mclass[39m=[32m"_cell_13d420 _state-empty_13d420"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  tablist:
+
+  Name "持仓历史期间":
+  [36m<div[39m
+    [33maria-label[39m=[32m"持仓历史期间"[39m
+    [33mclass[39m=[32m"_segmentedGroup_eb9172 _compact_eb9172 _periodTabs_3823b4"[39m
+    [33mdata-control-mode[39m=[32m"tabs"[39m
+    [33mdata-control-size[39m=[32m"compact"[39m
+    [33mrole[39m=[32m"tablist"[39m
+  [36m/>[39m
+
+  Name "资产分布维度":
+  [36m<div[39m
+    [33maria-label[39m=[32m"资产分布维度"[39m
+    [33mclass[39m=[32m"_tabs_a675ce"[39m
+    [33mrole[39m=[32m"tablist"[39m
+  [36m/>[39m
+
+  Name "交易室期间":
+  [36m<div[39m
+    [33maria-label[39m=[32m"交易室期间"[39m
+    [33mclass[39m=[32m"_segmentedGroup_eb9172 _compact_eb9172 _periodTabs_3823b4"[39m
+    [33mdata-control-mode[39m=[32m"tabs"[39m
+    [33mdata-control-size[39m=[32m"compact"[39m
+    [33mrole[39m=[32m"tablist"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  tab:
+
+  Name "持仓历史：本自然月":
+  [36m<button[39m
+    [33maria-label[39m=[32m"持仓历史：本自然月"[39m
+    [33maria-selected[39m=[32m"false"[39m
+    [33mclass[39m=[32m"_segmentButton_eb9172"[39m
+    [33mrole[39m=[32m"tab"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "持仓历史：近3个自然月":
+  [36m<button[39m
+    [33maria-label[39m=[32m"持仓历史：近3个自然月"[39m
+    [33maria-selected[39m=[32m"false"[39m
+    [33mclass[39m=[32m"_segmentButton_eb9172"[39m
+    [33mrole[39m=[32m"tab"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "持仓历史：今年至今":
+  [36m<button[39m
+    [33maria-label[39m=[32m"持仓历史：今年至今"[39m
+    [33maria-selected[39m=[32m"true"[39m
+    [33mclass[39m=[32m"_segmentButton_eb9172"[39m
+    [33mrole[39m=[32m"tab"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "持仓历史：全部":
+  [36m<button[39m
+    [33maria-label[39m=[32m"持仓历史：全部"[39m
+    [33maria-selected[39m=[32m"false"[39m
+    [33mclass[39m=[32m"_segmentButton_eb9172"[39m
+    [33mrole[39m=[32m"tab"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "近3个自然月":
+  [36m<button[39m
+    [33maria-label[39m=[32m"近3个自然月"[39m
+    [33maria-selected[39m=[32m"false"[39m
+    [33mclass[39m=[32m"_segmentButton_eb9172"[39m
+    [33mrole[39m=[32m"tab"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "今年至今":
+  [36m<button[39m
+    [33maria-label[39m=[32m"今年至今"[39m
+    [33maria-selected[39m=[32m"true"[39m
+    [33mclass[39m=[32m"_segmentButton_eb9172"[39m
+    [33mrole[39m=[32m"tab"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "全部":
+  [36m<button[39m
+    [33maria-label[39m=[32m"全部"[39m
+    [33maria-selected[39m=[32m"false"[39m
+    [33mclass[39m=[32m"_segmentButton_eb9172"[39m
+    [33mrole[39m=[32m"tab"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"_emptyCoverage_92039f"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  img:
+
+  Name "日级持仓总市值曲线":
+  [36m<svg[39m
+    [33maria-label[39m=[32m"日级持仓总市值曲线"[39m
+    [33mclass[39m=[32m"_chart_92039f"[39m
+    [33mpreserveAspectRatio[39m=[32m"none"[39m
+    [33mrole[39m=[32m"img"[39m
+    [33mviewBox[39m=[32m"0 0 720 220"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  contentinfo:
+
+  Name "":
+  [36m<footer[39m
+    [33mclass[39m=[32m"_footer_92039f"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "历史持仓日期":
+  [36m<select[39m
+    [33maria-label[39m=[32m"历史持仓日期"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "选择日期查看":
+  [36m<option[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "2026-01-01 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-01"[39m
+  [36m/>[39m
+
+  Name "2026-01-02 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-02"[39m
+  [36m/>[39m
+
+  Name "2026-01-03 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-03"[39m
+  [36m/>[39m
+
+  Name "2026-01-04 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-04"[39m
+  [36m/>[39m
+
+  Name "2026-01-05 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-05"[39m
+  [36m/>[39m
+
+  Name "2026-01-06 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-06"[39m
+  [36m/>[39m
+
+  Name "2026-01-07 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-07"[39m
+  [36m/>[39m
+
+  Name "2026-01-08 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-08"[39m
+  [36m/>[39m
+
+  Name "2026-01-09 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-09"[39m
+  [36m/>[39m
+
+  Name "2026-01-10 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-10"[39m
+  [36m/>[39m
+
+  Name "2026-01-11 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-11"[39m
+  [36m/>[39m
+
+  Name "2026-01-12 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-12"[39m
+  [36m/>[39m
+
+  Name "2026-01-13 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-13"[39m
+  [36m/>[39m
+
+  Name "2026-01-14 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-14"[39m
+  [36m/>[39m
+
+  Name "2026-01-15 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-15"[39m
+  [36m/>[39m
+
+  Name "2026-01-16 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-16"[39m
+  [36m/>[39m
+
+  Name "2026-01-17 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-17"[39m
+  [36m/>[39m
+
+  Name "2026-01-18 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-18"[39m
+  [36m/>[39m
+
+  Name "2026-01-19 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-19"[39m
+  [36m/>[39m
+
+  Name "2026-01-20 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-20"[39m
+  [36m/>[39m
+
+  Name "2026-01-21 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-21"[39m
+  [36m/>[39m
+
+  Name "2026-01-22 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-22"[39m
+  [36m/>[39m
+
+  Name "2026-01-23 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-23"[39m
+  [36m/>[39m
+
+  Name "2026-01-24 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-24"[39m
+  [36m/>[39m
+
+  Name "2026-01-25 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-25"[39m
+  [36m/>[39m
+
+  Name "2026-01-26 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-26"[39m
+  [36m/>[39m
+
+  Name "2026-01-27 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-27"[39m
+  [36m/>[39m
+
+  Name "2026-01-28 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-28"[39m
+  [36m/>[39m
+
+  Name "2026-01-29 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-29"[39m
+  [36m/>[39m
+
+  Name "2026-01-30 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-30"[39m
+  [36m/>[39m
+
+  Name "2026-01-31 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-01-31"[39m
+  [36m/>[39m
+
+  Name "2026-02-01 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-01"[39m
+  [36m/>[39m
+
+  Name "2026-02-02 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-02"[39m
+  [36m/>[39m
+
+  Name "2026-02-03 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-03"[39m
+  [36m/>[39m
+
+  Name "2026-02-04 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-04"[39m
+  [36m/>[39m
+
+  Name "2026-02-05 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-05"[39m
+  [36m/>[39m
+
+  Name "2026-02-06 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-06"[39m
+  [36m/>[39m
+
+  Name "2026-02-07 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-07"[39m
+  [36m/>[39m
+
+  Name "2026-02-08 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-08"[39m
+  [36m/>[39m
+
+  Name "2026-02-09 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-09"[39m
+  [36m/>[39m
+
+  Name "2026-02-10 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-10"[39m
+  [36m/>[39m
+
+  Name "2026-02-11 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-11"[39m
+  [36m/>[39m
+
+  Name "2026-02-12 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-12"[39m
+  [36m/>[39m
+
+  Name "2026-02-13 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-13"[39m
+  [36m/>[39m
+
+  Name "2026-02-14 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-14"[39m
+  [36m/>[39m
+
+  Name "2026-02-15 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-15"[39m
+  [36m/>[39m
+
+  Name "2026-02-16 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-16"[39m
+  [36m/>[39m
+
+  Name "2026-02-17 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-17"[39m
+  [36m/>[39m
+
+  Name "2026-02-18 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-18"[39m
+  [36m/>[39m
+
+  Name "2026-02-19 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-19"[39m
+  [36m/>[39m
+
+  Name "2026-02-20 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-20"[39m
+  [36m/>[39m
+
+  Name "2026-02-21 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-21"[39m
+  [36m/>[39m
+
+  Name "2026-02-22 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-22"[39m
+  [36m/>[39m
+
+  Name "2026-02-23 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-23"[39m
+  [36m/>[39m
+
+  Name "2026-02-24 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-24"[39m
+  [36m/>[39m
+
+  Name "2026-02-25 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-25"[39m
+  [36m/>[39m
+
+  Name "2026-02-26 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-26"[39m
+  [36m/>[39m
+
+  Name "2026-02-27 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-27"[39m
+  [36m/>[39m
+
+  Name "2026-02-28 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-02-28"[39m
+  [36m/>[39m
+
+  Name "2026-03-01 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-01"[39m
+  [36m/>[39m
+
+  Name "2026-03-02 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-02"[39m
+  [36m/>[39m
+
+  Name "2026-03-03 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-03"[39m
+  [36m/>[39m
+
+  Name "2026-03-04 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-04"[39m
+  [36m/>[39m
+
+  Name "2026-03-05 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-05"[39m
+  [36m/>[39m
+
+  Name "2026-03-06 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-06"[39m
+  [36m/>[39m
+
+  Name "2026-03-07 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-07"[39m
+  [36m/>[39m
+
+  Name "2026-03-08 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-08"[39m
+  [36m/>[39m
+
+  Name "2026-03-09 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-09"[39m
+  [36m/>[39m
+
+  Name "2026-03-10 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-10"[39m
+  [36m/>[39m
+
+  Name "2026-03-11 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-11"[39m
+  [36m/>[39m
+
+  Name "2026-03-12 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-12"[39m
+  [36m/>[39m
+
+  Name "2026-03-13 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-13"[39m
+  [36m/>[39m
+
+  Name "2026-03-14 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-14"[39m
+  [36m/>[39m
+
+  Name "2026-03-15 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-15"[39m
+  [36m/>[39m
+
+  Name "2026-03-16 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-16"[39m
+  [36m/>[39m
+
+  Name "2026-03-17 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-17"[39m
+  [36m/>[39m
+
+  Name "2026-03-18 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-18"[39m
+  [36m/>[39m
+
+  Name "2026-03-19 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-19"[39m
+  [36m/>[39m
+
+  Name "2026-03-20 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-20"[39m
+  [36m/>[39m
+
+  Name "2026-03-21 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-21"[39m
+  [36m/>[39m
+
+  Name "2026-03-22 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-22"[39m
+  [36m/>[39m
+
+  Name "2026-03-23 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-23"[39m
+  [36m/>[39m
+
+  Name "2026-03-24 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-24"[39m
+  [36m/>[39m
+
+  Name "2026-03-25 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-25"[39m
+  [36m/>[39m
+
+  Name "2026-03-26 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-26"[39m
+  [36m/>[39m
+
+  Name "2026-03-27 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-27"[39m
+  [36m/>[39m
+
+  Name "2026-03-28 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-28"[39m
+  [36m/>[39m
+
+  Name "2026-03-29 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-29"[39m
+  [36m/>[39m
+
+  Name "2026-03-30 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-30"[39m
+  [36m/>[39m
+
+  Name "2026-03-31 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-03-31"[39m
+  [36m/>[39m
+
+  Name "2026-04-01 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-01"[39m
+  [36m/>[39m
+
+  Name "2026-04-02 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-02"[39m
+  [36m/>[39m
+
+  Name "2026-04-03 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-03"[39m
+  [36m/>[39m
+
+  Name "2026-04-04 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-04"[39m
+  [36m/>[39m
+
+  Name "2026-04-05 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-05"[39m
+  [36m/>[39m
+
+  Name "2026-04-06 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-06"[39m
+  [36m/>[39m
+
+  Name "2026-04-07 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-07"[39m
+  [36m/>[39m
+
+  Name "2026-04-08 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-08"[39m
+  [36m/>[39m
+
+  Name "2026-04-09 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-09"[39m
+  [36m/>[39m
+
+  Name "2026-04-10 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-10"[39m
+  [36m/>[39m
+
+  Name "2026-04-11 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-11"[39m
+  [36m/>[39m
+
+  Name "2026-04-12 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-12"[39m
+  [36m/>[39m
+
+  Name "2026-04-13 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-13"[39m
+  [36m/>[39m
+
+  Name "2026-04-14 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-14"[39m
+  [36m/>[39m
+
+  Name "2026-04-15 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-15"[39m
+  [36m/>[39m
+
+  Name "2026-04-16 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-16"[39m
+  [36m/>[39m
+
+  Name "2026-04-17 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-17"[39m
+  [36m/>[39m
+
+  Name "2026-04-18 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-18"[39m
+  [36m/>[39m
+
+  Name "2026-04-19 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-19"[39m
+  [36m/>[39m
+
+  Name "2026-04-20 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-20"[39m
+  [36m/>[39m
+
+  Name "2026-04-21 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-21"[39m
+  [36m/>[39m
+
+  Name "2026-04-22 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-22"[39m
+  [36m/>[39m
+
+  Name "2026-04-23 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-23"[39m
+  [36m/>[39m
+
+  Name "2026-04-24 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-24"[39m
+  [36m/>[39m
+
+  Name "2026-04-25 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-25"[39m
+  [36m/>[39m
+
+  Name "2026-04-26 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-26"[39m
+  [36m/>[39m
+
+  Name "2026-04-27 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-27"[39m
+  [36m/>[39m
+
+  Name "2026-04-28 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-28"[39m
+  [36m/>[39m
+
+  Name "2026-04-29 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-29"[39m
+  [36m/>[39m
+
+  Name "2026-04-30 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-04-30"[39m
+  [36m/>[39m
+
+  Name "2026-05-01 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-01"[39m
+  [36m/>[39m
+
+  Name "2026-05-02 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-02"[39m
+  [36m/>[39m
+
+  Name "2026-05-03 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-03"[39m
+  [36m/>[39m
+
+  Name "2026-05-04 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-04"[39m
+  [36m/>[39m
+
+  Name "2026-05-05 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-05"[39m
+  [36m/>[39m
+
+  Name "2026-05-06 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-06"[39m
+  [36m/>[39m
+
+  Name "2026-05-07 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-07"[39m
+  [36m/>[39m
+
+  Name "2026-05-08 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-08"[39m
+  [36m/>[39m
+
+  Name "2026-05-09 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-09"[39m
+  [36m/>[39m
+
+  Name "2026-05-10 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-10"[39m
+  [36m/>[39m
+
+  Name "2026-05-11 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-11"[39m
+  [36m/>[39m
+
+  Name "2026-05-12 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-12"[39m
+  [36m/>[39m
+
+  Name "2026-05-13 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-13"[39m
+  [36m/>[39m
+
+  Name "2026-05-14 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-14"[39m
+  [36m/>[39m
+
+  Name "2026-05-15 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-15"[39m
+  [36m/>[39m
+
+  Name "2026-05-16 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-16"[39m
+  [36m/>[39m
+
+  Name "2026-05-17 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-17"[39m
+  [36m/>[39m
+
+  Name "2026-05-18 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-18"[39m
+  [36m/>[39m
+
+  Name "2026-05-19 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-19"[39m
+  [36m/>[39m
+
+  Name "2026-05-20 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-20"[39m
+  [36m/>[39m
+
+  Name "2026-05-21 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-21"[39m
+  [36m/>[39m
+
+  Name "2026-05-22 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-22"[39m
+  [36m/>[39m
+
+  Name "2026-05-23 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-23"[39m
+  [36m/>[39m
+
+  Name "2026-05-24 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-24"[39m
+  [36m/>[39m
+
+  Name "2026-05-25 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-25"[39m
+  [36m/>[39m
+
+  Name "2026-05-26 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-26"[39m
+  [36m/>[39m
+
+  Name "2026-05-27 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-27"[39m
+  [36m/>[39m
+
+  Name "2026-05-28 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-28"[39m
+  [36m/>[39m
+
+  Name "2026-05-29 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-29"[39m
+  [36m/>[39m
+
+  Name "2026-05-30 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-30"[39m
+  [36m/>[39m
+
+  Name "2026-05-31 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-05-31"[39m
+  [36m/>[39m
+
+  Name "2026-06-01 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-01"[39m
+  [36m/>[39m
+
+  Name "2026-06-02 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-02"[39m
+  [36m/>[39m
+
+  Name "2026-06-03 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-03"[39m
+  [36m/>[39m
+
+  Name "2026-06-04 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-04"[39m
+  [36m/>[39m
+
+  Name "2026-06-05 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-05"[39m
+  [36m/>[39m
+
+  Name "2026-06-06 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-06"[39m
+  [36m/>[39m
+
+  Name "2026-06-07 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-07"[39m
+  [36m/>[39m
+
+  Name "2026-06-08 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-08"[39m
+  [36m/>[39m
+
+  Name "2026-06-09 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-09"[39m
+  [36m/>[39m
+
+  Name "2026-06-10 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-10"[39m
+  [36m/>[39m
+
+  Name "2026-06-11 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-11"[39m
+  [36m/>[39m
+
+  Name "2026-06-12 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-12"[39m
+  [36m/>[39m
+
+  Name "2026-06-13 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-13"[39m
+  [36m/>[39m
+
+  Name "2026-06-14 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-14"[39m
+  [36m/>[39m
+
+  Name "2026-06-15 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-15"[39m
+  [36m/>[39m
+
+  Name "2026-06-16 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-16"[39m
+  [36m/>[39m
+
+  Name "2026-06-17 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-17"[39m
+  [36m/>[39m
+
+  Name "2026-06-18 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-18"[39m
+  [36m/>[39m
+
+  Name "2026-06-19 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-19"[39m
+  [36m/>[39m
+
+  Name "2026-06-20 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-20"[39m
+  [36m/>[39m
+
+  Name "2026-06-21 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-21"[39m
+  [36m/>[39m
+
+  Name "2026-06-22 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-22"[39m
+  [36m/>[39m
+
+  Name "2026-06-23 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-23"[39m
+  [36m/>[39m
+
+  Name "2026-06-24 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-24"[39m
+  [36m/>[39m
+
+  Name "2026-06-25 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-25"[39m
+  [36m/>[39m
+
+  Name "2026-06-26 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-26"[39m
+  [36m/>[39m
+
+  Name "2026-06-27 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-27"[39m
+  [36m/>[39m
+
+  Name "2026-06-28 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-28"[39m
+  [36m/>[39m
+
+  Name "2026-06-29 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-29"[39m
+  [36m/>[39m
+
+  Name "2026-06-30 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-06-30"[39m
+  [36m/>[39m
+
+  Name "2026-07-01 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-01"[39m
+  [36m/>[39m
+
+  Name "2026-07-02 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-02"[39m
+  [36m/>[39m
+
+  Name "2026-07-03 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-03"[39m
+  [36m/>[39m
+
+  Name "2026-07-04 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-04"[39m
+  [36m/>[39m
+
+  Name "2026-07-05 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-05"[39m
+  [36m/>[39m
+
+  Name "2026-07-06 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-06"[39m
+  [36m/>[39m
+
+  Name "2026-07-07 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-07"[39m
+  [36m/>[39m
+
+  Name "2026-07-08 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-08"[39m
+  [36m/>[39m
+
+  Name "2026-07-09 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-09"[39m
+  [36m/>[39m
+
+  Name "2026-07-10 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-10"[39m
+  [36m/>[39m
+
+  Name "2026-07-11 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-11"[39m
+  [36m/>[39m
+
+  Name "2026-07-12 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-12"[39m
+  [36m/>[39m
+
+  Name "2026-07-13 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-13"[39m
+  [36m/>[39m
+
+  Name "2026-07-14 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-14"[39m
+  [36m/>[39m
+
+  Name "2026-07-15 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-15"[39m
+  [36m/>[39m
+
+  Name "2026-07-16 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-16"[39m
+  [36m/>[39m
+
+  Name "2026-07-17 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-17"[39m
+  [36m/>[39m
+
+  Name "2026-07-18 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-18"[39m
+  [36m/>[39m
+
+  Name "2026-07-19 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-19"[39m
+  [36m/>[39m
+
+  Name "2026-07-20 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-20"[39m
+  [36m/>[39m
+
+  Name "2026-07-21 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-21"[39m
+  [36m/>[39m
+
+  Name "2026-07-22 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-22"[39m
+  [36m/>[39m
+
+  Name "2026-07-23 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-23"[39m
+  [36m/>[39m
+
+  Name "2026-07-24 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-24"[39m
+  [36m/>[39m
+
+  Name "2026-07-25 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-25"[39m
+  [36m/>[39m
+
+  Name "2026-07-26 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-26"[39m
+  [36m/>[39m
+
+  Name "2026-07-27 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-27"[39m
+  [36m/>[39m
+
+  Name "2026-07-28 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-28"[39m
+  [36m/>[39m
+
+  Name "2026-07-29 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-29"[39m
+  [36m/>[39m
+
+  Name "2026-07-30 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-30"[39m
+  [36m/>[39m
+
+  Name "2026-07-31 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-07-31"[39m
+  [36m/>[39m
+
+  Name "2026-08-01 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-01"[39m
+  [36m/>[39m
+
+  Name "2026-08-02 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-02"[39m
+  [36m/>[39m
+
+  Name "2026-08-03 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-03"[39m
+  [36m/>[39m
+
+  Name "2026-08-04 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-04"[39m
+  [36m/>[39m
+
+  Name "2026-08-05 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-05"[39m
+  [36m/>[39m
+
+  Name "2026-08-06 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-06"[39m
+  [36m/>[39m
+
+  Name "2026-08-07 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-07"[39m
+  [36m/>[39m
+
+  Name "2026-08-08 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-08"[39m
+  [36m/>[39m
+
+  Name "2026-08-09 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-09"[39m
+  [36m/>[39m
+
+  Name "2026-08-10 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-10"[39m
+  [36m/>[39m
+
+  Name "2026-08-11 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-11"[39m
+  [36m/>[39m
+
+  Name "2026-08-12 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-12"[39m
+  [36m/>[39m
+
+  Name "2026-08-13 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-13"[39m
+  [36m/>[39m
+
+  Name "2026-08-14 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-14"[39m
+  [36m/>[39m
+
+  Name "2026-08-15 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-15"[39m
+  [36m/>[39m
+
+  Name "2026-08-16 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-16"[39m
+  [36m/>[39m
+
+  Name "2026-08-17 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-17"[39m
+  [36m/>[39m
+
+  Name "2026-08-18 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-18"[39m
+  [36m/>[39m
+
+  Name "2026-08-19 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-19"[39m
+  [36m/>[39m
+
+  Name "2026-08-20 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-20"[39m
+  [36m/>[39m
+
+  Name "2026-08-21 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-21"[39m
+  [36m/>[39m
+
+  Name "2026-08-22 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-22"[39m
+  [36m/>[39m
+
+  Name "2026-08-23 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-23"[39m
+  [36m/>[39m
+
+  Name "2026-08-24 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-24"[39m
+  [36m/>[39m
+
+  Name "2026-08-25 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-25"[39m
+  [36m/>[39m
+
+  Name "2026-08-26 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-26"[39m
+  [36m/>[39m
+
+  Name "2026-08-27 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-27"[39m
+  [36m/>[39m
+
+  Name "2026-08-28 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-28"[39m
+  [36m/>[39m
+
+  Name "2026-08-29 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-29"[39m
+  [36m/>[39m
+
+  Name "2026-08-30 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-30"[39m
+  [36m/>[39m
+
+  Name "2026-08-31 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-08-31"[39m
+  [36m/>[39m
+
+  Name "2026-09-01 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-01"[39m
+  [36m/>[39m
+
+  Name "2026-09-02 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-02"[39m
+  [36m/>[39m
+
+  Name "2026-09-03 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-03"[39m
+  [36m/>[39m
+
+  Name "2026-09-04 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-04"[39m
+  [36m/>[39m
+
+  Name "2026-09-05 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-05"[39m
+  [36m/>[39m
+
+  Name "2026-09-06 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-06"[39m
+  [36m/>[39m
+
+  Name "2026-09-07 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-07"[39m
+  [36m/>[39m
+
+  Name "2026-09-08 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-08"[39m
+  [36m/>[39m
+
+  Name "2026-09-09 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-09"[39m
+  [36m/>[39m
+
+  Name "2026-09-10 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-10"[39m
+  [36m/>[39m
+
+  Name "2026-09-11 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-11"[39m
+  [36m/>[39m
+
+  Name "2026-09-12 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-12"[39m
+  [36m/>[39m
+
+  Name "2026-09-13 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-13"[39m
+  [36m/>[39m
+
+  Name "2026-09-14 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-14"[39m
+  [36m/>[39m
+
+  Name "2026-09-15 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-15"[39m
+  [36m/>[39m
+
+  Name "2026-09-16 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-16"[39m
+  [36m/>[39m
+
+  Name "2026-09-17 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-17"[39m
+  [36m/>[39m
+
+  Name "2026-09-18 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-18"[39m
+  [36m/>[39m
+
+  Name "2026-09-19 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-19"[39m
+  [36m/>[39m
+
+  Name "2026-09-20 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-20"[39m
+  [36m/>[39m
+
+  Name "2026-09-21 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-21"[39m
+  [36m/>[39m
+
+  Name "2026-09-22 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-22"[39m
+  [36m/>[39m
+
+  Name "2026-09-23 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-23"[39m
+  [36m/>[39m
+
+  Name "2026-09-24 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-24"[39m
+  [36m/>[39m
+
+  Name "2026-09-25 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-25"[39m
+  [36m/>[39m
+
+  Name "2026-09-26 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-26"[39m
+  [36m/>[39m
+
+  Name "2026-09-27 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-27"[39m
+  [36m/>[39m
+
+  Name "2026-09-28 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-28"[39m
+  [36m/>[39m
+
+  Name "2026-09-29 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-29"[39m
+  [36m/>[39m
+
+  Name "2026-09-30 · 数据不完整":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2026-09-30"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul />[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"_reasonList_a675ce"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"_legendItem_a675ce"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  radio:
+
+  Name "最近成交":
+  [36m<input[39m
+    [33mchecked[39m=[32m""[39m
+    [33mname[39m=[32m"holdings-sort"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"recent"[39m
+  [36m/>[39m
+
+  Name "浮盈亏":
+  [36m<input[39m
+    [33mname[39m=[32m"holdings-sort"[39m
+    [33mtype[39m=[32m"radio"[39m
+    [33mvalue[39m=[32m"pnl"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  searchbox:
+
+  Name "搜索持仓":
+  [36m<input[39m
+    [33maria-label[39m=[32m"搜索持仓"[39m
+    [33mplaceholder[39m=[32m"代码、名称、账户"[39m
+    [33mtype[39m=[32m"search"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  definition:
+
+  Name "10":
+  [36m<dd[39m
+    [33mtitle[39m=[32m"10"[39m
+  [36m/>[39m
+
+  Name "10":
+  [36m<dd[39m
+    [33mtitle[39m=[32m"10"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd />[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"_unavailable_a1a633"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"_unavailable_a1a633"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  navigation:
+
+  Name "持仓分页":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"持仓分页"[39m
+    [33mclass[39m=[32m"_pagination_a1a633"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-label[39m=[32m"我的交易室"[39m
+  [33mclass[39m=[32m"_dashboard_3823b4"[39m
+  [33mstyle[39m=[32m"--dashboard-positive: #26a69a; --dashboard-negative: #ef5350;"[39m
+[36m>[39m
+  [36m<header[39m
+    [33mclass[39m=[32m"_topbar_3823b4"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_topbarTitle_3823b4"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"_topbarEyebrow_3823b4"[39m
+      [36m>[39m
+        [0mTradeReview · 历史交易复盘[0m
+      [36m</span>[39m
+      [36m<h1>[39m
+        [0m我的交易室[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0m持仓照看 · 复盘总结 · 持续进化[0m
+      [36m</p>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_topbarRight_3823b4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"交易室共享范围"[39m
+        [33mclass[39m=[32m"_topbarScope_3823b4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"交易性质"[39m
+          [33mclass[39m=[32m"_segmentedGroup_eb9172 _standard_eb9172"[39m
+          [33mdata-control-mode[39m=[32m"segmented"[39m
+          [33mdata-control-size[39m=[32m"standard"[39m
+          [33mrole[39m=[32m"group"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-pressed[39m=[32m"true"[39m
+            [33mclass[39m=[32m"_segmentButton_eb9172"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m实盘[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-pressed[39m=[32m"false"[39m
+            [33mclass[39m=[32m"_segmentButton_eb9172"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m模拟盘[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"_selectField_eb9172 _topbarSelect_3823b4"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m账户范围[0m
+          [36m</span>[39m
+          [36m<select[39m
+            [33maria-label[39m=[32m"账户范围"[39m
+            [33mdata-control-size[39m=[32m"standard"[39m
+          [36m>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"all"[39m
+            [36m>[39m
+              [0m全部账户[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"acct"[39m
+            [36m>[39m
+              [0m富途[0m
+            [36m</option>[39m
+          [36m</select>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"_selectField_eb9172 _topbarSelect_3823b4"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m计价币种[0m
+          [36m</span>[39m
+          [36m<select[39m
+            [33maria-label[39m=[32m"报告计价"[39m
+            [33mdata-control-size[39m=[32m"standard"[39m
+          [36m>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"original"[39m
+            [36m>[39m
+              [0m原币[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"HKD"[39m
+            [36m>[39m
+              [0mHKD[0m
+            [36m</option>[39m
+            [36m<option[39m
+              [33mvalue[39m=[32m"CNY"[39m
+            [36m>[39m
+              [0mCNY[0m
+            [36m</option>[39m
+          [36m</select>[39m
+        [36m</label>[39m
+        [36m<button[39m
+          [33maria-controls[39m=[32m"trading-room-scope-filters"[39m
+          [33maria-expanded[39m=[32m"false"[39m
+          [33mclass[39m=[32m"_topbarFilterToggle_3823b4"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m筛选[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"数据更新时间"[39m
+        [33mclass[39m=[32m"_topbarUpdated_3823b4"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"_topbarUpdatedDot_3823b4"[39m
+        [36m/>[39m
+        [36m<span>[39m
+          [0m数据更新：[0m
+        [36m</span>[39m
+        [36m<time[39m
+          [33mdatetime[39m=[32m"2026-09-30"[39m
+          [33mtitle[39m=[32m"数据更新时间：2026-09-30"[39m
+        [36m>[39m
+          [0m2026-09-30 08:00[0m
+        [36m</time>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"交易室全局工具"[39m
+        [33mclass[39m=[32m"_tools_846bfb trading-room-global-tools"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_search_846bfb"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"_searchField_846bfb"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-search"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"17"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"17"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m21 21-4.34-4.34"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"11"[39m
+                [33mcy[39m=[32m"11"[39m
+                [33mr[39m=[32m"8"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<input[39m
+              [33maria-controls[39m=[32m"trading-room-global-search-results"[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-label[39m=[32m"搜索已导入标的"[39m
+              [33mplaceholder[39m=[32m"搜索标的"[39m
+              [33mtype[39m=[32m"search"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</label>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_popoverAnchor_846bfb"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-label[39m=[32m"打开待处理事项"[39m
+            [33mclass[39m=[32m"_iconButton_846bfb"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-bell"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"18"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+         ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/trade-review-workspace.test.tsx:4354:35
+    4352|     await screen.findByText("1 个未平仓回合");
+    4353|     const room = await screen.findByRole("region", { name: "我的交易室" });
+    4354|     await user.click(within(room).getByRole("radio", { name: "模拟盘" }));
+       |                                   ^
+    4355|     const runs = within(room).getByRole("group", { name: "交易室模拟运行筛选" }…
+    4356|     const runA = await within(runs).findByRole("radio", { name: /模拟运行 …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/12]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > returns to the trading room with its filters, period, and calendar view after opening a holding review
+TestingLibraryElementError: Unable to find an element with the text: 更多筛选. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-label[39m=[32m"交易室范围"[39m
+[36m>[39m
+  [36m<section[39m
+    [33maria-label[39m=[32m"持仓照看"[39m
+    [33mclass[39m=[32m"_workspace_3823b4"[39m
+  [36m>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"_workspaceHeading_3823b4"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h2>[39m
+          [0m持仓照看[0m
+        [36m</h2>[39m
+        [36m<p>[39m
+          [0m关注当前仓位，回看历史持仓变化[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<span>[39m
+        [0m当前时点 · [0m
+        [0m2026-09-30[0m
+      [36m</span>[39m
+    [36m</header>[39m
+    [36m<section[39m
+      [33maria-label[39m=[32m"当前持仓概览"[39m
+      [33mclass[39m=[32m"_summary_bcecff"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_cards_bcecff"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_card_bcecff"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m持仓市值[0m
+          [36m</span>[39m
+          [36m<strong>[39m
+            [0m暂不可用[0m
+          [36m</strong>[39m
+          [36m<small[39m
+            [33mtitle[39m=[32m"可用小计 0/1 个仓位"[39m
+          [36m>[39m
+            [0m估值 [0m
+            [0m0[0m
+            [0m/[0m
+            [0m1[0m
+            [0m · 部分估值[0m
+          [36m</small>[39m
+          [36m<small[39m
+            [33mtitle[39m=[32m"完整覆盖 1/1 个仓位"[39m
+          [36m>[39m
+            [0m成本 [0m
+            [0mUSD 100.00[0m
+          [36m</small>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_card_bcecff"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m未实现盈亏[0m
+          [36m</span>[39m
+          [36m<strong>[39m
+            [0m暂不可用[0m
+          [36m</strong>[39m
+          [36m<small[39m
+            [33mtitle[39m=[32m"可用小计 0/1 个仓位"[39m
+          [36m>[39m
+            [0m盈亏 [0m
+            [0m0[0m
+            [0m/[0m
+            [0m1[0m
+            [0m · 可用小计[0m
+          [36m</small>[39m
+          [36m<small[39m
+            [33mtitle[39m=[32m"未实现收益率以剩余多头成本为分母"[39m
+          [36m>[39m
+            [0m收益率 [0m
+            [0m暂不可用[0m
+          [36m</small>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_card_bcecff"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m当日盈亏[0m
+          [36m</span>[39m
+          [36m<strong>[39m
+            [0m暂不可用[0m
+          [36m</strong>[39m
+          [36m<small[39m
+            [33mtitle[39m=[32m"前一应有交易日估值缺失或数量不可用；当日估值缺失或数量不可用"[39m
+          [36m>[39m
+            [0m前一应有交易日估值缺失或数量不可用；…[0m
+          [36m</small>[39m
+          [36m<small[39m
+            [33mtitle[39m=[32m"前一应有交易日估值缺失或数量不可用；当日估值缺失或数量不可用；当日净盈亏不可用"[39m
+          [36m>[39m
+            [0m当日百分比 [0m
+            [36m<b[39m
+              [33maria-label[39m=[32m"当日盈亏百分比暂不可用：前一应有交易日估值缺失或数量不可用；当日估值缺失或数量不可用；当日净盈亏不可用"[39m
+            [36m>[39m
+              [0m暂不可用[0m
+            [36m</b>[39m
+          [36m</small>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_card_bcecff"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0m持仓标的数[0m
+          [36m</span>[39m
+          [36m<strong>[39m
+            [0m1[0m
+          [36m</strong>[39m
+          [36m<small>[39m
+            [0m股票 0 · ETF 0 · 类型待核对 1[0m
+          [36m</small>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_context_bcecff"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"_note_bcecff"[39m
+        [36m>[39m
+          [0m估值截点：[0m
+          [0m2026-09-30[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"_details_bcecff"[39m
+      [36m>[39m
+        [36m<summary>[39m
+          [0m核对估值组成与覆盖[0m
+        [36m</summary>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"_note_bcecff"[39m
+        [36m>[39m
+          [0m市值为多空净市值；成本为带符号的剩余持仓成本；未实现盈亏不扣交易费用；收益率仅支持多头剩余成本分母。[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"_note_bcecff"[39m
+        [36m>[39m
+          [0m当日依据：[0m
+          [0m前一应有交易日估值缺失或数量不可用；当日估值缺失或数量不可用[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"_note_bcecff"[39m
+        [36m>[39m
+          [0m市值：[0m
+          [0m可用小计 0/1 个仓位[0m
+          [0m；成本：[0m
+          [0m完整覆盖 1/1 个仓位[0m
+          [0m；盈亏：[0m
+          [0m可用小计 0/1 个仓位[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_scroll_bcecff"[39m
+        [36m>[39m
+          [36m<table>[39m
+            [36m<thead>[39m
+              [36m<tr>[39m
+                [36m<th>[39m
+                  [0m标的 / 账户[0m
+                [36m</th>[39m
+                [36m<th>[39m
+                  [0m数量[0m
+                [36m</th>[39m
+                [36m<th>[39m
+                  [0m行情日期[0m
+                [36m</th>[39m
+                [36m<th>[39m
+                  [0m原币净市值[0m
+                [36m</th>[39m
+                [36m<th>[39m
+                  [0m剩余成本[0m
+                [36m</th>[39m
+                [36m<th>[39m
+                  [0m未实现盈亏[0m
+                [36m</th>[39m
+                [36m<th>[39m
+                  [0m收益率 / 原因[0m
+                [36m</th>[39m
+              [36m</tr>[39m
+            [36m</thead>[39m
+            [36m<tbody>[39m
+              [36m<tr>[39m
+                [36m<td>[39m
+                  [0m小鹏汽车[0m
+                  [0m · [0m
+                  [0m富途[0m
+                [36m</td>[39m
+                [36m<td>[39m
+                  [0m10[0m
+                [36m</td>[39m
+                [36m<td>[39m
+                  [0m无行情[0m
+                [36m</td>[39m
+                [36m<td>[39m
+                  [0m暂不可用[0m
+                [36m</td>[39m
+                [36m<td>[39m
+                  [0mUSD 100.00[0m
+                [36m</td>[39m
+                [36m<td>[39m
+                  [0m暂不可用[0m
+                [36m</td>[39m
+                [36m<td>[39m
+                  [0m暂不可用[0m
+                  [36m<small>[39m
+                    [0m尚未开始行情更新[0m
+                    [0m；请在持仓明细核对证据或更新行情[0m
+                  [36m</small>[39m
+                [36m</td>[39m
+              [36m</tr>[39m
+            [36m</tbody>[39m
+          [36m</table>[39m
+        [36m</div>[39m
+      [36m</details>[39m
+    [36m</section>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"_holdingsOverviewGrid_3823b4"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33maria-label[39m=[32m"历史持仓估值"[39m
+        [33mclass[39m=[32m"_panel_92039f"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"_header_92039f"[39m
+        [36m>[39m
+       ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/components/trade-review-workspace.test.tsx:4390:36
+    4388|     const scope = within(dashboard).getByRole("region", { name: "交易室范围…
+    4389|     await user.click(within(scope).getByRole("tab", { name: "近3个自然月" }…
+    4390|     await user.click(within(scope).getByText("更多筛选"));
+       |                                    ^
+    4391|     await user.click(await within(within(scope).getByRole("group", { n…
+    4392|     const performance = within(dashboard).getByRole("region", { name: …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/12]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > opens stock entries in the shared workbench and preserves library browsing state
+AssertionError: expected [ [ …(2) ] ] to have a length of +0 but got 1
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ expectOnlyLocalFxFetches app/components/trade-review-workspace.test.tsx:443:30
+    441|     return requestInit.cache !== "no-store" || method !== "GET";
+    442|   });
+    443|   expect(unexpectedRequests).toHaveLength(0);
+       |                              ^
+    444| }
+    445|
+ ❯ app/components/trade-review-workspace.test.tsx:4581:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/12]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > hydrates cached candles for library stocks that are not selected in replay
+AssertionError: expected [ [ …(2) ] ] to have a length of +0 but got 1
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ expectOnlyLocalFxFetches app/components/trade-review-workspace.test.tsx:443:30
+    441|     return requestInit.cache !== "no-store" || method !== "GET";
+    442|   });
+    443|   expect(unexpectedRequests).toHaveLength(0);
+       |                              ^
+    444| }
+    445|
+ ❯ app/components/trade-review-workspace.test.tsx:4683:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/12]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > hydrates the review record for the exact position episode and exposes Recall capture controls
+AssertionError: expected [ [ …(2) ] ] to have a length of +0 but got 1
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ expectOnlyLocalFxFetches app/components/trade-review-workspace.test.tsx:443:30
+    441|     return requestInit.cache !== "no-store" || method !== "GET";
+    442|   });
+    443|   expect(unexpectedRequests).toHaveLength(0);
+       |                              ^
+    444| }
+    445|
+ ❯ app/components/trade-review-workspace.test.tsx:4796:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/12]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  12 failed | 74 passed (86)
+   Start at  00:35:49
+   Duration  122.13s (transform 4.04s, setup 556ms, import 6.66s, tests 111.01s, environment 2.83s)

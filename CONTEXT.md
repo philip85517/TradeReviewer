@@ -64,3 +64,14 @@ _Avoid_：将每条成交明细直接称为一笔独立复盘
 **研究快照**：研究任务使用的证券池、行情数据版本、行情口径与截止条件的固定组合，用于重复验证同一结果。
 
 **数据可知时间**：有证据表明某一版本的数据已可被获得的时间。交易时段结束不自动证明数据当时已经发布或被系统获得。
+
+## 策略研究
+
+**策略观察者**：通过播放、暂停、检查决策原因和比较组合结果来研究策略的用户角色；选股、调仓与再平衡由策略自动执行。
+_Avoid_：人工模拟交易员、逐笔下单操作者（不属于本次确认的主角色）
+
+## 2026-09-30 策略桌面 UX v2 原型验收收口
+
+`.scratch/strategy-desktop-ux-v2/FINAL-ACCEPTANCE.md`为最新交付记录；01–08全部技术ACCEPTED，root新会话旅程+Astra独立54图证据。仍为合成/内存/刷新重置原型，生产引擎/DB/插件与窄屏不在本轮。当前预览http://127.0.0.1:3047/?prototype=strategy-create&variant=A，服务PID47927（PTY44535），显式隔离`.scratch/strategy-portfolio-backtesting/prototype-isolated.sqlite`；业务库不变。Typecheck/build/scopedlint通过（lint2未用参数warning），全量suite基线失败详验收记录。未提交/推送/合并，父规格/决策票保持原状态，用户最终反馈尚待试用。
+
+2026-09-30 后续：用户已授权提交远端并合并 master。任务分支已先推送，PR #35（https://github.com/philip85517/TradeReviewer/pull/35）目标 master；整合复验见 `.scratch/strategy-desktop-ux-v2/REMOTE-INTEGRATION.md`。此前未推送描述保留为原验收时点记录，未扩大原型范围。

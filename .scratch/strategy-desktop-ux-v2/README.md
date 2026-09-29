@@ -73,3 +73,7 @@ X07-03/04：root实际Single EMA7/12仓位归属、事件忽略旧quality筛选�
 2026-09-30 X08-01/P2：08新鲜T0-1280时间条回看控件裁切，07仅新增入口布局局部重开；Luna6/max comparison_runtime_resume仅running CSS修复，root实际两档/Astra独立复验。08整体未接受，其余已接受证据保留。
 
 2026-09-30 X08-01修复关闭：root derived-t0-1280实际timebar无横向溢出、date selector全可见；Astra reviewer08第二阶段直接对照两档T0、主图/日期轴PASS。CSS-only无状态变更；07重新ACCEPTED，08继续验收。
+
+## 2026-09-30 远端整合
+
+用户授权推任务分支并合并 master；[PR #35](https://github.com/philip85517/TradeReviewer/pull/35)。整合后生产构建、5 项回归、类型与桌面浏览器/独立视觉检查通过。完整单测仍 NOT PASS：2720 PASS / 1 FAIL / 6 SKIP，唯一失败在未修改最新 master 同样复现。详 [REMOTE-INTEGRATION.md](REMOTE-INTEGRATION.md) 与 [test-verification](acceptance/test-verification.md)；原始验收与失败证据保留。

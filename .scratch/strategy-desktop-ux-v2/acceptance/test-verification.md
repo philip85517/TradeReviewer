@@ -10,3 +10,11 @@ This establishes observed remaining existing-workspace failures predate the stra
 
 ## Final frozen prototype checks
 Root after final X08-01 CSS: typecheck PASS(exit0); scoped ESLint exit0, 0 errors/2 nonblocking unused-parameter warnings in strategy-prototype.tsx (stage/selectedStrategy); isolated-DB build PASS(exit0); git diff --check PASS. Logs final-{typecheck,eslint,build}.log. Browser tab6 error/warn logs empty after full fresh journey and reload. Entire unit suite is still NOT PASS as described above; these checks do not rewrite baseline failures.
+
+## Remote integration against master 00f87b5
+
+After merge 46b6012, root ran `npm run test:unit -- --maxWorkers=1`: exit1; 288 passed / 1 failed / 3 skipped files, 2720 passed / 1 failed / 6 skipped tests. The sole failure is storage-boundary.test.tsx, the empty SQLite bootstrap test seeking the old “交易室共享范围” accessible label. Default timeout configuration was unchanged. Log: ../integration-merged-unit.log.
+
+Independent unchanged origin/master 00f87b5 archive, same installed dependencies, the workspace and storage-boundary files run serially: 79 passed / 3 failed tests. The same storage assertion fails; the two extra baseline failures are workspace 5000ms timeouts. Current-only failures: 0. Log: ../integration-master-baseline-unit.log. Astra statically confirmed these tests directly render existing Workspace, bypassing the changed Home and prototype modules; their source and dependencies match master. Full suite remains NOT PASS; this does not erase the historical logs above.
+
+Merged-version `npm test` (production build plus 5 regression tests) and typecheck pass. Production SSR with prototype query still renders original TradeReview. Root real-browser desktop smoke and Astra independent six-image visual regression pass. Details: ../REMOTE-INTEGRATION.md.

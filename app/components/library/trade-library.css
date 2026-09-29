@@ -2,23 +2,26 @@
    visual tokens; these selectors only tighten this component's density. */
 .trade-library {
   min-width: 0;
-  --library-content-width: min(1760px, 100%);
+  box-sizing: border-box;
+  padding-inline: 0;
+  padding-block-start: 0;
+  padding-block-end: 36px;
+  --library-inline-padding: 24px;
+  --library-content-width: min(1760px, calc(100% - (var(--library-inline-padding) * 2)));
 }
 
 /* Keep every browse surface on one fluid content rail. The application shell
    supplies the outer padding; this rail only prevents mismatched desktop
    caps from splitting the header, summary and rows into separate columns. */
-.trade-library > .library-header,
-.trade-library > .library-scope-controls,
-.trade-library > .module-tabs,
-.trade-library > .library-shared-browse-controls,
-.trade-library > .library-active-filter-chips,
-.trade-library > .library-fx-strip,
-.trade-library > .library-performance-summary,
-.trade-library > .review-queue,
-.trade-library > .library-stock-list,
-.trade-library > .library-empty,
-.trade-library > .library-empty-actions {
+.trade-library .library-shared-browse-controls,
+.trade-library .library-active-filter-chips,
+.trade-library .library-fx-strip,
+.trade-library .library-performance-summary,
+.trade-library .review-queue,
+.trade-library .library-stock-list,
+.trade-library .library-empty,
+.trade-library .library-empty-actions,
+.trade-library .library-simulation-scope-notice {
   width: var(--library-content-width);
   max-width: none;
   margin-left: auto;
@@ -26,14 +29,20 @@
   box-sizing: border-box;
 }
 
+.trade-library [data-content-rail] .library-shared-browse-controls {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
 /* The global shell has a narrower legacy FX cap. This local rail is the
    source of truth for every library surface, including the disclosure strip. */
-.trade-library > .library-fx-strip {
+.trade-library .library-fx-strip {
   width: var(--library-content-width) !important;
 }
 
 @media (min-width: 1060px) {
-  .trade-library > .library-shared-browse-controls {
+  .trade-library .library-shared-browse-controls {
     /* The shell's legacy grid distributes spare width into every field. Keep
        the toolbar content sized and leave unused desktop space at the end. */
     display: flex !important;
@@ -69,32 +78,52 @@
   }
 }
 
-.trade-library > .library-header {
+@media (max-width: 759px) {
+  .trade-library {
+    --library-inline-padding: 16px;
+    padding-inline: 0;
+    padding-block-start: 0;
+  }
+}
+
+@media (max-width: 320px) {
+  .trade-library {
+    --library-inline-padding: 12px;
+    padding-inline: 0;
+  }
+}
+
+.trade-library .library-header {
   min-height: 44px;
 }
 
-.trade-library .library-scope-controls {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px 18px;
-  margin-top: 8px;
-  padding: 7px 10px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  background: rgba(15, 23, 34, 0.9);
-  color: var(--muted);
+.trade-library .library-simulation-scope-notice {
+  margin: 12px 0 0;
+  padding: 9px 12px;
+  border: 1px solid color-mix(in srgb, var(--dashboard-negative, #bc4b4b) 45%, var(--line));
+  border-radius: 7px;
+  color: var(--dashboard-negative, #bc4b4b);
+  background: color-mix(in srgb, var(--dashboard-negative, #bc4b4b) 8%, transparent);
   font-size: 13px;
+  line-height: 20px;
+}
+
+.trade-library .library-scope-controls {
+  display: contents;
 }
 
 .trade-library .library-scope-choice {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+  display: grid;
+  align-items: initial;
+  gap: 4px;
   min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
+}
+
+.trade-library .library-scope-choice select {
+  min-width: 112px;
 }
 
 .trade-library .library-scope-choice label {
@@ -106,47 +135,61 @@
 
 .trade-library .library-scope-account,
 .trade-library .library-scope-run {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: grid;
+  align-items: initial;
   min-width: 0;
   color: var(--faint);
   font-size: 12px;
   font-weight: 700;
 }
 
+.trade-library .library-scope-account,
+.trade-library .library-scope-run {
+  gap: 4px;
+}
+
+.trade-library .library-scope-account > span,
+.trade-library .library-scope-run > span {
+  line-height: 16px;
+}
+
 .trade-library .library-scope-account select {
   min-width: 150px;
 }
 
-.trade-library .library-scope-run input {
+.trade-library .library-scope-run select {
   min-width: 120px;
-  height: 34px;
+  height: 36px;
   box-sizing: border-box;
   padding: 0 8px;
   border: 1px solid var(--scope-control-border, #34445b);
   border-radius: 6px;
   color: #e7edf6;
   background: var(--scope-control-background, #111a2b);
-  font-size: 13px;
+  font-size: 14px;
 }
 
-.trade-library .library-scope-run input:focus-visible {
+.trade-library .library-scope-run select:focus-visible {
   outline: 2px solid var(--scope-control-focus, #9ecaff);
   outline-offset: 1px;
 }
 
+.trade-library .library-shared-browse-controls select,
+.trade-library .library-shared-browse-controls input {
+  min-height: 36px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
 @media (pointer: coarse) {
-  .trade-library .library-scope-run input { min-height: 44px; height: 44px; }
+  .trade-library .library-scope-run select { min-height: 44px; height: 44px; }
 }
 
-.trade-library > .module-tabs {
-  margin-top: 8px;
-}
+.trade-library .module-tabs { margin-top: 0; }
 
-.trade-library > .library-performance-summary,
-.trade-library > .review-queue,
-.trade-library > .library-stock-list {
+.trade-library .library-performance-summary,
+.trade-library .review-queue,
+.trade-library .library-stock-list {
   margin-top: 8px;
 }
 
@@ -218,7 +261,7 @@
 
 @media (max-width: 600px) {
   .trade-library {
-    padding: 12px 10px 34px;
+    padding: 0 0 34px;
   }
 
   .trade-library .library-scope-controls {
@@ -230,12 +273,17 @@
   .trade-library .library-scope-choice {
     flex-wrap: wrap;
     gap: 7px;
+    min-height: 44px;
   }
 
-  .trade-library .library-scope-choice label,
+  .trade-library .library-scope-choice select,
   .trade-library .library-scope-account,
   .trade-library .library-scope-run {
     min-height: 44px;
+  }
+
+  .trade-library .library-scope-choice select {
+    height: 44px;
   }
 
   .trade-library .library-scope-account,
@@ -244,7 +292,7 @@
   }
 
   .trade-library .library-scope-account select,
-  .trade-library .library-scope-run input {
+  .trade-library .library-scope-run select {
     min-width: 0;
     min-height: 44px;
     height: 44px;
@@ -285,6 +333,12 @@
   .trade-library .library-shared-browse-controls > button {
     min-height: 44px;
     flex: 1 1 calc(50% - 4px);
+  }
+
+  .trade-library .library-shared-browse-controls select,
+  .trade-library .library-shared-browse-controls input {
+    min-height: 44px;
+    height: 44px;
   }
 
   .trade-library .library-fx-strip {
@@ -413,4 +467,36 @@
   .trade-library .review-queue-row > input[type="checkbox"] { left: 8px; }
   .trade-library .review-queue-batch-toolbar { gap: 5px; }
   .trade-library .review-queue-batch-toolbar button, .trade-library .review-queue-batch-toolbar details > summary { min-height: 44px; padding: 5px 7px; }
+}
+
+/* The unified header owns the scope rail; this wrapper must not add a second
+   horizontal inset or create a nested responsive grid. */
+.trade-library .library-scope-controls {
+  display: contents;
+}
+@media (max-width: 759px) {
+  .trade-library {
+    padding-inline: 0;
+    padding-block-start: 0;
+  }
+}
+@media (max-width: 639px) {
+}
+@media (max-width: 320px) {
+  .trade-library {
+    padding-inline: 0;
+  }
+}
+
+/* Keep every shared scope field on the public header tokens at every width. */
+.trade-library .library-scope-choice,
+.trade-library .library-scope-account,
+.trade-library .library-scope-run {
+  gap: 4px;
+}
+
+.trade-library .library-scope-choice > span,
+.trade-library .library-scope-account > span,
+.trade-library .library-scope-run > span {
+  line-height: 16px;
 }

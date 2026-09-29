@@ -216,8 +216,9 @@ describe("TradeLibrary", () => {
     setup();
 
     const header = screen.getByRole("heading", { name: "交易库" }).closest("header");
-    expect(header?.nextElementSibling).toHaveClass("module-tabs");
-    expect(header?.nextElementSibling).toHaveAttribute("role", "tablist");
+    const tabs = screen.getByRole("tablist", { name: "交易库浏览视图" });
+    expect(tabs).toHaveClass("module-tabs");
+    expect(tabs.closest("[data-content-rail]")).toBeInTheDocument();
     expect(document.querySelector(".library-view-tabs")).not.toBeInTheDocument();
 
     const stocksTab = screen.getByRole("tab", { name: "按标的浏览" });
@@ -259,24 +260,28 @@ describe("TradeLibrary", () => {
     };
     const view = render(<TradeLibrary {...props} />);
 
-    expect(screen.getByRole("group", { name: "交易性质" })).toBeInTheDocument();
-    expect(screen.getByRole("group", { name: "交易性质" })).toHaveAttribute("data-control-size", "standard");
-    expect(screen.getByRole("radio", { name: "实盘" })).toBeChecked();
-    expect(screen.getByRole("radio", { name: "模拟盘" })).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: "来源未知" })).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: "原币" })).toBeChecked();
-    expect(screen.getByRole("radio", { name: "HKD参考" })).toBeInTheDocument();
-    await user.click(screen.getByRole("radio", { name: "CNY参考" }));
+    expect(screen.getByRole("combobox", { name: "交易性质" })).toHaveValue("live");
+    expect(screen.getByRole("combobox", { name: "交易性质" }).closest("[data-scope-field='nature']")).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "共享账户" }).closest("[data-scope-field='account']")).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "报告计价" }).closest("[data-scope-field='currency']")).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "交易性质" })).toHaveDisplayValue("实盘");
+    expect(screen.getByRole("combobox", { name: "交易性质" })).toContainHTML("来源未知");
+    expect(screen.getByRole("combobox", { name: "报告计价" })).toHaveValue("original");
+    expect(screen.getByRole("combobox", { name: "报告计价" })).toContainHTML("HKD参考");
+    await user.selectOptions(screen.getByRole("combobox", { name: "报告计价" }), "CNY");
     expect(onSharedScopeChange).toHaveBeenCalledWith({ reportCurrency: "CNY" });
-    await user.click(screen.getByRole("radio", { name: "HKD参考" }));
+    await user.selectOptions(screen.getByRole("combobox", { name: "报告计价" }), "HKD");
     expect(onSharedScopeChange).toHaveBeenCalledWith({ reportCurrency: "HKD" });
-    await user.click(screen.getByRole("radio", { name: "模拟盘" }));
+    await user.selectOptions(screen.getByRole("combobox", { name: "交易性质" }), "simulation");
     expect(onSharedScopeChange).toHaveBeenCalledWith({ nature: "simulation", accountIds: [], simulationRunId: null });
     view.rerender(<TradeLibrary {...props} sharedScope={{ ...props.sharedScope, nature: "simulation" }} />);
-    await user.click(screen.getByRole("radio", { name: "实盘" }));
+    const runSelect = screen.getByRole("combobox", { name: "共享模拟运行" });
+    expect(runSelect.closest("[data-scope-field='run']")).toBeInTheDocument();
+    expect(runSelect).toBeRequired();
+    await user.selectOptions(screen.getByRole("combobox", { name: "交易性质" }), "live");
     expect(onSharedScopeChange).toHaveBeenCalledWith({ nature: "live", accountIds: [], simulationRunId: null });
     view.rerender(<TradeLibrary {...props} sharedScope={{ ...props.sharedScope, nature: "live" }} />);
-    await user.click(screen.getByRole("radio", { name: "来源未知" }));
+    await user.selectOptions(screen.getByRole("combobox", { name: "交易性质" }), "unknown");
     expect(onSharedScopeChange).toHaveBeenCalledWith({ nature: "unknown", accountIds: [], simulationRunId: null });
   });
 
@@ -379,6 +384,73 @@ describe("TradeLibrary", () => {
 
     expect(screen.getByText(`模拟运行：${formatSimulationRunLabel("run-current")}`)).toBeInTheDocument();
     expect(screen.queryByText(`模拟运行：${formatSimulationRunLabel("run-stale")}`)).not.toBeInTheDocument();
+  });
+
+  it("does not merge simulation runs while the shared run is unselected", () => {
+    const { entries } = setup();
+    cleanup();
+    const simulationEntries = entries.map(entry => ({
+      ...entry,
+      tradeNature: "simulation" as const,
+      simulationRunId: "run-one",
+      episodes: entry.episodes.map(item => ({
+        ...item,
+        episode: { ...item.episode, tradeNature: "simulation" as const, simulationRunId: "run-one" },
+      })),
+    }));
+    render(
+      <TradeLibrary
+        entries={simulationEntries}
+        candlesByInstrument={{}}
+        marketDataStatuses={{}}
+        timeframe="1D"
+        onTimeframeChange={() => {}}
+        onOpenInReview={() => {}}
+        onSaveReview={() => {}}
+        reviewsHydrated
+        sharedScope={{ nature: "simulation", accountIds: [], reportCurrency: "original", simulationRunId: null }}
+        onSharedScopeChange={() => {}}
+      />,
+    );
+
+    expect(screen.getByRole("combobox", { name: "共享模拟运行" })).toHaveValue("");
+    expect(screen.getByText(/请选择模拟运行后查看交易库/)).toBeInTheDocument();
+    expect(screen.getByRole("banner", { name: "交易库页面头部" })).toHaveTextContent("0 个标的 · 0 个回合");
+  });
+
+  it("keeps workspace simulation run choices available after selecting one run", () => {
+    const { entries } = setup();
+    cleanup();
+    const simulationEntries = entries.map((entry, index) => ({
+      ...entry,
+      tradeNature: "simulation" as const,
+      simulationRunId: index === 0 ? "run-one" : "run-two",
+      episodes: entry.episodes.map(item => ({
+        ...item,
+        episode: {
+          ...item.episode,
+          tradeNature: "simulation" as const,
+          simulationRunId: index === 0 ? "run-one" : "run-two",
+        },
+      })),
+    }));
+    render(
+      <TradeLibrary
+        entries={[simulationEntries[0]!]}
+        sharedSimulationRunOptions={[{ id: "run-one", label: "运行一" }, { id: "run-two", label: "运行二" }]}
+        candlesByInstrument={{}}
+        marketDataStatuses={{}}
+        timeframe="1D"
+        onTimeframeChange={() => {}}
+        onOpenInReview={() => {}}
+        onSaveReview={() => {}}
+        reviewsHydrated
+        sharedScope={{ nature: "simulation", accountIds: [], reportCurrency: "original", simulationRunId: "run-one" }}
+        onSharedScopeChange={() => {}}
+      />,
+    );
+
+    expect(screen.getByRole("combobox", { name: "共享模拟运行" })).toContainHTML("运行二");
   });
 
   it("shows inherited homepage filters as one clearable library constraint", async () => {
@@ -1196,5 +1268,6 @@ it("derives browse rows from shared nature and account scope across rerenders", 
   expect(screen.getAllByRole("button", { name: /展开.*交易回合/ })).toHaveLength(1);
 
   view.rerender(<TradeLibrary {...props} entries={simulationEntries} sharedScope={{ ...props.sharedScope, nature: "simulation", accountIds: [], simulationRunId: null }} />);
-  expect(screen.getAllByRole("button", { name: /展开.*交易回合/ })).toHaveLength(2);
+  expect(screen.queryAllByRole("button", { name: /展开.*交易回合/ })).toHaveLength(0);
+  expect(screen.getByText(/请选择模拟运行后查看交易库/)).toBeInTheDocument();
 });

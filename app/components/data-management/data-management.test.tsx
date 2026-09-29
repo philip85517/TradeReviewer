@@ -45,6 +45,22 @@ function renderPage(overrides: Partial<ComponentProps<typeof DataManagement>> = 
 }
 
 describe("DataManagement", () => {
+  it("places data tabs and import status in the shared page header", () => {
+    renderPage({
+      unifiedHeader: true,
+      scopeControls: <div data-testid="shared-scope-controls">共享范围</div>,
+      scopeTools: <div data-testid="shared-search">搜索</div>,
+      globalTools: <div data-testid="shared-tools">工具</div>,
+    });
+
+    expect(screen.getByRole("heading", { name: "数据" })).toBeInTheDocument();
+    expect(screen.getByText("1 个已导入标的")).toBeInTheDocument();
+    expect(screen.getByTestId("shared-scope-controls")).toBeInTheDocument();
+    expect(screen.getByTestId("shared-search")).toBeInTheDocument();
+    expect(screen.getByTestId("shared-tools")).toBeInTheDocument();
+    expect(screen.getByRole("tablist", { name: "数据管理分组" })).toBeInTheDocument();
+  });
+
   it("defaults to import and switches visible content without writing business data", async () => {
     const user = userEvent.setup();
     const onTabChange = vi.fn();

@@ -91,6 +91,7 @@ import {
   executionsThroughCursor,
   mapRecallExecutionToCandle,
   nextRecallDecisionState,
+  orderedRecallExecutions,
   previousRecallDecisionState,
   recallExecutionCandleIndex,
   revealRecallBar,
@@ -119,7 +120,7 @@ import { RecallExportDialog } from "../recall-export";
 import type { RecallExportOrder, RecallExportSource } from "../../lib/recall-export";
 
 import { RecallStoryboard } from "./recall-storyboard";
-import { RecallPlanSidebar, emptyRecallPlanInput } from "./recall-plan-sidebar";
+import { RecallPlanSidebar, compactRecallDerivedNumber, emptyRecallPlanInput } from "./recall-plan-sidebar";
 import { RecallPlanRevisionSection } from "./recall-plan-revisions";
 import { RecallExitEvaluations } from "./recall-exit-evaluations";
 import { RecallActualMetricsPanel } from "./recall-actual-metrics";
@@ -652,10 +653,7 @@ function firstDecisionInExecutionOrder(
   executions: TradeExecution[],
 ) {
   const order = new Map(
-    executions
-      .map((execution, index) => ({ execution, index }))
-      .sort((left, right) => Date.parse(left.execution.executedAt) - Date.parse(right.execution.executedAt) || left.index - right.index)
-      .map(({ execution }, index) => [execution.id, index]),
+    orderedRecallExecutions(executions).map((execution, index) => [execution.id, index]),
   );
   return document.decisions
     .map((decision, decisionIndex) => ({
@@ -674,28 +672,25 @@ function mapCursorToTimeframe(
   candles: Candle[],
 ) {
   const lastExecution = replay.revealedExecutions.at(-1);
-  const visibilityCursor = lastExecution?.executedAt ?? replay.cursor;
   const mapped = lastExecution ? mapRecallExecutionToCandle(lastExecution, candles) : undefined;
+  const revealedCandles = revealableCandlesThroughCursor(candles, replay.cursor);
   if (mapped) {
     return {
       ...replay,
-      cursor: candleKnowledgeAt(mapped),
-      currentCandle: Date.parse(candleKnowledgeAt(mapped)) <= Date.parse(visibilityCursor) ? mapped : undefined,
-      revealedCandles: revealableCandlesThroughCursor(candles, visibilityCursor),
+      // Timeframe changes remap the chart only. Preserve the market cutoff;
+      // an incomplete target bar must stay hidden until that cutoff advances.
+      cursor: replay.cursor,
+      currentCandle: revealedCandles.at(-1),
+      revealedCandles,
     };
   }
   const sorted = [...candles].sort((left, right) => Date.parse(left.time) - Date.parse(right.time));
-  const cursorTime = Date.parse(replay.cursor);
-  const current = replay.executionCursor === NO_REVEALED_EXECUTIONS
-    ? sorted.findLast((candle) => Date.parse(candleKnowledgeAt(candle)) <= cursorTime) ?? sorted[0]
-    : sorted.findLast((candle) => Date.parse(candle.time) <= cursorTime) ?? sorted[0];
+  const visible = revealableCandlesThroughCursor(sorted, replay.cursor);
   return {
     ...replay,
-    cursor: replay.executionCursor === NO_REVEALED_EXECUTIONS
-      ? replay.cursor
-      : current ? candleKnowledgeAt(current) : replay.cursor,
-    currentCandle: current && Date.parse(candleKnowledgeAt(current)) <= Date.parse(visibilityCursor) ? current : undefined,
-    revealedCandles: revealableCandlesThroughCursor(sorted, visibilityCursor),
+    cursor: replay.cursor,
+    currentCandle: visible.at(-1),
+    revealedCandles: visible,
     revealedExecutions: executionsThroughCursor(executions, replay.executionCursor),
   };
 }
@@ -2742,20 +2737,27 @@ export function RecallWorkspace({
   const sidebarPhase: RecallPhase = editingSnapshotId
     ? viewedBundle?.captureContext.phase ?? viewedSnapshot?.phase ?? "holding"
     : phase;
+  const compactReplayPlan = phase === "pre-entry" && planInput && (planInput.entry || planInput.initialStop || planInput.resolvedQuantity)
+    ? (() => {
+      const calculation = calculateRecallPlan(planInput);
+      const risk = calculation.initialRisk.value
+        ? `风险 ${calculation.initialRisk.value}${calculation.initialRisk.currency ? ` ${calculation.initialRisk.currency}` : ""}`
+        : "风险待补充";
+      return { risk, expectedR: calculation.expectedR.value };
+    })()
+    : null;
   const compactReplaySummary = phase === "holding"
     ? `持仓 ${quantityAvailable ? position.quantity : "待核对"}`
     : phase === "post-review"
       ? `历史已揭示 · 持仓 ${quantityAvailable ? position.quantity : "待核对"}`
       : (() => {
-        const hasPlan = Boolean(planInput?.entry || planInput?.initialStop || planInput?.resolvedQuantity);
-        if (!hasPlan || !planInput) return "计划待记录";
-        const calculation = calculateRecallPlan(planInput);
-        const risk = calculation.initialRisk.value
-          ? `风险 ${calculation.initialRisk.value}${calculation.initialRisk.currency ? ` ${calculation.initialRisk.currency}` : ""}`
-          : "风险待补充";
-        const expectedR = calculation.expectedR.value ? `${calculation.expectedR.value}R` : "预期R待补充";
-        return `计划 · ${expectedR} / ${risk}`;
+        if (!compactReplayPlan) return "计划待记录";
+        const expectedR = compactReplayPlan.expectedR ? `${compactRecallDerivedNumber(compactReplayPlan.expectedR)}R` : "预期R待补充";
+        return `计划 · ${expectedR} / ${compactReplayPlan.risk}`;
       })();
+  const compactReplaySummaryTitle = compactReplayPlan?.expectedR
+    ? `计划 · ${compactReplayPlan.expectedR}R / ${compactReplayPlan.risk}`
+    : compactReplaySummary;
   const alignedMarketCutoff = replay.cursor ? formatMarketCursor(replay.cursor, instrument.market) : "尚无行情游标";
   const alignedMarketCutoffShort = replay.cursor ? formatMarketCursorShort(replay.cursor, instrument.market) : "尚无时间";
   const visibleExecutionCutoff = replay.mode === "history"
@@ -3041,7 +3043,7 @@ export function RecallWorkspace({
               <div><span className={`live-dot${historyMode ? "" : " playing"}`} /><strong title={selectedLabel}>{historyMode ? "事后复盘" : "逐步"} · {selectedDecisionId === "global" ? "全局" : currentDecision ? `决策 ${decisionNumber}` : "未选择"}</strong><small className="recall-replay-cutoff" aria-label={historyMode ? "完整历史" : `行情时间 ${alignedMarketCutoff}；${executionCutoff}`}>
                 {historyMode ? <span>完整历史</span> : <><span title={alignedMarketCutoff}>行情时间 {alignedMarketCutoffShort}</span><span title={executionCutoff}>{visibleExecutionCutoff ? `成交截止 ${executionCutoffShort}` : executionCutoff}</span></>}
               </small></div>
-              <span className="recall-replay-summary" aria-label={compactReplaySummary}>{compactReplaySummary}</span>
+              <span className="recall-replay-summary" aria-label={compactReplaySummaryTitle} title={compactReplaySummaryTitle}>{compactReplaySummary}</span>
             </div>
 
             <div className="recall-controls recall-replay-bar__primary" aria-label="回放控制">

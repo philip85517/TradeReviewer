@@ -101,6 +101,28 @@ function note(
 }
 
 describe("ReviewSummary", () => {
+  it("places analysis tabs and filters in the shared page header without losing local state", async () => {
+    render(
+      <ReviewSummary
+        unifiedHeader
+        scopeControls={<div data-testid="shared-scope-controls">共享范围</div>}
+        scopeTools={<div data-testid="shared-search">搜索</div>}
+        entries={[entry()]}
+        scopeId="review-scope:v1:account-a:US:live::USD"
+        onScopeChange={vi.fn()}
+        client={{ get: vi.fn().mockResolvedValue(undefined), put: vi.fn() }}
+        onOpenEpisode={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("heading", { name: "分析" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "模式洞察" })).not.toBeInTheDocument();
+    expect(screen.getByTestId("shared-scope-controls")).toBeInTheDocument();
+    expect(screen.getByTestId("shared-search")).toBeInTheDocument();
+    expect(screen.getByRole("tablist", { name: "模式洞察视图" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "总结日期范围" })).toBeInTheDocument();
+  });
+
   it("shows the insights tabs, switches content without duplicating it, and supports controlled tabs", async () => {
     const user = userEvent.setup();
     const onTabChange = vi.fn();

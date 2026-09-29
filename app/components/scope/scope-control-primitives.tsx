@@ -107,6 +107,8 @@ export type ScopeSelectProps = {
   onChange: (value: string) => void;
   className?: string;
   layout?: "stacked" | "inline";
+  fieldId?: "nature" | "account" | "run" | "currency";
+  required?: boolean;
 };
 
 export function ScopeSelect({
@@ -117,11 +119,16 @@ export function ScopeSelect({
   onChange,
   className,
   layout = "stacked",
+  fieldId,
+  required = false,
 }: ScopeSelectProps) {
   return (
-    <label className={classes(styles.selectField, layout === "inline" ? styles.inlineField : undefined, className)}>
+    <label
+      className={classes(styles.selectField, layout === "inline" ? styles.inlineField : undefined, className)}
+      data-scope-field={fieldId}
+    >
       <span>{label}</span>
-      <select data-control-size="standard" aria-label={ariaLabel} value={value} onChange={event => onChange(event.target.value)}>
+      <select data-control-size="standard" aria-label={ariaLabel} required={required} value={value} onChange={event => onChange(event.target.value)}>
         {options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
       </select>
     </label>

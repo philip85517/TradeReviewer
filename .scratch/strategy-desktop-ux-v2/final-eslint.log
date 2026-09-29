@@ -1,0 +1,6 @@
+
+/Users/zhoulin/.codex/worktrees/0972/TradeReview/app/components/strategy-prototype/strategy-prototype.tsx
+  102:20  warning  'stage' is defined but never used             @typescript-eslint/no-unused-vars
+  102:32  warning  'selectedStrategy' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 2 problems (0 errors, 2 warnings)

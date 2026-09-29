@@ -64,13 +64,15 @@ import {
 import styles from "./review-dashboard.module.css";
 import type { SharedReportCurrency, SharedScope } from "../../lib/reviews/shared-scope";
 import {
-  TradingRoomGlobalTools,
+  TradingRoomGlobalSearch,
+  TradingRoomGlobalUtilities,
   type TradingRoomGlobalToolsProps,
 } from "./trading-room-global-tools";
 import type {
   GlobalNotification,
   GlobalSearchResult,
 } from "../../lib/reviews/trading-room-global-entries";
+import { UnifiedPageHeader, UnifiedScopeFields } from "../workspace/unified-page-header";
 
 export type ReviewDashboardProps = {
   entries: TradeLibraryEntry[];
@@ -107,7 +109,7 @@ export type ReviewDashboardProps = {
     episodeId?: string,
   ) => void;
   onOpenSearchResult?: (result: GlobalSearchResult) => void;
-  onOpenGlobalNotification?: (item: GlobalNotification) => void;
+  onOpenGlobalNotification?: (item: GlobalNotification, returnView?: "dashboard" | "library" | "insights") => void;
   onOpenAccountAndCurrency?: () => void;
   globalEntryStatus?: TradingRoomGlobalToolsProps["status"];
   /** Scope-valid cash read model for the current holdings/distribution owner. */
@@ -286,11 +288,11 @@ function dashboardBrowseReducer(state: DashboardBrowseState, action: DashboardBr
   }
 }
 
-function entryHasNature(entry: TradeLibraryEntry, nature: "live" | "simulation"): boolean {
+function entryHasNature(entry: TradeLibraryEntry, nature: RoomTradeNature): boolean {
   return entry.episodes.some(item => dashboardEpisodeNature({ entry, item }) === nature);
 }
 
-function scopedEntriesForNature(entries: TradeLibraryEntry[], nature: "live" | "simulation"): TradeLibraryEntry[] {
+function scopedEntriesForNature(entries: TradeLibraryEntry[], nature: RoomTradeNature): TradeLibraryEntry[] {
   return entries.filter(entry => entryHasNature(entry, nature));
 }
 
@@ -309,11 +311,15 @@ function disambiguateFilterOptionLabels(options: DashboardFilterOption[]): Dashb
   });
 }
 
-function accountFilterOptions(entries: TradeLibraryEntry[]) {
+function accountFilterOptions(
+  entries: TradeLibraryEntry[],
+  sharedAccountOptions: readonly { id: string; label: string }[] = [],
+) {
+  const sharedLabels = new Map(sharedAccountOptions.map(option => [option.id, option.label]));
   const values = new Map<string, string>();
   for (const entry of entries) {
     for (const execution of allEntryExecutions(entry)) {
-      if (!values.has(execution.accountId)) values.set(execution.accountId, execution.accountLabel.trim());
+      if (!values.has(execution.accountId)) values.set(execution.accountId, sharedLabels.get(execution.accountId) ?? execution.accountLabel.trim());
     }
   }
   const labels = new Map<string, number>();
@@ -488,6 +494,7 @@ export function ReviewDashboard({
   onQualityModelChange,
   sharedScope,
   onSharedScopeChange,
+  sharedAccountOptions = [],
   referenceCapitalEnabled = true,
   visible = true,
 }: ReviewDashboardProps) {
@@ -518,16 +525,14 @@ export function ReviewDashboard({
   const baseRoomScope = useMemo<RoomScope>(() => sharedScope
     ? {
       ...localRoomScope,
-      // Unknown is never a valid dashboard nature. Fall back to live until
-      // the shell can persist a valid choice, keeping the page deterministic.
-      nature: sharedScope.nature === "simulation" ? "simulation" : "live",
-      accountIds: [...sharedScope.accountIds].filter(id => accountFilterOptions(scopedEntriesForNature(entries, sharedScope.nature === "simulation" ? "simulation" : "live")).some(option => option.value === id)),
+      nature: sharedScope.nature,
+      accountIds: [...sharedScope.accountIds].filter(id => accountFilterOptions(scopedEntriesForNature(entries, sharedScope.nature), sharedAccountOptions).some(option => option.value === id)),
       simulationRunId: sharedScope.nature === "simulation"
         && simulationFilterOptions(scopedEntriesForNature(entries, "simulation")).some(option => option.value === sharedScope.simulationRunId)
         ? sharedScope.simulationRunId
         : null,
     }
-    : localRoomScope, [entries, localRoomScope, sharedScope]);
+    : localRoomScope, [entries, localRoomScope, sharedAccountOptions, sharedScope]);
   const reportCurrency = sharedScope?.reportCurrency ?? localReportCurrency;
   const targetCurrency = reportCurrency === "original" ? undefined : reportCurrency;
   const displayFxSnapshot = reportCurrency === "original" ? undefined : fxSnapshot;
@@ -778,13 +783,19 @@ export function ReviewDashboard({
   const roomMarkets = roomScope.markets ?? [];
   const roomDateDraftDirty = roomCustomStartDate !== roomScope.period.startDate || roomCustomEndDate !== roomScope.period.endDate;
   const roomRows = useMemo(() => roomModel.rows.map(value => value.row), [roomModel.rows]);
-  const natureEntries = useMemo(() => scopedEntriesForNature(entries, roomScope.nature === "simulation" ? "simulation" : "live"), [entries, roomScope.nature]);
-  const accountOptions = useMemo(() => accountFilterOptions(natureEntries), [natureEntries]);
+  const natureEntries = useMemo(() => scopedEntriesForNature(entries, roomScope.nature), [entries, roomScope.nature]);
+  const accountOptions = useMemo(() => accountFilterOptions(natureEntries, sharedAccountOptions), [natureEntries, sharedAccountOptions]);
   const currencyOptions = useMemo(() => [...new Set(natureEntries.map(entry => entry.instrument.currency.trim().toUpperCase()).filter(Boolean))]
     .sort()
     .map(value => ({ value, label: value })), [natureEntries]);
   const marketOptions = useMemo(() => marketFilterOptions(natureEntries), [natureEntries]);
-  const simulationRunOptions = useMemo(() => simulationFilterOptions(natureEntries), [natureEntries]);
+  const simulationRunOptions = useMemo(() => {
+    const accountIds = roomScope.accountIds;
+    const accountEntries = accountIds.length === 0
+      ? natureEntries
+      : natureEntries.filter(entry => entry.episodes.some(item => accountIds.includes(item.episode.accountId)));
+    return simulationFilterOptions(accountEntries);
+  }, [natureEntries, roomScope.accountIds]);
   const roomFilterCount = [
     roomScope.query,
     roomScope.accountIds.length,
@@ -801,19 +812,32 @@ export function ReviewDashboard({
     || roomScope.period.preset !== "ytd"
     || roomFilterCount > 0;
   const updateRoomScope = (patch: Partial<RoomScope>) => {
+    const nextNature = patch.nature ?? roomScope.nature;
+    const nextAccounts = patch.nature && patch.nature !== roomScope.nature
+      ? []
+      : [...(patch.accountIds ?? roomScope.accountIds)];
+    const requestedRun = patch.nature && patch.nature !== roomScope.nature
+      ? null
+      : patch.simulationRunId ?? roomScope.simulationRunId;
+    const nextRun = nextNature === "simulation" && requestedRun && patch.accountIds !== undefined
+      ? entries.some(entry => entry.episodes.some(item => item.episode.simulationRunId === requestedRun && nextAccounts.includes(item.episode.accountId)))
+        ? requestedRun
+        : null
+      : requestedRun;
     setRoomScope(current => {
       const next = { ...current, ...patch };
       if (patch.nature && patch.nature !== current.nature) {
         next.accountIds = [];
         next.simulationRunId = null;
       }
+      if (next.nature === "simulation" && patch.accountIds !== undefined) next.simulationRunId = nextRun;
       return next;
     });
     if (onSharedScopeChange) {
       const sharedPatch: Partial<SharedScope> = {};
       if (patch.nature !== undefined) sharedPatch.nature = patch.nature;
-      if (patch.accountIds !== undefined || patch.nature !== undefined) sharedPatch.accountIds = patch.nature && patch.nature !== roomScope.nature ? [] : [...(patch.accountIds ?? roomScope.accountIds)];
-      if (patch.simulationRunId !== undefined || patch.nature !== undefined) sharedPatch.simulationRunId = patch.nature && patch.nature !== roomScope.nature ? null : (patch.simulationRunId ?? roomScope.simulationRunId);
+      if (patch.accountIds !== undefined || patch.nature !== undefined) sharedPatch.accountIds = nextAccounts;
+      if (patch.simulationRunId !== undefined || patch.nature !== undefined || patch.accountIds !== undefined) sharedPatch.simulationRunId = nextRun;
       if (Object.keys(sharedPatch).length > 0) onSharedScopeChange(sharedPatch);
     }
     setRoomPeriodError(null);
@@ -932,81 +956,81 @@ export function ReviewDashboard({
       .sort((left, right) => right.time - left.time)[0]?.value ?? null;
   }, [fxSnapshot, holdingsQuotesByInstrument, qualityInput?.marketDataCandles, roomDataQuality]);
 
+  const dashboardScopeControls = (
+    <UnifiedScopeFields
+      nature={<ScopeSelect
+        className={styles.topbarSelect}
+        fieldId="nature"
+        label="性质"
+        ariaLabel="交易性质"
+        value={roomScope.nature}
+        options={[{ value: "live", label: "实盘" }, { value: "simulation", label: "模拟盘" }, { value: "unknown", label: "来源未知" }]}
+        onChange={value => updateRoomScope({ nature: value as RoomTradeNature })}
+      />}
+      account={<ScopeSelect
+        className={styles.topbarSelect}
+        fieldId="account"
+        label="账户范围"
+        ariaLabel="账户范围"
+        value={roomScope.accountIds[0] ?? "all"}
+        options={[{ value: "all", label: "全部账户" }, ...accountOptions.map(option => ({ value: option.value, label: option.label }))]}
+        onChange={value => updateRoomScope({ accountIds: value === "all" ? [] : [value] })}
+      />}
+      run={roomScope.nature === "simulation" ? <ScopeSelect
+        className={styles.topbarSelect}
+        fieldId="run"
+        label="模拟运行"
+        ariaLabel="模拟运行"
+        value={roomScope.simulationRunId ?? ""}
+        options={[{ value: "", label: "请选择运行" }, ...simulationRunOptions.map(option => ({ value: option.value, label: option.label }))]}
+        onChange={value => updateRoomScope({ simulationRunId: value || null })}
+      /> : undefined}
+      currency={<ScopeSelect
+        className={styles.topbarSelect}
+        fieldId="currency"
+        label="报告计价"
+        ariaLabel="报告计价"
+        value={reportCurrency}
+        options={[{ value: "original", label: "原币" }, { value: "HKD", label: "HKD" }, { value: "CNY", label: "CNY" }]}
+        onChange={value => {
+          const next = value as SharedReportCurrency;
+          setLocalReportCurrency(next);
+          onSharedScopeChange?.({ reportCurrency: next });
+        }}
+      />}
+    />
+  );
+  const dashboardGlobalSearch = visible ? (
+    <TradingRoomGlobalSearch
+      entries={entries}
+      scope={roomScope}
+      status={globalEntryStatus}
+      onOpenSearchResult={result => onOpenSearchResult?.(result)}
+    />
+  ) : null;
+  const dashboardGlobalUtilities = visible ? (
+    <TradingRoomGlobalUtilities
+      entries={entries}
+      scope={roomScope}
+      marketDataStatuses={qualityInput?.marketDataStatuses}
+      marketDataLabels={qualityInput?.marketDataLabels}
+      status={globalEntryStatus}
+      onOpenNotification={item => onOpenGlobalNotification?.(item, "dashboard")}
+      onOpenAccountAndCurrency={() => onOpenAccountAndCurrency?.()}
+    />
+  ) : null;
   return (
     <section className={styles.dashboard} style={dashboardStyle} aria-label="我的交易室">
-      <header className={styles.topbar}>
-        <div className={styles.topbarTitle}>
-          <span className={styles.topbarEyebrow}>TradeReview · 历史交易复盘</span>
-          <h1>我的交易室</h1>
-          <p>持仓照看 · 复盘总结 · 持续进化</p>
-        </div>
-        <div className={styles.topbarRight}>
-          <div className={styles.topbarScope} aria-label="交易室共享范围">
-            <ScopeChoiceGroup
-              mode="segmented"
-              ariaLabel="交易性质"
-              size="standard"
-              value={roomScope.nature === "simulation" ? "simulation" : "live"}
-              options={[{ value: "live", label: "实盘" }, { value: "simulation", label: "模拟盘" }]}
-              onChange={value => updateRoomScope({ nature: value as RoomTradeNature })}
-            />
-            <ScopeSelect
-              className={styles.topbarSelect}
-              label="账户范围"
-              ariaLabel="账户范围"
-              value={roomScope.accountIds[0] ?? "all"}
-              options={[{ value: "all", label: "全部账户" }, ...accountOptions.map(option => ({ value: option.value, label: option.label }))]}
-              onChange={value => updateRoomScope({ accountIds: value === "all" ? [] : [value] })}
-            />
-            {roomScope.nature === "simulation" && <ScopeSelect
-              className={styles.topbarSelect}
-              label="模拟运行"
-              ariaLabel="模拟运行"
-              value={roomScope.simulationRunId ?? ""}
-              options={[{ value: "", label: "请选择运行" }, ...simulationRunOptions.map(option => ({ value: option.value, label: option.label }))]}
-              onChange={value => updateRoomScope({ simulationRunId: value || null })}
-            />}
-            <ScopeSelect
-              className={styles.topbarSelect}
-              label="计价币种"
-              ariaLabel="报告计价"
-              value={reportCurrency}
-              options={[{ value: "original", label: "原币" }, { value: "HKD", label: "HKD" }, { value: "CNY", label: "CNY" }]}
-              onChange={value => {
-              const next = value as SharedReportCurrency;
-              setLocalReportCurrency(next);
-              onSharedScopeChange?.({ reportCurrency: next });
-            }}
-            />
-            <button
-              type="button"
-              className={styles.topbarFilterToggle}
-              aria-expanded={roomFiltersOpen}
-              aria-controls="trading-room-scope-filters"
-              onClick={() => setRoomFiltersOpen(open => !open)}
-            >
-              筛选{roomFilterCount > 0 ? ` · ${roomFilterCount}` : ""}
-            </button>
-          </div>
-          <div className={styles.topbarUpdated} aria-label="数据更新时间">
-            <span className={styles.topbarUpdatedDot} aria-hidden="true" />
-            <span>数据更新：</span>
-            {latestDataUpdatedAt
-              ? <time dateTime={latestDataUpdatedAt} title={`数据更新时间：${latestDataUpdatedAt}`}>{formatDashboardDataTime(latestDataUpdatedAt)}</time>
-              : <span>不可用</span>}
-          </div>
-          <TradingRoomGlobalTools
-            entries={entries}
-            scope={roomScope}
-            marketDataStatuses={qualityInput?.marketDataStatuses}
-            marketDataLabels={qualityInput?.marketDataLabels}
-            status={globalEntryStatus}
-            onOpenSearchResult={result => onOpenSearchResult?.(result)}
-            onOpenNotification={item => onOpenGlobalNotification?.(item)}
-            onOpenAccountAndCurrency={() => onOpenAccountAndCurrency?.()}
-          />
-        </div>
-      </header>
+      <UnifiedPageHeader
+        className={styles.dashboardHeader}
+        title="我的交易室"
+        description="持仓照看 · 复盘总结 · 持续进化"
+        status={<><span className={styles.topbarUpdatedDot} aria-hidden="true" /> <span>数据更新：</span>{latestDataUpdatedAt ? <time dateTime={latestDataUpdatedAt} title={`数据更新时间：${latestDataUpdatedAt}`}>{formatDashboardDataTime(latestDataUpdatedAt)}</time> : <span>不可用</span>}</>}
+        scopeControls={dashboardScopeControls}
+        globalTools={dashboardGlobalUtilities}
+        scopeTools={dashboardGlobalSearch}
+        scopeActions={<button type="button" className={styles.topbarFilterToggle} aria-expanded={roomFiltersOpen} aria-controls="trading-room-scope-filters" onClick={() => setRoomFiltersOpen(open => !open)}>筛选{roomFilterCount > 0 ? ` · ${roomFilterCount}` : ""}</button>}
+      />
 
       <section aria-label="交易室范围">
       {roomFiltersOpen && <div id="trading-room-scope-filters" className={`${styles.roomScopeSection} ${styles.sharedToolbar}`}>
@@ -1023,7 +1047,14 @@ export function ReviewDashboard({
             <RadioGroup label="账户" ariaLabel="交易室账户筛选" value={roomScope.accountIds[0] ?? "all"} options={[{ value: "all", label: "全部账户" }, ...accountOptions]} onChange={value => updateRoomScope({ accountIds: value === "all" ? [] : [value] })} />
             <RadioGroup label="资产类型" ariaLabel="交易室资产类型筛选" value={roomScope.assetType ?? "all"} options={[{ value: "all", label: "全部资产" }, { value: "stock", label: "股票" }, { value: "etf", label: "ETF" }]} onChange={value => updateRoomScope({ assetType: value as RoomAssetTypeFilter })} />
             <RadioGroup label="交易市场" ariaLabel="交易室交易市场筛选" value={roomMarkets[0] ?? "all"} options={[{ value: "all", label: "全部市场" }, ...marketOptions]} onChange={value => updateRoomScope({ markets: value === "all" ? [] : [value] })} />
-            <RadioGroup label="币种" ariaLabel="交易室币种筛选" value={roomScope.currencies[0] ?? "all"} options={[{ value: "all", label: "全部币种" }, ...currencyOptions]} onChange={value => updateRoomScope({ currencies: value === "all" ? [] : [value] })} />
+            <ScopeSelect
+              className={styles.topbarSelect}
+              label="币种"
+              ariaLabel="交易室币种筛选"
+              value={roomScope.currencies[0] ?? "all"}
+              options={[{ value: "all", label: "全部币种" }, ...currencyOptions]}
+              onChange={value => updateRoomScope({ currencies: value === "all" ? [] : [value] })}
+            />
             <RadioGroup label="复盘状态" ariaLabel="交易室复盘状态筛选" value={roomScope.reviewStatuses[0] ?? "all"} options={[{ value: "all", label: "全部状态" }, { value: "pending", label: "待复盘" }, { value: "completed", label: "已复盘" }, { value: "deferred", label: "暂不复盘" }]} onChange={value => updateRoomScope({ reviewStatuses: value === "all" ? [] : [value as RoomReviewStatus] })} />
             {roomFilterCount > 0 && <button type="button" className={styles.roomClearButton} onClick={clearRoomFilters}>清除附加筛选</button>}
             <button type="button" className={styles.roomClearButton} onClick={resetRoomScope}>恢复默认范围</button>

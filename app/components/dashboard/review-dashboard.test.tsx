@@ -193,11 +193,9 @@ describe("ReviewDashboard", () => {
   it("shows page-wide identity with YTD default and expandable custom dates", () => {
     render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
     const room = screen.getByRole("region", { name: "我的交易室" });
-    const nature = within(room).getByRole("group", { name: "交易性质" });
-    expect(nature).toHaveAttribute("data-control-mode", "segmented");
-    expect(nature).toHaveAttribute("data-control-size", "standard");
-    expect(within(room).getByRole("button", { name: "实盘" })).toHaveAttribute("aria-pressed", "true");
-    expect(within(room).getByRole("button", { name: "模拟盘" })).toHaveAttribute("aria-pressed", "false");
+    const nature = within(room).getByRole("combobox", { name: "交易性质" });
+    expect(nature).toHaveValue("live");
+    expect(within(room).getByRole("option", { name: "来源未知" })).toBeInTheDocument();
     expect(within(room).getByRole("combobox", { name: "报告计价" })).toHaveValue("original");
     expect(within(room).getByRole("combobox", { name: "报告计价" })).not.toHaveValue("CNY");
     expect(within(room).getByRole("tab", { name: "今年至今" })).toHaveAttribute("aria-selected", "true");
@@ -216,12 +214,27 @@ describe("ReviewDashboard", () => {
     const runB = copyEntry(base, { prefix: "run-b", tradeNature: "simulation", simulationRunId: "run-b" });
     render(<ReviewDashboard entries={[live, runA, runB]} onOpenInReview={() => undefined} />);
     const room = screen.getByRole("region", { name: "我的交易室" });
-    await user.click(within(room).getByRole("button", { name: "模拟盘" }));
+    await user.selectOptions(within(room).getByRole("combobox", { name: "交易性质" }), "simulation");
     await openRoomFilters(user);
     expect(within(room).getByRole("group", { name: "交易室模拟运行筛选" })).toBeInTheDocument();
     expect(within(room).getByRole("radio", { name: /模拟运行 · 1/ })).toBeInTheDocument();
     expect(within(room).getByRole("radio", { name: /模拟运行 · 2/ })).toBeInTheDocument();
     expect(screen.queryByRole("region", { name: "当前持仓" })).not.toBeInTheDocument();
+  });
+
+  it("keeps an unknown shared nature isolated instead of coercing it to live", () => {
+    const unknown = copyEntry(dashboardEntries()[0], { prefix: "unknown", tradeNature: "unknown" });
+    render(
+      <ReviewDashboard
+        entries={[unknown]}
+        sharedScope={{ nature: "unknown", accountIds: [], reportCurrency: "original", simulationRunId: null }}
+        onSharedScopeChange={() => undefined}
+        onOpenInReview={() => undefined}
+      />,
+    );
+
+    expect(screen.getByRole("combobox", { name: "交易性质" })).toHaveValue("unknown");
+    expect(screen.getByText("待复盘的已完成交易（4）")).toBeInTheDocument();
   });
 
   it("publishes the current scoped quality model after building it", () => {
@@ -344,7 +357,7 @@ describe("ReviewDashboard", () => {
     );
 
     const room = screen.getByRole("region", { name: "交易室范围" });
-    expect(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("button", { name: "实盘" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("combobox", { name: "交易性质" })).toHaveValue("live");
     openRoomFiltersImmediately();
     expect(within(within(room).getByRole("group", { name: "交易室市场分类筛选" })).getByRole("radio", { name: "全部市场" })).toBeChecked();
     expect(room).toHaveTextContent("全部市场");
@@ -361,8 +374,7 @@ describe("ReviewDashboard", () => {
     render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
 
     const scope = screen.getByRole("region", { name: "交易室范围" });
-    expect(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("button", { name: "实盘" })).toHaveAttribute("aria-pressed", "true");
-    expect(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("button", { name: "模拟盘" })).toHaveAttribute("aria-pressed", "false");
+    expect(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("combobox", { name: "交易性质" })).toHaveValue("live");
     expect(document.getElementById("trading-room-holdings")).toBeInTheDocument();
     expect(within(scope).queryByText("交易性质")).not.toBeInTheDocument();
   });
@@ -507,16 +519,16 @@ describe("ReviewDashboard", () => {
     const runB = copyEntry(base, { prefix: "run-b", tradeNature: "simulation", simulationRunId: "run-b" });
     render(<ReviewDashboard entries={[runA, runB]} onOpenInReview={() => undefined} />);
     const room = screen.getByRole("region", { name: "交易室范围" });
-    await user.click(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("button", { name: "模拟盘" }));
+    await user.selectOptions(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("combobox", { name: "交易性质" }), "simulation");
     await openRoomFilters(user);
-    expect(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("button", { name: "模拟盘" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("combobox", { name: "交易性质" })).toHaveValue("simulation");
     expect(room).toHaveTextContent("请选择一个模拟运行");
     const runSelect = within(room).getByRole("radio", { name: /模拟运行 · 1/ });
     await user.click(runSelect);
     expect(room).toHaveTextContent("4 个回合进入范围");
     expect(room).not.toHaveTextContent("run-b");
-    await user.click(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("button", { name: "实盘" }));
-    await user.click(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("button", { name: "模拟盘" }));
+    await user.selectOptions(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("combobox", { name: "交易性质" }), "live");
+    await user.selectOptions(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("combobox", { name: "交易性质" }), "simulation");
     expect(within(room).getByRole("radio", { name: "请选择运行" })).toBeChecked();
   });
 
@@ -535,8 +547,8 @@ describe("ReviewDashboard", () => {
       />,
     );
     const room = screen.getByRole("region", { name: "交易室范围" });
-    expect(screen.getByRole("button", { name: "实盘" })).toHaveAttribute("aria-pressed", "true");
-    await user.click(screen.getByRole("button", { name: "模拟盘" }));
+    expect(screen.getByRole("combobox", { name: "交易性质" })).toHaveValue("live");
+    await user.selectOptions(screen.getByRole("combobox", { name: "交易性质" }), "simulation");
     scope = { ...scope, nature: "simulation", simulationRunId: "run-controlled" };
     rerender(
       <ReviewDashboard
@@ -547,7 +559,7 @@ describe("ReviewDashboard", () => {
         onOpenInReview={() => undefined}
       />,
     );
-    expect(screen.getByRole("button", { name: "模拟盘" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("combobox", { name: "交易性质" })).toHaveValue("simulation");
     expect(screen.getByRole("combobox", { name: "模拟运行" })).toHaveValue("run-controlled");
   });
 

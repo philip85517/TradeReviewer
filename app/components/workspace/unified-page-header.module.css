@@ -1,0 +1,265 @@
+.shell {
+  --header-gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+
+.contentRail {
+  container: unified-page-header / inline-size;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding-inline: 24px;
+}
+
+.header {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 16px 0 0;
+  color: var(--text, #e7edf6);
+  background: var(--surface, #0b1220);
+  border-bottom: 1px solid var(--line, #243145);
+}
+
+.identityRow,
+.scopeRow,
+.tabsRow,
+.filtersRow {
+  min-width: 0;
+}
+
+.identityRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.identity {
+  min-width: 0;
+}
+
+.identity h1 {
+  margin: 0;
+  color: #f1f5fb;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+  letter-spacing: -.025em;
+}
+
+.identity p {
+  margin: 2px 0 0;
+  color: #91a9c9;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.identityTools {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: var(--header-gap);
+  min-width: 0;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  color: #9ab0ca;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.scopeRow {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(240px, 1fr) auto;
+  align-items: flex-end;
+  gap: var(--header-gap);
+  margin-top: var(--header-gap);
+  padding-bottom: var(--header-gap);
+}
+
+.scopeRow[data-has-scope-actions="false"] {
+  grid-template-columns: minmax(0, auto) minmax(240px, 1fr);
+}
+
+.scopeTools {
+  display: flex;
+  align-items: flex-end;
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+  min-width: 0;
+}
+
+.scopeActions {
+  display: flex;
+  align-items: flex-end;
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.scopeActions > button {
+  min-width: 64px;
+}
+
+.scopeControls {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--header-gap);
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  width: auto;
+}
+
+.scopeControls [data-scope-field] {
+  min-width: 0;
+}
+
+.scopeControls > :global(.library-scope-controls) {
+  display: contents;
+}
+
+.contentRail[data-content-layout="wide"] .scopeControls [data-scope-field="nature"] { flex: 0 0 120px; }
+.contentRail[data-content-layout="wide"] .scopeControls [data-scope-field="account"] { flex: 0 0 200px; }
+.contentRail[data-content-layout="wide"] .scopeControls [data-scope-field="run"] { flex: 0 0 160px; }
+.contentRail[data-content-layout="wide"] .scopeControls [data-scope-field="currency"] { flex: 0 0 128px; }
+
+.contentRail[data-content-layout="wide"] .scopeRow[data-has-scope-actions="false"] {
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+}
+
+.contentRail[data-content-layout="medium"] .scopeRow {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.contentRail[data-content-layout="medium"] .scopeControls {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  width: 100%;
+  flex-wrap: nowrap;
+  row-gap: var(--header-gap);
+}
+
+.contentRail[data-content-layout="medium"] .scopeControls [data-scope-field] {
+  flex: 1 1 0;
+}
+
+.contentRail[data-content-layout="medium"] .scopeTools {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.contentRail[data-content-layout="medium"] .scopeActions {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.contentRail[data-content-layout="medium"] .scopeRow[data-has-scope-actions="false"] .scopeTools {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.contentRail[data-content-layout="compact"] .scopeRow {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.contentRail[data-content-layout="compact"] .identityRow {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.contentRail[data-content-layout="compact"] .identityTools {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.contentRail[data-content-layout="compact"] .scopeControls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  flex-wrap: initial;
+  gap: var(--header-gap);
+  grid-column: 1 / -1;
+  grid-row: 1;
+  width: 100%;
+}
+
+.contentRail[data-content-layout="compact"] .scopeControls [data-scope-field="nature"] {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.contentRail[data-content-layout="compact"] .scopeControls [data-scope-field="currency"] {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.contentRail[data-content-layout="compact"] .scopeControls [data-scope-field="account"] {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.contentRail[data-content-layout="compact"] .scopeControls [data-scope-field="run"] {
+  grid-column: 1 / -1;
+  grid-row: 3;
+}
+
+.contentRail[data-content-layout="compact"] .scopeControls [data-scope-field] {
+  width: auto;
+  flex: initial;
+}
+
+.contentRail[data-content-layout="compact"] .scopeControls select,
+.contentRail[data-content-layout="compact"] .scopeTools input[type="search"],
+.contentRail[data-content-layout="compact"] .scopeTools label,
+.contentRail[data-content-layout="compact"] .scopeTools button,
+.contentRail[data-content-layout="compact"] .scopeActions button,
+.contentRail[data-content-layout="compact"] .identityTools button {
+  min-height: 44px;
+}
+
+.contentRail[data-content-layout="compact"] .scopeControls select,
+.contentRail[data-content-layout="compact"] .scopeTools input[type="search"],
+.contentRail[data-content-layout="compact"] .scopeTools label {
+  height: 44px;
+}
+
+.contentRail[data-content-layout="compact"] .scopeTools {
+  grid-column: 1;
+  grid-row: 2;
+  width: 100%;
+}
+
+.contentRail[data-content-layout="compact"] .scopeActions {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.contentRail[data-content-layout="compact"] .scopeRow[data-has-scope-actions="false"] .scopeTools {
+  grid-column: 1 / -1;
+}
+
+.tabsRow,
+.filtersRow {
+  margin-top: 0;
+  padding-bottom: var(--header-gap);
+}
+
+.tabsRow:empty,
+.filtersRow:empty {
+  display: none;
+}
+
+@media (max-width: 759px) {
+  .contentRail { padding-inline: 16px; }
+}
+
+@media (max-width: 320px) {
+  .contentRail { padding-inline: 12px; }
+}

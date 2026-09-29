@@ -207,6 +207,28 @@ describe("review phase summary", () => {
 });
 
 describe("review scope and tracked rules", () => {
+  it("uses the shared stable account aliases in scope options and summary labels", () => {
+    const entries = [
+      entry({ id: "account-z", accountId: "account-z", endedAt: "2026-08-02T15:00:00.000Z" }),
+      entry({ id: "account-a", accountId: "account-a", endedAt: "2026-08-03T15:00:00.000Z" }),
+    ];
+    const accountOptions = [
+      { id: "account-a", label: "同名账户（账户1）" },
+      { id: "account-z", label: "同名账户（账户2）" },
+    ];
+
+    const scopes = reviewScopeOptions(entries, accountOptions);
+    expect(scopes.map(option => option.scope.accountLabel)).toEqual([
+      "同名账户（账户1）",
+      "同名账户（账户2）",
+    ]);
+
+    const accountZ = scopes.find(option => option.scope.accountId === "account-z");
+    expect(accountZ).toBeDefined();
+    expect(buildReviewPhaseSummary(entries, accountZ!.id, ALL, accountOptions).scopeLabel)
+      .toContain("同名账户（账户2）");
+  });
+
   it("filters entries before insight computation without retaining incompatible episodes", () => {
     const entries = [
       entry({ id: "wanted", accountId: "account-a", endedAt: "2026-08-02T15:00:00.000Z" }),

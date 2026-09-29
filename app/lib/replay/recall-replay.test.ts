@@ -91,6 +91,37 @@ describe("recall replay cursors", () => {
     expect(second.cursor).toBe(first.cursor);
   });
 
+  it("keeps date-only decisions distinct when raw timestamps disagree within one replay day", () => {
+    const sameDayExecutions = executions.map((execution, index) => ({
+      ...execution,
+      executedAt: index === 0
+        ? execution.executedAt
+        : `2025-01-02T${index === 1 ? "10:20" : "10:05"}:00.000Z`,
+      source: { ...execution.source, timePrecision: "date-only" as const },
+    }));
+    const sameDayDecisions: RecallDecision[] = [
+      { id: "decision-1", executionIds: ["fill-1"] },
+      { id: "decision-2", executionIds: ["fill-2"] },
+      { id: "decision-3", executionIds: ["fill-3"] },
+    ];
+    const first = revealRecallDecision({
+      candles,
+      executions: sameDayExecutions,
+      decisions: sameDayDecisions,
+      decisionId: "decision-2",
+    });
+    const next = nextRecallDecisionState({
+      candles,
+      executions: sameDayExecutions,
+      decisions: sameDayDecisions,
+      current: first,
+    });
+    expect(first.executionCursor).toBe("fill-2");
+    expect(first.revealedExecutions.map(({ id }) => id)).toEqual(["fill-1", "fill-2"]);
+    expect(next.executionCursor).toBe("fill-3");
+    expect(next.revealedExecutions.map(({ id }) => id)).toEqual(["fill-1", "fill-2", "fill-3"]);
+  });
+
   it("advances the bar cursor to a complete candle and reveals fills through its close", () => {
     const first = revealRecallDecision({
       candles,

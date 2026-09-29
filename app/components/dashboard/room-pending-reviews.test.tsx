@@ -144,6 +144,47 @@ it("keeps trusted money while placing a close-field explanation beside the unava
   expect(screen.getByText("待复盘")).toBeInTheDocument();
 });
 
+it("formats long weighted prices to six decimals while keeping the source value accessible", () => {
+  const pending: RoomPendingReviewsModel = {
+    displayCurrency: "original",
+    count: 1,
+    queueIds: ["episode:price"],
+    rows: [{
+      episodeId: "episode:price",
+      instrumentId: "CN-SH:ETF",
+      instrumentName: "黄金ETF华安",
+      symbol: "518880",
+      accountId: "qa-main",
+      accountLabel: "QA 主账户",
+      closeDate: "2026-02-03",
+      closingSide: "sell",
+      closingQuantity: "4200",
+      closingWeightedPrice: "8.4578333333333333333",
+      closingCurrency: "CNY",
+      closingUnavailableReason: null,
+      money: {
+        baseCurrency: "CNY",
+        originalByCurrency: { CNY: "5373.17" },
+        convertedCny: "5373.17",
+        conversion: "same-currency",
+        fxSnapshotId: null,
+        note: "同币种",
+      },
+      unavailableReason: null,
+    }],
+  };
+
+  render(<RoomPendingReviews model={pending} onOpenInReview={vi.fn()} />);
+
+  const price = screen.getByText("8.457833 CNY");
+  expect(price).toHaveAttribute("title", "完整成交均价：8.4578333333333333333 CNY");
+  expect(price).toHaveAttribute("aria-label", "完整成交均价：8.4578333333333333333 CNY");
+  expect(screen.queryByText("完整成交均价：8.4578333333333333333 CNY")).not.toBeVisible();
+  fireEvent.click(price);
+  expect(screen.getByText("完整成交均价：8.4578333333333333333 CNY")).toBeVisible();
+  expect(screen.getByText("4200")).toBeInTheDocument();
+});
+
 it("emits an exact library range plus the complete homepage source snapshot", () => {
   const pending = model(fixture());
   const onViewAll = vi.fn();

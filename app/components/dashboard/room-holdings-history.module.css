@@ -10,20 +10,20 @@
 .header { display: grid; gap: 6px; }
 .titleBlock { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; min-width: 0; }
 .titleBlock h3 { margin: 0; font-size: 14px; line-height: 1.2; }
-.titleBlock p { margin: 0; color: var(--dashboard-muted, #94a3b8); font-size: 10px; line-height: 1.2; }
+.titleBlock p { margin: 0; color: var(--dashboard-muted, #94a3b8); font-size: 12px; line-height: 1.2; }
 .headerControls { display: flex; align-items: center; gap: 5px; min-width: 0; }
 .controls, .metricControls, .periodSlot { display: flex; min-width: 0; flex-wrap: wrap; gap: 3px; }
 .metricControls { flex: 1 1 auto; }
 .periodSlot { flex: 0 1 auto; }
 .controls button, .metricControls button, .periodSlot button {
-  min-height: 28px;
-  padding: 3px 7px;
+  min-height: 36px;
+  padding: 5px 9px;
   border: 1px solid transparent;
   border-radius: 6px;
   color: var(--dashboard-muted, #94a3b8);
   background: transparent;
   cursor: pointer;
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.1;
   white-space: nowrap;
 }
@@ -36,7 +36,7 @@
 .footer select:focus-visible, .tooltipHeader button:focus-visible, .tooltipDetails summary:focus-visible,
 .methodDetails summary:focus-visible { outline: 2px solid #53bbb4; outline-offset: 1px; }
 
-.legend { display: flex; min-height: 14px; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 0; color: var(--dashboard-muted, #94a3b8); font-size: 9px; line-height: 1.25; }
+.legend { display: flex; min-height: 14px; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 0; color: var(--dashboard-muted, #94a3b8); font-size: 12px; line-height: 1.25; }
 .legend i { display: inline-block; width: 9px; height: 2px; margin: 0 4px 2px 0; background: currentColor; }
 .primary { color: #4cc3c3; }
 .secondary { color: #a48cde; }
@@ -84,11 +84,11 @@
 .valueNote { color: #c7aa66; }
 .noticeDetails { margin-top: 2px; color: var(--dashboard-muted, #94a3b8); font-size: 9px; }
 .noticeDetails .note { margin: 4px 0 0; }
-.note, .footer { color: var(--dashboard-muted, #94a3b8); font-size: 9px; line-height: 1.35; }
-.footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 25px; }
+.note, .footer { color: var(--dashboard-muted, #94a3b8); font-size: 12px; line-height: 1.35; }
+.footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 36px; }
 .footer p { margin: 0; }
-.footer label { display: flex; flex: 0 0 auto; align-items: center; gap: 5px; color: var(--dashboard-muted, #94a3b8); font-size: 9px; }
-.footer select { max-width: 142px; padding: 3px 4px; border: 1px solid var(--dashboard-line, #28364a); border-radius: 5px; background: var(--dashboard-card, #111c2d); color: var(--dashboard-text, #e8edf6); font-size: 9px; }
+.footer label { display: flex; flex: 0 0 auto; align-items: center; gap: 5px; color: var(--dashboard-muted, #94a3b8); font-size: 12px; }
+.footer select { max-width: 142px; min-height: 36px; padding: 3px 6px; border: 1px solid var(--dashboard-line, #28364a); border-radius: 5px; background: var(--dashboard-card, #111c2d); color: var(--dashboard-text, #e8edf6); font-size: 14px; }
 .methodDetails { margin-top: 2px; color: var(--dashboard-muted, #94a3b8); }
 .methodDetails .note { margin: 4px 0 0; }
 .details { margin-top: 8px; font-size: 10px; }
@@ -128,23 +128,26 @@
   .header { gap: 4px; }
   .titleBlock { gap: 6px; }
   .titleBlock h3 { font-size: 12px; }
-  .titleBlock p { font-size: 8px; }
+  .titleBlock p { font-size: 12px; }
   .headerControls { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 3px; }
   .metricControls { flex: 0 1 auto; flex-wrap: nowrap; }
   .periodSlot { min-width: 0; flex: 1 1 auto; }
   .controls { flex-wrap: nowrap; }
-  .controls button, .metricControls button, .periodSlot button { min-height: 28px; padding: 3px 5px; font-size: 11px; }
+  .controls button, .metricControls button, .periodSlot button { min-height: 36px; padding: 5px 8px; font-size: 14px; }
   .periodSlot > div { display: flex; align-items: center; flex-wrap: nowrap; gap: 3px; min-width: 0; margin: 0; }
+  .periodSlot > div:has(> details[open]) { flex-wrap: wrap; }
   .periodSlot > div > div { display: flex; align-items: center; flex-wrap: nowrap; gap: 3px; min-width: 0; }
   .periodSlot > div > div > span { display: none; }
   .periodSlot > div > div > div { min-width: 0; flex: 0 1 auto; }
   .periodSlot > div > div > div { flex-wrap: nowrap; gap: 1px; padding: 2px; }
-  .periodSlot > div > details { flex: 0 0 auto; margin: 0; font-size: 9px; white-space: nowrap; }
-  .periodSlot > div > details > summary { padding: 2px 0; }
-  .periodSlot > div > p { flex: 0 1 auto; margin: 0; font-size: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .legend { min-height: 12px; gap: 3px 8px; font-size: 9px; }
-  .footer { min-height: 22px; gap: 5px; font-size: 9px; }
-  .footer label, .footer select { font-size: 9px; }
+  .periodSlot > div > details { flex: 0 0 auto; margin: 0; font-size: 12px; white-space: nowrap; }
+  .periodSlot > div > details[open] { flex-basis: 100%; }
+  .periodSlot > div > details > summary { padding: 5px 0; }
+  .periodSlot > div > p { flex: 0 1 auto; margin: 0; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .legend { min-height: 12px; gap: 3px 8px; font-size: 12px; }
+  .footer { min-height: 36px; gap: 5px; font-size: 12px; }
+  .footer label { font-size: 12px; }
+  .footer select { font-size: 14px; }
   .methodDetails { display: none; }
 }
 
@@ -152,11 +155,11 @@
   .primary { color: #00d5b6; }
   .secondary { color: #b76be7; }
   .titleBlock h3 { font-size: 13px; }
-  .titleBlock p { font-size: 9px; }
-  .controls button, .metricControls button, .periodSlot button { font-size: 11px; }
+  .titleBlock p { font-size: 12px; }
+  .controls button, .metricControls button, .periodSlot button { font-size: 14px; }
   .axisText { fill: #9ab0ca; font-size: 9.5px; }
   .tooltip, .table table { font-size: 10px; }
-  .note, .footer { font-size: 9.5px; }
+  .note, .footer { font-size: 12px; }
 }
 
 @media (pointer: coarse) {
@@ -168,6 +171,13 @@
     min-width: 44px;
     min-height: 44px;
   }
+}
+
+@media (max-width: 700px) {
+  .headerControls .metricControls button,
+  .headerControls .periodSlot button,
+  .headerControls .controls button,
+  .footer select { min-height: 44px; height: 44px; }
 }
 
 /* Keep the chart controls discoverable when the intermediate content rail is

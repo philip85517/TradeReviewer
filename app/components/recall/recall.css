@@ -384,6 +384,8 @@
 .recall-plan-sidebar dl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; }
 .recall-plan-sidebar dt { color: var(--muted); }
 .recall-plan-sidebar dd { margin: 0; text-align: right; overflow-wrap: anywhere; font-family: var(--font-geist-mono), monospace; }
+.recall-derived-number { display: inline; min-width: 0; overflow-wrap: anywhere; }
+.recall-plan-sidebar .recall-derived-number__toggle { display: inline; width: auto; min-width: 0; min-height: 0; max-width: 100%; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; line-height: inherit; overflow-wrap: anywhere; }
 .recall-plan-metrics { border-top: 1px solid var(--line); padding-top: 12px; color: var(--gold, #f3ba2f); }
 .recall-plan-derived-metrics {
   display: grid;
@@ -791,12 +793,13 @@
    yield space first when the controls need room. */
 .recall-replay-bar > .recall-position-strip > .recall-replay-summary,
 .recall-replay-footer > .recall-position-strip > .recall-replay-summary {
-  flex: 0 0 auto;
-  min-width: max-content;
-  max-width: none;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
   overflow: visible;
   text-overflow: clip;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .recall-replay-bar > .recall-position-strip > div:first-child,
@@ -991,7 +994,8 @@
   .recall-size-mode__buttons button,
   .recall-plan-price-action,
   .recall-plan-detail-group > summary,
-  .recall-plan-secondary-group > summary {
+  .recall-plan-secondary-group > summary,
+  .recall-plan-sidebar .recall-derived-number__toggle {
     min-height: 44px;
   }
 }
@@ -999,6 +1003,11 @@
 @media (max-width: 900px) {
   .recall-workspace {
     --recall-frame-control-height: 44px;
+  }
+
+  .recall-plan-sidebar .recall-derived-number__toggle {
+    display: inline-flex;
+    min-height: 44px;
   }
 
   .recall-header > .recall-heading h1 {
@@ -1068,6 +1077,31 @@
    may give up spare width, but their labels and hit targets keep their normal
    size and remain on one visual line. */
 @media (min-width: 1101px) and (max-width: 1320px) {
+  /* Keep the execution cutoff readable beside a long plan summary. The
+     summary may wrap; the cutoff must retain enough width for its date. */
+  .recall-replay-bar > .recall-position-strip,
+  .recall-replay-footer > .recall-position-strip {
+    flex-basis: min(360px, 31vw);
+    min-width: 332px;
+  }
+
+  .recall-replay-bar > .recall-position-strip > div:first-child,
+  .recall-replay-footer > .recall-position-strip > div:first-child {
+    flex: 0 0 154px;
+    min-width: 145px;
+  }
+
+  .recall-replay-bar .recall-replay-cutoff,
+  .recall-replay-footer .recall-replay-cutoff {
+    min-width: 128px;
+  }
+
+  .recall-replay-bar > .recall-position-strip > .recall-replay-summary,
+  .recall-replay-footer > .recall-position-strip > .recall-replay-summary {
+    flex: 1 1 0;
+    max-width: 190px;
+  }
+
   .recall-header {
     gap: 6px;
   }
@@ -1082,7 +1116,7 @@
 
   .recall-header > .chart-toolbar {
     flex: 0 1 180px;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .recall-header .chart-toolbar .timeframe-group,
@@ -1162,7 +1196,7 @@
 
   .recall-header > .chart-toolbar {
     flex: 1 1 0;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .recall-header > .recall-phases {
@@ -1487,7 +1521,7 @@
     flex: 0 1 auto;
     height: 36px;
     min-height: 36px;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .recall-header > .recall-phases {

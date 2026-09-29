@@ -169,7 +169,7 @@ import {
 } from "../lib/trades/instruments";
 import { buildTradeLibraryEntries } from "../lib/trades/library";
 import { tradingNatureLabel, displayTradeNature } from "../lib/trades/trading-nature";
-import { buildReviewQueue } from "../lib/reviews/review-queue";
+import { buildReviewQueue, stableAccountDisplayLabels } from "../lib/reviews/review-queue";
 import { localizedInstrumentOverlay, overlayStoredInstrumentMetadata } from "../lib/reviews/instrument-display-overlay";
 import type {
   TradingRoomInstrumentMetadata,
@@ -201,6 +201,7 @@ import {
   type TradeLibraryBrowseState,
 } from "./library/trade-library";
 import { normalizeTradeLibraryBrowseState } from "./library/library-browse-state";
+import { formatSimulationRunLabel } from "./library/library-filter-options";
 import { DataManagement } from "./data-management/data-management";
 import { CashBaselinePanel } from "./data-management/cash-baseline-panel";
 import { FxPanel } from "./data-management/fx-panel";
@@ -209,7 +210,7 @@ import { TradingRoomPrincipalSlot } from "./data-management/trading-room-princip
 import { useModalFocus } from "./import/use-modal-focus";
 import { ReviewSummary, initialReviewSummaryFilters, type ReviewSummaryDrafts } from "./insights/review-summary";
 import { ReviewDashboard } from "./dashboard/review-dashboard";
-import { SharedScopeBar } from "./scope/shared-scope-bar";
+import { LibraryScopeControls } from "./library/library-scope-controls";
 import { DEFAULT_SHARED_SCOPE, normalizeSharedScope, filterEntriesBySharedScope, sharedScopeStorageKey, type SharedScope } from "../lib/reviews/shared-scope";
 import { TagSuggestionPanel } from "./insights/tag-suggestion-panel";
 import { RuleChecks } from "./review/rule-checks";
@@ -259,6 +260,10 @@ import type {
   GlobalNotification,
   GlobalSearchResult,
 } from "../lib/reviews/trading-room-global-entries";
+import {
+  TradingRoomGlobalSearch,
+  TradingRoomGlobalUtilities,
+} from "./dashboard/trading-room-global-tools";
 
 const REVIEW_ID = "demo-xpev-2025";
 const DEFAULT_THESIS =
@@ -309,7 +314,7 @@ type Props = {
   legacyStateExporter?: (options?: { excludeDemo?: boolean }) => Promise<import("../lib/storage/sqlite-contracts").BrowserStatePayload | null>;
 };
 
-type ReviewReturnView = "dashboard" | "library" | "insights";
+type ReviewReturnView = "dashboard" | "library" | "insights" | "data";
 
 const DEFAULT_CHART_SETTINGS: ChartSettings = {
   version: 1,
@@ -1072,10 +1077,6 @@ export function TradeReviewWorkspace({
     if (!sharedScopeRestored) return;
     try { window.localStorage.setItem(sharedScopeStorageKey(), JSON.stringify(sharedScope)); } catch { /* Storage may be disabled. */ }
   }, [sharedScope, sharedScopeRestored]);
-  const updateSharedScope = useCallback((patch: Partial<SharedScope>) => {
-    setSharedScope(current => normalizeSharedScope({ ...current, ...patch }));
-  }, []);
-
   const [reviewQueueIds, setReviewQueueIds] = useState<string[]>();
   const [navigationNotice, setNavigationNotice] = useState<string | null>(null);
   const [qualityModel, setQualityModel] = useState<TradingRoomQualityModel | null>(null);
@@ -1604,18 +1605,57 @@ export function TradeReviewWorkspace({
     [tradeLibraryEntries, sharedScope],
   );
   const sharedAccountOptions = useMemo(() => {
-    const scopeEntries = filterEntriesBySharedScope(tradeLibraryEntries, { ...sharedScope, accountIds: [] });
+    const scopeEntries = filterEntriesBySharedScope(tradeLibraryEntries, { ...sharedScope, accountIds: [], simulationRunId: null });
     const options = [...new Map(scopeEntries.flatMap(entry => entry.executions.map(execution =>
       [execution.accountId, { id: execution.accountId, label: execution.accountLabel || "未命名账户" }] as const))).values()];
-    const counts = new Map<string, number>();
-    for (const option of options) counts.set(option.label, (counts.get(option.label) ?? 0) + 1);
-    const seen = new Map<string, number>();
-    return options.map(option => {
-      const ordinal = (seen.get(option.label) ?? 0) + 1;
-      seen.set(option.label, ordinal);
-      return { ...option, label: (counts.get(option.label) ?? 0) > 1 ? `${option.label} · 账户 ${ordinal}` : option.label };
-    });
+    const displayLabels = stableAccountDisplayLabels(options);
+    return options.map(option => ({ ...option, label: displayLabels.get(option.id) ?? option.label }));
   }, [tradeLibraryEntries, sharedScope]);
+  const sharedSimulationRunOptions = useMemo(() => {
+    if (sharedScope.nature !== "simulation") return [];
+    const scopeEntries = filterEntriesBySharedScope(tradeLibraryEntries, {
+      ...sharedScope,
+      nature: "simulation",
+      simulationRunId: null,
+    });
+    const runs = new Map<string, { instrumentName: string; symbol: string }>();
+    for (const entry of scopeEntries) {
+      const runIds = [
+        entry.simulationRunId,
+        ...entry.episodes.map(item => item.episode.simulationRunId),
+        ...entry.episodes.flatMap(item => item.episode.executions.map(execution => execution.source.simulationRunId)),
+      ];
+      for (const runId of runIds) {
+        if (runId && !runs.has(runId)) runs.set(runId, { instrumentName: entry.instrument.name, symbol: entry.instrument.symbol });
+      }
+    }
+    return [...runs.entries()]
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([id, instrument]) => ({ id, label: formatSimulationRunLabel(id, instrument) }));
+  }, [tradeLibraryEntries, sharedScope]);
+
+  const updateSharedScope = useCallback((patch: Partial<SharedScope>) => {
+    setSharedScope(current => {
+      const next = normalizeSharedScope({ ...current, ...patch });
+      if (next.nature === "simulation" && next.simulationRunId) {
+        const runIsCompatible = filterEntriesBySharedScope(tradeLibraryEntries, {
+          ...next,
+          simulationRunId: null,
+        }).some(entry => entry.episodes.some(item => item.episode.simulationRunId === next.simulationRunId));
+        if (!runIsCompatible) return { ...next, simulationRunId: null };
+      }
+      return next;
+    });
+  }, [tradeLibraryEntries]);
+
+  useEffect(() => {
+    if (tradeLibraryEntries.length === 0 || sharedScope.nature !== "simulation" || !sharedScope.simulationRunId) return;
+    if (!sharedSimulationRunOptions.some(option => option.id === sharedScope.simulationRunId)) {
+      // Keep a restored scope safe when its account no longer contains the run.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSharedScope(current => ({ ...current, simulationRunId: null }));
+    }
+  }, [sharedScope.nature, sharedScope.simulationRunId, sharedSimulationRunOptions, tradeLibraryEntries.length]);
   const cashNature: CashNature | null = sharedScope.nature === "simulation"
     ? "simulation"
     : sharedScope.nature === "live" ? "live" : null;
@@ -1931,7 +1971,10 @@ export function TradeReviewWorkspace({
   const [dataTab, setDataTab] = useState<"import" | "quality" | "settings">("import");
   const [requestedSummaryScope, setRequestedSummaryScope] = useState("");
   const summaryClient = useMemo(() => createReviewSummaryClient(), []);
-  const summaryScopes = useMemo(() => reviewScopeOptions(scopedTradeLibraryEntries), [scopedTradeLibraryEntries]);
+  const summaryScopes = useMemo(
+    () => reviewScopeOptions(scopedTradeLibraryEntries, sharedAccountOptions),
+    [scopedTradeLibraryEntries, sharedAccountOptions],
+  );
   const summaryScope = summaryScopes.some(scope => scope.id === requestedSummaryScope)
     ? requestedSummaryScope : summaryScopes[0]?.id ?? "";
   const insightEpisodeContexts = useMemo(
@@ -3914,14 +3957,14 @@ export function TradeReviewWorkspace({
     setActiveView("library");
   }
 
-  function openGlobalNotification(item: GlobalNotification) {
+  function openGlobalNotification(item: GlobalNotification, returnView: ReviewReturnView = "dashboard") {
     if (!item.instrumentId) {
       setNavigationNotice("该待处理事项缺少可定位的标的身份，请先在数据页核对导入记录。");
       return;
     }
     setNavigationNotice(null);
     if (item.action === "open-review" && item.episodeId) {
-      openLibraryEpisode(item.instrumentId, item.episodeId, undefined, "dashboard");
+      openLibraryEpisode(item.instrumentId, item.episodeId, undefined, returnView);
       return;
     }
     if (item.action === "open-market-data") {
@@ -4399,6 +4442,12 @@ export function TradeReviewWorkspace({
       setActiveView("insights");
       return;
     }
+    if (reviewReturnView === "data") {
+      setPlaying(false);
+      setLibraryTarget(undefined);
+      setActiveView("data");
+      return;
+    }
     returnToLibrary();
   }
 
@@ -4638,6 +4687,37 @@ export function TradeReviewWorkspace({
     onScreenshot: () => { clearSupplement(); importScreenshotRef.current?.click(); },
   };
 
+  // Global search and utility menus are mounted only by the active page. They
+  // keep the workspace-owned callbacks and scope while allowing the shared
+  // header to align search with the scope inputs and utilities with H01.
+  const workspaceGlobalSearch = (
+    <TradingRoomGlobalSearch
+      entries={tradeLibraryEntries}
+      scope={sharedScope}
+      status="ready"
+      onOpenSearchResult={openGlobalSearchResult}
+    />
+  );
+  const workspaceGlobalUtilities = (returnView: ReviewReturnView) => (
+    <TradingRoomGlobalUtilities
+      entries={tradeLibraryEntries}
+      scope={sharedScope}
+      marketDataStatuses={marketDataStatuses}
+      marketDataLabels={marketDataLabels}
+      status="ready"
+      onOpenNotification={item => openGlobalNotification(item, returnView)}
+      onOpenAccountAndCurrency={openAccountAndCurrency}
+    />
+  );
+  const workspaceScopeControls = (
+    <LibraryScopeControls
+      scope={sharedScope}
+      accountOptions={sharedAccountOptions}
+      simulationRunOptions={sharedSimulationRunOptions}
+      onChange={updateSharedScope}
+    />
+  );
+
   const episodeSidebar = (
     <EpisodeSidebar
       pendingReviewInstrumentIds={pendingReviewInstrumentIds}
@@ -4773,6 +4853,8 @@ export function TradeReviewWorkspace({
             type="button"
             className={activeView === "dashboard" ? "active" : ""}
             aria-current={activeView === "dashboard" ? "page" : undefined}
+            aria-label="我的交易室"
+            title="我的交易室"
             onClick={() => {
               setPlaying(false);
               setMobileNavOpen(false);
@@ -4781,12 +4863,14 @@ export function TradeReviewWorkspace({
             }}
           >
             <LayoutDashboard size={16} aria-hidden="true" />
-            我的交易室
+            <span className="app-nav-label">我的交易室</span>
           </button>
           <button
             type="button"
             className={activeView === "library" ? "active" : ""}
             aria-current={activeView === "library" ? "page" : undefined}
+            aria-label="交易库"
+            title="交易库"
             onClick={() => {
               if (activeView !== "review") setLibrarySourceSnapshot(null);
               returnToLibrary();
@@ -4794,24 +4878,28 @@ export function TradeReviewWorkspace({
             }}
           >
             <BookOpenCheck size={16} aria-hidden="true" />
-            交易库
+            <span className="app-nav-label">交易库</span>
           </button>
           <button
             type="button"
             className={activeView === "insights" ? "active" : ""}
             aria-current={activeView === "insights" ? "page" : undefined}
+            aria-label="分析"
+            title="分析"
             onClick={() => {
               setMobileNavOpen(false);
               setActiveView("insights");
             }}
           >
             <BarChart3 size={16} aria-hidden="true" />
-            分析
+            <span className="app-nav-label">分析</span>
           </button>
           <button
             type="button"
             className={activeView === "data" ? "active" : ""}
             aria-current={activeView === "data" ? "page" : undefined}
+            aria-label="数据"
+            title="数据"
             onClick={() => {
               setPlaying(false);
               setMobileNavOpen(false);
@@ -4819,23 +4907,23 @@ export function TradeReviewWorkspace({
             }}
           >
             <Database size={16} aria-hidden="true" />
-            数据
+            <span className="app-nav-label">数据</span>
           </button>
-          <button type="button" className="app-nav-disabled" disabled aria-disabled="true" title="策略功能尚未开放">
+          <button type="button" className="app-nav-disabled" disabled aria-disabled="true" aria-label="策略，未开放" title="策略功能尚未开放">
             <Workflow size={16} aria-hidden="true" />
-            <span>策略</span>
+            <span className="app-nav-label">策略</span>
             <small>未开放</small>
           </button>
         </nav>
         <div className="app-nav-secondary" aria-label="辅助导航">
-          <button type="button" className={activeView === "data" && dataTab === "settings" ? "active" : ""} aria-current={activeView === "data" && dataTab === "settings" ? "page" : undefined} onClick={() => {
+          <button type="button" className={activeView === "data" && dataTab === "settings" ? "active" : ""} aria-current={activeView === "data" && dataTab === "settings" ? "page" : undefined} aria-label="设置" title="设置" onClick={() => {
             setPlaying(false);
             setDataTab("settings");
             setMobileNavOpen(false);
             setActiveView("data");
           }}>
             <Settings2 size={16} aria-hidden="true" />
-            设置
+            <span className="app-nav-label">设置</span>
           </button>
         </div>
       </aside>
@@ -4874,7 +4962,7 @@ export function TradeReviewWorkspace({
         </div>
       </header>}
       {activeView === "review" && (showDemo || selectedImportedInstrument) && <div className="review-layout-controls" inert={stockDrawerOpen || Boolean(dataTarget)} aria-label="复盘布局">
-        {!showDemo && <button onClick={returnFromReview}>返回{reviewReturnView === "dashboard" ? "我的交易室" : reviewReturnView === "insights" ? "分析" : "交易库"}</button>}
+        {!showDemo && <button onClick={returnFromReview}>返回{reviewReturnView === "dashboard" ? "我的交易室" : reviewReturnView === "insights" ? "分析" : reviewReturnView === "data" ? "数据" : "交易库"}</button>}
         {selectedImportedInstrument && selectedEpisode && activeView === "review" && (
           <button
             type="button"
@@ -4982,8 +5070,11 @@ export function TradeReviewWorkspace({
             overflow: "auto",
           }}
         >
-          <SharedScopeBar scope={sharedScope} accountOptions={sharedAccountOptions} onChange={updateSharedScope} />
           <DataManagement
+            unifiedHeader
+            scopeControls={activeView === "data" ? workspaceScopeControls : undefined}
+            globalTools={activeView === "data" ? workspaceGlobalUtilities("data") : undefined}
+            scopeTools={activeView === "data" ? workspaceGlobalSearch : undefined}
             activeTab={dataTab}
             onTabChange={setDataTab}
             importActions={importActions}
@@ -5044,6 +5135,7 @@ export function TradeReviewWorkspace({
             initialBrowseState={libraryBrowseState}
             onBrowseStateChange={setLibraryBrowseState}
             entries={scopedTradeLibraryEntries}
+            sharedSimulationRunOptions={sharedSimulationRunOptions}
             instrumentMetadata={instrumentMetadata}
             roomFxSnapshot={fxSnapshot}
             candlesByInstrument={marketDataCandles}
@@ -5071,6 +5163,8 @@ export function TradeReviewWorkspace({
             target={libraryTarget}
             onSaveReview={saveEpisodeReview}
             reviewExtras={reviewExtras}
+            globalSearch={workspaceGlobalSearch}
+            globalTools={workspaceGlobalUtilities("library")}
             onInspectData={openDataCheck}
             onRefreshMarketData={(instrumentId) => void startMarketDataUpdate([instrumentId], { refreshMetadata: true })}
             onImport={() => {
@@ -5080,10 +5174,10 @@ export function TradeReviewWorkspace({
           />
           </div>
         ) : activeView !== "dashboard" && activeView === "insights" ? (
-          <div className="scoped-insights-page"><SharedScopeBar scope={sharedScope} accountOptions={sharedAccountOptions} onChange={updateSharedScope} /><ReviewSummary activeTab={insightsTab} onTabChange={setInsightsTab} onImport={() => {
+          <div className="scoped-insights-page"><ReviewSummary unifiedHeader scopeControls={workspaceScopeControls} globalTools={workspaceGlobalUtilities("insights")} scopeTools={workspaceGlobalSearch} activeTab={insightsTab} onTabChange={setInsightsTab} onImport={() => {
             setDataTab("import");
             setActiveView("data");
-          }} filterStore={{filters:summaryFilters,setFilters:setSummaryFilters}} draftStore={{drafts:summaryDrafts,setDrafts:setSummaryDrafts}} entries={scopedTradeLibraryEntries} scopeId={summaryScope} onScopeChange={setRequestedSummaryScope} client={summaryClient} onOpenEpisode={(instrumentId, episodeId) => openLibraryEpisode(instrumentId, episodeId, undefined, "insights")}>
+          }} filterStore={{filters:summaryFilters,setFilters:setSummaryFilters}} draftStore={{drafts:summaryDrafts,setDrafts:setSummaryDrafts}} entries={scopedTradeLibraryEntries} accountOptions={sharedAccountOptions} scopeId={summaryScope} onScopeChange={setRequestedSummaryScope} client={summaryClient} onOpenEpisode={(instrumentId, episodeId) => openLibraryEpisode(instrumentId, episodeId, undefined, "insights")}>
             {renderScopedInsights}
           </ReviewSummary></div>
         ) : activeView === "review" ? (

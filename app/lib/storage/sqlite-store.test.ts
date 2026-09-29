@@ -1,5 +1,6 @@
 import { createEmptyEpisodeReviewRecord } from "../reviews/review-metrics";
 import { parseBrokerStatement } from "../import/dispatcher";
+import { parseTradingViewCsv } from "../import/tradingview";
 import { csv, fileFor } from "../import/__fixtures__/tradingview";
 import { buildTradeEpisodes } from "../trades/episodes";
 import { columnStatement } from "../import/__fixtures__/china-merchants-columns";
@@ -740,7 +741,7 @@ describe("SqliteStore", () => {
 
     expect(store.getBootstrap().importHistory[0].monthly).toBeUndefined();
   });
-  it("roundtrips simulated source evidence and isolates reimports and runs", async () => {
+  it("roundtrips simulated source evidence and retains canonical run provenance", async () => {
     const store = createStore();
     const {records} = await parseBrokerStatement(fileFor());
     const other = await parseBrokerStatement(fileFor(csv.replaceAll('signal, quoted','new run')));
@@ -750,7 +751,9 @@ describe("SqliteStore", () => {
     const restored=store.getBootstrap().executions;
     expect(restored).toHaveLength(4);
     expect(restored.find(r=>r.id===records[1].id)?.source).toEqual(records[1].source);
-    expect(buildTradeEpisodes(restored)).toHaveLength(2);
+    const episodes=buildTradeEpisodes(restored);
+    expect(episodes).toHaveLength(1);
+    expect(new Set(episodes[0].executions.map(record=>record.source.simulationRunId)).size).toBe(2);
   });
 
   it("restores simulation notes and drawings for the exact episode after reopening SQLite", async () => {
@@ -774,7 +777,7 @@ describe("SqliteStore", () => {
     expect(reopened.getBootstrap().reviewStates).toEqual([state]);
     const restoredEpisodes=buildTradeEpisodes(reopened.getExecutions());
     expect(restoredEpisodes.map(e=>e.id)).toContain(episode.id);
-    expect(restoredEpisodes).toHaveLength(2);
+    expect(restoredEpisodes).toHaveLength(1);
     databaseFor(reopened).close();
   });
 
@@ -797,11 +800,65 @@ describe("SqliteStore", () => {
     expect(()=>store.mergeExecutions([records[1],invalid])).toThrow(/simulation/i);
     expect(store.getExecutions()).toHaveLength(0);
   });
+  it("preserves text trade IDs and historical roleless TradingView source reports", async () => {
+    const textIds=await parseBrokerStatement(fileFor(csv.replace(/^1,/gm,"trade-alpha,")));
+    expect(textIds.records.map(record=>record.source.sourceTradeId)).toEqual(["trade-alpha","trade-alpha"]);
+    const textIdStore=createStore();
+    textIdStore.mergeExecutions(textIds.records);
+    expect(textIdStore.getExecutions()).toEqual(textIds.records);
+
+    const {records}=await parseBrokerStatement(fileFor());
+    const { simulationRole: _historicalRole, ...historicalSource } = records[1].source;
+    const historicalExit={ ...records[1], source: historicalSource };
+    expect(historicalExit.source.sourceReport).toEqual(records[1].source.sourceReport);
+    const historicalStore=createStore();
+    historicalStore.mergeExecutions([historicalExit]);
+    expect(historicalStore.getExecutions()).toEqual([historicalExit]);
+  });
+  it("roundtrips the legacy TradingView simulationTradeId and report evidence", () => {
+    const legacy=parseTradingViewCsv({
+      fileName: "回放交易_SSE_600330.csv",
+      bytes: new TextEncoder().encode(csv),
+      fileFingerprint: "legacy-fingerprint",
+    });
+    expect(legacy.records[1].source.simulationTradeId).toBe("1");
+    expect(legacy.records[1].source.simulationReport).toBeDefined();
+    const store=createStore();
+    store.mergeExecutions(legacy.records);
+    expect(store.getExecutions()).toEqual(legacy.records);
+  });
+  it("accepts current TradingView source reports but keeps nature and financial evidence strict", async () => {
+    const {records}=await parseBrokerStatement(fileFor());
+    const invalidRecords = [
+      {
+        ...records[0],
+        source: { ...records[0].source, tradingNature: "live" as const },
+      },
+      {
+        ...records[0],
+        source: { ...records[0].source, simulationTradeId: "2" },
+      },
+      {
+        ...records[1],
+        source: {
+          ...records[1].source,
+          sourceReport: { ...records[1].source.sourceReport!, netPnl: "NaN" },
+        },
+      },
+    ];
+
+    for (const invalid of invalidRecords) {
+      const store=createStore();
+      expect(()=>store.mergeExecutions([invalid])).toThrow(/simulation|report/i);
+      expect(store.getExecutions()).toHaveLength(0);
+    }
+  });
   it("returns a complete bootstrap with empty production data", () => {
     const bootstrap = createStore().getBootstrap();
 
     expect(bootstrap).toMatchObject({
-      schemaVersion: 13,
+      // Version 14 registers the approved TradingView account migration.
+      schemaVersion: 14,
       executions: [], importHistory: [], instruments: [], reviews: [],
       tagSuggestions: [], marketDataJobs: [], settings: {},
     });
@@ -827,6 +884,9 @@ describe("SqliteStore", () => {
         tradeNature: "simulation" as const,
         simulationRunId: "tradingview:run-a",
         sourceTradeId: "1",
+        simulationRole: "entry" as const,
+        timePrecision: "date-only" as const,
+        sourceTimezone: "Asia/Shanghai",
       },
     };
     const history = {

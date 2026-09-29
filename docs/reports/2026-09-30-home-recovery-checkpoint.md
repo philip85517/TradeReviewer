@@ -33,3 +33,13 @@ Private database snapshots, original documents, private browser payloads and raw
 The complete Vitest run (`node node_modules/vitest/vitest.mjs run --maxWorkers=2`) finished with 312 passing files, 4 failing files, 3 skipped files; 3006 passing tests, 19 failing tests, 6 skipped tests. Failures are in the workspace integration suite, TradingView dispatcher compatibility, SQLite store compatibility and storage-boundary checks. Some assertions reflect the former run/schema contract, while other failures concern interaction/state behavior; they have not been triaged or waived. This result blocks release acceptance.
 
 The checkpoint commit was created locally. Three Git HTTPS push attempts failed (HTTP/2 framing, empty server reply, then GitHub port 443 connection failure). GitHub API verification showed the remote task branch still at `bbdc2de2a888881f3bbc0d215b72c2da294dcb86`; no new PR or remote merge was created. That remote branch is also not an ancestor of the local task branch, so its history must be reconciled before a normal push; do not force-push to conceal the divergence.
+
+## Bounded follow-up repairs
+
+The current parser's source evidence now passes SQLite validation alongside the legacy evidence shape. Historical current-parser rows without a role remain compatible, including their typed exit report; malformed financial evidence and conflicting explicit nature/identity remain rejected. A pure review parser now supplies both migration aliases and the legacy storage API without importing storage side effects into the alias resolver. Canonical-account and schema assertions were updated with explicit legacy-isolation coverage.
+
+The homepage now persists only applied page-local filters and the statistics period. Shared account/nature/currency scope remains authoritative, uncommitted date drafts are excluded, explicit return context takes precedence, and reset replaces the saved preference. This repair has component coverage but has not yet been accepted through a fresh production browser reload.
+
+Luna implementation checks report 80 storage/import tests and 46 dashboard/preference tests passing. Astra independently passed four additional state/storage counterexamples and narrow existing regressions. Coordinator typecheck passed. Workspace failures remain under classification, and integrated build, browser, performance and visual gates remain open; these results do not replace the historical full-suite failure record.
+
+Git HTTP/1.1 remote listing and fetch now succeed; the remote task branch and master have not changed. No follow-up push or merge has occurred yet.

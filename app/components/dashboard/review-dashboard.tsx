@@ -1,7 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { useEffect, useMemo, useReducer, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState, type CSSProperties } from "react";
 
 import { canonicalInstrumentId } from "../../lib/instruments/display-name";
 import { marketTradingDate } from "../../lib/market/trading-date";
@@ -64,6 +64,12 @@ import {
 } from "../../lib/reviews/trading-room-scope";
 import styles from "./review-dashboard.module.css";
 import type { SharedReportCurrency, SharedScope } from "../../lib/reviews/shared-scope";
+import {
+  applyDashboardBrowsePreferences,
+  readDashboardBrowsePreferences,
+  saveDashboardBrowsePreferences,
+  type DashboardBrowsePreferences,
+} from "../../lib/reviews/dashboard-browse-preferences";
 import {
   TradingRoomGlobalTools,
   type TradingRoomGlobalToolsProps,
@@ -218,6 +224,7 @@ type DashboardStateUpdate<T> = T | ((current: T) => T);
 
 type DashboardBrowseState = {
   localRoomScope: RoomScope;
+  restoreRevision: number;
   observationPeriod: RoomScope["period"];
   observationDraft: ReturnType<typeof observationDateDraft>;
   holdingsBrowseState: { query: string; page: number };
@@ -226,7 +233,8 @@ type DashboardBrowseState = {
 };
 
 type DashboardBrowseAction =
-  | { type: "restore"; context: RoomPendingSourceSnapshot }
+  | { type: "hydrate-preferences"; preferences: DashboardBrowsePreferences; today: string }
+  | { type: "restore"; context: RoomPendingSourceSnapshot; revision: number }
   | { type: "room-scope"; next: DashboardStateUpdate<RoomScope> }
   | { type: "observation-period"; next: DashboardStateUpdate<RoomScope["period"]> }
   | { type: "observation-draft"; next: DashboardStateUpdate<ReturnType<typeof observationDateDraft>> }
@@ -242,6 +250,7 @@ function createDashboardBrowseState(): DashboardBrowseState {
   const defaultScope = createDefaultRoomScope();
   return {
     localRoomScope: defaultScope,
+    restoreRevision: 0,
     observationPeriod: defaultScope.period,
     observationDraft: observationDateDraft(defaultScope.period),
     holdingsBrowseState: { query: "", page: 1 },
@@ -255,10 +264,20 @@ function createDashboardBrowseState(): DashboardBrowseState {
 
 function dashboardBrowseReducer(state: DashboardBrowseState, action: DashboardBrowseAction): DashboardBrowseState {
   switch (action.type) {
+    case "hydrate-preferences": {
+      // A history return is an explicit, newer user action than the stored
+      // homepage default. Keep it authoritative if effects are replayed.
+      if (state.restoreRevision > 0) return state;
+      return {
+        ...state,
+        localRoomScope: applyDashboardBrowsePreferences(state.localRoomScope, action.preferences, action.today),
+      };
+    }
     case "restore": {
       const sourceScope = action.context.roomScope;
       return {
         ...state,
+        restoreRevision: action.revision,
         localRoomScope: sourceScope
           ? {
             ...sourceScope,
@@ -513,6 +532,9 @@ export function ReviewDashboard({
 }: ReviewDashboardProps) {
   const [browseState, dispatchBrowse] = useReducer(dashboardBrowseReducer, undefined, createDashboardBrowseState);
   const { localRoomScope, observationPeriod, observationDraft, holdingsBrowseState, pendingPage, historyCalendar } = browseState;
+  const [browsePreferencesHydrated, setBrowsePreferencesHydrated] = useState(false);
+  const [browsePreferencesWritable, setBrowsePreferencesWritable] = useState(false);
+  const latestRestoreRevision = useRef(0);
   const setRoomScope = (next: DashboardStateUpdate<RoomScope>) => dispatchBrowse({ type: "room-scope", next });
   const setObservationPeriod = (next: DashboardStateUpdate<RoomScope["period"]>) => dispatchBrowse({ type: "observation-period", next });
   const setObservationDraft = (next: DashboardStateUpdate<ReturnType<typeof observationDateDraft>>) => dispatchBrowse({ type: "observation-draft", next });
@@ -532,9 +554,23 @@ export function ReviewDashboard({
   const [observationDateEditorOpen, setObservationDateEditorOpen] = useState(false);
   const [roomFiltersOpen, setRoomFiltersOpen] = useState(false);
   useEffect(() => {
+    const today = createDefaultRoomScope().period.endDate;
+    const result = readDashboardBrowsePreferences(today);
+    if (result.preferences) dispatchBrowse({ type: "hydrate-preferences", preferences: result.preferences, today });
+    setBrowsePreferencesWritable(result.available);
+    setBrowsePreferencesHydrated(true);
+  }, []);
+  useEffect(() => {
     if (!restoreBrowseContext) return;
-    dispatchBrowse({ type: "restore", context: restoreBrowseContext });
+    const revision = latestRestoreRevision.current + 1;
+    latestRestoreRevision.current = revision;
+    dispatchBrowse({ type: "restore", context: restoreBrowseContext, revision });
   }, [restoreBrowseContext]);
+  useEffect(() => {
+    if (!browsePreferencesHydrated || !browsePreferencesWritable) return;
+    if (latestRestoreRevision.current > browseState.restoreRevision) return;
+    saveDashboardBrowsePreferences(localRoomScope, createDefaultRoomScope().period.endDate);
+  }, [browsePreferencesHydrated, browsePreferencesWritable, browseState.restoreRevision, localRoomScope]);
   // The shell owns the cross-page scope. Derive the room scope during render so
   // a nature/account/run change cannot briefly render stale live metrics.
   const baseRoomScope = useMemo<RoomScope>(() => sharedScope

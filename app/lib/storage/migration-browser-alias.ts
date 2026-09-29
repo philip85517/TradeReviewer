@@ -12,7 +12,7 @@ import type { TradeExecution } from "../trades/types";
 import {
   parseStoredReviewState,
   type EpisodeReviewState,
-} from "./review-storage";
+} from "./review-storage-parser";
 import {
   createTradingViewAccountMigrationClient,
   type TradingViewAccountMigrationAlias,

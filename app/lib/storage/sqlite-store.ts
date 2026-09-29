@@ -430,6 +430,99 @@ function validateInstrument(value: unknown): asserts value is StoredInstrument {
   }
 }
 
+function isValidNumericEvidence(value: unknown): value is string {
+  return typeof value === "string" && /^-?\d+(?:\.\d+)?$/.test(value) && Number.isFinite(Number(value));
+}
+
+function validateSimulationReport(value: unknown) {
+  const report = asRecord(value, "simulation report");
+  if (Object.keys(report).length === 0 || Object.values(report).some(entry => !isValidNumericEvidence(entry))) {
+    throw new Error("Invalid simulation report");
+  }
+}
+
+function validateTradingViewSourceReport(value: unknown) {
+  const report = asRecord(value, "TradingView source report");
+  const numericFields = [
+    "netPnl",
+    "returnPercent",
+    "favorableExcursion",
+    "favorableExcursionPercent",
+    "adverseExcursion",
+    "adverseExcursionPercent",
+    "cumulativePnl",
+    "cumulativeReturnPercent",
+  ] as const;
+  const expectedFields = [...numericFields, "durationBars"];
+  if (Object.keys(report).length !== expectedFields.length || Object.keys(report).some(field => !expectedFields.includes(field as typeof expectedFields[number]))) {
+    throw new Error("Invalid TradingView source report");
+  }
+  assertStringFields(report, numericFields, "TradingView source report");
+  if (numericFields.some(field => !isValidNumericEvidence(report[field]))
+    || typeof report.durationBars !== "number" || !Number.isInteger(report.durationBars) || report.durationBars < 0) {
+    throw new Error("Invalid TradingView source report");
+  }
+}
+
+function validateSimulationEvidence(source: TradeExecution["source"]) {
+  const hasSimulationEvidence = source.tradingNature === "simulated"
+    || source.tradeNature === "simulation"
+    || source.simulationRunId !== undefined
+    || source.simulationTradeId !== undefined
+    || source.sourceTradeId !== undefined
+    || source.simulationRole !== undefined
+    || source.simulationSignal !== undefined
+    || source.simulationReport !== undefined
+    || source.sourceReport !== undefined;
+  if (!hasSimulationEvidence) return;
+
+  const legacyTradeId = source.simulationTradeId;
+  const sourceTradeId = source.sourceTradeId;
+  const tradeId = sourceTradeId ?? legacyTradeId;
+  const rolelessCurrentParserRow = source.tradeNature === "simulation"
+    && source.tradingNature === undefined
+    && source.simulationRole === undefined
+    && sourceTradeId !== undefined
+    && legacyTradeId === undefined
+    && source.simulationReport === undefined;
+  if (rolelessCurrentParserRow) {
+    if (source.platform !== "tradingview"
+      || typeof sourceTradeId !== "string" || !sourceTradeId.trim() || sourceTradeId !== sourceTradeId.trim()
+      || typeof source.simulationRunId !== "string" || !source.simulationRunId.trim()
+      || source.timePrecision !== "date-only" || source.sourceTimezone !== "Asia/Shanghai"
+      || (source.simulationSignal !== undefined && typeof source.simulationSignal !== "string")) {
+      throw new Error("Invalid simulation evidence");
+    }
+    if (source.sourceReport !== undefined) validateTradingViewSourceReport(source.sourceReport);
+    return;
+  }
+
+  if (source.platform !== "tradingview"
+    || (source.tradeNature !== "simulation" && source.tradingNature !== "simulated")
+    || (source.tradeNature !== undefined && source.tradeNature !== "simulation")
+    || (source.tradingNature !== undefined && source.tradingNature !== "simulated")
+    || typeof source.simulationRunId !== "string" || !source.simulationRunId.trim()
+    || typeof tradeId !== "string" || !tradeId.trim()
+    || (legacyTradeId !== undefined && !/^\d+$/.test(legacyTradeId))
+    || (legacyTradeId !== undefined && legacyTradeId !== tradeId)
+    || (sourceTradeId !== undefined && sourceTradeId !== tradeId)
+    || !["entry", "exit"].includes(source.simulationRole ?? "")
+    || source.timePrecision !== "date-only" || source.sourceTimezone !== "Asia/Shanghai") {
+    throw new Error("Invalid simulation evidence");
+  }
+  if (source.simulationSignal !== undefined && typeof source.simulationSignal !== "string") {
+    throw new Error("Invalid simulation signal");
+  }
+  if (source.simulationReport !== undefined) {
+    if (source.simulationRole !== "exit" || source.sourceReport !== undefined) throw new Error("Invalid simulation report");
+    validateSimulationReport(source.simulationReport);
+  }
+  if (source.sourceReport !== undefined) {
+    if ((source.simulationRole !== undefined && source.simulationRole !== "exit") || source.simulationReport !== undefined) throw new Error("Invalid TradingView source report");
+    validateTradingViewSourceReport(source.sourceReport);
+  }
+}
+
 function validateExecution(value: unknown): asserts value is TradeExecution {
   const item = asRecord(value, "execution") as Partial<TradeExecution>;
   assertStringFields(
@@ -451,18 +544,7 @@ function validateExecution(value: unknown): asserts value is TradeExecution {
     if (Object.values(fees).some(value=>!validDecimal(value)||Number(value)<0)) throw new Error("Invalid settlement fees");
   }
   if (source.tradingNature !== undefined && !["simulated", "live", "unknown"].includes(source.tradingNature)) throw new Error("Invalid trading nature");
-  if (source.tradingNature === "simulated" || source.simulationRole !== undefined) {
-    if (source.platform !== "tradingview" || source.tradingNature !== "simulated"
-      || typeof source.simulationRunId !== "string" || !source.simulationRunId
-      || typeof source.simulationTradeId !== "string" || !/^\d+$/.test(source.simulationTradeId)
-      || !["entry", "exit"].includes(source.simulationRole ?? "")
-      || source.timePrecision !== "date-only" || source.sourceTimezone !== "Asia/Shanghai") throw new Error("Invalid simulation evidence");
-    if (source.simulationSignal !== undefined && typeof source.simulationSignal !== "string") throw new Error("Invalid simulation signal");
-    if (source.simulationReport !== undefined) {
-      if (source.simulationRole !== "exit" || !source.simulationReport || typeof source.simulationReport !== "object" || Array.isArray(source.simulationReport)
-        || Object.values(source.simulationReport).some(value => typeof value !== "string" || !/^-?\d+(?:\.\d+)?$/.test(value))) throw new Error("Invalid simulation report");
-    }
-  } else if (source.tradeNature !== "simulation" && [source.simulationRunId, source.simulationTradeId, source.simulationRole, source.simulationReport].some(value => value !== undefined)) throw new Error("Invalid simulation evidence");
+  validateSimulationEvidence(source);
   validateTradeScope(source.tradeNature ?? (source.tradingNature === "simulated" ? "simulation" : source.tradingNature), source.simulationRunId, "simulation execution");
 }
 

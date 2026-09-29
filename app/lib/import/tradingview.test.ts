@@ -40,15 +40,27 @@ describe('TradingView CSV import through the dispatcher', () => {
     expect(episodes).toHaveLength(1);
     expect(episodes[0]).toMatchObject({direction:'short',openingQuantity:'200',remainingQuantity:'0',status:'closed'});
   });
-  it('deduplicates renamed reimports but isolates separate simulation runs and real trades', async () => {
+  it('deduplicates renamed reimports, groups canonical runs, and preserves legacy run isolation', async () => {
     const a=await parseBrokerStatement(fileFor());
     expect(a.records).toHaveLength(2);
     const renamed=await parseBrokerStatement(fileFor(csv,'renamed_SSE_600330.csv'));
     const other=await parseBrokerStatement(fileFor(csv.replaceAll('signal, quoted','other run')));
     const real=a.records.map(r=>({...r,id:'real:'+r.id,source:{platform:'futu',row:r.source.row},accountId:a.records[0].accountId}));
+    const legacyRuns = [
+      ...a.records.map(r=>({...r,id:`legacy-a:${r.id}`,accountId:'legacy-tradingview-account',accountLabel:'旧模拟账户'})),
+      ...other.records.map(r=>({...r,id:`legacy-b:${r.id}`,accountId:'legacy-tradingview-account',accountLabel:'旧模拟账户'})),
+    ];
     expect(mergeExecutions(a.records,renamed.records)).toHaveLength(2);
     expect(mergeExecutions(a.records,other.records)).toHaveLength(4);
-    expect(buildTradeEpisodes([...a.records,...other.records,...real])).toHaveLength(3);
+    const episodes=buildTradeEpisodes([...a.records,...other.records,...real,...legacyRuns]);
+    const canonical=episodes.find(episode=>episode.accountId===TRADINGVIEW_CANONICAL_ACCOUNT_ID && episode.tradeNature==='simulation');
+    expect(canonical?.executions.map(execution=>execution.source.simulationRunId)).toContain(a.records[0].source.simulationRunId);
+    expect(canonical?.executions.map(execution=>execution.source.simulationRunId)).toContain(other.records[0].source.simulationRunId);
+    const legacy=episodes.filter(episode=>episode.accountId==='legacy-tradingview-account' && episode.tradeNature==='simulation');
+    expect(legacy).toHaveLength(2);
+    expect(new Set(legacy.map(episode=>episode.simulationRunId)).size).toBe(2);
+    expect(episodes.filter(episode=>episode.accountId===TRADINGVIEW_CANONICAL_ACCOUNT_ID && episode.tradeNature!=='simulation')).toHaveLength(1);
+    expect(episodes).toHaveLength(4);
   });
   it('excludes an entire invalid pair without losing valid pairs', async () => {
     const parsed=await parseBrokerStatement(fileFor(csv+'\n'+row(2,'多头进场','2021-02-20','10')));

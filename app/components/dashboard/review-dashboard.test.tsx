@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { StrictMode } from "react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -12,16 +13,21 @@ import {
 import { ReviewDashboard } from "./review-dashboard";
 import * as portfolioModule from "../../lib/reviews/trading-room-portfolio";
 import * as historyModule from "../../lib/reviews/trading-room-history";
+import { buildRoomDateRange, createDefaultRoomScope } from "../../lib/reviews/trading-room-scope";
 import type { SharedScope } from "../../lib/reviews/shared-scope";
+import type { RoomPendingSourceSnapshot } from "../../lib/reviews/trading-room-pending";
 import type { CashSummary } from "../../lib/cash/cash-model";
 
 beforeEach(() => {
   vi.useFakeTimers({ now: new Date("2026-10-15T12:00:00.000Z"), shouldAdvanceTime: true });
+  localStorage.removeItem(dashboardBrowsePreferencesKey);
 });
 afterEach(() => {
   cleanup();
   vi.useRealTimers();
 });
+
+const dashboardBrowsePreferencesKey = "trade-reviewer:dashboard-browse-preferences:v1";
 
 const shanghai: Instrument = {
   id: "CN-SH:600000",
@@ -199,6 +205,34 @@ function canonicalHoldingEntry(sourceRunId: string, suffix: string): TradeLibrar
     instrument,
     executions: [execution],
     episodes: [{ ...base.episodes[0], episode }],
+  };
+}
+
+function canonicalClosedEntry(entry: TradeLibraryEntry, sourceRunId: string): TradeLibraryEntry {
+  const executions = entry.executions.map(execution => ({
+    ...execution,
+    accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+    accountLabel: TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+    source: { ...execution.source, platform: "tradingview", tradeNature: "simulation" as const, simulationRunId: sourceRunId },
+  }));
+  const executionsById = new Map(executions.map(execution => [execution.id, execution]));
+  return {
+    ...entry,
+    groupId: `${entry.instrument.id}|simulation:${TRADINGVIEW_CANONICAL_ACCOUNT_ID}`,
+    tradeNature: "simulation",
+    simulationRunId: sourceRunId,
+    executions,
+    episodes: entry.episodes.map(item => ({
+      ...item,
+      episode: {
+        ...item.episode,
+        accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+        accountLabel: TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+        tradeNature: "simulation",
+        simulationRunId: sourceRunId,
+        executions: item.episode.executions.map(execution => executionsById.get(execution.id)!),
+      },
+    })),
   };
 }
 
@@ -537,7 +571,7 @@ describe("ReviewDashboard", () => {
 
   it("cancels a history date draft back to the applied range and exposes invalid input as an alert", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
+    const view = render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
 
     const history = screen.getByRole("region", { name: "历史交易与复盘" });
     await user.click(within(history).getByText("自定义统计日期", { exact: true }));
@@ -558,6 +592,10 @@ describe("ReviewDashboard", () => {
     await user.click(within(history).getByText("自定义统计日期", { exact: true }));
     expect(within(history).getByLabelText("交易室起始日期")).toHaveValue("2026-10-02");
     expect(within(history).getByLabelText("交易室结束日期")).toHaveValue("2026-10-05");
+
+    view.unmount();
+    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
+    expect(screen.getByRole("region", { name: "历史交易与复盘" })).toHaveTextContent("2026-10-02 至 2026-10-05");
   });
 
   it("keeps original currency subtotals beside the converted summary", async () => {
@@ -1051,4 +1089,123 @@ it("forwards scope cash baseline details to the asset distribution strip", () =>
   const allocation = screen.getByRole("region", { name: "当前持仓资产分布" });
   expect(within(allocation).getByRole("group", { name: "现金基准详情" })).toHaveTextContent("caller-test");
   expect(within(allocation).getByRole("group", { name: "现金基准详情" })).toHaveTextContent("截至 2026-09-19");
+});
+
+it("restores only applied dashboard filters and statistics period after a reload, then keeps reset cleared", () => {
+  const stock = canonicalClosedEntry(dashboardEntries(shanghai, "2026-10", "stock-")[0], "source-stock");
+  const etfInstrument: Instrument = { id: "US:SPY", symbol: "SPY", name: "标普ETF", market: "US", currency: "USD" };
+  const etf = canonicalClosedEntry(dashboardEntries(etfInstrument, "2026-10", "etf-")[0], "source-etf");
+  const entries = [stock, etf];
+  const sharedScope: SharedScope = {
+    nature: "simulation",
+    accountIds: [TRADINGVIEW_CANONICAL_ACCOUNT_ID],
+    reportCurrency: "original",
+    simulationRunId: null,
+  };
+  const props = {
+    entries,
+    sharedScope,
+    instrumentMetadata: new Map([[shanghai.id, metadata(shanghai, "stock")], [etfInstrument.id, metadata(etfInstrument, "etf")]]),
+    onOpenInReview: vi.fn(),
+    referenceCapitalEnabled: false,
+  };
+
+  const view = render(<ReviewDashboard {...props} />);
+  const history = screen.getByRole("region", { name: "历史交易与复盘" });
+  const readClosedCount = () => within(history).getByText("完整回合数").parentElement?.querySelector("strong")?.textContent;
+  expect(readClosedCount()).toBe("8");
+  openRoomFiltersImmediately();
+  fireEvent.click(within(screen.getByRole("group", { name: "交易室资产类型筛选" })).getByRole("radio", { name: "股票" }));
+  fireEvent.click(within(history).getByRole("tab", { name: "全部" }));
+
+  expect(readClosedCount()).toBe("4");
+  expect(within(history).getByRole("tab", { name: "全部", selected: true })).toBeInTheDocument();
+  view.unmount();
+
+  render(<ReviewDashboard {...props} />);
+  openRoomFiltersImmediately();
+  expect(within(screen.getByRole("group", { name: "交易室资产类型筛选" })).getByRole("radio", { name: "股票" })).toBeChecked();
+  const reloadedHistory = screen.getByRole("region", { name: "历史交易与复盘" });
+  expect(within(reloadedHistory).getByRole("tab", { name: "全部", selected: true })).toBeInTheDocument();
+  expect(within(reloadedHistory).getByText("完整回合数").parentElement?.querySelector("strong")).toHaveTextContent("4");
+  expect(screen.getByRole("button", { name: "模拟盘" })).toHaveAttribute("aria-pressed", "true");
+
+  fireEvent.click(screen.getByRole("button", { name: "恢复默认范围" }));
+  expect(within(screen.getByRole("group", { name: "交易室资产类型筛选" })).getByRole("radio", { name: "全部资产" })).toBeChecked();
+  expect(within(reloadedHistory).getByRole("tab", { name: "今年至今", selected: true })).toBeInTheDocument();
+  cleanup();
+
+  render(<ReviewDashboard {...props} />);
+  openRoomFiltersImmediately();
+  expect(within(screen.getByRole("group", { name: "交易室资产类型筛选" })).getByRole("radio", { name: "全部资产" })).toBeChecked();
+  expect(within(screen.getByRole("region", { name: "历史交易与复盘" })).getByRole("tab", { name: "今年至今", selected: true })).toBeInTheDocument();
+});
+
+it("does not overwrite stored page filters with the default scope during StrictMode hydration", () => {
+  localStorage.setItem(dashboardBrowsePreferencesKey, JSON.stringify({
+    version: 1,
+    assetCategory: "all",
+    assetType: "stock",
+    instrumentIds: [],
+    markets: [],
+    currencies: [],
+    reviewStatuses: [],
+    period: { preset: "all" },
+  }));
+  const stock = canonicalClosedEntry(dashboardEntries(shanghai, "2026-10", "stock-")[0], "source-stock");
+  const sharedScope: SharedScope = {
+    nature: "simulation",
+    accountIds: [TRADINGVIEW_CANONICAL_ACCOUNT_ID],
+    reportCurrency: "original",
+    simulationRunId: null,
+  };
+  render(<StrictMode><ReviewDashboard entries={[stock]} sharedScope={sharedScope} onOpenInReview={vi.fn()} referenceCapitalEnabled={false} /></StrictMode>);
+  openRoomFiltersImmediately();
+  expect(within(screen.getByRole("group", { name: "交易室资产类型筛选" })).getByRole("radio", { name: "股票" })).toBeChecked();
+  expect(within(screen.getByRole("region", { name: "历史交易与复盘" })).getByRole("tab", { name: "全部", selected: true })).toBeInTheDocument();
+});
+
+it("lets an explicit history return context override stored dashboard preferences and persist its applied range", () => {
+  localStorage.setItem(dashboardBrowsePreferencesKey, JSON.stringify({
+    version: 1,
+    assetCategory: "all",
+    assetType: "etf",
+    instrumentIds: [],
+    markets: [],
+    currencies: [],
+    reviewStatuses: [],
+    period: { preset: "all" },
+  }));
+  const stock = canonicalClosedEntry(dashboardEntries(shanghai, "2026-10", "stock-")[0], "source-stock");
+  const sharedScope: SharedScope = {
+    nature: "simulation",
+    accountIds: [TRADINGVIEW_CANONICAL_ACCOUNT_ID],
+    reportCurrency: "original",
+    simulationRunId: null,
+  };
+  const roomScope = {
+    ...createDefaultRoomScope("2026-10-15"),
+    nature: "simulation" as const,
+    accountIds: [TRADINGVIEW_CANONICAL_ACCOUNT_ID],
+    assetType: "stock" as const,
+    period: buildRoomDateRange("custom", "2026-10-15", "2026-10-02", "2026-10-05"),
+  };
+  const context: RoomPendingSourceSnapshot = {
+    sharedScope,
+    roomScope,
+    observationPeriod: buildRoomDateRange("ytd", "2026-10-15"),
+    historyPeriod: roomScope.period,
+    holdings: { query: "", page: 1 },
+    pending: { page: 1 },
+    historyCalendar: { displayMonth: "2026-10", selectedDate: null },
+  };
+
+  render(<ReviewDashboard entries={[stock]} sharedScope={sharedScope} restoreBrowseContext={context} onOpenInReview={vi.fn()} referenceCapitalEnabled={false} />);
+  openRoomFiltersImmediately();
+  expect(within(screen.getByRole("group", { name: "交易室资产类型筛选" })).getByRole("radio", { name: "股票" })).toBeChecked();
+  const history = screen.getByRole("region", { name: "历史交易与复盘" });
+  expect(history).toHaveTextContent("2026-10-02 至 2026-10-05");
+  expect(within(history).getByRole("tab", { name: "今年至今" })).toHaveAttribute("aria-selected", "false");
+  const saved = JSON.parse(localStorage.getItem(dashboardBrowsePreferencesKey)!);
+  expect(saved).toMatchObject({ assetType: "stock", period: { preset: "custom", startDate: "2026-10-02", endDate: "2026-10-05" } });
 });

@@ -10,6 +10,7 @@ import type { DemoReplayFrame } from "../demo/replay-frame";
 import type { SqliteHttpClient } from "./sqlite-http-client";
 import type { TradeExecution } from "../trades/types";
 import { TradeReviewWorkspace } from "../../components/trade-review-workspace";
+import { parseStoredReviewState } from "./review-storage-parser";
 
 const { mockDispatcher, mockEnrichment, mockMarketDataSync } = vi.hoisted(
   () => ({
@@ -196,6 +197,67 @@ describe("SQLite production storage boundary", () => {
     mockDispatcher.mockReset();
     mockEnrichment.mockReset();
     mockMarketDataSync.mockReset();
+  });
+
+  it("keeps legacy and current review parsing pure with the same normalized state", () => {
+    const replayCursor = "2025-01-10T00:00:00.000Z";
+    const drawing = {
+      id: "price-1",
+      tool: "price-label",
+      anchors: [{ time: "2025-01-06T00:00:00.000Z", price: 12.5 }],
+      style: { color: "#f3ba2f", lineWidth: 1, opacity: 0.9 },
+      hidden: false,
+      locked: true,
+      visibleOn: "all",
+      stage: "pre-trade",
+      text: "突破价",
+    };
+    const legacy = parseStoredReviewState("legacy", JSON.stringify({
+      version: 1,
+      replayCursor,
+      timeframe: "1D",
+      thesis: "保留旧计划",
+      drawings: [drawing],
+    }));
+    expect(legacy).toMatchObject({
+      version: 2,
+      episodeId: "legacy",
+      replayCursor,
+      timeframe: "1D",
+      activePanelTab: "stats",
+      legacyThesis: "保留旧计划",
+      drawings: [{
+        version: 2,
+        episodeId: "legacy",
+        createdAtCursor: replayCursor,
+        text: "突破价",
+      }],
+    });
+
+    const current = parseStoredReviewState("current", JSON.stringify({
+      version: 2,
+      episodeId: "stored-episode",
+      replayCursor,
+      timeframe: "1W",
+      activePanelTab: "notes",
+      drawings: [{
+        ...drawing,
+        version: 2,
+        episodeId: "stored-episode",
+        name: "价格标注",
+        zIndex: 0,
+        createdAtCursor: replayCursor,
+      }],
+    }));
+    expect(current).toMatchObject({
+      version: 2,
+      episodeId: "current",
+      replayCursor,
+      timeframe: "1W",
+      activePanelTab: "notes",
+      drawings: [{ episodeId: "current", name: "价格标注", zIndex: 0 }],
+    });
+    expect(parseStoredReviewState("broken", "{")).toBeNull();
   });
 
   it("renders the import-empty state from an empty SQLite bootstrap without legacy reads", async () => {

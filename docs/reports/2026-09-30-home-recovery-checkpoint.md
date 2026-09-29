@@ -27,3 +27,9 @@ Private database snapshots, original documents, private browser payloads and raw
 - Reload returns to the homepage and resets the additional filter/period state. Re-entering the same history source then produces a current-year empty range instead of the previous all-period range. Do not infer filter persistence from unchanged account or instrument counts.
 - Remote master contains the unified page-header changes. Their semantic integration, conflict resolution and affected regression/visual acceptance remain outstanding.
 - Final integrated full-page responsive visual acceptance and release regression are not complete. Do not merge this checkpoint until required gates are resolved.
+
+## Publication attempt and full regression
+
+The complete Vitest run (`node node_modules/vitest/vitest.mjs run --maxWorkers=2`) finished with 312 passing files, 4 failing files, 3 skipped files; 3006 passing tests, 19 failing tests, 6 skipped tests. Failures are in the workspace integration suite, TradingView dispatcher compatibility, SQLite store compatibility and storage-boundary checks. Some assertions reflect the former run/schema contract, while other failures concern interaction/state behavior; they have not been triaged or waived. This result blocks release acceptance.
+
+The checkpoint commit was created locally. Three Git HTTPS push attempts failed (HTTP/2 framing, empty server reply, then GitHub port 443 connection failure). GitHub API verification showed the remote task branch still at `bbdc2de2a888881f3bbc0d215b72c2da294dcb86`; no new PR or remote merge was created. That remote branch is also not an ancestor of the local task branch, so its history must be reconciled before a normal push; do not force-push to conceal the divergence.

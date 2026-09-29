@@ -7,6 +7,7 @@ import {
   type CashScope,
   type CashInstrumentMetadata,
 } from "../../../lib/cash/cash-model";
+import { TRADINGVIEW_CANONICAL_ACCOUNT_ID } from "../../../lib/trades/tradingview-account-identity";
 import { getSqliteStore } from "../../../lib/storage/sqlite-store";
 import type { StoredInstrument } from "../../../lib/storage/sqlite-contracts";
 import type { TradeExecution } from "../../../lib/trades/types";
@@ -43,7 +44,13 @@ function parseScope(url: URL): CashScope | Response {
     if (simulationRunId !== null) return error("invalid-request", "实盘范围不能指定模拟运行", 400);
     return { nature: "live", simulationRunId: null };
   }
-  if (!simulationRunId?.trim()) return error("invalid-request", "模拟范围必须指定运行", 400);
+  if (!simulationRunId?.trim()) {
+    const accountIds = parseAccountIds(url);
+    if (accountIds.length > 1 || (accountIds.length === 1 && accountIds[0] !== TRADINGVIEW_CANONICAL_ACCOUNT_ID)) {
+      return error("invalid-request", "无运行 id 的模拟范围必须是 canonical TradingView 账户", 400);
+    }
+    return { nature: "simulation", simulationRunId: null };
+  }
   return { nature: "simulation", simulationRunId: simulationRunId.trim() };
 }
 

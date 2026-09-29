@@ -5,10 +5,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { buildInstrumentTradeSummaries } from "../../lib/trades/instruments";
 import { buildTradeLibraryEntries, type TradeLibraryEntry } from "../../lib/trades/library";
 import type { Instrument, TradeExecution } from "../../lib/trades/types";
+import {
+  TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+  TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+} from "../../lib/trades/tradingview-account-identity";
 import { ReviewDashboard } from "./review-dashboard";
 import * as portfolioModule from "../../lib/reviews/trading-room-portfolio";
 import * as historyModule from "../../lib/reviews/trading-room-history";
 import type { SharedScope } from "../../lib/reviews/shared-scope";
+import type { CashSummary } from "../../lib/cash/cash-model";
 
 beforeEach(() => {
   vi.useFakeTimers({ now: new Date("2026-10-15T12:00:00.000Z"), shouldAdvanceTime: true });
@@ -148,6 +153,52 @@ function holdingDashboardEntry(): TradeLibraryEntry {
     reviewedEpisodeCount: 0,
     confirmedTagIds: [],
     cumulativeR: null,
+  };
+}
+
+function canonicalHoldingEntry(sourceRunId: string, suffix: string): TradeLibraryEntry {
+  const base = holdingDashboardEntry();
+  const instrument: Instrument = {
+    ...base.instrument,
+    id: `US:${suffix}`,
+    symbol: suffix,
+    name: `${suffix}持仓`,
+  };
+  const execution: TradeExecution = {
+    ...base.executions[0],
+    id: `canonical:${suffix}:buy`,
+    accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+    accountLabel: TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+    instrument,
+    source: {
+      ...base.executions[0].source,
+      platform: "tradingview",
+      tradeNature: "simulation",
+      simulationRunId: sourceRunId,
+      inputKind: "tradingview",
+    },
+  };
+  const episode = {
+    ...base.episodes[0].episode,
+    id: `canonical:${suffix}:episode`,
+    accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+    accountLabel: TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+    instrument,
+    tradeNature: "simulation" as const,
+    // Preserve source provenance on the fixture to ensure the UI does not
+    // turn a canonical source run back into a business filter.
+    simulationRunId: sourceRunId,
+    executions: [execution],
+  };
+  return {
+    ...base,
+    groupId: `${instrument.id}|simulation:${TRADINGVIEW_CANONICAL_ACCOUNT_ID}`,
+    scopeKey: `simulation:${TRADINGVIEW_CANONICAL_ACCOUNT_ID}`,
+    tradeNature: "simulation",
+    simulationRunId: sourceRunId,
+    instrument,
+    executions: [execution],
+    episodes: [{ ...base.episodes[0], episode }],
   };
 }
 
@@ -453,6 +504,62 @@ describe("ReviewDashboard", () => {
     expect(scope).not.toHaveTextContent("自定义期间起止日期无效");
   });
 
+  it("cancels an observation date draft back to the applied range and closes the editor", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
+
+    let history = screen.getByRole("region", { name: "历史持仓估值" });
+    await user.click(within(history).getByText("自定义观察日期", { exact: true }));
+    fireEvent.change(within(history).getByLabelText("持仓历史起始日期"), { target: { value: "2026-10-02" } });
+    fireEvent.change(within(history).getByLabelText("持仓历史结束日期"), { target: { value: "2026-10-05" } });
+    fireEvent.click(within(history).getByRole("button", { name: "应用观察期间" }));
+    history = screen.getByRole("region", { name: "历史持仓估值" });
+    expect(within(history).getByLabelText("持仓历史起始日期")).toHaveValue("2026-10-02");
+    expect(within(history).getByLabelText("持仓历史结束日期")).toHaveValue("2026-10-05");
+    expect(within(history).getByRole("tab", { name: "持仓历史：今年至今" })).toHaveAttribute("aria-selected", "false");
+
+    fireEvent.change(within(history).getByLabelText("持仓历史起始日期"), { target: { value: "2026-10-10" } });
+    fireEvent.change(within(history).getByLabelText("持仓历史结束日期"), { target: { value: "2026-10-16" } });
+    expect(within(history).getByLabelText("持仓历史起始日期")).toHaveValue("2026-10-10");
+    expect(within(history).getByLabelText("持仓历史结束日期")).toHaveValue("2026-10-16");
+    await user.click(within(history).getByRole("button", { name: "应用观察期间" }));
+    history = screen.getByRole("region", { name: "历史持仓估值" });
+    expect(within(history).getByRole("alert")).toHaveTextContent("持仓历史期间起止日期无效");
+    expect(within(history).getByLabelText("持仓历史起始日期")).toHaveValue("2026-10-10");
+
+    await user.click(within(history).getByRole("button", { name: "取消观察期间" }));
+    expect(within(history).queryByRole("alert")).not.toBeInTheDocument();
+    expect(within(history).queryByLabelText("持仓历史起始日期")).not.toBeVisible();
+    await user.click(within(history).getByText("自定义观察日期", { exact: true }));
+    expect(within(history).getByLabelText("持仓历史起始日期")).toHaveValue("2026-10-02");
+    expect(within(history).getByLabelText("持仓历史结束日期")).toHaveValue("2026-10-05");
+  });
+
+  it("cancels a history date draft back to the applied range and exposes invalid input as an alert", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={() => undefined} />);
+
+    const history = screen.getByRole("region", { name: "历史交易与复盘" });
+    await user.click(within(history).getByText("自定义统计日期", { exact: true }));
+    fireEvent.change(within(history).getByLabelText("交易室起始日期"), { target: { value: "2026-10-02" } });
+    fireEvent.change(within(history).getByLabelText("交易室结束日期"), { target: { value: "2026-10-05" } });
+    await user.click(within(history).getByRole("button", { name: "应用期间" }));
+    expect(history).toHaveTextContent("2026-10-02 至 2026-10-05");
+
+    fireEvent.change(within(history).getByLabelText("交易室起始日期"), { target: { value: "2026-10-10" } });
+    fireEvent.change(within(history).getByLabelText("交易室结束日期"), { target: { value: "2026-10-09" } });
+    await user.click(within(history).getByRole("button", { name: "应用期间" }));
+    expect(within(history).getByRole("alert")).toHaveTextContent("自定义期间起止日期无效");
+    expect(history).toHaveTextContent("2026-10-02 至 2026-10-05");
+
+    await user.click(within(history).getByRole("button", { name: "取消统计期间" }));
+    expect(within(history).queryByRole("alert")).not.toBeInTheDocument();
+    expect(within(history).queryByLabelText("交易室起始日期")).not.toBeVisible();
+    await user.click(within(history).getByText("自定义统计日期", { exact: true }));
+    expect(within(history).getByLabelText("交易室起始日期")).toHaveValue("2026-10-02");
+    expect(within(history).getByLabelText("交易室结束日期")).toHaveValue("2026-10-05");
+  });
+
   it("keeps original currency subtotals beside the converted summary", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     const usd: Instrument = { ...shanghai, id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" };
@@ -518,6 +625,70 @@ describe("ReviewDashboard", () => {
     await user.click(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("button", { name: "实盘" }));
     await user.click(within(screen.getByRole("region", { name: "我的交易室" })).getByRole("button", { name: "模拟盘" }));
     expect(within(room).getByRole("radio", { name: "请选择运行" })).toBeChecked();
+  });
+
+  it("shows canonical TradingView holdings and history for all-account and explicit-account run-null scope", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const entries = [
+      ["source-01", "TV-A"],
+      ["source-02", "TV-B"],
+      ["source-03", "TV-C"],
+      ["source-04", "TV-D"],
+    ].map(([sourceRunId, suffix]) => canonicalHoldingEntry(sourceRunId, suffix));
+    const view = render(
+      <ReviewDashboard
+        entries={entries}
+        referenceCapitalEnabled={false}
+        holdingsAsOf="2026-10-15"
+        onOpenInReview={() => undefined}
+      />,
+    );
+
+    const room = screen.getByRole("region", { name: "交易室范围" });
+    await user.click(screen.getByRole("button", { name: "模拟盘" }));
+    expect(screen.getByRole("region", { name: "当前持仓" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "历史持仓估值" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "历史交易与复盘" })).toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "模拟运行" })).not.toBeInTheDocument();
+    expect(room).not.toHaveTextContent("请选择一个模拟运行");
+
+    await user.selectOptions(screen.getByRole("combobox", { name: "账户范围" }), TRADINGVIEW_CANONICAL_ACCOUNT_ID);
+    expect(screen.getByRole("region", { name: "当前持仓" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "历史持仓估值" })).toBeInTheDocument();
+
+    view.rerender(
+      <ReviewDashboard
+        entries={entries}
+        sharedScope={{ nature: "simulation", accountIds: [TRADINGVIEW_CANONICAL_ACCOUNT_ID], reportCurrency: "original", simulationRunId: null }}
+        referenceCapitalEnabled={false}
+        holdingsAsOf="2026-10-15"
+        onOpenInReview={() => undefined}
+      />,
+    );
+    expect(screen.getByRole("region", { name: "当前持仓" })).toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "模拟运行" })).not.toBeInTheDocument();
+
+    await openRoomFilters(user);
+    expect(within(room).queryByRole("group", { name: "交易室模拟运行筛选" })).not.toBeInTheDocument();
+    expect(room).not.toHaveTextContent("不会跨运行合并");
+  });
+
+  it("keeps canonical run-null rows separate from legacy simulation run filters", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const canonical = canonicalHoldingEntry("source-canonical", "TV-canonical");
+    const legacy = copyEntry(dashboardEntries()[0], { prefix: "legacy", tradeNature: "simulation", simulationRunId: "legacy-run" });
+    render(<ReviewDashboard entries={[canonical, legacy]} onOpenInReview={() => undefined} />);
+
+    const room = screen.getByRole("region", { name: "交易室范围" });
+    await user.click(screen.getByRole("button", { name: "模拟盘" }));
+    expect(screen.getByRole("region", { name: "当前持仓" })).toBeInTheDocument();
+    expect(room).not.toHaveTextContent("请选择一个模拟运行");
+    await openRoomFilters(user);
+    const legacyRun = within(room).getByRole("radio", { name: /模拟运行/ });
+    expect(legacyRun).toBeInTheDocument();
+    await user.click(legacyRun);
+    expect(room).toHaveTextContent("4 个回合进入范围");
+    expect(room).not.toHaveTextContent("TV-canonical持仓");
   });
 
   it("derives room metrics immediately from the controlled shared nature and account scope", async () => {
@@ -842,4 +1013,42 @@ it("does not rebuild holdings for shared-scope closed-period changes but rebuild
     expect(portfolioSpy).not.toHaveBeenCalled();
     expect(historySpy).not.toHaveBeenCalled();
   } finally { portfolioSpy.mockRestore(); historySpy.mockRestore(); }
+});
+
+it("forwards scope cash baseline details to the asset distribution strip", () => {
+  const money = {
+    baseCurrency: "CNY" as const,
+    originalByCurrency: { CNY: "100000" },
+    convertedCny: "100000",
+    converted: "100000",
+    convertedHkd: null,
+    targetCurrency: "CNY" as const,
+    conversion: "same-currency" as const,
+    fxSnapshotId: null,
+    note: "现金基准可核对",
+  };
+  const cashSummary = {
+    todayProceeds: money,
+    cashTotal: money,
+    todayProceedsStatus: "zero",
+    cashTotalStatus: "available",
+    coverage: { included: 0, excluded: 0, missing: 0 },
+    asOf: "2026-09-19T00:00:00.000Z",
+    missingReasons: [],
+    byScope: {},
+    updatedAt: "2026-09-20T00:00:00.000Z",
+  } satisfies CashSummary;
+  render(<ReviewDashboard
+    entries={[holdingDashboardEntry()]}
+    onOpenInReview={vi.fn()}
+    referenceCapitalEnabled={false}
+    holdingsAsOf="2026-10-15"
+    holdingsQuotesByInstrument={{ "US:TEST": { price: "15", currency: "USD", quoteDate: "2026-10-15", fetchedAt: null, provider: "test", freshness: "current" } }}
+    cashSummary={cashSummary}
+    cashBaselineDetails={[{ accountId: "account-1", accountLabel: "主账户", currency: "CNY", balance: "100000", asOf: "2026-09-19T00:00:00.000Z", source: "caller-test", revision: 2, coverage: "available" }]}
+  />);
+
+  const allocation = screen.getByRole("region", { name: "当前持仓资产分布" });
+  expect(within(allocation).getByRole("group", { name: "现金基准详情" })).toHaveTextContent("caller-test");
+  expect(within(allocation).getByRole("group", { name: "现金基准详情" })).toHaveTextContent("截至 2026-09-19");
 });

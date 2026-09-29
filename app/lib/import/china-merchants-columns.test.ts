@@ -61,7 +61,7 @@ describe("A-share statement column layouts", () => {
       expect.arrayContaining([expect.stringContaining("交易日期")]),
     );
     expect(preview).toMatchObject({
-      sourceLabel: "A股招商银行",
+      sourceLabel: "A股招商证券",
       tradeCount: 2,
       blocked: false,
       unresolvedInstrumentCount: 0,

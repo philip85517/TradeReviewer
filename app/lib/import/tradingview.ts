@@ -2,6 +2,10 @@ import Decimal from 'decimal.js';
 import { Temporal } from '@js-temporal/polyfill';
 import type { StatementInput, StatementParseResult } from './contracts';
 import type { TradeExecution } from '../trades/types';
+import {
+  TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+  TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+} from '../trades/tradingview-account-identity';
 
 export type TradingViewInstrument = { market: 'CN-SH' | 'CN-SZ'; symbol: string };
 const columns = ['交易编号','类型','日期和时间','信号','价格 CNY','大小（数量）','大小（价值）','净损益 CNY','回报 %','手续费 CNY','有利波动 CNY','有利波动 %','不利波动 CNY','不利波动 %','累计损益 CNY','累计损益 %','持续时间（K线）'];
@@ -88,7 +92,7 @@ export function parseTradingViewCsv(input: StatementInput, selected?: TradingVie
           id:`tradingview:${runId}:${id}:${index===0?'entry':'exit'}`,
           source:{ platform:'tradingview',inputKind:'statement',tradingNature:'simulated', simulationRunId:runId,simulationTradeId:id, simulationRole:index===0?'entry':'exit', simulationSignal:r.data['信号'], ...(index===1 ? { simulationReport:Object.fromEntries(columns.slice(6).map(c=>[c,r.data[c]])) } : {}),
             fileName:input.fileName,fileFingerprint:input.fileFingerprint,row:r.row,timePrecision:'date-only',sourceTimestampText:r.data['日期和时间'],sourceTimezone:'Asia/Shanghai' },
-          accountId:`tradingview:${runId}`, accountLabel:`TradingView · 模拟盘 · ${input.fileFingerprint.slice(0,8)}`,
+          accountId:TRADINGVIEW_CANONICAL_ACCOUNT_ID, accountLabel:TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
           instrument:{id:`${instrument.market}:${instrument.symbol}`,market:instrument.market,symbol:instrument.symbol,name:'名称待行情源补充',currency:'CNY'},
           side:['多头进场','空头出场'].includes(r.data['类型'])?'buy':'sell',
           executedAt:`${r.data['日期和时间']}T07:00:00.000Z`,quantity:new Decimal(r.data['大小（数量）']).toString(), price:new Decimal(r.data['价格 CNY']).toString(),fee:index===0?'0':new Decimal(r.data['手续费 CNY']).toString(),

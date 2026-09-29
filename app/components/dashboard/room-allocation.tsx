@@ -28,8 +28,20 @@ export type RoomAllocationProps = {
   targetCurrency?: RoomTargetCurrency;
   fxSnapshot?: RoomFxSnapshot;
   cashSummary?: CashSummary | null;
+  cashBaselineDetails?: readonly CashBaselineDisplayDetail[];
   loading?: boolean;
   error?: string | null;
+};
+
+export type CashBaselineDisplayDetail = {
+  accountId: string;
+  accountLabel?: string;
+  currency: string;
+  balance: string;
+  asOf: string | null;
+  source: string;
+  revision: number;
+  coverage: "available" | "partial" | "unavailable" | string;
 };
 
 const fixed = (value: string | null, signed = false) => {
@@ -67,6 +79,20 @@ function cashStatusLabel(status: CashSummaryStatus): string {
     case "partial": return "部分覆盖";
     default: return "暂不可用";
   }
+}
+
+function cashCoverageLabel(coverage: CashBaselineDisplayDetail["coverage"]): string {
+  if (coverage === "available") return "完整覆盖";
+  if (coverage === "partial") return "部分覆盖";
+  if (coverage === "unavailable") return "暂不可用";
+  return coverage;
+}
+
+function cashAsOfLabel(value: string | null): string {
+  if (!value) return "日期未提供";
+  const parsed = new Date(value);
+  if (!Number.isFinite(parsed.getTime())) return value;
+  return `${parsed.toISOString().slice(0, 19).replace("T", " ")} UTC`;
 }
 
 function ReasonDetails({ reasons, ariaLabel, fullText }: { reasons: readonly string[]; ariaLabel: string; fullText?: string }) {
@@ -142,8 +168,9 @@ function LegendItem({ item, index, signed, showRatios, showCoverage }: { item: R
   </li>;
 }
 
-function CashField({ label, view, status, reportCurrency }: {
+function CashField({ label, description, view, status, reportCurrency }: {
   label: string;
+  description?: string;
   view: RoomMoneyView;
   status: CashSummaryStatus;
   reportCurrency: RoomDisplayCurrency;
@@ -153,13 +180,15 @@ function CashField({ label, view, status, reportCurrency }: {
   return <div className={styles.cashField}>
     <span>{label}</span>
     <strong className={unavailable ? styles.mutedValue : undefined}>{display}</strong>
+    {description && <small>{description}</small>}
     <small>{cashStatusLabel(status)}</small>
   </div>;
 }
 
-function CashStrip({ summary, reportCurrency, loading, error }: {
+function CashStrip({ summary, reportCurrency, cashBaselineDetails, loading, error }: {
   summary: CashSummary | null | undefined;
   reportCurrency: RoomDisplayCurrency;
+  cashBaselineDetails?: readonly CashBaselineDisplayDetail[];
   loading?: boolean;
   error?: string | null;
 }) {
@@ -175,7 +204,17 @@ function CashStrip({ summary, reportCurrency, loading, error }: {
     : [];
   return <div className={styles.cashStrip} aria-label="现金状态">
     <CashField label="今日卖出回款" view={summary.todayProceeds} status={summary.todayProceedsStatus} reportCurrency={reportCurrency} />
-    <CashField label="现金总额" view={summary.cashTotal} status={summary.cashTotalStatus} reportCurrency={reportCurrency} />
+    <CashField label="参考现金" description="基准+股票/ETF成交变化" view={summary.cashTotal} status={summary.cashTotalStatus} reportCurrency={reportCurrency} />
+    {summary.asOf && <span className={styles.cashAsOf}>现金基准截至 {cashAsOfLabel(summary.asOf)}</span>}
+    {cashBaselineDetails && cashBaselineDetails.length > 0 && <details className={styles.cashDetails} role="group" aria-label="现金基准详情">
+      <summary>查看基准详情（{cashBaselineDetails.length} 条）</summary>
+      <ul>
+        {cashBaselineDetails.map((detail) => <li key={`${detail.accountId}:${detail.currency}`}>
+          <strong>{detail.accountLabel ?? detail.accountId}</strong>
+          <span>{detail.currency} {detail.balance} · 截至 {cashAsOfLabel(detail.asOf)} · 来源 {detail.source} · 版本 {detail.revision} · {cashCoverageLabel(detail.coverage)}</span>
+        </li>)}
+      </ul>
+    </details>}
     <ReasonDetails reasons={fullReasons} ariaLabel="现金数据完整解释" />
   </div>;
 }
@@ -186,6 +225,7 @@ export function RoomAllocation({
   targetCurrency,
   fxSnapshot,
   cashSummary,
+  cashBaselineDetails,
   loading,
   error,
 }: RoomAllocationProps) {
@@ -231,7 +271,7 @@ export function RoomAllocation({
           : "空头保留负号，多空可信小计分开"}</span>}
         <ReasonDetails reasons={group.missingReasons} ariaLabel="当前分布完整解释" fullText={group.note} />
       </div>}
-      <CashStrip summary={cashSummary} reportCurrency={reportCurrency} loading={loading} error={error} />
+      <CashStrip summary={cashSummary} reportCurrency={reportCurrency} cashBaselineDetails={cashBaselineDetails} loading={loading} error={error} />
     </section>
   );
 }

@@ -144,7 +144,9 @@ export function validateResolvedInstrument(
     !ASSET_TYPES.has(value.assetType as InstrumentAssetType) ||
     !SOURCES.has(value.source as InstrumentMetadataSource) ||
     !CONFIDENCES.has(value.confidence as InstrumentMetadataConfidence) ||
-    typeof value.resolvedAt !== "string"
+    typeof value.resolvedAt !== "string" ||
+    !value.resolvedAt.trim() ||
+    !Number.isFinite(Date.parse(value.resolvedAt))
   ) {
     invalidResolvedInstrument();
   }
@@ -157,6 +159,6 @@ export function validateResolvedInstrument(
     assetType: value.assetType as InstrumentAssetType,
     source: value.source as InstrumentMetadataSource,
     confidence: value.confidence as InstrumentMetadataConfidence,
-    resolvedAt: value.resolvedAt,
+    resolvedAt: new Date(value.resolvedAt.trim()).toISOString(),
   };
 }

@@ -56,6 +56,13 @@ function execution(
       marketCalendarDate: date,
       feeStatus: "reported",
       tradeNature: "live",
+      settlement: {
+        currency,
+        quantity,
+        grossAmount: (Number(quantity) * Number(price)).toString(),
+        netAmount: "",
+        fees: {},
+      },
     },
   };
 }

@@ -45,11 +45,9 @@ import {
   type ReviewQueueItem,
   type ReviewQueueSort,
 } from "../../lib/reviews/review-queue";
+import { sortLibraryItems } from "../../lib/reviews/library-sorting";
 import {
   canSortLibraryPerformance,
-  sortLibraryItems,
-} from "../../lib/reviews/library-sorting";
-import {
   summarizeLibraryPerformance,
   type LibraryFxSnapshot,
   type LibraryPerformanceSummary,
@@ -596,24 +594,32 @@ export function TradeLibrary({
     const cached = browseModelCache.get(key);
     if (cached) return cached;
 
-    const browseRows = buildTradeLibraryBrowseRows(
-      entries,
-      browseFilterState,
-      marketDataStatuses,
-      effectiveFxSnapshot,
-      performanceTargetCurrency,
-      instrumentMetadata,
-    );
+    const buildSortedRows = (state: TradeLibraryBrowseState) => {
+      // The browse-state helper retains the legacy run gate. Build the
+      // filtered slice in neutral order, then apply the caller's strict
+      // account-aware performance gate and sort here.
+      const filteredRows = buildTradeLibraryBrowseRows(
+        entries,
+        { ...state, sort: "newest" },
+        marketDataStatuses,
+        effectiveFxSnapshot,
+        performanceTargetCurrency,
+        instrumentMetadata,
+      );
+      const availability = canSortLibraryPerformance(filteredRows, state.simulationRunId);
+      const sort = isPerformanceSort(state.sort) && !availability.allowed ? "newest" : state.sort;
+      return sortLibraryItems(
+        filteredRows.map(row => ({ id: row.item.episode.id, rows: [row], value: row })),
+        sort,
+        effectiveFxSnapshot ?? undefined,
+        performanceTargetCurrency,
+      ).map(({ value }) => value);
+    };
+
+    const browseRows = buildSortedRows(browseFilterState);
     const allStatusBrowseRows = reviewStatus === "all"
       ? browseRows
-      : buildTradeLibraryBrowseRows(
-          entries,
-          allStatusFilterState,
-          marketDataStatuses,
-          effectiveFxSnapshot,
-          performanceTargetCurrency,
-          instrumentMetadata,
-        );
+      : buildSortedRows(allStatusFilterState);
     const filteredEntries = aggregateTradeLibraryStockDisplayEntries(browseRows);
     const model: TradeLibraryBrowseDerivedModel = {
       browseRows,
@@ -1136,7 +1142,12 @@ export function TradeLibrary({
     </header>
   );
   const sharedScopeControl = sharedScope && onSharedScopeChange
-    ? <LibraryScopeControls scope={sharedScope} accountOptions={sharedAccountOptions} onChange={onSharedScopeChange} />
+    ? <LibraryScopeControls
+        scope={sharedScope}
+        accountOptions={sharedAccountOptions}
+        simulationRunOptions={advancedOptions.simulationRuns}
+        onChange={onSharedScopeChange}
+      />
     : null;
   const libraryViewTabs = (
     <div className="module-tabs" role="tablist" aria-label="交易库浏览视图" onKeyDown={handleBrowseTabKeyDown}>

@@ -333,15 +333,22 @@ function HoldingRow({
   const summary = recall
     ? recall.text.trim() || `已留存${recall.snapshotCount}份快照`
     : record?.review.keyDecision?.trim() || record?.review.reusableRule.trim() || record?.plan.thesis.trim() || "已有复盘记录";
-  const quoteMeta = `${quoteStatusLabel(row)}；报价时间：${row.quote?.quoteDate ?? "未知"}`;
+  const quoteValue = price(row.quote?.price ?? null, row.quote?.currency);
+  const quoteMeta = `估值价：${quoteValue}；${quoteStatusLabel(row)}；报价时间：${row.quote?.quoteDate ?? "未知"}`;
+  const marketValueLabel = displayMoneyLabel(value.marketValue, costCurrency, displayOptions, false);
+  const marketValueMeta = `持仓市值：${marketValueLabel}；原始金额：${value.marketValue ?? "不可用"} ${costCurrency}`;
+  const pnlValueLabel = row.unrealizedPnlStatus === "available"
+    ? displayMoneyLabel(value.unrealizedPnl, costCurrency, displayOptions)
+    : pnlLabel(row);
+  const pnlMeta = `未实现盈亏：${pnlValueLabel}；原始金额：${row.unrealizedPnl ?? "不可用"} ${costCurrency}`;
   return <tr className={`${styles.tableRow} ${row.diagnostic === "available" ? styles.rowQuoteReady : styles.rowQuoteIssue}`}>
     <td data-label="证券"><strong>{row.instrumentName}</strong><small>{row.symbol} · {assetLabel(row)}</small><small>{accountLabel} · 方向：{directionLabel(row)}</small><details className={styles.rowDetails}><summary>详情</summary><p>账户：{accountLabel}；方向：{directionLabel(row)}</p><p>最近成交：{row.lastActivityAt}</p><p>报价精确时间：{row.quote?.fetchedAt ?? "未知"}</p></details></td>
     <td data-label="市场"><span className={`${styles.marketBadge} ${styles[`market${row.market.replace(/[^A-Za-z0-9]/g, "_")}`] ?? ""}`}>{row.marketLabel}</span></td>
     <td data-label="持仓数量"><dl><dd title={row.quantity ?? undefined}>{number(row.quantity)}</dd></dl></td>
     <td data-label="持仓均价"><dl><dd title={row.averageCost ?? undefined}>{averageCost(row.averageCost, costCurrency)}</dd></dl></td>
-    <td data-label="估值价" title={quoteMeta}><dl><dd>{price(row.quote?.price ?? null, row.quote?.currency)}</dd></dl><small>{quoteStatusLabel(row)}</small><small>报价时间：{row.quote?.quoteDate ?? "未知"}</small></td>
-    <td data-label="持仓市值"><dl><dd>{displayMoneyLabel(value.marketValue, costCurrency, displayOptions, false)}</dd></dl><small>{reportUnit(displayOptions, costCurrency)}</small></td>
-    <td data-label="浮盈亏"><dl><dd className={styles[row.unrealizedPnlStatus === "available" && displayedPnl.value !== null ? pnlTone(row) : "unavailable"]}>{row.unrealizedPnlStatus === "available" ? displayMoneyLabel(value.unrealizedPnl, costCurrency, displayOptions) : pnlLabel(row)}</dd></dl><small>{reportUnit(displayOptions, costCurrency)}</small></td>
+    <td data-label="估值价" className={styles.diagnosticCell} title={quoteMeta} aria-label={quoteMeta}><dl><dd className={styles.diagnosticValue}>{quoteValue}</dd></dl><small className={styles.diagnosticText}>{quoteStatusLabel(row)}</small><small className={styles.diagnosticText}>报价时间：{row.quote?.quoteDate ?? "未知"}</small></td>
+    <td data-label="持仓市值" className={styles.diagnosticCell} title={marketValueMeta} aria-label={marketValueMeta}><dl><dd className={styles.diagnosticValue}>{marketValueLabel}</dd></dl><small className={styles.diagnosticText}>{reportUnit(displayOptions, costCurrency)}</small></td>
+    <td data-label="浮盈亏" className={styles.diagnosticCell} title={pnlMeta} aria-label={pnlMeta}><dl><dd className={`${styles.diagnosticValue} ${styles[row.unrealizedPnlStatus === "available" && displayedPnl.value !== null ? pnlTone(row) : "unavailable"]}`}>{pnlValueLabel}</dd></dl><small className={styles.diagnosticText}>{reportUnit(displayOptions, costCurrency)}</small></td>
     <td data-label="盈亏率"><dl><dd className={styles[pnlTone(row)]}>{percent(value.unrealizedReturnPercent)}</dd></dl></td>
     <td data-label="近30日价格"><PriceTrend row={row} candles={candles} asOf={asOf}/></td>
     <td data-label="最近记录">{updatedAt ? <><span className={styles.recordDate}><time dateTime={updatedAt} aria-label={`最近记录精确时间：${updatedAt}`} title={`精确时间：${updatedAt}`}>{shortRecordDate(updatedAt, asOf)}</time><span className={styles.visuallyHidden}>{updatedAt}</span></span><span className={styles.recordSummary} title={summary}>{summary.slice(0, 70)}</span></> : <span>暂无记录</span>}</td>
@@ -424,14 +431,14 @@ export function RoomHoldingsPanel({
         <div className={styles.headerActions}>
           <fieldset className={styles.sortOptions}>
             <legend>排序持仓</legend>
-            <label><input type="radio" name="holdings-sort" value="recent" checked={sort === "recent"} onChange={() => setSort("recent")} />最近成交</label>
-            <label><input type="radio" name="holdings-sort" value="pnl" checked={sort === "pnl"} disabled={!canSortPnl} onChange={() => setSort("pnl")} />浮盈亏</label>
+            <label><input type="radio" name="holdings-sort" value="recent" checked={sort === "recent"} aria-describedby={!canSortPnl ? "holdings-pnl-sort-disabled-reason" : undefined} onChange={() => setSort("recent")} />最近成交</label>
+            <label><input type="radio" name="holdings-sort" value="pnl" checked={sort === "pnl"} disabled={!canSortPnl} aria-describedby={!canSortPnl ? "holdings-pnl-sort-disabled-reason" : undefined} onChange={() => setSort("pnl")} />浮盈亏</label>
           </fieldset>
           <span className={styles.count}>{model.rows.length} 个未平仓回合</span>
         </div>
       </header>
       <div className={styles.tableToolbar}><label>搜索持仓<input type="search" aria-label="搜索持仓" value={visibleQuery} placeholder="代码、名称、账户" onChange={event => updateBrowseState({ query: event.target.value, page: 1 })} /></label><button type="button" disabled={!filtered.length} onClick={exportRows}>导出当前筛选 CSV（{filtered.length}）</button></div>
-      {sort === "pnl" && !canSortPnl && <p className={styles.sortNote}>币种不可直接比较，已保留最近成交顺序。</p>}
+      {!canSortPnl && <p id="holdings-pnl-sort-disabled-reason" className={styles.sortNote}>币种不可直接比较，已保留最近成交顺序。</p>}
       {sort === "pnl" && canSortPnl && <p className={styles.sortNote}>仅在同币种内比较浮盈亏；不可用项置后。</p>}
       {model.rows.length === 0 ? (
         <p className={styles.empty}>当前范围暂无未平仓回合。</p>

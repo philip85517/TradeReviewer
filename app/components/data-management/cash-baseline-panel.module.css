@@ -2,21 +2,39 @@
 .panel header { display: flex; justify-content: space-between; gap: 12px; }
 .panel h2 { margin: 4px 0; font-size: 18px; }
 .panel p { margin: 0; color: var(--dashboard-muted, #69727f); font-size: 12px; line-height: 1.5; }
-.form { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; align-items: end; }
-.form label { display: grid; gap: 5px; font-size: 13px; }
+.form { display: grid; grid-template-columns: repeat(3, minmax(120px, 1fr)) minmax(240px, 1.4fr) minmax(120px, 1fr) minmax(220px, 1.4fr); gap: 10px; align-items: end; }
+.form > label, .formActions { min-width: 0; }
+.form label { display: grid; min-width: 0; gap: 5px; font-size: 13px; }
+.form input, .form select { box-sizing: border-box; width: 100%; min-width: 0; }
 .form input, .form select, .form button, .panel button { min-height: 36px; border: 1px solid var(--dashboard-line, #d9dee5); border-radius: 6px; padding: 7px 9px; background: #182337; color: var(--text, #e7edf6); }
 .form button, .panel button { cursor: pointer; }
 .form button:disabled, .panel button:disabled { cursor: not-allowed; opacity: .55; }
-.formActions { display: flex; gap: 6px; align-items: end; }
-.formActions button { flex: 1; }
+.formActions { display: flex; gap: 6px; align-items: stretch; }
+.formActions button { flex: 1 1 0; min-width: 0; white-space: nowrap; }
+.revision { align-self: center; color: var(--dashboard-muted, #69727f); font-size: 11px; white-space: nowrap; }
 .panel table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .panel th, .panel td { padding: 8px; border-bottom: 1px solid var(--dashboard-line, #d9dee5); text-align: left; }
 .panel caption { margin-bottom: 6px; text-align: left; font-weight: 600; }
 .empty { padding: 12px 0; }
+.conflict { display: grid; gap: 8px; padding: 10px 12px; border: 1px solid #b7791f; border-radius: 8px; background: rgba(183, 121, 31, .12); color: var(--dashboard-ink, #17212b); }
+.conflict strong { color: #8a5a00; }
+.conflict span { font-size: 12px; line-height: 1.5; }
+.conflict button { justify-self: start; }
+.history { border-top: 1px solid var(--dashboard-line, #d9dee5); padding-top: 8px; }
+.history summary { min-height: 36px; cursor: pointer; font-size: 12px; font-weight: 600; }
+.history ul { display: grid; gap: 8px; margin: 8px 0 0; padding-left: 18px; }
+.history li { display: grid; gap: 3px; font-size: 12px; }
+.history li span { color: var(--dashboard-muted, #69727f); line-height: 1.45; }
 @media (max-width: 800px) {
   .form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .form > label:nth-child(4) { grid-column: 1 / -1; }
   .formActions { grid-column: 1 / -1; }
   .panel { overflow-x: auto; }
   .form input, .form select, .panel button { min-height: 44px; }
+}
+@media (min-width: 801px) and (max-width: 1100px) {
+  .form { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .form > label:nth-child(4), .form > label:nth-child(5) { grid-column: span 2; }
+  .formActions { grid-column: 1 / -1; }
 }
 .form input, .form select { color-scheme: dark; }

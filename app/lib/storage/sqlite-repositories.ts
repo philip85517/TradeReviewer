@@ -14,7 +14,9 @@ import type { TagSuggestionRecord } from "../insights/types";
 import type { EpisodeReviewRepository } from "./episode-review-repository";
 import type { InstrumentMetadataRepository } from "./instrument-metadata-repository";
 import type {
+  DailyMarketDataRead,
   IntervalMarketDataCommit,
+  IntervalMarketDataRead,
   MarketDataCommit,
   MarketDataRepository,
 } from "./market-data-repository";
@@ -33,29 +35,92 @@ function marketCurrency(market: string): string {
   return "USD";
 }
 
+function readMarketData(
+  client: SqliteHttpClient,
+  input: Parameters<SqliteHttpClient["getMarketData"]>[0],
+  signal?: AbortSignal,
+) {
+  return signal === undefined
+    ? client.getMarketData(input)
+    : client.getMarketData(input, signal);
+}
+
 export class ApiMarketDataRepository implements MarketDataRepository {
   constructor(private readonly client: SqliteHttpClient) {}
 
-  async getCandles(instrumentId: string, interval: NativeMarketInterval, startTime: string, endTime: string): Promise<MarketCandleRecord[]> {
-    return (await this.client.getMarketData({ instrumentId, interval, start: startTime, end: endTime })).candles;
+  async getCandles(
+    instrumentId: string,
+    interval: NativeMarketInterval,
+    startTime: string,
+    endTime: string,
+    signal?: AbortSignal,
+  ): Promise<MarketCandleRecord[]> {
+    return (await readMarketData(this.client, { instrumentId, interval, start: startTime, end: endTime }, signal)).candles;
   }
 
-  async getIntervalCoverage(instrumentId: string, interval: NativeMarketInterval): Promise<IntervalCoverageSegment[]> {
-    return (await this.client.getMarketData({ instrumentId, interval })).intervalCoverage;
+  async getIntervalCoverage(
+    instrumentId: string,
+    interval: NativeMarketInterval,
+    signal?: AbortSignal,
+  ): Promise<IntervalCoverageSegment[]> {
+    return (await readMarketData(this.client, { instrumentId, interval }, signal)).intervalCoverage;
   }
 
-  async getDailyCandles(instrumentId: string, startDate: string, endDate: string): Promise<DailyCandleRecord[]> {
-    return (await this.client.getMarketData({
+  async getIntervalMarketData(
+    instrumentId: string,
+    interval: NativeMarketInterval,
+    startTime: string,
+    endTime: string,
+    signal?: AbortSignal,
+  ): Promise<IntervalMarketDataRead> {
+    const result = await readMarketData(this.client, {
+      instrumentId,
+      interval,
+      start: startTime,
+      end: endTime,
+    }, signal);
+    return {
+      candles: result.candles,
+      coverage: result.intervalCoverage,
+    };
+  }
+
+  async getDailyCandles(
+    instrumentId: string,
+    startDate: string,
+    endDate: string,
+    signal?: AbortSignal,
+  ): Promise<DailyCandleRecord[]> {
+    return (await readMarketData(this.client, {
       instrumentId,
       interval: "1D",
       start: `${startDate}T00:00:00.000Z`,
       end: `${endDate}T23:59:59.999Z`,
       dailyOnly: true,
-    })).dailyCandles ?? [];
+    }, signal)).dailyCandles ?? [];
   }
 
-  async getCoverage(instrumentId: string): Promise<CoverageSegment[]> {
-    return (await this.client.getMarketData({ instrumentId, interval: "1D" })).coverage ?? [];
+  async getDailyMarketData(
+    instrumentId: string,
+    startDate: string,
+    endDate: string,
+    signal?: AbortSignal,
+  ): Promise<DailyMarketDataRead> {
+    const result = await readMarketData(this.client, {
+      instrumentId,
+      interval: "1D",
+      start: `${startDate}T00:00:00.000Z`,
+      end: `${endDate}T23:59:59.999Z`,
+      dailyOnly: true,
+    }, signal);
+    return {
+      candles: result.dailyCandles ?? [],
+      coverage: result.coverage ?? [],
+    };
+  }
+
+  async getCoverage(instrumentId: string, signal?: AbortSignal): Promise<CoverageSegment[]> {
+    return (await readMarketData(this.client, { instrumentId, interval: "1D" }, signal)).coverage ?? [];
   }
 
   async getProviderSymbol(instrumentId: string, provider: MarketDataProviderId): Promise<string | undefined> {
@@ -109,14 +174,14 @@ export class ApiInstrumentMetadataRepository implements InstrumentMetadataReposi
   constructor(private readonly client: SqliteHttpClient) {}
 
   async get(instrumentId: string): Promise<ResolvedInstrument | undefined> {
-    const instrument = (await this.client.getBootstrap()).instruments.find(
-      (candidate) => candidate.id === instrumentId,
-    );
-    return instrument?.metadata;
+    return (await this.getMany([instrumentId])).get(instrumentId);
   }
 
   async getMany(instrumentIds: string[]): Promise<Map<string, ResolvedInstrument>> {
-    const instruments = (await this.client.getBootstrap()).instruments;
+    if (instrumentIds.length === 0) return new Map();
+    const instruments = this.client.getInstrumentMetadata
+      ? (await this.client.getInstrumentMetadata(instrumentIds)).instruments
+      : (await this.client.getBootstrap()).instruments;
     const wanted = new Set(instrumentIds);
     return new Map(
       instruments
@@ -126,6 +191,10 @@ export class ApiInstrumentMetadataRepository implements InstrumentMetadataReposi
   }
 
   async put(record: ResolvedInstrument): Promise<void> {
+    if (this.client.putInstrumentMetadata) {
+      await this.client.putInstrumentMetadata(record);
+      return;
+    }
     const existing = (await this.client.getBootstrap()).instruments.find(
       (instrument) => instrument.id === canonicalInstrumentId(record.symbol, record.market),
     );
@@ -140,7 +209,7 @@ export class ApiInstrumentMetadataRepository implements InstrumentMetadataReposi
         market: record.market,
         symbol: record.symbol,
         name: existing?.name ?? record.name,
-        currency: marketCurrency(record.market),
+        currency: existing?.currency ?? marketCurrency(record.market),
         ...(effectiveLocalizedName
           ? { localizedName: effectiveLocalizedName }
           : {}),

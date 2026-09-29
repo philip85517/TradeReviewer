@@ -604,6 +604,45 @@ describe("statement-only current holdings", () => {
     return value;
   }
   const options = { scope: scope(), asOf: "2026-09-19", quotesByInstrument: { "US:TEST": quote() } };
+  it("replays a zero-cash bonus share into quantity and average cost", () => {
+    const base = instrument({ id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" });
+    const value = openEntry(base, "2026-05-20T02:00:00Z");
+    const fill = value.episodes[0].episode.executions[0];
+    fill.quantity = "10000";
+    fill.price = "2.5";
+    value.episodes[0].episode.openingQuantity = "10000";
+    value.episodes[0].episode.remainingQuantity = "10000";
+    fill.source.positionEvents = [{
+      id: "bonus-516780",
+      accountId: "account-1",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账 1.8900",
+      source: [],
+    }];
+
+    const row = buildTradingRoomHoldings([value], {
+      ...options,
+      asOf: "2026-06-02",
+      quotesByInstrument: { [base.id]: quote({ currency: "CNY", quoteDate: "2026-06-02", price: "2" }) },
+      instrumentMetadata: new Map([[base.id, metadataFor(base, "stock")]]),
+    }).rows[0];
+
+    expect(row).toMatchObject({
+      quantity: "20000",
+      quantityStatus: "available",
+      averageCost: "1.25",
+      costStatus: "available",
+      unrealizedPnl: "15000",
+      unrealizedPnlStatus: "available",
+    });
+  });
+
   it("keeps real opening quantity and quote available without inventing acquisition cost or executions", () => {
     const value = evidenceEntry();
     const row = buildTradingRoomHoldings([value], options).rows[0];

@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { applyMonthlyHistoryEvidence, attachStatementEvidence, isExecutionBackedIpoAllocation, replayExecutionAt } from "./statement-evidence";
+import { applyMonthlyHistoryEvidence, attachStatementEvidence, isExecutionBackedIpoAllocation, replayExecutionAt, selectMonthlyEvidenceHistory } from "./statement-evidence";
 import type { StatementParseResult } from "./contracts";
 import type { PdfTextPage } from "./pdf-text";
 import type { TradeExecution } from "../trades/types";
-import type { StatementEvent } from "./monthly-statement";
+import type { MonthlyStatement, StatementEvent } from "./monthly-statement";
 import { isMonthlyStatement } from "./monthly-statement";
 import { buildTradeEpisodes } from "../trades/episodes";
 import { replayPositionAtPrice } from "../replay/position-ledger";
@@ -51,6 +51,66 @@ describe("attachStatementEvidence", () => {
 
     expect(attached[0].source.openingPosition?.quantity).toBe("1000");
     expect(attached[1].source.openingPosition?.quantity).toBe("2000");
+  });
+
+  it("uses transaction source order when selecting a later date-only opening boundary", () => {
+    const documentA = "china-merchants:order-fixture-a";
+    const documentB = "china-merchants:order-fixture-b";
+    const instrument = { id: "CN-SH:512560", market: "CN-SH", symbol: "512560", name: "512560", currency: "CNY" };
+    const position = (documentId: string, date: string, quantity: string, page: number, row: number) => ({
+      documentId,
+      accountId: "acct",
+      market: "CN-SH",
+      symbol: "512560",
+      phase: "closing" as const,
+      date,
+      quantity,
+      source: [{ page, row, role: "transaction-position" }],
+    });
+    const fills: TradeExecution[] = [
+      { id: "buy-a", accountId: "acct", accountLabel: "Test", instrument, side: "buy", executedAt: "2026-03-04T07:00:00Z", quantity: "10", price: "1", fee: "0", source: { platform: "china-merchants", fileFingerprint: "order-fixture-a", page: 11, row: 522, sourceOrder: 2, timePrecision: "date-only" } },
+      { id: "sell-a", accountId: "acct", accountLabel: "Test", instrument, side: "sell", executedAt: "2026-03-04T07:00:00Z", quantity: "4", price: "1", fee: "0", source: { platform: "china-merchants", fileFingerprint: "order-fixture-a", page: 11, row: 558, sourceOrder: 3, timePrecision: "date-only" } },
+      { id: "buy-b", accountId: "acct", accountLabel: "Test", instrument, side: "buy", executedAt: "2026-04-08T07:00:00Z", quantity: "2", price: "1", fee: "0", source: { platform: "china-merchants", fileFingerprint: "order-fixture-b", page: 13, row: 432, sourceOrder: 0, timePrecision: "date-only" } },
+    ];
+    const attached = applyMonthlyHistoryEvidence(fills, [{
+      ...result().monthly!,
+      documentId: documentB,
+      positions: [position(documentB, "2026-04-08", "8", 13, 432)],
+    }, {
+      ...result().monthly!,
+      documentId: documentA,
+      positions: [position(documentA, "2026-03-04", "10", 11, 522), position(documentA, "2026-03-04", "6", 11, 558)],
+    }]);
+
+    expect(attached[2].source.openingPosition).toMatchObject({ documentId: documentA, date: "2026-03-04", quantity: "6" });
+    expect(attached[2].source.statementPositions).toEqual(expect.arrayContaining([
+      expect.objectContaining({ documentId: documentA, date: "2026-03-04", quantity: "10" }),
+      expect.objectContaining({ documentId: documentA, date: "2026-03-04", quantity: "6" }),
+    ]));
+  });
+
+  it("does not attach a future precise boundary when source order disagrees with the clock", () => {
+    const instrument = { id: "CN-SH:512560", market: "CN-SH", symbol: "512560", name: "512560", currency: "CNY" };
+    const position = (row: number, quantity: string) => ({
+      documentId: "china-merchants:precise-order-conflict",
+      accountId: "acct",
+      market: "CN-SH",
+      symbol: "512560",
+      phase: "closing" as const,
+      date: "2026-03-04",
+      quantity,
+      source: [{ page: 1, row, role: "transaction-position" }],
+    });
+    const fills: TradeExecution[] = [
+      { id: "precise-buy", accountId: "acct", accountLabel: "Test", instrument, side: "buy", executedAt: "2026-03-04T02:00:00Z", quantity: "10", price: "1", fee: "0", source: { platform: "china-merchants", fileFingerprint: "precise-order-conflict", page: 1, row: 1, sourceOrder: 2, timePrecision: "second" } },
+      { id: "precise-sell", accountId: "acct", accountLabel: "Test", instrument, side: "sell", executedAt: "2026-03-04T03:00:00Z", quantity: "10", price: "1", fee: "0", source: { platform: "china-merchants", fileFingerprint: "precise-order-conflict", page: 1, row: 2, sourceOrder: 1, timePrecision: "second" } },
+    ];
+    const attached = applyMonthlyHistoryEvidence(fills, [{
+      ...result().monthly!,
+      documentId: "china-merchants:precise-order-conflict",
+      positions: [position(1, "10"), position(2, "0")],
+    }]);
+    expect(attached[0].source.openingPosition).toBeUndefined();
   });
 
   it("caps closed episode evidence while retaining all snapshots on instrument-level executions", () => {
@@ -471,6 +531,172 @@ describe("attachStatementEvidence", () => {
     expect(attached.source.openingPosition).toMatchObject({ phase: "closing", date: "2025-01-31", quantity: "2" });
     expect(execution.source).not.toHaveProperty("openingPosition");
     expect(applyMonthlyHistoryEvidence([attached], [monthly])).toEqual([attached]);
+  });
+});
+
+describe("applyMonthlyHistoryEvidence scoped documents", () => {
+  it("selects the newest scoped revision while retaining a full-document base for other instruments", () => {
+    const instrumentA = { id: "US:AAA", market: "US" as const, symbol: "AAA", name: "A", currency: "USD" as const };
+    const instrumentB = { id: "US:BBB", market: "US" as const, symbol: "BBB", name: "B", currency: "USD" as const };
+    const executionA: TradeExecution = { id: "history-a", accountId: "acct", accountLabel: "Test", instrument: instrumentA, side: "buy", executedAt: "2026-01-02T10:00:00Z", quantity: "10", price: "1", fee: "0", source: { platform: "tiger", row: 1 } };
+    const executionB: TradeExecution = { id: "history-b", accountId: "acct", accountLabel: "Test", instrument: instrumentB, side: "buy", executedAt: "2026-01-02T10:00:00Z", quantity: "20", price: "1", fee: "0", source: { platform: "tiger", row: 2 } };
+    const full: MonthlyStatement = {
+      documentId: "statement-versioned",
+      templateIds: ["tiger"],
+      accountId: "acct",
+      positions: [
+        { accountId: "acct", market: "US", symbol: "AAA", phase: "opening", date: "2026-01-01", quantity: "10", source: [] },
+        { accountId: "acct", market: "US", symbol: "BBB", phase: "opening", date: "2026-01-01", quantity: "20", source: [] },
+      ],
+      events: [],
+      reviewRequired: false,
+    };
+    const oldScopedA: MonthlyStatement = {
+      ...full,
+      evidenceScope: { accountId: "acct", instrumentId: "US:AAA" },
+      positions: [full.positions[0]],
+      historyIncomplete: true,
+      reviewRequired: true,
+    };
+    const newScopedA: MonthlyStatement = {
+      ...oldScopedA,
+      positions: [{ ...full.positions[0], quantity: "12" }],
+      historyIncomplete: undefined,
+      reviewRequired: false,
+    };
+
+    const selected = selectMonthlyEvidenceHistory([
+      { id: "import:full", importedAt: "2026-01-01T00:00:00.000Z", monthly: full },
+      { id: "supplement:old-a", importedAt: "2026-01-02T00:00:00.000Z", monthly: oldScopedA },
+      { id: "supplement:new-a", importedAt: "2026-01-03T00:00:00.000Z", monthly: newScopedA },
+    ]);
+    expect(selected).toEqual([full, newScopedA]);
+
+    const initial = applyMonthlyHistoryEvidence([executionA, executionB], [full]);
+    const afterReimport = applyMonthlyHistoryEvidence(initial, selected);
+    expect(afterReimport.find((execution) => execution.id === executionA.id)?.source).toMatchObject({
+      statementPositions: [expect.objectContaining({ symbol: "AAA", quantity: "12" })],
+    });
+    expect(afterReimport.find((execution) => execution.id === executionA.id)?.source.historyIncomplete).toBeUndefined();
+    expect(afterReimport.find((execution) => execution.id === executionB.id)?.source.statementPositions).toEqual(
+      initial.find((execution) => execution.id === executionB.id)?.source.statementPositions,
+    );
+  });
+
+  it("lets a newer full reimport retire an older scoped overlay for the same document", () => {
+    const oldScoped: MonthlyStatement = {
+      documentId: "statement-full-reimport",
+      templateIds: ["tiger"],
+      accountId: "acct",
+      evidenceScope: { accountId: "acct", instrumentId: "US:AAA" },
+      positions: [{ accountId: "acct", market: "US", symbol: "AAA", phase: "opening", date: "2026-01-01", quantity: "11", source: [] }],
+      events: [],
+      historyIncomplete: true,
+      reviewRequired: true,
+    };
+    const newFull: MonthlyStatement = {
+      ...oldScoped,
+      evidenceScope: undefined,
+      positions: [
+        { ...oldScoped.positions[0], quantity: "12" },
+        { accountId: "acct", market: "US", symbol: "BBB", phase: "opening", date: "2026-01-01", quantity: "20", source: [] },
+      ],
+      historyIncomplete: undefined,
+      reviewRequired: false,
+    };
+    const selected = selectMonthlyEvidenceHistory([
+      { id: "supplement:old-a", importedAt: "2026-01-02T00:00:00.000Z", monthly: oldScoped },
+      { id: "import:new-full", importedAt: "2026-01-03T00:00:00.000Z", monthly: newFull },
+    ]);
+    expect(selected).toEqual([newFull]);
+    const execution: TradeExecution = {
+      id: "full-reimport-fill",
+      accountId: "acct",
+      accountLabel: "Test",
+      instrument: { id: "US:AAA", market: "US", symbol: "AAA", name: "A", currency: "USD" },
+      side: "buy",
+      executedAt: "2026-01-02T10:00:00Z",
+      quantity: "10",
+      price: "1",
+      fee: "0",
+      source: { platform: "tiger", row: 1 },
+    };
+    const oldAttached = applyMonthlyHistoryEvidence([execution], [oldScoped]);
+    const reimported = applyMonthlyHistoryEvidence(oldAttached, selected);
+    expect(reimported[0].source).toMatchObject({
+      statementPositions: [expect.objectContaining({ quantity: "12" })],
+    });
+    expect(reimported[0].source.historyIncomplete).toBeUndefined();
+  });
+
+  it("keeps old full evidence outside scoped A, then scopes B on the next bootstrap", () => {
+    const instrumentA = { id: "US:AAA", market: "US" as const, symbol: "AAA", name: "A", currency: "USD" as const };
+    const instrumentB = { id: "US:BBB", market: "US" as const, symbol: "BBB", name: "B", currency: "USD" as const };
+    const positionA = { documentId: "statement", accountId: "acct", market: "US", symbol: "AAA", phase: "opening" as const, date: "2026-01-01", quantity: "10", source: [{ page: 1, row: 1 }] };
+    const positionB = { documentId: "statement", accountId: "acct", market: "US", symbol: "BBB", phase: "opening" as const, date: "2026-01-01", quantity: "20", source: [{ page: 1, row: 2 }] };
+    const executionA: TradeExecution = { id: "a", accountId: "acct", accountLabel: "Test", instrument: instrumentA, side: "buy", executedAt: "2026-01-02T10:00:00Z", quantity: "10", price: "1", fee: "0", source: { platform: "tiger", row: 1 } };
+    const executionB: TradeExecution = { id: "b", accountId: "acct", accountLabel: "Test", instrument: instrumentB, side: "buy", executedAt: "2026-01-02T10:00:00Z", quantity: "20", price: "1", fee: "0", source: { platform: "tiger", row: 2 } };
+    const full: MonthlyStatement = {
+      documentId: "statement",
+      templateIds: ["tiger"],
+      accountId: "acct",
+      positions: [positionA, positionB],
+      events: [],
+      reviewRequired: false,
+    };
+    const oldSource = applyMonthlyHistoryEvidence([executionA, executionB], [full]);
+    const scopedA: MonthlyStatement = {
+      ...full,
+      evidenceScope: { accountId: "acct", instrumentId: "US:AAA" },
+      positions: [{ ...positionA, quantity: "11" }],
+      historyIncomplete: true,
+      reviewRequired: true,
+    };
+
+    const afterA = applyMonthlyHistoryEvidence(oldSource, [scopedA]);
+    expect(afterA.find((execution) => execution.id === "a")?.source).toMatchObject({
+      statementPositions: [expect.objectContaining({ symbol: "AAA", quantity: "11" })],
+      historyIncomplete: ["statement"],
+    });
+    expect(afterA.find((execution) => execution.id === "b")?.source).toEqual(
+      oldSource.find((execution) => execution.id === "b")?.source,
+    );
+
+    const scopedB: MonthlyStatement = {
+      ...full,
+      evidenceScope: { accountId: "acct", instrumentId: "US:BBB" },
+      positions: [{ ...positionB, quantity: "21" }],
+      historyIncomplete: true,
+      reviewRequired: true,
+    };
+    const afterB = applyMonthlyHistoryEvidence(afterA, [scopedA, scopedB]);
+    expect(afterB.find((execution) => execution.id === "a")?.source).toEqual(afterA.find((execution) => execution.id === "a")?.source);
+    expect(afterB.find((execution) => execution.id === "b")?.source).toMatchObject({
+      statementPositions: [expect.objectContaining({ symbol: "BBB", quantity: "21" })],
+      historyIncomplete: ["statement"],
+    });
+  });
+
+  it("fails closed when a persisted scope is malformed", () => {
+    const execution: TradeExecution = {
+      id: "malformed-scope",
+      accountId: "acct",
+      accountLabel: "Test",
+      instrument: { id: "US:AAA", market: "US", symbol: "AAA", name: "A", currency: "USD" },
+      side: "buy",
+      executedAt: "2026-01-02T10:00:00Z",
+      quantity: "10",
+      price: "1",
+      fee: "0",
+      source: { platform: "tiger", row: 1 },
+    };
+    const malformed = {
+      ...result().monthly!,
+      documentId: "statement",
+      positions: [{ accountId: "acct", market: "US", symbol: "AAA", phase: "opening" as const, date: "2026-01-01", quantity: "10", source: [] }],
+      evidenceScope: { instrumentId: "HK:0700", accountId: "acct" },
+    } as MonthlyStatement;
+    expect(applyMonthlyHistoryEvidence([execution], [malformed])).toEqual([execution]);
   });
 });
 

@@ -39,6 +39,10 @@ export type StorageBootstrap = {
   settings: Record<string, unknown>;
 };
 
+export type InstrumentMetadataRead = {
+  instruments: StoredInstrument[];
+};
+
 export type BrowserStatePayload = {
   version: 1;
   sourceClientId: string;

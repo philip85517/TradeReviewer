@@ -125,9 +125,10 @@ describe("China Merchants Securities PDF import", () => {
     expect(result.records).toHaveLength(1);
     expect(result.monthly).toMatchObject({
       reviewRequired: true,
-      historyIncomplete: true,
+      incompleteInstruments: [{ market: "CN-SH", symbol: "510300" }],
       positions: [],
     });
+    expect(result.monthly?.historyIncomplete).toBeUndefined();
     expect(result.diagnostics).toEqual(expect.arrayContaining([
       expect.objectContaining({ code: "missing-china-merchants-security-balance", instrumentSymbol: "510300" }),
     ]));
@@ -176,11 +177,12 @@ describe("China Merchants Securities PDF import", () => {
 
     expect(result.monthly).toMatchObject({
       reviewRequired: true,
-      historyIncomplete: true,
+      incompleteInstruments: [{ market: "CN-SH", symbol: "510300" }],
       positions: [
         expect.objectContaining({ phase: "closing", quantity: "50" }),
       ],
     });
+    expect(result.monthly?.historyIncomplete).toBeUndefined();
     expect(result.monthly?.positions).not.toEqual(
       expect.arrayContaining([
         expect.objectContaining({ phase: "opening", quantity: expect.stringMatching(/^-/) }),

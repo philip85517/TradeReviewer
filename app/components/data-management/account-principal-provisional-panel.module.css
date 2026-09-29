@@ -1,0 +1,34 @@
+.panel { display: grid; gap: 14px; color: var(--dashboard-ink, #17212b); }
+.header { display: flex; justify-content: space-between; gap: 12px; }
+.eyebrow { color: var(--dashboard-muted, #69727f); font-size: 11px; }
+.panel h2 { margin: 4px 0; font-size: 18px; }
+.panel p { margin: 0; color: var(--dashboard-muted, #69727f); font-size: 12px; line-height: 1.5; }
+.busy { color: var(--dashboard-muted, #69727f); font-size: 12px; }
+.separation { padding: 9px 10px; border-left: 3px solid #5e9df6; background: rgba(94, 157, 246, .1); }
+.summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.summary > div { display: grid; gap: 4px; min-width: 0; padding: 10px; border: 1px solid var(--dashboard-line, #d9dee5); border-radius: 7px; background: rgba(24, 35, 55, .55); }
+.summary span { color: var(--dashboard-muted, #69727f); font-size: 11px; }
+.summary strong { overflow-wrap: anywhere; font-size: 13px; }
+.form { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; align-items: end; }
+.form label { display: grid; gap: 5px; font-size: 13px; }
+.form input, .form select, .form button, .panel button { min-height: 36px; border: 1px solid var(--dashboard-line, #d9dee5); border-radius: 6px; padding: 7px 9px; background: #182337; color: var(--text, #e7edf6); }
+.form input, .form select { color-scheme: dark; }
+.form button, .panel button { cursor: pointer; }
+.form button:disabled, .panel button:disabled { cursor: not-allowed; opacity: .55; }
+.actions { display: flex; gap: 6px; align-items: end; }
+.actions button { flex: 1; }
+.editButton { justify-self: start; }
+.error { padding: 9px 10px; border: 1px solid #c35d68; border-radius: 7px; color: #a12839 !important; background: rgba(195, 93, 104, .1); }
+.message { color: #16734b !important; }
+.missing { display: grid; gap: 5px; padding: 12px; border: 1px dashed var(--dashboard-line, #d9dee5); border-radius: 7px; }
+.missing span { color: var(--dashboard-muted, #69727f); font-size: 12px; }
+.conflict { display: grid; gap: 8px; padding: 10px 12px; border: 1px solid #b7791f; border-radius: 8px; background: rgba(183, 121, 31, .12); }
+.conflict strong { color: #8a5a00; }
+.conflict span { font-size: 12px; line-height: 1.5; }
+.conflict button { justify-self: start; }
+@media (max-width: 800px) {
+  .summary, .form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .actions { grid-column: 1 / -1; }
+  .panel { overflow-x: auto; }
+  .form input, .form select, .panel button { min-height: 44px; }
+}

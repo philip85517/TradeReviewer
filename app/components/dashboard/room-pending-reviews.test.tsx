@@ -144,6 +144,38 @@ it("keeps trusted money while placing a close-field explanation beside the unava
   expect(screen.getByText("待复盘")).toBeInTheDocument();
 });
 
+it("formats a long closing price for scanning while keeping its complete source value accessible", () => {
+  const rawPrice = "8.4578333333333333333";
+  const pending: RoomPendingReviewsModel = {
+    displayCurrency: "original",
+    count: 1,
+    queueIds: ["episode:long-price"],
+    rows: [{
+      episodeId: "episode:long-price",
+      instrumentId: "CN-SH:518880",
+      instrumentName: "黄金ETF华安",
+      symbol: "518880",
+      accountId: "招商证券",
+      accountLabel: "招商证券 · 尾号6476",
+      closeDate: "2026-07-28",
+      closingSide: "buy",
+      closingQuantity: "4200",
+      closingWeightedPrice: rawPrice,
+      closingCurrency: "CNY",
+      closingUnavailableReason: null,
+      money: { baseCurrency: "CNY", originalByCurrency: { CNY: "53717" }, convertedCny: "53717", conversion: "same-currency", fxSnapshotId: null, note: "按原币显示" },
+      unavailableReason: null,
+    }],
+  };
+  render(<RoomPendingReviews model={pending} onOpenInReview={vi.fn()} />);
+
+  const priceCell = screen.getByRole("cell", { name: /成交均价/ });
+  expect(priceCell).toHaveTextContent("8.457833 CNY");
+  expect(priceCell).not.toHaveTextContent(rawPrice);
+  expect(priceCell).toHaveAttribute("aria-label", expect.stringContaining(rawPrice));
+  expect(screen.getByText("4200")).toBeInTheDocument();
+});
+
 it("emits an exact library range plus the complete homepage source snapshot", () => {
   const pending = model(fixture());
   const onViewAll = vi.fn();

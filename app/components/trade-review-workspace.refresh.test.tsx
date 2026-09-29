@@ -197,6 +197,25 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     return screen.getByRole("region", { name: "数据管理" });
   }
 
+  it("exposes the read-only TradingView migration preview from the real data page", async () => {
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+        storageClient={createLegacySqliteClient()}
+      />,
+    );
+
+    const user = await openDataManagement();
+    await user.click(within(getDataManagement()).getByRole("tab", { name: "账户与计价" }));
+    const migrationPreview = await within(getDataManagement()).findByRole("region", {
+      name: "TradingView 账户迁移预览",
+    });
+
+    expect(within(migrationPreview).getByRole("button", { name: "读取只读预览" })).toBeVisible();
+    expect(within(migrationPreview).queryByRole("button", { name: /提交迁移|回退|rollback|commit/i })).toBeNull();
+  });
+
   it("cancels a running batch, persists a terminal job, and waits before the next batch", async () => {
     const providerGate = deferred<void>();
     const restoreGate = deferred<MarketDataJob>();

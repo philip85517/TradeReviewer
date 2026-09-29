@@ -1,4 +1,5 @@
 // Compatibility adapter for the previously supported combined-column export.
+import Decimal from "decimal.js";
 import type { TradeSide } from "../trades/types";
 import { groupItemsIntoRows, type PdfTextRow } from "./pdf-layout";
 import type { PdfTextItem, PdfTextPage } from "./pdf-text";
@@ -35,6 +36,8 @@ export type StatementRow = {
   stampDuty?: string;
   otherFee?: string;
   currencyLabel?: string;
+  /** Raw source cells retained for settlement, identity, and position evidence. */
+  cells?: Record<string, string>;
 };
 
 type ParsedIdentity = {
@@ -48,7 +51,10 @@ type NumericField =
   | "amount"
   | "commission"
   | "stampDuty"
-  | "otherFee";
+  | "otherFee"
+  | "cashChange"
+  | "cashBalance"
+  | "securityBalance";
 
 type TableLayout = {
   instrumentStart: number;
@@ -209,7 +215,54 @@ function numericCells(
       cells.otherFee = token.value;
     }
   }
+  // The legacy export puts the change, cash balance, and security balance
+  // after the fee columns. They can be split across separate PDF text items or
+  // packed into one item. A missing cell cannot be identified from the
+  // proportional character positions inside a packed item, so only a source
+  // row with all three tail values is promoted to evidence. Partial rows keep
+  // their execution fields but leave the tail unknown.
+  const trailing = tokens.filter((token) => token.centerX >= otherFeeEnd);
+  if (trailing.length === 3) {
+    cells.cashChange = trailing[0]!.value;
+    cells.cashBalance = trailing[1]!.value;
+    cells.securityBalance = trailing[2]!.value;
+  }
   return cells;
+}
+
+function securityAccountValue(
+  currencyItem: PdfTextRow["items"][number] | undefined,
+  symbol: string | undefined,
+): string | undefined {
+  if (!currencyItem || !symbol) return undefined;
+  const text = compact(currencyItem.text);
+  const symbolIndex = text.lastIndexOf(symbol);
+  if (symbolIndex < 0) return undefined;
+  const beforeSymbol = text.slice(0, symbolIndex);
+  const candidates = [...beforeSymbol.matchAll(/[A-Z0-9-]{6,}/gi)].map(
+    (match) => match[0],
+  );
+  return candidates.at(-1);
+}
+
+function settlementMatchesRow(
+  business: string,
+  cells: Record<string, string>,
+): boolean {
+  if (!EXECUTION_SIDE[business]) return true;
+  try {
+    const amount = new Decimal(cells.amount).abs();
+    const fees = new Decimal(cells.commission)
+      .plus(cells.stampDuty)
+      .plus(cells.otherFee);
+    const expected =
+      EXECUTION_SIDE[business] === "buy"
+        ? amount.plus(fees).negated()
+        : amount.minus(fees);
+    return new Decimal(cells.cashChange).minus(expected).abs().lte("0.01");
+  } catch {
+    return false;
+  }
 }
 
 function rowIdentity(
@@ -297,6 +350,45 @@ export function readLegacyChinaMerchantsRows(
           item.x < business.x &&
           /人民币|港币|美元|CNY|HKD|USD/i.test(item.text),
       );
+      const securityAccount = securityAccountValue(
+        currencyItem,
+        parsedIdentity?.symbol,
+      );
+      const evidenceCells =
+        securityAccount &&
+        cells.quantity !== undefined &&
+        cells.price !== undefined &&
+        cells.amount !== undefined &&
+        cells.commission !== undefined &&
+        cells.stampDuty !== undefined &&
+        cells.otherFee !== undefined &&
+        cells.cashChange !== undefined &&
+        cells.cashBalance !== undefined &&
+        cells.securityBalance !== undefined &&
+        settlementMatchesRow(businessLabel, {
+          amount: cells.amount,
+          commission: cells.commission,
+          stampDuty: cells.stampDuty,
+          otherFee: cells.otherFee,
+          cashChange: cells.cashChange,
+        })
+          ? {
+              securityAccount,
+              quantity: cells.quantity,
+              price: cells.price,
+              amount: cells.amount,
+              commission: cells.commission,
+              stampDuty: cells.stampDuty,
+              otherFee: cells.otherFee,
+              cashChange: cells.cashChange,
+              ...(cells.cashBalance !== undefined
+                ? { cashBalance: cells.cashBalance }
+                : {}),
+              ...(cells.securityBalance !== undefined
+                ? { securityBalance: cells.securityBalance }
+                : {}),
+            }
+          : undefined;
 
       result.push({
         page: page.pageNumber,
@@ -309,6 +401,7 @@ export function readLegacyChinaMerchantsRows(
         business: businessLabel,
         ...cells,
         currencyLabel: currencyItem?.text,
+        ...(evidenceCells ? { cells: evidenceCells } : {}),
       });
       sourceOrder += 1;
     }

@@ -510,12 +510,14 @@ describe("independent Recall integration review", () => {
   it("preserves unsaved global working drawings when returning from a decision", async () => {
     const globalDraft = drawing("global-draft", "全局草稿");
     const globalRetained = drawing("global-retained", "旧全局留存");
+    const base = documentWithDecisionSnapshots(episode);
     const initial = {
-      ...documentWithDecisionSnapshots(episode),
+      ...base,
       working: {
-        ...documentWithDecisionSnapshots(episode).working,
+        ...base.working,
         selectedDecisionId: "global",
         drawings: [globalDraft],
+        cursor: candle.knowledgeAt!,
       },
       snapshots: [
         snapshot("snapshot-fill-1", "fill-1"),
@@ -539,12 +541,14 @@ describe("independent Recall integration review", () => {
     vi.useFakeTimers();
     const globalDraft = drawing("global-draft", "全局草稿");
     const stageDraft = drawing("stage-draft", "阶段草稿");
+    const base = documentWithDecisionSnapshots(episode);
     const initial = {
-      ...documentWithDecisionSnapshots(episode),
+      ...base,
       working: {
-        ...documentWithDecisionSnapshots(episode).working,
+        ...base.working,
         selectedDecisionId: "global",
         drawings: [globalDraft],
+        cursor: candle.knowledgeAt!,
       },
     } satisfies RecallDocument;
     let persisted = initial;
@@ -614,6 +618,25 @@ describe("independent Recall integration review", () => {
     const saved = repository.save.mock.calls[0]![0] as RecallDocument;
     const global = saved.snapshots.find((item) => item.decisionId === "global");
     expect(global?.drawings.some((item) => item.id === "global-draft")).toBe(true);
+  });
+
+  it("keeps a future global drawing hidden before its replay cursor", async () => {
+    const futureDrawing = drawing("future-global", "尚未可知");
+    const base = documentWithDecisionSnapshots(episode);
+    const initial = {
+      ...base,
+      working: {
+        ...base.working,
+        selectedDecisionId: "global",
+        drawings: [futureDrawing],
+        cursor: candle.time,
+      },
+    } satisfies RecallDocument;
+    renderRecall(episode, initial, repositoryFor(initial));
+    await settleLoad();
+
+    const visible = JSON.parse(screen.getByTestId("review-chart").getAttribute("data-drawings")!) as NormalizedDrawing[];
+    expect(visible.some((item) => item.id === "future-global")).toBe(false);
   });
 
   it("preserves an unretained decision Text draft through completion and reload", async () => {
@@ -1190,6 +1213,52 @@ it("starts next decision from the first fill after returning to pre-entry", asyn
   fireEvent.click(screen.getByRole("button", { name: "下一笔决策" }));
   await settleLoad();
   expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", "fill-1");
+});
+
+it("does not restore a date-only execution from an old session-close draft", async () => {
+  const source = episodeWithExecutions("date-only-restore", 1);
+  const dateOnlyExecution = {
+    ...source.executions[0]!,
+    id: "date-only-fill",
+    executedAt: candle.knowledgeAt!,
+    source: {
+      ...source.executions[0]!.source,
+      platform: "china-merchants",
+      timePrecision: "date-only" as const,
+      sourceTimestampText: "20260120",
+      sourceTimezone: "Asia/Shanghai",
+    },
+  };
+  const dateOnlyEpisode: TradeEpisode = {
+    ...source,
+    executions: [dateOnlyExecution],
+    startedAt: candle.time,
+    endedAt: secondCandle.time,
+  };
+  const base = createRecallDocument(dateOnlyEpisode);
+  const initial: RecallDocument = {
+    ...base,
+    working: {
+      ...base.working,
+      phase: "holding",
+      cursor: candle.knowledgeAt!,
+      executionCursor: dateOnlyExecution.id,
+      editingContext: {
+        mode: "global",
+        decisionId: "global",
+        drawings: [],
+        timeframe: "1D",
+        cursor: candle.knowledgeAt!,
+        executionCursor: dateOnlyExecution.id,
+        revealedCandleCursor: candle.knowledgeAt!,
+      },
+    },
+  };
+  renderRecall(dateOnlyEpisode, initial, repositoryFor(initial));
+  await settleLoad();
+
+  expect(screen.getByTestId("review-chart")).not.toHaveAttribute("data-execution-cursor");
+  expect(screen.getByTestId("review-chart")).toHaveAttribute("data-candle-count", "1");
 });
 
 it("keeps same-candle decisions in stable execution order", async () => {

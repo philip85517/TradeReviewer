@@ -14,6 +14,8 @@ import {
 
 import type { EnrichedImportResult } from "../lib/import/enrich-import";
 import type { StatementParseResult } from "../lib/import/contracts";
+import { fingerprintBytes } from "../lib/import/file-fingerprint";
+import { parseTradingViewSimulationCsv } from "../lib/import/tradingview-simulation";
 import { requiredMarketDataRange } from "../lib/market/sync-range";
 import type { DemoReplayFrame } from "../lib/demo/replay-frame";
 import {
@@ -24,6 +26,7 @@ import { loadImportHistory } from "../lib/storage/import-history";
 import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-data-repository";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeExecution } from "../lib/trades/types";
+import { tradeRepairClient } from "../lib/storage/trade-repair-client";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
 import { createLegacySqliteClient } from "./test-support/legacy-sqlite-client";
 
@@ -434,6 +437,33 @@ describe("TradeReviewWorkspace", () => {
     });
   });
 
+  async function configureCurrentTradingViewCsvImport() {
+    const dispatcher = await vi.importActual<typeof import('../lib/import/dispatcher')>('../lib/import/dispatcher');
+    const enrichment = await vi.importActual<typeof import('../lib/import/enrich-import')>('../lib/import/enrich-import');
+    mockDispatcher.mockImplementation(dispatcher.parseBrokerStatement);
+    mockEnrichment.mockImplementation((statement, options) =>
+      enrichment.enrichStatementImport(statement, {
+        ...options,
+        resolver: async () => ({
+          resolved: new Map([
+            ["CN-SH:600330", {
+              market: "CN-SH",
+              symbol: "600330",
+              name: "天通股份",
+              assetType: "stock",
+              source: "tencent",
+              confidence: "portal",
+              resolvedAt: "2026-09-07T00:00:00Z",
+            }],
+          ]),
+          unresolved: new Map(),
+          cacheHits: 0,
+          backgroundRefresh: Promise.resolve(),
+        }),
+      }),
+    );
+  }
+
   it("imports a real TradingView CSV through confirmation and restores its simulation identity", async () => {
     const user=userEvent.setup();
     const dispatcher=await vi.importActual<typeof import('../lib/import/dispatcher')>('../lib/import/dispatcher');
@@ -457,6 +487,163 @@ describe("TradeReviewWorkspace", () => {
       tradeNature: "simulation",
     });
     expect(loadImportHistory()[0].sourceLabel).toBe('TradingView · 模拟盘');
+  });
+
+  it("previews a migrated TradingView CSV as a safe no-op and keeps the old source rows", async () => {
+    const user = userEvent.setup();
+    const dispatcher = await vi.importActual<typeof import('../lib/import/dispatcher')>('../lib/import/dispatcher');
+    const enrichment = await vi.importActual<typeof import('../lib/import/enrich-import')>('../lib/import/enrich-import');
+    const fileName = '回放交易_SSE_600330_2026-09-03.csv';
+    const bytes = new TextEncoder().encode(csv);
+    const fileFingerprint = fingerprintBytes(bytes);
+    const parsed = parseTradingViewSimulationCsv(bytes, {
+      fileName,
+      sourceFileId: fileFingerprint,
+    });
+    const migratedExecutions = parsed.records.map((record) => {
+      const {
+        tradeNature: _tradeNature,
+        sourceTradeId: _sourceTradeId,
+        ...legacySource
+      } = record.source;
+      const role = record.source.row === 3 ? "entry" : "exit";
+      return {
+        ...record,
+        id: `tradingview:${fileFingerprint}:CN-SH:600330:1:${role}`,
+        source: {
+          ...legacySource,
+          inputKind: "statement" as const,
+          tradingNature: "simulated" as const,
+          simulationTradeId: "1",
+          simulationRole: role as "entry" | "exit",
+          simulationRunId: `${fileFingerprint}:CN-SH:600330`,
+        },
+        accountId: `tradingview:${fileFingerprint}:CN-SH:600330`,
+        accountLabel: `TradingView · 模拟盘 · ${fileFingerprint.slice(0, 8)}`,
+        executedAt: record.source.sourceTimestampText === "2021-02-19"
+          ? "2021-02-19T07:00:00.000Z"
+          : "2021-03-01T07:00:00.000Z",
+      } satisfies TradeExecution;
+    });
+    const client = createLegacySqliteClient();
+    const merge = vi.spyOn(client, "mergeExecutions");
+    mockSqliteClient.current = client;
+    saveImportedExecutions(migratedExecutions);
+    mockDispatcher.mockImplementation(dispatcher.parseBrokerStatement);
+    mockEnrichment.mockImplementation((statement, options) =>
+      enrichment.enrichStatementImport(statement, {
+        ...options,
+        resolver: async () => ({
+          resolved: new Map([
+            ["CN-SH:600330", {
+              market: "CN-SH",
+              symbol: "600330",
+              name: "天通股份",
+              assetType: "stock",
+              source: "tencent",
+              confidence: "portal",
+              resolvedAt: "2026-09-07T00:00:00Z",
+            }],
+          ]),
+          unresolved: new Map(),
+          cacheHits: 0,
+          backgroundRefresh: Promise.resolve(),
+        }),
+      }),
+    );
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    const file = new File([csv], fileName, { type: "text/csv" });
+    Object.defineProperty(file, "arrayBuffer", {
+      value: async () => bytes.buffer,
+    });
+    await user.upload(await screen.findByLabelText("导入 TradingView 模拟交易"), file);
+
+    expect(await screen.findByRole("heading", { name: "确认导入交易记录" })).toBeInTheDocument();
+    expect(screen.getByText("2 笔已跳过")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "确认导入并开始更新行情" }));
+
+    await waitFor(() =>
+      expect(screen.queryByRole("heading", { name: "确认导入交易记录" })).not.toBeInTheDocument(),
+    );
+    expect(merge).not.toHaveBeenCalled();
+    expect(mockMarketDataSync).not.toHaveBeenCalled();
+    expect(loadImportHistory()).toEqual([]);
+    expect(loadImportedExecutions()).toHaveLength(2);
+    expect(loadImportedExecutions().map(({ id }) => id)).toEqual(
+      migratedExecutions.map(({ id }) => id),
+    );
+  });
+
+  it("confirms exact historical current-parser row IDs as a no-op without persistence", async () => {
+    const user = userEvent.setup();
+    const fileName = '回放交易_SSE_600330_2026-09-03.csv';
+    const bytes = new TextEncoder().encode(csv);
+    const fileFingerprint = fingerprintBytes(bytes);
+    const parsed = parseTradingViewSimulationCsv(bytes, { fileName, sourceFileId: fileFingerprint });
+    const historicalRows = parsed.records.map(record => ({
+      ...record,
+      accountId: `tradingview:${fileFingerprint}`,
+      accountLabel: `TradingView · 模拟盘 · ${fileFingerprint.slice(0, 8)}`,
+      source: { ...record.source, simulationRole: undefined },
+    }));
+    const client = createLegacySqliteClient();
+    const merge = vi.spyOn(client, "mergeExecutions");
+    mockSqliteClient.current = client;
+    saveImportedExecutions(historicalRows);
+    await configureCurrentTradingViewCsvImport();
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    const file = new File([csv], fileName, { type: "text/csv" });
+    Object.defineProperty(file, "arrayBuffer", { value: async () => bytes.buffer });
+    await user.upload(await screen.findByLabelText("导入 TradingView 模拟交易"), file);
+
+    expect(await screen.findByRole("heading", { name: "确认导入交易记录" })).toBeInTheDocument();
+    expect(screen.getByText("2 笔已跳过")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "确认导入并开始更新行情" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("heading", { name: "确认导入交易记录" })).not.toBeInTheDocument(),
+    );
+
+    expect(merge).not.toHaveBeenCalled();
+    expect(mockMarketDataSync).not.toHaveBeenCalled();
+    expect(loadImportHistory()).toEqual([]);
+    expect(loadImportedExecutions().map(({ id, accountId, price }) => ({ id, accountId, price }))).toEqual(
+      historicalRows.map(({ id, accountId, price }) => ({ id, accountId, price })),
+    );
+  });
+
+  it("blocks a financial conflict for a historical current-parser row before writing", async () => {
+    const user = userEvent.setup();
+    const fileName = '回放交易_SSE_600330_2026-09-03.csv';
+    const bytes = new TextEncoder().encode(csv);
+    const fileFingerprint = fingerprintBytes(bytes);
+    const parsed = parseTradingViewSimulationCsv(bytes, { fileName, sourceFileId: fileFingerprint });
+    const historicalRows = parsed.records.map(record => ({
+      ...record,
+      accountId: `tradingview:${fileFingerprint}`,
+      accountLabel: `TradingView · 模拟盘 · ${fileFingerprint.slice(0, 8)}`,
+      price: record.source.row === 3 ? "999" : record.price,
+      source: { ...record.source, simulationRole: undefined },
+    }));
+    const client = createLegacySqliteClient();
+    const merge = vi.spyOn(client, "mergeExecutions");
+    mockSqliteClient.current = client;
+    saveImportedExecutions(historicalRows);
+    await configureCurrentTradingViewCsvImport();
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    const file = new File([csv], fileName, { type: "text/csv" });
+    Object.defineProperty(file, "arrayBuffer", { value: async () => bytes.buffer });
+    await user.upload(await screen.findByLabelText("导入 TradingView 模拟交易"), file);
+
+    expect(await screen.findByRole("heading", { name: "确认导入交易记录" })).toBeInTheDocument();
+    expect(screen.getByText("同一 TradingView 来源的已有成交与本次导入财务字段不一致，已阻止导入；请核对原文件。")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "确认导入并开始更新行情" })).toBeDisabled();
+    expect(merge).not.toHaveBeenCalled();
+    expect(mockMarketDataSync).not.toHaveBeenCalled();
+    expect(loadImportHistory()).toEqual([]);
+    expect(loadImportedExecutions().map(({ id, price }) => ({ id, price }))).toEqual(
+      historicalRows.map(({ id, price }) => ({ id, price })),
+    );
   });
 
   it("imports a recognized PDF locally without asking for stock names", async () => {
@@ -580,7 +767,7 @@ describe("TradeReviewWorkspace", () => {
     );
     expect(loadImportHistory()).toEqual([
       expect.objectContaining({
-        sourceLabel: "A股招商银行",
+        sourceLabel: "A股招商证券",
         tradeCount: 1,
         instrumentCount: 1,
         unresolvedInstrumentCount: 1,
@@ -636,6 +823,117 @@ describe("TradeReviewWorkspace", () => {
     ).toBeGreaterThan(0);
     expect(screen.getByText("1 笔已跳过")).toBeInTheDocument();
   });
+
+  it("rebuilds the scoped change summary after an unresolved retry before confirmation", async () => {
+    const user = userEvent.setup();
+    const original = cmsExecution;
+    const added: TradeExecution = {
+      ...cmsExecution,
+      id: "cms:supplement:1",
+      executedAt: "2026-03-02T07:00:00.000Z",
+      source: {
+        ...cmsExecution.source,
+        fileName: "补充.pdf",
+        fileFingerprint: "supplement-file",
+        row: 12,
+        sourceOrder: 12,
+        sourceTimestampText: "2026-03-02",
+      },
+    };
+    const otherAccount = {
+      ...added,
+      id: "cms:supplement:other-account",
+      accountId: "other-account",
+    };
+    const otherInstrument = {
+      ...added,
+      id: "cms:supplement:other-instrument",
+      instrument: {
+        ...added.instrument,
+        id: "CN-SH:600000",
+        symbol: "600000",
+      },
+    };
+    const firstEnriched: EnrichedImportResult = {
+      broker: "china-merchants",
+      importable: [],
+      unresolved: [{ market: "CN-SH", symbol: "600938", attempts: [] }],
+      exclusions: [],
+      diagnostics: [],
+      cacheHits: 0,
+    };
+    const retriedEnriched: EnrichedImportResult = {
+      ...firstEnriched,
+      importable: [added],
+      unresolved: [],
+      diagnostics: [{
+        severity: "warning",
+        code: "duplicate-trade",
+        message: "同一来源重复成交",
+      }],
+    };
+    saveImportedExecutions([original]);
+    mockDispatcher.mockResolvedValue({
+      broker: "china-merchants",
+      records: [added, otherAccount, otherInstrument],
+      candidates: [],
+      exclusions: [],
+      diagnostics: [],
+      blocked: false,
+    });
+    mockEnrichment
+      .mockResolvedValueOnce(firstEnriched)
+      .mockResolvedValueOnce(retriedEnriched);
+    vi.spyOn(tradeRepairClient, "history").mockResolvedValue([]);
+    const revise = vi.spyOn(tradeRepairClient, "revise").mockImplementation(async request => ({
+      executions: [original, request.changes[0].after!],
+      revision: { ...request, recordedAt: "2026-09-29T00:00:00.000Z" },
+    }));
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    await screen.findByRole("region", { name: "我的交易室" });
+    await user.click(screen.getByRole("button", { name: "交易库" }));
+    const library = await screen.findByRole("region", { name: "交易库" });
+    await user.click(within(library).getByRole("tab", { name: "按标的浏览" }));
+    await user.click(
+      within(library).getByRole("button", { name: "展开名称待行情源补充交易回合" }),
+    );
+    await user.click(
+      within(library).getByRole("button", { name: /^打开名称待行情源补充第\d+次交易/ }),
+    );
+    await screen.findByLabelText("图表工具栏", {}, { timeout: 10000 });
+    await user.click(screen.getByRole("button", { name: "检查/修复数据" }));
+    const repairDialog = await screen.findByRole("dialog", { name: "检查与修复当前股票数据" });
+    await user.click(within(repairDialog).getByRole("button", { name: "查看完整数据并暂停复盘" }));
+    await user.click(screen.getByRole("button", { name: "为本股补充文件" }));
+    await user.upload(
+      screen.getByLabelText("导入交易记录"),
+      new File(["pdf"], "补充.pdf", { type: "application/pdf" }),
+    );
+
+    await user.click(await screen.findByRole("button", { name: "重新查询" }));
+    const changeSummary = await screen.findByRole("region", { name: "补充导入实际变更" });
+    expect(changeSummary).toHaveTextContent("新增成交 1 笔");
+    expect(changeSummary).toHaveTextContent("修订 0 笔");
+    expect(changeSummary).toHaveTextContent("来源重复 1 笔");
+    expect(changeSummary).toHaveTextContent("未新增成交");
+    expect(changeSummary).toHaveTextContent("已有成交仍可能修订证据");
+    expect(mockEnrichment).toHaveBeenLastCalledWith(
+      expect.objectContaining({ records: [added] }),
+      expect.objectContaining({
+        forceRefresh: true,
+        onlyInstrumentIds: ["CN-SH:600938"],
+        previous: firstEnriched,
+      }),
+    );
+
+    await user.click(screen.getByRole("button", { name: "确认补充当前股票成交" }));
+    await waitFor(() => expect(revise).toHaveBeenCalledOnce());
+    expect(revise.mock.calls[0][0]).toMatchObject({
+      changes: [{ before: null, after: expect.objectContaining({ id: added.id }) }],
+      expectedScope: [expect.objectContaining({ id: original.id })],
+    });
+  }, 15000);
 
   it("does not resurrect an import when a deferred unresolved retry finishes after cancel", async () => {
     const user = userEvent.setup();

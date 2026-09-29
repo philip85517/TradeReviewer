@@ -3,8 +3,10 @@ import { simulationScope } from "./trading-nature";
 
 import { canonicalInstrumentId } from "../instruments/display-name";
 import type { MonthlyStatement, StatementPosition, StatementEvent } from "../import/monthly-statement";
-import { isExecutionBackedIpoAllocation, replayExecutionAt, replayCursorAt, statementPositionAt, statementEventAt } from "../import/statement-evidence";
+import { executionDocumentKey, executionHasExactTime, executionSourceOrderConflictsWithTime, explicitExecutionSourceOrder, isExecutionBackedIpoAllocation, replayExecutionAt, replayCursorAt, statementPositionAt, statementEventAt, statementPositionEvidenceKey, statementPositionMatchesExecution } from "../import/statement-evidence";
+import { bonusShareEvidenceKey, collectBonusShareEvidence, isBonusShareEvidence } from "./bonus-share-evidence";
 import { resolveIpoAcquisitionCost, type IpoAcquisitionCost } from "./ipo-cost";
+import { isCanonicalTradingViewAccountExecution } from "./tradingview-account-identity";
 import {
   tradeNatureOf,
   tradeScopeKey,
@@ -32,10 +34,16 @@ function sortByExecutionTime(a: TradeExecution, b: TradeExecution) {
 }
 
 function episodeKey(execution: TradeExecution) {
-  return `${execution.accountId}:${canonicalInstrumentId(
+  const instrumentId = canonicalInstrumentId(
     execution.instrument.symbol,
     execution.instrument.market,
-  )}${tradeNatureOf(execution) === "unknown" ? "" : `:${tradeScopeKey(execution)}`}`;
+  );
+  if (isCanonicalTradingViewAccountExecution(execution)) {
+    // The canonical account is the business boundary. Source run remains on
+    // each execution for audit, but must not partition one inventory round.
+    return `${execution.accountId}:${instrumentId}:simulation`;
+  }
+  return `${execution.accountId}:${instrumentId}${tradeNatureOf(execution) === "unknown" ? "" : `:${tradeScopeKey(execution)}`}`;
 }
 
 function signedQuantity(execution: TradeExecution) {
@@ -78,6 +86,7 @@ function stableOpeningKey(execution: TradeExecution) {
   // Persisted legacy simulation reviews use a prefixed scope. Keep their
   // identity while using the canonical scope for episode accumulation.
   const legacySimulation = tradeNatureOf(execution) === "simulation" &&
+    !isCanonicalTradingViewAccountExecution(execution) &&
     (execution.source.tradingNature === "simulated" || execution.source.simulationRole !== undefined);
   const openingScope = legacySimulation
     ? `${simulationScope(execution)}:${execution.accountId}:${canonicalInstrumentId(execution.instrument.symbol, execution.instrument.market)}`
@@ -111,7 +120,7 @@ function createEpisode(
       accountLabel: execution.accountLabel,
       instrument: execution.instrument,
       tradeNature: tradeNatureOf(execution),
-      ...(execution.source.simulationRunId
+      ...(!isCanonicalTradingViewAccountExecution(execution) && execution.source.simulationRunId
         ? { simulationRunId: execution.source.simulationRunId }
         : {}),
       direction,
@@ -170,10 +179,35 @@ export function buildTradeEpisodes(
     evidenceKeys.set(item, key);
     return key;
   };
-  type Entry = { at: string; execution?: TradeExecution; position?: StatementPosition; event?: StatementEvent; uncertaintyKey?: string };
-  const timeline: Entry[] = executions.filter(e => !new Decimal(e.quantity).isZero()).map(execution => ({ at: replayExecutionAt(execution), execution }));
-  const positions = [...new Map([...evidence.flatMap(e => e.positions), ...executions.flatMap(e => [...(e.source.statementPositions ?? []), ...(e.source.openingPosition ? [e.source.openingPosition] : [])])].map(p => [JSON.stringify([p.documentId, evidenceKey(p), p.phase, p.date, p.quantity]), p])).values()];
-  const events = [...evidence.flatMap(e => e.events), ...executions.flatMap(e => e.source.positionEvents ?? [])];
+  type Entry = {
+    at: string;
+    execution?: TradeExecution;
+    position?: StatementPosition;
+    event?: StatementEvent;
+    uncertaintyKey?: string;
+    documentKey?: string;
+    sourceOrder?: number;
+    afterExecution?: boolean;
+  };
+  const executionEntry = (execution: TradeExecution): Entry => ({
+    at: replayExecutionAt(execution),
+    execution,
+    documentKey: executionDocumentKey(execution),
+    sourceOrder: explicitExecutionSourceOrder(execution),
+    afterExecution: false,
+  });
+  const timeline: Entry[] = executions.filter(e => !new Decimal(e.quantity).isZero()).map(executionEntry);
+  const positions = [...new Map([
+    ...evidence.flatMap(e => e.positions),
+    ...executions.flatMap(e => [...(e.source.statementPositions ?? []), ...(e.source.openingPosition ? [e.source.openingPosition] : [])]),
+  ].map(p => [statementPositionEvidenceKey(p), p])).values()];
+  const rawEvents = [...evidence.flatMap(e => e.events), ...executions.flatMap(e => e.source.positionEvents ?? [])];
+  const bonusEvidence = collectBonusShareEvidence(rawEvents);
+  const duplicateBonusKeys = new Set(bonusEvidence.duplicateKeys);
+  const events = [...new Map([
+    ...bonusEvidence.events,
+    ...rawEvents.filter(event => !isBonusShareEvidence(event)),
+  ].map(event => [`${event.accountId}:${event.id}`, event])).values()];
   const ipoAllocations = [...new Map(events.filter(event => event.kind === "ipo" && event.quantity !== undefined).map(event => [event.id, event])).values()];
   const ipoCosts = new Map<string, IpoAcquisitionCost>();
   const ipoEvidenceCosts = new Map<string, IpoAcquisitionCost>();
@@ -220,11 +254,61 @@ export function buildTradeEpisodes(
   const lastActivity = new Map<string, string>();
   const knownBoundary = new Set<string>();
   const seenExecution = new Set<string>();
+  const transactionExecution = (position: StatementPosition) => executions.filter(execution => statementPositionMatchesExecution(position, execution));
+  const executionDays = new Map<string, TradeExecution[]>();
+  for (const execution of executions) {
+    const key = episodeKey(execution);
+    const day = execution.source.tradingDate ?? execution.source.marketCalendarDate ?? execution.executedAt.slice(0, 10);
+    const group = executionDays.get(`${key}\u0000${day}`) ?? [];
+    group.push(execution);
+    executionDays.set(`${key}\u0000${day}`, group);
+  }
+  // A source fragment without an explicit sourceOrder cannot establish a
+  // total order among same-day date-only transactions. A date-only row and a
+  // precise row also have unknown relative time; preserve both and fail closed
+  // instead of letting a display-day boundary fabricate a direction.
+  const preflightSameDay = (key: string, sameDayExecutions: TradeExecution[]) => {
+    if (sameDayExecutions.length <= 1) return;
+    const hasDateOnlyExecution = sameDayExecutions.some(execution => !executionHasExactTime(execution));
+    const documentKeys = new Set(sameDayExecutions.map(executionDocumentKey));
+    const sourceOrders = sameDayExecutions.map(explicitExecutionSourceOrder);
+    const hasDuplicateSourceOrder = sourceOrders.every(order => order !== undefined) && new Set(sourceOrders).size !== sourceOrders.length;
+    const sourceOrderComparable = documentKeys.size === 1 && !documentKeys.has(undefined) &&
+      sourceOrders.every(order => order !== undefined) && !hasDuplicateSourceOrder;
+    const mixedPrecision = hasDateOnlyExecution && sameDayExecutions.some(executionHasExactTime);
+    const exactTimeConflict = !hasDateOnlyExecution && sameDayExecutions.some((left, index) =>
+      sameDayExecutions.slice(index + 1).some(right => executionSourceOrderConflictsWithTime(left, right)),
+    );
+    if (mixedPrecision || hasDateOnlyExecution && !sourceOrderComparable || exactTimeConflict) flag(key, "ambiguous-event-order");
+  };
+  for (const [groupKey, sameDayExecutions] of executionDays) {
+    preflightSameDay(groupKey.split("\u0000", 1)[0]!, sameDayExecutions);
+  }
   for (const position of positions) {
-    const id = JSON.stringify([evidenceKey(position), position.phase, position.date, position.quantity]);
+    if (position.phase !== "closing" || !position.source.some(fragment => fragment.role === "transaction-position")) continue;
+    const key = evidenceKey(position);
+    if (!key) continue;
+    const day = position.date;
+    const sameDayExecutions = executionDays.get(`${key}\u0000${day}`) ?? [];
+    if (sameDayExecutions.length <= 1) continue;
+    const linked = transactionExecution(position);
+    if (linked.length !== 1) flag(key, "ambiguous-event-order");
+  }
+  for (const position of positions) {
+    const id = statementPositionEvidenceKey(position);
     if (seen.has(id)) continue;
     seen.add(id);
-    timeline.push({ at: statementPositionAt(position), position });
+    const linked = transactionExecution(position);
+    const ordered = linked.length === 1 && explicitExecutionSourceOrder(linked[0]) !== undefined && executionDocumentKey(linked[0]) !== undefined;
+    timeline.push({
+      at: statementPositionAt(position),
+      position,
+      ...(ordered ? {
+        documentKey: executionDocumentKey(linked[0]),
+        sourceOrder: explicitExecutionSourceOrder(linked[0]),
+        afterExecution: true,
+      } : {}),
+    });
   }
   for (const event of events) {
     const id = `${event.accountId}:${event.id}`;
@@ -248,7 +332,18 @@ export function buildTradeEpisodes(
     }
   }
   const rank = (entry: Entry) => entry.uncertaintyKey ? -1 : entry.position ? (entry.position.phase === "opening" ? 0 : 3) : entry.event ? 1 : 2;
-  timeline.sort((a, b) => a.at.localeCompare(b.at) || rank(a) - rank(b) || (a.execution && b.execution ? sortByExecutionTime(a.execution, b.execution) : 0));
+  timeline.sort((a, b) => {
+    const at = a.at.localeCompare(b.at);
+    if (at !== 0) return at;
+    // Explicit source order only compares rows within one source document.
+    // A position linked to that row is applied immediately after its fill.
+    if (a.documentKey && a.documentKey === b.documentKey && a.sourceOrder !== undefined && b.sourceOrder !== undefined) {
+      const order = a.sourceOrder - b.sourceOrder;
+      if (order !== 0) return order;
+      if (a.afterExecution !== b.afterExecution) return a.afterExecution ? 1 : -1;
+    }
+    return rank(a) - rank(b) || (a.execution && b.execution ? sortByExecutionTime(a.execution, b.execution) : 0);
+  });
 
   for (const entry of timeline) {
     if (entry.uncertaintyKey) {
@@ -263,6 +358,10 @@ export function buildTradeEpisodes(
       if (!template) continue; // Inventory-only instruments need an Instrument from the caller before rendering.
       const existing = active.get(key);
       let next = existing?.position ?? new Decimal(0);
+      let isBonusShare = false;
+      let bonusBasisKnown = false;
+      let ambiguous = false;
+      let bonusDuplicate = false;
       if (entry.position) {
         knownBoundary.add(key);
         next = new Decimal(entry.position.quantity);
@@ -284,6 +383,7 @@ export function buildTradeEpisodes(
         // happened to be active on the cash posting date.
         if (isAttributableIpoCashEvent(event)) continue;
         const isIpoAllocation = event.kind === "ipo" && event.quantity !== undefined;
+        isBonusShare = isBonusShareEvidence(event);
         if (isIpoAllocation && isZeroStatementQuantity(event.quantity)) {
           if (existing) {
             (existing.episode.positionEvents ??= []).push(event);
@@ -305,7 +405,7 @@ export function buildTradeEpisodes(
           }
           continue; // A negative IPO result is not trusted as a positive lot.
         }
-        if (event.kind !== "transfer-in" && event.kind !== "transfer-out" && !isIpoAllocation) {
+        if (event.kind !== "transfer-in" && event.kind !== "transfer-out" && !isIpoAllocation && !isBonusShare) {
           if (existing) {
             (existing.episode.positionEvents ??= []).push(event);
             if (!isAttributableIpoCashEvent(event) && !isNonInventoryIpoEvidence(event)) flag(key, "position-event", existing.episode);
@@ -319,19 +419,49 @@ export function buildTradeEpisodes(
         const ipoHasExplicitReplayOrder = isIpoAllocation
           && /^\d{4}-\d{2}-\d{2}$/.test(event.date)
           && event.displayTimePolicy === "session-open";
-        const ambiguous = !ipoHasExplicitReplayOrder && ((event.date.length === 10
+        bonusDuplicate = isBonusShare && duplicateBonusKeys.has(bonusShareEvidenceKey(event));
+        ambiguous = !ipoHasExplicitReplayOrder && ((event.date.length === 10
           && executions.some(e => episodeKey(e) === key && (e.source.tradingDate ?? e.source.marketCalendarDate ?? e.executedAt.slice(0, 10)) === event.date))
           || (event.date.length === 7
             && executions.some(e => episodeKey(e) === key && (e.source.tradingDate ?? e.source.marketCalendarDate ?? e.executedAt.slice(0, 10)).startsWith(event.date))));
+        if (bonusDuplicate) flag(key, "duplicate-position-event", existing?.episode);
         if (ambiguous) flag(key, "ambiguous-event-order", existing?.episode);
+        if (isBonusShare) {
+          const currencies = new Set(executions
+            .filter(e => e.accountId === event.accountId && event.symbol && event.market &&
+              canonicalInstrumentId(e.instrument.symbol, e.instrument.market) === canonicalInstrumentId(event.symbol, event.market))
+            .map(e => e.instrument.currency.trim().toUpperCase()));
+          const eventCurrency = event.currency?.trim().toUpperCase();
+          const currencyMismatch = currencies.size > 0 && (currencies.size !== 1 || !eventCurrency || !currencies.has(eventCurrency));
+          if (currencyMismatch) {
+            flag(key, "currency-conflict", existing?.episode);
+            if (existing) (existing.episode.positionEvents ??= []).push(event);
+            else {
+              const pending = pendingEvents.get(key) ?? [];
+              if (!pending.some(item => item.id === event.id)) pending.push(event);
+              pendingEvents.set(key, pending);
+            }
+            continue;
+          }
+          const priorReasons = issues.get(key) ?? new Set<string>();
+          bonusBasisKnown = Boolean(existing?.position.gt(0) &&
+            !["unknown-cost", "position-event", "position-gap", "ambiguous-event-order", "currency-conflict", "duplicate-position-event", "initial-position"]
+              .some(reason => priorReasons.has(reason)));
+          if (existing?.position.isNegative() || (existing?.position.isZero() && existing !== undefined)) {
+            flag(key, "position-event", existing.episode);
+            flag(key, "unknown-cost", existing.episode);
+            (existing.episode.positionEvents ??= []).push(event);
+            continue;
+          }
+        }
         if (event.quantity === undefined) {
           flag(key, "position-event", existing?.episode);
           continue;
         }
-        const isAddition = event.kind === "transfer-in" || isIpoAllocation;
+        const isAddition = event.kind === "transfer-in" || isIpoAllocation || isBonusShare;
         next = next.plus(new Decimal(event.quantity).abs().times(isAddition ? 1 : -1));
         const knownIpoCost = isIpoAllocation && ipoCosts.has(event.id);
-        if (!knownIpoCost) flag(key, "position-event", existing?.episode);
+        if (!knownIpoCost && !isBonusShare) flag(key, "position-event", existing?.episode);
       }
       if (existing && (next.isZero() || next.isPositive() !== existing.position.isPositive())) {
         existing.episode.status = "closed";
@@ -370,7 +500,8 @@ export function buildTradeEpisodes(
       target.episode.remainingQuantity = next.abs().toString();
       const eventHasKnownCost = entry.event?.kind === "ipo"
         && entry.event.quantity !== undefined
-        && ipoCosts.has(entry.event.id);
+        && ipoCosts.has(entry.event.id)
+        || isBonusShare && bonusBasisKnown && !ambiguous && !bonusDuplicate;
       if (!eventHasKnownCost) flag(key, "unknown-cost", target.episode);
       continue;
     }

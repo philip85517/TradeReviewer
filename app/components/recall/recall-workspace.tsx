@@ -91,7 +91,10 @@ import {
   executionsThroughCursor,
   mapRecallExecutionToCandle,
   nextRecallDecisionState,
+  orderedRecallExecutions,
   previousRecallDecisionState,
+  recallExecutionKnowledgeAt,
+  recallMarketCursorForExecution,
   recallExecutionCandleIndex,
   revealRecallBar,
   revealRecallDecision,
@@ -99,6 +102,7 @@ import {
   revealableCandlesThroughCursor,
   NO_REVEALED_EXECUTIONS,
   rewindRecallBar,
+  visibleRecallExecutions,
   type RecallReplayCursor,
 } from "../../lib/replay/recall-replay";
 import { replayPositionAtPrice } from "../../lib/replay/position-ledger";
@@ -119,7 +123,7 @@ import { RecallExportDialog } from "../recall-export";
 import type { RecallExportOrder, RecallExportSource } from "../../lib/recall-export";
 
 import { RecallStoryboard } from "./recall-storyboard";
-import { RecallPlanSidebar, emptyRecallPlanInput } from "./recall-plan-sidebar";
+import { RecallPlanSidebar, compactRecallDerivedNumber, emptyRecallPlanInput } from "./recall-plan-sidebar";
 import { RecallPlanRevisionSection } from "./recall-plan-revisions";
 import { RecallExitEvaluations } from "./recall-exit-evaluations";
 import { RecallActualMetricsPanel } from "./recall-actual-metrics";
@@ -388,7 +392,7 @@ function persistedEditingContext(
     timeframe: graph.timeframe,
     cursor: graph.replay.cursor,
     executionCursor: graph.replay.executionCursor,
-    revealedCandleCursor: graph.replay.revealedCandles.length ? candleKnowledgeAt(graph.replay.revealedCandles.at(-1)!) : null,
+    revealedCandleCursor: replayMarketCursor(graph.replay) ?? null,
     ...(graph.viewport ? { viewport: graph.viewport } : {}),
   };
 }
@@ -651,12 +655,7 @@ function firstDecisionInExecutionOrder(
   document: RecallDocument,
   executions: TradeExecution[],
 ) {
-  const order = new Map(
-    executions
-      .map((execution, index) => ({ execution, index }))
-      .sort((left, right) => Date.parse(left.execution.executedAt) - Date.parse(right.execution.executedAt) || left.index - right.index)
-      .map(({ execution }, index) => [execution.id, index]),
-  );
+  const order = new Map(orderedRecallExecutions(executions).map((execution, index) => [execution.id, index]));
   return document.decisions
     .map((decision, decisionIndex) => ({
       decision,
@@ -668,35 +667,78 @@ function firstDecisionInExecutionOrder(
     .at(0)?.decision;
 }
 
+/** The market cutoff is the last completed candle; execution knowledge stays separate. */
+function replayMarketCursor(replay: RecallReplayCursor): string | undefined {
+  // New replay states carry this independently from the execution knowledge
+  // cursor. An explicit null means that no market candle is known; only old
+  // states without the field may infer it from their revealed candle list.
+  if (replay.revealedCandleCursor !== undefined) return replay.revealedCandleCursor ?? undefined;
+  const lastRevealed = replay.revealedCandles.at(-1);
+  return lastRevealed ? candleKnowledgeAt(lastRevealed) : undefined;
+}
+
+function marketRevealCursor(replay: RecallReplayCursor): string | undefined {
+  return replay.mode === "history"
+    ? replay.cursor
+    : replayMarketCursor(replay) ?? replay.cursor;
+}
+
+function marketCursorForPersistedContext(
+  context: RecallWorkingContext,
+  executions: TradeExecution[],
+  candles: Candle[],
+) {
+  if (context.revealedCandleCursor !== undefined) return context.revealedCandleCursor ?? undefined;
+  if (context.executionCursor === NO_REVEALED_EXECUTIONS) return context.cursor;
+  const boundaryExecution = executionsThroughCursor(executions, context.executionCursor).at(-1);
+  if (!boundaryExecution) return context.cursor;
+  return recallMarketCursorForExecution(
+    boundaryExecution,
+    mapRecallExecutionToCandle(boundaryExecution, candles),
+  ) ?? context.cursor;
+}
+
 function mapCursorToTimeframe(
   replay: RecallReplayCursor,
   executions: TradeExecution[],
   candles: Candle[],
 ) {
-  const lastExecution = replay.revealedExecutions.at(-1);
-  const visibilityCursor = lastExecution?.executedAt ?? replay.cursor;
-  const mapped = lastExecution ? mapRecallExecutionToCandle(lastExecution, candles) : undefined;
-  if (mapped) {
+  const sorted = [...candles].sort((left, right) => Date.parse(left.time) - Date.parse(right.time));
+  if (replay.mode === "history") {
     return {
       ...replay,
-      cursor: candleKnowledgeAt(mapped),
-      currentCandle: Date.parse(candleKnowledgeAt(mapped)) <= Date.parse(visibilityCursor) ? mapped : undefined,
-      revealedCandles: revealableCandlesThroughCursor(candles, visibilityCursor),
+      revealedCandleCursor: sorted.at(-1) ? candleKnowledgeAt(sorted.at(-1)!) : null,
+      revealedCandles: sorted,
+      revealedExecutions: orderedRecallExecutions(executions),
+      currentCandle: sorted.at(-1),
     };
   }
-  const sorted = [...candles].sort((left, right) => Date.parse(left.time) - Date.parse(right.time));
-  const cursorTime = Date.parse(replay.cursor);
-  const current = replay.executionCursor === NO_REVEALED_EXECUTIONS
-    ? sorted.findLast((candle) => Date.parse(candleKnowledgeAt(candle)) <= cursorTime) ?? sorted[0]
-    : sorted.findLast((candle) => Date.parse(candle.time) <= cursorTime) ?? sorted[0];
+  // Keep the legacy fallback local to this projection: Astra's persisted
+  // extraction exercises this mapper without the surrounding workspace.
+  const marketCursor = replay.revealedCandleCursor !== undefined
+    ? replay.revealedCandleCursor ?? undefined
+    : replay.revealedCandles.at(-1)
+      ? candleKnowledgeAt(replay.revealedCandles.at(-1)!)
+      : undefined;
+  const revealedCandles = marketCursor ? revealableCandlesThroughCursor(sorted, marketCursor) : [];
+  const revealedExecutions = visibleRecallExecutions(executions, replay.executionCursor, replay.cursor);
+  const lastExecution = revealedExecutions.at(-1);
+  const mapped = lastExecution ? mapRecallExecutionToCandle(lastExecution, sorted) : undefined;
+  const current = mapped && revealedCandles.some((candle) => candle.time === mapped.time)
+    ? mapped
+    : lastExecution
+      ? undefined
+      : revealedCandles.at(-1);
   return {
     ...replay,
-    cursor: replay.executionCursor === NO_REVEALED_EXECUTIONS
-      ? replay.cursor
-      : current ? candleKnowledgeAt(current) : replay.cursor,
-    currentCandle: current && Date.parse(candleKnowledgeAt(current)) <= Date.parse(visibilityCursor) ? current : undefined,
-    revealedCandles: revealableCandlesThroughCursor(sorted, visibilityCursor),
-    revealedExecutions: executionsThroughCursor(executions, replay.executionCursor),
+    // Timeframe changes remap market data only. Keep both replay cursors at
+    // their persisted boundary; an incomplete target bar must not promote
+    // the knowledge cursor to its future provider cutoff.
+    cursor: replay.cursor,
+    revealedCandleCursor: marketCursor ?? null,
+    revealedCandles,
+    revealedExecutions,
+    currentCandle: current,
   };
 }
 
@@ -706,14 +748,19 @@ function revealRecallExecutionBoundary(
   candles: Candle[],
 ): RecallReplayCursor {
   const currentCandle = mapRecallExecutionToCandle(execution, candles);
-  const visibilityCursor = execution.executedAt;
+  const knowledgeCursor = [
+    recallExecutionKnowledgeAt(execution),
+    currentCandle ? candleKnowledgeAt(currentCandle) : undefined,
+  ].filter((value): value is string => Boolean(value)).sort((left, right) => Date.parse(left) - Date.parse(right)).at(-1)!;
+  const marketCursor = recallMarketCursorForExecution(execution, currentCandle);
   return {
-    cursor: currentCandle ? candleKnowledgeAt(currentCandle) : visibilityCursor,
+    cursor: knowledgeCursor,
     executionCursor: execution.id,
     mode: "replay",
-    revealedCandles: revealableCandlesThroughCursor(candles, visibilityCursor),
-    revealedExecutions: executionsThroughCursor(executions, execution.id),
-    currentCandle: currentCandle && Date.parse(candleKnowledgeAt(currentCandle)) <= Date.parse(visibilityCursor)
+    revealedCandleCursor: marketCursor ?? null,
+    revealedCandles: marketCursor ? revealableCandlesThroughCursor(candles, marketCursor) : [],
+    revealedExecutions: visibleRecallExecutions(executions, execution.id, knowledgeCursor),
+    currentCandle: currentCandle && marketCursor && Date.parse(candleKnowledgeAt(currentCandle)) <= Date.parse(marketCursor)
       ? currentCandle
       : undefined,
   };
@@ -728,7 +775,8 @@ function restorePersistedWorkingGraph(
   const liveDecision = decisions.find(decision =>
     (context.decisionId === "global" || decision.id === context.decisionId)
     && decision.executionIds.some(id => executions.some(execution => execution.id === id)));
-  const knownCandles = revealableCandlesThroughCursor(candles, context.cursor);
+  const marketCursor = marketCursorForPersistedContext(context, executions, candles);
+  const knownCandles = marketCursor ? revealableCandlesThroughCursor(candles, marketCursor) : [];
   // Removed decisions retain their drawings and owner until explicitly
   // reassigned. They must not reveal an unrelated decision's executions.
   const base: RecallReplayCursor = liveDecision ? revealRecallDecision({
@@ -738,6 +786,7 @@ function restorePersistedWorkingGraph(
     decisionId: liveDecision.id,
   }) : {
     cursor: context.cursor, executionCursor: NO_REVEALED_EXECUTIONS, mode: "replay",
+    revealedCandleCursor: marketCursor ?? null,
     revealedCandles: knownCandles, revealedExecutions: [], currentCandle: knownCandles.at(-1),
   };
   const boundary = executionBoundaryForCursor(executions, context.executionCursor);
@@ -746,19 +795,17 @@ function restorePersistedWorkingGraph(
     ...base,
     cursor: context.cursor || base.cursor,
     executionCursor: boundary >= 0 || beforeFirst ? context.executionCursor : base.executionCursor,
+    revealedCandleCursor: marketCursor ?? null,
     revealedExecutions: boundary >= 0
-      ? executionsThroughCursor(executions, context.executionCursor)
+      ? visibleRecallExecutions(executions, context.executionCursor, context.cursor)
       : beforeFirst
         ? []
         : base.revealedExecutions,
+    revealedCandles: knownCandles,
   };
   return {
     drawings: cloneDrawings(context.drawings),
-    replay: context.revealedCandleCursor !== undefined ? {
-      ...replay,
-      revealedCandles: context.revealedCandleCursor === null ? [] : revealableCandlesThroughCursor(candles, context.revealedCandleCursor),
-      currentCandle: context.revealedCandleCursor === null ? undefined : revealableCandlesThroughCursor(candles, context.revealedCandleCursor).at(-1),
-    } : mapCursorToTimeframe(replay, executions, candles),
+    replay: mapCursorToTimeframe(replay, executions, candles),
     timeframe: context.timeframe,
     viewport: context.viewport,
   };
@@ -870,6 +917,13 @@ export function RecallWorkspace({
   headerActions,
 }: RecallWorkspaceProps) {
   const fallbackTimeframe = firstEnabledTimeframe(timeframeAvailability, candlesByTimeframe);
+  // The parent keeps a legacy timeline projection in sync with its own
+  // timeframe state. That projection changes identity when Recall switches
+  // timeframe, but it is not an episode-load boundary. Keep the latest
+  // fallback available to explicit restores without making the load callback
+  // churn and re-reading the old draft after a user change.
+  const importedTimelineCandlesRef = useRef(importedTimelineCandles);
+  importedTimelineCandlesRef.current = importedTimelineCandles;
   const chartHandleRef = useRef<RecallChartHandle | null>(null);
   const previousEpisodeIdRef = useRef<string | null>(null);
   const saveDocumentRef = useRef<((document?: RecallDocument, force?: boolean, generation?: number) => Promise<void>) | null>(null);
@@ -889,6 +943,7 @@ export function RecallWorkspace({
   const historyReplayBackupRef = useRef<RecallReplayCursor | null>(null);
   const revealRequestIdRef = useRef(0);
   const pendingViewportRestoreRef = useRef<ChartViewport | null>(null);
+  const queuedViewportRestoreRef = useRef<ChartViewport | null>(null);
   const phaseViewportRestoreRef = useRef<PhaseViewportRestoreRequest | null>(null);
   const phaseViewportRestoreGenerationRef = useRef(0);
   const phaseViewportContextTransitionRef = useRef<Pick<PhaseViewportRestoreRequest, "phase" | "timeframe" | "cursor"> | null>(null);
@@ -953,11 +1008,28 @@ export function RecallWorkspace({
 
   const requestReveal = useCallback((time: string | undefined) => {
     if (!time) return;
+    // A queued restore belongs to the document that requested the reveal. A
+    // later user reveal supersedes it before the chart is ready.
+    queuedViewportRestoreRef.current = null;
     cancelPhaseViewportRestore();
     const id = revealRequestIdRef.current + 1;
     revealRequestIdRef.current = id;
     setRevealRequest({ id, time });
   }, [cancelPhaseViewportRestore]);
+
+  const restoreQueuedViewport = useCallback(() => {
+    const queuedViewport = queuedViewportRestoreRef.current;
+    const handle = chartHandleRef.current;
+    if (!queuedViewport || !handle) return;
+    // ReplayChart creates its lightweight-charts handle after an async SDK
+    // import. Wait one paint after onReady so the chart's initial data/reveal
+    // effects have committed before applying the persisted window.
+    window.requestAnimationFrame(() => {
+      if (queuedViewportRestoreRef.current !== queuedViewport || chartHandleRef.current !== handle) return;
+      queuedViewportRestoreRef.current = null;
+      handle.restoreViewport(queuedViewport);
+    });
+  }, []);
 
   useEffect(() => {
     draftRef.current = document;
@@ -1170,9 +1242,9 @@ export function RecallWorkspace({
   const chartCandles = snapshotCandles ?? replay?.revealedCandles ?? allCandles;
   const chartExecutions = useMemo(
     () => snapshotEdit
-      ? executionsThroughCursor(currentExecutions, snapshotEdit.executionCursor)
+      ? visibleRecallExecutions(currentExecutions, snapshotEdit.executionCursor, snapshotEdit.cursor)
       : replay?.mode === "history"
-        ? currentExecutions
+        ? orderedRecallExecutions(currentExecutions)
         : replay?.revealedExecutions ?? [],
     [currentExecutions, replay?.mode, replay?.revealedExecutions, snapshotEdit],
   );
@@ -1297,7 +1369,7 @@ export function RecallWorkspace({
   }, [drawingHistory, editingSnapshotId, historyMode, markDirty, replay, selectedDecisionId, timeframe]);
 
   const setWorking = useCallback((nextReplay: RecallReplayCursor, nextSelectedDecisionId = selectedDecisionId, nextDrawings = drawingHistory.present) => {
-    requestReveal(nextReplay.cursor);
+    requestReveal(marketRevealCursor(nextReplay));
     setReplay(nextReplay);
     if (editingSnapshotId) {
       setSnapshotEditDirty(true);
@@ -1346,12 +1418,14 @@ export function RecallWorkspace({
   }, [drawingHistory.present, editingSnapshotId, historyMode, markDirty, requestReveal, selectedDecisionId, timeframe]);
 
   const restoreWorkingFromDocument = useCallback((nextDocument: RecallDocument, preferredTimeframe?: Timeframe, emitRevealRequest = true) => {
+    queuedViewportRestoreRef.current = null;
+    const currentImportedTimelineCandles = importedTimelineCandlesRef.current;
     const nextTimeframe = preferredTimeframe && timeframeAvailability[preferredTimeframe].enabled
       ? preferredTimeframe
       : nextDocument.working.timeframe && timeframeAvailability[nextDocument.working.timeframe].enabled
         ? nextDocument.working.timeframe
         : fallbackTimeframe;
-    const globalCandles = timeframeCandles(nextTimeframe, { importedTimelineCandles, candlesByTimeframe });
+    const globalCandles = timeframeCandles(nextTimeframe, { importedTimelineCandles: currentImportedTimelineCandles, candlesByTimeframe });
     const globalReplayBase = revealRecallDecision({
       candles: globalCandles,
       executions: currentExecutions,
@@ -1361,15 +1435,23 @@ export function RecallWorkspace({
     const storedExecutionCursor = nextDocument.working.executionCursor;
     const storedBoundary = executionBoundaryForCursor(currentExecutions, storedExecutionCursor);
     const storedBeforeFirst = storedExecutionCursor === NO_REVEALED_EXECUTIONS;
+    const storedExecution = storedBoundary >= 0
+      ? executionsThroughCursor(currentExecutions, storedExecutionCursor).at(-1)
+      : undefined;
+    const storedMarketCursor = storedExecution
+      ? recallMarketCursorForExecution(storedExecution, mapRecallExecutionToCandle(storedExecution, globalCandles))
+      : nextDocument.working.cursor;
     const globalReplay: RecallReplayCursor = {
       ...globalReplayBase,
       cursor: nextDocument.working.cursor || globalReplayBase.cursor,
       executionCursor: storedBoundary >= 0 || storedBeforeFirst ? storedExecutionCursor : globalReplayBase.executionCursor,
       revealedExecutions: storedBoundary >= 0
-        ? executionsThroughCursor(currentExecutions, storedExecutionCursor)
+        ? visibleRecallExecutions(currentExecutions, storedExecutionCursor, nextDocument.working.cursor)
         : storedBeforeFirst
           ? []
           : globalReplayBase.revealedExecutions,
+      revealedCandleCursor: storedMarketCursor ?? null,
+      revealedCandles: storedMarketCursor ? revealableCandlesThroughCursor(globalCandles, storedMarketCursor) : [],
     };
     const globalGraph: WorkingGraph = {
       drawings: cloneDrawings(nextDocument.working.drawings),
@@ -1383,7 +1465,7 @@ export function RecallWorkspace({
       const draftTimeframe = timeframeAvailability[persistedDraft.timeframe].enabled
         ? persistedDraft.timeframe
         : nextTimeframe;
-      const draftCandles = timeframeCandles(draftTimeframe, { importedTimelineCandles, candlesByTimeframe });
+      const draftCandles = timeframeCandles(draftTimeframe, { importedTimelineCandles: currentImportedTimelineCandles, candlesByTimeframe });
       stageWorkingContextsRef.current.set(
         persistedDraft.decisionId,
         restorePersistedWorkingGraph(
@@ -1402,7 +1484,7 @@ export function RecallWorkspace({
       const stageTimeframe = timeframeAvailability[persistedContext.timeframe].enabled
         ? persistedContext.timeframe
         : nextTimeframe;
-      const stageCandles = timeframeCandles(stageTimeframe, { importedTimelineCandles, candlesByTimeframe });
+      const stageCandles = timeframeCandles(stageTimeframe, { importedTimelineCandles: currentImportedTimelineCandles, candlesByTimeframe });
       activeGraph = restorePersistedWorkingGraph(
         { ...persistedContext, timeframe: stageTimeframe },
         nextDocument.decisions,
@@ -1417,14 +1499,18 @@ export function RecallWorkspace({
       if (persistedContext?.mode === "global") activeDecisionId = "global";
     }
 
-    setPhase(nextDocument.working.phase ?? "holding");
-    const phaseContext = nextDocument.working.phase && nextDocument.working.phaseContexts?.[nextDocument.working.phase];
+    const restoredPhase = nextDocument.working.phase ?? "holding";
+    setPhase(restoredPhase);
+    // Early drafts did not persist the active phase at the top level, while
+    // timeframe edits still recorded its graph under phaseContexts. Treat the
+    // default holding phase as the persisted owner so its market boundary is
+    // restored on reopen instead of rebuilding from the execution cursor.
+    const phaseContext = nextDocument.working.phaseContexts?.[restoredPhase];
     if (phaseContext) {
-      activeGraph = restorePersistedWorkingGraph(phaseContext, nextDocument.decisions, currentExecutions, timeframeCandles(phaseContext.timeframe, { importedTimelineCandles, candlesByTimeframe }));
+      activeGraph = restorePersistedWorkingGraph(phaseContext, nextDocument.decisions, currentExecutions, timeframeCandles(phaseContext.timeframe, { importedTimelineCandles: currentImportedTimelineCandles, candlesByTimeframe }));
       activeContextModeRef.current = phaseContext.mode;
       activeDecisionId = phaseContext.decisionId;
-      if (nextDocument.working.phase === "post-review") activeGraph.replay = revealRecallHistory(timeframeCandles(activeGraph.timeframe, { importedTimelineCandles, candlesByTimeframe }), currentExecutions);
-      if (activeGraph.viewport) window.requestAnimationFrame(() => chartHandleRef.current?.restoreViewport(activeGraph.viewport!));
+      if (restoredPhase === "post-review") activeGraph.replay = revealRecallHistory(timeframeCandles(activeGraph.timeframe, { importedTimelineCandles: currentImportedTimelineCandles, candlesByTimeframe }), currentExecutions);
     }
     setTimeframe(activeGraph.timeframe);
     setSelectedDecisionId(activeDecisionId);
@@ -1432,8 +1518,12 @@ export function RecallWorkspace({
     drawingHistoryRef.current = nextHistory;
     setDrawingHistory(nextHistory);
     setReplay(activeGraph.replay);
-    if (emitRevealRequest) requestReveal(activeGraph.replay.cursor);
-  }, [candlesByTimeframe, currentExecutions, fallbackTimeframe, importedTimelineCandles, requestReveal, timeframeAvailability]);
+    if (emitRevealRequest) requestReveal(marketRevealCursor(activeGraph.replay));
+    if (activeGraph.viewport) {
+      queuedViewportRestoreRef.current = activeGraph.viewport;
+      restoreQueuedViewport();
+    }
+  }, [candlesByTimeframe, currentExecutions, fallbackTimeframe, requestReveal, restoreQueuedViewport, timeframeAvailability]);
 
   const loadEpisode = useCallback(async (episodeToLoad: TradeEpisode, cancelled: () => boolean, refreshCurrentEpisode = false) => {
     const currentDraft = refreshCurrentEpisode && draftRef.current?.episodeId === episodeToLoad.id
@@ -1686,7 +1776,7 @@ export function RecallWorkspace({
       setDrawingHistory(globalHistory);
       setTimeframe(global.timeframe);
       setReplay(global.replay);
-      requestReveal(global.replay.cursor);
+      requestReveal(marketRevealCursor(global.replay));
       if (global.viewport) {
         window.requestAnimationFrame(() => chartHandleRef.current?.restoreViewport(global.viewport!));
       }
@@ -1747,7 +1837,7 @@ export function RecallWorkspace({
     setDrawingHistory(stageHistory);
     setTimeframe(nextTimeframe);
     setReplay(stageGraph.replay);
-    requestReveal(stageGraph.replay.cursor);
+    requestReveal(marketRevealCursor(stageGraph.replay));
     const context = persistedEditingContext("decision", decisionId, stageGraph);
     setDocument((current) => current ? touchRecallDraft({
       ...current,
@@ -1790,7 +1880,7 @@ export function RecallWorkspace({
     else if (!saved && nextPhase === "pre-entry") {
       const cursor = new Date(Date.parse(currentExecutions[0]?.executedAt ?? episode.startedAt) - 1).toISOString();
       const known = revealableCandlesThroughCursor(candles, cursor);
-      graph = { ...graph, replay: { cursor, executionCursor: NO_REVEALED_EXECUTIONS, mode: "replay", revealedCandles: known, revealedExecutions: [], currentCandle: known.at(-1) } };
+      graph = { ...graph, replay: { cursor, executionCursor: NO_REVEALED_EXECUTIONS, mode: "replay", revealedCandleCursor: known.at(-1) ? candleKnowledgeAt(known.at(-1)!) : null, revealedCandles: known, revealedExecutions: [], currentCandle: known.at(-1) } };
     } else if (!saved && nextPhase === "holding") {
       graph = { ...graph, replay: revealRecallDecision({ candles, executions: currentExecutions, decisions: document.decisions, decisionId: document.decisions[0]?.id ?? "" }) };
     }
@@ -1801,7 +1891,7 @@ export function RecallWorkspace({
     setDrawingHistory(history);
     setTimeframe(graph.timeframe);
     setReplay(graph.replay);
-    requestReveal(graph.replay.cursor);
+    requestReveal(marketRevealCursor(graph.replay));
     setSelectedDecisionId(nextOwner);
     setPhase(nextPhase);
     setHistoryMode(false);
@@ -1852,7 +1942,12 @@ export function RecallWorkspace({
       && phaseViewportRestoreRef.current.cursor === replay.cursor
       ? phaseViewportRestoreRef.current.viewport
       : undefined;
-    const viewport = phaseViewport ?? (isPhaseTransition ? undefined : chartHandleRef.current?.getViewport());
+    // Keep a persisted restore in the phase draft until the async chart has
+    // applied it. Reading the chart here can otherwise capture its temporary
+    // full-history fit and overwrite the saved window during reload.
+    const viewport = phaseViewport ?? (isPhaseTransition
+      ? undefined
+      : queuedViewportRestoreRef.current ?? chartHandleRef.current?.getViewport());
     const context = persistedEditingContext(selectedDecisionId && selectedDecisionId !== "global" ? "decision" : "global", selectedDecisionId ?? "global", {
       drawings: drawingHistory.present,
       replay,
@@ -1996,7 +2091,7 @@ export function RecallWorkspace({
       const selected = historyReplayBackupRef.current ?? replay;
       setHistoryMode(false);
       setReplay(selected);
-      requestReveal(selected.cursor);
+      requestReveal(marketRevealCursor(selected));
       historyReplayBackupRef.current = null;
       return;
     }
@@ -2006,7 +2101,7 @@ export function RecallWorkspace({
     setHistoryMode(true);
     const history = revealRecallHistory(allCandles, currentExecutions);
     setReplay(history);
-    requestReveal(history.cursor);
+    requestReveal(marketRevealCursor(history));
   }, [allCandles, currentExecutions, editingSnapshotId, historyMode, markDirty, replay, requestReveal]);
 
   const changeTimeframe = useCallback((nextTimeframe: Timeframe) => {
@@ -2015,7 +2110,7 @@ export function RecallWorkspace({
     const mapped = mapCursorToTimeframe(replay, currentExecutions, nextCandles);
     setTimeframe(nextTimeframe);
     setReplay(mapped);
-    requestReveal(mapped.cursor);
+    requestReveal(marketRevealCursor(mapped));
     onTimeframeChange?.(nextTimeframe);
     if (!historyMode && !editingSnapshotId) {
       const stageDecisionId = activeContextModeRef.current === "decision" && selectedDecisionId && selectedDecisionId !== "global"
@@ -2126,10 +2221,13 @@ export function RecallWorkspace({
     // A snapshot may have been captured from explicit retrospective mode. Its
     // stored candles are still useful for the image, but reopening it as an
     // editable step replay must respect the live knowledge boundary.
+    const snapshotUsesOwnBoundary = Boolean(snapshot.phase || replay.mode === "history");
+    const snapshotKnowledgeCursor = snapshotUsesOwnBoundary ? snapshot.cursor : replay.cursor;
+    const liveMarketCursor = marketRevealCursor(replay);
     const snapshotCandles = snapshot.phase || replay.mode === "history"
       ? snapshot.candles
-      : revealableCandlesThroughCursor(snapshot.candles, replay.cursor);
-    const snapshotExecutionCursor = snapshot.phase || replay.mode === "history"
+      : liveMarketCursor ? revealableCandlesThroughCursor(snapshot.candles, liveMarketCursor) : [];
+    const snapshotExecutionCursor = snapshotUsesOwnBoundary
       ? snapshot.executionCursor
       : replay.executionCursor;
     setPlaying(false);
@@ -2148,15 +2246,17 @@ export function RecallWorkspace({
     const snapshotHistory = createDrawingHistory(snapshot.drawings);
     drawingHistoryRef.current = snapshotHistory;
     setDrawingHistory(snapshotHistory);
-    setReplay({
-      cursor: snapshot.phase || replay.mode === "history" ? snapshot.cursor : replay.cursor,
+    const snapshotReplay: RecallReplayCursor = {
+      cursor: snapshotKnowledgeCursor,
       executionCursor: snapshotExecutionCursor,
       mode: "replay",
+      revealedCandleCursor: snapshotCandles.at(-1) ? candleKnowledgeAt(snapshotCandles.at(-1)!) : null,
       revealedCandles: snapshotCandles,
-      revealedExecutions: executionsThroughCursor(currentExecutions, snapshotExecutionCursor),
+      revealedExecutions: visibleRecallExecutions(currentExecutions, snapshotExecutionCursor, snapshotKnowledgeCursor),
       currentCandle: snapshotCandles.at(-1),
-    });
-    requestReveal(snapshot.phase || replay.mode === "history" ? snapshot.cursor : replay.cursor);
+    };
+    setReplay(snapshotReplay);
+    requestReveal(marketRevealCursor(snapshotReplay));
     setError(null);
   }, [currentExecutions, document, drawingHistory.present, markDirty, replay, requestReveal, selectedDecisionId, timeframe]);
 
@@ -2176,7 +2276,7 @@ export function RecallWorkspace({
       drawingHistoryRef.current = workingHistory;
       setDrawingHistory(workingHistory);
       setReplay(backup.replay);
-      requestReveal(backup.replay.cursor);
+      requestReveal(marketRevealCursor(backup.replay));
       setSelectedDecisionId(backup.selectedDecisionId);
       setTimeframe(backup.timeframe);
     }
@@ -2671,10 +2771,8 @@ export function RecallWorkspace({
     if (activeContextModeRef.current === "global" && globalWorkingContextRef.current && !globalWorkingContextRef.current.viewport) {
       globalWorkingContextRef.current = { ...globalWorkingContextRef.current, viewport: handle.getViewport() };
     }
-    // Viewport transitions are scheduled by the cancellable effects above.
-    // Scheduling a second untracked frame here could restore an old snapshot
-    // after the user has already returned to the working graph.
-  }, []);
+    restoreQueuedViewport();
+  }, [restoreQueuedViewport]);
 
   if (loading) {
     return <section className="recall-workspace recall-loading" aria-busy="true"><ClipboardPenLine size={20} /><strong>正在读取复盘草稿…</strong></section>;
@@ -2742,25 +2840,34 @@ export function RecallWorkspace({
   const sidebarPhase: RecallPhase = editingSnapshotId
     ? viewedBundle?.captureContext.phase ?? viewedSnapshot?.phase ?? "holding"
     : phase;
+  const compactReplayPlan = phase === "pre-entry" && planInput && (planInput.entry || planInput.initialStop || planInput.resolvedQuantity)
+    ? (() => {
+      const calculation = calculateRecallPlan(planInput);
+      const risk = calculation.initialRisk.value
+        ? `风险 ${calculation.initialRisk.value}${calculation.initialRisk.currency ? ` ${calculation.initialRisk.currency}` : ""}`
+        : "风险待补充";
+      return { risk, expectedR: calculation.expectedR.value };
+    })()
+    : null;
   const compactReplaySummary = phase === "holding"
     ? `持仓 ${quantityAvailable ? position.quantity : "待核对"}`
     : phase === "post-review"
       ? `历史已揭示 · 持仓 ${quantityAvailable ? position.quantity : "待核对"}`
       : (() => {
-        const hasPlan = Boolean(planInput?.entry || planInput?.initialStop || planInput?.resolvedQuantity);
-        if (!hasPlan || !planInput) return "计划待记录";
-        const calculation = calculateRecallPlan(planInput);
-        const risk = calculation.initialRisk.value
-          ? `风险 ${calculation.initialRisk.value}${calculation.initialRisk.currency ? ` ${calculation.initialRisk.currency}` : ""}`
-          : "风险待补充";
-        const expectedR = calculation.expectedR.value ? `${calculation.expectedR.value}R` : "预期R待补充";
-        return `计划 · ${expectedR} / ${risk}`;
+        if (!compactReplayPlan) return "计划待记录";
+        const expectedR = compactReplayPlan.expectedR ? `${compactRecallDerivedNumber(compactReplayPlan.expectedR)}R` : "预期R待补充";
+        return `计划 · ${expectedR} / ${compactReplayPlan.risk}`;
       })();
-  const alignedMarketCutoff = replay.cursor ? formatMarketCursor(replay.cursor, instrument.market) : "尚无行情游标";
-  const alignedMarketCutoffShort = replay.cursor ? formatMarketCursorShort(replay.cursor, instrument.market) : "尚无时间";
-  const visibleExecutionCutoff = replay.mode === "history"
-    ? currentExecutions.at(-1)?.executedAt
-    : replay.revealedExecutions.at(-1)?.executedAt;
+  const compactReplaySummaryTitle = compactReplayPlan?.expectedR
+    ? `计划 · ${compactReplayPlan.expectedR}R / ${compactReplayPlan.risk}`
+    : compactReplaySummary;
+  const marketCutoff = marketRevealCursor(replay);
+  const alignedMarketCutoff = marketCutoff ? formatMarketCursor(marketCutoff, instrument.market) : "尚无行情游标";
+  const alignedMarketCutoffShort = marketCutoff ? formatMarketCursorShort(marketCutoff, instrument.market) : "尚无时间";
+  const visibleExecution = replay.mode === "history"
+    ? orderedRecallExecutions(currentExecutions).at(-1)
+    : replay.revealedExecutions.at(-1);
+  const visibleExecutionCutoff = visibleExecution ? recallExecutionKnowledgeAt(visibleExecution) : undefined;
   const executionCutoff = visibleExecutionCutoff ? formatMarketCursor(visibleExecutionCutoff, instrument.market) : "成交尚未揭示";
   const executionCutoffShort = visibleExecutionCutoff ? formatMarketCursorShort(visibleExecutionCutoff, instrument.market) : executionCutoff;
 
@@ -3041,11 +3148,11 @@ export function RecallWorkspace({
               <div><span className={`live-dot${historyMode ? "" : " playing"}`} /><strong title={selectedLabel}>{historyMode ? "事后复盘" : "逐步"} · {selectedDecisionId === "global" ? "全局" : currentDecision ? `决策 ${decisionNumber}` : "未选择"}</strong><small className="recall-replay-cutoff" aria-label={historyMode ? "完整历史" : `行情时间 ${alignedMarketCutoff}；${executionCutoff}`}>
                 {historyMode ? <span>完整历史</span> : <><span title={alignedMarketCutoff}>行情时间 {alignedMarketCutoffShort}</span><span title={executionCutoff}>{visibleExecutionCutoff ? `成交截止 ${executionCutoffShort}` : executionCutoff}</span></>}
               </small></div>
-              <span className="recall-replay-summary" aria-label={compactReplaySummary}>{compactReplaySummary}</span>
+              <span className="recall-replay-summary" aria-label={compactReplaySummaryTitle} title={compactReplaySummaryTitle}>{compactReplaySummary}</span>
             </div>
 
             <div className="recall-controls recall-replay-bar__primary" aria-label="回放控制">
-              <button type="button" aria-label="上一根 K 线" disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || replay.executionCursor === NO_REVEALED_EXECUTIONS} title={editingSnapshotId ? replayControlReason : undefined} onClick={() => {
+              <button type="button" aria-label="上一根 K 线" disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || replay.revealedCandles.length === 0} title={editingSnapshotId ? replayControlReason : undefined} onClick={() => {
                 setWorking(rewindRecallBar({ candles: allCandles, executions: currentExecutions, current: replay }));
               }}><ChevronLeft size={17} />上一根</button>
               <button type="button" className={playing ? "active" : ""} onClick={() => setPlaying((current) => !current)} disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || atReplayEnd} title={editingSnapshotId || atReplayEnd ? replayControlReason : undefined} aria-pressed={playing}>{playing ? "暂停" : "播放"}</button>

@@ -3,6 +3,7 @@ import type { TradeLibraryEntry, TradeLibraryEpisode } from "../trades/library";
 import type { SharedScope } from "./shared-scope";
 import { filterEntriesBySharedScope } from "./shared-scope";
 import { reviewState } from "./review-queue";
+import { tradingViewEpisodeBusinessScope } from "../trades/tradingview-account-identity";
 
 /**
  * The global tools deliberately share identity only.  They do not inherit a
@@ -61,6 +62,23 @@ function entryEpisodes(entries: readonly TradeLibraryEntry[], scope: GlobalEntry
   }).flatMap(entry => entry.episodes.map(item => ({ entry, item })));
 }
 
+function hasCanonicalSimulationScope(entries: readonly TradeLibraryEntry[], scope: GlobalEntryScope): boolean {
+  if (scope.nature !== "simulation" || scope.simulationRunId !== null) return false;
+  return entries.some(entry => entry.episodes.some(({ episode }) => {
+    const businessScope = tradingViewEpisodeBusinessScope(episode);
+    return Boolean(
+      businessScope &&
+      (scope.accountIds.length === 0 || scope.accountIds.includes(businessScope.accountId)),
+    );
+  }));
+}
+
+function requiresSimulationRun(entries: readonly TradeLibraryEntry[], scope: GlobalEntryScope): boolean {
+  return scope.nature === "simulation" &&
+    scope.simulationRunId === null &&
+    !hasCanonicalSimulationScope(entries, scope);
+}
+
 function episodeTime(item: TradeLibraryEpisode): string {
   return item.episode.endedAt ?? item.episode.startedAt;
 }
@@ -84,7 +102,7 @@ export function searchGlobalInstruments(
   scope: GlobalEntryScope,
   query: string,
 ): GlobalSearchResult[] {
-  if (scope.nature === "unknown" || (scope.nature === "simulation" && !scope.simulationRunId)) return [];
+  if (scope.nature === "unknown" || requiresSimulationRun(entries, scope)) return [];
   const grouped = new Map<string, ScopedEpisode[]>();
   for (const scoped of entryEpisodes(entries, scope)) {
     if (!matchesQuery(scoped.entry, query)) continue;
@@ -149,7 +167,7 @@ export function buildGlobalNotifications(
     marketDataLabels?: Readonly<Record<string, string | undefined>>;
   } = {},
 ): GlobalNotificationModel {
-  if (scope.nature === "unknown" || (scope.nature === "simulation" && !scope.simulationRunId)) {
+  if (scope.nature === "unknown" || requiresSimulationRun(entries, scope)) {
     return { state: "needs-scope", items: [] };
   }
   const scopedEntries = filterEntriesBySharedScope(entries, {

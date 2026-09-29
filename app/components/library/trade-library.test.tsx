@@ -15,6 +15,10 @@ import { buildInstrumentTradeSummaries } from "../../lib/trades/instruments";
 import { buildTradeLibraryEntries } from "../../lib/trades/library";
 import type { Instrument, TradeExecution } from "../../lib/trades/types";
 import {
+  TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+  TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+} from "../../lib/trades/tradingview-account-identity";
+import {
   DEFAULT_TRADE_LIBRARY_BROWSE_STATE,
   normalizeTradeLibraryBrowseState,
 } from "./library-browse-state";
@@ -60,6 +64,28 @@ function fill(
     quantity: "100",
     price: side === "buy" ? "10" : "12",
     fee: "1",
+  };
+}
+
+function canonicalSimulationFill(
+  instrument: Instrument,
+  side: "buy" | "sell",
+  executedAt: string,
+  label: string,
+  sourceRunId: string,
+): TradeExecution {
+  const base = fill(instrument, side, executedAt, label);
+  return {
+    ...base,
+    accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+    accountLabel: TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+    source: {
+      ...base.source,
+      platform: "tradingview",
+      tradeNature: "simulation",
+      tradingNature: "simulated",
+      simulationRunId: sourceRunId,
+    },
   };
 }
 
@@ -1197,4 +1223,49 @@ it("derives browse rows from shared nature and account scope across rerenders", 
 
   view.rerender(<TradeLibrary {...props} entries={simulationEntries} sharedScope={{ ...props.sharedScope, nature: "simulation", accountIds: [], simulationRunId: null }} />);
   expect(screen.getAllByRole("button", { name: /展开.*交易回合/ })).toHaveLength(2);
+});
+
+it("treats canonical source runs as one sortable account in the library caller", async () => {
+  const user = userEvent.setup();
+  const executions = [
+    canonicalSimulationFill(xpev, "buy", "2025-01-02T14:30:00Z", "canonical-xpev-a-buy", "source-a"),
+    canonicalSimulationFill(xpev, "sell", "2025-01-03T14:30:00Z", "canonical-xpev-a-sell", "source-a"),
+    canonicalSimulationFill(xpev, "buy", "2025-02-02T14:30:00Z", "canonical-xpev-b-buy", "source-b"),
+    canonicalSimulationFill(xpev, "sell", "2025-02-03T14:30:00Z", "canonical-xpev-b-sell", "source-b"),
+    canonicalSimulationFill(xiaomi, "buy", "2025-01-02T02:30:00Z", "canonical-xiaomi-a-buy", "source-a"),
+    canonicalSimulationFill(xiaomi, "sell", "2025-01-03T02:30:00Z", "canonical-xiaomi-a-sell", "source-a"),
+    canonicalSimulationFill(xiaomi, "buy", "2025-02-02T02:30:00Z", "canonical-xiaomi-b-buy", "source-b"),
+    canonicalSimulationFill(xiaomi, "sell", "2025-02-03T02:30:00Z", "canonical-xiaomi-b-sell", "source-b"),
+  ];
+  const entries = buildTradeLibraryEntries(
+    buildInstrumentTradeSummaries(executions),
+    {},
+    {},
+  );
+
+  cleanup();
+  render(
+    <TradeLibrary
+      entries={entries}
+      candlesByInstrument={{}}
+      marketDataStatuses={{}}
+      timeframe="1D"
+      onTimeframeChange={() => {}}
+      onOpenInReview={() => {}}
+      onSaveReview={() => {}}
+      reviewsHydrated
+      sharedScope={{ nature: "simulation", accountIds: [], reportCurrency: "CNY", simulationRunId: null }}
+      onSharedScopeChange={() => {}}
+    />,
+  );
+
+  const summary = screen.getByRole("region", { name: "当前筛选绩效汇总" });
+  expect(summary).toHaveTextContent("2 个标的 · 4 个回合 · TradingView · 模拟盘");
+  expect(summary).not.toHaveTextContent("未指定运行");
+  expect(screen.queryByLabelText("共享模拟运行")).not.toBeInTheDocument();
+
+  const sort = screen.getByRole("combobox", { name: "交易库排序" });
+  await user.selectOptions(sort, "net-profit");
+  expect(sort).toHaveValue("net-profit");
+  expect(screen.queryByText(/绩效排序不可用/)).not.toBeInTheDocument();
 });

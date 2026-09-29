@@ -18,6 +18,7 @@ import {
   UNRESOLVED_ASSET_EXCLUSION_LABEL,
   type EnrichedImportResult,
 } from "./enrich-import";
+import type { SupplementChangeSummary } from "./scoped-supplement";
 
 export type ImportPreview = {
   monthly?: StatementParseResult["monthly"];
@@ -36,6 +37,8 @@ export type ImportPreview = {
   tradeCount: number;
   instrumentCount: number;
   duplicateTradeCount: number;
+  /** Actual target-scope delta shown by a scoped supplement confirmation. */
+  supplementChangeSummary?: SupplementChangeSummary;
   conflictTradeCount?: number;
   unresolvedInstrumentCount: number;
   /** Kept until import-history migrates to categorized record counts. */

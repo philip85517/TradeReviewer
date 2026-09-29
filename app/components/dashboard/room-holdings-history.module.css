@@ -187,3 +187,24 @@
     flex-wrap: wrap;
   }
 }
+
+/* An expanded custom range owns a full row in the compact chart header. The
+   normal one-line rule above must not squeeze its error message to zero width
+   or leave the period tabs overlapping the editor. */
+.periodSlot > div[data-date-controls="observation"] {
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.periodSlot > div[data-date-controls="observation"] > details[open] {
+  flex: 1 0 100%;
+  min-width: 0;
+}
+.periodSlot > div[data-date-controls="observation"] > p[role="alert"] {
+  flex: 1 0 100%;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}

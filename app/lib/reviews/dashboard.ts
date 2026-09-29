@@ -12,6 +12,7 @@ import {
   type TradeNature,
 } from "../trades/types";
 import { displayTradeNature } from "../trades/trading-nature";
+import { tradingViewEpisodeBusinessScope } from "../trades/tradingview-account-identity";
 
 /**
  * The market selector is deliberately made of display/query concepts. These
@@ -368,6 +369,8 @@ function tradeNatureForRow(row: DashboardRow): TradeNature {
 }
 
 function simulationRunForRow(row: DashboardRow): string | null {
+  const businessScope = tradingViewEpisodeBusinessScope(row.item.episode);
+  if (businessScope) return businessScope.simulationRunId;
   return row.item.episode.simulationRunId ?? row.entry.simulationRunId ?? null;
 }
 

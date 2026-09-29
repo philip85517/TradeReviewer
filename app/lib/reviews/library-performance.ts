@@ -7,6 +7,7 @@ import {
   tradeNatureOf as executionTradeNatureOf,
   type TradeNature,
 } from "../trades/types";
+import { tradingViewEpisodeBusinessScope } from "../trades/tradingview-account-identity";
 import type { ReviewQueueItem } from "./review-queue";
 
 /** FX snapshots accepted by the library. Room data is the preferred shared source. */
@@ -34,6 +35,13 @@ export type LibraryPerformanceScope = {
   key: string;
   tradeNature: TradeNature;
   simulationRunId: string | null;
+  /** Canonical account scope is distinct from a legacy run-null scope. */
+  canonicalAccount?: "tradingview";
+};
+
+export type LibraryPerformanceSortAvailability = {
+  allowed: boolean;
+  reason: string | null;
 };
 
 export type LibraryPerformanceMetricSet = {
@@ -74,6 +82,7 @@ export type LibraryPerformanceCurrencyGroup = LibraryPerformanceMetricSet & {
   currency: string;
   tradeNature: TradeNature;
   simulationRunId: string | null;
+  canonicalAccount?: "tradingview";
   sampleCount: number;
   closedCount: number;
   openCount: number;
@@ -84,6 +93,7 @@ export type LibraryPerformanceComparableGroup = LibraryPerformanceMetricSet & {
   currency: "CNY";
   tradeNature: TradeNature;
   simulationRunId: string | null;
+  canonicalAccount?: "tradingview";
   sourceCurrencies: string[];
   sampleCount: number;
   closedCount: number;
@@ -113,6 +123,7 @@ export type LibraryPerformanceOpenGroup = {
   currency: string;
   tradeNature: TradeNature;
   simulationRunId: string | null;
+  canonicalAccount?: "tradingview";
   count: number;
   withUnrealizedPnl: number;
   unavailable: number;
@@ -224,6 +235,10 @@ function tradeNatureOf(row: ReviewQueueItem): TradeNature {
 }
 
 function simulationRunIdOf(row: ReviewQueueItem): string | null {
+  const businessScope = tradeNatureOf(row) === "simulation"
+    ? tradingViewEpisodeBusinessScope(row.item.episode)
+    : null;
+  if (businessScope) return businessScope.simulationRunId;
   return row.item.episode.simulationRunId ??
     row.entry.simulationRunId ??
     row.item.episode.executions[0]?.source.simulationRunId ??
@@ -236,11 +251,18 @@ function encodePart(value: string): string {
 
 function scopeOf(row: ReviewQueueItem): LibraryPerformanceScope {
   const tradeNature = tradeNatureOf(row);
+  const businessScope = tradeNature === "simulation"
+    ? tradingViewEpisodeBusinessScope(row.item.episode)
+    : null;
   const simulationRunId = simulationRunIdOf(row);
+  const canonicalAccount = businessScope ? "tradingview" as const : undefined;
   return {
-    key: `${encodePart(tradeNature)}|${encodePart(simulationRunId ?? "")}`,
+    key: canonicalAccount
+      ? `${encodePart(tradeNature)}|${encodePart(simulationRunId ?? "")}|${encodePart(canonicalAccount)}`
+      : `${encodePart(tradeNature)}|${encodePart(simulationRunId ?? "")}`,
     tradeNature,
     simulationRunId,
+    ...(canonicalAccount ? { canonicalAccount } : {}),
   };
 }
 
@@ -488,6 +510,7 @@ function rawGroup(
     currency: first.currency,
     tradeNature: first.scope.tradeNature,
     simulationRunId: first.scope.simulationRunId,
+    ...(first.scope.canonicalAccount ? { canonicalAccount: first.scope.canonicalAccount } : {}),
     sampleCount: assessments.length,
     closedCount: assessments.filter(({ row }) => row.item.episode.status === "closed").length,
     openCount: assessments.filter(({ row }) => row.item.episode.status === "open").length,
@@ -507,6 +530,7 @@ function comparableGroup(
     currency: "CNY",
     tradeNature: first.scope.tradeNature,
     simulationRunId: first.scope.simulationRunId,
+    ...(first.scope.canonicalAccount ? { canonicalAccount: first.scope.canonicalAccount } : {}),
     sourceCurrencies: [...new Set(assessments.map(assessment => assessment.currency))].sort(),
     sampleCount: assessments.length,
     closedCount: assessments.filter(({ row }) => row.item.episode.status === "closed").length,
@@ -543,6 +567,7 @@ function blankCnySummary(
     currency: "CNY",
     tradeNature: first?.scope.tradeNature ?? "unknown",
     simulationRunId: first?.scope.simulationRunId ?? null,
+    ...(first?.scope.canonicalAccount ? { canonicalAccount: first.scope.canonicalAccount } : {}),
     sourceCurrencies: [...new Set(assessments.map(assessment => assessment.currency))].sort(),
     sampleCount: sample,
     closedCount: closed,
@@ -570,6 +595,7 @@ function blankTargetSummary(
     currency: targetCurrency,
     tradeNature: first?.scope.tradeNature ?? "unknown",
     simulationRunId: first?.scope.simulationRunId ?? null,
+    ...(first?.scope.canonicalAccount ? { canonicalAccount: first.scope.canonicalAccount } : {}),
     sourceCurrencies: [...new Set(assessments.map(assessment => assessment.currency))].sort(),
     sampleCount: sample,
     closedCount: closed,
@@ -614,6 +640,7 @@ function openGroup(
     currency: first.currency,
     tradeNature: first.scope.tradeNature,
     simulationRunId: first.scope.simulationRunId,
+    ...(first.scope.canonicalAccount ? { canonicalAccount: first.scope.canonicalAccount } : {}),
     count: assessments.length,
     withUnrealizedPnl: withUnrealized.length,
     unavailable: assessments.length - withUnrealized.length,
@@ -702,6 +729,42 @@ export function summarizeLibraryPerformance(
 
   const target = targetCurrency === "CNY" ? cny : summarizeTargetGroups(assessments, targetGroups, targetCurrency);
   return { sample, rawCurrencyGroups, comparableGroups, cny, target, open };
+}
+
+/**
+ * Returns whether one library slice can be ordered by comparable performance.
+ * Canonical TradingView rows are account-scoped: their source runs remain
+ * provenance and therefore do not require a run selection.
+ */
+export function canSortLibraryPerformance(
+  rows: ReviewQueueItem[],
+  selectedRunId: string | null,
+): LibraryPerformanceSortAvailability {
+  if (rows.length === 0) return { allowed: false, reason: "没有可排序的回合" };
+
+  const scopes = rows.map(scopeOf);
+  const scopeKeys = new Set(scopes.map(scope => scope.key));
+  if (scopeKeys.size > 1) {
+    return { allowed: false, reason: "当前范围包含多个交易性质或模拟运行" };
+  }
+
+  const scope = scopes[0];
+  if (scope.tradeNature === "simulation") {
+    const selected = selectedRunId?.trim().toLocaleLowerCase() ?? "";
+    if (scope.canonicalAccount === "tradingview") {
+      return selected && selected !== "all"
+        ? { allowed: false, reason: "所选模拟运行与当前回合不一致" }
+        : { allowed: true, reason: null };
+    }
+    if (!selected || selected === "all") {
+      return { allowed: false, reason: "请先选择模拟运行" };
+    }
+    if (scope.simulationRunId !== selectedRunId) {
+      return { allowed: false, reason: "所选模拟运行与当前回合不一致" };
+    }
+  }
+
+  return { allowed: true, reason: null };
 }
 
 /** Alias for callers that name aggregate builders consistently with the queue. */

@@ -72,6 +72,10 @@ describe("ImportConfirmDialog", () => {
       />,
     );
 
+    const dialog = screen.getByRole("dialog", { name: "确认导入交易记录" });
+    expect(dialog).toHaveClass("import-confirm-dialog");
+    expect(dialog.querySelector(".import-dialog-body")).toBeInTheDocument();
+    expect(dialog.querySelector(".modal-footer")).toBeInTheDocument();
     expect(screen.getByText("腾讯控股（700）")).toBeInTheDocument();
     expect(screen.getByText("可转债 2 笔")).toBeInTheDocument();
     expect(screen.getByText("1 个标的暂未导入")).toBeInTheDocument();
@@ -83,6 +87,8 @@ describe("ImportConfirmDialog", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText(/private\.example/)).not.toBeInTheDocument();
     expect(screen.queryByRole("textbox", { name: /股票名称/ })).not.toBeInTheDocument();
+    expect(screen.getByText("重复成交")).toBeInTheDocument();
+    expect(screen.getByText("1 笔已跳过")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "重新查询" }));
     expect(onRetry).toHaveBeenCalledWith(["US:BROKEN"]);
@@ -109,6 +115,70 @@ describe("ImportConfirmDialog", () => {
 
     await user.keyboard("{Escape}");
     expect(onCancel).toHaveBeenCalledOnce();
+  });
+
+  it("explains the actual target-scope delta before a supplement is saved", () => {
+    render(
+      <ImportConfirmDialog
+        preview={{
+          ...preview,
+          supplementChangeSummary: {
+            newTradeCount: 1,
+            revisedTradeCount: 1,
+            evidenceRevisionCount: 1,
+            unchangedTradeCount: 1,
+          },
+          duplicateTradeCount: 2,
+        }}
+        scopeNotice="仅补充 US:700 / 账户"
+        onCancel={() => {}}
+        onConfirm={() => {}}
+        onRetryUnresolved={() => {}}
+      />,
+    );
+
+    const summary = screen.getByRole("region", { name: "补充导入实际变更" });
+    expect(summary).toHaveTextContent("新增成交 1 笔");
+    expect(summary).toHaveTextContent("修订 1 笔");
+    expect(summary).toHaveTextContent("其中仅证据修订 1 笔");
+    expect(summary).toHaveTextContent("来源重复 2 笔");
+    expect(summary).toHaveTextContent("未新增成交");
+    expect(summary).toHaveTextContent("已有成交仍可能修订证据");
+    expect(summary).not.toHaveTextContent("重复或无变化");
+  });
+
+  it("separates scoped source duplicates from evidence revisions", () => {
+    render(
+      <ImportConfirmDialog
+        preview={{
+          ...preview,
+          supplementChangeSummary: {
+            newTradeCount: 0,
+            revisedTradeCount: 2,
+            evidenceRevisionCount: 2,
+            unchangedTradeCount: 0,
+          },
+          duplicateTradeCount: 1,
+        }}
+        scopeNotice="仅补充 US:700 / 账户"
+        onCancel={() => {}}
+        onConfirm={() => {}}
+        onRetryUnresolved={() => {}}
+      />,
+    );
+
+    const summary = screen.getByRole("region", { name: "补充导入实际变更" });
+    expect(summary).toHaveTextContent("新增成交 0 笔");
+    expect(summary).toHaveTextContent("修订 2 笔");
+    expect(summary).toHaveTextContent("其中仅证据修订 2 笔");
+    expect(summary).toHaveTextContent("来源重复 1 笔");
+    expect(summary).toHaveTextContent("未新增成交");
+    expect(summary).toHaveTextContent("已有成交仍可能修订证据");
+    expect(summary).not.toHaveTextContent("重复或无变化");
+
+    const duplicateStat = screen.getByText("来源重复", { selector: "span" }).parentElement;
+    expect(duplicateStat).toHaveTextContent("1 笔来源重复（未新增成交）");
+    expect(duplicateStat).not.toHaveTextContent("已跳过");
   });
 
   it("retries only the unresolved instruments selected by the user", async () => {

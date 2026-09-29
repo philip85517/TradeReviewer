@@ -1,6 +1,7 @@
 import Decimal from "decimal.js";
 
 import { isExecutionBackedIpoAllocation, replayExecutionAt, statementEventAt } from "../import/statement-evidence";
+import { collectBonusShareEvidence, isBonusShareEvidence } from "./bonus-share-evidence";
 import { resolveIpoAcquisitionCost } from "./ipo-cost";
 import { hasSettlementCurrencyMismatch, type TradeEpisode } from "./types";
 
@@ -43,12 +44,16 @@ export function summarizeTradeEpisode(
   let buyCount = 0;
   let sellCount = 0;
 
+  const bonusEvidence = collectBonusShareEvidence(episode.positionEvents ?? []);
+  if (bonusEvidence.duplicateKeys.length > 0) unavailable = true;
+  if ((episode.positionEvents ?? []).some(event => event.kind === "corporate-action" && !isBonusShareEvidence(event))) unavailable = true;
   const ipoAllocations = [...new Map((episode.positionEvents ?? [])
     .filter(event => event.kind === "ipo" && event.quantity !== undefined)
     .map(event => [event.id, event])).values()];
   type MetricEntry =
     | { at: string; kind: "execution"; execution: TradeEpisode["executions"][number] }
-    | { at: string; kind: "acquisition"; acquisition: { allocation: NonNullable<TradeEpisode["positionEvents"]>[number]; cost: NonNullable<ReturnType<typeof resolveIpoAcquisitionCost>> } };
+    | { at: string; kind: "acquisition"; acquisition: { allocation: NonNullable<TradeEpisode["positionEvents"]>[number]; cost: NonNullable<ReturnType<typeof resolveIpoAcquisitionCost>> } }
+    | { at: string; kind: "bonus"; bonus: NonNullable<TradeEpisode["positionEvents"]>[number] };
   const entries: MetricEntry[] = [
     ...episode.executions.map(execution => ({ at: replayExecutionAt(execution), kind: "execution" as const, execution })),
     ...(episode.direction === "long" ? ipoAllocations.flatMap(allocation => {
@@ -57,14 +62,33 @@ export function summarizeTradeEpisode(
       if (!cost) unavailable = true;
       return cost ? [{ at: statementEventAt(allocation), kind: "acquisition" as const, acquisition: { allocation, cost } }] : [];
     }) : []),
+    ...(episode.direction === "long" ? bonusEvidence.events.flatMap(bonus => {
+      const sameSession = episode.executions.some(execution => {
+        const executionDate = execution.source.tradingDate ?? execution.source.marketCalendarDate ?? execution.executedAt.slice(0, 10);
+        return bonus.date.length === 7 ? executionDate.startsWith(bonus.date) : executionDate === bonus.date;
+      });
+      if (sameSession) unavailable = true;
+      if (bonus.currency?.trim().toUpperCase() !== episode.instrument.currency.trim().toUpperCase()) unavailable = true;
+      return [{ at: statementEventAt(bonus), kind: "bonus" as const, bonus }];
+    }) : bonusEvidence.events.length ? (unavailable = true, []) : []),
   ].sort((left, right) => {
     const at = left.at.localeCompare(right.at);
     if (at !== 0) return at;
-    const rank = (entry: MetricEntry) => entry.kind === "acquisition" ? 0 : 1;
+    const rank = (entry: MetricEntry) => entry.kind === "acquisition" ? 0 : entry.kind === "bonus" ? 1 : 2;
     return rank(left) - rank(right);
   });
 
   for (const entry of entries) {
+    if (entry.kind === "bonus") {
+      const quantity = new Decimal(entry.bonus.quantity!);
+      if (remainingQuantity.isZero()) unavailable = true;
+      const existingExposure = remainingQuantity.times(averageEntryPrice);
+      remainingQuantity = remainingQuantity.plus(quantity);
+      averageEntryPrice = remainingQuantity.isZero()
+        ? new Decimal(0)
+        : existingExposure.div(remainingQuantity);
+      continue;
+    }
     if (entry.kind === "acquisition") {
       const quantity = new Decimal(entry.acquisition.allocation.quantity!);
       const cashCost = new Decimal(entry.acquisition.cost.cashCost);

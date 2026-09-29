@@ -269,3 +269,29 @@
     table-layout: fixed;
   }
 }
+
+/* Quote and valuation explanations belong to their own cells.  On the
+   narrow scroll surface they may wrap inside that cell so a missing-value
+   diagnostic cannot paint over the next financial column. */
+.diagnosticCell,
+.diagnosticValue,
+.diagnosticText {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 820px) {
+  .table td.diagnosticCell {
+    overflow: hidden;
+    vertical-align: top;
+    white-space: normal;
+  }
+  .table td.diagnosticCell dl {
+    min-width: 0;
+  }
+  .table td.diagnosticCell .diagnosticValue,
+  .table td.diagnosticCell .diagnosticText {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}

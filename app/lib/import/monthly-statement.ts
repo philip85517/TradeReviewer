@@ -1,5 +1,8 @@
+import { canonicalInstrumentId } from "../instruments/display-name";
+
 /** Evidence retained with an imported monthly statement, independent of executions. */
 export type StatementFragment = { page: number; row: number; role?: string };
+export type MonthlyEvidenceScope = { instrumentId: string; accountId: string };
 export type StatementPosition = {
   /** Originating statement, retained when this snapshot is attached to another document's fill. */
   documentId?: string;
@@ -36,6 +39,11 @@ export type MonthlyStatement = {
   month?: string;
   accountId?: string;
   timePolicy?: string;
+  /**
+   * A scoped supplement owns only this account/instrument's evidence from the
+   * source document. Full-document imports leave this absent for compatibility.
+   */
+  evidenceScope?: MonthlyEvidenceScope;
   positions: StatementPosition[];
   events: StatementEvent[];
   reviewRequired: boolean;
@@ -51,10 +59,24 @@ export type StatementTimeOptions = {
   overrideDocumentTimezone?: boolean;
 };
 
+/** A persisted scope must use the same canonical identity as a TradeExecution. */
+export function isMonthlyEvidenceScope(value: unknown): value is MonthlyEvidenceScope {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const scope = value as Record<string, unknown>;
+  if (typeof scope.accountId !== "string" || !scope.accountId.trim() || typeof scope.instrumentId !== "string") return false;
+  const separator = scope.instrumentId.indexOf(":");
+  if (separator <= 0 || separator !== scope.instrumentId.lastIndexOf(":")) return false;
+  const market = scope.instrumentId.slice(0, separator);
+  const symbol = scope.instrumentId.slice(separator + 1);
+  if (!["US", "HK", "CN-SH", "CN-SZ"].includes(market) || !symbol) return false;
+  return canonicalInstrumentId(symbol, market) === scope.instrumentId;
+}
+
 export function isMonthlyStatement(value: unknown): value is MonthlyStatement {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   const item = value as Record<string, unknown>;
   const optionalString = (object: Record<string, unknown>, key: string) => object[key] === undefined || typeof object[key] === "string";
+  if (item.evidenceScope !== undefined && !isMonthlyEvidenceScope(item.evidenceScope)) return false;
   const fragments = (value: unknown) => Array.isArray(value) && value.every(f => f && typeof f === "object" && Number.isInteger(f.page) && f.page > 0 && Number.isFinite(f.row) && f.row >= 0);
   if (item.historyIncomplete !== undefined && typeof item.historyIncomplete !== "boolean") return false;
   if (item.incompleteInstruments !== undefined && (!Array.isArray(item.incompleteInstruments) || !item.incompleteInstruments.every(i => i && typeof i === "object" && typeof i.market === "string" && typeof i.symbol === "string"))) return false;

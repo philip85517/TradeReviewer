@@ -6,8 +6,12 @@ import { buildTradeEpisodes } from "../trades/episodes";
 import { summarizeTradeEpisode } from "../trades/episode-metrics";
 import type { TradeEpisode, TradeExecution } from "../trades/types";
 import type { ReviewQueueItem } from "./review-queue";
-import { summarizeLibraryPerformance } from "./library-performance";
+import { canSortLibraryPerformance, summarizeLibraryPerformance } from "./library-performance";
 import type { RoomFxSnapshot } from "./trading-room-scope";
+import {
+  TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+  TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+} from "../trades/tradingview-account-identity";
 
 const instrument = {
   id: "US:TEST",
@@ -155,6 +159,45 @@ function rowFromEpisode(
     cumulativeR: null,
   };
   return { entry, item };
+}
+
+function canonicalRow(id: string, sourceRunId: string): ReviewQueueItem {
+  const legacy = row(id, {
+    tradeNature: "simulation",
+    simulationRunId: sourceRunId,
+    currency: "CNY",
+    netPnl: "10",
+  });
+  const executions = legacy.item.episode.executions.map((fill) => ({
+    ...fill,
+    accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+    accountLabel: TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+    source: {
+      ...fill.source,
+      platform: "tradingview",
+      tradeNature: "simulation" as const,
+      simulationRunId: sourceRunId,
+    },
+  }));
+  const episode = {
+    ...legacy.item.episode,
+    accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+    accountLabel: TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+    tradeNature: "simulation" as const,
+    simulationRunId: undefined,
+    executions,
+  };
+  const item = { ...legacy.item, episode };
+  return {
+    item,
+    entry: {
+      ...legacy.entry,
+      tradeNature: "simulation",
+      simulationRunId: undefined,
+      executions,
+      episodes: [item],
+    },
+  };
 }
 
 function fxSnapshot(rates: Partial<FxSnapshot["rates"]> = {}): FxSnapshot {
@@ -349,6 +392,49 @@ describe("library performance", () => {
     expect(summary.cny).toMatchObject({ available: false, reason: "multiple-scopes" });
     expect(summary.cny.netPnl).toBeNull();
     expect(summary.sample).toMatchObject({ cnyNetPnlEligible: 2, cnyReturnEligible: 2 });
+  });
+
+  it("keeps canonical account scope distinct from a legacy run-null scope", () => {
+    const canonical = summarizeLibraryPerformance([
+      canonicalRow("canonical-a", "source-a"),
+      canonicalRow("canonical-b", "source-b"),
+    ]);
+    const legacy = summarizeLibraryPerformance([
+      canonicalRow("canonical-a", "source-a"),
+      row("legacy-null", { tradeNature: "simulation", netPnl: "20" }),
+    ]);
+
+    expect(canonical.comparableGroups).toHaveLength(1);
+    expect(canonical.comparableGroups[0]).toMatchObject({
+      tradeNature: "simulation",
+      simulationRunId: null,
+      canonicalAccount: "tradingview",
+    });
+    expect(legacy.comparableGroups).toHaveLength(2);
+  });
+
+  it("allows performance sorting for the canonical account while rejecting pseudo and mixed scopes", () => {
+    const canonical = [canonicalRow("canonical-a", "source-a"), canonicalRow("canonical-b", "source-b")];
+    const pseudo = row("pseudo", { tradeNature: "simulation", netPnl: "20" });
+    pseudo.item.episode.accountLabel = TRADINGVIEW_CANONICAL_ACCOUNT_LABEL;
+    pseudo.entry.executions = pseudo.entry.executions.map(fill => ({
+      ...fill,
+      accountLabel: TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+    }));
+
+    expect(canSortLibraryPerformance(canonical, "all")).toEqual({ allowed: true, reason: null });
+    expect(canSortLibraryPerformance(canonical, "source-a")).toEqual({
+      allowed: false,
+      reason: "所选模拟运行与当前回合不一致",
+    });
+    expect(canSortLibraryPerformance([...canonical, pseudo], "all")).toEqual({
+      allowed: false,
+      reason: "当前范围包含多个交易性质或模拟运行",
+    });
+    expect(canSortLibraryPerformance([pseudo], "all")).toEqual({
+      allowed: false,
+      reason: "请先选择模拟运行",
+    });
   });
 
   it("uses the entry nature for legacy episodes while isolating explicit unknown scope", () => {

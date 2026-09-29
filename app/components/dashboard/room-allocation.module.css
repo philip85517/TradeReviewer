@@ -45,6 +45,13 @@
 .cashField small, .cashMessage { margin: 0; color: #8296b0; font-size: 9px; line-height: 1.35; }
 .mutedValue { color: #a7b5c7 !important; }
 .cashMessage { padding: 3px 0; }
+.cashAsOf { grid-column: 1 / -1; color: #8296b0; font-size: 9px; line-height: 1.35; }
+.cashDetails { grid-column: 1 / -1; min-width: 0; color: #9bb5d1; font-size: 9px; line-height: 1.35; }
+.cashDetails summary { width: fit-content; max-width: 100%; min-height: 22px; cursor: pointer; color: #9bbfe4; }
+.cashDetails ul { display: grid; gap: 5px; max-height: 176px; overflow: auto; margin: 4px 0 0; padding: 0 5px 0 18px; scrollbar-width: thin; }
+.cashDetails li { display: grid; gap: 2px; overflow-wrap: anywhere; }
+.cashDetails li strong { color: #d7e5f6; font-size: 9px; }
+.cashDetails li span { color: #b0bfd2; }
 .reasonDetails { min-width: 0; color: #9bb5d1; font-size: 9px; line-height: 1.35; }
 .reasonDetails summary { width: fit-content; max-width: 100%; min-height: 22px; cursor: pointer; color: #9bbfe4; }
 .itemReason { display: inline; margin-left: 4px; color: #9bbfe4; }
@@ -93,8 +100,10 @@
   .cashField { gap: 2px; }
   .cashField span, .cashField small, .cashMessage { font-size: 9px; line-height: 1.15; }
   .cashField strong { font-size: 10px; }
+  .cashAsOf, .cashDetails { font-size: 9px; }
 }
 
 @media (pointer: coarse) {
   .tabs button, .currencyTabs button { min-height: 44px; }
+  .cashDetails summary { min-height: 44px; display: inline-flex; align-items: center; }
 }

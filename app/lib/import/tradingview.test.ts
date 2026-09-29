@@ -4,8 +4,22 @@ import { parseBrokerStatement } from './dispatcher';
 import { buildTradeEpisodes } from '../trades/episodes';
 import { mergeExecutions } from '../storage/import-library';
 import { replayPositionAtPrice } from '../replay/position-ledger';
+import {
+ TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+ TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+} from '../trades/tradingview-account-identity';
+import type { StatementInput } from './contracts';
+import { parseTradingViewCsv } from './tradingview';
 
 import { header, row, csv, fileFor } from './__fixtures__/tradingview';
+
+function legacyInput(fileFingerprint = 'legacy-fingerprint', fileName = '回放交易_SSE_600330.csv'): StatementInput {
+ return {
+  fileName,
+  bytes: new TextEncoder().encode(csv),
+  fileFingerprint,
+ };
+}
 
 describe('TradingView CSV import through the dispatcher', () => {
   it('imports paired date-only trades and charges the pair fee once at exit', async () => {
@@ -49,6 +63,44 @@ describe('TradingView CSV import through the dispatcher', () => {
     const badFee=await parseBrokerStatement(fileFor(csv.replace('0.60','3.00')));
     expect(badFee.blocked).toBe(true);
   });
+});
+
+describe('TradingView CSV parser account identity', () => {
+ it('uses one canonical account while preserving source identity and reimport evidence', () => {
+  const first = parseTradingViewCsv(legacyInput());
+  const repeated = parseTradingViewCsv(legacyInput());
+  const otherSource = parseTradingViewCsv(legacyInput('other-fingerprint', '回放交易_SSE_600330_other.csv'));
+
+  expect(first.records).toHaveLength(2);
+  expect(new Set(first.records.map(record => record.accountId))).toEqual(new Set([TRADINGVIEW_CANONICAL_ACCOUNT_ID]));
+  expect(new Set(first.records.map(record => record.accountLabel))).toEqual(new Set([TRADINGVIEW_CANONICAL_ACCOUNT_LABEL]));
+  expect(first.records).toEqual(repeated.records);
+  expect(first.records.map(record => record.source.simulationRunId)).toEqual([
+   'legacy-fingerprint:CN-SH:600330',
+   'legacy-fingerprint:CN-SH:600330',
+  ]);
+  expect(first.records.map(record => record.id)).toEqual([
+   'tradingview:legacy-fingerprint:CN-SH:600330:1:entry',
+   'tradingview:legacy-fingerprint:CN-SH:600330:1:exit',
+  ]);
+  expect(first.records.map(record => ({
+   side: record.side,
+   executedAt: record.executedAt,
+   quantity: record.quantity,
+   price: record.price,
+   fee: record.fee,
+   source: record.source,
+  }))).toEqual(repeated.records.map(record => ({
+   side: record.side,
+   executedAt: record.executedAt,
+   quantity: record.quantity,
+   price: record.price,
+   fee: record.fee,
+   source: record.source,
+  })));
+  expect(new Set(otherSource.records.map(record => record.source.simulationRunId))).toEqual(new Set(['other-fingerprint:CN-SH:600330']));
+  expect(mergeExecutions(first.records, otherSource.records)).toHaveLength(4);
+ });
 });
 
 it('hides pair report results and exit fees before exit is revealed', async()=>{

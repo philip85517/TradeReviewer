@@ -1,4 +1,5 @@
 import { candleKnowledgeAt, type Candle } from "../market/types";
+import { replayCursorAt, replayExecutionAt } from "../import/statement-evidence";
 import type { RecallDecision } from "../recall/types";
 import type { TradeExecution } from "../trades/types";
 import { mapExecutionsToCandles } from "./execution-markers";
@@ -17,6 +18,8 @@ export type RecallReplayCursor = {
   cursor: string;
   executionCursor: string;
   mode: RecallReplayMode;
+  /** Last completed market candle knowledge boundary, independent of execution knowledge. */
+  revealedCandleCursor?: string | null;
   revealedCandles: Candle[];
   revealedExecutions: TradeExecution[];
   currentCandle?: Candle;
@@ -36,48 +39,136 @@ function sortedCandles(candles: Candle[]) {
   return [...candles].sort(byTime);
 }
 
-function executionOrder(executions: TradeExecution[]) {
-  // Stable sort is not guaranteed in every browser/runtime the application
-  // supports. Keep episode order as the tie-breaker for date-only and same-bar
-  // fills instead of manufacturing an order from a floating timestamp.
-  return executions.map((execution, index) => ({ execution, index })).sort((left, right) => {
-    const time = Date.parse(left.execution.executedAt) - Date.parse(right.execution.executedAt);
-    return time || left.index - right.index;
-  });
+function replayCursorTime(cursor: string) {
+  try {
+    const parsed = Date.parse(replayCursorAt(cursor));
+    return Number.isFinite(parsed) ? parsed : Number.NaN;
+  } catch {
+    return Number.NaN;
+  }
 }
 
-function orderedExecutions(executions: TradeExecution[]) {
-  return executionOrder(executions).map(({ execution }) => execution);
+function executionKnowledgeTime(execution: TradeExecution) {
+  return Date.parse(replayExecutionAt(execution));
+}
+
+/** Canonical knowledge boundary used by every Recall consumer. */
+export function recallExecutionKnowledgeAt(execution: TradeExecution) {
+  return replayExecutionAt(execution);
+}
+
+/** Canonical Recall order: knowledge time first, episode/source order on ties. */
+export function orderedRecallExecutions(executions: readonly TradeExecution[]) {
+  return executions
+    .map((execution, index) => ({ execution, index }))
+    .sort((left, right) => {
+      const leftTime = executionKnowledgeTime(left.execution);
+      const rightTime = executionKnowledgeTime(right.execution);
+      if (Number.isFinite(leftTime) && Number.isFinite(rightTime) && leftTime !== rightTime) {
+        return leftTime - rightTime;
+      }
+      if (Number.isFinite(leftTime) !== Number.isFinite(rightTime)) {
+        return Number.isFinite(leftTime) ? -1 : 1;
+      }
+      return left.index - right.index;
+    })
+    .map(({ execution }) => execution);
 }
 
 export function executionBoundaryForCursor(
-  executions: TradeExecution[],
+  executions: readonly TradeExecution[],
   cursor: string,
 ): number {
   if (cursor === NO_REVEALED_EXECUTIONS) return -1;
-  const ordered = orderedExecutions(executions);
+  const ordered = orderedRecallExecutions(executions);
   const byId = ordered.findIndex((execution) => execution.id === cursor);
   if (byId >= 0) return byId;
-  const cursorTime = Date.parse(cursor);
+  const cursorTime = replayCursorTime(cursor);
   if (!Number.isFinite(cursorTime)) return -1;
   return ordered.reduce(
     (last, execution, index) =>
-      Date.parse(execution.executedAt) <= cursorTime ? index : last,
+      executionKnowledgeTime(execution) <= cursorTime ? index : last,
     -1,
   );
 }
 
+/**
+ * Persisted drafts can retain an execution id that is beyond their knowledge
+ * cursor. Navigation must use the visible prefix as its current boundary;
+ * otherwise “next decision” treats a hidden target as already revealed.
+ */
+function visibleExecutionBoundaryForCursor(
+  executions: readonly TradeExecution[],
+  executionCursor: string,
+  knowledgeCursor: string,
+): number {
+  const ordered = orderedRecallExecutions(executions);
+  const boundary = executionBoundaryForCursor(ordered, executionCursor);
+  if (boundary < 0) return -1;
+  const cutoff = replayCursorTime(knowledgeCursor);
+  if (!Number.isFinite(cutoff)) return -1;
+  return ordered
+    .slice(0, boundary + 1)
+    .findLastIndex((execution) => executionKnowledgeTime(execution) <= cutoff);
+}
+
 export function executionsThroughCursor(
-  executions: TradeExecution[],
+  executions: readonly TradeExecution[],
   cursor: string,
 ): TradeExecution[] {
-  const ordered = orderedExecutions(executions);
+  const ordered = orderedRecallExecutions(executions);
   const boundary = executionBoundaryForCursor(ordered, cursor);
   return boundary < 0 ? [] : ordered.slice(0, boundary + 1);
 }
 
-function completedCandleAtCursor(candle: Candle | undefined, cursor: string) {
-  if (!candle) return undefined;
+/**
+ * Apply both Recall cutoffs. The execution cursor selects a stable prefix;
+ * the knowledge cursor prevents an old draft or a same-bar decision from
+ * making a later date-only fill visible early.
+ */
+export function visibleRecallExecutions(
+  executions: readonly TradeExecution[],
+  executionCursor: string,
+  knowledgeCursor: string,
+): TradeExecution[] {
+  const ordered = orderedRecallExecutions(executions);
+  const boundary = executionBoundaryForCursor(ordered, executionCursor);
+  if (boundary < 0) return [];
+  const cutoff = replayCursorTime(knowledgeCursor);
+  if (!Number.isFinite(cutoff)) return [];
+  return ordered
+    .slice(0, boundary + 1)
+    .filter((execution) => executionKnowledgeTime(execution) <= cutoff);
+}
+
+function latestCursor(...cursors: Array<string | undefined>) {
+  let latest: string | undefined;
+  let latestTime = Number.NEGATIVE_INFINITY;
+  for (const cursor of cursors) {
+    if (!cursor) continue;
+    const time = Date.parse(cursor);
+    if (!Number.isFinite(time)) continue;
+    if (latest === undefined || time > latestTime) {
+      latest = cursor;
+      latestTime = time;
+    }
+  }
+  return latest ?? cursors.find((cursor): cursor is string => Boolean(cursor)) ?? "";
+}
+
+export function recallMarketCursorForExecution(execution: TradeExecution, candle: Candle | undefined) {
+  if (execution.source.timePrecision === "date-only") {
+    // A normalized ISO anchor may describe the exchange close; a bare date has
+    // no usable instant, so the mapped candle supplies only the market cutoff.
+    return execution.executedAt.length === 10
+      ? candle ? candleKnowledgeAt(candle) : undefined
+      : execution.executedAt;
+  }
+  return execution.executedAt;
+}
+
+function completedCandleAtCursor(candle: Candle | undefined, cursor: string | undefined) {
+  if (!candle || !cursor) return undefined;
   const cursorTime = Date.parse(cursor);
   const knowledgeTime = Date.parse(candleKnowledgeAt(candle));
   return Number.isFinite(cursorTime) && Number.isFinite(knowledgeTime) && knowledgeTime <= cursorTime
@@ -99,6 +190,17 @@ export function mapRecallExecutionToCandle(
   const mapped = mappedCandleMap(candles, [execution]).get(execution.id);
   if (mapped) return candles.find((candle) => candle.time === mapped);
 
+  // A date-only source can be placed on a daily candle carrying its trading
+  // date, but it cannot be assigned to an intraday candle from the normalized
+  // `executedAt` anchor. Returning a fallback intraday mapping would recreate
+  // the session-close leak this module is responsible for preventing.
+  if (
+    execution.source.timePrecision === "date-only" ||
+    execution.source.sourceTimeKind === "date" ||
+    execution.source.sourceTimeKind === "order" ||
+    /^\d{4}-\d{2}-\d{2}$/.test(execution.executedAt)
+  ) return undefined;
+
   // Daily data can still be useful when the provider omitted a knowledge
   // boundary. `mapExecutionsToCandles` already handles tradingDates; this
   // fallback only covers a candle whose range is expressed by its timestamps.
@@ -113,7 +215,7 @@ export function mapRecallExecutionToCandle(
 }
 
 function firstExecution(decision: RecallDecision, executions: TradeExecution[]) {
-  const order = executionOrder(executions);
+  const order = orderedRecallExecutions(executions).map((execution, index) => ({ execution, index }));
   const ids = new Set(decision.executionIds);
   return order.find(({ execution }) => ids.has(execution.id));
 }
@@ -140,15 +242,27 @@ function result(
   executionCursor: string,
   mode: RecallReplayMode = "replay",
   currentCandle?: Candle,
-  visibilityCursor = cursor,
+  marketCursor?: string,
 ): RecallReplayCursor {
+  const revealedCandles = mode === "history"
+    ? sortedCandles(candles)
+    : marketCursor
+      ? revealableCandlesThroughCursor(candles, marketCursor)
+      : [];
   return {
     cursor,
     executionCursor,
     mode,
-    currentCandle: mode === "history" ? currentCandle : completedCandleAtCursor(currentCandle, visibilityCursor),
-    revealedCandles: mode === "history" ? sortedCandles(candles) : revealableCandlesThroughCursor(candles, visibilityCursor),
-    revealedExecutions: mode === "history" ? orderedExecutions(executions) : executionsThroughCursor(executions, executionCursor),
+    revealedCandleCursor: mode === "history"
+      ? revealedCandles.at(-1)
+        ? candleKnowledgeAt(revealedCandles.at(-1)!)
+        : null
+      : marketCursor ?? null,
+    currentCandle: mode === "history" ? currentCandle : completedCandleAtCursor(currentCandle, marketCursor),
+    revealedCandles,
+    revealedExecutions: mode === "history"
+      ? orderedRecallExecutions(executions)
+      : visibleRecallExecutions(executions, executionCursor, cursor),
   };
 }
 
@@ -163,14 +277,15 @@ export function revealRecallDecision({
   const first = firstExecution(decision, executions);
   if (!first) throw new Error(`决策 ${decisionId} 没有对应成交`);
   const currentCandle = mapRecallExecutionToCandle(first.execution, candles);
+  const marketCursor = recallMarketCursorForExecution(first.execution, currentCandle);
   return result(
     candles,
     executions,
-    currentCandle ? candleKnowledgeAt(currentCandle) : first.execution.executedAt,
+    latestCursor(currentCandle ? candleKnowledgeAt(currentCandle) : undefined, replayExecutionAt(first.execution)),
     first.execution.id,
     "replay",
     currentCandle,
-    first.execution.executedAt,
+    marketCursor,
   );
 }
 
@@ -180,23 +295,25 @@ export function nextRecallDecisionState({
   decisions,
   current,
 }: RecallReplayInput & { current: RecallReplayCursor }): RecallReplayCursor {
-  const ordered = executionOrder(executions);
-  const boundary = executionBoundaryForCursor(ordered.map(({ execution }) => execution), current.executionCursor);
-  const currentIndex = boundary < 0 ? -1 : boundary;
+  const ordered = orderedRecallExecutions(executions).map((execution, index) => ({ execution, index }));
+  const currentIndex = visibleExecutionBoundaryForCursor(executions, current.executionCursor, current.cursor);
   const nextDecision = decisions
     .map((decision) => ({ decision, first: firstExecution(decision, executions) }))
     .filter((item): item is { decision: RecallDecision; first: { execution: TradeExecution; index: number } } => Boolean(item.first))
-    .find((item) => item.first.index > currentIndex);
+    .filter((item) => item.first.index > currentIndex)
+    .sort((left, right) => left.first.index - right.first.index)
+    .at(0);
   if (!nextDecision) return current;
   const currentCandle = mapRecallExecutionToCandle(nextDecision.first.execution, candles);
+  const marketCursor = recallMarketCursorForExecution(nextDecision.first.execution, currentCandle);
   return result(
     candles,
     executions,
-    currentCandle ? candleKnowledgeAt(currentCandle) : nextDecision.first.execution.executedAt,
+    latestCursor(currentCandle ? candleKnowledgeAt(currentCandle) : undefined, replayExecutionAt(nextDecision.first.execution)),
     nextDecision.first.execution.id,
     "replay",
     currentCandle,
-    nextDecision.first.execution.executedAt,
+    marketCursor,
   );
 }
 
@@ -206,24 +323,34 @@ export function previousRecallDecisionState({
   decisions,
   current,
 }: RecallReplayInput & { current: RecallReplayCursor }): RecallReplayCursor {
-  const ordered = executionOrder(executions);
-  const boundary = executionBoundaryForCursor(ordered.map(({ execution }) => execution), current.executionCursor);
-  const currentIndex = boundary < 0 ? ordered.length : boundary;
+  const ordered = orderedRecallExecutions(executions).map((execution, index) => ({ execution, index }));
+  const visibleBoundary = visibleExecutionBoundaryForCursor(executions, current.executionCursor, current.cursor);
+  const persistedBoundary = executionBoundaryForCursor(
+    ordered.map(({ execution }) => execution),
+    current.executionCursor,
+  );
+  const currentIndex = current.executionCursor === NO_REVEALED_EXECUTIONS
+    ? ordered.length
+    : visibleBoundary < 0
+      ? persistedBoundary
+      : visibleBoundary;
   const previousDecision = decisions
     .map((decision) => ({ decision, first: firstExecution(decision, executions) }))
     .filter((item): item is { decision: RecallDecision; first: { execution: TradeExecution; index: number } } => Boolean(item.first))
     .filter((item) => item.first.index < currentIndex)
-    .at(-1);
+    .sort((left, right) => right.first.index - left.first.index)
+    .at(0);
   if (!previousDecision) return current;
   const currentCandle = mapRecallExecutionToCandle(previousDecision.first.execution, candles);
+  const marketCursor = recallMarketCursorForExecution(previousDecision.first.execution, currentCandle);
   return result(
     candles,
     executions,
-    currentCandle ? candleKnowledgeAt(currentCandle) : previousDecision.first.execution.executedAt,
+    latestCursor(currentCandle ? candleKnowledgeAt(currentCandle) : undefined, replayExecutionAt(previousDecision.first.execution)),
     previousDecision.first.execution.id,
     "replay",
     currentCandle,
-    previousDecision.first.execution.executedAt,
+    marketCursor,
   );
 }
 
@@ -243,30 +370,33 @@ export function revealRecallBar({
   const nextCandle = ordered[currentIndex + 1];
   if (!nextCandle) return current;
 
+  const orderedExecutionsList = orderedRecallExecutions(executions);
   const mappings = mappedCandleMap(candles, executions);
   const nextIndex = ordered.findIndex((candle) => candle.time === nextCandle.time);
-  const throughBar = executionsThroughCursor(executions, candleKnowledgeAt(nextCandle));
-  const throughMappedBar = orderedExecutions(executions).filter((execution) => {
+  const nextKnowledge = candleKnowledgeAt(nextCandle);
+  const throughBar = visibleRecallExecutions(executions, nextKnowledge, nextKnowledge);
+  const throughMappedBar = orderedExecutionsList.filter((execution) => {
     const mapped = mappings.get(execution.id);
     const mappedIndex = mapped ? ordered.findIndex((candle) => candle.time === mapped) : -1;
     const mappedCandle = mappedIndex >= 0 ? ordered[mappedIndex] : undefined;
     return mappedIndex >= 0 && mappedIndex <= nextIndex && mappedCandle !== undefined &&
-      Date.parse(execution.executedAt) <= Date.parse(candleKnowledgeAt(mappedCandle));
+      executionKnowledgeTime(execution) <= Date.parse(candleKnowledgeAt(mappedCandle));
   });
   const revealed = [...new Map([...throughBar, ...throughMappedBar].map((execution) => [execution.id, execution])).values()]
     .sort((left, right) => {
-      const l = orderedExecutions(executions).findIndex((execution) => execution.id === left.id);
-      const r = orderedExecutions(executions).findIndex((execution) => execution.id === right.id);
+      const l = orderedExecutionsList.findIndex((execution) => execution.id === left.id);
+      const r = orderedExecutionsList.findIndex((execution) => execution.id === right.id);
       return l - r;
     });
   const last = revealed.at(-1);
   return result(
     candles,
     executions,
-    candleKnowledgeAt(nextCandle),
+    nextKnowledge,
     last?.id ?? current.executionCursor,
     "replay",
     nextCandle,
+    nextKnowledge,
   );
 }
 
@@ -286,20 +416,20 @@ export function rewindRecallBar({
     : ordered.findLastIndex((candle) => Date.parse(candleKnowledgeAt(candle)) <= Date.parse(current.cursor));
   const previousCandle = currentIndex > 0 ? ordered[currentIndex - 1] : undefined;
   if (!previousCandle) {
-    return current.executionCursor === NO_REVEALED_EXECUTIONS
-      ? current
-      : result(candles, executions, current.cursor, NO_REVEALED_EXECUTIONS, "replay");
+    return result(candles, executions, current.cursor, NO_REVEALED_EXECUTIONS, "replay", undefined, undefined);
   }
 
+  const orderedExecutionsList = orderedRecallExecutions(executions);
   const mappings = mappedCandleMap(candles, executions);
   const previousIndex = currentIndex - 1;
-  const throughKnowledge = executionsThroughCursor(executions, candleKnowledgeAt(previousCandle));
-  const throughMappedBar = orderedExecutions(executions).filter((execution) => {
+  const previousKnowledge = candleKnowledgeAt(previousCandle);
+  const throughKnowledge = visibleRecallExecutions(executions, previousKnowledge, previousKnowledge);
+  const throughMappedBar = orderedExecutionsList.filter((execution) => {
     const mapped = mappings.get(execution.id);
     const mappedIndex = mapped ? ordered.findIndex((candle) => candle.time === mapped) : -1;
     const mappedCandle = mappedIndex >= 0 ? ordered[mappedIndex] : undefined;
     return mappedIndex >= 0 && mappedIndex <= previousIndex && mappedCandle !== undefined &&
-      Date.parse(execution.executedAt) <= Date.parse(candleKnowledgeAt(mappedCandle));
+      executionKnowledgeTime(execution) <= Date.parse(candleKnowledgeAt(mappedCandle));
   });
   const throughKnowledgeBeforeNextBar = throughKnowledge.filter((execution) => {
     const mapped = mappings.get(execution.id);
@@ -308,18 +438,19 @@ export function rewindRecallBar({
   });
   const revealed = [...new Map([...throughKnowledgeBeforeNextBar, ...throughMappedBar].map((execution) => [execution.id, execution])).values()]
     .sort((left, right) => {
-      const l = orderedExecutions(executions).findIndex((execution) => execution.id === left.id);
-      const r = orderedExecutions(executions).findIndex((execution) => execution.id === right.id);
+      const l = orderedExecutionsList.findIndex((execution) => execution.id === left.id);
+      const r = orderedExecutionsList.findIndex((execution) => execution.id === right.id);
       return l - r;
     });
 
   return result(
     candles,
     executions,
-    candleKnowledgeAt(previousCandle),
+    previousKnowledge,
     revealed.at(-1)?.id ?? NO_REVEALED_EXECUTIONS,
     "replay",
     previousCandle,
+    previousKnowledge,
   );
 }
 
@@ -329,14 +460,15 @@ export function revealRecallHistory(
 ): RecallReplayCursor {
   const orderedCandles = sortedCandles(candles);
   const last = orderedCandles.at(-1);
-  const orderedExecutionsList = orderedExecutions(executions);
+  const orderedExecutionsList = orderedRecallExecutions(executions);
   return result(
     candles,
     executions,
-    last ? candleKnowledgeAt(last) : orderedExecutionsList.at(-1)?.executedAt ?? "",
+    last ? candleKnowledgeAt(last) : orderedExecutionsList.at(-1) ? recallExecutionKnowledgeAt(orderedExecutionsList.at(-1)!) : "",
     orderedExecutionsList.at(-1)?.id ?? "",
     "history",
     last,
+    undefined,
   );
 }
 

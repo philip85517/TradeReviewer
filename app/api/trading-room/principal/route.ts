@@ -12,6 +12,7 @@ import {
   type PrincipalScope,
   type PrincipalState,
 } from "../../../lib/principal/principal-model";
+import { TRADINGVIEW_CANONICAL_ACCOUNT_ID } from "../../../lib/trades/tradingview-account-identity";
 import { getSqliteStore } from "../../../lib/storage/sqlite-store";
 
 export const runtime = "nodejs";
@@ -46,9 +47,20 @@ function isCategory(value: unknown): value is PrincipalCategory {
 
 function parseScope(value: unknown): PrincipalScope | null {
   if (!isRecord(value) || (value.nature !== "live" && value.nature !== "simulation")) return null;
-  if (value.nature === "live") return value.simulationRunId === null ? { nature: "live", simulationRunId: null } : null;
+  const accountId = value.accountId === undefined
+    ? undefined
+    : typeof value.accountId === "string" && value.accountId.trim()
+      ? value.accountId.trim()
+      : null;
+  if (accountId === null) return null;
+  if (value.nature === "live") {
+    return value.simulationRunId === null
+      ? { nature: "live", simulationRunId: null, ...(accountId ? { accountId } : {}) }
+      : null;
+  }
+  if (value.simulationRunId === null && accountId === TRADINGVIEW_CANONICAL_ACCOUNT_ID) return { nature: "simulation", simulationRunId: null, accountId };
   return typeof value.simulationRunId === "string" && value.simulationRunId.trim().length > 0
-    ? { nature: "simulation", simulationRunId: value.simulationRunId.trim() }
+    ? { nature: "simulation", simulationRunId: value.simulationRunId.trim(), ...(accountId ? { accountId } : {}) }
     : null;
 }
 

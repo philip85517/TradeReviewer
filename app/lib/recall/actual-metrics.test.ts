@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { calculateRecallActualMetrics, type RecallActualMetricsInput } from './actual-metrics';
 import type { TradeEpisode } from '../trades/types';
+import { NO_REVEALED_EXECUTIONS, nextRecallDecisionState, type RecallReplayCursor } from '../replay/recall-replay';
+import type { Candle } from '../market/types';
+import { TRADINGVIEW_CANONICAL_ACCOUNT_ID, TRADINGVIEW_CANONICAL_ACCOUNT_LABEL } from '../trades/tradingview-account-identity';
 function fixture(): RecallActualMetricsInput & {
     decisions: import('./types').RecallDecision[];
     planVersions: import('./types').RecallPlanVersion[];
@@ -20,7 +23,42 @@ function setSimulationScope(f: RecallActualMetricsInput, simulationRunId: string
     });
 }
 
+function setCanonicalTradingViewScope(f: RecallActualMetricsInput) {
+    f.episode.accountId = TRADINGVIEW_CANONICAL_ACCOUNT_ID;
+    f.episode.accountLabel = TRADINGVIEW_CANONICAL_ACCOUNT_LABEL;
+    f.episode.tradeNature = 'simulation';
+    f.episode.simulationRunId = undefined;
+    f.episode.executions.forEach((execution, index) => {
+        execution.accountId = TRADINGVIEW_CANONICAL_ACCOUNT_ID;
+        execution.accountLabel = TRADINGVIEW_CANONICAL_ACCOUNT_LABEL;
+        execution.source = {
+            ...execution.source,
+            platform: 'tradingview',
+            tradingNature: 'simulated',
+            simulationRunId: `legacy-source-run-${index + 1}`,
+        };
+        delete execution.source.tradeNature;
+    });
+}
+
 describe('actual metrics', () => {
+    it('uses the same date-only visibility as Recall at a next-decision knowledge boundary', () => {
+        const instrument = { id: 'CN-SH:TEST', symbol: 'TEST', name: 'Test', market: 'CN-SH', currency: 'CNY' };
+        const execution = {
+            id: 'date-only', accountId: 'account-1', accountLabel: 'Test account', instrument, side: 'buy' as const,
+            executedAt: '2025-01-03T07:00:00.000Z', quantity: '30', price: '1.10', fee: '0',
+            source: { platform: 'china-merchants', row: 1, timePrecision: 'date-only' as const, sourceTimestampText: '20250103', sourceTimezone: 'Asia/Shanghai' },
+        };
+        const candles: Candle[] = [
+            { time: '2025-01-02T00:00:00.000Z', knowledgeAt: '2025-01-02T07:00:00.000Z', tradingDates: ['2025-01-02'], open: 1, high: 1.2, low: .9, close: 1.1, volume: 1 },
+            { time: '2025-01-03T00:00:00.000Z', knowledgeAt: '2025-01-03T07:00:00.000Z', tradingDates: ['2025-01-03'], open: 1, high: 1.2, low: .9, close: 1.1, volume: 1 },
+        ];
+        const before: RecallReplayCursor = { cursor: candles[0].knowledgeAt!, executionCursor: NO_REVEALED_EXECUTIONS, mode: 'replay', revealedCandles: [candles[0]], revealedExecutions: [], currentCandle: candles[0] };
+        const replay = nextRecallDecisionState({ candles, executions: [execution], decisions: [{ id: 'decision', executionIds: [execution.id] }], current: before });
+        const episode: TradeEpisode = { id: 'ep-date-only', accountId: execution.accountId, accountLabel: execution.accountLabel, instrument, direction: 'long', status: 'open', startedAt: execution.executedAt, openingQuantity: execution.quantity, remainingQuantity: execution.quantity, executions: [execution] };
+        const metrics = calculateRecallActualMetrics({ episode, decisions: [], planVersions: [], riskBaselines: [], context: { phase: 'holding', cursor: replay.cursor, executionCursor: replay.executionCursor }, mark: { price: '1.07', time: candles[1].knowledgeAt!, priceBasis: 'raw' }, source: { documentRevision: 1, evidenceDigest: 'fixture', computedAt: replay.cursor } });
+        expect(metrics.executionIds).toEqual(replay.revealedExecutions.map(({ id }) => id));
+    });
     it('requires a comparable source plan for price risk only', () => {
         for (const patch of [{ priceBasis: 'adjusted' as const }, { priceBasis: null }, { direction: 'short' as const }, { currency: 'USD' }]) {
             const f = fixture();
@@ -88,6 +126,59 @@ describe('actual metrics', () => {
         expect(r.executionIds).toEqual(['entry', 'exit-a', 'exit-b']);
         expect(r.metrics.netPnl).toMatchObject({ value: '6760', reason: null });
         expect(r.metrics.actualR).toMatchObject({ value: '1.69', reason: null });
+    });
+    it('accepts canonical run-null scope while retaining legacy source run evidence', () => {
+        const f = fixture();
+        setCanonicalTradingViewScope(f);
+        const sourceRuns = f.episode.executions.map(execution => execution.source.simulationRunId);
+
+        const r = calculateRecallActualMetrics(f);
+
+        expect(r.metrics.realizedGross).toMatchObject({ value: '6800', reason: null });
+        expect(r.metrics.netPnl).toMatchObject({ value: '6760', reason: null });
+        expect(r.metrics.actualR).toMatchObject({ value: '1.69', reason: null });
+        expect(sourceRuns).toEqual(['legacy-source-run-1', 'legacy-source-run-2', 'legacy-source-run-3']);
+        expect(f.episode.executions.map(execution => execution.source.simulationRunId)).toEqual(sourceRuns);
+    });
+    it.each(['account', 'instrument', 'nature', 'platform'] as const)('rejects a canonical execution with a conflicting %s', conflict => {
+        const f = fixture();
+        setCanonicalTradingViewScope(f);
+        const execution = f.episode.executions[2];
+        if (conflict === 'account') execution.accountId = 'another-account';
+        if (conflict === 'instrument') execution.instrument = { ...execution.instrument, id: 'CN-SH:OTHER' };
+        if (conflict === 'nature') execution.source = { ...execution.source, tradeNature: 'live' };
+        if (conflict === 'platform') execution.source = { ...execution.source, platform: 'futu' };
+
+        const r = calculateRecallActualMetrics(f);
+
+        expect(r.metrics.realizedGross).toMatchObject({ value: null, reason: 'execution-scope-mismatch' });
+        expect(r.metrics.netPnl).toMatchObject({ value: null, reason: 'execution-scope-mismatch' });
+    });
+    it('rejects a canonical execution with a non-TradingView platform when its source run is absent', () => {
+        const f = fixture();
+        setCanonicalTradingViewScope(f);
+        f.context = { phase: 'holding', cursor: '2026-01-01T12:00:00Z', executionCursor: 'entry' };
+        f.episode.executions[0].source = { ...f.episode.executions[0].source, platform: 'futu' };
+        delete f.episode.executions[0].source.simulationRunId;
+
+        const r = calculateRecallActualMetrics(f);
+
+        expect(r.metrics.remainingQuantity).toMatchObject({ value: null, reason: 'execution-scope-mismatch' });
+    });
+    it('rejects conflicting canonical nature evidence when the legacy run matches', () => {
+        const f = fixture();
+        setCanonicalTradingViewScope(f);
+        f.context = { phase: 'holding', cursor: '2026-01-01T12:00:00Z', executionCursor: 'entry' };
+        f.episode.simulationRunId = 'legacy-source-run-1';
+        f.episode.executions[0].source = {
+            ...f.episode.executions[0].source,
+            tradeNature: 'simulation',
+            tradingNature: 'live',
+        };
+
+        const r = calculateRecallActualMetrics(f);
+
+        expect(r.metrics.remainingQuantity).toMatchObject({ value: null, reason: 'execution-scope-mismatch' });
     });
     it('rejects a visible execution from a different simulation run without returning zero metrics', () => {
         const f = fixture();

@@ -8,6 +8,8 @@ const MARKET_TIME_ZONES = {
   "CN-SZ": "Asia/Shanghai",
 } satisfies Record<SupportedMarket, string>;
 
+const MARKET_TRADING_DATE_FORMATTERS = new Map<string, Intl.DateTimeFormat>();
+
 export function marketTimeZone(market: string) {
   return (
     MARKET_TIME_ZONES[market.toUpperCase() as SupportedMarket] ?? "UTC"
@@ -48,13 +50,18 @@ export function marketCalendarDateOffset(
 export function marketTradingDate(timestamp: string, market: string) {
   // Date-only evidence is already a calendar label, not midnight in UTC.
   if (/^\d{4}-\d{2}-\d{2}$/.test(timestamp)) return timestamp;
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone:
-      marketTimeZone(market),
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(new Date(timestamp));
+  const timeZone = marketTimeZone(market);
+  let formatter = MARKET_TRADING_DATE_FORMATTERS.get(timeZone);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    MARKET_TRADING_DATE_FORMATTERS.set(timeZone, formatter);
+  }
+  const parts = formatter.formatToParts(new Date(timestamp));
   const values = Object.fromEntries(
     parts.map((part) => [part.type, part.value]),
   );

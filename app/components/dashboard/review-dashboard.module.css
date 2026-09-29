@@ -1267,6 +1267,9 @@
 .topbarFilterToggle:focus-visible { outline-offset: 1px; }
 @media (pointer: coarse) {
   .topbarFilterToggle { min-height: 44px; }
+  .roomCustomPeriodEditor .filterField input[type="date"] { min-height: 44px; height: 44px; }
+  .roomCustomPeriodActions > button { min-height: 44px; }
+  .dateDetails summary { display: flex; align-items: center; min-height: 44px; }
 }
 .topbarUpdated {
   display: inline-flex;

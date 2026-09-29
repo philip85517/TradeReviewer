@@ -225,6 +225,18 @@ describe("DataManagement", () => {
     expect(screen.getByLabelText("本金配置内容")).toHaveTextContent("本金配置表单");
   });
 
+  it("renders the read-only TradingView migration preview in account and pricing", async () => {
+    const user = userEvent.setup();
+    renderPage({
+      accountMigrationSlot: <output aria-label="TradingView迁移预览内容">只读迁移预览</output>,
+    });
+
+    await user.click(screen.getByRole("tab", { name: "账户与计价" }));
+
+    expect(screen.getByRole("region", { name: "TradingView 账户迁移预览" })).toBeVisible();
+    expect(screen.getByLabelText("TradingView迁移预览内容")).toHaveTextContent("只读迁移预览");
+  });
+
   it("keeps refresh controls available for cancellation, retry, and unfinished recovery", async () => {
     const user = userEvent.setup();
     const state: GlobalMarketRefreshState = {

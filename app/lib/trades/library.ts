@@ -26,6 +26,10 @@ import {
   type TradeEpisode,
   type TradeExecution,
 } from "./types";
+import {
+  isCanonicalTradingViewAccountExecution,
+  tradingViewEpisodeBusinessScope,
+} from "./tradingview-account-identity";
 
 export type TradeLibraryEpisode = {
   episode: TradeEpisode;
@@ -147,7 +151,10 @@ export function buildTradeLibraryEntries(
       const allEpisodes = buildTradeEpisodes(summary.executions);
       const episodesByScope = new Map<string, TradeEpisode[]>();
       for (const episode of allEpisodes) {
-        const key = tradeScopeKey(episode.executions[0]);
+        const businessScope = tradingViewEpisodeBusinessScope(episode);
+        const key = businessScope
+          ? `${businessScope.tradeNature}:${businessScope.accountId}`
+          : tradeScopeKey(episode.executions[0]);
         episodesByScope.set(key, [
           ...(episodesByScope.get(key) ?? []),
           episode,
@@ -155,9 +162,14 @@ export function buildTradeLibraryEntries(
       }
 
       return [...episodesByScope.entries()].map(([scopeKey, scopeEpisodes]) => {
-        const scopedExecutions = summary.executions.filter(
-          (execution) => tradeScopeKey(execution) === scopeKey,
+        const isCanonicalScope = scopeEpisodes.some((episode) =>
+          tradingViewEpisodeBusinessScope(episode),
         );
+        const scopedExecutions = isCanonicalScope
+          ? summary.executions.filter(isCanonicalTradingViewAccountExecution)
+          : summary.executions.filter(
+              (execution) => tradeScopeKey(execution) === scopeKey,
+            );
         const episodes = scopeEpisodes
           .map((episode) => {
           const latestExecution =

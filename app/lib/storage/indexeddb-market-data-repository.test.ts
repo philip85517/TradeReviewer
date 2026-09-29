@@ -103,6 +103,9 @@ describe("IndexedDbMarketDataRepository", () => {
     expect(await repo.getProviderSymbol("HK:1810", "tencent")).toBe(
       "hk01810",
     );
+    await expect(
+      repo.getDailyMarketData!("HK:1810", "2025-01-01", "2025-01-31"),
+    ).resolves.toEqual({ candles: [candle], coverage: [coverage] });
   });
 
   it("uses compound keys so the same candle can be written idempotently", async () => {
@@ -152,6 +155,17 @@ describe("IndexedDbMarketDataRepository", () => {
     expect(await repo.getIntervalCoverage("HK:1810", "15m")).toEqual([
       intervalCoverage,
     ]);
+    await expect(
+      repo.getIntervalMarketData!(
+        "HK:1810",
+        "15m",
+        "2025-01-02T02:00:00.000Z",
+        "2025-01-02T03:00:00.000Z",
+      ),
+    ).resolves.toEqual({
+      candles: [intervalCandle],
+      coverage: [intervalCoverage],
+    });
     expect(await repo.getProviderSymbol("HK:1810", "tencent")).toBe(
       "hk01810",
     );

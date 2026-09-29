@@ -34,6 +34,8 @@ export type DataManagementProps = {
   fxSlot?: ReactNode;
   /** Current account/scope cash baseline editor supplied by the workspace. */
   cashSlot?: ReactNode;
+  /** Read-only TradingView account migration preview supplied by the workspace. */
+  accountMigrationSlot?: ReactNode;
 };
 
 function hasInstrument(ids: DataManagementProps["activeInstrumentIds"], id: string) {
@@ -59,6 +61,7 @@ export function DataManagement({
   principalSlot,
   fxSlot,
   cashSlot,
+  accountMigrationSlot,
 }: DataManagementProps) {
   const [uncontrolledActiveTab, setUncontrolledActiveTab] = useState<
     "import" | "quality" | "settings"
@@ -233,6 +236,21 @@ export function DataManagement({
         hidden={activeTab !== "settings"}
         style={{ display: activeTab === "settings" ? "grid" : "none" }}
       >
+        {accountMigrationSlot && (
+          <section
+            className="data-management-card data-management-account-migration"
+            aria-label="TradingView 账户迁移预览"
+            style={{ gridColumn: "1 / -1" }}
+          >
+            <div className="data-management-card-heading">
+              <div>
+                <h2>TradingView 账户迁移预览</h2>
+              </div>
+              <span>只读检查，不会修改账户</span>
+            </div>
+            {accountMigrationSlot}
+          </section>
+        )}
         <section className="data-management-card" aria-label="本金与参考收益率配置">
           <div className="data-management-card-heading">
             <div>

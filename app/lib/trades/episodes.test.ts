@@ -3,6 +3,7 @@ import Decimal from "decimal.js";
 
 import { buildTradeEpisodes } from "./episodes";
 import { summarizeTradeEpisode } from "./episode-metrics";
+import { canonicalizeTradingViewExecution } from "./tradingview-account-identity";
 import type { TradeExecution } from "./types";
 import type { StatementEvent, StatementPosition } from "../import/monthly-statement";
 import { applyMonthlyHistoryEvidence } from "../import/statement-evidence";
@@ -43,6 +44,72 @@ function sumAllocatedFees(episodes: ReturnType<typeof buildTradeEpisodes>) {
 }
 
 describe("core review R1–R5", () => {
+  it("carries a known zero-cash bonus-share event through an episode without creating a buy", () => {
+    const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
+    const bonus: StatementEvent = {
+      id: "bonus-516780",
+      accountId: "acct-1",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账 1.8900",
+      source: [{ page: 15, row: 396, role: "corporate-action" }],
+    };
+    const buy = execution("buy", "2026-05-20T02:00:00Z", "10000", "2.5");
+    const sale = execution("sell", "2026-06-01T02:00:00Z", "20000", "2");
+    buy.instrument = instrument;
+    sale.instrument = instrument;
+    buy.source.positionEvents = [bonus];
+    sale.source.positionEvents = [bonus];
+
+    const [episode] = buildTradeEpisodes([buy, sale]);
+
+    expect(episode).toMatchObject({
+      status: "closed",
+      openingQuantity: "10000",
+      remainingQuantity: "0",
+      executions: [buy, sale],
+    });
+    expect(episode.positionEvents).toEqual([bonus]);
+    expect(episode.accuracy).toBeUndefined();
+    expect(summarizeTradeEpisode(episode)).toMatchObject({
+      buyCount: 1,
+      sellCount: 1,
+      boughtQuantity: "10000",
+      soldQuantity: "20000",
+      grossExposure: "25000",
+      realizedPnl: "15000",
+      netPnl: "15000",
+    });
+  });
+
+  it("marks an orphan or same-day bonus event as unavailable instead of fabricating its basis", () => {
+    const bonus: StatementEvent = {
+      id: "orphan-bonus",
+      accountId: "acct-1",
+      market: "US",
+      symbol: "XPEV",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "100",
+      amount: "0",
+      currency: "USD",
+      description: "红股入账",
+      source: [],
+    };
+    const sale = execution("sell", "2026-05-22T02:00:00Z", "100", "2");
+    sale.source.positionEvents = [bonus];
+
+    const [episode] = buildTradeEpisodes([sale]);
+
+    expect(episode.accuracy?.reasons).toEqual(expect.arrayContaining(["ambiguous-event-order"]));
+    expect(summarizeTradeEpisode(episode)).toMatchObject({ pnlAvailable: false, netPnl: null });
+  });
+
   const cashChain = (): StatementEvent[] => [
     { id: "allocation", date: "2025-06-19", quantity: "500", amount: "11265", displayTimePolicy: "session-open", description: "IPO allotment" },
     { id: "application", date: "2025-05-20", amount: "-68271.65", description: "IPO Application" },
@@ -355,6 +422,174 @@ describe("buildTradeEpisodes", () => {
     expect(episodes[0]).toMatchObject({ direction: "long", status: "closed", openingQuantity: "100" });
     second.source.openingPosition.quantity = "90";
     expect(buildTradeEpisodes([first, second])[0].accuracy?.reasons).toContain("position-gap");
+  });
+
+  it("reconciles same-day transaction positions by source order and keeps later-day PnL available", () => {
+    const instrument = { id: "CN-SH:512560", market: "CN-SH", symbol: "512560", name: "512560", currency: "CNY" };
+    const source = (fileFingerprint: string, page: number, row: number, sourceOrder: number) => ({
+      platform: "china-merchants",
+      fileFingerprint,
+      page,
+      row,
+      sourceOrder,
+      timePrecision: "date-only" as const,
+      settlement: undefined,
+    });
+    const position = (documentId: string, date: string, quantity: string, page: number, row: number): StatementPosition => ({
+      documentId,
+      accountId: "acct-1",
+      market: "CN-SH",
+      symbol: "512560",
+      phase: "closing",
+      date,
+      quantity,
+      source: [{ page, row, role: "transaction-position" }],
+    });
+    const fills: TradeExecution[] = [
+      { ...execution("buy", "2026-02-10T07:00:00Z", "40000", "0.906"), id: "buy-1", instrument, fee: "8.53", source: { ...source("doc-a", 10, 396, 241), settlement: { currency: "CNY", quantity: "40000", grossAmount: "36240", netAmount: "-36248.53", fees: { commission: "8.53" } }, feeStatus: "reported" } },
+      { ...execution("buy", "2026-02-13T07:00:00Z", "29500", "0.922"), id: "buy-2", instrument, fee: "6.4", source: { ...source("doc-a", 11, 144, 256), settlement: { currency: "CNY", quantity: "29500", grossAmount: "27199", netAmount: "-27205.4", fees: { commission: "6.4" } }, feeStatus: "reported" } },
+      { ...execution("buy", "2026-02-26T07:00:00Z", "20000", "0.961"), id: "buy-3", instrument, fee: "5", source: { ...source("doc-a", 11, 342, 267), settlement: { currency: "CNY", quantity: "20000", grossAmount: "19220", netAmount: "-19225", fees: { commission: "5" } }, feeStatus: "reported" } },
+      { ...execution("sell", "2026-03-04T07:00:00Z", "44700", "0.904"), id: "sell-1", instrument, fee: "9.51", source: { ...source("doc-a", 11, 522, 277), settlement: { currency: "CNY", quantity: "44700", grossAmount: "40408.8", netAmount: "40399.29", fees: { commission: "9.51" } }, feeStatus: "reported" } },
+      { ...execution("sell", "2026-03-04T07:00:00Z", "22400", "0.91"), id: "sell-2", instrument, fee: "5", source: { ...source("doc-a", 11, 558, 279), settlement: { currency: "CNY", quantity: "22400", grossAmount: "20384", netAmount: "20379", fees: { commission: "5" } }, feeStatus: "reported" } },
+      { ...execution("buy", "2026-04-08T07:00:00Z", "20000", "0.823"), id: "buy-4", instrument, fee: "5", source: { ...source("doc-b", 2, 218, 43), settlement: { currency: "CNY", quantity: "20000", grossAmount: "16460", netAmount: "-16465", fees: { commission: "5" } }, feeStatus: "reported" } },
+      { ...execution("sell", "2026-05-12T07:00:00Z", "42400", "0.912"), id: "sell-3", instrument, fee: "9.1", source: { ...source("doc-b", 2, 468, 80), settlement: { currency: "CNY", quantity: "42400", grossAmount: "38668.8", netAmount: "38659.7", fees: { commission: "9.1" } }, feeStatus: "reported" } },
+    ];
+    const evidence = [
+      position("china-merchants:doc-a", "2026-02-10", "40000", 10, 396),
+      position("china-merchants:doc-a", "2026-02-13", "69500", 11, 144),
+      position("china-merchants:doc-a", "2026-02-26", "89500", 11, 342),
+      position("china-merchants:doc-a", "2026-03-04", "44800", 11, 522),
+      position("china-merchants:doc-a", "2026-03-04", "22400", 11, 558),
+      position("china-merchants:doc-b", "2026-04-08", "42400", 13, 432),
+    ];
+    const withEvidence = fills.map(fill => ({
+      ...fill,
+      source: {
+        ...fill.source,
+        statementPositions: evidence,
+        ...(fill.id === "buy-4" ? { openingPosition: evidence[4] } : {}),
+      },
+    }));
+
+    const [episode] = buildTradeEpisodes(withEvidence);
+    expect(episode.executions.map(fill => fill.id)).toEqual(fills.map(fill => fill.id));
+    expect(episode.accuracy).toBeUndefined();
+    expect(summarizeTradeEpisode(episode)).toMatchObject({ netPnl: "294.06" });
+    expect(summarizeTradeEpisode(episode)).not.toHaveProperty("pnlAvailable");
+
+    const [reversed] = buildTradeEpisodes([...withEvidence].reverse());
+    expect(reversed.accuracy).toBeUndefined();
+    expect(reversed.executions.map(fill => fill.id)).toEqual(fills.map(fill => fill.id));
+    expect(summarizeTradeEpisode(reversed).netPnl).toBe("294.06");
+  });
+
+  it("does not claim a same-day boundary when source order is absent", () => {
+    const first = execution("sell", "2026-03-04T07:00:00Z", "4", "1");
+    const second = { ...execution("sell", "2026-03-04T07:00:00Z", "2", "1"), id: "second-sale" };
+    first.source = { ...first.source, platform: "china-merchants", fileFingerprint: "doc", timePrecision: "date-only", page: 1, row: 1 };
+    second.source = { ...second.source, platform: "china-merchants", fileFingerprint: "doc", timePrecision: "date-only", page: 1, row: 2 };
+    const positions: StatementPosition[] = [
+      { documentId: "china-merchants:doc", accountId: "acct-1", market: "US", symbol: "XPEV", phase: "closing", date: "2026-03-04", quantity: "6", source: [{ page: 1, row: 1, role: "transaction-position" }] },
+      { documentId: "china-merchants:doc", accountId: "acct-1", market: "US", symbol: "XPEV", phase: "closing", date: "2026-03-04", quantity: "4", source: [{ page: 1, row: 2, role: "transaction-position" }] },
+    ];
+    const attached = [first, second].map(fill => ({ ...fill, source: { ...fill.source, statementPositions: positions } }));
+    const [episode] = buildTradeEpisodes(attached);
+    expect(episode.accuracy?.reasons).toEqual(expect.arrayContaining(["ambiguous-event-order"]));
+    expect(summarizeTradeEpisode(episode)).toMatchObject({ pnlAvailable: false, netPnl: null });
+  });
+
+  it("fails closed when date-only and precise same-day fills have unknown relative time", () => {
+    const instrument = { id: "CN-SH:512560", market: "CN-SH", symbol: "512560", name: "512560", currency: "CNY" };
+    const source = (sourceOrder: number, row: number, timePrecision: "date-only" | "second") => ({ platform: "china-merchants", fileFingerprint: "mixed-precision", page: 1, row, sourceOrder, timePrecision });
+    const fills: TradeExecution[] = [
+      { ...execution("buy", "2026-03-04T07:00:00Z", "10", "1"), id: "mixed-buy", instrument, source: source(1, 1, "date-only") },
+      { ...execution("sell", "2026-03-04T03:00:00Z", "10", "1"), id: "mixed-sell", instrument, source: source(2, 2, "second") },
+    ];
+    const positions: StatementPosition[] = [
+      { documentId: "china-merchants:mixed-precision", accountId: "acct-1", market: "CN-SH", symbol: "512560", phase: "closing", date: "2026-03-04", quantity: "10", source: [{ page: 1, row: 1, role: "transaction-position" }] },
+      { documentId: "china-merchants:mixed-precision", accountId: "acct-1", market: "CN-SH", symbol: "512560", phase: "closing", date: "2026-03-04", quantity: "0", source: [{ page: 1, row: 2, role: "transaction-position" }] },
+    ];
+    const episodes = buildTradeEpisodes(fills.map(fill => ({ ...fill, source: { ...fill.source, statementPositions: positions } })));
+    expect(episodes.every(episode => episode.direction === "long" || Boolean(episode.accuracy))).toBe(true);
+    expect(episodes.filter(episode => episode.direction === "short" && !episode.accuracy)).toHaveLength(0);
+  });
+
+  it("keeps equal-quantity source rows through attachment and episode boundaries", () => {
+    const instrument = { id: "CN-SH:512560", market: "CN-SH", symbol: "512560", name: "512560", currency: "CNY" };
+    const source = (sourceOrder: number, row: number) => ({ platform: "china-merchants", fileFingerprint: "same-quantity", page: 1, row, sourceOrder, timePrecision: "date-only" as const });
+    const fills: TradeExecution[] = [
+      { ...execution("buy", "2026-03-04T07:00:00Z", "10", "1"), id: "buy-a", instrument, source: source(1, 4) },
+      { ...execution("sell", "2026-03-04T07:00:00Z", "10", "1"), id: "sell-a", instrument, source: source(2, 3) },
+      { ...execution("buy", "2026-03-04T07:00:00Z", "10", "1"), id: "buy-b", instrument, source: source(3, 2) },
+      { ...execution("sell", "2026-03-04T07:00:00Z", "10", "1"), id: "sell-b", instrument, source: source(4, 1) },
+    ];
+    const positions: StatementPosition[] = [4, 3, 2, 1].map((row, index) => ({
+      documentId: "china-merchants:same-quantity",
+      accountId: "acct-1",
+      market: "CN-SH",
+      symbol: "512560",
+      phase: "closing",
+      date: "2026-03-04",
+      quantity: index % 2 === 0 ? "10" : "0",
+      source: [{ page: 1, row, role: "transaction-position" }],
+    }));
+    const attached = applyMonthlyHistoryEvidence(fills, [{ documentId: "china-merchants:same-quantity", positions, events: [] } as never]);
+
+    expect(attached.every(fill => fill.source.statementPositions)).toBe(true);
+    expect(attached[0].source.statementPositions).toHaveLength(4);
+    const episodes = buildTradeEpisodes(attached);
+    expect(episodes).toHaveLength(2);
+    expect(episodes.every(episode => episode.direction === "long" && episode.status === "closed" && !episode.accuracy)).toBe(true);
+    expect(episodes.flatMap(episode => episode.executions)).toHaveLength(4);
+    expect(episodes.every(episode => summarizeTradeEpisode(episode).netPnl === "0")).toBe(true);
+  });
+
+  it("does not certify duplicate source orders within one date-only document", () => {
+    const instrument = { id: "CN-SH:512560", market: "CN-SH", symbol: "512560", name: "512560", currency: "CNY" };
+    const source = (row: number) => ({ platform: "china-merchants", fileFingerprint: "duplicate-order", page: 1, row, sourceOrder: 1, timePrecision: "date-only" as const });
+    const fills: TradeExecution[] = [
+      { ...execution("buy", "2026-03-04T07:00:00Z", "10", "1"), id: "duplicate-buy", instrument, source: source(1) },
+      { ...execution("sell", "2026-03-04T07:00:00Z", "10", "1"), id: "duplicate-sell", instrument, source: source(2) },
+    ];
+    const positions: StatementPosition[] = [
+      { documentId: "china-merchants:duplicate-order", accountId: "acct-1", market: "CN-SH", symbol: "512560", phase: "closing", date: "2026-03-04", quantity: "10", source: [{ page: 1, row: 1, role: "transaction-position" }] },
+      { documentId: "china-merchants:duplicate-order", accountId: "acct-1", market: "CN-SH", symbol: "512560", phase: "closing", date: "2026-03-04", quantity: "0", source: [{ page: 1, row: 2, role: "transaction-position" }] },
+    ];
+    const [episode] = buildTradeEpisodes(fills.map(fill => ({ ...fill, source: { ...fill.source, statementPositions: positions } })));
+    expect(episode.accuracy?.reasons).toContain("ambiguous-event-order");
+  });
+
+  it("does not compare local source orders across same-day documents", () => {
+    const instrument = { id: "CN-SH:512560", market: "CN-SH", symbol: "512560", name: "512560", currency: "CNY" };
+    const fill = (id: string, side: "buy" | "sell", document: string, row: number): TradeExecution => ({
+      ...execution(side, "2026-03-04T07:00:00Z", "10", "1"),
+      id,
+      instrument,
+      source: { platform: "china-merchants", fileFingerprint: document, page: 1, row, sourceOrder: row, timePrecision: "date-only" },
+    });
+    const positions: StatementPosition[] = [
+      { documentId: "china-merchants:document-a", accountId: "acct-1", market: "CN-SH", symbol: "512560", phase: "closing", date: "2026-03-04", quantity: "10", source: [{ page: 1, row: 1, role: "transaction-position" }] },
+      { documentId: "china-merchants:document-b", accountId: "acct-1", market: "CN-SH", symbol: "512560", phase: "closing", date: "2026-03-04", quantity: "0", source: [{ page: 1, row: 2, role: "transaction-position" }] },
+    ];
+    const [episode] = buildTradeEpisodes([fill("cross-buy", "buy", "document-a", 1), fill("cross-sell", "sell", "document-b", 2)].map(item => ({
+      ...item,
+      source: { ...item.source, statementPositions: positions },
+    })));
+    expect(episode.accuracy).toBeDefined();
+  });
+
+  it("retains conflicting same-day snapshots from separate documents as unavailable evidence", () => {
+    const buy = execution("buy", "2026-03-03T07:00:00Z", "10", "1");
+    const sell = execution("sell", "2026-03-04T07:00:00Z", "4", "1");
+    buy.source = { ...buy.source, platform: "china-merchants", fileFingerprint: "doc-a", sourceOrder: 1, page: 1, row: 1, timePrecision: "date-only" };
+    sell.source = { ...sell.source, platform: "china-merchants", fileFingerprint: "doc-b", sourceOrder: 1, page: 1, row: 1, timePrecision: "date-only" };
+    const positions: StatementPosition[] = [
+      { documentId: "china-merchants:doc-a", accountId: "acct-1", market: "US", symbol: "XPEV", phase: "closing", date: "2026-03-04", quantity: "6", source: [{ page: 1, row: 1, role: "transaction-position" }] },
+      { documentId: "china-merchants:doc-b", accountId: "acct-1", market: "US", symbol: "XPEV", phase: "closing", date: "2026-03-04", quantity: "5", source: [{ page: 1, row: 1, role: "transaction-position" }] },
+    ];
+    const [episode] = buildTradeEpisodes([buy, sell].map(fill => ({ ...fill, source: { ...fill.source, statementPositions: positions } })));
+    expect(episode.accuracy?.reasons).toContain("position-gap");
+    expect(summarizeTradeEpisode(episode)).toMatchObject({ pnlAvailable: false, netPnl: null });
   });
 
   it("keeps genuinely short initial inventory short", () => {
@@ -690,6 +925,58 @@ describe("statement evidence with simulation scopes", () => {
     const exit = execution("sell", "2025-01-03T14:30:00Z", "1", "12");
     exit.source = { ...exit.source, tradeNature: "simulation", simulationRunId: "same-run" };
     expect(buildTradeEpisodes([entry, exit])).toMatchObject([{ tradeNature: "simulation", status: "closed", remainingQuantity: "0" }]);
+  });
+
+  it("groups canonical TradingView executions across source runs into one closed episode", () => {
+    const entry = execution("buy", "2025-01-02T14:30:00Z", "100", "10");
+    entry.accountId = "tradingview:source-run-a";
+    entry.accountLabel = "TradingView · 模拟盘 · A";
+    entry.source = {
+      ...entry.source,
+      platform: "tradingview",
+      tradeNature: "simulation",
+      simulationRunId: "run-a",
+      fileFingerprint: "file-a",
+    };
+    const exit = execution("sell", "2025-01-03T14:30:00Z", "100", "11");
+    exit.id = "canonical-exit";
+    exit.accountId = "tradingview:source-run-b";
+    exit.accountLabel = "TradingView · 模拟盘 · B";
+    exit.source = {
+      ...exit.source,
+      platform: "tradingview",
+      tradeNature: "simulation",
+      simulationRunId: "run-b",
+      fileFingerprint: "file-b",
+    };
+
+    const canonical = [entry, exit].map((item) => canonicalizeTradingViewExecution(item)!);
+    const [episode] = buildTradeEpisodes(canonical);
+
+    expect(episode).toMatchObject({
+      accountId: "tradingview:simulation:default",
+      accountLabel: "TradingView · 模拟盘",
+      tradeNature: "simulation",
+      status: "closed",
+      remainingQuantity: "0",
+    });
+    expect(episode.simulationRunId).toBeUndefined();
+    expect(episode.executions.map((item) => item.source.simulationRunId)).toEqual(["run-a", "run-b"]);
+  });
+
+  it("keeps legacy source runs separated when they are not canonicalized", () => {
+    const first = execution("buy", "2025-01-02T14:30:00Z", "100", "10");
+    first.accountId = "tradingview:source-run-a";
+    first.source = { ...first.source, platform: "tradingview", tradeNature: "simulation", simulationRunId: "run-a" };
+    const second = execution("buy", "2025-01-02T14:30:00Z", "100", "10");
+    second.id = "legacy-second";
+    second.accountId = "tradingview:source-run-b";
+    second.source = { ...second.source, platform: "tradingview", tradeNature: "simulation", simulationRunId: "run-b" };
+
+    const episodes = buildTradeEpisodes([first, second]);
+
+    expect(episodes).toHaveLength(2);
+    expect(episodes.map((item) => item.simulationRunId).sort()).toEqual(["run-a", "run-b"]);
   });
 });
 

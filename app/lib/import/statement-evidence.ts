@@ -1,8 +1,80 @@
 import type { StatementParseResult } from "./contracts";
-import type { MonthlyStatement, StatementEvent, StatementPosition } from "./monthly-statement";
+import { isMonthlyEvidenceScope, isMonthlyStatement, type MonthlyStatement, type StatementEvent, type StatementPosition } from "./monthly-statement";
 import type { PdfTextItem, PdfTextPage } from "./pdf-text";
 import type { TradeExecution } from "../trades/types";
+import type { ImportHistoryEntry } from "../storage/import-history";
 import Decimal from "decimal.js";
+
+export type MonthlyEvidenceHistoryEntry = Pick<ImportHistoryEntry, "id" | "importedAt" | "monthly">;
+
+type MonthlyEvidenceCandidate = {
+  id: string;
+  importedAt: string;
+  monthly: MonthlyStatement;
+};
+
+function compareMonthlyEvidenceVersion(
+  left: MonthlyEvidenceCandidate,
+  right: MonthlyEvidenceCandidate,
+) {
+  const leftTime = Date.parse(left.importedAt);
+  const rightTime = Date.parse(right.importedAt);
+  if (Number.isFinite(leftTime) && Number.isFinite(rightTime) && leftTime !== rightTime) return leftTime - rightTime;
+  if (Number.isFinite(leftTime) !== Number.isFinite(rightTime)) return Number.isFinite(leftTime) ? 1 : -1;
+  const importedAtOrder = left.importedAt.localeCompare(right.importedAt);
+  return importedAtOrder || left.id.localeCompare(right.id);
+}
+
+/**
+ * Select the latest revision for each document scope before evidence is
+ * attached. A newer scoped revision overlays an older full-document base for
+ * that one target; a newer full revision supersedes older scoped revisions.
+ */
+export function selectMonthlyEvidenceHistory(
+  entries: readonly MonthlyEvidenceHistoryEntry[],
+): MonthlyStatement[] {
+  const groups = new Map<string, {
+    full?: MonthlyEvidenceCandidate;
+    scoped: Map<string, MonthlyEvidenceCandidate>;
+  }>();
+  for (const entry of entries) {
+    if (!entry.monthly || !isMonthlyStatement(entry.monthly)) continue;
+    const monthly = entry.monthly;
+    const candidate: MonthlyEvidenceCandidate = {
+      id: entry.id,
+      importedAt: entry.importedAt,
+      monthly,
+    };
+    const group = groups.get(monthly.documentId) ?? { scoped: new Map<string, MonthlyEvidenceCandidate>() };
+    if (monthly.evidenceScope === undefined) {
+      if (!group.full || compareMonthlyEvidenceVersion(candidate, group.full) > 0) group.full = candidate;
+    } else {
+      const scopeKey = `${monthly.evidenceScope.accountId}\u0000${monthly.evidenceScope.instrumentId}`;
+      const current = group.scoped.get(scopeKey);
+      if (!current || compareMonthlyEvidenceVersion(candidate, current) > 0) group.scoped.set(scopeKey, candidate);
+    }
+    groups.set(monthly.documentId, group);
+  }
+
+  const selected: MonthlyEvidenceCandidate[] = [];
+  for (const group of groups.values()) {
+    if (group.full) {
+      selected.push(group.full);
+      for (const scoped of group.scoped.values()) {
+        if (compareMonthlyEvidenceVersion(scoped, group.full) > 0) selected.push(scoped);
+      }
+    } else {
+      selected.push(...group.scoped.values());
+    }
+  }
+  selected.sort((left, right) => {
+    const version = compareMonthlyEvidenceVersion(left, right);
+    if (version !== 0) return version;
+    // A full snapshot is the base when revisions share a timestamp.
+    return Number(Boolean(left.monthly.evidenceScope)) - Number(Boolean(right.monthly.evidenceScope));
+  });
+  return selected.map((candidate) => candidate.monthly);
+}
 import { canonicalInstrumentId } from "../instruments/display-name";
 
 type Row = { y: number; items: PdfTextItem[]; number: number; text: string };
@@ -255,9 +327,9 @@ export function attachStatementEvidence(pages: PdfTextPage[], result: StatementP
       events.push({ documentId: monthly.documentId, id: `${monthly.documentId}:evidence:${page.pageNumber}:${row.number}`, accountId, ...instrument, date, kind, ...(quantity !== undefined ? { quantity } : {}), ...(amount !== undefined ? { amount } : {}), ...(kind === "ipo" && quantity !== undefined ? { displayTimePolicy: "session-open" as const } : {}), currency: section === "stock" || section === "transfer" ? undefined : eventCurrency, description: row.text, source });
     }
   }
-  const positionKeys = new Set(monthly.positions.map(p => JSON.stringify([p.accountId, p.market, p.symbol, p.date, p.phase, p.quantity])));
+  const positionKeys = new Set(monthly.positions.map(statementPositionEvidenceKey));
   for (const position of positions) {
-    const key = JSON.stringify([position.accountId, position.market, position.symbol, position.date, position.phase, position.quantity]);
+    const key = statementPositionEvidenceKey(position);
     if (!positionKeys.has(key)) { monthly.positions.push(position); positionKeys.add(key); }
   }
   const eventIds = new Set(monthly.events.map(e => e.id));
@@ -272,16 +344,97 @@ export function attachStatementEvidence(pages: PdfTextPage[], result: StatementP
   return { ...result, monthly, diagnostics, records: applyMonthlyHistoryEvidence(result.records, [monthly]) };
 }
 
+/**
+ * A transaction-position row is a post-transaction inventory boundary.  The
+ * source fragment is the only durable link back to its transaction; the
+ * position itself intentionally remains date-only.  Consumers may use this
+ * helper to order such a boundary when the source also provides an explicit
+ * sourceOrder, without manufacturing a timestamp or rewriting the evidence.
+ */
+export function statementPositionMatchesExecution(
+  position: StatementPosition,
+  execution: TradeExecution,
+): boolean {
+  if (position.phase !== "closing" || !position.source.some(fragment => fragment.role === "transaction-position")) return false;
+  if (position.accountId !== execution.accountId || canonicalInstrumentId(position.symbol, position.market) !== canonicalInstrumentId(execution.instrument.symbol, execution.instrument.market)) return false;
+  const fingerprint = execution.source.fileFingerprint;
+  if (!fingerprint || !position.documentId || ![
+    fingerprint,
+    `${execution.source.platform}:${fingerprint}`,
+  ].includes(position.documentId)) return false;
+  const executionFragments = [
+    ...(execution.source.page !== undefined ? [{ page: execution.source.page, row: execution.source.row }] : []),
+    ...(execution.source.fragments ?? []).map(fragment => ({ page: fragment.page, row: fragment.row })),
+  ];
+  return position.source.some(positionFragment => executionFragments.some(executionFragment =>
+    positionFragment.page === executionFragment.page && positionFragment.row === executionFragment.row));
+}
+
+/**
+ * Preserve source rows when the same boundary quantity appears more than once.
+ * Identical attachments with the same originating fragments still collapse;
+ * two rows from one statement remain two evidence boundaries even when every
+ * business value is equal.
+ */
+export function statementPositionEvidenceKey(position: StatementPosition): string {
+  const fragments = position.source
+    .map(fragment => [fragment.page, fragment.row, fragment.role ?? ""])
+    .sort((left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right)));
+  return JSON.stringify([
+    position.documentId ?? "",
+    position.accountId,
+    position.market,
+    position.symbol,
+    position.phase,
+    position.date,
+    position.quantity,
+    fragments,
+  ]);
+}
+
+/** Source order is explicit evidence. Row order is not a substitute here. */
+export function explicitExecutionSourceOrder(execution: TradeExecution): number | undefined {
+  const value = execution.source.sourceOrder;
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+export function executionDocumentKey(execution: TradeExecution): string | undefined {
+  return execution.source.fileFingerprint
+    ? `${execution.source.platform}:${execution.source.fileFingerprint}`
+    : undefined;
+}
+
+/** A full ISO instant with non-date-only precision is real clock evidence. */
+export function executionHasExactTime(execution: TradeExecution): boolean {
+  return execution.source.timePrecision !== "date-only" && execution.executedAt.length !== 10;
+}
+
+/** Return true only when explicit source order contradicts two real instants. */
+export function executionSourceOrderConflictsWithTime(left: TradeExecution, right: TradeExecution): boolean {
+  if (!executionHasExactTime(left) || !executionHasExactTime(right)) return false;
+  if (executionDocumentKey(left) !== executionDocumentKey(right)) return false;
+  const leftOrder = explicitExecutionSourceOrder(left);
+  const rightOrder = explicitExecutionSourceOrder(right);
+  if (leftOrder === undefined || rightOrder === undefined || leftOrder === rightOrder) return false;
+  const timeOrder = replayCursorAt(left.executedAt).localeCompare(replayCursorAt(right.executedAt));
+  return timeOrder !== 0 && Math.sign(timeOrder) !== Math.sign(leftOrder - rightOrder);
+}
+
 /** Reattach persisted monthly inventory to fills, including months containing no executions.
  * A preceding closing snapshot remains a closing boundary; its price is never promoted to cost.
  * Each supplied document is authoritative, including empty evidence arrays. Documents absent
  * from this call retain their attachments. Callers must supply only the current revision per ID.
  */
 export function applyMonthlyHistoryEvidence(executions: TradeExecution[], monthly: MonthlyStatement[]): TradeExecution[] {
-  const documents = new Set(monthly.map(m => m.documentId));
-  const positions = monthly.flatMap(m => m.positions.map(p => ({ ...p, documentId: p.documentId ?? m.documentId })));
-  const events = monthly.flatMap(m => m.events.map(e => ({ ...e, documentId: e.documentId ?? m.documentId })));
-  const superseded = (item: StatementPosition | StatementEvent) => {
+  const appliesToExecution = (statement: MonthlyStatement, execution: TradeExecution) => {
+    if (statement.evidenceScope === undefined) return true;
+    // A malformed persisted scope must never fall back to document-wide
+    // semantics. Retain the execution's current evidence until it is repaired.
+    return isMonthlyEvidenceScope(statement.evidenceScope) &&
+      statement.evidenceScope.accountId === execution.accountId &&
+      statement.evidenceScope.instrumentId === execution.instrument.id;
+  };
+  const superseded = (item: StatementPosition | StatementEvent, documents: Set<string>) => {
     // Older parser events already encode their document ID, even without the explicit field.
     const legacyDocument = "id" in item && item.id.includes(":evidence:") ? item.id.slice(0, item.id.lastIndexOf(":evidence:")) : undefined;
     const documentId = item.documentId ?? legacyDocument;
@@ -296,15 +449,83 @@ export function applyMonthlyHistoryEvidence(executions: TradeExecution[], monthl
       && (event.market === undefined || event.market.toUpperCase() === execution.instrument.market.toUpperCase())
       && (event.currency === undefined || event.currency.toUpperCase() === execution.instrument.currency.toUpperCase());
   return executions.map(execution => {
+    const applicableMonthly = monthly.filter(statement => appliesToExecution(statement, execution));
+    const documents = new Set(applicableMonthly.map(m => m.documentId));
     const matches = (item: { accountId: string; market?: string; symbol?: string }) => item.accountId === execution.accountId && item.market === execution.instrument.market && item.symbol !== undefined && symbolKey(item.symbol, item.market) === symbolKey(execution.instrument.symbol, execution.instrument.market);
+    // A newer scoped revision replaces the target slice of an older full
+    // document while leaving that document's other instruments available to
+    // their own executions.
+    const scopedDocuments = new Set(
+      applicableMonthly
+        .filter(statement => statement.evidenceScope !== undefined)
+        .map(statement => statement.documentId),
+    );
+    const positions = applicableMonthly.flatMap(m => m.positions
+      .filter(position => !(m.evidenceScope === undefined && scopedDocuments.has(m.documentId) && matches(position)))
+      .map(p => ({ ...p, documentId: p.documentId ?? m.documentId })));
+    const events = applicableMonthly.flatMap(m => m.events
+      .filter(event => !(m.evidenceScope === undefined && scopedDocuments.has(m.documentId) && matches(event)))
+      .map(e => ({ ...e, documentId: e.documentId ?? m.documentId })));
     const isSimulation = execution.source.tradeNature === "simulation" || execution.source.tradingNature === "simulated";
     const day = execution.source.tradingDate ?? execution.source.marketCalendarDate ?? execution.executedAt.slice(0, 10);
-    const retainedPosition = execution.source.openingPosition && !superseded(execution.source.openingPosition) ? [execution.source.openingPosition] : [];
-    const statementPositions = [...new Map([...positions.filter(matches), ...(execution.source.statementPositions ?? []).filter(p => !superseded(p)), ...retainedPosition].filter(matches).map(p => [JSON.stringify([p.documentId, p.accountId, p.market, p.symbol, p.phase, p.date, p.quantity]), p])).values()];
+    const retainedPosition = execution.source.openingPosition && !superseded(execution.source.openingPosition, documents) ? [execution.source.openingPosition] : [];
+    const statementPositions = [...new Map([...positions.filter(matches), ...(execution.source.statementPositions ?? []).filter(p => !superseded(p, documents)), ...retainedPosition].filter(matches).map(p => [statementPositionEvidenceKey(p), p])).values()];
+    const transactionExecutions = (position: StatementPosition) => executions.filter(candidate => statementPositionMatchesExecution(position, candidate));
+    const precedesExecution = (position: StatementPosition) => {
+      if (position.phase === "opening") return position.date <= day;
+      if (position.date < day) return true;
+      if (position.date > day) return false;
+      // A date-only closing row has no ordering relationship to a fill on the
+      // same date unless its source fragment identifies an earlier transaction
+      // and both source rows carry an explicit sourceOrder.  Same-document
+      // source order is evidence of sequence, never an invented clock time.
+      const linked = transactionExecutions(position);
+      if (linked.length !== 1) return false;
+      const prior = linked[0]!;
+      const currentOrder = explicitExecutionSourceOrder(execution);
+      const priorOrder = explicitExecutionSourceOrder(prior);
+      if (prior.id === execution.id) return false;
+      if (executionHasExactTime(prior) !== executionHasExactTime(execution)) return false;
+      if (executionHasExactTime(prior)) {
+        if (replayCursorAt(prior.executedAt).localeCompare(replayCursorAt(execution.executedAt)) >= 0) return false;
+        const sameDayExecutions = executions.filter(candidate =>
+          (candidate.source.tradingDate ?? candidate.source.marketCalendarDate ?? candidate.executedAt.slice(0, 10)) === day,
+        );
+        const hasSourceOrderConflict = sameDayExecutions.some((left, index) =>
+          sameDayExecutions.slice(index + 1).some(right => executionSourceOrderConflictsWithTime(left, right)),
+        );
+        return !hasSourceOrderConflict;
+      }
+      const sameDayExecutions = executions.filter(candidate =>
+        (candidate.source.tradingDate ?? candidate.source.marketCalendarDate ?? candidate.executedAt.slice(0, 10)) === day,
+      );
+      const documentKeys = new Set(sameDayExecutions.map(executionDocumentKey));
+      const sourceOrders = sameDayExecutions.map(explicitExecutionSourceOrder);
+      const sourceOrderComparable = documentKeys.size === 1 && !documentKeys.has(undefined) &&
+        sourceOrders.every(order => order !== undefined) && new Set(sourceOrders).size === sourceOrders.length;
+      return sourceOrderComparable &&
+        executionDocumentKey(prior) === executionDocumentKey(execution) &&
+        priorOrder !== undefined &&
+        currentOrder !== undefined &&
+        priorOrder < currentOrder;
+    };
     const openingPosition = statementPositions
-      .filter(p => matches(p) && (p.phase === "opening" ? p.date <= day : p.date < day))
-      .sort((a, b) => b.date.localeCompare(a.date) || (a.phase === b.phase ? 0 : a.phase === "closing" ? -1 : 1))[0];
-    const positionEvents = [...new Map([...(execution.source.positionEvents ?? []).filter(e => !superseded(e)), ...events.filter(event => matches(event) || (!isSimulation && compatibleUnassignedFee(event, execution)))].map(event => [`${event.documentId ?? ""}:${event.accountId}:${event.id}`, event])).values()];
+      .filter(p => matches(p) && precedesExecution(p))
+      .sort((a, b) => {
+        const date = b.date.localeCompare(a.date);
+        if (date !== 0) return date;
+        if (a.phase !== b.phase) return a.phase === "closing" ? -1 : 1;
+        if (a.phase !== "closing") return 0;
+        const aExecution = transactionExecutions(a)[0];
+        const bExecution = transactionExecutions(b)[0];
+        if (aExecution && bExecution && executionHasExactTime(aExecution) && executionHasExactTime(bExecution)) {
+          return replayCursorAt(bExecution.executedAt).localeCompare(replayCursorAt(aExecution.executedAt));
+        }
+        const aOrder = aExecution ? explicitExecutionSourceOrder(aExecution) : undefined;
+        const bOrder = bExecution ? explicitExecutionSourceOrder(bExecution) : undefined;
+        return aOrder !== undefined && bOrder !== undefined ? bOrder - aOrder : 0;
+      })[0];
+    const positionEvents = [...new Map([...(execution.source.positionEvents ?? []).filter(e => !superseded(e, documents)), ...events.filter(event => matches(event) || (!isSimulation && compatibleUnassignedFee(event, execution)))].map(event => [`${event.documentId ?? ""}:${event.accountId}:${event.id}`, event])).values()];
     const source = { ...execution.source };
     delete source.openingPosition;
     delete source.statementPositions;
@@ -315,7 +536,11 @@ export function applyMonthlyHistoryEvidence(executions: TradeExecution[], monthl
     // A later no-trade month can invalidate an earlier still-held position.
     // Conservatively withhold certification for that instrument's history until
     // corrected; do not silently lose the flag just because no later fill exists.
-    const affectedDocuments = monthly.filter(m => (!m.accountId || m.accountId === execution.accountId) && (m.historyIncomplete || m.incompleteInstruments?.some(i => i.market === execution.instrument.market && symbolKey(i.symbol, i.market) === symbolKey(execution.instrument.symbol, execution.instrument.market))));
+    const affectedDocuments = applicableMonthly.filter(m =>
+      !(m.evidenceScope === undefined && scopedDocuments.has(m.documentId)) &&
+      (!m.accountId || m.accountId === execution.accountId) &&
+      (m.historyIncomplete || m.incompleteInstruments?.some(i => i.market === execution.instrument.market && symbolKey(i.symbol, i.market) === symbolKey(execution.instrument.symbol, execution.instrument.market))),
+    );
     const historyIncomplete = [...new Set([...(source.historyIncomplete ?? []).filter(id => !documents.has(id)), ...affectedDocuments.map(m => m.documentId)])];
     delete source.historyIncomplete;
     if (historyIncomplete.length) source.historyIncomplete = historyIncomplete;

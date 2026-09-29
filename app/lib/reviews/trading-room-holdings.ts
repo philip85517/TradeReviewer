@@ -7,6 +7,7 @@ import { replayPositionAtPrice, type PositionLedgerSnapshot } from "../replay/po
 import { canonicalInstrumentId } from "../instruments/display-name";
 import { statementPositionAt, statementEventAt } from "../import/statement-evidence";
 import type { StatementPosition } from "../import/monthly-statement";
+import { isBonusShareEvidence } from "../trades/bonus-share-evidence";
 import {
   classifyTradingRoomAsset,
   filterRoomRows,
@@ -434,8 +435,8 @@ function replayEvidencePosition(
       const events = (episode.positionEvents ?? []).filter(event => matches(event) &&
         statementEventAt(event.date.length === 7 ? { ...event, displayTimePolicy: undefined } : event) <= cursor);
       // No admitted inventory evidence means unknown, never the ledger compatibility zero.
-      const hasInventoryEvent = events.some(event => ["transfer-in", "transfer-out"].includes(event.kind) || event.kind === "ipo" && event.quantity !== undefined);
-      if (!positions.length && !hasInventoryEvent || events.some(event => event.kind === "corporate-action")) return null;
+      const hasInventoryEvent = events.some(event => ["transfer-in", "transfer-out"].includes(event.kind) || event.kind === "ipo" && event.quantity !== undefined || isBonusShareEvidence(event));
+      if (!positions.length && !hasInventoryEvent || events.some(event => event.kind === "corporate-action" && !isBonusShareEvidence(event))) return null;
       return preserveEpisodeAccuracy(replayPositionAtPrice({
         executions: [], markPrice: quote?.price ?? "0", cursor: asOfDate,
         inventoryIdentity: { accountId: episode.accountId, symbol: episode.instrument.symbol, market: episode.instrument.market },

@@ -8,7 +8,11 @@ import {
   type RoomMoneyView,
   type RoomTargetCurrency,
 } from "../reviews/trading-room-scope";
-import { executionSettlementCurrency, tradeNatureOf, type TradeExecution, type TradeNature } from "../trades/types";
+import {
+  isCanonicalTradingViewAccountExecution,
+  TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+} from "../trades/tradingview-account-identity";
+import { tradeNatureOf, type TradeExecution, type TradeNature } from "../trades/types";
 
 export const CASH_SCHEMA_VERSION = 1 as const;
 export const CASH_SETTINGS_KEY = "trading-room.cash.v1" as const;
@@ -21,6 +25,18 @@ export type CashScope = {
   simulationRunId: string | null;
 };
 
+/**
+ * Cash is keyed by business account and currency.  A simulation run is kept
+ * on legacy records for source filtering, but the canonical TradingView
+ * account deliberately uses a null run to aggregate all source reports.
+ */
+export type CashBusinessKey = {
+  nature: CashNature;
+  accountId: string;
+  currency: CashCurrency;
+  simulationRunId: string | null;
+};
+
 export type CashBaselineRecord = {
   id: string;
   scope: CashScope;
@@ -29,10 +45,15 @@ export type CashBaselineRecord = {
   balance: string;
   asOf: string;
   updatedAt: string;
+  /** Explicit confirmation/source metadata. Legacy rows omit these fields. */
+  source?: string;
+  revision?: number;
 };
 
 export type CashBaselineDraft = Omit<CashBaselineRecord, "id" | "updatedAt"> & {
   id?: string;
+  /** Required by the CAS/API path; omitted legacy drafts are normalized for compatibility. */
+  expectedRevision?: number | null;
 };
 
 export type CashBaselineState = {
@@ -68,6 +89,7 @@ export type CashExecutionContext = {
   feeStatus: "reported" | "allocated" | "unknown";
   platform: string;
   source: "settlement" | "cashChange" | "priceTimesQuantity" | "unknown";
+  dateOnly?: boolean;
 };
 
 export type CashFeeResolution = {
@@ -112,6 +134,8 @@ type DecimalValue = Decimal | null;
 
 const ISO_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+const COMPACT_DATE = /^(\d{4})(\d{2})(\d{2})$/;
+const TEXT_DATE = /^(\d{4})[-/]?(\d{2})[-/]?(\d{2})/;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -153,9 +177,20 @@ function validInstant(value: unknown): value is string {
   return typeof value === "string" && ISO_TIMESTAMP.test(value) && Number.isFinite(Date.parse(value));
 }
 
+function dateFromText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const text = value.trim();
+  const compact = COMPACT_DATE.exec(text);
+  const parts = compact ?? TEXT_DATE.exec(text);
+  if (!parts) return null;
+  const candidate = `${parts[1]}-${parts[2]}-${parts[3]}`;
+  return validDate(candidate) ? candidate : null;
+}
+
 function normalizeScope(value: unknown): CashScope | null {
   if (!isRecord(value) || (value.nature !== "live" && value.nature !== "simulation")) return null;
   if (value.nature === "live") return value.simulationRunId === null ? { nature: "live", simulationRunId: null } : null;
+  if (value.simulationRunId === null) return { nature: "simulation", simulationRunId: null };
   return typeof value.simulationRunId === "string" && value.simulationRunId.trim().length > 0
     ? { nature: "simulation", simulationRunId: value.simulationRunId.trim() }
     : null;
@@ -175,12 +210,13 @@ function normalizedRecord(value: unknown): CashBaselineRecord | null {
     !scope ||
     typeof value.id !== "string" || !value.id.trim() ||
     typeof value.accountId !== "string" || !value.accountId.trim() ||
+    (scope.nature === "simulation" && scope.simulationRunId === null && value.accountId.trim() !== TRADINGVIEW_CANONICAL_ACCOUNT_ID) ||
     !validCurrency(value.currency) ||
     balance === null ||
     !validInstant(value.asOf) ||
     !validInstant(value.updatedAt)
   ) return null;
-  return {
+  const record: CashBaselineRecord = {
     id: value.id.trim(),
     scope,
     accountId: value.accountId.trim(),
@@ -189,6 +225,9 @@ function normalizedRecord(value: unknown): CashBaselineRecord | null {
     asOf: new Date(value.asOf).toISOString(),
     updatedAt: new Date(value.updatedAt).toISOString(),
   };
+  if (typeof value.source === "string" && value.source.trim()) record.source = value.source.trim();
+  if (Number.isInteger(value.revision) && Number(value.revision) >= 0) record.revision = Number(value.revision);
+  return record;
 }
 
 export function emptyCashBaselineState(): CashBaselineState {
@@ -239,12 +278,27 @@ export function normalizeCashBaselineDraft(value: unknown): CashBaselineDraft | 
   if (!isRecord(value)) return null;
   const scope = normalizeScope(value.scope);
   const balance = normalizeBalance(value.balance);
+  const source = value.source === undefined
+    ? undefined
+    : typeof value.source === "string" && value.source.trim()
+      ? value.source.trim()
+      : null;
+  const expectedRevision = value.expectedRevision === undefined
+    ? undefined
+    : value.expectedRevision === null
+      ? null
+      : Number.isInteger(value.expectedRevision) && Number(value.expectedRevision) >= 0
+        ? Number(value.expectedRevision)
+        : NaN;
   if (
     !scope ||
     typeof value.accountId !== "string" || !value.accountId.trim() ||
+    (scope.nature === "simulation" && scope.simulationRunId === null && value.accountId.trim() !== TRADINGVIEW_CANONICAL_ACCOUNT_ID) ||
     !validCurrency(value.currency) ||
     balance === null ||
-    !validInstant(value.asOf)
+    !validInstant(value.asOf) ||
+    source === null ||
+    (typeof expectedRevision === "number" && !Number.isFinite(expectedRevision))
   ) return null;
   const id = typeof value.id === "string" && value.id.trim() ? value.id.trim() : undefined;
   return {
@@ -254,15 +308,26 @@ export function normalizeCashBaselineDraft(value: unknown): CashBaselineDraft | 
     currency: value.currency,
     balance,
     asOf: new Date(value.asOf).toISOString(),
+    ...(source ? { source } : {}),
+    ...(expectedRevision === undefined ? {} : { expectedRevision }),
   };
 }
 
 export function cashScopeKey(scope: CashScope): string {
-  return scope.nature === "live" ? "live" : `simulation:${scope.simulationRunId}`;
+  return scope.nature === "live"
+    ? "live"
+    : scope.simulationRunId === null
+      ? "simulation"
+      : `simulation:${scope.simulationRunId}`;
 }
 
 export function cashBaselineKey(value: Pick<CashBaselineRecord, "scope" | "accountId" | "currency">): string {
   return `${cashScopeKey(value.scope)}:${value.accountId}:${value.currency}`;
+}
+
+/** Stable key for consumers that need to persist/compare the business scope. */
+export function cashBusinessKey(value: Pick<CashBaselineRecord, "scope" | "accountId" | "currency">): string {
+  return cashBaselineKey(value);
 }
 
 export function upsertCashBaseline(
@@ -328,14 +393,83 @@ function feeStatusOf(execution: TradeExecution): CashExecutionContext["feeStatus
         : "unknown";
 }
 
+/**
+ * Cash may only be bucketed when the source explicitly identifies its
+ * settlement currency. The instrument quote is deliberately not a fallback:
+ * an HK quote can settle in CNY through Stock Connect, and a cash change with
+ * no currency evidence cannot be assigned to an account bucket.
+ */
+function explicitSettlementCurrency(execution: TradeExecution): CashCurrency | null {
+  const currency = normalizedCurrency(execution.source.settlement?.currency);
+  return validCurrency(currency) ? currency : null;
+}
+
+function dateOnlyOf(execution: TradeExecution): boolean {
+  return execution.source.timePrecision === "date-only" ||
+    execution.source.sourceTimeKind === "order" ||
+    execution.source.sourceTimeKind === "date" ||
+    ISO_DATE.test(execution.executedAt);
+}
+
 function sourceDate(execution: TradeExecution): string | null {
-  const candidate = execution.source.tradingDate ?? execution.source.marketCalendarDate;
-  if (validDate(candidate)) return candidate;
+  for (const candidate of [
+    execution.source.tradingDate,
+    execution.source.marketCalendarDate,
+    execution.source.sourceTimestampText,
+  ]) {
+    const date = dateFromText(candidate);
+    if (date) return date;
+  }
   try {
     return marketTradingDate(execution.executedAt, execution.instrument.market);
   } catch {
     return null;
   }
+}
+
+type BaselineRelation = "before" | "after" | "ambiguous";
+
+function relationToBaseline(
+  dateOnly: boolean,
+  executionDate: string | null,
+  executedAt: string,
+  market: string,
+  baseline: CashBaselineRecord,
+): BaselineRelation {
+  if (dateOnly) {
+    let baselineDate: string;
+    try {
+      baselineDate = marketTradingDate(baseline.asOf, market);
+    } catch {
+      return "ambiguous";
+    }
+    if (!executionDate || executionDate === baselineDate) return "ambiguous";
+    return executionDate < baselineDate ? "before" : "after";
+  }
+  const executionInstant = Date.parse(executedAt);
+  const baselineInstant = Date.parse(baseline.asOf);
+  if (!Number.isFinite(executionInstant) || !Number.isFinite(baselineInstant)) return "ambiguous";
+  return executionInstant <= baselineInstant ? "before" : "after";
+}
+
+function relationForExecution(execution: TradeExecution, baseline: CashBaselineRecord): BaselineRelation {
+  return relationToBaseline(
+    dateOnlyOf(execution),
+    sourceDate(execution),
+    execution.executedAt,
+    execution.instrument.market,
+    baseline,
+  );
+}
+
+function relationForContext(context: CashExecutionContext, baseline: CashBaselineRecord): BaselineRelation {
+  return relationToBaseline(
+    context.dateOnly === true,
+    context.tradingDate,
+    context.executedAt,
+    context.market,
+    baseline,
+  );
 }
 
 function contextFor(
@@ -348,14 +482,16 @@ function contextFor(
     normalizedSymbol(metadata.symbol) !== normalizedSymbol(execution.instrument.symbol) ||
     normalizedSymbol(metadata.market) !== normalizedSymbol(execution.instrument.market)
   ) return { context: null, reason: `交易 ${execution.id} 的资产 metadata 身份不匹配` };
-  const nature = tradeNatureOf(execution);
-  const scope: CashScope = {
-    nature: nature === "live" || nature === "simulation" ? nature : "live",
-    simulationRunId: nature === "simulation" ? execution.source.simulationRunId ?? null : null,
-  };
-  const currency = normalizedCurrency(executionSettlementCurrency(execution));
+  const scope = cashScopeFromExecution(execution);
+  if (!scope) return { context: null, reason: `交易 ${execution.id} 缺少可审计的现金业务范围` };
   const settlement = execution.source.settlement;
-  const settlementCurrency = normalizedCurrency(settlement?.currency);
+  const settlementCurrency = explicitSettlementCurrency(execution);
+  if (!settlementCurrency) {
+    return {
+      context: null,
+      reason: `交易 ${execution.id} 缺少可审计的结算币种证据，不能用报价币种作为现金币种`,
+    };
+  }
   const quantity = decimal(execution.quantity);
   const price = decimal(execution.price);
   const computedGross = !settlement && quantity !== null && price !== null
@@ -375,19 +511,20 @@ function contextFor(
       scope,
       assetType: metadata.assetType,
       quantity: execution.quantity,
-      currency,
+      currency: settlementCurrency,
       quoteCurrency: normalizedCurrency(execution.instrument.currency),
-      settlementCurrency: settlementCurrency || currency,
+      settlementCurrency,
       side: execution.side,
       executedAt: execution.executedAt,
       tradingDate: sourceDate(execution),
       grossAmount,
       netAmount,
       fee,
-      feeCurrency: settlementCurrency || currency,
+      feeCurrency: settlementCurrency,
       feeStatus: feeStatusOf(execution),
       platform: execution.source.platform,
       source,
+      dateOnly: dateOnlyOf(execution),
     },
     reason: null,
   };
@@ -440,8 +577,8 @@ function deltaFor(
   if (resolution.availability !== "available") return { amount: null, reason: resolution.reason ?? "费用不可用" };
   const fee = decimal(resolution.amount);
   if (fee === null || fee.lt(0)) return { amount: null, reason: "费用金额无效" };
-  const feeCurrency = normalizedCurrency(resolution.currency ?? context.currency);
-  if (feeCurrency !== normalizedCurrency(context.currency)) return { amount: null, reason: "费用与结算币种不一致" };
+  const feeCurrency = normalizedCurrency(resolution.currency ?? context.settlementCurrency);
+  if (feeCurrency !== normalizedCurrency(context.settlementCurrency)) return { amount: null, reason: "费用与结算币种不一致" };
   const raw = context.side === "buy" ? gross.plus(fee).negated() : gross.minus(fee);
   return { amount: raw, reason: null };
 }
@@ -465,6 +602,7 @@ export function buildCashSummary(input: BuildCashSummaryInput): CashSummary {
   const selectedAccounts = new Set(input.accountIds.filter((id) => id.trim()));
   const baselines = input.baselines.filter((record) =>
     sameScope(record.scope, input.scope) &&
+    (input.scope.nature !== "simulation" || input.scope.simulationRunId !== null || record.accountId === TRADINGVIEW_CANONICAL_ACCOUNT_ID) &&
     (selectedAccounts.size === 0 || selectedAccounts.has(record.accountId)),
   );
   const uniqueExecutions = [...new Map(input.executions.map((execution) => [execution.id, execution])).values()];
@@ -474,29 +612,24 @@ export function buildCashSummary(input: BuildCashSummaryInput): CashSummary {
   let coveredEvidenceGaps = 0;
   let todayEvidenceGap = false;
   const baselineForExecution = (execution: TradeExecution): CashBaselineRecord | undefined => {
-    const nature = tradeNatureOf(execution);
-    if (nature !== "live" && nature !== "simulation") return undefined;
-    const simulationRunId = nature === "simulation" ? execution.source.simulationRunId?.trim() ?? null : null;
-    if (nature === "simulation" && !simulationRunId) return undefined;
-    const currency = normalizedCurrency(executionSettlementCurrency(execution));
-    const executedAt = Date.parse(execution.executedAt);
-    if (!currency || !Number.isFinite(executedAt)) return undefined;
+    const executionScope = cashScopeFromExecution(execution);
+    if (!executionScope || !sameScope(executionScope, input.scope)) return undefined;
+    const currency = explicitSettlementCurrency(execution);
+    if (!currency) return undefined;
     const baseline = baselines.find((record) =>
       record.accountId === execution.accountId &&
       record.currency === currency &&
-      sameScope(record.scope, { nature, simulationRunId }),
+      sameScope(record.scope, executionScope),
     );
     if (!baseline) return undefined;
-    return executedAt <= Date.parse(baseline.asOf) ? baseline : undefined;
+    return relationForExecution(execution, baseline) === "before" ? baseline : undefined;
   };
   for (const execution of uniqueExecutions) {
     const rawNature = tradeNatureOf(execution);
     if (rawNature !== "unknown" && rawNature !== input.scope.nature) continue;
     if (selectedAccounts.size > 0 && !selectedAccounts.has(execution.accountId)) continue;
-    if (
-      rawNature === "simulation" &&
-      execution.source.simulationRunId !== input.scope.simulationRunId
-    ) continue;
+    const executionScope = cashScopeFromExecution(execution);
+    if (rawNature === "simulation" && (!executionScope || !sameScope(executionScope, input.scope))) continue;
     if (rawNature === "unknown") {
       reasons.push(`交易 ${execution.id} 的实盘/模拟运行未知`);
       if (execution.side === "sell" && sourceDate(execution) === today) todayEvidenceGap = true;
@@ -581,7 +714,16 @@ export function buildCashSummary(input: BuildCashSummaryInput): CashSummary {
       }
       const amounts = [new Decimal(baseline.balance)];
       let status: CashSummaryStatus = "available";
-      for (const context of contexts.filter((item) => item.accountId === accountId && normalizedCurrency(item.currency) === currency && Date.parse(item.executedAt) > Date.parse(baseline.asOf))) {
+      for (const context of contexts.filter((item) => item.accountId === accountId && normalizedCurrency(item.currency) === currency)) {
+        const relation = relationForContext(context, baseline);
+        if (relation === "before") continue;
+        if (relation === "ambiguous") {
+          status = "partial";
+          totalPartial = true;
+          excluded += 1;
+          reasons.push(`现金成交 ${context.id} 与基准处于同一自然日但日期级先后不明`);
+          continue;
+        }
         const delta = deltaFor(context, resolver);
         if (delta.amount === null) {
           status = "partial";
@@ -641,6 +783,12 @@ export function buildCashSummary(input: BuildCashSummaryInput): CashSummary {
 export function cashScopeFromExecution(execution: TradeExecution): CashScope | null {
   const nature: TradeNature = tradeNatureOf(execution);
   if (nature === "live") return { nature: "live", simulationRunId: null };
+  // Canonical TradingView rows are one business simulation account.  Their
+  // source run remains available on the execution for provenance, but must
+  // never become the cash/principal scope or be inferred from the first row.
+  if (nature === "simulation" && isCanonicalTradingViewAccountExecution(execution)) {
+    return { nature: "simulation", simulationRunId: null };
+  }
   if (nature === "simulation" && execution.source.simulationRunId?.trim()) {
     return { nature: "simulation", simulationRunId: execution.source.simulationRunId.trim() };
   }

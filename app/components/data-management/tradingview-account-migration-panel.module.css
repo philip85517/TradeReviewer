@@ -1,0 +1,623 @@
+.panel {
+  display: grid;
+  min-width: 0;
+  gap: 16px;
+  color: var(--text, #e7edf6);
+}
+
+.header,
+.actionRow,
+.accountSummary,
+.principal,
+.mappingPair {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.header {
+  justify-content: space-between;
+}
+
+.eyebrow {
+  color: var(--blue, #8cb7ff);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.header h3 {
+  margin: 4px 0 6px;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+
+.header p,
+.actionHint,
+.loading,
+.error small,
+.operationId,
+.empty,
+.mappingList span,
+.mappingList small,
+.principal small,
+.cashMissing small {
+  color: var(--muted, #9aaac0);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.header p {
+  max-width: 720px;
+  margin: 0;
+}
+
+.operationBadge {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border: 1px solid #315071;
+  border-radius: 999px;
+  color: #b9d5ff;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.actionRow {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.previewButton {
+  min-height: 36px;
+  padding: 8px 13px;
+  border: 1px solid #4b76aa;
+  border-radius: 7px;
+  background: #1e4c80;
+  color: #f2f7ff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.previewButton:hover,
+.previewButton:focus-visible {
+  background: #2a619e;
+}
+
+.previewButton:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.loading,
+.error,
+.resultNotice,
+.blockers {
+  margin: 0;
+  padding: 11px 12px;
+  border-radius: 7px;
+}
+
+.loading,
+.resultNotice {
+  border: 1px solid #315071;
+  background: rgba(25, 50, 78, 0.55);
+}
+
+.error,
+.blockers {
+  display: grid;
+  gap: 7px;
+  border: 1px solid #795b45;
+  background: rgba(86, 58, 38, 0.42);
+  color: #f3d39c;
+}
+
+.error span,
+.error small {
+  display: block;
+}
+
+.secondaryButton,
+.commitButton {
+  min-height: 36px;
+  padding: 8px 13px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.secondaryButton {
+  border: 1px solid #49627d;
+  background: rgba(35, 53, 73, 0.8);
+  color: #d4e3f5;
+}
+
+.secondaryButton:hover,
+.secondaryButton:focus-visible {
+  border-color: #739dcc;
+  background: rgba(49, 75, 105, 0.9);
+}
+
+.secondaryButton:disabled,
+.commitButton:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.commitButton {
+  border: 1px solid #4d9a76;
+  background: #1d684d;
+  color: #effff7;
+}
+
+.commitButton:hover,
+.commitButton:focus-visible {
+  background: #278460;
+}
+
+.commitActions,
+.guardActions,
+.receiptActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.commitActions {
+  padding-top: 2px;
+}
+
+.commitActions > span {
+  color: var(--muted, #9aaac0);
+  font-size: 12px;
+}
+
+.commitGuard,
+.commitReceipt,
+.rollbackPreview,
+.recovery {
+  display: grid;
+  min-width: 0;
+  gap: 11px;
+  padding: 13px;
+  border: 1px solid #365678;
+  border-radius: 8px;
+  background: rgba(18, 35, 55, 0.72);
+}
+
+.commitGuard h3 {
+  margin: 0;
+  color: #e4efff;
+  font-size: 14px;
+}
+
+.commitGuard p,
+.rollbackPreview p {
+  margin: 0;
+  color: #b6c9e0;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.digestDetails {
+  min-width: 0;
+  border-top: 1px solid #304a68;
+  border-bottom: 1px solid #304a68;
+}
+
+.digestDetails summary {
+  padding: 9px 0;
+  color: #c4dafa;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.digestList {
+  display: grid;
+  gap: 7px;
+  margin: 0 0 10px;
+}
+
+.digestList > div {
+  display: grid;
+  grid-template-columns: minmax(90px, 0.3fr) minmax(0, 1fr);
+  gap: 10px;
+  min-width: 0;
+}
+
+.digestList dt {
+  color: #8fa7c4;
+  font-size: 11px;
+}
+
+.digestList dd {
+  min-width: 0;
+  margin: 0;
+  color: #dceaff;
+  font-size: 12px;
+}
+
+.digestList code,
+.rollbackPreview code,
+.recovery code {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.receiptNotice,
+.refreshFailure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 7px 12px;
+  padding: 10px 11px;
+  border-radius: 7px;
+}
+
+.receiptNotice {
+  border: 1px solid #376a83;
+  background: rgba(24, 70, 91, 0.5);
+}
+
+.refreshFailure {
+  border: 1px solid #795b45;
+  background: rgba(86, 58, 38, 0.46);
+}
+
+.receiptNotice strong,
+.refreshFailure strong {
+  font-size: 13px;
+}
+
+.receiptNotice strong {
+  color: #d8f0ff;
+}
+
+.refreshFailure strong,
+.refreshFailure span {
+  color: #f3d39c;
+}
+
+.receiptNotice span {
+  color: #b8d6e7;
+  font-size: 12px;
+}
+
+.receiptGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.receiptGrid > div {
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid #2b4a61;
+  border-radius: 6px;
+  background: rgba(17, 35, 49, 0.68);
+}
+
+.receiptGrid dt {
+  color: #8fa7bf;
+  font-size: 11px;
+}
+
+.receiptGrid dd {
+  margin: 5px 0 0;
+  color: #e7f2ff;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.rollbackPreview {
+  border-color: #4c6076;
+  background: rgba(24, 34, 49, 0.76);
+}
+
+.blockerList {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding-left: 18px;
+  color: #f3d39c;
+  font-size: 12px;
+}
+
+.recovery {
+  gap: 9px;
+  border-color: #4c6076;
+  background: rgba(24, 34, 49, 0.58);
+}
+
+.recovery > strong {
+  color: #d4e2f4;
+  font-size: 12px;
+}
+
+.recoveryRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  min-width: 0;
+}
+
+.unavailable {
+  color: #f0d3a2;
+  font-weight: 600;
+}
+
+.unavailableReason {
+  color: #d8c4a8;
+}
+
+.result {
+  display: grid;
+  min-width: 0;
+  gap: 14px;
+}
+
+.resultNotice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 14px;
+}
+
+.resultNotice strong {
+  color: #dcecff;
+  font-size: 13px;
+}
+
+.resultNotice span {
+  color: #adc4de;
+  font-size: 12px;
+}
+
+.blockers ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.summaryValue {
+  min-width: 0;
+  padding: 10px 11px;
+  border: 1px solid #2b4059;
+  border-radius: 7px;
+  background: rgba(20, 33, 49, 0.76);
+}
+
+.summaryValue dt {
+  color: #8fa2ba;
+  font-size: 11px;
+}
+
+.summaryValue dd {
+  margin: 5px 0 0;
+  color: #ecf4ff;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.accountSummary,
+.principal,
+.conservation {
+  padding: 12px;
+  border: 1px solid #2a405b;
+  border-radius: 7px;
+  background: rgba(17, 29, 44, 0.7);
+}
+
+.accountSummary {
+  align-items: center;
+}
+
+.accountSummary > div,
+.principal > div {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.accountSummary > div:first-child {
+  flex: 1 1 0;
+}
+
+.accountSummary > div:last-child {
+  flex: 1.4 1 0;
+}
+
+.accountSummary span,
+.principal span,
+.targetAccount span {
+  color: #8fa2ba;
+  font-size: 11px;
+}
+
+.accountSummary strong,
+.principal strong,
+.targetAccount strong {
+  color: #e9f2ff;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.arrow {
+  color: #6f9bd2;
+  font-size: 19px;
+}
+
+.panel code {
+  color: #bed7f7;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.conservation h3 {
+  margin: 0 0 7px;
+  font-size: 13px;
+}
+
+.conservation p {
+  margin: 4px 0 0;
+  color: #c5d5e8;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.conservation .unavailable {
+  color: #f0d3a2;
+  font-weight: 600;
+}
+
+.conservation .unavailableReason {
+  color: #d8c4a8;
+}
+
+.principal {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.75fr) minmax(120px, 0.6fr) minmax(240px, 1.65fr);
+}
+
+.cashMissing strong {
+  color: #f0d3a2;
+}
+
+.mappingStack {
+  display: grid;
+  gap: 8px;
+}
+
+.mappingDetails {
+  min-width: 0;
+  border-top: 1px solid #2b4059;
+}
+
+.mappingDetails summary {
+  min-height: 44px;
+  padding: 13px 2px 8px;
+  color: #c7d9f0;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  list-style-position: inside;
+}
+
+.mappingDetails summary:focus-visible {
+  outline: 2px solid #7fb3f2;
+  outline-offset: 2px;
+}
+
+.mappingBody {
+  max-height: 360px;
+  overflow: auto;
+  padding: 2px 2px 8px 20px;
+}
+
+.targetAccount {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 9px;
+  padding: 9px 10px;
+  border-left: 2px solid #5d8fce;
+  background: rgba(37, 70, 108, 0.3);
+}
+
+.mappingList {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding-left: 17px;
+}
+
+.mappingList li {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 8px 9px;
+  border: 1px solid #293d55;
+  border-radius: 6px;
+  background: rgba(15, 26, 40, 0.6);
+}
+
+.mappingPair {
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.mappingPair span {
+  color: #9ebce1;
+}
+
+.mappedText {
+  color: #9bd0b2 !important;
+}
+
+.blockedText {
+  color: #efc38c !important;
+}
+
+.operationId {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .header,
+  .accountSummary,
+  .principal {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .operationBadge {
+    justify-self: start;
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .receiptGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .arrow {
+    transform: rotate(90deg);
+    justify-self: start;
+  }
+
+  .mappingBody {
+    max-height: 320px;
+  }
+
+  .digestList > div {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+}
+
+@media (pointer: coarse) {
+  .previewButton,
+  .secondaryButton,
+  .commitButton {
+    min-height: 44px;
+  }
+}

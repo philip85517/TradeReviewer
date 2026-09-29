@@ -6,6 +6,8 @@ import { ScopeChoiceGroup, ScopeSelect } from "../scope/scope-control-primitives
 export type LibraryScopeControlsProps = {
   scope: SharedScope;
   accountOptions?: readonly { id: string; label: string }[];
+  /** Legacy run choices remain available when the range has source-run evidence. */
+  simulationRunOptions?: readonly { id: string; label: string }[];
   onChange: (patch: Partial<SharedScope>) => void;
 };
 
@@ -13,9 +15,12 @@ export type LibraryScopeControlsProps = {
 export function LibraryScopeControls({
   scope,
   accountOptions = [],
+  simulationRunOptions = [],
   onChange,
 }: LibraryScopeControlsProps) {
   const selectedAccount = scope.accountIds.length === 1 ? scope.accountIds[0] : "all";
+  const showSimulationRun = scope.nature === "simulation" &&
+    (scope.simulationRunId !== null || simulationRunOptions.length > 0);
 
   return (
     <div className="library-scope-controls" aria-label="交易库交易范围">
@@ -59,7 +64,7 @@ export function LibraryScopeControls({
         className="library-scope-choice library-scope-currency"
         onChange={reportCurrency => onChange({ reportCurrency })}
       />
-      {scope.nature === "simulation" && (
+      {showSimulationRun && (
         <label className="library-scope-run">
           <span>模拟运行</span>
           <input

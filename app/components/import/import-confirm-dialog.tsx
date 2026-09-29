@@ -112,12 +112,13 @@ export function ImportConfirmDialog({
   const selectedUnresolvedIds = unresolvedIds.filter(
     (instrumentId) => !deselectedUnresolvedIds.has(instrumentId),
   );
+  const isScopedSupplement = Boolean(preview.supplementChangeSummary);
 
   return (
     <div className="modal-backdrop">
       <section
         ref={dialogRef}
-        className="import-dialog"
+        className="import-dialog import-confirm-dialog"
         role="dialog"
         aria-modal="true"
         aria-labelledby="import-dialog-title"
@@ -138,206 +139,213 @@ export function ImportConfirmDialog({
           </button>
         </header>
 
-        <div className="import-file-summary">
-          <FileSpreadsheet size={20} />
-          <div>
-            <strong>{preview.fileName}</strong>
-            <span>已自动识别为 {preview.sourceLabel} 交易记录</span>
+        <div className="import-dialog-body">
+          <div className="import-file-summary">
+            <FileSpreadsheet size={20} />
+            <div>
+              <strong>{preview.fileName}</strong>
+              <span>已自动识别为 {preview.sourceLabel} 交易记录</span>
+            </div>
           </div>
-        </div>
-        <p className="import-confirm-explanation">确认前请核对账户范围、原币种与交易日期精度。重复成交会按批次指纹跳过；费用未知会保留为未知，不会静默当作 0。</p>
-        {preview.sourceKind === "tradingview" && (
-          <div className="tradingview-import-notice" role="status">
-            <strong>模拟盘 · TradingView</strong>
-            <span>文件只提供交易日期，回放不会伪造具体成交时刻；报告盈亏将在退出日期后显示。</span>
-          </div>
-        )}
-
-        {preview.monthly && <section className="import-category-panel"><strong>月结单证据将一并保存</strong><p>{preview.monthly.month} · {preview.monthly.templateIds.join(" / ")} · {preview.monthly.positions.length} 条持仓快照 · {preview.monthly.events.length} 条辅助流水</p><p>{preview.monthly.timePolicy}</p></section>}
-        {conflicts.length > 0 && <section className="import-category-panel" aria-label="月结单成交冲突"><h3>相同时刻的不同成交，请逐组核对</h3>{conflicts.map(conflict => <div key={conflict.id}>
-          <p>{conflict.incoming[0]?.instrument.symbol} · {conflict.incoming[0]?.executedAt}</p>
-          <p>已存：{conflict.existing.map(e => `${e.side} ${e.quantity} @ ${e.price}，费用 ${e.source.feeStatus === "unknown" ? "待核对" : `${e.fee} ${executionFeeCurrency(e)}`}（${e.source.fileName ?? "已有来源"}）`).join("；")}</p>
-          <p>本次：{conflict.incoming.map(e => `${e.side} ${e.quantity} @ ${e.price}，费用 ${e.source.feeStatus === "unknown" ? "待核对" : `${e.fee} ${executionFeeCurrency(e)}`}（第 ${e.source.page ?? "?"} 页）`).join("；")}</p>
-          <select aria-label={`冲突处理 ${conflict.id}`} value={conflictDecisions?.get(conflict.id) ?? ""} onChange={event => { const choice = event.target.value; if (choice === "keep-existing" || choice === "use-incoming" || choice === "keep-both") onConflictDecision?.(conflict.id, choice); }}>
-            <option value="" disabled>请选择处理方式</option><option value="keep-existing">保留已存，跳过本次</option><option value="use-incoming">使用本次，替换已存</option><option value="keep-both">确认为不同成交，两者保留</option>
-          </select>
-        </div>)}</section>}
-        {(preview.notices?.length ?? 0) > 0 && <section className="import-warning" aria-label="账单解析说明">
-          {preview.notices?.map(message=><p key={message}>{message}</p>)}
-        </section>}
-        <div className="import-stat-grid">
-          <div>
-            <CalendarRange size={17} />
-            <span>交易区间</span>
-            <strong>
-              {date(preview.firstTradeAt)} — {date(preview.lastTradeAt)}
-            </strong>
-          </div>
-          <div>
-            <ListChecks size={17} />
-            <span>有效成交</span>
-            <strong>{preview.tradeCount} 笔成交</strong>
-          </div>
-          <div>
-            <Layers3 size={17} />
-            <span>股票 / ETF</span>
-            <strong>{preview.instrumentCount} 个标的</strong>
-          </div>
-          <div className={preview.duplicateTradeCount > 0 ? "warning" : ""}>
-            <CopyCheck size={17} />
-            <span>重复成交</span>
-            <strong>{preview.duplicateTradeCount} 笔已跳过</strong>
-          </div>
-          {preview.sourceKind === "screenshot" && (
-            <div className={(preview.conflictTradeCount ?? 0) > 0 ? "warning" : ""}>
-              <GitCompareArrows size={17} />
-              <span>成交冲突</span>
-              <strong>{preview.conflictTradeCount ?? 0} 笔已处理</strong>
+          <p className="import-confirm-explanation">确认前请核对账户范围、原币种与交易日期精度。{isScopedSupplement ? "本次来源重复不会新增成交；已有成交仍可能修订证据。" : "重复成交会按批次指纹跳过。"}费用未知会保留为未知，不会静默当作 0。</p>
+          {preview.supplementChangeSummary && <section className="import-category-panel" aria-label="补充导入实际变更">
+            <strong>本次范围实际变更</strong>
+            <p>
+              新增成交 {preview.supplementChangeSummary.newTradeCount} 笔；
+              修订 {preview.supplementChangeSummary.revisedTradeCount} 笔
+              （其中仅证据修订 {preview.supplementChangeSummary.evidenceRevisionCount} 笔）；
+              来源重复 {preview.duplicateTradeCount} 笔（未新增成交；已有成交仍可能修订证据）。
+            </p>
+          </section>}
+          {preview.sourceKind === "tradingview" && (
+            <div className="tradingview-import-notice" role="status">
+              <strong>模拟盘 · TradingView</strong>
+              <span>文件只提供交易日期，回放不会伪造具体成交时刻；报告盈亏将在退出日期后显示。</span>
             </div>
           )}
-          <div
-            className={
-              preview.unresolvedInstrumentCount > 0 ? "warning" : ""
-            }
-          >
-            <SearchX size={17} />
-            <span>暂未识别</span>
-            <strong>
-              {preview.unresolvedInstrumentCount} 个标的
-            </strong>
-          </div>
-        </div>
 
-        <div className="import-classification">
-          <div className="classification-heading">
-            <strong>将进入股票复盘列表</strong>
-            <span>仅包含名称和类型均已确认的股票 / ETF</span>
+          {preview.monthly && <section className="import-category-panel"><strong>月结单证据将一并保存</strong><p>{preview.monthly.month} · {preview.monthly.templateIds.join(" / ")} · {preview.monthly.positions.length} 条持仓快照 · {preview.monthly.events.length} 条辅助流水</p><p>{preview.monthly.timePolicy}</p></section>}
+          {conflicts.length > 0 && <section className="import-category-panel" aria-label="月结单成交冲突"><h3>相同时刻的不同成交，请逐组核对</h3>{conflicts.map(conflict => <div key={conflict.id}>
+            <p>{conflict.incoming[0]?.instrument.symbol} · {conflict.incoming[0]?.executedAt}</p>
+            <p>已存：{conflict.existing.map(e => `${e.side} ${e.quantity} @ ${e.price}，费用 ${e.source.feeStatus === "unknown" ? "待核对" : `${e.fee} ${executionFeeCurrency(e)}`}（${e.source.fileName ?? "已有来源"}）`).join("；")}</p>
+            <p>本次：{conflict.incoming.map(e => `${e.side} ${e.quantity} @ ${e.price}，费用 ${e.source.feeStatus === "unknown" ? "待核对" : `${e.fee} ${executionFeeCurrency(e)}`}（第 ${e.source.page ?? "?"} 页）`).join("；")}</p>
+            <select aria-label={`冲突处理 ${conflict.id}`} value={conflictDecisions?.get(conflict.id) ?? ""} onChange={event => { const choice = event.target.value; if (choice === "keep-existing" || choice === "use-incoming" || choice === "keep-both") onConflictDecision?.(conflict.id, choice); }}>
+              <option value="" disabled>请选择处理方式</option><option value="keep-existing">保留已存，跳过本次</option><option value="use-incoming">使用本次，替换已存</option><option value="keep-both">确认为不同成交，两者保留</option>
+            </select>
+          </div>)}</section>}
+          {(preview.notices?.length ?? 0) > 0 && <section className="import-warning" aria-label="账单解析说明">
+            {preview.notices?.map(message=><p key={message}>{message}</p>)}
+          </section>}
+          <div className="import-stat-grid">
+            <div>
+              <CalendarRange size={17} />
+              <span>交易区间</span>
+              <strong>
+                {date(preview.firstTradeAt)} — {date(preview.lastTradeAt)}
+              </strong>
+            </div>
+            <div>
+              <ListChecks size={17} />
+              <span>有效成交</span>
+              <strong>{preview.tradeCount} 笔成交</strong>
+            </div>
+            <div>
+              <Layers3 size={17} />
+              <span>股票 / ETF</span>
+              <strong>{preview.instrumentCount} 个标的</strong>
+            </div>
+            <div className={preview.duplicateTradeCount > 0 ? "warning" : ""}>
+              <CopyCheck size={17} />
+              <span>{isScopedSupplement ? "来源重复" : "重复成交"}</span>
+              <strong>{isScopedSupplement ? `${preview.duplicateTradeCount} 笔来源重复（未新增成交）` : `${preview.duplicateTradeCount} 笔已跳过`}</strong>
+            </div>
+            {preview.sourceKind === "screenshot" && (
+              <div className={(preview.conflictTradeCount ?? 0) > 0 ? "warning" : ""}>
+                <GitCompareArrows size={17} />
+                <span>成交冲突</span>
+                <strong>{preview.conflictTradeCount ?? 0} 笔已处理</strong>
+              </div>
+            )}
+            <div className={preview.unresolvedInstrumentCount > 0 ? "warning" : ""}>
+              <SearchX size={17} />
+              <span>暂未识别</span>
+              <strong>
+                {preview.unresolvedInstrumentCount} 个标的
+              </strong>
+            </div>
           </div>
-          <div className="classification-list">
-            {preview.instruments.map((item) => (
-              <div className="classification-row" key={item.instrument.id}>
-                <span className="classification-check">
-                  <Check size={13} />
-                </span>
+
+          <div className="import-classification">
+            <div className="classification-heading">
+              <strong>将进入股票复盘列表</strong>
+              <span>仅包含名称和类型均已确认的股票 / ETF</span>
+            </div>
+            <div className="classification-list">
+              {preview.instruments.map((item) => (
+                <div className="classification-row" key={item.instrument.id}>
+                  <span className="classification-check">
+                    <Check size={13} />
+                  </span>
+                  <div>
+                    <strong>
+                      {item.instrument.name}（{item.instrument.symbol}）
+                    </strong>
+                    <span>{item.instrument.market}</span>
+                  </div>
+                  <b>{item.tradeCount} 笔</b>
+                </div>
+              ))}
+              {preview.instruments.length === 0 && (
+                <p className="classification-empty">
+                  当前文件没有可确认导入的股票或 ETF 成交。
+                </p>
+              )}
+            </div>
+          </div>
+
+          {preview.exclusionGroups.length > 0 && (
+            <section className="import-category-panel">
+              <div className="classification-heading">
+                <strong>不会导入</strong>
+                <span>非股票 / ETF 或无效记录</span>
+              </div>
+              <div className="exclusion-groups">
+                {preview.exclusionGroups.map((group) => (
+                  <span key={`${group.category}:${group.label}`}>
+                    {group.label} {group.count} 笔
+                  </span>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {preview.unresolved.length > 0 && (
+            <section className="unresolved-panel">
+              <div className="unresolved-heading">
                 <div>
                   <strong>
-                    {item.instrument.name}（{item.instrument.symbol}）
+                    {preview.unresolvedInstrumentCount} 个标的暂未导入
                   </strong>
-                  <span>{item.instrument.market}</span>
+                  <span>无法确认名称和证券类型，不影响其他标的导入。</span>
                 </div>
-                <b>{item.tradeCount} 笔</b>
-              </div>
-            ))}
-            {preview.instruments.length === 0 && (
-              <p className="classification-empty">
-                当前文件没有可确认导入的股票或 ETF 成交。
-              </p>
-            )}
-          </div>
-        </div>
-
-        {preview.exclusionGroups.length > 0 && (
-          <section className="import-category-panel">
-            <div className="classification-heading">
-              <strong>不会导入</strong>
-              <span>非股票 / ETF 或无效记录</span>
-            </div>
-            <div className="exclusion-groups">
-              {preview.exclusionGroups.map((group) => (
-                <span key={`${group.category}:${group.label}`}>
-                  {group.label} {group.count} 笔
-                </span>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {preview.unresolved.length > 0 && (
-          <section className="unresolved-panel">
-            <div className="unresolved-heading">
-              <div>
-                <strong>
-                  {preview.unresolvedInstrumentCount} 个标的暂未导入
-                </strong>
-                <span>无法确认名称和证券类型，不影响其他标的导入。</span>
-              </div>
-              <button
-                className="secondary-button retry-unresolved"
-                disabled={
-                  retryingUnresolved ||
-                  selectedUnresolvedIds.length === 0
-                }
-                onClick={() =>
-                  onRetryUnresolved(selectedUnresolvedIds)
-                }
-              >
-                <RefreshCw
-                  size={13}
-                  className={retryingUnresolved ? "spinning" : ""}
-                />
-                {retryingUnresolved ? "正在查询…" : "重新查询"}
-              </button>
-            </div>
-            <div className="unresolved-list">
-              {preview.unresolved.map((failure) => {
-                const instrumentId = canonicalInstrumentId(
-                  failure.symbol,
-                  failure.market,
-                );
-                const summaries = attemptSummaries(failure);
-                return (
-                <label
-                  key={`${failure.market}:${failure.symbol}`}
-                  className="unresolved-row"
+                <button
+                  className="secondary-button retry-unresolved"
+                  disabled={
+                    retryingUnresolved ||
+                    selectedUnresolvedIds.length === 0
+                  }
+                  onClick={() =>
+                    onRetryUnresolved(selectedUnresolvedIds)
+                  }
                 >
-                  <input
-                    type="checkbox"
-                    aria-label={`选择重新查询 ${failure.symbol}`}
-                    checked={!deselectedUnresolvedIds.has(instrumentId)}
-                    onChange={(event) =>
-                      setDeselectedUnresolvedIds((current) => {
-                        const next = new Set(current);
-                        if (event.target.checked) {
-                          next.delete(instrumentId);
-                        } else {
-                          next.add(instrumentId);
-                        }
-                        return next;
-                      })
-                    }
+                  <RefreshCw
+                    size={13}
+                    className={retryingUnresolved ? "spinning" : ""}
                   />
-                  <div className="unresolved-description">
-                    <strong>
-                      {failure.symbol} · {failure.market}
-                    </strong>
-                    <span className="attempt-summary-label">
-                      失败摘要
-                    </span>
-                    <ul className="attempt-summary-list">
-                      {summaries.length > 0 ? (
-                        summaries.map((summary) => (
-                          <li key={summary}>{summary}</li>
-                        ))
-                      ) : (
-                        <li>暂无可用数据源</li>
-                      )}
-                    </ul>
-                  </div>
-                </label>
-                );
-              })}
+                  {retryingUnresolved ? "正在查询…" : "重新查询"}
+                </button>
+              </div>
+              <div className="unresolved-list">
+                {preview.unresolved.map((failure) => {
+                  const instrumentId = canonicalInstrumentId(
+                    failure.symbol,
+                    failure.market,
+                  );
+                  const summaries = attemptSummaries(failure);
+                  return (
+                  <label
+                    key={`${failure.market}:${failure.symbol}`}
+                    className="unresolved-row"
+                  >
+                    <input
+                      type="checkbox"
+                      aria-label={`选择重新查询 ${failure.symbol}`}
+                      checked={!deselectedUnresolvedIds.has(instrumentId)}
+                      onChange={(event) =>
+                        setDeselectedUnresolvedIds((current) => {
+                          const next = new Set(current);
+                          if (event.target.checked) {
+                            next.delete(instrumentId);
+                          } else {
+                            next.add(instrumentId);
+                          }
+                          return next;
+                        })
+                      }
+                    />
+                    <div className="unresolved-description">
+                      <strong>
+                        {failure.symbol} · {failure.market}
+                      </strong>
+                      <span className="attempt-summary-label">
+                        失败摘要
+                      </span>
+                      <ul className="attempt-summary-list">
+                        {summaries.length > 0 ? (
+                          summaries.map((summary) => (
+                            <li key={summary}>{summary}</li>
+                          ))
+                        ) : (
+                          <li>暂无可用数据源</li>
+                        )}
+                      </ul>
+                    </div>
+                  </label>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {preview.blocked && (
+            <div className="import-warning">
+              <AlertTriangle size={14} />
+              {preview.blockingReason ?? "没有完整的股票或 ETF 成交可以导入。"}
             </div>
-          </section>
-        )}
+          )}
 
-        {preview.blocked && (
-          <div className="import-warning">
-            <AlertTriangle size={14} />
-            {preview.blockingReason ?? "没有完整的股票或 ETF 成交可以导入。"}
-          </div>
-        )}
-
-        {saveError && <div className="import-warning" role="alert">{saveError}</div>}
+          {saveError && <div className="import-warning" role="alert">{saveError}</div>}
+        </div>
         <footer className="modal-footer">
           <p>{preview.monthly ? "成交和月结单证据保存到本机；无成交月份也保留账期与持仓证据。" : "仅完整成交会保存到此设备，并为新增股票启动行情更新。"}</p>
           <button className="secondary-button" disabled={saving} onClick={onCancel}>

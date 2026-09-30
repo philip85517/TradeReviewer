@@ -1,4 +1,27 @@
-# Homepage recovery checkpoint
+# Homepage recovery — integration status
+
+The user explicitly requested pushing this version and merging it into master after being informed of the remaining import-readiness and performance failures. Integration is requested with these known limitations; this is not a claim that all acceptance gates pass.
+
+## Current verified state
+
+- Build12 integrates the upstream unified header and latest strategy prototype changes. Typecheck and production build passed; the 779-file source manifest remained unchanged during build and after diagnostic test restoration. Typecheck was rerun successfully before publication.
+- Real-page checks passed for compact Recall controls/layers/provenance, the 820px toolbar, narrow pagination, canonical simulation-account filter/period restoration, four-source duplicate-only imports, and daily/weekly save/reopen. Independent screenshot review passed these scoped responsive fixes.
+- Original protected execution, provisional-principal and migration records were unchanged across real-browser acceptance: 1866 executions, 82 canonical simulation executions and four provenance runs. Review timeframe autosaves were deliberately exercised and are outside the unchanged-record claim.
+- The experimental publication caller was withdrawn after its cancellation/retry safety proof remained incomplete. No performance improvement is claimed.
+
+## Known unresolved results
+
+- Latest frozen targeted regression: 9 passed, 1 failed. The confirmed-import journey did not recover its chart toolbar within the existing query deadline. A single diagnostic run failed earlier and did not establish the cause; the original test source was restored without weakening assertions or timeouts.
+- The last full suite ran before the final follow-ups: 3056 passed, 5 failed, 6 skipped across 322 files. Subsequent scoped checks do not establish a new full-suite pass.
+- Last normal exclusive performance baseline: first quote 4290 ms and all 236 reads 32380 ms, exceeding the unchanged 3000/10000 ms budgets.
+- One newer diagnostic trace showed substantial main-thread work and Worker synchronous dispatch cost. It was not a normal-budget benchmark, did not isolate SQLite service time, and recorded one unattributed HTTP502 console response alongside zero page errors and zero failed daily reads.
+- Complete-valuation visuals and physical-touch behavior remain unverified. Current partial-data screenshots cannot establish those states.
+
+Private database snapshots, source documents, browser payloads and screenshots remain local and are not published. The records below are historical and do not override this current status.
+
+---
+
+# Historical checkpoint records
 
 This branch is a reviewable checkpoint, not a completed release.
 

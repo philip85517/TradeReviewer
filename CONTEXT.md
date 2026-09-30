@@ -77,3 +77,14 @@ _Avoid_：将导入批次或报告运行标识等同于账户
 _Avoid_：各市场同名日期收盘（并非同一时刻）、数据抓取时间
 
 2026-09-28用户选择参考现金（基准＋股票/ETF成交变化），替代本轮完整券商现金对账要求；持仓/成本/行情要求不变。TradingView统一模拟账户默认暂定初始本金CNY 100000，仅计一次，基准日期及资金依据后补，不能冒充已核实现金余额。
+
+## 策略研究
+
+**策略观察者**：通过播放、暂停、检查决策原因和比较组合结果来研究策略的用户角色；选股、调仓与再平衡由策略自动执行。
+_Avoid_：人工模拟交易员、逐笔下单操作者（不属于本次确认的主角色）
+
+## 2026-09-30 策略桌面 UX v2 原型验收收口
+
+`.scratch/strategy-desktop-ux-v2/FINAL-ACCEPTANCE.md`为最新交付记录；01–08全部技术ACCEPTED，root新会话旅程+Astra独立54图证据。仍为合成/内存/刷新重置原型，生产引擎/DB/插件与窄屏不在本轮。当前预览http://127.0.0.1:3047/?prototype=strategy-create&variant=A，服务PID47927（PTY44535），显式隔离`.scratch/strategy-portfolio-backtesting/prototype-isolated.sqlite`；业务库不变。Typecheck/build/scopedlint通过（lint2未用参数warning），全量suite基线失败详验收记录。未提交/推送/合并，父规格/决策票保持原状态，用户最终反馈尚待试用。
+
+2026-09-30 后续：用户已授权提交远端并合并 master。任务分支已先推送，PR #35（https://github.com/philip85517/TradeReviewer/pull/35）目标 master；整合复验见 `.scratch/strategy-desktop-ux-v2/REMOTE-INTEGRATION.md`。此前未推送描述保留为原验收时点记录，未扩大原型范围。

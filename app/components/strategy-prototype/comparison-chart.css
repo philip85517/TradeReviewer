@@ -1,0 +1,101 @@
+.comparison-viz {
+  min-width: 0;
+  margin: 0;
+  color: var(--comparison-text, #e8eef7);
+  font-family: var(--font-geist-sans), "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.comparison-viz-frame {
+  position: relative;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #22334b;
+  border-radius: 6px;
+  background: #0d1726;
+}
+
+.comparison-viz-svg {
+  display: block;
+  width: 100%;
+  height: clamp(320px, 40vh, 360px);
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.comparison-viz-guide {
+  stroke: #24344b;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.comparison-viz-zero-line {
+  stroke: #71829a;
+  stroke-width: 1;
+  stroke-dasharray: 5 5;
+  vector-effect: non-scaling-stroke;
+}
+
+.comparison-viz-axis-label,
+.comparison-viz-date-label {
+  fill: #a8b8cb;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.comparison-viz-line {
+  fill: none;
+  stroke-width: 2.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.comparison-viz-point {
+  fill: #0d1726;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.comparison-viz-area {
+  fill-opacity: .58;
+  stroke-width: 1.1;
+  vector-effect: non-scaling-stroke;
+}
+
+.comparison-viz-empty-label {
+  fill: #d4deeb;
+  font-size: 14px;
+  font-weight: 620;
+}
+
+.comparison-viz-empty-copy {
+  fill: #9aacc3;
+  font-size: 12px;
+}
+
+.comparison-viz-endvalue,
+.comparison-viz-allocation-label {
+  fill: #e2eaf5;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 550;
+}
+
+.comparison-viz-readout-leader {
+  stroke-width: 1;
+  opacity: .78;
+  vector-effect: non-scaling-stroke;
+}
+
+.comparison-viz-allocation-label { fill: #c4d1e0; }
+
+.comparison-viz-allocation-key { rx: 2px; }
+
+.comparison-viz-selected-name {
+  fill: #e2eaf5;
+  font-family: var(--font-geist-sans), "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 12px;
+  font-weight: 620;
+}

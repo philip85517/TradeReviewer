@@ -1,0 +1,93 @@
+
+> trade-reviewer@0.1.0 build
+> WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build
+
+
+  vinext build  (Vite 8.0.13)
+
+(node:89560) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[1/5] analyze client references...
+[2K
+transforming...✓ 252 modules transformed.
+rendering chunks...
+✓ built in 1.62s
+[2/5] analyze server references...
+[2K
+transforming...✓ 428 modules transformed.
+rendering chunks...
+✓ built in 2.50s
+[3/5] build rsc environment...
+[2K
+transforming...✓ 258 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 1.66s
+[4/5] build client environment...
+[2K
+transforming...[plugin rolldown:vite-resolve] Module "fs" has been externalized for browser compatibility, imported by "/Users/zhoulin/.codex/worktrees/0972/TradeReview/node_modules/@techstark/opencv-js/dist/opencv.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "path" has been externalized for browser compatibility, imported by "/Users/zhoulin/.codex/worktrees/0972/TradeReview/node_modules/@techstark/opencv-js/dist/opencv.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "crypto" has been externalized for browser compatibility, imported by "/Users/zhoulin/.codex/worktrees/0972/TradeReview/node_modules/@techstark/opencv-js/dist/opencv.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+✓ 2110 modules transformed.
+rendering chunks...
+computing gzip size...
+[plugin builtin:vite-reporter]
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[33m[PLUGIN_TIMINGS] [0mYour build spent significant time in plugins. Here is a breakdown:
+  - rsc:virtual-client-package (47%)
+  - vinext:jsx-in-js (14%)
+  - vinext:react-canary (12%)
+  - vite-plugin-commonjs (8%)
+  - vinext:config (5%)
+See https://rolldown.rs/options/checks#plugintimings for more details.
+
+✓ built in 4.87s
+[5/5] build ssr environment...
+[2K
+transforming...✓ 510 modules transformed.
+rendering chunks...
+computing gzip size...
+[33m[PLUGIN_TIMINGS] [0mYour build spent significant time in plugins. Here is a breakdown:
+  - rsc:virtual-client-package (41%)
+  - vite-plugin-commonjs (12%)
+  - rsc:use-client (10%)
+  - vinext:react-canary (5%)
+  - vinext:optimize-imports (5%)
+See https://rolldown.rs/options/checks#plugintimings for more details.
+
+✓ built in 3.55s
+[0m
+  Route (app)
+  ┌ ? /
+  ├ λ /api/demo-replay
+  ├ λ /api/fx
+  ├ λ /api/instruments/resolve
+  ├ λ /api/market-data/daily
+  ├ λ /api/market-data/intraday
+  ├ λ /api/storage/bootstrap
+  ├ λ /api/storage/market-data
+  ├ λ /api/storage/migrate
+  ├ λ /api/storage/recall
+  ├ λ /api/storage/recall/summaries
+  ├ λ /api/storage/review-summaries
+  ├ λ /api/storage/reviews
+  ├ λ /api/storage/settings
+  ├ λ /api/storage/status
+  ├ λ /api/storage/trade-revisions
+  ├ λ /api/storage/trades
+  ├ λ /api/trading-room/cash
+  ├ λ /api/trading-room/cash/baselines
+  ├ λ /api/trading-room/fx
+  ├ λ /api/trading-room/principal
+  └ λ /api/trading-room/reference-capital
+
+  λ API  ? Unknown
+
+  ? Some routes could not be classified. vinext currently uses static analysis
+    and cannot detect dynamic API usage (headers(), cookies(), etc.) at build time.
+    Automatic classification will be improved in a future release.
+
+  Build complete. Run `vinext start` to start the production server.

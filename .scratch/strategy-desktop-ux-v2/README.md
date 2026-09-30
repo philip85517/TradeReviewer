@@ -1,6 +1,10 @@
 # 策略桌面 UX v2
 
-2026-09-30：**桌面交互原型已完成技术验收，01–08均ACCEPTED。** 多位Luna6/max实施，Astra/low独立审查，root真实浏览器完成整条旅程。用户最终设计反馈尚待试用，不等同技术验收。
+2026-09-30：**桌面交互原型已完成原范围技术验收，01–08均ACCEPTED。** 多位Luna6/max实施，Astra/low独立审查，root真实浏览器完成整条旅程。后续用户设计反馈见下文，技术验收不等同用户认可。
+
+2026-09-30 第一轮用户反馈已收到：缺少独立策略库，需三类包组装、已有策略选择/就地新建与复制历史策略。已发布[增补规格](../../docs/specs/2026-09-30-strategy-library-and-experiments.md)及 [09 交互模型](../strategy-portfolio-backtesting/issues/09-strategy-library-interaction-model.md) → [10 原型](../strategy-portfolio-backtesting/issues/10-strategy-library-creation-prototype.md)。该新增范围未实现/NOT VERIFIED；本目录旧 01–08 的技术接受按原范围保留，不代表新设计通过。
+
+同轮工作台反馈要求吸收 TradingView 的按钮风格，简化并固定布局。已发布[差异比较与设计方案](../../docs/specs/2026-09-30-strategy-stable-workbench-design.md)及 [11 稳定工作台模型](../strategy-portfolio-backtesting/issues/11-stable-workbench-interaction-model.md)。当前先 09/11 模型对齐，再 10 创建、05 工作台、06 比较和07交接；新布局/控件/位移全部 NOT VERIFIED。本次仅文档，原技术证据和历史 FAIL 保留；后文阶段性状态为历史，不代表新的模型已接受。
 
 [打开运行中的预览](http://127.0.0.1:3047/?prototype=strategy-create&variant=A) · [最终验收与启动方式](FINAL-ACCEPTANCE.md) · [完整旅程](acceptance/08.md) · [独立审查](acceptance/reviewer-08.md) · [需求覆盖](DESIGN-COVERAGE.md)
 

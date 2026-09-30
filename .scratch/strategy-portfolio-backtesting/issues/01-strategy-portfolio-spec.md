@@ -15,6 +15,9 @@ Assignee: unassigned
 
 ## Refs
 
+- [稳定工作台增补](../../../docs/specs/2026-09-30-strategy-stable-workbench-design.md)：SW01–SW10；正式实现前须随视觉地图交接新的固定布局、控件与状态/视野契约。
+- [第一轮策略库反馈增补](../../../docs/specs/2026-09-30-strategy-library-and-experiments.md)：SL01–SL09、LD01–LD08、LT01–LT03；与旧包表述冲突时优先采用本增补，先做 09 交互模型与 10 原型。
+
 - [产品规格](../../../docs/specs/2026-09-29-strategy-portfolio-backtesting.md)：Solution 的 R01–R06、S01–S08；Implementation Decisions 的 D01–D08；Testing Decisions 的 T01–T03。
 - [仓库核对依据](../REPOSITORY-EVIDENCE.md)：现有复用边界、限制与测试先例。
 - [本功能索引](../README.md)。
@@ -26,6 +29,8 @@ Assignee: unassigned
 - [策略观察者：从视觉原型确认完整使用动线](02-visual-journey-map.md)：用户选择先确认视觉原型与操作动线，再驱动正式页面与代码开发。
 
 ## 验收标准与反例
+
+- [ ] SL01–SL09：独立策略库、三类包组装、已有策略选择、就地新建返回与历史复制构成完整旅程；正式保存/刷新/重开保留策略与实验的确切版本，旧结果不受新编辑影响。反例：两张固定策略卡冒充策略库，或复制策略改写旧运行。证据须来自后续正式实现。
 
 - [ ] R01：通过统一证券/行情边界复用数据，并用版本固定研究快照；反例：复制另一套抓取器或刷新后旧运行结果变化。证据待后续实现报告。
 - [ ] R02：任意历史时点的候选、财报、指标、图表、摘要均遵守可知截止；缺失时明确阻断或标注样本范围。反例：今天股本/未来财报混入历史筛选。

@@ -1,0 +1,137 @@
+{
+  "desktop": [
+    {
+      "frame": "#f01",
+      "height": 900,
+      "horizontalOverflow": false,
+      "width": 1440
+    },
+    {
+      "frame": "#f02",
+      "height": 900,
+      "horizontalOverflow": false,
+      "width": 1440
+    },
+    {
+      "frame": "#f03",
+      "height": 900,
+      "horizontalOverflow": false,
+      "width": 1440
+    },
+    {
+      "frame": "#f04",
+      "height": 900,
+      "horizontalOverflow": false,
+      "width": 1440
+    },
+    {
+      "frame": "#f05",
+      "height": 900,
+      "horizontalOverflow": false,
+      "width": 1440
+    },
+    {
+      "frame": "#f06",
+      "height": 900,
+      "horizontalOverflow": false,
+      "width": 1440
+    },
+    {
+      "frame": "#f07",
+      "height": 900,
+      "horizontalOverflow": false,
+      "width": 1440
+    },
+    {
+      "frame": "#f08",
+      "height": 900,
+      "horizontalOverflow": false,
+      "width": 1440
+    }
+  ],
+  "compactDesktop": [
+    {
+      "frame": "#f01",
+      "height": 800,
+      "horizontalOverflow": false,
+      "width": 1280
+    },
+    {
+      "frame": "#f02",
+      "height": 800,
+      "horizontalOverflow": false,
+      "width": 1280
+    },
+    {
+      "frame": "#f03",
+      "height": 800,
+      "horizontalOverflow": false,
+      "width": 1280
+    },
+    {
+      "frame": "#f04",
+      "height": 800,
+      "horizontalOverflow": false,
+      "width": 1280
+    },
+    {
+      "frame": "#f05",
+      "height": 800,
+      "horizontalOverflow": false,
+      "width": 1280
+    },
+    {
+      "frame": "#f06",
+      "height": 800,
+      "horizontalOverflow": false,
+      "width": 1280
+    },
+    {
+      "frame": "#f07",
+      "height": 800,
+      "horizontalOverflow": false,
+      "width": 1280
+    },
+    {
+      "frame": "#f08",
+      "height": 800,
+      "horizontalOverflow": false,
+      "width": 1280
+    }
+  ],
+  "scrollBoundaries": [
+    {
+      "bodyBottom": 738,
+      "clientHeight": 594,
+      "footerTop": 738,
+      "frame": "#f02",
+      "scrollHeight": 646,
+      "viewport": [
+        1280,
+        800
+      ]
+    },
+    {
+      "bodyBottom": 736,
+      "clientHeight": 528,
+      "footerTop": 736,
+      "frame": "#f03",
+      "scrollHeight": 635,
+      "viewport": [
+        1280,
+        800
+      ]
+    },
+    {
+      "bodyBottom": 738,
+      "clientHeight": 594,
+      "footerTop": 738,
+      "frame": "#f05",
+      "scrollHeight": 686,
+      "viewport": [
+        1280,
+        800
+      ]
+    }
+  ]
+}

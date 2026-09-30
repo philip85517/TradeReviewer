@@ -1,0 +1,178 @@
+{
+  "layouts": [
+    {
+      "documentWidth": 1280,
+      "hash": "#f01",
+      "height": 800,
+      "visibleBoards": [
+        "f01"
+      ],
+      "width": 1280
+    },
+    {
+      "documentWidth": 1280,
+      "hash": "#f02",
+      "height": 800,
+      "visibleBoards": [
+        "f02"
+      ],
+      "width": 1280
+    },
+    {
+      "documentWidth": 1280,
+      "hash": "#f03",
+      "height": 800,
+      "visibleBoards": [
+        "f03"
+      ],
+      "width": 1280
+    },
+    {
+      "documentWidth": 1280,
+      "hash": "#f04",
+      "height": 800,
+      "visibleBoards": [
+        "f04"
+      ],
+      "width": 1280
+    },
+    {
+      "documentWidth": 1280,
+      "hash": "#f05",
+      "height": 800,
+      "visibleBoards": [
+        "f05"
+      ],
+      "width": 1280
+    },
+    {
+      "documentWidth": 1280,
+      "hash": "#f06",
+      "height": 800,
+      "visibleBoards": [
+        "f06"
+      ],
+      "width": 1280
+    },
+    {
+      "documentWidth": 1280,
+      "hash": "#f07",
+      "height": 800,
+      "visibleBoards": [
+        "f07"
+      ],
+      "width": 1280
+    },
+    {
+      "documentWidth": 1280,
+      "hash": "#f08",
+      "height": 800,
+      "visibleBoards": [
+        "f08"
+      ],
+      "width": 1280
+    },
+    {
+      "documentWidth": 1280,
+      "hash": "#f09",
+      "height": 800,
+      "visibleBoards": [
+        "f09"
+      ],
+      "width": 1280
+    },
+    {
+      "documentWidth": 1440,
+      "hash": "#f01",
+      "height": 900,
+      "visibleBoards": [
+        "f01"
+      ],
+      "width": 1440
+    },
+    {
+      "documentWidth": 1440,
+      "hash": "#f02",
+      "height": 900,
+      "visibleBoards": [
+        "f02"
+      ],
+      "width": 1440
+    },
+    {
+      "documentWidth": 1440,
+      "hash": "#f03",
+      "height": 900,
+      "visibleBoards": [
+        "f03"
+      ],
+      "width": 1440
+    },
+    {
+      "documentWidth": 1440,
+      "hash": "#f04",
+      "height": 900,
+      "visibleBoards": [
+        "f04"
+      ],
+      "width": 1440
+    },
+    {
+      "documentWidth": 1440,
+      "hash": "#f05",
+      "height": 900,
+      "visibleBoards": [
+        "f05"
+      ],
+      "width": 1440
+    },
+    {
+      "documentWidth": 1440,
+      "hash": "#f06",
+      "height": 900,
+      "visibleBoards": [
+        "f06"
+      ],
+      "width": 1440
+    },
+    {
+      "documentWidth": 1440,
+      "hash": "#f07",
+      "height": 900,
+      "visibleBoards": [
+        "f07"
+      ],
+      "width": 1440
+    },
+    {
+      "documentWidth": 1440,
+      "hash": "#f08",
+      "height": 900,
+      "visibleBoards": [
+        "f08"
+      ],
+      "width": 1440
+    },
+    {
+      "documentWidth": 1440,
+      "hash": "#f09",
+      "height": 900,
+      "visibleBoards": [
+        "f09"
+      ],
+      "width": 1440
+    }
+  ],
+  "detailGeometry": [
+    {
+      "bodyBottom": 736,
+      "clientHeight": 528,
+      "documentWidth": 1280,
+      "footerTop": 736,
+      "height": 800,
+      "scrollHeight": 1055,
+      "scrollTop": 527,
+      "width": 1280
+    }
+  ]
+}

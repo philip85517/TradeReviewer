@@ -43,3 +43,11 @@ TRADEREVIEW_DB_PATH="$PWD/.scratch/strategy-portfolio-backtesting/prototype-isol
 ## 2026-09-30 远端整合补充
 
 此前“无推送、合并、发布”为原验收交付时的历史状态。用户随后明确授权提交远端分支并合并 master；已先合入最新 master、推任务分支并创建 [PR #35](https://github.com/philip85517/TradeReviewer/pull/35)。本轮整合复验及限制见 [REMOTE-INTEGRATION.md](REMOTE-INTEGRATION.md)，既有验收历史与失败证据保留。最终远端合并和本地 master 同步结果以 PR 与当前聊天记录为准。
+
+## 2026-09-30 第一轮用户反馈（后续范围）
+
+用户指出当前实验列表缺独立策略库，要求完整策略由标的筛选、买入信号、止盈止损三类包组成，实验选择已有策略、可就地新建及复制历史策略；先给交互模型再设计开发。已写入[增补规格](../../docs/specs/2026-09-30-strategy-library-and-experiments.md)、[09 交互模型](../strategy-portfolio-backtesting/issues/09-strategy-library-interaction-model.md)和[10 原型](../strategy-portfolio-backtesting/issues/10-strategy-library-creation-prototype.md)。
+
+本次仅文档，未变更已验收代码，旧技术接受和失败证据原样保留；新增策略库、三类组装与复制/新建返回均 NOT VERIFIED，未获用户模型或整功能接受。不得用本报告关闭新增票。此补充没有重新验证预览服务或原测试结论。
+
+同轮用户补充当前工作台与 TradingView 截图，要求先比较控件/布局风格并沉淀稳定布局方案。见[方案正文](../../docs/specs/2026-09-30-strategy-stable-workbench-design.md)、[11 交互模型](../strategy-portfolio-backtesting/issues/11-stable-workbench-interaction-model.md)和[新增覆盖](../strategy-portfolio-backtesting/DESIGN-COVERAGE.md#稳定工作台反馈2026-09-30)。固定框架、底部回放条与紧凑摘要均待新模型/原型验证；本报告的旧视觉 PASS 不签署这些变化通过。尚未测量当前抖动原因或新方案位移，不将设计反馈当作代码回归结论。

@@ -1,0 +1,782 @@
+{
+  "viewport": {
+    "dpr": 1,
+    "visualScale": 1,
+    "unit": "CSS px"
+  },
+  "checks": [
+    {
+      "activeTab": "策略库",
+      "docWidth": 1440,
+      "footer": null,
+      "height": 900,
+      "id": "f01",
+      "pageHeight": 756,
+      "pageScrollHeight": 775,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "width": 1440,
+      "capture": "f01-1440.png"
+    },
+    {
+      "activeTab": "策略库",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 900,
+        "top": 838
+      },
+      "height": 900,
+      "id": "f04",
+      "pageHeight": 694,
+      "pageScrollHeight": 694,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "width": 1440,
+      "capture": "f04-1440.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": null,
+      "height": 900,
+      "id": "f14",
+      "pageHeight": 756,
+      "pageScrollHeight": 1286,
+      "pageScrollTop": 530,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "width": 1440,
+      "capture": "f14-1440-scrolled.png",
+      "panel": null
+    },
+    {
+      "activeTab": "策略库",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 900,
+        "top": 838
+      },
+      "height": 900,
+      "id": "f19",
+      "pageHeight": 694,
+      "pageScrollHeight": 694,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "width": 1440,
+      "capture": "f19-1440.png"
+    },
+    {
+      "activeTab": "策略库",
+      "docWidth": 1280,
+      "footer": null,
+      "height": 800,
+      "id": "f01",
+      "pageHeight": 656,
+      "pageScrollHeight": 743,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "width": 1280,
+      "capture": "f01-1280.png"
+    },
+    {
+      "activeTab": "策略库",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 800,
+        "top": 738
+      },
+      "height": 800,
+      "id": "f04",
+      "pageHeight": 594,
+      "pageScrollHeight": 624,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "width": 1280,
+      "capture": "f04-1280.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": null,
+      "height": 800,
+      "id": "f14",
+      "pageHeight": 656,
+      "pageScrollHeight": 1294,
+      "pageScrollTop": 638,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "width": 1280,
+      "capture": "f14-1280-scrolled.png",
+      "panel": null
+    },
+    {
+      "activeTab": "策略库",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 800,
+        "top": 738
+      },
+      "height": 800,
+      "id": "f19",
+      "pageHeight": 594,
+      "pageScrollHeight": 646,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "width": 1280,
+      "capture": "f19-1280.png"
+    },
+    {
+      "activeTab": "策略库",
+      "docWidth": 1280,
+      "footer": null,
+      "height": 800,
+      "id": "f01",
+      "pageHeight": 656,
+      "pageScrollHeight": 743,
+      "pageScrollTop": 87.5,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "width": 1280,
+      "capture": "f01-1280-scrolled.png"
+    },
+    {
+      "activeTab": "策略库",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 800,
+        "top": 738
+      },
+      "height": 800,
+      "id": "f04",
+      "pageHeight": 594,
+      "pageScrollHeight": 624,
+      "pageScrollTop": 30,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "width": 1280,
+      "capture": "f04-1280-scrolled.png"
+    },
+    {
+      "activeTab": "策略库",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 800,
+        "top": 738
+      },
+      "height": 800,
+      "id": "f19",
+      "pageHeight": 594,
+      "pageScrollHeight": 646,
+      "pageScrollTop": 52,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "width": 1280,
+      "capture": "f19-1280-scrolled.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 900,
+        "top": 838
+      },
+      "height": 900,
+      "id": "f02",
+      "pageHeight": 694,
+      "pageScrollHeight": 694,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "width": 1440,
+      "capture": "f02-1440.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 900,
+        "top": 838
+      },
+      "height": 900,
+      "id": "f03",
+      "pageHeight": 694,
+      "pageScrollHeight": 694,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "width": 1440,
+      "capture": "f03-1440.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 900,
+        "top": 838
+      },
+      "height": 900,
+      "id": "f09",
+      "pageHeight": 694,
+      "pageScrollHeight": 694,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "width": 1440,
+      "capture": "f09-1440.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": null,
+      "height": 900,
+      "id": "f14",
+      "pageHeight": 756,
+      "pageScrollHeight": 1286,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "width": 1440,
+      "capture": "f14-1440.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 1076.6953125,
+        "top": 1014.6953125
+      },
+      "height": 900,
+      "id": "f15",
+      "pageHeight": 756,
+      "pageScrollHeight": 956,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "steps": "● 1 设置起点2 选择策略3 预览组合4 确认并进入",
+      "width": 1440,
+      "capture": "f15-1440.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 928.8828125,
+        "top": 866.8828125
+      },
+      "height": 900,
+      "id": "f16",
+      "pageHeight": 756,
+      "pageScrollHeight": 808,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "steps": "✓ 1 设置起点● 2 选择策略3 预览组合4 确认并进入",
+      "width": 1440,
+      "capture": "f16-1440.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 915.8828125,
+        "top": 853.8828125
+      },
+      "height": 900,
+      "id": "f17",
+      "pageHeight": 756,
+      "pageScrollHeight": 795,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "steps": "✓ 1 设置起点✓ 2 选择策略● 3 预览组合4 确认并进入",
+      "width": 1440,
+      "capture": "f17-1440.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 916.28125,
+        "top": 854.28125
+      },
+      "height": 900,
+      "id": "f18",
+      "pageHeight": 756,
+      "pageScrollHeight": 832,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "steps": "✓ 1 设置起点✓ 2 选择策略✓ 3 预览组合● 4 确认并进入",
+      "width": 1440,
+      "capture": "f18-1440.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 800,
+        "top": 738
+      },
+      "height": 800,
+      "id": "f02",
+      "pageHeight": 594,
+      "pageScrollHeight": 646,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "width": 1280,
+      "capture": "f02-1280.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 800,
+        "top": 738
+      },
+      "height": 800,
+      "id": "f03",
+      "pageHeight": 594,
+      "pageScrollHeight": 646,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "width": 1280,
+      "capture": "f03-1280.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 800,
+        "top": 738
+      },
+      "height": 800,
+      "id": "f09",
+      "pageHeight": 594,
+      "pageScrollHeight": 646,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "width": 1280,
+      "capture": "f09-1280.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": null,
+      "height": 800,
+      "id": "f14",
+      "pageHeight": 656,
+      "pageScrollHeight": 1294,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "width": 1280,
+      "capture": "f14-1280.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 1067.6953125,
+        "top": 1005.6953125
+      },
+      "height": 800,
+      "id": "f15",
+      "pageHeight": 656,
+      "pageScrollHeight": 942,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "steps": "● 1 设置起点2 选择策略3 预览组合4 确认并进入",
+      "width": 1280,
+      "capture": "f15-1280.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 919.8828125,
+        "top": 857.8828125
+      },
+      "height": 800,
+      "id": "f16",
+      "pageHeight": 656,
+      "pageScrollHeight": 794,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "steps": "✓ 1 设置起点● 2 选择策略3 预览组合4 确认并进入",
+      "width": 1280,
+      "capture": "f16-1280.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 927.28125,
+        "top": 865.28125
+      },
+      "height": 800,
+      "id": "f17",
+      "pageHeight": 656,
+      "pageScrollHeight": 801,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "steps": "✓ 1 设置起点✓ 2 选择策略● 3 预览组合4 确认并进入",
+      "width": 1280,
+      "capture": "f17-1280.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 907.28125,
+        "top": 845.28125
+      },
+      "height": 800,
+      "id": "f18",
+      "pageHeight": 656,
+      "pageScrollHeight": 818,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "steps": "✓ 1 设置起点✓ 2 选择策略✓ 3 预览组合● 4 确认并进入",
+      "width": 1280,
+      "capture": "f18-1280.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 900,
+        "top": 838
+      },
+      "height": 900,
+      "id": "f02",
+      "pageHeight": 694,
+      "pageScrollHeight": 694,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "width": 1440,
+      "capture": "f02-1440-scrolled.png",
+      "panel": null
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 900,
+        "top": 838
+      },
+      "height": 900,
+      "id": "f03",
+      "pageHeight": 694,
+      "pageScrollHeight": 694,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "width": 1440,
+      "capture": "f03-1440-scrolled.png",
+      "panel": {
+        "bottom": 836,
+        "footerTop": 836,
+        "headerBottom": 208,
+        "height": 628,
+        "scrollHeight": 635,
+        "scrollTop": 7.5
+      }
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 900,
+        "top": 838
+      },
+      "height": 900,
+      "id": "f09",
+      "pageHeight": 694,
+      "pageScrollHeight": 694,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "width": 1440,
+      "capture": "f09-1440-scrolled.png",
+      "panel": {
+        "bottom": 836,
+        "footerTop": 836,
+        "headerBottom": 208,
+        "height": 628,
+        "scrollHeight": 1055,
+        "scrollTop": 427
+      }
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 877.1953125,
+        "top": 815.1953125
+      },
+      "height": 900,
+      "id": "f15",
+      "pageHeight": 756,
+      "pageScrollHeight": 956,
+      "pageScrollTop": 199.5,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "steps": "● 1 设置起点2 选择策略3 预览组合4 确认并进入",
+      "width": 1440,
+      "capture": "f15-1440-scrolled.png",
+      "panel": null
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 876.8828125,
+        "top": 814.8828125
+      },
+      "height": 900,
+      "id": "f16",
+      "pageHeight": 756,
+      "pageScrollHeight": 808,
+      "pageScrollTop": 52,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "steps": "✓ 1 设置起点● 2 选择策略3 预览组合4 确认并进入",
+      "width": 1440,
+      "capture": "f16-1440-scrolled.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 876.8828125,
+        "top": 814.8828125
+      },
+      "height": 900,
+      "id": "f17",
+      "pageHeight": 756,
+      "pageScrollHeight": 795,
+      "pageScrollTop": 39,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "steps": "✓ 1 设置起点✓ 2 选择策略● 3 预览组合4 确认并进入",
+      "width": 1440,
+      "capture": "f17-1440-scrolled.png",
+      "panel": null
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1440,
+      "footer": {
+        "bottom": 840.78125,
+        "top": 778.78125
+      },
+      "height": 900,
+      "id": "f18",
+      "pageHeight": 756,
+      "pageScrollHeight": 832,
+      "pageScrollTop": 75.5,
+      "pageScrollWidth": 1240,
+      "pageWidth": 1240,
+      "sidebarWidth": 200,
+      "steps": "✓ 1 设置起点✓ 2 选择策略✓ 3 预览组合● 4 确认并进入",
+      "width": 1440,
+      "capture": "f18-1440-scrolled.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 800,
+        "top": 738
+      },
+      "height": 800,
+      "id": "f02",
+      "pageHeight": 594,
+      "pageScrollHeight": 646,
+      "pageScrollTop": 52,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "width": 1280,
+      "capture": "f02-1280-scrolled.png",
+      "panel": null
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 800,
+        "top": 738
+      },
+      "height": 800,
+      "id": "f03",
+      "pageHeight": 594,
+      "pageScrollHeight": 646,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "width": 1280,
+      "capture": "f03-1280-scrolled.png",
+      "panel": {
+        "bottom": 736,
+        "footerTop": 736,
+        "headerBottom": 208,
+        "height": 528,
+        "scrollHeight": 635,
+        "scrollTop": 107.5
+      }
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 800,
+        "top": 738
+      },
+      "height": 800,
+      "id": "f09",
+      "pageHeight": 594,
+      "pageScrollHeight": 646,
+      "pageScrollTop": 0,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "width": 1280,
+      "capture": "f09-1280-scrolled.png",
+      "panel": {
+        "bottom": 736,
+        "footerTop": 736,
+        "headerBottom": 208,
+        "height": 528,
+        "scrollHeight": 1055,
+        "scrollTop": 527
+      }
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 782.1953125,
+        "top": 720.1953125
+      },
+      "height": 800,
+      "id": "f15",
+      "pageHeight": 656,
+      "pageScrollHeight": 942,
+      "pageScrollTop": 285.5,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "steps": "● 1 设置起点2 选择策略3 预览组合4 确认并进入",
+      "width": 1280,
+      "capture": "f15-1280-scrolled.png",
+      "panel": null
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 781.8828125,
+        "top": 719.8828125
+      },
+      "height": 800,
+      "id": "f16",
+      "pageHeight": 656,
+      "pageScrollHeight": 794,
+      "pageScrollTop": 138,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "steps": "✓ 1 设置起点● 2 选择策略3 预览组合4 确认并进入",
+      "width": 1280,
+      "capture": "f16-1280-scrolled.png"
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 781.78125,
+        "top": 719.78125
+      },
+      "height": 800,
+      "id": "f17",
+      "pageHeight": 656,
+      "pageScrollHeight": 801,
+      "pageScrollTop": 145.5,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "steps": "✓ 1 设置起点✓ 2 选择策略● 3 预览组合4 确认并进入",
+      "width": 1280,
+      "capture": "f17-1280-scrolled.png",
+      "panel": null
+    },
+    {
+      "activeTab": "我的实验",
+      "docWidth": 1280,
+      "footer": {
+        "bottom": 745.78125,
+        "top": 683.78125
+      },
+      "height": 800,
+      "id": "f18",
+      "pageHeight": 656,
+      "pageScrollHeight": 818,
+      "pageScrollTop": 161.5,
+      "pageScrollWidth": 1080,
+      "pageWidth": 1080,
+      "sidebarWidth": 200,
+      "steps": "✓ 1 设置起点✓ 2 选择策略✓ 3 预览组合● 4 确认并进入",
+      "width": 1280,
+      "capture": "f18-1280-scrolled.png"
+    }
+  ]
+}

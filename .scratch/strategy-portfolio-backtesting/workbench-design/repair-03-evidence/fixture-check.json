@@ -1,0 +1,18 @@
+{
+  "kind": "independent fixture invariant check",
+  "bars": 250,
+  "history": 80,
+  "simulationDays": 170,
+  "firstSimulation": "2024-06-14",
+  "lastSimulation": "2025-02-06",
+  "strictlyIncreasing": true,
+  "validOHLC": true,
+  "priceIndependentFromNet": true,
+  "firstTradeBar": {
+    "time": "2024-06-18",
+    "open": 1908.97,
+    "high": 1918.97,
+    "low": 1898.79,
+    "close": 1906.79
+  }
+}

@@ -1,0 +1,48 @@
+--- before-script
++++ after-script
+@@ -73,16 +73,17 @@
+       let lwViewport = null;
+       let candleBarSpacing = 12;
+       let drawingChart = false;
++      const chartTheme = { background: "#101722", text: "#adbbcf", grid: "#1c2736", gridStrong: "#243145", up: "#26a69a", down: "#ef5350", net: "#2f80ed", compare: "#f3ba2f", marker: "#2f80ed", event: "#f3ba2f" };
+       function ensureChart() {
+         if (lwChart || !window.LightweightCharts) return;
+-        lwChart = LightweightCharts.createChart(els.chart, { width:els.chart.clientWidth, height:els.chart.clientHeight, autoSize: true, layout: { background: { color: "#0e1b2e" }, textColor: "#8fa2ba" }, grid: { vertLines: { color: "#172b43" }, horzLines: { color: "#223750" } }, rightPriceScale: { borderColor: "#263b55" }, timeScale: { borderColor: "#263b55", timeVisible: false, rightOffset: 3, barSpacing: 12, minBarSpacing: 4 }, crosshair: { mode: LightweightCharts.CrosshairMode.Normal } });
+-        lwCandle = lwChart.addSeries(LightweightCharts.CandlestickSeries, { upColor: "#44d39d", downColor: "#ff7b82", borderVisible: false, wickUpColor: "#44d39d", wickDownColor: "#ff7b82", priceScaleId: "candle-inactive", priceFormat: { type: "price", precision: 2, minMove: .01 } });
+-        lwNet = lwChart.addSeries(LightweightCharts.LineSeries, { color: "#4ed8d2", lineWidth: 2, priceScaleId: "net-inactive", priceFormat: { type: "price", precision: 4, minMove: .0001 } });
+-        lwCompare = lwChart.addSeries(LightweightCharts.LineSeries, { color: "#b99aff", lineWidth: 2, priceScaleId: "compare-inactive", priceFormat: { type: "price", precision: 4, minMove: .0001 } });
++        lwChart = LightweightCharts.createChart(els.chart, { width:els.chart.clientWidth, height:els.chart.clientHeight, autoSize: true, layout: { background: { color: chartTheme.background }, textColor: chartTheme.text }, grid: { vertLines: { color: chartTheme.grid }, horzLines: { color: chartTheme.gridStrong } }, rightPriceScale: { borderColor: chartTheme.gridStrong }, timeScale: { borderColor: chartTheme.gridStrong, timeVisible: false, rightOffset: 3, barSpacing: 12, minBarSpacing: 4 }, crosshair: { mode: LightweightCharts.CrosshairMode.Normal } });
++        lwCandle = lwChart.addSeries(LightweightCharts.CandlestickSeries, { upColor: chartTheme.up, downColor: chartTheme.down, borderVisible: false, wickUpColor: chartTheme.up, wickDownColor: chartTheme.down, priceScaleId: "candle-inactive", priceFormat: { type: "price", precision: 2, minMove: .01 } });
++        lwNet = lwChart.addSeries(LightweightCharts.LineSeries, { color: chartTheme.net, lineWidth: 2, priceScaleId: "net-inactive", priceFormat: { type: "price", precision: 4, minMove: .0001 } });
++        lwCompare = lwChart.addSeries(LightweightCharts.LineSeries, { color: chartTheme.compare, lineWidth: 2, priceScaleId: "compare-inactive", priceFormat: { type: "price", precision: 4, minMove: .0001 } });
+         if (LightweightCharts.createSeriesMarkers) lwMarkers = LightweightCharts.createSeriesMarkers(lwCandle, []);
+         if (LightweightCharts.createSeriesMarkers) lwNetMarkers = LightweightCharts.createSeriesMarkers(lwNet, []);
+-        lwChart.priceScale("right").applyOptions({ scaleMargins: { top: .12, bottom: .2 }, borderColor: "#263b55" });
+-        lwChart.priceScale("candle").applyOptions({ scaleMargins: { top: .12, bottom: .2 }, borderColor: "#263b55" });
++        lwChart.priceScale("right").applyOptions({ scaleMargins: { top: .12, bottom: .2 }, borderColor: chartTheme.gridStrong });
++        lwChart.priceScale("candle").applyOptions({ scaleMargins: { top: .12, bottom: .2 }, borderColor: chartTheme.gridStrong });
+         lwChart.timeScale().subscribeVisibleLogicalRangeChange(range => { if (range && !state.followChart && !drawingChart) { lwViewport = range; if(state.chart === "candle") candleBarSpacing = lwChart.timeScale().width() / (range.to - range.from); } });
+       }
+       function drawChart() {
+@@ -111,10 +112,10 @@
+         if (lwMarkers) lwMarkers.setMarkers([]);
+         if (lwNetMarkers) lwNetMarkers.setMarkers([]);
+         if (!unavailableState && state.chart === "candle" && state.view !== "compare") {
+-          const markers = visibleEvents(safeLimit).map(e => ({ time: dates[e.i], position: e.type === "退出" ? "aboveBar" : "belowBar", color: e.type === "退出" ? "#ff7b82" : "#e8b84b", shape: e.type === "退出" ? "arrowDown" : "arrowUp", text: e.type }));
++          const markers = visibleEvents(safeLimit).map(e => ({ time: dates[e.i], position: e.type === "退出" ? "aboveBar" : "belowBar", color: e.type === "退出" ? chartTheme.down : chartTheme.event, shape: e.type === "退出" ? "arrowDown" : "arrowUp", text: e.type }));
+           if (lwMarkers) lwMarkers.setMarkers(markers); else if (lwCandle.setMarkers) lwCandle.setMarkers(markers);
+         }
+-        if (!unavailableState && state.chart !== "candle" && state.view !== "compare" && lwNetMarkers) lwNetMarkers.setMarkers([{ time: dates[safeLimit], position: "inBar", color: "#54a5ff", shape: "circle" }]);
++        if (!unavailableState && state.chart !== "candle" && state.view !== "compare" && lwNetMarkers) lwNetMarkers.setMarkers([{ time: dates[safeLimit], position: "inBar", color: chartTheme.marker, shape: "circle" }]);
+         if (state.followChart) {
+           const spacing=followSpacing;
+           lwViewport=state.chart === "candle"
+@@ -134,7 +135,7 @@
+         els.chartBound.textContent = state.chart === "candle" ? "调仓标记只读 · 详情见调仓记录" : `截至 ${dateAt(safeLimit)}`;
+         $("legendPrimary").innerHTML = state.view === "compare" ? '<i class="legend-line"></i>动量组合' : `<i class="legend-line"></i>${state.chart === "candle" ? "贵州茅台 OHLC · CNY" : "组合净值 · 右轴"}`;
+         drawingChart = false;
+-        $("legendSecondary").innerHTML = state.view === "compare" ? '<i class="legend-line" style="background:#b99aff"></i>防守组合' : '<span>合成行情</span>';
++        $("legendSecondary").innerHTML = state.view === "compare" ? `<i class="legend-line" style="background:${chartTheme.compare}"></i>防守组合` : '<span>合成行情</span>';
+       }
+       function setTab(view) {
+         if (state.source) { returnSource(); if (state.view === view) return; }

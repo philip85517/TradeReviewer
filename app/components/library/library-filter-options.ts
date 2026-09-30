@@ -6,6 +6,7 @@ import {
 import { reviewTagLabel } from "../../lib/reviews/review-tags";
 import { dashboardStableShortId } from "../../lib/reviews/dashboard";
 import { tradeExecutionTradingDate, type TradeLibraryEntry } from "../../lib/trades/library";
+import { tradingViewEpisodeBusinessScope } from "../../lib/trades/tradingview-account-identity";
 
 export type LibraryFilterOption = Readonly<{
   id: string;
@@ -119,8 +120,20 @@ function runOptions(entries: TradeLibraryEntry[]): LibraryFilterOption[] {
     });
   };
   for (const entry of entries) {
-    add(entry.simulationRunId, entry);
+    const legacyEpisodes = entry.episodes.filter(
+      ({ episode }) => !tradingViewEpisodeBusinessScope(episode),
+    );
+    const legacyRunIds = new Set(
+      legacyEpisodes
+        .map(({ episode }) => episode.simulationRunId)
+        .filter((runId): runId is string => Boolean(runId)),
+    );
+    if (
+      entry.episodes.length === 0 ||
+      (legacyEpisodes.length > 0 && (!entry.simulationRunId || legacyRunIds.has(entry.simulationRunId)))
+    ) add(entry.simulationRunId, entry);
     for (const item of entry.episodes) {
+      if (tradingViewEpisodeBusinessScope(item.episode)) continue;
       add(item.episode.simulationRunId, entry);
       for (const execution of item.episode.executions) {
         add(execution.source.simulationRunId, entry);

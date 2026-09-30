@@ -131,6 +131,24 @@ describe("createSqliteHttpClient", () => {
     );
   });
 
+  it("passes an abort signal through market-data reads", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+      json({ dailyCandles: [], intervalCoverage: [], coverage: [] }),
+    );
+    const controller = new AbortController();
+
+    await createSqliteHttpClient(fetcher).getMarketData({
+      instrumentId: "HK:700",
+      interval: "1D",
+      dailyOnly: true,
+    }, controller.signal);
+
+    expect(fetcher).toHaveBeenCalledWith(
+      "/api/storage/market-data?instrumentId=HK%3A700&interval=1D&dailyOnly=true",
+      { cache: "no-store", signal: controller.signal },
+    );
+  });
+
   it("exposes structured non-success responses as StorageHttpError", async () => {
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
       json(
@@ -141,6 +159,52 @@ describe("createSqliteHttpClient", () => {
 
     await expect(createSqliteHttpClient(fetcher).getBootstrap()).rejects.toEqual(
       new StorageHttpError(503, "storage-unavailable", "try later"),
+    );
+  });
+
+  it("reads only requested instrument metadata and forwards cancellation", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+      json({ instruments: [] }),
+    );
+    const controller = new AbortController();
+
+    await expect(
+      createSqliteHttpClient(fetcher).getInstrumentMetadata(
+        ["US:AAPL", "HK:700", "US:AAPL"],
+        controller.signal,
+      ),
+    ).resolves.toEqual({ instruments: [] });
+
+    expect(fetcher).toHaveBeenCalledWith(
+      "/api/storage/instruments/metadata?id=US%3AAAPL&id=HK%3A700",
+      { cache: "no-store", signal: controller.signal },
+    );
+  });
+
+  it("writes metadata through the narrow instrument endpoint", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(json({ ok: true }));
+    const metadata = {
+      market: "US" as const,
+      symbol: "AAPL",
+      name: "Apple Inc.",
+      assetType: "stock" as const,
+      source: "nasdaq" as const,
+      confidence: "official" as const,
+      resolvedAt: "2026-09-29T00:00:00.000Z",
+    };
+
+    await expect(
+      createSqliteHttpClient(fetcher).putInstrumentMetadata(metadata),
+    ).resolves.toEqual({ ok: true });
+
+    expect(fetcher).toHaveBeenCalledWith(
+      "/api/storage/instruments/metadata",
+      {
+        method: "PUT",
+        cache: "no-store",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(metadata),
+      },
     );
   });
 });

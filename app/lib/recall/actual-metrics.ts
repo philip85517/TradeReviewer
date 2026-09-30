@@ -1,9 +1,10 @@
 import Decimal from 'decimal.js';
 import { calculateRecallPlan } from './plans';
 import { replayPositionAtPrice } from '../replay/position-ledger';
-import { executionBoundaryForCursor } from '../replay/recall-replay';
+import { executionBoundaryForCursor, orderedRecallExecutions, visibleRecallExecutions } from '../replay/recall-replay';
 import { replayExecutionAt, replayCursorAt } from '../import/statement-evidence';
 import { hasSettlementCurrencyMismatch, tradeNatureOf, type TradeEpisode } from '../trades/types';
+import { TRADINGVIEW_CANONICAL_ACCOUNT_ID, tradingViewEpisodeBusinessScope } from '../trades/tradingview-account-identity';
 import type { RecallDecision, RecallPhase, RecallPlanVersion, RecallRiskBaseline } from './types';
 export type RecallActualMetricKey = 'remainingQuantity' | 'averageEntryPrice' | 'weightedExitPrice' | 'realizedGross' | 'realizedNet' | 'unrealizedGross' | 'remainingEntryFee' | 'totalFees' | 'netPnl' | 'actualR' | 'entryPriceDeviation' | 'quantityDeviation' | 'targetRealization';
 export type RecallActualMetric = {
@@ -91,25 +92,42 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
     };
     if (context.phase === 'pre-entry')
         return fail('pre-entry');
-    const ordered = episode.executions.map((e, i) => ({ e, i })).sort((a, b) => replayExecutionAt(a.e).localeCompare(replayExecutionAt(b.e)) || a.i - b.i).map(x => x.e);
+    const ordered = orderedRecallExecutions(episode.executions);
     const boundary = executionBoundaryForCursor(ordered, context.executionCursor);
     const cutoff = Date.parse(replayCursorAt(context.cursor));
     const planVersions = input.planVersions.filter(v => Date.parse(replayCursorAt(v.knowledgeCutoff.cursor)) <= cutoff && executionBoundaryForCursor(ordered, v.knowledgeCutoff.executionCursor) <= boundary);
     const riskBaselines = input.riskBaselines.filter(b => planVersions.some(v => v.id === b.planVersionId));
     result.planVersionIds = planVersions.map(v => v.id);
     result.riskBaselineIds = riskBaselines.map(b => b.id);
-    // A stable execution id is the authoritative second cursor. Its ordinal
-    // already represents the exact revealed decision, including date-only
-    // fills whose replay timestamp is the day-end fallback after the market
-    // candle's session-close knowledge boundary.
-    const hasStableExecutionCursor = ordered.some(e => e.id === context.executionCursor);
-    const visible = ordered.filter((e, i) => i <= boundary && (
-        hasStableExecutionCursor || Date.parse(replayExecutionAt(e)) <= cutoff
-    ));
+    const visible = visibleRecallExecutions(episode.executions, context.executionCursor, context.cursor);
     result.executionIds = visible.map(e => e.id);
     if (!visible.length)
         return result;
-    if (visible.some(e => e.accountId !== episode.accountId || e.instrument.id !== episode.instrument.id || tradeNatureOf(e) !== (episode.tradeNature ?? tradeNatureOf(ordered[0])) || (tradeNatureOf(e) === 'simulation' && e.source.simulationRunId !== episode.simulationRunId)))
+    const episodeNature = episode.tradeNature ?? tradeNatureOf(ordered[0]);
+    const visibleBusinessScope = tradingViewEpisodeBusinessScope({
+        accountId: episode.accountId,
+        tradeNature: episodeNature,
+        executions: visible,
+    });
+    if (episode.accountId === TRADINGVIEW_CANONICAL_ACCOUNT_ID && !visibleBusinessScope)
+        return fail('execution-scope-mismatch');
+    if (visible.some(e => {
+        if (e.accountId !== episode.accountId || e.instrument.id !== episode.instrument.id || tradeNatureOf(e) !== episodeNature)
+            return true;
+        if (episodeNature !== 'simulation')
+            return false;
+        if (visibleBusinessScope) {
+            const executionBusinessScope = tradingViewEpisodeBusinessScope({
+                accountId: e.accountId,
+                tradeNature: tradeNatureOf(e),
+                executions: [e],
+            });
+            return executionBusinessScope?.accountId !== visibleBusinessScope.accountId ||
+                executionBusinessScope.tradeNature !== visibleBusinessScope.tradeNature ||
+                executionBusinessScope.simulationRunId !== visibleBusinessScope.simulationRunId;
+        }
+        return e.source.simulationRunId !== episode.simulationRunId;
+    }))
         return fail('execution-scope-mismatch');
     if (!currency || MINOR_UNITS[currency] === undefined)
         return fail('unsupported-currency-precision');
@@ -124,9 +142,9 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
     // The existing ledger is the evidence authority. Strip only fee incompleteness
     // for its gross-cost check; missing fees must not hide otherwise known gross PnL.
     const grossExecutions = visible.map(e => ({ ...e, fee: '0', source: { ...e.source, feeStatus: 'reported' as const } }));
-    // Keep the market cutoff for ancillary statement evidence, while allowing
-    // the exact selected execution IDs through when date-only replay times
-    // fall after the candle's session-close knowledge boundary.
+    // The canonical shared visibility helper above supplies the exact visible
+    // execution prefix while the ledger keeps the independent market cutoff
+    // for ancillary statement evidence.
     const ledger = replayPositionAtPrice({
         executions: grossExecutions,
         markPrice: '0',

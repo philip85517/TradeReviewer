@@ -6,6 +6,10 @@ import {
   canonicalInstrumentSymbol,
   instrumentDisplayName,
 } from "../instruments/display-name";
+import {
+  TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+  TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+} from "../trades/tradingview-account-identity";
 import type {
   TradeExecution,
   TradeSide,
@@ -224,6 +228,7 @@ function exclusion(sourceTradeId: string): ImportExclusion {
 function execution(
   paired: PairedRows,
   row: RowWithNumber,
+  simulationRole: "entry" | "exit",
   context: TradingViewSimulationContext,
   fileName: string,
   sourceFileId: string,
@@ -247,10 +252,11 @@ function execution(
       tradeNature: "simulation",
       simulationRunId: `tradingview:${sourceFileId}:${context.market}:${symbol}`,
       sourceTradeId: paired.id,
+      simulationRole,
       ...(sourceReport ? { sourceReport } : {}),
     },
-    accountId: `tradingview:${sourceFileId}`,
-    accountLabel: "TradingView 模拟盘",
+    accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+    accountLabel: TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
     instrument: {
       id: instrumentId,
       symbol,
@@ -362,8 +368,8 @@ export function parseTradingViewSimulationCsv(
       if (!new Decimal(positiveNumber(pair.entry.row["大小（数量）"])).equals(positiveNumber(pair.exit.row["大小（数量）"]))) throw new Error("配对数量不一致");
       validPairs.push({ id: pair.id, start: entryDate, end: exitDate, direction: side(pair.entry.row) });
       records.push(
-        execution(pair, pair.entry, context, options.fileName, options.sourceFileId, undefined, "0"),
-        execution(pair, pair.exit, context, options.fileName, options.sourceFileId, exitReport, fee),
+        execution(pair, pair.entry, "entry", context, options.fileName, options.sourceFileId, undefined, "0"),
+        execution(pair, pair.exit, "exit", context, options.fileName, options.sourceFileId, exitReport, fee),
       );
     } catch (error) {
       const message = error instanceof Error ? error.message : "配对字段无法识别";

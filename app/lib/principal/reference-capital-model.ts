@@ -1,5 +1,7 @@
 import Decimal from "decimal.js";
 
+import { TRADINGVIEW_CANONICAL_ACCOUNT_ID } from "../trades/tradingview-account-identity";
+
 export const REFERENCE_CAPITAL_SCHEMA_VERSION = 2 as const;
 export const REFERENCE_CAPITAL_SETTINGS_KEY = "trading-room.reference-capital.v2" as const;
 export const REFERENCE_CAPITAL_CURRENCIES = ["CNY", "USD", "HKD"] as const;
@@ -28,11 +30,12 @@ const validNature = (v: unknown): v is ReferenceCapitalNature => v === "live" ||
 export function emptyReferenceCapitalState(): ReferenceCapitalState { return { version: 2, records: [] }; }
 export function normalizeReferenceCapitalDraft(value: unknown): ReferenceCapitalDraft | null {
   if (!isRecord(value) || !validNature(value.nature) || typeof value.accountId !== "string" || !value.accountId.trim() || !validCurrency(value.currency) || !validDate(value.fromDate) || !validDate(value.toDate) || value.toDate < value.fromDate || typeof value.amount !== "string") return null;
-  if (value.nature === "simulation" && (typeof value.simulationRunId !== "string" || !value.simulationRunId.trim())) return null;
+  if (value.nature === "simulation" && value.simulationRunId !== null && (typeof value.simulationRunId !== "string" || !value.simulationRunId.trim())) return null;
+  if (value.nature === "simulation" && value.simulationRunId === null && value.accountId !== TRADINGVIEW_CANONICAL_ACCOUNT_ID) return null;
   if (value.nature === "live" && value.simulationRunId !== null) return null;
-  try { const amount = new Decimal(value.amount); if (!amount.isFinite() || !amount.gt(0)) return null; return { id: typeof value.id === "string" ? value.id : undefined, nature: value.nature, simulationRunId: value.nature === "simulation" ? (value.simulationRunId as string).trim() : null, accountId: value.accountId.trim(), currency: value.currency, fromDate: value.fromDate, toDate: value.toDate, amount: amount.toString() }; } catch { return null; }
+  try { const amount = new Decimal(value.amount); if (!amount.isFinite() || !amount.gt(0)) return null; return { id: typeof value.id === "string" ? value.id : undefined, nature: value.nature, simulationRunId: value.nature === "simulation" ? ((value.simulationRunId as string | null)?.trim() ?? null) : null, accountId: value.accountId.trim(), currency: value.currency, fromDate: value.fromDate, toDate: value.toDate, amount: amount.toString() }; } catch { return null; }
 }
-export function referenceCapitalScopeKey(record: Pick<ReferenceCapitalRecord, "nature" | "simulationRunId" | "accountId" | "currency">): string { return `${record.nature}:${record.nature === "simulation" ? record.simulationRunId : ""}:${record.accountId}:${record.currency}`; }
+export function referenceCapitalScopeKey(record: Pick<ReferenceCapitalRecord, "nature" | "simulationRunId" | "accountId" | "currency">): string { return `${record.nature}:${record.accountId}:${record.currency}:${record.nature === "simulation" ? (record.simulationRunId ?? "") : ""}`; }
 export function rangesOverlap(a: Pick<ReferenceCapitalRecord, "fromDate" | "toDate">, b: Pick<ReferenceCapitalRecord, "fromDate" | "toDate">): boolean { return a.fromDate <= b.toDate && b.fromDate <= a.toDate; }
 export function validateReferenceCapitalDraft(state: ReferenceCapitalState, draft: ReferenceCapitalDraft, replacingId?: string): string | null {
   const normalized = normalizeReferenceCapitalDraft(draft); if (!normalized) return "账户、币种、期间或金额无效";

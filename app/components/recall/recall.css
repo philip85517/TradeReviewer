@@ -82,7 +82,66 @@
 .recall-chart-shell .drawing-toolbar { flex: 0 0 48px; min-height: 520px; border-right: 1px solid var(--line, #243145); }
 .recall-chart-column { min-width: 0; flex: 1; position: relative; }
 .recall-chart-column .chart-stage { height: 520px; min-height: 520px; border-radius: 0; }
-.recall-chart-column .drawing-layers-panel { position: absolute; z-index: 5; top: 10px; right: 10px; width: min(360px, 55%); max-height: 250px; overflow: auto; }
+.recall-chart-column .recall-drawing-layers {
+  position: absolute;
+  z-index: 5;
+  top: 10px;
+  right: 10px;
+  width: min(360px, calc(100% - 20px));
+  max-height: min(280px, calc(100% - 20px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line, #243145);
+  border-radius: 8px;
+  background: #101925;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .38);
+}
+.recall-drawing-layers__heading {
+  min-height: 40px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 8px 4px 12px;
+  color: var(--text, #e7edf6);
+}
+.recall-drawing-layers__heading button {
+  flex: 0 0 36px;
+  width: 36px;
+  min-height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line, #243145);
+  border-radius: 6px;
+  background: #111b29;
+  color: var(--muted, #8291a6);
+  cursor: pointer;
+}
+.recall-drawing-layers__heading button:hover,
+.recall-drawing-layers__heading button:focus-visible {
+  border-color: #3b5374;
+  color: var(--text, #e7edf6);
+}
+.recall-chart-column .recall-drawing-layers .drawing-layers-panel {
+  min-height: 0;
+  max-height: none;
+  flex: 1 1 auto;
+  overflow: auto;
+  border-top: 1px solid var(--line, #243145);
+}
+.recall-chart-column .drawing-layer-select {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.recall-chart-column .drawing-layer input {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .recall-fit-all { align-self: flex-start; margin: 10px; padding: 6px 8px; border: 1px solid var(--line, #243145); border-radius: 5px; background: #111b29; color: var(--muted, #8291a6); font-size: 12px; cursor: pointer; }
 .recall-fit-all:hover { color: var(--text, #e7edf6); border-color: #3b5374; }
 .recall-plan-price-action { min-width: 36px; min-height: 36px; padding: 6px 8px; border: 1px solid var(--line, #243145); border-radius: 5px; background: #111b29; color: var(--muted, #8291a6); font-size: 12px; cursor: pointer; }
@@ -184,6 +243,15 @@
   .recall-chart-column .chart-stage { height: 420px; min-height: 420px; }
   .recall-stats-panel { position: absolute; top: 60px; right: 12px; width: min(320px, calc(100% - 24px)); max-height: calc(100% - 72px); overflow: auto; }
   .recall-stats-panel dl { grid-template-columns: 96px minmax(0, 1fr); }
+}
+
+@media (max-width: 700px) {
+  .recall-chart-column .recall-drawing-layers {
+    top: 8px;
+    right: 8px;
+    width: min(360px, calc(100% - 16px));
+    max-height: min(280px, calc(100% - 16px));
+  }
 }
 
 .recall-workspace { font-variant-numeric: tabular-nums; }

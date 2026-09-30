@@ -5,6 +5,7 @@ import type {
   TradeLibraryEntry,
   TradeLibraryEpisode,
 } from "../trades/library";
+import { tradingViewEpisodeBusinessScope } from "../trades/tradingview-account-identity";
 import type { RuleCheck } from "./types";
 import { stableAccountDisplayLabels } from "./review-queue";
 
@@ -103,13 +104,16 @@ function episodeScope(
   accountLabels?: ReadonlyMap<string, string>,
 ): ReviewScope {
   const episode = item.episode;
+  const businessScope = tradingViewEpisodeBusinessScope(episode);
+  const accountId = businessScope?.accountId ?? episode.accountId;
   return {
-    accountId: episode.accountId,
-    accountLabel: accountLabels?.get(episode.accountId) ?? episode.accountLabel,
+    accountId,
+    accountLabel: accountLabels?.get(accountId) ?? episode.accountLabel,
     market: episode.instrument.market,
-    tradeNature: entry.tradeNature ?? episode.tradeNature ?? "unknown",
-    simulationRunId:
-      episode.simulationRunId ?? entry.simulationRunId ?? null,
+    tradeNature: businessScope?.tradeNature ?? entry.tradeNature ?? episode.tradeNature ?? "unknown",
+    simulationRunId: businessScope
+      ? businessScope.simulationRunId
+      : episode.simulationRunId ?? entry.simulationRunId ?? null,
     currency: episode.instrument.currency,
   };
 }

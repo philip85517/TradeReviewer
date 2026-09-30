@@ -93,6 +93,18 @@ describe("RoomHoldingsPanel", () => {
     expect(holdings).not.toHaveTextContent("+US$999.00");
   });
 
+  it("keeps quote and valuation diagnostics accessible as separate cell content", () => {
+    const value = entry();
+    const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
+    render(<RoomHoldingsPanel entries={[value]} scope={scope} onOpenInReview={() => undefined} />);
+
+    const holdings = screen.getByRole("region", { name: "当前持仓" });
+    const quoteCell = holdings.querySelector('td[data-label="估值价"]');
+    const marketValueCell = holdings.querySelector('td[data-label="持仓市值"]');
+    expect(quoteCell).toHaveAttribute("aria-label", expect.stringContaining("暂无可用报价"));
+    expect(marketValueCell).toHaveAttribute("aria-label", expect.stringContaining("缺少可信金额"));
+  });
+
   it("labels a short position without exposing a diagnostics link", async () => {
     const value = entry();
     const episode = value.episodes[0].episode;
@@ -281,8 +293,35 @@ describe("RoomHoldingsPanel", () => {
     second.episodes[0].episode.executions[0].executedAt = "2020-01-03T01:00:00.000Z";
     const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
     render(<RoomHoldingsPanel entries={[first, second]} scope={scope} onOpenInReview={() => undefined} />);
+    expect(screen.queryByText("币种不可直接比较，已保留最近成交顺序。")).not.toBeInTheDocument();
     await user.click(screen.getByRole("radio", { name: "浮盈亏" }));
     expect(screen.getByRole("region", { name: "当前持仓" })).toHaveTextContent("仅在同币种内比较浮盈亏");
+  });
+
+  it("explains disabled PnL sorting in the default recent state for mixed currencies", async () => {
+    const user = userEvent.setup();
+    const first = entry("account-1");
+    const second = entry("account-2");
+    for (const instrument of [second.instrument, second.episodes[0].episode.instrument, second.episodes[0].episode.executions[0].instrument]) {
+      instrument.id = "HK:TEST";
+      instrument.symbol = "TESTHK";
+      instrument.market = "HK";
+      instrument.currency = "HKD";
+    }
+    const scope = { ...createDefaultRoomScope("2026-09-19"), period: buildRoomDateRange("month", "2026-09-19") };
+    render(<RoomHoldingsPanel entries={[first, second]} scope={scope} onOpenInReview={() => undefined} />);
+
+    const pnlSort = screen.getByRole("radio", { name: "浮盈亏" });
+    expect(pnlSort).toBeDisabled();
+    expect(pnlSort).toHaveAttribute("aria-describedby", "holdings-pnl-sort-disabled-reason");
+    expect(pnlSort).toHaveAccessibleDescription("币种不可直接比较，已保留最近成交顺序。");
+    expect(screen.getByText("币种不可直接比较，已保留最近成交顺序。")).toBeVisible();
+    const recentSort = screen.getByRole("radio", { name: "最近成交" });
+    expect(recentSort).toBeChecked();
+    expect(recentSort).toHaveAttribute("aria-describedby", "holdings-pnl-sort-disabled-reason");
+    await user.tab();
+    expect(recentSort).toHaveFocus();
+    expect(recentSort).toHaveAccessibleDescription("币种不可直接比较，已保留最近成交顺序。");
   });
 
   it("uses loss styling and keeps the negative sign for negative PnL", () => {

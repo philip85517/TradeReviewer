@@ -1,5 +1,6 @@
 import { createEmptyEpisodeReviewRecord } from "../reviews/review-metrics";
 import { parseBrokerStatement } from "../import/dispatcher";
+import { parseTradingViewCsv } from "../import/tradingview";
 import { csv, fileFor } from "../import/__fixtures__/tradingview";
 import { buildTradeEpisodes } from "../trades/episodes";
 import { columnStatement } from "../import/__fixtures__/china-merchants-columns";
@@ -139,7 +140,7 @@ describe("A股招商银行 import persistence",()=>{
     const enriched=await enrichStatementImport(parsed,{resolver:async()=>{throw new Error('No external lookup needed');}});
     const preview=createImportPreview("statement.pdf",enriched);
     const store=createStore();
-    expect(preview.sourceLabel).toBe("A股招商银行");
+    expect(preview.sourceLabel).toBe("A股招商证券");
     store.mergeExecutions(preview.records);
     expect(store.getExecutions()).toEqual(preview.records);
     store.mergeExecutions(preview.records);
@@ -599,7 +600,148 @@ describe("SqliteStore", () => {
     expect(store.getExecutions()[0].source).toMatchObject({ timeEvidence: "user", templateId: "futu-legacy", openingPosition: monthly.positions[0] });
     expect(() => store.mergeTradeData({ executions: [], importHistory: [{ ...history, monthly: { ...monthly, positions: [{ ...monthly.positions[0], quantity: 123 as unknown as string }] } }] })).toThrow("Invalid monthly statement evidence");
   });
-  it("roundtrips simulated source evidence and isolates reimports and runs", async () => {
+
+  it("derives a legacy supplement scope only from its exact trade revision audit", () => {
+    const store = createStore();
+    store.mergeExecutions([execution]);
+    const monthly = {
+      documentId: "supplement-document",
+      templateIds: ["tiger"],
+      accountId: execution.accountId,
+      positions: [],
+      events: [],
+      reviewRequired: true,
+      historyIncomplete: true,
+    };
+    const history = {
+      id: "supplement:legacy-scope",
+      fileName: "scoped.pdf",
+      sourceLabel: "补充",
+      importedAt: "2026-09-29T00:00:00Z",
+      tradeCount: 1,
+      instrumentCount: 1,
+      excludedInstrumentCount: 0,
+      excludedRecordCount: 0,
+      duplicateTradeCount: 0,
+      unresolvedInstrumentCount: 0,
+      monthly,
+    };
+    const after = { ...execution, source: { ...execution.source, batchId: history.id } };
+    store.reviseTrades({
+      id: history.id,
+      instrumentId: execution.instrument.id,
+      accountId: execution.accountId,
+      reason: "补充证据",
+      changes: [{ before: execution, after }],
+      expectedScope: [execution],
+      importHistory: history,
+    });
+
+    expect(store.getBootstrap().importHistory[0].monthly?.evidenceScope).toEqual({
+      instrumentId: execution.instrument.id,
+      accountId: execution.accountId,
+    });
+  });
+
+  it("fails closed when a legacy supplement revision does not match the monthly account", () => {
+    const store = createStore();
+    store.mergeExecutions([execution]);
+    const history = {
+      id: "supplement:mismatched-scope",
+      fileName: "scoped.pdf",
+      sourceLabel: "补充",
+      importedAt: "2026-09-29T00:00:00Z",
+      tradeCount: 1,
+      instrumentCount: 1,
+      excludedInstrumentCount: 0,
+      excludedRecordCount: 0,
+      duplicateTradeCount: 0,
+      unresolvedInstrumentCount: 0,
+      monthly: {
+        documentId: "supplement-document",
+        templateIds: ["tiger"],
+        accountId: "another-account",
+        positions: [],
+        events: [],
+        reviewRequired: true,
+      },
+    };
+    const after = { ...execution, source: { ...execution.source, batchId: history.id } };
+    store.reviseTrades({
+      id: history.id,
+      instrumentId: execution.instrument.id,
+      accountId: execution.accountId,
+      reason: "补充证据",
+      changes: [{ before: execution, after }],
+      expectedScope: [execution],
+      importHistory: history,
+    });
+
+    expect(store.getBootstrap().importHistory[0].monthly).toBeUndefined();
+  });
+
+  it("does not treat a legacy supplement without a revision audit as full-document evidence", () => {
+    const store = createStore();
+    const history = {
+      id: "supplement:without-audit",
+      fileName: "scoped.pdf",
+      sourceLabel: "补充",
+      importedAt: "2026-09-29T00:00:00Z",
+      tradeCount: 1,
+      instrumentCount: 1,
+      excludedInstrumentCount: 0,
+      excludedRecordCount: 0,
+      duplicateTradeCount: 0,
+      unresolvedInstrumentCount: 0,
+      monthly: {
+        documentId: "supplement-document",
+        templateIds: ["tiger"],
+        accountId: execution.accountId,
+        positions: [],
+        events: [],
+        reviewRequired: true,
+      },
+    };
+    store.mergeTradeData({ executions: [], importHistory: [history] });
+
+    expect(store.getBootstrap().importHistory[0].monthly).toBeUndefined();
+  });
+
+  it("drops a malformed persisted monthly scope instead of widening it during bootstrap", () => {
+    const store = createStore();
+    const history = {
+      id: "import:corrupted-monthly-scope",
+      fileName: "statement.pdf",
+      sourceLabel: "账单",
+      importedAt: "2026-09-29T00:00:00Z",
+      tradeCount: 0,
+      instrumentCount: 0,
+      excludedInstrumentCount: 0,
+      excludedRecordCount: 0,
+      duplicateTradeCount: 0,
+      unresolvedInstrumentCount: 0,
+      monthly: {
+        documentId: "statement-document",
+        templateIds: ["tiger"],
+        accountId: execution.accountId,
+        positions: [],
+        events: [],
+        reviewRequired: false,
+      },
+    };
+    store.mergeTradeData({ executions: [], importHistory: [history] });
+    const corrupted = {
+      ...history,
+      monthly: { ...history.monthly, evidenceScope: { instrumentId: "HK:0700", accountId: execution.accountId } },
+    };
+    databaseFor(store).prepare("update import_batches set reconciliation_json = ? where id = ?").run(
+      JSON.stringify(corrupted),
+      history.id,
+    );
+
+    expect(store.getBootstrap().importHistory[0].monthly).toBeUndefined();
+  });
+  it("roundtrips simulated source evidence and retains canonical run provenance", async () => {
     const store = createStore();
     const {records} = await parseBrokerStatement(fileFor());
     const other = await parseBrokerStatement(fileFor(csv.replaceAll('signal, quoted','new run')));
@@ -609,7 +751,9 @@ describe("SqliteStore", () => {
     const restored=store.getBootstrap().executions;
     expect(restored).toHaveLength(4);
     expect(restored.find(r=>r.id===records[1].id)?.source).toEqual(records[1].source);
-    expect(buildTradeEpisodes(restored)).toHaveLength(2);
+    const episodes=buildTradeEpisodes(restored);
+    expect(episodes).toHaveLength(1);
+    expect(new Set(episodes[0].executions.map(record=>record.source.simulationRunId)).size).toBe(2);
   });
 
   it("restores simulation notes and drawings for the exact episode after reopening SQLite", async () => {
@@ -633,7 +777,7 @@ describe("SqliteStore", () => {
     expect(reopened.getBootstrap().reviewStates).toEqual([state]);
     const restoredEpisodes=buildTradeEpisodes(reopened.getExecutions());
     expect(restoredEpisodes.map(e=>e.id)).toContain(episode.id);
-    expect(restoredEpisodes).toHaveLength(2);
+    expect(restoredEpisodes).toHaveLength(1);
     databaseFor(reopened).close();
   });
 
@@ -656,11 +800,65 @@ describe("SqliteStore", () => {
     expect(()=>store.mergeExecutions([records[1],invalid])).toThrow(/simulation/i);
     expect(store.getExecutions()).toHaveLength(0);
   });
+  it("preserves text trade IDs and historical roleless TradingView source reports", async () => {
+    const textIds=await parseBrokerStatement(fileFor(csv.replace(/^1,/gm,"trade-alpha,")));
+    expect(textIds.records.map(record=>record.source.sourceTradeId)).toEqual(["trade-alpha","trade-alpha"]);
+    const textIdStore=createStore();
+    textIdStore.mergeExecutions(textIds.records);
+    expect(textIdStore.getExecutions()).toEqual(textIds.records);
+
+    const {records}=await parseBrokerStatement(fileFor());
+    const { simulationRole: _historicalRole, ...historicalSource } = records[1].source;
+    const historicalExit={ ...records[1], source: historicalSource };
+    expect(historicalExit.source.sourceReport).toEqual(records[1].source.sourceReport);
+    const historicalStore=createStore();
+    historicalStore.mergeExecutions([historicalExit]);
+    expect(historicalStore.getExecutions()).toEqual([historicalExit]);
+  });
+  it("roundtrips the legacy TradingView simulationTradeId and report evidence", () => {
+    const legacy=parseTradingViewCsv({
+      fileName: "回放交易_SSE_600330.csv",
+      bytes: new TextEncoder().encode(csv),
+      fileFingerprint: "legacy-fingerprint",
+    });
+    expect(legacy.records[1].source.simulationTradeId).toBe("1");
+    expect(legacy.records[1].source.simulationReport).toBeDefined();
+    const store=createStore();
+    store.mergeExecutions(legacy.records);
+    expect(store.getExecutions()).toEqual(legacy.records);
+  });
+  it("accepts current TradingView source reports but keeps nature and financial evidence strict", async () => {
+    const {records}=await parseBrokerStatement(fileFor());
+    const invalidRecords = [
+      {
+        ...records[0],
+        source: { ...records[0].source, tradingNature: "live" as const },
+      },
+      {
+        ...records[0],
+        source: { ...records[0].source, simulationTradeId: "2" },
+      },
+      {
+        ...records[1],
+        source: {
+          ...records[1].source,
+          sourceReport: { ...records[1].source.sourceReport!, netPnl: "NaN" },
+        },
+      },
+    ];
+
+    for (const invalid of invalidRecords) {
+      const store=createStore();
+      expect(()=>store.mergeExecutions([invalid])).toThrow(/simulation|report/i);
+      expect(store.getExecutions()).toHaveLength(0);
+    }
+  });
   it("returns a complete bootstrap with empty production data", () => {
     const bootstrap = createStore().getBootstrap();
 
     expect(bootstrap).toMatchObject({
-      schemaVersion: 13,
+      // Version 14 registers the approved TradingView account migration.
+      schemaVersion: 14,
       executions: [], importHistory: [], instruments: [], reviews: [],
       tagSuggestions: [], marketDataJobs: [], settings: {},
     });
@@ -686,6 +884,9 @@ describe("SqliteStore", () => {
         tradeNature: "simulation" as const,
         simulationRunId: "tradingview:run-a",
         sourceTradeId: "1",
+        simulationRole: "entry" as const,
+        timePrecision: "date-only" as const,
+        sourceTimezone: "Asia/Shanghai",
       },
     };
     const history = {
@@ -859,6 +1060,150 @@ describe("SqliteStore", () => {
 
     expect(store.getInstruments()).toEqual([{ ...instrument, metadata }]);
     expect(store.getBootstrap().instruments).toEqual([{ ...instrument, metadata }]);
+  });
+
+  it("projects only requested instrument rows for metadata hydration", () => {
+    const store = createStore();
+    const target = {
+      id: "US:AAPL",
+      symbol: "AAPL",
+      name: "Apple Inc.",
+      market: "US",
+      currency: "USD",
+      metadata: {
+        market: "US" as const,
+        symbol: "AAPL",
+        name: "Apple Inc.",
+        assetType: "stock" as const,
+        source: "nasdaq" as const,
+        confidence: "official" as const,
+        resolvedAt: "2026-01-01T00:00:00.000Z",
+      },
+    };
+    store.mergeTradeData({ instruments: [instrument, target], executions: [] });
+    const bootstrap = vi.spyOn(store, "getBootstrap");
+
+    expect(store.getInstrumentMetadata([target.id, instrument.id])).toEqual([
+      instrument,
+      target,
+    ]);
+    expect(bootstrap).not.toHaveBeenCalled();
+  });
+
+  it("updates one instrument metadata row without reading or rewriting executions", () => {
+    const store = createStore();
+    const original = {
+      id: "US:AAPL",
+      symbol: "AAPL",
+      name: "Historical Apple",
+      market: "US",
+      currency: "USD",
+    };
+    const originalExecution = { ...execution, id: "apple-execution", instrument: original };
+    store.mergeTradeData({ instruments: [original], executions: [originalExecution] });
+    const database = databaseFor(store);
+    const before = database.prepare("select id, quantity, price, fee from executions").all();
+    const metadata = {
+      market: "US" as const,
+      symbol: "AAPL",
+      name: "Apple Inc.",
+      localizedName: {
+        name: "苹果公司",
+        locale: "zh-CN" as const,
+        source: "tencent",
+        resolvedAt: "2026-01-01T00:00:00.000Z",
+      },
+      assetType: "stock" as const,
+      source: "nasdaq" as const,
+      confidence: "official" as const,
+      resolvedAt: "2026-01-01T00:00:00.000Z",
+    };
+
+    store.putInstrumentMetadata(metadata);
+
+    expect(database.prepare("select id, quantity, price, fee from executions").all()).toEqual(before);
+    expect(store.getInstrumentMetadata([original.id])).toEqual([{
+      ...original,
+      localizedName: metadata.localizedName,
+      metadata,
+    }]);
+
+    store.putInstrumentMetadata({
+      ...metadata,
+      source: "sec",
+      localizedName: undefined,
+      resolvedAt: "2026-02-01T00:00:00.000Z",
+    });
+    expect(store.getInstrumentMetadata([original.id])[0]).toMatchObject({
+      name: "Historical Apple",
+      currency: "USD",
+      localizedName: metadata.localizedName,
+      metadata: {
+        source: "sec",
+        localizedName: metadata.localizedName,
+        resolvedAt: "2026-02-01T00:00:00.000Z",
+      },
+    });
+  });
+
+  it("keeps newer main metadata and localized overlay when a late record carries stale layers", () => {
+    const store = createStore();
+    const newer = {
+      market: "US" as const,
+      symbol: "AAPL",
+      name: "Apple Inc.",
+      localizedName: {
+        name: "苹果新名称",
+        locale: "zh-CN" as const,
+        source: "tencent",
+        resolvedAt: "2026-09-28T00:00:00.000Z",
+      },
+      assetType: "stock" as const,
+      source: "nasdaq" as const,
+      confidence: "official" as const,
+      resolvedAt: "2026-09-29T00:00:00.000Z",
+    };
+    store.putInstrumentMetadata(newer);
+
+    store.putInstrumentMetadata({
+      ...newer,
+      resolvedAt: "2026-09-29T01:00:00.000Z",
+      localizedName: {
+        ...newer.localizedName,
+        name: "苹果旧名称",
+        resolvedAt: "2026-08-01T00:00:00.000Z",
+      },
+    });
+
+    expect(store.getInstrumentMetadata(["US:AAPL"])[0]).toMatchObject({
+      localizedName: newer.localizedName,
+      metadata: {
+        resolvedAt: "2026-09-29T01:00:00.000Z",
+        localizedName: newer.localizedName,
+      },
+    });
+  });
+
+  it("does not let an older metadata request overwrite a newer persisted record", () => {
+    const store = createStore();
+    const newer = {
+      market: "US" as const,
+      symbol: "AAPL",
+      name: "Apple Inc.",
+      assetType: "stock" as const,
+      source: "nasdaq" as const,
+      confidence: "official" as const,
+      resolvedAt: "2026-09-29T00:00:00.000Z",
+    };
+    store.putInstrumentMetadata(newer);
+
+    store.putInstrumentMetadata({
+      ...newer,
+      name: "Old Apple",
+      resolvedAt: "2026-08-01T00:00:00.000Z",
+    });
+
+    expect(store.getInstrumentMetadata(["US:AAPL"])[0]?.metadata?.resolvedAt).toBe(newer.resolvedAt);
   });
 
   it("preserves an incoming screenshot replacement when the old conflicting id is removed atomically", () => {

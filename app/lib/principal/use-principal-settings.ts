@@ -98,7 +98,7 @@ function messageFor(error: unknown): string {
 
 function mutationScopeFor(scope: PrincipalScope): PrincipalScope {
   return scope.nature === "live"
-    ? { nature: "live", simulationRunId: null }
+    ? { nature: "live", simulationRunId: null, ...(scope.accountId?.trim() ? { accountId: scope.accountId.trim() } : {}) }
     : scope;
 }
 

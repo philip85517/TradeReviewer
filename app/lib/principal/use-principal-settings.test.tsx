@@ -140,4 +140,23 @@ describe("principal settings client and hook", () => {
       { nature: "live", simulationRunId: null },
     ]);
   });
+
+  it("preserves a selected live account in principal mutations", async () => {
+    const mutations: PrincipalMutation[] = [];
+    const client = {
+      read: vi.fn(async () => emptyPrincipalState()),
+      mutate: vi.fn(async (mutation: PrincipalMutation) => {
+        mutations.push(mutation);
+        return emptyPrincipalState();
+      }),
+    };
+    const hook = renderHook(() => usePrincipalSettings({
+      scope: { nature: "live", simulationRunId: null, accountId: "broker:primary" },
+      client,
+    }));
+
+    await act(async () => { await hook.result.current.save("a-share-stock", { amount: "12000", currency: "CNY" }); });
+
+    expect(mutations[0]?.scope).toEqual({ nature: "live", simulationRunId: null, accountId: "broker:primary" });
+  });
 });

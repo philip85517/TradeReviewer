@@ -483,6 +483,20 @@ describe("historical holdings", () => {
     expect(point.dailyPnlAvailable).toBe(false);
     expect(point.dailyPnlReasons.join(" ")).toContain("前一");
   });
+  it("invalidates a cached ledger when the candle reference changes", () => {
+    const entry = openEntry(instrument(), "2026-09-17");
+    const first = buildHoldingsHistory([entry], {
+      ...options,
+      candlesByInstrument: { "US:TEST": [candle("2026-09-17", "12")] },
+    });
+    const second = buildHoldingsHistory([entry], {
+      ...options,
+      candlesByInstrument: { "US:TEST": [candle("2026-09-17", "20")] },
+    });
+
+    expect(first.points[0].holdings[0]?.quotePrice).toBe("12");
+    expect(second.points[0].holdings[0]?.quotePrice).toBe("20");
+  });
   it("makes daily PnL unavailable for unknown fees or inventory transfers", () => {
     const entry = openEntry(instrument(), "2026-09-17");
     entry.executions[0].source.feeStatus = "unknown";
@@ -574,6 +588,30 @@ describe("historical holdings", () => {
       expect(result.points[0].dailyPnl.originalByCurrency).toEqual({ USD: "2" });
       expect(result.points.at(-1)?.dailyPnl.originalByCurrency).toEqual({ USD: "2" });
       expect(replay).toHaveBeenCalledTimes(1);
+    }
+    finally {
+      replay.mockRestore();
+    }
+  });
+  it("retains bounded long and single-day ledger variants across dashboard calls", () => {
+    const replay = vi.spyOn(positionLedger, "replayPositionAtPrice");
+    try {
+      const entry = openEntry(instrument(), "2026-09-17");
+      const candles = [candle("2026-09-17", "12"), candle("2026-09-18", "13"), candle("2026-09-21", "14")];
+      const longOptions = {
+        ...options,
+        candlesByInstrument: { "US:TEST": candles },
+      };
+      const dayOptions = {
+        ...longOptions,
+        scope: { ...scope, period: { preset: "custom" as const, startDate: "2026-09-21", endDate: "2026-09-21" } },
+      };
+
+      buildHoldingsHistory([entry], longOptions);
+      buildHoldingsHistory([entry], dayOptions);
+      buildHoldingsHistory([entry], longOptions);
+
+      expect(replay).toHaveBeenCalledTimes(2);
     }
     finally {
       replay.mockRestore();

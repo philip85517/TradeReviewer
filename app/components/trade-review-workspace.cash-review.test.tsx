@@ -2,6 +2,7 @@ import "fake-indexeddb/auto";
 import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ComponentProps, ReactNode } from "react";
+import type { CashSummary } from "../lib/cash/cash-model";
 import type { ReviewDashboard } from "./dashboard/review-dashboard";
 import type { CashBaselinePanel } from "./data-management/cash-baseline-panel";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
@@ -13,7 +14,31 @@ vi.mock("./data-management/data-management", () => ({ DataManagement: ({ cashSlo
 vi.mock("./data-management/cash-baseline-panel", () => ({ CashBaselinePanel: (props: ComponentProps<typeof CashBaselinePanel>) => { probe.panel = props; return null; } }));
 function deferred<T>() { let resolve!: (value: T) => void; let reject!: (reason: unknown) => void; const promise = new Promise<T>((yes, no) => { resolve = yes; reject = no; }); return { promise, resolve, reject }; }
 const empty = { version: 1, records: [] };
-const summary = (value: string) => ({ cashTotal: { converted: value } });
+const summary = (value: string): CashSummary => {
+  const amount = ({ A: "1", B: "2", C: "3", A2: "4" } as Record<string, string>)[value] ?? value;
+  const money = {
+    baseCurrency: "CNY" as const,
+    originalByCurrency: { CNY: amount },
+    convertedCny: amount,
+    converted: amount,
+    convertedHkd: null,
+    targetCurrency: "CNY" as const,
+    conversion: "same-currency" as const,
+    fxSnapshotId: null,
+    note: "test",
+  };
+  return {
+    todayProceeds: money,
+    cashTotal: money,
+    todayProceedsStatus: "zero",
+    cashTotalStatus: "available",
+    coverage: { included: 0, excluded: 0, missing: 0 },
+    asOf: null,
+    missingReasons: [],
+    byScope: {},
+    updatedAt: null,
+  };
+};
 const frame = { cursorIndex: 0, cursor: "2025-01-02T14:30:00.000Z", candles15m: [], executions: [], canGoBack: false, canGoForward: false };
 let getCash: (url: string) => Promise<Response>;
 let putCash: () => Promise<Response>;
@@ -40,7 +65,7 @@ describe("independent workspace cash race acceptance", () => {
   it("clears the previous amount while the next identity GET waits, and ignores an older successful GET", async () => {
     await mount();
     const b = deferred<Response>(); const c = deferred<Response>();
-    getCash = url => url.includes("accountIds=b") ? b.promise : c.promise;
+    getCash = url => url.includes("accountId=b") ? b.promise : c.promise;
     switchAccount("b");
     await waitFor(() => expect(probe.dashboard?.cashLoading).toBe(true));
     expect(probe.dashboard?.cashSummary).toBeNull();
@@ -49,12 +74,12 @@ describe("independent workspace cash race acceptance", () => {
     await waitFor(() => expect(probe.dashboard?.cashSummary).toEqual(summary("C")));
     await act(async () => { b.resolve(Response.json(summary("B"))); });
     expect(probe.dashboard?.cashSummary).toEqual(summary("C"));
-    expect(screen.getByTestId("cash-probe")).not.toHaveTextContent('"B"');
+    expect(screen.getByTestId("cash-probe")).not.toHaveTextContent('"2"');
   });
   it("keeps a previously loaded identity pending while its new GET waits after an A-to-B-to-A switch", async () => {
     await mount();
     const b = deferred<Response>(); const returnedA = deferred<Response>();
-    getCash = url => url.includes("accountIds=b") ? b.promise : returnedA.promise;
+    getCash = url => url.includes("accountId=b") ? b.promise : returnedA.promise;
 
     switchAccount("b");
     await waitFor(() => expect(probe.dashboard?.cashLoading).toBe(true));
@@ -74,7 +99,7 @@ describe("independent workspace cash race acceptance", () => {
   it("attributes a failed reload after an A-to-B-to-A switch to the returned identity", async () => {
     await mount();
     const b = deferred<Response>(); const returnedA = deferred<Response>();
-    getCash = url => url.includes("accountIds=b") ? b.promise : returnedA.promise;
+    getCash = url => url.includes("accountId=b") ? b.promise : returnedA.promise;
 
     switchAccount("b");
     await waitFor(() => expect(probe.dashboard?.cashLoading).toBe(true));
@@ -104,11 +129,11 @@ describe("independent workspace cash race acceptance", () => {
     await mount();
     await waitFor(() => expect(probe.panel).not.toBeNull());
     const put = deferred<Response>(); putCash = () => put.promise;
-    let saved!: Promise<boolean>;
-    act(() => { saved = probe.panel!.onSave({ scope: { nature: "live", simulationRunId: null }, accountId: "a", currency: "CNY", balance: "1", asOf: "2026-09-01T00:00:00.000Z" }); });
+    let saved!: Promise<unknown>;
+    act(() => { saved = probe.panel!.onSave({ scope: { nature: "live", simulationRunId: null }, accountId: "a", currency: "CNY", balance: "1", asOf: "2026-09-01T00:00:00.000Z", source: "caller-test", expectedRevision: null }); });
     getCash = async () => Response.json(summary("B")); switchAccount("b");
     await waitFor(() => expect(probe.dashboard?.cashSummary).toEqual(summary("B")));
-    await act(async () => { put.reject(new Error("old account write failed")); expect(await saved).toBe(false); });
+    await act(async () => { put.reject(new Error("old account write failed")); await expect(saved).rejects.toThrow("old account write failed"); });
     expect(probe.dashboard?.cashError).toBeNull();
     expect(probe.panel?.error).toBeNull();
     expect(probe.dashboard?.cashSummary).toEqual(summary("B"));

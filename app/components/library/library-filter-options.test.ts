@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { TradeLibraryEntry } from "../../lib/trades/library";
+import { TRADINGVIEW_CANONICAL_ACCOUNT_ID, TRADINGVIEW_CANONICAL_ACCOUNT_LABEL } from "../../lib/trades/tradingview-account-identity";
 import {
   buildLibraryFilterOptions,
   formatBrokerLabel,
@@ -138,5 +139,51 @@ describe("library filter option formatting", () => {
     expect(options.simulationRuns).toHaveLength(1);
     expect(options.years).toEqual([{ id: "2026", label: "2026 年" }]);
     expect(options.tags).toEqual([{ id: "breakout", label: "突破" }]);
+  });
+
+  it("does not expose source runs from a canonical TradingView account", () => {
+    const legacy = entry();
+    const canonicalExecution = {
+      ...legacy.executions[0],
+      accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+      accountLabel: TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+      source: {
+        ...legacy.executions[0].source,
+        platform: "tradingview",
+        tradeNature: "simulation" as const,
+        simulationRunId: "tradingview:source:one",
+      },
+    };
+    const canonicalEpisode = {
+      ...legacy.episodes[0],
+      episode: {
+        ...legacy.episodes[0].episode,
+        accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+        accountLabel: TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+        tradeNature: "simulation" as const,
+        simulationRunId: undefined,
+        executions: [canonicalExecution],
+      },
+    };
+    const canonical = {
+      ...legacy,
+      simulationRunId: undefined,
+      tradeNature: "simulation" as const,
+      executions: [canonicalExecution],
+      episodes: [canonicalEpisode],
+    };
+
+    expect(buildLibraryFilterOptions([canonical]).simulationRuns).toEqual([]);
+
+    const mixed = {
+      ...canonical,
+      simulationRunId: "tradingview:source:canonical-stale",
+      executions: [canonicalExecution, legacy.executions[0]],
+      episodes: [canonicalEpisode, legacy.episodes[0]],
+    };
+    const mixedRuns = buildLibraryFilterOptions([mixed]).simulationRuns.map(option => option.id);
+    expect(mixedRuns).toContain("tradingview:source:US:ABC:long-run-id");
+    expect(mixedRuns).not.toContain("tradingview:source:canonical-stale");
+    expect(mixedRuns).not.toContain("tradingview:source:one");
   });
 });

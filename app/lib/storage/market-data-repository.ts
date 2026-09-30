@@ -28,23 +28,51 @@ export type IntervalMarketDataCommit = {
   };
 };
 
+export type DailyMarketDataRead = {
+  candles: DailyCandleRecord[];
+  coverage: CoverageSegment[];
+};
+
+export type IntervalMarketDataRead = {
+  candles: MarketCandleRecord[];
+  coverage: IntervalCoverageSegment[];
+};
+
 export interface MarketDataRepository {
   getCandles(
     instrumentId: string,
     interval: NativeMarketInterval,
     startTime: string,
     endTime: string,
+    signal?: AbortSignal,
   ): Promise<MarketCandleRecord[]>;
   getIntervalCoverage(
     instrumentId: string,
     interval: NativeMarketInterval,
+    signal?: AbortSignal,
   ): Promise<IntervalCoverageSegment[]>;
+  /** Optional combined read used by replay hydration to avoid duplicate interval payloads. */
+  getIntervalMarketData?(
+    instrumentId: string,
+    interval: NativeMarketInterval,
+    startTime: string,
+    endTime: string,
+    signal?: AbortSignal,
+  ): Promise<IntervalMarketDataRead>;
   getDailyCandles(
     instrumentId: string,
     startDate: string,
     endDate: string,
+    signal?: AbortSignal,
   ): Promise<DailyCandleRecord[]>;
-  getCoverage(instrumentId: string): Promise<CoverageSegment[]>;
+  /** Optional combined read used by homepage hydration to avoid duplicate HTTP payloads. */
+  getDailyMarketData?(
+    instrumentId: string,
+    startDate: string,
+    endDate: string,
+    signal?: AbortSignal,
+  ): Promise<DailyMarketDataRead>;
+  getCoverage(instrumentId: string, signal?: AbortSignal): Promise<CoverageSegment[]>;
   getProviderSymbol(
     instrumentId: string,
     provider: MarketDataProviderId,

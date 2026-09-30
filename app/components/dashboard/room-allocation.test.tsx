@@ -38,7 +38,9 @@ it("renders the complete distribution as a left donut with a right legend and re
   expect(screen.getByText("港股")).toBeInTheDocument();
   expect(screen.getByText("今日卖出回款")).toBeInTheDocument();
   expect(screen.getByText("HKD 12.00")).toBeInTheDocument();
-  expect(screen.getByText("现金总额")).toBeInTheDocument();
+  expect(screen.getByText("参考现金")).toBeInTheDocument();
+  expect(screen.getByText("基准+股票/ETF成交变化")).toBeInTheDocument();
+  expect(screen.queryByText("现金总额")).not.toBeInTheDocument();
   expect(screen.getByText("HKD 345.00")).toBeInTheDocument();
   expect(document.querySelector(".donut")).toBeTruthy();
   expect(screen.getByText("港股").closest("li")?.querySelector("small")).toBeNull();
@@ -141,4 +143,38 @@ it("hides ratio bars and ratio labels for partial signed coverage while keeping 
   expect(screen.getByText(/空头 -100\.00/)).toBeInTheDocument();
   expect(container.querySelector(".barTrack")).toBeNull();
   expect(screen.queryByText(/多空占比按绝对市值/)).not.toBeInTheDocument();
+});
+
+it("keeps multiple cash baseline dates and sources in a collapsed details disclosure", async () => {
+  const model = buildCurrentPortfolio([], { scope: createDefaultRoomScope() });
+  const money = { baseCurrency: "CNY", originalByCurrency: { CNY: "300" }, convertedCny: "300", converted: "300", convertedHkd: null, targetCurrency: "CNY", conversion: "same-currency", fxSnapshotId: null, note: "部分覆盖" } as const;
+  const cashSummary = {
+    todayProceeds: money,
+    cashTotal: money,
+    todayProceedsStatus: "available",
+    cashTotalStatus: "partial",
+    coverage: { included: 1, excluded: 0, missing: 0 },
+    asOf: null,
+    missingReasons: [],
+    byScope: {},
+    updatedAt: "2026-09-25T00:00:00Z",
+  } satisfies CashSummary;
+  render(<RoomAllocation
+    model={model}
+    reportCurrency="CNY"
+    cashSummary={cashSummary}
+    cashBaselineDetails={[
+      { accountId: "account-a", accountLabel: "账户 A", currency: "CNY", balance: "300", asOf: "2026-09-01T00:00:00.000Z", source: "broker-a", revision: 2, coverage: "partial" },
+      { accountId: "account-b", accountLabel: "账户 B", currency: "USD", balance: "100", asOf: "2026-09-02T00:00:00.000Z", source: "broker-b", revision: 1, coverage: "available" },
+    ]}
+  />);
+
+  const disclosure = screen.getByRole("group", { name: "现金基准详情" });
+  expect(disclosure).not.toHaveAttribute("open");
+  await userEvent.click(screen.getByText(/查看基准详情/));
+  expect(disclosure).toHaveAttribute("open");
+  expect(disclosure).toHaveTextContent("账户 A");
+  expect(disclosure).toHaveTextContent("截至 2026-09-01");
+  expect(disclosure).toHaveTextContent("来源 broker-a · 版本 2");
+  expect(disclosure).toHaveTextContent("账户 B");
 });

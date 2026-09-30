@@ -1,4 +1,8 @@
 import type { TradeLibraryEntry } from "../trades/library";
+import { tradingViewEpisodeBusinessScope } from "../trades/tradingview-account-identity";
+import { isCanonicalTradingViewAccountExecution } from "../trades/tradingview-account-identity";
+import { TRADINGVIEW_CANONICAL_ACCOUNT_ID } from "../trades/tradingview-account-identity";
+import type { TradeEpisode, TradeExecution } from "../trades/types";
 import Decimal from "decimal.js";
 
 export type SharedTradeNature = "live" | "simulation" | "unknown";
@@ -25,6 +29,29 @@ function entryEpisodeNature(entry: TradeLibraryEntry, episode: TradeLibraryEntry
   return entry.tradeNature ?? "unknown";
 }
 
+/**
+ * Match one episode against the shared business scope. A canonical TradingView
+ * episode is an account-level simulation scope, so its source run is never a
+ * business filter. Other simulation episodes keep their legacy run boundary.
+ */
+export function sharedScopeMatchesEpisode(
+  entry: TradeLibraryEntry,
+  episode: TradeEpisode,
+  scope: SharedScope,
+): boolean {
+  if (entryEpisodeNature(entry, episode) !== scope.nature) return false;
+  if (scope.accountIds.length > 0 && !scope.accountIds.includes(episode.accountId)) return false;
+  if (scope.nature !== "simulation") return true;
+
+  const businessScope = tradingViewEpisodeBusinessScope(episode);
+  if (businessScope) return scope.simulationRunId === businessScope.simulationRunId;
+  if (scope.simulationRunId !== null) return episode.simulationRunId === scope.simulationRunId;
+
+  // Keep the old no-execution fixtures usable for account-explicit callers,
+  // while real legacy simulation rows still require an explicit run.
+  return scope.accountIds.length > 0 && episode.executions.length === 0;
+}
+
 export function normalizeSharedScope(value: unknown): SharedScope {
   const candidate = value && typeof value === "object" ? value as Record<string, unknown> : {};
   const nature = candidate.nature === "simulation" || candidate.nature === "unknown" ? candidate.nature : "live";
@@ -44,22 +71,13 @@ export function normalizeSharedScope(value: unknown): SharedScope {
 }
 
 export function sharedScopeMatchesEntry(entry: TradeLibraryEntry, scope: SharedScope): boolean {
-  const hasNature = entry.episodes.some(({ episode }) => entryEpisodeNature(entry, episode) === scope.nature);
-  if (!hasNature) return false;
-  if (scope.accountIds.length > 0 && !entry.episodes.some(({ episode }) => scope.accountIds.includes(episode.accountId))) return false;
-  if (scope.simulationRunId !== null && !entry.episodes.some(({ episode }) => episode.simulationRunId === scope.simulationRunId)) return false;
-  return true;
+  return entry.episodes.some(({ episode }) => sharedScopeMatchesEpisode(entry, episode, scope));
 }
 
 export function filterEntriesBySharedScope(entries: readonly TradeLibraryEntry[], scope: SharedScope): TradeLibraryEntry[] {
   return entries.flatMap((entry) => {
     if (!sharedScopeMatchesEntry(entry, scope)) return [];
-    const episodes = entry.episodes.filter(({ episode }) => {
-      const nature = entryEpisodeNature(entry, episode);
-      return nature === scope.nature &&
-        (scope.accountIds.length === 0 || scope.accountIds.includes(episode.accountId)) &&
-        (scope.simulationRunId === null || episode.simulationRunId === scope.simulationRunId);
-    });
+    const episodes = entry.episodes.filter(({ episode }) => sharedScopeMatchesEpisode(entry, episode, scope));
     if (episodes.length === 0) return [];
     const executionIds = new Set(episodes.flatMap(({ episode }) => episode.executions.map(({ id }) => id)));
     const netValues = episodes.map(({ metrics }) => metrics.netPnl);
@@ -92,4 +110,34 @@ export function filterEntriesBySharedScope(entries: readonly TradeLibraryEntry[]
 
 export function sharedScopeStorageKey(project = "default") {
   return `tradereview:shared-scope:v1:${project}`;
+}
+
+export function sharedScopeV2StorageKey(project = "default") {
+  return `tradereview:shared-scope:v2:${project}`;
+}
+
+export function isCanonicalTradingViewSharedScope(scope: SharedScope): boolean {
+  return scope.nature === "simulation" &&
+    scope.simulationRunId === null &&
+    scope.accountIds.length === 1 &&
+    scope.accountIds[0] === TRADINGVIEW_CANONICAL_ACCOUNT_ID;
+}
+
+export function filterExecutionHistoryForEpisode(
+  executions: readonly TradeExecution[],
+  episode: Pick<TradeEpisode, "accountId" | "tradeNature" | "simulationRunId" | "executions">,
+): TradeExecution[] {
+  if (tradingViewEpisodeBusinessScope(episode)) {
+    return executions.filter(isCanonicalTradingViewAccountExecution);
+  }
+  const first = episode.executions[0];
+  if (!first) return [];
+  const nature = episode.tradeNature ?? first.source.tradeNature ?? (first.source.tradingNature === "simulated" ? "simulation" : first.source.tradingNature) ?? "unknown";
+  const episodeRun = episode.simulationRunId ?? first.source.simulationRunId ?? null;
+  return executions.filter((execution) => {
+    const executionNature = execution.source.tradeNature ?? (execution.source.tradingNature === "simulated" ? "simulation" : execution.source.tradingNature) ?? "unknown";
+    return execution.accountId === episode.accountId &&
+      executionNature === nature &&
+      (nature !== "simulation" || execution.source.simulationRunId === episodeRun);
+  });
 }

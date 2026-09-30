@@ -84,6 +84,23 @@ describe("instrument metadata contracts", () => {
     ).toThrow();
   });
 
+  it("rejects an invalid main metadata timestamp", () => {
+    expect(() =>
+      validateResolvedInstrument(
+        {
+          market: "US",
+          symbol: "AAPL",
+          name: "Apple Inc.",
+          assetType: "stock",
+          source: "nasdaq",
+          confidence: "official",
+          resolvedAt: "not-a-date",
+        },
+        { market: "US", symbol: "AAPL" },
+      ),
+    ).toThrow();
+  });
+
   it("normalizes route input and rejects unsupported markets", () => {
     expect(
       parseInstrumentLookup(

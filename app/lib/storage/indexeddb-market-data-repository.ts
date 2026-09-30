@@ -8,7 +8,9 @@ import type {
   NativeMarketInterval,
 } from "../market/contracts";
 import type {
+  DailyMarketDataRead,
   IntervalMarketDataCommit,
+  IntervalMarketDataRead,
   MarketDataCommit,
   MarketDataRepository,
 } from "./market-data-repository";
@@ -22,6 +24,26 @@ import {
   requestValue,
   transactionDone,
 } from "./indexeddb-schema";
+
+function throwIfAborted(signal?: AbortSignal) {
+  if (signal?.aborted) {
+    throw signal.reason ?? new DOMException("行情读取已取消", "AbortError");
+  }
+}
+
+function observeAbort(transaction: IDBTransaction, signal?: AbortSignal) {
+  if (!signal) return () => undefined;
+  const abortTransaction = () => {
+    try {
+      transaction.abort();
+    } catch {
+      // The transaction may have completed before the signal callback ran.
+    }
+  };
+  signal.addEventListener("abort", abortTransaction, { once: true });
+  if (signal.aborted) abortTransaction();
+  return () => signal.removeEventListener("abort", abortTransaction);
+}
 
 export class IndexedDbMarketDataRepository
   implements MarketDataRepository
@@ -42,58 +64,67 @@ export class IndexedDbMarketDataRepository
     interval: NativeMarketInterval,
     startTime: string,
     endTime: string,
+    signal?: AbortSignal,
   ) {
+    throwIfAborted(signal);
     const database = await this.open();
     try {
       const transaction = database.transaction(
         [MARKET_CANDLES, DAILY_CANDLES],
         "readonly",
       );
-      const genericCandles = (await requestValue(
-        transaction.objectStore(MARKET_CANDLES).getAll(
-          IDBKeyRange.bound(
-            [instrumentId, interval, startTime, "raw"],
-            [instrumentId, interval, endTime, "raw"],
+      const removeAbortListener = observeAbort(transaction, signal);
+      try {
+        const genericCandles = (await requestValue(
+          transaction.objectStore(MARKET_CANDLES).getAll(
+            IDBKeyRange.bound(
+              [instrumentId, interval, startTime, "raw"],
+              [instrumentId, interval, endTime, "raw"],
+            ),
           ),
-        ),
-      )) as MarketCandleRecord[];
-      if (interval !== "1D") return genericCandles;
+        )) as MarketCandleRecord[];
+        throwIfAborted(signal);
+        if (interval !== "1D") return genericCandles;
 
-      const dailyCandles = (await requestValue(
-        transaction.objectStore(DAILY_CANDLES).getAll(
-          IDBKeyRange.bound(
-            [instrumentId, startTime.slice(0, 10), "raw"],
-            [instrumentId, endTime.slice(0, 10), "raw"],
+        const dailyCandles = (await requestValue(
+          transaction.objectStore(DAILY_CANDLES).getAll(
+            IDBKeyRange.bound(
+              [instrumentId, startTime.slice(0, 10), "raw"],
+              [instrumentId, endTime.slice(0, 10), "raw"],
+            ),
           ),
-        ),
-      )) as DailyCandleRecord[];
-      const candlesByTimestamp = new Map<string, MarketCandleRecord>();
-      for (const candle of dailyCandles) {
-        const timestamp = `${candle.tradingDate}T00:00:00.000Z`;
-        if (timestamp >= startTime && timestamp <= endTime) {
-          candlesByTimestamp.set(timestamp, {
-            instrumentId: candle.instrumentId,
-            interval: "1D",
-            timestamp,
-            open: candle.open,
-            high: candle.high,
-            low: candle.low,
-            close: candle.close,
-            volume: candle.volume,
-            currency: candle.currency,
-            provider: candle.provider,
-            providerSymbol: candle.providerSymbol,
-            adjustmentMode: candle.adjustmentMode,
-            fetchedAt: candle.fetchedAt,
-          });
+        )) as DailyCandleRecord[];
+        throwIfAborted(signal);
+        const candlesByTimestamp = new Map<string, MarketCandleRecord>();
+        for (const candle of dailyCandles) {
+          const timestamp = `${candle.tradingDate}T00:00:00.000Z`;
+          if (timestamp >= startTime && timestamp <= endTime) {
+            candlesByTimestamp.set(timestamp, {
+              instrumentId: candle.instrumentId,
+              interval: "1D",
+              timestamp,
+              open: candle.open,
+              high: candle.high,
+              low: candle.low,
+              close: candle.close,
+              volume: candle.volume,
+              currency: candle.currency,
+              provider: candle.provider,
+              providerSymbol: candle.providerSymbol,
+              adjustmentMode: candle.adjustmentMode,
+              fetchedAt: candle.fetchedAt,
+            });
+          }
         }
+        for (const candle of genericCandles) {
+          candlesByTimestamp.set(candle.timestamp, candle);
+        }
+        return [...candlesByTimestamp.values()].sort((left, right) =>
+          left.timestamp.localeCompare(right.timestamp),
+        );
+      } finally {
+        removeAbortListener();
       }
-      for (const candle of genericCandles) {
-        candlesByTimestamp.set(candle.timestamp, candle);
-      }
-      return [...candlesByTimestamp.values()].sort((left, right) =>
-        left.timestamp.localeCompare(right.timestamp),
-      );
     } finally {
       database.close();
     }
@@ -102,20 +133,74 @@ export class IndexedDbMarketDataRepository
   async getIntervalCoverage(
     instrumentId: string,
     interval: NativeMarketInterval,
+    signal?: AbortSignal,
   ) {
+    throwIfAborted(signal);
     const database = await this.open();
     try {
       const transaction = database.transaction(INTERVAL_COVERAGE, "readonly");
-      const value = (await requestValue(
-        transaction.objectStore(INTERVAL_COVERAGE).get([instrumentId, interval]),
-      )) as
-        | {
-            instrumentId: string;
-            interval: NativeMarketInterval;
-            segments: IntervalCoverageSegment[];
-          }
-        | undefined;
-      return value?.segments ?? [];
+      const removeAbortListener = observeAbort(transaction, signal);
+      try {
+        const value = (await requestValue(
+          transaction.objectStore(INTERVAL_COVERAGE).get([instrumentId, interval]),
+        )) as
+          | {
+              instrumentId: string;
+              interval: NativeMarketInterval;
+              segments: IntervalCoverageSegment[];
+            }
+          | undefined;
+        throwIfAborted(signal);
+        return value?.segments ?? [];
+      } finally {
+        removeAbortListener();
+      }
+    } finally {
+      database.close();
+    }
+  }
+
+  async getIntervalMarketData(
+    instrumentId: string,
+    interval: NativeMarketInterval,
+    startTime: string,
+    endTime: string,
+    signal?: AbortSignal,
+  ): Promise<IntervalMarketDataRead> {
+    throwIfAborted(signal);
+    const database = await this.open();
+    try {
+      const transaction = database.transaction(
+        [MARKET_CANDLES, INTERVAL_COVERAGE],
+        "readonly",
+      );
+      const removeAbortListener = observeAbort(transaction, signal);
+      try {
+        const candles = (await requestValue(
+          transaction.objectStore(MARKET_CANDLES).getAll(
+            IDBKeyRange.bound(
+              [instrumentId, interval, startTime, "raw"],
+              [instrumentId, interval, endTime, "raw"],
+            ),
+          ),
+        )) as MarketCandleRecord[];
+        const value = (await requestValue(
+          transaction.objectStore(INTERVAL_COVERAGE).get([instrumentId, interval]),
+        )) as
+          | {
+              instrumentId: string;
+              interval: NativeMarketInterval;
+              segments: IntervalCoverageSegment[];
+            }
+          | undefined;
+        throwIfAborted(signal);
+        return {
+          candles,
+          coverage: value?.segments ?? [],
+        };
+      } finally {
+        removeAbortListener();
+      }
     } finally {
       database.close();
     }
@@ -125,7 +210,9 @@ export class IndexedDbMarketDataRepository
     instrumentId: string,
     startDate: string,
     endDate: string,
+    signal?: AbortSignal,
   ) {
+    throwIfAborted(signal);
     const database = await this.open();
     try {
       const transaction = database.transaction(DAILY_CANDLES, "readonly");
@@ -133,24 +220,79 @@ export class IndexedDbMarketDataRepository
         [instrumentId, startDate, "raw"],
         [instrumentId, endDate, "raw"],
       );
-      return (await requestValue(
-        transaction.objectStore(DAILY_CANDLES).getAll(range),
-      )) as DailyCandleRecord[];
+      const removeAbortListener = observeAbort(transaction, signal);
+      try {
+        const candles = (await requestValue(
+          transaction.objectStore(DAILY_CANDLES).getAll(range),
+        )) as DailyCandleRecord[];
+        throwIfAborted(signal);
+        return candles;
+      } finally {
+        removeAbortListener();
+      }
     } finally {
       database.close();
     }
   }
 
-  async getCoverage(instrumentId: string) {
+  async getDailyMarketData(
+    instrumentId: string,
+    startDate: string,
+    endDate: string,
+    signal?: AbortSignal,
+  ): Promise<DailyMarketDataRead> {
+    throwIfAborted(signal);
+    const database = await this.open();
+    try {
+      const transaction = database.transaction(
+        [DAILY_CANDLES, COVERAGE],
+        "readonly",
+      );
+      const removeAbortListener = observeAbort(transaction, signal);
+      try {
+        const candles = (await requestValue(
+          transaction.objectStore(DAILY_CANDLES).getAll(
+            IDBKeyRange.bound(
+              [instrumentId, startDate, "raw"],
+              [instrumentId, endDate, "raw"],
+            ),
+          ),
+        )) as DailyCandleRecord[];
+        const value = (await requestValue(
+          transaction.objectStore(COVERAGE).get(instrumentId),
+        )) as
+          | { instrumentId: string; segments: CoverageSegment[] }
+          | undefined;
+        throwIfAborted(signal);
+        return {
+          candles,
+          coverage: value?.segments ?? [],
+        };
+      } finally {
+        removeAbortListener();
+      }
+    } finally {
+      database.close();
+    }
+  }
+
+  async getCoverage(instrumentId: string, signal?: AbortSignal) {
+    throwIfAborted(signal);
     const database = await this.open();
     try {
       const transaction = database.transaction(COVERAGE, "readonly");
-      const value = (await requestValue(
-        transaction.objectStore(COVERAGE).get(instrumentId),
-      )) as
-        | { instrumentId: string; segments: CoverageSegment[] }
-        | undefined;
-      return value?.segments ?? [];
+      const removeAbortListener = observeAbort(transaction, signal);
+      try {
+        const value = (await requestValue(
+          transaction.objectStore(COVERAGE).get(instrumentId),
+        )) as
+          | { instrumentId: string; segments: CoverageSegment[] }
+          | undefined;
+        throwIfAborted(signal);
+        return value?.segments ?? [];
+      } finally {
+        removeAbortListener();
+      }
     } finally {
       database.close();
     }

@@ -1,5 +1,7 @@
 import { createHash } from "node:crypto";
 
+import { TRADINGVIEW_ACCOUNT_MIGRATION_SCHEMA } from "./tradingview-account-migration-schema";
+
 export interface SqliteMigration {
   readonly version: number;
   readonly name: string;
@@ -431,4 +433,5 @@ export const SQLITE_MIGRATIONS: readonly SqliteMigration[] = [
   migration(11, "project-explicit-current-evaluation-selection", recallEvaluationSelectionSql),
   migration(12, "project-frozen-recall-actual-metrics", recallActualMetricsSql),
   migration(13, "project-frozen-recall-manual-evaluations", recallManualEvaluationsSql),
+  migration(14, "tradingview-account-migration", TRADINGVIEW_ACCOUNT_MIGRATION_SCHEMA),
 ];

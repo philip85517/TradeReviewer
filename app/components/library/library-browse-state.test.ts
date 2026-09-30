@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import { buildInstrumentTradeSummaries } from "../../lib/trades/instruments";
 import { buildTradeLibraryEntries } from "../../lib/trades/library";
+import { TRADINGVIEW_CANONICAL_ACCOUNT_ID, TRADINGVIEW_CANONICAL_ACCOUNT_LABEL } from "../../lib/trades/tradingview-account-identity";
 import type { Instrument, TradeExecution } from "../../lib/trades/types";
+import { roomFiltersFromScope } from "../../lib/reviews/trading-room-pending";
+import type { RoomScope } from "../../lib/reviews/trading-room-scope";
 import {
   DEFAULT_TRADE_LIBRARY_BROWSE_STATE,
   aggregateTradeLibraryStockDisplayEntries,
@@ -65,6 +68,37 @@ function entriesFor(executions: TradeExecution[]) {
     {},
     {},
   );
+}
+
+function canonicalExecution(
+  side: "buy" | "sell",
+  at: string,
+  id: string,
+  sourceRunId: string,
+): TradeExecution {
+  return execution(side, at, id, {
+    accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+    accountLabel: TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+    tradeNature: "simulation",
+    simulationRunId: sourceRunId,
+    platform: "tradingview",
+  });
+}
+
+function homepageRoomScope(markets: string[]): RoomScope {
+  return {
+    nature: "simulation",
+    simulationRunId: null,
+    assetCategory: "all",
+    assetType: "all",
+    query: "",
+    accountIds: [],
+    instrumentIds: [],
+    markets,
+    currencies: [],
+    reviewStatuses: [],
+    period: { preset: "all", startDate: "0001-01-01", endDate: "9999-12-31" },
+  };
 }
 
 describe("trade library browse state", () => {
@@ -232,6 +266,81 @@ describe("trade library browse state", () => {
     );
     expect(tradeLibraryBrowseRangeKey(state, "CNY")).not.toBe(tradeLibraryBrowseRangeKey(state, "HKD"));
     expect(resetTradeLibraryBrowseState(state).roomFilters).toBeNull();
+  });
+
+  it("keeps canonical rows for matching inherited homepage room filters and excludes nonmatches", () => {
+    const entries = entriesFor([
+      canonicalExecution("buy", "2025-01-02T00:00:00Z", "canonical-in", "source-a"),
+      canonicalExecution("sell", "2025-01-03T00:00:00Z", "canonical-out", "source-b"),
+    ]);
+    const state = normalizeTradeLibraryBrowseState({
+      tradeNature: "simulation",
+      simulationRunId: "all",
+      reviewStatus: "all",
+      roomFilters: roomFiltersFromScope(homepageRoomScope(["US"])),
+    });
+    const mismatch = normalizeTradeLibraryBrowseState({
+      ...state,
+      roomFilters: roomFiltersFromScope(homepageRoomScope(["HK"])),
+    });
+
+    expect(buildTradeLibraryBrowseRows(entries, state, {})).toHaveLength(1);
+    expect(buildTradeLibraryBrowseRows(entries, mismatch, {})).toHaveLength(0);
+  });
+
+  it("enumerates canonical null business scope and legacy source runs separately", () => {
+    const entries = entriesFor([
+      canonicalExecution("buy", "2025-01-02T00:00:00Z", "canonical-in", "source-a"),
+      canonicalExecution("sell", "2025-01-03T00:00:00Z", "canonical-out", "source-b"),
+      execution("buy", "2025-02-02T00:00:00Z", "legacy-in", {
+        accountId: "legacy-simulation",
+        accountLabel: "旧模拟账户",
+        tradeNature: "simulation",
+        simulationRunId: "legacy-run",
+        platform: "tradingview",
+      }),
+      execution("sell", "2025-02-03T00:00:00Z", "legacy-out", {
+        accountId: "legacy-simulation",
+        accountLabel: "旧模拟账户",
+        tradeNature: "simulation",
+        simulationRunId: "legacy-run",
+        platform: "tradingview",
+      }),
+    ]);
+    const base = normalizeTradeLibraryBrowseState({
+      tradeNature: "simulation",
+      simulationRunId: "all",
+      reviewStatus: "all",
+      roomFilters: roomFiltersFromScope(homepageRoomScope(["US"])),
+    });
+    const legacyOnly = { ...base, simulationRunId: "legacy-run" };
+
+    expect(buildTradeLibraryBrowseRows(entries, base, {})).toHaveLength(2);
+    expect(buildTradeLibraryBrowseRows(entries, legacyOnly, {}).map(row => row.item.episode.accountId)).toEqual([
+      "legacy-simulation",
+    ]);
+  });
+
+  it("keeps inherited scope for both history and pending navigation states", () => {
+    const entries = entriesFor([
+      canonicalExecution("buy", "2025-01-02T00:00:00Z", "canonical-in", "source-a"),
+      canonicalExecution("sell", "2025-01-03T00:00:00Z", "canonical-out", "source-b"),
+    ]);
+    const roomFilters = roomFiltersFromScope(homepageRoomScope(["US"]));
+    const destination = {
+      mode: "queue" as const,
+      tradeNature: "simulation" as const,
+      simulationRunId: "all",
+      accounts: [TRADINGVIEW_CANONICAL_ACCOUNT_ID],
+      account: "all",
+      positionStatus: "closed" as const,
+      roomFilters,
+    };
+    const historyState = normalizeTradeLibraryBrowseState({ ...destination, reviewStatus: "all" });
+    const pendingState = normalizeTradeLibraryBrowseState({ ...destination, reviewStatus: "pending" });
+
+    expect(buildTradeLibraryBrowseRows(entries, historyState, {})).toHaveLength(1);
+    expect(buildTradeLibraryBrowseRows(entries, pendingState, {})).toHaveLength(1);
   });
 
   it("keeps stock display aggregation free of legacy financial totals", () => {

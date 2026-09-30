@@ -4,6 +4,10 @@ import {
   detectTradingViewSimulationCsv,
   parseTradingViewSimulationCsv,
 } from "./tradingview-simulation";
+import {
+  TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+  TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+} from "../trades/tradingview-account-identity";
 
 const HEADERS = [
   "交易编号",
@@ -105,6 +109,7 @@ describe("TradingView simulation CSV", () => {
         timePrecision: "date-only",
         sourceTimezone: "Asia/Shanghai",
         sourceTradeId: "1",
+        simulationRole: "entry",
         row: 3,
       },
     });
@@ -116,6 +121,35 @@ describe("TradingView simulation CSV", () => {
     expect(result.records[1].executedAt).toBe("2021-03-30T16:00:00.000Z");
     expect(result.records[2].side).toBe("sell");
     expect(result.records[3].side).toBe("buy");
+  });
+
+  it("uses one canonical account while retaining the source run and stable IDs", () => {
+    const input = new TextEncoder().encode(csv(sampleRows));
+    const result = parseTradingViewSimulationCsv(input, {
+      fileName: "回放交易_SSE_600330_2026-09-03.csv",
+      sourceFileId: "fingerprint",
+    });
+    const repeated = parseTradingViewSimulationCsv(input, {
+      fileName: "回放交易_SSE_600330_2026-09-03.csv",
+      sourceFileId: "fingerprint",
+    });
+
+    expect(new Set(result.records.map(record => record.accountId))).toEqual(
+      new Set([TRADINGVIEW_CANONICAL_ACCOUNT_ID]),
+    );
+    expect(new Set(result.records.map(record => record.accountLabel))).toEqual(
+      new Set([TRADINGVIEW_CANONICAL_ACCOUNT_LABEL]),
+    );
+    expect(new Set(result.records.map(record => record.source.simulationRunId))).toEqual(
+      new Set(["tradingview:fingerprint:CN-SH:600330"]),
+    );
+    expect(result.records).toEqual(repeated.records);
+    expect(result.records.map(record => record.id)).toEqual([
+      "tradingview:fingerprint:CN-SH:600330:1:3",
+      "tradingview:fingerprint:CN-SH:600330:1:2",
+      "tradingview:fingerprint:CN-SH:600330:2:5",
+      "tradingview:fingerprint:CN-SH:600330:2:4",
+    ]);
   });
 
   it("reports incomplete source trade groups with their row locations", () => {

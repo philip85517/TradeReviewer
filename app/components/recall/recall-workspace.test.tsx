@@ -1,4 +1,5 @@
-import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { useEffect } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -11,9 +12,10 @@ import { calculateRecallActualMetrics } from "../../lib/recall/actual-metrics";
 import { retainRecallActualMetrics } from "../../lib/recall/metric-retention";
 import { upsertRecallManualEvaluationDraft } from "../../lib/recall/manual-evaluations";
 import { applyRecallSizing } from "../../lib/recall/sizing";
-import type { RecallDocument, RecallSnapshot } from "../../lib/recall/types";
+import type { RecallDocument, RecallSnapshot, RecallWorkingContext } from "../../lib/recall/types";
 import type { Candle } from "../../lib/market/types";
 import type { TradeEpisode } from "../../lib/trades/types";
+import type { NormalizedDrawing } from "../../lib/chart/drawings";
 import { NO_REVEALED_EXECUTIONS } from "../../lib/replay/recall-replay";
 import {
   RecallWorkspace,
@@ -32,6 +34,8 @@ const replayChartHarness = vi.hoisted(() => {
   };
   return {
     viewport,
+    deferReady: false,
+    pendingReady: null as (() => void) | null,
     lastProps: null as { averageCost?: number; settings?: { showAverageCost?: boolean }; onPlanPriceChange?: (id: string, price: string) => void; planLinesEditable?: boolean } | null,
     handle: {
       capture: vi.fn().mockResolvedValue({ imageDataUrl: "data:image/png;base64,AA==", viewport }),
@@ -48,6 +52,7 @@ vi.mock("../chart/replay-chart", () => ({
     onCommand,
     onReady,
     cursor,
+    candles,
     executions,
     averageCost,
     settings,
@@ -57,6 +62,7 @@ vi.mock("../chart/replay-chart", () => ({
     onCommand: (command: unknown) => void;
     onReady?: (handle: typeof replayChartHarness.handle | null) => void;
     cursor?: string;
+    candles?: Array<{ time: string }>;
     executions?: Array<{ id: string }>;
     averageCost?: number;
     settings?: { showAverageCost?: boolean };
@@ -79,12 +85,19 @@ vi.mock("../chart/replay-chart", () => ({
       createdAtCursor: "2025-01-02T10:00:00.000Z",
     };
     useEffect(() => {
+      if (replayChartHarness.deferReady) {
+        replayChartHarness.pendingReady = () => onReady?.(replayChartHarness.handle);
+        return () => {
+          replayChartHarness.pendingReady = null;
+          onReady?.(null);
+        };
+      }
       onReady?.(replayChartHarness.handle);
       return () => onReady?.(null);
     }, [onReady]);
     replayChartHarness.lastProps = { averageCost, settings, onPlanPriceChange, planLinesEditable };
     return <>
-      <div data-testid="mock-replay-chart" data-cursor={cursor} data-execution-cursor={executions?.at(-1)?.id} />
+      <div data-testid="mock-replay-chart" data-cursor={cursor} data-execution-cursor={executions?.at(-1)?.id} data-revealed-candles={candles?.map((candle) => candle.time).join(",")} />
       <button type="button" onClick={() => onCommand({ type: "add", drawing: replayDrawing })}>add drawing</button>
       <button type="button" onClick={() => onCommand({ type: "add", drawing: {...replayDrawing, id: "text-1", tool: "text", text: "新 Text"} })}>add Text</button>
     </>;
@@ -234,6 +247,8 @@ function renderRecall(
     fetch: vi.fn(),
   },
   onLeaveGuardChange?: (guard: (() => Promise<boolean>) | null) => void,
+  candlesByTimeframe = { "15m": replayCandles, "1D": replayCandles, "1W": replayCandles },
+  initialDrawings: NormalizedDrawing[] = [],
 ) {
   return render(
     <RecallWorkspace
@@ -243,8 +258,9 @@ function renderRecall(
       instruments={[{ ...nextEpisode.instrument, market: "US" }]}
       timeframeAvailability={availability}
       importedTimelineCandles={replayCandles}
-      candlesByTimeframe={{ "15m": replayCandles, "1D": replayCandles, "1W": replayCandles }}
+      candlesByTimeframe={candlesByTimeframe}
       settings={settings}
+      initialDrawings={initialDrawings}
       repository={repository}
       onEpisodeChange={vi.fn()}
       onInstrumentChange={vi.fn()}
@@ -306,6 +322,8 @@ function retainedSnapshot(nextEpisode: TradeEpisode, decisionId = nextEpisode.ex
 }
 
 beforeEach(() => {
+  replayChartHarness.deferReady = false;
+  replayChartHarness.pendingReady = null;
   replayChartHarness.lastProps = null;
   replayChartHarness.handle.capture.mockReset();
   replayChartHarness.handle.capture.mockResolvedValue({
@@ -601,6 +619,234 @@ describe("RecallWorkspace autosave reconciliation", () => {
     fireEvent.click(screen.getByRole("button", { name: "切换到 1W" }));
     await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-2"));
     expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", marketCursor);
+    fireEvent.click(screen.getByRole("button", { name: "切换到 1D" }));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute(
+      "data-revealed-candles",
+      replayCandles.slice(0, 2).map((item) => item.time).join(","),
+    ));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", marketCursor);
+  });
+
+  it("restores the saved market cutoff after an empty weekly timeframe is reopened", async () => {
+    const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    const candlesByTimeframe = {
+      "15m": replayCandles,
+      "1D": replayCandles,
+      "1W": [incompleteWeeklyCandle],
+    };
+    const repository: RecallRepository = {
+      load: vi.fn().mockResolvedValue(initial),
+      save: vi.fn().mockImplementation(async value => ({ ...value, revision: value.revision + 1 })),
+      fetch: vi.fn(),
+    };
+    const rendered = renderRecall(replayEpisode, initial, repository, undefined, candlesByTimeframe);
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+    fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-2"));
+    const marketCursor = screen.getByTestId("mock-replay-chart").getAttribute("data-cursor");
+
+    fireEvent.click(screen.getByRole("button", { name: "切换到 1W" }));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", marketCursor));
+    await waitFor(() => expect(repository.save).toHaveBeenCalled(), { timeout: 2500 });
+    const saved = [...vi.mocked(repository.save).mock.calls]
+      .reverse()
+      .map(([document]) => document)
+      .find((document) => document.working.timeframe === "1W");
+    expect(saved).toBeDefined();
+    const savedContext = Object.values(saved?.working.phaseContexts ?? {})
+      .find((context) => context.timeframe === "1W");
+    expect(savedContext?.revealedCandleCursor).toBe(marketCursor);
+
+    rendered.unmount();
+    renderRecall(replayEpisode, saved!, {
+      load: vi.fn().mockResolvedValue(saved),
+      save: vi.fn().mockResolvedValue({ ...saved!, revision: saved!.revision + 1 }),
+      fetch: vi.fn(),
+    }, undefined, candlesByTimeframe);
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", marketCursor));
+    fireEvent.click(screen.getByRole("button", { name: "切换到 1D" }));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute(
+      "data-revealed-candles",
+      replayCandles.slice(0, 2).map((item) => item.time).join(","),
+    ));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", marketCursor);
+  });
+
+  it("does not replace the daily market cutoff with an older completed weekly bar", async () => {
+    const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    const olderWeeklyCandle = {
+      ...incompleteWeeklyCandle,
+      time: "2024-12-30T00:00:00.000Z",
+      knowledgeAt: "2025-01-02T10:20:00.000Z",
+    };
+    renderRecall(replayEpisode, initial, {
+      load: vi.fn().mockResolvedValue(initial),
+      save: vi.fn().mockResolvedValue({ ...initial, revision: 1 }),
+      fetch: vi.fn(),
+    }, undefined, {
+      "15m": replayCandles,
+      "1D": replayCandles,
+      "1W": [olderWeeklyCandle],
+    });
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+    fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-2"));
+    const marketCursor = screen.getByTestId("mock-replay-chart").getAttribute("data-cursor");
+
+    fireEvent.click(screen.getByRole("button", { name: "切换到 1W" }));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-revealed-candles", olderWeeklyCandle.time));
+    fireEvent.click(screen.getByRole("button", { name: "切换到 1D" }));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute(
+      "data-revealed-candles",
+      replayCandles.slice(0, 2).map((item) => item.time).join(","),
+    ));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", marketCursor);
+  });
+
+  it("keeps legacy missing market cutoffs compatible while honoring explicit empty cutoffs", async () => {
+    const base = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    const context: RecallWorkingContext = {
+      mode: "global",
+      decisionId: "global",
+      drawings: [],
+      timeframe: "1D",
+      cursor: replayCandles[1].knowledgeAt!,
+      executionCursor: "fill-2",
+    };
+    const legacy: RecallDocument = {
+      ...base,
+      working: {
+        ...base.working,
+        phase: "holding",
+        cursor: context.cursor,
+        executionCursor: context.executionCursor,
+        phaseContexts: { holding: context },
+      },
+    };
+    const legacyRepository: RecallRepository = {
+      load: vi.fn().mockResolvedValue(legacy),
+      save: vi.fn().mockResolvedValue({ ...legacy, revision: 1 }),
+      fetch: vi.fn(),
+    };
+    const rendered = renderRecall(replayEpisode, legacy, legacyRepository);
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute(
+      "data-revealed-candles",
+      replayCandles[0].time,
+    ));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-2");
+    rendered.unmount();
+
+    const explicitEarlier: RecallWorkingContext = {
+      ...context,
+      revealedCandleCursor: "2025-01-02T10:00:00.000Z",
+    };
+    const explicitEarlierDocument: RecallDocument = {
+      ...legacy,
+      working: {
+        ...legacy.working,
+        cursor: "2025-01-02T10:45:00.000Z",
+        phaseContexts: { holding: explicitEarlier },
+      },
+    };
+    const explicitEarlierRender = renderRecall(replayEpisode, explicitEarlierDocument, {
+      load: vi.fn().mockResolvedValue(explicitEarlierDocument),
+      save: vi.fn().mockResolvedValue({ ...explicitEarlierDocument, revision: 1 }),
+      fetch: vi.fn(),
+    });
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-revealed-candles", ""));
+    // The stable fill prefix can be later than the explicit market boundary;
+    // restoring the old global cursor must not override that saved context.
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-2");
+    explicitEarlierRender.unmount();
+
+    const explicitEmpty: RecallWorkingContext = { ...context, revealedCandleCursor: null };
+    const explicitDocument: RecallDocument = {
+      ...legacy,
+      working: { ...legacy.working, phaseContexts: { holding: explicitEmpty } },
+    };
+    renderRecall(replayEpisode, explicitDocument, {
+      load: vi.fn().mockResolvedValue(explicitDocument),
+      save: vi.fn().mockResolvedValue({ ...explicitDocument, revision: 1 }),
+      fetch: vi.fn(),
+    });
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-revealed-candles", ""));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-2");
+  });
+
+  it("reveals exactly one cached completed candle at its knowledge boundary", async () => {
+    const cachedEpisode: TradeEpisode = {
+      ...episode,
+      id: "cached-imported-episode",
+      startedAt: "2025-01-02T02:00:00.000Z",
+      endedAt: "2025-01-02T02:45:00.000Z",
+      openingQuantity: "100",
+      remainingQuantity: "0",
+      executions: [
+        { ...episode.executions[0], id: "cached-buy", executedAt: "2025-01-02T02:00:00.000Z", quantity: "100" },
+        { ...episode.executions[0], id: "cached-sell", executedAt: "2025-01-02T02:45:00.000Z", side: "sell", quantity: "100", price: "36.5" },
+      ],
+    };
+    const cachedCandles: Candle[] = [
+      { ...candle, time: "2025-01-02T02:00:00.000Z", knowledgeAt: "2025-01-02T02:15:00.000Z" },
+      { ...candle, time: "2025-01-02T02:15:00.000Z", knowledgeAt: "2025-01-02T02:30:00.000Z" },
+      { ...candle, time: "2025-01-02T02:30:00.000Z", knowledgeAt: "2025-01-02T02:45:00.000Z" },
+      { ...candle, time: "2025-01-02T02:45:00.000Z", knowledgeAt: "2025-01-02T03:00:00.000Z" },
+    ];
+    const hourlyCandle: Candle = {
+      ...candle,
+      time: "2025-01-02T02:00:00.000Z",
+      knowledgeAt: "2025-01-02T03:00:00.000Z",
+    };
+    const initial = createRecallDocument(cachedEpisode, "2025-01-03T00:00:00.000Z");
+    initial.working.phase = "holding";
+    initial.working.timeframe = "15m";
+    initial.working.cursor = "2025-01-02T02:45:00.000Z";
+    initial.working.executionCursor = "cached-sell";
+    initial.working.selectedDecisionId = "cached-sell";
+    const repository: RecallRepository = {
+      load: vi.fn().mockResolvedValue(initial),
+      save: vi.fn().mockResolvedValue({ ...initial, revision: 1 }),
+      fetch: vi.fn(),
+    };
+
+    render(
+      <RecallWorkspace
+        episode={cachedEpisode}
+        episodes={[cachedEpisode]}
+        instrument={cachedEpisode.instrument}
+        instruments={[{ ...cachedEpisode.instrument, market: "HK" }]}
+        timeframeAvailability={{ ...availability, "1h": { enabled: true } }}
+        importedTimelineCandles={cachedCandles}
+        candlesByTimeframe={{ "15m": cachedCandles, "1h": [hourlyCandle], "1D": cachedCandles, "1W": cachedCandles }}
+        settings={settings}
+        repository={repository}
+        onEpisodeChange={vi.fn()}
+        onInstrumentChange={vi.fn()}
+        onSettingsChange={vi.fn()}
+      />,
+    );
+
+    const chart = await waitFor(() => screen.getByTestId("mock-replay-chart"));
+    const nextCandle = screen.getByRole("button", { name: "下一根 K 线" });
+    expect(chart).toHaveAttribute("data-revealed-candles", cachedCandles.slice(0, 3).map(({ time }) => time).join(","));
+    expect(chart).toHaveAttribute("data-execution-cursor", "cached-sell");
+    expect(nextCandle).toBeEnabled();
+
+    fireEvent.click(nextCandle);
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute(
+      "data-revealed-candles",
+      cachedCandles.map(({ time }) => time).join(","),
+    ));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", "2025-01-02T03:00:00.000Z");
+    expect(nextCandle).toBeDisabled();
+
+    const frozenCursor = screen.getByTestId("mock-replay-chart").getAttribute("data-cursor");
+    fireEvent.click(screen.getByRole("button", { name: "切换到 1h" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "切换到 1h" })).toHaveClass("active"));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", frozenCursor));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-revealed-candles", hourlyCandle.time);
   });
 
   it("uses replay order for the pre-entry next-decision boundary", async () => {
@@ -640,6 +886,48 @@ describe("RecallWorkspace autosave reconciliation", () => {
     expect(confirmSpy).toHaveBeenCalled();
     await waitFor(() => expect(replayChartHarness.handle.restoreViewport).toHaveBeenLastCalledWith(workingViewport));
     confirmSpy.mockRestore();
+  });
+
+  it("restores the saved phase viewport when the chart handle becomes ready asynchronously", async () => {
+    const pendingFrames: Array<(timestamp: number) => void> = [];
+    const requestAnimationFrameSpy = vi.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => {
+      pendingFrames.push(callback);
+      return pendingFrames.length;
+    });
+    const cancelAnimationFrameSpy = vi.spyOn(window, "cancelAnimationFrame").mockImplementation(() => undefined);
+    try {
+      const savedViewport = { ...replayChartHarness.viewport, rightOffset: 17, logicalRange: { from: 12, to: 22 } };
+      const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+      initial.working.phase = "holding";
+      initial.working.phaseContexts = {
+        holding: {
+          mode: "global",
+          decisionId: "global",
+          drawings: [],
+          timeframe: "1D",
+          cursor: replayCandles[0].knowledgeAt!,
+          executionCursor: NO_REVEALED_EXECUTIONS,
+          viewport: savedViewport,
+        },
+      };
+      replayChartHarness.deferReady = true;
+      renderRecall(replayEpisode, initial);
+
+      await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toBeInTheDocument());
+      expect(replayChartHarness.pendingReady).not.toBeNull();
+      pendingFrames.splice(0).forEach((callback) => callback(0));
+      expect(replayChartHarness.handle.restoreViewport).not.toHaveBeenCalledWith(savedViewport);
+
+      await act(async () => {
+        replayChartHarness.pendingReady?.();
+        await Promise.resolve();
+      });
+      pendingFrames.splice(0).forEach((callback) => callback(0));
+      await waitFor(() => expect(replayChartHarness.handle.restoreViewport).toHaveBeenCalledWith(savedViewport));
+    } finally {
+      requestAnimationFrameSpy.mockRestore();
+      cancelAnimationFrameSpy.mockRestore();
+    }
   });
 
   it("keeps a saved phase viewport from being overwritten during the phase switch", async () => {
@@ -899,7 +1187,15 @@ describe("RecallWorkspace accounting safeguards", () => {
 
     await waitFor(() => expect(screen.getByTestId("tradingview-replay-notice")).toBeInTheDocument());
     expect(screen.getByText("TradingView · 模拟盘", { exact: true })).toBeInTheDocument();
-    expect(screen.getByTestId("tradingview-replay-notice")).toHaveTextContent("运行 run-a");
+    const notice = screen.getByTestId("tradingview-replay-notice");
+    const runIdDisclosure = notice.querySelector("details");
+    const runIdSummary = runIdDisclosure?.querySelector("summary");
+    expect(runIdDisclosure).not.toBeNull();
+    expect(runIdSummary).toHaveTextContent("运行标识");
+    expect(runIdDisclosure).not.toHaveAttribute("open");
+    fireEvent.click(runIdSummary!);
+    expect(runIdDisclosure).toHaveAttribute("open");
+    expect(notice.querySelector("code")).toHaveTextContent("run-a");
     expect(screen.queryByTestId("tradingview-source-report")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
@@ -908,6 +1204,47 @@ describe("RecallWorkspace accounting safeguards", () => {
     expect(screen.getByTestId("tradingview-replay-notice")).toBeInTheDocument();
     expect(screen.getByTestId("tradingview-source-report")).toHaveTextContent("报告收益率4.5%");
     expect(screen.getByTestId("tradingview-source-report")).toHaveTextContent("持仓 K 线6");
+  });
+
+  it("closes the drawing layer panel and leaves the chart frame available", async () => {
+    const user = userEvent.setup();
+    const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    const drawing: NormalizedDrawing = {
+      version: 2,
+      id: "compact-panel-drawing",
+      episodeId: replayEpisode.id,
+      name: "紧凑面板绘图",
+      tool: "trend-line",
+      anchors: [
+        { time: replayCandles[0].time, price: 10 },
+        { time: replayCandles[1].time, price: 11 },
+      ],
+      style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
+      zIndex: 0,
+      hidden: false,
+      locked: false,
+      visibleOn: "all",
+      stage: "during-replay",
+      createdAtCursor: "2025-01-02T09:59:00.000Z",
+    };
+    const repository: RecallRepository = {
+      load: vi.fn().mockResolvedValue(null),
+      save: vi.fn().mockImplementation(async document => ({ ...document, revision: document.revision + 1 })),
+      fetch: vi.fn(),
+    };
+    renderRecall(replayEpisode, initial, repository, undefined, undefined, [drawing]);
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toBeInTheDocument());
+
+    const layersButton = screen.getByRole("button", { name: "图层" });
+    expect(layersButton).toBeEnabled();
+    await user.click(layersButton);
+    const layerPanel = screen.getByRole("region", { name: "绘图图层面板" });
+    expect(within(layerPanel).getByRole("textbox", { name: "重命名紧凑面板绘图" })).toBeInTheDocument();
+    await user.click(within(layerPanel).getByRole("button", { name: "关闭绘图图层" }));
+
+    expect(screen.queryByRole("region", { name: "绘图图层面板" })).not.toBeInTheDocument();
+    expect(screen.getByTestId("mock-replay-chart")).toBeVisible();
+    expect(screen.getByRole("button", { name: "图层" })).toHaveAttribute("aria-expanded", "false");
   });
 });
 

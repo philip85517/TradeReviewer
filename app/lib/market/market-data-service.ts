@@ -42,6 +42,8 @@ export type MarketDataRefreshRequest = {
   signal?: AbortSignal;
   retryUnavailable?: boolean;
   forceRefresh?: boolean;
+  /** Keep replay intervals untouched for homepage quote retries. */
+  includeIntraday?: boolean;
 };
 
 export type MarketDataRefreshError = MarketDataErrorDetail &
@@ -127,32 +129,38 @@ export async function refreshMarketData(
   request: MarketDataRefreshRequest,
 ): Promise<MarketDataRefreshResult> {
   checkAborted(request.signal);
-  const [dailyResult, hourlyResult] = await Promise.allSettled([
-    syncMarketData({
-      instrumentId: request.instrumentId,
-      symbol: request.symbol,
-      market: request.market,
-      currency: request.currency,
-      required: request.dailyRange,
-      repository: request.repository,
-      fetcher: request.fetcher,
-      signal: request.signal,
-      retryUnavailable: request.retryUnavailable,
-    }),
-    syncIntradayMarketDataForRanges({
-      instrumentId: request.instrumentId,
-      symbol: request.symbol,
-      market: request.market,
-      currency: request.currency,
-      requiredRanges: request.hourlyRanges,
-      repository: request.repository,
-      fetcher: request.fetcher,
-      signal: request.signal,
-      interval: "1h",
-      forceRefresh: request.forceRefresh,
-    }),
+  const dailyPromise = syncMarketData({
+    instrumentId: request.instrumentId,
+    symbol: request.symbol,
+    market: request.market,
+    currency: request.currency,
+    required: request.dailyRange,
+    repository: request.repository,
+    fetcher: request.fetcher,
+    signal: request.signal,
+    retryUnavailable: request.retryUnavailable,
+  });
+  const hourlyPromise = request.includeIntraday === false
+    ? undefined
+    : syncIntradayMarketDataForRanges({
+        instrumentId: request.instrumentId,
+        symbol: request.symbol,
+        market: request.market,
+        currency: request.currency,
+        requiredRanges: request.hourlyRanges,
+        repository: request.repository,
+        fetcher: request.fetcher,
+        signal: request.signal,
+        interval: "1h",
+        forceRefresh: request.forceRefresh,
+      });
+  const [dailyResult, hourlyResult] = await Promise.all([
+    Promise.allSettled([dailyPromise]).then(([result]) => result),
+    hourlyPromise
+      ? Promise.allSettled([hourlyPromise]).then(([result]) => result)
+      : Promise.resolve(undefined),
   ]);
-  if (request.signal?.aborted || (dailyResult.status === "rejected" && isAbortError(dailyResult.reason)) || (hourlyResult.status === "rejected" && isAbortError(hourlyResult.reason))) {
+  if (request.signal?.aborted || (dailyResult.status === "rejected" && isAbortError(dailyResult.reason)) || (hourlyResult?.status === "rejected" && isAbortError(hourlyResult.reason))) {
     throw abortError(request.signal);
   }
 
@@ -185,7 +193,17 @@ export async function refreshMarketData(
   }
 
   let hourly: MarketDataRefreshResult["hourly"];
-  if (hourlyResult.status === "fulfilled") {
+  if (!hourlyResult) {
+    hourly = {
+      candles: [...request.previous.intraday],
+      coverage: [...request.previous.intradayCoverage],
+      status: "not-requested",
+      source: "cache",
+      requestedRanges: [],
+      retainedPrevious: true,
+      interval: request.previous.intradayInterval,
+    };
+  } else if (hourlyResult.status === "fulfilled") {
     const value: IntradaySyncResult = hourlyResult.value;
     const retainLegacy = value.candles.length === 0 && request.previous.intradayInterval === "15m" && request.previous.intraday.length > 0;
     hourly = {

@@ -13,7 +13,14 @@ function execution(id: string, executedAt: string, feeStatus: "reported" | "unkn
     id, accountId: "review-account", accountLabel: "Review account",
     instrument: { id: instrumentId, symbol, name: symbol, market: "CN-SH", currency: "CNY" },
     side: "sell", executedAt, quantity: "10", price: "100", fee: "1",
-    source: { platform: "review", row: 1, tradeNature: "live", tradingDate: executedAt.slice(0, 10), feeStatus },
+    source: {
+      platform: "review",
+      row: 1,
+      tradeNature: "live",
+      tradingDate: executedAt.slice(0, 10),
+      feeStatus,
+      settlement: { currency: "CNY", quantity: "10", grossAmount: "1000", netAmount: "", fees: {} },
+    },
   };
 }
 const input = {

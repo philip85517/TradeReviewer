@@ -191,6 +191,8 @@ describe("trading room principal model", () => {
     const otherRun = buildPrincipalReferenceSummary(rows, scope({ nature: "simulation", simulationRunId: "run-2", assetCategory: "us-stock" }), configured, completeFx);
 
     expect(principalScopeKey({ nature: "live", simulationRunId: null })).toBe("live");
+    expect(principalScopeKey({ nature: "simulation", simulationRunId: null, accountId: "tradingview:simulation:default" })).toBe("simulation:tradingview:simulation:default");
+    expect(principalScopeKey({ nature: "simulation", simulationRunId: "run-1", accountId: "legacy-account" })).toBe("simulation:legacy-account:run-1");
     expect(simulation.principalReturnPercent).toBe("2");
     expect(otherRun.mode).toBe("cost");
   });

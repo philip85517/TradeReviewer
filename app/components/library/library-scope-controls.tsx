@@ -7,6 +7,7 @@ import { UnifiedScopeFields } from "../workspace/unified-page-header";
 export type LibraryScopeControlsProps = {
   scope: SharedScope;
   accountOptions?: readonly { id: string; label: string }[];
+  /** Legacy run choices remain available when the range has source-run evidence. */
   simulationRunOptions?: readonly { id: string; label: string }[];
   onChange: (patch: Partial<SharedScope>) => void;
 };
@@ -27,6 +28,16 @@ export function LibraryScopeControls({
   onChange,
 }: LibraryScopeControlsProps) {
   const selectedAccount = scope.accountIds.length === 1 ? scope.accountIds[0] : "all";
+  const showSimulationRun = scope.nature === "simulation" &&
+    (scope.simulationRunId !== null || simulationRunOptions.length > 0);
+  const hasCurrentRunOption = Boolean(scope.simulationRunId && simulationRunOptions.some(option => option.id === scope.simulationRunId));
+  const runOptions = [
+    { value: "", label: "可选" },
+    ...simulationRunOptions.map(option => ({ value: option.id, label: option.label })),
+    ...(scope.simulationRunId && !hasCurrentRunOption
+      ? [{ value: scope.simulationRunId, label: `当前来源运行 · ${scope.simulationRunId}` }]
+      : []),
+  ];
 
   return (
     <div className="library-scope-controls" aria-label="共享交易范围">
@@ -56,20 +67,21 @@ export function LibraryScopeControls({
         className="library-scope-account"
         onChange={value => onChange({ accountIds: value === "all" ? [] : [value] })}
       />}
-      run={scope.nature === "simulation" ? (
-        <ScopeSelect
-          label="模拟运行"
-          ariaLabel="共享模拟运行"
-          value={scope.simulationRunId ?? ""}
-          fieldId="run"
-          required
-          options={[
-            { value: "", label: simulationRunOptions.length > 0 ? "请选择运行" : "暂无可用模拟运行" },
-            ...simulationRunOptions.map(option => ({ value: option.id, label: option.label })),
-          ]}
-          onChange={value => onChange({ simulationRunId: value || null })}
-        />
-      ) : undefined}
+      run={showSimulationRun
+        ? simulationRunOptions.length === 0 && scope.simulationRunId
+          ? <label className="library-scope-run">
+              <span>模拟运行</span>
+              <input aria-label="共享模拟运行" value={scope.simulationRunId} onChange={event => onChange({ simulationRunId: event.target.value || null })} placeholder="可选" />
+            </label>
+          : <ScopeSelect
+              label="模拟运行"
+              ariaLabel="共享模拟运行"
+              value={scope.simulationRunId ?? ""}
+              fieldId="run"
+              options={runOptions}
+              onChange={value => onChange({ simulationRunId: value || null })}
+            />
+        : undefined}
       currency={<ScopeSelect
         label="报告计价"
         ariaLabel="报告计价"

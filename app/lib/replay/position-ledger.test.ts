@@ -63,6 +63,253 @@ function fill(
 }
 
 describe("replayPositionAtPrice", () => {
+  it("adds known zero-cash bonus shares while preserving total cost and ignoring a reference price", () => {
+    const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
+    const bonus = fixtureEvent({
+      id: "bonus-516780",
+      accountId: "fixture-account",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账 1.8900",
+    });
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "0", { instrument });
+    const sale = fill("sell", "2026-06-01T02:00:00Z", "20000", "2", "0", { instrument });
+    buy.source.positionEvents = [bonus];
+    sale.source.positionEvents = [bonus];
+
+    expect(replayPositionAtPrice({
+      executions: [buy, sale],
+      cursor: "2026-05-21T23:59:59.999Z",
+      markPrice: "2",
+    })).toMatchObject({
+      quantity: "10000",
+      averageCost: "2.5",
+      grossCapitalDeployed: "25000",
+    });
+
+    expect(replayPositionAtPrice({ executions: [buy, sale], markPrice: "2" })).toMatchObject({
+      quantity: "0",
+      averageCost: "0",
+      grossCapitalDeployed: "25000",
+      realizedPnl: "15000",
+      netPnl: "15000",
+    });
+  });
+
+  it("keeps a bonus-share event cost-unknown when there is no eligible prior inventory", () => {
+    const bonus = fixtureEvent({
+      id: "orphan-bonus",
+      market: "US",
+      symbol: "TEST",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "USD",
+      description: "红股入账",
+    });
+    const sale = fill("sell", "2026-06-01T02:00:00Z", "10000", "2", "0");
+    sale.source.positionEvents = [bonus];
+
+    expect(replayPositionAtPrice({ executions: [sale], markPrice: "2" })).toMatchObject({
+      quantity: "0",
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["unknown-cost"]) },
+      realizedPnl: "0",
+      netPnl: "0",
+    });
+  });
+
+  it("does not apply non-zero-cash or unrelated corporate actions as bonus shares", () => {
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "0", {
+      instrument: { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" },
+    });
+    buy.source.positionEvents = [fixtureEvent({
+      id: "cash-action",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "18900",
+      currency: "CNY",
+      description: "送股现金补差",
+    })];
+
+    expect(replayPositionAtPrice({ executions: [buy], markPrice: "2" })).toMatchObject({
+      quantity: "10000",
+      averageCost: "0",
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["position-event"]) },
+    });
+  });
+
+  it("keeps same-day bonus-share order ambiguity unavailable", () => {
+    const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
+    const bonus = fixtureEvent({
+      id: "same-day-bonus",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账",
+    });
+    const buy = fill("buy", "2026-05-22T02:00:00Z", "10000", "2.5", "0", { instrument });
+    buy.source.positionEvents = [bonus];
+
+    expect(replayPositionAtPrice({ executions: [buy], markPrice: "2" })).toMatchObject({
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["ambiguous-event-order"]) },
+    });
+  });
+
+  it("does not double-count a bonus row repeated by another source", () => {
+    const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
+    const bonus = fixtureEvent({
+      id: "bonus-primary",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账",
+    });
+    const duplicate = { ...bonus, id: "bonus-copy" };
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "0", { instrument });
+    const sale = fill("sell", "2026-06-01T02:00:00Z", "20000", "2", "0", { instrument });
+    buy.source.positionEvents = [bonus, duplicate];
+    sale.source.positionEvents = [bonus, duplicate];
+
+    expect(replayPositionAtPrice({ executions: [buy, sale], markPrice: "2" })).toMatchObject({
+      quantity: "0",
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["duplicate-position-event"]) },
+      realizedPnl: "0",
+      netPnl: "0",
+    });
+  });
+
+  it("does not double-count numerically equivalent bonus rows and marks their cost unavailable", () => {
+    const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
+    const bonus = fixtureEvent({
+      id: "bonus-primary",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账 1.89",
+    });
+    const duplicate = { ...bonus, id: "bonus-copy", documentId: "other-document", quantity: "10000.00", amount: "0.00", description: "红股入账 1.8900" };
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "0", { instrument });
+    buy.source.positionEvents = [bonus, duplicate];
+
+    expect(replayPositionAtPrice({ executions: [buy], markPrice: "2" })).toMatchObject({
+      quantity: "20000",
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["duplicate-position-event"]) },
+    });
+  });
+
+  it("does not let another account with the same source ID suppress the target account event", () => {
+    const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
+    const target = fixtureEvent({
+      id: "shared-source-row",
+      accountId: "fixture-account",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账",
+    });
+    const foreign = { ...target, accountId: "other-account" };
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "0", { instrument });
+    buy.source.positionEvents = [foreign, target];
+
+    expect(replayPositionAtPrice({ executions: [buy], markPrice: "2" })).toMatchObject({
+      quantity: "20000",
+      averageCost: "1.25",
+    });
+  });
+
+  it("keeps a date-only bonus uncertain during the same-day intraday cursor", () => {
+    const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
+    const bonus = fixtureEvent({
+      id: "intraday-bonus",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账",
+    });
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "10", { instrument });
+    const sale = fill("sell", "2026-05-22T03:00:00Z", "20000", "2", "20", { instrument });
+    buy.source.positionEvents = [bonus];
+    sale.source.positionEvents = [bonus];
+
+    expect(replayPositionAtPrice({ executions: [buy, sale], markPrice: "2", cursor: "2026-05-21T23:59:59.999Z" })).toMatchObject({
+      quantity: "10000",
+      averageCost: "2.5",
+    });
+    expect(replayPositionAtPrice({ executions: [buy, sale], markPrice: "2", cursor: "2026-05-22T04:00:00Z" })).toMatchObject({
+      quantityKnown: false,
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["ambiguous-event-order"]) },
+    });
+  });
+
+  it("keeps a month-only bonus uncertain throughout that month without tainting a future month", () => {
+    const instrument = { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" };
+    const monthlyBonus = fixtureEvent({
+      id: "monthly-bonus",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股入账",
+    });
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "10", { instrument });
+    const sale = fill("sell", "2026-05-22T03:00:00Z", "20000", "2", "20", { instrument });
+    buy.source.positionEvents = [monthlyBonus];
+    sale.source.positionEvents = [monthlyBonus];
+
+    expect(replayPositionAtPrice({ executions: [buy, sale], markPrice: "2", cursor: "2026-05-22T04:00:00Z" })).toMatchObject({
+      quantityKnown: false,
+      costKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["ambiguous-event-order"]) },
+    });
+
+    const futureBonus = { ...monthlyBonus, id: "future-month-bonus", date: "2026-06" };
+    const futureOnlyBuy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "10", { instrument });
+    futureOnlyBuy.source.positionEvents = [futureBonus];
+    expect(replayPositionAtPrice({ executions: [futureOnlyBuy], markPrice: "2", cursor: "2026-05-22T04:00:00Z" })).toMatchObject({
+      quantity: "10000",
+      averageCost: "2.5",
+    });
+    expect(replayPositionAtPrice({ executions: [futureOnlyBuy], markPrice: "2", cursor: "2026-05-22T04:00:00Z" }).accuracy).toBeUndefined();
+  });
+
   it("keeps same-day transfer quantity unknown intraday and reconciles it at day end", () => {
     const sale = fill("sell", "2025-01-03T14:30:00Z", "100", "10", "0");
     sale.source.positionEvents = [{ id: "in", accountId: "fixture-account", market: "US", symbol: "TEST", date: "2025-01-03", kind: "transfer-in", quantity: "100", description: "transfer", source: [] }];

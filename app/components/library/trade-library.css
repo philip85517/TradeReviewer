@@ -157,7 +157,8 @@
   min-width: 150px;
 }
 
-.trade-library .library-scope-run select {
+.trade-library .library-scope-run select,
+.trade-library .library-scope-run input {
   min-width: 120px;
   height: 36px;
   box-sizing: border-box;
@@ -169,7 +170,8 @@
   font-size: 14px;
 }
 
-.trade-library .library-scope-run select:focus-visible {
+.trade-library .library-scope-run select:focus-visible,
+.trade-library .library-scope-run input:focus-visible {
   outline: 2px solid var(--scope-control-focus, #9ecaff);
   outline-offset: 1px;
 }
@@ -182,7 +184,8 @@
 }
 
 @media (pointer: coarse) {
-  .trade-library .library-scope-run select { min-height: 44px; height: 44px; }
+  .trade-library .library-scope-run select,
+  .trade-library .library-scope-run input { min-height: 44px; height: 44px; }
 }
 
 .trade-library .module-tabs { margin-top: 0; }

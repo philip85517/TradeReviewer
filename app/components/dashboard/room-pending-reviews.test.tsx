@@ -144,44 +144,76 @@ it("keeps trusted money while placing a close-field explanation beside the unava
   expect(screen.getByText("待复盘")).toBeInTheDocument();
 });
 
-it("formats long weighted prices to six decimals while keeping the source value accessible", () => {
+it("formats a long closing price for scanning while keeping its complete source value accessible", () => {
+  const rawPrice = "8.4578333333333333333";
   const pending: RoomPendingReviewsModel = {
     displayCurrency: "original",
     count: 1,
-    queueIds: ["episode:price"],
+    queueIds: ["episode:long-price"],
     rows: [{
-      episodeId: "episode:price",
-      instrumentId: "CN-SH:ETF",
+      episodeId: "episode:long-price",
+      instrumentId: "CN-SH:518880",
       instrumentName: "黄金ETF华安",
       symbol: "518880",
-      accountId: "qa-main",
-      accountLabel: "QA 主账户",
+      accountId: "招商证券",
+      accountLabel: "招商证券 · 尾号6476",
+      closeDate: "2026-07-28",
+      closingSide: "buy",
+      closingQuantity: "4200",
+      closingWeightedPrice: rawPrice,
+      closingCurrency: "CNY",
+      closingUnavailableReason: null,
+      money: { baseCurrency: "CNY", originalByCurrency: { CNY: "5373.17" }, convertedCny: "5373.17", conversion: "same-currency", fxSnapshotId: null, note: "同币种" },
+      unavailableReason: null,
+    }],
+  };
+  render(<RoomPendingReviews model={pending} onOpenInReview={vi.fn()} />);
+
+  const priceCell = screen.getByRole("cell", { name: /成交均价/ });
+  expect(priceCell).toHaveTextContent("8.457833 CNY");
+  expect(priceCell).toHaveAttribute("data-label", "成交均价");
+  expect(priceCell).toHaveAttribute("aria-label", expect.stringContaining(rawPrice));
+  const price = screen.getByText("8.457833 CNY");
+  expect(price).toHaveAttribute("title", `完整成交均价：${rawPrice} CNY`);
+  expect(price).toHaveAttribute("aria-label", `完整成交均价：${rawPrice} CNY`);
+  expect(screen.getByText(`完整成交均价：${rawPrice} CNY`)).not.toBeVisible();
+  fireEvent.click(price);
+  expect(screen.getByText(`完整成交均价：${rawPrice} CNY`)).toBeVisible();
+  expect(screen.getByText("+5373.17 CNY")).toBeInTheDocument();
+  expect(screen.getByText("4200")).toBeInTheDocument();
+});
+
+it("keeps malformed financial evidence and its unavailable reason without substituting zero", () => {
+  const pending: RoomPendingReviewsModel = {
+    displayCurrency: "original",
+    count: 1,
+    queueIds: ["episode:invalid-price"],
+    rows: [{
+      episodeId: "episode:invalid-price",
+      instrumentId: "CN-SH:BAD",
+      instrumentName: "待核对证券",
+      symbol: "BAD",
+      accountId: "account-unknown",
+      accountLabel: "来源未知账户",
       closeDate: "2026-02-03",
       closingSide: "sell",
       closingQuantity: "4200",
-      closingWeightedPrice: "8.4578333333333333333",
+      closingWeightedPrice: "not-a-decimal",
       closingCurrency: "CNY",
-      closingUnavailableReason: null,
-      money: {
-        baseCurrency: "CNY",
-        originalByCurrency: { CNY: "5373.17" },
-        convertedCny: "5373.17",
-        conversion: "same-currency",
-        fxSnapshotId: null,
-        note: "同币种",
-      },
-      unavailableReason: null,
+      closingUnavailableReason: "closing-price-unavailable",
+      money: null,
+      unavailableReason: "未知资产类型，未纳入收益汇总；closing-price-unavailable",
     }],
   };
 
   render(<RoomPendingReviews model={pending} onOpenInReview={vi.fn()} />);
 
-  const price = screen.getByText("8.457833 CNY");
-  expect(price).toHaveAttribute("title", "完整成交均价：8.4578333333333333333 CNY");
-  expect(price).toHaveAttribute("aria-label", "完整成交均价：8.4578333333333333333 CNY");
-  expect(screen.queryByText("完整成交均价：8.4578333333333333333 CNY")).not.toBeVisible();
-  fireEvent.click(price);
-  expect(screen.getByText("完整成交均价：8.4578333333333333333 CNY")).toBeVisible();
+  const price = screen.getByText("not-a-decimal CNY");
+  expect(price).toHaveAttribute("aria-label", "完整成交均价：not-a-decimal CNY");
+  expect(screen.getByText("成交均价证据不足")).toBeInTheDocument();
+  expect(screen.getByText("未知资产类型，未纳入收益汇总")).toBeInTheDocument();
+  expect(screen.getByText("不可用")).toBeInTheDocument();
+  expect(screen.queryByText("+0.00 CNY")).not.toBeInTheDocument();
   expect(screen.getByText("4200")).toBeInTheDocument();
 });
 

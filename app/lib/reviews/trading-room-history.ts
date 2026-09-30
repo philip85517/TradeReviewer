@@ -6,9 +6,10 @@ import { expectedTradingDates } from "../market/calendar";
 import type { DailyCandleRecord, SupportedMarket } from "../market/contracts";
 import { marketTimeZone, marketTradingDate } from "../market/trading-date";
 import { replayPositionAtPrice, type PositionLedgerSnapshot } from "../replay/position-ledger";
-import type { TradeLibraryEntry } from "../trades/library";
+import type { TradeLibraryEntry, TradeLibraryEpisode } from "../trades/library";
 import { executionSettlementCurrency, type TradeExecution, type Instrument, type TradeNature } from "../trades/types";
-import { dashboardEpisodeNature, dashboardEpisodeSimulationRunId } from "./dashboard";
+import { tradingViewEpisodeBusinessScope } from "../trades/tradingview-account-identity";
+import { dashboardEpisodeNature, dashboardEpisodeSimulationRunId, type DashboardRow } from "./dashboard";
 import { buildRoomMoneyView, filterRoomRows, roomMoneyValue, roomTodayKey, type RoomFxSnapshot, type RoomMoneyView, type RoomTargetCurrency } from "./trading-room-scope";
 import { buildDailyPnlPercent } from "./trading-room-time";
 import type { TradingRoomHoldingsOptions } from "./trading-room-holdings";
@@ -107,8 +108,314 @@ type Ledger = {
   firstExecutionDate: string | null;
   firstCorporateActionDate: string | null;
   emptyBoundaries: Set<string>;
+  sessionStart: string | null;
+  sessionEnd: string | null;
 };
+
+type CachedEntryLedgers = {
+  calendarStart: string;
+  candles: readonly DailyCandleRecord[];
+  end: string;
+  fingerprint: string;
+  items: readonly TradeLibraryEpisode[];
+  ledgers: Ledger[];
+};
+
+/**
+ * Keep at most two candle projections per live entry. The key is weak, while
+ * the per-entry variants are bounded, so a long-lived homepage cannot retain
+ * every completed market refresh. A new entry object (metadata/review/source
+ * evidence change) naturally bypasses this cache.
+ */
+const HISTORY_ENTRY_LEDGER_CACHE = new WeakMap<TradeLibraryEntry, CachedEntryLedgers[]>();
+const EMPTY_HISTORY_CANDLES: readonly DailyCandleRecord[] = [];
 const nextDay = (date: string) => new Date(Date.parse(`${date}T00:00:00Z`) + 86400000).toISOString().slice(0, 10);
+
+function historyCandlesForInstrument(
+  candlesByInstrument: Readonly<Record<string, readonly DailyCandleRecord[] | undefined>>,
+  instrumentId: string,
+): readonly DailyCandleRecord[] {
+  const candles = candlesByInstrument[instrumentId];
+  return candles?.length ? candles : EMPTY_HISTORY_CANDLES;
+}
+
+function historyLedgerKey(row: DashboardRow): string {
+  const episode = row.item.episode;
+  return JSON.stringify([
+    episode.accountId,
+    episode.instrument.id,
+    dashboardEpisodeNature(row),
+    dashboardEpisodeSimulationRunId(row),
+  ]);
+}
+
+function createHistoryLedger(row: DashboardRow): Ledger {
+  const episode = row.item.episode;
+  return {
+    key: historyLedgerKey(row),
+    accountId: episode.accountId,
+    instrumentId: episode.instrument.id,
+    instrumentName: episode.instrument.name,
+    market: episode.instrument.market,
+    instrument: episode.instrument,
+    nature: dashboardEpisodeNature(row),
+    positions: new Map(),
+    events: new Map(),
+    executions: new Map(),
+    candles: [],
+    sessions: [],
+    holdingsCache: new Map(),
+    orderedExecutions: [],
+    boundaryDates: [],
+    snapshots: new Map(),
+    shortProof: new Map(),
+    visibleExecutions: new Map(),
+    executionCurrencies: new Map(),
+    tradesByDate: new Map(),
+    datedEvents: [],
+    firstEvidenceDate: null,
+    firstExecutionDate: null,
+    firstCorporateActionDate: null,
+    emptyBoundaries: new Set(),
+    sessionStart: null,
+    sessionEnd: null,
+  };
+}
+
+function appendHistoryRow(ledger: Ledger, row: DashboardRow): void {
+  const episode = row.item.episode;
+  const matches = (item: {
+    accountId: string;
+    symbol?: string;
+    market?: string;
+  }) => item.accountId === episode.accountId && Boolean(
+    item.symbol && item.market &&
+    canonicalInstrumentId(item.symbol, item.market) ===
+    canonicalInstrumentId(episode.instrument.symbol, episode.instrument.market)
+  );
+  const positions = [
+    ...(episode.initialPosition ? [episode.initialPosition] : []),
+    ...episode.executions.flatMap(e => [
+      ...(e.source.statementPositions ?? []),
+      ...(e.source.openingPosition ? [e.source.openingPosition] : []),
+    ]),
+  ];
+  const events = [
+    ...(episode.positionEvents ?? []),
+    ...episode.executions.flatMap(e => e.source.positionEvents ?? []),
+  ];
+  if (ledger.nature !== "simulation") {
+    for (const position of positions)
+      if (matches(position))
+        ledger.positions.set(JSON.stringify([
+          position.accountId,
+          position.market,
+          position.symbol,
+          position.phase,
+          position.date,
+          position.quantity,
+        ]), position);
+    for (const event of events)
+      if (matches(event))
+        ledger.events.set(`${event.accountId}:${event.id}`, event);
+  }
+  for (const original of episode.executions) {
+    const at = dailyReplayExecution(original);
+    ledger.executions.set(original.id, {
+      ...original,
+      executedAt: at,
+      source: {
+        ...original.source,
+        tradingDate: at.slice(0, 10),
+        marketCalendarDate: at.slice(0, 10),
+        statementPositions: undefined,
+        openingPosition: undefined,
+        positionEvents: undefined,
+      },
+    });
+  }
+}
+
+function clearHistoryDerivedCaches(ledger: Ledger): void {
+  ledger.holdingsCache.clear();
+  ledger.snapshots.clear();
+  ledger.shortProof.clear();
+  ledger.visibleExecutions.clear();
+  ledger.executionCurrencies.clear();
+  ledger.emptyBoundaries.clear();
+}
+
+function setHistoryLedgerSessions(
+  ledger: Ledger,
+  calendarStart: string,
+  end: string,
+  sessionsByMarket: Map<string, string[]>,
+): void {
+  if (ledger.sessionStart === calendarStart && ledger.sessionEnd === end)
+    return;
+  const sessionsKey = `${ledger.market}:${calendarStart}:${end}`;
+  let sessions = sessionsByMarket.get(sessionsKey);
+  if (!sessions) {
+    try {
+      sessions = expectedTradingDates(ledger.market as SupportedMarket, calendarStart, end);
+    }
+    catch {
+      sessions = [];
+    }
+    sessionsByMarket.set(sessionsKey, sessions);
+  }
+  ledger.sessions = sessions;
+  ledger.sessionStart = calendarStart;
+  ledger.sessionEnd = end;
+  clearHistoryDerivedCaches(ledger);
+}
+
+function prepareHistoryLedger(
+  ledger: Ledger,
+  candlesByInstrument: Readonly<Record<string, readonly DailyCandleRecord[] | undefined>>,
+  calendarStart: string,
+  end: string,
+  sessionsByMarket: Map<string, string[]>,
+): void {
+  ledger.orderedExecutions = [...ledger.executions.values()].sort((a, b) => replayExecutionAt(a).localeCompare(replayExecutionAt(b)));
+  ledger.firstExecutionDate = ledger.orderedExecutions[0]?.executedAt.slice(0, 10) ?? null;
+  ledger.tradesByDate = new Map();
+  for (const execution of ledger.orderedExecutions) {
+    const day = execution.executedAt.slice(0, 10);
+    const trades = ledger.tradesByDate.get(day) ?? [];
+    trades.push(execution);
+    ledger.tradesByDate.set(day, trades);
+  }
+  ledger.datedEvents = [...ledger.events.values()].map(event => ({ date: eventAt(event).slice(0, 10), event }));
+  ledger.firstEvidenceDate = [
+    ...[...ledger.positions.values()].map(p => p.date),
+    ...ledger.datedEvents.map(item => item.date),
+  ].sort()[0] ?? null;
+  ledger.firstCorporateActionDate = ledger.datedEvents
+    .filter(item => item.event.kind === "corporate-action")
+    .map(item => item.date).sort()[0] ?? null;
+  ledger.boundaryDates = [...new Set([
+    ...ledger.orderedExecutions.map(e => replayExecutionAt(e).slice(0, 10)),
+    ...[...ledger.positions.values()].map(p => statementPositionAt(p).slice(0, 10)),
+    ...[...ledger.events.values()].map(e => eventAt(e).slice(0, 10)),
+  ])].sort();
+  ledger.candles = [...(candlesByInstrument[ledger.instrumentId] ?? [])]
+    .filter(c => c.instrumentId === ledger.instrumentId && c.adjustmentMode === "raw")
+    .sort((a, b) => a.tradingDate.localeCompare(b.tradingDate));
+  setHistoryLedgerSessions(ledger, calendarStart, end, sessionsByMarket);
+}
+
+function buildFreshHistoryLedgers(
+  rows: readonly DashboardRow[],
+  candlesByInstrument: Readonly<Record<string, readonly DailyCandleRecord[] | undefined>>,
+  calendarStart: string,
+  end: string,
+): Map<string, Ledger> {
+  const ledgers = new Map<string, Ledger>();
+  for (const row of rows) {
+    const key = historyLedgerKey(row);
+    let ledger = ledgers.get(key);
+    if (!ledger) {
+      ledger = createHistoryLedger(row);
+      ledgers.set(key, ledger);
+    }
+    appendHistoryRow(ledger, row);
+  }
+  const sessionsByMarket = new Map<string, string[]>();
+  for (const ledger of ledgers.values())
+    prepareHistoryLedger(ledger, candlesByInstrument, calendarStart, end, sessionsByMarket);
+  return ledgers;
+}
+
+function sameHistoryItems(left: readonly TradeLibraryEpisode[], right: readonly TradeLibraryEpisode[]): boolean {
+  return left.length === right.length && left.every((item, index) => item === right[index]);
+}
+
+function historyItemsFingerprint(items: readonly TradeLibraryEpisode[]): string | null {
+  try {
+    // The complete episode/source projection is intentional. History replay
+    // consumes more than quote/fee fields (time precision, settlement, source
+    // evidence, positions, events and simulation identity), so a narrow
+    // fingerprint could reuse a stale ledger after an in-place fixture update.
+    return JSON.stringify(items.map(item => ({
+      episode: item.episode,
+      reviewStatus: item.reviewStatus,
+      review: item.review,
+      recallReview: item.recallReview,
+    })));
+  }
+  catch {
+    // A cyclic source object is outside the persisted data contract. Do not
+    // cache it rather than risk reusing a ledger with unknown inputs.
+    return null;
+  }
+}
+
+function cachedHistoryLedgersForEntry(
+  entry: TradeLibraryEntry,
+  rows: readonly DashboardRow[],
+  candles: readonly DailyCandleRecord[],
+  candlesByInstrument: Readonly<Record<string, readonly DailyCandleRecord[] | undefined>>,
+  calendarStart: string,
+  end: string,
+): Ledger[] {
+  const items = rows.map(row => row.item);
+  const fingerprint = historyItemsFingerprint(items);
+  if (fingerprint === null)
+    return [...buildFreshHistoryLedgers(rows, candlesByInstrument, calendarStart, end).values()];
+  const variants = HISTORY_ENTRY_LEDGER_CACHE.get(entry) ?? [];
+  const hit = variants.find(variant =>
+    variant.calendarStart === calendarStart &&
+    variant.candles === candles &&
+    variant.end === end &&
+    variant.fingerprint === fingerprint &&
+    sameHistoryItems(variant.items, items)
+  );
+  if (hit) {
+    const sessionsByMarket = new Map<string, string[]>();
+    for (const ledger of hit.ledgers)
+      setHistoryLedgerSessions(ledger, calendarStart, end, sessionsByMarket);
+    return hit.ledgers;
+  }
+  const ledgers = [...buildFreshHistoryLedgers(rows, candlesByInstrument, calendarStart, end).values()];
+  const nextVariants = [
+    { calendarStart, candles, end, fingerprint, items: [...items], ledgers },
+    ...variants.filter(variant =>
+      variant.calendarStart !== calendarStart ||
+      variant.candles !== candles ||
+      variant.end !== end ||
+      variant.fingerprint !== fingerprint ||
+      !sameHistoryItems(variant.items, items)
+    ),
+  ].slice(0, 2);
+  HISTORY_ENTRY_LEDGER_CACHE.set(entry, nextVariants);
+  return ledgers;
+}
+
+function buildHistoryLedgers(
+  rows: readonly DashboardRow[],
+  candlesByInstrument: Readonly<Record<string, readonly DailyCandleRecord[] | undefined>>,
+  calendarStart: string,
+  end: string,
+): Map<string, Ledger> {
+  const rowsByEntry = new Map<TradeLibraryEntry, DashboardRow[]>();
+  for (const row of rows)
+    rowsByEntry.set(row.entry, [...(rowsByEntry.get(row.entry) ?? []), row]);
+  const cached = new Map<string, Ledger>();
+  let canReuse = true;
+  for (const [entry, entryRows] of rowsByEntry) {
+    const candles = historyCandlesForInstrument(candlesByInstrument, entry.instrument.id);
+    for (const ledger of cachedHistoryLedgersForEntry(entry, entryRows, candles, candlesByInstrument, calendarStart, end)) {
+      if (cached.has(ledger.key)) {
+        canReuse = false;
+        break;
+      }
+      cached.set(ledger.key, ledger);
+    }
+    if (!canReuse) break;
+  }
+  return canReuse ? cached : buildFreshHistoryLedgers(rows, candlesByInstrument, calendarStart, end);
+}
 
 function decimal(value: string | null | undefined): Decimal | null {
   try {
@@ -181,20 +488,51 @@ function validDate(value: string | undefined): string | null {
   return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value ? value : null;
 }
 
+const MARKET_EXECUTION_TIME_FORMATTERS = new Map<string, Intl.DateTimeFormat>();
+
+function marketExecutionTimeFormatter(market: string) {
+  const timeZone = marketTimeZone(market);
+  let formatter = MARKET_EXECUTION_TIME_FORMATTERS.get(timeZone);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h23",
+    });
+    MARKET_EXECUTION_TIME_FORMATTERS.set(timeZone, formatter);
+  }
+  return formatter;
+}
+
 function dailyReplayExecution(execution: TradeExecution): string {
   const date = validDate(execution.source.tradingDate) ?? validDate(execution.source.marketCalendarDate) ?? marketTradingDate(execution.executedAt, execution.instrument.market);
   if (execution.executedAt.length === 10 || execution.source.timePrecision === "date-only")
     return date;
-  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", {
-    timeZone: marketTimeZone(execution.instrument.market),
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hourCycle: "h23"
-  }).formatToParts(new Date(execution.executedAt)).map(p => [p.type, p.value]));
+  const parts = Object.fromEntries(
+    marketExecutionTimeFormatter(execution.instrument.market)
+      .formatToParts(new Date(execution.executedAt))
+      .map(p => [p.type, p.value]),
+  );
   const milliseconds = new Date(execution.executedAt).getUTCMilliseconds().toString().padStart(3, "0");
   return `${date}T${parts.hour}:${parts.minute}:${parts.second}.${milliseconds}Z`;
 }
+
+function hasRelevantLegacySimulationRows(
+  entries: readonly TradeLibraryEntry[],
+  scope: HoldingsHistoryOptions["scope"],
+): boolean {
+  if (scope.nature !== "simulation" || scope.simulationRunId !== null)
+    return false;
+  return entries.some(entry => entry.episodes.some(item => {
+    const row = { entry, item };
+    if (dashboardEpisodeNature(row) !== "simulation") return false;
+    if (scope.accountIds.length > 0 && !scope.accountIds.includes(item.episode.accountId)) return false;
+    return !tradingViewEpisodeBusinessScope(item.episode);
+  }));
+}
+
 // Same month-end knowledge rule as ledgerEventAt; a month label never
 // becomes a session-open event on an invented first day.
 
@@ -490,119 +828,8 @@ export function buildHoldingsHistory(entries: readonly TradeLibraryEntry[], opti
       startDate: "0001-01-01",
       endDate: "9999-12-31"
     } }, { instrumentMetadata: options.instrumentMetadata });
-  const ledgers = new Map<string, Ledger>();
-  for (const row of rows) {
-    const episode = row.item.episode;
-    const key = JSON.stringify([episode.accountId, episode.instrument.id, dashboardEpisodeNature(row), dashboardEpisodeSimulationRunId(row)]);
-    let ledger = ledgers.get(key);
-    if (!ledger) {
-      ledger = {
-        key,
-        accountId: episode.accountId,
-        instrumentId: episode.instrument.id,
-        instrumentName: episode.instrument.name,
-        market: episode.instrument.market,
-        instrument: episode.instrument,
-        nature: dashboardEpisodeNature(row),
-        executions: new Map(),
-        positions: new Map(),
-        events: new Map(),
-        candles: [],
-        sessions: [],
-        holdingsCache: new Map(),
-        orderedExecutions: [],
-        boundaryDates: [],
-        snapshots: new Map(),
-        shortProof: new Map(),
-        visibleExecutions: new Map(),
-        executionCurrencies: new Map(),
-        tradesByDate: new Map(),
-        datedEvents: [],
-        firstEvidenceDate: null,
-        firstExecutionDate: null,
-        firstCorporateActionDate: null,
-        emptyBoundaries: new Set()
-      };
-      ledgers.set(key, ledger);
-    }
-    const matches = (item: {
-      accountId: string;
-      symbol?: string;
-      market?: string;
-    }) => item.accountId === episode.accountId && Boolean(
-      item.symbol && item.market &&
-      canonicalInstrumentId(item.symbol, item.market) ===
-      canonicalInstrumentId(episode.instrument.symbol, episode.instrument.market)
-    );
-    const positions = [
-      ...(episode.initialPosition ? [episode.initialPosition] : []),
-      ...episode.executions.flatMap(e => [
-        ...(e.source.statementPositions ?? []),
-        ...(e.source.openingPosition ? [e.source.openingPosition] : []),
-      ]),
-    ];
-    const events = [...(episode.positionEvents ?? []), ...episode.executions.flatMap(e => e.source.positionEvents ?? [])];
-    if (ledger.nature !== "simulation") {
-      for (const position of positions)
-        if (matches(position))
-          ledger.positions.set(JSON.stringify([position.accountId, position.market, position.symbol, position.phase, position.date, position.quantity]), position);
-      for (const event of events)
-        if (matches(event))
-          ledger.events.set(`${event.accountId}:${event.id}`, event);
-    }
-    for (const original of episode.executions) {
-      const at = dailyReplayExecution(original);
-      ledger.executions.set(original.id, {
-        ...original,
-        executedAt: at,
-        source: {
-          ...original.source,
-          tradingDate: at.slice(0, 10),
-          marketCalendarDate: at.slice(0, 10),
-          statementPositions: undefined,
-          openingPosition: undefined,
-          positionEvents: undefined,
-        }
-      });
-    }
-  }
   const calendarStart = new Date(Date.parse(`${start}T00:00:00Z`) - 45 * 86400000).toISOString().slice(0, 10);
-  const sessionsByMarket = new Map<string, string[]>();
-  for (const ledger of ledgers.values()) {
-    ledger.orderedExecutions = [...ledger.executions.values()].sort((a, b) => replayExecutionAt(a).localeCompare(replayExecutionAt(b)));
-    ledger.firstExecutionDate = ledger.orderedExecutions[0]?.executedAt.slice(0, 10) ?? null;
-    for (const execution of ledger.orderedExecutions) {
-      const day = execution.executedAt.slice(0, 10);
-      const trades = ledger.tradesByDate.get(day) ?? [];
-      trades.push(execution);
-      ledger.tradesByDate.set(day, trades);
-    }
-    ledger.datedEvents = [...ledger.events.values()].map(event => ({ date: eventAt(event).slice(0, 10), event }));
-    ledger.firstEvidenceDate = [
-      ...[...ledger.positions.values()].map(p => p.date),
-      ...ledger.datedEvents.map(item => item.date),
-    ].sort()[0] ?? null;
-    ledger.firstCorporateActionDate = ledger.datedEvents
-      .filter(item => item.event.kind === "corporate-action")
-      .map(item => item.date).sort()[0] ?? null;
-    ledger.boundaryDates = [...new Set([
-        ...ledger.orderedExecutions.map(e => replayExecutionAt(e).slice(0, 10)),
-        ...[...ledger.positions.values()].map(p => statementPositionAt(p).slice(0, 10)),
-        ...[...ledger.events.values()].map(e => eventAt(e).slice(0, 10)),
-      ])].sort();
-    ledger.candles = [...(options.candlesByInstrument?.[ledger.instrumentId] ?? [])]
-      .filter(c => c.instrumentId === ledger.instrumentId && c.adjustmentMode === "raw")
-      .sort((a, b) => a.tradingDate.localeCompare(b.tradingDate));
-    if (!sessionsByMarket.has(ledger.market)) {
-      try {
-        sessionsByMarket.set(ledger.market, expectedTradingDates(ledger.market as SupportedMarket, calendarStart, end));
-      }
-      catch {
-        sessionsByMarket.set(ledger.market, []);
-      }
-    }
-    ledger.sessions = sessionsByMarket.get(ledger.market)!;
-  }
+  const ledgers = buildHistoryLedgers(rows, options.candlesByInstrument ?? {}, calendarStart, end);
   const points: HoldingsHistoryPoint[] = [];
   for (let date = start; date <= end; date = nextDay(date)) {
     const holdings = [...ledgers.values()].map(ledger => holdingAt(ledger, date)).filter((h): h is HistoricalHolding => h !== null);
@@ -728,7 +955,9 @@ export function buildHoldingsHistory(entries: readonly TradeLibraryEntry[], opti
     end,
     scope,
     fxSnapshotId: options.fxSnapshot?.id ?? null,
-    reasons: scope.nature === "simulation" && !scope.simulationRunId ? ["请先选择单一模拟运行"] : []
+    reasons: hasRelevantLegacySimulationRows(entries, scope)
+      ? ["请先选择单一模拟运行"]
+      : []
   };
 }
 

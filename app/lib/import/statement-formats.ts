@@ -8,7 +8,7 @@ export const STATEMENT_FORMATS: Record<
   futu: { label: "富途证券", description: "富途 XLSX 对账单" },
   tiger: { label: "Tiger 证券", description: "Tiger PDF 对账单" },
   "china-merchants": {
-    label: "A股招商银行",
+    label: "A股招商证券",
     description: "招商证券普通对账单 PDF，仅导入 A股和 ETF",
   },
   tradingview: {

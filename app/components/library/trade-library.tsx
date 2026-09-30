@@ -23,6 +23,7 @@ import {
 } from "../../lib/market/trading-date";
 import { formatBeijingDateTime } from "../../lib/replay/format-time";
 import type { EpisodeReviewRecord } from "../../lib/reviews/types";
+import { filterEntriesBySharedScope } from "../../lib/reviews/shared-scope";
 import { reviewTagLabel } from "../../lib/reviews/review-tags";
 import {
   dailyRecordToChartCandle,
@@ -38,6 +39,7 @@ import { EpisodeReviewEditor } from "../review/episode-review-editor";
 import type { EpisodeNotesProps } from "../review/episode-notes-panel";
 import type { TradeEpisode } from "../../lib/trades/types";
 import { executionFeeCurrency } from "../../lib/trades/types";
+import { tradingViewEpisodeBusinessScope } from "../../lib/trades/tradingview-account-identity";
 import {
   REVIEW_QUEUE_SORT_OPTIONS,
   reviewState,
@@ -45,11 +47,9 @@ import {
   type ReviewQueueItem,
   type ReviewQueueSort,
 } from "../../lib/reviews/review-queue";
+import { sortLibraryItems } from "../../lib/reviews/library-sorting";
 import {
   canSortLibraryPerformance,
-  sortLibraryItems,
-} from "../../lib/reviews/library-sorting";
-import {
   summarizeLibraryPerformance,
   type LibraryFxSnapshot,
   type LibraryPerformanceSummary,
@@ -522,14 +522,26 @@ export function TradeLibrary({
   const effectiveAccount = sharedScope
     ? (sharedScope.accountIds.length === 1 ? sharedScope.accountIds[0]! : "all")
     : account;
+  const hasCanonicalSimulationScope = Boolean(sharedScope?.nature === "simulation" &&
+    sharedScope.simulationRunId === null &&
+    entries.some(entry => entry.episodes.some(({ episode }) =>
+      tradingViewEpisodeBusinessScope(episode)?.tradeNature === "simulation" &&
+      (sharedScope.accountIds.length === 0 || sharedScope.accountIds.includes(episode.accountId)),
+    )));
   const simulationScopeNeedsRun = Boolean(
-    sharedScope?.nature === "simulation" && !sharedScope.simulationRunId,
+    sharedScope?.nature === "simulation" && !sharedScope.simulationRunId && !hasCanonicalSimulationScope,
   );
   const effectiveSimulationRunId: TradeLibraryBrowseState["simulationRunId"] = sharedScope
     ? (sharedScope.nature === "simulation"
-      ? sharedScope.simulationRunId ?? UNSELECTED_SIMULATION_RUN
+      ? sharedScope.simulationRunId ?? (hasCanonicalSimulationScope ? "all" : UNSELECTED_SIMULATION_RUN)
       : "all")
     : simulationRunId;
+  const browseEntries = useMemo(
+    () => hasCanonicalSimulationScope && sharedScope
+      ? filterEntriesBySharedScope(entries, sharedScope)
+      : entries,
+    [entries, hasCanonicalSimulationScope, sharedScope],
+  );
   const reportCurrency = sharedScope?.reportCurrency ?? "CNY";
   const performanceTargetCurrency = reportCurrency === "HKD" ? "HKD" : "CNY";
   const effectiveFxSnapshot: LibraryFxSnapshot | null = roomFxSnapshot === undefined
@@ -599,8 +611,8 @@ export function TradeLibrary({
   );
 
   const browseModelSource = useMemo(
-    () => ({ entries, fxSnapshot: effectiveFxSnapshot, marketDataStatuses, reviewsHydrated, performanceTargetCurrency, instrumentMetadata }),
-    [effectiveFxSnapshot, entries, instrumentMetadata, marketDataStatuses, performanceTargetCurrency, reviewsHydrated],
+    () => ({ entries: browseEntries, fxSnapshot: effectiveFxSnapshot, marketDataStatuses, reviewsHydrated, performanceTargetCurrency, instrumentMetadata }),
+    [browseEntries, effectiveFxSnapshot, instrumentMetadata, marketDataStatuses, performanceTargetCurrency, reviewsHydrated],
   );
   // Recreate the bounded cache whenever source identities change; this is the
   // invalidation boundary for reviews, market status and FX values.
@@ -614,24 +626,32 @@ export function TradeLibrary({
     const cached = browseModelCache.get(key);
     if (cached) return cached;
 
-    const browseRows = buildTradeLibraryBrowseRows(
-      entries,
-      browseFilterState,
-      marketDataStatuses,
-      effectiveFxSnapshot,
-      performanceTargetCurrency,
-      instrumentMetadata,
-    );
+    const buildSortedRows = (state: TradeLibraryBrowseState) => {
+      // The browse-state helper retains the legacy run gate. Build the
+      // filtered slice in neutral order, then apply the caller's strict
+      // account-aware performance gate and sort here.
+      const filteredRows = buildTradeLibraryBrowseRows(
+        browseEntries,
+        { ...state, sort: "newest" },
+        marketDataStatuses,
+        effectiveFxSnapshot,
+        performanceTargetCurrency,
+        instrumentMetadata,
+      );
+      const availability = canSortLibraryPerformance(filteredRows, state.simulationRunId);
+      const sort = isPerformanceSort(state.sort) && !availability.allowed ? "newest" : state.sort;
+      return sortLibraryItems(
+        filteredRows.map(row => ({ id: row.item.episode.id, rows: [row], value: row })),
+        sort,
+        effectiveFxSnapshot ?? undefined,
+        performanceTargetCurrency,
+      ).map(({ value }) => value);
+    };
+
+    const browseRows = buildSortedRows(browseFilterState);
     const allStatusBrowseRows = reviewStatus === "all"
       ? browseRows
-      : buildTradeLibraryBrowseRows(
-          entries,
-          allStatusFilterState,
-          marketDataStatuses,
-          effectiveFxSnapshot,
-          performanceTargetCurrency,
-          instrumentMetadata,
-        );
+      : buildSortedRows(allStatusFilterState);
     const filteredEntries = aggregateTradeLibraryStockDisplayEntries(browseRows);
     const model: TradeLibraryBrowseDerivedModel = {
       browseRows,
@@ -659,9 +679,9 @@ export function TradeLibrary({
     return model;
   }, [
     allStatusFilterState,
+    browseEntries,
     browseFilterState,
     browseModelCache,
-    entries,
     effectiveFxSnapshot,
     marketDataStatuses,
     instrumentMetadata,

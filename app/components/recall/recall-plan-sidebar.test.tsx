@@ -39,6 +39,30 @@ it('compacts long derived evidence while preserving its exact tooltip and primar
  expect(screen.getByTitle(exact).parentElement).toHaveStyle({overflowWrap:'anywhere'});
 });
 
+it('limits long R values to six decimals and reveals the exact value by keyboard or click', () => {
+ const input = {
+   ...emptyRecallPlanInput('CNY'),
+   direction: 'long' as const,
+   entry: '56',
+   initialStop: '51.6',
+   targets: [{ id: 'target-1', price: '76.6', quantity: null, ratio: null }],
+   sizeInputValue: '4200',
+   resolvedQuantity: '4200',
+   sizing: undefined,
+ };
+ render(<RecallPlanSidebar input={input} phase="holding" readOnly compactReadOnly onChange={() => {}} onClose={() => {}} />);
+
+ const compact = screen.getByText('≈4.681818R');
+ expect(compact).toBeInTheDocument();
+ const toggle = screen.getByRole('button', { name: '查看完整数值 4.6818181818181818182' });
+ expect(toggle).toHaveTextContent('≈4.681818R');
+ expect(toggle.parentElement).toHaveAttribute('title', '4.6818181818181818182');
+ fireEvent.keyDown(toggle, { key: ' ', code: 'Space' });
+ expect(toggle).toHaveTextContent('≈4.681818R');
+ fireEvent.click(toggle);
+ expect(toggle).toHaveTextContent('4.6818181818181818182R');
+});
+
 it('keeps the three derived plan metrics legible and uses text input for currency and ISO as-of values', () => {
  const input = {
    ...emptyRecallPlanInput('CNY'),

@@ -264,6 +264,28 @@ describe("LibraryPerformanceSummaryView", () => {
     expect(screen.queryByText(runId)).not.toBeInTheDocument();
   });
 
+  it("labels a canonical TradingView account without claiming an unspecified run", () => {
+    const canonical = comparable("simulation||tradingview", {
+      tradeNature: "simulation",
+      simulationRunId: null,
+      canonicalAccount: "tradingview",
+    });
+    const input = summary({
+      comparableGroups: [canonical],
+      cny: {
+        ...canonical,
+        available: true,
+        reason: null,
+        scopeCount: 1,
+      },
+    });
+
+    render(<LibraryPerformanceSummaryView summary={input} stockCount={4} roundCount={32} reviewedCount={0} progressTotal={32} />);
+
+    expect(screen.getAllByText(/TradingView · 模拟盘/).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/未指定运行/)).not.toBeInTheDocument();
+  });
+
   it("explains missing FX for the selected comparable group", () => {
     const noFx = comparable("live|", {
       netPnl: null,

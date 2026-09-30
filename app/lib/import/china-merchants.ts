@@ -19,7 +19,13 @@ import { fingerprintBytes } from "./file-fingerprint";
 import { groupItemsIntoRows } from "./pdf-layout";
 import { extractPdfPages, type PdfTextPage } from "./pdf-text";
 import { applyMonthlyHistoryEvidence } from "./statement-evidence";
-import type { MonthlyStatement, StatementFragment, StatementPosition } from "./monthly-statement";
+import { normalizeMarketSymbol } from "../market/symbol-map";
+import type {
+  MonthlyStatement,
+  StatementEvent,
+  StatementFragment,
+  StatementPosition,
+} from "./monthly-statement";
 
 import {
   readChinaMerchantsTable,
@@ -71,6 +77,20 @@ function cmsMarket(label: string): ParsedInstrumentCandidate["market"] {
   if (label.includes("上海") || label.includes("沪A")) return "CN-SH";
   if (label.includes("深圳") || label.includes("深A")) return "CN-SZ";
   throw new Error(`不支持的招商市场：${label}`);
+}
+
+function knownInstrumentKey(
+  marketLabel: string | undefined,
+  parsedIdentity: { symbol: string } | null,
+): string | undefined {
+  if (!parsedIdentity?.symbol.trim()) return undefined;
+  try {
+    const market = cmsMarket(marketLabel ?? "");
+    const symbol = normalizeMarketSymbol(market, parsedIdentity.symbol);
+    return symbol ? `${market}:${symbol}` : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 function decimal(value: string | undefined): Decimal {
@@ -263,13 +283,16 @@ export function parseChinaMerchantsPages(
   const diagnostics: StatementParseResult["diagnostics"] = [];
   const statementAccountId =
     options.accountId ?? maskedAccountId(pages, options.fileFingerprint);
+  const documentId = `china-merchants:${options.fileFingerprint}`;
   const evidenceRows: Array<{
     record: TradeExecution;
     securityBalance?: string;
     source: StatementFragment;
   }> = [];
+  const events: StatementEvent[] = [];
   const incompleteInstrumentKeys = new Set<string>();
   let reviewRequired = false;
+  let historyIncomplete = false;
 
   for (const layoutRow of readChinaMerchantsTable(pages)) {
     const parsedIdentity = layoutRow.instrumentSymbol
@@ -286,6 +309,61 @@ export function parseChinaMerchantsPages(
         knownFlow.label,
         parsedIdentity?.symbol,
       );
+      if (
+        knownFlow.category === "corporate-action" &&
+        /红股|送股/.test(layoutRow.business) &&
+        parsedIdentity
+      ) {
+        try {
+          const market = cmsMarket(layoutRow.marketLabel);
+          const symbol = canonicalInstrumentSymbol(
+            parsedIdentity.symbol,
+            market,
+          );
+          const quantity = optionalDecimal(
+            layoutRow.cells?.quantity ?? layoutRow.quantity,
+          );
+          const cashChange = optionalDecimal(layoutRow.cells?.cashChange);
+          const currency = currencyCode(layoutRow.currencyLabel);
+          if (!quantity?.gt(0) || !cashChange || !currency) {
+            throw new Error("incomplete corporate-action evidence");
+          }
+          events.push({
+            documentId,
+            id: `${documentId}:event:${layoutRow.page}:${layoutRow.sourceOrder}`,
+            accountId: statementAccountId,
+            market,
+            symbol,
+            date: executionDate(layoutRow.dateText).slice(0, 10),
+            kind: "corporate-action",
+            quantity: quantity.toString(),
+            amount: cashChange.toString(),
+            currency,
+            description: layoutRow.business,
+            source: [
+              {
+                page: layoutRow.page,
+                row: layoutRow.row,
+                role: "corporate-action",
+              },
+            ],
+          });
+        } catch {
+          reviewRequired = true;
+          const instrumentKey = knownInstrumentKey(layoutRow.marketLabel, parsedIdentity);
+          if (instrumentKey) incompleteInstrumentKeys.add(instrumentKey);
+          else historyIncomplete = true;
+          diagnostics.push({
+            severity: "warning",
+            code: "unparsed-china-merchants-corporate-action",
+            message: "红股数量或资金证据缺失，已保留公司行动待核对。",
+            page: layoutRow.page,
+            row: layoutRow.row,
+            sourceOrder: layoutRow.sourceOrder,
+            instrumentSymbol: parsedIdentity.symbol,
+          });
+        }
+      }
       continue;
     }
 
@@ -415,8 +493,9 @@ export function parseChinaMerchantsPages(
                         layoutRow.stampDuty,
                         layoutRow.otherFee,
                         layoutRow.cells.cashChange,
-                        layoutRow.cells.cashBalance,
                       ].map((value) => decimal(value).toString()),
+                      optionalDecimal(layoutRow.cells.cashBalance)?.toString() ??
+                        "missing",
                       optionalDecimal(layoutRow.cells.securityBalance)?.toString() ?? "missing",
                     ]),
                   ),
@@ -512,7 +591,6 @@ export function parseChinaMerchantsPages(
     }
   }
 
-  const documentId = `china-merchants:${options.fileFingerprint}`;
   const positions: StatementPosition[] = [];
   const groupedEvidence = new Map<string, typeof evidenceRows>();
   for (const row of evidenceRows) {
@@ -572,12 +650,12 @@ export function parseChinaMerchantsPages(
     templateIds: ["china-merchants/pdf/monthly-v1"],
     accountId: statementAccountId,
     positions,
-    events: [],
+    events,
     reviewRequired,
     ...(reviewRequired && incompleteInstrumentKeys.size > 0
       ? { incompleteInstruments: [...incompleteInstrumentKeys].map(key => { const [market, symbol] = key.split(":"); return { market, symbol }; }) }
       : {}),
-    ...(reviewRequired ? { historyIncomplete: true } : {}),
+    ...(historyIncomplete ? { historyIncomplete: true } : {}),
   };
   return {
     broker: "china-merchants",

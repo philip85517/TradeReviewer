@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import type { TradeExecution } from "../trades/types";
+import { TRADINGVIEW_CANONICAL_ACCOUNT_ID } from "../trades/tradingview-account-identity";
 import {
   CASH_SETTINGS_KEY,
   buildCashSummary,
@@ -54,6 +55,13 @@ function execution(
       row: 1,
       tradeNature: "live",
       tradingDate: executedAt.slice(0, 10),
+      settlement: {
+        currency,
+        quantity: "1",
+        grossAmount: amount,
+        netAmount: "",
+        fees: {},
+      },
       ...options,
     },
   };
@@ -88,11 +96,19 @@ describe("cash baseline contracts", () => {
     });
     expect(normalizeCashBaselineDraft({
       scope: { nature: "simulation", simulationRunId: null },
-      accountId: "account-a",
+      accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
       currency: "CNY",
       balance: "1",
       asOf: "2026-09-01T00:00:00.000Z",
-    })).toBeNull();
+      source: "user-default",
+      expectedRevision: null,
+    })).toMatchObject({
+      scope: { nature: "simulation", simulationRunId: null },
+      accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+      balance: "1",
+      source: "user-default",
+      expectedRevision: null,
+    });
   });
 
   it("normalizes malformed persisted state without carrying invalid records", () => {
@@ -352,6 +368,64 @@ describe("buildCashSummary", () => {
 
     expect(result.todayProceeds.originalByCurrency).toEqual({ CNY: "7" });
     expect(result.cashTotal.originalByCurrency).toEqual({ CNY: "107" });
+  });
+
+  it("uses one canonical TradingView baseline across four source runs", () => {
+    const canonicalScope: CashScope = { nature: "simulation", simulationRunId: null };
+    const canonicalAccount = TRADINGVIEW_CANONICAL_ACCOUNT_ID;
+    const result = buildCashSummary({
+      executions: [
+        execution("tv-run-a", "sell", "2026-09-26T01:00:00.000Z", "10", {
+          accountId: canonicalAccount,
+          platform: "tradingview",
+          tradeNature: "simulation",
+          simulationRunId: "run-a",
+        }),
+        execution("tv-run-b", "sell", "2026-09-26T02:00:00.000Z", "20", {
+          accountId: canonicalAccount,
+          platform: "tradingview",
+          tradeNature: "simulation",
+          simulationRunId: "run-b",
+        }),
+        execution("tv-run-c", "sell", "2026-09-26T03:00:00.000Z", "30", {
+          accountId: canonicalAccount,
+          platform: "tradingview",
+          tradeNature: "simulation",
+          simulationRunId: "run-c",
+        }),
+        execution("tv-run-d", "sell", "2026-09-26T04:00:00.000Z", "40", {
+          accountId: canonicalAccount,
+          platform: "tradingview",
+          tradeNature: "simulation",
+          simulationRunId: "run-d",
+        }),
+        execution("legacy-run", "sell", "2026-09-26T05:00:00.000Z", "100", {
+          accountId: "tradingview:legacy:account",
+          platform: "tradingview",
+          tradeNature: "simulation",
+          simulationRunId: "legacy-run",
+        }),
+        execution("live-row", "sell", "2026-09-26T06:00:00.000Z", "100", {
+          accountId: canonicalAccount,
+          platform: "broker",
+          tradeNature: "live",
+        }),
+      ],
+      baselines: [baseline({
+        scope: canonicalScope,
+        accountId: canonicalAccount,
+        balance: "100000",
+      })],
+      scope: canonicalScope,
+      accountIds: [],
+      today: "2026-09-26",
+      instrumentMetadata,
+    });
+
+    expect(result.cashTotal.originalByCurrency).toEqual({ CNY: "100100" });
+    expect(result.todayProceeds.originalByCurrency).toEqual({ CNY: "100" });
+    expect(result.cashTotalStatus).toBe("available");
+    expect(result.coverage).toMatchObject({ included: 4, missing: 0 });
   });
 
   it("does not let unrelated account or simulation evidence downgrade the selected live scope", () => {

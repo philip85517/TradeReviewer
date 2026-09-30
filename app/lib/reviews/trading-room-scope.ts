@@ -11,6 +11,7 @@ import {
 } from "./dashboard";
 import type { TradeNature, Instrument } from "../trades/types";
 import type { TradeLibraryEntry } from "../trades/library";
+import { tradingViewEpisodeBusinessScope } from "../trades/tradingview-account-identity";
 
 export type RoomTradeNature = TradeNature;
 
@@ -523,7 +524,12 @@ export function filterRoomRows(
     const nature = dashboardEpisodeNature(row);
     if (nature !== normalized.nature) return false;
     if (normalized.nature === "simulation") {
-      if (!normalized.simulationRunId || dashboardEpisodeSimulationRunId(row) !== normalized.simulationRunId) return false;
+      const businessScope = tradingViewEpisodeBusinessScope(row.item.episode);
+      if (businessScope) {
+        if (normalized.simulationRunId !== businessScope.simulationRunId) return false;
+      } else if (!normalized.simulationRunId || dashboardEpisodeSimulationRunId(row) !== normalized.simulationRunId) {
+        return false;
+      }
     }
     if (!rowMatchesQuery(row, normalized.query)) return false;
     const projection = classifyTradingRoomAsset(row.item.episode.instrument, metadata.get(rowInstrumentId(row)));

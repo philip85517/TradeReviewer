@@ -15,6 +15,8 @@
 .pageNumbers button { min-width: 28px; padding: 4px 7px; }
 .pageNumbers button[aria-current="page"] { opacity: 1; font-weight: 700; color: var(--dashboard-ink); background: var(--dashboard-soft); }
 .pending { padding: 3px 6px; border: 1px solid var(--dashboard-line); border-radius: 5px; white-space: nowrap; }
+.priceCell { overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.priceValue { display: inline-block; max-width: 100%; overflow-wrap: anywhere; }
 .positive { color: var(--dashboard-positive, #26a69a); }
 .negative { color: var(--dashboard-negative, #ef5350); }
 .neutral { color: var(--dashboard-muted); }
@@ -68,4 +70,21 @@
   .positive { color: #00d5b6; }
   .negative { color: #ff6b78; }
   .pending { border-color: #765b28; color: #f2c665; background: #2b2415; }
+}
+
+/* Keep every page link inside the narrow card. The table remains independently
+   horizontally scrollable; only the pagination controls wrap. */
+@media (max-width: 620px) {
+  .panel footer > nav {
+    min-width: 0;
+    max-width: 100%;
+    flex: 0 1 100%;
+    justify-content: flex-start;
+  }
+  .panel footer > nav > .pageNumbers {
+    min-width: 0;
+    max-width: 100%;
+    flex: 1 1 0;
+    flex-wrap: wrap;
+  }
 }

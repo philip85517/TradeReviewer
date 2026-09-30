@@ -18,11 +18,13 @@ import type {
 import type {
   BrowserStatePayload,
   ExecutionMergeReport,
+  InstrumentMetadataRead,
   MigrationReport,
   SqliteStatus,
   StorageBootstrap,
   StoredInstrument,
 } from "./sqlite-contracts";
+import type { ResolvedInstrument } from "../instruments/metadata-contracts";
 import type { TagSuggestionRecord } from "../insights/types";
 
 export class StorageHttpError extends Error {
@@ -60,7 +62,14 @@ export type SuggestionDecisionInput = {
   review: EpisodeReviewRecord;
 };
 
-export type SqliteHttpClient = ReturnType<typeof createSqliteHttpClient>;
+type SqliteHttpClientWithMetadata = ReturnType<typeof createSqliteHttpClient>;
+export type SqliteHttpClient = Omit<
+  SqliteHttpClientWithMetadata,
+  "getInstrumentMetadata" | "putInstrumentMetadata"
+> & Partial<Pick<
+  SqliteHttpClientWithMetadata,
+  "getInstrumentMetadata" | "putInstrumentMetadata"
+>>;
 
 type Fetcher = (input: string, init?: RequestInit) => Promise<Response>;
 
@@ -115,9 +124,17 @@ function marketDataUrl(input: {
   return `/api/storage/market-data?${params.toString()}`;
 }
 
+function instrumentMetadataUrl(instrumentIds: readonly string[]): string {
+  const params = new URLSearchParams();
+  for (const instrumentId of new Set(instrumentIds)) params.append("id", instrumentId);
+  return `/api/storage/instruments/metadata?${params.toString()}`;
+}
+
 export function createSqliteHttpClient(fetcher: Fetcher = fetch): {
   getStatus(): Promise<SqliteStatus>;
   getBootstrap(): Promise<StorageBootstrap>;
+  getInstrumentMetadata(instrumentIds: string[], signal?: AbortSignal): Promise<InstrumentMetadataRead>;
+  putInstrumentMetadata(record: ResolvedInstrument): Promise<{ ok: true }>;
   migrate(payload: BrowserStatePayload): Promise<MigrationReport>;
   mergeExecutions(input: MergeTradeDataInput): Promise<ExecutionMergeReport>;
   putReview(record: EpisodeReviewRecord): Promise<EpisodeReviewRecord>;
@@ -131,7 +148,7 @@ export function createSqliteHttpClient(fetcher: Fetcher = fetch): {
     start?: string;
     end?: string;
     dailyOnly?: boolean;
-  }): Promise<MarketDataRead>;
+  }, signal?: AbortSignal): Promise<MarketDataRead>;
   putMarketData(input: MarketDataWrite): Promise<{ ok: true }>;
   putMarketDataJob(job: MarketDataJob): Promise<MarketDataJob>;
   getSettings(): Promise<ChartSettings>;
@@ -140,6 +157,8 @@ export function createSqliteHttpClient(fetcher: Fetcher = fetch): {
   return {
     getStatus: async () => parseResponse<SqliteStatus>(await fetcher("/api/storage/status", { cache: "no-store" })),
     getBootstrap: async () => parseResponse<StorageBootstrap>(await fetcher("/api/storage/bootstrap", { cache: "no-store" })),
+    getInstrumentMetadata: async (instrumentIds, signal) => parseResponse<InstrumentMetadataRead>(await fetcher(instrumentMetadataUrl(instrumentIds), { cache: "no-store", ...(signal ? { signal } : {}) })),
+    putInstrumentMetadata: async (record) => parseResponse<{ ok: true }>(await fetcher("/api/storage/instruments/metadata", jsonRequest("PUT", record))),
     migrate: async (payload) => parseResponse<MigrationReport>(await fetcher("/api/storage/migrate", jsonRequest("POST", payload))),
     mergeExecutions: async (input) => parseResponse<ExecutionMergeReport>(await fetcher("/api/storage/trades", jsonRequest("PUT", input))),
     putReview: async (record) => parseResponse<EpisodeReviewRecord>(await fetcher("/api/storage/reviews", jsonRequest("PUT", record))),
@@ -151,7 +170,7 @@ export function createSqliteHttpClient(fetcher: Fetcher = fetch): {
       const result = await parseResponse<{ providerSymbol: string | null }>(await fetcher(`/api/storage/market-data?${params.toString()}`, { cache: "no-store" }));
       return result.providerSymbol ?? undefined;
     },
-    getMarketData: async (input) => parseResponse<MarketDataRead>(await fetcher(marketDataUrl(input), { cache: "no-store" })),
+    getMarketData: async (input, signal) => parseResponse<MarketDataRead>(await fetcher(marketDataUrl(input), { cache: "no-store", ...(signal ? { signal } : {}) })),
     putMarketData: async (input) => parseResponse<{ ok: true }>(await fetcher("/api/storage/market-data", jsonRequest("PUT", input))),
     putMarketDataJob: async (job) => parseResponse<MarketDataJob>(await fetcher("/api/storage/market-data", jsonRequest("PUT", { kind: "job", job }))),
     getSettings: async () => parseResponse<ChartSettings>(await fetcher("/api/storage/settings", { cache: "no-store" })),

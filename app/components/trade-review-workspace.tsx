@@ -3,7 +3,14 @@ import { summarizeRecallDocument, type RecallReviewSummary } from "../lib/recall
 import { fetchRecallReviewSummaries } from "../lib/recall/summary-client";
 import type { RecallDocument } from "../lib/recall/types";
 import { roomTodayKey } from "../lib/reviews/trading-room-scope";
-import { scopedRecords, supplementChanges, type SupplementScope } from "../lib/import/scoped-supplement";
+import {
+  applyScopedMonthlyEvidence,
+  scopeStatementParseResult,
+  scopedRecords,
+  supplementChangeSummary,
+  supplementChanges,
+  type SupplementScope,
+} from "../lib/import/scoped-supplement";
 
 import {
   BarChart3,
@@ -45,10 +52,10 @@ import {
   type EnrichedImportResult,
 } from "../lib/import/enrich-import";
 import { parseBrokerStatement } from "../lib/import/dispatcher";
-import { applyMonthlyHistoryEvidence } from "../lib/import/statement-evidence";
+import { applyMonthlyHistoryEvidence, selectMonthlyEvidenceHistory } from "../lib/import/statement-evidence";
 import { belongsToMonthlyDocument } from "../lib/import/statement-identity";
 import { assessMonthlyReimport } from "../lib/import/monthly-reimport";
-import type { StatementTimeOptions } from "../lib/import/monthly-statement";
+import type { MonthlyStatement, StatementTimeOptions } from "../lib/import/monthly-statement";
 import { MonthlyStatementReview } from "./import/monthly-statement-review";
 import { TradingViewContextDialog } from "./import/tradingview-context-dialog";
 import {
@@ -62,7 +69,10 @@ import {
 } from "../lib/import/import-preview";
 import { buildInsightEpisodeFacts } from "../lib/insights/episode-facts";
 import { buildPatternInsightReport } from "../lib/insights/insight-engine";
-import { buildTagSuggestions } from "../lib/insights/tag-suggestions";
+import {
+  buildCachedTagSuggestions,
+  type TagSuggestionCache,
+} from "../lib/insights/tag-suggestion-cache";
 import type { TagSuggestionRecord } from "../lib/insights/types";
 import { aggregateCandles } from "../lib/market/aggregate";
 import {
@@ -92,6 +102,7 @@ import {
   requiredMarketDataRange,
   requiredRangeExpanded,
 } from "../lib/market/sync-range";
+import { CalendarOutOfRangeError } from "../lib/market/calendar";
 import { statementReplayBounds } from "../lib/market/statement-range";
 import { createMarketDataFetcher } from "../lib/market/market-data-fetch";
 import {
@@ -106,7 +117,13 @@ import {
   type GlobalMarketRefreshFailureDetail,
 } from "../lib/market/refresh-summary";
 import { refreshMarketData } from "../lib/market/market-data-service";
+import {
+  createHomeMarketReadScheduler,
+  type HomeMarketReadPriority,
+  type HomeMarketReadScheduler,
+} from "../lib/market/home-market-read-scheduler";
 import { canonicalInstrumentId } from "../lib/instruments/display-name";
+import { tradingViewEpisodeBusinessScope } from "../lib/trades/tradingview-account-identity";
 import type { ResolvedInstrument } from "../lib/instruments/metadata-contracts";
 import { resolveHistoricalInstrumentIdentity } from "../lib/instruments/historical-instrument-identity";
 import { resolveInstrumentMetadataBatch, refreshInstrumentMetadata } from "../lib/instruments/resolve-service";
@@ -146,7 +163,16 @@ import type {
 import {
   mergeExecutions,
 } from "../lib/storage/import-library";
+import { mergeTradingViewReimports } from "../lib/import/tradingview-reimport";
 import type { EpisodeReviewState } from "../lib/storage/review-storage";
+import {
+  createActiveAliasLoader,
+  mergeAuthoritativeReviewStates,
+  readAliasedReviewStates,
+  resolveSharedScopeWithAliases,
+  writeCanonicalSharedScope,
+  type ActiveAliasLoader,
+} from "../lib/storage/migration-browser-alias";
 import type { MarketDataRepository } from "../lib/storage/market-data-repository";
 import {
   ApiEpisodeReviewRepository,
@@ -167,7 +193,10 @@ import {
   buildInstrumentTradeSummaries,
   type InstrumentTradeSummary,
 } from "../lib/trades/instruments";
-import { buildTradeLibraryEntries } from "../lib/trades/library";
+import {
+  buildCachedTradeLibraryEntries,
+  type TradeLibraryEntryCache,
+} from "../lib/reviews/trade-library-entry-cache";
 import { tradingNatureLabel, displayTradeNature } from "../lib/trades/trading-nature";
 import { buildReviewQueue, stableAccountDisplayLabels } from "../lib/reviews/review-queue";
 import { localizedInstrumentOverlay, overlayStoredInstrumentMetadata } from "../lib/reviews/instrument-display-overlay";
@@ -206,12 +235,22 @@ import { DataManagement } from "./data-management/data-management";
 import { CashBaselinePanel } from "./data-management/cash-baseline-panel";
 import { FxPanel } from "./data-management/fx-panel";
 import { QualityDetails } from "./data-management/quality-details";
+import { TradingViewAccountMigrationPanel } from "./data-management/tradingview-account-migration-panel";
 import { TradingRoomPrincipalSlot } from "./data-management/trading-room-principal-slot";
 import { useModalFocus } from "./import/use-modal-focus";
 import { ReviewSummary, initialReviewSummaryFilters, type ReviewSummaryDrafts } from "./insights/review-summary";
 import { ReviewDashboard } from "./dashboard/review-dashboard";
 import { LibraryScopeControls } from "./library/library-scope-controls";
-import { DEFAULT_SHARED_SCOPE, normalizeSharedScope, filterEntriesBySharedScope, sharedScopeStorageKey, type SharedScope } from "../lib/reviews/shared-scope";
+import {
+  DEFAULT_SHARED_SCOPE,
+  filterEntriesBySharedScope,
+  filterExecutionHistoryForEpisode,
+  isCanonicalTradingViewSharedScope,
+  normalizeSharedScope,
+  sharedScopeStorageKey,
+  sharedScopeV2StorageKey,
+  type SharedScope,
+} from "../lib/reviews/shared-scope";
 import { TagSuggestionPanel } from "./insights/tag-suggestion-panel";
 import { RuleChecks } from "./review/rule-checks";
 import type { EpisodeNotesProps } from "./review/episode-notes-panel";
@@ -244,12 +283,18 @@ import type {
 } from "../lib/reviews/trading-room-quality";
 import type { TradingRoomQuote } from "../lib/reviews/trading-room-holdings";
 import {
-  parseCashBaselineState,
-  type CashBaselineDraft,
+  cashBaselineKey,
   type CashBaselineState,
+  type CashScope,
   type CashSummary,
   type CashNature,
 } from "../lib/cash/cash-model";
+import { createCashClient, type CashClient } from "../lib/cash/cash-client";
+import {
+  emptyCashBaselineStorageState,
+  type CashBaselineMutation,
+  type CashBaselineStorageState,
+} from "../lib/cash/cash-baseline-contracts";
 import {
   roomFiltersFromScope,
   type PendingLibraryNavigationRequest,
@@ -312,7 +357,44 @@ type Props = {
   /** Injectable only for integration tests; production creates the HTTP client. */
   storageClient?: SqliteHttpClient;
   legacyStateExporter?: (options?: { excludeDemo?: boolean }) => Promise<import("../lib/storage/sqlite-contracts").BrowserStatePayload | null>;
+  /** The active migration alias read is injectable for deterministic workspace tests. */
+  activeAliasLoader?: ActiveAliasLoader;
 };
+
+function sharedEpisodeNature(entryNature: SharedScope["nature"] | undefined, episode: TradeEpisode): SharedScope["nature"] {
+  if (episode.tradeNature && episode.tradeNature !== "unknown") return episode.tradeNature;
+  return entryNature ?? "unknown";
+}
+
+function legacyEpisodeSimulationRunId(entryRunId: string | null | undefined, episode: TradeEpisode): string | null {
+  return episode.simulationRunId ??
+    entryRunId ??
+    episode.executions.find(execution => execution.source.simulationRunId)?.source.simulationRunId ??
+    null;
+}
+
+function readPersistedSharedScope(): SharedScope | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const storage = window.localStorage;
+    const serializedValues = [
+      storage.getItem(sharedScopeV2StorageKey()),
+      storage.getItem(sharedScopeStorageKey()),
+    ];
+    for (const serialized of serializedValues) {
+      if (!serialized) continue;
+      try {
+        return normalizeSharedScope(JSON.parse(serialized));
+      } catch {
+        // A malformed v2 value must not hide a readable legacy preference.
+      }
+    }
+  } catch {
+    // Disabled or private browser storage must not block SQLite hydration.
+  }
+  return null;
+}
+
 
 type ReviewReturnView = "dashboard" | "library" | "insights" | "data";
 
@@ -378,6 +460,28 @@ function emptyMarketState(
   };
 }
 
+function marketReadFailure(
+  error: unknown,
+  fallbackCode: string,
+  fallbackMessage: string,
+): MarketDataErrorDetail {
+  if (error instanceof CalendarOutOfRangeError) {
+    return { code: "calendar-out-of-range", message: error.message };
+  }
+  if (error instanceof DOMException && error.name === "TimeoutError") {
+    return { code: "read-timeout", message: "本地行情读取超过 10 秒预算" };
+  }
+  if (error instanceof Error && error.message) {
+    return { code: fallbackCode, message: error.message };
+  }
+  return { code: fallbackCode, message: fallbackMessage };
+}
+
+function isAbortError(error: unknown) {
+  return (error instanceof DOMException && error.name === "AbortError") ||
+    (error instanceof Error && error.name === "AbortError");
+}
+
 function applyPersistedMarketDataJob(
   state: InstrumentMarketState,
   job: MarketDataJob | undefined,
@@ -441,53 +545,151 @@ function marketRanges(summary: InstrumentTradeSummary) {
 async function readInstrumentMarketState(
   summary: InstrumentTradeSummary,
   repository: MarketDataRepository,
+  options: {
+    includeIntraday?: boolean;
+    includeDaily?: boolean;
+    signal?: AbortSignal;
+    scheduler?: HomeMarketReadScheduler;
+    priority?: HomeMarketReadPriority;
+  } = {},
 ): Promise<InstrumentMarketState> {
   const ranges = marketRanges(summary);
   const market = supportedMarket(summary.instrument.market);
-  const intradayRanges = market
-    ? buildIntradaySyncRanges(sortedEpisodes(summary), market)
-    : [ranges.intraday];
-  const [daily, dailyCoverage, hourly, hourlyCoverage, legacyIntraday, legacyCoverage] =
-    await Promise.all([
-      repository.getDailyCandles(
-        summary.instrument.id,
-        ranges.daily.startDate,
-        ranges.daily.endDate,
+  const scheduleRead = <T,>(
+    key: string,
+    task: (signal?: AbortSignal) => Promise<T>,
+    signal = options.signal,
+  ) => options.scheduler
+    ? options.scheduler.read(key, (readSignal) => task(readSignal), signal, options.priority)
+    : task(signal);
+  const dailyKey = [
+    "daily",
+    summary.instrument.id,
+    ranges.daily.startDate,
+    ranges.daily.endDate,
+  ].join(":");
+  const dailyCandlesKey = `${dailyKey}:candles`;
+  const dailyCoverageKey = `${dailyKey}:coverage`;
+  const readDaily = async (signal?: AbortSignal): Promise<InstrumentMarketState> => {
+    const dailyResult = repository.getDailyMarketData
+      ? await scheduleRead(
+          dailyKey,
+          (readSignal) => repository.getDailyMarketData!(
+            summary.instrument.id,
+            ranges.daily.startDate,
+            ranges.daily.endDate,
+            readSignal,
+          ),
+          signal,
+        )
+      : await Promise.all([
+          scheduleRead(
+            dailyCandlesKey,
+            (readSignal) => repository.getDailyCandles(
+              summary.instrument.id,
+              ranges.daily.startDate,
+              ranges.daily.endDate,
+              readSignal,
+            ),
+            signal,
+          ),
+          scheduleRead(
+            dailyCoverageKey,
+            (readSignal) => repository.getCoverage(summary.instrument.id, readSignal),
+            signal,
+          ),
+        ]).then(([candles, coverage]) => ({ candles, coverage }));
+    const { candles: daily, coverage: dailyCoverage } = dailyResult;
+    if (signal?.aborted) throw signal.reason ?? new DOMException("行情读取已取消", "AbortError");
+    const normalizedDailyCoverage = market
+      ? normalizeProviderLatestTails(market, reconcileDailyCoverage(market, ranges.daily, dailyCoverage, daily), daily)
+      : dailyCoverage;
+    return {
+      ...emptyMarketState(),
+      daily,
+      dailyStatus: coverageStatusForDateRange(
+        ranges.daily,
+        normalizedDailyCoverage,
       ),
-      repository.getCoverage(summary.instrument.id),
-      repository.getCandles(
+      dailyCoverage: normalizedDailyCoverage,
+    };
+  };
+  const readIntraday = async (signal?: AbortSignal): Promise<InstrumentMarketState> => {
+    const intradayRanges = market
+      ? buildIntradaySyncRanges(sortedEpisodes(summary), market)
+      : [ranges.intraday];
+    const readInterval = async (
+      interval: NativeIntradayInterval,
+    ): Promise<{ candles: MarketCandleRecord[]; coverage: IntervalCoverageSegment[] }> => {
+      const intervalKey = [
+        "intraday",
         summary.instrument.id,
-        "1h",
+        interval,
         ranges.intraday.startTime,
         ranges.intraday.endTime,
+      ].join(":");
+      if (repository.getIntervalMarketData) {
+        return scheduleRead(
+          intervalKey,
+          (readSignal) => repository.getIntervalMarketData!(
+            summary.instrument.id,
+            interval,
+            ranges.intraday.startTime,
+            ranges.intraday.endTime,
+            readSignal,
+          ),
+          signal,
+        );
+      }
+      const [candles, coverage] = await Promise.all([
+        scheduleRead(
+          `${intervalKey}:candles`,
+          (readSignal) => repository.getCandles(
+            summary.instrument.id,
+            interval,
+            ranges.intraday.startTime,
+            ranges.intraday.endTime,
+            readSignal,
+          ),
+          signal,
+        ),
+        scheduleRead(
+          `${intervalKey}:coverage`,
+          (readSignal) => repository.getIntervalCoverage(summary.instrument.id, interval, readSignal),
+          signal,
+        ),
+      ]);
+      return { candles, coverage };
+    };
+    const hourly = await readInterval("1h");
+    const useHourly = hourly.candles.length > 0 || hourly.coverage.length > 0;
+    const selected = useHourly ? hourly : await readInterval("15m");
+    if (signal?.aborted) throw signal.reason ?? new DOMException("行情读取已取消", "AbortError");
+    return {
+      ...emptyMarketState(),
+      intraday: selected.candles,
+      intradayInterval: useHourly ? "1h" : "15m",
+      intradayStatus: coverageStatusForTimeRanges(
+        intradayRanges,
+        selected.coverage,
       ),
-      repository.getIntervalCoverage(summary.instrument.id, "1h"),
-      repository.getCandles(
-        summary.instrument.id,
-        "15m",
-        ranges.intraday.startTime,
-        ranges.intraday.endTime,
-      ),
-      repository.getIntervalCoverage(summary.instrument.id, "15m"),
-    ]);
-  const useHourly = hourly.length > 0 || hourlyCoverage.length > 0;
-  const normalizedDailyCoverage = market
-    ? normalizeProviderLatestTails(market, reconcileDailyCoverage(market, ranges.daily, dailyCoverage, daily), daily)
-    : dailyCoverage;
+      intradayCoverage: selected.coverage,
+    };
+  };
+
+  const daily = options.includeDaily === false
+    ? emptyMarketState()
+    : await readDaily(options.signal);
+  if (!options.includeIntraday) return daily;
+  const intraday = await readIntraday(options.signal);
   return {
-    daily,
-    intraday: useHourly ? hourly : legacyIntraday,
-    intradayInterval: useHourly ? "1h" : "15m",
-    dailyStatus: coverageStatusForDateRange(
-      ranges.daily,
-      normalizedDailyCoverage,
-    ),
-    intradayStatus: coverageStatusForTimeRanges(
-      intradayRanges,
-      useHourly ? hourlyCoverage : legacyCoverage,
-    ),
-    intradayCoverage: useHourly ? hourlyCoverage : legacyCoverage,
-    dailyCoverage: normalizedDailyCoverage,
+    ...daily,
+    intraday: intraday.intraday,
+    intradayInterval: intraday.intradayInterval,
+    intradayStatus: intraday.intradayStatus,
+    intradayCoverage: intraday.intradayCoverage,
+    intradayMessage: intraday.intradayMessage,
+    intradayError: intraday.intradayError,
   };
 }
 
@@ -509,6 +711,10 @@ function sourceCandlesForTimeframe(
   return timeframe === "15m" || timeframe === "1h" || timeframe === "4h"
     ? marketState.intraday.map(intervalRecordToCandle)
     : marketState.daily.map(dailyRecordToKnowledgeCandle);
+}
+
+function isIntradayTimeframe(timeframe: Timeframe | undefined): timeframe is "15m" | "1h" | "4h" {
+  return timeframe === "15m" || timeframe === "1h" || timeframe === "4h";
 }
 
 function replayCursorForEpisode(source: Candle[], episodeStartedAt: string) {
@@ -889,17 +1095,33 @@ type ActiveMarketRefreshRun = {
   promise: Promise<void>;
   snapshotIds: ReadonlySet<string>;
   batch: boolean;
+  includeIntraday: boolean;
 };
 
 type MarketDataUpdateOptions = {
   executions?: TradeExecution[];
   refreshMetadata?: boolean;
   batch?: boolean;
+  /** Homepage quote retry only refreshes the current holding's daily data. */
+  includeIntraday?: boolean;
+  priority?: HomeMarketReadPriority;
 };
 
 type MarketHydrationInFlight = {
   key: string;
   runId: number;
+};
+
+type PendingImportedReplayRestore = {
+  instrumentId: string;
+  episodeId: string;
+  generation: number;
+  interactionGeneration: number;
+  desiredTimeframe?: Timeframe;
+  desiredCursor?: string;
+  baselineTimeframe: Timeframe;
+  baselineCursor: string;
+  episodeStartedAt: string;
 };
 
 type MarketDataRefreshOutcome = {
@@ -955,24 +1177,6 @@ function qualityModelSignature(model: TradingRoomQualityModel): string {
   return JSON.stringify(model);
 }
 
-async function readCashError(response: Response, fallback: string): Promise<string> {
-  try {
-    const body = await response.json() as { error?: { message?: string } };
-    return body.error?.message ?? fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-async function readCashBaselineResponse(response: Response, fallback: string): Promise<CashBaselineState> {
-  if (!response.ok) throw new Error(await readCashError(response, fallback));
-  try {
-    return parseCashBaselineState(await response.json());
-  } catch {
-    throw new Error("现金基准响应无效");
-  }
-}
-
 type CashDataRequest = {
   nature: CashNature;
   simulationRunId: string | null;
@@ -982,27 +1186,33 @@ type CashDataRequest = {
 };
 
 type CashDataResponse = {
-  baselineState: CashBaselineState;
+  baselineState: CashBaselineState | CashBaselineStorageState;
   summary: CashSummary;
 };
 
-async function fetchCashData(request: CashDataRequest): Promise<CashDataResponse> {
-  const params = new URLSearchParams({
-    nature: request.nature,
-    targetCurrency: request.targetCurrency,
-    today: request.today,
-  });
-  if (request.simulationRunId) params.set("simulationRunId", request.simulationRunId);
-  if (request.accountIds.length > 0) params.set("accountIds", request.accountIds.join(","));
+const CASH_SUMMARY_REFRESH_NOTICE = "已保存现金基准，摘要暂未刷新";
 
-  const [baselineResponse, summaryResponse] = await Promise.all([
-    fetch(`/api/trading-room/cash/baselines?${params.toString()}`, { cache: "no-store" }),
-    fetch(`/api/trading-room/cash?${params.toString()}`, { cache: "no-store" }),
-  ]);
-  if (!summaryResponse.ok) throw new Error(await readCashError(summaryResponse, "现金汇总暂时不可用"));
+type CashSavedFact = { scopeKey: string };
+type CashSummaryRefreshError = { scopeKey: string; message: string };
+
+async function fetchCashData(client: CashClient, request: CashDataRequest): Promise<CashDataResponse> {
+  const scope: CashScope = {
+    nature: request.nature,
+    simulationRunId: request.simulationRunId,
+  };
+  const accountId = request.accountIds.length === 1 ? request.accountIds[0] : undefined;
+  const baselineFilter = {
+    nature: request.nature,
+    simulationRunId: request.simulationRunId,
+    ...(accountId ? { accountId } : {}),
+  } as const;
   const [baselineState, summary] = await Promise.all([
-    readCashBaselineResponse(baselineResponse, "现金基准暂时不可用"),
-    summaryResponse.json() as Promise<CashSummary>,
+    client.readBaselines(baselineFilter),
+    client.readSummary(scope, {
+      accountIds: request.accountIds,
+      targetCurrency: request.targetCurrency,
+      today: request.today,
+    }),
   ]);
   return { baselineState, summary };
 }
@@ -1014,14 +1224,24 @@ export function TradeReviewWorkspace({
   screenshotImportDependencies,
   storageClient: storageClientOverride,
   legacyStateExporter = exportLegacyBrowserState,
+  activeAliasLoader: activeAliasLoaderOverride,
 }: Props) {
   const [storageClient] = useState<SqliteHttpClient>(
     () => storageClientOverride ?? createSqliteHttpClient(),
   );
+  const [activeAliasLoader] = useState<ActiveAliasLoader>(() =>
+    activeAliasLoaderOverride ?? (storageClientOverride ? async () => [] : createActiveAliasLoader()),
+  );
+  const cashClient = useMemo(() => createCashClient(), []);
   const marketDataRepository = useMemo(
     () => new ApiMarketDataRepository(storageClient),
     [storageClient],
   );
+  const marketReadScheduler = useMemo(
+    () => createHomeMarketReadScheduler({ concurrency: 4, interactiveReserve: 1 }),
+    [marketDataRepository],
+  );
+  useEffect(() => () => marketReadScheduler.dispose(), [marketReadScheduler]);
   const reviewRepository = useMemo(
     () => new ApiEpisodeReviewRepository(storageClient),
     [storageClient],
@@ -1064,18 +1284,18 @@ export function TradeReviewWorkspace({
   const [dashboardRestoreContext, setDashboardRestoreContext] = useState<RoomPendingSourceSnapshot | null>(null);
   const [sharedScope, setSharedScope] = useState<SharedScope>(DEFAULT_SHARED_SCOPE);
   const [sharedScopeRestored, setSharedScopeRestored] = useState(false);
-  useEffect(() => {
-    try {
-      const saved = window.localStorage.getItem(sharedScopeStorageKey());
-      // Restore browser-only preferences after hydration so the server and first client render agree.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (saved) setSharedScope(normalizeSharedScope(JSON.parse(saved)));
-    } catch { /* A malformed or unavailable preference must not block the ledger. */ }
-    setSharedScopeRestored(true);
-  }, []);
+  const sharedScopeRef = useRef(sharedScope);
+  const sharedScopeChangeGeneration = useRef(0);
+  const [aliasRecoveryState, setAliasRecoveryState] = useState<"loading" | "ready" | "error">("loading");
+  const [aliasRecoveryError, setAliasRecoveryError] = useState<string | null>(null);
+  const [aliasRecoveryAttempt, setAliasRecoveryAttempt] = useState(0);
   useEffect(() => {
     if (!sharedScopeRestored) return;
-    try { window.localStorage.setItem(sharedScopeStorageKey(), JSON.stringify(sharedScope)); } catch { /* Storage may be disabled. */ }
+    try {
+      writeCanonicalSharedScope(window.localStorage, sharedScope);
+    } catch {
+      // A disabled browser store must not affect the hydrated SQLite ledger.
+    }
   }, [sharedScope, sharedScopeRestored]);
   const [reviewQueueIds, setReviewQueueIds] = useState<string[]>();
   const [navigationNotice, setNavigationNotice] = useState<string | null>(null);
@@ -1096,6 +1316,9 @@ export function TradeReviewWorkspace({
   }, []);
   function setActiveView(next: typeof activeView) {
     const attempt = ++navigationAttemptRef.current;
+    if (activeView === "review" && next !== "review") {
+      invalidatePendingImportedReplayRestore();
+    }
     if (activeView !== "review" || next === "review" || !recallLeaveGuardRef.current) {
       if (next === "dashboard") setDashboardOpened(true);
       setActiveViewState(next);
@@ -1203,6 +1426,7 @@ export function TradeReviewWorkspace({
   const [hydratedMarketIds, setHydratedMarketIds] = useState<Set<string>>(
     () => new Set(),
   );
+  const [marketIntradayReadyKeys, setMarketIntradayReadyKeys] = useState<Record<string, string>>({});
   const [episodeReviews, setEpisodeReviews] = useState<
     Record<string, EpisodeReviewRecord>
   >({});
@@ -1254,6 +1478,11 @@ export function TradeReviewWorkspace({
   }, [activeView, storageState]);
   const [storageError, setStorageError] = useState<string | null>(null);
   const [bootstrapAttempt, setBootstrapAttempt] = useState(0);
+  const pendingMigrationReloads = useRef<Array<{ resolve: () => void; reject: (error: unknown) => void }>>([]);
+  const reloadAfterMigrationCommit = useCallback(() => new Promise<void>((resolve, reject) => {
+    pendingMigrationReloads.current.push({ resolve, reject });
+    setBootstrapAttempt(value => value + 1);
+  }), []);
   const [reviewStates, setReviewStates] = useState<
     Record<string, EpisodeReviewState>
   >({});
@@ -1285,6 +1514,13 @@ export function TradeReviewWorkspace({
   const marketHydrationKeys = useRef(new Map<string, string>());
   const marketHydrationInFlight = useRef(new Map<string, MarketHydrationInFlight>());
   const marketHydrationRunSequence = useRef(0);
+  const marketIntradayKeys = useRef(new Map<string, string>());
+  const marketIntradayInFlight = useRef(new Map<string, MarketHydrationInFlight>());
+  const marketIntradayRunSequence = useRef(0);
+  const importedReplaySelectionGeneration = useRef(0);
+  const importedReplayInteractionGeneration = useRef(0);
+  const pendingImportedReplayRestore = useRef<PendingImportedReplayRestore | undefined>(undefined);
+  const tagSuggestionCacheRef = useRef<TagSuggestionCache | undefined>(undefined);
   const [suggestionGeneratedAt] = useState(() => new Date().toISOString());
   const libraryTargetSequence = useRef(0);
 
@@ -1312,6 +1548,14 @@ export function TradeReviewWorkspace({
     () => rawImportedInstruments
       .map((summary) => `${summary.instrument.id}:${summary.tradeCount}:${summary.firstTradeAt}:${summary.lastTradeAt}`)
       .join("|"),
+    [rawImportedInstruments],
+  );
+  const currentHoldingInstrumentIds = useMemo(
+    () => new Set(
+      rawImportedInstruments
+        .filter((summary) => buildTradeEpisodes(summary.executions).some((episode) => episode.status === "open"))
+        .map((summary) => summary.instrument.id),
+    ),
     [rawImportedInstruments],
   );
   const importedInstruments = useMemo(
@@ -1344,6 +1588,11 @@ export function TradeReviewWorkspace({
   const selectedEpisode = selectedEpisodeId
     ? episodes.find((episode) => episode.id === selectedEpisodeId)
     : episodes[0];
+  const selectedReplayIdentity = `${selectedRawImportedInstrument?.instrument.id ?? ""}:${selectedEpisode?.id ?? ""}`;
+  useEffect(() => {
+    importedReplaySelectionGeneration.current += 1;
+    pendingImportedReplayRestore.current = undefined;
+  }, [selectedReplayIdentity]);
   const selectedMarketState = useMemo(
     () =>
       selectedImportedInstrument
@@ -1351,6 +1600,15 @@ export function TradeReviewWorkspace({
           emptyMarketState()
         : emptyMarketState("complete"),
     [marketStates, selectedImportedInstrument],
+  );
+  const selectedMarketHydrationKey = selectedRawImportedInstrument
+    ? `${selectedRawImportedInstrument.instrument.id}:${selectedRawImportedInstrument.tradeCount}:${selectedRawImportedInstrument.firstTradeAt}:${selectedRawImportedInstrument.lastTradeAt}`
+    : undefined;
+  const selectedIntradayReady = Boolean(
+    selectedRawImportedInstrument &&
+      selectedMarketHydrationKey &&
+      marketIntradayReadyKeys[selectedRawImportedInstrument.instrument.id] === selectedMarketHydrationKey &&
+      marketIntradayKeys.current.get(selectedRawImportedInstrument.instrument.id) === selectedMarketHydrationKey,
   );
   const importedAvailability = useMemo(
     () =>
@@ -1583,49 +1841,41 @@ export function TradeReviewWorkspace({
     ])),
     [importedInstruments, marketStates],
   );
-  const tradeLibraryEntries = useMemo(
-    () =>
-      buildTradeLibraryEntries(
-        importedInstruments,
-        marketDataCandles,
-        marketDataStatuses,
-        episodeReviews,
-        recallSummariesByEpisode,
-      ),
-    [
-      episodeReviews,
-      recallSummariesByEpisode,
+  const tradeLibraryEntryCacheRef = useRef<TradeLibraryEntryCache | undefined>(undefined);
+  const tradeLibraryEntriesResult = useMemo(() => buildCachedTradeLibraryEntries(
+      tradeLibraryEntryCacheRef.current,
       importedInstruments,
       marketDataCandles,
       marketDataStatuses,
-    ],
-  );
+      episodeReviews,
+      recallSummariesByEpisode,
+  ), [episodeReviews, recallSummariesByEpisode, importedInstruments, marketDataCandles, marketDataStatuses]);
+  useEffect(() => {
+    tradeLibraryEntryCacheRef.current = tradeLibraryEntriesResult.cache;
+  }, [tradeLibraryEntriesResult.cache]);
+  const tradeLibraryEntries = tradeLibraryEntriesResult.entries;
   const scopedTradeLibraryEntries = useMemo(
     () => filterEntriesBySharedScope(tradeLibraryEntries, sharedScope),
     [tradeLibraryEntries, sharedScope],
   );
   const sharedAccountOptions = useMemo(() => {
-    const scopeEntries = filterEntriesBySharedScope(tradeLibraryEntries, { ...sharedScope, accountIds: [], simulationRunId: null });
-    const options = [...new Map(scopeEntries.flatMap(entry => entry.executions.map(execution =>
-      [execution.accountId, { id: execution.accountId, label: execution.accountLabel || "未命名账户" }] as const))).values()];
+    const options = [...new Map(tradeLibraryEntries.flatMap(entry => entry.episodes
+      .filter(item => sharedEpisodeNature(entry.tradeNature, item.episode) === sharedScope.nature)
+      .map(({ episode }) => [episode.accountId, { id: episode.accountId, label: episode.accountLabel || "未命名账户" }] as const))).values()];
     const displayLabels = stableAccountDisplayLabels(options);
     return options.map(option => ({ ...option, label: displayLabels.get(option.id) ?? option.label }));
-  }, [tradeLibraryEntries, sharedScope]);
+  }, [tradeLibraryEntries, sharedScope.nature]);
   const sharedSimulationRunOptions = useMemo(() => {
     if (sharedScope.nature !== "simulation") return [];
-    const scopeEntries = filterEntriesBySharedScope(tradeLibraryEntries, {
-      ...sharedScope,
-      nature: "simulation",
-      simulationRunId: null,
-    });
     const runs = new Map<string, { instrumentName: string; symbol: string }>();
-    for (const entry of scopeEntries) {
-      const runIds = [
-        entry.simulationRunId,
-        ...entry.episodes.map(item => item.episode.simulationRunId),
-        ...entry.episodes.flatMap(item => item.episode.executions.map(execution => execution.source.simulationRunId)),
-      ];
-      for (const runId of runIds) {
+    for (const entry of tradeLibraryEntries) {
+      for (const item of entry.episodes) {
+        if (sharedEpisodeNature(entry.tradeNature, item.episode) !== "simulation") continue;
+        if (sharedScope.accountIds.length > 0 && !sharedScope.accountIds.includes(item.episode.accountId)) continue;
+        // A migrated TradingView episode is a canonical whole-account scope;
+        // its source run remains provenance and must not reappear as a business filter.
+        if (tradingViewEpisodeBusinessScope(item.episode)) continue;
+        const runId = legacyEpisodeSimulationRunId(entry.simulationRunId, item.episode);
         if (runId && !runs.has(runId)) runs.set(runId, { instrumentName: entry.instrument.name, symbol: entry.instrument.symbol });
       }
     }
@@ -1635,15 +1885,19 @@ export function TradeReviewWorkspace({
   }, [tradeLibraryEntries, sharedScope]);
 
   const updateSharedScope = useCallback((patch: Partial<SharedScope>) => {
+    sharedScopeChangeGeneration.current += 1;
     setSharedScope(current => {
-      const next = normalizeSharedScope({ ...current, ...patch });
+      let next = normalizeSharedScope({ ...current, ...patch });
       if (next.nature === "simulation" && next.simulationRunId) {
-        const runIsCompatible = filterEntriesBySharedScope(tradeLibraryEntries, {
-          ...next,
-          simulationRunId: null,
-        }).some(entry => entry.episodes.some(item => item.episode.simulationRunId === next.simulationRunId));
-        if (!runIsCompatible) return { ...next, simulationRunId: null };
+        const runIsCompatible = tradeLibraryEntries.some(entry => entry.episodes.some(item =>
+          sharedEpisodeNature(entry.tradeNature, item.episode) === "simulation" &&
+          (next.accountIds.length === 0 || next.accountIds.includes(item.episode.accountId)) &&
+          !tradingViewEpisodeBusinessScope(item.episode) &&
+          legacyEpisodeSimulationRunId(entry.simulationRunId, item.episode) === next.simulationRunId,
+        ));
+        if (!runIsCompatible) next = { ...next, simulationRunId: null };
       }
+      sharedScopeRef.current = next;
       return next;
     });
   }, [tradeLibraryEntries]);
@@ -1653,9 +1907,9 @@ export function TradeReviewWorkspace({
     if (!sharedSimulationRunOptions.some(option => option.id === sharedScope.simulationRunId)) {
       // Keep a restored scope safe when its account no longer contains the run.
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSharedScope(current => ({ ...current, simulationRunId: null }));
+      updateSharedScope({ simulationRunId: null });
     }
-  }, [sharedScope.nature, sharedScope.simulationRunId, sharedSimulationRunOptions, tradeLibraryEntries.length]);
+  }, [sharedScope.nature, sharedScope.simulationRunId, sharedSimulationRunOptions, tradeLibraryEntries.length, updateSharedScope]);
   const cashNature: CashNature | null = sharedScope.nature === "simulation"
     ? "simulation"
     : sharedScope.nature === "live" ? "live" : null;
@@ -1687,7 +1941,11 @@ export function TradeReviewWorkspace({
     asOf: fxSnapshot?.asOf,
     rates: fxSnapshot?.rates,
   }), [fxSnapshot]);
-  const cashScopeReady = !showDemo && Boolean(cashNature) && (cashNature === "live" || Boolean(cashSimulationRunId));
+  const cashScopeReady = !showDemo && Boolean(cashNature) && (
+    cashNature === "live" ||
+    Boolean(cashSimulationRunId) ||
+    isCanonicalTradingViewSharedScope(sharedScope)
+  );
   const cashScopeKey = useMemo(() => JSON.stringify({
     nature: cashNature,
     simulationRunId: cashSimulationRunId,
@@ -1708,13 +1966,15 @@ export function TradeReviewWorkspace({
       accountIds: [...sharedScope.accountIds],
     };
   }, [cashNature, cashScopeReady, cashSimulationRunId, cashTargetCurrency, cashTodayKey, sharedScope.accountIds]);
-  const [cashBaselineState, setCashBaselineState] = useState<CashBaselineState>({ version: 1, records: [] });
+  const [cashBaselineState, setCashBaselineState] = useState<CashBaselineState | CashBaselineStorageState>(() => emptyCashBaselineStorageState());
   const [cashBaselineScopeKey, setCashBaselineScopeKey] = useState<string | null>(null);
   const [cashSummary, setCashSummary] = useState<CashSummary | null>(null);
   const [cashSummaryScopeKey, setCashSummaryScopeKey] = useState<string | null>(null);
   const [cashLoading, setCashLoading] = useState(false);
   const [cashSaving, setCashSaving] = useState(false);
   const [cashError, setCashError] = useState<string | null>(null);
+  const [cashSavedFact, setCashSavedFact] = useState<CashSavedFact | null>(null);
+  const [cashSummaryRefreshError, setCashSummaryRefreshError] = useState<CashSummaryRefreshError | null>(null);
   const cashRequestSequence = useRef(0);
   const cashWriteSequence = useRef(0);
   const cashScopeKeyRef = useRef(cashScopeKey);
@@ -1722,14 +1982,20 @@ export function TradeReviewWorkspace({
   // must remain pending until the new request's own sequence settles.
   const cashResolvedRequestSequence = useRef(0);
   useEffect(() => {
+    if (cashScopeKeyRef.current !== cashScopeKey) {
+      cashWriteSequence.current += 1;
+      setCashSaving(false);
+    }
     cashScopeKeyRef.current = cashScopeKey;
+    setCashSavedFact(current => current?.scopeKey === cashScopeKey ? current : null);
+    setCashSummaryRefreshError(current => current?.scopeKey === cashScopeKey ? current : null);
     const requestId = ++cashRequestSequence.current;
     if (!cashDataRequest) {
       return () => {
         if (requestId === cashRequestSequence.current) cashRequestSequence.current += 1;
       };
     }
-    void fetchCashData(cashDataRequest).then(({ baselineState, summary }) => {
+    void fetchCashData(cashClient, cashDataRequest).then(({ baselineState, summary }) => {
       if (requestId !== cashRequestSequence.current) return;
       cashResolvedRequestSequence.current = requestId;
       setCashBaselineState(baselineState);
@@ -1737,6 +2003,8 @@ export function TradeReviewWorkspace({
       setCashSummary(summary);
       setCashSummaryScopeKey(cashScopeKey);
       setCashError(null);
+      setCashSavedFact(null);
+      setCashSummaryRefreshError(null);
       setCashLoading(false);
     }).catch(error => {
       if (requestId !== cashRequestSequence.current) return;
@@ -1749,69 +2017,97 @@ export function TradeReviewWorkspace({
     return () => {
       if (requestId === cashRequestSequence.current) cashRequestSequence.current += 1;
     };
-  }, [cashDataRequest, cashScopeKey]);
-  const refreshCashData = useCallback(async () => {
+  }, [cashClient, cashDataRequest, cashScopeKey]);
+  const refreshCashData = useCallback(async (): Promise<boolean> => {
     const requestId = ++cashRequestSequence.current;
-    if (!cashDataRequest) return;
+    if (!cashDataRequest) return false;
     setCashLoading(true);
     setCashError(null);
     setCashSummary(null);
     setCashSummaryScopeKey(null);
     try {
-      const { baselineState, summary } = await fetchCashData(cashDataRequest);
-      if (requestId !== cashRequestSequence.current || cashScopeKey !== cashScopeKeyRef.current) return;
+      const { baselineState, summary } = await fetchCashData(cashClient, cashDataRequest);
+      if (requestId !== cashRequestSequence.current || cashScopeKey !== cashScopeKeyRef.current) return false;
       cashResolvedRequestSequence.current = requestId;
       setCashBaselineState(baselineState);
       setCashBaselineScopeKey(cashScopeKey);
       setCashSummary(summary);
       setCashSummaryScopeKey(cashScopeKey);
+      setCashError(null);
+      setCashSavedFact(null);
+      setCashSummaryRefreshError(null);
+      return true;
     } catch (error) {
-      if (requestId !== cashRequestSequence.current || cashScopeKey !== cashScopeKeyRef.current) return;
+      if (requestId !== cashRequestSequence.current || cashScopeKey !== cashScopeKeyRef.current) return false;
       cashResolvedRequestSequence.current = requestId;
       setCashSummaryScopeKey(cashScopeKey);
-      setCashError(error instanceof Error ? error.message : "现金数据暂时不可用");
+      const message = error instanceof Error ? error.message : "现金数据暂时不可用";
+      setCashError(message);
+      setCashSummaryRefreshError({ scopeKey: cashScopeKey, message });
       setCashSummary(null);
+      return false;
     } finally {
       if (requestId === cashRequestSequence.current) setCashLoading(false);
     }
-  }, [cashDataRequest, cashScopeKey]);
-  const saveCashBaseline = useCallback(async (draft: CashBaselineDraft): Promise<boolean> => {
+  }, [cashClient, cashDataRequest, cashScopeKey]);
+  const saveCashBaseline = useCallback(async (draft: CashBaselineMutation): Promise<CashBaselineState | CashBaselineStorageState> => {
     const requestId = ++cashWriteSequence.current;
     const scopeAtWrite = cashScopeKey;
     setCashSaving(true);
     setCashError(null);
     try {
-      const response = await fetch("/api/trading-room/cash/baselines", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(draft),
-      });
-      if (!response.ok) throw new Error(await readCashError(response, "现金基准保存失败"));
-      const nextState = await readCashBaselineResponse(response, "现金基准保存失败");
-      if (requestId !== cashWriteSequence.current || scopeAtWrite !== cashScopeKeyRef.current) return false;
+      const nextState = await cashClient.saveBaseline(draft);
+      if (requestId !== cashWriteSequence.current || scopeAtWrite !== cashScopeKeyRef.current) return nextState;
       setCashBaselineState(nextState);
-      setCashBaselineScopeKey(cashScopeKey);
+      setCashBaselineScopeKey(scopeAtWrite);
+      setCashSavedFact({ scopeKey: scopeAtWrite });
       // The baseline changes both the editor state and the calculated total;
       // re-read the summary through the same scope after the write succeeds.
-      await refreshCashData();
-      return true;
+      const refreshed = await refreshCashData();
+      if (!refreshed && requestId === cashWriteSequence.current && scopeAtWrite === cashScopeKeyRef.current) {
+        setCashError(`${CASH_SUMMARY_REFRESH_NOTICE}；请重试读取`);
+      }
+      return nextState;
     } catch (error) {
       if (requestId === cashWriteSequence.current && scopeAtWrite === cashScopeKeyRef.current) setCashError(error instanceof Error ? error.message : "现金基准保存失败");
-      return false;
+      throw error;
     } finally {
       if (requestId === cashWriteSequence.current) setCashSaving(false);
     }
-  }, [cashScopeKey, refreshCashData]);
+  }, [cashClient, cashScopeKey, refreshCashData]);
   const cashRequestSettledForScope = cashScopeReady &&
     cashScopeKeyRef.current === cashScopeKey &&
     cashResolvedRequestSequence.current === cashRequestSequence.current &&
     cashSummaryScopeKey === cashScopeKey;
-  const cashBaselineForScope = cashRequestSettledForScope && cashBaselineScopeKey === cashScopeKey
+  const cashSavedFactForScope = cashSavedFact?.scopeKey === cashScopeKey ? cashSavedFact : null;
+  const cashSummaryRefreshErrorForScope = cashSummaryRefreshError?.scopeKey === cashScopeKey ? cashSummaryRefreshError : null;
+  const cashBaselineForScope = cashBaselineScopeKey === cashScopeKey &&
+    (cashRequestSettledForScope || cashSavedFactForScope !== null)
     ? cashBaselineState
-    : { version: 1 as const, records: [] };
+    : emptyCashBaselineStorageState();
   const cashSummaryForScope = cashRequestSettledForScope ? cashSummary : null;
   const cashLoadingForScope = cashScopeReady && (cashLoading || !cashRequestSettledForScope);
   const cashErrorForScope = cashRequestSettledForScope ? cashError : null;
+  const cashBaselineDetailsForScope = useMemo(() => {
+    if (!cashRequestSettledForScope || cashBaselineScopeKey !== cashScopeKey) return [];
+    const summaryByKey = cashSummary?.byScope ?? {};
+    return cashBaselineState.records
+      .filter(record => record.scope.nature === cashNature && record.scope.simulationRunId === cashSimulationRunId)
+      .filter(record => sharedScope.accountIds.length === 0 || sharedScope.accountIds.includes(record.accountId))
+      .map(record => {
+        const coverage = summaryByKey[cashBaselineKey(record)]?.status ?? cashSummary?.cashTotalStatus ?? "unavailable";
+        return {
+          accountId: record.accountId,
+          accountLabel: sharedAccountOptions.find(account => account.id === record.accountId)?.label,
+          currency: record.currency,
+          balance: record.balance,
+          asOf: record.asOf ?? null,
+          source: record.source ?? "legacy",
+          revision: record.revision ?? 0,
+          coverage,
+        };
+      });
+  }, [cashBaselineScopeKey, cashBaselineState.records, cashNature, cashRequestSettledForScope, cashScopeKey, cashSimulationRunId, cashSummary, sharedAccountOptions, sharedScope.accountIds]);
   const qualityInput = useMemo(
     () => ({
       marketDataStatuses,
@@ -1901,9 +2197,9 @@ export function TradeReviewWorkspace({
     focusedExecutions: selectedEpisode?.executions,
     candles: activeSnapshot.candles,
     executions: selectedImportedInstrument && historyMode === "history"
-      ? selectedImportedInstrument.executions.filter(execution => selectedEpisode?.executions[0]
-        ? execution.accountId === selectedEpisode.accountId && execution.source.tradeNature === selectedEpisode.executions[0].source.tradeNature && execution.source.simulationRunId === selectedEpisode.executions[0].source.simulationRunId
-        : true)
+      ? selectedEpisode
+        ? filterExecutionHistoryForEpisode(selectedImportedInstrument.executions, selectedEpisode)
+        : selectedImportedInstrument.executions
       : activeSnapshot.executions,
     positionEvents: activePositionEvents,
     position: activeSnapshot.position,
@@ -1949,14 +2245,14 @@ export function TradeReviewWorkspace({
   // is reached without narrowing the outer Recall branch to `never`.
   const legacySelectedImportedInstrument = selectedImportedInstrument;
   const pendingReviewInstrumentIds = useMemo(() => tradeLibraryEntries.filter((entry) => entry.reviewedEpisodeCount < entry.episodeCount).map((entry) => entry.instrument.id), [tradeLibraryEntries]);
-  const tagSuggestions = useMemo(
-    () =>
-      buildTagSuggestions(
-        tradeLibraryEntries,
-        marketDataCandles,
-        suggestionDecisions,
-        suggestionGeneratedAt,
-      ),
+  const tagSuggestionsResult = useMemo(
+    () => buildCachedTagSuggestions(
+      tagSuggestionCacheRef.current,
+      tradeLibraryEntries,
+      marketDataCandles,
+      suggestionDecisions,
+      suggestionGeneratedAt,
+    ),
     [
       marketDataCandles,
       suggestionDecisions,
@@ -1964,6 +2260,10 @@ export function TradeReviewWorkspace({
       tradeLibraryEntries,
     ],
   );
+  useEffect(() => {
+    tagSuggestionCacheRef.current = tagSuggestionsResult.cache;
+  }, [tagSuggestionsResult.cache]);
+  const tagSuggestions = tagSuggestionsResult.suggestions;
   const [summaryFilters, setSummaryFilters] = useState(initialReviewSummaryFilters);
   const [summaryDrafts, setSummaryDrafts] = useState<ReviewSummaryDrafts>({});
   const [insightsTab, setInsightsTab] = useState<"summary" | "patterns">("summary");
@@ -2077,6 +2377,7 @@ export function TradeReviewWorkspace({
       ? availableEpisodes.find((episode) => episode.id === episodeId)
       : availableEpisodes[0];
     if (!newest) return false;
+    invalidatePendingImportedReplayRestore();
     setImportManagementOpen(false);
     setPlaying(false);
     replayRequestSequence.current += 1;
@@ -2104,6 +2405,7 @@ export function TradeReviewWorkspace({
 
   function selectInstrument(instrumentId: string) {
     setReviewQueueIds(undefined);
+    invalidatePendingImportedReplayRestore();
     if (instrumentId === "demo") {
       if (!showDemo) return;
       setImportManagementOpen(false);
@@ -2157,6 +2459,7 @@ export function TradeReviewWorkspace({
     setReviewQueueIds(undefined);
     const episode = episodes.find((item) => item.id === episodeId);
     if (!episode) return;
+    invalidatePendingImportedReplayRestore();
     setPlaying(false);
     setLocateRequest(undefined);
     setSelectedEpisodeId(episode.id);
@@ -2202,9 +2505,11 @@ export function TradeReviewWorkspace({
   useEffect(() => {
     let active = true;
     const requestId = ++replayRequestSequence.current;
+    const aliasController = new AbortController();
     const bootstrapWorkspace = async () => {
+      const reloadRequested = pendingMigrationReloads.current.length > 0;
       try {
-        setStorageState("loading");
+        if (!reloadRequested) setStorageState("loading");
         setStorageError(null);
         let bootstrap = await storageClient.getBootstrap();
         if (!bootstrap.migration) {
@@ -2222,7 +2527,43 @@ export function TradeReviewWorkspace({
         const productionExecutions = applyMonthlyHistoryEvidence(showDemo
           ? bootstrap.executions
           : bootstrap.executions.filter((execution) => execution.source.platform !== "demo"),
-          bootstrap.importHistory.flatMap(entry => entry.monthly ? [entry.monthly] : []));
+          selectMonthlyEvidenceHistory(bootstrap.importHistory));
+        const savedScope = readPersistedSharedScope();
+        const scopeGeneration = sharedScopeChangeGeneration.current;
+        let aliases: readonly import("../lib/storage/tradingview-account-migration-client").TradingViewAccountMigrationAlias[] = [];
+        let aliasFailure: Error | null = null;
+        if (showDemo) {
+          setAliasRecoveryState("ready");
+          setAliasRecoveryError(null);
+        } else {
+          setAliasRecoveryState("loading");
+          setAliasRecoveryError(null);
+          try {
+            aliases = await activeAliasLoader(aliasController.signal);
+          } catch (error) {
+            if (!active || isAbortError(error)) return;
+            aliasFailure = error instanceof Error ? error : new Error("账户范围恢复失败");
+            setAliasRecoveryState("error");
+            setAliasRecoveryError(aliasFailure.message);
+          }
+        }
+        if (!active || requestId !== replayRequestSequence.current) return;
+        const scopeBeforeAlias = scopeGeneration === sharedScopeChangeGeneration.current
+          ? (savedScope ?? DEFAULT_SHARED_SCOPE)
+          : sharedScopeRef.current;
+        if (aliasFailure) {
+          sharedScopeRef.current = scopeBeforeAlias;
+          setSharedScope(scopeBeforeAlias);
+          setSharedScopeRestored(false);
+        } else {
+          const resolvedScope = showDemo
+            ? scopeBeforeAlias
+            : resolveSharedScopeWithAliases(scopeBeforeAlias, aliases, productionExecutions);
+          sharedScopeRef.current = resolvedScope;
+          setSharedScope(resolvedScope);
+          setSharedScopeRestored(true);
+          setAliasRecoveryState("ready");
+        }
         const storedSummaries = buildInstrumentTradeSummaries(
           productionExecutions,
         );
@@ -2248,9 +2589,18 @@ export function TradeReviewWorkspace({
             (summary) => summary.instrument.id === job.instrumentId,
           ),
         );
-        const states = Object.fromEntries(
+        const sqliteStates = Object.fromEntries(
           bootstrap.reviewStates.filter((state) => showDemo || state.episodeId !== REVIEW_ID).map((state) => [state.episodeId, state]),
         );
+        let browserStates: ReturnType<typeof readAliasedReviewStates> = [];
+        if (!showDemo && !aliasFailure && typeof window !== "undefined") {
+          try {
+            browserStates = readAliasedReviewStates(window.localStorage, aliases);
+          } catch {
+            // SQLite review state remains authoritative when browser storage is unavailable.
+          }
+        }
+        const states = mergeAuthoritativeReviewStates(sqliteStates, browserStates);
         const reviews = Object.fromEntries(
           bootstrap.reviews.filter((record) => showDemo || record.episodeId !== REVIEW_ID).map((record) => [record.episodeId, record]),
         );
@@ -2333,20 +2683,35 @@ export function TradeReviewWorkspace({
           setRestoring(false);
           setHydrated(true);
           setStorageState("ready");
+          const pending = pendingMigrationReloads.current.splice(0);
+          for (const request of pending) {
+            if (aliasFailure) request.reject(aliasFailure);
+            else request.resolve();
+          }
         }
       } catch (error) {
         if (!active || requestId !== replayRequestSequence.current) return;
-        setRestoring(false);
-        setStorageState("error");
-        setStorageError(error instanceof Error ? error.message : "无法连接 SQLite 存储");
+        const pending = pendingMigrationReloads.current.splice(0);
+        if (pending.length > 0) {
+          const message = error instanceof Error ? error.message : "无法刷新迁移后的页面数据";
+          setAliasRecoveryState("error");
+          setAliasRecoveryError(message);
+          setStorageError(message);
+          for (const request of pending) request.reject(error);
+        } else {
+          setRestoring(false);
+          setStorageState("error");
+          setStorageError(error instanceof Error ? error.message : "无法连接 SQLite 存储");
+        }
       }
     };
     void bootstrapWorkspace();
     return () => {
       active = false;
+      aliasController.abort();
       replayRequestSequence.current += 1;
     };
-  }, [bootstrapAttempt, initialFrame.cursor, legacyStateExporter, showDemo, storageClient]);
+  }, [activeAliasLoader, aliasRecoveryAttempt, bootstrapAttempt, initialFrame.cursor, legacyStateExporter, showDemo, storageClient]);
 
   useEffect(() => {
     if (!hydrated || storedInstruments.length === 0) return;
@@ -2379,6 +2744,21 @@ export function TradeReviewWorkspace({
       )?.state;
       if (!selectedState) return;
       const stored = reviewStates[selectedEpisode.id];
+      const hasIntradayData = selectedState.intraday.length > 0 || selectedState.intradayCoverage.length > 0;
+      // The inventory read is deliberately daily-only. An empty intraday
+      // portion at this boundary means "not requested yet", not that a saved
+      // intraday replay period has become unavailable. Keep the saved state
+      // pending until the replay consumer's read reaches a terminal outcome.
+      if (!hasIntradayData && (!stored || isIntradayTimeframe(stored.timeframe))) {
+        queuePendingImportedReplayRestore({
+          instrumentId: selectedImportedInstrument.instrument.id,
+          episodeId: selectedEpisode.id,
+          episodeStartedAt: selectedEpisode.startedAt,
+          desiredTimeframe: stored?.timeframe,
+          desiredCursor: stored?.replayCursor,
+        });
+        return;
+      }
       const availability = resolveEpisodeTimeframeAvailability(
         selectedState,
         selectedEpisode,
@@ -2392,6 +2772,7 @@ export function TradeReviewWorkspace({
           : availability["1D"].enabled
             ? "1D"
             : nextTimeframe;
+      pendingImportedReplayRestore.current = undefined;
       setTimeframe(availableTimeframe);
       const source = sourceCandlesForTimeframe(selectedState, availableTimeframe);
       if (!stored) {
@@ -2409,14 +2790,76 @@ export function TradeReviewWorkspace({
   });
 
   const selectedHydrationInstrument = useEffectEvent(() => selectedImportedInstrument?.instrument.id);
+  const currentMarketState = useEffectEvent(
+    (instrumentId: string) => marketStates[instrumentId],
+  );
+  const queuePendingImportedReplayRestore = useEffectEvent((input: {
+    instrumentId: string;
+    episodeId: string;
+    episodeStartedAt: string;
+    desiredTimeframe?: Timeframe;
+    desiredCursor?: string;
+  }) => {
+    pendingImportedReplayRestore.current = {
+      ...input,
+      generation: importedReplaySelectionGeneration.current,
+      interactionGeneration: importedReplayInteractionGeneration.current,
+      baselineTimeframe: timeframe,
+      baselineCursor: importedCursor,
+    };
+  });
+  const restorePendingImportedReplay = useEffectEvent((state: InstrumentMarketState) => {
+    const pending = pendingImportedReplayRestore.current;
+    if (!pending) return;
+    if (
+      pending.generation !== importedReplaySelectionGeneration.current ||
+      pending.interactionGeneration !== importedReplayInteractionGeneration.current ||
+      selectedRawImportedInstrument?.instrument.id !== pending.instrumentId ||
+      selectedEpisode?.id !== pending.episodeId ||
+      timeframe !== pending.baselineTimeframe ||
+      importedCursor !== pending.baselineCursor
+    ) {
+      pendingImportedReplayRestore.current = undefined;
+      return;
+    }
+    const availability = resolveEpisodeTimeframeAvailability(state, selectedEpisode);
+    const preferredTimeframe =
+      state.intradayInterval === "1h" && availability["1h"].enabled
+        ? "1h"
+        : availability["15m"].enabled
+          ? "15m"
+          : availability["1h"].enabled
+            ? "1h"
+            : availability["1D"].enabled
+              ? "1D"
+              : pending.desiredTimeframe ?? "1D";
+    const nextTimeframe = pending.desiredTimeframe && availability[pending.desiredTimeframe].enabled
+      ? pending.desiredTimeframe
+      : preferredTimeframe;
+    const source = sourceCandlesForTimeframe(state, nextTimeframe);
+    const nextCursor = pending.desiredCursor && source.length > 0 &&
+      replayHistoryStartsAfter(source, pending.desiredCursor, pending.episodeStartedAt)
+      ? replayCursorForEpisode(source, pending.episodeStartedAt)
+      : pending.desiredCursor ?? replayCursorForEpisode(source, pending.episodeStartedAt);
+    pendingImportedReplayRestore.current = undefined;
+    setTimeframe(nextTimeframe);
+    setImportedCursor(nextCursor);
+  });
+
+  function invalidatePendingImportedReplayRestore() {
+    importedReplayInteractionGeneration.current += 1;
+    pendingImportedReplayRestore.current = undefined;
+  }
 
   useEffect(() => {
     if (!hydrated) return;
     if (rawImportedInstruments.length === 0) {
       marketHydrationKeys.current.clear();
+      marketIntradayKeys.current.clear();
       return;
     }
     let active = true;
+    const controller = new AbortController();
     const repository = marketDataRepository;
     const currentHydrationKeys = new Map(
       rawImportedInstruments.map((summary) => [
@@ -2442,22 +2885,44 @@ export function TradeReviewWorkspace({
         return [id, key] as const;
       }),
     );
+    const priorityInstrumentId = selectedHydrationInstrument();
+    const selectedSummary = summariesToHydrate.find(summary => summary.instrument.id === priorityInstrumentId);
     const hydrateMarketState = async (summary: InstrumentTradeSummary) => {
       const id = summary.instrument.id;
       const key = ownedKeys.get(id);
       let state: InstrumentMarketState;
       try {
         state = applyPersistedMarketDataJob(
-          await readInstrumentMarketState(summary, repository),
+          await readInstrumentMarketState(summary, repository, {
+            signal: controller.signal,
+            scheduler: marketReadScheduler,
+          }),
           marketDataJobsRef.current[summary.instrument.id],
         );
-      } catch {
-        state = {
-          ...emptyMarketState("storage-error"),
-          intradayStatus: "storage-error" as const,
-          dailyMessage: "无法读取本地日线缓存",
-          intradayMessage: "无法读取本地 1 小时缓存",
-        };
+      } catch (error) {
+        if (!active || isAbortError(error)) {
+          return;
+        }
+        const failure = marketReadFailure(
+          error,
+          "storage-error",
+          "无法读取本地日线缓存",
+        );
+        const previous = currentMarketState(id);
+        state = previous
+          ? {
+              ...previous,
+              dailyStatus: "storage-error",
+              dailyMessage: previous.daily.length > 0
+                ? `${failure.message}，已保留原有行情`
+                : failure.message,
+              dailyError: failure,
+            }
+          : {
+              ...emptyMarketState("storage-error"),
+              dailyMessage: failure.message,
+              dailyError: failure,
+            };
       }
       if (
         !active ||
@@ -2478,15 +2943,24 @@ export function TradeReviewWorkspace({
       restoreHydratedEpisode([{ instrumentId: id, state }]);
       setHydratedMarketIds(current => new Set([...current, id]));
     };
-    const priorityInstrumentId = selectedHydrationInstrument();
-    const selectedSummary = summariesToHydrate.find(summary => summary.instrument.id === priorityInstrumentId);
-    const backgroundSummaries = summariesToHydrate.filter(summary => summary !== selectedSummary);
-    void (async () => {
-      if (selectedSummary) await hydrateMarketState(selectedSummary);
-      if (active) await Promise.all(backgroundSummaries.map(hydrateMarketState));
-    })();
+    const currentHoldingSummaries = summariesToHydrate.filter(summary =>
+      currentHoldingInstrumentIds.has(summary.instrument.id),
+    );
+    const historicalSummaries = summariesToHydrate.filter(summary =>
+      !currentHoldingInstrumentIds.has(summary.instrument.id),
+    );
+    const selectedHolding = currentHoldingSummaries.find(summary => summary === selectedSummary);
+    const selectedHistorical = historicalSummaries.find(summary => summary === selectedSummary);
+    const orderedSummaries = [
+      ...(selectedHolding ? [selectedHolding] : []),
+      ...currentHoldingSummaries.filter(summary => summary !== selectedHolding),
+      ...(selectedHistorical ? [selectedHistorical] : []),
+      ...historicalSummaries.filter(summary => summary !== selectedHistorical),
+    ];
+    void Promise.all(orderedSummaries.map(hydrateMarketState));
     return () => {
       active = false;
+      controller.abort();
       for (const [id, key] of ownedKeys) {
         const current = marketHydrationInFlight.current.get(id);
         if (current?.runId === runId && current.key === key) {
@@ -2496,8 +2970,148 @@ export function TradeReviewWorkspace({
     };
   }, [
     hydrated,
+    currentHoldingInstrumentIds,
     rawImportedInstrumentHydrationKey,
     marketDataRepository,
+    marketReadScheduler,
+  ]);
+
+  // Intraday data belongs to the replay consumer. The dashboard and library
+  // can render from daily candles alone; opening an imported replay starts one
+  // bounded, deduplicated intraday read for the selected instrument.
+  useEffect(() => {
+    if (
+      !hydrated ||
+      activeView !== "review" ||
+      !selectedRawImportedInstrument ||
+      !hydratedMarketIds.has(selectedRawImportedInstrument.instrument.id)
+    ) {
+      return;
+    }
+    const summary = selectedRawImportedInstrument;
+    const instrumentId = summary.instrument.id;
+    const key = `${instrumentId}:${summary.tradeCount}:${summary.firstTradeAt}:${summary.lastTradeAt}`;
+    if (
+      marketIntradayKeys.current.get(instrumentId) === key ||
+      marketIntradayInFlight.current.get(instrumentId)?.key === key
+    ) {
+      return;
+    }
+    const runId = ++marketIntradayRunSequence.current;
+    const controller = new AbortController();
+    marketIntradayInFlight.current.set(instrumentId, { key, runId });
+    let active = true;
+    void readInstrumentMarketState(summary, marketDataRepository, {
+      includeDaily: false,
+      includeIntraday: true,
+      signal: controller.signal,
+      scheduler: marketReadScheduler,
+      priority: "interactive",
+    })
+      .then((intradayState) => {
+        if (
+          !active ||
+          marketIntradayInFlight.current.get(instrumentId)?.runId !== runId
+        ) {
+          return;
+        }
+        marketIntradayKeys.current.set(instrumentId, key);
+        const previous = currentMarketState(instrumentId) ?? emptyMarketState();
+        const hasIntradayData =
+          intradayState.intraday.length > 0 ||
+          intradayState.intradayCoverage.length > 0;
+        const mergedState: InstrumentMarketState = {
+          ...previous,
+          intraday: hasIntradayData ? intradayState.intraday : previous.intraday,
+          intradayInterval: hasIntradayData
+            ? intradayState.intradayInterval
+            : previous.intradayInterval,
+          // An empty optional read must not erase a persisted provider
+          // failure or a previously usable cache.
+          intradayStatus: hasIntradayData || previous.intradayStatus === "not-requested"
+            ? intradayState.intradayStatus
+            : previous.intradayStatus,
+          intradayCoverage: hasIntradayData
+            ? intradayState.intradayCoverage
+            : previous.intradayCoverage,
+          intradayMessage: hasIntradayData
+            ? intradayState.intradayMessage
+            : previous.intradayMessage,
+          intradayError: hasIntradayData
+            ? intradayState.intradayError
+            : previous.intradayError,
+        };
+        setMarketStates((current) => ({
+          ...current,
+          [instrumentId]: {
+            ...(current[instrumentId] ?? previous),
+            ...mergedState,
+          },
+        }));
+        restorePendingImportedReplay(mergedState);
+        setMarketIntradayReadyKeys(current => ({ ...current, [instrumentId]: key }));
+      })
+      .catch((error: unknown) => {
+        if (
+          !active ||
+          isAbortError(error) ||
+          marketIntradayInFlight.current.get(instrumentId)?.runId !== runId
+        ) {
+          return;
+        }
+        marketIntradayKeys.current.set(instrumentId, key);
+        const failure = marketReadFailure(
+          error,
+          "storage-error",
+          "无法读取本地 1 小时缓存",
+        );
+        setMarketStates((current) => {
+          const previous = current[instrumentId] ?? emptyMarketState();
+          const retained = previous.intraday.length > 0 || previous.intradayCoverage.length > 0;
+          return {
+            ...current,
+            [instrumentId]: {
+              ...previous,
+              intradayStatus: "storage-error",
+              intradayMessage: retained
+                ? `${failure.message}，已保留原有行情`
+                : failure.message,
+              intradayError: failure,
+            },
+          };
+        });
+        const previous = currentMarketState(instrumentId) ?? emptyMarketState();
+        const retained = previous.intraday.length > 0 || previous.intradayCoverage.length > 0;
+        restorePendingImportedReplay({
+          ...previous,
+          intradayStatus: "storage-error",
+          intradayMessage: retained
+            ? `${failure.message}，已保留原有行情`
+            : failure.message,
+          intradayError: failure,
+        });
+        setMarketIntradayReadyKeys(current => ({ ...current, [instrumentId]: key }));
+      })
+      .finally(() => {
+        if (marketIntradayInFlight.current.get(instrumentId)?.runId === runId) {
+          marketIntradayInFlight.current.delete(instrumentId);
+        }
+      });
+    return () => {
+      active = false;
+      controller.abort();
+      const current = marketIntradayInFlight.current.get(instrumentId);
+      if (current?.runId === runId && current.key === key) {
+        marketIntradayInFlight.current.delete(instrumentId);
+      }
+    };
+  }, [
+    activeView,
+    hydrated,
+    hydratedMarketIds,
+    marketDataRepository,
+    marketReadScheduler,
+    selectedRawImportedInstrument,
   ]);
 
   function setDrawingSaveError(episodeId: string, message: string) {
@@ -2747,9 +3361,11 @@ export function TradeReviewWorkspace({
   }
 
   function cancelMarketDataUpdate() {
-    const run = activeMarketRefreshRuns.current.get("all");
+    const run = [...activeMarketRefreshRuns.current.values()].find(
+      (candidate) => candidate.batch,
+    );
     if (!run) return;
-    refreshCancellation.current.cancel("all");
+    refreshCancellation.current.cancel(run.key);
     for (const instrumentId of run.snapshotIds) {
       marketDataAbortControllers.current[instrumentId]?.abort();
     }
@@ -2790,6 +3406,8 @@ export function TradeReviewWorkspace({
       ),
     ];
     if (uniqueInstrumentIds.length === 0) return;
+    const includeIntraday = options.includeIntraday !== false;
+    const mode = includeIntraday ? "full" : "daily";
     // The full inventory is the baseline for "new imports" even when this
     // run is a retry subset. A retry should not report every untouched stock
     // as newly imported merely because it was outside its target set.
@@ -2797,9 +3415,11 @@ export function TradeReviewWorkspace({
       snapshotSummaries.map((summary) => summary.instrument.id),
     );
     const key = options.batch
-      ? "all"
-      : `instrument:${[...uniqueInstrumentIds].sort().join(",")}`;
-    const globalRun = activeMarketRefreshRuns.current.get("all");
+      ? includeIntraday ? "all" : "all:daily"
+      : `instrument:${mode}:${[...uniqueInstrumentIds].sort().join(",")}`;
+    const globalRun = [...activeMarketRefreshRuns.current.values()].find(
+      (run) => run.batch && run.includeIntraday === includeIntraday,
+    );
     if (
       globalRun &&
       !options.batch &&
@@ -2824,6 +3444,7 @@ export function TradeReviewWorkspace({
       promise: completion,
       snapshotIds,
       batch: Boolean(options.batch),
+      includeIntraday,
     });
     try {
     const executions = snapshotExecutions;
@@ -3012,14 +3633,52 @@ export function TradeReviewWorkspace({
         const repository = marketDataRepository;
         let cached = marketStates[instrumentId] ?? emptyMarketState();
         try {
-          cached = await readInstrumentMarketState(summary, repository);
-        } catch {
+          const includeIntraday = options.includeIntraday !== false;
+          cached = await readInstrumentMarketState(summary, repository, {
+            includeIntraday,
+            signal: requestSignal,
+            scheduler: marketReadScheduler,
+            priority: options.priority,
+          });
+          if (!includeIntraday) {
+            const retained = marketStates[instrumentId] ?? emptyMarketState();
+            cached = {
+              ...retained,
+              daily: cached.daily,
+              dailyStatus: cached.dailyStatus,
+              dailyCoverage: cached.dailyCoverage,
+              dailyMessage: cached.dailyMessage,
+              dailyError: cached.dailyError,
+            };
+          }
+        } catch (error) {
+          if (
+            cancellation.signal.aborted ||
+            marketDataRequestSequences.current[instrumentId] !== requestSequence ||
+            isAbortError(error)
+          ) {
+            throw error;
+          }
+          const retained = marketStates[instrumentId] ?? emptyMarketState();
+          const failure = marketReadFailure(
+            error,
+            "storage-error",
+            "无法读取本地行情缓存",
+          );
           cached = {
-            ...cached,
+            ...retained,
             dailyStatus: "storage-error",
-            intradayStatus: "storage-error",
-            dailyMessage: "无法读取本地日线缓存",
-            intradayMessage: "无法读取本地 1 小时缓存",
+            dailyMessage: retained.daily.length > 0
+              ? `${failure.message}，已保留原有行情`
+              : failure.message,
+            dailyError: failure,
+            ...(options.includeIntraday === false ? {} : {
+              intradayStatus: "storage-error" as const,
+              intradayMessage: retained.intraday.length > 0
+                ? `${failure.message}，已保留原有行情`
+                : failure.message,
+              intradayError: failure,
+            }),
           };
         }
         if (
@@ -3032,16 +3691,19 @@ export function TradeReviewWorkspace({
           }
           throw new DOMException("行情更新已被较新的请求取代", "AbortError");
         }
+        const includeIntraday = options.includeIntraday !== false;
         setMarketStates((current) => ({
           ...current,
           [instrumentId]: {
             ...cached,
             dailyStatus: "syncing",
-            intradayStatus: "syncing",
             dailyMessage: undefined,
-            intradayMessage: undefined,
             dailyError: undefined,
-            intradayError: undefined,
+            ...(includeIntraday ? {
+              intradayStatus: "syncing" as const,
+              intradayMessage: undefined,
+              intradayError: undefined,
+            } : {}),
           },
         }));
 
@@ -3072,7 +3734,14 @@ export function TradeReviewWorkspace({
             status: "syncing",
             intervals: [
               { interval: "1D", status: "syncing" },
-              { interval: "1h", status: "syncing" },
+              ...(includeIntraday
+                ? [{ interval: "1h" as const, status: "syncing" as const }]
+                : [{
+                    interval: "1h" as const,
+                    status: cached.intradayStatus,
+                    ...(cached.intradayMessage ? { message: cached.intradayMessage } : {}),
+                    ...(cached.intradayError ? { error: cached.intradayError } : {}),
+                  }]),
             ],
           });
         } catch {
@@ -3182,17 +3851,19 @@ export function TradeReviewWorkspace({
           next = {
             ...next,
             dailyStatus: "source-unavailable",
-            intradayStatus: "source-unavailable",
             dailyMessage: `暂不支持 ${instrument.market} 市场日线行情`,
-            intradayMessage: `暂不支持 ${instrument.market} 市场 1 小时行情`,
             dailyError: {
               code: "source-unavailable",
               message: `暂不支持 ${instrument.market} 市场日线行情`,
             },
-            intradayError: {
-              code: "source-unavailable",
-              message: `暂不支持 ${instrument.market} 市场 1 小时行情`,
-            },
+            ...(includeIntraday ? {
+              intradayStatus: "source-unavailable" as const,
+              intradayMessage: `暂不支持 ${instrument.market} 市场 1 小时行情`,
+              intradayError: {
+                code: "source-unavailable",
+                message: `暂不支持 ${instrument.market} 市场 1 小时行情`,
+              },
+            } : {}),
           };
         } else {
           const refreshed = await refreshMarketData({
@@ -3207,6 +3878,7 @@ export function TradeReviewWorkspace({
             signal: requestSignal,
             retryUnavailable: true,
             forceRefresh: Boolean(options.refreshMetadata || options.batch),
+            includeIntraday,
             previous: {
               daily: next.daily,
               dailyCoverage: next.dailyCoverage,
@@ -3236,18 +3908,20 @@ export function TradeReviewWorkspace({
                   : refreshed.daily.source === "cache"
                     ? "日线已使用本地缓存"
                     : `日线已补齐 ${refreshed.daily.requestedRanges.length} 个缺口`;
-          next.intradayInterval = refreshed.hourly.interval;
-          next.intraday = refreshed.hourly.candles;
-          next.intradayCoverage = refreshed.hourly.coverage;
-          next.intradayStatus = refreshed.hourly.status;
-          next.intradayError = refreshed.hourly.error ?? refreshed.hourly.refreshError;
-          next.intradayMessage = refreshed.hourly.error
-            ? `1 小时：${refreshed.hourly.error.message}`
-            : refreshed.hourly.refreshError
-              ? `1 小时：${refreshed.hourly.refreshError.message}`
-              : refreshed.hourly.source === "cache"
-              ? "1 小时行情已使用本地缓存"
-              : `1 小时行情已请求 ${refreshed.hourly.requestedRanges.length} 个区间`;
+          if (includeIntraday) {
+            next.intradayInterval = refreshed.hourly.interval;
+            next.intraday = refreshed.hourly.candles;
+            next.intradayCoverage = refreshed.hourly.coverage;
+            next.intradayStatus = refreshed.hourly.status;
+            next.intradayError = refreshed.hourly.error ?? refreshed.hourly.refreshError;
+            next.intradayMessage = refreshed.hourly.error
+              ? `1 小时：${refreshed.hourly.error.message}`
+              : refreshed.hourly.refreshError
+                ? `1 小时：${refreshed.hourly.refreshError.message}`
+                : refreshed.hourly.source === "cache"
+                ? "1 小时行情已使用本地缓存"
+                : `1 小时行情已请求 ${refreshed.hourly.requestedRanges.length} 个区间`;
+          }
         }
         await metadataRefresh;
         if (cancellation.signal.aborted) {
@@ -3665,20 +4339,63 @@ export function TradeReviewWorkspace({
         !enriched.monthly ||
         !belongsToMonthlyDocument(execution, enriched.monthly),
     );
-    const merged = mergeExecutions(current, enriched.importable);
+    const tradingViewMerge = enriched.broker === "tradingview"
+      ? mergeTradingViewReimports(current, enriched.importable)
+      : undefined;
+    const merged = tradingViewMerge?.merged ?? (
+      tradingViewMerge
+        ? current
+        : mergeExecutions(current, enriched.importable)
+    );
     const retainedIncomingCount = Math.max(
       0,
       merged.length - current.length,
     );
-    const libraryDuplicateCount = Math.max(
-      0,
-      enriched.importable.length - retainedIncomingCount,
-    );
+    const libraryDuplicateCount = tradingViewMerge
+      ? tradingViewMerge.reconciliation.duplicates.length
+      : Math.max(
+          0,
+          enriched.importable.length - retainedIncomingCount,
+        );
+    const tradingViewConflicts = tradingViewMerge?.reconciliation.conflicts ?? [];
     return {
       ...basePreview,
       ...(incompleteReplacement ? { blocked: true, blockingReason: "同一月结单仍有证券分类未完成，暂不替换已存成交。请重试分类或取消；旧记录保持不变。" } : {}),
+      ...(tradingViewConflicts.length > 0
+        ? {
+            blocked: true,
+            blockingReason: "同一 TradingView 来源的已有成交与本次导入财务字段不一致，已阻止导入；请核对原文件。",
+            conflictTradeCount: tradingViewConflicts.reduce(
+              (total, conflict) => total + conflict.incoming.length,
+              0,
+            ),
+          }
+        : {}),
       duplicateTradeCount:
         basePreview.duplicateTradeCount + libraryDuplicateCount,
+    };
+  }
+
+  function previewForScopedSupplement(
+    preview: ImportPreview,
+    before: TradeExecution[],
+    scope: SupplementScope,
+    parserDuplicateTradeCount: number,
+  ): ImportPreview {
+    const monthlyDocumentId = preview.monthly?.documentId;
+    const monthlyHistory = monthlyDocumentId && preview.monthly
+      ? selectMonthlyEvidenceHistory([
+          ...importHistory.filter((entry) => entry.monthly?.documentId === monthlyDocumentId),
+          { id: preview.id, importedAt: new Date().toISOString(), monthly: preview.monthly },
+        ])
+      : [];
+    const mergedExecutions = mergeExecutions(before, preview.records);
+    const after = applyScopedMonthlyEvidence(mergedExecutions, monthlyHistory, scope);
+    const changeSummary = supplementChangeSummary(before, preview.records, after, scope);
+    return {
+      ...preview,
+      duplicateTradeCount: parserDuplicateTradeCount + changeSummary.unchangedTradeCount,
+      supplementChangeSummary: changeSummary,
     };
   }
 
@@ -3803,6 +4520,8 @@ export function TradeReviewWorkspace({
       start: () => startMarketDataUpdate(ids, {
         refreshMetadata: true,
         batch: false,
+        includeIntraday: dimension !== "holdings",
+        priority: "interactive",
       }),
       jobFor: id => marketDataJobsRef.current[id],
     });
@@ -4012,17 +4731,33 @@ export function TradeReviewWorkspace({
           : current.filter((e) => !belongsToMonthlyDocument(e, parsed.monthly!)),
       );
       setPendingEnrichedImport(reimport.enriched);
-      setPendingImport(
-        previewForImport(file.name, reimport.enriched, undefined, {
+      const preview = previewForImport(file.name, reimport.enriched, undefined, {
           allowIncompleteMonthlyReimport: reimport.idempotent,
-        }),
-      );
+      });
+      const scope = supplementScopeRef.current;
+      setPendingImport(scope
+        ? previewForScopedSupplement(
+            preview,
+            current,
+            scope,
+            reimport.enriched.diagnostics.filter((diagnostic) => diagnostic.code.toLowerCase().includes("duplicate")).length,
+          )
+        : preview);
       setImportPhase("ready");
       return;
     }
     setPendingImportMergeBase(null);
     setPendingEnrichedImport(rawEnriched);
-    setPendingImport(previewForImport(file.name, rawEnriched));
+    const preview = previewForImport(file.name, rawEnriched);
+    const scope = supplementScopeRef.current;
+    setPendingImport(scope
+      ? previewForScopedSupplement(
+          preview,
+          currentExecutionSnapshot(),
+          scope,
+          rawEnriched.diagnostics.filter((diagnostic) => diagnostic.code.toLowerCase().includes("duplicate")).length,
+        )
+      : preview);
     setImportPhase("ready");
   }
 
@@ -4064,20 +4799,23 @@ export function TradeReviewWorkspace({
     try {
       await Promise.resolve();
       setImportPhase("parsing");
-      const parsed = tradingViewContext
+      const parsedResult = tradingViewContext
         ? await parseBrokerStatement(file, { ...timeOptions, tradingViewContext })
         : Object.keys(timeOptions).length > 0
           ? await parseBrokerStatement(file, timeOptions)
           : await parseBrokerStatement(file);
       const scope = supplementScopeRef.current;
-      if (scope) {
-        const filtered = scopedRecords(parsed.records, scope);
-        setSupplementExcluded(parsed.records.length - filtered.length);
-        parsed.records = filtered;
-        parsed.candidates = parsed.candidates.filter(candidate => canonicalInstrumentId(candidate.symbol, candidate.market) === scope.instrumentId);
+      const parsed = scope && parsedResult.broker !== "unknown"
+        ? scopeStatementParseResult(parsedResult, scope)
+        : parsedResult;
+      if (scope && parsed.broker !== "unknown") {
+        setSupplementExcluded(parsedResult.records.length - parsed.records.length);
         setPendingImportOriginalExecutions(currentExecutionSnapshot());
-        if (!filtered.length) throw new Error("文件中没有当前股票和账户的成交，范围外记录已排除。");
-        if (reconcileExecutions(currentExecutionSnapshot(), filtered).conflicts.length) throw new Error("当前账户存在冲突成交，请先在数据检查中核对修订，再补充导入。未覆盖原记录。");
+        // A monthly statement can add evidence to an existing target fill even
+        // when this parse contributes no new execution. Keep that path open;
+        // only a file with neither target fills nor monthly evidence is empty.
+        if (!parsed.records.length && !parsed.monthly) throw new Error("文件中没有当前股票和账户的成交，范围外记录已排除。");
+        if (parsed.records.length && reconcileExecutions(currentExecutionSnapshot(), parsed.records).conflicts.length) throw new Error("当前账户存在冲突成交，请先在数据检查中核对修订，再补充导入。未覆盖原记录。");
       }
       if (requestId !== importRequestSequence.current) return;
       if (parsed.broker !== "unknown" && parsed.monthly) {
@@ -4121,7 +4859,7 @@ export function TradeReviewWorkspace({
       setImportError(
         error instanceof Error
           ? error.message
-          : "暂时无法识别这个文件。请确认它来自富途、Tiger 或 A股招商银行格式。",
+          : "暂时无法识别这个文件。请确认它来自富途、Tiger 或 A股招商证券格式。",
       );
       setImportPhase("idle");
     } finally {
@@ -4187,8 +4925,19 @@ export function TradeReviewWorkspace({
             }
           : undefined,
       );
+      const scope = supplementScopeRef.current;
+      const scopedPreview = scope && pendingImportOriginalExecutions
+        ? previewForScopedSupplement(
+            preview,
+            pendingImportOriginalExecutions,
+            scope,
+            pendingImport.sourceKind === "screenshot"
+              ? screenshotDuplicateTradeCount
+              : enriched.diagnostics.filter((diagnostic) => diagnostic.code.toLowerCase().includes("duplicate")).length,
+          )
+        : preview;
       setPendingEnrichedImport(enriched);
-      setPendingImport(preview);
+      setPendingImport(scopedPreview);
     } catch (error) {
       if (requestId !== importRequestSequence.current) return;
       setImportError(
@@ -4213,10 +4962,61 @@ export function TradeReviewWorkspace({
       supplementSaving.current = true; setSavingSupplement(true);
       try {
         const before = pendingImportOriginalExecutions ?? currentExecutionSnapshot();
-        const changes = supplementChanges(before, mergeExecutions(pendingImportMergeBase ?? before, pendingImport.records), scope);
+        const mergedExecutions = mergeExecutions(before, pendingImport.records);
+        const pendingMonthly = pendingImport.monthly;
+        const monthlyDocumentId = pendingMonthly?.documentId;
+        const monthlyHistory = monthlyDocumentId && pendingMonthly
+          ? selectMonthlyEvidenceHistory([
+              ...importHistory.filter((entry) => entry.monthly?.documentId === monthlyDocumentId),
+              { id: pendingImport.id, importedAt: new Date().toISOString(), monthly: pendingMonthly },
+            ])
+          : [];
+        const evidenceEnrichedExecutions = applyScopedMonthlyEvidence(
+          mergedExecutions,
+          monthlyHistory,
+          scope,
+        );
+        const changes = supplementChanges(before, evidenceEnrichedExecutions, scope);
+        const hasStoredMonthlyHistory = monthlyDocumentId
+          ? importHistory.some((entry) => entry.monthly?.documentId === monthlyDocumentId)
+          : false;
+        if (changes.length === 0 && pendingImport.monthly && !hasStoredMonthlyHistory) {
+          throw new Error("本次月结单没有产生可审计的目标证据变更，未标记为已保存。");
+        }
         if (changes.length) {
           const batchId = `supplement:${crypto.randomUUID()}`;
-          const request = supplementRequestRef.current ?? { id: batchId, instrumentId: scope.instrumentId, accountId: scope.accountId, reason: `补充导入：${pendingImport.fileName}`, changes: changes.map(change => ({ ...change, after: change.after ? { ...change.after, source: { ...change.after.source, batchId: change.after.source.batchId ?? batchId } } : null })), importHistory: { id: batchId, fileName: pendingImport.fileName, sourceLabel: pendingImport.sourceLabel, importedAt: new Date().toISOString(), tradeCount: changes.filter(change=>change.after).length, instrumentCount: 1, excludedInstrumentCount: pendingImport.excludedInstrumentCount, excludedRecordCount: supplementExcluded, duplicateTradeCount: pendingImport.duplicateTradeCount, unresolvedInstrumentCount: pendingImport.unresolvedInstrumentCount }, expectedScope: before.filter(e => e.instrument.id === scope.instrumentId && e.accountId === scope.accountId) };
+          const request = supplementRequestRef.current ?? {
+            id: batchId,
+            instrumentId: scope.instrumentId,
+            accountId: scope.accountId,
+            reason: `补充导入：${pendingImport.fileName}`,
+            changes: changes.map(change => ({
+              ...change,
+              after: change.after
+                ? {
+                    ...change.after,
+                    source: {
+                      ...change.after.source,
+                      batchId: change.after.source.batchId ?? batchId,
+                    },
+                  }
+                : null,
+            })),
+            importHistory: {
+              ...(pendingImport.monthly ? { monthly: pendingImport.monthly } : {}),
+              id: batchId,
+              fileName: pendingImport.fileName,
+              sourceLabel: pendingImport.sourceLabel,
+              importedAt: new Date().toISOString(),
+              tradeCount: changes.filter(change => change.before === null && change.after !== null).length,
+              instrumentCount: 1,
+              excludedInstrumentCount: pendingImport.excludedInstrumentCount,
+              excludedRecordCount: supplementExcluded,
+              duplicateTradeCount: pendingImport.duplicateTradeCount,
+              unresolvedInstrumentCount: pendingImport.unresolvedInstrumentCount,
+            },
+            expectedScope: before.filter(e => e.instrument.id === scope.instrumentId && e.accountId === scope.accountId),
+          };
           supplementRequestRef.current = request;
           const result = await tradeRepairClient.revise(request);
           applyCorrectedExecutions(result.executions);
@@ -4252,10 +5052,36 @@ export function TradeReviewWorkspace({
     const reconciliation = pendingImport.monthly ? reconcileExecutions(mergeBase, recordsForStorage) : null;
     if (reconciliation?.conflicts.some(c => !monthlyConflictDecisions.has(c.id))) return;
     const resolvedMonthly = reconciliation ? applyReconciliationDecisions(mergeBase, reconciliation, monthlyConflictDecisions) : null;
-    const mergedExecutions = applyMonthlyHistoryEvidence(mergeExecutions(
-      resolvedMonthly?.currentAfterReplacements ?? mergeBase,
-      resolvedMonthly?.incomingToMerge ?? recordsForStorage,
-    ), [
+    const tradingViewMerge = pendingImport.sourceKind === "tradingview"
+      ? mergeTradingViewReimports(mergeBase, recordsForStorage)
+      : undefined;
+    if (tradingViewMerge?.reconciliation.conflicts.length) {
+      setImportError("同一 TradingView 来源的已有成交与本次导入财务字段不一致，已阻止导入；请核对原文件。");
+      return;
+    }
+    const tradingViewNoOp = Boolean(
+      tradingViewMerge &&
+      recordsForStorage.length > 0 &&
+      tradingViewMerge.reconciliation.acceptedIncoming.length === 0 &&
+      tradingViewMerge.reconciliation.automaticReplacementIds.length === 0 &&
+      tradingViewMerge.reconciliation.duplicates.length >= recordsForStorage.length,
+    );
+    if (tradingViewNoOp) {
+      setNavigationNotice("本次 TradingView 文件中的成交均已存在，未新增记录。");
+      setPendingImport(null);
+      setPendingParsedImport(null);
+      setPendingEnrichedImport(null);
+      setPendingImportOriginalExecutions(null);
+      setPendingImportMergeBase(null);
+      setPendingScreenshotDecisions(null);
+      setImportPhase("idle");
+      return;
+    }
+    const mergedExecutions = applyMonthlyHistoryEvidence(
+      tradingViewMerge?.merged ?? mergeExecutions(
+        resolvedMonthly?.currentAfterReplacements ?? mergeBase,
+        resolvedMonthly?.incomingToMerge ?? recordsForStorage,
+      ), [
       ...importHistory.filter(entry => entry.monthly?.documentId !== pendingImport.monthly?.documentId)
         .flatMap(entry => entry.monthly ? [entry.monthly] : []),
       ...(pendingImport.monthly ? [pendingImport.monthly] : []),
@@ -4571,6 +5397,7 @@ export function TradeReviewWorkspace({
     ) {
       return;
     }
+    invalidatePendingImportedReplayRestore();
     setTimeframe(next);
     setSelectedDrawingId(null);
   }
@@ -4588,7 +5415,10 @@ export function TradeReviewWorkspace({
             )!,
           )
         : undefined;
-    if (previous) setImportedCursor(previous);
+    if (previous) {
+      invalidatePendingImportedReplayRestore();
+      setImportedCursor(previous);
+    }
   }
 
   function nextImported() {
@@ -4604,7 +5434,10 @@ export function TradeReviewWorkspace({
             )!,
           )
         : undefined;
-    if (next) setImportedCursor(next);
+    if (next) {
+      invalidatePendingImportedReplayRestore();
+      setImportedCursor(next);
+    }
   }
 
   function nextImportedExecution() {
@@ -4615,7 +5448,10 @@ export function TradeReviewWorkspace({
         : selectedEpisode?.executions.find(
             (execution) => execution.executedAt > activeCursor,
           )?.executedAt;
-    if (next) setImportedCursor(next);
+    if (next) {
+      invalidatePendingImportedReplayRestore();
+      setImportedCursor(next);
+    }
   }
 
   async function saveEpisodeReview(record: EpisodeReviewRecord) {
@@ -4749,6 +5585,7 @@ export function TradeReviewWorkspace({
       onUpdateMarketData={(instrumentId) =>
         void startMarketDataUpdate([instrumentId], {
           refreshMetadata: true,
+          priority: "interactive",
         })
       }
       onUpdateAllMarketData={() =>
@@ -4782,16 +5619,30 @@ export function TradeReviewWorkspace({
       ? `已更新 · ${fxSnapshot.asOf.slice(0, 10)}`
       : fxSnapshot.status === "partial" ? "部分可用" : "待补齐";
   const cashSlot = showDemo ? undefined : cashScopeReady && cashNature ? (
-    <CashBaselinePanel
-      state={cashBaselineForScope}
-      accounts={sharedAccountOptions}
-      nature={cashNature}
-      simulationRunId={cashSimulationRunId}
-      loading={cashLoadingForScope}
-      saving={cashSaving}
-      error={cashErrorForScope}
-      onSave={saveCashBaseline}
-    />
+    <>
+      <CashBaselinePanel
+        state={cashBaselineForScope}
+        accounts={sharedAccountOptions}
+        nature={cashNature}
+        simulationRunId={cashSimulationRunId}
+        loading={cashLoadingForScope}
+        saving={cashSaving}
+        error={cashErrorForScope}
+        onSave={saveCashBaseline}
+      />
+      {cashSavedFactForScope && cashErrorForScope !== `${CASH_SUMMARY_REFRESH_NOTICE}；请重试读取` && (
+        <p role="status">{CASH_SUMMARY_REFRESH_NOTICE}</p>
+      )}
+      {cashSavedFactForScope && cashSummaryRefreshErrorForScope && (
+        <button
+          type="button"
+          onClick={() => { void refreshCashData(); }}
+          disabled={cashLoadingForScope || cashSaving}
+        >
+          重试读取现金摘要
+        </button>
+      )}
+    </>
   ) : (
     <p role="status">{cashNature === "simulation" && !cashSimulationRunId ? "请先选择模拟运行后编辑现金基准。" : "当前交易性质尚未核实，现金基准暂不可用。"}</p>
   );
@@ -4930,29 +5781,23 @@ export function TradeReviewWorkspace({
 
       {mobileNavOpen && <button className="mobile-navigation-backdrop" aria-label="关闭导航" onClick={() => setMobileNavOpen(false)} />}
       <div className="app-content">
-      {activeView === "review" && (showDemo || selectedImportedInstrument) && <header className="page-header review-page-header" aria-label="页面顶栏" inert={stockDrawerOpen || Boolean(dataTarget)}>
+      {aliasRecoveryState === "loading" && !showDemo && <p role="status" className="navigation-notice">正在恢复账户范围…</p>}
+      {aliasRecoveryState === "error" && !showDemo && aliasRecoveryError && <p role="alert" className="navigation-notice">账户范围恢复失败：{aliasRecoveryError}<button type="button" onClick={() => setAliasRecoveryAttempt(value => value + 1)}>重试账户范围恢复</button></p>}
+      {activeView === "review" && showDemo && !selectedImportedInstrument && <header className="page-header review-page-header" aria-label="页面顶栏" inert={stockDrawerOpen || Boolean(dataTarget)}>
         <div className="header-actions">
-          {selectedImportedInstrument && activeView === "review" && (
-            <button
-              type="button"
-              className="header-data-management"
-              aria-label="打开导入与数据管理"
-              aria-haspopup="dialog"
-              aria-controls="import-management-dialog"
-              onClick={() => setImportManagementOpen(true)}
-            >
-              数据
-            </button>
-          )}
           <span className="demo-chip">
             {showDemo && <Sparkles size={13} />}
-            {selectedImportedInstrument
-              ? selectedEpisode?.executions[0] ? tradingNatureLabel(selectedEpisode.executions[0]) : "本地导入"
-              : showDemo
-                ? "演示行情"
-                : "等待导入"}
+            演示行情
           </span>
           {activeView === "review" && <button type="button" className="stock-list-trigger" aria-label="打开股票列表" aria-haspopup="dialog" aria-expanded={stockDrawerOpen} onClick={() => setStockDrawerOpen(true)}><Menu size={19} /><span>股票</span></button>}
+          <div className="review-layout-controls" inert={stockDrawerOpen || Boolean(dataTarget)} aria-label="复盘布局">
+            {showDemo && <>
+              <button className="mobile-trades-toggle" aria-expanded={mobileTradesOpen} onClick={() => setMobileTradesOpen(value=>!value)}>{mobileTradesOpen ? "收起本股交易" : "本股交易"}</button>
+              <button className="desktop-left-toggle" aria-expanded={layout.left} onClick={() => { setFocusedChart(false); setLayout((value) => ({ ...value, left: !value.left })); }}>{layout.left ? "收起交易导航" : "展开交易导航"}</button>
+              <button className="desktop-right-toggle" aria-expanded={layout.right} onClick={() => { setFocusedChart(false); setLayout((value) => ({ ...value, right: !value.right })); }}>{layout.right ? "收起复盘面板" : "展开复盘面板"}</button>
+            </>}
+            <button aria-pressed={focusedChart} onClick={toggleFocus}>{focusedChart ? "标准布局" : "专注图表"}</button>
+          </div>
           <div className="user-avatar">ZL</div>
         </div>
       </header>}
@@ -4961,25 +5806,6 @@ export function TradeReviewWorkspace({
           <button type="button" className="secondary-action" onClick={() => setActiveView("review")}>返回演示复盘</button>
         </div>
       </header>}
-      {activeView === "review" && (showDemo || selectedImportedInstrument) && <div className="review-layout-controls" inert={stockDrawerOpen || Boolean(dataTarget)} aria-label="复盘布局">
-        {!showDemo && <button onClick={returnFromReview}>返回{reviewReturnView === "dashboard" ? "我的交易室" : reviewReturnView === "insights" ? "分析" : reviewReturnView === "data" ? "数据" : "交易库"}</button>}
-        {selectedImportedInstrument && selectedEpisode && activeView === "review" && (
-          <button
-            type="button"
-            className="header-data-check"
-            aria-label="检查/修复数据"
-            onClick={() => openDataCheck(selectedImportedInstrument.instrument.id, selectedEpisode.accountId)}
-          >
-            检查/修复数据
-          </button>
-        )}
-        {showDemo && <>
-          <button className="mobile-trades-toggle" aria-expanded={mobileTradesOpen} onClick={() => setMobileTradesOpen(value=>!value)}>{mobileTradesOpen ? "收起本股交易" : "本股交易"}</button>
-          <button className="desktop-left-toggle" aria-expanded={layout.left} onClick={() => { setFocusedChart(false); setLayout((value) => ({ ...value, left: !value.left })); }}>{layout.left ? "收起交易导航" : "展开交易导航"}</button>
-          <button className="desktop-right-toggle" aria-expanded={layout.right} onClick={() => { setFocusedChart(false); setLayout((value) => ({ ...value, right: !value.right })); }}>{layout.right ? "收起复盘面板" : "展开复盘面板"}</button>
-        </>}
-        <button aria-pressed={focusedChart} onClick={toggleFocus}>{focusedChart ? "标准布局" : "专注图表"}</button>
-      </div>}
       {mobileTradesOpen && <button className="stock-drawer-backdrop" aria-label="关闭本股交易遮罩" onClick={() => setMobileTradesOpen(false)} />}
       {importError && activeView !== "data" && <p role="alert" className="navigation-notice">{importError}</p>}
       {activeDrawingSaveError && <p role="alert" className="navigation-notice">{activeDrawingSaveError}<button type="button" disabled={activeDrawingSavePending} onClick={() => void retryDrawingState(activeEpisodeId).catch(() => undefined)}>重试保存复盘状态</button></p>}
@@ -5041,6 +5867,7 @@ export function TradeReviewWorkspace({
             restoreBrowseContext={dashboardRestoreContext}
             globalEntryStatus="ready"
             cashSummary={cashSummaryForScope}
+            cashBaselineDetails={cashBaselineDetailsForScope}
             cashLoading={cashLoadingForScope}
             cashError={cashErrorForScope}
             onOpenInReview={(instrumentId, episodeId, queueIds) => {
@@ -5121,6 +5948,7 @@ export function TradeReviewWorkspace({
             ) : undefined}
             fxSlot={resolvedFxSlot}
             cashSlot={cashSlot}
+            accountMigrationSlot={!showDemo ? <TradingViewAccountMigrationPanel onCommitted={reloadAfterMigrationCommit} /> : undefined}
           />
         </div>
         {activeView === "library" ? (
@@ -5166,7 +5994,7 @@ export function TradeReviewWorkspace({
             globalSearch={workspaceGlobalSearch}
             globalTools={workspaceGlobalUtilities("library")}
             onInspectData={openDataCheck}
-            onRefreshMarketData={(instrumentId) => void startMarketDataUpdate([instrumentId], { refreshMetadata: true })}
+            onRefreshMarketData={(instrumentId) => void startMarketDataUpdate([instrumentId], { refreshMetadata: true, priority: "interactive" })}
             onImport={() => {
               setDataTab("import");
               setActiveView("data");
@@ -5220,6 +6048,7 @@ export function TradeReviewWorkspace({
               onUpdateMarketData={(instrumentId) =>
                 void startMarketDataUpdate([instrumentId], {
                   refreshMetadata: true,
+                  priority: "interactive",
                 })
               }
               onUpdateAllMarketData={() =>
@@ -5238,7 +6067,7 @@ export function TradeReviewWorkspace({
             />
             </aside>
             <div className="review-content" inert={stockDrawerOpen || Boolean(dataTarget)}>
-            {showDemo && <div className={`stock-context-shell ${mobileTradesOpen ? "mobile-trades-open" : ""}`}><StockEpisodeNavigation mobileOpen={mobileTradesOpen} onCloseMobile={() => setMobileTradesOpen(false)} instrument={selectedImportedInstrument?.instrument} episodes={episodes} selectedEpisodeId={selectedEpisode?.id} cursor={activeCursor} onSelectEpisode={id => { selectEpisode(id); setMobileTradesOpen(false); }} onLocate={(cursor) => { setPlaying(false); setImportedCursor(cursor); setMobileTradesOpen(false); }} onLocateRequest={requestExecutionLocation} onNext={nextImportedExecution} onSwitchStock={() => { setMobileTradesOpen(false); setStockDrawerOpen(true); }} onLibrary={() => { setMobileTradesOpen(false); returnFromReview(); }} returnLabel={reviewReturnView === "dashboard" ? "返回我的交易室" : reviewReturnView === "insights" ? "返回模式洞察" : undefined} /></div>}
+            {showDemo && <div className={`stock-context-shell ${mobileTradesOpen ? "mobile-trades-open" : ""}`}><StockEpisodeNavigation mobileOpen={mobileTradesOpen} onCloseMobile={() => setMobileTradesOpen(false)} instrument={selectedImportedInstrument?.instrument} episodes={episodes} selectedEpisodeId={selectedEpisode?.id} cursor={activeCursor} onSelectEpisode={id => { selectEpisode(id); setMobileTradesOpen(false); }} onLocate={(cursor) => { setPlaying(false); invalidatePendingImportedReplayRestore(); setImportedCursor(cursor); setMobileTradesOpen(false); }} onLocateRequest={requestExecutionLocation} onNext={nextImportedExecution} onSwitchStock={() => { setMobileTradesOpen(false); setStockDrawerOpen(true); }} onLibrary={() => { setMobileTradesOpen(false); returnFromReview(); }} returnLabel={reviewReturnView === "dashboard" ? "返回我的交易室" : reviewReturnView === "insights" ? "返回模式洞察" : undefined} /></div>}
             {!showDemo && !selectedImportedInstrument ? (
               <section
                 className="review-workspace review-workspace-empty"
@@ -5255,9 +6084,9 @@ export function TradeReviewWorkspace({
                 <button type="button" className="secondary-action" onClick={returnToLibrary}>前往交易库选择回合</button>
               </section>
             ) : selectedImportedInstrument &&
-            !hydratedMarketIds.has(
+            (!hydratedMarketIds.has(
               selectedImportedInstrument.instrument.id,
-            ) ? (
+            ) || !selectedIntradayReady) ? (
               <section
                 className="review-workspace review-workspace-loading"
                 aria-label="交易复盘图表工作区"
@@ -5284,7 +6113,10 @@ export function TradeReviewWorkspace({
                   dataDetails={marketDataDetails(selectedMarketState, importedAvailability)}
                   onEpisodeChange={selectEpisode}
                   onInstrumentChange={selectInstrument}
-                  onTimeframeChange={(nextTimeframe) => setTimeframe(nextTimeframe)}
+                  onTimeframeChange={(nextTimeframe) => {
+                    invalidatePendingImportedReplayRestore();
+                    setTimeframe(nextTimeframe);
+                  }}
                   onSettingsChange={(next) => {
                     setSettings(next);
                     void storageClient.putSettings(next).catch(() => {
@@ -5296,8 +6128,47 @@ export function TradeReviewWorkspace({
                       selectedImportedInstrument.instrument.id,
                     ], {
                       refreshMetadata: true,
+                      priority: "interactive",
                     });
                   }}
+                  headerActions={(
+                    <div className="recall-header-actions">
+                      <button
+                        type="button"
+                        className="recall-header-action"
+                        aria-label="打开导入与数据管理"
+                        aria-haspopup="dialog"
+                        aria-controls="import-management-dialog"
+                        onClick={() => setImportManagementOpen(true)}
+                      >
+                        <Database size={15} aria-hidden="true" />数据
+                      </button>
+                      <button
+                        type="button"
+                        className="recall-header-action"
+                        aria-label="打开股票列表"
+                        aria-haspopup="dialog"
+                        aria-expanded={stockDrawerOpen}
+                        onClick={() => setStockDrawerOpen(true)}
+                      >
+                        <Menu size={16} aria-hidden="true" />股票
+                      </button>
+                      <button type="button" className="recall-header-action" onClick={returnFromReview}>
+                        返回{reviewReturnView === "dashboard" ? "我的交易室" : reviewReturnView === "insights" ? "分析" : reviewReturnView === "data" ? "数据" : "交易库"}
+                      </button>
+                      <button
+                        type="button"
+                        className="recall-header-action recall-header-action--repair"
+                        aria-label="检查/修复数据"
+                        onClick={() => openDataCheck(selectedImportedInstrument.instrument.id, selectedEpisode!.accountId)}
+                      >
+                        检查/修复数据
+                      </button>
+                      <button type="button" className="recall-header-action" aria-pressed={focusedChart} onClick={toggleFocus}>
+                        {focusedChart ? "标准布局" : "专注图表"}
+                      </button>
+                    </div>
+                  )}
                 />
                 {importManagementOpen && (
                   <ImportManagementDrawer
@@ -5346,6 +6217,7 @@ export function TradeReviewWorkspace({
                     legacySelectedImportedInstrument.instrument.id,
                   ], {
                     refreshMetadata: true,
+                    priority: "interactive",
                   });
                 } else {
                   void requestFrame("restore", frame.cursor);
@@ -5454,7 +6326,7 @@ export function TradeReviewWorkspace({
         `本地日线：${marketStates[dataTarget.instrument.id]?.daily.length ?? 0} 根；小时线：${marketStates[dataTarget.instrument.id]?.intraday.length ?? 0} 根`,
         ...(marketStates[dataTarget.instrument.id]?.dailyCoverage ?? []).map(segment => `日线覆盖：${segment.startDate} 至 ${segment.endDate}，${marketDataStatusLabel(segment.status)}`),
         ...(marketStates[dataTarget.instrument.id]?.intradayCoverage ?? []).map(segment => `小时线覆盖：${segment.actualStart ?? segment.requestedStart} 至 ${segment.actualEnd ?? segment.requestedEnd}，${marketDataStatusLabel(segment.status)}`),
-      ]} refreshing={marketDataStatuses[dataTarget.instrument.id] === "syncing"} onRefresh={() => void startMarketDataUpdate([dataTarget.instrument.id], { refreshMetadata: true })} onClose={() => setDataTarget(undefined)} onRevise={reviseCurrentTrades} loadHistory={tradeRepairClient.history} onSupplement={(accountId, kind) => { const scope = { instrumentId: dataTarget.instrument.id, accountId, accountLabel: importedExecutions.find(e=>e.accountId===accountId)?.accountLabel ?? accountId, kind }; supplementScopeRef.current = scope; setSupplementScope(scope); setDataTarget(undefined); if (kind === "file") importFileRef.current?.click(); else importScreenshotRef.current?.click(); }} retainedReviews={[
+      ]} refreshing={marketDataStatuses[dataTarget.instrument.id] === "syncing"} onRefresh={() => void startMarketDataUpdate([dataTarget.instrument.id], { refreshMetadata: true, priority: "interactive" })} onClose={() => setDataTarget(undefined)} onRevise={reviseCurrentTrades} loadHistory={tradeRepairClient.history} onSupplement={(accountId, kind) => { const scope = { instrumentId: dataTarget.instrument.id, accountId, accountLabel: importedExecutions.find(e=>e.accountId===accountId)?.accountLabel ?? accountId, kind }; supplementScopeRef.current = scope; setSupplementScope(scope); setDataTarget(undefined); if (kind === "file") importFileRef.current?.click(); else importScreenshotRef.current?.click(); }} retainedReviews={[
         ...new Set([...Object.values(episodeReviews).filter(review => review.instrumentId === dataTarget.instrument.id).map(review => review.episodeId), ...Object.keys(reviewStates).filter(id => id.includes(encodeURIComponent(dataTarget.instrument.id)))])
       ].filter(id => !currentEpisodeIds.has(id)).map(episodeId => ({ episodeId, review: episodeReviews[episodeId], drawingCount: reviewStates[episodeId]?.drawings.length ?? 0, drawings: reviewStates[episodeId]?.drawings }))} />}
 

@@ -56,6 +56,25 @@ describe("refreshMarketData", () => {
     expect(result.hourly.interval).toBe("15m");
   });
 
+  it("skips intraday provider work for a daily-only homepage retry", async () => {
+    syncMarketData.mockResolvedValue({ source: "network", status: "complete", candles: daily, requestedRanges: [] });
+    const result = await refreshMarketData(request({
+      includeIntraday: false,
+      previous: { daily: [], dailyCoverage: [], intraday: legacy15m, intradayCoverage: [], intradayInterval: "15m" },
+    }));
+
+    expect(syncMarketData).toHaveBeenCalledOnce();
+    expect(syncIntradayMarketDataForRanges).not.toHaveBeenCalled();
+    expect(result.daily.candles).toEqual(daily);
+    expect(result.hourly).toMatchObject({
+      candles: legacy15m,
+      interval: "15m",
+      source: "cache",
+      status: "not-requested",
+      retainedPrevious: true,
+    });
+  });
+
   it("keeps daily bars when coverage read fails and isolates hourly success", async () => {
     syncMarketData.mockResolvedValue({ source: "network", status: "complete", candles: daily, requestedRanges: [] });
     syncIntradayMarketDataForRanges.mockResolvedValue({ source: "network", status: "complete", candles: hourly, coverage: [], requestedRanges: [] });

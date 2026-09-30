@@ -8,6 +8,7 @@ import {
   type TradeLibraryRoomFilters,
 } from "../../lib/reviews/trading-room-pending";
 import { displayTradeNature } from "../../lib/trades/trading-nature";
+import { tradingViewEpisodeBusinessScope } from "../../lib/trades/tradingview-account-identity";
 import {
   buildReviewQueue,
   normalizeBrokerIds,
@@ -340,6 +341,8 @@ function libraryRowKey(row: ReviewQueueItem) {
 }
 
 function simulationRunIdForRow(row: ReviewQueueItem): string | null {
+  const businessScope = tradingViewEpisodeBusinessScope(row.item.episode);
+  if (businessScope) return businessScope.simulationRunId;
   return row.item.episode.simulationRunId ??
     row.entry.simulationRunId ??
     row.item.episode.executions.find(execution => execution.source.simulationRunId)?.source.simulationRunId ??
@@ -361,7 +364,7 @@ function roomFilterRowKeys(
   const keys = new Set<string>();
   for (const nature of natures) {
     const runIds = nature === "simulation" && state.simulationRunId === "all"
-      ? [...new Set(rows.map(simulationRunIdForRow).filter((value): value is string => Boolean(value)))]
+      ? [...new Set(rows.map(simulationRunIdForRow).filter(value => value === null || Boolean(value)))]
       : [nature === "simulation" ? state.simulationRunId : null];
     for (const simulationRunId of runIds) {
       const scope: RoomScope = {

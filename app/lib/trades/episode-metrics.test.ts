@@ -32,6 +32,38 @@ function fill(
 }
 
 describe("summarizeTradeEpisode", () => {
+  it("keeps bonus shares out of buy counts and spreads known basis across the enlarged lot", () => {
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "10000", "2.5", "0");
+    const sale = fill("sell", "2026-06-01T02:00:00Z", "20000", "2", "0");
+    const bonus = {
+      id: "bonus-516780",
+      accountId: "acct-1",
+      market: "US",
+      symbol: "XPEV",
+      date: "2026-05-22",
+      kind: "corporate-action" as const,
+      quantity: "10000",
+      amount: "0",
+      currency: "USD",
+      description: "红股入账 1.8900",
+      source: [],
+    };
+    buy.source.positionEvents = [bonus];
+    sale.source.positionEvents = [bonus];
+
+    const [episode] = buildTradeEpisodes([buy, sale]);
+
+    expect(summarizeTradeEpisode(episode)).toMatchObject({
+      buyCount: 1,
+      sellCount: 1,
+      boughtQuantity: "10000",
+      soldQuantity: "20000",
+      grossExposure: "25000",
+      realizedPnl: "15000",
+      netPnl: "15000",
+    });
+  });
+
   it("does not certify net profit when a reported fee is missing", () => {
     const buy = fill("buy", "2025-01-02T14:30:00Z", "1", "10", "0");
     buy.source.feeStatus = "unknown";

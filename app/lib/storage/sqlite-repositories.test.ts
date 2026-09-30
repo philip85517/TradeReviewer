@@ -100,6 +100,81 @@ describe("SQLite API repository adapters", () => {
     expect(getProviderSymbol).toHaveBeenCalledWith("HK:700", "tencent");
   });
 
+  it("combines the homepage daily candle and coverage read into one abortable API request", async () => {
+    const getMarketData = vi.fn().mockResolvedValue({
+      dailyCandles: [{ tradingDate: "2025-01-02" }],
+      coverage: [{ startDate: "2025-01-01" }],
+    });
+    const repository = new ApiMarketDataRepository(client({ getMarketData }));
+    const controller = new AbortController();
+
+    await expect(
+      repository.getDailyMarketData!("HK:700", "2025-01-01", "2025-01-31", controller.signal),
+    ).resolves.toEqual({
+      candles: [{ tradingDate: "2025-01-02" }],
+      coverage: [{ startDate: "2025-01-01" }],
+    });
+    expect(getMarketData).toHaveBeenCalledOnce();
+    expect(getMarketData).toHaveBeenCalledWith({
+      instrumentId: "HK:700",
+      interval: "1D",
+      start: "2025-01-01T00:00:00.000Z",
+      end: "2025-01-31T23:59:59.999Z",
+      dailyOnly: true,
+    }, controller.signal);
+  });
+
+  it("passes cancellation through lazy intraday repository reads", async () => {
+    const getMarketData = vi.fn().mockResolvedValue({ candles: [], intervalCoverage: [] });
+    const repository = new ApiMarketDataRepository(client({ getMarketData }));
+    const controller = new AbortController();
+
+    await expect(
+      repository.getCandles(
+        "HK:700",
+        "1h",
+        "2025-01-02T00:00:00.000Z",
+        "2025-01-02T01:00:00.000Z",
+        controller.signal,
+      ),
+    ).resolves.toEqual([]);
+    expect(getMarketData).toHaveBeenCalledWith({
+      instrumentId: "HK:700",
+      interval: "1h",
+      start: "2025-01-02T00:00:00.000Z",
+      end: "2025-01-02T01:00:00.000Z",
+    }, controller.signal);
+  });
+
+  it("combines one interval's candles and coverage into one abortable API request", async () => {
+    const getMarketData = vi.fn().mockResolvedValue({
+      candles: [{ timestamp: "2025-01-02T00:00:00.000Z" }],
+      intervalCoverage: [{ requestedStart: "2025-01-02T00:00:00.000Z" }],
+    });
+    const repository = new ApiMarketDataRepository(client({ getMarketData }));
+    const controller = new AbortController();
+
+    await expect(
+      repository.getIntervalMarketData!(
+        "HK:700",
+        "1h",
+        "2025-01-02T00:00:00.000Z",
+        "2025-01-02T01:00:00.000Z",
+        controller.signal,
+      ),
+    ).resolves.toEqual({
+      candles: [{ timestamp: "2025-01-02T00:00:00.000Z" }],
+      coverage: [{ requestedStart: "2025-01-02T00:00:00.000Z" }],
+    });
+    expect(getMarketData).toHaveBeenCalledOnce();
+    expect(getMarketData).toHaveBeenCalledWith({
+      instrumentId: "HK:700",
+      interval: "1h",
+      start: "2025-01-02T00:00:00.000Z",
+      end: "2025-01-02T01:00:00.000Z",
+    }, controller.signal);
+  });
+
   it("maps review and tag repository calls to the review endpoint client", async () => {
     const record = {
       version: 1 as const,
@@ -139,14 +214,14 @@ describe("SQLite API repository adapters", () => {
   });
 
   it("round-trips complete resolved metadata through persisted instruments", async () => {
-    const mergeExecutions = vi.fn().mockResolvedValue({ inserted: 0, duplicate: 0, conflict: 0 });
-    const getBootstrap = vi.fn().mockResolvedValue({
+    const getInstrumentMetadata = vi.fn().mockResolvedValue({
       instruments: [{
         id: "HK:700", market: "HK", symbol: "700", name: "腾讯", currency: "HKD",
         metadata: { market: "HK", symbol: "700", name: "腾讯", assetType: "stock", source: "hkex", confidence: "official", resolvedAt: "2025-01-01T00:00:00.000Z" },
       }],
     });
-    const repository = new ApiInstrumentMetadataRepository(client({ getBootstrap, mergeExecutions }));
+    const putInstrumentMetadata = vi.fn().mockResolvedValue({ ok: true });
+    const repository = new ApiInstrumentMetadataRepository(client({ getInstrumentMetadata, putInstrumentMetadata }));
 
     await expect(repository.get("HK:700")).resolves.toMatchObject({
       market: "HK", symbol: "700", name: "腾讯", source: "hkex", confidence: "official", resolvedAt: "2025-01-01T00:00:00.000Z",
@@ -154,41 +229,16 @@ describe("SQLite API repository adapters", () => {
     await repository.put({
       market: "US", symbol: "SPY", name: "SPDR S&P 500 ETF Trust", assetType: "etf", source: "nasdaq", confidence: "official", resolvedAt: "2025-01-01T00:00:00.000Z",
     });
-    expect(mergeExecutions).toHaveBeenCalledWith({
-      instruments: [{ id: "US:SPY", market: "US", symbol: "SPY", name: "SPDR S&P 500 ETF Trust", currency: "USD", metadata: { market: "US", symbol: "SPY", name: "SPDR S&P 500 ETF Trust", assetType: "etf", source: "nasdaq", confidence: "official", resolvedAt: "2025-01-01T00:00:00.000Z" } }],
-      executions: [],
+    expect(getInstrumentMetadata).toHaveBeenCalledWith(["HK:700"]);
+    expect(putInstrumentMetadata).toHaveBeenCalledWith({
+      market: "US", symbol: "SPY", name: "SPDR S&P 500 ETF Trust", assetType: "etf", source: "nasdaq", confidence: "official", resolvedAt: "2025-01-01T00:00:00.000Z",
     });
   });
 
-  it("keeps an existing instrument name and localized overlay during metadata refresh", async () => {
-    const mergeExecutions = vi.fn().mockResolvedValue({ inserted: 0, duplicate: 0, conflict: 0 });
-    const localizedName = {
-      name: "旧中文名",
-      locale: "zh-CN" as const,
-      source: "tencent",
-      resolvedAt: "2025-01-01T00:00:00.000Z",
-    };
-    const getBootstrap = vi.fn().mockResolvedValue({
-      instruments: [{
-        id: "US:AAPL",
-        market: "US",
-        symbol: "AAPL",
-        name: "历史名称",
-        currency: "USD",
-        localizedName,
-        metadata: {
-          market: "US",
-          symbol: "AAPL",
-          name: "历史名称",
-          localizedName,
-          assetType: "stock",
-          source: "nasdaq",
-          confidence: "official",
-          resolvedAt: "2025-01-01T00:00:00.000Z",
-        },
-      }],
-    });
-    const repository = new ApiInstrumentMetadataRepository(client({ getBootstrap, mergeExecutions }));
+  it("uses the narrow metadata write without reading the bootstrap", async () => {
+    const getBootstrap = vi.fn();
+    const putInstrumentMetadata = vi.fn().mockResolvedValue({ ok: true });
+    const repository = new ApiInstrumentMetadataRepository(client({ getBootstrap, putInstrumentMetadata }));
 
     await repository.put({
       market: "US",
@@ -200,26 +250,15 @@ describe("SQLite API repository adapters", () => {
       resolvedAt: "2025-02-01T00:00:00.000Z",
     });
 
-    expect(mergeExecutions).toHaveBeenCalledWith({
-      instruments: [{
-        id: "US:AAPL",
-        market: "US",
-        symbol: "AAPL",
-        name: "历史名称",
-        currency: "USD",
-        localizedName,
-        metadata: {
-          market: "US",
-          symbol: "AAPL",
-          name: "Apple Inc.",
-          localizedName,
-          assetType: "stock",
-          source: "nasdaq",
-          confidence: "official",
-          resolvedAt: "2025-02-01T00:00:00.000Z",
-        },
-      }],
-      executions: [],
+    expect(getBootstrap).not.toHaveBeenCalled();
+    expect(putInstrumentMetadata).toHaveBeenCalledWith({
+      market: "US",
+      symbol: "AAPL",
+      name: "Apple Inc.",
+      assetType: "stock",
+      source: "nasdaq",
+      confidence: "official",
+      resolvedAt: "2025-02-01T00:00:00.000Z",
     });
   });
 
@@ -237,7 +276,10 @@ describe("SQLite API repository adapters", () => {
     store.mergeTradeData({ instruments: [original], executions: [] });
     const api = client({
       getBootstrap: vi.fn(async () => store.getBootstrap()),
-      mergeExecutions: vi.fn(async (input) => store.mergeTradeData(input)),
+      putInstrumentMetadata: vi.fn(async (record) => {
+        store.putInstrumentMetadata(record);
+        return { ok: true as const };
+      }),
     });
     const repository = new ApiInstrumentMetadataRepository(api);
     const first = {
@@ -309,7 +351,10 @@ describe("SQLite API repository adapters", () => {
     store.mergeTradeData({ instruments: [original], executions: [execution] });
     const api = client({
       getBootstrap: vi.fn(async () => store.getBootstrap()),
-      mergeExecutions: vi.fn(async (input) => store.mergeTradeData(input)),
+      putInstrumentMetadata: vi.fn(async (record) => {
+        store.putInstrumentMetadata(record);
+        return { ok: true as const };
+      }),
     });
     const repository = new ApiInstrumentMetadataRepository(api);
     const oldMetadata = {

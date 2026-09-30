@@ -40,7 +40,10 @@ export type PrincipalState = {
   scopes: Readonly<Record<string, PrincipalConfig>>;
 };
 
-export type PrincipalScope = Pick<RoomScope, "nature" | "simulationRunId">;
+export type PrincipalScope = Pick<RoomScope, "nature" | "simulationRunId"> & {
+  /** Account is required for the canonical simulation run-null scope. */
+  accountId?: string | null;
+};
 
 export type PrincipalMutation = {
   version: typeof PRINCIPAL_SCHEMA_VERSION;
@@ -116,11 +119,32 @@ export function normalizePrincipalValue(value: unknown): PrincipalValue | undefi
 }
 
 export function principalScopeKey(scope: PrincipalScope): string {
-  if (scope.nature === "live") return "live";
+  const accountId = scope.accountId?.trim();
+  if (scope.nature === "live") return accountId ? `live:${accountId}` : "live";
   if (scope.nature === "simulation" && scope.simulationRunId?.trim()) {
-    return `simulation:${scope.simulationRunId.trim()}`;
+    return accountId
+      ? `simulation:${accountId}:${scope.simulationRunId.trim()}`
+      : `simulation:${scope.simulationRunId.trim()}`;
+  }
+  if (scope.nature === "simulation" && accountId) {
+    return `simulation:${accountId}`;
   }
   return "unknown";
+}
+
+/**
+ * Canonical scope key including the currency dimension. Legacy simulation
+ * runs remain distinct; only an explicit account with a null run is whole
+ * account scope.
+ */
+export function principalBusinessKey(
+  scope: PrincipalScope,
+  currency: PrincipalCurrency,
+): string | null {
+  const accountId = scope.accountId?.trim();
+  if (!accountId) return null;
+  const run = scope.nature === "simulation" ? scope.simulationRunId?.trim() ?? "" : "";
+  return `${scope.nature}:${accountId}:${currency}:${run}`;
 }
 
 export function emptyPrincipalState(): PrincipalState {
@@ -133,7 +157,11 @@ export function normalizePrincipalState(value: unknown): PrincipalState {
   }
   const scopes: Record<string, PrincipalConfig> = {};
   for (const [scopeKey, rawConfig] of Object.entries(value.scopes)) {
-    if (!(scopeKey === "live" || (scopeKey.startsWith("simulation:") && scopeKey.slice("simulation:".length).trim().length > 0)) || !isRecord(rawConfig)) continue;
+    if (!(
+      scopeKey === "live" ||
+      (scopeKey.startsWith("live:") && scopeKey.slice("live:".length).trim().length > 0) ||
+      (scopeKey.startsWith("simulation:") && scopeKey.slice("simulation:".length).trim().length > 0)
+    ) || !isRecord(rawConfig)) continue;
     const config: PrincipalConfig = {};
     for (const [category, rawValue] of Object.entries(rawConfig)) {
       if (!isPrincipalCategory(category)) continue;
@@ -266,7 +294,8 @@ export function buildPrincipalReferenceSummary(
   fxSnapshot?: RoomFxSnapshot,
   targetCurrency?: RoomTargetCurrency,
 ): PrincipalReferenceSummary {
-  const config = principalConfigForScope(normalizePrincipalState(state), scope);
+  const principalScope = scope as PrincipalScope;
+  const config = principalConfigForScope(normalizePrincipalState(state), principalScope);
   const required = requiredCategories(rows, scope);
   const values = principalValuesForScope(config, scope);
   const calculationCurrencies = [
@@ -279,7 +308,7 @@ export function buildPrincipalReferenceSummary(
   const netPnl = netPnlView(rows, calculationFxSnapshot, targetCurrency);
   const configuredCategories = PRINCIPAL_CATEGORIES.filter(category => Boolean(values[category]));
   const missingCategories = required.filter(category => !values[category]);
-  const scopeUnavailable = scope.nature === "unknown" || (scope.nature === "simulation" && !scope.simulationRunId?.trim());
+  const scopeUnavailable = scope.nature === "unknown" || (scope.nature === "simulation" && !scope.simulationRunId?.trim() && !principalScope.accountId?.trim());
   const narrowed = hasFineFilter(scope);
   const principalAmounts = Object.values(values).map(value => ({ currency: value!.currency, amount: value!.amount }));
   const principal = buildRoomMoneyView(principalAmounts, calculationFxSnapshot, targetCurrency);

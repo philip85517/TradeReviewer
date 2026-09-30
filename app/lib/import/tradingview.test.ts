@@ -4,8 +4,22 @@ import { parseBrokerStatement } from './dispatcher';
 import { buildTradeEpisodes } from '../trades/episodes';
 import { mergeExecutions } from '../storage/import-library';
 import { replayPositionAtPrice } from '../replay/position-ledger';
+import {
+ TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+ TRADINGVIEW_CANONICAL_ACCOUNT_LABEL,
+} from '../trades/tradingview-account-identity';
+import type { StatementInput } from './contracts';
+import { parseTradingViewCsv } from './tradingview';
 
 import { header, row, csv, fileFor } from './__fixtures__/tradingview';
+
+function legacyInput(fileFingerprint = 'legacy-fingerprint', fileName = '回放交易_SSE_600330.csv'): StatementInput {
+ return {
+  fileName,
+  bytes: new TextEncoder().encode(csv),
+  fileFingerprint,
+ };
+}
 
 describe('TradingView CSV import through the dispatcher', () => {
   it('imports paired date-only trades and charges the pair fee once at exit', async () => {
@@ -26,15 +40,27 @@ describe('TradingView CSV import through the dispatcher', () => {
     expect(episodes).toHaveLength(1);
     expect(episodes[0]).toMatchObject({direction:'short',openingQuantity:'200',remainingQuantity:'0',status:'closed'});
   });
-  it('deduplicates renamed reimports but isolates separate simulation runs and real trades', async () => {
+  it('deduplicates renamed reimports, groups canonical runs, and preserves legacy run isolation', async () => {
     const a=await parseBrokerStatement(fileFor());
     expect(a.records).toHaveLength(2);
     const renamed=await parseBrokerStatement(fileFor(csv,'renamed_SSE_600330.csv'));
     const other=await parseBrokerStatement(fileFor(csv.replaceAll('signal, quoted','other run')));
     const real=a.records.map(r=>({...r,id:'real:'+r.id,source:{platform:'futu',row:r.source.row},accountId:a.records[0].accountId}));
+    const legacyRuns = [
+      ...a.records.map(r=>({...r,id:`legacy-a:${r.id}`,accountId:'legacy-tradingview-account',accountLabel:'旧模拟账户'})),
+      ...other.records.map(r=>({...r,id:`legacy-b:${r.id}`,accountId:'legacy-tradingview-account',accountLabel:'旧模拟账户'})),
+    ];
     expect(mergeExecutions(a.records,renamed.records)).toHaveLength(2);
     expect(mergeExecutions(a.records,other.records)).toHaveLength(4);
-    expect(buildTradeEpisodes([...a.records,...other.records,...real])).toHaveLength(3);
+    const episodes=buildTradeEpisodes([...a.records,...other.records,...real,...legacyRuns]);
+    const canonical=episodes.find(episode=>episode.accountId===TRADINGVIEW_CANONICAL_ACCOUNT_ID && episode.tradeNature==='simulation');
+    expect(canonical?.executions.map(execution=>execution.source.simulationRunId)).toContain(a.records[0].source.simulationRunId);
+    expect(canonical?.executions.map(execution=>execution.source.simulationRunId)).toContain(other.records[0].source.simulationRunId);
+    const legacy=episodes.filter(episode=>episode.accountId==='legacy-tradingview-account' && episode.tradeNature==='simulation');
+    expect(legacy).toHaveLength(2);
+    expect(new Set(legacy.map(episode=>episode.simulationRunId)).size).toBe(2);
+    expect(episodes.filter(episode=>episode.accountId===TRADINGVIEW_CANONICAL_ACCOUNT_ID && episode.tradeNature!=='simulation')).toHaveLength(1);
+    expect(episodes).toHaveLength(4);
   });
   it('excludes an entire invalid pair without losing valid pairs', async () => {
     const parsed=await parseBrokerStatement(fileFor(csv+'\n'+row(2,'多头进场','2021-02-20','10')));
@@ -49,6 +75,44 @@ describe('TradingView CSV import through the dispatcher', () => {
     const badFee=await parseBrokerStatement(fileFor(csv.replace('0.60','3.00')));
     expect(badFee.blocked).toBe(true);
   });
+});
+
+describe('TradingView CSV parser account identity', () => {
+ it('uses one canonical account while preserving source identity and reimport evidence', () => {
+  const first = parseTradingViewCsv(legacyInput());
+  const repeated = parseTradingViewCsv(legacyInput());
+  const otherSource = parseTradingViewCsv(legacyInput('other-fingerprint', '回放交易_SSE_600330_other.csv'));
+
+  expect(first.records).toHaveLength(2);
+  expect(new Set(first.records.map(record => record.accountId))).toEqual(new Set([TRADINGVIEW_CANONICAL_ACCOUNT_ID]));
+  expect(new Set(first.records.map(record => record.accountLabel))).toEqual(new Set([TRADINGVIEW_CANONICAL_ACCOUNT_LABEL]));
+  expect(first.records).toEqual(repeated.records);
+  expect(first.records.map(record => record.source.simulationRunId)).toEqual([
+   'legacy-fingerprint:CN-SH:600330',
+   'legacy-fingerprint:CN-SH:600330',
+  ]);
+  expect(first.records.map(record => record.id)).toEqual([
+   'tradingview:legacy-fingerprint:CN-SH:600330:1:entry',
+   'tradingview:legacy-fingerprint:CN-SH:600330:1:exit',
+  ]);
+  expect(first.records.map(record => ({
+   side: record.side,
+   executedAt: record.executedAt,
+   quantity: record.quantity,
+   price: record.price,
+   fee: record.fee,
+   source: record.source,
+  }))).toEqual(repeated.records.map(record => ({
+   side: record.side,
+   executedAt: record.executedAt,
+   quantity: record.quantity,
+   price: record.price,
+   fee: record.fee,
+   source: record.source,
+  })));
+  expect(new Set(otherSource.records.map(record => record.source.simulationRunId))).toEqual(new Set(['other-fingerprint:CN-SH:600330']));
+  expect(mergeExecutions(first.records, otherSource.records)).toHaveLength(4);
+ });
 });
 
 it('hides pair report results and exit fees before exit is revealed', async()=>{

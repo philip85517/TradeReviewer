@@ -23,8 +23,14 @@ import { tradeNatureOf, type Instrument, type TradeExecution } from "../trades/t
 import type { ChartSettings } from "./chart-settings";
 import { validReviewExtensions } from "../reviews/review-metrics";
 import type { ImportHistoryEntry } from "./import-history";
-import { isMonthlyStatement } from "../import/monthly-statement";
-import { validateLocalizedInstrumentName } from "../instruments/metadata-contracts";
+import { isMonthlyEvidenceScope, isMonthlyStatement } from "../import/monthly-statement";
+import { canonicalInstrumentId } from "../instruments/display-name";
+import {
+  validateResolvedInstrument,
+  validateLocalizedInstrumentName,
+  type LocalizedInstrumentName,
+  type ResolvedInstrument,
+} from "../instruments/metadata-contracts";
 import type { MarketDataJob } from "./market-data-jobs";
 import type { EpisodeReviewState } from "./review-storage";
 import { buildTradeEpisodes } from "../trades/episodes";
@@ -78,6 +84,57 @@ const COVERAGE_STATUSES = new Set([
   "invalid-response", "storage-error",
 ]);
 
+function marketCurrency(market: string): string {
+  if (market === "HK") return "HKD";
+  if (market === "CN-SH" || market === "CN-SZ") return "CNY";
+  return "USD";
+}
+
+function resolvedAtTimestamp(value: string | undefined): number | undefined {
+  if (typeof value !== "string") return undefined;
+  const timestamp = Date.parse(value);
+  return Number.isFinite(timestamp) ? timestamp : undefined;
+}
+
+function newestByResolvedAt<T extends { resolvedAt: string }>(
+  candidates: readonly (T | undefined)[],
+): T | undefined {
+  let newest: T | undefined;
+  let newestTimestamp: number | undefined;
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    const timestamp = resolvedAtTimestamp(candidate.resolvedAt);
+    if (timestamp === undefined) continue;
+    if (newest === undefined || newestTimestamp === undefined || timestamp >= newestTimestamp) {
+      newest = candidate;
+      newestTimestamp = timestamp;
+    }
+  }
+  return newest;
+}
+
+function storedLocalizedName(value: unknown): LocalizedInstrumentName | undefined {
+  try {
+    return validateLocalizedInstrumentName(value);
+  } catch {
+    return undefined;
+  }
+}
+
+function storedMetadata(value: unknown): ResolvedInstrument | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const candidate = value as Partial<ResolvedInstrument>;
+  if (typeof candidate.market !== "string" || typeof candidate.symbol !== "string") return undefined;
+  try {
+    return validateResolvedInstrument(value, {
+      market: candidate.market,
+      symbol: candidate.symbol,
+    });
+  } catch {
+    return undefined;
+  }
+}
+
 function asString(value: unknown, field: string) {
   if (typeof value !== "string") throw new Error(`Invalid ${field}`);
   return value;
@@ -111,6 +168,76 @@ function assertOptionalStringFields(
 function parseJson<T>(value: unknown, field: string): T {
   if (typeof value !== "string") throw new Error(`Invalid ${field}`);
   try { return JSON.parse(value) as T; } catch { throw new Error(`Invalid ${field}`); }
+}
+
+function withoutMonthlyEvidence(entry: ImportHistoryEntry): ImportHistoryEntry {
+  const { monthly: _monthly, ...metadata } = entry;
+  return metadata;
+}
+
+function parseRevisionRequest(value: unknown): Record<string, unknown> | undefined {
+  if (typeof value !== "string") return undefined;
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? parsed as Record<string, unknown>
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * A legacy scoped supplement was persisted before MonthlyEvidenceScope existed.
+ * Recover its target only from the revision request written in the same batch;
+ * an unproven batch must not become document-wide evidence during bootstrap.
+ */
+function projectImportHistoryMonthly(
+  entry: ImportHistoryEntry,
+  revisionRequestJson: unknown,
+): ImportHistoryEntry {
+  if (entry.monthly === undefined) return entry;
+  if (!isMonthlyStatement(entry.monthly)) return withoutMonthlyEvidence(entry);
+
+  const isLegacyScopedSupplement = entry.id.startsWith("supplement:") && entry.instrumentCount === 1;
+  if (!isLegacyScopedSupplement) return entry;
+
+  const request = parseRevisionRequest(revisionRequestJson);
+  const importHistory = request?.importHistory;
+  if (!request || request.id !== entry.id || !importHistory || typeof importHistory !== "object" || Array.isArray(importHistory)) {
+    return withoutMonthlyEvidence(entry);
+  }
+  const auditHistory = importHistory as Record<string, unknown>;
+  if (auditHistory.id !== entry.id || auditHistory.instrumentCount !== 1) {
+    return withoutMonthlyEvidence(entry);
+  }
+  const instrumentId = request.instrumentId;
+  const accountId = request.accountId;
+  const derivedScope = { instrumentId, accountId };
+  if (!isMonthlyEvidenceScope(derivedScope)) return withoutMonthlyEvidence(entry);
+
+  const auditMonthly = auditHistory.monthly;
+  if (!isMonthlyStatement(auditMonthly)) return withoutMonthlyEvidence(entry);
+  if (
+    auditMonthly.documentId !== entry.monthly.documentId ||
+    auditMonthly.accountId !== accountId ||
+    (entry.monthly.accountId !== undefined && entry.monthly.accountId !== accountId)
+  ) {
+    return withoutMonthlyEvidence(entry);
+  }
+
+  if (entry.monthly.evidenceScope !== undefined) {
+    return isMonthlyEvidenceScope(entry.monthly.evidenceScope) &&
+      entry.monthly.evidenceScope.instrumentId === instrumentId &&
+      entry.monthly.evidenceScope.accountId === accountId
+      ? entry
+      : withoutMonthlyEvidence(entry);
+  }
+
+  return {
+    ...entry,
+    monthly: { ...entry.monthly, evidenceScope: derivedScope },
+  };
 }
 
 function json(value: unknown, field: string) {
@@ -303,6 +430,99 @@ function validateInstrument(value: unknown): asserts value is StoredInstrument {
   }
 }
 
+function isValidNumericEvidence(value: unknown): value is string {
+  return typeof value === "string" && /^-?\d+(?:\.\d+)?$/.test(value) && Number.isFinite(Number(value));
+}
+
+function validateSimulationReport(value: unknown) {
+  const report = asRecord(value, "simulation report");
+  if (Object.keys(report).length === 0 || Object.values(report).some(entry => !isValidNumericEvidence(entry))) {
+    throw new Error("Invalid simulation report");
+  }
+}
+
+function validateTradingViewSourceReport(value: unknown) {
+  const report = asRecord(value, "TradingView source report");
+  const numericFields = [
+    "netPnl",
+    "returnPercent",
+    "favorableExcursion",
+    "favorableExcursionPercent",
+    "adverseExcursion",
+    "adverseExcursionPercent",
+    "cumulativePnl",
+    "cumulativeReturnPercent",
+  ] as const;
+  const expectedFields = [...numericFields, "durationBars"];
+  if (Object.keys(report).length !== expectedFields.length || Object.keys(report).some(field => !expectedFields.includes(field as typeof expectedFields[number]))) {
+    throw new Error("Invalid TradingView source report");
+  }
+  assertStringFields(report, numericFields, "TradingView source report");
+  if (numericFields.some(field => !isValidNumericEvidence(report[field]))
+    || typeof report.durationBars !== "number" || !Number.isInteger(report.durationBars) || report.durationBars < 0) {
+    throw new Error("Invalid TradingView source report");
+  }
+}
+
+function validateSimulationEvidence(source: TradeExecution["source"]) {
+  const hasSimulationEvidence = source.tradingNature === "simulated"
+    || source.tradeNature === "simulation"
+    || source.simulationRunId !== undefined
+    || source.simulationTradeId !== undefined
+    || source.sourceTradeId !== undefined
+    || source.simulationRole !== undefined
+    || source.simulationSignal !== undefined
+    || source.simulationReport !== undefined
+    || source.sourceReport !== undefined;
+  if (!hasSimulationEvidence) return;
+
+  const legacyTradeId = source.simulationTradeId;
+  const sourceTradeId = source.sourceTradeId;
+  const tradeId = sourceTradeId ?? legacyTradeId;
+  const rolelessCurrentParserRow = source.tradeNature === "simulation"
+    && source.tradingNature === undefined
+    && source.simulationRole === undefined
+    && sourceTradeId !== undefined
+    && legacyTradeId === undefined
+    && source.simulationReport === undefined;
+  if (rolelessCurrentParserRow) {
+    if (source.platform !== "tradingview"
+      || typeof sourceTradeId !== "string" || !sourceTradeId.trim() || sourceTradeId !== sourceTradeId.trim()
+      || typeof source.simulationRunId !== "string" || !source.simulationRunId.trim()
+      || source.timePrecision !== "date-only" || source.sourceTimezone !== "Asia/Shanghai"
+      || (source.simulationSignal !== undefined && typeof source.simulationSignal !== "string")) {
+      throw new Error("Invalid simulation evidence");
+    }
+    if (source.sourceReport !== undefined) validateTradingViewSourceReport(source.sourceReport);
+    return;
+  }
+
+  if (source.platform !== "tradingview"
+    || (source.tradeNature !== "simulation" && source.tradingNature !== "simulated")
+    || (source.tradeNature !== undefined && source.tradeNature !== "simulation")
+    || (source.tradingNature !== undefined && source.tradingNature !== "simulated")
+    || typeof source.simulationRunId !== "string" || !source.simulationRunId.trim()
+    || typeof tradeId !== "string" || !tradeId.trim()
+    || (legacyTradeId !== undefined && !/^\d+$/.test(legacyTradeId))
+    || (legacyTradeId !== undefined && legacyTradeId !== tradeId)
+    || (sourceTradeId !== undefined && sourceTradeId !== tradeId)
+    || !["entry", "exit"].includes(source.simulationRole ?? "")
+    || source.timePrecision !== "date-only" || source.sourceTimezone !== "Asia/Shanghai") {
+    throw new Error("Invalid simulation evidence");
+  }
+  if (source.simulationSignal !== undefined && typeof source.simulationSignal !== "string") {
+    throw new Error("Invalid simulation signal");
+  }
+  if (source.simulationReport !== undefined) {
+    if (source.simulationRole !== "exit" || source.sourceReport !== undefined) throw new Error("Invalid simulation report");
+    validateSimulationReport(source.simulationReport);
+  }
+  if (source.sourceReport !== undefined) {
+    if ((source.simulationRole !== undefined && source.simulationRole !== "exit") || source.simulationReport !== undefined) throw new Error("Invalid TradingView source report");
+    validateTradingViewSourceReport(source.sourceReport);
+  }
+}
+
 function validateExecution(value: unknown): asserts value is TradeExecution {
   const item = asRecord(value, "execution") as Partial<TradeExecution>;
   assertStringFields(
@@ -324,18 +544,7 @@ function validateExecution(value: unknown): asserts value is TradeExecution {
     if (Object.values(fees).some(value=>!validDecimal(value)||Number(value)<0)) throw new Error("Invalid settlement fees");
   }
   if (source.tradingNature !== undefined && !["simulated", "live", "unknown"].includes(source.tradingNature)) throw new Error("Invalid trading nature");
-  if (source.tradingNature === "simulated" || source.simulationRole !== undefined) {
-    if (source.platform !== "tradingview" || source.tradingNature !== "simulated"
-      || typeof source.simulationRunId !== "string" || !source.simulationRunId
-      || typeof source.simulationTradeId !== "string" || !/^\d+$/.test(source.simulationTradeId)
-      || !["entry", "exit"].includes(source.simulationRole ?? "")
-      || source.timePrecision !== "date-only" || source.sourceTimezone !== "Asia/Shanghai") throw new Error("Invalid simulation evidence");
-    if (source.simulationSignal !== undefined && typeof source.simulationSignal !== "string") throw new Error("Invalid simulation signal");
-    if (source.simulationReport !== undefined) {
-      if (source.simulationRole !== "exit" || !source.simulationReport || typeof source.simulationReport !== "object" || Array.isArray(source.simulationReport)
-        || Object.values(source.simulationReport).some(value => typeof value !== "string" || !/^-?\d+(?:\.\d+)?$/.test(value))) throw new Error("Invalid simulation report");
-    }
-  } else if (source.tradeNature !== "simulation" && [source.simulationRunId, source.simulationTradeId, source.simulationRole, source.simulationReport].some(value => value !== undefined)) throw new Error("Invalid simulation evidence");
+  validateSimulationEvidence(source);
   validateTradeScope(source.tradeNature ?? (source.tradingNature === "simulated" ? "simulation" : source.tradingNature), source.simulationRunId, "simulation execution");
 }
 
@@ -829,13 +1038,68 @@ export class SqliteStore {
     return rows.map(mapInstrumentRow);
   }
 
+  getInstrumentMetadata(instrumentIds: readonly string[]): StoredInstrument[] {
+    const uniqueIds = [...new Set(instrumentIds)];
+    if (uniqueIds.length === 0) return [];
+    const placeholders = uniqueIds.map(() => "?").join(", ");
+    const rows = this.database
+      .prepare(`select id, symbol, name, market, currency, metadata_json, localized_name_json from instruments where id in (${placeholders}) order by id`)
+      .all(...uniqueIds) as Row[];
+    return rows.map(mapInstrumentRow);
+  }
+
+  putInstrumentMetadata(record: ResolvedInstrument): void {
+    const normalized = validateResolvedInstrument(record, {
+      market: record.market,
+      symbol: record.symbol,
+    });
+    const instrumentId = canonicalInstrumentId(normalized.symbol, normalized.market);
+    withSqliteTransaction(this.database, () => {
+      const existingRow = this.database
+        .prepare("select id, symbol, name, market, currency, metadata_json, localized_name_json from instruments where id = ?")
+        .get(instrumentId) as Row | undefined;
+      const existing = existingRow ? mapInstrumentRow(existingRow) : undefined;
+      const existingMetadata = storedMetadata(existing?.metadata);
+      const newestMetadata = newestByResolvedAt([existingMetadata, normalized]) ?? normalized;
+      const effectiveLocalizedName =
+        newestByResolvedAt<LocalizedInstrumentName>([
+          storedLocalizedName(existing?.localizedName),
+          storedLocalizedName(existingMetadata?.localizedName),
+          normalized.localizedName,
+        ]);
+      this.putInstrument({
+        ...existing,
+        id: instrumentId,
+        market: normalized.market,
+        symbol: normalized.symbol,
+        name: existing?.name ?? normalized.name,
+        currency: existing?.currency ?? marketCurrency(normalized.market),
+        ...(effectiveLocalizedName ? { localizedName: effectiveLocalizedName } : {}),
+        metadata: {
+          ...newestMetadata,
+          ...(effectiveLocalizedName ? { localizedName: effectiveLocalizedName } : {}),
+        },
+      });
+    });
+  }
+
   getExecutions(): TradeExecution[] {
     const rows = this.database.prepare("select e.*, i.symbol, i.name, i.market, i.currency, i.metadata_json, i.localized_name_json from executions e join instruments i on i.id = e.instrument_id").all() as Row[];
     return rows.map(mapExecutionRow).sort(compareExecutions);
   }
 
   getImportHistory(): ImportHistoryEntry[] {
-    return (this.database.prepare("select reconciliation_json from import_batches order by imported_at desc, id").all() as Row[]).map((row) => parseJson<ImportHistoryEntry>(row.reconciliation_json, "import history"));
+    return (this.database.prepare(`
+      select b.reconciliation_json, r.request_json as revision_request_json
+      from import_batches b
+      left join trade_revisions r on r.id = b.id
+      order by b.imported_at desc, b.id
+    `).all() as Row[]).map((row) =>
+      projectImportHistoryMonthly(
+        parseJson<ImportHistoryEntry>(row.reconciliation_json, "import history"),
+        row.revision_request_json,
+      ),
+    );
   }
 
   private getLegacyReviews(): EpisodeReviewRecord[] {

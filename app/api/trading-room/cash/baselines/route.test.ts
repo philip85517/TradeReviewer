@@ -1,4 +1,8 @@
-import { describe, expect, it, vi } from "vitest";
+import { DatabaseSync } from "node:sqlite";
+
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { initializeSqlite } from "../../../../../db/sqlite";
 
 import {
   CASH_SETTINGS_KEY,
@@ -6,7 +10,16 @@ import {
   type CashBaselineRecord,
   type CashBaselineState,
 } from "../../../../lib/cash/cash-model";
+import { CashBaselineStore } from "../../../../lib/cash/cash-baseline-store";
+import type { CashBaselineStorageState } from "../../../../lib/cash/cash-baseline-contracts";
+import { TRADINGVIEW_CANONICAL_ACCOUNT_ID } from "../../../../lib/trades/tradingview-account-identity";
 import { createCashBaselineHandlers, type CashSettingsStore } from "./route";
+
+const databases: DatabaseSync[] = [];
+
+afterEach(() => {
+  for (const database of databases.splice(0)) database.close();
+});
 
 function memoryStore(initial: CashBaselineState = emptyCashBaselineState()): CashSettingsStore & { settings: Record<string, unknown> } {
   let settings: Record<string, unknown> = { [CASH_SETTINGS_KEY]: initial };
@@ -23,9 +36,53 @@ const live = {
   currency: "CNY",
   balance: "-10.50",
   asOf: "2026-09-01T00:00:00.000Z",
+  source: "test",
+  expectedRevision: null,
 } as const;
 
 describe("/api/trading-room/cash/baselines", () => {
+  it("exposes the persistent CAS/history contract and returns current on a stale write", async () => {
+    const database = new DatabaseSync(":memory:");
+    databases.push(database);
+    initializeSqlite(database);
+    let tick = 0;
+    const store = new CashBaselineStore(database, () => `2026-09-26T00:00:0${tick++}.000Z`);
+    const handlers = createCashBaselineHandlers(store);
+    const body = {
+      scope: { nature: "simulation", simulationRunId: null },
+      accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+      currency: "CNY",
+      balance: "100000",
+      asOf: "2026-09-01T00:00:00.000Z",
+      source: "user-default",
+      expectedRevision: null,
+    };
+
+    const created = await handlers.PUT(new Request("http://localhost", { method: "PUT", body: JSON.stringify(body) }));
+    expect(created.status).toBe(200);
+    const first = await created.json() as CashBaselineStorageState;
+    const firstRecord = first.records[0];
+    if (!firstRecord) throw new Error("cash baseline create did not return a record");
+    expect(first).toMatchObject({ records: [expect.objectContaining({ balance: "100000", revision: 0, source: "user-default" })], history: [] });
+
+    const updated = await handlers.PUT(new Request("http://localhost", {
+      method: "PUT",
+      body: JSON.stringify({ ...body, id: firstRecord.id, balance: "101000", source: "user-confirmed", expectedRevision: 0 }),
+    }));
+    expect(updated.status).toBe(200);
+    const second = await updated.json() as CashBaselineStorageState;
+    expect(second).toMatchObject({ records: [expect.objectContaining({ balance: "101000", revision: 1 })], history: [expect.objectContaining({ balance: "100000", revision: 0 })] });
+
+    const stale = await handlers.PUT(new Request("http://localhost", {
+      method: "PUT",
+      body: JSON.stringify({ ...body, id: firstRecord.id, balance: "999", expectedRevision: 0 }),
+    }));
+    expect(stale.status).toBe(409);
+    const currentRecord = second.records[0];
+    if (!currentRecord) throw new Error("cash baseline update did not return a record");
+    expect(await stale.json()).toMatchObject({ error: { code: "revision-conflict" }, current: currentRecord });
+  });
+
   it("persists a baseline and reads the edited value back by its account/currency scope", async () => {
     const store = memoryStore();
     const handlers = createCashBaselineHandlers(store);
@@ -37,7 +94,13 @@ describe("/api/trading-room/cash/baselines", () => {
     expect(saved.status).toBe(200);
     const first = await saved.json() as CashBaselineState;
     expect(first.records).toHaveLength(1);
-    expect(first.records[0]).toMatchObject({ ...live, balance: "-10.5" });
+    expect(first.records[0]).toMatchObject({
+      scope: live.scope,
+      accountId: live.accountId,
+      currency: live.currency,
+      balance: "-10.5",
+      asOf: live.asOf,
+    });
 
     const edited = await handlers.PUT(new Request("http://localhost", {
       method: "PUT",
@@ -53,7 +116,7 @@ describe("/api/trading-room/cash/baselines", () => {
     expect(await reopened.json()).toEqual(state);
   });
 
-  it("keeps live and simulation runs separate and rejects an incomplete simulation scope", async () => {
+  it("keeps legacy simulation runs separate and accepts the canonical whole-account scope", async () => {
     const store = memoryStore();
     const handlers = createCashBaselineHandlers(store);
     const simulation = await handlers.PUT(new Request("http://localhost", {
@@ -63,12 +126,21 @@ describe("/api/trading-room/cash/baselines", () => {
     expect(simulation.status).toBe(200);
     const invalid = await handlers.PUT(new Request("http://localhost", {
       method: "PUT",
-      body: JSON.stringify({ ...live, scope: { nature: "simulation", simulationRunId: null } }),
+      body: JSON.stringify({
+        ...live,
+        accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+        scope: { nature: "simulation", simulationRunId: null },
+        source: "user-default",
+        expectedRevision: null,
+      }),
     }));
-    expect(invalid.status).toBe(400);
+    expect(invalid.status).toBe(200);
     const state = await (await handlers.GET(new Request("http://localhost"))).json() as CashBaselineState;
-    expect(state.records).toHaveLength(1);
-    expect(state.records[0].scope).toEqual({ nature: "simulation", simulationRunId: "run-a" });
+    expect(state.records).toHaveLength(2);
+    expect(state.records).toEqual(expect.arrayContaining([
+      expect.objectContaining({ scope: { nature: "simulation", simulationRunId: "run-a" }, accountId: "account-a" }),
+      expect.objectContaining({ scope: { nature: "simulation", simulationRunId: null }, accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID }),
+    ]));
   });
 
   it("applies an account filter even when nature is omitted", async () => {
@@ -122,6 +194,7 @@ describe("/api/trading-room/cash/baselines", () => {
     expect((await handlers.PUT(new Request("http://localhost", { method: "PUT", body: "{" }))).status).toBe(400);
 
     const failing = memoryStore();
+    if (!failing.getSettings) throw new Error("memory cash settings store must expose getSettings");
     vi.mocked(failing.getSettings).mockImplementation(() => { throw new Error("db unavailable"); });
     expect((await createCashBaselineHandlers(failing).GET(new Request("http://localhost"))).status).toBe(503);
 

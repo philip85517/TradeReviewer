@@ -46,7 +46,14 @@ function execution(id: string, side: "buy" | "sell", amount: string, date = "202
     quantity: "1",
     price: amount,
     fee: "0",
-    source: { platform: "test", row: 1, tradeNature: "live", tradingDate: date, feeStatus: "reported" },
+    source: {
+      platform: "test",
+      row: 1,
+      tradeNature: "live",
+      tradingDate: date,
+      feeStatus: "reported",
+      settlement: { currency: "CNY", quantity: "1", grossAmount: amount, netAmount: "", fees: {} },
+    },
   };
 }
 
@@ -96,13 +103,14 @@ describe("/api/trading-room/cash", () => {
     expect(store.getInstruments).toHaveBeenCalledOnce();
   });
 
-  it("does not read another simulation run and rejects an incomplete scope", async () => {
+  it("does not read another simulation run and accepts the canonical whole-account scope", async () => {
     const store = memoryStore({
       getExecutions: vi.fn(() => [execution("live", "sell", "10")]),
     });
     const { GET } = createCashHandlers(store);
     expect((await GET(new Request("http://localhost/api/trading-room/cash"))).status).toBe(400);
-    expect((await GET(new Request("http://localhost/api/trading-room/cash?nature=simulation"))).status).toBe(400);
+    expect((await GET(new Request("http://localhost/api/trading-room/cash?nature=simulation"))).status).toBe(200);
+    expect((await GET(new Request("http://localhost/api/trading-room/cash?nature=simulation&accountId=legacy-account"))).status).toBe(400);
     expect((await GET(new Request("http://localhost/api/trading-room/cash?nature=live&simulationRunId=run-a"))).status).toBe(400);
     expect((await GET(new Request("http://localhost/api/trading-room/cash?nature=live&targetCurrency=USD"))).status).toBe(400);
   });

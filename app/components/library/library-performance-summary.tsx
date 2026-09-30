@@ -84,13 +84,14 @@ function formatRatio(value: string | null): string {
 }
 
 function formatGroupLabel(
-  group: Pick<LibraryPerformanceComparableGroup, "tradeNature" | "simulationRunId">,
+  group: Pick<LibraryPerformanceComparableGroup, "tradeNature" | "simulationRunId" | "canonicalAccount">,
   groupLabels: Record<string, string> | undefined,
   key: string,
 ): string {
   const custom = groupLabels?.[key];
   if (custom) return custom;
   if (group.tradeNature === "simulation") {
+    if (group.canonicalAccount === "tradingview") return "TradingView · 模拟盘";
     return group.simulationRunId ? formatSimulationRunLabel(group.simulationRunId) : "模拟盘 · 未指定运行";
   }
   if (group.tradeNature === "live") return "实盘";
@@ -104,15 +105,17 @@ function exclusionText(exclusions: LibraryPerformanceExclusions): string[] {
 }
 
 function matchesScope(
-  group: Pick<LibraryPerformanceComparableGroup, "tradeNature" | "simulationRunId">,
-  candidate: Pick<LibraryPerformanceOpenGroup | LibraryPerformanceCurrencyGroup, "tradeNature" | "simulationRunId">,
+  group: Pick<LibraryPerformanceComparableGroup, "tradeNature" | "simulationRunId" | "canonicalAccount">,
+  candidate: Pick<LibraryPerformanceOpenGroup | LibraryPerformanceCurrencyGroup, "tradeNature" | "simulationRunId" | "canonicalAccount">,
 ) {
-  return group.tradeNature === candidate.tradeNature && group.simulationRunId === candidate.simulationRunId;
+  return group.tradeNature === candidate.tradeNature &&
+    group.simulationRunId === candidate.simulationRunId &&
+    group.canonicalAccount === candidate.canonicalAccount;
 }
 
 function openForGroup(
   open: LibraryPerformanceOpen,
-  group: Pick<LibraryPerformanceComparableGroup, "tradeNature" | "simulationRunId"> | null,
+  group: Pick<LibraryPerformanceComparableGroup, "tradeNature" | "simulationRunId" | "canonicalAccount"> | null,
 ) {
   if (!group) return null;
   const groups = open.groups.filter(candidate => matchesScope(group, candidate));

@@ -8,6 +8,7 @@ import {
 import type { MonthlyStatement, StatementPosition, StatementEvent } from "../import/monthly-statement";
 import { canonicalInstrumentId } from "../instruments/display-name";
 import { isExecutionBackedIpoAllocation, replayCursorAt, replayExecutionAt, statementPositionAt, statementEventAt } from "../import/statement-evidence";
+import { bonusShareEvidenceKey, collectBonusShareEvidence, isBonusShareEvidence } from "../trades/bonus-share-evidence";
 import { resolveIpoAcquisitionCost } from "../trades/ipo-cost";
 
 export type PositionLedgerSnapshot = {
@@ -96,6 +97,16 @@ export function replayPositionAtPrice(input: {
   let grossCapitalDeployed = new Decimal(0);
   const reasons = new Set<string>();
   const warnings: Array<{ code: "statement-coverage-gap"; from: string; to: string }> = [];
+  const rawEvents = [
+    ...(input.evidence ?? []).flatMap(e => e.events),
+    ...input.executions.flatMap(e => e.source.positionEvents ?? []),
+  ];
+  const bonusEvidence = collectBonusShareEvidence(rawEvents);
+  const duplicateBonusKeys = new Set(bonusEvidence.duplicateKeys);
+  const events = [...new Map([
+    ...bonusEvidence.events,
+    ...rawEvents.filter(event => !isBonusShareEvidence(event)),
+  ].map(event => [`${event.accountId}:${event.id}`, event])).values()];
   const matches = (item: StatementPosition | StatementEvent) => input.executions.some(e =>
     tradeNatureOf(e) !== "simulation" && e.accountId === item.accountId && item.symbol && item.market &&
     canonicalInstrumentId(e.instrument.symbol, e.instrument.market) === canonicalInstrumentId(item.symbol, item.market)) ||
@@ -112,7 +123,7 @@ export function replayPositionAtPrice(input: {
     seen.add(key);
     timeline.push({ at: statementPositionAt(position), position });
   }
-  for (const event of [...(input.evidence ?? []).flatMap(e => e.events), ...input.executions.flatMap(e => e.source.positionEvents ?? [])]) {
+  for (const event of events) {
     if (!matches(event) || seen.has(`${event.accountId}:${event.id}`)) continue;
     seen.add(`${event.accountId}:${event.id}`);
     // Month-only IPO results are contextual evidence, known by month end at earliest.
@@ -139,11 +150,7 @@ export function replayPositionAtPrice(input: {
     evidence.accountId === position.accountId &&
     (evidence.positions.some(item => item.accountId === position.accountId && item.market === position.market) ||
       evidence.events.some(item => item.accountId === position.accountId && item.market === position.market));
-  const allEvents = [
-    ...(input.evidence ?? []).flatMap(e => e.events),
-    ...input.executions.flatMap(e => e.source.positionEvents ?? []),
-  ];
-  const visibleEvents = [...new Map(allEvents
+  const visibleEvents = [...new Map(events
     .filter(event => visibleAt(ledgerEventAt(event)))
     .map(event => [`${event.accountId}:${event.id}`, event])).values()];
   const allPositions = [
@@ -195,6 +202,7 @@ export function replayPositionAtPrice(input: {
       const event = entry.event;
       if (isExecutionBackedIpoAllocation(event, actualVisibleExecutions)) continue;
       const isIpoAllocation = event.kind === "ipo" && event.quantity !== undefined;
+      const isBonusShare = isBonusShareEvidence(event);
       if (isIpoAllocation && isZero(event.quantity)) continue;
       const sameDayExecution = event.date.length === 10 && actualVisibleExecutions.some(e =>
         e.accountId === event.accountId &&
@@ -208,7 +216,55 @@ export function replayPositionAtPrice(input: {
       );
       const ipoHasExplicitReplayOrder = isIpoAllocation && event.date.length === 10 && event.displayTimePolicy === "session-open";
       if (!ipoHasExplicitReplayOrder && (sameDayExecution || sameMonthExecution) && isIpoAllocation) reasons.add("ambiguous-event-order");
-      if (event.kind === "transfer-in" || event.kind === "transfer-out") {
+      if (isBonusShare) {
+        const duplicate = duplicateBonusKeys.has(bonusShareEvidenceKey(event));
+        const currencies = new Set(actualVisibleExecutions
+          .filter(e => e.accountId === event.accountId && event.symbol && event.market &&
+            canonicalInstrumentId(e.instrument.symbol, e.instrument.market) === canonicalInstrumentId(event.symbol, event.market))
+          .map(e => e.instrument.currency.trim().toUpperCase()));
+        const eventCurrency = event.currency?.trim().toUpperCase();
+        const currencyMismatch = currencies.size > 0 && (currencies.size !== 1 || !eventCurrency || !currencies.has(eventCurrency));
+        const ambiguous = sameDayExecution || sameMonthExecution;
+        if (duplicate) reasons.add("duplicate-position-event");
+        if (ambiguous) {
+          reasons.add("ambiguous-event-order");
+          quantityUncertain = true;
+        }
+        if (currencyMismatch) {
+          reasons.add("currency-conflict");
+          reasons.add("position-event");
+          hasHistory = true;
+          continue;
+        }
+        const size = new Decimal(event.quantity!);
+        if (!size.isPositive()) {
+          reasons.add("position-event");
+          hasHistory = true;
+          continue;
+        }
+        if (quantity.isNegative() || (quantity.isZero() && hasHistory)) {
+          reasons.add("position-event");
+          reasons.add("unknown-cost");
+          hasHistory = true;
+          continue;
+        }
+        const basisKnown = quantity.gt(0) &&
+          !["unknown-cost", "position-event", "position-gap", "ambiguous-event-order", "currency-conflict"].some(reason => reasons.has(reason));
+        const newQuantity = quantity.plus(size);
+        if (basisKnown) {
+          averageCost = averageCost.mul(quantity).div(newQuantity);
+        } else {
+          if (!hasHistory) reasons.add("initial-position");
+          reasons.add("unknown-cost");
+        }
+        quantity = newQuantity;
+      } else if (event.kind === "corporate-action") {
+        // Unsupported company actions must remain evidence for review; they do
+        // not become inventory or a synthetic execution.
+        reasons.add("position-event");
+        hasHistory = true;
+        continue;
+      } else if (event.kind === "transfer-in" || event.kind === "transfer-out") {
         const sameDay = event.date.length === 10 && actualVisibleExecutions.some(e => e.accountId === event.accountId && e.instrument.symbol === event.symbol && (e.source.tradingDate ?? e.source.marketCalendarDate ?? e.executedAt.slice(0, 10)) === event.date);
         pendingTransfers.delete(`${event.accountId}:${event.id}`);
         if (sameDay) reasons.add("ambiguous-event-order");
@@ -271,6 +327,22 @@ export function replayPositionAtPrice(input: {
       continue;
     }
     const execution = entry.execution!;
+    const executionDate = execution.source.tradingDate ?? execution.source.marketCalendarDate ?? execution.executedAt.slice(0, 10);
+    const samePeriodBonusEvidence = tradeNatureOf(execution) !== "simulation" && events.some(event =>
+      isBonusShareEvidence(event) &&
+      ((event.date.length === 10 && event.date === executionDate) ||
+        (event.date.length === 7 && executionDate.startsWith(event.date))) &&
+      event.accountId === execution.accountId && event.symbol && event.market &&
+      canonicalInstrumentId(execution.instrument.symbol, execution.instrument.market) === canonicalInstrumentId(event.symbol, event.market),
+    );
+    if (samePeriodBonusEvidence) {
+      // Date-only and month-only corporate actions are known only at their
+      // statement boundary. A same-period fill may therefore be before or
+      // after the credit; mark the visible replay uncertain before applying
+      // that fill. A future period does not match this predicate.
+      reasons.add("ambiguous-event-order");
+      quantityUncertain = true;
+    }
     if (!hasHistory && !pendingTransfers.size && execution.side === "sell" && (execution.source.statementMonth || execution.source.templateId) && execution.source.positionEffect !== "open-short") {
       reasons.add("ambiguous-opening");
       quantityUncertain = true;

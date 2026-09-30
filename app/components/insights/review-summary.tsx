@@ -6,11 +6,13 @@ import { useEffect, useMemo, useRef, useState, type Dispatch, type KeyboardEvent
 import {
   buildReviewPhaseSummary,
   reviewScopeOptions,
+  type ReviewAccountOption,
   type ReviewSummaryNote,
   type ReviewSummaryRange,
 } from "../../lib/reviews/review-summary";
 import type { ReviewSummaryClient } from "../../lib/storage/review-summary-client";
 import type { TradeLibraryEntry } from "../../lib/trades/library";
+import { UnifiedPageHeader } from "../workspace/unified-page-header";
 import styles from "./review-summary.module.css";
 
 type Props = {
@@ -19,6 +21,7 @@ type Props = {
   filterStore?: { filters: ReviewSummaryFilters; setFilters: Dispatch<SetStateAction<ReviewSummaryFilters>> };
   scopeId: string;
   onScopeChange: (scopeId: string) => void;
+  accountOptions?: readonly ReviewAccountOption[];
   client: ReviewSummaryClient;
   onOpenEpisode: (instrumentId: string, episodeId: string) => void;
   today?: string;
@@ -26,6 +29,10 @@ type Props = {
   activeTab?: ReviewSummaryTab;
   onTabChange?: (tab: ReviewSummaryTab) => void;
   onImport?: () => void;
+  unifiedHeader?: boolean;
+  scopeControls?: ReactNode;
+  globalTools?: ReactNode;
+  scopeTools?: ReactNode;
 };
 
 export type ReviewSummaryTab = "summary" | "patterns";
@@ -110,6 +117,7 @@ export function ReviewSummary({
   filterStore,
   scopeId,
   onScopeChange,
+  accountOptions,
   client,
   onOpenEpisode,
   children,
@@ -117,8 +125,12 @@ export function ReviewSummary({
   activeTab,
   onTabChange,
   onImport,
+  unifiedHeader = false,
+  scopeControls,
+  globalTools,
+  scopeTools,
 }: Props) {
-  const scopes = useMemo(() => reviewScopeOptions(entries), [entries]);
+  const scopes = useMemo(() => reviewScopeOptions(entries, accountOptions), [accountOptions, entries]);
   const [localActiveTab, setLocalActiveTab] = useState<ReviewSummaryTab>("summary");
   const selectedTab = activeTab ?? localActiveTab;
   const changeTab = (tab: ReviewSummaryTab) => {
@@ -162,8 +174,8 @@ export function ReviewSummary({
     dirty: false,
   };
   const summary = useMemo(
-    () => buildReviewPhaseSummary(entries, scopeId, range),
-    [entries, range, scopeId],
+    () => buildReviewPhaseSummary(entries, scopeId, range, accountOptions),
+    [accountOptions, entries, range, scopeId],
   );
   const scope = scopes.find(({ id }) => id === scopeId);
 
@@ -246,41 +258,28 @@ export function ReviewSummary({
     }
   };
 
+  const tabs = (
+    <nav className="module-tabs" role="tablist" aria-label="模式洞察视图" onKeyDown={handleTabKeyDown}>
+      <button type="button" role="tab" id="review-summary-tab-summary" data-tab="summary" aria-selected={selectedTab === "summary"} aria-controls="review-summary-panel-summary" onClick={() => changeTab("summary")}>阶段总结</button>
+      <button type="button" role="tab" id="review-summary-tab-patterns" data-tab="patterns" aria-selected={selectedTab === "patterns"} aria-controls="review-summary-panel-patterns" onClick={() => changeTab("patterns")}>模式分析</button>
+    </nav>
+  );
+  const filterControls = scopes.length > 0 ? (
+    <fieldset disabled={saving} className="review-summary-controls review-summary-filters">
+      <label><span>统计范围</span><select aria-label="总结统计范围" value={scopeId} onChange={(event) => onScopeChange(event.target.value)}>{scopes.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}</select></label>
+      <label><span>日期</span><select aria-label="总结日期范围" value={preset} onChange={(event) => setFilters(current => ({...current, preset: event.target.value as Preset}))}><option value="all">全部</option><option value="last-30">最近 30 天</option><option value="last-90">最近 90 天</option><option value="custom">自定义</option></select></label>
+      {preset === "custom" && <div className="review-summary-custom-range"><label><span>开始日期</span><input type="date" value={customStart} onChange={(event) => setFilters(current => ({...current, customStart: event.target.value}))} /></label><label><span>结束日期</span><input type="date" value={customEnd} onChange={(event) => setFilters(current => ({...current, customEnd: event.target.value}))} /></label></div>}
+    </fieldset>
+  ) : undefined;
+
   return (
-    <section className="review-summary" aria-label="模式洞察">
-      <header>
-        <div>
-          <span className="eyebrow">Trading Insights</span>
-          <h1>模式洞察</h1>
-        </div>
-        <BookOpenCheck size={20} />
-      </header>
+    <section className={`review-summary${unifiedHeader ? " unified-review-summary" : ""}`} aria-label="模式洞察">
+      {unifiedHeader ? <UnifiedPageHeader title="分析" description="阶段总结与模式分析" scopeControls={scopeControls ?? null} globalTools={globalTools} scopeTools={scopeTools} tabs={tabs} filters={filterControls} /> : <>
+        <header><div><span className="eyebrow">Trading Insights</span><h1>模式洞察</h1></div><BookOpenCheck size={20} /></header>
+        {tabs}
+      </>}
 
-      <nav className="module-tabs" role="tablist" aria-label="模式洞察视图" onKeyDown={handleTabKeyDown}>
-        <button
-          type="button"
-          role="tab"
-          id="review-summary-tab-summary"
-          data-tab="summary"
-          aria-selected={selectedTab === "summary"}
-          aria-controls="review-summary-panel-summary"
-          onClick={() => changeTab("summary")}
-        >
-          阶段总结
-        </button>
-        <button
-          type="button"
-          role="tab"
-          id="review-summary-tab-patterns"
-          data-tab="patterns"
-          aria-selected={selectedTab === "patterns"}
-          aria-controls="review-summary-panel-patterns"
-          onClick={() => changeTab("patterns")}
-        >
-          模式分析
-        </button>
-      </nav>
-
+      <div className="review-summary-content">
       {scopes.length === 0 ? (
         <section className="review-summary-empty" aria-label="暂无交易范围">
           <h2>还没有可用的交易范围</h2>
@@ -292,56 +291,7 @@ export function ReviewSummary({
           )}
         </section>
       ) : <>
-      <fieldset disabled={saving} className="review-summary-controls">
-        <label>
-          <span>统计范围</span>
-          <select
-            aria-label="总结统计范围"
-            value={scopeId}
-            onChange={(event) => onScopeChange(event.target.value)}
-          >
-            {scopes.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          <span>日期</span>
-          <select
-            aria-label="总结日期范围"
-            value={preset}
-            onChange={(event) => setFilters(current => ({...current, preset: event.target.value as Preset}))}
-          >
-            <option value="all">全部</option>
-            <option value="last-30">最近 30 天</option>
-            <option value="last-90">最近 90 天</option>
-            <option value="custom">自定义</option>
-          </select>
-        </label>
-        {preset === "custom" && (
-          <div className="review-summary-custom-range">
-            <label>
-              <span>开始日期</span>
-              <input
-                type="date"
-                value={customStart}
-                onChange={(event) => setFilters(current => ({...current, customStart: event.target.value}))}
-              />
-            </label>
-            <label>
-              <span>结束日期</span>
-              <input
-                type="date"
-                value={customEnd}
-                onChange={(event) => setFilters(current => ({...current, customEnd: event.target.value}))}
-              />
-            </label>
-          </div>
-        )}
-      </fieldset>
-
+      {!unifiedHeader && filterControls}
       {!validRange && <p role="alert">开始日期不能晚于结束日期</p>}
       <div
         role="tabpanel"
@@ -494,6 +444,7 @@ export function ReviewSummary({
         hidden={selectedTab !== "patterns" || !validRange}
       >{validRange ? children?.(range) : null}</div>
       </>}
+      </div>
     </section>
   );
 }

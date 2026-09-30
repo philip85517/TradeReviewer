@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import type { TradeLibraryEntry } from "../trades/library";
+import { TRADINGVIEW_CANONICAL_ACCOUNT_ID } from "../trades/tradingview-account-identity";
+import type { TradeExecution } from "../trades/types";
 import type { EpisodeReviewRecord } from "./types";
 import {
   buildReviewPhaseSummary,
@@ -207,6 +209,77 @@ describe("review phase summary", () => {
 });
 
 describe("review scope and tracked rules", () => {
+  it("uses the shared stable account aliases in scope options and summary labels", () => {
+    const entries = [
+      entry({ id: "account-z", accountId: "account-z", endedAt: "2026-08-02T15:00:00.000Z" }),
+      entry({ id: "account-a", accountId: "account-a", endedAt: "2026-08-03T15:00:00.000Z" }),
+    ];
+    const accountOptions = [
+      { id: "account-a", label: "同名账户（账户1）" },
+      { id: "account-z", label: "同名账户（账户2）" },
+    ];
+
+    const scopes = reviewScopeOptions(entries, accountOptions);
+    expect(scopes.map(option => option.scope.accountLabel)).toEqual([
+      "同名账户（账户1）",
+      "同名账户（账户2）",
+    ]);
+
+    const accountZ = scopes.find(option => option.scope.accountId === "account-z");
+    expect(accountZ).toBeDefined();
+    expect(buildReviewPhaseSummary(entries, accountZ!.id, ALL, accountOptions).scopeLabel)
+      .toContain("同名账户（账户2）");
+  });
+
+  it("keeps canonical account and run identity separate from its display label", () => {
+    const accountId = TRADINGVIEW_CANONICAL_ACCOUNT_ID;
+    const migrated = entry({
+      id: "migrated-tv",
+      accountId,
+      nature: "simulation",
+      run: "source-run-legacy",
+      endedAt: "2026-08-02T15:00:00.000Z",
+      netPnl: "10",
+    });
+    const sourceFill: TradeExecution = {
+      id: "tv-source-fill",
+      accountId,
+      accountLabel: "TradingView · 模拟盘",
+      instrument: migrated.instrument,
+      side: "buy",
+      executedAt: "2026-08-01T15:00:00.000Z",
+      quantity: "1",
+      price: "10",
+      fee: "0",
+      source: {
+        platform: "tradingview",
+        row: 1,
+        tradingDate: "2026-08-01",
+        tradeNature: "simulation",
+        simulationRunId: "source-run-legacy",
+      },
+    };
+    migrated.executions = [sourceFill];
+    migrated.episodes[0].episode.executions = [sourceFill];
+    migrated.episodes[0].episode.accountLabel = "旧显示名";
+
+    const accountOptions = [{ id: accountId, label: "TradingView账户（账户1）" }];
+    const scope = reviewScopeOptions([migrated], accountOptions)[0];
+    const alternateLabelScope = reviewScopeOptions([migrated], [
+      { id: accountId, label: "改过的显示名" },
+    ])[0];
+
+    expect(scope.scope).toMatchObject({
+      accountId,
+      accountLabel: "TradingView账户（账户1）",
+      tradeNature: "simulation",
+      simulationRunId: null,
+    });
+    expect(alternateLabelScope.id).toBe(scope.id);
+    expect(buildReviewPhaseSummary([migrated], scope.id, ALL, accountOptions).scopeLabel)
+      .toContain("TradingView账户（账户1）");
+  });
+
   it("filters entries before insight computation without retaining incompatible episodes", () => {
     const entries = [
       entry({ id: "wanted", accountId: "account-a", endedAt: "2026-08-02T15:00:00.000Z" }),

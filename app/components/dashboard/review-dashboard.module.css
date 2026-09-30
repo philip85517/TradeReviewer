@@ -198,7 +198,7 @@
   min-height: 15px;
   align-items: center;
   color: var(--dashboard-muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 650;
 }
 
@@ -384,7 +384,7 @@
 
 .customPeriodApply,
 .customPeriodCancel {
-  min-height: 34px;
+  min-height: 36px;
   border: 1px solid var(--dashboard-line);
   border-radius: 8px;
   padding: 0 10px;
@@ -392,7 +392,7 @@
   color: var(--dashboard-ink);
   cursor: pointer;
   font: inherit;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -651,7 +651,7 @@
   gap: 5px;
   min-width: 0;
   color: var(--dashboard-muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 650;
 }
 
@@ -1211,7 +1211,7 @@
 .observationControls .roomPeriodControl { display: flex; align-items: center; gap: 10px; }
 .observationControls .workspaceHint { flex-basis: 100%; margin: 0; }
 .dateDetails { color: var(--dashboard-muted); font-size: 12px; margin: 6px 0; }
-.dateDetails summary { cursor: pointer; padding: 6px 0; }
+.dateDetails summary { display: flex; align-items: center; min-height: 36px; cursor: pointer; padding: 6px 0; font-size: 14px; }
 .dateDetails[open] { flex-basis: 100%; }
 @media (max-width: 720px) {
   .sharedToolbar { gap: 8px; }
@@ -1225,11 +1225,16 @@
 .dashboard {
   max-width: none;
   min-height: 100%;
-  padding: 12px 18px 34px;
+  padding: 0 24px 34px;
   color: #e7edf6;
   background:
     radial-gradient(circle at 64% -18%, rgba(47, 128, 237, .10), transparent 42%),
     #0b1220;
+}
+
+.dashboardHeader {
+  width: calc(100% + 48px);
+  margin-inline: -24px;
 }
 
 .topbar {
@@ -1249,17 +1254,17 @@
 .topbarTitle p { margin: 3px 0 0; color: #8fa0b7; font-size: 10px; }
 .topbarRight { display: flex; align-items: center; justify-content: flex-end; gap: 9px; min-width: 0; }
 .topbarScope { display: flex; align-items: center; gap: 6px; min-width: 0; }
-.topbarSelect { min-width: 76px; }
+.topbarSelect { min-width: 0; }
 .topbarFilterToggle {
   align-self: end;
-  min-height: 34px;
+  min-height: 36px;
   border: 1px solid #34445b;
   border-radius: 6px;
   padding: 0 9px;
   color: #91a9c9;
   background: #111a2b;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
   white-space: nowrap;
 }
 .topbarFilterToggle:hover,
@@ -1277,7 +1282,7 @@
   gap: 5px;
   min-width: 0;
   color: #9ab0ca;
-  font-size: 9px;
+  font-size: 12px;
   white-space: nowrap;
 }
 .topbarUpdated time { color: #b9cbe0; font-variant-numeric: tabular-nums; }
@@ -1293,38 +1298,38 @@
 }
 .sharedToolbar .roomScopeControls { gap: 7px; }
 .sharedToolbar .radioField { display: flex; align-items: center; gap: 6px; }
-.sharedToolbar .radioField legend { margin: 0; font-size: 9px; white-space: nowrap; }
+.sharedToolbar .radioField legend { margin: 0; font-size: 12px; white-space: nowrap; }
 .sharedToolbar .radioOptions { gap: 2px; }
-.sharedToolbar .radioOption { min-height: 25px; padding: 0 6px; font-size: 10px; }
+.sharedToolbar .radioOption { min-height: 36px; padding: 0 6px; font-size: 14px; }
 .sharedToolbar .roomAdvancedDetails { border-top: 0; padding-top: 0; margin: 0; }
-.sharedToolbar .roomAdvancedDetails > summary { min-height: 25px; padding: 0 5px; border: 1px solid #34445b; border-radius: 6px; color: #91a9c9; background: #111a2b; font-size: 10px; line-height: 25px; }
+.sharedToolbar .roomAdvancedDetails > summary { min-height: 36px; padding: 0 9px; border: 1px solid #34445b; border-radius: 6px; color: #91a9c9; background: #111a2b; font-size: 14px; line-height: 34px; }
 .sharedToolbar .filterChips {
   flex-basis: auto;
   gap: 4px;
   margin: 0;
 }
 .sharedToolbar .filterChips li {
-  min-height: 25px;
+  min-height: 36px;
   padding-left: 7px;
   border-color: #34445b;
-  font-size: 10px;
+  font-size: 12px;
 }
 .sharedToolbar .filterChips button {
-  width: 24px;
-  min-height: 25px;
+  width: 36px;
+  min-height: 36px;
   padding: 0;
-  font-size: 13px;
+  font-size: 16px;
 }
 .sharedToolbar .roomScopeBadge {
   display: inline-flex;
   align-items: center;
   color: #91a9c9;
-  font-size: 10px;
+  font-size: 12px;
   white-space: nowrap;
 }
 
 .workspace {
-  margin-top: 8px;
+  margin-top: 16px;
   padding: 12px;
   border-color: #243145;
   border-radius: 9px;
@@ -1332,16 +1337,16 @@
 }
 .workspaceHeading { gap: 8px; margin-bottom: 9px; }
 .workspaceHeading h2 { color: #f0f4fb; font-size: 19px; letter-spacing: -.02em; }
-.workspaceHeading p, .workspaceHeading > span, .workspaceHint { margin-top: 3px; color: #8fa0b7; font-size: 10px; }
+.workspaceHeading p, .workspaceHeading > span, .workspaceHint { margin-top: 3px; color: #8fa0b7; font-size: 12px; }
 .historyLibraryButton {
-  min-height: 27px;
+  min-height: 36px;
   border: 1px solid #2d78b5;
   border-radius: 6px;
   padding: 0 8px;
   color: #b9e7ff;
   background: #102b47;
   cursor: pointer;
-  font-size: 10px;
+  font-size: 14px;
   white-space: nowrap;
 }
 .historyLibraryButton:hover { border-color: #54b7e9; background: #163b5e; }
@@ -1349,10 +1354,10 @@
 .visuallyHidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .observationControls { gap: 6px 10px; margin: 7px 0; }
 .observationControls .roomPeriodControl { gap: 7px; }
-.observationControls .roomPeriodControl > span { font-size: 10px; }
+.observationControls .roomPeriodControl > span { font-size: 12px; }
 .periodTabs { flex-wrap: nowrap; }
-.dateDetails { margin: 0; font-size: 10px; }
-.dateDetails summary { padding: 3px 0; }
+.dateDetails { margin: 0; font-size: 12px; }
+.dateDetails summary { padding: 5px 0; }
 .holdingsOverviewGrid { grid-template-columns: minmax(0, 2fr) minmax(190px, 1fr); gap: 8px; margin: 8px 0; }
 .roomSummaryGrid { gap: 6px; margin-top: 3px; }
 .roomMoneyDetails, .returnDetails, .roomScopeNotes { font-size: 10px; }
@@ -1367,14 +1372,30 @@
 }
 
 @media (max-width: 759px) {
-  .dashboard { padding: 12px 10px 30px; }
+  .dashboard { padding: 0 16px 30px; }
+  .dashboardHeader { width: calc(100% + 32px); margin-inline: -16px; }
   .topbar { align-items: flex-start; flex-direction: column; }
   .topbarRight { width: 100%; align-items: flex-start; flex-wrap: wrap; justify-content: flex-start; }
   .topbarScope { flex-wrap: wrap; }
   .topbarRight :global(.trading-room-global-tools) { width: 100%; order: -1; }
   .topbarSelect { min-width: 94px; }
+  .topbarSelect select { height: 44px; min-height: 44px; }
   .workspace { padding: 10px; }
   .holdingsOverviewGrid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 320px) {
+  .dashboard { padding-inline: 12px; }
+  .dashboardHeader { width: calc(100% + 24px); margin-inline: -12px; }
+}
+
+@media (max-width: 759px), (pointer: coarse) {
+  .topbarFilterToggle,
+  .historyLibraryButton,
+  .customPeriodApply,
+  .customPeriodCancel,
+  .dateDetails summary { min-height: 44px; }
+  .roomCustomPeriodEditor .filterField input { height: 44px; }
 }
 
 /* Keep the financial state palette readable on touch widths as well. The
@@ -1424,10 +1445,10 @@
   }
   .workspaceHeading { gap: 6px; margin-bottom: 6px; }
   .historyPeriodControl { display: flex; align-items: center; gap: 4px; min-width: 0; margin-left: auto; }
-  .historyPeriodControl > span { color: #8fa0b7; font-size: 9px; white-space: nowrap; }
+  .historyPeriodControl > span { color: #8fa0b7; font-size: 12px; white-space: nowrap; }
   .historyPeriodControl .periodTabs { flex-wrap: nowrap; gap: 1px; }
-  .workspaceHeading > .dateDetails { flex: 0 0 auto; margin: 0; font-size: 9px; }
-  .workspaceHeading > .dateDetails summary { padding: 2px 0; white-space: nowrap; }
+  .workspaceHeading > .dateDetails { flex: 0 0 auto; margin: 0; font-size: 12px; }
+  .workspaceHeading > .dateDetails summary { min-height: 36px; padding: 5px 0; white-space: nowrap; }
   .workspaceHeading > .dateDetails[open] { flex-basis: 100%; }
   .workspace > .roomPeriodControl,
   .workspace > .dateDetails { margin: 0; }
@@ -1518,6 +1539,10 @@
   .workspace[aria-label="历史交易与复盘"] .roomDetailsBody .roomScopeHint,
   .workspace[aria-label="历史交易与复盘"] .roomDetailsBody .roomMoneyDetails p { margin: 4px 0 0; font-size: 9px; line-height: 1.3; }
   .workspace[aria-label="历史交易与复盘"] .roomDetailsBody .returnGrid { gap: 4px; margin-top: 4px; }
+}
+
+@media (min-width: 821px) and (pointer: coarse) {
+  .workspaceHeading > .dateDetails summary { min-height: 44px; }
 }
 
 /* Between the reference desktop and the narrow touch layout the content rail

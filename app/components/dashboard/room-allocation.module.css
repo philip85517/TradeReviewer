@@ -2,7 +2,7 @@
 .header { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
 .panel h3 { margin: 0; color: #eaf3ff; font-size: 14px; line-height: 1.25; }
 .tabs, .currencyTabs { display: flex; flex-wrap: wrap; gap: 4px; }
-.tabs button, .currencyTabs button { min-height: 28px; border: 1px solid var(--scope-control-border, #34445b); border-radius: 5px; padding: 0 8px; color: var(--scope-control-muted, #91a9c9); background: var(--scope-control-background, #111a2b); cursor: pointer; font: inherit; font-size: 11px; }
+.tabs button, .currencyTabs button { min-height: 36px; border: 1px solid var(--scope-control-border, #34445b); border-radius: 5px; padding: 0 8px; color: var(--scope-control-muted, #91a9c9); background: var(--scope-control-background, #111a2b); cursor: pointer; font: inherit; font-size: 14px; }
 .tabs button[aria-pressed="true"], .currencyTabs button[aria-selected="true"] { color: var(--scope-control-selected-text, #edf6ff); border-color: var(--scope-control-selected-border, #3797ff); background: var(--scope-control-selected, #163d63); }
 .currencyTabs { margin: 8px 0 0; }
 .note { margin: 5px 0 0; color: #8ea1ba; font-size: 9px; line-height: 1.35; }
@@ -78,7 +78,7 @@
   .panel { padding: 7px 8px; }
   .panel h3 { font-size: 13px; }
   .tabs, .currencyTabs { gap: 2px; }
-  .tabs button, .currencyTabs button { min-height: 28px; padding: 0 8px; font-size: 11px; }
+  .tabs button, .currencyTabs button { min-height: 36px; padding: 0 8px; font-size: 14px; }
   .currencyTabs { margin-top: 4px; }
   .note, .gapNote { margin-top: 3px; font-size: 9px; line-height: 1.2; }
   .distributionBody { grid-template-columns: minmax(150px, 1.12fr) minmax(0, .88fr); gap: 6px; min-height: 150px; margin-top: 2px; }
@@ -106,4 +106,8 @@
 @media (pointer: coarse) {
   .tabs button, .currencyTabs button { min-height: 44px; }
   .cashDetails summary { min-height: 44px; display: inline-flex; align-items: center; }
+}
+
+@media (max-width: 759px) {
+  .tabs button, .currencyTabs button { min-height: 44px; font-size: 14px; }
 }

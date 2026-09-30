@@ -56,7 +56,9 @@
   color: var(--dashboard-ink);
   cursor: pointer;
   font: inherit;
-  font-size: 11px;
+  font-size: 14px;
+  min-height: 36px;
+  white-space: nowrap;
 }
 .viewTabs button[aria-pressed="true"],
 .levelTabs button[aria-pressed="true"] { border-color: var(--blue, #4e9bab); background: var(--dashboard-soft); color: var(--blue, #32758b); }
@@ -114,7 +116,7 @@
 .calendarWrap { display: grid; gap: 10px; }
 .calendarSummary { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; border: 1px solid var(--dashboard-line-soft); border-radius: 8px; padding: 6px 8px; background: var(--dashboard-soft); }
 .calendarSummary strong { font-size: 13px; }
-.calendarSummary span { color: var(--dashboard-muted); font-size: 10px; }
+.calendarSummary span { color: var(--dashboard-muted); font-size: 12px; }
 .calendarNav { justify-content: center; }
 .calendarNav button { width: 30px; padding: 5px; font-size: 17px; line-height: 1; }
 .calendarGrid { display: grid; gap: 7px; }
@@ -147,12 +149,14 @@
 .detailRows { display: grid; gap: 6px; }
 .detailSummary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
 .detailSummary > div { display: grid; gap: 3px; min-width: 0; border: 1px solid var(--dashboard-line-soft); border-radius: 8px; padding: 7px; background: var(--dashboard-soft); }
-.detailSummary span { color: var(--dashboard-muted); font-size: 9px; }
-.detailSummary strong { min-width: 0; overflow-wrap: anywhere; font-size: 11px; }
+.detailSummary span { color: var(--dashboard-muted); font-size: 12px; }
+.detailSummary strong { min-width: 0; overflow-wrap: anywhere; font-size: 14px; }
 .detailRow { border-bottom: 1px solid var(--dashboard-line); padding: 8px 0; }
 .detailRow > div { display: grid; gap: 3px; }
-.detailRow > div:last-child { justify-items: end; }
-.detailRow strong { font-size: 11px; }
+.detailRow > div:first-child { min-width: 0; flex: 1 1 auto; }
+.detailRow > div:last-child { flex: 0 0 auto; min-width: max-content; justify-items: end; }
+.detailRow > div:last-child strong { white-space: nowrap; }
+.detailRow strong { font-size: 14px; }
 .detailRow button { min-height: 44px; border: 0; padding: 0 8px; background: transparent; color: var(--blue, #32758b); }
 .viewTabs button, .levelTabs button, .calendarNav button, .trendDetails summary { min-height: 44px; }
 
@@ -189,7 +193,10 @@
   .trendPointList small { grid-column: auto; }
   .selectedTrendPoint { grid-template-columns: 1fr; gap: 3px; }
   .selectedTrendPoint small { grid-column: auto; }
-  .detailRow { align-items: flex-start; }
+  .detailRow { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 6px; }
+  .detailRow > div:last-child { width: 100%; min-width: 0; justify-items: start; }
+  .detailRow > div:last-child strong { max-width: 100%; }
+  .detailRow > div:last-child button { justify-self: start; }
   .detailSummary { grid-template-columns: 1fr; }
   .dailyGrid .cellDateShort,
   .dailyGrid .cellValueShort,
@@ -225,7 +232,7 @@
 .workspaceGrid .cellValueLong, .workspaceGrid .cellSecondaryLong { overflow-wrap: anywhere; white-space: normal; }
 .workspaceGrid .calendarGrid,
 .workspaceGrid .weekdays { gap: 3px; }
-.workspaceGrid .levelTabs button { min-height: 30px; padding: 4px 6px; }
+  .workspaceGrid .levelTabs button { min-height: 36px; padding: 5px 8px; font-size: 14px; }
 .workspaceGrid .chartFrame { min-height: 0; padding: 6px; }
 .workspaceGrid .chartStage { height: 220px; }
 .workspaceGrid .chartFrame svg { height: 100%; }
@@ -287,14 +294,14 @@
   .workspaceGrid .calendarWrap { gap: 4px; min-height: 0; padding: 6px; }
   .workspaceGrid .calendarWrap h3 { margin-bottom: 2px; font-size: 13px; }
   .workspaceGrid .calendarWrap .levelTabs { gap: 2px; }
-  .workspaceGrid .calendarWrap .levelTabs button { min-height: 25px; padding: 3px 5px; font-size: 10px; }
-  .workspaceGrid .calendarWrap .calendarNav { gap: 3px; font-size: 10px; }
-  .workspaceGrid .calendarWrap .calendarNav button { width: 25px; min-height: 25px; padding: 3px; font-size: 14px; }
-  .workspaceGrid .calendarWrap .calendarNav span { font-size: 10px; }
+  .workspaceGrid .calendarWrap .levelTabs button { min-height: 36px; padding: 5px 8px; font-size: 14px; }
+  .workspaceGrid .calendarWrap .calendarNav { gap: 3px; font-size: 12px; }
+  .workspaceGrid .calendarWrap .calendarNav button { width: 36px; min-height: 36px; padding: 5px; font-size: 16px; }
+  .workspaceGrid .calendarWrap .calendarNav span { font-size: 12px; }
   .workspaceGrid .calendarWrap .breadcrumb { gap: 4px; font-size: 9px; }
   .workspaceGrid .calendarWrap .calendarSummary { padding: 4px 5px; }
   .workspaceGrid .calendarWrap .calendarSummary strong { font-size: 11px; }
-  .workspaceGrid .calendarWrap .calendarSummary span { font-size: 9px; }
+  .workspaceGrid .calendarWrap .calendarSummary span { font-size: 12px; }
   .workspaceGrid .dailyGrid .leadingBlank { min-height: 34px; height: 34px; }
   .workspaceGrid .axisYLabels,
   .workspaceGrid .axisXLabels { font-size: 9px; }
@@ -319,12 +326,15 @@
     position: relative;
     grid-template-rows: auto auto auto;
     gap: 4px;
+    align-self: start;
+    align-content: start;
     overflow: visible;
   }
   .workspaceGrid .cardHeading { min-height: 25px; gap: 5px; }
   .workspaceGrid .cardHeading h3 { font-size: 13px; }
   .workspaceGrid .trendWrap > .levelTabs { gap: 2px; }
-  .workspaceGrid .trendWrap > .levelTabs button { min-height: 28px; padding: 3px 6px; font-size: 11px; }
+  .workspaceGrid .trendWrap > .levelTabs { align-self: start; }
+  .workspaceGrid .trendWrap > .levelTabs button { min-height: 36px; padding: 5px 8px; font-size: 14px; }
   .workspaceGrid .chartFrame { min-height: 0; height: auto; padding: 5px; box-sizing: border-box; }
   .workspaceGrid .trendFooter { min-width: 0; min-height: 14px; display: flex; align-items: center; gap: 4px 8px; }
   .workspaceGrid .trendValueLegend { min-width: 0; min-height: 12px; color: #9db2cc; font-size: 9px; white-space: nowrap; }
@@ -343,11 +353,11 @@
     min-height: 42px;
   }
   .workspaceGrid .calendarHeader h3 { grid-area: title; min-width: 0; margin: 0; font-size: 13px; line-height: 1.05; white-space: nowrap; }
-  .workspaceGrid .calendarUnit { display: inline-block; margin-left: 5px; color: #b4c9e2; font-size: 8px; font-weight: 500; vertical-align: middle; }
+  .workspaceGrid .calendarUnit { display: inline-block; margin-left: 5px; color: #b4c9e2; font-size: 12px; font-weight: 500; vertical-align: middle; }
   .workspaceGrid .calendarHeader .levelTabs { grid-area: levels; justify-self: start; gap: 1px; flex-wrap: nowrap; min-width: 0; }
-  .workspaceGrid .calendarHeader .levelTabs button { min-width: 0; min-height: 21px; padding: 2px 4px; font-size: 8.5px; }
-  .workspaceGrid .calendarHeader .calendarNav { grid-area: nav; justify-self: end; align-self: center; gap: 2px; min-width: 0; flex-wrap: nowrap; font-size: 9px; }
-  .workspaceGrid .calendarHeader .calendarNav button { width: 22px; min-height: 23px; padding: 2px; font-size: 13px; }
+  .workspaceGrid .calendarHeader .levelTabs button { min-width: 0; min-height: 36px; padding: 5px 8px; font-size: 14px; }
+  .workspaceGrid .calendarHeader .calendarNav { grid-area: nav; justify-self: end; align-self: center; gap: 2px; min-width: 0; flex-wrap: nowrap; font-size: 12px; }
+  .workspaceGrid .calendarHeader .calendarNav button { width: 36px; min-height: 36px; padding: 5px; font-size: 16px; }
   .workspaceGrid .calendarHeader .calendarNav span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .workspaceGrid .calendarWrap { gap: 3px; padding: 6px; overflow: visible; }
   .workspaceGrid .calendarWrap .weekdays { gap: 2px; font-size: 9px; }
@@ -407,9 +417,9 @@
   }
   .workspaceGrid .calendarHeader .levelTabs button {
     min-width: 0;
-    min-height: 28px;
-    padding: 3px 7px;
-    font-size: 10px;
+    min-height: 36px;
+    padding: 5px 8px;
+    font-size: 14px;
   }
   .workspaceGrid .calendarHeader .calendarNav {
     grid-area: nav;
@@ -419,9 +429,9 @@
     flex-wrap: nowrap;
   }
   .workspaceGrid .calendarHeader .calendarNav button {
-    width: 28px;
-    min-height: 28px;
-    padding: 3px;
+    width: 36px;
+    min-height: 36px;
+    padding: 5px;
   }
   .workspaceGrid .calendarHeader .calendarNav span {
     min-width: 0;
@@ -434,6 +444,9 @@
 }
 
 @media (max-width: 620px) {
+  .workspaceGrid .trendWrap > .levelTabs button,
+  .workspaceGrid .calendarHeader .levelTabs button,
+  .workspaceGrid .calendarWrap .calendarNav button { min-width: 44px; min-height: 44px; font-size: 14px; }
   .workspaceGrid .calendarWrap { gap: 4px; padding: 6px; }
   .workspaceGrid .calendarWrap .weekdays {
     display: grid;

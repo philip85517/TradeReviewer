@@ -275,7 +275,7 @@ describe("SQLite production storage boundary", () => {
 
     await waitFor(() => {
       expect(screen.getByRole("region", { name: "交易室范围" })).toBeInTheDocument();
-      expect(screen.getByLabelText("交易室共享范围")).toBeInTheDocument();
+      expect(screen.getByRole("group", { name: "共享范围" })).toBeInTheDocument();
       expect(screen.getByRole("combobox", { name: "账户范围" })).toBeInTheDocument();
       expect(screen.getByRole("combobox", { name: "报告计价" })).toBeInTheDocument();
       expect(screen.getByRole("region", { name: "历史交易与复盘" })).toBeInTheDocument();

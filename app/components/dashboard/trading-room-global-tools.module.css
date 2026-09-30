@@ -11,17 +11,34 @@
 }
 
 .search {
-  width: min(210px, 20vw);
+  width: 100%;
+  min-width: 0;
+}
+
+.splitSearch {
+  display: grid;
+  gap: 4px;
+  align-content: end;
+  width: 100%;
+  min-width: 0;
+}
+
+.searchLabel {
+  color: var(--dashboard-muted);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 16px;
 }
 
 .searchField {
-  min-height: 34px;
+  height: 36px;
+  min-height: 36px;
   display: flex;
   align-items: center;
   gap: 7px;
   padding: 0 9px;
   border: 1px solid var(--dashboard-line);
-  border-radius: 8px;
+  border-radius: 6px;
   color: var(--dashboard-muted);
   background: color-mix(in srgb, var(--dashboard-card) 86%, transparent);
 }
@@ -39,7 +56,14 @@
   outline: 0;
   color: var(--text);
   background: transparent;
-  font-size: 12px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.searchField input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
 }
 
 .searchField input::placeholder { color: var(--dashboard-muted); }
@@ -48,7 +72,7 @@
 .iconButton,
 .userButton {
   position: relative;
-  min-height: 34px;
+  min-height: 36px;
   border: 1px solid transparent;
   border-radius: 8px;
   color: var(--dashboard-muted);
@@ -56,7 +80,7 @@
   cursor: pointer;
 }
 
-.iconButton { width: 34px; display: grid; place-items: center; }
+.iconButton { width: 36px; display: grid; place-items: center; }
 .iconButton:hover, .iconButton[aria-expanded="true"], .userButton:hover, .userButton.active { border-color: var(--dashboard-line); color: var(--text); background: var(--dashboard-soft); }
 
 .badge {
@@ -71,7 +95,7 @@
   border: 2px solid var(--dashboard-page);
   border-radius: 999px;
   color: #fff;
-  background: var(--dashboard-negative);
+  background: var(--dashboard-negative, #ef6672);
   font-size: 9px;
   font-weight: 750;
 }
@@ -101,7 +125,7 @@
 .panel header small { color: var(--dashboard-muted); font-size: 11px; }
 .closePanel { display: grid; place-items: center; border: 0; padding: 4px; color: var(--dashboard-muted); background: transparent; cursor: pointer; }
 
-.searchPopover { position: absolute; z-index: 50; top: calc(100% + 8px); left: 0; width: min(340px, calc(100vw - 28px)); border: 1px solid var(--dashboard-line); border-radius: 11px; padding: 7px; background: var(--dashboard-card-elevated); box-shadow: 0 18px 45px rgba(0, 0, 0, .42); }
+.searchPopover { position: absolute; z-index: 50; top: calc(100% + 8px); left: 0; width: min(340px, calc(100vw - 28px)); max-height: min(420px, calc(100dvh - 120px)); overflow: auto; border: 1px solid var(--dashboard-line); border-radius: 11px; padding: 7px; background: var(--dashboard-card-elevated); box-shadow: 0 18px 45px rgba(0, 0, 0, .42); }
 .searchResult { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px; border: 0; border-radius: 7px; color: var(--text); background: transparent; text-align: left; cursor: pointer; }
 .searchResult:hover, .searchResult:focus-visible { background: var(--blue-soft); }
 .searchResult span { min-width: 0; display: grid; gap: 3px; }
@@ -131,7 +155,7 @@
 .userPanel > button:hover, .userPanel > button:focus-visible { background: var(--blue-soft); }
 
 @media (max-width: 900px) {
-  .search { width: min(190px, 25vw); }
+  .search { width: 100%; min-width: 0; }
   .userLabel { display: none; }
   .userButton { padding-right: 3px; }
 }
@@ -146,14 +170,29 @@
     max-width: 100%;
     gap: 4px;
   }
-  .search,
-  .popoverAnchor { position: static; }
-  .search { width: min(190px, 48vw); }
+  .splitSearch { position: relative; }
+  .utilities .popoverAnchor { position: static; }
+  .search { width: 100%; min-width: 0; }
+  .splitSearch { width: 100%; }
   .panel,
   .searchPopover {
-    left: 0;
-    right: auto;
     max-width: 100%;
     box-sizing: border-box;
   }
+  .utilities .panel {
+    left: auto;
+    right: 0;
+    width: min(360px, calc(100vw - 28px));
+    max-width: calc(100vw - 28px);
+  }
+  .splitSearch .searchPopover {
+    left: 0;
+    right: auto;
+  }
+}
+
+@media (max-width: 759px) {
+  .splitSearch .searchField,
+  .splitSearch input { min-height: 44px; }
+  .splitSearch .searchField { height: 44px; }
 }

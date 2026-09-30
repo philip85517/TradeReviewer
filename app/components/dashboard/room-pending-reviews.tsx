@@ -72,18 +72,27 @@ function closingFieldNote(reason: string | null, field: "price" | "quantity") {
 
 function closingPriceDisplay(value: string | null, currency: string | null) {
   if (!value || !currency) {
-    return { display: "不可用", full: null };
+    return { display: "不可用", full: null, raw: null, requiresExpansion: false };
   }
   const raw = value.trim();
-  if (!raw) return { display: "不可用", full: null };
+  if (!raw) return { display: "不可用", full: null, raw: null, requiresExpansion: false };
   let display = raw;
+  let requiresExpansion = false;
   try {
     const parsed = new Decimal(raw);
-    if (parsed.isFinite() && parsed.gte(0)) display = parsed.toDecimalPlaces(6).toString();
+    if (parsed.isFinite() && parsed.gte(0)) {
+      display = parsed.toDecimalPlaces(6).toFixed();
+      requiresExpansion = !parsed.eq(display);
+    }
   } catch {
     // Keep the source text visible when it is not a valid decimal.
   }
-  return { display: `${display} ${currency}`, full: `${raw} ${currency}` };
+  return {
+    display: `${display} ${currency}`,
+    full: `完整成交均价：${raw} ${currency}`,
+    raw,
+    requiresExpansion,
+  };
 }
 
 export function RoomPendingReviews({ model, pageSize = 3, onOpenInReview, sourceSnapshot = null, onViewAllPending, page, onPageChange }: RoomPendingReviewsProps) {
@@ -118,13 +127,23 @@ export function RoomPendingReviews({ model, pageSize = 3, onOpenInReview, source
       <div className={styles.tableWrap}><table><thead><tr><th>平仓日期</th><th>标的</th><th>方向</th><th>成交均价</th><th>数量</th><th>回合净盈亏</th><th>状态</th><th>操作</th></tr></thead><tbody>{rows.map(row => {
         const closingPrice = closingPriceDisplay(row.closingWeightedPrice, row.closingCurrency);
         const priceLabel = closingPrice.full
-          ? `成交均价：${closingPrice.display}；完整原值：${closingPrice.full}`
+          ? `成交均价：${closingPrice.display}；${closingPrice.full}`
           : "成交均价：不可用";
+        const priceValue = !closingPrice.full ? (
+          <span className={styles.priceValue}>{closingPrice.display}</span>
+        ) : closingPrice.requiresExpansion ? (
+          <details className={styles.priceDetails} data-price-full-value={closingPrice.raw ?? undefined}>
+            <summary title={closingPrice.full} aria-label={closingPrice.full}>{closingPrice.display}</summary>
+            <span className={styles.priceFullValue}>{closingPrice.full}</span>
+          </details>
+        ) : (
+          <span className={styles.priceValue} title={closingPrice.full} aria-label={closingPrice.full}>{closingPrice.display}</span>
+        );
         return <tr key={row.episodeId}>
         <td data-label="平仓日期">{row.closeDate || "日期待核对"}</td>
         <td data-label="标的"><strong>{row.instrumentName}</strong><small>{row.symbol} · {row.accountLabel}</small></td>
         <td data-label="方向">{directionLabel(row.closingSide)}</td>
-        <td data-label="成交均价" className={styles.priceCell} aria-label={priceLabel}><span className={styles.priceValue} title={closingPrice.full ? `完整原值：${closingPrice.full}` : undefined}>{closingPrice.display}</span>{closingFieldNote(row.closingUnavailableReason, "price") && <small>{closingFieldNote(row.closingUnavailableReason, "price")}</small>}</td>
+        <td data-label="成交均价" className={styles.priceCell} aria-label={priceLabel}>{priceValue}{closingFieldNote(row.closingUnavailableReason, "price") && <small>{closingFieldNote(row.closingUnavailableReason, "price")}</small>}</td>
         <td data-label="数量">{row.closingQuantity ?? "不可用"}{closingFieldNote(row.closingUnavailableReason, "quantity") && <small>{closingFieldNote(row.closingUnavailableReason, "quantity")}</small>}</td>
         <td data-label="回合净盈亏" className={styles[tone(row.money, model.displayCurrency)]}>{row.money ? amount(row.money, model.displayCurrency) : "不可用"}{pendingReasonLabel(row.unavailableReason) && <small>{pendingReasonLabel(row.unavailableReason)}</small>}</td>
         <td data-label="状态"><span className={styles.pending}>待复盘</span></td>

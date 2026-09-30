@@ -468,7 +468,10 @@ function expectOnlyLocalFxFetches() {
     const method = requestInit.method?.toUpperCase() ?? "GET";
     return requestInit.cache !== "no-store" || method !== "GET";
   });
-  expect(unexpectedRequests).toHaveLength(0);
+  expect(
+    unexpectedRequests.map(([input, init]) => ({ input: String(input), init })),
+    `unexpected local fetches: ${unexpectedRequests.map(([input]) => String(input)).join(", ")}`,
+  ).toHaveLength(0);
 }
 
 function rejectNextDemoReplayRequest() {
@@ -687,6 +690,44 @@ describe("TradeReviewWorkspace", () => {
     expect(menuButton).toHaveAttribute("aria-expanded", "false");
   });
 
+  it("mounts one active-page search and utility set", async () => {
+    const user = userEvent.setup();
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+
+    const navigation = await screen.findByRole("navigation", { name: "主导航" });
+    await user.click(within(navigation).getByRole("button", { name: "交易库" }));
+    await screen.findByRole("region", { name: "交易库" });
+
+    expect(screen.getAllByRole("searchbox", { name: "搜索已导入标的", hidden: true })).toHaveLength(1);
+    expect(screen.getAllByRole("button", { name: "打开待处理事项", hidden: true })).toHaveLength(1);
+  });
+
+  it("returns notification reviews to their real analysis and data sources", async () => {
+    const user = userEvent.setup();
+    saveImportedExecutions([
+      availabilityExecution({ id: "notification-buy", row: 1, side: "buy", executedAt: "2026-09-10T14:30:00.000Z" }),
+      availabilityExecution({ id: "notification-sell", row: 2, side: "sell", executedAt: "2026-09-11T14:30:00.000Z" }),
+    ]);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+
+    const navigation = await screen.findByRole("navigation", { name: "主导航" });
+    await user.click(within(navigation).getByRole("button", { name: "分析" }));
+    await screen.findByRole("heading", { name: "分析", level: 1 });
+    await user.click(screen.getByRole("button", { name: "打开待处理事项" }));
+    await user.click(screen.getByRole("button", { name: /已平仓待复盘/ }));
+    expect(await screen.findByRole("button", { name: "返回分析" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "返回分析" }));
+    expect(await screen.findByRole("heading", { name: "分析", level: 1 })).toBeInTheDocument();
+
+    await user.click(within(navigation).getByRole("button", { name: "数据" }));
+    await screen.findByRole("heading", { name: "数据", level: 1 });
+    await user.click(screen.getByRole("button", { name: "打开待处理事项" }));
+    await user.click(screen.getByRole("button", { name: /已平仓待复盘/ }));
+    expect(await screen.findByRole("button", { name: "返回数据" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "返回数据" }));
+    expect(await screen.findByRole("heading", { name: "数据", level: 1 })).toBeInTheDocument();
+  });
+
   it("loads the FX snapshot when the production workspace opens on the dashboard", async () => {
     const fxState = {
       id: "fx:test-home-dashboard",
@@ -833,18 +874,52 @@ describe("TradeReviewWorkspace", () => {
     expect(summary).toHaveAttribute("aria-expanded", "true");
   }
 
-  it("keeps imported replay in one compact frame and places review actions in Recall's header", async () => {
+  it("keeps imported review actions in the Recall frame without a duplicate page header", async () => {
     await renderGoldReplay([], undefined, "2026-06-26T02:22:37Z", false, createLegacySqliteClient(), false, false);
 
+    const workspace = screen.getByRole("region", { name: "导入交易回忆复盘工作区" });
+    const header = workspace.querySelector<HTMLElement>(":scope > .recall-header");
+    expect(header).not.toBeNull();
+    if (!header) throw new Error("Recall frame header missing");
     expect(screen.queryByRole("banner", { name: "页面顶栏" })).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("复盘布局")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "检查/修复数据" })).toBeVisible();
-    expect(screen.getByRole("button", { name: /^返回/ })).toBeVisible();
+    expect(within(header).getByRole("button", { name: "打开导入与数据管理" })).toBeVisible();
+    expect(within(header).getByRole("button", { name: "打开股票列表" })).toBeVisible();
+    expect(within(header).getByRole("button", { name: "检查/修复数据" })).toBeVisible();
+    expect(within(header).getByRole("button", { name: /^返回/ })).toBeVisible();
+    expect(within(header).getByRole("button", { name: "专注图表" })).toBeVisible();
   });
 
   it("keeps Recall header actions wired to data management, repair, and return navigation", async () => {
     const user = userEvent.setup();
     await renderGoldReplay([], undefined, "2026-06-26T02:22:37Z", false, createLegacySqliteClient(), false, false);
+
+    const recallWorkspace = () => screen.getByRole("region", { name: "导入交易回忆复盘工作区" });
+    const frameHeader = (): HTMLElement => {
+      const header = recallWorkspace().querySelector<HTMLElement>(":scope > .recall-header");
+      if (!header) throw new Error("Recall frame header missing");
+      return header;
+    };
+    expect(screen.queryByRole("banner", { name: "页面顶栏" })).not.toBeInTheDocument();
+    const layoutBeforeFocus = {
+      leftHidden: screen.getByRole("region", { name: "导入交易回忆复盘工作区" }).closest(".workspace")?.classList.contains("layout-left-hidden"),
+      rightHidden: screen.getByRole("region", { name: "导入交易回忆复盘工作区" }).closest(".workspace")?.classList.contains("layout-right-hidden"),
+    };
+
+    await user.click(within(frameHeader()).getByRole("button", { name: "专注图表" }));
+    expect(within(frameHeader()).getByRole("button", { name: "标准布局" })).toHaveAttribute("aria-pressed", "true");
+    expect(recallWorkspace().closest(".workspace")).toHaveClass("layout-left-hidden", "layout-right-hidden");
+    const standardLayoutButton = within(frameHeader()).getByRole("button", { name: "标准布局" });
+    await user.click(standardLayoutButton);
+    expect(within(frameHeader()).getByRole("button", { name: "专注图表" })).toHaveAttribute("aria-pressed", "false");
+    expect(recallWorkspace().closest(".workspace")?.classList.contains("layout-left-hidden")).toBe(layoutBeforeFocus.leftHidden);
+    expect(recallWorkspace().closest(".workspace")?.classList.contains("layout-right-hidden")).toBe(layoutBeforeFocus.rightHidden);
+
+    const stockListButton = within(frameHeader()).getByRole("button", { name: "打开股票列表" });
+    await user.click(stockListButton);
+    expect(await screen.findByRole("dialog", { name: "选择复盘股票" })).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog", { name: "选择复盘股票" })).not.toBeInTheDocument();
+    expect(stockListButton).toHaveFocus();
 
     const more = screen.getByLabelText("更多记录与完成");
     const moreButton = within(more).getByRole("button", { name: "更多 / 记录" });
@@ -3497,7 +3572,7 @@ describe("TradeReviewWorkspace", () => {
     );
   });
 
-  it("keeps library context through cancelled and confirmed imports with failed market refresh", async () => {
+  it("keeps the library chart available after a cancelled import with failed market refresh", async () => {
     const user = userEvent.setup();
     saveImportedExecutions([
       availabilityExecution({ id: "library-open", row: 2, side: "buy", executedAt: "2025-01-02T14:30:00.000Z" }),
@@ -3508,9 +3583,7 @@ describe("TradeReviewWorkspace", () => {
       : Response.json({ error: { code: "source-unavailable" } }, { status: 502 }));
     const merge = vi.spyOn(mockSqliteClient.current as SqliteHttpClient, "mergeExecutions");
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
-    await enterImportedReviewFromDashboard();
-    await screen.findByRole("combobox", { name: "交易回合" });
-    await user.click(screen.getByRole("button", { name: "交易库" }));
+    await user.click(await screen.findByRole("button", { name: "交易库" }));
     await user.type(screen.getByRole("searchbox", { name: "搜索股票" }), "XPEV");
     await user.click(screen.getByRole("tab", { name: "按标的浏览" }));
     const xpevStock = screen.getByRole("button", { name: /^(展开|收起)小鹏汽车交易回合$/ });
@@ -3524,12 +3597,34 @@ describe("TradeReviewWorkspace", () => {
     await findImportConfirmation();
     await user.click(screen.getByRole("button", { name: "取消" }));
     expect(merge.mock.calls.flatMap(([payload]) => payload.executions)).toEqual([]);
-    merge.mockClear();
     expect(screen.getByLabelText("图表工具栏")).toBeInTheDocument();
+  });
+
+  it("keeps library context through a confirmed import with failed market refresh", async () => {
+    const user = userEvent.setup();
+    saveImportedExecutions([
+      availabilityExecution({ id: "library-open-confirm", row: 2, side: "buy", executedAt: "2025-01-02T14:30:00.000Z" }),
+      availabilityExecution({ id: "library-close-confirm", row: 3, side: "sell", executedAt: "2025-01-02T15:00:00.000Z" }),
+    ]);
+    vi.mocked(fetch).mockImplementation(async (input) => String(input).includes("/api/instruments/resolve")
+      ? Response.json({ market: "US", symbol: "XPEV", name: "小鹏汽车", assetType: "stock", source: "nasdaq", confidence: "official", resolvedAt: "2026-07-30T00:00:00.000Z" })
+      : Response.json({ error: { code: "source-unavailable" } }, { status: 502 }));
+    const merge = vi.spyOn(mockSqliteClient.current as SqliteHttpClient, "mergeExecutions");
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+    await user.click(await screen.findByRole("button", { name: "交易库" }));
+    await user.type(screen.getByRole("searchbox", { name: "搜索股票" }), "XPEV");
+    await user.click(screen.getByRole("tab", { name: "按标的浏览" }));
+    const xpevStock = screen.getByRole("button", { name: /^(展开|收起)小鹏汽车交易回合$/ });
+    if (xpevStock.getAttribute("aria-expanded") !== "true") await user.click(xpevStock);
+    await user.click(screen.getByRole("button", { name: /^打开小鹏汽车第\d+次交易/ }));
+    await screen.findByLabelText("图表工具栏");
+    const file = futuImportFile([["2025-01-06 22:30:00", "富途", "acct", "证券", "XPEV 小鹏汽车", "US", "买入开仓", "20250106", "USD", "10", "10", "-100", "0", "-100"]]);
+    const input = screen.getByLabelText("导入交易记录");
+    merge.mockClear();
     await user.upload(input, file);
     await user.click(await findImportConfirmation());
     await waitFor(() => expect(merge.mock.calls.some(([payload]) => payload.executions.length === 3)).toBe(true));
-    expect(screen.getByLabelText("图表工具栏")).toBeInTheDocument();
+    expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "返回交易库" }));
     expect(screen.getByRole("heading", { name: "交易库" })).toBeInTheDocument();
     expect(screen.getByRole("searchbox", { name: "搜索股票" })).toHaveValue("XPEV");
@@ -4086,13 +4181,24 @@ describe("TradeReviewWorkspace", () => {
 
     const cursorBeforePeriodChangeLabel = screen.getByLabelText(/行情时间/).getAttribute("aria-label") ?? "";
     // The sale is known at 02:45 UTC; its 02:45–03:00 candle remains
-    // incomplete, so the market cutoff is the preceding 10:45 HK boundary.
+    // incomplete, so only the preceding 10:45 HK boundary is visible.
     expect(cursorBeforePeriodChangeLabel).toContain("行情时间 2025-01-02 10:45:00 · Asia/Hong_Kong");
+    const nextCandle = screen.getByRole("button", { name: "下一根 K 线" });
+    expect(nextCandle).toBeEnabled();
+    expect(screen.queryByLabelText("导入股票成交详情")).not.toBeInTheDocument();
+
+    await user.click(nextCandle);
+    await waitFor(() => expect(screen.getByLabelText(/行情时间/).getAttribute("aria-label"))
+      .toContain("行情时间 2025-01-02 11:00:00 · Asia/Hong_Kong"));
+    expect(nextCandle).toBeDisabled();
+    const cursorAfterFinalCandleLabel = screen.getByLabelText(/行情时间/).getAttribute("aria-label");
+
     await user.click(screen.getByRole("button", { name: "切换到 1h" }));
     expect(screen.getByRole("button", { name: "切换到 1h" })).toHaveClass("active");
     // The sale's 02:45–03:00 bar and its containing 02:00–03:00 hour
-    // share a knowledge boundary; switching periods must not reset progress.
-    expect(screen.getByLabelText(/行情时间/)).toHaveAttribute("aria-label", cursorBeforePeriodChangeLabel);
+    // share a knowledge boundary; switching periods must preserve the actual
+    // cursor reached after explicitly revealing that final completed bar.
+    expect(screen.getByLabelText(/行情时间/)).toHaveAttribute("aria-label", cursorAfterFinalCandleLabel);
     await user.click(screen.getByRole("button", { name: "搜索标的" }));
     await user.type(screen.getByRole("searchbox", { name: "搜索标的" }), "1810");
     await user.click(
@@ -4963,7 +5069,7 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.getByRole("button", { name: "图层" })).toBeInTheDocument();
     // Per-episode Recall drawings and snapshot persistence are covered by the
     // dedicated RecallWorkspace tests; this parent test verifies navigation.
-    expect(vi.mocked(fetch).mock.calls.every(([url]) => String(url) === "/api/trading-room/reference-capital")).toBe(true);
+    expectOnlyLocalFxFetches();
   });
 
   it("opens the stock drawer and restores focus after Escape without resetting replay", async () => {
@@ -5068,7 +5174,8 @@ describe("TradeReviewWorkspace", () => {
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={storageClient} />);
     await screen.findByText("1 个未平仓回合");
     const dashboard = await screen.findByRole("region", { name: "我的交易室" });
-    await user.click(within(dashboard).getByRole("button", { name: "模拟盘" }));
+    const nature = within(dashboard).getByRole("combobox", { name: "交易性质" });
+    await user.selectOptions(nature, "simulation");
     const runs = within(dashboard).getByRole("combobox", { name: "模拟运行" });
     expect(runs.querySelector('option[value="run-a"]')).toBeInTheDocument();
     expect(runs.querySelector('option[value="run-b"]')).toBeInTheDocument();
@@ -5077,9 +5184,91 @@ describe("TradeReviewWorkspace", () => {
     await user.selectOptions(runs, "run-b");
     expect(runs).toHaveValue("run-b");
     expect(runs.querySelector('option[value="run-a"]')).toBeInTheDocument();
-    expect(within(dashboard).getByRole("region", { name: "当前持仓" })).toHaveTextContent("当前范围暂无未平仓回合");
-    await user.click(within(dashboard).getByRole("button", { name: "实盘" }));
+    const runBHoldings = within(dashboard).getByRole("region", { name: "当前持仓" });
+    expect(runBHoldings).toHaveTextContent("0 个未平仓回合");
+    expect(runBHoldings).toHaveTextContent("当前范围暂无未平仓回合");
+    await user.selectOptions(nature, "live");
     expect(within(dashboard).queryByRole("combobox", { name: "模拟运行" })).not.toBeInTheDocument();
+
+    await user.selectOptions(nature, "simulation");
+
+    // The same workspace-owned scope must keep the complete account/run option
+    // sets when the user enters the library, even after selecting one run.
+    await user.click(screen.getByRole("button", { name: "交易库" }));
+    await screen.findByRole("region", { name: "交易库" });
+    const library = () => screen.getByRole("region", { name: "交易库" });
+    const libraryRun = () => within(library()).getByRole("combobox", { name: "共享模拟运行" });
+    const libraryAccount = () => within(library()).getByRole("combobox", { name: "共享账户" });
+    expect(within(libraryRun()).getAllByRole("option")).toHaveLength(3);
+    expect(within(libraryAccount()).getAllByRole("option")).toHaveLength(3);
+    await user.selectOptions(libraryRun(), "run-a");
+    expect(libraryRun()).toHaveValue("run-a");
+    expect(within(libraryRun()).getAllByRole("option")).toHaveLength(3);
+    await user.selectOptions(libraryAccount(), "run-b");
+    await waitFor(() => expect(libraryAccount()).toHaveValue("run-b"));
+    await waitFor(() => expect(libraryRun()).toHaveValue(""));
+  });
+
+  it("carries an analysis unknown-to-live scope change into data navigation", async () => {
+    const user = userEvent.setup();
+    const execution: TradeExecution = {
+      ...availabilityExecution({
+        id: "analysis-scope-live",
+        row: 1,
+        side: "buy",
+        executedAt: "2026-09-10T14:30:00.000Z",
+      }),
+      source: { platform: "futu", row: 1, tradeNature: "live" },
+    };
+    const storageClient = createLegacySqliteClient();
+    storageClient.getBootstrap = vi.fn().mockResolvedValue({
+      schemaVersion: 1, migration: null, executions: [execution], importHistory: [], instruments: [],
+      reviews: [], reviewStates: [], tagSuggestions: [], marketDataJobs: [],
+      settings: { version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" },
+    } satisfies StorageBootstrap);
+
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={storageClient} />);
+    await screen.findByText("1 个未平仓回合");
+    await user.click(screen.getByRole("button", { name: "分析" }));
+
+    const insights = await screen.findByRole("region", { name: "模式洞察" });
+    const nature = within(insights).getByRole("combobox", { name: "交易性质" });
+    await user.selectOptions(nature, "unknown");
+    expect(nature).toHaveValue("unknown");
+    await user.selectOptions(nature, "live");
+    expect(nature).toHaveValue("live");
+
+    await user.click(screen.getByRole("button", { name: "数据" }));
+    const management = await screen.findByRole("region", { name: "数据管理" });
+    expect(within(management).getByRole("combobox", { name: "交易性质" })).toHaveValue("live");
+    expect(within(management).getByRole("combobox", { name: "共享账户" })).toHaveValue("all");
+  });
+
+  it("does not expose canonical TradingView source runs as business run filters", async () => {
+    const execution: TradeExecution = {
+      ...availabilityExecution({ id: "canonical-source-run", row: 1, side: "buy", executedAt: "2026-09-10T14:30:00.000Z" }),
+      accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID,
+      accountLabel: "TradingView · 模拟盘",
+      source: { platform: "tradingview", row: 1, tradeNature: "simulation", simulationRunId: "source-run-only" },
+    };
+    const storageClient = createLegacySqliteClient();
+    storageClient.getBootstrap = vi.fn().mockResolvedValue({
+      schemaVersion: 1, migration: null, executions: [execution], importHistory: [], instruments: [],
+      reviews: [], reviewStates: [], tagSuggestions: [], marketDataJobs: [],
+      settings: { version: 1, showGrid: true, showVolume: true, showExecutions: true, showAverageCost: true, colorScheme: "teal-red" },
+    } satisfies StorageBootstrap);
+    const user = userEvent.setup();
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={storageClient} />);
+
+    await screen.findByRole("button", { name: "交易库" });
+    await user.click(screen.getByRole("button", { name: "交易库" }));
+    const library = await screen.findByRole("region", { name: "交易库" });
+    const nature = within(library).getByRole("combobox", { name: "交易性质" });
+    await user.selectOptions(nature, "simulation");
+    const account = within(library).getByRole("combobox", { name: "共享账户" });
+    await user.selectOptions(account, TRADINGVIEW_CANONICAL_ACCOUNT_ID);
+    await waitFor(() => expect(account).toHaveValue(TRADINGVIEW_CANONICAL_ACCOUNT_ID));
+    expect(within(library).queryByRole("combobox", { name: "共享模拟运行" })).not.toBeInTheDocument();
   });
 
   it("returns to the trading room with its filters, period, and calendar view after opening a holding review", async () => {
@@ -5106,12 +5295,14 @@ describe("TradeReviewWorkspace", () => {
     await user.click(within(scope).getByRole("tab", { name: "近3个自然月" }));
     await user.click(within(dashboard).getByRole("button", { name: /^筛选/ }));
     await user.click(within(scope).getByText("更多筛选", { exact: true }));
-    await user.click(await within(within(scope).getByRole("group", { name: "交易室币种筛选" })).findByRole("radio", { name: "USD" }));
+    const currencyFilter = within(scope).getByRole("combobox", { name: "交易室币种筛选" });
+    await user.selectOptions(currencyFilter, "USD");
     const performance = within(dashboard).getByRole("region", { name: "业绩趋势与日历" });
     const calendar = within(performance).getByRole("region", { name: "盈亏日历" });
     expect(within(calendar).getByRole("heading", { name: /盈亏日历/ })).toBeInTheDocument();
-    await user.click(within(calendar).getByRole("button", { name: "年" }));
-    expect(within(calendar).getByRole("button", { name: "年" })).toHaveAttribute("aria-pressed", "true");
+    const calendarLevels = within(performance).getByRole("group", { name: "日历层级" });
+    await user.click(within(calendarLevels).getByRole("button", { name: "年" }));
+    expect(within(calendarLevels).getByRole("button", { name: "年" })).toHaveAttribute("aria-pressed", "true");
 
     const holdings = await screen.findByRole("region", { name: "当前持仓" });
     await within(holdings).findByText("1 个未平仓回合");
@@ -5127,11 +5318,13 @@ describe("TradeReviewWorkspace", () => {
     ).getByRole("region", { name: "盈亏日历" });
     expect(within(returnedCalendar).getByRole("heading", { name: /盈亏日历/ })).toBeInTheDocument();
     expect(within(returnedCalendar).getByRole("button", { name: "年" })).toHaveAttribute("aria-pressed", "true");
+    const returnedCalendarLevels = within(within(returnedDashboard).getByRole("region", { name: "业绩趋势与日历" })).getByRole("group", { name: "日历层级" });
+    expect(within(returnedCalendarLevels).getByRole("button", { name: "年" })).toHaveAttribute("aria-pressed", "true");
     const returnedFilterToggle = within(returnedDashboard).getByRole("button", { name: /^筛选/ });
     if (returnedFilterToggle.getAttribute("aria-expanded") !== "true") {
       await user.click(returnedFilterToggle);
     }
-    expect(within(within(returnedScope).getByRole("group", { name: "交易室币种筛选" })).getByRole("radio", { name: "USD" })).toBeChecked();
+    expect(within(returnedScope).getByRole("combobox", { name: "交易室币种筛选" })).toHaveValue("USD");
     expect(within(returnedScope).getByText("更多筛选 · 1 项已启用")).toBeInTheDocument();
   });
 

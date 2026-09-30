@@ -142,7 +142,15 @@ export function calculateRecallActualMetrics(input: RecallActualMetricsInput): R
     // The existing ledger is the evidence authority. Strip only fee incompleteness
     // for its gross-cost check; missing fees must not hide otherwise known gross PnL.
     const grossExecutions = visible.map(e => ({ ...e, fee: '0', source: { ...e.source, feeStatus: 'reported' as const } }));
-    const ledger = replayPositionAtPrice({ executions: grossExecutions, markPrice: '0', cursor: context.cursor, visibleExecutionIds: visible.map(e => e.id) });
+    // The canonical shared visibility helper above supplies the exact visible
+    // execution prefix while the ledger keeps the independent market cutoff
+    // for ancillary statement evidence.
+    const ledger = replayPositionAtPrice({
+        executions: grossExecutions,
+        markPrice: '0',
+        cursor: context.cursor,
+        visibleExecutionIds: visible.map(e => e.id),
+    });
     if (ledger.quantityKnown === false)
         return fail('unknown-quantity');
     const reason = ledger.accuracy?.reasons[0] ?? (ledger.costKnown === false ? 'unknown-cost' : null) ?? (visible.length === ordered.length ? episode.accuracy?.reasons.find(r => r !== 'unknown-fees') : undefined);

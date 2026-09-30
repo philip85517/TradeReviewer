@@ -174,3 +174,27 @@ it('keeps read-only stage summaries compact and folds the full plan and secondar
  expect(fullPlan).not.toHaveProperty('open', true);
  expect(screen.getByRole('region', { name: '完整计划与修订' })).toBeInTheDocument();
 });
+
+it('limits long R values to six decimals and reveals the exact value by keyboard or click', () => {
+ const input = {
+   ...emptyRecallPlanInput('CNY'),
+   direction: 'long' as const,
+   entry: '56',
+   initialStop: '51.6',
+   targets: [{ id: 'target-1', price: '76.6', quantity: null, ratio: null }],
+   sizeInputValue: '4200',
+   resolvedQuantity: '4200',
+   sizing: undefined,
+ };
+ render(<RecallPlanSidebar input={input} phase="holding" readOnly compactReadOnly onChange={() => {}} onClose={() => {}} />);
+
+ const compact = screen.getByText('≈4.681818R');
+ expect(compact).toBeInTheDocument();
+ const toggle = screen.getByRole('button', { name: '查看完整数值 4.6818181818181818182' });
+ expect(toggle).toHaveTextContent('≈4.681818R');
+ expect(toggle.parentElement).toHaveAttribute('title', '4.6818181818181818182');
+ fireEvent.keyDown(toggle, { key: ' ', code: 'Space' });
+ expect(toggle).toHaveTextContent('≈4.681818R');
+ fireEvent.click(toggle);
+ expect(toggle).toHaveTextContent('4.6818181818181818182R');
+});

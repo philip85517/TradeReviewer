@@ -11,6 +11,7 @@ import {
   ImportActions,
   type ImportActionsProps,
 } from "../import/import-actions";
+import { UnifiedPageHeader } from "../workspace/unified-page-header";
 
 export type DataManagementProps = {
   activeTab?: "import" | "quality" | "settings";
@@ -36,6 +37,11 @@ export type DataManagementProps = {
   cashSlot?: ReactNode;
   /** Read-only TradingView account migration preview supplied by the workspace. */
   accountMigrationSlot?: ReactNode;
+  /** Use the workspace's shared page header when embedded in the main shell. */
+  unifiedHeader?: boolean;
+  scopeControls?: ReactNode;
+  globalTools?: ReactNode;
+  scopeTools?: ReactNode;
 };
 
 function hasInstrument(ids: DataManagementProps["activeInstrumentIds"], id: string) {
@@ -62,6 +68,10 @@ export function DataManagement({
   fxSlot,
   cashSlot,
   accountMigrationSlot,
+  unifiedHeader = false,
+  scopeControls,
+  globalTools,
+  scopeTools,
 }: DataManagementProps) {
   const [uncontrolledActiveTab, setUncontrolledActiveTab] = useState<
     "import" | "quality" | "settings"
@@ -93,17 +103,26 @@ export function DataManagement({
     (instrument) => !hasInstrument(activeInstrumentIds, instrument.id),
   );
 
-  return (
-    <section className="data-management" aria-label="数据管理">
-      <header className="data-management-header">
-        <div>
-          <h1>数据</h1>
-        </div>
-        <span className="data-management-scope">
-          {marketRefresh.instrumentCount} 个已导入标的
-        </span>
-      </header>
+  const tabs = (
+    <div className="module-tabs" role="tablist" aria-label="数据管理分组" onKeyDown={handleTabKeyDown}>
+      {([
+        ["import", "导入记录"],
+        ["quality", "数据健康"],
+        ["settings", "账户与计价"],
+      ] as const).map(([tab, label]) => (
+        <button type="button" key={tab} role="tab" id={`data-management-tab-${tab}`} data-tab={tab} aria-selected={activeTab === tab} aria-controls={`data-management-panel-${tab}`} onClick={() => changeTab(tab)}>{label}</button>
+      ))}
+    </div>
+  );
 
+  return (
+    <section className={`data-management${unifiedHeader ? " unified-data-management" : ""}`} aria-label="数据管理">
+      {unifiedHeader ? <UnifiedPageHeader className="data-management-unified-header" title="数据" description="导入、健康与账户设置" status={<strong>{marketRefresh.instrumentCount} 个已导入标的</strong>} scopeControls={scopeControls ?? null} globalTools={globalTools} scopeTools={scopeTools} tabs={tabs} /> : <>
+        <header className="data-management-header"><div><h1>数据</h1></div><span className="data-management-scope">{marketRefresh.instrumentCount} 个已导入标的</span></header>
+        {tabs}
+      </>}
+
+      <div className="data-management-content">
       {(importError || navigationNotice) && (
         <section className="data-management-notice" role="alert" aria-label="数据管理提示">
           <span>{importError ?? navigationNotice}</span>
@@ -114,27 +133,6 @@ export function DataManagement({
           )}
         </section>
       )}
-
-      <div className="module-tabs" role="tablist" aria-label="数据管理分组" onKeyDown={handleTabKeyDown}>
-        {([
-          ["import", "导入记录"],
-          ["quality", "数据健康"],
-          ["settings", "账户与计价"],
-        ] as const).map(([tab, label]) => (
-          <button
-            type="button"
-            key={tab}
-            role="tab"
-            id={`data-management-tab-${tab}`}
-            data-tab={tab}
-            aria-selected={activeTab === tab}
-            aria-controls={`data-management-panel-${tab}`}
-            onClick={() => changeTab(tab)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
 
       <div
         className="data-management-grid"
@@ -150,7 +148,7 @@ export function DataManagement({
             <div>
               <h2>导入交易数据</h2>
             </div>
-            <span>确认后才会写入交易库</span>
+            <span>全量导入与审计，不受共享范围筛选</span>
           </div>
           <p>支持 PDF、Excel、TradingView 模拟交易和已适配的成交截图。</p>
           <ImportActions {...importActions} compact />
@@ -170,7 +168,7 @@ export function DataManagement({
             <div>
               <h2>行情数据更新</h2>
             </div>
-            <span>按当前已导入标的更新</span>
+            <span>全量行情更新，不受共享范围筛选</span>
           </div>
           <p>更新会保留本地缓存；取消、失败和未完成任务可在这里继续处理。</p>
           <GlobalMarketRefresh {...marketRefresh} />
@@ -191,7 +189,7 @@ export function DataManagement({
             <div>
               {!qualitySlot && <h2>数据质量明细</h2>}
             </div>
-            <span>按当前交易室范围定位影响</span>
+            <span>质量定位按当前范围；保留记录审计不受共享范围筛选</span>
           </div>
           {qualitySlot ?? <p className="data-management-empty">暂无数据健康明细。</p>}
         </section>
@@ -280,6 +278,7 @@ export function DataManagement({
           </div>
           {cashSlot ?? <p className="data-management-empty">暂无现金基准配置。</p>}
         </section>
+      </div>
       </div>
     </section>
   );

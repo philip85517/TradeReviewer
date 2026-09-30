@@ -114,6 +114,57 @@ describe('actual metrics', () => {
     });
     it('conserves exact golden partial fees and frozen R', () => { const r = calculateRecallActualMetrics(fixture()); expect(r.metrics.netPnl.value).toBe('6760'); expect(r.metrics.actualR.value).toBe('1.69'); expect(r.metrics.weightedExitPrice.value).toBe('62.8'); expect(r.exitAllocations.map(x => [x.entryFee.value, x.netPnl.value])).toEqual([['12', '4776'], ['8', '1984']]); });
     it('does not reveal later fills from complete captured payload', () => { const f = fixture(); f.context = { phase: 'holding', cursor: '2026-01-02T12:00:00Z', executionCursor: 'exit-a' }; f.mark = { price: '64', time: '2026-01-02T11:00:00Z', priceBasis: 'raw' }; const r = calculateRecallActualMetrics(f); expect(r.executionIds).toEqual(['entry', 'exit-a']); expect(r.metrics.remainingQuantity.value).toBe('400'); expect(r.metrics.unrealizedGross.value).toBe('3200'); expect(r.metrics.remainingEntryFee.value).toBe('8'); expect(r.metrics.actualR.value).toBeNull(); });
+    it('keeps a date-only execution hidden at market close until its knowledge boundary', () => {
+        const f = fixture();
+        f.episode.instrument.market = 'CN-SH';
+        f.episode.executions.forEach(execution => {
+            execution.source = { ...execution.source, timePrecision: 'date-only' };
+        });
+        f.episode.executions[2].fee = '';
+        f.episode.executions[2].source = { ...f.episode.executions[2].source, historyIncomplete: ['later'] };
+        f.context = { phase: 'holding', cursor: '2026-01-02T07:00:00.000Z', executionCursor: 'exit-a' };
+        expect(calculateRecallActualMetrics(f).executionIds).toEqual(['entry']);
+        f.context.cursor = '2026-01-02T23:59:59.999Z';
+        const r = calculateRecallActualMetrics(f);
+        expect(r.executionIds).toEqual(['entry', 'exit-a']);
+        expect(r.metrics.remainingQuantity.value).toBe('400');
+        expect(r.metrics.realizedGross.value).toBe('4800');
+        expect(r.metrics.realizedNet.value).toBe('4776');
+        expect(r.metrics.netPnl).toMatchObject({ value: null, reason: 'episode-open' });
+    });
+    it('keeps distinct same-day decisions at their stable replay boundary', () => {
+        const f = fixture();
+        f.episode.instrument.market = 'CN-SH';
+        f.episode.executions.forEach(execution => {
+            execution.source = { ...execution.source, timePrecision: 'date-only' };
+        });
+        f.episode.executions[1].executedAt = '2026-01-02T08:00:00.000Z';
+        f.episode.executions[2].executedAt = '2026-01-02T07:00:00.000Z';
+        // Same-day date-only fills share their knowledge date; the stable
+        // execution id selects an exact prefix without revealing its sibling.
+        f.context = { phase: 'holding', cursor: '2026-01-02T23:59:59.999Z', executionCursor: 'exit-a' };
+        const r = calculateRecallActualMetrics(f);
+        expect(r.executionIds).toEqual(['entry', 'exit-a']);
+        expect(r.metrics.remainingQuantity.value).toBe('400');
+    });
+    it('keeps future statement evidence off a date-only execution boundary', () => {
+        const f = fixture();
+        f.episode.instrument.market = 'CN-SH';
+        f.episode.executions.forEach(execution => {
+            execution.source = { ...execution.source, timePrecision: 'date-only' };
+        });
+        f.episode.executions[0].source.openingPosition = {
+            accountId: 'a', market: 'CN-SH', symbol: 'X', phase: 'closing', date: '2026-01-03', quantity: '0', source: [],
+        };
+        f.context = { phase: 'holding', cursor: '2026-01-02T07:00:00.000Z', executionCursor: 'exit-a' };
+        expect(calculateRecallActualMetrics(f).executionIds).toEqual(['entry']);
+        f.context.cursor = '2026-01-02T23:59:59.999Z';
+        const r = calculateRecallActualMetrics(f);
+        expect(r.executionIds).toEqual(['entry', 'exit-a']);
+        expect(r.metrics.remainingQuantity.value).toBe('400');
+        expect(r.metrics.averageEntryPrice.value).toBe('56');
+        expect(r.metrics.realizedGross.value).toBe('4800');
+    });
     it('keeps gross known when fees missing', () => { const f = fixture(); f.episode.executions[0].fee = ''; const r = calculateRecallActualMetrics(f); expect(r.metrics.realizedGross.value).toBe('6800'); expect(r.metrics.netPnl.value).toBeNull(); expect(r.metrics.actualR.value).toBeNull(); });
     it('does not let future episode accuracy contaminate an early visible ledger', () => { const f = fixture(); f.context.executionCursor = 'entry'; f.context.cursor = '2026-01-01T12:00:00Z'; f.episode.accuracy = { pnl: 'unavailable', reasons: ['history-incomplete'] }; f.episode.executions[2].source.historyIncomplete = ['later']; expect(calculateRecallActualMetrics(f).metrics.averageEntryPrice.value).toBe('56'); });
     it('rejects unknown episode budget execution cutoff', () => { const f = fixture(); f.riskBaselines[0].scope = 'episode'; f.riskBaselines[0].method = 'fixed-budget'; f.planVersions[0].riskBudget = { amount: '4000', currency: 'CNY', scope: 'episode', sourceDescription: 'budget', evidenceReference: null, provenance: 'retrospective', effectiveKnowledgeCutoff: { cursor: '2026-01-01', executionCursor: 'typo' } }; expect(calculateRecallActualMetrics(f).metrics.actualR.value).toBeNull(); });

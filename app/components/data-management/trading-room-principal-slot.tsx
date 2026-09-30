@@ -12,6 +12,7 @@ import {
 import type { TradeLibraryEntry } from "../../lib/trades/library";
 import { sharedScopeMatchesEntry, type SharedReportCurrency, type SharedScope } from "../../lib/reviews/shared-scope";
 import { TRADINGVIEW_CANONICAL_ACCOUNT_ID } from "../../lib/trades/tradingview-account-identity";
+import { stableAccountDisplayLabels } from "../../lib/reviews/review-queue";
 import { ReferenceCapitalPanel } from "./reference-capital-panel";
 import { AccountPrincipalProvisionalPanel } from "./account-principal-provisional-panel";
 import { useReferenceCapital } from "../../lib/principal/use-reference-capital";
@@ -30,7 +31,8 @@ export function TradingRoomPrincipalSlot({
   sharedScope,
 }: TradingRoomPrincipalSlotProps) {
   const scope = useMemo(() => ({ ...createDefaultRoomScope(), ...(sharedScope ?? {}) }), [sharedScope]);
-  const principalAccountId = sharedScope?.accountIds?.length === 1 ? sharedScope.accountIds[0] : undefined;
+  const sharedAccountIds = useMemo(() => sharedScope?.accountIds ?? [], [sharedScope?.accountIds]);
+  const principalAccountId = sharedAccountIds.length === 1 ? sharedAccountIds[0] : undefined;
   const principalScope = useMemo<PrincipalScope>(
     () => ({
       nature: scope.nature,
@@ -41,7 +43,6 @@ export function TradingRoomPrincipalSlot({
   );
   const settings = usePrincipalSettings({ scope: principalScope, enabled });
   const referenceCapital = useReferenceCapital({ enabled });
-  const sharedAccountIds = useMemo(() => sharedScope?.accountIds ?? [], [sharedScope?.accountIds]);
   const accounts = useMemo(() => {
     if (scope.nature === "unknown") return [];
     const filterScope: SharedScope = {
@@ -58,7 +59,11 @@ export function TradingRoomPrincipalSlot({
           .map(execution => [execution.accountId, { id: execution.accountId, label: execution.accountLabel }] as const)),
     ).values()];
   }, [entries, scope.nature, scope.simulationRunId, sharedAccountIds, sharedScope?.reportCurrency]);
-  const displayAccounts = accounts.map((account, index) => ({ ...account, label: accounts.filter(other => other.label === account.label).length > 1 ? `${account.label} · 账户 ${accounts.slice(0, index + 1).filter(other => other.label === account.label).length}` : account.label }));
+  const displayLabels = useMemo(() => stableAccountDisplayLabels(accounts), [accounts]);
+  const displayAccounts = accounts.map(account => ({
+    ...account,
+    label: displayLabels.get(account.id) ?? account.label,
+  }));
   const showCanonicalProvisional = scope.nature === "simulation" &&
     scope.simulationRunId === null &&
     accounts.some(account => account.id === TRADINGVIEW_CANONICAL_ACCOUNT_ID);

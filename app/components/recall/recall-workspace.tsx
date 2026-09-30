@@ -1435,12 +1435,9 @@ export function RecallWorkspace({
     const storedExecutionCursor = nextDocument.working.executionCursor;
     const storedBoundary = executionBoundaryForCursor(currentExecutions, storedExecutionCursor);
     const storedBeforeFirst = storedExecutionCursor === NO_REVEALED_EXECUTIONS;
-    const storedExecution = storedBoundary >= 0
-      ? executionsThroughCursor(currentExecutions, storedExecutionCursor).at(-1)
-      : undefined;
-    const storedMarketCursor = storedExecution
-      ? recallMarketCursorForExecution(storedExecution, mapRecallExecutionToCandle(storedExecution, globalCandles))
-      : nextDocument.working.cursor;
+    // Legacy global drafts store market progress in working.cursor. Keep this
+    // market cutoff independent from the stable execution-prefix cursor.
+    const storedMarketCursor = nextDocument.working.cursor || globalReplayBase.cursor;
     const globalReplay: RecallReplayCursor = {
       ...globalReplayBase,
       cursor: nextDocument.working.cursor || globalReplayBase.cursor,
@@ -2930,7 +2927,12 @@ export function RecallWorkspace({
         <div className="tradingview-replay-notice" data-testid="tradingview-replay-notice">
           <strong>模拟盘回放</strong>
           <span>成交日期按 TradingView 导出记录保留；游标回放只显示当前时点已知的行情与成交。</span>
-          {simulationRunId && <small>运行 {simulationRunId}</small>}
+          {simulationRunId && (
+            <details className="tradingview-run-provenance">
+              <summary>运行标识</summary>
+              <code>{simulationRunId}</code>
+            </details>
+          )}
         </div>
       )}
 
@@ -3069,7 +3071,17 @@ export function RecallWorkspace({
                 onCommand={applyCommand}
                 onReady={handleChartReady}
               />
-              {layersOpen && <DrawingLayersPanel drawings={visibleDrawings} onCommand={applyCommand} onSelectDrawing={setSelectedDrawingId} selectedDrawingId={selectedDrawingId} />}
+              {layersOpen && (
+                <div className="recall-drawing-layers" role="region" aria-label="绘图图层面板">
+                  <div className="recall-drawing-layers__heading">
+                    <strong>绘图图层</strong>
+                    <button type="button" aria-label="关闭绘图图层" onClick={() => setLayersOpen(false)}>
+                      <X size={16} aria-hidden="true" />
+                    </button>
+                  </div>
+                  <DrawingLayersPanel drawings={visibleDrawings} onCommand={applyCommand} onSelectDrawing={setSelectedDrawingId} selectedDrawingId={selectedDrawingId} />
+                </div>
+              )}
             </div>
             <button type="button" className="recall-fit-all" onClick={() => chartHandleRef.current?.fitAll()} aria-label="适应全部">适应全部</button>
           </div>

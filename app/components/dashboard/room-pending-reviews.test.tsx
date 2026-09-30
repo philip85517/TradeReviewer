@@ -163,7 +163,7 @@ it("formats a long closing price for scanning while keeping its complete source 
       closingWeightedPrice: rawPrice,
       closingCurrency: "CNY",
       closingUnavailableReason: null,
-      money: { baseCurrency: "CNY", originalByCurrency: { CNY: "53717" }, convertedCny: "53717", conversion: "same-currency", fxSnapshotId: null, note: "按原币显示" },
+      money: { baseCurrency: "CNY", originalByCurrency: { CNY: "5373.17" }, convertedCny: "5373.17", conversion: "same-currency", fxSnapshotId: null, note: "同币种" },
       unavailableReason: null,
     }],
   };
@@ -171,8 +171,49 @@ it("formats a long closing price for scanning while keeping its complete source 
 
   const priceCell = screen.getByRole("cell", { name: /成交均价/ });
   expect(priceCell).toHaveTextContent("8.457833 CNY");
-  expect(priceCell).not.toHaveTextContent(rawPrice);
+  expect(priceCell).toHaveAttribute("data-label", "成交均价");
   expect(priceCell).toHaveAttribute("aria-label", expect.stringContaining(rawPrice));
+  const price = screen.getByText("8.457833 CNY");
+  expect(price).toHaveAttribute("title", `完整成交均价：${rawPrice} CNY`);
+  expect(price).toHaveAttribute("aria-label", `完整成交均价：${rawPrice} CNY`);
+  expect(screen.getByText(`完整成交均价：${rawPrice} CNY`)).not.toBeVisible();
+  fireEvent.click(price);
+  expect(screen.getByText(`完整成交均价：${rawPrice} CNY`)).toBeVisible();
+  expect(screen.getByText("+5373.17 CNY")).toBeInTheDocument();
+  expect(screen.getByText("4200")).toBeInTheDocument();
+});
+
+it("keeps malformed financial evidence and its unavailable reason without substituting zero", () => {
+  const pending: RoomPendingReviewsModel = {
+    displayCurrency: "original",
+    count: 1,
+    queueIds: ["episode:invalid-price"],
+    rows: [{
+      episodeId: "episode:invalid-price",
+      instrumentId: "CN-SH:BAD",
+      instrumentName: "待核对证券",
+      symbol: "BAD",
+      accountId: "account-unknown",
+      accountLabel: "来源未知账户",
+      closeDate: "2026-02-03",
+      closingSide: "sell",
+      closingQuantity: "4200",
+      closingWeightedPrice: "not-a-decimal",
+      closingCurrency: "CNY",
+      closingUnavailableReason: "closing-price-unavailable",
+      money: null,
+      unavailableReason: "未知资产类型，未纳入收益汇总；closing-price-unavailable",
+    }],
+  };
+
+  render(<RoomPendingReviews model={pending} onOpenInReview={vi.fn()} />);
+
+  const price = screen.getByText("not-a-decimal CNY");
+  expect(price).toHaveAttribute("aria-label", "完整成交均价：not-a-decimal CNY");
+  expect(screen.getByText("成交均价证据不足")).toBeInTheDocument();
+  expect(screen.getByText("未知资产类型，未纳入收益汇总")).toBeInTheDocument();
+  expect(screen.getByText("不可用")).toBeInTheDocument();
+  expect(screen.queryByText("+0.00 CNY")).not.toBeInTheDocument();
   expect(screen.getByText("4200")).toBeInTheDocument();
 });
 

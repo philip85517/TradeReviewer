@@ -590,6 +590,25 @@ describe("independent Recall integration review", () => {
     expect(restoredGlobal.some((item) => item.id === "stage-draft")).toBe(false);
   });
 
+  it("keeps a future global drawing hidden before its replay cursor", async () => {
+    const futureDrawing = drawing("future-global", "尚未可知");
+    const base = documentWithDecisionSnapshots(episode);
+    const initial = {
+      ...base,
+      working: {
+        ...base.working,
+        selectedDecisionId: "global",
+        drawings: [futureDrawing],
+        cursor: candle.time,
+      },
+    } satisfies RecallDocument;
+    renderRecall(episode, initial, repositoryFor(initial));
+    await settleLoad();
+
+    const visible = JSON.parse(screen.getByTestId("review-chart").getAttribute("data-drawings")!) as NormalizedDrawing[];
+    expect(visible.some((item) => item.id === "future-global")).toBe(false);
+  });
+
   it("captures the global working graph when completion starts from a decision overlay", async () => {
     const globalDraft = drawing("global-draft", "全局草稿");
     const stageDraft = drawing("stage-draft", "阶段草稿");

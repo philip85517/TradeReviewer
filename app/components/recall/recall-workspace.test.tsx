@@ -1,4 +1,5 @@
-import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { useEffect } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -14,6 +15,7 @@ import { applyRecallSizing } from "../../lib/recall/sizing";
 import type { RecallDocument, RecallSnapshot, RecallWorkingContext } from "../../lib/recall/types";
 import type { Candle } from "../../lib/market/types";
 import type { TradeEpisode } from "../../lib/trades/types";
+import type { NormalizedDrawing } from "../../lib/chart/drawings";
 import { NO_REVEALED_EXECUTIONS } from "../../lib/replay/recall-replay";
 import {
   RecallWorkspace,
@@ -246,6 +248,7 @@ function renderRecall(
   },
   onLeaveGuardChange?: (guard: (() => Promise<boolean>) | null) => void,
   candlesByTimeframe = { "15m": replayCandles, "1D": replayCandles, "1W": replayCandles },
+  initialDrawings: NormalizedDrawing[] = [],
 ) {
   return render(
     <RecallWorkspace
@@ -257,6 +260,7 @@ function renderRecall(
       importedTimelineCandles={replayCandles}
       candlesByTimeframe={candlesByTimeframe}
       settings={settings}
+      initialDrawings={initialDrawings}
       repository={repository}
       onEpisodeChange={vi.fn()}
       onInstrumentChange={vi.fn()}
@@ -615,7 +619,6 @@ describe("RecallWorkspace autosave reconciliation", () => {
     fireEvent.click(screen.getByRole("button", { name: "切换到 1W" }));
     await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-2"));
     expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", marketCursor);
-
     fireEvent.click(screen.getByRole("button", { name: "切换到 1D" }));
     await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute(
       "data-revealed-candles",
@@ -732,7 +735,31 @@ describe("RecallWorkspace autosave reconciliation", () => {
       "data-revealed-candles",
       replayCandles[0].time,
     ));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-2");
     rendered.unmount();
+
+    const explicitEarlier: RecallWorkingContext = {
+      ...context,
+      revealedCandleCursor: "2025-01-02T10:00:00.000Z",
+    };
+    const explicitEarlierDocument: RecallDocument = {
+      ...legacy,
+      working: {
+        ...legacy.working,
+        cursor: "2025-01-02T10:45:00.000Z",
+        phaseContexts: { holding: explicitEarlier },
+      },
+    };
+    const explicitEarlierRender = renderRecall(replayEpisode, explicitEarlierDocument, {
+      load: vi.fn().mockResolvedValue(explicitEarlierDocument),
+      save: vi.fn().mockResolvedValue({ ...explicitEarlierDocument, revision: 1 }),
+      fetch: vi.fn(),
+    });
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-revealed-candles", ""));
+    // The stable fill prefix can be later than the explicit market boundary;
+    // restoring the old global cursor must not override that saved context.
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-2");
+    explicitEarlierRender.unmount();
 
     const explicitEmpty: RecallWorkingContext = { ...context, revealedCandleCursor: null };
     const explicitDocument: RecallDocument = {
@@ -745,6 +772,81 @@ describe("RecallWorkspace autosave reconciliation", () => {
       fetch: vi.fn(),
     });
     await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-revealed-candles", ""));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-2");
+  });
+
+  it("reveals exactly one cached completed candle at its knowledge boundary", async () => {
+    const cachedEpisode: TradeEpisode = {
+      ...episode,
+      id: "cached-imported-episode",
+      startedAt: "2025-01-02T02:00:00.000Z",
+      endedAt: "2025-01-02T02:45:00.000Z",
+      openingQuantity: "100",
+      remainingQuantity: "0",
+      executions: [
+        { ...episode.executions[0], id: "cached-buy", executedAt: "2025-01-02T02:00:00.000Z", quantity: "100" },
+        { ...episode.executions[0], id: "cached-sell", executedAt: "2025-01-02T02:45:00.000Z", side: "sell", quantity: "100", price: "36.5" },
+      ],
+    };
+    const cachedCandles: Candle[] = [
+      { ...candle, time: "2025-01-02T02:00:00.000Z", knowledgeAt: "2025-01-02T02:15:00.000Z" },
+      { ...candle, time: "2025-01-02T02:15:00.000Z", knowledgeAt: "2025-01-02T02:30:00.000Z" },
+      { ...candle, time: "2025-01-02T02:30:00.000Z", knowledgeAt: "2025-01-02T02:45:00.000Z" },
+      { ...candle, time: "2025-01-02T02:45:00.000Z", knowledgeAt: "2025-01-02T03:00:00.000Z" },
+    ];
+    const hourlyCandle: Candle = {
+      ...candle,
+      time: "2025-01-02T02:00:00.000Z",
+      knowledgeAt: "2025-01-02T03:00:00.000Z",
+    };
+    const initial = createRecallDocument(cachedEpisode, "2025-01-03T00:00:00.000Z");
+    initial.working.phase = "holding";
+    initial.working.timeframe = "15m";
+    initial.working.cursor = "2025-01-02T02:45:00.000Z";
+    initial.working.executionCursor = "cached-sell";
+    initial.working.selectedDecisionId = "cached-sell";
+    const repository: RecallRepository = {
+      load: vi.fn().mockResolvedValue(initial),
+      save: vi.fn().mockResolvedValue({ ...initial, revision: 1 }),
+      fetch: vi.fn(),
+    };
+
+    render(
+      <RecallWorkspace
+        episode={cachedEpisode}
+        episodes={[cachedEpisode]}
+        instrument={cachedEpisode.instrument}
+        instruments={[{ ...cachedEpisode.instrument, market: "HK" }]}
+        timeframeAvailability={{ ...availability, "1h": { enabled: true } }}
+        importedTimelineCandles={cachedCandles}
+        candlesByTimeframe={{ "15m": cachedCandles, "1h": [hourlyCandle], "1D": cachedCandles, "1W": cachedCandles }}
+        settings={settings}
+        repository={repository}
+        onEpisodeChange={vi.fn()}
+        onInstrumentChange={vi.fn()}
+        onSettingsChange={vi.fn()}
+      />,
+    );
+
+    const chart = await waitFor(() => screen.getByTestId("mock-replay-chart"));
+    const nextCandle = screen.getByRole("button", { name: "下一根 K 线" });
+    expect(chart).toHaveAttribute("data-revealed-candles", cachedCandles.slice(0, 3).map(({ time }) => time).join(","));
+    expect(chart).toHaveAttribute("data-execution-cursor", "cached-sell");
+    expect(nextCandle).toBeEnabled();
+
+    fireEvent.click(nextCandle);
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute(
+      "data-revealed-candles",
+      cachedCandles.map(({ time }) => time).join(","),
+    ));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", "2025-01-02T03:00:00.000Z");
+    expect(nextCandle).toBeDisabled();
+
+    const frozenCursor = screen.getByTestId("mock-replay-chart").getAttribute("data-cursor");
+    fireEvent.click(screen.getByRole("button", { name: "切换到 1h" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "切换到 1h" })).toHaveClass("active"));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", frozenCursor));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-revealed-candles", hourlyCandle.time);
   });
 
   it("uses replay order for the pre-entry next-decision boundary", async () => {
@@ -1085,7 +1187,15 @@ describe("RecallWorkspace accounting safeguards", () => {
 
     await waitFor(() => expect(screen.getByTestId("tradingview-replay-notice")).toBeInTheDocument());
     expect(screen.getByText("TradingView · 模拟盘", { exact: true })).toBeInTheDocument();
-    expect(screen.getByTestId("tradingview-replay-notice")).toHaveTextContent("运行 run-a");
+    const notice = screen.getByTestId("tradingview-replay-notice");
+    const runIdDisclosure = notice.querySelector("details");
+    const runIdSummary = runIdDisclosure?.querySelector("summary");
+    expect(runIdDisclosure).not.toBeNull();
+    expect(runIdSummary).toHaveTextContent("运行标识");
+    expect(runIdDisclosure).not.toHaveAttribute("open");
+    fireEvent.click(runIdSummary!);
+    expect(runIdDisclosure).toHaveAttribute("open");
+    expect(notice.querySelector("code")).toHaveTextContent("run-a");
     expect(screen.queryByTestId("tradingview-source-report")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
@@ -1094,6 +1204,47 @@ describe("RecallWorkspace accounting safeguards", () => {
     expect(screen.getByTestId("tradingview-replay-notice")).toBeInTheDocument();
     expect(screen.getByTestId("tradingview-source-report")).toHaveTextContent("报告收益率4.5%");
     expect(screen.getByTestId("tradingview-source-report")).toHaveTextContent("持仓 K 线6");
+  });
+
+  it("closes the drawing layer panel and leaves the chart frame available", async () => {
+    const user = userEvent.setup();
+    const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    const drawing: NormalizedDrawing = {
+      version: 2,
+      id: "compact-panel-drawing",
+      episodeId: replayEpisode.id,
+      name: "紧凑面板绘图",
+      tool: "trend-line",
+      anchors: [
+        { time: replayCandles[0].time, price: 10 },
+        { time: replayCandles[1].time, price: 11 },
+      ],
+      style: { color: "#2f80ed", lineWidth: 2, opacity: 1 },
+      zIndex: 0,
+      hidden: false,
+      locked: false,
+      visibleOn: "all",
+      stage: "during-replay",
+      createdAtCursor: "2025-01-02T09:59:00.000Z",
+    };
+    const repository: RecallRepository = {
+      load: vi.fn().mockResolvedValue(null),
+      save: vi.fn().mockImplementation(async document => ({ ...document, revision: document.revision + 1 })),
+      fetch: vi.fn(),
+    };
+    renderRecall(replayEpisode, initial, repository, undefined, undefined, [drawing]);
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toBeInTheDocument());
+
+    const layersButton = screen.getByRole("button", { name: "图层" });
+    expect(layersButton).toBeEnabled();
+    await user.click(layersButton);
+    const layerPanel = screen.getByRole("region", { name: "绘图图层面板" });
+    expect(within(layerPanel).getByRole("textbox", { name: "重命名紧凑面板绘图" })).toBeInTheDocument();
+    await user.click(within(layerPanel).getByRole("button", { name: "关闭绘图图层" }));
+
+    expect(screen.queryByRole("region", { name: "绘图图层面板" })).not.toBeInTheDocument();
+    expect(screen.getByTestId("mock-replay-chart")).toBeVisible();
+    expect(screen.getByRole("button", { name: "图层" })).toHaveAttribute("aria-expanded", "false");
   });
 });
 

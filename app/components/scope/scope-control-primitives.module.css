@@ -26,6 +26,7 @@
   color: var(--scope-control-muted);
   font-size: 12px;
   font-weight: 650;
+  line-height: 16px;
   white-space: nowrap;
 }
 
@@ -41,9 +42,9 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  min-height: 34px;
+  min-height: var(--scope-choice-height, 36px);
   color: var(--scope-control-text);
-  font-size: 13px;
+  font-size: var(--scope-choice-font, 14px);
   font-weight: 500;
   white-space: nowrap;
   cursor: pointer;
@@ -104,7 +105,7 @@
 
 .selectField {
   display: grid;
-  gap: 3px;
+  gap: 4px;
   min-width: 0;
   color: var(--scope-control-muted);
   font-size: 12px;
@@ -113,13 +114,13 @@
 
 .selectField > span {
   min-width: 0;
-  line-height: 1.15;
+  line-height: 16px;
 }
 
 .selectField select {
   width: 100%;
   min-width: 0;
-  height: 34px;
+  height: 36px;
   box-sizing: border-box;
   border: 1px solid var(--scope-control-border);
   border-radius: 6px;
@@ -127,7 +128,7 @@
   color: #e7edf6;
   background: var(--scope-control-background);
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .selectField select:focus-visible {
@@ -146,15 +147,15 @@
 }
 
 .standard {
-  --scope-choice-height: 32px;
+  --scope-choice-height: 36px;
   --scope-choice-padding: 10px;
-  --scope-choice-font: 13px;
+  --scope-choice-font: 14px;
 }
 
 .compact {
-  --scope-choice-height: 28px;
-  --scope-choice-padding: 8px;
-  --scope-choice-font: 11px;
+  --scope-choice-height: 36px;
+  --scope-choice-padding: 10px;
+  --scope-choice-font: 14px;
 }
 
 @media (pointer: coarse) {
@@ -163,10 +164,27 @@
   }
 
   .segmentButton {
-    min-height: 42px;
+    min-height: 44px;
   }
 
   .selectField select {
     height: 44px;
+  }
+}
+
+/* Narrow layouts still need the touch target when the browser reports a
+   fine pointer, as happens in a 390px desktop-browser emulation. */
+@media (max-width: 759px) {
+  .radioOption {
+    min-height: 44px;
+  }
+
+  .segmentButton {
+    min-height: 44px;
+  }
+
+  .selectField select {
+    height: 44px;
+    min-height: 44px;
   }
 }

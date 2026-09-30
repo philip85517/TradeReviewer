@@ -7,6 +7,7 @@ import type {
 } from "../trades/library";
 import { tradingViewEpisodeBusinessScope } from "../trades/tradingview-account-identity";
 import type { RuleCheck } from "./types";
+import { stableAccountDisplayLabels } from "./review-queue";
 
 export type ReviewScope = {
   accountId: string;
@@ -22,6 +23,8 @@ export type ReviewScopeOption = {
   label: string;
   scope: ReviewScope;
 };
+
+export type ReviewAccountOption = Readonly<{ id: string; label: string }>;
 
 export type ReviewSummaryRange = {
   id: string;
@@ -98,12 +101,14 @@ function natureLabel(value: ReviewScope["tradeNature"]) {
 function episodeScope(
   entry: TradeLibraryEntry,
   item: TradeLibraryEpisode,
+  accountLabels?: ReadonlyMap<string, string>,
 ): ReviewScope {
   const episode = item.episode;
   const businessScope = tradingViewEpisodeBusinessScope(episode);
+  const accountId = businessScope?.accountId ?? episode.accountId;
   return {
-    accountId: businessScope?.accountId ?? episode.accountId,
-    accountLabel: episode.accountLabel,
+    accountId,
+    accountLabel: accountLabels?.get(accountId) ?? episode.accountLabel,
     market: episode.instrument.market,
     tradeNature: businessScope?.tradeNature ?? entry.tradeNature ?? episode.tradeNature ?? "unknown",
     simulationRunId: businessScope
@@ -111,6 +116,11 @@ function episodeScope(
       : episode.simulationRunId ?? entry.simulationRunId ?? null,
     currency: episode.instrument.currency,
   };
+}
+
+function accountLabelLookup(accountOptions?: readonly ReviewAccountOption[]) {
+  if (!accountOptions) return undefined;
+  return new Map(stableAccountDisplayLabels(accountOptions));
 }
 
 export function reviewScopeId(scope: ReviewScope) {
@@ -133,10 +143,13 @@ function scopeLabel(scope: ReviewScope) {
   return `${scope.accountLabel} · ${scope.market} · ${natureLabel(scope.tradeNature)}${run} · ${scope.currency}`;
 }
 
-function contexts(entries: TradeLibraryEntry[]): EpisodeContext[] {
+function contexts(
+  entries: TradeLibraryEntry[],
+  accountLabels?: ReadonlyMap<string, string>,
+): EpisodeContext[] {
   return entries.flatMap((entry) =>
     entry.episodes.map((item) => {
-      const scope = episodeScope(entry, item);
+      const scope = episodeScope(entry, item, accountLabels);
       const scopeId = reviewScopeId(scope);
       const rangeTimestamp = item.episode.endedAt ?? item.episode.startedAt;
       return {
@@ -155,9 +168,11 @@ function contexts(entries: TradeLibraryEntry[]): EpisodeContext[] {
 
 export function reviewScopeOptions(
   entries: TradeLibraryEntry[],
+  accountOptions?: readonly ReviewAccountOption[],
 ): ReviewScopeOption[] {
+  const accountLabels = accountLabelLookup(accountOptions);
   const unique = new Map<string, ReviewScope>();
-  for (const context of contexts(entries)) {
+  for (const context of contexts(entries, accountLabels)) {
     if (!unique.has(context.scopeId)) {
       unique.set(context.scopeId, context.scope);
     }
@@ -224,8 +239,9 @@ function candidateFromContext(context: EpisodeContext): TrackedRuleCandidate | n
 export function trackedRuleCandidates(
   entries: TradeLibraryEntry[],
   currentEpisodeId: string,
+  accountOptions?: readonly ReviewAccountOption[],
 ): TrackedRuleCandidate[] {
-  const all = contexts(entries);
+  const all = contexts(entries, accountLabelLookup(accountOptions));
   const current = all.find(
     ({ item }) => item.episode.id === currentEpisodeId,
   );
@@ -311,8 +327,10 @@ export function buildReviewPhaseSummary(
   entries: TradeLibraryEntry[],
   scopeId: string,
   range: ReviewSummaryRange,
+  accountOptions?: readonly ReviewAccountOption[],
 ): ReviewPhaseSummary {
-  const scope = reviewScopeOptions(entries).find(({ id }) => id === scopeId);
+  const accountLabels = accountLabelLookup(accountOptions);
+  const scope = reviewScopeOptions(entries, accountOptions).find(({ id }) => id === scopeId);
   if (!scope) {
     return {
       scopeId,
@@ -330,7 +348,7 @@ export function buildReviewPhaseSummary(
       trackedRules: [],
     };
   }
-  const selected = contexts(entries)
+  const selected = contexts(entries, accountLabels)
     .filter(
       (context) => context.scopeId === scopeId && withinRange(context, range),
     )
@@ -387,7 +405,7 @@ export function buildReviewPhaseSummary(
     ).length,
     planAdherence,
     episodeIds: selected.map(({ item }) => item.episode.id),
-    trackedRules: trackedRulesForContexts(selected, contexts(entries)),
+    trackedRules: trackedRulesForContexts(selected, contexts(entries, accountLabels)),
   };
 }
 

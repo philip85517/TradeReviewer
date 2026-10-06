@@ -41,6 +41,7 @@ import {
   valueDomain,
 } from "./room-performance-chart";
 import { useObservedChartSize } from "./use-observed-chart-size";
+import { nearestTrendHit, type TrendHitCandidate } from "./room-performance-hit-testing";
 import styles from "./room-performance.module.css";
 
 export type RoomPerformanceProps = {
@@ -454,15 +455,19 @@ export function RoomPerformance({
   const [trendLevelOverride, setTrendLevelOverride] = useState<TradingRoomTrendLevel | null>(null);
   const [selectedKeyState, setSelectedKey] = useState<string | null>(() => calendarBrowseState?.selectedDate ?? null);
   const [selectedTrendKey, setSelectedTrendKey] = useState<string | null>(null);
+  const [hoverTrendKey, setHoverTrendKey] = useState<string | null>(null);
+  const [selectedTrendCandidates, setSelectedTrendCandidates] = useState<string[]>([]);
+  const [hoverTrendCandidates, setHoverTrendCandidates] = useState<string[]>([]);
   const [calendarState, setCalendarState] = useState<TradingRoomCalendarState>(() => createTradingRoomCalendarState(scope.period));
   const [calendarHistory, setCalendarHistory] = useState<Array<{ level: TradingRoomCalendarLevel; state: TradingRoomCalendarState; selectedKey: string | null }>>([]);
   const [chartStageRef, chartSize] = useObservedChartSize<HTMLDivElement>({ width: 640, height: 320 });
   const scopePeriodSignature = roomPeriodSignature(scope.period);
   const scopeFilterSignature = roomFilterSignature(scope);
   const previousScopePeriodSignatureRef = useRef(scopePeriodSignature);
-  const previousScopeFilterSignatureRef = useRef(scopeFilterSignature);
   const trendLevel = trendLevelOverride ?? defaultTrendLevel(scope);
   const reportCurrency = reportCurrencyProp ?? "original";
+  const previousScopeFilterSignatureRef = useRef(scopeFilterSignature);
+  const previousReportCurrencyRef = useRef(reportCurrency);
   const targetCurrency = targetFor(reportCurrency);
   const activeCalendarState: TradingRoomCalendarState = calendarBrowseState
     ? { ...calendarState, displayMonth: calendarBrowseState.displayMonth, selectedDate: calendarBrowseState.selectedDate }
@@ -510,11 +515,6 @@ export function RoomPerformance({
   const queueIds = model.rows.map(row => row.item.episode.id);
   const displayMoney = (value: RoomMoneyView) => renderMoney ? renderMoney(value) : moneyLabel(value, reportCurrency);
   const validSelectedKey = selectedKey && calendarModel.cells.some(cell => cell.key === selectedKey && cell.state !== "future") ? selectedKey : null;
-  const validSelectedTrendKey = selectedTrendKey && model.trend.points.some(point => point.key === selectedTrendKey.split(":").at(-1)) ? selectedTrendKey : null;
-  const details = validSelectedKey ? calendarModel.detailFor(validSelectedKey) : [];
-  const selectedTrend = validSelectedTrendKey ? model.trend.points.find(point => point.key === validSelectedTrendKey.split(":").at(-1)) ?? null : null;
-  const selectedTrendCurrency = validSelectedTrendKey?.split(":")[0];
-  const selectedCell = validSelectedKey ? calendarModel.cells.find(cell => cell.key === validSelectedKey && cell.state !== "future") ?? null : null;
   const isDailyCalendar = level === "month" && calendarModel.cells.every(cell => cell.startDate === cell.endDate);
   const weekdayOffset = isDailyCalendar
     ? (dateFromKey(`${activeCalendarState.displayMonth}-01`).getUTCDay() + 6) % 7
@@ -555,10 +555,19 @@ export function RoomPerformance({
         }),
       };
     });
-  const trendHitTargets = chartSeries.flatMap(series => chartPointCoordinates(series.points, chartGeometry, trendDomain).flatMap(point => {
+  const trendHitTargets: TrendHitCandidate[] = chartSeries.flatMap(series => chartPointCoordinates(series.points, chartGeometry, trendDomain).flatMap(point => {
     const trendPoint = model.trend.points[point.index];
     return trendPoint ? [{ x: point.x, y: point.y, key: `${series.key}:${trendPoint.key}` }] : [];
   }));
+  const currentTrendKeys = new Set(trendHitTargets.map(candidate => candidate.key));
+  const validSelectedTrendKey = selectedTrendKey && currentTrendKeys.has(selectedTrendKey) ? selectedTrendKey : null;
+  const validHoverTrendKey = hoverTrendKey && currentTrendKeys.has(hoverTrendKey) ? hoverTrendKey : null;
+  const details = validSelectedKey ? calendarModel.detailFor(validSelectedKey) : [];
+  const displayedTrendKey = validSelectedTrendKey ?? validHoverTrendKey;
+  const displayedTrendCandidates = (validSelectedTrendKey ? selectedTrendCandidates : hoverTrendCandidates).filter(candidate => currentTrendKeys.has(candidate));
+  const selectedTrend = displayedTrendKey ? model.trend.points.find(point => point.key === displayedTrendKey.split(":").at(-1)) ?? null : null;
+  const selectedTrendCurrency = displayedTrendKey?.split(":")[0];
+  const selectedCell = validSelectedKey ? calendarModel.cells.find(cell => cell.key === selectedKey && cell.state !== "future") ?? null : null;
   const occupiedTrendLabels: TrendLabelPlacement[] = [];
   const chartLabelPlacements = chartSeries.map(series => {
     const points = chartPointCoordinates(series.points, chartGeometry, trendDomain);
@@ -582,6 +591,8 @@ export function RoomPerformance({
       setLevel("month");
       setSelectedKey(null);
       setSelectedTrendKey(null);
+      setHoverTrendKey(null);
+      setSelectedTrendCandidates([]); setHoverTrendCandidates([]);
       setCalendarHistory([]);
       const next = applyTradingRoomCalendarPeriod(calendarState, scope.period);
       publishCalendarState(next);
@@ -591,12 +602,24 @@ export function RoomPerformance({
       setLevel("month");
       setSelectedKey(null);
       setSelectedTrendKey(null);
+      setHoverTrendKey(null);
+      setSelectedTrendCandidates([]); setHoverTrendCandidates([]);
       setCalendarHistory([]);
       const next = applyTradingRoomCalendarPeriod(calendarState, scope.period);
       publishCalendarState(next);
       previousScopePeriodSignatureRef.current = scopePeriodSignature;
     }
   }, [calendarState, publishCalendarState, scope.period, scopeFilterSignature, scopePeriodSignature]);
+
+  useEffect(() => {
+    if (previousReportCurrencyRef.current !== reportCurrency) {
+      previousReportCurrencyRef.current = reportCurrency;
+      setSelectedTrendKey(null);
+      setHoverTrendKey(null);
+      setSelectedTrendCandidates([]);
+      setHoverTrendCandidates([]);
+    }
+  }, [reportCurrency]);
 
   const changeLevel = (next: TradingRoomCalendarLevel) => {
     setSelectedKey(null);
@@ -655,7 +678,7 @@ export function RoomPerformance({
           <button type="button" aria-pressed={view === "calendar"} onClick={() => { setView("calendar"); setSelectedKey(null); }}>日历</button>
         </div>
         {view === "trend" && metric === "pnl" && <div className={styles.levelTabs} role="group" aria-label="趋势分桶">
-          {(["day", "week", "month"] as const).map(value => <button type="button" key={value} aria-label={value === "day" ? "日" : value === "week" ? "周" : "月"} aria-pressed={trendLevel === value} onClick={() => { setTrendLevelOverride(value); setSelectedKey(null); }}>{value === "day" ? "日" : value === "week" ? "周" : "月"}<span className={styles.visuallyHidden}>{trendLevelLabel(value)}</span></button>)}
+          {(["day", "week", "month"] as const).map(value => <button type="button" key={value} aria-label={value === "day" ? "日" : value === "week" ? "周" : "月"} aria-pressed={trendLevel === value} onClick={() => { setTrendLevelOverride(value); setSelectedKey(null); setSelectedTrendKey(null); setHoverTrendKey(null); setSelectedTrendCandidates([]); setHoverTrendCandidates([]); }}>{value === "day" ? "日" : value === "week" ? "周" : "月"}<span className={styles.visuallyHidden}>{trendLevelLabel(value)}</span></button>)}
         </div>}
       </header>}
 
@@ -670,12 +693,12 @@ export function RoomPerformance({
           {workspace && <div className={styles.cardHeading}>
             <h3>已完成交易表现</h3>
             {metric === "pnl" && <div className={styles.levelTabs} role="group" aria-label="趋势分桶">
-              {["day", "week", "month"].map(value => <button type="button" key={value} aria-label={value === "day" ? "日" : value === "week" ? "周" : "月"} aria-pressed={trendLevel === value} onClick={() => { setTrendLevelOverride(value as TradingRoomTrendLevel); setSelectedKey(null); }}>{value === "day" ? "日" : value === "week" ? "周" : "月"}</button>)}
+              {["day", "week", "month"].map(value => <button type="button" key={value} aria-label={value === "day" ? "日" : value === "week" ? "周" : "月"} aria-pressed={trendLevel === value} onClick={() => { setTrendLevelOverride(value as TradingRoomTrendLevel); setSelectedKey(null); setSelectedTrendKey(null); setHoverTrendKey(null); setSelectedTrendCandidates([]); setHoverTrendCandidates([]); }}>{value === "day" ? "日" : value === "week" ? "周" : "月"}</button>)}
             </div>}
           </div>}
           <div className={styles.levelTabs} role="group" aria-label="历史表现指标">
-            <button type="button" aria-pressed={metric === "pnl"} onClick={() => setMetric("pnl")}>累计盈亏</button>
-            <button type="button" aria-pressed={metric === "win-rate"} onClick={() => setMetric("win-rate")}>自然月胜率</button>
+            <button type="button" aria-pressed={metric === "pnl"} onClick={() => { setMetric("pnl"); setSelectedTrendKey(null); setHoverTrendKey(null); setSelectedTrendCandidates([]); setHoverTrendCandidates([]); }}>累计盈亏</button>
+            <button type="button" aria-pressed={metric === "win-rate"} onClick={() => { setMetric("win-rate"); setSelectedTrendKey(null); setHoverTrendKey(null); setSelectedTrendCandidates([]); setHoverTrendCandidates([]); }}>自然月胜率</button>
           </div>
           {metric === "win-rate" ? <section className={styles.winRate} aria-label="自然月胜率表现">
             <p>盈利回合 ÷ 可信已平仓回合；持平计入分母，无样本月份留缺口。</p>
@@ -687,13 +710,11 @@ export function RoomPerformance({
             <ul>{monthlyWinRate.points.map(point => <li key={point.month}><strong>{point.month} · {point.ratePercent === null ? "无样本" : percentLabel(point.ratePercent)} · {point.wins}/{point.denominator}</strong><small>{point.coverageLabel}</small></li>)}</ul>
           </section> : <>
 
-          {model.trend.points.length === 0 || model.summary.trustedClosedCount === 0 ? (
-            <p className={styles.empty}>当前范围暂无可绘制的已平仓回合。</p>
-          ) : (
-            <div className={styles.chartFrame}>
+          <div className={styles.chartFrame}>
               <div className={styles.chartAxisLayout}>
                 <div className={styles.chartPlotArea}>
                   <div className={styles.chartStage} ref={chartStageRef}>
+                    {model.trend.points.length === 0 || model.summary.trustedClosedCount === 0 ? <p className={styles.empty}>当前范围暂无可绘制的已平仓回合。</p> : <>
                     <svg role="img" aria-label="累计盈亏趋势图" width="100%" height={chartGeometry.height} viewBox={`0 0 ${chartGeometry.width} ${chartGeometry.height}`} preserveAspectRatio="none">
                     {trendAxisTicks.map(tick => <g key={tick.value}>
                       <line x1={chartGeometry.padding.left} x2={chartGeometry.width - chartGeometry.padding.right} y1={tick.y} y2={tick.y} className={styles.axisGridLine} />
@@ -708,28 +729,25 @@ export function RoomPerformance({
                         {points.map(point => {
                           const trendPoint = model.trend.points[point.index];
                           if (!trendPoint) return null;
-                          const selectPoint = () => setSelectedTrendKey(`${series.key}:${trendPoint.key}`);
+                          const selectPoint = () => { setSelectedTrendKey(`${series.key}:${trendPoint.key}`); };
+                          const previewPoint = () => {
+                            if (validSelectedTrendKey) return;
+                            setHoverTrendKey(`${series.key}:${trendPoint.key}`);
+                            setHoverTrendCandidates([]);
+                          };
                           const selectNearestPoint = (event: ReactMouseEvent<SVGCircleElement> | ReactPointerEvent<SVGCircleElement>) => {
+                            if (validSelectedTrendKey) return;
                             const svg = event.currentTarget.ownerSVGElement;
                             const bounds = svg?.getBoundingClientRect();
                             if (!svg || !bounds || bounds.width <= 0 || bounds.height <= 0) {
-                              selectPoint();
+                              previewPoint();
                               return;
                             }
-                            const pointerX = (event.clientX - bounds.left) * chartGeometry.width / bounds.width;
-                            const pointerY = (event.clientY - bounds.top) * chartGeometry.height / bounds.height;
-                            let nearestKey: string | null = null;
-                            let nearestDistanceSquared = Number.POSITIVE_INFINITY;
-                            for (const candidatePoint of trendHitTargets) {
-                              const dx = candidatePoint.x - pointerX;
-                              const dy = candidatePoint.y - pointerY;
-                              const distanceSquared = dx * dx + dy * dy;
-                              if (distanceSquared < nearestDistanceSquared) {
-                                nearestKey = candidatePoint.key;
-                                nearestDistanceSquared = distanceSquared;
-                              }
-                            }
-                            setSelectedTrendKey(nearestKey ?? `${series.key}:${trendPoint.key}`);
+                            const hit = nearestTrendHit(event, bounds, chartGeometry, trendHitTargets);
+                            if (!hit.nearest) return;
+                            setHoverTrendKey(hit.nearest.key);
+                            const nextCandidates = hit.matches.length > 1 ? hit.matches.map(candidate => candidate.key) : [];
+                            setHoverTrendCandidates(previous => previous.length === nextCandidates.length && previous.every((candidate, index) => candidate === nextCandidates[index]) ? previous : nextCandidates);
                           };
                           const pointLabel = `${series.key} · ${trendPointLabel(trendPoint, aggregateTrend ? undefined : series.key, reportCurrency)}`;
                           const pointEvents = {
@@ -737,15 +755,39 @@ export function RoomPerformance({
                             onMouseMove: selectNearestPoint,
                             onPointerEnter: selectNearestPoint,
                             onPointerMove: selectNearestPoint,
-                            onFocus: selectPoint,
+                            onFocus: previewPoint,
                             onClick: (event: ReactMouseEvent<SVGCircleElement>) => {
-                              if (event.detail === 0) selectPoint();
-                              else selectNearestPoint(event);
+                              if (event.detail === 0) {
+                                selectPoint();
+                                setHoverTrendKey(null);
+                                setSelectedTrendCandidates([]); setHoverTrendCandidates([]);
+                              } else {
+                                const svg = event.currentTarget.ownerSVGElement;
+                                const bounds = svg?.getBoundingClientRect();
+                                if (!svg || !bounds || bounds.width <= 0 || bounds.height <= 0) {
+                                  selectPoint();
+                                  setHoverTrendKey(null);
+                                  setSelectedTrendCandidates([]);
+                                  setHoverTrendCandidates([]);
+                                  return;
+                                }
+                                const hit = nearestTrendHit(event, bounds, chartGeometry, trendHitTargets);
+                                if (hit.nearest) {
+                                  setSelectedTrendKey(hit.nearest.key);
+                                  setHoverTrendKey(null);
+                                  setSelectedTrendCandidates(hit.matches.length > 1 ? hit.matches.map(candidate => candidate.key) : []);
+                                } else {
+                                  setHoverTrendKey(null);
+                                  setHoverTrendCandidates([]);
+                                }
+                              }
                             },
                             onKeyDown: (event: KeyboardEvent<SVGCircleElement>) => {
                               if (event.key === "Enter" || event.key === " ") {
                                 event.preventDefault();
                                 selectPoint();
+                                setHoverTrendKey(null);
+                                setSelectedTrendCandidates([]); setHoverTrendCandidates([]);
                               }
                             },
                           };
@@ -764,6 +806,7 @@ export function RoomPerformance({
                     <div className={styles.axisYLabels} aria-label="趋势图纵轴刻度">
                       {trendAxisTicks.map(tick => <span key={tick.value} style={{ top: `${(tick.y / chartGeometry.height) * 100}%`, left: `${(chartGeometry.padding.left / chartGeometry.width) * 100}%` }} data-chart-role="axis-y-label" data-value={tick.value}>{model.trend.currencies.length > 1 && !aggregateTrend ? new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2, signDisplay: "always" }).format(tick.value) : money(String(tick.value), aggregateTrend && reportCurrency !== "original" ? reportCurrency : model.trend.currencies[0] ?? "CNY")}</span>)}
                     </div>
+                    </>}
                     <div className={styles.axisXLabels} aria-label="趋势图横轴">
                       {trendAxisLabels.map(point => <span className={point.index === 0 ? styles.axisXLabelStart : point.index === model.trend.points.length - 1 ? styles.axisXLabelEnd : undefined} key={point.key} style={{ left: `${(point.x / chartGeometry.width) * 100}%` }} data-chart-role="axis-x-tick" data-key={point.key} data-x={point.x}>{point.label}</span>)}
                     </div>
@@ -780,9 +823,18 @@ export function RoomPerformance({
               </div>
               {selectedTrend && <div className={styles.selectedTrendPoint} role="status" aria-label="趋势点详情" aria-live="polite">
                 <strong>{selectedTrend.label}</strong>
+                <span className={styles.selectedTrendIdentity}>{selectedTrendCurrency ?? "原币"} · {selectedTrend.startDate === selectedTrend.endDate ? selectedTrend.startDate : `${selectedTrend.startDate} 至 ${selectedTrend.endDate}`}</span>
                 <span className={styles[`amount-${amountTone(trendNumericValue(selectedTrend, false, aggregateTrend ? undefined : selectedTrendCurrency, reportCurrency))}`]}>本期盈亏 {trendPointMoney(selectedTrend, false, aggregateTrend ? undefined : selectedTrendCurrency, reportCurrency)}</span>
                 <span className={styles[`amount-${amountTone(trendNumericValue(selectedTrend, true, aggregateTrend ? undefined : selectedTrendCurrency, reportCurrency))}`]}>累计盈亏 {trendPointMoney(selectedTrend, true, aggregateTrend ? undefined : selectedTrendCurrency, reportCurrency)}</span>
                 <small>{selectedTrend.trustedClosedCount} 个可信回合 · {selectedTrend.wins} 胜 / {selectedTrend.losses} 负 / 持平 {selectedTrend.breakEven} · {selectedTrend.startDate} 至 {selectedTrend.endDate}{selectedTrend.availability !== "available" ? ` · ${selectedTrend.availability === "not-combinable" ? "多币种无法合计" : selectedTrend.availability === "insufficient" ? "数据不足" : "暂无样本"}` : ""}</small>
+                {displayedTrendCandidates.length > 1 && <div className={styles.trendCandidates} role="listbox" aria-label="重合趋势点候选">
+                  {displayedTrendCandidates.map(candidateKey => {
+                    const [currency, pointKey] = candidateKey.split(":");
+                    const point = model.trend.points.find(item => item.key === pointKey);
+                    if (!point) return null;
+                    return <button key={candidateKey} type="button" role="option" aria-selected={candidateKey === displayedTrendKey} onClick={() => { setSelectedTrendKey(candidateKey); setHoverTrendKey(null); setSelectedTrendCandidates([]); setHoverTrendCandidates([]); }}>{currency} · {point.startDate === point.endDate ? point.startDate : `${point.startDate} 至 ${point.endDate}`}</button>;
+                  })}
+                </div>}
               </div>}
               <details className={styles.trendDetails}>
                 <summary>查看趋势数据</summary>
@@ -796,7 +848,6 @@ export function RoomPerformance({
                 </div>
               </details>
             </div>
-          )}
           </>}
         </div>
       )}

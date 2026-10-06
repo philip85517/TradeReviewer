@@ -1029,7 +1029,14 @@ export function ReviewDashboard({
       currencies: [],
       reviewStatuses: [],
     }));
-    onSharedScopeChange?.({ nature: roomScope.nature === "simulation" ? "simulation" : "live", accountIds: [], simulationRunId: null });
+    // Clearing the expanded filters must not reset the base simulation run.
+    // The run selector is a separate scope control; keep its value aligned in
+    // the shared scope while clearing only the additional filter fields.
+    onSharedScopeChange?.({
+      nature: roomScope.nature,
+      accountIds: [],
+      simulationRunId: roomScope.nature === "simulation" ? roomScope.simulationRunId : null,
+    });
     setRoomPeriodError(null);
   };
   const activeFilterChips = [
@@ -1160,11 +1167,14 @@ export function ReviewDashboard({
               className={styles.topbarSelect}
               label="币种"
               ariaLabel="交易室币种筛选"
+              fieldId="currency"
               value={roomScope.currencies[0] ?? "all"}
               options={[{ value: "all", label: "全部币种" }, ...currencyOptions]}
               onChange={value => updateRoomScope({ currencies: value === "all" ? [] : [value] })}
             />
             <RadioGroup label="复盘状态" ariaLabel="交易室复盘状态筛选" value={roomScope.reviewStatuses[0] ?? "all"} options={[{ value: "all", label: "全部状态" }, { value: "pending", label: "待复盘" }, { value: "completed", label: "已复盘" }, { value: "deferred", label: "暂不复盘" }]} onChange={value => updateRoomScope({ reviewStatuses: value === "all" ? [] : [value as RoomReviewStatus] })} />
+          </div>
+          <div className={styles.roomAdvancedActions}>
             {roomFilterCount > 0 && <button type="button" className={styles.roomClearButton} onClick={clearRoomFilters}>清除附加筛选</button>}
             <button type="button" className={styles.roomClearButton} onClick={resetRoomScope}>恢复默认范围</button>
           </div>

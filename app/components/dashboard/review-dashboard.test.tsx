@@ -677,6 +677,60 @@ describe("ReviewDashboard", () => {
     expect(within(room).getByRole("radio", { name: "请选择运行" })).toBeChecked();
   });
 
+  it("clears additional filters without clearing the selected simulation run", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const base = dashboardEntries()[0];
+    const run = copyEntry(base, { prefix: "clear-extra", tradeNature: "simulation", simulationRunId: "run-clear-extra" });
+    const onSharedScopeChange = vi.fn();
+    render(<ReviewDashboard entries={[run]} onSharedScopeChange={onSharedScopeChange} onOpenInReview={() => undefined} />);
+
+    const dashboard = screen.getByRole("region", { name: "我的交易室" });
+    await user.selectOptions(within(dashboard).getByRole("combobox", { name: "交易性质" }), "simulation");
+    await openRoomFilters(user);
+    const room = screen.getByRole("region", { name: "交易室范围" });
+    await user.click(within(room).getByRole("radio", { name: /上海测试（600000）/ }));
+    await user.click(within(room).getByText(/^更多筛选/));
+    await user.click(within(room).getByRole("radio", { name: "ETF" }));
+
+    await user.click(within(room).getByRole("button", { name: "清除附加筛选" }));
+
+    expect(within(room).getByRole("radio", { name: /模拟运行/ })).toBeChecked();
+    expect(within(room).getByRole("radio", { name: "全部资产" })).toBeChecked();
+    expect(onSharedScopeChange).toHaveBeenLastCalledWith({
+      nature: "simulation",
+      accountIds: [],
+      simulationRunId: "run-clear-extra",
+    });
+  });
+
+  it("preserves an unknown shared nature when clearing additional filters", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const unknown = copyEntry(dashboardEntries()[0], { prefix: "unknown-clear", tradeNature: "unknown" });
+    const onSharedScopeChange = vi.fn();
+    render(
+      <ReviewDashboard
+        entries={[unknown]}
+        sharedScope={{ nature: "unknown", accountIds: [], reportCurrency: "original", simulationRunId: null }}
+        onSharedScopeChange={onSharedScopeChange}
+        onOpenInReview={() => undefined}
+      />,
+    );
+
+    const dashboard = screen.getByRole("region", { name: "我的交易室" });
+    await openRoomFilters(user);
+    const room = screen.getByRole("region", { name: "交易室范围" });
+    await user.click(within(room).getByText(/^更多筛选/));
+    await user.click(within(room).getByRole("radio", { name: "ETF" }));
+    await user.click(within(room).getByRole("button", { name: "清除附加筛选" }));
+
+    expect(within(dashboard).getByRole("combobox", { name: "交易性质" })).toHaveValue("unknown");
+    expect(onSharedScopeChange).toHaveBeenLastCalledWith({
+      nature: "unknown",
+      accountIds: [],
+      simulationRunId: null,
+    });
+  });
+
   it("shows canonical TradingView holdings and history for all-account and explicit-account run-null scope", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     const entries = [

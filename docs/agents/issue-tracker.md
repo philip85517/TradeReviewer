@@ -9,6 +9,7 @@
 - 功能目录的 `README.md` 可作为索引，不代替独立任务文件。
 - 每个任务包含 What to build / Scope、Refs、State、Status、Assignee、集成负责人、Blocked by、可勾选的验收标准、反例与证据；按需记录 Priority。使用 [拆票标准与模板](task-decomposition.md)。
 - UI 功能目录同时记录视觉契约和整页 acceptance 证据，使用 [UI 任务与验收模板](ui-task-templates.md)；组件票通过不能自动关闭整页验收票。
+- 前端控件测试/检查等同义任务，以及影响前端交互或布局的开发后验收，按[前端控件与视觉空间诊断规范](frontend-control-audit.md)记录触发、完整/局部范围、版本绑定的控件登记/验证表、问题表与复验证据。范围内缺陷建立独立问题票，设计待补与实现故障分别标明；用户排除有依据且不记作通过。该要求同样适用于原任务未显式写“测试”的前端开发。
 - 已确认、可由 agent 领取的任务使用 `State: open`、`Status: ready-for-agent`、`Assignee: unassigned`；存在 Blocked by 时仍须等待所列任务被接受并关闭。`ready-for-agent` 不是完成。
 - 发布任务即写入对应 Markdown 文件；读取任务时读取完整文件。
 - 任务依赖使用编号和标题表达，不因优先级或共享文件而添加人为阻塞。

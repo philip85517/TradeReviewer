@@ -1,7 +1,7 @@
 # Native deploy and unit repair remote integration
 
-State: open
-Status: in-progress
+State: closed
+Status: accepted
 Coordinator: /root
 User request: 提交到远端分支，并合并至master (2026-10-07, Asia/Shanghai).
 
@@ -16,3 +16,9 @@ Scope: current codex/local-native-deploy native Node/SQLite release/debug work a
 Coordinator /root independently accepts G05/G06/G07 on the frozen final candidate. Bare `npm run test:unit` passes 319 files / 3070 tests, with only the original 3 external-corpus files / 6 tests skipped; duration463.72s. `make deploy-test`60/60; `make debug-test`18/18; `npm test` builds and passes5/5 integration cases; typecheck exit0; scoped ESLint exit0 (2 existing debug-local unused-variable warnings). No timeout overrides, added skips, removed assertions or production UI changes. Source and installed fixture entrypoints select private Node26.0.0 / actual SQL3.53.0 even with ambient Homebrew SQL3.53.1; missing configured runtime fails without fallback. Final source hashes match the tested and reviewed candidate.
 
 Evidence: reports/final-unit-result.json, final-unit.log, final-native.log, final-debug.log, final-build-integration.log, final-typecheck.log, final-scoped-eslint.log, source-freeze-verification.json, entrypoint-acceptance.json and final-native-review.md. Original FAILs and rejected experiments remain preserved. Live3022/3333 listener PIDs remain unchanged; existing processes' actual SQL versions are NOT VERIFIED. The installed production toolkit has not been updated by this integration. Actual deployment/restart acceptance is separate from this requested Git integration.
+
+## Remote integration completed — 2026-10-07
+
+Coordinator /root verified PR38 MERGED, task branch head0e336c6559b3124562c2346ff13d249e74cdc29e and merge2d22bb28516aebb34788e2337ae908b4f2f53c94 on origin/master. Local master /Users/zhoulin/Documents/TradeReview safely fast-forwarded to that merge, with tracked files clean and all25 unrelated untracked entries byte-identical. Merged tree matches the tested candidate. PR has no configured checks/review requirement; local verification/independent review passed. No force/direct-master push, branch deletion, actual deployment or service restart.3022/3333 original listeners retained; their actual SQL versions remain NOT VERIFIED.
+
+Evidence: reports/remote-integration-receipt.json and https://github.com/philip85517/TradeReviewer/pull/38. This local completion record was written after merge; committed pre-merge records remain historical snapshots. All requested Git integration gates G01–G07 accepted; separate live deployment/debug verification remains pending in native-debug-baseline.

@@ -1,0 +1,11 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:87238) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  2 passed (2)
+      Tests  5 passed | 90 skipped (95)
+   Start at  22:20:19
+   Duration  11.04s (transform 6.60s, setup 378ms, import 8.75s, tests 7.19s, environment 2.06s)
+

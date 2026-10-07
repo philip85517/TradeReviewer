@@ -1,6 +1,7 @@
 import "fake-indexeddb/auto";
 
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -489,12 +490,17 @@ function rejectNextDemoReplayRequest() {
 }
 
 async function findImportConfirmation(timeout = 10_000) {
-  await screen.findByRole(
+  const dialog = await screen.findByRole(
+    "dialog",
+    { name: "确认导入交易记录" },
+    { timeout },
+  );
+  await within(dialog).findByRole(
     "heading",
     { name: "确认导入交易记录" },
     { timeout },
   );
-  return screen.findByRole(
+  return within(dialog).findByRole(
     "button",
     { name: "确认导入并开始更新行情" },
     { timeout },
@@ -867,8 +873,8 @@ describe("TradeReviewWorkspace", () => {
     await screen.findByLabelText("图表工具栏");
   }
 
-  function openMoreRecords() {
-    const more = screen.getByLabelText("更多记录与完成");
+  function openMoreRecords(root: HTMLElement = document.body) {
+    const more = within(root).getByLabelText("更多记录与完成");
     const summary = within(more).getByRole("button", { name: "更多 / 记录" });
     if (summary.getAttribute("aria-expanded") !== "true") fireEvent.click(summary);
     expect(summary).toHaveAttribute("aria-expanded", "true");
@@ -977,7 +983,8 @@ describe("TradeReviewWorkspace", () => {
   async function enterImportedReviewFromDashboard(instrumentName?: string) {
     const user = userEvent.setup();
     const navigation = await screen.findByRole("navigation", { name: "主导航" });
-    const dashboard = await screen.findByRole("region", { name: "我的交易室" });
+    const room = await screen.findByRole("region", { name: "我的交易室" });
+    const dashboard = within(room).getByRole("region", { name: "历史交易与复盘" });
 
     // A closed episode can be opened from the dashboard calendar.  Waiting for
     // the hydrated dashboard here keeps this helper on the same user path as
@@ -1013,7 +1020,8 @@ describe("TradeReviewWorkspace", () => {
     const library = await screen.findByRole("region", { name: "交易库" });
     // The library intentionally opens in the review queue; stock-round tests
     // opt into the stock view explicitly.
-    await user.click(within(library).getByRole("tab", { name: "按标的浏览" }));
+    const browseTabs = within(library).getByRole("tablist", { name: "交易库浏览视图" });
+    await user.click(within(browseTabs).getByRole("tab", { name: "按标的浏览" }));
     if (instrumentName) {
       await user.type(
         within(library).getByRole("searchbox", { name: "搜索股票" }),
@@ -2790,80 +2798,123 @@ describe("TradeReviewWorkspace", () => {
   });
 
   it("retains a Recall drawing draft per episode and gates completion until a snapshot exists", async () => {
-    const user = userEvent.setup();
     await renderGoldReplay([], "2026-06-26T08:30:00.000Z", "2026-06-26T02:22:37Z", true);
-    // A drawing needs a visible, completed candle to map its coordinates.
-    await user.click(screen.getByRole("button", { name: "下一根 K 线" }));
-    await user.click(screen.getByRole("button", { name: "文字标注" }));
-    const canvas = screen.getByRole("img", { name: "绘图画布" });
-    fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 40, clientY: 40 });
-    const editor = screen.getByRole("textbox", { name: "文字标注" });
-    await user.type(editor, "QA故障注释");
-    await user.keyboard("{Enter}");
-    await user.click(screen.getByRole("button", { name: "图层" }));
-    const layerName = screen.getByRole("textbox", { name: "重命名文字标注" });
-    await user.clear(layerName);
-    await user.type(layerName, "QA故障注释");
-    await user.keyboard("{Enter}");
+    const workspace = screen.getByRole("region", { name: "导入交易回忆复盘工作区" });
+    const recall = within(workspace);
+    const replay = within(recall.getByLabelText("回放控制"));
+    const chartToolbar = within(recall.getByLabelText("图表工具栏"));
+    const drawingToolbar = within(recall.getByLabelText("绘图工具"));
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"], shouldAdvanceTime: true });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    try {
+      // A drawing needs a visible, completed candle to map its coordinates.
+      await user.click(replay.getByRole("button", { name: "下一根 K 线" }));
+      await user.click(drawingToolbar.getByRole("button", { name: "文字标注" }));
+      const canvas = recall.getByRole("img", { name: "绘图画布" });
+      fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 40, clientY: 40 });
+      const editor = recall.getByRole("textbox", { name: "文字标注" });
+      await user.type(editor, "QA故障注释");
+      await user.keyboard("{Enter}");
+      await user.click(chartToolbar.getByRole("button", { name: "图层" }));
+      const layerPanel = recall.getByRole("region", { name: "绘图图层面板" });
+      const layerName = within(layerPanel).getByRole("textbox", { name: "重命名文字标注" });
+      await user.clear(layerName);
+      await user.type(layerName, "QA故障注释");
+      await user.keyboard("{Enter}");
 
-    await waitFor(() =>
-      expect(screen.getByText("自动保存将在 1 秒后执行")).toBeInTheDocument(),
-    );
-    // Autosave deliberately waits one second; wait for its visible completion before inspecting the repository.
-    expect(await screen.findByText("已保存", {}, { timeout: 2500 })).toBeInTheDocument();
-    await waitFor(() => {
-      const saved = [...mockRecallRepository.documents.values()].some((value) =>
-        (value as { working?: { drawings?: Array<{ name?: string }> } }).working?.drawings?.some(
-          (drawing) => drawing.name === "QA故障注释",
-        ),
+      await waitFor(() =>
+        expect(screen.getByText("自动保存将在 1 秒后执行")).toBeInTheDocument(),
       );
-      expect(saved).toBe(true);
-    });
-    await user.click(screen.getByRole("button", { name: "返回交易库" }));
-    await user.click(screen.getByRole("tab", { name: "按标的浏览" }));
-    const goldStock = await screen.findByRole("button", { name: /^(展开|收起)自由黄金-DRS交易回合$/ });
-    if (goldStock.getAttribute("aria-expanded") !== "true") await user.click(goldStock);
-    await user.click(await screen.findByRole("button", { name: /^打开自由黄金-DRS第\d+次交易/ }));
-    await screen.findByLabelText("图表工具栏");
-    await user.click(screen.getByRole("button", { name: "图层" }));
-    expect(screen.getByDisplayValue("QA故障注释")).toBeInTheDocument();
-    openMoreRecords();
-    await user.click(screen.getByRole("button", { name: "保存并完成回合复盘" }));
-    expect(await screen.findByRole("alert")).toHaveTextContent(/仍缺少决策快照|尚未清仓/);
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1000);
+      });
+      // Advance the real 1000ms debounce under React act, then verify its visible completion.
+      expect(await screen.findByText("已保存", {}, { timeout: 2500 })).toBeInTheDocument();
+      await waitFor(() => {
+        const saved = [...mockRecallRepository.documents.values()].some((value) =>
+          (value as { working?: { drawings?: Array<{ name?: string }> } }).working?.drawings?.some(
+            (drawing) => drawing.name === "QA故障注释",
+          ),
+        );
+        expect(saved).toBe(true);
+      });
+      vi.useRealTimers();
+      const postSaveUser = userEvent.setup();
+      const reviewSubject = within(workspace).getByLabelText("复盘标的");
+      const reviewHeader = reviewSubject.closest("header");
+      expect(reviewHeader).not.toBeNull();
+      await postSaveUser.click(within(reviewHeader!).getByRole("button", { name: "返回交易库" }));
+      const library = await screen.findByRole("region", { name: "交易库" });
+      const browseTabs = within(library).getByRole("tablist", { name: "交易库浏览视图" });
+      await postSaveUser.click(within(browseTabs).getByRole("tab", { name: "按标的浏览" }));
+      const goldStock = await within(library).findByRole("button", { name: /^(展开|收起)自由黄金-DRS交易回合$/ });
+      if (goldStock.getAttribute("aria-expanded") !== "true") await postSaveUser.click(goldStock);
+      const goldRounds = within(library).getByRole("region", { name: "自由黄金-DRS交易回合" });
+      await postSaveUser.click(within(goldRounds).getByRole("button", { name: /^打开自由黄金-DRS第\d+次交易/ }));
+      const reopened = await screen.findByRole("region", { name: "导入交易回忆复盘工作区" });
+      const reopenedRecall = within(reopened);
+      const reopenedChartToolbar = await reopenedRecall.findByLabelText("图表工具栏");
+      await postSaveUser.click(within(reopenedChartToolbar).getByRole("button", { name: "图层" }));
+      const reopenedLayers = reopenedRecall.getByRole("region", { name: "绘图图层面板" });
+      expect(within(reopenedLayers).getByDisplayValue("QA故障注释")).toBeInTheDocument();
+      openMoreRecords(reopened);
+      const reopenedActions = reopenedRecall.getByLabelText("更多回放与记录动作");
+      await postSaveUser.click(within(reopenedActions).getByRole("button", { name: "保存并完成回合复盘" }));
+      expect(await screen.findByRole("alert")).toHaveTextContent(/仍缺少决策快照|尚未清仓/);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("keeps the latest Recall drawing draft while completion is gated", async () => {
-    const user = userEvent.setup();
     await renderGoldReplay([], "2026-06-26T08:30:00.000Z", "2026-06-26T02:22:37Z", true);
-    // A drawing needs a visible, completed candle to map its coordinates.
-    await user.click(screen.getByRole("button", { name: "下一根 K 线" }));
-    await user.click(screen.getByRole("button", { name: "文字标注" }));
-    const canvas = screen.getByRole("img", { name: "绘图画布" });
-    fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 40, clientY: 40 });
-    const editor = screen.getByRole("textbox", { name: "文字标注" });
-    await user.type(editor, "队列稳定性");
-    await user.keyboard("{Enter}");
-    await user.click(screen.getByRole("button", { name: "图层" }));
-    const layerName = screen.getByRole("textbox", { name: "重命名文字标注" });
-    await user.clear(layerName);
-    await user.type(layerName, "队列稳定性");
-    await user.keyboard("{Enter}");
-    await waitFor(() =>
-      expect(screen.getByText("自动保存将在 1 秒后执行")).toBeInTheDocument(),
-    );
-    // Autosave deliberately waits one second; allow its request to finish after that timer.
-    expect(await screen.findByText("已保存", {}, { timeout: 2500 })).toBeInTheDocument();
-    await waitFor(() => {
-      const saved = [...mockRecallRepository.documents.values()].some((value) =>
-        (value as { working?: { drawings?: Array<{ name?: string }> } }).working?.drawings?.some(
-          (drawing) => drawing.name === "队列稳定性",
-        ),
+    const workspace = screen.getByRole("region", { name: "导入交易回忆复盘工作区" });
+    const recall = within(workspace);
+    const replay = within(recall.getByLabelText("回放控制"));
+    const drawingToolbar = within(recall.getByLabelText("绘图工具"));
+    const chartToolbar = within(recall.getByLabelText("图表工具栏"));
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"], shouldAdvanceTime: true });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    try {
+      // A drawing needs a visible, completed candle to map its coordinates.
+      await user.click(replay.getByRole("button", { name: "下一根 K 线" }));
+      await user.click(drawingToolbar.getByRole("button", { name: "文字标注" }));
+      const canvas = recall.getByRole("img", { name: "绘图画布" });
+      fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 40, clientY: 40 });
+      const editor = recall.getByRole("textbox", { name: "文字标注" });
+      await user.type(editor, "队列稳定性");
+      await user.keyboard("{Enter}");
+      await user.click(chartToolbar.getByRole("button", { name: "图层" }));
+      const layerPanel = recall.getByRole("region", { name: "绘图图层面板" });
+      const layerName = within(layerPanel).getByRole("textbox", { name: "重命名文字标注" });
+      await user.clear(layerName);
+      await user.type(layerName, "队列稳定性");
+      await user.keyboard("{Enter}");
+      await waitFor(() =>
+        expect(screen.getByText("自动保存将在 1 秒后执行")).toBeInTheDocument(),
       );
-      expect(saved).toBe(true);
-    });
-    openMoreRecords();
-    await user.click(screen.getByRole("button", { name: "保存并完成回合复盘" }));
-    expect(await screen.findByRole("alert")).toHaveTextContent(/仍缺少决策快照|尚未清仓/);
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1000);
+      });
+      // Advance the real 1000ms debounce under React act, then verify its visible completion.
+      expect(await screen.findByText("已保存", {}, { timeout: 2500 })).toBeInTheDocument();
+      await waitFor(() => {
+        const saved = [...mockRecallRepository.documents.values()].some((value) =>
+          (value as { working?: { drawings?: Array<{ name?: string }> } }).working?.drawings?.some(
+            (drawing) => drawing.name === "队列稳定性",
+          ),
+        );
+        expect(saved).toBe(true);
+      });
+      vi.useRealTimers();
+      const postSaveUser = userEvent.setup();
+      openMoreRecords(workspace);
+      const reviewActions = recall.getByLabelText("更多回放与记录动作");
+      await postSaveUser.click(within(reviewActions).getByRole("button", { name: "保存并完成回合复盘" }));
+      expect(await screen.findByRole("alert")).toHaveTextContent(/仍缺少决策快照|尚未清仓/);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("stops replay and reports a recoverable message when a step fails", async () => {
@@ -3611,23 +3662,37 @@ describe("TradeReviewWorkspace", () => {
       : Response.json({ error: { code: "source-unavailable" } }, { status: 502 }));
     const merge = vi.spyOn(mockSqliteClient.current as SqliteHttpClient, "mergeExecutions");
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
-    await user.click(await screen.findByRole("button", { name: "交易库" }));
-    await user.type(screen.getByRole("searchbox", { name: "搜索股票" }), "XPEV");
-    await user.click(screen.getByRole("tab", { name: "按标的浏览" }));
-    const xpevStock = screen.getByRole("button", { name: /^(展开|收起)小鹏汽车交易回合$/ });
+    const navigation = await screen.findByRole("navigation", { name: "主导航" });
+    await user.click(within(navigation).getByRole("button", { name: "交易库" }));
+    const library = await screen.findByRole("region", { name: "交易库" });
+    const libraryQueries = within(library);
+    await user.type(libraryQueries.getByRole("searchbox", { name: "搜索股票" }), "XPEV");
+    const browseTabs = libraryQueries.getByRole("tablist", { name: "交易库浏览视图" });
+    await user.click(within(browseTabs).getByRole("tab", { name: "按标的浏览" }));
+    const xpevStock = libraryQueries.getByRole("button", { name: /^(展开|收起)小鹏汽车交易回合$/ });
     if (xpevStock.getAttribute("aria-expanded") !== "true") await user.click(xpevStock);
-    await user.click(screen.getByRole("button", { name: /^打开小鹏汽车第\d+次交易/ }));
-    await screen.findByLabelText("图表工具栏");
+    const xpevRounds = libraryQueries.getByRole("region", { name: "小鹏汽车交易回合" });
+    await user.click(within(xpevRounds).getByRole("button", { name: /^打开小鹏汽车第\d+次交易/ }));
+    expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
     const file = futuImportFile([["2025-01-06 22:30:00", "富途", "acct", "证券", "XPEV 小鹏汽车", "US", "买入开仓", "20250106", "USD", "10", "10", "-100", "0", "-100"]]);
     const input = screen.getByLabelText("导入交易记录");
     merge.mockClear();
     await user.upload(input, file);
-    await user.click(await findImportConfirmation());
+    const confirmation = await findImportConfirmation();
+    await user.click(confirmation);
     await waitFor(() => expect(merge.mock.calls.some(([payload]) => payload.executions.length === 3)).toBe(true));
-    expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "返回交易库" }));
-    expect(screen.getByRole("heading", { name: "交易库" })).toBeInTheDocument();
-    expect(screen.getByRole("searchbox", { name: "搜索股票" })).toHaveValue("XPEV");
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "确认导入交易记录" })).not.toBeInTheDocument(),
+    );
+    const hydratedRecall = await screen.findByRole("region", { name: "导入交易回忆复盘工作区" });
+    expect(await within(hydratedRecall).findByLabelText("图表工具栏")).toBeInTheDocument();
+    const hydratedSubject = within(hydratedRecall).getByLabelText("复盘标的");
+    const hydratedHeader = hydratedSubject.closest("header");
+    expect(hydratedHeader).not.toBeNull();
+    await user.click(within(hydratedHeader!).getByRole("button", { name: "返回交易库" }));
+    const returnedLibrary = await screen.findByRole("region", { name: "交易库" });
+    expect(within(returnedLibrary).getByRole("heading", { name: "交易库" })).toBeInTheDocument();
+    expect(within(returnedLibrary).getByRole("searchbox", { name: "搜索股票" })).toHaveValue("XPEV");
   });
 
   it("opens a library queue entry directly in the shared history workbench", async () => {

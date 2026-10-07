@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Makefile",
+    "existed": true,
+    "sha256": "4cbad3e677a5061091cdfe46c971d6e530f72216bf8d81eb3fe4631dddf8d748",
+    "mode": 420
+  },
+  {
+    "name": "DEPLOYMENT.md",
+    "existed": true,
+    "sha256": "2950f075269043903986e2e35879f8385199381d95c6cfd16fa41d080eb5ed04",
+    "mode": 420
+  },
+  {
+    "name": "ops/deploy-native.mjs",
+    "existed": false
+  },
+  {
+    "name": "ops/deploy-source.mjs",
+    "existed": false
+  },
+  {
+    "name": "ops/deploy-native-runtime.mjs",
+    "existed": false
+  },
+  {
+    "name": "ops/deploy.mjs",
+    "existed": true,
+    "sha256": "c7a08f3985b0e0423399ccc12304537456b2e5d92c59bbdaa9c1640c8ac8d606",
+    "mode": 420
+  },
+  {
+    "name": "ops/deploy-native-toolkit.mjs",
+    "existed": false
+  },
+  {
+    "name": "ops/native-environment.mjs",
+    "existed": false
+  },
+  {
+    "name": "ops/native-environment.json",
+    "existed": false
+  },
+  {
+    "name": "ops/start-native.command",
+    "existed": true,
+    "sha256": "26c87a476ffee0e7b233714f09d81ce46df98f5fdfa23f01bf2b39d7bbc77e76",
+    "mode": 493
+  }
+]

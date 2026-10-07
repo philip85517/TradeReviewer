@@ -73,14 +73,26 @@ export function createLegacySqliteClient(): SqliteHttpClient {
     async getMarketData(input) {
       const start = input.start ?? "0000-01-01T00:00:00.000Z";
       const end = input.end ?? "9999-12-31T23:59:59.999Z";
-      const intervalCoverage = await market.getIntervalCoverage(input.instrumentId, input.interval);
-      if (input.dailyOnly) return {
-        candles: [], dailyCandles: await market.getDailyCandles(input.instrumentId, start.slice(0, 10), end.slice(0, 10)), intervalCoverage,
-        coverage: await market.getCoverage(input.instrumentId),
-      };
-      return { candles: await market.getCandles(input.instrumentId, input.interval, start, end), intervalCoverage,
-        ...(input.interval === "1D" ? { coverage: await market.getCoverage(input.instrumentId) } : {}),
-      };
+      const intervalCoverage = market.getIntervalCoverage(input.instrumentId, input.interval);
+      if (input.dailyOnly) {
+        const [resolvedIntervalCoverage, dailyCandles, coverage] = await Promise.all([
+          intervalCoverage,
+          market.getDailyCandles(input.instrumentId, start.slice(0, 10), end.slice(0, 10)),
+          market.getCoverage(input.instrumentId),
+        ]);
+        return { candles: [], dailyCandles, intervalCoverage: resolvedIntervalCoverage, coverage };
+      }
+      const candles = market.getCandles(input.instrumentId, input.interval, start, end);
+      if (input.interval === "1D") {
+        const [resolvedIntervalCoverage, resolvedCandles, coverage] = await Promise.all([
+          intervalCoverage,
+          candles,
+          market.getCoverage(input.instrumentId),
+        ]);
+        return { candles: resolvedCandles, intervalCoverage: resolvedIntervalCoverage, coverage };
+      }
+      const [resolvedIntervalCoverage, resolvedCandles] = await Promise.all([intervalCoverage, candles]);
+      return { candles: resolvedCandles, intervalCoverage: resolvedIntervalCoverage };
     },
     async putMarketData(input) {
       if (input.kind === "daily") await market.commitSyncResult(input.result);

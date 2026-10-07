@@ -1,0 +1,6 @@
+{
+  "command": "npm run test:unit",
+  "exitCode": 1,
+  "log": "reports/integrated-unit.log",
+  "head": "cf7d48cc4d0052841b64690085e68b23325ffaea"
+}

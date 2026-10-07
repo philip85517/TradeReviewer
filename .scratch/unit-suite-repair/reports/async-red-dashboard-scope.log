@@ -1,0 +1,53 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:63227) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > shows page-wide identity with YTD default and expandable custom dates
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > keeps simulation runs and live holdings isolated after changing nature
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > keeps an unknown shared nature isolated instead of coercing it to live
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > publishes the current scoped quality model after building it
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > forwards market-data diagnostics to holdings and its quality model
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > forwards an async holdings retry through the dashboard callback
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > starts with live, all categories and the year to date period
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > puts nature controls beside the scope heading and exposes a holdings focus action
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > keeps the summary and trend inside one visual performance block
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > keeps full PnL context behind a compact keyboard-accessible disclosure
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > labels a pure CNY summary as original currency instead of an FX conversion
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > labels the primary category filter as market category without offering unknown as a choice
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > opens, applies, cancels and validates a custom period in place
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > cancels an observation date draft back to the applied range and closes the editor
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > cancels a history date draft back to the applied range and exposes invalid input as an alert
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > keeps original currency subtotals beside the converted summary
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > uses the same scope when switching category and period
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > requires a simulation run and never combines runs
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > shows canonical TradingView holdings and history for all-account and explicit-account run-null scope
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > keeps canonical run-null rows separate from legacy simulation run filters
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > derives room metrics immediately from the controlled shared nature and account scope
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > keeps the last valid scope when a custom date draft is invalid
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > stages a custom period and restores the applied range on cancel
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > rejects a future custom end date without changing the applied range
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > keeps the applied range when no scoped closed month can be found
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > shows and removes the active asset type filter
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > distinguishes empty data from an empty scoped period
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > clears a calendar drilldown and returns to the new scope after a top-level period change
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > does not open the custom editor after calendar period drilldown
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > keeps diagnostics and return detail modules out of the homepage
+ ↓ app/components/dashboard/review-dashboard.test.tsx > ReviewDashboard > opens the ordinary closed-history library with the complete room snapshot
+ ↓ app/components/dashboard/review-dashboard.test.tsx > keeps holding observation and closed performance periods independent in two ordered workspaces
+ ✓ app/components/dashboard/review-dashboard.test.tsx > reactively bounds all observation history by selected account, nature/run and refreshed entries 3015ms
+ ↓ app/components/dashboard/review-dashboard.test.tsx > uses validated source trading dates and visible matching opening evidence for all observation history
+ ↓ app/components/dashboard/review-dashboard.test.tsx > shows the model current date across Shanghai midnight
+ ↓ app/components/dashboard/review-dashboard.test.tsx > assembles the B2 current portfolio, allocation, history and pending work without observing old dates changing current KPI
+ ↓ app/components/dashboard/review-dashboard.test.tsx > uses one selected simulation run and one currency snapshot for all current modules
+ ↓ app/components/dashboard/review-dashboard.test.tsx > does not rebuild holdings for shared-scope closed-period changes but rebuilds for a real identity change
+ ↓ app/components/dashboard/review-dashboard.test.tsx > forwards scope cash baseline details to the asset distribution strip
+ ↓ app/components/dashboard/review-dashboard.test.tsx > restores only applied dashboard filters and statistics period after a reload, then keeps reset cleared
+ ↓ app/components/dashboard/review-dashboard.test.tsx > does not overwrite stored page filters with the default scope during StrictMode hydration
+ ↓ app/components/dashboard/review-dashboard.test.tsx > lets an explicit history return context override stored dashboard preferences and persist its applied range
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 41 skipped (42)
+   Start at  20:44:18
+   Duration  6.01s (transform 919ms, setup 172ms, import 1.25s, tests 3.02s, environment 919ms)
+

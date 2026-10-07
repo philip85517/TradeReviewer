@@ -1,0 +1,2 @@
+node "$NATIVE_CLI" --mode=deploy --source="$DEPLOY_SOURCE" --target="$DEPLOY_ROOT" --ref="$REF" --dry-run
+{"dryRun":true,"sourceSHA":"63690a494b8ad403081c7720985be54a95db60c7","requestedRef":"63690a494b8ad403081c7720985be54a95db60c7","resolvedRef":"63690a494b8ad403081c7720985be54a95db60c7","port":3022,"databasePath":"/Users/zhoulin/projects/交易空间/database/TradingReview/tradereview.sqlite","targetDir":"/Users/zhoulin/projects/交易空间/TradingReview"}

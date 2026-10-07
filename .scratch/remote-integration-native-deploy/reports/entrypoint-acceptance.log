@@ -1,0 +1,20 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ '/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-entrypoint-acceptance-YxnPpE/target with spaces 交易'
+- '/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-entrypoint-acceptance-YxnPpE/target with spaces 交易'
+
+    at file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/.scratch/remote-integration-native-deploy/reports/entrypoint-acceptance.mjs:46:12 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-entrypoint-acceptance-YxnPpE/target with spaces 交易',
+  expected: '/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-entrypoint-acceptance-YxnPpE/target with spaces 交易',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v26.0.0

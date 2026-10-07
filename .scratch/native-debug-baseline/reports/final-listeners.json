@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-06T12:02:39.117Z",
+  "pid": 51308,
+  "cwd": "p51308\nfcwd\nn/Users/zhoulin/.codex/worktrees/afc8/TradeReview",
+  "openedDatabase": [
+    "n/Users/zhoulin/.codex/worktrees/afc8/TradeReview/.data/tradereview-test.sqlite-shm",
+    "n/Users/zhoulin/.codex/worktrees/afc8/TradeReview/.data/tradereview-test.sqlite",
+    "n/Users/zhoulin/.codex/worktrees/afc8/TradeReview/.data/tradereview-test.sqlite-wal",
+    "n/Users/zhoulin/.codex/worktrees/afc8/TradeReview/.data/tradereview-test.sqlite-shm"
+  ],
+  "formalListener": "p98660\nf14",
+  "preview": "http://127.0.0.1:3333/",
+  "debugStorageHTTP": 200
+}

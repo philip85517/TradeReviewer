@@ -1,0 +1,64 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/components/trade-review-workspace.test.tsx --maxWorkers=1 -t retains a Recall drawing draft per episode|keeps the latest Recall drawing draft while completion is gated|keeps library context through a confirmed import with failed market refresh
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:66283) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.test.tsx (91 tests | 3 failed | 88 skipped) 15259ms
+     × retains a Recall drawing draft per episode and gates completion until a snapshot exists 5098ms
+     × keeps the latest Recall drawing draft while completion is gated 5066ms
+     × keeps library context through a confirmed import with failed market refresh 5090ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retains a Recall drawing draft per episode and gates completion until a snapshot exists
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/trade-review-workspace.test.tsx:2792:3
+    2790|   });
+    2791|
+    2792|   it("retains a Recall drawing draft per episode and gates completion …
+       |   ^
+    2793|     const user = userEvent.setup();
+    2794|     await renderGoldReplay([], "2026-06-26T08:30:00.000Z", "2026-06-26…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps the latest Recall drawing draft while completion is gated
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/trade-review-workspace.test.tsx:2835:3
+    2833|   });
+    2834|
+    2835|   it("keeps the latest Recall drawing draft while completion is gated"…
+       |   ^
+    2836|     const user = userEvent.setup();
+    2837|     await renderGoldReplay([], "2026-06-26T08:30:00.000Z", "2026-06-26…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps library context through a confirmed import with failed market refresh
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/trade-review-workspace.test.tsx:3603:3
+    3601|   });
+    3602|
+    3603|   it("keeps library context through a confirmed import with failed mar…
+       |   ^
+    3604|     const user = userEvent.setup();
+    3605|     saveImportedExecutions([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 88 skipped (91)
+   Start at  20:53:01
+   Duration  25.22s (transform 4.98s, setup 643ms, import 6.40s, tests 15.26s, environment 2.43s)
+
+real 26.98
+user 25.86
+sys 3.06

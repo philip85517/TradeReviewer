@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { delimiter, join } from "node:path";
 import { spawn } from "node:child_process";
 import { createServer } from "node:net";
 import test from "node:test";
@@ -43,12 +43,13 @@ test("dev server exposes a working SQLite storage API", async () => {
   const port = await freePort();
   const directory = mkdtempSync(join(tmpdir(), "tradereview-dev-storage-"));
   const child = spawn(
-    "npm",
-    ["run", "dev", "--", "--port", String(port)],
+    process.execPath,
+    [join(projectRoot, "scripts", "start-local.mjs"), "--dev", "--hostname", "127.0.0.1", "--port", String(port)],
     {
       cwd: projectRoot,
       env: {
         ...process.env,
+        PATH: `${join(projectRoot, "node_modules", ".bin")}${delimiter}${process.env.PATH || ""}`,
         TRADEREVIEW_DB_PATH: join(directory, "tradereview.sqlite"),
       },
       stdio: "ignore",

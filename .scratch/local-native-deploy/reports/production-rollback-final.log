@@ -1,0 +1,2 @@
+node "$NATIVE_CLI" --mode=rollback --target="$DEPLOY_ROOT" 
+{"targetDir":"/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-production-smoke-h3m9zqd7/target","activeRelease":"20261006T020332Z-05fdf32bd1","previousRelease":"20261006T020439Z-42c72908dd"}

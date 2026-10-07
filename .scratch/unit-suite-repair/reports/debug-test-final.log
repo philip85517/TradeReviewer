@@ -1,0 +1,120 @@
+node --test scripts/native-environment.test.mjs scripts/debug-local.test.mjs
+✖ copies committed WAL content and isolates writes (341.487115ms)
+✔ backs up a live uncheckpointed WAL and removes stale destination sidecars (57.439112ms)
+✖ failed backup keeps the previous copy and never publishes a temporary file (822.341913ms)
+✔ occupied port is rejected before copying (227.529329ms)
+✔ rejects same path, symlink, hard link, open target, and concurrent lock (37.125114ms)
+✖ standard launcher rejects redirecting environment and forwards fixed child contract (327.669072ms)
+✔ native mismatch is rejected before config/database filesystem access (2.106291ms)
+✖ corrupt/failed quick check and synchronous spawn failure preserve copy and release lock (582.41725ms)
+✖ cancellation during an awaited backup releases lock and cannot publish (336.332449ms)
+(node:91670) PromiseRejectionHandledWarning: Promise rejection was handled asynchronously (rejection id: 8)
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ rename failure restores quarantined old sidecars and previous main copy (55.545625ms)
+✔ post-publication quarantine cleanup failure never restores old sidecars over new main (38.988444ms)
+✔ accepts the pinned native runtime and reports measured values (4.389972ms)
+✔ rejects a runtime mismatch synchronously (1.695258ms)
+✔ rejects missing and malformed profiles without fallback values (2.737718ms)
+✔ source profile matches the pinned Node and built-in SQLite versions (0.311584ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 10
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3041.955299
+
+✖ failing tests:
+
+test at scripts/debug-local.test.mjs:21:1
+✖ copies committed WAL content and isolates writes (341.487115ms)
+  Error: Cannot start debug server: port 3333 is already occupied
+      at fail (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:11:32)
+      at assertDebugPreflight (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:105:84)
+      at prepareDebugDatabase (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:119:3)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.test.mjs:23:22)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.start (node:internal/test_runner/test:1096:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17)
+
+test at scripts/debug-local.test.mjs:48:1
+✖ failed backup keeps the previous copy and never publishes a temporary file (822.341913ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /backup failed/. Input:
+  
+  'Error: Cannot start debug server: port 3333 is already occupied'
+  
+      at async TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.test.mjs:52:3)
+      at async Test.run (node:internal/test_runner/test:1208:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: Cannot start debug server: port 3333 is already occupied
+        at fail (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:11:32)
+        at assertDebugPreflight (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:105:84)
+        at prepareDebugDatabase (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:119:3)
+        at file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.test.mjs:52:30
+        at waitForActual (node:assert:601:21)
+        at strict.rejects (node:assert:738:31)
+        at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.test.mjs:52:16)
+        at Test.runInAsyncScope (node:async_hooks:226:14)
+        at Test.run (node:internal/test_runner/test:1201:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:831:18),
+    expected: /backup failed/,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at scripts/debug-local.test.mjs:76:1
+✖ standard launcher rejects redirecting environment and forwards fixed child contract (327.669072ms)
+  Error: Cannot start debug server: port 3333 is already occupied
+      at fail (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:11:32)
+      at assertDebugPreflight (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:105:84)
+      at prepareDebugDatabase (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:119:3)
+      at startDebugServer (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:190:58)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.test.mjs:82:25)
+      at async Test.run (node:internal/test_runner/test:1208:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7)
+
+test at scripts/debug-local.test.mjs:95:1
+✖ corrupt/failed quick check and synchronous spawn failure preserve copy and release lock (582.41725ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /file is not a database|not a database/. Input:
+  
+  'Error: Cannot start debug server: port 3333 is already occupied'
+  
+      at async TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.test.mjs:99:3)
+      at async Test.run (node:internal/test_runner/test:1208:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: Cannot start debug server: port 3333 is already occupied
+        at fail (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:11:32)
+        at assertDebugPreflight (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:105:84)
+        at prepareDebugDatabase (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:119:3)
+        at file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.test.mjs:99:30
+        at waitForActual (node:assert:601:21)
+        at strict.rejects (node:assert:738:31)
+        at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.test.mjs:99:16)
+        at Test.runInAsyncScope (node:async_hooks:226:14)
+        at Test.run (node:internal/test_runner/test:1201:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:831:18),
+    expected: /file is not a database|not a database/,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at scripts/debug-local.test.mjs:107:1
+✖ cancellation during an awaited backup releases lock and cannot publish (336.332449ms)
+  Error: Cannot start debug server: port 3333 is already occupied
+      at fail (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:11:32)
+      at assertDebugPreflight (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:105:84)
+      at prepareDebugDatabase (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs:119:3)
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.test.mjs:112:21)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+      at Test.postRun (node:internal/test_runner/test:1330:19)
+      at Test.run (node:internal/test_runner/test:1258:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7)
+make: *** [debug-test] Error 1

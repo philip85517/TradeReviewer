@@ -1,0 +1,9 @@
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/deploy-native-toolkit.mjs
+  3:37  warning  'relative' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/deploy-native.test.mjs
+  1:26  warning  'readFile' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 2 problems (0 errors, 2 warnings)
+

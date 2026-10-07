@@ -1,0 +1,15 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:16140) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  319 passed | 3 skipped (322)
+      Tests  3070 passed | 6 skipped (3076)
+   Start at  10:06:19
+   Duration  463.72s (transform 9.20s, setup 57.42s, import 41.39s, tests 412.38s, environment 309.25s)
+

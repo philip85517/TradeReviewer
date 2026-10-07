@@ -1,0 +1,287 @@
+{
+  "path": "/Users/zhoulin/projects/交易空间/database/TradingReview/tradereview.sqlite",
+  "measuredAt": "2026-10-06T12:00:38.547Z",
+  "node": "26.0.0",
+  "sqlite": "3.53.0",
+  "quickCheck": {
+    "quick_check": "ok"
+  },
+  "tables": [
+    {
+      "name": "account_principal_provisionals",
+      "rows": 1,
+      "schemaHash": "b1cef48d80c8ad21eb93e863880bd4306315514f844d5c87c1c95b3f9eb6241d",
+      "contentHash": "4c4ec2212a011f51f1748cb5379481928f0c6353308dd1a9a8ecdaaa193a6bfb"
+    },
+    {
+      "name": "app_settings",
+      "rows": 7,
+      "schemaHash": "fba40bad0cbd69424aed5e060c83df6fd261fcd851cbfefda54d30beb37c7e14",
+      "contentHash": "c7efc1d118f37fe481c3d066bd9c991464736d1446a5b7e97ec513647b5308cb"
+    },
+    {
+      "name": "coverage",
+      "rows": 236,
+      "schemaHash": "0e4479bdc6a10150e6e9873647367faeac78d9e9819fc9e72e7cca8539534404",
+      "contentHash": "6e5ea62355626fd1e39c553168535f4aa462acf1d3a44b563db3b7fa3401e6a9"
+    },
+    {
+      "name": "daily_candles",
+      "rows": 153425,
+      "schemaHash": "b9eee1f0992b060d5b4df0f6375d07af421765c79c995c2b8d4d75d3300068c8",
+      "contentHash": "635501304075eedd222dbe5336d224b21690b0b3bcf8c6ccf413c7071ad4e297"
+    },
+    {
+      "name": "data_migrations",
+      "rows": 1,
+      "schemaHash": "23dba2783577d5a7db0ec681f966741d93a89acd3ec7e2d29ba199ff617f546c",
+      "contentHash": "6cd7e9dfb85f76704d286229ecd2cc0e3d7f07734aba17e7261a1b87f1a88608"
+    },
+    {
+      "name": "executions",
+      "rows": 1866,
+      "schemaHash": "50332666b59bab17bdd971f93f63df4b230a46cda62b99d3281776dd0bac3ec9",
+      "contentHash": "7695dcd5fdefb55923e3cce03008d759b72e034bc5b5db60f5c60116253f3b59"
+    },
+    {
+      "name": "import_batches",
+      "rows": 213,
+      "schemaHash": "6f5eee4a3245bdaf3f84558e6aacecd87bf5b19192cfcbd5758770d4acbf4333",
+      "contentHash": "e6ae186594abba313b5f3be6db36e71f0180924773aa65edede98e5b95000ecc"
+    },
+    {
+      "name": "instruments",
+      "rows": 236,
+      "schemaHash": "4cf7fc7b504f47d3025a35356abd195ff8ed3e777282d49ea676190d4aa044ab",
+      "contentHash": "e021eb8d07c6b5a86a29701c57eb10e6d5ee77720d81483539f02bcbde5f48c1"
+    },
+    {
+      "name": "interval_coverage",
+      "rows": 236,
+      "schemaHash": "31d5e297e6d0747a2402265048c826585a92c283624930098ec7d300b12d0873",
+      "contentHash": "1455265ae6bb7d53d7f098c39c301e4b44faee20d7e6a1c3b142a54e3fcdcefe"
+    },
+    {
+      "name": "market_candles",
+      "rows": 52781,
+      "schemaHash": "8dd3d495b0f6d12eacbadb81040ca0a4519c95862ed4e4715295d7872e2a18a1",
+      "contentHash": "c528049aed01ff02a65fd998dbc0410102c14ae1c33569226a997014e1e50423"
+    },
+    {
+      "name": "market_data_jobs",
+      "rows": 236,
+      "schemaHash": "e34bb2ac1ee36c8af38aa401123a8f1b9e28f1fccec05d0a9a83c14398c28f3a",
+      "contentHash": "2b80c853483e831172470101a0a15084fd9b6bbf3fb839c00ef2aeac17469797"
+    },
+    {
+      "name": "provider_symbols",
+      "rows": 436,
+      "schemaHash": "842c357032979de40f43f065fc06a7459e11c1ce3339dfe2198f00d6efd68110",
+      "contentHash": "cd07f597f999425ad1cc0b973e2c234225fcc00d73739005515910c5cb744fae"
+    },
+    {
+      "name": "recall_actual_metric_exits",
+      "rows": 0,
+      "schemaHash": "686f790285fdac945e633af7bd7465d9a5c9216d8a73458efea564699bd24efc",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_actual_metric_refs",
+      "rows": 0,
+      "schemaHash": "34e7b5708f6a93525ae792ef35f932f89f1dc2ffb10bd90a799d5d559cb16d32",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_actual_metric_sources",
+      "rows": 0,
+      "schemaHash": "ffb428d7c6a25c2d212aeb8e245e89fe2e9d84b1585f476b70fb9234bc120547",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_actual_metrics",
+      "rows": 0,
+      "schemaHash": "88d45b2bd5c9757c03cf7821d249ee705bcb00a435cb86e854a19861e9fd8e67",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_bundle_baselines",
+      "rows": 0,
+      "schemaHash": "4c3ef9f313813ef8e5e4c4adc131d7532ce36d39041526d04dc4d4ac518dbae9",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_bundle_evaluations",
+      "rows": 0,
+      "schemaHash": "141f9139d474d0d51e0f107b55c9dbfe2adc03750d974451018daa719ae22caf",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_bundle_manual_evaluations",
+      "rows": 0,
+      "schemaHash": "6c5dc335bb6b76d089842cccaa3d9f908543a3dbe2f8b53e9b7301ba02e403af",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_bundle_plans",
+      "rows": 0,
+      "schemaHash": "eac3bd9b2ed1b71e1633957225237eda36c6ec08adce15a8cb6ecedc4777b35f",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_documents",
+      "rows": 5,
+      "schemaHash": "07f30b9cf22477ca9da967e8556c9b7a746090d9dea3b8ca9049783a7babb627",
+      "contentHash": "edb3bedf6a81b249eab917c0ddbcfcfb19409a8982c60cca7d58a8df41e86f76"
+    },
+    {
+      "name": "recall_evaluation_associations",
+      "rows": 0,
+      "schemaHash": "573e78dc09f200a43c58e53bce578af93d0220382f9007ebcadd34f61d65050f",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_evaluation_evidence",
+      "rows": 0,
+      "schemaHash": "ca649ae69fd94abcd2e2639eedbe02faf9ba0b5305ab20de0954952e9ec57b06",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_evaluation_executions",
+      "rows": 0,
+      "schemaHash": "b075eefc4a86d953c8c4884b0b451fbcaf74fc8c08e62e8ec2b95f19452ad8ab",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_evaluation_selections",
+      "rows": 0,
+      "schemaHash": "1affe7769c14cc25eb7aa4ec06c03f4a8b05fd668ad7b4739b14c32b883040ee",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_evaluation_tags",
+      "rows": 0,
+      "schemaHash": "760e0cd70ca3999a4b86a296789b4ff392c43e3dc7b2fe9669a18a3cefb385d3",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_exit_evaluations",
+      "rows": 0,
+      "schemaHash": "d36ed5273cdecda02615976c663e9bd9c7e3d2dfeb9a8243aaf18f8a779b76b1",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_manual_evaluation_association_executions",
+      "rows": 0,
+      "schemaHash": "bf555554f9c5a7a196ca8a8a7bdc6220aa1ba575b41e613068a7206e8ea06f24",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_manual_evaluation_associations",
+      "rows": 0,
+      "schemaHash": "6281af776426d27a74d6dd9aa499f36bfd85ca59929fc709994c9544f490507f",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_manual_evaluation_evidence",
+      "rows": 0,
+      "schemaHash": "226fc75085e261a863e43bff6b4a016ec0625e657f8d028ff373b04945d4af6b",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_manual_evaluation_executions",
+      "rows": 0,
+      "schemaHash": "35a6384d6796746420c041a119c7a50a62ccc2d254b9e8fec9c164ed02fd84f3",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_manual_evaluation_tags",
+      "rows": 0,
+      "schemaHash": "05894d5de743ea5703380d76ae5a5185a597ae91e00f8c78818393f0d267dfb7",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_manual_evaluations",
+      "rows": 0,
+      "schemaHash": "7712d7ddc350c5648100f199609f8af643d18731e03077840255bc54b2089e32",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_plan_associations",
+      "rows": 0,
+      "schemaHash": "9de1d0eceaebf54ca840af7e6d4f05049f6f398dd512ba84432c4cef540732a3",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_plan_targets",
+      "rows": 0,
+      "schemaHash": "ce8f767c1ad6e3cefb162b51beff516b61fcc524be71f257a9b827431430ab09",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_plan_versions",
+      "rows": 0,
+      "schemaHash": "b81510609f95eb9796761c1a2e7c8600010dac67d52de99e0c73dc81e9cd7244",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_retained_bundles",
+      "rows": 0,
+      "schemaHash": "076fb9ce91ca6ad060b9bc378cc5bce6216e1b129f529bbbdc98e0f27957e56f",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "recall_risk_baselines",
+      "rows": 0,
+      "schemaHash": "d6d7d0981662dccbef14f00207d6a534f1d4f2d64f8ddf1ae889f7ecde1f37a8",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "reviews",
+      "rows": 138,
+      "schemaHash": "c2da8c7cd95b34ff81aeef00c0263e986d4a49a30e64132bf4690b05b15de378",
+      "contentHash": "81b3856bc14801a2ca440f5bb604e6b35f36c4a50810179fc9bd25fd4aeeacaf"
+    },
+    {
+      "name": "schema_migrations",
+      "rows": 14,
+      "schemaHash": "3c28fbf54df2020f699bce4e1049145bdc76fd595090d2d568bbdf9a115437f9",
+      "contentHash": "2bd67d6ba2a42fe4de80290cadd683f209da647857c2602cc5633fd6e35b520d"
+    },
+    {
+      "name": "tag_suggestions",
+      "rows": 0,
+      "schemaHash": "1c1742cc70b9a5eacd32165ed7d060e47116033623e0fbc2c48de40480235c21",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "trade_revisions",
+      "rows": 11,
+      "schemaHash": "6cc76be52925a0dbc7b17ff943a176b2f4b969ecec396d23502c5694101d5bb4",
+      "contentHash": "1067143c6dab40b8056e457ac794088b5b2fd73455cac494e7c42f3cdb55ea14"
+    },
+    {
+      "name": "tradingview_account_migration_aliases",
+      "rows": 36,
+      "schemaHash": "c15715071ca259e41246cf01017736da75c27226ce72be05fc7ebbeb5c28d4e9",
+      "contentHash": "9a636f6086408395ab4c95570874121c732f917ce892f9e3b8ad74eaacae21dd"
+    },
+    {
+      "name": "tradingview_account_migration_dependencies",
+      "rows": 4,
+      "schemaHash": "00e3e348f8786588d34fc43d3c86b31053564352492b3e800839faa4d6185c08",
+      "contentHash": "654ff68bf8f0544d0e7fae1d8366120c391ed9ff63c950e0dc59f38f8903da4b"
+    },
+    {
+      "name": "tradingview_account_migration_operations",
+      "rows": 1,
+      "schemaHash": "08c21d8540dcd05ade4c275097c6b2c1ede0f6836f1fb0b82c0a941c45dcaf34",
+      "contentHash": "d7fbea1aa1a39e576e9f0032e856ab61f579351f08717a08e723623e2cf87260"
+    },
+    {
+      "name": "tradingview_account_migration_rows",
+      "rows": 87,
+      "schemaHash": "2b926e8ab4881b342c9f74d9b93960f62703203c125572242d46b8d3ee55513c",
+      "contentHash": "27ca5fbfcb2b77060601f289cf38d539139b88ae11c08ad207a1cd0c340fb4cd"
+    }
+  ]
+}

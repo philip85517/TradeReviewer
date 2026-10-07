@@ -1,0 +1,65 @@
+{
+  "settings": {
+    "colorScheme": "teal-red",
+    "showAverageCost": true,
+    "showExecutions": true,
+    "showGrid": true,
+    "showVolume": false,
+    "trading-room.fx": {
+      "id": "boc:2026-10-05T23:48:01.682Z",
+      "baseCurrency": "CNY",
+      "source": "BOC",
+      "publishedAt": "2026-10-06T06:40:24+08:00",
+      "publishedAtByCurrency": {
+        "HKD": "2026-10-06T06:40:24+08:00",
+        "USD": "2026-10-06T06:40:24+08:00"
+      },
+      "fetchedAt": "2026-10-05T23:48:01.682Z",
+      "rates": {
+        "HKD": "0.8584",
+        "USD": "6.7351"
+      },
+      "lastAttemptDay": "2026-10-06",
+      "status": "complete",
+      "error": null
+    },
+    "version": 1
+  },
+  "sqliteRows": [
+    {
+      "key": "version",
+      "value_json": "1",
+      "updated_at": "2026-10-06 11:51:40"
+    },
+    {
+      "key": "showGrid",
+      "value_json": "true",
+      "updated_at": "2026-10-06 11:51:40"
+    },
+    {
+      "key": "showVolume",
+      "value_json": "false",
+      "updated_at": "2026-10-06 11:51:40"
+    },
+    {
+      "key": "showExecutions",
+      "value_json": "true",
+      "updated_at": "2026-10-06 11:51:40"
+    },
+    {
+      "key": "showAverageCost",
+      "value_json": "true",
+      "updated_at": "2026-10-06 11:51:40"
+    },
+    {
+      "key": "colorScheme",
+      "value_json": "\"teal-red\"",
+      "updated_at": "2026-10-06 11:51:40"
+    },
+    {
+      "key": "trading-room.fx",
+      "value_json": "{\"id\":\"boc:2026-10-05T23:48:01.682Z\",\"baseCurrency\":\"CNY\",\"source\":\"BOC\",\"publishedAt\":\"2026-10-06T06:40:24+08:00\",\"publishedAtByCurrency\":{\"HKD\":\"2026-10-06T06:40:24+08:00\",\"USD\":\"2026-10-06T06:40:24+08:00\"},\"fetchedAt\":\"2026-10-05T23:48:01.682Z\",\"rates\":{\"HKD\":\"0.8584\",\"USD\":\"6.7351\"},\"lastAttemptDay\":\"2026-10-06\",\"status\":\"complete\",\"error\":null}",
+      "updated_at": "2026-10-06 11:51:40"
+    }
+  ]
+}

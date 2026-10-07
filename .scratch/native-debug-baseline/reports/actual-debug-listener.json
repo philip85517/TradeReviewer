@@ -1,0 +1,13 @@
+[
+  {
+    "pid": 44088,
+    "identity": "44088 44086 44086 Tue Oct  6 19:49:44 2026     node /Users/zhoulin/.codex/worktrees/afc8/TradeReview/node_modules/.bin/vinext dev --hostname 127.0.0.1 --port 3333",
+    "cwd": "p44088\nfcwd\nn/Users/zhoulin/.codex/worktrees/afc8/TradeReview",
+    "databaseFiles": [
+      "n/Users/zhoulin/.codex/worktrees/afc8/TradeReview/.data/tradereview-test.sqlite-shm",
+      "n/Users/zhoulin/.codex/worktrees/afc8/TradeReview/.data/tradereview-test.sqlite",
+      "n/Users/zhoulin/.codex/worktrees/afc8/TradeReview/.data/tradereview-test.sqlite-wal",
+      "n/Users/zhoulin/.codex/worktrees/afc8/TradeReview/.data/tradereview-test.sqlite-shm"
+    ]
+  }
+]

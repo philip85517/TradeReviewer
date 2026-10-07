@@ -1,0 +1,34 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/components/trade-review-workspace.test.tsx --maxWorkers=1 -t retains a Recall drawing draft per episode and gates completion until a snapshot exists|keeps the latest Recall drawing draft while completion is gated|keeps library context through a confirmed import with failed market refresh
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:78538) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.test.tsx (91 tests | 1 failed | 88 skipped) 11109ms
+     × keeps library context through a confirmed import with failed market refresh 3215ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps library context through a confirmed import with failed market refresh
+Error: expect(element).toBeInTheDocument()
+
+element could not be found in the document
+ ❯ app/components/trade-review-workspace.test.tsx:3716:67
+    3714|     mark(`post-merge-toolbar ${document.querySelectorAll('[aria-label=…
+    3715|     const hydratedRecall = recall;
+    3716|     expect(await within(hydratedRecall).findByLabelText("图表工具栏")).toBe…
+       |                                                                   ^
+    3717|     mark("posttoolbar");
+    3718|     await user.click(within(hydratedRecall).getByRole("button", { name…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed | 88 skipped (91)
+   Start at  21:38:45
+   Duration  18.28s (transform 3.89s, setup 233ms, import 4.96s, tests 11.11s, environment 1.07s)
+

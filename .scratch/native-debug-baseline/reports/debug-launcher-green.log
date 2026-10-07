@@ -1,0 +1,8 @@
+command: node --test scripts/debug-local.test.mjs
+result: PASS
+tests: 11 passed, 0 failed, 0 cancelled
+scope: synthetic temporary fixtures only; includes live uncheckpointed WAL, stale sidecars, native mismatch ordering, corrupt backup, and spawn failure; no production database access and no actual 3333 app startup; CLI defaults include fail-closed lsof-based port/open-file preflight
+runtime-path regression: child PATH begins dirname(process.execPath), then worktree node_modules/.bin, before ambient PATH
+interruption regression: cancellation during pending backup releases lock and leaves no published target
+atomic rollback regression: injected main rename failure restores previous main copy and quarantined WAL/SHM
+post-commit regression: injected quarantine cleanup failure leaves refreshed main database intact

@@ -1,0 +1,33 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/components/trade-review-workspace.test.tsx --maxWorkers=1 -t keeps library context through a confirmed import with failed market refresh
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:71326) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.test.tsx (91 tests | 1 failed | 90 skipped) 5147ms
+     × keeps library context through a confirmed import with failed market refresh 5145ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps library context through a confirmed import with failed market refresh
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/trade-review-workspace.test.tsx:3609:3
+    3607|   });
+    3608|
+    3609|   it("keeps library context through a confirmed import with failed mar…
+       |   ^
+    3610|     const user = userEvent.setup();
+    3611|     saveImportedExecutions([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 90 skipped (91)
+   Start at  21:14:48
+   Duration  13.43s (transform 4.29s, setup 441ms, import 5.49s, tests 5.15s, environment 1.88s)
+

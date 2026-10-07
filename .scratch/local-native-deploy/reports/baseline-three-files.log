@@ -1,0 +1,25 @@
+Baseline regression evidence
+============================
+
+Baseline: /tmp/tradereview-baseline-zQfqZz (archived HEAD 63690a494b8ad403081c7720985be54a95db60c7)
+Database: TRADEREVIEW_DB_PATH=/tmp/tradereview-baseline-zQfqZz/acceptance.sqlite
+Node modules: symlinked to the existing workspace node_modules; no application files or business database were modified.
+
+Focused command:
+  ./node_modules/.bin/vitest run app/components/trade-review-workspace.test.tsx app/components/trade-review-workspace.refresh.test.tsx app/lib/reviews/trading-room-holdings.test.ts
+
+The combined run started and completed the holdings file, then stalled in the workspace worker without producing a final Vitest summary. It was interrupted after a bounded wait; the stalled run is recorded as incomplete rather than passing.
+
+Completed holdings result:
+  app/lib/reviews/trading-room-holdings.test.ts — 30 tests: 29 passed, 1 failed
+  Failure: “falls through invalid source dates before applying the market calendar fallback”
+  Assertion: expected quoteStatus/unrealizedPnlStatus “available”, received “stale” (app/lib/reviews/trading-room-holdings.test.ts:521)
+
+The workspace and refresh files did not emit completed counts in this baseline run because their worker stalled. Earlier isolated baseline evidence for the unchanged refresh/holdings subset recorded 38 total tests, 33 passed, 5 failed:
+  - calendar invalid source dates fallback
+  - refresh cancel running batch timeout
+  - refresh global saved summary missing button 行情数据详情
+  - refresh global failure summary timeout
+  - running global batch control timeout
+
+Status: FAIL / incomplete baseline evidence; these are pre-existing application UI/calendar regressions and are outside the native deployment source/runtime scope.

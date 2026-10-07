@@ -1,0 +1,11 @@
+{
+  "current": "releases/20260923-master-ee76e83",
+  "config": {
+    "databasePath": "/Users/zhoulin/projects/交易空间/database/TradingReview/tradereview.sqlite",
+    "port": 3022,
+    "hostname": "127.0.0.1"
+  },
+  "listener": "p98660\nf14\n",
+  "npmRealPath": "/usr/local/Cellar/node/26.0.0/libexec/lib/node_modules/npm/bin/npm-cli.js",
+  "nodeRealPath": "/usr/local/Cellar/node/26.0.0/bin/node"
+}

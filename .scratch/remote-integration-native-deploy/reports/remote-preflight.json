@@ -1,0 +1,12 @@
+{
+  "time": "2026-10-07T10:21:21.934937+08:00",
+  "branch": "codex/local-native-deploy",
+  "head": "cf7d48cc4d0052841b64690085e68b23325ffaea",
+  "verifiedBase": "0b0113773a54f716d45b30bfb8bc03d22b99a181",
+  "openMatchingPullRequests": [],
+  "masterBranchProtection": "NOT CONFIGURED (GitHub API404 Branch not protected)",
+  "configuredRepositoryWorkflows": "NONE (.github absent)",
+  "finalValidation": "final-validation-result.json",
+  "serviceChange": "NONE",
+  "remoteMerge": "PENDING"
+}

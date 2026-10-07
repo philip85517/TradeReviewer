@@ -1,0 +1,15 @@
+Baseline: commit 63690a494b8ad403081c7720985be54a95db60c7
+Source: git archive into /tmp/tradereview-baseline-zQfqZz with node_modules symlinked from the current worktree
+Command: ./node_modules/.bin/vitest run app/lib/reviews/trading-room-holdings.test.ts app/components/trade-review-workspace.refresh.test.tsx
+Scope: read-only unit tests; no browser, service, or business database actions
+
+Result count: 38 tests total; 33 passed; 5 failed; 0 skipped.
+
+Failures:
+1. app/lib/reviews/trading-room-holdings.test.ts — falls through invalid source dates before applying the market calendar fallback
+2. app/components/trade-review-workspace.refresh.test.tsx — cancels a running batch, persists a terminal job, and waits before the next batch (5000ms timeout)
+3. app/components/trade-review-workspace.refresh.test.tsx — refreshes the global saved summary after a single instrument update (missing button: 行情数据详情)
+4. app/components/trade-review-workspace.refresh.test.tsx — refreshes the global failure summary and details after a single hard failure (timed out)
+5. app/components/trade-review-workspace.refresh.test.tsx — keeps a running global batch in control when a single refresh is requested (timed out)
+
+The baseline output also emitted Node's DEP0205 module.register deprecation warning. The temporary archive and its symlink were test-only resources; no repository files or application data were changed.

@@ -1,0 +1,50 @@
+{
+  "status": {
+    "schemaVersion": 14,
+    "migration": {
+      "sourceFingerprint": "07846437b2f432c04ed32c003de36247b088eca08e62d0f827b6482d48c2dfab",
+      "inserted": 6,
+      "duplicate": 0,
+      "conflict": 0,
+      "failed": 0,
+      "validationDigest": "c1dabe1821b1c1983ccd4b11cf6ab86255148c520284d60e7274a205d8a68467"
+    },
+    "counts": {
+      "instruments": 236,
+      "executions": 1866,
+      "import_batches": 213,
+      "reviews": 138,
+      "tag_suggestions": 0,
+      "market_data_jobs": 236,
+      "daily_candles": 153425,
+      "market_candles": 52781
+    },
+    "databasePath": "tradereview.sqlite"
+  },
+  "settings": {
+    "colorScheme": "teal-red",
+    "showAverageCost": true,
+    "showExecutions": true,
+    "showGrid": true,
+    "showVolume": true,
+    "trading-room.fx": {
+      "id": "boc:2026-10-05T23:48:01.682Z",
+      "baseCurrency": "CNY",
+      "source": "BOC",
+      "publishedAt": "2026-10-06T06:40:24+08:00",
+      "publishedAtByCurrency": {
+        "HKD": "2026-10-06T06:40:24+08:00",
+        "USD": "2026-10-06T06:40:24+08:00"
+      },
+      "fetchedAt": "2026-10-05T23:48:01.682Z",
+      "rates": {
+        "HKD": "0.8584",
+        "USD": "6.7351"
+      },
+      "lastAttemptDay": "2026-10-06",
+      "status": "complete",
+      "error": null
+    },
+    "version": 1
+  }
+}

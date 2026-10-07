@@ -66,14 +66,18 @@ BROKER_CORPUS_ROOT=/path/to/statements npm run test:unit -- app/lib/import/month
 
 ## 本地运行
 
-需要 Node.js `>=22.13.0`。
+固定使用 Node.js `26.0.0` 和其加载的 SQLite `3.53.0`。版本及执行文件记录在 `.node-version` 和 `conf/native-environment.json`；标准调试和发布入口自动使用配置的执行文件，并查询实际 SQL 引擎，版本不符即退出。本机独立运行时的来源和安装说明见 [固定原生环境](conf/NATIVE-RUNTIME.md)。
 
 ```bash
-npm install
-npm run dev
+npm ci
+make dev
 ```
 
-打开 `http://localhost:3000/`。
+打开 `http://127.0.0.1:3333/`。`npm run dev` 是同一调试入口，端口被占用时退出，请先停止自己已确认归属的旧调试服务。
+
+每次启动从 `conf/runtime.json` 指定的在线业务库制作包含 WAL 的一致性备份，校验后原子替换当前 worktree 的 `.data/tradereview-test.sqlite`，调试服务只连接此副本。**重启会清除上一次测试修改。** 备份失败、测试库被占用或路径不安全时退出，不回退到业务库；标准入口不接受端口或数据库覆盖。
+
+自动化测试需要自建隔离库及独立端口时，可直接调用 `scripts/start-local.mjs`，显式设置 `TRADEREVIEW_DB_PATH`。此底层入口不自动备份，备份和清理由调用方负责，见 [运行配置](conf/README.md)。
 
 ### Recall 复盘流程
 
@@ -100,9 +104,21 @@ TIGER_OPENAPI_CONFIG=/absolute/path/tiger_openapi_config.properties npm run dev
 - 固定版本的官方 SDK 在 `private_key_pk8` 和 `private_key_pk1` 同时存在时，会优先解析 `private_key_pk8`。
 - 只有美股和港股的日线、`1h` 请求会优先尝试 Tiger；其他市场或周期继续走现有公开行情源。
 
-## Docker Compose 部署
+## 本机发布
 
-生产部署使用 Docker Compose，默认目标为 `/Users/zhoulin/projects/TradeReview`。第一次 `make deploy` 会自动初始化本机配置、SQLite、备份、日志和目标侧运维入口；如需预先编辑配置，可先运行 `make deploy-config`。日常命令包括 `make deploy-code`、`make deploy-status`、`make deploy-backup`、`make deploy-restore BACKUP=/absolute/path/to/backup.sqlite`、`make deploy-rollback` 和 `make deploy-down`。完整的凭据排除、失败恢复、保留策略、备份事务和 SQLite/浏览器数据边界见 [部署指南](deploy/DEPLOYMENT.md)。
+默认发布到 `/Users/zhoulin/projects/交易空间/TradingReview`，采用原生 Node 生产服务，统一入口为 `http://127.0.0.1:3022/`。在 Git 工作副本中执行：
+
+```bash
+make deploy                       # 当前 worktree 已提交 HEAD
+make deploy REF=master            # 最新 origin/master
+make deploy REF=master DRY_RUN=1  # 预览
+make deploy-status                # 发布版本与实际进程一致性
+make deploy-rollback              # 上一个成功版本
+```
+
+每个 release 独立安装依赖并构建，记录完整 Git 提交号，通过进程目录和 HTTP 健康门禁后切换；失败恢复旧服务。已有配置、业务库、备份和日志保留。当前源码未提交时默认拒绝发布，`REF=master` 不修改本地分支。命令参数、短暂停机、首次配置、目标侧运维和隔离验收见 [发布指南](deploy/DEPLOYMENT.md)。Docker 使用显式 `make deploy-docker` / `make deploy-docker-*` 命令。
+
+正式环境固定使用上述 Node/SQLite 引擎、3022 端口和 `conf/runtime.json` 中的绝对数据库路径。依赖按 lockfile 执行 `npm ci`；发布记录包含实际运行环境。数据库结构版本由迁移管理，与 SQLite 引擎版本分别核对。
 
 ### macOS 桌面启动
 
@@ -112,7 +128,7 @@ TIGER_OPENAPI_CONFIG=/absolute/path/tiger_openapi_config.properties npm run dev
 install -m 755 deploy/ops/tradeReview.command "$HOME/Desktop/tradeReview.command"
 ```
 
-双击桌面文件会启动正式部署的 3022 服务，并在只读健康检查通过后打开 TradeReview。服务已由正式部署运行时，只会打开现有页面；端口被其他程序占用时会提示并退出，不会停止该程序或改用其他端口。服务在启动器打开的 Terminal 窗口前台运行，关闭窗口会停止服务。
+双击桌面文件会启动正式部署的 3022 服务，并在只读健康检查通过后打开 TradeReview。服务已由正式部署运行时，只会打开现有页面；端口被其他程序占用时会提示并退出，不会停止该程序或改用其他端口。启动器手工启动的服务在 Terminal 窗口前台运行，关闭窗口会停止服务；`make deploy` 启动的后台服务用 `make deploy-down` 停止。
 
 ## 验证
 

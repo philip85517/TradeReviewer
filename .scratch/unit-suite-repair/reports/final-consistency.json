@@ -1,0 +1,124 @@
+{
+  "status": "accepted",
+  "coordinator": "/root",
+  "checkedAt": "2026-10-06T22:39:08+08:00",
+  "branch": "codex/local-native-deploy",
+  "head": "63690a494b8ad403081c7720985be54a95db60c7",
+  "sourceFreeze": [
+    {
+      "path": "app/components/trade-review-workspace.test.tsx",
+      "expected": "9da7b6ded0d0e46316be48fbedff3b6681a059a6",
+      "actual": "9da7b6ded0d0e46316be48fbedff3b6681a059a6",
+      "result": "PASS"
+    },
+    {
+      "path": "app/components/trade-review-workspace.alias-recovery.test.tsx",
+      "expected": "306070d24e4c55c4b55569a21db7e2ad0278a0aa",
+      "actual": "306070d24e4c55c4b55569a21db7e2ad0278a0aa",
+      "result": "PASS"
+    },
+    {
+      "path": "app/components/test-support/legacy-sqlite-client.ts",
+      "expected": "d53c142e7be3d4e81ab0745d3ca0322caabcc344",
+      "actual": "d53c142e7be3d4e81ab0745d3ca0322caabcc344",
+      "result": "PASS"
+    },
+    {
+      "path": "app/lib/reviews/trading-room-holdings.test.ts",
+      "expected": "b42f6b949f62d77084eb3184cbeb947d688d9d06",
+      "actual": "b42f6b949f62d77084eb3184cbeb947d688d9d06",
+      "result": "PASS"
+    },
+    {
+      "path": "vitest.config.ts",
+      "expected": "ae70bc9a7278d6dab22a5b067378ec50d554babb",
+      "actual": "ae70bc9a7278d6dab22a5b067378ec50d554babb",
+      "result": "PASS"
+    },
+    {
+      "path": "scripts/debug-local.test.mjs",
+      "expected": "3eea1bdd68c6e2d5db0a230e83d2ae166fdfa6ab",
+      "actual": "3eea1bdd68c6e2d5db0a230e83d2ae166fdfa6ab",
+      "result": "PASS"
+    },
+    {
+      "path": "scripts/debug-local.mjs",
+      "expected": "7c7cff28666fb0f1138d92686302ff4cfdde3f86",
+      "actual": "7c7cff28666fb0f1138d92686302ff4cfdde3f86",
+      "result": "PASS"
+    }
+  ],
+  "whitespace": {
+    "command": "git diff --check",
+    "exitCode": 0
+  },
+  "ledger": {
+    "result": "PASS",
+    "coverageRows": 13,
+    "closedIssues": 10,
+    "documents": [
+      ".scratch/unit-suite-repair/README.md",
+      ".scratch/unit-suite-repair/DESIGN-COVERAGE.md",
+      ".scratch/unit-suite-repair/IMPLEMENTATION-PLAN.md",
+      ".scratch/unit-suite-repair/FINAL-ACCEPTANCE.md",
+      ".scratch/unit-suite-repair/issues/01-workspace-implementation.md",
+      ".scratch/unit-suite-repair/issues/01-workspace.md",
+      ".scratch/unit-suite-repair/issues/02-async-fixtures.md",
+      ".scratch/unit-suite-repair/issues/03-holdings-implementation.md",
+      ".scratch/unit-suite-repair/issues/03-holdings.md",
+      ".scratch/unit-suite-repair/issues/04-root.md",
+      ".scratch/unit-suite-repair/issues/05-runner-bound.md",
+      ".scratch/unit-suite-repair/issues/06-market-adapter.md",
+      ".scratch/unit-suite-repair/issues/07-alias-persistence.md",
+      ".scratch/unit-suite-repair/issues/08-debug-port-isolation.md"
+    ]
+  },
+  "commands": {
+    "unit": {
+      "command": "npm run test:unit",
+      "log": "reports/full-unit-final-v2.log",
+      "filesCollected": 322,
+      "filesPassed": 319,
+      "filesSkipped": 3,
+      "testsPassed": 3064,
+      "testsFailed": 0,
+      "testsSkipped": 6,
+      "exitCode": 0
+    },
+    "deploy": {
+      "command": "make deploy-test",
+      "passed": 57,
+      "failed": 0,
+      "skipped": 0,
+      "log": "reports/deploy-test-final.log",
+      "exitCode": 0
+    },
+    "debug": {
+      "command": "make debug-test",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "log": "reports/debug-test-final-v2.log",
+      "exitCode": 0
+    },
+    "typecheck": {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "log": "reports/typecheck-final-v2.log"
+    },
+    "scopedLint": {
+      "exitCode": 0,
+      "logs": [
+        "reports/lint-final-v2.log",
+        "reports/lint-debug-port-final.log"
+      ]
+    }
+  },
+  "independentReviews": [
+    "reports/independent-review-scoped.md",
+    "reports/independent-review-final.md",
+    "reports/independent-review-synchronization.md",
+    "reports/independent-review-debug-port.md"
+  ],
+  "scopeSafety": "No current-task production source edits, formal database writes, service restarts, deployment, commits or remote actions; prior work preserved."
+}

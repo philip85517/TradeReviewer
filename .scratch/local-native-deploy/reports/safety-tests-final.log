@@ -1,0 +1,14 @@
+✔ does not stop an active service whose PID is reused with a new start time (55.35183ms)
+✔ does not stop an unexpected listener that appears during a build (30.974416ms)
+✔ an unhealthy A-to-B release recovers the old service (36.320519ms)
+✔ preserves the candidate release when old-service recovery fails (27.971297ms)
+✔ post-publication failure recovers service and toolkit while the deployment lock is held (34.092405ms)
+✔ down and rollback refuse a held deployment lock before inspecting (10.486829ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 435.869068

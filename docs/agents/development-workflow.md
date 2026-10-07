@@ -120,6 +120,7 @@
 
 1. 明确运行的是哪一个 worktree、哪个端口及哪个数据库；不要把历史 worktree 或测试样本服务当作最新版交付。
 2. 检查端口占用和进程归属。仅重启自己启动且已确认目标的服务；遇到其他程序占用则选择空闲端口并报告，不盲目杀进程。
+   标准 `make dev` / `npm run dev` 固定使用 3333，冲突时退出；选择空闲端口仅适用于显式隔离数据库的特殊验收入口。
 3. 使用持久的本地服务会话启动预览，绑定回环地址。保持用户预览服务运行，不在发完结果前关闭；测试专用服务可以在验收后停止。
 4. 等待服务就绪，检查首页 HTTP 成功和数据加载，再用真实浏览器打开最终 URL，确认新增控件、核心流程以及无阻断性报错。仅展示启动命令不算交付。
    涉及前端时核验[控件检查](frontend-control-audit.md)已完成，最终清单、分母、功能/状态/视觉证据对应此运行版本；启动成功不能替代控件覆盖或独立视觉门槛。
@@ -137,13 +138,19 @@
 
 正式启动使用新部署目录的 `ops/start-native.command`。端口占用必须核实已有进程，不得悄悄改端口生成另一业务入口。正式库备份使用 SQLite backup API，不能仅复制活跃数据库文件。
 
+2026-10-06 确认的原生环境固定为 Node.js 26.0.0、加载的 SQLite 3.53.0，由 `conf/native-environment.json` 校验，依赖使用 lockfile 和 `npm ci`。2026-10-07 校验改为查询实际 `sqlite_version()`；标准入口从环境配置选择独立运行时，执行文件缺失不回退。来源和复建说明见 [固定原生环境](../../conf/NATIVE-RUNTIME.md)。数据库结构版本由迁移管理。发布记录保留实际运行环境，不补造历史 release 的缺失字段。
+
+普通 worktree 调试执行 `make dev` 或 `npm run dev`，固定监听 `127.0.0.1:3333`。启动时只读打开项目配置的在线业务库，通过 SQLite backup API 制作包含 WAL 的一致性备份，校验后原子替换 `.data/tradereview-test.sqlite`，并显式设置隔离数据库路径。重启会重置此前测试修改；端口或测试库占用、路径不安全及备份失败时退出，不回退到业务库。
+
 需要会写入的开发、浏览器验收或并行任务时，先从主库创建一致性备份，再显式指定独立数据库及空闲端口，例如：
 
 ```bash
-TRADEREVIEW_DB_PATH="$PWD/.scratch/<task>/acceptance.sqlite" npm run dev -- --hostname 127.0.0.1 --port 3031
+TRADEREVIEW_DB_PATH="$PWD/.scratch/<task>/acceptance.sqlite" \
+  PATH="$PWD/node_modules/.bin:$PATH" \
+  node scripts/start-local.mjs --dev --hostname 127.0.0.1 --port 3031
 ```
 
-3031 仅是隔离验收示例，不是第二个正式入口。不要在设置了本机业务配置后直接运行无隔离参数的浏览器写入测试。容器部署使用 `SQLITE_HOST_DIR` 挂载相同主库目录，容器内路径仍为 `/var/lib/tradereview/tradereview.sqlite`；本次本机使用 Node 生产服务，Docker 模板验证不等于容器实际运行。
+3031 仅为特殊隔离验收示例，标准调试使用 3333。底层入口不自动备份，调用方须先生成隔离库；不要在设置了本机业务配置后直接运行无隔离参数的浏览器写入测试。容器部署使用 `SQLITE_HOST_DIR` 挂载相同主库目录，容器内路径仍为 `/var/lib/tradereview/tradereview.sqlite`；本次本机使用 Node 生产服务，Docker 模板验证不等于容器实际运行。
 
 ## 完成记录模板
 

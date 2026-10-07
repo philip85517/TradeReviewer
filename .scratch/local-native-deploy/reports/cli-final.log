@@ -1,0 +1,21 @@
+▶ native deployment CLI
+  ✔ parses ref and dry-run options (3.601511ms)
+  ✔ dry-run reports selected source and leaves target unchanged (21.43482ms)
+  ✔ build failure keeps old service and current release (55.994269ms)
+  ✔ dry-run down and rollback never inspect or mutate the target (9.467941ms)
+  ✔ rejects malformed and symlink runtime configuration (9.96804ms)
+  ✔ refuses to stop a listener without an active release (8.194985ms)
+  ✔ rejects ambient runtime overrides for mutating modes (5.189379ms)
+  ✔ rejects external current and config symlinks without touching the outsider (12.150516ms)
+  ✔ rejects a held deployment lock before inspecting or stopping (7.970117ms)
+  ✔ rejects source and target overlap before snapshot or mutation (7.105401ms)
+  ✔ rollback failure stops only its candidate handle and leaves a foreign listener alone (11.894231ms)
+✔ native deployment CLI (156.457801ms)
+ℹ tests 11
+ℹ suites 1
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 416.808794

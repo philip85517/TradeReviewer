@@ -1,0 +1,135 @@
+{
+  "checkedAt": "2026-10-06T09:39:07.554064",
+  "remoteMaster": "63690a494b8ad403081c7720985be54a95db60c7",
+  "formalRelease": "/Users/zhoulin/projects/交易空间/TradingReview/app/releases/20260923-master-ee76e83",
+  "formalListening": "p42336\nf17",
+  "verifiedLegacyCommit": "ee76e830f548ef456f8e193d57d165889ac56412",
+  "aheadOfFormal": "29",
+  "worktrees": [
+    {
+      "worktree": "/Users/zhoulin/Documents/TradeReview",
+      "HEAD": "63690a494b8ad403081c7720985be54a95db60c7",
+      "branch": "refs/heads/master",
+      "exists": true,
+      "packageVersion": "0.1.0",
+      "changeEntries": 4,
+      "ahead": 0,
+      "behind": 0
+    },
+    {
+      "worktree": "/private/tmp/tradereview-wayfinder.2fbUtR/templates",
+      "HEAD": "3bf1a0a3140871fcc43cfb562bb45dac0436b7d3",
+      "branch": "refs/heads/research/monthly-statement-templates",
+      "prunable": "gitdir file points to non-existent location",
+      "exists": false,
+      "packageVersion": null,
+      "changeEntries": null,
+      "ahead": 1,
+      "behind": 129
+    },
+    {
+      "worktree": "/private/tmp/tradereview-wayfinder.2fbUtR/time",
+      "HEAD": "8d2f60621938b7f36676e0050a13f8e47febe1e0",
+      "branch": "refs/heads/research/monthly-statement-time",
+      "prunable": "gitdir file points to non-existent location",
+      "exists": false,
+      "packageVersion": null,
+      "changeEntries": null,
+      "ahead": 1,
+      "behind": 129
+    },
+    {
+      "worktree": "/Users/zhoulin/.codex/worktrees/04ee/TradeReview",
+      "HEAD": "bced4f0a7de8148ea7e16793a8c6fd2e60a7002b",
+      "branch": "refs/heads/codex/cms-a-share-import",
+      "exists": true,
+      "packageVersion": "0.1.0",
+      "changeEntries": 0,
+      "ahead": 0,
+      "behind": 76
+    },
+    {
+      "worktree": "/Users/zhoulin/.codex/worktrees/2c43/TradeReview",
+      "HEAD": "9c2b3d209a202422c3d5aeab5969a9b093cfda92",
+      "branch": "refs/heads/codex/strategy-workbench-v1-design",
+      "exists": true,
+      "packageVersion": "0.1.0",
+      "changeEntries": 9,
+      "ahead": 1,
+      "behind": 10
+    },
+    {
+      "worktree": "/Users/zhoulin/.codex/worktrees/afc8/TradeReview",
+      "HEAD": "63690a494b8ad403081c7720985be54a95db60c7",
+      "branch": "refs/heads/codex/local-native-deploy",
+      "exists": true,
+      "packageVersion": "0.1.0",
+      "changeEntries": 18,
+      "ahead": 0,
+      "behind": 0
+    },
+    {
+      "worktree": "/Users/zhoulin/.codex/worktrees/cms-integration/TradeReview",
+      "HEAD": "e4cafd915fd2a421981983943eb8a88bfe1d360c",
+      "branch": "refs/heads/codex/sync-master-cms",
+      "exists": true,
+      "packageVersion": "0.1.0",
+      "changeEntries": 0,
+      "ahead": 0,
+      "behind": 93
+    },
+    {
+      "worktree": "/Users/zhoulin/.codex/worktrees/dbab/TradeReview",
+      "HEAD": "49c4fdbbe4d6b487a024d70b361b8bd9f3773f0b",
+      "branch": "refs/heads/codex/control-audit-fixes-20260929",
+      "exists": true,
+      "packageVersion": "0.1.0",
+      "changeEntries": 6,
+      "ahead": 0,
+      "behind": 16
+    },
+    {
+      "worktree": "/Users/zhoulin/.codex/worktrees/home-data-root-fixes/TradeReview",
+      "HEAD": "63690a494b8ad403081c7720985be54a95db60c7",
+      "branch": "refs/heads/codex/home-data-root-fixes-20260930",
+      "exists": true,
+      "packageVersion": "0.1.0",
+      "changeEntries": 35,
+      "ahead": 0,
+      "behind": 0
+    },
+    {
+      "worktree": "/Users/zhoulin/.codex/worktrees/luna-hk/TradeReview",
+      "HEAD": "3233a2ac5b8e01cdaffc96cf3f4ee038568c3de7",
+      "branch": "refs/heads/codex/hk-connect-import",
+      "exists": true,
+      "packageVersion": "0.1.0",
+      "changeEntries": 2,
+      "ahead": 0,
+      "behind": 71
+    },
+    {
+      "worktree": "/Users/zhoulin/.codex/worktrees/review-dashboard/TradeReview",
+      "HEAD": "4df397a7ee4d6335f777d940feab2571075a2d1c",
+      "branch": "refs/heads/codex/review-dashboard-refresh",
+      "exists": true,
+      "packageVersion": "0.1.0",
+      "changeEntries": 5,
+      "ahead": 0,
+      "behind": 62
+    },
+    {
+      "worktree": "/Users/zhoulin/Documents/TradeReview/.worktrees/rule-based-pattern-insights",
+      "HEAD": "d1171a478bedfdc81e3010ff53046c9fe88ab274",
+      "branch": "refs/heads/codex/rule-based-pattern-insights",
+      "exists": true,
+      "packageVersion": "0.1.0",
+      "changeEntries": 0,
+      "ahead": 0,
+      "behind": 308
+    }
+  ],
+  "localRecheckedAt": "2026-10-06T10:05:26.746972+08:00",
+  "remoteVerifiedAt": "2026-10-06T09:39:07.554064",
+  "remoteRefreshResult": "FAILED; see master-dry-run-final.log. No stale fallback."
+}

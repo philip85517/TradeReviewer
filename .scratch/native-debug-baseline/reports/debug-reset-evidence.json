@@ -1,0 +1,7 @@
+{
+  "showVolume": true,
+  "sqlite": {
+    "value_json": "true"
+  },
+  "copyReset": true
+}

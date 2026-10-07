@@ -1,0 +1,39 @@
+{
+  "before": {
+    "current": "releases/20260923-master-ee76e83",
+    "configHash": "1af6fdabccadad0ec0bc6374eaa9013a798ce95ae57fa7e56a96f30af7e05eb0",
+    "listener": "p98660\nf14\n"
+  },
+  "after": {
+    "current": "releases/20260923-master-ee76e83",
+    "configHash": "1af6fdabccadad0ec0bc6374eaa9013a798ce95ae57fa7e56a96f30af7e05eb0",
+    "listener": "p98660\nf14\n"
+  },
+  "status": {
+    "activeRelease": "20260923-master-ee76e83",
+    "healthy": true,
+    "consistent": true,
+    "toolingRuntime": {
+      "nodeVersion": "26.0.0",
+      "sqliteVersion": "3.53.0",
+      "nodeExecutable": "/usr/local/Cellar/node/26.0.0/bin/node"
+    },
+    "serviceRuntime": {
+      "nodeVersion": "26.0.0",
+      "sqliteVersion": "3.53.0",
+      "nodeExecutable": "/usr/local/Cellar/node/26.0.0/bin/node"
+    }
+  },
+  "files": [
+    "Makefile",
+    "DEPLOYMENT.md",
+    "ops/deploy-native.mjs",
+    "ops/deploy-source.mjs",
+    "ops/deploy-native-runtime.mjs",
+    "ops/deploy.mjs",
+    "ops/deploy-native-toolkit.mjs",
+    "ops/native-environment.mjs",
+    "ops/native-environment.json",
+    "ops/start-native.command"
+  ]
+}

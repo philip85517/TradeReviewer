@@ -1,0 +1,23 @@
+{
+  "instruments": {
+    "beforeCount": 236,
+    "afterCount": 236,
+    "inserted": 0,
+    "deleted": 0,
+    "updatedRows": 23,
+    "changedColumns": {
+      "metadata_json": 23,
+      "updated_at": 23
+    }
+  },
+  "reviews": {
+    "beforeCount": 138,
+    "afterCount": 138,
+    "inserted": 0,
+    "deleted": 0,
+    "updatedRows": 1,
+    "changedColumns": {
+      "updated_at": 1
+    }
+  }
+}

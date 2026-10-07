@@ -1,0 +1,567 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:15469) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.refresh.test.tsx (8 tests | 8 failed) 373ms
+     × exposes the read-only TradingView migration preview from the real data page 225ms
+     × cancels a running batch, persists a terminal job, and waits before the next batch 28ms
+     × restores saved result and failure details without starting provider work 22ms
+     × refreshes the global saved summary after a single instrument update 18ms
+     × refreshes the global failure summary and details after a single hard failure 15ms
+     × keeps a running global batch in control when a single refresh is requested 18ms
+     × offers recovery for a saved snapshot with two unfinished instruments and requests only those two 23ms
+     × shows and recovers an inventory instrument with no saved job 21ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > exposes the read-only TradingView migration preview from the real data page
+TestingLibraryElementError: Unable to find an accessible element with the role "navigation" and name "主导航"
+
+Here are the accessible roles:
+
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mclass[39m=[32m"trade-review-app"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "SQLite 存储状态":
+  [36m<section[39m
+    [33maria-busy[39m=[32m"true"[39m
+    [33maria-label[39m=[32m"SQLite 存储状态"[39m
+    [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mclass[39m=[32m"trade-review-app"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33maria-busy[39m=[32m"true"[39m
+        [33maria-label[39m=[32m"SQLite 存储状态"[39m
+        [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+      [36m>[39m
+        [36m<strong>[39m
+          [0m正在连接交易数据[0m
+        [36m</strong>[39m
+        [36m<span>[39m
+          [0m正在从 SQLite 读取交易记录…[0m
+        [36m</span>[39m
+      [36m</section>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ openDataManagement app/components/trade-review-workspace.refresh.test.tsx:191:31
+    189|   async function openDataManagement() {
+    190|     const user = userEvent.setup();
+    191|     const navigation = screen.getByRole("navigation", { name: "主导航" });
+       |                               ^
+    192|     await user.click(within(navigation).getByRole("button", { name: "数…
+    193|     await screen.findByRole("region", { name: "数据管理" });
+ ❯ app/components/trade-review-workspace.refresh.test.tsx:210:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > cancels a running batch, persists a terminal job, and waits before the next batch
+TestingLibraryElementError: Unable to find an accessible element with the role "navigation" and name "主导航"
+
+Here are the accessible roles:
+
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mclass[39m=[32m"trade-review-app"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "SQLite 存储状态":
+  [36m<section[39m
+    [33maria-busy[39m=[32m"true"[39m
+    [33maria-label[39m=[32m"SQLite 存储状态"[39m
+    [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mclass[39m=[32m"trade-review-app"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33maria-busy[39m=[32m"true"[39m
+        [33maria-label[39m=[32m"SQLite 存储状态"[39m
+        [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+      [36m>[39m
+        [36m<strong>[39m
+          [0m正在连接交易数据[0m
+        [36m</strong>[39m
+        [36m<span>[39m
+          [0m正在从 SQLite 读取交易记录…[0m
+        [36m</span>[39m
+      [36m</section>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ openDataManagement app/components/trade-review-workspace.refresh.test.tsx:191:31
+    189|   async function openDataManagement() {
+    190|     const user = userEvent.setup();
+    191|     const navigation = screen.getByRole("navigation", { name: "主导航" });
+       |                               ^
+    192|     await user.click(within(navigation).getByRole("button", { name: "数…
+    193|     await screen.findByRole("region", { name: "数据管理" });
+ ❯ app/components/trade-review-workspace.refresh.test.tsx:273:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > restores saved result and failure details without starting provider work
+TestingLibraryElementError: Unable to find an accessible element with the role "navigation" and name "主导航"
+
+Here are the accessible roles:
+
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mclass[39m=[32m"trade-review-app"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "SQLite 存储状态":
+  [36m<section[39m
+    [33maria-busy[39m=[32m"true"[39m
+    [33maria-label[39m=[32m"SQLite 存储状态"[39m
+    [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mclass[39m=[32m"trade-review-app"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33maria-busy[39m=[32m"true"[39m
+        [33maria-label[39m=[32m"SQLite 存储状态"[39m
+        [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+      [36m>[39m
+        [36m<strong>[39m
+          [0m正在连接交易数据[0m
+        [36m</strong>[39m
+        [36m<span>[39m
+          [0m正在从 SQLite 读取交易记录…[0m
+        [36m</span>[39m
+      [36m</section>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ openDataManagement app/components/trade-review-workspace.refresh.test.tsx:191:31
+    189|   async function openDataManagement() {
+    190|     const user = userEvent.setup();
+    191|     const navigation = screen.getByRole("navigation", { name: "主导航" });
+       |                               ^
+    192|     await user.click(within(navigation).getByRole("button", { name: "数…
+    193|     await screen.findByRole("region", { name: "数据管理" });
+ ❯ app/components/trade-review-workspace.refresh.test.tsx:360:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > refreshes the global saved summary after a single instrument update
+TestingLibraryElementError: Unable to find an accessible element with the role "navigation" and name "主导航"
+
+Here are the accessible roles:
+
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mclass[39m=[32m"trade-review-app"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "SQLite 存储状态":
+  [36m<section[39m
+    [33maria-busy[39m=[32m"true"[39m
+    [33maria-label[39m=[32m"SQLite 存储状态"[39m
+    [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mclass[39m=[32m"trade-review-app"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33maria-busy[39m=[32m"true"[39m
+        [33maria-label[39m=[32m"SQLite 存储状态"[39m
+        [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+      [36m>[39m
+        [36m<strong>[39m
+          [0m正在连接交易数据[0m
+        [36m</strong>[39m
+        [36m<span>[39m
+          [0m正在从 SQLite 读取交易记录…[0m
+        [36m</span>[39m
+      [36m</section>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ openDataManagement app/components/trade-review-workspace.refresh.test.tsx:191:31
+    189|   async function openDataManagement() {
+    190|     const user = userEvent.setup();
+    191|     const navigation = screen.getByRole("navigation", { name: "主导航" });
+       |                               ^
+    192|     await user.click(within(navigation).getByRole("button", { name: "数…
+    193|     await screen.findByRole("region", { name: "数据管理" });
+ ❯ app/components/trade-review-workspace.refresh.test.tsx:424:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > refreshes the global failure summary and details after a single hard failure
+TestingLibraryElementError: Unable to find an accessible element with the role "navigation" and name "主导航"
+
+Here are the accessible roles:
+
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mclass[39m=[32m"trade-review-app"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "SQLite 存储状态":
+  [36m<section[39m
+    [33maria-busy[39m=[32m"true"[39m
+    [33maria-label[39m=[32m"SQLite 存储状态"[39m
+    [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mclass[39m=[32m"trade-review-app"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33maria-busy[39m=[32m"true"[39m
+        [33maria-label[39m=[32m"SQLite 存储状态"[39m
+        [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+      [36m>[39m
+        [36m<strong>[39m
+          [0m正在连接交易数据[0m
+        [36m</strong>[39m
+        [36m<span>[39m
+          [0m正在从 SQLite 读取交易记录…[0m
+        [36m</span>[39m
+      [36m</section>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ openDataManagement app/components/trade-review-workspace.refresh.test.tsx:191:31
+    189|   async function openDataManagement() {
+    190|     const user = userEvent.setup();
+    191|     const navigation = screen.getByRole("navigation", { name: "主导航" });
+       |                               ^
+    192|     await user.click(within(navigation).getByRole("button", { name: "数…
+    193|     await screen.findByRole("region", { name: "数据管理" });
+ ❯ app/components/trade-review-workspace.refresh.test.tsx:479:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > keeps a running global batch in control when a single refresh is requested
+TestingLibraryElementError: Unable to find an accessible element with the role "navigation" and name "主导航"
+
+Here are the accessible roles:
+
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mclass[39m=[32m"trade-review-app"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "SQLite 存储状态":
+  [36m<section[39m
+    [33maria-busy[39m=[32m"true"[39m
+    [33maria-label[39m=[32m"SQLite 存储状态"[39m
+    [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mclass[39m=[32m"trade-review-app"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33maria-busy[39m=[32m"true"[39m
+        [33maria-label[39m=[32m"SQLite 存储状态"[39m
+        [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+      [36m>[39m
+        [36m<strong>[39m
+          [0m正在连接交易数据[0m
+        [36m</strong>[39m
+        [36m<span>[39m
+          [0m正在从 SQLite 读取交易记录…[0m
+        [36m</span>[39m
+      [36m</section>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ openDataManagement app/components/trade-review-workspace.refresh.test.tsx:191:31
+    189|   async function openDataManagement() {
+    190|     const user = userEvent.setup();
+    191|     const navigation = screen.getByRole("navigation", { name: "主导航" });
+       |                               ^
+    192|     await user.click(within(navigation).getByRole("button", { name: "数…
+    193|     await screen.findByRole("region", { name: "数据管理" });
+ ❯ app/components/trade-review-workspace.refresh.test.tsx:553:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > offers recovery for a saved snapshot with two unfinished instruments and requests only those two
+TestingLibraryElementError: Unable to find an accessible element with the role "navigation" and name "主导航"
+
+Here are the accessible roles:
+
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mclass[39m=[32m"trade-review-app"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "SQLite 存储状态":
+  [36m<section[39m
+    [33maria-busy[39m=[32m"true"[39m
+    [33maria-label[39m=[32m"SQLite 存储状态"[39m
+    [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mclass[39m=[32m"trade-review-app"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33maria-busy[39m=[32m"true"[39m
+        [33maria-label[39m=[32m"SQLite 存储状态"[39m
+        [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+      [36m>[39m
+        [36m<strong>[39m
+          [0m正在连接交易数据[0m
+        [36m</strong>[39m
+        [36m<span>[39m
+          [0m正在从 SQLite 读取交易记录…[0m
+        [36m</span>[39m
+      [36m</section>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ openDataManagement app/components/trade-review-workspace.refresh.test.tsx:191:31
+    189|   async function openDataManagement() {
+    190|     const user = userEvent.setup();
+    191|     const navigation = screen.getByRole("navigation", { name: "主导航" });
+       |                               ^
+    192|     await user.click(within(navigation).getByRole("button", { name: "数…
+    193|     await screen.findByRole("region", { name: "数据管理" });
+ ❯ app/components/trade-review-workspace.refresh.test.tsx:626:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > shows and recovers an inventory instrument with no saved job
+TestingLibraryElementError: Unable to find an accessible element with the role "navigation" and name "主导航"
+
+Here are the accessible roles:
+
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mclass[39m=[32m"trade-review-app"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "SQLite 存储状态":
+  [36m<section[39m
+    [33maria-busy[39m=[32m"true"[39m
+    [33maria-label[39m=[32m"SQLite 存储状态"[39m
+    [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mclass[39m=[32m"trade-review-app"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33maria-busy[39m=[32m"true"[39m
+        [33maria-label[39m=[32m"SQLite 存储状态"[39m
+        [33mclass[39m=[32m"review-workspace review-workspace-loading"[39m
+      [36m>[39m
+        [36m<strong>[39m
+          [0m正在连接交易数据[0m
+        [36m</strong>[39m
+        [36m<span>[39m
+          [0m正在从 SQLite 读取交易记录…[0m
+        [36m</span>[39m
+      [36m</section>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ openDataManagement app/components/trade-review-workspace.refresh.test.tsx:191:31
+    189|   async function openDataManagement() {
+    190|     const user = userEvent.setup();
+    191|     const navigation = screen.getByRole("navigation", { name: "主导航" });
+       |                               ^
+    192|     await user.click(within(navigation).getByRole("button", { name: "数…
+    193|     await screen.findByRole("region", { name: "数据管理" });
+ ❯ app/components/trade-review-workspace.refresh.test.tsx:683:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed (8)
+   Start at  10:04:09
+   Duration  5.31s (transform 2.74s, setup 172ms, import 3.58s, tests 373ms, environment 866ms)
+

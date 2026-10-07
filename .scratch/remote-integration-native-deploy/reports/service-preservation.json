@@ -1,0 +1,17 @@
+{
+  "time": "2026-10-07T10:10:56.593690+08:00",
+  "formal3022": [
+    "p98660",
+    "f14"
+  ],
+  "debug3333": [
+    "p51308",
+    "f16"
+  ],
+  "samePidsAsInitialEvidence": {
+    "formal": 98660,
+    "debug": 51308
+  },
+  "runtimeClaim": "Existing process actual SQL engine not independently queried; leave UNKNOWN. New private tooling runtime is independently verified. No service restart or deployment in this Git integration task.",
+  "databaseSafety": "Only owned fixtures or :memory: opened by this integration correction; formal DB not modified."
+}

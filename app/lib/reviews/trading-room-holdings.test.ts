@@ -513,6 +513,7 @@ describe("trading room holdings model", () => {
     entry.episodes[0].episode.executions[0].source.marketCalendarDate = "2026-09-01";
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
+      asOf: "2026-09-19T00:00:00.000Z",
       staleAfterDays: 30,
       quotesByInstrument: { [base.id]: quote({ quoteDate: "2026-09-02" }) },
       positionSnapshotsByEpisode: { [entry.episodes[0].episode.id]: snapshot() },

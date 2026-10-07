@@ -1,0 +1,15 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/components/trade-review-workspace.test.tsx --maxWorkers=1 -t retains a Recall drawing draft per episode and gates completion until a snapshot exists
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:75777) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 90 skipped (91)
+   Start at  21:32:35
+   Duration  14.86s (transform 5.14s, setup 519ms, import 6.53s, tests 5.01s, environment 1.88s)
+

@@ -1,0 +1,45 @@
+{
+  "sourceUrl": "https://www.sqlite.org/2026/sqlite-amalgamation-3530000.zip",
+  "releaseReference": "https://www.sqlite.org/releaselog/3_53_0.html",
+  "sourceSha3_256": "bb317fbbd2b3bc53233ddd5894bf4d2dc6f533445f350d4235dbcc86f65af4ec",
+  "root": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-sqlite3530-probe-b3ehb3yp",
+  "compilerCommand": [
+    "clang",
+    "-O2",
+    "-dynamiclib",
+    "-fPIC",
+    "-compatibility_version",
+    "9.0.0",
+    "-current_version",
+    "9.6.0",
+    "-o",
+    "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-sqlite3530-probe-b3ehb3yp/libsqlite3.dylib",
+    "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-sqlite3530-probe-b3ehb3yp/sqlite-amalgamation-3530000/sqlite3.c",
+    "-DSQLITE_ENABLE_API_ARMOR",
+    "-DSQLITE_ENABLE_COLUMN_METADATA",
+    "-DSQLITE_ENABLE_DBSTAT_VTAB",
+    "-DSQLITE_ENABLE_FTS3",
+    "-DSQLITE_ENABLE_FTS3_PARENTHESIS",
+    "-DSQLITE_ENABLE_FTS5",
+    "-DSQLITE_ENABLE_GEOPOLY",
+    "-DSQLITE_ENABLE_MATH_FUNCTIONS",
+    "-DSQLITE_ENABLE_MEMORY_MANAGEMENT",
+    "-DSQLITE_ENABLE_PERCENTILE",
+    "-DSQLITE_ENABLE_PREUPDATE_HOOK",
+    "-DSQLITE_ENABLE_RTREE",
+    "-DSQLITE_ENABLE_SESSION",
+    "-DSQLITE_ENABLE_STAT4",
+    "-DSQLITE_ENABLE_UNLOCK_NOTIFY",
+    "-DSQLITE_USE_URI",
+    "-DSQLITE_MAX_VARIABLE_NUMBER=250000"
+  ],
+  "probe": {
+    "node": "26.0.0",
+    "metadata": "3.53.0",
+    "sql": {
+      "version": "3.53.0",
+      "sourceId": "2026-04-09 11:41:38 4525003a53a7fc63ca75c59b22c79608659ca12f0131f52c18637f829977f20b"
+    }
+  },
+  "scope": "owned temporary directory, child environment only; no installation/config/system/service/database mutation"
+}

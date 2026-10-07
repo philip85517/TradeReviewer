@@ -1,0 +1,15 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/lib/reviews/trading-room-holdings.test.ts -t falls through invalid source dates before applying the market calendar fallback --maxWorkers=1
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:63835) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 29 skipped (30)
+   Start at  20:46:43
+   Duration  3.22s (transform 416ms, setup 467ms, import 423ms, tests 38ms, environment 1.86s)
+

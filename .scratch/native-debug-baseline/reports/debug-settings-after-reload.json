@@ -1,0 +1,26 @@
+{
+  "colorScheme": "teal-red",
+  "showAverageCost": true,
+  "showExecutions": true,
+  "showGrid": true,
+  "showVolume": false,
+  "trading-room.fx": {
+    "id": "boc:2026-10-05T23:48:01.682Z",
+    "baseCurrency": "CNY",
+    "source": "BOC",
+    "publishedAt": "2026-10-06T06:40:24+08:00",
+    "publishedAtByCurrency": {
+      "HKD": "2026-10-06T06:40:24+08:00",
+      "USD": "2026-10-06T06:40:24+08:00"
+    },
+    "fetchedAt": "2026-10-05T23:48:01.682Z",
+    "rates": {
+      "HKD": "0.8584",
+      "USD": "6.7351"
+    },
+    "lastAttemptDay": "2026-10-06",
+    "status": "complete",
+    "error": null
+  },
+  "version": 1
+}

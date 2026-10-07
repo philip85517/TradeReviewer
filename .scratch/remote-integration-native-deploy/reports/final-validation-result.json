@@ -1,0 +1,44 @@
+{
+  "time": "2026-10-07T10:18:44.395683+08:00",
+  "sourceGates": "PASS",
+  "unit": {
+    "command": "npm run test:unit",
+    "exitCode": 0,
+    "passed": 3070,
+    "skipped": 6,
+    "filesPassed": 319,
+    "filesSkipped": 3,
+    "durationSeconds": 463.72
+  },
+  "native": {
+    "command": "make deploy-test",
+    "exitCode": 0,
+    "passed": 60
+  },
+  "debug": {
+    "command": "make debug-test",
+    "exitCode": 0,
+    "passed": 18
+  },
+  "buildIntegration": {
+    "command": "npm test",
+    "exitCode": 0,
+    "passed": 5
+  },
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exitCode": 0
+  },
+  "scopedLint": {
+    "exitCode": 0,
+    "errors": 0,
+    "warnings": 2
+  },
+  "actualConfiguredRuntime": {
+    "node": "26.0.0",
+    "sqlite": "3.53.0"
+  },
+  "remoteIntegration": "PENDING",
+  "existingServiceSqliteVersion": "NOT VERIFIED",
+  "actualApplicationDeployment": "NOT PERFORMED"
+}

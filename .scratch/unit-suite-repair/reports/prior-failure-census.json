@@ -1,0 +1,327 @@
+[
+  {
+    "file": "scripts/deploy.test.mjs",
+    "test": "SQLite operations > publishes a checked backup and applies config retention only to safe backup pairs",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "scripts/deploy.test.mjs",
+    "test": "SQLite operations > restores a checked database through an atomic swap and returns healthy",
+    "symptom": "Error: Test timed out in 15000ms."
+  },
+  {
+    "file": "scripts/deploy.test.mjs",
+    "test": "deployment filesystem integration > runs deployed operational Make targets from the target root",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.import-flow.test.tsx",
+    "test": "TradeReviewWorkspace > refreshes metadata without blocking cached candles when metadata is unresolved",
+    "symptom": "TestingLibraryElementError: Unable to find a label with the text of: 图表工具栏"
+  },
+  {
+    "file": "app/components/trade-review-workspace.import-flow.test.tsx",
+    "test": "TradeReviewWorkspace > applies a refreshed canonical name to every execution and keeps it after candle failure and reload",
+    "symptom": "TestingLibraryElementError: Unable to find a label with the text of: 图表工具栏"
+  },
+  {
+    "file": "app/components/trade-review-workspace.import-flow.test.tsx",
+    "test": "TradeReviewWorkspace > merges a deferred metadata name with an overlapping import confirmation without losing either",
+    "symptom": "TestingLibraryElementError: Unable to find a label with the text of: 图表工具栏"
+  },
+  {
+    "file": "app/components/trade-review-workspace.recall-bridge.test.tsx",
+    "test": "Recall summary homepage bridge > uses only successful saved status, keeps drafts pending and restores persisted completion on remount",
+    "symptom": "TestingLibraryElementError: Unable to find an element with the text: recall editor. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible."
+  },
+  {
+    "file": "app/components/trade-review-workspace.recall-bridge.test.tsx",
+    "test": "Recall summary homepage bridge > quietly tolerates unavailable summaries and preserves saved state on failed dashboard refresh",
+    "symptom": "TestingLibraryElementError: Unable to find an element with the text: recall editor. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible."
+  },
+  {
+    "file": "app/components/trade-review-workspace.recall-bridge.test.tsx",
+    "test": "Recall summary homepage bridge > does not let a slow dashboard refresh overwrite a newly saved completion",
+    "symptom": "TestingLibraryElementError: Unable to find an element with the text: recall editor. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible."
+  },
+  {
+    "file": "app/components/trade-review-workspace.refresh.test.tsx",
+    "test": "TradeReviewWorkspace global refresh seam > cancels a running batch, persists a terminal job, and waits before the next batch",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.refresh.test.tsx",
+    "test": "TradeReviewWorkspace global refresh seam > refreshes the global saved summary after a single instrument update",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.refresh.test.tsx",
+    "test": "TradeReviewWorkspace global refresh seam > refreshes the global failure summary and details after a single hard failure",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.refresh.test.tsx",
+    "test": "TradeReviewWorkspace global refresh seam > keeps a running global batch in control when a single refresh is requested",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > uses one shared primary navigation and reuses it from the narrow-screen menu",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > returns notification reviews to their real analysis and data sources",
+    "symptom": "TestingLibraryElementError: Unable to find role=\"button\" and name \"返回分析\""
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > keeps imported review actions in the Recall frame without a duplicate page header",
+    "symptom": "TestingLibraryElementError: Unable to find a label with the text of: 图表工具栏"
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > keeps Recall header actions wired to data management, repair, and return navigation",
+    "symptom": "TestingLibraryElementError: Unable to find a label with the text of: 图表工具栏"
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > keeps the parent review mounted until a failed navigation save is retried successfully",
+    "symptom": "TestingLibraryElementError: Unable to find a label with the text of: 图表工具栏"
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > keeps a successful typed save observable when summary refresh fails, then retries with reads only",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > keeps the saved fact and read-only retry after repeated summary failures",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > drops a late save and summary failure after an actual caller scope A-B-A switch",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > keeps a typed draft after a caller CAS conflict and saves again only after explicit reload",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > opens production in the queue and stays on a rejected completion",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > gold replay does not reveal the sale before the first bar is played",
+    "symptom": "TestingLibraryElementError: Unable to find role=\"navigation\" and name \"主导航\""
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > gold replay explains missing historical bars when stepping its first available day",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > gold replay keeps cached historical bars before and after its first step",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > gold replay repairs the previously saved empty-chart entry cursor",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > gold replay preserves saved progress after its first completed bar",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > does not advance the training cursor when the target timeframe has no known candle yet",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > keeps an actual parent timeframe change in Recall's saved working graph",
+    "symptom": "TestingLibraryElementError: Unable to find a label with the text of: 图表工具栏"
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > gold replay next execution lands on a market-open fill rather than the first bar close",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > restores the prior sidebar layout after focusing the chart without changing the cursor",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > supplements only the selected stock account and retries the same audited request",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > does not re-read every instrument market cache when metadata hydration updates presentation",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > keeps saved intraday replay state pending until lazy data settles",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > does not label daily-only partial coverage as overall market data availability",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > marks a short hourly cache as updatable even when daily data is absent",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > does not block the selected replay on another stock's market data",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > keeps a persisted hourly provider failure visible when no cache exists",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > preserves the review timeframe and cursor while top navigation re-enters training mode",
+    "symptom": "TestingLibraryElementError: Unable to find a label with the text of: 图表工具栏"
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > retains a Recall drawing draft per episode and gates completion until a snapshot exists",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > keeps the latest Recall drawing draft while completion is gated",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > does not use candles before the bounded pre-entry context",
+    "symptom": "TestingLibraryElementError: Unable to find a label with the text of: 图表工具栏"
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > does not describe confirmed grey-market trades as a regular-market history gap",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > shows all daily history by default and explains trades before the first candle",
+    "symptom": "TestingLibraryElementError: Unable to find a label with the text of: 图表工具栏"
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > scopes Recall history and replay to the selected episode",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > starts before entry and advances to the first known candle when history begins after the trade",
+    "symptom": "TestingLibraryElementError: Unable to find a label with the text of: 图表工具栏"
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > refreshes every trade episode regardless of the selected episode",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > uses META as the market-data symbol for historical FB trades",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > keeps the library chart available after a cancelled import with failed market refresh",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > keeps library context through a confirmed import with failed market refresh",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > opens a library queue entry directly in the shared history workbench",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > keeps complete-history executions within the selected account",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > automatically syncs all episodes after importing a later episode",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > automatically syncs all episodes when an import closes and opens positions",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > uses the unified replay workspace for a cached imported episode",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > exposes Recall snapshot controls for daily-only data",
+    "symptom": "TestingLibraryElementError: Unable to find a label with the text of: 图表工具栏"
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > returns to the trading room with its filters, period, and calendar view after opening a holding review",
+    "symptom": "TestingLibraryElementError: Unable to find a label with the text of: 图表工具栏"
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > returns to the library with its expanded stock context after opening a library round",
+    "symptom": "TestingLibraryElementError: Unable to find a label with the text of: 图表工具栏"
+  },
+  {
+    "file": "app/components/trade-review-workspace.test.tsx",
+    "test": "TradeReviewWorkspace > opens stock entries in the shared workbench and preserves library browsing state",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/dashboard/review-dashboard.test.tsx",
+    "test": "reactively bounds all observation history by selected account, nature/run and refreshed entries",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/dashboard/review-dashboard.test.tsx",
+    "test": "restores only applied dashboard filters and statistics period after a reload, then keeps reset cleared",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/components/library/trade-library.acceptance.test.tsx",
+    "test": "TradeLibrary pagination acceptance > resets both page cursors when scope, sort, or reset changes",
+    "symptom": "Error: Test timed out in 5000ms."
+  },
+  {
+    "file": "app/lib/reviews/trading-room-holdings.test.ts",
+    "test": "trading room holdings model > falls through invalid source dates before applying the market calendar fallback",
+    "symptom": "AssertionError: expected { …(30) } to match object { quoteStatus: 'available', …(1) }"
+  },
+  {
+    "file": "app/lib/storage/storage-boundary.test.tsx",
+    "test": "SQLite production storage boundary > persists an imported trade and chart settings through SQLite without legacy browser writes",
+    "symptom": "Error: Test timed out in 5000ms."
+  }
+]

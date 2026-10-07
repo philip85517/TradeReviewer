@@ -1,0 +1,130 @@
+{
+  "time": "2026-10-06T10:27:31.639848+08:00",
+  "docker": {
+    "Client": {
+      "Version": "29.6.2",
+      "ApiVersion": "1.55",
+      "DefaultAPIVersion": "1.55",
+      "GitCommit": "dfc4efb",
+      "GoVersion": "go1.26.5",
+      "Os": "darwin",
+      "Arch": "amd64",
+      "BuildTime": "Thu Jul 16 16:11:17 2026",
+      "Context": "desktop-linux"
+    },
+    "Server": {
+      "Platform": {
+        "Name": "Docker Desktop 4.84.0 (234817)"
+      },
+      "Version": "29.6.2",
+      "ApiVersion": "1.55",
+      "MinAPIVersion": "1.40",
+      "Os": "linux",
+      "Arch": "amd64",
+      "Components": [
+        {
+          "Name": "Engine",
+          "Version": "29.6.2",
+          "Details": {
+            "ApiVersion": "1.55",
+            "Arch": "amd64",
+            "BuildTime": "Thu Jul 16 16:12:20 2026",
+            "Experimental": "false",
+            "GitCommit": "3d80467",
+            "GoVersion": "go1.26.5",
+            "KernelVersion": "6.12.76-linuxkit",
+            "MinAPIVersion": "1.40",
+            "Module": "github.com/moby/moby/v2",
+            "ModuleVersion": "v2.0.0+unknown",
+            "Os": "linux"
+          }
+        },
+        {
+          "Name": "containerd",
+          "Version": "v2.2.5",
+          "Details": {
+            "GitCommit": "e53c7c1516c3b2bff98eb76f1f4117477e6f4e66"
+          }
+        },
+        {
+          "Name": "runc",
+          "Version": "1.3.6",
+          "Details": {
+            "GitCommit": "v1.3.6-0-g491b69ba"
+          }
+        },
+        {
+          "Name": "docker-init",
+          "Version": "0.19.0",
+          "Details": {
+            "GitCommit": "de40ad0"
+          }
+        }
+      ],
+      "GitCommit": "3d80467",
+      "GoVersion": "go1.26.5",
+      "KernelVersion": "6.12.76-linuxkit",
+      "BuildTime": "2026-07-16T16:12:20.000000000+00:00"
+    }
+  },
+  "container": {
+    "id": "6be64675f2f667a6d07357bb59b8fd2001125f41be763e12644244e661859772",
+    "name": "/tradereview-app-1",
+    "image": "sha256:523bdb011b76635b82e5aa2824c8112ff157a6911b2dbc43456a8663b0e1f0c4",
+    "state": "exited",
+    "created": "2026-08-10T15:41:25.773342854Z",
+    "mounts": [
+      {
+        "Type": "bind",
+        "Source": "/Users/zhoulin/projects/TradeReview/data/sqlite",
+        "Destination": "/var/lib/tradereview",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ],
+    "ports": {
+      "3000/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "4317"
+        }
+      ]
+    },
+    "restart": {
+      "Name": "unless-stopped",
+      "MaximumRetryCount": 0
+    },
+    "databaseEnvironment": []
+  },
+  "image": {
+    "id": "sha256:523bdb011b76635b82e5aa2824c8112ff157a6911b2dbc43456a8663b0e1f0c4",
+    "created": "2026-08-10T15:40:01.165522467Z",
+    "repoTags": [
+      "tradereview-app:latest"
+    ],
+    "labels": {
+      "com.docker.compose.project": "tradereview",
+      "com.docker.compose.service": "app",
+      "com.docker.compose.version": "5.3.1"
+    }
+  },
+  "readOnlyImageProbe": {
+    "node": "v22.23.2",
+    "sqlite": "3.51.3",
+    "packageVersion": "0.1.0",
+    "sourceMigrations": [
+      1,
+      2,
+      3
+    ],
+    "databaseSchemaVersion": 6,
+    "dataMigrations": [
+      {
+        "version": 1,
+        "status": "complete"
+      }
+    ]
+  },
+  "probeMethod": "Disposable helper from exact stored image, network none, read-only rootfs and read-only exact database bind; existing app container not started"
+}

@@ -1,0 +1,62 @@
+{
+  "checkedAt": "2026-10-07T09:43:24+08:00",
+  "head": "cf7d48cc4d0052841b64690085e68b23325ffaea",
+  "tree": "b67dcd9dc0453a3ca92dbf0dd30f8897eb462d37",
+  "base": "0b0113773a54f716d45b30bfb8bc03d22b99a181",
+  "checks": [
+    {
+      "path": "app/components/trade-review-workspace.test.tsx",
+      "hash": "9da7b6ded0d0e46316be48fbedff3b6681a059a6",
+      "matchesAcceptedCandidate": true
+    },
+    {
+      "path": "app/components/trade-review-workspace.alias-recovery.test.tsx",
+      "hash": "306070d24e4c55c4b55569a21db7e2ad0278a0aa",
+      "matchesAcceptedCandidate": true
+    },
+    {
+      "path": "app/components/test-support/legacy-sqlite-client.ts",
+      "hash": "d53c142e7be3d4e81ab0745d3ca0322caabcc344",
+      "matchesAcceptedCandidate": true
+    },
+    {
+      "path": "app/lib/reviews/trading-room-holdings.test.ts",
+      "hash": "b42f6b949f62d77084eb3184cbeb947d688d9d06",
+      "matchesAcceptedCandidate": true
+    },
+    {
+      "path": "vitest.config.ts",
+      "hash": "ae70bc9a7278d6dab22a5b067378ec50d554babb",
+      "matchesAcceptedCandidate": true
+    },
+    {
+      "path": "scripts/debug-local.test.mjs",
+      "hash": "3eea1bdd68c6e2d5db0a230e83d2ae166fdfa6ab",
+      "matchesAcceptedCandidate": true
+    },
+    {
+      "path": "scripts/debug-local.mjs",
+      "sha256": "45e5a8e0447f6b6be707570c2d7859e22c992490771fc4af4026ff3347700972",
+      "matchesAcceptedReview": true
+    },
+    {
+      "path": "scripts/deploy-native-runtime.mjs",
+      "sha256": "45a353ae83cace5bfb1b6be8a66b82aa92eda845055f2e2893b80f1ce9e413da",
+      "matchesAcceptedReview": true
+    },
+    {
+      "path": "scripts/deploy-native-toolkit.mjs",
+      "sha256": "44061bbb9f3fd4dd54f41b2bc80032ae8fcc0ebcd81256898f94ddff3d6ef86e",
+      "matchesAcceptedReview": true
+    },
+    {
+      "path": "scripts/native-environment.mjs",
+      "sha256": "18e15ad2805532c622092de0ee4917c436a72baafb05b77905c8910c21c739e9",
+      "matchesAcceptedReview": true
+    }
+  ],
+  "productUiDiffFromMaster": [],
+  "activeLogPolicy": "Original committed evidence copied byte-for-byte to actual-debug-restart-accepted.log; original live log remains local and ignored, service untouched.",
+  "pendingEdits": "Documentation/ignore/archive only, no test or production source changes.",
+  "result": "PASS"
+}

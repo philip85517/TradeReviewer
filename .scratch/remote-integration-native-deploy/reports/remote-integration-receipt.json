@@ -1,0 +1,51 @@
+{
+  "state": "closed",
+  "status": "accepted",
+  "coordinator": "/root",
+  "time": "2026-10-07T10:24:05.258239+08:00",
+  "pullRequest": "https://github.com/philip85517/TradeReviewer/pull/38",
+  "pullRequestState": "MERGED",
+  "mergedAt": "2026-10-07T02:23:04Z",
+  "branch": "codex/local-native-deploy",
+  "pushedHead": "0e336c6559b3124562c2346ff13d249e74cdc29e",
+  "mergeCommit": "2d22bb28516aebb34788e2337ae908b4f2f53c94",
+  "originMaster": "2d22bb28516aebb34788e2337ae908b4f2f53c94",
+  "localMaster": {
+    "path": "/Users/zhoulin/Documents/TradeReview",
+    "head": "2d22bb28516aebb34788e2337ae908b4f2f53c94",
+    "trackedClean": true,
+    "update": "fast-forward only",
+    "untrackedCount": 25,
+    "untrackedHashesMatchBefore": true
+  },
+  "testedTreeMatchesMergedTree": true,
+  "requiredChecks": "NONE CONFIGURED; PR statusCheckRollup=[]",
+  "githubReviews": [],
+  "independentLocalReview": "PASS:final-native-review.md/refresh-review.md/final-stage-review.md",
+  "services": {
+    "3022": {
+      "pid": 98660,
+      "preserved": true
+    },
+    "3333": {
+      "pid": 51308,
+      "preserved": true
+    }
+  },
+  "applicationDeployment": "NOT PERFORMED",
+  "existingServiceActualSqliteVersion": "NOT VERIFIED",
+  "branchesDeleted": false,
+  "unit": {
+    "passed": 3070,
+    "skipped": 6
+  },
+  "nativePassed": 60,
+  "debugPassed": 18,
+  "buildIntegrationPassed": 5,
+  "typecheck": "PASS",
+  "scopedLint": {
+    "errors": 0,
+    "warnings": 2
+  },
+  "recordNote": "This completion receipt was generated locally after the remote merge; committed candidate records describe the pre-merge snapshot."
+}

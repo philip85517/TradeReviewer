@@ -1,0 +1,6 @@
+{
+  "root": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-production-smoke-h3m9zqd7",
+  "target": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-production-smoke-h3m9zqd7/target",
+  "databasePath": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-production-smoke-h3m9zqd7/isolated.sqlite",
+  "port": 61739
+}

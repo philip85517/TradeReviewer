@@ -1140,9 +1140,11 @@ export async function runDeployment(options, dependencies = {}) {
     let runtimeTransaction;
     let releaseForRecovery;
     let lifecycleAccepted = false;
+    let customAccepted = false;
     let lifecycleComposeRunner;
 
     try {
+      await options.beforeStage?.();
       if (policy.copyRuntimeFiles) {
         runtimeTransaction = await beginRuntimeTransaction({
           targetDir: resolvedPaths.targetDir,
@@ -1210,6 +1212,7 @@ export async function runDeployment(options, dependencies = {}) {
 
       if (accepted) {
         lifecycleAccepted = useDefaultLifecycle;
+        customAccepted = !useDefaultLifecycle && typeof dependencies.recoverAcceptedRelease === "function";
         await rename(temporaryLink, paths.currentLink);
         temporaryLink = undefined;
         await pruneInactiveReleases({
@@ -1218,6 +1221,7 @@ export async function runDeployment(options, dependencies = {}) {
           activeRelease: releaseId,
           previousRelease,
         });
+        await options.afterPublish?.();
         await runtimeTransaction?.discard();
         return { ...release, activeRelease: releaseId, accepted: true };
       }
@@ -1228,6 +1232,7 @@ export async function runDeployment(options, dependencies = {}) {
       return { ...release, accepted: false };
     } catch (error) {
       let finalError = error;
+      try { await options.onFailure?.(error); } catch (recoveryError) { finalError = new Error(`${finalError.message}\nControl-plane recovery failed:\n${recoveryError.message}`, { cause: finalError }); }
       if (runtimeTransaction) {
         try {
           await runtimeTransaction.restore();
@@ -1252,8 +1257,18 @@ export async function runDeployment(options, dependencies = {}) {
           });
         }
       }
+      if (customAccepted && releaseForRecovery) {
+        try {
+          await dependencies.recoverAcceptedRelease({ release: releaseForRecovery, error: finalError });
+        } catch (recoveryError) {
+          releaseReserved = false;
+          finalError = new Error(`${finalError.message}\nPost-publication recovery failed:\n${recoveryError.message}`, {
+            cause: finalError,
+          });
+        }
+      }
       if (temporaryLink) await rm(temporaryLink, { force: true }).catch(() => undefined);
-      if (releaseReserved) await rm(releaseDir, { recursive: true, force: true }).catch(() => undefined);
+      if (releaseReserved && !error.preserveRelease) await rm(releaseDir, { recursive: true, force: true }).catch(() => undefined);
       throw finalError;
     }
   });

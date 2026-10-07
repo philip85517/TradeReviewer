@@ -1,0 +1,72 @@
+node --test scripts/deploy-source.test.mjs scripts/deploy-native-runtime.test.mjs scripts/deploy-native-toolkit.test.mjs scripts/deploy-native.test.mjs scripts/deploy-native-safety.test.mjs
+✔ starts, health-checks, and stops a real detached release process (1392.590455ms)
+✖ does not stop or adopt a foreign listener on the configured port (660.205589ms)
+✔ refuses to stop a foreign process even when its cwd matches the release (782.405977ms)
+✔ rejects a listener that never provides both health endpoints and cleans up (694.219853ms)
+✔ health-checks a listener spawned by the detached wrapper process (1123.211847ms)
+✔ stops an orphan listener after its wrapper parent exits (1518.188454ms)
+✔ startup failure retains a cleanup handle and leaves the port free (614.227504ms)
+✔ build runs npm ci and npm run build with production runtime environment (9.34894ms)
+✔ build failure is finite and leaves the old service untouched (5.886838ms)
+✔ retains build stdout and stderr in the target build log (7.29757ms)
+✔ retains failed build diagnostics and refuses symlinked log paths (8.815233ms)
+✔ does not stop an active service whose PID is reused with a new start time (103.270592ms)
+✔ does not stop an unexpected listener that appears during a build (74.211432ms)
+✔ an unhealthy A-to-B release recovers the old service (64.211185ms)
+✔ preserves the candidate release when old-service recovery fails (55.184992ms)
+✔ post-publication failure recovers service and toolkit while the deployment lock is held (52.684683ms)
+✔ down and rollback refuse a held deployment lock before inspecting (15.597765ms)
+✔ installs the current toolkit and restores prior control files (78.292006ms)
+✔ restores all files after an install failure and leaves the target sentinel (9.719644ms)
+✔ installed toolkit resolves its control files from the target deployment (70.747976ms)
+✔ rejects symlinked target roots without touching the outsider (5.289474ms)
+▶ native deployment CLI
+  ✔ parses ref and dry-run options (5.047218ms)
+  ✔ dry-run reports selected source and leaves target unchanged (32.822045ms)
+  ✔ build failure keeps old service and current release (113.99706ms)
+  ✔ dry-run down and rollback never inspect or mutate the target (10.935178ms)
+  ✔ rejects malformed and symlink runtime configuration (12.757681ms)
+  ✔ refuses to stop a listener without an active release (11.645073ms)
+  ✔ rejects ambient runtime overrides for mutating modes (4.459638ms)
+  ✔ rejects external current and config symlinks without touching the outsider (13.283294ms)
+  ✔ rejects a held deployment lock before inspecting or stopping (12.303435ms)
+  ✔ rejects source and target overlap before snapshot or mutation (8.431845ms)
+✔ native deployment CLI (229.44483ms)
+✔ current resolves a clean branch and full commit (549.489155ms)
+✔ current rejects tracked edits and untracked application files (398.865875ms)
+✔ current permits excluded scratch and credential changes (503.135088ms)
+✔ detached current reports no branch (659.371467ms)
+✔ explicit refs resolve despite dirty worktree and identify a local branch (400.22121ms)
+✔ current rejects an application filename whose bytes end in whitespace (258.473006ms)
+✔ current rejects dirty edits to tracked build application source (324.821499ms)
+✔ current rejects a staged rename from ignored state into application source (468.164538ms)
+✔ resolveReleaseSource rejects an injected non-full commit SHA (248.160611ms)
+✔ master fetches the current origin master commit (1325.277741ms)
+✔ master rejects fetch failure instead of using stale origin master (324.420649ms)
+✔ snapshot contains committed bytes and filters application secrets (385.403914ms)
+✔ snapshot rejects committed symlinks (375.182617ms)
+ℹ tests 44
+ℹ suites 1
+ℹ pass 43
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7139.520432
+
+✖ failing tests:
+
+test at scripts/deploy-native-runtime.test.mjs:76:1
+✖ does not stop or adopt a foreign listener on the configured port (660.205589ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/deploy-native-runtime.test.mjs:83:3)
+      at async Test.run (node:internal/test_runner/test:1208:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /foreign|owned|listener|port/i,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+make: *** [deploy-test] Error 1

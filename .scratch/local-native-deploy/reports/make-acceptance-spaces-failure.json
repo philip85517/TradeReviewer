@@ -1,0 +1,205 @@
+[
+  {
+    "command": [
+      "git",
+      "init",
+      "-b",
+      "master",
+      "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source"
+    ],
+    "cwd": "/Users/zhoulin/.codex/worktrees/afc8/TradeReview",
+    "exit": 0,
+    "output": "Initialized empty Git repository in /private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source/.git/\n"
+  },
+  {
+    "command": [
+      "git",
+      "config",
+      "user.name",
+      "Acceptance"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "config",
+      "user.email",
+      "acceptance@localhost"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "add",
+      "."
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "commit",
+      "-m",
+      "A"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source",
+    "exit": 0,
+    "output": "[master (root-commit) 701fbfa] A\n 6 files changed, 6 insertions(+)\n create mode 100644 package-lock.json\n create mode 100644 package.json\n create mode 100644 scripts/build.mjs\n create mode 100644 scripts/start-local.mjs\n create mode 100644 scripts/vinext\n create mode 100644 version\n"
+  },
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source",
+    "exit": 0,
+    "output": "701fbfab3dbcfc2dda86c67a7810918e97529d14\n"
+  },
+  {
+    "command": [
+      "git",
+      "add",
+      "."
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "commit",
+      "-m",
+      "B"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source",
+    "exit": 0,
+    "output": "[master ec5aec0] B\n 1 file changed, 1 insertion(+), 1 deletion(-)\n"
+  },
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source",
+    "exit": 0,
+    "output": "ec5aec07dcbf3eab5ca14043b0e1f1957071e5c4\n"
+  },
+  {
+    "command": [
+      "git",
+      "add",
+      "."
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "commit",
+      "-m",
+      "broken"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source",
+    "exit": 0,
+    "output": "[master 95a2233] broken\n 1 file changed, 1 insertion(+), 1 deletion(-)\n"
+  },
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source",
+    "exit": 0,
+    "output": "95a2233deebea6f8d6a332e5a746e53c64be1e0b\n"
+  },
+  {
+    "command": [
+      "make",
+      "--no-print-directory",
+      "deploy",
+      "DEPLOY_SOURCE=/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source",
+      "REF=701fbfab3dbcfc2dda86c67a7810918e97529d14",
+      "DEPLOY_ROOT=/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录",
+      "DRY_RUN=1"
+    ],
+    "cwd": "/Users/zhoulin/.codex/worktrees/afc8/TradeReview",
+    "exit": 0,
+    "output": "node \"$NATIVE_CLI\" --mode=deploy --source=\"$DEPLOY_SOURCE\" --target=\"$DEPLOY_ROOT\" --ref=\"$REF\" --dry-run\n{\"dryRun\":true,\"sourceSHA\":\"701fbfab3dbcfc2dda86c67a7810918e97529d14\",\"requestedRef\":\"701fbfab3dbcfc2dda86c67a7810918e97529d14\",\"resolvedRef\":\"701fbfab3dbcfc2dda86c67a7810918e97529d14\",\"port\":63102,\"databasePath\":\"/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/isolated.sqlite\",\"targetDir\":\"/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录\"}\n"
+  },
+  {
+    "command": [
+      "make",
+      "--no-print-directory",
+      "deploy",
+      "DEPLOY_SOURCE=/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source",
+      "REF=current",
+      "DEPLOY_ROOT=/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录"
+    ],
+    "cwd": "/Users/zhoulin/.codex/worktrees/afc8/TradeReview",
+    "exit": 2,
+    "output": "node \"$NATIVE_CLI\" --mode=deploy --source=\"$DEPLOY_SOURCE\" --target=\"$DEPLOY_ROOT\" --ref=\"$REF\" \nCannot deploy unfinished source; worktree has application changes: version\nmake: *** [deploy] Error 1\n"
+  },
+  {
+    "command": [
+      "make",
+      "--no-print-directory",
+      "deploy",
+      "DEPLOY_SOURCE=/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source",
+      "REF=701fbfab3dbcfc2dda86c67a7810918e97529d14",
+      "DEPLOY_ROOT=/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录"
+    ],
+    "cwd": "/Users/zhoulin/.codex/worktrees/afc8/TradeReview",
+    "exit": 0,
+    "output": "node \"$NATIVE_CLI\" --mode=deploy --source=\"$DEPLOY_SOURCE\" --target=\"$DEPLOY_ROOT\" --ref=\"$REF\" \n{\"mode\":\"code\",\"policy\":{\"copyApplication\":true,\"copyRuntimeFiles\":false,\"preserveStorage\":true,\"preserveConfig\":true},\"paths\":{\"appDir\":\"/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录/app\",\"releasesDir\":\"/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录/app/releases\",\"currentLink\":\"/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录/app/current\",\"configDir\":\"/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录/config\",\"dataDir\":\"/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录/data\",\"backupsDir\":\"/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录/data/backups\",\"logsDir\":\"/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录/logs\",\"opsDir\":\"/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录/ops\"},\"releaseId\":\"20261006T014830Z-0e670dc1a6\",\"releaseDir\":\"/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录/app/releases/20261006T014830Z-0e670dc1a6\",\"activeRelease\":\"20261006T014830Z-0e670dc1a6\",\"staged\":true,\"accepted\":true,\"sourceSHA\":\"701fbfab3dbcfc2dda86c67a7810918e97529d14\",\"requestedRef\":\"701fbfab3dbcfc2dda86c67a7810918e97529d14\",\"resolvedRef\":\"701fbfab3dbcfc2dda86c67a7810918e97529d14\",\"runtimeConfig\":{\"databasePath\":\"/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/isolated.sqlite\",\"port\":63102,\"hostname\":\"127.0.0.1\"}}\n"
+  },
+  {
+    "command": [
+      "make",
+      "--no-print-directory",
+      "deploy-status",
+      "DEPLOY_ROOT=/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录"
+    ],
+    "cwd": "/Users/zhoulin/.codex/worktrees/afc8/TradeReview",
+    "exit": 0,
+    "output": "node \"$NATIVE_CLI\" --mode=status --target=\"$DEPLOY_ROOT\"\n{\"targetDir\":\"/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录\",\"activeRelease\":\"20261006T014830Z-0e670dc1a6\",\"metadata\":{\"schema\":1,\"fullcommit\":\"701fbfab3dbcfc2dda86c67a7810918e97529d14\",\"ref\":\"701fbfab3dbcfc2dda86c67a7810918e97529d14\",\"branch\":null,\"resolvedRef\":\"701fbfab3dbcfc2dda86c67a7810918e97529d14\",\"buildtimestamp\":\"2026-10-06T01:48:30.946Z\",\"packageversion\":\"1.0.0\",\"previousRelease\":null,\"accepted\":true},\"observed\":{\"pid\":67892,\"cwd\":\"/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录/app/releases/20261006T014830Z-0e670dc1a6\",\"command\":\"/usr/local/Cellar/node/26.0.0/bin/node scripts/vinext start --hostname 127.0.0.1 --port 63102\",\"startTime\":\"Tue Oct  6 09:48:32 2026\"},\"healthy\":true,\"consistent\":true,\"port\":63102,\"databasePath\":\"/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/isolated.sqlite\"}\n"
+  },
+  {
+    "command": [
+      "make",
+      "--no-print-directory",
+      "deploy",
+      "DEPLOY_SOURCE=/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source",
+      "REF=ec5aec07dcbf3eab5ca14043b0e1f1957071e5c4"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录",
+    "exit": 2,
+    "output": "node \"$DOCKER_CLI\" --mode=deploy --source=\"$DEPLOY_SOURCE\" --target=\"$DEPLOY_ROOT\" \nENOENT: no such file or directory, lstat '/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/source/deploy/config/.env.example'\nmake: *** [deploy-docker] Error 1\n"
+  },
+  {
+    "command": [
+      "make",
+      "--no-print-directory",
+      "deploy-down"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录",
+    "exit": 2,
+    "output": "node \"$DOCKER_CLI\" --mode=down --target=\"$DEPLOY_ROOT\"\nDocker Compose down failed:\ncouldn't find env file: /private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录/config/.env\nmake: *** [deploy-docker-down] Error 1\n"
+  },
+  {
+    "cleanup_error": "node \"$DOCKER_CLI\" --mode=down --target=\"$DEPLOY_ROOT\"\nDocker Compose down failed:\ncouldn't find env file: /private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 oeqmm8l4/发布目录/config/.env\nmake: *** [deploy-docker-down] Error 1\n"
+  }
+]

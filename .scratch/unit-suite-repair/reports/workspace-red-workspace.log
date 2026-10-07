@@ -1,0 +1,15 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/components/trade-review-workspace.test.tsx -t keeps imported review actions in the Recall frame without a duplicate page header
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:62965) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 90 skipped (91)
+   Start at  20:43:40
+   Duration  10.75s (transform 4.08s, setup 321ms, import 5.16s, tests 3.22s, environment 1.46s)
+

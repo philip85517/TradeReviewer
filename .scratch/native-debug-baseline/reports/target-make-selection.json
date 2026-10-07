@@ -1,0 +1,26 @@
+[
+  {
+    "marker": null,
+    "exit": 0,
+    "command": "node \"$DOCKER_CLI\" --mode=status --target=\"$DEPLOY_ROOT\"\n",
+    "result": "PASS"
+  },
+  {
+    "marker": "config/runtime.json",
+    "exit": 0,
+    "command": "node \"$NATIVE_CLI\" --mode=status --target=\"$DEPLOY_ROOT\"\n",
+    "result": "PASS"
+  },
+  {
+    "marker": "ops/deploy-native.mjs",
+    "exit": 0,
+    "command": "node \"$NATIVE_CLI\" --mode=status --target=\"$DEPLOY_ROOT\"\n",
+    "result": "PASS"
+  },
+  {
+    "marker": "ops/start-native.command",
+    "exit": 0,
+    "command": "node \"$NATIVE_CLI\" --mode=status --target=\"$DEPLOY_ROOT\"\n",
+    "result": "PASS"
+  }
+]

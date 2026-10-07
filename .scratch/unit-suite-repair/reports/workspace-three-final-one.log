@@ -1,0 +1,33 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/components/trade-review-workspace.test.tsx --maxWorkers=1 -t retains a Recall drawing draft per episode and gates completion until a snapshot exists|keeps the latest Recall drawing draft while completion is gated|keeps library context through a confirmed import with failed market refresh
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:75873) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.test.tsx (91 tests | 1 failed | 88 skipped) 13035ms
+     × keeps library context through a confirmed import with failed market refresh 5182ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps library context through a confirmed import with failed market refresh
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/trade-review-workspace.test.tsx:3652:3
+    3650|   });
+    3651|
+    3652|   it("keeps library context through a confirmed import with failed mar…
+       |   ^
+    3653|     const user = userEvent.setup();
+    3654|     saveImportedExecutions([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed | 88 skipped (91)
+   Start at  21:32:57
+   Duration  20.31s (transform 4.12s, setup 210ms, import 5.28s, tests 13.03s, environment 1.12s)
+

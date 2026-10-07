@@ -1,0 +1,43 @@
+node --test scripts/deploy-source.test.mjs scripts/deploy-native-runtime.test.mjs scripts/deploy-native-toolkit.test.mjs scripts/deploy-native.test.mjs
+✔ starts, health-checks, and stops a real detached release process (968.229592ms)
+✔ does not stop or adopt a foreign listener on the configured port (696.060526ms)
+✔ refuses to stop a foreign process even when its cwd matches the release (910.353484ms)
+✔ rejects a listener that never provides both health endpoints and cleans up (695.125372ms)
+✔ health-checks a listener spawned by the detached wrapper process (1352.400325ms)
+✔ stops an orphan listener after its wrapper parent exits (1595.773319ms)
+✔ startup failure retains a cleanup handle and leaves the port free (642.23665ms)
+✔ build runs npm ci and npm run build with production runtime environment (8.903288ms)
+✔ build failure is finite and leaves the old service untouched (7.890963ms)
+✔ installs the current toolkit and restores prior control files (46.901286ms)
+✔ restores all files after an install failure and leaves the target sentinel (7.355946ms)
+✔ installed toolkit resolves its control files from the target deployment (41.825304ms)
+✔ rejects symlinked target roots without touching the outsider (3.705514ms)
+▶ native deployment CLI
+  ✔ parses ref and dry-run options (4.028404ms)
+  ✔ dry-run reports selected source and leaves target unchanged (16.123875ms)
+  ✔ build failure keeps old service and current release (49.62701ms)
+  ✔ dry-run down and rollback never inspect or mutate the target (5.553891ms)
+  ✔ rejects malformed and symlink runtime configuration (7.412868ms)
+  ✔ refuses to stop a listener without an active release (11.811865ms)
+✔ native deployment CLI (97.780663ms)
+✔ current resolves a clean branch and full commit (373.961604ms)
+✔ current rejects tracked edits and untracked application files (319.573088ms)
+✔ current permits excluded scratch and credential changes (342.336055ms)
+✔ detached current reports no branch (535.063181ms)
+✔ explicit refs resolve despite dirty worktree and identify a local branch (358.626583ms)
+✔ current rejects an application filename whose bytes end in whitespace (356.114947ms)
+✔ current rejects dirty edits to tracked build application source (303.291045ms)
+✔ current rejects a staged rename from ignored state into application source (484.875175ms)
+✔ resolveReleaseSource rejects an injected non-full commit SHA (323.472286ms)
+✔ master fetches the current origin master commit (1543.990952ms)
+✔ master rejects fetch failure instead of using stale origin master (399.837803ms)
+✔ snapshot contains committed bytes and filters application secrets (437.269294ms)
+✔ snapshot rejects committed symlinks (404.774806ms)
+ℹ tests 32
+ℹ suites 1
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7110.188645

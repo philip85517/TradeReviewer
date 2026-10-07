@@ -1,0 +1,15 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:63345) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ↓ app/lib/storage/storage-boundary.test.tsx > SQLite production storage boundary > keeps legacy and current review parsing pure with the same normalized state
+ ↓ app/lib/storage/storage-boundary.test.tsx > SQLite production storage boundary > renders the import-empty state from an empty SQLite bootstrap without legacy reads
+ ✓ app/lib/storage/storage-boundary.test.tsx > SQLite production storage boundary > persists an imported trade and chart settings through SQLite without legacy browser writes 2475ms
+ ↓ app/lib/storage/storage-boundary.test.tsx > SQLite production storage boundary > marks legacy browser stores as migration-only and limits the exporter boundary
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 3 skipped (4)
+   Start at  20:44:37
+   Duration  7.56s (transform 2.83s, setup 173ms, import 3.61s, tests 2.48s, environment 850ms)
+

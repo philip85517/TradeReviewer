@@ -1,0 +1,227 @@
+npm run dev
+
+> trade-reviewer@0.1.0 dev
+> WRANGLER_LOG_PATH=.wrangler/wrangler.log node scripts/debug-local.mjs
+
+
+  vinext dev  (Vite 8.0.13)
+
+(node:44088) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+  ➜  Local:   http://127.0.0.1:3333/
+7:50:00 PM [vite] (rsc) connected.
+ GET /api/storage/status 200 in 4.0s
+ GET /api/storage/settings 200 in 3ms
+7:50:12 PM [vite] (ssr) connected.
+ GET / 200 in 5.3s (compile: 11ms, render: 5.2s)
+7:50:18 PM [vite] (rsc) hmr update /app/globals.css
+7:50:18 PM [vite] (client) hmr update /app/globals.css?direct
+ GET /api/trading-room/cash/baselines?nature=live 200 in 467ms
+ GET /api/trading-room/fx 200 in 449ms
+ GET /api/trading-room/cash?nature=live&targetCurrency=CNY&today=2026-10-06 200 in 466ms
+ GET /api/storage/bootstrap 200 in 488ms
+ GET /api/storage/tradingview-account-migration/aliases 200 in 3ms
+ GET /api/trading-room/cash/baselines?nature=live 200 in 3ms
+ GET /api/trading-room/cash?nature=live&targetCurrency=CNY&today=2026-10-06 200 in 146ms
+ GET /api/storage/tradingview-account-migration/aliases 200 in 3ms
+ GET /api/storage/recall/summaries 200 in 9ms
+ GET /api/trading-room/cash/baselines?nature=live 200 in 3ms
+ GET /api/trading-room/cash?nature=live&targetCurrency=CNY&today=2026-10-06 200 in 140ms
+ GET /api/trading-room/principal 200 in 2ms
+ GET /api/trading-room/principal 200 in 4ms
+ GET /api/trading-room/reference-capital 200 in 6ms
+ PUT /api/storage/reviews 200 in 9ms
+ GET /api/trading-room/reference-capital 200 in 1ms
+ GET /api/trading-room/reference-capital 200 in 5ms
+ PUT /api/storage/reviews 200 in 7ms
+7:50:25 PM [vite] (rsc) hmr update /app/globals.css
+7:50:25 PM [vite] (client) hmr update /app/globals.css?direct
+ GET /api/instruments/resolve?market=HK&symbol=6603 200 in 9.2s
+ GET /api/instruments/resolve?market=HK&symbol=100 200 in 9.2s
+ GET /api/instruments/resolve?market=HK&symbol=2148 502 in 9.4s
+ PUT /api/storage/instruments/metadata 200 in 6ms
+ PUT /api/storage/instruments/metadata 200 in 4ms
+ GET /api/instruments/resolve?market=HK&symbol=7226 200 in 51ms
+ PUT /api/storage/instruments/metadata 200 in 16ms
+ GET /api/instruments/resolve?market=HK&symbol=7500 200 in 96ms
+ GET /api/instruments/resolve?market=HK&symbol=7552 200 in 93ms
+ PUT /api/storage/instruments/metadata 200 in 4ms
+ PUT /api/storage/instruments/metadata 200 in 7ms
+ GET /api/instruments/resolve?market=US&symbol=AFRM 200 in 9.8s
+ GET /api/instruments/resolve?market=US&symbol=ADBE 200 in 10.1s
+ GET /api/instruments/resolve?market=US&symbol=AG 200 in 9.7s
+ PUT /api/storage/instruments/metadata 200 in 4ms
+ PUT /api/storage/instruments/metadata 200 in 8ms
+ PUT /api/storage/instruments/metadata 200 in 12ms
+ GET /api/instruments/resolve?market=US&symbol=APLD 200 in 10.0s
+ GET /api/instruments/resolve?market=US&symbol=APP 200 in 10.0s
+ GET /api/instruments/resolve?market=US&symbol=AI 200 in 10.1s
+ PUT /api/storage/instruments/metadata 200 in 9ms
+ PUT /api/storage/instruments/metadata 200 in 12ms
+ PUT /api/storage/instruments/metadata 200 in 11ms
+ GET /api/storage/bootstrap 200 in 582ms
+7:50:58 PM [vite] (rsc) hmr update /app/globals.css
+7:50:58 PM [vite] (client) hmr update /app/globals.css?direct
+ PUT /api/storage/reviews 200 in 247ms
+ GET /api/instruments/resolve?market=US&symbol=CBRS 200 in 10.1s
+ GET /api/instruments/resolve?market=US&symbol=BTGO 200 in 10.1s
+ GET /api/instruments/resolve?market=US&symbol=BE 200 in 10.1s
+ PUT /api/storage/instruments/metadata 200 in 5ms
+ PUT /api/storage/instruments/metadata 200 in 7ms
+ PUT /api/storage/instruments/metadata 200 in 10ms
+ PUT /api/storage/settings 200 in 4ms
+ GET /api/instruments/resolve?market=US&symbol=CRWD 200 in 6.2s
+ GET /api/instruments/resolve?market=US&symbol=CWEB 200 in 6.2s
+ GET /api/instruments/resolve?market=US&symbol=CELH 200 in 6.2s
+ PUT /api/storage/instruments/metadata 200 in 7ms
+ PUT /api/storage/instruments/metadata 200 in 9ms
+ PUT /api/storage/instruments/metadata 200 in 7ms
+ GET /api/instruments/resolve?market=US&symbol=DUST 200 in 55ms
+ GET /api/instruments/resolve?market=US&symbol=EDZ 200 in 54ms
+ PUT /api/storage/instruments/metadata 200 in 7ms
+ PUT /api/storage/instruments/metadata 200 in 11ms
+ GET /api/instruments/resolve?market=US&symbol=ELEV 200 in 52ms
+ GET /api/instruments/resolve?market=US&symbol=EWY 200 in 50ms
+ PUT /api/storage/instruments/metadata 200 in 5ms
+ PUT /api/storage/instruments/metadata 200 in 5ms
+ GET /api/instruments/resolve?market=US&symbol=FB 200 in 52ms
+ PUT /api/storage/instruments/metadata 200 in 4ms
+ GET /api/instruments/resolve?market=US&symbol=DIDIY 200 in 2.8s
+ PUT /api/storage/instruments/metadata 200 in 3ms
+ GET /api/storage/bootstrap 200 in 319ms
+ GET /api/storage/settings 200 in 2ms
+ GET /api/storage/recall/summaries 200 in 5ms
+ GET /api/trading-room/reference-capital 200 in 5ms
+ GET / 200 in 72ms (compile: 9ms, render: 60ms)
+ GET /api/trading-room/cash/baselines?nature=live 200 in 3ms
+ GET /api/trading-room/cash?nature=live&targetCurrency=CNY&today=2026-10-06 200 in 162ms
+ GET /api/trading-room/fx 200 in 5ms
+ GET /api/storage/bootstrap 200 in 387ms
+ GET /api/storage/tradingview-account-migration/aliases 200 in 4ms
+ GET /api/trading-room/cash/baselines?nature=live 200 in 5ms
+ GET /api/trading-room/cash/baselines?nature=live 200 in 7ms
+ GET /api/trading-room/cash?nature=live&targetCurrency=CNY&today=2026-10-06 200 in 166ms
+ GET /api/trading-room/cash?nature=live&targetCurrency=CNY&today=2026-10-06 200 in 317ms
+ GET /api/storage/tradingview-account-migration/aliases 200 in 3ms
+ GET /api/storage/recall/summaries 200 in 7ms
+ GET /api/trading-room/cash/baselines?nature=live 200 in 5ms
+ GET /api/trading-room/cash?nature=live&targetCurrency=CNY&today=2026-10-06 200 in 132ms
+ GET /api/instruments/resolve?market=HK&symbol=100 200 in 74ms
+ GET /api/instruments/resolve?market=HK&symbol=6603 200 in 76ms
+ GET /api/instruments/resolve?market=HK&symbol=2148 502 in 299ms
+ PUT /api/storage/reviews 200 in 6ms
+ GET /api/trading-room/principal 200 in 2ms
+ GET /api/trading-room/principal 200 in 6ms
+ GET /api/trading-room/reference-capital 200 in 9ms
+ GET /api/trading-room/reference-capital 200 in 13ms
+ PUT /api/storage/instruments/metadata 200 in 9ms
+ PUT /api/storage/instruments/metadata 200 in 12ms
+ GET /api/trading-room/reference-capital 200 in 5ms
+ GET /api/instruments/resolve?market=HK&symbol=7226 200 in 60ms
+ PUT /api/storage/instruments/metadata 200 in 4ms
+ GET /api/instruments/resolve?market=HK&symbol=7500 200 in 86ms
+ GET /api/instruments/resolve?market=HK&symbol=7552 200 in 97ms
+ GET /api/instruments/resolve?market=US&symbol=ADBE 200 in 51ms
+ PUT /api/storage/instruments/metadata 200 in 3ms
+ PUT /api/storage/reviews 200 in 5ms
+ PUT /api/storage/instruments/metadata 200 in 7ms
+ PUT /api/storage/instruments/metadata 200 in 6ms
+ GET /api/instruments/resolve?market=US&symbol=AFRM 200 in 50ms
+ PUT /api/storage/instruments/metadata 200 in 4ms
+ GET /api/instruments/resolve?market=US&symbol=AG 200 in 61ms
+ GET /api/instruments/resolve?market=US&symbol=AI 200 in 50ms
+ PUT /api/storage/instruments/metadata 200 in 7ms
+ GET /api/instruments/resolve?market=US&symbol=APLD 200 in 76ms
+ PUT /api/storage/instruments/metadata 200 in 3ms
+ GET /api/instruments/resolve?market=US&symbol=APP 200 in 53ms
+ PUT /api/storage/instruments/metadata 200 in 6ms
+ PUT /api/storage/instruments/metadata 200 in 19ms
+ GET /api/storage/bootstrap 200 in 340ms
+7:52:18 PM [vite] (rsc) hmr update /app/globals.css
+7:52:18 PM [vite] (client) hmr update /app/globals.css?direct
+ GET /api/instruments/resolve?market=US&symbol=BTGO 200 in 61ms
+ GET /api/instruments/resolve?market=US&symbol=CBRS 200 in 63ms
+ GET /api/instruments/resolve?market=US&symbol=BE 200 in 67ms
+ PUT /api/storage/instruments/metadata 200 in 7ms
+ PUT /api/storage/instruments/metadata 200 in 8ms
+ PUT /api/storage/instruments/metadata 200 in 10ms
+ GET /api/instruments/resolve?market=US&symbol=CRWD 200 in 54ms
+ GET /api/instruments/resolve?market=US&symbol=CELH 200 in 56ms
+ GET /api/instruments/resolve?market=US&symbol=CWEB 200 in 56ms
+ PUT /api/storage/instruments/metadata 200 in 8ms
+ PUT /api/storage/instruments/metadata 200 in 12ms
+ PUT /api/storage/instruments/metadata 200 in 9ms
+ GET /api/instruments/resolve?market=US&symbol=DUST 200 in 51ms
+ GET /api/instruments/resolve?market=US&symbol=EDZ 200 in 50ms
+ PUT /api/storage/instruments/metadata 200 in 5ms
+ PUT /api/storage/instruments/metadata 200 in 4ms
+ GET /api/instruments/resolve?market=US&symbol=DIDIY 200 in 106ms
+ PUT /api/storage/instruments/metadata 200 in 3ms
+ GET /api/instruments/resolve?market=US&symbol=ELEV 200 in 47ms
+ GET /api/instruments/resolve?market=US&symbol=EWY 200 in 47ms
+ PUT /api/storage/instruments/metadata 200 in 3ms
+ PUT /api/storage/instruments/metadata 200 in 4ms
+ GET /api/instruments/resolve?market=US&symbol=FB 200 in 50ms
+ PUT /api/storage/instruments/metadata 200 in 2ms
+ GET /api/storage/bootstrap 200 in 229ms
+7:52:50 PM [vite] (rsc) hmr update /app/globals.css
+7:52:50 PM [vite] (client) hmr update /app/globals.css?direct
+ GET /api/storage/settings 200 in 167ms
+ PUT /api/storage/reviews 200 in 5ms
+7:53:09 PM [vite] (rsc) hmr update /app/globals.css
+7:53:09 PM [vite] (client) hmr update /app/globals.css?direct
+ GET /api/instruments/resolve?market=US&symbol=IREN 200 in 55ms
+ GET /api/instruments/resolve?market=US&symbol=LYFT 200 in 53ms
+ GET /api/instruments/resolve?market=US&symbol=GLD 200 in 61ms
+ PUT /api/storage/instruments/metadata 200 in 3ms
+ PUT /api/storage/instruments/metadata 200 in 7ms
+ PUT /api/storage/instruments/metadata 200 in 8ms
+ GET /api/instruments/resolve?market=US&symbol=MARA 200 in 51ms
+ PUT /api/storage/instruments/metadata 200 in 5ms
+ GET /api/instruments/resolve?market=US&symbol=MF 200 in 50ms
+ GET /api/instruments/resolve?market=US&symbol=META 200 in 56ms
+ GET /api/instruments/resolve?market=US&symbol=NUGT 200 in 50ms
+ PUT /api/storage/instruments/metadata 200 in 6ms
+ PUT /api/storage/instruments/metadata 200 in 3ms
+ PUT /api/storage/instruments/metadata 200 in 5ms
+ GET /api/instruments/resolve?market=US&symbol=PLTR 200 in 49ms
+ GET /api/instruments/resolve?market=US&symbol=O 200 in 54ms
+ GET /api/instruments/resolve?market=US&symbol=QID 200 in 50ms
+ PUT /api/storage/instruments/metadata 200 in 7ms
+ PUT /api/storage/instruments/metadata 200 in 5ms
+ PUT /api/storage/instruments/metadata 200 in 7ms
+ GET /api/instruments/resolve?market=US&symbol=QIWI 200 in 55ms
+ GET /api/instruments/resolve?market=US&symbol=QLD 200 in 53ms
+ PUT /api/storage/instruments/metadata 200 in 4ms
+ PUT /api/storage/instruments/metadata 200 in 6ms
+ GET /api/storage/bootstrap 200 in 454ms
+7:53:20 PM [vite] (rsc) hmr update /app/globals.css
+7:53:20 PM [vite] (client) hmr update /app/globals.css?direct
+7:53:37 PM [vite] (rsc) hmr update /app/globals.css
+7:53:37 PM [vite] (client) hmr update /app/globals.css?direct
+ GET /api/instruments/resolve?market=US&symbol=RIVN 200 in 173ms
+ GET /api/instruments/resolve?market=US&symbol=RKLB 200 in 175ms
+ GET /api/instruments/resolve?market=US&symbol=QS 200 in 187ms
+ PUT /api/storage/instruments/metadata 200 in 7ms
+ PUT /api/storage/instruments/metadata 200 in 11ms
+ PUT /api/storage/instruments/metadata 200 in 5ms
+ GET /api/instruments/resolve?market=US&symbol=SNAP 200 in 55ms
+ GET /api/instruments/resolve?market=US&symbol=ROKU 200 in 57ms
+ GET /api/instruments/resolve?market=US&symbol=SQ 200 in 54ms
+ PUT /api/storage/instruments/metadata 200 in 5ms
+ PUT /api/storage/instruments/metadata 200 in 4ms
+ PUT /api/storage/instruments/metadata 200 in 9ms
+ GET /api/instruments/resolve?market=US&symbol=TQQQ 200 in 54ms
+ GET /api/instruments/resolve?market=US&symbol=UVXY 200 in 56ms
+ GET /api/instruments/resolve?market=US&symbol=SVXY 200 in 64ms
+ PUT /api/storage/instruments/metadata 200 in 8ms
+ PUT /api/storage/instruments/metadata 200 in 6ms
+ PUT /api/storage/instruments/metadata 200 in 11ms
+ GET /api/instruments/resolve?market=US&symbol=VTYX 200 in 49ms
+ GET /api/instruments/resolve?market=US&symbol=VGFC 200 in 53ms
+ GET /api/instruments/resolve?market=US&symbol=YNDX 200 in 51ms
+ PUT /api/storage/instruments/metadata 200 in 5ms
+ PUT /api/storage/instruments/metadata 200 in 3ms
+ PUT /api/storage/instruments/metadata 200 in 7ms
+ GET /api/storage/bootstrap 200 in 242ms
+make: *** [dev] Error 1

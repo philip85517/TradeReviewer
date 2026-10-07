@@ -1,0 +1,15 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:63312) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ↓ app/components/library/trade-library.acceptance.test.tsx > TradeLibrary pagination acceptance > keeps stock counts and metrics global while page two opens the exact child
+ ↓ app/components/library/trade-library.acceptance.test.tsx > TradeLibrary pagination acceptance > keeps queue metrics and Start Review global when the visible page is page two
+ ✓ app/components/library/trade-library.acceptance.test.tsx > TradeLibrary pagination acceptance > resets both page cursors when scope, sort, or reset changes 1473ms
+ ↓ app/components/library/trade-library.acceptance.test.tsx > TradeLibrary pagination acceptance > keeps page two through review return and parent remount
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 3 skipped (4)
+   Start at  20:44:32
+   Duration  4.17s (transform 772ms, setup 167ms, import 1.10s, tests 1.48s, environment 858ms)
+

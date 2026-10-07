@@ -1,0 +1,169 @@
+[
+  {
+    "command": [
+      "git",
+      "init",
+      "-b",
+      "master",
+      "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source"
+    ],
+    "cwd": "/Users/zhoulin/.codex/worktrees/afc8/TradeReview",
+    "exit": 0,
+    "output": "Initialized empty Git repository in /private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source/.git/\n"
+  },
+  {
+    "command": [
+      "git",
+      "config",
+      "user.name",
+      "Acceptance"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "config",
+      "user.email",
+      "acceptance@localhost"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "add",
+      "."
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "commit",
+      "-m",
+      "A"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source",
+    "exit": 0,
+    "output": "[master (root-commit) e18f7fe] A\n 6 files changed, 6 insertions(+)\n create mode 100644 package-lock.json\n create mode 100644 package.json\n create mode 100644 scripts/build.mjs\n create mode 100644 scripts/start-local.mjs\n create mode 100644 scripts/vinext\n create mode 100644 version\n"
+  },
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source",
+    "exit": 0,
+    "output": "e18f7fe7fe66cb4bf17252e3adca290ef827e2b2\n"
+  },
+  {
+    "command": [
+      "git",
+      "add",
+      "."
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "commit",
+      "-m",
+      "B"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source",
+    "exit": 0,
+    "output": "[master 0b3dab5] B\n 1 file changed, 1 insertion(+), 1 deletion(-)\n"
+  },
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source",
+    "exit": 0,
+    "output": "0b3dab5a12d3797728b9fb9afe7e73b45ca16b7e\n"
+  },
+  {
+    "command": [
+      "git",
+      "add",
+      "."
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "commit",
+      "-m",
+      "broken"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source",
+    "exit": 0,
+    "output": "[master e878dd1] broken\n 1 file changed, 1 insertion(+), 1 deletion(-)\n"
+  },
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source",
+    "exit": 0,
+    "output": "e878dd138dd847a8954415d097b6f4c9032c8f18\n"
+  },
+  {
+    "command": [
+      "make",
+      "--no-print-directory",
+      "deploy",
+      "DEPLOY_SOURCE=/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source",
+      "REF=e18f7fe7fe66cb4bf17252e3adca290ef827e2b2",
+      "DEPLOY_ROOT=/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/发布目录",
+      "DRY_RUN=1"
+    ],
+    "cwd": "/Users/zhoulin/.codex/worktrees/afc8/TradeReview",
+    "exit": 0,
+    "output": "node \"$NATIVE_CLI\" --mode=deploy --source=\"$DEPLOY_SOURCE\" --target=\"$DEPLOY_ROOT\" --ref=\"$REF\" --dry-run\n{\"dryRun\":true,\"sourceSHA\":\"e18f7fe7fe66cb4bf17252e3adca290ef827e2b2\",\"requestedRef\":\"e18f7fe7fe66cb4bf17252e3adca290ef827e2b2\",\"resolvedRef\":\"e18f7fe7fe66cb4bf17252e3adca290ef827e2b2\",\"port\":62941,\"databasePath\":\"/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/isolated.sqlite\",\"targetDir\":\"/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/发布目录\"}\n"
+  },
+  {
+    "command": [
+      "make",
+      "--no-print-directory",
+      "deploy",
+      "DEPLOY_SOURCE=/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source",
+      "REF=current",
+      "DEPLOY_ROOT=/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/发布目录"
+    ],
+    "cwd": "/Users/zhoulin/.codex/worktrees/afc8/TradeReview",
+    "exit": 2,
+    "output": "node \"$NATIVE_CLI\" --mode=deploy --source=\"$DEPLOY_SOURCE\" --target=\"$DEPLOY_ROOT\" --ref=\"$REF\" \nCannot deploy unfinished source; worktree has application changes: version\nmake: *** [deploy] Error 1\n"
+  },
+  {
+    "command": [
+      "make",
+      "--no-print-directory",
+      "deploy",
+      "DEPLOY_SOURCE=/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/source",
+      "REF=e18f7fe7fe66cb4bf17252e3adca290ef827e2b2",
+      "DEPLOY_ROOT=/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-native-验收 ycagyppw/发布目录"
+    ],
+    "cwd": "/Users/zhoulin/.codex/worktrees/afc8/TradeReview",
+    "exit": 2,
+    "output": "node \"$NATIVE_CLI\" --mode=deploy --source=\"$DEPLOY_SOURCE\" --target=\"$DEPLOY_ROOT\" --ref=\"$REF\" \nThe \"cb\" argument must be of type function. Received undefined\nmake: *** [deploy] Error 1\n"
+  }
+]

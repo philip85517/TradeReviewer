@@ -1,0 +1,18 @@
+✔ current resolves a clean branch and full commit (650.321014ms)
+✔ current rejects tracked edits and untracked application files (613.847072ms)
+✔ current permits excluded scratch and credential changes (558.863369ms)
+✔ detached current reports no branch (671.629168ms)
+✔ explicit refs resolve despite dirty worktree and identify a local branch (602.835ms)
+✔ current rejects an application filename whose bytes end in whitespace (422.137801ms)
+✔ master fetches the current origin master commit (1966.835188ms)
+✔ master rejects fetch failure instead of using stale origin master (570.485533ms)
+✔ snapshot contains committed bytes and filters application secrets (692.787466ms)
+✔ snapshot rejects committed symlinks (692.765445ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7794.757841

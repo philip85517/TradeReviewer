@@ -1,0 +1,253 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/components/trade-review-workspace.test.tsx app/components/trade-review-workspace.import-flow.test.tsx app/components/trade-review-workspace.recall-bridge.test.tsx app/components/trade-review-workspace.refresh.test.tsx app/components/dashboard/review-dashboard.test.tsx app/components/library/trade-library.acceptance.test.tsx app/lib/storage/storage-boundary.test.tsx app/lib/reviews/trading-room-holdings.test.ts scripts/deploy.test.mjs --maxWorkers=2 --reporter=default --reporter=json --outputFile=.scratch/unit-suite-repair/reports/affected-files.json
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:64053) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ app/components/trade-review-workspace.refresh.test.tsx (8 tests) 18222ms
+     ✓ exposes the read-only TradingView migration preview from the real data page  1591ms
+     ✓ cancels a running batch, persists a terminal job, and waits before the next batch  2471ms
+     ✓ restores saved result and failure details without starting provider work  780ms
+     ✓ refreshes the global saved summary after a single instrument update  4237ms
+     ✓ refreshes the global failure summary and details after a single hard failure  3360ms
+     ✓ keeps a running global batch in control when a single refresh is requested  3399ms
+     ✓ offers recovery for a saved snapshot with two unfinished instruments and requests only those two  1289ms
+     ✓ shows and recovers an inventory instrument with no saved job  1093ms
+ ✓ app/components/trade-review-workspace.recall-bridge.test.tsx (3 tests) 1856ms
+     ✓ uses only successful saved status, keeps drafts pending and restores persisted completion on remount  938ms
+     ✓ quietly tolerates unavailable summaries and preserves saved state on failed dashboard refresh  446ms
+     ✓ does not let a slow dashboard refresh overwrite a newly saved completion  471ms
+ ✓ app/components/dashboard/review-dashboard.test.tsx (42 tests) 26975ms
+     ✓ shows page-wide identity with YTD default and expandable custom dates  1037ms
+     ✓ keeps simulation runs and live holdings isolated after changing nature  485ms
+     ✓ forwards market-data diagnostics to holdings and its quality model  341ms
+     ✓ forwards an async holdings retry through the dashboard callback  470ms
+     ✓ starts with live, all categories and the year to date period  603ms
+     ✓ keeps full PnL context behind a compact keyboard-accessible disclosure  406ms
+     ✓ labels the primary category filter as market category without offering unknown as a choice  484ms
+     ✓ opens, applies, cancels and validates a custom period in place  1501ms
+     ✓ cancels an observation date draft back to the applied range and closes the editor  888ms
+     ✓ cancels a history date draft back to the applied range and exposes invalid input as an alert  1289ms
+     ✓ keeps original currency subtotals beside the converted summary  310ms
+     ✓ uses the same scope when switching category and period  814ms
+     ✓ requires a simulation run and never combines runs  945ms
+     ✓ shows canonical TradingView holdings and history for all-account and explicit-account run-null scope  775ms
+     ✓ keeps canonical run-null rows separate from legacy simulation run filters  717ms
+     ✓ derives room metrics immediately from the controlled shared nature and account scope  485ms
+     ✓ keeps the last valid scope when a custom date draft is invalid  758ms
+     ✓ stages a custom period and restores the applied range on cancel  644ms
+     ✓ rejects a future custom end date without changing the applied range  371ms
+     ✓ keeps the applied range when no scoped closed month can be found  1027ms
+     ✓ shows and removes the active asset type filter  859ms
+     ✓ clears a calendar drilldown and returns to the new scope after a top-level period change  569ms
+     ✓ does not open the custom editor after calendar period drilldown  463ms
+   ✓ keeps holding observation and closed performance periods independent in two ordered workspaces  547ms
+   ✓ reactively bounds all observation history by selected account, nature/run and refreshed entries  2201ms
+   ✓ uses validated source trading dates and visible matching opening evidence for all observation history  881ms
+   ✓ assembles the B2 current portfolio, allocation, history and pending work without observing old dates changing current KPI  777ms
+   ✓ uses one selected simulation run and one currency snapshot for all current modules  396ms
+   ✓ does not rebuild holdings for shared-scope closed-period changes but rebuilds for a real identity change  931ms
+   ✓ restores only applied dashboard filters and statistics period after a reload, then keeps reset cleared  1777ms
+   ✓ does not overwrite stored page filters with the default scope during StrictMode hydration  930ms
+   ✓ lets an explicit history return context override stored dashboard preferences and persist its applied range  330ms
+ ✓ scripts/deploy.test.mjs (58 tests) 74905ms
+     ✓ kills command descendants that survive the timeout signal  1900ms
+     ✓ rejects a corrupt SQLite snapshot without publishing backup artifacts  2665ms
+     ✓ publishes a checked backup and applies config retention only to safe backup pairs  3588ms
+     ✓ backup and restore resolve the quoted external SQLite directory  8095ms
+     ✓ refuses restore while another process holds the live database open  8753ms
+     ✓ fails closed when the database consumer checker errors  12120ms
+     ✓ failed restore keeps the original database and returns the app to health  6219ms
+     ✓ restores a checked database through an atomic swap and returns healthy  8293ms
+     ✓ health failure after a restore swap rolls back the database and restarts the original app  9047ms
+     ✓ reports a missing SQLite directory instead of failing status  1442ms
+     ✓ reports SQLite schema, migration, and business record counts  4918ms
+     ✓ rejects unsafe restore inputs before touching the database  467ms
+     ✓ rejects mismatched and unsafe checksum sidecars before restore  713ms
+     ✓ stages the tracked build and application data sources from the real repository  2763ms
+     ✓ runs deployed operational Make targets from the target root  2645ms
+ ✓ app/lib/storage/storage-boundary.test.tsx (4 tests) 3961ms
+     ✓ renders the import-empty state from an empty SQLite bootstrap without legacy reads  858ms
+     ✓ persists an imported trade and chart settings through SQLite without legacy browser writes  2860ms
+ ✓ app/components/library/trade-library.acceptance.test.tsx (4 tests) 4813ms
+     ✓ keeps stock counts and metrics global while page two opens the exact child  1343ms
+     ✓ keeps queue metrics and Start Review global when the visible page is page two  970ms
+     ✓ resets both page cursors when scope, sort, or reset changes  1726ms
+     ✓ keeps page two through review return and parent remount  770ms
+ ❯ app/components/trade-review-workspace.test.tsx (91 tests | 3 failed) 168534ms
+     ✓ uses one shared primary navigation and reuses it from the narrow-screen menu  1771ms
+     ✓ mounts one active-page search and utility set  553ms
+     ✓ returns notification reviews to their real analysis and data sources  4176ms
+     ✓ loads the FX snapshot when the production workspace opens on the dashboard 223ms
+     ✓ starts a quality data check in the first existing account for the instrument 1ms
+     ✓ prefers the issue episode account when the instrument has multiple accounts 1ms
+     ✓ keeps imported review actions in the Recall frame without a duplicate page header  2143ms
+     ✓ keeps Recall header actions wired to data management, repair, and return navigation  4347ms
+     ✓ keeps the parent review mounted until a failed navigation save is retried successfully  3276ms
+     ✓ uses the caller-owned tag cache and sends its suggestions to the existing patterns view  1237ms
+     ✓ passes the typed cash storage history through the real workspace caller  611ms
+     ✓ keeps a successful typed save observable when summary refresh fails, then retries with reads only  1781ms
+     ✓ keeps the saved fact and read-only retry after repeated summary failures  2124ms
+     ✓ drops a late save and summary failure after an actual caller scope A-B-A switch  2185ms
+     ✓ keeps a typed draft after a caller CAS conflict and saves again only after explicit reload  1940ms
+     ✓ opens production in the queue and stays on a rejected completion  2768ms
+     ✓ gold replay does not reveal the sale before the first bar is played  2722ms
+     ✓ gold replay explains missing historical bars when stepping its first available day  2321ms
+     ✓ gold replay keeps cached historical bars before and after its first step  2062ms
+     ✓ gold replay repairs the previously saved empty-chart entry cursor  1793ms
+     ✓ gold replay preserves saved progress after its first completed bar  2237ms
+     ✓ does not advance the training cursor when the target timeframe has no known candle yet  2892ms
+     ✓ keeps an actual parent timeframe change in Recall's saved working graph  3134ms
+     ✓ gold replay next execution lands on a market-open fill rather than the first bar close  2730ms
+     ✓ restores the prior sidebar layout after focusing the chart without changing the cursor  438ms
+     ✓ supplements only the selected stock account and retries the same audited request  3401ms
+     ✓ boots from the SQLite bootstrap response without reading legacy execution storage 216ms
+     ✓ does not re-read every instrument market cache when metadata hydration updates presentation  2256ms
+     ✓ hydrates the dashboard with daily data only until a replay consumer is opened 247ms
+     ✓ keeps saved intraday replay state pending until lazy data settles  1642ms
+     ✓ retries a homepage holding with daily data only  483ms
+     ✓ does not label daily-only partial coverage as overall market data availability  2397ms
+     ✓ marks a short hourly cache as updatable even when daily data is absent  2761ms
+     ✓ does not block the selected replay on another stock's market data  1550ms
+     ✓ keeps a persisted hourly provider failure visible when no cache exists  2258ms
+     ✓ keeps XPEV absent when an empty SQLite bootstrap is used in production mode 150ms
+     ✓ does not export legacy browser state after the SQLite server confirms migration 124ms
+     ✓ migrates legacy browser state when SQLite has no migration despite a local marker  305ms
+     ✓ supports multiple statements and an independent multi-image screenshot input 202ms
+     ✓ does not expose the bundled demo in production mode 144ms
+     ✓ reviews two screenshots and applies duplicate, use-incoming, and keep-both decisions through the existing import transaction  3058ms
+     ✓ does not persist when a prepared screenshot import preview is canceled  749ms
+     ✓ keeps an existing conflict when the selected screenshot replacement does not survive enrichment  1241ms
+     ✓ hides the frozen screenshot review while import preparation is pending  1040ms
+     ✓ advances one candle without revealing the future and preserves the cursor across periods  645ms
+     ✓ preserves the review timeframe and cursor while top navigation re-enters training mode  4866ms
+     ✓ pauses replay when returning to the library through top navigation  518ms
+     × retains a Recall drawing draft per episode and gates completion until a snapshot exists 5130ms
+     × keeps the latest Recall drawing draft while completion is gated 6505ms
+     ✓ stops replay and reports a recoverable message when a step fails  1332ms
+     ✓ switches from the desktop review panel to an operable narrow drawer  747ms
+     ✓ contains the toolbar and every chart popover within a 390px viewport 23ms
+     ✓ loads imported stocks after a page reload without starting a market request 147ms
+     ✓ keeps demo reachable with imports and restores its saved server frame and UI state  982ms
+     ✓ refreshes the selected demo frame from the existing replay backend  752ms
+     ✓ disables demo refresh accessibly while a replay request is active  797ms
+     ✓ uses the containing 15 minute bar for non-aligned closed fills  611ms
+     ✓ accepts bounded pre-entry candles as episode chart context  617ms
+     ✓ does not use candles before the bounded pre-entry context  468ms
+     ✓ does not describe confirmed grey-market trades as a regular-market history gap  1946ms
+     ✓ shows all daily history by default and explains trades before the first candle  4396ms
+     ✓ scopes Recall history and replay to the selected episode  3496ms
+     ✓ starts before entry and advances to the first known candle when history begins after the trade  3476ms
+     ✓ extends an open episode through cached data after its latest fill  544ms
+     ✓ refreshes every trade episode regardless of the selected episode  4707ms
+     ✓ uses META as the market-data symbol for historical FB trades  2559ms
+     ✓ keeps the library chart available after a cancelled import with failed market refresh  3623ms
+     × keeps library context through a confirmed import with failed market refresh 5088ms
+     ✓ opens a library queue entry directly in the shared history workbench  4446ms
+     ✓ keeps complete-history executions within the selected account  4549ms
+     ✓ automatically syncs all episodes after importing a later episode  1574ms
+     ✓ automatically syncs all episodes when an import closes and opens positions  1521ms
+     ✓ uses the unified replay workspace for a cached imported episode  3168ms
+     ✓ exposes Recall snapshot controls for daily-only data  910ms
+     ✓ derives intraday availability from the selected episode window  848ms
+     ✓ reveals the next execution 'after the final cached candle' without enabling next-candle navigation  1105ms
+     ✓ reveals the next execution 'without cached candles' without enabling next-candle navigation  1013ms
+     ✓ preserves cached intervals and reports each failed refresh independently  1217ms
+     ✓ reveals an imported provider candle only at its completed-bar knowledge boundary  818ms
+     ✓ restores the selected episode replay context independently  1052ms
+     ✓ opens the stock drawer and restores focus after Escape without resetting replay  365ms
+     ✓ offers the import flow in data management from the empty workspace  637ms
+     ✓ passes stored instrument metadata into the trading room scope  955ms
+     ✓ retains alternate simulation runs when the complete room changes its shared scope  2488ms
+     ✓ carries an analysis unknown-to-live scope change into data navigation  1527ms
+     ✓ does not expose canonical TradingView source runs as business run filters  1325ms
+     ✓ returns to the trading room with its filters, period, and calendar view after opening a holding review  3938ms
+     ✓ returns to the library with its expanded stock context after opening a library round  3278ms
+     ✓ opens stock entries in the shared workbench and preserves library browsing state  2340ms
+     ✓ hydrates cached candles for library stocks that are not selected in replay  758ms
+     ✓ hydrates the review record for the exact position episode and exposes Recall capture controls  1033ms
+ ✓ app/lib/reviews/trading-room-holdings.test.ts (30 tests) 95ms
+ ✓ app/components/trade-review-workspace.import-flow.test.tsx (33 tests) 30018ms
+     ✓ reviews a monthly statement before enrichment and cancels without saving  1106ms
+     ✓ reparses missing source time and persists reviewed monthly evidence only on final confirmation  1322ms
+     ✓ persists the explicit monthly conflict choice keep-existing  783ms
+     ✓ persists the explicit monthly conflict choice use-incoming  802ms
+     ✓ persists the explicit monthly conflict choice keep-both  720ms
+     ✓ replaces corrected times when a broker-qualified document ID differs from its raw fingerprint  435ms
+     ✓ blocks partial same-file replacement while stock classification remains unresolved  524ms
+     ✓ allows an idempotent same-file retry when unresolved rows are already stored  650ms
+     ✓ imports a real TradingView CSV through confirmation and restores its simulation identity  1162ms
+     ✓ previews a migrated TradingView CSV as a safe no-op and keeps the old source rows  993ms
+     ✓ confirms exact historical current-parser row IDs as a no-op without persistence  1248ms
+     ✓ blocks a financial conflict for a historical current-parser row before writing  737ms
+     ✓ imports a recognized PDF locally without asking for stock names  457ms
+     ✓ links statement executions to the import batch persisted with the history entry  557ms
+     ✓ persists only complete records and starts cache-first gap sync for the imported instrument  650ms
+     ✓ retries only selected unresolved canonical instruments while preserving the full result  502ms
+     ✓ rebuilds the scoped change summary after an unresolved retry before confirmation  4654ms
+     ✓ does not resurrect an import when a deferred unresolved retry finishes after cancel  712ms
+     ✓ disables confirmation while an unresolved retry is pending  674ms
+     ✓ reports stable-id duplicates when the same statement is imported again  504ms
+     ✓ retains the larger legitimate same-file fill multiplicity and counts only the overlap  325ms
+     ✓ keeps executions and import history when post-import K-line sync fails  689ms
+     ✓ advances one candle without revealing the future and preserves the cursor across periods  624ms
+     ✓ refreshes metadata without blocking cached candles when metadata is unresolved  660ms
+     ✓ applies a refreshed canonical name to every execution and keeps it after candle failure and reload  1163ms
+     ✓ merges a deferred metadata name with an overlapping import confirmation without losing either  1230ms
+     ✓ keeps UI and durable executions unchanged when refreshed-name persistence fails  715ms
+     ✓ opens a stock library entry in the shared workbench without requesting market data  883ms
+     ✓ hydrates cached candles for library stocks that are not selected in replay  713ms
+     ✓ opens the exact position episode in Recall without a side-note form  1105ms
+     ✓ accepts an edited cached suggestion and opens the exact episode without requesting market data  2298ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retains a Recall drawing draft per episode and gates completion until a snapshot exists
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/trade-review-workspace.test.tsx:2792:3
+    2790|   });
+    2791|
+    2792|   it("retains a Recall drawing draft per episode and gates completion …
+       |   ^
+    2793|     const user = userEvent.setup();
+    2794|     await renderGoldReplay([], "2026-06-26T08:30:00.000Z", "2026-06-26…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps the latest Recall drawing draft while completion is gated
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/trade-review-workspace.test.tsx:2835:3
+    2833|   });
+    2834|
+    2835|   it("keeps the latest Recall drawing draft while completion is gated"…
+       |   ^
+    2836|     const user = userEvent.setup();
+    2837|     await renderGoldReplay([], "2026-06-26T08:30:00.000Z", "2026-06-26…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > keeps library context through a confirmed import with failed market refresh
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/trade-review-workspace.test.tsx:3603:3
+    3601|   });
+    3602|
+    3603|   it("keeps library context through a confirmed import with failed mar…
+       |   ^
+    3604|     const user = userEvent.setup();
+    3605|     saveImportedExecutions([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 8 passed (9)
+      Tests  3 failed | 270 passed (273)
+   Start at  20:47:52
+   Duration  190.03s (transform 9.60s, setup 3.64s, import 17.56s, tests 329.38s, environment 15.83s)
+
+JSON report written to /Users/zhoulin/.codex/worktrees/afc8/TradeReview/.scratch/unit-suite-repair/reports/affected-files.json

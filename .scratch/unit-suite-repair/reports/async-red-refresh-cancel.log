@@ -1,0 +1,19 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:62911) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ↓ app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > exposes the read-only TradingView migration preview from the real data page
+ ✓ app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > cancels a running batch, persists a terminal job, and waits before the next batch 2576ms
+ ↓ app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > restores saved result and failure details without starting provider work
+ ↓ app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > refreshes the global saved summary after a single instrument update
+ ↓ app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > refreshes the global failure summary and details after a single hard failure
+ ↓ app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > keeps a running global batch in control when a single refresh is requested
+ ↓ app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > offers recovery for a saved snapshot with two unfinished instruments and requests only those two
+ ↓ app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > shows and recovers an inventory instrument with no saved job
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 7 skipped (8)
+   Start at  20:43:29
+   Duration  9.25s (transform 3.52s, setup 205ms, import 4.62s, tests 2.58s, environment 1.33s)
+

@@ -1,0 +1,44 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/lib/reviews/trading-room-holdings.test.ts -t falls through invalid source dates before applying the market calendar fallback
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:62932) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/lib/reviews/trading-room-holdings.test.ts (30 tests | 1 failed | 29 skipped) 44ms
+     × falls through invalid source dates before applying the market calendar fallback 42ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/lib/reviews/trading-room-holdings.test.ts > trading room holdings model > falls through invalid source dates before applying the market calendar fallback
+AssertionError: expected { …(30) } to match object { quoteStatus: 'available', …(1) }
+(48 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "quoteStatus": "available",
+-   "unrealizedPnlStatus": "available",
++   "quoteStatus": "stale",
++   "unrealizedPnlStatus": "stale",
+  }
+
+ ❯ app/lib/reviews/trading-room-holdings.test.ts:521:27
+    519|     });
+    520|
+    521|     expect(model.rows[0]).toMatchObject({ quoteStatus: "available", un…
+       |                           ^
+    522|   });
+    523|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 29 skipped (30)
+   Start at  20:43:32
+   Duration  2.25s (transform 420ms, setup 224ms, import 468ms, tests 44ms, environment 1.08s)
+

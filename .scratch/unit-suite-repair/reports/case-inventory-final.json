@@ -1,0 +1,23 @@
+[
+  {
+    "path": "app/components/trade-review-workspace.test.tsx",
+    "casesBefore": 89,
+    "casesAfter": 89,
+    "namesModesAndBudgetsUnchanged": true,
+    "inventoryKind": "direct it/test declarations; table-expanded runtime totals are supplied by Vitest"
+  },
+  {
+    "path": "app/components/trade-review-workspace.alias-recovery.test.tsx",
+    "casesBefore": 4,
+    "casesAfter": 4,
+    "namesModesAndBudgetsUnchanged": true,
+    "inventoryKind": "direct it/test declarations; table-expanded runtime totals are supplied by Vitest"
+  },
+  {
+    "path": "app/lib/reviews/trading-room-holdings.test.ts",
+    "casesBefore": 27,
+    "casesAfter": 27,
+    "namesModesAndBudgetsUnchanged": true,
+    "inventoryKind": "direct it/test declarations; table-expanded runtime totals are supplied by Vitest"
+  }
+]

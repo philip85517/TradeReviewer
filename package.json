@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=22.13.0"
+    "node": "26.0.0"
   },
   "scripts": {
-    "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log node scripts/start-local.mjs --dev",
+    "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log node scripts/debug-local.mjs",
     "build": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log node scripts/start-local.mjs",
     "test": "npm run build && node --test tests/rendered-html.test.mjs tests/local-dev-storage.test.mjs tests/focused-review-ui.test.mjs",

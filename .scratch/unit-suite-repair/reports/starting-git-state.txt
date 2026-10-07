@@ -1,0 +1,32 @@
+ M AGENTS.md
+ M Makefile
+ M README.md
+ M conf/README.md
+ M deploy/DEPLOYMENT.md
+ M deploy/target/Makefile
+ M docs/agents/development-workflow.md
+ M package-lock.json
+ M package.json
+ M scripts/deploy.mjs
+ M tests/local-dev-storage.test.mjs
+ M vitest.config.ts
+?? .node-version
+?? .scratch/local-native-deploy/
+?? .scratch/native-debug-baseline/
+?? .scratch/unit-suite-repair/
+?? conf/native-environment.json
+?? deploy/ops/start-native.command
+?? scripts/debug-local.mjs
+?? scripts/debug-local.test.mjs
+?? scripts/deploy-native-runtime.mjs
+?? scripts/deploy-native-runtime.test.mjs
+?? scripts/deploy-native-safety.test.mjs
+?? scripts/deploy-native-toolkit.mjs
+?? scripts/deploy-native-toolkit.test.mjs
+?? scripts/deploy-native.mjs
+?? scripts/deploy-native.test.mjs
+?? scripts/deploy-source.mjs
+?? scripts/deploy-source.test.mjs
+?? scripts/native-environment.mjs
+?? scripts/native-environment.test.mjs
+63690a494b8ad403081c7720985be54a95db60c7

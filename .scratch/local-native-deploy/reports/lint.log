@@ -1,0 +1,262 @@
+
+> trade-reviewer@0.1.0 lint
+> eslint . --ignore-pattern dist --ignore-pattern .next
+
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/.scratch/control-visual-fix-20260927/accept-real.mjs
+  20:7  warning  'scope' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/.scratch/trading-room-implementation/qa/seed-homepage-fixture.ts
+  158:21  warning  '_metadata' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/dashboard/review-dashboard.test.tsx
+  649:11  warning  'performance' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  759:11  warning  'room' is assigned a value but never used         @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/dashboard/review-dashboard.tsx
+  567:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/dashboard/review-dashboard.tsx:567:5
+  565 |     const result = readDashboardBrowsePreferences(today);
+  566 |     if (result.preferences) dispatchBrowse({ type: "hydrate-preferences", preferences: result.preferences, today });
+> 567 |     setBrowsePreferencesWritable(result.available);
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  568 |     setBrowsePreferencesHydrated(true);
+  569 |   }, []);
+  570 |   useEffect(() => {  react-hooks/set-state-in-effect
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/data-management/account-principal-provisional-panel.tsx
+   98:27  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/data-management/account-principal-provisional-panel.tsx:98:27
+   96 |   const clientRef = useRef<ClientSeam | null>(null);
+   97 |   if (clientRef.current === null) clientRef.current = client ?? createAccountPrincipalProvisionalClient();
+>  98 |   const principalClient = clientRef.current;
+      |                           ^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+   99 |   const [record, setRecord] = useState<AccountPrincipalProvisional | undefined>();
+  100 |   const [draft, setDraft] = useState<DraftState>(emptyDraft);
+  101 |   const [editing, setEditing] = useState(false);                                                                                             react-hooks/refs
+   98:27  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/data-management/account-principal-provisional-panel.tsx:98:27
+   96 |   const clientRef = useRef<ClientSeam | null>(null);
+   97 |   if (clientRef.current === null) clientRef.current = client ?? createAccountPrincipalProvisionalClient();
+>  98 |   const principalClient = clientRef.current;
+      |                           ^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+   99 |   const [record, setRecord] = useState<AccountPrincipalProvisional | undefined>();
+  100 |   const [draft, setDraft] = useState<DraftState>(emptyDraft);
+  101 |   const [editing, setEditing] = useState(false);                                                                                             react-hooks/refs
+  112:5   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/data-management/account-principal-provisional-panel.tsx:112:5
+  110 |     const version = ++requestVersion.current;
+  111 |     let active = true;
+> 112 |     setLoading(true);
+      |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  113 |     setError(null);
+  114 |     setMessage(null);
+  115 |     setConflict(null);  react-hooks/set-state-in-effect
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/data-management/cash-baseline-panel.tsx
+  174:8   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/data-management/cash-baseline-panel.tsx:174:8
+  172 |   const activeConflict = conflict
+  173 |     && conflict.scopeKey === scopeKey
+> 174 |     && knownScopeKey.current === scopeKey
+      |        ^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  175 |     && conflict.generation === scopeGeneration.current
+  176 |     ? conflict.record
+  177 |     : null;  react-hooks/refs
+  175:32  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/data-management/cash-baseline-panel.tsx:175:32
+  173 |     && conflict.scopeKey === scopeKey
+  174 |     && knownScopeKey.current === scopeKey
+> 175 |     && conflict.generation === scopeGeneration.current
+      |                                ^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  176 |     ? conflict.record
+  177 |     : null;
+  178 |         react-hooks/refs
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/data-management/tradingview-account-migration-panel.tsx
+  424:27   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/data-management/tradingview-account-migration-panel.tsx:424:27
+  422 |     clientRef.current = client ?? createTradingViewAccountMigrationClient();
+  423 |   }
+> 424 |   const migrationClient = clientRef.current;
+      |                           ^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  425 |   const [state, setState] = useState<PreviewState>("idle");
+  426 |   const [preview, setPreview] = useState<TradingViewMigrationPreview | null>(null);
+  427 |   const [error, setError] = useState<string | null>(null);                         react-hooks/refs
+  424:27   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/data-management/tradingview-account-migration-panel.tsx:424:27
+  422 |     clientRef.current = client ?? createTradingViewAccountMigrationClient();
+  423 |   }
+> 424 |   const migrationClient = clientRef.current;
+      |                           ^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  425 |   const [state, setState] = useState<PreviewState>("idle");
+  426 |   const [preview, setPreview] = useState<TradingViewMigrationPreview | null>(null);
+  427 |   const [error, setError] = useState<string | null>(null);                         react-hooks/refs
+  674:102  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/data-management/tradingview-account-migration-panel.tsx:674:102
+  672 |             </div>
+  673 |           )}
+> 674 |           {!previewHasBlockers(preview) && (commitState === "guard" || commitState === "loading") && commitRequestRef.current && (
+      |                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  675 |             <CommitGuard
+  676 |               preview={preview}
+  677 |               request={commitRequestRef.current}  react-hooks/refs
+  674:102  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/data-management/tradingview-account-migration-panel.tsx:674:102
+  672 |             </div>
+  673 |           )}
+> 674 |           {!previewHasBlockers(preview) && (commitState === "guard" || commitState === "loading") && commitRequestRef.current && (
+      |                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  675 |             <CommitGuard
+  676 |               preview={preview}
+  677 |               request={commitRequestRef.current}  react-hooks/refs
+  677:24   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/data-management/tradingview-account-migration-panel.tsx:677:24
+  675 |             <CommitGuard
+  676 |               preview={preview}
+> 677 |               request={commitRequestRef.current}
+      |                        ^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  678 |               busy={commitState === "loading"}
+  679 |               onConfirm={() => void submitCommit()}
+  680 |               onCancel={() => setCommitState("idle")}                                                                                           react-hooks/refs
+  707:49   error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/data-management/tradingview-account-migration-panel.tsx:707:49
+  705 |           preview={rollbackPreview}
+  706 |           error={rollbackError}
+> 707 |           onRetry={rollbackState === "error" && rollbackOperationRef.current
+      |                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  708 |             ? () => void readRollbackPreview(rollbackOperationRef.current as string, undefined, true)
+  709 |             : null}
+  710 |         />                                           react-hooks/refs
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/insights/pattern-insights.tsx
+  281:17  warning  'fact' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  291:3   warning  'factsByEpisode' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/library/trade-library.test.tsx
+  244:11  warning  'header' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/strategy-prototype/strategy-prototype.tsx
+  102:20  warning  'stage' is defined but never used             @typescript-eslint/no-unused-vars
+  102:32  warning  'selectedStrategy' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/trade-review-workspace.import-flow.test.tsx
+  505:22  warning  '_tradeNature' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  506:24  warning  '_sourceTradeId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/trade-review-workspace.tsx
+    58:15  warning  'MonthlyStatement' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+    94:3   warning  'combinedMarketDataStatus' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   129:10  warning  'resolveInstrumentMetadataBatch' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   200:10  warning  'tradingNatureLabel' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  1242:5   warning  React Hook useMemo has an unnecessary dependency: 'marketDataRepository'. Either exclude it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  1909:7   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/set-state-in-effect')
+  1990:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/components/trade-review-workspace.tsx:1990:5
+  1988 |     }
+  1989 |     cashScopeKeyRef.current = cashScopeKey;
+> 1990 |     setCashSavedFact(current => current?.scopeKey === cashScopeKey ? current : null);
+       |     ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  1991 |     setCashSummaryRefreshError(current => current?.scopeKey === cashScopeKey ? current : null);
+  1992 |     const requestId = ++cashRequestSequence.current;
+  1993 |     if (!cashDataRequest) {  react-hooks/set-state-in-effect
+  2967:35  warning  The ref value 'marketHydrationInFlight.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'marketHydrationInFlight.current' to a variable inside the effect, and use that variable in the cleanup function                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         react-hooks/exhaustive-deps
+  2971:6   warning  React Hook useEffect has a missing dependency: 'rawImportedInstruments'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/exhaustive-deps
+  3105:32  warning  The ref value 'marketIntradayInFlight.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'marketIntradayInFlight.current' to a variable inside the effect, and use that variable in the cleanup function                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-hooks/exhaustive-deps
+  3214:6   warning  React Hook useEffect has missing dependencies: 'enqueueDrawingState' and 'selectedImportedInstrument'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/exhaustive-deps
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/lib/cash/cash-baseline-store.ts
+  12:8  warning  'CashBaselineState' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/lib/cash/cash-client.test.ts
+  51:44  warning  '_input' is defined but never used  @typescript-eslint/no-unused-vars
+  51:52  warning  '_init' is defined but never used   @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/lib/cash/cash-model.test.ts
+  192:29  warning  '_context' is defined but never used  @typescript-eslint/no-unused-vars
+  241:29  warning  '_context' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/lib/import/tradingview-reimport.test.ts
+  55:18  warning  '_tradeNature' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  56:20  warning  '_sourceTradeId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/lib/market/providers/tiger.ts
+  157:5  warning  '_fetcher' is defined but never used  @typescript-eslint/no-unused-vars
+  204:5  warning  '_fetcher' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/lib/replay/recall-replay.ts
+  298:9  warning  'ordered' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/lib/reviews/localized-metadata-hydration.test.ts
+  115:10  warning  React Hook useEffect has a missing dependency: 'current'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  239:10  warning  React Hook useEffect has a missing dependency: 'current'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/lib/storage/sqlite-store.test.ts
+  811:29  warning  '_historicalRole' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/lib/storage/sqlite-store.ts
+  174:20  warning  '_monthly' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  870:21  warning  '_metadata' is assigned a value but never used               @typescript-eslint/no-unused-vars
+  886:26  warning  '_localizedName' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  913:26  warning  '_snapshotLocalizedName' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/app/lib/storage/storage-boundary.test.tsx
+  57:7  warning  'workspacePath' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/deploy-native.test.mjs
+  1:26  warning  'readFile' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 53 problems (13 errors, 40 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+

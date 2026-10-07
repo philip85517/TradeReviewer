@@ -1,0 +1,38 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/components/trade-review-workspace.test.tsx --maxWorkers=1 -t retains a Recall drawing draft per episode
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:68347) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+stdout | app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retains a Recall drawing draft per episode and gates completion until a snapshot exists
+D before type
+
+stdout | app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retains a Recall drawing draft per episode and gates completion until a snapshot exists
+D after type
+
+ ❯ app/components/trade-review-workspace.test.tsx (91 tests | 1 failed | 90 skipped) 4101ms
+     × retains a Recall drawing draft per episode and gates completion until a snapshot exists 4098ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retains a Recall drawing draft per episode and gates completion until a snapshot exists
+Error: A function to advance timers was called but the timers APIs are not mocked. Call `vi.useFakeTimers()` in the test file first.
+ ❯ wait node_modules/@testing-library/user-event/dist/esm/utils/misc/wait.js:8:16
+ ❯ Object.pointer node_modules/@testing-library/user-event/dist/esm/pointer/index.js:24:15
+ ❯ Object.click node_modules/@testing-library/user-event/dist/esm/convenience/click.js:12:17
+ ❯ node_modules/@testing-library/user-event/dist/esm/setup/setup.js:83:35
+ ❯ Object.asyncWrapper node_modules/@testing-library/react/dist/pure.js:87:28
+ ❯ wrapAsync node_modules/@testing-library/user-event/dist/esm/setup/wrapAsync.js:6:24
+ ❯ Object.method [as click] node_modules/@testing-library/user-event/dist/esm/setup/setup.js:83:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 90 skipped (91)
+   Start at  21:06:29
+   Duration  11.10s (transform 3.33s, setup 400ms, import 4.37s, tests 4.10s, environment 1.78s)
+

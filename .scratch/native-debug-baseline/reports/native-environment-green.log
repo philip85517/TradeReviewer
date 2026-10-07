@@ -1,0 +1,48 @@
+✔ starts, health-checks, and stops a real detached release process (1402.830001ms)
+✔ does not stop or adopt a foreign listener on the configured port (556.765871ms)
+✔ refuses to stop a foreign process even when its cwd matches the release (638.715978ms)
+✔ rejects a listener that never provides both health endpoints and cleans up (685.016421ms)
+✔ health-checks a listener spawned by the detached wrapper process (1372.876827ms)
+✔ rejects a healthy listener when its wrapper exits before first health (1938.722608ms)
+✔ stops an orphan listener after its wrapper parent exits (2526.254948ms)
+✔ startup failure retains a cleanup handle and leaves the port free (706.546224ms)
+✔ never stops a same-command replacement after a null startup identity (537.399037ms)
+✔ build runs npm ci and npm run build with production runtime environment (18.267109ms)
+✔ build failure is finite and leaves the old service untouched (8.784574ms)
+✔ rejects a mismatched runtime before build or log side effects (6.306616ms)
+✔ rejects a mismatched runtime before service inspection or start (4.583471ms)
+✔ retains build stdout and stderr in the target build log (7.1056ms)
+✔ retains failed build diagnostics and refuses symlinked log paths (10.878437ms)
+✔ installs the current toolkit and restores prior control files (93.665105ms)
+✔ restores all files after an install failure and leaves the target sentinel (13.690252ms)
+✔ installed toolkit resolves its control files from the target deployment (97.245734ms)
+✔ rejects symlinked target roots without touching the outsider (5.497523ms)
+✔ rejects a symlinked target parent before canonicalization (6.829042ms)
+✔ rejects hard-linked toolkit destinations without touching the outside inode (32.667237ms)
+▶ native deployment CLI
+  ✔ parses ref and dry-run options (8.229923ms)
+  ✔ dry-run reports selected source and leaves target unchanged (31.829558ms)
+  ✔ rejects a runtime mismatch before source resolution or target filesystem writes (13.450955ms)
+  ✔ status marks a foreign listener runtime unknown and preserves legacy metadata unknown (12.453786ms)
+  ✔ build failure keeps old service and current release (107.682782ms)
+  ✔ dry-run down and rollback never inspect or mutate the target (10.058318ms)
+  ✔ rejects malformed and symlink runtime configuration (10.034689ms)
+  ✔ refuses to stop a listener without an active release (16.343672ms)
+  ✔ rejects ambient runtime overrides for mutating modes (3.960713ms)
+  ✔ rejects external current and config symlinks without touching the outsider (19.98514ms)
+  ✔ rejects a held deployment lock before inspecting or stopping (15.257495ms)
+  ✔ rejects source and target overlap before snapshot or mutation (10.497624ms)
+  ✔ rollback failure stops only its candidate handle and leaves a foreign listener alone (17.828791ms)
+✔ native deployment CLI (282.684896ms)
+✔ accepts the pinned native runtime and reports measured values (6.200736ms)
+✔ rejects a runtime mismatch synchronously (2.707963ms)
+✔ rejects missing and malformed profiles without fallback values (4.797001ms)
+✔ source profile matches the pinned Node and built-in SQLite versions (0.691403ms)
+ℹ tests 38
+ℹ suites 1
+ℹ pass 38
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10813.041572

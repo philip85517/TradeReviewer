@@ -1,0 +1,83 @@
+node --test scripts/deploy-source.test.mjs scripts/deploy-native-runtime.test.mjs scripts/deploy-native-toolkit.test.mjs scripts/deploy-native.test.mjs scripts/deploy-native-safety.test.mjs
+✔ starts, health-checks, and stops a real detached release process (1168.643144ms)
+✔ does not stop or adopt a foreign listener on the configured port (841.366836ms)
+✔ refuses to stop a foreign process even when its cwd matches the release (514.389475ms)
+✔ rejects a listener that never provides both health endpoints and cleans up (617.669638ms)
+✔ health-checks a listener spawned by the detached wrapper process (1038.717466ms)
+✔ stops an orphan listener after its wrapper parent exits (1431.850175ms)
+✔ startup failure retains a cleanup handle and leaves the port free (624.094641ms)
+✔ build runs npm ci and npm run build with production runtime environment (9.288498ms)
+✔ build failure is finite and leaves the old service untouched (4.79105ms)
+✔ retains build stdout and stderr in the target build log (5.638517ms)
+✔ retains failed build diagnostics and refuses symlinked log paths (10.455635ms)
+✔ does not stop an active service whose PID is reused with a new start time (85.136342ms)
+✔ does not stop an unexpected listener that appears during a build (51.659109ms)
+✔ an unhealthy A-to-B release recovers the old service (49.776087ms)
+✔ preserves the candidate release when old-service recovery fails (34.761262ms)
+✔ post-publication failure recovers service and toolkit while the deployment lock is held (44.918059ms)
+✔ down and rollback refuse a held deployment lock before inspecting (12.381019ms)
+✔ installs the current toolkit and restores prior control files (59.020473ms)
+✔ restores all files after an install failure and leaves the target sentinel (7.413461ms)
+✔ installed toolkit resolves its control files from the target deployment (51.242044ms)
+✔ rejects symlinked target roots without touching the outsider (3.87426ms)
+▶ native deployment CLI
+  ✔ parses ref and dry-run options (6.370745ms)
+  ✔ dry-run reports selected source and leaves target unchanged (21.819208ms)
+  ✔ build failure keeps old service and current release (65.388402ms)
+  ✔ dry-run down and rollback never inspect or mutate the target (8.688842ms)
+  ✔ rejects malformed and symlink runtime configuration (9.986612ms)
+  ✔ refuses to stop a listener without an active release (8.316985ms)
+  ✔ rejects ambient runtime overrides for mutating modes (3.719779ms)
+  ✔ rejects external current and config symlinks without touching the outsider (14.285686ms)
+  ✔ rejects a held deployment lock before inspecting or stopping (8.998851ms)
+  ✔ rejects source and target overlap before snapshot or mutation (7.385547ms)
+  ✖ rollback failure stops only its candidate handle and leaves a foreign listener alone (14.25383ms)
+✖ native deployment CLI (173.984009ms)
+✔ current resolves a clean branch and full commit (423.436484ms)
+✔ current rejects tracked edits and untracked application files (314.264606ms)
+✔ current permits excluded scratch and credential changes (346.33387ms)
+✔ detached current reports no branch (541.618206ms)
+✔ explicit refs resolve despite dirty worktree and identify a local branch (461.704417ms)
+✔ current rejects an application filename whose bytes end in whitespace (246.877312ms)
+✔ current rejects dirty edits to tracked build application source (267.014051ms)
+✔ current rejects a staged rename from ignored state into application source (380.087541ms)
+✔ resolveReleaseSource rejects an injected non-full commit SHA (210.20671ms)
+✔ master fetches the current origin master commit (1110.126879ms)
+✔ master rejects fetch failure instead of using stale origin master (294.820022ms)
+✔ snapshot contains committed bytes and filters application secrets (407.015879ms)
+✔ snapshot rejects committed symlinks (370.253376ms)
+ℹ tests 45
+ℹ suites 1
+ℹ pass 44
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6527.214246
+
+✖ failing tests:
+
+test at scripts/deploy-native.test.mjs:135:3
+✖ rollback failure stops only its candidate handle and leaves a foreign listener alone (14.25383ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /candidate unhealthy/. Input:
+  
+  'ReferenceError: inspections is not defined'
+  
+      at async TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/deploy-native.test.mjs:151:5)
+      at async Test.run (node:internal/test_runner/test:1208:7)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ReferenceError: inspections is not defined
+        at Object.inspect (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/deploy-native.test.mjs:146:30)
+        at runNativeDeployment (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/deploy-native.mjs:200:76)
+        at async waitForActual (node:assert:615:5)
+        at async strict.rejects (node:assert:738:25)
+        at async TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/deploy-native.test.mjs:151:5)
+        at async Test.run (node:internal/test_runner/test:1208:7)
+        at async Suite.processPendingSubtests (node:internal/test_runner/test:831:7),
+    expected: /candidate unhealthy/,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+make: *** [deploy-test] Error 1

@@ -1,0 +1,73 @@
+[
+  {
+    "command": [
+      "node",
+      "--check",
+      "scripts/deploy-source.mjs"
+    ],
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "scripts/deploy-native-runtime.mjs"
+    ],
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "scripts/deploy-native-toolkit.mjs"
+    ],
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "scripts/deploy-native.mjs"
+    ],
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "scripts/deploy.mjs"
+    ],
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "zsh",
+      "-n",
+      "deploy/ops/start-native.command"
+    ],
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "check": "task Markdown local links",
+    "result": "PASS"
+  },
+  {
+    "check": "isolated installed tooling equals final source bytes",
+    "result": "PASS"
+  }
+]

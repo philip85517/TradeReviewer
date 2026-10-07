@@ -1,0 +1,33 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/components/trade-review-workspace.test.tsx --maxWorkers=1 -t retains a Recall drawing draft per episode and gates completion until a snapshot exists|keeps the latest Recall drawing draft while completion is gated|keeps library context through a confirmed import with failed market refresh
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:75360) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.test.tsx (91 tests | 1 failed | 88 skipped) 12606ms
+     × retains a Recall drawing draft per episode and gates completion until a snapshot exists 5036ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.test.tsx > TradeReviewWorkspace > retains a Recall drawing draft per episode and gates completion until a snapshot exists
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/trade-review-workspace.test.tsx:2793:3
+    2791|   });
+    2792|
+    2793|   it("retains a Recall drawing draft per episode and gates completion …
+       |   ^
+    2794|     await renderGoldReplay([], "2026-06-26T08:30:00.000Z", "2026-06-26…
+    2795|     const workspace = screen.getByRole("region", { name: "导入交易回忆复盘工作区"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed | 88 skipped (91)
+   Start at  21:31:41
+   Duration  22.48s (transform 3.95s, setup 438ms, import 5.13s, tests 12.61s, environment 3.31s)
+

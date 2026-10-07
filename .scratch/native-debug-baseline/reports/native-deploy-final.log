@@ -1,0 +1,75 @@
+node --test scripts/native-environment.test.mjs scripts/deploy-source.test.mjs scripts/deploy-native-runtime.test.mjs scripts/deploy-native-toolkit.test.mjs scripts/deploy-native.test.mjs scripts/deploy-native-safety.test.mjs
+✔ starts, health-checks, and stops a real detached release process (2732.324342ms)
+✔ does not stop or adopt a foreign listener on the configured port (1030.054134ms)
+✔ refuses to stop a foreign process even when its cwd matches the release (1143.143945ms)
+✔ rejects a listener that never provides both health endpoints and cleans up (875.730287ms)
+✔ health-checks a listener spawned by the detached wrapper process (2312.66044ms)
+✔ stops an orphan listener after its wrapper parent exits (3187.053555ms)
+✖ startup failure retains a cleanup handle and leaves the port free (672.875169ms)
+✔ build runs npm ci and npm run build with production runtime environment (12.846881ms)
+✔ build failure is finite and leaves the old service untouched (8.936028ms)
+✔ rejects a mismatched runtime before build or log side effects (9.174212ms)
+✔ rejects a mismatched runtime before service inspection or start (8.167087ms)
+✔ retains build stdout and stderr in the target build log (9.911378ms)
+✔ retains failed build diagnostics and refuses symlinked log paths (21.617541ms)
+✔ does not stop an active service whose PID is reused with a new start time (613.834104ms)
+✔ does not stop an unexpected listener that appears during a build (146.878283ms)
+✔ an unhealthy A-to-B release recovers the old service (128.245341ms)
+✔ preserves the candidate release when old-service recovery fails (126.527481ms)
+✔ post-publication failure recovers service and toolkit while the deployment lock is held (130.773937ms)
+✔ down and rollback refuse a held deployment lock before inspecting (26.335692ms)
+✔ installs the current toolkit and restores prior control files (95.717718ms)
+✔ restores all files after an install failure and leaves the target sentinel (266.988843ms)
+✔ installed toolkit resolves its control files from the target deployment (103.45797ms)
+✔ rejects symlinked target roots without touching the outsider (5.467202ms)
+▶ native deployment CLI
+  ✔ parses ref and dry-run options (8.213708ms)
+  ✔ dry-run reports selected source and leaves target unchanged (230.7789ms)
+  ✔ rejects a runtime mismatch before source resolution or target filesystem writes (77.207384ms)
+  ✔ status marks a foreign listener runtime unknown and preserves legacy metadata unknown (31.171941ms)
+  ✔ build failure keeps old service and current release (272.466717ms)
+  ✔ dry-run down and rollback never inspect or mutate the target (12.464516ms)
+  ✔ rejects malformed and symlink runtime configuration (69.018182ms)
+  ✔ refuses to stop a listener without an active release (15.616627ms)
+  ✔ rejects ambient runtime overrides for mutating modes (9.175614ms)
+  ✔ rejects external current and config symlinks without touching the outsider (30.218554ms)
+  ✔ rejects a held deployment lock before inspecting or stopping (72.211213ms)
+  ✔ rejects source and target overlap before snapshot or mutation (13.561124ms)
+  ✔ rollback failure stops only its candidate handle and leaves a foreign listener alone (23.884696ms)
+✔ native deployment CLI (884.823356ms)
+✔ current resolves a clean branch and full commit (1046.521528ms)
+✔ current rejects tracked edits and untracked application files (582.804253ms)
+✔ current permits excluded scratch and credential changes (570.211683ms)
+✔ detached current reports no branch (729.139881ms)
+✔ explicit refs resolve despite dirty worktree and identify a local branch (630.43632ms)
+✔ current rejects an application filename whose bytes end in whitespace (448.83926ms)
+✔ current rejects dirty edits to tracked build application source (447.254764ms)
+✔ current rejects a staged rename from ignored state into application source (688.145411ms)
+✔ resolveReleaseSource rejects an injected non-full commit SHA (379.257847ms)
+✔ master fetches the current origin master commit (2038.207774ms)
+✔ master rejects fetch failure instead of using stale origin master (522.533106ms)
+✔ snapshot contains committed bytes and filters application secrets (760.015271ms)
+✔ snapshot rejects committed symlinks (714.922348ms)
+✔ accepts the pinned native runtime and reports measured values (209.232921ms)
+✔ rejects a runtime mismatch synchronously (6.267883ms)
+✔ rejects missing and malformed profiles without fallback values (4.208918ms)
+✔ source profile matches the pinned Node and built-in SQLite versions (0.573609ms)
+ℹ tests 53
+ℹ suites 1
+ℹ pass 52
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13690.415468
+
+✖ failing tests:
+
+test at scripts/deploy-native-runtime.test.mjs:165:1
+✖ startup failure retains a cleanup handle and leaves the port free (672.875169ms)
+  Error: Refusing to stop unrelated or stale process
+      at Object.stop (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/deploy-native-runtime.mjs:252:93)
+      at async TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/deploy-native-runtime.test.mjs:173:3)
+      at async Test.run (node:internal/test_runner/test:1208:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7)
+make: *** [deploy-test] Error 1

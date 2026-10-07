@@ -1,0 +1,30 @@
+{
+  "server": "http://127.0.0.1:3333/",
+  "worktree": "/Users/zhoulin/.codex/worktrees/afc8/TradeReview",
+  "database": "/Users/zhoulin/.codex/worktrees/afc8/TradeReview/.data/tradereview-test.sqlite",
+  "browserJourney": [
+    "Loaded real SQLite instruments/executions in homepage",
+    "Opened gold ETF holding review",
+    "Chart settings showVolume true->false via checkbox",
+    "SQLite app_settings row and HTTP GET both false",
+    "Returned to homepage, reloaded browser, re-entered review; checkbox remains false",
+    "Stopped only owned make process group, port3333 and lock released",
+    "Restarted make dev; app_settings row and HTTP GET showVolume true from source copy",
+    "After restart, reloaded/re-entered actual chart settings; showVolume checkbox visibly true"
+  ],
+  "evidence": [
+    "actual-debug-listener.json",
+    "debug-api-before.json",
+    "debug-persisted-settings.json",
+    "debug-settings-after-reload.json",
+    "debug-persistence.jpg",
+    "debug-stop-evidence.json",
+    "debug-reset-evidence.json",
+    "formal-db-debug-comparison.json",
+    "debug-reset.jpg",
+    "browser-errors.json",
+    "formal-db-final-comparison.json"
+  ],
+  "sourceUnchanged": true,
+  "consoleErrors": 0
+}

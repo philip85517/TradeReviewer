@@ -1,0 +1,3 @@
+node "$NATIVE_CLI" --mode=deploy --source="$DEPLOY_SOURCE" --target="$DEPLOY_ROOT" --ref="$REF" 
+git fetch failed: Command failed: git fetch origin +refs/heads/master:refs/remotes/origin/master
+make: *** [deploy] Error 1

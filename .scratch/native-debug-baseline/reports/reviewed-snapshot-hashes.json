@@ -1,0 +1,22 @@
+[
+  {
+    "file": "scripts/debug-local.mjs",
+    "hash": "45e5a8e0447f6b6be707570c2d7859e22c992490771fc4af4026ff3347700972",
+    "reviewed": true
+  },
+  {
+    "file": "scripts/deploy-native-runtime.mjs",
+    "hash": "45a353ae83cace5bfb1b6be8a66b82aa92eda845055f2e2893b80f1ce9e413da",
+    "reviewed": true
+  },
+  {
+    "file": "scripts/deploy-native-toolkit.mjs",
+    "hash": "44061bbb9f3fd4dd54f41b2bc80032ae8fcc0ebcd81256898f94ddff3d6ef86e",
+    "reviewed": true
+  },
+  {
+    "file": "scripts/native-environment.mjs",
+    "hash": "18e15ad2805532c622092de0ee4917c436a72baafb05b77905c8910c21c739e9",
+    "reviewed": true
+  }
+]

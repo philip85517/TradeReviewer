@@ -1,0 +1,14 @@
+{
+  "tables": 46,
+  "totalRows": 209970,
+  "unchanged": true,
+  "changes": [],
+  "before": "2026-10-06T11:36:02.462Z",
+  "after": "2026-10-06T12:00:38.547Z",
+  "beforeQuickCheck": {
+    "quick_check": "ok"
+  },
+  "afterQuickCheck": {
+    "quick_check": "ok"
+  }
+}

@@ -1,0 +1,4 @@
+command: node --test scripts/debug-local.test.mjs
+result: initial red run failed 2 of 5
+failures: injectable child spawn seam absent; symlink assertion expected a more specific message
+review follow-up: initial implementation also failed ancestor/sidecar safety, live-WAL semantics, fail-closed lsof handling, native assertion ordering, and process-group cleanup; all were corrected before the current green run

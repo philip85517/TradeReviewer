@@ -134,6 +134,8 @@ install -m 755 deploy/ops/tradeReview.command "$HOME/Desktop/tradeReview.command
 
 项目默认采用[协调者 + Luna 分布式开发与预览交付流程](docs/agents/development-workflow.md)：Luna 负责实现，协调者独立验收，并在聊天交付已启动、可打开的预览链接。
 
+前端控件测试、点击检查、交互验收、视觉跳动、布局对齐或无响应诊断等同义请求，以及影响前端交互或布局的开发完成后，默认按[前端控件与视觉空间诊断规范](docs/agents/frontend-control-audit.md)执行。规范包含完整控件登记、覆盖率口径、真实操作、问题表、空间修复方案和分项验收模板；通过 [AGENTS.md](AGENTS.md)、开发流程和 UI 任务模板接入代理工作流，无需用户额外点名。纯文档修改按文档范围验证。
+
 TradingView 自动测试使用最小冻结夹具；如需校验本地原始示例，可设置 `TRADINGVIEW_SAMPLE_DIR` 并运行 `npm run test:unit -- app/lib/import/tradingview-samples.test.ts`。原始 CSV 不纳入仓库。
 
 ```bash

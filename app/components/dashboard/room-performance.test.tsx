@@ -8,6 +8,7 @@ import type { Instrument } from "../../lib/trades/types";
 import { buildRoomDateRange, createDefaultRoomScope, type RoomScope, type TradingRoomInstrumentMetadata } from "../../lib/reviews/trading-room-scope";
 import { findTradingRoomHistoryRange } from "../../lib/reviews/trading-room-calendar";
 import { RoomPerformance } from "./room-performance";
+import { nearestTrendHit } from "./room-performance-hit-testing";
 
 afterEach(() => {
   cleanup();
@@ -131,6 +132,20 @@ function PerformanceScopeHarness({ entries, initialPeriod }: { entries: readonly
 }
 
 describe("RoomPerformance", () => {
+  it("resolves nearest points in CSS screen space and caps the hit radius", () => {
+    const candidates = [
+      { key: "USD:2026-01", x: 100, y: 100 },
+      { key: "HKD:2026-01", x: 120, y: 100 },
+    ];
+    expect(nearestTrendHit({ clientX: 200, clientY: 200 }, { left: 0, top: 0, width: 1280, height: 640 }, { width: 640, height: 320 }, candidates).nearest?.key).toBe("USD:2026-01");
+    expect(nearestTrendHit({ clientX: 300, clientY: 200 }, { left: 0, top: 0, width: 1280, height: 640 }, { width: 640, height: 320 }, candidates).nearest).toBeNull();
+    const nonUniform = [
+      { key: "A", x: 20, y: 100 },
+      { key: "B", x: 0, y: 115 },
+    ];
+    expect(nearestTrendHit({ clientX: 0, clientY: 100 }, { left: 0, top: 0, width: 320, height: 320 }, { width: 640, height: 320 }, nonUniform).nearest?.key).toBe("A");
+  });
+
   it("uses simple trend titles and shows sparse cumulative point amounts directly", () => {
     const value = entry("2026-09-02", "100");
     const { container } = render(
@@ -874,6 +889,94 @@ describe("RoomPerformance", () => {
     expect(detail).toHaveTextContent("累计盈亏");
     await user.click(point);
     expect(detail).toHaveTextContent("1 个可信回合");
+  });
+
+  it("keeps a committed point through focus/hover, replaces it on click, and rejects distant clicks", () => {
+    const first = entry("2026-09-02", "100");
+    const second = entry("2026-09-03", "200", { id: "second" });
+    const { container } = render(
+      <RoomPerformance
+        entries={[first, second]}
+        scope={scope(buildRoomDateRange("custom", "2026-09-03", { startDate: "2026-09-02", endDate: "2026-09-03" }))}
+        instrumentMetadata={metadata([first, second])}
+        onScopeChange={() => undefined}
+        onOpenInReview={() => undefined}
+        asOf="2026-09-03T08:00:00.000Z"
+      />,
+    );
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    const svg = container.querySelector("svg[aria-label='累计盈亏趋势图']") as SVGSVGElement;
+    Object.defineProperty(svg, "getBoundingClientRect", { configurable: true, value: () => ({ left: 0, top: 0, width: 640, height: 320, right: 640, bottom: 320 }) });
+    const points = [...container.querySelectorAll<SVGCircleElement>("circle[data-chart-role='point-hit-area']")];
+    const firstPoint = points[0]!;
+    const secondPoint = points[1]!;
+    const firstPosition = { clientX: Number(firstPoint.getAttribute("cx")), clientY: Number(firstPoint.getAttribute("cy")) };
+    const secondPosition = { clientX: Number(secondPoint.getAttribute("cx")), clientY: Number(secondPoint.getAttribute("cy")) };
+    fireEvent.click(firstPoint, { detail: 1, ...firstPosition });
+    const detail = within(panel).getByRole("status", { name: "趋势点详情" });
+    expect(detail).toHaveTextContent("2026-09-02");
+    fireEvent.focus(secondPoint);
+    fireEvent.mouseEnter(secondPoint, secondPosition);
+    expect(detail).toHaveTextContent("2026-09-02");
+    fireEvent.click(secondPoint, { detail: 1, ...secondPosition });
+    expect(detail).toHaveTextContent("2026-09-03");
+    fireEvent.click(firstPoint, { detail: 1, clientX: 600, clientY: 10 });
+    expect(detail).toHaveTextContent("2026-09-03");
+  });
+
+  it("keeps coincident currency choices after hover and lets the audit select the exact one", async () => {
+    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = entry("2026-09-02", "100", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    const { container } = render(
+      <RoomPerformance
+        entries={[usd, hkd]}
+        scope={scope(buildRoomDateRange("custom", "2026-09-02", { startDate: "2026-09-02", endDate: "2026-09-02" }))}
+        instrumentMetadata={metadata([usd, hkd])}
+        onScopeChange={() => undefined}
+        onOpenInReview={() => undefined}
+        asOf="2026-09-02T08:00:00.000Z"
+      />,
+    );
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    const svg = container.querySelector("svg[aria-label='累计盈亏趋势图']") as SVGSVGElement;
+    Object.defineProperty(svg, "getBoundingClientRect", { configurable: true, value: () => ({ left: 0, top: 0, width: 640, height: 320, right: 640, bottom: 320 }) });
+    const hitAreas = [...container.querySelectorAll<SVGCircleElement>("circle[data-chart-role='point-hit-area']")];
+    expect(hitAreas).toHaveLength(2);
+    const pointPosition = { clientX: Number(hitAreas[0]?.getAttribute("cx")), clientY: Number(hitAreas[0]?.getAttribute("cy")) };
+    fireEvent.click(hitAreas[0]!, { detail: 1, ...pointPosition });
+    const detail = within(panel).getByRole("status", { name: "趋势点详情" });
+    expect(detail).toHaveTextContent("USD · 2026-09-02");
+    fireEvent.mouseEnter(hitAreas[1]!, pointPosition);
+    expect(detail).toHaveTextContent("USD · 2026-09-02");
+    const options = within(detail).getByRole("listbox", { name: "重合趋势点候选" });
+    expect(within(options).getByRole("option", { name: "HKD · 2026-09-02" })).toBeInTheDocument();
+    await act(async () => { fireEvent.click(within(options).getByRole("option", { name: "HKD · 2026-09-02" })); });
+    expect(detail).toHaveTextContent("HKD · 2026-09-02");
+    fireEvent.mouseEnter(hitAreas[0]!, pointPosition);
+    expect(detail).toHaveTextContent("HKD · 2026-09-02");
+  });
+
+  it("clears a committed currency point when the report currency changes", () => {
+    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = entry("2026-09-02", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    const props = {
+      entries: [usd, hkd],
+      scope: scope(buildRoomDateRange("custom", "2026-09-02", { startDate: "2026-09-02", endDate: "2026-09-02" })),
+      instrumentMetadata: metadata([usd, hkd]),
+      onScopeChange: () => undefined,
+      onOpenInReview: () => undefined,
+      asOf: "2026-09-02T08:00:00.000Z",
+    };
+    const { container, rerender } = render(<RoomPerformance {...props} />);
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    const point = within(panel).getByRole("button", { name: /^USD · 2026-09-02/ });
+    fireEvent.click(point, { detail: 1 });
+    expect(within(panel).getByRole("status", { name: "趋势点详情" })).toHaveTextContent("USD · 2026-09-02");
+    rerender(<RoomPerformance {...props} entries={[hkd]} instrumentMetadata={metadata([hkd])} />);
+    expect(within(container).queryByRole("status", { name: "趋势点详情" })).not.toBeInTheDocument();
+    rerender(<RoomPerformance {...props} />);
+    rerender(<RoomPerformance {...props} reportCurrency="HKD" fxSnapshot={{ id: "fx:complete", baseCurrency: "CNY", asOf: "2026-09-02", source: "fixture", status: "complete", rates: { "USD/CNY": "7", "HKD/CNY": "0.9" } }} />);
+    expect(within(container).queryByRole("status", { name: "趋势点详情" })).not.toBeInTheDocument();
   });
 
   it("resolves overlapping pointer targets to the nearest point while keyboard focus stays exact", () => {

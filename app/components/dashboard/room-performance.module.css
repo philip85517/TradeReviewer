@@ -94,7 +94,10 @@
 .trendValueLegend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
 .selectedTrendPoint { display: grid; grid-template-columns: auto auto auto; align-items: baseline; gap: 6px 12px; border: 1px solid var(--dashboard-line); border-radius: 9px; padding: 8px 10px; background: var(--dashboard-soft); color: var(--dashboard-muted); font-size: 14px; }
 .selectedTrendPoint strong { color: var(--dashboard-ink); font-size: 16px; }
+.selectedTrendIdentity { color: var(--dashboard-ink); font-weight: 600; }
 .selectedTrendPoint small { grid-column: 1 / -1; font-size: 14px; }
+.trendCandidates { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.trendCandidates button { border: 1px solid var(--dashboard-line); border-radius: 6px; padding: 3px 7px; background: var(--dashboard-card-elevated); color: var(--dashboard-ink); cursor: pointer; font: inherit; font-size: 12px; }
 .trendDetails { border-top: 1px solid var(--dashboard-line-soft); padding-top: 7px; color: var(--dashboard-muted); font-size: 14px; }
 .trendDetails summary { cursor: pointer; }
 .trendPointList { display: grid; gap: 7px; max-height: 230px; overflow: auto; margin-top: 8px; }
@@ -341,6 +344,13 @@
   .workspaceGrid .trendFooter .legend { min-width: 0; flex: 0 1 auto; flex-wrap: nowrap; gap: 3px 6px; padding: 0; font-size: 9px; white-space: nowrap; }
   .workspaceGrid .trendFooter .notice { min-width: 0; flex: 1 1 auto; padding: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; }
   .workspaceGrid .selectedTrendPoint { position: absolute; z-index: 2; left: 6px; right: 6px; bottom: 18px; max-height: 54px; overflow: auto; padding: 5px 7px; font-size: 9px; }
+  .workspaceGrid .selectedTrendPoint:has(.trendCandidates) { gap: 2px 8px; padding: 4px 7px; }
+  .workspaceGrid .selectedTrendPoint:has(.trendCandidates) strong,
+  .workspaceGrid .selectedTrendPoint:has(.trendCandidates) .selectedTrendIdentity,
+  .workspaceGrid .selectedTrendPoint:has(.trendCandidates) > span { line-height: 18px; }
+  .workspaceGrid .selectedTrendPoint:has(.trendCandidates) strong { font-size: 13px; }
+  .workspaceGrid .selectedTrendPoint .trendCandidates { order: -1; grid-column: 1 / -1; max-height: 20px; overflow: auto; gap: 2px; margin-top: 0; }
+  .workspaceGrid .selectedTrendPoint .trendCandidates button { min-height: 18px; padding: 1px 5px; font-size: 9px; line-height: 16px; }
   .workspaceGrid > .contributionSlot { min-width: 0; }
   .workspaceGrid > .contributionSlot > * { height: 100%; box-sizing: border-box; }
 

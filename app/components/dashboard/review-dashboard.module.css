@@ -423,9 +423,46 @@
 }
 
 .roomAdvancedGrid {
-  grid-template-columns: minmax(190px, 1.5fr) repeat(3, minmax(120px, 1fr));
-  align-items: end;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+  gap: 16px 12px;
   margin-top: 11px;
+}
+
+.roomAdvancedGrid .radioField,
+.roomAdvancedGrid :global([data-scope-field="currency"]),
+.roomAdvancedGrid .searchField {
+  align-self: start;
+}
+
+.roomAdvancedGrid .radioField {
+  display: block;
+}
+
+.roomAdvancedGrid .radioField legend,
+.roomAdvancedGrid .searchField,
+.roomAdvancedGrid :global([data-scope-field="currency"]) {
+  gap: 6px;
+}
+
+.roomAdvancedGrid :global([data-scope-field="currency"]) > span {
+  min-height: 18px;
+  line-height: 18px;
+}
+
+.roomAdvancedActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.roomAdvancedActions .roomClearButton {
+  padding: 0 12px;
+}
+
+.sharedToolbar .roomAdvancedDetails[open] .radioField legend {
+  margin-bottom: 6px;
 }
 
 .roomClearButton {

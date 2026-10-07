@@ -66,7 +66,7 @@ BROKER_CORPUS_ROOT=/path/to/statements npm run test:unit -- app/lib/import/month
 
 ## 本地运行
 
-固定使用 Node.js `26.0.0` 及其内置 SQLite `3.53.0`。版本记录在 `.node-version` 和 `conf/native-environment.json`；启动和发布前会校验，版本不符即退出。
+固定使用 Node.js `26.0.0` 和其加载的 SQLite `3.53.0`。版本及执行文件记录在 `.node-version` 和 `conf/native-environment.json`；标准调试和发布入口自动使用配置的执行文件，并查询实际 SQL 引擎，版本不符即退出。本机独立运行时的来源和安装说明见 [固定原生环境](conf/NATIVE-RUNTIME.md)。
 
 ```bash
 npm ci

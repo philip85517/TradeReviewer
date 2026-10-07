@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
 import process from "node:process";
 
@@ -23,16 +24,26 @@ function readProfile(path) {
   return value;
 }
 
+function getSqliteVersion() {
+  const database = new DatabaseSync(":memory:");
+  try {
+    const row = database.prepare("SELECT sqlite_version() AS version").get();
+    return String(row?.version ?? "");
+  } finally {
+    database.close();
+  }
+}
+
 /** Synchronously verify and report the exact runtime used by source or installed tooling. */
 export function assertNativeEnvironment(options = {}) {
   const profile = readProfile(options.profilePath ?? profilePath);
   const versions = options.versions ?? process.versions;
   const nodeVersion = String(versions.node ?? "").replace(/^v/, "");
-  const sqliteVersion = String(versions.sqlite ?? "");
   const nodeExecutable = options.execPath ?? process.execPath;
   if (nodeVersion !== profile.nodeVersion) fail(`Node.js ${profile.nodeVersion} is required; measured ${nodeVersion || "unknown"}`);
-  if (sqliteVersion !== profile.sqliteVersion) fail(`SQLite ${profile.sqliteVersion} is required; measured ${sqliteVersion || "unknown"}`);
   if (nodeExecutable !== profile.nodeExecutable) fail(`configured executable ${profile.nodeExecutable} is required; measured ${nodeExecutable}`);
+  const sqliteVersion = String((options.getSqliteVersion ?? getSqliteVersion)());
+  if (sqliteVersion !== profile.sqliteVersion) fail(`SQLite ${profile.sqliteVersion} is required; measured ${sqliteVersion || "unknown"}`);
   return { nodeVersion, sqliteVersion, nodeExecutable };
 }
 

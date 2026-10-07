@@ -1,0 +1,33 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:9497) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ❯ app/components/trade-review-workspace.refresh.test.tsx (8 tests | 1 failed) 21303ms
+     × refreshes the global saved summary after a single instrument update 5121ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/components/trade-review-workspace.refresh.test.tsx > TradeReviewWorkspace global refresh seam > refreshes the global saved summary after a single instrument update
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ app/components/trade-review-workspace.refresh.test.tsx:380:3
+    378|   });
+    379|
+    380|   it("refreshes the global saved summary after a single instrument upd…
+       |   ^
+    381|     const user = userEvent.setup();
+    382|     saveMarketDataJob({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 318 passed | 3 skipped (322)
+      Tests  1 failed | 3069 passed | 6 skipped (3076)
+   Start at  09:42:44
+   Duration  490.66s (transform 9.87s, setup 58.04s, import 43.23s, tests 456.60s, environment 312.32s)
+

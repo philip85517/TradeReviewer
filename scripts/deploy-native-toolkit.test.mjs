@@ -22,10 +22,12 @@ test("installs the current toolkit and restores prior control files", async () =
   await writeFile(oldOps, "old ops");
   const transaction = await beginNativeToolkitTransaction({ targetDir: target });
   assert.equal(await readFile(join(target, "ops", "deploy-native-toolkit.mjs"), "utf8"), await readFile(join(repo, "scripts", "deploy-native-toolkit.mjs"), "utf8"));
+  assert.equal(await readFile(join(target, "ops", "native-node.sh"), "utf8"), await readFile(join(repo, "scripts", "native-node.sh"), "utf8"));
   await transaction.restore();
   assert.equal(await readFile(oldMakefile, "utf8"), "old makefile");
   assert.equal(await readFile(oldOps, "utf8"), "old ops");
   await assert.rejects(() => lstat(join(target, "ops", "deploy-native-toolkit.mjs")), { code: "ENOENT" });
+  await assert.rejects(() => lstat(join(target, "ops", "native-node.sh")), { code: "ENOENT" });
   await rm(target, { recursive: true, force: true });
 });
 
@@ -40,7 +42,7 @@ test("restores all files after an install failure and leaves the target sentinel
 
 test("installed toolkit resolves its control files from the target deployment", async () => {
   const target = await tempTarget();
-  for (const name of ["deploy-native.mjs", "deploy-source.mjs", "deploy-native-runtime.mjs", "deploy.mjs", "deploy-native-toolkit.mjs", "native-environment.mjs"]) await cp(join(repo, "scripts", name), join(target, "ops", name));
+  for (const name of ["deploy-native.mjs", "deploy-source.mjs", "deploy-native-runtime.mjs", "deploy.mjs", "deploy-native-toolkit.mjs", "native-environment.mjs", "native-node.sh"]) await cp(join(repo, "scripts", name), join(target, "ops", name));
   await cp(join(repo, "conf", "native-environment.json"), join(target, "ops", "native-environment.json"));
   await cp(join(repo, "deploy", "ops", "start-native.command"), join(target, "ops", "start-native.command"));
   await cp(join(repo, "deploy", "target", "Makefile"), join(target, "Makefile"));

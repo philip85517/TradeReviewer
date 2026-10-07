@@ -1,0 +1,19 @@
+{
+  "time": "2026-10-07T10:09:59.294602+08:00",
+  "head": "cf7d48cc4d0052841b64690085e68b23325ffaea",
+  "workingTreeFiles": {
+    "scripts/native-environment.mjs": "ac2ef89f00db03d221351c4780671266c715a9adda20f7389ae744fc9fe602da",
+    "scripts/native-environment.test.mjs": "77da78f75aad1501ec67694bf2a0c4b9faa0e1500c9e22466254f135ff518b90",
+    "scripts/native-node.sh": "3d1d17bd76eb375fce90d2efa8cb8b7072435d305613b11b676b1c8f950b727e",
+    "Makefile": "4f052ff4b59dc91768dc10758dafcd51825598c93b2c266b0e0088b9dc449d2f",
+    "deploy/target/Makefile": "7d5a79abf226477b82a35016e567580f5672613f9bf835f63cc2e80a996a3807",
+    "package.json": "a9d1d953a0d13b0c27c76fbfe7566156790c909478cbd8b50a801fc95ed301ed",
+    "deploy/ops/start-native.command": "c91128d67dec7fa76b56128c7fffda405f8dc6954cf0c48f47d660790456eef6",
+    "scripts/deploy-native-toolkit.mjs": "4ae32a5498e5ed7cd69783dbf06e1f0fbf6c4f1218578562de0d75e8026144c5",
+    "scripts/deploy-native-toolkit.test.mjs": "50b6930b715279638e712162b1bca4fc6eab2e3ebd8983ee42412d3fdb07672c",
+    "scripts/deploy-native-runtime.test.mjs": "024b598e9b08810d46893533ca90a58fa02e7ed254e155899931f54de887d6bc",
+    "conf/native-environment.json": "0696e9467559261f591f47e73795258ee147eb0923f5fd27b76506a172914b0a"
+  },
+  "rootSQLProbe": "pinned-entrypoints-runtime.json",
+  "note": "Native test sources frozen after worker implementation; final tests pending, unit suite running against separately frozen app/db/test files."
+}

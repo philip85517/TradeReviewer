@@ -1,7 +1,9 @@
 # Final acceptance
 
-State: closed
-Status: accepted (deployment/debug operational scope)
+Current status: source/runtime correction accepted on2026-10-07; live deployment/debug verification remains pending. The2026-10-06 tables below are historical and their metadata-only SQLite identification was invalidated; see the appended regression and current source reacceptance.
+
+State: open
+Status: integration-pending (live deployment/debug verification)
 Coordinator: /root
 Accepted: 2026-10-06
 
@@ -18,7 +20,7 @@ Prior production service/version evidence is retained in ../local-native-deploy/
 | Exact native runtime and dependency installation contract | PASS — Node26.0.0, built-in SQLite3.53.0, pinned executable and npm CLI, lockfile npm ci; mismatches reject before side effects | [Native suite57/57](reports/native-deploy-final-green.log), [independent review](reports/independent-review.md) |
 | Native source/installed command selection | PASS — source and installed status healthy/consistent; installed dry run resolves explicit full SHA, port3022 and formal SQLite; native markers never silently select Docker | [Installed controls](reports/installed-controls-acceptance.json), [dry run](reports/installed-native-dry-run.json), [target selection](reports/target-make-selection.json) |
 | Production preservation | PASS — release `20260923-master-ee76e83`, PID98660, current pointer and runtime-config hash unchanged; no formal restart | [Installed before/after](reports/installed-controls-acceptance.json), [installed status](reports/installed-native-status.json) |
-| Real worktree startup / owned fixed copy | PASS — `make dev` on loopback3333; observed listener51308 cwd is this worktree; open DB files belong only to fixed test copy | [Listener evidence](reports/final-listeners.json), [startup](reports/actual-debug-restart.log) |
+| Real worktree startup / owned fixed copy | PASS — `make dev` on loopback3333; observed listener51308 cwd is this worktree; open DB files belong only to fixed test copy | [Listener evidence](reports/final-listeners.json), [startup](reports/actual-debug-restart-accepted.log) |
 | Actual browser write / return / reload / restart reset | PASS — showVolume true→false persisted in SQLite and HTTP, survived return/reload/re-entry, reset to source true after restart and visibly confirmed in browser | [Browser journey](reports/browser-acceptance.json), [persisted setting](reports/debug-persisted-settings.json), [reload](reports/debug-settings-after-reload.json), [reset](reports/debug-reset-evidence.json), [reset screenshot](reports/debug-reset.jpg) |
 | Source business-data safety | PASS —46 tables /209970 rows, schema/count/content fingerprints unchanged from pre-debug through control installation; both quick_check ok | [Final comparison](reports/formal-db-final-comparison.json), [before](reports/formal-db-before.json), [final](reports/formal-db-final.json) |
 | WAL backup / publication / lifecycle counterexamples | PASS — real synthetic uncheckpointed WAL copied; failures preserve prior data; alias/open DB/occupied port/concurrency rejected; bounded owned shutdown and lock safety | [Debug15/15](reports/debug-final.log), [independent counterexamples](reports/independent-review.md) |
@@ -41,3 +43,13 @@ Prior production service/version evidence is retained in ../local-native-deploy/
 ## Developer operation
 
 From the source worktree: `make deploy` publishes committed current HEAD; `make deploy REF=master` fetches remote master; append `DRY_RUN=1` to preview. `make deploy-status` checks pointer/process/runtime/HTTP agreement. `make dev` and `npm run dev` share the same fresh-copy3333 entry. The running preview is http://127.0.0.1:3333/; stop the foreground launcher with Ctrl+C before starting another standard debug session.
+
+## 2026-10-07 integration regression — current gate FAIL
+
+Actual SQLite engine gate invalidated: Homebrew Node metadata reports3.53.0 but in-memory SQL reports3.53.1. Prior metadata-only runtime acceptance is historical, actual engine check FAIL. No business database or existing service changed. See ../remote-integration-native-deploy/issues/02-runtime-engine.md.
+
+## 2026-10-07 source/runtime correction accepted; deployment verification pending
+
+G05/G07 source gates now PASS: assertNativeEnvironment queries actual sqlite_version() in a private in-memory database; configured bootstrap selects a new private exact26.0.0/3.53.0 runtime, and missing executable rejects without fallback. Native60/60, debug18/18, isolated source/installed make/status/launcher acceptance, build/integration5/5, typecheck and scoped lint (0errors/2warnings) passed. Independent final review and source freeze passed. See ../remote-integration-native-deploy/FINAL-ACCEPTANCE.md and its reports. Private runtime provenance is in ../../conf/NATIVE-RUNTIME.md (repository conf/NATIVE-RUNTIME.md).
+
+The earlier metadata-only runtime PASS is invalid for identifying the actual engine. Prior data/browser/control-install evidence is preserved as history. Existing production toolkit and3022/3333 processes were not reinstalled/restarted in this Git integration; their actual loaded SQLite versions are NOT VERIFIED. Therefore the native deployment/debug feature remains open/integration-pending until a separately requested actual deployment/restart is verified; source acceptance does not close that live operational gate.

@@ -6,10 +6,15 @@
 本机默认采用原生 Node 生产服务。发布命令统一选择已提交的 Git 快照，并保存提交号；
 `package.json` 的版本号不能单独证明两份代码一致。
 
-原生环境固定为 Node.js `26.0.0`、内置 SQLite `3.53.0`，依据项目
+原生环境固定为 Node.js `26.0.0`、加载的 SQLite `3.53.0`，依据项目
 `conf/native-environment.json` 和 `.node-version` 校验。安装、构建和启动使用同一 Node
 执行文件及 lockfile 的 `npm ci`；版本不符时在发布产生副作用前退出。SQLite 引擎版本
 与数据库迁移结构版本分别核对。
+
+源码侧 `scripts/native-node.sh` 和部署侧 `ops/native-node.sh` 从各自的环境配置读取
+绝对 Node 路径；配置文件或执行文件缺失会失败。校验在内存库中查询 `sqlite_version()`，
+不将编译元数据当作实际引擎版本。本机使用独立的 Node/SQLite 副本，来源和复建步骤见
+[固定原生环境](../conf/NATIVE-RUNTIME.md)。更新源码不会自动替换已安装的运维工具或重启服务。
 
 ## 发布命令
 

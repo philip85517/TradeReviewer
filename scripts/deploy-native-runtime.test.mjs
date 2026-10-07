@@ -3,7 +3,7 @@ import { spawn } from "node:child_process";
 import { mkdtemp, mkdir, writeFile, rm, symlink, readFile, lstat } from "node:fs/promises";
 import { realpathSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { afterEach, test } from "node:test";
 import { createNativeRuntime } from "./deploy-native-runtime.mjs";
 
@@ -221,7 +221,7 @@ test("build runs npm ci and npm run build with production runtime environment", 
     return { code: 0, stdout: "", stderr: "" };
   } });
   await runtime.build(release);
-  const npmCli = "/usr/local/Cellar/node/26.0.0/libexec/lib/node_modules/npm/bin/npm-cli.js";
+  const npmCli = join(dirname(process.execPath), "..", "libexec", "lib", "node_modules", "npm", "bin", "npm-cli.js");
   assert.deepEqual(calls.map((call) => [call.command, call.args]), [[process.execPath, [npmCli, "ci", "--include=dev"]], [process.execPath, [npmCli, "run", "build"]]]);
   assert.equal(calls[0].options.cwd, realpathSync.native(release));
   assert.equal(calls[0].options.env.NODE_ENV, "production");
@@ -247,7 +247,7 @@ test("rejects a mismatched runtime before build or log side effects", async () =
 test("rejects a mismatched runtime before service inspection or start", async () => {
   const { root, release, config } = await fixture();
   let inspected = 0; let started = 0;
-  const runtime = createNativeRuntime({ targetDir: root, runtimeConfig: config, nativeEnvironmentOptions: { versions: { node: "26.0.0", sqlite: "3.52.0" }, execPath: "/wrong/node" }, commandRunner: async () => { inspected += 1; return { code: 0, stdout: "" }; }, startCommand: async () => { started += 1; return { pid: 1 }; } });
+  const runtime = createNativeRuntime({ targetDir: root, runtimeConfig: config, nativeEnvironmentOptions: { versions: { node: "26.0.0", sqlite: "3.52.0" }, execPath: process.execPath, getSqliteVersion: () => "3.52.0" }, commandRunner: async () => { inspected += 1; return { code: 0, stdout: "" }; }, startCommand: async () => { started += 1; return { pid: 1 }; } });
   await assert.rejects(() => runtime.start(release), /SQLite 3\.53\.0/);
   assert.equal(inspected, 0);
   assert.equal(started, 0);

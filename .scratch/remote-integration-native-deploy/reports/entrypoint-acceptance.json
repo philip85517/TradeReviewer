@@ -1,0 +1,56 @@
+{
+  "ambient": {
+    "node": "26.0.0",
+    "execPath": "/usr/local/Cellar/node/26.0.0/bin/node",
+    "sqlite": "3.53.1"
+  },
+  "source": {
+    "node": "26.0.0",
+    "execPath": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+    "sqlite": "3.53.0"
+  },
+  "installed": {
+    "node": "26.0.0",
+    "execPath": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+    "sqlite": "3.53.0"
+  },
+  "sourceMake": {
+    "targetDir": "/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-entrypoint-acceptance-ACMWr3/target with spaces 交易",
+    "activeRelease": null,
+    "metadata": null,
+    "toolingRuntime": {
+      "nodeVersion": "26.0.0",
+      "sqliteVersion": "3.53.0",
+      "nodeExecutable": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node"
+    },
+    "serviceRuntime": null,
+    "observed": null,
+    "healthy": false,
+    "consistent": false,
+    "port": 56130,
+    "databasePath": "/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-entrypoint-acceptance-ACMWr3/target with spaces 交易/fixture.sqlite"
+  },
+  "installedMake": {
+    "targetDir": "/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-entrypoint-acceptance-ACMWr3/target with spaces 交易",
+    "activeRelease": null,
+    "metadata": null,
+    "toolingRuntime": {
+      "nodeVersion": "26.0.0",
+      "sqliteVersion": "3.53.0",
+      "nodeExecutable": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node"
+    },
+    "serviceRuntime": null,
+    "observed": null,
+    "healthy": false,
+    "consistent": false,
+    "port": 56130,
+    "databasePath": "/private/var/folders/35/254l_pjd3176pndzmz5_2l4m0000gn/T/tradereview-entrypoint-acceptance-ACMWr3/target with spaces 交易/fixture.sqlite"
+  },
+  "launcher": {
+    "node": "26.0.0",
+    "execPath": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node",
+    "sqlite": "3.53.0"
+  },
+  "launcherExit": 23,
+  "scope": "Owned temporary target, empty fixture file, free port inspected only, SQL probes only in memory; no services started and no business DB opened. Existing services unchanged."
+}

@@ -1,0 +1,21 @@
+{
+  "exitCode": 0,
+  "command": "npm run test:unit",
+  "testFiles": {
+    "passed": 319,
+    "skipped": 3,
+    "total": 322
+  },
+  "tests": {
+    "passed": 3070,
+    "skipped": 6,
+    "total": 3076
+  },
+  "durationSeconds": 463.72,
+  "sourceManifest": "final-unit-source-freeze.json",
+  "freezeVerification": "source-freeze-verification.json",
+  "runtimeProbe": "pinned-entrypoints-runtime.json",
+  "log": "final-unit.log",
+  "skipReason": "External broker corpus fixtures unavailable: BROKER_CORPUS_ROOT, CHINA_MERCHANTS_CORPUS_ROOT, TRADINGVIEW_SAMPLE_DIR. No added skips or changed timeout.",
+  "time": "2026-10-07T10:14:48.793207+08:00"
+}

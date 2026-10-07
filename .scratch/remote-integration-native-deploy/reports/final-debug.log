@@ -1,0 +1,27 @@
+"$NATIVE_NODE" --test scripts/native-environment.test.mjs scripts/debug-local.test.mjs
+✔ copies committed WAL content and isolates writes (780.193604ms)
+✔ backs up a live uncheckpointed WAL and removes stale destination sidecars (45.746205ms)
+✔ failed backup keeps the previous copy and never publishes a temporary file (1063.812638ms)
+✔ occupied port is rejected before copying (242.904386ms)
+✔ rejects same path, symlink, hard link, open target, and concurrent lock (35.667217ms)
+✔ standard launcher rejects redirecting environment and forwards fixed child contract (706.093328ms)
+✔ native mismatch is rejected before config/database filesystem access (1.394282ms)
+✔ corrupt/failed quick check and synchronous spawn failure preserve copy and release lock (2018.390566ms)
+✔ cancellation during an awaited backup releases lock and cannot publish (476.916649ms)
+✔ rename failure restores quarantined old sidecars and previous main copy (38.223008ms)
+✔ post-publication quarantine cleanup failure never restores old sidecars over new main (37.738203ms)
+✔ native shell bootstrap uses the configured runtime for SQL, execPath, and quoted args (1303.800145ms)
+✔ native shell bootstrap rejects a missing configured runtime without PATH fallback (853.094505ms)
+✔ accepts the pinned native runtime and reports measured values (0.60035ms)
+✔ rejects a runtime mismatch synchronously (0.892785ms)
+✔ rejects a profile that matches build metadata but mismatches the live SQLite engine (2.622532ms)
+✔ rejects missing and malformed profiles without fallback values (1.858502ms)
+✔ source profile matches the pinned Node and built-in SQLite versions (0.439293ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5674.835312

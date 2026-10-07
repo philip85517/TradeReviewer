@@ -1,0 +1,10 @@
+✔ native shell bootstrap uses the configured runtime for SQL, execPath, and quoted args (1229.834196ms)
+✔ native shell bootstrap rejects a missing configured runtime without PATH fallback (972.172121ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2470.512678

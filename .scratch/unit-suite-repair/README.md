@@ -31,3 +31,13 @@ Latest integration: bare full-unit-final-v2.log passes 3064 / 0 failures / 6 ori
 Coordinator /root accepted all applicable gates. Bare `npm run test:unit`: 319 passed files / 3 existing corpus files skipped, 3064 passed / 0 failed / 6 original corpus tests skipped, 449.66s. `make deploy-test`: 57/57; `make debug-test`: 15/15. Typecheck, scoped ESLint, final whitespace/source-freeze checks and all four independent Spec/Quality reviews pass. No new skips, removed cases/assertions or raised timeouts. Native debug tests pass with the original 3333 listener retained. Historical failures remain archived. No deployment, service restart, formal database write, commit or remote action.
 
 All R01–R13 and task issues are closed together. See [FINAL-ACCEPTANCE.md](FINAL-ACCEPTANCE.md) and reports/final-consistency.json for final evidence.
+
+## 2026-10-07 integration regression — current gate FAIL
+
+Integrated full suite regressed: refresh saved-summary test times out at5000ms; prior full PASS is historical, current full-suite gate FAIL. See ../remote-integration-native-deploy/issues/03-refresh-unit.md.
+
+## 2026-10-07 integration reacceptance — PASS
+
+The preceding refresh regression is closed by G06, preserving original failing runs and the rejected synchronous navigation candidate. The test now awaits the real asynchronous primary-navigation boundary, scopes data navigation and reacquires the returned data-management container; all8 cases/60 assertions remain, without added skips or raised timeouts. Targeted8/8 and fresh bare whole-unit319 files/3070 tests PASS, with only the original6 external-corpus skips. The extra6 passing tests come from integrated master; earlier3064 results remain historical. Native60/60, debug18/18, build/integration5/5, typecheck and scoped lint (0errors/2warnings) PASS. Independent G06 review PASS.
+
+Evidence: ../remote-integration-native-deploy/reports/{refresh-final-targeted-v2.log,refresh-review.md,final-unit.log,final-unit-result.json,final-native.log,final-debug.log,final-build-integration.log,final-typecheck.log,final-scoped-eslint.log,source-freeze-verification.json}. Coordinator /root reaccepts the unit-repair scope. Product rendering/state is unchanged; browser/visual acceptance is N/A for these test-only changes. Service listeners and business data were not changed by this repair.

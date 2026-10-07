@@ -1,0 +1,297 @@
+.scratch/local-native-deploy/reports/deploy-test-fixture-red.log:63: trailing whitespace.
++  
+.scratch/local-native-deploy/reports/deploy-test-fixture-red.log:65: trailing whitespace.
++  
+.scratch/local-native-deploy/reports/docker-regression-final.log:11: new blank line at EOF.
+.scratch/local-native-deploy/reports/docker-regression.log:11: new blank line at EOF.
+.scratch/local-native-deploy/reports/lint.log:262: new blank line at EOF.
+.scratch/local-native-deploy/reports/master-fetch-failure.log:1: trailing whitespace.
++node "$NATIVE_CLI" --mode=deploy --source="$DEPLOY_SOURCE" --target="$DEPLOY_ROOT" --ref="$REF" 
+.scratch/local-native-deploy/reports/npm-test-final.log:34: trailing whitespace.
++[plugin builtin:vite-reporter] 
+.scratch/local-native-deploy/reports/npm-test-final.log:63: trailing whitespace.
++  ┌ ? /                                                          
+.scratch/local-native-deploy/reports/npm-test-final.log:64: trailing whitespace.
++  ├ λ /api/demo-replay                                           
+.scratch/local-native-deploy/reports/npm-test-final.log:65: trailing whitespace.
++  ├ λ /api/fx                                                    
+.scratch/local-native-deploy/reports/npm-test-final.log:66: trailing whitespace.
++  ├ λ /api/instruments/resolve                                   
+.scratch/local-native-deploy/reports/npm-test-final.log:67: trailing whitespace.
++  ├ λ /api/market-data/daily                                     
+.scratch/local-native-deploy/reports/npm-test-final.log:68: trailing whitespace.
++  ├ λ /api/market-data/intraday                                  
+.scratch/local-native-deploy/reports/npm-test-final.log:69: trailing whitespace.
++  ├ λ /api/storage/bootstrap                                     
+.scratch/local-native-deploy/reports/npm-test-final.log:70: trailing whitespace.
++  ├ λ /api/storage/instruments/metadata                          
+.scratch/local-native-deploy/reports/npm-test-final.log:71: trailing whitespace.
++  ├ λ /api/storage/market-data                                   
+.scratch/local-native-deploy/reports/npm-test-final.log:72: trailing whitespace.
++  ├ λ /api/storage/migrate                                       
+.scratch/local-native-deploy/reports/npm-test-final.log:73: trailing whitespace.
++  ├ λ /api/storage/recall                                        
+.scratch/local-native-deploy/reports/npm-test-final.log:74: trailing whitespace.
++  ├ λ /api/storage/recall/summaries                              
+.scratch/local-native-deploy/reports/npm-test-final.log:75: trailing whitespace.
++  ├ λ /api/storage/review-summaries                              
+.scratch/local-native-deploy/reports/npm-test-final.log:76: trailing whitespace.
++  ├ λ /api/storage/reviews                                       
+.scratch/local-native-deploy/reports/npm-test-final.log:77: trailing whitespace.
++  ├ λ /api/storage/settings                                      
+.scratch/local-native-deploy/reports/npm-test-final.log:78: trailing whitespace.
++  ├ λ /api/storage/status                                        
+.scratch/local-native-deploy/reports/npm-test-final.log:79: trailing whitespace.
++  ├ λ /api/storage/trade-revisions                               
+.scratch/local-native-deploy/reports/npm-test-final.log:80: trailing whitespace.
++  ├ λ /api/storage/trades                                        
+.scratch/local-native-deploy/reports/npm-test-final.log:81: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration                 
+.scratch/local-native-deploy/reports/npm-test-final.log:82: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration/aliases         
+.scratch/local-native-deploy/reports/npm-test-final.log:83: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration/commit          
+.scratch/local-native-deploy/reports/npm-test-final.log:84: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration/preview         
+.scratch/local-native-deploy/reports/npm-test-final.log:85: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration/provisional     
+.scratch/local-native-deploy/reports/npm-test-final.log:86: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration/rollback        
+.scratch/local-native-deploy/reports/npm-test-final.log:88: trailing whitespace.
++  ├ λ /api/trading-room/account-principal                        
+.scratch/local-native-deploy/reports/npm-test-final.log:89: trailing whitespace.
++  ├ λ /api/trading-room/cash                                     
+.scratch/local-native-deploy/reports/npm-test-final.log:90: trailing whitespace.
++  ├ λ /api/trading-room/cash/baselines                           
+.scratch/local-native-deploy/reports/npm-test-final.log:91: trailing whitespace.
++  ├ λ /api/trading-room/fx                                       
+.scratch/local-native-deploy/reports/npm-test-final.log:92: trailing whitespace.
++  ├ λ /api/trading-room/principal                                
+.scratch/local-native-deploy/reports/npm-test-final.log:93: trailing whitespace.
++  └ λ /api/trading-room/reference-capital                        
+.scratch/local-native-deploy/reports/npm-test.log:34: trailing whitespace.
++[plugin builtin:vite-reporter] 
+.scratch/local-native-deploy/reports/npm-test.log:63: trailing whitespace.
++  ┌ ? /                                                          
+.scratch/local-native-deploy/reports/npm-test.log:64: trailing whitespace.
++  ├ λ /api/demo-replay                                           
+.scratch/local-native-deploy/reports/npm-test.log:65: trailing whitespace.
++  ├ λ /api/fx                                                    
+.scratch/local-native-deploy/reports/npm-test.log:66: trailing whitespace.
++  ├ λ /api/instruments/resolve                                   
+.scratch/local-native-deploy/reports/npm-test.log:67: trailing whitespace.
++  ├ λ /api/market-data/daily                                     
+.scratch/local-native-deploy/reports/npm-test.log:68: trailing whitespace.
++  ├ λ /api/market-data/intraday                                  
+.scratch/local-native-deploy/reports/npm-test.log:69: trailing whitespace.
++  ├ λ /api/storage/bootstrap                                     
+.scratch/local-native-deploy/reports/npm-test.log:70: trailing whitespace.
++  ├ λ /api/storage/instruments/metadata                          
+.scratch/local-native-deploy/reports/npm-test.log:71: trailing whitespace.
++  ├ λ /api/storage/market-data                                   
+.scratch/local-native-deploy/reports/npm-test.log:72: trailing whitespace.
++  ├ λ /api/storage/migrate                                       
+.scratch/local-native-deploy/reports/npm-test.log:73: trailing whitespace.
++  ├ λ /api/storage/recall                                        
+.scratch/local-native-deploy/reports/npm-test.log:74: trailing whitespace.
++  ├ λ /api/storage/recall/summaries                              
+.scratch/local-native-deploy/reports/npm-test.log:75: trailing whitespace.
++  ├ λ /api/storage/review-summaries                              
+.scratch/local-native-deploy/reports/npm-test.log:76: trailing whitespace.
++  ├ λ /api/storage/reviews                                       
+.scratch/local-native-deploy/reports/npm-test.log:77: trailing whitespace.
++  ├ λ /api/storage/settings                                      
+.scratch/local-native-deploy/reports/npm-test.log:78: trailing whitespace.
++  ├ λ /api/storage/status                                        
+.scratch/local-native-deploy/reports/npm-test.log:79: trailing whitespace.
++  ├ λ /api/storage/trade-revisions                               
+.scratch/local-native-deploy/reports/npm-test.log:80: trailing whitespace.
++  ├ λ /api/storage/trades                                        
+.scratch/local-native-deploy/reports/npm-test.log:81: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration                 
+.scratch/local-native-deploy/reports/npm-test.log:82: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration/aliases         
+.scratch/local-native-deploy/reports/npm-test.log:83: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration/commit          
+.scratch/local-native-deploy/reports/npm-test.log:84: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration/preview         
+.scratch/local-native-deploy/reports/npm-test.log:85: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration/provisional     
+.scratch/local-native-deploy/reports/npm-test.log:86: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration/rollback        
+.scratch/local-native-deploy/reports/npm-test.log:88: trailing whitespace.
++  ├ λ /api/trading-room/account-principal                        
+.scratch/local-native-deploy/reports/npm-test.log:89: trailing whitespace.
++  ├ λ /api/trading-room/cash                                     
+.scratch/local-native-deploy/reports/npm-test.log:90: trailing whitespace.
++  ├ λ /api/trading-room/cash/baselines                           
+.scratch/local-native-deploy/reports/npm-test.log:91: trailing whitespace.
++  ├ λ /api/trading-room/fx                                       
+.scratch/local-native-deploy/reports/npm-test.log:92: trailing whitespace.
++  ├ λ /api/trading-room/principal                                
+.scratch/local-native-deploy/reports/npm-test.log:93: trailing whitespace.
++  └ λ /api/trading-room/reference-capital                        
+.scratch/local-native-deploy/reports/npm-test.log:122: trailing whitespace.
++  
+.scratch/local-native-deploy/reports/npm-test.log:124: trailing whitespace.
++  
+.scratch/local-native-deploy/reports/production-deploy-accepted-final.log:1: trailing whitespace.
++node "$NATIVE_CLI" --mode=deploy --source="$DEPLOY_SOURCE" --target="$DEPLOY_ROOT" --ref="$REF" 
+.scratch/local-native-deploy/reports/production-deploy-accepted.log:1: trailing whitespace.
++node "$NATIVE_CLI" --mode=deploy --source="$DEPLOY_SOURCE" --target="$DEPLOY_ROOT" --ref="$REF" 
+.scratch/local-native-deploy/reports/production-deploy-final.log:1: trailing whitespace.
++node "$NATIVE_CLI" --mode=deploy --source="$DEPLOY_SOURCE" --target="$DEPLOY_ROOT" --ref="$REF" 
+.scratch/local-native-deploy/reports/production-deploy-fixed.log:1: trailing whitespace.
++node "$NATIVE_CLI" --mode=deploy --source="$DEPLOY_SOURCE" --target="$DEPLOY_ROOT" --ref="$REF" 
+.scratch/local-native-deploy/reports/production-deploy.log:1: trailing whitespace.
++node "$NATIVE_CLI" --mode=deploy --source="$DEPLOY_SOURCE" --target="$DEPLOY_ROOT" --ref="$REF" 
+.scratch/local-native-deploy/reports/production-deploy.log:11: trailing whitespace.
++ [38;5;240m  │[0m                       ─────────────┬─────────────  
+.scratch/local-native-deploy/reports/production-rollback-final.log:1: trailing whitespace.
++node "$NATIVE_CLI" --mode=rollback --target="$DEPLOY_ROOT" 
+.scratch/local-native-deploy/reports/production-status.log:3: new blank line at EOF.
+.scratch/local-native-deploy/reports/safety-tests-initial.log:21: trailing whitespace.
++  
+.scratch/local-native-deploy/reports/safety-tests-initial.log:23: trailing whitespace.
++  
+.scratch/local-native-deploy/reports/safety-tests-initial.log:48: trailing whitespace.
++  
+.scratch/local-native-deploy/reports/safety-tests-initial.log:50: trailing whitespace.
++  
+.scratch/local-native-deploy/reports/safety-tests-initial.log:75: trailing whitespace.
++  
+.scratch/local-native-deploy/reports/safety-tests-initial.log:77: trailing whitespace.
++  
+.scratch/local-native-deploy/reports/safety-tests-initial.log:102: trailing whitespace.
++  
+.scratch/local-native-deploy/reports/safety-tests-initial.log:104: trailing whitespace.
++  
+.scratch/local-native-deploy/reports/scoped-lint.log:9: new blank line at EOF.
+.scratch/local-native-deploy/reports/typecheck-final.log:4: new blank line at EOF.
+.scratch/local-native-deploy/reports/typecheck.log:4: new blank line at EOF.
+.scratch/local-native-deploy/reports/unit-final.log:9375: new blank line at EOF.
+.scratch/local-native-deploy/reports/unit.log:8567: new blank line at EOF.
+.scratch/native-debug-baseline/reports/baseline-runtime.log:15: new blank line at EOF.
+.scratch/native-debug-baseline/reports/full-unit.log:7326: new blank line at EOF.
+.scratch/native-debug-baseline/reports/npm-test.log:34: trailing whitespace.
++[plugin builtin:vite-reporter] 
+.scratch/native-debug-baseline/reports/npm-test.log:47: trailing whitespace.
++  ┌ ? /                                                          
+.scratch/native-debug-baseline/reports/npm-test.log:48: trailing whitespace.
++  ├ λ /api/demo-replay                                           
+.scratch/native-debug-baseline/reports/npm-test.log:49: trailing whitespace.
++  ├ λ /api/fx                                                    
+.scratch/native-debug-baseline/reports/npm-test.log:50: trailing whitespace.
++  ├ λ /api/instruments/resolve                                   
+.scratch/native-debug-baseline/reports/npm-test.log:51: trailing whitespace.
++  ├ λ /api/market-data/daily                                     
+.scratch/native-debug-baseline/reports/npm-test.log:52: trailing whitespace.
++  ├ λ /api/market-data/intraday                                  
+.scratch/native-debug-baseline/reports/npm-test.log:53: trailing whitespace.
++  ├ λ /api/storage/bootstrap                                     
+.scratch/native-debug-baseline/reports/npm-test.log:54: trailing whitespace.
++  ├ λ /api/storage/instruments/metadata                          
+.scratch/native-debug-baseline/reports/npm-test.log:55: trailing whitespace.
++  ├ λ /api/storage/market-data                                   
+.scratch/native-debug-baseline/reports/npm-test.log:56: trailing whitespace.
++  ├ λ /api/storage/migrate                                       
+.scratch/native-debug-baseline/reports/npm-test.log:57: trailing whitespace.
++  ├ λ /api/storage/recall                                        
+.scratch/native-debug-baseline/reports/npm-test.log:58: trailing whitespace.
++  ├ λ /api/storage/recall/summaries                              
+.scratch/native-debug-baseline/reports/npm-test.log:59: trailing whitespace.
++  ├ λ /api/storage/review-summaries                              
+.scratch/native-debug-baseline/reports/npm-test.log:60: trailing whitespace.
++  ├ λ /api/storage/reviews                                       
+.scratch/native-debug-baseline/reports/npm-test.log:61: trailing whitespace.
++  ├ λ /api/storage/settings                                      
+.scratch/native-debug-baseline/reports/npm-test.log:62: trailing whitespace.
++  ├ λ /api/storage/status                                        
+.scratch/native-debug-baseline/reports/npm-test.log:63: trailing whitespace.
++  ├ λ /api/storage/trade-revisions                               
+.scratch/native-debug-baseline/reports/npm-test.log:64: trailing whitespace.
++  ├ λ /api/storage/trades                                        
+.scratch/native-debug-baseline/reports/npm-test.log:65: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration                 
+.scratch/native-debug-baseline/reports/npm-test.log:66: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration/aliases         
+.scratch/native-debug-baseline/reports/npm-test.log:67: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration/commit          
+.scratch/native-debug-baseline/reports/npm-test.log:68: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration/preview         
+.scratch/native-debug-baseline/reports/npm-test.log:69: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration/provisional     
+.scratch/native-debug-baseline/reports/npm-test.log:70: trailing whitespace.
++  ├ λ /api/storage/tradingview-account-migration/rollback        
+.scratch/native-debug-baseline/reports/npm-test.log:72: trailing whitespace.
++  ├ λ /api/trading-room/account-principal                        
+.scratch/native-debug-baseline/reports/npm-test.log:73: trailing whitespace.
++  ├ λ /api/trading-room/cash                                     
+.scratch/native-debug-baseline/reports/npm-test.log:74: trailing whitespace.
++  ├ λ /api/trading-room/cash/baselines                           
+.scratch/native-debug-baseline/reports/npm-test.log:75: trailing whitespace.
++  ├ λ /api/trading-room/fx                                       
+.scratch/native-debug-baseline/reports/npm-test.log:76: trailing whitespace.
++  ├ λ /api/trading-room/principal                                
+.scratch/native-debug-baseline/reports/npm-test.log:77: trailing whitespace.
++  └ λ /api/trading-room/reference-capital                        
+.scratch/native-debug-baseline/reports/runtime-config-final.log:15: new blank line at EOF.
+.scratch/native-debug-baseline/reports/scoped-lint-final.log:7: new blank line at EOF.
+.scratch/native-debug-baseline/reports/typecheck.log:4: new blank line at EOF.
+.scratch/unit-suite-repair/reports/async-red-dashboard-reload.log:53: new blank line at EOF.
+.scratch/unit-suite-repair/reports/async-red-dashboard-scope.log:53: new blank line at EOF.
+.scratch/unit-suite-repair/reports/async-red-four-files-serial.log:787: new blank line at EOF.
+.scratch/unit-suite-repair/reports/async-red-library-pagination.log:15: new blank line at EOF.
+.scratch/unit-suite-repair/reports/async-red-refresh-cancel.log:19: new blank line at EOF.
+.scratch/unit-suite-repair/reports/async-red-refresh-failure.log:19: new blank line at EOF.
+.scratch/unit-suite-repair/reports/async-red-refresh-running.log:19: new blank line at EOF.
+.scratch/unit-suite-repair/reports/async-red-refresh-saved.log:19: new blank line at EOF.
+.scratch/unit-suite-repair/reports/async-red-storage-boundary.log:15: new blank line at EOF.
+.scratch/unit-suite-repair/reports/debug-test-final.log:45: trailing whitespace.
++  
+.scratch/unit-suite-repair/reports/debug-test-final.log:47: trailing whitespace.
++  
+.scratch/unit-suite-repair/reports/debug-test-final.log:83: trailing whitespace.
++  
+.scratch/unit-suite-repair/reports/debug-test-final.log:85: trailing whitespace.
++  
+.scratch/unit-suite-repair/reports/deploy-red-green.log:15: new blank line at EOF.
+.scratch/unit-suite-repair/reports/full-unit-final-v2.log:15: new blank line at EOF.
+.scratch/unit-suite-repair/reports/full-unit-final.log:407: new blank line at EOF.
+.scratch/unit-suite-repair/reports/holdings-green-case.log:15: new blank line at EOF.
+.scratch/unit-suite-repair/reports/holdings-green-full.log:15: new blank line at EOF.
+.scratch/unit-suite-repair/reports/holdings-red-20261006.log:44: new blank line at EOF.
+.scratch/unit-suite-repair/reports/typecheck-final-v2.log:4: new blank line at EOF.
+.scratch/unit-suite-repair/reports/typecheck-final.log:4: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-alias-synchronization-v2.log:11: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-clock-probe.log:1296: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-diagnostic-timing.log:53: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-drawing-diag.log:36: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-drawing-diag2.log:38: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-drawing-diag3.log:46: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-drawing-diag4.log:36: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-drawing-diag5.log:33: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-drawing-green-one.log:33: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-first-diagnostic.log:15: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-first-scoped-v3.log:211: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-first-scoped-v4.log:1088: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-first-scoped-v5.log:37: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-first-scoped-v6.log:15: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-full-frozen.log:15: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-import-diagnostic-three.log:34: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-import-final-diagnostic.log:33: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-import-green-one.log:33: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-import-isolated-current.log:33: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-import-scoped-green.log:33: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-red-import.log:15: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-red-recall.log:15: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-red-workspace.log:15: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-three-diagnostic-two.log:33: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-three-final-one-v2.log:34: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-three-final-one-v3.log:77: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-three-final-one.log:33: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-three-final-two.log:398: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-three-frozen-one.log:15: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-three-frozen-two.log:15: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-three-green-one.log:33: new blank line at EOF.
+.scratch/unit-suite-repair/reports/workspace-three-repair-attempt-1.log:412: new blank line at EOF.

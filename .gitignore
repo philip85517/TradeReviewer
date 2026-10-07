@@ -50,3 +50,6 @@ next-env.d.ts
 /.data/
 *.sqlite
 *.sqlite3
+
+# Active debug service output; accepted startup evidence is archived separately
+/.scratch/native-debug-baseline/reports/actual-debug-restart.log

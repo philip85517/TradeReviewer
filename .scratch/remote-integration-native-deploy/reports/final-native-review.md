@@ -1,0 +1,56 @@
+# Final frozen G05/G07 source review
+
+Reviewer: /root/unit_review. Date: 2026-10-07 (Asia/Shanghai).
+
+**Changed-source blockers: none found. Spec PASS; Quality PASS, scoped to the frozen G05/G07 implementation. This is not full native/integration or merge acceptance.** Existing-service actual SQLite remains UNKNOWN; pending coordinator checks cannot be replaced by this review.
+
+Compared current worktree source with HEAD `cf7d48cc4d0052841b64690085e68b23325ffaea`: `scripts/native-environment.mjs`, its test, new `scripts/native-node.sh`, source and target Makefiles, the `package.json` dev-only delta, installed launcher, toolkit source/test, and deploy-runtime test. Read current workflow, G05/G07 issues/coverage, the previous engine review, and root's frozen manifest/probe records. New untracked bootstrap was read directly, since ordinary Git diff omits it. No tests, SQL, service/process operations, source changes, Git mutations, remote/browser operations or nested agents were performed. Only this report was written.
+
+## Spec
+
+No Critical, Important or Minor changed-source issue found.
+
+- **Actual engine and synchronous API:** `scripts/native-environment.mjs:27-35` opens only `:memory:`, queries `SELECT sqlite_version() AS version`, and closes the connection in `finally` after either successful read or query failure. `:39-46` rejects bad profile/Node/executable before invoking that probe. It does not use `versions.sqlite` as an engine observation, swallow SQL failures or fall back to metadata. `:47` preserves the original three-field return object with the measured SQL value. The synchronous `getSqliteVersion` seam is a fixture option; normal CLI/debug/launcher paths do not expose a user/environment bypass.
+- **Pre-side-effect placement:** unchanged deployment `scripts/deploy-native.mjs:150`, runtime build/start `scripts/deploy-native-runtime.mjs:172,187`, and debug `scripts/debug-local.mjs:179-180` validate before target mutation, logging/build commands, service inspection/start, or debug lock/backup/child creation. Installed startup now performs the same actual assertion at `deploy/ops/start-native.command:13`, before application execution. Bootstrap profile reading itself does not inspect a service or open a business database.
+- **Configured runtime selection:** `scripts/native-node.sh:5-9` resolves source `conf/native-environment.json` or installed `ops/native-environment.json` from its own directory. `:12-26` uses ambient Node only to read/validate JSON and emit its fields; it imports no SQLite/project/service module and receives no application arguments. The executable must be absolute, a file and executable (`:30-37`). Invalid/missing configuration or executable exits without fallback. `:39` uses quoted `exec "$node_executable" "$@"`, preserving argument boundaries, inherited environment, exit status and signal delivery to the selected process. The source file is currently mode `0755`.
+- **Entrypoints and existing behavior:** source Makefile `:15-31` and target Makefile `:19-30` route native commands through the bootstrap. Target `:10-11` adds the new bootstrap as a native marker; any existing native marker still selects native mode, so incomplete native tools do not silently choose Docker. Docker recipes are unchanged. `package.json:9` changes only the dev executable and retains the exact `WRANGLER_LOG_PATH=.wrangler/wrangler.log` assignment and debug script argument. No business database or port override is added. Source `make dev` continues through that npm script.
+- **Installed launcher alignment:** `deploy/ops/start-native.command:8-16` requires installed bootstrap/module, captures the validated selected process's `execPath`, derives its matching npm CLI, and puts its bin directory first on PATH. Existing release/config checks, production environment, override cleanup and final quoted npm invocation remain (`:18-25`). There is no remaining hardcoded Homebrew Node path in this launcher.
+- **Toolkit ownership and rollback:** adding `native-node.sh` to `scripts/deploy-native-toolkit.mjs:8` brings it into both source and installed layout manifests (`:50-65`). Existing regular-file/ancestor/hard-link checks, per-file backup, copied permissions and reverse rollback (`:94-109`, `:114-119`) therefore cover the new control file too. Restoring an existing bootstrap restores original bytes/mode; restoring a newly installed bootstrap removes it. No second installation path outside the toolkit transaction was introduced.
+- **Pin and provenance:** the separately reviewed profile retains Node `26.0.0` / SQL `3.53.0` and selects the approved new private executable. The private runtime SQL/source ID and actual binary hashes are recorded in `pinned-runtime-doc-review.md`; the source makes no version relaxation. Its documentation now explicitly links `sqlite3530-private-probe.json` for the clang command, closing prior M01 while preserving that review's original history.
+
+## Assertion and fixture review
+
+All four original environment test names/cases and their assertion outcomes remain. Three new cases add the actual-engine regression and configured/missing bootstrap paths; no skip, timeout, deleted case or default-budget increase was introduced.
+
+- `scripts/native-environment.test.mjs:86-103` still checks the complete successful result and separately rejects wrong Node, wrong SQL engine and wrong executable. Fixtures now take the configured private executable/version and use the explicit SQL seam where a synthetic engine is intended. The Node/SQLite diagnostic assertions now require the exact configured version text, strengthening the broader intermediate candidate described in the prior G05 review. The no-option live assertions at `:140-144` still require literal `26.0.0` and `3.53.0`.
+- The real regression at `:105-126` independently reads a real in-memory engine, gives the assertion a temporary profile and matching fake build metadata `0.0.0`, omits the SQL seam and expects rejection. It directly detects the original metadata-only gate. Its owned database/directory cleanup remains in `finally`; bootstrap fixture setup failure also cleans its owned directory (`:27-41`), and both new bootstrap cases clean their temporary directories (`:65-67`, `:80-83`). There is no connection to the configured business database.
+- The bootstrap success test (`:54-68`) checks actual SQL, exact selected executable and the full forwarded argument array, including spaces, a quote and literal `$HOME`. An owned ambient Node wrapper logs profile-parser invocations; application sentinels must not reach it. The missing-executable test (`:70-84`) requires failure and the same absence of ambient application fallback. These assertions exercise the real copied shell boundary, rather than injecting a success callback.
+- Toolkit test `:24,29` adds exact bootstrap bytes and removal-on-restore assertions. Existing prior-control restoration, install-failure sentinel, installed layout and path safety assertions remain. The installed fixture list at `:45` includes the new control file.
+- `scripts/deploy-native-runtime.test.mjs:224-229` derives the expected npm path from the actual configured `process.execPath`; the exact two build command/argument pairs, cwd, production environment, database path and absence of runtime-config override assertions remain. `:250-253` supplies a valid executable and wrong SQL seam to reach the SQLite rejection after the corrected executable-first gate, retaining the exact required-version error and zero inspection/start counters. Bad-Node zero-command/no-log assertions at `:238-245` remain unchanged. No tests are bypassed by constant empty fixtures or broadened timeout budgets.
+
+## Quality
+
+The SQL resource owner is small and local; callers retain their existing synchronous contract. Bootstrap parsing and quoted execution keep shell interpretation separate from user arguments. Installation uses the existing safety/rollback mechanism, and changes to package/Makefiles remain bounded to native entrypoints. No unrelated Docker, UI, storage, business configuration or dependency changes occur in the reviewed deltas. The new test fixture boundaries retain actual shell/SQL observation while keeping all writes in owned temporary directories.
+
+The coordinator's final manifest `final-native-source-freeze.json` matches all ten source/test SHA256 values actually read by this reviewer:
+
+| File | SHA256 |
+| --- | --- |
+| `scripts/native-environment.mjs` | `ac2ef89f00db03d221351c4780671266c715a9adda20f7389ae744fc9fe602da` |
+| `scripts/native-environment.test.mjs` | `77da78f75aad1501ec67694bf2a0c4b9faa0e1500c9e22466254f135ff518b90` |
+| `scripts/native-node.sh` | `3d1d17bd76eb375fce90d2efa8cb8b7072435d305613b11b676b1c8f950b727e` |
+| `Makefile` | `4f052ff4b59dc91768dc10758dafcd51825598c93b2c266b0e0088b9dc449d2f` |
+| `deploy/target/Makefile` | `7d5a79abf226477b82a35016e567580f5672613f9bf835f63cc2e80a996a3807` |
+| `package.json` | `a9d1d953a0d13b0c27c76fbfe7566156790c909478cbd8b50a801fc95ed301ed` |
+| `deploy/ops/start-native.command` | `c91128d67dec7fa76b56128c7fffda405f8dc6954cf0c48f47d660790456eef6` |
+| `scripts/deploy-native-toolkit.mjs` | `4ae32a5498e5ed7cd69783dbf06e1f0fbf6c4f1218578562de0d75e8026144c5` |
+| `scripts/deploy-native-toolkit.test.mjs` | `50b6930b715279638e712162b1bca4fc6eab2e3ebd8983ee42412d3fdb07672c` |
+| `scripts/deploy-native-runtime.test.mjs` | `024b598e9b08810d46893533ca90a58fa02e7ed254e155899931f54de887d6bc` |
+
+Read coordinator evidence, without executing it: `pinned-entrypoints-red-v2.log` records the two intended cases failing because the production shell entrypoint did not yet exist; `pinned-entrypoints-green.log` records both passing, no skips. The earlier import-error log is separate and is not treated as behavioral RED. Root's focused G05 regression evidence remains retained. These scoped results do not establish full native/debug or integrated checks.
+
+## Preserved service-runtime proof boundary
+
+The invoking process's SQL measurement does not measure another running process. Unchanged `scripts/deploy-native.mjs:133-135` still reuses the tooling measurement as `serviceRuntime` when executable paths match; unchanged `scripts/deploy-native-runtime.mjs:234` checks ownership/executable/HTTP, not SQL returned by that listener. Child environment propagation at `:37-44` remains unchanged. An older same-path service or child with different dynamic-library overrides cannot be assigned a proven actual SQL version solely from that inference. This is the previously reported evidence boundary, outside the frozen changed-source implementation; **existing-service actual SQLite stays UNKNOWN**. Do not rewrite historical metadata-only observations as actual SQL verification or claim that a source merge updated installed tools/services.
+
+Recommendation: accept the bounded G05/G07 source implementation for coordinator validation. Keep overall G05/G07/native/integration acceptance pending until fresh required native/debug, isolated installed/source entrypoint probes, full unit/build/type/scoped lint and evidence closure are complete. Preserve the original I01 failure and previous review caveat; this scoped PASS does not establish remote merge readiness.

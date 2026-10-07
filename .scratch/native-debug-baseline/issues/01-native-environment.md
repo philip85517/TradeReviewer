@@ -1,8 +1,8 @@
 # 01 — Pin the native runtime and unify deployment control
 
 ID: NDB-01
-State: closed
-Status: accepted
+State: open
+Status: integration-pending
 Assignee: native_environment (gpt-5.6-luna)
 Coordinator: /root
 
@@ -31,3 +31,11 @@ Write only conf/native-environment.json, .node-version, scripts/native-environme
 ## Coordinator acceptance — 2026-10-06
 
 Accepted by /root after direct code review, independent review, and applicable operational checks. [Final acceptance](../FINAL-ACCEPTANCE.md) and [coverage](../DESIGN-COVERAGE.md) link native57/57, debug/environment15/15, existing deployment58/58, runtime-config6/6, build/integration5/5, typecheck/scoped lint, installed controls and unchanged formal service/data, and real browser persistence/restart-reset evidence. The broad repository unit run remains FAIL and is preserved explicitly; no repository-wide green claim or application release is made. Historical red/failing evidence is retained.
+
+2026-10-07: reopened for actual SQL engine mismatch; root and G05 own correction/reverification. Historical metadata evidence retained.
+
+## 2026-10-07 source/runtime correction accepted; deployment verification pending
+
+G05/G07 source gates now PASS: assertNativeEnvironment queries actual sqlite_version() in a private in-memory database; configured bootstrap selects a new private exact26.0.0/3.53.0 runtime, and missing executable rejects without fallback. Native60/60, debug18/18, isolated source/installed make/status/launcher acceptance, build/integration5/5, typecheck and scoped lint (0errors/2warnings) passed. Independent final review and source freeze passed. See ../remote-integration-native-deploy/FINAL-ACCEPTANCE.md and its reports. Private runtime provenance is in ../../conf/NATIVE-RUNTIME.md (repository conf/NATIVE-RUNTIME.md).
+
+The earlier metadata-only runtime PASS is invalid for identifying the actual engine. Prior data/browser/control-install evidence is preserved as history. Existing production toolkit and3022/3333 processes were not reinstalled/restarted in this Git integration; their actual loaded SQLite versions are NOT VERIFIED. Therefore the native deployment/debug feature remains open/integration-pending until a separately requested actual deployment/restart is verified; source acceptance does not close that live operational gate.

@@ -138,7 +138,7 @@
 
 正式启动使用新部署目录的 `ops/start-native.command`。端口占用必须核实已有进程，不得悄悄改端口生成另一业务入口。正式库备份使用 SQLite backup API，不能仅复制活跃数据库文件。
 
-2026-10-06 确认的原生环境固定为 Node.js 26.0.0、内置 SQLite 3.53.0，由 `conf/native-environment.json` 校验，依赖使用 lockfile 和 `npm ci`。数据库结构版本由迁移管理。发布记录保留实际运行环境，不补造历史 release 的缺失字段。
+2026-10-06 确认的原生环境固定为 Node.js 26.0.0、加载的 SQLite 3.53.0，由 `conf/native-environment.json` 校验，依赖使用 lockfile 和 `npm ci`。2026-10-07 校验改为查询实际 `sqlite_version()`；标准入口从环境配置选择独立运行时，执行文件缺失不回退。来源和复建说明见 [固定原生环境](../../conf/NATIVE-RUNTIME.md)。数据库结构版本由迁移管理。发布记录保留实际运行环境，不补造历史 release 的缺失字段。
 
 普通 worktree 调试执行 `make dev` 或 `npm run dev`，固定监听 `127.0.0.1:3333`。启动时只读打开项目配置的在线业务库，通过 SQLite backup API 制作包含 WAL 的一致性备份，校验后原子替换 `.data/tradereview-test.sqlite`，并显式设置隔离数据库路径。重启会重置此前测试修改；端口或测试库占用、路径不安全及备份失败时退出，不回退到业务库。
 

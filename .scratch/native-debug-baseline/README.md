@@ -1,7 +1,7 @@
 # Native deployment and worktree debug baseline
 
-State: closed
-Status: accepted (deployment/debug scope)
+State: open
+Status: integration-pending (live deployment/debug verification)
 Coordinator: /root
 Approved design: user confirmed the concrete design in this chat on 2026-10-06.
 
@@ -43,3 +43,13 @@ The coordinator independently accepted the operational contract. Verified native
 Native deployment57/57, debug/environment15/15, existing deployment58/58, runtime configuration6/6, typecheck, scoped lint and build/integration5/5 passed. Independent review resolved all ten confirmed findings. The broad repository unit run remains FAIL (65 failures); only40 were present in prior logs, three deployment timeouts passed isolated rerun, and22 other UI/business failures have no matching prior-log evidence. These are preserved explicitly in final acceptance; no repository-wide green claim or new application release is made.
 
 Changes remain uncommitted. `make deploy` requires a committed current HEAD; `make deploy REF=master` obtains remote master. See [Final acceptance](FINAL-ACCEPTANCE.md) for evidence and operational limits.
+
+## 2026-10-07 integration regression — current gate FAIL
+
+Actual SQLite engine gate invalidated: Homebrew Node metadata reports3.53.0 but in-memory SQL reports3.53.1. Prior metadata-only runtime acceptance is historical, actual engine check FAIL. No business database or existing service changed. See ../remote-integration-native-deploy/issues/02-runtime-engine.md.
+
+## 2026-10-07 source/runtime correction accepted; deployment verification pending
+
+G05/G07 source gates now PASS: assertNativeEnvironment queries actual sqlite_version() in a private in-memory database; configured bootstrap selects a new private exact26.0.0/3.53.0 runtime, and missing executable rejects without fallback. Native60/60, debug18/18, isolated source/installed make/status/launcher acceptance, build/integration5/5, typecheck and scoped lint (0errors/2warnings) passed. Independent final review and source freeze passed. See ../remote-integration-native-deploy/FINAL-ACCEPTANCE.md and its reports. Private runtime provenance is in ../../conf/NATIVE-RUNTIME.md (repository conf/NATIVE-RUNTIME.md).
+
+The earlier metadata-only runtime PASS is invalid for identifying the actual engine. Prior data/browser/control-install evidence is preserved as history. Existing production toolkit and3022/3333 processes were not reinstalled/restarted in this Git integration; their actual loaded SQLite versions are NOT VERIFIED. Therefore the native deployment/debug feature remains open/integration-pending until a separately requested actual deployment/restart is verified; source acceptance does not close that live operational gate.

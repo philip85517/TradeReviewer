@@ -1,0 +1,27 @@
+✖ rejects a profile that matches build metadata but mismatches the live SQLite engine (6.143359ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 275.258902
+
+✖ failing tests:
+
+test at scripts/native-environment.test.mjs:28:1
+✖ rejects a profile that matches build metadata but mismatches the live SQLite engine (6.143359ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/native-environment.test.mjs:40:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.start (node:internal/test_runner/test:1096:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /SQLite 0\.0\.0/,
+    operator: 'throws',
+    diff: 'simple'
+  }

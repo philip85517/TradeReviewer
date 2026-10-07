@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 
 const OWN_DIR = dirname(fileURLToPath(import.meta.url));
-const MODULES = ["deploy-native.mjs", "deploy-source.mjs", "deploy-native-runtime.mjs", "deploy.mjs", "deploy-native-toolkit.mjs", "native-environment.mjs"];
+const MODULES = ["deploy-native.mjs", "deploy-source.mjs", "deploy-native-runtime.mjs", "deploy.mjs", "deploy-native-toolkit.mjs", "native-environment.mjs", "native-node.sh"];
 
 async function details(path) {
   try { return await lstat(path); } catch (error) { if (error.code === "ENOENT") return null; throw error; }

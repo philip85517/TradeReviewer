@@ -1,5 +1,5 @@
 {
   "nodeVersion": "26.0.0",
   "sqliteVersion": "3.53.0",
-  "nodeExecutable": "/usr/local/Cellar/node/26.0.0/bin/node"
+  "nodeExecutable": "/Users/zhoulin/.local/share/tradereview/runtimes/node-26.0.0-sqlite-3.53.0-darwin-x64/bin/node"
 }

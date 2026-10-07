@@ -1,0 +1,21 @@
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/afc8/TradeReview
+
+(node:14712) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"tag":"G06-refresh","milestone":"render","elapsedMs":5}
+{"tag":"G06-refresh","milestone":"initial data","elapsedMs":498,"dataManagementConnected":true}
+{"tag":"G06-refresh","milestone":"first round","elapsedMs":964}
+{"tag":"G06-refresh","milestone":"first detail","elapsedMs":1910}
+{"tag":"G06-refresh","milestone":"refresh calls","elapsedMs":2024,"dailyCalls":1,"intradayCalls":1}
+{"tag":"G06-refresh","milestone":"return data","elapsedMs":2513,"dataManagementConnected":true,"freshDataManagementConnected":true,"sameRegion":true}
+{"tag":"G06-refresh","milestone":"summary complete","elapsedMs":2522}
+{"tag":"G06-refresh","milestone":"second round","elapsedMs":2921}
+{"tag":"G06-refresh","milestone":"second detail","elapsedMs":3256}
+{"tag":"G06-refresh","milestone":"final assertions","elapsedMs":3287}
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  09:59:01
+   Duration  18.28s (transform 2.70s, setup 165ms, import 3.52s, tests 13.21s, environment 1.04s)
+

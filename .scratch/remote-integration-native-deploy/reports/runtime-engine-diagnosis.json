@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-07T01:50:24.000298+00:00",
+  "observed": {
+    "execPath": "/usr/local/Cellar/node/26.0.0/bin/node",
+    "node": "26.0.0",
+    "metadataSqlite": "3.53.0",
+    "sql": {
+      "version": "3.53.1",
+      "sourceId": "2026-05-05 10:34:17 c88b22011a54b4f6fbd149e9f8e4de77658ce58143a1af0e3785e4e6475127e9"
+    }
+  },
+  "links": "/usr/local/Cellar/node/26.0.0/bin/node:\n\t@rpath/libnode.147.dylib (compatibility version 0.0.0, current version 0.0.0)\n\t/usr/lib/libz.1.dylib (compatibility version 1.0.0, current version 1.2.12)\n\t/usr/local/opt/llhttp/lib/libllhttp.9.4.dylib (compatibility version 9.4.0, current version 9.4.1)\n\t/usr/local/opt/libuv/lib/libuv.1.dylib (compatibility version 1.0.0, current version 1.0.0)\n\t/usr/local/opt/ada-url/lib/libada.3.dylib (compatibility version 3.0.0, current version 3.4.4)\n\t/usr/local/opt/simdjson/lib/libsimdjson.33.dylib (compatibility version 33.0.0, current version 33.0.0)\n\t/usr/local/opt/brotli/lib/libbrotlidec.1.dylib (compatibility version 1.0.0, current version 1.2.0)\n\t/usr/local/opt/brotli/lib/libbrotlienc.1.dylib (compatibility version 1.0.0, current version 1.2.0)\n\t/usr/local/opt/c-ares/lib/libcares.2.dylib (compatibility version 2.0.0, current version 2.19.5)\n\t/usr/local/opt/hdrhistogram_c/lib/libhdr_histogram.6.dylib (compatibility version 6.0.0, current version 6.2.3)\n\t/usr/local/opt/merve/lib/libmerve.1.dylib (compatibility version 1.0.0, current version 1.2.2)\n\t/usr/local/opt/nbytes/lib/libnbytes.dylib (compatibility version 0.0.0, current version 0.0.0)\n\t/usr/local/opt/libnghttp2/lib/libnghttp2.14.dylib (compatibility version 44.0.0, current version 44.4.0)\n\t/usr/local/opt/libnghttp3/lib/libnghttp3.9.dylib (compatibility version 9.0.0, current version 9.6.1)\n\t/usr/local/opt/libngtcp2/lib/libngtcp2.16.dylib (compatibility version 25.0.0, current version 25.1.0)\n\t/usr/local/opt/sqlite/lib/libsqlite3.dylib (compatibility version 9.0.0, current version 9.6.0)\n\t/usr/local/opt/uvwasi/lib/libuvwasi.dylib (compatibility version 0.0.0, current version 0.0.0)\n\t/usr/local/opt/zstd/lib/libzstd.1.dylib (compatibility version 1.0.0, current version 1.5.7)\n\t/usr/local/opt/openssl@3/lib/libcrypto.3.dylib (compatibility version 3.0.0, current version 3.0.0)\n\t/usr/local/opt/openssl@3/lib/libssl.3.dylib (compatibility version 3.0.0, current version 3.0.0)\n\t/usr/local/opt/icu4c@78/lib/libicui18n.78.dylib (compatibility version 78.0.0, current version 78.3.0)\n\t/usr/local/opt/icu4c@78/lib/libicuuc.78.dylib (compatibility version 78.0.0, current version 78.3.0)\n\t/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation (compatibility version 150.0.0, current version 2503.1.0)\n\t/System/Library/Frameworks/Security.framework/Versions/A/Security (compatibility version 1.0.0, current version 61123.121.1)\n\t/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 1700.255.5)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1345.120.2)\n",
+  "sqliteOptTarget": "/usr/local/Cellar/sqlite/3.53.1",
+  "rootCause": "Homebrew dynamically linked SQL engine differs from compile-time process.versions.sqlite; current gate observes compile metadata only.",
+  "status": "FAIL live engine pin3.53.0"
+}

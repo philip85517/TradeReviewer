@@ -50,3 +50,13 @@ Native deploy/debug两次命令均包含同一组4个environment测试，按各�
 并行fixture读取保留真实记录、独立readonly transaction、返回字段和错误拒绝传播。多个getter同时失败时，先拒绝者决定错误，原串行错误优先级未保留；无此优先级契约，原adapter也不提供跨getter原子快照。完整consumer和现有deferred/late-read安全测试已在最终全仓通过。
 
 Coordinator /root accepts the working repair after all applicable commands and independent reviews pass. No remaining in-scope FAIL or NOT VERIFIED gates.
+
+## 2026-10-07 integration regression — current gate FAIL
+
+Integrated full suite regressed: refresh saved-summary test times out at5000ms; prior full PASS is historical, current full-suite gate FAIL. See ../remote-integration-native-deploy/issues/03-refresh-unit.md.
+
+## 2026-10-07 integration reacceptance — PASS
+
+The preceding refresh regression is closed by G06, preserving original failing runs and the rejected synchronous navigation candidate. The test now awaits the real asynchronous primary-navigation boundary, scopes data navigation and reacquires the returned data-management container; all8 cases/60 assertions remain, without added skips or raised timeouts. Targeted8/8 and fresh bare whole-unit319 files/3070 tests PASS, with only the original6 external-corpus skips. The extra6 passing tests come from integrated master; earlier3064 results remain historical. Native60/60, debug18/18, build/integration5/5, typecheck and scoped lint (0errors/2warnings) PASS. Independent G06 review PASS.
+
+Evidence: ../remote-integration-native-deploy/reports/{refresh-final-targeted-v2.log,refresh-review.md,final-unit.log,final-unit-result.json,final-native.log,final-debug.log,final-build-integration.log,final-typecheck.log,final-scoped-eslint.log,source-freeze-verification.json}. Coordinator /root reaccepts the unit-repair scope. Product rendering/state is unchanged; browser/visual acceptance is N/A for these test-only changes. Service listeners and business data were not changed by this repair.

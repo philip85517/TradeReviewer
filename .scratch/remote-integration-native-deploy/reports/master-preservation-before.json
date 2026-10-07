@@ -1,0 +1,108 @@
+{
+  "checkout": "/Users/zhoulin/Documents/TradeReview",
+  "head": "0b0113773a54f716d45b30bfb8bc03d22b99a181",
+  "branch": "master",
+  "trackedStatus": "",
+  "untracked": {
+    ".scratch/baseline-sync-backup-20260920/AGENTS.md": {
+      "type": "file",
+      "sha256": "a92fdd7be37786877d1e5bab5a3f924b8f7d14f7a45f3065bc4293e334eaf676"
+    },
+    ".scratch/baseline-sync-backup-20260920/CONTEXT.md": {
+      "type": "file",
+      "sha256": "e57106df6895be46dc9ee24609f08a372e091f365af1eb41ebfee8d12ec7ad38"
+    },
+    ".scratch/baseline-sync-backup-20260920/docs/agents/development-workflow.md": {
+      "type": "file",
+      "sha256": "f4e4aa8157f1901e1cfa707250d0b34d02f4907a51ce37d4c23c6c8573a1307d"
+    },
+    ".scratch/baseline-sync-backup-20260920/untracked-20260922/review-dashboard-refresh/issues/01-review-dashboard-refresh.md": {
+      "type": "file",
+      "sha256": "735fc790b9ab41678aebf1a65997da6efc47f3545a7a80bcd5e5746356eb2e76"
+    },
+    ".scratch/baseline-sync-backup-20260920/untracked-20260922/statement-import-e2e-validation/issues/01-corpus-inventory.md": {
+      "type": "file",
+      "sha256": "f4a3b9f2d0e852dc2e6ea18ce6787733ce82754596d0cd676ff6fe65540b0e6b"
+    },
+    ".scratch/baseline-sync-backup-20260920/untracked-20260922/statement-import-e2e-validation/issues/02-verification-environment.md": {
+      "type": "file",
+      "sha256": "4490768f8855dfe52849ca7f18e189919c77105511ae7b4ceffe16d8d3b28f33"
+    },
+    ".scratch/baseline-sync-backup-20260920/untracked-20260922/statement-import-e2e-validation/issues/03-duplicate-import-semantics.md": {
+      "type": "file",
+      "sha256": "05586a89eb40eed6a9def18dd17323116912918845ae75e74f06fcaab8ca132c"
+    },
+    ".scratch/baseline-sync-backup-20260920/untracked-20260922/statement-import-e2e-validation/issues/04-ipo-review-semantics.md": {
+      "type": "file",
+      "sha256": "b94319b1a8469228429f20549b441675e26cbcc407ec736621cfc5f1a4cb2e4a"
+    },
+    ".scratch/baseline-sync-backup-20260920/untracked-20260922/statement-import-e2e-validation/issues/05-db-reconciliation-invariants.md": {
+      "type": "file",
+      "sha256": "af99d27d4ad47968c051292ac1c5df6aaff873bd5a5c77cbc98306b2f71fec05"
+    },
+    ".scratch/baseline-sync-backup-20260920/untracked-20260922/statement-import-e2e-validation/issues/06-run-ui-import-and-audit.md": {
+      "type": "file",
+      "sha256": "d3f2b2440762243b583fc3ae9d0abfb622717d63fdce1d90353da1ba97309201"
+    },
+    ".scratch/baseline-sync-backup-20260920/untracked-20260922/statement-import-e2e-validation/map.md": {
+      "type": "file",
+      "sha256": "caa94743fd393ef3764cee2af789349622aa84aa1bd96bca403d1566b6385e42"
+    },
+    "docs/specs/2026-09-25-tradereview_b2_hover_design_spec.md": {
+      "type": "file",
+      "sha256": "81c7f1848aa1f50133e2adb606893ee70dcc3712e245b14fc1cf88b308a9e50b"
+    },
+    "docs/specs/2026年9月25日 22_20_49_首页设计.png": {
+      "type": "file",
+      "sha256": "05cfc0c206263b69a681621afa67720324b3f084b60dfc85c7026c165357425f"
+    },
+    "tmp/pdfs/cms/page-01.png": {
+      "type": "file",
+      "sha256": "09b7cf56becbc44a88010fb5eabdfa010e74596b8c2f93923e08010dbf9e7657"
+    },
+    "tmp/pdfs/cms/page-02.png": {
+      "type": "file",
+      "sha256": "09b7cf56becbc44a88010fb5eabdfa010e74596b8c2f93923e08010dbf9e7657"
+    },
+    "tmp/pdfs/cms/pdfium-01.png": {
+      "type": "file",
+      "sha256": "16630f28b68507a6a501f9a82eca738c84be5ff0ff370bf0f9ff660b3c8eca70"
+    },
+    "tmp/pdfs/cms/pdfium-02.png": {
+      "type": "file",
+      "sha256": "edeffdfe2d20c052c65b74430d9cad88fbecc09a32ba68875ad8a4b3b9d0b680"
+    },
+    "tmp/pdfs/inspect-statements.py": {
+      "type": "file",
+      "sha256": "0c8144a4950ee5c04b2d39d633ec8a96e049fe4517bfb8985faaf8a7b8af0ee2"
+    },
+    "tmp/pdfs/render-cms.py": {
+      "type": "file",
+      "sha256": "dcae27ed0171894adf6bb7d65ce6b3675476aeec53e6a89f1ca4adc6d1eb6a18"
+    },
+    "tmp/pdfs/tiger/page-13.png": {
+      "type": "file",
+      "sha256": "d4880fb7739f19315344ecbb7412607aefce871cd200c9e08a0809a2acd59131"
+    },
+    "tmp/pdfs/tiger/page-14.png": {
+      "type": "file",
+      "sha256": "9e6bde52590bf695c33b75681dec793e981ae65f50fa96998c3f7a3ca7279965"
+    },
+    "tmp/screenshots/tradereview-home-fixed.png": {
+      "type": "file",
+      "sha256": "4c0208872d0153b395e5569864fb1545b2be39479e65e9c7cbdc6243834d0e07"
+    },
+    "tmp/screenshots/tradereview-home.png": {
+      "type": "file",
+      "sha256": "a0daa35e074b631a464044c59db43b9eca73ecf0f36d6dd6e2108c33938c9e7b"
+    },
+    "tmp/spreadsheets/inspect-trades.mjs": {
+      "type": "file",
+      "sha256": "c6d031c024d6fad233535884bc58d9aa2d2e6ae91fb63210d271eb3a86faf7cb"
+    },
+    "tmp/spreadsheets/node_modules": {
+      "type": "symlink",
+      "target": "/Users/zhoulin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules"
+    }
+  }
+}

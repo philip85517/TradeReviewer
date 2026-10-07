@@ -7,26 +7,27 @@ DRY_RUN ?= 0
 # Missing native tools must fail rather than silently switching to Docker.
 empty :=
 space := $(empty) $(empty)
-NATIVE_PROBE := $(subst $(space),\$(space),$(CURDIR)/config/runtime.json) $(subst $(space),\$(space),$(CURDIR)/ops/deploy-native.mjs) $(subst $(space),\$(space),$(CURDIR)/ops/start-native.command)
+NATIVE_PROBE := $(subst $(space),\$(space),$(CURDIR)/config/runtime.json) $(subst $(space),\$(space),$(CURDIR)/ops/deploy-native.mjs) $(subst $(space),\$(space),$(CURDIR)/ops/native-node.sh) $(subst $(space),\$(space),$(CURDIR)/ops/start-native.command)
 DEPLOY_RUNTIME ?= $(if $(wildcard $(NATIVE_PROBE)),native,docker)
 NATIVE_CLI := $(CURDIR)/ops/deploy-native.mjs
+NATIVE_NODE := $(CURDIR)/ops/native-node.sh
 DOCKER_CLI := $(CURDIR)/ops/deploy.mjs
-export DEPLOY_ROOT DEPLOY_SOURCE REF DRY_RUN NATIVE_CLI DOCKER_CLI BACKUP
+export DEPLOY_ROOT DEPLOY_SOURCE REF DRY_RUN NATIVE_CLI NATIVE_NODE DOCKER_CLI BACKUP
 
 .PHONY: deploy deploy-code deploy-status deploy-rollback deploy-down deploy-test deploy-docker deploy-docker-code deploy-docker-status deploy-docker-backup deploy-docker-restore deploy-docker-rollback deploy-docker-down deploy-docker-config deploy-backup deploy-restore deploy-config
 
 ifeq ($(DEPLOY_RUNTIME),native)
 deploy deploy-code:
-	node "$$NATIVE_CLI" --mode=deploy --source="$$DEPLOY_SOURCE" --target="$$DEPLOY_ROOT" --ref="$$REF" $(if $(filter 1,$(DRY_RUN)),--dry-run,)
+	"$$NATIVE_NODE" "$$NATIVE_CLI" --mode=deploy --source="$$DEPLOY_SOURCE" --target="$$DEPLOY_ROOT" --ref="$$REF" $(if $(filter 1,$(DRY_RUN)),--dry-run,)
 
 deploy-status:
-	node "$$NATIVE_CLI" --mode=status --target="$$DEPLOY_ROOT"
+	"$$NATIVE_NODE" "$$NATIVE_CLI" --mode=status --target="$$DEPLOY_ROOT"
 
 deploy-rollback:
-	node "$$NATIVE_CLI" --mode=rollback --target="$$DEPLOY_ROOT" $(if $(filter 1,$(DRY_RUN)),--dry-run,)
+	"$$NATIVE_NODE" "$$NATIVE_CLI" --mode=rollback --target="$$DEPLOY_ROOT" $(if $(filter 1,$(DRY_RUN)),--dry-run,)
 
 deploy-down:
-	node "$$NATIVE_CLI" --mode=down --target="$$DEPLOY_ROOT" $(if $(filter 1,$(DRY_RUN)),--dry-run,)
+	"$$NATIVE_NODE" "$$NATIVE_CLI" --mode=down --target="$$DEPLOY_ROOT" $(if $(filter 1,$(DRY_RUN)),--dry-run,)
 
 deploy-backup deploy-restore deploy-config:
 	@echo "Native database operations are documented in DEPLOYMENT.md; Docker operations require explicit deploy-docker-* targets." >&2; exit 2

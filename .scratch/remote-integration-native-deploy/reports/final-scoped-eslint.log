@@ -1,0 +1,7 @@
+
+/Users/zhoulin/.codex/worktrees/afc8/TradeReview/scripts/debug-local.mjs
+  39:36  warning  'hostname' is defined but never used       @typescript-eslint/no-unused-vars
+  47:9   warning  'stat' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 2 problems (0 errors, 2 warnings)
+

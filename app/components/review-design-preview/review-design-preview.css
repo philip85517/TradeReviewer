@@ -14,7 +14,7 @@
 .review-design-preview--recommended .recall-header > .recall-heading .eyebrow { flex: 0 0 auto; white-space: nowrap; }
 .review-design-preview--recommended .recall-header > .recall-heading h1 { flex: 0 1 auto; }
 .review-design-preview--recommended .recall-header > .recall-heading .recall-status { flex: 0 0 auto; margin: 0; white-space: nowrap; }
-.review-design-preview--recommended .recall-header { min-height: 56px; max-height: 64px; padding: 6px 12px; display: flex; flex-wrap: nowrap; gap: 12px; align-items: center; }
+.review-design-preview--recommended .recall-header { min-height: 48px; max-height: 56px; padding: 4px 12px; display: flex; flex-wrap: nowrap; gap: 8px; align-items: center; }
 .review-design-preview--recommended .recall-heading { flex: 0 1 auto; min-width: 0; }
 .review-design-preview--recommended .recall-header .chart-toolbar { flex: 0 1 auto; min-width: 0; }
 .review-design-preview--recommended .recall-phases { flex: 0 1 auto; margin-left: auto; }
@@ -71,7 +71,7 @@
 }
 @media (max-width: 1105px) {
   .review-design-preview--recommended .recall-header {
-    min-height: 64px;
+    min-height: 48px;
     max-height: none;
     flex-direction: row;
     flex-wrap: wrap;
@@ -218,8 +218,8 @@
 .review-design-preview--recommended .recall-replay-more__summary[aria-expanded="true"] { color: #e7edf6; background: rgba(91,114,145,.2); }
 .review-design-preview--recommended .recall-edge-toggle:focus-visible,
 .review-design-preview--recommended .recall-replay-more__summary:focus-visible { outline: 2px solid #aad1ff; outline-offset: 2px; }
-.review-design-preview--recommended .recall-edge-toggle--left { left: 6px; }
-.review-design-preview--recommended .recall-edge-toggle--right { right: 6px; }
+.review-design-preview--recommended .recall-edge-toggle--left { left: 0; }
+.review-design-preview--recommended .recall-edge-toggle--right { right: 0; }
 .review-design-preview--recommended .recall-replay-bar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1fr);
@@ -515,7 +515,7 @@
   .review-design-preview--recommended .recall-header {
     flex-wrap: wrap;
     max-height: none;
-    min-height: 56px;
+    min-height: 48px;
     row-gap: 4px;
   }
   .review-design-preview--recommended .recall-header > .recall-phases,

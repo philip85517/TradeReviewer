@@ -1,4 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { useEffect, type ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -30,6 +32,8 @@ const previewProps = {
   candles: [],
   instrument: {} as never,
 };
+
+const previewStyles = readFileSync(resolve(__dirname, "review-design-preview.css"), "utf8");
 
 afterEach(() => {
   cleanup();
@@ -65,5 +69,24 @@ describe("ReviewDesignPreview index navigation", () => {
 
     resolveGuard(true);
     await waitFor(() => expect(assign).toHaveBeenCalledWith("/design/review?index=1"));
+  });
+});
+
+describe("ReviewDesignPreview recommended compact frame contract", () => {
+  it("keeps the compact frame scoped to the recommended variant", () => {
+    expect(previewStyles).toMatch(/\.review-design-preview--recommended \.recall-header/);
+    expect(previewStyles).not.toMatch(/(?<!recommended )\.recall-header\s*\{[^}]*min-height:\s*48px/);
+  });
+
+  it("uses a compact header and side-local panel controls", () => {
+    expect(previewStyles).toMatch(/\.review-design-preview--recommended \.recall-header\s*\{[\s\S]*?min-height:\s*48px/);
+    expect(previewStyles).toMatch(/\.review-design-preview--recommended \.recall-edge-toggle--left\s*\{[^}]*left:\s*0/);
+    expect(previewStyles).toMatch(/\.review-design-preview--recommended \.recall-edge-toggle--right\s*\{[^}]*right:\s*0/);
+  });
+
+  it("centers icon-first replay actions with desktop and coarse-pointer hit boxes", () => {
+    expect(previewStyles).toMatch(/\.review-design-preview--recommended \.recall-main > \.recall-replay-bar\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) max-content minmax\(0, 1fr\)/);
+    expect(previewStyles).toMatch(/\.review-design-preview--recommended \.recall-controls \.recall-replay-action\s*\{[\s\S]*?width:\s*36px[\s\S]*?height:\s*36px/);
+    expect(previewStyles).toMatch(/\.review-design-preview--recommended \.recall-edge-toggle,\s*\.review-design-preview--recommended \.recall-controls \.recall-replay-action,\s*\.review-design-preview--recommended \.recall-replay-more__summary\s*\{[\s\S]*?width:\s*44px/);
   });
 });

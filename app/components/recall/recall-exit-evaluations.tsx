@@ -129,7 +129,7 @@ export function RecallExitEvaluations(props: RecallExitEvaluationsProps) {
     <label>退出决策<select aria-label="退出决策" value={selected?.key ?? ''} onChange={event => setSelectedId(event.target.value)}>
       {choices.map((c, index) => <option key={c.key} value={c.key}>{exitLabel(c.decisionId,index)}</option>)}
     </select></label>
-    <p>实际退出数量：{exit?.quantity ?? '未知'}{exit?.executionIds.length ? ` · ${exit.executionIds.length} 笔成交` : ''} · 真实加权均价：{exit?.averagePrice ?? '未知'}</p>
+    <p className="recall-exit-facts"><span>实际退出数量：{exit?.quantity ?? '未知'}</span>{exit?.executionIds.length ? <span>{` · ${exit.executionIds.length} 笔成交`}</span> : null}<span> · 真实加权均价：{exit?.averagePrice ?? '未知'}</span></p>
     {association.length > 1 && !readOnly ? <label>选择此退出当前采用的评价
       {!saved ? <p role="alert">合并后存在多次评价，请明确当前采用哪一条；全部历史仍保留。</p> : <p className="recall-exit-note">仅当前选择用于编辑、覆盖率和新留存；可随时切换。</p>}
       <select aria-label="当前采用的退出评价" value={saved?.evaluationId ?? ''} onChange={event => {

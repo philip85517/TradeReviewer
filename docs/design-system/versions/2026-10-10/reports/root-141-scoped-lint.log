@@ -1,0 +1,15 @@
+
+/Users/zhoulin/.codex/worktrees/93a7/TradeReview/app/components/chart/drawing-canvas.recall-review.test.tsx
+   547:13  warning  'stage' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  1177:13  warning  'stage' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  1293:13  warning  'stage' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  1330:13  warning  'stage' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  1362:13  warning  'stage' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  1396:13  warning  'stage' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  1428:13  warning  'stage' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  1457:13  warning  'stage' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/zhoulin/.codex/worktrees/93a7/TradeReview/app/components/recall/recall-workspace.test.tsx
+  106:8  warning  React Hook useEffect has a missing dependency: 'onReady'. Either include it or remove the dependency array. Outer scope values like 'replayChartHarness.deferReady' aren't valid dependencies because mutating them doesn't re-render the component  react-hooks/exhaustive-deps
+
+✖ 9 problems (0 errors, 9 warnings)

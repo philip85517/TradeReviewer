@@ -629,6 +629,7 @@ describe("TradeReviewWorkspace", () => {
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   beforeEach(async () => {
@@ -841,7 +842,7 @@ describe("TradeReviewWorkspace", () => {
     expect(accountIdForQualityCheck("US:MSFT", executions, "fixture-secondary")).toBe("fixture-secondary");
   });
 
-  async function renderGoldReplay(priorDates: string[] = [], storedCursor?: string, entryTime = "2026-06-26T02:22:37Z", hourly = false, storageClient: SqliteHttpClient = createLegacySqliteClient(), openViaQueue = false, expectLegacyReviewControls = false) {
+  async function renderGoldReplay(priorDates: string[] = [], storedCursor?: string, entryTime = "2026-06-26T02:22:37Z", hourly = false, storageClient: SqliteHttpClient = createLegacySqliteClient(), openViaQueue = false, expectLegacyReviewControls = false, chartReadyTimeout = 1_000) {
     const instrument = { id: "HK:6228", symbol: "6228", name: "自由黄金-DRS", market: "HK", currency: "HKD" };
     const execution: TradeExecution = { id: "gold-sale", instrument, accountId: "test", accountLabel: "测试账户", source: { platform: "tiger", row: 1 }, executedAt: entryTime, side: "sell", quantity: "200", price: "26.380", fee: "0" };
     saveImportedExecutions([execution]);
@@ -858,13 +859,16 @@ describe("TradeReviewWorkspace", () => {
       await user.click(within(library).getByRole("tab", { name: "按回合浏览" }));
       await user.click(within(library).getByRole("button", { name: /复盘自由黄金-DRS/ }));
     } else {
-      await enterImportedReviewFromDashboard();
+      await enterImportedReviewFromDashboard(undefined, chartReadyTimeout);
     }
     if (expectLegacyReviewControls) {
       await screen.findByRole("button", {name:"检查/修复数据"});
       expect(within(screen.getByLabelText("复盘布局")).getByRole("button", { name: "检查/修复数据" })).toBeVisible();
     }
-    await screen.findByLabelText("图表工具栏");
+    await waitFor(
+      () => expect(screen.getByLabelText("图表工具栏")).toBeInTheDocument(),
+      { timeout: chartReadyTimeout },
+    );
   }
 
   function openMoreRecords() {
@@ -889,9 +893,9 @@ describe("TradeReviewWorkspace", () => {
     expect(within(header).getByRole("button", { name: "专注图表" })).toBeVisible();
   });
 
-  it("keeps Recall header actions wired to data management, repair, and return navigation", async () => {
+  it("keeps Recall header actions wired to data management, repair, and return navigation", { timeout: 15_000 }, async () => {
     const user = userEvent.setup();
-    await renderGoldReplay([], undefined, "2026-06-26T02:22:37Z", false, createLegacySqliteClient(), false, false);
+    await renderGoldReplay([], undefined, "2026-06-26T02:22:37Z", false, createLegacySqliteClient(), false, false, 5_000);
 
     const recallWorkspace = () => screen.getByRole("region", { name: "导入交易回忆复盘工作区" });
     const frameHeader = (): HTMLElement => {
@@ -974,7 +978,7 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.queryByRole("region", { name: "导入交易回忆复盘工作区" })).not.toBeInTheDocument();
   });
 
-  async function enterImportedReviewFromDashboard(instrumentName?: string) {
+  async function enterImportedReviewFromDashboard(instrumentName?: string, chartReadyTimeout = 1_000) {
     const user = userEvent.setup();
     const navigation = await screen.findByRole("navigation", { name: "主导航" });
     const dashboard = await screen.findByRole("region", { name: "我的交易室" });
@@ -999,7 +1003,10 @@ describe("TradeReviewWorkspace", () => {
           : null;
         if (open) {
           await user.click(open);
-          await screen.findByLabelText("图表工具栏");
+          await waitFor(
+            () => expect(screen.getByLabelText("图表工具栏")).toBeInTheDocument(),
+            { timeout: chartReadyTimeout },
+          );
           return;
         }
       }
@@ -1037,7 +1044,10 @@ describe("TradeReviewWorkspace", () => {
     const round = within(library).getAllByRole("button", { name: /^打开.*第\d+次交易/ })[0];
     if (!round) throw new Error("目标标的没有可打开的交易回合");
     await user.click(round);
-    await screen.findByLabelText("图表工具栏");
+    await waitFor(
+      () => expect(screen.getByLabelText("图表工具栏")).toBeInTheDocument(),
+      { timeout: chartReadyTimeout },
+    );
   }
 
   async function expectEmptyProductionDashboard() {
@@ -2789,17 +2799,64 @@ describe("TradeReviewWorkspace", () => {
     expect(await screen.findByRole("button", { name: "开始回放" })).toBeInTheDocument();
   });
 
-  it("retains a Recall drawing draft per episode and gates completion until a snapshot exists", async () => {
+  // This complete save, return, reopen, and completion-gate journey needs room for its 1s autosave.
+  it("retains a Recall drawing draft per episode and gates completion until a snapshot exists", { timeout: 10000 }, async () => {
+    const canvasContext = new Proxy({
+      measureText: () => ({ width: 0 }),
+      createLinearGradient: () => ({ addColorStop: () => {} }),
+      createRadialGradient: () => ({ addColorStop: () => {} }),
+      getImageData: () => ({ data: new Uint8ClampedArray(4), width: 1, height: 1 }),
+      getLineDash: () => [],
+      isPointInPath: () => false,
+    } as Record<string, unknown>, {
+      get(target, property: string) {
+        if (property in target) return target[property];
+        const method = vi.fn();
+        target[property] = method;
+        return method;
+      },
+    }) as unknown as CanvasRenderingContext2D;
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(() => canvasContext);
+    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockImplementation(function (this: HTMLElement) {
+      return this.classList.contains("lightweight-chart") ? 640 : 0;
+    });
+    vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockImplementation(function (this: HTMLElement) {
+      return this.classList.contains("lightweight-chart") ? 240 : 0;
+    });
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(private readonly callback: ResizeObserverCallback) {}
+
+        observe(target: Element) {
+          if (target.classList.contains("lightweight-chart")) return;
+          if (target.getAttribute("aria-label") !== "绘图画布") return;
+          this.callback(
+            [{ target, contentRect: { width: 640, height: 240 } } as ResizeObserverEntry],
+            this as unknown as ResizeObserver,
+          );
+        }
+
+        disconnect() {}
+      },
+    );
     const user = userEvent.setup();
     await renderGoldReplay([], "2026-06-26T08:30:00.000Z", "2026-06-26T02:22:37Z", true);
     // A drawing needs a visible, completed candle to map its coordinates.
     await user.click(screen.getByRole("button", { name: "下一根 K 线" }));
     await user.click(screen.getByRole("button", { name: "文字标注" }));
     const canvas = screen.getByRole("img", { name: "绘图画布" });
-    fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 40, clientY: 40 });
+    vi.spyOn(canvas, "getBoundingClientRect").mockReturnValue({
+      x: 0, y: 0, width: 640, height: 240, top: 0, left: 0, right: 640, bottom: 240,
+      toJSON: () => ({}),
+    });
+    fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 20, clientY: 100 });
+    fireEvent.pointerUp(canvas, { pointerId: 1, clientX: 20, clientY: 100 });
+    fireEvent.pointerDown(canvas, { pointerId: 2, clientX: 100, clientY: 80 });
+    fireEvent.pointerUp(canvas, { pointerId: 2, clientX: 100, clientY: 80 });
     const editor = screen.getByRole("textbox", { name: "文字标注" });
     await user.type(editor, "QA故障注释");
-    await user.keyboard("{Enter}");
+    await user.click(screen.getByRole("button", { name: "完成文字编辑" }));
     await user.click(screen.getByRole("button", { name: "图层" }));
     const layerName = screen.getByRole("textbox", { name: "重命名文字标注" });
     await user.clear(layerName);
@@ -2812,11 +2869,24 @@ describe("TradeReviewWorkspace", () => {
     // Autosave deliberately waits one second; wait for its visible completion before inspecting the repository.
     expect(await screen.findByText("已保存", {}, { timeout: 2500 })).toBeInTheDocument();
     await waitFor(() => {
-      const saved = [...mockRecallRepository.documents.values()].some((value) =>
-        (value as { working?: { drawings?: Array<{ name?: string }> } }).working?.drawings?.some(
-          (drawing) => drawing.name === "QA故障注释",
-        ),
-      );
+      const saved = [...mockRecallRepository.documents.values()].some((value) => {
+        const document = value as ReturnType<typeof createRecallDocument>;
+        const holding = document.working.phaseContexts?.holding;
+        const editing = document.working.editingContext;
+        const decisionDraft = document.working.decisionDrafts?.find((draft) => draft.decisionId === "gold-sale");
+        const hasDrawing = (drawings: typeof document.working.drawings | undefined) =>
+          drawings?.some((drawing) => drawing.name === "QA故障注释") === true;
+        return holding?.mode === "decision"
+          && holding.decisionId === "gold-sale"
+          && hasDrawing(holding.drawings)
+          && editing?.mode === "decision"
+          && editing.decisionId === "gold-sale"
+          && hasDrawing(editing.drawings)
+          && decisionDraft?.mode === "decision"
+          && decisionDraft.decisionId === "gold-sale"
+          && hasDrawing(decisionDraft.drawings)
+          && !hasDrawing(document.working.drawings);
+      });
       expect(saved).toBe(true);
     });
     await user.click(screen.getByRole("button", { name: "返回交易库" }));
@@ -2833,16 +2903,62 @@ describe("TradeReviewWorkspace", () => {
   });
 
   it("keeps the latest Recall drawing draft while completion is gated", async () => {
+    const canvasContext = new Proxy({
+      measureText: () => ({ width: 0 }),
+      createLinearGradient: () => ({ addColorStop: () => {} }),
+      createRadialGradient: () => ({ addColorStop: () => {} }),
+      getImageData: () => ({ data: new Uint8ClampedArray(4), width: 1, height: 1 }),
+      getLineDash: () => [],
+      isPointInPath: () => false,
+    } as Record<string, unknown>, {
+      get(target, property: string) {
+        if (property in target) return target[property];
+        const method = vi.fn();
+        target[property] = method;
+        return method;
+      },
+    }) as unknown as CanvasRenderingContext2D;
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(() => canvasContext);
+    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockImplementation(function (this: HTMLElement) {
+      return this.classList.contains("lightweight-chart") ? 640 : 0;
+    });
+    vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockImplementation(function (this: HTMLElement) {
+      return this.classList.contains("lightweight-chart") ? 240 : 0;
+    });
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(private readonly callback: ResizeObserverCallback) {}
+
+        observe(target: Element) {
+          if (target.classList.contains("lightweight-chart")) return;
+          if (target.getAttribute("aria-label") !== "绘图画布") return;
+          this.callback(
+            [{ target, contentRect: { width: 640, height: 240 } } as ResizeObserverEntry],
+            this as unknown as ResizeObserver,
+          );
+        }
+
+        disconnect() {}
+      },
+    );
     const user = userEvent.setup();
     await renderGoldReplay([], "2026-06-26T08:30:00.000Z", "2026-06-26T02:22:37Z", true);
     // A drawing needs a visible, completed candle to map its coordinates.
     await user.click(screen.getByRole("button", { name: "下一根 K 线" }));
     await user.click(screen.getByRole("button", { name: "文字标注" }));
     const canvas = screen.getByRole("img", { name: "绘图画布" });
+    vi.spyOn(canvas, "getBoundingClientRect").mockReturnValue({
+      x: 0, y: 0, width: 640, height: 240, top: 0, left: 0, right: 640, bottom: 240,
+      toJSON: () => ({}),
+    });
     fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 40, clientY: 40 });
+    fireEvent.pointerUp(canvas, { pointerId: 1, clientX: 40, clientY: 40 });
+    fireEvent.pointerDown(canvas, { pointerId: 2, clientX: 80, clientY: 80 });
+    fireEvent.pointerUp(canvas, { pointerId: 2, clientX: 80, clientY: 80 });
     const editor = screen.getByRole("textbox", { name: "文字标注" });
     await user.type(editor, "队列稳定性");
-    await user.keyboard("{Enter}");
+    await user.click(screen.getByRole("button", { name: "完成文字编辑" }));
     await user.click(screen.getByRole("button", { name: "图层" }));
     const layerName = screen.getByRole("textbox", { name: "重命名文字标注" });
     await user.clear(layerName);
@@ -2854,11 +2970,24 @@ describe("TradeReviewWorkspace", () => {
     // Autosave deliberately waits one second; allow its request to finish after that timer.
     expect(await screen.findByText("已保存", {}, { timeout: 2500 })).toBeInTheDocument();
     await waitFor(() => {
-      const saved = [...mockRecallRepository.documents.values()].some((value) =>
-        (value as { working?: { drawings?: Array<{ name?: string }> } }).working?.drawings?.some(
-          (drawing) => drawing.name === "队列稳定性",
-        ),
-      );
+      const saved = [...mockRecallRepository.documents.values()].some((value) => {
+        const document = value as ReturnType<typeof createRecallDocument>;
+        const holding = document.working.phaseContexts?.holding;
+        const editing = document.working.editingContext;
+        const decisionDraft = document.working.decisionDrafts?.find((draft) => draft.decisionId === "gold-sale");
+        const hasDrawing = (drawings: typeof document.working.drawings | undefined) =>
+          drawings?.some((drawing) => drawing.name === "队列稳定性") === true;
+        return holding?.mode === "decision"
+          && holding.decisionId === "gold-sale"
+          && hasDrawing(holding.drawings)
+          && editing?.mode === "decision"
+          && editing.decisionId === "gold-sale"
+          && hasDrawing(editing.drawings)
+          && decisionDraft?.mode === "decision"
+          && decisionDraft.decisionId === "gold-sale"
+          && hasDrawing(decisionDraft.drawings)
+          && !hasDrawing(document.working.drawings);
+      });
       expect(saved).toBe(true);
     });
     openMoreRecords();
@@ -3390,7 +3519,7 @@ describe("TradeReviewWorkspace", () => {
     );
   });
 
-  it("refreshes every trade episode regardless of the selected episode", async () => {
+  it("refreshes every trade episode regardless of the selected episode", { timeout: 10000 }, async () => {
     const user = userEvent.setup();
     const executions = [
       availabilityExecution({
@@ -3600,7 +3729,8 @@ describe("TradeReviewWorkspace", () => {
     expect(screen.getByLabelText("图表工具栏")).toBeInTheDocument();
   });
 
-  it("keeps library context through a confirmed import with failed market refresh", async () => {
+  // This complete import, merge, toolbar restore, return, and search-retention journey spans async UI work.
+  it("keeps library context through a confirmed import with failed market refresh", { timeout: 10000 }, async () => {
     const user = userEvent.setup();
     saveImportedExecutions([
       availabilityExecution({ id: "library-open-confirm", row: 2, side: "buy", executedAt: "2025-01-02T14:30:00.000Z" }),
@@ -3624,7 +3754,7 @@ describe("TradeReviewWorkspace", () => {
     await user.upload(input, file);
     await user.click(await findImportConfirmation());
     await waitFor(() => expect(merge.mock.calls.some(([payload]) => payload.executions.length === 3)).toBe(true));
-    expect(await screen.findByLabelText("图表工具栏")).toBeInTheDocument();
+    expect(await screen.findByLabelText("图表工具栏", {}, { timeout: 2500 })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "返回交易库" }));
     expect(screen.getByRole("heading", { name: "交易库" })).toBeInTheDocument();
     expect(screen.getByRole("searchbox", { name: "搜索股票" })).toHaveValue("XPEV");

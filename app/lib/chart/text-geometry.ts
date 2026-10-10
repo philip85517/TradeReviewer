@@ -54,6 +54,7 @@ const TEXT_HORIZONTAL_PADDING = 4;
 // touch target. The reserved lane prevents it from covering the final line.
 const TEXT_CARD_CONTROL_WIDTH = 44;
 const TEXT_CARD_CONTROL_HEIGHT = 44;
+const NO_LINE_START_PUNCTUATION = new Set("，。！？；：、）》」』】〕〉》’”〗〙〛".split(""));
 
 function wrapText(
   value: string,
@@ -63,9 +64,19 @@ function wrapText(
   const lines: string[] = [];
   for (const sourceLine of value.split("\n")) {
     let line = "";
-    for (const character of sourceLine) {
+    for (const character of Array.from(sourceLine)) {
       const candidate = line + character;
       if (line && measure(candidate) > width) {
+        if (NO_LINE_START_PUNCTUATION.has(character)) {
+          const lineCharacters = Array.from(line);
+          const lastCharacter = lineCharacters.pop();
+          const precedingLine = lineCharacters.join("");
+          if (lastCharacter && precedingLine && measure(precedingLine + character) <= width) {
+            lines.push(precedingLine);
+            line = lastCharacter + character;
+            continue;
+          }
+        }
         lines.push(line);
         line = character;
       } else {

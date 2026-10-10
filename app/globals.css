@@ -1330,6 +1330,11 @@ input:focus-visible {
   font: 12px var(--font-geist-sans);
 }
 
+/* Keep the focus ring inside clipped text-editor controls. */
+.drawing-canvas .drawing-text-editor-shell :focus-visible {
+  outline-offset: -2px;
+}
+
 .drawing-validation-error {
   position: absolute;
   right: 12px;

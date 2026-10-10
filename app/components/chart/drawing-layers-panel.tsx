@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, ChevronUp, Eye, EyeOff, Lock, Trash2, Unlock } from "lucide-react";
+import { useRef, useState } from "react";
 
 import type { DrawingCommand } from "../../lib/chart/drawing-commands";
 import type { NormalizedDrawing } from "../../lib/chart/drawings";
@@ -16,28 +17,63 @@ const labels: Record<NormalizedDrawing["tool"], string> = {
   "trend-line": "趋势线", "horizontal-line": "水平线", "vertical-line": "垂直线", rectangle: "矩形区间", arrow: "箭头", "parallel-channel": "平行通道", fibonacci: "斐波那契回撤", "price-label": "价格标注", text: "文字标注", measure: "区间测量", "long-risk-reward": "做多盈亏比", "short-risk-reward": "做空盈亏比",
 };
 
+function DrawingLayerRow({ drawing, index, sorted, onCommand, onSelectDrawing, selectedDrawingId }: {
+  drawing: NormalizedDrawing;
+  index: number;
+  sorted: NormalizedDrawing[];
+  onCommand: (command: DrawingCommand) => void;
+  onSelectDrawing: (id: string | null) => void;
+  selectedDrawingId: string | null;
+}) {
+  const name = drawing.name ?? labels[drawing.tool];
+  const isTop = index === 0;
+  const isBottom = index === sorted.length - 1;
+  const eligibleIds = sorted.map((item) => item.id);
+  const [draft, setDraft] = useState(name);
+  const [editing, setEditing] = useState(false);
+  const submittedRef = useRef(false);
+  const composingRef = useRef(false);
+
+  const commitRename = (input: HTMLInputElement) => {
+    if (submittedRef.current) return;
+    submittedRef.current = true;
+    const next = input.value.trim();
+    setEditing(false);
+    if (next && next !== name) onCommand({ type: "rename", id: drawing.id, name: next });
+  };
+
+  return <div className={`drawing-layer ${selectedDrawingId === drawing.id ? "selected" : ""}`}>
+    <button className="drawing-layer-select" aria-label={`选择${name}`} aria-pressed={selectedDrawingId === drawing.id} onClick={() => onSelectDrawing(drawing.id)}>{labels[drawing.tool]}</button>
+    <input
+      aria-label={`重命名${name}`}
+      value={editing ? draft : name}
+      onChange={(event) => setDraft(event.currentTarget.value)}
+      onFocus={(event) => { submittedRef.current = false; setDraft(event.currentTarget.value); setEditing(true); onSelectDrawing(drawing.id); }}
+      onCompositionStart={() => { composingRef.current = true; }}
+      onCompositionEnd={() => { composingRef.current = false; }}
+      onKeyDown={(event) => {
+        if (event.key !== "Enter" || composingRef.current || event.nativeEvent.isComposing || event.keyCode === 229) return;
+        event.preventDefault();
+        event.currentTarget.blur();
+      }}
+      onBlur={(event) => commitRename(event.currentTarget)}
+    />
+    <div className="drawing-layer-actions">
+      <button aria-label={`${drawing.hidden ? "显示" : "隐藏"}${name}`} aria-pressed={!drawing.hidden} onClick={() => onCommand({ type: "toggle-hidden", id: drawing.id })}>{drawing.hidden ? <EyeOff size={14} /> : <Eye size={14} />}</button>
+      <button aria-label={`${drawing.locked ? "解锁" : "锁定"}${name}`} aria-pressed={drawing.locked} onClick={() => onCommand({ type: "toggle-locked", id: drawing.id })}>{drawing.locked ? <Lock size={14} /> : <Unlock size={14} />}</button>
+      <button aria-label={`上移${name}`} title={isTop ? "已在最上层" : "上移图层"} disabled={isTop} onClick={() => onCommand({ type: "move", id: drawing.id, direction: "up", eligibleIds })}><ChevronUp size={14} /></button>
+      <button aria-label={`下移${name}`} title={isBottom ? "已在最下层" : "下移图层"} disabled={isBottom} onClick={() => onCommand({ type: "move", id: drawing.id, direction: "down", eligibleIds })}><ChevronDown size={14} /></button>
+      <button aria-label={`删除${name}`} disabled={drawing.locked} onClick={() => onCommand({ type: "delete", id: drawing.id })}><Trash2 size={14} /></button>
+    </div>
+  </div>;
+}
+
 export function DrawingLayersPanel({ drawings, onCommand, onSelectDrawing, selectedDrawingId }: Props) {
   const sorted = [...drawings].sort((a, b) => (b.zIndex ?? 0) - (a.zIndex ?? 0));
-  const eligibleIds = sorted.map((drawing) => drawing.id);
   if (sorted.length === 0) return <p className="drawing-layers-empty">暂无绘图图层</p>;
   return (
     <div className="drawing-layers-panel" aria-label="绘图图层">
-      {sorted.map((drawing, index) => {
-        const name = drawing.name ?? labels[drawing.tool];
-        const isTop = index === 0;
-        const isBottom = index === sorted.length - 1;
-        return <div className={`drawing-layer ${selectedDrawingId === drawing.id ? "selected" : ""}`} key={drawing.id}>
-          <button className="drawing-layer-select" aria-label={`选择${name}`} aria-pressed={selectedDrawingId === drawing.id} onClick={() => onSelectDrawing(drawing.id)}>{labels[drawing.tool]}</button>
-          <input aria-label={`重命名${name}`} defaultValue={name} onFocus={() => onSelectDrawing(drawing.id)} onKeyDown={(event) => { if (event.key === "Enter") { event.currentTarget.blur(); } }} onBlur={(event) => { const next = event.currentTarget.value.trim(); if (next && next !== name) onCommand({ type: "rename", id: drawing.id, name: next }); }} />
-          <div className="drawing-layer-actions">
-            <button aria-label={`${drawing.hidden ? "显示" : "隐藏"}${name}`} aria-pressed={!drawing.hidden} onClick={() => onCommand({ type: "toggle-hidden", id: drawing.id })}>{drawing.hidden ? <EyeOff size={14} /> : <Eye size={14} />}</button>
-            <button aria-label={`${drawing.locked ? "解锁" : "锁定"}${name}`} aria-pressed={drawing.locked} onClick={() => onCommand({ type: "toggle-locked", id: drawing.id })}>{drawing.locked ? <Lock size={14} /> : <Unlock size={14} />}</button>
-            <button aria-label={`上移${name}`} title={isTop ? "已在最上层" : "上移图层"} disabled={isTop} onClick={() => onCommand({ type: "move", id: drawing.id, direction: "up", eligibleIds })}><ChevronUp size={14} /></button>
-            <button aria-label={`下移${name}`} title={isBottom ? "已在最下层" : "下移图层"} disabled={isBottom} onClick={() => onCommand({ type: "move", id: drawing.id, direction: "down", eligibleIds })}><ChevronDown size={14} /></button>
-            <button aria-label={`删除${name}`} disabled={drawing.locked} onClick={() => onCommand({ type: "delete", id: drawing.id })}><Trash2 size={14} /></button>
-          </div>
-        </div>;
-      })}
+      {sorted.map((drawing, index) => <DrawingLayerRow key={drawing.id} drawing={drawing} index={index} sorted={sorted} onCommand={onCommand} onSelectDrawing={onSelectDrawing} selectedDrawingId={selectedDrawingId} />)}
     </div>
   );
 }

@@ -5,7 +5,9 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { NormalizedDrawing } from "../../lib/chart/drawings";
@@ -53,6 +55,21 @@ function savedDrawing(
 }
 
 function renderCanvas(overrides: Record<string, unknown> = {}) {
+  vi.stubGlobal(
+    "ResizeObserver",
+    class {
+      constructor(private readonly callback: ResizeObserverCallback) {}
+
+      observe(target: Element) {
+        this.callback(
+          [{ target, contentRect: { width: 100, height: 100 } } as ResizeObserverEntry],
+          this as unknown as ResizeObserver,
+        );
+      }
+
+      disconnect() {}
+    },
+  );
   const props = {
     episodeId: "episode-1",
     candles,
@@ -92,7 +109,8 @@ describe("drawing interactions", () => {
     expect(cursorCanvas.parentElement).not.toHaveClass("drawing-mode");
   });
 
-  it("exposes every drawing tool as an enabled pressed-state button", () => {
+  it("exposes every drawing tool as an enabled pressed-state button", async () => {
+    const user = userEvent.setup();
     render(
       <DrawingToolbar
         activeTool="cursor"
@@ -107,13 +125,29 @@ describe("drawing interactions", () => {
       />,
     );
 
-    for (const name of [
-      "趋势线", "水平线", "垂直线", "矩形区间", "箭头", "平行通道", "斐波那契回撤", "价格标注",
-      "文字标注", "区间测量", "做多盈亏比", "做空盈亏比",
-    ]) {
-      expect(screen.getByRole("button", { name })).toBeEnabled();
+    const primaryToolNames = ["趋势线", "水平线"];
+    for (const name of primaryToolNames) {
+      const button = screen.getByRole("button", { name });
+      expect(button).toBeEnabled();
+      expect(button).toHaveAttribute("aria-pressed", "false");
     }
-    expect(screen.getByRole("button", { name: "选择" })).toHaveAttribute("aria-pressed", "true");
+
+    const moreToolsTrigger = screen.getByRole("button", { name: "更多绘图工具" });
+    expect(moreToolsTrigger).toHaveAttribute("aria-expanded", "false");
+    await user.click(moreToolsTrigger);
+
+    const moreToolsMenu = screen.getByRole("menu", { name: "更多绘图工具" });
+    for (const name of [
+      "垂直线", "矩形区间", "箭头", "平行通道", "斐波那契回撤", "价格标注", "文字标注", "区间测量",
+      "做多盈亏比", "做空盈亏比",
+    ]) {
+      const menuItem = within(moreToolsMenu).getByRole("menuitem", { name });
+      expect(menuItem).toBeEnabled();
+      expect(menuItem).toHaveAttribute("aria-pressed", "false");
+    }
+
+    expect(screen.getByRole("button", { name: "选择" }))
+      .toHaveAttribute("aria-pressed", "true");
   });
 
   it("creates a rectangle command with cursor-clamped anchors", () => {
@@ -391,7 +425,7 @@ describe("drawing interactions", () => {
       onCommand,
     });
 
-    fireEvent.pointerDown(stage, { clientX: 10, clientY: 100 });
+    fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${drawing.id}` }));
     const editor = screen.getByRole("textbox", { name: "文字标注" });
     expect(editor).toHaveStyle({ pointerEvents: "auto" });
     fireEvent.change(editor, { target: { value: "更新注释" } });
@@ -419,10 +453,12 @@ describe("drawing interactions", () => {
     const { stage } = renderCanvas({
       activeTool: "cursor",
       drawings: [drawing],
+      selectedDrawingId: drawing.id,
       onCommand,
     });
 
-    fireEvent.pointerDown(stage, { pointerId: 15, clientX: 10, clientY: 100 });
+    const move = screen.getByRole("button", { name: `移动文字 ${drawing.id}` });
+    fireEvent.pointerDown(move, { pointerId: 15, clientX: 10, clientY: 100 });
     fireEvent.pointerMove(stage, { pointerId: 15, clientX: 20, clientY: 90 });
     fireEvent.pointerUp(stage, { pointerId: 15, clientX: 20, clientY: 90 });
 
@@ -430,7 +466,9 @@ describe("drawing interactions", () => {
       type: "replace",
       drawing: expect.objectContaining({
         id: "drag-text",
-        anchors: [{ time: candles[0].time, price: 110 }],
+        anchors: [{ time: candles[0].time, price: 100 }],
+        canvasX: 0.2,
+        canvasY: 0.9,
       }),
     }));
   });
@@ -480,26 +518,17 @@ describe("drawing interactions", () => {
   });
 
   it.each([
-    ["long-risk-reward", 80, 80, 140],
-    ["short-risk-reward", 120, 120, 60],
-  ] as const)("normalizes a reversed %s creation drag and defaults the target to 2R", (tool, endY, stop, target) => {
+    ["long-risk-reward", 80],
+    ["short-risk-reward", 120],
+  ] as const)("rejects a reversed %s creation drag without automatic reflection", (tool, endY) => {
     const onCommand = vi.fn();
     const { canvas } = renderCanvas({ activeTool: tool, onCommand });
 
     fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 10, clientY: 100 });
     fireEvent.pointerUp(canvas, { pointerId: 1, clientX: 40, clientY: endY });
 
-    expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
-      type: "add",
-      drawing: expect.objectContaining({
-        tool,
-        anchors: [
-          expect.objectContaining({ price: 100 }),
-          expect.objectContaining({ price: stop }),
-          expect.objectContaining({ price: target }),
-        ],
-      }),
-    }));
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert")).toBeInTheDocument();
   });
 
   it("rejects a zero-risk creation without changing tools or emitting a command", () => {
@@ -675,10 +704,18 @@ describe("drawing interactions", () => {
       currency: "HKD",
     });
 
-    await waitFor(() => expect(fillText.mock.calls.length).toBeGreaterThan(1));
-    const renderedText = fillText.mock.calls
-      .map(([text]) => String(text))
-      .join("\n");
+    const fallback = await waitFor(() =>
+      screen.findByRole("status", {
+        name: "绘图标签 compact-risk-label",
+      }),
+    );
+    expect(fallback).toHaveAttribute("data-label-fallback", "true");
+    expect(fallback).toHaveStyle({
+      overflowY: "auto",
+      overflowX: "hidden",
+      maxHeight: "100px",
+    });
+    const renderedText = fallback.textContent ?? "";
     for (const required of [
       "入场 100.00",
       "止损 90.00",
@@ -690,18 +727,16 @@ describe("drawing interactions", () => {
     ]) {
       expect(renderedText).toContain(required);
     }
-    for (const [text, x, y] of fillText.mock.calls) {
-      expect(Number(x)).toBeGreaterThanOrEqual(0);
-      expect(Number(y)).toBeGreaterThanOrEqual(0);
-      expect(Number(x) + String(text).length * 6).toBeLessThanOrEqual(180);
-      expect(Number(y)).toBeLessThanOrEqual(150);
-    }
+    // The compact plot uses the bounded, scrollable DOM fallback. Its wrapped
+    // child rows preserve every complete value even when Canvas cannot fit the
+    // whole grouped surface in one readable placement.
+    expect(fallback.querySelectorAll(":scope > div").length).toBeGreaterThanOrEqual(9);
   });
 
   it.each([
     ["long-risk-reward", 90, 110, 90, 120],
     ["short-risk-reward", 110, 90, 110, 80],
-  ] as const)("keeps %s canonical when its stop handle crosses entry", (tool, initialStop, crossedStop, expectedStop, target) => {
+  ] as const)("rejects %s stop handle crossing entry without replacement", (tool, initialStop, crossedStop, _expectedStop, target) => {
     const onCommand = vi.fn();
     const drawing = savedDrawing({
       id: `${tool}-1`, tool, anchors: [
@@ -719,21 +754,13 @@ describe("drawing interactions", () => {
     fireEvent.pointerMove(stage, { pointerId: 1, clientX: 80, clientY: 200 - crossedStop });
     fireEvent.pointerUp(stage, { pointerId: 1, clientX: 80, clientY: 200 - crossedStop });
 
-    expect(onCommand).toHaveBeenCalledTimes(1);
-    expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
-      type: "replace",
-      drawing: expect.objectContaining({ anchors: [
-        expect.objectContaining({ price: 100 }),
-        expect.objectContaining({ price: expectedStop }),
-        expect.objectContaining({ price: target }),
-      ] }),
-    }));
+    expect(onCommand).not.toHaveBeenCalled();
   });
 
   it.each([
     ["long-risk-reward", 90, 120, 80, 120],
     ["short-risk-reward", 110, 80, 120, 80],
-  ] as const)("keeps %s canonical when its target handle crosses entry", (tool, stop, initialTarget, crossedTarget, expectedTarget) => {
+  ] as const)("rejects %s target handle crossing entry without replacement", (tool, stop, initialTarget, crossedTarget, expectedTarget) => {
     const onCommand = vi.fn();
     const drawing = savedDrawing({
       id: `${tool}-target`, tool, anchors: [
@@ -751,14 +778,7 @@ describe("drawing interactions", () => {
     fireEvent.pointerMove(stage, { pointerId: 1, clientX: 80, clientY: 200 - crossedTarget });
     fireEvent.pointerUp(stage, { pointerId: 1, clientX: 80, clientY: 200 - crossedTarget });
 
-    expect(onCommand).toHaveBeenCalledTimes(1);
-    expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
-      type: "replace",
-      drawing: expect.objectContaining({ anchors: [
-        expect.objectContaining({ price: 100 }),
-        expect.objectContaining({ price: stop }),
-        expect.objectContaining({ price: expectedTarget }),
-      ] }),
-    }));
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(drawing.anchors[2].price).toBe(expectedTarget);
   });
 });

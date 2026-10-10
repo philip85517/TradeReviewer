@@ -6,6 +6,7 @@ import { openSqliteDatabase } from "../../../db/sqlite";
 import { buildTradeEpisodes } from "../trades/episodes";
 import type { TradeExecution } from "../trades/types";
 import { getSqliteStore } from "../storage/sqlite-store";
+import { normalizeDrawing } from "../chart/drawings";
 import { createRecallDocument, retainRecallSnapshot, } from "./document";
 import { upsertRecallManualEvaluationDraft } from "./manual-evaluations";
 import { getRecallDocument, listRecallReviewSummaries, RecallConflictError, saveRecallDocument, } from "./server-repository";
@@ -57,6 +58,45 @@ afterEach(() => {
         });
 });
 describe("Recall SQLite repository", () => {
+    it("restores linked Chinese text after closing and reopening SQLite without changing retained evidence or cutoffs", () => {
+        const db = database();
+        const dbFile = join(directories[directories.length - 1], "recall.sqlite");
+        const store = getSqliteStore(db);
+        store.mergeExecutions([execution("buy-linked-note", "buy", "2026-01-01T00:00:00.000Z")]);
+        const tradeEpisode = buildTradeEpisodes(store.getExecutions())[0];
+        let document = createRecallDocument(tradeEpisode);
+        const original = normalizeDrawing({
+            id: "original-note", tool: "text", anchors: [{ time: "2026-01-01T00:00:00.000Z", price: 10 }],
+            text: "原始判断：\n回撤后观察承接，站回 10 再考虑做多。\n跌破 9 则结构失效。",
+            style: { color: "#9ec5ff", lineWidth: 1, opacity: 0.9 },
+            hidden: false, locked: false, visibleOn: "all", stage: "pre-trade",
+            textWidth: 240, fontSize: 18, background: "#142236", recallOwnerId: "global", textRevision: 1,
+        }, tradeEpisode.id, document.working.cursor, 0);
+        document = retainRecallSnapshot(document, { ...snapshot(document.decisions[0].id), drawings: [original] });
+        document.working.drawings = [original];
+        const first = saveRecallDocument(db, { document, expectedRevision: 0 });
+        const linked = { ...original, placement: "anchor" as const, canvasX: 0.25, canvasY: 0.2,
+            anchors: [{ time: "2026-01-01T00:00:00.000Z", price: 9.75 }] };
+        const changed = structuredClone(first.document);
+        changed.working.drawings = [linked];
+        saveRecallDocument(db, { document: changed, expectedRevision: 1 });
+        db.close();
+
+        const reopened = openSqliteDatabase(dbFile);
+        try {
+            const restored = getRecallDocument(reopened, tradeEpisode.id);
+            expect(restored?.working.drawings).toEqual([linked]);
+            expect(restored?.snapshots).toEqual(first.document.snapshots);
+            expect(restored?.working.cursor).toBe(first.document.working.cursor);
+            expect(restored?.working.executionCursor).toBe(first.document.working.executionCursor);
+            expect(restored?.working.phase).toBe(first.document.working.phase);
+            expect(restored?.working.hasSeenFuture).toBe(first.document.working.hasSeenFuture);
+            expect(getSqliteStore(reopened).getExecutions()).toEqual(tradeEpisode.executions);
+        } finally {
+            reopened.close();
+        }
+    });
+
     it("persists episode manual evaluation drafts in the same document transaction", () => {
         const db = database();
         const store = getSqliteStore(db);

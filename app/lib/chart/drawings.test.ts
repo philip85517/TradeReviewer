@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
+import type { Timeframe } from "../market/types";
 
 import {
   calculateRiskReward,
   clampDrawingToCursor,
+  eligibleDrawingsAtCursor,
   normalizeDrawing,
   requiredAnchorCount,
   validateDrawing,
@@ -12,6 +14,30 @@ import {
 } from "./drawings";
 
 describe("drawing replay safety", () => {
+  it("keeps a knowable hidden drawing eligible for the layer manager", () => {
+    const hidden: NormalizedDrawing = {
+      version: 2,
+      id: "hidden-note",
+      episodeId: "episode-1",
+      name: "隐藏判断",
+      tool: "text",
+      anchors: [{ time: "2025-01-06T00:00:00.000Z", price: 12 }],
+      style: { color: "#2f80ed", lineWidth: 1, opacity: 1 },
+      hidden: true,
+      locked: false,
+      visibleOn: "all",
+      stage: "during-replay",
+      createdAtCursor: "2025-01-06T00:00:00.000Z",
+      zIndex: 0,
+    };
+    const future = { ...hidden, id: "future-note", createdAtCursor: "2025-01-07T00:00:00.000Z" };
+    const otherTimeframe = { ...hidden, id: "other-timeframe", visibleOn: ["15m"] as Timeframe[] };
+
+    expect(eligibleDrawingsAtCursor([hidden], "2025-01-06T00:00:00.000Z", "1D")).toEqual([hidden]);
+    expect(eligibleDrawingsAtCursor([future, otherTimeframe], "2025-01-06T00:00:00.000Z", "1D")).toEqual([]);
+    expect(visibleDrawingsAtCursor([hidden], "2025-01-06T00:00:00.000Z", "1D")).toEqual([]);
+  });
+
   it("clamps every future anchor to the revealed cursor", () => {
     const cursor = "2025-01-06T00:00:00.000Z";
     const drawing: NormalizedDrawing = {

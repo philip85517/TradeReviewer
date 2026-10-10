@@ -38,6 +38,7 @@ import type { ChartSettings } from "../../lib/storage/chart-settings";
 import { markerDisplayGeometry, markerLogicalPosition, markerRightLabelBoundary, markerTimelineTimes } from "../../lib/chart/marker-geometry";
 import { displayTimeForCandle } from "../../lib/replay/display-time";
 import type { TradeExecution } from "../../lib/trades/types";
+import { Eye, Maximize2 } from "lucide-react";
 import { tradeScopeKey } from "../../lib/trades/types";
 import {
   mapExecutionsToCandles,
@@ -94,6 +95,7 @@ type Props = {
   onPlanInteractionStart?: () => void;
   onPlanPriceSelect?: (id: string) => void;
   planPriceLines?: { id: string; price: number; title: string }[];
+  compactControls?: boolean;
   drawings: NormalizedDrawing[];
   activeTool: DrawingTool;
   settings: ChartSettings;
@@ -112,6 +114,7 @@ type Props = {
   currency: string;
   onSelectDrawing: (id: string | null) => void;
   onCommand: (command: DrawingCommand) => void;
+  onDrawingInteractionStart?: () => void;
 };
 
 const EMPTY_POSITION_EVENTS: StatementEvent[] = [];
@@ -828,6 +831,7 @@ export function ReplayChart({
   cursor,
   averageCost,
   planPriceLines,
+  compactControls = false,
   planLinesEditable = false,
   onPlanPriceChange,
   onPlanInteractionStart,
@@ -850,6 +854,7 @@ export function ReplayChart({
   currency,
   onSelectDrawing,
   onCommand,
+  onDrawingInteractionStart,
 }: Props) {
   const planHitControls = useRef(new Map<string, HTMLButtonElement>());
   const planDrag = useRef<{id:string;original:string;pointerId:number} | null>(null);
@@ -895,6 +900,7 @@ export function ReplayChart({
   // ResizeObserver can run in that gap, so keep the latest chart-owned range
   // as the authority instead of reading the still-old range back from LWC.
   const pendingLogicalRangeRef = useRef<LogicalRange | null>(null);
+  const pendingPriceRangeRef = useRef<{ from: number; to: number } | null>(null);
   const pendingLogicalRangeVersionRef = useRef(0);
   const [chartReady, setChartReady] = useState(false);
   const [coordinateVersion, setCoordinateVersion] = useState(0);
@@ -1192,6 +1198,25 @@ export function ReplayChart({
 
     return () => {
       disposed = true;
+      // The chart effect can be cleaned up and rebuilt while React preserves
+      // component state (for example during Fast Refresh or Activity).
+      // Invalidate the published readiness state before removing the chart so
+      // the onReady effect cannot hand the parent a handle backed by this
+      // disposed chart.
+      setChartReady(false);
+      chartHandleRef.current = null;
+      const activeChart = chartRef.current;
+      const activeRange = activeChart?.timeScale().getVisibleLogicalRange?.();
+      pendingLogicalRangeRef.current = activeRange ? { ...activeRange } : null;
+      const activePriceRange = seriesRef.current?.priceScale().getVisibleRange?.();
+      pendingPriceRangeRef.current = activePriceRange &&
+        Number.isFinite(activePriceRange.from) && Number.isFinite(activePriceRange.to) &&
+        activePriceRange.to > activePriceRange.from
+        ? { ...activePriceRange }
+        : null;
+      chartSizeRef.current = { width: 0, height: 0 };
+      initialFitDoneRef.current = false;
+      waitingForUsableSizeRef.current = true;
       observer?.disconnect();
       const clickCapableChart = chartRef.current as (IChartApi & {
         unsubscribeClick?: (handler: (param: ReplayChartClickParam) => void) => void;
@@ -1199,13 +1224,11 @@ export function ReplayChart({
       const chartClickHandler = chartClickHandlerRef.current;
       if (clickCapableChart && chartClickHandler) clickCapableChart.unsubscribeClick?.(chartClickHandler);
       chartClickHandlerRef.current = null;
-      const activeChart = chartRef.current;
       const visibleLogicalRangeHandler = visibleLogicalRangeHandlerRef.current;
       if (activeChart && visibleLogicalRangeHandler) {
         activeChart.timeScale().unsubscribeVisibleLogicalRangeChange?.(visibleLogicalRangeHandler);
       }
       visibleLogicalRangeHandlerRef.current = null;
-      pendingLogicalRangeRef.current = null;
       pendingLogicalRangeVersionRef.current += 1;
       if (seriesRef.current && executionMarkerPrimitiveRef.current) {
         (seriesRef.current as ISeriesApi<"Candlestick"> & { detachPrimitive?: (primitive: ISeriesPrimitive<Time>) => void }).detachPrimitive?.(executionMarkerPrimitiveRef.current);
@@ -1341,6 +1364,12 @@ export function ReplayChart({
       requestLogicalRange(scale!, restoredTimeRange);
     } else if (timelineData.length > 0 && snapshot?.logicalRange) {
       requestLogicalRange(scale!, snapshot.logicalRange);
+    }
+    const pendingPriceRange = pendingPriceRangeRef.current;
+    if (pendingPriceRange) {
+      const priceScale = candleSeries.priceScale();
+      priceScale.setVisibleRange(pendingPriceRange);
+      pendingPriceRangeRef.current = null;
     }
     appliedCandleDataRef.current = timelineData;
     setCoordinateVersion((version) => version + 1);
@@ -1688,7 +1717,13 @@ export function ReplayChart({
     try {
       // Commands and React layout refs must commit before the immutable scene
       // is frozen. No asynchronous boundary precedes this revision barrier.
-      flushSync(() => drawingCanvasRef.current?.commitText());
+      let textCommitReady = true;
+      flushSync(() => {
+        textCommitReady = drawingCanvasRef.current?.commitText() ?? true;
+      });
+      if (!textCommitReady) {
+        throw new Error("文字编辑或关联取点尚未完成，请先完成或取消编辑；草稿已保留");
+      }
       chart.takeScreenshot(false, false);
       const viewport = getViewport();
       if (!viewport.logicalRange || !viewport.priceRange) throw new Error("图表可见范围尚未就绪，无法截图");
@@ -1727,7 +1762,7 @@ export function ReplayChart({
   }, [capture, fitAll, flush, getViewport, restoreViewport]);
 
   useEffect(() => {
-    if (!chartReady) {
+    if (!chartReady || !chartRef.current) {
       onReady?.(null);
       return;
     }
@@ -1755,11 +1790,16 @@ export function ReplayChart({
       const button = planHitControls.current.get(line.id);
       if (!button) continue;
       const y = seriesRef.current?.priceToCoordinate(line.price);
-      const visible = y != null && y >= 20 && y <= chartSizeRef.current.height - 20;
+      const halfHeight = compactControls
+        ? Math.max(18, button.offsetHeight / 2, Number.parseFloat(getComputedStyle(button).minHeight) / 2 || 0)
+        : 18;
+      const visible = y != null && (compactControls
+        ? y >= halfHeight && y <= chartSizeRef.current.height - halfHeight
+        : y >= 20 && y <= chartSizeRef.current.height - 20);
       button.style.display = visible ? "" : "none";
-      if (visible) button.style.top = `${y - 18}px`;
+      if (visible) button.style.top = `${y - halfHeight}px`;
     }
-  }, [chartReady, coordinateVersion, planPriceLines]);
+  }, [chartReady, compactControls, coordinateVersion, planPriceLines]);
   const fitPlanPrices = () => {
     const revealedPrices = validChartCandles
       .filter(candle => Date.parse(candle.time) <= Date.parse(cursor))
@@ -1814,8 +1854,19 @@ export function ReplayChart({
         )}
       </div>
       <div ref={containerRef} className="lightweight-chart" />
-      {safePlanLines.length > 0 && (
+      {compactControls ? (
+        <div className="replay-chart-compact-controls" role="toolbar" aria-label="图表视野操作"
+          style={{ left: plotBounds ? `${plotBounds.width / 2}px` : "50%" }}>
+          <button type="button" className="replay-chart-compact-control" onClick={() => fitAllRef.current()} aria-label="适应全部" title="适应全部">
+            <Maximize2 size={18} aria-hidden="true" />
+          </button>
+          {safePlanLines.length > 0 && <button type="button" className="replay-chart-compact-control" onClick={fitPlanPrices} aria-label="显示计划价格" title="显示计划价格">
+            <Eye size={18} aria-hidden="true" />
+          </button>}
+        </div>
+      ) : safePlanLines.length > 0 && (
         <button type="button" className="recall-plan-price-action" onClick={fitPlanPrices}
+          aria-label="显示计划价格" title="显示计划价格"
           style={{ position: "absolute", left: 76, bottom: 48, zIndex: 8 }}>
           显示计划价格
         </button>
@@ -1823,6 +1874,7 @@ export function ReplayChart({
       {chartReady && safePlanLines.map(line => {
         return (
           <button key={line.id} type="button"
+            className={compactControls ? "replay-chart-plan-hit" : undefined}
             ref={element => {
               if (element) planHitControls.current.set(line.id, element);
               else planHitControls.current.delete(line.id);
@@ -1891,6 +1943,7 @@ export function ReplayChart({
         currency={currency}
         onSelectDrawing={onSelectDrawing}
         onCommand={onCommand}
+        onDrawingInteractionStart={onDrawingInteractionStart}
         coordinateAdapter={coordinateAdapter}
         coordinateVersion={coordinateVersion}
         plotBounds={plotBounds}

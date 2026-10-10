@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -53,5 +53,37 @@ describe("DrawingLayersPanel", () => {
   it("announces an empty layer list", () => {
     render(<DrawingLayersPanel drawings={[]} onCommand={vi.fn()} onSelectDrawing={vi.fn()} selectedDrawingId={null} />);
     expect(screen.getByText("暂无绘图图层")).toBeInTheDocument();
+  });
+
+  it("syncs an external same-id rename without replacing an active draft", () => {
+    const onCommand = vi.fn();
+    const view = render(<DrawingLayersPanel drawings={drawings} onCommand={onCommand} onSelectDrawing={vi.fn()} selectedDrawingId={null} />);
+    const input = screen.getByLabelText("重命名趋势线") as HTMLInputElement;
+    view.rerender(<DrawingLayersPanel drawings={[{ ...drawings[0], name: "验收绘图" }, drawings[1]]} onCommand={onCommand} onSelectDrawing={vi.fn()} selectedDrawingId={null} />);
+    expect(input.value).toBe("验收绘图");
+
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "中文草稿" } });
+    view.rerender(<DrawingLayersPanel drawings={[{ ...drawings[0], name: "外部更新", style: { ...drawings[0].style, opacity: 0.5 } }, drawings[1]]} onCommand={onCommand} onSelectDrawing={vi.fn()} selectedDrawingId={null} />);
+    expect(input.value).toBe("中文草稿");
+    fireEvent.blur(input);
+    expect(onCommand).toHaveBeenLastCalledWith({ type: "rename", id: "trend-1", name: "中文草稿" });
+  });
+
+  it("does not submit while a Chinese composition is still active and commits Enter once", () => {
+    const onCommand = vi.fn();
+    render(<DrawingLayersPanel drawings={drawings} onCommand={onCommand} onSelectDrawing={vi.fn()} selectedDrawingId={null} />);
+    const input = screen.getByLabelText("重命名趋势线") as HTMLInputElement;
+    input.focus();
+    fireEvent.change(input, { target: { value: "新名称" } });
+    fireEvent.compositionStart(input);
+    fireEvent.keyDown(input, { key: "Enter", keyCode: 229, isComposing: true });
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(document.activeElement).toBe(input);
+    fireEvent.compositionEnd(input);
+    fireEvent.keyDown(input, { key: "Enter" });
+    fireEvent.blur(input);
+    expect(onCommand).toHaveBeenCalledTimes(1);
+    expect(onCommand).toHaveBeenCalledWith({ type: "rename", id: "trend-1", name: "新名称" });
   });
 });

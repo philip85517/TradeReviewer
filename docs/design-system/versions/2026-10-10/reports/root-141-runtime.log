@@ -1,0 +1,13 @@
+
+> trade-reviewer@0.1.0 test:runtime
+> node --test tests/local-dev-storage.test.mjs
+
+✔ dev server exposes a working SQLite storage API (19583.55274ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 20318.702087

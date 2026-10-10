@@ -1,10 +1,12 @@
 import { act, cleanup, fireEvent, render, waitFor, within } from "@testing-library/react";
-import { useState, type ComponentProps } from "react";
+import { Activity, useState, type ComponentProps } from "react";
 import { afterEach, expect, it, vi } from "vitest";
 
 const engine = vi.hoisted(() => ({
   data: [] as { time: number }[],
   range: { from: 0, to: 0 },
+  priceRange: { from: 0, to: 3 },
+  resetPriceRangeOnCreate: false,
   fitCalls: 0,
   controlY: 100,
   options: null as Record<string, unknown> | null,
@@ -25,6 +27,7 @@ const engine = vi.hoisted(() => ({
   rangeReadsAfterRemove: 0,
   autoScale:true,
   priceRanges:[] as {from:number;to:number}[],
+  priceRangeCalls: [] as Array<{ instance: number; range: { from: number; to: number } }>,
   paintedTexts:[] as string[],
   pixelSizes:[] as number[][],
   expandedTextIds: [] as string[],
@@ -33,6 +36,9 @@ const engine = vi.hoisted(() => ({
   timeScaleWidth: 0,
   paneHeight: 0,
   appliedSizes: [] as Array<{ width?: number; height?: number }>,
+  resetRangeOnCreate: false,
+  chartInstances: 0,
+  setDataCalls: [] as Array<{ instance: number; data: { time: number }[] }>,
 }));
 
 vi.mock("./drawing-canvas", async () => {
@@ -49,7 +55,7 @@ vi.mock("./drawing-canvas", async () => {
       commitText: () => engine.drawingCommit(props),
       getExpandedTextIds: () => [...engine.expandedTextIds],
     }));
-    return null;
+    return <button type="button" aria-label="mock drawing interaction" onClick={() => (props as { onDrawingInteractionStart?: () => void }).onDrawingInteractionStart?.()} />;
   });
   DrawingCanvas.displayName = "DrawingCanvas";
   return { DrawingCanvas, paintDrawingScene: (_context:unknown, scene:{drawings:Array<{id:string;text?:string}>;expandedTextIds?: Set<string>}) => { engine.overlayIds=scene.drawings.map(d=>d.id); engine.paintedTexts=scene.drawings.map(d=>d.text??''); engine.capturedExpandedTextIds=scene.expandedTextIds ? [...scene.expandedTextIds] : undefined; } };
@@ -63,7 +69,10 @@ vi.mock("lightweight-charts", () => ({
   LineStyle: { Dashed: 1 },
   createSeriesMarkers: () => ({ setMarkers: () => {} }),
   createChart: (_container: Element, options: Record<string, unknown>) => {
+    const chartInstance = ++engine.chartInstances;
     engine.options = options;
+    if (engine.resetRangeOnCreate) engine.range = { from: 0, to: 0 };
+    if (engine.resetPriceRangeOnCreate) engine.priceRange = { from: 0, to: 3 };
     const setAutoScale=(value:boolean)=>{if(!_container.closest('[data-recall-capture]'))engine.autoScale=value;};
     const scale = {
       subscribeVisibleLogicalRangeChange: (handler: () => void) => { engine.rangeChangeHandlers.push(handler); },
@@ -111,12 +120,14 @@ vi.mock("lightweight-charts", () => ({
         },
         setData: (data: { time: number }[]) => {
           if (kind === "candle") {
-            engine.data = data;
+            const clonedData = data.map((item) => ({ ...item }));
+            engine.setDataCalls.push({ instance: chartInstance, data: clonedData });
+            engine.data = clonedData;
             if (engine.setDataRangeShift) engine.range = { ...engine.setDataRangeShift };
           }
         },
         applyOptions: () => {},
-        priceScale: () => ({ applyOptions: (options:{autoScale?:boolean}) => {if(options.autoScale!==undefined)setAutoScale(options.autoScale);},getVisibleRange:()=>({from:0,to:3}),setVisibleRange:(range:{from:number;to:number})=>{engine.priceRanges.push(range);setAutoScale(false);},setAutoScale,options:()=>({mode:0,invertScale:false,autoScale:engine.autoScale,scaleMargins:{top:.08,bottom:.2}}) }),
+        priceScale: () => ({ applyOptions: (options:{autoScale?:boolean}) => {if(options.autoScale!==undefined)setAutoScale(options.autoScale);},getVisibleRange:()=>({...engine.priceRange}),setVisibleRange:(range:{from:number;to:number})=>{engine.priceRange={...range};engine.priceRanges.push(range);engine.priceRangeCalls.push({instance:chartInstance,range:{...range}});setAutoScale(false);},setAutoScale,options:()=>({mode:0,invertScale:false,autoScale:engine.autoScale,scaleMargins:{top:.08,bottom:.2}}) }),
         createPriceLine: (line:object) => ({ options:()=>line,applyOptions: () => {} }),
         removePriceLine: () => {},
         coordinateToPrice: () => 100,
@@ -168,6 +179,13 @@ function props(overrides: Partial<ComponentProps<typeof ReplayChart>> = {}) {
   } satisfies ComponentProps<typeof ReplayChart>;
 }
 
+it("passes the drawing interaction callback through to the canvas interface", () => {
+  const onDrawingInteractionStart = vi.fn();
+  render(<ReplayChart {...props({ onDrawingInteractionStart })} />);
+  fireEvent.click(within(document.body).getByRole("button", { name: "mock drawing interaction" }));
+  expect(onDrawingInteractionStart).toHaveBeenCalledTimes(1);
+});
+
 function stubResize(width = 640, height = 240) {
   vi.stubGlobal(
     "ResizeObserver",
@@ -207,6 +225,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
   engine.data = [];
   engine.range = { from: 0, to: 0 };
+  engine.priceRange = { from: 0, to: 3 };
   engine.fitCalls = 0;
   engine.controlY = 100;
   engine.options = null;
@@ -224,7 +243,8 @@ afterEach(() => {
   engine.removed=0;engine.lifecycleCalls=[];engine.deferredLifecycleFrames=[];engine.lifecycleErrors=[];engine.rangeReadsAfterRemove=0;engine.autoScale=true;engine.priceRanges=[];engine.paintedTexts=[];engine.drawingCommit.mockReset();
   engine.expandedTextIds=[];engine.capturedExpandedTextIds=undefined;
   engine.plotBounds=undefined;engine.timeScaleWidth=0;engine.paneHeight=0;
-  engine.appliedSizes=[];
+  engine.appliedSizes=[];engine.resetRangeOnCreate=false;engine.resetPriceRangeOnCreate=false;engine.priceRangeCalls=[];
+  engine.chartInstances=0;engine.setDataCalls=[];
 });
 
 it("formats daily tick marks compactly while retaining Asia/Shanghai date conversion", async () => {
@@ -477,6 +497,24 @@ function captureHarness() {
   const onReady=vi.fn();
   return {onReady,prepare:(container:HTMLElement)=>{vi.spyOn(container.querySelector('.chart-stage')!,'getBoundingClientRect').mockReturnValue({width:400,height:200} as DOMRect);},handle:()=>onReady.mock.calls.find(([v])=>v)?.[0] as import('./replay-chart').ChartHandle};
 }
+it("rejects a pending text association before taking a screenshot and allows the next ready capture", async () => {
+  const h = captureHarness();
+  engine.drawingCommit.mockReturnValue(false);
+  const { container } = render(<ReplayChart {...props({ onReady: h.onReady })} />);
+  h.prepare(container);
+  await waitFor(() => expect(h.handle()).toBeDefined());
+  await expect(h.handle().capture()).rejects.toThrow("文字编辑或关联取点尚未完成");
+  expect(engine.screenshotArgs).toBeNull();
+  expect(engine.screenshotData).toEqual([]);
+  expect(document.querySelector("[data-recall-capture]")).toBeNull();
+  engine.drawingCommit.mockReturnValue(true);
+  let result: Awaited<ReturnType<import("./replay-chart").ChartHandle["capture"]>> | undefined;
+  await act(async () => { result = await h.handle().capture(); });
+  expect(result?.imageDataUrl).toBe("data:image/png;base64,capture");
+  expect(engine.screenshotArgs).toEqual([true, false]);
+  expect(engine.drawingCommit).toHaveBeenCalledTimes(2);
+  expect(document.querySelector("[data-recall-capture]")).toBeNull();
+});
 it('freezes data, drawings, range and source viewport before awaiting fonts',async()=>{
   const h=captureHarness();let ready!:()=>void;
   Object.defineProperty(document,'fonts',{configurable:true,value:{ready:new Promise<void>(resolve=>{ready=resolve;})}});
@@ -735,4 +773,37 @@ it("does not let a queued range notification read a removed chart", async () => 
   await Promise.resolve();
 
   expect(engine.rangeReadsAfterRemove).toBe(0);
+});
+
+it("does not publish a stale handle while Activity hides and shows the chart", async () => {
+  stubResize();
+  const onReady = vi.fn((handle: ChartHandle | null) => {
+    if (handle) handle.getViewport();
+  });
+  const view = render(<Activity mode="visible"><ReplayChart {...props({ onReady })} /></Activity>);
+  await waitFor(() => expect(onReady).toHaveBeenCalledWith(expect.objectContaining({ getViewport: expect.any(Function) })));
+  await waitFor(() => expect(engine.setDataCalls.length).toBeGreaterThan(0));
+  const firstSetDataCallCount = engine.setDataCalls.length;
+  const firstChartInstance = engine.setDataCalls[0].instance;
+  engine.data = [];
+  engine.range = { from: 2, to: 6 };
+  engine.priceRange = { from: 52, to: 68 };
+  engine.resetPriceRangeOnCreate = true;
+  engine.resetRangeOnCreate = true;
+  expect(() => view.rerender(<Activity mode="hidden"><ReplayChart {...props({ onReady })} /></Activity>)).not.toThrow();
+  expect(() => view.rerender(<Activity mode="visible"><ReplayChart {...props({ onReady })} /></Activity>)).not.toThrow();
+  await waitFor(() => expect(onReady.mock.calls.filter(([value]) => value !== null)).toHaveLength(2));
+  const handles = onReady.mock.calls.flatMap(([value]) => value ? [value] : []);
+  expect(handles[1]).not.toBe(handles[0]);
+  expect(() => handles[1]?.getViewport()).not.toThrow();
+  await waitFor(() => expect(engine.setDataCalls.length).toBeGreaterThan(firstSetDataCallCount));
+  const rebuiltSetDataCalls = engine.setDataCalls.slice(firstSetDataCallCount);
+  expect(rebuiltSetDataCalls.some((call) => call.instance !== firstChartInstance)).toBe(true);
+  const rebuiltData = rebuiltSetDataCalls.at(-1)?.data;
+  expect(rebuiltData).toHaveLength(2);
+  expect(rebuiltData?.[0]?.time).toBe(Date.parse("2026-01-01T00:00:00Z") / 1000);
+  expect(rebuiltData?.at(-1)?.time).toBe(Date.parse("2026-01-02T00:00:00Z") / 1000);
+  await waitFor(() => expect(engine.range).toEqual({ from: 2, to: 6 }));
+  await waitFor(() => expect(engine.priceRange).toEqual({ from: 52, to: 68 }));
+  expect(engine.priceRangeCalls.some((call) => call.instance !== firstChartInstance && call.range.from === 52 && call.range.to === 68)).toBe(true);
 });

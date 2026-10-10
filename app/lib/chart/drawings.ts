@@ -245,13 +245,21 @@ export function visibleDrawingsAtCursor(
   cursor: string,
   timeframe: Timeframe,
 ) {
+  return eligibleDrawingsAtCursor(drawings, cursor, timeframe).filter((drawing) => !drawing.hidden);
+}
+
+/** Drawings knowable at the replay boundary, including manually hidden ones. */
+export function eligibleDrawingsAtCursor(
+  drawings: NormalizedDrawing[],
+  cursor: string,
+  timeframe: Timeframe,
+) {
   return drawings.filter((drawing) => {
     const visibleOnTimeframe =
       drawing.visibleOn === "all" ||
       drawing.visibleOn.includes(timeframe);
 
     return (
-      !drawing.hidden &&
       visibleOnTimeframe &&
       drawing.createdAtCursor <= cursor
     );

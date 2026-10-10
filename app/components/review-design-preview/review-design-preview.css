@@ -1,0 +1,695 @@
+.review-design-preview { min-height: 100vh; color: #e9eef6; background: #0b1018; }
+.review-design-preview .review-design-preview-context { display: inline-flex; align-items: center; gap: 14px; min-height: 36px; padding: 0 4px; color: #8fa1b8; font-size: 12px; line-height: 18px; }
+.review-design-preview .review-design-preview-context a { color: #aad1ff; text-decoration: none; }
+.review-design-preview .review-design-preview-context a:hover { text-decoration: underline; }
+
+/* The baseline keeps RecallWorkspace's existing component CSS. Every visual calibration below is recommended-only. */
+.review-design-preview--recommended { --review-preview-font: "Geist", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; }
+.review-design-preview--recommended .recall-workspace,
+.review-design-preview--recommended .recall-workspace * { font-family: var(--review-preview-font); }
+.review-design-preview--recommended .recall-workspace h1,
+.review-design-preview--recommended .recall-workspace h2,
+.review-design-preview--recommended .recall-workspace h3 { font-weight: 600; letter-spacing: -0.01em; }
+.review-design-preview--recommended .recall-header > .recall-heading { display: flex; flex-direction: row; align-items: baseline; gap: 8px; }
+.review-design-preview--recommended .recall-header > .recall-heading .eyebrow { flex: 0 0 auto; white-space: nowrap; }
+.review-design-preview--recommended .recall-header > .recall-heading h1 { flex: 0 1 auto; }
+.review-design-preview--recommended .recall-header > .recall-heading .recall-status { flex: 0 0 auto; margin: 0; white-space: nowrap; }
+.review-design-preview--recommended .recall-header { min-height: 56px; max-height: 64px; padding: 6px 12px; display: flex; flex-wrap: nowrap; gap: 12px; align-items: center; }
+.review-design-preview--recommended .recall-heading { flex: 0 1 auto; min-width: 0; }
+.review-design-preview--recommended .recall-header .chart-toolbar { flex: 0 1 auto; min-width: 0; }
+.review-design-preview--recommended .recall-phases { flex: 0 1 auto; margin-left: auto; }
+.review-design-preview--recommended .recall-header-controls { flex: 0 1 auto; min-width: 0; }
+.review-design-preview--recommended .recall-main { font-size: 14px; line-height: 21px; }
+.review-design-preview--recommended .recall-phases button { font-size: 14px; font-weight: 500; }
+.review-design-preview--recommended .recall-nav,
+.review-design-preview--recommended .recall-plan-sidebar { font-size: 14px; line-height: 21px; }
+.review-design-preview--recommended .recall-plan-sidebar p { font-size: 14px; line-height: 21px; }
+.review-design-preview--recommended .recall-plan-sidebar small,
+.review-design-preview--recommended .recall-nav small { font-size: 12px; line-height: 18px; }
+.review-design-preview--recommended svg { width: 18px; height: 18px; stroke-width: 2; }
+.review-design-preview--recommended .recall-workspace .drawing-toolbar svg { width: 19px; height: 19px; }
+.review-design-preview--recommended button:disabled,
+.review-design-preview--recommended select:disabled,
+.review-design-preview--recommended input:disabled,
+.review-design-preview--recommended textarea:disabled { color: #7f8fa5; border-color: #34455e; background: #101722; opacity: 1; }
+.review-design-preview--recommended .recall-plan-price-field input,
+.review-design-preview--recommended .recall-plan-derived-metrics dd,
+.review-design-preview--recommended .recall-plan-metrics dd,
+.review-design-preview--recommended .recall-actual-metrics dd,
+.review-design-preview--recommended .recall-stats-panel dd,
+.review-design-preview--recommended .recall-position-stats b,
+.review-design-preview--recommended .recall-derived-number { font-family: "Geist Mono", "SFMono-Regular", Consolas, monospace; font-variant-numeric: tabular-nums; }
+.review-design-preview--recommended button:focus-visible,
+.review-design-preview--recommended a:focus-visible,
+.review-design-preview--recommended input:focus-visible,
+.review-design-preview--recommended select:focus-visible,
+.review-design-preview--recommended textarea:focus-visible { outline: 2px solid #77aef5; outline-offset: 2px; }
+.review-design-preview--recommended .recall-main input,
+.review-design-preview--recommended .recall-main textarea,
+.review-design-preview--recommended .recall-main select { font-size: 14px; line-height: 21px; }
+.review-design-preview--recommended .recall-main input:not(:disabled),
+.review-design-preview--recommended .recall-main textarea:not(:disabled),
+.review-design-preview--recommended .recall-main select:not(:disabled) { border-color: #5b7291; }
+.review-design-preview--recommended .recall-header button,
+.review-design-preview--recommended .recall-header select,
+.review-design-preview--recommended .recall-main button { min-height: 36px; }
+.review-design-preview--recommended .recall-header .chart-toolbar > .icon-button,
+.review-design-preview--recommended .recall-header .chart-toolbar > .local-data-badge {
+  min-width: 36px;
+}
+.review-design-preview--recommended .recall-header .chart-toolbar .timeframe-group button {
+  font-family: "Geist Mono", "SFMono-Regular", Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  min-width: 36px;
+}
+/* Canvas controls carry their fine/coarse hit box in inline width/height.
+   Remove the shared button minimum only inside the chart Canvas subtree;
+   inline min sizes on text-card/editor controls still win where supplied. */
+.review-design-preview--recommended .recall-main .chart-stage .drawing-canvas button {
+  min-width: 0;
+  min-height: 0;
+}
+@media (max-width: 1105px) {
+  .review-design-preview--recommended .recall-header {
+    min-height: 64px;
+    max-height: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    padding-block: 6px;
+  }
+}
+@media (max-width: 640px), (pointer: coarse) {
+  .review-design-preview--recommended .recall-header button,
+  .review-design-preview--recommended .recall-header select,
+  .review-design-preview--recommended .recall-main button { min-height: 44px; }
+  .review-design-preview--recommended .review-design-preview-context { min-height: 44px; }
+}
+@media (max-width: 640px) {
+  .review-design-preview--recommended .recall-workspace { min-width: 0; }
+  .review-design-preview--recommended .recall-chart-shell,
+  .review-design-preview--recommended .recall-chart-shell .drawing-toolbar { min-height: 260px; }
+  .review-design-preview--recommended .recall-chart-column .chart-stage { height: 260px; min-height: 260px; }
+  .review-design-preview--recommended .review-design-preview-context { gap: 8px; max-width: 100%; overflow: hidden; }
+  .review-design-preview--recommended .review-design-preview-context span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+/* Final sample calibration: keep each header group intact while allowing the
+   recommended sample to use the production-sized single-row frame. */
+.review-design-preview--recommended .recall-header > .recall-heading {
+  align-self: center;
+  width: auto;
+  min-width: 0;
+  margin: 0;
+}
+.review-design-preview--recommended .recall-header > .recall-heading h1 {
+  margin: 0;
+  max-width: min(100%, 360px);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.review-design-preview--recommended .recall-header > .recall-phases {
+  align-self: center;
+  width: auto;
+  margin: 0;
+}
+.review-design-preview--recommended .recall-header > .chart-toolbar {
+  align-self: center;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  flex: initial;
+}
+.review-design-preview--recommended .recall-header > .recall-header-controls {
+  align-self: center;
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+}
+
+/* Let the bounded workspace decide the available desktop chart height. More
+   may reduce that track; its toolbar remains independently scrollable. */
+.review-design-preview--recommended .recall-main > .recall-chart-and-plan,
+.review-design-preview--recommended .recall-main > .recall-chart-and-plan .recall-chart-shell {
+  min-height: clamp(360px, 56dvh, 560px);
+}
+.review-design-preview--recommended .recall-main > .recall-chart-and-plan .recall-chart-shell {
+  height: auto;
+  max-height: none;
+}
+.review-design-preview--recommended .recall-main > .recall-chart-and-plan .recall-chart-column .chart-stage {
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+}
+.review-design-preview--recommended .recall-main > .recall-chart-and-plan .drawing-toolbar {
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.review-design-preview--recommended .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan,
+.review-design-preview--recommended .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan .recall-chart-shell,
+.review-design-preview--recommended .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan .drawing-toolbar {
+  height: auto;
+  min-height: clamp(360px, 46dvh, 520px);
+  max-height: none;
+}
+.review-design-preview--recommended .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan .recall-chart-column .chart-stage {
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+}
+.review-design-preview--recommended .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan .drawing-toolbar {
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* The scoped font stack intentionally applies CJK fallback broadly; numeric
+   definition values retain the existing mono/tabular reading convention. */
+.review-design-preview--recommended .recall-plan-sidebar dd,
+.review-design-preview--recommended .recall-plan-compact-summary strong {
+  font-family: "Geist Mono", "SFMono-Regular", Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+}
+.review-design-preview--recommended .recall-plan-sidebar dd { font-size: 14px; line-height: 21px; }
+.review-design-preview--recommended .recall-plan-sidebar .recall-plan-compact-summary strong span { font-family: inherit; font-variant-numeric: inherit; }
+.review-design-preview--recommended .recall-plan-sidebar .recall-plan-detail-group dd { font-size: 14px; line-height: 21px; }
+.review-design-preview--recommended .recall-plan-sidebar .recall-plan-reference-funds-label,
+.review-design-preview--recommended .recall-plan-sidebar .recall-plan-reference-funds-value { grid-column: 1 / -1; }
+.review-design-preview--recommended .recall-plan-sidebar .recall-plan-reference-funds-value { overflow-wrap: normal; word-break: keep-all; }
+.review-design-preview--recommended .recall-replay-bar__primary button,
+.review-design-preview--recommended .recall-replay-footer__primary button {
+  font-size: 14px;
+  line-height: 21px;
+}
+
+/* Panel controls revision: only the recommended sample opts into edge handles
+   and the compact footer. Production recall.css remains the baseline. */
+.review-design-preview--recommended .recall-header {
+  position: relative;
+  padding-inline: 48px;
+}
+.review-design-preview--recommended .recall-edge-toggle {
+  position: absolute;
+  inset-block: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #adbbcf;
+}
+.review-design-preview--recommended .recall-edge-toggle:hover,
+.review-design-preview--recommended .recall-edge-toggle:focus-visible { color: #e7edf6; background: rgba(119,174,245,.12); }
+.review-design-preview--recommended .recall-edge-toggle[aria-expanded="true"],
+.review-design-preview--recommended .recall-replay-more__summary[aria-expanded="true"] { color: #e7edf6; background: rgba(91,114,145,.2); }
+.review-design-preview--recommended .recall-edge-toggle:focus-visible,
+.review-design-preview--recommended .recall-replay-more__summary:focus-visible { outline: 2px solid #aad1ff; outline-offset: 2px; }
+.review-design-preview--recommended .recall-edge-toggle--left { left: 6px; }
+.review-design-preview--recommended .recall-edge-toggle--right { right: 6px; }
+.review-design-preview--recommended .recall-replay-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1fr);
+  grid-template-rows: auto;
+  align-items: center;
+  gap: 0 8px;
+}
+.review-design-preview--recommended .recall-replay-bar > .recall-position-strip { grid-column: 1; grid-row: 1; min-width: 0; }
+.review-design-preview--recommended .recall-replay-bar > .recall-controls { grid-column: 2; grid-row: 1; min-width: 0; gap: 0; justify-self: center; }
+.review-design-preview--recommended .recall-replay-more { display: contents; }
+.review-design-preview--recommended .recall-replay-more__summary { grid-column: 3; grid-row: 1; justify-self: end; width: 36px; min-width: 36px; padding: 0; border: 0; background: transparent; }
+.review-design-preview--recommended .recall-replay-more__summary span { display: none; }
+.review-design-preview--recommended .recall-replay-more__body {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  max-height: min(42vh, 420px);
+  min-width: 0;
+  overflow-y: auto;
+}
+.review-design-preview--recommended .recall-replay-more__body[hidden] { display: none; }
+.review-design-preview--recommended .recall-controls .recall-replay-action {
+  gap: 4px;
+  min-width: 36px;
+  width: auto;
+  min-height: 36px;
+  padding-inline: 6px;
+  border-color: transparent;
+  background: transparent;
+  border-radius: 4px;
+}
+.review-design-preview--recommended .recall-controls .recall-replay-action.primary { color: #aad1ff; }
+.review-design-preview--recommended .recall-controls .recall-replay-action:hover:not(:disabled),
+.review-design-preview--recommended .recall-controls .recall-replay-action:focus-visible { border-color: transparent; background: rgba(91,114,145,.15); color: #e7edf6; }
+.review-design-preview--recommended .recall-controls .recall-replay-action.active { color: #e7edf6; background: rgba(91,114,145,.2); }
+.review-design-preview--recommended .recall-controls .recall-replay-action:disabled { background: transparent; border-color: transparent; color: #7f8fa5; opacity: .45; }
+.review-design-preview--recommended .recall-replay-more__body > .recall-replay-bar__secondary { gap: 8px; }
+
+@media (max-width: 640px) {
+  .review-design-preview--recommended .recall-header { padding-inline: 44px; }
+  .review-design-preview--recommended .recall-edge-toggle { width: 44px; min-width: 44px; height: 44px; min-height: 44px; }
+  .review-design-preview--recommended .recall-edge-toggle--left { left: 0; }
+  .review-design-preview--recommended .recall-edge-toggle--right { right: 0; }
+  .review-design-preview--recommended .recall-replay-bar {
+    grid-template-columns: minmax(0, 1fr) 36px;
+    grid-template-rows: auto auto;
+    gap: 2px 8px;
+  }
+  .review-design-preview--recommended .recall-replay-bar > .recall-position-strip { grid-column: 1 / -1; grid-row: 1; }
+  .review-design-preview--recommended .recall-replay-bar > .recall-controls { grid-column: 1; grid-row: 2; overflow-x: auto; }
+  .review-design-preview--recommended .recall-replay-more__summary { grid-column: 2; grid-row: 2; width: 44px; min-width: 44px; min-height: 44px; }
+  .review-design-preview--recommended .recall-replay-action { min-width: 44px; min-height: 44px; }
+  .review-design-preview--recommended .recall-replay-action span { display: none; }
+}
+
+@media (max-width: 640px) {
+  .review-design-preview--recommended .recall-workspace {
+    min-height: 0;
+    height: auto;
+    overflow: visible;
+  }
+  .review-design-preview--recommended .recall-workspace {
+    min-height: 100dvh;
+  }
+  .review-design-preview--recommended .recall-main {
+    flex: 0 0 auto;
+    min-height: 0;
+    height: auto;
+    overflow: visible;
+  }
+  .review-design-preview--recommended .recall-main > .recall-chart-and-plan {
+    min-height: 260px;
+    height: auto;
+    overflow: visible;
+  }
+  .review-design-preview--recommended .recall-main > .recall-chart-and-plan.plan-open {
+    flex: none;
+    height: auto;
+    min-height: 554px;
+    grid-template-rows: 260px minmax(280px, auto);
+    overflow: visible;
+  }
+  .review-design-preview--recommended .recall-header {
+    min-height: 0;
+    max-height: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding-inline: 44px;
+    gap: 6px;
+  }
+  .review-design-preview--recommended .recall-header > .recall-heading {
+    display: flex;
+    width: auto;
+    max-width: 100%;
+    min-height: 44px;
+  }
+  .review-design-preview--recommended .recall-header > .recall-heading h1 {
+    max-width: min(62vw, 270px);
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .review-design-preview--recommended .recall-header > .recall-header-controls {
+    min-height: 44px;
+    width: 200px;
+    max-width: 200px;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: flex-end;
+    row-gap: 4px;
+    overflow: visible;
+  }
+  .review-design-preview--recommended .recall-header > .recall-header-controls > .review-design-preview-context {
+    flex: 0 0 100%;
+    width: 100%;
+    justify-content: flex-end;
+    min-height: 36px;
+  }
+  .review-design-preview--recommended .recall-header > .recall-phases {
+    width: 100%;
+  }
+  .review-design-preview--recommended .recall-header > .chart-toolbar {
+    width: 100%;
+    height: 44px;
+    min-height: 44px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .review-design-preview--recommended .recall-header .chart-toolbar > button,
+  .review-design-preview--recommended .recall-header .timeframe-group button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .review-design-preview--recommended .recall-header .chart-toolbar > .icon-button,
+  .review-design-preview--recommended .recall-header .chart-toolbar > .local-data-badge {
+    min-width: 44px;
+  }
+  .review-design-preview--recommended .review-design-preview-context {
+    max-width: 100%;
+    min-height: 44px;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    overflow: visible;
+    white-space: normal;
+  }
+  .review-design-preview--recommended .review-design-preview-context span {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+  .review-design-preview--recommended .recall-main > .recall-chart-and-plan,
+  .review-design-preview--recommended .recall-main > .recall-chart-and-plan .recall-chart-shell,
+  .review-design-preview--recommended .recall-main > .recall-chart-and-plan .drawing-toolbar {
+    min-height: 260px;
+  }
+  .review-design-preview--recommended .recall-main > .recall-chart-and-plan .recall-chart-column .chart-stage {
+    height: 260px;
+    min-height: 260px;
+  }
+  .review-design-preview--recommended .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan,
+  .review-design-preview--recommended .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan .recall-chart-shell,
+  .review-design-preview--recommended .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan .drawing-toolbar {
+    height: auto;
+    min-height: 260px;
+    max-height: none;
+  }
+  .review-design-preview--recommended .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan .recall-chart-column .chart-stage {
+    height: 260px;
+    min-height: 260px;
+    max-height: none;
+  }
+}
+
+@media (max-width: 1105px) {
+  .review-design-preview--recommended .recall-main > .recall-chart-and-plan.plan-open {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 260px minmax(0, 1fr);
+  }
+  .review-design-preview--recommended .recall-main > .recall-chart-and-plan.plan-open .recall-chart-shell {
+    height: 260px;
+    min-height: 260px;
+    max-height: 260px;
+  }
+  .review-design-preview--recommended .recall-main > .recall-chart-and-plan.plan-open .recall-chart-column .chart-stage {
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+  }
+  .review-design-preview--recommended .recall-main > .recall-chart-and-plan.plan-open .drawing-toolbar {
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+  }
+}
+
+@container recall-work (max-width: 1105px) {
+  .review-design-preview--recommended .recall-main > .recall-chart-and-plan.plan-open {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 260px minmax(0, 1fr);
+  }
+  .review-design-preview--recommended .recall-main > .recall-chart-and-plan.plan-open .recall-chart-shell {
+    height: 260px;
+    min-height: 260px;
+    max-height: 260px;
+  }
+  .review-design-preview--recommended .recall-main > .recall-chart-and-plan.plan-open .recall-chart-column .chart-stage {
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+  }
+  .review-design-preview--recommended .recall-main > .recall-chart-and-plan.plan-open .drawing-toolbar {
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+  }
+}
+
+.review-design-preview--recommended .chart-ohlc {
+  top: 8px;
+  left: 10px;
+  right: 96px;
+  max-width: calc(100% - 106px);
+  min-height: 18px;
+  align-items: baseline;
+  gap: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 4;
+  font-size: 12px;
+  line-height: 18px;
+}
+.review-design-preview--recommended .chart-ohlc b { font-family: "Geist Mono", "SFMono-Regular", Consolas, monospace; font-variant-numeric: tabular-nums; }
+.review-design-preview--recommended .replay-chart-compact-controls {
+  position: absolute;
+  left: 50%;
+  bottom: 35px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  gap: 2px;
+  z-index: 8;
+  padding: 0;
+  border: 1px solid #2a3a51;
+  border-radius: 5px;
+  overflow: visible;
+  background: rgba(16, 23, 34, .92);
+}
+.review-design-preview--recommended .replay-chart-compact-control {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0;
+  color: #adbbcf;
+  background: rgba(16, 23, 34, .92);
+  border: 0;
+  border-radius: 0;
+}
+.review-design-preview--recommended .replay-chart-compact-control:hover { color: #e7edf6; border-color: #5b7291; }
+.review-design-preview--recommended .replay-chart-compact-control:first-child { border-radius: 5px 0 0 5px; }
+.review-design-preview--recommended .replay-chart-compact-control:last-child { border-radius: 0 5px 5px 0; }
+.review-design-preview--recommended .recall-plan-price-action { min-height: 36px; }
+.review-design-preview--recommended .replay-chart-plan-hit { min-height: 36px; }
+.review-design-preview--recommended .recall-plan-sidebar { scrollbar-gutter: stable; }
+.review-design-preview--recommended .recall-plan-sidebar p { margin-block: 8px; }
+.review-design-preview--recommended .recall-plan-sidebar dd,
+.review-design-preview--recommended .recall-plan-sidebar .recall-plan-compact-summary strong { min-width: 0; overflow-wrap: anywhere; }
+.review-design-preview--recommended .recall-plan-sidebar .recall-plan-compact-summary { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.review-design-preview--recommended .recall-plan-sidebar .recall-plan-compact-summary > div { grid-template-columns: minmax(0, 1fr); gap: 2px; align-items: start; }
+.review-design-preview--recommended .recall-plan-sidebar .recall-plan-compact-summary > div > span { line-height: 18px; }
+.review-design-preview--recommended .recall-plan-sidebar .recall-plan-compact-summary strong { display: block; line-height: 21px; }
+.review-design-preview--recommended .recall-plan-sidebar .recall-plan-compact-summary > * { min-width: 0; }
+.review-design-preview--recommended .recall-exit-evaluations .recall-exit-segmented-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.review-design-preview--recommended .recall-exit-evaluations .recall-exit-segmented-options label { min-width: 0; min-height: 36px; align-items: center; justify-content: center; }
+.review-design-preview--recommended .recall-exit-evaluations { grid-template-columns: minmax(0, 1fr); }
+.review-design-preview--recommended .recall-exit-evaluations > * { min-width: 0; }
+.review-design-preview--recommended .recall-exit-evaluations .recall-exit-facts { display: flex; flex-wrap: wrap; white-space: normal; }
+.review-design-preview--recommended .recall-exit-evaluations .recall-exit-facts > span { white-space: nowrap; }
+@media (pointer: coarse) {
+  .review-design-preview--recommended .replay-chart-compact-control,
+  .review-design-preview--recommended .recall-plan-price-action { width: 44px; min-width: 44px; height: 44px; min-height: 44px; }
+  .review-design-preview--recommended .replay-chart-plan-hit { width: auto; min-width: 0; height: 44px; min-height: 44px; }
+  .review-design-preview--recommended .recall-exit-evaluations .recall-exit-segmented-options label { min-height: 44px; }
+}
+
+/* Keep the phase and sample groups intact at the compact desktop boundary;
+   1280px remains the approved single-row frame, while 1279px gets a natural
+   two-row header instead of squeezing labels into one another. */
+@media (min-width: 641px) and (max-width: 1279px) {
+  .review-design-preview--recommended .recall-header {
+    flex-wrap: wrap;
+    max-height: none;
+    min-height: 56px;
+    row-gap: 4px;
+  }
+  .review-design-preview--recommended .recall-header > .recall-phases,
+  .review-design-preview--recommended .recall-header > .recall-phases button {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .review-design-preview--recommended .review-design-preview-context,
+  .review-design-preview--recommended .review-design-preview-context a { white-space: nowrap; }
+}
+
+@media (max-width: 640px) {
+  .review-design-preview--recommended .recall-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 196px);
+    grid-template-rows: auto 24px 44px 44px;
+    grid-template-areas: "heading heading" "context context" "phases phases" "toolbar controls";
+    min-height: 0;
+    max-height: none;
+    height: auto;
+    overflow: visible;
+    position: relative;
+  }
+  .review-design-preview--recommended .recall-header > .recall-heading { grid-area: heading; min-height: 36px; max-width: 100%; }
+  .review-design-preview--recommended .recall-header > .recall-heading h1 { max-width: calc(100vw - 120px); }
+  .review-design-preview--recommended .recall-header > .recall-phases { grid-area: phases; width: 100%; margin: 0; }
+  .review-design-preview--recommended .recall-header > .recall-phases button { flex: 1 1 0; min-width: 0; }
+  .review-design-preview--recommended .recall-header > .chart-toolbar {
+    grid-area: toolbar;
+    width: 100%;
+    height: 44px;
+    min-height: 44px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .review-design-preview--recommended .recall-header > .recall-header-controls {
+    grid-area: controls;
+    position: static;
+    width: 100%;
+    min-width: 0;
+    max-width: 196px;
+    height: 44px;
+    min-height: 44px;
+    flex-wrap: nowrap;
+    overflow: visible;
+    white-space: nowrap;
+  }
+  .review-design-preview--recommended .recall-header > .recall-header-controls > .review-design-preview-context {
+    position: absolute;
+    top: 36px;
+    right: calc(44px + 8px);
+    width: auto;
+    min-height: 18px;
+    height: 18px;
+    flex-wrap: nowrap;
+    gap: 8px;
+    white-space: nowrap;
+    z-index: 2;
+  }
+  .review-design-preview--recommended .recall-controls.recall-replay-bar__primary,
+  .review-design-preview--recommended .recall-replay-bar__primary.recall-controls {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 48px;
+    overflow: visible;
+  }
+  .review-design-preview--recommended .recall-main > .recall-chart-and-plan.plan-open .recall-plan-sidebar {
+    min-height: 280px;
+    max-height: min(60vh, 560px);
+    overflow-y: auto;
+  }
+  .review-design-preview--recommended .recall-replay-bar,
+  .review-design-preview--recommended .recall-replay-footer { flex-wrap: wrap; height: auto; min-height: 48px; }
+}
+
+.review-design-preview-index { display: grid; place-items: center; min-height: 100vh; padding: 24px; box-sizing: border-box; }
+.review-design-preview-index section { width: min(720px, 100%); padding: 28px; border: 1px solid #243145; border-radius: 10px; background: #101722; }
+.review-design-preview-index h1 { margin: 6px 0 10px; font-size: 22px; }
+.review-design-preview-index p { color: #9baac0; line-height: 21px; }
+.review-design-preview-eyebrow { color: #8ea9cf !important; font-size: 12px; letter-spacing: .08em; }
+.review-design-preview-index-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 26px; padding: 16px; border: 1px solid #243145; border-radius: 8px; }
+.review-design-preview-index-row div { display: grid; gap: 6px; }
+.review-design-preview-index-row small { color: #8291a6; }
+.review-design-preview-index-row a { color: #aad1ff; white-space: nowrap; }
+
+/* Equal side tracks keep the execution group at the main workspace center,
+   independent of the left summary width and the More disclosure state. */
+.review-design-preview--recommended .recall-main > .recall-replay-bar { display: grid; grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1fr); grid-template-rows: auto; align-items: center; overflow: visible; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) { flex: 0 0 auto; grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1fr); grid-template-rows: auto auto auto; min-height: 48px; overflow: visible; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-position-strip { grid-column: 1; grid-row: 1; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-controls { grid-column: 2; grid-row: 1; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-more[data-open="true"] { display: contents; flex: initial; border: 0; padding: 0; overflow: visible; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-more[data-open="true"] .recall-replay-more__summary { grid-column: 3; grid-row: 1; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-more[data-open="true"] .recall-replay-more__body { grid-column: 1 / -1; grid-row: 2; display: grid; max-height: min(42vh, 420px); overflow-y: auto; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-more[data-open="true"] .recall-replay-more__body[hidden] { display: none; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-bar__secondary[role="status"] { display: inline-flex; grid-column: 1 / -1; grid-row: 3; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-controls .recall-replay-action-group button:disabled,
+.review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-controls > button:disabled { display: inline-flex; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar > .recall-replay-more[data-open="true"] .recall-replay-more__body > .recall-replay-bar__secondary { min-width: 0; }
+.review-design-preview--recommended .recall-replay-action-group { display: inline-flex; align-items: center; gap: 2px; min-width: 0; }
+.review-design-preview--recommended .recall-replay-action-group + .recall-replay-action-group { margin-left: 3px; padding-left: 4px; border-left: 1px solid #34455e; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar > .recall-controls,
+.review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-controls { width: max-content; max-width: 100%; justify-self: center; justify-content: center; overflow: visible; gap: 0; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar > .recall-position-strip { min-width: 0; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar .recall-replay-cutoff { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar .recall-replay-cutoff > span { white-space: normal; overflow-wrap: anywhere; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar > .recall-replay-bar__secondary[role="status"] { grid-column: 1 / -1; grid-row: 2; min-width: 0; margin-left: 0; flex-wrap: wrap; white-space: normal; }
+.review-design-preview--recommended .recall-main > .recall-replay-bar > .recall-replay-bar__secondary[role="status"] > .recall-control-note { overflow: visible; white-space: normal; overflow-wrap: anywhere; }
+.review-design-preview--recommended .recall-replay-more__summary { position: relative; }
+.review-design-preview--recommended .recall-controls .recall-replay-action { width: 36px; min-width: 36px; height: 36px; min-height: 36px; padding: 0; justify-content: center; position: relative; }
+.review-design-preview--recommended .recall-replay-action span { display: none; }
+.review-design-preview--recommended .recall-replay-action[data-action-label]::after,
+.review-design-preview--recommended .recall-replay-more__summary[data-action-label]::after,
+.review-design-preview--recommended .recall-edge-toggle[data-action-label]::after { content: attr(data-action-label); position: absolute; z-index: 20; pointer-events: none; opacity: 0; white-space: nowrap; padding: 4px 7px; border: 1px solid #34455e; border-radius: 4px; background: #101722; color: #e7edf6; font-size: 12px; line-height: 18px; transition: opacity .12s ease; }
+.review-design-preview--recommended .recall-replay-action[data-action-label]::after { bottom: calc(100% + 6px); top: auto; left: 50%; transform: translateX(-50%); }
+.review-design-preview--recommended .recall-replay-more__summary[data-action-label]::after { bottom: calc(100% + 6px); top: auto; right: 0; left: auto; transform: none; }
+.review-design-preview--recommended .recall-edge-toggle[data-action-label]::after { top: calc(100% + 6px); left: auto; right: 0; }
+.review-design-preview--recommended .recall-edge-toggle--left[data-action-label]::after { left: 0; right: auto; }
+.review-design-preview--recommended .recall-replay-action[data-action-label]:hover::after,
+.review-design-preview--recommended .recall-replay-action[data-action-label]:focus-visible::after,
+.review-design-preview--recommended .recall-replay-more__summary[data-action-label]:hover::after,
+.review-design-preview--recommended .recall-replay-more__summary[data-action-label]:focus-visible::after,
+.review-design-preview--recommended .recall-edge-toggle[data-action-label]:hover::after,
+.review-design-preview--recommended .recall-edge-toggle[data-action-label]:focus-visible::after { opacity: 1; }
+
+@container recall-work (max-width: 1105px) {
+  .review-design-preview--recommended .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan,
+  .review-design-preview--recommended .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan .recall-chart-shell,
+  .review-design-preview--recommended .recall-main:has(> .recall-replay-bar > .recall-replay-more[data-open="true"]) > .recall-chart-and-plan .recall-chart-shell .drawing-toolbar { min-height: 260px; height: auto; max-height: none; }
+}
+
+@media (pointer: coarse) and (min-width: 641px) {
+  .review-design-preview--recommended .recall-header { padding-inline: 56px; }
+  .review-design-preview--recommended .recall-edge-toggle,
+  .review-design-preview--recommended .recall-controls .recall-replay-action,
+  .review-design-preview--recommended .recall-replay-more__summary { width: 44px; min-width: 44px; height: 44px; min-height: 44px; }
+}
+
+/* Once the workspace cannot fit a readable summary beside the centered
+   actions, give metadata its own row. More stays at the right of that row. */
+@container recall-work (max-width: 900px) {
+  .review-design-preview--recommended .recall-main > .recall-replay-bar,
+  .review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) { grid-template-columns: minmax(0, 1fr) 44px; grid-template-rows: auto auto; row-gap: 2px; }
+  .review-design-preview--recommended .recall-main > .recall-replay-bar > .recall-position-strip,
+  .review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-position-strip { grid-column: 1; grid-row: 1; min-width: 0; }
+  .review-design-preview--recommended .recall-main > .recall-replay-bar > .recall-controls,
+  .review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-controls { grid-column: 1 / -1; grid-row: 2; flex-wrap: wrap; }
+  .review-design-preview--recommended .recall-main > .recall-replay-bar > .recall-replay-more .recall-replay-more__summary,
+  .review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-more[data-open="true"] .recall-replay-more__summary { grid-column: 2; grid-row: 1; }
+  .review-design-preview--recommended .recall-main > .recall-replay-bar > .recall-replay-more .recall-replay-more__body,
+  .review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-more[data-open="true"] .recall-replay-more__body { grid-column: 1 / -1; grid-row: 3; }
+  .review-design-preview--recommended .recall-main > .recall-replay-bar > .recall-replay-bar__secondary[role="status"],
+  .review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-bar__secondary[role="status"] { grid-column: 1 / -1; grid-row: 4; }
+}
+
+@media (max-width: 640px) {
+  .review-design-preview--recommended .recall-header { padding-inline: 44px; }
+  .review-design-preview--recommended .recall-edge-toggle { inset-block: 4px auto; transform: none; }
+  .review-design-preview--recommended .recall-edge-toggle,
+  .review-design-preview--recommended .recall-controls .recall-replay-action,
+  .review-design-preview--recommended .recall-replay-more__summary { width: 44px; min-width: 44px; height: 44px; min-height: 44px; }
+  .review-design-preview--recommended .recall-main > .recall-replay-bar,
+  .review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) { grid-template-columns: minmax(0, 1fr) 44px; }
+  .review-design-preview--recommended .recall-main > .recall-replay-bar > .recall-position-strip { grid-column: 1; grid-row: 1; }
+  .review-design-preview--recommended .recall-main > .recall-replay-bar > .recall-controls { grid-column: 1 / -1; grid-row: 2; overflow: visible; }
+  .review-design-preview--recommended .recall-main > .recall-replay-bar > .recall-replay-more .recall-replay-more__summary { grid-column: 2; grid-row: 1; }
+  .review-design-preview--recommended .recall-main > .recall-replay-bar > .recall-replay-bar__secondary[role="status"] { grid-column: 1 / -1; grid-row: 4; }
+  .review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-position-strip { grid-column: 1; grid-row: 1; }
+  .review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-controls { grid-column: 1 / -1; grid-row: 2; }
+  .review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-more[data-open="true"] .recall-replay-more__summary { grid-column: 2; grid-row: 1; min-height: 44px; }
+  .review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-more[data-open="true"] .recall-replay-more__body { grid-column: 1 / -1; grid-row: 3; }
+  .review-design-preview--recommended .recall-main > .recall-replay-bar:has(> .recall-replay-more[data-open="true"]) > .recall-replay-bar__secondary[role="status"] { grid-column: 1 / -1; grid-row: 4; }
+}
+
+@media (min-width: 1280px) {
+  .review-design-preview--recommended .recall-header { max-height: none; flex-wrap: wrap; }
+}

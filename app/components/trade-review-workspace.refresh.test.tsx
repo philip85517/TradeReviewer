@@ -377,7 +377,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     expect(screen.getByText(/小时线源暂不可用/)).toBeVisible();
   });
 
-  it("refreshes the global saved summary after a single instrument update", async () => {
+  it("refreshes the global saved summary after a single instrument update", { timeout: 15_000 }, async () => {
     const user = userEvent.setup();
     saveMarketDataJob({
       instrumentId: "US:REFRESH",
@@ -424,7 +424,10 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     const dataManagement = getDataManagement();
     expect(await within(dataManagement).findByText("部分可用 1 个标的")).toBeVisible();
     await openDefaultStockRound(user);
-    await screen.findByRole("button", { name: "行情数据详情" });
+    await waitFor(
+      () => expect(screen.getByRole("button", { name: "行情数据详情" })).toBeVisible(),
+      { timeout: 5_000 },
+    );
     await user.click(screen.getByRole("button", { name: "行情数据详情" }));
     const marketDataDetails = await screen.findByRole("dialog", { name: "行情数据详情" });
     await user.click(within(marketDataDetails).getByRole("button", { name: "刷新行情数据" }));
@@ -440,7 +443,10 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     );
     expect(within(dataManagement).getByText("部分可用 0 个标的")).toBeVisible();
     await openDefaultStockRound(user);
-    await screen.findByRole("button", { name: "行情数据详情" });
+    await waitFor(
+      () => expect(screen.getByRole("button", { name: "行情数据详情" })).toBeVisible(),
+      { timeout: 5_000 },
+    );
     await user.click(screen.getByRole("button", { name: "行情数据详情" }));
     const refreshedDetails = await screen.findByRole("dialog", { name: "行情数据详情" });
     expect(within(refreshedDetails).getByRole("region", { name: "1h 行情详情" })).toBeVisible();

@@ -15,6 +15,15 @@ import {
   History,
   PanelLeftClose,
   PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
+  PanelBottomClose,
+  PanelBottomOpen,
+  Pause,
+  Play,
+  SkipForward,
+  StepBack,
+  StepForward,
   Save,
   Split,
   Trash2,
@@ -48,6 +57,7 @@ import {
   type DrawingHistory,
 } from "../../lib/chart/drawing-commands";
 import {
+  eligibleDrawingsAtCursor,
   visibleDrawingsAtCursor,
   type DrawingTool,
   type NormalizedDrawing,
@@ -248,6 +258,8 @@ export type RecallWorkspaceProps = {
   onExport?: (document: RecallDocument) => void;
   /** Parent-owned navigation and data actions rendered in the single Recall header. */
   headerActions?: ReactNode;
+  /** Recommended samples can place chart viewport actions inside the real chart. */
+  compactControls?: boolean;
 };
 
 type SnapshotEditBackup = {
@@ -915,6 +927,7 @@ export function RecallWorkspace({
   onFocusedChange,
   onExport,
   headerActions,
+  compactControls = false,
 }: RecallWorkspaceProps) {
   const fallbackTimeframe = firstEnabledTimeframe(timeframeAvailability, candlesByTimeframe);
   // The parent keeps a legacy timeline projection in sync with its own
@@ -937,6 +950,10 @@ export function RecallWorkspace({
   const latestSavedDocumentRef = useRef<RecallDocument | null>(null);
   const latestSavedGenerationRef = useRef(-1);
   const dirtyRef = useRef(false);
+  // A retain capture is a navigation boundary even before it marks the draft
+  // dirty. Leave guards await the same operation instead of observing the
+  // pre-capture draft during the capture/state-commit gap.
+  const retainInFlightRef = useRef<Promise<boolean> | null>(null);
   const initialPlanFreezeEpisodeRef = useRef<string | null>(null);
   const [initialPlanFreezeEpisode, setInitialPlanFreezeEpisode] = useState<string | null>(null);
   const snapshotEditBackupRef = useRef<SnapshotEditBackup | null>(null);
@@ -1050,6 +1067,7 @@ export function RecallWorkspace({
   const [revisionDragError, setRevisionDragError] = useState<string | null>(null);
   const [planEdits, setPlanEdits] = useState<Record<string, { input: RecallPlanInput; error: string | null }>>({});
   const planToggleRef = useRef<HTMLButtonElement>(null);
+  const moreToggleRef = useRef<HTMLButtonElement>(null);
   const workspaceElementRef = useRef<HTMLElement>(null);
   const recallPanelContentWidth = useCallback(() => {
     const chartAndPlan = workspaceElementRef.current?.querySelector<HTMLElement>(".recall-chart-and-plan");
@@ -1206,6 +1224,14 @@ export function RecallWorkspace({
     }
   };
   const closePlan = () => { updateRecallPanelState({ type: "close-plan" }); planToggleRef.current?.focus(); };
+  const toggleMore = useCallback(() => {
+    updateRecallPanelState({ type: "toggle-more", contentWidth: recallPanelContentWidth() });
+  }, [recallPanelContentWidth, updateRecallPanelState]);
+  const closeMore = useCallback(() => {
+    if (!moreOpen) return;
+    updateRecallPanelState({ type: "toggle-more", contentWidth: recallPanelContentWidth() });
+    moreToggleRef.current?.focus();
+  }, [moreOpen, recallPanelContentWidth, updateRecallPanelState]);
   const selectPlanPrice = (id: string) => {
     setPlaying(false);
     openPlanAndCloseMore();
@@ -1311,6 +1337,10 @@ export function RecallWorkspace({
   }, [document, executionCandleIndex]);
   const visibleDrawings = useMemo(
     () => visibleDrawingsAtCursor(drawingHistory.present, replay?.cursor ?? episode.startedAt, timeframe),
+    [drawingHistory.present, episode.startedAt, replay?.cursor, timeframe],
+  );
+  const eligibleLayerDrawings = useMemo(
+    () => eligibleDrawingsAtCursor(drawingHistory.present, replay?.cursor ?? episode.startedAt, timeframe),
     [drawingHistory.present, episode.startedAt, replay?.cursor, timeframe],
   );
   const canUndo = replay ? canUndoDrawingAtCursor(drawingHistory, replay.cursor, timeframe) : false;
@@ -1668,6 +1698,11 @@ export function RecallWorkspace({
   }, [saveNow]);
 
   const leaveGuard = useCallback(async () => {
+    const pendingRetain = retainInFlightRef.current;
+    if (pendingRetain) {
+      const retained = await pendingRetain;
+      if (!retained) return false;
+    }
     if (!dirtyRef.current) return true;
     await saveNow();
     return !dirtyRef.current;
@@ -1730,6 +1765,10 @@ export function RecallWorkspace({
     );
     const nextHistory = applyDrawingCommand(drawingHistory, stamped);
     commitDrawingHistory(nextHistory);
+    // Text is a one-shot editor gesture: after its editor commits, return to
+    // the cursor. Geometric tools remain selected so users can place a series
+    // of lines/channels without reselecting the tool after every add.
+    if (command.type === "add" && command.drawing.tool === "text") setActiveTool("cursor");
   }, [commitDrawingHistory, document?.working.hasSeenFuture, drawingHistory, phase, selectedDecisionId, snapshotEdit?.decisionId, snapshotEdit?.phase]);
 
   const selectDecision = useCallback((decisionId: string | "global", options: DecisionSelectionOptions = {}) => {
@@ -1998,6 +2037,15 @@ export function RecallWorkspace({
         decisions: document.decisions,
         decisionId: firstDecision.id,
       });
+      const savedHolding = document.working.phaseContexts?.holding;
+      const savedDecisionGraph = stageWorkingContextsRef.current.get(firstDecision.id);
+      const decisionDrawings = savedHolding?.mode === "decision" && savedHolding.decisionId === firstDecision.id
+        ? savedHolding.drawings
+        : savedDecisionGraph?.drawings ?? drawingsAtDecisionBoundary(document, firstDecision.id);
+      const resumedDrawings = cloneDrawings(decisionDrawings);
+      const resumedHistory = createDrawingHistory(resumedDrawings);
+      drawingHistoryRef.current = resumedHistory;
+      setDrawingHistory(resumedHistory);
       activeContextModeRef.current = "decision";
       setPhase("holding");
       setSelectedDecisionId(firstDecision.id);
@@ -2010,7 +2058,7 @@ export function RecallWorkspace({
           phaseContexts: { ...current.working.phaseContexts, "pre-entry": preEntryContext },
         },
       }) : current);
-      setWorking(next, firstDecision.id);
+      setWorking(next, firstDecision.id, resumedDrawings);
       return;
     }
     const next = nextRecallDecisionState({
@@ -2035,12 +2083,24 @@ export function RecallWorkspace({
       const context = persistedEditingContext(selectedDecisionId && selectedDecisionId !== "global" ? "decision" : "global", selectedDecisionId ?? "global", {
         drawings: drawingHistoryRef.current.present, replay, timeframe, viewport: chartHandleRef.current?.getViewport(),
       });
+      const savedHolding = document?.working.phaseContexts?.holding;
+      const resumedDrawings = cloneDrawings(savedHolding?.drawings ?? drawingHistoryRef.current.present);
+      const resumedOwner = savedHolding?.mode === "decision" && savedHolding.decisionId
+        ? savedHolding.decisionId
+        : selectedDecisionId ?? "global";
+      const resumedHistory = createDrawingHistory(resumedDrawings);
+      drawingHistoryRef.current = resumedHistory;
+      setDrawingHistory(resumedHistory);
+      activeContextModeRef.current = resumedOwner === "global" ? "global" : "decision";
+      setSelectedDecisionId(resumedOwner);
       setPhase("holding");
       setDocument(current => current ? { ...current, working: { ...current.working, phase: "holding", hasSeenFuture: true, phaseContexts: { ...current.working.phaseContexts, "pre-entry": context } } } : current);
+      setWorking(next, resumedOwner, resumedDrawings);
+    } else {
+      setWorking(next);
     }
-    setWorking(next);
     if (next.revealedCandles.length >= allCandles.length) setPlaying(false);
-  }, [allCandles, currentExecutions, editingSnapshotId, historyMode, phase, replay, selectedDecisionId, setWorking, timeframe]);
+  }, [allCandles, currentExecutions, document, editingSnapshotId, historyMode, phase, replay, selectedDecisionId, setWorking, timeframe]);
 
   useEffect(() => {
     if (!playing || historyMode || editingSnapshotId || phase === "post-review" || !replay) return;
@@ -2057,6 +2117,7 @@ export function RecallWorkspace({
   const handleWorkspaceKeyDown = useCallback((event: KeyboardEvent<HTMLElement>) => {
     const target = event.target as HTMLElement | null;
     if (event.nativeEvent.isComposing || event.keyCode === 229 || target?.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName ?? "")) return;
+    if (compactControls && target?.closest("button, a, summary, [role=\"button\"]")) return;
     if (historyMode || editingSnapshotId || !replay) return;
     if (phase === "post-review" && event.key.toLowerCase() !== "t") return;
     if (event.key === " " && replay.revealedCandles.length >= allCandles.length) return;
@@ -2079,7 +2140,7 @@ export function RecallWorkspace({
       event.preventDefault();
       setPlaying((current) => !current);
     }
-  }, [allCandles, currentExecutions, document, editingSnapshotId, historyMode, nextBar, nextDecision, phase, replay, selectedDecisionId, setWorking]);
+  }, [allCandles, compactControls, currentExecutions, document, editingSnapshotId, historyMode, nextBar, nextDecision, phase, replay, selectedDecisionId, setWorking]);
 
   const toggleHistory = useCallback(() => {
     if (!replay || editingSnapshotId) return;
@@ -2186,25 +2247,50 @@ export function RecallWorkspace({
   }, []);
 
   const retain = useCallback(async () => {
+    if (retainInFlightRef.current) return;
     if (!document || !replay || !selectedDecisionId) return;
     if (selectedDecisionId !== "global" && unmatchedDecisionIds.has(selectedDecisionId)) {
       setError("当前决策没有对应行情，补齐行情后才能留存对应快照。");
       return;
     }
-    try {
-      const captureResult = await capture();
-      if (!confirmCaptureWarnings(captureResult.warnings)) {
-        setError("截图文字可能被裁切；已取消留存，请调整视野后重试。");
-        return;
+    const retainTask = (async () => {
+      try {
+        const captureResult = await capture();
+        if (!confirmCaptureWarnings(captureResult.warnings)) {
+          setError("截图文字可能被裁切；已取消留存，请调整视野后重试。");
+          return false;
+        }
+        // Use the latest published draft after the capture barrier. The state
+        // updater alone is asynchronous, so publishing only through
+        // setDocument would leave saveNow with the pre-retain candidate.
+        const currentDocument = draftRef.current ?? document;
+        const nextSnapshot = { ...createSnapshot(undefined, selectedDecisionId, timeframe, replay, drawingHistoryRef.current.present, chartCandles, captureResult), phase, hasSeenFuture: currentDocument.working.hasSeenFuture === true };
+        const nextDocument = touchRecallDraft(
+          freezeRecallSnapshotBundle(
+            retainRecallSnapshot(currentDocument, nextSnapshot),
+            nextSnapshot.id,
+            { bundleId: `bundle-${crypto.randomUUID()}`, retainedAt: nowIso(), episode },
+          ),
+        );
+        draftRef.current = nextDocument;
+        draftGenerationRef.current += 1;
+        dirtyRef.current = true;
+        setDocument(nextDocument);
+        setDirty(true);
+        setError(null);
+        return true;
+      } catch (captureError) {
+        setError(captureError instanceof Error ? captureError.message : "图表截图失败，未创建快照");
+        return false;
       }
-      const nextSnapshot = { ...createSnapshot(undefined, selectedDecisionId, timeframe, replay, drawingHistoryRef.current.present, chartCandles, captureResult), phase, hasSeenFuture: document.working.hasSeenFuture === true };
-      setDocument((current) => current ? touchRecallDraft(freezeRecallSnapshotBundle(retainRecallSnapshot(current, nextSnapshot), nextSnapshot.id, { bundleId: `bundle-${crypto.randomUUID()}`, retainedAt: nowIso(), episode })) : current);
-      markDirty();
-      setError(null);
-    } catch (captureError) {
-      setError(captureError instanceof Error ? captureError.message : "图表截图失败，未创建快照");
+    })();
+    retainInFlightRef.current = retainTask;
+    try {
+      await retainTask;
+    } finally {
+      if (retainInFlightRef.current === retainTask) retainInFlightRef.current = null;
     }
-  }, [capture, chartCandles, confirmCaptureWarnings, document, episode, markDirty, phase, replay, selectedDecisionId, timeframe, unmatchedDecisionIds]);
+  }, [capture, chartCandles, confirmCaptureWarnings, document, episode, phase, replay, selectedDecisionId, timeframe, unmatchedDecisionIds]);
 
   const editSnapshot = useCallback((snapshot: RecallSnapshot) => {
     if (!replay || !document) return;
@@ -2871,6 +2957,16 @@ export function RecallWorkspace({
   return (
     <section ref={workspaceElementRef} className="recall-workspace trade-review-workspace--recall-frame" data-layout={focusMode ? "focus" : "standard"} aria-label="导入交易回忆复盘工作区" tabIndex={-1} onKeyDown={handleWorkspaceKeyDown} onFocusCapture={(event) => { if ((event.target as HTMLElement).matches("input, textarea, select, [contenteditable=true]")) setPlaying(false); }}>
       <header className="recall-header recall-frame-header">
+        {compactControls && <button
+          type="button"
+          className="recall-edge-toggle recall-edge-toggle--left"
+          data-action-label={navOpen ? "收起回合与决策导航" : "展开回合与决策导航"}
+          aria-expanded={navOpen}
+          aria-controls={`recall-nav-${episode.id}`}
+          aria-label={navOpen ? "收起回合与决策导航" : "展开回合与决策导航"}
+          title={navOpen ? "收起回合与决策导航" : "展开回合与决策导航"}
+          onClick={() => { setLeftNavOpen(!navOpen); if (focused) onFocusedChange?.(false); }}
+        >{navOpen ? <PanelLeftClose size={18} aria-hidden="true" /> : <PanelLeftOpen size={18} aria-hidden="true" />}</button>}
         <div className="recall-heading">
           <span className="eyebrow">{tradeNature === "simulation" ? "TradingView · 模拟盘" : "导入交易 · 回忆复盘"}</span>
           <h1 title={`${instrument.name} · ${instrument.symbol}`}>{instrument.name} <small>{instrument.symbol}</small></h1>
@@ -2914,13 +3010,24 @@ export function RecallWorkspace({
               {episodes.map((item, index) => <option key={item.id} value={item.id}>{blindEpisodeSelection ? `第 ${episodes.length - index} 次` : `第 ${episodes.length - index} 次 · ${item.status === "closed" ? "已平仓" : "持仓中"}`}</option>)}
             </select>
           </label>
-          {<button type="button" className="recall-icon-button" title={focusMode ? "切换到标准布局" : "切换到专注布局"} aria-label={focusMode ? "展开复盘导航，切换到标准布局" : "收起复盘导航，切换到专注布局"} onClick={() => { setLeftNavOpen(!navOpen); if (focused) onFocusedChange?.(false); }}>
+          {!compactControls && <button type="button" className="recall-icon-button" title={focusMode ? "切换到标准布局" : "切换到专注布局"} aria-label={focusMode ? "展开复盘导航，切换到标准布局" : "收起复盘导航，切换到专注布局"} onClick={() => { setLeftNavOpen(!navOpen); if (focused) onFocusedChange?.(false); }}>
             {navOpen ? <PanelLeftClose size={17} /> : <PanelLeftOpen size={17} />}
           </button>}
           <button type="button" className="recall-icon-button" aria-label="统计" aria-pressed={statsOpen} onClick={() => setStatsOpen((open) => !open)}><BarChart3 size={17} /></button>
           <button type="button" className="recall-export-button" title="导出已留存内容" onClick={() => onExport ? onExport(document) : setExportOpen(true)}><Download size={15} />导出</button>
           {headerActions}
         </div>
+        {compactControls && <button
+          type="button"
+          className="recall-edge-toggle recall-edge-toggle--right"
+          data-action-label={planOpen ? "关闭计划侧栏" : "打开计划侧栏"}
+          ref={planToggleRef}
+          aria-expanded={planOpen}
+          aria-controls={`recall-plan-sidebar-${episode.id}`}
+          aria-label={planOpen ? "关闭计划侧栏" : "打开计划侧栏"}
+          title={planOpen ? "关闭计划侧栏" : "打开计划侧栏"}
+          onClick={() => updateRecallPanelState({ type: "toggle-plan", contentWidth: recallPanelContentWidth() })}
+        >{planOpen ? <PanelRightClose size={18} aria-hidden="true" /> : <PanelRightOpen size={18} aria-hidden="true" />}</button>}
       </header>
 
       {tradeNature === "simulation" && (
@@ -2990,7 +3097,7 @@ export function RecallWorkspace({
 
       <div className={`recall-layout${navOpen ? "" : " nav-collapsed"}`}>
         {navOpen && (
-          <aside className={`recall-nav${mobileRecordsOpen ? " mobile-records-open" : ""}`} aria-label="回合与决策导航">
+          <aside id={`recall-nav-${episode.id}`} className={`recall-nav${mobileRecordsOpen ? " mobile-records-open" : ""}`} aria-label="回合与决策导航">
             <div className="recall-nav-title"><span>本回合记录</span><small>{document.decisions.length} 笔决策</small><button type="button" className="recall-nav-toggle" aria-expanded={mobileRecordsOpen} onClick={() => setMobileRecordsOpen((open) => !open)}>{mobileRecordsOpen ? "收起" : "展开"}</button></div>
             <button type="button" className={`recall-nav-item global${selectedDecisionId === "global" ? " selected" : ""}`} aria-current={selectedDecisionId === "global" ? "true" : undefined} onClick={() => selectDecision("global")}>
               <span className="recall-nav-icon"><ClipboardPenLine size={15} /></span><span><strong>全局总结</strong><small>{globalSnapshot ? "已有留存" : "尚未留存"}</small></span>
@@ -3060,6 +3167,7 @@ export function RecallWorkspace({
                 settings={pnlAvailable ? settings : { ...settings, showAverageCost: false }}
                 selectedDrawingId={selectedDrawingId}
                 planPriceLines={planPriceLines}
+                compactControls={compactControls}
                 planLinesEditable={chartPlanEditable}
                 onPlanPriceChange={changePlanPrice}
                 onPlanPriceSelect={selectPlanPrice}
@@ -3069,6 +3177,7 @@ export function RecallWorkspace({
                 currency={instrument.currency}
                 onSelectDrawing={setSelectedDrawingId}
                 onCommand={applyCommand}
+                onDrawingInteractionStart={() => setPlaying(false)}
                 onReady={handleChartReady}
               />
               {layersOpen && (
@@ -3079,16 +3188,18 @@ export function RecallWorkspace({
                       <X size={16} aria-hidden="true" />
                     </button>
                   </div>
-                  <DrawingLayersPanel drawings={visibleDrawings} onCommand={applyCommand} onSelectDrawing={setSelectedDrawingId} selectedDrawingId={selectedDrawingId} />
+                  <DrawingLayersPanel drawings={eligibleLayerDrawings} onCommand={applyCommand} onSelectDrawing={setSelectedDrawingId} selectedDrawingId={selectedDrawingId} />
                 </div>
               )}
             </div>
-            <button type="button" className="recall-fit-all" onClick={() => chartHandleRef.current?.fitAll()} aria-label="适应全部">适应全部</button>
+            {!compactControls && <button type="button" className="recall-fit-all" onClick={() => chartHandleRef.current?.fitAll()} aria-label="适应全部">适应全部</button>}
           </div>
 
           {
             <RecallPlanSidebar
               hidden={!planOpen}
+              id={`recall-plan-sidebar-${episode.id}`}
+              showCloseControl={!compactControls}
               input={planInput}
               missingReason={snapshotPlanAmbiguous ? "此快照包含多个原计划，尚未明确所展示的计划；请按原决策查看对应留存。" : undefined}
               phase={sidebarPhase}
@@ -3164,6 +3275,7 @@ export function RecallWorkspace({
             </div>
 
             <div className="recall-controls recall-replay-bar__primary" aria-label="回放控制">
+              {!compactControls && <>
               <button type="button" aria-label="上一根 K 线" disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || replay.revealedCandles.length === 0} title={editingSnapshotId ? replayControlReason : undefined} onClick={() => {
                 setWorking(rewindRecallBar({ candles: allCandles, executions: currentExecutions, current: replay }));
               }}><ChevronLeft size={17} />上一根</button>
@@ -3171,18 +3283,39 @@ export function RecallWorkspace({
               <button type="button" onClick={nextBar} disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || atReplayEnd} title={editingSnapshotId || atReplayEnd ? replayControlReason : undefined}><ChevronDown size={17} />下一根 K 线</button>
               <button type="button" className="primary" onClick={nextDecision} disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || !hasNextDecision} title={editingSnapshotId || !hasNextDecision ? replayControlReason : undefined}><ChevronRight size={17} />下一笔决策</button>
               {editingSnapshotId ? <><button type="button" className="primary" onClick={() => void updateSnapshot()}><FileImage size={15} />更新此快照</button><button type="button" onClick={leaveSnapshotEdit}><X size={15} />返回工作图</button></> : <button type="button" className="primary" onClick={() => void retain()} disabled={!selectedDecisionId || historyMode}><Save size={15} />留存当前快照</button>}
-              <button ref={planToggleRef} type="button" aria-expanded={planOpen} onClick={() => updateRecallPanelState({ type: "toggle-plan", contentWidth: recallPanelContentWidth() })}>计划侧栏</button>
+              <button ref={planToggleRef} type="button" aria-expanded={planOpen} aria-controls={`recall-plan-sidebar-${episode.id}`} onClick={() => updateRecallPanelState({ type: "toggle-plan", contentWidth: recallPanelContentWidth() })}>计划侧栏</button>
+              </>}
+              {compactControls && <>
+              <span className="recall-replay-action-group recall-replay-action-group--replay">
+              <button type="button" data-action-label="上一根 K 线" className="recall-replay-action recall-replay-action--step" aria-label="上一根 K 线" disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || replay.revealedCandles.length === 0} title={editingSnapshotId ? replayControlReason : "上一根 K 线"} onClick={() => {
+                setWorking(rewindRecallBar({ candles: allCandles, executions: currentExecutions, current: replay }));
+              }}><StepBack size={18} aria-hidden="true" /><span>上一根</span></button>
+              <button type="button" data-action-label={playing ? "暂停回放" : "播放回放"} className={`recall-replay-action recall-replay-action--play${playing ? " active" : ""}`} onClick={() => setPlaying((current) => !current)} disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || atReplayEnd} title={editingSnapshotId || atReplayEnd ? replayControlReason : playing ? "暂停回放" : "播放回放"} aria-label={playing ? "暂停回放" : "播放回放"} aria-pressed={playing}>{playing ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}<span>{playing ? "暂停" : "播放"}</span></button>
+              <button type="button" data-action-label="下一根 K 线" className="recall-replay-action recall-replay-action--step" aria-label="下一根 K 线" onClick={nextBar} disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || atReplayEnd} title={editingSnapshotId || atReplayEnd ? replayControlReason : "下一根 K 线"}><StepForward size={18} aria-hidden="true" /><span>下一根</span></button>
+              </span>
+              <span className="recall-replay-action-group recall-replay-action-group--decision">
+              <button type="button" data-action-label="下一笔决策" className="recall-replay-action recall-replay-action--decision primary" aria-label="下一笔决策" onClick={nextDecision} disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || !hasNextDecision} title={editingSnapshotId || !hasNextDecision ? replayControlReason : "下一笔决策"}><SkipForward size={18} aria-hidden="true" /><span>下一笔决策</span></button>
+              </span>
+              <span className="recall-replay-action-group recall-replay-action-group--retain">
+                {editingSnapshotId ? <><button type="button" data-action-label="更新此快照" className="recall-replay-action primary" aria-label="更新此快照" title="更新此快照" onClick={() => void updateSnapshot()}><FileImage size={18} aria-hidden="true" /><span>更新此快照</span></button><button type="button" data-action-label="返回工作图" className="recall-replay-action" aria-label="返回工作图" title="返回工作图" onClick={leaveSnapshotEdit}><X size={18} aria-hidden="true" /><span>返回工作图</span></button></> : <button type="button" data-action-label="留存当前快照" className="recall-replay-action primary" aria-label="留存当前快照" title="留存当前快照" onClick={() => void retain()} disabled={!selectedDecisionId || historyMode}><Save size={18} aria-hidden="true" /><span>留存当前快照</span></button>}
+              </span>
+              </>}
             </div>
 
             <div className="recall-replay-more" data-open={moreOpen ? "true" : "false"} aria-label="更多记录与完成">
               <button
                 type="button"
                 className="recall-replay-more__summary"
+                ref={moreToggleRef}
                 aria-expanded={moreOpen}
                 aria-controls={`recall-replay-more-body-${episode.id}`}
-                onClick={() => updateRecallPanelState({ type: "toggle-more", contentWidth: recallPanelContentWidth() })}
-              >更多 / 记录</button>
-              <div id={`recall-replay-more-body-${episode.id}`} className="recall-replay-more__body" hidden={!moreOpen}>
+                aria-label="更多 / 记录"
+                data-action-label={moreOpen ? "收起更多记录与完成" : "展开更多记录与完成"}
+                title={moreOpen ? "收起更多记录与完成" : "展开更多记录与完成"}
+                onClick={compactControls ? toggleMore : () => updateRecallPanelState({ type: "toggle-more", contentWidth: recallPanelContentWidth() })}
+                onKeyDown={compactControls ? (event => { if (event.key === "Escape") { event.stopPropagation(); closeMore(); } }) : undefined}
+              >{compactControls ? (moreOpen ? <PanelBottomClose size={18} aria-hidden="true" /> : <PanelBottomOpen size={18} aria-hidden="true" />) : null}{compactControls ? <span>更多 / 记录</span> : "更多 / 记录"}</button>
+              <div id={`recall-replay-more-body-${episode.id}`} className="recall-replay-more__body" hidden={!moreOpen} onKeyDown={compactControls ? (event => { if (event.key === "Escape") { event.stopPropagation(); closeMore(); } }) : undefined}>
                 <div className="recall-replay-bar__secondary" aria-label="更多回放与记录动作">
                   <button type="button" onClick={toggleHistory} className={historyMode ? "active" : ""} disabled={Boolean(editingSnapshotId)} title={editingSnapshotId ? replayControlReason : undefined}>{historyMode ? <Undo2 size={15} /> : <History size={15} />}{historyMode ? "返回回放" : "完整历史"}</button>
                   <button type="button" className="complete-button" onClick={() => void complete()} disabled={document.status === "completed" && !dirty && !hasFormalDraft}><Check size={15} />保存并完成回合复盘</button>

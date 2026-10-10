@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import type { RecallPhase, RecallPlanInput } from "../../lib/recall/types";
 import { calculateRecallPlan } from "../../lib/recall/plans";
 type Props = {
+    id?: string;
     children?: ReactNode;
     /** Content that must remain in the phase's first-screen reading order. */
     primaryContent?: ReactNode;
@@ -24,6 +25,7 @@ type Props = {
     knownQuantity?: string;
     hasSeenFuture?: boolean;
     missingReason?: string;
+    showCloseControl?: boolean;
 };
 export function emptyRecallPlanInput(currency: string): RecallPlanInput {
     return {
@@ -86,7 +88,7 @@ function RecallApproximateNumber({ value, compact, suffix }: { value: string; co
         aria-expanded={expanded}
         aria-label={`查看完整数值 ${value}`}
         onClick={() => setExpanded(current => !current)}
-        onKeyDown={event => event.stopPropagation()}
+        onKeyDown={event => { if (event.key !== "Escape") event.stopPropagation(); }}
       >{expanded ? <>{value}{suffix}</> : compact}</button>
     </span>;
 }
@@ -112,7 +114,7 @@ function PlanSummary({ input }: {
       <dt>初始止损</dt><dd>{input.initialStop ?? "未记录"}</dd>
       <dt>止盈目标</dt><dd>{input.targets[0]?.price ?? "未记录"}</dd>
       <dt>规模主输入</dt><dd>{input.sizeInputMode === "quantity" ? "数量" : input.sizeInputMode === "amount" ? "名义金额" : "仓位比例（%）"} {input.sizeInputValue ?? "未记录"}</dd>
-      <dt>参考资金</dt><dd>{input.capital?.amount ?? "未提供"} {input.capital?.currency} · {input.capital?.asOf ?? "时点未提供"} · {input.capital?.source === "manual-reference" ? "手填参考资金" : input.capital?.source === "account-snapshot" ? "账户快照" : "来源未提供"}</dd>
+      <dt className="recall-plan-reference-funds-label">参考资金</dt><dd className="recall-plan-reference-funds-value">{input.capital?.amount ?? "未提供"} {input.capital?.currency} · {input.capital?.asOf ?? "时点未提供"} · {input.capital?.source === "manual-reference" ? "手填参考资金" : input.capital?.source === "account-snapshot" ? "账户快照" : "来源未提供"}</dd>
       {input.sizing && <><dt>参考步长 / 取整前 / 舍去数量</dt><dd style={{overflowWrap:"anywhere"}}><RecallDerivedNumber value={input.sizing.quantityStep} /> / <RecallDerivedNumber value={input.sizing.derivedUnroundedQuantity} /> / <RecallDerivedNumber value={input.sizing.roundingDelta} />（手工参考，向下取整）</dd></>}
       <dt>计划数量</dt><dd>{input.resolvedQuantity ?? "未记录"} {input.quantityUnit === "share" ? "股" : "单位"}</dd>
     </dl>);
@@ -266,11 +268,11 @@ export function RecallPlanFields({ input, onChange }: {
       {sizing.exceedsCapital && <p role="alert">计划超过参考资金；未自动截断。</p>}
     </div>);
 }
-export function RecallPlanSidebar({ input, phase, readOnly, compactReadOnly = false, onChange, onClose, error, knownQuantity, hasSeenFuture, retained, missingReason, children, primaryContent, secondaryContent, hidden }: Props) {
+export function RecallPlanSidebar({ id, input, phase, readOnly, compactReadOnly = false, onChange, onClose, error, knownQuantity, hasSeenFuture, retained, missingReason, showCloseControl = true, children, primaryContent, secondaryContent, hidden }: Props) {
     const calculation = input ? calculateRecallPlan(input) : null;
     const compact = compactReadOnly && readOnly && input;
     const [fullPlanOpen, setFullPlanOpen] = useState(false);
-    return (<aside hidden={hidden} style={hidden ? {display:"none"} : undefined} className="recall-plan-sidebar" aria-label="阶段计划" onKeyDown={event => {
+    return (<aside id={id} hidden={hidden} style={hidden ? {display:"none"} : undefined} className="recall-plan-sidebar" aria-label="阶段计划" onKeyDown={event => {
             if (event.key === "Escape") {
                 event.stopPropagation();
                 onClose();
@@ -278,7 +280,7 @@ export function RecallPlanSidebar({ input, phase, readOnly, compactReadOnly = fa
         }}>
       <header>
         <h2>{phase === "pre-entry" ? "买入前计划" : "原计划"}</h2>
-        <button type="button" aria-label="关闭计划侧栏" onClick={onClose}><X size={18}/></button>
+        {showCloseControl && <button type="button" aria-label="关闭计划侧栏" onClick={onClose}><X size={18}/></button>}
       </header>
       <p className="recall-plan-source">
         复盘补记{hasSeenFuture ? " · 已看后续补记" : ""}

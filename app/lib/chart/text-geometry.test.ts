@@ -70,4 +70,11 @@ describe("text card geometry", () => {
     expect(geometry.x + geometry.width).toBeLessThanOrEqual(172);
     expect(geometry.y + geometry.height).toBeLessThanOrEqual(60);
   });
+
+  it("keeps closing CJK punctuation with a neighboring glyph when wrapping", () => {
+    const layout = textLayout("一二三四五六七八九。下一句", 140, 14, 140);
+
+    expect(layout.lines.some((line) => line.startsWith("。"))).toBe(false);
+    expect(layout.lines.join("")).toBe("一二三四五六七八九。下一句");
+  });
 });

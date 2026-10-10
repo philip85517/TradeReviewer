@@ -1,6 +1,6 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createRecallPlanRevision, freezeRecallPlanDraft, upsertRecallPlanDraft } from "../../lib/recall/plans";
@@ -13,15 +13,17 @@ import { retainRecallActualMetrics } from "../../lib/recall/metric-retention";
 import { upsertRecallManualEvaluationDraft } from "../../lib/recall/manual-evaluations";
 import { applyRecallSizing } from "../../lib/recall/sizing";
 import type { RecallDocument, RecallSnapshot, RecallWorkingContext } from "../../lib/recall/types";
-import type { Candle } from "../../lib/market/types";
+import type { Candle, Timeframe } from "../../lib/market/types";
 import type { TradeEpisode } from "../../lib/trades/types";
 import type { NormalizedDrawing } from "../../lib/chart/drawings";
 import { NO_REVEALED_EXECUTIONS } from "../../lib/replay/recall-replay";
 import {
   RecallWorkspace,
   reconcileRecallSaveResponse,
+  transitionRecallPanelState,
   type RecallRepository,
 } from "./recall-workspace";
+import { DrawingLayersPanel } from "../chart/drawing-layers-panel";
 
 const replayChartHarness = vi.hoisted(() => {
   const viewport = {
@@ -54,21 +56,29 @@ vi.mock("../chart/replay-chart", () => ({
     cursor,
     candles,
     executions,
+    drawings,
     averageCost,
     settings,
     onPlanPriceChange,
     planLinesEditable,
+    onDrawingInteractionStart,
+    activeTool,
   }: {
     onCommand: (command: unknown) => void;
     onReady?: (handle: typeof replayChartHarness.handle | null) => void;
     cursor?: string;
     candles?: Array<{ time: string }>;
     executions?: Array<{ id: string }>;
+    drawings?: Array<{ id: string }>;
     averageCost?: number;
     settings?: { showAverageCost?: boolean };
     onPlanPriceChange?: (id: string, price: string) => void;
     planLinesEditable?: boolean;
+    onDrawingInteractionStart?: () => void;
+    activeTool?: string;
   }) => {
+    const onReadyRef = useRef(onReady);
+    onReadyRef.current = onReady;
     const replayDrawing = {
       version: 2,
       id: "drawing-1",
@@ -86,20 +96,20 @@ vi.mock("../chart/replay-chart", () => ({
     };
     useEffect(() => {
       if (replayChartHarness.deferReady) {
-        replayChartHarness.pendingReady = () => onReady?.(replayChartHarness.handle);
+        replayChartHarness.pendingReady = () => onReadyRef.current?.(replayChartHarness.handle);
         return () => {
-          replayChartHarness.pendingReady = null;
           onReady?.(null);
         };
       }
       onReady?.(replayChartHarness.handle);
       return () => onReady?.(null);
-    }, [onReady]);
+    }, [replayChartHarness.deferReady]);
     replayChartHarness.lastProps = { averageCost, settings, onPlanPriceChange, planLinesEditable };
     return <>
-      <div data-testid="mock-replay-chart" data-cursor={cursor} data-execution-cursor={executions?.at(-1)?.id} data-revealed-candles={candles?.map((candle) => candle.time).join(",")} />
+      <div data-testid="mock-replay-chart" data-active-tool={activeTool} data-cursor={cursor} data-execution-cursor={executions?.at(-1)?.id} data-revealed-candles={candles?.map((candle) => candle.time).join(",")} data-drawing-ids={drawings?.map((drawing) => drawing.id).join(",")} />
       <button type="button" onClick={() => onCommand({ type: "add", drawing: replayDrawing })}>add drawing</button>
       <button type="button" onClick={() => onCommand({ type: "add", drawing: {...replayDrawing, id: "text-1", tool: "text", text: "新 Text"} })}>add Text</button>
+      <button type="button" onClick={() => onDrawingInteractionStart?.()}>start drawing interaction</button>
     </>;
   },
 }));
@@ -249,6 +259,7 @@ function renderRecall(
   onLeaveGuardChange?: (guard: (() => Promise<boolean>) | null) => void,
   candlesByTimeframe = { "15m": replayCandles, "1D": replayCandles, "1W": replayCandles },
   initialDrawings: NormalizedDrawing[] = [],
+  compactControls = false,
 ) {
   return render(
     <RecallWorkspace
@@ -266,9 +277,88 @@ function renderRecall(
       onInstrumentChange={vi.fn()}
       onSettingsChange={vi.fn()}
       onLeaveGuardChange={onLeaveGuardChange}
+      compactControls={compactControls}
     />,
   );
 }
+
+describe("recommended panel control contracts", () => {
+  it("keeps More's remembered plan state when narrow mode yields it", () => {
+    const initial = { episodeId: "episode-1", planOpen: true, moreOpen: false, rememberedPlanOpen: null };
+    const open = transitionRecallPanelState(initial, { type: "toggle-more", contentWidth: 390 });
+    expect(open).toMatchObject({ moreOpen: true, planOpen: false, rememberedPlanOpen: true });
+    expect(transitionRecallPanelState(open, { type: "toggle-more", contentWidth: 390 })).toMatchObject({ moreOpen: false, planOpen: true, rememberedPlanOpen: null });
+  });
+
+  it("uses stable edge identities and does not let Space on controls play replay", async () => {
+    const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    renderRecall(replayEpisode, initial, undefined, undefined, undefined, [], true);
+    const user = userEvent.setup();
+    const left = await screen.findByRole("button", { name: "收起回合与决策导航" });
+    const right = await screen.findByRole("button", { name: "关闭计划侧栏" });
+    const more = await screen.findByRole("button", { name: "更多 / 记录" });
+    const play = await screen.findByRole("button", { name: "播放回放" });
+    const readPosition = () => {
+      const cutoff = screen.getByLabelText(/行情时间/);
+      const chart = screen.getByTestId("mock-replay-chart");
+      return {
+        fullCutoffs: cutoff.getAttribute("aria-label"),
+        cutoffs: Array.from(cutoff.querySelectorAll("span")).map(span => ({ text: span.textContent, fullTime: span.title })),
+        marketCursor: chart.getAttribute("data-cursor"),
+        executionCursor: chart.getAttribute("data-execution-cursor"),
+        candles: chart.getAttribute("data-revealed-candles"),
+        phase: document.querySelector('.recall-phases [aria-pressed="true"]')?.textContent,
+      };
+    };
+    const position = readPosition();
+    expect(position.cutoffs).toHaveLength(2);
+    const expectLayoutOnly = () => {
+      expect(readPosition()).toEqual(position);
+      expect(replayChartHarness.handle.fitAll).not.toHaveBeenCalled();
+    };
+    expect(left).toHaveAttribute("aria-controls", "recall-nav-episode-1");
+    expect(right).toHaveAttribute("aria-controls", "recall-plan-sidebar-episode-1");
+    expect(more).toHaveAttribute("aria-controls", "recall-replay-more-body-episode-1");
+    more.focus();
+    await user.keyboard(" ");
+    expect(more).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("button", { name: "更多 / 记录" })).toBe(more);
+    expect(play).toHaveAttribute("aria-pressed", "false");
+    expectLayoutOnly();
+    await user.keyboard("{ENTER}");
+    expect(more).toHaveAttribute("aria-expanded", "false");
+    expectLayoutOnly();
+    await user.click(left);
+    const closedLeft = screen.getByRole("button", { name: "展开回合与决策导航" });
+    expect(closedLeft).toBe(left);
+    expectLayoutOnly();
+    await user.click(left);
+    const openLeft = screen.getByRole("button", { name: "收起回合与决策导航" });
+    expect(openLeft).toBe(left);
+    expect(left).toHaveAttribute("aria-expanded", "true");
+    expectLayoutOnly();
+    await user.click(right);
+    const closedRight = screen.getByRole("button", { name: "打开计划侧栏" });
+    expect(closedRight).toBe(right);
+    expect(left).toHaveAttribute("aria-expanded", "true");
+    expect(document.getElementById("recall-plan-sidebar-episode-1")).toHaveAttribute("hidden");
+    expectLayoutOnly();
+    await user.click(right);
+    const openRight = screen.getByRole("button", { name: "关闭计划侧栏" });
+    expect(openRight).toBe(right);
+    expect(right).toHaveAttribute("aria-expanded", "true");
+    expectLayoutOnly();
+    await user.click(more);
+    expect(more).toHaveAttribute("aria-expanded", "true");
+    const moreBodyAction = screen.getByRole("button", { name: "完整历史" });
+    moreBodyAction.focus();
+    await user.keyboard("{Escape}");
+    expect(document.activeElement).toBe(more);
+    expect(more).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("button", { name: "更多 / 记录" })).toBe(more);
+    expectLayoutOnly();
+  });
+});
 
 function openMoreRecords() {
   const summary = screen.getByRole("button", { name: "更多 / 记录" });
@@ -342,6 +432,36 @@ afterEach(() => {
 });
 
 describe("RecallWorkspace autosave reconciliation", () => {
+  it("pauses playback through the real replay drawing interaction callback", async () => {
+    const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    renderRecall(replayEpisode, initial, undefined, undefined, undefined, [], true);
+    const play = await screen.findByRole("button", { name: "播放回放" });
+    fireEvent.click(play);
+    expect(play).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(screen.getByRole("button", { name: "start drawing interaction" }));
+    expect(screen.getByRole("button", { name: "播放回放" })).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("returns the Recall drawing tool to cursor after a text add callback", async () => {
+    const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    renderRecall(replayEpisode, initial);
+    const chart = await screen.findByTestId("mock-replay-chart");
+    fireEvent.click(screen.getByRole("button", { name: "文字标注" }));
+    expect(chart).toHaveAttribute("data-active-tool", "text");
+    fireEvent.click(screen.getByRole("button", { name: "add Text" }));
+    await waitFor(() => expect(chart).toHaveAttribute("data-active-tool", "cursor"));
+  });
+
+  it("keeps a geometric drawing tool selected after a non-text add", async () => {
+    const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    renderRecall(replayEpisode, initial);
+    const chart = await screen.findByTestId("mock-replay-chart");
+    fireEvent.click(screen.getByRole("button", { name: "趋势线" }));
+    expect(chart).toHaveAttribute("data-active-tool", "trend-line");
+    fireEvent.click(screen.getByRole("button", { name: "add drawing" }));
+    await waitFor(() => expect(chart).toHaveAttribute("data-active-tool", "trend-line"));
+  });
+
   it("keeps the replay bar compact while preserving record actions behind More", async () => {
     const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
     renderRecall(replayEpisode, initial);
@@ -428,7 +548,7 @@ describe("RecallWorkspace autosave reconciliation", () => {
     expect(summary).toHaveAttribute("aria-label", "计划 · 3R / 风险 4000 CNY");
   });
 
-  it("keeps derived-number keyboard focus inside the plan sidebar", async () => {
+  it.each([false, true])("keeps derived-number keyboard focus inside the plan sidebar (compact=%s)", async (compactControls) => {
     let initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
     initial.working.phase = "pre-entry";
     initial = upsertRecallPlanDraft(initial, {
@@ -452,17 +572,30 @@ describe("RecallWorkspace autosave reconciliation", () => {
       knowledgeCutoff: { cursor: "2025-01-02T09:00:00.000Z", executionCursor: NO_REVEALED_EXECUTIONS },
       hasSeenFuture: false,
     });
-    renderRecall(replayEpisode, initial);
+    renderRecall(replayEpisode, initial, undefined, undefined, undefined, [], compactControls);
 
     const chart = await waitFor(() => screen.getByTestId("mock-replay-chart"));
     const cursor = chart.getAttribute("data-cursor");
     const toggle = await waitFor(() => screen.getAllByRole("button", { name: "查看完整数值 4.6818181818181818182" }).find(button => button.textContent?.includes("R"))!);
-    fireEvent.keyDown(toggle, { key: " ", code: "Space" });
-    fireEvent.keyDown(toggle, { key: "ArrowRight", code: "ArrowRight" });
-    fireEvent.keyDown(toggle, { key: "j", code: "KeyJ" });
+    const planToggle = screen.getByRole("button", { name: compactControls ? "关闭计划侧栏" : "计划侧栏" });
+    expect(planToggle).toHaveAttribute("aria-expanded", "true");
+    toggle.focus();
+    fireEvent.keyDown(toggle, { key: "Escape" });
+    expect(planToggle).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("button", { name: compactControls ? "打开计划侧栏" : "计划侧栏" })).toBe(planToggle);
+    expect(document.activeElement).toBe(planToggle);
+    fireEvent.click(planToggle);
+    const reopenedPlanToggle = await waitFor(() => screen.getByRole("button", { name: compactControls ? "关闭计划侧栏" : "计划侧栏" }));
+    expect(reopenedPlanToggle).toBe(planToggle);
+    await waitFor(() => expect(reopenedPlanToggle).toHaveAttribute("aria-expanded", "true"));
+    const reopenedToggle = await waitFor(() => screen.getAllByRole("button", { name: "查看完整数值 4.6818181818181818182" }).find(button => button.textContent?.includes("R"))!);
+    reopenedToggle.focus();
+    fireEvent.keyDown(reopenedToggle, { key: " ", code: "Space" });
+    fireEvent.keyDown(reopenedToggle, { key: "ArrowRight", code: "ArrowRight" });
+    fireEvent.keyDown(reopenedToggle, { key: "j", code: "KeyJ" });
     expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", cursor);
-    fireEvent.click(toggle);
-    expect(toggle).toHaveTextContent("4.6818181818181818182R");
+    fireEvent.click(reopenedToggle);
+    expect(reopenedToggle).toHaveTextContent("4.6818181818181818182R");
   });
 
   it("exposes an awaitable leave guard that blocks navigation when saving fails", async () => {
@@ -914,7 +1047,7 @@ describe("RecallWorkspace autosave reconciliation", () => {
       renderRecall(replayEpisode, initial);
 
       await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toBeInTheDocument());
-      expect(replayChartHarness.pendingReady).not.toBeNull();
+      await waitFor(() => expect(replayChartHarness.pendingReady).not.toBeNull());
       pendingFrames.splice(0).forEach((callback) => callback(0));
       expect(replayChartHarness.handle.restoreViewport).not.toHaveBeenCalledWith(savedViewport);
 
@@ -1245,6 +1378,66 @@ describe("RecallWorkspace accounting safeguards", () => {
     expect(screen.queryByRole("region", { name: "绘图图层面板" })).not.toBeInTheDocument();
     expect(screen.getByTestId("mock-replay-chart")).toBeVisible();
     expect(screen.getByRole("button", { name: "图层" })).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("keeps a hidden drawing in the eligible layer list so it can be shown again", async () => {
+    const hiddenDrawing = { ...drawing, id: "hidden-layer", name: "隐藏判断", hidden: true, createdAtCursor: "2025-01-01T00:00:00.000Z" };
+    const futureDrawing = { ...drawing, id: "future-layer", name: "未来判断", hidden: true, createdAtCursor: "2099-01-01T00:00:00.000Z" };
+    const otherTimeframeDrawing = { ...drawing, id: "other-timeframe", name: "其他周期", hidden: true, visibleOn: ["15m"] as Timeframe[] };
+    const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    initial.working.phase = "holding";
+    initial.working.drawings = [hiddenDrawing, futureDrawing, otherTimeframeDrawing];
+    initial.working.cursor = "2025-01-02T10:15:00.000Z";
+    initial.working.executionCursor = "fill-1";
+    renderRecall(replayEpisode, initial);
+
+    await screen.findByTestId("mock-replay-chart");
+    expect(screen.getByTestId("mock-replay-chart")).not.toHaveAttribute("data-drawing-ids", "hidden-layer");
+    const onCommand = vi.fn();
+    render(<DrawingLayersPanel drawings={[hiddenDrawing]} onCommand={onCommand} onSelectDrawing={vi.fn()} selectedDrawingId={null} />);
+    const layers = document.body;
+    expect(within(layers).getByDisplayValue("隐藏判断")).toBeInTheDocument();
+    fireEvent.click(within(layers).getByRole("button", { name: "显示隐藏判断" }));
+    expect(onCommand).toHaveBeenCalledWith({ type: "toggle-hidden", id: "hidden-layer" });
+  });
+
+  it("restores the saved holding drawings when pre-entry replay crosses into its first fill", async () => {
+    const holdingDrawing = { ...drawing, id: "holding-graph", name: "持仓图", createdAtCursor: "2025-01-02T10:15:00.000Z" };
+    const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    const holdingContext: RecallWorkingContext = {
+      mode: "global",
+      decisionId: "global",
+      drawings: [holdingDrawing],
+      timeframe: "1D",
+      cursor: "2025-01-02T10:30:00.000Z",
+      executionCursor: "fill-2",
+      revealedCandleCursor: "2025-01-02T10:30:00.000Z",
+    };
+    const preEntryContext: RecallWorkingContext = {
+      mode: "global",
+      decisionId: "global",
+      drawings: [],
+      timeframe: "1D",
+      cursor: "2025-01-01T23:59:59.999Z",
+      executionCursor: NO_REVEALED_EXECUTIONS,
+      revealedCandleCursor: null,
+    };
+    initial.working = {
+      ...initial.working,
+      phase: "holding",
+      drawings: [holdingDrawing],
+      phaseContexts: { holding: holdingContext, "pre-entry": preEntryContext },
+    };
+    renderRecall(replayEpisode, initial);
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "买入前判断" })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "买入前判断" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "买入前判断" })).toHaveAttribute("aria-pressed", "true"));
+    fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-1"));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-drawing-ids", "holding-graph");
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", "2025-01-02T10:15:00.000Z");
   });
 });
 
@@ -1710,6 +1903,116 @@ it("autosaves a representative stage selection through the existing repository",
   await openStoryboard();
   fireEvent.change(await screen.findByLabelText("持仓过程代表快照"),{target:{value:"snapshot-1"}});
   await waitFor(()=>expect(repository.save).toHaveBeenCalledWith(expect.objectContaining({storyboard:{holding:{snapshotId:"snapshot-1"}}}),expect.anything()),{timeout:2500});
+});
+
+it("keeps the document unchanged on unfinished text capture and retains once after retry", async () => {
+  const initial = createRecallDocument(episode, "2025-01-02T10:00:00.000Z");
+  initial.working.drawings = [drawing];
+  const message = "文字编辑或关联取点尚未完成，请先完成或取消编辑；草稿已保留";
+  replayChartHarness.handle.capture.mockRejectedValueOnce(new Error(message));
+  const repository: RecallRepository = {
+    load: vi.fn().mockResolvedValue(initial),
+    save: vi.fn().mockImplementation(async (document: RecallDocument) => ({ ...document, revision: document.revision + 1 })),
+    fetch: vi.fn(),
+  };
+  let guard: (() => Promise<boolean>) | null = null;
+  renderRecall(episode, initial, repository, next => { guard = next; });
+  fireEvent.click(await screen.findByRole("button", { name: "留存当前快照" }));
+  expect(await screen.findByText(message)).toBeInTheDocument();
+  expect(repository.save).not.toHaveBeenCalled();
+  expect(initial.snapshots).toEqual([]);
+  expect(initial.working.drawings).toEqual([drawing]);
+  fireEvent.click(screen.getByRole("button", { name: "留存当前快照" }));
+  await openAllSnapshotRecords();
+  await screen.findByRole("button", { name: "编辑决策 1快照" });
+  let allowed!: boolean;
+  await act(async () => { allowed = await guard!(); });
+  expect(allowed).toBe(true);
+  expect(replayChartHarness.handle.capture).toHaveBeenCalledTimes(2);
+  expect(repository.save).toHaveBeenCalledWith(
+    expect.objectContaining({ snapshots: expect.arrayContaining([expect.objectContaining({ imageDataUrl: "data:image/png;base64,AA==" })]) }),
+    expect.anything(),
+  );
+  // Keep the existing eventual repository-boundary assertion as a persistence
+  // check; the immediate guard assertion above owns the navigation contract.
+  await waitFor(() => expect(repository.save).toHaveBeenCalledWith(
+    expect.objectContaining({ snapshots: expect.arrayContaining([expect.objectContaining({ imageDataUrl: "data:image/png;base64,AA==" })]) }),
+    expect.anything(),
+  ), { timeout: 2500 });
+  const saved = vi.mocked(repository.save).mock.calls.at(-1)![0];
+  expect(saved.snapshots).toHaveLength(1);
+  expect(saved.snapshots[0].imageDataUrl).toBe("data:image/png;base64,AA==");
+  expect(saved.snapshots[0].drawings).toEqual([drawing]);
+  expect(saved.working).toMatchObject({
+    cursor: initial.working.cursor, executionCursor: initial.working.executionCursor,
+    drawings: [drawing],
+  });
+  expect(saved.working.phase).toBe(initial.working.phase);
+  expect(saved.working.hasSeenFuture).toBe(initial.working.hasSeenFuture);
+});
+
+it("does not report a clean leave guard before a retained snapshot reaches the save boundary", async () => {
+  const initial = createRecallDocument(episode, "2025-01-02T10:00:00.000Z");
+  initial.working.drawings = [drawing];
+  let resolveCapture!: (value: {imageDataUrl: string; viewport: typeof replayChartHarness.viewport}) => void;
+  replayChartHarness.handle.capture.mockReturnValueOnce(new Promise(resolve => { resolveCapture = resolve; }));
+  const repository: RecallRepository = {
+    load: vi.fn().mockResolvedValue(initial),
+    save: vi.fn().mockImplementation(async (document: RecallDocument) => ({...document, revision: document.revision + 1})),
+    fetch: vi.fn(),
+  };
+  let guard: (() => Promise<boolean>) | null = null;
+  renderRecall(episode, initial, repository, next => { guard = next; });
+  fireEvent.click(await screen.findByRole("button", {name: "留存当前快照"}));
+
+  let allowed!: boolean;
+  await act(async () => {
+    resolveCapture({imageDataUrl: "data:image/png;base64,boundary", viewport: replayChartHarness.viewport});
+    await Promise.resolve();
+    await Promise.resolve();
+    allowed = await guard!();
+  });
+
+  const latest = vi.mocked(repository.save).mock.calls.at(-1)?.[0];
+  expect(allowed).toBe(true);
+  expect(latest).toBeDefined();
+  expect(latest!.snapshots).toHaveLength(1);
+  expect(latest!.snapshots[0].imageDataUrl).toBe("data:image/png;base64,boundary");
+  await openAllSnapshotRecords();
+  await screen.findByRole("button", {name: "编辑决策 1快照"});
+  const flushed = vi.mocked(repository.save).mock.calls.at(-1)![0];
+  expect(flushed.snapshots).toHaveLength(1);
+});
+
+it("blocks or awaits navigation while a retain capture is pending", async () => {
+  const initial = createRecallDocument(episode, "2025-01-02T10:00:00.000Z");
+  let resolveCapture!: (value: {imageDataUrl: string; viewport: typeof replayChartHarness.viewport}) => void;
+  replayChartHarness.handle.capture.mockReturnValueOnce(new Promise(resolve => { resolveCapture = resolve; }));
+  const repository: RecallRepository = {
+    load: vi.fn().mockResolvedValue(initial),
+    save: vi.fn().mockImplementation(async (document: RecallDocument) => ({...document, revision: document.revision + 1})),
+    fetch: vi.fn(),
+  };
+  let guard: (() => Promise<boolean>) | null = null;
+  renderRecall(episode, initial, repository, next => { guard = next; });
+  fireEvent.click(await screen.findByRole("button", {name: "留存当前快照"}));
+
+  let guardPromise!: Promise<boolean>;
+  let settled = false;
+  await act(async () => {
+    guardPromise = guard!();
+    void guardPromise.then(() => { settled = true; });
+    await Promise.resolve();
+  });
+  expect(settled).toBe(false);
+  resolveCapture({imageDataUrl: "data:image/png;base64,pending", viewport: replayChartHarness.viewport});
+  let allowed!: boolean;
+  await act(async () => { allowed = await guardPromise; });
+  const latest = vi.mocked(repository.save).mock.calls.at(-1)?.[0];
+  expect(allowed).toBe(true);
+  expect(latest).toBeDefined();
+  expect(latest!.snapshots).toHaveLength(1);
+  expect(latest!.snapshots[0].imageDataUrl).toBe("data:image/png;base64,pending");
 });
 
 it("keeps a server-stamped capture when Text changes during its save", async () => {
@@ -2308,5 +2611,7 @@ it("accepts the synchronous Text commit performed before the chart freezes its s
   const saved = vi.mocked(repository.save).mock.calls[0][0];
   expect(saved.snapshots[0].drawings).toHaveLength(1);
   expect(saved.snapshots[0].drawings[0]).toMatchObject({tool: "text", text: "新 Text"});
+  expect(saved.working.drawings).toHaveLength(1);
+  expect(saved.working.drawings[0]).toMatchObject({tool: "text", text: "新 Text"});
   expect(saved.snapshots[0].imageDataUrl).toBe("data:image/png;base64,committed");
 });

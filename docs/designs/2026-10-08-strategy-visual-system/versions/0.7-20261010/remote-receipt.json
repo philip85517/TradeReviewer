@@ -13,5 +13,6 @@
   "excludedRawEvidenceStillLocal": true,
   "masterMerged": false,
   "productionPublished": false,
-  "finalRefVerification": "Root verifies the later receipt commit with ls-remote again before chat delivery; no self-referential commit SHA in this receipt."
+  "finalRefVerification": "Compare the GitHub refs API result with final local HEAD before chat delivery. Preserve the unpublished local documentation commits in a backup ref; verify identical Git tree before synchronizing the equivalent API commit.",
+  "receiptTransport": "Local Git HTTPS retries failed after the archive push. The connected GitHub Git-data API is used for the documentation receipt; no force push or master change."
 }

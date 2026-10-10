@@ -11,6 +11,7 @@ import {
   type RoomAllocationOptions,
 } from "../../lib/reviews/trading-room-allocation";
 import type { CurrentPortfolioModel } from "../../lib/reviews/trading-room-portfolio";
+import type { TradingRoomQualityDimensionId } from "../../lib/reviews/trading-room-quality";
 import {
   type RoomDisplayCurrency,
   type RoomFxSnapshot,
@@ -18,19 +19,29 @@ import {
   type RoomTargetCurrency,
 } from "../../lib/reviews/trading-room-scope";
 import styles from "./room-allocation.module.css";
+import { RoomValuationDiagnostics } from "./room-valuation-diagnostics";
 
 const colors = ["#3797ff", "#29c9af", "#efac65", "#a484ef", "#71829e"];
 const dimensions = [["market", "按市场"], ["assetType", "按资产类型"]] as const;
 
 export type RoomAllocationProps = {
   model: CurrentPortfolioModel;
+  /** Whether the empty state represents all holdings or the selected market. */
+  scope?: "overall" | "market";
   reportCurrency?: RoomDisplayCurrency;
   targetCurrency?: RoomTargetCurrency;
   fxSnapshot?: RoomFxSnapshot;
   cashSummary?: CashSummary | null;
   cashBaselineDetails?: readonly CashBaselineDisplayDetail[];
+  cashScopeLabel?: string;
   loading?: boolean;
   error?: string | null;
+  onRetryValuation?: () => void;
+  onOpenDataCheck?: (
+    dimension: TradingRoomQualityDimensionId,
+    ids: readonly string[],
+    episodeId?: string,
+  ) => void;
 };
 
 export type CashBaselineDisplayDetail = {
@@ -58,7 +69,7 @@ const fixed = (value: string | null, signed = false) => {
 
 function amountLabel(view: RoomMoneyView, currency: RoomDisplayCurrency, status?: CashSummaryStatus): string {
   if (status === "zero") {
-    if (currency !== "original") return `${currency} 0.00`;
+    if (currency !== "original" && (view.targetCurrency === currency || view.targetCurrency === undefined)) return `${currency} 0.00`;
     const originalCurrency = Object.keys(view.originalByCurrency)[0];
     return originalCurrency ? `${originalCurrency} 0.00` : "0.00";
   }
@@ -66,7 +77,9 @@ function amountLabel(view: RoomMoneyView, currency: RoomDisplayCurrency, status?
     const value = view.targetCurrency === currency
       ? view.converted ?? null
       : currency === "HKD" ? view.convertedHkd ?? null : view.convertedCny;
-    return value === null ? "暂不可用" : `${currency} ${fixed(value)}`;
+    if (value !== null) return `${currency} ${fixed(value)}`;
+    const originals = Object.entries(view.originalByCurrency);
+    return originals.length > 0 ? originals.map(([code, amount]) => `${code} ${fixed(amount)}（原币）`).join(" · ") : "暂不可用";
   }
   const values = Object.entries(view.originalByCurrency);
   return values.length > 0 ? values.map(([code, value]) => `${code} ${fixed(value)}`).join(" · ") : "暂不可用";
@@ -95,15 +108,17 @@ function cashAsOfLabel(value: string | null): string {
   return `${parsed.toISOString().slice(0, 19).replace("T", " ")} UTC`;
 }
 
-function ReasonDetails({ reasons, ariaLabel, fullText }: { reasons: readonly string[]; ariaLabel: string; fullText?: string }) {
-  if (reasons.length === 0 && !fullText) return null;
-  const reasonCount = fullText ? fullText.split("；").length : reasons.length;
-  return <details className={styles.reasonDetails} aria-label={ariaLabel}>
-    <summary>查看完整解释（{reasonCount} 条原因）</summary>
-    {fullText
-      ? <div className={styles.reasonText}>{fullText}</div>
-      : <ul className={styles.reasonList}>{reasons.map((reason, index) => <li key={`${index}-${reason}`}>{reason}</li>)}</ul>}
-  </details>;
+function valuationCutoffLabel(value: string | null | undefined): string {
+  if (!value) return "未知";
+  const parsed = new Date(value);
+  if (!Number.isFinite(parsed.getTime()) || /^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZoneName: "short",
+  }).formatToParts(parsed).reduce<Record<string, string>>((result, part) => {
+    result[part.type] = part.value;
+    return result;
+  }, {});
+  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute} ${parts.timeZoneName ?? "UTC"}`;
 }
 
 function itemAmount(item: RoomAllocationItem): string {
@@ -161,10 +176,7 @@ function LegendItem({ item, index, signed, showRatios, showCoverage }: { item: R
         <b className={styles.negativeBar} style={{ width: `${Math.min(50, Math.abs(Number(item.shortPercent ?? 0)) / 2)}%` }} />
       </div>}
     </div>}
-    {showCoverage && <small>{item.available === item.total ? "完整覆盖" : "可用小计"} {item.available}/{item.total} 个仓位{item.reason && <details className={styles.itemReason} aria-label={`${item.label}分布原因`}>
-      <summary>查看原因</summary>
-      <div className={styles.reasonText}>{item.reason}</div>
-    </details>}</small>}
+    {showCoverage && <small>{item.available === item.total ? "完整覆盖" : "可用小计"} {item.available}/{item.total} 个仓位</small>}
   </li>;
 }
 
@@ -185,24 +197,19 @@ function CashField({ label, description, view, status, reportCurrency }: {
   </div>;
 }
 
-function CashStrip({ summary, reportCurrency, cashBaselineDetails, loading, error }: {
+function CashStrip({ summary, reportCurrency, cashBaselineDetails, cashScopeLabel, loading, error }: {
   summary: CashSummary | null | undefined;
   reportCurrency: RoomDisplayCurrency;
   cashBaselineDetails?: readonly CashBaselineDisplayDetail[];
+  cashScopeLabel?: string;
   loading?: boolean;
   error?: string | null;
 }) {
-  if (loading) return <div className={styles.cashStrip} aria-label="现金状态"><p className={styles.cashMessage}>现金数据加载中…</p></div>;
-  if (error) return <div className={styles.cashStrip} aria-label="现金状态"><p className={styles.cashMessage}>{`现金数据读取失败：${error}`}</p></div>;
-  if (!summary) return <div className={styles.cashStrip} aria-label="现金状态"><p className={styles.cashMessage}>现金数据暂不可用</p></div>;
-  const needsExplanation = summary.todayProceedsStatus === "unavailable"
-    || summary.cashTotalStatus === "unavailable"
-    || summary.coverage.missing > 0
-    || summary.coverage.excluded > 0;
-  const fullReasons = needsExplanation
-    ? [...new Set([...summary.missingReasons, summary.cashTotal.note, summary.todayProceeds.note].filter(Boolean))]
-    : [];
+  if (loading) return <div className={styles.cashStrip} aria-label="现金状态">{cashScopeLabel && <small>{cashScopeLabel}</small>}<p className={styles.cashMessage}>现金数据加载中…</p></div>;
+  if (error) return <div className={styles.cashStrip} aria-label="现金状态">{cashScopeLabel && <small>{cashScopeLabel}</small>}<p className={styles.cashMessage}>{`现金数据读取失败：${error}`}</p></div>;
+  if (!summary) return <div className={styles.cashStrip} aria-label="现金状态">{cashScopeLabel && <small>{cashScopeLabel}</small>}<p className={styles.cashMessage}>现金数据暂不可用</p></div>;
   return <div className={styles.cashStrip} aria-label="现金状态">
+    {cashScopeLabel && <small>{cashScopeLabel}</small>}
     <CashField label="今日卖出回款" view={summary.todayProceeds} status={summary.todayProceedsStatus} reportCurrency={reportCurrency} />
     <CashField label="参考现金" description="基准+股票/ETF成交变化" view={summary.cashTotal} status={summary.cashTotalStatus} reportCurrency={reportCurrency} />
     {summary.asOf && <span className={styles.cashAsOf}>现金基准截至 {cashAsOfLabel(summary.asOf)}</span>}
@@ -215,23 +222,32 @@ function CashStrip({ summary, reportCurrency, cashBaselineDetails, loading, erro
         </li>)}
       </ul>
     </details>}
-    <ReasonDetails reasons={fullReasons} ariaLabel="现金数据完整解释" />
   </div>;
 }
 
 export function RoomAllocation({
   model,
+  scope = "overall",
   reportCurrency = "original",
   targetCurrency,
   fxSnapshot,
   cashSummary,
   cashBaselineDetails,
+  cashScopeLabel = "全账户范围（当前账户筛选）",
   loading,
   error,
+  onRetryValuation,
+  onOpenDataCheck,
 }: RoomAllocationProps) {
   const [dimension, setDimension] = useState<RoomAllocationOptions["dimension"]>("market");
   const [selectedCurrency, setSelectedCurrency] = useState<string | undefined>();
-  const availableCurrencies = [...new Set(model.rows.map(row => row.holding.settlementCurrency?.trim().toUpperCase() || "币种待核对"))];
+  const availableCurrencies = [...new Set(model.rows.map(row => row.holding.settlementCurrency?.trim().toUpperCase() || "币种待核对"))]
+    .sort((left, right) => {
+      const order = ["CNY", "HKD", "USD"];
+      const leftIndex = order.indexOf(left);
+      const rightIndex = order.indexOf(right);
+      return (leftIndex < 0 ? order.length : leftIndex) - (rightIndex < 0 ? order.length : rightIndex) || left.localeCompare(right);
+    });
   const effectiveSelectedCurrency = reportCurrency === "original"
     ? selectedCurrency && availableCurrencies.includes(selectedCurrency) ? selectedCurrency : availableCurrencies[0]
     : undefined;
@@ -249,11 +265,11 @@ export function RoomAllocation({
       {reportCurrency === "original" && allocation.currencies.length > 1 && <div className={styles.currencyTabs} role="tablist" aria-label="分布原币">
         {allocation.currencies.map(currency => <button type="button" role="tab" key={currency} aria-selected={allocation.selectedCurrency === currency} onClick={() => setSelectedCurrency(currency)}>{currency}</button>)}
       </div>}
-      <p className={styles.note}>{allocation.empty ? "暂无可信持仓市值" : `${group?.complete ? "完整覆盖" : "可用小计"} ${group?.available ?? allocation.available}/${group?.total ?? allocation.total} 个仓位 · 估值截点 ${allocation.asOf}`}</p>
-      {allocation.empty && <p className={styles.empty}>当前空仓，暂无资产分布</p>}
+      <p className={styles.note}>{allocation.empty ? "暂无可信持仓市值" : <><span>{group?.complete ? "完整覆盖" : "可用小计"} {group?.available ?? allocation.available}/{group?.total ?? allocation.total} 个仓位 · 估值截点 </span><time dateTime={allocation.asOf ?? undefined} title={allocation.asOf ?? undefined}>{valuationCutoffLabel(allocation.asOf)}</time></>}</p>
+      {allocation.empty && <p className={styles.empty}>{scope === "market" ? "当前市场暂无持仓，暂无资产分布" : "当前空仓，暂无资产分布"}</p>}
       {group && <div className={styles.distributionBody}>
         <div className={styles.chartColumn}>
-          {group.signed ? showRatios ? <SignedBars group={group} /> : <SignedSubtotal group={group} /> : showRatios ? <Donut group={group} /> : <div className={styles.unavailableChart}><strong>{group.currency} {group.netValue === null ? "不可用" : fixed(group.netValue)}</strong><span>净市值小计 · 比例暂不可用</span></div>}
+          {group.signed ? showRatios ? <SignedBars group={group} /> : <SignedSubtotal group={group} /> : showRatios ? <Donut group={group} /> : <div className={styles.unavailableSummary}><strong>{group.currency} {group.netValue === null ? "不可用" : fixed(group.netValue)}</strong><span>已知市值小计</span><small>覆盖 {group.available}/{group.total} 个仓位 · 比例暂不可用</small></div>}
         </div>
         <div className={styles.legend}>
           <strong className={styles.legendTitle}>{group.currency} {group.signed ? "多空分布" : "持仓分布"}</strong>
@@ -262,16 +278,21 @@ export function RoomAllocation({
       </div>}
       {reportCurrency === "original" && !allocation.globalComplete && <div className={styles.gapNote}>
         <span>全卡缺口：{allocation.globalNote}</span>
-        <ReasonDetails reasons={allocation.globalMissingReasons} ariaLabel="资产分布完整覆盖说明" />
       </div>}
       {group && (!group.complete || group.signed || group.currency === "币种待核对") && <div className={styles.note}>
         <span>{group.complete ? "完整覆盖" : `可用小计，比例不可用 · 覆盖 ${group.available}/${group.total} 个仓位`}</span>
         {group.signed && <span>{group.complete
           ? "空头以负条形表示，比例分母为多空绝对市值总敞口"
           : "空头保留负号，多空可信小计分开"}</span>}
-        <ReasonDetails reasons={group.missingReasons} ariaLabel="当前分布完整解释" fullText={group.note} />
       </div>}
-      <CashStrip summary={cashSummary} reportCurrency={reportCurrency} cashBaselineDetails={cashBaselineDetails} loading={loading} error={error} />
+      <RoomValuationDiagnostics
+        model={model}
+        cashSummary={cashSummary}
+        additionalReasons={allocation.globalMissingReasons}
+        onRetryValuation={onRetryValuation}
+        onOpenDataCheck={onOpenDataCheck}
+      />
+      <CashStrip summary={cashSummary} reportCurrency={reportCurrency} cashBaselineDetails={cashBaselineDetails} cashScopeLabel={cashScopeLabel} loading={loading} error={error} />
     </section>
   );
 }

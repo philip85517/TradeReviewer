@@ -2,6 +2,7 @@ import Decimal from "decimal.js";
 import type { TradeLibraryEntry } from "../trades/library";
 import { buildTradingRoomHoldings, type TradingRoomHoldingRow, type TradingRoomHoldingsOptions } from "./trading-room-holdings";
 import { buildRoomMoneyView, roomMoneyValue, type RoomFxSnapshot, type RoomMoneyView, type RoomTargetCurrency } from "./trading-room-scope";
+import { buildRoomMoneySubtotal, type RoomMoneySubtotal } from "./holdings-money-subtotal";
 
 export type CurrentPortfolioOptions = TradingRoomHoldingsOptions & { fxSnapshot?: RoomFxSnapshot; targetCurrency?: RoomTargetCurrency };
 export type CurrentPortfolioRow = {
@@ -59,11 +60,21 @@ export function buildCurrentPortfolio(entries: readonly TradeLibraryEntry[], opt
   const marketValue = money("marketValue");
   const cost = money("cost");
   const unrealizedPnl = money("unrealizedPnl");
+  const subtotal = (key: typeof keys[number]): RoomMoneySubtotal => buildRoomMoneySubtotal(rows.map((row, index) => ({
+    memberKey: row.holding.episodeId || row.holding.instrumentId || `${index}`,
+    currency: row.holding.settlementCurrency ?? "",
+    amount: row[key],
+  })), options.fxSnapshot, options.targetCurrency ?? "CNY");
+  const subtotals = {
+    marketValue: subtotal("marketValue"),
+    cost: subtotal("cost"),
+    unrealizedPnl: subtotal("unrealizedPnl"),
+  };
   const scalar = (view: RoomMoneyView) => options.targetCurrency || options.fxSnapshot ? roomMoneyValue(view)
     : Object.keys(view.originalByCurrency).length === 1 ? Object.values(view.originalByCurrency)[0] : null;
   const unrealizedReturnPercent = coverage.cost.complete && coverage.unrealizedPnl.complete && rows.every(row => row.holding.direction === "long")
     ? ratio(scalar(unrealizedPnl), scalar(cost)) : null;
-  return { holdings, rows, marketValue, cost, unrealizedPnl, unrealizedReturnPercent, coverage,
+  return { holdings, rows, marketValue, cost, unrealizedPnl, subtotals, unrealizedReturnPercent, coverage,
     count: new Set(rows.map(row => row.holding.instrumentId)).size,
     complete: keys.every(key => coverage[key].complete),
     empty: rows.length === 0,

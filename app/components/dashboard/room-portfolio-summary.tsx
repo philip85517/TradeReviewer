@@ -9,6 +9,8 @@ import styles from "./room-portfolio-summary.module.css";
 
 export type RoomPortfolioSummaryProps = {
   model: CurrentPortfolioModel;
+  /** Whether the empty state represents all holdings or the selected market. */
+  scope?: "overall" | "market";
   reportCurrency?: RoomDisplayCurrency;
   dailyPnl?: RoomMoneyView;
   dailyPnlReason?: string;
@@ -26,7 +28,12 @@ function format(value: string | null | undefined, signed = false) {
   if (value === null || value === undefined) return "暂不可用";
   try {
     const number = new Decimal(value);
-    return `${signed && number.gt(0) ? "+" : ""}${number.toFixed(2)}`;
+    const [integer, fraction = "00"] = number.toFixed(2).split(".");
+    const negative = integer.startsWith("-");
+    const digits = negative ? integer.slice(1) : integer;
+    const grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    const formatted = `${negative ? "-" : ""}${grouped}.${fraction}`;
+    return `${signed && number.gt(0) ? "+" : ""}${formatted}`;
   } catch {
     return "暂不可用";
   }
@@ -37,26 +44,102 @@ function targetValue(view: RoomMoneyView, currency: Exclude<RoomDisplayCurrency,
   return currency === "HKD" ? view.convertedHkd ?? null : view.convertedCny;
 }
 
-function money(view: RoomMoneyView, currency: RoomDisplayCurrency, signed = false) {
+function moneyLines(view: RoomMoneyView | undefined, currency: RoomDisplayCurrency, signed = false, originalCurrencies?: readonly string[]): string[] {
   if (currency !== "original") {
-    const value = targetValue(view, currency);
-    return value === null ? "暂不可用" : `${currency} ${format(value, signed)}`;
+    const value = view ? targetValue(view, currency) : null;
+    return value === null ? ["暂不可用"] : [`${currency} ${format(value, signed)}`];
   }
-  return Object.entries(view.originalByCurrency)
-    .map(([code, value]) => `${code} ${format(value, signed)}`)
-    .join(" / ") || "暂不可用";
+  const currencyOrder = ["CNY", "HKD", "USD"];
+  const entries = (originalCurrencies ?? (view ? Object.keys(view.originalByCurrency) : [])).map(code => [code, view?.originalByCurrency[code] ?? null] as const)
+    .sort(([left], [right]) => {
+      const leftIndex = currencyOrder.indexOf(left);
+      const rightIndex = currencyOrder.indexOf(right);
+      return (leftIndex < 0 ? currencyOrder.length : leftIndex) - (rightIndex < 0 ? currencyOrder.length : rightIndex) || left.localeCompare(right);
+    });
+  return entries.length > 0 ? entries.map(([code, value]) => `${code} ${value === null ? "暂不可用" : format(value, signed)}`) : ["暂不可用"];
 }
 
-function scalarValues(view: RoomMoneyView, currency: RoomDisplayCurrency): string[] {
+function subtotalValue(model: CurrentPortfolioModel | undefined, key: "marketValue" | "cost" | "unrealizedPnl", currency: RoomDisplayCurrency): string | null {
+  if (!model || currency === "original") return null;
+  const subtotal = model.subtotals?.[key];
+  return subtotal?.currency === currency ? subtotal.value : null;
+}
+
+function scalarValues(view: RoomMoneyView, currency: RoomDisplayCurrency, fallback?: string | null): string[] {
   if (currency !== "original") {
     const value = targetValue(view, currency);
-    return value === null ? [] : [value];
+    return value === null ? (fallback === null || fallback === undefined ? [] : [fallback]) : [value];
   }
   return Object.values(view.originalByCurrency);
 }
 
 function coverageLabel(coverage: PortfolioCoverage) {
   return `${coverage.complete ? "完整覆盖" : "可用小计"} ${coverage.available}/${coverage.total} 个仓位`;
+}
+
+function metricCoverageLabel(metric: "市值" | "未实现盈亏", coverage: PortfolioCoverage): string {
+  if (coverage.complete) return `${metric} ${coverage.available}/${coverage.total} · 完整覆盖`;
+  return metric === "市值"
+    ? `已估值 ${coverage.available}/${coverage.total} 个仓位`
+    : `已计算盈亏 ${coverage.available}/${coverage.total} 个仓位`;
+}
+
+function displayedCoverage(model: CurrentPortfolioModel, key: "marketValue" | "cost" | "unrealizedPnl", currency: RoomDisplayCurrency): PortfolioCoverage {
+  if (currency === "original" || model.subtotals?.[key]?.complete) return model.coverage[key];
+  const subtotal = model.subtotals?.[key];
+  return subtotal ? { available: subtotal.available, total: subtotal.total, complete: subtotal.complete } : model.coverage[key];
+}
+
+function currencyCode(value: string | null | undefined): string {
+  const normalized = value?.trim().toUpperCase() ?? "";
+  if (normalized === "人民币" || normalized === "RMB") return "CNY";
+  if (normalized === "港币" || normalized === "HK$") return "HKD";
+  if (normalized === "美元" || normalized === "US$") return "USD";
+  return normalized || "币种待核对";
+}
+
+function currencyCoverage(model: CurrentPortfolioModel, key: "marketValue" | "cost" | "unrealizedPnl", currency: string): string {
+  const rows = model.rows.filter(row => currencyCode(row.holding.settlementCurrency) === currency);
+  const available = rows.filter(row => row[key] !== null).length;
+  return `${available}/${rows.length}`;
+}
+
+function asOfLabel(value: string): string {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const parsed = new Date(value);
+  if (!Number.isFinite(parsed.getTime())) return value;
+  const parts = new Intl.DateTimeFormat("zh-CN", {
+    timeZone: "Asia/Shanghai", hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit",
+  }).formatToParts(parsed);
+  const part = (type: string) => parts.find(item => item.type === type)?.value ?? "";
+  return `${part("year")}-${part("month")}-${part("day")} ${part("hour")}:${part("minute")}（UTC+8）`;
+}
+
+function currencyUniverse(model: CurrentPortfolioModel, view?: RoomMoneyView): string[] {
+  const values = new Set([
+    ...(view ? Object.keys(view.originalByCurrency) : []),
+    ...model.rows.map(row => currencyCode(row.holding.settlementCurrency)),
+  ]);
+  const order = ["CNY", "HKD", "USD"];
+  return [...values].sort((left, right) => {
+    const leftIndex = order.indexOf(left);
+    const rightIndex = order.indexOf(right);
+    return (leftIndex < 0 ? order.length : leftIndex) - (rightIndex < 0 ? order.length : rightIndex) || left.localeCompare(right);
+  });
+}
+
+function MoneyLines({ view, currency, signed = false, model, coverageKey }: {
+  view?: RoomMoneyView;
+  currency: RoomDisplayCurrency;
+  signed?: boolean;
+  model?: CurrentPortfolioModel;
+  coverageKey?: "marketValue" | "cost" | "unrealizedPnl";
+}) {
+  const currencies = currency === "original" && model ? currencyUniverse(model, view) : undefined;
+  const strictValue = view ? (currency === "original" ? null : targetValue(view, currency)) : null;
+  const fallback = strictValue === null && model && coverageKey ? subtotalValue(model, coverageKey, currency) : null;
+  const lines = strictValue === null && fallback !== null ? [`${currency} ${format(fallback, signed)}`] : moneyLines(view, currency, signed, currencies);
+  return <span className={`${styles.amountList} ${lines.length === 1 ? styles.singleAmount : styles.multiAmount}`}>{lines.map((line, index) => <span key={line}>{line}{currencies && coverageKey && <em> · 覆盖 {currencyCoverage(model!, coverageKey, currencies[index])}</em>}</span>)}</span>;
 }
 
 function shortDates(text: string) {
@@ -101,8 +184,21 @@ function dailyReasonFor(
     : reason;
 }
 
+function dailyEvidenceLabel(
+  model: CurrentPortfolioModel,
+  view: RoomMoneyView | undefined,
+  reportCurrency: RoomDisplayCurrency,
+): string {
+  if (!view) return "当日估值证据不可用";
+  if (reportCurrency !== "original") return targetValue(view, reportCurrency) === null ? "当日估值证据不可用" : "当日估值证据完整";
+  const currencies = currencyUniverse(model, view);
+  const hasGap = currencies.some(currency => view.originalByCurrency[currency] === undefined || view.originalByCurrency[currency] === null);
+  return hasGap ? "当日估值证据存在缺口" : "当日估值证据完整";
+}
+
 export function RoomPortfolioSummary({
   model,
+  scope = "overall",
   reportCurrency = "original",
   dailyPnl,
   dailyPnlReason,
@@ -115,12 +211,16 @@ export function RoomPortfolioSummary({
 }: RoomPortfolioSummaryProps) {
   const dailyReason = dailyReasonFor(reportCurrency, dailyPnl, dailyPnlReason ?? dailyPnl?.note ?? "缺少可核对的前收盘估值，当日盈亏暂不可用");
   const dailyBrief = dailyReason.length > 20 ? `${dailyReason.slice(0, 18)}…` : dailyReason;
+  const dailyEvidence = dailyEvidenceLabel(model, dailyPnl, reportCurrency);
   const percentValue = dailyReturnPercent ?? dailyPnlPercent;
   const percentAvailable = dailyReturnPercentAvailable ?? dailyPnlPercentAvailable ?? (percentValue !== null && percentValue !== undefined);
   const percentReason = dailyReturnPercentReasons?.join("；") || dailyPnlPercentReason || (percentAvailable ? "当日盈亏百分比" : "当日盈亏百分比暂不可用");
   const hasShort = model.rows.some(row => row.holding.direction === "short");
-  const tone = (view: RoomMoneyView) => {
-    const values = scalarValues(view, reportCurrency);
+  const marketCoverage = displayedCoverage(model, "marketValue", reportCurrency);
+  const costCoverage = displayedCoverage(model, "cost", reportCurrency);
+  const pnlCoverage = displayedCoverage(model, "unrealizedPnl", reportCurrency);
+  const tone = (view: RoomMoneyView, key?: "marketValue" | "unrealizedPnl") => {
+    const values = scalarValues(view, reportCurrency, key ? subtotalValue(model, key, reportCurrency) : null);
     const valid = values.filter(value => {
       try { return new Decimal(value).isFinite(); } catch { return false; }
     });
@@ -130,21 +230,21 @@ export function RoomPortfolioSummary({
   return <section aria-label="当前持仓概览" className={styles.summary}>
     <div className={styles.cards}>
       <div className={styles.card}>
-        <span>{hasShort ? "持仓净市值" : "持仓市值"}</span>
-        <strong>{money(model.marketValue, reportCurrency)}</strong>
-        <small title={coverageLabel(model.coverage.marketValue)}>估值 {model.coverage.marketValue.available}/{model.coverage.marketValue.total}{model.coverage.marketValue.complete ? " · 完整覆盖" : " · 部分估值"}</small>
-        <small title={coverageLabel(model.coverage.cost)}>成本 {money(model.cost, reportCurrency)}{model.coverage.cost.complete ? "" : " · 可用小计"}</small>
+        <span>{marketCoverage.complete ? (hasShort ? "持仓净市值" : "持仓市值") : "已知市值小计"}</span>
+        <strong><MoneyLines view={model.marketValue} currency={reportCurrency} model={model} coverageKey="marketValue" /></strong>
+        <small title={coverageLabel(marketCoverage)}>{metricCoverageLabel("市值", marketCoverage)}</small>
+        <small title={coverageLabel(costCoverage)}>成本 <MoneyLines view={model.cost} currency={reportCurrency} model={model} coverageKey="cost" />{costCoverage.complete ? "" : " · 可用小计"}</small>
       </div>
       <div className={styles.card}>
-        <span>未实现盈亏</span>
-        <strong className={tone(model.unrealizedPnl)}>{money(model.unrealizedPnl, reportCurrency, true)}</strong>
-        <small title={coverageLabel(model.coverage.unrealizedPnl)}>盈亏 {model.coverage.unrealizedPnl.available}/{model.coverage.unrealizedPnl.total}{model.coverage.unrealizedPnl.complete ? " · 完整覆盖" : " · 可用小计"}</small>
+        <span>{pnlCoverage.complete ? "未实现盈亏" : "已知未实现盈亏小计"}</span>
+        <strong className={tone(model.unrealizedPnl, "unrealizedPnl")}><MoneyLines view={model.unrealizedPnl} currency={reportCurrency} signed model={model} coverageKey="unrealizedPnl" /></strong>
+        <small title={coverageLabel(pnlCoverage)}>{metricCoverageLabel("未实现盈亏", pnlCoverage)}</small>
         <small title="未实现收益率以剩余多头成本为分母">收益率 {model.unrealizedReturnPercent === null ? "暂不可用" : `${format(model.unrealizedReturnPercent, true)}%`}</small>
       </div>
       <div className={styles.card}>
         <span>当日盈亏</span>
-        <strong className={dailyPnl ? tone(dailyPnl) : undefined}>{dailyPnl ? money(dailyPnl, reportCurrency, true) : "暂不可用"}</strong>
-        <small title={dailyReason}>{dailyBrief}</small>
+        <strong className={dailyPnl ? tone(dailyPnl) : undefined}><MoneyLines view={dailyPnl} currency={reportCurrency} signed model={model} /></strong>
+        <small title={dailyReason}>{dailyEvidence} · {dailyBrief}</small>
         <small title={percentReason}>当日百分比 <b aria-label={percentAvailable ? `当日盈亏百分比 ${percentLabel(percentValue, percentAvailable)}` : `当日盈亏百分比暂不可用：${percentReason}`}>{percentLabel(percentValue, percentAvailable)}</b></small>
       </div>
       <div className={styles.card}>
@@ -154,14 +254,14 @@ export function RoomPortfolioSummary({
       </div>
     </div>
     <div className={styles.context}>
-      <p className={styles.note}>估值截点：{shortDates(model.asOf)}</p>
+      <p className={styles.note}><time dateTime={model.asOf} title={model.asOf}>估值截点：{asOfLabel(model.asOf)}</time></p>
       {reportCurrency !== "original" && <p className={styles.note} title={noteTitle(model.marketValue)}>{noteLabel(model.marketValue)}</p>}
     </div>
-    {model.empty && <p className={styles.note}>当前空仓</p>}
+    {model.empty && <p className={styles.note}>{scope === "market" ? "当前市场暂无持仓" : "当前空仓"}</p>}
     <details className={styles.details}><summary>核对估值组成与覆盖</summary>
       <p className={styles.note}>{model.basis}</p>
       <p className={styles.note}>当日依据：{dailyReason}</p>
-      <p className={styles.note}>市值：{coverageLabel(model.coverage.marketValue)}；成本：{coverageLabel(model.coverage.cost)}；盈亏：{coverageLabel(model.coverage.unrealizedPnl)}</p>
+      <p className={styles.note}>原币证据覆盖：市值 {coverageLabel(model.coverage.marketValue)}；成本 {coverageLabel(model.coverage.cost)}；盈亏 {coverageLabel(model.coverage.unrealizedPnl)}。{reportCurrency !== "original" && ` ${reportCurrency} 换算覆盖：市值 ${coverageLabel(marketCoverage)}；成本 ${coverageLabel(costCoverage)}；盈亏 ${coverageLabel(pnlCoverage)}。`}</p>
       <div className={styles.scroll}><table><thead><tr><th>标的 / 账户</th><th>数量</th><th>行情日期</th><th>原币净市值</th><th>剩余成本</th><th>未实现盈亏</th><th>收益率 / 原因</th></tr></thead>
         <tbody>{model.rows.map((row, index) => <tr key={row.holding.episodeId ?? `${row.holding.instrumentId ?? row.holding.instrumentName ?? "row"}:${row.holding.accountId ?? row.holding.accountLabel ?? index}`}>
           <td>{row.holding.instrumentName} · {row.holding.accountLabel}</td><td>{row.holding.quantity ?? "待核对"}</td>

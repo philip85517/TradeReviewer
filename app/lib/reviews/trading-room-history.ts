@@ -3,14 +3,17 @@ import { canonicalInstrumentId } from "../instruments/display-name";
 import type { StatementEvent, StatementPosition } from "../import/monthly-statement";
 import { isExecutionBackedIpoAllocation, replayExecutionAt, statementEventAt, statementPositionAt } from "../import/statement-evidence";
 import { expectedTradingDates } from "../market/calendar";
+import { latestCompletedSessionAt } from "../market/sync-range";
 import type { DailyCandleRecord, SupportedMarket } from "../market/contracts";
 import { marketTimeZone, marketTradingDate } from "../market/trading-date";
 import { replayPositionAtPrice, type PositionLedgerSnapshot } from "../replay/position-ledger";
 import type { TradeLibraryEntry, TradeLibraryEpisode } from "../trades/library";
 import { executionSettlementCurrency, type TradeExecution, type Instrument, type TradeNature } from "../trades/types";
 import { tradingViewEpisodeBusinessScope } from "../trades/tradingview-account-identity";
+import { isBonusShareEvidence } from "../trades/bonus-share-evidence";
 import { dashboardEpisodeNature, dashboardEpisodeSimulationRunId, type DashboardRow } from "./dashboard";
 import { buildRoomMoneyView, filterRoomRows, roomMoneyValue, roomTodayKey, type RoomFxSnapshot, type RoomMoneyView, type RoomTargetCurrency } from "./trading-room-scope";
+import { buildRoomMoneySubtotal, type RoomMoneySubtotal } from "./holdings-money-subtotal";
 import { buildDailyPnlPercent } from "./trading-room-time";
 import type { TradingRoomHoldingsOptions } from "./trading-room-holdings";
 
@@ -58,6 +61,7 @@ export type HoldingsHistoryPoint = {
   marketValue: RoomMoneyView;
   cost: RoomMoneyView;
   unrealizedPnl: RoomMoneyView;
+  knownSubtotals: { marketValue: RoomMoneySubtotal; cost: RoomMoneySubtotal; unrealizedPnl: RoomMoneySubtotal };
   unrealizedReturnPercent: string | null;
   available: boolean;
   quantityAvailable: boolean;
@@ -97,6 +101,7 @@ type Ledger = {
   sessions: string[];
   holdingsCache: Map<string, HistoricalHolding | null>;
   orderedExecutions: TradeExecution[];
+  executionAbsoluteAt: Map<string, string>;
   boundaryDates: string[];
   snapshots: Map<string, PositionLedgerSnapshot | null>;
   shortProof: Map<string, boolean>;
@@ -110,6 +115,10 @@ type Ledger = {
   emptyBoundaries: Set<string>;
   sessionStart: string | null;
   sessionEnd: string | null;
+  /** Absolute as-of cutoff, projected into the market-local clock for the final day. */
+  cutoffDate: string | null;
+  cutoffLocal: string | null;
+  cutoffAbsolute: string | null;
 };
 
 type CachedEntryLedgers = {
@@ -166,6 +175,7 @@ function createHistoryLedger(row: DashboardRow): Ledger {
     sessions: [],
     holdingsCache: new Map(),
     orderedExecutions: [],
+    executionAbsoluteAt: new Map(),
     boundaryDates: [],
     snapshots: new Map(),
     shortProof: new Map(),
@@ -179,6 +189,9 @@ function createHistoryLedger(row: DashboardRow): Ledger {
     emptyBoundaries: new Set(),
     sessionStart: null,
     sessionEnd: null,
+    cutoffDate: null,
+    cutoffLocal: null,
+    cutoffAbsolute: null,
   };
 }
 
@@ -221,6 +234,7 @@ function appendHistoryRow(ledger: Ledger, row: DashboardRow): void {
   }
   for (const original of episode.executions) {
     const at = dailyReplayExecution(original);
+    ledger.executionAbsoluteAt.set(original.id, original.executedAt);
     ledger.executions.set(original.id, {
       ...original,
       executedAt: at,
@@ -454,15 +468,23 @@ function previousSession(ledger: Ledger, date: string): string | undefined {
 }
 
 function markFor(ledger: Ledger, date: string): DailyCandleRecord | undefined {
+  const effectiveDate = ledger.cutoffDate && date > ledger.cutoffDate ? ledger.cutoffDate : date;
   let low = 0, high = ledger.candles.length;
   while (low < high) {
     const middle = (low + high) >>> 1;
-    if (ledger.candles[middle].tradingDate <= date)
+    if (ledger.candles[middle].tradingDate <= effectiveDate)
       low = middle + 1;
     else
       high = middle;
   }
-  const requiredSession = ledger.sessions[upperBound(ledger.sessions, date) - 1];
+  let requiredSession = ledger.sessions[upperBound(ledger.sessions, date) - 1];
+  if (ledger.cutoffDate === effectiveDate && ledger.cutoffLocal) {
+    try {
+      requiredSession = latestCompletedSessionAt(ledger.market as SupportedMarket, ledger.cutoffAbsolute!).session;
+    } catch {
+      return undefined;
+    }
+  }
   if (!requiredSession)
     return undefined;
   // Raw candle feeds can contain labels on exchange holidays or weekends.
@@ -473,8 +495,23 @@ function markFor(ledger: Ledger, date: string): DailyCandleRecord | undefined {
     const candidateSession = ledger.sessions[upperBound(ledger.sessions, candidate.tradingDate) - 1];
     if (candidateSession !== candidate.tradingDate)
       continue;
+    if (candidate.tradingDate > requiredSession)
+      continue;
+    try {
+      const closeAt = latestCompletedSessionAt(ledger.market as SupportedMarket, `${candidate.tradingDate}T23:59:59.999Z`).sessionCloseAt;
+      if (candidate.fetchedAt && Date.parse(candidate.fetchedAt) < Date.parse(closeAt))
+        continue;
+      const latestExecution = visibleExecutionsAt(ledger, effectiveDate)
+        .map(execution => ({ execution, originalAt: ledger.executionAbsoluteAt.get(execution.id) ?? execution.executedAt }))
+        .filter(value => marketTradingDate(value.originalAt, ledger.market) === candidate.tradingDate)
+        .sort((left, right) => Date.parse(left.originalAt) - Date.parse(right.originalAt)).at(-1);
+      if (latestExecution && Date.parse(latestExecution.originalAt) > Date.parse(closeAt) && candidate.fetchedAt && Date.parse(candidate.fetchedAt) < Date.parse(latestExecution.originalAt))
+        continue;
+    } catch {
+      return undefined;
+    }
     // Carry only across indexed exchange closures, never a missing session.
-    return candidate.tradingDate >= requiredSession ? candidate : undefined;
+    return candidate.tradingDate === requiredSession ? candidate : undefined;
   }
   return undefined;
 }
@@ -519,6 +556,33 @@ function dailyReplayExecution(execution: TradeExecution): string {
   return `${date}T${parts.hour}:${parts.minute}:${parts.second}.${milliseconds}Z`;
 }
 
+function marketLocalCutoff(asOf: string, market: string): { date: string; local: string } | null {
+  if (!/T\d{2}:\d{2}/.test(asOf)) return null;
+  const instant = new Date(asOf);
+  if (!Number.isFinite(instant.getTime())) return null;
+  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
+    timeZone: marketTimeZone(market), year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23",
+  }).formatToParts(instant).map(part => [part.type, part.value]));
+  const milliseconds = instant.getUTCMilliseconds().toString().padStart(3, "0");
+  const date = `${parts.year}-${parts.month}-${parts.day}`;
+  return { date, local: `${date}T${parts.hour}:${parts.minute}:${parts.second}.${milliseconds}Z` };
+}
+
+function configureHistoryCutoff(ledgers: Iterable<Ledger>, asOf: string | undefined): void {
+  for (const ledger of ledgers) {
+    const cutoff = asOf ? marketLocalCutoff(asOf, ledger.market) : null;
+    const nextDate = cutoff?.date ?? null;
+    const nextLocal = cutoff?.local ?? null;
+    const nextAbsolute = cutoff ? asOf! : null;
+    if (ledger.cutoffDate === nextDate && ledger.cutoffLocal === nextLocal && ledger.cutoffAbsolute === nextAbsolute) continue;
+    ledger.cutoffDate = nextDate;
+    ledger.cutoffLocal = nextLocal;
+    ledger.cutoffAbsolute = nextAbsolute;
+    clearHistoryDerivedCaches(ledger);
+  }
+}
+
 function hasRelevantLegacySimulationRows(
   entries: readonly TradeLibraryEntry[],
   scope: HoldingsHistoryOptions["scope"],
@@ -540,8 +604,15 @@ function eventAt(event: StatementEvent): string {
   return statementEventAt(event.date.length === 7 ? { ...event, displayTimePolicy: undefined } : event);
 }
 
+function ledgerCursorForDate(ledger: Ledger, date: string): string {
+  return ledger.cutoffDate === date && ledger.cutoffLocal ? ledger.cutoffLocal : `${date}T23:59:59.999Z`;
+}
+
 function evidenceVisible(ledger: Ledger, date: string): boolean {
-  return ledger.firstEvidenceDate !== null && ledger.firstEvidenceDate <= date;
+  if (ledger.cutoffDate && date > ledger.cutoffDate) return false;
+  const cursor = ledgerCursorForDate(ledger, date);
+  return [...ledger.positions.values()].some(position => statementPositionAt(position) <= cursor) ||
+    [...ledger.events.values()].some(event => eventAt(event) <= cursor);
 }
 
 function boundaryAt(ledger: Ledger, date: string): string | undefined {
@@ -549,10 +620,15 @@ function boundaryAt(ledger: Ledger, date: string): string | undefined {
 }
 
 function visibleExecutionsAt(ledger: Ledger, date: string): TradeExecution[] {
+  if (ledger.cutoffDate && date > ledger.cutoffDate) return [];
   const boundary = boundaryAt(ledger, date);
   if (!boundary) return [];
   if (!ledger.visibleExecutions.has(boundary)) {
-    ledger.visibleExecutions.set(boundary, ledger.orderedExecutions.filter(e => e.executedAt.slice(0, 10) <= boundary));
+    ledger.visibleExecutions.set(boundary, ledger.orderedExecutions.filter(e => {
+      const originalAt = ledger.executionAbsoluteAt.get(e.id) ?? e.executedAt;
+      if (marketTradingDate(originalAt, ledger.market) > boundary) return false;
+      return !(ledger.cutoffDate === boundary && ledger.cutoffAbsolute && originalAt.length > 10 && Date.parse(originalAt) > Date.parse(ledger.cutoffAbsolute));
+    }));
   }
   return ledger.visibleExecutions.get(boundary)!;
 }
@@ -575,7 +651,7 @@ function shortVerified(ledger: Ledger, executions: TradeExecution[], date: strin
     inventory?: StatementEvent;
     execution?: TradeExecution;
   };
-  const cursor = `${date}T23:59:59.999Z`;
+  const cursor = ledgerCursorForDate(ledger, date);
   const visible = executions.filter(e => replayExecutionAt(e) <= cursor);
   const events: ProofEvent[] = visible.map(execution => ({
     at: replayExecutionAt(execution),
@@ -633,29 +709,33 @@ function shortVerified(ledger: Ledger, executions: TradeExecution[], date: strin
 }
 
 function holdingAt(ledger: Ledger, date: string): HistoricalHolding | null {
-  const boundary = boundaryAt(ledger, date);
+  const effectiveDate = ledger.cutoffDate && date > ledger.cutoffDate ? ledger.cutoffDate : date;
+  const boundary = boundaryAt(ledger, effectiveDate);
   if (!boundary || ledger.emptyBoundaries.has(boundary)) return null;
   if (!ledger.holdingsCache.has(date))
-    ledger.holdingsCache.set(date, computeHoldingAt(ledger, date));
+    ledger.holdingsCache.set(date, computeHoldingAt(ledger, effectiveDate));
   return ledger.holdingsCache.get(date) ?? null;
 }
 
 function computeHoldingAt(ledger: Ledger, date: string): HistoricalHolding | null {
-  const executions = ledger.orderedExecutions;
   const visible = visibleExecutionsAt(ledger, date);
+  const executions = visible;
   if (!visible.length && !evidenceVisible(ledger, date))
     return null;
   const currencies = visible.length ? executionCurrenciesAt(ledger, date) : [currency(ledger.instrument.currency)];
   const settlementCurrency = currencies.length === 1 ? currencies[0] : "";
   const reasons: string[] = [];
   const boundary = boundaryAt(ledger, date);
+  const cursor = ledgerCursorForDate(ledger, date);
+  const visiblePositions = [...ledger.positions.values()].filter(position => statementPositionAt(position) <= cursor);
+  const visibleEvents = [...ledger.events.values()].filter(event => eventAt(event) <= cursor);
   let position: PositionLedgerSnapshot | null = null;
   if (boundary) {
     if (!ledger.snapshots.has(boundary)) {
       try {
         ledger.snapshots.set(boundary, replayPositionAtPrice({
           executions,
-          cursor: boundary,
+          cursor: ledger.cutoffDate === boundary && ledger.cutoffLocal ? ledger.cutoffLocal : boundary,
           markPrice: "0",
           ...(ledger.nature !== "simulation" ? {
             inventoryIdentity: {
@@ -663,7 +743,7 @@ function computeHoldingAt(ledger: Ledger, date: string): HistoricalHolding | nul
               symbol: ledger.instrument.symbol,
               market: ledger.market
             },
-            evidence: [{ positions: [...ledger.positions.values()], events: [...ledger.events.values()] }],
+            evidence: [{ positions: visiblePositions, events: visibleEvents }],
           } : {}),
         }));
       }
@@ -676,7 +756,9 @@ function computeHoldingAt(ledger: Ledger, date: string): HistoricalHolding | nul
   if (!position)
     reasons.push("历史持仓回放失败，证据待核对");
   const q = decimal(position?.quantity);
-  const unsupportedAction = ledger.firstCorporateActionDate !== null && ledger.firstCorporateActionDate <= date;
+  const unsupportedAction = ledger.datedEvents.some(item =>
+    item.event.kind === "corporate-action" && eventAt(item.event) <= cursor && !isBonusShareEvidence(item.event),
+  );
   if (unsupportedAction)
     reasons.push("存在尚未支持数量与成本调整的公司行动证据");
   if (boundary && q?.lt(0) && !ledger.shortProof.has(boundary))
@@ -736,7 +818,8 @@ function dailyContribution(ledger: Ledger, date: string): DailyContribution | nu
   const visible = visibleExecutionsAt(ledger, date);
   if (!visible.length && !evidenceVisible(ledger, date))
     return null;
-  const trades = ledger.tradesByDate.get(date) ?? [];
+  const visibleIds = new Set(visibleExecutionsAt(ledger, date).map(execution => execution.id));
+  const trades = (ledger.tradesByDate.get(date) ?? []).filter(execution => visibleIds.has(execution.id));
   const currencies = visible.length ? executionCurrenciesAt(ledger, date) : [currency(ledger.instrument.currency)];
   const code = currencies.length === 1 ? currencies[0] : "";
   const reasons: string[] = [];
@@ -761,12 +844,16 @@ function dailyContribution(ledger: Ledger, date: string): DailyContribution | nu
       reasons: [],
     };
   }
-  const events = ledger.datedEvents.filter(item => item.date <= date && (!priorDate || item.date > priorDate)).map(item => item.event);
+  const cursor = ledgerCursorForDate(ledger, date);
+  const priorCursor = priorDate ? ledgerCursorForDate(ledger, priorDate) : null;
+  const events = ledger.datedEvents
+    .filter(item => eventAt(item.event) <= cursor && (!priorCursor || eventAt(item.event) > priorCursor))
+    .map(item => item.event);
   if (events.some(e => e.kind === "transfer-in" || e.kind === "transfer-out"))
     reasons.push("转仓现金流证据不足，无法计算当日盈亏");
-  if (events.some(e => e.kind === "corporate-action" || e.kind === "ipo" && e.quantity !== undefined))
+  if (events.some(e => (e.kind === "corporate-action" && !isBonusShareEvidence(e)) || e.kind === "ipo" && e.quantity !== undefined))
     reasons.push("公司行动或配股投入未完整计入当日现金流");
-  if ([...ledger.positions.values()].some(p => p.date <= date && (!priorDate || p.date > priorDate)))
+  if ([...ledger.positions.values()].some(p => statementPositionAt(p) <= cursor && (!priorCursor || statementPositionAt(p) > priorCursor)))
     reasons.push("当日持仓证据边界变动，现金流覆盖待核对");
   // A first known fill on this date establishes a known empty prior
   // inventory for the day's cash-flow-neutral calculation. Any later missing
@@ -815,6 +902,18 @@ function dailyContribution(ledger: Ledger, date: string): DailyContribution | nu
     reasons: [...new Set(reasons)]
   };
 }
+
+function requiredValuationDate(ledger: Ledger, date: string): string | undefined {
+  const effectiveDate = ledger.cutoffDate && date > ledger.cutoffDate ? ledger.cutoffDate : date;
+  if (ledger.cutoffDate === effectiveDate && ledger.cutoffAbsolute) {
+    try {
+      return latestCompletedSessionAt(ledger.market as SupportedMarket, ledger.cutoffAbsolute).session;
+    } catch {
+      return undefined;
+    }
+  }
+  return ledger.sessions[upperBound(ledger.sessions, effectiveDate) - 1];
+}
 /** Daily marks replay each account/instrument/nature/run once, independently of episode-final metrics. */
 
 export function buildHoldingsHistory(entries: readonly TradeLibraryEntry[], options: HoldingsHistoryOptions): HoldingsHistoryModel {
@@ -830,6 +929,7 @@ export function buildHoldingsHistory(entries: readonly TradeLibraryEntry[], opti
     } }, { instrumentMetadata: options.instrumentMetadata });
   const calendarStart = new Date(Date.parse(`${start}T00:00:00Z`) - 45 * 86400000).toISOString().slice(0, 10);
   const ledgers = buildHistoryLedgers(rows, options.candlesByInstrument ?? {}, calendarStart, end);
+  configureHistoryCutoff(ledgers.values(), options.asOf);
   const points: HoldingsHistoryPoint[] = [];
   for (let date = start; date <= end; date = nextDay(date)) {
     const holdings = [...ledgers.values()].map(ledger => holdingAt(ledger, date)).filter((h): h is HistoricalHolding => h !== null);
@@ -846,6 +946,12 @@ export function buildHoldingsHistory(entries: readonly TradeLibraryEntry[], opti
       options.targetCurrency,
     );
     const marketValue = money("marketValue"), cost = money("cost"), unrealizedPnl = money("unrealizedPnl");
+    const knownSubtotal = (field: "marketValue" | "cost" | "unrealizedPnl") => buildRoomMoneySubtotal(
+      holdings.map(holding => ({ memberKey: holding.key, currency: holding.currency, amount: holding[field] })),
+      options.fxSnapshot,
+      options.targetCurrency ?? "CNY",
+    );
+    const knownSubtotals = { marketValue: knownSubtotal("marketValue"), cost: knownSubtotal("cost"), unrealizedPnl: knownSubtotal("unrealizedPnl") };
     const quantityAvailable = hasHistory && holdings.every(h => h.quantityAvailable);
     const marketValueAvailable = hasHistory && holdings.every(h => h.marketValueAvailable);
     const costAvailable = hasHistory && holdings.every(h => h.costAvailable);
@@ -914,7 +1020,7 @@ export function buildHoldingsHistory(entries: readonly TradeLibraryEntry[], opti
     const valuationLedgers = [...ledgers.values()].filter(ledger => activeKeys.has(ledger.key) || ledger.tradesByDate.has(date));
     // With no position or same-day trade there is no live market cutoff: an
     // explicitly known empty snapshot belongs to its own calendar date.
-    const valuationDate = valuationLedgers.map(ledger => ledger.sessions[upperBound(ledger.sessions, date) - 1]).filter((day): day is string => Boolean(day)).sort().at(-1) ?? date;
+    const valuationDate = valuationLedgers.map(ledger => requiredValuationDate(ledger, date)).filter((day): day is string => Boolean(day)).sort().at(-1) ?? date;
     points.push({
       date,
       valuationDate,
@@ -933,6 +1039,7 @@ export function buildHoldingsHistory(entries: readonly TradeLibraryEntry[], opti
       marketValue,
       cost,
       unrealizedPnl,
+      knownSubtotals,
       unrealizedReturnPercent: ratio,
       available: marketValueAvailable && unrealizedPnlAvailable && (!(options.targetCurrency || options.fxSnapshot) || roomMoneyValue(marketValue) !== null),
       quantityAvailable,

@@ -81,6 +81,10 @@ import type {
 } from "../../lib/reviews/trading-room-global-entries";
 import { tradingViewEpisodeBusinessScope } from "../../lib/trades/tradingview-account-identity";
 import { UnifiedPageHeader, UnifiedScopeFields } from "../workspace/unified-page-header";
+import {
+  useHoldingsValuationRefresh,
+  type HoldingsRefreshReceipt,
+} from "./use-holdings-valuation-refresh";
 
 export type ReviewDashboardProps = {
   entries: TradeLibraryEntry[];
@@ -101,6 +105,25 @@ export type ReviewDashboardProps = {
   positionSnapshotsByEpisode?: Readonly<Record<string, PositionLedgerSnapshot | undefined>>;
   holdingsAsOf?: string;
   holdingsStaleAfterDays?: number;
+  onRefreshHoldingsValuation?: (instrumentIds: readonly string[], trigger?: "automatic" | "manual") => Promise<boolean | HoldingsRefreshReceipt> | boolean | HoldingsRefreshReceipt;
+  onCancelHoldingsValuation?: (instrumentIds?: readonly string[]) => void;
+  marketDataRefresh?: {
+    running: boolean;
+    total: number;
+    completed: number;
+    processed?: number;
+    partial: number;
+    failed: number;
+    cancelled?: number;
+  };
+  marketDataDailyStatuses?: Readonly<Record<string, string | undefined>>;
+  marketDataJobs?: Readonly<Record<string, {
+    status?: string;
+    requestedAt?: string;
+    message?: string;
+    error?: { code?: string; message?: string };
+    intervals?: readonly { interval?: string; status?: string; message?: string; error?: { code?: string; message?: string } }[];
+  } | undefined>>;
   /** Enable the persisted principal settings adapter in the real workspace. */
   principalEnabled?: boolean;
   /** Optional workspace projections used by the four-dimension data-quality summary. */
@@ -226,6 +249,8 @@ type DashboardStateUpdate<T> = T | ((current: T) => T);
 
 type DashboardBrowseState = {
   localRoomScope: RoomScope;
+  browsePreferencesHydrated: boolean;
+  browsePreferencesWritable: boolean;
   restoreRevision: number;
   observationPeriod: RoomScope["period"];
   observationDraft: ReturnType<typeof observationDateDraft>;
@@ -235,7 +260,7 @@ type DashboardBrowseState = {
 };
 
 type DashboardBrowseAction =
-  | { type: "hydrate-preferences"; preferences: DashboardBrowsePreferences; today: string }
+  | { type: "hydrate-preferences"; preferences: DashboardBrowsePreferences | null; today: string; writable: boolean }
   | { type: "restore"; context: RoomPendingSourceSnapshot; revision: number }
   | { type: "room-scope"; next: DashboardStateUpdate<RoomScope> }
   | { type: "observation-period"; next: DashboardStateUpdate<RoomScope["period"]> }
@@ -252,6 +277,8 @@ function createDashboardBrowseState(): DashboardBrowseState {
   const defaultScope = createDefaultRoomScope();
   return {
     localRoomScope: defaultScope,
+    browsePreferencesHydrated: false,
+    browsePreferencesWritable: false,
     restoreRevision: 0,
     observationPeriod: defaultScope.period,
     observationDraft: observationDateDraft(defaultScope.period),
@@ -269,10 +296,20 @@ function dashboardBrowseReducer(state: DashboardBrowseState, action: DashboardBr
     case "hydrate-preferences": {
       // A history return is an explicit, newer user action than the stored
       // homepage default. Keep it authoritative if effects are replayed.
-      if (state.restoreRevision > 0) return state;
+      if (state.restoreRevision > 0) {
+        return {
+          ...state,
+          browsePreferencesHydrated: true,
+          browsePreferencesWritable: action.writable,
+        };
+      }
       return {
         ...state,
-        localRoomScope: applyDashboardBrowsePreferences(state.localRoomScope, action.preferences, action.today),
+        browsePreferencesHydrated: true,
+        browsePreferencesWritable: action.writable,
+        localRoomScope: action.preferences
+          ? applyDashboardBrowsePreferences(state.localRoomScope, action.preferences, action.today)
+          : state.localRoomScope,
       };
     }
     case "restore": {
@@ -319,6 +356,7 @@ function scopedEntriesForNature(entries: TradeLibraryEntry[], nature: RoomTradeN
 }
 
 type DashboardFilterOption = { value: string; label: string };
+type HoldingsMarket = "all" | "a-share" | "hk" | "us";
 
 function disambiguateFilterOptionLabels(options: DashboardFilterOption[]): DashboardFilterOption[] {
   const counts = new Map<string, number>();
@@ -515,6 +553,11 @@ export function ReviewDashboard({
   positionSnapshotsByEpisode,
   holdingsAsOf,
   holdingsStaleAfterDays,
+  onRefreshHoldingsValuation,
+  onCancelHoldingsValuation,
+  marketDataRefresh,
+  marketDataDailyStatuses,
+  marketDataJobs,
   principalEnabled = false,
   qualityInput,
   onRetryDataQuality,
@@ -539,8 +582,6 @@ export function ReviewDashboard({
 }: ReviewDashboardProps) {
   const [browseState, dispatchBrowse] = useReducer(dashboardBrowseReducer, undefined, createDashboardBrowseState);
   const { localRoomScope, observationPeriod, observationDraft, holdingsBrowseState, pendingPage, historyCalendar } = browseState;
-  const [browsePreferencesHydrated, setBrowsePreferencesHydrated] = useState(false);
-  const [browsePreferencesWritable, setBrowsePreferencesWritable] = useState(false);
   const latestRestoreRevision = useRef(0);
   const setRoomScope = (next: DashboardStateUpdate<RoomScope>) => dispatchBrowse({ type: "room-scope", next });
   const setObservationPeriod = (next: DashboardStateUpdate<RoomScope["period"]>) => dispatchBrowse({ type: "observation-period", next });
@@ -550,6 +591,7 @@ export function ReviewDashboard({
   const setHistoryCalendar = (next: DashboardStateUpdate<RoomPerformanceCalendarBrowseState>) => dispatchBrowse({ type: "history-calendar", next });
   const [observationError, setObservationError] = useState<string | null>(null);
   const [localReportCurrency, setLocalReportCurrency] = useState<SharedReportCurrency>("original");
+  const [holdingsMarket, setHoldingsMarket] = useState<HoldingsMarket>("all");
   const initialRoomPeriod = createDefaultRoomScope().period;
   const [roomDateDraft, setRoomDateDraft] = useState(() => ({
     startDate: initialRoomPeriod.startDate,
@@ -563,9 +605,7 @@ export function ReviewDashboard({
   useEffect(() => {
     const today = createDefaultRoomScope().period.endDate;
     const result = readDashboardBrowsePreferences(today);
-    if (result.preferences) dispatchBrowse({ type: "hydrate-preferences", preferences: result.preferences, today });
-    setBrowsePreferencesWritable(result.available);
-    setBrowsePreferencesHydrated(true);
+    dispatchBrowse({ type: "hydrate-preferences", preferences: result.preferences, today, writable: result.available });
   }, []);
   useEffect(() => {
     if (!restoreBrowseContext) return;
@@ -574,10 +614,10 @@ export function ReviewDashboard({
     dispatchBrowse({ type: "restore", context: restoreBrowseContext, revision });
   }, [restoreBrowseContext]);
   useEffect(() => {
-    if (!browsePreferencesHydrated || !browsePreferencesWritable) return;
+    if (!browseState.browsePreferencesHydrated || !browseState.browsePreferencesWritable) return;
     if (latestRestoreRevision.current > browseState.restoreRevision) return;
     saveDashboardBrowsePreferences(localRoomScope, createDefaultRoomScope().period.endDate);
-  }, [browsePreferencesHydrated, browsePreferencesWritable, browseState.restoreRevision, localRoomScope]);
+  }, [browseState.browsePreferencesHydrated, browseState.browsePreferencesWritable, browseState.restoreRevision, localRoomScope]);
   // The shell owns the cross-page scope. Derive the room scope during render so
   // a nature/account/run change cannot briefly render stale live metrics.
   const baseRoomScope = useMemo<RoomScope>(() => sharedScope
@@ -682,15 +722,24 @@ export function ReviewDashboard({
       fxRatesToCny: reportCurrency === "CNY" ? usableFxSnapshot?.rates : undefined,
     });
   }, [referenceCapital.state, reportCurrency, roomModel.rows, roomScope.nature, roomScope.period.endDate, roomScope.period.startDate, roomScope.simulationRunId, usableFxSnapshot]);
-  const { nature, assetCategory, assetType, simulationRunId, query, accountIds, instrumentIds, markets, currencies, reviewStatuses } = roomScope;
+  const { nature, assetType, simulationRunId, query, accountIds, instrumentIds, currencies, reviewStatuses } = roomScope;
   // The shell may reconstruct equivalent account arrays on a closed-period change.
   // Canonicalize membership by value so those renders cannot replay holdings history.
+  const holdingsMarketFilter = holdingsMarket === "a-share" ? ["CN-SH", "CN-SZ"]
+    : holdingsMarket === "hk" ? ["HK"]
+      : holdingsMarket === "us" ? ["US"] : [];
   const holdingsIdentitySignature = JSON.stringify({
-    nature, assetCategory, assetType, simulationRunId, query,
+    // Holdings market tabs own the market and asset-category dimensions. Keep
+    // the remaining filters from the shared room scope (account, nature,
+    // search, asset type, currency, and review status).
+    nature, assetCategory: "all", assetType, simulationRunId, query,
     accountIds: [...accountIds].sort(), instrumentIds: [...instrumentIds].sort(),
-    markets: [...markets].sort(), currencies: [...currencies].sort(), reviewStatuses: [...reviewStatuses].sort(),
+    markets: holdingsMarketFilter, currencies: [...currencies].sort(), reviewStatuses: [...reviewStatuses].sort(),
   });
   const holdingsIdentity = useMemo<Omit<RoomScope, "period">>(() => JSON.parse(holdingsIdentitySignature), [holdingsIdentitySignature]);
+  const holdingsReportCurrency: SharedReportCurrency = holdingsMarket === "all" ? "CNY" : "original";
+  const holdingsTargetCurrency = holdingsReportCurrency === "original" ? undefined : "CNY";
+  const holdingsFxSnapshot = fxSnapshot?.rates && Object.keys(fxSnapshot.rates).length > 0 ? fxSnapshot : undefined;
   const allObservationPeriod = useMemo(() => {
     const today = createDefaultRoomScope().period.endDate;
     const parsedAsOf = holdingsAsOf ? new Date(holdingsAsOf) : null;
@@ -769,13 +818,13 @@ export function ReviewDashboard({
     observation: observationSignature(effectiveObservationPeriod),
     currentDay: observationSignature(currentHoldingsScope.period),
     asOf: holdingsAsOf ?? null,
-    targetCurrency: targetCurrency ?? null,
-    fxSnapshot: usableFxSnapshot
+    targetCurrency: holdingsTargetCurrency ?? null,
+    fxSnapshot: holdingsFxSnapshot
       ? {
-        id: usableFxSnapshot.id,
-        asOf: usableFxSnapshot.asOf,
-        status: usableFxSnapshot.status,
-        rates: usableFxSnapshot.rates,
+        id: holdingsFxSnapshot.id,
+        asOf: holdingsFxSnapshot.asOf,
+        status: holdingsFxSnapshot.status,
+        rates: holdingsFxSnapshot.rates,
       }
       : null,
   }), [
@@ -783,17 +832,17 @@ export function ReviewDashboard({
     effectiveObservationPeriod,
     holdingsAsOf,
     holdingsIdentitySignature,
-    targetCurrency,
-    usableFxSnapshot,
+    holdingsTargetCurrency,
+    holdingsFxSnapshot,
   ]);
   const portfolioModel = useMemo(
     () => buildCurrentPortfolio(entries, {
       scope: currentHoldingsScope,
-      fxSnapshot: usableFxSnapshot,
+      fxSnapshot: holdingsFxSnapshot,
       instrumentMetadata,
       quotesByInstrument: holdingsQuotesByInstrument,
       candlesByInstrument: holdingsCandlesByInstrument,
-      targetCurrency,
+      targetCurrency: holdingsTargetCurrency,
       marketDataStatuses: qualityInput?.marketDataStatuses,
       marketDataDailyStatuses: qualityInput?.marketDataDailyStatuses,
       marketDataLabels: qualityInput?.marketDataLabels,
@@ -815,8 +864,8 @@ export function ReviewDashboard({
       qualityInput?.marketDataStatuses,
       positionSnapshotsByEpisode,
       currentHoldingsScope,
-      targetCurrency,
-      usableFxSnapshot,
+      holdingsTargetCurrency,
+      holdingsFxSnapshot,
     ],
   );
   const roomHoldingsModel = portfolioModel.holdings;
@@ -830,11 +879,15 @@ export function ReviewDashboard({
     instrumentMetadata,
     candlesByInstrument: holdingsCandlesByInstrument,
     asOf: holdingsAsOf,
-    fxSnapshot: usableFxSnapshot,
-    targetCurrency,
+    fxSnapshot: holdingsFxSnapshot,
+    targetCurrency: holdingsTargetCurrency,
   });
   const holdingsHistoryModel = historyWorker.holdingsHistoryModel;
   const currentDayPoint = historyWorker.currentDayPoint;
+  // Task 1 exposes the exact current input and the input whose result is
+  // accepted for display. Reference equality prevents an old history result
+  // plus pending=false from ending a new valuation request.
+  const historyInputReady = historyWorker.acceptedInput === historyWorker.currentInput;
   const contributionModel = useMemo(() => buildRoomContribution(roomModel.rows, usableFxSnapshot, targetCurrency), [roomModel.rows, targetCurrency, usableFxSnapshot]);
   const pendingModel = useMemo(() => buildPendingReviews(roomModel.rows, usableFxSnapshot, targetCurrency), [roomModel.rows, targetCurrency, usableFxSnapshot]);
   const pendingPageCount = Math.max(1, Math.ceil(pendingModel.count / 3));
@@ -860,6 +913,13 @@ export function ReviewDashboard({
     pending: { page: effectivePendingPage },
     historyCalendar,
   }), [effectiveObservationPeriod, effectivePendingPage, historyCalendar, holdingsBrowseState, reportCurrency, roomScope, sharedScope]);
+  const jumpToPending = () => {
+    const pendingRegion = document.getElementById("trading-room-pending");
+    const prefersReducedMotion = typeof window !== "undefined"
+      && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    pendingRegion?.scrollIntoView?.({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
+    pendingRegion?.focus({ preventScroll: true });
+  };
   const roomDataQuality = useMemo(
     () => qualityInput
       ? buildTradingRoomQuality({
@@ -890,6 +950,80 @@ export function ReviewDashboard({
   const simulationNeedsRun = roomScope.nature === "simulation" && !roomScope.simulationRunId && !hasCanonicalSimulationScope;
   const showSimulationRunFilter = roomScope.nature === "simulation" && (simulationRunOptions.length > 0 || !hasCanonicalSimulationScope);
   const canViewHoldings = roomScope.nature !== "simulation" || Boolean(roomScope.simulationRunId) || hasCanonicalSimulationScope;
+  const holdingsInstrumentRegistry = useMemo(() => {
+    const registry = new Map<string, { instrumentId: string; market: string }>();
+    for (const entry of entries) {
+      registry.set(entry.instrument.id, { instrumentId: entry.instrument.id, market: entry.instrument.market });
+      for (const episode of entry.episodes) {
+        const instrument = episode.episode.instrument;
+        registry.set(instrument.id, { instrumentId: instrument.id, market: instrument.market });
+      }
+    }
+    return registry;
+  }, [entries]);
+  const holdingsRefreshInstruments = useMemo(() => {
+    const candidates = new Map<string, { instrumentId: string; market: string }>();
+    for (const row of roomHoldingsModel.rows) {
+      // Market refresh is evidence for a holding with trusted quantity whose
+      // quote is missing/stale. Cost gaps are independent ledger evidence and
+      // must not block a quote needed for market value.
+      const trustedQuantity = row.quantityStatus === "available";
+      const needsQuote = row.quoteStatus !== "available";
+      if (trustedQuantity && needsQuote) {
+        candidates.set(row.instrumentId, { instrumentId: row.instrumentId, market: row.market });
+      }
+    }
+    // The selected historical range has its own per-point evidence. Include
+    // only holdings with trusted quantity and a missing market value/quote;
+    // quantity/cost evidence gaps stay visible in their own coverage counts.
+    for (const point of holdingsHistoryModel.points) {
+      for (const holding of point.holdings) {
+        if (!holding.quantityAvailable || (holding.marketValueAvailable && holding.quotePrice)) continue;
+        const instrument = holdingsInstrumentRegistry.get(holding.instrumentId);
+        if (instrument) candidates.set(instrument.instrumentId, instrument);
+      }
+    }
+    return [...candidates.values()].sort((left, right) => left.instrumentId.localeCompare(right.instrumentId));
+  }, [holdingsHistoryModel.points, holdingsInstrumentRegistry, roomHoldingsModel.rows]);
+  const holdingsRefreshScopeInstruments = useMemo(() => {
+    const scope = new Map<string, { instrumentId: string; market: string }>();
+    for (const row of roomHoldingsModel.rows) scope.set(row.instrumentId, { instrumentId: row.instrumentId, market: row.market });
+    for (const value of roomModel.rows) {
+      const instrument = value.row.item.episode.instrument;
+      scope.set(instrument.id, { instrumentId: instrument.id, market: instrument.market });
+    }
+    for (const instrument of holdingsInstrumentRegistry.values()) scope.set(instrument.instrumentId, instrument);
+    return [...scope.values()].sort((left, right) => left.instrumentId.localeCompare(right.instrumentId));
+  }, [holdingsInstrumentRegistry, roomHoldingsModel.rows, roomModel.rows]);
+  const holdingsHistoryResultKey = useMemo(() => JSON.stringify({
+    scope: holdingsHistoryModel.scope,
+    points: holdingsHistoryModel.points.map(point => ({
+      date: point.date,
+      valuationDate: point.valuationDate,
+      coverage: point.coverage,
+      available: point.available,
+    })),
+    reasons: holdingsHistoryModel.reasons,
+    fxSnapshotId: holdingsHistoryModel.fxSnapshotId,
+  }), [holdingsHistoryModel]);
+  const holdingsRefresh = useHoldingsValuationRefresh({
+    visible: visible && canViewHoldings,
+    scopeKey: JSON.stringify({ holdings: holdingsIdentitySignature, observation: observationSignature(effectiveObservationPeriod) }),
+    asOf: holdingsAsOf ?? new Date().toISOString(),
+    instruments: holdingsRefreshInstruments,
+    scopeInstruments: holdingsRefreshScopeInstruments,
+    onRefresh: onRefreshHoldingsValuation ?? (() => false),
+    onCancel: onCancelHoldingsValuation,
+    historyPending: historyWorker.pending,
+    historyError: historyWorker.error,
+    historyInputReady,
+    historyCurrentInput: historyWorker.currentInput,
+    historyAcceptedInput: historyWorker.acceptedInput,
+    historyResultKey: holdingsHistoryResultKey,
+    marketDataRefresh,
+    marketDataDailyStatuses,
+    marketDataJobs,
+  });
   const roomFilterCount = [
     roomScope.query,
     roomScope.accountIds.length,
@@ -1134,10 +1268,24 @@ export function ReviewDashboard({
         className={styles.dashboardHeader}
         title="我的交易室"
         description="持仓照看 · 复盘总结 · 持续进化"
-        status={<><span className={styles.topbarUpdatedDot} aria-hidden="true" /> <span>数据更新：</span>{latestDataUpdatedAt ? <time dateTime={latestDataUpdatedAt} title={`数据更新时间：${latestDataUpdatedAt}`}>{formatDashboardDataTime(latestDataUpdatedAt)}</time> : <span>不可用</span>}</>}
+        status={<>
+          <span className={styles.headerUpdateStatus}>
+            <span className={styles.topbarUpdatedDot} aria-hidden="true" />
+            <span>数据更新：</span>
+            {latestDataUpdatedAt ? <time dateTime={latestDataUpdatedAt} title={`数据更新时间：${latestDataUpdatedAt}`}>{formatDashboardDataTime(latestDataUpdatedAt)}</time> : <span>不可用</span>}
+          </span>
+          <span className={styles.headerPendingEntry} aria-label="当前范围待复盘入口">
+            <strong>待复盘 · {pendingModel.count}</strong>
+            <span>统计期间：{roomScope.period.startDate} 至 {roomScope.period.endDate}</span>
+            <button type="button" onClick={jumpToPending} disabled={pendingModel.count === 0}>跳到待复盘（{pendingModel.count}）</button>
+          </span>
+        </>}
         scopeControls={dashboardScopeControls}
         globalTools={dashboardGlobalUtilities}
-        scopeTools={dashboardGlobalSearch}
+        scopeTools={<div className={styles.dashboardScopeTools}>
+          <span className={styles.dashboardScopeSummary}>范围：{roomNatureLabel(roomScope.nature)} · {roomScope.accountIds[0] ? (accountOptions.find(option => option.value === roomScope.accountIds[0])?.label ?? roomScope.accountIds[0]) : "全部账户"} · {reportCurrency === "original" ? "原币" : reportCurrency}</span>
+          <span className={styles.dashboardScopeSearch}>{dashboardGlobalSearch}</span>
+        </div>}
         scopeActions={<button type="button" className={styles.topbarFilterToggle} aria-expanded={roomFiltersOpen} aria-controls="trading-room-scope-filters" onClick={() => setRoomFiltersOpen(open => !open)}>筛选{roomFilterCount > 0 ? ` · ${roomFilterCount}` : ""}</button>}
       />
 
@@ -1169,18 +1317,56 @@ export function ReviewDashboard({
             <button type="button" className={styles.roomClearButton} onClick={resetRoomScope}>恢复默认范围</button>
           </div>
         </details>
-        {activeFilterChips.length > 0 && <ul className={styles.filterChips} aria-label="已启用交易室筛选">
-          {activeFilterChips.map(chip => <li key={chip.id}><span>{chip.label}</span><button type="button" aria-label={`移除${chip.label.split("：")[0]}筛选`} onClick={chip.remove}>×</button></li>)}
-        </ul>}
         </div>
       </div>}
+      {activeFilterChips.length > 0 && <ul className={`${styles.filterChips} ${styles.persistentFilterChips}`} aria-label="已启用交易室筛选">
+        {activeFilterChips.map(chip => <li key={chip.id}><span>{chip.label}</span><button type="button" aria-label={`移除${chip.label.split("：")[0]}筛选`} onClick={chip.remove}>×</button></li>)}
+      </ul>}
 
       <section className={styles.workspace} aria-label="持仓照看">
-        <header className={styles.workspaceHeading}><div><h2>持仓照看</h2><p>关注当前仓位，回看历史持仓变化</p></div><span>当前时点 · {roomHoldingsModel.asOf}</span></header>
-        {canViewHoldings && <RoomPortfolioSummary model={portfolioModel} reportCurrency={reportCurrency}
+        <header className={styles.workspaceHeading}>
+          <div><h2>持仓照看</h2><p>关注当前仓位，回看历史持仓变化</p></div>
+          <div className={styles.holdingsRefreshCluster}>
+            <span>当前时点 · {roomHoldingsModel.asOf}</span>
+            <div className={styles.holdingsRefreshControls}>
+              <span className={styles.holdingsRefreshStatus} role="status" aria-live="polite" data-refresh-phase={holdingsRefresh.phase}>
+                <span className={styles.holdingsRefreshStatusContent}>
+                  <span className={`${styles.holdingsRefreshSpinner} ${holdingsRefresh.active ? styles.holdingsRefreshSpinnerActive : ""}`} aria-hidden="true" />
+                  {holdingsRefresh.label}{holdingsRefresh.detail ? ` · ${holdingsRefresh.detail}` : ""}
+                </span>
+              </span>
+              <button type="button" className={styles.holdingsRefreshCancel} onClick={holdingsRefresh.cancel} disabled={!holdingsRefresh.active}>取消</button>
+              <button type="button" className={styles.holdingsRefreshButton} onClick={() => holdingsRefresh.request()}>{holdingsRefresh.phase === "failed" || holdingsRefresh.phase === "partial" || holdingsRefresh.phase === "cancelled" ? "重试" : "更新估值"}</button>
+            </div>
+            <span
+              className={styles.holdingsRefreshAnnouncement}
+              aria-live="polite"
+              aria-atomic="true"
+              data-refresh-announcement={holdingsRefresh.announcement ? "active" : "empty"}
+            >
+              {holdingsRefresh.announcement ?? "\u00a0"}
+            </span>
+          </div>
+        </header>
+        <div className={styles.holdingsMarketTabs}>
+          <ScopeChoiceGroup
+            mode="tabs"
+            ariaLabel="持仓市场范围"
+            value={holdingsMarket}
+            options={[
+              { value: "all", label: "总体（CNY）", ariaLabel: "持仓总体，人民币计价" },
+              { value: "a-share", label: "A股", ariaLabel: "持仓A股市场" },
+              { value: "hk", label: "港股", ariaLabel: "持仓港股市场" },
+              { value: "us", label: "美股", ariaLabel: "持仓美股市场" },
+            ]}
+            onChange={value => setHoldingsMarket(value as HoldingsMarket)}
+          />
+          <span className={styles.holdingsMarketHint}>{holdingsMarket === "all" ? "全部市场按同一汇率快照估算" : "仅影响持仓四个模块；下方已平仓复盘范围保持不变"}</span>
+        </div>
+        {canViewHoldings && <RoomPortfolioSummary model={portfolioModel} scope={holdingsMarket === "all" ? "overall" : "market"} reportCurrency={holdingsReportCurrency}
           dailyPnl={currentDayPoint?.dailyPnlAvailable ? currentDayPoint.dailyPnl : undefined}
           dailyPnlReason={currentDayPoint?.dailyPnlAvailable
-            ? reportCurrency === "original" ? "按原币显示当日净盈亏" : currentDayPoint.dailyPnl.note
+            ? holdingsReportCurrency === "original" ? "按原币显示当日净盈亏" : currentDayPoint.dailyPnl.note
             : currentDayPoint?.dailyPnlReasons.join("；") || historyWorker.statusReason || "当前日期缺少可核对的估值证据"}
           dailyReturnPercent={currentDayPoint?.dailyReturnPercent}
           dailyReturnPercentAvailable={currentDayPoint?.dailyReturnPercentAvailable}
@@ -1188,7 +1374,7 @@ export function ReviewDashboard({
         {canViewHoldings && <div className={styles.holdingsOverviewGrid}>
           <RoomHoldingsHistory
             model={holdingsHistoryModel}
-            reportCurrency={reportCurrency}
+            reportCurrency={holdingsReportCurrency}
             periodLabel="持仓历史观察期间"
             periodControls={<div className={styles.observationControls} data-date-controls="observation">{/* The range controls live in the chart card header. */}
               <div className={styles.roomPeriodControl}><span>持仓历史观察期间</span><ScopeChoiceGroup
@@ -1215,12 +1401,32 @@ export function ReviewDashboard({
                   </div>
                 </div>
               </details>
-              {historyWorker.statusReason && <span role="status" aria-live="polite">{historyWorker.statusReason}</span>}
+              <span
+                className={styles.historyWorkerStatusSlot}
+              >
+                <span className={styles.historyWorkerStatusMeasure} data-history-worker-status-measure aria-hidden="true">
+                  持仓历史计算失败：行情更新失败，请检查数据源（沿用上次快照）
+                </span>
+                {historyWorker.statusReason && <span role="status" aria-live="polite">{historyWorker.statusReason}</span>}
+              </span>
               {historyWorker.error && typeof Worker !== "undefined" && <button type="button" className={styles.customPeriodCancel} onClick={historyWorker.retry}>重试历史计算</button>}
               {observationError && <p role="alert" aria-live="assertive" className={styles.roomScopeWarning}>{observationError}</p>}
             </div>}
           />
-          <RoomAllocation model={portfolioModel} reportCurrency={reportCurrency} targetCurrency={targetCurrency} fxSnapshot={usableFxSnapshot} cashSummary={cashSummary} cashBaselineDetails={cashBaselineDetails} loading={cashLoading} error={cashError} />
+          <RoomAllocation
+            model={portfolioModel}
+            scope={holdingsMarket === "all" ? "overall" : "market"}
+            reportCurrency={holdingsReportCurrency}
+            targetCurrency={holdingsTargetCurrency}
+            fxSnapshot={holdingsFxSnapshot}
+            cashSummary={cashSummary}
+            cashBaselineDetails={cashBaselineDetails}
+            cashScopeLabel="全账户范围（当前账户筛选）"
+            loading={cashLoading}
+            error={cashError}
+            onRetryValuation={() => holdingsRefresh.request()}
+            onOpenDataCheck={(dimension, ids, episodeId) => onOpenDataCheck?.(dimension, ids, episodeId)}
+          />
         </div>}
       {canViewHoldings && <div id="trading-room-holdings" className={styles.holdingsAnchor} tabIndex={-1}>
         <RoomHoldingsPanel
@@ -1237,8 +1443,8 @@ export function ReviewDashboard({
           positionSnapshotsByEpisode={positionSnapshotsByEpisode}
           asOf={holdingsAsOf}
           staleAfterDays={holdingsStaleAfterDays}
-          reportCurrency={reportCurrency}
-          fxSnapshot={usableFxSnapshot}
+          reportCurrency={holdingsReportCurrency}
+          fxSnapshot={holdingsFxSnapshot}
           browseState={holdingsBrowseState}
           onBrowseStateChange={setHoldingsBrowseState}
           onRetryQuote={instrumentId => onRetryDataQuality?.("holdings", [instrumentId])}
@@ -1356,6 +1562,7 @@ export function ReviewDashboard({
           onPageChange={setPendingPage}
           sourceSnapshot={pendingSourceSnapshot}
           onViewAllPending={onViewAllPending}
+          scopeLabel={`${roomScope.period.startDate} 至 ${roomScope.period.endDate}`}
         />
       </section>
 

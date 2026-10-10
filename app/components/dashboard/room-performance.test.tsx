@@ -227,7 +227,7 @@ describe("RoomPerformance", () => {
     expect(container.querySelectorAll("[data-chart-role='point-label']")).toHaveLength(9);
   });
 
-  it("avoids overlapping labels between nearby original-currency series", () => {
+  it("keeps the selected original-currency label inside the chart", () => {
     const usd = entry("2026-09-02", "123456.78", { id: "usd", instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
     const hkd = entry("2026-09-02", "98765.43", { id: "hkd", instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
     const { container } = render(
@@ -242,7 +242,7 @@ describe("RoomPerformance", () => {
     );
 
     const labels = [...container.querySelectorAll("[data-chart-role='point-label']")];
-    expect(labels).toHaveLength(2);
+    expect(labels).toHaveLength(1);
     const boxes = labels.map(label => {
       const x = Number(label.getAttribute("x"));
       const y = Number(label.getAttribute("y"));
@@ -256,7 +256,7 @@ describe("RoomPerformance", () => {
       };
     });
     expect(boxes.every(box => box.left >= 72 && box.right <= 624 && box.top >= 14 && box.bottom <= 278)).toBe(true);
-    expect(boxes[0].right <= boxes[1].left || boxes[1].right <= boxes[0].left || boxes[0].bottom <= boxes[1].top || boxes[1].bottom <= boxes[0].top).toBe(true);
+    expect(boxes[0].right > boxes[0].left).toBe(true);
   });
 
   it("starts on the cumulative trend and keeps a visible zero baseline", () => {
@@ -546,7 +546,7 @@ describe("RoomPerformance", () => {
       />,
     );
     const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
-    expect(panel).toHaveTextContent("多币种暂不可合计");
+    expect(within(panel).getByRole("group", { name: "趋势币种" })).toBeInTheDocument();
     expect(panel).toHaveTextContent("原币小计");
     expect(panel).toHaveTextContent("US$100.00");
     expect(panel).toHaveTextContent("HK$20.00");
@@ -626,10 +626,108 @@ describe("RoomPerformance", () => {
     const hkd = entry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
     render(<RoomPerformance entries={[usd, hkd]} scope={scope(buildRoomDateRange("custom", "2026-09-03", { startDate: "2026-09-02", endDate: "2026-09-03" }))} instrumentMetadata={metadata([usd, hkd])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-03T08:00:00.000Z" />);
     const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    await user.click(within(panel).getByRole("button", { name: "USD" }));
     await user.click(within(panel).getByRole("button", { name: /USD.*2026-09-02/ }));
     const detail = within(panel).getByRole("status", { name: "趋势点详情" });
     expect(detail).toHaveTextContent("本期盈亏 +US$100.00");
     expect(detail).not.toHaveTextContent("+HK$20.00");
+  });
+
+  it("exposes original currency choices when the requested target FX value is unavailable", async () => {
+    const user = userEvent.setup();
+    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = entry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    render(<RoomPerformance entries={[usd, hkd]} scope={scope(buildRoomDateRange("custom", "2026-09-03", { startDate: "2026-09-02", endDate: "2026-09-03" }))} instrumentMetadata={metadata([usd, hkd])} reportCurrency="CNY" onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-03T08:00:00.000Z" />);
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    const currencies = within(panel).getByRole("group", { name: "趋势币种" });
+    expect(within(currencies).getByRole("button", { name: "HKD" })).toBeInTheDocument();
+    await user.click(within(currencies).getByRole("button", { name: "HKD" }));
+    expect(within(currencies).getByRole("button", { name: "HKD" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("clears trend detail with a currency that disappears from the rendered series", async () => {
+    const user = userEvent.setup();
+    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = entry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    const view = render(<RoomPerformance entries={[usd, hkd]} scope={scope(buildRoomDateRange("custom", "2026-09-03", { startDate: "2026-09-02", endDate: "2026-09-03" }))} instrumentMetadata={metadata([usd, hkd])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-03T08:00:00.000Z" />);
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    await user.click(within(panel).getByRole("button", { name: "USD" }));
+    await user.click(within(panel).getByRole("button", { name: /USD.*2026-09-02/ }));
+    expect(within(panel).getByRole("status", { name: "趋势点详情" })).toHaveTextContent("US$100.00");
+    view.rerender(<RoomPerformance entries={[hkd]} scope={scope(buildRoomDateRange("custom", "2026-09-03", { startDate: "2026-09-02", endDate: "2026-09-03" }))} instrumentMetadata={metadata([hkd])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-03T08:00:00.000Z" />);
+    expect(within(panel).queryByRole("status", { name: "趋势点详情" })).not.toBeInTheDocument();
+    expect(panel).toHaveTextContent("+HK$20.00");
+    expect(panel.querySelector("[data-currency-marker='diamond']")).not.toBeNull();
+  });
+
+  it("records the default original currency and permanently clears its detail when it disappears", async () => {
+    const user = userEvent.setup();
+    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = entry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "0700", market: "HK", currency: "HKD" } });
+    const initialEntries = [usd, hkd];
+    const view = render(<RoomPerformance entries={initialEntries} scope={scope(buildRoomDateRange("custom", "2026-09-03", { startDate: "2026-09-02", endDate: "2026-09-03" }))} instrumentMetadata={metadata(initialEntries)} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-03T08:00:00.000Z" />);
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    await user.click(within(panel).getByRole("button", { name: /HKD.*2026-09-03/ }));
+    expect(within(panel).getByRole("status", { name: "趋势点详情" })).toHaveTextContent("HK$20.00");
+
+    view.rerender(<RoomPerformance entries={[usd]} scope={scope(buildRoomDateRange("custom", "2026-09-03", { startDate: "2026-09-02", endDate: "2026-09-03" }))} instrumentMetadata={metadata([usd])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-03T08:00:00.000Z" />);
+    expect(within(panel).queryByRole("status", { name: "趋势点详情" })).not.toBeInTheDocument();
+
+    view.rerender(<RoomPerformance entries={initialEntries} scope={scope(buildRoomDateRange("custom", "2026-09-03", { startDate: "2026-09-02", endDate: "2026-09-03" }))} instrumentMetadata={metadata(initialEntries)} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-03T08:00:00.000Z" />);
+    expect(within(panel).queryByRole("status", { name: "趋势点详情" })).not.toBeInTheDocument();
+  });
+
+  it("permanently clears detail when its selected trend bucket becomes non-renderable", async () => {
+    const user = userEvent.setup();
+    const first = entry("2026-09-02", "100");
+    const middle = entry("2026-09-03", "20", { id: "middle" });
+    const last = entry("2026-09-04", "-50", { id: "last" });
+    const unknown = entry("2026-09-03", "20", { id: "unknown", instrument: { id: "UNKNOWN:TEST", symbol: "TEST", name: "未知测试", market: "XX", currency: "CNY" } });
+    const initialEntries = [first, middle, last];
+    const range = buildRoomDateRange("custom", "2026-09-04", { startDate: "2026-09-02", endDate: "2026-09-04" });
+    const view = render(<RoomPerformance entries={initialEntries} scope={scope(range)} instrumentMetadata={metadata(initialEntries)} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-04T08:00:00.000Z" />);
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    await user.click(within(panel).getByRole("button", { name: /2026-09-03.*本期盈亏/ }));
+    expect(within(panel).getByRole("status", { name: "趋势点详情" })).toHaveTextContent("2026-09-03");
+
+    view.rerender(<RoomPerformance entries={[first, unknown, last]} scope={scope(range)} instrumentMetadata={metadata([first, last])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-04T08:00:00.000Z" />);
+    expect(within(panel).queryByRole("status", { name: "趋势点详情" })).not.toBeInTheDocument();
+
+    view.rerender(<RoomPerformance entries={initialEntries} scope={scope(range)} instrumentMetadata={metadata(initialEntries)} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-04T08:00:00.000Z" />);
+    expect(within(panel).queryByRole("status", { name: "趋势点详情" })).not.toBeInTheDocument();
+  });
+
+  it("retains a valid original currency choice when the observation period changes", async () => {
+    const user = userEvent.setup();
+    const usd = entry("2026-09-02", "100", { instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = entry("2026-09-03", "20", { instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    const view = render(<RoomPerformance entries={[usd, hkd]} scope={scope(buildRoomDateRange("custom", "2026-09-03", { startDate: "2026-09-02", endDate: "2026-09-03" }))} instrumentMetadata={metadata([usd, hkd])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-03T08:00:00.000Z" />);
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+    await user.click(within(panel).getByRole("button", { name: "USD" }));
+    view.rerender(<RoomPerformance entries={[usd, hkd]} scope={scope(buildRoomDateRange("all", "2026-09-03", { startDate: "2026-09-01", endDate: "2026-09-03" }))} instrumentMetadata={metadata([usd, hkd])} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-03T08:00:00.000Z" />);
+    expect(within(screen.getByRole("group", { name: "趋势币种" })).getByRole("button", { name: "USD" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("keeps a valid currency when a period-only change removes the committed bucket", async () => {
+    const user = userEvent.setup();
+    const usdFirst = entry("2026-09-02", "100", { id: "usd-first", instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const hkd = entry("2026-09-03", "20", { id: "hkd", instrument: { id: "HK:0700", symbol: "0700", name: "港股测试", market: "HK", currency: "HKD" } });
+    const usdLast = entry("2026-09-04", "50", { id: "usd-last", instrument: { id: "US:TEST", symbol: "TEST", name: "美股测试", market: "US", currency: "USD" } });
+    const entries = [usdFirst, hkd, usdLast];
+    const initialPeriod = buildRoomDateRange("custom", "2026-09-04", { startDate: "2026-09-02", endDate: "2026-09-04" });
+    const narrowedPeriod = buildRoomDateRange("custom", "2026-09-04", { startDate: "2026-09-03", endDate: "2026-09-04" });
+    const view = render(<RoomPerformance entries={entries} scope={scope(initialPeriod)} instrumentMetadata={metadata(entries)} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-04T08:00:00.000Z" />);
+    const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
+
+    await user.click(within(panel).getByRole("button", { name: "USD" }));
+    await user.click(within(panel).getByRole("button", { name: /USD.*2026-09-02/ }));
+    expect(within(panel).getByRole("status", { name: "趋势点详情" })).toHaveTextContent("2026-09-02");
+
+    view.rerender(<RoomPerformance entries={entries} scope={scope(narrowedPeriod)} instrumentMetadata={metadata(entries)} onScopeChange={() => undefined} onOpenInReview={() => undefined} asOf="2026-09-04T08:00:00.000Z" />);
+
+    expect(within(panel).queryByRole("status", { name: "趋势点详情" })).not.toBeInTheDocument();
+    expect(within(panel).getByRole("group", { name: "趋势币种" })).toHaveTextContent("USD");
+    expect(within(panel).getByRole("button", { name: "USD" })).toHaveAttribute("aria-pressed", "true");
   });
 
   it("keeps no-trade buckets as a known plateau and exposes keyboard readouts", async () => {
@@ -716,7 +814,7 @@ describe("RoomPerformance", () => {
 
     const panel = screen.getByRole("region", { name: "业绩趋势与日历" });
     expect(within(panel).getByRole("button", { name: /^HKD · 2026-09-03/ })).toBeInTheDocument();
-    expect(within(panel).queryByRole("button", { name: /^HKD · 2026-09-02/ })).not.toBeInTheDocument();
+    expect(within(panel).getByRole("button", { name: /^HKD · 2026-09-02/ })).toBeInTheDocument();
   });
 
   it("uses padded shared coordinates for points, ticks, and the zero baseline", () => {

@@ -13,6 +13,21 @@ import type { TradeExecution } from "../lib/trades/types";
 import { createLegacySqliteClient } from "./test-support/legacy-sqlite-client";
 import { TradeReviewWorkspace } from "./trade-review-workspace";
 
+// These tests exercise the legacy workspace market-data refresh seam. The
+// dashboard's automatic holdings valuation has its own focused hook tests and
+// must stay idle here so it cannot add an unrelated refresh request.
+vi.mock("./dashboard/use-holdings-valuation-refresh", () => ({
+  useHoldingsValuationRefresh: () => ({
+    phase: "idle",
+    label: "估值待更新",
+    detail: null,
+    announcement: null,
+    active: false,
+    request: vi.fn(),
+    cancel: vi.fn(),
+  }),
+}));
+
 const refreshMocks = vi.hoisted(() => ({
   daily: vi.fn(),
   intraday: vi.fn(),
@@ -377,6 +392,8 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     expect(screen.getByText(/小时线源暂不可用/)).toBeVisible();
   });
 
+  // These three journeys cross IndexedDB-backed replay readiness and return navigation.
+  // Measured reads exceed the default 1s query window; keep budgets local and assertions intact.
   it("refreshes the global saved summary after a single instrument update", async () => {
     const user = userEvent.setup();
     saveMarketDataJob({
@@ -424,7 +441,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     const dataManagement = getDataManagement();
     expect(await within(dataManagement).findByText("部分可用 1 个标的")).toBeVisible();
     await openDefaultStockRound(user);
-    await screen.findByRole("button", { name: "行情数据详情" });
+    await screen.findByRole("button", { name: "行情数据详情" }, { timeout: 2_500 });
     await user.click(screen.getByRole("button", { name: "行情数据详情" }));
     const marketDataDetails = await screen.findByRole("dialog", { name: "行情数据详情" });
     await user.click(within(marketDataDetails).getByRole("button", { name: "刷新行情数据" }));
@@ -440,13 +457,13 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     );
     expect(within(dataManagement).getByText("部分可用 0 个标的")).toBeVisible();
     await openDefaultStockRound(user);
-    await screen.findByRole("button", { name: "行情数据详情" });
+    await screen.findByRole("button", { name: "行情数据详情" }, { timeout: 2_500 });
     await user.click(screen.getByRole("button", { name: "行情数据详情" }));
     const refreshedDetails = await screen.findByRole("dialog", { name: "行情数据详情" });
     expect(within(refreshedDetails).getByRole("region", { name: "1h 行情详情" })).toBeVisible();
     expect(within(refreshedDetails).queryByRole("region", { name: "15m 行情详情" })).not.toBeInTheDocument();
     expect(screen.queryByText("待重试 0 个标的")).not.toBeInTheDocument();
-  });
+  }, 10_000);
 
   it("refreshes the global failure summary and details after a single hard failure", async () => {
     const user = userEvent.setup();
@@ -479,7 +496,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     await openDataManagement();
     expect(await screen.findByText("更新完成 1 个标的")).toBeVisible();
     await openDefaultStockRound(user);
-    await screen.findByRole("button", { name: "行情数据详情" });
+    await screen.findByRole("button", { name: "行情数据详情" }, { timeout: 2_500 });
     await user.click(screen.getByRole("button", { name: "行情数据详情" }));
     await user.click(screen.getByRole("button", { name: "刷新行情数据" }));
 
@@ -500,7 +517,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     expect(globalFailureDetails).not.toBeNull();
     expect(within(globalFailureDetails!).getByText(/日线服务不可用/)).toBeVisible();
     expect(within(globalFailureDetails!).getByText(/小时线服务不可用/)).toBeVisible();
-  });
+  }, 10_000);
 
   it("keeps a running global batch in control when a single refresh is requested", async () => {
     const user = userEvent.setup();
@@ -561,7 +578,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     });
 
     await openDefaultStockRound(user);
-    await screen.findByRole("button", { name: "行情数据详情" });
+    await screen.findByRole("button", { name: "行情数据详情" }, { timeout: 2_500 });
     await user.click(screen.getByRole("button", { name: "行情数据详情" }));
     await user.click(screen.getByRole("button", { name: "刷新行情数据" }));
 
@@ -581,7 +598,7 @@ describe("TradeReviewWorkspace global refresh seam", () => {
         ).toBeEnabled(),
       { timeout: 5_000 },
     );
-  });
+  }, 10_000);
 
   it("offers recovery for a saved snapshot with two unfinished instruments and requests only those two", async () => {
     const complete = refreshExecutionFor("COMPLETE");

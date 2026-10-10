@@ -1,5 +1,6 @@
 .panel { min-width: 0; height: 100%; padding: 9px; border: 1px solid var(--dashboard-line, #24394d); border-radius: 12px; background: var(--dashboard-card); }
 .panel h3 { margin: 0 0 8px; font-size: 14px; }
+.panel h3.workspaceContributionTitle { min-height: 44px; height: 44px; box-sizing: border-box; display: flex; align-items: center; margin: 0; }
 .tabs { display: flex; flex-wrap: wrap; gap: 4px; }
 .tabs button { min-height: 36px; border: 1px solid var(--dashboard-line); border-radius: 7px; padding: 4px 7px; color: var(--dashboard-ink); background: var(--dashboard-card-elevated); cursor: pointer; font: inherit; font-size: 14px; }
 .tabs button[aria-pressed="true"] { border-color: #338caa; background: var(--dashboard-soft); }
@@ -11,6 +12,16 @@
 .rowLabel { min-width: 0; max-width: 100%; display: grid; grid-template-columns: minmax(24px, .8fr) minmax(0, 1fr) minmax(54px, auto); align-items: center; gap: 5px; }
 .rowLabel > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rowLabel b { min-width: 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; text-align: right; }
+/* HA09 V01: contribution amounts and their attribution stay readable on the
+   compact mobile rail as well as the desktop layout. */
+.currencyGroup { font-size: 14px; }
+.currencyGroup > strong { font-size: 14px; line-height: 22px; }
+.rowLabel { font-size: 14px; line-height: 22px; }
+.rowLabel b { font-size: 14px; line-height: 22px; }
+.currencyGroup li small,
+.note,
+.currencyGroup small { font-size: 12px; line-height: 18px; }
+.rowLabel b { white-space: nowrap; overflow: visible; }
 .positive { color: var(--dashboard-positive, #26a69a); }
 .negative { color: var(--dashboard-negative, #ef5350); }
 .zero { color: var(--dashboard-muted); }
@@ -25,6 +36,7 @@
 @media (min-width: 821px) {
   .panel { padding: 7px 8px; }
   .panel h3 { margin-bottom: 4px; font-size: 13px; }
+  .panel h3.workspaceContributionTitle { min-height: 44px; height: 44px; margin: 0; }
   .tabs { gap: 2px; }
   .tabs button { min-height: 23px; padding: 2px 5px; font-size: 9px; }
   .note, .currencyGroup small { font-size: 9px; line-height: 1.2; }
@@ -34,7 +46,7 @@
   .rowLabel b { font-size: 9px; }
   .barTrack { height: 4px; }
   .barTrack::after { height: 9px; top: -2px; }
-  .currencyGroup li small { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; line-height: 1.1; }
+  .currencyGroup li small { display: block; max-width: 100%; overflow: visible; white-space: normal; font-size: 9px; line-height: 1.1; }
 }
 
 @media (min-width: 821px) {
@@ -50,4 +62,19 @@
   .positive { color: #00d5b6; }
   .negative { color: #ff6b78; }
   .barTrack { height: 5px; background: #1a3552; }
+}
+
+/* HA09 V01: contribution amounts are financial values, so keep the amount
+   and its attribution legible even when the workspace is in the compact
+   three-column layout. The panel may grow naturally with multi-currency data. */
+@media (min-width: 821px) {
+  .currencyGroup { font-size: 14px; }
+  .currencyGroup > strong { font-size: 14px; line-height: 22px; }
+  .rowLabel { font-size: 14px; line-height: 22px; }
+  .rowLabel b { font-size: 14px; line-height: 22px; }
+  .currencyGroup li small,
+  .note,
+  .currencyGroup small { font-size: 12px; line-height: 18px; }
+  .currencyGroup li small { overflow: visible; white-space: normal; }
+  .barTrack { height: 6px; }
 }

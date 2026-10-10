@@ -2,12 +2,26 @@ import { describe, expect, it } from "vitest";
 
 import {
   hasOpenPosition,
+  latestCompletedSessionAt,
   requiredMarketDataRange,
   requiredRangeExpanded,
+  valuationInstantAt,
 } from "./sync-range";
 import { CalendarOutOfRangeError, expectedTradingDates } from "./calendar";
 
 describe("requiredMarketDataRange", () => {
+  it("resolves the same absolute cutoff per market across the CN holiday week", () => {
+    const asOf = "2026-10-06T08:11:00.000Z";
+    expect(latestCompletedSessionAt("CN-SH", asOf).session).toBe("2026-09-30");
+    expect(latestCompletedSessionAt("HK", asOf).session).toBe("2026-10-06");
+    expect(latestCompletedSessionAt("US", asOf).session).toBe("2026-10-05");
+  });
+
+  it("uses exchange-local date end for date-only valuation", () => {
+    expect(latestCompletedSessionAt("CN-SH", "2026-10-06").session).toBe("2026-09-30");
+    expect(valuationInstantAt("CN-SH", "2026-10-06")).toMatch(/^2026-10-06T15:59:59\.999Z$/);
+  });
+
   it("requests 400 calendar days before the first trade and 35 after the last", () => {
     expect(
       requiredMarketDataRange(

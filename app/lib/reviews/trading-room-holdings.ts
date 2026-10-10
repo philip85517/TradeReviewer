@@ -1,11 +1,12 @@
 import Decimal from "decimal.js";
 
-import type { DailyCandleRecord } from "../market/contracts";
-import { marketTradingDate } from "../market/trading-date";
+import type { DailyCandleRecord, SupportedMarket } from "../market/contracts";
+import { latestCompletedSessionAt, valuationInstantAt } from "../market/sync-range";
+import { marketTimeZone, marketTradingDate } from "../market/trading-date";
 import type { MarketDataSyncStatus } from "../market/sync-status";
 import { replayPositionAtPrice, type PositionLedgerSnapshot } from "../replay/position-ledger";
 import { canonicalInstrumentId } from "../instruments/display-name";
-import { statementPositionAt, statementEventAt } from "../import/statement-evidence";
+import { replayExecutionAt, statementPositionAt, statementEventAt } from "../import/statement-evidence";
 import type { StatementPosition } from "../import/monthly-statement";
 import { isBonusShareEvidence } from "../trades/bonus-share-evidence";
 import {
@@ -25,7 +26,7 @@ import {
 } from "./dashboard";
 import type { TradeLibraryEntry, TradeLibraryQuoteProjection } from "../trades/library";
 import type { MarketDataJob } from "../storage/market-data-jobs";
-import { executionSettlementCurrency, type TradeEpisode } from "../trades/types";
+import { executionSettlementCurrency, type TradeEpisode, type TradeExecution } from "../trades/types";
 
 export type TradingRoomQuoteFreshness = "current" | "stale" | "future";
 
@@ -225,7 +226,10 @@ function shanghaiDateOnly(value: string | null | undefined): string | null {
 
 function dayDistance(from: string, to: string): number | null {
   const start = Date.parse(`${from}T00:00:00.000Z`);
-  const end = Date.parse(`${to}T00:00:00.000Z`);
+  const parsedTo = dateOnly(to) ? null : new Date(to);
+  if (parsedTo && !Number.isFinite(parsedTo.getTime())) return null;
+  const endDate = dateOnly(to) ?? parsedTo!.toISOString().slice(0, 10);
+  const end = Date.parse(`${endDate}T00:00:00.000Z`);
   if (!Number.isFinite(start) || !Number.isFinite(end)) return null;
   return Math.floor((end - start) / 86_400_000);
 }
@@ -233,14 +237,16 @@ function dayDistance(from: string, to: string): number | null {
 function quoteFreshness(
   quoteDate: string | null,
   asOf: string,
-  staleAfterDays: number,
+  _staleAfterDays: number,
   supplied: TradingRoomQuoteFreshness,
 ): TradingRoomQuoteFreshness {
   if (!quoteDate) return supplied;
   const age = dayDistance(quoteDate, asOf);
   if (age !== null && age < 0) return "future";
   if (supplied === "future") return "future";
-  if (supplied === "stale" || (age !== null && age > staleAfterDays)) return "stale";
+  if (supplied === "stale") return "stale";
+  // Natural calendar age is not a validity rule. Session closure and missing
+  // expected sessions are evaluated against the market-local cutoff below.
   return "current";
 }
 
@@ -319,22 +325,24 @@ function quoteFor(
   return normalizeQuote(quoteFromProjection(row.entry.latestQuote) ?? undefined, asOf, staleAfterDays);
 }
 
-function expectedSettlementCurrencies(row: DashboardRow): string[] {
-  const executions = row.item.episode.executions;
+function expectedSettlementCurrencies(row: DashboardRow, asOf?: string): string[] {
+  const market = row.item.episode.instrument.market;
+  const executions = asOf ? row.item.episode.executions.filter(execution => executionAtOrBefore(execution, asOf, market)) : row.item.episode.executions;
   const currencies = executions.length > 0
     ? executions.map(executionSettlementCurrency)
     : [row.item.episode.instrument.currency];
   return [...new Set(currencies.map(currencyCode).filter(Boolean))];
 }
 
-function settlementCurrencyFor(row: DashboardRow): string | null {
-  const currencies = expectedSettlementCurrencies(row);
+function settlementCurrencyFor(row: DashboardRow, asOf?: string): string | null {
+  const currencies = expectedSettlementCurrencies(row, asOf);
   return currencies.length === 1 ? currencies[0] : null;
 }
 
-function latestSourceTradingDate(row: DashboardRow): string | null {
+function latestSourceTradingDate(row: DashboardRow, asOf?: string): string | null {
   const market = row.item.episode.instrument.market;
   const dates = row.item.episode.executions
+    .filter(execution => !asOf || executionAtOrBefore(execution, asOf, market))
     .map(execution => [
       execution.source.tradingDate,
       execution.source.marketCalendarDate,
@@ -344,15 +352,48 @@ function latestSourceTradingDate(row: DashboardRow): string | null {
   return dates.sort().at(-1) ?? shanghaiDateOnly(row.item.episode.startedAt);
 }
 
-function quoteMatchesHolding(row: DashboardRow, quote: TradingRoomQuote | null): boolean {
+function quoteMatchesHolding(row: DashboardRow, quote: TradingRoomQuote | null, asOf?: string): boolean {
   if (!quote) return false;
-  const settlementCurrency = settlementCurrencyFor(row);
+  const settlementCurrency = settlementCurrencyFor(row, asOf);
   return settlementCurrency !== null && settlementCurrency === currencyCode(quote.currency);
 }
 
-function quoteIsAfterLatestExecution(row: DashboardRow, quote: TradingRoomQuote | null): boolean {
-  const latestTradeDate = latestSourceTradingDate(row);
+function quoteIsAfterLatestExecution(row: DashboardRow, quote: TradingRoomQuote | null, asOf?: string): boolean {
+  const latestTradeDate = latestSourceTradingDate(row, asOf);
   return Boolean(quote?.quoteDate && latestTradeDate && quote.quoteDate >= latestTradeDate);
+}
+
+function quoteSessionReason(
+  row: DashboardRow,
+  quote: TradingRoomQuote | null,
+  asOf: string,
+): string | null {
+  if (!quote?.quoteDate) return null;
+  const market = canonicalMarket(row.item.episode.instrument.market) as SupportedMarket;
+  if (!["CN-SH", "CN-SZ", "HK", "US"].includes(market)) return null;
+  let cutoff: ReturnType<typeof latestCompletedSessionAt>;
+  try {
+    cutoff = latestCompletedSessionAt(market, asOf);
+  } catch {
+    return "无法确认市场已完成交易时段，无法计算当前浮盈亏";
+  }
+  if (quote.quoteDate > cutoff.session) return "行情日期晚于当前已完成交易时段";
+  if (quote.quoteDate < cutoff.session) return "缺少最近已完成交易时段行情，无法计算当前浮盈亏";
+  // A same-session daily bar fetched before the close may still be rolling.
+  const fetchedSession = quote.fetchedAt ? marketTradingDate(quote.fetchedAt, market) : null;
+  if (fetchedSession === quote.quoteDate && Date.parse(quote.fetchedAt!) < Date.parse(cutoff.sessionCloseAt)) {
+    return "同日行情尚未经过市场收盘，无法计算当前浮盈亏";
+  }
+  const latestExecution = row.item.episode.executions
+    .filter(execution => executionAtOrBefore(execution, asOf, market))
+    .map(execution => ({ raw: execution.executedAt, date: marketTradingDate(execution.executedAt, market) }))
+    .filter(value => Number.isFinite(Date.parse(value.raw)))
+    .sort((left, right) => Date.parse(left.raw) - Date.parse(right.raw))
+    .at(-1);
+  if (latestExecution && quote.quoteDate === latestExecution.date && quote.fetchedAt && Date.parse(latestExecution.raw) > Date.parse(cutoff.sessionCloseAt) && Date.parse(quote.fetchedAt) < Date.parse(latestExecution.raw)) {
+    return "行情获取时间早于最近成交，无法计算当前浮盈亏";
+  }
+  return null;
 }
 
 function lastActivity(row: DashboardRow): string {
@@ -366,12 +407,13 @@ function derivePosition(
   row: DashboardRow,
   quote: TradingRoomQuote | null,
   explicit: PositionLedgerSnapshot | undefined,
-  asOfDate: string,
+  asOfCutoff: string,
 ): PositionLedgerSnapshot | null {
   const episode = row.item.episode;
-  const replayed = replayEvidencePosition(row, quote, asOfDate);
+  const replayed = replayEvidencePosition(row, quote, asOfCutoff);
   // External snapshots cannot establish identity for an evidence-free episode.
-  if (episode.executions.length === 0) return replayed;
+  const admittedExecutions = episode.executions.filter(execution => executionAtOrBefore(execution, asOfCutoff, episode.instrument.market));
+  if (admittedExecutions.length === 0) return replayed;
   if (explicit) {
     const preserved = preserveEpisodeAccuracy({
       ...explicit,
@@ -383,7 +425,7 @@ function derivePosition(
       } : {}),
       ...(replayed?.quantityKnown === false ? { quantityKnown: false as const } : {}),
       ...(replayed?.warnings ? { warnings: replayed.warnings } : {}),
-    }, episode);
+    }, episode, admittedExecutions);
     return refreshPositionAtQuote(preserved, quote);
   }
   return replayed ? refreshPositionAtQuote(replayed, quote) : replayed;
@@ -407,20 +449,112 @@ function refreshPositionAtQuote(position: PositionLedgerSnapshot, quote: Trading
   }
 }
 
-function admittedPosition(position: StatementPosition | undefined, episode: TradeEpisode, asOfDate: string): position is StatementPosition {
+function admittedPosition(position: StatementPosition | undefined, episode: TradeEpisode, asOfCutoff: string): position is StatementPosition {
   if (!position || position.accountId !== episode.accountId ||
     canonicalInstrumentId(position.symbol, position.market) !== canonicalInstrumentId(episode.instrument.symbol, episode.instrument.market)) return false;
   try {
-    return statementPositionAt(position) <= `${asOfDate}T23:59:59.999Z`;
+    if (position.date.length === 10) {
+      const cutoffDate = marketTradingDate(asOfCutoff, episode.instrument.market);
+      if (position.date < cutoffDate) return true;
+      if (position.date > cutoffDate) return false;
+      if (position.phase === "opening") return true;
+    }
+    const positionAt = statementPositionAt(position);
+    const positionTime = Date.parse(positionAt);
+    const cutoffTime = Date.parse(marketLocalCursor(asOfCutoff, episode.instrument.market));
+    return Number.isFinite(positionTime) && Number.isFinite(cutoffTime) && positionTime <= cutoffTime;
   } catch {
     return false;
   }
 }
 
+/**
+ * Evidence timestamps are statement-local clocks, while execution cutoffs
+ * are absolute instants. Compare both on the market-local pseudo timeline so
+ * a same-day closing statement is visible at a date-only cutoff but remains
+ * hidden before the close for an intraday cutoff.
+ */
+function marketLocalCursor(asOfCutoff: string, market: string): string {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(asOfCutoff)) return `${asOfCutoff}T23:59:59.999Z`;
+  const timestamp = Date.parse(asOfCutoff);
+  if (!Number.isFinite(timestamp)) return asOfCutoff;
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: marketTimeZone(market),
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      fractionalSecondDigits: 3,
+      hourCycle: "h23",
+    }).formatToParts(new Date(timestamp))
+      .filter(part => part.type !== "literal")
+      .map(part => [part.type, part.value]),
+  ) as Record<string, string>;
+  return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}.${parts.fractionalSecond ?? "000"}Z`;
+}
+
+function replayExecutionAtLocal(execution: TradeExecution, market: string): string {
+  if (execution.executedAt.length === 10 || execution.source.timePrecision === "date-only") {
+    return marketTradingDate(execution.executedAt, market);
+  }
+  const instant = new Date(execution.executedAt);
+  if (!Number.isFinite(instant.getTime())) return execution.executedAt;
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: marketTimeZone(market),
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h23",
+    }).formatToParts(instant)
+      .filter(part => part.type !== "literal")
+      .map(part => [part.type, part.value]),
+  ) as Record<string, string>;
+  return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}.${instant.getUTCMilliseconds().toString().padStart(3, "0")}Z`;
+}
+
+function replayTradeDateBefore(date: string): string {
+  const at = Date.parse(`${date}T00:00:00.000Z`);
+  if (!Number.isFinite(at)) return date;
+  return new Date(at - 86_400_000).toISOString().slice(0, 10);
+}
+
+function executionAtOrBefore(execution: TradeExecution, asOfCutoff: string, market: string): boolean {
+  const sourceDateOnly = execution.source.timePrecision === "date-only";
+  if (execution.executedAt.length === 10 || sourceDateOnly) {
+    // Use the shared replay ordering so source market-calendar/trading-date
+    // precedence and the verified session-open/open-long exception remain
+    // identical to ledger replay. Compare that pseudo-local date boundary to
+    // the market-local absolute cutoff; timestamp formatting cannot signal
+    // whether an input was date-only.
+    const executionAt = Date.parse(replayExecutionAt(execution));
+    const cutoffAt = Date.parse(marketLocalCursor(asOfCutoff, market));
+    return Number.isFinite(executionAt) && Number.isFinite(cutoffAt) && executionAt <= cutoffAt;
+  }
+  const executionAt = Date.parse(execution.executedAt);
+  const cutoffAt = Date.parse(asOfCutoff);
+  return Number.isFinite(executionAt) && Number.isFinite(cutoffAt) && executionAt <= cutoffAt;
+}
+
+/** Date-only statement evidence is known at its statement boundary, never at
+ * the start of the calendar day. This keeps transfer markers from making a
+ * same-day receipt visible to an intraday valuation. */
+function evidenceEventAtOrBefore(event: Parameters<typeof statementEventAt>[0], asOfCutoff: string, market: string): boolean {
+  const eventAt = Date.parse(statementEventAt(event));
+  const cutoffAt = Date.parse(marketLocalCursor(asOfCutoff, market));
+  return Number.isFinite(eventAt) && Number.isFinite(cutoffAt) && eventAt <= cutoffAt;
+}
+
 function replayEvidencePosition(
   row: DashboardRow,
   quote: TradingRoomQuote | null,
-  asOfDate: string,
+  asOfCutoff: string,
 ): PositionLedgerSnapshot | null {
   const episode = row.item.episode;
   try {
@@ -429,16 +563,18 @@ function replayEvidencePosition(
       const matches = (item: { accountId: string; symbol?: string; market?: string }) =>
         item.accountId === episode.accountId && Boolean(item.symbol && item.market &&
           canonicalInstrumentId(item.symbol, item.market) === canonicalInstrumentId(episode.instrument.symbol, episode.instrument.market));
-      const cursor = `${asOfDate}T23:59:59.999Z`;
-      const positions = admittedPosition(episode.initialPosition, episode, asOfDate)
+      const cursor = marketLocalCursor(asOfCutoff, episode.instrument.market);
+      const positions = admittedPosition(episode.initialPosition, episode, asOfCutoff)
         ? [episode.initialPosition] : [];
-      const events = (episode.positionEvents ?? []).filter(event => matches(event) &&
-        statementEventAt(event.date.length === 7 ? { ...event, displayTimePolicy: undefined } : event) <= cursor);
+      const events = (episode.positionEvents ?? []).filter(event => {
+        if (!matches(event)) return false;
+        return evidenceEventAtOrBefore(event, asOfCutoff, episode.instrument.market);
+      });
       // No admitted inventory evidence means unknown, never the ledger compatibility zero.
       const hasInventoryEvent = events.some(event => ["transfer-in", "transfer-out"].includes(event.kind) || event.kind === "ipo" && event.quantity !== undefined || isBonusShareEvidence(event));
       if (!positions.length && !hasInventoryEvent || events.some(event => event.kind === "corporate-action" && !isBonusShareEvidence(event))) return null;
       return preserveEpisodeAccuracy(replayPositionAtPrice({
-        executions: [], markPrice: quote?.price ?? "0", cursor: asOfDate,
+        executions: [], markPrice: quote?.price ?? "0", cursor,
         inventoryIdentity: { accountId: episode.accountId, symbol: episode.instrument.symbol, market: episode.instrument.market },
         evidence: [{ positions, events }],
       }), episode);
@@ -446,24 +582,44 @@ function replayEvidencePosition(
     // The ledger establishes quantity/cost from source evidence. When a quote
     // is absent, zero is only a non-displayed mark; no PnL from this mark is
     // exposed to the user.
-    const executions = episode.executions.map((execution, index) => index === 0
-      ? {
-        ...execution,
-        source: {
-          ...execution.source,
-          ...(episode.initialPosition && !execution.source.openingPosition
-            ? { openingPosition: episode.initialPosition }
-            : {}),
-          ...(episode.positionEvents?.length
-            ? { positionEvents: [...(execution.source.positionEvents ?? []), ...episode.positionEvents] }
-            : {}),
-        },
-      }
-      : execution);
+    const admittedExecutions = episode.executions.filter(execution => executionAtOrBefore(execution, asOfCutoff, episode.instrument.market));
+    // A row whose entire execution ledger is in the future has no admitted
+    // inventory. Preserve unknown rather than manufacturing a zero position.
+    if (!admittedExecutions.length) return null;
+    const executions = admittedExecutions.map((execution, index) => ({
+      ...execution,
+      // replayPositionAtPrice intentionally uses a local pseudo clock for
+      // statement evidence. Keep exact admission above, then convert every
+      // admitted execution into that same clock without changing settlement
+      // or fee metadata used by the ledger.
+      executedAt: replayExecutionAtLocal(execution, episode.instrument.market),
+      source: {
+        ...execution.source,
+        // Episode-level bonus evidence is a settled statement event. Keep it
+        // after the admitted fill in the replay ordering when both carry the
+        // same market date; the original execution metadata remains untouched
+        // for exact admission and audit fields.
+        ...(index === 0 && (episode.positionEvents ?? []).some(event =>
+          isBonusShareEvidence(event) && event.date === marketTradingDate(execution.executedAt, episode.instrument.market),
+        )
+          ? { tradingDate: replayTradeDateBefore(marketTradingDate(execution.executedAt, episode.instrument.market)) }
+          : {}),
+        ...(execution.source.positionEvents
+          ? { positionEvents: execution.source.positionEvents.filter(event => evidenceEventAtOrBefore(event, asOfCutoff, episode.instrument.market)) }
+          : {}),
+        ...(index === 0 && episode.initialPosition && !execution.source.openingPosition
+          ? { openingPosition: episode.initialPosition }
+          : {}),
+        ...(index === 0 && episode.positionEvents?.length
+          ? { positionEvents: [...(execution.source.positionEvents ?? []).filter(event => evidenceEventAtOrBefore(event, asOfCutoff, episode.instrument.market)), ...episode.positionEvents.filter(event => evidenceEventAtOrBefore(event, asOfCutoff, episode.instrument.market))] }
+          : {}),
+      },
+    }));
     return preserveEpisodeAccuracy(replayPositionAtPrice({
       executions,
       markPrice: quote?.price ?? "0",
-    }), episode);
+      cursor: marketLocalCursor(asOfCutoff, episode.instrument.market),
+    }), episode, admittedExecutions);
   } catch {
     return null;
   }
@@ -472,11 +628,12 @@ function replayEvidencePosition(
 function preserveEpisodeAccuracy(
   position: PositionLedgerSnapshot,
   episode: TradeEpisode,
+  admittedExecutions = episode.executions,
 ): PositionLedgerSnapshot {
   const reasons = new Set([
     ...(position.accuracy?.reasons ?? []),
-    ...(episode.accuracy?.reasons ?? []),
-    ...episode.executions.flatMap(execution => [
+    ...(admittedExecutions.length === episode.executions.length ? (episode.accuracy?.reasons ?? []) : []),
+    ...admittedExecutions.flatMap(execution => [
       ...(execution.source.feeStatus === "unknown" ? ["unknown-fees"] : []),
       ...(execution.source.historyIncomplete?.length ? ["history-incomplete"] : []),
       ...(execution.source.settlement?.currency && currencyCode(execution.source.settlement.currency) !== currencyCode(execution.instrument.currency)
@@ -494,7 +651,7 @@ function preserveEpisodeAccuracy(
       accuracy: { pnl: "unavailable" as const, reasons: [...reasons] },
     } : {}),
     ...(quantityKnown === false ? { quantityKnown } : {}),
-    ...(episode.warnings?.length ? {
+    ...(admittedExecutions.length === episode.executions.length && episode.warnings?.length ? {
       warnings: [...(position.warnings ?? []), ...episode.warnings],
     } : {}),
   };
@@ -512,10 +669,10 @@ function negativeStatementPosition(position: StatementPosition | undefined): boo
 function positionEvidenceFor(
   row: DashboardRow,
   position: PositionLedgerSnapshot | null,
-  asOfDate: string,
+  asOfCutoff: string,
 ): TradingRoomHoldingPositionEvidence {
   const episode = row.item.episode;
-  const executions = episode.executions;
+  const executions = episode.executions.filter(execution => executionAtOrBefore(execution, asOfCutoff, episode.instrument.market));
   const sourceFormatRuleIds = [...new Set(
     executions
       .map(execution => execution.source.formatRuleId)
@@ -526,7 +683,7 @@ function positionEvidenceFor(
     execution.source.positionEffectEvidence?.kind !== "inferred",
   );
   const admittedNegativeOpening = (position: StatementPosition | undefined) =>
-    dashboardEpisodeNature(row) !== "simulation" && admittedPosition(position, episode, asOfDate) && negativeStatementPosition(position);
+    dashboardEpisodeNature(row) !== "simulation" && admittedPosition(position, episode, asOfCutoff) && negativeStatementPosition(position);
   const hasNegativeOpeningPosition = Boolean(
     admittedNegativeOpening(episode.initialPosition) ||
       executions.some(execution =>
@@ -656,6 +813,7 @@ function diagnosticFor(
   if (quoteReason?.includes("币种")) return "currency-mismatch";
   if (quoteReason?.includes("早于")) return "pre-trade-quote";
   if (quoteReason?.includes("晚于")) return "future-quote";
+  if (quoteReason?.includes("缺少最近") || quoteReason?.includes("收盘")) return "stale-quote";
   if (quoteStatus === "missing") return "missing-quote";
   if (quoteStatus === "stale") return "stale-quote";
   if (!quote || quote.price === null) return "invalid-quote";
@@ -690,18 +848,22 @@ export function buildTradingRoomHoldings(
   const rows = selectedRows.map(row => {
     const episode = row.item.episode;
     const projection = classifyTradingRoomAsset(episode.instrument, metadata.get(episode.instrument.id));
-    const quote = quoteFor(row, options, asOfDate, staleAfterDays);
-    const settlementCurrency = settlementCurrencyFor(row);
-    const latestTradeDate = latestSourceTradingDate(row);
-    const quoteReason = quote && !quoteMatchesHolding(row, quote)
+    const quote = quoteFor(row, options, asOf, staleAfterDays);
+    const settlementCurrency = settlementCurrencyFor(row, asOf);
+    const latestTradeDate = latestSourceTradingDate(row, asOf);
+    const quoteReason = quote?.price === null
+      ? "行情价格无效，无法计算浮盈亏"
+      : quote && !quoteMatchesHolding(row, quote, asOf)
       ? settlementCurrency === null
         ? "结算币种不明确，无法计算浮盈亏"
         : "行情币种与结算币种不一致，无法计算浮盈亏"
-      : quote && !quoteIsAfterLatestExecution(row, quote)
+      : quote && !quoteIsAfterLatestExecution(row, quote, asOf)
         ? "行情早于最近一笔交易，无法计算浮盈亏"
         : quote?.freshness === "future"
           ? "行情日期晚于当前截点，无法计算浮盈亏"
           : null;
+    const sessionReason = quoteSessionReason(row, quote, asOf);
+    const effectiveQuoteReason = quoteReason ?? sessionReason;
     const marketDataStatus = options.marketDataDailyStatuses?.[episode.instrument.id]
       ?? options.marketDataStatuses?.[episode.instrument.id];
     const hasMarketDataDiagnosticInput = marketDataStatus !== undefined ||
@@ -715,10 +877,16 @@ export function buildTradingRoomHoldings(
       )
       : null;
     const quoteStatus: TradingRoomHoldingValueStatus = quote
-      ? quoteReason || quote.price === null ? "unavailable" : quote.freshness === "stale" ? "stale" : "available"
+      ? effectiveQuoteReason || quote.price === null
+        ? (quote.price !== null && (effectiveQuoteReason?.includes("缺少最近已完成") || effectiveQuoteReason?.includes("收盘") || (!quoteReason && quote.freshness === "stale"))) ? "stale" : "unavailable"
+        : quote.freshness === "stale" ? "stale" : "available"
       : "missing";
-    const position = derivePosition(row, quote, options.positionSnapshotsByEpisode?.[episode.id], asOfDate);
-    const positionEvidence = positionEvidenceFor(row, position, asOfDate);
+    const normalizedMarket = canonicalMarket(episode.instrument.market);
+    const asOfCutoff = ["CN-SH", "CN-SZ", "HK", "US"].includes(normalizedMarket)
+      ? valuationInstantAt(normalizedMarket as SupportedMarket, asOf)
+      : (Date.parse(asOf) ? new Date(asOf).toISOString() : `${asOfDate}T23:59:59.999Z`);
+    const position = derivePosition(row, quote, options.positionSnapshotsByEpisode?.[episode.id], asOfCutoff);
+    const positionEvidence = positionEvidenceFor(row, position, asOfCutoff);
     const quantityUnavailable = !position || position.quantityKnown === false;
     const costUnavailable = !position || position.costKnown === false || Boolean(position.accuracy) || settlementCurrency === null || positionEvidence.status === "unverified-negative";
     const pnlUnavailable = quantityUnavailable || costUnavailable || quoteStatus !== "available";
@@ -752,10 +920,10 @@ export function buildTradingRoomHoldings(
       quoteStatus,
       unrealizedPnl: pnlUnavailable ? null : position.unrealizedPnl,
       unrealizedPnlStatus: pnlStatus,
-      statusReason: reasonFor(position, positionEvidence, quote, pnlStatus === "stale" ? "stale" : quoteStatus, settlementCurrency, quoteReason, marketDataDiagnostic?.reason),
+      statusReason: reasonFor(position, positionEvidence, quote, pnlStatus === "stale" ? "stale" : quoteStatus, settlementCurrency, effectiveQuoteReason, marketDataDiagnostic?.reason),
       direction: directionFor(row, position, positionEvidence),
       positionEvidence,
-      diagnostic: diagnosticFor(position, positionEvidence, quote, quoteStatus, settlementCurrency, quoteReason, marketDataDiagnostic),
+      diagnostic: diagnosticFor(position, positionEvidence, quote, quoteStatus, settlementCurrency, effectiveQuoteReason, marketDataDiagnostic),
     } satisfies TradingRoomHoldingRow;
   }).sort(compareRows);
   const groups = [...new Set(rows.map(row => row.market))]

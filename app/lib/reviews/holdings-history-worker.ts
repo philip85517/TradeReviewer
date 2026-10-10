@@ -26,6 +26,10 @@ export type HoldingsHistoryWorkerState = {
   identity: string | null;
   pending: boolean;
   result: HoldingsHistoryWorkerResult | null;
+  resultInput: HoldingsHistoryWorkerInput | null;
+  /** Latest compatible completed snapshot, which may belong to an older input while a newer one is pending. */
+  completedResult: HoldingsHistoryWorkerResult | null;
+  completedInput: HoldingsHistoryWorkerInput | null;
   error: string | null;
   generation: number;
   activeRequestId: number | null;
@@ -55,6 +59,27 @@ function errorMessage(error: unknown): string {
 
 type PendingRequest = { id: number; input: HoldingsHistoryWorkerInput };
 
+function structuralKey(input: HoldingsHistoryWorkerInput): string {
+  return JSON.stringify([
+    input.observationScope,
+    input.currentDayScope,
+    input.targetCurrency ?? null,
+    input.fxSnapshot ?? null,
+  ]);
+}
+
+function safeAsOfAdvance(previous: string | undefined, next: string | undefined): boolean {
+  if (previous === next) return true;
+  if (!previous || !next || !previous.includes("T") || !next.includes("T")) return false;
+  const previousTime = Date.parse(previous);
+  const nextTime = Date.parse(next);
+  return Number.isFinite(previousTime) && Number.isFinite(nextTime) && nextTime >= previousTime;
+}
+
+function canRetainResult(previous: HoldingsHistoryWorkerInput, next: HoldingsHistoryWorkerInput): boolean {
+  return structuralKey(previous) === structuralKey(next) && safeAsOfAdvance(previous.asOf, next.asOf);
+}
+
 export function createHoldingsHistoryWorkerController(
   options: HoldingsHistoryWorkerControllerOptions = {},
 ): HoldingsHistoryWorkerController {
@@ -71,6 +96,9 @@ export function createHoldingsHistoryWorkerController(
     identity: null,
     pending: false,
     result: null,
+    resultInput: null,
+    completedResult: null,
+    completedInput: null,
     error: null,
     generation: 0,
     activeRequestId: null,
@@ -104,18 +132,32 @@ export function createHoldingsHistoryWorkerController(
       // Same-scope refreshes may publish each completed snapshot immediately
       // while the newest input is pending. A changed scope/period must never
       // expose a result calculated for the previous identity.
-      const sameIdentity = request.input.identity === next.input.identity;
+      const sameDisplayScope = canRetainResult(request.input, next.input);
       setState({
         pending: true,
         activeRequestId: null,
         error,
-        ...(sameIdentity && result ? { result } : {}),
+        ...(sameDisplayScope && result
+          ? {
+              completedResult: result,
+              completedInput: request.input,
+              ...(request.input.identity === next.input.identity ? { result, resultInput: request.input } : { result: null, resultInput: null }),
+            }
+          : { completedResult: null, completedInput: null, result: null, resultInput: null }),
       });
       start(next);
       return;
     }
     if (result) {
-      setState({ pending: false, result, error, activeRequestId: null });
+      setState({
+        pending: false,
+        result,
+        resultInput: request.input,
+        completedResult: result,
+        completedInput: request.input,
+        error,
+        activeRequestId: null,
+      });
     } else {
       setState({ pending: false, error, activeRequestId: null });
     }
@@ -186,11 +228,20 @@ export function createHoldingsHistoryWorkerController(
       latestInput = input;
       const request = { id: ++nextRequestId, input };
       const identityChanged = state.identity !== input.identity;
+      const displayResult = state.completedResult ?? state.result;
+      const displayInput = state.completedInput ?? state.resultInput;
+      const canKeepDisplay = Boolean(
+        displayResult
+        && displayInput
+        && canRetainResult(displayInput, input),
+      );
       setState({
         identity: input.identity,
         pending: true,
         error: null,
-        ...(identityChanged ? { result: null } : {}),
+        ...(!canKeepDisplay
+          ? { result: null, resultInput: null, completedResult: null, completedInput: null }
+          : identityChanged ? { result: null, resultInput: null } : {}),
         generation: request.id,
       });
       if (active) {

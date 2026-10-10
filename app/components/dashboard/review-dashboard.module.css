@@ -295,6 +295,22 @@
   align-items: start;
 }
 
+.holdingsMarketTabs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin: 0 0 10px;
+  overflow-x: auto;
+}
+
+.holdingsMarketHint {
+  flex: 0 0 auto;
+  color: var(--dashboard-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 .roomPeriodControl > span {
   grid-column: 1 / -1;
 }
@@ -1182,6 +1198,13 @@
 }
 .workspaceHeading h2 { margin: 0; font-size: 21px; letter-spacing: -.02em; }
 .workspaceHeading p, .workspaceHeading > span, .workspaceHint { color: var(--dashboard-muted); font-size: 12px; margin: 6px 0 0; }
+.holdingsRefreshCluster { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 0; }
+.holdingsRefreshControls { display: flex; align-items: center; justify-content: flex-end; gap: 7px; flex-wrap: wrap; }
+.holdingsRefreshStatus, .holdingsRefreshAnnouncement { color: var(--dashboard-muted); font-size: 12px; }
+.holdingsRefreshButton, .holdingsRefreshCancel { min-height: 36px; border: 1px solid var(--dashboard-line); border-radius: 6px; padding: 0 10px; color: var(--dashboard-ink); background: var(--dashboard-card); cursor: pointer; font-size: 12px; }
+.holdingsRefreshButton { border-color: #2d78b5; color: #b9e7ff; background: #102b47; }
+.holdingsRefreshButton:hover, .holdingsRefreshCancel:hover { border-color: #54b7e9; }
+.holdingsRefreshButton:focus-visible, .holdingsRefreshCancel:focus-visible { outline: 2px solid #53bbb4; outline-offset: 1px; }
 .observationControls { margin-bottom: 16px; }
 @media (max-width: 720px) {
   .workspace { padding: 12px; margin-top: 12px; }
@@ -1209,6 +1232,9 @@
 .sharedToolbar .radioField legend { margin-bottom: 2px; }
 .observationControls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 12px 0; }
 .observationControls .roomPeriodControl { display: flex; align-items: center; gap: 10px; }
+.historyWorkerStatusSlot { display: grid; min-height: 36px; line-height: 18px; }
+.historyWorkerStatusSlot > span { grid-area: 1 / 1; }
+.historyWorkerStatusMeasure { visibility: hidden; pointer-events: none; }
 .observationControls .workspaceHint { flex-basis: 100%; margin: 0; }
 .dateDetails { color: var(--dashboard-muted); font-size: 12px; margin: 6px 0; }
 .dateDetails summary { display: flex; align-items: center; min-height: 36px; cursor: pointer; padding: 6px 0; font-size: 14px; }
@@ -1338,6 +1364,8 @@
 .workspaceHeading { gap: 8px; margin-bottom: 9px; }
 .workspaceHeading h2 { color: #f0f4fb; font-size: 19px; letter-spacing: -.02em; }
 .workspaceHeading p, .workspaceHeading > span, .workspaceHint { margin-top: 3px; color: #8fa0b7; font-size: 12px; }
+.holdingsRefreshStatus, .holdingsRefreshAnnouncement { color: #8fa0b7; }
+.holdingsRefreshButton, .holdingsRefreshCancel { border-color: #2d78b5; color: #b9e7ff; background: #102b47; }
 .historyLibraryButton {
   min-height: 36px;
   border: 1px solid #2d78b5;
@@ -1382,6 +1410,9 @@
   .topbarSelect select { height: 44px; min-height: 44px; }
   .workspace { padding: 10px; }
   .holdingsOverviewGrid { grid-template-columns: minmax(0, 1fr); }
+  .holdingsMarketTabs { flex-wrap: wrap; }
+  .holdingsMarketTabs :global([role="tablist"]) { flex: 0 0 auto; max-width: 100%; overflow-x: auto; }
+  .holdingsMarketHint { flex-basis: 100%; }
 }
 
 @media (max-width: 320px) {
@@ -1396,16 +1427,6 @@
   .customPeriodCancel,
   .dateDetails summary { min-height: 44px; }
   .roomCustomPeriodEditor .filterField input { height: 44px; }
-}
-
-/* Keep the financial state palette readable on touch widths as well. The
-   chart preference remains available through the real control, while the
-   homepage's positive/negative states retain the reference contrast. */
-@media (max-width: 820px) {
-  .dashboard {
-    --dashboard-positive: #00d5b6 !important;
-    --dashboard-negative: #ff6b78 !important;
-  }
 }
 
 /* The desktop homepage keeps the history range beside its heading.  This
@@ -1423,11 +1444,6 @@
     z-index: 1;
   }
   .dashboard {
-    /* The dashboard root receives chart-theme variables through an inline
-       style. Keep the desktop reference palette authoritative for financial
-       states so the inline theme does not wash positive values into gray. */
-    --dashboard-positive: #00d5b6 !important;
-    --dashboard-negative: #ff6b78 !important;
     --dashboard-ink: #edf5ff;
     --dashboard-muted: #9ab0ca;
     --dashboard-line: #2a4667;
@@ -1545,10 +1561,129 @@
   .workspaceHeading > .dateDetails summary { min-height: 44px; }
 }
 
+@media (max-width: 720px), (pointer: coarse) {
+  .holdingsRefreshCluster { width: 100%; align-items: flex-start; }
+  .holdingsRefreshControls { justify-content: flex-start; }
+  .holdingsRefreshStatus { flex: 1 1 100%; }
+  .holdingsRefreshButton, .holdingsRefreshCancel { min-height: 44px; }
+}
+
 /* Between the reference desktop and the narrow touch layout the content rail
    is too small for the donut, legend, and chart controls to share a row. Keep
    the surfaces in one readable column until the 1055px composition has room
    for its two-column scan layout. */
 @media (max-width: 1054px) {
   .holdingsOverviewGrid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Task 3 shell refinements. The compact rail keeps two primary fields and a
+   concise identity summary; advanced account/run/search controls remain behind
+   the existing filter disclosure. */
+.dashboardScopeTools { display: flex; align-items: flex-end; gap: 8px; width: 100%; min-width: 0; }
+.dashboardScopeSummary { display: none; color: #9ab0ca; font-size: 14px; line-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dashboardScopeSearch { display: contents; }
+.persistentFilterChips { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 8px; padding: 0; list-style: none; }
+.persistentFilterChips li { display: inline-flex; align-items: center; min-height: 44px; padding-left: 9px; border: 1px solid #34445b; border-radius: 6px; color: #c2d4e9; background: #111a2b; font-size: 14px; }
+.persistentFilterChips button { width: 44px; min-height: 44px; padding: 0; border: 0; color: #a9bdd5; background: transparent; cursor: pointer; font-size: 18px; }
+.persistentFilterChips button:focus-visible { outline: 2px solid #53bbb4; outline-offset: -2px; }
+.pendingEntry { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 10px; padding: 8px 10px; border: 1px solid #2a4d73; border-radius: 7px; background: rgba(16, 39, 66, .62); }
+.pendingEntry > div { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.pendingEntry strong { color: #f0f4fb; font-size: 14px; }
+.pendingEntry span { color: #9ab0ca; font-size: 12px; }
+.pendingEntry button { min-height: 44px; padding: 0 11px; border: 1px solid #2d78b5; border-radius: 6px; color: #b9e7ff; background: #102b47; cursor: pointer; font-size: 14px; white-space: nowrap; }
+.pendingEntry button:disabled { opacity: .55; cursor: default; }
+.headerPendingEntry { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px 9px; margin-left: 12px; }
+.headerPendingEntry strong { color: #f0f4fb; font-size: 14px; }
+.headerPendingEntry > span { color: #9ab0ca; font-size: 12px; }
+.headerPendingEntry button { min-height: 44px; padding: 0 10px; border: 1px solid #2d78b5; border-radius: 6px; color: #b9e7ff; background: #102b47; cursor: pointer; font-size: 14px; white-space: nowrap; }
+.headerPendingEntry button:disabled { opacity: .55; cursor: default; }
+.headerUpdateStatus { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.holdingsRefreshStatus { display: inline-flex; align-items: center; gap: 6px; min-height: 20px; }
+.holdingsRefreshStatusContent { display: inline-flex; align-items: center; gap: 6px; width: 25ch; max-width: 100%; min-height: 36px; font-variant-numeric: tabular-nums; }
+.holdingsRefreshAnnouncement { display: block; min-height: 36px; max-width: 100%; overflow-wrap: anywhere; color: #9ab0ca; font-size: 12px; line-height: 18px; }
+.holdingsRefreshSpinner { width: 12px; height: 12px; flex: 0 0 auto; border: 2px solid rgba(154, 176, 202, .3); border-top-color: #53b7e9; border-radius: 50%; opacity: 0; }
+.holdingsRefreshSpinnerActive { opacity: 1; animation: holdings-refresh-spin .8s linear infinite; }
+@keyframes holdings-refresh-spin { to { transform: rotate(360deg); } }
+.holdingsRefreshButton, .holdingsRefreshCancel { min-width: 80px; }
+.holdingsRefreshCancel:disabled { opacity: .55; cursor: default; }
+
+@media (max-width: 759px) {
+  .pendingEntry { align-items: flex-start; flex-direction: column; }
+  .pendingEntry button { width: 100%; }
+}
+
+.dashboardHeader :global([data-content-layout="compact"] [data-header-scope-controls] [data-scope-field="account"]),
+.dashboardHeader :global([data-content-layout="compact"] [data-header-scope-controls] [data-scope-field="run"]) { display: none; }
+.dashboardHeader :global([data-content-layout="compact"] [data-header-scope-controls]) { gap: 8px; }
+.dashboardHeader :global([data-content-layout="compact"] [data-header-row="scope"]) { margin-top: 8px; padding-bottom: 8px; }
+.dashboardHeader :global([data-content-layout="compact"] [data-header-row="identity"] p) { display: none; }
+.dashboardHeader :global([data-content-layout="compact"]) .dashboardScopeTools { min-height: 44px; }
+.dashboardHeader :global([data-content-layout="compact"]) .dashboardScopeSummary { display: block; flex: 1 1 auto; }
+.dashboardHeader :global([data-content-layout="compact"]) .dashboardScopeSearch { display: none; }
+.dashboardHeader :global([data-content-layout="compact"]) .headerPendingEntry { margin-left: 4px; gap: 4px; }
+.dashboardHeader :global([data-content-layout="compact"]) .headerPendingEntry > span { display: none; }
+.dashboardHeader :global([data-content-layout="medium"] [data-header-row="identity"] > div:last-child) { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 8px; row-gap: 6px; }
+.dashboardHeader :global([data-content-layout="medium"] [data-header-row="identity"] > div:last-child > div:first-child) { gap: 8px; flex-wrap: wrap; row-gap: 6px; }
+.dashboardHeader :global([data-content-layout="medium"] [data-header-row="identity"]) .headerUpdateStatus { flex: 0 0 auto; }
+.dashboardHeader :global([data-content-layout="medium"] [data-header-row="identity"]) .headerPendingEntry { min-width: 0; flex: 0 1 auto; }
+
+@media (max-width: 759px), (pointer: coarse) {
+  .sharedToolbar .radioOption,
+  .sharedToolbar .roomAdvancedDetails > summary { min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .holdingsRefreshSpinner { animation: none; }
+}
+
+@media (min-width: 821px) {
+  .topbarFilterToggle, .historyLibraryButton, .holdingsRefreshButton, .holdingsRefreshCancel { min-height: 44px; }
+  .workspace .metricCard > span,
+  .workspace .metricCard > small,
+  .workspace .returnDetails,
+  .workspace .roomMoneyDetails,
+  .workspace .roomScopeNotes,
+  .workspace[aria-label="历史交易与复盘"] .roomAncillaryRow > details > summary,
+  .workspace[aria-label="历史交易与复盘"] .roomDetailsSummary > summary { font-size: 12px; }
+  .workspace[aria-label="历史交易与复盘"] .roomDetailsBody .roomScopeHint,
+  .workspace[aria-label="历史交易与复盘"] .roomDetailsBody .roomMoneyDetails p { font-size: 12px; }
+}
+
+/* Fix1 density contract: the shell's interactive controls and row content
+   stay readable at the intermediate 721–820px boundary as well as desktop. */
+.holdingsRefreshButton,
+.holdingsRefreshCancel,
+.sharedToolbar .radioOption,
+.sharedToolbar .roomAdvancedDetails > summary,
+.dateDetails summary,
+.workspace[aria-label="历史交易与复盘"] .roomDetailsSummary > summary,
+.workspace[aria-label="历史交易与复盘"] .roomDetailsBody > details > summary,
+.workspace[aria-label="历史交易与复盘"] .roomAncillaryRow > details > summary,
+.workspace[aria-label="历史交易与复盘"] .roomAncillaryRow > [data-testid="room-return-details"] > summary {
+  min-height: 44px;
+  font-size: 14px;
+}
+.holdingsRefreshButton,
+.holdingsRefreshCancel { font-size: 14px; }
+.workspace[aria-label="历史交易与复盘"] .roomDetailsBody .roomScopeHint,
+.workspace[aria-label="历史交易与复盘"] .roomDetailsBody .roomMoneyDetails p,
+.workspace[aria-label="历史交易与复盘"] .roomDetailsBody .returnGrid,
+.workspace .metricCard > span,
+.workspace .metricCard > small,
+.workspace .returnDetails,
+.workspace .roomMoneyDetails,
+.workspace .roomScopeNotes { font-size: 14px; }
+.workspaceHeading > .dateDetails summary { min-height: 44px; font-size: 14px; }
+
+@media (max-width: 759px) {
+  .headerPendingEntry { max-width: 100%; margin-left: 0; }
+  .headerPendingEntry button { flex: 0 0 auto; }
+}
+
+@media (max-width: 759px), (pointer: coarse) {
+  .topbarFilterToggle { min-height: 44px; }
+}
+
+@media (max-width: 359px) {
+  .holdingsRefreshStatusContent { width: auto; }
 }

@@ -55,7 +55,7 @@ describe("RoomHoldingsPanel", () => {
         entries={[value]}
         scope={scope}
         instrumentMetadata={metadata}
-        quotesByInstrument={{ "US:TEST": { price: "12", currency: "USD", quoteDate: "2026-09-19", fetchedAt: "2026-09-19T08:00:00.000Z", provider: "fixture", freshness: "current" } }}
+        quotesByInstrument={{ "US:TEST": { price: "12", currency: "USD", quoteDate: "2026-09-18", fetchedAt: "2026-09-18T20:00:00.000Z", provider: "fixture", freshness: "current" } }}
         asOf="2026-09-19T08:00:00.000Z"
         onOpenInReview={onOpenInReview}
         positionSnapshotsByEpisode={{ "episode:holding": { quantity: "2", averageCost: "10", realizedPnl: "0", unrealizedPnl: "4", netPnl: "4", fees: "0", grossCapitalDeployed: "20", returnPercent: "20" } }}
@@ -183,7 +183,7 @@ describe("RoomHoldingsPanel", () => {
     view.rerender(
       <RoomHoldingsPanel
         {...props}
-        quotesByInstrument={{ "US:TEST": { price: "12", currency: "USD", quoteDate: "2026-09-19", fetchedAt: "2026-09-19T08:00:00.000Z", provider: "fixture", freshness: "current" } }}
+        quotesByInstrument={{ "US:TEST": { price: "12", currency: "USD", quoteDate: "2026-09-18", fetchedAt: "2026-09-18T20:00:00.000Z", provider: "fixture", freshness: "current" } }}
       />,
     );
     expect(await screen.findByText("行情重试成功")).toBeInTheDocument();
@@ -331,7 +331,7 @@ describe("RoomHoldingsPanel", () => {
       <RoomHoldingsPanel
         entries={[value]}
         scope={scope}
-        quotesByInstrument={{ "US:TEST": { price: "9", currency: "USD", quoteDate: "2026-09-19", fetchedAt: "2026-09-19T08:00:00.000Z", provider: "fixture", freshness: "current" } }}
+        quotesByInstrument={{ "US:TEST": { price: "9", currency: "USD", quoteDate: "2026-09-18", fetchedAt: "2026-09-18T20:00:00.000Z", provider: "fixture", freshness: "current" } }}
         positionSnapshotsByEpisode={{ "episode:holding": { quantity: "2", averageCost: "10", realizedPnl: "0", unrealizedPnl: "-2", netPnl: "-2", fees: "0", grossCapitalDeployed: "20", returnPercent: "-10" } }}
         onOpenInReview={() => undefined}
       />,
@@ -347,7 +347,7 @@ describe("RoomHoldingsPanel", () => {
       <RoomHoldingsPanel
         entries={[value]}
         scope={scope}
-        quotesByInstrument={{ "US:TEST": { price: "10", currency: "USD", quoteDate: "2026-09-19", fetchedAt: "2026-09-19T08:00:00.000Z", provider: "fixture", freshness: "current" } }}
+        quotesByInstrument={{ "US:TEST": { price: "10", currency: "USD", quoteDate: "2026-09-18", fetchedAt: "2026-09-18T20:00:00.000Z", provider: "fixture", freshness: "current" } }}
         positionSnapshotsByEpisode={{ "episode:holding": { quantity: "2", averageCost: "10", realizedPnl: "0", unrealizedPnl: "0", netPnl: "0", fees: "0", grossCapitalDeployed: "20", returnPercent: "0" } }}
         onOpenInReview={() => undefined}
       />,
@@ -413,7 +413,7 @@ describe("holdings table workflow", () => {
   const value = entry();
   const fxSnapshot = { id: "fx-hkd", baseCurrency: "CNY" as const, asOf: "2026-09-19T00:00:00Z", source: "fixture", status: "complete" as const, rates: { "USD/CNY": "7", "HKD/CNY": "0.9", "CNY/CNY": "1" } };
   const scope = createDefaultRoomScope("2026-09-19");
-  const model = buildCurrentPortfolio([value], { scope, asOf: "2026-09-19", quotesByInstrument: { "US:TEST": { price: "12", currency: "USD", quoteDate: "2026-09-19", fetchedAt: "2026-09-19T08:00:00.000Z", provider: "fixture", freshness: "current" } } });
+  const model = buildCurrentPortfolio([value], { scope, asOf: "2026-09-19", quotesByInstrument: { "US:TEST": { price: "12", currency: "USD", quoteDate: "2026-09-18", fetchedAt: "2026-09-18T20:00:00.000Z", provider: "fixture", freshness: "current" } } });
   render(<RoomHoldingsPanel entries={[value]} portfolioModel={model} scope={scope} asOf="2026-09-19" reportCurrency="HKD" fxSnapshot={fxSnapshot} onOpenInReview={() => undefined} />);
   const holdings = screen.getByRole("region", { name: "当前持仓" });
   expect(holdings).toHaveTextContent("HK$186.67");
@@ -428,7 +428,7 @@ describe("holdings table workflow", () => {
   const value = entry();
   const scope = createDefaultRoomScope("2026-09-19");
   const partialFx = { id: "fx-partial", baseCurrency: "CNY" as const, asOf: "2026-09-19T00:00:00Z", source: "fixture", status: "partial" as const, rates: { "USD/CNY": "7" } };
-  render(<RoomHoldingsPanel entries={[value]} scope={scope} asOf="2026-09-19" reportCurrency="HKD" fxSnapshot={partialFx} quotesByInstrument={{ "US:TEST": { price: "12", currency: "USD", quoteDate: "2026-09-19", fetchedAt: "2026-09-19T08:00:00.000Z", provider: "fixture", freshness: "current" } }} onOpenInReview={() => undefined} />);
+  render(<RoomHoldingsPanel entries={[value]} scope={scope} asOf="2026-09-19" reportCurrency="HKD" fxSnapshot={partialFx} quotesByInstrument={{ "US:TEST": { price: "12", currency: "USD", quoteDate: "2026-09-18", fetchedAt: "2026-09-18T20:00:00.000Z", provider: "fixture", freshness: "current" } }} onOpenInReview={() => undefined} />);
   const holdings = screen.getByRole("region", { name: "当前持仓" });
   expect(holdings).toHaveTextContent("不可用（汇率快照不完整");
   expect(holdings).toHaveTextContent("US$10");

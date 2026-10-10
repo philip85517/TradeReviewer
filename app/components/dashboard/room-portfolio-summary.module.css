@@ -1,41 +1,61 @@
 .summary { display: grid; gap: 7px; min-width: 0; }
 .cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .card { display: grid; align-content: start; gap: 4px; min-width: 0; min-height: 91px; box-sizing: border-box; border: 1px solid #243a55; border-radius: 9px; padding: 10px 12px; background: linear-gradient(135deg, rgba(26, 61, 93, .52), rgba(17, 30, 49, .96)); }
-.card span { color: #9aacc4; font-size: 11px; line-height: 1.2; }
-.card strong { min-width: 0; color: #eff6ff; font-size: clamp(17px, 1.7vw, 21px); line-height: 1.25; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.card small, .note, .details small { color: #8ea1ba; font-size: 10px; line-height: 1.35; }
+.card > span:not(.amountList) { color: #9aacc4; font-size: 12px; line-height: 1.2; }
+.card strong { min-width: 0; color: #eff6ff; font-size: 14px; line-height: 1.25; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.amountList { display: grid; gap: 2px; min-width: 0; }
+.amountList.singleAmount { display: inline; }
+.amountList.singleAmount > span { display: inline; }
+.amountList.multiAmount { display: grid; }
+.card strong .amountList > span { display: block; color: inherit; font-size: inherit; overflow-wrap: anywhere; }
+.amountList em { color: #8ea1ba; font-size: 12px; font-style: normal; font-weight: 400; }
+.coverageBreakdown { color: #8296b0; }
+.card small, .note, .details small { color: #8ea1ba; font-size: 12px; line-height: 1.35; }
 .card small { overflow-wrap: anywhere; }
 .note { margin: 0; line-height: 1.45; }
-.details { color: #8ea1ba; font-size: 10px; }
-.details summary { cursor: pointer; min-height: 22px; line-height: 22px; }
+.summary > .note { font-size: 14px; }
+.context .note { font-size: 12px; }
+.context .note + .note { font-size: 14px; }
+.details { color: #8ea1ba; font-size: 14px; }
+.details .note, .details small { font-size: 14px; }
+.details summary { display: inline-flex; align-items: center; cursor: pointer; min-height: 44px; line-height: 1.4; font-size: 14px; }
 .scroll { overflow-x: auto; margin-top: 8px; }
-.scroll table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.scroll table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .scroll th, .scroll td { text-align: left; padding: 7px 8px; border-bottom: 1px solid #243145; white-space: nowrap; }
 .details small { display: block; min-width: 160px; }
 .context { display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px 14px; min-height: 15px; }
 .gain { color: var(--dashboard-positive, #3dc9ad) !important; }
 .loss { color: var(--dashboard-negative, #f1727c) !important; }
 
+@media (min-width: 821px) {
+  .amountList.singleAmount { white-space: normal; }
+  .amountList.singleAmount > span { white-space: nowrap; }
+}
+
 @media (max-width: 760px) {
   .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .card { min-height: 84px; padding: 9px 10px; }
-  .card strong { font-size: 17px; }
+  .card strong { font-size: 14px; }
 }
 
 @media (max-width: 430px) {
   .cards { gap: 6px; }
   .card { padding: 8px; }
-  .card strong { font-size: 15px; }
+  .card strong { font-size: 14px; }
+}
+
+@media (max-width: 360px) {
+  .cards { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (min-width: 821px) {
   .summary { gap: 4px; }
   .cards { gap: 6px; }
   .card { min-height: 84px; padding: 8px 10px; }
-  .card span { font-size: 10px; }
-  .card strong { font-size: 18px; }
-  .card small { font-size: 9px; line-height: 1.25; }
+  .card > span:not(.amountList) { font-size: 12px; }
+  .card strong { font-size: 14px; }
+  .card small { font-size: 12px; line-height: 1.25; }
   .context { display: none; }
-  .details { margin-top: 0; font-size: 9px; }
-  .details summary { min-height: 20px; line-height: 20px; font-size: 9px; }
+  .details { margin-top: 0; font-size: 14px; }
+  .details summary { min-height: 44px; line-height: 1.4; font-size: 14px; }
 }

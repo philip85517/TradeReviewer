@@ -41,7 +41,7 @@ export function RoomContribution({ model, reportCurrency: reportCurrencyProp }: 
   const currencies = converted ? [reportCurrency] : Object.keys(model.total.originalByCurrency).sort();
   const groups = model.dimensions[dimension];
   return <section className={styles.panel} aria-label="盈亏贡献分解">
-    <h3>盈亏贡献分解</h3>
+      <h3 className={styles.workspaceContributionTitle}>盈亏贡献分解</h3>
     <div className={styles.tabs} role="group" aria-label="贡献维度">{([["market", "市场"], ["instrument", "标的"], ["account", "账户"]] as const).map(([key, label]) => <button type="button" key={key} aria-pressed={dimension === key} onClick={() => setDimension(key)}>{label}</button>)}</div>
     <p className={styles.note}>{converted ? `折算 ${reportCurrency} · ${model.total.note}` : reportCurrency === "original" ? `按原币分别显示 · ${model.total.note}` : `${reportCurrency}不可用，保留原币小计 · ${model.total.note}`}</p>
     {model.includedCount === 0 ? <p className={styles.note}>当前范围暂无可信已平仓贡献样本。</p> : currencies.map(currency => {

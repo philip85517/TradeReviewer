@@ -1,0 +1,826 @@
+.root {
+  --preview-bg: #0b1220;
+  --preview-surface: #111a2b;
+  --preview-surface-raised: #182337;
+  --preview-border: #263650;
+  --preview-text: #e7edf6;
+  --preview-muted: #adbbcf;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  min-height: 0;
+  overflow: clip;
+  color: var(--preview-text);
+  background: var(--preview-bg);
+  font-family: var(--font-geist-sans), "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+/* HA04: in the preview, jump-to-pending uses the workspace's own scroll
+   container. Keep the document viewport from becoming a second scroll owner
+   when the browser's scrollIntoView visits the internal anchor. The selector
+   is gated by the preview marker so normal application pages are untouched. */
+:global(html:has([data-preview-variant])),
+:global(body:has([data-preview-variant])) {
+  overflow: clip;
+}
+
+.comparisonBar {
+  z-index: 2;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 42px;
+  gap: 12px;
+  padding: 6px 12px;
+  color: var(--preview-muted);
+  background: var(--preview-surface);
+  border-bottom: 1px solid var(--preview-border);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.controls {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.button,
+.sampleLink {
+  min-height: 36px;
+  padding: 7px 10px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--preview-muted);
+  background: transparent;
+  font: inherit;
+  line-height: 18px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:hover,
+.sampleLink:hover {
+  color: var(--preview-text);
+  background: rgb(148 163 184 / 10%);
+}
+
+.button:focus-visible,
+.sampleLink:focus-visible {
+  outline: 2px solid #9ecaff;
+  outline-offset: 2px;
+}
+
+.button[aria-pressed="true"] {
+  color: var(--preview-text);
+  background: var(--preview-surface-raised);
+  border-color: #2169cc;
+}
+
+.host {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+.host :global(.trade-review-app) {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+}
+
+.host :global(.trade-review-app .app-sidebar) {
+  height: 100%;
+}
+
+.host :global(.trade-review-app .app-content) {
+  min-height: 0;
+}
+
+.recommended .host :global(.trade-review-app) {
+  --preview-dashboard-bg: #0b1220;
+  --preview-dashboard-border: #263650;
+}
+
+.recommended .host :global(.trade-review-app .app-sidebar) {
+  background: #0d1728;
+  border-color: var(--preview-dashboard-border);
+}
+
+.recommended .host :global(.trade-review-app .app-nav > button),
+.recommended .host :global(.trade-review-app .app-nav-secondary > button) {
+  min-height: 36px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.recommended .host :global(.trade-review-app .app-nav svg),
+.recommended .host :global(.trade-review-app .app-nav-secondary svg) {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.75;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="我的交易室"] {
+  --page: #0b1220;
+  --surface: #111a2b;
+  --surface-elevated: #182337;
+  --surface-soft: #182337;
+  --text: #e7edf6;
+  --muted: #adbbcf;
+  --line: #263650;
+  --line-soft: #213047;
+  --dashboard-ink: #e7edf6;
+  --dashboard-muted: #adbbcf;
+  --dashboard-line: #263650;
+  --dashboard-line-soft: #213047;
+  --dashboard-soft: #182337;
+  --dashboard-card: #111a2b;
+  --dashboard-card-elevated: #182337;
+  color: var(--preview-text);
+  background: var(--preview-dashboard-bg);
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="我的交易室"] h1 {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="我的交易室"] p {
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="我的交易室"] h2 {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) div[aria-label="交易室业绩摘要"] > div > span {
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) div[aria-label="交易室业绩摘要"] > div > strong {
+  font-variant-numeric: tabular-nums;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 500;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) div[aria-label="交易室业绩摘要"] > div > small {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓概览"] > div:first-child > div > span,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓概览"] > div:first-child > div > small {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓概览"] > div:first-child > div > span {
+  font-weight: 400;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓概览"] > div:first-child > div > strong {
+  font-variant-numeric: tabular-nums;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 500;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="我的交易室"] button {
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="持仓照看"],
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="历史交易与复盘"],
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓概览"] {
+  border-radius: 8px;
+  background: var(--dashboard-card);
+  box-shadow: none;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓资产分布"] {
+  border-radius: 8px;
+  background: var(--dashboard-card);
+  box-shadow: none;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓资产分布"] > p,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓资产分布"] > div > span,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓资产分布"] small {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓概览"] > div:first-child > div {
+  border-radius: 8px;
+  background: var(--dashboard-card-elevated);
+  box-shadow: none;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓"] table th {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓"] table td {
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓"] strong {
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓"] small,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓"] time {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓"] button {
+  min-height: 36px;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+/* HA07-F2: keep disclosure summaries usable on desktop. The coarse/narrow
+   override below raises all workspace controls to the approved touch target
+   without changing icon sizing. */
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) summary {
+  min-height: 44px;
+}
+
+/* Keep the compact desktop chart/tool controls at their component-defined
+   sizes. Raise only the contribution dimension controls and date cells that
+   were below the approved desktop target. */
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [aria-label="盈亏贡献分解"] button,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [aria-label="盈亏日历"] button[aria-label*="，"] {
+  min-height: 36px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓"] button:not(:disabled) {
+  color: #8cbdff;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓"] input[type="search"] {
+  min-height: 36px;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓"] fieldset label {
+  min-height: 36px;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓"] fieldset legend,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓"] div > label {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓"] nav[aria-label="持仓分页"] {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-scope-field] > span {
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-scope-field] > button,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-scope-field] > select,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-scope-field] > input:not([type="checkbox"]):not([type="radio"]) {
+  font-weight: 500;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-scope-field] select,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-scope-field] input[type="search"],
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-scope-field] input[type="date"] {
+  min-height: 36px;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+/* HA09 V05: scope fields share the filter button's 44px outer rhythm while
+   retaining the existing readable 14/22 text role. */
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-scope-field] select,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-scope-field] input[type="search"],
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-scope-field] input[type="date"] {
+  min-height: 44px;
+  height: 44px;
+  box-sizing: border-box;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) a {
+  color: #8cbdff;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) button:focus-visible,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) a:focus-visible,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) select:focus-visible,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) input:focus-visible {
+  outline: 2px solid #9ecaff;
+  outline-offset: 2px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) summary:focus-visible {
+  outline: 2px solid #9ecaff;
+  outline-offset: 2px;
+}
+
+/* HA07-F2: keyboard focus for the chart interaction container (including the
+   holdings-history chart's role=group/tabIndex=0) uses the same visible focus
+   token as the surrounding controls. */
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [role="group"][tabindex="0"]:focus-visible {
+  outline: 2px solid #9ecaff;
+  outline-offset: 2px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="历史交易与复盘"] > header > button {
+  min-height: 44px;
+  border-color: #2169cc;
+  color: #fff;
+  background: #2169cc;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) div[aria-label="交易室业绩摘要"] > div {
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+@media (max-width: 759px) {
+  .root {
+    height: 100dvh;
+    min-height: 0;
+    overflow: clip;
+  }
+
+  .comparisonBar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .controls {
+    width: 100%;
+  }
+
+  .host {
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .host :global(.trade-review-app) {
+    height: auto;
+    min-height: auto;
+  }
+
+  .host :global(.trade-review-app .app-sidebar) {
+    height: auto;
+  }
+
+  .host :global(.trade-review-app .app-content),
+  .host :global(.trade-review-app .workspace.dashboard-mode) {
+    overflow: visible;
+  }
+
+  .recommended .host :global(.trade-review-app .app-nav > button),
+  .recommended .host :global(.trade-review-app .app-nav-secondary > button) {
+    min-height: 44px;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="我的交易室"] button,
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="我的交易室"] select,
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="我的交易室"] input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]) {
+    min-height: 44px;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓"] fieldset label {
+    min-height: 44px;
+  }
+
+  .button,
+  .sampleLink {
+    min-height: 44px;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) button,
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) summary,
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) [aria-label="盈亏贡献分解"] button,
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) [aria-label="盈亏日历"] button[aria-label*="，"] {
+    min-height: 44px;
+  }
+}
+
+@media (pointer: coarse) {
+  .button,
+  .sampleLink {
+    min-height: 44px;
+  }
+
+  .recommended .host :global(.trade-review-app .app-nav > button),
+  .recommended .host :global(.trade-review-app .app-nav-secondary > button) {
+    min-height: 44px;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="我的交易室"] button,
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="我的交易室"] select,
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="我的交易室"] input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]) {
+    min-height: 44px;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓"] fieldset label {
+    min-height: 44px;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) button,
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) summary,
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) [aria-label="盈亏贡献分解"] button,
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) [aria-label="盈亏日历"] button[aria-label*="，"] {
+    min-height: 44px;
+  }
+}
+
+/* HA02: the chart header has four independent control groups (metric,
+   currency, period and granularity). The recommendation wrapper previously
+   supplied only three grid tracks, which left the optional currency group in
+   an implicit zero-width track at the desktop reference width. Use explicit
+   flex rows so the period controls receive a full readable row when all four
+   groups are present. */
+@media (min-width: 821px) {
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="历史持仓估值"] > header > div:nth-child(2) {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="历史持仓估值"] > header > div:nth-child(2) > div[role="group"][aria-label="持仓历史观察期间"] {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="历史持仓估值"] > header > div:nth-child(2) > div[role="group"][aria-label="持仓曲线币种"] {
+    min-width: 44px;
+  }
+}
+
+/* HA09 V04 final compact identity composition: keep utility anchors beside
+   the identity on row one, with the status/pending content spanning row two.
+   This removes the empty utility row without hiding fields or shrinking text. */
+@media (max-width: 759px) {
+  .recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 4px 8px;
+  }
+
+  .recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) > :first-child {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+  }
+
+  .recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) > :last-child {
+    display: contents !important;
+  }
+
+  .recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) > :last-child > .status,
+  .recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) > :last-child > div:not([aria-label="交易室全局工具"]) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    min-width: 0;
+    width: 100%;
+    white-space: normal;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+  }
+
+  .recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) [aria-label="交易室全局工具"] {
+    grid-column: 2;
+    grid-row: 1;
+    width: auto;
+    min-width: max-content;
+    max-width: 100%;
+    flex: 0 1 auto;
+  }
+}
+
+/* HA02: compact header status must be allowed to become a real row. Its
+   pending entry contains a long date range and a 44px action; constraining
+   both to the available rail prevents the status' intrinsic width from
+   creating page-level horizontal scrolling. */
+@media (max-width: 759px) {
+  .recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) > :last-child {
+    width: 100%;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  .recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) > :last-child > :first-child {
+    display: flex;
+    flex: 1 1 100%;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+
+  .recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) span[aria-label="当前范围待复盘入口"] {
+    width: 100%;
+    min-width: 0;
+    margin-left: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) span[aria-label="当前范围待复盘入口"] > span {
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+}
+
+/* HA02: the identity tools contain two fixed-size popover anchors. Allow the
+   identity row to wrap before that semantic tools group is asked to shrink;
+   keeping the group at max-content preserves both controls and their hit
+   areas at the intermediate 760–1054px widths as well as compact widths. */
+.recommended .host :global(.trade-review-app [data-header-row="identity"]) {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.recommended .host :global(.trade-review-app [data-header-row="identity"]) > :last-child {
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.recommended .host :global(.trade-review-app [data-header-row="identity"]) > :last-child > :first-child {
+  min-width: 0;
+  flex: 1 1 auto;
+  max-width: 100%;
+  white-space: normal;
+}
+
+.recommended .host :global(.trade-review-app [data-header-row="identity"]) [aria-label="交易室全局工具"] {
+  flex: 0 0 max-content;
+  min-width: max-content;
+}
+
+.recommended .host :global(.trade-review-app [data-header-row="identity"]) [aria-label="交易室全局工具"] > div {
+  flex: 0 0 auto;
+  min-width: max-content;
+}
+
+/* HA03: at narrow widths the utility stylesheet makes popover anchors static
+   so both panels are positioned against the full tools row. HA02's
+   max-content sizing is correct for the intermediate desktop row, but it
+   collapses that mobile positioning reference to the two icon buttons. Keep
+   the row full width on the same breakpoint as the static-anchor rule, while
+   retaining intrinsic control sizes and right alignment. */
+@media (max-width: 620px) {
+  .recommended .host :global(.trade-review-app [data-header-row="identity"]) [aria-label="交易室全局工具"] {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    justify-content: flex-end;
+  }
+
+  .recommended .host :global(.trade-review-app [data-header-row="identity"]) [aria-label="交易室全局工具"] > div {
+    flex: 0 0 auto;
+    min-width: 0;
+  }
+
+  /* The utility module's later `.utilities .panel` rule sizes both the
+     dialog and menu from the viewport. The preview row has horizontal
+     padding, so cap both role-based overlays to their actual containing
+     block to keep their right edge inside the visible rail. */
+  .recommended .host :global(.trade-review-app [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="dialog"],
+  .recommended .host :global(.trade-review-app [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="menu"] {
+    width: min(360px, 100%);
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Keep the long notification body scrollable without letting the panel
+     extend below the narrow viewport. The minimum preserves a useful list
+     area on shorter devices; the list remains the scroll container. */
+}
+
+@media (max-width: 759px) {
+  .recommended .host :global(.trade-review-app [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="dialog"] > header + div {
+    max-height: min(360px, max(100px, calc(100dvh - 496px)));
+  }
+}
+
+/* HA09 V04 follow-up: the utility menu keeps its approved intrinsic panel
+   width even though compact identity tools are now grid items. */
+@media (max-width: 759px) {
+  .recommended .host :global(.trade-review-app [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="menu"] {
+    width: min(360px, calc(100vw - 28px));
+    min-width: min(224px, calc(100vw - 28px));
+    max-width: none;
+    box-sizing: border-box;
+  }
+}
+
+/* HA09 V03 boundary: at the narrow two-column 1055–1200px rail, keep the
+   allocation title intact on its own row and put the dimension tabs together
+   below it rather than wrapping the heading mid-label. */
+@media (min-width: 1055px) and (max-width: 1200px) {
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓资产分布"] > header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓资产分布"] > header > h3 {
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓资产分布"] > header > div[role="tablist"] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    min-width: 0;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓资产分布"] > header > div[role="tablist"] > button {
+    min-height: 44px;
+  }
+}
+
+/* HA09 V07: explicit desktop rows keep all history controls discoverable:
+   metric/currency/granularity on row one, period/date on row two. */
+@media (min-width: 821px) {
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="历史持仓估值"] > header > div:nth-child(2) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: "metric currency granularity" "period period period";
+    align-items: center;
+    gap: 3px;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="历史持仓估值"] > header > div:nth-child(2) > div[role="group"][aria-label="持仓曲线指标"] {
+    grid-area: metric;
+    min-width: 0;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="历史持仓估值"] > header > div:nth-child(2) > div[role="group"][aria-label="持仓曲线币种"] {
+    grid-area: currency;
+    min-width: 44px;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="历史持仓估值"] > header > div:nth-child(2) > div[role="group"][aria-label="持仓历史观察期间"] {
+    grid-area: period;
+    min-width: 0;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="历史持仓估值"] > header > div:nth-child(2) > div[role="group"][aria-label="持仓曲线粒度"] {
+    grid-area: granularity;
+  }
+
+  .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="历史持仓估值"] > header > div:first-child {
+    min-height: 44px;
+    align-items: center;
+  }
+}
+
+/* HA03: the utility component's icon-only close control is 23px by default.
+   Restore the approved desktop hit box in the preview, then enlarge it for
+   compact/touch layouts. */
+.recommended .host :global(.trade-review-app [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="dialog"] > header > button[aria-label="关闭待处理事项"] {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+@media (max-width: 759px), (pointer: coarse) {
+  .recommended .host :global(.trade-review-app [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="dialog"] > header > button[aria-label="关闭待处理事项"] {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* HA02: the embedded performance card keeps the title, three trend-level
+   buttons and optional CNY/USD/HKD buttons in one heading. At 320px that
+   heading's min-content width became wider than the workspace rail. Give the
+   heading a wrapping row and let the currency group occupy its own full row;
+   the chart remains fluid and its controls retain their existing hit sizes. */
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="业绩趋势与日历"] div:has(> [aria-label="趋势币种"]) {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="业绩趋势与日历"] div:has(> div > [aria-label="趋势币种"]) {
+  min-width: 0;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="业绩趋势与日历"] div[aria-label="趋势币种"] {
+  flex: 1 1 100%;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="业绩趋势与日历"] div:has(> [aria-label="趋势币种"]) h3 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* HA09 V03: module headings share one readable role and a stable title row.
+   Keep this scoped to the recommended preview so the existing homepage and
+   replay surfaces retain their own contracts. */
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="我的交易室"] h3,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="持仓照看"] h3,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="历史交易与复盘"] h3,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓资产分布"] h3,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓"] h3,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="待复盘的已完成交易"] h3,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="盈亏贡献分解"] h3,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="盈亏日历"] h3,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="业绩趋势与日历"] h3 {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 600;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="盈亏贡献分解"] > h3,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="盈亏日历"] > div:first-child,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="业绩趋势与日历"] > div > div:first-child > div:first-child,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="待复盘的已完成交易"] > header,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="当前持仓资产分布"] > header {
+  min-height: 44px;
+  align-items: center;
+}
+
+/* HA09 V04 coordination: the dynamic header owns compact-row sizing. Do not
+   force the pending summary or utility anchors onto separate full-width rows
+   in the preview; let the source header keep both visible while wrapping only
+   when its measured content width requires it. */
+@media (max-width: 759px) {
+  .recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) > :last-child {
+    width: auto;
+    max-width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) > :last-child > :first-child {
+    flex: 1 1 auto;
+    width: auto;
+    max-width: 100%;
+  }
+
+  .recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) span[aria-label="当前范围待复盘入口"] {
+    width: auto;
+    max-width: 100%;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 620px) {
+  .recommended .host :global(.trade-review-app [data-header-row="identity"]) [aria-label="交易室全局工具"] {
+    flex: 0 1 auto;
+    width: auto;
+    min-width: max-content;
+    max-width: 100%;
+  }
+}

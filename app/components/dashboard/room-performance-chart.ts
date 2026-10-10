@@ -27,6 +27,17 @@ export type ChartAxisLabel = {
   x: number;
 };
 
+export type ChartMarkerShape = "circle" | "diamond" | "square";
+
+/** SVG polygon points for non-circular currency markers. */
+export function chartMarkerPoints(shape: ChartMarkerShape, x: number, y: number, size: number): string | null {
+  if (shape === "circle") return null;
+  const points = shape === "diamond"
+    ? [[x, y - size], [x + size, y], [x, y + size], [x - size, y]]
+    : [[x - size, y - size], [x + size, y - size], [x + size, y + size], [x - size, y + size]];
+  return points.map(([pointX, pointY]) => `${pointX},${pointY}`).join(" ");
+}
+
 const DEFAULT_GEOMETRY = {
   width: 640,
   height: 220,

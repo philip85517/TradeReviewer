@@ -14,6 +14,7 @@
 .pageNumbers { display: inline-flex; align-items: center; gap: 4px; }
 .pageNumbers button { min-width: 28px; padding: 4px 7px; }
 .pageNumbers button[aria-current="page"] { opacity: 1; font-weight: 700; color: var(--dashboard-ink); background: var(--dashboard-soft); }
+.pageCurrent { min-width: 92px; color: var(--dashboard-ink); text-align: center; font-variant-numeric: tabular-nums; }
 .pending { padding: 3px 6px; border: 1px solid var(--dashboard-line); border-radius: 5px; white-space: nowrap; }
 .priceCell { overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
 .priceValue { display: inline-block; max-width: 100%; overflow-wrap: anywhere; }
@@ -88,3 +89,20 @@
     flex-wrap: wrap;
   }
 }
+
+/* The queue is keyboard and touch navigable at the same density as the rest
+   of the dashboard. Only the current page label is exposed between arrows. */
+.panel button { min-height: 44px; }
+.panel footer > nav { min-height: 44px; }
+@media (prefers-reduced-motion: reduce) {
+  .panel * { scroll-behavior: auto; }
+}
+
+/* Pending rows are primary review content, including when the table is
+   horizontally scrolled at the intermediate desktop width. */
+.panel table { font-size: 14px; }
+.panel td { font-size: 14px; }
+.panel th { font-size: 12px; }
+.panel small { font-size: 12px; }
+.pending { font-size: 12px; }
+.panel button { min-height: 44px; font-size: 14px; }

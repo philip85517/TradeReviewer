@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { StrictMode } from "react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -646,7 +646,6 @@ describe("ReviewDashboard", () => {
       />,
     );
     const room = screen.getByRole("region", { name: "交易室范围" });
-    const performance = within(room).getByRole("region", { name: "业绩趋势与日历" });
     await openRoomFilters(user);
     await user.click(within(room).getByRole("tab", { name: "近3个自然月" }));
     expect(room).toHaveTextContent("2026-08-01 至 2026-10-15");
@@ -756,7 +755,6 @@ describe("ReviewDashboard", () => {
         onOpenInReview={() => undefined}
       />,
     );
-    const room = screen.getByRole("region", { name: "交易室范围" });
     expect(screen.getByRole("combobox", { name: "交易性质" })).toHaveValue("live");
     await user.selectOptions(screen.getByRole("combobox", { name: "交易性质" }), "simulation");
     scope = { ...scope, nature: "simulation", simulationRunId: "run-controlled" };
@@ -832,6 +830,8 @@ describe("ReviewDashboard", () => {
     await user.click(within(room).getByRole("radio", { name: "ETF" }));
     const chips = within(room).getByRole("list", { name: "已启用交易室筛选" });
     expect(chips).toHaveTextContent("资产类型：ETF");
+    await user.click(screen.getByRole("button", { name: /^筛选/ }));
+    expect(within(room).getByRole("list", { name: "已启用交易室筛选" })).toHaveTextContent("资产类型：ETF");
     await user.click(within(chips).getByRole("button", { name: "移除资产类型筛选" }));
     expect(within(room).queryByRole("list", { name: "已启用交易室筛选" })).not.toBeInTheDocument();
   });
@@ -1006,7 +1006,7 @@ it("assembles the B2 current portfolio, allocation, history and pending work wit
   const holding = holdingDashboardEntry();
   render(<ReviewDashboard entries={[holding, ...dashboardEntries()]} onOpenInReview={vi.fn()} referenceCapitalEnabled={false} holdingsAsOf="2026-10-15" holdingsQuotesByInstrument={{ [holding.instrument.id]: { price: "15", currency: "USD", quoteDate: "2026-10-15", fetchedAt: null, provider: "test", freshness: "current" } }} />);
   const current = screen.getByRole("region", { name: "当前持仓概览" });
-  expect(current).toHaveTextContent("持仓市值USD 30.00");
+  expect(current).toHaveTextContent("已知市值小计暂不可用");
   expect(current).toHaveTextContent("持仓标的数1");
   expect(screen.getByRole("region", { name: "当前持仓资产分布" })).toBeInTheDocument();
   expect(screen.getByRole("region", { name: "历史持仓估值" })).toBeInTheDocument();
@@ -1016,8 +1016,73 @@ it("assembles the B2 current portfolio, allocation, history and pending work wit
   fireEvent.change(revealDateEditor(screen.getByLabelText("持仓历史起始日期")), { target: { value: "2026-01-01" } });
   fireEvent.change(revealDateEditor(screen.getByLabelText("持仓历史结束日期")), { target: { value: "2026-01-03" } });
   fireEvent.click(screen.getByRole("button", { name: "应用观察期间" }));
-  expect(current).toHaveTextContent("持仓市值USD 30.00");
+  expect(current).toHaveTextContent("已知市值小计暂不可用");
   expect(screen.getByLabelText("交易室结束日期")).toHaveValue("2026-10-15");
+});
+
+it("keeps the refresh status and action slots mounted during an active valuation update", async () => {
+  const holding = holdingDashboardEntry();
+  let resolveRefresh!: (value: boolean) => void;
+  const onRefreshHoldingsValuation = vi.fn(() => new Promise<boolean>(resolve => { resolveRefresh = resolve; }));
+  render(<ReviewDashboard
+    entries={[holding]}
+    onOpenInReview={vi.fn()}
+    referenceCapitalEnabled={false}
+    onRefreshHoldingsValuation={onRefreshHoldingsValuation}
+  />);
+  await act(async () => { await Promise.resolve(); });
+  const holdings = screen.getByRole("region", { name: "持仓照看" });
+  const status = holdings.querySelector('[data-refresh-phase]');
+  expect(status).toHaveAttribute("data-refresh-phase", "waiting");
+  expect(status).toHaveTextContent("正在更新估值");
+  expect(within(holdings).getByRole("button", { name: "取消" })).toBeEnabled();
+  expect(within(holdings).getByRole("button", { name: "更新估值" })).toBeEnabled();
+  expect(status?.querySelector("span")?.className).toContain("holdingsRefreshStatusContent");
+  expect(holdings.querySelector('[data-refresh-announcement]')).toHaveAttribute("data-refresh-announcement", "empty");
+  const workerStatusMeasure = holdings.querySelector('[data-history-worker-status-measure]');
+  expect(workerStatusMeasure).toHaveAttribute("aria-hidden", "true");
+  expect(workerStatusMeasure).toHaveTextContent("持仓历史计算失败：行情更新失败，请检查数据源（沿用上次快照）");
+  await act(async () => { resolveRefresh(true); await Promise.resolve(); });
+});
+
+it("exposes the scoped pending count above the queue and jumps to the existing region", () => {
+  render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={vi.fn()} referenceCapitalEnabled={false} />);
+  const pendingRegion = screen.getByRole("region", { name: "待复盘的已完成交易" });
+  const scrollIntoView = vi.fn();
+  Object.defineProperty(pendingRegion, "scrollIntoView", { value: scrollIntoView, configurable: true });
+  const header = screen.getByRole("banner", { name: "我的交易室页面头部" });
+
+  expect(within(header).getByRole("button", { name: "跳到待复盘（4）" })).toBeInTheDocument();
+  expect(header).toHaveTextContent("统计期间：2026-01-01 至 2026-10-15");
+  fireEvent.click(within(header).getByRole("button", { name: "跳到待复盘（4）" }));
+  expect(scrollIntoView).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+});
+
+it("jumps to pending immediately when reduced motion is preferred", () => {
+  const originalMatchMedia = window.matchMedia;
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    value: vi.fn((query: string) => ({
+      matches: query.includes("prefers-reduced-motion"),
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+  try {
+    render(<ReviewDashboard entries={dashboardEntries()} onOpenInReview={vi.fn()} referenceCapitalEnabled={false} />);
+    const pendingRegion = screen.getByRole("region", { name: "待复盘的已完成交易" });
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(pendingRegion, "scrollIntoView", { value: scrollIntoView, configurable: true });
+    fireEvent.click(within(screen.getByRole("banner", { name: "我的交易室页面头部" })).getByRole("button", { name: "跳到待复盘（4）" }));
+    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: "auto", block: "start" });
+  } finally {
+    Object.defineProperty(window, "matchMedia", { configurable: true, value: originalMatchMedia });
+  }
 });
 
 it("uses one selected simulation run and one currency snapshot for all current modules", () => {
@@ -1030,7 +1095,7 @@ it("uses one selected simulation run and one currency snapshot for all current m
   const view = render(<ReviewDashboard {...props} sharedScope={shared} />);
   expect(screen.queryByRole("region", { name: "当前持仓概览" })).not.toBeInTheDocument();
   view.rerender(<ReviewDashboard {...props} sharedScope={{ ...shared, simulationRunId: "run-a" }} />);
-  expect(screen.getByRole("region", { name: "当前持仓概览" })).toHaveTextContent("持仓市值USD 30.00");
+  expect(screen.getByRole("region", { name: "当前持仓概览" })).toHaveTextContent("持仓市值CNY 210.00");
   expect(screen.getByRole("region", { name: "当前持仓" })).toBeInTheDocument();
   view.rerender(<ReviewDashboard {...props} sharedScope={{ ...shared, simulationRunId: "run-a", reportCurrency: "CNY" }} />);
   expect(screen.getByRole("region", { name: "当前持仓概览" })).toHaveTextContent("持仓市值CNY 210.00");
@@ -1225,4 +1290,50 @@ it("lets an explicit history return context override stored dashboard preference
   expect(within(history).getByRole("tab", { name: "今年至今" })).toHaveAttribute("aria-selected", "false");
   const saved = JSON.parse(localStorage.getItem(dashboardBrowsePreferencesKey)!);
   expect(saved).toMatchObject({ assetType: "stock", period: { preset: "custom", startDate: "2026-10-02", endDate: "2026-10-05" } });
+});
+
+it("does not write a default over the page when preference storage cannot be read", () => {
+  const getItem = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+    throw new Error("storage blocked");
+  });
+  const setItem = vi.spyOn(Storage.prototype, "setItem");
+  try {
+    render(<ReviewDashboard entries={[dashboardEntries()[0]]} onOpenInReview={vi.fn()} referenceCapitalEnabled={false} />);
+    expect(setItem).not.toHaveBeenCalledWith(dashboardBrowsePreferencesKey, expect.any(String));
+  } finally {
+    getItem.mockRestore();
+    setItem.mockRestore();
+  }
+});
+
+it("keeps persistent holdings market tabs local to the holdings view", async () => {
+  const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+  const us = canonicalClosedEntry(dashboardEntries({ ...shanghai, id: "US:TEST", market: "US", symbol: "TEST", currency: "USD" }, "2026-10", "us-")[0], "us-entry");
+  render(<ReviewDashboard entries={[us]} onOpenInReview={vi.fn()} referenceCapitalEnabled={false} />);
+
+  const tabs = screen.getByRole("tablist", { name: "持仓市场范围" });
+  expect(within(tabs).getByRole("tab", { name: "持仓总体，人民币计价", selected: true })).toBeInTheDocument();
+  await user.click(within(tabs).getByRole("tab", { name: "持仓美股市场" }));
+  expect(within(tabs).getByRole("tab", { name: "持仓美股市场", selected: true })).toBeInTheDocument();
+  expect(screen.getByRole("region", { name: "历史交易与复盘" })).toBeInTheDocument();
+});
+
+it("uses tab-owned holdings scope while preserving the shared period and filters", async () => {
+  const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+  const spy = vi.spyOn(portfolioModule, "buildCurrentPortfolio");
+  try {
+    const us = canonicalClosedEntry(dashboardEntries({ ...shanghai, id: "US:TEST", market: "US", symbol: "TEST", currency: "USD" }, "2026-10", "us-")[0], "us-entry");
+    const cn = canonicalClosedEntry(dashboardEntries(shanghai, "2026-10", "cn-")[0], "cn-entry");
+    render(<ReviewDashboard entries={[us, cn]} sharedScope={{ nature: "live", accountIds: [], simulationRunId: null, reportCurrency: "original" }} onOpenInReview={vi.fn()} referenceCapitalEnabled={false} holdingsAsOf="2026-10-15" />);
+    spy.mockClear();
+    const tabs = screen.getByRole("tablist", { name: "持仓市场范围" });
+    await user.click(within(tabs).getByRole("tab", { name: "持仓美股市场" }));
+    const latest = spy.mock.calls.at(-1)?.[1];
+    expect(latest?.scope.markets).toEqual(["US"]);
+    expect(latest?.scope.assetCategory).toBe("all");
+    expect(latest?.scope.accountIds).toEqual([]);
+    expect(latest?.scope.period).toMatchObject({ endDate: "2026-10-15" });
+  } finally {
+    spy.mockRestore();
+  }
 });

@@ -19,7 +19,24 @@ export type RoomPendingReviewsProps = {
   /** One-based page so the homepage table can be restored without an index conversion. */
   page?: number;
   onPageChange?: (page: number) => void;
+  /** Applied history range shown with the queue so its count is auditable. */
+  scopeLabel?: string;
 };
+
+export function buildPendingLibraryNavigationRequest(
+  model: RoomPendingReviewsModel,
+  sourceSnapshot: RoomPendingSourceSnapshot | null | undefined,
+  currentPage: number,
+): PendingLibraryNavigationRequest {
+  const dates = model.rows.map(row => row.closeDate).filter(Boolean).sort();
+  return {
+    reviewStatus: "pending",
+    positionStatus: "closed",
+    closeDateFrom: sourceSnapshot?.historyPeriod.startDate ?? dates[0] ?? "",
+    closeDateTo: sourceSnapshot?.historyPeriod.endDate ?? dates.at(-1) ?? "",
+    sourceSnapshot: sourceSnapshot ? { ...sourceSnapshot, pending: { ...sourceSnapshot.pending, page: currentPage } } : null,
+  };
+}
 function originalAmount(view: RoomMoneyView) {
   return Object.entries(view.originalByCurrency)
     .map(([currency, value]) => `${new Decimal(value).gte(0) ? "+" : ""}${new Decimal(value).toFixed(2)} ${currency}`)
@@ -95,7 +112,7 @@ function closingPriceDisplay(value: string | null, currency: string | null) {
   };
 }
 
-export function RoomPendingReviews({ model, pageSize = 3, onOpenInReview, sourceSnapshot = null, onViewAllPending, page, onPageChange }: RoomPendingReviewsProps) {
+export function RoomPendingReviews({ model, pageSize = 3, onOpenInReview, sourceSnapshot = null, onViewAllPending, page, onPageChange, scopeLabel }: RoomPendingReviewsProps) {
   const [localPage, setLocalPage] = useState(1);
   const size = Number.isFinite(pageSize) && pageSize > 0 ? Math.max(1, Math.floor(pageSize)) : 3;
   const pageCount = Math.max(1, Math.ceil(model.count / size));
@@ -109,20 +126,13 @@ export function RoomPendingReviews({ model, pageSize = 3, onOpenInReview, source
   }, [currentPage, onPageChange, requestedPage]);
   const viewAll = () => {
     if (onViewAllPending) {
-      const dates = model.rows.map(row => row.closeDate).filter(Boolean).sort();
-      onViewAllPending({
-        reviewStatus: "pending",
-        positionStatus: "closed",
-        closeDateFrom: sourceSnapshot?.historyPeriod.startDate ?? dates[0] ?? "",
-        closeDateTo: sourceSnapshot?.historyPeriod.endDate ?? dates.at(-1) ?? "",
-        sourceSnapshot: sourceSnapshot ? { ...sourceSnapshot, pending: { ...sourceSnapshot.pending, page: currentPage } } : null,
-      });
+      onViewAllPending(buildPendingLibraryNavigationRequest(model, sourceSnapshot, currentPage));
       return;
     }
   };
-  return <section className={styles.panel} aria-label="待复盘的已完成交易">
+  return <section id="trading-room-pending" className={styles.panel} aria-label="待复盘的已完成交易" tabIndex={-1}>
     <header><h3>待复盘的已完成交易（{model.count}）</h3>{model.count > 0 && <button type="button" onClick={viewAll}>查看全部待复盘</button>}</header>
-    <p className={styles.note}>按最近平仓日期排序 · 仅待复盘，已完成与暂不复盘不列入；盈亏待核对仍可复盘。</p>
+    <p className={styles.note}>{scopeLabel ? `统计期间：${scopeLabel} · ` : ""}按最近平仓日期排序 · 仅待复盘，已完成与暂不复盘不列入；盈亏待核对仍可复盘。</p>
     {model.count === 0 ? <p className={styles.note}>当前范围没有待复盘的已平仓回合。</p> : <>
       <div className={styles.tableWrap}><table><thead><tr><th>平仓日期</th><th>标的</th><th>方向</th><th>成交均价</th><th>数量</th><th>回合净盈亏</th><th>状态</th><th>操作</th></tr></thead><tbody>{rows.map(row => {
         const closingPrice = closingPriceDisplay(row.closingWeightedPrice, row.closingCurrency);
@@ -150,7 +160,7 @@ export function RoomPendingReviews({ model, pageSize = 3, onOpenInReview, source
         <td data-label="操作"><button type="button" onClick={() => onOpenInReview(row.instrumentId, row.episodeId, model.queueIds)}>开始复盘</button></td>
       </tr>;
       })}</tbody></table></div>
-      <footer><span>显示 {start + 1}–{start + rows.length}，共 {model.count} 条</span>{pageCount > 1 && <nav aria-label="待复盘分页"><button type="button" aria-label="上一页待复盘" disabled={currentPage === 1} onClick={() => onPageChange ? onPageChange(currentPage - 1) : setLocalPage(currentPage - 1)}>‹</button><span className={styles.pageNumbers}>{Array.from({ length: pageCount }, (_, index) => index + 1).map(pageNumber => <button key={pageNumber} type="button" aria-label={`第${pageNumber}页待复盘`} aria-current={pageNumber === currentPage ? "page" : undefined} disabled={pageNumber === currentPage} onClick={() => onPageChange ? onPageChange(pageNumber) : setLocalPage(pageNumber)}>{pageNumber}</button>)}</span><button type="button" aria-label="下一页待复盘" disabled={currentPage >= pageCount} onClick={() => onPageChange ? onPageChange(currentPage + 1) : setLocalPage(currentPage + 1)}>›</button></nav>}</footer>
+      <footer><span>显示 {start + 1}–{start + rows.length}，共 {model.count} 条</span>{pageCount > 1 && <nav aria-label="待复盘分页"><button type="button" aria-label="上一页待复盘" disabled={currentPage === 1} onClick={() => onPageChange ? onPageChange(currentPage - 1) : setLocalPage(currentPage - 1)}>‹</button><span className={styles.pageCurrent} aria-live="polite">第 {currentPage} / {pageCount} 页</span><button type="button" aria-label="下一页待复盘" disabled={currentPage >= pageCount} onClick={() => onPageChange ? onPageChange(currentPage + 1) : setLocalPage(currentPage + 1)}>›</button></nav>}</footer>
     </>}
   </section>;
 }

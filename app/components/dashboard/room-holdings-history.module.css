@@ -12,11 +12,11 @@
 .titleBlock h3 { margin: 0; font-size: 14px; line-height: 1.2; }
 .titleBlock p { margin: 0; color: var(--dashboard-muted, #94a3b8); font-size: 12px; line-height: 1.2; }
 .headerControls { display: flex; align-items: center; gap: 5px; min-width: 0; }
-.controls, .metricControls, .periodSlot { display: flex; min-width: 0; flex-wrap: wrap; gap: 3px; }
+.controls, .metricControls, .currencyControls, .periodSlot { display: flex; min-width: 0; flex-wrap: wrap; gap: 3px; }
 .metricControls { flex: 1 1 auto; }
 .periodSlot { flex: 0 1 auto; }
-.controls button, .metricControls button, .periodSlot button {
-  min-height: 36px;
+.controls button, .metricControls button, .currencyControls button, .periodSlot button {
+  min-height: 44px;
   padding: 5px 9px;
   border: 1px solid transparent;
   border-radius: 6px;
@@ -27,24 +27,32 @@
   line-height: 1.1;
   white-space: nowrap;
 }
-.controls button[aria-pressed="true"], .metricControls button[aria-pressed="true"], .periodSlot button[aria-selected="true"], .periodSlot button[aria-pressed="true"] {
+.controls button { min-width: 44px; }
+.periodSlot summary { font-size: 14px; }
+.controls button[aria-pressed="true"], .metricControls button[aria-pressed="true"], .currencyControls button[aria-pressed="true"], .periodSlot button[aria-selected="true"], .periodSlot button[aria-pressed="true"] {
   color: #e4f8fa;
   border-color: #345566;
   background: #183246;
 }
-.controls button:focus-visible, .metricControls button:focus-visible, .periodSlot button:focus-visible,
+.controls button:focus-visible, .metricControls button:focus-visible, .currencyControls button:focus-visible, .periodSlot button:focus-visible,
 .footer select:focus-visible, .tooltipHeader button:focus-visible, .tooltipDetails summary:focus-visible,
 .methodDetails summary:focus-visible { outline: 2px solid #53bbb4; outline-offset: 1px; }
 
 .legend { display: flex; min-height: 14px; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 0; color: var(--dashboard-muted, #94a3b8); font-size: 12px; line-height: 1.25; }
-.legend i { display: inline-block; width: 9px; height: 2px; margin: 0 4px 2px 0; background: currentColor; }
+.legend i { display: inline-block; width: 8px; height: 8px; margin: 0 4px 1px 0; background: currentColor; vertical-align: middle; }
+.currencyMarker[data-marker="circle"] { border-radius: 50%; }
+.currencyMarker[data-marker="diamond"] { transform: rotate(45deg); border-radius: 1px; }
+.currencyMarker[data-marker="square"] { border-radius: 1px; }
+.currencyControls { flex: 0 1 auto; }
+.currencyControls button { min-width: 44px; }
+.coverageLegend { color: var(--dashboard-muted, #94a3b8); }
 .primary { color: #4cc3c3; }
 .secondary { color: #a48cde; }
 .interaction { position: relative; min-width: 0; outline-offset: 3px; }
 .interaction:focus-visible { outline: 2px solid #53bbb4; border-radius: 6px; }
 .chart { display: block; width: 100%; height: 220px; touch-action: pan-y; cursor: crosshair; }
 .gridLine { stroke: var(--dashboard-line, #28364a); stroke-dasharray: 3 5; opacity: .65; }
-.axisText { fill: var(--dashboard-muted, #94a3b8); font-size: 9px; }
+.axisText { fill: var(--dashboard-muted, #94a3b8); font-size: 12px; }
 .crosshair { stroke: #c3d2e2; stroke-width: 1; stroke-dasharray: 4 4; pointer-events: none; }
 .tooltip {
   position: absolute;
@@ -58,7 +66,7 @@
   background: rgba(11, 19, 33, .97);
   box-shadow: 0 10px 28px #0007;
   color: #eef4ff;
-  font-size: 10px;
+  font-size: 14px;
   line-height: 1.25;
   pointer-events: auto;
 }
@@ -66,39 +74,46 @@
 .tooltipLeft { left: 6px; }
 .tooltip[data-selection-source="touch"], .tooltip[data-selection-source="keyboard"] { pointer-events: auto; }
 .tooltipHeader { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
-.tooltipHeader time { color: #b5c4d8; font-size: 10px; font-variant-numeric: tabular-nums; }
-.tooltipHeader button { pointer-events: auto; border: 0; background: transparent; color: #c2d2e8; cursor: pointer; padding: 1px 5px; font-size: 16px; line-height: 1; }
+.tooltipHeader time { color: #b5c4d8; font-size: 12px; font-variant-numeric: tabular-nums; }
+.tooltipHeader button { pointer-events: auto; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; border: 0; background: transparent; color: #c2d2e8; cursor: pointer; padding: 1px 5px; font-size: 16px; line-height: 1; }
 .tooltip dl { display: grid; gap: 5px; margin: 0; }
 .tooltip dl > div { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; min-width: 0; }
-.tooltip dt { color: #a9b8cc; font-size: 9px; flex-shrink: 0; }
+.tooltip dt { color: #a9b8cc; font-size: 12px; flex-shrink: 0; }
 .tooltip dd { min-width: 0; margin: 0; display: grid; gap: 1px; text-align: right; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .tooltip .primaryValue { display: grid; gap: 2px; }
 .primaryValue dd { text-align: left; font-size: 19px; font-weight: 650; line-height: 1.15; }
-.primaryValue dd span + span { font-size: 10px; font-weight: 500; }
-.tooltip p, .tooltip small { color: #a9b8cc; font-size: 9px; line-height: 1.35; margin: 5px 0 0; overflow-wrap: anywhere; }
+.primaryValue dd span + span { font-size: 14px; font-weight: 500; }
+.tooltip p, .tooltip small { color: #a9b8cc; line-height: 1.35; margin: 5px 0 0; overflow-wrap: anywhere; }
+.tooltip p { font-size: 14px; }
+.tooltip small { font-size: 14px; }
 .tooltipDetails { margin-top: 6px; border-top: 1px solid #2d4055; padding-top: 5px; color: #a9b8cc; }
-.tooltipDetails summary, .methodDetails summary, .noticeDetails summary { cursor: pointer; color: #8fa9c4; font-size: 9px; }
+.tooltipDetails summary, .methodDetails summary, .noticeDetails summary { display: inline-flex; align-items: center; min-height: 44px; cursor: pointer; color: #8fa9c4; font-size: 14px; }
 .tooltipDetails p { margin: 4px 0 0; }
 .unavailable { color: #c8a75b; }
-.originalSubtotal { color: #d2d9e4; font-size: 9px; }
+.originalSubtotal { color: #d2d9e4; font-size: 14px; }
 .valueNote { color: #c7aa66; }
-.noticeDetails { margin-top: 2px; color: var(--dashboard-muted, #94a3b8); font-size: 9px; }
+.noticeDetails { margin-top: 2px; color: var(--dashboard-muted, #94a3b8); font-size: 12px; }
 .noticeDetails .note { margin: 4px 0 0; }
-.note, .footer { color: var(--dashboard-muted, #94a3b8); font-size: 12px; line-height: 1.35; }
+.statusSlot { display: flow-root; min-height: 44px; }
+.statusSlot > .noticeDetails { margin-top: 0; }
+.note { color: var(--dashboard-muted, #94a3b8); font-size: 14px; line-height: 1.35; }
+.footer { color: var(--dashboard-muted, #94a3b8); font-size: 12px; line-height: 1.35; }
 .footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 36px; }
-.footer p { margin: 0; }
+.footer p { margin: 0; font-size: 14px; }
+.returnCurrent { flex: 0 0 auto; min-height: 44px; padding: 8px 10px; border: 1px solid #345566; border-radius: 5px; background: #183246; color: #d9f4f2; cursor: pointer; font-size: 14px; }
 .footer label { display: flex; flex: 0 0 auto; align-items: center; gap: 5px; color: var(--dashboard-muted, #94a3b8); font-size: 12px; }
-.footer select { max-width: 142px; min-height: 36px; padding: 3px 6px; border: 1px solid var(--dashboard-line, #28364a); border-radius: 5px; background: var(--dashboard-card, #111c2d); color: var(--dashboard-text, #e8edf6); font-size: 14px; }
+.footer select { max-width: 142px; min-width: 44px; min-height: 44px; padding: 3px 6px; border: 1px solid var(--dashboard-line, #28364a); border-radius: 5px; background: var(--dashboard-card, #111c2d); color: var(--dashboard-text, #e8edf6); font-size: 14px; }
 .methodDetails { margin-top: 2px; color: var(--dashboard-muted, #94a3b8); }
 .methodDetails .note { margin: 4px 0 0; }
-.details { margin-top: 8px; font-size: 10px; }
-.details summary { cursor: pointer; }
+.details { margin-top: 8px; font-size: 14px; }
+.details summary { display: inline-flex; align-items: center; min-height: 44px; cursor: pointer; font-size: 14px; }
 .table { overflow-x: auto; }
-.table table { width: 100%; border-collapse: collapse; font-size: 10px; text-align: left; }
+.table table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
 .table th, .table td { padding: 7px; border-bottom: 1px solid var(--dashboard-line, #28364a); }
 .gain { color: var(--dashboard-positive, #3dc9ad); }
 .loss { color: var(--dashboard-negative, #f1727c); }
-.emptyCoverage { margin: 5px 0; padding: 6px 8px; border: 1px solid var(--dashboard-line, #28364a); border-radius: 6px; color: var(--dashboard-text, #e8edf6); font-size: 9px; line-height: 1.35; }
+.emptyCoverage { box-sizing: border-box; min-height: 29px; margin: 5px 0; padding: 6px 8px; border: 1px solid var(--dashboard-line, #28364a); border-radius: 6px; color: var(--dashboard-text, #e8edf6); font-size: 14px; line-height: 1.35; }
+.emptyCoveragePlaceholder { visibility: hidden; border-color: transparent; pointer-events: none; }
 
 @media (max-width: 700px) {
   .panel { padding: 10px; }
@@ -116,7 +131,7 @@
 }
 
 @media (max-width: 360px) {
-  .controls button, .metricControls button, .periodSlot button { padding-inline: 6px; }
+  .controls button, .metricControls button, .currencyControls button, .periodSlot button { padding-inline: 6px; }
   .titleBlock p { display: none; }
 }
 
@@ -127,13 +142,13 @@
   .panel { padding: 8px 9px 7px; }
   .header { gap: 4px; }
   .titleBlock { gap: 6px; }
-  .titleBlock h3 { font-size: 12px; }
+  .titleBlock h3 { font-size: 14px; }
   .titleBlock p { font-size: 12px; }
   .headerControls { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 3px; }
   .metricControls { flex: 0 1 auto; flex-wrap: nowrap; }
   .periodSlot { min-width: 0; flex: 1 1 auto; }
   .controls { flex-wrap: nowrap; }
-  .controls button, .metricControls button, .periodSlot button { min-height: 36px; padding: 5px 8px; font-size: 14px; }
+  .controls button, .metricControls button, .periodSlot button { min-height: 44px; padding: 5px 8px; font-size: 14px; }
   .periodSlot > div { display: flex; align-items: center; flex-wrap: nowrap; gap: 3px; min-width: 0; margin: 0; }
   .periodSlot > div:has(> details[open]) { flex-wrap: wrap; }
   .periodSlot > div > div { display: flex; align-items: center; flex-wrap: nowrap; gap: 3px; min-width: 0; }
@@ -142,28 +157,49 @@
   .periodSlot > div > div > div { flex-wrap: nowrap; gap: 1px; padding: 2px; }
   .periodSlot > div > details { flex: 0 0 auto; margin: 0; font-size: 12px; white-space: nowrap; }
   .periodSlot > div > details[open] { flex-basis: 100%; }
-  .periodSlot > div > details > summary { padding: 5px 0; }
+  .periodSlot > div > details > summary { padding: 5px 0; font-size: 14px; }
   .periodSlot > div > p { flex: 0 1 auto; margin: 0; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .legend { min-height: 12px; gap: 3px 8px; font-size: 12px; }
-  .footer { min-height: 36px; gap: 5px; font-size: 12px; }
+  .footer { min-height: 44px; gap: 5px; font-size: 12px; }
   .footer label { font-size: 12px; }
   .footer select { font-size: 14px; }
   .methodDetails { display: none; }
 }
 
+/* HA09 V07: keep metric + granularity together and give period/date controls
+   their own stable second row. The optional currency group occupies the
+   middle slot without introducing a third main toolbar row. */
+@media (min-width: 821px) {
+  .headerControls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: "metric currency granularity" "period period period";
+    align-items: center;
+    gap: 3px;
+  }
+  .headerControls .metricControls { grid-area: metric; min-width: 0; }
+  .headerControls .currencyControls { grid-area: currency; }
+  .headerControls .periodSlot { grid-area: period; min-width: 0; }
+  .headerControls .controls { grid-area: granularity; }
+  .headerControls .periodSlot > div { flex-wrap: wrap; }
+  .statusSlot { min-height: 44px; }
+}
+
 @media (min-width: 821px) {
   .primary { color: #00d5b6; }
   .secondary { color: #b76be7; }
-  .titleBlock h3 { font-size: 13px; }
+  .titleBlock h3 { font-size: 14px; }
   .titleBlock p { font-size: 12px; }
-  .controls button, .metricControls button, .periodSlot button { font-size: 14px; }
-  .axisText { fill: #9ab0ca; font-size: 9.5px; }
-  .tooltip, .table table { font-size: 10px; }
-  .note, .footer { font-size: 12px; }
+  .controls button, .metricControls button, .currencyControls button, .periodSlot button { font-size: 14px; }
+  .axisText { fill: #9ab0ca; font-size: 12px; }
+  .tooltip, .table table { font-size: 14px; }
+  .note { font-size: 14px; }
+  .footer { font-size: 12px; }
 }
 
 @media (pointer: coarse) {
   .panel .headerControls .metricControls button,
+  .panel .headerControls .currencyControls button,
   .panel .headerControls .periodSlot button,
   .panel .headerControls .controls button,
   .panel .tooltipHeader button,
@@ -175,6 +211,7 @@
 
 @media (max-width: 700px) {
   .headerControls .metricControls button,
+  .headerControls .currencyControls button,
   .headerControls .periodSlot button,
   .headerControls .controls button,
   .footer select { min-height: 44px; height: 44px; }

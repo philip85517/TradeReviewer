@@ -35,6 +35,10 @@ export type UseHoldingsHistoryWorkerResult = {
   holdingsHistoryModel: HoldingsHistoryModel;
   currentDayHistory: HoldingsHistoryModel;
   currentDayPoint: HoldingsHistoryPoint | undefined;
+  /** The exact input object currently being requested by the worker. */
+  currentInput: HoldingsHistoryWorkerInput;
+  /** The exact current input whose result is settled and accepted for display. */
+  acceptedInput: HoldingsHistoryWorkerInput | null;
   pending: boolean;
   error: string | null;
   statusReason: string | null;
@@ -57,13 +61,55 @@ function modelWithStatus(model: HoldingsHistoryModel, statusReason: string | nul
   return { ...model, reasons: [...model.reasons, statusReason] };
 }
 
+type AcceptedSnapshot = {
+  input: HoldingsHistoryWorkerInput;
+  result: HoldingsHistoryWorkerResult;
+};
+
+function structuralKey(input: HoldingsHistoryWorkerInput): string {
+  return JSON.stringify([
+    input.observationScope,
+    input.currentDayScope,
+    input.targetCurrency ?? null,
+    input.fxSnapshot ?? null,
+  ]);
+}
+
+function safeAsOfAdvance(previous: string | undefined, next: string | undefined): boolean {
+  if (previous === next) return true;
+  if (!previous || !next || !previous.includes("T") || !next.includes("T")) return false;
+  const previousTime = Date.parse(previous);
+  const nextTime = Date.parse(next);
+  return Number.isFinite(previousTime) && Number.isFinite(nextTime) && nextTime >= previousTime;
+}
+
+function canRetain(previous: AcceptedSnapshot | null, input: HoldingsHistoryWorkerInput): boolean {
+  return Boolean(previous && structuralKey(previous.input) === structuralKey(input) && safeAsOfAdvance(previous.input.asOf, input.asOf));
+}
+
+function resultMatchesInput(result: HoldingsHistoryWorkerResult | null, input: HoldingsHistoryWorkerInput): result is HoldingsHistoryWorkerResult {
+  return Boolean(result
+    && JSON.stringify(result.observation.scope) === JSON.stringify(input.observationScope)
+    && JSON.stringify(result.currentDay.scope) === JSON.stringify(input.currentDayScope)
+    && result.observation.fxSnapshotId === (input.fxSnapshot?.id ?? null)
+    && result.currentDay.fxSnapshotId === (input.fxSnapshot?.id ?? null));
+}
+
 function stateForInput(state: HoldingsHistoryWorkerState, input: HoldingsHistoryWorkerInput): HoldingsHistoryWorkerState {
   if (state.identity === input.identity) return state;
+  const retainCompleted = Boolean(
+    state.completedResult
+    && state.completedInput
+    && canRetain({ input: state.completedInput, result: state.completedResult }, input),
+  );
   return {
     ...state,
     identity: input.identity,
     pending: true,
     result: null,
+    resultInput: null,
+    completedResult: retainCompleted ? state.completedResult : null,
+    completedInput: retainCompleted ? state.completedInput : null,
     error: null,
   };
 }
@@ -102,6 +148,7 @@ export function useHoldingsHistoryWorker(input: UseHoldingsHistoryWorkerInput): 
     input.identity,
   ]);
   const [workerState, setWorkerState] = useState<HoldingsHistoryWorkerState>(() => controller.getState());
+  const [previousWorkerInput, setPreviousWorkerInput] = useState(workerInput);
   const cleanupToken = useRef(0);
 
   useEffect(() => controller.subscribe(setWorkerState), [controller]);
@@ -119,23 +166,40 @@ export function useHoldingsHistoryWorker(input: UseHoldingsHistoryWorkerInput): 
   }, [controller]);
 
   const visibleState = stateForInput(workerState, workerInput);
+  const inputChanged = previousWorkerInput !== workerInput;
+  if (inputChanged) setPreviousWorkerInput(workerInput);
+  const currentResult = !inputChanged && visibleState.identity === workerInput.identity
+    && visibleState.resultInput === workerInput
+    && resultMatchesInput(visibleState.result, workerInput)
+    ? visibleState.result
+    : null;
+  const acceptedInput = !visibleState.pending && !visibleState.error && currentResult ? workerInput : null;
+  const stateSnapshot = visibleState.completedResult && visibleState.completedInput
+    ? { input: visibleState.completedInput, result: visibleState.completedResult }
+    : null;
+  const stateRetainedResult = stateSnapshot && canRetain(stateSnapshot, workerInput) ? stateSnapshot.result : null;
+  // A cold same-scope refresh has no acceptedSnapshot yet. The controller can
+  // publish the first compatible completed result while its newer exact input
+  // is pending; display it without treating it as an acknowledgement.
+  const retainedResult = visibleState.pending || visibleState.error
+    ? stateRetainedResult
+    : null;
+  const result = currentResult ?? retainedResult;
+  const retainingSnapshot = Boolean(retainedResult && result === retainedResult && (visibleState.pending || visibleState.error));
   const statusReason = visibleState.error
-    ? `持仓历史计算失败：${visibleState.error}`
-    : visibleState.pending ? "持仓历史正在更新" : null;
-  const result: HoldingsHistoryWorkerResult | null = visibleState.result;
-  const holdingsHistoryModel = modelWithStatus(
-    result?.observation ?? pendingModel(workerInput.observationScope, workerInput.fxSnapshot),
-    statusReason,
-  );
-  const currentDayHistory = modelWithStatus(
-    result?.currentDay ?? pendingModel(workerInput.currentDayScope, workerInput.fxSnapshot),
-    statusReason,
-  );
+    ? `持仓历史计算失败：${visibleState.error}${retainingSnapshot ? "（沿用上次快照）" : ""}`
+    : visibleState.pending ? `持仓历史正在更新${retainingSnapshot ? "（沿用上次快照）" : ""}` : null;
+  const pendingObservation = useMemo(() => pendingModel(workerInput.observationScope, workerInput.fxSnapshot), [workerInput.observationScope, workerInput.fxSnapshot]);
+  const pendingCurrentDay = useMemo(() => pendingModel(workerInput.currentDayScope, workerInput.fxSnapshot), [workerInput.currentDayScope, workerInput.fxSnapshot]);
+  const holdingsHistoryModel = useMemo(() => modelWithStatus(result?.observation ?? pendingObservation, statusReason), [pendingObservation, result, statusReason]);
+  const currentDayHistory = useMemo(() => modelWithStatus(result?.currentDay ?? pendingCurrentDay, statusReason), [pendingCurrentDay, result, statusReason]);
 
   return {
     holdingsHistoryModel,
     currentDayHistory,
     currentDayPoint: currentDayHistory.points.at(-1),
+    currentInput: workerInput,
+    acceptedInput,
     pending: visibleState.pending,
     error: visibleState.error,
     statusReason,

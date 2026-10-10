@@ -95,7 +95,7 @@ function shiftIsoDate(timestamp: string, days: number) {
   return date.toISOString().slice(0, 10);
 }
 
-function latestCompletedSession(
+export function latestCompletedSession(
   market: SupportedMarket,
   now: Date,
 ) {
@@ -146,6 +146,36 @@ function latestCompletedSession(
     );
   }
   return latest;
+}
+
+/**
+ * Resolve the latest session whose conservative market close has passed.
+ * Date-only inputs mean the end of that market-local observation day; callers
+ * that need a real-time cutoff should pass an absolute ISO instant.
+ */
+export function latestCompletedSessionAt(
+  market: SupportedMarket,
+  asOf: string,
+): { session: string; sessionCloseAt: string } {
+  const instant = /^\d{4}-\d{2}-\d{2}$/.test(asOf)
+    ? Date.parse(marketLocalTimestampToIso(`${asOf} 23:59:59`, marketTimeZone(market)))
+    : Date.parse(asOf);
+  if (!Number.isFinite(instant)) throw new RangeError(`无效估值时点：${asOf}`);
+  const now = new Date(instant);
+  const session = latestCompletedSession(market, now);
+  const close = marketSessionClose(market, session);
+  return {
+    session,
+    sessionCloseAt: marketLocalTimestampToIso(`${session} ${close.time}`, marketTimeZone(market)),
+  };
+}
+
+export function valuationInstantAt(market: SupportedMarket, asOf: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(asOf)) {
+    if (!Number.isFinite(Date.parse(asOf))) throw new RangeError(`无效估值时点：${asOf}`);
+    return new Date(asOf).toISOString();
+  }
+  return marketLocalTimestampToIso(`${asOf} 23:59:59`, marketTimeZone(market)).replace(".000Z", ".999Z");
 }
 
 function dailyEndAfterLastTrade(

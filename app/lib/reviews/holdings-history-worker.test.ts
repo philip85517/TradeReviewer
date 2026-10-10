@@ -108,6 +108,7 @@ describe("holdings history worker controller", () => {
     expect(controller.getState()).toMatchObject({ identity: "same-scope", pending: true, result: null });
     workers[0].respond({ requestId: controller.getState().activeRequestId!, result: result(first, "first") });
     expect(controller.getState()).toMatchObject({ pending: false, error: null });
+    expect(controller.getState().resultInput).toBe(first);
     expect(controller.getState().result?.observation.reasons).toEqual(["first:observation"]);
 
     controller.request(second);
@@ -115,6 +116,7 @@ describe("holdings history worker controller", () => {
     expect(controller.getState().result?.observation.reasons).toEqual(["first:observation"]);
     workers[0].respond({ requestId: controller.getState().activeRequestId!, result: result(second, "second") });
     expect(controller.getState()).toMatchObject({ pending: false, error: null });
+    expect(controller.getState().resultInput).toBe(second);
     expect(controller.getState().result?.observation.reasons).toEqual(["second:observation"]);
   });
 
@@ -160,6 +162,23 @@ describe("holdings history worker controller", () => {
     expect(controller.getState().result?.observation.reasons).toEqual(["second:observation"]);
   });
 
+  it("publishes a compatible cold snapshot while a forward identity is queued", () => {
+    const controller = setup();
+    const first = input("initial");
+    const forward = { ...first, identity: "forward", asOf: "2026-09-05T13:00:00.000Z" };
+
+    controller.request(first);
+    controller.request(forward);
+    const firstRequestId = controller.getState().activeRequestId!;
+    workers[0].respond({ requestId: firstRequestId, result: result(first, "first") });
+
+    expect(controller.getState()).toMatchObject({ identity: "forward", pending: true });
+    expect(controller.getState().result).toBeNull();
+    expect(controller.getState().completedResult?.observation.reasons).toEqual(["first:observation"]);
+    expect(controller.getState().completedInput).toBe(first);
+    expect(workers[0].messages).toHaveLength(2);
+  });
+
   it("clears the previous display when the scope or period identity changes", () => {
     const controller = setup();
     const first = input("scope-a", "2026-09-01");
@@ -170,7 +189,7 @@ describe("holdings history worker controller", () => {
 
     const changed = input("scope-b", "2026-09-02");
     controller.request(changed);
-    expect(controller.getState()).toMatchObject({ identity: "scope-b", pending: true, result: null });
+    expect(controller.getState()).toMatchObject({ identity: "scope-b", pending: true, result: null, resultInput: null });
   });
 
   it("surfaces worker failure with a fallback result and retries the latest input", () => {

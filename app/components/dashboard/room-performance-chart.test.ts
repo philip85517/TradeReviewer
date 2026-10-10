@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   chartLinePath,
   chartAxisLabels,
+  chartMarkerPoints,
   chartPointCoordinates,
   createChartGeometry,
   valueDomain,
@@ -35,5 +36,11 @@ describe("room performance chart geometry", () => {
     ];
 
     expect(chartAxisLabels(points, geometry, 2)).toHaveLength(2);
+  });
+
+  it("uses distinct geometry for the currency marker identities", () => {
+    expect(chartMarkerPoints("circle", 10, 10, 4)).toBeNull();
+    expect(chartMarkerPoints("diamond", 10, 10, 4)).toBe("10,6 14,10 10,14 6,10");
+    expect(chartMarkerPoints("square", 10, 10, 4)).toBe("6,6 14,6 14,14 6,14");
   });
 });

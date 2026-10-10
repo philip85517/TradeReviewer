@@ -1,6 +1,7 @@
 "use client";
 
 import styles from "./scope-control-primitives.module.css";
+import type { KeyboardEvent } from "react";
 
 export type ScopeChoiceOption<Value extends string> = {
   value: Value;
@@ -71,6 +72,16 @@ export function ScopeChoiceGroup<Value extends string>(props: ScopeChoiceGroupPr
   }
 
   const isTabs = props.mode === "tabs";
+  const moveTab = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (!isTabs) return;
+    const key = event.key;
+    const count = props.options.length;
+    if (!count || !["ArrowRight", "ArrowLeft", "Home", "End"].includes(key)) return;
+    event.preventDefault();
+    const next = key === "Home" ? 0 : key === "End" ? count - 1 : (index + (key === "ArrowRight" ? 1 : -1) + count) % count;
+    props.onChange(props.options[next].value);
+    event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus();
+  };
   return (
     <div
       className={classes(styles.segmentedGroup, sizeClass, props.className)}
@@ -79,7 +90,7 @@ export function ScopeChoiceGroup<Value extends string>(props: ScopeChoiceGroupPr
       data-control-mode={isTabs ? "tabs" : "segmented"}
       data-control-size={props.size ?? "standard"}
     >
-      {props.options.map(option => (
+      {props.options.map((option, index) => (
         <button
           type="button"
           className={styles.segmentButton}
@@ -89,6 +100,7 @@ export function ScopeChoiceGroup<Value extends string>(props: ScopeChoiceGroupPr
             : { "aria-pressed": props.value === option.value })}
           aria-label={option.ariaLabel}
           onClick={() => props.onChange(option.value)}
+          {...(isTabs ? { tabIndex: props.value === option.value ? 0 : -1, onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => moveTab(event, index) } : {})}
         >
           {option.label}
         </button>

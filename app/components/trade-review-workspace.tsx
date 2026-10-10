@@ -334,6 +334,40 @@ const ALL_TIMEFRAMES: TimeframeAvailability = {
   "1W": { enabled: true },
 };
 
+/**
+ * Complete a metadata side effect before rethrowing a failed market refresh.
+ * The market error remains the caller-visible failure; metadata persistence
+ * has its own receipt and must not mask it.
+ */
+export async function awaitMetadataBeforeMarketFailure<T>(
+  marketRefresh: Promise<T>,
+  metadataRefresh: Promise<unknown>,
+  signal?: AbortSignal,
+): Promise<T> {
+  return marketRefresh.catch(async (marketError) => {
+    const settledMetadata = metadataRefresh.then(
+      () => undefined,
+      () => undefined,
+    );
+    if (!signal) {
+      await settledMetadata;
+    } else if (!signal.aborted) {
+      let abortListener: (() => void) | undefined;
+      const aborted = new Promise<void>((resolve) => {
+        abortListener = () => resolve();
+        signal.addEventListener("abort", abortListener, { once: true });
+      });
+      try {
+        await Promise.race([settledMetadata, aborted]);
+      } finally {
+        if (abortListener) signal.removeEventListener("abort", abortListener);
+      }
+    }
+    // Preserve the market failure and the metadata persistence receipt.
+    throw marketError;
+  });
+}
+
 type InstrumentMarketState = {
   daily: DailyCandleRecord[];
   intraday: MarketCandleRecord[];
@@ -347,6 +381,7 @@ type InstrumentMarketState = {
   dailyError?: MarketDataErrorDetail;
   intradayError?: MarketDataErrorDetail;
 };
+
 
 type Props = {
   initialFrame: DemoReplayFrame;
@@ -482,6 +517,41 @@ function isAbortError(error: unknown) {
     (error instanceof Error && error.name === "AbortError");
 }
 
+function hasIntradayEvidence(state: InstrumentMarketState): boolean {
+  return state.intraday.length > 0 ||
+    state.intradayCoverage.length > 0 ||
+    state.intradayInterval !== "1h" ||
+    state.intradayStatus !== "not-requested" ||
+    state.intradayMessage !== undefined ||
+    state.intradayError !== undefined;
+}
+
+function mergeIntradayPublication(
+  current: InstrumentMarketState,
+  incoming: InstrumentMarketState,
+): InstrumentMarketState {
+  const hasIntradayData =
+    incoming.intraday.length > 0 ||
+    incoming.intradayCoverage.length > 0;
+  return {
+    ...current,
+    intraday: hasIntradayData ? incoming.intraday : current.intraday,
+    intradayInterval: hasIntradayData
+      ? incoming.intradayInterval
+      : current.intradayInterval,
+    intradayStatus: hasIntradayData || current.intradayStatus === "not-requested"
+      ? incoming.intradayStatus
+      : current.intradayStatus,
+    intradayCoverage: hasIntradayData
+      ? incoming.intradayCoverage
+      : current.intradayCoverage,
+    intradayMessage: hasIntradayData
+      ? incoming.intradayMessage
+      : current.intradayMessage,
+    intradayError: hasIntradayData ? incoming.intradayError : current.intradayError,
+  };
+}
+
 function applyPersistedMarketDataJob(
   state: InstrumentMarketState,
   job: MarketDataJob | undefined,
@@ -542,7 +612,7 @@ function marketRanges(summary: InstrumentTradeSummary) {
   };
 }
 
-async function readInstrumentMarketState(
+export async function readInstrumentMarketState(
   summary: InstrumentTradeSummary,
   repository: MarketDataRepository,
   options: {
@@ -701,8 +771,13 @@ function dailyRecordToKnowledgeCandle(record: DailyCandleRecord): Candle {
   return dailyRecordToChartCandle(record);
 }
 
+type ReplayMarketState = Pick<
+  InstrumentMarketState,
+  "daily" | "intraday" | "intradayInterval" | "intradayCoverage" | "dailyCoverage"
+>;
+
 function sourceCandlesForTimeframe(
-  marketState: InstrumentMarketState,
+  marketState: Pick<ReplayMarketState, "daily" | "intraday" | "intradayInterval">,
   timeframe: Timeframe,
 ) {
   if (timeframe === "15m" && marketState.intradayInterval !== "15m") {
@@ -797,7 +872,7 @@ function intradayContextStart(timestamp: string, market: string) {
 }
 
 function episodeWindow(
-  state: InstrumentMarketState,
+  state: ReplayMarketState,
   episode: TradeEpisode,
 ) {
   const market = episode.instrument.market;
@@ -899,7 +974,7 @@ function coverageOverlapsEpisode(
 }
 
 function resolveEpisodeTimeframeAvailability(
-  state: InstrumentMarketState,
+  state: ReplayMarketState,
   episode: TradeEpisode | undefined,
 ) {
   if (!episode) {
@@ -1096,6 +1171,7 @@ type ActiveMarketRefreshRun = {
   snapshotIds: ReadonlySet<string>;
   batch: boolean;
   includeIntraday: boolean;
+  subscriberCounts: Map<string, number>;
 };
 
 type MarketDataUpdateOptions = {
@@ -1104,7 +1180,36 @@ type MarketDataUpdateOptions = {
   batch?: boolean;
   /** Homepage quote retry only refreshes the current holding's daily data. */
   includeIntraday?: boolean;
+  /** Holdings valuation runs use a private durable batch key for safe cancellation. */
+  holdingsScope?: boolean;
+  /** Internal guard for the public refresh coordinator. */
+  coalesced?: boolean;
+  /** IDs whose subscriber ownership was reserved at public request arrival. */
+  preRegisteredIds?: ReadonlySet<string>;
+  ownerCounts?: ReadonlyMap<string, number>;
+  producer?: MarketRefreshProducer;
   priority?: HomeMarketReadPriority;
+};
+
+type PendingMarketRefreshRequest = {
+  ids: ReadonlySet<string>;
+  options: MarketDataUpdateOptions;
+  cancelled: boolean;
+  bindings: ReadonlyArray<{ producer: MarketRefreshProducer; ids: ReadonlySet<string> }>;
+  promise?: Promise<boolean>;
+};
+
+type MarketRefreshProducer = {
+  ids: Set<string>;
+  options: MarketDataUpdateOptions;
+  includeIntraday: boolean;
+  subscriberCounts: Map<string, number>;
+  promise: Promise<boolean>;
+  resolve: (value: boolean) => void;
+  started: boolean;
+  activeRun?: ActiveMarketRefreshRun;
+  cancelled: boolean;
+  settled: boolean;
 };
 
 type MarketHydrationInFlight = {
@@ -1183,6 +1288,12 @@ type CashDataRequest = {
   targetCurrency: "CNY" | "HKD";
   today: string;
   accountIds: readonly string[];
+};
+
+type CashReadOwner = {
+  client: CashClient;
+  request: CashDataRequest | null;
+  scopeKey: string;
 };
 
 type CashDataResponse = {
@@ -1511,6 +1622,13 @@ export function TradeReviewWorkspace({
   >({});
   const refreshCancellation = useRef(new RefreshCancellationService());
   const activeMarketRefreshRuns = useRef(new Map<string, ActiveMarketRefreshRun>());
+  // Public callers are registered before waiting for the lock. This keeps
+  // same-page disjoint work queued behind the current run and lets duplicate
+  // supplements observe the same settled run instead of racing the Web Lock.
+  const publicMarketRefreshQueue = useRef<Promise<unknown>>(Promise.resolve());
+  const pendingMarketRefreshRequests = useRef(new Map<number, PendingMarketRefreshRequest>());
+  const marketRefreshProducers = useRef(new Map<number, MarketRefreshProducer>());
+  const marketRefreshRequestSequence = useRef(0);
   const marketHydrationKeys = useRef(new Map<string, string>());
   const marketHydrationInFlight = useRef(new Map<string, MarketHydrationInFlight>());
   const marketHydrationRunSequence = useRef(0);
@@ -1578,12 +1696,16 @@ export function TradeReviewWorkspace({
   const selectedRawImportedInstrument = rawImportedInstruments.find(
     (item) => item.instrument.id === selectedInstrumentId,
   );
-  const selectedImportedInstrument = importedInstruments.find(
+  // Replay identity and candle availability follow the raw execution summary.
+  // The complete overlay below remains available for display metadata, whose
+  // freshness must not restart the market-data read chain.
+  const selectedImportedInstrument = selectedRawImportedInstrument;
+  const selectedDisplayImportedInstrument = importedInstruments.find(
     (item) => item.instrument.id === selectedInstrumentId,
   );
   const episodes = useMemo(
-    () => sortedEpisodes(selectedImportedInstrument),
-    [selectedImportedInstrument],
+    () => sortedEpisodes(selectedRawImportedInstrument),
+    [selectedRawImportedInstrument],
   );
   const selectedEpisode = selectedEpisodeId
     ? episodes.find((episode) => episode.id === selectedEpisodeId)
@@ -1610,20 +1732,36 @@ export function TradeReviewWorkspace({
       marketIntradayReadyKeys[selectedRawImportedInstrument.instrument.id] === selectedMarketHydrationKey &&
       marketIntradayKeys.current.get(selectedRawImportedInstrument.instrument.id) === selectedMarketHydrationKey,
   );
-  const importedAvailability = useMemo(
-    () =>
-      resolveEpisodeTimeframeAvailability(
-        selectedMarketState,
-        selectedEpisode,
-      ),
-    [selectedEpisode, selectedMarketState],
+  const replayMarketState = useMemo<ReplayMarketState>(
+    () => ({
+      daily: selectedMarketState.daily,
+      dailyCoverage: selectedMarketState.dailyCoverage,
+      intraday: selectedMarketState.intraday,
+      intradayCoverage: selectedMarketState.intradayCoverage,
+      intradayInterval: selectedMarketState.intradayInterval,
+    }),
+    [
+      selectedMarketState.daily,
+      selectedMarketState.dailyCoverage,
+      selectedMarketState.intraday,
+      selectedMarketState.intradayCoverage,
+      selectedMarketState.intradayInterval,
+    ],
   );
+  const replayAvailability = useMemo(
+    () => resolveEpisodeTimeframeAvailability(replayMarketState, selectedEpisode),
+    [
+      replayMarketState,
+      selectedEpisode,
+    ],
+  );
+  const importedAvailability = replayAvailability;
   const importedSourceCandles = useMemo(
     () =>
       selectedImportedInstrument
-        ? sourceCandlesForTimeframe(selectedMarketState, timeframe)
+        ? sourceCandlesForTimeframe(replayMarketState, timeframe)
         : [],
-    [selectedImportedInstrument, selectedMarketState, timeframe],
+    [selectedImportedInstrument, replayMarketState, timeframe],
   );
   const importedTimelineCandles = useMemo(
     () =>
@@ -1631,14 +1769,14 @@ export function TradeReviewWorkspace({
         ? aggregateVisibleCandles(
             importedSourceCandles,
           timeframe,
-          selectedImportedInstrument.instrument.market,
-          selectedMarketState.intradayInterval,
+          selectedImportedInstrument!.instrument.market,
+          replayMarketState.intradayInterval,
         )
         : [],
     [
       importedSourceCandles,
       selectedImportedInstrument,
-      selectedMarketState.intradayInterval,
+      replayMarketState.intradayInterval,
       timeframe,
     ],
   );
@@ -1649,15 +1787,15 @@ export function TradeReviewWorkspace({
         (Object.keys(ALL_TIMEFRAMES) as Timeframe[]).map((nextTimeframe) => [
           nextTimeframe,
           aggregateVisibleCandles(
-            sourceCandlesForTimeframe(selectedMarketState, nextTimeframe),
+            sourceCandlesForTimeframe(replayMarketState, nextTimeframe),
             nextTimeframe,
-            selectedImportedInstrument.instrument.market,
-            selectedMarketState.intradayInterval,
+            selectedImportedInstrument!.instrument.market,
+            replayMarketState.intradayInterval,
           ),
         ]),
       );
     },
-    [selectedImportedInstrument, selectedMarketState],
+    [selectedImportedInstrument, replayMarketState],
   );
   const firstImportedKnownCursor = useMemo(() => {
     const first = [...importedTimelineCandles].sort(
@@ -1744,7 +1882,8 @@ export function TradeReviewWorkspace({
     : REVIEW_ID;
   const activeDrawingSaveError = drawingSaveErrors[activeEpisodeId];
   const activeDrawingSavePending = Boolean(drawingSavePending[activeEpisodeId]);
-  const activeInstrument = selectedImportedInstrument?.instrument ??
+  const activeInstrument = selectedDisplayImportedInstrument?.instrument ??
+    selectedImportedInstrument?.instrument ??
     DEMO_INSTRUMENT;
   const activeReview = episodeReviews[activeEpisodeId];
   const activePlan = episodePlanAtCursor(activeReview, activeCursor);
@@ -1975,9 +2114,11 @@ export function TradeReviewWorkspace({
   const [cashError, setCashError] = useState<string | null>(null);
   const [cashSavedFact, setCashSavedFact] = useState<CashSavedFact | null>(null);
   const [cashSummaryRefreshError, setCashSummaryRefreshError] = useState<CashSummaryRefreshError | null>(null);
+  const [cashCompletedReadOwner, setCashCompletedReadOwner] = useState<CashReadOwner | null>(null);
   const cashRequestSequence = useRef(0);
   const cashWriteSequence = useRef(0);
   const cashScopeKeyRef = useRef(cashScopeKey);
+  const cashLatestCommittedReadOwnerRef = useRef<CashReadOwner | null>(null);
   // Keep reload state out of the effect's synchronous body: a repeated scope key
   // must remain pending until the new request's own sequence settles.
   const cashResolvedRequestSequence = useRef(0);
@@ -1985,11 +2126,13 @@ export function TradeReviewWorkspace({
     if (cashScopeKeyRef.current !== cashScopeKey) {
       cashWriteSequence.current += 1;
       setCashSaving(false);
+      setCashSavedFact(current => current?.scopeKey === cashScopeKey ? current : null);
+      setCashSummaryRefreshError(current => current?.scopeKey === cashScopeKey ? current : null);
     }
     cashScopeKeyRef.current = cashScopeKey;
-    setCashSavedFact(current => current?.scopeKey === cashScopeKey ? current : null);
-    setCashSummaryRefreshError(current => current?.scopeKey === cashScopeKey ? current : null);
     const requestId = ++cashRequestSequence.current;
+    const readOwner: CashReadOwner = { client: cashClient, request: cashDataRequest, scopeKey: cashScopeKey };
+    cashLatestCommittedReadOwnerRef.current = readOwner;
     if (!cashDataRequest) {
       return () => {
         if (requestId === cashRequestSequence.current) cashRequestSequence.current += 1;
@@ -2005,6 +2148,7 @@ export function TradeReviewWorkspace({
       setCashError(null);
       setCashSavedFact(null);
       setCashSummaryRefreshError(null);
+      setCashCompletedReadOwner(readOwner);
       setCashLoading(false);
     }).catch(error => {
       if (requestId !== cashRequestSequence.current) return;
@@ -2012,6 +2156,7 @@ export function TradeReviewWorkspace({
       setCashSummaryScopeKey(cashScopeKey);
       setCashError(error instanceof Error ? error.message : "现金数据暂时不可用");
       setCashSummary(null);
+      setCashCompletedReadOwner(readOwner);
       setCashLoading(false);
     });
     return () => {
@@ -2019,15 +2164,16 @@ export function TradeReviewWorkspace({
     };
   }, [cashClient, cashDataRequest, cashScopeKey]);
   const refreshCashData = useCallback(async (): Promise<boolean> => {
+    const readOwner = cashLatestCommittedReadOwnerRef.current;
+    if (!readOwner || readOwner.scopeKey !== cashScopeKey || !readOwner.request) return false;
     const requestId = ++cashRequestSequence.current;
-    if (!cashDataRequest) return false;
     setCashLoading(true);
     setCashError(null);
     setCashSummary(null);
     setCashSummaryScopeKey(null);
     try {
-      const { baselineState, summary } = await fetchCashData(cashClient, cashDataRequest);
-      if (requestId !== cashRequestSequence.current || cashScopeKey !== cashScopeKeyRef.current) return false;
+      const { baselineState, summary } = await fetchCashData(readOwner.client, readOwner.request);
+      if (requestId !== cashRequestSequence.current || cashScopeKey !== cashScopeKeyRef.current || readOwner.scopeKey !== cashScopeKey) return false;
       cashResolvedRequestSequence.current = requestId;
       setCashBaselineState(baselineState);
       setCashBaselineScopeKey(cashScopeKey);
@@ -2036,15 +2182,17 @@ export function TradeReviewWorkspace({
       setCashError(null);
       setCashSavedFact(null);
       setCashSummaryRefreshError(null);
+      setCashCompletedReadOwner(readOwner);
       return true;
     } catch (error) {
-      if (requestId !== cashRequestSequence.current || cashScopeKey !== cashScopeKeyRef.current) return false;
+      if (requestId !== cashRequestSequence.current || cashScopeKey !== cashScopeKeyRef.current || readOwner.scopeKey !== cashScopeKey) return false;
       cashResolvedRequestSequence.current = requestId;
       setCashSummaryScopeKey(cashScopeKey);
       const message = error instanceof Error ? error.message : "现金数据暂时不可用";
       setCashError(message);
       setCashSummaryRefreshError({ scopeKey: cashScopeKey, message });
       setCashSummary(null);
+      setCashCompletedReadOwner(readOwner);
       return false;
     } finally {
       if (requestId === cashRequestSequence.current) setCashLoading(false);
@@ -2076,6 +2224,11 @@ export function TradeReviewWorkspace({
     }
   }, [cashClient, cashScopeKey, refreshCashData]);
   const cashRequestSettledForScope = cashScopeReady &&
+    cashDataRequest !== null &&
+    cashCompletedReadOwner !== null &&
+    cashCompletedReadOwner.client === cashClient &&
+    cashCompletedReadOwner.request === cashDataRequest &&
+    cashCompletedReadOwner.scopeKey === cashScopeKey &&
     cashScopeKeyRef.current === cashScopeKey &&
     cashResolvedRequestSequence.current === cashRequestSequence.current &&
     cashSummaryScopeKey === cashScopeKey;
@@ -2138,9 +2291,12 @@ export function TradeReviewWorkspace({
     ),
     [tradeLibraryEntries],
   );
-  const [holdingsAsOf, setHoldingsAsOf] = useState(() => roomTodayKey());
+  // Keep the valuation cutoff as an absolute instant. The dashboard still
+  // formats it as a room-local date, while the refresh coordinator can use
+  // completed market sessions instead of retrying every minute.
+  const [holdingsAsOf, setHoldingsAsOf] = useState(() => new Date().toISOString());
   useEffect(() => {
-    const refresh = () => setHoldingsAsOf(roomTodayKey());
+    const refresh = () => setHoldingsAsOf(new Date().toISOString());
     const interval = window.setInterval(refresh, 60_000);
     window.addEventListener("focus", refresh);
     const onVisibilityChange = () => { if (document.visibilityState === "visible") refresh(); };
@@ -2891,6 +3047,7 @@ export function TradeReviewWorkspace({
       const id = summary.instrument.id;
       const key = ownedKeys.get(id);
       let state: InstrumentMarketState;
+      let dailyFailure: MarketDataErrorDetail | undefined;
       try {
         state = applyPersistedMarketDataJob(
           await readInstrumentMarketState(summary, repository, {
@@ -2908,21 +3065,13 @@ export function TradeReviewWorkspace({
           "storage-error",
           "无法读取本地日线缓存",
         );
-        const previous = currentMarketState(id);
-        state = previous
-          ? {
-              ...previous,
-              dailyStatus: "storage-error",
-              dailyMessage: previous.daily.length > 0
-                ? `${failure.message}，已保留原有行情`
-                : failure.message,
-              dailyError: failure,
-            }
-          : {
-              ...emptyMarketState("storage-error"),
-              dailyMessage: failure.message,
-              dailyError: failure,
-            };
+        dailyFailure = failure;
+        state = applyPersistedMarketDataJob(
+          emptyMarketState("storage-error"),
+          marketDataJobsRef.current[summary.instrument.id],
+        );
+        state.dailyMessage = failure.message;
+        state.dailyError = failure;
       }
       if (
         !active ||
@@ -2936,10 +3085,40 @@ export function TradeReviewWorkspace({
       // the next inventory effect.
       marketHydrationKeys.current.set(id, key);
       marketHydrationInFlight.current.delete(id);
-      setMarketStates((current) => ({
-        ...current,
-        [id]: state,
-      }));
+      setMarketStates((current) => {
+        const previous = current[id] ?? emptyMarketState();
+        const intradaySource = hasIntradayEvidence(previous) ? previous : state;
+        const dailySource = dailyFailure
+          ? {
+              daily: previous.daily,
+              dailyCoverage: previous.dailyCoverage,
+              dailyStatus: "storage-error" as const,
+              dailyMessage: previous.daily.length > 0
+                ? `${dailyFailure.message}，已保留原有行情`
+                : dailyFailure.message,
+              dailyError: dailyFailure,
+            }
+          : {
+              daily: state.daily,
+              dailyCoverage: state.dailyCoverage,
+              dailyStatus: state.dailyStatus,
+              dailyMessage: state.dailyMessage,
+              dailyError: state.dailyError,
+            };
+        return {
+          ...current,
+          [id]: {
+            ...previous,
+            ...dailySource,
+            intraday: intradaySource.intraday,
+            intradayCoverage: intradaySource.intradayCoverage,
+            intradayInterval: intradaySource.intradayInterval,
+            intradayStatus: intradaySource.intradayStatus,
+            intradayMessage: intradaySource.intradayMessage,
+            intradayError: intradaySource.intradayError,
+          },
+        };
+      });
       restoreHydratedEpisode([{ instrumentId: id, state }]);
       setHydratedMarketIds(current => new Set([...current, id]));
     };
@@ -2979,12 +3158,15 @@ export function TradeReviewWorkspace({
   // Intraday data belongs to the replay consumer. The dashboard and library
   // can render from daily candles alone; opening an imported replay starts one
   // bounded, deduplicated intraday read for the selected instrument.
+  const selectedImportedInstrumentHydrated = selectedRawImportedInstrument
+    ? hydratedMarketIds.has(selectedRawImportedInstrument.instrument.id)
+    : false;
   useEffect(() => {
     if (
       !hydrated ||
       activeView !== "review" ||
       !selectedRawImportedInstrument ||
-      !hydratedMarketIds.has(selectedRawImportedInstrument.instrument.id)
+      !selectedImportedInstrumentHydrated
     ) {
       return;
     }
@@ -3017,36 +3199,13 @@ export function TradeReviewWorkspace({
         }
         marketIntradayKeys.current.set(instrumentId, key);
         const previous = currentMarketState(instrumentId) ?? emptyMarketState();
-        const hasIntradayData =
-          intradayState.intraday.length > 0 ||
-          intradayState.intradayCoverage.length > 0;
-        const mergedState: InstrumentMarketState = {
-          ...previous,
-          intraday: hasIntradayData ? intradayState.intraday : previous.intraday,
-          intradayInterval: hasIntradayData
-            ? intradayState.intradayInterval
-            : previous.intradayInterval,
-          // An empty optional read must not erase a persisted provider
-          // failure or a previously usable cache.
-          intradayStatus: hasIntradayData || previous.intradayStatus === "not-requested"
-            ? intradayState.intradayStatus
-            : previous.intradayStatus,
-          intradayCoverage: hasIntradayData
-            ? intradayState.intradayCoverage
-            : previous.intradayCoverage,
-          intradayMessage: hasIntradayData
-            ? intradayState.intradayMessage
-            : previous.intradayMessage,
-          intradayError: hasIntradayData
-            ? intradayState.intradayError
-            : previous.intradayError,
-        };
+        const mergedState = mergeIntradayPublication(previous, intradayState);
         setMarketStates((current) => ({
           ...current,
-          [instrumentId]: {
-            ...(current[instrumentId] ?? previous),
-            ...mergedState,
-          },
+          [instrumentId]: mergeIntradayPublication(
+            current[instrumentId] ?? emptyMarketState(),
+            intradayState,
+          ),
         }));
         restorePendingImportedReplay(mergedState);
         setMarketIntradayReadyKeys(current => ({ ...current, [instrumentId]: key }));
@@ -3108,10 +3267,10 @@ export function TradeReviewWorkspace({
   }, [
     activeView,
     hydrated,
-    hydratedMarketIds,
     marketDataRepository,
     marketReadScheduler,
-    selectedRawImportedInstrument,
+    selectedImportedInstrument,
+    selectedImportedInstrumentHydrated,
   ]);
 
   function setDrawingSaveError(episodeId: string, message: string) {
@@ -3200,7 +3359,7 @@ export function TradeReviewWorkspace({
       restoring ||
       !activeEpisodeId ||
       drawingEpisodeRef.current !== activeEpisodeId ||
-      (!showDemo && !selectedRawImportedInstrument)
+      (!showDemo && !selectedImportedInstrument)
     ) return;
     const state: EpisodeReviewState = {
       version: 2,
@@ -3222,7 +3381,7 @@ export function TradeReviewWorkspace({
     storageClient,
     timeframe,
     showDemo,
-    selectedRawImportedInstrument,
+    selectedImportedInstrument,
   ]);
 
   useEffect(() => {
@@ -3360,14 +3519,53 @@ export function TradeReviewWorkspace({
     });
   }
 
-  function cancelMarketDataUpdate() {
-    const run = [...activeMarketRefreshRuns.current.values()].find(
-      (candidate) => candidate.batch,
-    );
-    if (!run) return;
-    refreshCancellation.current.cancel(run.key);
-    for (const instrumentId of run.snapshotIds) {
-      marketDataAbortControllers.current[instrumentId]?.abort();
+  function cancelMarketDataUpdate(targetIds?: readonly string[]) {
+    const requestedIds = Array.isArray(targetIds) ? targetIds : undefined;
+    const candidates = [...pendingMarketRefreshRequests.current.values()].filter(request =>
+      !request.cancelled && (!requestedIds?.length || requestedIds.every(id => request.ids.has(id))),
+    ).sort((left, right) => {
+      if (!requestedIds?.length) {
+        const scope = Number(Boolean(left.options.holdingsScope)) - Number(Boolean(right.options.holdingsScope));
+        if (scope !== 0) return scope;
+      }
+      const size = left.ids.size - right.ids.size;
+      if (size !== 0) return size;
+      return Number(Boolean(right.options.holdingsScope)) - Number(Boolean(left.options.holdingsScope));
+    });
+    const request = candidates[0];
+    if (!request) return;
+    cancelSubscriber(request);
+  }
+
+  function cancelQueuedMarketDataUpdate(targetIds?: readonly string[]) {
+    const requestedIds = Array.isArray(targetIds) ? targetIds : undefined;
+    const request = [...pendingMarketRefreshRequests.current.values()]
+      .filter(candidate => candidate.options.holdingsScope && !candidate.cancelled &&
+        (!requestedIds?.length || requestedIds.every(id => candidate.ids.has(id))))
+      .sort((left, right) => left.ids.size - right.ids.size)[0];
+    if (request) cancelSubscriber(request);
+  }
+
+  function cancelSubscriber(request: PendingMarketRefreshRequest) {
+    request.cancelled = true;
+    for (const binding of request.bindings) {
+      const cancellableIds: string[] = [];
+      for (const id of binding.ids) {
+        const next = Math.max(0, (binding.producer.subscriberCounts.get(id) ?? 1) - 1);
+        binding.producer.subscriberCounts.set(id, next);
+        if (next === 0) cancellableIds.push(id);
+      }
+      if (!binding.producer.started) {
+        binding.producer.ids = new Set([...binding.producer.ids].filter(id => (binding.producer.subscriberCounts.get(id) ?? 0) > 0));
+      }
+      if ([...binding.producer.subscriberCounts.values()].every(count => count === 0)) {
+        binding.producer.cancelled = true;
+        const run = binding.producer.activeRun;
+        if (run) {
+          refreshCancellation.current.cancel(run.key);
+        }
+      }
+      for (const id of cancellableIds) marketDataAbortControllers.current[id]?.abort();
     }
   }
 
@@ -3375,6 +3573,92 @@ export function TradeReviewWorkspace({
     instrumentIds?: readonly string[],
     options: MarketDataUpdateOptions = {},
   ): Promise<boolean> {
+    if (!options.coalesced) {
+      const snapshotExecutions = options.executions ?? currentExecutionSnapshot();
+      const requestedIds = new Set(instrumentIds ?? buildInstrumentTradeSummaries(snapshotExecutions).map(summary => summary.instrument.id));
+      const requestId = ++marketRefreshRequestSequence.current;
+      const pending: PendingMarketRefreshRequest = { ids: requestedIds, options, cancelled: false, bindings: [] };
+      const producers = [...marketRefreshProducers.current.values()];
+      const unbound = new Set(requestedIds);
+      for (const producer of producers) {
+        if (!producer.cancelled && !producer.settled && (producer.includeIntraday || options.includeIntraday === false) &&
+          [...unbound].some(id => producer.ids.has(id) && (producer.subscriberCounts.get(id) ?? 0) > 0)) {
+          const ids = new Set([...unbound].filter(id => producer.ids.has(id) && (producer.subscriberCounts.get(id) ?? 0) > 0));
+          ids.forEach(id => unbound.delete(id));
+          ids.forEach(id => producer.subscriberCounts.set(id, (producer.subscriberCounts.get(id) ?? 0) + 1));
+          pending.bindings = [...pending.bindings, { producer, ids }];
+        }
+      }
+      if (unbound.size > 0) {
+        let resolve!: (value: boolean) => void;
+        const promise = new Promise<boolean>(r => { resolve = r; });
+        const producer: MarketRefreshProducer = {
+          ids: new Set(unbound), options, includeIntraday: options.includeIntraday !== false,
+          subscriberCounts: new Map([...unbound].map(id => [id, 1])), promise, resolve, started: false,
+          cancelled: false, settled: false,
+        };
+        marketRefreshProducers.current.set(requestId, producer);
+        pending.bindings = [...pending.bindings, { producer, ids: new Set(unbound) }];
+        const previous = publicMarketRefreshQueue.current;
+        const task = previous.catch(() => undefined).then(async () => {
+          producer.started = true;
+          const owned = [...producer.ids].filter(id => (producer.subscriberCounts.get(id) ?? 0) > 0);
+          if (owned.length === 0) return false;
+          return startMarketDataUpdate(owned, {
+            ...options,
+            coalesced: true,
+            ownerCounts: producer.subscriberCounts,
+            preRegisteredIds: new Set(owned),
+            producer,
+          });
+        }).then(value => {
+          producer.settled = true;
+          marketRefreshProducers.current.delete(requestId);
+          producer.resolve(value);
+          return value;
+        }, () => {
+          producer.settled = true;
+          marketRefreshProducers.current.delete(requestId);
+          producer.resolve(false);
+          return false;
+        });
+        publicMarketRefreshQueue.current = task.catch(() => undefined);
+      }
+      pending.promise = Promise.all(pending.bindings.map(binding => binding.producer.promise)).then(results => !pending.cancelled && results.every(Boolean));
+      pendingMarketRefreshRequests.current.set(requestId, pending);
+      pending.promise.finally(() => pendingMarketRefreshRequests.current.delete(requestId));
+      return pending.promise;
+    }
+    return executeMarketDataUpdate(instrumentIds, options);
+  }
+
+  async function executeMarketDataUpdate(
+    instrumentIds?: readonly string[],
+    options: MarketDataUpdateOptions = {},
+  ): Promise<boolean> {
+    const snapshotExecutions = options.executions ?? currentExecutionSnapshot();
+    const requestedIds = [...new Set(instrumentIds ?? buildInstrumentTradeSummaries(snapshotExecutions).map(summary => summary.instrument.id))];
+    const requestNeedsIntraday = options.includeIntraday !== false;
+    const activeRuns = [...activeMarketRefreshRuns.current.values()];
+    const overlappingRuns = activeRuns.filter(run => requestedIds.some(id => run.snapshotIds.has(id)));
+    if (overlappingRuns.length > 0) {
+      for (const run of overlappingRuns) {
+        for (const id of requestedIds) {
+          if (run.snapshotIds.has(id) && !options.preRegisteredIds?.has(id)) {
+            run.subscriberCounts.set(id, (run.subscriberCounts.get(id) ?? 0) + 1);
+          }
+        }
+      }
+      // A full run covers a daily subscriber, while a daily run never
+      // covers a full subscriber: the latter must queue a full pass for the
+      // overlap so its intraday leg is not silently skipped.
+      const remaining = requestedIds.filter(id => !overlappingRuns.some(run =>
+        run.snapshotIds.has(id) && (run.includeIntraday || !requestNeedsIntraday),
+      ));
+      await Promise.all(overlappingRuns.map(run => run.promise));
+      if (remaining.length === 0) return true;
+      return executeMarketDataUpdate(remaining, { ...options, coalesced: true });
+    }
     let started = false;
     await withGlobalMarketRefreshLock(
       async () => {
@@ -3415,7 +3699,9 @@ export function TradeReviewWorkspace({
       snapshotSummaries.map((summary) => summary.instrument.id),
     );
     const key = options.batch
-      ? includeIntraday ? "all" : "all:daily"
+      ? options.holdingsScope
+        ? `holdings:${includeIntraday ? "full" : "daily"}:${[...uniqueInstrumentIds].sort().join(",")}`
+        : includeIntraday ? "all" : "all:daily"
       : `instrument:${mode}:${[...uniqueInstrumentIds].sort().join(",")}`;
     const globalRun = [...activeMarketRefreshRuns.current.values()].find(
       (run) => run.batch && run.includeIntraday === includeIntraday,
@@ -3445,7 +3731,15 @@ export function TradeReviewWorkspace({
       snapshotIds,
       batch: Boolean(options.batch),
       includeIntraday,
+      subscriberCounts: new Map([...snapshotIds].map((id) => [id, 1] as const)),
     });
+    const activeRun = activeMarketRefreshRuns.current.get(key);
+    if (activeRun && options.ownerCounts) {
+      activeRun.subscriberCounts = options.ownerCounts as Map<string, number>;
+    }
+    if (activeRun && options.producer) {
+      options.producer.activeRun = activeRun;
+    }
     try {
     const executions = snapshotExecutions;
     const summariesById = new Map(
@@ -3619,13 +3913,6 @@ export function TradeReviewWorkspace({
         marketDataAbortControllers.current[instrumentId]?.abort();
         const abortController = new AbortController();
         marketDataAbortControllers.current[instrumentId] = abortController;
-        if (options.batch) {
-          refreshSnapshots.set(instrumentId, {
-            state: marketStates[instrumentId] ?? emptyMarketState(),
-            sequence: requestSequence,
-            job: marketDataJobsRef.current[instrumentId],
-          });
-        }
         const requestSignal = composeAbortSignals(
           cancellation.signal,
           abortController.signal,
@@ -3680,6 +3967,17 @@ export function TradeReviewWorkspace({
               intradayError: failure,
             }),
           };
+        }
+        // Capture the authoritative local snapshot after hydration. Capturing
+        // before readInstrumentMarketState can save an empty React state even
+        // when durable candles are already available; cancellation would then
+        // roll a successfully hydrated instrument back to no quote.
+        if (options.batch) {
+          refreshSnapshots.set(instrumentId, {
+            state: cached,
+            sequence: requestSequence,
+            job: marketDataJobsRef.current[instrumentId],
+          });
         }
         if (
           cancellation.signal.aborted ||
@@ -3866,7 +4164,7 @@ export function TradeReviewWorkspace({
             } : {}),
           };
         } else {
-          const refreshed = await refreshMarketData({
+          const refreshed = await awaitMetadataBeforeMarketFailure(refreshMarketData({
             instrumentId,
             symbol: marketDataSymbol,
             market,
@@ -3886,7 +4184,7 @@ export function TradeReviewWorkspace({
               intradayCoverage: next.intradayCoverage,
               intradayInterval: next.intradayInterval,
             },
-          });
+          }), metadataRefresh, requestSignal);
           next.daily = refreshed.daily.candles;
           next.dailyCoverage = refreshed.daily.coverage;
           next.dailyStatus = refreshed.daily.status;
@@ -4003,6 +4301,23 @@ export function TradeReviewWorkspace({
             },
           );
           next.dailyMessage = "行情缓存保留，但同步状态写入失败";
+          // A failed terminal publication must produce a fresh in-memory
+          // failure receipt. Keep the previous durable job as the reload
+          // cache, but never let this run report its old completion as ours.
+          const failedJob: MarketDataJob = {
+            ...completedJob,
+            status: "storage-error",
+            message: "行情缓存保留，但同步状态写入失败",
+            error: { code: "storage-error", message: "行情同步状态写入失败" },
+            intervals: completedJob.intervals.map((interval) => ({
+              ...interval,
+              status: "storage-error" as const,
+              message: "行情同步状态写入失败",
+              error: { code: "storage-error", message: "行情同步状态写入失败" },
+            })),
+          };
+          marketDataJobsRef.current[instrumentId] = failedJob;
+          setMarketDataJobs((current) => ({ ...current, [instrumentId]: failedJob }));
         }
         setMarketStates((current) => ({
           ...current,
@@ -4223,8 +4538,15 @@ export function TradeReviewWorkspace({
     }
     } finally {
       refreshCancellation.current.finish(key, cancellation.controller);
-      activeMarketRefreshRuns.current.delete(key);
-      resolveCompletion();
+      // Keep the public task registered until the Web Lock callback returns.
+      // Resolving here wakes a queued subscriber while the lock is still held,
+      // making its immediate retry look like a cross-page busy failure.
+      const finishRun = () => {
+        activeMarketRefreshRuns.current.delete(key);
+        resolveCompletion();
+      };
+      if (options.producer) finishRun();
+      else setTimeout(finishRun, 0);
     }
   }
 
@@ -4233,71 +4555,57 @@ export function TradeReviewWorkspace({
       setNavigationNotice("当前页面正在更新行情，请等待完成。");
       return;
     }
-
-    await withGlobalMarketRefreshLock(
-      async () => {
-        if (activeMarketRefreshRuns.current.size > 0) {
-          setNavigationNotice("当前页面正在更新行情，请等待完成。");
-          return;
-        }
-        let bootstrap;
-        try {
-          bootstrap = await storageClient.getBootstrap();
-        } catch {
-          setNavigationNotice("无法读取已保存的行情状态，请稍后再试。");
-          return;
-        }
-        const inventory: GlobalMarketRefreshInventoryItem[] =
-          buildInstrumentTradeSummaries(currentExecutionSnapshot()).map(
-            ({ instrument }) => ({
-              instrumentId: instrument.id,
-              symbol: instrument.symbol,
-              market: instrument.market,
-            }),
-          );
-        const jobs = Object.fromEntries(
-          bootstrap.marketDataJobs.map((job) => [job.instrumentId, job]),
-        );
-        const summary = summarizePersistedMarketDataJobs(
-          bootstrap.marketDataJobs,
-          inventory,
-        );
-        marketDataJobsRef.current = jobs;
-        setMarketDataJobs(jobs);
-        setFailedMarketDataIds(summary.retryableInstrumentIds);
-        if (summary.unfinishedInstrumentIds.length === 0) {
-          setMarketDataRefresh((current) =>
-            current.running
-              ? current
-              : {
-                  ...EMPTY_MARKET_DATA_REFRESH,
-                  total: summary.total,
-                  processed: summary.processed,
-                  completed: summary.completed,
-                  partial: summary.partial,
-                  failed: summary.failed,
-                  retryable: summary.retryable,
-                  failureDetails: summary.failureDetails,
-                  unfinishedInstrumentIds: summary.unfinishedInstrumentIds,
-                  unfinishedDetails: summary.unfinishedDetails,
-                  restored: true,
-                },
-          );
-          setNavigationNotice("没有仍未完成的行情任务，已刷新已保存状态。");
-          return;
-        }
-        setNavigationNotice(null);
-        await runMarketDataUpdate(summary.unfinishedInstrumentIds, {
-          refreshMetadata: true,
-          batch: true,
-        });
-      },
-      () => setNavigationNotice(
-        activeMarketRefreshRuns.current.size > 0
-          ? "当前页面正在更新行情，请等待完成。"
-          : "其他页面正在更新行情，请稍后再试。",
-      ),
+    let bootstrap;
+    try {
+      bootstrap = await storageClient.getBootstrap();
+    } catch {
+      setNavigationNotice("无法读取已保存的行情状态，请稍后再试。");
+      return;
+    }
+    const inventory: GlobalMarketRefreshInventoryItem[] =
+      buildInstrumentTradeSummaries(currentExecutionSnapshot()).map(
+        ({ instrument }) => ({
+          instrumentId: instrument.id,
+          symbol: instrument.symbol,
+          market: instrument.market,
+        }),
+      );
+    const jobs = Object.fromEntries(
+      bootstrap.marketDataJobs.map((job) => [job.instrumentId, job]),
     );
+    const summary = summarizePersistedMarketDataJobs(
+      bootstrap.marketDataJobs,
+      inventory,
+    );
+    marketDataJobsRef.current = jobs;
+    setMarketDataJobs(jobs);
+    setFailedMarketDataIds(summary.retryableInstrumentIds);
+    if (summary.unfinishedInstrumentIds.length === 0) {
+      setMarketDataRefresh((current) =>
+        current.running
+          ? current
+          : {
+              ...EMPTY_MARKET_DATA_REFRESH,
+              total: summary.total,
+              processed: summary.processed,
+              completed: summary.completed,
+              partial: summary.partial,
+              failed: summary.failed,
+              retryable: summary.retryable,
+              failureDetails: summary.failureDetails,
+              unfinishedInstrumentIds: summary.unfinishedInstrumentIds,
+              unfinishedDetails: summary.unfinishedDetails,
+              restored: true,
+            },
+      );
+      setNavigationNotice("没有仍未完成的行情任务，已刷新已保存状态。");
+      return;
+    }
+    setNavigationNotice(null);
+    await startMarketDataUpdate(summary.unfinishedInstrumentIds, {
+      refreshMetadata: true,
+      batch: true,
+    });
   }
 
   function previewForImport(
@@ -5849,6 +6157,53 @@ export function TradeReviewWorkspace({
             holdingsCandlesByInstrument={marketDataCandles}
             holdingsAsOf={holdingsAsOf}
             holdingsStaleAfterDays={3}
+            onRefreshHoldingsValuation={!showDemo ? async (instrumentIds, trigger = "manual") => {
+              const baselineRequestedAt = Object.fromEntries(instrumentIds.map(id => [id, marketDataJobsRef.current[id]?.requestedAt]));
+              const sharedRun = [...activeMarketRefreshRuns.current.values()].find(run =>
+                instrumentIds.some(id => run.snapshotIds.has(id)),
+              );
+              const hadActiveCoverage = Boolean(sharedRun && !sharedRun.controller.signal.aborted);
+              const started = await startMarketDataUpdate(instrumentIds, {
+                batch: true,
+                includeIntraday: false,
+                refreshMetadata: false,
+                holdingsScope: true,
+                priority: trigger === "automatic" ? "background" : "interactive",
+              });
+              if (!started) return false;
+              const failed = instrumentIds.some(id => {
+                const job = marketDataJobsRef.current[id];
+                if (!job || !job.requestedAt || (job.requestedAt === baselineRequestedAt[id] && !hadActiveCoverage)) return true;
+                const dailyStatus = job.intervals?.find(interval => interval.interval === "1D")?.status ?? job.status;
+                return dailyStatus === "source-rate-limited"
+                  || dailyStatus === "source-forbidden"
+                  || dailyStatus === "source-unavailable"
+                  || dailyStatus === "invalid-response"
+                  || dailyStatus === "storage-error"
+                  || dailyStatus === "error"
+                  || dailyStatus === "needs-provider"
+                  || dailyStatus === "not-requested"
+                  || dailyStatus === "syncing";
+              });
+              if (failed) {
+                return {
+                  ok: false as const,
+                  reason: sharedRun?.controller.signal.aborted ? "cancelled" as const : "failed" as const,
+                };
+              }
+              // The run resolves only after putMarketDataJob and the terminal
+              // queue outcome. Read the receipt from the durable in-memory
+              // projection so a subscriber waiting on an older active run
+              // does not compare it with its own Date.now().
+              return {
+                ok: true as const,
+                requestedAtByInstrument: Object.fromEntries(instrumentIds.map(id => [id, marketDataJobsRef.current[id]?.requestedAt])),
+              };
+            } : undefined}
+            onCancelHoldingsValuation={!showDemo ? cancelMarketDataUpdate : undefined}
+            marketDataRefresh={!showDemo ? marketDataRefresh : undefined}
+            marketDataDailyStatuses={!showDemo ? marketDataDailyStatuses : undefined}
+            marketDataJobs={!showDemo ? marketDataJobs : undefined}
             qualityInput={!showDemo ? qualityInput : undefined}
             onQualityModelChange={updateQualityModel}
             onOpenDataManagement={openQualityDetails}
@@ -6067,7 +6422,7 @@ export function TradeReviewWorkspace({
             />
             </aside>
             <div className="review-content" inert={stockDrawerOpen || Boolean(dataTarget)}>
-            {showDemo && <div className={`stock-context-shell ${mobileTradesOpen ? "mobile-trades-open" : ""}`}><StockEpisodeNavigation mobileOpen={mobileTradesOpen} onCloseMobile={() => setMobileTradesOpen(false)} instrument={selectedImportedInstrument?.instrument} episodes={episodes} selectedEpisodeId={selectedEpisode?.id} cursor={activeCursor} onSelectEpisode={id => { selectEpisode(id); setMobileTradesOpen(false); }} onLocate={(cursor) => { setPlaying(false); invalidatePendingImportedReplayRestore(); setImportedCursor(cursor); setMobileTradesOpen(false); }} onLocateRequest={requestExecutionLocation} onNext={nextImportedExecution} onSwitchStock={() => { setMobileTradesOpen(false); setStockDrawerOpen(true); }} onLibrary={() => { setMobileTradesOpen(false); returnFromReview(); }} returnLabel={reviewReturnView === "dashboard" ? "返回我的交易室" : reviewReturnView === "insights" ? "返回模式洞察" : undefined} /></div>}
+            {showDemo && <div className={`stock-context-shell ${mobileTradesOpen ? "mobile-trades-open" : ""}`}><StockEpisodeNavigation mobileOpen={mobileTradesOpen} onCloseMobile={() => setMobileTradesOpen(false)} instrument={selectedDisplayImportedInstrument?.instrument ?? selectedImportedInstrument?.instrument} episodes={episodes} selectedEpisodeId={selectedEpisode?.id} cursor={activeCursor} onSelectEpisode={id => { selectEpisode(id); setMobileTradesOpen(false); }} onLocate={(cursor) => { setPlaying(false); invalidatePendingImportedReplayRestore(); setImportedCursor(cursor); setMobileTradesOpen(false); }} onLocateRequest={requestExecutionLocation} onNext={nextImportedExecution} onSwitchStock={() => { setMobileTradesOpen(false); setStockDrawerOpen(true); }} onLibrary={() => { setMobileTradesOpen(false); returnFromReview(); }} returnLabel={reviewReturnView === "dashboard" ? "返回我的交易室" : reviewReturnView === "insights" ? "返回模式洞察" : undefined} /></div>}
             {!showDemo && !selectedImportedInstrument ? (
               <section
                 className="review-workspace review-workspace-empty"
@@ -6103,7 +6458,7 @@ export function TradeReviewWorkspace({
                   onFocusedChange={setFocusedChart}
                   episode={selectedEpisode!}
                   episodes={episodes}
-                  instrument={selectedImportedInstrument.instrument}
+                  instrument={(selectedDisplayImportedInstrument ?? selectedImportedInstrument)!.instrument}
                   instruments={searchableInstruments}
                   timeframeAvailability={importedAvailability}
                   importedTimelineCandles={importedTimelineCandles}

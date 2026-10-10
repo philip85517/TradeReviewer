@@ -92,6 +92,8 @@
 .trendValueLegend { display: flex; gap: 14px; color: var(--dashboard-muted); font-size: 14px; }
 .trendValueLegend span { display: inline-flex; align-items: center; gap: 4px; }
 .trendValueLegend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
+.currencyMarker[data-marker="diamond"] { border-radius: 1px; transform: rotate(45deg); }
+.currencyMarker[data-marker="square"] { border-radius: 1px; }
 .selectedTrendPoint { display: grid; grid-template-columns: auto auto auto; align-items: baseline; gap: 6px 12px; border: 1px solid var(--dashboard-line); border-radius: 9px; padding: 8px 10px; background: var(--dashboard-soft); color: var(--dashboard-muted); font-size: 14px; }
 .selectedTrendPoint strong { color: var(--dashboard-ink); font-size: 16px; }
 .selectedTrendPoint small { grid-column: 1 / -1; font-size: 14px; }
@@ -224,7 +226,24 @@
 .workspaceGrid .contributionSlot,
 .workspaceGrid .calendarWrap { min-height: 0; }
 .workspaceGrid .calendarWrap { border: 1px solid var(--dashboard-line); border-radius: 12px; padding: 9px; }
+.workspaceGrid .calendarWrap { align-content: start; }
 .workspaceGrid h3 { margin: 0 0 8px; font-size: 14px; }
+.workspaceGrid > .trendWrap { padding-top: 9px; }
+.workspaceGrid > .trendWrap .cardHeading,
+.workspaceGrid > .calendarWrap .calendarHeader {
+  min-height: 44px;
+  box-sizing: border-box;
+  align-items: center;
+}
+.workspaceGrid > .trendWrap .cardHeading h3,
+.workspaceGrid > .calendarWrap .calendarHeader h3 {
+  min-height: 44px;
+  height: 44px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
 .workspaceGrid .calendarNav { flex-wrap: wrap; gap: 6px; font-size: 11px; }
 .workspaceGrid .calendarNav span { flex: 1; text-align: center; }
 .workspaceGrid .cell { min-width: 0; min-height: 40px; padding: 4px 3px; }
@@ -292,6 +311,8 @@
   }
   .workspaceGrid .dailyGrid .weekdays { font-size: 9px; }
   .workspaceGrid .calendarWrap { gap: 4px; min-height: 0; padding: 6px; }
+  .workspaceGrid > .trendWrap { padding-top: 7px; }
+  .workspaceGrid > .calendarWrap { padding-top: 7px; }
   .workspaceGrid .calendarWrap h3 { margin-bottom: 2px; font-size: 13px; }
   .workspaceGrid .calendarWrap .levelTabs { gap: 2px; }
   .workspaceGrid .calendarWrap .levelTabs button { min-height: 36px; padding: 5px 8px; font-size: 14px; }
@@ -381,6 +402,34 @@
   .workspaceGrid .calendarWrap .dailyGrid .cellSecondaryShort { font-size: 8px; }
   .workspaceGrid .calendarWrap .dailyGrid .state-empty .cellValueShort { color: #50647f; }
   .workspaceGrid .calendarWrap .dailyGrid .state-empty .cellSecondaryShort { display: none !important; }
+}
+
+/* HA09 V02/V03: calendar cells remain a seven-column scan surface, but the
+   visible date, amount/status and weekday roles must be readable. Let the
+   row grow from its content instead of hiding values in a fixed 30px cell. */
+@media (min-width: 821px) {
+  .workspaceGrid .calendarWrap .weekdays { font-size: 12px; line-height: 18px; }
+  .workspaceGrid .calendarWrap .dailyGrid .cell,
+  .workspaceGrid .calendarWrap .dailyGrid .outsideCell {
+    min-height: 42px;
+    height: 42px;
+    padding: 4px 3px;
+    gap: 2px;
+  }
+  .workspaceGrid .calendarWrap .dailyGrid .cell strong,
+  .workspaceGrid .calendarWrap .dailyGrid .outsideCell strong,
+  .workspaceGrid .calendarWrap .dailyGrid .cell > span,
+  .workspaceGrid .calendarWrap .dailyGrid .cell > small,
+  .workspaceGrid .calendarWrap .dailyGrid .outsideCell small {
+    font-size: 12px;
+    line-height: 16px;
+  }
+  .workspaceGrid .calendarWrap .dailyGrid .cellValueShort {
+    font-size: 12px !important;
+    letter-spacing: normal;
+  }
+  .workspaceGrid .calendarWrap .dailyGrid .cellSecondaryShort { font-size: 12px !important; }
+  .workspaceGrid .calendarWrap .dailyGrid .leadingBlank { min-height: 42px; height: 42px; }
 }
 
 /* At touch widths the calendar remains a Monday-to-Sunday scan grid. Complete
@@ -539,5 +588,38 @@
   .workspaceGrid .calendarWrap .calendarNav button {
     min-width: 44px;
     min-height: 44px;
+  }
+}
+
+/* HA09 V02: the seven-column calendar keeps its date, amount, and state
+   legible on the 320–820px homepage rail as well as desktop. */
+@media (max-width: 820px) {
+  .workspaceGrid .calendarWrap .weekdays {
+    font-size: 12px;
+    line-height: 18px;
+  }
+  .workspaceGrid .calendarWrap .dailyGrid .cell,
+  .workspaceGrid .calendarWrap .dailyGrid .outsideCell {
+    min-height: 64px;
+    height: auto;
+    padding: 4px 3px;
+    gap: 2px;
+  }
+  .workspaceGrid .calendarWrap .dailyGrid .dayNumber {
+    font-size: 12px !important;
+    line-height: 16px;
+  }
+  .workspaceGrid .calendarWrap .dailyGrid .cellValueShort {
+    font-size: 12px !important;
+    letter-spacing: normal;
+    line-height: 16px;
+  }
+  .workspaceGrid .calendarWrap .dailyGrid .cellSecondaryShort {
+    font-size: 12px !important;
+    line-height: 16px;
+  }
+  .workspaceGrid .calendarWrap .dailyGrid .leadingBlank {
+    min-height: 64px;
+    height: 64px;
   }
 }

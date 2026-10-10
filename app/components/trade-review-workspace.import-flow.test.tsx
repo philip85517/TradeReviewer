@@ -27,7 +27,10 @@ import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-d
 import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeExecution } from "../lib/trades/types";
 import { tradeRepairClient } from "../lib/storage/trade-repair-client";
-import { TradeReviewWorkspace } from "./trade-review-workspace";
+import {
+  awaitMetadataBeforeMarketFailure,
+  TradeReviewWorkspace,
+} from "./trade-review-workspace";
 import { createLegacySqliteClient } from "./test-support/legacy-sqlite-client";
 
 const mockSqliteClient = vi.hoisted(() => ({ current: undefined as unknown }));
@@ -1295,6 +1298,7 @@ describe("TradeReviewWorkspace", () => {
 
   it("applies a refreshed canonical name to every execution and keeps it after candle failure and reload", async () => {
     const user = userEvent.setup();
+    const metadataResponse = deferred<Response>();
     const base: TradeExecution = {
       id: "name-refresh-buy",
       source: { platform: "tiger", row: 2 },
@@ -1326,15 +1330,7 @@ describe("TradeReviewWorkspace", () => {
     const fallbackFetch = vi.mocked(fetch).getMockImplementation();
     vi.mocked(fetch).mockImplementation((input, init) =>
       String(input) === "/api/instruments/resolve?market=HK&symbol=1810"
-        ? Promise.resolve(Response.json({
-        market: "HK",
-        symbol: "1810",
-        name: "小米集团-W（更新）",
-        assetType: "stock",
-        source: "hkex",
-        confidence: "official",
-        resolvedAt: "2026-07-29T00:00:00.000Z",
-      }))
+        ? metadataResponse.promise
         : fallbackFetch?.(input, init) ?? Promise.resolve(Response.json({})),
     );
     mockMarketDataSync.mockRejectedValueOnce(
@@ -1348,6 +1344,21 @@ describe("TradeReviewWorkspace", () => {
     await screen.findByLabelText("图表工具栏");
     await user.click(screen.getByRole("button", { name: "行情数据详情" }));
     await user.click(screen.getByRole("button", { name: "刷新行情数据" }));
+
+    await waitFor(() =>
+      expect(vi.mocked(fetch).mock.calls.some(([input]) =>
+        String(input) === "/api/instruments/resolve?market=HK&symbol=1810",
+      )).toBe(true),
+    );
+    metadataResponse.resolve(Response.json({
+      market: "HK",
+      symbol: "1810",
+      name: "小米集团-W（更新）",
+      assetType: "stock",
+      source: "hkex",
+      confidence: "official",
+      resolvedAt: "2026-07-29T00:00:00.000Z",
+    }));
 
     expect(
       (await screen.findAllByRole("heading", {
@@ -1385,6 +1396,62 @@ describe("TradeReviewWorkspace", () => {
       })).length,
     ).toBeGreaterThan(0);
     expectOnlyLocalRoomFetches();
+  });
+
+  it("waits for metadata persistence before exposing a market refresh failure", async () => {
+    const marketRefresh = deferred<string>();
+    const metadataRefresh = deferred<void>();
+    const result = awaitMetadataBeforeMarketFailure(
+      marketRefresh.promise,
+      metadataRefresh.promise,
+    );
+    const marketError = new Error("K 线更新失败");
+
+    marketRefresh.reject(marketError);
+    let settled = false;
+    void result.then(
+      () => { settled = true; },
+      () => { settled = true; },
+    );
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
+    expect(settled).toBe(false);
+
+    metadataRefresh.resolve();
+    await expect(result).rejects.toBe(marketError);
+    expect(settled).toBe(true);
+
+    const failedMetadata = deferred<void>();
+    const secondMarketRefresh = deferred<string>();
+    const secondResult = awaitMetadataBeforeMarketFailure(
+      secondMarketRefresh.promise,
+      failedMetadata.promise,
+    );
+    const secondMarketError = new Error("行情源不可用");
+    secondMarketRefresh.reject(secondMarketError);
+    failedMetadata.reject(new Error("名称保存失败"));
+    await expect(secondResult).rejects.toBe(secondMarketError);
+  });
+
+  it("stops waiting for metadata after abort while consuming its eventual rejection", async () => {
+    const marketRefresh = deferred<string>();
+    const metadataRefresh = deferred<void>();
+    const controller = new AbortController();
+    const result = awaitMetadataBeforeMarketFailure(
+      marketRefresh.promise,
+      metadataRefresh.promise,
+      controller.signal,
+    );
+    const marketError = new Error("取消前行情源不可用");
+
+    marketRefresh.reject(marketError);
+    await Promise.resolve();
+    controller.abort(new DOMException("用户取消", "AbortError"));
+    await expect(result).rejects.toBe(marketError);
+
+    // Persistence was already started; its later failure must be observed in
+    // the helper rather than becoming an unhandled rejection after cancellation.
+    metadataRefresh.reject(new Error("后台名称保存失败"));
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
   });
 
   it("merges a deferred metadata name with an overlapping import confirmation without losing either", async () => {

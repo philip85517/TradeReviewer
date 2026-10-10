@@ -104,7 +104,9 @@ function candle(date: string, close = "12"): DailyCandleRecord {
     provider: "yahoo",
     providerSymbol: "TEST",
     adjustmentMode: "raw",
-    fetchedAt: "2026-09-22T00:00:00Z"
+    // Historical reconstruction may use a later download; a pre-close fetch
+    // is a rolling bar and must not satisfy a completed-session mark.
+    fetchedAt: "2026-09-30T23:00:00Z"
   };
 }
 const options = {
@@ -270,6 +272,141 @@ describe("historical holdings", () => {
     expect(result.points[0].available).toBe(true);
     expect(result.points[1].marketValueAvailable).toBe(false);
     expect(result.points[1].reasons.join(" ")).toContain("公司行动");
+  });
+  it("replays supported 516780 settlements and a zero-cash bonus share", () => {
+    const base = instrument({ id: "CN-SH:516780", symbol: "516780", market: "CN-SH", currency: "CNY" });
+    const fills: Array<["buy" | "sell", string, string, string]> = [
+      ["buy", "2026-02-27", "20000", "44440"],
+      ["sell", "2026-03-04", "10000", "21010.5"],
+      ["buy", "2026-03-18", "10000", "18980"],
+      ["sell", "2026-05-12", "10000", "20420"],
+      ["buy", "2026-08-19", "10000", "8716.5"],
+    ];
+    const executions = fills.map(([side, date, quantity, grossAmount], index) => {
+      const item = execution(base, side, `${date}T02:00:00Z`);
+      item.id = `516780-${index}`;
+      item.quantity = quantity;
+      item.price = side === "buy" ? "2.222" : "2.04205";
+      item.source = {
+        ...item.source,
+        settlement: { currency: "CNY", quantity, grossAmount, netAmount: grossAmount, fees: {} },
+        feeStatus: "reported",
+      };
+      return item;
+    });
+    executions[3].source.positionEvents = [{
+      id: "516780-bonus-2026-05-22",
+      accountId: "account-1",
+      symbol: "516780",
+      market: "CN-SH",
+      date: "2026-05-22",
+      kind: "corporate-action",
+      quantity: "10000",
+      amount: "0",
+      currency: "CNY",
+      description: "红股到账",
+      source: [],
+    }];
+    const entry = openEntry(base, "2026-02-27");
+    entry.executions = executions;
+    entry.episodes[0].episode.executions = executions;
+    const historyScope = {
+      ...scope,
+      period: { preset: "custom" as const, startDate: "2026-05-21", endDate: "2026-08-19" },
+    };
+    const candlesByInstrument = {
+      [base.id]: ["2026-05-21", "2026-05-22", "2026-08-18", "2026-08-19"].map(date => ({
+        ...candle(date, "1"), instrumentId: base.id, currency: "CNY",
+      })),
+    };
+    const result = buildHoldingsHistory([entry], {
+      scope: historyScope,
+      asOf: "2026-08-19",
+      candlesByInstrument,
+    });
+    const point = (date: string) => result.points.find(item => item.date === date)?.holdings[0];
+    expect(point("2026-05-21")).toMatchObject({ quantity: "10000", cost: "20600" });
+    expect(point("2026-05-22")).toMatchObject({ quantity: "20000", cost: "20600" });
+    expect(point("2026-08-19")).toMatchObject({ quantity: "30000", cost: "29316.5001" });
+  });
+  it("cuts an absolute as-of history point before later same-session fills", () => {
+    const base = instrument({ id: "CN-SH:TEST", symbol: "TEST", market: "CN-SH", currency: "CNY" });
+    const first = execution(base, "buy", "2026-09-29T06:00:00Z");
+    const future = execution(base, "buy", "2026-09-30T08:00:00Z");
+    const entry = openEntry(base, first.executedAt);
+    entry.executions = [first, future];
+    entry.episodes[0].episode.executions = [first, future];
+    const result = buildHoldingsHistory([entry], {
+      scope: { ...scope, period: { preset: "custom", startDate: "2026-09-29", endDate: "2026-09-30" } },
+      asOf: "2026-09-30T06:59:00Z",
+      candlesByInstrument: {
+        [base.id]: [
+          { ...candle("2026-09-29", "12"), instrumentId: base.id, currency: "CNY" },
+          { ...candle("2026-09-30", "99"), instrumentId: base.id, currency: "CNY" },
+        ],
+      },
+    });
+    const final = result.points.find(item => item.date === "2026-09-30");
+    expect(final?.holdings[0]).toMatchObject({ quantity: "2" });
+    expect(final?.holdings[0]?.marketValue).toBe("24");
+  });
+  it("does not use a same-session rolling candle before the market close", () => {
+    const base = instrument({ id: "CN-SH:ROLL", symbol: "ROLL", market: "CN-SH", currency: "CNY" });
+    const fill = execution(base, "buy", "2026-09-30T03:00:00Z");
+    const entry = openEntry(base, fill.executedAt);
+    entry.executions = [fill];
+    entry.episodes[0].episode.executions = [fill];
+    const rolling = {
+      ...candle("2026-09-30", "99"),
+      instrumentId: base.id,
+      currency: "CNY",
+      fetchedAt: "2026-09-30T06:59:00Z",
+    };
+    const result = buildHoldingsHistory([entry], {
+      scope: { ...scope, period: { preset: "custom", startDate: "2026-09-30", endDate: "2026-09-30" } },
+      asOf: "2026-09-30T07:01:00Z",
+      candlesByInstrument: { [base.id]: [rolling] },
+    });
+    expect(result.points[0]?.holdings[0]?.marketValue).toBeNull();
+    expect(result.points[0]?.marketValueAvailable).toBe(false);
+  });
+  it("does not use a bar captured before a same-day after-close execution", () => {
+    const base = instrument({ id: "CN-SH:POST", symbol: "POST", market: "CN-SH", currency: "CNY" });
+    const fill = execution(base, "buy", "2026-09-30T08:00:00Z");
+    const entry = openEntry(base, fill.executedAt);
+    entry.executions = [fill];
+    entry.episodes[0].episode.executions = [fill];
+    const preTradeBar = {
+      ...candle("2026-09-30", "99"),
+      instrumentId: base.id,
+      currency: "CNY",
+      fetchedAt: "2026-09-30T07:30:00Z",
+    };
+    const result = buildHoldingsHistory([entry], {
+      scope: { ...scope, period: { preset: "custom", startDate: "2026-09-30", endDate: "2026-09-30" } },
+      asOf: "2026-09-30T09:00:00Z",
+      candlesByInstrument: { [base.id]: [preTradeBar] },
+    });
+    expect(result.points[0]?.holdings[0]?.marketValue).toBeNull();
+    expect(result.points[0]?.marketValueAvailable).toBe(false);
+  });
+  it("carries the last admitted US snapshot across later Shanghai display dates", () => {
+    const base = instrument({ id: "US:CUTOFF", symbol: "CUTOFF", market: "US", currency: "USD" });
+    const first = execution(base, "buy", "2026-09-29T14:00:00Z");
+    const future = execution(base, "buy", "2026-10-01T14:00:00Z");
+    const entry = openEntry(base, first.executedAt);
+    entry.executions = [first, future];
+    entry.episodes[0].episode.executions = [first, future];
+    const bars = ["2026-09-29", "2026-09-30", "2026-10-01"].map(date => ({
+      ...candle(date, "12"), instrumentId: base.id, fetchedAt: "2026-10-02T00:00:00Z",
+    }));
+    const result = buildHoldingsHistory([entry], {
+      scope: { ...scope, period: { preset: "custom", startDate: "2026-09-29", endDate: "2026-10-01" } },
+      asOf: "2026-10-01T00:30:00Z",
+      candlesByInstrument: { [base.id]: bars },
+    });
+    const point = result.points.find(item => item.date === "2026-10-01");
+    expect(point?.holdings[0]).toMatchObject({ quantity: "2", marketValue: "24", quoteDate: "2026-09-30" });
   });
   it("selects exactly one simulation run when accounts and instruments overlap", () => {
     const entries = ["run-a", "run-b"].map((run, index) => {

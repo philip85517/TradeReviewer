@@ -192,9 +192,9 @@ describe("trading room holdings model", () => {
     const episodeId = entry.episodes[0].episode.id;
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
-      asOf: "2026-09-22T00:00:00+08:00",
       instrumentMetadata: new Map([[base.id, metadataFor(base, "stock")]]),
-      quotesByInstrument: { [base.id]: quote({ price: "12" }) },
+      quotesByInstrument: { [base.id]: quote({ price: "12", quoteDate: "2026-09-21", fetchedAt: "2026-09-22T01:00:00.000Z" }) },
+      asOf: "2026-09-22T00:00:00.000Z",
       positionSnapshotsByEpisode: { [episodeId]: snapshot({ realizedPnl: "80", netPnl: "84", unrealizedPnl: "4" }) },
     });
 
@@ -208,9 +208,9 @@ describe("trading room holdings model", () => {
     const episodeId = entry.episodes[0].episode.id;
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
-      asOf: "2026-09-22T00:00:00+08:00",
       instrumentMetadata: new Map([[base.id, metadataFor(base, "stock")]]),
-      quotesByInstrument: { [base.id]: quote({ price: "13" }) },
+      quotesByInstrument: { [base.id]: quote({ price: "13", quoteDate: "2026-09-21", fetchedAt: "2026-09-22T01:00:00.000Z" }) },
+      asOf: "2026-09-22T00:00:00.000Z",
       positionSnapshotsByEpisode: { [episodeId]: snapshot({ unrealizedPnl: "4", netPnl: "4" }) },
     });
 
@@ -230,8 +230,8 @@ describe("trading room holdings model", () => {
     episode.remainingQuantity = "2";
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
-      asOf: "2026-09-22T00:00:00+08:00",
-      quotesByInstrument: { [base.id]: quote({ price: "8" }) },
+      quotesByInstrument: { [base.id]: quote({ price: "8", quoteDate: "2026-09-21", fetchedAt: "2026-09-22T01:00:00.000Z" }) },
+      asOf: "2026-09-22T00:00:00.000Z",
     });
 
     expect(model.rows[0]).toMatchObject({
@@ -382,13 +382,14 @@ describe("trading room holdings model", () => {
       const episodeId = value.episodes[0].episode.id;
       return buildTradingRoomHoldings([value], {
         scope: scope(),
+        asOf: "2026-09-22T00:00:00.000Z",
         quotesByInstrument: quoteValue ? { [base.id]: quoteValue } : {},
         positionSnapshotsByEpisode: { [episodeId]: snapshot(overrides) },
       }).rows[0];
     };
 
     expect(build(undefined)).toMatchObject({ diagnostic: "missing-quote", statusReason: "缺少行情，无法计算浮盈亏" });
-    expect(build(quote({ freshness: "stale" }))).toMatchObject({ diagnostic: "stale-quote", statusReason: "行情已过期，无法计算当前浮盈亏" });
+    expect(build(quote({ freshness: "stale", quoteDate: "2026-09-21", fetchedAt: "2026-09-22T01:00:00.000Z" }))).toMatchObject({ diagnostic: "stale-quote", statusReason: "行情已过期，无法计算当前浮盈亏" });
     expect(build(quote({ quoteDate: "2026-09-08" }))).toMatchObject({ diagnostic: "pre-trade-quote", statusReason: "行情早于最近一笔交易，无法计算浮盈亏" });
     expect(build(quote({ currency: "HKD" }))).toMatchObject({ diagnostic: "currency-mismatch", statusReason: "行情币种与结算币种不一致，无法计算浮盈亏" });
     expect(build(quote({ price: "0" }))).toMatchObject({ diagnostic: "invalid-quote", statusReason: "行情价格无效，无法计算浮盈亏" });
@@ -514,7 +515,8 @@ describe("trading room holdings model", () => {
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
       staleAfterDays: 30,
-      quotesByInstrument: { [base.id]: quote({ quoteDate: "2026-09-02" }) },
+      asOf: "2026-09-11T00:00:00.000Z",
+      quotesByInstrument: { [base.id]: quote({ quoteDate: "2026-09-10" }) },
       positionSnapshotsByEpisode: { [entry.episodes[0].episode.id]: snapshot() },
     });
 
@@ -533,7 +535,8 @@ describe("trading room holdings model", () => {
     };
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
-      quotesByInstrument: { [base.id]: quote({ currency: "USD" }) },
+      asOf: "2026-09-22T00:00:00.000Z",
+      quotesByInstrument: { [base.id]: quote({ currency: "USD", quoteDate: "2026-09-21", fetchedAt: "2026-09-22T01:00:00.000Z" }) },
       positionSnapshotsByEpisode: { [entry.episodes[0].episode.id]: snapshot() },
     });
 
@@ -545,8 +548,8 @@ describe("trading room holdings model", () => {
     const entry = openEntry(base, "2026-09-10T01:00:00.000Z");
     const model = buildTradingRoomHoldings([entry], {
       scope: scope(),
-      asOf: "2026-09-18T17:00:00.000Z",
-      quotesByInstrument: { [base.id]: quote({ quoteDate: "2026-09-19" }) },
+      asOf: "2026-09-18T21:00:00.000Z",
+      quotesByInstrument: { [base.id]: quote({ quoteDate: "2026-09-18", fetchedAt: "2026-09-19T01:00:00.000Z" }) },
       positionSnapshotsByEpisode: { [entry.episodes[0].episode.id]: snapshot() },
     });
 
@@ -603,7 +606,7 @@ describe("statement-only current holdings", () => {
     };
     return value;
   }
-  const options = { scope: scope(), asOf: "2026-09-19", quotesByInstrument: { "US:TEST": quote() } };
+  const options = { scope: scope(), asOf: "2026-09-19", quotesByInstrument: { "US:TEST": quote({ quoteDate: "2026-09-18", fetchedAt: "2026-09-18T21:00:00.000Z" }) } };
   it("replays a zero-cash bonus share into quantity and average cost", () => {
     const base = instrument({ id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" });
     const value = openEntry(base, "2026-05-20T02:00:00Z");
@@ -703,6 +706,176 @@ describe("statement-only current holdings", () => {
     value.episodes[0].episode.initialPosition!.quantity = "-5";
     expect(buildTradingRoomHoldings([value], options).rows[0].direction).toBe("short");
     expect(buildCurrentPortfolio([value], options).rows[0].marketValue).toBe("-60");
+  });
+
+  it("uses the latest completed CN session across the National Day holiday", () => {
+    const base = instrument({ id: "CN-SH:TEST", market: "CN-SH", currency: "CNY" });
+    const value = openEntry(base, "2026-09-28T02:00:00.000Z");
+    const build = (quoteDate: string) => buildTradingRoomHoldings([value], {
+      scope: scope(),
+      asOf: "2026-10-06T08:11:00.000Z",
+      quotesByInstrument: { [base.id]: quote({ currency: "CNY", quoteDate, fetchedAt: "2026-10-06T09:00:00.000Z" }) },
+      instrumentMetadata: new Map([[base.id, metadataFor(base, "stock")]]),
+    }).rows[0];
+
+    expect(build("2026-09-30")).toMatchObject({ quoteStatus: "available", unrealizedPnlStatus: "available" });
+    expect(build("2026-09-28")).toMatchObject({ quoteStatus: "stale", diagnostic: "stale-quote" });
+  });
+
+  it("rejects future, pre-close, and post-close pre-trade current quotes", () => {
+    const base = instrument({ id: "CN-SH:TEST", market: "CN-SH", currency: "CNY" });
+    const value = openEntry(base, "2026-09-29T02:00:00.000Z");
+    const build = (asOf: string, currentQuote: Partial<TradingRoomQuote>) => buildTradingRoomHoldings([value], {
+      scope: scope(),
+      asOf,
+      quotesByInstrument: { [base.id]: quote({ currency: "CNY", ...currentQuote }) },
+      instrumentMetadata: new Map([[base.id, metadataFor(base, "stock")]]),
+    }).rows[0];
+
+    expect(build("2026-09-30T06:59:00.000Z", {
+      quoteDate: "2026-09-29", fetchedAt: "2026-09-29T06:59:00.000Z",
+    })).toMatchObject({ quoteStatus: "stale", diagnostic: "stale-quote" });
+    expect(build("2026-09-30T07:01:00.000Z", {
+      quoteDate: "2026-10-01", fetchedAt: "2026-10-01T07:01:00.000Z",
+    })).toMatchObject({ quoteStatus: "unavailable", diagnostic: "future-quote" });
+
+    value.episodes[0].episode.executions[0].executedAt = "2026-09-30T08:00:00.000Z";
+    expect(build("2026-09-30T09:00:00.000Z", {
+      quoteDate: "2026-09-30", fetchedAt: "2026-09-30T07:30:00.000Z",
+    })).toMatchObject({ quoteStatus: "unavailable", diagnostic: "pre-trade-quote" });
+  });
+
+  it("cuts same-day execution and statement evidence at the absolute valuation instant", () => {
+    const base = instrument({ id: "CN-SH:TEST", market: "CN-SH", currency: "CNY" });
+    const value = openEntry(base, "2026-09-30T08:00:00.000Z");
+    value.episodes[0].episode.executions[0].executedAt = "2026-09-30T06:00:00.000Z";
+    value.episodes[0].episode.executions[0].source.positionEvents = [{
+      id: "future-receipt", accountId: "account-1", symbol: "TEST", market: "CN-SH",
+      date: "2026-09-30", kind: "transfer-in", quantity: "5", description: "future", source: [],
+    }];
+    value.episodes[0].episode.executions[0].source.statementPositions = [{
+      accountId: "account-1", symbol: "TEST", market: "CN-SH", phase: "closing", date: "2026-09-30", quantity: "99", source: [],
+    }];
+    const row = buildTradingRoomHoldings([value], {
+      scope: scope(),
+      asOf: "2026-09-30T07:00:00.000Z",
+      quotesByInstrument: { [base.id]: quote({ currency: "CNY", quoteDate: "2026-09-30", fetchedAt: "2026-09-30T07:01:00.000Z" }) },
+      instrumentMetadata: new Map([[base.id, metadataFor(base, "stock")]]),
+    }).rows[0];
+
+    expect(row).toMatchObject({ quantity: "2", averageCost: "10" });
+    expect(row.positionEvidence.status).toBe("verified-long");
+  });
+
+  it("keeps date-only same-session executions unknown before the conservative day boundary", () => {
+    const base = instrument({ id: "CN-SH:DATE-ONLY", symbol: "DATEONLY", market: "CN-SH", currency: "CNY" });
+    const value = openEntry(base, "2026-09-30");
+    value.episodes[0].episode.executions[0].executedAt = "2026-09-30";
+    const row = buildTradingRoomHoldings([value], {
+      scope: scope(),
+      asOf: "2026-09-30T06:00:00.000Z",
+      quotesByInstrument: { [base.id]: quote({ currency: "CNY", quoteDate: "2026-09-29", fetchedAt: "2026-09-30T08:00:00.000Z" }) },
+    }).rows[0];
+
+    expect(row).toMatchObject({ quantity: null, averageCost: null, quantityStatus: "unavailable", costStatus: "unavailable" });
+  });
+
+  it("does not treat an absolute .999Z intraday cutoff as a date-only boundary", () => {
+    const base = instrument({ id: "CN-SH:DATE-ONLY-999", symbol: "DATE999", market: "CN-SH", currency: "CNY" });
+    const value = openEntry(base, "2026-09-30");
+    value.episodes[0].episode.executions[0].executedAt = "2026-09-30";
+    const row = buildTradingRoomHoldings([value], {
+      scope: scope(),
+      asOf: "2026-09-30T06:00:00.999Z",
+      quotesByInstrument: { [base.id]: quote({ currency: "CNY", quoteDate: "2026-09-29", fetchedAt: "2026-09-30T08:00:00.000Z" }) },
+    }).rows[0];
+
+    expect(row.quantityStatus).toBe("unavailable");
+  });
+
+  it("admits date-only executions at the market-local day end and preserves session-open exceptions", () => {
+    const base = instrument({ id: "CN-SH:DATE-ONLY-END", symbol: "DATEEND", market: "CN-SH", currency: "CNY" });
+    const value = openEntry(base, "2026-09-30");
+    const fill = value.episodes[0].episode.executions[0];
+    fill.executedAt = "2026-09-30T08:00:00.000Z";
+    fill.source = {
+      ...fill.source,
+      timePrecision: "date-only",
+      tradingDate: "2026-09-30",
+      displayTimePolicy: "session-open",
+      positionEffect: "open-long",
+    };
+    const atDayEnd = buildTradingRoomHoldings([value], {
+      scope: scope(),
+      asOf: "2026-09-30",
+      quotesByInstrument: { [base.id]: quote({ currency: "CNY", quoteDate: "2026-09-30", fetchedAt: "2026-09-30T08:00:00.000Z" }) },
+    }).rows[0];
+    const sessionOpenIntraday = buildTradingRoomHoldings([value], {
+      scope: scope(),
+      asOf: "2026-09-30T06:00:00.000Z",
+      quotesByInstrument: { [base.id]: quote({ currency: "CNY", quoteDate: "2026-09-29", fetchedAt: "2026-09-30T08:00:00.000Z" }) },
+    }).rows[0];
+
+    expect(atDayEnd).toMatchObject({ quantity: "2", averageCost: "10" });
+    expect(sessionOpenIntraday).toMatchObject({ quantity: "2", averageCost: "10" });
+  });
+
+  it("replays admitted US executions on the market-local clock", () => {
+    const base = instrument({ id: "US:CLOCK", symbol: "CLOCK", market: "US", currency: "USD" });
+    const value = openEntry(base, "2026-09-30T14:00:00.000Z");
+    const row = buildTradingRoomHoldings([value], {
+      scope: scope(),
+      asOf: "2026-09-30T14:30:00.000Z",
+      quotesByInstrument: { [base.id]: quote({ quoteDate: "2026-09-29", fetchedAt: "2026-09-30T16:00:00.000Z" }) },
+    }).rows[0];
+
+    expect(row).toMatchObject({ quantity: "2", averageCost: "10", quantityStatus: "available", costStatus: "available" });
+  });
+
+  it("filters future episode evidence from a first fill before replay", () => {
+    const base = instrument({ id: "CN-SH:EVIDENCE", symbol: "EVIDENCE", market: "CN-SH", currency: "CNY" });
+    const first = execution(base, "buy", "2026-09-29T02:00:00.000Z");
+    const value = openEntry(base, first.executedAt);
+    value.executions = [first];
+    value.episodes[0].episode.executions = [first];
+    const bonus = {
+      id: "bonus-prior", accountId: "account-1", symbol: "EVIDENCE", market: "CN-SH",
+      date: "2026-09-29", kind: "corporate-action" as const, quantity: "2", amount: "0", currency: "CNY",
+      description: "红股到账", source: [],
+    };
+    const futureReceipt = {
+      id: "future-receipt", accountId: "account-1", symbol: "EVIDENCE", market: "CN-SH",
+      date: "2026-09-30", kind: "transfer-in" as const, quantity: "5", description: "future", source: [],
+    };
+    value.episodes[0].episode.positionEvents = [bonus, futureReceipt];
+    first.source.positionEvents = [futureReceipt];
+    const row = buildTradingRoomHoldings([value], {
+      scope: scope(),
+      asOf: "2026-09-30T06:59:00.000Z",
+      quotesByInstrument: { [base.id]: quote({ currency: "CNY", quoteDate: "2026-09-29", fetchedAt: "2026-09-30T08:00:00.000Z" }) },
+    }).rows[0];
+
+    expect(row).toMatchObject({ quantity: "4", averageCost: "5", quantityStatus: "available" });
+  });
+
+  it("filters future source evidence from a later fill before replay", () => {
+    const base = instrument({ id: "CN-SH:EVIDENCE-SECOND", symbol: "EVIDENCE2", market: "CN-SH", currency: "CNY" });
+    const first = execution(base, "buy", "2026-09-28T02:00:00.000Z");
+    const second = execution(base, "buy", "2026-09-29T02:00:00.000Z");
+    const value = openEntry(base, first.executedAt);
+    value.executions = [first, second];
+    value.episodes[0].episode.executions = [first, second];
+    second.source.positionEvents = [{
+      id: "future-receipt", accountId: "account-1", symbol: "EVIDENCE2", market: "CN-SH",
+      date: "2026-09-30", kind: "transfer-in" as const, quantity: "5", description: "future", source: [],
+    }];
+    const row = buildTradingRoomHoldings([value], {
+      scope: scope(),
+      asOf: "2026-09-30T06:59:00.000Z",
+      quotesByInstrument: { [base.id]: quote({ currency: "CNY", quoteDate: "2026-09-29", fetchedAt: "2026-09-30T08:00:00.000Z" }) },
+    }).rows[0];
+
+    expect(row).toMatchObject({ quantity: "4", averageCost: "10", quantityStatus: "available" });
   });
 
 });

@@ -143,8 +143,8 @@ describe("TradeReviewWorkspace alias recovery", () => {
       expect(screen.getByRole("combobox", { name: "交易性质" })).toHaveValue("simulation");
       expect(screen.getByRole("combobox", { name: "账户范围" })).toHaveValue("tradingview:simulation:default");
       expect(screen.getByRole("combobox", { name: "报告计价" })).toHaveValue("CNY");
+      expect(JSON.parse(window.localStorage.getItem(sharedScopeV2StorageKey())!)).toEqual({ nature: "simulation", accountIds: ["tradingview:simulation:default"], reportCurrency: "CNY", simulationRunId: null });
     });
-    expect(JSON.parse(window.localStorage.getItem(sharedScopeV2StorageKey())!)).toEqual({ nature: "simulation", accountIds: ["tradingview:simulation:default"], reportCurrency: "CNY", simulationRunId: null });
     expect(window.localStorage.getItem(sharedScopeStorageKey())).toContain("tv-old");
   });
 

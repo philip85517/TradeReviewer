@@ -35,20 +35,26 @@ it("paginates the same pending count, keeps unavailable rows, and opens the exac
   fireEvent.click(within(rows[1]).getByRole("button", { name: "开始复盘" }));
   expect(onOpen).toHaveBeenCalledWith("US:T6", latest.episode.id, pending.queueIds);
   expect(screen.getByText("待复盘的已完成交易（6）")).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "第1页待复盘" })).toHaveAttribute("aria-current", "page");
-  expect(screen.getByRole("button", { name: "第2页待复盘" })).not.toBeDisabled();
+  expect(screen.getByText("第 1 / 3 页")).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "第2页待复盘" })).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "下一页待复盘" }));
   expect(screen.getAllByRole("row")[1]).toHaveTextContent("待复盘证券4");
-  expect(screen.getByRole("button", { name: "第2页待复盘" })).toHaveAttribute("aria-current", "page");
-  fireEvent.click(screen.getByRole("button", { name: "第3页待复盘" }));
+  expect(screen.getByText("第 2 / 3 页")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "下一页待复盘" }));
   expect(screen.getAllByRole("row")[1]).toHaveTextContent("待复盘证券2");
-  expect(screen.getByRole("button", { name: "第3页待复盘" })).toHaveAttribute("aria-current", "page");
-  fireEvent.click(screen.getByRole("button", { name: "第2页待复盘" }));
+  expect(screen.getByText("第 3 / 3 页")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "上一页待复盘" }));
   fireEvent.click(screen.getByRole("button", { name: "查看全部待复盘" }));
   expect(onViewAll).toHaveBeenCalledWith(expect.objectContaining({
     reviewStatus: "pending",
     positionStatus: "closed",
   }));
+});
+
+it("keeps the period context visible beside the pending queue", () => {
+  render(<RoomPendingReviews model={model(fixture())} onOpenInReview={vi.fn()} scopeLabel="2026-09-01 至 2026-09-25" />);
+
+  expect(screen.getByRole("region", { name: "待复盘的已完成交易" })).toHaveTextContent("统计期间：2026-09-01 至 2026-09-25");
 });
 
 it("uses saved completion/defer records on refresh and retains pending work on unchanged or cancelled return", () => {

@@ -380,9 +380,10 @@ describe("real review replay journey", () => {
     };
     const repository: RecallRepository = {
       load: vi.fn(async () => structuredClone(persisted ?? s0)),
-      save: vi.fn(async (document) => {
-        persisted = structuredClone({ ...document, revision: document.revision + 1 });
-        return structuredClone(persisted);
+      save: vi.fn(async (document: RecallDocument): Promise<RecallDocument> => {
+        const next: RecallDocument = structuredClone({ ...document, revision: document.revision + 1 });
+        persisted = next;
+        return structuredClone(next);
       }),
       fetch: vi.fn(),
     };

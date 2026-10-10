@@ -84,6 +84,10 @@ describe("ReviewDesignPreview recommended compact frame contract", () => {
     expect(previewStyles).toMatch(/\.review-design-preview--recommended \.recall-edge-toggle--right\s*\{[^}]*right:\s*0/);
   });
 
+  it("keeps the wide desktop cascade on the compact single-row baseline", () => {
+    expect(previewStyles).toMatch(/@media\s*\(min-width:\s*1280px\)[\s\S]*?\.review-design-preview--recommended \.recall-header\s*\{[\s\S]*?min-height:\s*48px[\s\S]*?flex-wrap:\s*nowrap/);
+  });
+
   it("centers icon-first replay actions with desktop and coarse-pointer hit boxes", () => {
     expect(previewStyles).toMatch(/\.review-design-preview--recommended \.recall-main > \.recall-replay-bar\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) max-content minmax\(0, 1fr\)/);
     expect(previewStyles).toMatch(/\.review-design-preview--recommended \.recall-controls \.recall-replay-action\s*\{[\s\S]*?width:\s*36px[\s\S]*?height:\s*36px/);

@@ -691,5 +691,5 @@
 }
 
 @media (min-width: 1280px) {
-  .review-design-preview--recommended .recall-header { max-height: none; flex-wrap: wrap; }
+  .review-design-preview--recommended .recall-header { min-height: 48px; max-height: 56px; flex-wrap: nowrap; }
 }

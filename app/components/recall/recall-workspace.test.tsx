@@ -25,6 +25,8 @@ import {
 } from "./recall-workspace";
 import { DrawingLayersPanel } from "../chart/drawing-layers-panel";
 
+const originalTradereviewDbPath = process.env.TRADEREVIEW_DB_PATH;
+
 const replayChartHarness = vi.hoisted(() => {
   const viewport = {
     version: 1 as const,
@@ -360,6 +362,88 @@ describe("recommended panel control contracts", () => {
   });
 });
 
+describe("real review replay journey", () => {
+  it("keeps S0 cutoffs, an anchored Text stage, and the early cursor after save and reopen", async () => {
+    const isolatedDbPath = `${process.cwd()}/.scratch/review-visual-baseline-plan-20261011/evidence/task-1-journey.sqlite`;
+    process.env.TRADEREVIEW_DB_PATH = isolatedDbPath;
+    let persisted: RecallDocument | undefined;
+    const initial = createRecallDocument(replayEpisode, "2025-01-02T09:00:00.000Z");
+    const s0: RecallDocument = {
+      ...initial,
+      working: {
+        ...initial.working,
+        phase: "pre-entry",
+        hasSeenFuture: false,
+        cursor: "2025-01-02T09:59:59.000Z",
+        executionCursor: NO_REVEALED_EXECUTIONS,
+      },
+    };
+    const repository: RecallRepository = {
+      load: vi.fn(async () => structuredClone(persisted ?? s0)),
+      save: vi.fn(async (document) => {
+        persisted = structuredClone({ ...document, revision: document.revision + 1 });
+        return structuredClone(persisted);
+      }),
+      fetch: vi.fn(),
+    };
+    let leaveGuard: (() => Promise<boolean>) | null = null;
+
+    const rendered = renderRecall(replayEpisode, s0, repository, guard => { leaveGuard = guard; });
+    const chart = await screen.findByTestId("mock-replay-chart");
+    expect(chart).toHaveAttribute("data-revealed-candles", "");
+    expect(chart).not.toHaveAttribute("data-execution-cursor");
+
+    fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+    await waitFor(() => expect(chart).toHaveAttribute("data-revealed-candles", replayCandles[0].time));
+    fireEvent.click(screen.getByRole("button", { name: "下一笔决策" }));
+    await waitFor(() => expect(chart).toHaveAttribute("data-execution-cursor", "fill-2"));
+    fireEvent.click(screen.getByRole("button", { name: "add Text" }));
+    fireEvent.click(screen.getByRole("button", { name: "上一根 K 线" }));
+    await waitFor(() => expect(chart).toHaveAttribute("data-revealed-candles", replayCandles[0].time));
+
+    expect(leaveGuard).not.toBeNull();
+    await act(async () => { await leaveGuard!(); });
+    expect(repository.save).toHaveBeenCalled();
+    const saved = persisted!;
+    const savedText = [
+      ...saved.working.drawings,
+      ...(saved.working.editingContext?.drawings ?? []),
+      ...Object.values(saved.working.phaseContexts ?? {}).flatMap(context => context.drawings),
+      ...(saved.working.decisionDrafts ?? []).flatMap(context => context.drawings),
+    ].find(drawing => drawing.id === "text-1");
+    expect(savedText).toMatchObject({
+      tool: "text",
+      stage: "during-replay",
+      anchors: [{ time: replayCandles[0].time, price: 10 }],
+    });
+    const savedContext = saved.working.editingContext!;
+    const savedCutoff = {
+      cursor: savedContext.cursor,
+      executionCursor: savedContext.executionCursor,
+      phase: saved.working.phase,
+      hasSeenFuture: saved.working.hasSeenFuture,
+    };
+
+    rendered.unmount();
+    renderRecall(replayEpisode, saved, repository, guard => { leaveGuard = guard; });
+    const reopenedChart = await screen.findByTestId("mock-replay-chart");
+    await waitFor(() => expect(reopenedChart).toHaveAttribute("data-revealed-candles", replayCandles[0].time));
+    expect(repository.load).toHaveBeenCalledTimes(2);
+    expect(reopenedChart).toHaveAttribute("data-cursor", savedCutoff.cursor);
+    expect(reopenedChart).toHaveAttribute("data-execution-cursor", savedCutoff.executionCursor);
+    expect(reopenedChart).toHaveAttribute("data-drawing-ids", "text-1");
+    const reopenedText = [
+      ...saved.working.drawings,
+      ...(saved.working.editingContext?.drawings ?? []),
+      ...Object.values(saved.working.phaseContexts ?? {}).flatMap(context => context.drawings),
+      ...(saved.working.decisionDrafts ?? []).flatMap(context => context.drawings),
+    ].find(drawing => drawing.id === "text-1");
+    expect(reopenedText).toMatchObject(savedText!);
+    expect(saved.working.phase).toBe(savedCutoff.phase);
+    expect(saved.working.hasSeenFuture).toBe(savedCutoff.hasSeenFuture);
+  });
+});
+
 function openMoreRecords() {
   const summary = screen.getByRole("button", { name: "更多 / 记录" });
   if (summary.getAttribute("aria-expanded") !== "true") fireEvent.click(summary);
@@ -429,6 +513,8 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.useRealTimers();
+  if (originalTradereviewDbPath === undefined) delete process.env.TRADEREVIEW_DB_PATH;
+  else process.env.TRADEREVIEW_DB_PATH = originalTradereviewDbPath;
 });
 
 describe("RecallWorkspace autosave reconciliation", () => {

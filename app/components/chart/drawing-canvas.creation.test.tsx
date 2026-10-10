@@ -285,6 +285,31 @@ describe("drawing creation state", () => {
     },
   );
 
+  it.each(["horizontal-line", "vertical-line", "price-label"] as const)(
+    "moves the %s preview with the pointer before release",
+    (activeTool) => {
+      const methods = new Map<string, ReturnType<typeof vi.fn>>();
+      const context = new Proxy({} as Record<string, unknown>, {
+        get(target, property: string) {
+          if (!methods.has(property)) methods.set(property, vi.fn());
+          return methods.get(property);
+        },
+        set() { return true; },
+      }) as unknown as CanvasRenderingContext2D;
+      vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(context);
+      const { canvas } = renderCanvas({ activeTool });
+
+      fireEvent.pointerDown(canvas, { pointerId: 44, clientX: 60, clientY: 100 });
+      methods.get("moveTo")?.mockClear();
+      fireEvent.pointerMove(canvas, { pointerId: 44, clientX: 100, clientY: 80 });
+
+      // Time anchors snap to the nearest revealed candle (x=90 for the
+      // pointer position in this fixture); price anchors remain pixel exact.
+      const expectedMove = activeTool === "vertical-line" ? [90, 0] : [0, 80];
+      expect(methods.get("moveTo")?.mock.calls).toContainEqual(expectedMove);
+    },
+  );
+
   it("cancels a staged horizontal line without writing a command", () => {
     const onCommand = vi.fn();
     const { canvas } = renderCanvas({ activeTool: "horizontal-line", onCommand });

@@ -1953,6 +1953,17 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
       const point = pointFromClient(clientX, clientY);
       if (!point) return;
       const anchor = anchorFromPoint(point.x, point.y);
+      if (isSinglePointTool(creation.tool)) {
+        // Axis tools keep their original orthogonal coordinate for the final
+        // drawing, but the live preview must follow the pointer on the axis
+        // that will be committed. Reusing creation.first here made the line
+        // appear stuck until pointerup.
+        const previewAnchor = creation.tool === "vertical-line"
+          ? { ...creation.first, time: anchor.time }
+          : { ...creation.first, price: anchor.price };
+        setCreationPreview(creation.tool, [previewAnchor]);
+        return;
+      }
       const anchors = creation.phase === "width"
         ? [creation.first, creation.second!, anchor]
         : [creation.first, anchor];

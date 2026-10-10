@@ -1,0 +1,21 @@
+{
+  "status": "FAIL V09 V10; preserved before second bounded repair",
+  "files": [
+    {
+      "path": "app/components/strategy-prototype/full-workbench-preview.tsx",
+      "sha256": "b0a80086cbcc213b6a3ddc4e5679306e1cd3f36be425b831d3cc208618acc5fb"
+    },
+    {
+      "path": "app/components/strategy-prototype/full-workbench-preview.css",
+      "sha256": "eab90e4d3554ce53c8b3179569acbb8106fca3bc879f7ab92e5e74b9e6142674"
+    },
+    {
+      "path": "app/components/strategy-prototype/workbench-visual-theme.css",
+      "sha256": "d173672baa0790c6993076f0486bc25486dc86c5ba9a6f51dfb0d26f15c4e2f9"
+    },
+    {
+      "path": "app/components/strategy-prototype/running-prototype.tsx",
+      "sha256": "360650f1688855c9195b290c344491c78fd2379e8836d3b250fe709e11bdcb8a"
+    }
+  ]
+}

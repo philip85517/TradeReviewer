@@ -1,0 +1,78 @@
+{
+  "buttons": [
+    {
+      "fullyWithinViewportX": true,
+      "rect": {
+        "height": 44,
+        "width": 82,
+        "x": 17,
+        "y": 1893
+      },
+      "text": "上一根"
+    },
+    {
+      "fullyWithinViewportX": true,
+      "rect": {
+        "height": 44,
+        "width": 46,
+        "x": 105,
+        "y": 1893
+      },
+      "text": "播放"
+    },
+    {
+      "fullyWithinViewportX": true,
+      "rect": {
+        "height": 44,
+        "width": 109.84375,
+        "x": 157,
+        "y": 1893
+      },
+      "text": "下一根 K 线"
+    },
+    {
+      "fullyWithinViewportX": true,
+      "rect": {
+        "height": 44,
+        "width": 108,
+        "x": 17,
+        "y": 1943
+      },
+      "text": "下一笔决策"
+    },
+    {
+      "fullyWithinViewportX": true,
+      "rect": {
+        "height": 44,
+        "width": 121,
+        "x": 131,
+        "y": 1943
+      },
+      "text": "留存当前快照"
+    },
+    {
+      "fullyWithinViewportX": true,
+      "rect": {
+        "height": 44,
+        "width": 72,
+        "x": 258,
+        "y": 1943
+      },
+      "text": "计划侧栏"
+    }
+  ],
+  "pageWidth": 390,
+  "row": {
+    "clientWidth": 356,
+    "height": 94,
+    "overflow": "visible",
+    "scrollWidth": 356,
+    "width": 356,
+    "wrap": "wrap",
+    "x": 17
+  },
+  "viewport": [
+    390,
+    844
+  ]
+}

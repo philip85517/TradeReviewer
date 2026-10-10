@@ -1,0 +1,944 @@
+{
+  "height": 800,
+  "scrollHeight": 800,
+  "scrollWidth": 900,
+  "visible": [
+    {
+      "fontSize": "13px",
+      "label": "重新读取本地样板",
+      "lineHeight": "20px",
+      "padding": "0px 10px",
+      "rect": {
+        "height": 36,
+        "width": 126,
+        "x": 668,
+        "y": 6
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "重置样板",
+      "lineHeight": "20px",
+      "padding": "0px 10px",
+      "rect": {
+        "height": 36,
+        "width": 74,
+        "x": 802,
+        "y": 6
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "搜索标的",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 8,
+        "y": 167
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "切换到 15m",
+      "lineHeight": "20px",
+      "padding": "0px 6px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 55,
+        "y": 167
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "切换到 1h",
+      "lineHeight": "20px",
+      "padding": "0px 6px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 101,
+        "y": 167
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "切换到 4h",
+      "lineHeight": "20px",
+      "padding": "0px 6px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 147,
+        "y": 167
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "切换到 1D",
+      "lineHeight": "20px",
+      "padding": "0px 6px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 193,
+        "y": 167
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "切换到 1W",
+      "lineHeight": "20px",
+      "padding": "0px 6px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 239,
+        "y": 167
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "行情数据详情",
+      "lineHeight": "20px",
+      "padding": "6px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 286,
+        "y": 167
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "图层",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 337,
+        "y": 167
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "图表设置",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 384,
+        "y": 167
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "买入前判断",
+      "lineHeight": "20px",
+      "padding": "0px 8px",
+      "rect": {
+        "height": 44,
+        "width": 292,
+        "x": 8,
+        "y": 121
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "持仓过程",
+      "lineHeight": "20px",
+      "padding": "0px 8px",
+      "rect": {
+        "height": 44,
+        "width": 292,
+        "x": 304,
+        "y": 121
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "事后复盘",
+      "lineHeight": "20px",
+      "padding": "0px 8px",
+      "rect": {
+        "height": 44,
+        "width": 292,
+        "x": 600,
+        "y": 121
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "收起复盘导航，切换到专注布局",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 453,
+        "y": 75
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "统计",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 501,
+        "y": 75
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "导出",
+      "lineHeight": "20px",
+      "padding": "0px 10px",
+      "rect": {
+        "height": 44,
+        "width": 71,
+        "x": 549,
+        "y": 75
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "展开",
+      "lineHeight": "20px",
+      "padding": "0px 8px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 838,
+        "y": 222
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "选择",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 36,
+        "x": 20.5,
+        "y": 281
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "文字标注",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 36,
+        "x": 20.5,
+        "y": 328
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "趋势线",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 36,
+        "x": 20.5,
+        "y": 375
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "水平线",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 36,
+        "x": 20.5,
+        "y": 422
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "平行通道",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 36,
+        "x": 20.5,
+        "y": 469
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "做多盈亏比",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 36,
+        "x": 20.5,
+        "y": 516
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "垂直线",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 75.5,
+        "y": 610
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "矩形区间",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 125.5,
+        "y": 610
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "箭头",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 175.5,
+        "y": 610
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "斐波那契回撤",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 225.5,
+        "y": 610
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "价格标注",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 75.5,
+        "y": 660
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "区间测量",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 125.5,
+        "y": 660
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "做空盈亏比",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 175.5,
+        "y": 660
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "锁定全部图形",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 36,
+        "x": 20.5,
+        "y": 613
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "撤销绘图",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 36,
+        "x": 20.5,
+        "y": 660
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "重做绘图",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 36,
+        "x": 20.5,
+        "y": 707
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "清空绘图",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 36,
+        "x": 20.5,
+        "y": 754
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "12px",
+      "label": "S0 入场前 · 行情可知至 2026-03-01 14:59:59 Asia/Shanghai · 成交尚未揭示 · 复盘补记",
+      "lineHeight": "18px",
+      "padding": "4px 8px",
+      "rect": {
+        "height": 28,
+        "width": 822,
+        "x": 63,
+        "y": 274
+      },
+      "tag": "DIV"
+    },
+    {
+      "fontSize": "14px",
+      "label": "",
+      "lineHeight": "22px",
+      "padding": "0px",
+      "rect": {
+        "height": 192,
+        "width": 738,
+        "x": 63,
+        "y": 302
+      },
+      "tag": "CANVAS"
+    },
+    {
+      "fontSize": "14px",
+      "label": "",
+      "lineHeight": "22px",
+      "padding": "0px",
+      "rect": {
+        "height": 192,
+        "width": 738,
+        "x": 63,
+        "y": 302
+      },
+      "tag": "CANVAS"
+    },
+    {
+      "fontSize": "14px",
+      "label": "",
+      "lineHeight": "22px",
+      "padding": "0px",
+      "rect": {
+        "height": 192,
+        "width": 84,
+        "x": 801,
+        "y": 302
+      },
+      "tag": "CANVAS"
+    },
+    {
+      "fontSize": "14px",
+      "label": "",
+      "lineHeight": "22px",
+      "padding": "0px",
+      "rect": {
+        "height": 192,
+        "width": 84,
+        "x": 801,
+        "y": 302
+      },
+      "tag": "CANVAS"
+    },
+    {
+      "fontSize": "14px",
+      "label": "",
+      "lineHeight": "22px",
+      "padding": "0px",
+      "rect": {
+        "height": 28,
+        "width": 738,
+        "x": 63,
+        "y": 494
+      },
+      "tag": "CANVAS"
+    },
+    {
+      "fontSize": "14px",
+      "label": "",
+      "lineHeight": "22px",
+      "padding": "0px",
+      "rect": {
+        "height": 28,
+        "width": 738,
+        "x": 63,
+        "y": 494
+      },
+      "tag": "CANVAS"
+    },
+    {
+      "fontSize": "14px",
+      "label": "",
+      "lineHeight": "22px",
+      "padding": "0px",
+      "rect": {
+        "height": 28,
+        "width": 84,
+        "x": 801,
+        "y": 494
+      },
+      "tag": "CANVAS"
+    },
+    {
+      "fontSize": "13px",
+      "label": "显示计划价格",
+      "lineHeight": "20px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 44,
+        "width": 96,
+        "x": 139,
+        "y": 430
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "计划入场 56，精确编辑",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 71.09375,
+        "x": 71,
+        "y": 342.4375
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "初始止损 52，精确编辑",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 71.09375,
+        "x": 71,
+        "y": 382.328125
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "14px",
+      "label": "绘图画布",
+      "lineHeight": "22px",
+      "padding": "0px",
+      "rect": {
+        "height": 220,
+        "width": 822,
+        "x": 63,
+        "y": 302
+      },
+      "tag": "CANVAS"
+    },
+    {
+      "fontSize": "12px",
+      "label": "收起文字 prototype-pre-entry-note",
+      "lineHeight": "18px",
+      "padding": "4px 6px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 411.875,
+        "y": 446
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "适应全部",
+      "lineHeight": "20px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 44,
+        "width": 70,
+        "x": 67,
+        "y": 440
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "关闭计划侧栏",
+      "lineHeight": "20px",
+      "padding": "0px",
+      "rect": {
+        "height": 44,
+        "width": 36,
+        "x": 835,
+        "y": 522
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "计划入场",
+      "lineHeight": "20px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 44,
+        "width": 842,
+        "x": 29,
+        "y": 607
+      },
+      "tag": "INPUT"
+    },
+    {
+      "fontSize": "13px",
+      "label": "初始止损",
+      "lineHeight": "20px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 44,
+        "width": 417,
+        "x": 29,
+        "y": 686
+      },
+      "tag": "INPUT"
+    },
+    {
+      "fontSize": "13px",
+      "label": "止盈目标",
+      "lineHeight": "20px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 44,
+        "width": 417,
+        "x": 454,
+        "y": 686
+      },
+      "tag": "INPUT"
+    },
+    {
+      "fontSize": "13px",
+      "label": "数量",
+      "lineHeight": "20px",
+      "padding": "0px 4px",
+      "rect": {
+        "height": 44,
+        "width": 276.65625,
+        "x": 29,
+        "y": 769
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "名义金额",
+      "lineHeight": "20px",
+      "padding": "0px 4px",
+      "rect": {
+        "height": 44,
+        "width": 276.671875,
+        "x": 311.65625,
+        "y": 769
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "仓位比例（%）",
+      "lineHeight": "20px",
+      "padding": "0px 4px",
+      "rect": {
+        "height": 44,
+        "width": 276.65625,
+        "x": 594.328125,
+        "y": 769
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "计划数量",
+      "lineHeight": "20px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 44,
+        "width": 842,
+        "x": 29,
+        "y": 848
+      },
+      "tag": "INPUT"
+    },
+    {
+      "fontSize": "13px",
+      "label": "计划方向",
+      "lineHeight": "normal",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 44,
+        "width": 112,
+        "x": 29,
+        "y": 927
+      },
+      "tag": "SELECT"
+    },
+    {
+      "fontSize": "13px",
+      "label": "计划数量单位",
+      "lineHeight": "normal",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 44,
+        "width": 112,
+        "x": 149,
+        "y": 927
+      },
+      "tag": "SELECT"
+    },
+    {
+      "fontSize": "13px",
+      "label": "计划币种",
+      "lineHeight": "20px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 44,
+        "width": 417,
+        "x": 29,
+        "y": 1028
+      },
+      "tag": "INPUT"
+    },
+    {
+      "fontSize": "13px",
+      "label": "计划价格口径",
+      "lineHeight": "normal",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 44,
+        "width": 417,
+        "x": 454,
+        "y": 1028
+      },
+      "tag": "SELECT"
+    },
+    {
+      "fontSize": "13px",
+      "label": "参考资金金额",
+      "lineHeight": "20px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 44,
+        "width": 842,
+        "x": 29,
+        "y": 1095
+      },
+      "tag": "INPUT"
+    },
+    {
+      "fontSize": "13px",
+      "label": "参考资金币种",
+      "lineHeight": "20px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 44,
+        "width": 842,
+        "x": 29,
+        "y": 1162
+      },
+      "tag": "INPUT"
+    },
+    {
+      "fontSize": "13px",
+      "label": "参考资金时点",
+      "lineHeight": "20px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 44,
+        "width": 842,
+        "x": 29,
+        "y": 1229
+      },
+      "tag": "INPUT"
+    },
+    {
+      "fontSize": "13px",
+      "label": "参考数量步长",
+      "lineHeight": "20px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 44,
+        "width": 842,
+        "x": 29,
+        "y": 1318
+      },
+      "tag": "INPUT"
+    },
+    {
+      "fontSize": "13px",
+      "label": "上一根 K 线",
+      "lineHeight": "20px",
+      "padding": "0px 9px",
+      "rect": {
+        "height": 44,
+        "width": 82,
+        "x": 23,
+        "y": 683
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "播放",
+      "lineHeight": "20px",
+      "padding": "0px 9px",
+      "rect": {
+        "height": 44,
+        "width": 46,
+        "x": 111,
+        "y": 683
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "下一根 K 线",
+      "lineHeight": "20px",
+      "padding": "0px 9px",
+      "rect": {
+        "height": 44,
+        "width": 109.84375,
+        "x": 163,
+        "y": 683
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "下一笔决策",
+      "lineHeight": "20px",
+      "padding": "0px 9px",
+      "rect": {
+        "height": 44,
+        "width": 108,
+        "x": 278.84375,
+        "y": 683
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "留存当前快照",
+      "lineHeight": "20px",
+      "padding": "0px 9px",
+      "rect": {
+        "height": 44,
+        "width": 121,
+        "x": 392.84375,
+        "y": 683
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "计划侧栏",
+      "lineHeight": "20px",
+      "padding": "0px 9px",
+      "rect": {
+        "height": 44,
+        "width": 72,
+        "x": 519.84375,
+        "y": 683
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "fontSize": "13px",
+      "label": "更多 / 记录",
+      "lineHeight": "20px",
+      "padding": "0px 9px",
+      "rect": {
+        "height": 44,
+        "width": 84.75,
+        "x": 792.25,
+        "y": 733
+      },
+      "tag": "BUTTON"
+    }
+  ],
+  "width": 900
+}

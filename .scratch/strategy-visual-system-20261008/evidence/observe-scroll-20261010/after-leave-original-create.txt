@@ -1,0 +1,35 @@
+- complementary "主导航":
+  - strong: TradeReview
+  - generic: 历史交易复盘
+  - navigation "主导航":
+    - button "我的交易室":
+      - text: 我的交易室
+    - button "交易库" [disabled]:
+      - text: 交易库
+    - button "分析" [disabled]:
+      - text: 分析
+    - button "数据" [disabled]:
+      - text: 数据
+    - button "策略 原型":
+      - generic: 策略
+      - generic: 原型
+  - button "设置" [disabled]:
+    - text: 设置
+- main:
+  - generic: 策略实验 / 我的实验 / 实验列表
+  - generic: 交互原型 · 合成数据 · 刷新重置
+  - generic: 策略实验 / 我的实验
+  - heading "我的策略实验" [level=1]
+  - paragraph: 同一会话可保留多个实验；返回列表重开会恢复各自进度。刷新后重置。
+  - button "+ 新建实验"
+  - generic: 还没有策略实验
+  - generic: 从历史时点开始创建第一份内存草稿；这里只生成合成预览。
+  - button "开始设置起点":
+    - text: 开始设置起点
+    - generic: →
+  - button "原型演示工具（开发）":
+    - generic: ▸
+    - text: 原型演示工具（开发）
+  - button "演示范围与数据限制":
+    - generic: ▸
+    - text: 演示范围与数据限制

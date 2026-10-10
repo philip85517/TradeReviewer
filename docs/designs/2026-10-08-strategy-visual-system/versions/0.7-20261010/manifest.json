@@ -1,0 +1,211 @@
+{
+  "version": "0.7-20261010",
+  "generatedAtUTC": "2026-10-10T12:50:14.908543+00:00",
+  "scope": "Archive approved complete-observe visual, add document indexes, push task branch. No new visuals or behavior. Not overall ticket 01 or production acceptance.",
+  "git": {
+    "branch": "codex/strategy-visual-system-20261008",
+    "baseCommit": "9c2b3d209a202422c3d5aeab5969a9b093cfda92",
+    "binding": "The Git commit containing this manifest binds this version. Later documentation receipts do not change source SHA256."
+  },
+  "fixedState": {
+    "view": "observe",
+    "scene": "complete",
+    "strategy": "EMA20 v1.4",
+    "date": "2024-09-13",
+    "chart": "net",
+    "data": "Three-month two-strategy synthetic preview fixture"
+  },
+  "preview": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+  "currentSourceSHA256": {
+    "app/components/chart/canonical-chart-capture.test.ts": "596d43d916ca489f1b3b80c932d6b4a19c0104edae2f2bd3634cc56c48796f6a",
+    "app/components/chart/canonical-chart-capture.ts": "be64d17460d18fe5f67d23ae9e7c42e319a4f5a0e01578d06d021fa9f3b2a445",
+    "app/components/chart/chart-settings-popover.test.tsx": "b2d04b3f064d899f007a4836ceffcdd7919685f0394a894dcb186004e152a32b",
+    "app/components/chart/chart-settings-popover.tsx": "0a2e2c043cc5d8f9dea82a215a4ff6ab14e686436cb8635df140f02077c646d1",
+    "app/components/chart/chart-toolbar.test.tsx": "0615fd5b1f282105e2dba13ade90b52241bb1fa63ae5fba7b9df74661e52535f",
+    "app/components/chart/chart-toolbar.tsx": "3898ea40b438abb92f9543ed095f12d4f29db33ed377627bc0d057ba367fab7d",
+    "app/components/chart/drawing-canvas.recall-review.test.tsx": "ffb9464fa4a6345ee23f2b6f45c2e77dce20c3fd731256a5e96f74f98111388e",
+    "app/components/chart/drawing-canvas.test.tsx": "04db7c3bd48e1335655e279f31c7dc9415f082cc7268fc0ff802f2b35571b260",
+    "app/components/chart/drawing-canvas.tsx": "0f969da1e4fa40973a38eb6c2aa96595f53286b29dbb7601139e98ed55faf174",
+    "app/components/chart/drawing-layers-panel.test.tsx": "20ece5110ec7c54565195c91a408645f4ff19c0f8d57150bae567db6269b7fbe",
+    "app/components/chart/drawing-layers-panel.tsx": "1ab04e332b6c6fc2155cca2388c949ee31e6b54955d6a44e2cd4e228d4f00efc",
+    "app/components/chart/drawing-toolbar.test.tsx": "28eae4cdb1a1aee2a5a83df19d2ed230aa769bc468dff7590d99906c49f518f0",
+    "app/components/chart/drawing-toolbar.tsx": "523d44f3149b4dc1aa3897df019058744346d66f0a7bf091b4f0ed9131512569",
+    "app/components/chart/instrument-search-popover.test.tsx": "f061ef10ef19a19384b4caff669eaa6beec21c5ea8b7346b811ea2446cd86186",
+    "app/components/chart/instrument-search-popover.tsx": "87c9f18b6986dbcec6052411c8c3794dd4415b2c8f65984d9c547c34e88b4c9f",
+    "app/components/chart/market-data-popover.test.tsx": "e564ecc50e8d4902b5ac8c4c91afa72bd4f462c1ba5c1b56f354370a23adf04a",
+    "app/components/chart/market-data-popover.tsx": "3146b43e150afcad34f7b3d2b453d55babb8d4a9c2bb9ca53ada014e43180452",
+    "app/components/chart/replay-chart.recall-review.test.tsx": "5dd29202070d8e360613bfffb3e008060d9f4032cbf04c6e52b8d029f8bcec14",
+    "app/components/chart/replay-chart.test.tsx": "33be8ae6a6546de69ea9a588ed824cd42b563e9d5ce582205d48f378fafeb10a",
+    "app/components/chart/replay-chart.tsx": "1b9aa46bcfeddd25218ecead21d94634ba0eae985706caaf11f3722c3b347311",
+    "app/components/chart/use-fullscreen.test.tsx": "24ff4a6fdd90d8f722b3f1fafc2c6ff1da0245a9b253711d2b7609fd637d63e6",
+    "app/components/chart/use-fullscreen.ts": "760f413e333ff386c53f1bb9c7e41554acd8741d1075bf87d0a93f1c8554f6bc",
+    "app/components/design-prototype/recall-design-prototype-data.ts": "395d3997c4b322b54bd9675a0dcd0a64c6a8beb41aed8001eb5a11843a0987d4",
+    "app/components/design-prototype/recall-design-prototype.css": "67e714fc53087cf5f8270d2bf60533c87a832d0b31339a2282172e4a291c125d",
+    "app/components/design-prototype/recall-design-prototype.test.ts": "1b0895008a67403ab42437fbee016edd4dac2017fd3a0f0e775d86247154dfb9",
+    "app/components/design-prototype/recall-design-prototype.tsx": "77a2327a613d950e724622965e45ccaa58b8e73f57ff52649aa9f5ea07394a67",
+    "app/components/recall/recall-actual-metrics.css": "544ba200175fdc419a6532593bc11461386c678a013eb6a0a37dd60e41149cd6",
+    "app/components/recall/recall-actual-metrics.test.tsx": "fe6dd0c27815bd518122d8620cb2daf8b30b322dc6df0125f4f3e6b0e51e21dc",
+    "app/components/recall/recall-actual-metrics.tsx": "88de56f812d35527272b0e4555e0a26a11d1ae87001f0a6ee6a6e381d37a29e1",
+    "app/components/recall/recall-exit-evaluations.css": "4368849515e3c949a3a0443b7eb7fe3ae95e2daffb526bbf94ad30b30a521282",
+    "app/components/recall/recall-exit-evaluations.test.tsx": "86db088386dffa4b1d9a77a3fd67ecc49b13add9487c1106bfd9135fd31f3765",
+    "app/components/recall/recall-exit-evaluations.tsx": "b0c3e9df2637021cc2fb55daeeb151c24ae16625eab87450c1de6908df7aa2b5",
+    "app/components/recall/recall-integration.recall-review.test.tsx": "7ecc04327df511104f8652946b7af0fc92cc9bdedc67d8d8349c4dc32c81e00b",
+    "app/components/recall/recall-manual-evaluations.css": "b6eadadddf7b7421ea37b9748b91b06774854ce12697d00b0080921fe49a7986",
+    "app/components/recall/recall-manual-evaluations.test.tsx": "c50d8252a97bdf0feed7146c12f8756607b1ce5e58bc087ef261d243bfcadf2b",
+    "app/components/recall/recall-manual-evaluations.tsx": "0eed2a4e4b18705692d7248117564af37e1276fc6453317208bc9e30f87b83e0",
+    "app/components/recall/recall-panel-state.test.ts": "7c6812fee29ccc8632f77c43c81ca3e67edf95f44c79ba0bb28aac006e070d16",
+    "app/components/recall/recall-plan-revisions.css": "3ef581457d4df38703efb455550458dabe1571faec22a2067fb3a11b6acde50f",
+    "app/components/recall/recall-plan-revisions.test.tsx": "090323af23461bcb04243128bb4d84d352d949a55c2fe10d8007f1fcee3c9973",
+    "app/components/recall/recall-plan-revisions.tsx": "dc4008781ca0399be0fc620689a6cd572e72e99f03743acf59d59e25abaadcda",
+    "app/components/recall/recall-plan-sidebar.test.tsx": "7cd427a97786e94a5654756503e7ce349a975ca58bce5fb33b03053754999e51",
+    "app/components/recall/recall-plan-sidebar.tsx": "e23360065b5fa3b6d86f3cd09f43dd422a7260abd0c36f76a899acef8241b6b8",
+    "app/components/recall/recall-prototype-price-roles.test.ts": "932bb5ad06c82f861fd4727a32b6dbcd86fd5960a53b6ef41335a7ed754f3ca7",
+    "app/components/recall/recall-storyboard.css": "1b91dbaffb6a61ec90750c516e6e4903b0fb11ac3c03039f61a4b30c1ec0a1ac",
+    "app/components/recall/recall-storyboard.test.tsx": "cae3a3da1c09467be23455d469a312998ddca8e1c2281110112367cc2ca02ed1",
+    "app/components/recall/recall-storyboard.tsx": "b37ac8d7ee872c4aae8167fa81e30687208b5c386d415b6d1ad6729804018bfc",
+    "app/components/recall/recall-workspace.test.tsx": "58e223121afff39e9125874c30182017962cffb7797b03a6c578376b8b0eb751",
+    "app/components/recall/recall-workspace.tsx": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec",
+    "app/components/recall/recall.css": "0910ed81c75c29473b842feafd0c3c61401a4070c33cc9d7090bd134fd188d87",
+    "app/components/strategy-prototype/comparison-chart.css": "77e5268c174a57b783f851144aa6bc8c2c127213a1f959c4fd1b942e46882ada",
+    "app/components/strategy-prototype/comparison-chart.tsx": "984f4095fed4d2b5f68918b5d195962f05db0eca126c21e7581aee0d9237a7fa",
+    "app/components/strategy-prototype/comparison-prototype.css": "8fb0f6e11d782b6d954537d2e83362cf5462f2837fa4d70c260dcbaa7e4a5dcb",
+    "app/components/strategy-prototype/comparison-prototype.tsx": "d973e49b686b004b5fa95794284b8dfe6238886d01b95e85e7ac480bd76aaa2b",
+    "app/components/strategy-prototype/creation-prototype.css": "eb668d653bacebc7edb6626ee68fc53d53d46e17f084ee3a3a7f839a64e6f1b0",
+    "app/components/strategy-prototype/creation-prototype.tsx": "e5457bd178bbe17f212249f3523fd77cca8f849321e8c1db376a217778ad56a6",
+    "app/components/strategy-prototype/full-workbench-preview.css": "9f98afeaf2bc4cc23dcaf5e08f8931f2fac4566f3f8cc5c75767934d592b9e6e",
+    "app/components/strategy-prototype/full-workbench-preview.tsx": "b0a80086cbcc213b6a3ddc4e5679306e1cd3f36be425b831d3cc208618acc5fb",
+    "app/components/strategy-prototype/recovery-prototype.css": "6720379f98a960f07d554ef9bce0ed9853b0a88c8f265fc64902ed014e5c764f",
+    "app/components/strategy-prototype/recovery-prototype.tsx": "9897b29571300e57abd5dc9b7995f4b2da49c98616e0f1563a996c5fb68a579d",
+    "app/components/strategy-prototype/results-model.ts": "cce6e7e5966d07e16009d1eb61e01628895cdc307ddb1693787abd98a80d1faa",
+    "app/components/strategy-prototype/results-prototype.css": "6046d2df344a8a77925a3d7141f81ad178436915f0418cdc32172382424f0e3e",
+    "app/components/strategy-prototype/results-prototype.tsx": "591b83e6b9aecd554ab83ead4fc7a008a5ff6779d7c019113e11131b790c03f6",
+    "app/components/strategy-prototype/running-model.ts": "fcd869f60d2db1591eb271a3b19931e9a146c4909a56418a52b72048a97bfebb",
+    "app/components/strategy-prototype/running-prototype.css": "e515cd2a2909c6a0f17f32b3c47d1dd6c1195a841c1a4a95f6256390d42ab389",
+    "app/components/strategy-prototype/running-prototype.tsx": "44b4766e0c809f269341895892d7725a6b9897f7c1f53f0ab06cd9d93e1ed2ae",
+    "app/components/strategy-prototype/strategy-prototype.css": "7d7f1e35e198edf23f5ccc7ee9331c72a6eb4269fae4796623ccfa89cf523b44",
+    "app/components/strategy-prototype/strategy-prototype.tsx": "d47adcdd8a3429f035f5e2ed31e1b6f5541fe5a0b32788dd580fb1cde51acba9",
+    "app/components/strategy-prototype/workbench-visual-theme.css": "5a58d7981428e2b21cd682430113b4f6e4094280a4c708416bb3a0add6ae6b0f",
+    "app/globals.css": "949a4136243d0c8e9ffa4299d2f9156fae75593bab51770d80815bec19d241c6",
+    "app/layout.tsx": "7b5c2b2c898f35cb725e13a6ce0b173217ecc4424d030a5570efb52b71216c3e",
+    "app/page.tsx": "a57b648f9b98fee573505f60623000c1422b75cde0de713c0fc5c707718e25c3",
+    "package-lock.json": "bb131f271a9aa4808e434bfb9f9eef06765bb2ae9d774163f2f464d9952a0e0d",
+    "package.json": "29085df404518c788bbab7a2c467066b8297d9dbcf68eff9a0940808c1d93314",
+    "public/design-system-20261008/workbench/index.html": "4ff8a3374f3d8e59deeefafe7e8cabe01fc6bed8a59ff9ac255617332043c235",
+    "public/design-system-20261008/workbench/layout-audit.js": "903cd60d7f5ff50b91e92ac0e635a2705da4686d94ba27a0d763b4957680734f",
+    "public/design-system-20261008/workbench/vendor/LICENSE": "942560b236adfa83745b2c64e5fc09ebaf91cb331751b1157eb92187e5d6e930",
+    "public/design-system-20261008/workbench/vendor/README.md": "4c6d210d07311c841392f6194fc0e31c600cf787ce2fc1d2a88543311b89073f",
+    "public/design-system-20261008/workbench/vendor/fonts/LICENSE": "942560b236adfa83745b2c64e5fc09ebaf91cb331751b1157eb92187e5d6e930",
+    "public/design-system-20261008/workbench/vendor/fonts/README.md": "11a1f804cf4ef8dacbba858eb3a6752a263cdf5847b088eb9f695b21003890eb",
+    "public/design-system-20261008/workbench/vendor/fonts/geist-latin.woff2": "9b6f5ff45b278c744b5f379a2c4ecbaf858a842b8eaf82ac8d21b699ca16c608",
+    "public/design-system-20261008/workbench/vendor/fonts/geist-mono-latin.woff2": "5f3d6ad60f29d6cb708414ec6887163d63bf197377ef5417d2483ff31ace6c3b",
+    "public/design-system-20261008/workbench/vendor/lightweight-charts-5.2.0.LICENSE": "70c9d5382506dd184465425c08a99ad9bd6d9ac1313c252968ba0b585e5ef823",
+    "public/design-system-20261008/workbench/vendor/lightweight-charts-5.2.0.standalone.production.js": "c0992580867c4912cc9385b3c2728315bcc1a76c7f1087dca908430fccdf31d7",
+    "public/design-system-20261008/workbench/vendor/lucide.LICENSE": "b495047bd93a9b06913511076f504daba17d5bbeb3e0650f3bb53a4220329c57",
+    "scripts/start-local.mjs": "340fde65b1a6bce854c4b660d9a6dce966833b97ecd3431f81e24ad4d596de5b"
+  },
+  "screenshots": [
+    {
+      "path": "screenshots/observe-1440.jpg",
+      "mimeType": "image/jpeg",
+      "sha256": "a6fb563bbc8215b82a258cd8177430f84be3331c8c45c84bd3763e278aa2e677",
+      "origin": ".scratch/strategy-visual-system-20261008/evidence/observe-scroll-20261010/after-top-1440.jpg",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "capturedDuring": "2026-10-10 scroll acceptance, byte-identical copy in this archive task",
+      "byteIdentical": true
+    },
+    {
+      "path": "screenshots/observe-1280.jpg",
+      "mimeType": "image/jpeg",
+      "sha256": "edad43ac3087b0175ecc091725659ccde232db6de5d350f6ea4d41a66846b222",
+      "origin": ".scratch/strategy-visual-system-20261008/evidence/observe-scroll-20261010/after-top-1280.jpg",
+      "viewport": {
+        "width": 1280,
+        "height": 720,
+        "dpr": 1
+      },
+      "capturedDuring": "2026-10-10 scroll acceptance, byte-identical copy in this archive task",
+      "byteIdentical": true
+    },
+    {
+      "path": "screenshots/observe-390.jpg",
+      "mimeType": "image/jpeg",
+      "sha256": "ba903f036236a18d779fca57b78abc948b122295fbb27da5aa03f487241f5655",
+      "origin": ".scratch/strategy-visual-system-20261008/evidence/observe-scroll-20261010/after-top-390.jpg",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 1
+      },
+      "capturedDuring": "2026-10-10 scroll acceptance, byte-identical copy in this archive task",
+      "byteIdentical": true
+    },
+    {
+      "path": "screenshots/observe-bottom-1280.jpg",
+      "mimeType": "image/jpeg",
+      "sha256": "763aa53c67c6630936cdbb9e6d9d1f2fb720e393e6d22d040eccc08699ba1b0b",
+      "origin": ".scratch/strategy-visual-system-20261008/evidence/observe-scroll-20261010/final-live-bottom.jpg",
+      "viewport": {
+        "width": 1280,
+        "height": 720,
+        "dpr": 2
+      },
+      "capturedDuring": "2026-10-10 scroll acceptance, byte-identical copy in this archive task",
+      "byteIdentical": true
+    },
+    {
+      "path": "screenshots/live-preview.jpg",
+      "mimeType": "image/jpeg",
+      "sha256": "edad43ac3087b0175ecc091725659ccde232db6de5d350f6ea4d41a66846b222",
+      "origin": "Fresh real-browser screenshot in this archive task",
+      "metrics": "live-preview.json",
+      "sha256Metrics": "4b842e59d26ce3d9d95ceb57c5fda71d55065e6854a6ca308945dfa12757e29d",
+      "viewport": {
+        "width": 1280,
+        "height": 720,
+        "dpr": 2
+      }
+    }
+  ],
+  "previousFrozenManifests": [
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/version-manifest.json",
+      "sha256": "12ac217852605b3830d027acb2382b62f89a0e17fab3923d40c1ce0c446d7b86",
+      "meaning": "Historical acceptance hashes preserved. Intentional local-only raw evidence is listed in remote-exclusions.json."
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-manifest.json",
+      "sha256": "9ea5f6098de7bf33df0cadf471565c8a178393c5a019ff8a865bad044d367616",
+      "meaning": "Historical acceptance hashes preserved. Intentional local-only raw evidence is listed in remote-exclusions.json."
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/style-unification-20261009/manifest.json",
+      "sha256": "cc14a842a77ab74c25ae6374142118a3b613e8a7ab1a58fc0c80ebeaaa5bd996",
+      "meaning": "Historical acceptance hashes preserved. Intentional local-only raw evidence is listed in remote-exclusions.json."
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/manifest.json",
+      "sha256": "b9add728d57155e4a6bdeeb82c34f8a29bfa1428d435344c9e4d0a35ff1829ae",
+      "meaning": "Historical acceptance hashes preserved. Intentional local-only raw evidence is listed in remote-exclusions.json."
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-scroll-20261010/manifest.json",
+      "sha256": "3ee63d494d6108a12d04da1bcb83ced72792d0233a4ce4aea813c782112f0e3a",
+      "meaning": "Historical acceptance hashes preserved. Intentional local-only raw evidence is listed in remote-exclusions.json."
+    }
+  ],
+  "verificationLogs": {
+    "logs/build-and-integration.log": "14295088892472cd7394a1a613a2b3496309eaa563925146df154d1e470a8a3e",
+    "logs/focused-unit.log": "73e1ccd2bea7300298ae6b4d3d1637c9244dc08d77ca5fcd87c625c84c2c5181",
+    "logs/typecheck.log": "c8d8a64efefdb022f5208d4c99ae725a5319544d3c6857e1929c4eed5babf47f"
+  },
+  "remoteExclusions": "remote-exclusions.json",
+  "evidenceBoundaries": [
+    "Four prior acceptance images copied unchanged; fresh runtime image has its own timestamp.",
+    "Prior business baseline is not synthetic; specified raw measurements/image remain local only.",
+    "Historical failures and NOT VERIFIED gates remain; no claim of full repository test passage."
+  ]
+}

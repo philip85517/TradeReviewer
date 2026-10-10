@@ -1,0 +1,17 @@
+- navigation "完整工作台导览":
+  - generic: TradeReview历史策略复盘 · 完整交互版
+  - text: 旧 Workbench 预览
+  - link "完整观察":
+    - /url: "?prototype=strategy-workbench&view=observe&scene=complete"
+  - link "完整结果":
+    - /url: "?prototype=strategy-workbench&view=results&scene=complete"
+  - link "完整比较":
+    - /url: "?prototype=strategy-workbench&view=compare&scene=complete"
+  - link "原创建":
+    - /url: "?prototype=strategy-create&variant=A"
+  - link "当前 A":
+    - /url: /design-system-20261008/workbench/index.html
+- generic: 合成演示 · 完整 · 已展开 · 首页统一
+- text: 三个月双策略合成预设 · EMA20 v1.4 · 低波动质量 v2.1 · ¥100,000 · 复盘标的集
+- generic "预览工具 · 场景 / 视觉 / 说明"
+- status: 正在打开完整交互预览…

@@ -1,0 +1,8 @@
+2026-10-08 root independent verification of frozen restoration source
+Scope ESLint app/page.tsx + full-workbench-preview.tsx + running-prototype.tsx: exit 0
+npm run typecheck: exit 0
+Node26 --check extracted public HTML inline JS: exit 0
+git diff --check: exit 0
+npm run lint: exit 1, 17 errors /1645 warnings (16 vendor, existing RecallDesignPrototype effect)
+Two desktop browser viewports, actual playback / scene repeat reset / result-comparison plots / event source return / original creation / A presets and scenes verified. Final direct result and comparison reloads verified. Per-evidence limits and historical FAIL remain in full-workbench-preview.md.
+No full unit rerun, no production SQL persistence claim.

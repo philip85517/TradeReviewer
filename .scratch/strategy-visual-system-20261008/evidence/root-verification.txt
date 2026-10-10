@@ -1,0 +1,38 @@
+根协调者实际工具结果摘要；不是完整控制台转录。
+工作树 /Users/zhoulin/.codex/worktrees/facb/TradeReview
+分支 codex/strategy-visual-system-20261008
+HEAD/foundation 9c2b3d209a202422c3d5aeab5969a9b093cfda92
+
+先前最终 TS 冻结后，根代理独立运行（统一 PATH 使用 /usr/local/Cellar/node/26.0.0/bin）：
+npm run typecheck
+结果 PASS / exit 0
+
+./node_modules/.bin/vitest run \
+ app/components/design-prototype/recall-design-prototype.test.ts \
+ app/components/chart/drawing-canvas.test.tsx \
+ app/components/chart/drawing-canvas.recall-review.test.tsx \
+ app/components/chart/replay-chart.test.tsx \
+ app/components/chart/replay-chart.recall-review.test.tsx \
+ app/components/recall/recall-workspace.test.tsx \
+ app/components/recall/recall-integration.recall-review.test.tsx \
+ app/components/trade-review-workspace.recall-bridge.test.tsx \
+ app/components/recall/recall-prototype-price-roles.test.ts --reporter=dot
+结果 9 files PASS / 193 tests PASS / 35.05s / exit 0
+上述 TS 文件之后未再改变；随后仅 CSS 布局及报告更新，不重复与变化无关的测试。
+
+最终 CSS 冻结后根代理独立：
+/usr/local/Cellar/node/26.0.0/bin/node 通过 postcss.parse 解析推荐 CSS
+结果 Node v26.0.0 / CSS parse PASS / 607 lines / exit 0
+
+git diff --check
+结果 exit 0 / 无输出
+
+2026-10-07 18:20:53 UTC（北京时间2026-10-08）：
+HTTP GET A 3069 -> 200 / 89618 bytes
+HTTP GET 原生推荐复盘 3069 -> 200 / 17583 bytes
+HTTP GET 基线3068 -> 200 / 83743 bytes
+这些HTTP只证明服务仍运行；真实浏览器画面/操作另以JPEG、DOM和computed记录。
+
+历史全量运行 293 files；31 tests FAIL / 2694 PASS / 6 SKIPPED；修复后未重跑全量。
+具体基线复现/隔离复跑与推断见 reports/test-failure-audit.md，不能称全量通过。
+Tooltip/wheel/拖动/触摸/完整Text编辑IME/Windows glyph/生产SQL写链/正式导出 NOT VERIFIED。

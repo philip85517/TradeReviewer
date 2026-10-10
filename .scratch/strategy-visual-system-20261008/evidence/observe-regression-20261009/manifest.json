@@ -1,0 +1,5059 @@
+{
+  "frozenAtUTC": "2026-10-09T16:10:48.697499+00:00",
+  "scope": "complete observation UI and shared preview chrome; reversible synthetic preview; no production rollout",
+  "base": "origin/codex/strategy-workbench-v1-design@9c2b3d209a202422c3d5aeab5969a9b093cfda92",
+  "sources": {
+    "app/components/strategy-prototype/full-workbench-preview.tsx": "b0a80086cbcc213b6a3ddc4e5679306e1cd3f36be425b831d3cc208618acc5fb",
+    "app/components/strategy-prototype/full-workbench-preview.css": "a8922b03e0c413b2e4cf9e7c57ab3c7ed38b1da4bbc92138eaee9558113a9570",
+    "app/components/strategy-prototype/workbench-visual-theme.css": "5a58d7981428e2b21cd682430113b4f6e4094280a4c708416bb3a0add6ae6b0f",
+    "app/components/strategy-prototype/running-prototype.tsx": "44b4766e0c809f269341895892d7725a6b9897f7c1f53f0ab06cd9d93e1ed2ae"
+  },
+  "sourceCopies": "final-source/",
+  "retainedFailures": [
+    "before-*",
+    "final-complete-* V09 V10 FAIL",
+    "final2-* intermediate breakpoint iterations",
+    "final3-more-menu-* R11 FAIL"
+  ],
+  "matrix": {
+    "version": "final3",
+    "viewportWidths": [
+      1440,
+      1280,
+      1060,
+      1059,
+      1024,
+      1023,
+      981,
+      980,
+      760,
+      759,
+      601,
+      600,
+      431,
+      430,
+      390,
+      360,
+      359,
+      320
+    ],
+    "fixture": "complete/EMA20/2024-09-13/net",
+    "dpr": 1,
+    "final4MenuOnlyCSS": "three scoped positioning selectors; reverse hash equals final3; other three files unchanged",
+    "final4BodyRechecks": [
+      1440,
+      390,
+      760,
+      759
+    ]
+  },
+  "rootGates": {
+    "typecheck": "PASS exit0",
+    "scopedESLint": "PASS exit0",
+    "build": "PASS exit0",
+    "diffCheck": "PASS exit0",
+    "actualChartJourneys": "PASS for documented T0/next/play-pause/theme and source-return",
+    "independentSource": "PASS scoped R01-R11",
+    "independentVisual": "PASS documented 18 widths and representative states",
+    "productionPersistence": "NOT APPLICABLE for pure-memory preview; prior production gate NOT VERIFIED"
+  },
+  "preview": {
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+    "servicePID": 44702,
+    "freshBrowser": "final4-live-preview",
+    "normalViewport": {
+      "width": 1280,
+      "height": 720,
+      "dpr": 2
+    }
+  },
+  "files": [
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1023-full.jpg",
+      "bytes": 140253,
+      "sha256": "9d6b2d9c4f6d4781bf3ca180aca84b3dd71c1eca0f95389138a2aa4ddd256144",
+      "imagePixels": [
+        1023,
+        1612
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1023.jpg",
+      "bytes": 70278,
+      "sha256": "b09c106ae7ab88a50de6b13081c4a9d0b10b6ac2c1e7aaf88e3a4df8641c44bf",
+      "imagePixels": [
+        1023,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1023.json",
+      "bytes": 97556,
+      "sha256": "a65e2a59654ab6be61ad29e1e51738ca45c926cf980e74426ade0e90a87b1bb8",
+      "at": "2026-10-09T15:09:47.974Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1023
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1612,
+        "scrollY": 125.5,
+        "w": 1023
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1023.txt",
+      "bytes": 12975,
+      "sha256": "b0ce9637d85570a0e4953a1e62e62ee4fa89c3764f40e6d1bf6fbe41e454c23e"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1024-full.jpg",
+      "bytes": 121493,
+      "sha256": "7977dcfb40820027c49fa1048e29bbe4398c332fb46032641d664a58d5e985eb",
+      "imagePixels": [
+        1024,
+        1069
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1024.jpg",
+      "bytes": 93862,
+      "sha256": "101865c8cc569b149374b867e9357e2a9409ee7794fa5e72e01afe6da4acbf94",
+      "imagePixels": [
+        1024,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1024.json",
+      "bytes": 97608,
+      "sha256": "2bb0d749aea6d252f040905f49643a98426dd2724f093f8fa862b671c1a0537c",
+      "at": "2026-10-09T15:09:46.122Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1024
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1069,
+        "scrollY": 125.5,
+        "w": 1024
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1024.txt",
+      "bytes": 12975,
+      "sha256": "b0ce9637d85570a0e4953a1e62e62ee4fa89c3764f40e6d1bf6fbe41e454c23e"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1280-full.jpg",
+      "bytes": 126881,
+      "sha256": "99e67e22e4375113fdd749c386cb2ab01b1852c61ce5239ce57e0b9eec084389",
+      "imagePixels": [
+        1280,
+        1051
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1280.jpg",
+      "bytes": 99049,
+      "sha256": "a183b032da4feb08e28e292c089e88d3971cf86cd070c9a5e034d67cca7ef474",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1280.json",
+      "bytes": 98047,
+      "sha256": "cfba2042af327a40727977b317732c90b8a130c56c8ed25b933bf7e7d2b74afb",
+      "at": "2026-10-09T15:09:43.856Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1051,
+        "scrollY": 125.5,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1280.txt",
+      "bytes": 12975,
+      "sha256": "b0ce9637d85570a0e4953a1e62e62ee4fa89c3764f40e6d1bf6fbe41e454c23e"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1440-full.jpg",
+      "bytes": 136141,
+      "sha256": "fc652d34c6bcd57f16b49b1eefc7ee6d1ca1e6dbea481ac2b63058d58821c993",
+      "imagePixels": [
+        1440,
+        1113
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1440.jpg",
+      "bytes": 110620,
+      "sha256": "65cb95549ee63cf7d5a38af0ad59fe5e7f235faa47554c7ff0517dfb39f4d9ea",
+      "imagePixels": [
+        1440,
+        900
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1440.json",
+      "bytes": 96839,
+      "sha256": "e9e34373507f08b4150a30706295b6f8fe08122671ba43931c841149067c3d26",
+      "at": "2026-10-09T15:09:41.330Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 900,
+        "w": 1440
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1113,
+        "scrollY": 125.5,
+        "w": 1440
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-1440.txt",
+      "bytes": 12975,
+      "sha256": "b0ce9637d85570a0e4953a1e62e62ee4fa89c3764f40e6d1bf6fbe41e454c23e"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-320-full.jpg",
+      "bytes": 107931,
+      "sha256": "1f72c8bfbc868cf7a1b2e44446736b99fed02ba07418fd9a923af7aaf1be9b27",
+      "imagePixels": [
+        320,
+        2306
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-320.jpg",
+      "bytes": 31369,
+      "sha256": "f1e4429fa9e59a66e2f08193a50c1baea11124d1aafe6d44c361e75187b1d4cd",
+      "imagePixels": [
+        320,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-320.json",
+      "bytes": 97387,
+      "sha256": "3f0753301dd2671d2ad9027b88514f388e6ea18b95440eea419bdf5742c5d0fe",
+      "at": "2026-10-09T15:10:02.837Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 320
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2306,
+        "scrollY": 125.5,
+        "w": 320
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-320.txt",
+      "bytes": 12975,
+      "sha256": "b0ce9637d85570a0e4953a1e62e62ee4fa89c3764f40e6d1bf6fbe41e454c23e"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-390-full.jpg",
+      "bytes": 112152,
+      "sha256": "054a540f2a0e3ee0260597febcf43038dbc51b2dbe5fad904281fbc834addebe",
+      "imagePixels": [
+        390,
+        2118
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-390.jpg",
+      "bytes": 40273,
+      "sha256": "d0ae3353d95c34e353edbe2d293f60b0b1cda93b87b1446f553f89805e6617a3",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-390.json",
+      "bytes": 97408,
+      "sha256": "5193a5b92fcda9dde4ea863404b2573b23898029b22582655d45d9f32cb017d9",
+      "at": "2026-10-09T15:10:00.971Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2118,
+        "scrollY": 125.5,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-390.txt",
+      "bytes": 12975,
+      "sha256": "b0ce9637d85570a0e4953a1e62e62ee4fa89c3764f40e6d1bf6fbe41e454c23e"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-600-full.jpg",
+      "bytes": 134468,
+      "sha256": "40644a9853e9b2e19251a2ac6e7e155361e7113ef650600d4f02cf26b2842caa",
+      "imagePixels": [
+        600,
+        2072
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-600.jpg",
+      "bytes": 45775,
+      "sha256": "8578ff8ab1fa52cbb19c2cc6d246a701b3c0a55d5a22c0c16dd3e31ed5bd4c7b",
+      "imagePixels": [
+        600,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-600.json",
+      "bytes": 97384,
+      "sha256": "d78ec54b5c2ebb1713f0cff8f0467788c32c77cbb6b67116bfbfa9f2fe31a15a",
+      "at": "2026-10-09T15:09:59.251Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 600
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2072,
+        "scrollY": 125.5,
+        "w": 600
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-600.txt",
+      "bytes": 12975,
+      "sha256": "b0ce9637d85570a0e4953a1e62e62ee4fa89c3764f40e6d1bf6fbe41e454c23e"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-601-full.jpg",
+      "bytes": 132759,
+      "sha256": "20ec85948b40340e5e04c5ef8ea27333950f7c5f79aa34063a833f4c857581cb",
+      "imagePixels": [
+        601,
+        2020
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-601.jpg",
+      "bytes": 46693,
+      "sha256": "846aaaec0e7fde2df440a85cfc32f200175ae95d8998eb1bccf8ef850f94db1f",
+      "imagePixels": [
+        601,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-601.json",
+      "bytes": 97461,
+      "sha256": "1f96fd0cf2c87cc077fe1fbc3685a6eb946754877c8bbb0d65783a3f611de259",
+      "at": "2026-10-09T15:09:57.347Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 601
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2020,
+        "scrollY": 125.5,
+        "w": 601
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-601.txt",
+      "bytes": 12975,
+      "sha256": "b0ce9637d85570a0e4953a1e62e62ee4fa89c3764f40e6d1bf6fbe41e454c23e"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-759-full.jpg",
+      "bytes": 142049,
+      "sha256": "3b8b0aea1ed844695aa371bd6ffcc20f665241b3f7128cc6c514b8620030de1e",
+      "imagePixels": [
+        759,
+        1970
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-759.jpg",
+      "bytes": 50711,
+      "sha256": "55993e5d6054db2af8e6a6ace53501be6739b6cd9fe46b8fb37179a6636612c9",
+      "imagePixels": [
+        759,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-759.json",
+      "bytes": 97515,
+      "sha256": "106bfbc86c09e1a34c0fc8ef16c36dbe06431d47e12a5d70796ebaa4a38b5d39",
+      "at": "2026-10-09T15:09:55.497Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 759
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1970,
+        "scrollY": 125.5,
+        "w": 759
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-759.txt",
+      "bytes": 12975,
+      "sha256": "b0ce9637d85570a0e4953a1e62e62ee4fa89c3764f40e6d1bf6fbe41e454c23e"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-760-full.jpg",
+      "bytes": 129714,
+      "sha256": "8a70d05ca0d5e84a13d6788627b643b0415ece3ab7c8b6682c53cc5dc5b4ef3e",
+      "imagePixels": [
+        760,
+        1612
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-760.jpg",
+      "bytes": 67405,
+      "sha256": "b115b5b598e4ce448b7ecb0f424402618fc9da14c38782386e169aa742303d0f",
+      "imagePixels": [
+        760,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-760.json",
+      "bytes": 97526,
+      "sha256": "dd9321c61dd65f640af279797de6cee6bf56eab1b8a2147722069f0f9a6efa2d",
+      "at": "2026-10-09T15:09:53.466Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 760
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1612,
+        "scrollY": 125.5,
+        "w": 760
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-760.txt",
+      "bytes": 12975,
+      "sha256": "b0ce9637d85570a0e4953a1e62e62ee4fa89c3764f40e6d1bf6fbe41e454c23e"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-980-full.jpg",
+      "bytes": 139382,
+      "sha256": "f343921e4e36cf006cf0b084cdbf8d3b0fd84991cb3ca3c6d1e13e5508080a9f",
+      "imagePixels": [
+        980,
+        1612
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-980.jpg",
+      "bytes": 69424,
+      "sha256": "1605c3e77488c3e4fd250c41da413e2841b59ca27bebd586f5bded281b74f669",
+      "imagePixels": [
+        980,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-980.json",
+      "bytes": 97520,
+      "sha256": "ceb850d6bffb2734d9196003515f7b6ef49dc47cb3c2cd7f2f7650e6368c7490",
+      "at": "2026-10-09T15:09:51.486Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 980
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1612,
+        "scrollY": 125.5,
+        "w": 980
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-980.txt",
+      "bytes": 12975,
+      "sha256": "b0ce9637d85570a0e4953a1e62e62ee4fa89c3764f40e6d1bf6fbe41e454c23e"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-981-full.jpg",
+      "bytes": 139057,
+      "sha256": "d5c1da7cfcad0c69468a2006fc55dceb21083e51849f5390144e2aba35136cb1",
+      "imagePixels": [
+        981,
+        1612
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-981.jpg",
+      "bytes": 69223,
+      "sha256": "6c917e2d3ac93e7c5b595dd56cc2b1686f4881fb1f8e201d80482a93d609221d",
+      "imagePixels": [
+        981,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-981.json",
+      "bytes": 97547,
+      "sha256": "e740789966abc43cd3b63544474039f212acc92d1ce06cdf991ec041b2f38b37",
+      "at": "2026-10-09T15:09:49.600Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 981
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1612,
+        "scrollY": 125.5,
+        "w": 981
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-complete-981.txt",
+      "bytes": 12975,
+      "sha256": "b0ce9637d85570a0e4953a1e62e62ee4fa89c3764f40e6d1bf6fbe41e454c23e"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-holding-selected-focus-1280.jpg",
+      "bytes": 106739,
+      "sha256": "c2a0340487602f52e96cde71af936849dfd2fae7ae1716141dd5be68409410de",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-holding-selected-focus-1280.json",
+      "bytes": 99638,
+      "sha256": "1db21cd590376f5229ac8a86e59aa4ae215192865be31668020edadb221ac6f0",
+      "at": "2026-10-09T15:12:30.774Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1052,
+        "scrollY": 198.5,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-holding-selected-focus-1280.txt",
+      "bytes": 13410,
+      "sha256": "36f79f47230c20decfe78ca21a49f836fbd06aa40056ba1de69528bff70b8cc7"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-more-menu-1280.jpg",
+      "bytes": 118731,
+      "sha256": "81e2753d05418a367fd6cc6f8ca627d44809f692e574c89a4124c5cfce940e5c",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-more-menu-1280.json",
+      "bytes": 117565,
+      "sha256": "4d2fb0050e51e9ffbb6a1ea394ef889d53bc952c23052369900d5d9b81c3a353",
+      "at": "2026-10-09T15:12:12.020Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1052,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/after-more-menu-1280.txt",
+      "bytes": 14789,
+      "sha256": "7f0c81d5c86082c1e2aaea429dc6a2a2f510dcd1ecff7b8922f76e0860b01255"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-complete-1280.jpg",
+      "bytes": 110241,
+      "sha256": "306f09cad512b4758420b761956869c0aa125bdbc478de26aa611c14a8b93913",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-complete-1280.json",
+      "bytes": 83141,
+      "sha256": "a35a1588da5acd650ac7344e6242ec1ba794299227a01310f3b603ce9cd474dd",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 909,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-complete-1280.txt",
+      "bytes": 13272,
+      "sha256": "098b2c2953d3d4fc4cecf5614d6ed2f4333eb8e9afe72dfc2cd48a16d966c592"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-complete-1440.jpg",
+      "bytes": 127143,
+      "sha256": "8392f841734721b8beae17f3d65f5f16c00ad5a7cb0988384d3b983ec6e51861",
+      "imagePixels": [
+        1440,
+        900
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-complete-1440.json",
+      "bytes": 83154,
+      "sha256": "d983bb2dc29e4662e28e1639d54739ec3194c64adc4c0f4b98ae0d390b539d03",
+      "viewport": {
+        "dpr": 1,
+        "h": 900,
+        "w": 1440
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1009,
+        "scrollY": 0,
+        "w": 1440
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-complete-1440.txt",
+      "bytes": 13272,
+      "sha256": "098b2c2953d3d4fc4cecf5614d6ed2f4333eb8e9afe72dfc2cd48a16d966c592"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-complete-390.jpg",
+      "bytes": 43300,
+      "sha256": "1058b5c91cfe0170b448a65ee5d62ae70fc4b7dc359740b43ceb80532ff5db0f",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-complete-390.json",
+      "bytes": 82550,
+      "sha256": "04082166a9178289cdd959a956fdc151234c4aade27d6d381aea54e803084155",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2333,
+        "scrollY": 0,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-complete-390.txt",
+      "bytes": 13272,
+      "sha256": "098b2c2953d3d4fc4cecf5614d6ed2f4333eb8e9afe72dfc2cd48a16d966c592"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-complete-601.jpg",
+      "bytes": 52442,
+      "sha256": "fa5335202b7e9aa796b624538243e09d2342ac72037ea63a4f4f6af5fadf55bb",
+      "imagePixels": [
+        601,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-complete-601.json",
+      "bytes": 82945,
+      "sha256": "8c81bef10b0211112cbae31dced055b95fcf44e4f0c67128f50a17df0cc7c4b6",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 601
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1167,
+        "scrollY": 0,
+        "w": 601
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-complete-601.txt",
+      "bytes": 13272,
+      "sha256": "098b2c2953d3d4fc4cecf5614d6ed2f4333eb8e9afe72dfc2cd48a16d966c592"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-complete-760.jpg",
+      "bytes": 80774,
+      "sha256": "bc6cc2d8020de129cffb1e8669b58085c2aa05cbd0abda128509acd22d22e145",
+      "imagePixels": [
+        760,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-complete-760.json",
+      "bytes": 82662,
+      "sha256": "ab548b516c49612aeb79d0777c1b2df904f75a47c367c8aeb1fd3c76fa56f162",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 760
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1071,
+        "scrollY": 0,
+        "w": 760
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-complete-760.txt",
+      "bytes": 13272,
+      "sha256": "098b2c2953d3d4fc4cecf5614d6ed2f4333eb8e9afe72dfc2cd48a16d966c592"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-event-drawer-1280.jpg",
+      "bytes": 64798,
+      "sha256": "b695c575a97295d8052b4ef72e2580776d2ec94f07bed219091e3a56d90e0582",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-event-drawer-1280.json",
+      "bytes": 91915,
+      "sha256": "378070ba819f66fdc799510bf26966153514b54ded85787c65140bf4f644102e",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 909,
+        "scrollY": 109,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-event-drawer-1280.txt",
+      "bytes": 14837,
+      "sha256": "654c8a06c06b3f3ddba885bea1c2b4b3e5c184b466d6ad7f77061935f7f2b81c"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-extra-audit.json",
+      "bytes": 1541,
+      "sha256": "6ad1a0dd091431d192e0450cf60b45b09916e9ccd51a5b47f25f2028330908bb",
+      "at": "2026-10-09T14:54:29.223Z"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-holding-selected-1280.jpg",
+      "bytes": 112350,
+      "sha256": "2a84af39b6917706383ca423a67118dd3937c6bed0f1cf296219e5073cce01c3",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-holding-selected-1280.json",
+      "bytes": 84161,
+      "sha256": "389e850ef8c0b908df54a27a4239aa6bb0a7331711d187a713059473a63ca8b3",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 909,
+        "scrollY": 109,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-holding-selected-1280.txt",
+      "bytes": 13485,
+      "sha256": "6e85cac40b8cde890d3ddcffc48d4253818835e52372a230b760136bed4e3a4b"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-menu-fonts.json",
+      "bytes": 2562,
+      "sha256": "fcc6380e4d1794a4b41feecf635bc384d412f2a9441c5d30a882edfc60f07ade"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-more-menu-1280.jpg",
+      "bytes": 112980,
+      "sha256": "d42b189d9a1c4a2b739fb1b65d0b31c0ccad5f68e154dc13345f230583d6ae20",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-more-menu-1280.json",
+      "bytes": 88190,
+      "sha256": "9aefdfe4634df7d12dac406a81eb78ce1292dd38d170fc887ef58208695a084f",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 909,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-more-menu-1280.txt",
+      "bytes": 14882,
+      "sha256": "5ca998b2fca515dc8196f60c70c1d7d0f4a7746e65a5e4a618dba280d462b506"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-source/app/components/strategy-prototype/full-workbench-preview.css",
+      "bytes": 4144,
+      "sha256": "4b060b73f6ec7cf6a0c6664b927c3f8a85bae0ef1a44bb32f39f2fac57c1666c"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-source/app/components/strategy-prototype/full-workbench-preview.tsx",
+      "bytes": 4427,
+      "sha256": "426d986c04cb78602fd6d820c89760581ad1e81e0f447da0ca1dc5d1178b9c5b"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-source/app/components/strategy-prototype/recovery-prototype.css",
+      "bytes": 6915,
+      "sha256": "6720379f98a960f07d554ef9bce0ed9853b0a88c8f265fc64902ed014e5c764f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-source/app/components/strategy-prototype/running-prototype.css",
+      "bytes": 30908,
+      "sha256": "e515cd2a2909c6a0f17f32b3c47d1dd6c1195a841c1a4a95f6256390d42ab389"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-source/app/components/strategy-prototype/running-prototype.tsx",
+      "bytes": 89989,
+      "sha256": "7829be4ec52fbb575cc1c4c2742a14e1a859b0a3b111eaa848cf71c9e10e8038"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-source/app/components/strategy-prototype/workbench-visual-theme.css",
+      "bytes": 31471,
+      "sha256": "e1ec30945d818e738f0366c0b3989e9e246bbc7bea784dcb020b0ea0a3297aea"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/before-source-freeze.json",
+      "bytes": 984,
+      "sha256": "94039ba3fe4630e659620b084fa53b2662c04a5f28cb3c08429604919dd4cb34"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/candidate-complete-1440.jpg",
+      "bytes": 24878,
+      "sha256": "b89f57b65f1f162954c2d4a0c88d4c880d56e04a36fdeeebf9929662aafad944",
+      "imagePixels": [
+        1440,
+        900
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/candidate-complete-1440.json",
+      "bytes": 15612,
+      "sha256": "69e7b85d109f2a0213366f58d02cd25ba442edd01a7563f4d316e1f94a70dc94",
+      "at": "2026-10-09T15:05:27.350Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 900,
+        "w": 1440
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 900,
+        "scrollY": 0,
+        "w": 1440
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/candidate-complete-1440.txt",
+      "bytes": 841,
+      "sha256": "716d259adc7a93ae17a39687cd7e1a16374ceb7f224eb0a72a356743d100aa08"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/checkpoint-complete-1440.jpg",
+      "bytes": 121103,
+      "sha256": "b64b04ff90e25e235fbdf0b77377679dffa3adf78c6f760d2f98bf0ab9a182de",
+      "imagePixels": [
+        1440,
+        900
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/checkpoint-complete-1440.json",
+      "bytes": 96672,
+      "sha256": "cf6eb8408a4fe6813b88a2d06acb86a36684b4e21a48d4b5d9cb4f385b73b0f0",
+      "at": "2026-10-09T15:05:49.313Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 900,
+        "w": 1440
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1113,
+        "scrollY": 0,
+        "w": 1440
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/checkpoint-complete-1440.txt",
+      "bytes": 12975,
+      "sha256": "678d4fc3eae9006d8b54344726e21c14e9985a75afedfbed551c258ab05efbf4"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/checkpoint-complete-601.jpg",
+      "bytes": 53087,
+      "sha256": "3aef7c9167904035478e85e64125a56b294f00f2e152d316a93ba2068e7fa21a",
+      "imagePixels": [
+        601,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/checkpoint-complete-601.json",
+      "bytes": 97267,
+      "sha256": "ebf26160290bf522bff5fec5011da2aaac5c97e0579ffdf6275b84592d3e3bd7",
+      "at": "2026-10-09T15:05:50.022Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 601
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2112,
+        "scrollY": 0,
+        "w": 601
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/checkpoint-complete-601.txt",
+      "bytes": 12975,
+      "sha256": "678d4fc3eae9006d8b54344726e21c14e9985a75afedfbed551c258ab05efbf4"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/checkpoint-config-drawer-390.jpg",
+      "bytes": 41147,
+      "sha256": "515eaf207d909022f0577bfc41fccbd9e121242f299d47d3211751d202544acf",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/checkpoint-config-drawer-390.json",
+      "bytes": 113018,
+      "sha256": "433194c0cc5ae11ba72613d6626d6fb855d002cc492b51b313643b693bea73f7",
+      "at": "2026-10-09T15:22:25.381Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2134,
+        "scrollY": 0,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/checkpoint-config-drawer-390.txt",
+      "bytes": 14263,
+      "sha256": "53627fdac3ed5020e9ed9e2d9baead48d76104b78ffafef5c5aefb74abd47b87"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/extra-recovery-expanded-bottom-390.jpg",
+      "bytes": 37098,
+      "sha256": "144e4c4142114ccd1c3baffcaaedb01028011e5443c97de75495a606eca5b1f3",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/extra-recovery-expanded-bottom-390.json",
+      "bytes": 98025,
+      "sha256": "a8b75b6e3c59adece817ee34a4a23a3257313cff729cb5387482d3b53d40d5dc",
+      "at": "2026-10-09T15:34:52.175Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 3090,
+        "scrollY": 1017,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/extra-recovery-expanded-bottom-390.txt",
+      "bytes": 14217,
+      "sha256": "64cccb3ca419db35b723d0bee0d8a092eef7b2472eed25558843ec474e03a0fd"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/extra-recovery-expanded-full-390.jpg",
+      "bytes": 155013,
+      "sha256": "3d00a4a5d3182ff55b9533afd6979957916a6a5ce58158d59ccf543ccd4e4a56",
+      "imagePixels": [
+        390,
+        3090
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1023-full.jpg",
+      "bytes": 141722,
+      "sha256": "72d802283c821e93ec549083a4a144c5c295b61c4a6c7658ebe8223115c1f5c6",
+      "imagePixels": [
+        1023,
+        1612
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1023.jpg",
+      "bytes": 81313,
+      "sha256": "8daaf5a67af2d8d69dc7a89ce225a16a6f3aef1ecc9c827811ff3a3d7d341cc3",
+      "imagePixels": [
+        1023,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1023.json",
+      "bytes": 97364,
+      "sha256": "d5b01395605ac29e990f5fc9bccd7519032aec23fd0de9debcef934a5fb5f84f",
+      "at": "2026-10-09T15:19:30.447Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1023
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1612,
+        "scrollY": 0,
+        "w": 1023
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1023.txt",
+      "bytes": 12975,
+      "sha256": "2ae1fe60216d6d5f23ea0e5b287dbad850b87fdf63d8b81b51fed9c4f235e42f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1024-full.jpg",
+      "bytes": 122610,
+      "sha256": "fe25c76d3399bf5481eaf2d06d509ffc5472e68bc611cefa307b8292c6a61dc9",
+      "imagePixels": [
+        1024,
+        1069
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1024.jpg",
+      "bytes": 99090,
+      "sha256": "4855b539d6aa71fe1151c369c10aad17f399e6a43df574b555f7d290bbbe9a95",
+      "imagePixels": [
+        1024,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1024.json",
+      "bytes": 97425,
+      "sha256": "544bbcf1e3b2b257525af010ea29863259f69dc32e0c83f6f21be8a7de31aff5",
+      "at": "2026-10-09T15:19:28.395Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1024
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1069,
+        "scrollY": 0,
+        "w": 1024
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1024.txt",
+      "bytes": 12975,
+      "sha256": "2ae1fe60216d6d5f23ea0e5b287dbad850b87fdf63d8b81b51fed9c4f235e42f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1280-full.jpg",
+      "bytes": 127312,
+      "sha256": "820e580d914fa4082a68d92b380829ac4694aed3bf33fa919037fd7c7c4abc7d",
+      "imagePixels": [
+        1280,
+        1051
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1280.jpg",
+      "bytes": 104281,
+      "sha256": "b095ba4d2e899d863f8b01b75545b2498da1b25fc14a233fb4c6624fd7feedf7",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1280.json",
+      "bytes": 97872,
+      "sha256": "11b38ea60aa5f6c76f888d2b67df30aab670d1d774553f7a5802619437d3b555",
+      "at": "2026-10-09T15:19:26.388Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1051,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1280.txt",
+      "bytes": 12975,
+      "sha256": "2ae1fe60216d6d5f23ea0e5b287dbad850b87fdf63d8b81b51fed9c4f235e42f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1440-full.jpg",
+      "bytes": 138872,
+      "sha256": "73f327f68f9fc8d67e36f8a476dd0b12db84e22f91cf54db9a203053ab32320b",
+      "imagePixels": [
+        1440,
+        1113
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1440.jpg",
+      "bytes": 122349,
+      "sha256": "c3d7a68275c43febe300126894aca7525c556f5e13e9449e026ae77bd899774b",
+      "imagePixels": [
+        1440,
+        900
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1440.json",
+      "bytes": 97502,
+      "sha256": "ab5baf8f572371d1c4f2bbbfd0fb60e9b67de0079cade226e92c215a4ca5d90e",
+      "at": "2026-10-09T15:18:53.974Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 900,
+        "w": 1440
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1113,
+        "scrollY": 0,
+        "w": 1440
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-1440.txt",
+      "bytes": 12975,
+      "sha256": "2ae1fe60216d6d5f23ea0e5b287dbad850b87fdf63d8b81b51fed9c4f235e42f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-320-full.jpg",
+      "bytes": 108799,
+      "sha256": "47ac3446ea7e1102281f5373933daeada492323935d564f846aa7fbc5d206a8f",
+      "imagePixels": [
+        320,
+        2314
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-320.jpg",
+      "bytes": 38211,
+      "sha256": "7db8272191d295518c97450f1c9595b300e7a8948efcb680d1e9397be9e7c625",
+      "imagePixels": [
+        320,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-320.json",
+      "bytes": 97173,
+      "sha256": "4db852dc5780c61f26da86807ea83bde2600ead55ac0571a078ac0fb48908aee",
+      "at": "2026-10-09T15:19:57.804Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 320
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2314,
+        "scrollY": 0,
+        "w": 320
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-320.txt",
+      "bytes": 12975,
+      "sha256": "2ae1fe60216d6d5f23ea0e5b287dbad850b87fdf63d8b81b51fed9c4f235e42f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-359-full.jpg",
+      "bytes": 112203,
+      "sha256": "0c5bf9633cbb97f31a35af24045f26d21ac76ef7963c8803941b34c10e856f5f",
+      "imagePixels": [
+        359,
+        2294
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-359.jpg",
+      "bytes": 38767,
+      "sha256": "5249f90dfe8ca4166b39f0c4751920b79a4a1c5d3058e1b18a6d5aba4562254d",
+      "imagePixels": [
+        359,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-359.json",
+      "bytes": 97191,
+      "sha256": "8276b976280b4f9ef2ce4e31800631574109f1c00ca2cc180d5a00b778e6c31f",
+      "at": "2026-10-09T15:19:56.080Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 359
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2294,
+        "scrollY": 0,
+        "w": 359
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-359.txt",
+      "bytes": 12975,
+      "sha256": "2ae1fe60216d6d5f23ea0e5b287dbad850b87fdf63d8b81b51fed9c4f235e42f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-360-full.jpg",
+      "bytes": 110028,
+      "sha256": "677ec664ea0d116205bcc9d986538c70cf731982b615ebe246452cccede750d4",
+      "imagePixels": [
+        360,
+        2136
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-360.jpg",
+      "bytes": 43179,
+      "sha256": "a0295d7016674e6f55c1e10bf262c354541b7ec054ed516c1e9ff98691b530c0",
+      "imagePixels": [
+        360,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-360.json",
+      "bytes": 97167,
+      "sha256": "0c0e48e73e0a22401cc7e1c24973762138cc375bc407aedaafd895dab770d566",
+      "at": "2026-10-09T15:19:54.330Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 360
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2136,
+        "scrollY": 0,
+        "w": 360
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-360.txt",
+      "bytes": 12975,
+      "sha256": "2ae1fe60216d6d5f23ea0e5b287dbad850b87fdf63d8b81b51fed9c4f235e42f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-390-full.jpg",
+      "bytes": 112954,
+      "sha256": "e07ecbf82e940c3a7c9f9ab7e2cd213e387c8fbc95eeb452e35c835949d928ce",
+      "imagePixels": [
+        390,
+        2134
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-390.jpg",
+      "bytes": 44575,
+      "sha256": "0a708cabaab958e2b38e8a12ce56c98667ef9adea849e5e8400c7caba66a6623",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-390.json",
+      "bytes": 97199,
+      "sha256": "acc1250e79113abccd0978f2c45e53f3762ccbe3930dc3fc690f6abc83a3f605",
+      "at": "2026-10-09T15:19:52.518Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2134,
+        "scrollY": 0,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-390.txt",
+      "bytes": 12975,
+      "sha256": "2ae1fe60216d6d5f23ea0e5b287dbad850b87fdf63d8b81b51fed9c4f235e42f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-600-full.jpg",
+      "bytes": 134270,
+      "sha256": "735d17e577853ed8a12f20207ce3018d8a07c2331c3ec3f45428488c34959908",
+      "imagePixels": [
+        600,
+        2088
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-600.jpg",
+      "bytes": 50935,
+      "sha256": "539279073eee9087cd7d6d379d74fc1e562b388abf6fc46503d9a32bcc2b0b85",
+      "imagePixels": [
+        600,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-600.json",
+      "bytes": 97171,
+      "sha256": "d15b5f8d44bde335409c1b6074643feeb06809b429a3edd6112796d32b5d0467",
+      "at": "2026-10-09T15:19:50.450Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 600
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2088,
+        "scrollY": 0,
+        "w": 600
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-600.txt",
+      "bytes": 12975,
+      "sha256": "2ae1fe60216d6d5f23ea0e5b287dbad850b87fdf63d8b81b51fed9c4f235e42f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-601-full.jpg",
+      "bytes": 134860,
+      "sha256": "96ca1099336f42dc651836b7c77da7cb38ea6ed04476b000fe2b3cd865fee760",
+      "imagePixels": [
+        601,
+        2088
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-601.jpg",
+      "bytes": 51077,
+      "sha256": "bef59dce9db38b4dd47bc111474ba7c0ebafe76f5cb27be55e244461ff17dfc6",
+      "imagePixels": [
+        601,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-601.json",
+      "bytes": 97258,
+      "sha256": "3e62acc3dab2d1afd9166b8f2031638084050143e9e1cd61dea22dd4e0cf0342",
+      "at": "2026-10-09T15:19:48.530Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 601
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2088,
+        "scrollY": 0,
+        "w": 601
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-601.txt",
+      "bytes": 12975,
+      "sha256": "2ae1fe60216d6d5f23ea0e5b287dbad850b87fdf63d8b81b51fed9c4f235e42f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-759-full.jpg",
+      "bytes": 144248,
+      "sha256": "5fe58783ddfd3d2e0601995081defa37bacbee7349eb2af1add52bd1ca4b518c",
+      "imagePixels": [
+        759,
+        2038
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-759.jpg",
+      "bytes": 57150,
+      "sha256": "7b5db09de0d570681f7a05c9370a13a27f11564eaf17a9953c33c7e9942c4410",
+      "imagePixels": [
+        759,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-759.json",
+      "bytes": 97325,
+      "sha256": "628872a114ddcaa5682bc04062e4ae0ff64b44b3edcdeea2610a440e7b2d5f26",
+      "at": "2026-10-09T15:19:46.626Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 759
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2038,
+        "scrollY": 0,
+        "w": 759
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-759.txt",
+      "bytes": 12975,
+      "sha256": "2ae1fe60216d6d5f23ea0e5b287dbad850b87fdf63d8b81b51fed9c4f235e42f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-760-full.jpg",
+      "bytes": 130396,
+      "sha256": "0c75a4f5316c31a8b7ce752ff59f24d700127ee1d37c1cb4e47228c6c3a267ca",
+      "imagePixels": [
+        760,
+        1612
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-760.jpg",
+      "bytes": 75416,
+      "sha256": "48bf6a603294f3faa1c433f86de46b824bed89925b23ccbd561b7d1226d76671",
+      "imagePixels": [
+        760,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-760.json",
+      "bytes": 97340,
+      "sha256": "fef056c0c552c513f3716bc91bf2eee268eef73c24461d001fd244d8dce39380",
+      "at": "2026-10-09T15:19:35.805Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 760
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1612,
+        "scrollY": 0,
+        "w": 760
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-760.txt",
+      "bytes": 12975,
+      "sha256": "2ae1fe60216d6d5f23ea0e5b287dbad850b87fdf63d8b81b51fed9c4f235e42f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-980-full.jpg",
+      "bytes": 140783,
+      "sha256": "75d56098d34d6b52fa824224b13b1443b34135d2a73aa7f72ca47fe49a1dda1f",
+      "imagePixels": [
+        980,
+        1612
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-980.jpg",
+      "bytes": 81119,
+      "sha256": "50cace7d1ca98360075aa5e6a544bd6a39dd6e30da945334621e54ea8abee7c4",
+      "imagePixels": [
+        980,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-980.json",
+      "bytes": 97328,
+      "sha256": "b8358b0c894cc0b9f8177a7c549b2c296ffaac418e0efc9f46decb04547c1989",
+      "at": "2026-10-09T15:19:33.986Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 980
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1612,
+        "scrollY": 0,
+        "w": 980
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-980.txt",
+      "bytes": 12975,
+      "sha256": "2ae1fe60216d6d5f23ea0e5b287dbad850b87fdf63d8b81b51fed9c4f235e42f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-981-full.jpg",
+      "bytes": 140453,
+      "sha256": "01c0f8e11350c72acf2e7aa8c3f48519d2d3e13834dcb2834f1776635803ac05",
+      "imagePixels": [
+        981,
+        1612
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-981.jpg",
+      "bytes": 80881,
+      "sha256": "f5867673d131f3b3d3e29e65591cc9e2cfaaf619c1d364db5f945cab4fd87630",
+      "imagePixels": [
+        981,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-981.json",
+      "bytes": 97355,
+      "sha256": "018389ad91f407e468c3df30ce7859785db36aaaa2769e324cb4a919600c8dc1",
+      "at": "2026-10-09T15:19:32.169Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 981
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1612,
+        "scrollY": 0,
+        "w": 981
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-complete-981.txt",
+      "bytes": 12975,
+      "sha256": "2ae1fe60216d6d5f23ea0e5b287dbad850b87fdf63d8b81b51fed9c4f235e42f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-event-drawer-1280.jpg",
+      "bytes": 67833,
+      "sha256": "4451f77f03a7b2466592895068be3f2c3b562c224c154b94ef2c42e20caed39c",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-event-drawer-1280.json",
+      "bytes": 111835,
+      "sha256": "1364e3618a3924bcb02c03a7c77505e560874885adab182e1a65dfa31665fac1",
+      "at": "2026-10-09T15:16:56.965Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1070,
+        "scrollY": 270,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-event-drawer-1280.txt",
+      "bytes": 14963,
+      "sha256": "99c5a4c3ff2f39fc2d5470acc3072c5c7751eafc7ccaaa29c7d68367eb18bc81"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-event-drawer-390.jpg",
+      "bytes": 46851,
+      "sha256": "a0301a73e3c428757b1e7f5435dd61f3c9ce0d01c6860afc492fe1abe93f776f",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-event-drawer-390.json",
+      "bytes": 109082,
+      "sha256": "1cca4dc3cf9fd45ebe51c615a4dee3ec663c448ac3c5a573a66a6d787ea9edfd",
+      "at": "2026-10-09T15:20:56.474Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2134,
+        "scrollY": 1290,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-event-drawer-390.txt",
+      "bytes": 14537,
+      "sha256": "15249b77fd2cbfedfe1f3ff89f4ad515ed3afb98d8ab5fb1f52474780bd821a1"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-event-drawer-bottom-1280.jpg",
+      "bytes": 67928,
+      "sha256": "5424b0ef8c6511b2fa0a73c4d1bb2e2040656e5e32f9a0bcea9c00dc740711a9",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-event-drawer-bottom-1280.json",
+      "bytes": 111864,
+      "sha256": "d89c2053462b87c7c818943838bd1d8df5233109d59da3107929279bbf8f3e59",
+      "at": "2026-10-09T15:17:16.370Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1070,
+        "scrollY": 270,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-event-drawer-bottom-1280.txt",
+      "bytes": 14963,
+      "sha256": "15cb4c979ba1ba695cd843407a09120626bd6e0a142c2b87bfcdb69dab88979b"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-event-drawer-bottom-390.jpg",
+      "bytes": 49722,
+      "sha256": "18640d56407c9980f24ce5e2f6d591c31d01d29cbe4ee1ed9db9d8073388568e",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-event-drawer-bottom-390.json",
+      "bytes": 109120,
+      "sha256": "5f0ed2b0fffafd34fc8190cb59f8b1bd74eea28324586d02c0b7ac5b5ff71628",
+      "at": "2026-10-09T15:21:21.858Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2134,
+        "scrollY": 1290,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-event-drawer-bottom-390.txt",
+      "bytes": 14537,
+      "sha256": "a0b83cf99119bef02e6e35db904483886b355382bc4e0f398bd99f542b12b3bc"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-holding-selected-focus-390.jpg",
+      "bytes": 47331,
+      "sha256": "1d5c58ec4f754bcd143aa68ad93b9b9807ef47d6d55a50cbbc66534156ff4b83",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-holding-selected-focus-390.json",
+      "bytes": 97961,
+      "sha256": "3a472271844ba4a04eb17a2dac2d6f01f183d1deadad023d3b05af812b125918",
+      "at": "2026-10-09T15:23:37.106Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2187,
+        "scrollY": 1231.5,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-holding-selected-focus-390.txt",
+      "bytes": 13188,
+      "sha256": "f1491ec13f96f9dbcb518ebb6f126750c9b89cefe0b3afc1d86d47b9b4918bbc"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-more-menu-390.jpg",
+      "bytes": 52716,
+      "sha256": "163b2f657c7c1f5f532eaadc37918c6463eb3a5840f630941cce3e4924ac941f",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-more-menu-390.json",
+      "bytes": 115734,
+      "sha256": "9102110c17d961a8c1e515d0be7c3864e6ee74c1ce81f1b73de385e5499813f8",
+      "at": "2026-10-09T15:21:22.558Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2134,
+        "scrollY": 0,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-more-menu-390.txt",
+      "bytes": 14585,
+      "sha256": "167f37abcf2760e1c14a99d36a4bf73e699f85dd70fcd97ff5af2fd9e076a40c"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-more-menu-bottom-390.jpg",
+      "bytes": 50786,
+      "sha256": "83ce95912934d557d05921cc2f446061f3454303d4c6754b017079c16b989b3d",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-more-menu-bottom-390.json",
+      "bytes": 115750,
+      "sha256": "dd415cbaf72be59ca05aa66b06063d985a1b9ead8b22e5ec665e6d81f0aab80b",
+      "at": "2026-10-09T15:21:22.759Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2134,
+        "scrollY": 378,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-more-menu-bottom-390.txt",
+      "bytes": 14585,
+      "sha256": "b62b873f5c2f20f482cf411022d72348f21fc04b87c3acf1d78a76534d9df18b"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-recovery-expanded-390.jpg",
+      "bytes": 43124,
+      "sha256": "8316fd7245a81515c5be1ed434eaf0a54d05f1bf98ea058ceb857fb669d8c52a",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-recovery-expanded-390.json",
+      "bytes": 96761,
+      "sha256": "f4158428e544a5d8bb872dd912a8b8c05e3b1e950cae84000174d8e07834d362",
+      "at": "2026-10-09T15:22:26.368Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2678,
+        "scrollY": 460,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-recovery-expanded-390.txt",
+      "bytes": 13940,
+      "sha256": "f758118d81b1e4b32bcb147213f99cd2c2a60dbfec8f15b7b564bd9a00454d16"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-compare-1280-full.jpg",
+      "bytes": 106172,
+      "sha256": "1efb8bcd38bb630963b307996fe40e2665aae33bd9adb0d2a4d34004d9050961",
+      "imagePixels": [
+        1280,
+        906
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-compare-1280.jpg",
+      "bytes": 98568,
+      "sha256": "d4ff8f3a7bc76c5c856bd572bcf955155aee5c3e06c2454ce6b5a48a0a903050",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-compare-1280.json",
+      "bytes": 91785,
+      "sha256": "8cc920cc5281c4aba6b4fbce2cefc9841b6eb96a1141042e6910402fc4828820",
+      "at": "2026-10-09T15:23:32.607Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 906,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-compare-1280.txt",
+      "bytes": 10241,
+      "sha256": "e4cdefc11efebcb3ecc0db5e5618a63d45976259a3d4b0b3ac5c5e9ec31e8e53"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-compare-390-full.jpg",
+      "bytes": 98874,
+      "sha256": "217c33af9164a0bdd0fae937672f276f1408ce6dfcbfa73d9b8430ff0b35b324",
+      "imagePixels": [
+        390,
+        1851
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-compare-390.jpg",
+      "bytes": 50327,
+      "sha256": "187d84d767d0158fbafad7221a439ac83c1f4b700001b1bcef0b130d211fcb3d",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-compare-390.json",
+      "bytes": 91544,
+      "sha256": "286a197f14733d65ea4440b0ba33e4c634100ed7de6e8012153727e7cef67de2",
+      "at": "2026-10-09T15:23:34.125Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1851,
+        "scrollY": 0,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-compare-390.txt",
+      "bytes": 10241,
+      "sha256": "e4cdefc11efebcb3ecc0db5e5618a63d45976259a3d4b0b3ac5c5e9ec31e8e53"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-results-1280-full.jpg",
+      "bytes": 104779,
+      "sha256": "10bb5fc54ea48acf58fce36d85965d12f300425286b2f5b442891edc709f9243",
+      "imagePixels": [
+        1280,
+        906
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-results-1280.jpg",
+      "bytes": 92288,
+      "sha256": "feed1255e216417574cfb301f867f8ed9677627235765170381845a107bb6c55",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-results-1280.json",
+      "bytes": 88786,
+      "sha256": "37a1486d283e36625768d33a7f092ebe04626548ad72222cd817e65be1218bd5",
+      "at": "2026-10-09T15:23:10.192Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 906,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-results-1280.txt",
+      "bytes": 8835,
+      "sha256": "bf53f25dabf795f2f325aaa4b30d615362e35082b716c8d64e8b40e763b8bd89"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-results-390-full.jpg",
+      "bytes": 125933,
+      "sha256": "30ae919cff128203cdc124b705eb4b4e2443214d58817ce966b81b88dcfefcb8",
+      "imagePixels": [
+        390,
+        2589
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-results-390.jpg",
+      "bytes": 42341,
+      "sha256": "b7fbdc04df5b33310da0f682efee406cc9f3c78fe563b0f2b68eb2d2d7d7b6de",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-results-390.json",
+      "bytes": 88388,
+      "sha256": "9835cf73071ca8ae9f5424595ce646705e80547d1b560f141f0b38f8380fdee2",
+      "at": "2026-10-09T15:23:08.353Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2589,
+        "scrollY": 0,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-shared-results-390.txt",
+      "bytes": 8835,
+      "sha256": "bf53f25dabf795f2f325aaa4b30d615362e35082b716c8d64e8b40e763b8bd89"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-source/app/components/strategy-prototype/full-workbench-preview.css",
+      "bytes": 4869,
+      "sha256": "a8922b03e0c413b2e4cf9e7c57ab3c7ed38b1da4bbc92138eaee9558113a9570"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-source/app/components/strategy-prototype/full-workbench-preview.tsx",
+      "bytes": 4974,
+      "sha256": "b0a80086cbcc213b6a3ddc4e5679306e1cd3f36be425b831d3cc208618acc5fb"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-source/app/components/strategy-prototype/running-prototype.tsx",
+      "bytes": 93814,
+      "sha256": "44b4766e0c809f269341895892d7725a6b9897f7c1f53f0ab06cd9d93e1ed2ae"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final-source/app/components/strategy-prototype/workbench-visual-theme.css",
+      "bytes": 39688,
+      "sha256": "5a58d7981428e2b21cd682430113b4f6e4094280a4c708416bb3a0add6ae6b0f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-600-full.jpg",
+      "bytes": 133054,
+      "sha256": "2a014f80fce49d361d4a68d5c83f875ccdfc9243d625366e2c54fc512afecd60",
+      "imagePixels": [
+        600,
+        1964
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-600.jpg",
+      "bytes": 57269,
+      "sha256": "0ddcba39806db39c7f7bc2096c6edd0d842cee9179559263bcb36d03b08db62f",
+      "imagePixels": [
+        600,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-600.json",
+      "bytes": 97205,
+      "sha256": "0e38ad9a8f535b6b722e6f031012d554f3db3d71e4d02749f4862579268d4e19",
+      "at": "2026-10-09T15:37:58.937Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 600
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1964,
+        "scrollY": 0,
+        "w": 600
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-600.txt",
+      "bytes": 12975,
+      "sha256": "79895d2de16da17a5e9f10e7bb11bf618a715b44463076ec11badb0af844b651"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-601-full.jpg",
+      "bytes": 133623,
+      "sha256": "511bb25923756eaccd0a2451267ff5dcc5193789fd451f2127f81517ac30d518",
+      "imagePixels": [
+        601,
+        1964
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-601.jpg",
+      "bytes": 57475,
+      "sha256": "fc8325d8d694e710fc7025fc1104445742d04523b59dbb93e1f3f2a7d596ad1b",
+      "imagePixels": [
+        601,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-601.json",
+      "bytes": 97262,
+      "sha256": "e35d9a56c5c6031f3f8b1d11ca72f738d987ca56508fe77115fa2547490a31e4",
+      "at": "2026-10-09T15:37:57.203Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 601
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1964,
+        "scrollY": 0,
+        "w": 601
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-601.txt",
+      "bytes": 12975,
+      "sha256": "79895d2de16da17a5e9f10e7bb11bf618a715b44463076ec11badb0af844b651"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-759-full.jpg",
+      "bytes": 141627,
+      "sha256": "283b182c6390fe93f30ec1c209d2d459bb962a011475314b5888e3c6b9203494",
+      "imagePixels": [
+        759,
+        1914
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-759.jpg",
+      "bytes": 61754,
+      "sha256": "b5ee1fc0f91d4dc1ac6c199a456e0b7bd0916dbea2bb00cba30999f68689aff4",
+      "imagePixels": [
+        759,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-759.json",
+      "bytes": 97330,
+      "sha256": "9755d9717ca626f798e9a81330779100c5e49bed61c3ae35072c35f31b0a39ee",
+      "at": "2026-10-09T15:37:55.440Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 759
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1914,
+        "scrollY": 0,
+        "w": 759
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-759.txt",
+      "bytes": 12975,
+      "sha256": "79895d2de16da17a5e9f10e7bb11bf618a715b44463076ec11badb0af844b651"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-760-full.jpg",
+      "bytes": 130297,
+      "sha256": "c07c84ea9d79113cf0674126d1cd8141816e48d7892169af93d8dafaa6877470",
+      "imagePixels": [
+        760,
+        1612
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-760.jpg",
+      "bytes": 75267,
+      "sha256": "2f63803584f6a0ab3f76270d121ff9b90455c5232c78ee496678f13d7ec626af",
+      "imagePixels": [
+        760,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-760.json",
+      "bytes": 97340,
+      "sha256": "1d86dc1d44e7395d6bd5232368421ad477170d19308694a0ba4106416d91c5a8",
+      "at": "2026-10-09T15:37:53.623Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 760
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1612,
+        "scrollY": 0,
+        "w": 760
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-check-complete-760.txt",
+      "bytes": 12975,
+      "sha256": "79895d2de16da17a5e9f10e7bb11bf618a715b44463076ec11badb0af844b651"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-minimal-complete-390-full.jpg",
+      "bytes": 113805,
+      "sha256": "f1163b2c1762f0118f32a51c6c045b699edbf1b05bda1b1837b182e1ad3a35dc",
+      "imagePixels": [
+        390,
+        2212
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-minimal-complete-390.jpg",
+      "bytes": 44149,
+      "sha256": "63d964f979235f89d6688e460c21201eaaf4dc8650c90011d9573fc70b15e4eb",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-minimal-complete-390.json",
+      "bytes": 96381,
+      "sha256": "a40c051323dbe96aec97c2a349862a9fcfc38928867d1a8352b28a9f601a8d2c",
+      "at": "2026-10-09T15:37:23.978Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2212,
+        "scrollY": 0,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final2-minimal-complete-390.txt",
+      "bytes": 12975,
+      "sha256": "79895d2de16da17a5e9f10e7bb11bf618a715b44463076ec11badb0af844b651"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-1280-full.jpg",
+      "bytes": 135591,
+      "sha256": "fc5b2f51800ed7635ff746796d75b83fe070c0e1728ac30eac09fd9e56157374",
+      "imagePixels": [
+        1280,
+        1051
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-1280.jpg",
+      "bytes": 112601,
+      "sha256": "b1837a2b3b81e9ea39fc655b3cff990566e32668fcb695744775414bee6bfb14",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-1280.json",
+      "bytes": 98893,
+      "sha256": "f50ced5a60edd69028880daebe658b2da250bbaecaddf8eef97c2e89a748e850",
+      "at": "2026-10-09T15:49:46.976Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1051,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-1280.txt",
+      "bytes": 13169,
+      "sha256": "69a781ee95a38e85be4be55c83db2d7c6a040cfabd21663b06a47a13b54d4ef5"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-320-full.jpg",
+      "bytes": 112614,
+      "sha256": "e24103a5dd423dae555525f81b5c2b80906e20822eed5827e6e238b8f4e3ebd6",
+      "imagePixels": [
+        320,
+        2416
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-320.jpg",
+      "bytes": 34108,
+      "sha256": "9c39538c9745a4b81c40dbed5666e6028962b41e1e1e4f5a8f5d1499569d9df0",
+      "imagePixels": [
+        320,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-320.json",
+      "bytes": 98176,
+      "sha256": "8219a3385a640a39bda955e5e66d4ae9d109c9b64cd2c0083a86bb5bfd49b723",
+      "at": "2026-10-09T15:49:54.577Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 320
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2416,
+        "scrollY": 0,
+        "w": 320
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-320.txt",
+      "bytes": 13169,
+      "sha256": "69a781ee95a38e85be4be55c83db2d7c6a040cfabd21663b06a47a13b54d4ef5"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-390-full.jpg",
+      "bytes": 115614,
+      "sha256": "0e1c2c56534603a9f0b0d4a98f67de0ebd814f0ce1cd2ba1eb295d00a51ec9a4",
+      "imagePixels": [
+        390,
+        2192
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-390.jpg",
+      "bytes": 42044,
+      "sha256": "ba903f036236a18d779fca57b78abc948b122295fbb27da5aa03f487241f5655",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-390.json",
+      "bytes": 98203,
+      "sha256": "b1e82d7977eec6fdc3f82259895945f6a0dd4b03529956b47c46ba60a3811543",
+      "at": "2026-10-09T15:49:52.595Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2192,
+        "scrollY": 0,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-390.txt",
+      "bytes": 13169,
+      "sha256": "69a781ee95a38e85be4be55c83db2d7c6a040cfabd21663b06a47a13b54d4ef5"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-430-full.jpg",
+      "bytes": 120439,
+      "sha256": "9f7e6e76c76b1ac6e3d787b2fe35de9d7bc784e0301fe2e3453bb1cbd23d3ad7",
+      "imagePixels": [
+        430,
+        2121
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-430.jpg",
+      "bytes": 43891,
+      "sha256": "6b9748f2cca9bb2c7719f517dc8a14d4189bedbbc3d698e8c0bdcfb4bdd3a9ab",
+      "imagePixels": [
+        430,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-430.json",
+      "bytes": 98216,
+      "sha256": "d9161f31202f79f338d9175c7a56de1946fb96a32b020acc8eed49e6c26a77fd",
+      "at": "2026-10-09T15:49:50.745Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 430
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2121,
+        "scrollY": 0,
+        "w": 430
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-430.txt",
+      "bytes": 13169,
+      "sha256": "69a781ee95a38e85be4be55c83db2d7c6a040cfabd21663b06a47a13b54d4ef5"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-431-full.jpg",
+      "bytes": 120220,
+      "sha256": "01a223511d5f5287a2afe62222c8686ab50e8ffd721c46818d590030f83dc5bd",
+      "imagePixels": [
+        431,
+        2121
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-431.jpg",
+      "bytes": 43852,
+      "sha256": "80be08250bc23e910740bb378ca3b30c592b41d2547e444128eb9fa939024169",
+      "imagePixels": [
+        431,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-431.json",
+      "bytes": 98228,
+      "sha256": "c6077c886b387271b2b2fe09ae4d70e1de78b990301ab70848b27f792ae5709d",
+      "at": "2026-10-09T15:49:48.914Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 431
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2121,
+        "scrollY": 0,
+        "w": 431
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-candles-431.txt",
+      "bytes": 13169,
+      "sha256": "69a781ee95a38e85be4be55c83db2d7c6a040cfabd21663b06a47a13b54d4ef5"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-check-complete-390-full.jpg",
+      "bytes": 111349,
+      "sha256": "33ef5036c4455a9a22671f047b1485ce28cbefed5347bc49791f058c95c216fc",
+      "imagePixels": [
+        390,
+        2140
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-check-complete-390.jpg",
+      "bytes": 42044,
+      "sha256": "ba903f036236a18d779fca57b78abc948b122295fbb27da5aa03f487241f5655",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-check-complete-390.json",
+      "bytes": 97184,
+      "sha256": "cb0b64ad84f289b167dc04aed192fbfe26cd69b2a49d1d920928ffff4224efae",
+      "at": "2026-10-09T15:45:12.332Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2140,
+        "scrollY": 0,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-check-complete-390.txt",
+      "bytes": 12975,
+      "sha256": "79895d2de16da17a5e9f10e7bb11bf618a715b44463076ec11badb0af844b651"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-check-complete-759-full.jpg",
+      "bytes": 140041,
+      "sha256": "50a7f5e4da63255db7ff42f938643cc1e7a82518f789c5827afc22bc8cbdd7f2",
+      "imagePixels": [
+        759,
+        1774
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-check-complete-759.jpg",
+      "bytes": 69224,
+      "sha256": "384bd1d3a54d2e0923c355843ed4f748bdbc5512efb8538a5e744462c91ebfb4",
+      "imagePixels": [
+        759,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-check-complete-759.json",
+      "bytes": 97303,
+      "sha256": "bcecf635ee9160be138daf2ecfca94dabb42108edfcc413c3df0431a4802c175",
+      "at": "2026-10-09T15:43:35.645Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 759
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1774,
+        "scrollY": 0,
+        "w": 759
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-check-complete-759.txt",
+      "bytes": 12975,
+      "sha256": "79895d2de16da17a5e9f10e7bb11bf618a715b44463076ec11badb0af844b651"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1023-full.jpg",
+      "bytes": 141629,
+      "sha256": "4407059838a2199c34ec4346d3914e5ba1b4c579b3683f697b3f61650c02be64",
+      "imagePixels": [
+        1023,
+        1612
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1023.jpg",
+      "bytes": 81198,
+      "sha256": "def49b8befd987b83d35e841aa1835001798f3a8707aa87bd06e0ca24adb5710",
+      "imagePixels": [
+        1023,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1023.json",
+      "bytes": 97364,
+      "sha256": "5ca24c15d294b841a3248e1f8ed72a4e5f76d2dfc62b25753d1a0b2ee08f4351",
+      "at": "2026-10-09T15:48:18.716Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1023
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1612,
+        "scrollY": 0,
+        "w": 1023
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1023.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1024-full.jpg",
+      "bytes": 123055,
+      "sha256": "9b04eb9575f90a77b7bbd4864341e303b89cf15fa849e42a0a17d66f0d5a4fc6",
+      "imagePixels": [
+        1024,
+        1057
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1024.jpg",
+      "bytes": 99477,
+      "sha256": "10d5bf88d4c359c7af5dce7bd62d13cba8688cc1b07e7d5fdbecd99c59876a8a",
+      "imagePixels": [
+        1024,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1024.json",
+      "bytes": 97425,
+      "sha256": "83823af9ae1e0993726fcad9616f9389c6005ba7ba1e4782fb2eeff7de07ad00",
+      "at": "2026-10-09T15:48:16.560Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1024
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1057,
+        "scrollY": 0,
+        "w": 1024
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1024.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1059-full.jpg",
+      "bytes": 124950,
+      "sha256": "4dd15b2e4f15f4a0a375cff15ecb1e017861fb62b4e465a60e00a1fd926c9be7",
+      "imagePixels": [
+        1059,
+        1057
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1059.jpg",
+      "bytes": 100948,
+      "sha256": "c021b45c24adb064abbe0ef3fa095d56f302aaf5fa976145d5efe51f2bfad1cd",
+      "imagePixels": [
+        1059,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1059.json",
+      "bytes": 97451,
+      "sha256": "843fbc2783e0455e67b726df3f7670d737395df4de9f94571d5fbfa592dfe9d0",
+      "at": "2026-10-09T15:48:14.626Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1059
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1057,
+        "scrollY": 0,
+        "w": 1059
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1059.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1060-full.jpg",
+      "bytes": 125422,
+      "sha256": "3b79462dace507b65efd1b97650950096524e9d6321cc759917785101c313aca",
+      "imagePixels": [
+        1060,
+        1057
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1060.jpg",
+      "bytes": 101651,
+      "sha256": "93ce172e81a6b5f22471600c3ce4c13de1888c7d2978cc08b2810a91cdfda1c5",
+      "imagePixels": [
+        1060,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1060.json",
+      "bytes": 97981,
+      "sha256": "8f374297401752b0402a7b3bffddbdf4098305610a89798e1d3ef9f6ae7ebeb3",
+      "at": "2026-10-09T15:48:12.773Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1060
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1057,
+        "scrollY": 0,
+        "w": 1060
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1060.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1280-full.jpg",
+      "bytes": 127167,
+      "sha256": "ce49d6f0eb24aa5ce2b598ba3cd21ca785839df267127f6c3fbb57c64830969e",
+      "imagePixels": [
+        1280,
+        1051
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1280.jpg",
+      "bytes": 104119,
+      "sha256": "0e9e1aef9cd84291e2ff7da5cdefbb5e4ec4a38cd8f4bd26206fa23931a3f945",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1280.json",
+      "bytes": 97872,
+      "sha256": "16162d6dca3d1f7e43baadf0f69826b7687d39f49f965fdbf8650223bfd35be6",
+      "at": "2026-10-09T15:48:10.860Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1051,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1280.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1440-full.jpg",
+      "bytes": 138772,
+      "sha256": "46eb957288cacec873586b3206315910c7ed9ddb24da5b3235d8c0882f6fd701",
+      "imagePixels": [
+        1440,
+        1113
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1440.jpg",
+      "bytes": 122146,
+      "sha256": "a6fb563bbc8215b82a258cd8177430f84be3331c8c45c84bd3763e278aa2e677",
+      "imagePixels": [
+        1440,
+        900
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1440.json",
+      "bytes": 96658,
+      "sha256": "96653cb4aff611f670f3822bf33343de3848dd991be66b0d3098e463dbbd7798",
+      "at": "2026-10-09T15:48:08.999Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 900,
+        "w": 1440
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1113,
+        "scrollY": 0,
+        "w": 1440
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-1440.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-320-full.jpg",
+      "bytes": 107576,
+      "sha256": "43c742a58ea32250c23b7617890d5f7a421fecd379cfb99aa78f3e06fc29d947",
+      "imagePixels": [
+        320,
+        2364
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-320.jpg",
+      "bytes": 34102,
+      "sha256": "81ac57297e3b0d3e2d4330c36fc583f930ba9075b1845ef423abcf7263282f9b",
+      "imagePixels": [
+        320,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-320.json",
+      "bytes": 97158,
+      "sha256": "79cf6289cb69e467f42c7f5888002bd25c1ccb5dce3b7d2369cee1c3ecebcdaf",
+      "at": "2026-10-09T15:48:41.674Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 320
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2364,
+        "scrollY": 0,
+        "w": 320
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-320.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-359-full.jpg",
+      "bytes": 111250,
+      "sha256": "0ac22709339285d6208905c04a8dbc277d58b42ad9b451500203e57ae3f56bc0",
+      "imagePixels": [
+        359,
+        2346
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-359.jpg",
+      "bytes": 35017,
+      "sha256": "fdfee009ab79b727dc707d37dcf014434e33f8a988db392f6ff34b1f33796ed1",
+      "imagePixels": [
+        359,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-359.json",
+      "bytes": 97158,
+      "sha256": "dd6bbf03994e2c2cf2ccf1dc4f6bc605ecf425f5f40d2869dcfda09b8759dcff",
+      "at": "2026-10-09T15:48:39.880Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 359
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2346,
+        "scrollY": 0,
+        "w": 359
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-359.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-360-full.jpg",
+      "bytes": 110262,
+      "sha256": "e4b8ffc222d4054b406f4e39508a6e8e184d062217f52940b4d022b53d87d02b",
+      "imagePixels": [
+        360,
+        2188
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-360.jpg",
+      "bytes": 40704,
+      "sha256": "5755dc19064f4ff78e00604a32adf7443083bab68cc86310f7ed7cea7aaee70b",
+      "imagePixels": [
+        360,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-360.json",
+      "bytes": 97153,
+      "sha256": "171a77510f19ab93c1b3543d129c26775d435c3cd52a391d7f3da1dffe32c080",
+      "at": "2026-10-09T15:48:38.040Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 360
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2188,
+        "scrollY": 0,
+        "w": 360
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-360.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-390-full.jpg",
+      "bytes": 110736,
+      "sha256": "a705c6d706001c12752abb57ec6d9f8985104a22daf073110107610cb754aa3c",
+      "imagePixels": [
+        390,
+        2140
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-390.jpg",
+      "bytes": 42044,
+      "sha256": "ba903f036236a18d779fca57b78abc948b122295fbb27da5aa03f487241f5655",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-390.json",
+      "bytes": 97184,
+      "sha256": "f9d52a994e32946a8cdb0a9d730c5cf8ae02bf2ca8f6694e0d44e9c676513284",
+      "at": "2026-10-09T15:48:36.215Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2140,
+        "scrollY": 0,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-390.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-430-full.jpg",
+      "bytes": 116260,
+      "sha256": "b7abf2dc5d958b900af59fd6365f1ca6c895cac62c4d9960d66e826963689ed2",
+      "imagePixels": [
+        430,
+        2069
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-430.jpg",
+      "bytes": 43891,
+      "sha256": "6b9748f2cca9bb2c7719f517dc8a14d4189bedbbc3d698e8c0bdcfb4bdd3a9ab",
+      "imagePixels": [
+        430,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-430.json",
+      "bytes": 97197,
+      "sha256": "120dc88f0bb906ff5605a2b40487d557b1d9bdc9562d169085c5ecac79bd52e5",
+      "at": "2026-10-09T15:48:34.293Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 430
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2069,
+        "scrollY": 0,
+        "w": 430
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-430.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-431-full.jpg",
+      "bytes": 116364,
+      "sha256": "973a6948382086f824a6879848b23870a9c7d714cfe3bc72b5ff1d5150aacd59",
+      "imagePixels": [
+        431,
+        2069
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-431.jpg",
+      "bytes": 43852,
+      "sha256": "80be08250bc23e910740bb378ca3b30c592b41d2547e444128eb9fa939024169",
+      "imagePixels": [
+        431,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-431.json",
+      "bytes": 97209,
+      "sha256": "a30e083fb958620d993dd38122630d584674563f3a8ae1e63c9960307ab9f3b0",
+      "at": "2026-10-09T15:48:32.417Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 431
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2069,
+        "scrollY": 0,
+        "w": 431
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-431.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-600-full.jpg",
+      "bytes": 128127,
+      "sha256": "8ad526043c262d82700d08b4e81ffd12492e67b6fd58b3d37bab3689829d2da4",
+      "imagePixels": [
+        600,
+        1828
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-600.jpg",
+      "bytes": 58269,
+      "sha256": "1ed8b017f508a64a61c2c05fe41e4507ace63afec478566e32b297a7076e3da7",
+      "imagePixels": [
+        600,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-600.json",
+      "bytes": 97214,
+      "sha256": "129eae495fd78151c3556bacd99240700a64c4e3ab6b88e16a2befcb2466ed58",
+      "at": "2026-10-09T15:48:30.674Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 600
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1828,
+        "scrollY": 0,
+        "w": 600
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-600.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-601-full.jpg",
+      "bytes": 128811,
+      "sha256": "a8adaef7938a1292bdab448b74fae7307851e3626af500d8af3578e5494f54a6",
+      "imagePixels": [
+        601,
+        1828
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-601.jpg",
+      "bytes": 58484,
+      "sha256": "5cf7d696094f3fe86dfa19e8ea8dfd050e1419931e68c2c901dfa65de546c922",
+      "imagePixels": [
+        601,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-601.json",
+      "bytes": 97252,
+      "sha256": "a4363e97dd9943567422a0d4d27c4420f156c0ab0a27b6a8abe0a0928ed051ba",
+      "at": "2026-10-09T15:48:28.740Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 601
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1828,
+        "scrollY": 0,
+        "w": 601
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-601.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-759-full.jpg",
+      "bytes": 137985,
+      "sha256": "4e99d992300a27abe9c73d406232d0c71c63220c7e570673dca19ea1e2eb3761",
+      "imagePixels": [
+        759,
+        1709
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-759.jpg",
+      "bytes": 73652,
+      "sha256": "b8d88213fbab3fef9cda8f3cd41af863407d32e2655096daa1bae3cb660ea835",
+      "imagePixels": [
+        759,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-759.json",
+      "bytes": 97320,
+      "sha256": "c00b868bf8e8953e797f317f04870118d37171d789e6dd2a27963c3361c3c1d8",
+      "at": "2026-10-09T15:48:26.853Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 759
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1709,
+        "scrollY": 0,
+        "w": 759
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-759.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-760-full.jpg",
+      "bytes": 130333,
+      "sha256": "0f17aeaf35df1ca6afb34ae3e69bf05f362396c0bc70be5ace1519669ccef66f",
+      "imagePixels": [
+        760,
+        1612
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-760.jpg",
+      "bytes": 75267,
+      "sha256": "2f63803584f6a0ab3f76270d121ff9b90455c5232c78ee496678f13d7ec626af",
+      "imagePixels": [
+        760,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-760.json",
+      "bytes": 97340,
+      "sha256": "c3d172e721440c4f16c758379307239bf7c0d88eca00fed853844abd89fbf93a",
+      "at": "2026-10-09T15:48:24.882Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 760
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1612,
+        "scrollY": 0,
+        "w": 760
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-760.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-980-full.jpg",
+      "bytes": 140680,
+      "sha256": "dea4dbb9615ce8104f701e564e3e3b8148d2a80f1f75864a9b24d155d741e4ab",
+      "imagePixels": [
+        980,
+        1612
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-980.jpg",
+      "bytes": 80965,
+      "sha256": "2b9e2ce03eb01f9728cb5073719efb5e6b73bea85fdc92c35356874a77c4697d",
+      "imagePixels": [
+        980,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-980.json",
+      "bytes": 97328,
+      "sha256": "4485e407ce8a32dbd75629da24027681bc7ed54c0ca2aae2869521fae553b79b",
+      "at": "2026-10-09T15:48:22.947Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 980
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1612,
+        "scrollY": 0,
+        "w": 980
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-980.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-981-full.jpg",
+      "bytes": 140374,
+      "sha256": "7ff1f145ac42f09c2d717c77ef3ebe3d9f0b043513b70024e79fe33786b48bd2",
+      "imagePixels": [
+        981,
+        1612
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-981.jpg",
+      "bytes": 80747,
+      "sha256": "4bfe22d87cc3e2138e48b75a8a3f87212fbf4493ae17eea11ee4566ac8d0e237",
+      "imagePixels": [
+        981,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-981.json",
+      "bytes": 97355,
+      "sha256": "8b17c5d135c020757e19b78b25fce6fc0b9448dbbf5dbd5e958f69f2c2d4284d",
+      "at": "2026-10-09T15:48:20.831Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 981
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1612,
+        "scrollY": 0,
+        "w": 981
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-complete-981.txt",
+      "bytes": 12975,
+      "sha256": "026763ed615679b100774d136b67888ebbb9c7abf77d8b1c3ef337c119b38cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-event-drawer-390.jpg",
+      "bytes": 46188,
+      "sha256": "1150efc90e018b6e796a343bed8119f0a695852f3c36acf64e511489bf3137d9",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-event-drawer-390.json",
+      "bytes": 110092,
+      "sha256": "ddbf4be28bb4ed6f59bb70bbd987d6985c41cea4d13e66b5f73a9cea88cf17ca",
+      "at": "2026-10-09T15:52:33.294Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2193,
+        "scrollY": 1349,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-event-drawer-390.txt",
+      "bytes": 14741,
+      "sha256": "5255e18eb1f45cb873083fa72aeb61036c4d6932c1e1d9d7c2cf1127792e169c"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-event-drawer-bottom-390.jpg",
+      "bytes": 49746,
+      "sha256": "78ea6217577cec1528146be1e4535c26f4df3fe924f7418632e6fdc25fcf418c",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-event-drawer-bottom-390.json",
+      "bytes": 110130,
+      "sha256": "325bc953f882abeb442239759e364b77322f3bd27a60a3194dbf43d017a9a16e",
+      "at": "2026-10-09T15:53:16.145Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2193,
+        "scrollY": 1349,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-event-drawer-bottom-390.txt",
+      "bytes": 14741,
+      "sha256": "a87057e53a7b09cdd9b989e46041f1dd52f54dff5ce6fcd8b5e3029b0b6dc22f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-holding-selected-focus-390-full.jpg",
+      "bytes": 116467,
+      "sha256": "a1648d2672c0fc18ee8f84096b8661bdefb7e0e538c53a8049362a91afc62946",
+      "imagePixels": [
+        390,
+        2193
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-holding-selected-focus-390.jpg",
+      "bytes": 49866,
+      "sha256": "8d54f5ecb8f4ea5ddd35cf9f41a2ffa090095d65a08e2ba860104ccff04d68a4",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-holding-selected-focus-390.json",
+      "bytes": 97772,
+      "sha256": "1eaf67e7e549787803520de4e89d8b4497365f79a4534709ff74b1e3d3e4ffc5",
+      "at": "2026-10-09T15:50:14.681Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2193,
+        "scrollY": 1180,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-holding-selected-focus-390.txt",
+      "bytes": 13188,
+      "sha256": "d506621b4ca97a356318cde5e584f6d5258c9bd00327f1e1e4fc2521139b7a26"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-journey-T0-1280.jpg",
+      "bytes": 96099,
+      "sha256": "92ff056dd0410f84d178747714ca556e05608f6aa37f9da84170721ddefaa858",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-journey-T0-1280.json",
+      "bytes": 62964,
+      "sha256": "591341fd5376cd1fb20bbbadcd40c9cea8efd30316fd7caf5762b4b28edd668e",
+      "at": "2026-10-09T15:46:11.348Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "document": {
+        "h": 971,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-journey-T0-1280.txt",
+      "bytes": 4525,
+      "sha256": "860e7d800a27b35726832dd46544e6a5fe2e8336c575a510ae624fe206be0914"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-journey-T0-candles-1280.jpg",
+      "bytes": 102022,
+      "sha256": "a7fda5730e5292207d29820e01c05554aec649a2ea88c371f556f1b1f1669c4b",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-journey-T0-candles-1280.json",
+      "bytes": 64053,
+      "sha256": "e03ce2462ab2c1aee7f061bdadc56870f5905a4c4abcb67e3d41a18659c23fc7",
+      "at": "2026-10-09T15:47:02.017Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "document": {
+        "h": 971,
+        "scrollY": 70,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-journey-T0-candles-1280.txt",
+      "bytes": 4773,
+      "sha256": "08f3eff95a025713f61f17db5e874cbec4c3a732741e0cd4e40f2877f92259d9"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-journey-next-candles-1280.jpg",
+      "bytes": 103287,
+      "sha256": "13f0932e1bc901f876b963d4bd9640832641ba54e94c82ed8a0c357fd2a04cb0",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-journey-next-candles-1280.json",
+      "bytes": 71169,
+      "sha256": "0a27748543bdf609c9fa9b2e0bfc99571392db1f46dd7e8743d25576224407fb",
+      "at": "2026-10-09T15:47:02.931Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "document": {
+        "h": 1051,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-journey-next-candles-1280.txt",
+      "bytes": 5444,
+      "sha256": "0323b53a96dea7b597b34d33f13e3b71228abb4304131353954025e22cdcb637"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-journey-next-day-1280.jpg",
+      "bytes": 95868,
+      "sha256": "e4257178bdc881e4d7b22bfb987c14f7d92ba67fc8283290c635654217df04d0",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-journey-next-day-1280.json",
+      "bytes": 70148,
+      "sha256": "da9d7c61f5d065e77e8a56e42ea9b981f5be53fe06297fa14a7b97945525c848",
+      "at": "2026-10-09T15:46:12.180Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "document": {
+        "h": 1051,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-journey-next-day-1280.txt",
+      "bytes": 5250,
+      "sha256": "8e3d8455bd5799e230473faf7f25e95da2f4a5fadeea8b763a1d194f9549cf41"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-journey-play-pause-1280.jpg",
+      "bytes": 103768,
+      "sha256": "faee0cbf5dbd101dca0a8748ea960b2582a925e9a67ce695cc94e4b9f70b1b2f",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-journey-play-pause-1280.json",
+      "bytes": 79399,
+      "sha256": "3d0ddcb0c25115d6053c852357c91d5807d5ce5d5662eb4b9133087482c985e8",
+      "at": "2026-10-09T15:46:46.225Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "document": {
+        "h": 1051,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-journey-play-pause-1280.txt",
+      "bytes": 7632,
+      "sha256": "a29ca070c1ebb996607510ec90b92f5c50aae6f3137d4472bf4669372e216589"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-more-menu-390.jpg",
+      "bytes": 38186,
+      "sha256": "10476045a9ac66c8a9761034e0528a8845b9cb0bab757358d6cc850133f70aee",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-more-menu-390.json",
+      "bytes": 116924,
+      "sha256": "28d0c8dc2cdcef05b28070eaa1e50c6f83774610a14a1a1ff66f6d3f838dbba2",
+      "at": "2026-10-09T15:50:17.064Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2193,
+        "scrollY": 3,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-more-menu-390.txt",
+      "bytes": 14789,
+      "sha256": "40c9b78f1043bae70aae5332723999e56b61d58f02c6199aa04925f2e07edf59"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-more-menu-bottom-390.jpg",
+      "bytes": 38368,
+      "sha256": "ce6dfe1d3ca44ea45d291036976978ab3248010baec4724af5e2811100a0d49c",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-more-menu-bottom-390.json",
+      "bytes": 116946,
+      "sha256": "7e7001e658174873f618c437f32f7434f53f438045f6832f427753dae85b2a04",
+      "at": "2026-10-09T15:50:17.570Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2193,
+        "scrollY": 423,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-more-menu-bottom-390.txt",
+      "bytes": 14789,
+      "sha256": "c8181aef21367008b39d0b2eedab2d3ae95fa0559b37064eefc167c4bde5c2fb"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-recovery-expanded-390-full.jpg",
+      "bytes": 143941,
+      "sha256": "e4de75dae151e1f9895f1454c786b3f48ab7f94a470064ad8c8ac9d41137ee2f",
+      "imagePixels": [
+        390,
+        2737
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-recovery-expanded-390.jpg",
+      "bytes": 43029,
+      "sha256": "8a8707e90daed991b20b585488e9f1149dfd80cf8fc0ad0c985c1cc5b619712e",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-recovery-expanded-390.json",
+      "bytes": 97763,
+      "sha256": "4473008852b6a07ed9093a8d5c09d8e4d3a813b908d569bb1d1d893637789c3a",
+      "at": "2026-10-09T15:53:17.154Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2737,
+        "scrollY": 492,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-recovery-expanded-390.txt",
+      "bytes": 14144,
+      "sha256": "7ffd548d193f659900a636add0363e0e64272cb234803aaf07925cf471877b64"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-recovery-reloaded-bottom-390.jpg",
+      "bytes": 47652,
+      "sha256": "b42ec14a82b10ae049b4694a08b59e8d5f6b0460cba8eccd02e3d43c19028e21",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-recovery-reloaded-bottom-390.json",
+      "bytes": 97692,
+      "sha256": "d1075958641df67f0edf3746823275e48279fe36d35fc33c0517d49e73cedd06",
+      "at": "2026-10-09T15:53:33.799Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2761,
+        "scrollY": 997,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-recovery-reloaded-bottom-390.txt",
+      "bytes": 14217,
+      "sha256": "11ddcc86ef9ca0392b16bd37ef68835e42fa577798a95b9ddd7ad8bcd3475e70"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-recovery-rewind-390.jpg",
+      "bytes": 43979,
+      "sha256": "cb9afcdf2af7757588028b14d0911a6797b3d33bd65968a69a60286bb6ca74eb",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-recovery-rewind-390.json",
+      "bytes": 70236,
+      "sha256": "02336714c040f628d2dce84085f79e5656bddc96e43ca55c07734eec51354303",
+      "at": "2026-10-09T15:53:32.986Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2659,
+        "scrollY": 923,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-recovery-rewind-390.txt",
+      "bytes": 8215,
+      "sha256": "e3f24bf5aa73eef7e99fc4ce6243d9263c53feb2bd589572a5564c27fbe983da"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-theme-original-negative-1280.jpg",
+      "bytes": 99701,
+      "sha256": "71f207367f86c74bb50bba231affb0216d2f43c68fc562030c4d6bcabd570d9f",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-theme-original-negative-1280.json",
+      "bytes": 71102,
+      "sha256": "a001323046c1569618f7cebb21d447495475387ba16da13067f31033de72cc7f",
+      "at": "2026-10-09T15:47:23.890Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "document": {
+        "h": 906,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-theme-original-negative-1280.txt",
+      "bytes": 5435,
+      "sha256": "9d48f4889c6f64436de2ff67adcc08dc1fa39c719d2a1954c3edbe4bd5dcdb2d"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-theme-state-negative.json",
+      "bytes": 2308,
+      "sha256": "8b4c966638d3f6fc9122f30f4011844ed4fda9e6f56030070d5e288117a5c368"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-theme-unified-negative-1280.jpg",
+      "bytes": 103283,
+      "sha256": "05ca5ed281b78cf7b52fe72a9fec556290d47e9aa57bc1c79f44dd3509177f70",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-theme-unified-negative-1280.json",
+      "bytes": 71661,
+      "sha256": "658aa66fb2fef9bdc65d7563f3fccfb7781e5537111f19784f7dcb168403a575",
+      "at": "2026-10-09T15:47:25.191Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "document": {
+        "h": 1051,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final3-theme-unified-negative-1280.txt",
+      "bytes": 5435,
+      "sha256": "9f2b2ad6714a909178038f0874bf54dea1e34b983ef54e3b4d0052d6264dc2ce"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-1440-full.jpg",
+      "bytes": 138766,
+      "sha256": "5bb865c6d027f1b022833f64fed840bffa03554f5fd1b9d5270f910f138455ec",
+      "imagePixels": [
+        1440,
+        1113
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-1440.jpg",
+      "bytes": 122146,
+      "sha256": "a6fb563bbc8215b82a258cd8177430f84be3331c8c45c84bd3763e278aa2e677",
+      "imagePixels": [
+        1440,
+        900
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-1440.json",
+      "bytes": 97502,
+      "sha256": "2484dc3688f5406c43b94f49a0efd83c52737890edd6fe2754722f13b5bae12c",
+      "at": "2026-10-09T16:00:20.774Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 900,
+        "w": 1440
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1113,
+        "scrollY": 0,
+        "w": 1440
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-1440.txt",
+      "bytes": 12975,
+      "sha256": "cfbb090950503d524336dc50f4f991909ce20f019446bc16c2935eb2c8aa24de"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-390-full.jpg",
+      "bytes": 110719,
+      "sha256": "f525382638d8ef6e5a8bee783b0a25f95150218ea8346721d63999c65eabbe56",
+      "imagePixels": [
+        390,
+        2140
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-390.jpg",
+      "bytes": 42044,
+      "sha256": "ba903f036236a18d779fca57b78abc948b122295fbb27da5aa03f487241f5655",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-390.json",
+      "bytes": 96347,
+      "sha256": "e662ff97faf062adbb7ce594b33fe53221890ab089c5ef2255ceb20b779cacfd",
+      "at": "2026-10-09T16:00:11.526Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2140,
+        "scrollY": 0,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-390.txt",
+      "bytes": 12975,
+      "sha256": "cfbb090950503d524336dc50f4f991909ce20f019446bc16c2935eb2c8aa24de"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-759-full.jpg",
+      "bytes": 137978,
+      "sha256": "d2cbbbefc7ca7797a450a922494b7db88ac748030554e0abc11f48d134c0ae8c",
+      "imagePixels": [
+        759,
+        1709
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-759.jpg",
+      "bytes": 73652,
+      "sha256": "b8d88213fbab3fef9cda8f3cd41af863407d32e2655096daa1bae3cb660ea835",
+      "imagePixels": [
+        759,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-759.json",
+      "bytes": 97320,
+      "sha256": "2040500cd66f1b50cf7f448abd06d58a73a2f8839d8d77709409d5909dfdb511",
+      "at": "2026-10-09T16:00:17.988Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 759
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1709,
+        "scrollY": 0,
+        "w": 759
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-759.txt",
+      "bytes": 12975,
+      "sha256": "cfbb090950503d524336dc50f4f991909ce20f019446bc16c2935eb2c8aa24de"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-760-full.jpg",
+      "bytes": 130327,
+      "sha256": "b62a465318c0b070b63b753443595f18e69fc9c410ce6a69bfe7d9140dae1438",
+      "imagePixels": [
+        760,
+        1612
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-760.jpg",
+      "bytes": 75267,
+      "sha256": "2f63803584f6a0ab3f76270d121ff9b90455c5232c78ee496678f13d7ec626af",
+      "imagePixels": [
+        760,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-760.json",
+      "bytes": 97340,
+      "sha256": "c7cd7ea757cd248767cae3d11d2b44830fbf313d88836bb8cfd2b5310fa8144c",
+      "at": "2026-10-09T16:00:14.733Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 760
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1612,
+        "scrollY": 0,
+        "w": 760
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-complete-760.txt",
+      "bytes": 12975,
+      "sha256": "cfbb090950503d524336dc50f4f991909ce20f019446bc16c2935eb2c8aa24de"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-contrast-measured.json",
+      "bytes": 1144,
+      "sha256": "bce9a78e9dd0f714fc3f4c20c3bf5f4948ccb02cee2dc8ad77cc9208fc3c4d12",
+      "at": "2026-10-09T16:01:26.904Z"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-event-drawer-1280.jpg",
+      "bytes": 65176,
+      "sha256": "9f3e9f23e39156ad9be26b7c8b91f9664dfcde9b10c72da92f1a66202e3f02a9",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-event-drawer-1280.json",
+      "bytes": 108938,
+      "sha256": "47382b00b10c14fb3eebd1d9f8140f7256bb143e81feda8b6d7e07b982863e5f",
+      "at": "2026-10-09T15:55:20.923Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1051,
+        "scrollY": 251,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-event-drawer-1280.txt",
+      "bytes": 14537,
+      "sha256": "d28ca1798e540f377d755940b76bc01f99a7a2fe4d854e96b1a184a691d6f133"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-event-drawer-bottom-1280.jpg",
+      "bytes": 65268,
+      "sha256": "38f4c8f21646796e8c93f534eb0dd2150731c14f32d234718ac77a9f591edfb2",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-event-drawer-bottom-1280.json",
+      "bytes": 109819,
+      "sha256": "e59a97c961d8dfa0476892dec872745762af0048266da1a13937bd3406d657e0",
+      "at": "2026-10-09T15:55:21.635Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1051,
+        "scrollY": 251,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-event-drawer-bottom-1280.txt",
+      "bytes": 14537,
+      "sha256": "e7cb73508f1757222af8bcf94b0af41d656fca26b2d4f84e93d092a84927ac05"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-live-preview.jpg",
+      "bytes": 95185,
+      "sha256": "05c57bc3f832c03ca719418ddbfe93556b24c646095f2149a544ce5997a73240",
+      "imagePixels": [
+        1280,
+        720
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-live-preview.json",
+      "bytes": 97872,
+      "sha256": "ecdc2dca4145385a8b63196971b4369b06de63406fa5f640028b0cbf8b86f5e9",
+      "at": "2026-10-09T16:01:39.964Z",
+      "viewport": {
+        "dpr": 2,
+        "h": 720,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1051,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-live-preview.txt",
+      "bytes": 12975,
+      "sha256": "cfbb090950503d524336dc50f4f991909ce20f019446bc16c2935eb2c8aa24de"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-live-role-audit.json",
+      "bytes": 6971,
+      "sha256": "3849bee90b3d2bf5367aa2bfa245a240e1eed2e7e8271e561e6410fbd144581c",
+      "at": "2026-10-09T16:01:26.904Z"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-live-style-audit.json",
+      "bytes": 4104,
+      "sha256": "00f1539e0758ab94c0f1ed03480d39affcf6a5ac914939216db989af7c2acf0a",
+      "at": "2026-10-09T16:00:57.754Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 900,
+        "w": 1440
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-long-portfolio-390-full.jpg",
+      "bytes": 120123,
+      "sha256": "5dadbd1e14cd4729651d83ba8695901635bfac0bbd0f8d65350c5f1b2f53bf6e",
+      "imagePixels": [
+        390,
+        2202
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-long-portfolio-390.jpg",
+      "bytes": 45103,
+      "sha256": "c67d1102bf0ca2277c49001d4fe7b8167be7b6d1ea67aab2734f78d3608c9b5f",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-long-portfolio-390.json",
+      "bytes": 77828,
+      "sha256": "b0090568eae0d142d2e4b19c8da5468bc784d7dc28dad7b2cc238efba4dbd5f0",
+      "at": "2026-10-09T15:54:23.464Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2202,
+        "scrollY": 0,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-long-portfolio-390.txt",
+      "bytes": 8883,
+      "sha256": "cec992de2b33df41ce09539d39b8195ab3250b8f4b2213d72a4ab1aed200817b"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-1280-full.jpg",
+      "bytes": 142421,
+      "sha256": "b9627ddd074d9f84a6debd31b25a997ef7ccb18eda805ec48f32bdfcfdc95a3b",
+      "imagePixels": [
+        1280,
+        1052
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-1280.jpg",
+      "bytes": 119549,
+      "sha256": "da378ef9886b448a3ac2b2040589df2510e5e7e2aef30a2a84cd908e0afeb7b5",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-1280.json",
+      "bytes": 118042,
+      "sha256": "3f7b00143a044e90be86d4e55f6c8d3e3a0a22d155238b4de36c96ae8fa6ab7b",
+      "at": "2026-10-09T15:54:20.143Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1052,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-1280.txt",
+      "bytes": 14780,
+      "sha256": "86d7113c247911b5881bf678345aa0326c6bf69c70163135fda055f00eec1f93"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-320-full.jpg",
+      "bytes": 122276,
+      "sha256": "56d8788314a288f48fa4d32d1702b111332866a11673652bbd644a1020df1be4",
+      "imagePixels": [
+        320,
+        2417
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-320.jpg",
+      "bytes": 42515,
+      "sha256": "28c537ac7fbfff6e2614735076a3e9ed1f5f4419b80f6ded2f6cc2d80d97a250",
+      "imagePixels": [
+        320,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-320.json",
+      "bytes": 117180,
+      "sha256": "127c7bb7838bcf7307fbae3033e93b6ea6dd3fcf0c7fc37033f827e0f20d5f49",
+      "at": "2026-10-09T15:54:12.425Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 320
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2417,
+        "scrollY": 0,
+        "w": 320
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-320.txt",
+      "bytes": 14780,
+      "sha256": "86d7113c247911b5881bf678345aa0326c6bf69c70163135fda055f00eec1f93"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-390.jpg",
+      "bytes": 49687,
+      "sha256": "548707a8c69c5a4d7747ae873172b95d101590390b7207fd72d058bfac9c3aea",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-390.json",
+      "bytes": 116715,
+      "sha256": "de63582dd5da4166bb5b9229247211400f027971c9f21c963ea071d93e8e4eb7",
+      "at": "2026-10-09T15:53:35.015Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2193,
+        "scrollY": 3,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-390.txt",
+      "bytes": 14789,
+      "sha256": "40c9b78f1043bae70aae5332723999e56b61d58f02c6199aa04925f2e07edf59"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-601-full.jpg",
+      "bytes": 151710,
+      "sha256": "db0e1ccd23e4eca7f4beffd1ee61566238a4af873fc0d178659ac5f088dd45ee",
+      "imagePixels": [
+        601,
+        1933
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-601.jpg",
+      "bytes": 72879,
+      "sha256": "b526a90120fa72b0f11636e39154095e4bb2615d8d20e010c07935cd572bfdc9",
+      "imagePixels": [
+        601,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-601.json",
+      "bytes": 117288,
+      "sha256": "967a0997ff180a430e82393acc32390de15d8ae332d8a8bcb78f4d3ac299d533",
+      "at": "2026-10-09T15:54:14.254Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 601
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1933,
+        "scrollY": 0,
+        "w": 601
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-601.txt",
+      "bytes": 14780,
+      "sha256": "86d7113c247911b5881bf678345aa0326c6bf69c70163135fda055f00eec1f93"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-759-full.jpg",
+      "bytes": 156355,
+      "sha256": "a41561a98233aa726965bce49c4c580512d55dc1a7ce21458fcce28d7b63aeac",
+      "imagePixels": [
+        759,
+        1760
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-759.jpg",
+      "bytes": 84922,
+      "sha256": "af17228d235e726d8c4293f56954bca72b4346ca8af850fe4fd3affe9e6c79ba",
+      "imagePixels": [
+        759,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-759.json",
+      "bytes": 117385,
+      "sha256": "396750fbcbebfa62dd8528b42604cc0a839e8e967d10e1671f121c55d6713d57",
+      "at": "2026-10-09T15:54:16.341Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 759
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1760,
+        "scrollY": 0,
+        "w": 759
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-759.txt",
+      "bytes": 14780,
+      "sha256": "86d7113c247911b5881bf678345aa0326c6bf69c70163135fda055f00eec1f93"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-760-full.jpg",
+      "bytes": 145572,
+      "sha256": "d3b76d32bc8b4d51a665eb067b364b7640274fc246cb1aeb8d8ff926310e3bfc",
+      "imagePixels": [
+        760,
+        1613
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-760.jpg",
+      "bytes": 89291,
+      "sha256": "69e7baafa6e498c14862fa995201c1975a61baaf1117b7927179fc30c2e79615",
+      "imagePixels": [
+        760,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-760.json",
+      "bytes": 117390,
+      "sha256": "9bfb21b6fe4df48b9ccb805e8058cd9d2d3f42d4a64e5205e856fee51c5ab520",
+      "at": "2026-10-09T15:54:18.307Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 760
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1613,
+        "scrollY": 0,
+        "w": 760
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-760.txt",
+      "bytes": 14780,
+      "sha256": "86d7113c247911b5881bf678345aa0326c6bf69c70163135fda055f00eec1f93"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-bottom-390.jpg",
+      "bytes": 51317,
+      "sha256": "b91fa5139f276cd5bdb51165a01667cfd08f45bdc54b208ae443aea2dd4a1e47",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-bottom-390.json",
+      "bytes": 116737,
+      "sha256": "ccc850ce6e5fe525d86e37eb5bc49e926eaaadaa927489b4a0b24bd81ccea2aa",
+      "at": "2026-10-09T15:54:22.060Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2193,
+        "scrollY": 423,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-menu-bottom-390.txt",
+      "bytes": 14789,
+      "sha256": "c8181aef21367008b39d0b2eedab2d3ae95fa0559b37064eefc167c4bde5c2fb"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-shared-compare-390.jpg",
+      "bytes": 50006,
+      "sha256": "61d2e5569b408cc3625db1bce7649bbce5237ded1c6ea32586e98e59ffd0aba5",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-shared-compare-390.json",
+      "bytes": 90732,
+      "sha256": "f6776702180556dee84d1f6b45b3ae60d46fdd5a5fd13c9927751b3745bdac18",
+      "at": "2026-10-09T15:55:43.200Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "document": {
+        "h": 1851,
+        "scrollY": 0,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-shared-compare-390.txt",
+      "bytes": 12936,
+      "sha256": "2ec58820b479ddd162551a7e7e880198ac0026645c9cb341a075e91c221a4c63"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-shared-results-1280.jpg",
+      "bytes": 92288,
+      "sha256": "923e3f78d3d288fd27b36e5d8cae62bfd2680c59503bf5d11fdf4f00f612c352",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-shared-results-1280.json",
+      "bytes": 88806,
+      "sha256": "7b952692acfa4331d8b69934846d838ed67ca469970ddeff5cc941c1be1cfd0b",
+      "at": "2026-10-09T15:55:22.541Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 906,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-shared-results-1280.txt",
+      "bytes": 8835,
+      "sha256": "bf53f25dabf795f2f325aaa4b30d615362e35082b716c8d64e8b40e763b8bd89"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-source-compare-drawer-390.jpg",
+      "bytes": 48301,
+      "sha256": "71b12e2e1af5705096922c31439039edcdd37d35a1e49576b5647fdf9416fe53",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-source-compare-drawer-390.json",
+      "bytes": 109829,
+      "sha256": "9b8d6c40523761939f9707adeefd5024b8c7fe27aaa11c84e8484379a04f17f0",
+      "at": "2026-10-09T15:59:21.777Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "document": {
+        "h": 2192,
+        "scrollY": 1007.5,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-source-compare-drawer-390.txt",
+      "bytes": 14325,
+      "sha256": "bb13087c086cc06940a06b9641787931eb566faef14ede52a4742382384703ea"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-source-compare-return-390.jpg",
+      "bytes": 50944,
+      "sha256": "122cdd7da4a37c2883ac1cc4d8f6218485b35cf9de3f1e0569984c0dffcecdcb",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-source-compare-return-390.json",
+      "bytes": 91158,
+      "sha256": "9cc2a29ffb1c9db2039450e99e3591ec052d5025460dd3bb40c8d72708d39653",
+      "at": "2026-10-09T15:59:31.859Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "document": {
+        "h": 1851,
+        "scrollY": 0,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-source-compare-return-390.txt",
+      "bytes": 10250,
+      "sha256": "ff6af94342ea20d6602ccfc067a22f66d47401a90ad3aa23c121bc149284d9a7"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-source-result-drawer-1280.jpg",
+      "bytes": 72960,
+      "sha256": "6d9181dc55091496cee8ec4bc6667f2e6b5af3c4766487b9c180acc65a565617",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-source-result-drawer-1280.json",
+      "bytes": 110301,
+      "sha256": "91793734226f35fb5b3b13aa7a9249e30845905bc3e6fe80ecf3a29f7a481638",
+      "at": "2026-10-09T15:55:41.172Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1051,
+        "scrollY": 106,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-source-result-drawer-1280.txt",
+      "bytes": 14325,
+      "sha256": "527edd7e9455012a833636dcfe9f52a27b80afd8a885c23a84c4b0eb2e4f321a"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-source-result-return-1280.jpg",
+      "bytes": 91048,
+      "sha256": "33e5fa4b7d2985266b1f1551155eac3cab3fee2007a7f7c2007aeebcb1169d55",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-source-result-return-1280.json",
+      "bytes": 88799,
+      "sha256": "4e8029838003e7a6fb0af50d6b311df08255c85abf51a80c6c082a869796a2d3",
+      "at": "2026-10-09T15:55:41.977Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 906,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/final4-source-result-return-1280.txt",
+      "bytes": 8835,
+      "sha256": "bf53f25dabf795f2f325aaa4b30d615362e35082b716c8d64e8b40e763b8bd89"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/first-final-source/full-workbench-preview.css",
+      "bytes": 4814,
+      "sha256": "eab90e4d3554ce53c8b3179569acbb8106fca3bc879f7ab92e5e74b9e6142674"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/first-final-source/full-workbench-preview.tsx",
+      "bytes": 4974,
+      "sha256": "b0a80086cbcc213b6a3ddc4e5679306e1cd3f36be425b831d3cc208618acc5fb"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/first-final-source/running-prototype.tsx",
+      "bytes": 90147,
+      "sha256": "360650f1688855c9195b290c344491c78fd2379e8836d3b250fe709e11bdcb8a"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/first-final-source/workbench-visual-theme.css",
+      "bytes": 38744,
+      "sha256": "d173672baa0790c6993076f0486bc25486dc86c5ba9a6f51dfb0d26f15c4e2f9"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/first-final-source-freeze.json",
+      "bytes": 778,
+      "sha256": "d53cab31a18f433792a1187f768014ee1a6b00a6aa5503c0352c30dd597dd7b7"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-T0-1280.jpg",
+      "bytes": 95236,
+      "sha256": "98b299d1c103216e8b2d3bb454a9ecb371a2c45854e277ed35040d89b5baa170",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-T0-1280.json",
+      "bytes": 62968,
+      "sha256": "2f76bb4557a54cbdd7ef459d2c78c6f6d9f0469e33c00bf951ed7c01b05f36c0",
+      "at": "2026-10-09T15:07:00.927Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "document": {
+        "h": 971,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-T0-1280.txt",
+      "bytes": 4525,
+      "sha256": "860e7d800a27b35726832dd46544e6a5fe2e8336c575a510ae624fe206be0914"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-long-portfolio-1280.jpg",
+      "bytes": 114617,
+      "sha256": "1cba9609198427e808698575fac8c0a74c8830e2d97cdf0f94d12fd6cbbeba1a",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-long-portfolio-1280.json",
+      "bytes": 77973,
+      "sha256": "fdb4a247b0c7cb4c44de1df1d8b331bdd8e496b44e1b89f3284edb9548153fbc",
+      "at": "2026-10-09T15:12:28.695Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1069,
+        "scrollY": 43,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-long-portfolio-1280.txt",
+      "bytes": 8892,
+      "sha256": "a723667baf2d8b89d6e2c30f747ef3c38ad6451ff248a1bcdee2df608361e74d"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-memory-checkpoint-reload-390.jpg",
+      "bytes": 45579,
+      "sha256": "30167178c6956a53b2f3139230e2780bdfa089e41454368a862a3cb409ef68e6",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-memory-checkpoint-reload-390.json",
+      "bytes": 96689,
+      "sha256": "92afbec63305c83407d57ccde8bdea53ef5446f8012b5b1eb5f5f4d4c0f5c135",
+      "at": "2026-10-09T15:22:50.605Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2702,
+        "scrollY": 965,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-memory-checkpoint-reload-390.txt",
+      "bytes": 14013,
+      "sha256": "cc8c38e9202c4c5ba6da563a4ed515ec43bf2a50e8efe28947250c7b37653a33"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-next-day-1280.jpg",
+      "bytes": 94954,
+      "sha256": "874dd760dbf9295fa0afb2f4f1c43c275d9f4ee2b31a23cfb1189b0aa9a488e5",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-next-day-1280.json",
+      "bytes": 70152,
+      "sha256": "f5dea50e94bb8cc383f205b7814e081176547831b2098eb4eb7c341e4126daac",
+      "at": "2026-10-09T15:07:01.655Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "document": {
+        "h": 1051,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-next-day-1280.txt",
+      "bytes": 5250,
+      "sha256": "6ba6539efed098ff939e7dee9d67cd63b476afd39e1e0e4e51ab46c37b67b595"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-play-pause-1280.jpg",
+      "bytes": 95111,
+      "sha256": "efd33061ee281a115c0c3f33df4d25fcbfbddd12c6cd9cc1b04bcaef5566c7e3",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-play-pause-1280.json",
+      "bytes": 70143,
+      "sha256": "0a749b5288b4553057167d8ab198fe550e3c3d533307fcb173481935260495a7",
+      "at": "2026-10-09T15:07:35.984Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "document": {
+        "h": 1051,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-play-pause-1280.txt",
+      "bytes": 5250,
+      "sha256": "2f8fcf26ac4fc321264d3568cf572f38cc9ed2a5ee582294551dafe1198f4a2c"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-play-revealed-pause-1280.jpg",
+      "bytes": 104733,
+      "sha256": "02fd632a5800c13fd99898d78dc2ca1a57e15f62832b159dd8a33e518c5e4343",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-play-revealed-pause-1280.json",
+      "bytes": 77189,
+      "sha256": "8ed83c2d654b4445bf58a191fe003ba386f5fdf69545d842ecb3535b717c68ef",
+      "at": "2026-10-09T15:08:03.958Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "document": {
+        "h": 1051,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-play-revealed-pause-1280.txt",
+      "bytes": 7079,
+      "sha256": "750df851b9f15227af5bcc323e3396e1a821b883487754de5795e3ceaf7b2590"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-source-comparison-drawer-390.jpg",
+      "bytes": 49004,
+      "sha256": "70af2b21151adcda42570ca2643f7d5d92db3b783dc6302598ca0866cbae9347",
+      "imagePixels": [
+        390,
+        844
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-source-comparison-drawer-390.json",
+      "bytes": 109828,
+      "sha256": "84643fadc03031ce186c52bc17ca28c6c710695148a7624eb60d80d796b4acd3",
+      "at": "2026-10-09T15:23:35.866Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 844,
+        "w": 390
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 2238,
+        "scrollY": 1007.5,
+        "w": 390
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-source-comparison-drawer-390.txt",
+      "bytes": 14325,
+      "sha256": "004f54752971a6da8080496f69bbfd20b020c4b3080737626ef5a3d71e685cc8"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-source-result-drawer-1280.jpg",
+      "bytes": 73022,
+      "sha256": "e22d00da8464ccc50c6ac81437149739dfe35643ba1d38a1d67736b8ef572a2d",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-source-result-drawer-1280.json",
+      "bytes": 110282,
+      "sha256": "c91ab702852a8a514a8f46b1e39119059ad8cf5888906d7b32afa81ac1b938a3",
+      "at": "2026-10-09T15:23:12.106Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1051,
+        "scrollY": 106,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/journey-source-result-drawer-1280.txt",
+      "bytes": 14325,
+      "sha256": "dfacf2087b2c2aa055368c11b420fba41be17e9a0ee6ef1210535884e9d48482"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/theme-original-negative-1280.jpg",
+      "bytes": 102820,
+      "sha256": "633890643a4fcffe93f1cf1422b8a58504c24b0f2cd20238e80e6aa2e6475b52",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/theme-original-negative-1280.json",
+      "bytes": 70211,
+      "sha256": "8a8645cbbef91497b8b4c2dc4ea635e1d66d4819e27419ae4d2edce2d7645870",
+      "at": "2026-10-09T15:11:46.683Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 981,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/theme-original-negative-1280.txt",
+      "bytes": 7587,
+      "sha256": "5488e0446b5d171abd466efe969bacb24f102d130bb8696278d778557cfd0679"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/theme-state-negative.json",
+      "bytes": 2533,
+      "sha256": "8586a02707481354f44eab69e0ad8f810d105b2410b764d5bbbd60d3de9312e7"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/theme-unified-negative-1280.jpg",
+      "bytes": 105341,
+      "sha256": "9882a07339a1cf5175b9919eec37fe9b73d5c3bb8899e1357d0eecc2f57ba063",
+      "imagePixels": [
+        1280,
+        800
+      ],
+      "format": "JPEG"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/theme-unified-negative-1280.json",
+      "bytes": 70739,
+      "sha256": "a833b12216f40f475da4edba00bb13d27f06eed875d0730d91f05613377624ad",
+      "at": "2026-10-09T15:11:47.419Z",
+      "viewport": {
+        "dpr": 1,
+        "h": 800,
+        "w": 1280
+      },
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "document": {
+        "h": 1127,
+        "scrollY": 0,
+        "w": 1280
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/observe-regression-20261009/theme-unified-negative-1280.txt",
+      "bytes": 7587,
+      "sha256": "317e06d76d1f49e9da67c423f167657486ef5d1e81cf876763107c1f853b5e68"
+    }
+  ],
+  "acceptanceDocumentHashes": {
+    "docs/designs/2026-10-08-strategy-visual-system/observe-regression-20261009.md": "06f0e8b4a52015fee3e71dd245d834cce83fca9eaee58124871700d3045c8b5f",
+    "docs/designs/2026-10-08-strategy-visual-system/homepage-style-reuse.md": "0218c1e53410577c2861d342173439dc34a7b7f30d4daae47d06b3cde122f530",
+    "docs/designs/2026-10-08-strategy-visual-system/README.md": "4efdbddea999bee3e35e4ef3c70fa6dec8cbce8ef094911afeb8c05aba5da0ae",
+    "docs/designs/2026-10-08-strategy-visual-system/homepage-style-acceptance.md": "0af0e1494ae9d90c453abf5ee2137c4a6c2cfaa9fff9a0d908446b8844638336",
+    ".scratch/strategy-visual-system-20261008/DESIGN-COVERAGE.md": "259b1dbe368bcd90626a4bf400fba7135ccc1eeec54d271c28fd3a5caf7b384e",
+    ".scratch/strategy-visual-system-20261008/README.md": "94f652afe55b2fce03d230fc02c535740ddc45aa7e6b05d692a5923c55b7bebb",
+    ".scratch/strategy-visual-system-20261008/issues/04-homepage-style-unification.md": "76846a36c284ad0de7d50da6689d953f728f489ba7af6407b6b6071f17b2023d",
+    ".scratch/strategy-visual-system-20261008/observe-regression-contract-20261009.md": "090daceb46107d138ead90a27c8d4bb30b4b0e5a30ae5908f01a0da8f39d2664",
+    ".scratch/strategy-visual-system-20261008/reports/observe-regression-visual-20261009.md": "0a8b051f992ee0885e3cb60b09f5f4984357976a78cdf94e673f1236a75a0e22",
+    ".scratch/strategy-visual-system-20261008/reports/observe-regression-standards-20261009.md": "2338923d14231ddd66e18bb9497ba7e2e53b86fb26215e399ba4aa9f2f588a90"
+  }
+}

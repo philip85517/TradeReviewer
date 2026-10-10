@@ -1,0 +1,834 @@
+/*
+ * Reversible visual layer for the restored Workbench.  It deliberately scopes
+ * every rule below to the opt-in ancestor so the original prototype remains
+ * available for comparison and the business/layout contract stays intact.
+ */
+.workbench-visual-surface {
+  display: contents;
+}
+
+.workbench-theme-unified {
+  --page: #0b1220;
+  --surface: #111a2b;
+  --surface-raised: #182337;
+  --surface-soft: #213047;
+  --line: #263650;
+  --text: #e7edf6;
+  --muted: #adbbcf;
+  --link: #8cbdff;
+  --primary: #2169cc;
+  --focus: #9ecaff;
+}
+
+.workbench-theme-unified .running-prototype,
+.workbench-theme-unified .results-prototype,
+.workbench-theme-unified .comparison-prototype {
+  color: var(--text);
+  background: var(--page);
+  font-family: "Geist", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.workbench-theme-unified .running-prototype h1,
+.workbench-theme-unified .results-prototype h1,
+.workbench-theme-unified .comparison-prototype h1 {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.workbench-theme-unified .running-prototype h2,
+.workbench-theme-unified .results-prototype h2,
+.workbench-theme-unified .comparison-prototype h2 {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.workbench-theme-unified .running-prototype small,
+.workbench-theme-unified .results-prototype small,
+.workbench-theme-unified .comparison-prototype small,
+.workbench-theme-unified .running-prototype .running-kicker,
+.workbench-theme-unified .results-prototype .results-eyebrow,
+.workbench-theme-unified .results-prototype .results-section-kicker,
+.workbench-theme-unified .comparison-prototype .comparison-eyebrow,
+.workbench-theme-unified .comparison-prototype .comparison-section-kicker {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.workbench-theme-unified .running-prototype .running-kicker,
+.workbench-theme-unified .results-prototype .results-eyebrow,
+.workbench-theme-unified .results-prototype .results-section-kicker,
+.workbench-theme-unified .comparison-prototype .comparison-eyebrow,
+.workbench-theme-unified .comparison-prototype .comparison-section-kicker {
+  font-family: inherit;
+}
+
+.workbench-theme-unified .running-prototype button,
+.workbench-theme-unified .running-prototype select,
+.workbench-theme-unified .results-prototype button,
+.workbench-theme-unified .results-prototype select,
+.workbench-theme-unified .comparison-prototype button,
+.workbench-theme-unified .comparison-prototype select {
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.workbench-theme-unified .running-prototype button:focus-visible,
+.workbench-theme-unified .running-prototype select:focus-visible,
+.workbench-theme-unified .running-prototype summary:focus-visible,
+.workbench-theme-unified .results-prototype button:focus-visible,
+.workbench-theme-unified .results-prototype select:focus-visible,
+.workbench-theme-unified .comparison-prototype button:focus-visible,
+.workbench-theme-unified .comparison-prototype select:focus-visible,
+.workbench-theme-unified .comparison-prototype input:focus-visible,
+.workbench-theme-unified .results-prototype input:focus-visible,
+.workbench-theme-unified .comparison-matrix-scroll:focus-visible,
+.workbench-theme-unified .comparison-metrics-scroll:focus-visible,
+.workbench-theme-unified .comparison-summary-scroll:focus-visible,
+.workbench-theme-unified .comparison-full-ledger-scroll:focus-visible,
+.workbench-theme-unified .comparison-prototype .comparison-viz-frame:focus-visible,
+.workbench-theme-unified .comparison-prototype .comparison-event-list:focus-visible,
+.workbench-theme-unified .results-prototype .results-table-scroll:focus-visible,
+.workbench-theme-unified .results-prototype .results-coverage summary:focus-visible,
+.workbench-theme-unified .comparison-prototype .comparison-shared-terms summary:focus-visible,
+.workbench-theme-unified .comparison-prototype .comparison-full-ledger summary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Observe page: keep the chart-first grid and all existing field content. */
+.workbench-theme-unified .running-prototype .running-header,
+.workbench-theme-unified .running-prototype .portfolio-tabs,
+.workbench-theme-unified .running-prototype .running-summary,
+.workbench-theme-unified .running-prototype .running-timebar,
+.workbench-theme-unified .running-prototype .running-main,
+.workbench-theme-unified .running-prototype .side-block,
+.workbench-theme-unified .running-prototype .recovery-prototype {
+  border-color: var(--line);
+}
+
+.workbench-theme-unified .running-prototype .running-header h1 {
+  color: var(--text);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+}
+
+.workbench-theme-unified .running-prototype .running-kicker,
+.workbench-theme-unified .running-prototype .chart-kicker,
+.workbench-theme-unified .running-prototype .side-title > div > span,
+.workbench-theme-unified .running-prototype .event-heading > div:first-child > span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+}
+
+.workbench-theme-unified .running-prototype .synthetic-badge {
+  border-color: #826d2d;
+  color: #f3d77a;
+  background: rgb(243 186 47 / 8%);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.workbench-theme-unified .running-prototype .running-list-button,
+.workbench-theme-unified .running-prototype .running-secondary,
+.workbench-theme-unified .running-prototype .chart-switch button,
+.workbench-theme-unified .running-prototype .chart-switch select,
+.workbench-theme-unified .running-prototype .speed-control select,
+.workbench-theme-unified .running-prototype .date-control select,
+.workbench-theme-unified .running-prototype .portfolio-tabs button,
+.workbench-theme-unified .running-prototype .portfolio-more-button {
+  min-height: 36px;
+  border-color: var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  background: var(--surface);
+  font-weight: 500;
+}
+
+.workbench-theme-unified .running-prototype .running-list-button:hover,
+.workbench-theme-unified .running-prototype .running-secondary:hover:not(:disabled),
+.workbench-theme-unified .running-prototype .chart-switch button:hover,
+.workbench-theme-unified .running-prototype .portfolio-tabs button:hover,
+.workbench-theme-unified .running-prototype .portfolio-more-button:hover,
+.workbench-theme-unified .running-prototype .portfolio-more-button[aria-expanded="true"] {
+  border-color: #58708f;
+  color: var(--text);
+  background: var(--surface-raised);
+}
+
+.workbench-theme-unified .running-prototype .running-primary {
+  min-height: 36px;
+  border-color: var(--primary);
+  border-radius: 6px;
+  color: #fff;
+  background: var(--primary);
+  font-weight: 600;
+}
+
+.workbench-theme-unified .running-prototype .running-primary:hover:not(:disabled) {
+  border-color: #1b58ad;
+  background: #1b58ad;
+}
+
+.workbench-theme-unified .running-prototype .running-primary:active:not(:disabled) {
+  background: #174a91;
+}
+
+.workbench-theme-unified .running-prototype .running-primary:disabled,
+.workbench-theme-unified .running-prototype .running-secondary:disabled,
+.workbench-theme-unified .running-prototype .event-nav button:disabled {
+  color: #7f8da2;
+  background: #141e30;
+  border-color: #263650;
+  opacity: 0.62;
+}
+
+.workbench-theme-unified .running-prototype .portfolio-tabs button.active,
+.workbench-theme-unified .running-prototype .portfolio-tabs button[aria-current="page"],
+.workbench-theme-unified .running-prototype .chart-switch button.active {
+  border-color: #3797ff;
+  color: var(--text);
+  background: #163d63;
+}
+
+.workbench-theme-unified .running-prototype .portfolio-tabs button.demo-portfolio-tab {
+  border-color: #42516a;
+  background: #131e31;
+}
+
+.workbench-theme-unified .running-prototype .running-summary > div,
+.workbench-theme-unified .running-prototype .running-timebar,
+.workbench-theme-unified .running-prototype .running-main,
+.workbench-theme-unified .running-prototype .side-block {
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.workbench-theme-unified .running-prototype .running-summary span,
+.workbench-theme-unified .running-prototype .running-timebar small,
+.workbench-theme-unified .running-prototype .side-muted,
+.workbench-theme-unified .running-prototype .chart-origin,
+.workbench-theme-unified .running-prototype .chart-caption,
+.workbench-theme-unified .running-prototype .chart-disclosure {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.workbench-theme-unified .running-prototype .running-summary b,
+.workbench-theme-unified .running-prototype .account-total b,
+.workbench-theme-unified .running-prototype .holdings-foot b,
+.workbench-theme-unified .running-prototype .holding-value b {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 500;
+}
+
+.workbench-theme-unified .running-prototype .running-summary b.positive,
+.workbench-theme-unified .running-prototype .running-summary b.negative,
+.workbench-theme-unified .running-prototype .holding-value b.positive,
+.workbench-theme-unified .running-prototype .holding-value b.negative {
+  font-weight: 500;
+}
+
+.workbench-theme-unified .running-prototype .timebar-state {
+  border-radius: 6px;
+  color: var(--muted);
+  background: var(--surface-raised);
+}
+
+.workbench-theme-unified .running-prototype .timebar-state.reviewing,
+.workbench-theme-unified .running-prototype .timebar-state.complete {
+  color: var(--link);
+  background: #163d63;
+}
+
+.workbench-theme-unified .running-prototype .running-chart-shell {
+  border-color: var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.workbench-theme-unified .running-prototype .chart-heading h2,
+.workbench-theme-unified .running-prototype .side-title h2,
+.workbench-theme-unified .running-prototype .event-heading h2 {
+  color: var(--text);
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+}
+
+.workbench-theme-unified .running-prototype .holding-row,
+.workbench-theme-unified .running-prototype .event-card {
+  border-color: var(--line);
+  background: var(--surface-raised);
+}
+
+.workbench-theme-unified .running-prototype .holding-row[aria-pressed="true"],
+.workbench-theme-unified .running-prototype .event-card:focus-visible {
+  border-color: #3797ff;
+  background: #163d63;
+}
+
+.workbench-theme-unified .running-prototype .holding-identity b,
+.workbench-theme-unified .running-prototype .event-card b {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 500;
+}
+
+.workbench-theme-unified .running-prototype .holding-identity small,
+.workbench-theme-unified .running-prototype .holding-value small,
+.workbench-theme-unified .running-prototype .event-card small,
+.workbench-theme-unified .running-prototype .event-card time {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.workbench-theme-unified .running-prototype .portfolio-more-menu > p,
+.workbench-theme-unified .running-prototype .timebar-state,
+.workbench-theme-unified .running-prototype .chart-not-held,
+.workbench-theme-unified .running-prototype .chart-time-rule i,
+.workbench-theme-unified .running-prototype .portfolio-name,
+.workbench-theme-unified .running-prototype .event-type,
+.workbench-theme-unified .running-prototype .exposure-note,
+.workbench-theme-unified .results-prototype .results-synthetic,
+.workbench-theme-unified .results-prototype .results-legend,
+.workbench-theme-unified .results-prototype .results-range-control label,
+.workbench-theme-unified .results-prototype .results-event-copy > span,
+.workbench-theme-unified .results-prototype .results-event-execution-note,
+.workbench-theme-unified .results-prototype .results-event-note,
+.workbench-theme-unified .results-prototype .results-footer-note,
+.workbench-theme-unified .comparison-prototype .comparison-prototype-badge,
+.workbench-theme-unified .comparison-prototype .comparison-section-heading span:not(.comparison-difference-note),
+.workbench-theme-unified .comparison-prototype .comparison-difference-note {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.workbench-theme-unified .running-prototype .chart-time-rule i,
+.workbench-theme-unified .results-prototype .results-event-copy > span,
+.workbench-theme-unified .results-prototype .results-event-execution-note {
+  font-family: inherit;
+}
+
+.workbench-theme-unified .results-prototype .results-event-copy > span {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.workbench-theme-unified .running-prototype .drawer-layer {
+  background: rgb(4 9 17 / 68%);
+}
+
+.workbench-theme-unified .running-prototype .running-drawer {
+  border-color: var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+/* Results and comparison use their existing information hierarchy; this only
+   aligns roles, surfaces and controls. Their complete ledgers remain intact. */
+.workbench-theme-unified .results-prototype,
+.workbench-theme-unified .comparison-prototype {
+  --results-page: #0b1220;
+  --results-panel: #111a2b;
+  --results-panel-raised: #182337;
+  --results-line: #263650;
+  --results-text: #e7edf6;
+  --results-muted: #adbbcf;
+  --results-blue: #8cbdff;
+  --comparison-panel: #111a2b;
+  --comparison-raised: #182337;
+  --comparison-line: #263650;
+  --comparison-text: #e7edf6;
+  --comparison-muted: #adbbcf;
+}
+
+.workbench-theme-unified .results-prototype .results-panel,
+.workbench-theme-unified .results-prototype .results-kpi,
+.workbench-theme-unified .results-prototype .results-period,
+.workbench-theme-unified .results-prototype .results-coverage,
+.workbench-theme-unified .comparison-prototype .comparison-period,
+.workbench-theme-unified .comparison-prototype .comparison-matrix-section,
+.workbench-theme-unified .comparison-prototype .comparison-chart-panel,
+.workbench-theme-unified .comparison-prototype .comparison-metrics,
+.workbench-theme-unified .comparison-prototype .comparison-events,
+.workbench-theme-unified .comparison-prototype .comparison-full-ledger {
+  border-color: var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.workbench-theme-unified .results-prototype .results-title-block h1,
+.workbench-theme-unified .comparison-prototype .comparison-title-block h1 {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+}
+
+.workbench-theme-unified .results-prototype .results-kpi strong,
+.workbench-theme-unified .comparison-prototype .comparison-summary-table strong {
+  font-variant-numeric: tabular-nums;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 500;
+}
+
+.workbench-theme-unified .results-prototype .results-kpi small,
+.workbench-theme-unified .results-prototype .results-asof,
+.workbench-theme-unified .results-prototype .results-section-kicker,
+.workbench-theme-unified .results-prototype .results-event-count,
+.workbench-theme-unified .comparison-prototype .comparison-section-kicker,
+.workbench-theme-unified .comparison-prototype .comparison-asof,
+.workbench-theme-unified .comparison-prototype .comparison-scroll-hint,
+.workbench-theme-unified .comparison-prototype .comparison-legend-limit {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.workbench-theme-unified .results-prototype .results-coverage summary,
+.workbench-theme-unified .comparison-prototype .comparison-shared-terms > summary,
+.workbench-theme-unified .comparison-prototype .comparison-full-ledger > summary {
+  min-height: 36px;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.workbench-theme-unified .results-prototype .results-coverage summary b,
+.workbench-theme-unified .comparison-prototype .comparison-shared-terms > summary b,
+.workbench-theme-unified .comparison-prototype .comparison-full-ledger > summary b {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.workbench-theme-unified .results-prototype button,
+.workbench-theme-unified .comparison-prototype button {
+  min-height: 36px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.workbench-theme-unified .results-prototype input[type="range"],
+.workbench-theme-unified .comparison-prototype input[type="range"] {
+  min-height: 36px;
+}
+
+.workbench-theme-unified .results-prototype .results-compare-button,
+.workbench-theme-unified .results-prototype .results-return-button,
+.workbench-theme-unified .comparison-prototype .comparison-primary,
+.workbench-theme-unified .comparison-prototype .comparison-secondary {
+  border-color: var(--line);
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.workbench-theme-unified .results-prototype .results-compare-button:hover:not(:disabled),
+.workbench-theme-unified .results-prototype .results-return-button:hover:not(:disabled),
+.workbench-theme-unified .comparison-prototype .comparison-secondary:hover:not(:disabled) {
+  border-color: #58708f;
+  color: var(--text);
+  background: var(--surface-raised);
+}
+
+.workbench-theme-unified .results-prototype .results-compare-button,
+.workbench-theme-unified .comparison-prototype .comparison-primary {
+  border-color: var(--primary);
+  color: #fff;
+  background: var(--primary);
+  font-weight: 600;
+}
+
+.workbench-theme-unified .results-prototype .results-compare-button:hover:not(:disabled),
+.workbench-theme-unified .comparison-prototype .comparison-primary:hover:not(:disabled) {
+  border-color: #1b58ad;
+  background: #1b58ad;
+}
+
+.workbench-theme-unified .results-prototype .results-compare-button:active:not(:disabled),
+.workbench-theme-unified .comparison-prototype .comparison-primary:active:not(:disabled) {
+  border-color: #174a91;
+  background: #174a91;
+}
+
+.workbench-theme-unified .results-prototype .results-chart-tabs button.active,
+.workbench-theme-unified .results-prototype .results-event-filters button.active,
+.workbench-theme-unified .comparison-prototype .comparison-chart-tab.is-active,
+.workbench-theme-unified .comparison-prototype .comparison-series-toggle[aria-pressed="true"] {
+  border-color: #3797ff;
+  color: var(--text);
+  background: #163d63;
+}
+
+.workbench-theme-unified .results-prototype .result-chart-frame,
+.workbench-theme-unified .comparison-prototype .comparison-viz-frame {
+  border-color: var(--line);
+  border-radius: 8px;
+  background: #111a2b;
+}
+
+.workbench-theme-unified .results-prototype .results-contribution-table th,
+.workbench-theme-unified .results-prototype .results-contribution-table td,
+.workbench-theme-unified .results-prototype .results-event-row,
+.workbench-theme-unified .comparison-prototype .comparison-summary-table th,
+.workbench-theme-unified .comparison-prototype .comparison-summary-table td,
+.workbench-theme-unified .comparison-prototype .comparison-metrics th,
+.workbench-theme-unified .comparison-prototype .comparison-metrics td,
+.workbench-theme-unified .comparison-prototype .comparison-full-ledger th,
+.workbench-theme-unified .comparison-prototype .comparison-full-ledger td,
+.workbench-theme-unified .comparison-prototype .comparison-event-button {
+  border-color: var(--line);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.workbench-theme-unified .results-prototype .results-event-row:hover,
+.workbench-theme-unified .comparison-prototype .comparison-event-button:hover {
+  background: var(--surface-raised);
+}
+
+.workbench-theme-unified .results-prototype .results-value-number,
+.workbench-theme-unified .results-prototype .results-pnl-total b,
+.workbench-theme-unified .results-prototype .results-pnl-row b,
+.workbench-theme-unified .comparison-prototype .comparison-summary-table td,
+.workbench-theme-unified .comparison-prototype .comparison-full-ledger td {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 600px) {
+  .workbench-theme-unified .running-prototype,
+  .workbench-theme-unified .results-prototype,
+  .workbench-theme-unified .comparison-prototype {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  .workbench-theme-unified .running-prototype .running-header,
+  .workbench-theme-unified .running-prototype .portfolio-selector,
+  .workbench-theme-unified .running-prototype .running-summary,
+  .workbench-theme-unified .running-prototype .running-timebar,
+  .workbench-theme-unified .running-prototype .recovery-prototype,
+  .workbench-theme-unified .running-prototype .running-grid {
+    flex-shrink: 0;
+  }
+
+  .workbench-theme-unified .running-prototype button,
+  .workbench-theme-unified .running-prototype select,
+  .workbench-theme-unified .results-prototype button,
+  .workbench-theme-unified .results-prototype select,
+  .workbench-theme-unified .comparison-prototype button,
+  .workbench-theme-unified .comparison-prototype select,
+  .workbench-theme-unified .running-prototype .portfolio-tabs button,
+  .workbench-theme-unified .results-prototype input[type="range"],
+  .workbench-theme-unified .comparison-prototype input[type="range"],
+  .workbench-theme-unified .results-prototype .results-coverage summary,
+  .workbench-theme-unified .comparison-prototype .comparison-shared-terms > summary,
+  .workbench-theme-unified .comparison-prototype .comparison-full-ledger > summary {
+    min-height: 44px;
+  }
+
+  /* The restored running controls have class-qualified 36px rules. Repeat
+     the prototype class so every running button/select reaches the narrow
+     hit-area contract without changing its data or interaction. */
+  .workbench-theme-unified .running-prototype.running-prototype button,
+  .workbench-theme-unified .running-prototype.running-prototype select,
+  .workbench-theme-unified .running-prototype.running-prototype summary {
+    min-height: 44px;
+  }
+
+  /* Preserve complete KPI values at narrow widths. The original data string
+     remains intact and can occupy a second line when the card is narrow. */
+  .workbench-theme-unified .running-prototype .running-summary b,
+  .workbench-theme-unified .results-prototype .results-kpi strong {
+    overflow: visible;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .workbench-theme-unified .running-prototype .running-summary > div {
+    min-height: 76px;
+    justify-content: flex-start;
+  }
+
+  .workbench-theme-unified .running-prototype .running-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    align-items: start;
+    gap: 8px;
+  }
+  .workbench-theme-unified .running-prototype .running-heading,
+  .workbench-theme-unified .running-prototype .synthetic-badge,
+  .workbench-theme-unified .running-prototype .running-header-actions {
+    grid-column: 1;
+  }
+  .workbench-theme-unified .running-prototype .synthetic-badge {
+    width: max-content;
+    max-width: 100%;
+    margin-left: 0;
+    white-space: normal;
+  }
+
+  /* Keep every timebar action inside its growing surface before recovery. */
+  .workbench-theme-unified .running-prototype .running-timebar {
+    align-items: stretch;
+    min-height: 0;
+  }
+  .workbench-theme-unified .running-prototype .timebar-position,
+  .workbench-theme-unified .running-prototype .timebar-actions {
+    width: 100%;
+  }
+  .workbench-theme-unified .running-prototype .timebar-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 8px;
+  }
+  .workbench-theme-unified .running-prototype .timebar-actions > *,
+  .workbench-theme-unified .running-prototype .timebar-actions > label select {
+    width: 100%;
+    min-width: 0;
+  }
+  .workbench-theme-unified .running-prototype .timebar-actions > .date-control,
+  .workbench-theme-unified .running-prototype .timebar-actions > .results-range-unavailable {
+    grid-column: 1 / -1;
+  }
+  .workbench-theme-unified .running-prototype .timebar-actions > .results-range-unavailable {
+    white-space: normal;
+  }
+
+  /* Reserve a dedicated column for the portfolio menu trigger. */
+  .workbench-theme-unified .running-prototype .portfolio-selector {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+  .workbench-theme-unified .running-prototype .portfolio-tabs {
+    width: 100%;
+    max-width: 100%;
+  }
+  .workbench-theme-unified .running-prototype .portfolio-more {
+    width: auto;
+  }
+
+  .workbench-theme-unified .running-prototype .chart-switch {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .workbench-theme-unified .running-prototype .chart-switch button,
+  .workbench-theme-unified .running-prototype .chart-switch select {
+    width: 100%;
+    min-width: 0;
+    white-space: normal;
+  }
+  .workbench-theme-unified .running-prototype .chart-switch select {
+    grid-column: 1 / -1;
+  }
+
+  .workbench-theme-unified .running-prototype .chart-heading > div:first-child {
+    flex: none;
+  }
+
+  /* Results and comparison keep the title and every action in the page flow
+     on narrow screens. The restored desktop header is a single flex row,
+     which can squeeze the title to one-character lines before it wraps. */
+  .workbench-theme-unified .results-prototype .results-header,
+  .workbench-theme-unified .comparison-prototype .comparison-header {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    justify-content: stretch;
+    gap: 10px;
+  }
+
+  .workbench-theme-unified .results-prototype .results-title-block,
+  .workbench-theme-unified .comparison-prototype .comparison-title-block {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .workbench-theme-unified .results-prototype .results-title-block h1,
+  .workbench-theme-unified .comparison-prototype .comparison-title-block h1 {
+    overflow: visible;
+    min-width: 0;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .workbench-theme-unified .results-prototype .results-header-actions,
+  .workbench-theme-unified .comparison-prototype .comparison-header-actions {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    flex: 0 0 auto;
+    align-items: stretch;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .workbench-theme-unified .results-prototype .results-header-actions > *,
+  .workbench-theme-unified .comparison-prototype .comparison-header-actions > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .workbench-theme-unified .results-prototype .results-compare-entry {
+    min-width: 0;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+  }
+
+  .workbench-theme-unified .results-prototype .results-compare-entry small {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  /* Full result strings remain readable. The card grid stacks into two
+     columns while each value is allowed to take its natural number of lines. */
+  .workbench-theme-unified .results-prototype .results-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .workbench-theme-unified .results-prototype .results-kpi {
+    min-height: 104px;
+    align-content: start;
+    padding: 10px;
+  }
+
+  .workbench-theme-unified .results-prototype .results-kpi strong,
+  .workbench-theme-unified .results-prototype .results-kpi small {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  /* The desktop breakpoint retains a fixed side rail. Stack it after the
+     chart on a phone so its minimum width cannot create page overflow. */
+  .workbench-theme-unified .results-prototype .results-analysis-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .workbench-theme-unified .results-prototype .results-period,
+  .workbench-theme-unified .comparison-prototype .comparison-period {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .workbench-theme-unified .results-prototype .results-period-main,
+  .workbench-theme-unified .results-prototype .results-period-meta,
+  .workbench-theme-unified .comparison-prototype .comparison-period > div,
+  .workbench-theme-unified .comparison-prototype .comparison-period p {
+    width: 100%;
+    min-width: 0;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .workbench-theme-unified .comparison-prototype .comparison-chart-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .workbench-theme-unified .comparison-prototype .comparison-chart-tabs {
+    width: 100%;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  .workbench-theme-unified .comparison-prototype .comparison-chart-tabs > * {
+    min-width: 0;
+    flex: 1 1 auto;
+    white-space: normal;
+  }
+
+  /* The chart keeps both complete date labels. At phone width the restored
+     right plot margin puts their SVG anchors too close together, so separate
+     the baselines and return the result label to the visible frame edge. */
+  .workbench-theme-unified .comparison-prototype .comparison-viz-net-value .comparison-viz-date-label,
+  .workbench-theme-unified .comparison-prototype .comparison-viz-drawdown .comparison-viz-date-label {
+    transform: translateY(-7px);
+  }
+
+  .workbench-theme-unified .comparison-prototype .comparison-viz-net-value .comparison-viz-date-label + .comparison-viz-date-label,
+  .workbench-theme-unified .comparison-prototype .comparison-viz-drawdown .comparison-viz-date-label + .comparison-viz-date-label {
+    transform: translate(88px, 7px);
+  }
+
+  /* Allocation readouts are a complete per-weight ledger. Give the SVG a
+     local minimum width and keep overflow on the chart surface so labels do
+     not collide or create document-level horizontal overflow. */
+  .workbench-theme-unified .comparison-prototype .comparison-viz-allocation .comparison-viz-frame {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .workbench-theme-unified .comparison-prototype .comparison-viz-allocation .comparison-viz-svg {
+    width: max(100%, 620px);
+    min-width: 620px;
+  }
+
+  /* The horizontal table region already exposes keyboard scrolling. On a
+     phone a sticky first column can cover the values being inspected, so let
+     every complete column move with the region. */
+  .workbench-theme-unified .comparison-prototype .comparison-summary-table th:first-child,
+  .workbench-theme-unified .comparison-prototype .comparison-summary-table td:first-child,
+  .workbench-theme-unified .comparison-prototype .comparison-full-ledger th:first-child,
+  .workbench-theme-unified .comparison-prototype .comparison-full-ledger td:first-child {
+    position: static;
+  }
+}
+
+/* Touch hit areas apply to coarse pointers at every viewport width. Narrow
+   geometry stays scoped to the width query above so a wide touch device keeps
+   the desktop composition. */
+@media (pointer: coarse) {
+  .workbench-theme-unified .running-prototype button,
+  .workbench-theme-unified .running-prototype select,
+  .workbench-theme-unified .results-prototype button,
+  .workbench-theme-unified .results-prototype select,
+  .workbench-theme-unified .comparison-prototype button,
+  .workbench-theme-unified .comparison-prototype select,
+  .workbench-theme-unified .running-prototype .portfolio-tabs button,
+  .workbench-theme-unified .results-prototype input[type="range"],
+  .workbench-theme-unified .comparison-prototype input[type="range"],
+  .workbench-theme-unified .results-prototype .results-coverage summary,
+  .workbench-theme-unified .comparison-prototype .comparison-shared-terms > summary,
+  .workbench-theme-unified .comparison-prototype .comparison-full-ledger > summary {
+    min-height: 44px;
+  }
+
+  .workbench-theme-unified .running-prototype.running-prototype button,
+  .workbench-theme-unified .running-prototype.running-prototype select,
+  .workbench-theme-unified .running-prototype.running-prototype summary {
+    min-height: 44px;
+  }
+}

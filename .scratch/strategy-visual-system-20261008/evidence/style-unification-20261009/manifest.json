@@ -1,0 +1,2562 @@
+{
+  "generated_at": "2026-10-09T09:41:39.262465+00:00",
+  "source_freeze": {
+    "frozen_at": "2026-10-09",
+    "sources": {
+      "app/components/strategy-prototype/full-workbench-preview.tsx": "426d986c04cb78602fd6d820c89760581ad1e81e0f447da0ca1dc5d1178b9c5b",
+      "app/components/strategy-prototype/full-workbench-preview.css": "4b060b73f6ec7cf6a0c6664b927c3f8a85bae0ef1a44bb32f39f2fac57c1666c",
+      "app/components/strategy-prototype/workbench-visual-theme.css": "e1ec30945d818e738f0366c0b3989e9e246bbc7bea784dcb020b0ea0a3297aea",
+      "app/components/strategy-prototype/running-prototype.tsx": "7829be4ec52fbb575cc1c4c2742a14e1a859b0a3b111eaa848cf71c9e10e8038"
+    }
+  },
+  "evidence_notes": [
+    "No retrospective source hash binding for earlier screenshots. Final business handlers unchanged after journey capture; final repairs scoped to narrow geometry and expanded ledger font.",
+    "Source freeze independently checked by reviewer. Explicit capture categories are evidence roles, not automatic pass statuses.",
+    "Prototype auxiliary chrome12/18 exception; measured hit-height rules do not assert square hit boxes.",
+    "Original theme1280/390 includes new wrapper. Incorrect before viewport captures preserved and excluded.",
+    "Exact chart internal logical range API, physical/coarse touch, per-glyph fonts, and full future-tooltip/wheel safety remain NOT VERIFIED."
+  ],
+  "measured_control_height_checks": {
+    "observe-delivery-final-1440": {
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "min_measured_control_height": 36,
+      "control_count": 45,
+      "height_rule": 36,
+      "under_rule": [],
+      "document_width": {
+        "client": 1440,
+        "doc": 1440
+      },
+      "visible_only_elements_exclude_zero_rect": true
+    },
+    "observe-final-1280": {
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      },
+      "min_measured_control_height": 36,
+      "control_count": 45,
+      "height_rule": 36,
+      "under_rule": [],
+      "document_width": {
+        "client": 1280,
+        "doc": 1280
+      },
+      "visible_only_elements_exclude_zero_rect": true
+    },
+    "results-final-1440": {
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "min_measured_control_height": 36,
+      "control_count": 39,
+      "height_rule": 36,
+      "under_rule": [],
+      "document_width": {
+        "client": 1440,
+        "doc": 1440
+      },
+      "visible_only_elements_exclude_zero_rect": true
+    },
+    "results-final-1280": {
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      },
+      "min_measured_control_height": 36,
+      "control_count": 39,
+      "height_rule": 36,
+      "under_rule": [],
+      "document_width": {
+        "client": 1280,
+        "doc": 1280
+      },
+      "visible_only_elements_exclude_zero_rect": true
+    },
+    "compare-final-1440": {
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "min_measured_control_height": 36,
+      "control_count": 41,
+      "height_rule": 36,
+      "under_rule": [],
+      "document_width": {
+        "client": 1440,
+        "doc": 1440
+      },
+      "visible_only_elements_exclude_zero_rect": true
+    },
+    "compare-final-1280": {
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      },
+      "min_measured_control_height": 36,
+      "control_count": 41,
+      "height_rule": 36,
+      "under_rule": [],
+      "document_width": {
+        "client": 1280,
+        "doc": 1280
+      },
+      "visible_only_elements_exclude_zero_rect": true
+    },
+    "observe-fixed-final-390": {
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "min_measured_control_height": 44,
+      "control_count": 45,
+      "height_rule": 44,
+      "under_rule": [],
+      "document_width": {
+        "client": 390,
+        "doc": 390
+      },
+      "visible_only_elements_exclude_zero_rect": true
+    },
+    "results-final-390": {
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "min_measured_control_height": 44,
+      "control_count": 39,
+      "height_rule": 44,
+      "under_rule": [],
+      "document_width": {
+        "client": 390,
+        "doc": 390
+      },
+      "visible_only_elements_exclude_zero_rect": true
+    },
+    "compare-final-390": {
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "min_measured_control_height": 44,
+      "control_count": 41,
+      "height_rule": 44,
+      "under_rule": [],
+      "document_width": {
+        "client": 390,
+        "doc": 390
+      },
+      "visible_only_elements_exclude_zero_rect": true
+    },
+    "observe-running-controls-final-390": {
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "min_measured_control_height": 44,
+      "control_count": 36,
+      "height_rule": 44,
+      "under_rule": [],
+      "document_width": {
+        "client": 390,
+        "doc": 390
+      },
+      "visible_only_elements_exclude_zero_rect": true
+    }
+  },
+  "files": [
+    {
+      "path": "capture-manifest.json",
+      "sha256": "d5c2647e098aae57299a6168b93c595653762c3eea847f6c5978229214ca416f",
+      "bytes": 8891
+    },
+    {
+      "path": "compare-after-1280.jpg",
+      "sha256": "c770daaa5d7120cd1609f117c96fc6fa88e796ed23c1dd88190846220f120a0f",
+      "bytes": 102437,
+      "format": "JPEG",
+      "pixels": [
+        1280,
+        800
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      },
+      "captured_at": "2026-10-09T09:01:57.150Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-after-1280.json",
+      "sha256": "cf18d925b78587dee1ed7ea1621c8ed28db3a345c162a1604e84bf0c918824bc",
+      "bytes": 18623
+    },
+    {
+      "path": "compare-after-1280.txt",
+      "sha256": "5dcaab650d05e007dca1cda1b5cd18ea41e8606a6dc7b2393d254bb43e29f111",
+      "bytes": 10534
+    },
+    {
+      "path": "compare-after-1440.jpg",
+      "sha256": "a1aa67add7f8e2702d5760b60cecf1947fce6abd4941106cb9ace3e726727131",
+      "bytes": 108762,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T08:58:54.780Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-after-1440.json",
+      "sha256": "5d231eacfb067a5fb5a9efb43e0f94c743121d829e5f3b05f1a63095ccf15611",
+      "bytes": 18522
+    },
+    {
+      "path": "compare-after-1440.txt",
+      "sha256": "5dcaab650d05e007dca1cda1b5cd18ea41e8606a6dc7b2393d254bb43e29f111",
+      "bytes": 10534
+    },
+    {
+      "path": "compare-after-390.jpg",
+      "sha256": "fce2c376f3e26631713d8947e20681dbcf21a32764ab6f74ce4b1e27446cd727",
+      "bytes": 46759,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:03:29.583Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-after-390.json",
+      "sha256": "95301d5a67fecab1fa64bf6398ef3b74fda912e1c16e4efd1a07d28a6fe49ca2",
+      "bytes": 18529
+    },
+    {
+      "path": "compare-after-390.txt",
+      "sha256": "5dcaab650d05e007dca1cda1b5cd18ea41e8606a6dc7b2393d254bb43e29f111",
+      "bytes": 10534
+    },
+    {
+      "path": "compare-before-1280-capture-fail.jpg",
+      "sha256": "9f6ac02bc325b278da9743ec2678500071b308106bdbb66bb5b6a28688026818",
+      "bytes": 104951,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "role": "historical failure / excluded from final acceptance"
+    },
+    {
+      "path": "compare-before-1440.jpg",
+      "sha256": "9f6ac02bc325b278da9743ec2678500071b308106bdbb66bb5b6a28688026818",
+      "bytes": 104951,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "role": "actual pre-change Workbench"
+    },
+    {
+      "path": "compare-chart-after-390.jpg",
+      "sha256": "84667a223761e0f48027f4d2b286c8a383fcd67398473b7262ba4e7590fb3c55",
+      "bytes": 44934,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:11:10.057Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-chart-after-390.json",
+      "sha256": "d83ba15cf16cc1179787e17c1a280c671d3be1079ed7c6722e81b6365f7efada",
+      "bytes": 13966
+    },
+    {
+      "path": "compare-chart-after-390.txt",
+      "sha256": "d3042ded3be1f95cde97b6cc82bbd9682e4cc0e3fa6cfcf5ba0d796c78efcd32",
+      "bytes": 10654
+    },
+    {
+      "path": "compare-drawdown-after-1440.jpg",
+      "sha256": "f8f26bd24a06b10e23313fcf3bc00ef34abfe4706a59f7e68bbcd272f4427926",
+      "bytes": 107339,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T08:59:09.855Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-drawdown-after-1440.json",
+      "sha256": "3c72f8de2ace268c989f58055d4947d681fed6b6ce344e9057d40f66bb7a3f72",
+      "bytes": 18534
+    },
+    {
+      "path": "compare-drawdown-after-1440.txt",
+      "sha256": "4b3f0763d14b17cb8eb65c4fd10c68a4335ea5d9d7c05a1bfc0d482c08eed872",
+      "bytes": 10539
+    },
+    {
+      "path": "compare-drawdown-dates-final-390.jpg",
+      "sha256": "ab3ad712528af893ed5fd6fa5357d3886c302c2d0e88699c4c7daffc9e325b67",
+      "bytes": 44303,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:28:34.852Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-drawdown-dates-final-390.json",
+      "sha256": "4705a41120c7ae43c61accf9b19644e71312adfb97cac7b3e10858cceff758cc",
+      "bytes": 24840
+    },
+    {
+      "path": "compare-drawdown-dates-final-390.txt",
+      "sha256": "765c2b12b4eb13ac8fdc9d91f3958b054734f7e3b3cbb2227911e0ba217c4931",
+      "bytes": 10539
+    },
+    {
+      "path": "compare-final-1280.jpg",
+      "sha256": "a7d94b5ab4766e7a0099bde0b18b11c8c587893c65dd3498f9db101744b2df1e",
+      "bytes": 103411,
+      "format": "JPEG",
+      "pixels": [
+        1280,
+        800
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      },
+      "captured_at": "2026-10-09T09:23:11.236Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "accepted final basic view; before last narrow/expanded-ledger-only CSS repairs; unaffected desktop/closed-ledger rendering"
+    },
+    {
+      "path": "compare-final-1280.json",
+      "sha256": "49e0b1e623b3909c926aed48ade894ba3a1816d90932c8fa68d52bc3cb9c2365",
+      "bytes": 24956
+    },
+    {
+      "path": "compare-final-1280.txt",
+      "sha256": "5dcaab650d05e007dca1cda1b5cd18ea41e8606a6dc7b2393d254bb43e29f111",
+      "bytes": 10534
+    },
+    {
+      "path": "compare-final-1440.jpg",
+      "sha256": "4295e54faf6841d8749a923f0b12f79a213ea43924f87005e9e68df475eaa0d8",
+      "bytes": 110463,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:22:57.850Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "accepted final basic view; before last narrow/expanded-ledger-only CSS repairs; unaffected desktop/closed-ledger rendering"
+    },
+    {
+      "path": "compare-final-1440.json",
+      "sha256": "6f81ab102553f8a1ef59adb6250d834bc8cb19c415c7d14df9a1592f279cc9b2",
+      "bytes": 24846
+    },
+    {
+      "path": "compare-final-1440.txt",
+      "sha256": "5dcaab650d05e007dca1cda1b5cd18ea41e8606a6dc7b2393d254bb43e29f111",
+      "bytes": 10534
+    },
+    {
+      "path": "compare-final-390.jpg",
+      "sha256": "09dcd2b1bb2f44a91d4fe414bdb2e4bd99e11e8c43a473b025a074a128770d10",
+      "bytes": 46400,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:28:10.490Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "accepted final basic view; before last narrow/expanded-ledger-only CSS repairs; unaffected desktop/closed-ledger rendering"
+    },
+    {
+      "path": "compare-final-390.json",
+      "sha256": "2dda3ffe2e037ff4f96e567c4c0d382d052a0c33654258aa1c8b20abecf9d53e",
+      "bytes": 24810
+    },
+    {
+      "path": "compare-final-390.txt",
+      "sha256": "5dcaab650d05e007dca1cda1b5cd18ea41e8606a6dc7b2393d254bb43e29f111",
+      "bytes": 10534
+    },
+    {
+      "path": "compare-full-ledger-assets-after-1440.jpg",
+      "sha256": "9ac3a0892ee4abd41ee6a2a2a83f10a8cfc726b328c3ec718281c7a63f5adc51",
+      "bytes": 104351,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:10:16.770Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-full-ledger-assets-after-1440.json",
+      "sha256": "8f90a0abb39a0608af8b784313d4c017a373ea5bd49735b509560395bd06fa33",
+      "bytes": 13948
+    },
+    {
+      "path": "compare-full-ledger-assets-after-1440.txt",
+      "sha256": "5957bd5fd843b733165e81feb32208ed482fb4431cb483dff84453dc78f0e227",
+      "bytes": 10654
+    },
+    {
+      "path": "compare-full-ledger-expanded-after-1440.jpg",
+      "sha256": "850faa0c80d34c92a926322ddb20f8ea67f674396cb132e765ad3e67fd609722",
+      "bytes": 102211,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:10:05.099Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-full-ledger-expanded-after-1440.json",
+      "sha256": "b6f3750cc8479445ead15648e5abdf1e8dabfb8c57c42a82bd1f59cc47e0a944",
+      "bytes": 13948
+    },
+    {
+      "path": "compare-full-ledger-expanded-after-1440.txt",
+      "sha256": "5957bd5fd843b733165e81feb32208ed482fb4431cb483dff84453dc78f0e227",
+      "bytes": 10654
+    },
+    {
+      "path": "compare-ledger-after-1440.jpg",
+      "sha256": "5fbe477e08422e2b0c82f38ee2e4972e3282db61a50db656a20707a934117bc7",
+      "bytes": 101201,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T08:59:11.051Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling",
+      "caption_correction": "position chart, not expanded ledger"
+    },
+    {
+      "path": "compare-ledger-after-1440.json",
+      "sha256": "53cdb8abf796fe22fc89db1f5c2d7360c64995a759250e7dd221fbb88a6527ab",
+      "bytes": 13622
+    },
+    {
+      "path": "compare-ledger-after-1440.txt",
+      "sha256": "2f57c169cda4bc9b085e791742fa13e855ce5e796d1694c0bea175fde0d6de94",
+      "bytes": 6574
+    },
+    {
+      "path": "compare-ledger-after-390.jpg",
+      "sha256": "e060acbb7e12da6f2b01fbaa3c6f0464a09104d2b5406dcf177771e5eeb91fbe",
+      "bytes": 44576,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:03:46.585Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling",
+      "caption_correction": "old net chart with date failure, not expanded ledger; not final acceptance"
+    },
+    {
+      "path": "compare-ledger-after-390.json",
+      "sha256": "3c03160be424792c9019edcd74f091da541ec0110b357099bca6b5afc4c2d532",
+      "bytes": 13966
+    },
+    {
+      "path": "compare-ledger-after-390.txt",
+      "sha256": "e62eb6f3f85136824ad568c89409574eb845539b083a22068168f02a53b2e2cf",
+      "bytes": 6512
+    },
+    {
+      "path": "compare-ledger-assets-final-1440.jpg",
+      "sha256": "1c9c99d6139470075cddb4977aefcddc182ac884f17e6300b467bb16ab489205",
+      "bytes": 106407,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:32:45.155Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "final affected-region or delivery capture after final CSS repairs"
+    },
+    {
+      "path": "compare-ledger-assets-final-1440.json",
+      "sha256": "8d3bab0a7f027b8ed9e30fc6d664d32a0336e698a0b164bcc6db1b38ca33fad7",
+      "bytes": 24853
+    },
+    {
+      "path": "compare-ledger-assets-final-1440.txt",
+      "sha256": "4244b3a3b1529760a6c5aee49b0c0e870185a77acbce986dd2162f7d7607b423",
+      "bytes": 14685
+    },
+    {
+      "path": "compare-ledger-fixed-left-final-390.jpg",
+      "sha256": "60bb15bc6780804c2dbe20f787098e868e700792c223a842a626ff5862b664d4",
+      "bytes": 46351,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:32:00.204Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "final affected-region or delivery capture after final CSS repairs"
+    },
+    {
+      "path": "compare-ledger-fixed-left-final-390.json",
+      "sha256": "30a9ff04c3e96de4485edc50980a750e10abc4ef3c72ee3e6d293458ff876a5a",
+      "bytes": 24828
+    },
+    {
+      "path": "compare-ledger-fixed-left-final-390.txt",
+      "sha256": "4244b3a3b1529760a6c5aee49b0c0e870185a77acbce986dd2162f7d7607b423",
+      "bytes": 14685
+    },
+    {
+      "path": "compare-ledger-fixed-right-final-390.jpg",
+      "sha256": "af34ec875b51b13a793cbec619f89f4fcbdb619665daf4971e0ecb368b732bf8",
+      "bytes": 44787,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:32:02.014Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "final affected-region or delivery capture after final CSS repairs"
+    },
+    {
+      "path": "compare-ledger-fixed-right-final-390.json",
+      "sha256": "c1756ff17fd045087238e35a42458c574d0aee431ac9129c21a4ccc6c78198d8",
+      "bytes": 24828
+    },
+    {
+      "path": "compare-ledger-fixed-right-final-390.txt",
+      "sha256": "4244b3a3b1529760a6c5aee49b0c0e870185a77acbce986dd2162f7d7607b423",
+      "bytes": 14685
+    },
+    {
+      "path": "compare-ledger-left-font-fail-390.jpg",
+      "sha256": "025cff64c224c7a26d817b601034cdae2d03529a2e6b6cf08fd753b06a60cb8c",
+      "bytes": 44344,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:28:50.019Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "historical failure / excluded from final acceptance"
+    },
+    {
+      "path": "compare-ledger-left-font-fail-390.json",
+      "sha256": "232f1e5705c5c1c4bac4f93c77dd98e710319694680f3034be38a30c94c58d62",
+      "bytes": 24505
+    },
+    {
+      "path": "compare-ledger-left-font-fail-390.txt",
+      "sha256": "08b9e1eee53e0dae2cddec54187ed37d88454f71304541bb2788acaa8e9eef72",
+      "bytes": 14747
+    },
+    {
+      "path": "compare-ledger-right-font-fail-390.jpg",
+      "sha256": "e35a8cdc244ded8bd858ec96f78a3a53d3f49350731818d1159a38bee4fe7311",
+      "bytes": 43193,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:28:51.574Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "historical failure / excluded from final acceptance"
+    },
+    {
+      "path": "compare-ledger-right-font-fail-390.json",
+      "sha256": "e1d89ad7fe92ea8fafbe43e856a09e96a27090cfc1dd3de85f486444dba80eba",
+      "bytes": 24505
+    },
+    {
+      "path": "compare-ledger-right-font-fail-390.txt",
+      "sha256": "08b9e1eee53e0dae2cddec54187ed37d88454f71304541bb2788acaa8e9eef72",
+      "bytes": 14747
+    },
+    {
+      "path": "compare-ledger-turnover-final-1440.jpg",
+      "sha256": "c02ff55888b9fd7ea91ed8c91e4f731eb392d499b2de265dbfc076babd4e493e",
+      "bytes": 103801,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:32:45.748Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "final affected-region or delivery capture after final CSS repairs"
+    },
+    {
+      "path": "compare-ledger-turnover-final-1440.json",
+      "sha256": "92594e6b9942cfe480e5281bb37d71cfa42f7c1bf6dfa0bb51dde169a84bdcbe",
+      "bytes": 24853
+    },
+    {
+      "path": "compare-ledger-turnover-final-1440.txt",
+      "sha256": "4244b3a3b1529760a6c5aee49b0c0e870185a77acbce986dd2162f7d7607b423",
+      "bytes": 14685
+    },
+    {
+      "path": "compare-narrow-dates-fail-390.jpg",
+      "sha256": "72d234e1db5dd493454ab2725cef9970f4f77b3b6250a94e35e3652e821468d1",
+      "bytes": 45515,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:03:46.006Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "historical failure / excluded from final acceptance"
+    },
+    {
+      "path": "compare-narrow-dates-fail-390.json",
+      "sha256": "0c08380b568b975b026d43cc9fbbd1d7a60bc47706ed2b73fa674fefa3b858f1",
+      "bytes": 18529
+    },
+    {
+      "path": "compare-narrow-dates-fail-390.txt",
+      "sha256": "bc46dbd2d5a8feea0bd7f64278c26786f0ae5115e42995b51c42e89c12c77113",
+      "bytes": 10543
+    },
+    {
+      "path": "compare-net-dates-final-390.jpg",
+      "sha256": "45385cb6a560e1fc9f6569b9d13e08c8711150aab0c8250e14e52abbcc865c3d",
+      "bytes": 44234,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:28:34.154Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-net-dates-final-390.json",
+      "sha256": "3e0a8f1da76e9a6400e09c7ed7e235e214b87812caddc7fcf9a397b82f40d53d",
+      "bytes": 24826
+    },
+    {
+      "path": "compare-net-dates-final-390.txt",
+      "sha256": "f9c627f0f01bb52b78eb5c17e58098288268cb3e6eae3c46b4dcfbdb59cd92a1",
+      "bytes": 10543
+    },
+    {
+      "path": "compare-original-style-1280.jpg",
+      "sha256": "8b50bc7e63bcf355ba4822137968bd03004ed9b4563254e2a3365386c9c7f441",
+      "bytes": 98794,
+      "format": "JPEG",
+      "pixels": [
+        1280,
+        800
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      },
+      "captured_at": "2026-10-09T09:01:57.859Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "original theme in new wrapper; not pre-change bundle"
+    },
+    {
+      "path": "compare-original-style-1280.json",
+      "sha256": "51c5c9269c5e0a157ba1d601bf373d4e759021170a9115e088cd5fbeffd4e2ee",
+      "bytes": 18588
+    },
+    {
+      "path": "compare-original-style-1280.txt",
+      "sha256": "5ae529d2c5bc6f49cfc147c35d2196b78341870c0ce92524bf40d1bcaf4fc0f1",
+      "bytes": 10543
+    },
+    {
+      "path": "compare-original-style-390.jpg",
+      "sha256": "95731c91597be66ed03948f64d8611a6bda5833c4371276ed44d97aad2495085",
+      "bytes": 53328,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:03:45.044Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "original theme in new wrapper; not pre-change bundle"
+    },
+    {
+      "path": "compare-original-style-390.json",
+      "sha256": "3bc9d7382f8db2975b84789f7c7b86fa010295482afe19731539fde1074cfc85",
+      "bytes": 18424
+    },
+    {
+      "path": "compare-original-style-390.txt",
+      "sha256": "5ae529d2c5bc6f49cfc147c35d2196b78341870c0ce92524bf40d1bcaf4fc0f1",
+      "bytes": 10543
+    },
+    {
+      "path": "compare-position-after-1440.jpg",
+      "sha256": "5fbe477e08422e2b0c82f38ee2e4972e3282db61a50db656a20707a934117bc7",
+      "bytes": 101201,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T08:59:10.490Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-position-after-1440.json",
+      "sha256": "a35ad623975ce85056d85dea996ff1cd1e6825a4ec1a8a48a3c60f3d55481583",
+      "bytes": 18199
+    },
+    {
+      "path": "compare-position-after-1440.txt",
+      "sha256": "e02abd75a1cf3b483833193b04a9def1473e84bb666cf1b4883ffccd59b1564c",
+      "bytes": 10605
+    },
+    {
+      "path": "compare-position-left-final-390.jpg",
+      "sha256": "80b70c8b2c4a8798aa3a8c578a278f094ea4756c147b2368d10be1ef7ffbd1c4",
+      "bytes": 43352,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:28:35.426Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-position-left-final-390.json",
+      "sha256": "6059b981ee13300d6e62143f592cd7eaf76061fcfb4932d7ad632858c4a503b7",
+      "bytes": 24491
+    },
+    {
+      "path": "compare-position-left-final-390.txt",
+      "sha256": "e02abd75a1cf3b483833193b04a9def1473e84bb666cf1b4883ffccd59b1564c",
+      "bytes": 10605
+    },
+    {
+      "path": "compare-position-right-final-390.jpg",
+      "sha256": "0bf6f68c98ddf9a890839f70da84814acb8fa19527f251f8a9bf3c0fdcfbbeac",
+      "bytes": 36202,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:28:36.174Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-position-right-final-390.json",
+      "sha256": "b943c59e48b67a4add13b22dd43c7442931a2ea835f9f99b5b01a4c59c49f495",
+      "bytes": 24492
+    },
+    {
+      "path": "compare-position-right-final-390.txt",
+      "sha256": "93321e55259dc6f643da50cc8185c1b1b3469b800eb3f027f144dc4d98276403",
+      "bytes": 10596
+    },
+    {
+      "path": "compare-position-scroll-after-390.jpg",
+      "sha256": "a32d5677b2ebe9b1ace03feb8cf247a00415389749a72240901c2f8162ac9629",
+      "bytes": 32632,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:13:02.940Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-position-scroll-after-390.json",
+      "sha256": "22f6795308cc26f9ad95b39d0cca25439d3721813324301d6f041e52ad32cd35",
+      "bytes": 13646
+    },
+    {
+      "path": "compare-position-scroll-after-390.txt",
+      "sha256": "a85c50db192369e4d32226182eb33c529b74a33c3d77f11798a7f9148a310681",
+      "bytes": 10707
+    },
+    {
+      "path": "compare-source-drawer-after-1440.jpg",
+      "sha256": "fd87b600412ff9db2d9e162fe91d363f0097d0b69b051964eec0a985c467fa34",
+      "bytes": 77517,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T08:59:24.679Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-source-drawer-after-1440.json",
+      "sha256": "f056227586c3875695809e934ebe77a60cc9a1ddc9c85e812b9ee9f4034b7152",
+      "bytes": 17969
+    },
+    {
+      "path": "compare-source-drawer-after-1440.txt",
+      "sha256": "09f355da33db05cdafd2870ea5a3dec0b99c6cb5f4b19ae70fde620919234e4a",
+      "bytes": 9040
+    },
+    {
+      "path": "compare-source-return-after-1440.jpg",
+      "sha256": "1412040e7cd419a0ee1f231135419174f08ded25286f59925e01776030976951",
+      "bytes": 78328,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T08:59:26.100Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-source-return-after-1440.json",
+      "sha256": "a2cf9c1d653a4c82bfcb4c10be77b0c044b24a5d02d9af60e2e5ba07fddc41bb",
+      "bytes": 13624
+    },
+    {
+      "path": "compare-source-return-after-1440.txt",
+      "sha256": "a46180c3e60f950fd75b60367ee1793d5c4965a91a3960760c98cb8977b30c07",
+      "bytes": 6574
+    },
+    {
+      "path": "compare-summary-prices-final-390.jpg",
+      "sha256": "3de56ab89f70fbb5c75b5c1c335323566f4b5858abdae4617b2d5d0f181e659c",
+      "bytes": 40820,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:28:49.373Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-summary-prices-final-390.json",
+      "sha256": "48e8841eb6399da1f3855d93770a054d692d13c68301bbe72a63ffe190d1b5d5",
+      "bytes": 24490
+    },
+    {
+      "path": "compare-summary-prices-final-390.txt",
+      "sha256": "30530acd8108a3941fc1a5fac412d6081ba581e1b2739c7f6813cb97ae41e8ca",
+      "bytes": 10605
+    },
+    {
+      "path": "compare-table-keyboard-scroll-after-390.jpg",
+      "sha256": "61496ef57af2a453732f6770a38c23bdcca84c2141fc5291d5fb5b16d769f1be",
+      "bytes": 42779,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:12:05.080Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "compare-table-keyboard-scroll-after-390.json",
+      "sha256": "2bdefb4c48bec364cbc3da8c8608c0a970746076791ec44cbca78a354074c066",
+      "bytes": 13966
+    },
+    {
+      "path": "compare-table-keyboard-scroll-after-390.txt",
+      "sha256": "1f4d5f51878e23cc7ebb0e6efc50013b0edbf5b76db163c49cdc14dca73ee2b7",
+      "bytes": 10654
+    },
+    {
+      "path": "compare-table-sticky-price-fail-390.jpg",
+      "sha256": "4cc7f3a839e1547f9190c5128435a09c8a5b6e39b346bb453f502def0cbba5e3",
+      "bytes": 43650,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:05:23.967Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "historical failure / excluded from final acceptance"
+    },
+    {
+      "path": "compare-table-sticky-price-fail-390.json",
+      "sha256": "ba79a23410641f8ee8eeffc3766f77a67574830295e55b937a590a189101f2e0",
+      "bytes": 13966
+    },
+    {
+      "path": "compare-table-sticky-price-fail-390.txt",
+      "sha256": "2e20afaabf18efedcf073de6b264b9704fb2ae174cf5217ebae64a10a77041ea",
+      "bytes": 6512
+    },
+    {
+      "path": "computed-before.json",
+      "sha256": "91d1844ace251fde4aca81a6754cefd7665a6d9bed72b4c0c0c84a5c40b2c607",
+      "bytes": 3756
+    },
+    {
+      "path": "computed-final-ledger.json",
+      "sha256": "efe537a3dfd72aa7ba172f62fbaa8a5a7f05750539dc257a5b948b896456ab69",
+      "bytes": 1290
+    },
+    {
+      "path": "computed-homepage-reference.json",
+      "sha256": "e5f5ddd85392ae9457c10b7a6295d2486d41f0dc76330fdcbf72638503abe0eb",
+      "bytes": 23319
+    },
+    {
+      "path": "contrast-measured.json",
+      "sha256": "13793128a4b393cacf9c0601034bfd55d8697ee96e254c1b88f7967012c0b0dc",
+      "bytes": 1787
+    },
+    {
+      "path": "homepage-reference-1440.jpg",
+      "sha256": "b02b9d0cb5893a9cecc65973df7b33ee23f61cf94f4c1747390738d56b6013fe",
+      "bytes": 116760,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "role": "current homepage candidate reference from 0ff3; different business data"
+    },
+    {
+      "path": "observe-after-1280.jpg",
+      "sha256": "b9431893dbf267b84ca0dd2f7fd3e3a51db6a6369b1a108d45766391e3c3a592",
+      "bytes": 112793,
+      "format": "JPEG",
+      "pixels": [
+        1280,
+        800
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      },
+      "captured_at": "2026-10-09T09:01:37.223Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "observe-after-1280.json",
+      "sha256": "74c4a90699df6317fada93c8d5d5bf4859ad328212594fc7df4a68e878ec7cb1",
+      "bytes": 21288
+    },
+    {
+      "path": "observe-after-1280.txt",
+      "sha256": "62571ad0837c8dc73d21f7d9efe16d72edff783860bfd7d04ca140c13a917ec9",
+      "bytes": 13272
+    },
+    {
+      "path": "observe-after-1440.jpg",
+      "sha256": "83e7e600583162e6be48554d7392141c32ad43964b3bb8a4cd61d05a0799f6e5",
+      "bytes": 126068,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T08:59:29.100Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "observe-after-1440.json",
+      "sha256": "2bd0c97d9811422235a66d2ea6cafe7a856072d70e6c53b2ab25b0b8f34c495c",
+      "bytes": 21280
+    },
+    {
+      "path": "observe-after-1440.txt",
+      "sha256": "c5e2fa377367f79219e0541a0d01f19a71bd8bb333836c4937f660dc7079183a",
+      "bytes": 13272
+    },
+    {
+      "path": "observe-after-390.jpg",
+      "sha256": "815d6586150170c02961422ae91ba4a5def953d9f60684cf49e4962aaef33aef",
+      "bytes": 44564,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T08:57:10.669Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "observe-after-390.json",
+      "sha256": "079818312cb858ea76e3e204a1987aa57dcf328855cb7344a2fca182082fb41a",
+      "bytes": 21239
+    },
+    {
+      "path": "observe-after-390.txt",
+      "sha256": "11c30bdd148f61e36a3afac1ddd2cbf0aba7d29a2286dc78f5f5b8418d645277",
+      "bytes": 13272
+    },
+    {
+      "path": "observe-after-controls-390.jpg",
+      "sha256": "54c87929104286b097a5eb69a08af7dd96464aec1c3d6f8a647528663d4e1ee1",
+      "bytes": 48282,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T08:57:14.417Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "observe-after-controls-390.json",
+      "sha256": "46d9f56885d921849df065385f55792ea80f2585a14cc4cb2bf45fca415fa877",
+      "bytes": 21239
+    },
+    {
+      "path": "observe-after-controls-390.txt",
+      "sha256": "db3ee976affef81c06b588066ebf01159b176acad27a1b5243ee944a32a846d9",
+      "bytes": 13281
+    },
+    {
+      "path": "observe-before-1280-capture-fail.jpg",
+      "sha256": "4d788ffdce950a51336dde123f3d3a571722223316591bb52df48128b51f4eb9",
+      "bytes": 119715,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "role": "historical failure / excluded from final acceptance"
+    },
+    {
+      "path": "observe-before-1440.jpg",
+      "sha256": "3cb2ba6394d8af5f6aafab325899a08bbbce3884f7372b8cea1a7ece28e5a65b",
+      "bytes": 119467,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "role": "actual pre-change Workbench"
+    },
+    {
+      "path": "observe-before-390-capture-fail.jpg",
+      "sha256": "4d788ffdce950a51336dde123f3d3a571722223316591bb52df48128b51f4eb9",
+      "bytes": 119715,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "role": "historical failure / excluded from final acceptance"
+    },
+    {
+      "path": "observe-controls-specificity-fail-390.jpg",
+      "sha256": "279bed8d4ee535f9d99bd7698319a37ee012356ef039c479832c5f3355988d67",
+      "bytes": 43692,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:23:20.209Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "historical failure / excluded from final acceptance"
+    },
+    {
+      "path": "observe-controls-specificity-fail-390.json",
+      "sha256": "b90db629113cbfb102e4cef7fd97e15047ed5d7829eeeae87352bf4757bab16c",
+      "bytes": 27610
+    },
+    {
+      "path": "observe-controls-specificity-fail-390.txt",
+      "sha256": "6f683f4237a12266758480f5571f59fdd6266819b7576c85fa4739af85109543",
+      "bytes": 13272
+    },
+    {
+      "path": "observe-delivery-final-1440.jpg",
+      "sha256": "8392f841734721b8beae17f3d65f5f16c00ad5a7cb0988384d3b983ec6e51861",
+      "bytes": 127143,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:37:27.549Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "final affected-region or delivery capture after final CSS repairs"
+    },
+    {
+      "path": "observe-delivery-final-1440.json",
+      "sha256": "5d9554af50f22e185ef50b9afe7e4931cd1f529ff169731b8539e833e0387b29",
+      "bytes": 27736
+    },
+    {
+      "path": "observe-delivery-final-1440.txt",
+      "sha256": "a43dbf980d4d87fb21b4762cc241a2be5ae7cd17961e0b48bfa9ee308d376ecd",
+      "bytes": 13272
+    },
+    {
+      "path": "observe-final-1280.jpg",
+      "sha256": "306f09cad512b4758420b761956869c0aa125bdbc478de26aa611c14a8b93913",
+      "bytes": 110241,
+      "format": "JPEG",
+      "pixels": [
+        1280,
+        800
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      },
+      "captured_at": "2026-10-09T09:23:08.905Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "accepted final basic view; before last narrow/expanded-ledger-only CSS repairs; unaffected desktop/closed-ledger rendering"
+    },
+    {
+      "path": "observe-final-1280.json",
+      "sha256": "31340113d8bde3283091a34a793473f476a31a5d9a3954e202e238b2f3b7811a",
+      "bytes": 27748
+    },
+    {
+      "path": "observe-final-1280.txt",
+      "sha256": "e33fdd2da915f7e1eaf6d57042692ef5cdcee9241a743612da40b29c0f5e7fce",
+      "bytes": 13272
+    },
+    {
+      "path": "observe-final-1440.jpg",
+      "sha256": "8392f841734721b8beae17f3d65f5f16c00ad5a7cb0988384d3b983ec6e51861",
+      "bytes": 127143,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:22:46.612Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "accepted final basic view; before last narrow/expanded-ledger-only CSS repairs; unaffected desktop/closed-ledger rendering"
+    },
+    {
+      "path": "observe-final-1440.json",
+      "sha256": "d1e836024a21a450f1000074935655a92606e0c836d3e90cd4a82232bab27a4e",
+      "bytes": 27736
+    },
+    {
+      "path": "observe-final-1440.txt",
+      "sha256": "61e026854816e56ebc276d023ff6ac5c33d965e9fc175eefcab16188c0b19fdc",
+      "bytes": 13272
+    },
+    {
+      "path": "observe-fixed-final-390.jpg",
+      "sha256": "1058b5c91cfe0170b448a65ee5d62ae70fc4b7dc359740b43ceb80532ff5db0f",
+      "bytes": 43300,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:29:06.286Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "final affected-region or delivery capture after final CSS repairs"
+    },
+    {
+      "path": "observe-fixed-final-390.json",
+      "sha256": "1cdd4e3d4cbf90f7bc368102c148312acc509f2afb4cfba6a71a756950f0c7f0",
+      "bytes": 27610
+    },
+    {
+      "path": "observe-fixed-final-390.txt",
+      "sha256": "10dc4f9cc2aed1ff858bb83ee2128902226a01287caca199800c6e1b878a6c75",
+      "bytes": 13272
+    },
+    {
+      "path": "observe-initial-narrow-fail-390.jpg",
+      "sha256": "2cc42b205b4072e8b03292ccda0247f158b8eb5a8e29218f3e22b6c7b300df80",
+      "bytes": 49822,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "role": "historical failure / excluded from final acceptance"
+    },
+    {
+      "path": "observe-original-style-1280.jpg",
+      "sha256": "1adf708c0114ffaab06b5cd92caefd853d9e661c2102d10dbcc1bb9ca5a16ebd",
+      "bytes": 105759,
+      "format": "JPEG",
+      "pixels": [
+        1280,
+        800
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      },
+      "captured_at": "2026-10-09T09:01:38.073Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "original theme in new wrapper; not pre-change bundle"
+    },
+    {
+      "path": "observe-original-style-1280.json",
+      "sha256": "164f1837bc983ecad727fe9a71ac3e6dfbaf0021b5e54af5fa7462be0d5cf07a",
+      "bytes": 21119
+    },
+    {
+      "path": "observe-original-style-1280.txt",
+      "sha256": "f572e67a85e91863152e2fe6bbe0ca35bdefae58be79b798aa3653d2af9514ae",
+      "bytes": 13281
+    },
+    {
+      "path": "observe-original-style-390.jpg",
+      "sha256": "7c3596de3cc1e710d42aa1ffe770c23fdc67d47057d6ef3b2ea8182bcac64193",
+      "bytes": 48071,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T08:57:13.026Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "original theme in new wrapper; not pre-change bundle"
+    },
+    {
+      "path": "observe-original-style-390.json",
+      "sha256": "3da15cd654f74992f24eed437fb6642f76590a821bd3d1a771bb0b13a7581793",
+      "bytes": 21107
+    },
+    {
+      "path": "observe-original-style-390.txt",
+      "sha256": "169823c51611eeb128b02370a151cdb1ca4d59d5deae9162700723c354aaf081",
+      "bytes": 13281
+    },
+    {
+      "path": "observe-running-controls-final-390.jpg",
+      "sha256": "da928913ebf915eab01ea68964e5572338a4dbbb550009253d3c88c49014affb",
+      "bytes": 39428,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:31:46.680Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=running",
+      "matches_viewport_pixels": true,
+      "role": "final affected-region or delivery capture after final CSS repairs"
+    },
+    {
+      "path": "observe-running-controls-final-390.json",
+      "sha256": "4e51cc61fad68c375deabc3ac64021a6cdaeb4d5fe5800375d793f3f0a6e0c3f",
+      "bytes": 22378
+    },
+    {
+      "path": "observe-running-controls-final-390.txt",
+      "sha256": "34f39f5b01a8fc5fcb062aa78a215fc44fd92dafa25215623a9f068301e9ac85",
+      "bytes": 6740
+    },
+    {
+      "path": "observe-time-controls-fixed-final-390.jpg",
+      "sha256": "f7f62a08304356a690b07d9478b202006ecf6d0dd4d40f94aacbb22cd004da0a",
+      "bytes": 42422,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:29:06.784Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "final affected-region or delivery capture after final CSS repairs"
+    },
+    {
+      "path": "observe-time-controls-fixed-final-390.json",
+      "sha256": "5d6287e4245866000229a14533527b1399a4e8f76281bbe6217df1315479a8ea",
+      "bytes": 27612
+    },
+    {
+      "path": "observe-time-controls-fixed-final-390.txt",
+      "sha256": "ae7185602fa83ad517f15b983d66ac7071fde4b5c0315bb7aa8b9c2a1c5b4b54",
+      "bytes": 13281
+    },
+    {
+      "path": "observe-time-controls-specificity-fail-390.jpg",
+      "sha256": "dbab23af076c6c5e48624883719b806f8f0763effb1374eab45831c96209cab2",
+      "bytes": 37476,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:23:20.691Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "historical failure / excluded from final acceptance"
+    },
+    {
+      "path": "observe-time-controls-specificity-fail-390.json",
+      "sha256": "f0c334a4836680c235450710bd20bc174d96b14fab68200811aebe54cd667832",
+      "bytes": 27613
+    },
+    {
+      "path": "observe-time-controls-specificity-fail-390.txt",
+      "sha256": "05f1d42f32175bf2b7e3984a4faad1f9915bab5bcc3e24678e690a12d003c4ae",
+      "bytes": 13281
+    },
+    {
+      "path": "playback-newbar-paused-after-1440.jpg",
+      "sha256": "9a4d292df42e738dd7fe9a758c6ef8264d5f2e85e05d9f54f74b876b4e74514a",
+      "bytes": 125843,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:01:04.952Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "playback-newbar-paused-after-1440.json",
+      "sha256": "7f3cd02dfd01ca5824ffb50dca352d6014a0e02086b1a207f85138e9f5a09683",
+      "bytes": 15435
+    },
+    {
+      "path": "playback-newbar-paused-after-1440.txt",
+      "sha256": "ebdcf521840aa57cf28b727417ff70f6e3d550bee40b94616e59d3d7277001e5",
+      "bytes": 5765
+    },
+    {
+      "path": "playback-paused-after-1440.jpg",
+      "sha256": "ca533a380f1a6a3770f275c85031b5224078adf7544d1d343fc9e38b0ad6382f",
+      "bytes": 124760,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:00:48.929Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling",
+      "caption_correction": "same June17 bar; not evidence of advancing playback"
+    },
+    {
+      "path": "playback-paused-after-1440.json",
+      "sha256": "2a24b9629be26a7050986191bc4cf14905b391d6d49acbbe0a78f75e86219145",
+      "bytes": 15413
+    },
+    {
+      "path": "playback-paused-after-1440.txt",
+      "sha256": "b7d4331d486d00c479d642392201547cb584f9d1b810c6c7336a1f7cf6f89cde",
+      "bytes": 5748
+    },
+    {
+      "path": "playback-running-after-1440.jpg",
+      "sha256": "9c2693aeeefed48f3f3c730466906b7d4cc39bc6b7f23e88b6f26e547eb08828",
+      "bytes": 124003,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:00:48.042Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling",
+      "caption_correction": "same June17 bar; not evidence of advancing playback"
+    },
+    {
+      "path": "playback-running-after-1440.json",
+      "sha256": "44ea1055d17aa6bfa027f1061e60d5d9817ef0037603cc5d616ebba1cb996fca",
+      "bytes": 15408
+    },
+    {
+      "path": "playback-running-after-1440.txt",
+      "sha256": "9f837e8f14a00cb033e294b3d18392113c7ec3257135373a81d17f49ca64ab4d",
+      "bytes": 5759
+    },
+    {
+      "path": "results-after-1280.jpg",
+      "sha256": "fa1f305c312552396aed4f795aadc4f8632ea43d46f1c2ad6c0cd5782bf3ca37",
+      "bytes": 99093,
+      "format": "JPEG",
+      "pixels": [
+        1280,
+        800
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      },
+      "captured_at": "2026-10-09T09:01:39.686Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "results-after-1280.json",
+      "sha256": "5f12c6de69ad8f09e35309609fdbe7b8abeff329842c13896add59f067243425",
+      "bytes": 16687
+    },
+    {
+      "path": "results-after-1280.txt",
+      "sha256": "167af6a68de077b359cf0cf7187345b51c8868795d457dab5a6bf17ceefa85b8",
+      "bytes": 9128
+    },
+    {
+      "path": "results-after-1440.jpg",
+      "sha256": "5434618103edb01a410822fe4d088e5306bf7b2460e134d03807102913744af8",
+      "bytes": 112271,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T08:58:09.025Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "results-after-1440.json",
+      "sha256": "fcad0123ab8f7fcd677e9f163208f8fcbae05d5483dbe82ab3fcfe71a92df979",
+      "bytes": 16639
+    },
+    {
+      "path": "results-after-1440.txt",
+      "sha256": "167af6a68de077b359cf0cf7187345b51c8868795d457dab5a6bf17ceefa85b8",
+      "bytes": 9128
+    },
+    {
+      "path": "results-after-390.jpg",
+      "sha256": "4835fc5e7a3ed236103afcbd6e5f24ce489ed52ff8bff920fb1a7838eb05605d",
+      "bytes": 40266,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:02:46.131Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "results-after-390.json",
+      "sha256": "a073816dc477583735490bddaabfff8587457e7dcb045a4af2c85477abbba678",
+      "bytes": 16555
+    },
+    {
+      "path": "results-after-390.txt",
+      "sha256": "167af6a68de077b359cf0cf7187345b51c8868795d457dab5a6bf17ceefa85b8",
+      "bytes": 9128
+    },
+    {
+      "path": "results-before-1280-capture-fail.jpg",
+      "sha256": "c947583c389a815556ecb6666fe694f4730a1426d224c70bba7efea5323f6f0b",
+      "bytes": 105978,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "role": "historical failure / excluded from final acceptance"
+    },
+    {
+      "path": "results-before-1440.jpg",
+      "sha256": "c947583c389a815556ecb6666fe694f4730a1426d224c70bba7efea5323f6f0b",
+      "bytes": 105978,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "role": "actual pre-change Workbench"
+    },
+    {
+      "path": "results-before-390-capture-fail.jpg",
+      "sha256": "c947583c389a815556ecb6666fe694f4730a1426d224c70bba7efea5323f6f0b",
+      "bytes": 105978,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "role": "historical failure / excluded from final acceptance"
+    },
+    {
+      "path": "results-chart-after-390.jpg",
+      "sha256": "c0a27d1fa7aaca4caf3df8db438d450c467a26b3fd01f41de35e3f5c4be9bb92",
+      "bytes": 39992,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:03:01.331Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "results-chart-after-390.json",
+      "sha256": "8fe0326d20127a7d04fcb627ca63226c513c92724b879192835f51469fde1794",
+      "bytes": 16555
+    },
+    {
+      "path": "results-chart-after-390.txt",
+      "sha256": "4e852624e8b148626c96f79614a70a0da3bed9f781794d3d9848704c9c8f9585",
+      "bytes": 9137
+    },
+    {
+      "path": "results-contribution-final-390.jpg",
+      "sha256": "abd73d0da2825f07d30638e14e8739ebab69bc1a69af58f42cf246dd3ff9622f",
+      "bytes": 40376,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:28:00.236Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "results-contribution-final-390.json",
+      "sha256": "bcdfe9e41a6a1e9aa95a800e92ab2f55a175d7815b3597ad9bcc4e49e6a42b44",
+      "bytes": 23212
+    },
+    {
+      "path": "results-contribution-final-390.txt",
+      "sha256": "167af6a68de077b359cf0cf7187345b51c8868795d457dab5a6bf17ceefa85b8",
+      "bytes": 9128
+    },
+    {
+      "path": "results-contribution-scroll-after-390.jpg",
+      "sha256": "a36e62c9b2be0e64b3988671484907ecca7b9a037e6437b143ac8ebfe80161c8",
+      "bytes": 40200,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:13:57.376Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "results-contribution-scroll-after-390.json",
+      "sha256": "05c84b2d2b3f309b34759a9da140fcdc0ef0b45fdf67b1f4d2dfcaa606621c5b",
+      "bytes": 16559
+    },
+    {
+      "path": "results-contribution-scroll-after-390.txt",
+      "sha256": "167af6a68de077b359cf0cf7187345b51c8868795d457dab5a6bf17ceefa85b8",
+      "bytes": 9128
+    },
+    {
+      "path": "results-drawdown-after-1440.jpg",
+      "sha256": "4f808f59108a71d1bcccb50a30b43534f57676ec1a5b9bb2704154b0631a19da",
+      "bytes": 112595,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T08:58:23.467Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "results-drawdown-after-1440.json",
+      "sha256": "83b3cef9d21a1fe218c70683745662f887a0f2ffda80a703734aeef69c526b24",
+      "bytes": 16641
+    },
+    {
+      "path": "results-drawdown-after-1440.txt",
+      "sha256": "19871c91e48f77823971ef18518018c5da67797ac2db21d64fd3050071c7cd68",
+      "bytes": 9139
+    },
+    {
+      "path": "results-final-1280.jpg",
+      "sha256": "14511e42a5a911bda107d0b643c8437f2b3ee953358f8f72ab67af3ffe5bd7bb",
+      "bytes": 97683,
+      "format": "JPEG",
+      "pixels": [
+        1280,
+        800
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      },
+      "captured_at": "2026-10-09T09:23:10.020Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "accepted final basic view; before last narrow/expanded-ledger-only CSS repairs; unaffected desktop/closed-ledger rendering"
+    },
+    {
+      "path": "results-final-1280.json",
+      "sha256": "22a3b70916414df23d137c6db5f5936aab007fda25ec630fd1affd502865a790",
+      "bytes": 23400
+    },
+    {
+      "path": "results-final-1280.txt",
+      "sha256": "167af6a68de077b359cf0cf7187345b51c8868795d457dab5a6bf17ceefa85b8",
+      "bytes": 9128
+    },
+    {
+      "path": "results-final-1440.jpg",
+      "sha256": "a4cb0a2c7ddc6d38b26aa9472b765d756ec7bd4fb8bb05af47dca41da7fd747f",
+      "bytes": 108349,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:22:56.420Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "accepted final basic view; before last narrow/expanded-ledger-only CSS repairs; unaffected desktop/closed-ledger rendering"
+    },
+    {
+      "path": "results-final-1440.json",
+      "sha256": "73fa087e8bd002925ce67baf694648af9cdc086fd7c88c6e31ebecacfaab95a2",
+      "bytes": 23317
+    },
+    {
+      "path": "results-final-1440.txt",
+      "sha256": "167af6a68de077b359cf0cf7187345b51c8868795d457dab5a6bf17ceefa85b8",
+      "bytes": 9128
+    },
+    {
+      "path": "results-final-390.jpg",
+      "sha256": "cbf94ee127e60ced9c6d51653dba73cbf14c934b2562123ea8152045e98f2454",
+      "bytes": 39144,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:27:42.666Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "accepted final basic view; before last narrow/expanded-ledger-only CSS repairs; unaffected desktop/closed-ledger rendering"
+    },
+    {
+      "path": "results-final-390.json",
+      "sha256": "f1deafce7d8af5960e0704d6b89d487a2812905ec7006602818d5fc4bf136ebf",
+      "bytes": 23199
+    },
+    {
+      "path": "results-final-390.txt",
+      "sha256": "167af6a68de077b359cf0cf7187345b51c8868795d457dab5a6bf17ceefa85b8",
+      "bytes": 9128
+    },
+    {
+      "path": "results-ledger-after-1440.jpg",
+      "sha256": "d0c2c9c21dc82eb451b263bccbebccb3ef826ffa5cab9952bacdda60027becf3",
+      "bytes": 105259,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T08:58:25.179Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "results-ledger-after-1440.json",
+      "sha256": "618116691bfb526a216d9ffc5fd4535e1d77b413fcb7545cbc083c645b0100f2",
+      "bytes": 12983
+    },
+    {
+      "path": "results-ledger-after-1440.txt",
+      "sha256": "924418e34ed24d9260619d91677b301fd4f0e00a0bb50d38549c4d0b8cb56021",
+      "bytes": 6141
+    },
+    {
+      "path": "results-ledger-after-390.jpg",
+      "sha256": "15edd5fb18b0bfef5f5de9434fc3c052177182bf4b2e0ab246325d35da30f302",
+      "bytes": 42114,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:03:13.177Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "results-ledger-after-390.json",
+      "sha256": "e46d4c1a40da7e5b38cd29bf7894a918a2f18b1bbb26b10ee116703caf173897",
+      "bytes": 12984
+    },
+    {
+      "path": "results-ledger-after-390.txt",
+      "sha256": "89041d9f69410ef5e177be6b15e032773c4227f80e761c8b6e468c3814f57bea",
+      "bytes": 5928
+    },
+    {
+      "path": "results-narrow-header-fail-390.jpg",
+      "sha256": "4710eccb2b70b504f7dfc27bfa7b8992d7660d3dccc9cdc903fd1967deea7e6b",
+      "bytes": 27353,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T08:57:43.054Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "historical failure / excluded from final acceptance"
+    },
+    {
+      "path": "results-narrow-header-fail-390.json",
+      "sha256": "91077f8b65d29568c0bb6906b0d249979594c819e11089ee22bbe887cf0c9de8",
+      "bytes": 16546
+    },
+    {
+      "path": "results-narrow-header-fail-390.txt",
+      "sha256": "167af6a68de077b359cf0cf7187345b51c8868795d457dab5a6bf17ceefa85b8",
+      "bytes": 9128
+    },
+    {
+      "path": "results-original-style-1280.jpg",
+      "sha256": "b768f0bb40119e8c2a1fd01f03a74b3bd7b652ffb803898546627b83cfd1acc5",
+      "bytes": 99276,
+      "format": "JPEG",
+      "pixels": [
+        1280,
+        800
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 800,
+        "width": 1280
+      },
+      "captured_at": "2026-10-09T09:01:55.627Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "original theme in new wrapper; not pre-change bundle"
+    },
+    {
+      "path": "results-original-style-1280.json",
+      "sha256": "335e13907c4cbeb11649331d987356177315d5a1e09318243a940a7ba311ac83",
+      "bytes": 16508
+    },
+    {
+      "path": "results-original-style-1280.txt",
+      "sha256": "0ab5298affcb759d9b19e590b36870a28622a65a17981c9030dd2988b895d3f0",
+      "bytes": 9137
+    },
+    {
+      "path": "results-original-style-390.jpg",
+      "sha256": "81f5b8b0a78022fdb62b766983d179efe55ccab8dba0502fc6c66a1bec19073e",
+      "bytes": 48325,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:03:00.317Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "original theme in new wrapper; not pre-change bundle"
+    },
+    {
+      "path": "results-original-style-390.json",
+      "sha256": "db79a00b8adcae1474662303ee2cacffa7412e511a6027531334deeaaec95051",
+      "bytes": 16353
+    },
+    {
+      "path": "results-original-style-390.txt",
+      "sha256": "0ab5298affcb759d9b19e590b36870a28622a65a17981c9030dd2988b895d3f0",
+      "bytes": 9137
+    },
+    {
+      "path": "results-position-focus-after-1440.jpg",
+      "sha256": "33490a39854a18defa6fdb1a86d43f1b66f618da84e4133dc1069daa008f7e5d",
+      "bytes": 112858,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T08:58:24.268Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "results-position-focus-after-1440.json",
+      "sha256": "3c6d99b8217b87d863fb617d6396b98f4d91a60df5cfaa8ec3ee9a0f298ae21f",
+      "bytes": 16630
+    },
+    {
+      "path": "results-position-focus-after-1440.txt",
+      "sha256": "9ba22e81b3c28851808ce1262f4f99001fbfa33eaf5eb5d59bfb6365a081aa29",
+      "bytes": 9350
+    },
+    {
+      "path": "results-range-focus-final-390.jpg",
+      "sha256": "fb8a1118996d06984e5371c393a60c9b0a53d7807d5d70e8bf35e42026d63663",
+      "bytes": 38929,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:27:59.105Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "results-range-focus-final-390.json",
+      "sha256": "44c6bf2739c5bf2a634136e791377af5003f7b9909ecfed17f98a1134a727157",
+      "bytes": 23205
+    },
+    {
+      "path": "results-range-focus-final-390.txt",
+      "sha256": "a9cf0857e3f87d0502566269e9c94bb41c0d0de77c99f9701ef5136d0ac00ed9",
+      "bytes": 9137
+    },
+    {
+      "path": "results-source-drawer-after-1440.jpg",
+      "sha256": "4e8f68912bd20aabf2c6ff46d0d1fe2d0c8bec49de52834dd507a3694cdafee6",
+      "bytes": 76118,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T08:58:36.121Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "results-source-drawer-after-1440.json",
+      "sha256": "d6b1666486fcf38af628842be005cbf13f9e87f7bf54c8c676d22caeefedf87a",
+      "bytes": 17970
+    },
+    {
+      "path": "results-source-drawer-after-1440.txt",
+      "sha256": "79c6dddd001c487988233280755c17d9926537a8a0917181e979623315a57711",
+      "bytes": 9020
+    },
+    {
+      "path": "results-source-drawer-after-390.jpg",
+      "sha256": "a6d6a5a183196ad7faf128cc61ab107a7cdd9b7b5769a2ea667288da0419339c",
+      "bytes": 43990,
+      "format": "JPEG",
+      "pixels": [
+        390,
+        844
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 844,
+        "width": 390
+      },
+      "captured_at": "2026-10-09T09:03:14.091Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "results-source-drawer-after-390.json",
+      "sha256": "b3130abe7ad23a85e8591acd5a495561f144c0daff9668a909af02fa5d82ab83",
+      "bytes": 17956
+    },
+    {
+      "path": "results-source-drawer-after-390.txt",
+      "sha256": "2e3271bdffaf05d82cdb814636a0be9929086ef1a9acbd441fdada144d0fa661",
+      "bytes": 9020
+    },
+    {
+      "path": "results-source-return-after-1440.jpg",
+      "sha256": "351845e9c470e75ccf8e3e387ee0536fc474ebe79b58b6924df11d553af35f95",
+      "bytes": 104040,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T08:58:51.255Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "results-source-return-after-1440.json",
+      "sha256": "9feae8b0b2b211efb81331cf6af0ee162a349cc63823d7d685c18b1e6aa917a2",
+      "bytes": 12984
+    },
+    {
+      "path": "results-source-return-after-1440.txt",
+      "sha256": "8c8bc9aa825dd7e89e092adf0915aa287c62b574c20495d1f408ac6888cb1ef7",
+      "bytes": 6132
+    },
+    {
+      "path": "source-freeze.json",
+      "sha256": "e23fe71aa0c8e4717db0ce260499e4c5bf82d52f39dafbc618b28f4b5715f6a8",
+      "bytes": 589
+    },
+    {
+      "path": "style-preservation-original-1440.jpg",
+      "sha256": "fda9cd75c8aa94b870f2873f2715fbf17a9519f7878d6f6c651e02560362cdf8",
+      "bytes": 124766,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:00:16.842Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "original theme in new wrapper; not pre-change bundle"
+    },
+    {
+      "path": "style-preservation-original-1440.json",
+      "sha256": "b9d01fc1904130cecf4b8f65e1ee5fefefc85aac8d66763c4b21ff7a8e644fd6",
+      "bytes": 16722
+    },
+    {
+      "path": "style-preservation-original-1440.txt",
+      "sha256": "3c49a9567e189140944fcbc33d96b95791ae61dc41ea562122e6f33e9ed71e63",
+      "bytes": 7952
+    },
+    {
+      "path": "style-preservation-unified-after-1440.jpg",
+      "sha256": "e180ee1ecb278e25002752a7e34b20f9f381c92131ec23c31be3b4f5a52c259a",
+      "bytes": 129231,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:00:17.540Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "style-preservation-unified-after-1440.json",
+      "sha256": "16bc169c6114ffc2c7fe8cb5210e8719fe537262de273502d540a4b680dd3821",
+      "bytes": 16922
+    },
+    {
+      "path": "style-preservation-unified-after-1440.txt",
+      "sha256": "c34cb7539e7691ce1a5b606ed0c1d3f34c3318c34393d68adb3f1ae9dc95ef87",
+      "bytes": 7952
+    },
+    {
+      "path": "style-preservation-unified-before-1440.jpg",
+      "sha256": "e180ee1ecb278e25002752a7e34b20f9f381c92131ec23c31be3b4f5a52c259a",
+      "bytes": 129231,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T08:59:47.052Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "matches_viewport_pixels": true,
+      "role": "actual pre-change Workbench"
+    },
+    {
+      "path": "style-preservation-unified-before-1440.json",
+      "sha256": "e7e3189d3ef571075f2927eb57a77dd8a4bae5efd7d3b7492ae3eb8099b20631",
+      "bytes": 16922
+    },
+    {
+      "path": "style-preservation-unified-before-1440.txt",
+      "sha256": "087f981885cac022f46cdc0885479f2a829a4dc952b5fc0b1df2e8c0f0971f3d",
+      "bytes": 7952
+    },
+    {
+      "path": "style-state-preservation.json",
+      "sha256": "a953caeb34ad6ff324aaf3bde2e87efcb6ec184c1a38d223f1786838d7f14815",
+      "bytes": 672
+    },
+    {
+      "path": "t0-after-1440.jpg",
+      "sha256": "21b47b7d2e2e652c77bc850dc810cd28056c0fa443c8e05ecfaef29c14b284ce",
+      "bytes": 113203,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:00:31.474Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "t0-after-1440.json",
+      "sha256": "3ff1fa83ba894ac31286511c4ccdbb2db8fd234f0e09d745492a36663298f365",
+      "bytes": 13934
+    },
+    {
+      "path": "t0-after-1440.txt",
+      "sha256": "e05a72ec54010484bcb9b59928d34d869bb2c35983a9db25f5ddad4cc61b6c4d",
+      "bytes": 4829
+    },
+    {
+      "path": "t0-candles-after-1440.jpg",
+      "sha256": "7e39106caa19b10ab320d2c09fd84ceb26b6d57f78833c8a9f15df3dfed3680b",
+      "bytes": 124037,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:00:32.190Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "t0-candles-after-1440.json",
+      "sha256": "024b77e2fa6d3557bbea13bcd98a0e6ba9432cc73e236bd1c899201be3885c7e",
+      "bytes": 14202
+    },
+    {
+      "path": "t0-candles-after-1440.txt",
+      "sha256": "99d8c0bbd7d1b5c042707dc136aeba15b4ed48fa1e15523f2c66885813689fa5",
+      "bytes": 5077
+    },
+    {
+      "path": "t0-firstbar-after-1440.jpg",
+      "sha256": "ba559f9073411cd02bc570b83989047d93a82d3401f9b7b3860935eacf138db6",
+      "bytes": 124721,
+      "format": "JPEG",
+      "pixels": [
+        1440,
+        900
+      ],
+      "viewport": {
+        "dpr": 1,
+        "height": 900,
+        "width": 1440
+      },
+      "captured_at": "2026-10-09T09:00:32.998Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+      "matches_viewport_pixels": true,
+      "role": "intermediate or functional-state evidence; inspect documented caption; not automatically final styling"
+    },
+    {
+      "path": "t0-firstbar-after-1440.json",
+      "sha256": "31e11c330244fbd44acf9e11fe8f6efde72148be3e0082f3930040d709174c78",
+      "bytes": 15413
+    },
+    {
+      "path": "t0-firstbar-after-1440.txt",
+      "sha256": "b1297ba95f285f5da5527150fe95e73b5b24beb19f426b4aa2973ad089c2c1af",
+      "bytes": 5748
+    },
+    {
+      "path": "viewport-capture-correction.md",
+      "sha256": "b5400d162cf5561c823c2e60c68022bff8dbe0f6164001d24f0c780ee5d30099",
+      "bytes": 598
+    },
+    {
+      "path": "preview-delivery-normal-viewport.jpg",
+      "sha256": "99ac0ad5f55f3656de68d61c01493636b50823e59c76223ac4c06de2e1318c96",
+      "bytes": 102750,
+      "role": "fresh delivery/service check after viewport reset; not fixed-viewport visual acceptance",
+      "pixels": [
+        1280,
+        720
+      ],
+      "format": "JPEG",
+      "viewport": {
+        "dpr": 2,
+        "height": 720,
+        "width": 1280
+      },
+      "captured_at": "2026-10-09T09:45:39.923Z",
+      "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+      "screenshot_scaling": "actual image dimensions recorded; no assumption that backend uses device-pixel screenshot scale"
+    },
+    {
+      "path": "preview-delivery-normal-viewport.json",
+      "sha256": "d96908028ae676960812e2937f3947eaecb39871f98b71017c402eee63444769",
+      "bytes": 27748,
+      "role": "fresh delivery/service check after viewport reset; not fixed-viewport visual acceptance"
+    },
+    {
+      "path": "preview-delivery-normal-viewport.txt",
+      "sha256": "a43dbf980d4d87fb21b4762cc241a2be5ae7cd17961e0b48bfa9ee308d376ecd",
+      "bytes": 13272,
+      "role": "fresh delivery/service check after viewport reset; not fixed-viewport visual acceptance"
+    }
+  ],
+  "delivery_browser_check": {
+    "time": "2026-10-09T09:45:39.923Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+    "viewport": {
+      "dpr": 2,
+      "height": 720,
+      "width": 1280
+    },
+    "document_width": {
+      "client": 1280,
+      "doc": 1280
+    },
+    "theme": "首页统一",
+    "page_visible_and_marked_deliverable": true,
+    "open_in_codex_status": "queued",
+    "temporary_viewport_override_reset": true,
+    "fixture": "memory only / refresh reset",
+    "screenshot": "preview-delivery-normal-viewport.jpg"
+  }
+}

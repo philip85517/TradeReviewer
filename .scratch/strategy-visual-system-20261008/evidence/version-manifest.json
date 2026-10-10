@@ -1,0 +1,1752 @@
+{
+  "schema": "tradereview.visual-evidence.v1",
+  "generated_at": "2026-10-07T18:24:04.793887+00:00",
+  "task_branch": "codex/strategy-visual-system-20261008",
+  "foundation_commit": "9c2b3d209a202422c3d5aeab5969a9b093cfda92",
+  "environment": {
+    "browser": "Codex in-app browser",
+    "OS": "macOS",
+    "DPR": 1,
+    "node": "26.0.0",
+    "db": "explicit isolated .data/strategy-visual-acceptance.sqlite"
+  },
+  "overall_acceptance": "OPEN / acceptance-failed: required checks remain NOT VERIFIED",
+  "notes": [
+    "源文件SHA是最终磁盘版本；图片SHA不是源码版本。",
+    "图片像素尺寸不独自证明CSS视口；fullPage高度不是viewport高度。",
+    "最新真实浏览器代表图已冻结；旧失败与排除图保留。",
+    "未逐字绑定历史图的源快照记为historical，不虚构其来源。",
+    "v05 S2/900为桌面flex f41e；最终67e仅在≤600回放增加换行。"
+  ],
+  "sources": [
+    {
+      "path": "app/components/chart/drawing-canvas.tsx",
+      "sha256": "0f969da1e4fa40973a38eb6c2aa96595f53286b29dbb7601139e98ed55faf174"
+    },
+    {
+      "path": "app/components/chart/replay-chart.tsx",
+      "sha256": "1b9aa46bcfeddd25218ecead21d94634ba0eae985706caaf11f3722c3b347311"
+    },
+    {
+      "path": "app/components/design-prototype/recall-design-prototype-data.ts",
+      "sha256": "395d3997c4b322b54bd9675a0dcd0a64c6a8beb41aed8001eb5a11843a0987d4"
+    },
+    {
+      "path": "app/components/design-prototype/recall-design-prototype.css",
+      "sha256": "67e714fc53087cf5f8270d2bf60533c87a832d0b31339a2282172e4a291c125d"
+    },
+    {
+      "path": "app/components/design-prototype/recall-design-prototype.test.ts",
+      "sha256": "1b0895008a67403ab42437fbee016edd4dac2017fd3a0f0e775d86247154dfb9"
+    },
+    {
+      "path": "app/components/design-prototype/recall-design-prototype.tsx",
+      "sha256": "77a2327a613d950e724622965e45ccaa58b8e73f57ff52649aa9f5ea07394a67"
+    },
+    {
+      "path": "app/components/recall/recall-prototype-price-roles.test.ts",
+      "sha256": "932bb5ad06c82f861fd4727a32b6dbcd86fd5960a53b6ef41335a7ed754f3ca7"
+    },
+    {
+      "path": "app/components/recall/recall-workspace.tsx",
+      "sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+    },
+    {
+      "path": "app/page.tsx",
+      "sha256": "92be63f6bc89f0bb6672b6ffd942cd1bdd607227a15cc6d9d5136092e5f3af14"
+    },
+    {
+      "path": "public/design-system-20261008/workbench/index.html",
+      "sha256": "3520318c2d366988de0540928501122f3bce8ea884a6a4e3955e3bef72613071"
+    },
+    {
+      "path": "public/design-system-20261008/workbench/layout-audit.js",
+      "sha256": "903cd60d7f5ff50b91e92ac0e635a2705da4686d94ba27a0d763b4957680734f"
+    },
+    {
+      "path": "public/design-system-20261008/workbench/vendor/LICENSE",
+      "sha256": "942560b236adfa83745b2c64e5fc09ebaf91cb331751b1157eb92187e5d6e930"
+    },
+    {
+      "path": "public/design-system-20261008/workbench/vendor/README.md",
+      "sha256": "4c6d210d07311c841392f6194fc0e31c600cf787ce2fc1d2a88543311b89073f"
+    },
+    {
+      "path": "public/design-system-20261008/workbench/vendor/fonts/LICENSE",
+      "sha256": "942560b236adfa83745b2c64e5fc09ebaf91cb331751b1157eb92187e5d6e930"
+    },
+    {
+      "path": "public/design-system-20261008/workbench/vendor/fonts/README.md",
+      "sha256": "11a1f804cf4ef8dacbba858eb3a6752a263cdf5847b088eb9f695b21003890eb"
+    },
+    {
+      "path": "public/design-system-20261008/workbench/vendor/fonts/geist-latin.woff2",
+      "sha256": "9b6f5ff45b278c744b5f379a2c4ecbaf858a842b8eaf82ac8d21b699ca16c608"
+    },
+    {
+      "path": "public/design-system-20261008/workbench/vendor/fonts/geist-mono-latin.woff2",
+      "sha256": "5f3d6ad60f29d6cb708414ec6887163d63bf197377ef5417d2483ff31ace6c3b"
+    },
+    {
+      "path": "public/design-system-20261008/workbench/vendor/lightweight-charts-5.2.0.LICENSE",
+      "sha256": "70c9d5382506dd184465425c08a99ad9bd6d9ac1313c252968ba0b585e5ef823"
+    },
+    {
+      "path": "public/design-system-20261008/workbench/vendor/lightweight-charts-5.2.0.standalone.production.js",
+      "sha256": "c0992580867c4912cc9385b3c2728315bcc1a76c7f1087dca908430fccdf31d7"
+    },
+    {
+      "path": "public/design-system-20261008/workbench/vendor/lucide.LICENSE",
+      "sha256": "b495047bd93a9b06913511076f504daba17d5bbeb3e0650f3bb53a4220329c57"
+    }
+  ],
+  "approved_references": [
+    {
+      "path": "docs/specs/2026-09-30-strategy-workbench-v1-integrated-design.md",
+      "sha256": "34d47a33cde3840971a866d1464c768c28ec634f563ae5465cf8a5a8e88a95fa"
+    },
+    {
+      "path": "docs/specs/2026-09-25-chart-first-review-ui-elements.md",
+      "sha256": "65cc18cfc8eef309d20783c2a2bccb99683066cd95c3e5c97f6ad6b03033c6c5"
+    },
+    {
+      "path": ".scratch/strategy-portfolio-backtesting/workbench-design/STYLE-04-CONTRACT.md",
+      "sha256": "3e6ad17754055fe23727d995bdc7ce9c730d128f43b4d893b289ee6161a83db5"
+    },
+    {
+      "path": ".scratch/strategy-portfolio-backtesting/workbench-design/index.html",
+      "sha256": "15d53141389bb3ec615100083a412f88fbbedddaf18636562d2171c87be8c2a7"
+    },
+    {
+      "path": "docs/designs/2026-09-25-chart-first-review/02-chart-workspace.png",
+      "sha256": "a907b8031ca5ee3ead09b8500e5f823f6f310943a41dda347d5d66ee1e0ee11c"
+    },
+    {
+      "path": "docs/designs/2026-09-25-chart-first-review/04-holding-stage.png",
+      "sha256": "3241fc77b7d5c6cf73b90f3550b8526c309b353435a918f82e2c155e811d10db"
+    },
+    {
+      "path": "docs/designs/2026-09-25-chart-first-review/05-final-review.png",
+      "sha256": "2392cc92154276e8f5fec50ad3f260740f9caf9346905607c166ff972ec2f7d7"
+    },
+    {
+      "path": "docs/designs/2026-09-25-chart-first-review/07-interaction-states.png",
+      "sha256": "355deddf537dd1e58860c5b31b4beeedc142fbf515ed3e5f789540248130cec4"
+    },
+    {
+      "path": ".scratch/strategy-portfolio-backtesting/references/2026-09-30-round1-tradingview-reference.png",
+      "sha256": "4561cbd236fca09a68a16fcf19d1f08a8a187a0a3309432aa40ed92683e8e447"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/native-review-current-1440.jpg",
+      "sha256": "13a355755f6892c22640c845ca630c38e6afd7da3f955151b37d3e7b861ebc64",
+      "bytes": 80457,
+      "image_pixels": [
+        1440,
+        810
+      ],
+      "use": "production-baseline-evidence",
+      "source": {
+        "git_commit": "9c2b3d209a202422c3d5aeab5969a9b093cfda92"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/native-review-current-1440.json",
+      "sha256": "360ba8e5b892eb4529b25097bc39130c3f7fdd77588701596b823381ea6422e1",
+      "bytes": 566806,
+      "use": "production-baseline-evidence",
+      "source": {
+        "git_commit": "9c2b3d209a202422c3d5aeab5969a9b093cfda92"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/native-review-current-900-fresh.jpg",
+      "sha256": "a9a54da9a20afa36686b1532f68f91903f46a8370f38e2e82b9f7cd508efed6e",
+      "bytes": 60746,
+      "image_pixels": [
+        900,
+        800
+      ],
+      "use": "production-baseline-evidence",
+      "source": {
+        "git_commit": "9c2b3d209a202422c3d5aeab5969a9b093cfda92"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/native-review-current-900.jpg",
+      "sha256": "4ef5141ec8d46c7cd9bdfb0a971134e123d88e03568587199f525e9e242c5ed2",
+      "bytes": 32417,
+      "image_pixels": [
+        900,
+        563
+      ],
+      "use": "EXCLUDED_FROM_FINAL_COMPARISON",
+      "reason": "视口未稳定；用native-review-current-900-fresh替代"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/native-review-current-summary.json",
+      "sha256": "119c601b5c163a1a1c0446e132ef2ff24fd2d88321c274b8c7959a261d134a1b",
+      "bytes": 9923,
+      "use": "production-baseline-evidence",
+      "source": {
+        "git_commit": "9c2b3d209a202422c3d5aeab5969a9b093cfda92"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-accepted-action-390.jpg",
+      "sha256": "0a2ffff54b46e7e367698b2a58bb0757beee482eb05eadab23daf1b6654d7b8d",
+      "bytes": 44883,
+      "image_pixels": [
+        390,
+        844
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "de678a0cb52491f97f04377b73d7479924438e282712d1a3fbcfa1b379b45f36",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-accepted-baseline-s0-1440.jpg",
+      "sha256": "452165425707c8fab930cda5e8298c9a30371982f3ae2566de3fcf757a4a6282",
+      "bytes": 151649,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "de678a0cb52491f97f04377b73d7479924438e282712d1a3fbcfa1b379b45f36",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-accepted-computed-390.json",
+      "sha256": "cd8e273f30644637150ff6d13df7b455435d39d5d2c909f919f291175926d259",
+      "bytes": 3374,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "de678a0cb52491f97f04377b73d7479924438e282712d1a3fbcfa1b379b45f36",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-accepted-price-focus-1440.jpg",
+      "sha256": "14e2426915a9d18ca5bd990d9b876de7993c910f3b6f3030e7a46e700c8d2451",
+      "bytes": 156585,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "de678a0cb52491f97f04377b73d7479924438e282712d1a3fbcfa1b379b45f36",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-accepted-s0-1440.jpg",
+      "sha256": "4c8c7391242b3cdb1afb647300846fea975c5bde0a880213506e55bb83f1d9cf",
+      "bytes": 159148,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "de678a0cb52491f97f04377b73d7479924438e282712d1a3fbcfa1b379b45f36",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-accepted-s1-1440.dom.txt",
+      "sha256": "6d0a4fbed3798c913f535dff7f881e81d5a4b31c7ac918caac48f66a4f53c3e1",
+      "bytes": 4972,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "de678a0cb52491f97f04377b73d7479924438e282712d1a3fbcfa1b379b45f36",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-accepted-s1-1440.jpg",
+      "sha256": "4fa3b310bc18d6c909f51f358a5d0ea02596931022ffb423fa31c29279d1c288",
+      "bytes": 167353,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "de678a0cb52491f97f04377b73d7479924438e282712d1a3fbcfa1b379b45f36",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-accepted-s1-390-full.jpg",
+      "sha256": "7fbaced145d2ff88ff0ea964ae0f776c895cc44cee2a7688bac2880d63c25c1c",
+      "bytes": 120875,
+      "image_pixels": [
+        390,
+        1896
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "de678a0cb52491f97f04377b73d7479924438e282712d1a3fbcfa1b379b45f36",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-accepted-s1-900-full.jpg",
+      "sha256": "f87e7af1958cce394a6461c8ee71746365274b26d98f20b282f471a5cca2bebe",
+      "bytes": 153400,
+      "image_pixels": [
+        900,
+        1505
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "de678a0cb52491f97f04377b73d7479924438e282712d1a3fbcfa1b379b45f36",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-accepted-s2-1440.dom.txt",
+      "sha256": "8098eca57e3ac93615fd935bb7db547f2f3dc1e4eb8b1faf54ef88557f886b46",
+      "bytes": 8103,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "de678a0cb52491f97f04377b73d7479924438e282712d1a3fbcfa1b379b45f36",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-accepted-s2-1440.jpg",
+      "sha256": "82259ceb91284adcaaf9a82c0199852b32c25fe903cac1ca2d48520baca05cc6",
+      "bytes": 175465,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "de678a0cb52491f97f04377b73d7479924438e282712d1a3fbcfa1b379b45f36",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-comparison-baseline-s0-1440.jpg",
+      "sha256": "fac8f940cfe8b558f74530c622c17f3df12e0eb3056dcd1d0da8ecf0d30bdd91",
+      "bytes": 141835,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "EXCLUDED_FROM_FINAL_COMPARISON",
+      "reason": "与推荐非fit图bar范围不一致；排除正式前后比较"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-comparison-fit-recommended-s0-1440-scroll0.jpg",
+      "sha256": "f2c072d73814b737de2455c564bde0a2f5cb4239c8a0b208423d83df35149996",
+      "bytes": 155451,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-comparison-fit-recommended-s0-1440.jpg",
+      "sha256": "8db2205e008e5eeeb3bc5e934dfb0322306e3811db77f41a413f3df2c9c3e8bc",
+      "bytes": 155455,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-comparison-recommended-s0-1440.jpg",
+      "sha256": "059f627799de92e2fa67559c6e26174eb35d3c7dabaff79456c171685d0bc8f5",
+      "bytes": 158910,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "EXCLUDED_FROM_FINAL_COMPARISON",
+      "reason": "与基线非fit图bar范围不一致；排除正式前后比较"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-baseline-s0-1440.dom.txt",
+      "sha256": "272fe640a3174933f0fea08fd08f3ef4209879f788a96796abc16ea791aa1407",
+      "bytes": 5084,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-baseline-s0-1440.jpg",
+      "sha256": "6f968e7937fbae3861c359619f60e58f894b8195e43c17fa5548a8a33449fce7",
+      "bytes": 151650,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-final-1440.json",
+      "sha256": "085c7d88bc62b1ebdc4499d0188ded108d5d2cacb6f4acf97bb7aa7e2880abd8",
+      "bytes": 367,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-final-900.json",
+      "sha256": "d2b2f6a0606fed5230b89957f1f93a1b18bba38f1f44c1039051cbc66ef7d4d2",
+      "bytes": 365,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-final-s0-1440.dom.txt",
+      "sha256": "3d470177de163a543e743d641872dd5903d88740542230178aad5500f8849453",
+      "bytes": 5155,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-final-s0-1440.jpg",
+      "sha256": "d9822c5c7308b9becce07be042ef443c5b400cd0a78adbef8d1aab91cc9d16a6",
+      "bytes": 148862,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-final-s1-1440.dom.txt",
+      "sha256": "021eb81fab8ecbc16877921526c6a4f4187b4832f955b79a4fe098ec8426ab64",
+      "bytes": 4991,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-final-s1-1440.jpg",
+      "sha256": "661287a219adcaf452615177b2f2a4b6b2f265a86667a4f417aa7f3481a4ff9b",
+      "bytes": 162031,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-final-s1-900-full.jpg",
+      "sha256": "bcad19d13a44618271bb58914937827c5cc2beb11072bb6019a83af2a27400e9",
+      "bytes": 151531,
+      "image_pixels": [
+        900,
+        1505
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-final-s1-900.dom.txt",
+      "sha256": "32e4cba8fc3c484da079c7ba9eb5c81b03c6770b0f4beaa28e14a744cfc67e77",
+      "bytes": 4561,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-final-s2-1440.dom.txt",
+      "sha256": "d7aa0fa1b5ee9ae5f910f24c8ba301cc59356bead5fe6d8be8b35806f4fba622",
+      "bytes": 8040,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-final-s2-1440.jpg",
+      "sha256": "c8ce96463b764c960e6e390e1faa6abf49a1eb6322bf9780e730decfaf9d1518",
+      "bytes": 168814,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-play-1440.jpg",
+      "sha256": "9e4ccb942b8421d3baa678e1bd7e9bf514636f31ee06681bcf1eb2c8bf829f77",
+      "bytes": 172584,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-play-pause.dom.txt",
+      "sha256": "d3c7cbc9add39b10675beb83bc1784528cf2f7af93f1cc414c8dcd1d77f49a7b",
+      "bytes": 5177,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-s0-1440.dom.txt",
+      "sha256": "3dbebe22b9f54464454eb5e29eae27c4d6e2136e30208341478e03525e372adc",
+      "bytes": 5084,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-s0-1440.jpg",
+      "sha256": "10b87494f5d4434dd548cbe57de6cdb21035a6854d87574b15facacf75d12d53",
+      "bytes": 158613,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-s1-1440.dom.txt",
+      "sha256": "f18b00f0626a2ed93222c2dbe2657f59846b0f7328d6c692f1f6891e43270ef3",
+      "bytes": 4970,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-s1-1440.jpg",
+      "sha256": "45958395b71a4b47917453b40cbb09bf009bde460e7177a8bf8896cf262c3878",
+      "bytes": 171618,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-s2-1440.dom.txt",
+      "sha256": "b106677ab2c59f54aeaa3d785e1c4c629e572ac7c044bfb90a4f85c4b2b1093a",
+      "bytes": 8103,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-s2-1440.jpg",
+      "sha256": "0188435f10a0fc6ce28f3122e9ee08b18756bacb129fffaaf573b7b7677639e3",
+      "bytes": 176205,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-delivery-settings-off-1440.jpg",
+      "sha256": "a0ae6a11e120c0951db5f6b9624a773e4ea431958108b9e993bfab2aad4f29f8",
+      "bytes": 158043,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-execution-off-1440.jpg",
+      "sha256": "9ad51255d0ebede74ae9d383e94b05d1e4f8d67fd77356bb19cbf86335da5e03",
+      "bytes": 161070,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-exit-persistence-after-reload.dom.txt",
+      "sha256": "1b4201ae7374111533ba3079da38ee00fe3d6cd5eca9388c82dfeb2d38c9c45f",
+      "bytes": 8103,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-900.dom.txt",
+      "sha256": "374d47efb52fcefc411b8d179d2d8ff4688f51b42392c7223ca2398e5788f371",
+      "bytes": 4827,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-900.jpg",
+      "sha256": "7d7e8d939071356101661ced32aeb9e065b3094a411a174906bf1ecb69a91756",
+      "bytes": 85486,
+      "image_pixels": [
+        900,
+        800
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-baseline-s0-1440.jpg",
+      "sha256": "371851d96a52a283771bf95e45069634a8b718d0a163042240d348e2977428fa",
+      "bytes": 151606,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-computed-1440.json",
+      "sha256": "5d4b90224a4d4fc73648f3c7cd1de9ca91ec376a5dc1f7abf617f3da5ba541d9",
+      "bytes": 39984,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-computed-900.json",
+      "sha256": "75347c256a9a7905ca190f0a46fba82c88764ac81b26dcdfa6db3b19596e21c5",
+      "bytes": 18305,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-focus-1440.jpg",
+      "sha256": "a2a01524e7be20984a93f6c7dfbba780281064419dcf10efd8017f09f8e002c6",
+      "bytes": 160637,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-s0-1280.jpg",
+      "sha256": "4dd311fb63771d9ea7d4ca48ef257fca07670dd3987fffde13e9e0e1a74ce2c8",
+      "bytes": 113182,
+      "image_pixels": [
+        1280,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-s0-1440.dom.txt",
+      "sha256": "3dbebe22b9f54464454eb5e29eae27c4d6e2136e30208341478e03525e372adc",
+      "bytes": 5084,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-s0-1440.jpg",
+      "sha256": "11f3628f8042d0af264ab4dda2afa710e10f77a83950c37b98bac818b1e135cf",
+      "bytes": 158610,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-s1-1440.dom.txt",
+      "sha256": "f18b00f0626a2ed93222c2dbe2657f59846b0f7328d6c692f1f6891e43270ef3",
+      "bytes": 4970,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-s1-1440.jpg",
+      "sha256": "b0e3cdef9f9c9da51f03ffa89a4cb7b3b317f69da58695f70d27c968a4e93434",
+      "bytes": 171641,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-s2-1440.dom.txt",
+      "sha256": "cf1fbb4ca6a42aa63b75ca29a43f30bd3e7628a8b995c9289de4f80ddfb67abd",
+      "bytes": 8103,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-s2-1440.jpg",
+      "sha256": "f848e2330132cbde24764b4943007a1a210b18cf3077fd1416b8cf495697f552",
+      "bytes": 176196,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-selected-1440.jpg",
+      "sha256": "6718e81fcc22292c9d66adae509b9d316565325bd106ed6a94f63119156c7dcd",
+      "bytes": 162106,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-v05-price-focus-1440.jpg",
+      "sha256": "17717343246d83f7739beafebb337778704fa38dbf63c70d5a0302a848f0f0cc",
+      "bytes": 160699,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "原生S0；真实Tab到价格命中区；阶段仍完整",
+      "source": {
+        "css_sha256": "67e714fc53087cf5f8270d2bf60533c87a832d0b31339a2282172e4a291c125d",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-v05-s0-1440.jpg",
+      "sha256": "6c3d7162fa8bca1eaebb6307e3685abf42b9ec4b0f29a243d547bfe754a8535a",
+      "bytes": 160410,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "原生S0；实际适应全部；阶段全文/未知实际/计划",
+      "source": {
+        "css_sha256": "67e714fc53087cf5f8270d2bf60533c87a832d0b31339a2282172e4a291c125d",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-final-v05-s1-1440.jpg",
+      "sha256": "56a6ccda2dc127ab926ea2b3472918143fc51b4ee8c81556e74174d1236a2422",
+      "bytes": 172384,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "原生S1；实际下一决策Mar1/1000@56；原判断及S1补充",
+      "source": {
+        "css_sha256": "67e714fc53087cf5f8270d2bf60533c87a832d0b31339a2282172e4a291c125d",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-first-390-fail.jpg",
+      "sha256": "582d2ce6a4892e60f915076844f68acc82b8693a456305978054ac9ec52c4be8",
+      "bytes": 55632,
+      "image_pixels": [
+        390,
+        844
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-first-computed-390-fail.json",
+      "sha256": "717d8ab0a0ae83ef2b929f1ecd4074a3e5d374e894d7035330beaa216c78ab97",
+      "bytes": 1769,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-first-recommended-s0-1440.jpg",
+      "sha256": "9dee03d127517d6c0d9ba7b724a424cb8eb7d577c35142ac4ac9b36e692aa92b",
+      "bytes": 154996,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-journey-first-entry-1440.jpg",
+      "sha256": "1658dae0640c9c6e017006b8cac41b4b31bf07bec7161bea32f76efd03763168",
+      "bytes": 169051,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-persistence-reload-1440.jpg",
+      "sha256": "60d87c4d6206c537f37bc96850168c381fc3dcbb1b4736ff255e8933437d81f7",
+      "bytes": 160449,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-persistence-reload-dom.txt",
+      "sha256": "62a89bccff48f353f8060d343c14e46424ba3ab3e66d4532ce6be05cac3fb420",
+      "bytes": 5068,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-price-roles-action-390.jpg",
+      "sha256": "7743154fe05a6395cc1ad802e6b7d5d13f811f0453aea3af78bdd44d40ada408",
+      "bytes": 44124,
+      "image_pixels": [
+        390,
+        844
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-price-roles-s0-390-full.jpg",
+      "sha256": "29eba88a61cf299393d63b3c6b1bb68279b4ee006d687ce012553fe82cd33245",
+      "bytes": 118242,
+      "image_pixels": [
+        390,
+        2071
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-price-roles-s1-390-full.jpg",
+      "sha256": "d1cfdfc977dd752fcd0d172b0c45de550e010f21f03303bd449672a6842e68cc",
+      "bytes": 121907,
+      "image_pixels": [
+        390,
+        1956
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-price-roles-s1-390.dom.txt",
+      "sha256": "78e537d439875bc8691a7c3b985b080d29e5e592517ca13fc73f6bf7165f00c5",
+      "bytes": 4438,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-price-roles-s2-390-full.jpg",
+      "sha256": "0dc9cfbbc756e0f0682546e8809934c426e0426a52a9f07016cb92fc5bb755e6",
+      "bytes": 164325,
+      "image_pixels": [
+        390,
+        2912
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-price-roles-s2-390.dom.txt",
+      "sha256": "4494596eb0b6345765138955d54e3b5388db5b0a454bf786ae9a9d664d4ca5ab",
+      "bytes": 7191,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "ad14a9b379c714b56ff37e2040782d160a88cf604a40cb64d4662bbe4b32b522",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-repaired-390-action-viewport.jpg",
+      "sha256": "fa0a5791665b89623963d9c481b1d73d2bb6f170ffc81e4fb29bc92a649699d5",
+      "bytes": 44159,
+      "image_pixels": [
+        390,
+        844
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-repaired-computed-1280.json",
+      "sha256": "9e4f2a5c1f78cd55cd025405e7f01932dd1133be7421c09174738b0a69c45888",
+      "bytes": 535,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-repaired-computed-390.json",
+      "sha256": "9caf1615c4ce55314bcc62dd1977c52c3329b14174167640faa3c4be462ef7c8",
+      "bytes": 965,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-repaired-s0-1280-full.jpg",
+      "sha256": "223cf32953a3818eef20394eb475a4f4864357b3bc79ea921aa4e88d5183991f",
+      "bytes": 169147,
+      "image_pixels": [
+        1280,
+        1539
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-repaired-s0-390-full.jpg",
+      "sha256": "f571f1b61af9955f83c0beb647060c7a5e4adfb3b3d3767fc352b4a11665455a",
+      "bytes": 113564,
+      "image_pixels": [
+        390,
+        1967
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-repaired-s1-390-full.jpg",
+      "sha256": "88838db88626eb348b9aad834d6229c010fa5ea820ea2e7cd4f05e97eb9a5dee",
+      "bytes": 116404,
+      "image_pixels": [
+        390,
+        1896
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-repaired-s1-900-full.jpg",
+      "sha256": "79d6aa09c3e5a24452ec2211051b88ca905259dee3367c2a6b53c65a0c70bf42",
+      "bytes": 147589,
+      "image_pixels": [
+        900,
+        1505
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-settings-grid-volume-off-1440.jpg",
+      "sha256": "05e7d02164046a31cfcd65dd242f5e38e960bd219393394d4d523365613cf5e3",
+      "bytes": 133517,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-v05-fit-baseline-s0-1440.jpg",
+      "sha256": "76bb7d11c70de400fbbc6d41293ea8398357435c23847d70901a3bbf416b5df8",
+      "bytes": 150025,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "f41e222319bb83eab43d87d134464514f2a6b689bf2296f1d39d41f6d9f26bc3",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      },
+      "scope_note": "wrap项已优先绑定最终67e；fit/S2/900为f41e局部证据，最后改动只在≤600回放。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-v05-fit-focus-1440.json",
+      "sha256": "09f0c15948280fb2dca362c9070df993d697d77717c3f6d0f2dd7af83f0bfd46",
+      "bytes": 1464,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "f41e222319bb83eab43d87d134464514f2a6b689bf2296f1d39d41f6d9f26bc3",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      },
+      "scope_note": "wrap项已优先绑定最终67e；fit/S2/900为f41e局部证据，最后改动只在≤600回放。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-v05-fit-price-focus-1440.jpg",
+      "sha256": "33818b54169e855efde3d4e7ec639c0146a99dc719b91049c7448438f49b3653",
+      "bytes": 160004,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "f41e222319bb83eab43d87d134464514f2a6b689bf2296f1d39d41f6d9f26bc3",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      },
+      "scope_note": "wrap项已优先绑定最终67e；fit/S2/900为f41e局部证据，最后改动只在≤600回放。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-v05-fit-recommended-s0-1440.jpg",
+      "sha256": "d2324e704f73a96a9c2d0c9e146fb4776c926d2c05d0d38ef05190ac5ca6605c",
+      "bytes": 159176,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "f41e222319bb83eab43d87d134464514f2a6b689bf2296f1d39d41f6d9f26bc3",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      },
+      "scope_note": "wrap项已优先绑定最终67e；fit/S2/900为f41e局部证据，最后改动只在≤600回放。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-v05-s1-1440.dom.txt",
+      "sha256": "f18b00f0626a2ed93222c2dbe2657f59846b0f7328d6c692f1f6891e43270ef3",
+      "bytes": 4970,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "f41e222319bb83eab43d87d134464514f2a6b689bf2296f1d39d41f6d9f26bc3",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      },
+      "scope_note": "wrap项已优先绑定最终67e；fit/S2/900为f41e局部证据，最后改动只在≤600回放。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-v05-s1-1440.jpg",
+      "sha256": "ccd9debfca10fac0c55410e4cbf710704eef2b395a19f9d9818e328f698cab73",
+      "bytes": 171657,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "f41e222319bb83eab43d87d134464514f2a6b689bf2296f1d39d41f6d9f26bc3",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      },
+      "scope_note": "wrap项已优先绑定最终67e；fit/S2/900为f41e局部证据，最后改动只在≤600回放。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-v05-s1-390-full.jpg",
+      "sha256": "c521a3b2a15355a2f8cd390f842135abffb6da8b5860ca25b26487c022a5983d",
+      "bytes": 125542,
+      "image_pixels": [
+        390,
+        2000
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "f41e222319bb83eab43d87d134464514f2a6b689bf2296f1d39d41f6d9f26bc3",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      },
+      "scope_note": "wrap项已优先绑定最终67e；fit/S2/900为f41e局部证据，最后改动只在≤600回放。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-v05-s1-390.json",
+      "sha256": "e998b6a6c4aefae96ad9ac522632ae360bdc2916aae7a964752226c4f68bd280",
+      "bytes": 381,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "f41e222319bb83eab43d87d134464514f2a6b689bf2296f1d39d41f6d9f26bc3",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      },
+      "scope_note": "wrap项已优先绑定最终67e；fit/S2/900为f41e局部证据，最后改动只在≤600回放。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-v05-s1-900-full.jpg",
+      "sha256": "7dcb8e9a14e9494236ab953abe9354688211b882bc4a3321e1cf3ac609a36454",
+      "bytes": 153447,
+      "image_pixels": [
+        900,
+        1505
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "f41e222319bb83eab43d87d134464514f2a6b689bf2296f1d39d41f6d9f26bc3",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      },
+      "scope_note": "wrap项已优先绑定最终67e；fit/S2/900为f41e局部证据，最后改动只在≤600回放。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-v05-s1-900.json",
+      "sha256": "d461866a34e6cb78867bb3960dd82413b7f42fa27f47af67f14b0f121b45bd58",
+      "bytes": 306,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "f41e222319bb83eab43d87d134464514f2a6b689bf2296f1d39d41f6d9f26bc3",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      },
+      "scope_note": "wrap项已优先绑定最终67e；fit/S2/900为f41e局部证据，最后改动只在≤600回放。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-v05-s2-1440.dom.txt",
+      "sha256": "2904147f198eeec4f60fc4f46545f9d54a0dad4c04e09c5967a9e9040eabbb0b",
+      "bytes": 8103,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "f41e222319bb83eab43d87d134464514f2a6b689bf2296f1d39d41f6d9f26bc3",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      },
+      "scope_note": "wrap项已优先绑定最终67e；fit/S2/900为f41e局部证据，最后改动只在≤600回放。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-v05-s2-1440.jpg",
+      "sha256": "0f74093ed46ff30daf023c6ad5b4f42facebbf6eb4347ef345797b544d33ef5e",
+      "bytes": 181640,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。",
+      "source": {
+        "css_snapshot": "f41e222319bb83eab43d87d134464514f2a6b689bf2296f1d39d41f6d9f26bc3",
+        "note": "后续CSS变动与实际截图版本分开；只有price-roles及v05的workspace对应最终SHA。",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      },
+      "scope_note": "wrap项已优先绑定最终67e；fit/S2/900为f41e局部证据，最后改动只在≤600回放。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-v05-wrap-action-390-full.jpg",
+      "sha256": "3b0cdd882fbabb5258fa5b3dc3af0520fd82d16fbce82f1ded30f96fd8a40bac",
+      "bytes": 128959,
+      "image_pixels": [
+        390,
+        2050
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "原生390真实下一决策Mar9/持仓400",
+      "source": {
+        "css_sha256": "67e714fc53087cf5f8270d2bf60533c87a832d0b31339a2282172e4a291c125d",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-v05-wrap-s1-390-full.jpg",
+      "sha256": "9d0999788cc3a0c181d1bf44b445654e8409f41526cbf710a4edaf13283b6eca",
+      "bytes": 128515,
+      "image_pixels": [
+        390,
+        2050
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "原生S1；390×844 fullPage；未点击的完整六控件两行",
+      "source": {
+        "css_sha256": "67e714fc53087cf5f8270d2bf60533c87a832d0b31339a2282172e4a291c125d",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/recall-v05-wrap-s1-390.json",
+      "sha256": "de3aae9cadef663c7751ac8b09b47f912399316fd1f90eb61b3a2821ff8a8d74",
+      "bytes": 1340,
+      "use": "frozen-review-evidence",
+      "purpose": "原生S1；静止控件rect/44高/宽356/两行94高",
+      "source": {
+        "css_sha256": "67e714fc53087cf5f8270d2bf60533c87a832d0b31339a2282172e4a291c125d",
+        "workspace_sha256": "38896bdf912b7c9c1845212789249112935d7d63c342aea6f8c575fe64f524ec"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/root-verification.txt",
+      "sha256": "0d097060c76664a9f27413c1311db342ed871ea385a9ea353b3cb9e010b1ce06",
+      "bytes": 1940,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-before-1280.jpg",
+      "sha256": "32803620985e8bb1936d825411030be7df2b0c6daa768d62e7144c03eb85aa1b",
+      "bytes": 102301,
+      "image_pixels": [
+        1280,
+        800
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-before-1440.jpg",
+      "sha256": "504b1f4fa3dae83e70defacd9d58e815d84a2225ed74e2828cc9939c8eff821d",
+      "bytes": 123162,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-before-1440.json",
+      "sha256": "ff3babb721ac185cacd5f03e0e5ecc8a7607941b943cf39cfbf5ff3ff4f2e94d",
+      "bytes": 25911,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-before-complete-1440.jpg",
+      "sha256": "5881fc896533534dea35931da05c62745fe3011aad55ab83533522a259956de5",
+      "bytes": 123857,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-before-running-1440-confirmed.jpg",
+      "sha256": "96f43bb54dc09ff34d7beb2ef8e87add9b667e804aa16946e6328d96d42e1b75",
+      "bytes": 112420,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "baseline-comparison",
+      "purpose": "9c推送checkpoint A running/Jun18；1440×900",
+      "source": {
+        "html_sha256": "15d53141389bb3ec615100083a412f88fbbedddaf18636562d2171c87be8c2a7"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-before-running-1440-fresh.jpg",
+      "sha256": "d657290fa0763ae76cc5c00c07d8adeb192f3a6fe5179486e09dfcf84b74375a",
+      "bytes": 101306,
+      "image_pixels": [
+        1280,
+        800
+      ],
+      "use": "EXCLUDED_FROM_FINAL_COMPARISON",
+      "reason": "视口未稳定；用before-running-1440-confirmed替代"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-before-running-1440.jpg",
+      "sha256": "d657290fa0763ae76cc5c00c07d8adeb192f3a6fe5179486e09dfcf84b74375a",
+      "bytes": 101306,
+      "image_pixels": [
+        1280,
+        800
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-compare-1440.jpg",
+      "sha256": "2ab1e9da8022c7970f5064343079e5c4fd7cad169ae7de1cc0bd7bdaf1b117ee",
+      "bytes": 120454,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-delivery-running-1440.jpg",
+      "sha256": "adcbc39bc41688f2a27228a9d6c202067834644938d5d7421ce0a0a27b17502e",
+      "bytes": 114070,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-event-1440.jpg",
+      "sha256": "a5ea4cd507ab9672928a6f72c75619ee0042d0aa5dd44226d589009bd133aa0a",
+      "bytes": 115702,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-1299.jpg",
+      "sha256": "a46d7d87f7e91c0f88742c45e1a974fc0592b1b762266b30e3136b8cd4f6e5eb",
+      "bytes": 103126,
+      "image_pixels": [
+        1299,
+        800
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "A1300断点左侧",
+      "source": {
+        "html_sha256": "3520318c2d366988de0540928501122f3bce8ea884a6a4e3955e3bef72613071"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-1301.jpg",
+      "sha256": "6932d6570326736aa1ef0d04920dc02b5074b8dc152086fb47f9df988fa943ba",
+      "bytes": 106991,
+      "image_pixels": [
+        1301,
+        800
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "A1300断点右侧",
+      "source": {
+        "html_sha256": "3520318c2d366988de0540928501122f3bce8ea884a6a4e3955e3bef72613071"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-390-exploration.jpg",
+      "sha256": "bbec877418c9f03e289f1dcf336771702656d2389f0a6d4841d257aa7865852a",
+      "bytes": 37208,
+      "image_pixels": [
+        390,
+        844
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "A390未适配/横滚记录",
+      "source": {
+        "html_sha256": "3520318c2d366988de0540928501122f3bce8ea884a6a4e3955e3bef72613071"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-900-exploration.jpg",
+      "sha256": "47d313a2cb22ff631977084a22e9cfb5f7870c18e9903f58f5f7e92a8cc9bdb6",
+      "bytes": 83616,
+      "image_pixels": [
+        900,
+        800
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "A900未适配/横滚记录",
+      "source": {
+        "html_sha256": "3520318c2d366988de0540928501122f3bce8ea884a6a4e3955e3bef72613071"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-compare-1440.jpg",
+      "sha256": "1b1959a978c04931c61bbcecbb20acb0ec546364bd15e3418b9b418b78eb97e9",
+      "bytes": 121151,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "A比较模式，仅4个共同截止日",
+      "source": {
+        "html_sha256": "3520318c2d366988de0540928501122f3bce8ea884a6a4e3955e3bef72613071"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-complete-1280.jpg",
+      "sha256": "b24d8a43278975bc76b2ba617023c9119a77e52a8e6e2a70ef2af2d0b65fbb60",
+      "bytes": 102431,
+      "image_pixels": [
+        1280,
+        800
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "A完成1280",
+      "source": {
+        "html_sha256": "3520318c2d366988de0540928501122f3bce8ea884a6a4e3955e3bef72613071"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-complete-1440.jpg",
+      "sha256": "9b030396a69590f0653aeacfbdc8d4fca5cde558cef1d69181f538422f3ae002",
+      "bytes": 126213,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "A完成1440",
+      "source": {
+        "html_sha256": "3520318c2d366988de0540928501122f3bce8ea884a6a4e3955e3bef72613071"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-computed.json",
+      "sha256": "5ece5e6e88739c296417e11883226a880aeea0bb3f1ff8e3dcea7002d95ca03f",
+      "bytes": 18372,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-error-1280.jpg",
+      "sha256": "20075fcf2ec45f7d2dab7f80c5bed96c3d0210b79ddd5bafaa523342ba28abf8",
+      "bytes": 104493,
+      "image_pixels": [
+        1280,
+        800
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-event-1440.jpg",
+      "sha256": "3c46988e2120c13b909d29df830b99cfe51534c17b53f2d296095f5e5aaa8cc2",
+      "bytes": 116578,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-event-projected-1440.jpg",
+      "sha256": "ed210572153ba62f672cff15b5526da8c671276bd034c088d5ecad85f6f8b3ab",
+      "bytes": 116552,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "A事件模式，仅3个已知事件日",
+      "source": {
+        "html_sha256": "3520318c2d366988de0540928501122f3bce8ea884a6a4e3955e3bef72613071"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-focus-1440.jpg",
+      "sha256": "d1534c0da001572479bf51c5f9552f3c9cca021a03b0d154d4b20d26e30f8910",
+      "bytes": 113808,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "A实际键盘焦点",
+      "source": {
+        "html_sha256": "3520318c2d366988de0540928501122f3bce8ea884a6a4e3955e3bef72613071"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-loading-1280.jpg",
+      "sha256": "1358511bb54d225e2431e293d18edd973663aa87b6de442edefadc876431adee",
+      "bytes": 65043,
+      "image_pixels": [
+        1280,
+        800
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-pressure-1280.jpg",
+      "sha256": "5e74bfd6c5a5ed1adeb9dc89188ab54d6d864364e98508856122c8b80a52bd70",
+      "bytes": 104993,
+      "image_pixels": [
+        1280,
+        800
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-pressure-1440.jpg",
+      "sha256": "032a0fddcd2d8c090dd78dc57b81046f3caa23d0c415217bacc9b1c989dbbdce",
+      "bytes": 125090,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-running-1440.jpg",
+      "sha256": "55e278b86bb6398447a0c760d43043f7c426047eb7aa4fe7468beaf0ba76bddf",
+      "bytes": 113366,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "EXCLUDED_FROM_FINAL_COMPARISON",
+      "reason": "1280装载再改1440，chart range不同；排除正式前后比较"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-final-running-range-1440.jpg",
+      "sha256": "adcbc39bc41688f2a27228a9d6c202067834644938d5d7421ce0a0a27b17502e",
+      "bytes": 114070,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "A running/Jun18同范围复验",
+      "source": {
+        "html_sha256": "3520318c2d366988de0540928501122f3bce8ea884a6a4e3955e3bef72613071"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-keyboard-focus.jpg",
+      "sha256": "f020a6b60ca1aec919f89f219d5116ab3b46227ac6bb085b8386e193e83b79a1",
+      "bytes": 114951,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-recommended-complete-1440.jpg",
+      "sha256": "2eb6b88b908d22c4006386327896e56e789fb4e6a079f15b3e0fde96c2ea312b",
+      "bytes": 125296,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-recommended-complete-dom.txt",
+      "sha256": "bf8e4d55964fb94bbc093c6cbc467690fdb41adb15713eca51a036a09b6de718",
+      "bytes": 8682,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-recommended-running-1440.jpg",
+      "sha256": "eaa9fddd110858a24f4222bafd58e4e7fea04b0b1bc8ebf8d3f8b643b8889992",
+      "bytes": 118389,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-recommended-running-1440.json",
+      "sha256": "2418226e64e644b0c21c45a671e2192b49c36643de0433bb60a81ae0d46c5315",
+      "bytes": 4160,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-results-dom.txt",
+      "sha256": "d75de9965858c8ec02363b6ec0e6f3e0a034b98ce067b9de68c1364c841812d8",
+      "bytes": 8831,
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-review-final-running-1440.jpg",
+      "sha256": "adcbc39bc41688f2a27228a9d6c202067834644938d5d7421ce0a0a27b17502e",
+      "bytes": 114070,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "frozen-review-evidence",
+      "purpose": "A running/Jun18；1440×900稳定装载，同基线日期范围",
+      "source": {
+        "html_sha256": "3520318c2d366988de0540928501122f3bce8ea884a6a4e3955e3bef72613071"
+      }
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-review-transient-1280-excluded.jpg",
+      "sha256": "87fbbc427e289b5bc62d2beca37118368b9b673226a9de4e71798186fcd5ad0a",
+      "bytes": 6294,
+      "image_pixels": [
+        1280,
+        720
+      ],
+      "use": "EXCLUDED_FROM_FINAL_COMPARISON",
+      "reason": "新tab默认1280瞬时画面；排除交付"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-t0-after-step.jpg",
+      "sha256": "e085ed752fd2f6065ee0d601d303155c7059cfa0578fe34766c30f2b09609ee2",
+      "bytes": 114633,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/workbench-t0-before-step.jpg",
+      "sha256": "4d24ad4a8d14c956a8c6995e3d5962a37ba5e5a2a0515e428241b808868ea7cb",
+      "bytes": 108149,
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "use": "historical-scoped-evidence-or-failure",
+      "binding_note": "不得当作最终完整接受；精确状态/FAIL与局部复验见独立报告和接受记录。"
+    }
+  ],
+  "review_documents": [
+    {
+      "path": ".scratch/strategy-visual-system-20261008/DESIGN-COVERAGE.md",
+      "sha256": "8fe7fd6362cbf884d18ec576ed27e1db146b2bff3e9d45cc341f5a9443b0e72e"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/PLAN.md",
+      "sha256": "7339bccabf8f8b4057595b56a42be14d531a0336a4f887448449d0067044e91a"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/README.md",
+      "sha256": "90a8af041be78b31d3ebe63551e252b69a388428ecad9ad0b752866479026f6c"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/issues/01-visual-system-sample.md",
+      "sha256": "827e6ba00e28c512476df60cf7cab8a1dd2eeb90055ebb27cff67646df0bfa85"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/reports/recall-implementation.md",
+      "sha256": "aec8c22a04bd4deb85b6fc4e7ee9377b821858f97a5e362d470c617b62a995a0"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/reports/recall-visual-implementation.md",
+      "sha256": "aa1553fb8e30cbe9d4f355234ecfd3a3ed0d98e9340fdbbaa5b694bdd002cf15"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/reports/source-audit.md",
+      "sha256": "8bd9352e0ccea1eae39fbe77a8c635283af46834ff8c531f0bcd270bed090bc5"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/reports/test-failure-audit.md",
+      "sha256": "609c597737aaef8cf27a61f7b7acebbc25bf1d27841f4713111ca28bca6c6efa"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/reports/visual-acceptance.md",
+      "sha256": "d96888813c25a08e04d8bdf6a34b6935f7c88f35a2b67ae6b9a2156e2d4ba25f"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/reports/workbench-implementation.md",
+      "sha256": "961080282a9224287c88a39fccc8717f45769b26feb8a0c2ab619474deb5d039"
+    },
+    {
+      "path": "docs/designs/2026-10-08-strategy-visual-system/README.md",
+      "sha256": "3db7c9dc9f6678764646c406975ff8f8c758d3d9e749803c22b04f9bb667d1ea"
+    },
+    {
+      "path": "docs/designs/2026-10-08-strategy-visual-system/acceptance.md",
+      "sha256": "4a9d108f76b8c78ae69ee9c75fbff5c8715601eca6dfde74382aafff00f84f72"
+    },
+    {
+      "path": "docs/designs/2026-10-08-strategy-visual-system/diagnosis.md",
+      "sha256": "af837eae24f7c7a5f4ffdcf55bb7bf64c10e76c91e172ceb3e3bcb963d8b71ca"
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "elements": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "rgb(231, 237, 246)",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 24.6328125,
+      "line": "24.64px",
+      "padding": "0px",
+      "radius": "0px",
+      "selector": ".running-header h1",
+      "size": "22px",
+      "text": "回测工作台",
+      "weight": "650",
+      "width": 210.40625
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "rgb(173, 187, 207)",
+      "color": "rgb(173, 187, 207)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 15.59375,
+      "line": "15.6px",
+      "padding": "0px",
+      "radius": "0px",
+      "selector": ".running-summary span",
+      "size": "12px",
+      "text": "总资产",
+      "weight": "400",
+      "width": 276.5
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "rgb(231, 237, 246)",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 20,
+      "line": "20px",
+      "padding": "0px",
+      "radius": "0px",
+      "selector": ".running-summary b",
+      "size": "16px",
+      "text": "¥102,540.84",
+      "weight": "700",
+      "width": 276.5
+    },
+    {
+      "background": "rgb(53, 125, 218)",
+      "border": "rgb(67, 140, 244)",
+      "color": "rgb(255, 255, 255)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "8px",
+      "height": 36,
+      "line": "18.85px",
+      "padding": "0px 14px",
+      "radius": "6px",
+      "selector": ".running-primary",
+      "size": "13px",
+      "text": "查看回测结果 →",
+      "weight": "650",
+      "width": 129
+    },
+    {
+      "background": "rgb(25, 50, 88)",
+      "border": "rgb(67, 140, 244)",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 36,
+      "line": "17.4px",
+      "padding": "0px 10px",
+      "radius": "6px",
+      "selector": ".chart-switch button",
+      "size": "12px",
+      "text": "组合净值",
+      "weight": "400",
+      "width": 70
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "rgb(231, 237, 246)",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 20,
+      "line": "20px",
+      "padding": "0px",
+      "radius": "0px",
+      "selector": ".side-block h2",
+      "size": "16px",
+      "text": "持仓概览",
+      "weight": "620",
+      "width": 64
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "rgb(167, 182, 201)",
+      "color": "rgb(167, 182, 201)",
+      "font": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 33.59375,
+      "line": "16.8px",
+      "padding": "0px",
+      "radius": "0px",
+      "selector": ".event-card small",
+      "size": "12px",
+      "text": "策略按预设调整仓位 · A 33.0% / B 57.0% / 现金 9.9% → A 55.0% / B 35.0% / 现金 10.0%",
+      "weight": "400",
+      "width": 269
+    },
+    {
+      "missing": true,
+      "selector": ".running-chart-stage"
+    },
+    {
+      "missing": true,
+      "selector": ".running-chart-note"
+    }
+  ],
+  "fontStatus": "loaded",
+  "time": "2026-10-09T08:41:48.562Z",
+  "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+  "viewport": {
+    "dpr": 1,
+    "height": 900,
+    "width": 1440
+  }
+}

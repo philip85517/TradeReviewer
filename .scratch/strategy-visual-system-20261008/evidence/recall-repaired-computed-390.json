@@ -1,0 +1,60 @@
+{
+  "areas": [
+    {
+      "height": 1729,
+      "overflow": "visible",
+      "s": ".recall-workspace",
+      "width": 390,
+      "x": 0,
+      "y": -538
+    },
+    {
+      "height": 1527,
+      "overflow": "visible",
+      "s": ".recall-main",
+      "width": 390,
+      "x": 0,
+      "y": -336
+    },
+    {
+      "height": 785,
+      "overflow": "hidden",
+      "s": ".recall-chart-shell",
+      "width": 374,
+      "x": 8,
+      "y": -336
+    },
+    {
+      "height": 18,
+      "overflow": "visible",
+      "s": "[role=\"status\"]",
+      "width": 188.84375,
+      "x": 14,
+      "y": -640
+    },
+    {
+      "height": 720,
+      "overflow": "hidden",
+      "s": ".chart-stage",
+      "width": 328,
+      "x": 53,
+      "y": -272
+    },
+    {
+      "height": 534,
+      "overflow": "visible",
+      "s": ".recall-plan-sidebar",
+      "width": 374,
+      "x": 8,
+      "y": 463
+    }
+  ],
+  "scroll": [
+    390,
+    1896
+  ],
+  "viewport": [
+    390,
+    844
+  ]
+}

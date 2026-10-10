@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-09T16:01:26.904Z",
+  "samples": [
+    {
+      "selector": ".timebar-actions button",
+      "text": "查看回测结果 →",
+      "fg": "rgb(255, 255, 255)",
+      "bg": "rgb(33, 105, 204)",
+      "ratio": 5.307,
+      "scope": "实际 computed，不透明单色，不扩推所有状态"
+    },
+    {
+      "selector": ".timebar-actions button",
+      "text": "比较组合",
+      "fg": "rgb(173, 187, 207)",
+      "bg": "rgb(17, 26, 43)",
+      "ratio": 8.94,
+      "scope": "实际 computed，不透明单色，不扩推所有状态"
+    },
+    {
+      "selector": ".portfolio-more > button",
+      "text": "更多组合 ⌄",
+      "fg": "rgb(173, 187, 207)",
+      "bg": "rgb(17, 26, 43)",
+      "ratio": 8.94,
+      "scope": "实际 computed，不透明单色，不扩推所有状态"
+    },
+    {
+      "selector": ".event-nav button",
+      "text": "",
+      "fg": "rgb(169, 189, 214)",
+      "bg": "rgb(13, 24, 40)",
+      "ratio": 9.281,
+      "scope": "实际 computed，不透明单色，不扩推所有状态"
+    }
+  ],
+  "unverified": [
+    "全部Canvas/Tooltip/半透明disabled叠层逐像素对比"
+  ]
+}

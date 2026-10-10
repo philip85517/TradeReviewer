@@ -1,0 +1,4 @@
+# Retain raw business-baseline evidence locally; do not upload.
+evidence/native-review-current-1440.json
+evidence/style-unification-20261009/computed-homepage-reference.json
+evidence/style-unification-20261009/homepage-reference-1440.jpg

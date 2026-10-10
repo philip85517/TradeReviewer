@@ -1,0 +1,380 @@
+[
+  {
+    "name": "observe-after-390",
+    "time": "2026-10-09T08:57:10.669Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "scrolling": {
+      "client": 390,
+      "doc": 390
+    }
+  },
+  {
+    "name": "observe-original-style-390",
+    "time": "2026-10-09T08:57:13.026Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "scrolling": {
+      "client": 390,
+      "doc": 390
+    }
+  },
+  {
+    "name": "observe-after-controls-390",
+    "time": "2026-10-09T08:57:14.417Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "scrolling": {
+      "client": 390,
+      "doc": 390
+    }
+  },
+  {
+    "name": "results-after-390",
+    "time": "2026-10-09T08:57:31.804Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "scrolling": {
+      "client": 390,
+      "doc": 390
+    }
+  },
+  {
+    "name": "results-after-390",
+    "time": "2026-10-09T08:57:43.054Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    },
+    "scrolling": {
+      "client": 390,
+      "doc": 419
+    }
+  },
+  {
+    "name": "results-after-1440",
+    "time": "2026-10-09T08:58:09.025Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "results-drawdown-after-1440",
+    "time": "2026-10-09T08:58:23.467Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "results-position-focus-after-1440",
+    "time": "2026-10-09T08:58:24.268Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "results-ledger-after-1440",
+    "time": "2026-10-09T08:58:25.179Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "results-source-drawer-after-1440",
+    "time": "2026-10-09T08:58:36.121Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "results-source-return-after-1440",
+    "time": "2026-10-09T08:58:51.255Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "compare-after-1440",
+    "time": "2026-10-09T08:58:54.780Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "compare-drawdown-after-1440",
+    "time": "2026-10-09T08:59:09.855Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "compare-position-after-1440",
+    "time": "2026-10-09T08:59:10.490Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "compare-ledger-after-1440",
+    "time": "2026-10-09T08:59:11.051Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "compare-source-drawer-after-1440",
+    "time": "2026-10-09T08:59:24.679Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "compare-source-return-after-1440",
+    "time": "2026-10-09T08:59:26.100Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "observe-after-1440",
+    "time": "2026-10-09T08:59:29.100Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "style-preservation-unified-before-1440",
+    "time": "2026-10-09T08:59:47.052Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "style-preservation-original-1440",
+    "time": "2026-10-09T09:00:16.842Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "style-preservation-unified-after-1440",
+    "time": "2026-10-09T09:00:17.540Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "t0-after-1440",
+    "time": "2026-10-09T09:00:18.865Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "t0-after-1440",
+    "time": "2026-10-09T09:00:31.474Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "t0-candles-after-1440",
+    "time": "2026-10-09T09:00:32.190Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "t0-firstbar-after-1440",
+    "time": "2026-10-09T09:00:32.998Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "playback-running-after-1440",
+    "time": "2026-10-09T09:00:48.042Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  },
+  {
+    "name": "playback-paused-after-1440",
+    "time": "2026-10-09T09:00:48.929Z",
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    },
+    "scrolling": {
+      "client": 1440,
+      "doc": 1440
+    }
+  }
+]

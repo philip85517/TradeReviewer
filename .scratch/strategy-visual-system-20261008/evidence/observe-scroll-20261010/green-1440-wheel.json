@@ -1,0 +1,200 @@
+{
+  "name": "green-1440-wheel",
+  "input": "native wheel at page margin",
+  "before": {
+    "nodes": [
+      {
+        "clientH": 900,
+        "cls": "",
+        "height": "1113px",
+        "overflow": "visible",
+        "overflowY": "visible",
+        "rect": {
+          "h": 1113,
+          "w": 1440,
+          "x": 0,
+          "y": 0
+        },
+        "scrollH": 1113,
+        "tag": "HTML",
+        "top": 0
+      },
+      {
+        "clientH": 1113,
+        "cls": "__variable_geist_0h4idih __variable_geist_mono_1ikzmhz antialiased",
+        "height": "1113px",
+        "overflow": "hidden auto",
+        "overflowY": "auto",
+        "rect": {
+          "h": 1113,
+          "w": 1440,
+          "x": 0,
+          "y": 0
+        },
+        "scrollH": 1113,
+        "tag": "BODY",
+        "top": 0
+      },
+      {
+        "clientH": 1113,
+        "cls": "full-workbench-preview full-workbench-preview--unified",
+        "height": "1113px",
+        "overflow": "visible",
+        "overflowY": "visible",
+        "rect": {
+          "h": 1113,
+          "w": 1440,
+          "x": 0,
+          "y": 0
+        },
+        "scrollH": 1113,
+        "tag": "DIV",
+        "top": 0
+      },
+      {
+        "clientH": 667,
+        "cls": "running-main",
+        "height": "669px",
+        "overflow": "visible",
+        "overflowY": "visible",
+        "rect": {
+          "h": 669,
+          "w": 904,
+          "x": 100,
+          "y": 424
+        },
+        "scrollH": 667,
+        "tag": "SECTION",
+        "top": 0
+      },
+      {
+        "clientH": 360,
+        "cls": "running-chart",
+        "height": "360px",
+        "overflow": "hidden",
+        "overflowY": "hidden",
+        "rect": {
+          "h": 360,
+          "w": 874,
+          "x": 115,
+          "y": 491
+        },
+        "scrollH": 360,
+        "tag": "DIV",
+        "top": 0
+      }
+    ],
+    "root": {
+      "client": 900,
+      "h": 1113,
+      "tag": "HTML",
+      "top": 0
+    },
+    "scrollY": 0,
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "h": 900,
+      "w": 1440
+    }
+  },
+  "after": {
+    "nodes": [
+      {
+        "clientH": 900,
+        "cls": "",
+        "height": "1113px",
+        "overflow": "visible",
+        "overflowY": "visible",
+        "rect": {
+          "h": 1113,
+          "w": 1440,
+          "x": 0,
+          "y": -213
+        },
+        "scrollH": 1113,
+        "tag": "HTML",
+        "top": 213
+      },
+      {
+        "clientH": 1113,
+        "cls": "__variable_geist_0h4idih __variable_geist_mono_1ikzmhz antialiased",
+        "height": "1113px",
+        "overflow": "hidden auto",
+        "overflowY": "auto",
+        "rect": {
+          "h": 1113,
+          "w": 1440,
+          "x": 0,
+          "y": -213
+        },
+        "scrollH": 1113,
+        "tag": "BODY",
+        "top": 0
+      },
+      {
+        "clientH": 1113,
+        "cls": "full-workbench-preview full-workbench-preview--unified",
+        "height": "1113px",
+        "overflow": "visible",
+        "overflowY": "visible",
+        "rect": {
+          "h": 1113,
+          "w": 1440,
+          "x": 0,
+          "y": -213
+        },
+        "scrollH": 1113,
+        "tag": "DIV",
+        "top": 0
+      },
+      {
+        "clientH": 667,
+        "cls": "running-main",
+        "height": "669px",
+        "overflow": "visible",
+        "overflowY": "visible",
+        "rect": {
+          "h": 669,
+          "w": 904,
+          "x": 100,
+          "y": 211
+        },
+        "scrollH": 667,
+        "tag": "SECTION",
+        "top": 0
+      },
+      {
+        "clientH": 360,
+        "cls": "running-chart",
+        "height": "360px",
+        "overflow": "hidden",
+        "overflowY": "hidden",
+        "rect": {
+          "h": 360,
+          "w": 874,
+          "x": 115,
+          "y": 278
+        },
+        "scrollH": 360,
+        "tag": "DIV",
+        "top": 0
+      }
+    ],
+    "root": {
+      "client": 900,
+      "h": 1113,
+      "tag": "HTML",
+      "top": 213
+    },
+    "scrollY": 213,
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "h": 900,
+      "w": 1440
+    }
+  },
+  "expected": "document scrollY increases when content exceeds viewport",
+  "pass": true
+}

@@ -1,0 +1,115 @@
+- main:
+  - paragraph: 原生复盘样板 · 推荐视觉
+  - heading "复盘样板" [level=1]
+  - generic "样板操作":
+    - status: 已保存到浏览器本地样板 · 01:59:14
+    - button "重新读取本地样板"
+    - button "重置样板"
+  - paragraph: 合成行情 · 浏览器本地保存 · 不写入业务交易记录或 SQL。
+  - region "导入交易回忆复盘工作区":
+    - heading "复盘样板 REVIEW" [level=1]
+    - generic: 草稿 · 有草稿修改
+    - generic "图表工具栏":
+      - button "搜索标的":
+      - generic "K 线周期":
+        - button "切换到 15m" [disabled]: 15m
+        - button "切换到 1h" [disabled]: 1H
+        - button "切换到 4h" [disabled]: 4H
+        - button "切换到 1D": 1D
+        - button "切换到 1W" [disabled]: 1W
+      - button "行情数据详情":
+        - text: 本地数据
+      - button "图层":
+      - button "图表设置":
+    - navigation "复盘阶段":
+      - button "买入前判断"
+      - button "持仓过程" [active] [pressed]
+      - button "事后复盘"
+    - button "收起复盘导航，切换到专注布局":
+    - button "统计":
+    - button "导出":
+      - text: 导出
+    - complementary "回合与决策导航":
+      - generic: 本回合记录
+      - generic: 1 笔已揭示决策
+      - button "展开"
+    - generic "绘图工具":
+      - button "选择" [pressed]:
+      - button "文字标注":
+      - button "趋势线":
+      - button "水平线":
+      - button "平行通道":
+      - button "做多盈亏比":
+      - generic "更多绘图工具":
+        - generic: 更多绘图工具
+      - button "锁定全部图形":
+      - button "撤销绘图" [disabled]:
+      - button "重做绘图" [disabled]:
+      - button "清空绘图":
+    - status: S1 持仓中 · 行情可知至 2026-03-01 15:00:00 Asia/Shanghai · 成交截止 2026-03-01 15:00:00 Asia/Shanghai · 复盘补记
+    - generic: 2026年02月13日 08:00:00
+    - generic: 开 51.40
+    - generic: 高 53.20
+    - generic: 低 49.31
+    - generic: 收 50.51
+    - table:
+      - row:
+        - cell
+        - cell:
+          - link "Charting by TradingView":
+            - /url: https://www.tradingview.com/?utm_medium=lwc-link&utm_campaign=lwc-chart&utm_source=127.0.0.1/
+        - cell
+      - row:
+        - cell
+        - cell
+        - cell
+    - button "显示计划价格"
+    - button "计划入场 56，精确编辑": 计划入场 56
+    - button "初始止损 52，精确编辑": 初始止损 52
+    - img "绘图画布"
+    - button "收起文字 prototype-pre-entry-note": 收起
+    - button "收起文字 prototype-holding-note": 收起
+    - button "适应全部"
+    - complementary "阶段计划":
+      - heading "原计划" [level=2]
+      - button "关闭计划侧栏":
+      - paragraph: 复盘补记 · 已看后续补记 · 未留存草稿
+      - region "紧凑计划摘要":
+        - generic: 计划价格
+        - strong: 56 / 52 / 68
+        - generic: 当前计划规模 / 风险
+        - strong:
+          - text: 1000 股 · 4000 CNY ·
+          - generic "3": 3R
+      - generic "完整原计划"
+      - region "实际结果":
+        - heading "当前执行" [level=3]
+        - paragraph: 按当前已知成交计算 · 原币口径
+        - term: 剩余数量
+        - definition: "1000"
+        - term: 已实现净盈亏
+        - definition: 0 CNY
+        - term: 持仓浮盈亏（未扣费）
+        - definition: 1690 CNY
+        - generic "费用、计划偏差与退出明细"
+      - generic "计划修订与来源详情"
+      - paragraph: 未留存草稿；返回买入前判断继续编辑。
+      - paragraph: 计划价格超出当前视野时，可使用图上的“显示计划价格”按钮查看；计划数值仍保留在此栏。
+    - strong: 逐步 · 决策 1
+    - generic "行情时间 2026-03-01 15:00:00 · Asia/Shanghai；2026-03-01 15:00:00 · Asia/Shanghai":
+      - generic "2026-03-01 15:00:00 · Asia/Shanghai": 行情时间 03-01 15:00
+      - generic "2026-03-01 15:00:00 · Asia/Shanghai": 成交截止 03-01 15:00
+    - generic "持仓 1000"
+    - generic "回放控制":
+      - button "上一根 K 线":
+        - text: 上一根
+      - button "播放"
+      - button "下一根 K 线":
+        - text: 下一根 K 线
+      - button "下一笔决策":
+        - text: 下一笔决策
+      - button "留存当前快照":
+        - text: 留存当前快照
+      - button "计划侧栏" [expanded]
+    - generic "更多记录与完成":
+      - button "更多 / 记录"

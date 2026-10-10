@@ -1,0 +1,136 @@
+{
+  "elements": [
+    {
+      "items": [
+        {
+          "fontSize": "13px",
+          "label": "行情数据详情",
+          "minHeight": "44px",
+          "rect": {
+            "bottom": 307,
+            "height": 44,
+            "left": 286,
+            "right": 379,
+            "top": 263,
+            "width": 93,
+            "x": 286,
+            "y": 263
+          },
+          "text": "本地数据",
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "selector": ".local-data-badge"
+    },
+    {
+      "items": [
+        {
+          "fontSize": "14px",
+          "label": null,
+          "minHeight": "720px",
+          "rect": {
+            "bottom": 1153,
+            "height": 720,
+            "left": 53,
+            "right": 381,
+            "top": 433,
+            "width": 328,
+            "x": 53,
+            "y": 433
+          },
+          "text": "当前 K 线开 57.96高 59.76低 56.49收 57.69a#tv-attr-logo{--fill:#131722;--stroke:#fff;position:absolute;left",
+          "whiteSpace": "normal"
+        }
+      ],
+      "selector": ".chart-stage"
+    },
+    {
+      "items": [
+        {
+          "fontSize": "0px",
+          "label": "计划入场 56，精确编辑",
+          "minHeight": "36px",
+          "rect": {
+            "bottom": 662.46875,
+            "height": 36,
+            "left": 233,
+            "right": 345,
+            "top": 626.46875,
+            "width": 112,
+            "x": 233,
+            "y": 626.46875
+          },
+          "text": "计划入场 56",
+          "whiteSpace": "normal"
+        },
+        {
+          "fontSize": "0px",
+          "label": "初始止损 52，精确编辑",
+          "minHeight": "36px",
+          "rect": {
+            "bottom": 807.015625,
+            "height": 36,
+            "left": 233,
+            "right": 345,
+            "top": 771.015625,
+            "width": 112,
+            "x": 233,
+            "y": 771.015625
+          },
+          "text": "初始止损 52",
+          "whiteSpace": "normal"
+        },
+        {
+          "fontSize": "0px",
+          "label": "止盈目标 68，精确编辑",
+          "minHeight": "36px",
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "text": "止盈目标 68",
+          "whiteSpace": "normal"
+        }
+      ],
+      "selector": ".chart-stage > button[aria-label$=\"，精确编辑\"]"
+    },
+    {
+      "items": [
+        {
+          "fontSize": "14px",
+          "label": "阶段计划",
+          "minHeight": "max-content",
+          "rect": {
+            "bottom": 1702,
+            "height": 534,
+            "left": 8,
+            "right": 382,
+            "top": 1168,
+            "width": 374,
+            "x": 8,
+            "y": 1168
+          },
+          "text": "原计划复盘补记 · 已看后续补记 · 未留存草稿计划价格56 / 52 / 68当前计划规模 / 风险1000 股 · 4000 CNY · 3R完整原计划当前执行按当前已知成交计算 · 原币口径剩余",
+          "whiteSpace": "normal"
+        }
+      ],
+      "selector": ".recall-plan-sidebar"
+    }
+  ],
+  "scroll": {
+    "height": 1896,
+    "width": 390,
+    "x": 0,
+    "y": 0
+  },
+  "viewport": {
+    "height": 844,
+    "width": 390
+  }
+}

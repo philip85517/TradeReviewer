@@ -1,0 +1,245 @@
+{
+  "at": "2026-10-09T16:01:26.904Z",
+  "items": [
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "26px",
+      "opacity": "1",
+      "padding": "0px",
+      "rect": {
+        "h": 26,
+        "w": 535.4609375,
+        "x": 115,
+        "y": 458
+      },
+      "sel": ".chart-heading h2",
+      "size": "18px",
+      "stroke": null,
+      "text": "组合净值",
+      "weight": "600"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "32px",
+      "opacity": "1",
+      "padding": "0px",
+      "rect": {
+        "h": 32,
+        "w": 276.5,
+        "x": 113,
+        "y": 266
+      },
+      "sel": ".running-summary b",
+      "size": "24px",
+      "stroke": null,
+      "text": "¥102,540.84",
+      "weight": "500"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(38, 166, 154)",
+      "disabled": false,
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "32px",
+      "opacity": "1",
+      "padding": "0px",
+      "rect": {
+        "h": 32,
+        "w": 276.5,
+        "x": 425.5,
+        "y": 266
+      },
+      "sel": ".running-summary b",
+      "size": "24px",
+      "stroke": null,
+      "text": "+2.54%",
+      "weight": "500"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(38, 166, 154)",
+      "disabled": false,
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "32px",
+      "opacity": "1",
+      "padding": "0px",
+      "rect": {
+        "h": 32,
+        "w": 276.5,
+        "x": 738,
+        "y": 266
+      },
+      "sel": ".running-summary b",
+      "size": "24px",
+      "stroke": null,
+      "text": "¥1,097.16 · +1.08%",
+      "weight": "500"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "32px",
+      "opacity": "1",
+      "padding": "0px",
+      "rect": {
+        "h": 32,
+        "w": 276.5,
+        "x": 1050.5,
+        "y": 266
+      },
+      "sel": ".running-summary b",
+      "size": "24px",
+      "stroke": null,
+      "text": "10.0%",
+      "weight": "500"
+    },
+    {
+      "bg": "rgb(33, 105, 204)",
+      "color": "rgb(255, 255, 255)",
+      "disabled": false,
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "22px",
+      "opacity": "1",
+      "padding": "0px 14px",
+      "rect": {
+        "h": 36,
+        "w": 136,
+        "x": 882.5,
+        "y": 328.5
+      },
+      "sel": ".timebar-actions button",
+      "size": "14px",
+      "stroke": null,
+      "text": "查看回测结果 →",
+      "weight": "600"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "22px",
+      "opacity": "1",
+      "padding": "0px 12px",
+      "rect": {
+        "h": 36,
+        "w": 82,
+        "x": 1025.5,
+        "y": 328.5
+      },
+      "sel": ".timebar-actions button",
+      "size": "14px",
+      "stroke": null,
+      "text": "比较组合",
+      "weight": "500"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "22px",
+      "opacity": "1",
+      "padding": "0px 11px",
+      "rect": {
+        "h": 36,
+        "w": 95.4296875,
+        "x": 1244.5703125,
+        "y": 186
+      },
+      "sel": ".portfolio-more > button",
+      "size": "14px",
+      "stroke": null,
+      "text": "更多组合 ⌄",
+      "weight": "500"
+    },
+    {
+      "bg": "rgb(13, 24, 40)",
+      "color": "rgb(169, 189, 214)",
+      "disabled": false,
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "22px",
+      "opacity": "1",
+      "padding": "0px",
+      "rect": {
+        "h": 36,
+        "w": 36,
+        "x": 1148,
+        "y": 766
+      },
+      "sel": ".event-nav button",
+      "size": "20px",
+      "stroke": null,
+      "text": "",
+      "weight": "400"
+    },
+    {
+      "bg": "rgb(20, 30, 48)",
+      "color": "rgb(127, 141, 162)",
+      "disabled": true,
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "22px",
+      "opacity": "0.62",
+      "padding": "4px 8px",
+      "rect": {
+        "h": 40.59375,
+        "w": 138,
+        "x": 1189,
+        "y": 766
+      },
+      "sel": ".event-nav button",
+      "size": "14px",
+      "stroke": null,
+      "text": "下一已知事件当前进度内无后续事件",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(169, 189, 214)",
+      "disabled": false,
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "22px",
+      "opacity": "1",
+      "padding": "0px",
+      "rect": {
+        "h": 18,
+        "w": 18,
+        "x": 1157,
+        "y": 775
+      },
+      "sel": ".event-nav button svg",
+      "size": "20px",
+      "stroke": "1.75",
+      "text": "",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "22px",
+      "opacity": "1",
+      "padding": "0px",
+      "rect": {
+        "h": 38,
+        "w": 1240,
+        "x": 100,
+        "y": 386
+      },
+      "sel": ".recovery-prototype",
+      "size": "14px",
+      "stroke": null,
+      "text": "进度恢复展开剩余行情已到计划结束日原型演示工具 仅合成数据 · 内存状态，不是真实保存或撮合一次性故障场景故障注入关闭数据中断执行失败下一次计划执行 · EMA20 v1.4当前没有下一次计划执行日期执行演示结果正常成交部分成交（每笔计划差量 50%）未成交（计划保留，实际成交为 0）无下一次计划执行；部分成交和未成交选项不可用。内存检查点 · 仅本次页面状态当前完整日 2024-09-13 · 最近检查点 尚未创建创建内存检查点模拟保存失败重载最近检查点重载只恢复明确创建的内存检查点，不清除最远已看日期与来源；不代表真实数据库持久化。",
+      "weight": "400"
+    }
+  ]
+}

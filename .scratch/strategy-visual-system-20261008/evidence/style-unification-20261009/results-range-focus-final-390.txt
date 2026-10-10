@@ -1,0 +1,216 @@
+- navigation "完整工作台导览":
+  - generic: TradeReview
+  - generic: 历史策略复盘 · 完整交互版
+  - generic: 旧 Workbench 预览
+  - link "完整观察":
+    - /url: "?prototype=strategy-workbench&view=observe&scene=complete"
+  - link "完整结果":
+    - /url: "?prototype=strategy-workbench&view=results&scene=complete"
+  - link "完整比较":
+    - /url: "?prototype=strategy-workbench&view=compare&scene=complete"
+  - link "原创建":
+    - /url: "?prototype=strategy-create&variant=A"
+  - link "当前 A":
+    - /url: /design-system-20261008/workbench/index.html
+- generic: 三个月双策略合成预设
+- generic: EMA20 v1.4 · 低波动质量 v2.1 · ¥100,000 · 复盘标的集
+- generic "演示场景":
+  - button "T0 起点"
+  - button "运行中 · 第10日"
+  - button "完整 · 已展开" [pressed]
+- group "工作台视觉样式":
+  - generic: 视觉
+  - button "原版样式"
+  - button "首页统一" [pressed]
+- generic: 完整入口预设：已展开；合成演示，刷新重置；切换演示场景或导览会重开预设；切换视觉保留当前查看状态。
+- main "组合回测结果":
+  - generic: 策略实验 / 回测结果
+  - heading "EMA20 v1.4" [level=1]
+  - paragraph: EMA20 v1.4 · 随策略 · 每周 · 复盘示例集合
+  - generic: 交互原型 · 合成数据 · 刷新重置
+  - button "比较组合"
+  - button "返回过程回看"
+  - region "结果截止与数据口径":
+    - generic: 完整区间
+    - generic: 2024-06-14 — 2024-09-13
+    - generic: 结果截至 R · 2024-09-13
+    - generic: 可用数据边界 2024-09-13
+    - generic: 本金 ¥100,000.00 · 收盘估值 · 次日开盘成交
+  - generic "完整样本覆盖 查看数据覆盖说明":
+    - generic: 完整样本覆盖
+    - generic: 查看数据覆盖说明
+  - region "核心结果指标":
+    - article:
+      - generic: 累计收益
+      - strong: +2.54%
+      - generic: 净值 − 1
+    - article:
+      - generic: 最大回撤
+      - strong: 3.06%
+      - generic: 截至当前 R 的已知峰值
+    - article:
+      - generic: 期末总资产
+      - strong: ¥102,540.84
+      - generic: 组合当日收益 +¥1,097.16 · +1.08%
+    - article:
+      - generic: 再平衡次数
+      - strong: "13"
+      - generic: 首次执行 1 · 部分成交 0 · 未成交 0
+  - region "净值图与结果拆分":
+    - article:
+      - text: 结果走势
+      - heading "组合表现" [level=2]
+      - tablist "结果图表类型":
+        - tab "净值" [selected]
+        - tab "回撤"
+        - tab "仓位"
+      - generic: 组合净值 · T0 = 1.0000
+      - generic: "1.0422"
+      - generic: "1.0086"
+      - generic: "0.9751"
+      - img "组合净值曲线"
+      - generic: 06-14
+      - generic: 07-30
+      - generic: 09-13
+      - generic: 2024-09-13
+      - generic: 净值 1.0254
+      - button "上一个交易日": −
+      - text: 结果截止 R
+      - generic: 2024-09-13
+      - slider "结果截止 R 2024-09-13" [active]: "84"
+      - button "下一个已展开交易日" [disabled]: +
+      - button "最远已展开" [disabled]
+    - complementary:
+      - text: 账本损益
+      - heading "损益构成" [level=2]
+      - generic: 截至 2024-09-13
+      - generic: 组合总损益
+      - generic: +¥2,540.84
+      - text: 已平仓回合净盈亏
+      - generic: 0 个
+      - generic: — · 尚无已平仓回合
+      - text: 部分减仓已实现
+      - generic: 未平仓回合
+      - generic: +¥3,010.01
+      - generic: 持仓浮动盈亏
+      - generic: −¥469.17
+      - text: 现金损益
+      - generic: 原型现金不计息
+      - generic: ¥0.00
+      - generic: 胜率
+      - generic: 不可计算 · 尚无已平仓回合
+      - generic: ✓
+      - generic: 损益与账本对账
+      - generic: 差额 ¥0.00
+  - region "标的贡献与调仓明细":
+    - article:
+      - text: 损益归因
+      - heading "标的贡献" [level=2]
+      - generic: 按持仓回合拆分
+      - table:
+        - rowgroup:
+          - row "标的 已平仓回合 部分减仓 浮动损益 合计":
+            - columnheader "标的"
+            - columnheader "已平仓回合"
+            - columnheader "部分减仓"
+            - columnheader "浮动损益"
+            - columnheader "合计"
+        - rowgroup:
+          - row "A — +¥2,261.40 −¥291.56 +¥1,969.84":
+            - rowheader "A": A
+            - cell "—"
+            - cell "+¥2,261.40"
+            - cell "−¥291.56"
+            - cell "+¥1,969.84"
+          - row "B — +¥748.61 −¥177.61 +¥570.99":
+            - rowheader "B": B
+            - cell "—"
+            - cell "+¥748.61"
+            - cell "−¥177.61"
+            - cell "+¥570.99"
+      - generic: 费用 ¥0.00
+      - generic: 滑点 ¥0.00
+      - generic: 损益按 FIFO 成本配对；合成执行不计费用或滑点。换手 = 双边总成交额 ÷ 初始本金：597.63%（成交额 ¥597,625.56）。
+    - article:
+      - text: 执行记录
+      - heading "调仓与成交" [level=2]
+      - generic: 14 个事件
+      - group "筛选结果事件及执行状态":
+        - button "全部" [pressed]
+        - button "再平衡"
+        - button "首次建仓"
+        - button "部分成交"
+        - button "未成交"
+      - button "再平衡 2024-09-13 2 笔实际成交 · A 买入 228.99 股 回看过程":
+        - text: 再平衡
+        - generic: 2024-09-13
+        - generic: 2 笔实际成交 · A 买入 228.99 股
+        - generic "回看过程": ›
+      - button "再平衡 2024-09-06 2 笔实际成交 · A 卖出 214.32 股 回看过程":
+        - text: 再平衡
+        - generic: 2024-09-06
+        - generic: 2 笔实际成交 · A 卖出 214.32 股
+        - generic "回看过程": ›
+      - button "再平衡 2024-08-30 2 笔实际成交 · A 买入 186.63 股 回看过程":
+        - text: 再平衡
+        - generic: 2024-08-30
+        - generic: 2 笔实际成交 · A 买入 186.63 股
+        - generic "回看过程": ›
+      - button "再平衡 2024-08-23 2 笔实际成交 · A 卖出 196.61 股 回看过程":
+        - text: 再平衡
+        - generic: 2024-08-23
+        - generic: 2 笔实际成交 · A 卖出 196.61 股
+        - generic "回看过程": ›
+      - button "再平衡 2024-08-16 2 笔实际成交 · A 买入 207.37 股 回看过程":
+        - text: 再平衡
+        - generic: 2024-08-16
+        - generic: 2 笔实际成交 · A 买入 207.37 股
+        - generic "回看过程": ›
+      - button "再平衡 2024-08-09 2 笔实际成交 · A 卖出 221.30 股 回看过程":
+        - text: 再平衡
+        - generic: 2024-08-09
+        - generic: 2 笔实际成交 · A 卖出 221.30 股
+        - generic "回看过程": ›
+      - button "再平衡 2024-08-02 2 笔实际成交 · A 买入 218.93 股 回看过程":
+        - text: 再平衡
+        - generic: 2024-08-02
+        - generic: 2 笔实际成交 · A 买入 218.93 股
+        - generic "回看过程": ›
+      - button "再平衡 2024-07-26 2 笔实际成交 · A 卖出 189.28 股 回看过程":
+        - text: 再平衡
+        - generic: 2024-07-26
+        - generic: 2 笔实际成交 · A 卖出 189.28 股
+        - generic "回看过程": ›
+      - button "再平衡 2024-07-19 2 笔实际成交 · A 买入 198.64 股 回看过程":
+        - text: 再平衡
+        - generic: 2024-07-19
+        - generic: 2 笔实际成交 · A 买入 198.64 股
+        - generic "回看过程": ›
+      - button "再平衡 2024-07-12 2 笔实际成交 · A 卖出 221.55 股 回看过程":
+        - text: 再平衡
+        - generic: 2024-07-12
+        - generic: 2 笔实际成交 · A 卖出 221.55 股
+        - generic "回看过程": ›
+      - button "再平衡 2024-07-05 2 笔实际成交 · A 买入 209.35 股 回看过程":
+        - text: 再平衡
+        - generic: 2024-07-05
+        - generic: 2 笔实际成交 · A 买入 209.35 股
+        - generic "回看过程": ›
+      - button "再平衡 2024-06-28 2 笔实际成交 · A 卖出 194.88 股 回看过程":
+        - text: 再平衡
+        - generic: 2024-06-28
+        - generic: 2 笔实际成交 · A 卖出 194.88 股
+        - generic "回看过程": ›
+      - button "再平衡 2024-06-21 2 笔实际成交 · A 买入 92.10 股 回看过程":
+        - text: 再平衡
+        - generic: 2024-06-21
+        - generic: 2 笔实际成交 · A 买入 92.10 股
+        - generic "回看过程": ›
+      - button "首次建仓 2024-06-17 2 笔实际成交 · A 买入 469.24 股 回看过程":
+        - text: 首次建仓
+        - generic: 2024-06-17
+        - generic: 2 笔实际成交 · A 买入 469.24 股
+        - generic "回看过程": ›
+      - paragraph: 部分成交与未成交均是完整交易日的执行结果；未成交不计入已执行再平衡。点击事件按真实成交账本返回过程回看。
+  - generic: 金额按 ¥ 显示；净值 = 总资产 ÷ 初始本金，回撤只使用截至 R 的历史峰值。
+  - generic: 暂无可比较基准 · 不计算超额收益、年化或夏普比率。

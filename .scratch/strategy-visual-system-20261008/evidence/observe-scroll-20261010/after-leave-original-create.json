@@ -1,0 +1,58 @@
+{
+  "metrics": {
+    "nodes": [
+      {
+        "clientH": 720,
+        "cls": "",
+        "height": "720px",
+        "overflow": "visible",
+        "overflowY": "visible",
+        "rect": {
+          "h": 720,
+          "w": 1280,
+          "x": 0,
+          "y": 0
+        },
+        "scrollH": 720,
+        "tag": "HTML",
+        "top": 0
+      },
+      {
+        "clientH": 720,
+        "cls": "__variable_geist_0h4idih __variable_geist_mono_1ikzmhz antialiased",
+        "height": "720px",
+        "overflow": "hidden",
+        "overflowY": "hidden",
+        "rect": {
+          "h": 720,
+          "w": 1280,
+          "x": 0,
+          "y": 0
+        },
+        "scrollH": 720,
+        "tag": "BODY",
+        "top": 0
+      }
+    ],
+    "root": {
+      "client": 720,
+      "h": 720,
+      "tag": "HTML",
+      "top": 0
+    },
+    "scrollY": 0,
+    "url": "http://127.0.0.1:3069/?prototype=strategy-create&variant=A",
+    "viewport": {
+      "dpr": 1,
+      "h": 720,
+      "w": 1280
+    }
+  },
+  "details": {
+    "active": {
+      "tag": "BODY",
+      "text": "TradeReview历史交易复盘导航我的交易室交易库分析数据策略原型设置策略实验 / 我的实验 / 实验列表交互原型 · 合成数据 · 刷新重置策略实验 / 我的实验我的策略实验同一会话可保留多个实验；返回列表重开会恢复各自进度。刷新后重置。+ 新建实验还没有策略实验从历史时点开始创建第一份内存草稿；这里只生成合成预览。开始设置起点 →▸原型演示工具（开发）演示数据场景完整覆盖样本策略缺必要字段"
+    },
+    "items": []
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "menuBefore": {
+    "client": 428,
+    "h": 454,
+    "top": 0,
+    "windowY": 3,
+    "x": 197,
+    "y": 665
+  },
+  "drawerBefore": {
+    "client": 772,
+    "h": 902,
+    "top": 0,
+    "windowY": 1296,
+    "x": 202.5,
+    "y": 458
+  },
+  "closed": {
+    "nodes": [
+      {
+        "clientH": 844,
+        "cls": "",
+        "height": "2140px",
+        "overflow": "visible",
+        "overflowY": "visible",
+        "rect": {
+          "h": 2140,
+          "w": 390,
+          "x": 0,
+          "y": -1296
+        },
+        "scrollH": 2140,
+        "tag": "HTML",
+        "top": 1296
+      },
+      {
+        "clientH": 2140,
+        "cls": "__variable_geist_0h4idih __variable_geist_mono_1ikzmhz antialiased",
+        "height": "2140px",
+        "overflow": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "h": 2140,
+          "w": 390,
+          "x": 0,
+          "y": -1296
+        },
+        "scrollH": 2140,
+        "tag": "BODY",
+        "top": 0
+      },
+      {
+        "clientH": 2140,
+        "cls": "full-workbench-preview full-workbench-preview--unified",
+        "height": "2140px",
+        "overflow": "visible",
+        "overflowY": "visible",
+        "rect": {
+          "h": 2140,
+          "w": 390,
+          "x": 0,
+          "y": -1296
+        },
+        "scrollH": 2140,
+        "tag": "DIV",
+        "top": 0
+      },
+      {
+        "clientH": 478,
+        "cls": "running-main",
+        "height": "480px",
+        "overflow": "visible",
+        "overflowY": "visible",
+        "rect": {
+          "h": 480,
+          "w": 370,
+          "x": 10,
+          "y": -359
+        },
+        "scrollH": 478,
+        "tag": "SECTION",
+        "top": 0
+      },
+      {
+        "clientH": 280,
+        "cls": "running-chart",
+        "height": "280px",
+        "overflow": "hidden",
+        "overflowY": "hidden",
+        "rect": {
+          "h": 280,
+          "w": 348,
+          "x": 21,
+          "y": -243
+        },
+        "scrollH": 280,
+        "tag": "DIV",
+        "top": 0
+      }
+    ],
+    "root": {
+      "client": 844,
+      "h": 2140,
+      "tag": "HTML",
+      "top": 1296
+    },
+    "scrollY": 1296,
+    "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+    "viewport": {
+      "dpr": 1,
+      "h": 844,
+      "w": 390
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "areas": [
+    {
+      "height": 510,
+      "overflow": "hidden",
+      "s": ".recall-chart-shell",
+      "width": 1252
+    },
+    {
+      "height": 480,
+      "overflow": "hidden",
+      "s": ".chart-stage",
+      "width": 1202
+    },
+    {
+      "height": 597,
+      "overflow": "visible",
+      "s": ".recall-plan-sidebar",
+      "width": 1252
+    },
+    {
+      "height": 1219,
+      "overflow": "visible",
+      "s": ".recall-main",
+      "width": 1280
+    }
+  ],
+  "scrollWidth": 1280,
+  "viewport": [
+    1280,
+    900
+  ]
+}

@@ -1,0 +1,1371 @@
+{
+  "elements": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px solid rgb(231, 237, 246)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "18px",
+      "fontWeight": "600",
+      "gap": "normal",
+      "label": "复盘样板",
+      "lineHeight": "24px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 24,
+        "width": 72,
+        "x": 160.421875,
+        "y": 12
+      },
+      "tag": "H1"
+    },
+    {
+      "background": "rgb(17, 26, 43)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "label": "重新读取本地样板",
+      "lineHeight": "20px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "0px 10px",
+      "rect": {
+        "height": 36,
+        "width": 126,
+        "x": 1208,
+        "y": 6
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(17, 26, 43)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "label": "重置样板",
+      "lineHeight": "20px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "0px 10px",
+      "rect": {
+        "height": 36,
+        "width": 74,
+        "x": 1342,
+        "y": 6
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px solid rgb(231, 237, 246)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "18px",
+      "fontWeight": "600",
+      "gap": "normal",
+      "label": "复盘样板 REVIEW",
+      "lineHeight": "24px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 24,
+        "width": 124.078125,
+        "x": 89.953125,
+        "y": 77
+      },
+      "tag": "H1"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(173, 187, 207)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "搜索标的",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 31,
+        "x": 383.859375,
+        "y": 86
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(173, 187, 207)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "\"Geist Mono\", sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "切换到 15m",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 6px",
+      "rect": {
+        "height": 36,
+        "width": 35.40625,
+        "x": 417.859375,
+        "y": 86
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(173, 187, 207)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "\"Geist Mono\", sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "切换到 1h",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 6px",
+      "rect": {
+        "height": 36,
+        "width": 31,
+        "x": 455.265625,
+        "y": 86
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(173, 187, 207)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "\"Geist Mono\", sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "切换到 4h",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 6px",
+      "rect": {
+        "height": 36,
+        "width": 31,
+        "x": 488.265625,
+        "y": 86
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(47, 128, 237, 0.14)",
+      "border": "0px none rgb(157, 204, 255)",
+      "color": "rgb(157, 204, 255)",
+      "fontFamily": "\"Geist Mono\", sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "切换到 1D",
+      "lineHeight": "20px",
+      "outline": "rgb(157, 204, 255) none 3px",
+      "padding": "0px 6px",
+      "rect": {
+        "height": 36,
+        "width": 31,
+        "x": 521.265625,
+        "y": 86
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(173, 187, 207)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "\"Geist Mono\", sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "切换到 1W",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 6px",
+      "rect": {
+        "height": 36,
+        "width": 31,
+        "x": 554.265625,
+        "y": 86
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(156, 172, 194)",
+      "color": "rgb(156, 172, 194)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "0px",
+      "label": "行情数据详情",
+      "lineHeight": "20px",
+      "outline": "rgb(156, 172, 194) none 3px",
+      "padding": "6px",
+      "rect": {
+        "height": 36,
+        "width": 82,
+        "x": 588.265625,
+        "y": 86
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(173, 187, 207)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "图层",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 31,
+        "x": 677.265625,
+        "y": 86
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(173, 187, 207)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "图表设置",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 31,
+        "x": 711.265625,
+        "y": 86
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(47, 128, 237, 0.16)",
+      "border": "1px solid rgb(47, 128, 237)",
+      "color": "rgb(195, 219, 255)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "gap": "normal",
+      "label": "买入前判断",
+      "lineHeight": "20px",
+      "outline": "rgb(195, 219, 255) none 3px",
+      "padding": "0px 8px",
+      "rect": {
+        "height": 36,
+        "width": 83,
+        "x": 834.140625,
+        "y": 86
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "1px solid rgba(0, 0, 0, 0)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "持仓过程",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 8px",
+      "rect": {
+        "height": 36,
+        "width": 70,
+        "x": 921.140625,
+        "y": 86
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "1px solid rgba(0, 0, 0, 0)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "事后复盘",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 8px",
+      "rect": {
+        "height": 36,
+        "width": 70,
+        "x": 995.140625,
+        "y": 86
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(17, 27, 41)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "交易回合",
+      "lineHeight": "normal",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "0px 24px 0px 9px",
+      "rect": {
+        "height": 36,
+        "width": 110,
+        "x": 1157,
+        "y": 86
+      },
+      "tag": "SELECT"
+    },
+    {
+      "background": "rgb(17, 27, 41)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "收起复盘导航，切换到专注布局",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 1273,
+        "y": 86
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(17, 27, 41)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "统计",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 1315,
+        "y": 86
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(17, 27, 41)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "5px",
+      "label": "导出",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 10px",
+      "rect": {
+        "height": 36,
+        "width": 71,
+        "x": 1357,
+        "y": 86
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "1px solid rgba(0, 0, 0, 0)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "8px",
+      "label": "全局总结尚未留存",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 55,
+        "width": 225,
+        "x": 10,
+        "y": 183
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(33, 50, 73)",
+      "border": "0px none rgb(139, 194, 255)",
+      "color": "rgb(139, 194, 255)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "gap": "normal",
+      "label": "选择",
+      "lineHeight": "20px",
+      "outline": "rgb(139, 194, 255) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 266.5,
+        "y": 146
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "文字标注",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 266.5,
+        "y": 185
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "趋势线",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 266.5,
+        "y": 224
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "水平线",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 266.5,
+        "y": 263
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "平行通道",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 266.5,
+        "y": 302
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "做多盈亏比",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 266.5,
+        "y": 341
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "垂直线",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 40,
+        "width": 40,
+        "x": 321.5,
+        "y": 425
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "矩形区间",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 40,
+        "width": 40,
+        "x": 367.5,
+        "y": 425
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "箭头",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 40,
+        "width": 40,
+        "x": 413.5,
+        "y": 425
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "斐波那契回撤",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 40,
+        "width": 40,
+        "x": 459.5,
+        "y": 425
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "价格标注",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 40,
+        "width": 40,
+        "x": 321.5,
+        "y": 471
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "区间测量",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 40,
+        "width": 40,
+        "x": 367.5,
+        "y": 471
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "做空盈亏比",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 40,
+        "width": 40,
+        "x": 413.5,
+        "y": 471
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "锁定全部图形",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 266.5,
+        "y": 431
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "撤销绘图",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 266.5,
+        "y": 470
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "重做绘图",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 266.5,
+        "y": 509
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(127, 143, 165)",
+      "color": "rgb(127, 143, 165)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "清空绘图",
+      "lineHeight": "20px",
+      "outline": "rgb(127, 143, 165) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 266.5,
+        "y": 548
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "gap": "normal",
+      "label": "S0 入场前 · 行情可知至 2026-03-01 14:59:59 Asia/Shanghai · 成交尚未揭示 · 复盘补记",
+      "lineHeight": "18px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "4px 8px",
+      "rect": {
+        "height": 28,
+        "width": 782,
+        "x": 309,
+        "y": 139
+      },
+      "tag": "DIV"
+    },
+    {
+      "background": "rgb(17, 27, 41)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "显示计划价格",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 36,
+        "width": 96,
+        "x": 385,
+        "y": 757
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px solid rgb(231, 237, 246)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "计划入场 56，精确编辑",
+      "lineHeight": "20px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 71.09375,
+        "x": 317,
+        "y": 346.390625
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px solid rgb(231, 237, 246)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "初始止损 52，精确编辑",
+      "lineHeight": "20px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 71.09375,
+        "x": 317,
+        "y": 481.296875
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(16, 23, 34, 0.92)",
+      "border": "1px solid rgba(140, 189, 255, 0.65)",
+      "color": "rgb(207, 227, 255)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "12px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "收起文字 prototype-pre-entry-note",
+      "lineHeight": "18px",
+      "outline": "rgb(207, 227, 255) none 3px",
+      "padding": "4px 6px",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 656.265625,
+        "y": 396.90625
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(17, 27, 41)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "适应全部",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 36,
+        "width": 70,
+        "x": 313,
+        "y": 769
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "0px solid rgb(231, 237, 246)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "600",
+      "gap": "normal",
+      "label": "买入前计划",
+      "lineHeight": "24px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 24,
+        "width": 80,
+        "x": 1121,
+        "y": 159
+      },
+      "tag": "H2"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "关闭计划侧栏",
+      "lineHeight": "20px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "0px",
+      "rect": {
+        "height": 36,
+        "width": 36,
+        "x": 1375,
+        "y": 153
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(17, 26, 43)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "计划入场",
+      "lineHeight": "20px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 36,
+        "width": 290,
+        "x": 1121,
+        "y": 230
+      },
+      "tag": "INPUT"
+    },
+    {
+      "background": "rgb(17, 26, 43)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "初始止损",
+      "lineHeight": "20px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 36,
+        "width": 141,
+        "x": 1121,
+        "y": 301
+      },
+      "tag": "INPUT"
+    },
+    {
+      "background": "rgb(17, 26, 43)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "止盈目标",
+      "lineHeight": "20px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 36,
+        "width": 141,
+        "x": 1270,
+        "y": 301
+      },
+      "tag": "INPUT"
+    },
+    {
+      "background": "rgba(47, 128, 237, 0.16)",
+      "border": "1px solid rgb(47, 128, 237)",
+      "color": "rgb(195, 219, 255)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "gap": "normal",
+      "label": "数量",
+      "lineHeight": "20px",
+      "outline": "rgb(195, 219, 255) none 3px",
+      "padding": "0px 8px",
+      "rect": {
+        "height": 36,
+        "width": 92.65625,
+        "x": 1121,
+        "y": 376
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(17, 27, 41)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "名义金额",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 8px",
+      "rect": {
+        "height": 36,
+        "width": 92.671875,
+        "x": 1219.65625,
+        "y": 376
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(17, 27, 41)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "仓位比例（%）",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 8px",
+      "rect": {
+        "height": 36,
+        "width": 92.65625,
+        "x": 1318.328125,
+        "y": 376
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(17, 26, 43)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "计划数量",
+      "lineHeight": "20px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 36,
+        "width": 290,
+        "x": 1121,
+        "y": 447
+      },
+      "tag": "INPUT"
+    },
+    {
+      "background": "rgb(17, 26, 43)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "计划方向",
+      "lineHeight": "normal",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 36,
+        "width": 112,
+        "x": 1121,
+        "y": 518
+      },
+      "tag": "SELECT"
+    },
+    {
+      "background": "rgb(17, 26, 43)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "计划数量单位",
+      "lineHeight": "normal",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 36,
+        "width": 112,
+        "x": 1241,
+        "y": 518
+      },
+      "tag": "SELECT"
+    },
+    {
+      "background": "rgb(17, 26, 43)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "计划币种",
+      "lineHeight": "20px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 36,
+        "width": 141,
+        "x": 1121,
+        "y": 611
+      },
+      "tag": "INPUT"
+    },
+    {
+      "background": "rgb(17, 26, 43)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "计划价格口径",
+      "lineHeight": "normal",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 36,
+        "width": 141,
+        "x": 1270,
+        "y": 611
+      },
+      "tag": "SELECT"
+    },
+    {
+      "background": "rgb(17, 26, 43)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "参考资金金额",
+      "lineHeight": "20px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 36,
+        "width": 290,
+        "x": 1121,
+        "y": 670
+      },
+      "tag": "INPUT"
+    },
+    {
+      "background": "rgb(17, 26, 43)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "参考资金币种",
+      "lineHeight": "20px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 36,
+        "width": 290,
+        "x": 1121,
+        "y": 729
+      },
+      "tag": "INPUT"
+    },
+    {
+      "background": "rgb(17, 26, 43)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "参考资金时点",
+      "lineHeight": "20px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 36,
+        "width": 290,
+        "x": 1121,
+        "y": 788
+      },
+      "tag": "INPUT"
+    },
+    {
+      "background": "rgb(17, 26, 43)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(231, 237, 246)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "normal",
+      "label": "参考数量步长",
+      "lineHeight": "20px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "padding": "6px 8px",
+      "rect": {
+        "height": 36,
+        "width": 290,
+        "x": 1121,
+        "y": 869
+      },
+      "tag": "INPUT"
+    },
+    {
+      "background": "rgb(17, 27, 41)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "5px",
+      "label": "上一根 K 线",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 9px",
+      "rect": {
+        "height": 36,
+        "width": 82,
+        "x": 635,
+        "y": 839
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(17, 27, 41)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "5px",
+      "label": "播放",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 9px",
+      "rect": {
+        "height": 36,
+        "width": 46,
+        "x": 723,
+        "y": 839
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(17, 27, 41)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "5px",
+      "label": "下一根 K 线",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 9px",
+      "rect": {
+        "height": 36,
+        "width": 109.84375,
+        "x": 775,
+        "y": 839
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(36, 105, 200)",
+      "border": "1px solid rgb(36, 105, 200)",
+      "color": "rgb(255, 255, 255)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "5px",
+      "label": "下一笔决策",
+      "lineHeight": "20px",
+      "outline": "rgb(255, 255, 255) none 3px",
+      "padding": "0px 9px",
+      "rect": {
+        "height": 36,
+        "width": 108,
+        "x": 890.84375,
+        "y": 839
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(17, 26, 43)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "5px",
+      "label": "留存当前快照",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 9px",
+      "rect": {
+        "height": 36,
+        "width": 121,
+        "x": 1004.84375,
+        "y": 839
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(17, 27, 41)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "5px",
+      "label": "计划侧栏",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 9px",
+      "rect": {
+        "height": 36,
+        "width": 72,
+        "x": 1131.84375,
+        "y": 839
+      },
+      "tag": "BUTTON"
+    },
+    {
+      "background": "rgb(17, 27, 41)",
+      "border": "1px solid rgb(88, 112, 143)",
+      "color": "rgb(173, 187, 207)",
+      "fontFamily": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "gap": "5px",
+      "label": "更多 / 记录",
+      "lineHeight": "20px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "padding": "0px 9px",
+      "rect": {
+        "height": 36,
+        "width": 84.75,
+        "x": 1332.25,
+        "y": 839
+      },
+      "tag": "BUTTON"
+    }
+  ],
+  "fontStatus": "loaded",
+  "viewport": {
+    "dpr": 1,
+    "height": 900,
+    "scrollWidth": 1440,
+    "width": 1440
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "active": {
+    "label": "计划入场 56，精确编辑",
+    "outline": "rgb(140, 189, 255) solid 2px",
+    "outlineOffset": "2px",
+    "rect": {
+      "height": 36,
+      "width": 112,
+      "x": 943,
+      "y": 337.8125
+    }
+  },
+  "nodes": [
+    {
+      "clientHeight": 66,
+      "rect": {
+        "height": 67,
+        "width": 1440,
+        "x": 0,
+        "y": 71
+      },
+      "scrollHeight": 66,
+      "scrollTop": 0,
+      "selector": ".recall-header"
+    },
+    {
+      "clientHeight": 674,
+      "rect": {
+        "height": 676,
+        "width": 832,
+        "x": 260,
+        "y": 138
+      },
+      "scrollHeight": 674,
+      "scrollTop": 0,
+      "selector": ".recall-chart-shell"
+    },
+    {
+      "clientHeight": 674,
+      "rect": {
+        "height": 674,
+        "width": 782,
+        "x": 309,
+        "y": 139
+      },
+      "scrollHeight": 674,
+      "scrollTop": 0,
+      "selector": ".recall-chart-column"
+    },
+    {
+      "clientHeight": 27,
+      "rect": {
+        "height": 28,
+        "width": 782,
+        "x": 309,
+        "y": 139
+      },
+      "scrollHeight": 27,
+      "scrollTop": 0,
+      "selector": ".recall-stage-context"
+    },
+    {
+      "clientHeight": 646,
+      "rect": {
+        "height": 646,
+        "width": 782,
+        "x": 309,
+        "y": 167
+      },
+      "scrollHeight": 646,
+      "scrollTop": 0,
+      "selector": ".chart-stage"
+    }
+  ],
+  "viewport": [
+    1440,
+    900
+  ],
+  "windowY": 0
+}

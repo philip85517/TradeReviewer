@@ -1,0 +1,24 @@
+{
+  "scope": "Local-only raw business baseline evidence. Historical manifests are unchanged.",
+  "excludedFromGit": [
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/native-review-current-1440.json",
+      "sha256": "360ba8e5b892eb4529b25097bc39130c3f7fdd77588701596b823381ea6422e1",
+      "reason": "Hidden business catalog with securities, execution recency and counts.",
+      "localOriginalPreserved": true
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/style-unification-20261009/computed-homepage-reference.json",
+      "sha256": "e5f5ddd85392ae9457c10b7a6295d2486d41f0dc76330fdcbf72638503abe0eb",
+      "reason": "Actual account filters and securities catalog in homepage measurements.",
+      "localOriginalPreserved": true
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/style-unification-20261009/homepage-reference-1440.jpg",
+      "sha256": "b02b9d0cb5893a9cecc65973df7b33ee23f61cf94f4c1747390738d56b6013fe",
+      "reason": "Reference screenshot containing actual holdings valuations, cost and profit/loss.",
+      "localOriginalPreserved": true
+    }
+  ],
+  "exclusionsDoNotChange": "The current synthetic complete-observe preview, its screenshots and sources are committed. Historical manifests do not imply every raw measurement is available remotely."
+}

@@ -1,0 +1,54 @@
+{
+  "method": "sRGB relative luminance; transparent backdrop role noted separately; not full-page pixel audit",
+  "pairs": [
+    {
+      "role": "primary text",
+      "foreground": "#ffffff",
+      "background": "#2169cc",
+      "ratio": 5.306751,
+      "evidence": "observe-delivery-final-1440.json: .running-primary visible computed pair"
+    },
+    {
+      "role": "auxiliary control text",
+      "foreground": "#adbbcf",
+      "background": "#111a2b",
+      "ratio": 8.94007,
+      "evidence": "observe-delivery-final-1440.json: .full-preview-style-toggle button visible computed pair"
+    },
+    {
+      "role": "focus on panel",
+      "foreground": "#9ecaff",
+      "background": "#111a2b",
+      "ratio": 10.233139,
+      "evidence": "results-range-focus-final-390.json: actual outline; result-chart-frame measured panel color (backdrop role, not per-pixel audit)"
+    },
+    {
+      "role": "selected border on raised",
+      "foreground": "#3797ff",
+      "background": "#182337",
+      "ratio": 5.270529,
+      "evidence": "selected .chart-switch button computed border; raised role backdrop"
+    },
+    {
+      "role": "selected border on selected background",
+      "foreground": "#3797ff",
+      "background": "#163d63",
+      "ratio": 3.737461,
+      "evidence": "observe-delivery-final-1440.json: .chart-switch button computed pair"
+    },
+    {
+      "role": "structural line on panel",
+      "foreground": "#263650",
+      "background": "#111a2b",
+      "ratio": 1.430545,
+      "evidence": "computed panel/line pair; structural only"
+    },
+    {
+      "role": "primary on raised",
+      "foreground": "#2169cc",
+      "background": "#182337",
+      "ratio": 2.965505,
+      "evidence": "computed primary; raised role, inadequate as sole selected boundary"
+    }
+  ]
+}

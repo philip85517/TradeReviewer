@@ -1,0 +1,200 @@
+- main:
+  - paragraph: 原生复盘样板 · 推荐视觉
+  - heading "复盘样板" [level=1]
+  - generic "样板操作":
+    - status: 已保存到浏览器本地样板 · 02:00:18
+    - button "重新读取本地样板"
+    - button "重置样板"
+  - paragraph: 合成行情 · 浏览器本地保存 · 不写入业务交易记录或 SQL。
+  - region "导入交易回忆复盘工作区":
+    - heading "复盘样板 REVIEW" [level=1]
+    - generic: 草稿 · 有草稿修改
+    - generic "图表工具栏":
+      - button "搜索标的":
+      - generic "K 线周期":
+        - button "切换到 15m" [disabled]: 15m
+        - button "切换到 1h" [disabled]: 1H
+        - button "切换到 4h" [disabled]: 4H
+        - button "切换到 1D": 1D
+        - button "切换到 1W" [disabled]: 1W
+      - button "行情数据详情":
+        - text: 本地数据
+      - button "图层":
+      - button "图表设置":
+    - navigation "复盘阶段":
+      - button "买入前判断"
+      - button "持仓过程"
+      - button "事后复盘" [active] [pressed]
+    - combobox "交易回合":
+      - option "第 1 次 · 已平仓" [selected]
+    - button "收起复盘导航，切换到专注布局":
+    - button "统计":
+    - button "导出":
+      - text: 导出
+    - complementary "回合与决策导航":
+      - generic: 本回合记录
+      - generic: 3 笔已揭示决策
+      - button "全局总结 尚未留存":
+        - strong: 全局总结
+        - generic: 尚未留存
+      - checkbox "选择决策 1 进行合并"
+      - button "1 买 1000 @ 56 待留存快照":
+        - generic: "1"
+        - strong: 买 1000 @ 56
+        - generic: 待留存快照
+      - checkbox "选择决策 2 进行合并"
+      - button "2 卖 600 @ 64 待留存快照":
+        - generic: "2"
+        - strong: 卖 600 @ 64
+        - generic: 待留存快照
+      - checkbox "选择决策 3 进行合并"
+      - button "3 卖 400 @ 61 待留存快照":
+        - generic: "3"
+        - strong: 卖 400 @ 61
+        - generic: 待留存快照
+      - generic: 选中一笔成交会定位到其完整 K 线；文字归属跟随当前记录对象。
+    - generic "绘图工具":
+      - button "选择" [pressed]:
+      - button "文字标注":
+      - button "趋势线":
+      - button "水平线":
+      - button "平行通道":
+      - button "做多盈亏比":
+      - generic "更多绘图工具":
+        - generic: 更多绘图工具
+      - button "锁定全部图形":
+      - button "撤销绘图" [disabled]:
+      - button "重做绘图" [disabled]:
+      - button "清空绘图":
+    - status: S2 事后复盘 · 行情可知至 2026-04-10 15:00:00 Asia/Shanghai · 成交截止 2026-03-15 15:00:00 Asia/Shanghai · 复盘补记
+    - generic: 当前 K 线
+    - generic: 开 58.52
+    - generic: 高 60.32
+    - generic: 低 56.15
+    - generic: 收 57.35
+    - table:
+      - row:
+        - cell
+        - cell:
+          - link "Charting by TradingView":
+            - /url: https://www.tradingview.com/?utm_medium=lwc-link&utm_campaign=lwc-chart&utm_source=127.0.0.1/
+        - cell
+      - row:
+        - cell
+        - cell
+        - cell
+    - button "显示计划价格"
+    - button "计划入场 56，精确编辑": 计划入场 56
+    - button "止盈目标 68，精确编辑": 止盈目标 68
+    - img "绘图画布"
+    - button "收起文字 prototype-pre-entry-note": 收起
+    - button "收起文字 prototype-holding-note": 收起
+    - button "适应全部"
+    - complementary "阶段计划":
+      - heading "原计划" [level=2]
+      - button "关闭计划侧栏":
+      - paragraph: 复盘补记 · 已看后续补记 · 未留存草稿
+      - region "紧凑计划摘要":
+        - generic: 计划价格
+        - strong: 56 / 52 / 68
+        - generic: 计划规模 / 风险
+        - strong:
+          - text: 1000 股 · 4000 CNY ·
+          - generic "3": 3R
+      - generic "完整原计划"
+      - region "实际结果":
+        - heading "实际结果" [level=3]
+        - paragraph: 按当前已知成交计算 · 原币口径
+        - term: 回合净盈亏
+        - definition: 6800 CNY
+        - term: 实际 R
+        - definition: 初始风险未记录
+        - generic "费用、计划偏差与退出明细"
+      - region "退出执行评价":
+        - heading "退出评价" [level=3]
+        - paragraph: 人工补记 · 提前退出不等于错误；不按盈亏自动评价。
+        - text: 退出决策
+        - combobox "退出决策":
+          - option "退出 1 · 2026-03-09 · 减仓 · 卖出 · 数量 600 · 均价 64" [selected]
+          - option "退出 2 · 2026-03-15 · 清仓 · 卖出 · 数量 400 · 均价 61"
+        - paragraph: 实际退出数量：600 · 1 笔成交 · 真实加权均价：64
+        - group "提前退出":
+          - generic: 提前退出
+          - radio "未评价" [checked]
+          - generic: 未评价
+          - radio "是"
+          - generic: 是
+          - radio "否"
+          - generic: 否
+          - radio "不确定"
+          - generic: 不确定
+        - group "执行符合度":
+          - generic: 执行符合度
+          - radio "未评价" [checked]
+          - generic: 未评价
+          - radio "按计划"
+          - generic: 按计划
+          - radio "偏离"
+          - generic: 偏离
+          - radio "无原计划"
+          - generic: 无原计划
+        - text: 退出原因
+        - combobox "退出原因":
+          - option "未填写" [selected]
+          - option "计划内分批"
+          - option "结构失效"
+          - option "风险收缩"
+          - option "情绪影响"
+          - option "资金需求"
+          - option "其他"
+        - generic "比较计划与目标"
+        - option "未选择／未记录" [selected]
+        - option "未选择" [selected]
+        - group "人工归因标签":
+          - generic: 人工归因标签
+          - checkbox "仓位"
+          - text: 仓位
+          - checkbox "入场"
+          - text: 入场
+          - checkbox "退出"
+          - text: 退出
+          - checkbox "判断"
+          - text: 判断
+        - generic "关联图上证据"
+        - paragraph: 已评价 0/2 次；不确定 0 次。覆盖率按提前退出的已填状态计算。
+      - region "回合人工标签":
+        - heading "回合人工标签" [level=3]
+        - paragraph: 人工补记 · 只记录仓位、入场与判断，不自动从盈亏推断。
+        - group "人工回合标签":
+          - generic: 人工归因标签
+          - checkbox "仓位"
+          - text: 仓位
+          - checkbox "入场"
+          - text: 入场
+          - checkbox "判断"
+          - text: 判断
+        - generic "关联图上证据"
+      - generic "完整实际结果、计划与修订"
+      - paragraph: 未留存草稿；返回买入前判断继续编辑。
+      - paragraph: 计划价格超出当前视野时，可使用图上的“显示计划价格”按钮查看；计划数值仍保留在此栏。
+    - strong: 逐步 · 决策 3
+    - generic "行情时间 2026-04-10 15:00:00 · Asia/Shanghai；2026-03-15 15:00:00 · Asia/Shanghai":
+      - generic "2026-04-10 15:00:00 · Asia/Shanghai": 行情时间 04-10 15:00
+      - generic "2026-03-15 15:00:00 · Asia/Shanghai": 成交截止 03-15 15:00
+    - generic "历史已揭示 · 持仓 0"
+    - generic "回放控制":
+      - button "上一根 K 线" [disabled]:
+        - text: 上一根
+      - button "播放" [disabled]
+      - button "下一根 K 线" [disabled]:
+        - text: 下一根 K 线
+      - button "下一笔决策" [disabled]:
+        - text: 下一笔决策
+      - button "留存当前快照":
+        - text: 留存当前快照
+      - button "计划侧栏" [expanded]
+    - generic "更多记录与完成":
+      - button "更多 / 记录"
+    - status:
+      - generic: 事后复盘已揭示完整历史；可回到买入前判断保留计划、快照和后续补记。
+      - button "回到买入前判断"

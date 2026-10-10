@@ -1,0 +1,994 @@
+{
+  "created_at_utc": "2026-10-08T04:09:46.357612+00:00",
+  "branch": "codex/strategy-visual-system-20261008",
+  "base": "origin/codex/strategy-workbench-v1-design@9c2b3d209a202422c3d5aeab5969a9b093cfda92",
+  "scope": "Desktop full interactive preview access restoration; historical full layout separate from compact A; no production integration",
+  "source_files": [
+    {
+      "path": "app/page.tsx",
+      "sha256": "a57b648f9b98fee573505f60623000c1422b75cde0de713c0fc5c707718e25c3",
+      "bytes": 2555,
+      "filesystem_mtime_utc": "2026-10-08T03:50:41.010640+00:00"
+    },
+    {
+      "path": "app/components/strategy-prototype/full-workbench-preview.tsx",
+      "sha256": "e4229c54deb238c3402e593c741c53a3c6e91390717d45b47dc5ced7d3bef8cf",
+      "bytes": 3613,
+      "filesystem_mtime_utc": "2026-10-08T03:59:51.360485+00:00"
+    },
+    {
+      "path": "app/components/strategy-prototype/full-workbench-preview.css",
+      "sha256": "809d895322c61399d060fc796c397bea7924aeada635bc5fa0a2a51b22308bdd",
+      "bytes": 1873,
+      "filesystem_mtime_utc": "2026-10-08T03:58:43.737812+00:00"
+    },
+    {
+      "path": "app/components/strategy-prototype/running-prototype.tsx",
+      "sha256": "2aa19e1aa980837455e4018b97c0b2a85fc2cdb6ab2dff669d668dc3a98f8989",
+      "bytes": 88110,
+      "filesystem_mtime_utc": "2026-10-08T04:01:49.145288+00:00"
+    },
+    {
+      "path": "public/design-system-20261008/workbench/index.html",
+      "sha256": "4ff8a3374f3d8e59deeefafe7e8cabe01fc6bed8a59ff9ac255617332043c235",
+      "bytes": 94812,
+      "filesystem_mtime_utc": "2026-10-08T03:54:45.182258+00:00"
+    }
+  ],
+  "reference_files": [
+    {
+      "path": "docs/specs/2026-09-29-strategy-desktop-ux-design.md",
+      "sha256": "a695aa432add7ded5e26dd8083358bf50ca2a09ea77ad83c6fa1de83c9c5cee0",
+      "bytes": 42927,
+      "filesystem_mtime_utc": "2026-10-07T16:20:28.016501+00:00"
+    },
+    {
+      "path": "docs/specs/2026-09-30-strategy-stable-workbench-design.md",
+      "sha256": "2439b2c5de667c07575dcc98023b497c2aa7a40b6583f836ccd6a307396e9aa3",
+      "bytes": 32220,
+      "filesystem_mtime_utc": "2026-10-07T16:20:28.017751+00:00"
+    },
+    {
+      "path": ".scratch/strategy-desktop-ux-v2/screenshots/integration/results-1280.png",
+      "sha256": "45300f17d252e6c219383ed818352a3715e72790c01a675da15590ea4847219a",
+      "bytes": 87752,
+      "filesystem_mtime_utc": "2026-10-07T16:17:04.292201+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-desktop-ux-v2/screenshots/integration/comparison-1280.png",
+      "sha256": "8e092a343e127e0e2781c8758d458c9a7fab1d3f68535484d46cb90513f4b736",
+      "bytes": 85865,
+      "filesystem_mtime_utc": "2026-10-07T16:17:04.284368+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-desktop-ux-v2/screenshots/integration/t0-1280.png",
+      "sha256": "d71e3fe6f2727caa67bd4d10fddfd50e14289ff43aec51b8505a49c965952c13",
+      "bytes": 86727,
+      "filesystem_mtime_utc": "2026-10-07T16:17:04.294720+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-desktop-ux-v2/screenshots/integration/first-bar-1280.png",
+      "sha256": "b4461d4ae16cd93e02a0d5fa147e87afa52d5e9c3702dace4dfeff3826ce0575",
+      "bytes": 100165,
+      "filesystem_mtime_utc": "2026-10-07T16:17:04.290420+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-candles-1440.png",
+      "sha256": "125d7975058d7f3e0d69ae7a141c1d45a56d4f16940b8c63484284cf2d929126",
+      "bytes": 135573,
+      "filesystem_mtime_utc": "2026-10-08T03:50:28.194723+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-candles-final-1280.png",
+      "sha256": "32639376d2da8e161f8ed6ca7a9f966a8ff7ff850d2450bd5e887e9f4a75407a",
+      "bytes": 118760,
+      "filesystem_mtime_utc": "2026-10-08T04:02:04.143410+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-compare-final-1280.png",
+      "sha256": "11d4c85ba0277213d820d7a0688c5e38e536574dfbe8185721067cf284a51b71",
+      "bytes": 101467,
+      "filesystem_mtime_utc": "2026-10-08T04:02:16.038039+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-config-final-1280.png",
+      "sha256": "09652ffa8cfa7bc9c0639377faac90d5fa07321d650b5e45b58a33c40d28423f",
+      "bytes": 76533,
+      "filesystem_mtime_utc": "2026-10-08T04:02:19.937427+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-detail-final-1280.png",
+      "sha256": "59b068374790fe5f7e45e042d032199bd48aae1fcfd6182f42d5d0040fa4f913",
+      "bytes": 109151,
+      "filesystem_mtime_utc": "2026-10-08T04:02:19.262650+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-event-final-1280.png",
+      "sha256": "d6cbd4d0b676bd00f1454cffca73729fa6bcf8424a389571d5df459e70a7f0da",
+      "bytes": 100045,
+      "filesystem_mtime_utc": "2026-10-08T04:02:17.661219+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-events-final-1280.png",
+      "sha256": "cb70adff73185bb0be2a47c1479f2ac12e80131386ef1a7beda68a502b61ff32",
+      "bytes": 100754,
+      "filesystem_mtime_utc": "2026-10-08T04:02:16.922291+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-legacy-running.txt",
+      "sha256": "5b63bd0500dc0f0f022b122e6782d1057be02b8f3ef7abbc869d301736049525",
+      "bytes": 3460,
+      "filesystem_mtime_utc": "2026-10-08T03:59:53.805092+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-metrics-final-1280.png",
+      "sha256": "7b7440c94a1fd9f1b7ca5bae582b121e386c09c792308d5db200a6c1f73f41de",
+      "bytes": 98389,
+      "filesystem_mtime_utc": "2026-10-08T04:02:18.468111+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-overview-final-1280.png",
+      "sha256": "b8d269aee46fd109ceeb61e9a9378554bcb2c9cc8fd3cf52d693ec8fff74967e",
+      "bytes": 105152,
+      "filesystem_mtime_utc": "2026-10-08T04:02:03.463515+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-presets-final.json",
+      "sha256": "4ac3ed79368355fbb6a7b884101aaeb72538a35aac5f279d9c1e9440c0631e29",
+      "bytes": 75010,
+      "filesystem_mtime_utc": "2026-10-08T04:02:20.250746+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-presets.json",
+      "sha256": "3ecda3844fd81b1008af704d6cd4b5a9f360686edb3fced2023940d42ff17905",
+      "bytes": 66877,
+      "filesystem_mtime_utc": "2026-10-08T03:50:46.300852+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-results-final-1280.png",
+      "sha256": "3a89b0efea7960bedaa24d0e3e07041ba42d45f8fde97bace061f95c683173eb",
+      "bytes": 102695,
+      "filesystem_mtime_utc": "2026-10-08T04:02:15.307186+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-scene-complete-final-1280.png",
+      "sha256": "cf4ed66a3afabceb33dc7a3c855d92179907b06fbbdab5cee0ff116ff65df464",
+      "bytes": 100060,
+      "filesystem_mtime_utc": "2026-10-08T04:02:34.378296+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-scene-error-final-1280.png",
+      "sha256": "34485122fe5b7bf270e90707fb41d66448f38610f9f91b6a8d299dc92007b663",
+      "bytes": 97714,
+      "filesystem_mtime_utc": "2026-10-08T04:02:36.603257+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-scene-loading-final-1280.png",
+      "sha256": "a3f4f9b0cf8c3eaa54d844df9f44011501743ae287773435608a952b62355156",
+      "bytes": 63387,
+      "filesystem_mtime_utc": "2026-10-08T04:02:35.484990+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-scene-pressure-final-1280.png",
+      "sha256": "a0ceffc29d7d6a09afad0b61008350a4d13fc49400098466308b75a32229cbc3",
+      "bytes": 99096,
+      "filesystem_mtime_utc": "2026-10-08T04:02:37.709176+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-scene-review-final-1280.png",
+      "sha256": "3d4fb15952d46f040f9af92c9b7047e0e4e08cf1e30d58bb51e602697218a913",
+      "bytes": 90602,
+      "filesystem_mtime_utc": "2026-10-08T04:02:33.306008+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-scene-running-final-1280.png",
+      "sha256": "22e382c2c2c821568eed552c5447817eeecb814082d0c0cb61bd91f72ef3d5e9",
+      "bytes": 98042,
+      "filesystem_mtime_utc": "2026-10-08T04:02:32.153259+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-scene-t0-final-1280.png",
+      "sha256": "fbb89aef14e14af6cf520c96af5846e37a94debf003c6e448cf42cea9abbb2d4",
+      "bytes": 86119,
+      "filesystem_mtime_utc": "2026-10-08T04:02:30.936936+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-scenes-final.json",
+      "sha256": "6b1b7d00921c6a072323105cf28c633a2dd1096a0a17030e571f92b11abd08a7",
+      "bytes": 31636,
+      "filesystem_mtime_utc": "2026-10-08T04:02:37.710333+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-a-scenes.json",
+      "sha256": "afab312ecbc497eb7efc3a2fc8ca6d43256844d3e9dc4ac992359883633379fe",
+      "bytes": 32853,
+      "filesystem_mtime_utc": "2026-10-08T03:51:03.042468+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-before-comparison-1440.png",
+      "sha256": "c25ef3bbac5b59bcc0079f6c75f969ece600a23620f8e82627542f15367669f3",
+      "bytes": 102054,
+      "filesystem_mtime_utc": "2026-10-08T03:45:26.173312+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-before-drawdown-1440.png",
+      "sha256": "b193afbbb8b0cc0a9eee5e417032ac9a0a20667d778d535d81829cf435d59783",
+      "bytes": 108323,
+      "filesystem_mtime_utc": "2026-10-08T03:45:12.495737+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-before-first-bar-1440.png",
+      "sha256": "039cf1b47fe9261f669afc0f8c265b73962f8506fb83b81a50e09d9b9e7ce7f6",
+      "bytes": 109817,
+      "filesystem_mtime_utc": "2026-10-08T03:43:09.424839+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-before-position-1440.png",
+      "sha256": "873f3116b71347c8c0f5090d2763a9280bcc1c7973a701a6ed7ca79107c407ab",
+      "bytes": 108036,
+      "filesystem_mtime_utc": "2026-10-08T03:45:25.671422+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-before-results-1440.png",
+      "sha256": "b46702324d2dd3979898b91003f5251ce04e98985f316ec734899d08318137d4",
+      "bytes": 107316,
+      "filesystem_mtime_utc": "2026-10-08T03:45:11.987269+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-before-t0-1440.png",
+      "sha256": "b1b2e722b7a5fe180743f86a90d85cd90bbd57bbeb644427d98c6c8686b0b13c",
+      "bytes": 91256,
+      "filesystem_mtime_utc": "2026-10-08T03:40:54.514918+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-drawdown-after-1280.png",
+      "sha256": "2c2a40b64eaa2eeb8ea33277c0800bd4ec3c059831a3d28bedfc89707134d0de",
+      "bytes": 87423,
+      "filesystem_mtime_utc": "2026-10-08T03:57:00.836844+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-drawdown-after-1280.txt",
+      "sha256": "c6916160ab0119a233725a995147d1e38a7338dbb08425b661aa3df242415012",
+      "bytes": 10372,
+      "filesystem_mtime_utc": "2026-10-08T03:57:00.728613+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-drawdown-after-1440.png",
+      "sha256": "ed88db121389de9981e276d408edad0fb40903d454427b9ae8405d469f0766b5",
+      "bytes": 102099,
+      "filesystem_mtime_utc": "2026-10-08T03:56:27.435958+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-drawdown-after-1440.txt",
+      "sha256": "c6916160ab0119a233725a995147d1e38a7338dbb08425b661aa3df242415012",
+      "bytes": 10372,
+      "filesystem_mtime_utc": "2026-10-08T03:56:27.327618+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-entry-final-1440.txt",
+      "sha256": "cb251644b4a3880fc7e5e21cbcd972312bf640eb925231c644718393ed0dd3a2",
+      "bytes": 10367,
+      "filesystem_mtime_utc": "2026-10-08T04:05:59.203607+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-net-after-1280.png",
+      "sha256": "d2aff807976a8610310df3be7373748b436d5e52f6ae00a7741176abe53436bd",
+      "bytes": 88189,
+      "filesystem_mtime_utc": "2026-10-08T03:57:00.335059+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-net-after-1280.txt",
+      "sha256": "4176f7166ea835fdfc0986e11f831aca92babc9b6550c68457099e3bd25d0d8e",
+      "bytes": 10376,
+      "filesystem_mtime_utc": "2026-10-08T03:57:00.223567+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-net-after-1440.png",
+      "sha256": "92ccc7367c333b935f82683a229aeac8f374ac34343f8923057f915d8931751c",
+      "bytes": 102331,
+      "filesystem_mtime_utc": "2026-10-08T03:56:26.928477+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-net-after-1440.txt",
+      "sha256": "4176f7166ea835fdfc0986e11f831aca92babc9b6550c68457099e3bd25d0d8e",
+      "bytes": 10376,
+      "filesystem_mtime_utc": "2026-10-08T03:56:26.818917+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-net-final-1440.png",
+      "sha256": "9f6ac02bc325b278da9743ec2678500071b308106bdbb66bb5b6a28688026818",
+      "bytes": 104951,
+      "filesystem_mtime_utc": "2026-10-08T04:05:59.312603+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-position-after-1280.png",
+      "sha256": "03881e7df1ef9b1e51ef13de1857a6c5eca7df9ab2da2c80292ef19b5eebb4e9",
+      "bytes": 84128,
+      "filesystem_mtime_utc": "2026-10-08T03:57:01.347470+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-position-after-1280.txt",
+      "sha256": "6bc38373067b804e977d66a63342569d690c7049089fbcf0a0e48f58adceb5fd",
+      "bytes": 10438,
+      "filesystem_mtime_utc": "2026-10-08T03:57:01.237371+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-position-after-1440.png",
+      "sha256": "114b019b4ffa6ca64fd9efcd165f0a6e572d9dd61e06cf652655db5359cea4ec",
+      "bytes": 95715,
+      "filesystem_mtime_utc": "2026-10-08T03:56:27.939953+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-position-after-1440.txt",
+      "sha256": "6bc38373067b804e977d66a63342569d690c7049089fbcf0a0e48f58adceb5fd",
+      "bytes": 10438,
+      "filesystem_mtime_utc": "2026-10-08T03:56:27.834553+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-reload-final.txt",
+      "sha256": "cb251644b4a3880fc7e5e21cbcd972312bf640eb925231c644718393ed0dd3a2",
+      "bytes": 10367,
+      "filesystem_mtime_utc": "2026-10-08T04:06:06.078344+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-comparison-return.txt",
+      "sha256": "6c5c951f173ba6df726b8548209c459e9bec07054a6aa93036667467aded5df9",
+      "bytes": 10438,
+      "filesystem_mtime_utc": "2026-10-08T03:56:47.429544+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-drawdown-after-1440.png",
+      "sha256": "beef0088aeedce83cc644b926c4429738e99dd81af5c44abbde91c6b40cba85d",
+      "bytes": 105062,
+      "filesystem_mtime_utc": "2026-10-08T03:55:09.387104+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-final-console.json",
+      "sha256": "9d8e4f8ef415c838ca3355cdfcb6c2502583f8128e67022f11012dfb9d50514c",
+      "bytes": 57,
+      "filesystem_mtime_utc": "2026-10-08T04:07:32.288934+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-first-bar-after-1280.png",
+      "sha256": "a7bdf584f14de89e4e0eddcecd3a1ada907aca3366da67dd63d5af882fc89f72",
+      "bytes": 100457,
+      "filesystem_mtime_utc": "2026-10-08T03:57:19.617690+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-first-bar-after-1280.txt",
+      "sha256": "3caa8e537e09cc18cab2c480b2b9bc88931d24ad1d19edac498cfe6d9c1fcd6b",
+      "bytes": 5581,
+      "filesystem_mtime_utc": "2026-10-08T03:57:19.513877+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-first-bar-after-1440.png",
+      "sha256": "50e5e362d54117dec5cddd969cb78edf21a3678d652d9e35430d101cb6ab8bc7",
+      "bytes": 116551,
+      "filesystem_mtime_utc": "2026-10-08T03:57:54.856714+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-first-bar-after-1440.txt",
+      "sha256": "b6745e25e08307f029f0858460138deef4c69dc6a5c6e1d3d099ce8cb7cb9ee9",
+      "bytes": 5581,
+      "filesystem_mtime_utc": "2026-10-08T03:57:54.760576+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-guide-1440.png",
+      "sha256": "78652aca1f81ba35214463493018213d7d10f5eb73858ddeb9a9b40d615ab972",
+      "bytes": 120446,
+      "filesystem_mtime_utc": "2026-10-08T03:47:42.528777+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-guide-after-1280.json",
+      "sha256": "72bea7ed4f9114faae6236ec00102f770da101d2a1ca16cae5a344f019d0364e",
+      "bytes": 976,
+      "filesystem_mtime_utc": "2026-10-08T03:51:25.070956+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-guide-after-1280.png",
+      "sha256": "f69c44291e46371d81545d588f738f07d7d4b6d261fd89116b8a6f5d23b88963",
+      "bytes": 83979,
+      "filesystem_mtime_utc": "2026-10-08T03:51:15.619223+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-guide-after-1440.png",
+      "sha256": "e43a433e2d37e8546575d960df46169b3a0d545837fcd7d181fb7b7e23cb3a10",
+      "bytes": 100577,
+      "filesystem_mtime_utc": "2026-10-08T03:49:10.040662+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-guide-fail.json",
+      "sha256": "bcfb2c43e353165515d40196fdbc06fcf72ba49b871b93c709596672c30eeeb9",
+      "bytes": 321,
+      "filesystem_mtime_utc": "2026-10-08T03:48:29.578899+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-guide-final-1280.png",
+      "sha256": "360ea716a0eda2a78e2f0743b38029acfeea2c218792756e169b175caa038a96",
+      "bytes": 84940,
+      "filesystem_mtime_utc": "2026-10-08T03:59:44.544510+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-guide-final-1440.png",
+      "sha256": "a78361203be341230612228a640ba03ae26d770fb0242b1e49cef1d0d60f95f7",
+      "bytes": 101308,
+      "filesystem_mtime_utc": "2026-10-08T03:58:55.204921+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-guide-final-1440.txt",
+      "sha256": "22391400de99efe0c75396318ffd55d47ab13db2446e2dbe444aa72cf4d2194b",
+      "bytes": 10433,
+      "filesystem_mtime_utc": "2026-10-08T03:58:55.099200+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-hydration-fail-1440.png",
+      "sha256": "eb20fc6ab8e4e5095a5935673053edd4e501ef381c93b2b4f9a405b3bebb44c2",
+      "bytes": 99818,
+      "filesystem_mtime_utc": "2026-10-08T03:49:47.587759+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-observe-candles-final-1280.png",
+      "sha256": "7668f35b568954c67ac7269b54ab4bda1ea2dcfbaad1f2feb8ded632e67a02dc",
+      "bytes": 110929,
+      "filesystem_mtime_utc": "2026-10-08T04:06:28.300218+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-observe-candles-final-1440.png",
+      "sha256": "19e498f4f57e371c837dd15f379904d643baefb61cf4c1babcf069feab094c67",
+      "bytes": 127793,
+      "filesystem_mtime_utc": "2026-10-08T04:06:20.962451+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-observe-net-final-1280.png",
+      "sha256": "0c0a25185342dda5bcd91c793adb2d432b9d3c96eb90e6e168d2c697e1d7e098",
+      "bytes": 102078,
+      "filesystem_mtime_utc": "2026-10-08T04:06:28.707552+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-observe-net-final-1440.png",
+      "sha256": "8eea7048ab1cff9751cf03ce797a4b4ba256e9478db6694ff3a494b449f7a799",
+      "bytes": 119467,
+      "filesystem_mtime_utc": "2026-10-08T04:06:13.093203+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-observe-net-final-1440.txt",
+      "sha256": "62e9f7b712db25c5e62ad2447ea066e3c8e74a2065a42055968d8668b1c0fa1f",
+      "bytes": 13105,
+      "filesystem_mtime_utc": "2026-10-08T04:06:12.977980+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-original-create-t0.txt",
+      "sha256": "24d684028cf30e757d7cc685fb50e56ac55076d1a8235bc44ca7c3b8e3c2f148",
+      "bytes": 4015,
+      "filesystem_mtime_utc": "2026-10-08T04:00:52.966702+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-position-after-1440.png",
+      "sha256": "25a3f4ad4d8e34c1fe286f16048650cd23bbc1cf19e442ade404c1655eb7590b",
+      "bytes": 104868,
+      "filesystem_mtime_utc": "2026-10-08T03:55:20.115296+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-position-after-1440.txt",
+      "sha256": "0f22a5caaf9abeaa594869b6d7c4f6730a4c6d500791d89dcaa301df574d9bd4",
+      "bytes": 9183,
+      "filesystem_mtime_utc": "2026-10-08T03:55:20.009125+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-result-event-after-1440.png",
+      "sha256": "591714c73480206f8b74abf6644c90ab472adeff638e7a9292d72fe40d1f5c2b",
+      "bytes": 77840,
+      "filesystem_mtime_utc": "2026-10-08T03:56:03.392052+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-result-event.txt",
+      "sha256": "35f67b40655527c5b4fa606fd58fe5135339618a45873a78620693bf00daa2ee",
+      "bytes": 8853,
+      "filesystem_mtime_utc": "2026-10-08T03:56:02.879734+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-result-return.txt",
+      "sha256": "0c7c355d60f940616a6b91fa17d4f60bd5febce05eb2c42ef9c69c3470858fdc",
+      "bytes": 5965,
+      "filesystem_mtime_utc": "2026-10-08T03:56:15.948245+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-results-after-1280-full.png",
+      "sha256": "d48d43e4164bd71bf1c510c2f402bb77b66e2991223cc55e8aae21e69bdef7f7",
+      "bytes": 103496,
+      "filesystem_mtime_utc": "2026-10-08T03:52:20.124733+00:00",
+      "pixel_dimensions": [
+        1280,
+        906
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-results-after-1280.png",
+      "sha256": "40d477dc092ff44dbe3d5cb5ba9a5f6a432db5b717e96bc436dfc1bac377c3d9",
+      "bytes": 94919,
+      "filesystem_mtime_utc": "2026-10-08T03:52:18.903075+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-results-after-1440.png",
+      "sha256": "5f9aba79ba50c2b9df2ecf487c4ad623cc0bc4c7c5d9ebd788c114df617abbfb",
+      "bytes": 104758,
+      "filesystem_mtime_utc": "2026-10-08T03:55:08.744658+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-results-drawdown-final-1280.png",
+      "sha256": "9e198541508f72d9eb2b2cefc8b7705c5d34e150e39080b954d8dd8c15069c8a",
+      "bytes": 95037,
+      "filesystem_mtime_utc": "2026-10-08T04:01:25.304269+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-results-entry-final-1440.txt",
+      "sha256": "e4e2823014ae49d946039fee4ec0f3923f698bfda4d39373e128b95a90146f4c",
+      "bytes": 8961,
+      "filesystem_mtime_utc": "2026-10-08T04:05:45.602649+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-results-lower-after-1440.png",
+      "sha256": "eb16a360ece6487149176ac53039bc41d52457959d304ccd815e1889a98d3631",
+      "bytes": 100669,
+      "filesystem_mtime_utc": "2026-10-08T03:55:41.154590+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-results-lower-final-1280.png",
+      "sha256": "6615507fb282404533fb898d08c1ecead352232f87b75b720e3026ffe8358534",
+      "bytes": 87887,
+      "filesystem_mtime_utc": "2026-10-08T04:01:25.922645+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-results-net-final-1280.png",
+      "sha256": "8e12cbb775ff53cbd18b4cf5d6820faac4a06d55c25fd26d61e20401d3f1533f",
+      "bytes": 94579,
+      "filesystem_mtime_utc": "2026-10-08T04:01:24.799575+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-results-net-final-1440.png",
+      "sha256": "c947583c389a815556ecb6666fe694f4730a1426d224c70bba7efea5323f6f0b",
+      "bytes": 105978,
+      "filesystem_mtime_utc": "2026-10-08T04:05:45.708800+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-results-position-final-1280.png",
+      "sha256": "3929d15167763b368b2cddef7caa95cde1675cc14194f850154ccd1b2e343788",
+      "bytes": 95208,
+      "filesystem_mtime_utc": "2026-10-08T04:01:25.731930+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-results-reload-final.txt",
+      "sha256": "e4e2823014ae49d946039fee4ec0f3923f698bfda4d39373e128b95a90146f4c",
+      "bytes": 8961,
+      "filesystem_mtime_utc": "2026-10-08T04:07:20.802285+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-running-after-1440.png",
+      "sha256": "b0cc261f5a7723479eed48dfadd0879cc1dbd724b8c98ca3add7d17981b8b7bd",
+      "bytes": 121996,
+      "filesystem_mtime_utc": "2026-10-08T03:58:03.772473+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-running-before-play.txt",
+      "sha256": "e4d2c31cbb2b4e1cf46962c07e7cfb2dbe82844a270814cfcd49dafa49c9f4ad",
+      "bytes": 6767,
+      "filesystem_mtime_utc": "2026-10-08T03:58:03.665709+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-running-final-1280.png",
+      "sha256": "fda887a7585e2fba31a532da59c2c3f04e1880410fc0ed0a2276dbfd474b357a",
+      "bytes": 107248,
+      "filesystem_mtime_utc": "2026-10-08T04:06:36.437393+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-running-final-1280.txt",
+      "sha256": "6e92cb70ac528677225baecc1144cf41880b168208b72e9536becda0423ba2fb",
+      "bytes": 6767,
+      "filesystem_mtime_utc": "2026-10-08T04:06:36.466085+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-running-play-after-1440.png",
+      "sha256": "ee93ddf9c8f7af8b24fea4cf235f79bf355302f8e1bf9c1c5d2a2535f39f24fe",
+      "bytes": 120445,
+      "filesystem_mtime_utc": "2026-10-08T03:58:14.194739+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-running-play-paused.txt",
+      "sha256": "21fcba75500c08bf4a545dbb31fbbd3c6ad780c0639927486228311f6147dc08",
+      "bytes": 7979,
+      "filesystem_mtime_utc": "2026-10-08T03:58:14.080760+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-running-reset.txt",
+      "sha256": "e3bae018063532d8daaeed2bbc0fcea4a72bc6a34b2d77e58812f93bb9f353dd",
+      "bytes": 6573,
+      "filesystem_mtime_utc": "2026-10-08T03:58:14.683484+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-t0-after-1280.png",
+      "sha256": "a3d422fbd12e15f315b48cb006c20aaba8ef3d3759f785b5dc51806cffe3ade7",
+      "bytes": 99654,
+      "filesystem_mtime_utc": "2026-10-08T03:57:19.115458+00:00",
+      "pixel_dimensions": [
+        1280,
+        800
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-t0-after-1280.txt",
+      "sha256": "a3d9494ce490522bca7513f7a9242e6124ac4f94fcba98a56dfb5745ed539729",
+      "bytes": 4910,
+      "filesystem_mtime_utc": "2026-10-08T03:57:19.004404+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-t0-after-1440.png",
+      "sha256": "1706db2e5d20bdba8e119d5dfdf88c08e8a8df74710686539d99336e869f72cf",
+      "bytes": 111378,
+      "filesystem_mtime_utc": "2026-10-08T03:57:54.446697+00:00",
+      "pixel_dimensions": [
+        1440,
+        900
+      ],
+      "actual_mime_type": "image/jpeg"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-t0-from-results-final.txt",
+      "sha256": "ed9e006588a04b86114e165de2ef4021f09f202cbbcbcad2ffdb2f5954c7d31a",
+      "bytes": 4662,
+      "filesystem_mtime_utc": "2026-10-08T04:07:32.272465+00:00"
+    },
+    {
+      "path": ".scratch/strategy-visual-system-20261008/evidence/full-restore-t0-reset.txt",
+      "sha256": "ed9e006588a04b86114e165de2ef4021f09f202cbbcbcad2ffdb2f5954c7d31a",
+      "bytes": 4662,
+      "filesystem_mtime_utc": "2026-10-08T03:57:45.391382+00:00"
+    }
+  ],
+  "historical_manifest_preserved": "evidence/version-manifest.json",
+  "viewport_evidence": {
+    "desktop": [
+      [
+        1440,
+        900
+      ],
+      [
+        1280,
+        800
+      ]
+    ],
+    "observed_dpr": 1,
+    "capture_notes": "Filesystem mtime is not source identity at capture. final observe/running1280/entry reload evidence and final A screenshot sets rechecked after frozen source. Older plot/return evidence precedes initialization and metadata repairs; original analysis/model components unchanged. Historical guide-hidden and hydration screenshots retain FAIL. Browser screenshots returned JPEG bytes even where existing filename ends .png; dimensions now parsed by actual image signature. Initial invalid header-derived dimensions corrected before acceptance.",
+    "delivery_panel": {
+      "actual_dimensions": [
+        399,
+        694
+      ],
+      "purpose": "Live service access only; NOT desktop visual acceptance. Expand browser panel for desktop layout."
+    }
+  },
+  "checks": {
+    "typecheck": "PASS exit0",
+    "scope_eslint": "PASS exit0",
+    "inline_script_syntax": "PASS exit0",
+    "diff_check": "PASS exit0",
+    "repository_lint": "FAIL 17 errors / 1645 warnings; vendor and prior RecallDesignPrototype effect",
+    "all_unit_tests": "NOT RERUN; historical failures retained"
+  },
+  "database": {
+    "path": "/Users/zhoulin/.codex/worktrees/facb/TradeReview/.data/strategy-visual-acceptance.sqlite",
+    "business_write": "NOT APPLICABLE: in-memory synthetic restoration; runtime explicit isolated path"
+  },
+  "unverified": [
+    "Full Tooltip/wheel future projection",
+    "production SQL persistence",
+    "physical/emulated touch",
+    "Windows glyphs",
+    "full Text/IME/edit/export",
+    "missing design startup package",
+    "full analysis fusion into A"
+  ]
+}

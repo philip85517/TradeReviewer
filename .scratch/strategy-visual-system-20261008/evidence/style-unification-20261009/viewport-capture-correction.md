@@ -1,0 +1,1 @@
+2026-10-09：viewport capability应用当时最后选定的首页参考tab11，工作台tab10保持1440×900/DPR1。标称before-1280和before-390的五份JPEG实为1440×900，已加capture-fail后缀保留，不能作为1280/390证据。root与独立审查者分别发现并核对。关闭临时参考tab后，工作台evaluate确认390×844/DPR1。后续1280/390通过新wrapper的原版样式取同数据对照，明确与真正修改前区别；每次截图记录actual viewport，最终清单解析JPEG头。首页reference-1440和三页before-1440实为1440，可用于主要角色比较。

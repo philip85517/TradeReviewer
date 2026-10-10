@@ -116,6 +116,8 @@ install -m 755 deploy/ops/tradeReview.command "$HOME/Desktop/tradeReview.command
 
 ## 验证
 
+视觉规范、当前 0.7 检查点和历史接受证据从[文档索引](docs/README.md)进入；当前完整观察预览仍是开发态样板，用户确认画面不等于生产全局固化。
+
 项目默认采用[协调者 + Luna 分布式开发与预览交付流程](docs/agents/development-workflow.md)：Luna 负责实现，协调者独立验收，并在聊天交付已启动、可打开的预览链接。
 
 TradingView 自动测试使用最小冻结夹具；如需校验本地原始示例，可设置 `TRADINGVIEW_SAMPLE_DIR` 并运行 `npm run test:unit -- app/lib/import/tradingview-samples.test.ts`。原始 CSV 不纳入仓库。

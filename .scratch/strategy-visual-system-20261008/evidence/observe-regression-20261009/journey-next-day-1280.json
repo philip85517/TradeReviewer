@@ -1,0 +1,2595 @@
+{
+  "active": {
+    "bg": "rgb(27, 88, 173)",
+    "border": [
+      "1px",
+      "1px",
+      "1px",
+      "1px",
+      "rgb(27, 88, 173)"
+    ],
+    "client": 120,
+    "color": "rgb(255, 255, 255)",
+    "disabled": false,
+    "ellipsis": "clip",
+    "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+    "gap": "8px",
+    "line": "22px",
+    "offset": "0px",
+    "outline": "rgb(255, 255, 255) none 3px",
+    "overflow": "visible",
+    "padding": "0px 14px",
+    "pressed": null,
+    "radius": "6px",
+    "rect": {
+      "h": 36,
+      "w": 122,
+      "x": 266.59375,
+      "y": 325.5
+    },
+    "scroll": 120,
+    "selected": null,
+    "size": "14px",
+    "text": "下一交易日 →",
+    "weight": "600",
+    "white": "normal"
+  },
+  "at": "2026-10-09T15:07:01.655Z",
+  "controls": [
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(170, 199, 236)"
+      ],
+      "client": 64,
+      "color": "rgb(170, 199, 236)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(170, 199, 236) none 3px",
+      "overflow": "visible",
+      "padding": "0px 8px",
+      "pressed": null,
+      "radius": "4px",
+      "rect": {
+        "h": 36,
+        "w": 64,
+        "x": 288.5625,
+        "y": 5
+      },
+      "scroll": 64,
+      "selected": null,
+      "size": "12px",
+      "text": "完整观察",
+      "weight": "400",
+      "white": "nowrap"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(170, 199, 236)"
+      ],
+      "client": 64,
+      "color": "rgb(170, 199, 236)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(170, 199, 236) none 3px",
+      "overflow": "visible",
+      "padding": "0px 8px",
+      "pressed": null,
+      "radius": "4px",
+      "rect": {
+        "h": 36,
+        "w": 64,
+        "x": 360.5625,
+        "y": 5
+      },
+      "scroll": 64,
+      "selected": null,
+      "size": "12px",
+      "text": "完整结果",
+      "weight": "400",
+      "white": "nowrap"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(170, 199, 236)"
+      ],
+      "client": 64,
+      "color": "rgb(170, 199, 236)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(170, 199, 236) none 3px",
+      "overflow": "visible",
+      "padding": "0px 8px",
+      "pressed": null,
+      "radius": "4px",
+      "rect": {
+        "h": 36,
+        "w": 64,
+        "x": 432.5625,
+        "y": 5
+      },
+      "scroll": 64,
+      "selected": null,
+      "size": "12px",
+      "text": "完整比较",
+      "weight": "400",
+      "white": "nowrap"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(170, 199, 236)"
+      ],
+      "client": 52,
+      "color": "rgb(170, 199, 236)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(170, 199, 236) none 3px",
+      "overflow": "visible",
+      "padding": "0px 8px",
+      "pressed": null,
+      "radius": "4px",
+      "rect": {
+        "h": 36,
+        "w": 52,
+        "x": 504.5625,
+        "y": 5
+      },
+      "scroll": 52,
+      "selected": null,
+      "size": "12px",
+      "text": "原创建",
+      "weight": "400",
+      "white": "nowrap"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(170, 199, 236)"
+      ],
+      "client": 51,
+      "color": "rgb(170, 199, 236)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(170, 199, 236) none 3px",
+      "overflow": "visible",
+      "padding": "0px 8px",
+      "pressed": null,
+      "radius": "4px",
+      "rect": {
+        "h": 36,
+        "w": 51.0234375,
+        "x": 564.5625,
+        "y": 5
+      },
+      "scroll": 51,
+      "selected": null,
+      "size": "12px",
+      "text": "当前 A",
+      "weight": "400",
+      "white": "nowrap"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(173, 187, 207)"
+      ],
+      "client": 172,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": null,
+      "radius": "0px",
+      "rect": {
+        "h": 36,
+        "w": 171.9375,
+        "x": 1083.0625,
+        "y": 58
+      },
+      "scroll": 172,
+      "selected": null,
+      "size": "12px",
+      "text": "预览工具 · 场景 / 视觉 / 说明",
+      "weight": "400",
+      "white": "nowrap"
+    },
+    {
+      "bg": "rgb(22, 61, 99)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(55, 151, 255)"
+      ],
+      "client": 62,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": "true",
+      "radius": "4px",
+      "rect": {
+        "h": 36,
+        "w": 63.5859375,
+        "x": 1091.0625,
+        "y": 103
+      },
+      "scroll": 62,
+      "selected": null,
+      "size": "12px",
+      "text": "T0 起点",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 101,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": "false",
+      "radius": "4px",
+      "rect": {
+        "h": 36,
+        "w": 102.859375,
+        "x": 1160.6484375,
+        "y": 103
+      },
+      "scroll": 101,
+      "selected": null,
+      "size": "12px",
+      "text": "运行中 · 第10日",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 88,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": "false",
+      "radius": "4px",
+      "rect": {
+        "h": 36,
+        "w": 90.4140625,
+        "x": 1269.5078125,
+        "y": 103
+      },
+      "scroll": 88,
+      "selected": null,
+      "size": "12px",
+      "text": "完整 · 已展开",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 62,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": "false",
+      "radius": "6px",
+      "rect": {
+        "h": 38,
+        "w": 63.5703125,
+        "x": 1115.8515625,
+        "y": 147
+      },
+      "scroll": 62,
+      "selected": null,
+      "size": "12px",
+      "text": "原版样式",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(22, 61, 99)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(55, 151, 255)"
+      ],
+      "client": 62,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": "true",
+      "radius": "6px",
+      "rect": {
+        "h": 38,
+        "w": 63.578125,
+        "x": 1183.421875,
+        "y": 147
+      },
+      "scroll": 62,
+      "selected": null,
+      "size": "12px",
+      "text": "首页统一",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 80,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 12px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 82,
+        "x": 1082.40625,
+        "y": 130.5
+      },
+      "scroll": 80,
+      "selected": null,
+      "size": "14px",
+      "text": "查看配置",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 80,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 12px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 82,
+        "x": 1172.40625,
+        "y": 130.5
+      },
+      "scroll": 80,
+      "selected": null,
+      "size": "14px",
+      "text": "实验列表",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(22, 61, 99)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(55, 151, 255)"
+      ],
+      "client": 220,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "10px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "4px 11px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 221.5078125,
+        "x": 27.59375,
+        "y": 186
+      },
+      "scroll": 220,
+      "selected": "true",
+      "size": "14px",
+      "text": "EMA20 v1.4独立本金 ¥100,000.00",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 238,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "10px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "4px 11px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 239.59375,
+        "x": 256.1015625,
+        "y": 186
+      },
+      "scroll": 238,
+      "selected": "false",
+      "size": "14px",
+      "text": "低波动质量 v2.1独立本金 ¥100,000.00",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 93,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "7px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 11px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 95.4296875,
+        "x": 1158.9765625,
+        "y": 186
+      },
+      "scroll": 93,
+      "selected": null,
+      "size": "14px",
+      "text": "更多组合 ⌄",
+      "weight": "500",
+      "white": "nowrap"
+    },
+    {
+      "bg": "rgb(27, 88, 173)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(27, 88, 173)"
+      ],
+      "client": 120,
+      "color": "rgb(255, 255, 255)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(255, 255, 255) none 3px",
+      "overflow": "visible",
+      "padding": "0px 14px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 122,
+        "x": 266.59375,
+        "y": 325.5
+      },
+      "scroll": 120,
+      "selected": null,
+      "size": "14px",
+      "text": "下一交易日 →",
+      "weight": "600",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 52,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 12px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 54,
+        "x": 393.59375,
+        "y": 325.5
+      },
+      "scroll": 52,
+      "selected": null,
+      "size": "14px",
+      "text": "播放",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 74,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "clip",
+      "padding": "0px 9px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 76,
+        "x": 482.59375,
+        "y": 325.5
+      },
+      "scroll": 74,
+      "selected": null,
+      "size": "14px",
+      "text": "0.5x1x2x",
+      "weight": "500",
+      "white": "pre"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 80,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 12px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 82,
+        "x": 563.59375,
+        "y": 325.5
+      },
+      "scroll": 80,
+      "selected": null,
+      "size": "14px",
+      "text": "阶段结果",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 183,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "clip",
+      "padding": "0px 9px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 184.5,
+        "x": 680.59375,
+        "y": 325.5
+      },
+      "scroll": 183,
+      "selected": null,
+      "size": "14px",
+      "text": "T0 · 2024-06-14 16:002024-06-17",
+      "weight": "500",
+      "white": "pre"
+    },
+    {
+      "bg": "rgb(17, 27, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(43, 61, 86)"
+      ],
+      "client": 106,
+      "color": "rgb(199, 213, 231)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "6px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(199, 213, 231) none 3px",
+      "overflow": "visible",
+      "padding": "0px 11px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 108,
+        "x": 81.59375,
+        "y": 381
+      },
+      "scroll": 106,
+      "selected": null,
+      "size": "14px",
+      "text": "展开剩余行情",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(194, 208, 225)"
+      ],
+      "client": 330,
+      "color": "rgb(194, 208, 225)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "2px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(194, 208, 225) none 3px",
+      "overflow": "visible",
+      "padding": "4px 9px",
+      "pressed": null,
+      "radius": "0px",
+      "rect": {
+        "h": 36,
+        "w": 329.71875,
+        "x": 923.6875,
+        "y": 381
+      },
+      "scroll": 330,
+      "selected": null,
+      "size": "12px",
+      "text": "原型演示工具 仅合成数据 · 内存状态，不是真实保存或撮合",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(13, 23, 37)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(50, 69, 95)"
+      ],
+      "client": 126,
+      "color": "rgb(219, 230, 244)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "offset": "0px",
+      "outline": "rgb(219, 230, 244) none 3px",
+      "overflow": "clip",
+      "padding": "0px 9px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 127.859375,
+        "x": 944.6875,
+        "y": 488
+      },
+      "scroll": 126,
+      "selected": null,
+      "size": "14px",
+      "text": "关闭数据中断执行失败",
+      "weight": "400",
+      "white": "pre"
+    },
+    {
+      "bg": "rgb(13, 23, 37)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(50, 69, 95)"
+      ],
+      "client": 126,
+      "color": "rgb(219, 230, 244)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "offset": "0px",
+      "outline": "rgb(219, 230, 244) none 3px",
+      "overflow": "clip",
+      "padding": "0px 9px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 127.859375,
+        "x": 1104.546875,
+        "y": 537.3984375
+      },
+      "scroll": 126,
+      "selected": null,
+      "size": "14px",
+      "text": "正常成交部分成交（每笔计划差量 50%）未成交（计划保留，实际成交为 0）",
+      "weight": "400",
+      "white": "pre"
+    },
+    {
+      "bg": "rgb(17, 27, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(43, 61, 86)"
+      ],
+      "client": 116,
+      "color": "rgb(199, 213, 231)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "6px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(199, 213, 231) none 3px",
+      "overflow": "visible",
+      "padding": "0px 9px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 118,
+        "x": 944.6875,
+        "y": 660.796875
+      },
+      "scroll": 116,
+      "selected": null,
+      "size": "14px",
+      "text": "创建内存检查点",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 27, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(43, 61, 86)"
+      ],
+      "client": 102,
+      "color": "rgb(199, 213, 231)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "6px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(199, 213, 231) none 3px",
+      "overflow": "visible",
+      "padding": "0px 9px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 104,
+        "x": 1068.6875,
+        "y": 660.796875
+      },
+      "scroll": 102,
+      "selected": null,
+      "size": "14px",
+      "text": "模拟保存失败",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 27, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(43, 61, 86)"
+      ],
+      "client": 116,
+      "color": "rgb(199, 213, 231)",
+      "disabled": true,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "6px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(199, 213, 231) none 3px",
+      "overflow": "visible",
+      "padding": "0px 9px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 118,
+        "x": 944.6875,
+        "y": 702.796875
+      },
+      "scroll": 116,
+      "selected": null,
+      "size": "14px",
+      "text": "重载最近检查点",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(22, 61, 99)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(55, 151, 255)"
+      ],
+      "client": 76,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 78,
+        "x": 739.4140625,
+        "y": 437
+      },
+      "scroll": 76,
+      "selected": "true",
+      "size": "14px",
+      "text": "组合净值",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 78,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 79.9921875,
+        "x": 823.4140625,
+        "y": 437
+      },
+      "scroll": 78,
+      "selected": "false",
+      "size": "14px",
+      "text": "标的 K 线",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "0px",
+        "0px",
+        "1px",
+        "0px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 294,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "10px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "7px 2px",
+      "pressed": "false",
+      "radius": "0px",
+      "rect": {
+        "h": 57,
+        "w": 294,
+        "x": 947.40625,
+        "y": 512
+      },
+      "scroll": 294,
+      "selected": null,
+      "size": "14px",
+      "text": "合成股票 A469.2351 股 × ¥94.76¥44,463.9844.5%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "0px",
+        "0px",
+        "1px",
+        "0px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 294,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "10px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "7px 2px",
+      "pressed": "false",
+      "radius": "0px",
+      "rect": {
+        "h": 57,
+        "w": 294,
+        "x": 947.40625,
+        "y": 569
+      },
+      "scroll": 294,
+      "selected": null,
+      "size": "14px",
+      "text": "合成股票 B599.8956 股 × ¥75.87¥45,515.8945.5%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(20, 30, 48)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 34,
+      "color": "rgb(127, 141, 162)",
+      "disabled": true,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(127, 141, 162) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 36,
+        "w": 36,
+        "x": 1062.40625,
+        "y": 760
+      },
+      "scroll": 34,
+      "selected": null,
+      "size": "20px",
+      "text": "",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(20, 30, 48)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 136,
+      "color": "rgb(127, 141, 162)",
+      "disabled": true,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(127, 141, 162) none 3px",
+      "overflow": "visible",
+      "padding": "4px 8px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 40.59375,
+        "w": 138,
+        "x": 1103.40625,
+        "y": 760
+      },
+      "scroll": 136,
+      "selected": null,
+      "size": "14px",
+      "text": "下一已知事件当前进度内无后续事件",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 289,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "5px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "9px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 110,
+        "w": 291,
+        "x": 947.40625,
+        "y": 824
+      },
+      "scroll": 289,
+      "selected": null,
+      "size": "14px",
+      "text": "首次建仓2024-06-17T0 已确定初始目标，下一交易日开盘建仓初始目标已执行 · A 0.0% / B 0.0% / 现金 100.0% → A 45.0% / B 45.0% / 现金 10.0%",
+      "weight": "400",
+      "white": "normal"
+    }
+  ],
+  "document": {
+    "h": 1051,
+    "scrollY": 0,
+    "w": 1280
+  },
+  "sections": [
+    {
+      "items": [
+        {
+          "bg": "rgb(17, 26, 43)",
+          "border": [
+            "0px",
+            "0px",
+            "1px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 1280,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "8px",
+          "line": "18px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "auto",
+          "padding": "5px 24px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 47,
+            "w": 1280,
+            "x": 0,
+            "y": 0
+          },
+          "scroll": 1280,
+          "selected": null,
+          "size": "12px",
+          "text": "TradeReview历史策略复盘 · 完整交互版旧 Workbench 预览完整观察完整结果完整比较原创建当前 A",
+          "weight": "400",
+          "white": "nowrap"
+        }
+      ],
+      "sel": ".full-preview-nav"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(17, 26, 43)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 172,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "18px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 38,
+            "w": 173.9375,
+            "x": 1082.0625,
+            "y": 57
+          },
+          "scroll": 172,
+          "selected": null,
+          "size": "12px",
+          "text": "预览工具 · 场景 / 视觉 / 说明T0 起点运行中 · 第10日完整 · 已展开视觉原版样式首页统一T0 入口预设：未展开；合成演示，刷新重置；切换演示场景或导览会重开预设；切换视觉保留当前查看状态。",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".full-preview-tools"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(15, 25, 43)",
+          "border": [
+            "0px",
+            "0px",
+            "1px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 1280,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "12px",
+          "line": "18px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "8px 24px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 59,
+            "w": 1280,
+            "x": 0,
+            "y": 47
+          },
+          "scroll": 1280,
+          "selected": null,
+          "size": "12px",
+          "text": "合成演示 · T0 起点 · 首页统一三个月双策略合成预设 · EMA20 v1.4 · 低波动质量 v2.1 · ¥100,000 · 复盘标的集预览工具 · 场景 / 视觉 / 说明T0 起点运行中 · 第10日完整 · 已展开视觉原版样式首页统一T0 入口预设：未展开；合成演示，刷新重置；切换演示场景或导览会重开预设；切换视觉保留当前查看状态。",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".full-preview-context"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(11, 18, 32)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 1280,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "16px 25.6px 20px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 945,
+            "w": 1280,
+            "x": 0,
+            "y": 106
+          },
+          "scroll": 1280,
+          "selected": null,
+          "size": "14px",
+          "text": "策略实验 / 完整 Workbench 合成演示回测工作台交互原型 · 合成数据 · 刷新重置查看配置实验列表EMA20 v1.4独立本金 ¥100,000.00低波动质量 v2.1独立本金 ¥100,000.00更多组合 ⌄总资产¥99,979.87累计收益-0.02%组合当日收益¥-20.13 · -0.02%现金比例10.0%当前观察日2024-06-17 · 收盘后已展开至 2024-06-17下一交易日 →播放速度0.5x1x2x阶段结果回看T0 · 2024-06",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-prototype"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 1229,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "14px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 53,
+            "w": 1228.8125,
+            "x": 25.59375,
+            "y": 122
+          },
+          "scroll": 1229,
+          "selected": null,
+          "size": "14px",
+          "text": "策略实验 / 完整 Workbench 合成演示回测工作台交互原型 · 合成数据 · 刷新重置查看配置实验列表",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-header"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 1125,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "7px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "auto",
+          "padding": "1px 2px 3px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 40,
+            "w": 1125.3828125,
+            "x": 25.59375,
+            "y": 185
+          },
+          "scroll": 1125,
+          "selected": null,
+          "size": "14px",
+          "text": "EMA20 v1.4独立本金 ¥100,000.00低波动质量 v2.1独立本金 ¥100,000.00",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".portfolio-tabs"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 1229,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "10px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 72,
+            "w": 1228.8125,
+            "x": 25.59375,
+            "y": 235
+          },
+          "scroll": 1229,
+          "selected": null,
+          "size": "14px",
+          "text": "总资产¥99,979.87累计收益-0.02%组合当日收益¥-20.13 · -0.02%现金比例10.0%",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-summary"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 274,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "32px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 32,
+            "w": 273.703125,
+            "x": 38.59375,
+            "y": 266
+          },
+          "scroll": 274,
+          "selected": null,
+          "size": "24px",
+          "text": "¥99,979.87",
+          "weight": "500",
+          "white": "normal"
+        },
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(239, 83, 80)"
+          ],
+          "client": 274,
+          "color": "rgb(239, 83, 80)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "32px",
+          "offset": "0px",
+          "outline": "rgb(239, 83, 80) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 32,
+            "w": 273.703125,
+            "x": 348.296875,
+            "y": 266
+          },
+          "scroll": 274,
+          "selected": null,
+          "size": "24px",
+          "text": "-0.02%",
+          "weight": "500",
+          "white": "normal"
+        },
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(239, 83, 80)"
+          ],
+          "client": 274,
+          "color": "rgb(239, 83, 80)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "32px",
+          "offset": "0px",
+          "outline": "rgb(239, 83, 80) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 32,
+            "w": 273.703125,
+            "x": 658,
+            "y": 266
+          },
+          "scroll": 274,
+          "selected": null,
+          "size": "24px",
+          "text": "¥-20.13 · -0.02%",
+          "weight": "500",
+          "white": "normal"
+        },
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 274,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "32px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 32,
+            "w": 273.703125,
+            "x": 967.703125,
+            "y": 266
+          },
+          "scroll": 274,
+          "selected": null,
+          "size": "24px",
+          "text": "10.0%",
+          "weight": "500",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-summary b"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(17, 26, 43)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 1227,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "6px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "2px 10px 2px 12px",
+          "pressed": null,
+          "radius": "8px",
+          "rect": {
+            "h": 49,
+            "w": 1228.8125,
+            "x": 25.59375,
+            "y": 319
+          },
+          "scroll": 1227,
+          "selected": null,
+          "size": "14px",
+          "text": "当前观察日2024-06-17 · 收盘后已展开至 2024-06-17下一交易日 →播放速度0.5x1x2x阶段结果回看T0 · 2024-06-14 16:002024-06-17",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-timebar"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 1229,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "6px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 38,
+            "w": 1228.8125,
+            "x": 25.59375,
+            "y": 380
+          },
+          "scroll": 1229,
+          "selected": null,
+          "size": "14px",
+          "text": "进度恢复展开剩余行情原型演示工具 仅合成数据 · 内存状态，不是真实保存或撮合一次性故障场景故障注入关闭数据中断执行失败下一次计划执行 · EMA20 v1.4计划日期 2024-06-21执行演示结果正常成交部分成交（每笔计划差量 50%）未成交（计划保留，实际成交为 0）内存检查点 · 仅本次页面状态当前完整日 2024-06-17 · 最近检查点 尚未创建创建内存检查点模拟保存失败重载最近检查点重载只恢复明确创建的内存检查点，不清除最远已看日期与来源；不代表真实数据库持",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".recovery-prototype"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(194, 208, 225)"
+          ],
+          "client": 330,
+          "color": "rgb(194, 208, 225)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "2px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(194, 208, 225) none 3px",
+          "overflow": "visible",
+          "padding": "4px 9px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 36,
+            "w": 329.71875,
+            "x": 923.6875,
+            "y": 381
+          },
+          "scroll": 330,
+          "selected": null,
+          "size": "12px",
+          "text": "原型演示工具 仅合成数据 · 内存状态，不是真实保存或撮合",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".recovery-prototype summary"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 1229,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "16px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 613,
+            "w": 1228.8125,
+            "x": 25.59375,
+            "y": 418
+          },
+          "scroll": 1229,
+          "selected": null,
+          "size": "14px",
+          "text": "EMA20 v1.4组合净值T0 起点 · 2024-06-14 16:00组合净值标的 K 线a#tv-attr-logo{--fill:#131722;--stroke:#fff;position:absolute;left:10px;bottom:10px;height:19px;width:35px;margin:0;padding:0;border:0;z-index:3;}a#tv-attr-logo[data-dark]{--fill:#D1D4DC;--str",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-grid"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(17, 26, 43)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 891,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "13px 14px 11px",
+          "pressed": null,
+          "radius": "8px",
+          "rect": {
+            "h": 613,
+            "w": 892.8125,
+            "x": 25.59375,
+            "y": 418
+          },
+          "scroll": 891,
+          "selected": null,
+          "size": "14px",
+          "text": "EMA20 v1.4组合净值T0 起点 · 2024-06-14 16:00组合净值标的 K 线a#tv-attr-logo{--fill:#131722;--stroke:#fff;position:absolute;left:10px;bottom:10px;height:19px;width:35px;margin:0;padding:0;border:0;z-index:3;}a#tv-attr-logo[data-dark]{--fill:#D1D4DC;--str",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-main"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 863,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "8px 12px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 46,
+            "w": 862.8125,
+            "x": 40.59375,
+            "y": 432
+          },
+          "scroll": 863,
+          "selected": null,
+          "size": "14px",
+          "text": "EMA20 v1.4组合净值T0 起点 · 2024-06-14 16:00组合净值标的 K 线",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".chart-heading"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(17, 26, 43)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 863,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "hidden",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "8px",
+          "rect": {
+            "h": 320,
+            "w": 862.8125,
+            "x": 40.59375,
+            "y": 485
+          },
+          "scroll": 863,
+          "selected": null,
+          "size": "14px",
+          "text": "a#tv-attr-logo{--fill:#131722;--stroke:#fff;position:absolute;left:10px;bottom:10px;height:19px;width:35px;margin:0;padding:0;border:0;z-index:3;}a#tv-attr-logo[data-dark]{--fill:#D1D4DC;--stroke:#131722;}T0V",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-chart-shell"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(173, 187, 207)"
+          ],
+          "client": 863,
+          "color": "rgb(173, 187, 207)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "14px",
+          "line": "18px",
+          "offset": "0px",
+          "outline": "rgb(173, 187, 207) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 23,
+            "w": 862.8125,
+            "x": 40.59375,
+            "y": 805
+          },
+          "scroll": 863,
+          "selected": null,
+          "size": "12px",
+          "text": "T0当前 V净值截至 2024-06-17",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".chart-caption"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(173, 187, 207)"
+          ],
+          "client": 863,
+          "color": "rgb(173, 187, 207)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "18px",
+          "offset": "0px",
+          "outline": "rgb(173, 187, 207) none 3px",
+          "overflow": "visible",
+          "padding": "2px 0px 0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 20,
+            "w": 862.8125,
+            "x": 40.59375,
+            "y": 828
+          },
+          "scroll": 863,
+          "selected": null,
+          "size": "12px",
+          "text": "查看日 2024-06-17 · 图形、轴范围与事件标记均截止当前日",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".chart-disclosure"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 320,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "12px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "auto",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 613,
+            "w": 320,
+            "x": 934.40625,
+            "y": 418
+          },
+          "scroll": 320,
+          "selected": null,
+          "size": "14px",
+          "text": "当前组合持仓概览EMA20 v1.4随策略 · 每周 · 每组合独立本金 · 收盘估值合成股票 A469.2351 股 × ¥94.76¥44,463.9844.5%合成股票 B599.8956 股 × ¥75.87¥45,515.8945.5%现金¥10,000.00组合净值0.9998总资产¥99,979.87当前查看日 · 1 条调仓事件下一已知事件当前进度内无后续事件首次建仓2024-06-17T0 已确定初始目标，下一交易日开盘建仓初始目标已执行 · A 0.0% ",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-side"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(17, 26, 43)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 318,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "12px",
+          "pressed": null,
+          "radius": "8px",
+          "rect": {
+            "h": 317,
+            "w": 320,
+            "x": 934.40625,
+            "y": 418
+          },
+          "scroll": 318,
+          "selected": null,
+          "size": "14px",
+          "text": "当前组合持仓概览EMA20 v1.4随策略 · 每周 · 每组合独立本金 · 收盘估值合成股票 A469.2351 股 × ¥94.76¥44,463.9844.5%合成股票 B599.8956 股 × ¥75.87¥45,515.8945.5%现金¥10,000.00组合净值0.9998总资产¥99,979.87",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".holdings-block"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "0px",
+            "0px",
+            "1px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 294,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "10px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "7px 2px",
+          "pressed": "false",
+          "radius": "0px",
+          "rect": {
+            "h": 57,
+            "w": 294,
+            "x": 947.40625,
+            "y": 512
+          },
+          "scroll": 294,
+          "selected": null,
+          "size": "14px",
+          "text": "合成股票 A469.2351 股 × ¥94.76¥44,463.9844.5%",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "0px",
+            "0px",
+            "1px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 294,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "10px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "7px 2px",
+          "pressed": "false",
+          "radius": "0px",
+          "rect": {
+            "h": 57,
+            "w": 294,
+            "x": 947.40625,
+            "y": 569
+          },
+          "scroll": 294,
+          "selected": null,
+          "size": "14px",
+          "text": "合成股票 B599.8956 股 × ¥75.87¥45,515.8945.5%",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".holding-row"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 74,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 22,
+            "w": 74.2578125,
+            "x": 1165.1484375,
+            "y": 519
+          },
+          "scroll": 74,
+          "selected": null,
+          "size": "14px",
+          "text": "¥44,463.98",
+          "weight": "500",
+          "white": "normal"
+        },
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 74,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 22,
+            "w": 74.2578125,
+            "x": 1165.1484375,
+            "y": 576
+          },
+          "scroll": 74,
+          "selected": null,
+          "size": "14px",
+          "text": "¥45,515.89",
+          "weight": "500",
+          "white": "normal"
+        }
+      ],
+      "sel": ".holding-value b"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 74,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 22,
+            "w": 74.2578125,
+            "x": 1167.1484375,
+            "y": 694.5
+          },
+          "scroll": 74,
+          "selected": null,
+          "size": "14px",
+          "text": "¥99,979.87",
+          "weight": "500",
+          "white": "normal"
+        }
+      ],
+      "sel": ".holdings-foot b"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 74,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 22,
+            "w": 74.2578125,
+            "x": 1167.1484375,
+            "y": 631
+          },
+          "scroll": 74,
+          "selected": null,
+          "size": "14px",
+          "text": "¥10,000.00",
+          "weight": "500",
+          "white": "normal"
+        },
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 46,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 22,
+            "w": 45.8203125,
+            "x": 1195.5859375,
+            "y": 662
+          },
+          "scroll": 46,
+          "selected": null,
+          "size": "14px",
+          "text": "0.9998",
+          "weight": "500",
+          "white": "normal"
+        }
+      ],
+      "sel": ".account-total b"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(17, 26, 43)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 318,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "hidden",
+          "padding": "12px",
+          "pressed": null,
+          "radius": "8px",
+          "rect": {
+            "h": 216,
+            "w": 320,
+            "x": 934.40625,
+            "y": 747
+          },
+          "scroll": 318,
+          "selected": null,
+          "size": "14px",
+          "text": "当前查看日 · 1 条调仓事件下一已知事件当前进度内无后续事件首次建仓2024-06-17T0 已确定初始目标，下一交易日开盘建仓初始目标已执行 · A 0.0% / B 0.0% / 现金 100.0% → A 45.0% / B 45.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".event-block"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(20, 30, 48)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 34,
+          "color": "rgb(127, 141, 162)",
+          "disabled": true,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(127, 141, 162) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 36,
+            "w": 36,
+            "x": 1062.40625,
+            "y": 760
+          },
+          "scroll": 34,
+          "selected": null,
+          "size": "20px",
+          "text": "",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(20, 30, 48)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 136,
+          "color": "rgb(127, 141, 162)",
+          "disabled": true,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(127, 141, 162) none 3px",
+          "overflow": "visible",
+          "padding": "4px 8px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 40.59375,
+            "w": 138,
+            "x": 1103.40625,
+            "y": 760
+          },
+          "scroll": 136,
+          "selected": null,
+          "size": "14px",
+          "text": "下一已知事件当前进度内无后续事件",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".event-nav button"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 289,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "5px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "9px 10px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 110,
+            "w": 291,
+            "x": 947.40625,
+            "y": 824
+          },
+          "scroll": 289,
+          "selected": null,
+          "size": "14px",
+          "text": "首次建仓2024-06-17T0 已确定初始目标，下一交易日开盘建仓初始目标已执行 · A 0.0% / B 0.0% / 现金 100.0% → A 45.0% / B 45.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".event-card"
+    },
+    {
+      "items": [],
+      "sel": ".portfolio-more-menu"
+    },
+    {
+      "items": [],
+      "sel": ".portfolio-more-menu b"
+    },
+    {
+      "items": [],
+      "sel": ".portfolio-more-menu small"
+    },
+    {
+      "items": [],
+      "sel": ".running-drawer"
+    },
+    {
+      "items": [],
+      "sel": ".drawer-header"
+    },
+    {
+      "items": [],
+      "sel": ".drawer-content"
+    },
+    {
+      "items": [],
+      "sel": ".drawer-content dd"
+    },
+    {
+      "items": [],
+      "sel": ".drawer-actions"
+    }
+  ],
+  "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0",
+  "viewport": {
+    "dpr": 1,
+    "h": 800,
+    "w": 1280
+  }
+}

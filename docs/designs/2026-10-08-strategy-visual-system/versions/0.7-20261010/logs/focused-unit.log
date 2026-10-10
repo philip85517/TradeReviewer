@@ -1,0 +1,15 @@
+
+> trade-reviewer@0.1.0 test:unit
+> vitest run app/components/design-prototype/recall-design-prototype.test.ts app/components/recall/recall-prototype-price-roles.test.ts app/components/chart/drawing-canvas.test.tsx app/components/chart/drawing-canvas.recall-review.test.tsx app/components/chart/replay-chart.test.tsx app/components/chart/replay-chart.recall-review.test.tsx app/components/recall/recall-workspace.test.tsx app/components/recall/recall-integration.recall-review.test.tsx app/components/trade-review-workspace.recall-bridge.test.tsx
+
+
+ RUN  v4.1.10 /Users/zhoulin/.codex/worktrees/facb/TradeReview
+
+(node:13406) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  9 passed (9)
+      Tests  193 passed (193)
+   Start at  20:41:41
+   Duration  35.74s (transform 8.05s, setup 4.44s, import 12.08s, tests 55.69s, environment 19.66s)
+

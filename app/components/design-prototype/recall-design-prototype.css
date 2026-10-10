@@ -1,0 +1,606 @@
+.recall-design-prototype {
+  --prototype-font: Geist, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+  min-height: 100vh;
+  color: #e7edf6;
+  background: #0b1220;
+  font-family: var(--prototype-font);
+}
+
+.recall-design-prototype__intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 6px 24px;
+  border-bottom: 1px solid rgba(88, 112, 143, .72);
+}
+
+.recall-design-prototype__intro > div:first-child {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.recall-design-prototype__eyebrow {
+  margin: 0;
+  color: #9db4cc;
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.recall-design-prototype__intro h1 {
+  margin: 0;
+  color: #e7edf6;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.recall-design-prototype__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: #9db4cc;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.recall-design-prototype__actions button {
+  min-height: 36px;
+  border: 1px solid #58708f;
+  border-radius: 5px;
+  padding: 0 10px;
+  color: #e7edf6;
+  background: #111a2b;
+  font: 13px/20px var(--prototype-font);
+  cursor: pointer;
+}
+
+.recall-design-prototype__actions button:hover { background: #1a3150; }
+.recall-design-prototype__actions button:focus-visible { outline: 2px solid #8cbdff; outline-offset: 2px; }
+
+.recall-design-prototype__storage-note {
+  margin: 0;
+  padding: 2px 24px;
+  color: #8ea7c1;
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recall-design-prototype__workspace {
+  min-height: 720px;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype {
+  font-family: var(--prototype-font);
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-shell {
+  border-color: #58708f;
+  box-shadow: 0 8px 32px rgba(3, 11, 22, .24);
+}
+
+.recall-design-prototype .recall-workspace--design-prototype .recall-chart-column {
+  min-width: 0;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] {
+  --primary: #2469c8;
+  --primary-hover: #2b72d3;
+  --primary-active: #205bac;
+  --focus-ring: #8cbdff;
+  --line: #58708f;
+  --surface: #111a2b;
+  --text: #e7edf6;
+  --muted: #adbbcf;
+  --faint: #9cacc2;
+  --prototype-page: #0b1220;
+  --prototype-surface: #111a2b;
+  --prototype-elevated: #182337;
+  --prototype-text: #e7edf6;
+  --prototype-muted: #adbbcf;
+  --prototype-helper: #9cacc2;
+  font-family: var(--prototype-font);
+  color: var(--prototype-text);
+  background: var(--prototype-page);
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-and-plan {
+  min-height: 0;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-plan-sidebar {
+  max-width: none;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .chart-stage,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .drawing-canvas {
+  font-family: var(--prototype-font);
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .chart-ohlc {
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-stage-context[data-design-prototype="recommended"] {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 28px;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  border-bottom: 1px solid rgba(88, 112, 143, .72);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] button:focus-visible,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] input:focus-visible,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] select:focus-visible,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] textarea:focus-visible {
+  outline: 2px solid #8cbdff;
+  outline-offset: 2px;
+}
+
+/* The recommendation is opt-in. Keep this role scale inside the prototype
+   workspace so the baseline route continues to use the source stylesheet. */
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-header > .recall-heading h1 {
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-plan-sidebar h2,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-plan-sidebar h3,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-plan-detail-group > summary,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-plan-secondary-group > summary {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] {
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] p,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] li,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] dd {
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] small,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] label,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-heading .eyebrow,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-heading h1 small,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-phase-provenance,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-plan-source,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-plan-field-note,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-plan-sidebar dt {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] button,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] select,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] input,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] textarea {
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 500;
+  min-height: 36px;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] button[aria-pressed="true"],
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] option:checked,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .is-selected {
+  font-weight: 600;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.75;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-bar__primary,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-footer__primary {
+  min-width: 0;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-bar > .recall-position-strip.recall-replay-bar__primary > div:first-child,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-footer > .recall-position-strip.recall-replay-footer__primary > div:first-child {
+  column-gap: 8px;
+  row-gap: 2px;
+}
+
+/* Keep the current decision as the sole solid forward action. Retained
+   snapshots remain available as a secondary action even though the source
+   component uses the shared `primary` class for both branches. */
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-bar .recall-controls.recall-replay-bar__primary > button.primary,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-footer .recall-controls.recall-replay-footer__primary > button.primary {
+  border-color: var(--line);
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-bar .recall-controls.recall-replay-bar__primary > button.primary:nth-of-type(4):enabled,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-footer .recall-controls.recall-replay-footer__primary > button.primary:nth-of-type(4):enabled {
+  border-color: #2469c8;
+  background: #2469c8;
+  color: #fff;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-bar .recall-controls.recall-replay-bar__primary > button.primary:nth-of-type(4):enabled:hover,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-footer .recall-controls.recall-replay-footer__primary > button.primary:nth-of-type(4):enabled:hover {
+  border-color: #2b72d3;
+  background: #2b72d3;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-bar .recall-controls.recall-replay-bar__primary > button.primary:nth-of-type(4):enabled:active,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-footer .recall-controls.recall-replay-footer__primary > button.primary:nth-of-type(4):enabled:active {
+  border-color: #205bac;
+  background: #205bac;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-bar .recall-controls.recall-replay-bar__primary > button.primary:nth-of-type(4):disabled,
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-footer .recall-controls.recall-replay-footer__primary > button.primary:nth-of-type(4):disabled {
+  border-color: var(--line);
+  background: transparent;
+  color: var(--muted);
+  opacity: .58;
+  cursor: default;
+}
+
+@media (max-width: 900px) {
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-and-plan.plan-open {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] button,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] select,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] input,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] textarea {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 760px) {
+  .recall-design-prototype__intro { align-items: flex-start; flex-direction: column; padding: 12px 14px 8px; }
+  .recall-design-prototype__actions { justify-content: flex-start; flex-wrap: wrap; }
+  .recall-design-prototype__storage-note { padding-inline: 14px; white-space: normal; overflow: visible; text-overflow: clip; }
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-plan-sidebar { max-width: none; }
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-header > .recall-heading h1 {
+    font-size: 16px;
+    line-height: 22px;
+  }
+}
+
+/* Narrow recommendation flow.  The production chart stylesheet has a
+   bounded 220px container branch for the native workspace.  The prototype
+   needs the complete chart annotation and plan content reachable in the page,
+   so this opt-in branch restores intrinsic vertical flow only for the
+   recommended sample. */
+@media (max-width: 1330px) {
+  .recall-design-prototype,
+  .recall-design-prototype__workspace,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"],
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-layout,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-main {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-layout {
+    display: block;
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-main {
+    display: block;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-and-plan,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-and-plan.plan-open {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    box-sizing: border-box;
+    overflow: visible;
+    gap: 14px;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-shell,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-and-plan.plan-open .recall-chart-shell {
+    position: static;
+    z-index: auto;
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto;
+    min-height: 480px;
+    max-height: none;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-column {
+    width: auto;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-column .chart-stage,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-and-plan.plan-open .chart-stage,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-shell .drawing-toolbar {
+    height: 480px;
+    min-height: 480px;
+    max-height: none;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-plan-sidebar,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-and-plan.plan-open .recall-plan-sidebar {
+    display: block;
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto;
+    min-height: max-content;
+    max-height: none;
+    overflow: visible;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-plan-sidebar > *,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-plan-sidebar p,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-plan-sidebar dd {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-bar,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-footer {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: visible;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-bar > .recall-position-strip,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-footer > .recall-position-strip {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-bar .recall-replay-cutoff,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-footer .recall-replay-cutoff {
+    min-width: 0;
+    max-width: 100%;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-bar .recall-replay-cutoff span,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-footer .recall-replay-cutoff span {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* A 390px viewport gets more chart height so multiline drawing annotations
+   and the phase context can be read by page scroll. The chart remains a
+   usable full-width surface; replay/tool rows keep their existing internal
+   horizontal reachability without creating page overflow. */
+@media (max-width: 600px) {
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-shell,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-and-plan.plan-open .recall-chart-shell {
+    min-height: 720px;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-column .chart-stage,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-and-plan.plan-open .chart-stage,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-shell .drawing-toolbar {
+    height: 720px;
+    min-height: 720px;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-bar > .recall-controls,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-footer > .recall-controls,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-header > .chart-toolbar {
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  /* Keep every replay action statically discoverable at the narrow sample
+     width. The source row scrolls horizontally, which leaves the primary
+     next-decision action outside the initial viewport; wrapping preserves
+     DOM/tab order while allowing all six controls to be seen and reached. */
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-bar > .recall-controls,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-footer > .recall-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: flex-start;
+    gap: 6px;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    overflow-x: visible;
+    overflow-y: visible;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-bar > .recall-controls > button,
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-footer > .recall-controls > button {
+    flex: 0 0 auto;
+    max-width: 100%;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-bar > .recall-controls > button.primary:nth-of-type(4),
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-replay-footer > .recall-controls > button.primary:nth-of-type(4) {
+    flex: 0 0 auto;
+  }
+}
+
+/* Desktop chart sizing must account for the prototype stage-context row. The
+   native chart's 100% stage height otherwise adds to that row, making the
+   chart column taller than its shell and allowing focus scrolling to clip the
+   context/axis boundary. Let the chart consume the remaining flex space so
+   ReplayChart's ResizeObserver receives the actual available height. */
+@media (min-width: 1331px) {
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-column {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: auto;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-stage-context[data-design-prototype="recommended"] {
+    flex: 0 0 auto;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-chart-column .chart-stage {
+    flex: 1 1 0;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+  }
+}
+
+/* Keep the chart toolbar's data affordance legible after the production
+   toolbar intentionally compresses this badge to an icon-sized slot. It
+   remains a non-shrinking member of the toolbar's own horizontal scroller. */
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-header > .chart-toolbar .local-data-badge {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 90px;
+  min-height: 36px;
+  padding: 0 9px;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-header > .chart-toolbar .local-data-badge {
+    min-height: 44px;
+  }
+}
+
+/* The native chart paints the gold plan title/price label on the right axis,
+   while the source hit button also contains that label as text. In the
+   recommendation, keep the same aria/title and pointer/keyboard hit target,
+   but make the duplicate text transparent and place the target beside the
+   painted label. */
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .chart-stage > button[aria-label$="，精确编辑"] {
+  left: auto !important;
+  right: 36px !important;
+  width: 112px;
+  min-width: 112px;
+  max-width: 112px;
+  padding: 0;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0;
+  z-index: 8;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .chart-stage > button[aria-label$="，精确编辑"]:hover {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: transparent !important;
+}
+
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .chart-stage > button[aria-label$="，精确编辑"]:focus-visible {
+  border-color: #8cbdff !important;
+  outline: 2px solid #8cbdff;
+  outline-offset: 2px;
+}
+
+/* The narrow semantic price readout is supplied by the prototype seam. It is
+   intentionally absent at desktop/900px so it cannot become a second chart
+   header; the narrow sample uses normal flow to keep complete values
+   discoverable when canvas labels and multiline text share the plot. */
+.recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-prototype-price-roles {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-prototype-price-roles {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+    padding: 6px 8px;
+    box-sizing: border-box;
+    border-top: 1px solid #243145;
+    border-bottom: 1px solid #243145;
+    background: #111a2b;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 18px;
+    overflow-wrap: anywhere;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-prototype-price-roles > * {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-prototype-price-roles__plan {
+    border-left: 2px solid #f3ba2f;
+    padding-left: 6px;
+    color: #f3ba2f;
+  }
+
+  .recall-design-prototype .recall-workspace--design-prototype[data-design-prototype="recommended"] .recall-prototype-price-roles__actual {
+    border-left: 2px solid #58708f;
+    padding-left: 6px;
+    color: var(--muted);
+  }
+}

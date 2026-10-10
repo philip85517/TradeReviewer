@@ -1,0 +1,97 @@
+{
+  "nodes": [
+    {
+      "clientH": 720,
+      "cls": "",
+      "height": "1051px",
+      "overflow": "visible",
+      "overflowY": "visible",
+      "rect": {
+        "h": 1051,
+        "w": 1280,
+        "x": 0,
+        "y": 0
+      },
+      "scrollH": 1051,
+      "tag": "HTML",
+      "top": 0
+    },
+    {
+      "clientH": 1051,
+      "cls": "__variable_geist_0h4idih __variable_geist_mono_1ikzmhz antialiased",
+      "height": "1051px",
+      "overflow": "hidden",
+      "overflowY": "hidden",
+      "rect": {
+        "h": 1051,
+        "w": 1280,
+        "x": 0,
+        "y": 0
+      },
+      "scrollH": 1051,
+      "tag": "BODY",
+      "top": 0
+    },
+    {
+      "clientH": 1051,
+      "cls": "full-workbench-preview full-workbench-preview--unified",
+      "height": "1051px",
+      "overflow": "visible",
+      "overflowY": "visible",
+      "rect": {
+        "h": 1051,
+        "w": 1280,
+        "x": 0,
+        "y": 0
+      },
+      "scrollH": 1051,
+      "tag": "DIV",
+      "top": 0
+    },
+    {
+      "clientH": 611,
+      "cls": "running-main",
+      "height": "613px",
+      "overflow": "visible",
+      "overflowY": "visible",
+      "rect": {
+        "h": 613,
+        "w": 892.8125,
+        "x": 25.59375,
+        "y": 418
+      },
+      "scrollH": 611,
+      "tag": "SECTION",
+      "top": 0
+    },
+    {
+      "clientH": 320,
+      "cls": "running-chart",
+      "height": "320px",
+      "overflow": "hidden",
+      "overflowY": "hidden",
+      "rect": {
+        "h": 320,
+        "w": 862.8125,
+        "x": 40.59375,
+        "y": 485
+      },
+      "scrollH": 320,
+      "tag": "DIV",
+      "top": 0
+    }
+  ],
+  "root": {
+    "client": 720,
+    "h": 1051,
+    "tag": "HTML",
+    "top": 0
+  },
+  "scrollY": 0,
+  "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+  "viewport": {
+    "dpr": 2,
+    "h": 720,
+    "w": 1280
+  }
+}

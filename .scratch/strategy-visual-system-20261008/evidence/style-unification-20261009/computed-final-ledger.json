@@ -1,0 +1,40 @@
+{
+  "elements": [
+    {
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "22px",
+      "numerals": "normal",
+      "offset": "0px",
+      "outline": "rgb(156, 174, 197) none 3px",
+      "selector": ".comparison-full-ledger th",
+      "size": "14px",
+      "text": "指标"
+    },
+    {
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "22px",
+      "numerals": "tabular-nums",
+      "offset": "0px",
+      "outline": "rgb(203, 215, 230) none 3px",
+      "selector": ".comparison-full-ledger td",
+      "size": "14px",
+      "text": "+2.54%"
+    },
+    {
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "22px",
+      "numerals": "normal",
+      "offset": "2px",
+      "outline": "rgb(158, 202, 255) solid 2px",
+      "selector": ".comparison-full-ledger-scroll",
+      "size": "14px",
+      "text": "指标EMA20 v1.4低波动质量 v2.1累计收益+2.54%−0.90%最大回撤3.06%4.38%期末总资产¥102,540.84¥99,102.99现金余额¥10,277.84¥20,111."
+    }
+  ],
+  "time": "2026-10-09T09:32:45.995Z",
+  "viewport": {
+    "dpr": 1,
+    "height": 900,
+    "width": 1440
+  }
+}

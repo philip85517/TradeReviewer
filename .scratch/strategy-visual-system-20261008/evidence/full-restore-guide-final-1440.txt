@@ -1,0 +1,311 @@
+- complementary "应用导航":
+  - generic "TradeReview":
+  - button "工作台（当前）": 工作台
+  - button "策略库"
+  - button "实验"
+- main:
+  - generic: TradeReview
+  - generic: / 策略实验 / 工作台
+  - generic: 视觉模型 · 合成数据 · 刷新重置
+  - button "查看配置"
+  - button "实验列表"
+  - generic "当前用户": 林 · 观察者
+  - region "实验身份与观察模式":
+    - generic "动量轮动 · 稳定工作台"
+    - combobox "选择策略组合":
+      - option "EMA20 动量 v1.4 · 锁定" [selected]
+      - option "低波动防守 v2.0 · 锁定"
+      - option "组合 B · 数据缺失 · 锁定"
+    - generic: ¥100,000.00 · 2024-06-14 → 2025-02-06
+    - navigation "工作区模式":
+      - button "回放观察"
+      - button "阶段结果"
+      - button "组合对比"
+    - button "实验操作":
+      - text: 实验操作
+  - region "四项摘要指标":
+    - generic: 总资产
+    - generic: ¥104,840
+    - generic: 累计收益
+    - generic: 4.84%
+    - generic: 按当前查看日计算
+    - generic: 组合当日收益
+    - generic: 0.06%
+    - generic: 2025-02-06
+    - generic: 现金比例
+    - generic: 54.4%
+  - region "当前范围":
+    - generic: 当前组合：EMA20 动量 v1.4 · 查看 2025-02-06 · 已运行至 2025-02-06
+    - button "全部视图"
+  - region "主图与回放工作区":
+    - strong: 组合净值
+    - generic: 截至 2025-02-06 16:00 · 当前查看日
+    - button "显示组合净值": 组合净值
+    - button "显示标的 K 线": 标的 K 线
+    - button "图表视野说明": 视野说明
+    - img "合成策略净值图，仅绘制当前可见日期":
+      - table:
+        - row:
+          - cell:
+            - link:
+              - /url: https://www.tradingview.com/?utm_medium=lwc-link&utm_campaign=lwc-chart&utm_source=127.0.0.1/design-system-20261008/workbench/index.html
+          - cell
+        - row:
+          - cell
+          - cell
+      - generic: 组合净值，可知范围截至 2025-02-06，共 170 个可见交易日。
+      - generic: 组合净值 · 右轴
+      - generic: 合成行情
+      - generic: 截至 2025-02-06
+    - generic "图下回放控制":
+      - generic: 查看日期
+      - button "回看上一日"
+      - combobox "查看日期":
+        - option "2024-06-14"
+        - option "2024-06-17"
+        - option "2024-06-18"
+        - option "2024-06-19"
+        - option "2024-06-20"
+        - option "2024-06-21"
+        - option "2024-06-24"
+        - option "2024-06-25"
+        - option "2024-06-26"
+        - option "2024-06-27"
+        - option "2024-06-28"
+        - option "2024-07-01"
+        - option "2024-07-02"
+        - option "2024-07-03"
+        - option "2024-07-04"
+        - option "2024-07-05"
+        - option "2024-07-08"
+        - option "2024-07-09"
+        - option "2024-07-10"
+        - option "2024-07-11"
+        - option "2024-07-12"
+        - option "2024-07-15"
+        - option "2024-07-16"
+        - option "2024-07-17"
+        - option "2024-07-18"
+        - option "2024-07-19"
+        - option "2024-07-22"
+        - option "2024-07-23"
+        - option "2024-07-24"
+        - option "2024-07-25"
+        - option "2024-07-26"
+        - option "2024-07-29"
+        - option "2024-07-30"
+        - option "2024-07-31"
+        - option "2024-08-01"
+        - option "2024-08-02"
+        - option "2024-08-05"
+        - option "2024-08-06"
+        - option "2024-08-07"
+        - option "2024-08-08"
+        - option "2024-08-09"
+        - option "2024-08-12"
+        - option "2024-08-13"
+        - option "2024-08-14"
+        - option "2024-08-15"
+        - option "2024-08-16"
+        - option "2024-08-19"
+        - option "2024-08-20"
+        - option "2024-08-21"
+        - option "2024-08-22"
+        - option "2024-08-23"
+        - option "2024-08-26"
+        - option "2024-08-27"
+        - option "2024-08-28"
+        - option "2024-08-29"
+        - option "2024-08-30"
+        - option "2024-09-02"
+        - option "2024-09-03"
+        - option "2024-09-04"
+        - option "2024-09-05"
+        - option "2024-09-06"
+        - option "2024-09-09"
+        - option "2024-09-10"
+        - option "2024-09-11"
+        - option "2024-09-12"
+        - option "2024-09-13"
+        - option "2024-09-16"
+        - option "2024-09-17"
+        - option "2024-09-18"
+        - option "2024-09-19"
+        - option "2024-09-20"
+        - option "2024-09-23"
+        - option "2024-09-24"
+        - option "2024-09-25"
+        - option "2024-09-26"
+        - option "2024-09-27"
+        - option "2024-09-30"
+        - option "2024-10-01"
+        - option "2024-10-02"
+        - option "2024-10-03"
+        - option "2024-10-04"
+        - option "2024-10-07"
+        - option "2024-10-08"
+        - option "2024-10-09"
+        - option "2024-10-10"
+        - option "2024-10-11"
+        - option "2024-10-14"
+        - option "2024-10-15"
+        - option "2024-10-16"
+        - option "2024-10-17"
+        - option "2024-10-18"
+        - option "2024-10-21"
+        - option "2024-10-22"
+        - option "2024-10-23"
+        - option "2024-10-24"
+        - option "2024-10-25"
+        - option "2024-10-28"
+        - option "2024-10-29"
+        - option "2024-10-30"
+        - option "2024-10-31"
+        - option "2024-11-01"
+        - option "2024-11-04"
+        - option "2024-11-05"
+        - option "2024-11-06"
+        - option "2024-11-07"
+        - option "2024-11-08"
+        - option "2024-11-11"
+        - option "2024-11-12"
+        - option "2024-11-13"
+        - option "2024-11-14"
+        - option "2024-11-15"
+        - option "2024-11-18"
+        - option "2024-11-19"
+        - option "2024-11-20"
+        - option "2024-11-21"
+        - option "2024-11-22"
+        - option "2024-11-25"
+        - option "2024-11-26"
+        - option "2024-11-27"
+        - option "2024-11-28"
+        - option "2024-11-29"
+        - option "2024-12-02"
+        - option "2024-12-03"
+        - option "2024-12-04"
+        - option "2024-12-05"
+        - option "2024-12-06"
+        - option "2024-12-09"
+        - option "2024-12-10"
+        - option "2024-12-11"
+        - option "2024-12-12"
+        - option "2024-12-13"
+        - option "2024-12-16"
+        - option "2024-12-17"
+        - option "2024-12-18"
+        - option "2024-12-19"
+        - option "2024-12-20"
+        - option "2024-12-23"
+        - option "2024-12-24"
+        - option "2024-12-25"
+        - option "2024-12-26"
+        - option "2024-12-27"
+        - option "2024-12-30"
+        - option "2024-12-31"
+        - option "2025-01-01"
+        - option "2025-01-02"
+        - option "2025-01-03"
+        - option "2025-01-06"
+        - option "2025-01-07"
+        - option "2025-01-08"
+        - option "2025-01-09"
+        - option "2025-01-10"
+        - option "2025-01-13"
+        - option "2025-01-14"
+        - option "2025-01-15"
+        - option "2025-01-16"
+        - option "2025-01-17"
+        - option "2025-01-20"
+        - option "2025-01-21"
+        - option "2025-01-22"
+        - option "2025-01-23"
+        - option "2025-01-24"
+        - option "2025-01-27"
+        - option "2025-01-28"
+        - option "2025-01-29"
+        - option "2025-01-30"
+        - option "2025-01-31"
+        - option "2025-02-03"
+        - option "2025-02-04"
+        - option "2025-02-05"
+        - option "2025-02-06" [selected]
+      - button "回到最新": 回到最新进度
+      - generic: 推进
+      - button "播放" [disabled]
+      - button "推进下一日" [disabled]: 推进下一交易日
+      - generic: 速度
+      - combobox "播放速度" [disabled]:
+        - option "1x" [selected]
+        - option "2x"
+        - option "4x"
+    - status:
+      - strong: 当前查看日
+      - text: 2025-02-06 · 已运行至 2025-02-06
+      - generic: 已到示意范围末尾
+  - complementary "固定检查区":
+    - strong: 组合详情
+    - button "概览"
+    - button "调仓记录"
+    - button "统计指标"
+    - generic: 持仓概览
+    - generic: 按 2025-02-06 显示 · 已展开至 2025-02-06 · 合成示意
+    - generic "EMA20 动量 v1.4": EMA20 v1.4
+    - generic: 当前组合 · 2025-02-06
+    - generic: 贵州茅台 · 600519
+    - generic: 0.0%
+    - generic: 其他持仓（合计）
+    - generic: 45.6%
+    - generic: 现金
+    - generic: ¥57,032.96
+    - generic: 组合净值
+    - generic: "1.0484"
+    - generic: 已知范围
+    - generic: 查看日
+    - generic: 2025-02-06
+    - generic: 展开上限
+    - generic: 2025-02-06
+    - generic: 当前已知范围无后续事件。范围截至 2025-02-06。
+    - button "展开完整明细"
+- dialog "全部视图 · 工作台导览":
+  - heading "全部视图 · 工作台导览" [level=2]
+  - button "关闭弹窗" [active]:
+  - paragraph: 当前 A 是紧凑视觉样板。选择预设会重置本地合成演示内存；它不会写入生产保存。默认净值保持不变。
+  - heading "完整交互版（历史布局）" [level=3]
+  - paragraph: 完整净值 / K 线、结果回撤 / 仓位 / 贡献 / 费用、比较三图仍在完整版，尚未融合进紧凑 A。
+  - link "打开完整观察 历史工作台布局":
+    - /url: /?prototype=strategy-workbench&view=observe
+    - text: 打开完整观察
+    - generic: 历史工作台布局
+  - link "打开完整结果 净值、回撤、仓位与贡献":
+    - /url: /?prototype=strategy-workbench&view=results
+    - text: 打开完整结果
+    - generic: 净值、回撤、仓位与贡献
+  - link "打开完整比较 比较三图与共同截止":
+    - /url: /?prototype=strategy-workbench&view=compare
+    - text: 打开完整比较
+    - generic: 比较三图与共同截止
+  - link "原创建入口 策略创建 A 原型":
+    - /url: /?prototype=strategy-create&variant=A
+    - text: 原创建入口
+    - generic: 策略创建 A 原型
+  - heading "当前 A 推荐视觉样板预设" [level=3]
+  - button "完整净值"
+  - button "标的 K 线"
+  - button "阶段结果"
+  - button "组合比较"
+  - button "事件列表"
+  - button "事件日详情"
+  - button "统计指标"
+  - button "完整明细"
+  - button "只读配置"
+  - heading "场景状态" [level=3]
+  - button "T0 待开始"
+  - button "运行中"
+  - button "历史回看"
+  - button "已完成"
+  - button "加载中"
+  - button "执行失败"
+  - button "长文本与六组合"
+  - button "关闭"

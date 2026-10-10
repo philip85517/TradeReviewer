@@ -1,0 +1,647 @@
+{
+  "active": {
+    "bg": "rgb(11, 18, 32)",
+    "border": [
+      "0px",
+      "0px",
+      "0px",
+      "0px",
+      "rgb(231, 237, 246)"
+    ],
+    "client": 1440,
+    "color": "rgb(231, 237, 246)",
+    "disabled": false,
+    "ellipsis": "clip",
+    "family": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+    "gap": "normal",
+    "line": "21px",
+    "offset": "0px",
+    "outline": "rgb(231, 237, 246) none 3px",
+    "overflow": "hidden",
+    "padding": "0px",
+    "pressed": null,
+    "radius": "0px",
+    "rect": {
+      "h": 84,
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "scroll": 1440,
+    "selected": null,
+    "size": "14px",
+    "text": "TradeReview历史策略复盘 · 完整交互版旧 Workbench 预览完整观察完整结果完整比较原创建当前 A合成演示 · 完整 · 已展开 · 首页统一三个月双策略合成预设 · EMA20 v1.4 · 低波动质量 v2.1 · ¥100,000 · 复盘标的集预览工具 · 场景 / 视觉 / 说明T0 起点运行中 · 第10日完整 · 已展开视觉原版样式首页统一完整入口预设：已展开；合成演示，刷新重置；切换演示场景或导览会重开预设；切换视觉保留当前查看状态。正在打开",
+    "weight": "400",
+    "white": "normal"
+  },
+  "at": "2026-10-09T15:05:27.350Z",
+  "controls": [
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(231, 237, 246)"
+      ],
+      "client": 0,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "21px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "pressed": null,
+      "radius": "0px",
+      "rect": {
+        "h": 18,
+        "w": 56,
+        "x": 340.7734375,
+        "y": 1.5
+      },
+      "scroll": 0,
+      "selected": null,
+      "size": "14px",
+      "text": "完整观察",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(231, 237, 246)"
+      ],
+      "client": 0,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "21px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "pressed": null,
+      "radius": "0px",
+      "rect": {
+        "h": 18,
+        "w": 56,
+        "x": 396.7734375,
+        "y": 1.5
+      },
+      "scroll": 0,
+      "selected": null,
+      "size": "14px",
+      "text": "完整结果",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(231, 237, 246)"
+      ],
+      "client": 0,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "21px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "pressed": null,
+      "radius": "0px",
+      "rect": {
+        "h": 18,
+        "w": 56,
+        "x": 452.7734375,
+        "y": 1.5
+      },
+      "scroll": 0,
+      "selected": null,
+      "size": "14px",
+      "text": "完整比较",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(231, 237, 246)"
+      ],
+      "client": 0,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "21px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "pressed": null,
+      "radius": "0px",
+      "rect": {
+        "h": 18,
+        "w": 42,
+        "x": 508.7734375,
+        "y": 1.5
+      },
+      "scroll": 0,
+      "selected": null,
+      "size": "14px",
+      "text": "原创建",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(231, 237, 246)"
+      ],
+      "client": 0,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "21px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "pressed": null,
+      "radius": "0px",
+      "rect": {
+        "h": 18,
+        "w": 40.859375,
+        "x": 550.7734375,
+        "y": 1.5
+      },
+      "scroll": 0,
+      "selected": null,
+      "size": "14px",
+      "text": "当前 A",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(231, 237, 246)"
+      ],
+      "client": 1440,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "21px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "pressed": null,
+      "radius": "0px",
+      "rect": {
+        "h": 21,
+        "w": 1440,
+        "x": 0,
+        "y": 42
+      },
+      "scroll": 1440,
+      "selected": null,
+      "size": "14px",
+      "text": "预览工具 · 场景 / 视觉 / 说明",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(231, 237, 246)"
+      ],
+      "client": 94,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "21px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "pressed": "false",
+      "radius": "0px",
+      "rect": {
+        "h": 21,
+        "w": 94.3359375,
+        "x": 48.515625,
+        "y": 63
+      },
+      "scroll": 94,
+      "selected": null,
+      "size": "14px",
+      "text": "运行中 · 第10日",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(231, 237, 246)"
+      ],
+      "client": 80,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "21px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "pressed": "true",
+      "radius": "0px",
+      "rect": {
+        "h": 21,
+        "w": 79.8203125,
+        "x": 142.8515625,
+        "y": 63
+      },
+      "scroll": 80,
+      "selected": null,
+      "size": "14px",
+      "text": "完整 · 已展开",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(231, 237, 246)"
+      ],
+      "client": 56,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "21px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "pressed": "false",
+      "radius": "0px",
+      "rect": {
+        "h": 21,
+        "w": 56,
+        "x": 28,
+        "y": 84
+      },
+      "scroll": 56,
+      "selected": null,
+      "size": "14px",
+      "text": "原版样式",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(231, 237, 246)"
+      ],
+      "client": 56,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "line": "21px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "pressed": "true",
+      "radius": "0px",
+      "rect": {
+        "h": 21,
+        "w": 56,
+        "x": 84,
+        "y": 84
+      },
+      "scroll": 56,
+      "selected": null,
+      "size": "14px",
+      "text": "首页统一",
+      "weight": "400",
+      "white": "normal"
+    }
+  ],
+  "document": {
+    "h": 900,
+    "scrollY": 0,
+    "w": 1440
+  },
+  "sections": [
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 1440,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+          "gap": "normal",
+          "line": "21px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 21,
+            "w": 1440,
+            "x": 0,
+            "y": 0
+          },
+          "scroll": 1440,
+          "selected": null,
+          "size": "14px",
+          "text": "TradeReview历史策略复盘 · 完整交互版旧 Workbench 预览完整观察完整结果完整比较原创建当前 A",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".full-preview-nav"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 1440,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+          "gap": "normal",
+          "line": "21px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 21,
+            "w": 1440,
+            "x": 0,
+            "y": 42
+          },
+          "scroll": 1440,
+          "selected": null,
+          "size": "14px",
+          "text": "预览工具 · 场景 / 视觉 / 说明T0 起点运行中 · 第10日完整 · 已展开视觉原版样式首页统一完整入口预设：已展开；合成演示，刷新重置；切换演示场景或导览会重开预设；切换视觉保留当前查看状态。",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".full-preview-tools"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 1440,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+          "gap": "normal",
+          "line": "21px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 42,
+            "w": 1440,
+            "x": 0,
+            "y": 21
+          },
+          "scroll": 1440,
+          "selected": null,
+          "size": "14px",
+          "text": "合成演示 · 完整 · 已展开 · 首页统一三个月双策略合成预设 · EMA20 v1.4 · 低波动质量 v2.1 · ¥100,000 · 复盘标的集预览工具 · 场景 / 视觉 / 说明T0 起点运行中 · 第10日完整 · 已展开视觉原版样式首页统一完整入口预设：已展开；合成演示，刷新重置；切换演示场景或导览会重开预设；切换视觉保留当前查看状态。",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".full-preview-context"
+    },
+    {
+      "items": [],
+      "sel": ".running-prototype"
+    },
+    {
+      "items": [],
+      "sel": ".running-header"
+    },
+    {
+      "items": [],
+      "sel": ".portfolio-tabs"
+    },
+    {
+      "items": [],
+      "sel": ".running-summary"
+    },
+    {
+      "items": [],
+      "sel": ".running-summary b"
+    },
+    {
+      "items": [],
+      "sel": ".running-timebar"
+    },
+    {
+      "items": [],
+      "sel": ".recovery-prototype"
+    },
+    {
+      "items": [],
+      "sel": ".recovery-prototype summary"
+    },
+    {
+      "items": [],
+      "sel": ".running-grid"
+    },
+    {
+      "items": [],
+      "sel": ".running-main"
+    },
+    {
+      "items": [],
+      "sel": ".chart-heading"
+    },
+    {
+      "items": [],
+      "sel": ".running-chart-shell"
+    },
+    {
+      "items": [],
+      "sel": ".chart-caption"
+    },
+    {
+      "items": [],
+      "sel": ".chart-disclosure"
+    },
+    {
+      "items": [],
+      "sel": ".running-side"
+    },
+    {
+      "items": [],
+      "sel": ".holdings-block"
+    },
+    {
+      "items": [],
+      "sel": ".holding-row"
+    },
+    {
+      "items": [],
+      "sel": ".holding-value b"
+    },
+    {
+      "items": [],
+      "sel": ".holdings-foot b"
+    },
+    {
+      "items": [],
+      "sel": ".account-total b"
+    },
+    {
+      "items": [],
+      "sel": ".event-block"
+    },
+    {
+      "items": [],
+      "sel": ".event-nav button"
+    },
+    {
+      "items": [],
+      "sel": ".event-card"
+    },
+    {
+      "items": [],
+      "sel": ".portfolio-more-menu"
+    },
+    {
+      "items": [],
+      "sel": ".portfolio-more-menu b"
+    },
+    {
+      "items": [],
+      "sel": ".portfolio-more-menu small"
+    },
+    {
+      "items": [],
+      "sel": ".running-drawer"
+    },
+    {
+      "items": [],
+      "sel": ".drawer-header"
+    },
+    {
+      "items": [],
+      "sel": ".drawer-content"
+    },
+    {
+      "items": [],
+      "sel": ".drawer-content dd"
+    },
+    {
+      "items": [],
+      "sel": ".drawer-actions"
+    }
+  ],
+  "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+  "viewport": {
+    "dpr": 1,
+    "h": 900,
+    "w": 1440
+  }
+}

@@ -1,0 +1,264 @@
+- navigation "完整工作台导览":
+  - generic: TradeReview
+  - generic: 历史策略复盘 · 完整交互版
+  - generic: 旧 Workbench 预览
+  - link "完整观察":
+    - /url: "?prototype=strategy-workbench&view=observe&scene=complete"
+  - link "完整结果":
+    - /url: "?prototype=strategy-workbench&view=results&scene=complete"
+  - link "完整比较":
+    - /url: "?prototype=strategy-workbench&view=compare&scene=complete"
+  - link "原创建":
+    - /url: "?prototype=strategy-create&variant=A"
+  - link "当前 A":
+    - /url: /design-system-20261008/workbench/index.html
+- generic: 三个月双策略合成预设
+- generic: EMA20 v1.4 · 低波动质量 v2.1 · ¥100,000 · 复盘标的集
+- generic "演示场景":
+  - button "T0 起点"
+  - button "运行中 · 第10日"
+  - button "完整 · 已展开" [pressed]
+- group "工作台视觉样式":
+  - generic: 视觉
+  - button "原版样式"
+  - button "首页统一" [pressed]
+- generic: 完整入口预设：已展开；合成演示，刷新重置；切换演示场景或导览会重开预设；切换视觉保留当前查看状态。
+- main:
+  - generic: 策略实验 / 完整 Workbench 合成演示
+  - heading "回测工作台" [level=1]
+  - generic: 交互原型 · 合成数据 · 刷新重置
+  - button "查看配置"
+  - button "实验列表"
+  - tablist "当前实验中的组合":
+    - tab "EMA20 v1.4 独立本金 ¥100,000.00" [selected]:
+      - generic "EMA20 v1.4"
+      - generic: 独立本金 ¥100,000.00
+    - tab "低波动质量 v2.1 独立本金 ¥100,000.00":
+      - generic "低波动质量 v2.1"
+      - generic: 独立本金 ¥100,000.00
+  - button "更多组合":
+    - text: 更多组合
+    - generic: ⌄
+  - region "组合资产摘要":
+    - generic: 总资产
+    - generic: ¥102,540.84
+    - generic: 累计收益
+    - generic: +2.54%
+    - generic: 组合当日收益
+    - generic: ¥1,097.16 · +1.08%
+    - generic: 现金比例
+    - generic: 10.0%
+  - region "运行日期与播放控制":
+    - generic: 运行已完成
+    - generic: 2024-09-13 · 收盘后
+    - generic: 已展开至 2024-09-13
+    - button "查看回测结果 →":
+      - text: 查看回测结果
+      - generic: →
+    - button "比较组合"
+    - text: 回看
+    - combobox "回看日期":
+      - option "T0 · 2024-06-14 16:00"
+      - option "2024-06-17"
+      - option "2024-06-18"
+      - option "2024-06-19"
+      - option "2024-06-20"
+      - option "2024-06-21"
+      - option "2024-06-24"
+      - option "2024-06-25"
+      - option "2024-06-26"
+      - option "2024-06-27"
+      - option "2024-06-28"
+      - option "2024-07-01"
+      - option "2024-07-02"
+      - option "2024-07-03"
+      - option "2024-07-04"
+      - option "2024-07-05"
+      - option "2024-07-08"
+      - option "2024-07-09"
+      - option "2024-07-10"
+      - option "2024-07-11"
+      - option "2024-07-12"
+      - option "2024-07-15"
+      - option "2024-07-16"
+      - option "2024-07-17"
+      - option "2024-07-18"
+      - option "2024-07-19"
+      - option "2024-07-22"
+      - option "2024-07-23"
+      - option "2024-07-24"
+      - option "2024-07-25"
+      - option "2024-07-26"
+      - option "2024-07-29"
+      - option "2024-07-30"
+      - option "2024-07-31"
+      - option "2024-08-01"
+      - option "2024-08-02"
+      - option "2024-08-05"
+      - option "2024-08-06"
+      - option "2024-08-07"
+      - option "2024-08-08"
+      - option "2024-08-09"
+      - option "2024-08-12"
+      - option "2024-08-13"
+      - option "2024-08-14"
+      - option "2024-08-15"
+      - option "2024-08-16"
+      - option "2024-08-19"
+      - option "2024-08-20"
+      - option "2024-08-21"
+      - option "2024-08-22"
+      - option "2024-08-23"
+      - option "2024-08-26"
+      - option "2024-08-27"
+      - option "2024-08-28"
+      - option "2024-08-29"
+      - option "2024-08-30"
+      - option "2024-09-02"
+      - option "2024-09-03"
+      - option "2024-09-04"
+      - option "2024-09-05"
+      - option "2024-09-06"
+      - option "2024-09-09"
+      - option "2024-09-10"
+      - option "2024-09-11"
+      - option "2024-09-12"
+      - option "2024-09-13" [selected]
+  - region "展开与恢复控制":
+    - generic: 进度恢复
+    - button "展开剩余行情" [disabled]
+    - generic: 已到计划结束日
+    - generic "原型演示工具 仅合成数据 · 内存状态，不是真实保存或撮合":
+      - text: 原型演示工具
+      - generic: 仅合成数据 · 内存状态，不是真实保存或撮合
+    - option "关闭" [selected]
+    - option "数据中断"
+    - option "执行失败"
+    - option "正常成交" [selected]
+    - option "部分成交（每笔计划差量 50%）"
+    - option "未成交（计划保留，实际成交为 0）"
+  - region "组合净值与标的图表":
+    - generic: EMA20 v1.4
+    - heading "组合净值" [level=2]
+    - generic "T0 起点 2024-06-14 16:00": T0 起点 · 2024-06-14 16:00
+    - tablist "图表视图":
+      - tab "组合净值" [selected]
+      - tab "标的 K 线"
+    - generic "组合净值真实折线":
+      - table:
+        - row:
+          - cell
+          - cell:
+            - link "Charting by TradingView":
+              - /url: https://www.tradingview.com/?utm_medium=lwc-link&utm_campaign=lwc-chart&utm_source=127.0.0.1/
+          - cell
+        - row:
+          - cell
+          - cell
+          - cell
+      - generic: T0
+      - generic: V
+    - generic: T0
+    - generic: 当前 V
+    - generic: 净值截至 2024-09-13
+    - generic: 查看日 2024-09-13 · 图形、轴范围与事件标记均截止当前日
+  - complementary "当前组合持仓与事件":
+    - generic: 当前组合
+    - heading "持仓概览" [level=2]
+    - generic: EMA20 v1.4
+    - paragraph: 随策略 · 每周 · 每组合独立本金 · 收盘估值
+    - button "合成股票 A 573.3066 股 × ¥99.11 ¥56,819.15 55.4%":
+      - generic: 合成股票 A
+      - generic: 573.3066 股 × ¥99.11
+      - generic: ¥56,819.15
+      - generic: 55.4%
+    - button "合成股票 B 477.1771 股 × ¥74.28 ¥35,443.85 34.6%":
+      - generic: 合成股票 B
+      - generic: 477.1771 股 × ¥74.28
+      - generic: ¥35,443.85
+      - generic: 34.6%
+    - generic: 现金
+    - generic: ¥10,277.84
+    - generic: 组合净值
+    - generic: "1.0254"
+    - generic: 总资产
+    - generic: ¥102,540.84
+    - generic: 当前查看日 · 14 条
+    - heading "调仓事件" [level=2]
+    - button "上一个已知事件": ‹
+    - button "下一已知事件 当前进度内无后续事件" [disabled]:
+      - generic: 下一已知事件
+      - generic: 当前进度内无后续事件
+    - button "再平衡 2024-09-13 前一交易日已定模板：每 5 个合成交易日开盘再平衡 策略按预设调整仓位 · A 33.0% / B 57.0% / 现金 9.9% → A 55.0% / B 35.0% / 现金 10.0%":
+      - generic: 再平衡
+      - time: 2024-09-13
+      - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡
+      - generic: 策略按预设调整仓位 · A 33.0% / B 57.0% / 现金 9.9% → A 55.0% / B 35.0% / 现金 10.0%
+    - button "再平衡 2024-09-06 前一交易日已定模板：每 5 个合成交易日开盘再平衡 策略按预设调整仓位 · A 56.8% / B 33.1% / 现金 10.1% → A 35.0% / B 55.0% / 现金 10.0%":
+      - generic: 再平衡
+      - time: 2024-09-06
+      - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡
+      - generic: 策略按预设调整仓位 · A 56.8% / B 33.1% / 现金 10.1% → A 35.0% / B 55.0% / 现金 10.0%
+    - button "再平衡 2024-08-30 前一交易日已定模板：每 5 个合成交易日开盘再平衡 策略按预设调整仓位 · A 36.6% / B 53.5% / 现金 9.9% → A 55.0% / B 35.0% / 现金 10.0%":
+      - generic: 再平衡
+      - time: 2024-08-30
+      - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡
+      - generic: 策略按预设调整仓位 · A 36.6% / B 53.5% / 现金 9.9% → A 55.0% / B 35.0% / 现金 10.0%
+    - button "再平衡 2024-08-23 前一交易日已定模板：每 5 个合成交易日开盘再平衡 策略按预设调整仓位 · A 53.5% / B 36.6% / 现金 9.9% → A 35.0% / B 55.0% / 现金 10.0%":
+      - generic: 再平衡
+      - time: 2024-08-23
+      - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡
+      - generic: 策略按预设调整仓位 · A 53.5% / B 36.6% / 现金 9.9% → A 35.0% / B 55.0% / 现金 10.0%
+    - button "再平衡 2024-08-16 前一交易日已定模板：每 5 个合成交易日开盘再平衡 策略按预设调整仓位 · A 34.9% / B 55.0% / 现金 10.1% → A 55.0% / B 35.0% / 现金 10.0%":
+      - generic: 再平衡
+      - time: 2024-08-16
+      - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡
+      - generic: 策略按预设调整仓位 · A 34.9% / B 55.0% / 现金 10.1% → A 55.0% / B 35.0% / 现金 10.0%
+    - button "再平衡 2024-08-09 前一交易日已定模板：每 5 个合成交易日开盘再平衡 策略按预设调整仓位 · A 56.4% / B 33.7% / 现金 9.9% → A 35.0% / B 55.0% / 现金 10.0%":
+      - generic: 再平衡
+      - time: 2024-08-09
+      - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡
+      - generic: 策略按预设调整仓位 · A 56.4% / B 33.7% / 现金 9.9% → A 35.0% / B 55.0% / 现金 10.0%
+    - button "再平衡 2024-08-02 前一交易日已定模板：每 5 个合成交易日开盘再平衡 策略按预设调整仓位 · A 34.3% / B 55.9% / 现金 9.8% → A 55.0% / B 35.0% / 现金 10.0%":
+      - generic: 再平衡
+      - time: 2024-08-02
+      - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡
+      - generic: 策略按预设调整仓位 · A 34.3% / B 55.9% / 现金 9.8% → A 55.0% / B 35.0% / 现金 10.0%
+    - button "再平衡 2024-07-26 前一交易日已定模板：每 5 个合成交易日开盘再平衡 策略按预设调整仓位 · A 53.2% / B 36.7% / 现金 10.0% → A 35.0% / B 55.0% / 现金 10.0%":
+      - generic: 再平衡
+      - time: 2024-07-26
+      - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡
+      - generic: 策略按预设调整仓位 · A 53.2% / B 36.7% / 现金 10.0% → A 35.0% / B 55.0% / 现金 10.0%
+    - button "再平衡 2024-07-19 前一交易日已定模板：每 5 个合成交易日开盘再平衡 策略按预设调整仓位 · A 35.2% / B 54.6% / 现金 10.2% → A 55.0% / B 35.0% / 现金 10.0%":
+      - generic: 再平衡
+      - time: 2024-07-19
+      - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡
+      - generic: 策略按预设调整仓位 · A 35.2% / B 54.6% / 现金 10.2% → A 55.0% / B 35.0% / 现金 10.0%
+    - button "再平衡 2024-07-12 前一交易日已定模板：每 5 个合成交易日开盘再平衡 策略按预设调整仓位 · A 56.9% / B 33.2% / 现金 9.9% → A 35.0% / B 55.0% / 现金 10.0%":
+      - generic: 再平衡
+      - time: 2024-07-12
+      - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡
+      - generic: 策略按预设调整仓位 · A 56.9% / B 33.2% / 现金 9.9% → A 35.0% / B 55.0% / 现金 10.0%
+    - button "再平衡 2024-07-05 前一交易日已定模板：每 5 个合成交易日开盘再平衡 策略按预设调整仓位 · A 35.0% / B 55.2% / 现金 9.8% → A 55.0% / B 35.0% / 现金 10.0%":
+      - generic: 再平衡
+      - time: 2024-07-05
+      - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡
+      - generic: 策略按预设调整仓位 · A 35.0% / B 55.2% / 现金 9.8% → A 55.0% / B 35.0% / 现金 10.0%
+    - button "再平衡 2024-06-28 前一交易日已定模板：每 5 个合成交易日开盘再平衡 策略按预设调整仓位 · A 53.6% / B 36.3% / 现金 10.0% → A 35.0% / B 55.0% / 现金 10.0%":
+      - generic: 再平衡
+      - time: 2024-06-28
+      - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡
+      - generic: 策略按预设调整仓位 · A 53.6% / B 36.3% / 现金 10.0% → A 35.0% / B 55.0% / 现金 10.0%
+    - button "再平衡 2024-06-21 前一交易日已定模板：每 5 个合成交易日开盘再平衡 策略按预设调整仓位 · A 46.0% / B 43.9% / 现金 10.1% → A 55.0% / B 35.0% / 现金 10.0%":
+      - generic: 再平衡
+      - time: 2024-06-21
+      - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡
+      - generic: 策略按预设调整仓位 · A 46.0% / B 43.9% / 现金 10.1% → A 55.0% / B 35.0% / 现金 10.0%
+    - button "首次建仓 2024-06-17 T0 已确定初始目标，下一交易日开盘建仓 初始目标已执行 · A 0.0% / B 0.0% / 现金 100.0% → A 45.0% / B 45.0% / 现金 10.0%":
+      - generic: 首次建仓
+      - time: 2024-06-17
+      - generic: T0 已确定初始目标，下一交易日开盘建仓
+      - generic: 初始目标已执行 · A 0.0% / B 0.0% / 现金 100.0% → A 45.0% / B 45.0% / 现金 10.0%
+    - paragraph:
+      - text: 已看后续 · 最远至 2024-09-13 · 来源：快速展开
+      - generic: 记录时间 Asia/Shanghai · 2026/10/9 17:29:05

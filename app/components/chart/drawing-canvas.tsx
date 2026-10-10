@@ -62,6 +62,8 @@ type Props = {
   multilineText?: boolean;
   /** Interactive plot bounds exclude the right price axis and bottom time axis. */
   plotBounds?: ChartPlotBounds;
+  /** Opt-in typography seam for the review design prototype. */
+  designPrototype?: { mode: "baseline" | "recommended"; safeStageProjection?: boolean };
 };
 
 type CanvasSize = { width: number; height: number };
@@ -118,6 +120,12 @@ const EDITOR_STYLE_BAR_HEIGHT = 36;
 const EDITOR_TOUCH_STYLE_BAR_HEIGHT = 44;
 const EDITOR_HINT_HEIGHT = 18;
 const EDITOR_VERTICAL_GAP = 2;
+const RECOMMENDED_CANVAS_TEXT_FONT_FAMILY =
+  '"Geist", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif';
+
+function recommendedCanvasTextFont(fontSize: number) {
+  return `400 ${fontSize}px ${RECOMMENDED_CANVAS_TEXT_FONT_FAMILY}`;
+}
 // Includes the textarea's 3px vertical padding and 1px borders. Keeping this
 // explicit prevents a large font from being clipped to a half line by the
 // grid row's min-height.
@@ -126,13 +134,15 @@ const EDITOR_TEXTAREA_VERTICAL_INSET = 8;
 export function paintDrawingScene(
   context: CanvasRenderingContext2D,
   { width, height, drawings, pointFor, pointForDrawing, plannedRiskAmount, currency,
-    selectedDrawingId = null, preview = null, expandedTextIds, plotWidth, plotHeight }: {
+    selectedDrawingId = null, preview = null, expandedTextIds, textFont = canvasTextFont, plotWidth, plotHeight }: {
     width: number; height: number; drawings: readonly NormalizedDrawing[];
     pointFor: (anchor: DrawingAnchor) => ProjectedPoint;
     pointForDrawing: (drawing: NormalizedDrawing) => ProjectedPoint;
     plannedRiskAmount?: string; currency: string;
     selectedDrawingId?: string | null; preview?: NormalizedDrawing | null;
     expandedTextIds?: ReadonlySet<string>;
+    /** Opt-in canvas typography for the recommended review prototype. */
+    textFont?: (fontSize: number) => string;
     /** Optional real plot bounds; the backing canvas remains width × height. */
     plotWidth?: number; plotHeight?: number;
   },
@@ -280,7 +290,7 @@ export function paintDrawingScene(
           context.fillText(String(cardNumber), geometry.x + Math.max(4, textWidth - 18), geometry.y + 14);
         }
         context.fillStyle = drawing.style.color;
-        context.font = canvasTextFont(fontSize);
+        context.font = textFont(fontSize);
         layout.lines.forEach((line, index) => context.fillText(line, geometry.x + textCardLayoutOptions.horizontalPadding, geometry.y + fontSize + index * layout.lineHeight));
       }
       if ((drawing.tool === "long-risk-reward" || drawing.tool === "short-risk-reward") && points[1] && points[2]) {
@@ -469,6 +479,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   allowFutureAnchors = false,
   multilineText = false,
   plotBounds,
+  designPrototype,
 }, forwardedRef) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const startAnchorRef = useRef<DrawingAnchor | null>(null);
@@ -489,6 +500,17 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   const [expandedTextIds, setExpandedTextIds] = useState<Set<string>>(
     () => new Set(),
   );
+  const prototypeExpandedIdsRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (!designPrototype || drawings.length === 0) return;
+    const textIds = drawings
+      .filter((drawing) => drawing.id.startsWith("prototype-") && drawing.tool === "text" && !drawing.hidden && Boolean(drawing.text?.includes("\n")))
+      .map((drawing) => drawing.id);
+    const newTextIds = textIds.filter((id) => !prototypeExpandedIdsRef.current.has(id));
+    if (newTextIds.length === 0) return;
+    newTextIds.forEach((id) => prototypeExpandedIdsRef.current.add(id));
+    setExpandedTextIds((current) => new Set([...current, ...newTextIds]));
+  }, [designPrototype, drawings]);
   const [validationError, setValidationError] = useState<string | null>(
     null,
   );
@@ -728,8 +750,9 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     includeSelection: boolean, renderPreview = true,
   ) => paintDrawingScene(context, { width, height, drawings, pointFor, pointForDrawing,
     plannedRiskAmount, currency, selectedDrawingId, preview, expandedTextIds,
+    textFont: designPrototype?.mode === "recommended" ? recommendedCanvasTextFont : canvasTextFont,
     plotWidth: boundedPlot.width, plotHeight: boundedPlot.height }, includeSelection, renderPreview),
-  [boundedPlot.height, boundedPlot.width, currency, drawings, expandedTextIds, plannedRiskAmount, pointFor, pointForDrawing, preview, selectedDrawingId]);
+  [boundedPlot.height, boundedPlot.width, currency, designPrototype?.mode, drawings, expandedTextIds, plannedRiskAmount, pointFor, pointForDrawing, preview, selectedDrawingId]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1239,6 +1262,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   return (
     <div
       className={`drawing-canvas ${drawingMode ? "drawing-mode" : ""}`}
+      data-design-prototype={designPrototype?.mode}
       style={editor ? { zIndex: 9 } : undefined}
     >
       <canvas

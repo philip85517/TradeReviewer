@@ -1,0 +1,3435 @@
+{
+  "active": {
+    "bg": "rgb(11, 18, 32)",
+    "border": [
+      "0px",
+      "0px",
+      "0px",
+      "0px",
+      "rgb(231, 237, 246)"
+    ],
+    "client": 759,
+    "color": "rgb(231, 237, 246)",
+    "disabled": false,
+    "ellipsis": "clip",
+    "family": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+    "gap": "normal",
+    "line": "21px",
+    "offset": "0px",
+    "outline": "rgb(231, 237, 246) none 3px",
+    "overflow": "auto",
+    "padding": "0px",
+    "pressed": null,
+    "radius": "0px",
+    "rect": {
+      "h": 1709,
+      "w": 759,
+      "x": 0,
+      "y": 0
+    },
+    "scroll": 759,
+    "selected": null,
+    "size": "14px",
+    "text": "TradeReview历史策略复盘 · 完整交互版旧 Workbench 预览完整观察完整结果完整比较原创建当前 A合成演示 · 完整 · 已展开 · 首页统一三个月双策略合成预设 · EMA20 v1.4 · 低波动质量 v2.1 · ¥100,000 · 复盘标的集预览工具 · 场景 / 视觉 / 说明T0 起点运行中 · 第10日完整 · 已展开视觉原版样式首页统一完整入口预设：已展开；合成演示，刷新重置；切换演示场景或导览会重开预设；切换视觉保留当前查看状态。策略实验",
+    "weight": "400",
+    "white": "normal"
+  },
+  "at": "2026-10-09T16:00:17.988Z",
+  "controls": [
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(170, 199, 236)"
+      ],
+      "client": 64,
+      "color": "rgb(170, 199, 236)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(170, 199, 236) none 3px",
+      "overflow": "visible",
+      "padding": "0px 8px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 64,
+        "x": 271.7421875,
+        "y": 5
+      },
+      "scroll": 64,
+      "selected": null,
+      "size": "12px",
+      "text": "完整观察",
+      "weight": "400",
+      "white": "nowrap"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(170, 199, 236)"
+      ],
+      "client": 64,
+      "color": "rgb(170, 199, 236)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(170, 199, 236) none 3px",
+      "overflow": "visible",
+      "padding": "0px 8px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 64,
+        "x": 339.7421875,
+        "y": 5
+      },
+      "scroll": 64,
+      "selected": null,
+      "size": "12px",
+      "text": "完整结果",
+      "weight": "400",
+      "white": "nowrap"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(170, 199, 236)"
+      ],
+      "client": 64,
+      "color": "rgb(170, 199, 236)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(170, 199, 236) none 3px",
+      "overflow": "visible",
+      "padding": "0px 8px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 64,
+        "x": 407.7421875,
+        "y": 5
+      },
+      "scroll": 64,
+      "selected": null,
+      "size": "12px",
+      "text": "完整比较",
+      "weight": "400",
+      "white": "nowrap"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(170, 199, 236)"
+      ],
+      "client": 52,
+      "color": "rgb(170, 199, 236)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(170, 199, 236) none 3px",
+      "overflow": "visible",
+      "padding": "0px 8px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 52,
+        "x": 475.7421875,
+        "y": 5
+      },
+      "scroll": 52,
+      "selected": null,
+      "size": "12px",
+      "text": "原创建",
+      "weight": "400",
+      "white": "nowrap"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(170, 199, 236)"
+      ],
+      "client": 51,
+      "color": "rgb(170, 199, 236)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(170, 199, 236) none 3px",
+      "overflow": "visible",
+      "padding": "0px 8px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 51.0234375,
+        "x": 531.7421875,
+        "y": 5
+      },
+      "scroll": 51,
+      "selected": null,
+      "size": "12px",
+      "text": "当前 A",
+      "weight": "400",
+      "white": "nowrap"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(173, 187, 207)"
+      ],
+      "client": 172,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": null,
+      "radius": "0px",
+      "rect": {
+        "h": 44,
+        "w": 171.9375,
+        "x": 570.8828125,
+        "y": 64
+      },
+      "scroll": 172,
+      "selected": null,
+      "size": "12px",
+      "text": "预览工具 · 场景 / 视觉 / 说明",
+      "weight": "400",
+      "white": "nowrap"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 62,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": "false",
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 63.5859375,
+        "x": 578.8828125,
+        "y": 117
+      },
+      "scroll": 62,
+      "selected": null,
+      "size": "12px",
+      "text": "T0 起点",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 101,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": "false",
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 102.859375,
+        "x": 648.46875,
+        "y": 117
+      },
+      "scroll": 101,
+      "selected": null,
+      "size": "12px",
+      "text": "运行中 · 第10日",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(22, 61, 99)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(55, 151, 255)"
+      ],
+      "client": 88,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": "true",
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 90.4140625,
+        "x": 757.328125,
+        "y": 117
+      },
+      "scroll": 88,
+      "selected": null,
+      "size": "12px",
+      "text": "完整 · 已展开",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 68,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": "false",
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 70,
+        "x": 606.8828125,
+        "y": 169
+      },
+      "scroll": 68,
+      "selected": null,
+      "size": "12px",
+      "text": "原版样式",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(22, 61, 99)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(55, 151, 255)"
+      ],
+      "client": 68,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": "true",
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 70,
+        "x": 578.8828125,
+        "y": 217
+      },
+      "scroll": 68,
+      "selected": null,
+      "size": "12px",
+      "text": "首页统一",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 80,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 12px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 82,
+        "x": 577,
+        "y": 132
+      },
+      "scroll": 80,
+      "selected": null,
+      "size": "14px",
+      "text": "查看配置",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 80,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 12px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 82,
+        "x": 667,
+        "y": 132
+      },
+      "scroll": 80,
+      "selected": null,
+      "size": "14px",
+      "text": "实验列表",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(22, 61, 99)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(55, 151, 255)"
+      ],
+      "client": 234,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "10px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "4px 11px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 235.7421875,
+        "x": 12,
+        "y": 196
+      },
+      "scroll": 234,
+      "selected": "true",
+      "size": "14px",
+      "text": "EMA20 v1.4独立本金 ¥100,000.00",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 254,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "10px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "4px 11px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 256.078125,
+        "x": 254.7421875,
+        "y": 196
+      },
+      "scroll": 254,
+      "selected": "false",
+      "size": "14px",
+      "text": "低波动质量 v2.1独立本金 ¥100,000.00",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 93,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "7px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 11px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 95.4296875,
+        "x": 653.5703125,
+        "y": 196
+      },
+      "scroll": 93,
+      "selected": null,
+      "size": "14px",
+      "text": "更多组合 ⌄",
+      "weight": "500",
+      "white": "nowrap"
+    },
+    {
+      "bg": "rgb(33, 105, 204)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(33, 105, 204)"
+      ],
+      "client": 134,
+      "color": "rgb(255, 255, 255)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(255, 255, 255) none 3px",
+      "overflow": "visible",
+      "padding": "0px 14px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 136,
+        "x": 291.5,
+        "y": 445
+      },
+      "scroll": 134,
+      "selected": null,
+      "size": "14px",
+      "text": "查看回测结果 →",
+      "weight": "600",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 80,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 12px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 82,
+        "x": 434.5,
+        "y": 445
+      },
+      "scroll": 80,
+      "selected": null,
+      "size": "14px",
+      "text": "比较组合",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 183,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "clip",
+      "padding": "0px 9px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 184.5,
+        "x": 553.5,
+        "y": 445
+      },
+      "scroll": 183,
+      "selected": null,
+      "size": "14px",
+      "text": "T0 · 2024-06-14 16:002024-06-172024-06-182024-06-192024-06-202024-06-212024-06-242024-06-252024-06-262024-06-272024-06-282024-07-012024-07-022024-07-032024-07-042024-07-052024-07-082024-07-092024-07-102024-07-112024-07-122024-07-152024-07-1",
+      "weight": "500",
+      "white": "pre"
+    },
+    {
+      "bg": "rgb(17, 27, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(43, 61, 86)"
+      ],
+      "client": 106,
+      "color": "rgb(199, 213, 231)",
+      "disabled": true,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "6px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(199, 213, 231) none 3px",
+      "overflow": "visible",
+      "padding": "0px 11px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 108,
+        "x": 66,
+        "y": 513
+      },
+      "scroll": 106,
+      "selected": null,
+      "size": "14px",
+      "text": "展开剩余行情",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px",
+        "rgb(194, 208, 225)"
+      ],
+      "client": 349,
+      "color": "rgb(194, 208, 225)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "2px 8px",
+      "line": "18px",
+      "offset": "0px",
+      "outline": "rgb(194, 208, 225) none 3px",
+      "overflow": "visible",
+      "padding": "4px 9px",
+      "pressed": null,
+      "radius": "0px",
+      "rect": {
+        "h": 44,
+        "w": 349.4140625,
+        "x": 398.5859375,
+        "y": 513
+      },
+      "scroll": 349,
+      "selected": null,
+      "size": "12px",
+      "text": "原型演示工具 仅合成数据 · 内存状态，不是真实保存或撮合",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(13, 23, 37)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(50, 69, 95)"
+      ],
+      "client": 305,
+      "color": "rgb(219, 230, 244)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "offset": "0px",
+      "outline": "rgb(219, 230, 244) none 3px",
+      "overflow": "clip",
+      "padding": "0px 9px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 307.4140625,
+        "x": 419.5859375,
+        "y": 628
+      },
+      "scroll": 305,
+      "selected": null,
+      "size": "14px",
+      "text": "关闭数据中断执行失败",
+      "weight": "400",
+      "white": "pre"
+    },
+    {
+      "bg": "rgb(13, 23, 37)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(50, 69, 95)"
+      ],
+      "client": 305,
+      "color": "rgb(219, 230, 244)",
+      "disabled": true,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "normal",
+      "offset": "0px",
+      "outline": "rgb(219, 230, 244) none 3px",
+      "overflow": "clip",
+      "padding": "0px 9px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 307.4140625,
+        "x": 419.5859375,
+        "y": 788
+      },
+      "scroll": 305,
+      "selected": null,
+      "size": "14px",
+      "text": "正常成交部分成交（每笔计划差量 50%）未成交（计划保留，实际成交为 0）",
+      "weight": "400",
+      "white": "pre"
+    },
+    {
+      "bg": "rgb(17, 27, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(43, 61, 86)"
+      ],
+      "client": 116,
+      "color": "rgb(199, 213, 231)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "6px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(199, 213, 231) none 3px",
+      "overflow": "visible",
+      "padding": "0px 9px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 118,
+        "x": 419.5859375,
+        "y": 944
+      },
+      "scroll": 116,
+      "selected": null,
+      "size": "14px",
+      "text": "创建内存检查点",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 27, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(43, 61, 86)"
+      ],
+      "client": 102,
+      "color": "rgb(199, 213, 231)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "6px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(199, 213, 231) none 3px",
+      "overflow": "visible",
+      "padding": "0px 9px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 104,
+        "x": 543.5859375,
+        "y": 944
+      },
+      "scroll": 102,
+      "selected": null,
+      "size": "14px",
+      "text": "模拟保存失败",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 27, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(43, 61, 86)"
+      ],
+      "client": 116,
+      "color": "rgb(199, 213, 231)",
+      "disabled": true,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "6px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(199, 213, 231) none 3px",
+      "overflow": "visible",
+      "padding": "0px 9px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 118,
+        "x": 419.5859375,
+        "y": 994
+      },
+      "scroll": 116,
+      "selected": null,
+      "size": "14px",
+      "text": "重载最近检查点",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(22, 61, 99)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(55, 151, 255)"
+      ],
+      "client": 76,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 78,
+        "x": 572.0078125,
+        "y": 569
+      },
+      "scroll": 76,
+      "selected": "true",
+      "size": "14px",
+      "text": "组合净值",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(17, 26, 43)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 78,
+      "color": "rgb(173, 187, 207)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(173, 187, 207) none 3px",
+      "overflow": "visible",
+      "padding": "0px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 79.9921875,
+        "x": 658.0078125,
+        "y": 569
+      },
+      "scroll": 78,
+      "selected": "false",
+      "size": "14px",
+      "text": "标的 K 线",
+      "weight": "500",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "0px",
+        "0px",
+        "1px",
+        "0px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 717,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "10px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "7px 2px",
+      "pressed": "false",
+      "radius": "0px",
+      "rect": {
+        "h": 57,
+        "w": 717,
+        "x": 21,
+        "y": 1090
+      },
+      "scroll": 717,
+      "selected": null,
+      "size": "14px",
+      "text": "合成股票 A573.3066 股 × ¥99.11¥56,819.1555.4%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "0px",
+        "0px",
+        "1px",
+        "0px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 717,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "10px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "7px 2px",
+      "pressed": "false",
+      "radius": "0px",
+      "rect": {
+        "h": 57,
+        "w": 717,
+        "x": 21,
+        "y": 1147
+      },
+      "scroll": 717,
+      "selected": null,
+      "size": "14px",
+      "text": "合成股票 B477.1771 股 × ¥74.28¥35,443.8534.6%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(13, 24, 40)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 42,
+      "color": "rgb(169, 189, 214)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(169, 189, 214) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 44,
+        "x": 551,
+        "y": 1332
+      },
+      "scroll": 42,
+      "selected": null,
+      "size": "20px",
+      "text": "",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(20, 30, 48)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 136,
+      "color": "rgb(127, 141, 162)",
+      "disabled": true,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "normal",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(127, 141, 162) none 3px",
+      "overflow": "visible",
+      "padding": "4px 8px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 44,
+        "w": 138,
+        "x": 600,
+        "y": 1332
+      },
+      "scroll": 136,
+      "selected": null,
+      "size": "14px",
+      "text": "下一已知事件当前进度内无后续事件",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 712,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "5px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "9px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 92,
+        "w": 714,
+        "x": 21,
+        "y": 1396
+      },
+      "scroll": 712,
+      "selected": null,
+      "size": "14px",
+      "text": "再平衡2024-09-13前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 33.0% / B 57.0% / 现金 9.9% → A 55.0% / B 35.0% / 现金 10.0%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 712,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "5px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "9px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 92,
+        "w": 714,
+        "x": 21,
+        "y": 1496
+      },
+      "scroll": 712,
+      "selected": null,
+      "size": "14px",
+      "text": "再平衡2024-09-06前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 56.8% / B 33.1% / 现金 10.1% → A 35.0% / B 55.0% / 现金 10.0%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 712,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "5px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "9px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 92,
+        "w": 714,
+        "x": 21,
+        "y": 1596
+      },
+      "scroll": 712,
+      "selected": null,
+      "size": "14px",
+      "text": "再平衡2024-08-30前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 36.6% / B 53.5% / 现金 9.9% → A 55.0% / B 35.0% / 现金 10.0%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 712,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "5px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "9px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 92,
+        "w": 714,
+        "x": 21,
+        "y": 1696
+      },
+      "scroll": 712,
+      "selected": null,
+      "size": "14px",
+      "text": "再平衡2024-08-23前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 53.5% / B 36.6% / 现金 9.9% → A 35.0% / B 55.0% / 现金 10.0%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 712,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "5px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "9px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 92,
+        "w": 714,
+        "x": 21,
+        "y": 1796
+      },
+      "scroll": 712,
+      "selected": null,
+      "size": "14px",
+      "text": "再平衡2024-08-16前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 34.9% / B 55.0% / 现金 10.1% → A 55.0% / B 35.0% / 现金 10.0%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 712,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "5px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "9px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 92,
+        "w": 714,
+        "x": 21,
+        "y": 1896
+      },
+      "scroll": 712,
+      "selected": null,
+      "size": "14px",
+      "text": "再平衡2024-08-09前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 56.4% / B 33.7% / 现金 9.9% → A 35.0% / B 55.0% / 现金 10.0%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 712,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "5px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "9px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 92,
+        "w": 714,
+        "x": 21,
+        "y": 1996
+      },
+      "scroll": 712,
+      "selected": null,
+      "size": "14px",
+      "text": "再平衡2024-08-02前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 34.3% / B 55.9% / 现金 9.8% → A 55.0% / B 35.0% / 现金 10.0%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 712,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "5px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "9px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 92,
+        "w": 714,
+        "x": 21,
+        "y": 2096
+      },
+      "scroll": 712,
+      "selected": null,
+      "size": "14px",
+      "text": "再平衡2024-07-26前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 53.2% / B 36.7% / 现金 10.0% → A 35.0% / B 55.0% / 现金 10.0%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 712,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "5px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "9px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 92,
+        "w": 714,
+        "x": 21,
+        "y": 2196
+      },
+      "scroll": 712,
+      "selected": null,
+      "size": "14px",
+      "text": "再平衡2024-07-19前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 35.2% / B 54.6% / 现金 10.2% → A 55.0% / B 35.0% / 现金 10.0%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 712,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "5px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "9px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 92,
+        "w": 714,
+        "x": 21,
+        "y": 2296
+      },
+      "scroll": 712,
+      "selected": null,
+      "size": "14px",
+      "text": "再平衡2024-07-12前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 56.9% / B 33.2% / 现金 9.9% → A 35.0% / B 55.0% / 现金 10.0%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 712,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "5px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "9px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 92,
+        "w": 714,
+        "x": 21,
+        "y": 2396
+      },
+      "scroll": 712,
+      "selected": null,
+      "size": "14px",
+      "text": "再平衡2024-07-05前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 35.0% / B 55.2% / 现金 9.8% → A 55.0% / B 35.0% / 现金 10.0%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 712,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "5px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "9px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 92,
+        "w": 714,
+        "x": 21,
+        "y": 2496
+      },
+      "scroll": 712,
+      "selected": null,
+      "size": "14px",
+      "text": "再平衡2024-06-28前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 53.6% / B 36.3% / 现金 10.0% → A 35.0% / B 55.0% / 现金 10.0%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 712,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "5px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "9px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 92,
+        "w": 714,
+        "x": 21,
+        "y": 2596
+      },
+      "scroll": 712,
+      "selected": null,
+      "size": "14px",
+      "text": "再平衡2024-06-21前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 46.0% / B 43.9% / 现金 10.1% → A 55.0% / B 35.0% / 现金 10.0%",
+      "weight": "400",
+      "white": "normal"
+    },
+    {
+      "bg": "rgb(24, 35, 55)",
+      "border": [
+        "1px",
+        "1px",
+        "1px",
+        "1px",
+        "rgb(38, 54, 80)"
+      ],
+      "client": 712,
+      "color": "rgb(231, 237, 246)",
+      "disabled": false,
+      "ellipsis": "clip",
+      "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "gap": "5px 8px",
+      "line": "22px",
+      "offset": "0px",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "9px 10px",
+      "pressed": null,
+      "radius": "6px",
+      "rect": {
+        "h": 92,
+        "w": 714,
+        "x": 21,
+        "y": 2696
+      },
+      "scroll": 712,
+      "selected": null,
+      "size": "14px",
+      "text": "首次建仓2024-06-17T0 已确定初始目标，下一交易日开盘建仓初始目标已执行 · A 0.0% / B 0.0% / 现金 100.0% → A 45.0% / B 45.0% / 现金 10.0%",
+      "weight": "400",
+      "white": "normal"
+    }
+  ],
+  "document": {
+    "h": 1709,
+    "scrollY": 0,
+    "w": 759
+  },
+  "sections": [
+    {
+      "items": [
+        {
+          "bg": "rgb(17, 26, 43)",
+          "border": [
+            "0px",
+            "0px",
+            "1px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 759,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "4px",
+          "line": "18px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "auto",
+          "padding": "5px 15.18px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 55,
+            "w": 759,
+            "x": 0,
+            "y": 0
+          },
+          "scroll": 759,
+          "selected": null,
+          "size": "12px",
+          "text": "TradeReview历史策略复盘 · 完整交互版旧 Workbench 预览完整观察完整结果完整比较原创建当前 A",
+          "weight": "400",
+          "white": "nowrap"
+        }
+      ],
+      "sel": ".full-preview-nav"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(17, 26, 43)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 172,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "18px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 46,
+            "w": 173.9375,
+            "x": 569.8828125,
+            "y": 63
+          },
+          "scroll": 172,
+          "selected": null,
+          "size": "12px",
+          "text": "预览工具 · 场景 / 视觉 / 说明T0 起点运行中 · 第10日完整 · 已展开视觉原版样式首页统一完整入口预设：已展开；合成演示，刷新重置；切换演示场景或导览会重开预设；切换视觉保留当前查看状态。",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".full-preview-tools"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(15, 25, 43)",
+          "border": [
+            "0px",
+            "0px",
+            "1px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 759,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "12px",
+          "line": "18px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "8px 15.18px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 63,
+            "w": 759,
+            "x": 0,
+            "y": 55
+          },
+          "scroll": 759,
+          "selected": null,
+          "size": "12px",
+          "text": "合成演示 · 完整 · 已展开 · 首页统一三个月双策略合成预设 · EMA20 v1.4 · 低波动质量 v2.1 · ¥100,000 · 复盘标的集预览工具 · 场景 / 视觉 / 说明T0 起点运行中 · 第10日完整 · 已展开视觉原版样式首页统一完整入口预设：已展开；合成演示，刷新重置；切换演示场景或导览会重开预设；切换视觉保留当前查看状态。",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".full-preview-context"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(11, 18, 32)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 759,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "14px 10px 24px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 1591,
+            "w": 759,
+            "x": 0,
+            "y": 118
+          },
+          "scroll": 759,
+          "selected": null,
+          "size": "14px",
+          "text": "策略实验 / 完整 Workbench 合成演示回测工作台交互原型 · 合成数据 · 刷新重置查看配置实验列表EMA20 v1.4独立本金 ¥100,000.00低波动质量 v2.1独立本金 ¥100,000.00更多组合 ⌄总资产¥102,540.84累计收益+2.54%组合当日收益¥1,097.16 · +1.08%现金比例10.0%运行已完成2024-09-13 · 收盘后已展开至 2024-09-13查看回测结果 →比较组合回看T0 · 2024-06-14 16:0",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-prototype"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 739,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 53,
+            "w": 739,
+            "x": 10,
+            "y": 132
+          },
+          "scroll": 739,
+          "selected": null,
+          "size": "14px",
+          "text": "策略实验 / 完整 Workbench 合成演示回测工作台交互原型 · 合成数据 · 刷新重置查看配置实验列表",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-header"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 636,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "7px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "auto",
+          "padding": "1px 2px 3px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 48,
+            "w": 635.5703125,
+            "x": 10,
+            "y": 195
+          },
+          "scroll": 636,
+          "selected": null,
+          "size": "14px",
+          "text": "EMA20 v1.4独立本金 ¥100,000.00低波动质量 v2.1独立本金 ¥100,000.00",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".portfolio-tabs"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 739,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 160,
+            "w": 739,
+            "x": 10,
+            "y": 262
+          },
+          "scroll": 739,
+          "selected": null,
+          "size": "14px",
+          "text": "总资产¥102,540.84累计收益+2.54%组合当日收益¥1,097.16 · +1.08%现金比例10.0%",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-summary"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 346,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "32px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 32,
+            "w": 345.5,
+            "x": 20,
+            "y": 293
+          },
+          "scroll": 346,
+          "selected": null,
+          "size": "24px",
+          "text": "¥102,540.84",
+          "weight": "500",
+          "white": "normal"
+        },
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(38, 166, 154)"
+          ],
+          "client": 346,
+          "color": "rgb(38, 166, 154)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "32px",
+          "offset": "0px",
+          "outline": "rgb(38, 166, 154) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 32,
+            "w": 345.5,
+            "x": 393.5,
+            "y": 293
+          },
+          "scroll": 346,
+          "selected": null,
+          "size": "24px",
+          "text": "+2.54%",
+          "weight": "500",
+          "white": "normal"
+        },
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(38, 166, 154)"
+          ],
+          "client": 346,
+          "color": "rgb(38, 166, 154)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "32px",
+          "offset": "0px",
+          "outline": "rgb(38, 166, 154) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 32,
+            "w": 345.5,
+            "x": 20,
+            "y": 377
+          },
+          "scroll": 346,
+          "selected": null,
+          "size": "24px",
+          "text": "¥1,097.16 · +1.08%",
+          "weight": "500",
+          "white": "normal"
+        },
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 346,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "32px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 32,
+            "w": 345.5,
+            "x": 393.5,
+            "y": 377
+          },
+          "scroll": 346,
+          "selected": null,
+          "size": "24px",
+          "text": "10.0%",
+          "weight": "500",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-summary b"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(17, 26, 43)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 737,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "12px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "10px",
+          "pressed": null,
+          "radius": "8px",
+          "rect": {
+            "h": 66,
+            "w": 739,
+            "x": 10,
+            "y": 434
+          },
+          "scroll": 737,
+          "selected": null,
+          "size": "14px",
+          "text": "运行已完成2024-09-13 · 收盘后已展开至 2024-09-13查看回测结果 →比较组合回看T0 · 2024-06-14 16:002024-06-172024-06-182024-06-192024-06-202024-06-212024-06-242024-06-252024-06-262024-06-272024-06-282024-07-012024-07-022024-07-032024-07-042024-07-052024-07-082024-07-0",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-timebar"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 739,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "6px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 46,
+            "w": 739,
+            "x": 10,
+            "y": 512
+          },
+          "scroll": 739,
+          "selected": null,
+          "size": "14px",
+          "text": "进度恢复展开剩余行情已到计划结束日原型演示工具 仅合成数据 · 内存状态，不是真实保存或撮合一次性故障场景故障注入关闭数据中断执行失败下一次计划执行 · EMA20 v1.4当前没有下一次计划执行日期执行演示结果正常成交部分成交（每笔计划差量 50%）未成交（计划保留，实际成交为 0）无下一次计划执行；部分成交和未成交选项不可用。内存检查点 · 仅本次页面状态当前完整日 2024-09-13 · 最近检查点 尚未创建创建内存检查点模拟保存失败重载最近检查点重载只恢复明确创建的",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".recovery-prototype"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(194, 208, 225)"
+          ],
+          "client": 349,
+          "color": "rgb(194, 208, 225)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "2px 8px",
+          "line": "18px",
+          "offset": "0px",
+          "outline": "rgb(194, 208, 225) none 3px",
+          "overflow": "visible",
+          "padding": "4px 9px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 44,
+            "w": 349.4140625,
+            "x": 398.5859375,
+            "y": 513
+          },
+          "scroll": 349,
+          "selected": null,
+          "size": "12px",
+          "text": "原型演示工具 仅合成数据 · 内存状态，不是真实保存或撮合",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".recovery-prototype summary"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 739,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "12px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 1127,
+            "w": 739,
+            "x": 10,
+            "y": 558
+          },
+          "scroll": 739,
+          "selected": null,
+          "size": "14px",
+          "text": "EMA20 v1.4组合净值T0 起点 · 2024-06-14 16:00组合净值标的 K 线a#tv-attr-logo{--fill:#131722;--stroke:#fff;position:absolute;left:10px;bottom:10px;height:19px;width:35px;margin:0;padding:0;border:0;z-index:3;}a#tv-attr-logo[data-dark]{--fill:#D1D4DC;--str",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-grid"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(17, 26, 43)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 737,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "10px",
+          "pressed": null,
+          "radius": "8px",
+          "rect": {
+            "h": 428,
+            "w": 739,
+            "x": 10,
+            "y": 558
+          },
+          "scroll": 737,
+          "selected": null,
+          "size": "14px",
+          "text": "EMA20 v1.4组合净值T0 起点 · 2024-06-14 16:00组合净值标的 K 线a#tv-attr-logo{--fill:#131722;--stroke:#fff;position:absolute;left:10px;bottom:10px;height:19px;width:35px;margin:0;padding:0;border:0;z-index:3;}a#tv-attr-logo[data-dark]{--fill:#D1D4DC;--str",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-main"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 717,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 46,
+            "w": 717,
+            "x": 21,
+            "y": 569
+          },
+          "scroll": 717,
+          "selected": null,
+          "size": "14px",
+          "text": "EMA20 v1.4组合净值T0 起点 · 2024-06-14 16:00组合净值标的 K 线",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".chart-heading"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(17, 26, 43)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 717,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "hidden",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "8px",
+          "rect": {
+            "h": 280,
+            "w": 717,
+            "x": 21,
+            "y": 622
+          },
+          "scroll": 717,
+          "selected": null,
+          "size": "14px",
+          "text": "a#tv-attr-logo{--fill:#131722;--stroke:#fff;position:absolute;left:10px;bottom:10px;height:19px;width:35px;margin:0;padding:0;border:0;z-index:3;}a#tv-attr-logo[data-dark]{--fill:#D1D4DC;--stroke:#131722;}T0V",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-chart-shell"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(173, 187, 207)"
+          ],
+          "client": 717,
+          "color": "rgb(173, 187, 207)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "7px 12px",
+          "line": "18px",
+          "offset": "0px",
+          "outline": "rgb(173, 187, 207) none 3px",
+          "overflow": "visible",
+          "padding": "5px 0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 53,
+            "w": 717,
+            "x": 21,
+            "y": 902
+          },
+          "scroll": 717,
+          "selected": null,
+          "size": "12px",
+          "text": "T0当前 V净值截至 2024-09-13",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".chart-caption"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(173, 187, 207)"
+          ],
+          "client": 717,
+          "color": "rgb(173, 187, 207)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "18px",
+          "offset": "0px",
+          "outline": "rgb(173, 187, 207) none 3px",
+          "overflow": "visible",
+          "padding": "2px 0px 0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 20,
+            "w": 717,
+            "x": 21,
+            "y": 955
+          },
+          "scroll": 717,
+          "selected": null,
+          "size": "12px",
+          "text": "查看日 2024-09-13 · 图形、轴范围与事件标记均截止当前日",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".chart-disclosure"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 739,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "10px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 687,
+            "w": 739,
+            "x": 10,
+            "y": 998
+          },
+          "scroll": 739,
+          "selected": null,
+          "size": "14px",
+          "text": "当前组合持仓概览EMA20 v1.4随策略 · 每周 · 每组合独立本金 · 收盘估值合成股票 A573.3066 股 × ¥99.11¥56,819.1555.4%合成股票 B477.1771 股 × ¥74.28¥35,443.8534.6%现金¥10,277.84组合净值1.0254总资产¥102,540.84当前查看日 · 14 条调仓事件下一已知事件当前进度内无后续事件再平衡2024-09-13前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 ·",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".running-side"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(17, 26, 43)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 737,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "10px",
+          "pressed": null,
+          "radius": "8px",
+          "rect": {
+            "h": 313,
+            "w": 739,
+            "x": 10,
+            "y": 998
+          },
+          "scroll": 737,
+          "selected": null,
+          "size": "14px",
+          "text": "当前组合持仓概览EMA20 v1.4随策略 · 每周 · 每组合独立本金 · 收盘估值合成股票 A573.3066 股 × ¥99.11¥56,819.1555.4%合成股票 B477.1771 股 × ¥74.28¥35,443.8534.6%现金¥10,277.84组合净值1.0254总资产¥102,540.84",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".holdings-block"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "0px",
+            "0px",
+            "1px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 717,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "10px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "7px 2px",
+          "pressed": "false",
+          "radius": "0px",
+          "rect": {
+            "h": 57,
+            "w": 717,
+            "x": 21,
+            "y": 1090
+          },
+          "scroll": 717,
+          "selected": null,
+          "size": "14px",
+          "text": "合成股票 A573.3066 股 × ¥99.11¥56,819.1555.4%",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "0px",
+            "0px",
+            "1px",
+            "0px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 717,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "10px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "7px 2px",
+          "pressed": "false",
+          "radius": "0px",
+          "rect": {
+            "h": 57,
+            "w": 717,
+            "x": 21,
+            "y": 1147
+          },
+          "scroll": 717,
+          "selected": null,
+          "size": "14px",
+          "text": "合成股票 B477.1771 股 × ¥74.28¥35,443.8534.6%",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".holding-row"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 74,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 22,
+            "w": 74.2578125,
+            "x": 661.7421875,
+            "y": 1097
+          },
+          "scroll": 74,
+          "selected": null,
+          "size": "14px",
+          "text": "¥56,819.15",
+          "weight": "500",
+          "white": "normal"
+        },
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 74,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 22,
+            "w": 74.2578125,
+            "x": 661.7421875,
+            "y": 1154
+          },
+          "scroll": 74,
+          "selected": null,
+          "size": "14px",
+          "text": "¥35,443.85",
+          "weight": "500",
+          "white": "normal"
+        }
+      ],
+      "sel": ".holding-value b"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 83,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 22,
+            "w": 82.828125,
+            "x": 655.171875,
+            "y": 1272.5
+          },
+          "scroll": 83,
+          "selected": null,
+          "size": "14px",
+          "text": "¥102,540.84",
+          "weight": "500",
+          "white": "normal"
+        }
+      ],
+      "sel": ".holdings-foot b"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 74,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 22,
+            "w": 74.2578125,
+            "x": 663.7421875,
+            "y": 1209
+          },
+          "scroll": 74,
+          "selected": null,
+          "size": "14px",
+          "text": "¥10,277.84",
+          "weight": "500",
+          "white": "normal"
+        },
+        {
+          "bg": "rgba(0, 0, 0, 0)",
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px",
+            "rgb(231, 237, 246)"
+          ],
+          "client": 46,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "0px",
+          "rect": {
+            "h": 22,
+            "w": 45.8203125,
+            "x": 692.1796875,
+            "y": 1240
+          },
+          "scroll": 46,
+          "selected": null,
+          "size": "14px",
+          "text": "1.0254",
+          "weight": "500",
+          "white": "normal"
+        }
+      ],
+      "sel": ".account-total b"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(17, 26, 43)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 737,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "hidden",
+          "padding": "10px",
+          "pressed": null,
+          "radius": "8px",
+          "rect": {
+            "h": 298,
+            "w": 739,
+            "x": 10,
+            "y": 1321
+          },
+          "scroll": 737,
+          "selected": null,
+          "size": "14px",
+          "text": "当前查看日 · 14 条调仓事件下一已知事件当前进度内无后续事件再平衡2024-09-13前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 33.0% / B 57.0% / 现金 9.9% → A 55.0% / B 35.0% / 现金 10.0%再平衡2024-09-06前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 56.8% / B 33.1% / 现金 10.1% → A 35.0% / B 55.0% /",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".event-block"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(13, 24, 40)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 42,
+          "color": "rgb(169, 189, 214)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(169, 189, 214) none 3px",
+          "overflow": "visible",
+          "padding": "0px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 44,
+            "w": 44,
+            "x": 551,
+            "y": 1332
+          },
+          "scroll": 42,
+          "selected": null,
+          "size": "20px",
+          "text": "",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(20, 30, 48)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 136,
+          "color": "rgb(127, 141, 162)",
+          "disabled": true,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "normal",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(127, 141, 162) none 3px",
+          "overflow": "visible",
+          "padding": "4px 8px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 44,
+            "w": 138,
+            "x": 600,
+            "y": 1332
+          },
+          "scroll": 136,
+          "selected": null,
+          "size": "14px",
+          "text": "下一已知事件当前进度内无后续事件",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".event-nav button"
+    },
+    {
+      "items": [
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 712,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "5px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "9px 10px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 92,
+            "w": 714,
+            "x": 21,
+            "y": 1396
+          },
+          "scroll": 712,
+          "selected": null,
+          "size": "14px",
+          "text": "再平衡2024-09-13前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 33.0% / B 57.0% / 现金 9.9% → A 55.0% / B 35.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 712,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "5px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "9px 10px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 92,
+            "w": 714,
+            "x": 21,
+            "y": 1496
+          },
+          "scroll": 712,
+          "selected": null,
+          "size": "14px",
+          "text": "再平衡2024-09-06前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 56.8% / B 33.1% / 现金 10.1% → A 35.0% / B 55.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 712,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "5px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "9px 10px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 92,
+            "w": 714,
+            "x": 21,
+            "y": 1596
+          },
+          "scroll": 712,
+          "selected": null,
+          "size": "14px",
+          "text": "再平衡2024-08-30前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 36.6% / B 53.5% / 现金 9.9% → A 55.0% / B 35.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 712,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "5px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "9px 10px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 92,
+            "w": 714,
+            "x": 21,
+            "y": 1696
+          },
+          "scroll": 712,
+          "selected": null,
+          "size": "14px",
+          "text": "再平衡2024-08-23前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 53.5% / B 36.6% / 现金 9.9% → A 35.0% / B 55.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 712,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "5px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "9px 10px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 92,
+            "w": 714,
+            "x": 21,
+            "y": 1796
+          },
+          "scroll": 712,
+          "selected": null,
+          "size": "14px",
+          "text": "再平衡2024-08-16前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 34.9% / B 55.0% / 现金 10.1% → A 55.0% / B 35.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 712,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "5px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "9px 10px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 92,
+            "w": 714,
+            "x": 21,
+            "y": 1896
+          },
+          "scroll": 712,
+          "selected": null,
+          "size": "14px",
+          "text": "再平衡2024-08-09前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 56.4% / B 33.7% / 现金 9.9% → A 35.0% / B 55.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 712,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "5px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "9px 10px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 92,
+            "w": 714,
+            "x": 21,
+            "y": 1996
+          },
+          "scroll": 712,
+          "selected": null,
+          "size": "14px",
+          "text": "再平衡2024-08-02前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 34.3% / B 55.9% / 现金 9.8% → A 55.0% / B 35.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 712,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "5px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "9px 10px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 92,
+            "w": 714,
+            "x": 21,
+            "y": 2096
+          },
+          "scroll": 712,
+          "selected": null,
+          "size": "14px",
+          "text": "再平衡2024-07-26前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 53.2% / B 36.7% / 现金 10.0% → A 35.0% / B 55.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 712,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "5px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "9px 10px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 92,
+            "w": 714,
+            "x": 21,
+            "y": 2196
+          },
+          "scroll": 712,
+          "selected": null,
+          "size": "14px",
+          "text": "再平衡2024-07-19前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 35.2% / B 54.6% / 现金 10.2% → A 55.0% / B 35.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 712,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "5px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "9px 10px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 92,
+            "w": 714,
+            "x": 21,
+            "y": 2296
+          },
+          "scroll": 712,
+          "selected": null,
+          "size": "14px",
+          "text": "再平衡2024-07-12前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 56.9% / B 33.2% / 现金 9.9% → A 35.0% / B 55.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 712,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "5px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "9px 10px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 92,
+            "w": 714,
+            "x": 21,
+            "y": 2396
+          },
+          "scroll": 712,
+          "selected": null,
+          "size": "14px",
+          "text": "再平衡2024-07-05前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 35.0% / B 55.2% / 现金 9.8% → A 55.0% / B 35.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 712,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "5px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "9px 10px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 92,
+            "w": 714,
+            "x": 21,
+            "y": 2496
+          },
+          "scroll": 712,
+          "selected": null,
+          "size": "14px",
+          "text": "再平衡2024-06-28前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 53.6% / B 36.3% / 现金 10.0% → A 35.0% / B 55.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 712,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "5px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "9px 10px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 92,
+            "w": 714,
+            "x": 21,
+            "y": 2596
+          },
+          "scroll": 712,
+          "selected": null,
+          "size": "14px",
+          "text": "再平衡2024-06-21前一交易日已定模板：每 5 个合成交易日开盘再平衡策略按预设调整仓位 · A 46.0% / B 43.9% / 现金 10.1% → A 55.0% / B 35.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        },
+        {
+          "bg": "rgb(24, 35, 55)",
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px",
+            "rgb(38, 54, 80)"
+          ],
+          "client": 712,
+          "color": "rgb(231, 237, 246)",
+          "disabled": false,
+          "ellipsis": "clip",
+          "family": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+          "gap": "5px 8px",
+          "line": "22px",
+          "offset": "0px",
+          "outline": "rgb(231, 237, 246) none 3px",
+          "overflow": "visible",
+          "padding": "9px 10px",
+          "pressed": null,
+          "radius": "6px",
+          "rect": {
+            "h": 92,
+            "w": 714,
+            "x": 21,
+            "y": 2696
+          },
+          "scroll": 712,
+          "selected": null,
+          "size": "14px",
+          "text": "首次建仓2024-06-17T0 已确定初始目标，下一交易日开盘建仓初始目标已执行 · A 0.0% / B 0.0% / 现金 100.0% → A 45.0% / B 45.0% / 现金 10.0%",
+          "weight": "400",
+          "white": "normal"
+        }
+      ],
+      "sel": ".event-card"
+    },
+    {
+      "items": [],
+      "sel": ".portfolio-more-menu"
+    },
+    {
+      "items": [],
+      "sel": ".portfolio-more-menu b"
+    },
+    {
+      "items": [],
+      "sel": ".portfolio-more-menu small"
+    },
+    {
+      "items": [],
+      "sel": ".running-drawer"
+    },
+    {
+      "items": [],
+      "sel": ".drawer-header"
+    },
+    {
+      "items": [],
+      "sel": ".drawer-content"
+    },
+    {
+      "items": [],
+      "sel": ".drawer-content dd"
+    },
+    {
+      "items": [],
+      "sel": ".drawer-actions"
+    }
+  ],
+  "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+  "viewport": {
+    "dpr": 1,
+    "h": 800,
+    "w": 759
+  }
+}

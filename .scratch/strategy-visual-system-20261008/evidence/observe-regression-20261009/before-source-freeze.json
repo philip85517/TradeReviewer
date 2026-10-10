@@ -1,0 +1,26 @@
+[
+  {
+    "path": "app/components/strategy-prototype/full-workbench-preview.tsx",
+    "sha256": "426d986c04cb78602fd6d820c89760581ad1e81e0f447da0ca1dc5d1178b9c5b"
+  },
+  {
+    "path": "app/components/strategy-prototype/full-workbench-preview.css",
+    "sha256": "4b060b73f6ec7cf6a0c6664b927c3f8a85bae0ef1a44bb32f39f2fac57c1666c"
+  },
+  {
+    "path": "app/components/strategy-prototype/workbench-visual-theme.css",
+    "sha256": "e1ec30945d818e738f0366c0b3989e9e246bbc7bea784dcb020b0ea0a3297aea"
+  },
+  {
+    "path": "app/components/strategy-prototype/running-prototype.tsx",
+    "sha256": "7829be4ec52fbb575cc1c4c2742a14e1a859b0a3b111eaa848cf71c9e10e8038"
+  },
+  {
+    "path": "app/components/strategy-prototype/running-prototype.css",
+    "sha256": "e515cd2a2909c6a0f17f32b3c47d1dd6c1195a841c1a4a95f6256390d42ab389"
+  },
+  {
+    "path": "app/components/strategy-prototype/recovery-prototype.css",
+    "sha256": "6720379f98a960f07d554ef9bce0ed9853b0a88c8f265fc64902ed014e5c764f"
+  }
+]

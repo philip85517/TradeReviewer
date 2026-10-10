@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-10T12:44:12.394Z",
+  "bodyOverflowY": "auto",
+  "chartCanvases": 7,
+  "scrollHeight": 1051,
+  "scrollY": 0,
+  "selectedTab": "EMA20 v1.4独立本金 ¥100,000.00",
+  "title": "回测工作台",
+  "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+  "viewport": {
+    "dpr": 2,
+    "height": 720,
+    "width": 1280
+  }
+}

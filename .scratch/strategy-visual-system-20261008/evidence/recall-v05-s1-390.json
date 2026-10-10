@@ -1,0 +1,14 @@
+{
+  "chart": {
+    "height": 720,
+    "width": 328
+  },
+  "context": "S1 持仓中 · 行情可知至 2026-03-01 15:00:00 Asia/Shanghai · 成交截止 2026-03-01 15:00:00 Asia/Shanghai · 复盘补记",
+  "roles": "计划入场 56.00初始止损 52.00止盈目标 68.00实际成本 56.00 CNY",
+  "rolesDisplay": "grid",
+  "scrollWidth": 390,
+  "viewport": [
+    390,
+    844
+  ]
+}

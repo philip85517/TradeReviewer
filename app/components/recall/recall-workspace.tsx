@@ -245,7 +245,53 @@ export type RecallWorkspaceProps = {
   onExport?: (document: RecallDocument) => void;
   /** Parent-owned navigation and data actions rendered in the single Recall header. */
   headerActions?: ReactNode;
+  /** Opt-in visual seam for design prototypes; omitted in the business workspace. */
+  designPrototype?: {
+    mode: "baseline" | "recommended";
+    safeStageProjection?: boolean;
+  };
 };
+
+export type RecallPrototypePriceRole = {
+  id: string;
+  text: string;
+};
+
+/**
+ * Build the compact, narrow-screen role readout for the recommended sample.
+ * The input plan lines are already the plan recorded for the current review
+ * object. Actual cost comes only from the currently revealed execution
+ * projection supplied by the workspace, so this helper never consults the
+ * episode's unrevealed execution list.
+ */
+export function buildRecallPrototypePriceRoles(input: {
+  mode?: "baseline" | "recommended";
+  phase: RecallPhase;
+  planPriceLines: readonly { id: string; price: number; title: string }[];
+  position: Pick<ReturnType<typeof replayPositionAtPrice>, "quantity" | "averageCost">;
+  pnlAvailable: boolean;
+  quantityAvailable: boolean;
+  currency: string;
+}): RecallPrototypePriceRole[] {
+  if (input.mode !== "recommended") return [];
+
+  const roles = input.planPriceLines
+    .filter((line) => Number.isFinite(line.price) && line.price > 0)
+    .map((line) => ({ id: `plan-${line.id}`, text: `${line.title} ${line.price.toFixed(2)}` }));
+  const quantity = Number(input.position.quantity);
+  const averageCost = Number(input.position.averageCost);
+
+  if (input.phase === "pre-entry") {
+    return [...roles, { id: "actual", text: "实际成交尚未揭示" }];
+  }
+  if (input.phase === "post-review" && input.quantityAvailable && quantity === 0) {
+    return [...roles, { id: "actual", text: "实际已清仓 · 持仓 0" }];
+  }
+  if (input.quantityAvailable && input.pnlAvailable && quantity !== 0 && Number.isFinite(averageCost) && averageCost > 0) {
+    return [...roles, { id: "actual-cost", text: `实际成本 ${averageCost.toFixed(2)} ${input.currency}` }];
+  }
+  return roles;
+}
 
 type SnapshotEditBackup = {
   drawings: NormalizedDrawing[];
@@ -863,6 +909,7 @@ export function RecallWorkspace({
   onFocusedChange,
   onExport,
   headerActions,
+  designPrototype,
 }: RecallWorkspaceProps) {
   const fallbackTimeframe = firstEnabledTimeframe(timeframeAvailability, candlesByTimeframe);
   const chartHandleRef = useRef<RecallChartHandle | null>(null);
@@ -2681,6 +2728,13 @@ export function RecallWorkspace({
   const decisionSnapshots = document.snapshots.filter((snapshot) => snapshot.decisionId !== "global");
   const globalSnapshot = document.snapshots.find((snapshot) => snapshot.decisionId === "global");
   const revealedExecutionIds = new Set(chartExecutions.map((execution) => execution.id));
+  const safeStageProjection = Boolean(designPrototype?.safeStageProjection);
+  const visibleDecisions = safeStageProjection && !historyMode && phase !== "post-review"
+    ? document.decisions.filter((decision) => decision.executionIds.some((id) => revealedExecutionIds.has(id)))
+    : document.decisions;
+  const decisionCountLabel = safeStageProjection
+    ? `${visibleDecisions.length} 笔已揭示决策`
+    : `${document.decisions.length} 笔决策`;
   const selectedExecutionCandidate = currentDecisionExecution(document, currentExecutions, selectedDecisionId);
   const selectedExecution = selectedExecutionCandidate && revealedExecutionIds.has(selectedExecutionCandidate.id)
     ? selectedExecutionCandidate
@@ -2765,9 +2819,21 @@ export function RecallWorkspace({
     : replay.revealedExecutions.at(-1)?.executedAt;
   const executionCutoff = visibleExecutionCutoff ? formatMarketCursor(visibleExecutionCutoff, instrument.market) : "成交尚未揭示";
   const executionCutoffShort = visibleExecutionCutoff ? formatMarketCursorShort(visibleExecutionCutoff, instrument.market) : executionCutoff;
+  const prototypeStageContext = designPrototype
+    ? `${sidebarPhase === "pre-entry" ? "S0 入场前" : sidebarPhase === "holding" ? "S1 持仓中" : "S2 事后复盘"} · 行情可知至 ${alignedMarketCutoff.replace(" · ", " ")} · ${visibleExecutionCutoff ? `成交截止 ${executionCutoff.replace(" · ", " ")}` : executionCutoff} · 复盘补记`
+    : null;
+  const prototypePriceRoles = buildRecallPrototypePriceRoles({
+    mode: designPrototype?.mode,
+    phase: sidebarPhase,
+    planPriceLines,
+    position,
+    pnlAvailable,
+    quantityAvailable,
+    currency: instrument.currency,
+  });
 
   return (
-    <section ref={workspaceElementRef} className="recall-workspace trade-review-workspace--recall-frame" data-layout={focusMode ? "focus" : "standard"} aria-label="导入交易回忆复盘工作区" tabIndex={-1} onKeyDown={handleWorkspaceKeyDown} onFocusCapture={(event) => { if ((event.target as HTMLElement).matches("input, textarea, select, [contenteditable=true]")) setPlaying(false); }}>
+    <section ref={workspaceElementRef} className={`recall-workspace trade-review-workspace--recall-frame${designPrototype ? " recall-workspace--design-prototype" : ""}`} data-layout={focusMode ? "focus" : "standard"} data-design-prototype={designPrototype?.mode} data-safe-stage-projection={designPrototype?.safeStageProjection ? "true" : undefined} aria-label="导入交易回忆复盘工作区" tabIndex={-1} onKeyDown={handleWorkspaceKeyDown} onFocusCapture={(event) => { if ((event.target as HTMLElement).matches("input, textarea, select, [contenteditable=true]")) setPlaying(false); }}>
       <header className="recall-header recall-frame-header">
         <div className="recall-heading">
           <span className="eyebrow">{tradeNature === "simulation" ? "TradingView · 模拟盘" : "导入交易 · 回忆复盘"}</span>
@@ -2884,12 +2950,13 @@ export function RecallWorkspace({
       <div className={`recall-layout${navOpen ? "" : " nav-collapsed"}`}>
         {navOpen && (
           <aside className={`recall-nav${mobileRecordsOpen ? " mobile-records-open" : ""}`} aria-label="回合与决策导航">
-            <div className="recall-nav-title"><span>本回合记录</span><small>{document.decisions.length} 笔决策</small><button type="button" className="recall-nav-toggle" aria-expanded={mobileRecordsOpen} onClick={() => setMobileRecordsOpen((open) => !open)}>{mobileRecordsOpen ? "收起" : "展开"}</button></div>
+            <div className="recall-nav-title"><span>本回合记录</span><small>{decisionCountLabel}</small><button type="button" className="recall-nav-toggle" aria-expanded={mobileRecordsOpen} onClick={() => setMobileRecordsOpen((open) => !open)}>{mobileRecordsOpen ? "收起" : "展开"}</button></div>
             <button type="button" className={`recall-nav-item global${selectedDecisionId === "global" ? " selected" : ""}`} aria-current={selectedDecisionId === "global" ? "true" : undefined} onClick={() => selectDecision("global")}>
               <span className="recall-nav-icon"><ClipboardPenLine size={15} /></span><span><strong>全局总结</strong><small>{globalSnapshot ? "已有留存" : "尚未留存"}</small></span>
             </button>
             <div className="recall-nav-divider" />
-            {document.decisions.map((decision, index) => {
+            {visibleDecisions.map((decision) => {
+              const index = document.decisions.indexOf(decision);
               const decisionExecutions = decision.executionIds.map((id) => currentExecutions.find((execution) => execution.id === id)).filter(Boolean) as TradeExecution[];
               const snapshots = decisionSnapshots.filter((snapshot) => snapshot.decisionId === decision.id);
               const missingSnapshot = snapshots.length === 0;
@@ -2932,13 +2999,17 @@ export function RecallWorkspace({
 
         <div className="recall-main">
 
-          <div className="recall-phase-provenance" role="status">{editingSnapshotId ? "正在编辑已留存快照" : phase === "pre-entry" ? "复盘补记 · 买入事实尚未揭示" : phase === "holding" ? "持仓过程 · 仅展示当前已知事实" : "事后复盘 · 完整历史已主动揭示"}{document.working.hasSeenFuture && " · 已看后续补记"}</div>
+          {!designPrototype && <div className="recall-phase-provenance" role="status">{editingSnapshotId ? "正在编辑已留存快照" : phase === "pre-entry" ? "复盘补记 · 买入事实尚未揭示" : phase === "holding" ? "持仓过程 · 仅展示当前已知事实" : "事后复盘 · 完整历史已主动揭示"}{document.working.hasSeenFuture && " · 已看后续补记"}</div>}
           {historyMode && <div className="recall-history-banner"><History size={15} />完整历史：当前回合成交全部显示；返回后恢复原回放边界。<button type="button" onClick={toggleHistory}>返回回放</button></div>}
           {unmatchedDecisionIds.size > 0 && <div className="recall-unmatched" role="status"><CircleAlert size={15} />有成交找不到对应 K 线；相关决策可编辑草稿，但不能留存冒充该时点的快照。</div>}
 
           <div className={`recall-chart-and-plan${planOpen ? " plan-open" : ""}`}><div className="recall-chart-shell">
             <DrawingToolbar compact activeTool={activeTool} canUndo={canUndo} canRedo={canRedo} allLocked={allLocked} onToolChange={(tool) => { setPlaying(false); setActiveTool(tool); }} onUndo={() => replay && commitDrawingHistory(undoDrawingAtCursor(drawingHistory, replay.cursor, timeframe))} onRedo={() => replay && commitDrawingHistory(redoDrawingAtCursor(drawingHistory, replay.cursor, timeframe))} onClear={() => commitDrawingHistory(applyDrawingCommand(drawingHistory, { type: "clear-unlocked" }))} onToggleLock={() => replay && commitDrawingHistory(setAllDrawingsLockedAtCursor(drawingHistory, replay.cursor, timeframe))} />
             <div className="recall-chart-column">
+              {prototypeStageContext && <div className="recall-stage-context" data-design-prototype={designPrototype?.mode} role="status">{prototypeStageContext}</div>}
+              {prototypePriceRoles.length > 0 && <div className="recall-prototype-price-roles" data-design-prototype="recommended" role="status" aria-label="阶段价格角色">
+                {prototypePriceRoles.map((role) => <span key={role.id} className={role.id.startsWith("plan-") ? "recall-prototype-price-roles__plan" : "recall-prototype-price-roles__actual"} data-role={role.id}>{role.text}</span>)}
+              </div>}
               <ReplayChartWithHandle
                 episodeId={episode.id}
                 viewportKey={`${episode.id}:${timeframe}:${editingSnapshotId ?? "working"}:${chartCandles[0]?.time ?? ""}:${chartCandles.at(-1)?.time ?? ""}`}
@@ -2963,6 +3034,7 @@ export function RecallWorkspace({
                 onSelectDrawing={setSelectedDrawingId}
                 onCommand={applyCommand}
                 onReady={handleChartReady}
+                designPrototype={designPrototype}
               />
               {layersOpen && <DrawingLayersPanel drawings={visibleDrawings} onCommand={applyCommand} onSelectDrawing={setSelectedDrawingId} selectedDrawingId={selectedDrawingId} />}
             </div>
@@ -3114,7 +3186,7 @@ export function RecallWorkspace({
 
           {!pnlAvailable && <p role="status">持仓历史、成本或费用尚未补齐，盈亏及成本线暂不展示。{settlementCurrencyMismatch ? "报价币种与结算币种不同，未换算汇率，盈亏不可用。" : position.accuracy?.reasons.includes("ambiguous-opening") ? "首笔卖出缺少期初持仓或明确卖空依据，持仓方向待核对。" : ""}</p>}
 
-          {statsOpen && <aside className="recall-stats-panel" aria-label="当前统计"><div><strong>当前统计</strong><button type="button" aria-label="关闭统计" onClick={() => setStatsOpen(false)}><X size={15} /></button></div><dl><dt>标记收盘价</dt><dd>{latestCandle?.close?.toFixed(2) ?? "—"}</dd><dt>标记时间</dt><dd>{latestCandle ? formatMarketCursor(latestCandle.time, instrument.market) : "—"}</dd><dt>已揭示成交</dt><dd>{chartExecutions.length} / {currentExecutions.length}</dd><dt>持仓数量</dt><dd>{quantityAvailable ? position.quantity : "待核对"}</dd><dt>平均成本</dt><dd>{pnlAvailable ? Number(position.averageCost).toFixed(2) : settlementCurrencyMismatch ? "币种待换算" : "待补齐成本"}</dd><dt>净盈亏</dt><dd className={pnlPositive ? "positive" : "negative"}>{pnlAvailable ? money(position.netPnl, instrument.currency) : settlementCurrencyMismatch ? "币种待换算" : "历史不完整"}</dd><dt>累计费用</dt><dd>{chartExecutions.some((execution) => execution.source.feeStatus === "unknown") ? "待核对" : feeCurrency ? fee(position.fees, feeCurrency) : "币种待核对"}</dd></dl></aside>}
+          {statsOpen && <aside className="recall-stats-panel" aria-label="当前统计"><div><strong>当前统计</strong><button type="button" aria-label="关闭统计" onClick={() => setStatsOpen(false)}><X size={15} /></button></div><dl><dt>标记收盘价</dt><dd>{latestCandle?.close?.toFixed(2) ?? "—"}</dd><dt>标记时间</dt><dd>{latestCandle ? formatMarketCursor(latestCandle.time, instrument.market) : "—"}</dd><dt>已揭示成交</dt><dd>{safeStageProjection ? `${chartExecutions.length} 笔` : `${chartExecutions.length} / ${currentExecutions.length}`}</dd><dt>持仓数量</dt><dd>{quantityAvailable ? position.quantity : "待核对"}</dd><dt>平均成本</dt><dd>{pnlAvailable ? Number(position.averageCost).toFixed(2) : settlementCurrencyMismatch ? "币种待换算" : "待补齐成本"}</dd><dt>净盈亏</dt><dd className={pnlPositive ? "positive" : "negative"}>{pnlAvailable ? money(position.netPnl, instrument.currency) : settlementCurrencyMismatch ? "币种待换算" : "历史不完整"}</dd><dt>累计费用</dt><dd>{chartExecutions.some((execution) => execution.source.feeStatus === "unknown") ? "待核对" : feeCurrency ? fee(position.fees, feeCurrency) : "币种待核对"}</dd></dl></aside>}
 
         </div>
       </div>

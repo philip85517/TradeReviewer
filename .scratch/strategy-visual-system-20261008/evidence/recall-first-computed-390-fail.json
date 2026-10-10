@@ -1,0 +1,92 @@
+{
+  "elements": [
+    {
+      "class": "recall-workspace trade-review-workspace--recall-frame recall-workspace--design-prototype",
+      "height": "721px",
+      "minHeight": "0px",
+      "overflow": "clip",
+      "rect": {
+        "height": 721,
+        "width": 390,
+        "x": 0,
+        "y": 123
+      }
+    },
+    {
+      "class": "recall-layout",
+      "height": "576px",
+      "minHeight": "0px",
+      "overflow": "clip",
+      "rect": {
+        "height": 576,
+        "width": 390,
+        "x": 0,
+        "y": 268
+      }
+    },
+    {
+      "class": "recall-main",
+      "height": "519px",
+      "minHeight": "0px",
+      "overflow": "hidden",
+      "rect": {
+        "height": 519,
+        "width": 390,
+        "x": 0,
+        "y": 325
+      }
+    },
+    {
+      "class": "recall-chart-shell",
+      "height": "220px",
+      "minHeight": "220px",
+      "overflow": "hidden",
+      "rect": {
+        "height": 220,
+        "width": 374,
+        "x": 8,
+        "y": 325
+      }
+    },
+    {
+      "class": "recall-stage-context",
+      "height": "45px",
+      "minHeight": "28px",
+      "overflow": "visible",
+      "rect": {
+        "height": 45,
+        "width": 328,
+        "x": 53,
+        "y": 326
+      }
+    },
+    {
+      "class": "chart-stage",
+      "height": "220px",
+      "minHeight": "200px",
+      "overflow": "hidden",
+      "rect": {
+        "height": 220,
+        "width": 328,
+        "x": 53,
+        "y": 371
+      }
+    },
+    {
+      "class": "recall-plan-sidebar",
+      "height": "91px",
+      "minHeight": "0px",
+      "overflow": "auto",
+      "rect": {
+        "height": 91,
+        "width": 374,
+        "x": 8,
+        "y": 559
+      }
+    }
+  ],
+  "height": 844,
+  "scrollHeight": 844,
+  "scrollWidth": 390,
+  "width": 390
+}

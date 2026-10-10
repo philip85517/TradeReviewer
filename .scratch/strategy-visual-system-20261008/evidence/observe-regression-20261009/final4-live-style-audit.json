@@ -1,0 +1,148 @@
+{
+  "at": "2026-10-09T16:00:57.754Z",
+  "fonts": {
+    "cjkChainOnly": true,
+    "geistAvailable": true,
+    "status": "loaded"
+  },
+  "items": [
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(231, 237, 246)",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "32px",
+      "opacity": "1",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "rect": {
+        "h": 32,
+        "w": 207.9140625,
+        "x": 100,
+        "y": 143
+      },
+      "sel": ".running-header h1",
+      "size": "24px",
+      "text": "回测工作台",
+      "textOverflow": "clip",
+      "weight": "600"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(231, 237, 246)",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "22px",
+      "opacity": "1",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "rect": {
+        "h": 42,
+        "w": 74.2578125,
+        "x": 1250.7421875,
+        "y": 525
+      },
+      "sel": ".holding-value",
+      "size": "14px",
+      "text": "¥56,819.1555.4%",
+      "textOverflow": "clip",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(231, 237, 246)",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "22px",
+      "opacity": "1",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "rect": {
+        "h": 42,
+        "w": 74.2578125,
+        "x": 1250.7421875,
+        "y": 582
+      },
+      "sel": ".holding-value",
+      "size": "14px",
+      "text": "¥35,443.8534.6%",
+      "textOverflow": "clip",
+      "weight": "400"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(231, 237, 246)",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "22px",
+      "opacity": "1",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "rect": {
+        "h": 22,
+        "w": 74.2578125,
+        "x": 1250.7421875,
+        "y": 525
+      },
+      "sel": ".holding-value b",
+      "size": "14px",
+      "text": "¥56,819.15",
+      "textOverflow": "clip",
+      "weight": "500"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(231, 237, 246)",
+      "color": "rgb(231, 237, 246)",
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "22px",
+      "opacity": "1",
+      "outline": "rgb(231, 237, 246) none 3px",
+      "overflow": "visible",
+      "padding": "0px",
+      "rect": {
+        "h": 22,
+        "w": 74.2578125,
+        "x": 1250.7421875,
+        "y": 582
+      },
+      "sel": ".holding-value b",
+      "size": "14px",
+      "text": "¥35,443.85",
+      "textOverflow": "clip",
+      "weight": "500"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "border": "rgb(194, 208, 225)",
+      "color": "rgb(194, 208, 225)",
+      "font": "Geist, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", system-ui, sans-serif",
+      "line": "18px",
+      "opacity": "1",
+      "outline": "rgb(194, 208, 225) none 3px",
+      "overflow": "visible",
+      "padding": "4px 9px",
+      "rect": {
+        "h": 36,
+        "w": 349.4140625,
+        "x": 989.5859375,
+        "y": 387
+      },
+      "sel": ".recovery-demo-tools > summary",
+      "size": "12px",
+      "text": "原型演示工具 仅合成数据 · 内存状态，不是真实保存或撮合",
+      "textOverflow": "clip",
+      "weight": "400"
+    }
+  ],
+  "url": "http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete",
+  "viewport": {
+    "dpr": 1,
+    "h": 900,
+    "w": 1440
+  }
+}

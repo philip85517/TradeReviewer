@@ -1,0 +1,9 @@
+{
+  "frozen_at": "2026-10-09",
+  "sources": {
+    "app/components/strategy-prototype/full-workbench-preview.tsx": "426d986c04cb78602fd6d820c89760581ad1e81e0f447da0ca1dc5d1178b9c5b",
+    "app/components/strategy-prototype/full-workbench-preview.css": "4b060b73f6ec7cf6a0c6664b927c3f8a85bae0ef1a44bb32f39f2fac57c1666c",
+    "app/components/strategy-prototype/workbench-visual-theme.css": "e1ec30945d818e738f0366c0b3989e9e246bbc7bea784dcb020b0ea0a3297aea",
+    "app/components/strategy-prototype/running-prototype.tsx": "7829be4ec52fbb575cc1c4c2742a14e1a859b0a3b111eaa848cf71c9e10e8038"
+  }
+}

@@ -1,0 +1,99 @@
+- complementary "应用导航":
+  - generic "TradeReview":
+  - button "工作台（当前）": 工作台
+  - button "策略库"
+  - button "实验"
+- main:
+  - generic: TradeReview
+  - generic: / 策略实验 / 工作台
+  - generic: 视觉模型 · 合成数据 · 刷新重置
+  - button "查看配置"
+  - button "实验列表"
+  - region "实验身份与观察模式":
+    - generic "动量轮动 · 稳定工作台"
+    - combobox "选择策略组合":
+      - option "EMA20 动量 v1.4 · 锁定" [selected]
+      - option "低波动防守 v2.0 · 锁定"
+      - option "组合 B · 数据缺失 · 锁定"
+    - navigation "工作区模式":
+      - button "回放观察"
+      - button "阶段结果"
+      - button "组合对比"
+    - button "实验操作":
+      - text: 实验操作
+  - region "四项摘要指标":
+    - generic: 总资产
+    - generic: ¥100,390
+    - generic: 累计收益
+    - generic: 0.39%
+    - generic: 组合当日收益
+    - generic: 0.19%
+    - generic: 现金比例
+    - generic: 87.6%
+  - region "当前范围":
+    - generic: 当前组合：EMA20 动量 v1.4 · 查看 2024-06-18 · 已运行至 2024-06-18
+    - button "全部视图"
+  - region "主图与回放工作区":
+    - strong: 组合净值
+    - generic: 截至 2024-06-18 16:00 · 当前查看日
+    - button "显示组合净值": 组合净值
+    - button "显示标的 K 线": 标的 K 线
+    - button "图表视野说明": 视野说明
+    - img "合成策略净值图，仅绘制当前可见日期":
+      - table:
+        - row:
+          - cell:
+            - link:
+              - /url: https://www.tradingview.com/?utm_medium=lwc-link&utm_campaign=lwc-chart&utm_source=127.0.0.1/design-system-20261008/workbench/index.html
+          - cell
+        - row:
+          - cell
+          - cell
+      - generic: 组合净值，可知范围截至 2024-06-18，共 3 个可见交易日。
+      - generic: 组合净值 · 右轴
+      - generic: 合成行情
+      - generic: 截至 2024-06-18
+    - generic "图下回放控制":
+      - generic: 查看日期
+      - button "回看上一日"
+      - combobox "查看日期":
+        - option "2024-06-14"
+        - option "2024-06-17"
+        - option "2024-06-18" [selected]
+      - button "回到最新": 回到最新进度
+      - generic: 推进
+      - button "播放"
+      - button "推进下一日": 推进下一交易日
+      - generic: 速度
+      - combobox "播放速度":
+        - option "1x" [selected]
+        - option "2x"
+        - option "4x"
+    - status:
+      - strong: 当前查看日
+      - text: 2024-06-18 · 已运行至 2024-06-18
+      - generic: 单步推进 1 日
+  - complementary "固定检查区":
+    - strong: 组合详情
+    - button "概览"
+    - button "调仓记录"
+    - button "统计指标"
+    - generic: 持仓概览
+    - generic: 按 2024-06-18 显示 · 已展开至 2024-06-18 · 合成示意
+    - generic "EMA20 动量 v1.4": EMA20 v1.4
+    - generic: 当前组合 · 2024-06-18
+    - generic: 贵州茅台 · 600519
+    - generic: 12.4%
+    - generic: 其他持仓（合计）
+    - generic: 0.0%
+    - generic: 现金
+    - generic: ¥87,941.64
+    - generic: 组合净值
+    - generic: "1.0039"
+    - generic: 已知范围
+    - generic: 查看日
+    - generic: 2024-06-18
+    - generic: 展开上限
+    - generic: 2024-06-18
+    - generic: 当前范围暂无后续事件。范围截至 2024-06-18。
+    - button "展开完整明细"

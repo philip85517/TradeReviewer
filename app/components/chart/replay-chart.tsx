@@ -112,9 +112,13 @@ type Props = {
   currency: string;
   onSelectDrawing: (id: string | null) => void;
   onCommand: (command: DrawingCommand) => void;
+  /** Opt-in typography/readout seam for the review design prototype. */
+  designPrototype?: { mode: "baseline" | "recommended"; safeStageProjection?: boolean };
 };
 
 const EMPTY_POSITION_EVENTS: StatementEvent[] = [];
+const RECOMMENDED_CHART_FONT_FAMILY =
+  '"Geist", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif';
 
 type CrosshairCandle = Pick<
   Candle,
@@ -850,6 +854,7 @@ export function ReplayChart({
   currency,
   onSelectDrawing,
   onCommand,
+  designPrototype,
 }: Props) {
   const planHitControls = useRef(new Map<string, HTMLButtonElement>());
   const planDrag = useRef<{id:string;original:string;pointerId:number} | null>(null);
@@ -1016,6 +1021,9 @@ export function ReplayChart({
             background: { type: ColorType.Solid, color: "#101722" },
             textColor: "#8392a7",
             attributionLogo: true,
+            ...(designPrototype?.mode === "recommended"
+              ? { fontFamily: RECOMMENDED_CHART_FONT_FAMILY, fontSize: 12 }
+              : {}),
           },
           grid: {
             vertLines: { color: "#1c2634" },
@@ -1217,7 +1225,7 @@ export function ReplayChart({
       executionMarkerPrimitiveRef.current = null;
       costLineRef.current = null;
     };
-  }, [requestLogicalRange]);
+  }, [designPrototype?.mode, requestLogicalRange]);
 
   useEffect(() => {
     chartRef.current?.applyOptions({
@@ -1778,6 +1786,8 @@ export function ReplayChart({
   return (
     <div
       className="chart-stage"
+      data-design-prototype={designPrototype?.mode}
+      data-safe-stage-projection={designPrototype?.safeStageProjection ? "true" : undefined}
       data-show-grid={settings.showGrid}
       data-show-volume={settings.showVolume}
       data-show-executions={settings.showExecutions}
@@ -1894,6 +1904,7 @@ export function ReplayChart({
         coordinateAdapter={coordinateAdapter}
         coordinateVersion={coordinateVersion}
         plotBounds={plotBounds}
+        designPrototype={designPrototype}
       />
     </div>
   );

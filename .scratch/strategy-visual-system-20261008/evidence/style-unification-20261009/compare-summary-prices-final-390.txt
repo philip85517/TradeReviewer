@@ -1,0 +1,175 @@
+- navigation "完整工作台导览":
+  - generic: TradeReview
+  - generic: 历史策略复盘 · 完整交互版
+  - generic: 旧 Workbench 预览
+  - link "完整观察":
+    - /url: "?prototype=strategy-workbench&view=observe&scene=complete"
+  - link "完整结果":
+    - /url: "?prototype=strategy-workbench&view=results&scene=complete"
+  - link "完整比较":
+    - /url: "?prototype=strategy-workbench&view=compare&scene=complete"
+  - link "原创建":
+    - /url: "?prototype=strategy-create&variant=A"
+  - link "当前 A":
+    - /url: /design-system-20261008/workbench/index.html
+- generic: 三个月双策略合成预设
+- generic: EMA20 v1.4 · 低波动质量 v2.1 · ¥100,000 · 复盘标的集
+- generic "演示场景":
+  - button "T0 起点"
+  - button "运行中 · 第10日"
+  - button "完整 · 已展开" [pressed]
+- group "工作台视觉样式":
+  - generic: 视觉
+  - button "原版样式"
+  - button "首页统一" [pressed]
+- generic: 完整入口预设：已展开；合成演示，刷新重置；切换演示场景或导览会重开预设；切换视觉保留当前查看状态。
+- main "组合比较":
+  - generic: 策略实验 / 组合比较
+  - heading "组合表现比较" [level=1]
+  - paragraph:
+    - text: 2 个组合 · 独立本金 · 结果仅截至当前 R
+    - generic: 交互原型 · 合成数据 · 刷新重置
+  - button "返回过程回看"
+  - region "比较区间与结果截止":
+    - generic: 共同有效区间
+    - generic: 2024-06-14 — 2024-09-13
+    - generic: 完整区间 · 结果截至 R
+    - paragraph: 共同截止取各组合最后完整日中的最早日期 · 2024-09-13 · 计划终点 2024-09-14
+  - region "组合配置与核心指标":
+    - generic: 比较口径
+    - heading "方案与当前指标" [level=2]
+    - generic: 未提供可信基准 · 未计算超额收益
+    - generic "相同计算口径 · 起始时点、数据集合、币种与执行、费用与滑点"
+    - region "组合配置与指标，可纵向和横向滚动" [active]:
+      - table:
+        - rowgroup:
+          - row "组合 本金 · 策略 / 预设 累计收益 最大回撤 期末总资产 已执行再平衡":
+            - columnheader "组合"
+            - columnheader "本金 · 策略 / 预设"
+            - columnheader "累计收益"
+            - columnheader "最大回撤"
+            - columnheader "期末总资产"
+            - columnheader "已执行再平衡"
+        - rowgroup:
+          - row "查看单组合结果：EMA20 v1.4 ¥100,000.00 EMA20 v1.4 · 随策略 · 每周 +2.54% 3.06% ¥102,540.84 13":
+            - rowheader "查看单组合结果：EMA20 v1.4":
+              - button "查看单组合结果：EMA20 v1.4":
+                - text: EMA20 v1.4
+                - generic: 共同区间可用
+            - cell "¥100,000.00 EMA20 v1.4 · 随策略 · 每周":
+              - text: ¥100,000.00
+              - generic: EMA20 v1.4 · 随策略 · 每周
+            - cell "+2.54%"
+            - cell "3.06%"
+            - cell "¥102,540.84"
+            - cell "13"
+          - row "查看单组合结果：低波动质量 v2.1 ¥100,000.00 低波动质量 v2.1 · 随策略 · 每月 −0.90% 4.38% ¥99,102.99 3":
+            - rowheader "查看单组合结果：低波动质量 v2.1":
+              - button "查看单组合结果：低波动质量 v2.1":
+                - text: 低波动质量 v2.1
+                - generic: 共同区间可用
+            - cell "¥100,000.00 低波动质量 v2.1 · 随策略 · 每月":
+              - text: ¥100,000.00
+              - generic: 低波动质量 v2.1 · 随策略 · 每月
+            - cell "−0.90%"
+            - cell "4.38%"
+            - cell "¥99,102.99"
+            - cell "3"
+  - region "组合表现图表":
+    - generic: 当前可见账本 · 2024-09-13
+    - heading "结果走势" [level=2]
+    - tablist "图表类型":
+      - tab "净值"
+      - tab "回撤"
+      - tab "仓位" [selected]
+    - generic: 选择一个组合查看仓位
+    - combobox "仓位图所选组合":
+      - option "EMA20 v1.4" [selected]
+      - option "低波动质量 v2.1"
+    - generic: 当前仅显示：EMA20 v1.4
+    - figure "所选组合的实际仓位历史":
+      - img "所选组合的实际仓位历史 · 截止 2024-09-13":
+        - generic: 100.0%
+        - generic: 75.0%
+        - generic: 50.0%
+        - generic: 25.0%
+        - generic: 0.0%
+        - generic: 当前组合 · EMA20 v1.4
+        - generic: 2024-06-14
+        - generic: 结果截至 R · 2024-09-13
+        - generic: 现金 10.0%
+        - generic: 合成股票 A 55.4%
+        - generic: 合成股票 B 34.6%
+    - generic: 共同结果截止 R 2024-09-13
+    - slider "共同结果截止日": "84"
+  - generic "完整账本指标与数据质量 · 展开查看所有组合"
+  - region "当前结果截止前的事件":
+    - text: 仅显示当前 R 可见事件
+    - heading "执行事件" [level=2]
+    - generic: 18 条
+    - generic: 组合
+    - combobox "按组合筛选事件":
+      - option "全部组合" [selected]
+      - option "EMA20 v1.4"
+      - option "低波动质量 v2.1"
+    - generic: 执行类型
+    - combobox "按执行类型筛选事件":
+      - option "全部类型" [selected]
+      - option "已执行"
+      - option "部分成交"
+      - option "未成交"
+    - list:
+      - button "2024-09-13 · EMA20 v1.4 · 已执行 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-09-13 · EMA20 v1.4 · 已执行
+        - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B
+      - button "2024-09-06 · EMA20 v1.4 · 已执行 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-09-06 · EMA20 v1.4 · 已执行
+        - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B
+      - button "2024-09-06 · 低波动质量 v2.1 · 已执行 前一交易日已定模板：每 20 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-09-06 · 低波动质量 v2.1 · 已执行
+        - generic: 前一交易日已定模板：每 20 个合成交易日开盘再平衡 · A、B
+      - button "2024-08-30 · EMA20 v1.4 · 已执行 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-08-30 · EMA20 v1.4 · 已执行
+        - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B
+      - button "2024-08-23 · EMA20 v1.4 · 已执行 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-08-23 · EMA20 v1.4 · 已执行
+        - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B
+      - button "2024-08-16 · EMA20 v1.4 · 已执行 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-08-16 · EMA20 v1.4 · 已执行
+        - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B
+      - button "2024-08-09 · EMA20 v1.4 · 已执行 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-08-09 · EMA20 v1.4 · 已执行
+        - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B
+      - button "2024-08-09 · 低波动质量 v2.1 · 已执行 前一交易日已定模板：每 20 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-08-09 · 低波动质量 v2.1 · 已执行
+        - generic: 前一交易日已定模板：每 20 个合成交易日开盘再平衡 · A、B
+      - button "2024-08-02 · EMA20 v1.4 · 已执行 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-08-02 · EMA20 v1.4 · 已执行
+        - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B
+      - button "2024-07-26 · EMA20 v1.4 · 已执行 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-07-26 · EMA20 v1.4 · 已执行
+        - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B
+      - button "2024-07-19 · EMA20 v1.4 · 已执行 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-07-19 · EMA20 v1.4 · 已执行
+        - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B
+      - button "2024-07-12 · EMA20 v1.4 · 已执行 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-07-12 · EMA20 v1.4 · 已执行
+        - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B
+      - button "2024-07-12 · 低波动质量 v2.1 · 已执行 前一交易日已定模板：每 20 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-07-12 · 低波动质量 v2.1 · 已执行
+        - generic: 前一交易日已定模板：每 20 个合成交易日开盘再平衡 · A、B
+      - button "2024-07-05 · EMA20 v1.4 · 已执行 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-07-05 · EMA20 v1.4 · 已执行
+        - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B
+      - button "2024-06-28 · EMA20 v1.4 · 已执行 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-06-28 · EMA20 v1.4 · 已执行
+        - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B
+      - button "2024-06-21 · EMA20 v1.4 · 已执行 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B":
+        - generic: 2024-06-21 · EMA20 v1.4 · 已执行
+        - generic: 前一交易日已定模板：每 5 个合成交易日开盘再平衡 · A、B
+      - button "2024-06-17 · EMA20 v1.4 · 已执行 T0 已确定初始目标，下一交易日开盘建仓 · A、B":
+        - generic: 2024-06-17 · EMA20 v1.4 · 已执行
+        - generic: T0 已确定初始目标，下一交易日开盘建仓 · A、B
+      - button "2024-06-17 · 低波动质量 v2.1 · 已执行 T0 已确定初始目标，下一交易日开盘建仓 · A、B":
+        - generic: 2024-06-17 · 低波动质量 v2.1 · 已执行
+        - generic: T0 已确定初始目标，下一交易日开盘建仓 · A、B

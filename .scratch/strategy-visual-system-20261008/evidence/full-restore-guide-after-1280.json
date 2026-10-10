@@ -1,0 +1,47 @@
+{
+  "dialog": {
+    "bottom": 712,
+    "height": 624,
+    "left": 340,
+    "right": 940,
+    "top": 88,
+    "width": 600,
+    "x": 340,
+    "y": 88
+  },
+  "focus": "modalClose",
+  "guideLayerHidden": false,
+  "links": [
+    {
+      "href": "/?prototype=strategy-workbench&view=observe",
+      "text": "打开完整观察历史工作台布局"
+    },
+    {
+      "href": "/?prototype=strategy-workbench&view=results",
+      "text": "打开完整结果净值、回撤、仓位与贡献"
+    },
+    {
+      "href": "/?prototype=strategy-workbench&view=compare",
+      "text": "打开完整比较比较三图与共同截止"
+    },
+    {
+      "href": "/?prototype=strategy-create&variant=A",
+      "text": "原创建入口策略创建 A 原型"
+    }
+  ],
+  "range": {
+    "bottom": 182,
+    "height": 38,
+    "left": 54,
+    "right": 1280,
+    "top": 144,
+    "width": 1226,
+    "x": 54,
+    "y": 144
+  },
+  "viewport": {
+    "dpr": 1,
+    "height": 800,
+    "width": 1280
+  }
+}

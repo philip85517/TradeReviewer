@@ -13,6 +13,6 @@
   "excludedRawEvidenceStillLocal": true,
   "masterMerged": false,
   "productionPublished": false,
-  "finalRefVerification": "Compare the GitHub refs API result with final local HEAD before chat delivery. Preserve the unpublished local documentation commits in a backup ref; verify identical Git tree before synchronizing the equivalent API commit.",
-  "receiptTransport": "Local Git HTTPS retries failed after the archive push. The connected GitHub Git-data API is used for the documentation receipt; no force push or master change."
+  "finalRefVerification": "The first visual archive SHA was confirmed by git ls-remote and a later read-only GitHub refs API query. The final branch HEAD must be verified separately at delivery; later local receipt commits do not alter this verified archive result.",
+  "receiptTransport": "The archive was pushed successfully through normal Git HTTPS. Subsequent receipt pushes failed with HTTP/2, connection and low-speed errors. A GitHub connector write attempt returned 403 at create_blob; it created no Git objects and changed no remote refs. Receipt commits remain local until a normal fast-forward Git push succeeds; no force push or master change."
 }

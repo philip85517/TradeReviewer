@@ -6,6 +6,16 @@
   font-family: var(--prototype-font);
 }
 
+/* The application shell locks the document body for the native workspace.
+   This prototype deliberately restores intrinsic page flow at tablet widths,
+   where the chart, plan, replay controls, and long Chinese annotations stack
+   past the viewport. Keep horizontal overflow clipped while allowing the
+   document to own vertical scrolling. */
+body:has(.recall-design-prototype) {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 .recall-design-prototype__intro {
   display: flex;
   align-items: center;

@@ -16,6 +16,8 @@
 
 [0.7 · 2026-10-10 当前视觉检查点（含滚动修复）](versions/0.7-20261010/README.md)冻结本轮用户确认的完整观察画面、精确参考图、哈希清单和可复现开发入口。它串联[本轮严格回归](observe-regression-20261009.md)、[最新滚动接受](observe-scroll-20261010.md)、[完整恢复记录](full-workbench-preview.md)、[诊断](diagnosis.md)、[0.6实际接受](homepage-style-acceptance.md)与[当前接受记录](acceptance.md)。该入口记录的是当前视觉样板检查点：主工作台范围已验，A/原生复盘的例外继续保留；用户确认完整观察画面不代表生产公共组件固化，也不关闭整体 01 或其余未验证项。
 
+验收合同与实施路线见[策略台视觉验收与实施规划（2026-10-11）](../../../.scratch/strategy-visual-acceptance-plan-20261011/README.md)，其中包含视觉合同、三道独立门槛、覆盖矩阵和 Wayfinder 任务地图；本次首个实现切片的代码范围和浏览器证据见[实现目录](../../../.scratch/strategy-visual-implementation-20261011/README.md)，不替代 0.7 归档的历史接受记录。
+
 ## 文字角色
 
 |角色|推荐候选|使用边界|

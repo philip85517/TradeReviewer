@@ -32,7 +32,7 @@ const replayChartHarness = vi.hoisted(() => {
   };
   return {
     viewport,
-    lastProps: null as { averageCost?: number; settings?: { showAverageCost?: boolean }; onPlanPriceChange?: (id: string, price: string) => void; planLinesEditable?: boolean } | null,
+    lastProps: null as { averageCost?: number; settings?: { showAverageCost?: boolean }; onPlanPriceChange?: (id: string, price: string) => void; planLinesEditable?: boolean; candleCount?: number } | null,
     handle: {
       capture: vi.fn().mockResolvedValue({ imageDataUrl: "data:image/png;base64,AA==", viewport }),
       flush: vi.fn().mockResolvedValue(undefined),
@@ -53,6 +53,7 @@ vi.mock("../chart/replay-chart", () => ({
     settings,
     onPlanPriceChange,
     planLinesEditable,
+    candles,
   }: {
     onCommand: (command: unknown) => void;
     onReady?: (handle: typeof replayChartHarness.handle | null) => void;
@@ -62,6 +63,7 @@ vi.mock("../chart/replay-chart", () => ({
     settings?: { showAverageCost?: boolean };
     onPlanPriceChange?: (id: string, price: string) => void;
     planLinesEditable?: boolean;
+    candles?: Candle[];
   }) => {
     const replayDrawing = {
       version: 2,
@@ -82,9 +84,9 @@ vi.mock("../chart/replay-chart", () => ({
       onReady?.(replayChartHarness.handle);
       return () => onReady?.(null);
     }, [onReady]);
-    replayChartHarness.lastProps = { averageCost, settings, onPlanPriceChange, planLinesEditable };
+    replayChartHarness.lastProps = { averageCost, settings, onPlanPriceChange, planLinesEditable, candleCount: candles?.length };
     return <>
-      <div data-testid="mock-replay-chart" data-cursor={cursor} data-execution-cursor={executions?.at(-1)?.id} />
+      <div data-testid="mock-replay-chart" data-cursor={cursor} data-candle-count={candles?.length} data-execution-cursor={executions?.at(-1)?.id} />
       <button type="button" onClick={() => onCommand({ type: "add", drawing: replayDrawing })}>add drawing</button>
       <button type="button" onClick={() => onCommand({ type: "add", drawing: {...replayDrawing, id: "text-1", tool: "text", text: "新 Text"} })}>add Text</button>
     </>;
@@ -571,6 +573,73 @@ describe("RecallWorkspace autosave reconciliation", () => {
       expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", replayCursor);
       expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", replayExecutionCursor);
     });
+  });
+
+  it("does not let full history overwrite the global replay context", async () => {
+    const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    renderRecall(replayEpisode, initial);
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+    fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-2"));
+    const replayChart = screen.getByTestId("mock-replay-chart");
+    const replayCursor = replayChart.getAttribute("data-cursor");
+    const replayExecutionCursor = replayChart.getAttribute("data-execution-cursor");
+    const replayCandleCount = replayChart.getAttribute("data-candle-count");
+
+    openMoreRecords();
+    fireEvent.click(screen.getByRole("button", { name: "完整历史" }));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-3"));
+
+    // Navigation controls remain visible while the explicit history view is
+    // open. They must not capture the history cursor into the global draft.
+    const secondDecision = Array.from(document.querySelectorAll<HTMLButtonElement>(".recall-nav-item")).find((button) => button.querySelector(".recall-nav-index")?.textContent === "2");
+    expect(secondDecision).toBeDefined();
+    expect(secondDecision).toBeDisabled();
+    fireEvent.click(secondDecision!);
+    fireEvent.click(screen.getAllByRole("button", { name: "返回回放" }).at(-1)!);
+    await waitFor(() => {
+      expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", replayCursor);
+      expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", replayExecutionCursor);
+      expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-candle-count", replayCandleCount);
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /全局总结/ }));
+    await waitFor(() => {
+      expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-cursor", replayCursor);
+      expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", replayExecutionCursor);
+      expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-candle-count", replayCandleCount);
+    });
+  });
+
+  it("keeps all full-history candles and executions when changing timeframe", async () => {
+    const initial = createRecallDocument(replayEpisode, "2025-01-02T10:00:00.000Z");
+    render(
+      <RecallWorkspace
+        episode={replayEpisode}
+        episodes={[replayEpisode]}
+        instrument={replayEpisode.instrument}
+        instruments={[{ ...replayEpisode.instrument, market: "US" }]}
+        timeframeAvailability={availability}
+        importedTimelineCandles={replayCandles}
+        candlesByTimeframe={{ "15m": replayCandles, "1D": replayCandles, "1W": [incompleteWeeklyCandle] }}
+        settings={settings}
+        repository={{ load: vi.fn().mockResolvedValue(initial), save: vi.fn().mockResolvedValue({ ...initial, revision: 1 }), fetch: vi.fn() }}
+        onEpisodeChange={vi.fn()}
+        onInstrumentChange={vi.fn()}
+        onSettingsChange={vi.fn()}
+      />,
+    );
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toBeInTheDocument());
+
+    openMoreRecords();
+    fireEvent.click(screen.getByRole("button", { name: "完整历史" }));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-3"));
+
+    fireEvent.click(screen.getByRole("button", { name: "切换到 1W" }));
+    await waitFor(() => expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-execution-cursor", "fill-3"));
+    expect(screen.getByTestId("mock-replay-chart")).toHaveAttribute("data-candle-count", "1");
   });
 
   it("keeps both replay cursors when switching to a timeframe with an incomplete bar", async () => {

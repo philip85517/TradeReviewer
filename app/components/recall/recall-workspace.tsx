@@ -1688,7 +1688,7 @@ export function RecallWorkspace({
   }, [commitDrawingHistory, document?.working.hasSeenFuture, drawingHistory, phase, selectedDecisionId, snapshotEdit?.decisionId, snapshotEdit?.phase]);
 
   const selectDecision = useCallback((decisionId: string | "global", options: DecisionSelectionOptions = {}) => {
-    if (!document) return;
+    if (!document || (historyMode && !options.boundaryExecutionId)) return;
     const currentReplay = replay;
     setPlaying(false);
     if (options.boundaryExecutionId && historyMode) {
@@ -2054,7 +2054,9 @@ export function RecallWorkspace({
   const changeTimeframe = useCallback((nextTimeframe: Timeframe) => {
     if (!timeframeAvailability[nextTimeframe].enabled || !document || !replay) return;
     const nextCandles = timeframeCandles(nextTimeframe, { importedTimelineCandles, candlesByTimeframe });
-    const mapped = mapCursorToTimeframe(replay, currentExecutions, nextCandles);
+    const mapped = historyMode
+      ? revealRecallHistory(nextCandles, currentExecutions)
+      : mapCursorToTimeframe(replay, currentExecutions, nextCandles);
     setTimeframe(nextTimeframe);
     setReplay(mapped);
     requestReveal(mapped.cursor);
@@ -2951,7 +2953,7 @@ export function RecallWorkspace({
         {navOpen && (
           <aside className={`recall-nav${mobileRecordsOpen ? " mobile-records-open" : ""}`} aria-label="回合与决策导航">
             <div className="recall-nav-title"><span>本回合记录</span><small>{decisionCountLabel}</small><button type="button" className="recall-nav-toggle" aria-expanded={mobileRecordsOpen} onClick={() => setMobileRecordsOpen((open) => !open)}>{mobileRecordsOpen ? "收起" : "展开"}</button></div>
-            <button type="button" className={`recall-nav-item global${selectedDecisionId === "global" ? " selected" : ""}`} aria-current={selectedDecisionId === "global" ? "true" : undefined} onClick={() => selectDecision("global")}>
+            <button type="button" className={`recall-nav-item global${selectedDecisionId === "global" ? " selected" : ""}`} aria-current={selectedDecisionId === "global" ? "true" : undefined} onClick={() => selectDecision("global")} disabled={historyMode} title={historyMode ? "完整历史查看中；返回回放后才能切换阶段。" : undefined}>
               <span className="recall-nav-icon"><ClipboardPenLine size={15} /></span><span><strong>全局总结</strong><small>{globalSnapshot ? "已有留存" : "尚未留存"}</small></span>
             </button>
             <div className="recall-nav-divider" />
@@ -2968,7 +2970,7 @@ export function RecallWorkspace({
               return (
                 <div className="recall-decision-wrap" key={decision.id}>
                   <label className="recall-decision-check"><input type="checkbox" checked={selectedDecisionIds.includes(decision.id)} onChange={() => setSelectedDecisionIds((ids) => ids.includes(decision.id) ? ids.filter((id) => id !== decision.id) : [...ids, decision.id])} aria-label={`选择决策 ${index + 1} 进行合并`} /></label>
-                  <button type="button" className={`recall-nav-item${selectedDecisionId === decision.id ? " selected" : ""}`} aria-current={selectedDecisionId === decision.id ? "true" : undefined} onClick={() => selectDecision(decision.id)}>
+                  <button type="button" className={`recall-nav-item${selectedDecisionId === decision.id ? " selected" : ""}`} aria-current={selectedDecisionId === decision.id ? "true" : undefined} onClick={() => selectDecision(decision.id)} disabled={historyMode} title={historyMode ? "完整历史查看中；返回回放后才能切换阶段。" : undefined}>
                     <span className="recall-nav-index">{index + 1}</span>
                     <span><strong>{decisionTitle}</strong><small>{snapshots.length ? `${snapshots.length} 份快照` : "待留存快照"}{unmatched && detailsVisible ? " · 缺少行情" : ""}</small></span>
                     {missingSnapshot ? <CircleAlert size={14} className="negative" /> : <CircleCheck size={14} className="positive" />}

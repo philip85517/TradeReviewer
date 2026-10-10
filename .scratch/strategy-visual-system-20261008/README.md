@@ -1,6 +1,6 @@
 # 策略台视觉规范与真实组件样板 · 2026-10-08
 
-2026-10-10归档授权：用户明确要求沉淀当前视觉、建立文档索引并提交远端任务分支。新增[0.7视觉检查点](../../docs/designs/2026-10-08-strategy-visual-system/versions/0.7-20261010/README.md)和[06归档任务](issues/06-visual-checkpoint-and-remote.md)，下文“不推送”为当时历史范围，本轮按新授权处理。保留整体01与生产固化未验边界；不改视觉或原证据。
+2026-10-10归档授权：用户明确要求沉淀当前视觉、建立文档索引并提交远端任务分支。新增[0.7视觉检查点](../../docs/designs/2026-10-08-strategy-visual-system/versions/0.7-20261010/README.md)和[06归档任务](issues/06-visual-checkpoint-and-remote.md)，下文“不推送”为当时历史范围，本轮按新授权处理。保留整体01与生产固化未验边界；不改视觉或原证据。06已closed/accepted-scoped：独立归档审查PASS，归档提交573e58b已push并核对远端SHA；[实际回执](../../docs/designs/2026-10-08-strategy-visual-system/versions/0.7-20261010/remote-receipt.json)。本接受回执随后另作纯文档提交。
 
 基础：origin/codex/strategy-workbench-v1-design@9c2b3d209a202422c3d5aeab5969a9b093cfda92。任务分支codex/strategy-visual-system-20261008；保留另一工作树未提交草稿，不推送/合并/发布。
 

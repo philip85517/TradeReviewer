@@ -2,6 +2,8 @@
 
 这是当前视觉的本地归档入口，基于分支 `codex/strategy-visual-system-20261008`、基线 `9c2b3d2`。它冻结用户已确认的完整观察画面和本轮滚动修复证据，供开发态复现与后续比较使用。
 
+2026-10-10 归档提交 [573e58b](https://github.com/philip85517/TradeReviewer/commit/573e58b253c54d7050a192068ff44c7f95a4d2ef) 已推送任务分支，`ls-remote` 确认与该次本地 HEAD 相同，见[远端回执](remote-receipt.json)。本回执随后另作纯文档提交；视觉源码哈希不变。
+
 推荐入口：[打开完整观察](http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=complete)。这是当前源码的可复现开发态预览；若服务未运行，按下方命令启动后再打开。
 
 同一开发态还保留完整范围入口：[结果](http://127.0.0.1:3069/?prototype=strategy-workbench&view=results&scene=complete)、[比较](http://127.0.0.1:3069/?prototype=strategy-workbench&view=compare&scene=complete)、[T0 起点](http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=T0)、[运行中](http://127.0.0.1:3069/?prototype=strategy-workbench&view=observe&scene=running)；原生个股复盘的设计依据为[图表优先复盘元素规范](../../../../specs/2026-09-25-chart-first-review-ui-elements.md)。这些入口可列出完整范围，但本检查点的当前视觉冻结对象仍是完整观察画面。
@@ -42,6 +44,7 @@
 
 - [manifest.json](manifest.json)：截图、源码/证据指纹和归档清单，由协调者生成。
 - [verification.md](verification.md)：当前检查命令、浏览器确认、服务和未验边界，由协调者生成。
+- [remote-receipt.json](remote-receipt.json)：归档提交的实际推送与远端 SHA 回执。
 - `screenshots/`：四张原始接受图与一张本轮真实运行图。
 
 [远端归档排除清单](remote-exclusions.json)记录仅本地保留的原始证据。旧业务复盘页诊断基线包含公共行情和空计划；其中隐藏业务目录的原始测量不随分支上传。首页参考测量中的实际账户筛选、证券目录及包含真实持仓估值/成本/盈亏的参考截图也保留本地、不上传。历史 manifest 保留原值；它们代表各次接受时点，不代表所有当前源码或后续修改的文档，也不代表远端包含这些有意排除的原件。

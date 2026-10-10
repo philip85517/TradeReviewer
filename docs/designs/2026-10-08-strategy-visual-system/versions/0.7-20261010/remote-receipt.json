@@ -1,0 +1,17 @@
+{
+  "verifiedAtUTC": "2026-10-10T12:55:31.640062+00:00",
+  "scope": "First visual archive push; this receipt is committed afterwards without changing visual sources.",
+  "remote": "https://github.com/philip85517/TradeReviewer.git",
+  "branch": "codex/strategy-visual-system-20261008",
+  "archiveCommit": "573e58b253c54d7050a192068ff44c7f95a4d2ef",
+  "pushCommand": "git push -u origin codex/strategy-visual-system-20261008",
+  "pushExitCode": 0,
+  "remoteVerificationCommand": "git ls-remote --heads origin refs/heads/codex/strategy-visual-system-20261008",
+  "remoteArchiveSHA": "573e58b253c54d7050a192068ff44c7f95a4d2ef",
+  "localAndRemoteArchiveSHAMatch": true,
+  "commitURL": "https://github.com/philip85517/TradeReviewer/commit/573e58b253c54d7050a192068ff44c7f95a4d2ef",
+  "excludedRawEvidenceStillLocal": true,
+  "masterMerged": false,
+  "productionPublished": false,
+  "finalRefVerification": "Root verifies the later receipt commit with ls-remote again before chat delivery; no self-referential commit SHA in this receipt."
+}

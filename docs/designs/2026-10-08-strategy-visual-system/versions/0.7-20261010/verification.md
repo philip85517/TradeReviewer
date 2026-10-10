@@ -13,6 +13,7 @@
 |源码/公开样板/当前文档格式检查|PASS，exit 0|`git diff --cached --check -- README.md app public docs`，仅排除版本页原始 logs 目录|
 |包含原始报告与日志的全暂存格式检查|FAIL，exit 2，按原件保留|80 项均为原始报告/日志的尾空白或文件末空行，涉及 14 个报告/日志文件；源代码与当前文档无此问题。不改写冻结报告或原始测试输出来消除该记录|
 |独立归档审查与提交范围|PASS，checkpoint_audit 只读独立核对|[独立报告](../../../../../.scratch/strategy-visual-system-20261008/reports/checkpoint-archive-audit-20261010.md)：仅本任务源码、主题、公开离线素材、规范/证据与索引；3 个本地业务原件不在暂存区。没有数据库、账单、凭据或临时基线副本|
+|归档提交与远端分支|PASS，push exit 0，ls-remote SHA 相符|[573e58b](https://github.com/philip85517/TradeReviewer/commit/573e58b253c54d7050a192068ff44c7f95a4d2ef) 到 `codex/strategy-visual-system-20261008`，正确 upstream 已设置；[实际回执](remote-receipt.json)。本回执另作纯文档提交，交付前再核对最终分支 HEAD|
 |全量单元测试 / 全仓库 lint|本轮 NOT VERIFIED|历史全量失败保留，见[测试失败审查](../../../../../.scratch/strategy-visual-system-20261008/reports/test-failure-audit.md)；不能用本轮相关测试替代全量结果|
 |生产写入链、物理或模拟触摸、Windows/逐字字体、全量 Tooltip / 未来信息审计、IME/手机键盘|NOT VERIFIED，范围不扩大|继续按[整体接受记录](../../acceptance.md)与[本轮严格回归](../../observe-regression-20261009.md)理解|
 |新数据库写流程接受|NOT APPLICABLE|本轮没有新写流程；预览使用隔离数据库和合成样板，不修改共享业务库|

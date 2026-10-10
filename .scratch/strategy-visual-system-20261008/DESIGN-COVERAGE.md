@@ -8,7 +8,7 @@
 |---|---|---|---|---|
 |A01 本地当前视觉冻结 / E01–E08、E12无改动|用户本轮；observe-scroll-20261010.md；evidence/observe-scroll-20261010/after-top-{1440,1280,390}.jpg及final-live-bottom.jpg，阶段complete、EMA20、2024-09-13净值|Luna版本README；root截图/manifest|版本页→精确活预览与本地图；源码/图像SHA绑定，保留原始FAIL与NV|versions/0.7-20261010/manifest.json；PASS root SHA核对与真实浏览器，3业务原件本地保留/远端排除|
 |A02 文档与视觉版本索引 / 产品元素不适用（仅文档导航）|用户本轮；当前0.7规范与历史0.5/0.6接受记录|Luna根README/docs索引/designs索引及规范入口|根→文档→视觉索引→检查点；不迁移或重写历史接受|73条相对链接与root内容审查 PASS；历史FAIL/NV保留|
-|A03 提交当前任务远端分支 / 产品元素不适用（Git检查点）|用户本轮；development-workflow.md“仅提交/推送”|root Git、验证/接受；checkpoint_audit只读审查|提交范围→普通push→ls-remote exact HEAD；保留工作树和原数据，不合并master|类型/相关193项/构建及5项集成PASS；3原件未暂存；独立审查与远端SHA待最终核对|
+|A03 提交当前任务远端分支 / 产品元素不适用（Git检查点）|用户本轮；development-workflow.md“仅提交/推送”|root Git、验证/接受；checkpoint_audit只读审查|提交范围→普通push→ls-remote exact HEAD；保留工作树和原数据，不合并master|类型/相关193项/构建及5项集成PASS；3原件未提交；独立归档审查PASS；573e58b push exit0与ls-remote SHA相同，remote-receipt.json记录；接受回执另作纯文档提交|
 
 基线：origin/codex/strategy-workbench-v1-design @ 9c2b3d209a202422c3d5aeab5969a9b093cfda92。当前分支 codex/strategy-visual-system-20261008。f42e 未提交草稿只能作为实现参考，不作为已批准契约。用户最新要求覆盖旧稿预设复盘栏数/比例。启动包尚未定位，NOT VERIFIED。
 

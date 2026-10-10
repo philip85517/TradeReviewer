@@ -264,6 +264,55 @@ describe("drawing creation state", () => {
     expect(onCommand.mock.calls[0][0]).toEqual(expect.objectContaining({ type: "add" }));
   });
 
+  it.each(["horizontal-line", "vertical-line", "price-label"] as const)(
+    "stages %s until the confirming release",
+    (activeTool) => {
+      const onCommand = vi.fn();
+      const { canvas } = renderCanvas({ activeTool, onCommand });
+
+      fireEvent.pointerDown(canvas, { pointerId: 41, clientX: 60, clientY: 100 });
+      expect(onCommand).not.toHaveBeenCalled();
+      expect(screen.getByRole("status")).toHaveTextContent("已取第一个点");
+
+      fireEvent.pointerMove(canvas, { pointerId: 41, clientX: 100, clientY: 80 });
+      fireEvent.pointerUp(canvas, { pointerId: 41, clientX: 100, clientY: 80 });
+
+      expect(onCommand).toHaveBeenCalledTimes(1);
+      expect(onCommand.mock.calls[0][0]).toEqual(expect.objectContaining({
+        type: "add",
+        drawing: expect.objectContaining({ tool: activeTool }),
+      }));
+    },
+  );
+
+  it("cancels a staged horizontal line without writing a command", () => {
+    const onCommand = vi.fn();
+    const { canvas } = renderCanvas({ activeTool: "horizontal-line", onCommand });
+
+    fireEvent.pointerDown(canvas, { pointerId: 42, clientX: 60, clientY: 100 });
+    expect(screen.getByRole("status")).toBeInTheDocument();
+    fireEvent.keyDown(window, { key: "Escape" });
+
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("creates a new risk/reward object with a 1:1 target while preserving the stop anchor", () => {
+    const onCommand = vi.fn();
+    const { canvas } = renderCanvas({ activeTool: "long-risk-reward", onCommand });
+
+    fireEvent.pointerDown(canvas, { pointerId: 43, clientX: 20, clientY: 80 });
+    fireEvent.pointerUp(canvas, { pointerId: 43, clientX: 20, clientY: 80 });
+    fireEvent.pointerDown(canvas, { pointerId: 43, clientX: 100, clientY: 120 });
+    fireEvent.pointerUp(canvas, { pointerId: 43, clientX: 100, clientY: 120 });
+
+    const command = onCommand.mock.calls[0]?.[0];
+    expect(command).toEqual(expect.objectContaining({ type: "add" }));
+    const [entry, stop, target] = command.drawing.anchors;
+    expect(stop.price).not.toBe(entry.price);
+    expect(target.price - entry.price).toBeCloseTo(entry.price - stop.price, 6);
+  });
+
   it("shows the current creation stage while a drawing is pending", () => {
     const { canvas } = renderCanvas({ activeTool: "parallel-channel" });
 

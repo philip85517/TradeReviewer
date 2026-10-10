@@ -181,7 +181,7 @@ type GestureHandlers = {
   leave: () => void;
 };
 type CreationState = {
-  tool: Exclude<DrawingTool, "cursor" | "text" | "horizontal-line" | "vertical-line" | "price-label">;
+  tool: Exclude<DrawingTool, "cursor" | "text">;
   first: DrawingAnchor;
   second?: DrawingAnchor;
   phase: "second" | "width";
@@ -804,6 +804,10 @@ const names: Record<Exclude<DrawingTool, "cursor">, string> = {
 
 function styleFor(tool: DrawingTool) {
   return { color: tool === "price-label" ? "#f3ba2f" : "#2f80ed", lineWidth: tool === "trend-line" || tool === "arrow" ? 2 : 1.5, opacity: 0.95 };
+}
+
+function isSinglePointTool(tool: DrawingTool): tool is "horizontal-line" | "vertical-line" | "price-label" {
+  return tool === "horizontal-line" || tool === "vertical-line" || tool === "price-label";
 }
 
 function localizedCurrency(value: number, currency: string) {
@@ -1898,21 +1902,16 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
       });
       return true;
     }
-    if (
-      activeTool === "horizontal-line" ||
-      activeTool === "vertical-line" ||
-      activeTool === "price-label"
-    ) {
-      emitAdd({
-        id: drawingId(),
+    if (isSinglePointTool(activeTool)) {
+      creationRef.current = {
         tool: activeTool,
-        anchors: [anchor],
-        style: styleFor(activeTool),
-        hidden: false,
-        locked: false,
-        visibleOn: "all",
-        stage: "during-replay",
-      });
+        first: anchor,
+        phase: "second",
+        firstPointConfirmed: true,
+        pointerDownPoint: point,
+      };
+      startAnchorRef.current = anchor;
+      setCreationPreview(activeTool, [anchor]);
       return true;
     }
     const creationTool = activeTool as CreationState["tool"];
@@ -2164,6 +2163,23 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     if (!point) return;
     const endAnchor = anchorFromPoint(point.x, point.y);
     const moved = Math.hypot(point.x - creation.pointerDownPoint.x, point.y - creation.pointerDownPoint.y) >= 3;
+    if (isSinglePointTool(creation.tool)) {
+      const confirmedAnchor = creation.tool === "horizontal-line" || creation.tool === "price-label"
+        ? { ...creation.first, price: endAnchor.price }
+        : { ...creation.first, time: endAnchor.time };
+      emitAdd({
+        id: drawingId(),
+        tool: creation.tool,
+        anchors: [confirmedAnchor],
+        style: styleFor(creation.tool),
+        hidden: false,
+        locked: false,
+        visibleOn: "all",
+        stage: "during-replay",
+      });
+      clearCreationDraft();
+      return;
+    }
     if (creation.phase === "width") {
       const secondPoint = pointFor(creation.second!);
       const widthMoved = !sameAnchor(creation.second!, endAnchor) &&

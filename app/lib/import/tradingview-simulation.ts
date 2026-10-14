@@ -48,9 +48,50 @@ type TradingViewRow = Record<string, string | number | null | undefined>;
 type RowWithNumber = { row: TradingViewRow; sourceRow: number };
 type PairedRows = { id: string; entry?: RowWithNumber; exit?: RowWithNumber };
 
-function csvWorkbook(input: ArrayBuffer | Uint8Array) {
+const BINARY_SIGNATURES = [
+  // ZIP containers, including XLSX, XLSM and empty/spanned ZIP variants.
+  [0x50, 0x4b],
+  // OLE Compound File containers, including legacy XLS.
+  [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1],
+  // PDF documents.
+  [0x25, 0x50, 0x44, 0x46, 0x2d],
+  // Common compressed/binary containers that should not reach a CSV reader.
+  [0x1f, 0x8b],
+  [0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c],
+] as const;
+
+function startsWithSignature(bytes: Uint8Array, signature: readonly number[]) {
+  return signature.every((byte, index) => bytes[index] === byte);
+}
+
+function isBinaryInput(bytes: Uint8Array) {
+  if (BINARY_SIGNATURES.some((signature) => startsWithSignature(bytes, signature))) {
+    return true;
+  }
+  return bytes.some(
+    (byte) =>
+      byte === 0x00 ||
+      byte === 0x7f ||
+      (byte <= 0x08) ||
+      (byte >= 0x0e && byte <= 0x1f),
+  );
+}
+
+function csvText(input: ArrayBuffer | Uint8Array) {
   const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
-  const source = new TextDecoder("utf-8").decode(bytes).replace(/^\uFEFF/, "");
+  if (bytes.length === 0 || isBinaryInput(bytes)) return;
+  let source: string;
+  try {
+    source = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  } catch {
+    return;
+  }
+  return source.replace(/^\uFEFF/, "");
+}
+
+function csvWorkbook(input: ArrayBuffer | Uint8Array) {
+  const source = csvText(input);
+  if (source === undefined) return;
   return XLSX.read(source, {
     type: "string",
     cellDates: false,
@@ -99,6 +140,7 @@ function parseDate(value: unknown) {
 
 function csvRows(input: ArrayBuffer | Uint8Array): TradingViewRow[] {
   const workbook = csvWorkbook(input);
+  if (!workbook) return [];
   const sheet = workbook.Sheets[workbook.SheetNames[0] ?? ""];
   if (!sheet) return [];
   return XLSX.utils.sheet_to_json<TradingViewRow>(sheet, {
@@ -109,6 +151,7 @@ function csvRows(input: ArrayBuffer | Uint8Array): TradingViewRow[] {
 
 function headerValues(input: ArrayBuffer | Uint8Array) {
   const workbook = csvWorkbook(input);
+  if (!workbook) return [];
   const sheet = workbook.Sheets[workbook.SheetNames[0] ?? ""];
   if (!sheet) return [];
   const rows = XLSX.utils.sheet_to_json<unknown[]>(sheet, {

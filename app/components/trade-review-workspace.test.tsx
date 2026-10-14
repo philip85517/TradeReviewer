@@ -47,8 +47,11 @@ import { IndexedDbMarketDataRepository } from "../lib/storage/indexeddb-market-d
 import { saveReviewState } from "../lib/storage/review-storage";
 import { buildTradeEpisodes } from "../lib/trades/episodes";
 import type { TradeExecution } from "../lib/trades/types";
+import { createCashClient, type CashClient } from "../lib/cash/cash-client";
 import type { CashBaselineHistoryRecord, CashBaselineStorageState } from "../lib/cash/cash-baseline-contracts";
 import type { CashBaselineRecord, CashSummary } from "../lib/cash/cash-model";
+import type { FxState } from "../lib/fx/room-contracts";
+import type { RoomFxSnapshot } from "../lib/reviews/trading-room-scope";
 import { TRADINGVIEW_CANONICAL_ACCOUNT_ID } from "../lib/trades/tradingview-account-identity";
 import type { ScreenshotImportDependencies } from "./import/use-screenshot-import";
 import { tradeRepairClient } from "../lib/storage/trade-repair-client";
@@ -86,6 +89,25 @@ const mockRecallRepository = vi.hoisted(() => ({
 
 const mockBuildIntradaySyncRanges = vi.hoisted(() => vi.fn());
 const mockBuildCachedTagSuggestions = vi.hoisted(() => vi.fn());
+const mockFxRatesOverride = vi.hoisted(() => ({ current: undefined as FxState | undefined }));
+
+vi.mock("../lib/fx/use-fx-rates", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../lib/fx/use-fx-rates")>();
+  return {
+    ...actual,
+    useFxRates: (options?: Parameters<typeof actual.useFxRates>[0]) => {
+      // Always call the real hook so its hook order and cleanup stay intact;
+      // the test-only override only supplies a new accepted FX state on the
+      // next caller rerender.
+      const result = actual.useFxRates(options);
+      const override = mockFxRatesOverride.current;
+      if (override && options?.enabled !== false) {
+        return { ...result, state: override, loading: false, refreshing: false, error: null };
+      }
+      return result;
+    },
+  };
+});
 
 vi.mock("../lib/market/intraday-sync-ranges", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../lib/market/intraday-sync-ranges")>();
@@ -652,6 +674,7 @@ describe("TradeReviewWorkspace", () => {
 
   beforeEach(async () => {
     chartProbe.enabled = false; chartProbe.candles = [];
+    mockFxRatesOverride.current = undefined;
     window.localStorage.clear();
     mockRecallRepository.documents.clear();
     mockRecallRepository.saveError = undefined;
@@ -719,7 +742,7 @@ describe("TradeReviewWorkspace", () => {
     await screen.findByRole("region", { name: "交易库" });
 
     expect(screen.getAllByRole("searchbox", { name: "搜索已导入标的", hidden: true })).toHaveLength(1);
-    expect(screen.getAllByRole("button", { name: "打开待处理事项", hidden: true })).toHaveLength(1);
+    expect(screen.getAllByRole("button", { name: /^打开待处理事项/, hidden: true })).toHaveLength(1);
   });
 
   it("returns notification reviews to their real analysis and data sources", async () => {
@@ -734,7 +757,7 @@ describe("TradeReviewWorkspace", () => {
     await user.click(within(navigation).getByRole("button", { name: "分析" }));
     const analysis = await screen.findByRole("region", { name: "模式洞察" });
     expect(await within(analysis).findByRole("heading", { name: "分析", level: 1 })).toBeInTheDocument();
-    await user.click(within(analysis).getByRole("button", { name: "打开待处理事项" }));
+    await user.click(within(analysis).getByRole("button", { name: /^打开待处理事项/ }));
     const analysisNotifications = await screen.findByRole("dialog", { name: "待处理事项" });
     await user.click(within(analysisNotifications).getByRole("button", { name: /已平仓待复盘/ }));
     const analysisReview = await screen.findByRole("region", { name: "导入交易回忆复盘工作区" });
@@ -745,7 +768,7 @@ describe("TradeReviewWorkspace", () => {
     await user.click(within(navigation).getByRole("button", { name: "数据" }));
     const data = await screen.findByRole("region", { name: "数据管理" });
     expect(await within(data).findByRole("heading", { name: "数据", level: 1 })).toBeInTheDocument();
-    await user.click(within(data).getByRole("button", { name: "打开待处理事项" }));
+    await user.click(within(data).getByRole("button", { name: /^打开待处理事项/ }));
     const dataNotifications = await screen.findByRole("dialog", { name: "待处理事项" });
     await user.click(within(dataNotifications).getByRole("button", { name: /已平仓待复盘/ }));
     const dataReview = await screen.findByRole("region", { name: "导入交易回忆复盘工作区" });
@@ -1169,12 +1192,12 @@ describe("TradeReviewWorkspace", () => {
     return { version: 1, records: [record], history };
   }
 
-  function cashSummary(): CashSummary {
+  function cashSummary(balance = "100000"): CashSummary {
     const money = {
       baseCurrency: "CNY",
-      originalByCurrency: { CNY: "100000" },
-      convertedCny: "100000",
-      converted: "100000",
+      originalByCurrency: { CNY: balance },
+      convertedCny: balance,
+      converted: balance,
       convertedHkd: null,
       targetCurrency: "CNY",
       conversion: "same-currency",
@@ -1194,6 +1217,106 @@ describe("TradeReviewWorkspace", () => {
     } satisfies CashSummary;
   }
 
+  function cashFxSnapshot(
+    id: string,
+    usdCny: string,
+    publishedAt: string,
+  ): RoomFxSnapshot {
+    return {
+      id,
+      baseCurrency: "CNY",
+      asOf: publishedAt,
+      source: "BOC",
+      status: "complete",
+      rates: { "USD/CNY": usdCny, "HKD/CNY": "0.86" },
+      publishedAt,
+      publishedAtByCurrency: { USD: publishedAt, HKD: publishedAt },
+      fetchedAt: publishedAt,
+      error: null,
+      lastAttemptDay: publishedAt.slice(0, 10),
+    };
+  }
+
+  function cashFxState(snapshot: RoomFxSnapshot): FxState {
+    return {
+      id: snapshot.id,
+      baseCurrency: "CNY",
+      // RoomFxSnapshot deliberately keeps the source open for provenance
+      // identity. The current settings contract uses BOC; this cast keeps the
+      // caller fixture ready for the accepted source-only read-revision case.
+      source: snapshot.source as FxState["source"],
+      publishedAt: snapshot.publishedAt ?? snapshot.asOf,
+      publishedAtByCurrency: snapshot.publishedAtByCurrency ?? {},
+      fetchedAt: snapshot.fetchedAt ?? snapshot.asOf,
+      rates: {
+        USD: snapshot.rates["USD/CNY"] ?? "",
+        HKD: snapshot.rates["HKD/CNY"] ?? "",
+      },
+      lastAttemptDay: snapshot.lastAttemptDay ?? snapshot.asOf.slice(0, 10),
+      status: snapshot.status,
+      error: snapshot.error ?? null,
+    };
+  }
+
+  function cashFxMetadataCases() {
+    const first = cashFxSnapshot("cash-fx-metadata-1", "7", "2026-09-25T03:00:00.000Z");
+    return [
+      {
+        field: "id",
+        first,
+        second: { ...first, id: "cash-fx-metadata-id-2" },
+      },
+      {
+        field: "source",
+        first,
+        second: { ...first, source: "SAFE" },
+      },
+      {
+        field: "publishedAtByCurrency",
+        first,
+        second: {
+          ...first,
+          publishedAtByCurrency: {
+            USD: "2026-09-26T03:00:00.000Z",
+            HKD: "2026-09-27T03:00:00.000Z",
+          },
+        },
+      },
+      {
+        field: "fetchedAt",
+        first,
+        second: { ...first, fetchedAt: "2026-09-26T04:00:00.000Z" },
+      },
+    ] as const;
+  }
+
+  function cashSummaryWithFx(
+    amount: string,
+    convertedCny: string,
+    snapshot: RoomFxSnapshot,
+  ): CashSummary {
+    const money = {
+      baseCurrency: "CNY" as const,
+      originalByCurrency: { USD: amount },
+      convertedCny,
+      converted: convertedCny,
+      convertedHkd: null,
+      targetCurrency: "CNY" as const,
+      conversion: "complete" as const,
+      fxSnapshotId: snapshot.id,
+      note: "完整",
+    };
+    const base = cashSummary();
+    return {
+      ...base,
+      todayProceeds: money,
+      cashTotal: money,
+      todayProceedsStatus: "available",
+      cashTotalStatus: "available",
+      fxSnapshot: snapshot,
+    };
+  }
+
   type CallerResponse = Response | Promise<Response>;
   type CallerResponseFactory = () => CallerResponse;
 
@@ -1203,6 +1326,15 @@ describe("TradeReviewWorkspace", () => {
     summary?: CashSummary;
     putResponses?: Array<CallerResponse | CallerResponseFactory>;
     summaryResponses?: Array<CallerResponse | CallerResponseFactory>;
+    baselineHandler?: (
+      path: string,
+      init?: RequestInit,
+    ) => CallerResponse | CallerResponseFactory | undefined;
+    fxResponses?: Array<CallerResponse | CallerResponseFactory>;
+    summaryHandler?: (
+      path: string,
+      init?: RequestInit,
+    ) => CallerResponse | CallerResponseFactory | undefined;
   } = {}) {
     const baseline = options.baseline ?? cashStorageState();
     const baselineResponses = [...(options.baselineResponses ?? [])];
@@ -1210,6 +1342,7 @@ describe("TradeReviewWorkspace", () => {
     const putBodies: unknown[] = [];
     const putResponses = [...(options.putResponses ?? [])];
     const summaryResponses = [...(options.summaryResponses ?? [])];
+    const fxResponses = [...(options.fxResponses ?? [])];
     vi.mocked(fetch).mockImplementation(async (input, init) => {
       const path = String(input);
       const method = (init?.method ?? "GET").toUpperCase();
@@ -1219,10 +1352,22 @@ describe("TradeReviewWorkspace", () => {
         return typeof response === "function" ? response() : response ?? Response.json(baseline);
       }
       if (path.includes("/api/trading-room/cash/baselines")) {
+        const handled = options.baselineHandler?.(path, init);
+        if (handled !== undefined) {
+          return typeof handled === "function" ? handled() : handled;
+        }
         const response = baselineResponses.shift();
         return typeof response === "function" ? response() : response ?? Response.json(baseline);
       }
+      if (path === "/api/trading-room/fx") {
+        const response = fxResponses.shift();
+        return typeof response === "function" ? response() : response ?? Response.json(nextFrame);
+      }
       if (path.includes("/api/trading-room/cash?")) {
+        const handled = options.summaryHandler?.(path, init);
+        if (handled !== undefined) {
+          return typeof handled === "function" ? handled() : handled;
+        }
         const response = summaryResponses.shift();
         return typeof response === "function" ? response() : response ?? Response.json(summary);
       }
@@ -1248,6 +1393,22 @@ describe("TradeReviewWorkspace", () => {
     return client;
   }
 
+  // The workspace product will expose this client identity as an integration
+  // seam. Keeping the extra field on a structural test prop lets the caller
+  // tests describe A→B replacement before the product handoff without
+  // widening the production storage client contract here.
+  type CashWorkspaceTestProps = Parameters<typeof TradeReviewWorkspace>[0] & {
+    cashClient?: CashClient;
+  };
+
+  function renderCashWorkspace(props: CashWorkspaceTestProps) {
+    return render(<TradeReviewWorkspace {...props} />);
+  }
+
+  function testCashClient(): CashClient {
+    return createCashClient((input, init) => fetch(input, init));
+  }
+
   function seedCanonicalSharedScope() {
     window.localStorage.setItem("tradereview:shared-scope:v2:default", JSON.stringify({
       nature: "simulation",
@@ -1257,11 +1418,11 @@ describe("TradeReviewWorkspace", () => {
     }));
   }
 
-  function seedLiveSharedScope(accountId: string) {
+  function seedLiveSharedScope(accountId: string, reportCurrency: "original" | "CNY" | "HKD" = "original") {
     window.localStorage.setItem("tradereview:shared-scope:v2:default", JSON.stringify({
       nature: "live",
       accountIds: [accountId],
-      reportCurrency: "original",
+      reportCurrency,
       simulationRunId: null,
     }));
   }
@@ -1338,15 +1499,32 @@ describe("TradeReviewWorkspace", () => {
     const user = userEvent.setup();
     seedCanonicalSharedScope();
     const updated = cashRecord({ balance: "120000", source: "caller-updated", revision: 3, updatedAt: "2026-09-21T00:00:00.000Z" });
+    const initialBaseline = cashStorageState();
+    const savedBaseline = cashStorageState(updated);
+    let putCompleted = false;
+    const summaryFailures = ["摘要暂不可用"];
     const { putBodies } = installCashCallerFetch({
-      baseline: cashStorageState(),
-      putResponses: [Response.json(cashStorageState(updated))],
-      summaryResponses: [
-        () => Response.json(cashSummary()),
-        () => Response.json(cashSummary()),
-        () => Response.json({ error: { message: "摘要暂不可用" } }, { status: 503 }),
-        () => Response.json(cashSummary()),
-      ],
+      baseline: initialBaseline,
+      baselineHandler: path => {
+        const params = new URL(path, "http://localhost").searchParams;
+        expect(params.get("accountId")).toBe(TRADINGVIEW_CANONICAL_ACCOUNT_ID);
+        expect(params.get("nature")).toBe("simulation");
+        return Response.json(putCompleted ? savedBaseline : initialBaseline);
+      },
+      putResponses: [() => {
+        putCompleted = true;
+        return Response.json(savedBaseline);
+      }],
+      summaryHandler: path => {
+        const params = new URL(path, "http://localhost").searchParams;
+        expect(params.get("accountId")).toBe(TRADINGVIEW_CANONICAL_ACCOUNT_ID);
+        expect(params.get("nature")).toBe("simulation");
+        expect(params.get("targetCurrency")).toBe("CNY");
+        const message = putCompleted ? summaryFailures.shift() : undefined;
+        return message === undefined
+          ? Response.json(cashSummary(putCompleted ? "120000" : "100000"))
+          : Response.json({ error: { message } }, { status: 503 });
+      },
     });
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={productionStorageClient([canonicalCashExecution()])} />);
 
@@ -1360,12 +1538,38 @@ describe("TradeReviewWorkspace", () => {
 
     expect(putBodies).toHaveLength(1);
     expect(putBodies[0]).toMatchObject({ accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID, source: "caller-updated", expectedRevision: 2 });
+    const getCashManagement = () => screen.getAllByRole("region", { name: "现金基准" }).find(region => region.classList.contains("data-management-card"));
+    const getCashPanel = () => screen.getAllByRole("region", { name: "现金基准" }).at(-1);
+    expect(getCashManagement()).toBeTruthy();
+    expect(getCashPanel()).toBeTruthy();
     await waitFor(() => {
-      expect(screen.getByLabelText("现金状态")).toHaveTextContent(/已保存现金基准，摘要暂未刷新/);
+      expect(within(getCashManagement()!).getByText(/已保存现金基准，摘要暂未刷新/)).toBeInTheDocument();
+      expect(within(getCashManagement()!).getByRole("button", { name: "重试读取现金摘要" })).toBeInTheDocument();
+      expect(within(getCashPanel()!).getByRole("cell", { name: "120000" })).toBeInTheDocument();
     });
-    const retry = await screen.findByRole("button", { name: "重试读取现金摘要" });
-    await user.click(retry);
-    await waitFor(() => expect(screen.queryByRole("button", { name: "重试读取现金摘要" })).not.toBeInTheDocument());
+
+    const navigation = await screen.findByRole("navigation", { name: "主导航" });
+    await user.click(within(navigation).getByRole("button", { name: "我的交易室" }));
+    const getVisibleCashStatus = () => within(screen.getByRole("region", { name: "我的交易室" })).getByLabelText("现金状态");
+    await waitFor(() => {
+      expect(getVisibleCashStatus()).toHaveTextContent("CNY 100,000.00");
+      expect(within(getVisibleCashStatus()).getByText(/已保存现金基准，摘要暂未刷新/)).toBeInTheDocument();
+      expect(within(getVisibleCashStatus()).getByRole("button", { name: "重试读取现金摘要" })).toBeInTheDocument();
+    });
+    await user.click(within(getVisibleCashStatus()).getByRole("button", { name: "重试读取现金摘要" }));
+    await waitFor(() => {
+      expect(getVisibleCashStatus()).toHaveTextContent("CNY 120,000.00");
+      expect(within(getVisibleCashStatus()).queryByRole("button", { name: "重试读取现金摘要" })).not.toBeInTheDocument();
+      expect(within(getVisibleCashStatus()).queryByText(/已保存现金基准，摘要暂未刷新/)).not.toBeInTheDocument();
+    });
+
+    await user.click(within(navigation).getByRole("button", { name: "数据" }));
+    const returnedManagement = await screen.findByRole("region", { name: "数据管理" });
+    await user.click(within(returnedManagement).getByRole("tab", { name: "账户与计价" }));
+    await waitFor(() => {
+      expect(within(getCashPanel()!).getByRole("cell", { name: "120000" })).toBeInTheDocument();
+      expect(within(getCashManagement()!).queryByRole("button", { name: "重试读取现金摘要" })).not.toBeInTheDocument();
+    });
     expect(putBodies).toHaveLength(1);
   });
 
@@ -1373,45 +1577,95 @@ describe("TradeReviewWorkspace", () => {
     const user = userEvent.setup();
     seedCanonicalSharedScope();
     const updated = cashRecord({ balance: "120000", source: "caller-updated", revision: 3, updatedAt: "2026-09-21T00:00:00.000Z" });
+    const initialBaseline = cashStorageState();
+    const savedBaseline = cashStorageState(updated);
+    let putCompleted = false;
+    const summaryFailures = ["摘要首次不可用", "摘要再次不可用"];
     const { putBodies } = installCashCallerFetch({
-      baseline: cashStorageState(),
-      putResponses: [() => Response.json(cashStorageState(updated))],
-      summaryResponses: [
-        () => Response.json(cashSummary()),
-        () => Response.json(cashSummary()),
-        () => Response.json({ error: { message: "摘要首次不可用" } }, { status: 503 }),
-        () => Response.json({ error: { message: "摘要再次不可用" } }, { status: 503 }),
-        () => Response.json(cashSummary()),
-      ],
+      baseline: initialBaseline,
+      baselineHandler: path => {
+        const params = new URL(path, "http://localhost").searchParams;
+        expect(params.get("accountId")).toBe(TRADINGVIEW_CANONICAL_ACCOUNT_ID);
+        expect(params.get("nature")).toBe("simulation");
+        return Response.json(putCompleted ? savedBaseline : initialBaseline);
+      },
+      putResponses: [() => {
+        putCompleted = true;
+        return Response.json(savedBaseline);
+      }],
+      summaryHandler: path => {
+        const params = new URL(path, "http://localhost").searchParams;
+        expect(params.get("accountId")).toBe(TRADINGVIEW_CANONICAL_ACCOUNT_ID);
+        expect(params.get("nature")).toBe("simulation");
+        expect(params.get("targetCurrency")).toBe("CNY");
+        const message = putCompleted ? summaryFailures.shift() : undefined;
+        return message === undefined
+          ? Response.json(cashSummary(putCompleted ? "120000" : "100000"))
+          : Response.json({ error: { message } }, { status: 503 });
+      },
     });
     render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} storageClient={productionStorageClient([canonicalCashExecution()])} />);
 
     await openProductionAccountSettings(user);
     await user.click(await screen.findByRole("button", { name: "编辑" }));
-    await user.clear(screen.getByRole("spinbutton", { name: "余额" }));
-    await user.type(screen.getByRole("spinbutton", { name: "余额" }), "120000");
-    await user.clear(screen.getByLabelText("来源"));
-    await user.type(screen.getByLabelText("来源"), "caller-updated");
+    const balanceInput = screen.getByRole("spinbutton", { name: "余额" });
+    await user.clear(balanceInput);
+    await user.paste("120000");
+    const sourceInput = screen.getByLabelText("来源");
+    await user.clear(sourceInput);
+    await user.paste("caller-updated");
     await user.click(screen.getByRole("button", { name: "保存修改" }));
 
+    const getCashManagement = () => screen.getAllByRole("region", { name: "现金基准" }).find(region => region.classList.contains("data-management-card"));
+    const getCashPanel = () => screen.getAllByRole("region", { name: "现金基准" }).at(-1);
+    expect(getCashManagement()).toBeTruthy();
+    expect(getCashPanel()).toBeTruthy();
     await waitFor(() => {
-      expect(screen.getByLabelText("现金状态")).toHaveTextContent(/已保存现金基准，摘要暂未刷新/);
+      expect(within(getCashManagement()!).getByText(/已保存现金基准，摘要暂未刷新/)).toBeInTheDocument();
+      expect(within(getCashManagement()!).getByRole("button", { name: "重试读取现金摘要" })).toBeInTheDocument();
+      expect(within(getCashPanel()!).getByRole("cell", { name: "120000" })).toBeInTheDocument();
     });
-    await user.click(await screen.findByRole("button", { name: "重试读取现金摘要" }));
+    expect(putBodies).toHaveLength(1);
+    expect(putBodies[0]).toMatchObject({ accountId: TRADINGVIEW_CANONICAL_ACCOUNT_ID, source: "caller-updated", expectedRevision: 2 });
 
-    const cashPanel = screen.getAllByRole("region", { name: "现金基准" }).at(-1);
-    expect(cashPanel).toBeTruthy();
-    await waitFor(() => expect(within(cashPanel!).getByRole("alert")).toHaveTextContent("摘要再次不可用"));
-    expect(screen.getByLabelText("现金状态")).toHaveTextContent("现金数据读取失败：摘要再次不可用");
-    expect(screen.getByText("已保存现金基准，摘要暂未刷新")).toBeVisible();
-    expect(within(cashPanel!).getByRole("cell", { name: "120000" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "重试读取现金摘要" })).toBeInTheDocument();
+    const navigation = await screen.findByRole("navigation", { name: "主导航" });
+    await user.click(within(navigation).getByRole("button", { name: "我的交易室" }));
+    const getVisibleCashStatus = () => within(screen.getByRole("region", { name: "我的交易室" })).getByLabelText("现金状态");
+    await waitFor(() => {
+      expect(getVisibleCashStatus()).toHaveTextContent("CNY 100,000.00");
+      expect(within(getVisibleCashStatus()).getByText(/已保存现金基准，摘要暂未刷新/)).toBeVisible();
+      expect(within(getVisibleCashStatus()).getByRole("button", { name: "重试读取现金摘要" })).toBeInTheDocument();
+    });
+    await user.click(within(getVisibleCashStatus()).getByRole("button", { name: "重试读取现金摘要" }));
+    await waitFor(() => {
+      expect(getVisibleCashStatus()).toHaveTextContent("CNY 100,000.00");
+      expect(within(getVisibleCashStatus()).getByText(/已保存现金基准，摘要暂未刷新/)).toBeVisible();
+      expect(within(getVisibleCashStatus()).getByRole("button", { name: "重试读取现金摘要" })).toBeInTheDocument();
+    });
+
+    await user.click(within(navigation).getByRole("button", { name: "数据" }));
+    const returnedManagement = await screen.findByRole("region", { name: "数据管理" });
+    await user.click(within(returnedManagement).getByRole("tab", { name: "账户与计价" }));
+    const getReturnedCashManagement = () => within(returnedManagement).getAllByRole("region", { name: "现金基准" }).find(region => region.classList.contains("data-management-card"));
+    const getReturnedCashPanel = () => within(returnedManagement).getAllByRole("region", { name: "现金基准" }).at(-1);
+    await waitFor(() => expect(within(getReturnedCashPanel()!).getByRole("alert")).toHaveTextContent("摘要再次不可用"));
+    expect(within(getReturnedCashPanel()!).getByRole("cell", { name: "120000" })).toBeInTheDocument();
+    expect(within(getReturnedCashManagement()!).getByRole("button", { name: "重试读取现金摘要" })).toBeInTheDocument();
     expect(putBodies).toHaveLength(1);
 
-    await user.click(screen.getByRole("button", { name: "重试读取现金摘要" }));
-    await waitFor(() => expect(screen.queryByRole("button", { name: "重试读取现金摘要" })).not.toBeInTheDocument());
-    expect(screen.queryAllByText(/已保存现金基准，摘要暂未刷新/)).toHaveLength(0);
+    await user.click(within(getReturnedCashManagement()!).getByRole("button", { name: "重试读取现金摘要" }));
+    await waitFor(() => {
+      expect(within(getReturnedCashManagement()!).queryByRole("button", { name: "重试读取现金摘要" })).not.toBeInTheDocument();
+      expect(within(getReturnedCashManagement()!).queryByText(/已保存现金基准，摘要暂未刷新/)).not.toBeInTheDocument();
+    });
     expect(putBodies).toHaveLength(1);
+
+    await user.click(within(navigation).getByRole("button", { name: "我的交易室" }));
+    await waitFor(() => {
+      expect(getVisibleCashStatus()).toHaveTextContent("CNY 120,000.00");
+      expect(within(getVisibleCashStatus()).queryByRole("button", { name: "重试读取现金摘要" })).not.toBeInTheDocument();
+      expect(within(getVisibleCashStatus()).queryByText(/已保存现金基准，摘要暂未刷新/)).not.toBeInTheDocument();
+    });
   });
 
   it("drops a late save and summary failure after an actual caller scope A-B-A switch", async () => {
@@ -1523,17 +1777,24 @@ describe("TradeReviewWorkspace", () => {
     );
 
     await openProductionAccountSettings(user);
-    const scopeSelect = screen.getByLabelText("共享账户");
+    const management = screen.getByRole("region", { name: "数据管理" });
+    const scopeSelect = within(management).getByLabelText("共享账户");
+    const cashManagement = within(management).getAllByRole("region", { name: "现金基准" }).find(region => region.classList.contains("data-management-card"));
+    expect(cashManagement).toBeTruthy();
     await waitFor(() => {
-      expect(within(screen.getAllByRole("region", { name: "现金基准" }).at(-1)!).getByRole("cell", { name: "100000" })).toBeInTheDocument();
+      expect(within(cashManagement!).getByRole("cell", { name: "100000" })).toBeInTheDocument();
     });
-    await user.click(await screen.findByRole("button", { name: "编辑" }));
-    await user.clear(screen.getByRole("spinbutton", { name: "余额" }));
-    await user.type(screen.getByRole("spinbutton", { name: "余额" }), "120000");
-    await user.clear(screen.getByLabelText("来源"));
-    await user.type(screen.getByLabelText("来源"), "caller-updated-a");
+    await user.click(within(cashManagement!).getByRole("button", { name: "编辑" }));
+    const balanceInput = within(cashManagement!).getByRole("spinbutton", { name: "余额" });
+    await user.click(balanceInput);
+    await user.clear(balanceInput);
+    await user.paste("120000");
+    const sourceInput = within(cashManagement!).getByLabelText("来源");
+    await user.click(sourceInput);
+    await user.clear(sourceInput);
+    await user.paste("caller-updated-a");
     stage = "save-failed";
-    await user.click(screen.getByRole("button", { name: "保存修改" }));
+    await user.click(within(cashManagement!).getByRole("button", { name: "保存修改" }));
     await waitFor(() => {
       expect(putBodies).toHaveLength(1);
       expect(screen.getByLabelText("现金状态")).toHaveTextContent(/已保存现金基准，摘要暂未刷新/);
@@ -1554,7 +1815,7 @@ describe("TradeReviewWorkspace", () => {
       });
       expect(requests).toHaveLength(accountBReadsBeforeSwitch + 1);
       expect(new URL(String(requests.at(-1)?.[0]), "http://localhost").searchParams.get("accountId")).toBe(accountB);
-      expect(within(screen.getAllByRole("region", { name: "现金基准" }).at(-1)!).getByRole("cell", { name: "80000" })).toBeInTheDocument();
+      expect(within(cashManagement!).getByRole("cell", { name: "80000" })).toBeInTheDocument();
     });
     const accountAReadsBeforeReturn = vi.mocked(fetch).mock.calls.filter(([input]) => {
       const path = String(input);
@@ -1617,20 +1878,30 @@ describe("TradeReviewWorkspace", () => {
     );
 
     await openProductionAccountSettings(user);
+    const getCashPanel = () => screen.getAllByRole("region", { name: "现金基准" }).at(-1);
+    const cashManagement = screen.getAllByRole("region", { name: "现金基准" }).find(region => region.classList.contains("data-management-card"));
     await waitFor(() => {
-      expect(within(screen.getAllByRole("region", { name: "现金基准" }).at(-1)!).getByRole("cell", { name: "100000" })).toBeInTheDocument();
+      const cashPanel = getCashPanel();
+      expect(cashPanel).toBeTruthy();
+      expect(within(cashPanel!).getByRole("cell", { name: "100000" })).toBeInTheDocument();
     });
     await user.click(await screen.findByRole("button", { name: "编辑" }));
-    await user.clear(screen.getByRole("spinbutton", { name: "余额" }));
-    await user.type(screen.getByRole("spinbutton", { name: "余额" }), "120000");
-    await user.clear(screen.getByLabelText("来源"));
-    await user.type(screen.getByLabelText("来源"), "caller-updated-cny");
+    const balanceInput = screen.getByRole("spinbutton", { name: "余额" });
+    await user.clear(balanceInput);
+    await user.paste("120000");
+    const sourceInput = screen.getByLabelText("来源");
+    await user.clear(sourceInput);
+    await user.paste("caller-updated-cny");
     stage = "save-failed";
     await user.click(screen.getByRole("button", { name: "保存修改" }));
     await waitFor(() => {
       expect(putBodies).toHaveLength(1);
-      expect(screen.getByLabelText("现金状态")).toHaveTextContent("已保存现金基准，摘要暂未刷新");
-      expect(screen.getByRole("button", { name: "重试读取现金摘要" })).toBeInTheDocument();
+      const cashPanel = getCashPanel();
+      expect(cashManagement).toBeTruthy();
+      expect(cashPanel).toBeTruthy();
+      expect(within(cashManagement!).getByText("已保存现金基准，摘要暂未刷新")).toBeInTheDocument();
+      expect(within(cashManagement!).getByRole("button", { name: "重试读取现金摘要" })).toBeInTheDocument();
+      expect(within(cashPanel!).getByRole("cell", { name: "120000" })).toBeInTheDocument();
     });
 
     const reportCurrency = screen.getByRole("combobox", { name: "报告计价" });
@@ -1663,21 +1934,32 @@ describe("TradeReviewWorkspace", () => {
       expect(currencyParams.get("simulationRunId")).toBe(originalParams.get("simulationRunId"));
       expect(currencyParams.get("today")).toBe(originalParams.get("today"));
       expect(currencyParams.get("targetCurrency")).toBe("CNY");
-      expect(screen.getByLabelText("现金状态")).toHaveTextContent("现金数据加载中…");
-      expect(screen.getByText("已保存现金基准，摘要暂未刷新")).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "重试读取现金摘要" })).toBeDisabled();
+      expect(cashManagement).toBeTruthy();
+      expect(within(cashManagement!).getByText("已保存现金基准，摘要暂未刷新")).toBeInTheDocument();
+      expect(within(cashManagement!).getByRole("button", { name: "重试读取现金摘要" })).toBeDisabled();
     });
-    expect(screen.getByText("已保存现金基准，摘要暂未刷新")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "重试读取现金摘要" })).toBeDisabled();
 
     stage = "currency-failed";
     await act(async () => {
       returnedCurrency.resolve(Response.json({ error: { message: "新计价摘要不可用" } }, { status: 503 }));
       await returnedCurrency.promise;
     });
-    await waitFor(() => expect(screen.getByLabelText("现金状态")).toHaveTextContent("现金数据读取失败：新计价摘要不可用"));
-    expect(screen.getByText("已保存现金基准，摘要暂未刷新")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "重试读取现金摘要" })).toBeInTheDocument();
+    await waitFor(() => {
+      const failedCashPanel = getCashPanel();
+      expect(cashManagement).toBeTruthy();
+      expect(failedCashPanel).toBeTruthy();
+      expect(within(cashManagement!).getByText("已保存现金基准，摘要暂未刷新")).toBeInTheDocument();
+      expect(within(cashManagement!).getByRole("button", { name: "重试读取现金摘要" })).toBeInTheDocument();
+      expect(within(failedCashPanel!).getByRole("alert")).toHaveTextContent("新计价摘要不可用");
+    });
+    await user.click(within(await screen.findByRole("navigation", { name: "主导航" })).getByRole("button", { name: "我的交易室" }));
+    const visibleCashStatus = () => within(screen.getByRole("region", { name: "我的交易室" })).getByLabelText("现金状态");
+    await waitFor(() => {
+      const cashStatus = visibleCashStatus();
+      expect(cashStatus).toHaveTextContent("已保存现金基准，摘要暂未刷新");
+      expect(cashStatus).not.toHaveTextContent("现金数据读取失败：新计价摘要不可用");
+      expect(within(cashStatus).getByRole("group", { name: "现金摘要读取详情" })).toHaveTextContent("新计价摘要不可用");
+    });
     expect(putBodies).toHaveLength(1);
   });
 
@@ -1738,10 +2020,12 @@ describe("TradeReviewWorkspace", () => {
     });
     readPhase = "ready";
     await user.click(await screen.findByRole("button", { name: "编辑" }));
-    await user.clear(screen.getByRole("spinbutton", { name: "余额" }));
-    await user.type(screen.getByRole("spinbutton", { name: "余额" }), "120000");
-    await user.clear(screen.getByLabelText("来源"));
-    await user.type(screen.getByLabelText("来源"), "caller-updated-post-save");
+    const balanceInput = screen.getByRole("spinbutton", { name: "余额" });
+    await user.clear(balanceInput);
+    await user.paste("120000");
+    const sourceInput = screen.getByLabelText("来源");
+    await user.clear(sourceInput);
+    await user.paste("caller-updated-post-save");
     await user.click(screen.getByRole("button", { name: "保存修改" }));
     expect(putBodies).toHaveLength(1);
 
@@ -1753,7 +2037,9 @@ describe("TradeReviewWorkspace", () => {
       expect(reportCurrency).toHaveValue("CNY");
       const requests = vi.mocked(fetch).mock.calls.filter(([input]) => String(input).includes("/api/trading-room/cash?"));
       expect(requests).toHaveLength(cashSummaryRequestsBeforeCurrency + 1);
-      expect(screen.getByLabelText("现金状态")).toHaveTextContent("现金数据加载中…");
+      const cashPanel = screen.getAllByRole("region", { name: "现金基准" }).at(-1);
+      expect(cashPanel).toBeTruthy();
+      expect(within(cashPanel!).getByText("正在读取")).toBeInTheDocument();
     });
     const q1Request = vi.mocked(fetch).mock.calls.filter(([input]) => String(input).includes("/api/trading-room/cash?")).at(-1)?.[0];
     expect(q1Request).toBeDefined();
@@ -1770,26 +2056,34 @@ describe("TradeReviewWorkspace", () => {
     await waitFor(() => {
       const requests = vi.mocked(fetch).mock.calls.filter(([input]) => String(input).includes("/api/trading-room/cash?"));
       expect(requests).toHaveLength(cashSummaryRequestsBeforeCurrency + 2);
-      expect(screen.getByLabelText("现金状态")).toHaveTextContent("现金数据加载中…");
-      expect(screen.getByText("已保存现金基准，摘要暂未刷新")).toBeInTheDocument();
+      const cashManagement = screen.getAllByRole("region", { name: "现金基准" }).find(region => region.classList.contains("data-management-card"));
+      expect(cashManagement).toBeTruthy();
+      expect(within(cashManagement!).getByText("已保存现金基准，摘要暂未刷新")).toBeInTheDocument();
     });
     const r2Request = vi.mocked(fetch).mock.calls.filter(([input]) => String(input).includes("/api/trading-room/cash?")).at(-1)?.[0];
     expect(new URL(String(r2Request), "http://localhost").searchParams.toString()).toBe(q1Params.toString());
+
+    const navigation = await screen.findByRole("navigation", { name: "主导航" });
+    await user.click(within(navigation).getByRole("button", { name: "我的交易室" }));
+    const visibleCashStatus = () => within(screen.getByRole("region", { name: "我的交易室" })).getByLabelText("现金状态");
+    await waitFor(() => {
+      const cashStatus = visibleCashStatus();
+      expect(cashStatus).toHaveTextContent("CNY 100,000.00");
+      expect(cashStatus).toHaveTextContent("已保存现金基准，摘要暂未刷新");
+      expect(within(cashStatus).getByRole("button", { name: "重试读取现金摘要" })).toBeDisabled();
+    });
 
     await act(async () => {
       r2Response.resolve(Response.json(refreshedSummary));
       await r2Response.promise;
     });
     await waitFor(() => {
-      const cashStatus = screen.getByLabelText("现金状态");
+      const cashStatus = visibleCashStatus();
       expect(cashStatus).not.toHaveTextContent("现金数据加载中…");
       expect(cashStatus).toHaveTextContent("CNY 120,000.00");
       expect(cashStatus).not.toHaveTextContent("CNY 100,000.00");
       expect(cashStatus).not.toHaveTextContent("现金数据读取失败");
       expect(screen.queryByText("已保存现金基准，摘要暂未刷新")).not.toBeInTheDocument();
-      const activeCashPanel = screen.getAllByRole("region", { name: "现金基准" }).at(-1);
-      expect(activeCashPanel).toBeTruthy();
-      expect(within(activeCashPanel!).getByRole("cell", { name: "120000" })).toBeInTheDocument();
     });
 
     await act(async () => {
@@ -1797,17 +2091,738 @@ describe("TradeReviewWorkspace", () => {
       await q1Response.promise;
     });
     await waitFor(() => {
-      const cashStatus = screen.getByLabelText("现金状态");
+      const cashStatus = visibleCashStatus();
       expect(cashStatus).not.toHaveTextContent("迟到旧计价摘要不可用");
       expect(cashStatus).not.toHaveTextContent("现金数据加载中…");
       expect(cashStatus).toHaveTextContent("CNY 120,000.00");
       expect(cashStatus).not.toHaveTextContent("CNY 100,000.00");
       expect(cashStatus).not.toHaveTextContent("现金数据读取失败");
+    });
+    await user.click(within(navigation).getByRole("button", { name: "数据" }));
+    const returnedManagement = await screen.findByRole("region", { name: "数据管理" });
+    await user.click(within(returnedManagement).getByRole("tab", { name: "账户与计价" }));
+    await waitFor(() => {
       const activeCashPanel = screen.getAllByRole("region", { name: "现金基准" }).at(-1);
       expect(activeCashPanel).toBeTruthy();
       expect(within(activeCashPanel!).getByRole("cell", { name: "120000" })).toBeInTheDocument();
+      const activeCashManagement = screen.getAllByRole("region", { name: "现金基准" }).find(region => region.classList.contains("data-management-card"));
+      expect(activeCashManagement).toBeTruthy();
+      expect(within(activeCashManagement!).queryByText("已保存现金基准，摘要暂未刷新")).not.toBeInTheDocument();
     });
     expect(putBodies).toHaveLength(1);
+  });
+
+  it("keeps the accepted cash strip and baseline details during a same-business FX refresh, then swaps once on owned success", async () => {
+    const user = userEvent.setup();
+    const accountId = "live-cash-fx";
+    seedLiveSharedScope(accountId, "CNY");
+    const firstFx = cashFxSnapshot("cash-fx-1", "7", "2026-09-25T03:00:00.000Z");
+    const secondFx = cashFxSnapshot("cash-fx-2", "7.2", "2026-09-27T03:00:00.000Z");
+    const secondSummary = deferred<Response>();
+    let fxStage: "first" | "second" = "first";
+    let secondSummaryReads = 0;
+    installCashCallerFetch({
+      baseline: cashStorageState(cashRecord({ accountId, scope: { nature: "live", simulationRunId: null } })),
+      fxResponses: [
+        Response.json(cashFxState(firstFx)),
+        () => {
+          fxStage = "second";
+          return Response.json(cashFxState(secondFx));
+        },
+      ],
+      summaryHandler: () => {
+        if (fxStage === "second") {
+          secondSummaryReads += 1;
+          return secondSummary.promise;
+        }
+        return Response.json(cashSummaryWithFx("100", "700", firstFx));
+      },
+    });
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+        storageClient={productionStorageClient([liveCashExecution(accountId, "实盘现金账户", "cash-caller-fx")])}
+      />,
+    );
+
+    await waitFor(() => {
+      const cashStatus = screen.getByLabelText("现金状态");
+      expect(cashStatus).toHaveTextContent("CNY 700.00");
+      expect(cashStatus).toHaveTextContent("汇率：2026-09-25");
+    });
+    await openProductionAccountSettings(user);
+    await user.click(await screen.findByRole("button", { name: "刷新汇率" }));
+
+    await waitFor(() => expect(secondSummaryReads).toBe(1));
+    const pendingCashStatus = screen.getByLabelText("现金状态");
+    expect(pendingCashStatus).toHaveTextContent("CNY 700.00");
+    expect(pendingCashStatus).toHaveTextContent("汇率：2026-09-25");
+    expect(pendingCashStatus).toHaveTextContent("现金更新中 · 显示上次结果");
+    expect(pendingCashStatus).not.toHaveTextContent("CNY 1,440.00");
+    const pendingCashDetails = screen.getByRole("group", { name: "现金基准详情", hidden: true });
+    await user.click(within(pendingCashDetails).getByText(/查看基准详情/));
+    expect(pendingCashDetails).toHaveAttribute("open");
+    expect(pendingCashDetails).toHaveTextContent("实盘现金账户");
+    expect(pendingCashDetails).toHaveTextContent("CNY 100000");
+    expect(pendingCashDetails).toHaveTextContent("截至 2026-09-19 00:00:00 UTC");
+    expect(pendingCashDetails).toHaveTextContent("来源 caller-fixture");
+    expect(pendingCashDetails).toHaveTextContent("版本 2");
+
+    await act(async () => {
+      secondSummary.resolve(Response.json(cashSummaryWithFx("200", "1440", secondFx)));
+      await secondSummary.promise;
+    });
+    await waitFor(() => {
+      const cashStatus = screen.getByLabelText("现金状态");
+      expect(cashStatus).toHaveTextContent("CNY 1,440.00");
+      expect(cashStatus).toHaveTextContent("汇率：2026-09-27");
+      expect(cashStatus).not.toHaveTextContent("CNY 700.00");
+      expect(cashStatus).not.toHaveTextContent("现金更新中 · 显示上次结果");
+    });
+    const acceptedCashDetails = screen.getByRole("group", { name: "现金基准详情", hidden: true });
+    expect(acceptedCashDetails).toHaveTextContent("实盘现金账户");
+    expect(acceptedCashDetails).toHaveTextContent("CNY 100000");
+    expect(acceptedCashDetails).toHaveTextContent("来源 caller-fixture");
+    expect(acceptedCashDetails).toHaveTextContent("版本 2");
+    expect(secondSummaryReads).toBe(1);
+  });
+
+  it.each(cashFxMetadataCases())(
+    "applies the approved FX revision boundary to the real cash consumer when only FX $field changes",
+    async ({ field, first, second }) => {
+      const accountId = `live-cash-fx-metadata-${field}`;
+      seedLiveSharedScope(accountId, "CNY");
+      const secondSummary = deferred<Response>();
+      let secondSummaryReads = 0;
+      let summaryStage: "initial" | "second" = "initial";
+      mockFxRatesOverride.current = cashFxState(first);
+      installCashCallerFetch({
+        baseline: cashStorageState(cashRecord({ accountId, scope: { nature: "live", simulationRunId: null } })),
+        fxResponses: [Response.json(cashFxState(first))],
+        summaryHandler: () => {
+          if (summaryStage === "second") {
+            secondSummaryReads += 1;
+            return secondSummary.promise;
+          }
+          return Response.json(cashSummaryWithFx("100", "700", first));
+        },
+      });
+      const initialProps = {
+        initialFrame,
+        showDemo: false,
+        storageClient: productionStorageClient([liveCashExecution(accountId, "实盘现金元数据账户", `cash-caller-fx-metadata-${field}`)]),
+      } satisfies Parameters<typeof TradeReviewWorkspace>[0];
+      const view = renderCashWorkspace(initialProps);
+
+      await waitFor(() => {
+        expect(screen.getByLabelText("现金状态")).toHaveTextContent("CNY 700.00");
+        expect(screen.getByLabelText("现金状态")).toHaveTextContent("汇率：2026-09-25（中行）");
+      });
+      const cashReadsBeforeRevision = vi.mocked(fetch).mock.calls.filter(([input]) => String(input).includes("/api/trading-room/cash?")).length;
+
+      // This is an accepted FX state update, not a click on the FX refresh
+      // control. Publication identity changes are real cash-read revisions;
+      // a fetchedAt-only change with a stable publication must keep the
+      // accepted summary and baseline fact without starting another read.
+      mockFxRatesOverride.current = cashFxState(second);
+      summaryStage = "second";
+      view.rerender(<TradeReviewWorkspace {...initialProps} />);
+
+      if (field === "fetchedAt") {
+        await waitFor(() => {
+          expect(secondSummaryReads).toBe(0);
+          const requests = vi.mocked(fetch).mock.calls.filter(([input]) => String(input).includes("/api/trading-room/cash?"));
+          expect(requests).toHaveLength(cashReadsBeforeRevision);
+          const stableStatus = screen.getByLabelText("现金状态");
+          expect(stableStatus).toHaveTextContent("CNY 700.00");
+          expect(stableStatus).toHaveTextContent("汇率：2026-09-25（中行）");
+          expect(stableStatus).not.toHaveTextContent("现金更新中 · 显示上次结果");
+          expect(stableStatus).not.toHaveTextContent("现金数据读取失败");
+        });
+        const stableCashDetails = screen.getByRole("group", { name: "现金基准详情", hidden: true });
+        expect(stableCashDetails).toHaveTextContent("CNY 100000");
+        expect(stableCashDetails).toHaveTextContent("来源 caller-fixture");
+        expect(stableCashDetails).toHaveTextContent("版本 2");
+        return;
+      }
+
+      await waitFor(() => {
+        expect(secondSummaryReads).toBe(1);
+        const requests = vi.mocked(fetch).mock.calls.filter(([input]) => String(input).includes("/api/trading-room/cash?"));
+        expect(requests).toHaveLength(cashReadsBeforeRevision + 1);
+        const pendingStatus = screen.getByLabelText("现金状态");
+        expect(pendingStatus).toHaveTextContent("CNY 700.00");
+        expect(pendingStatus).toHaveTextContent("汇率：2026-09-25（中行）");
+        expect(pendingStatus).toHaveTextContent("现金更新中 · 显示上次结果");
+      });
+
+      await act(async () => {
+        secondSummary.resolve(Response.json(cashSummaryWithFx("100", "700", second)));
+        await secondSummary.promise;
+      });
+      await waitFor(() => {
+        const settledStatus = screen.getByLabelText("现金状态");
+        expect(settledStatus).not.toHaveTextContent("现金更新中 · 显示上次结果");
+        expect(settledStatus).toHaveTextContent("CNY 700.00");
+        if (field === "source") expect(settledStatus).toHaveTextContent("SAFE");
+        if (field === "publishedAtByCurrency") expect(settledStatus).toHaveTextContent("汇率：2026-09-26");
+      });
+      const acceptedCashDetails = screen.getByRole("group", { name: "现金基准详情", hidden: true });
+      expect(acceptedCashDetails).toHaveTextContent("CNY 100000");
+      expect(acceptedCashDetails).toHaveTextContent("来源 caller-fixture");
+      expect(acceptedCashDetails).toHaveTextContent("版本 2");
+      expect(vi.mocked(fetch).mock.calls.filter(([input]) => String(input).includes("/api/trading-room/cash?")).length).toBe(cashReadsBeforeRevision + 1);
+    },
+  );
+
+  it("rereads the real cash consumer when fetchedAt changes without a publishedAt", async () => {
+    const accountId = "live-cash-fx-fetch-only";
+    seedLiveSharedScope(accountId, "CNY");
+    const firstFx = {
+      ...cashFxSnapshot("cash-fx-fetch-only", "7", "2026-09-25T03:00:00.000Z"),
+      publishedAt: null,
+      publishedAtByCurrency: {},
+    } satisfies RoomFxSnapshot;
+    const secondFx = {
+      ...firstFx,
+      asOf: "2026-09-26T04:00:00.000Z",
+      fetchedAt: "2026-09-26T04:00:00.000Z",
+    } satisfies RoomFxSnapshot;
+    // Keep the default cashFxState helper honest for its ordinary published
+    // snapshot cases; this explicit override is the no-publishedAt contract.
+    const firstFxState = { ...cashFxState(firstFx), publishedAt: null, publishedAtByCurrency: {} };
+    const secondFxState = { ...cashFxState(secondFx), publishedAt: null, publishedAtByCurrency: {} };
+    const secondSummary = deferred<Response>();
+    let secondSummaryReads = 0;
+    let summaryStage: "initial" | "second" = "initial";
+    mockFxRatesOverride.current = firstFxState;
+    installCashCallerFetch({
+      baseline: cashStorageState(cashRecord({ accountId, scope: { nature: "live", simulationRunId: null } })),
+      fxResponses: [Response.json(firstFxState)],
+      summaryHandler: () => {
+        if (summaryStage === "second") {
+          secondSummaryReads += 1;
+          return secondSummary.promise;
+        }
+        return Response.json(cashSummaryWithFx("100", "700", firstFx));
+      },
+    });
+    const initialProps = {
+      initialFrame,
+      showDemo: false,
+      storageClient: productionStorageClient([liveCashExecution(accountId, "实盘现金无发布日期账户", "cash-caller-fx-fetch-only")]),
+    } satisfies Parameters<typeof TradeReviewWorkspace>[0];
+    const view = renderCashWorkspace(initialProps);
+
+    await waitFor(() => {
+      const initialStatus = screen.getByLabelText("现金状态");
+      expect(initialStatus).toHaveTextContent("CNY 700.00");
+      expect(initialStatus).toHaveTextContent("获取于 2026-09-25 11:00（GMT+8），USD发布日期未提供（中行）");
+    });
+    const cashReadsBeforeRevision = vi.mocked(fetch).mock.calls.filter(([input]) => String(input).includes("/api/trading-room/cash?")).length;
+
+    mockFxRatesOverride.current = secondFxState;
+    summaryStage = "second";
+    view.rerender(<TradeReviewWorkspace {...initialProps} />);
+
+    await waitFor(() => {
+      expect(secondSummaryReads).toBe(1);
+      const requests = vi.mocked(fetch).mock.calls.filter(([input]) => String(input).includes("/api/trading-room/cash?"));
+      expect(requests).toHaveLength(cashReadsBeforeRevision + 1);
+      const pendingStatus = screen.getByLabelText("现金状态");
+      expect(pendingStatus).toHaveTextContent("CNY 700.00");
+      expect(pendingStatus).toHaveTextContent("获取于 2026-09-25 11:00（GMT+8），USD发布日期未提供（中行）");
+      expect(pendingStatus).toHaveTextContent("现金更新中 · 显示上次结果");
+    });
+
+    await act(async () => {
+      secondSummary.resolve(Response.json(cashSummaryWithFx("100", "700", secondFx)));
+      await secondSummary.promise;
+    });
+    await waitFor(() => {
+      const settledStatus = screen.getByLabelText("现金状态");
+      expect(settledStatus).toHaveTextContent("CNY 700.00");
+      expect(settledStatus).toHaveTextContent("获取于 2026-09-26 12:00（GMT+8），USD发布日期未提供（中行）");
+      expect(settledStatus).not.toHaveTextContent("现金更新中 · 显示上次结果");
+    });
+    expect(secondSummaryReads).toBe(1);
+    expect(vi.mocked(fetch).mock.calls.filter(([input]) => String(input).includes("/api/trading-room/cash?")).length).toBe(cashReadsBeforeRevision + 1);
+  });
+
+  it("rejects an FX snapshot identity mismatch, then accepts the matching snapshot through visible retry", async () => {
+    const user = userEvent.setup();
+    const accountId = "live-cash-fx-identity-mismatch";
+    seedLiveSharedScope(accountId, "CNY");
+    const firstFx = cashFxSnapshot("cash-fx-identity-1", "7", "2026-09-25T03:00:00.000Z");
+    // Isolate the identity revision: the public rate, source, and publication
+    // date stay stable while only the accepted snapshot id changes.
+    const secondFx = cashFxSnapshot("cash-fx-identity-2", "7", "2026-09-25T03:00:00.000Z");
+    const matchingSecondSummary = cashSummaryWithFx("100", "700", secondFx);
+    const mismatchedSummary: CashSummary = {
+      ...matchingSecondSummary,
+      // Keep the accepted amount stable while deliberately breaking the
+      // public summary/snapshot identity contract that createCashClient
+      // validates at the response boundary.
+      todayProceeds: { ...matchingSecondSummary.todayProceeds, fxSnapshotId: firstFx.id },
+      cashTotal: { ...matchingSecondSummary.cashTotal, fxSnapshotId: firstFx.id },
+    };
+    const retrySummary = deferred<Response>();
+    let summaryStage: "initial" | "mismatch" | "retry" = "initial";
+    let summaryReads = 0;
+    let refreshedFxReads = 0;
+    const { putBodies } = installCashCallerFetch({
+      baseline: cashStorageState(cashRecord({ accountId, scope: { nature: "live", simulationRunId: null } })),
+      fxResponses: [
+        Response.json(cashFxState(firstFx)),
+        () => {
+          refreshedFxReads += 1;
+          return Response.json(cashFxState(secondFx));
+        },
+      ],
+      summaryHandler: () => {
+        summaryReads += 1;
+        if (summaryStage === "mismatch") return Response.json(mismatchedSummary);
+        if (summaryStage === "retry") return retrySummary.promise;
+        return Response.json(cashSummaryWithFx("100", "700", firstFx));
+      },
+    });
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+        storageClient={productionStorageClient([liveCashExecution(accountId, "实盘现金身份账户", "cash-caller-fx-identity")])}
+      />,
+    );
+
+    await waitFor(() => {
+      const cashStatus = screen.getByLabelText("现金状态");
+      expect(cashStatus).toHaveTextContent("CNY 700.00");
+      expect(cashStatus).toHaveTextContent("汇率：2026-09-25");
+    });
+    const summaryRequests = () => vi.mocked(fetch).mock.calls.filter(([input]) => String(input).includes("/api/trading-room/cash?"));
+    const initialRequest = summaryRequests().at(-1)?.[0];
+    expect(initialRequest).toBeDefined();
+    const initialParams = new URL(String(initialRequest), "http://localhost").searchParams;
+    expect(initialParams.get("nature")).toBe("live");
+    expect(initialParams.get("simulationRunId")).toBeNull();
+    expect(initialParams.getAll("accountId")).toEqual([accountId]);
+    expect(initialParams.get("targetCurrency")).toBe("CNY");
+    const expectedToday = initialParams.get("today");
+    expect(expectedToday).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+
+    summaryStage = "mismatch";
+    await openProductionAccountSettings(user);
+    await user.click(await screen.findByRole("button", { name: "刷新汇率" }));
+    await waitFor(() => {
+      expect(refreshedFxReads).toBe(1);
+      expect(summaryReads).toBe(2);
+    });
+
+    const navigation = await screen.findByRole("navigation", { name: "主导航" });
+    await user.click(within(navigation).getByRole("button", { name: "我的交易室" }));
+    const visibleDashboard = await screen.findByRole("region", { name: "我的交易室" });
+    const visibleCashStatus = () => within(visibleDashboard).getByLabelText("现金状态");
+    await waitFor(() => {
+      const cashStatus = visibleCashStatus();
+      expect(within(cashStatus).getByRole("status")).toHaveTextContent("现金数据读取失败 · 显示上次结果");
+      expect(cashStatus).toHaveTextContent("CNY 700.00");
+      expect(cashStatus).toHaveTextContent("汇率：2026-09-25");
+      expect(cashStatus).not.toHaveTextContent("CNY 1,440.00");
+    });
+    const failedReadDetails = within(visibleCashStatus()).getByRole("group", { name: "现金摘要读取详情" });
+    await user.click(within(failedReadDetails).getByText("现金摘要读取详情"));
+    expect(failedReadDetails).toHaveAttribute("open");
+    expect(failedReadDetails).toHaveTextContent("现金数据读取失败：现金摘要响应格式无效");
+    const failedCashDetails = within(visibleCashStatus()).getByRole("group", { name: "现金基准详情" });
+    expect(failedCashDetails).toHaveTextContent("CNY 100000");
+    expect(failedCashDetails).toHaveTextContent("来源 caller-fixture");
+    expect(failedCashDetails).toHaveTextContent("版本 2");
+
+    summaryStage = "retry";
+    await user.click(within(visibleCashStatus()).getByRole("button", { name: "重试读取现金摘要" }));
+    await waitFor(() => expect(summaryReads).toBe(3));
+    const retryRequest = summaryRequests().at(-1)?.[0];
+    expect(retryRequest).toBeDefined();
+    const retryParams = new URL(String(retryRequest), "http://localhost").searchParams;
+    expect(retryParams.get("nature")).toBe("live");
+    expect(retryParams.get("simulationRunId")).toBeNull();
+    expect(retryParams.getAll("accountId")).toEqual([accountId]);
+    expect(retryParams.get("targetCurrency")).toBe("CNY");
+    expect(retryParams.get("today")).toBe(expectedToday);
+    await waitFor(() => {
+      const cashStatus = visibleCashStatus();
+      expect(cashStatus).toHaveTextContent("CNY 700.00");
+      expect(cashStatus).toHaveTextContent("汇率：2026-09-25");
+      expect(cashStatus).toHaveTextContent("现金更新中 · 显示上次结果");
+      expect(cashStatus).not.toHaveTextContent("CNY 1,440.00");
+      expect(cashStatus).not.toHaveTextContent("现金数据读取失败");
+    });
+
+    await act(async () => {
+      retrySummary.resolve(Response.json(matchingSecondSummary));
+      await retrySummary.promise;
+    });
+    await waitFor(() => {
+      const cashStatus = visibleCashStatus();
+      expect(cashStatus).toHaveTextContent("CNY 700.00");
+      expect(cashStatus).toHaveTextContent("汇率：2026-09-25");
+      expect(cashStatus).not.toHaveTextContent("现金更新中 · 显示上次结果");
+      expect(cashStatus).not.toHaveTextContent("现金数据读取失败");
+      expect(cashStatus).not.toHaveTextContent("不可核对");
+      const fxEvidence = within(cashStatus).getByLabelText("现金换算依据");
+      expect(fxEvidence).toHaveTextContent("汇率：2026-09-25");
+      expect(fxEvidence).not.toHaveTextContent("不可核对");
+    });
+    const acceptedCashDetails = within(visibleCashStatus()).getByRole("group", { name: "现金基准详情" });
+    expect(acceptedCashDetails).toHaveTextContent("CNY 100000");
+    expect(acceptedCashDetails).toHaveTextContent("来源 caller-fixture");
+    expect(acceptedCashDetails).toHaveTextContent("版本 2");
+    expect(putBodies).toHaveLength(0);
+  });
+
+  it("keeps the accepted cash amount and provenance when a same-business FX refresh fails", async () => {
+    const user = userEvent.setup();
+    const accountId = "live-cash-fx-error";
+    seedLiveSharedScope(accountId, "CNY");
+    const firstFx = cashFxSnapshot("cash-fx-error-1", "7", "2026-09-25T03:00:00.000Z");
+    const secondFx = cashFxSnapshot("cash-fx-error-2", "7.2", "2026-09-27T03:00:00.000Z");
+    const secondSummary = deferred<Response>();
+    const retrySummary = deferred<Response>();
+    let summaryStage: "initial" | "failed-refresh" | "retry" = "initial";
+    let secondSummaryReads = 0;
+    let retrySummaryReads = 0;
+    const { putBodies } = installCashCallerFetch({
+      baseline: cashStorageState(cashRecord({ accountId, scope: { nature: "live", simulationRunId: null } })),
+      fxResponses: [
+        Response.json(cashFxState(firstFx)),
+        () => {
+          return Response.json(cashFxState(secondFx));
+        },
+      ],
+      summaryHandler: () => {
+        if (summaryStage === "failed-refresh") {
+          secondSummaryReads += 1;
+          return secondSummary.promise;
+        }
+        if (summaryStage === "retry") {
+          retrySummaryReads += 1;
+          return retrySummary.promise;
+        }
+        return Response.json(cashSummaryWithFx("100", "700", firstFx));
+      },
+    });
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+        storageClient={productionStorageClient([liveCashExecution(accountId, "实盘现金错误账户", "cash-caller-fx-error")])}
+      />,
+    );
+
+    await waitFor(() => {
+      const cashStatus = screen.getByLabelText("现金状态");
+      expect(cashStatus).toHaveTextContent("CNY 700.00");
+      expect(cashStatus).toHaveTextContent("汇率：2026-09-25");
+    });
+    const summaryRequests = () => vi.mocked(fetch).mock.calls.filter(([input]) => String(input).includes("/api/trading-room/cash?"));
+    const initialRequest = summaryRequests().at(-1)?.[0];
+    expect(initialRequest).toBeDefined();
+    const initialParams = new URL(String(initialRequest), "http://localhost").searchParams;
+    expect(initialParams.get("nature")).toBe("live");
+    expect(initialParams.get("simulationRunId")).toBeNull();
+    expect(initialParams.getAll("accountId")).toEqual([accountId]);
+    expect(initialParams.get("targetCurrency")).toBe("CNY");
+    const expectedToday = initialParams.get("today");
+    expect(expectedToday).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+
+    summaryStage = "failed-refresh";
+    await openProductionAccountSettings(user);
+    await user.click(await screen.findByRole("button", { name: "刷新汇率" }));
+    await waitFor(() => expect(secondSummaryReads).toBe(1));
+    // The refresh action is intentionally started from data management. Return
+    // through the real primary navigation before asserting the pending
+    // dashboard copy; the dashboard subtree is aria-hidden while
+    // activeView === "data".
+    const navigation = await screen.findByRole("navigation", { name: "主导航" });
+    await user.click(within(navigation).getByRole("button", { name: "我的交易室" }));
+    const visibleDashboard = await screen.findByRole("region", { name: "我的交易室" });
+    const visibleCashStatus = () => within(visibleDashboard).getByLabelText("现金状态");
+    await waitFor(() => {
+      const cashStatus = visibleCashStatus();
+      expect(cashStatus).toHaveTextContent("现金更新中 · 显示上次结果");
+      expect(cashStatus).toHaveTextContent("CNY 700.00");
+      expect(cashStatus).toHaveTextContent("汇率：2026-09-25");
+      expect(cashStatus).not.toHaveTextContent("CNY 1,440.00");
+    });
+    const pendingCashDetails = within(visibleCashStatus()).getByRole("group", { name: "现金基准详情" });
+    await user.click(within(pendingCashDetails).getByText(/查看基准详情/));
+    expect(pendingCashDetails).toHaveAttribute("open");
+    expect(pendingCashDetails).toHaveTextContent("CNY 100000");
+    expect(pendingCashDetails).toHaveTextContent("来源 caller-fixture");
+    expect(pendingCashDetails).toHaveTextContent("版本 2");
+
+    await act(async () => {
+      secondSummary.resolve(Response.json({ error: { message: "F2现金摘要不可用" } }, { status: 503 }));
+      await secondSummary.promise;
+    });
+    await waitFor(() => {
+      const cashStatus = visibleCashStatus();
+      expect(within(cashStatus).getByRole("status")).toHaveTextContent("现金数据读取失败 · 显示上次结果");
+      expect(cashStatus).toHaveTextContent("CNY 700.00");
+      expect(cashStatus).toHaveTextContent("汇率：2026-09-25");
+      expect(cashStatus).not.toHaveTextContent("CNY 1,440.00");
+    });
+    const failedReadDetails = within(visibleCashStatus()).getByRole("group", { name: "现金摘要读取详情" });
+    await user.click(within(failedReadDetails).getByText("现金摘要读取详情"));
+    expect(failedReadDetails).toHaveAttribute("open");
+    expect(failedReadDetails).toHaveTextContent("现金数据读取失败：F2现金摘要不可用");
+    const retryCashSummary = within(visibleCashStatus()).getByRole("button", { name: "重试读取现金摘要" });
+    expect(retryCashSummary).toBeVisible();
+    expect(retryCashSummary).toBeEnabled();
+    const failedCashDetails = within(visibleCashStatus()).getByRole("group", { name: "现金基准详情" });
+    expect(failedCashDetails).toHaveTextContent("CNY 100000");
+    expect(failedCashDetails).toHaveTextContent("来源 caller-fixture");
+    expect(failedCashDetails).toHaveTextContent("版本 2");
+    expect(secondSummaryReads).toBe(1);
+
+    summaryStage = "retry";
+    await user.click(retryCashSummary);
+    await waitFor(() => expect(retrySummaryReads).toBe(1));
+    const retryRequest = summaryRequests().at(-1)?.[0];
+    expect(retryRequest).toBeDefined();
+    const retryParams = new URL(String(retryRequest), "http://localhost").searchParams;
+    expect(retryParams.get("nature")).toBe("live");
+    expect(retryParams.get("simulationRunId")).toBeNull();
+    expect(retryParams.getAll("accountId")).toEqual([accountId]);
+    expect(retryParams.get("targetCurrency")).toBe("CNY");
+    expect(retryParams.get("today")).toBe(expectedToday);
+    await waitFor(() => {
+      const cashStatus = visibleCashStatus();
+      expect(cashStatus).toHaveTextContent("CNY 700.00");
+      expect(cashStatus).toHaveTextContent("汇率：2026-09-25");
+      expect(cashStatus).toHaveTextContent("现金更新中 · 显示上次结果");
+      expect(cashStatus).not.toHaveTextContent("CNY 1,440.00");
+      expect(cashStatus).not.toHaveTextContent("现金数据读取失败");
+    });
+
+    await act(async () => {
+      retrySummary.resolve(Response.json(cashSummaryWithFx("200", "1440", secondFx)));
+      await retrySummary.promise;
+    });
+    await waitFor(() => {
+      const cashStatus = visibleCashStatus();
+      expect(cashStatus).toHaveTextContent("CNY 1,440.00");
+      expect(cashStatus).toHaveTextContent("汇率：2026-09-27");
+      expect(cashStatus).not.toHaveTextContent("CNY 700.00");
+      expect(cashStatus).not.toHaveTextContent("现金更新中 · 显示上次结果");
+      expect(cashStatus).not.toHaveTextContent("现金数据读取失败");
+    });
+    const acceptedCashDetails = within(visibleCashStatus()).getByRole("group", { name: "现金基准详情" });
+    expect(acceptedCashDetails).toHaveTextContent("CNY 100000");
+    expect(acceptedCashDetails).toHaveTextContent("来源 caller-fixture");
+    expect(acceptedCashDetails).toHaveTextContent("版本 2");
+    expect(putBodies).toHaveLength(0);
+  });
+
+  it("clears the real cash strip across account switches and ignores a late cross-account read", async () => {
+    const user = userEvent.setup();
+    const accountA = "live-cash-account-a";
+    const accountB = "live-cash-account-b";
+    seedLiveSharedScope(accountA, "CNY");
+    const fx = cashFxSnapshot("cash-fx-cross-account", "7", "2026-09-25T03:00:00.000Z");
+    const accountBResponse = deferred<Response>();
+    const accountAResponse = deferred<Response>();
+    let stage: "initial" | "b-pending" | "a-pending" | "a-done" = "initial";
+    let accountBReads = 0;
+    let accountAReads = 0;
+    installCashCallerFetch({
+      baseline: cashStorageState(cashRecord({ accountId: accountA, scope: { nature: "live", simulationRunId: null } })),
+      fxResponses: [Response.json(cashFxState(fx))],
+      summaryHandler: path => {
+        const accountIdFromRequest = new URL(path, "http://localhost").searchParams.get("accountId");
+        if (accountIdFromRequest === accountB && stage === "b-pending") {
+          accountBReads += 1;
+          return accountBResponse.promise;
+        }
+        if (accountIdFromRequest === accountA && stage === "a-pending") {
+          accountAReads += 1;
+          return accountAResponse.promise;
+        }
+        if (accountIdFromRequest === accountA && stage === "a-done") {
+          return Response.json(cashSummaryWithFx("120", "840", fx));
+        }
+        return Response.json(cashSummaryWithFx("100", "700", fx));
+      },
+    });
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+        storageClient={productionStorageClient([
+          liveCashExecution(accountA, "实盘账户 A", "cash-caller-cross-a"),
+          liveCashExecution(accountB, "实盘账户 B", "cash-caller-cross-b"),
+        ])}
+      />,
+    );
+
+    await waitFor(() => expect(screen.getByLabelText("现金状态")).toHaveTextContent("CNY 700.00"));
+    await openProductionAccountSettings(user);
+    const scopeSelect = screen.getByLabelText("共享账户");
+    stage = "b-pending";
+    await user.selectOptions(scopeSelect, accountB);
+    await waitFor(() => {
+      expect(scopeSelect).toHaveValue(accountB);
+      expect(accountBReads).toBe(1);
+      const cashStatus = screen.getByLabelText("现金状态");
+      expect(cashStatus).not.toHaveTextContent("CNY 700.00");
+      expect(cashStatus).toHaveTextContent("现金数据加载中…");
+      expect(screen.queryByRole("group", { name: "现金基准详情", hidden: true })).not.toBeInTheDocument();
+    });
+
+    stage = "a-pending";
+    await user.selectOptions(scopeSelect, accountA);
+    await waitFor(() => {
+      expect(scopeSelect).toHaveValue(accountA);
+      expect(accountAReads).toBe(1);
+      expect(screen.getByLabelText("现金状态")).not.toHaveTextContent("CNY 700.00");
+    });
+
+    stage = "a-done";
+    await act(async () => {
+      accountAResponse.resolve(Response.json(cashSummaryWithFx("120", "840", fx)));
+      await accountAResponse.promise;
+    });
+    await waitFor(() => expect(screen.getByLabelText("现金状态")).toHaveTextContent("CNY 840.00"));
+
+    await act(async () => {
+      accountBResponse.resolve(Response.json(cashSummaryWithFx("80", "560", fx)));
+      await accountBResponse.promise;
+    });
+    await waitFor(() => {
+      const cashStatus = screen.getByLabelText("现金状态");
+      expect(cashStatus).toHaveTextContent("CNY 840.00");
+      expect(cashStatus).not.toHaveTextContent("CNY 560.00");
+      expect(cashStatus).not.toHaveTextContent("CNY 700.00");
+    });
+  });
+
+  it.each(["success", "failure"] as const)(
+    "hides accepted cash immediately when the client changes and ignores a late A %s",
+    async lateOutcome => {
+      const accountId = `live-cash-client-replacement-${lateOutcome}`;
+      seedLiveSharedScope(accountId, "CNY");
+      const firstFx = cashFxSnapshot("cash-client-fx-1", "7", "2026-09-25T03:00:00.000Z");
+      const secondFx = cashFxSnapshot("cash-client-fx-2", "7.2", "2026-09-27T03:00:00.000Z");
+      const lateAResponse = deferred<Response>();
+      const clientBResponse = deferred<Response>();
+      let stage: "initial" | "a-late" | "b-pending" = "initial";
+      let lateAReads = 0;
+      let clientBReads = 0;
+      installCashCallerFetch({
+        baseline: cashStorageState(cashRecord({ accountId, scope: { nature: "live", simulationRunId: null } })),
+        fxResponses: [
+          Response.json(cashFxState(firstFx)),
+          Response.json(cashFxState(secondFx)),
+        ],
+        summaryHandler: () => {
+          if (stage === "a-late") {
+            lateAReads += 1;
+            return lateAResponse.promise;
+          }
+          if (stage === "b-pending") {
+            clientBReads += 1;
+            return clientBResponse.promise;
+          }
+          return Response.json(cashSummaryWithFx("100", "700", firstFx));
+        },
+      });
+      const clientA = testCashClient();
+      const clientB = testCashClient();
+      const initialProps = {
+        initialFrame,
+        showDemo: false,
+        cashClient: clientA,
+        storageClient: productionStorageClient([liveCashExecution(accountId, "实盘现金客户端账户", `cash-client-${lateOutcome}`)]),
+      } satisfies CashWorkspaceTestProps;
+      const view = renderCashWorkspace(initialProps);
+
+      await waitFor(() => {
+        expect(screen.getByLabelText("现金状态")).toHaveTextContent("CNY 700.00");
+        expect(screen.getByLabelText("现金状态")).toHaveTextContent("汇率：2026-09-25（中行）");
+      });
+      const user = userEvent.setup();
+      await openProductionAccountSettings(user);
+      stage = "a-late";
+      await user.click(await screen.findByRole("button", { name: "刷新汇率" }));
+      await waitFor(() => {
+        expect(lateAReads).toBe(1);
+        expect(screen.getByLabelText("现金状态")).toHaveTextContent("CNY 700.00");
+      });
+
+      stage = "b-pending";
+      const clientBProps = { ...initialProps, cashClient: clientB };
+      view.rerender(<TradeReviewWorkspace {...clientBProps} />);
+      await waitFor(() => {
+        expect(clientBReads).toBe(1);
+        const pendingStatus = screen.getByLabelText("现金状态");
+        expect(pendingStatus).not.toHaveTextContent("CNY 700.00");
+        expect(pendingStatus).toHaveTextContent("现金数据加载中…");
+        expect(screen.queryByRole("group", { name: "现金基准详情", hidden: true })).not.toBeInTheDocument();
+      });
+
+      await act(async () => {
+        if (lateOutcome === "success") {
+          lateAResponse.resolve(Response.json(cashSummaryWithFx("120", "840", secondFx)));
+        } else {
+          lateAResponse.resolve(Response.json({ error: { message: "A客户端迟到摘要失败" } }, { status: 503 }));
+        }
+        await lateAResponse.promise;
+      });
+      await waitFor(() => {
+        const pendingStatus = screen.getByLabelText("现金状态");
+        expect(pendingStatus).not.toHaveTextContent("CNY 840.00");
+        expect(pendingStatus).not.toHaveTextContent("A客户端迟到摘要失败");
+        expect(pendingStatus).toHaveTextContent("现金数据加载中…");
+      });
+
+      await act(async () => {
+        clientBResponse.resolve(Response.json(cashSummaryWithFx("200", "1440", secondFx)));
+        await clientBResponse.promise;
+      });
+      await waitFor(() => {
+        const settledStatus = screen.getByLabelText("现金状态");
+        expect(settledStatus).toHaveTextContent("CNY 1,440.00");
+        expect(settledStatus).toHaveTextContent("汇率：2026-09-27（中行）");
+        expect(settledStatus).not.toHaveTextContent("CNY 700.00");
+      });
+    },
+  );
+
+  it("does not start a cash summary read when the real dashboard valuation control is used", async () => {
+    const user = userEvent.setup();
+    const accountId = "live-cash-market-refresh";
+    seedLiveSharedScope(accountId, "CNY");
+    const fx = cashFxSnapshot("cash-fx-market-refresh", "7", "2026-09-25T03:00:00.000Z");
+    installCashCallerFetch({
+      baseline: cashStorageState(cashRecord({ accountId, scope: { nature: "live", simulationRunId: null } })),
+      fxResponses: [Response.json(cashFxState(fx))],
+      summary: cashSummaryWithFx("100", "700", fx),
+    });
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+        storageClient={productionStorageClient([liveCashExecution(accountId, "实盘行情账户", "cash-caller-market-refresh")])}
+      />,
+    );
+
+    await waitFor(() => expect(screen.getByLabelText("现金状态")).toHaveTextContent("CNY 700.00"));
+    const cashReadsBefore = vi.mocked(fetch).mock.calls.filter(([input]) => String(input).includes("/api/trading-room/cash?")).length;
+    const holdings = await screen.findByRole("region", { name: "持仓照看" });
+    await user.click(within(holdings).getByRole("button", { name: "更新估值" }));
+    expect(vi.mocked(fetch).mock.calls.filter(([input]) => String(input).includes("/api/trading-room/cash?")).length).toBe(cashReadsBefore);
+    expect(screen.getByLabelText("现金状态")).toHaveTextContent("CNY 700.00");
   });
 
   it("keeps a typed draft after a caller CAS conflict and saves again only after explicit reload", async () => {
@@ -1829,7 +2844,7 @@ describe("TradeReviewWorkspace", () => {
     await user.click(await screen.findByRole("button", { name: "编辑" }));
     const amount = screen.getByRole("spinbutton", { name: "余额" });
     await user.clear(amount);
-    await user.type(amount, "125000");
+    await user.paste("125000");
     await user.click(screen.getByRole("button", { name: "保存修改" }));
 
     const cashPanel = screen.getAllByRole("region", { name: "现金基准" }).at(-1);
@@ -1841,10 +2856,12 @@ describe("TradeReviewWorkspace", () => {
     await user.click(screen.getByRole("button", { name: "重新载入当前值" }));
     expect(screen.getByRole("spinbutton", { name: "余额" })).toHaveValue(130000);
     expect(screen.getByLabelText("来源")).toHaveValue("server-current");
-    await user.clear(screen.getByRole("spinbutton", { name: "余额" }));
-    await user.type(screen.getByRole("spinbutton", { name: "余额" }), "135000");
-    await user.clear(screen.getByLabelText("来源"));
-    await user.type(screen.getByLabelText("来源"), "caller-resaved");
+    const resavedAmount = screen.getByRole("spinbutton", { name: "余额" });
+    await user.clear(resavedAmount);
+    await user.paste("135000");
+    const resavedSource = screen.getByLabelText("来源");
+    await user.clear(resavedSource);
+    await user.paste("caller-resaved");
     await user.click(screen.getByRole("button", { name: "保存修改" }));
 
     await waitFor(() => expect(putBodies).toHaveLength(2));

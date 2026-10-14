@@ -204,6 +204,42 @@ function axisNumber(value: number) {
   return new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 1 }).format(value);
 }
 
+// The shared chart helper chooses useful context ticks without knowing the
+// consumer's rendered width. Keep its samples intact, but remove only an
+// interior label whose full 12px date box cannot fit between its neighbours.
+const HISTORY_AXIS_LABEL_GLYPH_WIDTH = 12 * 0.6;
+const HISTORY_AXIS_LABEL_GAP = 8;
+function readableHistoryAxisLabels(
+  points: readonly { key: string; label: string }[],
+  geometry: ReturnType<typeof createChartGeometry>,
+) {
+  const labels = chartAxisLabels(points, geometry, 3);
+  if (labels.length <= 2) return labels;
+
+  const labelBounds = (label: typeof labels[number]) => {
+    const width = Math.max(1, label.label.length * HISTORY_AXIS_LABEL_GLYPH_WIDTH);
+    const startsAtLeft = label.index === 0 && points.length > 1;
+    const endsAtRight = label.index === points.length - 1 && points.length > 1;
+    const left = startsAtLeft ? label.x : endsAtRight ? label.x - width : label.x - width / 2;
+    return { left, right: left + width };
+  };
+
+  const first = labels[0];
+  const last = labels[labels.length - 1];
+  const firstBounds = labelBounds(first);
+  const lastBounds = labelBounds(last);
+  const interior: typeof labels = [];
+  let previousBounds = firstBounds;
+  for (const candidate of labels.slice(1, -1)) {
+    const bounds = labelBounds(candidate);
+    if (bounds.left - previousBounds.right < HISTORY_AXIS_LABEL_GAP
+      || lastBounds.left - bounds.right < HISTORY_AXIS_LABEL_GAP) continue;
+    interior.push(candidate);
+    previousBounds = bounds;
+  }
+  return [first, ...interior, last];
+}
+
 function History({ model, reportCurrency = "original", periodControls, periodLabel = "持仓历史观察期间" }: RoomHoldingsHistoryProps) {
   const [metric, setMetric] = useState<Metric>("marketValue");
   const [granularity, setGranularity] = useState<HoldingsHistoryGranularity>("day");
@@ -293,7 +329,7 @@ function History({ model, reportCurrency = "original", periodControls, periodLab
         coordinates: seriesSegments(series.points, geometry, domain).flatMap(segment => segment.coordinates),
       })),
       ticks: chartAxisTicks(domain, geometry),
-      labels: chartAxisLabels(samples.map(sample => ({ key: sample.periodStart, label: sample.actualDate })), geometry, 3),
+      labels: readableHistoryAxisLabels(samples.map(sample => ({ key: sample.periodStart, label: sample.actualDate })), geometry),
     };
   }, [samples, metric, reportCurrency, geometry, activeOriginalCurrency, originalCurrencies]);
   const hasDrawablePoints = plot.series.some(series => series.coordinates.length > 0);

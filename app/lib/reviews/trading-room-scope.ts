@@ -75,6 +75,13 @@ export type RoomFxSnapshot = {
   status: "complete" | "partial" | "missing";
   /** A rate is the amount of CNY for one unit of the source currency. */
   rates: Readonly<Record<string, string>>;
+  /** Publication metadata is optional so legacy snapshots remain readable. */
+  publishedAt?: string | null;
+  publishedAtByCurrency?: Readonly<Record<string, string>>;
+  fetchedAt?: string | null;
+  /** A failed refresh can leave a usable, but stale, cached rate set. */
+  error?: string | null;
+  lastAttemptDay?: string | null;
 };
 
 /** A report target with a supported rate in the room FX snapshot. */

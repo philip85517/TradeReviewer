@@ -17,7 +17,7 @@
 .panel caption { margin-bottom: 6px; text-align: left; font-weight: 600; }
 .empty { padding: 12px 0; }
 .conflict { display: grid; gap: 8px; padding: 10px 12px; border: 1px solid #b7791f; border-radius: 8px; background: rgba(183, 121, 31, .12); color: var(--dashboard-ink, #17212b); }
-.conflict strong { color: #8a5a00; }
+.conflict strong { color: #f1d598; }
 .conflict span { font-size: 12px; line-height: 1.5; }
 .conflict button { justify-self: start; }
 .history { border-top: 1px solid var(--dashboard-line, #d9dee5); padding-top: 8px; }

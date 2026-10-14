@@ -53,6 +53,21 @@ function modelWithDiagnosticRows(count: number) {
   return model;
 }
 
+function cashSummaryWithReasons(missingReasons: readonly string[]): CashSummary {
+  const money = { baseCurrency: "CNY", originalByCurrency: {}, convertedCny: null, converted: null, convertedHkd: null, targetCurrency: "CNY", conversion: "missing", fxSnapshotId: null, note: "缺少可信现金数据" } as const;
+  return {
+    todayProceeds: money,
+    cashTotal: money,
+    todayProceedsStatus: "unavailable",
+    cashTotalStatus: "unavailable",
+    coverage: { included: 0, excluded: 0, missing: missingReasons.length },
+    asOf: null,
+    missingReasons: [...missingReasons],
+    byScope: {},
+    updatedAt: null,
+  } satisfies CashSummary;
+}
+
 it("keeps metric specific reasons separate and carries only real holding ids", () => {
   const diagnostics = buildRoomValuationDiagnostics({ model: modelWithRows() });
   expect(diagnostics).toEqual(expect.arrayContaining([
@@ -153,6 +168,86 @@ it("reports unstructured cash reasons with unknown object coverage and preserves
   render(<RoomValuationDiagnostics model={buildCurrentPortfolio([], { scope: createDefaultRoomScope() })} cashSummary={cashSummary} />);
   expect(screen.getAllByText(/现金与记录缺口/).length).toBeGreaterThan(0);
   expect(screen.queryByText(/3 个对象/)).not.toBeInTheDocument();
+});
+
+it("keeps accepted valuation records stable while independent cash records grow and remain searchable", async () => {
+  const user = userEvent.setup();
+  const model = modelWithRows();
+  const initialCash = cashSummaryWithReasons(["现金原因 A"]);
+  const nextCash = cashSummaryWithReasons(["现金原因 A", "现金原因 B"]);
+  const sourceOf = (item: ReturnType<typeof buildRoomValuationDiagnostics>[number]) => item.source;
+  const initial = buildRoomValuationDiagnostics({ model, cashSummary: initialCash });
+  const next = buildRoomValuationDiagnostics({ model, cashSummary: nextCash });
+  const valuationRecords = (items: typeof initial) => items.filter(item => sourceOf(item) !== "cash").map(item => `${item.id}:${item.reason}`).sort();
+  const cashRecords = (items: typeof initial) => items.filter(item => sourceOf(item) === "cash");
+
+  expect(valuationRecords(next)).toEqual(valuationRecords(initial));
+  expect(cashRecords(next)).toHaveLength(cashRecords(initial).length + 1);
+
+  const { rerender } = render(<RoomValuationDiagnostics model={model} cashSummary={initialCash} />);
+  const valuationSummary = screen.getByLabelText("持仓估值问题摘要");
+  const initialValuationSummary = valuationSummary.innerHTML;
+  const initialCashSummary = screen.getByLabelText("现金记录问题 · 独立更新摘要");
+  expect(valuationSummary).toHaveTextContent("行情与估值缺口");
+  expect(initialCashSummary).toHaveTextContent(`${cashRecords(initial).length} 条原始记录`);
+  await user.click(screen.getByRole("button", { name: "查看问题详情" }));
+
+  const search = screen.getByRole("textbox", { name: "搜索原因" });
+  await user.clear(search);
+  await user.type(search, "报价证据缺失");
+  expect(screen.getByText("报价证据缺失")).toBeInTheDocument();
+  await user.clear(search);
+  await user.type(search, "现金原因 A");
+  expect(screen.getByText("现金原因 A")).toBeInTheDocument();
+
+  rerender(<RoomValuationDiagnostics model={model} cashSummary={nextCash} />);
+  expect(screen.getByLabelText("持仓估值问题摘要").innerHTML).toBe(initialValuationSummary);
+  expect(screen.getByLabelText("现金记录问题 · 独立更新摘要")).toHaveTextContent(`${cashRecords(next).length} 条原始记录`);
+  await user.clear(screen.getByRole("textbox", { name: "搜索原因" }));
+  await user.type(screen.getByRole("textbox", { name: "搜索原因" }), "现金原因 B");
+  expect(screen.getByText("现金原因 B")).toBeInTheDocument();
+
+  const emptyModel = buildCurrentPortfolio([], { scope: createDefaultRoomScope(), asOf: "2026-09-25" });
+  rerender(<RoomValuationDiagnostics model={emptyModel} cashSummary={initialCash} />);
+  expect(screen.getByLabelText("现金记录问题摘要").querySelector("strong")).toHaveTextContent("现金记录问题");
+});
+
+it("derives summary, count, dialog, and close names from each source-aware title", async () => {
+  const user = userEvent.setup();
+  const valuationModel = modelWithRows();
+  const cashOnlyModel = buildCurrentPortfolio([], { scope: createDefaultRoomScope(), asOf: "2026-09-25" });
+  const states = [
+    { title: "现金记录问题", model: cashOnlyModel, cashSummary: cashSummaryWithReasons(["现金原因 A"]) },
+    { title: "估值问题", model: valuationModel, cashSummary: null },
+    { title: "估值与现金记录问题", model: valuationModel, cashSummary: cashSummaryWithReasons(["现金原因 A"]) },
+  ] as const;
+
+  const { rerender } = render(<RoomValuationDiagnostics model={states[0].model} cashSummary={states[0].cashSummary} />);
+  for (const state of states) {
+    rerender(<RoomValuationDiagnostics model={state.model} cashSummary={state.cashSummary} />);
+    expect(screen.getByLabelText(`${state.title}摘要`).querySelector("strong")).toHaveTextContent(state.title);
+    expect(screen.getByLabelText(`${state.title}计数`)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "查看问题详情" }));
+    const dialog = screen.getByRole("dialog", { name: `${state.title}详情` });
+    expect(within(dialog).getByRole("heading", { name: `${state.title}详情` })).toBeInTheDocument();
+    await user.click(within(dialog).getByRole("button", { name: `关闭${state.title}详情` }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  }
+});
+
+it("retains the existing one-reason policy when model and allocation text is identical", () => {
+  const modelReason = "报价证据缺失";
+  const diagnostics = buildRoomValuationDiagnostics({
+    model: modelWithRows(),
+    additionalReasons: [modelReason, "估值范围缺失"],
+  });
+
+  expect(diagnostics.filter(item => item.reason === modelReason)).toHaveLength(1);
+  expect(diagnostics.find(item => item.reason === modelReason)?.source).toBe("model");
+  expect(diagnostics).toEqual(expect.arrayContaining([
+    expect.objectContaining({ reason: "估值范围缺失", source: "allocation" }),
+  ]));
 });
 
 it("navigates from the rendered clamped page after live results shrink", async () => {

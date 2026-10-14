@@ -50,6 +50,48 @@ type CoordinatorHarness = {
   cancellation: RefreshCancellationService;
 };
 
+type HarnessInstrumentSummary = {
+  instrument: { id: string };
+  tradeCount: number;
+  firstTradeAt: string;
+  lastTradeAt: string;
+};
+
+function createCurrentKeyRereadSeam() {
+  const summary: HarnessInstrumentSummary = {
+    instrument: { id: "B" },
+    tradeCount: 1,
+    firstTradeAt: "2024-01-01T00:00:00.000Z",
+    lastTradeAt: "2024-01-02T00:00:00.000Z",
+  };
+  const rawImportedInstrumentsRef = { current: [summary] };
+  const marketHydrationKey = (current: HarnessInstrumentSummary) =>
+    `${current.instrument.id}:${current.tradeCount}:${current.firstTradeAt}:${current.lastTradeAt}`;
+  const rereadFinancialMarketData = async (
+    instrumentIds: readonly string[],
+    ownedKeys: ReadonlyMap<string, string>,
+  ): Promise<ReadonlySet<string>> => {
+    const succeeded = new Set<string>();
+    for (const id of instrumentIds) {
+      const currentSummary = rawImportedInstrumentsRef.current.find(
+        (item) => item.instrument.id === id,
+      );
+      if (
+        currentSummary &&
+        ownedKeys.get(id) === marketHydrationKey(currentSummary)
+      ) {
+        succeeded.add(id);
+      }
+    }
+    return succeeded;
+  };
+  return {
+    rawImportedInstrumentsRef,
+    marketHydrationKey,
+    rereadFinancialMarketData,
+  };
+}
+
 function createCoordinatorHarness(): CoordinatorHarness {
   const ast = ts.createSourceFile("workspace.tsx", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
   const declarations: string[] = [];
@@ -68,6 +110,10 @@ function createCoordinatorHarness(): CoordinatorHarness {
   const producers = { current: new Map<number, HarnessProducer>() };
   const queue = { current: Promise.resolve() };
   const sequence = { current: 0 };
+  const financialMarketReadSequence = { current: 0 };
+  const financialMarketReadOwners = {
+    current: new Map<string, { key: string; runId: number; controller: AbortController }>(),
+  };
   const cancellation = new RefreshCancellationService();
   const controllers = { current: {} as Record<string, AbortController> };
   const runs: CoordinatorHarness["runs"] = [];
@@ -92,6 +138,7 @@ function createCoordinatorHarness(): CoordinatorHarness {
     };
     active.current.set(key, run);
     if (options.ownerCounts) run.subscriberCounts = new Map(options.ownerCounts as Map<string, number>);
+    if (options.producer) (options.producer as HarnessProducer).activeRun = run;
     requested.forEach((id) => { controllers.current[id] ??= new AbortController(); });
     runs.push({ ids: requested, options });
     if (options.throw === true) {
@@ -128,11 +175,13 @@ function createCoordinatorHarness(): CoordinatorHarness {
   });
   const functions = new Function(
     "activeMarketRefreshRuns", "pendingMarketRefreshRequests", "marketRefreshProducers", "publicMarketRefreshQueue",
-    "marketRefreshRequestSequence", "refreshCancellation", "marketDataAbortControllers",
+    "marketRefreshRequestSequence", "financialMarketReadSequence", "financialMarketReadOwners",
+    "refreshCancellation", "marketDataAbortControllers",
     "withGlobalMarketRefreshLock", "runMarketDataUpdate", "setNavigationNotice",
     "currentExecutionSnapshot", "buildInstrumentTradeSummaries", compiled,
   )(
-    active, pending, producers, queue, sequence, { current: cancellation }, controllers,
+    active, pending, producers, queue, sequence, financialMarketReadSequence, financialMarketReadOwners,
+    { current: cancellation }, controllers,
     withGlobalMarketRefreshLock, runMarketDataUpdate, () => undefined, () => [], () => [],
   ) as { start: CoordinatorHarness["start"]; cancel: CoordinatorHarness["cancel"]; cancelQueued: CoordinatorHarness["cancelQueued"] };
   return { ...functions, active, pending, runs, releaseFirst: () => firstRelease?.(), releaseDeferred: () => deferredRelease?.(), cancellation };
@@ -244,9 +293,19 @@ describe("workspace market refresh coordinator contract", () => {
       status: "complete",
       intervals: [{ interval: "1D", status: "complete" }],
     } } };
+    const rereadSeam = createCurrentKeyRereadSeam();
     const callbackFn = new Function(
-      "showDemo", "marketDataJobsRef", "activeMarketRefreshRuns", "startMarketDataUpdate", body,
-    )(false, jobs, active, async () => true);
+      "showDemo", "marketDataJobsRef", "activeMarketRefreshRuns", "startMarketDataUpdate",
+      "rawImportedInstrumentsRef", "marketHydrationKey", "rereadFinancialMarketData", body,
+    )(
+      false,
+      jobs,
+      active,
+      async () => true,
+      rereadSeam.rawImportedInstrumentsRef,
+      rereadSeam.marketHydrationKey,
+      rereadSeam.rereadFinancialMarketData,
+    );
     await expect(callbackFn(["B"], "manual")).resolves.toEqual({ ok: false, reason: "cancelled" });
   });
 
@@ -393,9 +452,19 @@ describe("workspace market refresh coordinator contract", () => {
       status: "storage-error",
       intervals: [{ interval: "1D", status: "storage-error" }],
     } } };
+    const rereadSeam = createCurrentKeyRereadSeam();
     const callbackFn = new Function(
-      "showDemo", "marketDataJobsRef", "activeMarketRefreshRuns", "startMarketDataUpdate", callbackBody,
-    )(false, jobs, harness.active, harness.start);
+      "showDemo", "marketDataJobsRef", "activeMarketRefreshRuns", "startMarketDataUpdate",
+      "rawImportedInstrumentsRef", "marketHydrationKey", "rereadFinancialMarketData", callbackBody,
+    )(
+      false,
+      jobs,
+      harness.active,
+      harness.start,
+      rereadSeam.rawImportedInstrumentsRef,
+      rereadSeam.marketHydrationKey,
+      rereadSeam.rereadFinancialMarketData,
+    );
     const result = callbackFn(["B"], "manual") as Promise<unknown>;
     for (let i = 0; i < 12; i++) await Promise.resolve();
     harness.releaseFirst();

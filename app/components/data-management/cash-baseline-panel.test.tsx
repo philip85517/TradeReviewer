@@ -203,7 +203,8 @@ describe("CashBaselinePanel", () => {
       revision: 3,
     };
     const onSave = vi.fn().mockRejectedValue(new CashClientError(409, "revision-conflict", "版本冲突", current));
-    renderPanel({ onSave });
+    const onReloadConflict = vi.fn();
+    renderPanel({ onSave, error: "现金摘要读取失败", onReloadConflict });
 
     await user.click(screen.getByRole("button", { name: "编辑" }));
     const amount = screen.getByRole("spinbutton", { name: "余额" });
@@ -216,9 +217,12 @@ describe("CashBaselinePanel", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(/服务器当前值/);
     await user.click(screen.getByRole("button", { name: "重新载入当前值" }));
 
+    expect(onReloadConflict).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("spinbutton", { name: "余额" })).toHaveValue(130000);
     expect(screen.getByLabelText("来源")).toHaveValue("another-session");
     expect(screen.getByText("当前版本 3")).toBeVisible();
+    expect(screen.getByRole("status")).toHaveTextContent("已载入服务器当前值，请核对后再保存");
+    expect(screen.getByRole("alert")).toHaveTextContent("现金摘要读取失败");
   });
 
   it("uses the revision captured when editing began after a refreshed state arrives", async () => {
@@ -278,10 +282,12 @@ describe("CashBaselinePanel", () => {
       source: "server-a",
       revision: 3,
     };
+    const onReloadConflict = vi.fn();
     const view = renderPanel({
       state,
       accounts: [{ id: "account-a", label: "账户 A" }],
       onSave,
+      onReloadConflict,
     });
 
     await user.click(screen.getByRole("button", { name: "编辑" }));
@@ -307,6 +313,7 @@ describe("CashBaselinePanel", () => {
     });
     expect(screen.queryByText("服务器当前值已变化，已保留你的草稿")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "重新载入当前值" })).not.toBeInTheDocument();
+    expect(onReloadConflict).not.toHaveBeenCalled();
   });
 
   it("keeps a new draft when an old save resolves after an A-to-B-to-A return", async () => {

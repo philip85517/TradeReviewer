@@ -1,0 +1,279 @@
+.root {
+  --fixture-bg: var(--preview-bg, #0b1220);
+  --fixture-surface: var(--preview-surface, #111a2b);
+  --fixture-raised: var(--preview-surface-raised, #182337);
+  --fixture-border: var(--preview-border, #263650);
+  --fixture-text: var(--preview-text, #e7edf6);
+  --fixture-muted: var(--preview-muted, #adbbcf);
+  --fixture-blue: #68a9ff;
+  box-sizing: border-box;
+  min-height: 100%;
+  padding: 32px clamp(16px, 4vw, 56px) 56px;
+  color: var(--fixture-text);
+  background: var(--fixture-bg);
+  font-family: var(--font-geist-sans), "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.root,
+.root * {
+  box-sizing: border-box;
+}
+
+.intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 0 auto 24px;
+  max-width: 1280px;
+}
+
+.eyebrow,
+.kicker {
+  margin: 0 0 8px;
+  color: var(--fixture-blue);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  letter-spacing: .06em;
+}
+
+.intro h1,
+.panel h2 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.intro h1 {
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.lede,
+.helper {
+  color: var(--fixture-muted);
+}
+
+.lede {
+  max-width: 720px;
+  margin: 10px 0 0;
+}
+
+.homeLink {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--fixture-border);
+  border-radius: 6px;
+  color: #8cbdff;
+  background: var(--fixture-raised);
+  text-decoration: none;
+}
+
+.homeLink:hover {
+  border-color: var(--fixture-blue);
+}
+
+.matrix {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.panel {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--fixture-border);
+  border-radius: 8px;
+  background: var(--fixture-surface);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.panel h2 {
+  font-size: 18px;
+  line-height: 26px;
+}
+
+.fixturePicker {
+  display: grid;
+  flex: 0 1 300px;
+  min-width: 180px;
+  gap: 4px;
+  color: var(--fixture-muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.fixturePicker select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--fixture-border);
+  border-radius: 6px;
+  color: var(--fixture-text);
+  background: var(--fixture-raised);
+  font: inherit;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.helper {
+  min-height: 44px;
+  margin: 12px 0 16px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.fixtureSurface {
+  --dashboard-page: var(--fixture-bg);
+  --dashboard-card: var(--fixture-surface);
+  --dashboard-card-elevated: var(--fixture-raised);
+  --dashboard-soft: var(--fixture-raised);
+  --dashboard-line: var(--fixture-border);
+  --dashboard-muted: var(--fixture-muted);
+  --dashboard-negative: #ef6672;
+  --dashboard-positive: #64d3c2;
+  --blue: var(--fixture-blue);
+  --blue-soft: rgb(82 145 224 / 17%);
+  --text: var(--fixture-text);
+  min-width: 0;
+  min-height: 76px;
+  padding: 12px;
+  border: 1px solid var(--fixture-border);
+  border-radius: 6px;
+  background: var(--fixture-bg);
+  overflow: visible;
+}
+
+.searchSurface {
+  min-height: 96px;
+}
+
+.fixtureApp {
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.fixtureApp .fixtureWorkspace {
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+}
+
+.fixtureRoom {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+}
+
+/* Keep the fixture's identity row shaped like the real header: the
+   status/pending slot owns the flexible first child and the mounted utility
+   component stays anchored to the right by the shared preview rules. */
+.fixtureIdentityStatus {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.fixtureContextLabel {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  color: var(--fixture-muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.fxPanel {
+  grid-column: 1 / -1;
+}
+
+.fxPanel .fixtureSurface {
+  min-height: 70px;
+}
+
+.emptyFx {
+  margin: 0;
+  color: var(--fixture-muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.callbackReadout {
+  display: grid;
+  gap: 4px;
+  max-width: 1280px;
+  margin: 16px auto 0;
+  padding: 12px 16px;
+  border: 1px solid var(--fixture-border);
+  border-radius: 6px;
+  color: var(--fixture-muted);
+  background: var(--fixture-surface);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.callbackReadout strong {
+  min-width: 0;
+  color: var(--fixture-text);
+  font-size: 14px;
+  line-height: 22px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .intro {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .matrix {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fxPanel {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .root {
+    padding: 24px 12px 40px;
+  }
+
+  .panel {
+    padding: 16px;
+  }
+
+  .panelHeader {
+    flex-direction: column;
+  }
+
+  .fixturePicker {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .fixtureSurface {
+    padding: 8px;
+  }
+}

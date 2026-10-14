@@ -53,6 +53,104 @@ describe("FxPanel", () => {
     expect(screen.getByText("更新失败：汇率源响应 502")).toBeVisible();
   });
 
+  it("updates displayed source timestamps when a newer snapshot is rendered", () => {
+    const view = render(<FxPanel state={completeState} loading={false} refreshing={false} error={null} onRefresh={vi.fn()} />);
+
+    expect(screen.getByText("最近源数据：2026/09/19 10:30")).toBeVisible();
+    expect(screen.getByText("源发布时间：2026/09/19 10:30")).toBeVisible();
+
+    view.rerender(
+      <FxPanel
+        state={{
+          ...completeState,
+          publishedAt: "2026-09-20T08:15:00+08:00",
+          publishedAtByCurrency: {
+            USD: "2026-09-20T08:15:00+08:00",
+            HKD: "2026-09-20T07:05:00+08:00",
+          },
+          fetchedAt: "2026-09-20T00:15:00.000Z",
+        }}
+        loading={false}
+        refreshing={false}
+        error={null}
+        onRefresh={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("最近源数据：2026/09/20 08:15")).toBeVisible();
+    expect(screen.queryByText("最近源数据：2026/09/19 10:30")).not.toBeInTheDocument();
+    expect(screen.getByText("源发布时间：2026/09/20 08:15")).toBeVisible();
+  });
+
+  it("keeps invalid timestamp text and omits missing timestamps", () => {
+    render(
+      <FxPanel
+        state={{
+          ...completeState,
+          publishedAt: "源日期待人工核对",
+          publishedAtByCurrency: { USD: "源时间未知" },
+        }}
+        loading={false}
+        refreshing={false}
+        error={null}
+        onRefresh={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("源日期原文（待核对）：源日期待人工核对")).toBeVisible();
+    expect(screen.getByText("源日期原文（待核对）：源时间未知")).toBeVisible();
+    expect(screen.queryByText(/源发布时间/)).not.toBeInTheDocument();
+  });
+
+  it("marks an invalid per-currency publication as raw source date pending verification", () => {
+    const invalidPublication = "provider-publication:unparsed";
+
+    render(
+      <FxPanel
+        state={{
+          ...completeState,
+          publishedAtByCurrency: {
+            USD: invalidPublication,
+            HKD: "2026-09-19T09:20:00+08:00",
+          },
+        }}
+        loading={false}
+        refreshing={false}
+        error={null}
+        onRefresh={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByText(`源日期原文（待核对）：${invalidPublication}`),
+    ).toBeVisible();
+    expect(
+      screen.queryByText(`源发布时间：${invalidPublication}`),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("源发布时间：2026/09/19 09:20")).toBeVisible();
+  });
+
+  it("labels fetched-only state as publication date unavailable and keeps fetch time separate", () => {
+    render(
+      <FxPanel
+        state={{
+          ...completeState,
+          publishedAt: null,
+          publishedAtByCurrency: {},
+          fetchedAt: "2026-09-19T03:00:00.000Z",
+        }}
+        loading={false}
+        refreshing={false}
+        error={null}
+        onRefresh={vi.fn()}
+      />,
+    );
+
+    expect(screen.getAllByText(/发布日期未提供/).length).toBeGreaterThan(0);
+    expect(screen.getByText("最近获取：2026/09/19 11:00")).toBeVisible();
+    expect(screen.queryByText(/源发布时间/)).not.toBeInTheDocument();
+  });
+
   it("keeps the refresh action disabled while loading", () => {
     render(<FxPanel state={null} loading={true} refreshing={false} error={null} onRefresh={vi.fn()} />);
 

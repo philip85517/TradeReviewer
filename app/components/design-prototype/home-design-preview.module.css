@@ -167,6 +167,13 @@
   line-height: 22px;
 }
 
+/* PA-I01: keep the holdings FX provenance copy compact inside the homepage
+   preview; the dashboard's broad section paragraph rule otherwise expands it. */
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="持仓照看"] [data-testid="room-holdings-fx-provenance"] p {
+  font-size: 12px;
+  line-height: 18px;
+}
+
 .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="我的交易室"] h2 {
   font-size: 18px;
   line-height: 26px;
@@ -212,6 +219,13 @@
   border-radius: 6px;
   font-size: 14px;
   line-height: 22px;
+}
+
+/* HI02: the recommended homepage keeps the holdings refresh status and its
+   fixed-size actions eight pixels apart. The direct data-refresh-phase child
+   anchors this to the live action row without touching the existing homepage. */
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="持仓照看"] div:has(> [data-refresh-phase]) {
+  gap: 8px;
 }
 
 .recommended .host :global(.trade-review-app .workspace.dashboard-mode) section[aria-label="持仓照看"],
@@ -340,6 +354,144 @@
   box-sizing: border-box;
 }
 
+/* PA-I01: the shared homepage header uses one 44px control rhythm. Keep the
+   calibration inside the recommended preview so replay surfaces retain their
+   source control contract. */
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-scope-controls] [data-scope-field] {
+  gap: 8px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-scope-controls] [data-scope-field] > span {
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-scope-controls] [data-scope-field] > select,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-scope-controls] [data-scope-field] > input:not([type="checkbox"]):not([type="radio"]) {
+  height: 44px;
+  min-height: 44px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  padding-block: 0;
+  padding-inline-start: 12px;
+  padding-inline-end: 25px;
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 500;
+}
+
+/* PA-I100: calibrate only the recommended header's real SELECT controls. The
+   inline SVG is a decorative 18px chevron; keeping it as a background leaves
+   the native element, keyboard handling, popup and focus target untouched. */
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-scope-controls] [data-scope-field] > select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-inline-end: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' fill='none'%3E%3Cpath d='M5 7.25 9 11.25 13 7.25' stroke='%23adbbcf' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px 18px;
+}
+
+/* The filter action belongs to the same bordered control row as the shared
+   scope fields. Its identity is stable even though the source button class
+   is owned by the dashboard module. */
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-row="scope"] [aria-expanded][aria-controls="trading-room-scope-filters"] {
+  height: 44px;
+  min-height: 44px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  padding-block: 0;
+  padding-inline: 12px;
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 500;
+}
+
+/* The search field has a nested border in the source composition. Size the
+   bordered label and its clear affordance together so the input line cannot
+   make a second, shorter visual box. */
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-row="scope"] [class*="splitSearch"] {
+  gap: 8px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-row="scope"] [class*="splitSearch"] > [class*="searchLabel"] {
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-row="scope"] label:has(> input[aria-label="搜索已导入标的"]) {
+  height: 44px;
+  min-height: 44px;
+  box-sizing: border-box;
+  gap: 8px;
+  padding-block: 0;
+  padding-inline: 12px;
+  border-radius: 6px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-row="scope"] input[aria-label="搜索已导入标的"] {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 500;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-row="scope"] label:has(> input[aria-label="搜索已导入标的"]) > button[aria-label="清除搜索"] {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  flex: 0 0 44px;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* The bell is a neutral status entry. The badge deliberately uses the
+   notification blue tokens instead of dashboard P&L colors. */
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-row="identity"] [aria-label="交易室全局工具"] > div:first-child > button[aria-label="打开待处理事项"] {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  color: #adbbcf;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-row="identity"] [aria-label="交易室全局工具"] > div:first-child > button[aria-label="打开待处理事项"] > svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.75;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-row="identity"] [aria-label="交易室全局工具"] > div:first-child > button[aria-label="打开待处理事项"] > span[aria-label] {
+  top: 0;
+  right: 0;
+  min-width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  padding-block: 0;
+  padding-inline: 4px;
+  border: 1px solid #44546b;
+  color: #8cbdff;
+  background: #182337;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-row="identity"] [aria-label="交易室全局工具"] > div:first-child > button[aria-label="打开待处理事项"]:focus-visible {
+  outline: 2px solid #9ecaff;
+  outline-offset: 2px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-row="identity"] [aria-label="交易室全局工具"] > div:first-child > button[aria-label="打开待处理事项"]:hover,
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-row="identity"] [aria-label="交易室全局工具"] > div:first-child > button[aria-label="打开待处理事项"][aria-expanded="true"] {
+  color: #e7edf6;
+}
+
 .recommended .host :global(.trade-review-app .workspace.dashboard-mode) a {
   color: #8cbdff;
 }
@@ -350,6 +502,18 @@
 .recommended .host :global(.trade-review-app .workspace.dashboard-mode) input:focus-visible {
   outline: 2px solid #9ecaff;
   outline-offset: 2px;
+}
+
+/* Keep the recommended homepage search focus ring on the composite 44px
+   control. The generic input focus rule above would otherwise draw a second
+   ring around the shorter text input inside the bordered search field. */
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-row="scope"] label:has(> input[aria-label="搜索已导入标的"]):has(> input:focus-visible) {
+  outline: 2px solid #9ecaff;
+  outline-offset: 2px;
+}
+
+.recommended .host :global(.trade-review-app .workspace.dashboard-mode) [data-header-row="scope"] label:has(> input[aria-label="搜索已导入标的"]) > input:focus-visible {
+  outline: none;
 }
 
 .recommended .host :global(.trade-review-app .workspace.dashboard-mode) summary:focus-visible {
@@ -639,15 +803,6 @@
     box-sizing: border-box;
   }
 
-  /* Keep the long notification body scrollable without letting the panel
-     extend below the narrow viewport. The minimum preserves a useful list
-     area on shorter devices; the list remains the scroll container. */
-}
-
-@media (max-width: 759px) {
-  .recommended .host :global(.trade-review-app [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="dialog"] > header + div {
-    max-height: min(360px, max(100px, calc(100dvh - 496px)));
-  }
 }
 
 /* HA09 V04 follow-up: the utility menu keeps its approved intrinsic panel
@@ -823,4 +978,88 @@
     min-width: max-content;
     max-width: 100%;
   }
+}
+
+/* PAV31: compact UnifiedPageHeader keeps the title and utility buttons in the
+   same grid.  The source utility stylesheet makes the two anchors relative
+   (or static at the narrow breakpoint), so a preview dialog can otherwise use
+   the 104px utility item as its containing block.  Keep the grid and intrinsic
+   44px controls intact, but position compact overlays against the full
+   identity row, which is the visible content rail.  Its open panel height is
+   supplied by the utility's viewport-aware layout effect. */
+.recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) {
+  position: relative;
+}
+
+.recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) [aria-label="交易室全局工具"],
+.recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) [aria-label="交易室全局工具"] > div {
+  position: static;
+}
+
+.recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="dialog"],
+.recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="menu"] {
+  top: var(--trading-room-overlay-top, calc(100% + 9px));
+  right: 0;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="dialog"] {
+  width: min(360px, 100%);
+  max-height: var(--trading-room-overlay-max-height, none);
+}
+
+.recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="menu"] {
+  width: min(240px, 100%);
+  min-width: min(224px, 100%);
+}
+
+.recommended .host :global(.trade-review-app [data-content-layout="compact"] [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="dialog"] > header + div {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  max-height: none;
+  overflow: auto;
+}
+
+/* PAV36: the live 759px page reports `medium` while its identity row is the
+   visible content rail.  Relative icon anchors otherwise place a 360px
+   dialog from the 109px tools group, which sends its left edge off-screen.
+   Keep the complete header row as the containing block for both overlays,
+   without changing the row's intrinsic controls or typography. */
+.recommended .host :global(.trade-review-app [data-content-layout="medium"] [data-header-row="identity"]) {
+  position: relative;
+}
+
+.recommended .host :global(.trade-review-app [data-content-layout="medium"] [data-header-row="identity"]) [aria-label="交易室全局工具"],
+.recommended .host :global(.trade-review-app [data-content-layout="medium"] [data-header-row="identity"]) [aria-label="交易室全局工具"] > div {
+  position: static;
+}
+
+.recommended .host :global(.trade-review-app [data-content-layout="medium"] [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="dialog"],
+.recommended .host :global(.trade-review-app [data-content-layout="medium"] [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="menu"] {
+  top: var(--trading-room-overlay-top, calc(100% + 9px));
+  right: 0;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.recommended .host :global(.trade-review-app [data-content-layout="medium"] [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="dialog"] {
+  width: min(360px, 100%);
+  max-height: var(--trading-room-overlay-max-height, none);
+}
+
+.recommended .host :global(.trade-review-app [data-content-layout="medium"] [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="menu"] {
+  width: min(240px, 100%);
+  min-width: min(224px, 100%);
+}
+
+.recommended .host :global(.trade-review-app [data-content-layout="medium"] [data-header-row="identity"]) [aria-label="交易室全局工具"] [role="dialog"] > header + div {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  max-height: none;
+  overflow: auto;
 }

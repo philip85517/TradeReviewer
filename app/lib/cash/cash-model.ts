@@ -109,6 +109,8 @@ export type CashSummaryStatus = "available" | "zero" | "partial" | "unavailable"
 export type CashSummary = {
   todayProceeds: RoomMoneyView;
   cashTotal: RoomMoneyView;
+  /** The immutable FX snapshot used to build both money views, when available. */
+  fxSnapshot?: RoomFxSnapshot;
   todayProceedsStatus: CashSummaryStatus;
   cashTotalStatus: Exclude<CashSummaryStatus, "zero">;
   coverage: { included: number; excluded: number; missing: number };
@@ -770,6 +772,7 @@ export function buildCashSummary(input: BuildCashSummaryInput): CashSummary {
   return {
     todayProceeds: todayView,
     cashTotal: cashTotalView,
+    fxSnapshot: input.fxSnapshot,
     todayProceedsStatus,
     cashTotalStatus,
     coverage: { included, excluded, missing },

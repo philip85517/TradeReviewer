@@ -148,6 +148,13 @@ describe("buildCashSummary", () => {
     fxSnapshot,
   });
 
+  it("returns the exact FX snapshot used to build its money views", () => {
+    const result = input([]);
+
+    expect(result.fxSnapshot).toBe(fxSnapshot);
+    expect(result.cashTotal.fxSnapshotId).toBe(fxSnapshot.id);
+  });
+
   it("computes baseline plus later stock and ETF cash once", () => {
     const result = input([
       execution("buy", "buy", "2026-09-02T00:00:00.000Z", "30000"),

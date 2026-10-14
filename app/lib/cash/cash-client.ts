@@ -17,6 +17,7 @@ import type {
   CashBaselineStorageState,
 } from "./cash-baseline-contracts";
 import { TRADINGVIEW_CANONICAL_ACCOUNT_ID } from "../trades/tradingview-account-identity";
+import type { RoomFxSnapshot } from "../reviews/trading-room-scope";
 
 type Fetcher = (input: string, init?: RequestInit) => Promise<Response>;
 
@@ -69,7 +70,40 @@ function validInstant(value: unknown): value is string {
   return typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value) && Number.isFinite(Date.parse(value));
 }
 
-function isMoneyView(value: unknown): boolean {
+function nonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function positiveRate(value: unknown): value is string {
+  if (!nonEmptyString(value)) return false;
+  try {
+    const decimal = new Decimal(value);
+    return decimal.isFinite() && decimal.gt(0);
+  } catch {
+    return false;
+  }
+}
+
+function optionalStringOrNull(value: Record<string, unknown>, key: string): boolean {
+  return !(key in value) || value[key] === null || typeof value[key] === "string";
+}
+
+function isRoomFxSnapshot(value: unknown): value is RoomFxSnapshot {
+  if (!isRecord(value) || !nonEmptyString(value.id) || value.baseCurrency !== "CNY" ||
+      !nonEmptyString(value.asOf) || !nonEmptyString(value.source) ||
+      !(value.status === "complete" || value.status === "partial" || value.status === "missing") ||
+      !isRecord(value.rates)) return false;
+
+  const rateEntries = Object.entries(value.rates);
+  if (rateEntries.length === 0 || rateEntries.some(([currency, rate]) => !nonEmptyString(currency) || !positiveRate(rate))) return false;
+  if (!optionalStringOrNull(value, "publishedAt") || !optionalStringOrNull(value, "fetchedAt") ||
+      !optionalStringOrNull(value, "error") || !optionalStringOrNull(value, "lastAttemptDay")) return false;
+  if ("publishedAtByCurrency" in value &&
+      (!isRecord(value.publishedAtByCurrency) || Object.values(value.publishedAtByCurrency).some(date => typeof date !== "string"))) return false;
+  return true;
+}
+
+function isMoneyView(value: unknown): value is CashSummary["cashTotal"] {
   if (!isRecord(value) || value.baseCurrency !== "CNY" || !isRecord(value.originalByCurrency) ||
       !(["same-currency", "complete", "partial", "missing"] as readonly unknown[]).includes(value.conversion) ||
       (value.fxSnapshotId !== null && typeof value.fxSnapshotId !== "string") || typeof value.note !== "string") return false;
@@ -84,6 +118,12 @@ function isCashSummary(value: unknown): value is CashSummary {
   const coverage = value.coverage;
   const byScopeValid = Object.values(value.byScope).every(item => isRecord(item) && typeof item.currency === "string" && finiteAmount(item.amount) &&
     (["available", "zero", "partial", "unavailable"] as readonly unknown[]).includes(item.status));
+  if ("fxSnapshot" in value) {
+    const fxSnapshot = value.fxSnapshot;
+    if (!isRoomFxSnapshot(fxSnapshot) || value.cashTotal.fxSnapshotId !== fxSnapshot.id || value.todayProceeds.fxSnapshotId !== fxSnapshot.id) return false;
+  } else if (value.cashTotal.fxSnapshotId !== null || value.todayProceeds.fxSnapshotId !== null) {
+    return false;
+  }
   return (value.todayProceedsStatus === "available" || value.todayProceedsStatus === "zero" || value.todayProceedsStatus === "partial" || value.todayProceedsStatus === "unavailable")
     && (value.cashTotalStatus === "available" || value.cashTotalStatus === "partial" || value.cashTotalStatus === "unavailable")
     && Number.isInteger(coverage.included) && Number(coverage.included) >= 0

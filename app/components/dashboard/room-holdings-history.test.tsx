@@ -555,6 +555,52 @@ describe("RoomHoldingsHistory B2", () => {
     expect(finalY).toBeCloseTo(14 + (190 - 14 - 28) * (1 - 80 / 120), 2);
   });
 
+  it("keeps full endpoint dates readable at compact width while retaining a selected interior date", () => {
+    let resizeCallback: (() => void) | null = null;
+    // These are the measured inner SVG widths of the 390px and 320px
+    // responsive captures after the holding-history card's border and padding.
+    let dimensions = { width: 314, height: 190 };
+    vi.stubGlobal("ResizeObserver", class {
+      constructor(callback: () => void) {
+        resizeCallback = callback;
+      }
+
+      observe(element: Element) {
+        Object.defineProperty(element, "getBoundingClientRect", {
+          configurable: true,
+          value: () => ({ ...dimensions, x: 0, y: 0, top: 0, right: dimensions.width, bottom: dimensions.height, left: 0, toJSON: () => ({}) }),
+        });
+        resizeCallback?.();
+      }
+
+      disconnect() {}
+    });
+
+    render(<RoomHoldingsHistory model={model()} />);
+    const svg = chart();
+    const dateLabels = () => [...svg.querySelectorAll("text")]
+      .map(label => label.textContent ?? "")
+      .filter(label => /^\d{4}-\d{2}-\d{2}$/.test(label));
+    expect(dateLabels()).toEqual(["2026-09-17", "2026-09-18", "2026-09-19"]);
+
+    fireEvent.change(screen.getByLabelText("历史持仓日期"), { target: { value: "2026-09-18" } });
+    expect(screen.getByRole("tooltip")).toHaveTextContent("2026-09-18");
+    expect(screen.getByText("2026-09-18 持仓明细")).toBeInTheDocument();
+    expect(screen.getByLabelText("历史持仓日期").querySelectorAll("option")).toHaveLength(4);
+
+    dimensions = { width: 252, height: 190 };
+    act(() => resizeCallback?.());
+    expect(dateLabels()).toEqual(["2026-09-17", "2026-09-19"]);
+    expect(screen.getByRole("tooltip")).toHaveTextContent("2026-09-18");
+    expect(screen.getByText("2026-09-18 持仓明细")).toBeInTheDocument();
+    expect(screen.getByLabelText("历史持仓日期").querySelectorAll("option")).toHaveLength(4);
+
+    dimensions = { width: 314, height: 190 };
+    act(() => resizeCallback?.());
+    expect(dateLabels()).toEqual(["2026-09-17", "2026-09-18", "2026-09-19"]);
+    expect(screen.getByRole("tooltip")).toHaveTextContent("2026-09-18");
+  });
+
   it("renders the shell-owned period controls in the chart card slot", () => {
     render(<RoomHoldingsHistory model={model()} periodLabel="持仓历史观察期间" periodControls={<button type="button">今年</button>} />);
     expect(screen.getByRole("group", { name: "持仓历史观察期间" })).toContainElement(screen.getByRole("button", { name: "今年" }));

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import Decimal from "decimal.js";
 
 import type { CashSummary, CashSummaryStatus } from "../../lib/cash/cash-model";
@@ -26,6 +26,8 @@ const dimensions = [["market", "按市场"], ["assetType", "按资产类型"]] a
 
 export type RoomAllocationProps = {
   model: CurrentPortfolioModel;
+  /** Keep the independent cash strip live while holdings publication is fenced. */
+  holdingsPublicationBlocked?: boolean;
   /** Whether the empty state represents all holdings or the selected market. */
   scope?: "overall" | "market";
   reportCurrency?: RoomDisplayCurrency;
@@ -36,6 +38,9 @@ export type RoomAllocationProps = {
   cashScopeLabel?: string;
   loading?: boolean;
   error?: string | null;
+  cashRefreshNotice?: string | null;
+  onRetryCashSummary?: () => void;
+  cashRetryDisabled?: boolean;
   onRetryValuation?: () => void;
   onOpenDataCheck?: (
     dimension: TradingRoomQualityDimensionId,
@@ -106,6 +111,152 @@ function cashAsOfLabel(value: string | null): string {
   const parsed = new Date(value);
   if (!Number.isFinite(parsed.getTime())) return value;
   return `${parsed.toISOString().slice(0, 19).replace("T", " ")} UTC`;
+}
+
+function cashCurrencyCode(value: string): string {
+  const normalized = value.trim().toUpperCase();
+  if (["人民币", "RMB", "CNY"].includes(normalized)) return "CNY";
+  if (["港币", "HK$", "HKD"].includes(normalized)) return "HKD";
+  if (["美元", "US$", "USD"].includes(normalized)) return "USD";
+  return normalized;
+}
+
+function cashFxRate(snapshot: RoomFxSnapshot, currency: string): Decimal | null {
+  const normalized = cashCurrencyCode(currency);
+  if (normalized === snapshot.baseCurrency) return new Decimal(1);
+  for (const key of [`${normalized}/${snapshot.baseCurrency}`, `${normalized}:${snapshot.baseCurrency}`, normalized]) {
+    const value = snapshot.rates[key];
+    if (typeof value !== "string" || !value.trim()) continue;
+    try {
+      const parsed = new Decimal(value.trim());
+      if (parsed.isFinite() && parsed.gt(0)) return parsed;
+    } catch {
+      // Keep malformed rates visibly unresolved.
+    }
+  }
+  return null;
+}
+
+function cashFxDate(value: string | null | undefined): string | null {
+  if (!value?.trim()) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value.trim())) return value.trim();
+  const parsed = new Date(value);
+  if (!Number.isFinite(parsed.getTime())) return null;
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(parsed).reduce<Record<string, string>>((result, part) => {
+    result[part.type] = part.value;
+    return result;
+  }, {});
+  return parts.year && parts.month && parts.day ? `${parts.year}-${parts.month}-${parts.day}` : null;
+}
+
+function cashFxFetchedAt(value: string | null | undefined): string | null {
+  if (!value?.trim()) return null;
+  const parsed = new Date(value);
+  if (!Number.isFinite(parsed.getTime())) return null;
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(parsed).reduce<Record<string, string>>((result, part) => {
+    result[part.type] = part.value;
+    return result;
+  }, {});
+  return parts.year && parts.month && parts.day && parts.hour && parts.minute
+    ? `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}（GMT+8）`
+    : null;
+}
+
+function cashFxSourceLabel(source: string): string {
+  const normalized = source.trim();
+  if (normalized.toUpperCase() === "BOC" || normalized.toLowerCase() === "bank of china") return "中行";
+  return normalized || "来源未知";
+}
+
+function cashFxPublicationLabel(snapshot: RoomFxSnapshot, currency: string, targetCurrency: RoomTargetCurrency): string {
+  const publicationDate = cashFxDate(snapshot.publishedAtByCurrency?.[currency]) ?? cashFxDate(snapshot.publishedAt);
+  const targetPublicationDate = cashFxDate(snapshot.publishedAtByCurrency?.[targetCurrency]);
+  const sourceCurrency = cashCurrencyCode(currency);
+  const source = cashFxSourceLabel(snapshot.source);
+  if (publicationDate) {
+    const targetDate = targetPublicationDate && targetPublicationDate !== publicationDate
+      ? `，目标${targetCurrency}发布日期：${targetPublicationDate}`
+      : "";
+    return `汇率：${publicationDate}（${source}）${targetDate}`;
+  }
+  const fetchedAt = cashFxFetchedAt(snapshot.fetchedAt);
+  const targetDate = targetPublicationDate ? `，目标${targetCurrency}发布日期：${targetPublicationDate}` : "";
+  if (fetchedAt) return `获取于 ${fetchedAt}，${sourceCurrency}发布日期未提供${targetDate}（${source}）`;
+  return `${sourceCurrency}发布日期未提供${targetDate}（${source}）`;
+}
+
+function cashFxRateLabel(sourceCurrency: string, targetCurrency: RoomTargetCurrency, snapshot: RoomFxSnapshot): string | null {
+  const source = cashFxRate(snapshot, sourceCurrency);
+  const target = cashFxRate(snapshot, targetCurrency);
+  if (!source || !target) return null;
+  const converted = source.div(target);
+  return `1 ${cashCurrencyCode(sourceCurrency)} = ${converted.toString()} ${targetCurrency}`;
+}
+
+function CashFxProvenance({ views, reportCurrency, snapshot }: {
+  views: readonly RoomMoneyView[];
+  reportCurrency: RoomDisplayCurrency;
+  snapshot?: RoomFxSnapshot;
+}) {
+  if (reportCurrency === "original") return null;
+  const targetCurrency = reportCurrency;
+  const grouped = new Map<string, Set<string>>();
+  const missingSnapshot = new Set<string>();
+  const unmatchedVisible = new Set<string>();
+  const missingRate = new Set<string>();
+  let hasCurrency = false;
+
+  for (const view of views) {
+    const originalCurrencies = [...new Set(Object.keys(view.originalByCurrency).map(cashCurrencyCode))].filter(Boolean);
+    const currencies = originalCurrencies.filter(currency => currency !== targetCurrency);
+    if (currencies.length === 0) continue;
+    hasCurrency = true;
+    const matches = Boolean(snapshot && view.fxSnapshotId && snapshot.id === view.fxSnapshotId);
+    for (const currency of currencies) {
+      if (!matches || !snapshot) {
+        const hasConvertedAmount = view.converted !== null || view.convertedCny !== null || view.convertedHkd !== null;
+        if (hasConvertedAmount) {
+          unmatchedVisible.add(currency);
+          missingSnapshot.delete(currency);
+        } else if (!unmatchedVisible.has(currency)) {
+          missingSnapshot.add(currency);
+        }
+        continue;
+      }
+      const label = cashFxRateLabel(currency, targetCurrency, snapshot);
+      if (!label) {
+        missingRate.add(currency);
+        continue;
+      }
+      const publication = cashFxPublicationLabel(snapshot, currency, targetCurrency);
+      const labels = grouped.get(publication) ?? new Set<string>();
+      labels.add(label);
+      grouped.set(publication, labels);
+    }
+  }
+  if (!hasCurrency) return null;
+
+  return <div className={styles.cashFxProvenance} data-testid="cash-fx-provenance" aria-label="现金换算依据">
+    {[...grouped.entries()].map(([publication, rates]) => <p key={publication}>{publication}｜{[...rates].join("；")}</p>)}
+    {[...unmatchedVisible].map(currency => <p key={`unmatched-visible-${currency}`}>{currency}：现金换算依据不可核对</p>)}
+    {[...missingSnapshot].map(currency => <p key={`missing-snapshot-${currency}`}>{currency}：现金换算依据缺失，未计入{targetCurrency}换算</p>)}
+    {[...missingRate].map(currency => <p key={`missing-rate-${currency}`}>{currency}：暂无可用汇率，未计入{targetCurrency}换算</p>)}
+    {snapshot?.status !== "complete" && grouped.size > 0 && <p>部分汇率仅作参考，未计入{targetCurrency}换算</p>}
+    {snapshot?.error?.trim() && grouped.size > 0 && <p>沿用缓存：{snapshot.error.trim()}</p>}
+  </div>;
 }
 
 function valuationCutoffLabel(value: string | null | undefined): string {
@@ -197,19 +348,69 @@ function CashField({ label, description, view, status, reportCurrency }: {
   </div>;
 }
 
-function CashStrip({ summary, reportCurrency, cashBaselineDetails, cashScopeLabel, loading, error }: {
+function CashStatusFooter({ status, actions }: { status: ReactNode; actions: ReactNode }) {
+  return <div className={styles.cashStatusFooter} data-testid="cash-status-footer">
+    <div className={styles.cashStatusRow} data-testid="cash-status-row">
+      {status ?? <span data-testid="cash-status-empty" aria-hidden="true" />}
+    </div>
+    <div className={styles.cashActionRow} data-testid="cash-action-row">
+      {actions ?? <span data-testid="cash-action-empty" aria-hidden="true" />}
+    </div>
+  </div>;
+}
+
+function CashStrip({ summary, reportCurrency, cashBaselineDetails, cashScopeLabel, loading, error, cashRefreshNotice, onRetryCashSummary, cashRetryDisabled }: {
   summary: CashSummary | null | undefined;
   reportCurrency: RoomDisplayCurrency;
   cashBaselineDetails?: readonly CashBaselineDisplayDetail[];
   cashScopeLabel?: string;
   loading?: boolean;
   error?: string | null;
+  cashRefreshNotice?: string | null;
+  onRetryCashSummary?: () => void;
+  cashRetryDisabled?: boolean;
 }) {
-  if (loading) return <div className={styles.cashStrip} aria-label="现金状态">{cashScopeLabel && <small>{cashScopeLabel}</small>}<p className={styles.cashMessage}>现金数据加载中…</p></div>;
-  if (error) return <div className={styles.cashStrip} aria-label="现金状态">{cashScopeLabel && <small>{cashScopeLabel}</small>}<p className={styles.cashMessage}>{`现金数据读取失败：${error}`}</p></div>;
-  if (!summary) return <div className={styles.cashStrip} aria-label="现金状态">{cashScopeLabel && <small>{cashScopeLabel}</small>}<p className={styles.cashMessage}>现金数据暂不可用</p></div>;
+  const savedStatus = cashRefreshNotice ? <p className={styles.cashMessage} role="status" aria-live="polite">{cashRefreshNotice}</p> : null;
+  const savedReadDetails = cashRefreshNotice && error ? <details className={styles.cashDetails} role="group" aria-label="现金摘要读取详情">
+    <summary>现金摘要读取详情</summary>
+    <p className={styles.cashMessage}>{error}</p>
+  </details> : null;
+  const savedRetry = (cashRefreshNotice || onRetryCashSummary) ? <button type="button" className={styles.cashRetry} onClick={() => onRetryCashSummary?.()} disabled={cashRetryDisabled || !onRetryCashSummary}>重试读取现金摘要</button> : null;
+  const compactReadFailure = Boolean(error && onRetryCashSummary && !cashRefreshNotice);
+  const readDetails = compactReadFailure ? <details className={styles.cashDetails} role="group" aria-label="现金摘要读取详情">
+    <summary>现金摘要读取详情</summary>
+    <p className={styles.cashMessage}>{`现金数据读取失败：${error}`}</p>
+  </details> : null;
+
+  if (!summary) {
+    const statusContent = cashRefreshNotice
+      ? savedStatus
+      : loading
+        ? <p className={styles.cashMessage}>现金数据加载中…</p>
+        : error && !compactReadFailure
+          ? <p className={styles.cashMessage}>{`现金数据读取失败：${error}`}</p>
+          : compactReadFailure
+            ? <p className={styles.cashMessage}>现金数据读取失败</p>
+            : <p className={styles.cashMessage}>现金数据暂不可用</p>;
+    const actionContent = savedReadDetails || savedRetry || readDetails
+      ? <>{savedReadDetails}{savedRetry}{readDetails}</>
+      : null;
+    return <div className={styles.cashStrip} aria-label="现金状态">
+      {cashScopeLabel && <small className={styles.cashScopeLabel}>{cashScopeLabel}</small>}
+      <small className={styles.cashIndependent}>现金独立更新</small>
+      <CashStatusFooter status={statusContent} actions={actionContent} />
+    </div>;
+  }
+  const status = cashRefreshNotice ?? (error
+    ? compactReadFailure ? "现金数据读取失败 · 显示上次结果" : `现金数据读取失败：${error} · 显示上次结果`
+    : loading ? "现金更新中 · 显示上次结果" : null);
+  const statusContent = status ? <p className={styles.cashMessage} role="status" aria-live="polite">{status}</p> : null;
+  const actionContent = readDetails || savedReadDetails || savedRetry
+    ? <>{readDetails}{savedReadDetails}{savedRetry}</>
+    : null;
   return <div className={styles.cashStrip} aria-label="现金状态">
-    {cashScopeLabel && <small>{cashScopeLabel}</small>}
+    {cashScopeLabel && <small className={styles.cashScopeLabel}>{cashScopeLabel}</small>}
+    <small className={styles.cashIndependent}>现金独立更新</small>
     <CashField label="今日卖出回款" view={summary.todayProceeds} status={summary.todayProceedsStatus} reportCurrency={reportCurrency} />
     <CashField label="参考现金" description="基准+股票/ETF成交变化" view={summary.cashTotal} status={summary.cashTotalStatus} reportCurrency={reportCurrency} />
     {summary.asOf && <span className={styles.cashAsOf}>现金基准截至 {cashAsOfLabel(summary.asOf)}</span>}
@@ -222,11 +423,14 @@ function CashStrip({ summary, reportCurrency, cashBaselineDetails, cashScopeLabe
         </li>)}
       </ul>
     </details>}
+    <CashFxProvenance views={[summary.todayProceeds, summary.cashTotal]} reportCurrency={reportCurrency} snapshot={summary.fxSnapshot} />
+    <CashStatusFooter status={statusContent} actions={actionContent} />
   </div>;
 }
 
 export function RoomAllocation({
   model,
+  holdingsPublicationBlocked = false,
   scope = "overall",
   reportCurrency = "original",
   targetCurrency,
@@ -236,6 +440,9 @@ export function RoomAllocation({
   cashScopeLabel = "全账户范围（当前账户筛选）",
   loading,
   error,
+  cashRefreshNotice,
+  onRetryCashSummary,
+  cashRetryDisabled,
   onRetryValuation,
   onOpenDataCheck,
 }: RoomAllocationProps) {
@@ -262,6 +469,9 @@ export function RoomAllocation({
           {dimensions.map(([value, label]) => <button type="button" key={value} aria-pressed={dimension === value} onClick={() => setDimension(value)}>{label}</button>)}
         </div>
       </header>
+      {holdingsPublicationBlocked
+        ? <p className={styles.note} data-testid="holdings-allocation-publication-placeholder" role="status">持仓分布正在等待发布</p>
+        : <>
       {reportCurrency === "original" && allocation.currencies.length > 1 && <div className={styles.currencyTabs} role="tablist" aria-label="分布原币">
         {allocation.currencies.map(currency => <button type="button" role="tab" key={currency} aria-selected={allocation.selectedCurrency === currency} onClick={() => setSelectedCurrency(currency)}>{currency}</button>)}
       </div>}
@@ -292,7 +502,8 @@ export function RoomAllocation({
         onRetryValuation={onRetryValuation}
         onOpenDataCheck={onOpenDataCheck}
       />
-      <CashStrip summary={cashSummary} reportCurrency={reportCurrency} cashBaselineDetails={cashBaselineDetails} cashScopeLabel={cashScopeLabel} loading={loading} error={error} />
+        </>}
+      <CashStrip summary={cashSummary} reportCurrency={reportCurrency} cashBaselineDetails={cashBaselineDetails} cashScopeLabel={cashScopeLabel} loading={loading} error={error} cashRefreshNotice={cashRefreshNotice} onRetryCashSummary={onRetryCashSummary} cashRetryDisabled={cashRetryDisabled} />
     </section>
   );
 }

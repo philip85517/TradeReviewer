@@ -15,18 +15,25 @@ const CURRENCIES = [
   { code: "HKD", label: "港币" },
 ] as const;
 
-function formatTime(value: string | null | undefined): string | null {
+const FX_TIME_FORMATTER = new Intl.DateTimeFormat("zh-CN", {
+  timeZone: "Asia/Shanghai",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+type FormattedTime = {
+  text: string;
+  isRaw: boolean;
+};
+
+function formatTime(value: string | null | undefined): FormattedTime | null {
   if (!value) return null;
   const parsed = Date.parse(value);
-  if (!Number.isFinite(parsed)) return value;
-  return new Intl.DateTimeFormat("zh-CN", {
-    timeZone: "Asia/Shanghai",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(parsed));
+  if (!Number.isFinite(parsed)) return { text: value, isRaw: true };
+  return { text: FX_TIME_FORMATTER.format(new Date(parsed)), isRaw: false };
 }
 
 export function FxPanel({ state, loading, refreshing, error, onRefresh }: FxPanelProps) {
@@ -41,7 +48,13 @@ export function FxPanel({ state, loading, refreshing, error, onRefresh }: FxPane
         <strong>当前估值参考汇率（中行）</strong>
         <span>中国银行 · 中行折算价（源报价每100单位外币，以下换算为1外币）</span>
         <small>用于当前估值参考；不代表历史绩效折算快照。</small>
-        {sourceTime && <span>最近源数据：{sourceTime}</span>}
+        {sourceTime && (
+          <span>
+            {sourceTime.isRaw
+              ? `源日期原文（待核对）：${sourceTime.text}`
+              : `最近源数据：${sourceTime.text}`}
+          </span>
+        )}
       </div>
 
       {loading && !state ? (
@@ -63,7 +76,15 @@ export function FxPanel({ state, loading, refreshing, error, onRefresh }: FxPane
                     <span>{rate ?? "暂无"}</span>
                     <span> CNY</span>
                   </strong>
-                  {publishedAt && <span>源发布时间：{publishedAt}</span>}
+                  {publishedAt ? (
+                    <span>
+                      {publishedAt.isRaw
+                        ? `源日期原文（待核对）：${publishedAt.text}`
+                        : `源发布时间：${publishedAt.text}`}
+                    </span>
+                  ) : (
+                    fetchedTime && <span>发布日期未提供</span>
+                  )}
                 </div>
               </div>
             );
@@ -78,11 +99,11 @@ export function FxPanel({ state, loading, refreshing, error, onRefresh }: FxPane
         <p className="data-management-fx-status">当前缺少部分币种，未能完整汇总；原币金额会继续保留。</p>
       )}
       {staleError?.startsWith("更新失败：") && fetchedTime && (
-        <p className="data-management-fx-status">本次更新失败，沿用{fetchedTime}汇率。</p>
+        <p className="data-management-fx-status">本次更新失败，沿用{fetchedTime.text}汇率。</p>
       )}
       {staleError && <p className="data-management-fx-error" role="alert">{staleError}</p>}
       {error && <p className="data-management-fx-error" role="alert">{error}</p>}
-      {fetchedTime && <p className="data-management-fx-fetched">最近获取：{fetchedTime}</p>}
+      {fetchedTime && <p className="data-management-fx-fetched">最近获取：{fetchedTime.text}</p>}
 
       <button
         type="button"

@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
+import { canonicalFxPublicationIdentity } from "../../lib/fx/room-contracts";
 import {
   buildHoldingsRefreshAttemptKey,
   createHoldingsRefreshCoalescer,
@@ -59,6 +60,10 @@ export type HoldingsValuationRefreshInput = {
    * over the compatibility boolean above. */
   historyCurrentInput?: HoldingsHistoryWorkerInput;
   historyAcceptedInput?: HoldingsHistoryWorkerInput | null;
+  /** Persisted current holdings/cache and the first exact history result are
+   * prerequisites for the automatic default refresh. Manual requests remain
+   * available while this baseline is loading. */
+  initialDataReady?: boolean;
 };
 
 export type HoldingsRefreshReceipt = {
@@ -89,6 +94,7 @@ const FAILURE_STATUSES = new Set([
   "invalid-response",
   "storage-error",
   "error",
+  "needs-provider",
 ]);
 const PARTIAL_STATUSES = new Set(["partial", "latest-available", "stale"]);
 const TERMINAL_MARKET_STATUSES = new Set([
@@ -102,6 +108,10 @@ const TERMINAL_MARKET_STATUSES = new Set([
 ]);
 
 const INTERRUPTED_JOB_CODE = "market-data-job-interrupted";
+const AUTOMATIC_ATTEMPT_CACHE_LIMIT = 8;
+const EMPTY_REFRESH_ANNOUNCEMENT = "当前范围暂无需要补齐的行情。";
+type TerminalPhaseValue = readonly [string] | "superseded" | null;
+type TerminalPhaseResult = HoldingsValuationRefreshPhase | "superseded" | null;
 
 function isRelevantInterruptedJob(job: NonNullable<HoldingsValuationRefreshInput["marketDataJobs"]>[string]): boolean {
   if (!job) return false;
@@ -121,30 +131,57 @@ function terminalPhase(
   baselineJobs: Readonly<Record<string, string | undefined>> | null,
   receipt: Readonly<Record<string, string | undefined>> | null,
   receiptDailyStatuses: Readonly<Record<string, string | undefined>> | null,
-): HoldingsValuationRefreshPhase | null {
-  const values = ids.map(id => {
+): TerminalPhaseResult {
+  const values: TerminalPhaseValue[] = ids.map(id => {
     const job = jobs?.[id];
+    if (!job || !job.status) return null;
+    const dailyIntervalStatus = job.intervals?.find(interval => interval.interval === "1D")?.status;
+    // A durable 1D interval that is still running (or has not been requested)
+    // is authoritative even when a receipt or aggregate status already looks
+    // terminal. The accepted daily receipt cannot bypass an actual day-level
+    // pending state; only unrelated intraday intervals may remain unrequested.
+    if (dailyIntervalStatus === "syncing" || dailyIntervalStatus === "not-requested" || dailyIntervalStatus === "unknown") return null;
+    if (dailyIntervalStatus !== undefined && !TERMINAL_MARKET_STATUSES.has(dailyIntervalStatus)) return null;
+    // Aggregate pending states are only overridable by this request's owned
+    // receipt. A stale live daily status alone must not turn an unowned
+    // unknown/not-requested job into an accepted terminal result.
+    if ((job.status === "syncing" || job.status === "not-requested" || job.status === "unknown")
+      && receipt?.[id] === undefined) return null;
     const dailyStatus = receiptDailyStatuses?.[id] ?? statuses?.[id];
     if (dailyStatus === "syncing" || dailyStatus === "not-requested" || dailyStatus === "unknown") return null;
     if (dailyStatus !== undefined && !TERMINAL_MARKET_STATUSES.has(dailyStatus)) return null;
-    if (!job || !job.status || job.status === "syncing" || job.status === "not-requested" || job.status === "unknown") return null;
-    const dailyIntervalStatus = job.intervals?.find(interval => interval.interval === "1D")?.status;
     const effectiveJobStatus = dailyStatus ?? dailyIntervalStatus ?? job.status;
     if (effectiveJobStatus === "syncing" || effectiveJobStatus === "not-requested" || effectiveJobStatus === "unknown") return null;
     if (!TERMINAL_MARKET_STATUSES.has(effectiveJobStatus)) return null;
     const receiptAt = receipt?.[id];
     if (receiptAt !== undefined) {
-      if (!job.requestedAt || job.requestedAt !== receiptAt) return null;
+      if (!job.requestedAt || job.requestedAt !== receiptAt) {
+        const jobTime = Date.parse(job.requestedAt ?? "");
+        const receiptTime = Date.parse(receiptAt);
+        if (Number.isFinite(jobTime)
+          && Number.isFinite(receiptTime)
+          && jobTime > receiptTime) return "superseded";
+        return null;
+      }
     } else if (requestStartedAt !== null && (!job.requestedAt || !Number.isFinite(Date.parse(job.requestedAt)) || Date.parse(job.requestedAt) < requestStartedAt)) return null;
     const evidence = `${job.status}|${job.requestedAt ?? ""}`;
     if (baselineJobs?.[id] === evidence && !receipt) return null;
-    return [effectiveJobStatus];
+    return [effectiveJobStatus] as const;
   });
-  if (values.some(value => value === null || value.length === 0)) return null;
-  const allValues = values.flatMap(value => value ?? []);
-  if (allValues.some(value => FAILURE_STATUSES.has(value))) return "failed";
-  if (allValues.some(value => PARTIAL_STATUSES.has(value))) return "partial";
-  if (allValues.some(value => value === "cancelled" || value === "unknown")) return "cancelled";
+  if (values.some(value => value === "superseded")) return "superseded";
+  if (values.some(value => value === null)) return null;
+  const allValues = values.flatMap(value => value !== null && value !== "superseded" ? value : []);
+  const failures = allValues.filter(value => FAILURE_STATUSES.has(value)).length;
+  const partials = allValues.filter(value => PARTIAL_STATUSES.has(value)).length;
+  const cancellations = allValues.filter(value => value === "cancelled" || value === "unknown").length;
+  // A batch with at least one usable terminal result can publish a partial
+  // accepted snapshot. Only an all-failure batch remains retryable without
+  // changing the visible financial result. Cancellation follows the same
+  // rule for a mixed batch, while an all-cancelled batch retains the explicit
+  // cancelled state.
+  if (failures === allValues.length) return "failed";
+  if (cancellations === allValues.length) return "cancelled";
+  if (failures > 0 || partials > 0 || cancellations > 0) return "partial";
   return "complete";
 }
 
@@ -153,11 +190,19 @@ function historyInputIncludesNewPublishedData(
   baseline: HoldingsHistoryWorkerInput | null | undefined,
 ): boolean {
   if (!baseline) return true;
-  // A worker input recreated only because the as-of clock advanced can be
-  // accepted while retaining the same source snapshots. It cannot acknowledge
-  // this request's durable candle/entry publication.
-  return accepted.candlesByInstrument !== baseline.candlesByInstrument
-    || accepted.entries !== baseline.entries;
+  // The worker identity is recreated for every as-of tick. It is therefore
+  // only a candidate version, not proof that this refresh published source
+  // data. A candle/ledger reference change is causal evidence for a new
+  // result; an FX publication is also evidence because its rate/as-of is part
+  // of the accepted financial bundle. A clock-only identity change reaches a
+  // terminal failed state below so the request cannot remain downloading
+  // forever while retaining the previous bundle.
+  if (accepted.candlesByInstrument !== baseline.candlesByInstrument
+    || accepted.entries !== baseline.entries) return true;
+  const acceptedFx = accepted.fxSnapshot;
+  const baselineFx = baseline.fxSnapshot;
+  return JSON.stringify(canonicalFxPublicationIdentity(acceptedFx))
+    !== JSON.stringify(canonicalFxPublicationIdentity(baselineFx));
 }
 
 export function useHoldingsValuationRefresh(input: HoldingsValuationRefreshInput): HoldingsValuationRefreshResult {
@@ -174,7 +219,7 @@ export function useHoldingsValuationRefresh(input: HoldingsValuationRefreshInput
    * those newly eligible instruments.
    */
   const automaticAttemptedIds = useRef(new Map<string, Set<string>>());
-  const requesting = useRef<{ generation: number; ids: readonly string[] } | null>(null);
+  const requesting = useRef<{ generation: number; scopeKey: string; ids: readonly string[] } | null>(null);
   const settledGeneration = useRef<number | null>(null);
   const settledIds = useRef<readonly string[] | null>(null);
   const requestStartedAt = useRef<number | null>(null);
@@ -185,15 +230,22 @@ export function useHoldingsValuationRefresh(input: HoldingsValuationRefreshInput
   const historyBaselineInput = useRef<HoldingsHistoryWorkerInput | null | undefined>(undefined);
   const historyBaselineCurrentInput = useRef<HoldingsHistoryWorkerInput | undefined>(undefined);
   const pendingAutomatic = useRef<{ key: string; ids: readonly string[] } | null>(null);
+  const previousScopeKey = useRef(input.scopeKey);
   const [recoveryDismissedForAttempt, setRecoveryDismissedForAttempt] = useState<string | null>(null);
   const [autoDrainTick, setAutoDrainTick] = useState(0);
   const generation = useRef(0);
   const onCancelRef = useRef(input.onCancel);
   const inputRef = useRef(input);
   const [coalescer] = useState(() => createHoldingsRefreshCoalescer(input.onRefresh));
+  // Publish the live input before passive effects and before any promise
+  // continuation can observe a committed scope change. Promise guards below
+  // intentionally read this ref instead of the request callback's captured
+  // input, so an old producer receipt cannot settle a newer scope.
+  useLayoutEffect(() => {
+    inputRef.current = input;
+  }, [input]);
   useEffect(() => {
     onCancelRef.current = input.onCancel;
-    inputRef.current = input;
     coalescer.setRunner(input.onRefresh);
   }, [coalescer, input, input.onCancel, input.onRefresh]);
   const ids = useMemo(() => [...new Set(input.instruments.map(value => value.instrumentId).filter(Boolean))], [input.instruments]);
@@ -206,13 +258,37 @@ export function useHoldingsValuationRefresh(input: HoldingsValuationRefreshInput
   const hasRecoveredInterruption = ids.some(id => isRelevantInterruptedJob(input.marketDataJobs?.[id]));
 
   const request = useCallback((trigger: "automatic" | "manual" = "manual", requestedIds: readonly string[] = ids) => {
+    // A request from the previous display scope may still be running in the
+    // shared producer. It can finish and write its own durable cache, but its
+    // receipt must not settle this hook after the user moved to a new scope.
+    if (requesting.current && requesting.current.scopeKey !== input.scopeKey) {
+      const staleIds = requesting.current.ids;
+      ++generation.current;
+      requesting.current = null;
+      settledGeneration.current = null;
+      settledIds.current = null;
+      requestStartedAt.current = null;
+      baselineJobs.current = null;
+      requestReceipt.current = null;
+      requestDailyStatuses.current = null;
+      historyBaselineInput.current = undefined;
+      historyBaselineCurrentInput.current = undefined;
+      pendingAutomatic.current = null;
+      coalescer.cancel(staleIds);
+      setRequestActive(false);
+      setDisplayIds(null);
+      setPendingRecompute(false);
+      setPhase("idle");
+      setAnnouncement(null);
+    }
     if (requestedIds.length === 0 || requesting.current) {
       if (requesting.current) setAnnouncement("已加入当前估值更新，正在共享本页任务。");
+      else if (trigger === "manual") setAnnouncement(EMPTY_REFRESH_ANNOUNCEMENT);
       return;
     }
     const requestGeneration = ++generation.current;
     setRecoveryDismissedForAttempt(attemptKey);
-    requesting.current = { generation: requestGeneration, ids: requestedIds };
+    requesting.current = { generation: requestGeneration, scopeKey: input.scopeKey, ids: requestedIds };
     setRequestActive(true);
     setDisplayIds(requestedIds);
     requestStartedAt.current = Date.now();
@@ -231,7 +307,9 @@ export function useHoldingsValuationRefresh(input: HoldingsValuationRefreshInput
     }
     setPhase("waiting");
     void coalescer.request(requestedIds, trigger).then(result => {
-      if (requesting.current?.generation !== requestGeneration) return;
+      if (requesting.current?.generation !== requestGeneration
+        || requesting.current.scopeKey !== inputRef.current.scopeKey
+        || inputRef.current.scopeKey !== input.scopeKey) return;
       if (result.shared) setAnnouncement("已加入当前估值更新，正在共享本页任务。");
       if (result.value === false) {
         requesting.current = null;
@@ -260,10 +338,18 @@ export function useHoldingsValuationRefresh(input: HoldingsValuationRefreshInput
       requestDailyStatuses.current = typeof result.value === "object" && result.value?.ok
         ? result.value.dailyStatusByInstrument ?? null
         : null;
+      // The durable receipt is stored in refs so it cannot be observed as a
+      // transient input candidate. Tick the existing drain state when it
+      // arrives so a terminal render that happened just before the promise
+      // settled gets another pass through the exact-history and job-boundary
+      // checks without adding another hook to this long-lived component.
+      setAutoDrainTick(value => value + 1);
       setPendingRecompute(Boolean(inputRef.current.historyPending));
       setPhase(inputRef.current.historyPending ? "recomputing" : "downloading");
     }).catch(() => {
-      if (requesting.current?.generation !== requestGeneration) return;
+      if (requesting.current?.generation !== requestGeneration
+        || requesting.current.scopeKey !== inputRef.current.scopeKey
+        || inputRef.current.scopeKey !== input.scopeKey) return;
       requesting.current = null;
       setRequestActive(false);
       setDisplayIds(null);
@@ -271,15 +357,51 @@ export function useHoldingsValuationRefresh(input: HoldingsValuationRefreshInput
       setPhase("failed");
       setAnnouncement("估值更新失败，可再次重试。");
     });
-  }, [attemptKey, coalescer, hasRecoveredInterruption, ids]);
+  }, [attemptKey, coalescer, hasRecoveredInterruption, ids, input.scopeKey]);
 
   useEffect(() => {
-    if (!input.visible || ids.length === 0) return;
+    if (previousScopeKey.current === input.scopeKey) return;
+    previousScopeKey.current = input.scopeKey;
+
+    // A scope change owns a new transient phase even when the previous scope
+    // already settled. Invalidate any late receipt, and cancel only this hook's
+    // active subscription before deriving B's own interruption state.
+    const staleRequest = requesting.current;
+    ++generation.current;
+    requesting.current = null;
+    settledGeneration.current = null;
+    settledIds.current = null;
+    requestStartedAt.current = null;
+    baselineJobs.current = null;
+    requestReceipt.current = null;
+    requestDailyStatuses.current = null;
+    historyBaselineKey.current = undefined;
+    historyBaselineInput.current = undefined;
+    historyBaselineCurrentInput.current = undefined;
+    pendingAutomatic.current = null;
+    if (staleRequest) coalescer.cancel(staleRequest.ids);
+    setRequestActive(false);
+    setDisplayIds(null);
+    setPendingRecompute(false);
+    setRecoveryDismissedForAttempt(null);
+    setPhase(hasRecoveredInterruption ? "interrupted" : "idle");
+    setAnnouncement(null);
+    setAutoDrainTick(value => value + 1);
+  }, [coalescer, hasRecoveredInterruption, input.scopeKey]);
+
+  useEffect(() => {
+    if (!input.visible || ids.length === 0 || input.initialDataReady === false || input.historyInputReady === false) return;
     const attemptedIds = automaticAttemptedIds.current.get(attemptKey) ?? new Set<string>();
     const newIds = ids.filter(id => !attemptedIds.has(id));
     if (newIds.length === 0) return;
     for (const id of newIds) attemptedIds.add(id);
+    automaticAttemptedIds.current.delete(attemptKey);
     automaticAttemptedIds.current.set(attemptKey, attemptedIds);
+    while (automaticAttemptedIds.current.size > AUTOMATIC_ATTEMPT_CACHE_LIMIT) {
+      const oldestKey = automaticAttemptedIds.current.keys().next().value;
+      if (oldestKey === undefined || oldestKey === attemptKey) break;
+      automaticAttemptedIds.current.delete(oldestKey);
+    }
     if (requesting.current) {
       const pending = pendingAutomatic.current;
       if (pending?.key === attemptKey) {
@@ -293,7 +415,7 @@ export function useHoldingsValuationRefresh(input: HoldingsValuationRefreshInput
       return;
     }
     request("automatic", newIds);
-  }, [attemptKey, ids, input.visible, request]);
+  }, [attemptKey, ids, input.historyInputReady, input.initialDataReady, input.visible, request]);
 
   useEffect(() => {
     if (requesting.current || !pendingAutomatic.current || !input.visible) return;
@@ -326,14 +448,48 @@ export function useHoldingsValuationRefresh(input: HoldingsValuationRefreshInput
       });
       return;
     }
+    // A newer terminal job can prove that this request's durable receipt was
+    // superseded even while the history worker is still pending. End that
+    // request before the exact-history gate so an abandoned receipt cannot
+    // keep the hook recomputing forever. The newer job is only failure
+    // evidence here; its result is not accepted by this request.
+    const earlyTerminalPhase = terminalPhase(
+      settledIds.current ?? ids,
+      input.marketDataDailyStatuses,
+      input.marketDataJobs,
+      requestStartedAt.current,
+      baselineJobs.current,
+      requestReceipt.current,
+      requestDailyStatuses.current,
+    );
+    if (earlyTerminalPhase === "superseded") {
+      setPendingRecompute(false);
+      setPhase("failed");
+      setRequestActive(false);
+      setDisplayIds(null);
+      setAnnouncement("估值更新失败，可再次重试。");
+      requesting.current = null;
+      settledGeneration.current = null;
+      settledIds.current = null;
+      requestStartedAt.current = null;
+      baselineJobs.current = null;
+      requestReceipt.current = null;
+      requestDailyStatuses.current = null;
+      historyBaselineInput.current = undefined;
+      historyBaselineCurrentInput.current = undefined;
+      pendingAutomatic.current = null;
+      setAutoDrainTick(value => value + 1);
+      return;
+    }
     if (input.historyPending) return;
     const hasExactHistoryInput = input.historyCurrentInput !== undefined || input.historyAcceptedInput !== undefined;
+    let hasNewPublishedData = true;
     if (hasExactHistoryInput) {
       if (input.historyAcceptedInput !== input.historyCurrentInput
-        || input.historyAcceptedInput === historyBaselineInput.current
-        || input.historyAcceptedInput === historyBaselineCurrentInput.current
-        || !input.historyAcceptedInput
-        || !historyInputIncludesNewPublishedData(input.historyAcceptedInput, historyBaselineCurrentInput.current)) return;
+        || !input.historyAcceptedInput) return;
+      hasNewPublishedData = input.historyAcceptedInput !== historyBaselineInput.current
+        && input.historyAcceptedInput !== historyBaselineCurrentInput.current
+        && historyInputIncludesNewPublishedData(input.historyAcceptedInput, historyBaselineCurrentInput.current);
     } else if (input.historyInputReady === false) {
       return;
     }
@@ -344,11 +500,25 @@ export function useHoldingsValuationRefresh(input: HoldingsValuationRefreshInput
       && input.historyResultKey === historyBaselineKey.current) return;
     const nextPhase = terminalPhase(settledIds.current ?? ids, input.marketDataDailyStatuses, input.marketDataJobs, requestStartedAt.current, baselineJobs.current, requestReceipt.current, requestDailyStatuses.current);
     if (nextPhase === null) return;
+    const superseded = nextPhase === "superseded";
+    // A durable market receipt can legitimately contain no new daily source
+    // rows (for example a provider reports the same completed candle while
+    // the workspace as-of clock advanced). End that attempt explicitly as a
+    // retryable failure and keep the accepted bundle frozen. Treating the
+    // identity-only worker result as complete would publish a second bundle
+    // without causal financial evidence; leaving it active would strand the
+    // refresh in downloading forever.
+    const hasNoNewPublishedData = hasExactHistoryInput && !hasNewPublishedData;
+    const publishedPhase = superseded || hasNoNewPublishedData ? "failed" : nextPhase;
     setPendingRecompute(false);
-    setPhase(nextPhase);
+    setPhase(publishedPhase);
     setRequestActive(false);
     setDisplayIds(null);
-    setAnnouncement(null);
+    setAnnouncement(superseded
+      ? "估值更新失败，可再次重试。"
+      : hasNoNewPublishedData
+        ? "本次更新没有新的可用数据，已保留上次结果，可再次手动重试。"
+        : null);
     requesting.current = null;
     settledGeneration.current = null;
     settledIds.current = null;
@@ -359,7 +529,7 @@ export function useHoldingsValuationRefresh(input: HoldingsValuationRefreshInput
     historyBaselineInput.current = undefined;
     historyBaselineCurrentInput.current = undefined;
     setAutoDrainTick(value => value + 1);
-  }, [ids, input.historyAcceptedInput, input.historyCurrentInput, input.historyError, input.historyInputReady, input.historyPending, input.historyResultKey, input.marketDataDailyStatuses, input.marketDataJobs, pendingRecompute, phase]);
+  }, [autoDrainTick, ids, input.historyAcceptedInput, input.historyCurrentInput, input.historyError, input.historyInputReady, input.historyPending, input.historyResultKey, input.marketDataDailyStatuses, input.marketDataJobs, pendingRecompute, phase]);
 
   useEffect(() => {
     // A durable receipt hands ownership to the history recompute phase. The
@@ -395,6 +565,7 @@ export function useHoldingsValuationRefresh(input: HoldingsValuationRefreshInput
   }, [coalescer]);
 
   const active = requestActive || pendingRecompute;
+  const emptyRefresh = announcement === EMPTY_REFRESH_ANNOUNCEMENT;
   // Keep one stateful phase for the live request while deriving the reopened
   // durable interruption from the current 1D evidence. This avoids an effect
   // write racing the automatic retry: request() immediately owns the phase.
@@ -403,25 +574,27 @@ export function useHoldingsValuationRefresh(input: HoldingsValuationRefreshInput
     : phase === "interrupted" && !hasRecoveredInterruption
       ? "idle"
       : phase;
-  const label = active && (visiblePhase === "waiting" || visiblePhase === "downloading" || visiblePhase === "recomputing")
-    ? "正在更新估值"
+  const label = emptyRefresh
+    ? "当前无需补齐行情"
+    : active && (visiblePhase === "waiting" || visiblePhase === "downloading" || visiblePhase === "recomputing")
+      ? "正在更新估值"
     : visiblePhase === "waiting"
-    ? "等待行情更新"
-    : visiblePhase === "interrupted"
-      ? "上次行情更新被中断"
-    : visiblePhase === "downloading"
-      ? "正在下载行情…"
-      : visiblePhase === "recomputing"
-        ? "正在重算持仓历史…"
-        : visiblePhase === "complete"
-          ? "估值更新完成"
-          : visiblePhase === "partial"
-            ? "估值部分完成"
-            : visiblePhase === "failed"
-              ? "估值更新失败"
-              : visiblePhase === "cancelled"
-                ? "估值更新已取消"
-                : "估值待更新";
+      ? "等待行情更新"
+      : visiblePhase === "interrupted"
+        ? "上次行情更新被中断"
+      : visiblePhase === "downloading"
+        ? "正在下载行情…"
+        : visiblePhase === "recomputing"
+          ? "正在重算持仓历史…"
+          : visiblePhase === "complete"
+            ? "估值更新完成"
+            : visiblePhase === "partial"
+              ? "部分行情未更新"
+              : visiblePhase === "failed"
+                ? "估值更新失败"
+                : visiblePhase === "cancelled"
+                  ? "估值更新已取消"
+                  : "估值待更新";
   const detailIds = displayIds ?? ids;
   const detail = active && visiblePhase === "waiting"
     ? "等待行情更新"
@@ -437,7 +610,9 @@ export function useHoldingsValuationRefresh(input: HoldingsValuationRefreshInput
       }).length;
       return `${completed}/${detailIds.length} 个标的已处理`;
     })()
-        : null;
+    : visiblePhase === "partial"
+      ? "估值基于可用行情"
+      : null;
 
   return { phase: visiblePhase, label, detail, announcement, active, request, cancel };
 }

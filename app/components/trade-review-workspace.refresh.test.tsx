@@ -11,7 +11,7 @@ import type { SqliteHttpClient } from "../lib/storage/sqlite-http-client";
 import { saveImportedExecutions } from "../lib/storage/import-library";
 import type { TradeExecution } from "../lib/trades/types";
 import { createLegacySqliteClient } from "./test-support/legacy-sqlite-client";
-import { TradeReviewWorkspace } from "./trade-review-workspace";
+import { isLiveMarketRefreshRun, TradeReviewWorkspace } from "./trade-review-workspace";
 
 // These tests exercise the legacy workspace market-data refresh seam. The
 // dashboard's automatic holdings valuation has its own focused hook tests and
@@ -182,6 +182,14 @@ async function openDefaultStockRound(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe("TradeReviewWorkspace global refresh seam", () => {
+  it("does not reuse an aborted or retired run for a late subscriber", () => {
+    const controller = new AbortController();
+    expect(isLiveMarketRefreshRun({ controller, retired: false })).toBe(true);
+    controller.abort();
+    expect(isLiveMarketRefreshRun({ controller, retired: false })).toBe(false);
+    expect(isLiveMarketRefreshRun({ controller: new AbortController(), retired: true })).toBe(false);
+  });
+
   beforeEach(async () => {
     cleanup();
     vi.clearAllMocks();
@@ -338,6 +346,63 @@ describe("TradeReviewWorkspace global refresh seam", () => {
     expect(
       screen.queryByRole("button", { name: "正在更新全部行情" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("does not publish a terminal result after cancellation races its durable write", async () => {
+    const terminalWriteGate = deferred<void>();
+    const baseClient = createLegacySqliteClient();
+    const persistedJobs: MarketDataJob[] = [];
+    let terminalWriteObserved = false;
+    const putMarketDataJob = vi.fn(async (job: MarketDataJob) => {
+      persistedJobs.push(job);
+      await baseClient.putMarketDataJob(job);
+      if (job.status !== "syncing" && !terminalWriteObserved) {
+        terminalWriteObserved = true;
+        await terminalWriteGate.promise;
+      }
+      return job;
+    });
+    const storageClient = {
+      ...baseClient,
+      putMarketDataJob,
+    } as SqliteHttpClient;
+
+    refreshMocks.daily.mockResolvedValue({
+      source: "network" as const,
+      status: "complete" as const,
+      candles: [],
+      requestedRanges: [],
+    });
+    refreshMocks.intraday.mockResolvedValue({
+      source: "network" as const,
+      status: "complete" as const,
+      candles: [],
+      coverage: [],
+      requestedRanges: [],
+    });
+
+    render(
+      <TradeReviewWorkspace
+        initialFrame={initialFrame}
+        showDemo={false}
+        storageClient={storageClient}
+      />,
+    );
+
+    const user = await openDataManagement();
+    await user.click(screen.getByRole("button", { name: "更新全部数据" }));
+    await waitFor(() => expect(terminalWriteObserved).toBe(true));
+
+    await user.click(screen.getByRole("button", { name: "取消全部行情更新" }));
+    terminalWriteGate.resolve();
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "更新全部数据" })).toBeEnabled(),
+    );
+    expect(persistedJobs.some((job) => job.status === "complete")).toBe(true);
+    expect(screen.getByText(/已取消/)).toBeInTheDocument();
+    expect(screen.getByText("未完成 1 个标的")).toBeVisible();
+    expect(screen.queryByText("更新完成 1 个标的")).not.toBeInTheDocument();
   });
 
   it("restores saved result and failure details without starting provider work", async () => {

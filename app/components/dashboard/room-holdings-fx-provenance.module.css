@@ -1,0 +1,16 @@
+.provenance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+  color: #adbbcf;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+}
+
+.line {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}

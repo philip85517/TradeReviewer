@@ -58,7 +58,7 @@ describe("split global header slots", () => {
 
   it("shows loading state without a misleading zero notification count", () => {
     render(<TradingRoomGlobalUtilities entries={[]} scope={scope} status="loading" onOpenNotification={vi.fn()} onOpenAccountAndCurrency={vi.fn()} />);
-    fireEvent.click(screen.getByRole("button", { name: "打开待处理事项" }));
+    fireEvent.click(screen.getByRole("button", { name: /^打开待处理事项/ }));
     const dialog = screen.getByRole("dialog", { name: "待处理事项" });
     expect(dialog).toHaveTextContent("读取中");
     expect(dialog).not.toHaveTextContent("0 项");

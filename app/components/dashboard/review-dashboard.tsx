@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 import { useEffect, useMemo, useReducer, useRef, useState, type CSSProperties } from "react";
 
 import { canonicalInstrumentId } from "../../lib/instruments/display-name";
+import { canonicalFxPublicationIdentity } from "../../lib/fx/room-contracts";
 import { marketTradingDate } from "../../lib/market/trading-date";
 import { buildTradingRoomMetrics } from "../../lib/reviews/trading-room-metrics";
 import { dashboardEpisodeDate, dashboardEpisodeNature } from "../../lib/reviews/dashboard";
@@ -42,6 +43,7 @@ import { RoomPortfolioSummary } from "./room-portfolio-summary";
 import { RoomAllocation } from "./room-allocation";
 import type { CashBaselineDisplayDetail } from "./room-allocation";
 import { RoomHoldingsHistory } from "./room-holdings-history";
+import { RoomHoldingsFxProvenance } from "./room-holdings-fx-provenance";
 import { RoomContribution } from "./room-contribution";
 import { RoomPendingReviews } from "./room-pending-reviews";
 import type { TradeLibraryEntry } from "../../lib/trades/library";
@@ -84,7 +86,18 @@ import { UnifiedPageHeader, UnifiedScopeFields } from "../workspace/unified-page
 import {
   useHoldingsValuationRefresh,
   type HoldingsRefreshReceipt,
+  type HoldingsValuationRefreshPhase,
 } from "./use-holdings-valuation-refresh";
+import { useAcceptedHoldingsSnapshot } from "./use-accepted-holdings-snapshot";
+import {
+  type HoldingsPublicationStatus,
+  type HoldingsPublicationPermit,
+} from "./holdings-publication-boundary";
+import {
+  holdingsOwnedProgressDetail,
+  type HoldingsOwnedProgress,
+} from "./holdings-owned-progress";
+import { holdingsLedgerIdentity } from "./holdings-ledger-identity";
 
 export type ReviewDashboardProps = {
   entries: TradeLibraryEntry[];
@@ -104,9 +117,19 @@ export type ReviewDashboardProps = {
   holdingsCandlesByInstrument?: Readonly<Record<string, readonly DailyCandleRecord[] | undefined>>;
   positionSnapshotsByEpisode?: Readonly<Record<string, PositionLedgerSnapshot | undefined>>;
   holdingsAsOf?: string;
+  /** True after the workspace has read the persisted ledger/cache boundary. */
+  holdingsDataReady?: boolean;
+  /** Current owned retained-key mismatches that require an explicit hydration reread. */
+  holdingsHydrationRetryInstruments?: readonly { instrumentId: string; market: string }[];
   holdingsStaleAfterDays?: number;
   onRefreshHoldingsValuation?: (instrumentIds: readonly string[], trigger?: "automatic" | "manual") => Promise<boolean | HoldingsRefreshReceipt> | boolean | HoldingsRefreshReceipt;
   onCancelHoldingsValuation?: (instrumentIds?: readonly string[]) => void;
+  /** Import-owned terminal/readback fence for replacing the accepted bundle. */
+  holdingsPublicationPermit?: HoldingsPublicationPermit | null;
+  /** The current ledger revision is owned by that permit; direct repairs use the exact-worker boundary. */
+  holdingsLedgerPublicationRequired?: boolean;
+  /** Per-run progress owned by the current publication permit. */
+  holdingsOwnedProgress?: HoldingsOwnedProgress | null;
   marketDataRefresh?: {
     running: boolean;
     total: number;
@@ -148,6 +171,9 @@ export type ReviewDashboardProps = {
   cashBaselineDetails?: readonly CashBaselineDisplayDetail[];
   cashLoading?: boolean;
   cashError?: string | null;
+  cashRefreshNotice?: string | null;
+  onRetryCashSummary?: () => void;
+  cashRetryDisabled?: boolean;
   /** Navigate the current pending slice into the library while preserving homepage context. */
   onViewAllPending?: (request: PendingLibraryNavigationRequest) => void;
   /** Navigate the exact closed-history range into the library while preserving homepage context. */
@@ -161,6 +187,53 @@ export type ReviewDashboardProps = {
   referenceCapitalEnabled?: boolean;
   visible?: boolean;
 };
+
+function terminalRefreshAnnouncement(
+  phase: HoldingsValuationRefreshPhase,
+  announcement: string | null,
+): string | null {
+  if (!announcement) return null;
+  const prefix = phase === "failed"
+    ? "估值更新失败"
+    : phase === "cancelled"
+      ? "估值更新已取消"
+      : null;
+  if (!prefix || !announcement.startsWith(prefix)) return announcement;
+  const remainder = announcement.slice(prefix.length).replace(/^\s*[，。:：]\s*/, "").trim();
+  return remainder || null;
+}
+
+/**
+ * Resolve the visible phase at the publication boundary. A local refresh
+ * phase is only a candidate: an affected ledger remains fenced until its
+ * current permit is accepted, and a terminal producer status must remain
+ * visible even when the dashboard hook has already returned to complete/idle.
+ */
+export function resolveHoldingsPublicationPhase({
+  candidatePending,
+  candidateAccepted,
+  publicationStatus,
+}: {
+  candidatePending: boolean;
+  candidateAccepted: boolean;
+  publicationStatus: HoldingsPublicationStatus | undefined;
+}): HoldingsValuationRefreshPhase | undefined {
+  if (candidatePending) {
+    switch (publicationStatus) {
+      case "pending": return "downloading";
+      case "complete": return "recomputing";
+      case "partial": return "partial";
+      case "failed": return "failed";
+      case "cancelled": return "cancelled";
+      default: return "recomputing";
+    }
+  }
+  if (candidateAccepted) {
+    if (publicationStatus === "complete") return "complete";
+    if (publicationStatus === "partial") return "partial";
+  }
+  return undefined;
+}
 
 function RadioGroup({
   label,
@@ -203,6 +276,12 @@ function formatDashboardDataTime(value: string | null): string {
     minute: "2-digit",
     hour12: false,
   }).format(parsed).replaceAll("/", "-");
+}
+
+function formatHoldingsCutoff(value: string | undefined): string {
+  if (!value) return "不可用";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  return formatDashboardDataTime(value);
 }
 
 function money(value: string | null, currency: string | null | undefined): string {
@@ -552,9 +631,14 @@ export function ReviewDashboard({
   holdingsCandlesByInstrument,
   positionSnapshotsByEpisode,
   holdingsAsOf,
+  holdingsDataReady,
+  holdingsHydrationRetryInstruments,
   holdingsStaleAfterDays,
   onRefreshHoldingsValuation,
   onCancelHoldingsValuation,
+  holdingsPublicationPermit = null,
+  holdingsLedgerPublicationRequired = true,
+  holdingsOwnedProgress = null,
   marketDataRefresh,
   marketDataDailyStatuses,
   marketDataJobs,
@@ -570,6 +654,9 @@ export function ReviewDashboard({
   cashBaselineDetails,
   cashLoading = false,
   cashError = null,
+  cashRefreshNotice = null,
+  onRetryCashSummary,
+  cashRetryDisabled = false,
   onViewAllPending,
   onViewHistoryLibrary,
   restoreBrowseContext,
@@ -813,20 +900,17 @@ export function ReviewDashboard({
     const currentDate = holdingsAsOf && validObservationDate(holdingsAsOf) ? holdingsAsOf : Number.isFinite(instant.getTime()) ? roomTodayKey(instant) : createDefaultRoomScope().period.endDate;
     return { ...holdingsIdentity, period: { preset: "custom", startDate: currentDate, endDate: currentDate } };
   }, [holdingsIdentity, holdingsAsOf]);
+  // The worker identity includes exact data versions so a new FX/candle/clock
+  // input starts a fresh calculation. It is deliberately separate from the
+  // acceptance scope below: those arrivals are candidate bundle versions and
+  // must not discard the last accepted result while they settle.
   const holdingsHistoryIdentity = useMemo(() => JSON.stringify({
     holdings: holdingsIdentitySignature,
     observation: observationSignature(effectiveObservationPeriod),
     currentDay: observationSignature(currentHoldingsScope.period),
     asOf: holdingsAsOf ?? null,
     targetCurrency: holdingsTargetCurrency ?? null,
-    fxSnapshot: holdingsFxSnapshot
-      ? {
-        id: holdingsFxSnapshot.id,
-        asOf: holdingsFxSnapshot.asOf,
-        status: holdingsFxSnapshot.status,
-        rates: holdingsFxSnapshot.rates,
-      }
-      : null,
+    fxSnapshot: canonicalFxPublicationIdentity(holdingsFxSnapshot),
   }), [
     currentHoldingsScope.period,
     effectiveObservationPeriod,
@@ -834,6 +918,26 @@ export function ReviewDashboard({
     holdingsIdentitySignature,
     holdingsTargetCurrency,
     holdingsFxSnapshot,
+  ]);
+  // The accepted bundle is keyed by user-effective scope. Use calendar-day
+  // boundaries for the current valuation day, while keeping the exact
+  // holdingsAsOf in holdingsHistoryIdentity for worker matching and refresh
+  // readiness. A ticking cutoff or a new FX publication is therefore a
+  // candidate version within the same display scope.
+  const holdingsAcceptanceScopeKey = useMemo(() => JSON.stringify({
+    holdings: holdingsIdentitySignature,
+    observation: observationSignature(effectiveObservationPeriod),
+    currentDay: observationSignature({
+      ...currentHoldingsScope.period,
+      startDate: currentHoldingsScope.period.startDate.slice(0, 10),
+      endDate: currentHoldingsScope.period.endDate.slice(0, 10),
+    }),
+    targetCurrency: holdingsTargetCurrency ?? null,
+  }), [
+    currentHoldingsScope.period,
+    effectiveObservationPeriod,
+    holdingsIdentitySignature,
+    holdingsTargetCurrency,
   ]);
   const portfolioModel = useMemo(
     () => buildCurrentPortfolio(entries, {
@@ -950,17 +1054,37 @@ export function ReviewDashboard({
   const simulationNeedsRun = roomScope.nature === "simulation" && !roomScope.simulationRunId && !hasCanonicalSimulationScope;
   const showSimulationRunFilter = roomScope.nature === "simulation" && (simulationRunOptions.length > 0 || !hasCanonicalSimulationScope);
   const canViewHoldings = roomScope.nature !== "simulation" || Boolean(roomScope.simulationRunId) || hasCanonicalSimulationScope;
+  // The refresh attempt identity must use the holdings tab's effective filters
+  // while retaining members from the complete historical range. A current
+  // period or the shared room rows can omit closed history or reintroduce a
+  // member from an unrelated market/account scope.
+  const holdingsIdentityRows = useMemo(
+    () => filterRoomRows(entries, {
+      ...holdingsIdentity,
+      period: { preset: "all", startDate: "0001-01-01", endDate: "9999-12-31" },
+    }, { instrumentMetadata }),
+    [entries, holdingsIdentity, instrumentMetadata],
+  );
+  // A worker identity can change for a fresh candle, quote, or as-of clock
+  // tick. Those are candidate data versions inside one display scope. The
+  // ledger revision is scoped to rows the holdings view can actually publish;
+  // a new closed/out-of-scope instrument must not freeze the current bundle.
+  const holdingsLedgerRevision = useMemo(
+    () => holdingsLedgerIdentity(holdingsIdentityRows),
+    [holdingsIdentityRows],
+  );
+  const holdingsAcceptanceRevision = useMemo(() => JSON.stringify({
+    ledger: holdingsLedgerRevision,
+    fxSnapshot: canonicalFxPublicationIdentity(holdingsFxSnapshot),
+  }), [holdingsFxSnapshot, holdingsLedgerRevision]);
   const holdingsInstrumentRegistry = useMemo(() => {
     const registry = new Map<string, { instrumentId: string; market: string }>();
-    for (const entry of entries) {
-      registry.set(entry.instrument.id, { instrumentId: entry.instrument.id, market: entry.instrument.market });
-      for (const episode of entry.episodes) {
-        const instrument = episode.episode.instrument;
-        registry.set(instrument.id, { instrumentId: instrument.id, market: instrument.market });
-      }
+    for (const row of holdingsIdentityRows) {
+      const instrument = row.item.episode.instrument;
+      registry.set(instrument.id, { instrumentId: instrument.id, market: instrument.market });
     }
     return registry;
-  }, [entries]);
+  }, [holdingsIdentityRows]);
   const holdingsRefreshInstruments = useMemo(() => {
     const candidates = new Map<string, { instrumentId: string; market: string }>();
     for (const row of roomHoldingsModel.rows) {
@@ -983,18 +1107,42 @@ export function ReviewDashboard({
         if (instrument) candidates.set(instrument.instrumentId, instrument);
       }
     }
+    for (const instrument of holdingsHydrationRetryInstruments ?? []) {
+      candidates.set(instrument.instrumentId, instrument);
+    }
     return [...candidates.values()].sort((left, right) => left.instrumentId.localeCompare(right.instrumentId));
-  }, [holdingsHistoryModel.points, holdingsInstrumentRegistry, roomHoldingsModel.rows]);
+  }, [holdingsHistoryModel.points, holdingsHydrationRetryInstruments, holdingsInstrumentRegistry, roomHoldingsModel.rows]);
   const holdingsRefreshScopeInstruments = useMemo(() => {
     const scope = new Map<string, { instrumentId: string; market: string }>();
     for (const row of roomHoldingsModel.rows) scope.set(row.instrumentId, { instrumentId: row.instrumentId, market: row.market });
-    for (const value of roomModel.rows) {
-      const instrument = value.row.item.episode.instrument;
-      scope.set(instrument.id, { instrumentId: instrument.id, market: instrument.market });
-    }
     for (const instrument of holdingsInstrumentRegistry.values()) scope.set(instrument.instrumentId, instrument);
     return [...scope.values()].sort((left, right) => left.instrumentId.localeCompare(right.instrumentId));
-  }, [holdingsInstrumentRegistry, roomHoldingsModel.rows, roomModel.rows]);
+  }, [holdingsInstrumentRegistry, roomHoldingsModel.rows]);
+  const holdingsPublicationScopeInstrumentIds = useMemo(
+    () => new Set(holdingsRefreshScopeInstruments.map(instrument => instrument.instrumentId)),
+    [holdingsRefreshScopeInstruments],
+  );
+  const holdingsPublicationTargetsScope = Boolean(holdingsPublicationPermit
+    && holdingsPublicationPermit.affectedInstrumentIds.some(id =>
+      holdingsRefreshScopeInstruments.some(instrument => instrument.instrumentId === id),
+    ));
+  const ownedProgressForPermit = holdingsOwnedProgress
+    && holdingsPublicationPermit?.generation === holdingsOwnedProgress.generation
+    && holdingsPublicationPermit.status === "pending"
+    ? holdingsOwnedProgress
+    : null;
+  // The import producer has no local refresh-hook request to drive the
+  // dashboard because the dashboard stays mounted while the user imports in
+  // another view. A pending owned permit therefore supplies the same active
+  // phase to the accepted-snapshot consumer; once it is terminal, the hook's
+  // idle phase lets the one-shot source boundary publish without reopening a
+  // second request lifecycle.
+  const publicationDrivenPhase: HoldingsValuationRefreshPhase | undefined =
+    holdingsLedgerPublicationRequired
+      && holdingsPublicationTargetsScope
+      && holdingsPublicationPermit?.status === "pending"
+      ? ownedProgressForPermit?.phase ?? "downloading"
+      : undefined;
   const holdingsHistoryResultKey = useMemo(() => JSON.stringify({
     scope: holdingsHistoryModel.scope,
     points: holdingsHistoryModel.points.map(point => ({
@@ -1008,7 +1156,10 @@ export function ReviewDashboard({
   }), [holdingsHistoryModel]);
   const holdingsRefresh = useHoldingsValuationRefresh({
     visible: visible && canViewHoldings,
-    scopeKey: JSON.stringify({ holdings: holdingsIdentitySignature, observation: observationSignature(effectiveObservationPeriod) }),
+    // The refresh receipt and accepted bundle share the user-effective scope;
+    // exact FX/candle/as-of versions remain in the worker input and readiness
+    // handoff so they can settle into one bundle without changing scope.
+    scopeKey: holdingsAcceptanceScopeKey,
     asOf: holdingsAsOf ?? new Date().toISOString(),
     instruments: holdingsRefreshInstruments,
     scopeInstruments: holdingsRefreshScopeInstruments,
@@ -1019,11 +1170,123 @@ export function ReviewDashboard({
     historyInputReady,
     historyCurrentInput: historyWorker.currentInput,
     historyAcceptedInput: historyWorker.acceptedInput,
+    initialDataReady: holdingsDataReady,
     historyResultKey: holdingsHistoryResultKey,
     marketDataRefresh,
     marketDataDailyStatuses,
     marketDataJobs,
   });
+  const publicationDrivenActive = publicationDrivenPhase !== undefined;
+  const cancelHoldingsRefresh = () => {
+    if (publicationDrivenActive) {
+      const targetIds = holdingsPublicationPermit?.requiredMarketDataIds.length
+        ? holdingsPublicationPermit.requiredMarketDataIds
+        : holdingsPublicationPermit?.affectedInstrumentIds;
+      onCancelHoldingsValuation?.(targetIds);
+      return;
+    }
+    holdingsRefresh.cancel();
+  };
+  const acceptedHoldings = useAcceptedHoldingsSnapshot({
+    scopeKey: holdingsAcceptanceScopeKey,
+    acceptanceRevision: holdingsAcceptanceRevision,
+    ledgerRevision: holdingsLedgerRevision,
+    portfolioModel,
+    holdingsHistoryModel,
+    currentDayPoint,
+    fxSnapshot: holdingsFxSnapshot,
+    quotesByInstrument: holdingsQuotesByInstrument,
+    candlesByInstrument: holdingsCandlesByInstrument,
+    // The accepted snapshot drives the publication candidate itself. Its
+    // input phase must remain available before the terminal display phase is
+    // derived below; import permits can publish through the direct receipt
+    // boundary even while this local hook is idle.
+    refreshPhase: publicationDrivenPhase ?? holdingsRefresh.phase,
+    historyPending: historyWorker.pending,
+    historyError: historyWorker.error,
+    historyCurrentInput: historyWorker.currentInput,
+    historyAcceptedInput: historyWorker.acceptedInput,
+    historyInputReady,
+    initialDataReady: holdingsDataReady,
+    ledgerPublicationRequired: holdingsLedgerPublicationRequired,
+    publicationScopeInstrumentIds: holdingsPublicationScopeInstrumentIds,
+    publicationPermit: holdingsPublicationPermit,
+  });
+  // Import/manual publication receipts are owned by the workspace producer,
+  // so their terminal status must stay visible even when this dashboard's
+  // local refresh hook was idle (the dashboard remains mounted while an
+  // import is confirmed elsewhere). Keep an accepted current-revision
+  // complete/partial terminal receipt visible only during that idle gap;
+  // an independent FX/candle request can then own its own lifecycle.
+  const publicationCandidatePending = Boolean(
+    holdingsLedgerPublicationRequired
+    && holdingsPublicationTargetsScope
+    && holdingsPublicationPermit
+    && acceptedHoldings.acceptedSnapshot?.ledgerRevision !== holdingsLedgerRevision,
+  );
+  const publicationCandidateAccepted = Boolean(
+    holdingsLedgerPublicationRequired
+    && holdingsPublicationTargetsScope
+    && holdingsPublicationPermit
+    && (holdingsPublicationPermit.status === "complete"
+      || holdingsPublicationPermit.status === "partial")
+    && acceptedHoldings.acceptedSnapshot?.ledgerRevision === holdingsLedgerRevision,
+  );
+  const publicationTerminalPhase: HoldingsValuationRefreshPhase | undefined = publicationCandidatePending
+    ? resolveHoldingsPublicationPhase({
+      candidatePending: true,
+      candidateAccepted: false,
+      publicationStatus: holdingsPublicationPermit?.status,
+    })
+    : holdingsRefresh.phase === "idle" && publicationCandidateAccepted
+      ? resolveHoldingsPublicationPhase({
+        candidatePending: false,
+        candidateAccepted: true,
+        publicationStatus: holdingsPublicationPermit?.status,
+      })
+      : undefined;
+  const effectiveHoldingsRefreshPhase = publicationDrivenPhase
+    ?? publicationTerminalPhase
+    ?? holdingsRefresh.phase;
+  const publicationBoundaryActive = publicationDrivenPhase === "downloading"
+    || publicationDrivenPhase === "recomputing"
+    || publicationTerminalPhase === "downloading"
+    || publicationTerminalPhase === "recomputing";
+  const effectiveHoldingsRefreshLabel = publicationDrivenPhase
+    && (publicationDrivenPhase === "downloading" || publicationDrivenPhase === "recomputing")
+      ? "正在更新估值"
+    : publicationDrivenPhase === "failed"
+      ? "估值更新失败"
+      : publicationDrivenPhase === "cancelled"
+        ? "估值更新已取消"
+    : publicationTerminalPhase === "downloading" || publicationTerminalPhase === "recomputing"
+      ? "正在更新估值"
+    : publicationTerminalPhase === "complete"
+      ? "估值更新完成"
+      : publicationTerminalPhase === "partial"
+        ? "部分行情未更新"
+        : publicationTerminalPhase === "failed"
+          ? "估值更新失败"
+          : publicationTerminalPhase === "cancelled"
+            ? "估值更新已取消"
+            : holdingsRefresh.label;
+  const ownedProgressDetail = holdingsOwnedProgressDetail(ownedProgressForPermit);
+  const effectiveHoldingsRefreshDetail = (publicationDrivenPhase === "downloading" || publicationDrivenPhase === "recomputing") || publicationTerminalPhase === "downloading"
+    ? ownedProgressDetail ?? "等待行情更新"
+    : publicationTerminalPhase === "recomputing"
+      ? "正在重算持仓历史"
+    : publicationTerminalPhase === "partial"
+      ? "估值基于可用行情"
+      : publicationTerminalPhase
+        ? null
+        : holdingsRefresh.detail;
+  const refreshAnnouncement = terminalRefreshAnnouncement(effectiveHoldingsRefreshPhase, holdingsRefresh.announcement);
+  const acceptedHoldingsSnapshot = acceptedHoldings.displaySnapshot;
+  const acceptedPortfolioModel = acceptedHoldingsSnapshot.portfolioModel;
+  const acceptedHoldingsHistoryModel = acceptedHoldingsSnapshot.holdingsHistoryModel;
+  const acceptedCurrentDayPoint = acceptedHoldingsSnapshot.currentDayPoint;
+  const acceptedFxSnapshot = acceptedHoldingsSnapshot.fxSnapshot;
+  const holdingsPublicationBlocked = acceptedHoldings.publicationBlocked;
   const roomFilterCount = [
     roomScope.query,
     roomScope.accountIds.length,
@@ -1183,21 +1446,18 @@ export function ReviewDashboard({
       : null;
   const latestDataUpdatedAt = useMemo(() => {
     const candidates: string[] = [];
-    for (const candles of Object.values(qualityInput?.marketDataCandles ?? {})) {
+    for (const candles of Object.values(acceptedHoldingsSnapshot.candlesByInstrument ?? {})) {
       for (const candle of candles ?? []) if (candle.fetchedAt) candidates.push(candle.fetchedAt);
     }
-    for (const quote of Object.values(holdingsQuotesByInstrument ?? {})) {
+    for (const quote of Object.values(acceptedHoldingsSnapshot.quotesByInstrument ?? {})) {
       if (quote?.fetchedAt) candidates.push(quote.fetchedAt);
     }
-    if (fxSnapshot?.asOf) candidates.push(fxSnapshot.asOf);
-    for (const dimension of roomDataQuality?.dimensions ?? []) {
-      if (dimension.asOf) candidates.push(dimension.asOf);
-    }
+    if (acceptedHoldingsSnapshot.fxSnapshot?.asOf) candidates.push(acceptedHoldingsSnapshot.fxSnapshot.asOf);
     return candidates
       .map(value => ({ value, time: Date.parse(value) }))
       .filter(item => Number.isFinite(item.time))
       .sort((left, right) => right.time - left.time)[0]?.value ?? null;
-  }, [fxSnapshot, holdingsQuotesByInstrument, qualityInput?.marketDataCandles, roomDataQuality]);
+  }, [acceptedHoldingsSnapshot]);
 
   const dashboardScopeControls = (
     <UnifiedScopeFields
@@ -1262,6 +1522,24 @@ export function ReviewDashboard({
       onOpenAccountAndCurrency={() => onOpenAccountAndCurrency?.()}
     />
   ) : null;
+  const roomAllocation = <RoomAllocation
+    model={acceptedPortfolioModel}
+    holdingsPublicationBlocked={holdingsPublicationBlocked}
+    scope={holdingsMarket === "all" ? "overall" : "market"}
+    reportCurrency={holdingsReportCurrency}
+    targetCurrency={holdingsTargetCurrency}
+    fxSnapshot={acceptedFxSnapshot}
+    cashSummary={cashSummary}
+    cashBaselineDetails={cashBaselineDetails}
+    cashScopeLabel="全账户范围（当前账户筛选）"
+    loading={cashLoading}
+    error={cashError}
+    cashRefreshNotice={cashRefreshNotice}
+    onRetryCashSummary={onRetryCashSummary}
+    cashRetryDisabled={cashRetryDisabled}
+    onRetryValuation={() => holdingsRefresh.request()}
+    onOpenDataCheck={(dimension, ids, episodeId) => onOpenDataCheck?.(dimension, ids, episodeId)}
+  />;
   return (
     <section className={styles.dashboard} style={dashboardStyle} aria-label="我的交易室">
       <UnifiedPageHeader
@@ -1284,7 +1562,7 @@ export function ReviewDashboard({
         globalTools={dashboardGlobalUtilities}
         scopeTools={<div className={styles.dashboardScopeTools}>
           <span className={styles.dashboardScopeSummary}>范围：{roomNatureLabel(roomScope.nature)} · {roomScope.accountIds[0] ? (accountOptions.find(option => option.value === roomScope.accountIds[0])?.label ?? roomScope.accountIds[0]) : "全部账户"} · {reportCurrency === "original" ? "原币" : reportCurrency}</span>
-          <span className={styles.dashboardScopeSearch}>{dashboardGlobalSearch}</span>
+          <span className={styles.dashboardScopeSearch} data-compact-search={roomFiltersOpen ? "open" : "closed"}>{dashboardGlobalSearch}</span>
         </div>}
         scopeActions={<button type="button" className={styles.topbarFilterToggle} aria-expanded={roomFiltersOpen} aria-controls="trading-room-scope-filters" onClick={() => setRoomFiltersOpen(open => !open)}>筛选{roomFilterCount > 0 ? ` · ${roomFilterCount}` : ""}</button>}
       />
@@ -1327,24 +1605,24 @@ export function ReviewDashboard({
         <header className={styles.workspaceHeading}>
           <div><h2>持仓照看</h2><p>关注当前仓位，回看历史持仓变化</p></div>
           <div className={styles.holdingsRefreshCluster}>
-            <span>当前时点 · {roomHoldingsModel.asOf}</span>
+            <span>当前时点 · {formatHoldingsCutoff(acceptedPortfolioModel.asOf)}</span>
             <div className={styles.holdingsRefreshControls}>
-              <span className={styles.holdingsRefreshStatus} role="status" aria-live="polite" data-refresh-phase={holdingsRefresh.phase}>
+              <span className={styles.holdingsRefreshStatus} role="status" aria-live="polite" data-refresh-phase={effectiveHoldingsRefreshPhase}>
                 <span className={styles.holdingsRefreshStatusContent}>
-                  <span className={`${styles.holdingsRefreshSpinner} ${holdingsRefresh.active ? styles.holdingsRefreshSpinnerActive : ""}`} aria-hidden="true" />
-                  {holdingsRefresh.label}{holdingsRefresh.detail ? ` · ${holdingsRefresh.detail}` : ""}
+                  <span className={`${styles.holdingsRefreshSpinner} ${(publicationBoundaryActive || holdingsRefresh.active) ? styles.holdingsRefreshSpinnerActive : ""}`} aria-hidden="true" />
+                  {acceptedHoldings.retaining ? "更新中 · 显示上次结果" : effectiveHoldingsRefreshLabel}{effectiveHoldingsRefreshDetail ? ` · ${effectiveHoldingsRefreshDetail}` : ""}
                 </span>
               </span>
-              <button type="button" className={styles.holdingsRefreshCancel} onClick={holdingsRefresh.cancel} disabled={!holdingsRefresh.active}>取消</button>
-              <button type="button" className={styles.holdingsRefreshButton} onClick={() => holdingsRefresh.request()}>{holdingsRefresh.phase === "failed" || holdingsRefresh.phase === "partial" || holdingsRefresh.phase === "cancelled" ? "重试" : "更新估值"}</button>
+              <button type="button" className={styles.holdingsRefreshCancel} onClick={cancelHoldingsRefresh} disabled={!publicationBoundaryActive && !holdingsRefresh.active}>取消</button>
+              <button type="button" className={styles.holdingsRefreshButton} onClick={() => holdingsRefresh.request()}>{effectiveHoldingsRefreshPhase === "failed" || effectiveHoldingsRefreshPhase === "partial" || effectiveHoldingsRefreshPhase === "cancelled" ? "重试" : "更新估值"}</button>
             </div>
             <span
               className={styles.holdingsRefreshAnnouncement}
               aria-live="polite"
               aria-atomic="true"
-              data-refresh-announcement={holdingsRefresh.announcement ? "active" : "empty"}
+              data-refresh-announcement={refreshAnnouncement ? "active" : "empty"}
             >
-              {holdingsRefresh.announcement ?? "\u00a0"}
+              {refreshAnnouncement ?? "\u00a0"}
             </span>
           </div>
         </header>
@@ -1361,22 +1639,33 @@ export function ReviewDashboard({
             ]}
             onChange={value => setHoldingsMarket(value as HoldingsMarket)}
           />
-          <span className={styles.holdingsMarketHint}>{holdingsMarket === "all" ? "全部市场按同一汇率快照估算" : "仅影响持仓四个模块；下方已平仓复盘范围保持不变"}</span>
+          {holdingsMarket !== "all" && <span className={styles.holdingsMarketHint}>仅影响持仓四个模块；下方已平仓复盘范围保持不变</span>}
+          {holdingsMarket === "all" && !holdingsPublicationBlocked && <RoomHoldingsFxProvenance snapshot={acceptedFxSnapshot} currencies={acceptedHoldingsSnapshot.currencies} />}
         </div>
-        {canViewHoldings && <RoomPortfolioSummary model={portfolioModel} scope={holdingsMarket === "all" ? "overall" : "market"} reportCurrency={holdingsReportCurrency}
-          dailyPnl={currentDayPoint?.dailyPnlAvailable ? currentDayPoint.dailyPnl : undefined}
-          dailyPnlReason={currentDayPoint?.dailyPnlAvailable
-            ? holdingsReportCurrency === "original" ? "按原币显示当日净盈亏" : currentDayPoint.dailyPnl.note
-            : currentDayPoint?.dailyPnlReasons.join("；") || historyWorker.statusReason || "当前日期缺少可核对的估值证据"}
-          dailyReturnPercent={currentDayPoint?.dailyReturnPercent}
-          dailyReturnPercentAvailable={currentDayPoint?.dailyReturnPercentAvailable}
-          dailyReturnPercentReasons={currentDayPoint?.dailyReturnPercentReasons} />}
+        {canViewHoldings && (holdingsPublicationBlocked
+          ? <p className={styles.workspaceHint} data-testid="holdings-publication-placeholder" role="status">持仓估值正在等待发布</p>
+          : <RoomPortfolioSummary model={acceptedPortfolioModel} scope={holdingsMarket === "all" ? "overall" : "market"} reportCurrency={holdingsReportCurrency}
+            dailyPnl={acceptedCurrentDayPoint?.dailyPnlAvailable ? acceptedCurrentDayPoint.dailyPnl : undefined}
+            dailyPnlReason={acceptedCurrentDayPoint?.dailyPnlAvailable
+              ? holdingsReportCurrency === "original" ? "按原币显示当日净盈亏" : acceptedCurrentDayPoint.dailyPnl.note
+              : acceptedCurrentDayPoint?.dailyPnlReasons.join("；")
+                || acceptedHoldingsHistoryModel.reasons.join("；")
+                || "当前日期缺少可核对的估值证据"}
+            dailyReturnPercent={acceptedCurrentDayPoint?.dailyReturnPercent}
+            dailyReturnPercentAvailable={acceptedCurrentDayPoint?.dailyReturnPercentAvailable}
+            dailyReturnPercentReasons={acceptedCurrentDayPoint?.dailyReturnPercentReasons} />)}
         {canViewHoldings && <div className={styles.holdingsOverviewGrid}>
-          <RoomHoldingsHistory
-            model={holdingsHistoryModel}
-            reportCurrency={holdingsReportCurrency}
-            periodLabel="持仓历史观察期间"
-            periodControls={<div className={styles.observationControls} data-date-controls="observation">{/* The range controls live in the chart card header. */}
+          {holdingsPublicationBlocked
+            ? <>
+              <p className={styles.workspaceHint} data-testid="holdings-history-publication-placeholder" role="status">持仓历史估值正在等待发布</p>
+              {roomAllocation}
+            </>
+            : <>
+              <RoomHoldingsHistory
+                model={acceptedHoldingsHistoryModel}
+                reportCurrency={holdingsReportCurrency}
+                periodLabel="持仓历史观察期间"
+                periodControls={<div className={styles.observationControls} data-date-controls="observation">{/* The range controls live in the chart card header. */}
               <div className={styles.roomPeriodControl}><span>持仓历史观察期间</span><ScopeChoiceGroup
                 mode="tabs"
                 ariaLabel="持仓历史期间"
@@ -1412,45 +1701,36 @@ export function ReviewDashboard({
               {historyWorker.error && typeof Worker !== "undefined" && <button type="button" className={styles.customPeriodCancel} onClick={historyWorker.retry}>重试历史计算</button>}
               {observationError && <p role="alert" aria-live="assertive" className={styles.roomScopeWarning}>{observationError}</p>}
             </div>}
-          />
-          <RoomAllocation
-            model={portfolioModel}
-            scope={holdingsMarket === "all" ? "overall" : "market"}
-            reportCurrency={holdingsReportCurrency}
-            targetCurrency={holdingsTargetCurrency}
-            fxSnapshot={holdingsFxSnapshot}
-            cashSummary={cashSummary}
-            cashBaselineDetails={cashBaselineDetails}
-            cashScopeLabel="全账户范围（当前账户筛选）"
-            loading={cashLoading}
-            error={cashError}
-            onRetryValuation={() => holdingsRefresh.request()}
-            onOpenDataCheck={(dimension, ids, episodeId) => onOpenDataCheck?.(dimension, ids, episodeId)}
-          />
+              />
+              {roomAllocation}
+            </>
+          }
         </div>}
       {canViewHoldings && <div id="trading-room-holdings" className={styles.holdingsAnchor} tabIndex={-1}>
-        <RoomHoldingsPanel
+        {holdingsPublicationBlocked
+          ? <p className={styles.workspaceHint} data-testid="holdings-table-publication-placeholder" role="status">当前持仓明细正在等待发布</p>
+          : <RoomHoldingsPanel
           entries={entries}
           scope={currentHoldingsScope}
-          portfolioModel={portfolioModel}
+          portfolioModel={acceptedPortfolioModel}
           instrumentMetadata={instrumentMetadata}
-          quotesByInstrument={holdingsQuotesByInstrument}
-          candlesByInstrument={holdingsCandlesByInstrument}
+          quotesByInstrument={acceptedHoldingsSnapshot.quotesByInstrument}
+          candlesByInstrument={acceptedHoldingsSnapshot.candlesByInstrument}
           marketDataStatuses={qualityInput?.marketDataStatuses}
           marketDataDailyStatuses={qualityInput?.marketDataDailyStatuses}
           marketDataLabels={qualityInput?.marketDataLabels}
           marketDataJobs={qualityInput?.marketDataJobs}
           positionSnapshotsByEpisode={positionSnapshotsByEpisode}
-          asOf={holdingsAsOf}
+          asOf={acceptedPortfolioModel.asOf}
           staleAfterDays={holdingsStaleAfterDays}
           reportCurrency={holdingsReportCurrency}
-          fxSnapshot={holdingsFxSnapshot}
+          fxSnapshot={acceptedFxSnapshot}
           browseState={holdingsBrowseState}
           onBrowseStateChange={setHoldingsBrowseState}
           onRetryQuote={instrumentId => onRetryDataQuality?.("holdings", [instrumentId])}
           onOpenDataCheck={(instrumentId, episodeId) => onOpenDataCheck?.("holdings", [instrumentId], episodeId)}
           onOpenInReview={onOpenInReview}
-        />
+          />}
       </div>}
         {!canViewHoldings && <p className={styles.roomScopeHint}>请选择一个模拟运行查看独立持仓与历史，不会跨运行合并。</p>}
       </section>

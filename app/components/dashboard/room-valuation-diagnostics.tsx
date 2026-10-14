@@ -8,9 +8,11 @@ import type { CurrentPortfolioModel } from "../../lib/reviews/trading-room-portf
 import styles from "./room-valuation-diagnostics.module.css";
 
 export type RoomValuationDiagnosticGroupId = "valuation" | "holding" | "record";
+export type RoomValuationDiagnosticSourceId = "model" | "allocation" | "cash";
 
 export type RoomValuationDiagnostic = {
   id: string;
+  source: RoomValuationDiagnosticSourceId;
   group: RoomValuationDiagnosticGroupId;
   label: string;
   reason: string;
@@ -42,6 +44,14 @@ const GROUP_LABELS: Record<RoomValuationDiagnosticGroupId, string> = {
   holding: "持仓数据",
   record: "现金与记录",
 };
+
+const SOURCE_LABELS: Record<RoomValuationDiagnosticSourceId, string> = {
+  model: "持仓估值问题",
+  allocation: "估值范围问题",
+  cash: "现金记录问题 · 独立更新",
+};
+
+const SOURCE_ORDER: readonly RoomValuationDiagnosticSourceId[] = ["model", "allocation", "cash"];
 
 function unique(values: readonly string[]): string[] {
   return [...new Set(values.filter(Boolean))];
@@ -109,6 +119,7 @@ export function buildRoomValuationDiagnostics({
         const dimension: TradingRoomQualityDimensionId = group === "valuation" ? "historical" : group === "record" ? "transaction" : "holdings";
         diagnostics.push({
           id: stableDiagnosticId(["holding", row.holding.episodeId ?? row.holding.instrumentId ?? rowLabel(row), group, reason, row.holding.quote?.quoteDate ?? model.asOf], seenIds),
+          source: "model",
           group,
           label: rowLabel(row),
           reason,
@@ -128,6 +139,7 @@ export function buildRoomValuationDiagnostics({
     if (!reason || existingReasons.has(reason)) continue;
     diagnostics.push({
       id: stableDiagnosticId(["allocation", reason, model.asOf], seenIds),
+      source: "allocation",
       group: "valuation",
       label: "当前估值范围",
       reason,
@@ -147,6 +159,7 @@ export function buildRoomValuationDiagnostics({
     ]);
     cashReasons.forEach(reason => diagnostics.push({
       id: stableDiagnosticId(["cash", reason, cashSummary.asOf ?? cashSummary.updatedAt ?? model.asOf], seenIds),
+      source: "cash",
       group: "record",
       label: "现金记录",
       reason,
@@ -178,12 +191,32 @@ function objectKey(item: RoomValuationDiagnostic): string | null {
 }
 
 function diagnosticSummary(diagnostics: readonly RoomValuationDiagnostic[]) {
-  const issueTypes = new Set(diagnostics.map(item => `${item.group}:${item.category}`));
+  const issueTypes = new Set(diagnostics.map(item => `${item.source}:${item.group}:${item.category}`));
   const objects = new Set(diagnostics.flatMap(item => {
     const key = objectKey(item);
     return key ? [key] : [];
   }));
   return { issueTypes: issueTypes.size, objects: objects.size, rawRecords: diagnostics.length };
+}
+
+function diagnosticSourceSummary(diagnostics: readonly RoomValuationDiagnostic[]) {
+  const counts = new Map<RoomValuationDiagnosticSourceId, number>();
+  for (const item of diagnostics) counts.set(item.source, (counts.get(item.source) ?? 0) + 1);
+  return SOURCE_ORDER.filter(source => counts.has(source)).map(source => ({ source, count: counts.get(source) ?? 0 }));
+}
+
+function summaryTitle(sourceCounts: readonly { source: RoomValuationDiagnosticSourceId; count: number }[]): string {
+  const hasValuation = sourceCounts.some(item => item.source === "model" || item.source === "allocation");
+  const hasCash = sourceCounts.some(item => item.source === "cash");
+  if (!hasValuation && hasCash) return "现金记录问题";
+  if (hasValuation && hasCash) return "估值与现金记录问题";
+  return "估值问题";
+}
+
+function summaryImpact(title: string): string {
+  if (title === "现金记录问题") return "现金记录独立更新，有缺口时可核对现金与成交记录。";
+  if (title === "估值与现金记录问题") return "持仓估值沿用当前结果；现金记录独立更新。";
+  return "当前范围有部分估值或记录不可用；可更新行情或核对原始数据。";
 }
 
 function actionLabel(action: RoomValuationDiagnostic["action"]): string {
@@ -205,6 +238,7 @@ type RoomValuationDiagnosticsContentProps = {
 
 type DiagnosticDisplayGroup = {
   key: string;
+  source: RoomValuationDiagnosticSourceId;
   group: RoomValuationDiagnosticGroupId;
   category: string;
   label: string;
@@ -216,10 +250,10 @@ function buildDisplayGroups(items: readonly RoomValuationDiagnostic[]): Diagnost
   const byKey = new Map<string, DiagnosticDisplayGroup>();
   for (const item of items) {
     const object = objectKey(item);
-    const key = `${item.group}:${item.category}:${object ?? "unknown"}:${item.action}`;
+    const key = `${item.source}:${item.group}:${item.category}:${object ?? "unknown"}:${item.action}`;
     const existing = byKey.get(key);
     if (existing) existing.items.push(item);
-    else byKey.set(key, { key, group: item.group, category: item.category, label: object ? item.label : "未识别对象（不推断为同一对象）", objectKey: object, items: [item] });
+    else byKey.set(key, { key, source: item.source, group: item.group, category: item.category, label: object ? item.label : "未识别对象（不推断为同一对象）", objectKey: object, items: [item] });
   }
   return [...byKey.values()];
 }
@@ -242,7 +276,7 @@ function RoomValuationDiagnosticsContent({
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase();
     return normalized
-      ? diagnostics.filter(item => `${GROUP_LABELS[item.group]} ${item.category} ${item.label} ${item.reason} ${item.id} ${item.instrumentId ?? ""} ${item.episodeId ?? ""} ${item.at ?? ""} ${actionLabel(item.action)}`.toLocaleLowerCase().includes(normalized))
+      ? diagnostics.filter(item => `${SOURCE_LABELS[item.source]} ${GROUP_LABELS[item.group]} ${item.category} ${item.label} ${item.reason} ${item.id} ${item.instrumentId ?? ""} ${item.episodeId ?? ""} ${item.at ?? ""} ${actionLabel(item.action)}`.toLocaleLowerCase().includes(normalized))
       : diagnostics;
   }, [diagnostics, query]);
   const pageSize = 30;
@@ -308,27 +342,40 @@ function RoomValuationDiagnosticsContent({
   };
 
   const summary = diagnosticSummary(diagnostics);
-  const summaryCategories = [...buildDisplayGroups(diagnostics).reduce((categories, group) => {
-    const key = `${group.group}:${group.category}`;
-    const current = categories.get(key);
-    categories.set(key, current ? { ...current, count: current.count + group.items.length } : { group: group.group, category: group.category, count: group.items.length });
-    return categories;
-  }, new Map<string, { group: RoomValuationDiagnosticGroupId; category: string; count: number }>()).values()];
+  const sourceCounts = diagnosticSourceSummary(diagnostics);
+  const title = summaryTitle(sourceCounts);
+  const allDisplayGroups = buildDisplayGroups(diagnostics);
+  const sourceSummaries = SOURCE_ORDER.flatMap(source => {
+    const sourceItems = diagnostics.filter(item => item.source === source);
+    if (sourceItems.length === 0) return [];
+    const categories = [...allDisplayGroups.filter(group => group.source === source).reduce((categoryCounts, group) => {
+      const key = `${group.group}:${group.category}`;
+      const current = categoryCounts.get(key);
+      categoryCounts.set(key, current ? { ...current, count: current.count + group.items.length } : { group: group.group, category: group.category, count: group.items.length });
+      return categoryCounts;
+    }, new Map<string, { group: RoomValuationDiagnosticGroupId; category: string; count: number }>()).values()];
+    return [{ source, count: sourceItems.length, categories }];
+  });
   return <div className={styles.root}>
-    <div className={styles.summary} aria-label="估值问题摘要">
-      <strong>估值问题</strong>
-      <p className={styles.impact}>当前范围有部分估值或记录不可用；可更新行情或核对原始数据。</p>
-      <p className={styles.counts} aria-label="估值问题计数">问题类型数 {summary.issueTypes} · 已识别对象数 {summary.objects} · 原始记录数 {summary.rawRecords}</p>
-      <div className={styles.groupList}>
-        {summaryCategories.slice(0, 3).map(({ group, category, count }) => <span key={`${group}:${category}`}><b>{category}</b> · {count}</span>)}
+    <div className={styles.summary} aria-label={`${title}摘要`}>
+      <strong>{title}</strong>
+      <p className={styles.impact}>{summaryImpact(title)}</p>
+      <p className={styles.counts} aria-label={`${title}计数`}>问题类型数 {summary.issueTypes} · 已识别对象数 {summary.objects} · 原始记录数 {summary.rawRecords}</p>
+      <div className={styles.sourceList} aria-label="问题来源计数">
+        {sourceSummaries.map(({ source, count, categories }) => <section className={styles.sourceSummary} key={source} aria-label={`${SOURCE_LABELS[source]}摘要`}>
+          <span><b>{SOURCE_LABELS[source]}</b> · {count} 条原始记录</span>
+          <div className={styles.groupList}>
+            {categories.slice(0, 3).map(({ group, category, count: categoryCount }) => <span key={`${group}:${category}`}><b>{category}</b> · {categoryCount}</span>)}
+          </div>
+        </section>)}
       </div>
       <button ref={triggerRef} type="button" className={styles.openButton} onClick={openDrawer}>查看问题详情</button>
     </div>
     {open && <div className={styles.scrim} role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) close(); }}>
-      <div ref={dialogRef} className={styles.drawer} role="dialog" aria-modal="true" aria-labelledby="valuation-diagnostics-title">
+      <div ref={dialogRef} className={styles.drawer} role="dialog" aria-modal="true" aria-label={`${title}详情`}>
         <header className={styles.drawerHeader}>
-          <div><span className={styles.eyebrow}>数据完整性</span><h2 id="valuation-diagnostics-title">估值问题详情</h2><p>保留当前范围的全部原始原因，可搜索并逐页核对。</p></div>
-          <button ref={closeRef} type="button" className={styles.closeButton} onClick={close} aria-label="关闭估值问题详情">关闭</button>
+          <div><span className={styles.eyebrow}>数据完整性</span><h2 id="valuation-diagnostics-title">{title}详情</h2><p>按来源保留当前范围的全部原始原因，可搜索并逐页核对。</p></div>
+          <button ref={closeRef} type="button" className={styles.closeButton} onClick={close} aria-label={`关闭${title}详情`}>关闭</button>
         </header>
         <div className={styles.controls}>
           <label>搜索原因<input value={query} onChange={event => { setQuery(event.target.value); setPage(0); }} placeholder="搜索标的、原因或原始证据" /></label>
@@ -342,12 +389,13 @@ function RoomValuationDiagnosticsContent({
             const rawVisible = isExpanded ? group.items.slice(rawPage * 30, (rawPage + 1) * 30) : [];
             const rawPageCount = Math.max(1, Math.ceil(group.items.length / 30));
             return <article className={styles.issue} key={group.key}>
-              <div className={styles.issueBody}><span className={styles.issueGroup}>{GROUP_LABELS[group.group]}</span><h3>{group.category}</h3><p>{group.label}</p><p className={styles.impactDetail}>{impactLabel(group.group)} · 下一步：{actionLabel(primary.action)}</p>
+              <div className={styles.issueBody}><div className={styles.issueMeta}><span className={styles.issueGroup}>{GROUP_LABELS[group.group]}</span><span className={styles.sourceMarker}>{SOURCE_LABELS[group.source]}</span></div><h3>{group.category}</h3><p>{group.label}</p><p className={styles.impactDetail}>{impactLabel(group.group)} · 下一步：{actionLabel(primary.action)}</p>
                 <details className={styles.evidence} open={isExpanded}>
                   <summary aria-label={`查看原始证据（${group.items.length} 条）`} onClick={event => { event.preventDefault(); setExpandedGroups(previous => { const next = new Set(previous); if (next.has(group.key)) next.delete(group.key); else next.add(group.key); return next; }); }}>查看原始证据</summary>
                   {rawVisible.map(item => {
                     const timestamp = formatTimestamp(item.at);
                     return <div className={styles.rawEvidence} key={item.id}><dl>
+                      <div><dt>来源</dt><dd>{SOURCE_LABELS[item.source]}</dd></div>
                       <div><dt>规则/原因</dt><dd>{item.reason}</dd></div>
                       {item.at && <div><dt>原始时间（ISO）</dt><dd>{item.at}</dd></div>}
                     </dl>{timestamp && <time dateTime={item.at ?? undefined} title={item.at ?? undefined}>{timestamp}</time>}</div>;

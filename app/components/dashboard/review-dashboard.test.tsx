@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { StrictMode } from "react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -953,17 +953,18 @@ it("reactively bounds all observation history by selected account, nature/run an
   accountB.executions.forEach(execution => { execution.accountId = "account-2"; execution.accountLabel = "第二账户"; });
   accountB.episodes.forEach(item => { item.episode.accountId = "account-2"; });
   const run = copyEntry(dashboardEntries(shanghai, "2022-03", "sim")[0], { prefix: "sim", tradeNature: "simulation", simulationRunId: "run-one" });
+  const entries = [accountA, accountB, run];
   const scope: SharedScope = { nature: "live", accountIds: ["account-1"], simulationRunId: null, reportCurrency: "original" };
   const props = { onOpenInReview: vi.fn(), referenceCapitalEnabled: false };
-  const view = render(<ReviewDashboard {...props} entries={[accountA, accountB, run]} sharedScope={scope} />);
+  const view = render(<ReviewDashboard {...props} entries={entries} sharedScope={scope} />);
   fireEvent.click(screen.getByRole("tab", { name: "持仓历史：全部" }));
   expect(screen.getByLabelText("持仓历史起始日期")).toHaveValue("2026-09-02");
-  view.rerender(<ReviewDashboard {...props} entries={[accountA, accountB, run]} sharedScope={{ ...scope, accountIds: ["account-2"] }} />);
+  view.rerender(<ReviewDashboard {...props} entries={entries} sharedScope={{ ...scope, accountIds: ["account-2"] }} />);
   expect(screen.getByLabelText("持仓历史起始日期")).toHaveValue("2023-02-02");
-  view.rerender(<ReviewDashboard {...props} entries={[accountA, accountB, run]} sharedScope={{ ...scope, nature: "simulation", simulationRunId: "run-one" }} />);
+  view.rerender(<ReviewDashboard {...props} entries={entries} sharedScope={{ ...scope, nature: "simulation", simulationRunId: "run-one" }} />);
   expect(screen.getByLabelText("持仓历史起始日期")).toHaveValue("2022-03-02");
   const earlier = dashboardEntries(shanghai, "2021-04", "earlier")[0];
-  view.rerender(<ReviewDashboard {...props} entries={[accountA, accountB, run, earlier]} sharedScope={scope} />);
+  view.rerender(<ReviewDashboard {...props} entries={[...entries, earlier]} sharedScope={scope} />);
   expect(screen.getByLabelText("持仓历史起始日期")).toHaveValue("2021-04-02");
   expect(screen.getByRole("tab", { name: "持仓历史：全部" })).toHaveAttribute("aria-selected", "true");
 });
@@ -1028,9 +1029,15 @@ it("keeps the refresh status and action slots mounted during an active valuation
     entries={[holding]}
     onOpenInReview={vi.fn()}
     referenceCapitalEnabled={false}
+    holdingsDataReady
+    holdingsAsOf="2026-10-15"
+    holdingsQuotesByInstrument={{ "US:TEST": { price: "15", currency: "USD", quoteDate: "2026-10-15", fetchedAt: null, provider: "test", freshness: "stale" } }}
     onRefreshHoldingsValuation={onRefreshHoldingsValuation}
   />);
-  await act(async () => { await Promise.resolve(); });
+  fireEvent.click(within(screen.getByRole("region", { name: "持仓照看" })).getByRole("button", { name: "更新估值" }));
+  await waitFor(() => {
+    expect(onRefreshHoldingsValuation).toHaveBeenCalledWith(["US:TEST"], "manual");
+  });
   const holdings = screen.getByRole("region", { name: "持仓照看" });
   const status = holdings.querySelector('[data-refresh-phase]');
   expect(status).toHaveAttribute("data-refresh-phase", "waiting");
@@ -1042,6 +1049,64 @@ it("keeps the refresh status and action slots mounted during an active valuation
   const workerStatusMeasure = holdings.querySelector('[data-history-worker-status-measure]');
   expect(workerStatusMeasure).toHaveAttribute("aria-hidden", "true");
   expect(workerStatusMeasure).toHaveTextContent("持仓历史计算失败：行情更新失败，请检查数据源（沿用上次快照）");
+  await act(async () => { resolveRefresh(true); await Promise.resolve(); });
+});
+
+it("keeps the failed refresh announcement complementary to its terminal label", async () => {
+  const holding = holdingDashboardEntry();
+  const onRefreshHoldingsValuation = vi.fn(() => Promise.reject(new Error("fixture refresh failure")));
+  render(<ReviewDashboard
+    entries={[holding]}
+    onOpenInReview={vi.fn()}
+    referenceCapitalEnabled={false}
+    holdingsDataReady
+    holdingsAsOf="2026-10-15"
+    holdingsQuotesByInstrument={{ "US:TEST": { price: "15", currency: "USD", quoteDate: "2026-10-15", fetchedAt: null, provider: "test", freshness: "stale" } }}
+    onRefreshHoldingsValuation={onRefreshHoldingsValuation}
+  />);
+
+  const holdings = screen.getByRole("region", { name: "持仓照看" });
+  fireEvent.click(within(holdings).getByRole("button", { name: "更新估值" }));
+  await waitFor(() => {
+    expect(onRefreshHoldingsValuation).toHaveBeenCalledWith(["US:TEST"], "manual");
+    expect(holdings.querySelector('[data-refresh-phase]')).toHaveAttribute("data-refresh-phase", "failed");
+  });
+
+  const status = holdings.querySelector('[data-refresh-phase]');
+  const announcement = holdings.querySelector('[data-refresh-announcement]');
+  expect(status).toHaveTextContent("估值更新失败");
+  expect(announcement).toHaveAttribute("data-refresh-announcement", "active");
+  expect(announcement).toHaveTextContent("可再次重试。");
+  expect(announcement).not.toHaveTextContent("估值更新失败");
+});
+
+it("keeps the cancelled refresh announcement complementary to its terminal label", async () => {
+  const holding = holdingDashboardEntry();
+  let resolveRefresh!: (value: boolean) => void;
+  const onRefreshHoldingsValuation = vi.fn(() => new Promise<boolean>(resolve => { resolveRefresh = resolve; }));
+  render(<ReviewDashboard
+    entries={[holding]}
+    onOpenInReview={vi.fn()}
+    referenceCapitalEnabled={false}
+    holdingsDataReady
+    holdingsAsOf="2026-10-15"
+    holdingsQuotesByInstrument={{ "US:TEST": { price: "15", currency: "USD", quoteDate: "2026-10-15", fetchedAt: null, provider: "test", freshness: "stale" } }}
+    onRefreshHoldingsValuation={onRefreshHoldingsValuation}
+  />);
+
+  const holdings = screen.getByRole("region", { name: "持仓照看" });
+  fireEvent.click(within(holdings).getByRole("button", { name: "更新估值" }));
+  await waitFor(() => expect(onRefreshHoldingsValuation).toHaveBeenCalledWith(["US:TEST"], "manual"));
+  fireEvent.click(within(holdings).getByRole("button", { name: "取消" }));
+
+  const status = holdings.querySelector('[data-refresh-phase]');
+  const announcement = holdings.querySelector('[data-refresh-announcement]');
+  expect(status).toHaveAttribute("data-refresh-phase", "cancelled");
+  expect(status).toHaveTextContent("估值更新已取消");
+  expect(announcement).toHaveAttribute("data-refresh-announcement", "active");
+  expect(announcement).toHaveTextContent("原有缓存已保留。");
+  expect(announcement).not.toHaveTextContent("估值更新已取消");
+
   await act(async () => { resolveRefresh(true); await Promise.resolve(); });
 });
 

@@ -94,11 +94,17 @@ describe("/api/trading-room/cash", () => {
       cashTotal: { originalByCurrency: Record<string, string>; converted: string | null };
       todayProceeds: { originalByCurrency: Record<string, string> };
       todayProceedsStatus: string;
+      fxSnapshot: { id: string; source: string; rates: Record<string, string> };
     };
     expect(body.cashTotal.originalByCurrency).toEqual({ CNY: "102000" });
     expect(body.cashTotal.converted).toBe("102000");
     expect(body.todayProceeds.originalByCurrency).toEqual({ CNY: "32000" });
     expect(body.todayProceedsStatus).toBe("available");
+    expect(body.fxSnapshot).toMatchObject({
+      id: "boc:test",
+      source: "BOC",
+      rates: { "USD/CNY": "7", "HKD/CNY": "0.9" },
+    });
     expect(store.getExecutions).toHaveBeenCalledOnce();
     expect(store.getInstruments).toHaveBeenCalledOnce();
   });

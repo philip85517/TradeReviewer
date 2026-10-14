@@ -33,6 +33,8 @@ export type CashBaselinePanelProps = {
   error?: string | null;
   /** Accepts the legacy boolean consumer and the typed CAS consumer. */
   onSave: (draft: CashBaselineMutation) => Promise<SaveResult>;
+  /** Acknowledge only the currently owned write error after an explicit conflict reload. */
+  onReloadConflict?: () => void;
 };
 
 type Draft = Partial<CashBaselineDraft> & {
@@ -115,6 +117,7 @@ export function CashBaselinePanel({
   saving,
   error,
   onSave,
+  onReloadConflict,
 }: CashBaselinePanelProps) {
   const scopeKey = `${nature}:${simulationRunId ?? ""}:${accounts.map((account) => account.id).join("|")}`;
   const [draft, setDraft] = useState<Draft>(() => emptyDraft(accounts[0]?.id));
@@ -210,6 +213,7 @@ export function CashBaselinePanel({
     setConflict(null);
     setSubmitError(null);
     setMessage("已载入服务器当前值，请核对后再保存");
+    onReloadConflict?.();
   };
 
   const submit = async () => {

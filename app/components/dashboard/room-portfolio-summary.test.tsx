@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it } from "vitest";
 import { buildCurrentPortfolio } from "../../lib/reviews/trading-room-portfolio";
 import { buildRoomMoneyView, createDefaultRoomScope } from "../../lib/reviews/trading-room-scope";
@@ -35,7 +35,12 @@ it("shows every current holding currency in daily evidence without inventing cov
 });
 it("displays supplied daily PnL and selected currency without inventing totals", () => {
  render(<RoomPortfolioSummary model={buildCurrentPortfolio([], {scope:createDefaultRoomScope()})} reportCurrency="CNY" dailyPnl={{baseCurrency:"CNY",originalByCurrency:{USD:"5"},convertedCny:null,conversion:"partial",fxSnapshotId:null,note:"汇率不足"}} />);
- expect(screen.getByTitle("汇率不足")).toBeInTheDocument();
+ const dailyCard = screen.getByText("当日盈亏").closest("div");
+ expect(dailyCard).not.toBeNull();
+ const disclosure = within(dailyCard!).getByText("查看当日依据").closest("details");
+ expect(disclosure).not.toBeNull();
+ fireEvent.click(disclosure!.querySelector("summary")!);
+ expect(within(disclosure!).getByText("汇率不足", { exact: true })).toBeInTheDocument();
  expect(screen.queryByText("CNY 0")).not.toBeInTheDocument();
 });
 it("keeps zero daily PnL neutral instead of assigning a gain tone", () => {
@@ -63,8 +68,25 @@ it("keeps partial valuation warning compact and preserves complete reasons in di
  expect(screen.getByText("已估值 2/3 个仓位")).toBeInTheDocument();
  expect(screen.getByText("已计算盈亏 1/3 个仓位")).toBeInTheDocument();
  expect(screen.getByText("估值截点：2026-09-25 18:00（UTC+8）")).toBeInTheDocument();
- expect(screen.getByTitle("前收盘报价缺失，需补齐完整历史价格后再计算当日盈亏")).toBeInTheDocument();
+  expect(screen.getByText("查看当日依据")).toBeInTheDocument();
  expect(screen.getByText(model.basis).closest("details")).not.toBeNull();
+});
+
+it("opens the complete daily PnL basis from the same card without an ellipsis", () => {
+  const reason = "前收盘报价缺失，需补齐完整历史价格后再计算当日盈亏";
+  const model = buildCurrentPortfolio([], { scope: createDefaultRoomScope(), asOf: "2026-09-25" });
+  render(<RoomPortfolioSummary model={model} dailyPnlReason={reason} />);
+
+  const card = screen.getByText("当日盈亏").closest("div");
+  expect(card).not.toBeNull();
+  const disclosure = within(card!).getByText("查看当日依据").closest("details");
+  expect(disclosure).not.toBeNull();
+  expect(disclosure).not.toHaveAttribute("open");
+  expect(within(card!).queryByTitle(reason)).not.toBeInTheDocument();
+
+  fireEvent.click(disclosure!.querySelector("summary")!);
+  expect(disclosure).toHaveAttribute("open");
+  expect(within(disclosure!).getByText(reason, { exact: true })).toBeInTheDocument();
 });
 
 it("groups very large decimal amounts without converting through a JavaScript number", () => {

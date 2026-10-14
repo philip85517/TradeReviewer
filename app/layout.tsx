@@ -13,6 +13,17 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+function isLoopbackHost(host: string): boolean {
+  try {
+    const hostname = new URL(`http://${host}`).hostname
+      .replace(/^\[|\]$/g, "")
+      .toLowerCase();
+    return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
+  } catch {
+    return false;
+  }
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
   const host =
@@ -21,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
     "localhost:3000";
   const protocol =
     requestHeaders.get("x-forwarded-proto") ??
-    (host.startsWith("localhost") ? "http" : "https");
+    (isLoopbackHost(host) ? "http" : "https");
   const metadataBase = new URL(`${protocol}://${host}`);
   const title = "TradeReview — 历史交易复盘";
   const description =

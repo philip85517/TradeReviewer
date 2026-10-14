@@ -210,7 +210,6 @@ export function RoomPortfolioSummary({
   dailyPnlPercentReason,
 }: RoomPortfolioSummaryProps) {
   const dailyReason = dailyReasonFor(reportCurrency, dailyPnl, dailyPnlReason ?? dailyPnl?.note ?? "缺少可核对的前收盘估值，当日盈亏暂不可用");
-  const dailyBrief = dailyReason.length > 20 ? `${dailyReason.slice(0, 18)}…` : dailyReason;
   const dailyEvidence = dailyEvidenceLabel(model, dailyPnl, reportCurrency);
   const percentValue = dailyReturnPercent ?? dailyPnlPercent;
   const percentAvailable = dailyReturnPercentAvailable ?? dailyPnlPercentAvailable ?? (percentValue !== null && percentValue !== undefined);
@@ -244,7 +243,11 @@ export function RoomPortfolioSummary({
       <div className={styles.card}>
         <span>当日盈亏</span>
         <strong className={dailyPnl ? tone(dailyPnl) : undefined}><MoneyLines view={dailyPnl} currency={reportCurrency} signed model={model} /></strong>
-        <small title={dailyReason}>{dailyEvidence} · {dailyBrief}</small>
+        <small>{dailyEvidence}</small>
+        <details className={styles.details}>
+          <summary>查看当日依据</summary>
+          <p className={styles.note}>{dailyReason}</p>
+        </details>
         <small title={percentReason}>当日百分比 <b aria-label={percentAvailable ? `当日盈亏百分比 ${percentLabel(percentValue, percentAvailable)}` : `当日盈亏百分比暂不可用：${percentReason}`}>{percentLabel(percentValue, percentAvailable)}</b></small>
       </div>
       <div className={styles.card}>
@@ -260,7 +263,6 @@ export function RoomPortfolioSummary({
     {model.empty && <p className={styles.note}>{scope === "market" ? "当前市场暂无持仓" : "当前空仓"}</p>}
     <details className={styles.details}><summary>核对估值组成与覆盖</summary>
       <p className={styles.note}>{model.basis}</p>
-      <p className={styles.note}>当日依据：{dailyReason}</p>
       <p className={styles.note}>原币证据覆盖：市值 {coverageLabel(model.coverage.marketValue)}；成本 {coverageLabel(model.coverage.cost)}；盈亏 {coverageLabel(model.coverage.unrealizedPnl)}。{reportCurrency !== "original" && ` ${reportCurrency} 换算覆盖：市值 ${coverageLabel(marketCoverage)}；成本 ${coverageLabel(costCoverage)}；盈亏 ${coverageLabel(pnlCoverage)}。`}</p>
       <div className={styles.scroll}><table><thead><tr><th>标的 / 账户</th><th>数量</th><th>行情日期</th><th>原币净市值</th><th>剩余成本</th><th>未实现盈亏</th><th>收益率 / 原因</th></tr></thead>
         <tbody>{model.rows.map((row, index) => <tr key={row.holding.episodeId ?? `${row.holding.instrumentId ?? row.holding.instrumentName ?? "row"}:${row.holding.accountId ?? row.holding.accountLabel ?? index}`}>

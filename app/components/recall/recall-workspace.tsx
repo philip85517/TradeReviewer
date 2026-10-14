@@ -1601,7 +1601,6 @@ export function RecallWorkspace({
       if (!cancelled()) setLoading(false);
     }
   }, [initialDrawings, markDirty, repository, restoreWorkingFromDocument]);
-
   const saveNow = useCallback(async (
     documentToSave?: RecallDocument,
     force = false,

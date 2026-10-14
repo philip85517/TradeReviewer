@@ -16,6 +16,7 @@ import type { EnrichedImportResult } from "../lib/import/enrich-import";
 import type { StatementParseResult } from "../lib/import/contracts";
 import { fingerprintBytes } from "../lib/import/file-fingerprint";
 import { parseTradingViewSimulationCsv } from "../lib/import/tradingview-simulation";
+import type { FxState } from "../lib/fx/room-contracts";
 import { requiredMarketDataRange } from "../lib/market/sync-range";
 import type { DemoReplayFrame } from "../lib/demo/replay-frame";
 import {
@@ -31,6 +32,7 @@ import {
   awaitMetadataBeforeMarketFailure,
   TradeReviewWorkspace,
 } from "./trade-review-workspace";
+import { ComputingHoldingsHistoryWorker } from "./test-support/computing-holdings-history-worker";
 import { createLegacySqliteClient } from "./test-support/legacy-sqlite-client";
 
 const mockSqliteClient = vi.hoisted(() => ({ current: undefined as unknown }));
@@ -38,6 +40,22 @@ const mockSqliteClient = vi.hoisted(() => ({ current: undefined as unknown }));
 const mockRecallRepository = vi.hoisted(() => ({
   documents: new Map<string, unknown>(),
 }));
+
+const mockOwnedSettlement = vi.hoisted(() => vi.fn());
+
+vi.mock("./dashboard/holdings-owned-progress", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./dashboard/holdings-owned-progress")>();
+  return {
+    ...actual,
+    settleHoldingsOwnedProgress: (
+      progress: Parameters<typeof actual.settleHoldingsOwnedProgress>[0],
+      input: Parameters<typeof actual.settleHoldingsOwnedProgress>[1],
+    ) => {
+      mockOwnedSettlement(progress, input);
+      return actual.settleHoldingsOwnedProgress(progress, input);
+    },
+  };
+});
 
 vi.mock("../lib/recall/repository", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../lib/recall/repository")>();
@@ -95,13 +113,62 @@ function rejectNextDemoReplayRequest() {
   });
 }
 
+async function withComputingHoldingsHistoryWorker<T>(run: () => Promise<T>): Promise<T> {
+  const originalWorker = Object.getOwnPropertyDescriptor(globalThis, "Worker");
+  Object.defineProperty(globalThis, "Worker", {
+    configurable: true,
+    value: ComputingHoldingsHistoryWorker,
+    writable: true,
+  });
+  try {
+    return await run();
+  } finally {
+    if (originalWorker) Object.defineProperty(globalThis, "Worker", originalWorker);
+    else Reflect.deleteProperty(globalThis, "Worker");
+  }
+}
+
+const br09MissingFxState: FxState = {
+  id: "br09-test-fx-missing",
+  baseCurrency: "CNY",
+  source: "BOC",
+  publishedAt: null,
+  publishedAtByCurrency: {},
+  fetchedAt: "2026-10-14T00:00:00.000Z",
+  rates: {},
+  lastAttemptDay: "2026-10-14",
+  status: "missing",
+  error: "测试环境未提供外汇报价",
+};
+
+async function withBr09MissingFxState<T>(run: () => Promise<T>): Promise<T> {
+  const fetchMock = vi.mocked(fetch);
+  const originalFetch = fetchMock.getMockImplementation();
+  fetchMock.mockImplementation(async (input, init) => {
+    const path = String(input);
+    const method = ((init as RequestInit | undefined)?.method ?? "GET").toUpperCase();
+    if (path === "/api/trading-room/fx" && method === "GET") {
+      return Response.json(br09MissingFxState);
+    }
+    return originalFetch ? originalFetch(input, init) : Response.json({});
+  });
+  try {
+    return await run();
+  } finally {
+    if (originalFetch) fetchMock.mockImplementation(originalFetch);
+    else fetchMock.mockReset();
+  }
+}
+
 const {
   mockDispatcher,
   mockEnrichment,
+  mockIntradayMarketDataSync,
   mockMarketDataSync,
 } = vi.hoisted(() => ({
   mockDispatcher: vi.fn(),
   mockEnrichment: vi.fn(),
+  mockIntradayMarketDataSync: vi.fn(),
   mockMarketDataSync: vi.fn(),
 }));
 
@@ -116,6 +183,10 @@ vi.mock("../lib/import/enrich-import", async (importOriginal) => ({
 
 vi.mock("../lib/market/sync-service", () => ({
   syncMarketData: mockMarketDataSync,
+}));
+
+vi.mock("../lib/market/intraday-sync-service", () => ({
+  syncIntradayMarketDataForRanges: mockIntradayMarketDataSync,
 }));
 
 const initialFrame: DemoReplayFrame = {
@@ -430,12 +501,21 @@ describe("TradeReviewWorkspace", () => {
     );
     mockDispatcher.mockReset();
     mockEnrichment.mockReset();
+    mockIntradayMarketDataSync.mockReset();
     mockMarketDataSync.mockReset();
+    mockOwnedSettlement.mockReset();
     mockSqliteClient.current = createLegacySqliteClient();
     mockMarketDataSync.mockResolvedValue({
       source: "cache",
       status: "complete",
       candles: [],
+      requestedRanges: [],
+    });
+    mockIntradayMarketDataSync.mockResolvedValue({
+      source: "cache",
+      status: "complete",
+      candles: [],
+      coverage: [],
       requestedRanges: [],
     });
   });
@@ -782,6 +862,116 @@ describe("TradeReviewWorkspace", () => {
       ),
     ).toBe(false);
   });
+
+  it("binds a single imported market run to the owned progress projection before readback", async () => {
+    const user = userEvent.setup();
+    const syncGate = deferred<{
+      source: "cache";
+      status: "complete";
+      candles: never[];
+      requestedRanges: never[];
+    }>();
+    mockDispatcher.mockResolvedValue(cmsParsedResult);
+    mockEnrichment.mockResolvedValue(cmsEnrichedResult);
+    mockMarketDataSync.mockImplementation(() => syncGate.promise);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+
+    await uploadStatement(
+      user,
+      new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], "招商证券.pdf", {
+        type: "application/pdf",
+      }),
+    );
+    await user.click(await screen.findByRole("button", { name: "确认导入并开始更新行情" }));
+    await waitFor(() => expect(mockMarketDataSync).toHaveBeenCalledOnce());
+
+    await user.click(screen.getByRole("button", { name: "我的交易室" }));
+    const holdings = await screen.findByRole("region", { name: "持仓照看" });
+    await waitFor(() => {
+      expect(holdings.querySelector("[data-refresh-phase]")).toHaveTextContent("0/1 个标的已处理");
+    });
+
+    syncGate.resolve({ source: "cache", status: "complete", candles: [], requestedRanges: [] });
+    await waitFor(() => {
+      // The import producer is a non-batch, single-instrument run. The owned
+      // projection must receive its per-item settlement before readback can
+      // finish; observing only the initial 0/1 state would miss that wiring.
+      expect(holdings.querySelector("[data-refresh-phase]")).toHaveTextContent("1/1 个标的已处理");
+    });
+    expect(mockOwnedSettlement).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        instrumentId: cmsExecution.instrument.id,
+        status: "complete",
+        cacheOnly: true,
+      }),
+    );
+  });
+
+  it("reads back an in-range ledger import even when it does not need a new market sync", () => withComputingHoldingsHistoryWorker(() => withBr09MissingFxState(async () => {
+    const user = userEvent.setup();
+    const existing: TradeExecution = {
+      ...cmsExecution,
+      id: "cms:existing-in-range",
+      quantity: "50",
+      source: {
+        ...cmsExecution.source,
+        row: 6,
+        sourceOrder: 2,
+        fileFingerprint: "existing-in-range",
+      },
+    };
+    saveImportedExecutions([existing]);
+    await new IndexedDbMarketDataRepository().commitSyncResult({
+      instrumentId: cmsExecution.instrument.id,
+      candles: [{
+        instrumentId: cmsExecution.instrument.id,
+        tradingDate: "2026-03-01",
+        open: "15",
+        high: "15.5",
+        low: "14.5",
+        close: "15.2",
+        volume: "1000",
+        currency: "CNY",
+        provider: "tencent",
+        providerSymbol: "sh600938",
+        adjustmentMode: "raw",
+        fetchedAt: "2026-10-15T00:00:00.000Z",
+      }],
+      coverage: [{
+        startDate: "2025-01-25",
+        endDate: "2026-12-31",
+        status: "complete",
+        provider: "tencent",
+        fetchedAt: "2026-10-15T00:00:00.000Z",
+        missingTradingDates: [],
+      }],
+      providerSymbol: {
+        provider: "tencent",
+        symbol: "sh600938",
+      },
+    });
+    mockDispatcher.mockResolvedValue(cmsParsedResult);
+    mockEnrichment.mockResolvedValue(cmsEnrichedResult);
+    render(<TradeReviewWorkspace initialFrame={initialFrame} showDemo={false} />);
+
+    await uploadStatement(
+      user,
+      new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], "招商证券.pdf", {
+        type: "application/pdf",
+      }),
+    );
+    await user.click(await screen.findByRole("button", { name: "确认导入并开始更新行情" }));
+
+    await waitFor(() => expect(loadImportedExecutions()).toHaveLength(2));
+    // The ledger range and episode shape are unchanged, so the producer must
+    // skip a new market request while still rereading the saved financial key.
+    expect(mockMarketDataSync).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(document.querySelector("[data-refresh-phase]"))
+        .toHaveAttribute("data-refresh-phase", "complete");
+    });
+  })));
 
   it("retries only selected unresolved canonical instruments while preserving the full result", async () => {
     const user = userEvent.setup();

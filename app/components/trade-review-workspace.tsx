@@ -275,7 +275,7 @@ import { RefreshCancellationService } from "../lib/market/refresh-cancellation";
 import { withGlobalMarketRefreshLock } from "../lib/market/refresh-lock";
 import { retryMarketData } from "../lib/market/retry-market-data";
 import { composeAbortSignals } from "../lib/instruments/abort-signal";
-import { toRoomFxSnapshot } from "../lib/fx/room-contracts";
+import { canonicalFxPublicationIdentity, toRoomFxSnapshot } from "../lib/fx/room-contracts";
 import { useFxRates } from "../lib/fx/use-fx-rates";
 import type {
   TradingRoomQualityDimensionId,
@@ -309,6 +309,21 @@ import {
   TradingRoomGlobalSearch,
   TradingRoomGlobalUtilities,
 } from "./dashboard/trading-room-global-tools";
+import {
+  needsHoldingsPublicationRetry,
+  type HoldingsPublicationOwner,
+  type HoldingsPublicationPermit,
+  type HoldingsPublicationReceipt,
+} from "./dashboard/holdings-publication-boundary";
+import {
+  bindHoldingsOwnedProgressRun,
+  createHoldingsOwnedProgress,
+  mergeHoldingsOwnedProgressRequiredIds,
+  setHoldingsOwnedProgressPhase,
+  settleHoldingsOwnedProgress,
+  type HoldingsOwnedProgress,
+  type HoldingsOwnedProgressTerminal,
+} from "./dashboard/holdings-owned-progress";
 
 const REVIEW_ID = "demo-xpev-2025";
 const DEFAULT_THESIS =
@@ -391,6 +406,8 @@ type Props = {
   screenshotImportDependencies?: Partial<ScreenshotImportDependencies>;
   /** Injectable only for integration tests; production creates the HTTP client. */
   storageClient?: SqliteHttpClient;
+  /** Injectable cash reader/writer identity for caller-owned cash integrations. */
+  cashClient?: CashClient;
   legacyStateExporter?: (options?: { excludeDemo?: boolean }) => Promise<import("../lib/storage/sqlite-contracts").BrowserStatePayload | null>;
   /** The active migration alias read is injectable for deterministic workspace tests. */
   activeAliasLoader?: ActiveAliasLoader;
@@ -610,6 +627,10 @@ function marketRanges(summary: InstrumentTradeSummary) {
       endTime: `${daily.endDate}T23:59:59.999Z`,
     } satisfies IntradayTimeRange,
   };
+}
+
+function marketHydrationKey(summary: InstrumentTradeSummary) {
+  return `${summary.instrument.id}:${summary.tradeCount}:${summary.firstTradeAt}:${summary.lastTradeAt}`;
 }
 
 export async function readInstrumentMarketState(
@@ -1166,12 +1187,34 @@ const EMPTY_MARKET_DATA_REFRESH: GlobalMarketRefreshState =
 
 type ActiveMarketRefreshRun = {
   key: string;
+  runId: number;
   controller: AbortController;
+  retired: boolean;
   promise: Promise<void>;
   snapshotIds: ReadonlySet<string>;
   batch: boolean;
   includeIntraday: boolean;
   subscriberCounts: Map<string, number>;
+  /** The per-instrument controller is the item-level ownership barrier inside a shared run. */
+  itemControllers: Map<string, AbortController>;
+  ownedBindings: Map<string, OwnedProgressBinding>;
+  settledById: Map<string, OwnedProgressSettlement>;
+};
+
+export function isLiveMarketRefreshRun(
+  run: Pick<ActiveMarketRefreshRun, "controller" | "retired">,
+): boolean {
+  return !run.retired && !run.controller.signal.aborted;
+}
+
+type OwnedProgressBinding = {
+  generation: number;
+  requiredIds: ReadonlySet<string>;
+};
+
+type OwnedProgressSettlement = {
+  status: HoldingsOwnedProgressTerminal;
+  cacheOnly?: boolean;
 };
 
 type MarketDataUpdateOptions = {
@@ -1189,6 +1232,28 @@ type MarketDataUpdateOptions = {
   ownerCounts?: ReadonlyMap<string, number>;
   producer?: MarketRefreshProducer;
   priority?: HomeMarketReadPriority;
+  /** Import-owned publication generation waiting on this producer receipt. */
+  holdingsPublicationGeneration?: number;
+  /** Owned projection bindings carried by a coalesced producer. */
+  holdingsOwnedBindings?: ReadonlyArray<OwnedProgressBinding>;
+};
+
+type FinancialMarketReadOwnerKind = HoldingsPublicationOwner | "quality";
+
+type FinancialMarketReadContext = {
+  /** A readback tied to a permit must still belong to its pending generation. */
+  publicationGeneration?: number;
+  owner: FinancialMarketReadOwnerKind;
+};
+
+type FinancialMarketReadOwner = {
+  key: string;
+  runId: number;
+  token: string;
+  controller: AbortController;
+  promise: Promise<boolean>;
+  publicationGeneration?: number;
+  owner: FinancialMarketReadOwnerKind;
 };
 
 type PendingMarketRefreshRequest = {
@@ -1196,6 +1261,7 @@ type PendingMarketRefreshRequest = {
   options: MarketDataUpdateOptions;
   cancelled: boolean;
   bindings: ReadonlyArray<{ producer: MarketRefreshProducer; ids: ReadonlySet<string> }>;
+  ownedBindings: ReadonlyArray<OwnedProgressBinding>;
   promise?: Promise<boolean>;
 };
 
@@ -1208,6 +1274,7 @@ type MarketRefreshProducer = {
   resolve: (value: boolean) => void;
   started: boolean;
   activeRun?: ActiveMarketRefreshRun;
+  ownedBindings: Map<number, OwnedProgressBinding>;
   cancelled: boolean;
   settled: boolean;
 };
@@ -1233,6 +1300,8 @@ type MarketDataRefreshOutcome = {
   status: MarketDataSyncStatus;
   /** At least one interval failed and can be retried for this instrument. */
   retryable: boolean;
+  /** True only when every requested interval used this run's current cache result. */
+  cacheOnly?: boolean;
 };
 
 type MarketDataRefreshSnapshot = {
@@ -1296,6 +1365,14 @@ type CashReadOwner = {
   scopeKey: string;
 };
 
+type CashAcceptedBundle = {
+  client: CashClient;
+  businessKey: string;
+  writeBusinessKey: string;
+  baselineState: CashBaselineState | CashBaselineStorageState;
+  summary: CashSummary;
+};
+
 type CashDataResponse = {
   baselineState: CashBaselineState | CashBaselineStorageState;
   summary: CashSummary;
@@ -1303,8 +1380,9 @@ type CashDataResponse = {
 
 const CASH_SUMMARY_REFRESH_NOTICE = "已保存现金基准，摘要暂未刷新";
 
-type CashSavedFact = { scopeKey: string };
-type CashSummaryRefreshError = { scopeKey: string; message: string };
+type CashSavedFact = { client: CashClient; scopeKey: string; writeScopeKey: string };
+type CashSummaryRefreshError = { client: CashClient; scopeKey: string; writeScopeKey: string; message: string };
+type CashWriteError = { client: CashClient; scopeKey: string; writeScopeKey: string; message: string };
 
 async function fetchCashData(client: CashClient, request: CashDataRequest): Promise<CashDataResponse> {
   const scope: CashScope = {
@@ -1317,7 +1395,7 @@ async function fetchCashData(client: CashClient, request: CashDataRequest): Prom
     simulationRunId: request.simulationRunId,
     ...(accountId ? { accountId } : {}),
   } as const;
-  const [baselineState, summary] = await Promise.all([
+  const [baselineResult, summaryResult] = await Promise.allSettled([
     client.readBaselines(baselineFilter),
     client.readSummary(scope, {
       accountIds: request.accountIds,
@@ -1325,7 +1403,9 @@ async function fetchCashData(client: CashClient, request: CashDataRequest): Prom
       today: request.today,
     }),
   ]);
-  return { baselineState, summary };
+  if (baselineResult.status === "rejected") throw baselineResult.reason;
+  if (summaryResult.status === "rejected") throw summaryResult.reason;
+  return { baselineState: baselineResult.value, summary: summaryResult.value };
 }
 
 export function TradeReviewWorkspace({
@@ -1334,6 +1414,7 @@ export function TradeReviewWorkspace({
   fxSlot,
   screenshotImportDependencies,
   storageClient: storageClientOverride,
+  cashClient: cashClientOverride,
   legacyStateExporter = exportLegacyBrowserState,
   activeAliasLoader: activeAliasLoaderOverride,
 }: Props) {
@@ -1343,7 +1424,10 @@ export function TradeReviewWorkspace({
   const [activeAliasLoader] = useState<ActiveAliasLoader>(() =>
     activeAliasLoaderOverride ?? (storageClientOverride ? async () => [] : createActiveAliasLoader()),
   );
-  const cashClient = useMemo(() => createCashClient(), []);
+  const cashClient = useMemo(
+    () => cashClientOverride ?? createCashClient(),
+    [cashClientOverride],
+  );
   const marketDataRepository = useMemo(
     () => new ApiMarketDataRepository(storageClient),
     [storageClient],
@@ -1449,6 +1533,11 @@ export function TradeReviewWorkspace({
     enabled: !showDemo,
   });
   const fxSnapshot = useMemo(() => toRoomFxSnapshot(fxRates.state), [fxRates.state]);
+  // The first holdings bundle may only freeze after the persisted FX read has
+  // returned. A null initial state is still an in-flight read even when the
+  // hook has not flipped its loading flag yet (the request starts in a
+  // microtask), so use the durable state itself as the boundary.
+  const holdingsFxDataReady = showDemo || fxRates.state !== null;
   const resolvedFxSlot = fxSlot ?? (
     !showDemo ? (
       <FxPanel
@@ -1531,12 +1620,26 @@ export function TradeReviewWorkspace({
   const [marketDataJobs, setMarketDataJobs] = useState<
     Record<string, MarketDataJob>
   >({});
+  // The import producer registers this permit before projecting its saved
+  // ledger into the dashboard. The hidden dashboard can therefore retain its
+  // prior accepted bundle until this exact generation reaches terminal
+  // producer receipt plus financial readback.
+  const [holdingsPublicationPermit, setHoldingsPublicationPermit] = useState<HoldingsPublicationPermit | null>(null);
+  const [holdingsOwnedProgress, setHoldingsOwnedProgress] = useState<HoldingsOwnedProgress | null>(null);
+  const [holdingsLedgerPublicationRequired, setHoldingsLedgerPublicationRequired] = useState(false);
   const [marketDataRefresh, setMarketDataRefresh] =
     useState<GlobalMarketRefreshState>(EMPTY_MARKET_DATA_REFRESH);
   const [failedMarketDataIds, setFailedMarketDataIds] = useState<string[]>([]);
   const [hydratedMarketIds, setHydratedMarketIds] = useState<Set<string>>(
     () => new Set(),
   );
+  const [hydratedMarketKeys, setHydratedMarketKeys] = useState<Record<string, string>>({});
+  // `hydratedMarketKeys` is the settled read boundary used by Recall. A
+  // failed daily read may still settle that boundary so the consumer can show
+  // its terminal error. Holdings publication has a stricter boundary: only a
+  // successful read for the current raw execution identity may advance this
+  // key.
+  const [financialMarketKeys, setFinancialMarketKeys] = useState<Record<string, string>>({});
   const [marketIntradayReadyKeys, setMarketIntradayReadyKeys] = useState<Record<string, string>>({});
   const [episodeReviews, setEpisodeReviews] = useState<
     Record<string, EpisodeReviewRecord>
@@ -1622,6 +1725,8 @@ export function TradeReviewWorkspace({
   >({});
   const refreshCancellation = useRef(new RefreshCancellationService());
   const activeMarketRefreshRuns = useRef(new Map<string, ActiveMarketRefreshRun>());
+  const holdingsOwnedProgressRef = useRef(new Map<number, HoldingsOwnedProgress>());
+  const marketRefreshRunSequence = useRef(0);
   // Public callers are registered before waiting for the lock. This keeps
   // same-page disjoint work queued behind the current run and lets duplicate
   // supplements observe the same settled run instead of racing the Web Lock.
@@ -1632,6 +1737,11 @@ export function TradeReviewWorkspace({
   const marketHydrationKeys = useRef(new Map<string, string>());
   const marketHydrationInFlight = useRef(new Map<string, MarketHydrationInFlight>());
   const marketHydrationRunSequence = useRef(0);
+  const financialMarketKeysRef = useRef(new Map<string, string>());
+  const financialMarketReadSequence = useRef(0);
+  const financialMarketReadOwners = useRef(new Map<string, FinancialMarketReadOwner>());
+  const holdingsPublicationGeneration = useRef(0);
+  const holdingsPublicationRef = useRef<HoldingsPublicationPermit | null>(null);
   const marketIntradayKeys = useRef(new Map<string, string>());
   const marketIntradayInFlight = useRef(new Map<string, MarketHydrationInFlight>());
   const marketIntradayRunSequence = useRef(0);
@@ -1644,6 +1754,218 @@ export function TradeReviewWorkspace({
 
   function currentExecutionSnapshot() {
     return importedExecutionsRef.current ?? [];
+  }
+
+  function isOwnedPublicationPermit(
+    permit: HoldingsPublicationPermit | null,
+    generation: number,
+    status: "pending" | "current" = "current",
+  ): boolean {
+    return Boolean(
+      permit
+      && permit.generation === generation
+      && (permit.owner === "import" || permit.owner === "holdings-refresh")
+      && (status !== "pending" || permit.status === "pending"),
+    );
+  }
+
+  function ownedRequiredIds(generation: number, fallbackIds: readonly string[]): string[] {
+    const permit = holdingsPublicationRef.current;
+    if (!permit || !isOwnedPublicationPermit(permit, generation, "pending")) return [...new Set(fallbackIds)];
+    // An accepted permit with no required market IDs is a valid empty scope.
+    // Never replace that denominator with the caller's durable inventory.
+    return [...new Set(permit.requiredMarketDataIds)];
+  }
+
+  function publishOwnedProgress(progress: HoldingsOwnedProgress): void {
+    if (!isOwnedPublicationPermit(holdingsPublicationRef.current, progress.generation)) return;
+    setHoldingsOwnedProgress(progress);
+  }
+
+  function beginOwnedProgress(
+    generation: number,
+    runId: number,
+    requiredIds: readonly string[],
+  ): void {
+    const permit = holdingsPublicationRef.current;
+    if (!isOwnedPublicationPermit(permit, generation, "pending")) return;
+    const existing = holdingsOwnedProgressRef.current.get(generation);
+    const next = existing
+      ? bindHoldingsOwnedProgressRun(
+          mergeHoldingsOwnedProgressRequiredIds(existing, requiredIds),
+          runId,
+        )
+      : createHoldingsOwnedProgress({ generation, runId, requiredIds });
+    holdingsOwnedProgressRef.current.set(generation, next);
+    publishOwnedProgress(next);
+  }
+
+  function bindOwnedProgressToRun(
+    run: ActiveMarketRefreshRun,
+    binding: OwnedProgressBinding,
+  ): void {
+    const permit = holdingsPublicationRef.current;
+    if (!isOwnedPublicationPermit(permit, binding.generation, "pending")) return;
+    const bindingKey = `${binding.generation}:${run.runId}`;
+    run.ownedBindings.set(bindingKey, binding);
+    beginOwnedProgress(binding.generation, run.runId, [...binding.requiredIds]);
+    const progress = holdingsOwnedProgressRef.current.get(binding.generation);
+    if (!progress) return;
+    let next = progress;
+    for (const [instrumentId, settlement] of run.settledById) {
+      next = settleHoldingsOwnedProgress(next, {
+        generation: binding.generation,
+        runId: run.runId,
+        instrumentId,
+        status: settlement.status,
+        cacheOnly: settlement.cacheOnly,
+      });
+    }
+    holdingsOwnedProgressRef.current.set(binding.generation, next);
+    publishOwnedProgress(next);
+  }
+
+  function isLiveMarketRefreshItem(
+    run: ActiveMarketRefreshRun,
+    instrumentId: string,
+  ): boolean {
+    if (!isLiveMarketRefreshRun(run)) return false;
+    if ((run.subscriberCounts.get(instrumentId) ?? 0) <= 0) return false;
+    const controller = run.itemControllers.get(instrumentId);
+    return !controller || !controller.signal.aborted;
+  }
+
+  function settleOwnedProgressForRun(
+    run: ActiveMarketRefreshRun,
+    instrumentId: string,
+    status: HoldingsOwnedProgressTerminal,
+    cacheOnly = false,
+  ): void {
+    // A shared run can remain live for another instrument after this item has
+    // been cancelled. Do not let an abort-ignoring provider record or replay
+    // that item's late terminal result into a current owned projection.
+    if (!isLiveMarketRefreshItem(run, instrumentId)) return;
+    run.settledById.set(instrumentId, { status, cacheOnly });
+    for (const binding of run.ownedBindings.values()) {
+      const permit = holdingsPublicationRef.current;
+      if (!isOwnedPublicationPermit(permit, binding.generation, "pending")) continue;
+      const progress = holdingsOwnedProgressRef.current.get(binding.generation);
+      if (!progress) continue;
+      const next = settleHoldingsOwnedProgress(progress, {
+        generation: binding.generation,
+        runId: run.runId,
+        instrumentId,
+        status,
+        cacheOnly,
+      });
+      if (next === progress) continue;
+      holdingsOwnedProgressRef.current.set(binding.generation, next);
+      publishOwnedProgress(next);
+    }
+  }
+
+  function setOwnedProgressPhase(
+    generation: number,
+    phase: HoldingsOwnedProgress["phase"],
+    runId?: number,
+  ): void {
+    const progress = holdingsOwnedProgressRef.current.get(generation);
+    if (!progress) return;
+    const next = setHoldingsOwnedProgressPhase(progress, { generation, phase, runId });
+    if (next === progress) return;
+    holdingsOwnedProgressRef.current.set(generation, next);
+    publishOwnedProgress(next);
+  }
+
+  function ownedBindingForOptions(
+    options: MarketDataUpdateOptions,
+    fallbackIds: readonly string[],
+  ): OwnedProgressBinding | undefined {
+    const generation = options.holdingsPublicationGeneration;
+    if (generation === undefined) return undefined;
+    return {
+      generation,
+      requiredIds: new Set(ownedRequiredIds(generation, fallbackIds)),
+    };
+  }
+
+  function mergeOwnedBinding(
+    bindings: ReadonlyArray<OwnedProgressBinding>,
+    binding: OwnedProgressBinding | undefined,
+  ): OwnedProgressBinding[] {
+    if (!binding) return [...bindings];
+    const existing = bindings.find(item => item.generation === binding.generation);
+    if (!existing) return [...bindings, binding];
+    return bindings.map(item => item.generation === binding.generation
+      ? { ...item, requiredIds: new Set([...item.requiredIds, ...binding.requiredIds]) }
+      : item);
+  }
+
+  function ownedBindingsForOptions(
+    options: MarketDataUpdateOptions,
+    fallbackIds: readonly string[],
+  ): OwnedProgressBinding[] {
+    let bindings = [...(options.holdingsOwnedBindings ?? [])];
+    bindings = mergeOwnedBinding(bindings, ownedBindingForOptions(options, fallbackIds));
+    if (options.producer) {
+      for (const binding of options.producer.ownedBindings.values()) {
+        bindings = mergeOwnedBinding(bindings, binding);
+      }
+    }
+    return bindings;
+  }
+
+  function attachOwnedBindingToProducer(
+    producer: MarketRefreshProducer,
+    binding: OwnedProgressBinding | undefined,
+  ): void {
+    if (!binding) return;
+    const existing = producer.ownedBindings.get(binding.generation);
+    const merged = existing
+      ? mergeOwnedBinding([existing], binding)[0]
+      : binding;
+    producer.ownedBindings.set(binding.generation, merged);
+    if (producer.activeRun) bindOwnedProgressToRun(producer.activeRun, merged);
+  }
+
+  function updateHoldingsPublication(
+    generation: number,
+    patch: Partial<HoldingsPublicationPermit>,
+  ) {
+    const current = holdingsPublicationRef.current;
+    if (!current || current.generation !== generation) return;
+    // Cancellation owns the terminal decision. A late producer/readback
+    // continuation must not turn a cancelled generation back into a usable
+    // publication.
+    if (current.status !== "pending" && patch.status !== undefined) return;
+    const next = { ...current, ...patch };
+    holdingsPublicationRef.current = next;
+    setHoldingsPublicationPermit(next);
+    if (patch.status !== undefined) {
+      const phase = patch.status === "complete"
+        ? "complete"
+        : patch.status === "partial"
+          ? "partial"
+          : patch.status === "failed"
+            ? "failed"
+            : patch.status === "cancelled"
+              ? "cancelled"
+              : undefined;
+      if (phase) setOwnedProgressPhase(generation, phase);
+    }
+  }
+
+  function registerHoldingsPublication(
+    input: Omit<HoldingsPublicationPermit, "generation">,
+  ): HoldingsPublicationPermit {
+    const permit: HoldingsPublicationPermit = {
+      ...input,
+      generation: ++holdingsPublicationGeneration.current,
+    };
+    holdingsPublicationRef.current = permit;
+    setHoldingsPublicationPermit(permit);
+    setHoldingsOwnedProgress(null);
+    return permit;
   }
 
   const screenshotImport = useScreenshotImport({
@@ -1659,12 +1981,21 @@ export function TradeReviewWorkspace({
     () => buildInstrumentTradeSummaries(importedExecutions),
     [importedExecutions],
   );
+  const rawImportedInstrumentsRef = useRef(rawImportedInstruments);
+  // This ref is advanced synchronously with importedExecutionsRef. Import
+  // readback can therefore validate the current ledger before React renders
+  // the new raw summary; the render-time ref remains the fallback for other
+  // paths that do not have a synchronously projected ledger.
+  const currentImportedInstrumentSummariesRef = useRef<readonly InstrumentTradeSummary[]>(
+    rawImportedInstruments,
+  );
+  rawImportedInstrumentsRef.current = rawImportedInstruments;
   // Metadata overlays can update an execution's display name without changing
   // the market-data range. Keep that update out of the inventory hydration
   // dependency so one rename cannot restart reads for every instrument.
   const rawImportedInstrumentHydrationKey = useMemo(
     () => rawImportedInstruments
-      .map((summary) => `${summary.instrument.id}:${summary.tradeCount}:${summary.firstTradeAt}:${summary.lastTradeAt}`)
+      .map(marketHydrationKey)
       .join("|"),
     [rawImportedInstruments],
   );
@@ -1724,7 +2055,7 @@ export function TradeReviewWorkspace({
     [marketStates, selectedImportedInstrument],
   );
   const selectedMarketHydrationKey = selectedRawImportedInstrument
-    ? `${selectedRawImportedInstrument.instrument.id}:${selectedRawImportedInstrument.tradeCount}:${selectedRawImportedInstrument.firstTradeAt}:${selectedRawImportedInstrument.lastTradeAt}`
+    ? marketHydrationKey(selectedRawImportedInstrument)
     : undefined;
   const selectedIntradayReady = Boolean(
     selectedRawImportedInstrument &&
@@ -1993,6 +2324,60 @@ export function TradeReviewWorkspace({
     tradeLibraryEntryCacheRef.current = tradeLibraryEntriesResult.cache;
   }, [tradeLibraryEntriesResult.cache]);
   const tradeLibraryEntries = tradeLibraryEntriesResult.entries;
+  const dashboardTradeLibraryEntries = useMemo(
+    () => tradeLibraryEntries.map((entry) => {
+      const summary = rawImportedInstruments.find(
+        (item) => item.instrument.id === entry.instrument.id,
+      );
+      const financialReady = !summary ||
+        financialMarketKeys[entry.instrument.id] === marketHydrationKey(summary);
+      if (financialReady) return entry;
+      // The dashboard's holdings row falls back to entry.latestQuote when its
+      // explicit quote/candle projections are empty. Remove that fallback for
+      // an unsettled identity while keeping the ledger and Recall/library
+      // entry itself available to the rest of the workspace.
+      const sanitized = { ...entry };
+      delete sanitized.latestQuote;
+      return sanitized;
+    }),
+    [financialMarketKeys, rawImportedInstruments, tradeLibraryEntries],
+  );
+  const dashboardMarketDataCandles = useMemo(
+    () => Object.fromEntries(
+      rawImportedInstruments.map((summary) => {
+        const id = summary.instrument.id;
+        const ready = financialMarketKeys[id] === marketHydrationKey(summary);
+        return [id, ready ? marketStates[id]?.daily ?? [] : []];
+      }),
+    ),
+    [financialMarketKeys, marketStates, rawImportedInstruments],
+  );
+  // A cold scope can publish the instruments whose current reads succeeded as
+  // soon as every instrument has reached a settled result. A failed cold read
+  // has no financial key, so the projections above remove its quote/candles;
+  // the known successful rows remain useful instead of keeping the whole cold
+  // scope pending forever. Once an accepted bundle exists for an older raw
+  // identity, however, a settled failure for the new identity must retain the
+  // old bundle until every affected financial key succeeds. The mismatch is
+  // the render-time guard that prevents a new ledger from pairing with old
+  // market data.
+  const holdingsMarketDataSettled = rawImportedInstruments.length === 0 || rawImportedInstruments.every(
+    (summary) => hydratedMarketKeys[summary.instrument.id] === marketHydrationKey(summary),
+  );
+  const holdingsHydrationRetryInstruments = useMemo(
+    () => rawImportedInstruments
+      .filter((summary) => {
+        const financialKey = financialMarketKeys[summary.instrument.id];
+        return financialKey !== undefined && financialKey !== marketHydrationKey(summary);
+      })
+      .map((summary) => ({
+        instrumentId: summary.instrument.id,
+        market: summary.instrument.market,
+      })),
+    [financialMarketKeys, rawImportedInstruments],
+  );
+  const hasRetainedFinancialIdentity = holdingsHydrationRetryInstruments.length > 0;
+  const holdingsDataReady = hydrated && holdingsFxDataReady && holdingsMarketDataSettled && !hasRetainedFinancialIdentity;
   const scopedTradeLibraryEntries = useMemo(
     () => filterEntriesBySharedScope(tradeLibraryEntries, sharedScope),
     [tradeLibraryEntries, sharedScope],
@@ -2075,26 +2460,47 @@ export function TradeReviewWorkspace({
       : Object.entries(instrumentMetadata ?? {})).sort(([left], [right]) => left.localeCompare(right))),
     [instrumentMetadata],
   );
-  const cashFxRevision = useMemo(() => JSON.stringify({
-    status: fxSnapshot?.status,
-    asOf: fxSnapshot?.asOf,
-    rates: fxSnapshot?.rates,
-  }), [fxSnapshot]);
-  const cashScopeReady = !showDemo && Boolean(cashNature) && (
+  const cashFxRevision = useMemo(
+    () => JSON.stringify(canonicalFxPublicationIdentity(fxSnapshot)),
+    [fxSnapshot],
+  );
+  const cashScopeReady = storageState === "ready" && sharedScopeRestored && !showDemo && Boolean(cashNature) && (
     cashNature === "live" ||
     Boolean(cashSimulationRunId) ||
     isCanonicalTradingViewSharedScope(sharedScope)
   );
-  const cashScopeKey = useMemo(() => JSON.stringify({
+  const cashBusinessKey = useMemo(() => JSON.stringify({
+    nature: cashNature,
+    simulationRunId: cashSimulationRunId,
+    accountIds: [...sharedScope.accountIds].sort(),
+    targetCurrency: cashTargetCurrency,
+    reportCurrency: sharedScope.reportCurrency,
+    today: cashTodayKey,
+  }), [cashNature, cashSimulationRunId, cashTargetCurrency, cashTodayKey, sharedScope.accountIds, sharedScope.reportCurrency]);
+  // The display preference is a cash business boundary for accepted rendering,
+  // while the underlying baseline write remains scoped to the API business
+  // request. This lets an in-flight save finish when the user changes only
+  // original/CNY presentation, while account, FX, execution, and metadata
+  // changes still invalidate the editor write.
+  const cashWriteBusinessKey = useMemo(() => JSON.stringify({
     nature: cashNature,
     simulationRunId: cashSimulationRunId,
     accountIds: [...sharedScope.accountIds].sort(),
     targetCurrency: cashTargetCurrency,
     today: cashTodayKey,
+  }), [cashNature, cashSimulationRunId, cashTargetCurrency, cashTodayKey, sharedScope.accountIds]);
+  const cashScopeKey = useMemo(() => JSON.stringify({
+    businessKey: cashBusinessKey,
     executionRevision: cashExecutionRevision,
     metadataRevision: cashMetadataRevision,
     fxRevision: cashFxRevision,
-  }), [cashExecutionRevision, cashFxRevision, cashMetadataRevision, cashNature, cashSimulationRunId, cashTargetCurrency, cashTodayKey, sharedScope.accountIds]);
+  }), [cashBusinessKey, cashExecutionRevision, cashFxRevision, cashMetadataRevision]);
+  const cashWriteScopeKey = useMemo(() => JSON.stringify({
+    businessKey: cashWriteBusinessKey,
+    executionRevision: cashExecutionRevision,
+    metadataRevision: cashMetadataRevision,
+    fxRevision: cashFxRevision,
+  }), [cashWriteBusinessKey, cashExecutionRevision, cashFxRevision, cashMetadataRevision]);
   const cashDataRequest = useMemo<CashDataRequest | null>(() => {
     if (!cashScopeReady || !cashNature) return null;
     return {
@@ -2107,30 +2513,61 @@ export function TradeReviewWorkspace({
   }, [cashNature, cashScopeReady, cashSimulationRunId, cashTargetCurrency, cashTodayKey, sharedScope.accountIds]);
   const [cashBaselineState, setCashBaselineState] = useState<CashBaselineState | CashBaselineStorageState>(() => emptyCashBaselineStorageState());
   const [cashBaselineScopeKey, setCashBaselineScopeKey] = useState<string | null>(null);
-  const [cashSummary, setCashSummary] = useState<CashSummary | null>(null);
   const [cashSummaryScopeKey, setCashSummaryScopeKey] = useState<string | null>(null);
   const [cashLoading, setCashLoading] = useState(false);
   const [cashSaving, setCashSaving] = useState(false);
   const [cashError, setCashError] = useState<string | null>(null);
+  const [cashWriteError, setCashWriteError] = useState<CashWriteError | null>(null);
   const [cashSavedFact, setCashSavedFact] = useState<CashSavedFact | null>(null);
   const [cashSummaryRefreshError, setCashSummaryRefreshError] = useState<CashSummaryRefreshError | null>(null);
   const [cashCompletedReadOwner, setCashCompletedReadOwner] = useState<CashReadOwner | null>(null);
+  const [cashAcceptedBundle, setCashAcceptedBundle] = useState<CashAcceptedBundle | null>(null);
   const cashRequestSequence = useRef(0);
   const cashWriteSequence = useRef(0);
   const cashScopeKeyRef = useRef(cashScopeKey);
+  const cashWriteScopeKeyRef = useRef(cashWriteScopeKey);
+  const cashBusinessKeyRef = useRef(cashBusinessKey);
+  const cashWriteBusinessKeyRef = useRef(cashWriteBusinessKey);
+  const cashClientRef = useRef(cashClient);
+  const cashPreviousClientRef = useRef(cashClient);
+  const cashAcceptedBundleRef = useRef<CashAcceptedBundle | null>(cashAcceptedBundle);
   const cashLatestCommittedReadOwnerRef = useRef<CashReadOwner | null>(null);
   // Keep reload state out of the effect's synchronous body: a repeated scope key
   // must remain pending until the new request's own sequence settles.
   const cashResolvedRequestSequence = useRef(0);
+  cashBusinessKeyRef.current = cashBusinessKey;
+  cashWriteBusinessKeyRef.current = cashWriteBusinessKey;
+  cashClientRef.current = cashClient;
+  cashAcceptedBundleRef.current = cashAcceptedBundle;
   useEffect(() => {
-    if (cashScopeKeyRef.current !== cashScopeKey) {
+    const fullScopeChanged = cashScopeKeyRef.current !== cashScopeKey;
+    const writeScopeChanged = cashWriteScopeKeyRef.current !== cashWriteScopeKey;
+    const clientChanged = cashPreviousClientRef.current !== cashClient;
+    if (fullScopeChanged) {
+      if (cashAcceptedBundleRef.current && cashAcceptedBundleRef.current.writeBusinessKey !== cashWriteBusinessKey) {
+        setCashAcceptedBundle(null);
+      }
+    }
+    if (clientChanged) {
+      setCashAcceptedBundle(null);
+      setCashSavedFact(null);
+      setCashSummaryRefreshError(null);
+      setCashWriteError(null);
+    }
+    if (writeScopeChanged || clientChanged) {
       cashWriteSequence.current += 1;
       setCashSaving(false);
-      setCashSavedFact(current => current?.scopeKey === cashScopeKey ? current : null);
-      setCashSummaryRefreshError(current => current?.scopeKey === cashScopeKey ? current : null);
+      setCashSavedFact(current => current?.client === cashClient && current.scopeKey === cashScopeKey && current.writeScopeKey === cashWriteScopeKey ? current : null);
+      setCashSummaryRefreshError(current => current?.client === cashClient && current.scopeKey === cashScopeKey && current.writeScopeKey === cashWriteScopeKey ? current : null);
+    }
+    if (fullScopeChanged || clientChanged) {
+      setCashWriteError(null);
     }
     cashScopeKeyRef.current = cashScopeKey;
+    cashWriteScopeKeyRef.current = cashWriteScopeKey;
+    cashPreviousClientRef.current = cashClient;
     const requestId = ++cashRequestSequence.current;
+    const writeSequenceAtRead = cashWriteSequence.current;
     const readOwner: CashReadOwner = { client: cashClient, request: cashDataRequest, scopeKey: cashScopeKey };
     cashLatestCommittedReadOwnerRef.current = readOwner;
     if (!cashDataRequest) {
@@ -2139,90 +2576,89 @@ export function TradeReviewWorkspace({
       };
     }
     void fetchCashData(cashClient, cashDataRequest).then(({ baselineState, summary }) => {
-      if (requestId !== cashRequestSequence.current) return;
+      if (requestId !== cashRequestSequence.current || writeSequenceAtRead !== cashWriteSequence.current || cashClientRef.current !== cashClient) return;
       cashResolvedRequestSequence.current = requestId;
       setCashBaselineState(baselineState);
       setCashBaselineScopeKey(cashScopeKey);
-      setCashSummary(summary);
       setCashSummaryScopeKey(cashScopeKey);
+      setCashAcceptedBundle({ client: cashClient, businessKey: cashBusinessKey, writeBusinessKey: cashWriteBusinessKey, baselineState, summary });
       setCashError(null);
       setCashSavedFact(null);
       setCashSummaryRefreshError(null);
       setCashCompletedReadOwner(readOwner);
       setCashLoading(false);
     }).catch(error => {
-      if (requestId !== cashRequestSequence.current) return;
+      if (requestId !== cashRequestSequence.current || writeSequenceAtRead !== cashWriteSequence.current || cashClientRef.current !== cashClient) return;
       cashResolvedRequestSequence.current = requestId;
       setCashSummaryScopeKey(cashScopeKey);
       setCashError(error instanceof Error ? error.message : "现金数据暂时不可用");
-      setCashSummary(null);
       setCashCompletedReadOwner(readOwner);
       setCashLoading(false);
     });
     return () => {
       if (requestId === cashRequestSequence.current) cashRequestSequence.current += 1;
     };
-  }, [cashClient, cashDataRequest, cashScopeKey]);
+  }, [cashBusinessKey, cashClient, cashDataRequest, cashScopeKey, cashWriteBusinessKey, cashWriteScopeKey]);
   const refreshCashData = useCallback(async (): Promise<boolean> => {
     const readOwner = cashLatestCommittedReadOwnerRef.current;
-    if (!readOwner || readOwner.scopeKey !== cashScopeKey || !readOwner.request) return false;
+    const currentScopeKey = cashScopeKeyRef.current;
+    if (!readOwner || readOwner.client !== cashClientRef.current || readOwner.scopeKey !== currentScopeKey || !readOwner.request) return false;
     const requestId = ++cashRequestSequence.current;
+    const writeSequenceAtRead = cashWriteSequence.current;
+    const clientAtRead = readOwner.client;
     setCashLoading(true);
     setCashError(null);
-    setCashSummary(null);
-    setCashSummaryScopeKey(null);
     try {
       const { baselineState, summary } = await fetchCashData(readOwner.client, readOwner.request);
-      if (requestId !== cashRequestSequence.current || cashScopeKey !== cashScopeKeyRef.current || readOwner.scopeKey !== cashScopeKey) return false;
+      if (requestId !== cashRequestSequence.current || writeSequenceAtRead !== cashWriteSequence.current || clientAtRead !== cashClientRef.current || currentScopeKey !== cashScopeKeyRef.current || readOwner.scopeKey !== currentScopeKey) return false;
       cashResolvedRequestSequence.current = requestId;
       setCashBaselineState(baselineState);
-      setCashBaselineScopeKey(cashScopeKey);
-      setCashSummary(summary);
-      setCashSummaryScopeKey(cashScopeKey);
+      setCashBaselineScopeKey(currentScopeKey);
+      setCashSummaryScopeKey(currentScopeKey);
+      setCashAcceptedBundle({ client: clientAtRead, businessKey: cashBusinessKeyRef.current, writeBusinessKey: cashWriteBusinessKeyRef.current, baselineState, summary });
       setCashError(null);
       setCashSavedFact(null);
       setCashSummaryRefreshError(null);
       setCashCompletedReadOwner(readOwner);
       return true;
     } catch (error) {
-      if (requestId !== cashRequestSequence.current || cashScopeKey !== cashScopeKeyRef.current || readOwner.scopeKey !== cashScopeKey) return false;
+      if (requestId !== cashRequestSequence.current || writeSequenceAtRead !== cashWriteSequence.current || clientAtRead !== cashClientRef.current || currentScopeKey !== cashScopeKeyRef.current || readOwner.scopeKey !== currentScopeKey) return false;
       cashResolvedRequestSequence.current = requestId;
-      setCashSummaryScopeKey(cashScopeKey);
+      setCashSummaryScopeKey(currentScopeKey);
       const message = error instanceof Error ? error.message : "现金数据暂时不可用";
       setCashError(message);
-      setCashSummaryRefreshError({ scopeKey: cashScopeKey, message });
-      setCashSummary(null);
+      setCashSummaryRefreshError({ client: clientAtRead, scopeKey: currentScopeKey, writeScopeKey: cashWriteScopeKeyRef.current, message });
       setCashCompletedReadOwner(readOwner);
       return false;
     } finally {
-      if (requestId === cashRequestSequence.current) setCashLoading(false);
+      if (requestId === cashRequestSequence.current && clientAtRead === cashClientRef.current) setCashLoading(false);
     }
-  }, [cashClient, cashDataRequest, cashScopeKey]);
+  }, []);
   const saveCashBaseline = useCallback(async (draft: CashBaselineMutation): Promise<CashBaselineState | CashBaselineStorageState> => {
     const requestId = ++cashWriteSequence.current;
-    const scopeAtWrite = cashScopeKey;
+    const scopeAtWrite = cashWriteScopeKey;
+    const clientAtWrite = cashClient;
     setCashSaving(true);
-    setCashError(null);
+    setCashWriteError(null);
     try {
       const nextState = await cashClient.saveBaseline(draft);
-      if (requestId !== cashWriteSequence.current || scopeAtWrite !== cashScopeKeyRef.current) return nextState;
+      if (requestId !== cashWriteSequence.current || clientAtWrite !== cashClientRef.current || scopeAtWrite !== cashWriteScopeKeyRef.current) return nextState;
       setCashBaselineState(nextState);
-      setCashBaselineScopeKey(scopeAtWrite);
-      setCashSavedFact({ scopeKey: scopeAtWrite });
+      setCashBaselineScopeKey(cashScopeKeyRef.current);
+      setCashSavedFact({ client: clientAtWrite, scopeKey: cashScopeKeyRef.current, writeScopeKey: scopeAtWrite });
       // The baseline changes both the editor state and the calculated total;
       // re-read the summary through the same scope after the write succeeds.
-      const refreshed = await refreshCashData();
-      if (!refreshed && requestId === cashWriteSequence.current && scopeAtWrite === cashScopeKeyRef.current) {
-        setCashError(`${CASH_SUMMARY_REFRESH_NOTICE}；请重试读取`);
-      }
+      await refreshCashData();
       return nextState;
     } catch (error) {
-      if (requestId === cashWriteSequence.current && scopeAtWrite === cashScopeKeyRef.current) setCashError(error instanceof Error ? error.message : "现金基准保存失败");
+      if (requestId === cashWriteSequence.current && clientAtWrite === cashClientRef.current && scopeAtWrite === cashWriteScopeKeyRef.current) {
+        setCashWriteError({ client: clientAtWrite, scopeKey: cashScopeKeyRef.current, writeScopeKey: scopeAtWrite, message: error instanceof Error ? error.message : "现金基准保存失败" });
+      }
       throw error;
     } finally {
-      if (requestId === cashWriteSequence.current) setCashSaving(false);
+      if (requestId === cashWriteSequence.current && clientAtWrite === cashClientRef.current) setCashSaving(false);
     }
-  }, [cashClient, cashScopeKey, refreshCashData]);
+  }, [cashClient, cashScopeKey, cashWriteScopeKey, refreshCashData]);
   const cashRequestSettledForScope = cashScopeReady &&
     cashDataRequest !== null &&
     cashCompletedReadOwner !== null &&
@@ -2231,24 +2667,77 @@ export function TradeReviewWorkspace({
     cashCompletedReadOwner.scopeKey === cashScopeKey &&
     cashScopeKeyRef.current === cashScopeKey &&
     cashResolvedRequestSequence.current === cashRequestSequence.current &&
-    cashSummaryScopeKey === cashScopeKey;
-  const cashSavedFactForScope = cashSavedFact?.scopeKey === cashScopeKey ? cashSavedFact : null;
-  const cashSummaryRefreshErrorForScope = cashSummaryRefreshError?.scopeKey === cashScopeKey ? cashSummaryRefreshError : null;
+    cashSummaryScopeKey === cashScopeKey &&
+    cashError === null;
+  const cashAcceptedDisplayForScope = cashScopeReady &&
+    cashAcceptedBundle !== null &&
+    cashAcceptedBundle.client === cashClient &&
+    cashAcceptedBundle.writeBusinessKey === cashWriteBusinessKey
+    ? cashAcceptedBundle
+    : null;
+  // reportCurrency is presentation-only for a saved baseline. Keep its
+  // notice/retry owned by the same client and write scope while that display
+  // resubscription is pending; accepted summary/editor bundles stay exact.
+  const cashSavedFactForScope = cashSavedFact?.client === cashClient && cashSavedFact.writeScopeKey === cashWriteScopeKey ? cashSavedFact : null;
+  const cashSummaryRefreshErrorForScope = cashSummaryRefreshError?.client === cashClient && cashSummaryRefreshError.writeScopeKey === cashWriteScopeKey ? cashSummaryRefreshError : null;
+  const cashWriteErrorForScope = cashWriteError?.client === cashClient && cashWriteError.scopeKey === cashScopeKey && cashWriteError.writeScopeKey === cashWriteScopeKey ? cashWriteError : null;
+  const acknowledgeCashWriteErrorForScope = useCallback(() => {
+    const acknowledged = cashWriteErrorForScope;
+    if (!acknowledged ||
+      acknowledged.client !== cashClientRef.current ||
+      acknowledged.scopeKey !== cashScopeKeyRef.current ||
+      acknowledged.writeScopeKey !== cashWriteScopeKeyRef.current) return;
+    setCashWriteError(current => {
+      if (!current ||
+        current !== acknowledged ||
+        current.client !== cashClientRef.current ||
+        current.scopeKey !== cashScopeKeyRef.current ||
+        current.writeScopeKey !== cashWriteScopeKeyRef.current) return current;
+      return null;
+    });
+  }, [cashWriteErrorForScope]);
   const cashBaselineForScope = cashBaselineScopeKey === cashScopeKey &&
     (cashRequestSettledForScope || cashSavedFactForScope !== null)
     ? cashBaselineState
-    : emptyCashBaselineStorageState();
-  const cashSummaryForScope = cashRequestSettledForScope ? cashSummary : null;
-  const cashLoadingForScope = cashScopeReady && (cashLoading || !cashRequestSettledForScope);
-  const cashErrorForScope = cashRequestSettledForScope ? cashError : null;
+    : cashAcceptedDisplayForScope?.baselineState ?? emptyCashBaselineStorageState();
+  const cashSummaryForScope = cashAcceptedDisplayForScope?.summary ?? null;
+  const cashErrorBelongsToCurrentClient = cashCompletedReadOwner?.client === cashClient;
+  const cashErrorForScope = cashScopeReady &&
+    cashErrorBelongsToCurrentClient &&
+    cashCompletedReadOwner?.scopeKey === cashScopeKey &&
+    cashScopeKeyRef.current === cashScopeKey &&
+    cashResolvedRequestSequence.current === cashRequestSequence.current &&
+    cashSummaryScopeKey === cashScopeKey
+    ? cashError
+    : null;
+  const cashEditorErrorForScope = cashWriteErrorForScope?.message ?? cashErrorForScope;
+  const cashLoadingForScope = cashScopeReady &&
+    cashErrorForScope === null &&
+    (cashLoading || !cashRequestSettledForScope);
+  const cashRefreshNoticeForScope = cashSavedFactForScope ? CASH_SUMMARY_REFRESH_NOTICE : null;
+  // A failed read belongs to the committed owner above, so retrying it is a
+  // GET-only refresh. Keep the callback available for both the initial read
+  // and a same-scope reread; the refresh path's owner/request/write guards
+  // decide whether a late result may commit.
+  const cashReadRetryOwner = cashCompletedReadOwner?.client === cashClient &&
+    cashCompletedReadOwner.request === cashDataRequest &&
+    cashCompletedReadOwner.scopeKey === cashScopeKey
+    ? cashCompletedReadOwner
+    : null;
+  const onRetryCashSummaryForScope = cashReadRetryOwner &&
+    (cashErrorForScope !== null || cashSummaryRefreshErrorForScope !== null || cashLoadingForScope)
+    ? () => { void refreshCashData(); }
+    : undefined;
+  const cashRetryDisabledForScope = cashLoadingForScope || cashSaving;
   const cashBaselineDetailsForScope = useMemo(() => {
-    if (!cashRequestSettledForScope || cashBaselineScopeKey !== cashScopeKey) return [];
-    const summaryByKey = cashSummary?.byScope ?? {};
-    return cashBaselineState.records
+    if (!cashAcceptedDisplayForScope) return [];
+    const summary = cashAcceptedDisplayForScope.summary;
+    const summaryByKey = summary.byScope ?? {};
+    return cashAcceptedDisplayForScope.baselineState.records
       .filter(record => record.scope.nature === cashNature && record.scope.simulationRunId === cashSimulationRunId)
       .filter(record => sharedScope.accountIds.length === 0 || sharedScope.accountIds.includes(record.accountId))
       .map(record => {
-        const coverage = summaryByKey[cashBaselineKey(record)]?.status ?? cashSummary?.cashTotalStatus ?? "unavailable";
+        const coverage = summaryByKey[cashBaselineKey(record)]?.status ?? summary.cashTotalStatus ?? "unavailable";
         return {
           accountId: record.accountId,
           accountLabel: sharedAccountOptions.find(account => account.id === record.accountId)?.label,
@@ -2260,7 +2749,7 @@ export function TradeReviewWorkspace({
           coverage,
         };
       });
-  }, [cashBaselineScopeKey, cashBaselineState.records, cashNature, cashRequestSettledForScope, cashScopeKey, cashSimulationRunId, cashSummary, sharedAccountOptions, sharedScope.accountIds]);
+  }, [cashAcceptedDisplayForScope, cashNature, cashSimulationRunId, sharedAccountOptions, sharedScope.accountIds]);
   const qualityInput = useMemo(
     () => ({
       marketDataStatuses,
@@ -2275,7 +2764,7 @@ export function TradeReviewWorkspace({
   );
   const holdingsQuotesByInstrument = useMemo<Readonly<Record<string, TradingRoomQuote | undefined>>>(
     () => Object.fromEntries(
-      tradeLibraryEntries.map(entry => [
+      dashboardTradeLibraryEntries.map(entry => [
         entry.instrument.id,
         entry.latestQuote
           ? {
@@ -2289,7 +2778,7 @@ export function TradeReviewWorkspace({
           : undefined,
       ]),
     ),
-    [tradeLibraryEntries],
+    [dashboardTradeLibraryEntries],
   );
   // Keep the valuation cutoff as an absolute instant. The dashboard still
   // formats it as a room-local date, while the refresh coordinator can use
@@ -2768,6 +3257,7 @@ export function TradeReviewWorkspace({
           );
         }
         importedExecutionsRef.current = productionExecutions;
+        currentImportedInstrumentSummariesRef.current = storedSummaries;
         setImportedExecutions(productionExecutions);
         setImportHistory(bootstrap.importHistory);
         setReviewStates(states);
@@ -2892,7 +3382,12 @@ export function TradeReviewWorkspace({
   // Read the latest selection only when an inventory hydration completes. Saving a
   // cursor or switching episodes must never re-read every instrument's cache.
   const restoreHydratedEpisode = useEffectEvent((results: Array<{ instrumentId: string; state: InstrumentMarketState }>) => {
-      if (!selectedImportedInstrument || !selectedEpisode || hydratedMarketIds.has(selectedImportedInstrument.instrument.id)) return;
+      if (
+        !selectedImportedInstrument ||
+        !selectedEpisode ||
+        hydratedMarketKeys[selectedImportedInstrument.instrument.id] ===
+          marketHydrationKey(selectedImportedInstrument)
+      ) return;
       const selectedState = results.find(
         (result) =>
           result.instrumentId ===
@@ -3012,6 +3507,8 @@ export function TradeReviewWorkspace({
     if (rawImportedInstruments.length === 0) {
       marketHydrationKeys.current.clear();
       marketIntradayKeys.current.clear();
+      financialMarketKeysRef.current.clear();
+      setFinancialMarketKeys({});
       return;
     }
     let active = true;
@@ -3020,9 +3517,21 @@ export function TradeReviewWorkspace({
     const currentHydrationKeys = new Map(
       rawImportedInstruments.map((summary) => [
         summary.instrument.id,
-        `${summary.instrument.id}:${summary.tradeCount}:${summary.firstTradeAt}:${summary.lastTradeAt}`,
+        marketHydrationKey(summary),
       ]),
     );
+    const currentInstrumentIds = new Set(currentHydrationKeys.keys());
+    const removedFinancialIds = [...financialMarketKeysRef.current.keys()].filter(
+      (id) => !currentInstrumentIds.has(id),
+    );
+    if (removedFinancialIds.length > 0) {
+      removedFinancialIds.forEach((id) => financialMarketKeysRef.current.delete(id));
+      setFinancialMarketKeys((current) => {
+        const next = { ...current };
+        removedFinancialIds.forEach((id) => delete next[id]);
+        return next;
+      });
+    }
     const summariesToHydrate = rawImportedInstruments.filter((summary) => {
       const id = summary.instrument.id;
       const key = currentHydrationKeys.get(id);
@@ -3051,6 +3560,12 @@ export function TradeReviewWorkspace({
       try {
         state = applyPersistedMarketDataJob(
           await readInstrumentMarketState(summary, repository, {
+            // Inventory hydration is the dashboard's initial cache boundary.
+            // Daily data is enough for the holdings/history bundle; replay
+            // reads its intraday series after the selected instrument is
+            // hydrated. Reading intraday rows here made the initial bundle
+            // wait behind every replay range in the database.
+            includeIntraday: false,
             signal: controller.signal,
             scheduler: marketReadScheduler,
           }),
@@ -3080,11 +3595,17 @@ export function TradeReviewWorkspace({
       ) {
         return;
       }
-      // Only a successfully owned read may advance the durable hydration key.
-      // Cleanup removes this ownership, so an interrupted read is retried by
-      // the next inventory effect.
+      // Only a settled, still-owned read may advance the durable hydration key.
+      // An explicit storage failure is a settled result; cleanup removes this
+      // ownership, so an interrupted read is retried by the next inventory effect.
       marketHydrationKeys.current.set(id, key);
       marketHydrationInFlight.current.delete(id);
+      if (!dailyFailure) {
+        financialMarketKeysRef.current.set(id, key);
+        setFinancialMarketKeys((current) =>
+          current[id] === key ? current : { ...current, [id]: key },
+        );
+      }
       setMarketStates((current) => {
         const previous = current[id] ?? emptyMarketState();
         const intradaySource = hasIntradayEvidence(previous) ? previous : state;
@@ -3121,6 +3642,7 @@ export function TradeReviewWorkspace({
       });
       restoreHydratedEpisode([{ instrumentId: id, state }]);
       setHydratedMarketIds(current => new Set([...current, id]));
+      setHydratedMarketKeys(current => ({ ...current, [id]: key }));
     };
     const currentHoldingSummaries = summariesToHydrate.filter(summary =>
       currentHoldingInstrumentIds.has(summary.instrument.id),
@@ -3161,6 +3683,10 @@ export function TradeReviewWorkspace({
   const selectedImportedInstrumentHydrated = selectedRawImportedInstrument
     ? hydratedMarketIds.has(selectedRawImportedInstrument.instrument.id)
     : false;
+  const selectedImportedInstrumentReady = selectedRawImportedInstrument
+    ? hydratedMarketKeys[selectedRawImportedInstrument.instrument.id] ===
+      marketHydrationKey(selectedRawImportedInstrument)
+    : false;
   useEffect(() => {
     if (
       !hydrated ||
@@ -3172,7 +3698,7 @@ export function TradeReviewWorkspace({
     }
     const summary = selectedRawImportedInstrument;
     const instrumentId = summary.instrument.id;
-    const key = `${instrumentId}:${summary.tradeCount}:${summary.firstTradeAt}:${summary.lastTradeAt}`;
+    const key = marketHydrationKey(summary);
     if (
       marketIntradayKeys.current.get(instrumentId) === key ||
       marketIntradayInFlight.current.get(instrumentId)?.key === key
@@ -3462,12 +3988,20 @@ export function TradeReviewWorkspace({
 
   useEffect(
     () => () => {
+      for (const run of activeMarketRefreshRuns.current.values()) {
+        run.retired = true;
+      }
       refreshCancellation.current.cancelAll();
       for (const controller of Object.values(
         marketDataAbortControllers.current,
       )) {
         controller.abort();
       }
+      financialMarketReadSequence.current += 1;
+      for (const owner of financialMarketReadOwners.current.values()) {
+        owner.controller.abort();
+      }
+      financialMarketReadOwners.current.clear();
     },
     [],
   );
@@ -3485,8 +4019,10 @@ export function TradeReviewWorkspace({
       Object.values(marketDataJobsRef.current),
       inventory,
     );
+    const globalRunIsLive = [...activeMarketRefreshRuns.current.values()]
+      .some((run) => run.batch && isLiveMarketRefreshRun(run));
     setFailedMarketDataIds((current) =>
-      activeMarketRefreshRuns.current.has("all")
+      globalRunIsLive
         ? current
         : summary.retryableInstrumentIds,
     );
@@ -3496,7 +4032,7 @@ export function TradeReviewWorkspace({
       // but it must never replace the batch progress in the header.
       if (
         current.running ||
-        activeMarketRefreshRuns.current.has("all")
+        globalRunIsLive
       ) {
         return current;
       }
@@ -3519,8 +4055,160 @@ export function TradeReviewWorkspace({
     });
   }
 
+  async function rereadFinancialMarketData(
+    instrumentIds: readonly string[],
+    ownedKeys: ReadonlyMap<string, string>,
+    summarySource?: readonly InstrumentTradeSummary[],
+    context: FinancialMarketReadContext = { owner: "quality" },
+  ): Promise<ReadonlySet<string>> {
+    const runId = ++financialMarketReadSequence.current;
+    const currentPublication = holdingsPublicationRef.current;
+    const publicationGeneration = context.publicationGeneration;
+    if (
+      publicationGeneration !== undefined
+      && (currentPublication?.generation !== publicationGeneration || currentPublication.status !== "pending")
+    ) {
+      return new Set();
+    }
+    const requestedIds = new Set(instrumentIds);
+    // An import can project its merged ledger into React after this producer
+    // continuation starts. Use the post-merge summaries captured by the owner
+    // for the read, while the synchronously advanced ledger ref guards the
+    // current key before and after that read.
+    const source = summarySource ?? rawImportedInstrumentsRef.current;
+    const currentLedgerSummaries = currentImportedInstrumentSummariesRef.current;
+    const targets = source.filter((summary) => {
+      const id = summary.instrument.id;
+      if (!requestedIds.has(id) || ownedKeys.get(id) !== marketHydrationKey(summary)) return false;
+      const currentSummary = currentLedgerSummaries.find(
+        (item) => item.instrument.id === id,
+      );
+      return currentSummary !== undefined && marketHydrationKey(currentSummary) === marketHydrationKey(summary);
+    });
+    const succeeded = new Set<string>();
+    await Promise.all(targets.map(async (summary) => {
+      const id = summary.instrument.id;
+      const key = marketHydrationKey(summary);
+      const permitAtStart = holdingsPublicationRef.current;
+      const activePublicationGeneration = context.publicationGeneration;
+      if (
+        activePublicationGeneration !== undefined
+        && (permitAtStart?.generation !== activePublicationGeneration || permitAtStart.status !== "pending")
+      ) {
+        return;
+      }
+      const existingOwner = financialMarketReadOwners.current.get(id);
+      const existingOwnerIsCurrent = existingOwner !== undefined
+        && (existingOwner.publicationGeneration === undefined
+          || (holdingsPublicationRef.current?.generation === existingOwner.publicationGeneration
+            && holdingsPublicationRef.current.status === "pending"));
+      if (
+        existingOwner
+        && existingOwner.key === key
+        && existingOwnerIsCurrent
+      ) {
+        if (await existingOwner.promise) succeeded.add(id);
+        return;
+      }
+      // A pending publication already has an owner. An independent refresh
+      // may join that owner's same-key promise, but it cannot replace it or
+      // start a second read for an old/different key.
+      if (
+        holdingsPublicationRef.current?.status === "pending"
+        && activePublicationGeneration === undefined
+      ) {
+        return;
+      }
+      if (existingOwner) {
+        const canReplace = activePublicationGeneration !== undefined
+          || !existingOwnerIsCurrent
+          || existingOwner.publicationGeneration === undefined;
+        if (!canReplace) return;
+        existingOwner.controller.abort();
+        if (financialMarketReadOwners.current.get(id) === existingOwner) {
+          financialMarketReadOwners.current.delete(id);
+        }
+      }
+      const controller = new AbortController();
+      const token = `${runId}:${id}`;
+      let resolveOwner!: (value: boolean) => void;
+      const ownerPromise = new Promise<boolean>(resolve => {
+        resolveOwner = resolve;
+      });
+      financialMarketReadOwners.current.set(id, {
+        key,
+        runId,
+        token,
+        controller,
+        promise: ownerPromise,
+        publicationGeneration: activePublicationGeneration,
+        owner: context.owner,
+      });
+      let ownerSucceeded = false;
+      try {
+        const state = await readInstrumentMarketState(summary, marketDataRepository, {
+          includeIntraday: false,
+          signal: controller.signal,
+          scheduler: marketReadScheduler,
+          priority: "interactive",
+        });
+        const currentSummary = source.find(
+          (item) => item.instrument.id === id,
+        );
+        const currentLedgerSummary = currentImportedInstrumentSummariesRef.current.find(
+          (item) => item.instrument.id === id,
+        );
+        const currentOwner = financialMarketReadOwners.current.get(id);
+        const currentPermit = holdingsPublicationRef.current;
+        const publicationStillCurrent = activePublicationGeneration === undefined
+          || (currentPermit?.generation === activePublicationGeneration && currentPermit.status === "pending");
+        if (
+          controller.signal.aborted ||
+          currentOwner?.token !== token ||
+          !publicationStillCurrent ||
+          !currentLedgerSummary ||
+          marketHydrationKey(currentLedgerSummary) !== key ||
+          !currentSummary ||
+          marketHydrationKey(currentSummary) !== key
+        ) {
+          return;
+        }
+        setMarketStates((current) => {
+          const previous = current[id] ?? emptyMarketState();
+          return {
+            ...current,
+            [id]: {
+              ...previous,
+              daily: state.daily,
+              dailyCoverage: state.dailyCoverage,
+              dailyStatus: state.dailyStatus,
+              dailyMessage: state.dailyMessage,
+              dailyError: state.dailyError,
+            },
+          };
+        });
+        financialMarketKeysRef.current.set(id, key);
+        setFinancialMarketKeys((current) =>
+          current[id] === key ? current : { ...current, [id]: key },
+        );
+        succeeded.add(id);
+        ownerSucceeded = true;
+      } catch {
+        // The batch job remains the terminal failure source. A failed or
+        // cancelled reread never promotes the financial identity key.
+      } finally {
+        if (financialMarketReadOwners.current.get(id)?.token === token) {
+          financialMarketReadOwners.current.delete(id);
+        }
+        resolveOwner(ownerSucceeded);
+      }
+    }));
+    return succeeded;
+  }
+
   function cancelMarketDataUpdate(targetIds?: readonly string[]) {
     const requestedIds = Array.isArray(targetIds) ? targetIds : undefined;
+    const requestedFinancialIds = requestedIds ? new Set(requestedIds) : undefined;
     const candidates = [...pendingMarketRefreshRequests.current.values()].filter(request =>
       !request.cancelled && (!requestedIds?.length || requestedIds.every(id => request.ids.has(id))),
     ).sort((left, right) => {
@@ -3533,8 +4221,36 @@ export function TradeReviewWorkspace({
       return Number(Boolean(right.options.holdingsScope)) - Number(Boolean(left.options.holdingsScope));
     });
     const request = candidates[0];
-    if (!request) return;
-    cancelSubscriber(request);
+    if (request) {
+      cancelSubscriber(request);
+    }
+    const currentPublication = holdingsPublicationRef.current;
+    const fallbackGeneration = !request
+      && currentPublication?.status === "pending"
+      && (!requestedIds?.length || currentPublication.affectedInstrumentIds.some(id => requestedFinancialIds?.has(id)))
+      ? currentPublication.generation
+      : undefined;
+    if (fallbackGeneration !== undefined) {
+      updateHoldingsPublication(fallbackGeneration, { status: "cancelled" });
+    }
+    const cancelledGeneration = request?.options.holdingsPublicationGeneration ?? fallbackGeneration;
+    if (cancelledGeneration === undefined && !request) return;
+    const financialOwners = [...financialMarketReadOwners.current.entries()]
+      .filter(([id, owner]) => {
+        if (requestedFinancialIds && !requestedFinancialIds.has(id)) return false;
+        if (cancelledGeneration === undefined) {
+          return owner.owner === "holdings-refresh" && owner.publicationGeneration === undefined;
+        }
+        return owner.publicationGeneration === cancelledGeneration
+          || (owner.publicationGeneration === undefined
+            && holdingsPublicationRef.current?.generation === cancelledGeneration);
+      });
+    for (const [id, owner] of financialOwners) {
+      owner.controller.abort();
+      if (financialMarketReadOwners.current.get(id) === owner) {
+        financialMarketReadOwners.current.delete(id);
+      }
+    }
   }
 
   function cancelQueuedMarketDataUpdate(targetIds?: readonly string[]) {
@@ -3548,24 +4264,34 @@ export function TradeReviewWorkspace({
 
   function cancelSubscriber(request: PendingMarketRefreshRequest) {
     request.cancelled = true;
+    if (request.options.holdingsPublicationGeneration !== undefined) {
+      updateHoldingsPublication(request.options.holdingsPublicationGeneration, { status: "cancelled" });
+    }
+    for (const binding of request.ownedBindings) {
+      setOwnedProgressPhase(binding.generation, "cancelled");
+    }
     for (const binding of request.bindings) {
-      const cancellableIds: string[] = [];
+      const run = binding.producer.activeRun;
       for (const id of binding.ids) {
         const next = Math.max(0, (binding.producer.subscriberCounts.get(id) ?? 1) - 1);
         binding.producer.subscriberCounts.set(id, next);
-        if (next === 0) cancellableIds.push(id);
+        if (next === 0) {
+          // Abort only the controller owned by this producer/run. Looking up
+          // the global controller by id could cancel a newer owner that
+          // started after this subscriber was registered.
+          run?.itemControllers.get(id)?.abort();
+        }
       }
       if (!binding.producer.started) {
         binding.producer.ids = new Set([...binding.producer.ids].filter(id => (binding.producer.subscriberCounts.get(id) ?? 0) > 0));
       }
       if ([...binding.producer.subscriberCounts.values()].every(count => count === 0)) {
         binding.producer.cancelled = true;
-        const run = binding.producer.activeRun;
         if (run) {
+          run.retired = true;
           refreshCancellation.current.cancel(run.key);
         }
       }
-      for (const id of cancellableIds) marketDataAbortControllers.current[id]?.abort();
     }
   }
 
@@ -3577,7 +4303,15 @@ export function TradeReviewWorkspace({
       const snapshotExecutions = options.executions ?? currentExecutionSnapshot();
       const requestedIds = new Set(instrumentIds ?? buildInstrumentTradeSummaries(snapshotExecutions).map(summary => summary.instrument.id));
       const requestId = ++marketRefreshRequestSequence.current;
-      const pending: PendingMarketRefreshRequest = { ids: requestedIds, options, cancelled: false, bindings: [] };
+      const ownedBinding = ownedBindingForOptions(options, [...requestedIds]);
+      const ownedBindings = ownedBindingsForOptions(options, [...requestedIds]);
+      const pending: PendingMarketRefreshRequest = {
+        ids: requestedIds,
+        options,
+        cancelled: false,
+        bindings: [],
+        ownedBindings,
+      };
       const producers = [...marketRefreshProducers.current.values()];
       const unbound = new Set(requestedIds);
       for (const producer of producers) {
@@ -3586,6 +4320,7 @@ export function TradeReviewWorkspace({
           const ids = new Set([...unbound].filter(id => producer.ids.has(id) && (producer.subscriberCounts.get(id) ?? 0) > 0));
           ids.forEach(id => unbound.delete(id));
           ids.forEach(id => producer.subscriberCounts.set(id, (producer.subscriberCounts.get(id) ?? 0) + 1));
+          attachOwnedBindingToProducer(producer, ownedBinding);
           pending.bindings = [...pending.bindings, { producer, ids }];
         }
       }
@@ -3595,8 +4330,9 @@ export function TradeReviewWorkspace({
         const producer: MarketRefreshProducer = {
           ids: new Set(unbound), options, includeIntraday: options.includeIntraday !== false,
           subscriberCounts: new Map([...unbound].map(id => [id, 1])), promise, resolve, started: false,
-          cancelled: false, settled: false,
+          cancelled: false, settled: false, ownedBindings: new Map(),
         };
+        attachOwnedBindingToProducer(producer, ownedBinding);
         marketRefreshProducers.current.set(requestId, producer);
         pending.bindings = [...pending.bindings, { producer, ids: new Set(unbound) }];
         const previous = publicMarketRefreshQueue.current;
@@ -3610,6 +4346,7 @@ export function TradeReviewWorkspace({
             ownerCounts: producer.subscriberCounts,
             preRegisteredIds: new Set(owned),
             producer,
+            holdingsOwnedBindings: [...producer.ownedBindings.values()],
           });
         }).then(value => {
           producer.settled = true;
@@ -3624,7 +4361,13 @@ export function TradeReviewWorkspace({
         });
         publicMarketRefreshQueue.current = task.catch(() => undefined);
       }
-      pending.promise = Promise.all(pending.bindings.map(binding => binding.producer.promise)).then(results => !pending.cancelled && results.every(Boolean));
+      pending.promise = Promise.all(pending.bindings.map(binding => binding.producer.promise)).then(results => {
+        const succeeded = !pending.cancelled && results.every(Boolean);
+        for (const binding of pending.ownedBindings) {
+          setOwnedProgressPhase(binding.generation, pending.cancelled ? "cancelled" : succeeded ? "recomputing" : "failed");
+        }
+        return succeeded;
+      });
       pendingMarketRefreshRequests.current.set(requestId, pending);
       pending.promise.finally(() => pendingMarketRefreshRequests.current.delete(requestId));
       return pending.promise;
@@ -3639,12 +4382,17 @@ export function TradeReviewWorkspace({
     const snapshotExecutions = options.executions ?? currentExecutionSnapshot();
     const requestedIds = [...new Set(instrumentIds ?? buildInstrumentTradeSummaries(snapshotExecutions).map(summary => summary.instrument.id))];
     const requestNeedsIntraday = options.includeIntraday !== false;
-    const activeRuns = [...activeMarketRefreshRuns.current.values()];
-    const overlappingRuns = activeRuns.filter(run => requestedIds.some(id => run.snapshotIds.has(id)));
+    const activeRuns = [...activeMarketRefreshRuns.current.values()].filter(isLiveMarketRefreshRun);
+    const overlappingRuns = activeRuns.filter(run => requestedIds.some(id => isLiveMarketRefreshItem(run, id)));
     if (overlappingRuns.length > 0) {
       for (const run of overlappingRuns) {
+        if (requestedIds.some(id => isLiveMarketRefreshItem(run, id))) {
+          for (const binding of ownedBindingsForOptions(options, requestedIds)) {
+            bindOwnedProgressToRun(run, binding);
+          }
+        }
         for (const id of requestedIds) {
-          if (run.snapshotIds.has(id) && !options.preRegisteredIds?.has(id)) {
+          if (isLiveMarketRefreshItem(run, id) && !options.preRegisteredIds?.has(id)) {
             run.subscriberCounts.set(id, (run.subscriberCounts.get(id) ?? 0) + 1);
           }
         }
@@ -3653,7 +4401,7 @@ export function TradeReviewWorkspace({
       // covers a full subscriber: the latter must queue a full pass for the
       // overlap so its intraday leg is not silently skipped.
       const remaining = requestedIds.filter(id => !overlappingRuns.some(run =>
-        run.snapshotIds.has(id) && (run.includeIntraday || !requestNeedsIntraday),
+        isLiveMarketRefreshItem(run, id) && (run.includeIntraday || !requestNeedsIntraday),
       ));
       await Promise.all(overlappingRuns.map(run => run.promise));
       if (remaining.length === 0) return true;
@@ -3666,7 +4414,7 @@ export function TradeReviewWorkspace({
         await runMarketDataUpdate(instrumentIds, options);
       },
       () => setNavigationNotice(
-        activeMarketRefreshRuns.current.size > 0
+        [...activeMarketRefreshRuns.current.values()].some(isLiveMarketRefreshRun)
           ? "当前页面正在更新行情，请等待完成。"
           : "其他页面正在更新行情，请稍后再试。",
       ),
@@ -3698,26 +4446,54 @@ export function TradeReviewWorkspace({
     const inventorySnapshotIds = new Set(
       snapshotSummaries.map((summary) => summary.instrument.id),
     );
+    const sortedInstrumentIds = [...uniqueInstrumentIds].sort().join(",");
     const key = options.batch
       ? options.holdingsScope
-        ? `holdings:${includeIntraday ? "full" : "daily"}:${[...uniqueInstrumentIds].sort().join(",")}`
-        : includeIntraday ? "all" : "all:daily"
+        ? `holdings:${includeIntraday ? "full" : "daily"}:${sortedInstrumentIds}`
+        : `${includeIntraday ? "all" : "all:daily"}:${sortedInstrumentIds}`
       : `instrument:${mode}:${[...uniqueInstrumentIds].sort().join(",")}`;
     const globalRun = [...activeMarketRefreshRuns.current.values()].find(
-      (run) => run.batch && run.includeIntraday === includeIntraday,
+      (run) => isLiveMarketRefreshRun(run) && run.batch && run.includeIntraday === includeIntraday,
     );
     if (
       globalRun &&
       !options.batch &&
-      uniqueInstrumentIds.some((id) => globalRun.snapshotIds.has(id))
+      uniqueInstrumentIds.some((id) => isLiveMarketRefreshItem(globalRun, id))
     ) {
+      for (const binding of ownedBindingsForOptions(options, uniqueInstrumentIds)) {
+        bindOwnedProgressToRun(globalRun, binding);
+      }
       return globalRun.promise;
     }
     const existingRun = activeMarketRefreshRuns.current.get(key);
-    if (existingRun) return existingRun.promise;
+    if (existingRun && isLiveMarketRefreshRun(existingRun)
+      && uniqueInstrumentIds.every(id => isLiveMarketRefreshItem(existingRun, id))) {
+      for (const binding of ownedBindingsForOptions(options, uniqueInstrumentIds)) {
+        bindOwnedProgressToRun(existingRun, binding);
+      }
+      return existingRun.promise;
+    }
+    if (existingRun) {
+      // A cancelled/retired run remains in the registry until its worker
+      // unwinds. It cannot own a late subscriber or replay its settled ledger
+      // into a newer generation.
+      if (!existingRun.controller.signal.aborted) existingRun.controller.abort();
+      refreshCancellation.current.finish(key, existingRun.controller);
+      if (activeMarketRefreshRuns.current.get(key) === existingRun) {
+        activeMarketRefreshRuns.current.delete(key);
+      }
+    }
     const cancellation = refreshCancellation.current.begin(key);
     if (cancellation.duplicate) {
-      return activeMarketRefreshRuns.current.get(key)?.promise;
+      const duplicateRun = activeMarketRefreshRuns.current.get(key);
+      if (duplicateRun && isLiveMarketRefreshRun(duplicateRun)
+        && uniqueInstrumentIds.every(id => isLiveMarketRefreshItem(duplicateRun, id))) {
+        for (const binding of ownedBindingsForOptions(options, uniqueInstrumentIds)) {
+          bindOwnedProgressToRun(duplicateRun, binding);
+        }
+        return duplicateRun.promise;
+      }
+      return undefined;
     }
     const snapshotIds = new Set(uniqueInstrumentIds);
     let resolveCompletion!: () => void;
@@ -3731,9 +4507,19 @@ export function TradeReviewWorkspace({
       snapshotIds,
       batch: Boolean(options.batch),
       includeIntraday,
+      retired: false,
       subscriberCounts: new Map([...snapshotIds].map((id) => [id, 1] as const)),
+      itemControllers: new Map(),
+      runId: ++marketRefreshRunSequence.current,
+      ownedBindings: new Map(),
+      settledById: new Map(),
     });
     const activeRun = activeMarketRefreshRuns.current.get(key);
+    if (activeRun) {
+      for (const binding of ownedBindingsForOptions(options, uniqueInstrumentIds)) {
+        bindOwnedProgressToRun(activeRun, binding);
+      }
+    }
     if (activeRun && options.ownerCounts) {
       activeRun.subscriberCounts = options.ownerCounts as Map<string, number>;
     }
@@ -3913,6 +4699,20 @@ export function TradeReviewWorkspace({
         marketDataAbortControllers.current[instrumentId]?.abort();
         const abortController = new AbortController();
         marketDataAbortControllers.current[instrumentId] = abortController;
+        activeRun?.itemControllers.set(instrumentId, abortController);
+        const throwIfMarketDataRequestIsStale = () => {
+          if (
+            !cancellation.signal.aborted &&
+            !abortController.signal.aborted &&
+            marketDataRequestSequences.current[instrumentId] === requestSequence
+          ) {
+            return;
+          }
+          if (cancellation.signal.aborted || abortController.signal.aborted) {
+            throw cancellation.signal.reason ?? new DOMException("行情更新已取消", "AbortError");
+          }
+          throw new DOMException("行情更新已被较新的请求取代", "AbortError");
+        };
         const requestSignal = composeAbortSignals(
           cancellation.signal,
           abortController.signal,
@@ -3941,6 +4741,7 @@ export function TradeReviewWorkspace({
         } catch (error) {
           if (
             cancellation.signal.aborted ||
+            abortController.signal.aborted ||
             marketDataRequestSequences.current[instrumentId] !== requestSequence ||
             isAbortError(error)
           ) {
@@ -3979,16 +4780,7 @@ export function TradeReviewWorkspace({
             job: marketDataJobsRef.current[instrumentId],
           });
         }
-        if (
-          cancellation.signal.aborted ||
-          marketDataRequestSequences.current[instrumentId] !==
-          requestSequence
-        ) {
-          if (cancellation.signal.aborted) {
-            throw cancellation.signal.reason ?? new DOMException("行情更新已取消", "AbortError");
-          }
-          throw new DOMException("行情更新已被较新的请求取代", "AbortError");
-        }
+        throwIfMarketDataRequestIsStale();
         const includeIntraday = options.includeIntraday !== false;
         setMarketStates((current) => ({
           ...current,
@@ -4091,6 +4883,7 @@ export function TradeReviewWorkspace({
             return;
           }
           importedExecutionsRef.current = renamed;
+          currentImportedInstrumentSummariesRef.current = buildInstrumentTradeSummaries(renamed);
           setImportedExecutions(renamed);
           setStoredInstruments((current) => {
             const index = current.findIndex((item) => item.id === instrumentId);
@@ -4145,6 +4938,7 @@ export function TradeReviewWorkspace({
               })()
             : Promise.resolve();
         let next = { ...cached };
+        let cacheOnly = false;
         if (!market) {
           next = {
             ...next,
@@ -4185,6 +4979,8 @@ export function TradeReviewWorkspace({
               intradayInterval: next.intradayInterval,
             },
           }), metadataRefresh, requestSignal);
+          cacheOnly = refreshed.daily.source === "cache"
+            && (!includeIntraday || refreshed.hourly.source === "cache");
           next.daily = refreshed.daily.candles;
           next.dailyCoverage = refreshed.daily.coverage;
           next.dailyStatus = refreshed.daily.status;
@@ -4222,9 +5018,7 @@ export function TradeReviewWorkspace({
           }
         }
         await metadataRefresh;
-        if (cancellation.signal.aborted) {
-          throw cancellation.signal.reason ?? new DOMException("行情更新已取消", "AbortError");
-        }
+        throwIfMarketDataRequestIsStale();
         if (metadataPersistenceFailed) {
           next.dailyStatus = "storage-error";
           next.dailyMessage =
@@ -4282,13 +5076,25 @@ export function TradeReviewWorkspace({
         let persistedTerminalJob = false;
         try {
           await storageClient.putMarketDataJob(completedJob);
+          // The durable receipt may finish after cancellation or a newer run
+          // has taken ownership of the same instrument. Keep that cache write,
+          // but prevent the stale worker from publishing it as live state.
+          throwIfMarketDataRequestIsStale();
           marketDataJobsRef.current[instrumentId] = completedJob;
           persistedTerminalJob = true;
           setMarketDataJobs((current) => ({
             ...current,
             [instrumentId]: completedJob,
           }));
-        } catch {
+        } catch (error) {
+          if (
+            cancellation.signal.aborted ||
+            abortController.signal.aborted ||
+            marketDataRequestSequences.current[instrumentId] !== requestSequence ||
+            isAbortError(error)
+          ) {
+            throw error;
+          }
           next.dailyStatus = "storage-error";
           overallStatus = displayMarketDataStatus(
             next.dailyStatus,
@@ -4319,6 +5125,7 @@ export function TradeReviewWorkspace({
           marketDataJobsRef.current[instrumentId] = failedJob;
           setMarketDataJobs((current) => ({ ...current, [instrumentId]: failedJob }));
         }
+        throwIfMarketDataRequestIsStale();
         setMarketStates((current) => ({
           ...current,
           [instrumentId]: next,
@@ -4337,6 +5144,7 @@ export function TradeReviewWorkspace({
           retryable:
             Boolean(next.dailyError || next.intradayError) ||
             isHardMarketDataFailure(overallStatus),
+          cacheOnly,
         } satisfies MarketDataRefreshOutcome;
       },
       {
@@ -4354,8 +5162,7 @@ export function TradeReviewWorkspace({
               }));
             }
           : undefined,
-              onItemSettled: options.batch
-          ? ({ completed, active, result }) => {
+              onItemSettled: ({ completed, active, result }) => {
               const outcome =
                 result.status === "fulfilled" ? result.value : undefined;
               const status = outcome?.status;
@@ -4369,6 +5176,21 @@ export function TradeReviewWorkspace({
                 : result.status === "rejected"
                   ? "failed" as const
                   : undefined;
+              if (activeRun) {
+                settleOwnedProgressForRun(
+                  activeRun,
+                  result.item,
+                  result.status === "cancelled"
+                    ? "cancelled"
+                    : category === "complete"
+                      ? "complete"
+                      : category === "partial"
+                        ? "partial"
+                        : "failed",
+                  outcome?.cacheOnly ?? false,
+                );
+              }
+              if (!options.batch) return;
               setMarketDataRefresh((current) => ({
                 ...current,
                 // `processed` is the queue's settled count. The result
@@ -4395,8 +5217,7 @@ export function TradeReviewWorkspace({
                 restoreCancelledSnapshot(result.item);
               }
               refreshSnapshots.delete(result.item);
-            }
-          : undefined,
+            },
         signal: options.batch ? cancellation.signal : undefined,
       },
     );
@@ -4542,7 +5363,9 @@ export function TradeReviewWorkspace({
       // Resolving here wakes a queued subscriber while the lock is still held,
       // making its immediate retry look like a cross-page busy failure.
       const finishRun = () => {
-        activeMarketRefreshRuns.current.delete(key);
+        if (activeMarketRefreshRuns.current.get(key) === activeRun) {
+          activeMarketRefreshRuns.current.delete(key);
+        }
         resolveCompletion();
       };
       if (options.producer) finishRun();
@@ -4551,7 +5374,7 @@ export function TradeReviewWorkspace({
   }
 
   async function recoverUnfinishedMarketData() {
-    if (activeMarketRefreshRuns.current.size > 0) {
+    if ([...activeMarketRefreshRuns.current.values()].some(isLiveMarketRefreshRun)) {
       setNavigationNotice("当前页面正在更新行情，请等待完成。");
       return;
     }
@@ -4822,6 +5645,11 @@ export function TradeReviewWorkspace({
     if (ids.length === 0) {
       throw new Error("可重试标的不在当前导入范围内");
     }
+    const ownedFinancialKeys = new Map(
+      rawImportedInstrumentsRef.current
+        .filter(({ instrument }) => ids.includes(instrument.id))
+        .map((summary) => [summary.instrument.id, marketHydrationKey(summary)] as const),
+    );
     await retryMarketData({
       dimension,
       instrumentIds: ids,
@@ -4833,6 +5661,15 @@ export function TradeReviewWorkspace({
       }),
       jobFor: id => marketDataJobsRef.current[id],
     });
+    const financiallySucceeded = await rereadFinancialMarketData(
+      ids,
+      ownedFinancialKeys,
+      undefined,
+      { owner: "quality" },
+    );
+    if (ids.some((id) => !financiallySucceeded.has(id))) {
+      throw new Error("行情更新完成但当前金融数据未能确认，请重试");
+    }
   }
   function openQualityDataCheck(
     _dimension: TradingRoomQualityDimensionId,
@@ -5007,7 +5844,11 @@ export function TradeReviewWorkspace({
     setActiveView("data");
   }
   function applyCorrectedExecutions(executions: TradeExecution[]) {
+    // A data-quality repair has its own exact-worker source boundary. It must
+    // not inherit an older import permit that has already been consumed.
+    setHoldingsLedgerPublicationRequired(false);
     importedExecutionsRef.current = executions;
+    currentImportedInstrumentSummariesRef.current = buildInstrumentTradeSummaries(executions);
     setImportedExecutions(executions);
     if (selectedEpisodeId && !buildTradeEpisodes(executions).some(episode => episode.id === selectedEpisodeId)) {
       setNavigationNotice("成交已修订，原回合身份发生变化。请重新选择回合；原笔记和绘图已保留，可在数据检查中核对。");
@@ -5437,31 +6278,6 @@ export function TradeReviewWorkspace({
       unresolvedInstrumentCount:
         pendingImport.unresolvedInstrumentCount,
     };
-    setSavingImport(true);
-    setImportError(null);
-    try {
-      await storageClient.mergeExecutions({
-        executions: mergedExecutions,
-        instruments: summaries.map(({ instrument }) => instrument),
-        importHistory: [historyEntry],
-        ...(replaceExecutionIds.length > 0 ? { replaceExecutionIds } : {}),
-      });
-    } catch (error) {
-      setImportError(
-        error instanceof Error && "code" in error && error.code === "conflict"
-          ? "同一 CSV 已关联另一证券，请核对已有导入记录。当前预览尚未保存。"
-          : "SQLite 未能保存这次导入，请检查服务状态后重试。",
-      );
-      return;
-    } finally {
-      setSavingImport(false);
-    }
-    importedExecutionsRef.current = mergedExecutions;
-    setImportedExecutions(mergedExecutions);
-    setImportHistory([
-      historyEntry,
-      ...importHistory.filter((entry) => entry.id !== historyEntry.id),
-    ]);
     const importedIds = pendingImport.instruments.map(
       (item) => item.instrument.id,
     );
@@ -5488,6 +6304,48 @@ export function TradeReviewWorkspace({
         );
       })
       .map((summary) => summary.instrument.id);
+    const affectedInstrumentIds = [...new Set(importedIds)].filter(id =>
+      summaries.some(summary => summary.instrument.id === id),
+    );
+    setSavingImport(true);
+    setImportError(null);
+    try {
+      await storageClient.mergeExecutions({
+        executions: mergedExecutions,
+        instruments: summaries.map(({ instrument }) => instrument),
+        importHistory: [historyEntry],
+        ...(replaceExecutionIds.length > 0 ? { replaceExecutionIds } : {}),
+      });
+    } catch (error) {
+      setImportError(
+        error instanceof Error && "code" in error && error.code === "conflict"
+          ? "同一 CSV 已关联另一证券，请核对已有导入记录。当前预览尚未保存。"
+          : "SQLite 未能保存这次导入，请检查服务状态后重试。",
+      );
+      return;
+    } finally {
+      setSavingImport(false);
+    }
+    const publicationPermit = registerHoldingsPublication({
+      revision: importBatchId,
+      owner: "import",
+      affectedInstrumentIds,
+      requiredMarketDataIds: automaticSyncIds,
+      readbackInstrumentIds: [],
+      status: "pending",
+    });
+    const publicationGeneration = publicationPermit.generation;
+    setHoldingsLedgerPublicationRequired(true);
+    // This registration intentionally precedes the React ledger projection.
+    // The hidden dashboard may render the saved rows immediately, but it has
+    // no publishable generation until the producer receipt and reread below.
+    importedExecutionsRef.current = mergedExecutions;
+    currentImportedInstrumentSummariesRef.current = summaries;
+    setImportedExecutions(mergedExecutions);
+    setImportHistory([
+      historyEntry,
+      ...importHistory.filter((entry) => entry.id !== historyEntry.id),
+    ]);
     const firstImported = summaries.find((item) =>
       importedIds.includes(item.instrument.id),
     );
@@ -5495,10 +6353,75 @@ export function TradeReviewWorkspace({
       const importedEpisode = sortedEpisodes(buildInstrumentTradeSummaries(pendingImport.records).find(item=>item.instrument.id===firstImported.instrument.id))[0];
       selectImportedSummary(firstImported, importedEpisode?.id);
     }
-    void startMarketDataUpdate(automaticSyncIds, {
-      executions: mergedExecutions,
-      batch: automaticSyncIds.length > 1,
-    });
+    const ownedFinancialKeys = new Map(
+      summaries
+        .filter(summary => affectedInstrumentIds.includes(summary.instrument.id))
+        .map(summary => [summary.instrument.id, marketHydrationKey(summary)] as const),
+    );
+    void (async () => {
+      try {
+        const started = automaticSyncIds.length === 0 || await startMarketDataUpdate(automaticSyncIds, {
+          executions: mergedExecutions,
+          batch: automaticSyncIds.length > 1,
+          holdingsPublicationGeneration: publicationGeneration,
+        });
+        if (!started) {
+          updateHoldingsPublication(publicationGeneration, { status: "failed" });
+          return;
+        }
+        const readback = await rereadFinancialMarketData(
+          affectedInstrumentIds,
+          ownedFinancialKeys,
+          summaries,
+          { owner: "import", publicationGeneration },
+        );
+        const dailyStatusByInstrument = Object.fromEntries(automaticSyncIds.map(id => {
+          const job = marketDataJobsRef.current[id];
+          return [id, job?.intervals?.find(interval => interval.interval === "1D")?.status ?? job?.status];
+        }));
+        const requestedAtByInstrument = Object.fromEntries(automaticSyncIds.map(id => [id, marketDataJobsRef.current[id]?.requestedAt]));
+        const hardFailureStatuses = new Set([
+          "not-requested",
+          "syncing",
+          "source-rate-limited",
+          "source-forbidden",
+          "source-unavailable",
+          "invalid-response",
+          "storage-error",
+          "needs-provider",
+          "error",
+          "cancelled",
+          "interrupted",
+        ]);
+        const cancellationStatuses = new Set(["cancelled", "interrupted"]);
+        const dailyStatuses = automaticSyncIds.map(id => dailyStatusByInstrument[id]);
+        const failedIds = new Set([
+          ...affectedInstrumentIds.filter(id => !readback.has(id)),
+          ...automaticSyncIds.filter(id => !requestedAtByInstrument[id]
+            || hardFailureStatuses.has(dailyStatusByInstrument[id] ?? "not-requested")),
+        ]);
+        const cancelledIds = new Set(
+          automaticSyncIds.filter(id => cancellationStatuses.has(dailyStatusByInstrument[id] ?? "")),
+        );
+        const allFailed = affectedInstrumentIds.length > 0 && failedIds.size === affectedInstrumentIds.length;
+        const allCancelled = affectedInstrumentIds.length > 0 && cancelledIds.size === affectedInstrumentIds.length;
+        const partial = !allFailed && !allCancelled && (
+          failedIds.size > 0
+          || dailyStatuses.some(status => status === "latest-available" || status === "partial" || status === "stale")
+        );
+        const receipt: HoldingsPublicationReceipt = {
+          requestedAtByInstrument,
+          dailyStatusByInstrument,
+        };
+        updateHoldingsPublication(publicationGeneration, {
+          status: allCancelled ? "cancelled" : allFailed ? "failed" : partial ? "partial" : "complete",
+          readbackInstrumentIds: [...readback],
+          receipt,
+        });
+      } catch {
+        updateHoldingsPublication(publicationGeneration, { status: "failed" });
+      }
+    })();
     setPendingImport(null);
     setPendingParsedImport(null);
     setPendingEnrichedImport(null);
@@ -5935,8 +6858,9 @@ export function TradeReviewWorkspace({
         simulationRunId={cashSimulationRunId}
         loading={cashLoadingForScope}
         saving={cashSaving}
-        error={cashErrorForScope}
+        error={cashEditorErrorForScope}
         onSave={saveCashBaseline}
+        onReloadConflict={acknowledgeCashWriteErrorForScope}
       />
       {cashSavedFactForScope && cashErrorForScope !== `${CASH_SUMMARY_REFRESH_NOTICE}；请重试读取` && (
         <p role="status">{CASH_SUMMARY_REFRESH_NOTICE}</p>
@@ -6148,33 +7072,116 @@ export function TradeReviewWorkspace({
             sharedScope={sharedScope}
             onSharedScopeChange={updateSharedScope}
             sharedAccountOptions={sharedAccountOptions}
-            entries={tradeLibraryEntries}
+            entries={dashboardTradeLibraryEntries}
             colorScheme={settings.colorScheme}
             instrumentMetadata={instrumentMetadata}
             fxSnapshot={fxSnapshot}
             principalEnabled={!showDemo}
             holdingsQuotesByInstrument={holdingsQuotesByInstrument}
-            holdingsCandlesByInstrument={marketDataCandles}
+            holdingsCandlesByInstrument={dashboardMarketDataCandles}
             holdingsAsOf={holdingsAsOf}
+            holdingsDataReady={holdingsDataReady}
+            holdingsHydrationRetryInstruments={holdingsHydrationRetryInstruments}
+            holdingsPublicationPermit={holdingsPublicationPermit}
+            holdingsLedgerPublicationRequired={holdingsLedgerPublicationRequired}
+            holdingsOwnedProgress={holdingsOwnedProgress}
             holdingsStaleAfterDays={3}
             onRefreshHoldingsValuation={!showDemo ? async (instrumentIds, trigger = "manual") => {
-              const baselineRequestedAt = Object.fromEntries(instrumentIds.map(id => [id, marketDataJobsRef.current[id]?.requestedAt]));
-              const sharedRun = [...activeMarketRefreshRuns.current.values()].find(run =>
-                instrumentIds.some(id => run.snapshotIds.has(id)),
+              // Any terminal permit that failed the exact readback boundary
+              // leaves the saved ledger deliberately unpublishable. A manual
+              // retry must establish a fresh owned generation before it starts
+              // producer work; otherwise the old permit can permanently fence
+              // the new receipt/readback (or a late old continuation can win).
+              const previousPublication = holdingsPublicationRef.current;
+              const previousPublicationScope = new Set(
+                previousPublication?.affectedInstrumentIds ?? instrumentIds,
               );
-              const hadActiveCoverage = Boolean(sharedRun && !sharedRun.controller.signal.aborted);
-              const started = await startMarketDataUpdate(instrumentIds, {
-                batch: true,
-                includeIntraday: false,
-                refreshMetadata: false,
-                holdingsScope: true,
-                priority: trigger === "automatic" ? "background" : "interactive",
-              });
-              if (!started) return false;
-              const failed = instrumentIds.some(id => {
+              const retriesPublication = Boolean(
+                previousPublication
+                && previousPublication.affectedInstrumentIds.some(id => instrumentIds.includes(id))
+                && needsHoldingsPublicationRetry(previousPublication, previousPublicationScope),
+              );
+              const requestIds = retriesPublication
+                ? [...new Set([...(previousPublication?.affectedInstrumentIds ?? []), ...instrumentIds])]
+                : [...new Set(instrumentIds)];
+              const publicationPermit = retriesPublication
+                ? registerHoldingsPublication({
+                    revision: `${previousPublication?.revision ?? "holdings"}:retry:${holdingsPublicationGeneration.current + 1}`,
+                    owner: "holdings-refresh",
+                    affectedInstrumentIds: requestIds,
+                    requiredMarketDataIds: requestIds,
+                    readbackInstrumentIds: [],
+                    status: "pending",
+                  })
+                : undefined;
+              const currentPublication = holdingsPublicationRef.current;
+              const activePublicationGeneration = publicationPermit?.generation
+                ?? (currentPublication?.owner === "import" && currentPublication.status === "pending"
+                  ? currentPublication.generation
+                  : undefined);
+              const baselineRequestedAt = Object.fromEntries(requestIds.map(id => [id, marketDataJobsRef.current[id]?.requestedAt]));
+              const ownedFinancialKeys = new Map(
+                rawImportedInstrumentsRef.current
+                  .filter(({ instrument }) => requestIds.includes(instrument.id))
+                  .map((summary) => [summary.instrument.id, marketHydrationKey(summary)] as const),
+              );
+              const sharedRun = [...activeMarketRefreshRuns.current.values()].find(run =>
+                isLiveMarketRefreshRun(run)
+                && requestIds.some(id => run.snapshotIds.has(id)),
+              );
+              const hadActiveCoverage = Boolean(sharedRun);
+              let started = false;
+              try {
+                started = await startMarketDataUpdate(requestIds, {
+                  batch: true,
+                  includeIntraday: false,
+                  refreshMetadata: false,
+                  holdingsScope: true,
+                  priority: trigger === "automatic" ? "background" : "interactive",
+                  ...(activePublicationGeneration !== undefined
+                    ? { holdingsPublicationGeneration: activePublicationGeneration }
+                    : {}),
+                });
+              } catch {
+                if (publicationPermit) {
+                  updateHoldingsPublication(publicationPermit.generation, { status: "failed" });
+                }
+                return false;
+              }
+              if (!started) {
+                if (publicationPermit) {
+                  updateHoldingsPublication(publicationPermit.generation, { status: "failed" });
+                }
+                return false;
+              }
+              let financiallySucceeded: ReadonlySet<string>;
+              try {
+                financiallySucceeded = await rereadFinancialMarketData(
+                  requestIds,
+                  ownedFinancialKeys,
+                  undefined,
+                  {
+                    owner: "holdings-refresh",
+                    ...(activePublicationGeneration !== undefined
+                      ? { publicationGeneration: activePublicationGeneration }
+                      : {}),
+                  },
+                );
+              } catch {
+                if (publicationPermit) {
+                  updateHoldingsPublication(publicationPermit.generation, { status: "failed" });
+                }
+                return false;
+              }
+              const dailyStatusByInstrument = Object.fromEntries(requestIds.map(id => {
                 const job = marketDataJobsRef.current[id];
+                return [id, job?.intervals?.find(interval => interval.interval === "1D")?.status ?? job?.status];
+              }));
+              const cancellationStatuses = new Set(["cancelled", "interrupted"]);
+              const failedIds = requestIds.filter(id => {
+                const job = marketDataJobsRef.current[id];
+                const dailyStatus = dailyStatusByInstrument[id];
                 if (!job || !job.requestedAt || (job.requestedAt === baselineRequestedAt[id] && !hadActiveCoverage)) return true;
-                const dailyStatus = job.intervals?.find(interval => interval.interval === "1D")?.status ?? job.status;
                 return dailyStatus === "source-rate-limited"
                   || dailyStatus === "source-forbidden"
                   || dailyStatus === "source-unavailable"
@@ -6183,12 +7190,46 @@ export function TradeReviewWorkspace({
                   || dailyStatus === "error"
                   || dailyStatus === "needs-provider"
                   || dailyStatus === "not-requested"
-                  || dailyStatus === "syncing";
+                  || dailyStatus === "syncing"
+                  || cancellationStatuses.has(dailyStatus ?? "");
               });
-              if (failed) {
+              // A cancelled shared run must keep the prior accepted bundle,
+              // including when its durable job still contains the old
+              // terminal status. A mixed completed/failed run is a usable
+              // receipt: the dashboard's terminal classifier publishes it as
+              // partial instead of discarding the completed instruments.
+              const cancelledByStatus = requestIds.length > 0
+                && requestIds.every(id => cancellationStatuses.has(dailyStatusByInstrument[id] ?? ""));
+              const cancelled = Boolean(sharedRun?.controller.signal.aborted) || cancelledByStatus;
+              const requestedFinancialIds = [...ownedFinancialKeys.keys()];
+              const financialFailures = requestedFinancialIds.filter(
+                (id) => !financiallySucceeded.has(id),
+              );
+              const failedSet = new Set([...failedIds, ...financialFailures]);
+              const allFailed = requestIds.length > 0 && failedSet.size === requestIds.length;
+              const partial = !allFailed && !cancelled && (
+                failedSet.size > 0 || Object.values(dailyStatusByInstrument).some(status =>
+                  status === "latest-available" || status === "partial" || status === "stale",
+                )
+              );
+              const receipt: HoldingsPublicationReceipt = {
+                requestedAtByInstrument: Object.fromEntries(requestIds.map(id => [id, marketDataJobsRef.current[id]?.requestedAt])),
+                dailyStatusByInstrument,
+              };
+              if (publicationPermit) {
+                updateHoldingsPublication(publicationPermit.generation, {
+                  status: cancelled ? "cancelled" : allFailed ? "failed" : partial ? "partial" : "complete",
+                  readbackInstrumentIds: [...financiallySucceeded],
+                  receipt,
+                });
+              }
+              if (
+                cancelled ||
+                allFailed
+              ) {
                 return {
                   ok: false as const,
-                  reason: sharedRun?.controller.signal.aborted ? "cancelled" as const : "failed" as const,
+                  reason: cancelled ? "cancelled" as const : "failed" as const,
                 };
               }
               // The run resolves only after putMarketDataJob and the terminal
@@ -6197,7 +7238,8 @@ export function TradeReviewWorkspace({
               // does not compare it with its own Date.now().
               return {
                 ok: true as const,
-                requestedAtByInstrument: Object.fromEntries(instrumentIds.map(id => [id, marketDataJobsRef.current[id]?.requestedAt])),
+                requestedAtByInstrument: receipt.requestedAtByInstrument,
+                dailyStatusByInstrument,
               };
             } : undefined}
             onCancelHoldingsValuation={!showDemo ? cancelMarketDataUpdate : undefined}
@@ -6225,6 +7267,9 @@ export function TradeReviewWorkspace({
             cashBaselineDetails={cashBaselineDetailsForScope}
             cashLoading={cashLoadingForScope}
             cashError={cashErrorForScope}
+            cashRefreshNotice={cashRefreshNoticeForScope}
+            onRetryCashSummary={onRetryCashSummaryForScope}
+            cashRetryDisabled={cashRetryDisabledForScope}
             onOpenInReview={(instrumentId, episodeId, queueIds) => {
               const summary = importedInstruments.find((item) => item.instrument.id === instrumentId);
               if (!summary || !selectImportedSummary(summary, episodeId)) {
@@ -6439,9 +7484,7 @@ export function TradeReviewWorkspace({
                 <button type="button" className="secondary-action" onClick={returnToLibrary}>前往交易库选择回合</button>
               </section>
             ) : selectedImportedInstrument &&
-            (!hydratedMarketIds.has(
-              selectedImportedInstrument.instrument.id,
-            ) || !selectedIntradayReady) ? (
+            (!selectedImportedInstrumentReady || !selectedIntradayReady) ? (
               <section
                 className="review-workspace review-workspace-loading"
                 aria-label="交易复盘图表工作区"

@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 
 import { createPortal } from "react-dom";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import type { DrawingTool } from "../../lib/chart/drawings";
 import styles from "./drawing-toolbar.module.css";
@@ -61,11 +61,13 @@ type Props = {
   canUndo: boolean;
   canRedo: boolean;
   allLocked: boolean;
+  canDeleteSelected?: boolean;
   onToolChange: (tool: DrawingTool) => void;
   onUndo: () => void;
   onRedo: () => void;
   onClear: () => void;
   onToggleLock: () => void;
+  onDeleteSelected?: () => void;
 };
 
 export function DrawingToolbar({
@@ -74,11 +76,13 @@ export function DrawingToolbar({
   canUndo,
   canRedo,
   allLocked,
+  canDeleteSelected = false,
   onToolChange,
   onUndo,
   onRedo,
   onClear,
   onToggleLock,
+  onDeleteSelected,
 }: Props) {
   const moreRef = useRef<HTMLDetailsElement>(null);
   const triggerRef = useRef<HTMLElement>(null);
@@ -254,10 +258,26 @@ export function DrawingToolbar({
     document.body,
   ) : null;
   const SelectedIcon = selectedMoreTool?.icon;
+  const deleteButton = onDeleteSelected ? (
+    <button
+      className="drawing-delete-selected"
+      aria-label="删除选中的批注"
+      title="删除选中的批注"
+      disabled={!canDeleteSelected}
+      onClick={() => onDeleteSelected()}
+    >
+      <Trash2 size={18} />
+    </button>
+  ) : null;
 
   return (
     <div className="drawing-toolbar" role="toolbar" aria-label="绘图工具">
-      {(compact ? compactPrimary.map(value => tools.find(tool => tool.value === value)!) : tools.slice(0, 3)).map((tool) => renderTool(tool))}
+      {(compact ? compactPrimary.map(value => tools.find(tool => tool.value === value)!) : tools.slice(0, 3)).map((tool, index) => (
+        <Fragment key={tool.value}>
+          {renderTool(tool)}
+          {index === 1 ? deleteButton : null}
+        </Fragment>
+      ))}
       <details className="drawing-more" ref={moreRef} open={moreOpen}>
         <summary
           ref={triggerRef}

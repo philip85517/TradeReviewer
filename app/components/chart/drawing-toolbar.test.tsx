@@ -242,3 +242,66 @@ it("keeps the floating menu inside the viewport near a right-edge trigger", asyn
   expect(Number.parseFloat(menu.style.left)).toBeLessThanOrEqual(320 - 216 - 8);
   expect(Number.parseFloat(menu.style.top)).toBeLessThanOrEqual(240 - 216 - 8);
 });
+
+it("provides an independent selected-annotation delete action with keyboard activation", async () => {
+  const user = userEvent.setup();
+  const onDeleteSelected = vi.fn();
+  const { rerender } = render(
+    <DrawingToolbar
+      activeTool="cursor"
+      canUndo={false}
+      canRedo={false}
+      allLocked={false}
+      canDeleteSelected={false}
+      onToolChange={vi.fn()}
+      onUndo={vi.fn()}
+      onRedo={vi.fn()}
+      onClear={vi.fn()}
+      onToggleLock={vi.fn()}
+      onDeleteSelected={onDeleteSelected}
+    />,
+  );
+
+  const deleteButton = screen.getByRole("button", { name: "删除选中的批注" });
+  expect(deleteButton).toBeDisabled();
+  expect(screen.getAllByRole("button", { name: "清空绘图" })).toHaveLength(1);
+
+  rerender(
+    <DrawingToolbar
+      activeTool="cursor"
+      canUndo={false}
+      canRedo={false}
+      allLocked={false}
+      canDeleteSelected
+      onToolChange={vi.fn()}
+      onUndo={vi.fn()}
+      onRedo={vi.fn()}
+      onClear={vi.fn()}
+      onToggleLock={vi.fn()}
+      onDeleteSelected={onDeleteSelected}
+    />,
+  );
+  await user.click(screen.getByRole("button", { name: "删除选中的批注" }));
+  await user.keyboard("{Enter}");
+  await user.keyboard(" ");
+  expect(onDeleteSelected).toHaveBeenCalledTimes(3);
+});
+
+it("does not add the selected-annotation delete entry to unconnected toolbars", () => {
+  render(
+    <DrawingToolbar
+      activeTool="cursor"
+      canUndo={false}
+      canRedo={false}
+      allLocked={false}
+      onToolChange={vi.fn()}
+      onUndo={vi.fn()}
+      onRedo={vi.fn()}
+      onClear={vi.fn()}
+      onToggleLock={vi.fn()}
+    />,
+  );
+
+  expect(screen.queryByRole("button", { name: "删除选中的批注" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "清空绘图" })).toBeInTheDocument();
+});

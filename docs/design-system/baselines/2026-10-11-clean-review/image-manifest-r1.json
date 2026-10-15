@@ -1,0 +1,156 @@
+{
+  "note": "R1 updates documentation only. Product code/database unchanged. Plot range 48–70 and synthetic bars preserved; right annotation lane 160px candidate replaces over-plot rectangles. CSS viewport1440x900/DPR1/zoom1 for export; topic heights differ. Per-pane cutoffs: S0 market03-17 15:00/no executions; S1 market+execution03-18 15:00; S2 market05-04 15:00/execution04-22 15:00; hasSeenFuture per pane, false for S0/S1 true for S2. Font glyph source not verified. User input PNG CSS viewport/DPR/zoom unknown.",
+  "createdAt": "2026-10-11T05:51:43.626Z",
+  "revision": "r1",
+  "author": "root",
+  "codeVersion": "75b06cca",
+  "browserVersion": "154.0.8037.99",
+  "kind": "documentation-design-illustrations-not-runtime-golden",
+  "viewport": {
+    "width": 1440,
+    "baseHeight": 900,
+    "dpr": 1,
+    "zoom": 1
+  },
+  "sources": [
+    "app/design/review/page.tsx fixture formula",
+    "Lucide-react existing package",
+    "visual-baseline.md CB01–28",
+    "current-visual-source.json"
+  ],
+  "font": {
+    "stack": "Geist, PingFang SC, Microsoft YaHei, Noto Sans CJK SC, sans-serif",
+    "actualCJK": "not verified; macOS browser render",
+    "numeric": "SFMono-Regular, Consolas, monospace"
+  },
+  "fixture": {
+    "identity": "远山科技 688000 (fictional)",
+    "stage": "holding",
+    "cursor": "2026-03-18T07:00:00.000Z",
+    "executionCursor": "2026-03-18T07:00:00.000Z",
+    "hasSeenFuture": false,
+    "holding": 1000,
+    "lastPrice": 57.04,
+    "plan": {
+      "entry": 56,
+      "stop": 52,
+      "target": 68
+    },
+    "newRisk": {
+      "entry": 56,
+      "stop": 52,
+      "target": 60
+    }
+  },
+  "images": [
+    {
+      "filename": "01-workspace-s1.png",
+      "id": "IMG-01",
+      "revision": "r1",
+      "sourceHTML": "images/r1/01-workspace-s1.html",
+      "sourceSha256": "a7ac598945850ee6644bac70cf03c793a858a40227311ec7055b14e4408e3e61",
+      "state": "S1, left/right open, Text selected, footer next-bar focus",
+      "width": 1440,
+      "height": 900,
+      "sha256": "8841e323e8dd88c847b39f99845bd799a3b278d550d12d54d6e00d963e06840b",
+      "overflow": []
+    },
+    {
+      "filename": "02-frame-controls.png",
+      "id": "IMG-02",
+      "revision": "r1",
+      "sourceHTML": "images/r1/02-frame-controls.html",
+      "sourceSha256": "c873f43ba8eb37c9dc6bf96246c3c18223fc463e0e4ee3d3a6fc5597d4c1d0c2",
+      "state": "topic illustration; labeled sub-states",
+      "width": 1440,
+      "height": 945,
+      "sha256": "dfbdde5b75a9bd0c7ed2b5b21a4b03d4dee7f3f799bf510058cc7881ade35e74",
+      "overflow": []
+    },
+    {
+      "filename": "04-colors-control-states.png",
+      "id": "IMG-04",
+      "revision": "r1",
+      "sourceHTML": "images/r1/04-colors-control-states.html",
+      "sourceSha256": "da93d40369cc74a661196d4604cf37ce1501c81b29b6678983fe3fecdacbb2a7",
+      "state": "topic illustration; labeled sub-states",
+      "width": 1440,
+      "height": 900,
+      "sha256": "938963bd2455e6d85232065affecff36694d1d7dde25cd5e721c228aaa02f0b0",
+      "overflow": []
+    },
+    {
+      "filename": "09-phases-cutoffs.png",
+      "id": "IMG-09",
+      "revision": "r1",
+      "sourceHTML": "images/r1/09-phases-cutoffs.html",
+      "sourceSha256": "164ed8d1fd6dc1ad393fb3bcbcb3926e85d292b74997281033afd1f38c722a00",
+      "state": "separate S0/S1/S2 panes",
+      "width": 1440,
+      "height": 1101,
+      "sha256": "6de9b1a8b8c9f176042920a9b761481f5276c41c1c590590d96d7827f685bdc9",
+      "overflow": []
+    },
+    {
+      "filename": "10-responsive-long-text.png",
+      "id": "IMG-10",
+      "revision": "r1",
+      "sourceHTML": "images/r1/10-responsive-long-text.html",
+      "sourceSha256": "544fb74172ae3326b5904e718e9bb46b30471b60c681ae4fac95607f986f953e",
+      "state": "topic illustration; labeled sub-states",
+      "width": 1440,
+      "height": 1041,
+      "sha256": "204732fdbe807ccf5aafcf1d430e3e3c975fed49062d5f024d5747de785d703b",
+      "overflow": []
+    },
+    {
+      "filename": "12-three-stage-export.png",
+      "id": "IMG-12",
+      "revision": "r1",
+      "sourceHTML": "images/r1/12-three-stage-export.html",
+      "sourceSha256": "28ce20175163b25ef79328f52bacaf0cc35ec4a9cc9ec29d9c24c96ae7106cc7",
+      "state": "separate S0/S1/S2 panes",
+      "width": 1440,
+      "height": 810,
+      "sha256": "9fb116dfdf32d066b4af17fbdbd429895a995707f5a4cd932779627aef7aa019",
+      "overflow": []
+    },
+    {
+      "filename": "13-tool-state-machine.png",
+      "id": "IMG-13",
+      "revision": "r1",
+      "sourceHTML": "images/r1/13-tool-state-machine.html",
+      "sourceSha256": "c5eb255cdd8a2bd26d9f5d1f7f9efcd0be6322b607221dffc20e058b32c44592",
+      "state": "creation first point / preview / committed selected; S1 unchanged",
+      "width": 1440,
+      "height": 1029,
+      "sha256": "10b7a7ef1463be32a8664f72dd1d0df8128b3cdafc31d355561879dbf75536d3",
+      "overflow": []
+    },
+    {
+      "filename": "14-entry-context.png",
+      "id": "IMG-14",
+      "revision": "r1",
+      "sourceHTML": "images/r1/14-entry-context.html",
+      "sourceSha256": "e1e4774cd2d038efd3356963f90f41c4f36f46fdec87868a2e4b51394a37b577",
+      "state": "app location schematic; no runtime UI",
+      "width": 1440,
+      "height": 950,
+      "sha256": "ace262ebb45aba1e7235098338797739a20a86ce256ea095f38e06161031ac45",
+      "overflow": []
+    },
+    {
+      "filename": "15-plan-axis-detail.png",
+      "id": "IMG-15",
+      "revision": "r1",
+      "sourceHTML": "images/r1/15-plan-axis-detail.html",
+      "sourceSha256": "f11c342db786eb9a1d9cab7d25f33577387ee254814fa8b96be1e4617993e4a3",
+      "state": "topic illustration; labeled sub-states",
+      "width": 1440,
+      "height": 980,
+      "sha256": "b16819e5d11e1b1e36cbfb6128aab430804efdcef0695e6e48830c51a76beacc",
+      "overflow": []
+    }
+  ],
+  "browserErrors": []
+}

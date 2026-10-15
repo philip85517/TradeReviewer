@@ -11,9 +11,14 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { createRef, type Ref } from "react";
 
 import type { NormalizedDrawing } from "../../lib/chart/drawings";
-import { textLayout } from "../../lib/chart/text-geometry";
+import {
+  textCardLayout,
+  textCardLayoutOptions,
+  textLayout,
+} from "../../lib/chart/text-geometry";
 import {
   DrawingCanvas,
+  findLowerBoundTextWidth,
   paintDrawingScene,
   type DrawingCanvasHandle,
 } from "./drawing-canvas";
@@ -65,6 +70,36 @@ function fakeContext() {
     lineWidth: 1,
     font: "",
   } as unknown as CanvasRenderingContext2D;
+}
+
+function surfaceRecordingContext() {
+  const context = fakeContext();
+  const fillCalls: Array<{ fillStyle: CanvasRenderingContext2D["fillStyle"]; globalAlpha: number; args: number[] }> = [];
+  context.fillRect = vi.fn((...args: [number, number, number, number]) => {
+    fillCalls.push({
+      fillStyle: context.fillStyle,
+      globalAlpha: context.globalAlpha,
+      args,
+    });
+  }) as unknown as CanvasRenderingContext2D["fillRect"];
+  return { context, fillCalls };
+}
+
+function strokeRecordingContext() {
+  const context = fakeContext();
+  const strokeCalls: Array<{
+    strokeStyle: CanvasRenderingContext2D["strokeStyle"];
+    globalAlpha: number;
+    args: number[];
+  }> = [];
+  context.strokeRect = vi.fn((...args: [number, number, number, number]) => {
+    strokeCalls.push({
+      strokeStyle: context.strokeStyle,
+      globalAlpha: context.globalAlpha,
+      args,
+    });
+  }) as unknown as CanvasRenderingContext2D["strokeRect"];
+  return { context, strokeCalls };
 }
 
 function savedDrawing(
@@ -131,7 +166,7 @@ function renderCanvas(
     multilineText: false,
     ...overrides,
   };
-  render(
+  const rendered = render(
     <div className="chart-stage" data-testid="chart-stage">
       <DrawingCanvas ref={ref} {...(props as Parameters<typeof DrawingCanvas>[0])} />
     </div>,
@@ -149,7 +184,7 @@ function renderCanvas(
     bottom: dimensions.height,
     toJSON: () => ({}),
   });
-  return { canvas, stage, props, context };
+  return { canvas, stage, props, context, rerender: rendered.rerender };
 }
 
 afterEach(() => {
@@ -245,6 +280,318 @@ describe("recall chart Text review", () => {
     expect(Number.parseFloat(edit.style.top)).toBeGreaterThan(Number.parseFloat(readout.style.top));
   });
 
+  it("keeps text controls outside a sibling card body in a narrow chart", () => {
+    const first = savedDrawing({
+      id: "narrow-sibling-first",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 101.25 }],
+      placement: "canvas",
+      canvasX: 0.02,
+      canvasY: 0.16,
+      textWidth: 236,
+      text: "第一行\n第二行",
+    });
+    const second = savedDrawing({
+      id: "narrow-sibling-second",
+      tool: "text",
+      anchors: [{ time: candles[1].time, price: 101.25 }],
+      placement: "canvas",
+      canvasX: 0.02,
+      canvasY: 0.35,
+      textWidth: 236,
+      text: "第三行\n第四行",
+    });
+
+    renderCanvas(
+      { activeTool: "cursor", drawings: [first, second], selectedDrawingId: second.id },
+      undefined,
+      { width: 328, height: 270 },
+    );
+
+    const rect = (element: HTMLElement, fallbackWidth = 24, fallbackHeight = 24) => {
+      const left = Number.parseFloat(element.style.left);
+      const top = Number.parseFloat(element.style.top);
+      const width = Number.parseFloat(element.style.width) || fallbackWidth;
+      const height = Number.parseFloat(element.style.height) || fallbackHeight;
+      return { left, top, right: left + width, bottom: top + height };
+    };
+    const overlaps = (left: ReturnType<typeof rect>, right: ReturnType<typeof rect>) =>
+      left.left < right.right && right.left < left.right && left.top < right.bottom && right.top < left.bottom;
+    const body = (id: string) => screen.getByLabelText(`文字内容 ${id}`);
+
+    const firstBody = rect(body(first.id), 236, 94);
+    const secondBody = rect(body(second.id), 236, 94);
+    const firstFold = rect(screen.getByRole("button", { name: `收起文字 ${first.id}` }));
+    const secondFold = rect(screen.getByRole("button", { name: `收起文字 ${second.id}` }));
+    const secondEdit = rect(screen.getByRole("button", { name: `编辑文字 ${second.id}` }), 36, 36);
+    const selectedMoveElement = screen.getByRole("button", { name: `移动文字 ${second.id}` });
+    const selectedMove = rect(selectedMoveElement);
+    expect(selectedMoveElement).toHaveStyle({ color: "var(--link, #8cbdff)" });
+
+    for (const control of [
+      screen.getByRole("button", { name: `收起文字 ${first.id}` }),
+      screen.getByRole("button", { name: `收起文字 ${second.id}` }),
+      screen.getByRole("button", { name: `编辑文字 ${second.id}` }),
+      screen.getByRole("button", { name: `移动文字 ${second.id}` }),
+    ]) {
+      expect(control).toHaveStyle({ pointerEvents: "auto" });
+    }
+
+    expect(overlaps(firstFold, secondBody)).toBe(false);
+    expect(overlaps(secondFold, firstBody)).toBe(false);
+    expect(overlaps(secondEdit, firstBody)).toBe(false);
+    expect(overlaps(selectedMove, firstBody)).toBe(false);
+  });
+
+  it("keeps controls adjacent when the first narrow card is fully expanded", () => {
+    const first = savedDrawing({
+      id: "expanded-first-sibling",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 101.25 }],
+      placement: "canvas",
+      canvasX: 0.02,
+      canvasY: 0.16,
+      textWidth: 236,
+      text: "第一行完整正文\n第二行完整正文\n第三行完整正文\n第四行完整正文",
+    });
+    const second = savedDrawing({
+      id: "expanded-second-sibling",
+      tool: "text",
+      anchors: [{ time: candles[1].time, price: 101.25 }],
+      placement: "canvas",
+      canvasX: 0.02,
+      canvasY: 0.35,
+      textWidth: 236,
+      text: "第五行完整正文\n第六行完整正文\n第七行完整正文\n第八行完整正文",
+    });
+
+    renderCanvas(
+      {
+        activeTool: "cursor",
+        drawings: [first, second],
+        selectedDrawingId: second.id,
+      },
+      undefined,
+      { width: 328, height: 270 },
+    );
+
+    const rect = (element: HTMLElement, fallbackWidth = 24, fallbackHeight = 24) => {
+      const left = Number.parseFloat(element.style.left);
+      const top = Number.parseFloat(element.style.top);
+      const width = Number.parseFloat(element.style.width) || fallbackWidth;
+      const height = Number.parseFloat(element.style.height) || fallbackHeight;
+      return { left, top, right: left + width, bottom: top + height };
+    };
+    const overlaps = (left: ReturnType<typeof rect>, right: ReturnType<typeof rect>) =>
+      left.left < right.right && right.left < left.right && left.top < right.bottom && right.top < left.bottom;
+    fireEvent.click(screen.getByRole("button", { name: `展开文字 ${first.id}` }));
+    const firstBody = rect(screen.getByLabelText(`文字内容 ${first.id}`), 236, 94);
+    const secondBody = rect(screen.getByLabelText(`文字内容 ${second.id}`), 236, 94);
+    expect(screen.getByLabelText(`文字内容 ${first.id}`)).toHaveTextContent("第四行完整正文");
+    for (const control of [
+      screen.getByRole("button", { name: `编辑文字 ${second.id}` }),
+      screen.getByRole("button", { name: `移动文字 ${second.id}` }),
+    ]) {
+      expect(overlaps(rect(control), firstBody)).toBe(false);
+      expect(control).toHaveStyle({ pointerEvents: "auto" });
+    }
+    expect(overlaps(rect(screen.getByRole("button", { name: `收起文字 ${first.id}` })), secondBody)).toBe(false);
+  });
+
+  it("keeps the folded narrow card expand handle pointer reachable beside a sibling", () => {
+    const first = savedDrawing({
+      id: "folded-sibling-first",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 101.25 }],
+      placement: "canvas",
+      canvasX: 0.02,
+      canvasY: 0.16,
+      textWidth: 236,
+      text: "第一行\n第二行",
+    });
+    const second = savedDrawing({
+      id: "folded-sibling-second",
+      tool: "text",
+      anchors: [{ time: candles[1].time, price: 101.25 }],
+      placement: "canvas",
+      canvasX: 0.02,
+      canvasY: 0.35,
+      textWidth: 236,
+      text: "第三行\n第四行",
+    });
+
+    renderCanvas(
+      { activeTool: "cursor", drawings: [first, second], selectedDrawingId: second.id },
+      undefined,
+      { width: 328, height: 270 },
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: `收起文字 ${second.id}` }));
+
+    const expand = screen.getByRole("button", { name: `展开文字 ${second.id}` });
+    const rect = (element: HTMLElement, fallbackWidth = 24, fallbackHeight = 24) => {
+      const left = Number.parseFloat(element.style.left);
+      const top = Number.parseFloat(element.style.top);
+      const width = Number.parseFloat(element.style.width) || fallbackWidth;
+      const height = Number.parseFloat(element.style.height) || fallbackHeight;
+      return { left, top, right: left + width, bottom: top + height };
+    };
+    const firstBody = rect(screen.getByLabelText(`文字内容 ${first.id}`), 236, 94);
+    const expandRect = rect(expand);
+    const selectedMove = rect(screen.getByRole("button", { name: `移动文字 ${second.id}` }));
+    expect(expand).toHaveAttribute("data-control-placement", "plot");
+    expect(expand).toHaveStyle({ pointerEvents: "auto" });
+    expect(expandRect.left >= firstBody.right || expandRect.right <= firstBody.left || expandRect.top >= firstBody.bottom || expandRect.bottom <= firstBody.top).toBe(true);
+    expect(expandRect.left >= selectedMove.right || expandRect.right <= selectedMove.left || expandRect.top >= selectedMove.bottom || expandRect.bottom <= selectedMove.top).toBe(true);
+    expect(expandRect.left).toBeGreaterThanOrEqual(firstBody.right + 6);
+  });
+
+  it("keeps the narrow selected source readout clear of the first card body", () => {
+    const first = savedDrawing({
+      id: "narrow-readout-first",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 101.25 }],
+      placement: "canvas",
+      canvasX: 0.02,
+      canvasY: 0.16,
+      textWidth: 236,
+      text: "第一行\n第二行",
+    });
+    const second = savedDrawing({
+      id: "narrow-readout-second",
+      tool: "text",
+      anchors: [{ time: candles[1].time, price: 101.25 }],
+      placement: "canvas",
+      canvasX: 0.02,
+      canvasY: 0.35,
+      textWidth: 236,
+      text: "第三行\n第四行",
+    });
+
+    renderCanvas(
+      { activeTool: "cursor", drawings: [first, second], selectedDrawingId: second.id },
+      undefined,
+      { width: 328, height: 270 },
+    );
+
+    const rect = (element: HTMLElement, fallbackWidth = 24, fallbackHeight = 24) => {
+      const left = Number.parseFloat(element.style.left);
+      const top = Number.parseFloat(element.style.top);
+      const width = Number.parseFloat(element.style.width) || fallbackWidth;
+      const height = Number.parseFloat(element.style.height) || fallbackHeight;
+      return { left, top, right: left + width, bottom: top + height };
+    };
+    const readout = rect(screen.getByRole("status", { name: `文字锚点 ${second.id}` }), 190, 38);
+    const firstBody = rect(screen.getByLabelText(`文字内容 ${first.id}`), 236, 94);
+    expect(readout.right <= firstBody.left || firstBody.right <= readout.left || readout.bottom <= firstBody.top || firstBody.bottom <= readout.top).toBe(true);
+  });
+
+  it("keeps required Text controls and source readout reachable in the measured 244px plot", () => {
+    const first = savedDrawing({
+      id: "actual-bounds-first",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 101.25 }],
+      placement: "canvas",
+      canvasX: 0.02,
+      canvasY: 0.16,
+      textWidth: 236,
+      text: "第一张卡第一行\n第一张卡第二行\n第一张卡第三行",
+    });
+    const second = savedDrawing({
+      id: "actual-bounds-second",
+      tool: "text",
+      anchors: [{ time: candles[1].time, price: 101.25 }],
+      placement: "canvas",
+      canvasX: 0.02,
+      canvasY: 0.35,
+      textWidth: 236,
+      text: "第二张卡第一行\n第二张卡第二行\n第二张卡第三行",
+    });
+
+    renderCanvas(
+      {
+        activeTool: "cursor",
+        drawings: [first, second],
+        selectedDrawingId: second.id,
+        plotBounds: { width: 244, height: 242 },
+        controlObstacles: [{ id: "compact-toolbar", left: 84, top: 197, right: 160, bottom: 235 }],
+      },
+      undefined,
+      { width: 328, height: 270 },
+    );
+
+    const expand = screen.getByRole("button", { name: `展开文字 ${second.id}` });
+    const move = screen.getByRole("button", { name: `移动文字 ${second.id}` });
+    expect(expand).toHaveAttribute("data-control-placement", "plot");
+    expect(expand).toHaveStyle({ pointerEvents: "auto" });
+    expect(move).toHaveStyle({ pointerEvents: "auto" });
+
+    const readout = screen.getByRole("status", { name: `文字锚点 ${second.id}` });
+    expect(readout).toBeVisible();
+    const rect = (element: HTMLElement, fallbackWidth = 190, fallbackHeight = 38) => {
+      const left = Number.parseFloat(element.style.left);
+      const top = Number.parseFloat(element.style.top);
+      const width = Number.parseFloat(element.style.width) || fallbackWidth;
+      const height = Number.parseFloat(element.style.height) || fallbackHeight;
+      return { left, top, right: left + width, bottom: top + height };
+    };
+    const readoutRect = rect(readout);
+    expect(readoutRect.left).toBeGreaterThanOrEqual(0);
+    expect(readoutRect.right).toBeLessThanOrEqual(244);
+    expect(readoutRect.top).toBeGreaterThanOrEqual(0);
+    expect(readoutRect.bottom).toBeLessThanOrEqual(242);
+    const secondBody = rect(screen.getByLabelText(`文字内容 ${second.id}`), 236, 94);
+    const overlaps = (left: ReturnType<typeof rect>, right: ReturnType<typeof rect>) =>
+      left.left < right.right && right.left < left.right && left.top < right.bottom && right.top < left.bottom;
+    expect(overlaps(readoutRect, secondBody)).toBe(false);
+    expect(overlaps(readoutRect, rect(screen.getByLabelText(`文字内容 ${first.id}`), 236, 94))).toBe(false);
+    expect(overlaps(readoutRect, { left: 84, top: 197, right: 160, bottom: 235 })).toBe(false);
+  });
+
+  it.each([false, true])("keeps a folded narrow card's side expand target clear with coarse hit size (coarse=%s)", (coarse) => {
+    vi.stubGlobal("matchMedia", vi.fn((query: string) => ({
+      matches: coarse && query === "(pointer: coarse)",
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })));
+    const first = savedDrawing({
+      id: `coarse-first-${coarse}`,
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 101.25 }],
+      placement: "canvas",
+      canvasX: 0.02,
+      canvasY: 0.16,
+      textWidth: 236,
+      text: "第一行\n第二行",
+    });
+    const second = savedDrawing({
+      id: `coarse-second-${coarse}`,
+      tool: "text",
+      anchors: [{ time: candles[1].time, price: 101.25 }],
+      placement: "canvas",
+      canvasX: 0.02,
+      canvasY: 0.35,
+      textWidth: 236,
+      text: "第三行\n第四行",
+    });
+
+    renderCanvas(
+      { activeTool: "cursor", drawings: [first, second], selectedDrawingId: second.id },
+      undefined,
+      { width: 328, height: 270 },
+    );
+    fireEvent.click(screen.getByRole("button", { name: `收起文字 ${second.id}` }));
+
+    const expand = screen.getByRole("button", { name: `展开文字 ${second.id}` });
+    const firstBody = screen.getByLabelText(`文字内容 ${first.id}`);
+    const expandLeft = Number.parseFloat(expand.style.left);
+    const firstRight = Number.parseFloat(firstBody.style.left) + Number.parseFloat(firstBody.style.width);
+    expect(Number.parseFloat(expand.style.width)).toBe(coarse ? 44 : 24);
+    expect(expandLeft).toBeGreaterThanOrEqual(firstRight + 6);
+    expect(expand).toHaveStyle({ pointerEvents: "auto" });
+  });
+
   it("updates the revealed source readout while moving the text anchor and after commit", () => {
     const onCommand = vi.fn();
     const drawing = savedDrawing({
@@ -337,9 +684,426 @@ describe("recall chart Text review", () => {
       currency: "HKD",
     });
 
-    expect(context.font).toContain("14px");
+    expect(context.font).toContain("400 14px");
     expect(context.font).not.toContain("var(");
     expect(context.fillText).toHaveBeenCalledWith("1", expect.any(Number), expect.any(Number));
+  });
+
+  it("keeps ordinary anchored Text free of the bright selection frame", () => {
+    const drawing = savedDrawing({
+      id: "ordinary-card-no-frame",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.3,
+      canvasY: 0.2,
+      text: "普通卡片",
+    });
+    const scene = {
+      width: 100,
+      height: 100,
+      drawings: [drawing],
+      pointFor: () => ({ x: 10, y: 40 }),
+      pointForDrawing: () => ({ x: 30, y: 20 }),
+      currency: "HKD",
+    };
+    const { context, strokeCalls } = strokeRecordingContext();
+    paintDrawingScene(context, scene, true);
+    expect(strokeCalls).toHaveLength(1);
+    expect(strokeCalls[0].strokeStyle).not.toBe("#2f80ed");
+    expect(context.fillText).toHaveBeenCalledWith(expect.stringContaining("普通"), expect.any(Number), expect.any(Number));
+  });
+
+  it("paints exactly one persistent selected Text state layer", () => {
+    const drawing = savedDrawing({
+      id: "selected-card-one-layer",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.3,
+      canvasY: 0.2,
+      text: "选中卡片",
+    });
+    const { context, strokeCalls } = strokeRecordingContext();
+    paintDrawingScene(context, {
+      width: 100,
+      height: 100,
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      pointFor: () => ({ x: 10, y: 40 }),
+      pointForDrawing: () => ({ x: 30, y: 20 }),
+      currency: "HKD",
+    }, true);
+    expect(strokeCalls).toHaveLength(1);
+    expect(strokeCalls[0].strokeStyle).toBe("#8cbdff");
+  });
+
+  it.each([false, true])("exposes a selected unlocked Text width handle at fine/coarse size (coarse=%s)", (coarse) => {
+    vi.stubGlobal("matchMedia", vi.fn((query: string) => ({
+      matches: coarse && query === "(pointer: coarse)",
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })));
+    const drawing = savedDrawing({
+      id: `width-handle-${coarse}`,
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.25,
+      canvasY: 0.25,
+      textWidth: 180,
+      text: "第一行完整正文\n第二行完整正文\n第三行完整正文",
+    });
+    const onCommand = vi.fn();
+    renderCanvas({ activeTool: "cursor", drawings: [drawing], selectedDrawingId: drawing.id, onCommand }, undefined, { width: 800, height: 600 });
+    const handle = screen.getByRole("button", { name: `调整文字宽度 ${drawing.id}` });
+    const expectedSize = coarse ? 44 : 24;
+    expect(Number.parseFloat(handle.style.width)).toBe(expectedSize);
+    expect(Number.parseFloat(handle.style.height)).toBe(expectedSize);
+    expect(handle).toHaveStyle({ cursor: "ew-resize" });
+  });
+
+  it("previews a width drag, commits once, preserves geometry, and rolls back on cancel", () => {
+    const onCommand = vi.fn();
+    const drawing = savedDrawing({
+      id: "width-drag-lifecycle",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.25,
+      canvasY: 0.25,
+      textWidth: 180,
+      text: "第一行完整正文\n第二行完整正文\n第三行完整正文",
+    });
+    const { stage } = renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      onCommand,
+    }, undefined, { width: 800, height: 600 });
+    const handle = screen.getByRole("button", { name: `调整文字宽度 ${drawing.id}` });
+    const originalLeft = Number.parseFloat(handle.style.left);
+    const originalTop = Number.parseFloat(handle.style.top);
+    fireEvent.pointerDown(handle, { pointerId: 90, clientX: originalLeft + 12, clientY: originalTop + 12 });
+    fireEvent.pointerMove(stage, { pointerId: 90, clientX: originalLeft + 12, clientY: originalTop + 80 });
+    expect(screen.getByLabelText(`文字内容 ${drawing.id}`)).toHaveStyle({ width: "180px" });
+    fireEvent.pointerUp(stage, { pointerId: 90, clientX: originalLeft + 12, clientY: originalTop + 80 });
+    expect(onCommand).not.toHaveBeenCalled();
+
+    fireEvent.pointerDown(handle, { pointerId: 91, clientX: originalLeft + 12, clientY: originalTop + 12 });
+    fireEvent.pointerMove(stage, { pointerId: 91, clientX: originalLeft + 72, clientY: originalTop + 12 });
+    const previewHandle = screen.getByRole("button", { name: `调整文字宽度 ${drawing.id}` });
+    expect(Number.parseFloat(previewHandle.style.left)).toBeGreaterThan(originalLeft);
+    expect(screen.getByLabelText(`文字内容 ${drawing.id}`)).toHaveStyle({ width: "240px" });
+    fireEvent.pointerUp(stage, { pointerId: 91, clientX: originalLeft + 72, clientY: originalTop + 12 });
+    expect(onCommand).toHaveBeenCalledTimes(1);
+    expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
+      type: "replace",
+      drawing: expect.objectContaining({
+        id: drawing.id,
+        textWidth: 240,
+        anchors: drawing.anchors,
+        canvasX: drawing.canvasX,
+        canvasY: drawing.canvasY,
+        text: drawing.text,
+      }),
+    }));
+    const committed = screen.getByRole("button", { name: `调整文字宽度 ${drawing.id}` });
+    const committedLeft = Number.parseFloat(committed.style.left);
+    fireEvent.pointerDown(committed, { pointerId: 92, clientX: committedLeft + 12, clientY: originalTop + 12 });
+    fireEvent.pointerMove(stage, { pointerId: 92, clientX: committedLeft - 24, clientY: originalTop + 12 });
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.getByRole("button", { name: `调整文字宽度 ${drawing.id}` })).toHaveStyle({ left: `${committedLeft}px` });
+    expect(onCommand).toHaveBeenCalledTimes(1);
+  });
+
+  it("clamps right-edge Text width to remaining plot space without moving the card", () => {
+    const onCommand = vi.fn();
+    const drawing = savedDrawing({
+      id: "width-drag-right-edge",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.72,
+      canvasY: 0.25,
+      textWidth: 180,
+      text: "右侧正文",
+    });
+    const { stage } = renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      onCommand,
+    }, undefined, { width: 800, height: 600 });
+
+    const body = screen.getByLabelText(`文字内容 ${drawing.id}`);
+    const originalLeft = Number.parseFloat(body.style.left);
+    const originalTop = Number.parseFloat(body.style.top);
+    const handle = screen.getByRole("button", { name: `调整文字宽度 ${drawing.id}` });
+    const handleLeft = Number.parseFloat(handle.style.left);
+    const handleTop = Number.parseFloat(handle.style.top);
+    fireEvent.pointerDown(handle, { pointerId: 94, clientX: handleLeft + 12, clientY: handleTop + 12 });
+    fireEvent.pointerMove(stage, { pointerId: 94, clientX: handleLeft + 72, clientY: handleTop + 12 });
+
+    const preview = screen.getByLabelText(`文字内容 ${drawing.id}`);
+    const previewWidth = Number.parseFloat(preview.style.width);
+    expect(Number.parseFloat(preview.style.left)).toBe(originalLeft);
+    expect(Number.parseFloat(preview.style.top)).toBe(originalTop);
+    expect(previewWidth).toBeLessThan(240);
+    expect(originalLeft + previewWidth).toBeLessThanOrEqual(800 - 4);
+
+    fireEvent.pointerUp(stage, { pointerId: 94, clientX: handleLeft + 72, clientY: handleTop + 12 });
+    expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
+      type: "replace",
+      drawing: expect.objectContaining({ id: drawing.id, textWidth: previewWidth }),
+    }));
+  });
+
+  it("keeps the visible left and top fixed when a right-edge width drag shrinks the stored card", () => {
+    const onCommand = vi.fn();
+    const drawing = savedDrawing({
+      id: "width-drag-preserves-base-origin",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.650216658485127,
+      canvasY: 0.4409278325,
+      textWidth: 180,
+      text: "右边界缩窄仍保留完整位置",
+    });
+    const { stage, rerender } = renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      onCommand,
+      plotBounds: { width: 662, height: 630 },
+    }, undefined, { width: 748, height: 659 });
+
+    const before = screen.getByLabelText(`文字内容 ${drawing.id}`);
+    const originalLeft = Number.parseFloat(before.style.left);
+    const originalTop = Number.parseFloat(before.style.top);
+    const handle = screen.getByRole("button", { name: `调整文字宽度 ${drawing.id}` });
+    const handleLeft = Number.parseFloat(handle.style.left);
+    const handleTop = Number.parseFloat(handle.style.top);
+
+    fireEvent.pointerDown(handle, {
+      pointerId: 221,
+      clientX: handleLeft + 12,
+      clientY: handleTop + 12,
+    });
+    fireEvent.pointerMove(stage, {
+      pointerId: 221,
+      clientX: handleLeft - 16,
+      clientY: handleTop + 12,
+    });
+
+    const during = screen.getByLabelText(`文字内容 ${drawing.id}`);
+    expect(Number.parseFloat(during.style.width)).toBe(152);
+    expect(Number.parseFloat(during.style.left)).toBeCloseTo(originalLeft, 5);
+    expect(Number.parseFloat(during.style.top)).toBeCloseTo(originalTop, 5);
+
+    fireEvent.pointerUp(stage, {
+      pointerId: 221,
+      clientX: handleLeft - 16,
+      clientY: handleTop + 12,
+    });
+
+    expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
+      type: "replace",
+      drawing: expect.objectContaining({
+        id: drawing.id,
+        textWidth: 152,
+      }),
+    }));
+
+    const committed = onCommand.mock.calls.at(-1)?.[0] as {
+      drawing?: NormalizedDrawing;
+    };
+    expect(committed.drawing?.canvasX).toBeCloseTo(originalLeft / 748, 5);
+    expect(committed.drawing?.canvasY).toBeCloseTo(originalTop / 659, 5);
+
+    rerender(
+      <div className="chart-stage" data-testid="chart-stage">
+        <DrawingCanvas
+          episodeId="episode-1"
+          candles={candles}
+          cursor={candles[1].time}
+          drawings={[committed.drawing as NormalizedDrawing]}
+          selectedDrawingId={drawing.id}
+          activeTool="cursor"
+          plannedRiskAmount={undefined}
+          currency="HKD"
+          onSelectDrawing={vi.fn()}
+          onCommand={onCommand}
+          coordinateAdapter={adapter}
+          plotBounds={{ width: 662, height: 630 }}
+          multilineText={false}
+        />
+      </div>,
+    );
+    const after = screen.getByLabelText(`文字内容 ${drawing.id}`);
+    expect(Number.parseFloat(after.style.left)).toBeCloseTo(originalLeft, 5);
+    expect(Number.parseFloat(after.style.top)).toBeCloseTo(originalTop, 5);
+  });
+
+  it("keeps the Text card top fixed when a narrow width would wrap beyond the bottom edge", () => {
+    const onCommand = vi.fn();
+    const drawing = savedDrawing({
+      id: "width-drag-bottom-edge",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.25,
+      canvasY: 0.88,
+      textWidth: 180,
+      text: "一二三四五六",
+    });
+    const { stage } = renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      onCommand,
+    }, undefined, { width: 800, height: 600 });
+
+    const body = screen.getByLabelText(`文字内容 ${drawing.id}`);
+    const originalTop = Number.parseFloat(body.style.top);
+    const originalWidth = Number.parseFloat(body.style.width);
+    const handle = screen.getByRole("button", { name: `调整文字宽度 ${drawing.id}` });
+    const handleLeft = Number.parseFloat(handle.style.left);
+    const handleTop = Number.parseFloat(handle.style.top);
+    fireEvent.pointerDown(handle, { pointerId: 95, clientX: handleLeft + 12, clientY: handleTop + 12 });
+    fireEvent.pointerMove(stage, { pointerId: 95, clientX: handleLeft - 140, clientY: handleTop + 12 });
+
+    const preview = screen.getByLabelText(`文字内容 ${drawing.id}`);
+    const previewWidth = Number.parseFloat(preview.style.width);
+    expect(Number.parseFloat(preview.style.top)).toBe(originalTop);
+    expect(previewWidth).toBeLessThan(originalWidth);
+
+    fireEvent.pointerUp(stage, { pointerId: 95, clientX: handleLeft - 140, clientY: handleTop + 12 });
+    expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
+      type: "replace",
+      drawing: expect.objectContaining({ id: drawing.id, textWidth: previewWidth }),
+    }));
+  });
+
+  it("terminates lower-bound Text width search when adjacent bounds leave only the upper width fitting", () => {
+    let calls = 0;
+    expect(() => findLowerBoundTextWidth(83, 84, (width) => {
+      calls += 1;
+      if (calls > 8) throw new Error("non-converging lower-bound search");
+      return width === 84;
+    })).not.toThrow();
+    expect(findLowerBoundTextWidth(83, 84, (width) => width === 84)).toBe(84);
+    expect(calls).toBeLessThanOrEqual(2);
+  });
+
+  it("keeps the Text edit control compact while retaining its accessible hit target", () => {
+    const drawing = savedDrawing({
+      id: "edit-control-icon",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.25,
+      canvasY: 0.25,
+      text: "编辑图标",
+    });
+    renderCanvas({ activeTool: "cursor", drawings: [drawing], selectedDrawingId: drawing.id }, undefined, { width: 800, height: 600 });
+
+    const edit = screen.getByRole("button", { name: `编辑文字 ${drawing.id}` });
+    expect(edit).toHaveAttribute("title", "编辑文字");
+    expect(edit.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
+    expect(edit).not.toHaveTextContent("编辑文字");
+    expect(Number.parseFloat(edit.style.width)).toBe(36);
+    expect(Number.parseFloat(edit.style.height)).toBe(36);
+  });
+
+  it("retains the coarse-pointer Text edit hit target with the compact icon", () => {
+    vi.stubGlobal("matchMedia", vi.fn((query: string) => ({
+      matches: query === "(pointer: coarse)",
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })));
+    const drawing = savedDrawing({
+      id: "edit-control-icon-coarse",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.25,
+      canvasY: 0.25,
+      text: "编辑图标",
+    });
+    renderCanvas({ activeTool: "cursor", drawings: [drawing], selectedDrawingId: drawing.id }, undefined, { width: 800, height: 600 });
+
+    const edit = screen.getByRole("button", { name: `编辑文字 ${drawing.id}` });
+    expect(edit.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
+    expect(Number.parseFloat(edit.style.width)).toBe(44);
+    expect(Number.parseFloat(edit.style.height)).toBe(44);
+  });
+
+  it("keeps the edited Text buffer and width in sync while resizing", () => {
+    const onCommand = vi.fn();
+    const drawing = savedDrawing({
+      id: "width-drag-editor-buffer",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.25,
+      canvasY: 0.25,
+      textWidth: 180,
+      text: "旧正文",
+    });
+    const { stage } = renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      onCommand,
+    }, undefined, { width: 800, height: 600 });
+
+    fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${drawing.id}` }));
+    const editor = screen.getByRole("textbox", { name: "文字标注" });
+    fireEvent.change(editor, { target: { value: "宽度变化后仍保留" } });
+    const handle = screen.getByRole("button", { name: `调整文字宽度 ${drawing.id}` });
+    const left = Number.parseFloat(handle.style.left);
+    const top = Number.parseFloat(handle.style.top);
+    fireEvent.pointerDown(handle, { pointerId: 93, clientX: left + 12, clientY: top + 12 });
+    fireEvent.pointerMove(stage, { pointerId: 93, clientX: left + 72, clientY: top + 12 });
+    expect(screen.getByRole("textbox", { name: "文字标注" })).toHaveValue("宽度变化后仍保留");
+    fireEvent.pointerUp(stage, { pointerId: 93, clientX: left + 72, clientY: top + 12 });
+    fireEvent.click(screen.getByRole("button", { name: "完成文字编辑" }));
+
+    const commands = onCommand.mock.calls.map(([command]) => command as { type: string; drawing?: NormalizedDrawing });
+    expect(commands).toHaveLength(2);
+    expect(commands[1]).toEqual(expect.objectContaining({
+      type: "replace",
+      drawing: expect.objectContaining({
+        id: drawing.id,
+        text: "宽度变化后仍保留",
+        textWidth: 240,
+      }),
+    }));
+  });
+
+  it("keeps the width handle clear of transient control obstacles and hides it for locked Text", () => {
+    const drawing = savedDrawing({
+      id: "width-handle-obstacle",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.25,
+      canvasY: 0.25,
+      textWidth: 180,
+      text: "避让控件",
+    });
+    const obstacle = { id: "toolbar", left: 0, top: 0, right: 800, bottom: 44 };
+    renderCanvas({ activeTool: "cursor", drawings: [drawing], selectedDrawingId: drawing.id, controlObstacles: [obstacle] }, undefined, { width: 800, height: 600 });
+    const handle = screen.getByRole("button", { name: `调整文字宽度 ${drawing.id}` });
+    const top = Number.parseFloat(handle.style.top);
+    expect(top).toBeGreaterThanOrEqual(44);
+    cleanup();
+    renderCanvas({ activeTool: "cursor", drawings: [{ ...drawing, locked: true }], selectedDrawingId: drawing.id }, undefined, { width: 800, height: 600 });
+    expect(screen.queryByRole("button", { name: `调整文字宽度 ${drawing.id}` })).not.toBeInTheDocument();
   });
 
   it("keeps expanded Text content in canvas capture output", () => {
@@ -558,6 +1322,143 @@ describe("recall chart Text review", () => {
     );
   });
 
+  it("provides a fold control for a complete two-line Text card without rewriting raw text", () => {
+    const drawing = savedDrawing({
+      id: "short-card-fold",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "canvas",
+      canvasX: 0.2,
+      canvasY: 0.2,
+      textWidth: 240,
+      text: "第一行短正文\n第二行短正文",
+    });
+
+    const onCommand = vi.fn();
+    renderCanvas({ activeTool: "cursor", drawings: [drawing], selectedDrawingId: drawing.id, onCommand }, undefined, { width: 800, height: 600 });
+
+    const toggle = screen.getByRole("button", { name: `收起文字 ${drawing.id}` });
+    expect(toggle).toBeInTheDocument();
+    expect(screen.getByLabelText(`文字内容 ${drawing.id}`)).toHaveTextContent("第一行短正文");
+    fireEvent.click(toggle);
+    expect(screen.getByRole("button", { name: `展开文字 ${drawing.id}` })).toBeInTheDocument();
+    expect(screen.getByLabelText(`文字内容 ${drawing.id}`)).not.toHaveTextContent("第二行短正文");
+    fireEvent.click(screen.getByRole("button", { name: `展开文字 ${drawing.id}` }));
+    expect(screen.getByRole("button", { name: `收起文字 ${drawing.id}` })).toBeInTheDocument();
+    expect(screen.getByLabelText(`文字内容 ${drawing.id}`)).toHaveTextContent("第二行短正文");
+    expect(drawing.text).toBe("第一行短正文\n第二行短正文");
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
+  it.each([false, true])("renders the Text edit control at the required hit size (coarse=%s)", (coarse) => {
+    vi.stubGlobal("matchMedia", vi.fn((query: string) => ({
+      matches: coarse && query === "(pointer: coarse)",
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })));
+    const drawing = savedDrawing({
+      id: `edit-hit-size-${coarse}`,
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.25,
+      canvasY: 0.25,
+      text: "编辑命中尺寸",
+    });
+
+    renderCanvas({ activeTool: "cursor", drawings: [drawing], selectedDrawingId: drawing.id }, undefined, { width: 800, height: 600 });
+
+    const edit = screen.getByRole("button", { name: `编辑文字 ${drawing.id}` });
+    const expectedSize = coarse ? 44 : 36;
+    expect(Number.parseFloat(edit.style.height)).toBeGreaterThanOrEqual(expectedSize);
+    expect(Number.parseFloat(edit.style.minHeight)).toBeGreaterThanOrEqual(expectedSize);
+  });
+
+  it.each([false, true])("moves the Text expand control clear of a moved compact-toolbar obstacle without changing saved data (coarse=%s)", (coarse) => {
+    vi.stubGlobal("matchMedia", vi.fn((query: string) => ({
+      matches: coarse && query === "(pointer: coarse)",
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })));
+    const drawing = savedDrawing({
+      id: `compact-obstacle-${coarse}`,
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.4,
+      canvasY: 0.7,
+      textWidth: 180,
+      text: "第一行完整正文\n第二行完整正文\n第三行完整正文",
+      background: "rgba(16, 23, 34, 0.86)",
+      style: { color: "#e7edf6", lineWidth: 1.5, opacity: 0.95 },
+    });
+    const saved = structuredClone(drawing);
+    renderCanvas({ activeTool: "cursor", drawings: [drawing], selectedDrawingId: drawing.id }, undefined, { width: 800, height: 600 });
+    const initial = screen.getByRole("button", { name: `展开文字 ${drawing.id}` });
+    const rect = (button: HTMLElement) => ({
+      left: Number.parseFloat(button.style.left),
+      top: Number.parseFloat(button.style.top),
+      right: Number.parseFloat(button.style.left) + Number.parseFloat(button.style.width),
+      bottom: Number.parseFloat(button.style.top) + Number.parseFloat(button.style.height),
+    });
+    const blockedRect = rect(initial);
+
+    cleanup();
+    renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      controlObstacles: [{ id: "compact-toolbar", ...blockedRect }],
+    }, undefined, { width: 800, height: 600 });
+    const moved = screen.getByRole("button", { name: `展开文字 ${drawing.id}` });
+    const movedRect = rect(moved);
+    expect(movedRect.left === blockedRect.left && movedRect.top === blockedRect.top).toBe(false);
+    expect(movedRect.right <= blockedRect.left || blockedRect.right <= movedRect.left || movedRect.bottom <= blockedRect.top || blockedRect.bottom <= movedRect.top).toBe(true);
+    expect(moved).toHaveStyle({ pointerEvents: "auto" });
+
+    cleanup();
+    renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      controlObstacles: [{ id: "compact-toolbar-moved", ...movedRect }],
+    }, undefined, { width: 800, height: 600 });
+    const movedAgain = screen.getByRole("button", { name: `展开文字 ${drawing.id}` });
+    const movedAgainRect = rect(movedAgain);
+    expect(movedAgainRect.right <= movedRect.left || movedRect.right <= movedAgainRect.left || movedAgainRect.bottom <= movedRect.top || movedRect.bottom <= movedAgainRect.top).toBe(true);
+    expect(movedAgain).toHaveStyle({ pointerEvents: "auto" });
+
+    fireEvent.click(movedAgain);
+    expect(screen.getByLabelText(`文字内容 ${drawing.id}`)).toHaveTextContent("第三行完整正文");
+    expect(drawing).toEqual(saved);
+  });
+
+  it("marks a fully blocked Text expand control as keyboard fallback instead of claiming mouse reachability", () => {
+    const drawing = savedDrawing({
+      id: "blocked-expand-fallback",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.4,
+      canvasY: 0.7,
+      text: "第一行\n第二行\n第三行",
+    });
+    renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      controlObstacles: [{ id: "compact-toolbar", left: 0, top: 0, right: 800, bottom: 600 }],
+    }, undefined, { width: 800, height: 600 });
+
+    const toggle = screen.getByRole("button", { name: `展开文字 ${drawing.id}` });
+    expect(toggle).toHaveAttribute("data-control-placement", "keyboard-fallback");
+    expect(toggle).toHaveStyle({ pointerEvents: "none" });
+    fireEvent.click(toggle);
+    expect(screen.getByLabelText(`文字内容 ${drawing.id}`)).toHaveTextContent("第一行");
+  });
+
   it("keeps expanded text readable before and after selection", () => {
     const drawing = savedDrawing({
       id: "expanded-unselected",
@@ -633,6 +1534,7 @@ describe("recall chart Text review", () => {
       canvasX: 0.2,
       canvasY: 0.2,
       text: "选中文字应保持可读\n第二行正文\n第三行正文",
+      background: "#101722",
     });
     renderCanvas({
       activeTool: "cursor",
@@ -647,6 +1549,120 @@ describe("recall chart Text review", () => {
     expect(layer).toHaveStyle({ zIndex: "7" });
     expect(layer).toHaveStyle({ background: "#101722" });
     expect(screen.getByRole("button", { name: `展开文字 ${text.id}` })).toHaveStyle({ zIndex: "8" });
+  });
+
+  it("preserves a selected Text card's saved surface and regular body style", () => {
+    const drawing = savedDrawing({
+      id: "selected-surface-contract",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.2,
+      canvasY: 0.2,
+      fontSize: 18,
+      background: "rgba(16, 23, 34, 0.86)",
+      text: "保留已存背景",
+    });
+
+    renderCanvas({ activeTool: "cursor", drawings: [drawing], selectedDrawingId: drawing.id });
+
+    const layer = screen.getByLabelText(`文字内容 ${drawing.id}`);
+    expect(layer).toHaveStyle({
+      background: drawing.background,
+      fontSize: "18px",
+      fontWeight: "400",
+      padding: "4px 4px",
+    });
+  });
+
+  it("keeps a selected transparent Text card transparent", () => {
+    const drawing = savedDrawing({
+      id: "selected-transparent-surface",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.2,
+      canvasY: 0.2,
+      background: "transparent",
+      text: "透明背景",
+    });
+
+    renderCanvas({ activeTool: "cursor", drawings: [drawing], selectedDrawingId: drawing.id });
+
+    expect(screen.getByLabelText(`文字内容 ${drawing.id}`)).toHaveStyle({
+      background: "transparent",
+    });
+  });
+
+  it("keeps the interactive Text surface single-painted while preserving capture painting", () => {
+    const drawing = savedDrawing({
+      id: "single-painted-surface",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.2,
+      canvasY: 0.2,
+      background: "rgba(16, 23, 34, 0.86)",
+      text: "单表面背景",
+    });
+    const scene = {
+      width: 100,
+      height: 100,
+      drawings: [drawing],
+      pointFor: () => ({ x: 10, y: 40 }),
+      pointForDrawing: () => ({ x: 30, y: 20 }),
+      currency: "HKD",
+    };
+
+    const ordinary = surfaceRecordingContext();
+    paintDrawingScene(ordinary.context, scene, true);
+    expect(ordinary.fillCalls).toEqual([
+      expect.objectContaining({ fillStyle: drawing.background, globalAlpha: 1 }),
+    ]);
+
+    const selected = surfaceRecordingContext();
+    paintDrawingScene(selected.context, { ...scene, selectedDrawingId: drawing.id }, true);
+    expect(selected.fillCalls).toHaveLength(0);
+
+    const capture = surfaceRecordingContext();
+    paintDrawingScene(capture.context, { ...scene, selectedDrawingId: drawing.id }, false);
+    expect(capture.fillCalls).toEqual([
+      expect.objectContaining({ fillStyle: drawing.background, globalAlpha: 1 }),
+    ]);
+  });
+
+  it("delegates an ordinary expanded body to the DOM while capture and selected states stay single-painted", () => {
+    const drawing = savedDrawing({
+      id: "expanded-body-paint-ownership",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.2,
+      canvasY: 0.2,
+      text: "第一行\n第二行\n第三行",
+    });
+    const scene = {
+      width: 100,
+      height: 100,
+      drawings: [drawing],
+      pointFor: () => ({ x: 10, y: 40 }),
+      pointForDrawing: () => ({ x: 30, y: 20 }),
+      currency: "HKD",
+      expandedTextIds: new Set([drawing.id]),
+    };
+    const bodyLine = (value: unknown) => String(value).startsWith("第一行");
+
+    const ordinary = fakeContext();
+    paintDrawingScene(ordinary, scene, true);
+    expect(vi.mocked(ordinary.fillText).mock.calls.filter(([value]) => bodyLine(value))).toHaveLength(0);
+
+    const selected = fakeContext();
+    paintDrawingScene(selected, { ...scene, selectedDrawingId: drawing.id }, true);
+    expect(vi.mocked(selected.fillText).mock.calls.filter(([value]) => bodyLine(value))).toHaveLength(0);
+
+    const capture = fakeContext();
+    paintDrawingScene(capture, scene, false);
+    expect(vi.mocked(capture.fillText).mock.calls.filter(([value]) => bodyLine(value))).toHaveLength(1);
   });
 
   it("moves a new anchored card without changing its time-price anchor", () => {
@@ -670,6 +1686,8 @@ describe("recall chart Text review", () => {
 
     const move = screen.getByRole("button", { name: `移动文字 ${drawing.id}` });
     expect(move).toHaveStyle({ cursor: "move" });
+    expect(move.querySelector("svg")).toHaveClass("lucide-move");
+    expect(move.querySelector("svg")).toHaveAttribute("width", "16");
     fireEvent.pointerDown(move, { pointerId: 17, clientX: 14, clientY: 14 });
     expect(move).toHaveStyle({ cursor: "grabbing" });
     expect(stage).toHaveStyle({ cursor: "grabbing" });
@@ -687,6 +1705,254 @@ describe("recall chart Text review", () => {
         canvasY: expect.closeTo(0.36, 5),
       }),
     }));
+  });
+
+  it("uses the frozen card origin for every Text move preview and commits once", () => {
+    const runDrag = (moveCount: number) => {
+      const onCommand = vi.fn();
+      const drawing = savedDrawing({
+        id: `text-origin-${moveCount}`,
+        tool: "text",
+        anchors: [{ time: candles[0].time, price: 100 }],
+        placement: "anchor",
+        canvasX: 0.2,
+        canvasY: 0.2,
+        textWidth: 180,
+        text: "需要避让的文字卡片",
+      });
+      const sibling = savedDrawing({
+        id: `text-sibling-${moveCount}`,
+        tool: "text",
+        anchors: [{ time: candles[1].time, price: 100 }],
+        placement: "anchor",
+        canvasX: 0.2,
+        canvasY: 0.2,
+        textWidth: 180,
+        text: "占用布局空间的文字卡片",
+      });
+      const { stage } = renderCanvas({
+        activeTool: "cursor",
+        drawings: [drawing, sibling],
+        selectedDrawingId: drawing.id,
+        controlObstacles: [{ id: "toolbar", left: 0, top: 0, right: 40, bottom: 40 }],
+        onCommand,
+      }, undefined, { width: 800, height: 600 });
+      const move = screen.getByRole("button", { name: `移动文字 ${drawing.id}` });
+      const startX = Number.parseFloat(move.style.left) + 12;
+      const startY = Number.parseFloat(move.style.top) + 12;
+      fireEvent.pointerDown(move, { pointerId: 300 + moveCount, clientX: startX, clientY: startY });
+      for (let index = 1; index <= moveCount; index += 1) {
+        fireEvent.pointerMove(stage, {
+          pointerId: 300 + moveCount,
+          clientX: startX + 120 * index / moveCount,
+          clientY: startY + 60 * index / moveCount,
+        });
+      }
+      const previewBody = screen.getByLabelText(`文字内容 ${drawing.id}`);
+      const previewPosition = {
+        left: Number.parseFloat(previewBody.style.left),
+        top: Number.parseFloat(previewBody.style.top),
+      };
+      fireEvent.pointerUp(stage, { pointerId: 300 + moveCount, clientX: startX + 120, clientY: startY + 60 });
+      const command = onCommand.mock.calls.at(-1)?.[0] as { type: string; drawing?: NormalizedDrawing } | undefined;
+      expect(onCommand).toHaveBeenCalledTimes(1);
+      cleanup();
+      return { command, previewPosition, originalAnchors: drawing.anchors };
+    };
+
+    const oneMove = runDrag(1);
+    const fiveMoves = runDrag(5);
+    const twentyMoves = runDrag(20);
+    expect(oneMove.command?.type).toBe("replace");
+    expect(fiveMoves.command?.type).toBe("replace");
+    expect(twentyMoves.command?.type).toBe("replace");
+    expect(oneMove.command?.drawing?.anchors).toEqual(oneMove.originalAnchors);
+    expect(fiveMoves.command?.drawing?.anchors).toEqual(fiveMoves.originalAnchors);
+    expect(twentyMoves.command?.drawing?.anchors).toEqual(twentyMoves.originalAnchors);
+    expect(oneMove.command?.drawing?.anchors).toEqual(fiveMoves.command?.drawing?.anchors);
+    expect(oneMove.command?.drawing?.anchors).toEqual(twentyMoves.command?.drawing?.anchors);
+    expect(oneMove.command?.drawing?.canvasX).toBeCloseTo(fiveMoves.command?.drawing?.canvasX ?? NaN, 6);
+    expect(oneMove.command?.drawing?.canvasY).toBeCloseTo(fiveMoves.command?.drawing?.canvasY ?? NaN, 6);
+    expect(oneMove.command?.drawing?.canvasX).toBeCloseTo(twentyMoves.command?.drawing?.canvasX ?? NaN, 6);
+    expect(oneMove.command?.drawing?.canvasY).toBeCloseTo(twentyMoves.command?.drawing?.canvasY ?? NaN, 6);
+    expect(oneMove.previewPosition.left).toBeCloseTo(fiveMoves.previewPosition.left, 6);
+    expect(oneMove.previewPosition.top).toBeCloseTo(fiveMoves.previewPosition.top, 6);
+    expect(oneMove.previewPosition.left).toBeCloseTo(twentyMoves.previewPosition.left, 6);
+    expect(oneMove.previewPosition.top).toBeCloseTo(twentyMoves.previewPosition.top, 6);
+  });
+
+  it("does not commit a zero-distance or cancelled Text move", () => {
+    const onCommand = vi.fn();
+    const drawing = savedDrawing({
+      id: "text-move-cancel",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.2,
+      canvasY: 0.2,
+      text: "取消移动",
+    });
+    const { stage } = renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      onCommand,
+    });
+    const move = screen.getByRole("button", { name: `移动文字 ${drawing.id}` });
+    const startX = Number.parseFloat(move.style.left) + 12;
+    const startY = Number.parseFloat(move.style.top) + 12;
+    const body = screen.getByLabelText(`文字内容 ${drawing.id}`);
+    const initialPosition = { left: body.style.left, top: body.style.top };
+    fireEvent.pointerDown(move, { pointerId: 410, clientX: startX, clientY: startY });
+    fireEvent.pointerUp(stage, { pointerId: 410, clientX: startX, clientY: startY });
+    expect(onCommand).not.toHaveBeenCalled();
+
+    fireEvent.pointerDown(move, { pointerId: 411, clientX: startX, clientY: startY });
+    fireEvent.pointerMove(stage, { pointerId: 411, clientX: startX + 50, clientY: startY + 25 });
+    expect({ left: body.style.left, top: body.style.top }).not.toEqual(initialPosition);
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(body.style.left).toBe(initialPosition.left);
+    expect(body.style.top).toBe(initialPosition.top);
+  });
+
+  it("merges a committed Text drag back into the open editor without losing its buffer or style", () => {
+    const onCommand = vi.fn();
+    const drawing = savedDrawing({
+      id: "editing-card-drag",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.2,
+      canvasY: 0.2,
+      textWidth: 80,
+      fontSize: 18,
+      text: "旧内容",
+    });
+    const { stage } = renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      onCommand,
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${drawing.id}` }));
+    const editor = screen.getByRole("textbox", { name: "文字标注" });
+    fireEvent.change(editor, { target: { value: "拖动后仍保留" } });
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
+    fireEvent.change(screen.getByRole("spinbutton", { name: "文字宽度" }), { target: { value: "72" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "文字字号" }), { target: { value: "24" } });
+    fireEvent.change(screen.getByLabelText("文字颜色"), { target: { value: "#ff00aa" } });
+
+    const move = screen.getByRole("button", { name: `移动文字 ${drawing.id}` });
+    fireEvent.pointerDown(move, { pointerId: 201, clientX: 14, clientY: 14 });
+    fireEvent.pointerMove(stage, { pointerId: 201, clientX: 40, clientY: 30 });
+    fireEvent.pointerUp(stage, { pointerId: 201, clientX: 40, clientY: 30 });
+
+    fireEvent.click(screen.getByRole("button", { name: "完成文字编辑" }));
+
+    const commands = onCommand.mock.calls.map(([command]) => command as { type: string; drawing?: NormalizedDrawing });
+    expect(commands).toHaveLength(2);
+    const dragDrawing = commands[0].drawing;
+    expect(dragDrawing).toBeDefined();
+    expect(commands[1]).toEqual(expect.objectContaining({
+      type: "replace",
+      drawing: expect.objectContaining({
+        id: drawing.id,
+        text: "拖动后仍保留",
+        canvasX: expect.closeTo(dragDrawing!.canvasX!, 5),
+        canvasY: expect.closeTo(dragDrawing!.canvasY!, 5),
+        textWidth: 72,
+        fontSize: 24,
+        style: expect.objectContaining({ color: "#ff00aa" }),
+      }),
+    }));
+  });
+
+  it("executes a queued Text selection after the draft decision exactly once", async () => {
+    const onCommand = vi.fn();
+    const onSelectDrawing = vi.fn();
+    const first = savedDrawing({
+      id: "editing-first",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.2,
+      canvasY: 0.2,
+      text: "第一条",
+    });
+    const second = savedDrawing({
+      id: "editing-second",
+      tool: "text",
+      anchors: [{ time: candles[1].time, price: 106 }],
+      placement: "anchor",
+      canvasX: 0.7,
+      canvasY: 0.2,
+      text: "第二条",
+    });
+    renderCanvas({
+      activeTool: "cursor",
+      drawings: [first, second],
+      selectedDrawingId: first.id,
+      onCommand,
+      onSelectDrawing,
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${first.id}` }));
+    fireEvent.change(screen.getByRole("textbox", { name: "文字标注" }), { target: { value: "第一条草稿" } });
+    const selectSecond = screen.getByRole("button", { name: `选择文字 ${second.id}` });
+    fireEvent.pointerDown(selectSecond, { pointerId: 202 });
+    fireEvent.pointerDown(selectSecond, { pointerId: 203 });
+
+    expect(screen.getByRole("dialog", { name: "文字草稿待决议" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "完成文字草稿" }));
+
+    await waitFor(() => expect(onSelectDrawing).toHaveBeenCalledWith(second.id));
+    expect(onSelectDrawing.mock.calls.filter(([id]) => id === second.id)).toHaveLength(1);
+    expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
+      type: "replace",
+      drawing: expect.objectContaining({ id: first.id, text: "第一条草稿" }),
+    }));
+  });
+
+  it("does not show an editor source readout for free canvas Text", () => {
+    const drawing = savedDrawing({
+      id: "free-editor-readout",
+      tool: "text",
+      anchors: [],
+      placement: "canvas",
+      canvasX: 0.3,
+      canvasY: 0.2,
+      text: "自由文字",
+    });
+    renderCanvas({ activeTool: "cursor", drawings: [drawing], selectedDrawingId: drawing.id });
+
+    fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${drawing.id}` }));
+
+    expect(screen.queryByRole("status", { name: "文字编辑锚点" })).not.toBeInTheDocument();
+  });
+
+  it("keeps a future planned anchor editable without showing an unrevealed source readout", () => {
+    const drawing = savedDrawing({
+      id: "future-planned-editor-readout",
+      tool: "text",
+      anchors: [{ time: candles[1].time, price: 106.75 }],
+      placement: "anchor",
+      createdAtCursor: candles[0].time,
+      text: "未来布局计划",
+    });
+    renderCanvas({
+      activeTool: "cursor",
+      cursor: candles[0].time,
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      allowFutureAnchors: true,
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${drawing.id}` }));
+
+    expect(screen.getByRole("textbox", { name: "文字标注" })).toBeInTheDocument();
+    expect(screen.queryByRole("status", { name: "文字编辑锚点" })).not.toBeInTheDocument();
   });
 
   it("moves only the real market anchor from the anchor grip", () => {
@@ -1124,12 +2390,93 @@ describe("recall chart Text review", () => {
 
     fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 10, clientY: 100 });
     const editor = screen.getByRole("textbox", { name: "文字标注" });
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
     const toggle = screen.getByRole("button", { name: "改为自由文字" });
 
     await user.click(toggle);
 
     expect(screen.getByRole("textbox", { name: "文字标注" })).toBe(editor);
     expect(screen.getByRole("button", { name: "改为锚定文字" })).toBeInTheDocument();
+  });
+
+  it("rolls back a Text anchor drag before opening the draft decision", () => {
+    const onCommand = vi.fn();
+    const drawing = savedDrawing({
+      id: "text-anchor-escape",
+      tool: "text",
+      text: "原文",
+      anchors: [{ time: candles[0].time, price: 100 }],
+    });
+    const { stage } = renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      onCommand,
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${drawing.id}` }));
+    const editor = screen.getByRole("textbox", { name: "文字标注" });
+    fireEvent.change(editor, { target: { value: "保留编辑缓冲" } });
+    const anchor = screen.getByRole("button", { name: `移动市场锚点 ${drawing.id}` });
+    fireEvent.pointerDown(anchor, { pointerId: 46, clientX: 10, clientY: 100 });
+    fireEvent.pointerMove(stage, { pointerId: 46, clientX: 30, clientY: 90 });
+    fireEvent.keyDown(window, { key: "Escape" });
+
+    expect(screen.queryByRole("dialog", { name: "文字草稿待决议" })).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "文字标注" })).toHaveValue("保留编辑缓冲");
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
+  it("keeps the editor body primary and exposes advanced style controls by disclosure", () => {
+    const drawing = savedDrawing({
+      id: "body-first-editor",
+      tool: "text",
+      text: "正文优先的编辑注释",
+      textWidth: 36,
+      fontSize: 24,
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+    });
+    renderCanvas(
+      {
+        activeTool: "cursor",
+        drawings: [drawing],
+        selectedDrawingId: drawing.id,
+        plotBounds: { width: 700, height: 500 },
+      },
+      undefined,
+      { width: 720, height: 520 },
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${drawing.id}` }));
+    const shell = document.querySelector<HTMLElement>(".drawing-text-editor-shell");
+    const header = document.querySelector<HTMLElement>(".drawing-text-editor-header");
+    const textarea = screen.getByRole("textbox", { name: "文字标注" });
+    expect(textarea).toHaveStyle({
+      fontWeight: "400",
+      padding: "4px 4px 48px",
+    });
+    const styleBar = screen.getByLabelText("文字样式");
+    const actions = document.querySelector<HTMLElement>(".drawing-text-editor-actions");
+    const styleDisclosure = screen.getByRole("button", { name: "样式" });
+
+    expect(shell).not.toBeNull();
+    expect(header).not.toBeNull();
+    expect(screen.getByRole("button", { name: "移动文字编辑器" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "关闭文字编辑" })).toBeInTheDocument();
+    expect(styleDisclosure).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("spinbutton", { name: "文字宽度" })).not.toBeInTheDocument();
+    expect(shell ? shell.compareDocumentPosition(textarea) & Node.DOCUMENT_POSITION_CONTAINED_BY : 0).toBeTruthy();
+    expect(header ? header.compareDocumentPosition(textarea) & Node.DOCUMENT_POSITION_FOLLOWING : 0).toBeTruthy();
+    expect(textarea.compareDocumentPosition(styleBar) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(styleBar.compareDocumentPosition(actions as Node) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(Number.parseFloat(shell?.style.width ?? "500")).toBeLessThan(500);
+
+    fireEvent.click(styleDisclosure);
+
+    expect(styleDisclosure).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("spinbutton", { name: "文字宽度" })).toBeInTheDocument();
+    expect(screen.getByLabelText("文字颜色")).toBeInTheDocument();
   });
 
   it("keeps the style bar above the textarea despite legacy editor CSS", () => {
@@ -1139,14 +2486,14 @@ describe("recall chart Text review", () => {
     const editor = screen.getByRole("textbox", { name: "文字标注" });
     const styleBar = screen.getByLabelText("文字样式");
     const shell = document.querySelector<HTMLElement>(".drawing-text-editor-shell");
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
     const colorInput = document.querySelector<HTMLInputElement>('input[type="color"]');
 
     expect(editor.style.position).toBe("static");
     expect(styleBar.style.position).toBe("relative");
     expect(styleBar.style.zIndex).toBe("7");
-    expect(styleBar.style.flexWrap).toBe("wrap");
-    expect(styleBar.style.overflowX).toBe("hidden");
-    expect(styleBar.style.overflowY).toBe("auto");
+    expect(styleBar.style.flexWrap).toBe("");
+    expect(styleBar.style.overflow).toBe("hidden");
     expect(canvas.parentElement).toHaveStyle({ zIndex: "9" });
     expect(shell).toHaveStyle({
       zIndex: "10",
@@ -1218,6 +2565,7 @@ describe("recall chart Text review", () => {
     fireEvent.pointerDown(canvas, { pointerId: 2, clientX: 10, clientY: 40 });
     const editor = screen.getByRole("textbox", { name: "文字标注" });
     fireEvent.change(editor, { target: { value: "宽度超出画布" } });
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
     fireEvent.change(screen.getByRole("spinbutton", { name: "文字宽度" }), {
       target: { value: "999" },
     });
@@ -1225,6 +2573,125 @@ describe("recall chart Text review", () => {
 
     const command = onCommand.mock.calls[0]?.[0] as { drawing?: { textWidth?: number } } | undefined;
     expect(command?.drawing?.textWidth).toBeLessThanOrEqual(100);
+  });
+
+  it("clamps numeric Text width to the remaining right-edge space", () => {
+    const onCommand = vi.fn();
+    const drawing = savedDrawing({
+      id: "numeric-width-right-edge",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.72,
+      canvasY: 0.25,
+      textWidth: 180,
+      text: "右侧数字宽度",
+    });
+    renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      onCommand,
+    }, undefined, { width: 800, height: 600 });
+
+    fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${drawing.id}` }));
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
+    const widthInput = screen.getByRole("spinbutton", { name: "文字宽度" });
+    expect(widthInput).toHaveAttribute("max", "220");
+    fireEvent.change(widthInput, { target: { value: "240" } });
+    expect(widthInput).toHaveValue(220);
+
+    fireEvent.click(screen.getByRole("button", { name: "完成文字编辑" }));
+    expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
+      type: "replace",
+      drawing: expect.objectContaining({ id: drawing.id, textWidth: 220 }),
+    }));
+  });
+
+  it("keeps the anchored Text card top fixed when numeric width shrinks a bottom-edge card", () => {
+    const onCommand = vi.fn();
+    const drawing = savedDrawing({
+      id: "numeric-width-bottom-edge",
+      tool: "text",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      placement: "anchor",
+      canvasX: 0.28,
+      canvasY: 0.88,
+      textWidth: 300,
+      text: "底边数值调宽必须保持左上角。第一句完整保留。第二句完整保留。第三句完整保留。第四句完整保留。",
+    });
+    const { rerender } = renderCanvas({
+      activeTool: "cursor",
+      drawings: [drawing],
+      selectedDrawingId: drawing.id,
+      onCommand,
+    }, undefined, { width: 800, height: 600 });
+
+    fireEvent.click(screen.getByRole("button", { name: `展开文字 ${drawing.id}` }));
+    const before = screen.getByLabelText(`文字内容 ${drawing.id}`);
+    const originalLeft = Number.parseFloat(before.style.left);
+    const originalTop = Number.parseFloat(before.style.top);
+    const originalCanvasY = drawing.canvasY;
+
+    fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${drawing.id}` }));
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
+    fireEvent.change(screen.getByRole("spinbutton", { name: "文字宽度" }), { target: { value: "180" } });
+    fireEvent.click(screen.getByRole("button", { name: "完成文字编辑" }));
+
+    expect(onCommand).toHaveBeenCalledWith(expect.objectContaining({
+      type: "replace",
+      drawing: expect.objectContaining({
+        id: drawing.id,
+        textWidth: expect.any(Number),
+        canvasX: drawing.canvasX,
+      }),
+    }));
+    const committed = onCommand.mock.calls.at(-1)?.[0] as {
+      drawing?: { canvasY?: number; textWidth?: number; text?: string; fontSize?: 12 | 14 | 16 | 18 | 24 | 32 };
+    };
+    const committedWidth = committed.drawing?.textWidth ?? 0;
+    expect(committedWidth).toBeGreaterThan(180);
+    expect(committedWidth).toBeLessThanOrEqual(300);
+    expect(committed.drawing?.canvasY).not.toBe(originalCanvasY);
+    expect(committed.drawing?.canvasY).toBeCloseTo(originalTop / 600, 5);
+    expect(originalLeft).toBe(Number.parseFloat(before.style.left));
+
+    rerender(
+      <div className="chart-stage" data-testid="chart-stage">
+        <DrawingCanvas
+          {...(drawing && {
+            episodeId: "episode-1",
+            candles,
+            cursor: candles[1].time,
+            drawings: [committed.drawing as NormalizedDrawing],
+            selectedDrawingId: drawing.id,
+            activeTool: "cursor" as const,
+            plannedRiskAmount: undefined,
+            currency: "HKD",
+            onSelectDrawing: vi.fn(),
+            onCommand,
+            coordinateAdapter: adapter,
+            multilineText: false,
+          })}
+        />
+      </div>,
+    );
+    const after = screen.getByLabelText(`文字内容 ${drawing.id}`);
+    expect(Number.parseFloat(after.style.left)).toBe(originalLeft);
+    expect(Number.parseFloat(after.style.top)).toBe(originalTop);
+    expect(Number.parseFloat(after.style.width)).toBe(committedWidth);
+    const fullLayout = textCardLayout(
+      drawing.text ?? "",
+      committedWidth,
+      committed.drawing?.fontSize ?? 14,
+      800,
+      true,
+      Number.POSITIVE_INFINITY,
+      textCardLayoutOptions.controlWidth,
+      textCardLayoutOptions.controlHeight,
+    );
+    expect(after.textContent?.replace(/\n/g, "")).toBe(drawing.text);
+    expect(Number.parseFloat(after.style.height)).toBeGreaterThanOrEqual(fullLayout.fullHeight);
   });
 
   it("uses the same wrapped text height for hit testing as the renderer", () => {
@@ -1366,6 +2833,7 @@ describe("recall chart Text review", () => {
     });
 
     fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${drawing.id}` }));
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
 
     const shell = document.querySelector<HTMLElement>(".drawing-text-editor-shell");
     expect(shell).not.toBeNull();
@@ -1401,6 +2869,7 @@ describe("recall chart Text review", () => {
     });
 
     fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${drawing.id}` }));
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
 
     const shell = document.querySelector<HTMLElement>(".drawing-text-editor-shell");
     expect(shell).not.toBeNull();
@@ -1432,13 +2901,14 @@ describe("recall chart Text review", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${drawing.id}` }));
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
 
     const shell = document.querySelector<HTMLElement>(".drawing-text-editor-shell");
     expect(shell).not.toBeNull();
     const height = Number.parseFloat(shell?.style.height ?? "0");
     const maxHeight = Number.parseFloat(shell?.style.maxHeight ?? "0");
-    expect(height).toBeLessThan(maxHeight);
-    expect(height).toBeLessThanOrEqual(120);
+    expect(height).toBeGreaterThanOrEqual(200);
+    expect(height).toBeLessThanOrEqual(maxHeight);
   });
 
   it("allocates font-aware editor space and preserves a narrow stored card width", () => {
@@ -1467,14 +2937,14 @@ describe("recall chart Text review", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${drawing.id}` }));
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
 
     const shell = document.querySelector<HTMLElement>(".drawing-text-editor-shell");
     expect(shell).not.toBeNull();
-    expect(Number.parseFloat(shell?.style.width ?? "0")).toBeGreaterThanOrEqual(500);
+    expect(Number.parseFloat(shell?.style.width ?? "0")).toBeGreaterThanOrEqual(340);
     const shellHeight = Number.parseFloat(shell?.style.height ?? "0");
     const shellMaxHeight = Number.parseFloat(shell?.style.maxHeight ?? "0");
     const textarea = screen.getByRole("textbox", { name: "文字标注" });
-    const hint = document.querySelector<HTMLElement>(".drawing-text-editor-hint");
     const styleBar = screen.getByLabelText("文字样式");
     const styleButton = screen.getByRole("button", { name: "改为自由文字" });
     const widthInput = screen.getByRole("spinbutton", { name: "文字宽度" });
@@ -1486,23 +2956,14 @@ describe("recall chart Text review", () => {
       minHeight: "56px",
       overflowY: "auto",
     });
-    expect(styleBar).toHaveStyle({
-      minHeight: "0px",
-      maxHeight: "36px",
-      height: "36px",
-      whiteSpace: "nowrap",
-      flexWrap: "wrap",
-      overflowX: "hidden",
-      overflowY: "auto",
-    });
+    expect(styleBar.style.minHeight).toBe("36px");
+    expect(styleBar.style.maxHeight).toBe("36px");
+    expect(styleBar.style.height).toBe("36px");
+    expect(styleBar.style.whiteSpace).toBe("nowrap");
+    expect(styleBar.style.overflow).toBe("hidden");
     expect(styleButton).toHaveStyle({
       minHeight: "36px",
       flexShrink: "0",
-      whiteSpace: "nowrap",
-    });
-    expect(hint).toHaveStyle({
-      fontSize: "12px",
-      lineHeight: "18px",
       whiteSpace: "nowrap",
     });
     expect(widthInput).toHaveValue(36);
@@ -1530,7 +2991,7 @@ describe("recall chart Text review", () => {
     fireEvent.pointerDown(canvas, { pointerId: 19, clientX: 10, clientY: 40 });
 
     const styleBar = screen.getByLabelText("文字样式");
-    expect(Number.parseFloat((styleBar as HTMLElement).style.minHeight)).toBe(0);
+    expect(Number.parseFloat((styleBar as HTMLElement).style.minHeight)).toBeGreaterThanOrEqual(44);
     expect(Number.parseFloat((styleBar as HTMLElement).style.maxHeight)).toBeGreaterThanOrEqual(44);
     for (const control of Array.from(styleBar.children)) {
       expect(control).toHaveStyle({ flexShrink: "0", minHeight: "44px" });
@@ -1559,17 +3020,15 @@ describe("recall chart Text review", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${drawing.id}` }));
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
 
     const shell = document.querySelector<HTMLElement>(".drawing-text-editor-shell");
     const styleBar = screen.getByLabelText("文字样式");
     expect(Number.parseFloat(shell?.style.width ?? "0")).toBe(316);
-    expect(styleBar).toHaveStyle({
-      flexWrap: "wrap",
-      overflowY: "auto",
-      minHeight: "0px",
-      maxHeight: "108px",
-      height: "108px",
-    });
+    expect(styleBar.style.overflow).toBe("hidden");
+    expect(styleBar.style.minHeight).toBe("36px");
+    expect(styleBar.style.maxHeight).toBe("36px");
+    expect(styleBar.style.height).toBe("36px");
     expect(screen.getByRole("combobox", { name: "文字字号" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "切换文字背景" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "完成文字编辑" })).toBeInTheDocument();
@@ -1600,25 +3059,21 @@ describe("recall chart Text review", () => {
     }, undefined, { width: 390, height: 844 });
 
     fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${drawing.id}` }));
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
 
     const shell = document.querySelector<HTMLElement>(".drawing-text-editor-shell");
     const controls = document.querySelector<HTMLElement>(".drawing-text-editor-controls");
     const styleBar = screen.getByLabelText("文字样式");
     const colorInput = screen.getByLabelText("文字颜色");
     expect(Number.parseFloat(shell?.style.width ?? "0")).toBe(240);
-    expect(controls).toHaveStyle({
-      minHeight: "0px",
-      maxHeight: "132px",
-      height: "132px",
-      overflow: "hidden",
-    });
-    expect(styleBar).toHaveStyle({
-      minHeight: "0px",
-      maxHeight: "132px",
-      height: "132px",
-      overflowY: "auto",
-      boxSizing: "border-box",
-    });
+    expect(controls?.style.minHeight).toBe("44px");
+    expect(controls?.style.height).toBe("44px");
+    expect(controls?.style.overflow).toBe("hidden");
+    expect(styleBar.style.minHeight).toBe("44px");
+    expect(styleBar.style.maxHeight).toBe("44px");
+    expect(styleBar.style.height).toBe("44px");
+    expect(styleBar.style.overflow).toBe("hidden");
+    expect(styleBar.style.boxSizing).toBe("border-box");
     expect(colorInput).toHaveStyle({
       width: "44px",
       minWidth: "44px",
@@ -1640,7 +3095,7 @@ describe("recall chart Text review", () => {
     })));
     const { canvas } = renderCanvas();
     fireEvent.pointerDown(canvas, { pointerId: 26, clientX: 10, clientY: 40 });
-    expect(Number.parseFloat((screen.getByLabelText("文字样式") as HTMLElement).style.minHeight)).toBe(0);
+    expect(Number.parseFloat((screen.getByLabelText("文字样式") as HTMLElement).style.minHeight)).toBeGreaterThanOrEqual(44);
     expect(Number.parseFloat((screen.getByLabelText("文字样式") as HTMLElement).style.maxHeight)).toBeGreaterThanOrEqual(44);
     expect(screen.getByRole("button", { name: "完成文字编辑" })).toHaveStyle({ minHeight: "44px", minWidth: "44px", width: "44px" });
   });
@@ -1677,7 +3132,8 @@ describe("recall chart Text review", () => {
     expect(screen.getByRole("button", { name: "取消文字编辑" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "取消文字编辑" }));
     expect(onCommand).not.toHaveBeenCalled();
-    expect(screen.queryByRole("textbox", { name: "文字标注" })).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "文字标注" })).toHaveValue("草稿");
+    expect(screen.getByRole("dialog", { name: "文字草稿待决议" })).toBeInTheDocument();
   });
 
   it("cancels from a style control without committing a draft", () => {
@@ -1688,7 +3144,8 @@ describe("recall chart Text review", () => {
     fireEvent.change(editor, { target: { value: "不要保存" } });
     fireEvent.keyDown(screen.getByRole("combobox", { name: "文字字号" }), { key: "Escape" });
     expect(onCommand).not.toHaveBeenCalled();
-    expect(screen.queryByRole("textbox", { name: "文字标注" })).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "文字标注" })).toHaveValue("不要保存");
+    expect(screen.getByRole("dialog", { name: "文字草稿待决议" })).toBeInTheDocument();
   });
 
   it("protects a non-empty editor draft when an undo control takes focus", () => {
@@ -1748,6 +3205,7 @@ describe("recall chart Text review", () => {
     fireEvent.pointerDown(canvas, { pointerId: 22, clientX: 30, clientY: 40 });
     const editor = screen.getByRole("textbox", { name: "文字标注" });
     fireEvent.change(editor, { target: { value: "关联" } });
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
     fireEvent.click(screen.getByRole("button", { name: "关联价格 / K线" }));
     expect(screen.getByRole("button", { name: "取消关联取点" })).toBeInTheDocument();
     fireEvent.pointerDown(canvas, { pointerId: 23, clientX: 79, clientY: 95 });
@@ -1769,6 +3227,7 @@ describe("recall chart Text review", () => {
   it("keeps association picking active when the pointer is outside the plot bounds", () => {
     const { canvas } = renderCanvas({ plotBounds: { width: 78, height: 70 } });
     fireEvent.pointerDown(canvas, { pointerId: 28, clientX: 10, clientY: 40 });
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
     fireEvent.click(screen.getByRole("button", { name: "关联价格 / K线" }));
     fireEvent.pointerDown(canvas, { pointerId: 29, clientX: 90, clientY: 80 });
     expect(screen.getByRole("button", { name: "取消关联取点" })).toBeInTheDocument();
@@ -1791,6 +3250,7 @@ describe("recall chart Text review", () => {
     fireEvent.pointerDown(canvas, { pointerId: 25, clientX: 10, clientY: 40 });
     const editor = screen.getByRole("textbox", { name: "文字标注" });
     fireEvent.change(editor, { target: { value: "保留草稿" } });
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
     fireEvent.click(screen.getByRole("button", { name: "关联价格 / K线" }));
     fireEvent.click(screen.getByRole("button", { name: "取消关联取点" }));
     expect(screen.getByRole("textbox", { name: "文字标注" })).toHaveValue("保留草稿");
@@ -1824,6 +3284,7 @@ describe("recall chart Text review", () => {
     const ref = createRef<DrawingCanvasHandle>();
     const { canvas, props } = renderCanvas({}, ref);
     fireEvent.pointerDown(canvas, { pointerId: 31, clientX: 10, clientY: 40 });
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
     fireEvent.change(screen.getByRole("textbox", { name: "文字标注" }), { target: { value: "未完成取点的中文草稿" } });
     fireEvent.click(screen.getByRole("button", { name: "关联价格 / K线" }));
     let ready: boolean | undefined;
@@ -1866,6 +3327,7 @@ describe("recall chart Text review", () => {
     } }, undefined, { width: 640, height: 400 });
     fireEvent.pointerDown(canvas, { pointerId: 33, clientX: draftX, clientY: draftY });
     fireEvent.change(screen.getByRole("textbox", { name: "文字标注" }), { target: { value: text } });
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
     fireEvent.click(screen.getByRole("button", { name: "关联价格 / K线" }));
     fireEvent.pointerDown(canvas, { pointerId: 34, clientX: barX, clientY: barY });
     fireEvent.pointerUp(canvas, { pointerId: 34, clientX: barX, clientY: barY });
@@ -1901,6 +3363,7 @@ describe("recall chart Text review", () => {
     fireEvent.pointerDown(canvas, { pointerId: 35, clientX: 50, clientY: 50 });
     const text = "完整中文判断不能为排版删减\n第二行继续保留原有事实\n第三行保留后续观察";
     fireEvent.change(screen.getByRole("textbox", { name: "文字标注" }), { target: { value: text } });
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
     fireEvent.change(screen.getByRole("combobox", { name: "文字字号" }), { target: { value: "32" } });
     fireEvent.click(screen.getByRole("button", { name: "关联价格 / K线" }));
     fireEvent.pointerDown(canvas, { pointerId: 36, clientX: 50, clientY: 50 });

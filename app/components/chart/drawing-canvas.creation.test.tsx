@@ -1,8 +1,9 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { createRef, type Ref } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { NormalizedDrawing } from "../../lib/chart/drawings";
-import { DrawingCanvas, paintDrawingScene } from "./drawing-canvas";
+import { DrawingCanvas, paintDrawingScene, type DrawingCanvasHandle } from "./drawing-canvas";
 
 const candles = [
   { time: "2026-01-01T00:00:00.000Z", open: 100, high: 105, low: 95, close: 102, volume: 10 },
@@ -33,6 +34,7 @@ function renderCanvas(overrides: Record<string, unknown> = {}) {
       disconnect() {}
     },
   );
+  const { ref, ...restOverrides } = overrides;
   const props = {
     episodeId: "episode-1",
     candles,
@@ -45,11 +47,11 @@ function renderCanvas(overrides: Record<string, unknown> = {}) {
     onSelectDrawing: vi.fn(),
     onCommand: vi.fn(),
     coordinateAdapter: adapter,
-    ...overrides,
+    ...restOverrides,
   };
   const view = render(
     <div className="chart-stage" data-testid="chart-stage">
-      <DrawingCanvas {...(props as Parameters<typeof DrawingCanvas>[0])} />
+    <DrawingCanvas ref={ref as Ref<DrawingCanvasHandle> | undefined} {...(props as Parameters<typeof DrawingCanvas>[0])} />
     </div>,
   );
   const canvas = screen.getByRole("img", { name: "绘图画布" });
@@ -74,9 +76,11 @@ describe("drawing creation state", () => {
     fireEvent.pointerUp(canvas, { pointerId: 30, clientX: 20, clientY: 100 });
 
     expect(screen.queryByRole("textbox", { name: "文字标注" })).not.toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("已取锚点");
-    expect(screen.getByRole("status")).toHaveTextContent(candles[0].time);
-    expect(screen.getByRole("status")).toHaveTextContent("100.00");
+    const creationStatus = screen.getByRole("status");
+    expect(creationStatus).toHaveTextContent("已取锚点");
+    expect(creationStatus).toHaveTextContent(candles[0].time);
+    expect(creationStatus).toHaveTextContent("100.00");
+    expect(creationStatus).toHaveStyle({ top: "40px" });
     expect(screen.getByLabelText("文字定位预览")).toBeInTheDocument();
 
     fireEvent.pointerMove(canvas, { pointerId: 30, clientX: 100, clientY: 80 });
@@ -85,6 +89,16 @@ describe("drawing creation state", () => {
     fireEvent.pointerDown(canvas, { pointerId: 30, clientX: 100, clientY: 80 });
     fireEvent.pointerUp(canvas, { pointerId: 30, clientX: 100, clientY: 80 });
     expect(screen.getByRole("textbox", { name: "文字标注" })).toBeInTheDocument();
+  });
+
+  it("pauses replay as soon as the first staged Text anchor is placed", () => {
+    const onDrawingInteractionStart = vi.fn();
+    const { canvas } = renderCanvas({ activeTool: "text", multilineText: true, onDrawingInteractionStart });
+
+    fireEvent.pointerDown(canvas, { pointerId: 37, clientX: 20, clientY: 100 });
+    fireEvent.pointerUp(canvas, { pointerId: 37, clientX: 20, clientY: 100 });
+
+    expect(onDrawingInteractionStart).toHaveBeenCalledTimes(1);
   });
 
   it("cancels a staged first anchor with Escape and starts the next gesture cleanly", () => {
@@ -144,7 +158,148 @@ describe("drawing creation state", () => {
 
     fireEvent.pointerDown(canvas, { pointerId: 35, clientX: 40, clientY: 80 });
     expect(screen.getByRole("textbox", { name: "文字标注" })).toHaveValue("保留草稿");
-    expect(screen.getByRole("alert")).toHaveTextContent("请先完成或取消当前文字编辑");
+    expect(screen.getByRole("dialog", { name: "文字草稿待决议" })).toBeInTheDocument();
+  });
+
+  it("keeps a non-empty new draft through Escape and reuses one decision surface", () => {
+    const { canvas } = renderCanvas({ activeTool: "text", multilineText: true });
+
+    fireEvent.pointerDown(canvas, { pointerId: 40, clientX: 20, clientY: 100 });
+    fireEvent.pointerMove(canvas, { pointerId: 40, clientX: 100, clientY: 80 });
+    fireEvent.pointerUp(canvas, { pointerId: 40, clientX: 100, clientY: 80 });
+    const editor = screen.getByRole("textbox", { name: "文字标注" });
+    fireEvent.change(editor, { target: { value: "保留草稿" } });
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    fireEvent.keyDown(window, { key: "Escape" });
+
+    expect(screen.getByRole("textbox", { name: "文字标注" })).toHaveValue("保留草稿");
+    expect(screen.getAllByRole("dialog", { name: "文字草稿待决议" })).toHaveLength(1);
+    expect(screen.getByRole("button", { name: "继续编辑文字" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "完成文字草稿" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "放弃文字草稿" })).toBeInTheDocument();
+  });
+
+  it("returns an empty new Text draft to the cursor tool on explicit cancel", () => {
+    const onRequestCursorTool = vi.fn();
+    const { canvas } = renderCanvas({
+      activeTool: "text",
+      multilineText: true,
+      onRequestCursorTool,
+    });
+
+    fireEvent.pointerDown(canvas, { pointerId: 45, clientX: 20, clientY: 100 });
+    fireEvent.pointerMove(canvas, { pointerId: 45, clientX: 100, clientY: 80 });
+    fireEvent.pointerUp(canvas, { pointerId: 45, clientX: 100, clientY: 80 });
+    expect(screen.getByRole("textbox", { name: "文字标注" })).toHaveValue("");
+
+    fireEvent.click(screen.getByRole("button", { name: "取消文字编辑" }));
+
+    expect(onRequestCursorTool).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("textbox", { name: "文字标注" })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("文字定位预览")).not.toBeInTheDocument();
+  });
+
+  it("does not select another Text body while a non-empty draft is awaiting a decision", () => {
+    const onSelectDrawing = vi.fn();
+    const first = {
+      id: "text-a",
+      tool: "text" as const,
+      text: "A",
+      anchors: [{ time: candles[0].time, price: 100 }],
+      style: { color: "#2f80ed", lineWidth: 1.5, opacity: 1 },
+      hidden: false,
+      locked: false,
+      visibleOn: "all" as const,
+      stage: "during-replay" as const,
+      version: 2 as const,
+      episodeId: "episode-1",
+      name: "文字",
+      zIndex: 0,
+      createdAtCursor: candles[2].time,
+    } satisfies NormalizedDrawing;
+    const second = { ...first, id: "text-b", text: "B", zIndex: 1 };
+    renderCanvas({
+      activeTool: "cursor",
+      drawings: [first, second],
+      selectedDrawingId: first.id,
+      onSelectDrawing,
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: `编辑文字 ${first.id}` }));
+    const editor = screen.getByRole("textbox", { name: "文字标注" });
+    fireEvent.change(editor, { target: { value: "A 草稿" } });
+    fireEvent.pointerDown(screen.getByLabelText(`文字内容 ${second.id}`));
+    fireEvent.keyDown(screen.getByRole("button", { name: `选择文字 ${second.id}` }), { key: "Enter" });
+
+    expect(onSelectDrawing).not.toHaveBeenCalledWith(second.id);
+    expect(screen.getByRole("textbox", { name: "文字标注" })).toHaveValue("A 草稿");
+    expect(screen.getByRole("dialog", { name: "文字草稿待决议" })).toBeInTheDocument();
+  });
+
+  it("does not implicitly commit a non-empty draft on textarea blur", () => {
+    const onCommand = vi.fn();
+    const { canvas } = renderCanvas({ activeTool: "text", multilineText: true, onCommand });
+
+    fireEvent.pointerDown(canvas, { pointerId: 41, clientX: 20, clientY: 100 });
+    fireEvent.pointerMove(canvas, { pointerId: 41, clientX: 100, clientY: 80 });
+    fireEvent.pointerUp(canvas, { pointerId: 41, clientX: 100, clientY: 80 });
+    const editor = screen.getByRole("textbox", { name: "文字标注" });
+    fireEvent.change(editor, { target: { value: "不应自动提交" } });
+    fireEvent.blur(editor, { relatedTarget: document.body });
+
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(screen.getByRole("textbox", { name: "文字标注" })).toHaveValue("不应自动提交");
+    expect(screen.getByRole("dialog", { name: "文字草稿待决议" })).toBeInTheDocument();
+  });
+
+  it("reuses the same pending Promise for repeated prepareTextDraft calls", async () => {
+    const ref = createRef<DrawingCanvasHandle>();
+    const { canvas } = renderCanvas({ activeTool: "text", multilineText: true, ref });
+
+    fireEvent.pointerDown(canvas, { pointerId: 42, clientX: 20, clientY: 100 });
+    fireEvent.pointerMove(canvas, { pointerId: 42, clientX: 100, clientY: 80 });
+    fireEvent.pointerUp(canvas, { pointerId: 42, clientX: 100, clientY: 80 });
+    const editor = screen.getByRole("textbox", { name: "文字标注" });
+    fireEvent.change(editor, { target: { value: "待决议" } });
+
+    const first = ref.current!.prepareTextDraft("undo");
+    const second = ref.current!.prepareTextDraft("redo");
+    expect(first).toBe(second);
+    await waitFor(() => expect(screen.getByRole("button", { name: "继续编辑文字" })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "继续编辑文字" }));
+    await expect(first).resolves.toBe(false);
+    await waitFor(() => expect(document.activeElement).toBe(editor));
+  });
+
+  it("resolves explicit completion and discard without losing a non-empty buffer", async () => {
+    const onCommand = vi.fn();
+    const completeRef = createRef<DrawingCanvasHandle>();
+    const complete = renderCanvas({ activeTool: "text", multilineText: true, onCommand, ref: completeRef });
+    fireEvent.pointerDown(complete.canvas, { pointerId: 43, clientX: 20, clientY: 100 });
+    fireEvent.pointerMove(complete.canvas, { pointerId: 43, clientX: 100, clientY: 80 });
+    fireEvent.pointerUp(complete.canvas, { pointerId: 43, clientX: 100, clientY: 80 });
+    fireEvent.change(screen.getByRole("textbox", { name: "文字标注" }), { target: { value: "完成草稿" } });
+    const completion = completeRef.current!.prepareTextDraft("save");
+    await waitFor(() => expect(screen.getByRole("button", { name: "完成文字草稿" })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "完成文字草稿" }));
+    await expect(completion).resolves.toBe(true);
+    await expect(completeRef.current!.prepareTextDraft("capture")).resolves.toBe(true);
+    expect(onCommand).toHaveBeenCalledTimes(1);
+    cleanup();
+
+    const discardRef = createRef<DrawingCanvasHandle>();
+    const discard = renderCanvas({ activeTool: "text", multilineText: true, onCommand, ref: discardRef });
+    fireEvent.pointerDown(discard.canvas, { pointerId: 44, clientX: 20, clientY: 100 });
+    fireEvent.pointerMove(discard.canvas, { pointerId: 44, clientX: 100, clientY: 80 });
+    fireEvent.pointerUp(discard.canvas, { pointerId: 44, clientX: 100, clientY: 80 });
+    fireEvent.change(screen.getByRole("textbox", { name: "文字标注" }), { target: { value: "放弃草稿" } });
+    const discarded = discardRef.current!.prepareTextDraft("leave");
+    await waitFor(() => expect(screen.getByRole("button", { name: "放弃文字草稿" })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "放弃文字草稿" }));
+    await expect(discarded).resolves.toBe(true);
+    expect(onCommand).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("textbox", { name: "文字标注" })).not.toBeInTheDocument();
   });
 
   it("supports drag-to-place Text and keeps the market anchor independent", () => {
@@ -286,6 +441,24 @@ describe("drawing creation state", () => {
   );
 
   it.each(["horizontal-line", "vertical-line", "price-label"] as const)(
+    "finalizes %s by returning to cursor and selecting the new object",
+    (activeTool) => {
+      const onCommand = vi.fn();
+      const onRequestCursorTool = vi.fn();
+      const onSelectDrawing = vi.fn();
+      const { canvas } = renderCanvas({ activeTool, onCommand, onRequestCursorTool, onSelectDrawing });
+
+      fireEvent.pointerDown(canvas, { pointerId: 45, clientX: 60, clientY: 100 });
+      fireEvent.pointerUp(canvas, { pointerId: 45, clientX: 100, clientY: 80 });
+
+      const command = onCommand.mock.calls[0]?.[0];
+      expect(onCommand).toHaveBeenCalledTimes(1);
+      expect(onRequestCursorTool).toHaveBeenCalledTimes(1);
+      expect(onSelectDrawing).toHaveBeenCalledWith(command.drawing.id);
+    },
+  );
+
+  it.each(["horizontal-line", "vertical-line", "price-label"] as const)(
     "moves the %s preview with the pointer before release",
     (activeTool) => {
       const methods = new Map<string, ReturnType<typeof vi.fn>>();
@@ -324,7 +497,9 @@ describe("drawing creation state", () => {
 
   it("creates a new risk/reward object with a 1:1 target while preserving the stop anchor", () => {
     const onCommand = vi.fn();
-    const { canvas } = renderCanvas({ activeTool: "long-risk-reward", onCommand });
+    const onRequestCursorTool = vi.fn();
+    const onSelectDrawing = vi.fn();
+    const { canvas } = renderCanvas({ activeTool: "long-risk-reward", onCommand, onRequestCursorTool, onSelectDrawing });
 
     fireEvent.pointerDown(canvas, { pointerId: 43, clientX: 20, clientY: 80 });
     fireEvent.pointerUp(canvas, { pointerId: 43, clientX: 20, clientY: 80 });
@@ -336,6 +511,69 @@ describe("drawing creation state", () => {
     const [entry, stop, target] = command.drawing.anchors;
     expect(stop.price).not.toBe(entry.price);
     expect(target.price - entry.price).toBeCloseTo(entry.price - stop.price, 6);
+    expect(onRequestCursorTool).toHaveBeenCalledTimes(1);
+    expect(onSelectDrawing).toHaveBeenCalledWith(command.drawing.id);
+  });
+
+  it("finalizes a parallel channel only after its third width point", () => {
+    const onCommand = vi.fn();
+    const onRequestCursorTool = vi.fn();
+    const onSelectDrawing = vi.fn();
+    const { canvas } = renderCanvas({ activeTool: "parallel-channel", onCommand, onRequestCursorTool, onSelectDrawing });
+
+    fireEvent.pointerDown(canvas, { pointerId: 46, clientX: 20, clientY: 100 });
+    fireEvent.pointerUp(canvas, { pointerId: 46, clientX: 20, clientY: 100 });
+    fireEvent.pointerDown(canvas, { pointerId: 46, clientX: 100, clientY: 80 });
+    fireEvent.pointerUp(canvas, { pointerId: 46, clientX: 100, clientY: 80 });
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(screen.getByRole("status")).toHaveTextContent("已确定通道基线");
+
+    fireEvent.pointerDown(canvas, { pointerId: 46, clientX: 100, clientY: 60 });
+    fireEvent.pointerUp(canvas, { pointerId: 46, clientX: 100, clientY: 60 });
+
+    const command = onCommand.mock.calls[0]?.[0];
+    expect(onCommand).toHaveBeenCalledTimes(1);
+    expect(command.drawing.anchors).toHaveLength(3);
+    expect(onRequestCursorTool).toHaveBeenCalledTimes(1);
+    expect(onSelectDrawing).toHaveBeenCalledWith(command.drawing.id);
+  });
+
+  it.each(["arrow", "fibonacci", "measure"] as const)(
+    "finalizes the two-point %s tool once after click-click",
+    (activeTool) => {
+      const onCommand = vi.fn();
+      const onRequestCursorTool = vi.fn();
+      const onSelectDrawing = vi.fn();
+      const { canvas } = renderCanvas({ activeTool, onCommand, onRequestCursorTool, onSelectDrawing });
+
+      fireEvent.pointerDown(canvas, { pointerId: 47, clientX: 20, clientY: 100 });
+      fireEvent.pointerUp(canvas, { pointerId: 47, clientX: 20, clientY: 100 });
+      fireEvent.pointerDown(canvas, { pointerId: 47, clientX: 100, clientY: 80 });
+      fireEvent.pointerUp(canvas, { pointerId: 47, clientX: 100, clientY: 80 });
+
+      const command = onCommand.mock.calls[0]?.[0];
+      expect(onCommand).toHaveBeenCalledTimes(1);
+      expect(command.drawing.tool).toBe(activeTool);
+      expect(onRequestCursorTool).toHaveBeenCalledTimes(1);
+      expect(onSelectDrawing).toHaveBeenCalledWith(command.drawing.id);
+    },
+  );
+
+  it("keeps the current RR step and preview after an invalid second point", () => {
+    const onCommand = vi.fn();
+    const { canvas } = renderCanvas({
+      activeTool: "long-risk-reward",
+      onCommand,
+    });
+
+    fireEvent.pointerDown(canvas, { pointerId: 82, clientX: 20, clientY: 100 });
+    fireEvent.pointerUp(canvas, { pointerId: 82, clientX: 20, clientY: 100 });
+    fireEvent.pointerDown(canvas, { pointerId: 82, clientX: 100, clientY: 100 });
+    fireEvent.pointerUp(canvas, { pointerId: 82, clientX: 100, clientY: 100 });
+
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(screen.getByRole("status")).toHaveTextContent("已取第一个点");
+    expect(screen.getByRole("alert")).toHaveTextContent("止损价不能等于入场价");
   });
 
   it("shows the current creation stage while a drawing is pending", () => {

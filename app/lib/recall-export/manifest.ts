@@ -27,6 +27,12 @@ const KNOWN_MARKET_TIME_ZONES = new Set([
   "CN-SZ",
 ]);
 
+const SNAPSHOT_PHASE_LABELS: Record<NonNullable<RecallSnapshot["phase"]>, string> = {
+  "pre-entry": "S0 买入前判断",
+  holding: "S1 持仓过程",
+  "post-review": "S2 事后复盘",
+};
+
 export class RecallExportError extends Error {
   constructor(message: string) {
     super(message);
@@ -157,6 +163,13 @@ function markdownText(value: string) {
 
 function markdownTableText(value: string) {
   return markdownText(value).replace(/\r?\n/g, " ");
+}
+
+function snapshotCaption(snapshot: RecallExportSnapshot) {
+  const phase = snapshot.phase && SNAPSHOT_PHASE_LABELS[snapshot.phase]
+    ? SNAPSHOT_PHASE_LABELS[snapshot.phase]
+    : "未知";
+  return `> 阶段：${phase}；行情可知截止：${snapshot.cursor ?? "未知"}；成交揭示截止：${snapshot.executionCursor ?? "未知"}`;
 }
 
 function decodeBase64(value: string): number[] {
@@ -453,7 +466,14 @@ function buildMarkdownDocument(
       continue;
     }
     snapshots.forEach((snapshot, index) => {
-      lines.push("", `### 快照 ${pad(index + 1)} · ${snapshot.timeframe}`, "", `![${snapshot.timeframe}](${snapshot.imagePath})`);
+      lines.push(
+        "",
+        `### 快照 ${pad(index + 1)} · ${snapshot.timeframe}`,
+        "",
+        `![${snapshot.timeframe}](${snapshot.imagePath})`,
+        "",
+        snapshotCaption(snapshot),
+      );
       const entries = snapshot.textIds
         .map((key) => textByKey.get(key))
         .filter((entry): entry is RecallExportTextEntry => Boolean(entry && entry.sourceSnapshotId === snapshot.id));
@@ -475,7 +495,7 @@ function buildMarkdownDocument(
   if (globalSnapshots.length > 0) {
     lines.push("", "## 全局总结");
     for (const snapshot of globalSnapshots) {
-      lines.push("", `![全局总结](${snapshot.imagePath})`);
+      lines.push("", `![全局总结](${snapshot.imagePath})`, "", snapshotCaption(snapshot));
       const entries = snapshot.textIds
         .map((key) => textByKey.get(key))
         .filter((entry): entry is RecallExportTextEntry => Boolean(entry && entry.sourceSnapshotId === snapshot.id));
@@ -485,7 +505,9 @@ function buildMarkdownDocument(
   const unassigned = grouped.get("unassigned") ?? [];
   if (unassigned.length > 0) {
     lines.push("", "## 待分配快照");
-    for (const snapshot of unassigned) lines.push("", `![${snapshot.timeframe}](${snapshot.imagePath})`);
+    for (const snapshot of unassigned) {
+      lines.push("", `![${snapshot.timeframe}](${snapshot.imagePath})`, "", snapshotCaption(snapshot));
+    }
   }
 
   return `${lines.join("\n")}\n`;
@@ -557,6 +579,9 @@ export function createRecallExportManifest(
       id: snapshot.id,
       decisionId: snapshot.decisionId,
       timeframe: snapshot.timeframe,
+      phase: snapshot.phase ?? null,
+      cursor: snapshot.cursor ?? null,
+      executionCursor: snapshot.executionCursor ?? null,
       imagePath,
       textIds: textIdsBySnapshot.get(snapshot.id) ?? [],
     };

@@ -4,7 +4,9 @@ import { createRecallPptxManifest } from './pptx-manifest';
 import { createRecallPptxBlob, paginateRecallPptxRows } from './pptx';
 import JSZip from 'jszip';
 import { buildTradeEpisodes } from '../trades/episodes';
-import { captureRecallExecutionEvidence } from '../recall/retained-bundles';
+import { canonicalRecallJson, captureRecallExecutionEvidence } from '../recall/retained-bundles';
+import { sha256 } from '../recall/retained-digest';
+import { replayExecutionAt } from '../import/statement-evidence';
 import { calculateRecallActualMetrics } from '../recall/actual-metrics';
 import type { RecallPlanVersion } from '../recall/types';
 import type { NormalizedDrawing } from '../chart/drawings';
@@ -49,6 +51,9 @@ function frozenDocument() {
 async function unzip(blob: Blob) {
     const buffer = await new Promise<ArrayBuffer>((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result as ArrayBuffer); reader.onerror = reject; reader.readAsArrayBuffer(blob); });
     return JSZip.loadAsync(buffer);
+}
+function refreshEvidenceDigest(bundle: NonNullable<RecallDocument['retainedBundles']>[number]) {
+    bundle.executionEvidence.digest = sha256(canonicalRecallJson(bundle.executionEvidence.payload));
 }
 describe('PPTX frozen export', () => {
     it('declares only package parts that exist in the generated multi-slide presentation', async () => {
@@ -120,6 +125,247 @@ describe('PPTX frozen export', () => {
         expect(early.summary.rows[0][2]).toContain('尚未揭示');
         input.retainedBundles![2].executionEvidence.payload.episode.directionKnown = false;
         expect(createRecallPptxManifest(input).summary.rows[0][2]).toContain('方向待确认');
+    });
+    it('chooses one retained bundle by visible execution count before retained time', () => {
+        const input = frozenDocument();
+        const sourceSnapshot = input.snapshots.find(item => item.id === 'post')!;
+        const sourceBundle = input.retainedBundles!.find(item => item.id === 'bundle-post')!;
+        const laterS0 = structuredClone(sourceSnapshot);
+        const laterBundle = structuredClone(sourceBundle);
+        laterS0.id = 's0-later';
+        laterS0.phase = 'pre-entry';
+        laterS0.retainedBundleId = 'bundle-s0-later';
+        laterS0.cursor = '2025-12-31T23:59:59.999Z';
+        laterS0.executionCursor = 'buy';
+        laterS0.updatedAt = laterS0.cursor;
+        laterBundle.id = 'bundle-s0-later';
+        laterBundle.snapshotId = laterS0.id;
+        laterBundle.retainedAt = '2026-01-10T00:00:00.000Z';
+        laterBundle.documentRevision = 2;
+        laterBundle.captureContext = {
+            ...laterBundle.captureContext,
+            phase: laterS0.phase,
+            cursor: laterS0.cursor,
+            executionCursor: laterS0.executionCursor,
+        };
+        input.snapshots.push(laterS0);
+        input.retainedBundles!.push(laterBundle);
+
+        const manifest = createRecallPptxManifest(input);
+        expect(manifest.executionFacts.snapshotId).toBe('post');
+        expect(manifest.executionFacts.executionIds).toEqual(['buy', 'exit1', 'exit2']);
+        expect(manifest.executionFacts.warnings).toEqual([]);
+    });
+    it('keeps nonglobal S0/S1/S2 facts independent from the missing global summary', () => {
+        const input = frozenDocument();
+        for (const snap of input.snapshots) snap.decisionId = 'decision-buy';
+        const pre = input.snapshots.find(item => item.id === 'pre')!;
+        const preBundle = input.retainedBundles!.find(item => item.id === 'bundle-pre')!;
+        pre.executionCursor = '__recall_before_first_execution__';
+        preBundle.captureContext = { ...preBundle.captureContext, executionCursor: pre.executionCursor };
+        const hold = input.snapshots.find(item => item.id === 'hold')!;
+        const holdBundle = input.retainedBundles!.find(item => item.id === 'bundle-hold')!;
+        hold.executionCursor = 'buy';
+        holdBundle.captureContext = { ...holdBundle.captureContext, executionCursor: hold.executionCursor };
+
+        const manifest = createRecallPptxManifest(input);
+
+        expect(manifest.summary.bundle).toBeNull();
+        expect(manifest.summary.rows.flat().join(' ')).toContain('缺少已留存全局版本组合');
+        expect(manifest.executionFacts.snapshotId).toBe('post');
+        expect(manifest.executionFacts.executionIds).toEqual(['buy', 'exit1', 'exit2']);
+        expect(manifest.executionFacts.rows.every(row => row.length === 5)).toBe(true);
+        expect(manifest.executionFacts.rows.map(row => [row[1], row[4]])).toEqual([
+            ['买入', '20 USD'], ['卖出', '12 USD'], ['卖出', '8 USD'],
+        ]);
+
+        const onlyS0 = structuredClone(input);
+        onlyS0.snapshots = onlyS0.snapshots.filter(item => item.id === 'pre');
+        onlyS0.retainedBundles = onlyS0.retainedBundles!.filter(item => item.id === 'bundle-pre');
+        expect(createRecallPptxManifest(onlyS0).executionFacts.executionIds).toEqual([]);
+
+        const onlyS1 = structuredClone(input);
+        onlyS1.snapshots = onlyS1.snapshots.filter(item => item.id === 'hold');
+        onlyS1.retainedBundles = onlyS1.retainedBundles!.filter(item => item.id === 'bundle-hold');
+        expect(createRecallPptxManifest(onlyS1).executionFacts.executionIds).toEqual(['buy']);
+    });
+    it('freezes completed execution facts and filters future payload from provenance notes', async () => {
+        const input = frozenDocument();
+        input.lastCompleted = { ...structuredClone(input), status: 'completed', completedAt: '2026-01-05' };
+        const completed = createRecallPptxManifest(input, { source: 'completed' });
+        const completedRows = structuredClone(completed.executionFacts.rows);
+        input.lastCompleted.retainedBundles![2].executionEvidence.payload.executions[0].fee = '999';
+        expect(completed.executionFacts.rows).toEqual(completedRows);
+
+        const cutoffInput = frozenDocument();
+        const snapshot = cutoffInput.snapshots.find(item => item.id === 'post')!;
+        const bundle = cutoffInput.retainedBundles!.find(item => item.id === 'bundle-post')!;
+        snapshot.cursor = '2026-01-02';
+        snapshot.executionCursor = 'exit1';
+        bundle.captureContext = { ...bundle.captureContext, cursor: snapshot.cursor, executionCursor: snapshot.executionCursor };
+        const cutoffManifest = createRecallPptxManifest(cutoffInput);
+        expect(cutoffManifest.executionFacts.executionIds).toEqual(['buy', 'exit1']);
+        const archive = await unzip(await createRecallPptxBlob(cutoffManifest));
+        const notes = (await Promise.all(Object.keys(archive.files)
+            .filter(path => path.includes('notesSlides/') && path.endsWith('.xml'))
+            .map(path => archive.file(path)!.async('string')))).join('\n');
+        expect(notes).toContain('executionIds');
+        expect(notes).not.toContain('exit2');
+    });
+    it('rejects invalid snapshot binding and evidence digests instead of exporting their facts', () => {
+        const badBinding = frozenDocument();
+        badBinding.retainedBundles!.forEach(bundle => { bundle.snapshotId = 'other-snapshot'; });
+        const bindingManifest = createRecallPptxManifest(badBinding);
+        expect(bindingManifest.executionFacts.snapshotId).toBeNull();
+        expect(bindingManifest.executionFacts.warnings).toContain('缺少有效已留存成交事实');
+
+        const badDigest = frozenDocument();
+        badDigest.retainedBundles!.forEach(bundle => { bundle.executionEvidence.digest = 'bad-digest'; });
+        const digestManifest = createRecallPptxManifest(badDigest);
+        expect(digestManifest.executionFacts.snapshotId).toBeNull();
+        expect(digestManifest.executionFacts.warnings).toContain('缺少有效已留存成交事实');
+    });
+    it('uses the allocated fee from a buildTradeEpisodes split instead of raw settlement fees', () => {
+        const instrument = { id: 'US:SPLIT', symbol: 'SPLIT', name: 'Split', market: 'US', currency: 'USD' };
+        const sourceSettlement = { currency: 'USD', quantity: '150', grossAmount: '9150', netAmount: '9135', fees: { commission: '15' } };
+        const episodes = buildTradeEpisodes([
+            { id: 'open', side: 'buy' as const, quantity: '100', price: '50', fee: '0', executedAt: '2026-01-01', accountId: 'account', accountLabel: 'Test', instrument, source: { platform: 'test', row: 1, feeStatus: 'reported' as const } },
+            { id: 'reverse', side: 'sell' as const, quantity: '150', price: '61', fee: '15', executedAt: '2026-01-02', accountId: 'account', accountLabel: 'Test', instrument, source: { platform: 'test', row: 2, feeStatus: 'reported' as const, settlement: sourceSettlement } },
+        ]);
+        const closing = episodes.find(episode => episode.executions.some(execution => execution.id === 'reverse:close'))!;
+        expect(closing.executions.find(execution => execution.id === 'reverse:close')?.fee).toBe('10');
+
+        const input = frozenDocument();
+        input.episodeId = closing.id;
+        const snapshot = input.snapshots.find(item => item.id === 'post')!;
+        const bundle = input.retainedBundles!.find(item => item.id === 'bundle-post')!;
+        const closingExecution = closing.executions.find(execution => execution.id === 'reverse:close')!;
+        snapshot.cursor = '2026-01-05';
+        snapshot.executionCursor = closingExecution.id;
+        bundle.captureContext = { ...bundle.captureContext, cursor: snapshot.cursor, executionCursor: snapshot.executionCursor };
+        bundle.executionEvidence = captureRecallExecutionEvidence(closing);
+
+        const manifest = createRecallPptxManifest(input);
+        const row = manifest.executionFacts.rows.find(item => item[1] === '卖出');
+        expect(row?.[4]).toBe('10 USD');
+    });
+    it('renders non-finite fees as unknown while preserving reported and unknown zero semantics', () => {
+        const invalid = frozenDocument();
+        const invalidBundle = invalid.retainedBundles!.find(item => item.id === 'bundle-post')!;
+        const invalidExecution = invalidBundle.executionEvidence.payload.executions[0];
+        invalidExecution.fee = 'Infinity';
+        invalidExecution.source.feeStatus = 'reported';
+        refreshEvidenceDigest(invalidBundle);
+        expect(createRecallPptxManifest(invalid).executionFacts.rows[0][4]).toBe('未知');
+
+        const reportedZero = frozenDocument();
+        const reportedBundle = reportedZero.retainedBundles!.find(item => item.id === 'bundle-post')!;
+        reportedBundle.executionEvidence.payload.executions[0].fee = '0';
+        reportedBundle.executionEvidence.payload.executions[0].source.feeStatus = 'reported';
+        refreshEvidenceDigest(reportedBundle);
+        expect(createRecallPptxManifest(reportedZero).executionFacts.rows[0][4]).toBe('0 USD');
+
+        const unknownZero = frozenDocument();
+        const unknownBundle = unknownZero.retainedBundles!.find(item => item.id === 'bundle-post')!;
+        unknownBundle.executionEvidence.payload.executions[0].fee = '0';
+        unknownBundle.executionEvidence.payload.executions[0].source.feeStatus = 'unknown';
+        refreshEvidenceDigest(unknownBundle);
+        expect(createRecallPptxManifest(unknownZero).executionFacts.rows[0][4]).toBe('未知');
+    });
+    it('labels date-only execution rows without inventing an intraday time', () => {
+        const input = frozenDocument();
+        const bundle = input.retainedBundles!.find(item => item.id === 'bundle-post')!;
+        const execution = bundle.executionEvidence.payload.executions[0];
+        execution.executedAt = '2026-01-03T07:00:00.000Z';
+        execution.source.timePrecision = 'date-only';
+        execution.source.marketCalendarDate = '2026-01-03';
+        refreshEvidenceDigest(bundle);
+
+        const manifest = createRecallPptxManifest(input);
+        const row = manifest.executionFacts.rows[manifest.executionFacts.executionIds.indexOf(execution.id)][0];
+        expect(row).toContain('2026年01月03日');
+        expect(row).toContain('仅日期');
+        expect(row).toContain('时刻未提供');
+        expect(row).not.toContain('15:00');
+    });
+    it('uses the canonical source-timezone calendar day for date-only fallback', () => {
+        const input = frozenDocument();
+        const snapshot = input.snapshots.find(item => item.id === 'post')!;
+        const bundle = input.retainedBundles!.find(item => item.id === 'bundle-post')!;
+        const execution = bundle.executionEvidence.payload.executions.find(item => item.id === 'buy')!;
+        execution.executedAt = '2026-03-17T23:00:00.000Z';
+        execution.source = { ...execution.source, timePrecision: 'date-only', sourceTimezone: 'Asia/Tokyo' };
+        snapshot.cursor = '2026-03-18T23:59:59.999Z';
+        snapshot.executionCursor = execution.id;
+        bundle.captureContext = { ...bundle.captureContext, cursor: snapshot.cursor, executionCursor: snapshot.executionCursor };
+        refreshEvidenceDigest(bundle);
+
+        expect(replayExecutionAt(execution)).toBe('2026-03-18T23:59:59.999Z');
+        const manifest = createRecallPptxManifest(input);
+        const row = manifest.executionFacts.rows[manifest.executionFacts.executionIds.indexOf(execution.id)][0];
+        expect(row).toBe('2026年03月18日（仅日期；时刻未提供）');
+
+        const explicit = frozenDocument();
+        const explicitSnapshot = explicit.snapshots.find(item => item.id === 'post')!;
+        const explicitBundle = explicit.retainedBundles!.find(item => item.id === 'bundle-post')!;
+        const explicitExecution = explicitBundle.executionEvidence.payload.executions.find(item => item.id === 'buy')!;
+        explicitExecution.executedAt = execution.executedAt;
+        explicitExecution.source = { ...explicitExecution.source, timePrecision: 'date-only', sourceTimezone: 'Asia/Tokyo', marketCalendarDate: '2026-03-16' };
+        explicitSnapshot.cursor = '2026-03-18T23:59:59.999Z';
+        explicitSnapshot.executionCursor = explicitExecution.id;
+        explicitBundle.captureContext = { ...explicitBundle.captureContext, cursor: explicitSnapshot.cursor, executionCursor: explicitSnapshot.executionCursor };
+        refreshEvidenceDigest(explicitBundle);
+        const explicitManifest = createRecallPptxManifest(explicit);
+        const explicitRow = explicitManifest.executionFacts.rows[explicitManifest.executionFacts.executionIds.indexOf(explicitExecution.id)][0];
+        expect(explicitRow).toBe('2026年03月16日（仅日期；时刻未提供）');
+
+        const west = frozenDocument();
+        const westSnapshot = west.snapshots.find(item => item.id === 'post')!;
+        const westBundle = west.retainedBundles!.find(item => item.id === 'bundle-post')!;
+        const westExecution = westBundle.executionEvidence.payload.executions.find(item => item.id === 'buy')!;
+        westExecution.executedAt = '2026-03-18T06:00:00.000Z';
+        westExecution.source = { ...westExecution.source, timePrecision: 'date-only', sourceTimezone: 'America/Los_Angeles' };
+        westSnapshot.cursor = '2026-03-18T23:59:59.999Z';
+        westSnapshot.executionCursor = westExecution.id;
+        westBundle.captureContext = { ...westBundle.captureContext, cursor: westSnapshot.cursor, executionCursor: westSnapshot.executionCursor };
+        refreshEvidenceDigest(westBundle);
+        const westManifest = createRecallPptxManifest(west);
+        const westRow = westManifest.executionFacts.rows[westManifest.executionFacts.executionIds.indexOf(westExecution.id)][0];
+        expect(westRow).toBe('2026年03月17日（仅日期；时刻未提供）');
+
+        const precise = frozenDocument();
+        const preciseSnapshot = precise.snapshots.find(item => item.id === 'post')!;
+        const preciseBundle = precise.retainedBundles!.find(item => item.id === 'bundle-post')!;
+        const preciseExecution = preciseBundle.executionEvidence.payload.executions.find(item => item.id === 'buy')!;
+        preciseExecution.executedAt = execution.executedAt;
+        preciseExecution.source = { ...preciseExecution.source, timePrecision: 'second', sourceTimezone: 'Asia/Tokyo' };
+        preciseSnapshot.cursor = '2026-03-18T23:59:59.999Z';
+        preciseSnapshot.executionCursor = preciseExecution.id;
+        preciseBundle.captureContext = { ...preciseBundle.captureContext, cursor: preciseSnapshot.cursor, executionCursor: preciseSnapshot.executionCursor };
+        refreshEvidenceDigest(preciseBundle);
+        const preciseManifest = createRecallPptxManifest(precise);
+        const preciseRow = preciseManifest.executionFacts.rows[preciseManifest.executionFacts.executionIds.indexOf(preciseExecution.id)][0];
+        expect(preciseRow).toMatch(/^2026年03月18日 \d{2}:\d{2}$/);
+        expect(preciseRow).not.toContain('仅日期');
+    });
+    it('does not reveal a date-only execution before its canonical day boundary', () => {
+        const input = frozenDocument();
+        for (const snapshot of input.snapshots) {
+            const bundle = input.retainedBundles!.find(item => item.id === snapshot.retainedBundleId)!;
+            const execution = bundle.executionEvidence.payload.executions.find(item => item.id === 'buy')!;
+            bundle.executionEvidence.payload.executions = [execution];
+            bundle.executionEvidence.executionIds = [execution.id];
+            execution.executedAt = '2026-03-17T23:00:00.000Z';
+            execution.source = { ...execution.source, timePrecision: 'date-only', sourceTimezone: 'Asia/Tokyo' };
+            snapshot.cursor = '2026-03-18T00:00:00.000Z';
+            snapshot.executionCursor = execution.id;
+            bundle.captureContext = { ...bundle.captureContext, cursor: snapshot.cursor, executionCursor: snapshot.executionCursor };
+            refreshEvidenceDigest(bundle);
+        }
+        const manifest = createRecallPptxManifest(input);
+        expect(manifest.executionFacts.executionIds).toEqual([]);
+        expect(manifest.executionFacts.rows).toEqual([]);
+        expect(manifest.executionFacts.warnings).toContain('当前双截止下无已揭示成交事实');
     });
     it('generates actual widescreen OOXML with native editable tables and embedded images only', async () => {
         const manifest = createRecallPptxManifest(frozenDocument());

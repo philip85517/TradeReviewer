@@ -1,5 +1,6 @@
 import { act, cleanup, fireEvent, render, waitFor, within } from "@testing-library/react";
 import { Activity, useState, type ComponentProps } from "react";
+import { flushSync } from "react-dom";
 import { afterEach, expect, it, vi } from "vitest";
 
 const engine = vi.hoisted(() => ({
@@ -11,12 +12,15 @@ const engine = vi.hoisted(() => ({
   controlY: 100,
   options: null as Record<string, unknown> | null,
   resizeCallbacks: [] as ResizeObserverCallback[],
+  animationFrames: [] as FrameRequestCallback[],
+  cancelledAnimationFrameIds: [] as number[],
   asyncRange: false,
   pendingRanges: [] as Array<{ from: number; to: number }>,
   rangeChangeHandlers: [] as Array<() => void>,
   setDataRangeShift: null as { from: number; to: number } | null,
   applyOptionsRangeMutation: null as { from: number; to: number } | null,
   drawingCommit: vi.fn(),
+  prepareTextDraft: vi.fn(),
   screenshotArgs: null as [boolean, boolean] | null,
   screenshotData: [] as { time: number }[][],
   overlayIds: [] as string[],
@@ -25,6 +29,8 @@ const engine = vi.hoisted(() => ({
   deferredLifecycleFrames: [] as Array<() => void>,
   lifecycleErrors: [] as string[],
   rangeReadsAfterRemove: 0,
+  canonicalOptions: null as Record<string, unknown> | null,
+  captureOptions: [] as Array<Record<string, unknown>>,
   autoScale:true,
   priceRanges:[] as {from:number;to:number}[],
   priceRangeCalls: [] as Array<{ instance: number; range: { from: number; to: number } }>,
@@ -35,16 +41,32 @@ const engine = vi.hoisted(() => ({
   plotBounds: undefined as { width: number; height: number } | undefined,
   timeScaleWidth: 0,
   paneHeight: 0,
+  modelResizeSemantics: false,
+  sdkPlotWidth: 0,
+  pendingSdkPlotWidth: null as number | null,
+  sdkBarSpacing: 8,
+  lockVisibleTimeRangeOnResize: false,
   appliedSizes: [] as Array<{ width?: number; height?: number }>,
   resetRangeOnCreate: false,
   chartInstances: 0,
   setDataCalls: [] as Array<{ instance: number; data: { time: number }[] }>,
+  reconcileCoordinateOnScreenshot: false,
+  pendingControlY: null as number | null,
+  coordinateVersionSamples: [] as Array<{ version: number; controlY: number }>,
+  crosshairHandler: null as ((param: { time?: number; seriesData: Map<unknown, unknown> }) => void) | null,
+  candleSeries: null as object | null,
+  canvasOnRequestCursorTool: undefined as (() => void) | undefined,
 }));
 
 vi.mock("./drawing-canvas", async () => {
   const React = await import("react");
   const DrawingCanvas = React.forwardRef((props, ref) => {
+    engine.canvasOnRequestCursorTool = (props as { onRequestCursorTool?: () => void }).onRequestCursorTool;
     engine.plotBounds = (props as { plotBounds?: { width: number; height: number } }).plotBounds;
+    engine.coordinateVersionSamples.push({
+      version: (props as { coordinateVersion?: number }).coordinateVersion ?? -1,
+      controlY: engine.controlY,
+    });
     React.useImperativeHandle(ref, () => ({
       captureOverlay: async () => {
         engine.overlayIds = ((props as { drawings?: Array<{ id: string }> }).drawings ?? []).map(
@@ -53,12 +75,21 @@ vi.mock("./drawing-canvas", async () => {
         return { width: 800, height: 480 };
       },
       commitText: () => engine.drawingCommit(props),
+      prepareTextDraft: (reason: string) => {
+        const guarded = engine.prepareTextDraft(reason);
+        if (guarded !== undefined) return Promise.resolve(guarded);
+        const committed = engine.drawingCommit(props);
+        // The real guard resolves after its decision action has committed the
+        // parent drawing state; model that settled seam in this mock handle.
+        flushSync(() => {});
+        return Promise.resolve(committed === undefined ? true : committed);
+      },
       getExpandedTextIds: () => [...engine.expandedTextIds],
     }));
     return <button type="button" aria-label="mock drawing interaction" onClick={() => (props as { onDrawingInteractionStart?: () => void }).onDrawingInteractionStart?.()} />;
   });
   DrawingCanvas.displayName = "DrawingCanvas";
-  return { DrawingCanvas, paintDrawingScene: (_context:unknown, scene:{drawings:Array<{id:string;text?:string}>;expandedTextIds?: Set<string>}) => { engine.overlayIds=scene.drawings.map(d=>d.id); engine.paintedTexts=scene.drawings.map(d=>d.text??''); engine.capturedExpandedTextIds=scene.expandedTextIds ? [...scene.expandedTextIds] : undefined; } };
+  return { DrawingCanvas, paintDrawingScene: (_context:unknown, scene:{drawings:Array<{id:string;text?:string}>;expandedTextIds?: Set<string>}) => { if (scene.drawings.length) engine.overlayIds=scene.drawings.map(d=>d.id); if (scene.drawings.some(d=>typeof d.text === 'string')) engine.paintedTexts=scene.drawings.map(d=>d.text??''); engine.capturedExpandedTextIds=scene.expandedTextIds ? [...scene.expandedTextIds] : undefined; } };
 });
 
 vi.mock("lightweight-charts", () => ({
@@ -70,7 +101,17 @@ vi.mock("lightweight-charts", () => ({
   createSeriesMarkers: () => ({ setMarkers: () => {} }),
   createChart: (_container: Element, options: Record<string, unknown>) => {
     const chartInstance = ++engine.chartInstances;
+    const captureChart = Boolean(_container.closest("[data-recall-capture]"));
     engine.options = options;
+    if (captureChart) engine.captureOptions.push(options);
+    const timeScaleOptions = options.timeScale as { lockVisibleTimeRangeOnResize?: boolean; barSpacing?: number };
+    let chartBarSpacing = Number(timeScaleOptions.barSpacing ?? 8);
+    if (!captureChart) {
+      engine.canonicalOptions = options;
+      engine.lockVisibleTimeRangeOnResize = timeScaleOptions.lockVisibleTimeRangeOnResize === true;
+      engine.sdkPlotWidth = Math.max(1, Number(options.width ?? 1) - 84);
+      engine.sdkBarSpacing = chartBarSpacing;
+    }
     if (engine.resetRangeOnCreate) engine.range = { from: 0, to: 0 };
     if (engine.resetPriceRangeOnCreate) engine.priceRange = { from: 0, to: 3 };
     const setAutoScale=(value:boolean)=>{if(!_container.closest('[data-recall-capture]'))engine.autoScale=value;};
@@ -87,8 +128,13 @@ vi.mock("lightweight-charts", () => ({
         if (engine.removed > 0) engine.rangeReadsAfterRemove += 1;
         return { ...engine.range };
       },
-      options: () => ({ barSpacing: 8, rightOffset: 4 }),
-      applyOptions: () => {},
+      options: () => ({ barSpacing: chartBarSpacing, rightOffset: 4 }),
+      applyOptions: (nextOptions: { barSpacing?: number }) => {
+        if (nextOptions.barSpacing !== undefined) {
+          chartBarSpacing = nextOptions.barSpacing;
+          if (!captureChart) engine.sdkBarSpacing = chartBarSpacing;
+        }
+      },
       timeToCoordinate: () => null,
       logicalToCoordinate: (logical: number) => logical * 10,
       coordinateToTime: () => null,
@@ -99,6 +145,9 @@ vi.mock("lightweight-charts", () => ({
       options: () => ({...options,timeScale:{...options.timeScale as object}}),
       applyOptions: (nextOptions: { width?: number; height?: number }) => {
         engine.appliedSizes.push({ width: nextOptions.width, height: nextOptions.height });
+        if (engine.modelResizeSemantics && nextOptions.width !== undefined) {
+          engine.pendingSdkPlotWidth = Math.max(1, nextOptions.width - 84);
+        }
         if (engine.applyOptionsRangeMutation) engine.range = { ...engine.applyOptionsRangeMutation };
       },
       remove: () => {
@@ -106,10 +155,11 @@ vi.mock("lightweight-charts", () => ({
         engine.removed++;
         engine.deferredLifecycleFrames = [];
       },
-      subscribeCrosshairMove: () => {},
+      subscribeCrosshairMove: (handler: (param: { time?: number; seriesData: Map<unknown, unknown> }) => void) => { engine.crosshairHandler = handler; },
       timeScale: () => scale,
       panes: () => [{ getHeight: () => engine.paneHeight }],
-      addSeries: (kind: string, seriesOptions:object) => ({
+      addSeries: (kind: string, seriesOptions:object) => {
+        const series = {
         options:()=>seriesOptions,
         attachPrimitive: () => {},
         detachPrimitive: () => {
@@ -127,14 +177,21 @@ vi.mock("lightweight-charts", () => ({
           }
         },
         applyOptions: () => {},
-        priceScale: () => ({ applyOptions: (options:{autoScale?:boolean}) => {if(options.autoScale!==undefined)setAutoScale(options.autoScale);},getVisibleRange:()=>({...engine.priceRange}),setVisibleRange:(range:{from:number;to:number})=>{engine.priceRange={...range};engine.priceRanges.push(range);engine.priceRangeCalls.push({instance:chartInstance,range:{...range}});setAutoScale(false);},setAutoScale,options:()=>({mode:0,invertScale:false,autoScale:engine.autoScale,scaleMargins:{top:.08,bottom:.2}}) }),
+        priceScale: () => ({ applyOptions: (options:{autoScale?:boolean}) => {if(options.autoScale!==undefined)setAutoScale(options.autoScale);},getVisibleRange:()=>({...engine.priceRange}),setVisibleRange:(range:{from:number;to:number})=>{engine.priceRange={...range};engine.priceRanges.push(range);engine.priceRangeCalls.push({instance:chartInstance,range:{...range}});if(engine.reconcileCoordinateOnScreenshot)engine.pendingControlY=140;setAutoScale(false);},setAutoScale,options:()=>({mode:0,invertScale:false,autoScale:engine.autoScale,scaleMargins:{top:.08,bottom:.2}}) }),
         createPriceLine: (line:object) => ({ options:()=>line,applyOptions: () => {} }),
         removePriceLine: () => {},
         coordinateToPrice: () => 100,
         priceToCoordinate: () => engine.controlY,
-      }),
+        };
+        if (kind === "candle") engine.candleSeries = series;
+        return series;
+      },
       takeScreenshot: (includeTopLayer: boolean, includeCrosshair: boolean) => {
         engine.screenshotArgs = [includeTopLayer, includeCrosshair];
+        if (engine.reconcileCoordinateOnScreenshot && engine.pendingControlY !== null) {
+          engine.controlY = engine.pendingControlY;
+          engine.pendingControlY = null;
+        }
         engine.screenshotData.push(engine.data.map((item) => ({ ...item })));
         return { width: Number(options.width), height: Number(options.height) };
       },
@@ -186,6 +243,35 @@ it("passes the drawing interaction callback through to the canvas interface", ()
   expect(onDrawingInteractionStart).toHaveBeenCalledTimes(1);
 });
 
+it("passes the optional cursor cancellation seam through to DrawingCanvas", () => {
+  const onRequestCursorTool = vi.fn();
+  render(<ReplayChart {...props({ onRequestCursorTool })} />);
+  engine.canvasOnRequestCursorTool?.();
+  expect(onRequestCursorTool).toHaveBeenCalledTimes(1);
+});
+
+it("publishes plot center and measured axis budget through the Replay seam", async () => {
+  stubResize(640, 240);
+  const onPlotLayoutChange = vi.fn();
+  const view = render(<ReplayChart {...props({
+    onPlotLayoutChange,
+    planPriceLines: [{ id: "target", price: 68, title: "止盈目标", displayPrice: "68.0000000000001" }],
+  })} />);
+  await waitFor(() => expect(onPlotLayoutChange).toHaveBeenLastCalledWith(expect.objectContaining({
+    width: expect.any(Number),
+    height: expect.any(Number),
+    plotCenterX: expect.any(Number),
+    axisWidth: expect.any(Number),
+  })));
+  const layout = onPlotLayoutChange.mock.lastCall?.[0];
+  expect(layout.plotCenterX).toBe(layout.width / 2);
+  expect(layout.axisWidth).toBeGreaterThan(84);
+  expect(view.container.querySelector(".chart-stage")).toHaveStyle({
+    "--replay-plot-center-x": `${layout.plotCenterX}px`,
+    "--replay-axis-width": `${layout.axisWidth}px`,
+  });
+});
+
 function stubResize(width = 640, height = 240) {
   vi.stubGlobal(
     "ResizeObserver",
@@ -220,31 +306,60 @@ function flushPendingRanges() {
   }
 }
 
+/**
+ * Models the lightweight-charts full paint that follows an explicit pane
+ * resize. Without lockVisibleTimeRangeOnResize, the SDK keeps bar spacing and
+ * the right edge and therefore shifts the left logical endpoint when the
+ * pane width changes. The real chart performs this work after ResizeObserver,
+ * so tests must keep it separate from chart.applyOptions().
+ */
+function paintPendingSdkResize() {
+  const nextWidth = engine.pendingSdkPlotWidth;
+  if (nextWidth === null || engine.sdkPlotWidth <= 0) return;
+  if (engine.modelResizeSemantics && !engine.lockVisibleTimeRangeOnResize) {
+    const delta = nextWidth - engine.sdkPlotWidth;
+    engine.range = {
+      from: engine.range.from - delta / engine.sdkBarSpacing,
+      to: engine.range.to,
+    };
+  }
+  engine.sdkPlotWidth = nextWidth;
+  engine.pendingSdkPlotWidth = null;
+}
+
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
   engine.data = [];
+  engine.canvasOnRequestCursorTool = undefined;
   engine.range = { from: 0, to: 0 };
   engine.priceRange = { from: 0, to: 3 };
   engine.fitCalls = 0;
   engine.controlY = 100;
   engine.options = null;
+  engine.canonicalOptions = null;
+  engine.captureOptions = [];
   engine.resizeCallbacks = [];
+  engine.animationFrames = [];
+  engine.cancelledAnimationFrameIds = [];
   engine.asyncRange = false;
   engine.pendingRanges = [];
   engine.rangeChangeHandlers = [];
   engine.setDataRangeShift = null;
   engine.applyOptionsRangeMutation = null;
   engine.drawingCommit.mockClear();
+  engine.prepareTextDraft.mockClear();
   engine.screenshotArgs = null;
   engine.screenshotData = [];
   Object.defineProperty(document,'fonts',{configurable:true,value:undefined});
   engine.overlayIds = [];
-  engine.removed=0;engine.lifecycleCalls=[];engine.deferredLifecycleFrames=[];engine.lifecycleErrors=[];engine.rangeReadsAfterRemove=0;engine.autoScale=true;engine.priceRanges=[];engine.paintedTexts=[];engine.drawingCommit.mockReset();
+  engine.removed=0;engine.lifecycleCalls=[];engine.deferredLifecycleFrames=[];engine.lifecycleErrors=[];engine.rangeReadsAfterRemove=0;engine.autoScale=true;engine.priceRanges=[];engine.paintedTexts=[];engine.drawingCommit.mockReset();engine.prepareTextDraft.mockReset();
   engine.expandedTextIds=[];engine.capturedExpandedTextIds=undefined;
   engine.plotBounds=undefined;engine.timeScaleWidth=0;engine.paneHeight=0;
+  engine.modelResizeSemantics=false;engine.sdkPlotWidth=0;engine.pendingSdkPlotWidth=null;engine.sdkBarSpacing=8;engine.lockVisibleTimeRangeOnResize=false;
   engine.appliedSizes=[];engine.resetRangeOnCreate=false;engine.resetPriceRangeOnCreate=false;engine.priceRangeCalls=[];
-  engine.chartInstances=0;engine.setDataCalls=[];
+  engine.chartInstances=0;engine.setDataCalls=[];engine.reconcileCoordinateOnScreenshot=false;engine.pendingControlY=null;engine.coordinateVersionSamples=[];
+  engine.crosshairHandler=null;engine.candleSeries=null;
 });
 
 it("formats daily tick marks compactly while retaining Asia/Shanghai date conversion", async () => {
@@ -268,6 +383,21 @@ it("formats daily tick marks compactly while retaining Asia/Shanghai date conver
   expect(intraday).toBe("00:00");
 });
 
+it("clears a stale crosshair when the hovered series item has no OHLC", async () => {
+  stubResize();
+  render(<ReplayChart {...props()} />);
+  await waitFor(() => expect(engine.crosshairHandler).not.toBeNull());
+  const hoveredTime = Date.parse("2026-01-01T00:00:00.000Z") / 1000;
+  engine.crosshairHandler?.({
+    time: hoveredTime,
+    seriesData: new Map([[engine.candleSeries, { open: 1, high: 2, low: 1, close: 2 }]]),
+  });
+  await waitFor(() => expect(document.querySelector(".chart-ohlc")).toHaveTextContent("00:00"));
+
+  engine.crosshairHandler?.({ time: hoveredTime, seriesData: new Map() });
+  await waitFor(() => expect(document.querySelector(".chart-ohlc")).toHaveTextContent("当前 K 线"));
+});
+
 it("passes real plot bounds to Text editing without shrinking the full chart", async () => {
   stubResize(640, 220);
   engine.timeScaleWidth = 560;
@@ -276,6 +406,69 @@ it("passes real plot bounds to Text editing without shrinking the full chart", a
 
   await waitFor(() => expect(engine.plotBounds).toEqual({ width: 560, height: 180 }));
   expect(engine.appliedSizes).toContainEqual({ width: 640, height: 220 });
+});
+
+it("remeasures plot bounds after the SDK applies a resize on its next paint", async () => {
+  const requestAnimationFrameMock = vi.fn((callback: FrameRequestCallback) => {
+    engine.animationFrames.push(callback);
+    return engine.animationFrames.length;
+  });
+  const cancelAnimationFrameMock = vi.fn((id: number) => {
+    engine.cancelledAnimationFrameIds.push(id);
+  });
+  vi.stubGlobal("requestAnimationFrame", requestAnimationFrameMock);
+  vi.stubGlobal("cancelAnimationFrame", cancelAnimationFrameMock);
+
+  const onPlotLayoutChange = vi.fn();
+  engine.timeScaleWidth = 504;
+  engine.paneHeight = 422;
+  stubResize(902, 450);
+  render(<ReplayChart {...props({ onPlotLayoutChange })} />);
+
+  await waitFor(() => expect(engine.plotBounds).toEqual({ width: 504, height: 422 }));
+  expect(engine.animationFrames).toHaveLength(1);
+
+  engine.timeScaleWidth = 818;
+  act(() => {
+    engine.animationFrames.shift()?.(0);
+  });
+
+  await waitFor(() => expect(engine.plotBounds).toEqual({ width: 818, height: 422 }));
+  expect(onPlotLayoutChange).toHaveBeenLastCalledWith(expect.objectContaining({
+    width: 818,
+    height: 422,
+    plotCenterX: 409,
+  }));
+  expect(requestAnimationFrameMock).toHaveBeenCalledTimes(1);
+  expect(cancelAnimationFrameMock).not.toHaveBeenCalled();
+});
+
+it("cancels a pending post-resize plot measurement when the chart is disposed", async () => {
+  const requestAnimationFrameMock = vi.fn((callback: FrameRequestCallback) => {
+    engine.animationFrames.push(callback);
+    return engine.animationFrames.length;
+  });
+  const cancelAnimationFrameMock = vi.fn((id: number) => {
+    engine.cancelledAnimationFrameIds.push(id);
+  });
+  vi.stubGlobal("requestAnimationFrame", requestAnimationFrameMock);
+  vi.stubGlobal("cancelAnimationFrame", cancelAnimationFrameMock);
+
+  engine.timeScaleWidth = 504;
+  engine.paneHeight = 422;
+  stubResize(902, 450);
+  const view = render(<ReplayChart {...props()} />);
+  await waitFor(() => expect(engine.plotBounds).toEqual({ width: 504, height: 422 }));
+  expect(engine.animationFrames).toHaveLength(1);
+
+  view.unmount();
+
+  expect(cancelAnimationFrameMock).toHaveBeenCalledWith(1);
+  engine.timeScaleWidth = 818;
+  act(() => {
+    for (const callback of engine.animationFrames) callback(0);
+  });
+  expect(engine.plotBounds).toEqual({ width: 504, height: 422 });
 });
 
 it("preserves the logical view when the replay/history mode changes", async () => {
@@ -367,7 +560,7 @@ it("captures the real chart plus a 2x drawing overlay after committing focused T
   stubResize(400, 200);
   const drawImage = vi.fn();
   const toDataURL = vi.fn(() => "data:image/png;base64,review");
-  const context = { drawImage, toDataURL, setTransform:vi.fn() } as unknown as CanvasRenderingContext2D;
+  const context = { drawImage, toDataURL, setTransform:vi.fn(), save:vi.fn(), restore:vi.fn(), beginPath:vi.fn(), arc:vi.fn(), stroke:vi.fn(), fillText:vi.fn() } as unknown as CanvasRenderingContext2D;
   vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(context);
   vi.spyOn(HTMLCanvasElement.prototype, "toDataURL").mockImplementation(toDataURL);
   const onReady = vi.fn();
@@ -397,11 +590,11 @@ it("captures the real chart plus a 2x drawing overlay after committing focused T
   const handle = onReady.mock.calls.find(([value]) => value && typeof value.capture === "function")?.[0] as { capture: () => Promise<{ imageDataUrl: string; viewport: unknown }> };
   const capture = await handle.capture();
   expect(capture.viewport).toMatchObject({width:400,height:200,imageFrame:{version:1,width:1280,height:720,pixelRatio:2}});
-  expect(engine.options).toMatchObject({width:2560,height:1440});
+  expect(engine.captureOptions[0]).toMatchObject({width:2560,height:1440});
 
   expect(engine.drawingCommit).toHaveBeenCalledTimes(1);
   expect(engine.screenshotArgs).toEqual([true, false]);
-  expect(drawImage).toHaveBeenCalledTimes(1);
+  expect(drawImage).toHaveBeenCalledTimes(2);
   expect(toDataURL).toHaveBeenCalledWith("image/png");
   expect(capture.imageDataUrl).toBe("data:image/png;base64,review");
 });
@@ -413,6 +606,7 @@ it("captures current data and overlays even when requestAnimationFrame never run
     drawImage: vi.fn(),
     setTransform:vi.fn(),
     toDataURL: vi.fn(() => "data:image/png;base64:stalled-rAF"),
+    save: vi.fn(), restore: vi.fn(), beginPath: vi.fn(), arc: vi.fn(), stroke: vi.fn(), fillText: vi.fn(),
   } as unknown as CanvasRenderingContext2D);
   vi.spyOn(HTMLCanvasElement.prototype, "toDataURL").mockReturnValue(
     "data:image/png;base64:stalled-rAF",
@@ -497,6 +691,19 @@ function captureHarness() {
   const onReady=vi.fn();
   return {onReady,prepare:(container:HTMLElement)=>{vi.spyOn(container.querySelector('.chart-stage')!,'getBoundingClientRect').mockReturnValue({width:400,height:200} as DOMRect);},handle:()=>onReady.mock.calls.find(([v])=>v)?.[0] as import('./replay-chart').ChartHandle};
 }
+it("awaits the shared text-draft guard before freezing the canonical capture", async () => {
+  const h = captureHarness();
+  let release!: (ready: boolean) => void;
+  engine.prepareTextDraft.mockReturnValue(new Promise<boolean>(resolve => { release = resolve; }));
+  const { container } = render(<ReplayChart {...props({ onReady: h.onReady })} />);
+  h.prepare(container);
+  await waitFor(() => expect(h.handle()).toBeDefined());
+  const capture = h.handle().capture();
+  await waitFor(() => expect(engine.prepareTextDraft).toHaveBeenCalledWith("capture"));
+  expect(engine.screenshotArgs).toBeNull();
+  release(true);
+  await capture;
+});
 it("rejects a pending text association before taking a screenshot and allows the next ready capture", async () => {
   const h = captureHarness();
   engine.drawingCommit.mockReturnValue(false);
@@ -569,6 +776,19 @@ it('restores saved auto scale after the native explicit-range setter disables it
   expect(engine.autoScale).toBe(false);
 });
 
+it("publishes drawing coordinates only after a restored price range is flushed", async () => {
+  const h = captureHarness();
+  engine.reconcileCoordinateOnScreenshot = true;
+  const { container } = render(<ReplayChart {...props({ onReady: h.onReady })} />);
+  h.prepare(container);
+  await waitFor(() => expect(h.handle()).toBeDefined());
+  const source = h.handle().getViewport();
+  act(() => h.handle().restoreViewport(source));
+
+  expect(engine.screenshotData.length).toBeGreaterThan(0);
+  expect(engine.coordinateVersionSamples.at(-1)?.controlY).toBe(140);
+});
+
 it("repositions plan controls after scale movement, edits, and resize", async () => {
   stubResize();
   const { container, rerender } = render(<ReplayChart {...props({ planPriceLines: [{ id: "entry", title: "入场", price: 100 }] })}/>);
@@ -578,13 +798,13 @@ it("repositions plan controls after scale movement, edits, and resize", async ()
   act(() => engine.resizeCallbacks[0]([], {} as ResizeObserver));
   const control = container.querySelector<HTMLButtonElement>('button[aria-label="入场 100，精确编辑"]')!;
   expect(control).toBeVisible();
-  expect(control.style.top).toBe("82px");
+  expect(control.style.top).toBe("60px");
   engine.controlY = 140;
   fireEvent.pointerMove(container.querySelector(".chart-stage")!);
-  expect(control.style.top).toBe("122px");
+  expect(control.style.top).toBe("100px");
   engine.controlY = 160;
   rerender(<ReplayChart {...props({ planPriceLines: [{ id: "entry", title: "入场", price: 110 }] })}/>);
-  expect(control.style.top).toBe("142px");
+  expect(control.style.top).toBe("120px");
   expect(control).toHaveAttribute("aria-label", "入场 110，精确编辑");
   Object.defineProperty(chart, "clientHeight", { configurable: true, value: 170 });
   act(() => engine.resizeCallbacks[0]([], {} as ResizeObserver));
@@ -593,7 +813,41 @@ it("repositions plan controls after scale movement, edits, and resize", async ()
   act(() => engine.resizeCallbacks[0]([], {} as ResizeObserver));
   const resizedControl = within(container).getByRole("button", { name: "入场 110，精确编辑" });
   expect(resizedControl).toBeVisible();
-  expect(resizedControl.style.top).toBe("142px");
+  expect(resizedControl.style.top).toBe("120px");
+});
+
+it("renders one outside hit target for an equal-price group while retaining every source id", async () => {
+  stubResize();
+  const view = render(<ReplayChart {...props({
+    planPriceLines: [
+      { id: "entry", price: 56, title: "计划入场", displayPrice: "56.0000" },
+      { id: "cost", price: 56, title: "实际成本", displayPrice: "56.00" },
+    ],
+  })} />);
+  await waitFor(() => expect(view.container.querySelectorAll("[data-plan-source-ids]")).toHaveLength(1));
+  const group = view.container.querySelector("[data-plan-source-ids]")!;
+  expect(group).toHaveAttribute("data-plan-source-ids", "entry,cost");
+  expect(group.querySelector("[data-plan-axis-name]")).toHaveTextContent("计划入场 / 实际成本");
+  expect(group.querySelector("[data-plan-axis-value]")).toHaveTextContent("56.0000 / 56.00");
+  const semanticNameParts = [...group.querySelectorAll("[data-plan-axis-name] > span")];
+  const semanticValueParts = [...group.querySelectorAll("[data-plan-axis-value] > span")];
+  expect(semanticNameParts).toHaveLength(2);
+  expect(semanticValueParts).toHaveLength(2);
+  expect(semanticNameParts.map(part => (part as HTMLElement).style.color)).toEqual(["rgb(173, 187, 207)", "rgb(173, 187, 207)"]);
+  expect(semanticValueParts.map(part => (part as HTMLElement).style.color)).toEqual(["rgb(173, 187, 207)", "rgb(173, 187, 207)"]);
+});
+
+it("keeps the in-plot dashed connector at each true price when outside rows are separated", async () => {
+  stubResize();
+  const view = render(<ReplayChart {...props({
+    planPriceLines: [
+      { id: "entry", price: 56, title: "计划入场", displayPrice: "56" },
+      { id: "target", price: 56.0001, title: "止盈目标", displayPrice: "56.0001" },
+    ],
+  })} />);
+  await waitFor(() => expect(view.container.querySelectorAll("[data-plan-axis-connectors] line").length).toBe(4));
+  expect(view.container.querySelector("[data-plan-axis-connectors]"))
+    .toHaveAttribute("data-plan-axis-connectors", "true");
 });
 
 it("keeps the revealed last candle when a height resize races the async range commit", async () => {
@@ -670,6 +924,118 @@ it("keeps a pending restored range authoritative during a same-frame width resiz
   act(() => resizeCallback([], {} as ResizeObserver));
   flushPendingRanges();
   expect(engine.range).toEqual({ from: 1, to: 4 });
+});
+
+it("does not refit over a persisted restore on the first usable resize", async () => {
+  let resizeCallback!: ResizeObserverCallback;
+  vi.stubGlobal("ResizeObserver", class {
+    constructor(callback: ResizeObserverCallback) {
+      resizeCallback = callback;
+      engine.resizeCallbacks.push(callback);
+    }
+    observe(target: Element) {
+      Object.defineProperties(target, {
+        clientWidth: { configurable: true, value: 640 },
+        clientHeight: { configurable: true, value: 240 },
+      });
+    }
+    disconnect() {}
+  });
+  const onReady = vi.fn();
+  render(<ReplayChart {...props({ onReady, viewportKey: "initial-restore-resize" })} />);
+  await waitFor(() => expect(onReady).toHaveBeenCalledWith(expect.objectContaining({ restoreViewport: expect.any(Function) })));
+  const fitCallsBeforeRestore = engine.fitCalls;
+  const handle = onReady.mock.calls.find(([value]) => value && typeof value.restoreViewport === "function")?.[0] as ChartHandle | undefined;
+  if (!handle) throw new Error("chart handle not ready");
+
+  act(() => handle.restoreViewport({
+    version: 1,
+    logicalRange: { from: -22.8594, to: 29.1406 },
+    barSpacing: 15.434,
+    rightOffset: 4,
+    width: 902,
+    height: 450,
+    priceRange: { from: 55.0836, to: 57.94 },
+    priceScaleOptions: { mode: 0, invertScale: false, autoScale: true, scaleMargins: { top: 0.08, bottom: 0.2 } },
+  }));
+  engine.rangeChangeHandlers[0]?.();
+  act(() => resizeCallback([], {} as ResizeObserver));
+
+  expect(engine.fitCalls).toBe(fitCallsBeforeRestore);
+  expect(engine.range).toEqual({ from: -22.8594, to: 29.1406 });
+});
+
+it("keeps a restored range through a delayed first resize and the SDK full paint", async () => {
+  engine.modelResizeSemantics = true;
+  let width = 902;
+  vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockImplementation(() => width);
+  vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(450);
+  let resizeCallback!: ResizeObserverCallback;
+  vi.stubGlobal("ResizeObserver", class {
+    constructor(callback: ResizeObserverCallback) {
+      resizeCallback = callback;
+      engine.resizeCallbacks.push(callback);
+    }
+    observe() {}
+    disconnect() {}
+  });
+  const onReady = vi.fn();
+  render(<ReplayChart {...props({ onReady, viewportKey: "delayed-sdk-resize" })} />);
+  await waitFor(() => expect(onReady).toHaveBeenCalledWith(expect.objectContaining({ restoreViewport: expect.any(Function) })));
+  expect((engine.options?.timeScale as { lockVisibleTimeRangeOnResize?: boolean }).lockVisibleTimeRangeOnResize).toBe(true);
+  const handle = onReady.mock.calls.find(([value]) => value && typeof value.restoreViewport === "function")?.[0] as ChartHandle;
+  const savedRange = { from: -22.8594, to: 29.1406 };
+
+  act(() => handle.restoreViewport({
+    version: 1,
+    logicalRange: savedRange,
+    barSpacing: 15.434,
+    rightOffset: 4,
+    width: 902,
+    height: 450,
+  }));
+  // The restore paint has completed and its pending range notification was
+  // consumed before the late first ResizeObserver delivery.
+  engine.rangeChangeHandlers[0]?.();
+  width = 842;
+  act(() => resizeCallback([], {} as ResizeObserver));
+  paintPendingSdkResize();
+
+  expect(engine.range).toEqual(savedRange);
+});
+
+it("keeps SDK-only axis width changes stable, returns to the original width, and respects a user pan", async () => {
+  engine.modelResizeSemantics = true;
+  stubResize(902, 450);
+  const onReady = vi.fn();
+  render(<ReplayChart {...props({ onReady, viewportKey: "sdk-only-resize" })} />);
+  await waitFor(() => expect(onReady).toHaveBeenCalledWith(expect.objectContaining({ restoreViewport: expect.any(Function) })));
+  const handle = onReady.mock.calls.find(([value]) => value && typeof value.restoreViewport === "function")?.[0] as ChartHandle;
+  const savedRange = { from: -10, to: 30 };
+  act(() => handle.restoreViewport({
+    version: 1,
+    logicalRange: savedRange,
+    barSpacing: 12,
+    rightOffset: 4,
+    width: 902,
+    height: 450,
+  }));
+  engine.rangeChangeHandlers[0]?.();
+
+  engine.pendingSdkPlotWidth = 778;
+  paintPendingSdkResize();
+  expect(engine.range).toEqual(savedRange);
+  engine.pendingSdkPlotWidth = 902 - 84;
+  paintPendingSdkResize();
+  expect(engine.range).toEqual(savedRange);
+
+  // A later user pan is authoritative; a resize must not replay the saved
+  // restore range over it.
+  engine.range = { from: 4, to: 24 };
+  engine.rangeChangeHandlers[0]?.();
+  engine.pendingSdkPlotWidth = 850;
+  paintPendingSdkResize();
+  expect(engine.range).toEqual({ from: 4, to: 24 });
 });
 
 it("lets reveal override a pending data-preservation range after setData shifts the getter", async () => {

@@ -10,6 +10,7 @@ import {
   CircleCheck,
   ClipboardPenLine,
   Download,
+  Ellipsis,
   FileImage,
   GripVertical,
   History,
@@ -37,6 +38,7 @@ import {
   useRef,
   useState,
   type ComponentProps,
+  type CSSProperties,
   type DragEvent,
   type KeyboardEvent,
   type ReactElement,
@@ -89,6 +91,7 @@ import {
 } from "../../lib/recall/repository";
 import type {
   RecallDocument,
+  RecallDerivedCapture,
   RecallPhase,
   RecallPlanInput,
   RecallPlanDraft,
@@ -117,6 +120,7 @@ import {
 } from "../../lib/replay/recall-replay";
 import { replayPositionAtPrice } from "../../lib/replay/position-ledger";
 import type { ChartSettings } from "../../lib/storage/chart-settings";
+import type { TextDraftIntentReason } from "../../lib/chart/text-draft-guard";
 import {
   executionFeeCurrency,
   tradeNatureOf,
@@ -128,7 +132,7 @@ import { ChartToolbar } from "../chart/chart-toolbar";
 import type { SearchableInstrument } from "../chart/instrument-search-popover";
 import { DrawingLayersPanel } from "../chart/drawing-layers-panel";
 import { DrawingToolbar } from "../chart/drawing-toolbar";
-import { ReplayChart } from "../chart/replay-chart";
+import { ReplayChart, type ReplayPlotLayout } from "../chart/replay-chart";
 import { RecallExportDialog } from "../recall-export";
 import type { RecallExportOrder, RecallExportSource } from "../../lib/recall-export";
 
@@ -138,6 +142,7 @@ import { RecallPlanRevisionSection } from "./recall-plan-revisions";
 import { RecallExitEvaluations } from "./recall-exit-evaluations";
 import { RecallActualMetricsPanel } from "./recall-actual-metrics";
 import { RecallManualEvaluations } from "./recall-manual-evaluations";
+import { RecallSaveStatus } from "./recall-save-status";
 import { calculateRecallActualMetrics } from "../../lib/recall/actual-metrics";
 import { calculateRecallPlan, upsertRecallPlanDraft } from "../../lib/recall/plans";
 import { captureRecallExecutionEvidence, freezeRecallSnapshotBundle, getRecallBundlePlans } from "../../lib/recall/retained-bundles";
@@ -153,7 +158,8 @@ type ChartViewport = {
 };
 
 export type RecallChartHandle = {
-  capture: () => Promise<{ imageDataUrl: string; viewport: ChartViewport; warnings?: string[] }>;
+  capture: () => Promise<{ imageDataUrl: string; viewport: ChartViewport; warnings?: string[]; derivedCapture?: RecallDerivedCapture }>;
+  prepareTextDraft?: (reason: TextDraftIntentReason) => Promise<boolean>;
   flush: () => Promise<void>;
   getViewport: () => ChartViewport;
   restoreViewport: (viewport: ChartViewport) => void;
@@ -276,6 +282,15 @@ type WorkingGraph = {
   timeframe: Timeframe;
   viewport?: ChartViewport;
 };
+
+function workingViewportKey(
+  phase: RecallPhase,
+  mode: RecallWorkingContext["mode"],
+  decisionId: string | "global",
+  timeframe: Timeframe,
+) {
+  return `${phase}:${mode}:${decisionId}:${timeframe}`;
+}
 
 type DecisionSelectionOptions = {
   /** A chart marker selected an explicit fill boundary; never resume a later draft cursor. */
@@ -407,6 +422,17 @@ function persistedEditingContext(
     revealedCandleCursor: replayMarketCursor(graph.replay) ?? null,
     ...(graph.viewport ? { viewport: graph.viewport } : {}),
   };
+}
+
+function sameChartViewport(left?: ChartViewport, right?: ChartViewport): boolean {
+  if (!left || !right) return left === right;
+  return left.version === right.version
+    && left.logicalRange?.from === right.logicalRange?.from
+    && left.logicalRange?.to === right.logicalRange?.to
+    && left.barSpacing === right.barSpacing
+    && left.rightOffset === right.rightOffset
+    && left.width === right.width
+    && left.height === right.height;
 }
 
 function upsertDecisionDraft(
@@ -871,7 +897,7 @@ function createSnapshot(
   replay: RecallReplayCursor,
   drawings: NormalizedDrawing[],
   candles: Candle[],
-  capture: { imageDataUrl: string; viewport: ChartViewport },
+  capture: { imageDataUrl: string; viewport: ChartViewport; derivedCapture?: RecallDerivedCapture },
 ): RecallSnapshot {
   const id = existing?.id ?? `recall-snapshot-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const timestamp = nowIso();
@@ -890,6 +916,19 @@ function createSnapshot(
     drawings: cloneDrawings(drawings),
     viewport: { ...capture.viewport, logicalRange: capture.viewport.logicalRange ? { ...capture.viewport.logicalRange } : null },
     imageDataUrl: capture.imageDataUrl,
+    ...(capture.derivedCapture ? {
+      derivedCapture: {
+        ...capture.derivedCapture,
+        textSourceKeys: capture.derivedCapture.textSourceKeys.map(key => key.startsWith(`${id}:`) ? key : `${id}:${key}`),
+        ...(capture.derivedCapture.textSourceBindings ? {
+          textSourceBindings: capture.derivedCapture.textSourceBindings.map(binding => ({
+            ...binding,
+            sourceKey: binding.sourceKey.startsWith(`${id}:`) ? binding.sourceKey : `${id}:${binding.sourceKey}`,
+          })),
+        } : {}),
+        warnings: [...capture.derivedCapture.warnings],
+      },
+    } : {}),
     createdAt: existing?.createdAt ?? timestamp,
     updatedAt: timestamp,
   };
@@ -937,6 +976,9 @@ export function RecallWorkspace({
   // churn and re-reading the old draft after a user change.
   const importedTimelineCandlesRef = useRef(importedTimelineCandles);
   importedTimelineCandlesRef.current = importedTimelineCandles;
+  const currentExecutionsRef = useRef<TradeEpisode["executions"]>([]);
+  const candlesByTimeframeRef = useRef(candlesByTimeframe);
+  candlesByTimeframeRef.current = candlesByTimeframe;
   const chartHandleRef = useRef<RecallChartHandle | null>(null);
   const previousEpisodeIdRef = useRef<string | null>(null);
   const saveDocumentRef = useRef<((document?: RecallDocument, force?: boolean, generation?: number) => Promise<void>) | null>(null);
@@ -967,6 +1009,10 @@ export function RecallWorkspace({
   const deletedSnapshotRef = useRef<RecallSnapshot | null>(null);
   const globalWorkingContextRef = useRef<WorkingGraph | null>(null);
   const stageWorkingContextsRef = useRef(new Map<string, WorkingGraph>());
+  // A WorkingGraph persists the active timeframe's viewport. Keep the other
+  // timeframe windows locally as well, so 1D → 15m → 1D returns to the user's
+  // original 1D window instead of treating 1D logical indexes as 15m bars.
+  const timeframeViewportsRef = useRef(new Map<string, ChartViewport>());
   const activeContextModeRef = useRef<RecallWorkingContext["mode"]>("global");
   const [document, setDocument] = useState<RecallDocument | null>(null);
   const [formalBaseline, setFormalBaseline] = useState<RecallDocument | null>(null);
@@ -980,14 +1026,16 @@ export function RecallWorkspace({
   const [selectedDecisionIds, setSelectedDecisionIds] = useState<string[]>([]);
   const [layersOpen, setLayersOpen] = useState(false);
   const [statsOpen, setStatsOpen] = useState(false);
-  const [leftNavOpen, setLeftNavOpen] = useState(focused === undefined);
+  const [leftNavOpen, setLeftNavOpen] = useState(focused !== true);
   const [mobileRecordsOpen, setMobileRecordsOpen] = useState(false);
   const [activeTool, setActiveTool] = useState<DrawingTool>("cursor");
   const [selectedDrawingId, setSelectedDrawingId] = useState<string | null>(null);
+  const [replayPlotLayout, setReplayPlotLayout] = useState<ReplayPlotLayout | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [conflict, setConflict] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saveRetryable, setSaveRetryable] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [historyMode, setHistoryMode] = useState(false);
   const [panelState, setPanelState] = useState<RecallPanelState>(() => ({
@@ -1001,11 +1049,27 @@ export function RecallWorkspace({
   const [playing, setPlaying] = useState(false);
   const [editingSnapshotId, setEditingSnapshotId] = useState<string | null>(null);
   const [snapshotEditDirty, setSnapshotEditDirty] = useState(false);
+  const snapshotEditDirtyRef = useRef(false);
   const [snapshotCandles, setSnapshotCandles] = useState<Candle[] | null>(null);
   const [splitDrafts, setSplitDrafts] = useState<SplitDraft[] | null>(null);
   const [deletedNotice, setDeletedNotice] = useState(false);
   const [phaseResolutionNotice, setPhaseResolutionNotice] = useState<string | null>(null);
   const [exportOpen, setExportOpen] = useState(false);
+  const liveContextRef = useRef({
+    phase,
+    timeframe,
+    selectedDecisionId,
+  });
+  liveContextRef.current = { phase, timeframe, selectedDecisionId };
+  const liveReplayRef = useRef<RecallReplayCursor | null>(replay);
+  liveReplayRef.current = replay;
+  const selectedDrawingIdRef = useRef<string | null>(selectedDrawingId);
+  selectedDrawingIdRef.current = selectedDrawingId;
+  const historyModeRef = useRef(historyMode);
+  historyModeRef.current = historyMode;
+  const editingSnapshotIdRef = useRef<string | null>(editingSnapshotId);
+  editingSnapshotIdRef.current = editingSnapshotId;
+  const replayActionGuardRef = useRef<Promise<boolean> | null>(null);
   const navOpen = !focused && leftNavOpen;
   const focusMode = !navOpen;
 
@@ -1014,6 +1078,31 @@ export function RecallWorkspace({
     dirtyRef.current = true;
     setDirty(true);
   }, []);
+
+  const prepareTextDraft = useCallback(async (reason: TextDraftIntentReason) => {
+    const handle = chartHandleRef.current;
+    if (!handle?.prepareTextDraft) return true;
+    try {
+      return await handle.prepareTextDraft(reason);
+    } catch (prepareError) {
+      setError(prepareError instanceof Error ? prepareError.message : "文字草稿处理失败，当前编辑仍保留。");
+      return false;
+    }
+  }, []);
+
+  // Replay controls share one bounded Text decision. While the editor is
+  // pending, a second intent is ignored so it cannot toggle playback or move
+  // the cursor ahead of the decision that is being resolved.
+  const prepareReplayAction = useCallback(async (reason: TextDraftIntentReason) => {
+    if (replayActionGuardRef.current) return false;
+    const pending = prepareTextDraft(reason);
+    replayActionGuardRef.current = pending;
+    try {
+      return await pending;
+    } finally {
+      if (replayActionGuardRef.current === pending) replayActionGuardRef.current = null;
+    }
+  }, [prepareTextDraft]);
 
   const cancelPhaseViewportRestore = useCallback(() => {
     const hadPendingRestore = phaseViewportRestoreRef.current !== null;
@@ -1038,21 +1127,27 @@ export function RecallWorkspace({
     const queuedViewport = queuedViewportRestoreRef.current;
     const handle = chartHandleRef.current;
     if (!queuedViewport || !handle) return;
-    // ReplayChart creates its lightweight-charts handle after an async SDK
-    // import. Wait one paint after onReady so the chart's initial data/reveal
-    // effects have committed before applying the persisted window.
+    // `flush` drains lightweight-charts' pending invalidation before the
+    // external range is applied. Use one restore after that barrier: a loop
+    // could overwrite a user's new pan immediately after this transition.
     window.requestAnimationFrame(() => {
       if (queuedViewportRestoreRef.current !== queuedViewport || chartHandleRef.current !== handle) return;
-      queuedViewportRestoreRef.current = null;
-      handle.restoreViewport(queuedViewport);
+      const apply = () => {
+        if (queuedViewportRestoreRef.current !== queuedViewport || chartHandleRef.current !== handle) return;
+        handle.restoreViewport(queuedViewport);
+        queuedViewportRestoreRef.current = null;
+      };
+      void handle.flush().then(apply, apply);
     });
   }, []);
 
   useEffect(() => {
-    draftRef.current = document;
+    // Keep the last draft reference while a new episode is loading. This lets
+    // a cancelled market-hydration load restore the still-mounted episode,
+    // while the render itself remains blank until the new read succeeds.
+    if (document) draftRef.current = document;
     dirtyRef.current = dirty;
-    drawingHistoryRef.current = drawingHistory;
-  }, [document, dirty, drawingHistory]);
+  }, [document, dirty]);
 
   useEffect(() => {
     episodeRef.current = episode;
@@ -1067,15 +1162,38 @@ export function RecallWorkspace({
   const [revisionDragError, setRevisionDragError] = useState<string | null>(null);
   const [planEdits, setPlanEdits] = useState<Record<string, { input: RecallPlanInput; error: string | null }>>({});
   const planToggleRef = useRef<HTMLButtonElement>(null);
+  const leftNavToggleRef = useRef<HTMLButtonElement>(null);
+  const navElementRef = useRef<HTMLElement | null>(null);
+  const navScrollTopRef = useRef(0);
   const moreToggleRef = useRef<HTMLButtonElement>(null);
   const workspaceElementRef = useRef<HTMLElement>(null);
+  const replayBarRef = useRef<HTMLDivElement>(null);
+  const replayControlsRef = useRef<HTMLDivElement>(null);
   const recallPanelContentWidth = useCallback(() => {
     const chartAndPlan = workspaceElementRef.current?.querySelector<HTMLElement>(".recall-chart-and-plan");
-    return chartAndPlan?.getBoundingClientRect().width ?? Number.POSITIVE_INFINITY;
+    const width = chartAndPlan?.getBoundingClientRect().width ?? Number.POSITIVE_INFINITY;
+    // A zero width means the layout has not measured yet (for example during
+    // the first jsdom render), rather than a real narrow workspace. Keep both
+    // panels available until the browser reports a usable width.
+    return width > 0 ? width : Number.POSITIVE_INFINITY;
   }, []);
   const updateRecallPanelState = useCallback((action: RecallPanelAction) => {
     setPanelState(current => transitionRecallPanelState(current, action));
   }, []);
+  const closeNav = useCallback(() => {
+    if (navElementRef.current) navScrollTopRef.current = navElementRef.current.scrollTop;
+    setLeftNavOpen(false);
+    onFocusedChange?.(false);
+    leftNavToggleRef.current?.focus();
+  }, [onFocusedChange]);
+  const toggleNav = useCallback(() => {
+    if (navElementRef.current) navScrollTopRef.current = navElementRef.current.scrollTop;
+    setLeftNavOpen(open => !open);
+    if (focused) onFocusedChange?.(false);
+  }, [focused, onFocusedChange]);
+  useEffect(() => {
+    if (navOpen && navElementRef.current) navElementRef.current.scrollTop = navScrollTopRef.current;
+  }, [navOpen]);
   const openPlanAndCloseMore = useCallback(() => {
     updateRecallPanelState({ type: "open-plan", closeMore: true });
   }, [updateRecallPanelState]);
@@ -1130,6 +1248,58 @@ export function RecallWorkspace({
       window.visualViewport?.removeEventListener("scroll", measure);
     };
   }, [loading, document?.episodeId, planOpen]);
+  useEffect(() => {
+    const workspace = workspaceElementRef.current;
+    const replayBar = replayBarRef.current;
+    const chartStage = workspace?.querySelector<HTMLElement>(".recall-chart-column .chart-stage");
+    if (!workspace || !replayBar || !chartStage || !compactControls || !replayPlotLayout) {
+      workspace?.style.removeProperty("--replay-footer-plot-center-x");
+      workspace?.style.removeProperty("--replay-footer-control-half");
+      workspace?.style.removeProperty("--replay-footer-control-width");
+      return;
+    }
+    const controls = replayControlsRef.current;
+    const setMeasuredProperty = (name: string, value: string) => {
+      if (workspace.style.getPropertyValue(name) !== value) workspace.style.setProperty(name, value);
+    };
+    const measure = () => {
+      const stageRect = chartStage.getBoundingClientRect();
+      const footerRect = replayBar.getBoundingClientRect();
+      const controlsWidth = controls?.getBoundingClientRect().width ?? 0;
+      // Replay reports plotCenterX in chart-stage coordinates. The footer
+      // rect starts at its border box, while the grid columns start at the
+      // content box and the second column follows the first gap. Normalize
+      // the target into that grid coordinate space so the control center
+      // stays on the SDK plot center without baking in footer chrome widths.
+      const footerStyle = window.getComputedStyle(replayBar);
+      const pixels = (value: string) => Number.parseFloat(value) || 0;
+      const footerGridInset = pixels(footerStyle.borderLeftWidth) + pixels(footerStyle.paddingLeft) + pixels(footerStyle.columnGap);
+      const footerPlotCenterX = stageRect.left - footerRect.left + replayPlotLayout.plotCenterX - footerGridInset;
+      setMeasuredProperty("--replay-footer-plot-center-x", `${footerPlotCenterX}px`);
+      if (controlsWidth > 0) {
+        setMeasuredProperty("--replay-footer-control-half", `${controlsWidth / 2}px`);
+        setMeasuredProperty("--replay-footer-control-width", `${controlsWidth}px`);
+      } else {
+        workspace.style.removeProperty("--replay-footer-control-half");
+        workspace.style.removeProperty("--replay-footer-control-width");
+      }
+    };
+    measure();
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    observer?.observe(workspace);
+    observer?.observe(replayBar);
+    observer?.observe(chartStage);
+    if (controls) observer?.observe(controls);
+    window.addEventListener("resize", measure);
+    window.visualViewport?.addEventListener("resize", measure);
+    window.visualViewport?.addEventListener("scroll", measure);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+      window.visualViewport?.removeEventListener("resize", measure);
+      window.visualViewport?.removeEventListener("scroll", measure);
+    };
+  }, [compactControls, document?.episodeId, episode.id, loading, moreOpen, planOpen, replayPlotLayout]);
   useEffect(() => {
     const workspace = workspaceElementRef.current;
     const chartAndPlan = workspace?.querySelector<HTMLElement>(".recall-chart-and-plan");
@@ -1194,7 +1364,7 @@ export function RecallWorkspace({
       { id: "target", price: chartPlanInput.targets[0]?.price, title: "止盈目标" },
     ]
       .filter(line => line.price && /^\d+(\.\d+)?$/.test(line.price) && Number(line.price) > 0)
-      .map(line => ({ ...line, price: Number(line.price) }));
+      .map(line => ({ ...line, displayPrice: line.price, price: Number(line.price) }));
   }, [chartPlanInput]);
   const editPlan = (input: RecallPlanInput) => {
     if (!document || !replay || !planDecisionId || planReadOnly || initialPlanFreezeEpisodeRef.current === episode.id) return;
@@ -1223,7 +1393,7 @@ export function RecallWorkspace({
       setPlanEdits(current => ({ ...current, [planDecisionId]: { input, error: error instanceof Error ? error.message : "计划输入无效" } }));
     }
   };
-  const closePlan = () => { updateRecallPanelState({ type: "close-plan" }); planToggleRef.current?.focus(); };
+  const closePlan = useCallback(() => { updateRecallPanelState({ type: "close-plan" }); planToggleRef.current?.focus(); }, [updateRecallPanelState]);
   const toggleMore = useCallback(() => {
     updateRecallPanelState({ type: "toggle-more", contentWidth: recallPanelContentWidth() });
   }, [recallPanelContentWidth, updateRecallPanelState]);
@@ -1263,6 +1433,7 @@ export function RecallWorkspace({
 
   const allCandles = timeframeCandles(timeframe, { importedTimelineCandles, candlesByTimeframe });
   const currentExecutions = episode.executions;
+  currentExecutionsRef.current = currentExecutions;
   const currentDecision = document?.decisions.find((decision) => decision.id === selectedDecisionId);
   const snapshotEdit = document?.snapshots.find((snapshot) => snapshot.id === editingSnapshotId);
   const chartCandles = snapshotCandles ?? replay?.revealedCandles ?? allCandles;
@@ -1295,8 +1466,10 @@ export function RecallWorkspace({
     () => replayPositionAtPrice({
       executions: chartExecutions,
       markPrice: String(latestCandle?.close ?? chartExecutions.at(-1)?.price ?? 0),
+      cursor: snapshotEdit?.cursor ?? replay?.cursor,
+      visibleExecutionIds: chartExecutions.map((execution) => execution.id),
     }),
-    [chartExecutions, latestCandle?.close],
+    [chartExecutions, latestCandle?.close, replay?.cursor, snapshotEdit?.cursor],
   );
   const tradeNature = episode.tradeNature ?? (currentExecutions[0] ? tradeNatureOf(currentExecutions[0]) : "unknown");
   const simulationRunId = episode.simulationRunId ?? currentExecutions.find((execution) => tradeNatureOf(execution) === "simulation")?.source.simulationRunId;
@@ -1346,9 +1519,11 @@ export function RecallWorkspace({
   const canUndo = replay ? canUndoDrawingAtCursor(drawingHistory, replay.cursor, timeframe) : false;
   const canRedo = replay ? canRedoDrawingAtCursor(drawingHistory, replay.cursor, timeframe) : false;
   const allLocked = visibleDrawings.length > 0 && visibleDrawings.every((drawing) => drawing.locked);
+  const selectedTextDrawing = visibleDrawings.find((drawing) => drawing.id === selectedDrawingId && drawing.tool === "text" && !drawing.locked);
+  const canDeleteSelected = Boolean(selectedTextDrawing) && !historyMode && !editingSnapshotId;
 
   const commitDrawingHistory = useCallback((nextHistory: DrawingHistory) => {
-    if (nextHistory === drawingHistory) return;
+    if (nextHistory === drawingHistoryRef.current) return;
     // Chart capture can commit a focused text editor immediately before it
     // resolves. Keep this ref ahead of React's effect phase so retention and
     // finalization never clone the previous drawing list.
@@ -1363,10 +1538,11 @@ export function RecallWorkspace({
           drawings: cloneDrawings(nextHistory.present),
           replay,
           timeframe,
+          viewport: chartHandleRef.current?.getViewport() ?? stageWorkingContextsRef.current.get(stageDecisionId)?.viewport,
         };
         stageWorkingContextsRef.current.set(stageDecisionId, graph);
         const context = persistedEditingContext("decision", stageDecisionId, graph);
-        setDocument((current) => current ? touchRecallDraft({
+        const updateWorkingDraft = (current: RecallDocument) => touchRecallDraft({
           ...current,
           updatedAt: nowIso(),
           working: {
@@ -1375,7 +1551,11 @@ export function RecallWorkspace({
             editingContext: context,
             decisionDrafts: upsertDecisionDraft(current.working.decisionDrafts, context),
           },
-        }) : current);
+        });
+        if (draftRef.current && activeContextModeRef.current === "decision") {
+          draftRef.current = updateWorkingDraft(draftRef.current);
+        }
+        setDocument((current) => current ? updateWorkingDraft(current) : current);
       } else {
         const currentGlobal = globalWorkingContextRef.current;
         if (currentGlobal && replay) {
@@ -1384,24 +1564,35 @@ export function RecallWorkspace({
             drawings: cloneDrawings(nextHistory.present),
             replay,
             timeframe,
+            viewport: chartHandleRef.current?.getViewport() ?? currentGlobal.viewport,
           };
         }
-        setDocument((current) => current ? touchRecallDraft({
+        const updateWorkingDraft = (current: RecallDocument) => touchRecallDraft({
           ...current,
           updatedAt: nowIso(),
           working: { ...current.working, drawings: cloneDrawings(nextHistory.present) },
-        }) : current);
+        });
+        if (draftRef.current && activeContextModeRef.current === "global") {
+          draftRef.current = updateWorkingDraft(draftRef.current);
+        }
+        setDocument((current) => current ? updateWorkingDraft(current) : current);
       }
       markDirty();
     } else if (editingSnapshotId) {
+      snapshotEditDirtyRef.current = true;
       setSnapshotEditDirty(true);
     }
   }, [drawingHistory, editingSnapshotId, historyMode, markDirty, replay, selectedDecisionId, timeframe]);
 
   const setWorking = useCallback((nextReplay: RecallReplayCursor, nextSelectedDecisionId = selectedDecisionId, nextDrawings = drawingHistory.present) => {
     requestReveal(marketRevealCursor(nextReplay));
+    // Keep the imperative replay view current while guarded actions are
+    // waiting for the Text decision. Multiple keyboard/click events can
+    // resume in the same microtask before React publishes the next render.
+    liveReplayRef.current = nextReplay;
     setReplay(nextReplay);
     if (editingSnapshotId) {
+      snapshotEditDirtyRef.current = true;
       setSnapshotEditDirty(true);
       return;
     }
@@ -1409,16 +1600,19 @@ export function RecallWorkspace({
     const stageDecisionId = activeContextModeRef.current === "decision" && nextSelectedDecisionId && nextSelectedDecisionId !== "global"
       ? nextSelectedDecisionId
       : null;
+    const existingViewport = stageDecisionId
+      ? stageWorkingContextsRef.current.get(stageDecisionId)?.viewport
+      : globalWorkingContextRef.current?.viewport;
     const graph: WorkingGraph = {
       drawings: cloneDrawings(nextDrawings),
       replay: nextReplay,
       timeframe,
-      viewport: globalWorkingContextRef.current?.viewport ?? chartHandleRef.current?.getViewport(),
+      viewport: chartHandleRef.current?.getViewport() ?? existingViewport,
     };
     if (stageDecisionId) {
       stageWorkingContextsRef.current.set(stageDecisionId, graph);
       const context = persistedEditingContext("decision", stageDecisionId, graph);
-      setDocument((current) => current ? touchRecallDraft({
+      const updateWorkingDraft = (current: RecallDocument) => touchRecallDraft({
         ...current,
         updatedAt: nowIso(),
         working: {
@@ -1427,10 +1621,14 @@ export function RecallWorkspace({
           editingContext: context,
           decisionDrafts: upsertDecisionDraft(current.working.decisionDrafts, context),
         },
-      }) : current);
+      });
+      if (draftRef.current && activeContextModeRef.current === "decision") {
+        draftRef.current = updateWorkingDraft(draftRef.current);
+      }
+      setDocument((current) => current ? updateWorkingDraft(current) : current);
     } else {
       globalWorkingContextRef.current = graph;
-      setDocument((current) => current ? touchRecallDraft({
+      const updateWorkingDraft = (current: RecallDocument) => touchRecallDraft({
         ...current,
         updatedAt: nowIso(),
         working: {
@@ -1442,13 +1640,19 @@ export function RecallWorkspace({
           drawings: cloneDrawings(nextDrawings),
           editingContext: undefined,
         },
-      }) : current);
+      });
+      if (draftRef.current && activeContextModeRef.current === "global") {
+        draftRef.current = updateWorkingDraft(draftRef.current);
+      }
+      setDocument((current) => current ? updateWorkingDraft(current) : current);
     }
     markDirty();
   }, [drawingHistory.present, editingSnapshotId, historyMode, markDirty, requestReveal, selectedDecisionId, timeframe]);
 
-  const restoreWorkingFromDocument = useCallback((nextDocument: RecallDocument, preferredTimeframe?: Timeframe, emitRevealRequest = true) => {
+  const restoreWorkingFromDocument = useCallback((nextDocument: RecallDocument, preferredTimeframe?: Timeframe, emitRevealRequest = true, preserveRuntimeViewports = false) => {
+    const runtimeViewports = preserveRuntimeViewports ? new Map(timeframeViewportsRef.current) : undefined;
     queuedViewportRestoreRef.current = null;
+    timeframeViewportsRef.current.clear();
     const currentImportedTimelineCandles = importedTimelineCandlesRef.current;
     const nextTimeframe = preferredTimeframe && timeframeAvailability[preferredTimeframe].enabled
       ? preferredTimeframe
@@ -1480,7 +1684,7 @@ export function RecallWorkspace({
       revealedCandleCursor: storedMarketCursor ?? null,
       revealedCandles: storedMarketCursor ? revealableCandlesThroughCursor(globalCandles, storedMarketCursor) : [],
     };
-    const globalGraph: WorkingGraph = {
+    let globalGraph: WorkingGraph = {
       drawings: cloneDrawings(nextDocument.working.drawings),
       replay: mapCursorToTimeframe(globalReplay, currentExecutions, globalCandles),
       timeframe: nextTimeframe,
@@ -1489,14 +1693,21 @@ export function RecallWorkspace({
     stageWorkingContextsRef.current.clear();
     for (const persistedDraft of nextDocument.working.decisionDrafts ?? []) {
       if (!nextDocument.decisions.some((decision) => decision.id === persistedDraft.decisionId)) continue;
-      const draftTimeframe = timeframeAvailability[persistedDraft.timeframe].enabled
+      const draftTimeframeAvailable = timeframeAvailability[persistedDraft.timeframe].enabled;
+      const draftTimeframe = draftTimeframeAvailable
         ? persistedDraft.timeframe
         : nextTimeframe;
       const draftCandles = timeframeCandles(draftTimeframe, { importedTimelineCandles: currentImportedTimelineCandles, candlesByTimeframe });
       stageWorkingContextsRef.current.set(
         persistedDraft.decisionId,
         restorePersistedWorkingGraph(
-          { ...persistedDraft, timeframe: draftTimeframe },
+          {
+            ...persistedDraft,
+            timeframe: draftTimeframe,
+            // A logical range belongs to its timeframe's bar index. Do not
+            // apply an unavailable period's range to the fallback graph.
+            ...(draftTimeframeAvailable ? {} : { viewport: undefined }),
+          },
           nextDocument.decisions,
           currentExecutions,
           draftCandles,
@@ -1508,12 +1719,17 @@ export function RecallWorkspace({
     let activeDecisionId = nextDocument.working.selectedDecisionId;
     const persistedContext = nextDocument.working.editingContext;
     if (persistedContext?.mode === "decision" && nextDocument.decisions.some((decision) => decision.id === persistedContext.decisionId)) {
-      const stageTimeframe = timeframeAvailability[persistedContext.timeframe].enabled
+      const stageTimeframeAvailable = timeframeAvailability[persistedContext.timeframe].enabled;
+      const stageTimeframe = stageTimeframeAvailable
         ? persistedContext.timeframe
         : nextTimeframe;
       const stageCandles = timeframeCandles(stageTimeframe, { importedTimelineCandles: currentImportedTimelineCandles, candlesByTimeframe });
       activeGraph = restorePersistedWorkingGraph(
-        { ...persistedContext, timeframe: stageTimeframe },
+        {
+          ...persistedContext,
+          timeframe: stageTimeframe,
+          ...(stageTimeframeAvailable ? {} : { viewport: undefined }),
+        },
         nextDocument.decisions,
         currentExecutions,
         stageCandles,
@@ -1534,10 +1750,34 @@ export function RecallWorkspace({
     // restored on reopen instead of rebuilding from the execution cursor.
     const phaseContext = nextDocument.working.phaseContexts?.[restoredPhase];
     if (phaseContext) {
-      activeGraph = restorePersistedWorkingGraph(phaseContext, nextDocument.decisions, currentExecutions, timeframeCandles(phaseContext.timeframe, { importedTimelineCandles: currentImportedTimelineCandles, candlesByTimeframe }));
+      const phaseTimeframeAvailable = timeframeAvailability[phaseContext.timeframe].enabled;
+      const phaseRestoreContext = phaseTimeframeAvailable
+        ? phaseContext
+        : { ...phaseContext, timeframe: nextTimeframe, viewport: undefined };
+      activeGraph = restorePersistedWorkingGraph(phaseRestoreContext, nextDocument.decisions, currentExecutions, timeframeCandles(phaseRestoreContext.timeframe, { importedTimelineCandles: currentImportedTimelineCandles, candlesByTimeframe }));
       activeContextModeRef.current = phaseContext.mode;
       activeDecisionId = phaseContext.decisionId;
       if (restoredPhase === "post-review") activeGraph.replay = revealRecallHistory(timeframeCandles(activeGraph.timeframe, { importedTimelineCandles: currentImportedTimelineCandles, candlesByTimeframe }), currentExecutions);
+    }
+    if (runtimeViewports) {
+      for (const [key, viewport] of runtimeViewports) timeframeViewportsRef.current.set(key, viewport);
+      const globalViewport = runtimeViewports.get(workingViewportKey(restoredPhase, "global", "global", globalGraph.timeframe));
+      if (globalViewport) globalGraph = { ...globalGraph, viewport: globalViewport };
+      for (const [decisionId, graph] of stageWorkingContextsRef.current) {
+        const viewport = runtimeViewports.get(workingViewportKey(restoredPhase, "decision", decisionId, graph.timeframe));
+        if (viewport) stageWorkingContextsRef.current.set(decisionId, { ...graph, viewport });
+      }
+      const activeViewport = runtimeViewports.get(workingViewportKey(restoredPhase, activeContextModeRef.current, activeDecisionId ?? "global", activeGraph.timeframe));
+      if (activeViewport) activeGraph = { ...activeGraph, viewport: activeViewport };
+    }
+    if (globalGraph.viewport) {
+      timeframeViewportsRef.current.set(workingViewportKey(restoredPhase, "global", "global", globalGraph.timeframe), globalGraph.viewport);
+    }
+    for (const [decisionId, graph] of stageWorkingContextsRef.current) {
+      if (graph.viewport) timeframeViewportsRef.current.set(workingViewportKey(restoredPhase, "decision", decisionId, graph.timeframe), graph.viewport);
+    }
+    if (activeGraph.viewport) {
+      timeframeViewportsRef.current.set(workingViewportKey(restoredPhase, activeContextModeRef.current, activeDecisionId ?? "global", activeGraph.timeframe), activeGraph.viewport);
     }
     setTimeframe(activeGraph.timeframe);
     setSelectedDecisionId(activeDecisionId);
@@ -1561,16 +1801,75 @@ export function RecallWorkspace({
       // selected episode. Keep its mounted controls and newest local edits;
       // a storage reread here can replace a draft whose save is still queued.
       const reconciliation = reconcileRecallDocument(currentDraft, episodeToLoad);
+      const executionBoundaryChanged = reconciliation.addedExecutionIds.length > 0 || reconciliation.removedExecutionIds.length > 0;
+      // Parent refreshes can arrive after a user pans the real chart but
+      // before that gesture is represented in the draft. Drain chart layout
+      // first, then carry the live context window across this refresh.
+      if (executionBoundaryChanged) await chartHandleRef.current?.flush();
+      if (cancelled() || episodeRef.current.id !== episodeToLoad.id || draftRef.current !== currentDraft) return;
+      const liveViewport = executionBoundaryChanged ? chartHandleRef.current?.getViewport() : undefined;
+      if (liveViewport) {
+        const liveContext = liveContextRef.current;
+        const mode = activeContextModeRef.current;
+        const decisionId = mode === "decision" && liveContext.selectedDecisionId && liveContext.selectedDecisionId !== "global"
+          ? liveContext.selectedDecisionId
+          : "global";
+        timeframeViewportsRef.current.set(workingViewportKey(liveContext.phase, mode, decisionId, liveContext.timeframe), liveViewport);
+        if (mode === "global") {
+          const global = globalWorkingContextRef.current;
+          if (global) globalWorkingContextRef.current = { ...global, viewport: liveViewport };
+        } else if (liveContext.selectedDecisionId && liveContext.selectedDecisionId !== "global") {
+          const stage = stageWorkingContextsRef.current.get(liveContext.selectedDecisionId);
+          if (stage) stageWorkingContextsRef.current.set(liveContext.selectedDecisionId, { ...stage, viewport: liveViewport });
+        }
+      }
       setLoading(false);
       draftRef.current = reconciliation.document;
       setDocument(reconciliation.document);
-      if (reconciliation.addedExecutionIds.length || reconciliation.removedExecutionIds.length) markDirty();
-      setHistoryMode(false);
-      historyReplayBackupRef.current = null;
-      setEditingSnapshotId(null);
-      setSnapshotCandles(null);
-      setSelectedDecisionIds([]);
-      restoreWorkingFromDocument(reconciliation.document, undefined, false);
+      if (executionBoundaryChanged) markDirty();
+      if (executionBoundaryChanged) {
+        setHistoryMode(false);
+        historyReplayBackupRef.current = null;
+        setEditingSnapshotId(null);
+        setSnapshotCandles(null);
+        setSelectedDecisionIds([]);
+      } else {
+        // Keep the live phase/context and viewport while remapping every
+        // working graph's revealed candles to the refreshed OHLC data. This
+        // updates chart data at the same knowledge/execution cutoffs without
+        // issuing a reveal or viewport restore that could refit the chart.
+        const remapGraph = (graph: WorkingGraph): WorkingGraph => ({
+          ...graph,
+          replay: mapCursorToTimeframe(
+            graph.replay,
+            currentExecutionsRef.current,
+            timeframeCandles(graph.timeframe, {
+              importedTimelineCandles: importedTimelineCandlesRef.current,
+              candlesByTimeframe: candlesByTimeframeRef.current,
+            }),
+          ),
+        });
+        if (globalWorkingContextRef.current) globalWorkingContextRef.current = remapGraph(globalWorkingContextRef.current);
+        for (const [decisionId, graph] of stageWorkingContextsRef.current) {
+          stageWorkingContextsRef.current.set(decisionId, remapGraph(graph));
+        }
+        const liveReplay = liveReplayRef.current;
+        if (liveReplay) {
+          setReplay(mapCursorToTimeframe(
+            liveReplay,
+            currentExecutionsRef.current,
+            timeframeCandles(liveContextRef.current.timeframe, {
+              importedTimelineCandles: importedTimelineCandlesRef.current,
+              candlesByTimeframe: candlesByTimeframeRef.current,
+            }),
+          ));
+        }
+      }
+      // Candle hydration with the same execution boundary is a parent data
+      // refresh, not a navigation boundary. Preserve the live chart and its
+      // runtime context; rebuilding here can fit the chart before the saved
+      // viewport is reapplied. Rebuild only when execution ownership changed.
+      if (executionBoundaryChanged) restoreWorkingFromDocument(reconciliation.document, undefined, false, true);
       return;
     }
     setLoading(true);
@@ -1618,6 +1917,7 @@ export function RecallWorkspace({
       setDirty(migratedDraft);
       if (migratedDraft) draftGenerationRef.current += 1;
       setConflict(false);
+      setSaveRetryable(false);
       setHistoryMode(false);
       historyReplayBackupRef.current = null;
       setEditingSnapshotId(null);
@@ -1626,6 +1926,13 @@ export function RecallWorkspace({
       restoreWorkingFromDocument(nextDocument);
     } catch (loadError) {
       if (cancelled()) return;
+      // A failed read for a newly selected episode must not leave the previous
+      // episode mounted behind the error state. Clear the render and draft
+      // references only after the read has failed; keeping them during the
+      // request preserves the cancelled market-hydration recovery path.
+      setDocument(null);
+      setReplay(null);
+      draftRef.current = null;
       setError(loadError instanceof Error ? loadError.message : "无法读取复盘草稿");
     } finally {
       if (!cancelled()) setLoading(false);
@@ -1636,10 +1943,17 @@ export function RecallWorkspace({
     documentToSave?: RecallDocument,
     force = false,
     generation = draftGenerationRef.current,
+    guardText = true,
   ) => {
-    const candidate = documentToSave ?? draftRef.current;
+    const explicitCandidate = documentToSave;
+    if ((!explicitCandidate && !draftRef.current) || (!dirtyRef.current && !force)) return;
+    if (guardText && !(await prepareTextDraft("save"))) return;
+    // Explicit saves guard the live Text buffer before reading the draft ref.
+    // The debounce callback is already holding the last committed document;
+    // invoking the guard there would turn a pending buffer into a decision.
+    const candidate = explicitCandidate ?? draftRef.current;
     if (!candidate || (!dirtyRef.current && !force)) return;
-    const requestGeneration = generation;
+    const requestGeneration = explicitCandidate ? generation : draftGenerationRef.current;
     const saveTask = saveQueueRef.current.then(async () => {
       // A debounce callback may outlive the render that scheduled it. If a
       // newer draft is already available, let its own callback carry the
@@ -1676,13 +1990,16 @@ export function RecallWorkspace({
           return reconciled.document;
         });
         setConflict(false);
+        setSaveRetryable(false);
         setError(null);
       } catch (saveError) {
         if (!isCurrentEpisode()) return;
         if (isConflict(saveError)) {
           setConflict(true);
+          setSaveRetryable(false);
           setError("云端草稿已有新版本；当前编辑仍保留，请重新载入或手动合并。");
         } else {
+          setSaveRetryable(true);
           setError(saveError instanceof Error ? saveError.message : "复盘草稿保存失败");
         }
       } finally {
@@ -1691,22 +2008,150 @@ export function RecallWorkspace({
     });
     saveQueueRef.current = saveTask.then(() => undefined, () => undefined);
     await saveTask;
-  }, [onSaved, repository]);
+  }, [onSaved, prepareTextDraft, repository]);
 
   useEffect(() => {
     saveDocumentRef.current = saveNow;
   }, [saveNow]);
 
+  const retrySave = useCallback(async () => {
+    await saveNow(undefined, true);
+  }, [saveNow]);
+
+  const flushWorkingViewportBeforeLeave = useCallback(async () => {
+    const handle = chartHandleRef.current;
+    if (!handle) return true;
+    try {
+      await handle.flush();
+    } catch (flushError) {
+      setError(flushError instanceof Error ? flushError.message : "复盘图表刷新失败，当前编辑仍保留。");
+      return false;
+    }
+    // Snapshot and complete-history charts are independent views. Their
+    // viewport belongs to the retained record and must never overwrite the
+    // resumable working graphs.
+    if (editingSnapshotId || historyMode) return true;
+
+    const currentDocument = draftRef.current;
+    const currentReplay = liveReplayRef.current;
+    const liveContext = liveContextRef.current;
+    let viewport: ChartViewport | undefined;
+    try {
+      viewport = handle.getViewport();
+    } catch (viewportError) {
+      setError(viewportError instanceof Error ? viewportError.message : "复盘图表视野读取失败，当前编辑仍保留。");
+      return false;
+    }
+    if (!currentDocument || !currentReplay || !viewport) return true;
+
+    const decisionId = liveContext.selectedDecisionId;
+    const isDecisionContext = activeContextModeRef.current === "decision"
+      && Boolean(decisionId && decisionId !== "global");
+    const nextWorking = isDecisionContext
+      ? (() => {
+          const activeDecisionId = decisionId as string;
+          const previous = stageWorkingContextsRef.current.get(activeDecisionId);
+          const graph: WorkingGraph = {
+            drawings: cloneDrawings(drawingHistoryRef.current.present),
+            replay: currentReplay,
+            timeframe: liveContext.timeframe,
+            viewport,
+          };
+          stageWorkingContextsRef.current.set(activeDecisionId, graph);
+          timeframeViewportsRef.current.set(
+            workingViewportKey(liveContext.phase, "decision", activeDecisionId, liveContext.timeframe),
+            viewport,
+          );
+          const context = persistedEditingContext("decision", activeDecisionId, graph);
+          const previousContext = currentDocument.working.editingContext;
+          const previousPhaseContext = currentDocument.working.phaseContexts?.[liveContext.phase];
+          const previousDecisionDraft = decisionDraftFor(currentDocument.working.decisionDrafts, activeDecisionId);
+          const baselineViewport = previous?.viewport
+            ?? previousContext?.viewport
+            ?? previousPhaseContext?.viewport
+            ?? previousDecisionDraft?.viewport;
+          // Avoid turning a clean revisit into a write when the chart window
+          // is unchanged. The full context comparison also covers the case
+          // where the phase graph lagged behind the active decision draft.
+          if (sameChartViewport(baselineViewport, viewport)
+            && JSON.stringify(previousContext) === JSON.stringify(context)
+            && JSON.stringify(previousPhaseContext) === JSON.stringify(context)
+            && JSON.stringify(previousDecisionDraft) === JSON.stringify(context)) {
+            return currentDocument.working;
+          }
+          return {
+            ...currentDocument.working,
+            ...(currentDocument.working.phase ? { phase: liveContext.phase } : {}),
+            selectedDecisionId: activeDecisionId,
+            editingContext: context,
+            decisionDrafts: upsertDecisionDraft(currentDocument.working.decisionDrafts, context),
+            phaseContexts: { ...currentDocument.working.phaseContexts, [liveContext.phase]: context },
+          };
+        })()
+      : (() => {
+          const previous = globalWorkingContextRef.current;
+          const graph: WorkingGraph = {
+            drawings: cloneDrawings(drawingHistoryRef.current.present),
+            replay: currentReplay,
+            timeframe: liveContext.timeframe,
+            viewport,
+          };
+          globalWorkingContextRef.current = graph;
+          timeframeViewportsRef.current.set(
+            workingViewportKey(liveContext.phase, "global", "global", liveContext.timeframe),
+            viewport,
+          );
+          const context = persistedEditingContext("global", "global", graph);
+          const previousPhaseContext = currentDocument.working.phaseContexts?.[liveContext.phase];
+          const baselineViewport = previous?.viewport ?? previousPhaseContext?.viewport;
+          const globalWorkingMatches = JSON.stringify(currentDocument.working.drawings) === JSON.stringify(graph.drawings)
+            && currentDocument.working.timeframe === graph.timeframe
+            && currentDocument.working.cursor === graph.replay.cursor
+            && currentDocument.working.executionCursor === graph.replay.executionCursor
+            && (currentDocument.working.selectedDecisionId === "global" || currentDocument.working.selectedDecisionId === null)
+            && currentDocument.working.editingContext === undefined;
+          if (sameChartViewport(baselineViewport, viewport)
+            && globalWorkingMatches
+            && JSON.stringify(previousPhaseContext) === JSON.stringify(context)) {
+            return currentDocument.working;
+          }
+          return {
+            ...currentDocument.working,
+            ...(currentDocument.working.phase ? { phase: liveContext.phase } : {}),
+            selectedDecisionId: "global",
+            drawings: cloneDrawings(graph.drawings),
+            timeframe: graph.timeframe,
+            cursor: graph.replay.cursor,
+            executionCursor: graph.replay.executionCursor,
+            editingContext: undefined,
+            phaseContexts: { ...currentDocument.working.phaseContexts, [liveContext.phase]: context },
+          };
+        })();
+
+    if (nextWorking === currentDocument.working) return true;
+    const nextDocument = { ...currentDocument, working: nextWorking };
+    // Keep the ref ahead of the save queue and the React effect. A navigation
+    // caller can await this guard before React commits the state update.
+    draftRef.current = nextDocument;
+    markDirty();
+    flushSync(() => setDocument(nextDocument));
+    return true;
+  }, [editingSnapshotId, historyMode, markDirty]);
+
   const leaveGuard = useCallback(async () => {
+    if (!(await prepareTextDraft("leave"))) return false;
+    setPlaying(false);
     const pendingRetain = retainInFlightRef.current;
     if (pendingRetain) {
       const retained = await pendingRetain;
       if (!retained) return false;
     }
+    const viewportReady = await flushWorkingViewportBeforeLeave();
+    if (!viewportReady) return false;
     if (!dirtyRef.current) return true;
     await saveNow();
     return !dirtyRef.current;
-  }, [saveNow]);
+  }, [flushWorkingViewportBeforeLeave, prepareTextDraft, saveNow]);
 
   useEffect(() => {
     onLeaveGuardChange?.(leaveGuard);
@@ -1733,7 +2178,7 @@ export function RecallWorkspace({
     const documentAtSchedule = document;
     const generationAtSchedule = draftGenerationRef.current;
     const timer = window.setTimeout(() => {
-      void saveNow(documentAtSchedule, false, generationAtSchedule);
+      void saveNow(documentAtSchedule, false, generationAtSchedule, false);
     }, 1000);
     return () => window.clearTimeout(timer);
   }, [document, dirty, saveNow]);
@@ -1756,47 +2201,68 @@ export function RecallWorkspace({
   }, []);
 
   const applyCommand = useCallback((command: DrawingCommand) => {
+    if (snapshotEditBackupRef.current) snapshotEditDirtyRef.current = true;
+    const currentHistory = drawingHistoryRef.current;
     const stamped = stampRecallDrawingCommand(
       command,
-      drawingHistory.present,
+      currentHistory.present,
       snapshotEdit?.decisionId ?? selectedDecisionId,
       snapshotEdit?.phase ?? phase,
       document?.working.hasSeenFuture === true,
     );
-    const nextHistory = applyDrawingCommand(drawingHistory, stamped);
+    const nextHistory = applyDrawingCommand(currentHistory, stamped);
     commitDrawingHistory(nextHistory);
     // Text is a one-shot editor gesture: after its editor commits, return to
-    // the cursor. Geometric tools remain selected so users can place a series
-    // of lines/channels without reselecting the tool after every add.
-    if (command.type === "add" && command.drawing.tool === "text") setActiveTool("cursor");
-  }, [commitDrawingHistory, document?.working.hasSeenFuture, drawingHistory, phase, selectedDecisionId, snapshotEdit?.decisionId, snapshotEdit?.phase]);
+    // the cursor while keeping the committed object selected for follow-up
+    // inspection. Other command tools keep their existing selection behavior.
+    if (stamped.type === "add" && stamped.drawing.tool === "text") {
+      setActiveTool("cursor");
+      setSelectedDrawingId(stamped.drawing.id);
+    }
+  }, [commitDrawingHistory, document?.working.hasSeenFuture, phase, selectedDecisionId, snapshotEdit?.decisionId, snapshotEdit?.phase]);
 
-  const selectDecision = useCallback((decisionId: string | "global", options: DecisionSelectionOptions = {}) => {
+  const selectDecision = useCallback(async (decisionId: string | "global", options: DecisionSelectionOptions = {}) => {
     if (!document) return;
-    const currentReplay = replay;
+    if (!(await prepareTextDraft("decision-change"))) return;
+    // Complete history is a temporary presentation of the active graph. When
+    // navigation starts from that view, persist the replay that was captured
+    // on entry instead of copying reveal-all cursors into the graph being left.
+    const currentReplay = historyMode
+      ? historyReplayBackupRef.current ?? replay
+      : replay;
     setPlaying(false);
-    if (options.boundaryExecutionId && historyMode) {
+    if (historyMode) {
       setHistoryMode(false);
       historyReplayBackupRef.current = null;
     }
-    if (document.working.phase && phase !== "holding" && replay) {
-      const leaving = persistedEditingContext(selectedDecisionId && selectedDecisionId !== "global" ? "decision" : "global", selectedDecisionId ?? "global", { drawings: drawingHistoryRef.current.present, replay, timeframe, viewport: chartHandleRef.current?.getViewport() });
+    if (document.working.phase && phase !== "holding" && currentReplay) {
+      const leaving = persistedEditingContext(selectedDecisionId && selectedDecisionId !== "global" ? "decision" : "global", selectedDecisionId ?? "global", { drawings: drawingHistoryRef.current.present, replay: currentReplay, timeframe, viewport: chartHandleRef.current?.getViewport() });
       setPhase("holding");
       setDocument(current => current ? { ...current, working: { ...current.working, phase: "holding", phaseContexts: { ...current.working.phaseContexts, [phase]: leaving } } } : current);
     }
     let leavingStageContext: RecallWorkingContext | undefined;
-    if (activeContextModeRef.current === "global" && replay) {
+    if (activeContextModeRef.current === "global" && currentReplay) {
+      const currentViewport = chartHandleRef.current?.getViewport() ?? globalWorkingContextRef.current?.viewport;
+      if (currentViewport) {
+        timeframeViewportsRef.current.set(workingViewportKey(phase, "global", "global", timeframe), currentViewport);
+      }
       globalWorkingContextRef.current = {
         drawings: cloneDrawings(drawingHistoryRef.current.present),
-        replay,
+        replay: currentReplay,
         timeframe,
-        viewport: chartHandleRef.current?.getViewport() ?? globalWorkingContextRef.current?.viewport,
+        viewport: currentViewport,
       };
-    } else if (activeContextModeRef.current === "decision" && selectedDecisionId && selectedDecisionId !== "global" && replay) {
+    } else if (activeContextModeRef.current === "decision" && selectedDecisionId && selectedDecisionId !== "global" && currentReplay) {
+      const existingStage = stageWorkingContextsRef.current.get(selectedDecisionId);
+      const currentViewport = chartHandleRef.current?.getViewport() ?? existingStage?.viewport;
+      if (currentViewport) {
+        timeframeViewportsRef.current.set(workingViewportKey(phase, "decision", selectedDecisionId, timeframe), currentViewport);
+      }
       const graph: WorkingGraph = {
         drawings: cloneDrawings(drawingHistoryRef.current.present),
-        replay,
+        replay: currentReplay,
         timeframe,
+        viewport: currentViewport,
       };
       stageWorkingContextsRef.current.set(selectedDecisionId, graph);
       leavingStageContext = persistedEditingContext("decision", selectedDecisionId, graph);
@@ -1807,14 +2273,27 @@ export function RecallWorkspace({
       activeContextModeRef.current = "global";
       const global = globalWorkingContextRef.current;
       if (!global) return;
+      const globalTimeframe = timeframeAvailability[global.timeframe].enabled ? global.timeframe : fallbackTimeframe;
+      const globalCandles = timeframeCandles(globalTimeframe, { importedTimelineCandles, candlesByTimeframe });
+      const globalReplay = globalTimeframe === global.timeframe
+        ? global.replay
+        : mapCursorToTimeframe(global.replay, currentExecutions, globalCandles);
+      const normalizedGlobal = globalTimeframe === global.timeframe
+        ? global
+        : { ...global, timeframe: globalTimeframe, replay: globalReplay, viewport: undefined };
+      globalWorkingContextRef.current = normalizedGlobal;
       const globalHistory = createDrawingHistory(global.drawings);
       drawingHistoryRef.current = globalHistory;
       setDrawingHistory(globalHistory);
-      setTimeframe(global.timeframe);
-      setReplay(global.replay);
-      requestReveal(marketRevealCursor(global.replay));
-      if (global.viewport) {
-        window.requestAnimationFrame(() => chartHandleRef.current?.restoreViewport(global.viewport!));
+      setTimeframe(globalTimeframe);
+      setReplay(globalReplay);
+      requestReveal(marketRevealCursor(globalReplay));
+      const globalViewport = timeframeViewportsRef.current.get(
+        workingViewportKey(phase, "global", "global", globalTimeframe),
+      ) ?? (globalTimeframe === timeframe ? normalizedGlobal.viewport : undefined);
+      if (globalViewport && !options.boundaryExecutionId) {
+        queuedViewportRestoreRef.current = globalViewport;
+        restoreQueuedViewport();
       }
       setDocument((current) => current ? touchRecallDraft({
         ...current,
@@ -1822,13 +2301,13 @@ export function RecallWorkspace({
         working: {
           ...current.working,
           drawings: cloneDrawings(global.drawings),
-          timeframe: global.timeframe,
-          cursor: global.replay.cursor,
-          executionCursor: global.replay.executionCursor,
+          timeframe: globalTimeframe,
+          cursor: globalReplay.cursor,
+          executionCursor: globalReplay.executionCursor,
           selectedDecisionId: "global",
           editingContext: undefined,
           hasSeenFuture: current.working.hasSeenFuture === true
-            || Boolean(currentReplay && replayStateIsLater(global.replay, currentReplay, currentExecutions)),
+            || Boolean(currentReplay && replayStateIsLater(globalReplay, currentReplay, currentExecutions)),
           ...(leavingStageContext
             ? { decisionDrafts: upsertDecisionDraft(current.working.decisionDrafts, leavingStageContext) }
             : {}),
@@ -1842,14 +2321,27 @@ export function RecallWorkspace({
     activeContextModeRef.current = "decision";
     const persistedStage = decisionDraftFor(document.working.decisionDrafts, decisionId);
     const boundarySnapshot = document.snapshots.filter((snapshot) => snapshot.decisionId === decisionId).at(-1);
-    const nextTimeframe = stageWorkingContextsRef.current.get(decisionId)?.timeframe
+    const runtimeStage = stageWorkingContextsRef.current.get(decisionId);
+    const nextTimeframe = (runtimeStage && timeframeAvailability[runtimeStage.timeframe].enabled ? runtimeStage.timeframe : undefined)
       ?? (persistedStage && timeframeAvailability[persistedStage.timeframe].enabled ? persistedStage.timeframe : undefined)
-      ?? (boundarySnapshot && timeframeAvailability[boundarySnapshot.timeframe].enabled ? boundarySnapshot.timeframe : timeframe);
+      ?? (boundarySnapshot && timeframeAvailability[boundarySnapshot.timeframe].enabled ? boundarySnapshot.timeframe : undefined)
+      ?? (timeframeAvailability[timeframe].enabled ? timeframe : fallbackTimeframe);
     const nextCandles = timeframeCandles(nextTimeframe, { importedTimelineCandles, candlesByTimeframe });
+    const persistedStageTimeframeAvailable = persistedStage
+      ? timeframeAvailability[persistedStage.timeframe].enabled && persistedStage.timeframe === nextTimeframe
+      : false;
     const persistedStageGraph = persistedStage
-      ? restorePersistedWorkingGraph({ ...persistedStage, timeframe: nextTimeframe }, document.decisions, currentExecutions, nextCandles)
+      ? restorePersistedWorkingGraph({
+          ...persistedStage,
+          timeframe: nextTimeframe,
+          ...(persistedStageTimeframeAvailable ? {} : { viewport: undefined }),
+        }, document.decisions, currentExecutions, nextCandles)
       : undefined;
-    const savedStage = stageWorkingContextsRef.current.get(decisionId) ?? persistedStageGraph;
+    // An in-memory graph can outlive a market-availability update. Reuse it
+    // only when its bar index still belongs to the selected timeframe;
+    // otherwise use the persisted graph remapped above, with its old viewport
+    // discarded when the period changed.
+    const savedStage = runtimeStage?.timeframe === nextTimeframe ? runtimeStage : persistedStageGraph;
     const boundaryExecution = options.boundaryExecutionId
       ? currentExecutions.find((execution) => execution.id === options.boundaryExecutionId && decision.executionIds.includes(execution.id))
       : undefined;
@@ -1866,6 +2358,9 @@ export function RecallWorkspace({
       drawings: cloneDrawings(boundaryDrawings),
       replay: boundaryExecution ? next : savedStage?.replay ?? mapCursorToTimeframe(next, currentExecutions, nextCandles),
       timeframe: nextTimeframe,
+      viewport: timeframeViewportsRef.current.get(
+        workingViewportKey(phase, "decision", decisionId, nextTimeframe),
+      ) ?? (nextTimeframe === timeframe ? savedStage?.viewport : undefined),
     };
     stageWorkingContextsRef.current.set(decisionId, stageGraph);
     const stageHistory = createDrawingHistory(stageGraph.drawings);
@@ -1874,6 +2369,13 @@ export function RecallWorkspace({
     setTimeframe(nextTimeframe);
     setReplay(stageGraph.replay);
     requestReveal(marketRevealCursor(stageGraph.replay));
+    // An explicit marker selection owns the reveal target. Restoring an older
+    // working window here could hide that target immediately after the
+    // boundary reveal; ordinary decision navigation still restores its view.
+    if (stageGraph.viewport && !options.boundaryExecutionId) {
+      queuedViewportRestoreRef.current = stageGraph.viewport;
+      restoreQueuedViewport();
+    }
     const context = persistedEditingContext("decision", decisionId, stageGraph);
     setDocument((current) => current ? touchRecallDraft({
       ...current,
@@ -1882,34 +2384,51 @@ export function RecallWorkspace({
         ...current.working,
         selectedDecisionId: decisionId,
         editingContext: context,
-        decisionDrafts: upsertDecisionDraft(current.working.decisionDrafts, context),
+        // Persist the context being left before the destination context. This
+        // matters for decision→decision navigation: the destination write
+        // alone used to leave the previous decision's viewport only in the
+        // runtime map, so reload lost that graph's window.
+        decisionDrafts: upsertDecisionDraft(
+          leavingStageContext
+            ? upsertDecisionDraft(current.working.decisionDrafts, leavingStageContext)
+            : current.working.decisionDrafts,
+          context,
+        ),
         hasSeenFuture: current.working.hasSeenFuture === true
           || Boolean(currentReplay && replayStateIsLater(stageGraph.replay, currentReplay, currentExecutions)),
       },
     }) : current);
     markDirty();
-  }, [candlesByTimeframe, currentExecutions, document, historyMode, importedTimelineCandles, markDirty, phase, replay, requestReveal, selectedDecisionId, timeframe, timeframeAvailability]);
+  }, [candlesByTimeframe, currentExecutions, document, historyMode, importedTimelineCandles, markDirty, phase, prepareTextDraft, replay, requestReveal, restoreQueuedViewport, selectedDecisionId, timeframe, timeframeAvailability]);
 
-  const handleExecutionSelect = useCallback((executionId: string) => {
+  const handleExecutionSelect = useCallback(async (executionId: string) => {
     if (editingSnapshotId) return;
     if (!document || !chartExecutions.some((execution) => execution.id === executionId)) return;
     const decisionId = decisionForExecution(document, executionId);
     if (!decisionId) return;
-    setPlaying(false);
-    selectDecision(decisionId, { boundaryExecutionId: executionId });
+    await selectDecision(decisionId, { boundaryExecutionId: executionId });
   }, [chartExecutions, document, editingSnapshotId, selectDecision]);
 
   const switchPhase = useCallback(async (nextPhase: RecallPhase) => {
     if (!document || !replay || editingSnapshotId || nextPhase === phase) return;
+    if (!(await prepareTextDraft("phase-change"))) return;
     setPlaying(false);
     await chartHandleRef.current?.flush();
     const context = persistedEditingContext(selectedDecisionId && selectedDecisionId !== "global" ? "decision" : "global", selectedDecisionId ?? "global", {
       drawings: drawingHistoryRef.current.present, replay, timeframe, viewport: chartHandleRef.current?.getViewport(),
     });
     const saved = document.working.phaseContexts?.[nextPhase];
-    const nextTimeframe = saved?.timeframe ?? timeframe;
+    const savedTimeframeAvailable = saved ? timeframeAvailability[saved.timeframe].enabled : false;
+    const nextTimeframe = saved && savedTimeframeAvailable
+      ? saved.timeframe
+      : timeframeAvailability[timeframe].enabled ? timeframe : fallbackTimeframe;
     const candles = timeframeCandles(nextTimeframe, { importedTimelineCandles, candlesByTimeframe });
-    let graph = saved ? restorePersistedWorkingGraph(saved, document.decisions, currentExecutions, candles) : {
+    const phaseRestoreContext = saved && savedTimeframeAvailable
+      ? saved
+      : saved
+        ? { ...saved, timeframe: nextTimeframe, viewport: undefined }
+        : undefined;
+    let graph = phaseRestoreContext ? restorePersistedWorkingGraph(phaseRestoreContext, document.decisions, currentExecutions, candles) : {
       drawings: cloneDrawings(drawingHistoryRef.current.present), replay, timeframe: nextTimeframe,
     };
     if (nextPhase === "post-review") graph = { ...graph, replay: revealRecallHistory(candles, currentExecutions) };
@@ -1963,7 +2482,7 @@ export function RecallWorkspace({
       setPhaseViewportRestoreToken(generation);
     }
     markDirty();
-  }, [candlesByTimeframe, currentExecutions, document, editingSnapshotId, episode.startedAt, importedTimelineCandles, markDirty, phase, replay, requestReveal, selectedDecisionId, timeframe]);
+  }, [candlesByTimeframe, currentExecutions, document, editingSnapshotId, episode.startedAt, importedTimelineCandles, markDirty, phase, prepareTextDraft, replay, requestReveal, selectedDecisionId, timeframe]);
 
   // Keep the active phase's resumable graph alongside the existing global and
   // decision drafts. Snapshots remain independent immutable captures.
@@ -2018,8 +2537,9 @@ export function RecallWorkspace({
     return () => window.cancelAnimationFrame(frame);
   }, [editingSnapshotId, phase, phaseViewportRestoreToken, replay?.cursor, timeframe]);
 
-  const nextDecision = useCallback(() => {
+  const nextDecision = useCallback(async () => {
     if (!document || !replay || editingSnapshotId || historyMode || phase === "post-review") return;
+    if (!(await prepareTextDraft("decision-change"))) return;
     if (phase === "pre-entry") {
       const firstDecision = firstDecisionInExecutionOrder(document, currentExecutions);
       if (!firstDecision) {
@@ -2074,11 +2594,25 @@ export function RecallWorkspace({
     if (!editingSnapshotId && nextDecisionId && nextDecisionId !== "global") activeContextModeRef.current = "decision";
     setSelectedDecisionId(nextDecisionId ?? null);
     setWorking(next, nextDecisionId ?? null);
-  }, [allCandles, currentExecutions, document, editingSnapshotId, historyMode, phase, replay, selectedDecisionId, setWorking, timeframe]);
+  }, [allCandles, currentExecutions, document, editingSnapshotId, historyMode, phase, prepareTextDraft, replay, selectedDecisionId, setWorking, timeframe]);
 
-  const nextBar = useCallback(() => {
+  const rewindBar = useCallback(async () => {
+    if (!replay || editingSnapshotId || historyMode || phase === "post-review" || replay.revealedCandles.length === 0) return;
+    if (!(await prepareReplayAction("phase-change"))) return;
+    const currentReplay = liveReplayRef.current ?? replay;
+    if (currentReplay.revealedCandles.length === 0) return;
+    setWorking(rewindRecallBar({ candles: allCandles, executions: currentExecutions, current: currentReplay }));
+  }, [allCandles, currentExecutions, editingSnapshotId, historyMode, phase, prepareReplayAction, replay, setWorking]);
+
+  const nextBar = useCallback(async () => {
     if (!replay || editingSnapshotId || historyMode || phase === "post-review" || replay.revealedCandles.length >= allCandles.length) return;
-    const next = revealRecallBar({ candles: allCandles, executions: currentExecutions, current: replay });
+    // Invalidate a queued phase viewport restore at action intent, before the
+    // guarded text-draft decision yields to a newer replay reveal.
+    cancelPhaseViewportRestore();
+    if (!(await prepareReplayAction("phase-change"))) return;
+    const currentReplay = liveReplayRef.current ?? replay;
+    if (currentReplay.revealedCandles.length >= allCandles.length) return;
+    const next = revealRecallBar({ candles: allCandles, executions: currentExecutions, current: currentReplay });
     if (phase === "pre-entry" && next.revealedExecutions.length > 0) {
       const context = persistedEditingContext(selectedDecisionId && selectedDecisionId !== "global" ? "decision" : "global", selectedDecisionId ?? "global", {
         drawings: drawingHistoryRef.current.present, replay, timeframe, viewport: chartHandleRef.current?.getViewport(),
@@ -2100,7 +2634,16 @@ export function RecallWorkspace({
       setWorking(next);
     }
     if (next.revealedCandles.length >= allCandles.length) setPlaying(false);
-  }, [allCandles, currentExecutions, document, editingSnapshotId, historyMode, phase, replay, selectedDecisionId, setWorking, timeframe]);
+  }, [allCandles, cancelPhaseViewportRestore, currentExecutions, document, editingSnapshotId, historyMode, phase, prepareReplayAction, replay, selectedDecisionId, setWorking, timeframe]);
+
+  const togglePlaying = useCallback(async () => {
+    if (playing) {
+      setPlaying(false);
+      return;
+    }
+    if (!replay || editingSnapshotId || historyMode || phase === "post-review" || replay.revealedCandles.length >= allCandles.length) return;
+    if (await prepareReplayAction("phase-change")) setPlaying(true);
+  }, [allCandles.length, editingSnapshotId, historyMode, phase, playing, prepareReplayAction, replay]);
 
   useEffect(() => {
     if (!playing || historyMode || editingSnapshotId || phase === "post-review" || !replay) return;
@@ -2116,6 +2659,19 @@ export function RecallWorkspace({
 
   const handleWorkspaceKeyDown = useCallback((event: KeyboardEvent<HTMLElement>) => {
     const target = event.target as HTMLElement | null;
+    if (compactControls && event.key === "Escape") {
+      const planSidebar = workspaceElementRef.current?.querySelector<HTMLElement>(".recall-plan-sidebar");
+      if (planOpen && planSidebar?.contains(target)) {
+        event.preventDefault();
+        closePlan();
+        return;
+      }
+      if (navOpen && navElementRef.current?.contains(target)) {
+        event.preventDefault();
+        closeNav();
+        return;
+      }
+    }
     if (event.nativeEvent.isComposing || event.keyCode === 229 || target?.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName ?? "")) return;
     if (compactControls && target?.closest("button, a, summary, [role=\"button\"]")) return;
     if (historyMode || editingSnapshotId || !replay) return;
@@ -2123,27 +2679,36 @@ export function RecallWorkspace({
     if (event.key === " " && replay.revealedCandles.length >= allCandles.length) return;
     if (event.key.toLowerCase() === "t") {
       event.preventDefault();
-      setPlaying(false);
-      setActiveTool("text");
+      void prepareTextDraft("tool-change").then((allowed) => {
+        if (!allowed) return;
+        setPlaying(false);
+        setActiveTool("text");
+      });
     } else if (event.key === "ArrowRight") {
       event.preventDefault();
       nextBar();
     } else if (event.key.toLowerCase() === "j") {
       event.preventDefault();
-      const previous = previousRecallDecisionState({ candles: allCandles, executions: currentExecutions, decisions: document?.decisions ?? [], current: replay });
-      setSelectedDecisionId(decisionForExecution(document!, previous.executionCursor) ?? selectedDecisionId);
-      setWorking(previous, decisionForExecution(document!, previous.executionCursor) ?? selectedDecisionId);
+      void (async () => {
+        if (!(await prepareTextDraft("decision-change"))) return;
+        setPlaying(false);
+        const currentReplay = liveReplayRef.current ?? replay;
+        const previous = previousRecallDecisionState({ candles: allCandles, executions: currentExecutions, decisions: document?.decisions ?? [], current: currentReplay });
+        setSelectedDecisionId(decisionForExecution(document!, previous.executionCursor) ?? selectedDecisionId);
+        setWorking(previous, decisionForExecution(document!, previous.executionCursor) ?? selectedDecisionId);
+      })();
     } else if (event.key.toLowerCase() === "k") {
       event.preventDefault();
       nextDecision();
     } else if (event.key === " ") {
       event.preventDefault();
-      setPlaying((current) => !current);
+      void togglePlaying();
     }
-  }, [allCandles, compactControls, currentExecutions, document, editingSnapshotId, historyMode, nextBar, nextDecision, phase, replay, selectedDecisionId, setWorking]);
+  }, [allCandles, closeNav, closePlan, compactControls, currentExecutions, document, editingSnapshotId, historyMode, navOpen, nextBar, nextDecision, phase, planOpen, prepareTextDraft, replay, selectedDecisionId, setWorking, togglePlaying]);
 
-  const toggleHistory = useCallback(() => {
+  const toggleHistory = useCallback(async () => {
     if (!replay || editingSnapshotId) return;
+    if (!(await prepareTextDraft("history-change"))) return;
     setPlaying(false);
     if (historyMode) {
       const selected = historyReplayBackupRef.current ?? replay;
@@ -2160,10 +2725,22 @@ export function RecallWorkspace({
     const history = revealRecallHistory(allCandles, currentExecutions);
     setReplay(history);
     requestReveal(marketRevealCursor(history));
-  }, [allCandles, currentExecutions, editingSnapshotId, historyMode, markDirty, replay, requestReveal]);
+  }, [allCandles, currentExecutions, editingSnapshotId, historyMode, markDirty, prepareTextDraft, replay, requestReveal]);
 
-  const changeTimeframe = useCallback((nextTimeframe: Timeframe) => {
+  const changeTimeframe = useCallback(async (nextTimeframe: Timeframe) => {
     if (!timeframeAvailability[nextTimeframe].enabled || !document || !replay) return;
+    if (!(await prepareTextDraft("timeframe-change"))) return;
+    const currentViewport = chartHandleRef.current?.getViewport();
+    const currentMode = activeContextModeRef.current;
+    const currentDecisionId = currentMode === "decision" && selectedDecisionId && selectedDecisionId !== "global"
+      ? selectedDecisionId
+      : "global";
+    if (currentViewport) {
+      timeframeViewportsRef.current.set(
+        workingViewportKey(phase, currentMode, currentDecisionId, timeframe),
+        currentViewport,
+      );
+    }
     const nextCandles = timeframeCandles(nextTimeframe, { importedTimelineCandles, candlesByTimeframe });
     const mapped = mapCursorToTimeframe(replay, currentExecutions, nextCandles);
     setTimeframe(nextTimeframe);
@@ -2178,9 +2755,9 @@ export function RecallWorkspace({
         drawings: cloneDrawings(drawingHistoryRef.current.present),
         replay: mapped,
         timeframe: nextTimeframe,
-        viewport: activeContextModeRef.current === "global"
-          ? chartHandleRef.current?.getViewport() ?? globalWorkingContextRef.current?.viewport
-          : undefined,
+        viewport: timeframeViewportsRef.current.get(
+          workingViewportKey(phase, currentMode, currentDecisionId, nextTimeframe),
+        ) ?? (nextTimeframe === timeframe ? currentViewport : undefined),
       };
       if (stageDecisionId) {
         stageWorkingContextsRef.current.set(stageDecisionId, graph);
@@ -2212,11 +2789,133 @@ export function RecallWorkspace({
           },
         }) : current);
       }
+      if (graph.viewport) {
+        queuedViewportRestoreRef.current = graph.viewport;
+        restoreQueuedViewport();
+      }
       markDirty();
     } else if (editingSnapshotId) {
+      snapshotEditDirtyRef.current = true;
       setSnapshotEditDirty(true);
     }
-  }, [candlesByTimeframe, currentExecutions, document, editingSnapshotId, historyMode, importedTimelineCandles, markDirty, onTimeframeChange, phase, replay, requestReveal, selectedDecisionId, timeframeAvailability]);
+  }, [candlesByTimeframe, currentExecutions, document, editingSnapshotId, historyMode, importedTimelineCandles, markDirty, onTimeframeChange, phase, prepareTextDraft, replay, requestReveal, restoreQueuedViewport, selectedDecisionId, timeframe, timeframeAvailability]);
+
+  const changeTool = useCallback(async (tool: DrawingTool) => {
+    if (!(await prepareTextDraft("tool-change"))) return;
+    setPlaying(false);
+    setActiveTool(tool);
+  }, [prepareTextDraft]);
+  const requestCursorTool = useCallback(() => {
+    void changeTool("cursor");
+  }, [changeTool]);
+
+  const undoDrawing = useCallback(async () => {
+    if (!(await prepareTextDraft("undo"))) return;
+    setPlaying(false);
+    setActiveTool("cursor");
+    if (replay) {
+      const currentHistory = drawingHistoryRef.current;
+      const nextHistory = undoDrawingAtCursor(currentHistory, replay.cursor, timeframe);
+      if (nextHistory !== currentHistory) {
+        commitDrawingHistory(nextHistory);
+        const visible = visibleDrawingsAtCursor(nextHistory.present, replay.cursor, timeframe);
+        if (!selectedDrawingId || !visible.some((drawing) => drawing.id === selectedDrawingId)) {
+          setSelectedDrawingId(null);
+        }
+      }
+    }
+  }, [commitDrawingHistory, prepareTextDraft, replay, selectedDrawingId, timeframe]);
+
+  const redoDrawing = useCallback(async () => {
+    if (!(await prepareTextDraft("redo"))) return;
+    setPlaying(false);
+    setActiveTool("cursor");
+    if (replay) {
+      const currentHistory = drawingHistoryRef.current;
+      const nextHistory = redoDrawingAtCursor(currentHistory, replay.cursor, timeframe);
+      if (nextHistory !== currentHistory) {
+        commitDrawingHistory(nextHistory);
+        const visible = visibleDrawingsAtCursor(nextHistory.present, replay.cursor, timeframe);
+        if (!selectedDrawingId || !visible.some((drawing) => drawing.id === selectedDrawingId)) {
+          const currentIds = new Set(currentHistory.present.map((drawing) => drawing.id));
+          const restored = visible.find((drawing) => !currentIds.has(drawing.id));
+          setSelectedDrawingId(restored?.id ?? null);
+        }
+      }
+    }
+  }, [commitDrawingHistory, prepareTextDraft, replay, selectedDrawingId, timeframe]);
+
+  const clearDrawings = useCallback(async () => {
+    if (!(await prepareTextDraft("clear"))) return;
+    setPlaying(false);
+    const currentHistory = drawingHistoryRef.current;
+    const nextHistory = applyDrawingCommand(currentHistory, { type: "clear-unlocked" });
+    if (nextHistory !== currentHistory) {
+      commitDrawingHistory(nextHistory);
+      const cursor = replay?.cursor ?? episode.startedAt;
+      const visible = visibleDrawingsAtCursor(nextHistory.present, cursor, timeframe);
+      if (!selectedDrawingId || !visible.some((drawing) => drawing.id === selectedDrawingId)) {
+        setSelectedDrawingId(null);
+      }
+    }
+  }, [commitDrawingHistory, episode.startedAt, prepareTextDraft, replay?.cursor, selectedDrawingId, timeframe]);
+
+  const deleteSelectedText = useCallback(async () => {
+    const requestedId = selectedDrawingIdRef.current;
+    if (!requestedId) return;
+    if (!(await prepareTextDraft("selection"))) return;
+    setPlaying(false);
+    const currentSelectedId = selectedDrawingIdRef.current;
+    if (currentSelectedId !== requestedId) return;
+    const currentReplay = liveReplayRef.current;
+    const currentTimeframe = liveContextRef.current.timeframe;
+    const currentCursor = currentReplay?.cursor ?? episode.startedAt;
+    const currentVisible = visibleDrawingsAtCursor(drawingHistoryRef.current.present, currentCursor, currentTimeframe);
+    const selected = currentVisible.find((drawing) => drawing.id === requestedId);
+    if (
+      !selected
+      || selected.tool !== "text"
+      || selected.locked
+      || historyModeRef.current
+      || editingSnapshotIdRef.current
+    ) return;
+    applyCommand({ type: "delete", id: selected.id });
+    setSelectedDrawingId(current => current === selected.id ? null : current);
+    setActiveTool("cursor");
+  }, [applyCommand, episode.startedAt, prepareTextDraft]);
+
+  const toggleDrawingLock = useCallback(async () => {
+    if (!(await prepareTextDraft("lock"))) return;
+    setPlaying(false);
+    if (replay) {
+      const currentHistory = drawingHistoryRef.current;
+      const nextHistory = setAllDrawingsLockedAtCursor(currentHistory, replay.cursor, timeframe);
+      if (nextHistory !== currentHistory) {
+        commitDrawingHistory(nextHistory);
+        const visible = visibleDrawingsAtCursor(nextHistory.present, replay.cursor, timeframe);
+        if (selectedDrawingId && !visible.some((drawing) => drawing.id === selectedDrawingId)) {
+          setSelectedDrawingId(null);
+        }
+      }
+    }
+  }, [commitDrawingHistory, prepareTextDraft, replay, selectedDrawingId, timeframe]);
+
+  const guardedApplyCommand = useCallback(async (command: DrawingCommand) => {
+    if (!(await prepareTextDraft("selection"))) return;
+    applyCommand(command);
+  }, [applyCommand, prepareTextDraft]);
+
+  const changeInstrument = useCallback(async (instrumentId: string) => {
+    if (!(await prepareTextDraft("leave"))) return;
+    setPlaying(false);
+    onInstrumentChange(instrumentId);
+  }, [onInstrumentChange, prepareTextDraft]);
+
+  const changeEpisode = useCallback(async (episodeId: string) => {
+    if (!(await prepareTextDraft("leave"))) return;
+    setPlaying(false);
+    onEpisodeChange(episodeId);
+  }, [onEpisodeChange, prepareTextDraft]);
 
   const capture = useCallback(async () => {
     if (Object.values(planEdits).some(edit => edit.error)) throw new Error("请先修正计划输入；当前输入已保留，尚未留存。");
@@ -2249,6 +2948,7 @@ export function RecallWorkspace({
   const retain = useCallback(async () => {
     if (retainInFlightRef.current) return;
     if (!document || !replay || !selectedDecisionId) return;
+    if (!(await prepareTextDraft("save"))) return;
     if (selectedDecisionId !== "global" && unmatchedDecisionIds.has(selectedDecisionId)) {
       setError("当前决策没有对应行情，补齐行情后才能留存对应快照。");
       return;
@@ -2290,10 +2990,11 @@ export function RecallWorkspace({
     } finally {
       if (retainInFlightRef.current === retainTask) retainInFlightRef.current = null;
     }
-  }, [capture, chartCandles, confirmCaptureWarnings, document, episode, phase, replay, selectedDecisionId, timeframe, unmatchedDecisionIds]);
+  }, [capture, chartCandles, confirmCaptureWarnings, document, episode, phase, prepareTextDraft, replay, selectedDecisionId, timeframe, unmatchedDecisionIds]);
 
-  const editSnapshot = useCallback((snapshot: RecallSnapshot) => {
+  const editSnapshot = useCallback(async (snapshot: RecallSnapshot) => {
     if (!replay || !document) return;
+    if (!(await prepareTextDraft("selection"))) return;
     snapshotEditBackupRef.current = {
       drawings: cloneDrawings(drawingHistory.present),
       replay,
@@ -2322,6 +3023,7 @@ export function RecallWorkspace({
       markDirty();
     }
     setEditingSnapshotId(snapshot.id);
+    snapshotEditDirtyRef.current = false;
     setSnapshotEditDirty(false);
     setSnapshotCandles(snapshotCandles.map((candle) => ({ ...candle, tradingDates: candle.tradingDates ? [...candle.tradingDates] : undefined })));
     setTimeframe(snapshot.timeframe);
@@ -2341,7 +3043,7 @@ export function RecallWorkspace({
     setReplay(snapshotReplay);
     requestReveal(marketRevealCursor(snapshotReplay));
     setError(null);
-  }, [currentExecutions, document, drawingHistory.present, markDirty, replay, requestReveal, selectedDecisionId, timeframe]);
+  }, [currentExecutions, document, drawingHistory.present, markDirty, prepareTextDraft, replay, requestReveal, selectedDecisionId, timeframe]);
 
   useEffect(() => {
     const viewport = snapshotEdit?.viewport;
@@ -2365,6 +3067,7 @@ export function RecallWorkspace({
     }
     snapshotEditBackupRef.current = null;
     setEditingSnapshotId(null);
+    snapshotEditDirtyRef.current = false;
     setSnapshotEditDirty(false);
     setSnapshotCandles(null);
   }, [requestReveal]);
@@ -2383,23 +3086,30 @@ export function RecallWorkspace({
 
   const updateSnapshot = useCallback(async () => {
     if (!document || !snapshotEdit || !replay) return;
+    if (!(await prepareTextDraft("save"))) return;
     try {
       const captureResult = await capture();
       if (!confirmCaptureWarnings(captureResult.warnings)) {
         setError("截图文字可能被裁切；已取消更新，请调整视野后重试。");
         return;
       }
-      const nextSnapshot = { ...createSnapshot(snapshotEdit, snapshotEdit.decisionId, timeframe, replay, drawingHistoryRef.current.present, chartCandles, captureResult), phase: snapshotEdit.phase, hasSeenFuture: snapshotEdit.hasSeenFuture === true || document.working.hasSeenFuture === true };
-      setDocument((current) => current ? touchRecallDraft(freezeRecallSnapshotBundle(updateRecallSnapshot(current, nextSnapshot), nextSnapshot.id, { bundleId: `bundle-${crypto.randomUUID()}`, retainedAt: nowIso(), episode, sourceBundleId: snapshotEdit.retainedBundleId ?? null })) : current);
+      const currentDocument = draftRef.current?.episodeId === document.episodeId ? draftRef.current : document;
+      const currentSnapshot = currentDocument.snapshots.find(candidate => candidate.id === snapshotEdit.id) ?? snapshotEdit;
+      const currentReplay = liveReplayRef.current ?? replay;
+      const nextSnapshot = { ...createSnapshot(currentSnapshot, currentSnapshot.decisionId, timeframe, currentReplay, drawingHistoryRef.current.present, chartCandles, captureResult), phase: currentSnapshot.phase, hasSeenFuture: currentSnapshot.hasSeenFuture === true || currentDocument.working.hasSeenFuture === true };
+      const nextDocument = touchRecallDraft(freezeRecallSnapshotBundle(updateRecallSnapshot(currentDocument, nextSnapshot), nextSnapshot.id, { bundleId: `bundle-${crypto.randomUUID()}`, retainedAt: nowIso(), episode, sourceBundleId: currentSnapshot.retainedBundleId ?? null }));
+      draftRef.current = nextDocument;
+      setDocument(nextDocument);
       markDirty();
       leaveSnapshotEditNow();
     } catch (captureError) {
       setError(captureError instanceof Error ? captureError.message : "图表截图失败，未更新快照");
     }
-  }, [capture, chartCandles, confirmCaptureWarnings, document, episode, leaveSnapshotEditNow, markDirty, replay, snapshotEdit, timeframe]);
+  }, [capture, chartCandles, confirmCaptureWarnings, document, episode, leaveSnapshotEditNow, markDirty, prepareTextDraft, replay, snapshotEdit, timeframe]);
 
-  const leaveSnapshotEdit = useCallback(() => {
-    if (snapshotEditDirty) {
+  const leaveSnapshotEdit = useCallback(async () => {
+    if (!(await prepareTextDraft("leave"))) return;
+    if (snapshotEditDirtyRef.current) {
       const update = typeof window !== "undefined" && window.confirm("当前快照有未提交编辑。确定更新快照吗？取消将保留旧快照并返回工作图。");
       if (update) {
         void updateSnapshot();
@@ -2407,7 +3117,7 @@ export function RecallWorkspace({
       }
     }
     leaveSnapshotEditNow();
-  }, [leaveSnapshotEditNow, snapshotEditDirty, updateSnapshot]);
+  }, [leaveSnapshotEditNow, prepareTextDraft, updateSnapshot]);
 
   const removeSnapshot = useCallback((snapshot: RecallSnapshot) => {
     if (!document) return;
@@ -2463,10 +3173,10 @@ export function RecallWorkspace({
     reorder(ids);
   }, [document, reorder]);
 
-  const merge = useCallback(() => {
-    if (!document || selectedDecisionIds.length < 2) return;
+  const merge = useCallback((decisionIds = selectedDecisionIds) => {
+    if (!document || decisionIds.length < 2) return;
     try {
-      setDocument(touchRecallDraft(mergeRecallDecisions(document, selectedDecisionIds)));
+      setDocument(touchRecallDraft(mergeRecallDecisions(document, decisionIds)));
       setSelectedDecisionIds([]);
       markDirty();
       setError(null);
@@ -2551,6 +3261,7 @@ export function RecallWorkspace({
 
   const complete = useCallback(async () => {
     if (!document || !replay) return;
+    if (!(await prepareTextDraft("save"))) return;
     if (historyMode) {
       setError("请先返回逐步回放，再保存并完成回合复盘；完整历史仅用于事后查看。");
       return;
@@ -2846,7 +3557,7 @@ export function RecallWorkspace({
     } finally {
       if (isCurrentEpisode()) setSaving(false);
     }
-  }, [capture, candlesByTimeframe, chartCandles, confirmCaptureWarnings, currentExecutions, document, editingSnapshotId, episode, historyMode, importedTimelineCandles, missing, onFormalCompletion, onSaved, replay, repository, selectedDecisionId, timeframe]);
+  }, [capture, candlesByTimeframe, chartCandles, confirmCaptureWarnings, currentExecutions, document, editingSnapshotId, episode, historyMode, importedTimelineCandles, missing, onFormalCompletion, onSaved, prepareTextDraft, replay, repository, selectedDecisionId, timeframe]);
 
   const handleChartReady = useCallback((handle: RecallChartHandle | null) => {
     chartHandleRef.current = handle;
@@ -2861,34 +3572,84 @@ export function RecallWorkspace({
     return <section className="recall-workspace recall-loading" aria-busy="true"><ClipboardPenLine size={20} /><strong>正在读取复盘草稿…</strong></section>;
   }
   if (!document || !replay) {
-    return <section className="recall-workspace recall-loading" role="alert"><CircleAlert size={20} /><strong>{error ?? "复盘草稿不可用"}</strong></section>;
+    return <section className="recall-workspace recall-loading" role="alert"><CircleAlert size={20} /><strong>{error ?? "复盘草稿不可用"}</strong><button type="button" onClick={() => void loadEpisode(episode, () => false)}>重新读取此回合</button></section>;
   }
 
-  const decisionSnapshots = document.snapshots.filter((snapshot) => snapshot.decisionId !== "global");
-  const globalSnapshot = document.snapshots.find((snapshot) => snapshot.decisionId === "global");
+  const fullHistoryView = historyMode || phase === "post-review";
   const revealedExecutionIds = new Set(chartExecutions.map((execution) => execution.id));
+  // Presentation follows the actual replay boundary. `document.decisions` is
+  // intentionally left intact for navigation/save semantics; this projection
+  // only prevents future records from becoming visible/selectable before the
+  // user explicitly opens full history.
+  const legalExecutionIds = fullHistoryView
+    ? new Set(currentExecutions.map((execution) => execution.id))
+    : revealedExecutionIds;
+  const visibleDecisions = document.decisions.filter((decision) =>
+    fullHistoryView || decision.executionIds.some((id) => legalExecutionIds.has(id)),
+  );
+  const visibleDecisionIds = new Set(visibleDecisions.map((decision) => decision.id));
+  const allDecisionSnapshots = document.snapshots.filter((snapshot) => snapshot.decisionId !== "global");
+  const globalSnapshot = document.snapshots.find((snapshot) => snapshot.decisionId === "global");
+  // The replay cursor may advance with execution knowledge while the market
+  // cutoff remains earlier.  An explicit null means that no market candle is
+  // known; only legacy states without a market cutoff may fall back to the
+  // replay cursor.
+  const currentMarketCursor = replay.revealedCandleCursor !== undefined
+    ? replay.revealedCandleCursor
+    : replayMarketCursor(replay) ?? replay.cursor;
+  const currentMarketBoundary = currentMarketCursor ? Date.parse(currentMarketCursor) : Number.NaN;
+  const currentExecutionBoundary = executionBoundaryForCursor(currentExecutions, replay.executionCursor);
+  const snapshotIsKnown = (snapshot: RecallSnapshot) => {
+    if (fullHistoryView) return true;
+    const snapshotMarketBoundary = Date.parse(snapshot.cursor);
+    const snapshotExecutionBoundary = executionBoundaryForCursor(currentExecutions, snapshot.executionCursor);
+    return Number.isFinite(snapshotMarketBoundary)
+      && Number.isFinite(currentMarketBoundary)
+      && snapshotMarketBoundary <= currentMarketBoundary
+      && snapshotExecutionBoundary <= currentExecutionBoundary;
+  };
+  const visibleGlobalSnapshot = globalSnapshot && snapshotIsKnown(globalSnapshot) ? globalSnapshot : undefined;
+  const visibleDecisionSnapshots = allDecisionSnapshots.filter((snapshot) =>
+    fullHistoryView || (visibleDecisionIds.has(snapshot.decisionId) && snapshotIsKnown(snapshot)),
+  );
+  const visibleSnapshotIds = new Set(visibleDecisionSnapshots.map((snapshot) => snapshot.id));
+  const decisionSnapshots = visibleDecisionSnapshots;
+  const visibleSelectedDecisionIds = selectedDecisionIds.filter((id) => visibleDecisionIds.has(id));
+  const visibleStoryboardSnapshots = (source: RecallDocument) => fullHistoryView
+    ? source.snapshots
+    : source.snapshots.filter((snapshot) => snapshot.decisionId === "global"
+      ? Boolean(visibleGlobalSnapshot && snapshot.id === visibleGlobalSnapshot.id)
+      : visibleSnapshotIds.has(snapshot.id));
+  const storyboardDocument = fullHistoryView
+    ? document
+    : {
+        ...document,
+        snapshots: visibleStoryboardSnapshots(document),
+        lastCompleted: document.lastCompleted
+          ? { ...document.lastCompleted, snapshots: visibleStoryboardSnapshots(document.lastCompleted) }
+          : document.lastCompleted,
+      };
   const selectedExecutionCandidate = currentDecisionExecution(document, currentExecutions, selectedDecisionId);
-  const selectedExecution = selectedExecutionCandidate && revealedExecutionIds.has(selectedExecutionCandidate.id)
+  const selectedExecution = selectedExecutionCandidate && legalExecutionIds.has(selectedExecutionCandidate.id)
     ? selectedExecutionCandidate
     : undefined;
   const decisionNumber = selectedDecisionId && selectedDecisionId !== "global"
-    ? document.decisions.findIndex((decision) => decision.id === selectedDecisionId) + 1
+    ? visibleDecisions.findIndex((decision) => decision.id === selectedDecisionId) + 1
     : 0;
   const selectedDetailsVisible = Boolean(
     selectedDecisionId === "global" ||
-      historyMode ||
-      (currentDecision?.executionIds.some((id) => revealedExecutionIds.has(id)) ?? false),
+      visibleDecisionIds.has(selectedDecisionId ?? ""),
   );
   const selectedLabel = selectedDecisionId === "global"
     ? "全局总结"
     : currentDecision && selectedDetailsVisible
       ? currentDecision.executionIds
           .map((id) => currentExecutions.find((execution) => execution.id === id))
-          .filter((execution): execution is TradeExecution => execution !== undefined && revealedExecutionIds.has(execution.id))
+          .filter((execution): execution is TradeExecution => execution !== undefined && legalExecutionIds.has(execution.id))
           .map(executionLabel)
           .join(" · ") || `决策 ${decisionNumber}`
       : currentDecision
-        ? `决策 ${decisionNumber}`
+        ? "当前计划"
         : "选择一笔成交";
   // Outcome labels are only knowable in explicit full-history/post-review
   // views. Holding may expose a first fill while later exits remain hidden.
@@ -2944,6 +3705,13 @@ export function RecallWorkspace({
   const compactReplaySummaryTitle = compactReplayPlan?.expectedR
     ? `计划 · ${compactReplayPlan.expectedR}R / ${compactReplayPlan.risk}`
     : compactReplaySummary;
+  const compactReplayStatus = editingSnapshotId
+    ? "正在编辑快照"
+    : historyMode || phase === "post-review"
+      ? "完整历史"
+      : atReplayEnd || !hasNextDecision
+        ? "已到末尾"
+        : undefined;
   const marketCutoff = marketRevealCursor(replay);
   const alignedMarketCutoff = marketCutoff ? formatMarketCursor(marketCutoff, instrument.market) : "尚无行情游标";
   const alignedMarketCutoffShort = marketCutoff ? formatMarketCursorShort(marketCutoff, instrument.market) : "尚无时间";
@@ -2953,9 +3721,16 @@ export function RecallWorkspace({
   const visibleExecutionCutoff = visibleExecution ? recallExecutionKnowledgeAt(visibleExecution) : undefined;
   const executionCutoff = visibleExecutionCutoff ? formatMarketCursor(visibleExecutionCutoff, instrument.market) : "成交尚未揭示";
   const executionCutoffShort = visibleExecutionCutoff ? formatMarketCursorShort(visibleExecutionCutoff, instrument.market) : executionCutoff;
+  const executionCutoffAria = visibleExecutionCutoff ? `成交截止 ${executionCutoff}` : executionCutoff;
+  const historyModeNotice = "完整历史临时视图 · 当前回合成交全部显示";
+
+  const replayPlotStyle = replayPlotLayout ? {
+    "--replay-plot-width": `${replayPlotLayout.width}px`,
+    "--replay-plot-center-x": `${replayPlotLayout.plotCenterX}px`,
+  } as CSSProperties : undefined;
 
   return (
-    <section ref={workspaceElementRef} className="recall-workspace trade-review-workspace--recall-frame" data-layout={focusMode ? "focus" : "standard"} aria-label="导入交易回忆复盘工作区" tabIndex={-1} onKeyDown={handleWorkspaceKeyDown} onFocusCapture={(event) => { if ((event.target as HTMLElement).matches("input, textarea, select, [contenteditable=true]")) setPlaying(false); }}>
+    <section ref={workspaceElementRef} className="recall-workspace trade-review-workspace--recall-frame" data-layout={focusMode ? "focus" : "standard"} data-compact-controls={compactControls ? "true" : undefined} style={replayPlotStyle} aria-label="导入交易回忆复盘工作区" tabIndex={-1} onKeyDown={handleWorkspaceKeyDown} onFocusCapture={(event) => { if ((event.target as HTMLElement).matches("input, textarea, select, [contenteditable=true]")) setPlaying(false); }}>
       <header className="recall-header recall-frame-header">
         {compactControls && <button
           type="button"
@@ -2965,7 +3740,8 @@ export function RecallWorkspace({
           aria-controls={`recall-nav-${episode.id}`}
           aria-label={navOpen ? "收起回合与决策导航" : "展开回合与决策导航"}
           title={navOpen ? "收起回合与决策导航" : "展开回合与决策导航"}
-          onClick={() => { setLeftNavOpen(!navOpen); if (focused) onFocusedChange?.(false); }}
+          ref={leftNavToggleRef}
+          onClick={toggleNav}
         >{navOpen ? <PanelLeftClose size={18} aria-hidden="true" /> : <PanelLeftOpen size={18} aria-hidden="true" />}</button>}
         <div className="recall-heading">
           <span className="eyebrow">{tradeNature === "simulation" ? "TradingView · 模拟盘" : "导入交易 · 回忆复盘"}</span>
@@ -2974,13 +3750,25 @@ export function RecallWorkspace({
             {document.status === "completed" ? "已完成" : document.status === "needs-confirmation" ? "待重新确认" : "草稿"}
             {(dirty || hasFormalDraft) && " · 有草稿修改"}
           </span>
+          <RecallSaveStatus
+            conflict={conflict}
+            dirty={dirty}
+            error={error}
+            saveRetryable={saveRetryable}
+            saving={saving}
+            onRetrySave={retrySave}
+            onReload={() => {
+              if (conflict) setConflict(false);
+              return loadEpisode(episode, () => false);
+            }}
+          />
         </div>
           <ChartToolbar
             timeframe={timeframe}
             timeframeAvailability={timeframeAvailability}
             onTimeframeChange={changeTimeframe}
             instruments={instruments}
-            onSelectInstrument={onInstrumentChange}
+            onSelectInstrument={changeInstrument}
             dataDetails={dataDetails}
             onRefreshMarketData={onRefreshMarketData}
             refreshDisabledReason={undefined}
@@ -3000,13 +3788,13 @@ export function RecallWorkspace({
         <div className="recall-header-controls recall-frame-more">
           <label>
             <span>标的</span>
-            <select aria-label="复盘标的" value={instrument.id} onChange={(event) => onInstrumentChange(event.target.value)}>
+            <select aria-label="复盘标的" value={instrument.id} onChange={(event) => void changeInstrument(event.target.value)}>
               {instruments.map((item) => <option key={item.id} value={item.id}>{item.name} · {item.symbol}</option>)}
             </select>
           </label>
           <label>
             <span>交易回合</span>
-            <select aria-label="交易回合" value={episode.id} onChange={(event) => onEpisodeChange(event.target.value)}>
+            <select aria-label="交易回合" value={episode.id} onChange={(event) => void changeEpisode(event.target.value)}>
               {episodes.map((item, index) => <option key={item.id} value={item.id}>{blindEpisodeSelection ? `第 ${episodes.length - index} 次` : `第 ${episodes.length - index} 次 · ${item.status === "closed" ? "已平仓" : "持仓中"}`}</option>)}
             </select>
           </label>
@@ -3015,8 +3803,30 @@ export function RecallWorkspace({
           </button>}
           <button type="button" className="recall-icon-button" aria-label="统计" aria-pressed={statsOpen} onClick={() => setStatsOpen((open) => !open)}><BarChart3 size={17} /></button>
           <button type="button" className="recall-export-button" title="导出已留存内容" onClick={() => onExport ? onExport(document) : setExportOpen(true)}><Download size={15} />导出</button>
-          {headerActions}
         </div>
+        {headerActions && (
+          <details
+            className="recall-header-actions-menu"
+            onClick={(event) => {
+              const target = event.target as HTMLElement | null;
+              if (target?.closest("button.recall-header-action")) {
+                event.currentTarget.open = false;
+              }
+            }}
+            onKeyDown={(event) => {
+              if (event.key !== "Escape") return;
+              event.preventDefault();
+              event.stopPropagation();
+              event.currentTarget.open = false;
+              event.currentTarget.querySelector<HTMLElement>("summary")?.focus();
+            }}
+          >
+            <summary aria-label="更多操作" title="更多操作">
+              <Ellipsis size={18} aria-hidden="true" />
+            </summary>
+            {headerActions}
+          </details>
+        )}
         {compactControls && <button
           type="button"
           className="recall-edge-toggle recall-edge-toggle--right"
@@ -3063,8 +3873,6 @@ export function RecallWorkspace({
         </div>
       )}
 
-      {error && <div className="recall-alert" role="alert"><CircleAlert size={16} /><span>{error}</span><button type="button" aria-label="关闭提示" onClick={() => setError(null)}><X size={14} /></button></div>}
-      {conflict && <div className="recall-conflict" role="status"><CircleAlert size={15} /><span>检测到其他窗口更新；当前草稿已保留。</span><button type="button" onClick={() => { setConflict(false); void loadEpisode(episode, () => false); }}>重新载入</button></div>}
       {phaseResolutionNotice && <div className="recall-phase-provenance" role="status">{phaseResolutionNotice}</div>}
       {document.reconciliation?.stale && (
         <section className="recall-reconciliation" aria-label="行情变更处理" role="status">
@@ -3079,7 +3887,7 @@ export function RecallWorkspace({
                 <span>快照 {snapshot.id.slice(-6)} 原决策已无成交</span>
                 <select aria-label={`重新关联快照 ${snapshot.id}`} value="" onChange={(event) => reassignReconciliationSnapshot(snapshot, event.target.value)}>
                   <option value="">选择新决策</option>
-                  {document.decisions.filter((candidate) => candidate.executionIds.length > 0).map((candidate) => <option key={candidate.id} value={candidate.id}>决策 {document.decisions.indexOf(candidate) + 1}</option>)}
+                  {visibleDecisions.filter((candidate) => candidate.executionIds.length > 0).map((candidate) => <option key={candidate.id} value={candidate.id}>决策 {visibleDecisions.indexOf(candidate) + 1}</option>)}
                 </select>
                 <button type="button" onClick={() => removeSnapshot(snapshot)}>删除快照</button>
               </label>
@@ -3088,7 +3896,7 @@ export function RecallWorkspace({
           <div className="recall-reconciliation-orphans">
             {Object.entries(document.working.phaseContexts ?? {}).filter(([, context]) => reconciliationOrphans.some(decision => decision.id === context?.decisionId)).map(([contextPhase, context]) => {
               const label = contextPhase === "pre-entry" ? "买入前判断" : contextPhase === "holding" ? "持仓过程" : "事后复盘";
-              return <label key={contextPhase}><span>{label}草稿原决策已无成交 · 保留 {context?.drawings.length ?? 0} 个图文</span><select aria-label={`重新关联${label}草稿`} value="" onChange={event => reassignPhaseContext(contextPhase as RecallPhase, event.target.value)}><option value="">选择草稿新归属</option><option value="global">全局总结</option>{document.decisions.filter(decision => decision.executionIds.length > 0).map((decision) => <option key={decision.id} value={decision.id}>决策 {document.decisions.indexOf(decision) + 1}</option>)}</select></label>;
+              return <label key={contextPhase}><span>{label}草稿原决策已无成交 · 保留 {context?.drawings.length ?? 0} 个图文</span><select aria-label={`重新关联${label}草稿`} value="" onChange={event => reassignPhaseContext(contextPhase as RecallPhase, event.target.value)}><option value="">选择草稿新归属</option><option value="global">全局总结</option>{visibleDecisions.filter(decision => decision.executionIds.length > 0).map((decision) => <option key={decision.id} value={decision.id}>决策 {visibleDecisions.indexOf(decision) + 1}</option>)}</select></label>;
             })}
           </div>
           <button type="button" className="recall-reconciliation-confirm" disabled={reconciliationOrphans.some((decision) => document.snapshots.some((snapshot) => snapshot.decisionId === decision.id) || Object.values(document.working.phaseContexts ?? {}).some(context => context?.decisionId === decision.id))} onClick={resolveReconciliation}>确认已处理行情变更</button>
@@ -3097,34 +3905,35 @@ export function RecallWorkspace({
 
       <div className={`recall-layout${navOpen ? "" : " nav-collapsed"}`}>
         {navOpen && (
-          <aside id={`recall-nav-${episode.id}`} className={`recall-nav${mobileRecordsOpen ? " mobile-records-open" : ""}`} aria-label="回合与决策导航">
-            <div className="recall-nav-title"><span>本回合记录</span><small>{document.decisions.length} 笔决策</small><button type="button" className="recall-nav-toggle" aria-expanded={mobileRecordsOpen} onClick={() => setMobileRecordsOpen((open) => !open)}>{mobileRecordsOpen ? "收起" : "展开"}</button></div>
+          <aside ref={(element) => { navElementRef.current = element; }} id={`recall-nav-${episode.id}`} className={`recall-nav${mobileRecordsOpen ? " mobile-records-open" : ""}`} aria-label="回合与决策导航">
+            <div className="recall-nav-title"><span>本回合记录</span><small>{visibleDecisions.length} 笔决策</small><button type="button" className="recall-nav-toggle" aria-expanded={mobileRecordsOpen} onClick={() => setMobileRecordsOpen((open) => !open)}>{mobileRecordsOpen ? "收起" : "展开"}</button></div>
             <button type="button" className={`recall-nav-item global${selectedDecisionId === "global" ? " selected" : ""}`} aria-current={selectedDecisionId === "global" ? "true" : undefined} onClick={() => selectDecision("global")}>
-              <span className="recall-nav-icon"><ClipboardPenLine size={15} /></span><span><strong>全局总结</strong><small>{globalSnapshot ? "已有留存" : "尚未留存"}</small></span>
+              <span className="recall-nav-icon"><ClipboardPenLine size={15} /></span><span><strong>全局总结</strong><small>{visibleGlobalSnapshot ? "已有留存" : "尚未留存"}</small></span>
             </button>
             <div className="recall-nav-divider" />
-            {document.decisions.map((decision, index) => {
+            {visibleDecisions.map((decision, index) => {
               const decisionExecutions = decision.executionIds.map((id) => currentExecutions.find((execution) => execution.id === id)).filter(Boolean) as TradeExecution[];
               const snapshots = decisionSnapshots.filter((snapshot) => snapshot.decisionId === decision.id);
               const missingSnapshot = snapshots.length === 0;
               const unmatched = unmatchedDecisionIds.has(decision.id);
-              const detailsVisible = historyMode || decisionExecutions.some((execution) => revealedExecutionIds.has(execution.id));
+              const displayNumber = fullHistoryView ? document.decisions.indexOf(decision) + 1 : index + 1;
+              const detailsVisible = fullHistoryView || decisionExecutions.some((execution) => legalExecutionIds.has(execution.id));
               const decisionTitle = detailsVisible
-                ? decisionExecutions.filter((execution) => revealedExecutionIds.has(execution.id)).map(executionLabel).join(" · ") || `决策 ${index + 1}`
-                : `决策 ${index + 1}`;
+                ? decisionExecutions.filter((execution) => legalExecutionIds.has(execution.id)).map(executionLabel).join(" · ") || `决策 ${displayNumber}`
+                : `决策 ${displayNumber}`;
               return (
                 <div className="recall-decision-wrap" key={decision.id}>
-                  <label className="recall-decision-check"><input type="checkbox" checked={selectedDecisionIds.includes(decision.id)} onChange={() => setSelectedDecisionIds((ids) => ids.includes(decision.id) ? ids.filter((id) => id !== decision.id) : [...ids, decision.id])} aria-label={`选择决策 ${index + 1} 进行合并`} /></label>
+                  <label className="recall-decision-check"><input type="checkbox" checked={visibleSelectedDecisionIds.includes(decision.id)} onChange={() => setSelectedDecisionIds((ids) => ids.includes(decision.id) ? ids.filter((id) => id !== decision.id) : [...ids, decision.id])} aria-label={`选择决策 ${displayNumber} 进行合并`} /></label>
                   <button type="button" className={`recall-nav-item${selectedDecisionId === decision.id ? " selected" : ""}`} aria-current={selectedDecisionId === decision.id ? "true" : undefined} onClick={() => selectDecision(decision.id)}>
-                    <span className="recall-nav-index">{index + 1}</span>
+                    <span className="recall-nav-index">{displayNumber}</span>
                     <span><strong>{decisionTitle}</strong><small>{snapshots.length ? `${snapshots.length} 份快照` : "待留存快照"}{unmatched && detailsVisible ? " · 缺少行情" : ""}</small></span>
                     {missingSnapshot ? <CircleAlert size={14} className="negative" /> : <CircleCheck size={14} className="positive" />}
                   </button>
                 </div>
               );
             })}
-            {selectedDecisionIds.length >= 2 && <button type="button" className="recall-secondary-action" onClick={merge}>合并所选决策</button>}
-            {currentDecision && currentDecision.executionIds.length > 1 && <button type="button" className="recall-secondary-action" onClick={openSplit}><Split size={14} />拆分当前决策</button>}
+            {visibleSelectedDecisionIds.length >= 2 && <button type="button" className="recall-secondary-action" onClick={() => merge(visibleSelectedDecisionIds)}>合并所选决策</button>}
+            {currentDecision && selectedDetailsVisible && currentDecision.executionIds.length > 1 && currentDecision.executionIds.every((id) => legalExecutionIds.has(id)) && <button type="button" className="recall-secondary-action" onClick={openSplit}><Split size={14} />拆分当前决策</button>}
             {splitDrafts && currentDecision && (
               <div className="recall-split-editor" aria-label="拆分决策">
                 <strong>明确分配成交</strong>
@@ -3146,16 +3955,26 @@ export function RecallWorkspace({
 
         <div className="recall-main">
 
-          <div className="recall-phase-provenance" role="status">{editingSnapshotId ? "正在编辑已留存快照" : phase === "pre-entry" ? "复盘补记 · 买入事实尚未揭示" : phase === "holding" ? "持仓过程 · 仅展示当前已知事实" : "事后复盘 · 完整历史已主动揭示"}{document.working.hasSeenFuture && " · 已看后续补记"}</div>
-          {historyMode && <div className="recall-history-banner"><History size={15} />完整历史：当前回合成交全部显示；返回后恢复原回放边界。<button type="button" onClick={toggleHistory}>返回回放</button></div>}
+          <div className="recall-phase-provenance" role="status">{historyMode ? historyModeNotice : editingSnapshotId ? "正在编辑已留存快照" : phase === "pre-entry" ? "复盘补记 · 买入事实尚未揭示" : phase === "holding" ? "持仓过程 · 仅展示当前已知事实" : "事后复盘 · 完整历史已主动揭示"}{document.working.hasSeenFuture && " · 已看后续补记"}</div>
+          {historyMode && <div className="recall-history-banner"><History size={15} /><span>完整历史：当前回合成交全部显示；返回后恢复原回放边界。</span><span className="sr-only">完整历史临时视图：当前回合成交全部显示</span><button type="button" onClick={toggleHistory}>返回回放</button></div>}
           {unmatchedDecisionIds.size > 0 && <div className="recall-unmatched" role="status"><CircleAlert size={15} />有成交找不到对应 K 线；相关决策可编辑草稿，但不能留存冒充该时点的快照。</div>}
 
           <div className={`recall-chart-and-plan${planOpen ? " plan-open" : ""}`}><div className="recall-chart-shell">
-            <DrawingToolbar compact activeTool={activeTool} canUndo={canUndo} canRedo={canRedo} allLocked={allLocked} onToolChange={(tool) => { setPlaying(false); setActiveTool(tool); }} onUndo={() => replay && commitDrawingHistory(undoDrawingAtCursor(drawingHistory, replay.cursor, timeframe))} onRedo={() => replay && commitDrawingHistory(redoDrawingAtCursor(drawingHistory, replay.cursor, timeframe))} onClear={() => commitDrawingHistory(applyDrawingCommand(drawingHistory, { type: "clear-unlocked" }))} onToggleLock={() => replay && commitDrawingHistory(setAllDrawingsLockedAtCursor(drawingHistory, replay.cursor, timeframe))} />
+            <DrawingToolbar compact activeTool={activeTool} canUndo={canUndo} canRedo={canRedo} allLocked={allLocked} canDeleteSelected={canDeleteSelected} onToolChange={changeTool} onUndo={undoDrawing} onRedo={redoDrawing} onClear={clearDrawings} onDeleteSelected={() => void deleteSelectedText()} onToggleLock={toggleDrawingLock} />
             <div className="recall-chart-column">
               <ReplayChartWithHandle
                 episodeId={episode.id}
-                viewportKey={`${episode.id}:${timeframe}:${editingSnapshotId ?? "working"}:${chartCandles[0]?.time ?? ""}:${chartCandles.at(-1)?.time ?? ""}`}
+                // Keep the stable chart identity as a JSON tuple. Episode IDs
+                // are real domain IDs and may contain colons, so a legacy
+                // colon-delimited key would shift the timeframe/snapshot
+                // slots and make replay/history restoration collide.
+                viewportKey={JSON.stringify([
+                  instrument.id,
+                  `${episode.id}:${editingSnapshotId ?? "working"}`,
+                  timeframe,
+                  chartCandles[0]?.time ?? "",
+                  chartCandles.at(-1)?.time ?? "",
+                ])}
                 candles={chartCandles}
                 executions={chartExecutions}
                 focusRange={{ start: episode.startedAt, end: episode.endedAt ?? replay.cursor }}
@@ -3171,6 +3990,8 @@ export function RecallWorkspace({
                 planLinesEditable={chartPlanEditable}
                 onPlanPriceChange={changePlanPrice}
                 onPlanPriceSelect={selectPlanPrice}
+                onPlotLayoutChange={setReplayPlotLayout}
+                onRequestCursorTool={requestCursorTool}
                 onPlanInteractionStart={() => setPlaying(false)}
                 onExecutionSelect={handleExecutionSelect}
                 plannedRiskAmount={undefined}
@@ -3188,7 +4009,7 @@ export function RecallWorkspace({
                       <X size={16} aria-hidden="true" />
                     </button>
                   </div>
-                  <DrawingLayersPanel drawings={eligibleLayerDrawings} onCommand={applyCommand} onSelectDrawing={setSelectedDrawingId} selectedDrawingId={selectedDrawingId} />
+                  <DrawingLayersPanel drawings={eligibleLayerDrawings} onCommand={guardedApplyCommand} onSelectDrawing={setSelectedDrawingId} selectedDrawingId={selectedDrawingId} />
                 </div>
               )}
             </div>
@@ -3266,20 +4087,18 @@ export function RecallWorkspace({
           }
           </div>
 
-          <div className="recall-replay-bar">
+          <div ref={replayBarRef} className="recall-replay-bar">
             <div className="recall-position-strip recall-replay-bar__primary">
-              <div><span className={`live-dot${historyMode ? "" : " playing"}`} /><strong title={selectedLabel}>{historyMode ? "事后复盘" : "逐步"} · {selectedDecisionId === "global" ? "全局" : currentDecision ? `决策 ${decisionNumber}` : "未选择"}</strong><small className="recall-replay-cutoff" aria-label={historyMode ? "完整历史" : `行情时间 ${alignedMarketCutoff}；${executionCutoff}`}>
-                {historyMode ? <span>完整历史</span> : <><span title={alignedMarketCutoff}>行情时间 {alignedMarketCutoffShort}</span><span title={executionCutoff}>{visibleExecutionCutoff ? `成交截止 ${executionCutoffShort}` : executionCutoff}</span></>}
+              <div><span className={`live-dot${fullHistoryView ? "" : " playing"}`} /><strong title={selectedLabel}>{fullHistoryView ? "完整历史" : "逐步"} · {selectedDecisionId === "global" ? "全局" : currentDecision && selectedDetailsVisible ? `决策 ${decisionNumber}` : currentDecision ? "当前计划" : "未选择"}</strong><small className="recall-replay-cutoff" aria-label={fullHistoryView ? `完整历史；行情时间 ${alignedMarketCutoff}；${executionCutoffAria}` : `行情时间 ${alignedMarketCutoff}；${executionCutoffAria}`}>
+                <><span title={alignedMarketCutoff}>行情时间 {alignedMarketCutoffShort}</span><span title={executionCutoff}>{visibleExecutionCutoff ? `成交截止 ${executionCutoffShort}` : executionCutoff}</span></>
               </small></div>
-              <span className="recall-replay-summary" aria-label={compactReplaySummaryTitle} title={compactReplaySummaryTitle}>{compactReplaySummary}</span>
+              <span className="recall-replay-summary" aria-label={compactReplaySummaryTitle} title={compactReplaySummaryTitle}><span className="recall-replay-summary-value">{compactReplaySummary}</span>{compactReplayStatus && <small className="recall-replay-summary-status">{compactReplayStatus}</small>}</span>
             </div>
 
-            <div className="recall-controls recall-replay-bar__primary" aria-label="回放控制">
+            <div ref={replayControlsRef} className="recall-controls recall-replay-bar__primary" aria-label="回放控制">
               {!compactControls && <>
-              <button type="button" aria-label="上一根 K 线" disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || replay.revealedCandles.length === 0} title={editingSnapshotId ? replayControlReason : undefined} onClick={() => {
-                setWorking(rewindRecallBar({ candles: allCandles, executions: currentExecutions, current: replay }));
-              }}><ChevronLeft size={17} />上一根</button>
-              <button type="button" className={playing ? "active" : ""} onClick={() => setPlaying((current) => !current)} disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || atReplayEnd} title={editingSnapshotId || atReplayEnd ? replayControlReason : undefined} aria-pressed={playing}>{playing ? "暂停" : "播放"}</button>
+              <button type="button" aria-label="上一根 K 线" disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || replay.revealedCandles.length === 0} title={editingSnapshotId ? replayControlReason : undefined} onClick={() => void rewindBar()}><ChevronLeft size={17} />上一根</button>
+              <button type="button" className={playing ? "active" : ""} onClick={() => void togglePlaying()} disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || atReplayEnd} title={editingSnapshotId || atReplayEnd ? replayControlReason : undefined} aria-pressed={playing}>{playing ? "暂停" : "播放"}</button>
               <button type="button" onClick={nextBar} disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || atReplayEnd} title={editingSnapshotId || atReplayEnd ? replayControlReason : undefined}><ChevronDown size={17} />下一根 K 线</button>
               <button type="button" className="primary" onClick={nextDecision} disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || !hasNextDecision} title={editingSnapshotId || !hasNextDecision ? replayControlReason : undefined}><ChevronRight size={17} />下一笔决策</button>
               {editingSnapshotId ? <><button type="button" className="primary" onClick={() => void updateSnapshot()}><FileImage size={15} />更新此快照</button><button type="button" onClick={leaveSnapshotEdit}><X size={15} />返回工作图</button></> : <button type="button" className="primary" onClick={() => void retain()} disabled={!selectedDecisionId || historyMode}><Save size={15} />留存当前快照</button>}
@@ -3287,10 +4106,8 @@ export function RecallWorkspace({
               </>}
               {compactControls && <>
               <span className="recall-replay-action-group recall-replay-action-group--replay">
-              <button type="button" data-action-label="上一根 K 线" className="recall-replay-action recall-replay-action--step" aria-label="上一根 K 线" disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || replay.revealedCandles.length === 0} title={editingSnapshotId ? replayControlReason : "上一根 K 线"} onClick={() => {
-                setWorking(rewindRecallBar({ candles: allCandles, executions: currentExecutions, current: replay }));
-              }}><StepBack size={18} aria-hidden="true" /><span>上一根</span></button>
-              <button type="button" data-action-label={playing ? "暂停回放" : "播放回放"} className={`recall-replay-action recall-replay-action--play${playing ? " active" : ""}`} onClick={() => setPlaying((current) => !current)} disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || atReplayEnd} title={editingSnapshotId || atReplayEnd ? replayControlReason : playing ? "暂停回放" : "播放回放"} aria-label={playing ? "暂停回放" : "播放回放"} aria-pressed={playing}>{playing ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}<span>{playing ? "暂停" : "播放"}</span></button>
+              <button type="button" data-action-label="上一根 K 线" className="recall-replay-action recall-replay-action--step" aria-label="上一根 K 线" disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || replay.revealedCandles.length === 0} title={editingSnapshotId ? replayControlReason : "上一根 K 线"} onClick={() => void rewindBar()}><StepBack size={18} aria-hidden="true" /><span>上一根</span></button>
+              <button type="button" data-action-label={playing ? "暂停回放" : "播放回放"} className={`recall-replay-action recall-replay-action--play${playing ? " active" : ""}`} onClick={() => void togglePlaying()} disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || atReplayEnd} title={editingSnapshotId || atReplayEnd ? replayControlReason : playing ? "暂停回放" : "播放回放"} aria-label={playing ? "暂停回放" : "播放回放"} aria-pressed={playing}>{playing ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}<span>{playing ? "暂停" : "播放"}</span></button>
               <button type="button" data-action-label="下一根 K 线" className="recall-replay-action recall-replay-action--step" aria-label="下一根 K 线" onClick={nextBar} disabled={phase === "post-review" || historyMode || Boolean(editingSnapshotId) || atReplayEnd} title={editingSnapshotId || atReplayEnd ? replayControlReason : "下一根 K 线"}><StepForward size={18} aria-hidden="true" /><span>下一根</span></button>
               </span>
               <span className="recall-replay-action-group recall-replay-action-group--decision">
@@ -3316,13 +4133,17 @@ export function RecallWorkspace({
                 onKeyDown={compactControls ? (event => { if (event.key === "Escape") { event.stopPropagation(); closeMore(); } }) : undefined}
               >{compactControls ? (moreOpen ? <PanelBottomClose size={18} aria-hidden="true" /> : <PanelBottomOpen size={18} aria-hidden="true" />) : null}{compactControls ? <span>更多 / 记录</span> : "更多 / 记录"}</button>
               <div id={`recall-replay-more-body-${episode.id}`} className="recall-replay-more__body" hidden={!moreOpen} onKeyDown={compactControls ? (event => { if (event.key === "Escape") { event.stopPropagation(); closeMore(); } }) : undefined}>
+                {(showReplayControlReason || canReturnToPreEntry) && <div className="recall-replay-bar__secondary recall-replay-more__status" role="status">
+                  {showReplayControlReason && <span className="recall-control-note">{replayControlReason}</span>}
+                  {canReturnToPreEntry && <button type="button" className="recall-return-pre-entry" onClick={() => void switchPhase("pre-entry")}>回到买入前判断</button>}
+                </div>}
                 <div className="recall-replay-bar__secondary" aria-label="更多回放与记录动作">
                   <button type="button" onClick={toggleHistory} className={historyMode ? "active" : ""} disabled={Boolean(editingSnapshotId)} title={editingSnapshotId ? replayControlReason : undefined}>{historyMode ? <Undo2 size={15} /> : <History size={15} />}{historyMode ? "返回回放" : "完整历史"}</button>
                   <button type="button" className="complete-button" onClick={() => void complete()} disabled={document.status === "completed" && !dirty && !hasFormalDraft}><Check size={15} />保存并完成回合复盘</button>
                 </div>
 
                 <div className="recall-position-details" aria-label="完整持仓摘要">
-                  {phase === "pre-entry" ? <span>仅记录计划 · 成交尚未揭示</span> : <div className="recall-position-stats">
+                  {historyMode && phase === "pre-entry" ? <span>{historyModeNotice}</span> : phase === "pre-entry" ? <span>{compactReplaySummaryTitle} · 成交尚未揭示</span> : <div className="recall-position-stats">
                     <span>持仓 <b>{quantityAvailable ? position.quantity : "待核对"}</b></span>
                     <span>均价 <b>{pnlAvailable ? Number(position.averageCost).toFixed(2) : settlementCurrencyMismatch ? "币种待换算" : "待补齐成本"}</b></span>
                     <span>估值 <b>{latestCandle?.close?.toFixed(2) ?? "—"}</b></span>
@@ -3333,18 +4154,24 @@ export function RecallWorkspace({
                 <details className="recall-snapshot-panel recall-replay-more__panel" aria-label="三阶段代表图">
                   <summary>三阶段代表图</summary>
                   <RecallStoryboard
-                    document={document}
+                    document={storyboardDocument}
                     disabled={saving || Boolean(editingSnapshotId)}
-                    onChangeDocument={next => { setDocument(touchRecallDraft(next)); markDirty(); }}
+                    onChangeDocument={next => {
+                      // The storyboard receives a visibility projection, but
+                      // selecting a stage must preserve every hidden source
+                      // snapshot in the authoritative draft.
+                      setDocument(touchRecallDraft({ ...next, snapshots: document.snapshots, lastCompleted: document.lastCompleted }));
+                      markDirty();
+                    }}
                   />
                 </details>
 
-                <details className="recall-snapshot-panel recall-replay-more__panel" aria-label="阶段快照"><summary>全部记录与快照（{document.snapshots.length}）</summary>
-                  <div className="recall-panel-heading"><div><strong>阶段快照</strong><small>{decisionSnapshots.length} 份决策快照{globalSnapshot ? " · 1 份全局总结" : ""}</small></div><span>{saving ? "保存中…" : dirty ? "自动保存将在 1 秒后执行" : "已保存"}</span></div>
+                <details className="recall-snapshot-panel recall-replay-more__panel" aria-label="阶段快照"><summary>全部记录与快照（{decisionSnapshots.length + (visibleGlobalSnapshot ? 1 : 0)}）</summary>
+                  <div className="recall-panel-heading"><div><strong>阶段快照</strong><small>{decisionSnapshots.length} 份决策快照{visibleGlobalSnapshot ? " · 1 份全局总结" : ""}</small></div><span>{saving ? "保存中…" : dirty ? "自动保存将在 1 秒后执行" : "已保存"}</span></div>
                   {deletedNotice && <div className="recall-delete-notice" role="status"><Undo2 size={14} />快照已删除<button type="button" onClick={undoDeleteSnapshot}>撤销</button></div>}
-                  {document.snapshots.length === 0 ? <p className="recall-empty">选中一笔成交，在图表上完成标注后留存快照。</p> : <ol className="recall-snapshot-list">
-                    {document.snapshots.map((snapshot, index) => {
-                      const owner = snapshot.decisionId === "global" ? "全局总结" : `决策 ${document.decisions.findIndex((decision) => decision.id === snapshot.decisionId) + 1}`;
+                  {decisionSnapshots.length + (visibleGlobalSnapshot ? 1 : 0) === 0 ? <p className="recall-empty">选中一笔成交，在图表上完成标注后留存快照。</p> : <ol className="recall-snapshot-list">
+                    {document.snapshots.filter((snapshot) => snapshot.decisionId === "global" ? Boolean(visibleGlobalSnapshot) : visibleSnapshotIds.has(snapshot.id)).map((snapshot, index) => {
+                      const owner = snapshot.decisionId === "global" ? "全局总结" : `决策 ${(fullHistoryView ? document.decisions.findIndex((decision) => decision.id === snapshot.decisionId) : visibleDecisions.findIndex((decision) => decision.id === snapshot.decisionId)) + 1}`;
                       return <li key={snapshot.id} draggable onDragStart={(event) => event.dataTransfer.setData("text/recall-snapshot", snapshot.id)} onDragOver={(event) => event.preventDefault()} onDrop={(event) => onSnapshotDrop(event, snapshot.id)} className={editingSnapshotId === snapshot.id ? "editing" : ""}>
                         <span className="recall-drag-handle" aria-hidden="true"><GripVertical size={16} /></span><span className="recall-snapshot-owner"><strong>{owner}</strong><small>{snapshotTitle(snapshot, index)} · {snapshot.drawings.filter((drawing) => drawing.tool === "text").length} 段文字</small></span><span className="recall-snapshot-actions"><button type="button" aria-label={`编辑${owner}快照`} title={`编辑${owner}快照`} onClick={() => editSnapshot(snapshot)}><ClipboardPenLine size={14} />编辑</button><button type="button" aria-label={`删除${owner}快照`} title={`删除${owner}快照`} onClick={() => removeSnapshot(snapshot)}><Trash2 size={14} /></button></span>
                       </li>;
@@ -3356,15 +4183,11 @@ export function RecallWorkspace({
               </div>
             </div>
 
-            {(showReplayControlReason || canReturnToPreEntry) && <div className="recall-replay-bar__secondary" role="status">
-              {showReplayControlReason && <span className="recall-control-note">{replayControlReason}</span>}
-              {canReturnToPreEntry && <button type="button" className="recall-return-pre-entry" onClick={() => void switchPhase("pre-entry")}>回到买入前判断</button>}
-            </div>}
           </div>
 
           {!pnlAvailable && <p role="status">持仓历史、成本或费用尚未补齐，盈亏及成本线暂不展示。{settlementCurrencyMismatch ? "报价币种与结算币种不同，未换算汇率，盈亏不可用。" : position.accuracy?.reasons.includes("ambiguous-opening") ? "首笔卖出缺少期初持仓或明确卖空依据，持仓方向待核对。" : ""}</p>}
 
-          {statsOpen && <aside className="recall-stats-panel" aria-label="当前统计"><div><strong>当前统计</strong><button type="button" aria-label="关闭统计" onClick={() => setStatsOpen(false)}><X size={15} /></button></div><dl><dt>标记收盘价</dt><dd>{latestCandle?.close?.toFixed(2) ?? "—"}</dd><dt>标记时间</dt><dd>{latestCandle ? formatMarketCursor(latestCandle.time, instrument.market) : "—"}</dd><dt>已揭示成交</dt><dd>{chartExecutions.length} / {currentExecutions.length}</dd><dt>持仓数量</dt><dd>{quantityAvailable ? position.quantity : "待核对"}</dd><dt>平均成本</dt><dd>{pnlAvailable ? Number(position.averageCost).toFixed(2) : settlementCurrencyMismatch ? "币种待换算" : "待补齐成本"}</dd><dt>净盈亏</dt><dd className={pnlPositive ? "positive" : "negative"}>{pnlAvailable ? money(position.netPnl, instrument.currency) : settlementCurrencyMismatch ? "币种待换算" : "历史不完整"}</dd><dt>累计费用</dt><dd>{chartExecutions.some((execution) => execution.source.feeStatus === "unknown") ? "待核对" : feeCurrency ? fee(position.fees, feeCurrency) : "币种待核对"}</dd></dl></aside>}
+          {statsOpen && <aside className="recall-stats-panel" aria-label="当前统计"><div><strong>当前统计</strong><button type="button" aria-label="关闭统计" onClick={() => setStatsOpen(false)}><X size={15} /></button></div><dl><dt>标记收盘价</dt><dd>{latestCandle?.close?.toFixed(2) ?? "—"}</dd><dt>标记时间</dt><dd>{latestCandle ? formatMarketCursor(latestCandle.time, instrument.market) : "—"}</dd><dt>已揭示成交</dt><dd>{chartExecutions.length} / {legalExecutionIds.size}</dd><dt>持仓数量</dt><dd>{quantityAvailable ? position.quantity : "待核对"}</dd><dt>平均成本</dt><dd>{pnlAvailable ? Number(position.averageCost).toFixed(2) : settlementCurrencyMismatch ? "币种待换算" : "待补齐成本"}</dd><dt>净盈亏</dt><dd className={pnlPositive ? "positive" : "negative"}>{pnlAvailable ? money(position.netPnl, instrument.currency) : settlementCurrencyMismatch ? "币种待换算" : "历史不完整"}</dd><dt>累计费用</dt><dd>{chartExecutions.some((execution) => execution.source.feeStatus === "unknown") ? "待核对" : feeCurrency ? fee(position.fees, feeCurrency) : "币种待核对"}</dd></dl></aside>}
 
         </div>
       </div>

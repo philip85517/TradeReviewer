@@ -24,6 +24,7 @@ function captureContext(snapshot: RecallSnapshot) {
 function snapshotContentDigest(snapshot: RecallSnapshot): string {
     return sha256(canonicalRecallJson({
         context: captureContext(snapshot), candles: snapshot.candles, imageDataUrl: snapshot.imageDataUrl,
+        derivedCapture: snapshot.derivedCapture,
         drawings: snapshot.drawings.map(({ recallOwnerId, ...drawing }) => {
             void recallOwnerId;
             return drawing;

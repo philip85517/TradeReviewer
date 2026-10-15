@@ -45,10 +45,17 @@ import {
   canvasMonoFont,
   canvasTextFont,
   CANVAS_TEXT_FONT_FAMILY,
+  chooseAvailableControlPlacement,
+  chooseAvailableControlRect,
+  chooseJointControlPlacements,
+  textCardControlObstacles,
   textCardGeometry,
   textCardLayout,
   textCardLayoutOptions,
   textLayout,
+  resolveTextCardGeometries,
+  type DrawingControlObstacle,
+  type DrawingControlRect,
 } from "../../lib/chart/text-geometry";
 import {
   arrowheadGeometry,
@@ -60,8 +67,13 @@ import {
   type LabelRect,
   type LabelRowLayout,
 } from "../../lib/chart/drawing-label-layout";
+import type {
+  TextDraftDecision,
+  TextDraftIntentReason,
+  TextDraftPrepareHandle,
+} from "../../lib/chart/text-draft-guard";
 import type { Candle } from "../../lib/market/types";
-import { Check, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Move, Pencil, X } from "lucide-react";
 
 type Props = {
   episodeId: string;
@@ -75,6 +87,8 @@ type Props = {
   onSelectDrawing: (id: string | null) => void;
   onCommand: (command: DrawingCommand) => void;
   onDrawingInteractionStart?: () => void;
+  /** Lets the owning toolbar return an empty/new Text draft to cursor mode. */
+  onRequestCursorTool?: () => void;
   coordinateAdapter?: ChartCoordinateAdapter;
   coordinateVersion?: number;
   /** Defaults to anchored text for compatibility with existing callers. */
@@ -85,6 +99,8 @@ type Props = {
   multilineText?: boolean;
   /** Interactive plot bounds exclude the right price axis and bottom time axis. */
   plotBounds?: ChartPlotBounds;
+  /** Transient chart-local rectangles that Text operation controls must avoid. */
+  controlObstacles?: readonly DrawingControlObstacle[];
 };
 
 type CanvasSize = { width: number; height: number };
@@ -144,11 +160,27 @@ type DragState = {
   anchorIndex: number | null;
   anchorAxis?: "price" | "time";
   textCard: boolean;
-  textInteraction?: "move" | "anchor";
+  textInteraction?: "move" | "anchor" | "width";
+  /** The visible card position at pointerdown; transient packing must not become a new drag origin. */
+  textOriginGeometry?: { x: number; y: number };
   originPoint: ProjectedPoint;
   riskHandle?: RiskHandle;
   interactionStarted?: boolean;
 };
+
+export function findLowerBoundTextWidth(
+  low: number,
+  high: number,
+  fitsAt: (width: number) => boolean,
+) {
+  while (low < high) {
+    const middle = Math.floor((low + high) / 2);
+    if (fitsAt(middle)) high = middle;
+    else low = middle + 1;
+  }
+  return low;
+}
+
 type TextEditor = {
   anchor: DrawingAnchor;
   x: number;
@@ -164,6 +196,12 @@ type TextEditor = {
   fontSize: 12 | 14 | 16 | 18 | 24 | 32;
   background: string;
   color: string;
+};
+type TextEditorGeometryOverride = {
+  drawing: NormalizedDrawing;
+  anchor: DrawingAnchor;
+  x: number;
+  y: number;
 };
 type DrawingDraft = Omit<
   NormalizedDrawing,
@@ -216,14 +254,15 @@ const FALLBACK_ADAPTER_VERSION = 0;
 const DEFAULT_TEXT_CARD_BACKGROUND = "rgba(16, 23, 34, 0.86)";
 const DEFAULT_TEXT_COLOR = "#e7edf6";
 const DEFAULT_TEXT_AUXILIARY_COLOR = "#2f80ed";
+const DEFAULT_TEXT_CARD_BORDER_COLOR = "rgba(140, 189, 255, 0.28)";
 const EDITOR_MIN_WIDTH = 220;
 // The style controls are a single editing surface, not part of the stored
 // text-card width. Give them a usable desktop span while still allowing the
 // frame to shrink to the actual chart pane on small viewports.
-const EDITOR_CONTROLS_MIN_WIDTH = 500;
+const EDITOR_CONTROLS_MIN_WIDTH = 340;
 const EDITOR_STYLE_BAR_HEIGHT = 36;
 const EDITOR_TOUCH_STYLE_BAR_HEIGHT = 44;
-const EDITOR_HINT_HEIGHT = 18;
+const EDITOR_HEADER_HEIGHT = 34;
 const EDITOR_VERTICAL_GAP = 2;
 // Includes the textarea's 3px vertical padding and 1px borders. Keeping this
 // explicit prevents a large font from being clipped to a half line by the
@@ -233,7 +272,7 @@ const EDITOR_TEXTAREA_VERTICAL_INSET = 8;
 export function paintDrawingScene(
   context: CanvasRenderingContext2D,
   { width, height, drawings, pointFor, pointForDrawing, plannedRiskAmount, currency,
-    selectedDrawingId = null, hoveredDrawingId = null, selectionPulse = 0, activeRiskGesture = null, preview = null, expandedTextIds, plotWidth, plotHeight, onLabelFallback }: {
+    selectedDrawingId = null, hoveredDrawingId = null, selectionPulse = 0, activeRiskGesture = null, preview = null, expandedTextIds, foldedTextIds, textControlReserveBottom, plotWidth, plotHeight, textGeometryOverrides, onLabelFallback }: {
     width: number; height: number; drawings: readonly NormalizedDrawing[];
     pointFor: (anchor: DrawingAnchor) => ProjectedPoint;
     pointForDrawing: (drawing: NormalizedDrawing) => ProjectedPoint;
@@ -242,8 +281,14 @@ export function paintDrawingScene(
     hoveredDrawingId?: string | null; selectionPulse?: number;
     activeRiskGesture?: { drawingId: string; handle: RiskHandle } | null;
     expandedTextIds?: ReadonlySet<string>;
+    /** Short normal cards start fully visible; this set records an explicit fold. */
+    foldedTextIds?: ReadonlySet<string>;
+    /** The bottom operation row stays outside the text body's width budget. */
+    textControlReserveBottom?: number;
     /** Optional real plot bounds; the backing canvas remains width × height. */
     plotWidth?: number; plotHeight?: number;
+    /** Transient body placements shared by live DOM and canvas paint. */
+    textGeometryOverrides?: ReadonlyMap<string, import("../../lib/chart/text-geometry").TextCardGeometry>;
     /** Interactive callers can replace an unreadable label with a DOM surface. */
     onLabelFallback?: (fallback: DrawingLabelFallback) => void;
   },
@@ -353,20 +398,40 @@ export function paintDrawingScene(
         const textPlotHeight = hasCardPosition && Number.isFinite(plotHeight)
           ? Math.min(height, Math.max(1, plotHeight as number))
           : height;
+        const fullLayout = textCardLayout(
+          drawing.text ?? "关键位",
+          drawing.textWidth ?? 180,
+          fontSize,
+          textPlotWidth,
+          true,
+          hasCardPosition ? Math.max(1, textPlotHeight - 8) : Number.POSITIVE_INFINITY,
+          hasCardPosition ? textCardLayoutOptions.controlWidth : 0,
+          hasCardPosition
+            ? Math.max(textCardLayoutOptions.controlHeight, textControlReserveBottom ?? 0)
+            : 0,
+          hasCardPosition,
+        );
+        const shortCard = hasCardPosition && fullLayout.fullLines.length > 1 && fullLayout.fullLines.length <= 2;
+        const expandedText = !hasCardPosition || (shortCard
+          ? foldedTextIds?.has(drawing.id) !== true
+          : expandedTextIds?.has(drawing.id) === true);
         const layout = textCardLayout(
           drawing.text ?? "关键位",
           drawing.textWidth ?? 180,
           fontSize,
           textPlotWidth,
-          !hasCardPosition || expandedTextIds?.has(drawing.id) === true,
+          expandedText,
           hasCardPosition ? Math.max(1, textPlotHeight - 8) : Number.POSITIVE_INFINITY,
           hasCardPosition ? textCardLayoutOptions.controlWidth : 0,
-          hasCardPosition ? textCardLayoutOptions.controlHeight : 0,
+          hasCardPosition
+            ? Math.max(textCardLayoutOptions.controlHeight, textControlReserveBottom ?? 0)
+            : 0,
+          hasCardPosition,
         );
         const anchorPoint = drawing.anchors[0]
           ? pointFor(drawing.anchors[0])
           : primaryPoint;
-        const geometry = hasCardPosition
+        const baseGeometry = hasCardPosition
           ? textCardGeometry(
               anchorPoint,
               primaryPoint,
@@ -383,6 +448,9 @@ export function paintDrawingScene(
               connectorStart: anchorPoint,
               connectorEnd: anchorPoint,
             };
+        const geometry = hasCardPosition
+          ? textGeometryOverrides?.get(drawing.id) ?? baseGeometry
+          : baseGeometry;
         const hasAnchoredCard =
           drawing.placement !== "canvas" &&
           drawing.anchors.length > 0 &&
@@ -390,9 +458,24 @@ export function paintDrawingScene(
         const auxiliaryColor = drawing.style.color === DEFAULT_TEXT_COLOR
           ? DEFAULT_TEXT_AUXILIARY_COLOR
           : drawing.style.color;
+        const cardBorderColor = drawing.style.color === DEFAULT_TEXT_COLOR || drawing.style.color === DEFAULT_TEXT_AUXILIARY_COLOR
+          ? DEFAULT_TEXT_CARD_BORDER_COLOR
+          : drawing.style.color;
         const textWidth = geometry.width;
         const boxHeight = geometry.height;
-        if (drawing.background && drawing.background !== "transparent") {
+        const selectedText = includeSelection && drawing.id === selectedDrawingId;
+        if (
+          hasAnchoredCard &&
+          !selectedText &&
+          typeof context.strokeRect === "function"
+        ) {
+          // Ordinary cards keep a quiet boundary for spatial orientation. The
+          // bright link-colored frame belongs exclusively to selected state.
+          context.strokeStyle = cardBorderColor;
+          context.lineWidth = 1;
+          context.strokeRect(geometry.x, geometry.y, textWidth, boxHeight);
+        }
+        if (!selectedText && drawing.background && drawing.background !== "transparent") {
           context.fillStyle = drawing.background;
           context.fillRect(geometry.x, geometry.y, textWidth, boxHeight);
         }
@@ -418,31 +501,20 @@ export function paintDrawingScene(
           context.stroke();
           context.restore?.();
         }
-        if (
-          hasAnchoredCard &&
-          typeof context.strokeRect === "function"
-        ) {
-          context.strokeStyle = auxiliaryColor;
-          context.lineWidth = 1;
-          context.strokeRect(geometry.x, geometry.y, textWidth, boxHeight);
-        }
         const cardNumber = cardNumberById.get(drawing.id);
         if (hasAnchoredCard && cardNumber !== undefined) {
           context.fillStyle = auxiliaryColor;
           context.font = canvasMonoFont(12, 600);
           context.fillText(String(cardNumber), geometry.x + Math.max(4, textWidth - 18), geometry.y + 14);
         }
-        const selectedText = includeSelection && drawing.id === selectedDrawingId;
-        const expandedText = expandedTextIds?.has(drawing.id) === true;
         context.globalAlpha = selectedText ? 0 : drawing.style.opacity;
         context.fillStyle = drawing.style.color;
-        context.font = canvasTextFont(fontSize);
-        // Expanded cards are rendered by the scrollable DOM layer. Keeping
-        // the bounded canvas lines underneath would leave an ellipsis tail
-        // visible in the ordinary (unselected) state.
-        // Interactive expanded cards are replaced by the scrollable DOM layer.
-        // Capture/export has no DOM layer, so it must keep painting its text.
-        if (!expandedText || !includeSelection) {
+        context.font = canvasTextFont(fontSize, 400);
+        // The interactive DOM layer owns body text for selected cards and for
+        // ordinary expanded cards. Keep the canvas body for collapsed ordinary
+        // cards and for capture/export, where no DOM layer is present.
+        const domOwnsText = includeSelection && (selectedText || expandedText);
+        if (!domOwnsText) {
           layout.lines.forEach((line, index) => context.fillText(line, geometry.x + textCardLayoutOptions.horizontalPadding, geometry.y + fontSize + index * layout.lineHeight));
         }
         if (includeSelection && drawing.id === selectedDrawingId) {
@@ -562,7 +634,7 @@ export function paintDrawingScene(
         context.restore?.();
       }
       // Keep non-risk selection feedback tied to the object's real anchor set.
-      if (includeSelection && drawing.id === selectedDrawingId && drawing.tool !== "long-risk-reward" && drawing.tool !== "short-risk-reward" && drawing.tool !== "text") {
+      if (includeSelection && drawing.id === selectedDrawingId && !drawing.locked && drawing.tool !== "long-risk-reward" && drawing.tool !== "short-risk-reward" && drawing.tool !== "text") {
         const linkColor = typeof document !== "undefined"
           ? getComputedStyle(document.documentElement).getPropertyValue("--link").trim() || "#8cbdff"
           : "#8cbdff";
@@ -660,7 +732,7 @@ export function paintDrawingScene(
     }
 }
 
-export type DrawingCanvasHandle = {
+export type DrawingCanvasHandle = TextDraftPrepareHandle & {
   /** Render the visible drawings without selection/editor controls. */
   captureOverlay(scale?: number): Promise<HTMLCanvasElement>;
   /** Commit a focused editor before a caller captures the chart. */
@@ -883,12 +955,14 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   onSelectDrawing,
   onCommand,
   onDrawingInteractionStart,
+  onRequestCursorTool,
   coordinateAdapter,
   coordinateVersion = FALLBACK_ADAPTER_VERSION,
   defaultTextPlacement = "anchor",
   allowFutureAnchors = false,
   multilineText = false,
   plotBounds,
+  controlObstacles = [],
 }, forwardedRef) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const startAnchorRef = useRef<DrawingAnchor | null>(null);
@@ -903,6 +977,19 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   const compositionRef = useRef(false);
   const cancelEditorRef = useRef(false);
   const commitTextRef = useRef<() => boolean>(() => true);
+  const editorRef = useRef<TextEditor | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const prepareTextDraftRef = useRef<(reason: TextDraftIntentReason) => Promise<boolean>>(() => Promise.resolve(true));
+  const pendingTextDraftRef = useRef<{
+    promise: Promise<boolean>;
+    resolve: (value: boolean) => void;
+  } | null>(null);
+  const pendingTextDraftActionRef = useRef<{
+    key: string;
+    action: () => void;
+    promise: Promise<boolean>;
+  } | null>(null);
+  const editorGeometryOverrideRef = useRef<TextEditorGeometryOverride | null>(null);
   const capturedPointerRef = useRef<{
     target: Element;
     pointerId: number;
@@ -916,8 +1003,13 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   const [preview, setPreview] = useState<NormalizedDrawing | null>(null);
   const [creationStatus, setCreationStatus] = useState<string | null>(null);
   const [editor, setEditor] = useState<TextEditor | null>(null);
+  const [textStyleExpanded, setTextStyleExpanded] = useState(false);
+  const [textDraftDecision, setTextDraftDecision] = useState<TextDraftIntentReason | null>(null);
   const [pickingAnchor, setPickingAnchor] = useState(false);
   const [expandedTextIds, setExpandedTextIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [foldedTextIds, setFoldedTextIds] = useState<Set<string>>(
     () => new Set(),
   );
   const [validationError, setValidationError] = useState<string | null>(
@@ -929,12 +1021,13 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   const [riskHoverCursor, setRiskHoverCursor] = useState<string | null>(null);
   const [selectionPulse, setSelectionPulse] = useState(0);
   const [activeRiskGesture, setActiveRiskGesture] = useState<{ drawingId: string; handle: RiskHandle } | null>(null);
-  const [activeTextGesture, setActiveTextGesture] = useState<{ drawingId: string; kind: "move" | "anchor" } | null>(null);
+  const [activeTextGesture, setActiveTextGesture] = useState<{ drawingId: string; kind: "move" | "anchor" | "width" } | null>(null);
   const [draggingDrawingId, setDraggingDrawingId] = useState<string | null>(null);
   const [labelFallbacks, setLabelFallbacks] = useState<DrawingLabelFallback[]>([]);
   const [focusedRiskControl, setFocusedRiskControl] = useState<string | null>(null);
   const [focusedTextControl, setFocusedTextControl] = useState<string | null>(null);
   selectedDrawingIdRef.current = selectedDrawingId;
+  editorRef.current = editor;
   const cancelGesture = useCallback(() => {
     // cancellation is also handled by the native stage listeners below
     if (dragSelectionCapturedRef.current) {
@@ -1044,23 +1137,43 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     return pointFor(drawing.anchors[0] ?? { time: cursor, price: minPrice });
   }, [cursor, minPrice, pointFor, size.height, size.width]);
 
-  function textGeometryForDrawing(
+  function baseTextGeometryForDrawing(
     drawing: NormalizedDrawing,
-    expanded = expandedTextIds.has(drawing.id),
+    expandedOverride?: boolean,
   ) {
     const hasCardPosition =
       Number.isFinite(drawing.canvasX) && Number.isFinite(drawing.canvasY);
     const textWidth = hasCardPosition ? boundedPlot.width : size.width;
     const textHeight = hasCardPosition ? boundedPlot.height : size.height;
+    const fullLayout = textCardLayout(
+      drawing.text ?? "关键位",
+      drawing.textWidth ?? 180,
+      drawing.fontSize ?? 14,
+      textWidth,
+      true,
+      hasCardPosition ? Math.max(1, textHeight - 8) : Number.POSITIVE_INFINITY,
+      hasCardPosition ? textCardLayoutOptions.controlWidth : 0,
+      hasCardPosition
+        ? (coarsePointer ? textCardLayoutOptions.coarseControlHeight : textCardLayoutOptions.controlHeight)
+        : 0,
+      hasCardPosition,
+    );
+    const shortCard = hasCardPosition && fullLayout.fullLines.length > 1 && fullLayout.fullLines.length <= 2;
+    const expanded = expandedOverride ?? (!hasCardPosition || (shortCard
+      ? !foldedTextIds.has(drawing.id)
+      : expandedTextIds.has(drawing.id)));
     const layout = textCardLayout(
       drawing.text ?? "关键位",
       drawing.textWidth ?? 180,
       drawing.fontSize ?? 14,
       textWidth,
-      !hasCardPosition || expanded,
+      expanded,
       hasCardPosition ? Math.max(1, textHeight - 8) : Number.POSITIVE_INFINITY,
       hasCardPosition ? textCardLayoutOptions.controlWidth : 0,
-      hasCardPosition ? textCardLayoutOptions.controlHeight : 0,
+      hasCardPosition
+        ? (coarsePointer ? textCardLayoutOptions.coarseControlHeight : textCardLayoutOptions.controlHeight)
+        : 0,
+      hasCardPosition,
     );
     const cardPoint = pointForDrawing(drawing);
     const anchorPoint = drawing.anchors[0]
@@ -1086,7 +1199,85 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     return {
       layout,
       geometry,
+      expanded,
+      shortCard,
     };
+  }
+
+  const transientTextGeometry = useMemo(() => {
+    const entries = drawings
+      .filter((drawing) => !drawing.hidden && drawing.tool === "text" &&
+        Number.isFinite(drawing.canvasX) && Number.isFinite(drawing.canvasY))
+      .map((drawing) => {
+        const rendered = preview?.id === drawing.id && preview.tool === "text" ? preview : drawing;
+        return {
+          id: drawing.id,
+          geometry: baseTextGeometryForDrawing(rendered).geometry,
+        };
+      });
+    const anchorHitSize = coarsePointer ? 44 : 24;
+    const anchorObstacles = drawings
+      .filter((drawing) => !drawing.hidden && drawing.tool === "text" && drawing.anchors[0])
+      .map((drawing) => {
+        const anchor = pointFor(drawing.anchors[0]!);
+        return {
+          left: anchor.x - anchorHitSize / 2,
+          top: anchor.y - anchorHitSize / 2,
+          right: anchor.x + anchorHitSize / 2,
+          bottom: anchor.y + anchorHitSize / 2,
+          id: `text-anchor-${drawing.id}`,
+        };
+      });
+    return resolveTextCardGeometries(
+      entries,
+      [...controlObstacles, ...anchorObstacles],
+      boundedPlot.width,
+      boundedPlot.height,
+    ).placements;
+  }, [
+    boundedPlot.height,
+    boundedPlot.width,
+    coarsePointer,
+    controlObstacles,
+    drawings,
+    expandedTextIds,
+    foldedTextIds,
+    pointFor,
+    pointForDrawing,
+    preview,
+    size.height,
+    size.width,
+  ]);
+
+  function textGeometryForDrawing(
+    drawing: NormalizedDrawing,
+    expandedOverride?: boolean,
+    applyTransient = true,
+  ) {
+    const base = baseTextGeometryForDrawing(drawing, expandedOverride);
+    if (expandedOverride !== undefined || !applyTransient || drawing.tool !== "text") return base;
+    const textCardCount = drawings.filter((item) => !item.hidden && item.tool === "text").length;
+    if (controlObstacles.length === 0 && textCardCount < 2) return base;
+    const resolved = transientTextGeometry.get(drawing.id);
+    return resolved ? { ...base, geometry: resolved } : base;
+  }
+
+  function textWidthForVerticalFit(
+    drawing: NormalizedDrawing,
+    requestedWidth: number,
+  ) {
+    const originWidth = Number.isFinite(drawing.textWidth) ? drawing.textWidth! : 180;
+    if (requestedWidth >= originWidth) return requestedWidth;
+    const originGeometry = textGeometryForDrawing(drawing, undefined, false).geometry;
+    const candidateWidth = Math.ceil(requestedWidth);
+    const originWidthFloor = Math.floor(originWidth);
+    const fitsAt = (width: number) =>
+      textGeometryForDrawing({ ...drawing, textWidth: width }, undefined, false).geometry.y === originGeometry.y;
+    if (fitsAt(candidateWidth)) return requestedWidth;
+    if (fitsAt(originWidthFloor)) {
+      return findLowerBoundTextWidth(candidateWidth, originWidthFloor, fitsAt);
+    }
+    return originWidth;
   }
 
   function textEditorFrame(editorValue: string, editorWidth: number, fontSize: TextEditor["fontSize"], x: number, y: number) {
@@ -1105,11 +1296,9 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     const controlHeight = coarsePointer || narrowViewport
       ? EDITOR_TOUCH_STYLE_BAR_HEIGHT
       : EDITOR_STYLE_BAR_HEIGHT;
-    // At a narrow chart boundary the controls wrap into a second/third row;
-    // reserving those rows in the grid keeps them reachable instead of
-    // clipping them inside the one-line toolbar.
-    const styleRows = width < 360 ? 3 : width < EDITOR_CONTROLS_MIN_WIDTH ? 2 : 1;
-    const styleBarHeight = controlHeight * styleRows;
+    // The compact style row stays one line. Advanced placement/width/color
+    // controls are disclosed below the body in their own scroll viewport.
+    const styleBarHeight = controlHeight;
     const lineHeight = Math.max(18, Math.round(fontSize * 1.5));
     const measuredLines = textLayout(
       editorValue,
@@ -1120,10 +1309,12 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     // Give the textarea one complete line plus its border/padding, and use
     // the available space for up to three lines. Longer text stays editable
     // through the textarea's own vertical scroll container.
-    const visibleLines = Math.max(1, Math.min(3, measuredLines));
+    const visibleLines = Math.max(4, Math.min(10, measuredLines));
     const textareaMinHeight = lineHeight + EDITOR_TEXTAREA_VERTICAL_INSET;
-    const textareaHeight = visibleLines * lineHeight + EDITOR_TEXTAREA_VERTICAL_INSET;
-    const preferredHeight = styleBarHeight + textareaHeight + EDITOR_HINT_HEIGHT + EDITOR_VERTICAL_GAP * 2;
+    const textareaHeight = Math.max(96, Math.min(280, visibleLines * lineHeight + EDITOR_TEXTAREA_VERTICAL_INSET));
+    const actionHeight = controlHeight;
+    const advancedHeight = textStyleExpanded ? controlHeight * 2 : 0;
+    const preferredHeight = EDITOR_HEADER_HEIGHT + textareaHeight + styleBarHeight + advancedHeight + actionHeight + EDITOR_VERTICAL_GAP * (textStyleExpanded ? 4 : 3);
     const maxTop = Math.max(2, boundedPlot.height - preferredHeight - 2);
     const top = Math.max(2, Math.min(maxTop, y - 24));
     const maxHeight = Math.max(1, boundedPlot.height - top - 2);
@@ -1131,11 +1322,13 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     return {
       style: { width, left, top, maxHeight, height },
       styleBarHeight,
+      headerHeight: EDITOR_HEADER_HEIGHT,
+      actionHeight,
+      advancedHeight,
       controlHeight,
       lineHeight,
       textareaHeight,
       textareaMinHeight,
-      hintHeight: EDITOR_HINT_HEIGHT,
     };
   }
 
@@ -1200,19 +1393,19 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     };
   }
 
-  function emitAdd(drawing: DrawingDraft) {
+  function emitAdd(drawing: DrawingDraft): NormalizedDrawing | null {
     const normalizedDrawing = normalized(drawing);
     const message = validationMessage(normalizedDrawing);
     if (message) {
       setValidationError(message);
-      return false;
+      return null;
     }
     setValidationError(null);
     onCommand({
       type: "add",
       drawing: normalizedDrawing,
     });
-    return true;
+    return normalizedDrawing;
   }
 
   function emitReplace(drawing: NormalizedDrawing) {
@@ -1250,8 +1443,12 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   ) => {
     const fallbackById = new Map<string, DrawingLabelFallback>();
     paintDrawingScene(context, { width, height, drawings, pointFor, pointForDrawing,
-      plannedRiskAmount, currency, selectedDrawingId, hoveredDrawingId, selectionPulse, activeRiskGesture, preview, expandedTextIds,
+      plannedRiskAmount, currency, selectedDrawingId, hoveredDrawingId, selectionPulse, activeRiskGesture, preview, expandedTextIds, foldedTextIds,
+      textControlReserveBottom: coarsePointer
+        ? textCardLayoutOptions.coarseControlHeight
+        : textCardLayoutOptions.controlHeight,
       plotWidth: boundedPlot.width, plotHeight: boundedPlot.height,
+      textGeometryOverrides: transientTextGeometry,
       onLabelFallback: includeSelection ? (fallback) => fallbackById.set(fallback.drawingId, fallback) : undefined,
     }, includeSelection, renderPreview);
     if (includeSelection) {
@@ -1262,7 +1459,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
       });
     }
   },
-  [activeRiskGesture, boundedPlot.height, boundedPlot.width, currency, drawings, expandedTextIds, hoveredDrawingId, plannedRiskAmount, pointFor, pointForDrawing, preview, selectedDrawingId, selectionPulse]);
+  [activeRiskGesture, boundedPlot.height, boundedPlot.width, coarsePointer, currency, drawings, expandedTextIds, foldedTextIds, hoveredDrawingId, plannedRiskAmount, pointFor, pointForDrawing, preview, selectedDrawingId, selectionPulse, transientTextGeometry]);
 
   useEffect(() => {
     if (selectionPulseRafRef.current !== null) cancelAnimationFrame(selectionPulseRafRef.current);
@@ -1318,6 +1515,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   // closure. A ref also avoids a dependency on the per-render function and
   // prevents a capture from observing stale text after a state update.
   commitTextRef.current = commitText;
+  prepareTextDraftRef.current = prepareTextDraft;
   useImperativeHandle(forwardedRef, () => ({
     captureOverlay: async (scale = 2) => {
       if (size.width <= 0 || size.height <= 0) throw new Error("图表叠加层尚未就绪");
@@ -1332,6 +1530,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
       return overlay;
     },
     commitText: () => commitTextRef.current(),
+    prepareTextDraft: (reason) => prepareTextDraftRef.current(reason),
     getExpandedTextIds: () => [...expandedTextIds],
   }), [expandedTextIds, renderDrawings, size]);
 
@@ -1392,7 +1591,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   function beginEdit(
     drawing: NormalizedDrawing,
     point: ProjectedPoint,
-    textInteraction?: "move" | "anchor",
+    textInteraction?: "move" | "anchor" | "width",
     forcedAnchorIndex?: number,
   ) {
     const points = drawing.anchors.map(pointFor);
@@ -1415,6 +1614,9 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
           ? "ew-resize"
           : "grabbing",
     );
+    const textOriginGeometry = drawing.tool === "text" && textInteraction === "move"
+      ? textGeometryForDrawing(drawing).geometry
+      : undefined;
     dragRef.current = {
       drawing,
       anchorIndex: anchorIndex === null || anchorIndex < 0 ? null : anchorIndex,
@@ -1427,16 +1629,54 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
         Number.isFinite(drawing.canvasX) &&
         Number.isFinite(drawing.canvasY),
       textInteraction,
+      textOriginGeometry,
       originPoint: point,
       riskHandle,
       interactionStarted: false,
     };
   }
 
+  function requestDrawingSelection(id: string | null) {
+    const current = editorRef.current;
+    if (current && current.drawing?.id !== id) {
+      runAfterTextDraft(`select:${id ?? "none"}`, () => onSelectDrawing(id));
+      return false;
+    }
+    onSelectDrawing(id);
+    return true;
+  }
+
+  function runAfterTextDraft(key: string, action: () => void) {
+    const pendingAction = pendingTextDraftActionRef.current;
+    if (pendingAction) {
+      // Keep one original intent attached to one decision surface. Repeated
+      // pointer events must not stack callbacks or replace its target.
+      return;
+    }
+    const promise = prepareTextDraft("selection");
+    const nextAction = { key, action, promise };
+    pendingTextDraftActionRef.current = nextAction;
+    void promise.then((allowed) => {
+      if (pendingTextDraftActionRef.current !== nextAction) return;
+      pendingTextDraftActionRef.current = null;
+      if (allowed) action();
+    });
+  }
+
   function openTextEditor(drawing: NormalizedDrawing) {
     if (drawing.locked) return;
+    const current = editorRef.current;
+    if (current) {
+      if (current.drawing?.id !== drawing.id) {
+        runAfterTextDraft(`edit:${drawing.id}`, () => openTextEditor(drawing));
+        return;
+      }
+      textareaRef.current?.focus();
+      return;
+    }
     const { geometry: textGeometry } = textGeometryForDrawing(drawing);
     const defaults = textDefaults(drawing);
+    setTextStyleExpanded(false);
     setEditor({
       anchor: drawing.anchors[0] ?? anchorFromPoint(textGeometry.x, textGeometry.y),
       x: textGeometry.x,
@@ -1455,6 +1695,13 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   ) {
     event.preventDefault();
     event.stopPropagation();
+    const current = editorRef.current;
+    if (current && current.drawing?.id !== drawing.id) {
+      // The original pointer belongs to the old control. Resolve selection
+      // only; a fresh gesture can begin safely on the selected drawing.
+      runAfterTextDraft(`select:${drawing.id}`, () => onSelectDrawing(drawing.id));
+      return;
+    }
     onSelectDrawing(drawing.id);
     if (drawing.locked) return;
     const point = pointFromClient(event.clientX, event.clientY);
@@ -1462,6 +1709,27 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     beginEdit(drawing, point, interaction);
     setActiveTextGesture({ drawingId: drawing.id, kind: interaction });
     setRiskHoverCursor("grabbing");
+    capturePointer(event.currentTarget, event.pointerId);
+  }
+
+  function beginTextWidthControl(
+    event: ReactPointerEvent<HTMLButtonElement>,
+    drawing: NormalizedDrawing,
+  ) {
+    event.preventDefault();
+    event.stopPropagation();
+    const current = editorRef.current;
+    if (current && current.drawing?.id !== drawing.id) {
+      runAfterTextDraft(`select:${drawing.id}`, () => onSelectDrawing(drawing.id));
+      return;
+    }
+    onSelectDrawing(drawing.id);
+    if (drawing.locked) return;
+    const point = pointFromClient(event.clientX, event.clientY);
+    if (!point) return;
+    beginEdit(drawing, point, "width");
+    setActiveTextGesture({ drawingId: drawing.id, kind: "width" });
+    setRiskHoverCursor("ew-resize");
     capturePointer(event.currentTarget, event.pointerId);
   }
 
@@ -1478,9 +1746,14 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     onSelectDrawing(drawing.id);
   }
 
-  function createDrawing(first: DrawingAnchor, last: DrawingAnchor) {
+  function finalizeCreatedDrawing(drawing: NormalizedDrawing) {
+    onRequestCursorTool?.();
+    onSelectDrawing(drawing.id);
+  }
+
+  function createDrawing(first: DrawingAnchor, last: DrawingAnchor): NormalizedDrawing | null {
     const tool = activeTool;
-    if (tool === "cursor" || tool === "text" || tool === "horizontal-line" || tool === "vertical-line" || tool === "price-label") return;
+    if (tool === "cursor" || tool === "text" || tool === "horizontal-line" || tool === "vertical-line" || tool === "price-label") return null;
     const base = { id: drawingId(), tool, anchors: [first, last], style: styleFor(tool), hidden: false, locked: false, visibleOn: "all" as const, stage: "during-replay" as const };
     if (tool === "long-risk-reward" || tool === "short-risk-reward") {
       const direction = tool === "short-risk-reward" ? "short" : "long";
@@ -1489,16 +1762,15 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
         setValidationError(first.price === last.price
           ? "止损价不能等于入场价"
           : direction === "long" ? "做多止损必须低于入场价" : "做空止损必须高于入场价");
-        return;
+        return null;
       }
-      emitAdd({
+      return emitAdd({
         ...base,
         tool,
         anchors,
       });
-      return;
     }
-    emitAdd(base);
+    return emitAdd(base);
   }
 
   function setCreationPreview(tool: CreationState["tool"], anchors: DrawingAnchor[]) {
@@ -1536,36 +1808,57 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   }
 
   function commitText(): boolean {
-    if (!editor) return true;
+    const baseEditor = editorRef.current;
+    const geometryOverride = editorGeometryOverrideRef.current;
+    const currentEditor = baseEditor && geometryOverride && baseEditor.drawing?.id === geometryOverride.drawing.id
+      ? {
+          ...baseEditor,
+          anchor: geometryOverride.anchor,
+          x: geometryOverride.x,
+          y: geometryOverride.y,
+          placement: geometryOverride.drawing.placement,
+          canvasX: geometryOverride.drawing.canvasX,
+          canvasY: geometryOverride.drawing.canvasY,
+          drawing: {
+            ...baseEditor.drawing,
+            placement: geometryOverride.drawing.placement,
+            anchors: geometryOverride.drawing.anchors,
+            ...(Number.isFinite(geometryOverride.drawing.canvasX) && Number.isFinite(geometryOverride.drawing.canvasY)
+              ? { canvasX: geometryOverride.drawing.canvasX, canvasY: geometryOverride.drawing.canvasY }
+              : {}),
+          },
+        }
+      : baseEditor;
+    if (!currentEditor) return true;
     if (pickingAnchor || pickingAnchorRef.current) return false;
     // Prevent the textarea blur caused by closing the editor from committing
     // the same revision a second time.
     cancelEditorRef.current = true;
-    const text = editor.value;
+    const text = currentEditor.value;
     if (text) {
       const fields = {
-        placement: editor.placement,
-        textWidth: editor.textWidth,
-        fontSize: editor.fontSize,
-        background: editor.background,
-        ...(Number.isFinite(editor.canvasX) && Number.isFinite(editor.canvasY)
-          ? { canvasX: editor.canvasX, canvasY: editor.canvasY }
+        placement: currentEditor.placement,
+        textWidth: currentEditor.textWidth,
+        fontSize: currentEditor.fontSize,
+        background: currentEditor.background,
+        ...(Number.isFinite(currentEditor.canvasX) && Number.isFinite(currentEditor.canvasY)
+          ? { canvasX: currentEditor.canvasX, canvasY: currentEditor.canvasY }
           : {}),
       } as const;
-      const anchors = editor.placement === "canvas" ? [] : [editor.anchor];
-      if (editor.drawing) {
+      const anchors = currentEditor.placement === "canvas" ? [] : [currentEditor.anchor];
+      if (currentEditor.drawing) {
         const nextDrawing = {
-          ...editor.drawing,
+          ...currentEditor.drawing,
           anchors,
           text,
           ...fields,
-          style: { ...editor.drawing.style, color: editor.color },
+          style: { ...currentEditor.drawing.style, color: currentEditor.color },
         };
         // Some legacy records arrive with explicit undefined properties after
         // an in-memory merge. Remove them as well as preserving a genuinely
         // absent field so a text-only edit cannot migrate the drawing into a
         // canvas-positioned card.
-        if (!Number.isFinite(editor.canvasX) || !Number.isFinite(editor.canvasY)) {
+        if (!Number.isFinite(currentEditor.canvasX) || !Number.isFinite(currentEditor.canvasY)) {
           delete nextDrawing.canvasX;
           delete nextDrawing.canvasY;
         }
@@ -1574,32 +1867,104 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
           return false;
         }
       } else {
-        if (!emitAdd({ id: drawingId(), tool: "text", anchors, text, ...fields, style: { ...styleFor("text"), color: editor.color }, hidden: false, locked: false, visibleOn: "all", stage: "during-replay" })) {
+        const created = emitAdd({ id: drawingId(), tool: "text", anchors, text, ...fields, style: { ...styleFor("text"), color: currentEditor.color }, hidden: false, locked: false, visibleOn: "all", stage: "during-replay" });
+        if (!created) {
           cancelEditorRef.current = false;
           return false;
         }
+        onRequestCursorTool?.();
+        onSelectDrawing(created.id);
       }
     } else {
       setValidationError("请输入文字后再完成编辑");
       cancelEditorRef.current = false;
       return false;
     }
+    setTextStyleExpanded(false);
     setEditor(null);
+    editorRef.current = null;
+    editorGeometryOverrideRef.current = null;
+    // A direct completion (Ctrl/⌘+Enter or the editor check button) also
+    // satisfies a parent that is awaiting the single draft decision promise.
+    settleTextDraft(true);
     setTimeout(() => {
       cancelEditorRef.current = false;
     }, 0);
     return true;
   }
 
-  function cancelTextEditor() {
+  function settleTextDraft(value: boolean) {
+    const pending = pendingTextDraftRef.current;
+    if (!pending) return;
+    pendingTextDraftRef.current = null;
+    setTextDraftDecision(null);
+    pending.resolve(value);
+  }
+
+  function clearTextEditorState() {
+    const current = editorRef.current;
+    const isNewDraft = Boolean(current && !current.drawing);
     cancelEditorRef.current = true;
     pickingAnchorRef.current = false;
     setPickingAnchor(false);
     setValidationError(null);
+    setTextStyleExpanded(false);
     setEditor(null);
+    editorRef.current = null;
+    editorGeometryOverrideRef.current = null;
+    if (isNewDraft) {
+      clearCreationDraft();
+      onRequestCursorTool?.();
+      onSelectDrawing(null);
+    }
     setTimeout(() => {
       cancelEditorRef.current = false;
     }, 0);
+  }
+
+  function cancelTextEditor() {
+    clearTextEditorState();
+    settleTextDraft(true);
+  }
+
+  function resolveTextDraftDecision(decision: TextDraftDecision) {
+    if (decision === "continue") {
+      settleTextDraft(false);
+      requestAnimationFrame(() => textareaRef.current?.focus());
+      return;
+    }
+    if (decision === "discard") {
+      cancelTextEditor();
+      return;
+    }
+    if (!commitText()) return;
+    settleTextDraft(true);
+  }
+
+  function prepareTextDraft(reason: TextDraftIntentReason): Promise<boolean> {
+    const current = editorRef.current;
+    if (!current) return Promise.resolve(true);
+    const pending = pendingTextDraftRef.current;
+    if (pending) return pending.promise;
+    // Parent actions must wait while IME composition or market-anchor picking
+    // owns the editor. The buffer remains untouched and no decision surface is
+    // stacked over the active sub-operation.
+    if (compositionRef.current || pickingAnchorRef.current || pickingAnchor) {
+      return Promise.resolve(false);
+    }
+    if (!current.value) {
+      // A new empty draft has no command to preserve. Closing an empty edit of
+      // an existing drawing also emits nothing and therefore cannot delete it.
+      clearTextEditorState();
+      return Promise.resolve(true);
+    }
+    let resolve!: (value: boolean) => void;
+    const promise = new Promise<boolean>((settle) => {
+      resolve = settle;
+    });
+    pendingTextDraftRef.current = { promise, resolve };
+    setTextDraftDecision(reason);
+    return promise;
   }
 
   function beginAnchorPick() {
@@ -1653,7 +2018,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
       editor.drawing ? expandedTextIds.has(editor.drawing.id) : false,
       Math.max(1, boundedPlot.height - 8),
       textCardLayoutOptions.controlWidth,
-      textCardLayoutOptions.controlHeight,
+      coarsePointer ? textCardLayoutOptions.coarseControlHeight : textCardLayoutOptions.controlHeight,
     );
     const cardGeometry = (desired: ProjectedPoint) => textCardGeometry(anchorPoint, desired, layout, boundedPlot.width, boundedPlot.height);
     let geometry = cardGeometry({ x: draftX, y: draftY });
@@ -1750,8 +2115,14 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
       event.stopPropagation();
       if (pickingAnchor || pickingAnchorRef.current) {
         cancelAnchorPick();
+      } else if (editor && dragRef.current) {
+        // A text move/anchor sub-operation has priority over the editor-level
+        // draft decision. Roll back only the transient geometry and preserve
+        // the textarea buffer for the next explicit decision.
+        cancelGesture();
+        releaseCapturedPointer();
       } else if (editor) {
-        cancelTextEditor();
+        void prepareTextDraft("escape");
       } else if (dragRef.current || creationRef.current || textCreationRef.current || startAnchorRef.current || parallelDraftRef.current) {
         cancelGesture();
         releaseCapturedPointer();
@@ -1818,6 +2189,10 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
       pickRevealedAnchor(point);
       return true;
     }
+    if (editor && activeTool !== "text") {
+      void prepareTextDraft("outside-click");
+      return true;
+    }
     // Default staged Text must bind to a revealed source bar even when the
     // chart adapter projects a blank/future x-coordinate. Other drawing tools
     // retain their existing free-anchor semantics.
@@ -1846,10 +2221,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     }
     if (activeTool === "text") {
       if (editor && editor.value.length > 0) {
-        // A non-empty draft owns the canvas until the user explicitly
-        // completes or cancels it. Do not replace it with a fresh creation
-        // gesture from an outside click.
-        setValidationError("请先完成或取消当前文字编辑");
+        void prepareTextDraft("selection");
         return true;
       }
       if (multilineText) {
@@ -1876,6 +2248,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
             canvasX: size.width > 0 ? labelPoint.x / size.width : defaults.canvasX,
             canvasY: size.height > 0 ? labelPoint.y / size.height : defaults.canvasY,
           });
+          setTextStyleExpanded(false);
           onDrawingInteractionStart?.();
           return true;
         }
@@ -1888,6 +2261,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
         };
         startAnchorRef.current = anchor;
         setTextCreationPreview(anchor, point);
+        onDrawingInteractionStart?.();
         return true;
       }
       const defaults = textDefaults();
@@ -1900,6 +2274,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
         canvasX: size.width > 0 ? point.x / size.width : defaults.canvasX,
         canvasY: size.height > 0 ? point.y / size.height : defaults.canvasY,
       });
+      setTextStyleExpanded(false);
       return true;
     }
     if (isSinglePointTool(activeTool)) {
@@ -1980,8 +2355,60 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     }
     const anchor = anchorFromPoint(point.x, point.y);
     let anchors: DrawingAnchor[];
+    if (drag.drawing.tool === "text" && drag.textInteraction === "width") {
+      // Width is a chart-local presentation property. Keep the source anchor
+      // and visible base origin fixed while horizontal movement changes wrapping.
+      const originWidth = Number.isFinite(drag.drawing.textWidth)
+        ? drag.drawing.textWidth!
+        : 180;
+      // Width fitting compares the stored card's vertical geometry. The
+      // transient packer may move that body to clear HUD/sibling obstacles,
+      // but changing width must retain the same visual top during the drag.
+      const originGeometry = textGeometryForDrawing(drag.drawing, undefined, false).geometry;
+      if (point.x === drag.originPoint.x) {
+        previewRef.current = null;
+        setPreview(null);
+        return;
+      }
+      const minWidth = 36;
+      const maxWidth = Math.max(minWidth, boundedPlot.width - originGeometry.x - 4);
+      let textWidth = Math.max(
+        minWidth,
+        Math.min(maxWidth, originWidth + point.x - drag.originPoint.x),
+      );
+      textWidth = textWidthForVerticalFit(drag.drawing, textWidth);
+      if (textWidth === originWidth) {
+        previewRef.current = null;
+        setPreview(null);
+        return;
+      }
+      if (!drag.interactionStarted && physicallyMoved) {
+        drag.interactionStarted = true;
+        onDrawingInteractionStart?.();
+      }
+      // `canvasX` is normally the desired card point, not the rendered left
+      // edge. At a right plot boundary the old width is clamped, so reusing
+      // that desired point after a shrink would make the card jump right. The
+      // width gesture is a resize in place: normalize the preview to the
+      // non-transient base geometry that existed when the gesture started.
+      // Collision packing remains transient and must never be persisted as a
+      // new source position.
+      const nextPreview = {
+        ...drag.drawing,
+        textWidth,
+        ...(size.width > 0 && size.height > 0
+          ? {
+              canvasX: originGeometry.x / size.width,
+              canvasY: originGeometry.y / size.height,
+            }
+          : {}),
+      };
+      previewRef.current = nextPreview;
+      setPreview(nextPreview);
+      return;
+    }
     if (drag.drawing.tool === "text" && drag.textInteraction === "move") {
-      const origin = textGeometryForDrawing(drag.drawing).geometry;
+      const origin = drag.textOriginGeometry ?? textGeometryForDrawing(drag.drawing).geometry;
       const canvasX = size.width > 0
         ? Math.max(0, Math.min(1, (origin.x + point.x - drag.originPoint.x) / size.width))
         : drag.drawing.canvasX;
@@ -2114,6 +2541,51 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     setPreview(nextPreview);
   }
 
+  function syncEditorGeometryFromPreview(committed: NormalizedDrawing, syncTextWidth: boolean) {
+    const current = editorRef.current;
+    if (!current?.drawing || current.drawing.id !== committed.id) return;
+    const syncedTextWidth = syncTextWidth && typeof committed.textWidth === "number" && Number.isFinite(committed.textWidth)
+      ? committed.textWidth
+      : current.textWidth;
+    const nextDrawing: NormalizedDrawing = {
+      ...current.drawing,
+      placement: current.placement,
+      anchors: current.placement === "canvas" ? [] : committed.anchors.map((anchor) => ({ ...anchor })),
+      textWidth: syncedTextWidth,
+    };
+    if (Number.isFinite(committed.canvasX) && Number.isFinite(committed.canvasY)) {
+      nextDrawing.canvasX = committed.canvasX;
+      nextDrawing.canvasY = committed.canvasY;
+    } else {
+      delete nextDrawing.canvasX;
+      delete nextDrawing.canvasY;
+    }
+    const { geometry } = textGeometryForDrawing({
+      ...nextDrawing,
+      text: current.value,
+      textWidth: syncedTextWidth,
+      fontSize: current.fontSize,
+    });
+    const nextEditor: TextEditor = {
+      ...current,
+      textWidth: syncedTextWidth,
+      drawing: nextDrawing,
+      anchor: nextDrawing.anchors[0] ?? current.anchor,
+      x: geometry.x,
+      y: geometry.y,
+    };
+    // Update the ref synchronously because a completion decision can arrive
+    // before React has rendered the state update from pointerup.
+    editorRef.current = nextEditor;
+    editorGeometryOverrideRef.current = {
+      drawing: nextDrawing,
+      anchor: nextEditor.anchor,
+      x: nextEditor.x,
+      y: nextEditor.y,
+    };
+    setEditor(nextEditor);
+  }
+
   function handlePointerUp(clientX: number, clientY: number) {
     const drag = dragRef.current;
     if (drag) {
@@ -2121,7 +2593,10 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
       // event observed after a capture handoff, so never commit the previous
       // move preview instead of the final coordinates.
       handlePointerMove(clientX, clientY);
-      if (previewRef.current) emitReplace(previewRef.current);
+      const committed = previewRef.current;
+      if (committed && emitReplace(committed)) {
+        syncEditorGeometryFromPreview(committed, drag.drawing.tool === "text" && drag.textInteraction === "width");
+      }
       dragRef.current = null;
       setActiveRiskGesture(null);
       setActiveTextGesture(null);
@@ -2164,6 +2639,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
         canvasX: size.width > 0 ? point.x / size.width : defaults.canvasX,
         canvasY: size.height > 0 ? point.y / size.height : defaults.canvasY,
       });
+      setTextStyleExpanded(false);
       onDrawingInteractionStart?.();
       return;
     }
@@ -2178,7 +2654,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
       const confirmedAnchor = creation.tool === "horizontal-line" || creation.tool === "price-label"
         ? { ...creation.first, price: endAnchor.price }
         : { ...creation.first, time: endAnchor.time };
-      emitAdd({
+      const created = emitAdd({
         id: drawingId(),
         tool: creation.tool,
         anchors: [confirmedAnchor],
@@ -2188,7 +2664,10 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
         visibleOn: "all",
         stage: "during-replay",
       });
-      clearCreationDraft();
+      if (created) {
+        clearCreationDraft();
+        finalizeCreatedDrawing(created);
+      }
       return;
     }
     if (creation.phase === "width") {
@@ -2209,8 +2688,11 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
         visibleOn: "all" as const,
         stage: "during-replay" as const,
       };
-      emitAdd(base);
-      clearCreationDraft();
+      const created = emitAdd(base);
+      if (created) {
+        clearCreationDraft();
+        finalizeCreatedDrawing(created);
+      }
       return;
     }
     if (!creation.firstPointConfirmed) {
@@ -2226,8 +2708,14 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
         creation.firstPointConfirmed = false;
         setCreationPreview(creation.tool, [creation.first, endAnchor]);
       } else {
-        createDrawing(creation.first, endAnchor);
-        clearCreationDraft();
+        const created = createDrawing(creation.first, endAnchor);
+        if (created) {
+          clearCreationDraft();
+          finalizeCreatedDrawing(created);
+        } else {
+          creation.firstPointConfirmed = true;
+          setCreationPreview(creation.tool, [creation.first]);
+        }
       }
       return;
     }
@@ -2242,8 +2730,13 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
       creation.firstPointConfirmed = false;
       setCreationPreview(creation.tool, [creation.first, endAnchor]);
     } else {
-      createDrawing(creation.first, endAnchor);
-      clearCreationDraft();
+      const created = createDrawing(creation.first, endAnchor);
+      if (created) {
+        clearCreationDraft();
+        finalizeCreatedDrawing(created);
+      } else {
+        setCreationPreview(creation.tool, [creation.first]);
+      }
     }
   }
 
@@ -2256,6 +2749,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     }
     clearCreationDraft();
     if (editor && editor.value.length === 0) cancelTextEditor();
+    else if (editor) void prepareTextDraft("tool-change");
   }, [activeTool, cancelGesture, editor]);
 
   function capturePointer(target: Element, pointerId: number) {
@@ -2434,6 +2928,10 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
       creationRef.current = null;
       capturedPointerRef.current = null;
       gestureHandlersRef.current = null;
+      const pendingTextDraft = pendingTextDraftRef.current;
+      pendingTextDraftRef.current = null;
+      pendingTextDraftActionRef.current = null;
+      pendingTextDraft?.resolve(false);
     };
   }, []);
 
@@ -2441,6 +2939,26 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   const editorFrame = editor
     ? textEditorFrame(editor.value, editor.textWidth, editor.fontSize, editor.x, editor.y)
     : null;
+  const editorTextWidthMax = editor
+    ? Math.max(36, boundedPlot.width - editor.x - 4)
+    : 36;
+  const editorHasSourceAnchor = Boolean(
+    editor &&
+    editor.placement === "anchor" &&
+    Number.isFinite(editor.anchor.price) &&
+    (!editor.drawing || (editor.drawing.placement !== "canvas" && editor.drawing.anchors.length > 0)),
+  );
+  const editorSourceAnchor = editorHasSourceAnchor ? editor?.anchor : undefined;
+  const editorSourceBar = editorSourceAnchor && Number.isFinite(editorSourceAnchor.price)
+    ? candles.find((candle) => candle.time === editorSourceAnchor.time && candle.time <= cursor)
+    : undefined;
+  const editorSourceBarDateTime = editorSourceBar
+    ? formatBeijingDateTime(editorSourceBar.time).replace(
+      /^(\d{4})年(\d{2})月(\d{2})日 (\d{2}:\d{2}:\d{2})$/u,
+      "$1-$2-$3 $4",
+    )
+    : undefined;
+  const creationStatusTop = Math.min(40, Math.max(8, boundedPlot.height - 44));
   const editorControlStyle = editorFrame
     ? {
         flex: "0 0 auto",
@@ -2460,6 +2978,14 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
         borderRadius: "4px",
         padding: "0 8px",
         cursor: "pointer",
+      }
+    : undefined;
+  const editorFinalActionStyle = editorButtonStyle
+    ? {
+        ...editorButtonStyle,
+        ...(editorFrame && editorFrame.controlHeight >= EDITOR_TOUCH_STYLE_BAR_HEIGHT
+          ? { width: editorFrame.controlHeight, minWidth: editorFrame.controlHeight, padding: 0 }
+          : {}),
       }
     : undefined;
   const editorActionStyle = editorControlStyle
@@ -2500,6 +3026,61 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
         boxShadow: "0 0 0 1px var(--line-soft)",
       }
     : undefined;
+  const narrowTextControlPlan = useMemo(() => {
+    if (boundedPlot.width > 280) return null;
+    const textDrawings = drawings.filter((drawing) =>
+      !drawing.hidden && drawing.tool === "text",
+    );
+    if (textDrawings.length === 0) return null;
+    const bodyBottom = Math.max(
+      0,
+      ...textDrawings.map((drawing) => {
+        const geometry = transientTextGeometry.get(drawing.id);
+        return geometry ? geometry.y + geometry.height : 0;
+      }),
+    );
+    const hitSize = coarsePointer ? 44 : 24;
+    const editSize = coarsePointer ? 44 : 36;
+    const selectedId = selectedDrawingId ?? activeTextGesture?.drawingId;
+    const hasSourceBar = (drawing: NormalizedDrawing) => {
+      const anchor = drawing.anchors[0];
+      return Boolean(anchor && Number.isFinite(anchor.price) && candles.some((candle) =>
+        candle.time === anchor.time && candle.time <= cursor,
+      ));
+    };
+    const readoutId = [selectedDrawingId, activeTextGesture?.drawingId]
+      .filter((id): id is string => Boolean(id))
+      .find((id) => textDrawings.some((drawing) => drawing.id === id && hasSourceBar(drawing))) ?? null;
+    const readoutTop = bodyBottom + 8;
+    const controlTop = readoutTop + (readoutId ? 38 + 8 : 0);
+    const controls = new Map<string, DrawingControlRect>();
+    let left = 4;
+    const addControl = (id: string, width: number, height = hitSize) => {
+      if (left + width > boundedPlot.width - 4) return;
+      controls.set(id, { left, top: controlTop, right: left + width, bottom: controlTop + height });
+      left += width + 4;
+    };
+    for (const drawing of textDrawings) {
+      if (drawing.id === selectedId) {
+        addControl(`${drawing.id}:edit`, editSize, editSize);
+        addControl(`${drawing.id}:expand`, hitSize);
+        addControl(`${drawing.id}:width`, hitSize);
+        addControl(`${drawing.id}:move`, hitSize);
+      } else {
+        addControl(`${drawing.id}:expand`, hitSize);
+      }
+    }
+    return { controls, readoutTop };
+  }, [
+    activeTextGesture?.drawingId,
+    boundedPlot.width,
+    candles,
+    coarsePointer,
+    cursor,
+    drawings,
+    selectedDrawingId,
+    transientTextGeometry,
+  ]);
   const textPreviewGeometry = preview?.id === "__text-creation-preview__"
     ? textGeometryForDrawing(preview).geometry
     : null;
@@ -2572,7 +3153,10 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
           aria-live="polite"
           style={{
             position: "absolute",
-            top: 8,
+            // The chart's top information strip occupies the first ~36px.
+            // Keep the creation readout below it while retaining a bounded
+            // fallback for very short embedded plots.
+            top: creationStatusTop,
             left: 12,
             maxWidth: "calc(100% - 24px)",
             padding: "4px 8px",
@@ -2803,9 +3387,28 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
       {size.width > 0 && size.height > 0 && drawings.map((drawing) => {
         if (drawing.hidden || drawing.tool !== "text") return null;
         const renderedDrawing = preview?.id === drawing.id && preview.tool === "text" ? preview : drawing;
-        const { layout, geometry } = textGeometryForDrawing(renderedDrawing);
-        const expanded = expandedTextIds.has(drawing.id);
+        const { layout, geometry, expanded, shortCard } = textGeometryForDrawing(renderedDrawing);
         const hitSize = coarsePointer ? 44 : 24;
+        const siblingTextCardObstacles = textCardControlObstacles(
+          drawings
+            .filter((sibling) => !sibling.hidden && sibling.tool === "text" && sibling.id !== drawing.id)
+            .map((sibling) => {
+              const renderedSibling = preview?.id === sibling.id && preview.tool === "text" ? preview : sibling;
+              const siblingGeometry = textGeometryForDrawing(renderedSibling).geometry;
+              return {
+                id: sibling.id,
+                body: {
+                  left: siblingGeometry.x,
+                  top: siblingGeometry.y,
+                  right: siblingGeometry.x + siblingGeometry.width,
+                  bottom: siblingGeometry.y + siblingGeometry.height,
+                },
+              };
+            }),
+          drawing.id,
+          hitSize,
+        );
+        const textControlObstacles = [...controlObstacles, ...siblingTextCardObstacles];
         const selected = drawing.id === selectedDrawingId;
         const editingThisDrawing = editor?.drawing?.id === drawing.id;
         const sourceAnchor = renderedDrawing.anchors[0];
@@ -2831,43 +3434,142 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
         const readoutRect = (left: number, top: number) => ({
           left, top, right: left + readoutWidth, bottom: top + readoutReserveHeight,
         });
-        const operationRowHeight = Math.max(hitSize, textCardLayoutOptions.controlHeight);
-        const editLeft = Math.max(4, Math.min(Math.max(4, boundedPlot.width - 64), geometry.x + 4));
+        // Edit is a regular button, unlike the 24px fine-pointer Text expand
+        // and move handles. Keep its visual label compact while its actual
+        // hit rect follows the ordinary 36px / coarse 44px control contract.
+        const editHitSize = coarsePointer ? 44 : 36;
+        const editHitWidth = editHitSize;
+        const operationRowHeight = Math.max(hitSize, editHitSize, textCardLayoutOptions.controlHeight);
         const editTop = expanded && geometry.height >= operationRowHeight
-          ? geometry.y + geometry.height - operationRowHeight + Math.max(0, (operationRowHeight - 22) / 2)
-          : geometry.y - 28;
+          ? geometry.y + geometry.height - operationRowHeight + Math.max(0, (operationRowHeight - editHitSize) / 2)
+          : geometry.y - editHitSize - 6;
         const clampCenter = (value: number, limit: number) => Math.max(hitSize / 2, Math.min(Math.max(hitSize / 2, limit - hitSize / 2), value));
+        const clampControlRect = (left: number, top: number, width: number, height: number): DrawingControlRect => {
+          const maxLeft = Math.max(4, boundedPlot.width - width - 4);
+          const maxTop = Math.max(4, boundedPlot.height - height - 4);
+          const nextLeft = Math.max(4, Math.min(maxLeft, left));
+          const nextTop = Math.max(4, Math.min(maxTop, top));
+          return { left: nextLeft, top: nextTop, right: nextLeft + width, bottom: nextTop + height };
+        };
+        const editCandidates = [
+          ...(narrowTextControlPlan?.controls.get(`${drawing.id}:edit`) ? [narrowTextControlPlan.controls.get(`${drawing.id}:edit`)!] : []),
+          clampControlRect(geometry.x + 4, editTop, editHitWidth, editHitSize),
+          clampControlRect(geometry.x + geometry.width - editHitWidth, geometry.y - editHitSize - 6, editHitWidth, editHitSize),
+          clampControlRect(geometry.x + geometry.width + editHitWidth + 6, geometry.y + geometry.height - editHitSize, editHitWidth, editHitSize),
+          clampControlRect(geometry.x + 4, geometry.y + geometry.height + 6, editHitWidth, editHitSize),
+          clampControlRect(geometry.x + geometry.width - editHitWidth, geometry.y + geometry.height + 6, editHitWidth, editHitSize),
+          // A narrow card can have every in-card corner occupied by a sibling's
+          // body/halo. Use the clear strip immediately to the right before
+          // falling back to keyboard-only placement.
+          clampControlRect(geometry.x + geometry.width + editHitWidth + 6, geometry.y + 4, editHitWidth, editHitSize),
+          clampControlRect(geometry.x + geometry.width + editHitWidth + 6, geometry.y + geometry.height + editHitSize + 6, editHitWidth, editHitSize),
+        ];
+        const expandCandidates = [
+          ...(narrowTextControlPlan?.controls.get(`${drawing.id}:expand`) ? [narrowTextControlPlan.controls.get(`${drawing.id}:expand`)!] : []),
+          // Prefer the adjacent lower side strip when it is available. It
+          // keeps the button outside the readable card surface and is the
+          // first place a narrow stacked card can be reached with a pointer.
+          clampControlRect(geometry.x + geometry.width + hitSize + 6, geometry.y + geometry.height - hitSize, hitSize, hitSize),
+          clampControlRect(geometry.x + geometry.width - hitSize, geometry.y + geometry.height - hitSize, hitSize, hitSize),
+          clampControlRect(geometry.x + geometry.width - hitSize, geometry.y + 4, hitSize, hitSize),
+          clampControlRect(geometry.x + 4, geometry.y + geometry.height - hitSize, hitSize, hitSize),
+          clampControlRect(geometry.x + 4, geometry.y + 4, hitSize, hitSize),
+          clampControlRect(geometry.x + geometry.width + hitSize + 6, geometry.y + 4, hitSize, hitSize),
+        ];
+        // Edit and expand share the same compact operation space. Resolve
+        // them together so the native target for one control cannot sit
+        // beneath the other control's SVG/button subtree.
+        const jointControlPlacements = chooseJointControlPlacements([
+          { id: `${drawing.id}:expand`, candidates: expandCandidates },
+          { id: `${drawing.id}:edit`, candidates: editCandidates },
+        ], textControlObstacles);
+        const editPlacement = jointControlPlacements.get(`${drawing.id}:edit`);
+        const editRect = editPlacement?.rect ?? editCandidates[0];
+        const expandPlacement = jointControlPlacements.get(`${drawing.id}:expand`);
+        const expandRect = expandPlacement?.rect ?? expandCandidates[0];
         const operationMoveCandidates = [
+          ...(narrowTextControlPlan?.controls.get(`${drawing.id}:move`) ? [{
+            x: narrowTextControlPlan.controls.get(`${drawing.id}:move`)!.left + hitSize / 2,
+            y: narrowTextControlPlan.controls.get(`${drawing.id}:move`)!.top + hitSize / 2,
+          }] : []),
           { x: geometry.x - hitSize - 6, y: geometry.y + Math.min(12, geometry.height / 2) },
           { x: geometry.x + geometry.width + hitSize + 6, y: geometry.y + Math.min(12, geometry.height / 2) },
           { x: geometry.x - hitSize - 6, y: geometry.y + Math.max(geometry.height - 12, geometry.height / 2) },
           { x: geometry.x + geometry.width + hitSize + 6, y: geometry.y + Math.max(geometry.height - 12, geometry.height / 2) },
+          // A measured narrow plot can have no safe side strip. Pack the
+          // move handle into the lower corners before trying the top/bottom
+          // center positions; the lower-right slot remains outside the body
+          // and the compact toolbar in the bounded 244px plot.
+          { x: geometry.x - hitSize - 6, y: geometry.y + geometry.height + hitSize / 2 + 6 },
+          { x: geometry.x + geometry.width + hitSize + 6, y: geometry.y + geometry.height + hitSize / 2 + 6 },
           { x: geometry.x + geometry.width / 2, y: geometry.y - hitSize - 6 },
           { x: geometry.x + geometry.width / 2, y: geometry.y + geometry.height + hitSize + 6 },
         ].map((candidate) => ({
           x: clampCenter(candidate.x, boundedPlot.width),
           y: clampCenter(candidate.y, boundedPlot.height),
         }));
+        const operationMoveRects = operationMoveCandidates.map(({ x, y }) => ({
+          left: x - hitSize / 2, top: y - hitSize / 2, right: x + hitSize / 2, bottom: y + hitSize / 2,
+        }));
+        const currentTextCardBody: DrawingControlObstacle = {
+          left: geometry.x,
+          top: geometry.y,
+          right: geometry.x + geometry.width,
+          bottom: geometry.y + geometry.height,
+          id: `text-body-${drawing.id}`,
+        };
+        const moveAnchorPoint = sourceAnchor ? pointFor(sourceAnchor) : null;
+        const moveAnchorRect = moveAnchorPoint ? {
+          left: moveAnchorPoint.x - hitSize / 2,
+          top: moveAnchorPoint.y - hitSize / 2,
+          right: moveAnchorPoint.x + hitSize / 2,
+          bottom: moveAnchorPoint.y + hitSize / 2,
+        } : null;
+        // Very small synthetic panes cannot contain a transient hit target at
+        // all; keep the legacy keyboard/test fixture path there. Real chart
+        // panes use the selected body's readable surface as a move obstacle.
+        const moveObstacles = boundedPlot.width < 200 || boundedPlot.height < 140
+          ? textControlObstacles
+          : [...textControlObstacles, currentTextCardBody];
+        const moveCandidateAvailable = (candidate: { x: number; y: number }, index: number, avoidCardControls: boolean) => {
+          const moveRect = operationMoveRects[index]!;
+          const clearOfObstacle = !moveObstacles.some((obstacle) =>
+            moveRect.left < obstacle.right && obstacle.left < moveRect.right &&
+            moveRect.top < obstacle.bottom && obstacle.top < moveRect.bottom,
+          );
+          const clearOfCardControls = ![editRect, expandRect].some((control) =>
+            moveRect.left < control.right && control.left < moveRect.right &&
+            moveRect.top < control.bottom && control.top < moveRect.bottom,
+          );
+          const clearOfAnchor = !moveAnchorRect || !(
+            moveRect.left < moveAnchorRect.right && moveAnchorRect.left < moveRect.right &&
+            moveRect.top < moveAnchorRect.bottom && moveAnchorRect.top < moveRect.bottom
+          );
+          const separatedFromAnchor = !moveAnchorPoint ||
+            Math.abs(candidate.x - moveAnchorPoint.x) >= hitSize || Math.abs(candidate.y - moveAnchorPoint.y) >= hitSize;
+          return clearOfObstacle && (!avoidCardControls || clearOfCardControls) && clearOfAnchor && separatedFromAnchor;
+        };
+        const strictMoveIndex = operationMoveCandidates.findIndex((candidate, index) =>
+          moveCandidateAvailable(candidate, index, true),
+        );
+        const relaxedMoveIndex = strictMoveIndex >= 0
+          ? strictMoveIndex
+          : operationMoveCandidates.findIndex((candidate, index) => moveCandidateAvailable(candidate, index, false));
+        const moveCandidateIndex = relaxedMoveIndex >= 0 ? relaxedMoveIndex : 0;
+        const movePlacement = {
+          index: moveCandidateIndex,
+          rect: operationMoveRects[moveCandidateIndex]!,
+          available: relaxedMoveIndex >= 0,
+        };
         const operationRects = [
-          { left: editLeft, top: editTop, right: editLeft + 64, bottom: editTop + 22 },
-          ...(layout.canExpand ? [{
-            left: Math.max(4, Math.min(Math.max(4, boundedPlot.width - hitSize - 4), geometry.x + geometry.width - hitSize)),
-            top: Math.max(4, Math.min(Math.max(4, boundedPlot.height - hitSize - 4), geometry.y + geometry.height - hitSize)),
-            right: Math.max(4, Math.min(Math.max(4, boundedPlot.width - hitSize - 4), geometry.x + geometry.width - hitSize)) + hitSize,
-            bottom: Math.max(4, Math.min(Math.max(4, boundedPlot.height - hitSize - 4), geometry.y + geometry.height - hitSize)) + hitSize,
-          }] : []),
-          ...(selected && activeTool === "cursor" ? operationMoveCandidates.map(({ x, y }) => ({
-            left: x - hitSize / 2, top: y - hitSize / 2, right: x + hitSize / 2, bottom: y + hitSize / 2,
-          })) : []),
-          ...(selected && activeTool === "cursor" && sourceAnchor ? [{
-            left: pointFor(sourceAnchor).x - hitSize / 2,
-            top: pointFor(sourceAnchor).y - hitSize / 2,
-            right: pointFor(sourceAnchor).x + hitSize / 2,
-            bottom: pointFor(sourceAnchor).y + hitSize / 2,
-          }] : []),
+          ...(selected && activeTool === "cursor" ? [editRect] : []),
+          ...(selected && activeTool === "cursor" && layout.canExpand ? [expandRect] : []),
+          ...(selected && activeTool === "cursor" && movePlacement.available ? [movePlacement.rect] : []),
+          ...(selected && activeTool === "cursor" && moveAnchorRect ? [moveAnchorRect] : []),
+          ...textControlObstacles,
         ];
         const preferredReadoutCandidates = [
-          // Leave the edit row (geometry.y - 28 .. - 6) below the readout.
+          // Leave the actual edit hit row (geometry.y - editHitSize - 6 .. - 6) below the readout.
           { left: geometry.x + 4, top: geometry.y - readoutReserveHeight - 36 },
           { left: geometry.x + geometry.width + 8, top: geometry.y + 4 },
           { left: geometry.x - readoutWidth - 8, top: geometry.y + 4 },
@@ -2887,29 +3589,75 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
           2,
           boundedPlot.height - readoutReserveHeight - 2,
         ];
-        const readoutCandidates = [...preferredReadoutCandidates, ...readoutCandidateYs.flatMap((top) =>
+        const readoutCandidates = [
+          ...(narrowTextControlPlan && showAnchorReadout ? [readoutRect(2, narrowTextControlPlan.readoutTop)] : []),
+          ...preferredReadoutCandidates,
+          ...readoutCandidateYs.flatMap((top) =>
           readoutCandidateXs.map((left) => ({ left, top })),
-        )].map((candidate) => readoutRect(clampReadoutLeft(candidate.left), clampReadoutTop(candidate.top)))
+          ),
+        ].map((candidate) => readoutRect(clampReadoutLeft(candidate.left), clampReadoutTop(candidate.top)))
           .filter((candidate, index, all) => all.findIndex((other) =>
             other.left === candidate.left && other.top === candidate.top,
           ) === index);
         // The candidate grid includes each bounded corner and the four sides
-        // around the card. Normal chart panes always have a clear candidate;
-        // the tiny synthetic pane used by legacy unit fixtures can be smaller
-        // than the readout and every grip at once, so retain its historical
-        // compact fallback without weakening the real narrow-chart path.
-        const readoutPositionCandidate = readoutCandidates.find((candidate) =>
-          !operationRects.some((operation) =>
+        // around the card. A readout must never silently land on a known
+        // obstacle; an unavailable placement stays unresolved for the owning
+        // stage to widen before exposing source details.
+        const readoutObstacles = [...operationRects, currentTextCardBody];
+        const safeReadoutPositionCandidate = readoutCandidates.find((candidate) =>
+          !readoutObstacles.some((operation) =>
             candidate.left < operation.right && operation.left < candidate.right &&
             candidate.top < operation.bottom && operation.top < candidate.bottom,
           ),
-        ) ?? (boundedPlot.width < 200 || boundedPlot.height < 140
-          ? readoutRect(2, 2)
-          : readoutCandidates[0]!);
+        );
+        const readoutPositionCandidate = safeReadoutPositionCandidate ?? (
+          boundedPlot.width < 200 || boundedPlot.height < 140 ? readoutRect(2, 2) : undefined
+        );
+        const widthHandleCandidates = [
+          ...(narrowTextControlPlan?.controls.get(`${drawing.id}:width`) ? [narrowTextControlPlan.controls.get(`${drawing.id}:width`)!] : []),
+          // The primary grip lives on the card's right edge. Alternatives keep
+          // it reachable when a compact toolbar or source readout occupies
+          // that edge of the plot.
+          clampControlRect(
+            geometry.x + geometry.width - hitSize / 2,
+            geometry.y + geometry.height / 2 - hitSize / 2,
+            hitSize,
+            hitSize,
+          ),
+          clampControlRect(
+            geometry.x + geometry.width - hitSize / 2,
+            geometry.y + geometry.height - hitSize / 2,
+            hitSize,
+            hitSize,
+          ),
+          clampControlRect(
+            geometry.x + geometry.width / 2 - hitSize / 2,
+            geometry.y + geometry.height - hitSize / 2,
+            hitSize,
+            hitSize,
+          ),
+          clampControlRect(
+            geometry.x - hitSize / 2,
+            geometry.y + geometry.height / 2 - hitSize / 2,
+            hitSize,
+            hitSize,
+          ),
+        ];
+        const widthHandleObstacles: DrawingControlObstacle[] = [
+          ...textControlObstacles,
+          ...operationRects.map((rect, index) => ({ ...rect, id: `text-control-${drawing.id}-${index}` })),
+          ...(readoutPositionCandidate ? [{ ...readoutPositionCandidate, id: `text-readout-${drawing.id}` }] : []),
+        ];
+        const widthHandlePlacement = chooseAvailableControlRect(widthHandleCandidates, widthHandleObstacles);
+        const widthHandleRect = widthHandlePlacement?.rect ?? widthHandleCandidates[0];
         // Expanded cards keep the bounded viewport for layout, but their DOM
         // layer must retain every wrapped line so the user can scroll/read the
         // complete original text instead of receiving an ellipsis-only tail.
         const visibleText = expanded ? layout.fullLines.join("\n") : layout.lines.join("\n");
+        // Short cards start fully visible, but their operation row remains a
+        // separate compact surface rather than turning the body into the
+        // scroll-reserved long-text viewport.
+        const expandedBody = expanded && !shortCard;
         const controlFocusStyle = (key: string) => ({
           outline: focusedTextControl === key ? "2px solid var(--link, #8cbdff)" : "none",
           outlineOffset: 2,
@@ -2919,7 +3667,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
             key={`text-card-text-layer-${drawing.id}`}
             className="drawing-text-card-text-layer"
             aria-label={`文字内容 ${drawing.id}`}
-            onPointerDown={() => onSelectDrawing(drawing.id)}
+            onPointerDown={() => requestDrawingSelection(drawing.id)}
             style={{
               position: "absolute",
               // A selected card must remain legible over an opaque risk/reward
@@ -2934,15 +3682,15 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
               // existing operation row inside that geometry, but reserve its
               // height in the scroll content so the last wrapped line cannot
               // end underneath the edit/collapse controls at scroll bottom.
-              padding: expanded
+              padding: expandedBody
                 ? `4px ${textCardLayoutOptions.horizontalPadding}px ${operationRowHeight + 4}px`
                 : `4px ${textCardLayoutOptions.horizontalPadding}px`,
               color: (selected || expanded) && !editingThisDrawing ? drawing.style.color : "transparent",
               opacity: (selected || expanded) && !editingThisDrawing ? drawing.style.opacity : 0,
-              background: selected ? "#101722" : "transparent",
+              background: selected ? (drawing.background ?? "transparent") : "transparent",
               fontSize: drawing.fontSize ?? 14,
               fontFamily: CANVAS_TEXT_FONT_FAMILY,
-              fontWeight: 600,
+              fontWeight: 400,
               lineHeight: `${layout.lineHeight}px`,
               whiteSpace: "pre-wrap",
               overflow: "auto",
@@ -2959,13 +3707,13 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
           textLayer,
           <button key={selectKey} type="button" className="drawing-selection-control" aria-label={`选择文字 ${drawing.id}`}
             onFocus={() => setFocusedTextControl(selectKey)} onBlur={() => setFocusedTextControl(null)}
-            onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onSelectDrawing(drawing.id); } }}
-            onPointerDown={(event) => { event.preventDefault(); event.stopPropagation(); onSelectDrawing(drawing.id); }}
+            onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); requestDrawingSelection(drawing.id); } }}
+            onPointerDown={(event) => { event.preventDefault(); event.stopPropagation(); requestDrawingSelection(drawing.id); }}
             style={{ position: "absolute", zIndex: 4, left: Math.max(0, geometry.x), top: Math.max(0, geometry.y), width: 22, height: 22, minWidth: 0, minHeight: 0, padding: 0, border: focusedTextControl === selectKey ? "1px solid var(--link, #8cbdff)" : 0, borderRadius: 3, background: focusedTextControl === selectKey ? "rgba(140, 189, 255, 0.18)" : "transparent", color: "var(--link, #8cbdff)", opacity: focusedTextControl === selectKey ? 1 : 0, pointerEvents: activeTool === "cursor" && focusedTextControl === selectKey ? "auto" : "none", cursor: "pointer", ...controlFocusStyle(selectKey) }}>
             {focusedTextControl === selectKey && <span aria-hidden="true" style={{ fontSize: 12, lineHeight: "20px" }}>⌖</span>}
           </button>,
         ];
-        if (showAnchorReadout && sourceAnchor && sourceBar) {
+        if (showAnchorReadout && sourceAnchor && sourceBar && readoutPositionCandidate) {
           controls.push(
             <div
               key={`${drawing.id}:anchor-readout`}
@@ -3006,20 +3754,35 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
               type="button"
               className="drawing-text-card-control"
               aria-label={`${expanded ? "收起" : "展开"}文字 ${drawing.id}`}
-              title={expanded ? "收起文字" : "展开文字"}
+              title={expandPlacement?.available === false
+                ? "图表空间不足，请使用键盘操作"
+                : expanded ? "收起文字" : "展开文字"}
+              data-control-placement={expandPlacement?.available === false ? "keyboard-fallback" : "plot"}
               onFocus={() => setFocusedTextControl(toggleKey)}
               onBlur={() => setFocusedTextControl(null)}
               onPointerDown={(event) => event.stopPropagation()}
-              onClick={() => setExpandedTextIds((current) => {
-                const next = new Set(current);
-                if (next.has(drawing.id)) next.delete(drawing.id);
-                else next.add(drawing.id);
-                return next;
-              })}
+              onClick={() => {
+                if (shortCard) {
+                  setFoldedTextIds((current) => {
+                    const next = new Set(current);
+                    if (next.has(drawing.id)) next.delete(drawing.id);
+                    else next.add(drawing.id);
+                    return next;
+                  });
+                  return;
+                }
+                setExpandedTextIds((current) => {
+                  const next = new Set(current);
+                  if (next.has(drawing.id)) next.delete(drawing.id);
+                  else next.add(drawing.id);
+                  return next;
+                });
+              }}
               style={{
-                position: "absolute", zIndex: selected ? 8 : 6, pointerEvents: activeTool === "cursor" ? "auto" : "none",
-                left: Math.max(4, Math.min(Math.max(4, boundedPlot.width - hitSize - 4), geometry.x + geometry.width - hitSize)),
-                top: Math.max(4, Math.min(Math.max(4, boundedPlot.height - hitSize - 4), geometry.y + geometry.height - hitSize)),
+                position: "absolute", zIndex: selected ? 8 : 6,
+                pointerEvents: activeTool === "cursor" && (expandPlacement?.available ?? true) ? "auto" : "none",
+                left: expandRect.left,
+                top: expandRect.top,
                 width: hitSize, height: hitSize, minWidth: hitSize, minHeight: hitSize,
                 padding: 0, boxSizing: "border-box", border: "1px solid rgba(140, 189, 255, 0.65)",
                 borderRadius: 3, color: "#cfe3ff", background: "rgba(16, 23, 34, 0.92)",
@@ -3027,51 +3790,102 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
                 ...controlFocusStyle(toggleKey),
               }}
             >
-              <span aria-hidden="true">{expanded ? "⌃" : "⌄"}</span>
+              {expanded
+                ? <ChevronUp size={16} strokeWidth={2} aria-hidden="true" />
+                : <ChevronDown size={16} strokeWidth={2} aria-hidden="true" />}
             </button>,
           );
         }
         if (selected && activeTool === "cursor") {
           const moveKey = `${drawing.id}:move`;
-          const clampCenter = (value: number, limit: number) => Math.max(hitSize / 2, Math.min(Math.max(hitSize / 2, limit - hitSize / 2), value));
-          const anchorPoint = renderedDrawing.anchors[0] ? pointFor(renderedDrawing.anchors[0]) : null;
-          const moveCandidates = [
-            { x: geometry.x - hitSize - 6, y: geometry.y + Math.min(12, geometry.height / 2) },
-            { x: geometry.x + geometry.width + hitSize + 6, y: geometry.y + Math.min(12, geometry.height / 2) },
-            { x: geometry.x - hitSize - 6, y: geometry.y + Math.max(geometry.height - 12, geometry.height / 2) },
-            { x: geometry.x + geometry.width + hitSize + 6, y: geometry.y + Math.max(geometry.height - 12, geometry.height / 2) },
-            { x: geometry.x + geometry.width / 2, y: geometry.y - hitSize - 6 },
-            { x: geometry.x + geometry.width / 2, y: geometry.y + geometry.height + hitSize + 6 },
-          ].map((candidate) => ({
-            x: clampCenter(candidate.x, boundedPlot.width),
-            y: clampCenter(candidate.y, boundedPlot.height),
-          }));
-          const separated = anchorPoint
-            ? moveCandidates.find((candidate) => Math.abs(candidate.x - anchorPoint.x) >= hitSize || Math.abs(candidate.y - anchorPoint.y) >= hitSize)
-            : moveCandidates[0];
-          const moveX = separated?.x ?? moveCandidates[0].x;
-          const moveY = separated?.y ?? moveCandidates[0].y;
+          const overlapsRect = (left: DrawingControlRect, right: DrawingControlRect) =>
+            left.left < right.right && right.left < left.right &&
+            left.top < right.bottom && right.top < left.bottom;
+          const moveRect = movePlacement.rect;
+          const moveX = moveRect.left + hitSize / 2;
+          const moveY = moveRect.top + hitSize / 2;
+          const moveAvailable = movePlacement.available;
           if (!drawing.locked) {
             const moveActive = activeTextGesture?.drawingId === drawing.id && activeTextGesture.kind === "move";
             const anchorActive = activeTextGesture?.drawingId === drawing.id && activeTextGesture.kind === "anchor";
+            const widthKey = `${drawing.id}:width`;
+            const widthActive = activeTextGesture?.drawingId === drawing.id && activeTextGesture.kind === "width";
+            controls.push(
+              <button
+                key={widthKey}
+                type="button"
+                className="drawing-selection-control"
+                aria-label={`调整文字宽度 ${drawing.id}`}
+                title={widthHandlePlacement?.available === false
+                  ? "图表空间不足，请使用键盘操作"
+                  : "调整文字宽度"}
+                data-control-placement={widthHandlePlacement?.available === false ? "keyboard-fallback" : "plot"}
+                onFocus={() => setFocusedTextControl(widthKey)}
+                onBlur={() => setFocusedTextControl(null)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onSelectDrawing(drawing.id);
+                  }
+                }}
+                onPointerDown={(event) => beginTextWidthControl(event, drawing)}
+                style={{
+                  position: "absolute", zIndex: 9,
+                  left: widthHandleRect.left,
+                  top: widthHandleRect.top,
+                  width: hitSize,
+                  height: hitSize,
+                  minWidth: hitSize,
+                  minHeight: hitSize,
+                  padding: 0,
+                  border: 0,
+                  borderRadius: 3,
+                  background: "transparent",
+                  pointerEvents: widthHandlePlacement?.available === false ? "none" : "auto",
+                  cursor: widthActive ? "ew-resize" : "ew-resize",
+                  ...controlFocusStyle(widthKey),
+                }}
+              >
+                <span
+                  aria-hidden="true"
+                  style={{
+                    display: "block",
+                    width: 10,
+                    height: Math.max(10, hitSize - 10),
+                    margin: "auto",
+                    boxSizing: "border-box",
+                    borderLeft: "2px solid var(--link, #8cbdff)",
+                    borderRight: "2px solid var(--link, #8cbdff)",
+                    background: widthActive ? "rgba(140, 189, 255, 0.28)" : "transparent",
+                  }}
+                />
+              </button>,
+            );
             controls.push(
               <button key={moveKey} type="button" className="drawing-selection-control" aria-label={`移动文字 ${drawing.id}`}
                 onFocus={() => setFocusedTextControl(moveKey)} onBlur={() => setFocusedTextControl(null)}
                 onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onSelectDrawing(drawing.id); } }}
                 onPointerDown={(event) => beginTextControl(event, drawing, "move")}
-            style={{ position: "absolute", zIndex: 9, left: moveX - hitSize / 2, top: moveY - hitSize / 2, width: hitSize, height: hitSize, minWidth: hitSize, minHeight: hitSize, padding: 0, border: 0, borderRadius: "50%", background: "transparent", color: "#17202b", pointerEvents: "auto", cursor: moveActive ? "grabbing" : "move", ...controlFocusStyle(moveKey) }}>
-                <span aria-hidden="true" style={{ display: "block", width: 8, height: 8, margin: "auto", boxSizing: "border-box", border: "2px solid var(--link, #8cbdff)", borderRadius: 2, background: moveActive ? "var(--link, #8cbdff)" : "#17202b" }} />
+            style={{ position: "absolute", zIndex: 9, left: moveX - hitSize / 2, top: moveY - hitSize / 2, width: hitSize, height: hitSize, minWidth: hitSize, minHeight: hitSize, padding: 0, border: 0, borderRadius: "50%", background: "transparent", color: "var(--link, #8cbdff)", pointerEvents: moveAvailable ? "auto" : "none", cursor: moveActive ? "grabbing" : "move", ...controlFocusStyle(moveKey) }}>
+                <Move size={16} strokeWidth={2} aria-hidden="true" />
               </button>,
             );
             if (renderedDrawing.placement !== "canvas" && renderedDrawing.anchors[0]) {
               const anchorPoint = pointFor(renderedDrawing.anchors[0]);
               const anchorKey = `${drawing.id}:anchor`;
+              const anchorRect = {
+                left: anchorPoint.x - hitSize / 2,
+                top: anchorPoint.y - hitSize / 2,
+                right: anchorPoint.x + hitSize / 2,
+                bottom: anchorPoint.y + hitSize / 2,
+              };
+              const anchorAvailable = !textControlObstacles.some((obstacle) => overlapsRect(anchorRect, obstacle));
               controls.push(
                 <button key={anchorKey} type="button" className="drawing-selection-control" aria-label={`移动市场锚点 ${drawing.id}`}
                   onFocus={() => setFocusedTextControl(anchorKey)} onBlur={() => setFocusedTextControl(null)}
                   onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onSelectDrawing(drawing.id); } }}
                   onPointerDown={(event) => beginTextControl(event, drawing, "anchor")}
-                  style={{ position: "absolute", zIndex: 9, left: anchorPoint.x - hitSize / 2, top: anchorPoint.y - hitSize / 2, width: hitSize, height: hitSize, minWidth: hitSize, minHeight: hitSize, padding: 0, border: 0, borderRadius: "50%", background: "transparent", pointerEvents: "auto", cursor: anchorActive ? "grabbing" : "move", ...controlFocusStyle(anchorKey) }}>
+                  style={{ position: "absolute", zIndex: 9, left: anchorPoint.x - hitSize / 2, top: anchorPoint.y - hitSize / 2, width: hitSize, height: hitSize, minWidth: hitSize, minHeight: hitSize, padding: 0, border: 0, borderRadius: "50%", background: "transparent", pointerEvents: anchorAvailable ? "auto" : "none", cursor: anchorActive ? "grabbing" : "move", ...controlFocusStyle(anchorKey) }}>
                   <span aria-hidden="true" style={{ display: "block", width: 8, height: 8, margin: "auto", boxSizing: "border-box", border: "2px solid var(--link, #8cbdff)", borderRadius: "50%", background: anchorActive ? "var(--link, #8cbdff)" : "#17202b" }} />
                 </button>,
               );
@@ -3079,10 +3893,11 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
             const editKey = `${drawing.id}:edit`;
             controls.push(
               <button key={editKey} type="button" className="drawing-selection-control" aria-label={`编辑文字 ${drawing.id}`}
+                title="编辑文字"
                 onFocus={() => setFocusedTextControl(editKey)} onBlur={() => setFocusedTextControl(null)}
                 onPointerDown={(event) => event.stopPropagation()} onClick={() => openTextEditor(drawing)}
-                style={{ position: "absolute", zIndex: 9, left: editLeft, top: Math.max(4, editTop), minHeight: 22, height: 22, padding: "0 6px", border: "1px solid var(--line-soft)", borderRadius: 3, background: "var(--surface-elevated, #17202b)", color: "var(--link, #8cbdff)", fontSize: 11, pointerEvents: "auto", cursor: "text", ...controlFocusStyle(editKey) }}>
-                编辑文字
+                style={{ position: "absolute", zIndex: 9, left: editRect.left, top: editRect.top, width: editRect.right - editRect.left, minWidth: editRect.right - editRect.left, height: editRect.bottom - editRect.top, minHeight: editRect.bottom - editRect.top, boxSizing: "border-box", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "0 6px", border: "1px solid var(--line-soft)", borderRadius: 3, background: "var(--surface-elevated, #17202b)", color: "var(--link, #8cbdff)", fontSize: 11, lineHeight: "18px", pointerEvents: (editPlacement?.available ?? true) ? "auto" : "none", cursor: "text", ...controlFocusStyle(editKey) }}>
+                <Pencil size={16} aria-hidden="true" />
               </button>,
             );
           }
@@ -3097,10 +3912,10 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
             zIndex: 10,
             pointerEvents: "auto",
             display: "grid",
-            gap: 2,
+            gap: EDITOR_VERTICAL_GAP,
             overflow: "hidden",
             overflowY: "hidden",
-            gridTemplateRows: `${editorFrame.styleBarHeight}px minmax(0, 1fr) ${editorFrame.hintHeight}px`,
+            gridTemplateRows: `${editorFrame.headerHeight}px minmax(0, 1fr) ${editorFrame.styleBarHeight}px ${editorFrame.advancedHeight > 0 ? `${editorFrame.advancedHeight}px ` : ""}${editorFrame.actionHeight}px`,
             background: "var(--surface-elevated)",
             borderRadius: "6px",
             boxShadow: "0 0 0 1px var(--line-soft)",
@@ -3110,167 +3925,85 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
           onKeyDown={(event) => event.stopPropagation()}
         >
           <div
-            className="drawing-text-editor-controls"
+            className="drawing-text-editor-header"
             style={{
-              display: "flex",
+              display: "grid",
+              gridTemplateColumns: `${editorFrame.controlHeight}px minmax(0, 1fr) ${editorFrame.controlHeight}px`,
               gap: 2,
               alignItems: "center",
               minWidth: 0,
-              minHeight: 0,
-              maxHeight: editorFrame.styleBarHeight,
-              height: editorFrame.styleBarHeight,
-              width: "100%",
-              maxWidth: "100%",
-              overflow: "hidden",
-              flexShrink: 0,
+              minHeight: editorFrame.headerHeight,
+              height: editorFrame.headerHeight,
+              padding: "0 2px",
+              boxSizing: "border-box",
+              background: "var(--surface)",
+              borderRadius: "4px",
+              boxShadow: "inset 0 0 0 1px var(--line-soft)",
               position: "relative",
               zIndex: 7,
-              }}
-            onPointerDown={(event) => {
-              event.stopPropagation();
-              preserveEditorForControl();
             }}
           >
-            <div
-              className="drawing-text-style-bar"
-              aria-label="文字样式"
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 2,
-                alignItems: "flex-start",
-                alignContent: "flex-start",
-                minWidth: 0,
-                flex: "1 1 auto",
-                minHeight: 0,
-                maxHeight: editorFrame.styleBarHeight,
-                boxSizing: "border-box",
-                overflowX: "hidden",
-                overflowY: "auto",
-                whiteSpace: "nowrap",
-                background: "var(--surface)",
-                borderRadius: "4px",
-                boxShadow: "inset 0 0 0 1px var(--line-soft)",
-                height: editorFrame.styleBarHeight,
-                position: "relative",
-                zIndex: 7,
+            <button
+              type="button"
+              aria-label="移动文字编辑器"
+              title="移动文字"
+              style={{ ...editorActionStyle, cursor: activeTextGesture?.kind === "move" ? "grabbing" : "move" }}
+              onPointerDown={(event) => {
+                const current = editorRef.current;
+                if (!current?.drawing) return;
+                beginTextControl(event, current.drawing, "move");
               }}
             >
-              <button
-                type="button"
-                style={editorButtonStyle}
-                aria-label={editor.placement === "canvas" ? "改为锚定文字" : "改为自由文字"}
-                onClick={() => setEditor((current) => {
-                if (!current) return current;
-                const placement = current.placement === "canvas" ? "anchor" : "canvas";
-                return {
-                  ...current,
-                  placement,
-                  background:
-                    placement === "canvas" &&
-                    current.background === DEFAULT_TEXT_CARD_BACKGROUND
-                      ? "transparent"
-                      : current.background,
-                  canvasX: size.width > 0 ? current.x / size.width : current.canvasX,
-                  canvasY: size.height > 0 ? current.y / size.height : current.canvasY,
-                };
-                })}
-              >
-                {editor.placement === "canvas" ? "锚定" : "自由"}
-              </button>
-              {editor.placement === "canvas" && (
-                <button
-                  type="button"
-                  style={editorButtonStyle}
-                  aria-label="定位所选文字"
-                  onClick={() => setEditor((current) => {
-                  if (!current || size.width <= 0 || size.height <= 0) return current;
-                  const layout = textLayout(current.value, current.textWidth, current.fontSize, size.width - 4);
-                  const width = layout.width;
-                  const height = layout.height;
-                  const x = Math.max(2, Math.min(size.width - width - 2, current.x));
-                  const y = Math.max(2, Math.min(size.height - height - 2, current.y));
-                  return {
-                    ...current,
-                    x,
-                    y,
-                    canvasX: x / size.width,
-                    canvasY: y / size.height,
-                  };
-                  })}
+              <span aria-hidden="true">✣</span>
+            </button>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 6,
+                minWidth: 0,
+                overflow: "hidden",
+              }}
+            >
+              <strong style={{ flex: "0 0 auto", fontSize: 12, lineHeight: "16px", whiteSpace: "nowrap" }}>编辑批注</strong>
+              {editorSourceAnchor && editorSourceBar && Number.isFinite(editorSourceAnchor.price) ? (
+                <div
+                  role="status"
+                  aria-label="文字编辑锚点"
+                  title="编辑中的文字锚点（北京时间）"
+                  style={{
+                    minWidth: 0,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    color: "var(--link, #8cbdff)",
+                    fontSize: 11,
+                    lineHeight: "16px",
+                  }}
                 >
-                  定位
-                </button>
-              )}
-              <button
-                type="button"
-                style={editorButtonStyle}
-                aria-label={pickingAnchor ? "取消关联取点" : "关联价格 / K线"}
-                onClick={() => pickingAnchor ? cancelAnchorPick() : beginAnchorPick()}
-              >
-                {pickingAnchor ? "取消关联" : "关联价格 / K线"}
-              </button>
-              <label style={editorControlStyle}>
-              <span className="sr-only">字号</span>
-              <select
-                aria-label="文字字号"
-                value={editor.fontSize}
-                style={editorFieldStyle}
-                onChange={(event) => setEditor((current) => current ? { ...current, fontSize: Number(event.target.value) as TextEditor["fontSize"] } : current)}
-              >
-                {[12, 14, 16, 18, 24, 32].map((fontSize) => <option key={fontSize} value={fontSize}>{fontSize}px</option>)}
-              </select>
-              </label>
-              <label style={editorControlStyle}>
-              <span className="sr-only">文字颜色</span>
-              <input
-                type="color"
-                aria-label="文字颜色"
-                value={editor.color}
-                style={editorColorStyle}
-                onChange={(event) => setEditor((current) => current ? { ...current, color: event.target.value } : current)}
-              />
-              </label>
-              <label style={editorControlStyle}>
-              <span className="sr-only">文字宽度</span>
-              <input
-                type="number"
-                aria-label="文字宽度"
-                min={36}
-                max={Math.max(36, size.width)}
-                value={Math.round(editor.textWidth)}
-                style={editorFieldStyle}
-                onChange={(event) => setEditor((current) => current ? {
-                  ...current,
-                  // Deliberate user edits are capped to this canvas. Existing
-                  // stored desired widths remain untouched until edited and
-                  // are only clamped by textLayout while rendered.
-                  textWidth: Math.min(
-                    Math.max(1, size.width),
-                    Math.max(36, Number(event.target.value) || 36),
-                  ),
-                } : current)}
-              />
-              </label>
-              <button
-                type="button"
-                style={editorButtonStyle}
-                aria-label="切换文字背景"
-                onClick={() => setEditor((current) => current ? { ...current, background: current.background === "transparent" ? "rgba(16, 23, 34, 0.86)" : "transparent" } : current)}
-              >
-                背景
-              </button>
+                  源柱 {editorSourceAnchor.price.toFixed(2)} · {editorSourceBarDateTime}
+                </div>
+              ) : null}
             </div>
-            <button type="button" style={editorActionStyle} aria-label="完成文字编辑" disabled={pickingAnchor} onClick={commitText}><Check size={18} aria-hidden="true" /></button>
-            <button type="button" style={editorActionStyle} aria-label="取消文字编辑" onClick={cancelTextEditor}><X size={18} aria-hidden="true" /></button>
+            <button
+              type="button"
+              aria-label="关闭文字编辑"
+              title="关闭编辑"
+              style={editorActionStyle}
+              onClick={() => void prepareTextDraft("leave")}
+            >
+              <X size={16} aria-hidden="true" />
+            </button>
           </div>
           <textarea
+            ref={textareaRef}
             autoFocus
             className="drawing-text-editor"
             aria-label="文字标注"
             value={editor.value}
-            rows={3}
-            style={{ position: "static", width: "100%", minWidth: 0, maxWidth: "100%", minHeight: editorFrame.textareaMinHeight, height: "100%", overflowY: "auto", boxSizing: "border-box", pointerEvents: "auto", fontSize: editor.fontSize, fontFamily: CANVAS_TEXT_FONT_FAMILY, fontWeight: 600, lineHeight: `${editorFrame.lineHeight}px`, padding: "3px 6px", border: "1px solid var(--line-soft)", boxShadow: "none", background: editor.background === "transparent" ? "#101722" : editor.background }}
+            rows={4}
+            style={{ position: "static", width: "100%", minWidth: 0, maxWidth: "100%", minHeight: editorFrame.textareaMinHeight, height: "100%", overflowY: "auto", boxSizing: "border-box", pointerEvents: "auto", fontSize: editor.fontSize, fontFamily: CANVAS_TEXT_FONT_FAMILY, fontWeight: 400, lineHeight: `${editorFrame.lineHeight}px`, padding: "4px 4px 48px", border: "1px solid var(--line-soft)", boxShadow: "none", background: editor.background === "transparent" ? "#101722" : editor.background }}
             onChange={(event) => setEditor((current) => current ? { ...current, value: event.target.value } : current)}
             onCompositionStart={() => { compositionRef.current = true; }}
             onCompositionEnd={() => { compositionRef.current = false; }}
@@ -3282,13 +4015,13 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
               const nextTarget = event.relatedTarget;
               if (nextTarget instanceof Element && nextTarget.closest("[data-replay-control]")) return;
               if (nextTarget instanceof Node && event.currentTarget.parentElement?.contains(nextTarget)) return;
-              commitText();
+              void prepareTextDraft("outside-click");
             }}
             onKeyDown={(event: ReactKeyboardEvent<HTMLTextAreaElement>) => {
               if (event.key === "Escape") {
                 if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229 || compositionRef.current) return;
                 event.preventDefault();
-                cancelTextEditor();
+                void prepareTextDraft("escape");
                 return;
               }
               if (
@@ -3315,7 +4048,263 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
               }
             }}
           />
-          <span className="drawing-text-editor-hint" style={{ color: "#8392a7", fontSize: 12, lineHeight: `${editorFrame.hintHeight}px`, whiteSpace: "nowrap", overflowX: "auto", overflowY: "hidden", display: "block" }}>{pickingAnchor ? "请在已揭示的图表区域点选价格/K线 · Esc 取消取点" : "Enter 换行 · ⌘/Ctrl+Enter 完成 · Esc 取消"}</span>
+          <div
+            className="drawing-text-editor-controls"
+            style={{
+              display: "flex",
+              gap: 2,
+              alignItems: "center",
+              minWidth: 0,
+              minHeight: editorFrame.controlHeight,
+              height: editorFrame.styleBarHeight,
+              width: "100%",
+              maxWidth: "100%",
+              overflow: "hidden",
+              flexShrink: 0,
+              position: "relative",
+              zIndex: 7,
+            }}
+            onPointerDown={(event) => {
+              event.stopPropagation();
+              preserveEditorForControl();
+            }}
+          >
+            <div
+              className="drawing-text-style-bar"
+              aria-label="文字样式"
+              style={{
+                display: "flex",
+                gap: 2,
+                alignItems: "center",
+                minWidth: 0,
+                flex: "1 1 auto",
+                minHeight: editorFrame.controlHeight,
+                maxHeight: editorFrame.styleBarHeight,
+                boxSizing: "border-box",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                background: "var(--surface)",
+                borderRadius: "4px",
+                boxShadow: "inset 0 0 0 1px var(--line-soft)",
+                height: editorFrame.styleBarHeight,
+                position: "relative",
+                zIndex: 7,
+              }}
+            >
+              <label style={editorControlStyle}>
+                <span className="sr-only">字号</span>
+                <select
+                  aria-label="文字字号"
+                  value={editor.fontSize}
+                  style={editorFieldStyle}
+                  onChange={(event) => setEditor((current) => current ? { ...current, fontSize: Number(event.target.value) as TextEditor["fontSize"] } : current)}
+                >
+                  {[12, 14, 16, 18, 24, 32].map((fontSize) => <option key={fontSize} value={fontSize}>{fontSize}px</option>)}
+                </select>
+              </label>
+              <button
+                type="button"
+                style={editorButtonStyle}
+                aria-label="切换文字背景"
+                onClick={() => setEditor((current) => current ? { ...current, background: current.background === "transparent" ? "rgba(16, 23, 34, 0.86)" : "transparent" } : current)}
+              >
+                背景
+              </button>
+              <button
+                type="button"
+                style={editorButtonStyle}
+                aria-label="样式"
+                aria-expanded={textStyleExpanded}
+                onClick={() => setTextStyleExpanded((expanded) => !expanded)}
+              >
+                样式
+              </button>
+            </div>
+          </div>
+          {textStyleExpanded && (
+            <div
+              className="drawing-text-editor-advanced"
+              aria-label="更多文字样式"
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                alignContent: "flex-start",
+                gap: 2,
+                minWidth: 0,
+                minHeight: 0,
+                maxHeight: editorFrame.advancedHeight,
+                height: editorFrame.advancedHeight,
+                overflowX: "hidden",
+                overflowY: "auto",
+                boxSizing: "border-box",
+                background: "var(--surface)",
+                borderRadius: "4px",
+                boxShadow: "inset 0 0 0 1px var(--line-soft)",
+              }}
+              onPointerDown={(event) => {
+                event.stopPropagation();
+                preserveEditorForControl();
+              }}
+            >
+              <button
+                type="button"
+                style={editorButtonStyle}
+                aria-label={editor.placement === "canvas" ? "改为锚定文字" : "改为自由文字"}
+                onClick={() => setEditor((current) => {
+                  if (!current) return current;
+                  const placement = current.placement === "canvas" ? "anchor" : "canvas";
+                  return {
+                    ...current,
+                    placement,
+                    background:
+                      placement === "canvas" &&
+                      current.background === DEFAULT_TEXT_CARD_BACKGROUND
+                        ? "transparent"
+                        : current.background,
+                    canvasX: size.width > 0 ? current.x / size.width : current.canvasX,
+                    canvasY: size.height > 0 ? current.y / size.height : current.canvasY,
+                  };
+                })}
+              >
+                {editor.placement === "canvas" ? "锚定" : "自由"}
+              </button>
+              {editor.placement === "canvas" && (
+                <button
+                  type="button"
+                  style={editorButtonStyle}
+                  aria-label="定位所选文字"
+                  onClick={() => setEditor((current) => {
+                    if (!current || size.width <= 0 || size.height <= 0) return current;
+                    const layout = textLayout(current.value, current.textWidth, current.fontSize, size.width - 4);
+                    const width = layout.width;
+                    const height = layout.height;
+                    const x = Math.max(2, Math.min(size.width - width - 2, current.x));
+                    const y = Math.max(2, Math.min(size.height - height - 2, current.y));
+                    return {
+                      ...current,
+                      x,
+                      y,
+                      canvasX: x / size.width,
+                      canvasY: y / size.height,
+                    };
+                  })}
+                >
+                  定位
+                </button>
+              )}
+              <button
+                type="button"
+                style={editorButtonStyle}
+                aria-label={pickingAnchor ? "取消关联取点" : "关联价格 / K线"}
+                onClick={() => pickingAnchor ? cancelAnchorPick() : beginAnchorPick()}
+              >
+                {pickingAnchor ? "取消关联" : "关联价格 / K线"}
+              </button>
+              <label style={editorControlStyle}>
+                <span className="sr-only">文字颜色</span>
+                <input
+                  type="color"
+                  aria-label="文字颜色"
+                  value={editor.color}
+                  style={editorColorStyle}
+                  onChange={(event) => setEditor((current) => current ? { ...current, color: event.target.value } : current)}
+                />
+              </label>
+              <label style={editorControlStyle}>
+                <span className="sr-only">文字宽度</span>
+                <input
+                  type="number"
+                  aria-label="文字宽度"
+                  min={36}
+                  max={editorTextWidthMax}
+                  value={Math.round(editor.textWidth)}
+                  style={editorFieldStyle}
+                  onChange={(event) => setEditor((current) => {
+                    if (!current) return current;
+                    const textWidth = Math.min(
+                      editorTextWidthMax,
+                      Math.max(36, Number(event.target.value) || 36),
+                    );
+                    if (
+                      current.drawing &&
+                      current.placement === "anchor" &&
+                      Number.isFinite(current.canvasX) &&
+                      Number.isFinite(current.canvasY) &&
+                      size.height > 0
+                    ) {
+                      const before = {
+                        ...current.drawing,
+                        text: current.value,
+                        textWidth: current.textWidth,
+                        fontSize: current.fontSize,
+                      };
+                      const beforeGeometry = textGeometryForDrawing(before).geometry;
+                      const fittedTextWidth = textWidthForVerticalFit(before, textWidth);
+                      return {
+                        ...current,
+                        textWidth: fittedTextWidth,
+                        x: beforeGeometry.x,
+                        y: beforeGeometry.y,
+                        canvasX: beforeGeometry.x / size.width,
+                        canvasY: beforeGeometry.y / size.height,
+                      };
+                    }
+                    return { ...current, textWidth };
+                  })}
+                />
+              </label>
+            </div>
+          )}
+          <div
+            className="drawing-text-editor-actions"
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              gap: 4,
+              minWidth: 0,
+              minHeight: editorFrame.actionHeight,
+              height: editorFrame.actionHeight,
+              padding: "0 2px",
+              boxSizing: "border-box",
+              background: "var(--surface)",
+              borderRadius: "4px",
+            }}
+          >
+            <button type="button" style={editorFinalActionStyle} aria-label="取消文字编辑" onClick={() => void prepareTextDraft("leave")}>取消</button>
+            <button type="button" style={editorFinalActionStyle} aria-label="完成文字编辑" disabled={pickingAnchor} onClick={commitText}>完成</button>
+          </div>
+          {textDraftDecision && (
+            <div
+              role="dialog"
+              aria-label="文字草稿待决议"
+              onPointerDown={(event) => event.stopPropagation()}
+              style={{
+                position: "absolute",
+                zIndex: 12,
+                inset: 4,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                gap: 8,
+                padding: 12,
+                boxSizing: "border-box",
+                border: "1px solid rgba(140, 189, 255, 0.55)",
+                borderRadius: 4,
+                background: "rgba(16, 23, 34, 0.96)",
+                color: "var(--text)",
+                fontSize: 12,
+              }}
+            >
+              <span>文字草稿尚未完成，请选择下一步</span>
+              <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
+                <button type="button" aria-label="完成文字草稿" onClick={() => resolveTextDraftDecision("complete")}>完成</button>
+                <button type="button" aria-label="继续编辑文字" autoFocus onClick={() => resolveTextDraftDecision("continue")}>继续编辑</button>
+                <button type="button" aria-label="放弃文字草稿" onClick={() => resolveTextDraftDecision("discard")}>放弃</button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

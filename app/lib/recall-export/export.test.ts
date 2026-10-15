@@ -62,7 +62,12 @@ function drawing(id: string, text: string, revision: number, owner?: string): No
   };
 }
 
-function snapshot(id: string, decisionId: RecallSnapshot["decisionId"], drawings: NormalizedDrawing[]): RecallSnapshot {
+function snapshot(
+  id: string,
+  decisionId: RecallSnapshot["decisionId"],
+  drawings: NormalizedDrawing[],
+  overrides: Partial<RecallSnapshot> = {},
+): RecallSnapshot {
   return {
     id,
     decisionId,
@@ -74,7 +79,17 @@ function snapshot(id: string, decisionId: RecallSnapshot["decisionId"], drawings
     imageDataUrl: PNG,
     createdAt: "2026-01-02T04:30:00.000Z",
     updatedAt: "2026-01-02T04:30:00.000Z",
+    ...overrides,
   };
+}
+
+function withoutSnapshotField(
+  value: RecallSnapshot,
+  field: "phase" | "cursor" | "executionCursor",
+) {
+  const copy = { ...value } as Partial<RecallSnapshot>;
+  delete copy[field];
+  return copy as RecallSnapshot;
 }
 
 function documentWith(snapshots: RecallSnapshot[], status: RecallDocument["status"] = "in-progress"): RecallDocument {
@@ -184,6 +199,140 @@ describe("recall export manifest", () => {
     expect(Array.from(zip.slice(0, 4))).toEqual([0x50, 0x4b, 0x03, 0x04]);
     expect(new TextDecoder().decode(zip)).toContain("images/");
     expect(new TextDecoder().decode(zip)).toContain("复盘.md");
+  });
+
+  it("binds each snapshot image to its own phase and both raw cutoffs", () => {
+    const manifest = createRecallExportManifest(documentWith([
+      snapshot("s0", "decision-1", [], {
+        phase: "pre-entry",
+        cursor: "2026-01-02T04:29:59.999Z",
+        executionCursor: "__recall_before_first_execution__",
+      }),
+      snapshot("s1", "decision-1", [], {
+        phase: "holding",
+        cursor: "2026-01-03T04:30:00.000Z",
+        executionCursor: "exec-1",
+      }),
+    ], "completed"), episode, { generatedAt: "2026-01-04T00:00:00.000Z" });
+    const markdown = buildRecallMarkdown(manifest);
+    expect(markdown).toContain("> 阶段：S0 买入前判断；行情可知截止：2026-01-02T04:29:59.999Z；成交揭示截止：__recall_before_first_execution__");
+    expect(markdown).toContain("> 阶段：S1 持仓过程；行情可知截止：2026-01-03T04:30:00.000Z；成交揭示截止：exec-1");
+    expect(manifest.snapshots.map((value) => [value.phase, value.cursor, value.executionCursor])).toEqual([
+      ["pre-entry", "2026-01-02T04:29:59.999Z", "__recall_before_first_execution__"],
+      ["holding", "2026-01-03T04:30:00.000Z", "exec-1"],
+    ]);
+  });
+
+  it("uses the explicit phase for numbered, global, and unassigned branches", () => {
+    const manifest = createRecallExportManifest(documentWith([
+      snapshot("global-s0", "global", [], { phase: "pre-entry", cursor: "g0", executionCursor: "e0" }),
+      snapshot("unassigned-s1", "unassigned", [], { phase: "holding", cursor: "g1", executionCursor: "e1" }),
+      snapshot("numbered-s2", "decision-1", [], { phase: "post-review", cursor: "g2", executionCursor: "e2" }),
+    ], "completed"), episode, { generatedAt: "2026-01-04T00:00:00.000Z" });
+    const markdown = buildRecallMarkdown(manifest);
+    expect(markdown).toContain("> 阶段：S0 买入前判断；行情可知截止：g0；成交揭示截止：e0");
+    expect(markdown).toContain("> 阶段：S1 持仓过程；行情可知截止：g1；成交揭示截止：e1");
+    expect(markdown).toContain("> 阶段：S2 事后复盘；行情可知截止：g2；成交揭示截止：e2");
+    expect(markdown.indexOf("global.png")).toBeGreaterThan(-1);
+    expect(markdown.indexOf("待分配快照")).toBeGreaterThan(-1);
+  });
+
+  it("marks phase and each cutoff independently when a legacy snapshot omits one", () => {
+    const known = { cursor: "timestamp-like-value", executionCursor: "stable-execution-id" };
+    const missingPhase = withoutSnapshotField(snapshot("missing-phase", "decision-1", [], { ...known }), "phase");
+    const missingCursor = withoutSnapshotField(snapshot("missing-cursor", "decision-1", [], { phase: "holding", ...known }), "cursor");
+    const missingExecution = withoutSnapshotField(snapshot("missing-execution", "decision-1", [], { phase: "post-review", ...known }), "executionCursor");
+    const markdown = buildRecallMarkdown(createRecallExportManifest(documentWith([
+      missingPhase, missingCursor, missingExecution,
+    ], "completed"), episode, { generatedAt: "2026-01-04T00:00:00.000Z" }));
+    expect(markdown).toContain("> 阶段：未知；行情可知截止：timestamp-like-value；成交揭示截止：stable-execution-id");
+    expect(markdown).toContain("> 阶段：S1 持仓过程；行情可知截止：未知；成交揭示截止：stable-execution-id");
+    expect(markdown).toContain("> 阶段：S2 事后复盘；行情可知截止：timestamp-like-value；成交揭示截止：未知");
+  });
+
+  it("exports completed retained snapshots while the working state is at a later phase", () => {
+    const retained = snapshot("retained-s0", "decision-1", [], {
+      phase: "pre-entry",
+      cursor: "s0-market",
+      executionCursor: "__recall_before_first_execution__",
+    });
+    const current = snapshot("working-s2", "decision-1", [], {
+      phase: "post-review",
+      cursor: "s2-market",
+      executionCursor: "exit-1",
+    });
+    const input = documentWith([current], "in-progress");
+    input.working.phase = "post-review";
+    input.lastCompleted = {
+      ...documentWith([retained], "completed"),
+      completedAt: "2026-01-04T00:00:00.000Z",
+      status: "completed",
+    };
+    const manifest = createRecallExportManifest(input, episode, {
+      source: "completed",
+      generatedAt: "2026-01-04T00:00:00.000Z",
+    });
+    const markdown = buildRecallMarkdown(manifest);
+    expect(manifest.snapshots.map((value) => value.id)).toEqual(["retained-s0"]);
+    expect(markdown).toContain("s0-market");
+    expect(markdown).not.toContain("s2-market");
+    expect(markdown).not.toContain("working-s2");
+
+    const noCompletedVersion = documentWith([current], "in-progress");
+    expect(() => createRecallExportManifest(noCompletedVersion, episode, {
+      source: "completed",
+      generatedAt: "2026-01-04T00:00:00.000Z",
+    })).toThrow("没有可导出的上次完成版本");
+  });
+
+  it("keeps phase and cutoff captions attached when the caller reorders snapshots", () => {
+    const order = ["s2", "s0", "s1"];
+    const manifest = createRecallExportManifest(documentWith([
+      snapshot("s0", "decision-1", [], { phase: "pre-entry", cursor: "c0", executionCursor: "e0" }),
+      snapshot("s1", "decision-1", [], { phase: "holding", cursor: "c1", executionCursor: "e1" }),
+      snapshot("s2", "decision-1", [], { phase: "post-review", cursor: "c2", executionCursor: "e2" }),
+    ], "completed"), episode, {
+      order: { snapshotIds: order },
+      generatedAt: "2026-01-04T00:00:00.000Z",
+    });
+    const markdown = buildRecallMarkdown(manifest);
+    expect(manifest.snapshots.map((value) => value.id)).toEqual(order);
+    for (const [index, [phase, cursor, executionCursor]] of [
+      ["S2 事后复盘", "c2", "e2"],
+      ["S0 买入前判断", "c0", "e0"],
+      ["S1 持仓过程", "c1", "e1"],
+    ].entries()) {
+      const image = `images/01_0${index + 1}_1D.png`;
+      const imageAt = markdown.indexOf(`![1D](${image})`);
+      expect(imageAt).toBeGreaterThan(-1);
+      expect(markdown.slice(imageAt, imageAt + 180)).toContain(`阶段：${phase}；行情可知截止：${cursor}；成交揭示截止：${executionCursor}`);
+    }
+  });
+
+  it("freezes projected stage facts and Markdown bytes independently of later source mutations", () => {
+    const sourceSnapshots = [
+      snapshot("s0", "decision-1", [drawing("d0", "frozen", 1)], { phase: "pre-entry", cursor: "c0", executionCursor: "e0" }),
+      snapshot("s1", "decision-1", [], { phase: "holding", cursor: "c1", executionCursor: "e1" }),
+    ];
+    const requestedOrder = ["s1", "s0"];
+    const manifest = createRecallExportManifest(documentWith(sourceSnapshots, "completed"), episode, {
+      order: { snapshotIds: requestedOrder },
+      generatedAt: "2026-01-04T00:00:00.000Z",
+    });
+    const beforeMarkdown = buildRecallMarkdown(manifest);
+    const beforeImageBytes = manifest.files.filter((file) => file.kind === "image").map((file) => [...file.bytes]);
+    sourceSnapshots[0].phase = "post-review";
+    sourceSnapshots[0].cursor = "working-cursor";
+    sourceSnapshots[0].executionCursor = "working-execution";
+    sourceSnapshots.reverse();
+    requestedOrder.reverse();
+    expect(buildRecallMarkdown(manifest)).toBe(beforeMarkdown);
+    expect(manifest.files.filter((file) => file.kind === "image").map((file) => [...file.bytes])).toEqual(beforeImageBytes);
+    expect(manifest.snapshots.map((value) => [value.id, value.phase, value.cursor, value.executionCursor])).toEqual([
+      ["s1", "holding", "c1", "e1"],
+      ["s0", "pre-entry", "c0", "e0"],
+    ]);
+    expect(Object.isFrozen(manifest.snapshots[0])).toBe(true);
   });
 
   it("writes large image entries without spreading bytes into the call stack", () => {

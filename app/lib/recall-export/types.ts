@@ -51,6 +51,9 @@ export type RecallExportSnapshot = {
   id: string;
   decisionId: string;
   timeframe: RecallSnapshot["timeframe"];
+  phase: NonNullable<RecallSnapshot["phase"]> | null;
+  cursor: RecallSnapshot["cursor"] | null;
+  executionCursor: RecallSnapshot["executionCursor"] | null;
   imagePath: string;
   textIds: readonly string[];
 };

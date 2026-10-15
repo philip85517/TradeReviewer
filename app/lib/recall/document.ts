@@ -10,6 +10,8 @@ import {
   type RecallCandle,
   type RecallCompletedVersion,
   type RecallDecision,
+  type RecallDerivedCapture,
+  RECALL_DERIVED_CAPTURE_RENDERERS,
   type RecallDocument,
   type RecallDrawing,
   type RecallPhase,
@@ -21,6 +23,7 @@ import {
   type RecallWorkingContext,
   type RecallWorkingState,
 } from "./types";
+import { sha256 } from "./retained-digest";
 
 export const RECALL_VERSION = 1 as const;
 export const RECALL_TIMEFRAMES = ["15m", "1h", "4h", "1D", "1W"] as const;
@@ -132,6 +135,53 @@ function validateImageDataUrl(value: unknown, field: string): void {
   }
 }
 
+export function pngDimensions(value: unknown): { width: number; height: number } | null {
+  if (typeof value !== "string" || !/^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$/.test(value)) return null;
+  try {
+    const bytes = Uint8Array.from(atob(value.slice(value.indexOf(",") + 1)), character => character.charCodeAt(0));
+    const signature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+    if (bytes.length < 24 || !signature.every((byte, index) => bytes[index] === byte) || bytes[12] !== 0x49 || bytes[13] !== 0x48 || bytes[14] !== 0x44 || bytes[15] !== 0x52) return null;
+    const read = (offset: number) => bytes[offset] * 0x1000000 + bytes[offset + 1] * 0x10000 + bytes[offset + 2] * 0x100 + bytes[offset + 3];
+    return { width: read(16), height: read(20) };
+  } catch { return null; }
+}
+
+function validateDerivedCapture(value: unknown, snapshotImageDataUrl: string, field: string): asserts value is RecallDerivedCapture {
+  const derived = record(value, field);
+  if (derived.version !== 1) invalid(`${field}.version is invalid`);
+  validateImageDataUrl(derived.imageDataUrl, `${field}.imageDataUrl`);
+  const frame = record(derived.imageFrame, `${field}.imageFrame`);
+  if (frame.version !== 1 || frame.width !== 432 || frame.height !== 280 || frame.pixelRatio !== 2) {
+    invalid(`${field}.imageFrame must be version 1, 432×280, DPR 2`);
+  }
+  const rendererVersion = nonEmptyString(derived.rendererVersion, `${field}.rendererVersion`);
+  if (!RECALL_DERIVED_CAPTURE_RENDERERS.includes(rendererVersion as typeof RECALL_DERIVED_CAPTURE_RENDERERS[number])) invalid(`${field}.rendererVersion is unsupported`);
+  const dimensions = pngDimensions(derived.imageDataUrl);
+  if (!dimensions || dimensions.width !== 864 || dimensions.height !== 560) invalid(`${field}.imageDataUrl must contain an 864×560 DPR 2 raster`);
+  const sourceDigest = nonEmptyString(derived.sourceCanonicalDigest, `${field}.sourceCanonicalDigest`);
+  if (!/^[0-9a-f]{64}$/.test(sourceDigest)) invalid(`${field}.sourceCanonicalDigest must be a SHA-256 digest`);
+  if (sourceDigest !== sha256(snapshotImageDataUrl)) invalid(`${field}.sourceCanonicalDigest does not match canonical image`);
+  if (derived.textOverlayPolicy !== "body-only") invalid(`${field}.textOverlayPolicy is invalid`);
+  const sourceKeys = array(derived.textSourceKeys, `${field}.textSourceKeys`);
+  sourceKeys.forEach((key, index) => nonEmptyString(key, `${field}.textSourceKeys[${index}]`));
+  if (derived.textSourceBindings !== undefined) {
+    const bindings = array(derived.textSourceBindings, `${field}.textSourceBindings`);
+    const statuses = ["visible-anchor", "off-range", "canvas-position", "missing-anchor"];
+    bindings.forEach((binding, index) => {
+      const item = record(binding, `${field}.textSourceBindings[${index}]`);
+      nonEmptyString(item.sourceKey, `${field}.textSourceBindings[${index}].sourceKey`);
+      nonEmptyString(item.drawingId, `${field}.textSourceBindings[${index}].drawingId`);
+      const sourceNumber = item.sourceNumber;
+      if (typeof sourceNumber !== "number" || !Number.isInteger(sourceNumber) || sourceNumber < 1) invalid(`${field}.textSourceBindings[${index}].sourceNumber must be a positive integer`);
+      if (!statuses.includes(String(item.status))) invalid(`${field}.textSourceBindings[${index}].status is invalid`);
+      if (item.anchorTime !== undefined) nonEmptyString(item.anchorTime, `${field}.textSourceBindings[${index}].anchorTime`);
+      if (item.anchorPrice !== undefined) finiteNumber(item.anchorPrice, `${field}.textSourceBindings[${index}].anchorPrice`);
+    });
+  }
+  const warnings = array(derived.warnings, `${field}.warnings`);
+  warnings.forEach((warning, index) => nonEmptyString(warning, `${field}.warnings[${index}]`));
+}
+
 function validateCandle(value: unknown, index: number): asserts value is RecallCandle {
   const item = record(value, `snapshot candle ${index}`);
   nonEmptyString(item.time, `snapshot candle ${index}.time`);
@@ -234,7 +284,9 @@ function validateSnapshot(value: unknown, index: number): asserts value is Recal
   candles.forEach((candle, candleIndex) => validateCandle(candle, candleIndex));
   validateDrawings(snapshot.drawings, `snapshot ${index}.drawings`);
   if (snapshot.viewport !== undefined) validateViewport(snapshot.viewport);
-  validateImageDataUrl(snapshot.imageDataUrl, `snapshot ${index}.imageDataUrl`);
+  const imageDataUrl = nonEmptyString(snapshot.imageDataUrl, `snapshot ${index}.imageDataUrl`);
+  validateImageDataUrl(imageDataUrl, `snapshot ${index}.imageDataUrl`);
+  if (snapshot.derivedCapture !== undefined) validateDerivedCapture(snapshot.derivedCapture, imageDataUrl, `snapshot ${index}.derivedCapture`);
   nonEmptyString(snapshot.createdAt, `snapshot ${index}.createdAt`);
   nonEmptyString(snapshot.updatedAt, `snapshot ${index}.updatedAt`);
   assertRecallJsonSafe(snapshot, `snapshot ${index}`);

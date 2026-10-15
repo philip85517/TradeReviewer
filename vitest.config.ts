@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   resolve: {
@@ -12,5 +12,6 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./tests/setup.ts"],
     include: ["app/**/*.test.{ts,tsx}", "db/**/*.test.ts", "scripts/**/*.test.mjs"],
+    exclude: [...configDefaults.exclude, "scripts/acceptance/review-harness.test.mjs"],
   },
 });

@@ -142,11 +142,125 @@ describe("replayPositionAtPrice", () => {
     })];
 
     expect(replayPositionAtPrice({ executions: [buy], markPrice: "2" })).toMatchObject({
-      quantity: "10000",
+      quantity: "0",
       averageCost: "0",
+      quantityKnown: false,
       costKnown: false,
       accuracy: { reasons: expect.arrayContaining(["position-event"]) },
     });
+  });
+
+  it("keeps quantity known when a cash dividend is classified as a distribution", () => {
+    const buy = fill("buy", "2026-05-20T02:00:00Z", "100", "2.5", "0", {
+      instrument: { id: "CN-SH:516780", symbol: "516780", name: "稀土ETF", market: "CN-SH", currency: "CNY" },
+    });
+    buy.source.positionEvents = [fixtureEvent({
+      id: "cash-dividend",
+      market: "CN-SH",
+      symbol: "516780",
+      date: "2026-05-22",
+      kind: "distribution",
+      amount: "189",
+      currency: "CNY",
+      description: "现金股息",
+    })];
+
+    const snapshot = replayPositionAtPrice({ executions: [buy], markPrice: "2" });
+    expect(snapshot).toMatchObject({
+      quantity: "100",
+      averageCost: "2.5",
+      grossCapitalDeployed: "250",
+    });
+    expect(snapshot.quantityKnown).toBeUndefined();
+    expect(snapshot.costKnown).toBeUndefined();
+    expect(snapshot.accuracy).toBeUndefined();
+  });
+
+  it("does not certify a clear after an unsupported non-zero corporate action", () => {
+    const unsupported = fixtureEvent({
+      id: "unsupported-capital-change",
+      market: "US",
+      symbol: "TEST",
+      date: "2025-02-10",
+      kind: "corporate-action",
+      quantity: "100",
+      amount: "0",
+      currency: "USD",
+      description: "资本公积变更待核对",
+    });
+    const bonus = fixtureEvent({
+      id: "recognized-bonus",
+      market: "US",
+      symbol: "TEST",
+      date: "2025-01-20",
+      kind: "corporate-action",
+      quantity: "500",
+      amount: "0",
+      currency: "USD",
+      description: "红股入账",
+    });
+    const futureBonus = fixtureEvent({
+      id: "future-bonus",
+      market: "US",
+      symbol: "TEST",
+      date: "2025-04-20",
+      kind: "corporate-action",
+      quantity: "600",
+      amount: "0",
+      currency: "USD",
+      description: "红股入账",
+    });
+    const firstExit = fill("sell", "2025-02-20T02:00:00Z", "1000", "10", "0");
+    const secondExit = fill("sell", "2025-03-20T02:00:00Z", "500", "10", "0");
+    firstExit.source.openingPosition = { accountId: "fixture-account", market: "US", symbol: "TEST", phase: "opening", date: "2025-01-01", quantity: "1000", source: [] };
+    firstExit.source.positionEvents = [bonus, unsupported, futureBonus];
+    secondExit.source.positionEvents = [bonus, unsupported, futureBonus];
+
+    expect(replayPositionAtPrice({ executions: [firstExit, secondExit], cursor: "2025-02-09T23:59:59Z", markPrice: "10" })).toMatchObject({
+      quantity: "1500",
+    });
+    expect(replayPositionAtPrice({ executions: [firstExit, secondExit], cursor: "2025-03-20T23:59:59Z", markPrice: "10" })).toMatchObject({
+      quantity: "0",
+      quantityKnown: false,
+      accuracy: { reasons: expect.arrayContaining(["position-event"]) },
+    });
+
+    secondExit.source.statementPositions = [{ accountId: "fixture-account", market: "US", symbol: "TEST", phase: "closing", date: "2025-03-21", quantity: "200", source: [] }];
+    expect(replayPositionAtPrice({ executions: [firstExit, secondExit], cursor: "2025-03-22T00:00:00Z", markPrice: "10" })).toMatchObject({
+      quantity: "200",
+    });
+  });
+
+  it("scopes unsupported corporate-action uncertainty to the executed account and instrument", () => {
+    const buy = fill("buy", "2025-02-01T02:00:00Z", "100", "10", "0");
+    buy.source.positionEvents = [fixtureEvent({
+      id: "foreign-unsupported-action",
+      accountId: "other-account",
+      market: "US",
+      symbol: "TEST",
+      date: "2025-02-02",
+      kind: "corporate-action",
+      quantity: "50",
+      amount: "0",
+      currency: "USD",
+      description: "资本公积变更待核对",
+    }), fixtureEvent({
+      id: "other-instrument-unsupported-action",
+      accountId: "fixture-account",
+      market: "US",
+      symbol: "OTHER",
+      date: "2025-02-02",
+      kind: "corporate-action",
+      quantity: "50",
+      amount: "0",
+      currency: "USD",
+      description: "资本公积变更待核对",
+    })];
+
+    const snapshot = replayPositionAtPrice({ executions: [buy], markPrice: "10" });
+    expect(snapshot).toMatchObject({ quantity: "100" });
+    expect(snapshot.quantityKnown).toBeUndefined();
+    expect(snapshot.accuracy).toBeUndefined();
   });
 
   it("keeps same-day bonus-share order ambiguity unavailable", () => {

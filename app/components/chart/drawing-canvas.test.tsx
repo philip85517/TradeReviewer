@@ -169,11 +169,38 @@ describe("drawing interactions", () => {
     }));
   });
 
+  it("returns to cursor mode and selects the newly completed non-Text drawing", () => {
+    const onCommand = vi.fn();
+    const onRequestCursorTool = vi.fn();
+    const onSelectDrawing = vi.fn();
+    const { canvas } = renderCanvas({
+      activeTool: "trend-line",
+      onCommand,
+      onRequestCursorTool,
+      onSelectDrawing,
+    });
+
+    fireEvent.pointerDown(canvas, { pointerId: 81, clientX: 20, clientY: 100 });
+    fireEvent.pointerUp(canvas, { pointerId: 81, clientX: 20, clientY: 100 });
+    fireEvent.pointerDown(canvas, { pointerId: 81, clientX: 100, clientY: 80 });
+    fireEvent.pointerUp(canvas, { pointerId: 81, clientX: 100, clientY: 80 });
+
+    const command = onCommand.mock.calls[0]?.[0];
+    expect(command).toEqual(expect.objectContaining({ type: "add" }));
+    expect(onRequestCursorTool).toHaveBeenCalledTimes(1);
+    expect(onSelectDrawing).toHaveBeenCalledWith(command.drawing.id);
+  });
+
   it("opens an inline editor and commits placed text", () => {
     const onCommand = vi.fn();
-    const { canvas } = renderCanvas({ activeTool: "text", onCommand });
+    const onRequestCursorTool = vi.fn();
+    const onSelectDrawing = vi.fn();
+    const { canvas } = renderCanvas({ activeTool: "text", onCommand, onRequestCursorTool, onSelectDrawing });
 
     fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 10, clientY: 100 });
+    const readout = screen.getByRole("status", { name: "文字编辑锚点" });
+    expect(readout).toHaveTextContent("源柱 100.00");
+    expect(readout).toHaveTextContent("2026-01-01 08:00:00");
     const editor = screen.getByRole("textbox", { name: "文字标注" });
     fireEvent.change(editor, { target: { value: "突破确认" } });
     fireEvent.keyDown(editor, { key: "Enter" });
@@ -182,6 +209,10 @@ describe("drawing interactions", () => {
       type: "add",
       drawing: expect.objectContaining({ tool: "text", text: "突破确认" }),
     }));
+    const command = onCommand.mock.calls[0]?.[0];
+    expect(onCommand).toHaveBeenCalledTimes(1);
+    expect(onRequestCursorTool).toHaveBeenCalledTimes(1);
+    expect(onSelectDrawing).toHaveBeenCalledWith(command.drawing.id);
   });
 
   it("toggles text placement from the inline style bar without closing the editor", () => {
@@ -190,6 +221,7 @@ describe("drawing interactions", () => {
 
     fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 10, clientY: 100 });
     const editor = screen.getByRole("textbox", { name: "文字标注" });
+    fireEvent.click(screen.getByRole("button", { name: "样式" }));
     const placementButton = screen.getByRole("button", { name: "改为自由文字" });
     fireEvent.pointerDown(placementButton, { pointerId: 1 });
     fireEvent.click(placementButton);

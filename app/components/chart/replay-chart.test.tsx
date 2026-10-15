@@ -4,8 +4,8 @@ import { buildReplayChartMarkers, chartTickLabel, createExecutionMarkerPrimitive
 import type { ComponentProps } from "react";
 import type { Time } from "lightweight-charts";
 
-const engine = vi.hoisted(() => ({ priceRange:{from:0,to:0}, data: [] as { time: number }[], visible: [] as number[], range: { from: 0, to: 0 }, rangeCalls: [] as Array<{ from: number; to: number }>, setDataCalls: 0, planLines: [] as {price:number; title:string}[], removedLines: 0, markers: [] as unknown[], clickHandler: null as ((param: { hoveredInfo?: { objectId?: unknown } }) => void) | null }));
-vi.mock("./drawing-canvas", () => ({ DrawingCanvas: () => null }));
+const engine = vi.hoisted(() => ({ priceRange:{from:0,to:0}, data: [] as { time: number }[], visible: [] as number[], range: { from: 0, to: 0 }, rangeCalls: [] as Array<{ from: number; to: number }>, setDataCalls: 0, planLines: [] as {price:number; title:string}[], removedLines: 0, markers: [] as unknown[], clickHandler: null as ((param: { hoveredInfo?: { objectId?: unknown } }) => void) | null, drawingCanvasProps: null as Record<string, unknown> | null }));
+vi.mock("./drawing-canvas", () => ({ DrawingCanvas: (props: Record<string, unknown>) => { engine.drawingCanvasProps = props; return null; } }));
 vi.mock("lightweight-charts", () => ({
   TickMarkType: { Year: 0, Month: 1, DayOfMonth: 2, Time: 3, TimeWithSeconds: 4 },
   CandlestickSeries: "candle", HistogramSeries: "volume", ColorType: { Solid: "solid" }, CrosshairMode: { MagnetOHLC: 1 }, LineStyle: { Dashed: 1 },
@@ -19,7 +19,7 @@ vi.mock("lightweight-charts", () => ({
     }),
   }),
 }));
-afterEach(() => { cleanup(); vi.unstubAllGlobals(); engine.data = []; engine.visible = []; engine.range = { from: 0, to: 0 }; engine.rangeCalls = []; engine.setDataCalls = 0; engine.markers = []; engine.clickHandler = null; });
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); engine.data = []; engine.visible = []; engine.range = { from: 0, to: 0 }; engine.rangeCalls = []; engine.setDataCalls = 0; engine.markers = []; engine.clickHandler = null; engine.drawingCanvasProps = null; });
 
 it("keeps axis ticks short while preserving Beijing dates across midnight", () => {
   const time = "2025-12-31T20:30:45Z";
@@ -28,6 +28,73 @@ it("keeps axis ticks short while preserving Beijing dates across midnight", () =
   expect(chartTickLabel(time, "time")).toBe("04:30");
   expect(chartTickLabel(time, "seconds")).toBe("04:30:45");
   expect(chartTickLabel({ year: 2026, month: 9, day: 12 }, "date")).toBe("09-12");
+});
+
+it('passes the mounted compact toolbar as a chart-local DrawingCanvas obstacle', async () => {
+  vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
+  vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(400);
+  vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(800);
+  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+    if (this.classList.contains('chart-stage')) return { left: 100, top: 50, right: 900, bottom: 450, width: 800, height: 400 } as DOMRect;
+    if (this.classList.contains('replay-chart-compact-controls')) return { left: 300, top: 70, right: 500, bottom: 114, width: 200, height: 44 } as DOMRect;
+    return { left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0 } as DOMRect;
+  });
+  const props:ComponentProps<typeof ReplayChart>={candles:[{time:'2026-01-01T00:00:00Z',open:10,high:12,low:9,close:11,volume:1}],executions:[],cursor:'2026-01-01T00:00:00Z',averageCost:0,drawings:[],activeTool:'cursor',episodeId:'toolbar-obstacle',plannedRiskAmount:undefined,selectedDrawingId:null,currency:'USD',onSelectDrawing:()=>{},onCommand:()=>{},settings:{version:1,showGrid:true,showVolume:true,showExecutions:true,showAverageCost:true,colorScheme:'blue-orange'},compactControls:true,planPriceLines:[{id:'entry',price:10,title:'计划入场'}]};
+  render(<ReplayChart {...props}/>);
+
+  await waitFor(() => expect(engine.drawingCanvasProps?.controlObstacles).toEqual([{
+    id: 'compact-toolbar', left: 200, top: 20, right: 400, bottom: 64,
+  }]));
+});
+
+it('re-measures a moved compact toolbar through ResizeObserver without changing its chart-local contract', async () => {
+  const callbacks: Array<() => void> = [];
+  let toolbarLeft = 300;
+  vi.stubGlobal('ResizeObserver', class {
+    constructor(callback: () => void) { callbacks.push(callback); }
+    observe() {}
+    disconnect() {}
+  });
+  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+    if (this.classList.contains('chart-stage')) return { left: 100, top: 50, right: 900, bottom: 450, width: 800, height: 400 } as DOMRect;
+    if (this.classList.contains('replay-chart-compact-controls')) return { left: toolbarLeft, top: 70, right: toolbarLeft + 200, bottom: 114, width: 200, height: 44 } as DOMRect;
+    return { left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0 } as DOMRect;
+  });
+  const props: ComponentProps<typeof ReplayChart> = { candles:[{time:'2026-01-01T00:00:00Z',open:10,high:12,low:9,close:11,volume:1}],executions:[],cursor:'2026-01-01T00:00:00Z',averageCost:0,drawings:[],activeTool:'cursor',episodeId:'toolbar-obstacle-move',plannedRiskAmount:undefined,selectedDrawingId:null,currency:'USD',onSelectDrawing:()=>{},onCommand:()=>{},settings:{version:1,showGrid:true,showVolume:true,showExecutions:true,showAverageCost:true,colorScheme:'blue-orange'},compactControls:true,planPriceLines:[{id:'entry',price:10,title:'计划入场'}]};
+  render(<ReplayChart {...props}/>);
+
+  await waitFor(() => expect(engine.drawingCanvasProps?.controlObstacles).toEqual([{
+    id: 'compact-toolbar', left: 200, top: 20, right: 400, bottom: 64,
+  }]));
+  toolbarLeft = 420;
+  callbacks.forEach(callback => callback());
+  await waitFor(() => expect(engine.drawingCanvasProps?.controlObstacles).toEqual([{
+    id: 'compact-toolbar', left: 320, top: 20, right: 520, bottom: 64,
+  }]));
+});
+
+it('measures the noncompact plan-price action and clears its obstacle when the action unmounts', async () => {
+  let disconnects = 0;
+  vi.stubGlobal('ResizeObserver', class {
+    constructor() {}
+    observe() {}
+    disconnect() { disconnects += 1; }
+  });
+  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+    if (this.classList.contains('chart-stage')) return { left: 40, top: 30, right: 840, bottom: 430, width: 800, height: 400 } as DOMRect;
+    if (this.classList.contains('recall-plan-price-action')) return { left: 116, top: 334, right: 276, bottom: 370, width: 160, height: 36 } as DOMRect;
+    return { left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0 } as DOMRect;
+  });
+  const props: ComponentProps<typeof ReplayChart> = { candles:[{time:'2026-01-01T00:00:00Z',open:10,high:12,low:9,close:11,volume:1}],executions:[],cursor:'2026-01-01T00:00:00Z',averageCost:0,drawings:[],activeTool:'cursor',episodeId:'toolbar-obstacle-action',plannedRiskAmount:undefined,selectedDrawingId:null,currency:'USD',onSelectDrawing:()=>{},onCommand:()=>{},settings:{version:1,showGrid:true,showVolume:true,showExecutions:true,showAverageCost:true,colorScheme:'blue-orange'},compactControls:false,planPriceLines:[{id:'entry',price:10,title:'计划入场'}]};
+  const view = render(<ReplayChart {...props}/>);
+
+  await waitFor(() => expect(engine.drawingCanvasProps?.controlObstacles).toEqual([{
+    id: 'plan-price-action', left: 76, top: 304, right: 236, bottom: 340,
+  }]));
+  view.rerender(<ReplayChart {...props} planPriceLines={[]}/>);
+  await waitFor(() => expect(engine.drawingCanvasProps?.controlObstacles).toEqual([]));
+  view.unmount();
+  expect(disconnects).toBeGreaterThan(0);
 });
 
 it("only builds finite markers that point at valid chart candles", () => {
@@ -105,6 +172,30 @@ it("does not call an exit a liquidation when an earlier fill leaves inventory un
   expect(markers.at(-1)?.text).not.toContain("清仓");
 });
 
+it("does not call a direction-unknown sell a liquidation", () => {
+  const candle = (time: string) => ({ time, open: 1, high: 2, low: 1, close: 2, volume: 10 });
+  const execution = (id: string, side: "buy" | "sell", executedAt: string, quantity: string, positionEffect?: "open-long") => ({
+    id,
+    source: { platform: "fixture", row: 1, displayTimePolicy: "execution-time" as const, ...(positionEffect ? { positionEffect } : {}) },
+    accountId: "account",
+    accountLabel: "Account",
+    instrument: { id: "US:TEST", symbol: "TEST", name: "Test", market: "US", currency: "USD" },
+    side,
+    executedAt,
+    quantity,
+    price: "1",
+    fee: "0",
+  });
+  const markers = buildReplayChartMarkers(
+    [candle("2025-01-01T10:00:00Z"), candle("2025-01-02T10:00:00Z")],
+    [
+      execution("open", "buy", "2025-01-01T10:05:00Z", "1000", "open-long"),
+      execution("unknown-direction-close", "sell", "2025-01-02T10:05:00Z", "1000"),
+    ],
+  );
+  expect(markers.at(-1)).toEqual(expect.objectContaining({ actionLabel: "减仓", text: "减仓" }));
+});
+
 it("keeps same-candle fills in authoritative execution order with one selectable marker per fill", () => {
   const candle = { time: "2025-01-02T10:00:00.000Z", open: 1, high: 2, low: 1, close: 2, volume: 10 };
   const execution = (
@@ -139,6 +230,100 @@ it("keeps same-candle fills in authoritative execution order with one selectable
   ]);
   expect(markers.filter((marker) => marker.executionIds).map((marker) => marker.offsetX)).toEqual([-18, 0, 18]);
   expect(markers.filter((marker) => marker.executionIds).map((marker) => marker.offsetY)).toEqual([0, 0, -22]);
+});
+
+it("uses the authoritative opening ledger to distinguish partial and full long exits", () => {
+  const candles = [
+    { time: "2025-01-02T10:00:00.000Z", open: 1, high: 2, low: 1, close: 2, volume: 10 },
+    { time: "2025-01-03T10:00:00.000Z", open: 1, high: 2, low: 1, close: 2, volume: 10 },
+  ];
+  const execution = (id: string, executedAt: string, quantity: string) => ({
+    id,
+    source: {
+      platform: "fixture",
+      row: 1,
+      displayTimePolicy: "execution-time" as const,
+      positionEffect: "close-long" as const,
+      openingPosition: { accountId: "account", market: "US", symbol: "TEST", phase: "opening" as const, date: "2025-01-01", quantity: "1000", source: [] },
+      statementPositions: [{ accountId: "account", market: "US", symbol: "TEST", phase: "closing" as const, date: "2025-01-04", quantity: "0", source: [] }],
+    },
+    accountId: "account",
+    accountLabel: "Account",
+    instrument: { id: "US:TEST", symbol: "TEST", name: "Test", market: "US", currency: "USD" },
+    side: "sell" as const,
+    executedAt,
+    quantity,
+    price: "1",
+    fee: "0",
+  });
+
+  const markers = buildReplayChartMarkers(candles, [
+    execution("partial", "2025-01-02T10:05:00Z", "400"),
+    { ...execution("final", "2025-01-03T10:05:00Z", "600"), source: { ...execution("final-source", "2025-01-03T10:05:00Z", "600").source, openingPosition: undefined, statementPositions: undefined } },
+  ]);
+
+  expect(markers.filter((marker) => marker.executionIds).map((marker) => marker.actionLabel)).toEqual(["减仓", "清仓"]);
+});
+
+it("uses a negative authoritative opening ledger to distinguish partial and full short exits", () => {
+  const candles = [
+    { time: "2025-01-02T10:00:00.000Z", open: 1, high: 2, low: 1, close: 2, volume: 10 },
+    { time: "2025-01-03T10:00:00.000Z", open: 1, high: 2, low: 1, close: 2, volume: 10 },
+  ];
+  const execution = (id: string, executedAt: string, quantity: string) => ({
+    id,
+    source: {
+      platform: "fixture",
+      row: 1,
+      displayTimePolicy: "execution-time" as const,
+      positionEffect: "close-short" as const,
+      openingPosition: { accountId: "account", market: "US", symbol: "TEST", phase: "opening" as const, date: "2025-01-01", quantity: "-1000", source: [] },
+    },
+    accountId: "account",
+    accountLabel: "Account",
+    instrument: { id: "US:TEST", symbol: "TEST", name: "Test", market: "US", currency: "USD" },
+    side: "buy" as const,
+    executedAt,
+    quantity,
+    price: "1",
+    fee: "0",
+  });
+
+  const markers = buildReplayChartMarkers(candles, [
+    execution("partial-short", "2025-01-02T10:05:00Z", "400"),
+    execution("final-short", "2025-01-03T10:05:00Z", "600"),
+  ]);
+
+  expect(markers.filter((marker) => marker.executionIds).map((marker) => marker.actionLabel)).toEqual(["减空", "买入平仓"]);
+});
+
+it("keeps authoritative opening inventories separate for accounts and instruments", () => {
+  const candle = { time: "2025-01-02T10:00:00.000Z", open: 1, high: 2, low: 1, close: 2, volume: 10 };
+  const execution = (id: string, accountId: string, symbol: string) => ({
+    id,
+    source: {
+      platform: "fixture",
+      row: 1,
+      displayTimePolicy: "execution-time" as const,
+      positionEffect: "close-long" as const,
+      openingPosition: { accountId, market: "US", symbol, phase: "opening" as const, date: "2025-01-01", quantity: "1000", source: [] },
+    },
+    accountId,
+    accountLabel: accountId,
+    instrument: { id: `US:${symbol}`, symbol, name: symbol, market: "US", currency: "USD" },
+    side: "sell" as const,
+    executedAt: "2025-01-02T10:05:00Z",
+    quantity: "1000",
+    price: "1",
+    fee: "0",
+  });
+
+  const markers = buildReplayChartMarkers([candle], [
+    execution("account-a-test", "account-a", "TEST"),
+    execution("account-b-other", "account-b", "OTHER"),
+  ]);
+
+  expect(markers.filter((marker) => marker.executionIds).map((marker) => marker.actionLabel)).toEqual(["清仓", "清仓"]);
 });
 
 it("offers marker prices to lightweight-charts autoscale", () => {
@@ -186,6 +371,36 @@ it("hit-tests the clamped diamond position at the pane boundary", () => {
 
   expect(primitive.hitTest?.(104, 190)).toEqual(expect.objectContaining({ externalId: "fill-final" }));
   expect(primitive.hitTest?.(120, 190)).toBeNull();
+});
+
+it("projects a between-candle execution through integer SDK coordinates", () => {
+  const primitive = createExecutionMarkerPrimitive(() => [
+    { time: 0 as Time, open: 1, high: 2, low: 1, close: 2, volume: 10 },
+    { time: 10 as Time, open: 1, high: 2, low: 1, close: 2, volume: 10 },
+  ]);
+  const chart = {
+    timeScale: () => ({
+      width: () => 210,
+      timeToCoordinate: () => null,
+      // Installed lightweight-charts returns 0 for a fractional logical.
+      logicalToCoordinate: (logical: number) => Number.isInteger(logical) ? logical * 100 : 0,
+    }),
+  };
+  const series = { priceToCoordinate: () => 200 };
+  primitive.attached?.({ chart, series, requestUpdate: () => {} } as never);
+  primitive.setMarkers([{
+    time: 5 as Time,
+    price: 61.5,
+    position: "aboveBar",
+    color: "#ef5350",
+    shape: "diamond",
+    actionLabel: "买入",
+    text: "买入",
+    executionIds: ["fractional-fill"],
+  }]);
+
+  expect(primitive.hitTest?.(50, 190)).toEqual(expect.objectContaining({ externalId: "fractional-fill" }));
+  expect(primitive.hitTest?.(0, 190)).toBeNull();
 });
 
 it("anchors a revealed execution in its actual whitespace time when the candle OHLC is still withheld", () => {
@@ -594,10 +809,10 @@ it("adds optional plan price lines without refitting and removes replaced lines"
  vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
  const props: ComponentProps<typeof ReplayChart> = { candles:[{time:"2026-01-01T00:00:00Z",open:10,high:12,low:9,close:11,volume:1}], executions:[], cursor:"2026-01-01T00:00:00Z",averageCost:0,drawings:[],activeTool:"cursor",episodeId:"plan",plannedRiskAmount:undefined,selectedDrawingId:null,currency:"USD",onSelectDrawing:()=>{},onCommand:()=>{},settings:{version:1,showGrid:true,showVolume:true,showExecutions:true,showAverageCost:true,colorScheme:"blue-orange"},planPriceLines:[{id:"entry",price:10,title:"计划入场"}] };
  const {rerender}=render(<ReplayChart {...props}/>);
- await waitFor(()=>expect(engine.planLines).toContainEqual(expect.objectContaining({price:10,title:"计划入场"})));
+ await waitFor(()=>expect(engine.planLines).toContainEqual(expect.objectContaining({price:10,title:"",color:"#adbbcf",axisLabelVisible:false,lineStyle:2})));
  const count=engine.rangeCalls.length;
  rerender(<ReplayChart {...props} planPriceLines={[{id:"entry",price:11,title:"计划入场"}]}/>);
- await waitFor(()=>expect(engine.planLines).toContainEqual(expect.objectContaining({price:11,title:"计划入场"})));
+ await waitFor(()=>expect(engine.planLines).toContainEqual(expect.objectContaining({price:11,title:"",color:"#adbbcf",axisLabelVisible:false,lineStyle:2})));
  expect(engine.rangeCalls).toHaveLength(count);
  expect(engine.removedLines).toBeGreaterThan(0);
 });
@@ -620,12 +835,111 @@ it('drag shares plan callback, pauses interaction and cancellation restores orig
  vi.spyOn(HTMLElement.prototype,'clientWidth','get').mockReturnValue(800);
  vi.stubGlobal('PointerEvent',MouseEvent);
  const change=vi.fn(),pause=vi.fn(),select=vi.fn();
- const props:ComponentProps<typeof ReplayChart>={candles:[{time:'2026-01-01T00:00:00Z',open:56,high:57,low:55,close:56,volume:1}],executions:[],cursor:'2026-01-01T00:00:00Z',averageCost:0,drawings:[],activeTool:'cursor',episodeId:'drag-plan',plannedRiskAmount:undefined,selectedDrawingId:null,currency:'USD',onSelectDrawing:()=>{},onCommand:()=>{},settings:{version:1,showGrid:true,showVolume:true,showExecutions:true,showAverageCost:true,colorScheme:'blue-orange'},planPriceLines:[{id:'entry',price:68,title:'计划入场'}],planLinesEditable:true,onPlanPriceChange:change,onPlanInteractionStart:pause,onPlanPriceSelect:select};
+ const props:ComponentProps<typeof ReplayChart>={candles:[{time:'2026-01-01T00:00:00Z',open:56,high:57,low:55,close:56,volume:1}],executions:[],cursor:'2026-01-01T00:00:00Z',averageCost:0,drawings:[],activeTool:'cursor',episodeId:'drag-plan',plannedRiskAmount:undefined,selectedDrawingId:null,currency:'USD',onSelectDrawing:()=>{},onCommand:()=>{},settings:{version:1,showGrid:true,showVolume:true,showExecutions:true,showAverageCost:true,colorScheme:'blue-orange'},planPriceLines:[{id:'entry',price:68,title:'计划入场',displayPrice:'68.0000000000001'}],planLinesEditable:true,onPlanPriceChange:change,onPlanInteractionStart:pause,onPlanPriceSelect:select};
  const {getByRole}=render(<ReplayChart {...props}/>);
- const button=await waitFor(()=>getByRole('button',{name:'计划入场 68，精确编辑'}));
+ const button=await waitFor(()=>getByRole('button',{name:'计划入场 68.0000000000001，精确编辑'}));
  fireEvent.pointerDown(button,{clientY:68});fireEvent.pointerMove(button,{clientY:72});
  expect(pause).toHaveBeenCalledOnce();expect(change).toHaveBeenLastCalledWith('entry','72');
- fireEvent.pointerCancel(button);expect(change).toHaveBeenLastCalledWith('entry','68');
+ fireEvent.pointerCancel(button);expect(change).toHaveBeenLastCalledWith('entry','68.0000000000001');
+ fireEvent.pointerDown(button,{clientY:68});fireEvent.keyDown(button,{key:'Escape'});
+ expect(change).toHaveBeenLastCalledWith('entry','68.0000000000001');
  fireEvent.click(button);expect(select).toHaveBeenCalledWith('entry');
+ vi.restoreAllMocks();
+});
+it('renders plan axis labels as transparent semantic name and lexical-value columns', async () => {
+ vi.stubGlobal('ResizeObserver', class { constructor(private callback:()=>void){} observe(){this.callback();} disconnect() {} });
+ vi.spyOn(HTMLElement.prototype,'clientHeight','get').mockReturnValue(400);
+ vi.spyOn(HTMLElement.prototype,'clientWidth','get').mockReturnValue(800);
+ const props:ComponentProps<typeof ReplayChart>={candles:[{time:'2026-01-01T00:00:00Z',open:56,high:57,low:55,close:56,volume:1}],executions:[],cursor:'2026-01-01T00:00:00Z',averageCost:0,drawings:[],activeTool:'cursor',episodeId:'axis-columns',plannedRiskAmount:undefined,selectedDrawingId:null,currency:'USD',onSelectDrawing:()=>{},onCommand:()=>{},settings:{version:1,showGrid:true,showVolume:true,showExecutions:true,showAverageCost:true,colorScheme:'blue-orange'},planPriceLines:[{id:'target',price:68,title:'止盈目标',displayPrice:'68.0000000000001'}]};
+ const {getByRole}=render(<ReplayChart {...props}/>);
+ const label=await waitFor(()=>getByRole('button',{name:'止盈目标 68.0000000000001，精确编辑'}));
+ expect(label).toHaveAttribute('data-plan-source-ids','target');
+ expect(label.querySelector('[data-plan-axis-name]')).toHaveTextContent('止盈目标');
+ expect(label.querySelector('[data-plan-axis-value]')).toHaveTextContent('68.0000000000001');
+ expect(label.style.background).toBe('transparent');
+ expect(label.style.border).toBe('0px');
+});
+
+it('uses a shared 12px axis metric and separates visual rows from pointer hit targets', async()=>{
+ vi.stubGlobal('ResizeObserver', class { constructor(private callback:()=>void){} observe(){this.callback();} disconnect(){} });
+ vi.spyOn(HTMLElement.prototype,'clientHeight','get').mockReturnValue(400);
+ vi.spyOn(HTMLElement.prototype,'clientWidth','get').mockReturnValue(800);
+ const props:ComponentProps<typeof ReplayChart>={candles:[{time:'2026-01-01T00:00:00Z',open:56,high:57,low:55,close:55.94,volume:1}],executions:[],cursor:'2026-01-01T00:00:00Z',averageCost:0,drawings:[],activeTool:'cursor',episodeId:'axis-metric',plannedRiskAmount:undefined,selectedDrawingId:null,currency:'USD',onSelectDrawing:()=>{},onCommand:()=>{},settings:{version:1,showGrid:true,showVolume:true,showExecutions:true,showAverageCost:true,colorScheme:'blue-orange'},planPriceLines:[{id:'entry',price:56,title:'计划入场',displayPrice:'56.0000'},{id:'target',price:56.01,title:'止盈目标',displayPrice:'56.0100'}]};
+ const {getAllByRole}=render(<ReplayChart {...props}/>);
+ const labels=await waitFor(()=>{
+  const found=getAllByRole('button').filter(button=>button.hasAttribute('data-plan-source-ids'));
+  expect(found).toHaveLength(2);
+  return found;
+ });
+ expect(labels).toHaveLength(2);
+ expect(labels.map(label=>label.style.left)).toEqual([labels[0].style.left,labels[0].style.left]);
+ expect(labels.map(label=>label.style.minHeight)).toEqual(['36px','36px']);
+ const bounds=labels.map(label=>({top:Number.parseFloat(label.style.top),bottom:Number.parseFloat(label.style.top)+Number.parseFloat(label.style.height)})).sort((first,second)=>first.top-second.top);
+ expect(bounds[1].top).toBeGreaterThanOrEqual(bounds[0].bottom);
+ expect(labels[0].style.fontSize).toBe('12px');
+ expect(labels[0].style.fontWeight).toBe('400');
+ expect(labels[0].style.lineHeight).toBe('18px');
+ expect(labels[0].querySelector<HTMLElement>('[data-plan-axis-value]')?.style.textAlign).toBe('right');
+ vi.restoreAllMocks();
+});
+
+it('uses a 44px hit target for coarse pointers without changing the 18px visual row', async()=>{
+ vi.stubGlobal('ResizeObserver', class { constructor(private callback:()=>void){} observe(){this.callback();} disconnect(){} });
+ vi.spyOn(HTMLElement.prototype,'clientHeight','get').mockReturnValue(400);
+ vi.spyOn(HTMLElement.prototype,'clientWidth','get').mockReturnValue(800);
+ vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({matches:true,addEventListener:vi.fn(),removeEventListener:vi.fn()}));
+ const props:ComponentProps<typeof ReplayChart>={candles:[{time:'2026-01-01T00:00:00Z',open:56,high:57,low:55,close:55.94,volume:1}],executions:[],cursor:'2026-01-01T00:00:00Z',averageCost:0,drawings:[],activeTool:'cursor',episodeId:'axis-coarse',plannedRiskAmount:undefined,selectedDrawingId:null,currency:'USD',onSelectDrawing:()=>{},onCommand:()=>{},settings:{version:1,showGrid:true,showVolume:true,showExecutions:true,showAverageCost:true,colorScheme:'blue-orange'},planPriceLines:[{id:'entry',price:56,title:'计划入场',displayPrice:'56.0000'},{id:'target',price:56.01,title:'止盈目标',displayPrice:'56.0100'}]};
+ const {getAllByRole}=render(<ReplayChart {...props}/>);
+ const labels=await waitFor(()=>{
+  const found=getAllByRole('button').filter(button=>button.hasAttribute('data-plan-source-ids'));
+  expect(found).toHaveLength(2);
+  return found;
+ });
+ expect(labels.map(label=>label.style.minHeight)).toEqual(['44px','44px']);
+ expect(labels.map(label=>label.style.height)).toEqual(['44px','44px']);
+ const bounds=labels.map(label=>({top:Number.parseFloat(label.style.top),bottom:Number.parseFloat(label.style.top)+Number.parseFloat(label.style.height)})).sort((first,second)=>first.top-second.top);
+ expect(bounds[1].top).toBeGreaterThanOrEqual(bounds[0].bottom);
+ expect(labels[0].style.lineHeight).toBe('18px');
+ vi.restoreAllMocks();
+});
+
+it('keeps live labels clear of both revealed close and visible actual cost', async () => {
+ vi.stubGlobal('ResizeObserver', class { constructor(private callback:()=>void){} observe(){this.callback();} disconnect(){} });
+ vi.spyOn(HTMLElement.prototype,'clientHeight','get').mockReturnValue(400);
+ vi.spyOn(HTMLElement.prototype,'clientWidth','get').mockReturnValue(800);
+ const props:ComponentProps<typeof ReplayChart>={candles:[{time:'2026-01-01T00:00:00Z',open:56,high:57,low:55,close:55.94,volume:1}],executions:[],cursor:'2026-01-01T00:00:00Z',averageCost:56,drawings:[],activeTool:'cursor',episodeId:'axis-native-obstacles',plannedRiskAmount:undefined,selectedDrawingId:null,currency:'USD',onSelectDrawing:()=>{},onCommand:()=>{},settings:{version:1,showGrid:true,showVolume:true,showExecutions:true,showAverageCost:true,colorScheme:'blue-orange'},planPriceLines:[{id:'entry',price:56,title:'计划入场',displayPrice:'56.0000'},{id:'target',price:55.95,title:'止盈目标',displayPrice:'55.9500'}]};
+ const {getAllByRole}=render(<ReplayChart {...props}/>);
+ const labels=await waitFor(()=>{
+  const found=getAllByRole('button').filter(button=>button.hasAttribute('data-plan-source-ids'));
+  expect(found).toHaveLength(2);
+  return found;
+ });
+ const centers=labels.map(label=>Number.parseFloat(label.style.top)+18);
+ expect(centers[1]-centers[0]).toBeGreaterThanOrEqual(36);
+ for (const center of centers) {
+  expect(Math.abs(center-55.94)).toBeGreaterThanOrEqual(22);
+  expect(Math.abs(center-56)).toBeGreaterThanOrEqual(22);
+ }
+ vi.restoreAllMocks();
+});
+
+it('shows complete accessible axis metadata without connectors or hit targets when live layout is infeasible', async () => {
+ vi.stubGlobal('ResizeObserver', class { constructor(private callback:()=>void){} observe(){this.callback();} disconnect(){} });
+ vi.spyOn(HTMLElement.prototype,'clientHeight','get').mockReturnValue(40);
+ vi.spyOn(HTMLElement.prototype,'clientWidth','get').mockReturnValue(800);
+ const props:ComponentProps<typeof ReplayChart>={candles:[{time:'2026-01-01T00:00:00Z',open:56,high:57,low:55,close:56,volume:1}],executions:[],cursor:'2026-01-01T00:00:00Z',averageCost:56,drawings:[],activeTool:'cursor',episodeId:'axis-infeasible',plannedRiskAmount:undefined,selectedDrawingId:null,currency:'USD',onSelectDrawing:()=>{},onCommand:()=>{},settings:{version:1,showGrid:true,showVolume:true,showExecutions:true,showAverageCost:true,colorScheme:'blue-orange'},planPriceLines:[{id:'entry',price:56,title:'计划入场',displayPrice:'56.0000'},{id:'cost',price:56.01,title:'实际成本',displayPrice:'56.0100'},{id:'stop',price:56.02,title:'初始止损',displayPrice:'56.0200'}]};
+ const {container,getByRole}=render(<ReplayChart {...props}/>);
+ const status=await waitFor(()=>getByRole('alert'));
+ expect(status).toHaveAttribute('data-plan-axis-status','infeasible');
+ expect(status.querySelectorAll('[data-plan-axis-name]')).toHaveLength(3);
+ expect(status).toHaveTextContent('计划入场');
+ expect(status).toHaveTextContent('56.0000');
+ expect(status).toHaveTextContent('实际成本');
+ expect(status).toHaveTextContent('56.0100');
+ expect(status).toHaveTextContent('初始止损');
+ expect(status).toHaveTextContent('56.0200');
+ expect(container.querySelectorAll('[data-plan-source-ids]').length).toBe(3);
+ expect(container.querySelector('[data-plan-axis-connectors]')).toBeNull();
+ expect(container.querySelectorAll('button[data-plan-source-ids]')).toHaveLength(0);
  vi.restoreAllMocks();
 });

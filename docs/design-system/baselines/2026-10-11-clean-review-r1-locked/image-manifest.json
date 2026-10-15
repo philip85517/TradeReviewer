@@ -1,0 +1,127 @@
+{
+  "createdAt": "2026-10-11T04:03:52.669Z",
+  "kind": "documentation-design-illustrations-not-runtime-golden",
+  "viewport": {
+    "width": 1440,
+    "baseHeight": 900,
+    "dpr": 1,
+    "zoom": 1
+  },
+  "sources": [
+    "app/design/review/page.tsx fixture formula",
+    "Lucide-react existing package",
+    "visual-baseline.md CB01–28",
+    "current-visual-source.json"
+  ],
+  "font": {
+    "stack": "Geist, PingFang SC, Microsoft YaHei, Noto Sans CJK SC, sans-serif",
+    "actualCJK": "not verified; macOS browser render",
+    "numeric": "SFMono-Regular, Consolas, monospace"
+  },
+  "fixture": {
+    "identity": "远山科技 688000 (fictional)",
+    "stage": "holding",
+    "cursor": "2026-03-18T07:00:00.000Z",
+    "executionCursor": "2026-03-18T07:00:00.000Z",
+    "hasSeenFuture": false,
+    "holding": 1000,
+    "lastPrice": 57.04,
+    "plan": {
+      "entry": 56,
+      "stop": 52,
+      "target": 68
+    },
+    "newRisk": {
+      "entry": 56,
+      "stop": 52,
+      "target": 60
+    }
+  },
+  "images": [
+    {
+      "filename": "01-workspace-s1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "95cd7167c1354b3e553438b2da94fcba41db9a5d6741854b82635f9016b69245",
+      "overflow": []
+    },
+    {
+      "filename": "02-frame-controls.png",
+      "width": 1440,
+      "height": 945,
+      "sha256": "31e5c6c08baee262bf726a1877dbfb120e7dd54abd8e693f2644010dc479ade7",
+      "overflow": []
+    },
+    {
+      "filename": "03-typography-spacing.png",
+      "width": 1440,
+      "height": 902,
+      "sha256": "70d4ae7316c972c71e56378105a827942468cbabe0c9b3ccef54403255cd410a",
+      "overflow": []
+    },
+    {
+      "filename": "04-colors-control-states.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "79d74e21e84f75cdebead00ce8893188f029c8fafa4c15490512c5d4f02c9762",
+      "overflow": []
+    },
+    {
+      "filename": "05-sidebar.png",
+      "width": 1440,
+      "height": 1178,
+      "sha256": "ebbd1ec7eb024bc63b3e788f74158c2b3c3ea981ca87fa01a331efa12ca3deb2",
+      "overflow": []
+    },
+    {
+      "filename": "06-text-states.png",
+      "width": 1440,
+      "height": 1020,
+      "sha256": "bd0355277c8aeab8df820c4d03f8f016544ce21040b9e1e041fb5493f78e2ad4",
+      "overflow": []
+    },
+    {
+      "filename": "07-anchor-journey.png",
+      "width": 1440,
+      "height": 920,
+      "sha256": "a2d25d1f463567a44ebbbdae6801f3861f6961004a3a6fdc43129817a5d6794a",
+      "overflow": []
+    },
+    {
+      "filename": "08-drawing-selection-risk.png",
+      "width": 1440,
+      "height": 1223,
+      "sha256": "3854e78c4b869dc5f2dce7994c4563f64d4833ba83cc5b0de6ace38990f8f01b",
+      "overflow": []
+    },
+    {
+      "filename": "09-phases-cutoffs.png",
+      "width": 1440,
+      "height": 1101,
+      "sha256": "cede2efae85cb0636b227388fdc5d8e2399b67c5a3ea307e459befe912c275df",
+      "overflow": []
+    },
+    {
+      "filename": "10-responsive-long-text.png",
+      "width": 1440,
+      "height": 1041,
+      "sha256": "bff59109e025484604ff77920ca33d836c5dff14ccdee37590a77e2d55072a96",
+      "overflow": []
+    },
+    {
+      "filename": "11-save-states.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ef0c1193a2e1e4a90ab335443931c742689e3c7d81a108fda2803d2ffc9054e5",
+      "overflow": []
+    },
+    {
+      "filename": "12-three-stage-export.png",
+      "width": 1440,
+      "height": 810,
+      "sha256": "be1ce684186c21ada33bcab0069ccb1666bb60e18483394a14fd2ea9f34e06cd",
+      "overflow": []
+    }
+  ],
+  "browserErrors": []
+}

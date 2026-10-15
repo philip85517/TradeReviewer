@@ -280,6 +280,43 @@ describe("risk selection slice", () => {
     expect(calls.some((call) => call.fill === "#ffffff")).toBe(false);
   });
 
+  it.each([
+    { tool: "trend-line" as const, anchors: drawing().anchors.slice(0, 2) },
+    { tool: "horizontal-line" as const, anchors: drawing().anchors.slice(0, 1) },
+    { tool: "vertical-line" as const, anchors: drawing().anchors.slice(0, 1) },
+    { tool: "arrow" as const, anchors: drawing().anchors.slice(0, 2) },
+    { tool: "rectangle" as const, anchors: drawing().anchors.slice(0, 2) },
+    { tool: "parallel-channel" as const, anchors: drawing().anchors.slice(0, 3) },
+    { tool: "fibonacci" as const, anchors: drawing().anchors.slice(0, 2) },
+    { tool: "measure" as const, anchors: drawing().anchors.slice(0, 2) },
+    { tool: "price-label" as const, anchors: drawing().anchors.slice(0, 1) },
+  ])("keeps locked %s selection readable without Canvas handles", ({ tool, anchors }) => {
+    const item = {
+      ...drawing(),
+      id: `locked-${tool}`,
+      name: tool,
+      tool,
+      anchors,
+      locked: true,
+      style: { ...drawing().style, color: "#d946ef" },
+    };
+    const originalAnchors = item.anchors.map((anchor) => ({ ...anchor }));
+    paintDrawingScene(recordingContext(), {
+      width: 300,
+      height: 200,
+      drawings: [item],
+      pointFor: (anchor) => ({ x: adapter.timeToX(anchor.time), y: adapter.priceToY(anchor.price) }),
+      pointForDrawing: () => ({ x: 10, y: 100 }),
+      currency: "HKD",
+      selectedDrawingId: item.id,
+      selectionPulse: 0.5,
+    }, true);
+
+    expect(calls.some((call) => call.op === "arc")).toBe(false);
+    expect(calls.some((call) => call.stroke === "#d946ef" || call.fill === "#d946ef")).toBe(true);
+    expect(item.anchors).toEqual(originalAnchors);
+  });
+
   it.each([false, true])("restores A after an object DOM gesture selects B and is cancelled (moved=%s)", (moved) => {
     const second = { ...drawing(), id: "b", name: "B", anchors: drawing().anchors.map((anchor) => ({ ...anchor, price: anchor.price + 30 })) };
     const { stage, props } = renderRisk({ drawings: [drawing(), second] });

@@ -57,9 +57,11 @@ function provenance(manifest: RecallPptxManifest) {
         metricMethodVersion: bundle.actualMetrics?.methodVersion ?? null, metricSource: bundle.actualMetrics?.source ?? null,
         captureContext: bundle.captureContext,
     } : null;
+    const executionFactsReference = manifest.executionFacts.bundle ? reference(manifest.executionFacts.bundle) : null;
     return { version: manifest.version, source: manifest.source, documentRevision: manifest.documentRevision, episodeId: manifest.episodeId, generatedAt: manifest.generatedAt,
         stages: manifest.stages.map(stage => ({ phase: stage.phase, snapshotId: stage.snapshot?.id ?? null, reference: reference(stage.bundle), warnings: stage.warnings })),
         summary: { snapshotId: manifest.summary.snapshotId, reference: reference(manifest.summary.bundle) },
+        executionFacts: { snapshotId: manifest.executionFacts.snapshotId, reference: executionFactsReference, executionIds: manifest.executionFacts.executionIds, warnings: manifest.executionFacts.warnings },
         texts: manifest.texts.map(({ text: _text, ...entry }) => { void _text; return entry; }) };
 }
 
@@ -102,6 +104,10 @@ export async function createRecallPptxBlob(manifest: RecallPptxManifest): Promis
     }
     tables('交易总结表', manifest.summary.rows, ['项目', '已留存计划', '实际 / 评价'], [2.15, 4.65, 5.43]);
     if (manifest.summary.details.length) tables('交易明细与口径', manifest.summary.details, ['项目 / 来源', '已留存明细'], [3.1, 9.13]);
+    const executionRows = manifest.executionFacts.rows.length
+        ? manifest.executionFacts.rows
+        : [['成交事实', manifest.executionFacts.warnings.join('；') || '无已揭示成交事实', '', '', '']];
+    tables('成交事实与费用', executionRows, ['成交时间', '方向', '数量', '价格', '费用'], [2.7, 1.35, 2.05, 2.75, 3.38]);
     if (manifest.texts.length) tables('图上文字 · 稳定身份去重', manifest.texts.map(entry => [`${entry.drawingId}\n修订 ${entry.revision.startsWith('legacy:') ? '旧版' : entry.revision}\n归属 ${entry.ownerId}`, entry.text]), ['来源', '可编辑文字'], [3.1, 9.13]);
     const data = await deck.write({ outputType: 'arraybuffer', compression: true });
     if (!(data instanceof ArrayBuffer)) throw new RecallExportError('PPTX 生成器未返回有效文件');

@@ -12,11 +12,14 @@ import {
   chooseRecallDirectory,
   createRecallExportManifest,
   createRecallZipBlob,
+  createThreeStageExportManifest,
+  createThreeStagePngBlob,
   writeRecallExportDirectory,
   type RecallDirectoryExportResult,
   type RecallExportManifest,
   type RecallExportOrder,
   type RecallExportSource,
+  type ThreeStageExportManifest,
 } from "../../lib/recall-export";
 import type { RecallDocument } from "../../lib/recall/types";
 import type { TradeEpisode } from "../../lib/trades/types";
@@ -30,7 +33,7 @@ export type RecallExportDialogProps = {
   /** The source is supplied so draft ordering cannot overwrite formal history. */
   onOrderChange?: (order: RecallExportOrder, source: RecallExportSource) => void;
   onExported?: (
-    result: RecallDirectoryExportResult | { status: "zip" | "pptx"; fileName: string },
+    result: RecallDirectoryExportResult | { status: "zip" | "pptx" | "three-stage-png"; fileName: string },
   ) => void;
   initialSource?: RecallExportSource;
   generatedAt?: string;
@@ -53,6 +56,18 @@ function initialSourceFor(document: RecallDocument, requested: RecallExportSourc
   return requested === "completed" && document.lastCompleted ? "completed" : "draft";
 }
 
+function financialMetricText(metric: ThreeStageExportManifest["financial"]["metrics"][number]) {
+  const value = metric.value ?? "未提供";
+  const unit = metric.unit ? ` · 单位：${metric.unit}` : "";
+  const currency = metric.currency ? ` · 币种：${metric.currency}` : "";
+  const reason = metric.reason ? ` · 原因：${metric.reason}` : "";
+  return `${metric.label}：${value}${unit}${currency}${reason}`;
+}
+
+function capitalSourceText(source: ThreeStageExportManifest["financial"]["capitalSources"][number]) {
+  return `计划版本：${source.planVersionId} · 金额：${source.amount ?? "未提供"} · 币种：${source.currency ?? "未提供"} · asOf：${source.asOf ?? "未提供"} · 来源：${source.source ?? "未提供"} · 快照：${source.snapshotRef ?? "未提供"}`;
+}
+
 export function RecallExportDialog({
   document,
   episode,
@@ -71,6 +86,8 @@ export function RecallExportDialog({
   const [error, setError] = useState<string | null>(null);
   const [pptxBusy, setPptxBusy] = useState(false);
   const [pptxDownloaded, setPptxDownloaded] = useState(false);
+  const [threeStageBusy, setThreeStageBusy] = useState(false);
+  const [threeStageDownloaded, setThreeStageDownloaded] = useState(false);
   const [globalBundleId, setGlobalBundleId] = useState<string | undefined>();
   const globalChoices = useMemo(() => recallPptxGlobalChoices(document, source), [document, source]);
 
@@ -86,6 +103,27 @@ export function RecallExportDialog({
     }
   }, [document, episode, generatedAt, order, source]);
   const manifest = manifestState.manifest;
+  const threeStageState = useMemo<{ manifest: ThreeStageExportManifest | null; error: string | null }>(() => {
+    try {
+      return {
+        manifest: createThreeStageExportManifest(document, {
+          source,
+          instrument: {
+            episodeId: episode.id,
+            symbol: episode.instrument.symbol,
+            name: episode.instrument.name,
+            market: episode.instrument.market,
+            currency: episode.instrument.currency,
+          },
+          ...(generatedAt ? { generatedAt } : {}),
+        }),
+        error: null,
+      };
+    } catch (reason) {
+      return { manifest: null, error: reason instanceof Error ? reason.message : "三阶段导出清单无效" };
+    }
+  }, [document, episode, generatedAt, source]);
+  const threeStageManifest = threeStageState.manifest;
 
   const commitOrder = (next: RecallExportOrder) => {
     setOrder(next);
@@ -99,6 +137,7 @@ export function RecallExportDialog({
     setZipDownloaded(false);
     setGlobalBundleId(undefined);
     setPptxDownloaded(false);
+    setThreeStageDownloaded(false);
   };
 
   const orderForManifest = (nextSnapshots: RecallExportManifest["snapshots"]): RecallExportOrder => ({
@@ -202,6 +241,34 @@ export function RecallExportDialog({
     } finally { setPptxBusy(false); }
   };
 
+  const downloadThreeStagePng = async () => {
+    if (threeStageBusy || !threeStageManifest || threeStageManifest.contentOverflow) return;
+    setError(null); setThreeStageBusy(true); setThreeStageDownloaded(false);
+    try {
+      // Freeze synchronously before the first await. The image renderer receives no live document or chart handle.
+      const frozen = createThreeStageExportManifest(document, {
+        source,
+        instrument: {
+          episodeId: episode.id,
+          symbol: episode.instrument.symbol,
+          name: episode.instrument.name,
+          market: episode.instrument.market,
+          currency: episode.instrument.currency,
+        },
+        ...(generatedAt ? { generatedAt } : {}),
+      });
+      const blob = await createThreeStagePngBlob(frozen);
+      const href = window.URL.createObjectURL(blob);
+      const anchor = window.document.createElement("a");
+      anchor.href = href; anchor.download = frozen.fileName; anchor.click();
+      window.setTimeout(() => window.URL.revokeObjectURL(href), 0);
+      setThreeStageDownloaded(true);
+      onExported?.({ status: "three-stage-png", fileName: frozen.fileName });
+    } catch (reason) {
+      setError(`三阶段 PNG 导出失败：${reason instanceof Error ? reason.message : "请重试"}。完整 Markdown/PPTX 仍可用。`);
+    } finally { setThreeStageBusy(false); }
+  };
+
   return (
     <section className="recall-export-dialog" role="dialog" aria-modal="true" aria-label="导出复盘">
       <header>
@@ -234,6 +301,58 @@ export function RecallExportDialog({
         {globalChoices.length === 0 && <p>缺少已留存全局版本组合：PPTX 会明确标记总结缺失。</p>}
         <button type="button" onClick={() => void downloadPptx()} disabled={pptxBusy}>{pptxBusy ? "正在生成 PPTX…" : "下载 PPTX"}</button>
         {pptxDownloaded && <span role="status">PPTX 已开始下载</span>}
+      </div>
+      <div className="recall-export-three-stage" aria-label="三阶段 PNG 导出">
+        <p>三阶段 PNG 固定为 1440×810，仅嵌入已保存 PNG 与已接受版本组合；缺阶段保留占位。</p>
+        {threeStageState.error && <p role="alert">{threeStageState.error}</p>}
+        {threeStageManifest && (
+          <>
+            <ul aria-label="三阶段代表快照">
+              {threeStageManifest.stages.map(stage => <li key={stage.phase}>
+                <strong>{stage.title}</strong>
+                <span>{stage.snapshotId ?? "未留存"} · {stage.imageDataUrl ? "已保存 PNG" : "无可验证 PNG"}</span>
+                {stage.texts.map(text => <pre key={text.key}>{stage.contentRows.find(row => row.textKey === text.key)?.text ?? text.text}</pre>)}
+              </li>)}
+            </ul>
+            {threeStageManifest.warnings.length > 0 && <ul className="recall-export-warnings" aria-label="三阶段导出提示">
+              {threeStageManifest.warnings.map(warning => <li key={warning}>{warning}</li>)}
+            </ul>}
+            <p>
+              冻结来源：{threeStageManifest.sourceIdentity.source === "completed" ? "正式版本" : "草稿版本"} · episode {threeStageManifest.sourceIdentity.episodeId} · 文档修订 {threeStageManifest.sourceIdentity.documentRevision}。
+              接受组合：{threeStageManifest.acceptedBundleId ?? "未提供"}；财务证据：{threeStageManifest.financial.evidenceDigest ?? "未提供"}。
+            </p>
+            <p>全部记录索引：{threeStageManifest.allRecordIndex.length} 条；成交：{threeStageManifest.executions.length} 条。</p>
+            <details>
+              <summary>查看完整财务来源与记录索引</summary>
+              <section aria-label="三阶段完整财务来源">
+                <h3>完整财务指标</h3>
+                <ul>
+                  {threeStageManifest.financial.metrics.length > 0
+                    ? threeStageManifest.financial.metrics.map(metric => <li key={metric.key}>{financialMetricText(metric)}</li>)
+                    : <li>未提供已接受财务指标</li>}
+                </ul>
+                <h3>完整资金来源</h3>
+                <ul>
+                  {threeStageManifest.financial.capitalSources.length > 0
+                    ? threeStageManifest.financial.capitalSources.map(capital => <li key={capital.planVersionId}>{capitalSourceText(capital)}</li>)
+                    : <li>未提供已接受资金来源</li>}
+                </ul>
+              </section>
+              <ul aria-label="三阶段完整记录索引">
+                {threeStageManifest.allRecordIndex.map((record) => (
+                  <li key={`${record.kind}:${record.id}:${record.bundleId ?? ""}`}>
+                    <span>{record.kind} · {record.id}{record.bundleId ? ` · bundle ${record.bundleId}` : ""} · {record.selected ? "已选" : record.retained ? "已留存" : "未接受组合"}{record.status ? ` · ${record.status}` : ""}</span>
+                    {record.details && <ul>{record.details.map(detail => <li key={detail}>{detail}</li>)}</ul>}
+                  </li>
+                ))}
+              </ul>
+            </details>
+            <button type="button" onClick={() => void downloadThreeStagePng()} disabled={threeStageBusy || threeStageManifest.contentOverflow}>
+              {threeStageBusy ? "正在生成三阶段 PNG…" : threeStageManifest.contentOverflow ? "内容超出画布，无法生成完整 PNG" : "下载三阶段 PNG"}
+            </button>
+            {threeStageDownloaded && <span role="status">三阶段 PNG 已开始下载</span>}
+          </>
+        )}
       </div>
       {manifest && (
         <>

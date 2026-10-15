@@ -10,6 +10,8 @@
 
 本规范不替代 [开发工作流](development-workflow.md)、[任务拆解标准](task-decomposition.md)、[UI 任务与验收模板](ui-task-templates.md) 或 [本地任务跟踪](issue-tracker.md)。任务票仍须写明精确范围、负责人、证据和依赖；本规范提供检查方法与可复制记录。
 
+诊断需要补设计状态稿或修复方案时，按[图文设计文档标准](../design-system/documentation-standard.md)组织“图片＋描述＋规则＋验收”，引用原控件/规则ID和准确状态；不得把候选图版的通过视为真实控件PASS。仅整理设计文档格式按文档范围验证，不触发无关UI/数据库检查。
+
 ## 2. 冻结可比条件
 
 开始检查前冻结以下信息，并把它们写在报告顶部：

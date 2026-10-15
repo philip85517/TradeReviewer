@@ -1,0 +1,33 @@
+{
+  "registeredAt": "2026-10-11T05:53:40.209239+00:00",
+  "references": [
+    {
+      "file": "user-plan-overlap.png",
+      "sourceAttachment": "codex-clipboard-ed56e0ff-865b-47d6-b842-e1897662e043.png",
+      "sha256": "a95ddb09a1bc4758542664a49a411fcab10f5e5e001790c4224525243defad4b",
+      "originalPixels": [
+        2220,
+        1302
+      ],
+      "cssViewport": "unknown",
+      "dpr": "unknown",
+      "zoom": "unknown",
+      "edited": false,
+      "kind": "user-provided-document-critique-not-runtime-evidence"
+    },
+    {
+      "file": "user-control-states.png",
+      "sourceAttachment": "codex-clipboard-343cd3e4-083f-4ec7-a02b-29930c122869.png",
+      "sha256": "9bc5555bba76b0f504c4a3b2078c1031e038b7513fc9826294f96fca1ae7062e",
+      "originalPixels": [
+        2272,
+        1334
+      ],
+      "cssViewport": "unknown",
+      "dpr": "unknown",
+      "zoom": "unknown",
+      "edited": false,
+      "kind": "user-provided-document-critique-not-runtime-evidence"
+    }
+  ]
+}

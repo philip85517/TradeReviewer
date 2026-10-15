@@ -31,6 +31,7 @@ const chartHarness = vi.hoisted(() => {
     nextDrawing: undefined as NormalizedDrawing | undefined,
     pending: undefined as { cursor?: string; executionCursor?: string; drawings: NormalizedDrawing[] } | undefined,
     rendered: undefined as { cursor?: string; executionCursor?: string; drawings: NormalizedDrawing[] } | undefined,
+    viewportKey: undefined as string | undefined,
     handle: {
       capture: vi.fn(),
       flush: vi.fn(async () => {
@@ -52,6 +53,7 @@ vi.mock("../chart/replay-chart", () => ({
     onCommand,
     onExecutionSelect,
     onReady,
+    viewportKey,
   }: {
     drawings: NormalizedDrawing[];
     candles: Candle[];
@@ -60,9 +62,11 @@ vi.mock("../chart/replay-chart", () => ({
     onCommand: (command: unknown) => void;
     onExecutionSelect?: (executionId: string) => void;
     onReady?: (handle: RecallChartHandle | null) => void;
+    viewportKey?: string;
   }) => {
     chartHarness.onCommand = onCommand;
     chartHarness.onExecutionSelect = onExecutionSelect;
+    chartHarness.viewportKey = viewportKey;
     chartHarness.pending = {
       cursor,
       executionCursor: executions?.at(-1)?.id,
@@ -79,6 +83,7 @@ vi.mock("../chart/replay-chart", () => ({
           data-testid="review-chart"
           data-cursor={cursor}
           data-candle-count={candles.length}
+          data-last-candle-close={candles.at(-1)?.close}
           data-execution-cursor={executions?.at(-1)?.id}
           data-drawings={JSON.stringify(drawings)}
         />
@@ -232,6 +237,30 @@ function repositoryFor(initial: RecallDocument, save = (document: RecallDocument
   } satisfies RecallRepository;
 }
 
+function recallProps(
+  currentEpisode: TradeEpisode,
+  initial: RecallDocument,
+  repository: RecallRepository,
+  episodes: TradeEpisode[] = [currentEpisode],
+  onFormalCompletion?: RecallWorkspaceProps["onFormalCompletion"],
+) : RecallWorkspaceProps {
+  return {
+    episode: currentEpisode,
+    episodes,
+    instrument: currentEpisode.instrument,
+    instruments: [currentEpisode.instrument],
+    timeframeAvailability: availability,
+    importedTimelineCandles: [candle, secondCandle],
+    candlesByTimeframe: { "15m": [candle, secondCandle], "1D": [candle, secondCandle], "1W": [candle, secondCandle] },
+    settings,
+    repository,
+    onFormalCompletion,
+    onEpisodeChange: vi.fn(),
+    onInstrumentChange: vi.fn(),
+    onSettingsChange: vi.fn(),
+  };
+}
+
 function renderRecall(
   currentEpisode: TradeEpisode,
   initial: RecallDocument,
@@ -239,28 +268,29 @@ function renderRecall(
   episodes: TradeEpisode[] = [currentEpisode],
   onFormalCompletion?: RecallWorkspaceProps["onFormalCompletion"],
 ) {
-  return render(
-    <RecallWorkspace
-      episode={currentEpisode}
-      episodes={episodes}
-      instrument={currentEpisode.instrument}
-      instruments={[currentEpisode.instrument]}
-      timeframeAvailability={availability}
-      importedTimelineCandles={[candle, secondCandle]}
-      candlesByTimeframe={{ "15m": [candle, secondCandle], "1D": [candle, secondCandle], "1W": [candle, secondCandle] }}
-      settings={settings}
-      repository={repository}
-      onFormalCompletion={onFormalCompletion}
-      onEpisodeChange={vi.fn()}
-      onInstrumentChange={vi.fn()}
-      onSettingsChange={vi.fn()}
-    />,
-  );
+  return render(<RecallWorkspace {...recallProps(currentEpisode, initial, repository, episodes, onFormalCompletion)} />);
 }
 
-function decisionButton(number: number): HTMLElement {
-  const button = document.querySelectorAll<HTMLElement>(".recall-decision-wrap > .recall-nav-item")[number - 1];
-  if (!button) throw new Error(`decision ${number} navigation button not found`);
+async function decisionButton(number: number): Promise<HTMLElement> {
+  let button = document.querySelectorAll<HTMLElement>(".recall-decision-wrap > .recall-nav-item")[number - 1];
+  // Replay hides future decisions until the real progressive control reveals
+  // them. Keep this helper on that product path instead of selecting a hidden
+  // source record by DOM index.
+  const maxAdvances = Math.max(1, number);
+  let advances = 0;
+  while (!button && advances < maxAdvances) {
+    const next = screen.queryByRole("button", { name: "下一笔决策" });
+    if (!(next instanceof HTMLButtonElement) || next.disabled) break;
+    await act(async () => {
+      fireEvent.click(next);
+      await Promise.resolve();
+    });
+    advances += 1;
+    button = document.querySelectorAll<HTMLElement>(".recall-decision-wrap > .recall-nav-item")[number - 1];
+  }
+  if (!button) {
+    throw new Error(`decision ${number} navigation button not found after ${advances} bounded advances`);
+  }
   return button;
 }
 
@@ -269,6 +299,44 @@ async function settleLoad() {
     await Promise.resolve();
     await Promise.resolve();
   });
+}
+
+async function clickAndSettle(name: string) {
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name }));
+    await Promise.resolve();
+    await Promise.resolve();
+  });
+}
+
+async function clickElementAndSettle(element: HTMLElement) {
+  await act(async () => {
+    fireEvent.click(element);
+    await Promise.resolve();
+    await Promise.resolve();
+  });
+}
+
+async function waitForExecutionCursor(cursor: string) {
+  await waitFor(() => {
+    expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", cursor);
+  });
+}
+
+async function waitForCandleCount(count: number) {
+  await waitFor(() => {
+    expect(screen.getByTestId("review-chart")).toHaveAttribute("data-candle-count", String(count));
+  });
+}
+
+async function waitForFullHistory() {
+  await waitFor(() => {
+    expect(screen.getByText(/完整历史：当前回合成交全部显示/)).toBeInTheDocument();
+  });
+}
+
+async function waitForSnapshotEditButton(number: number) {
+  return screen.findByRole("button", { name: `编辑决策 ${number}快照` });
 }
 
 function openMoreRecords() {
@@ -299,6 +367,7 @@ beforeEach(() => {
   chartHarness.nextDrawing = undefined;
   chartHarness.pending = undefined;
   chartHarness.rendered = undefined;
+  chartHarness.viewportKey = undefined;
   chartHarness.handle.capture.mockReset();
   chartHarness.handle.capture.mockImplementation(async () => ({
     imageDataUrl: `data:image/png;base64,${chartHarness.rendered?.executionCursor === "fill-2" ? "R0xPQkFM" : "U1RBR0U="}`,
@@ -317,6 +386,89 @@ afterEach(() => {
 });
 
 describe("independent Recall integration review", () => {
+  it("passes a structured viewport identity for domain episode IDs containing colons", async () => {
+    const colonEpisode = episodeWithExecutions("episode:opening%2F2026-01-20:0", 2);
+    const initial = documentWithDecisionSnapshots(colonEpisode);
+    renderRecall(colonEpisode, initial, repositoryFor(initial));
+    await settleLoad();
+
+    const key = JSON.parse(chartHarness.viewportKey ?? "null") as unknown;
+    expect(key).toEqual([
+      colonEpisode.instrument.id,
+      `${colonEpisode.id}:working`,
+      "1D",
+      "",
+      "",
+    ]);
+  });
+
+  it("drops an unavailable persisted decision viewport instead of applying its old bar range", async () => {
+    const initial = createRecallDocument(episode);
+    const unavailableViewport = { ...chartHarness.viewport, logicalRange: { from: 24, to: 40 } };
+    initial.working.timeframe = "15m";
+    initial.working.decisionDrafts = [{
+      mode: "decision",
+      decisionId: "fill-1",
+      timeframe: "1h",
+      cursor: candle.knowledgeAt!,
+      executionCursor: "fill-1",
+      revealedCandleCursor: candle.knowledgeAt!,
+      drawings: [],
+      viewport: unavailableViewport,
+    }];
+    renderRecall(episode, initial, repositoryFor(initial));
+    await settleLoad();
+    chartHarness.handle.restoreViewport.mockClear();
+
+    fireEvent.click(await decisionButton(1));
+    await settleLoad();
+
+    expect(JSON.parse(chartHarness.viewportKey ?? "null")).toEqual(expect.arrayContaining(["15m"]));
+    expect(chartHarness.handle.restoreViewport).not.toHaveBeenCalledWith(unavailableViewport);
+  });
+
+  it("drops an unavailable persisted phase viewport instead of applying its old bar range", async () => {
+    const initial = createRecallDocument(episode);
+    const unavailableViewport = { ...chartHarness.viewport, logicalRange: { from: 24, to: 40 } };
+    initial.working.timeframe = "15m";
+    initial.working.phaseContexts = {
+      holding: {
+        mode: "global",
+        decisionId: "global",
+        timeframe: "1h",
+        cursor: candle.knowledgeAt!,
+        executionCursor: "fill-1",
+        drawings: [],
+        viewport: unavailableViewport,
+      },
+    };
+    renderRecall(episode, initial, repositoryFor(initial));
+    await settleLoad();
+
+    expect(JSON.parse(chartHarness.viewportKey ?? "null")).toEqual(expect.arrayContaining(["15m"]));
+    expect(chartHarness.handle.restoreViewport).not.toHaveBeenCalledWith(unavailableViewport);
+  });
+
+  it("normalizes the global graph when its timeframe becomes unavailable", async () => {
+    const initial = createRecallDocument(episode);
+    initial.working.timeframe = "1D";
+    const props = recallProps(episode, initial, repositoryFor(initial));
+    const view = render(<RecallWorkspace {...props} />);
+    await settleLoad();
+
+    const unavailableAvailability = {
+      ...availability,
+      "1D": { enabled: false, reason: "period unavailable" },
+    } satisfies RecallWorkspaceProps["timeframeAvailability"];
+    view.rerender(<RecallWorkspace {...props} timeframeAvailability={unavailableAvailability} />);
+    await settleLoad();
+
+    fireEvent.click(document.querySelector(".recall-nav-item.global")!);
+    await settleLoad();
+
+    expect(JSON.parse(chartHarness.viewportKey ?? "null")).toEqual(expect.arrayContaining(["15m"]));
+  });
+
   it("notifies the parent only after a formal Recall completion is accepted", async () => {
     const initial = documentWithDecisionSnapshots(episode);
     const repository = repositoryFor(initial);
@@ -375,7 +527,9 @@ describe("independent Recall integration review", () => {
     renderRecall(episode, initial, repository);
     await settleLoad();
 
-    fireEvent.click(decisionButton(1));
+    fireEvent.click(await decisionButton(1));
+    await settleLoad();
+    expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", "fill-1");
     fireEvent.click(screen.getByRole("button", { name: "add text" }));
     await act(async () => {
       await vi.advanceTimersByTimeAsync(1000);
@@ -427,12 +581,11 @@ describe("independent Recall integration review", () => {
     chartHarness.nextDrawing = laterText;
     renderRecall(episode, initial, repository);
     await settleLoad();
-
-    fireEvent.click(decisionButton(2));
+    fireEvent.click(await decisionButton(2));
     fireEvent.click(screen.getByRole("button", { name: "add text" }));
     expect(JSON.parse(screen.getByTestId("review-chart").getAttribute("data-drawings")!).some((item: NormalizedDrawing) => item.id === "later-text")).toBe(true);
 
-    fireEvent.click(decisionButton(1));
+    fireEvent.click(await decisionButton(1));
     await waitFor(() => {
       const visible = JSON.parse(screen.getByTestId("review-chart").getAttribute("data-drawings")!) as NormalizedDrawing[];
       expect(visible.some((item) => item.id === "first-text")).toBe(true);
@@ -460,7 +613,8 @@ describe("independent Recall integration review", () => {
     renderRecall(episode, initial, repository);
     await settleLoad();
 
-    fireEvent.click(screen.getByRole("button", { name: "下一笔决策" }));
+    await clickAndSettle("下一笔决策");
+    expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", "fill-2");
     fireEvent.click(screen.getByRole("button", { name: "add text" }));
     await act(async () => {
       await vi.advanceTimersByTimeAsync(1000);
@@ -477,12 +631,143 @@ describe("independent Recall integration review", () => {
     cleanup();
     renderRecall(episode, persisted, repository);
     await settleLoad();
-    fireEvent.click(decisionButton(1));
-    fireEvent.click(decisionButton(2));
+    fireEvent.click(await decisionButton(2));
+    await settleLoad();
     await waitFor(() => {
       const visible = JSON.parse(screen.getByTestId("review-chart").getAttribute("data-drawings")!) as NormalizedDrawing[];
       expect(visible.some((item) => item.id === "next-decision-text")).toBe(true);
     });
+  });
+
+  it("keeps each decision viewport through a timeframe change and return navigation", async () => {
+    const initial = createRecallDocument(episode, "2026-01-20T10:00:00.000Z");
+    const repository = repositoryFor(initial);
+    renderRecall(episode, initial, repository);
+    await settleLoad();
+
+    const firstViewport = { ...chartHarness.viewport, rightOffset: 7, logicalRange: { from: 4, to: 12 } };
+    const secondViewport = { ...chartHarness.viewport, rightOffset: 31, logicalRange: { from: 18, to: 28 } };
+    fireEvent.click(await decisionButton(1));
+    chartHarness.handle.getViewport.mockReturnValue(firstViewport);
+    fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+    await settleLoad();
+    fireEvent.click(await decisionButton(2));
+    await settleLoad();
+    chartHarness.handle.getViewport.mockReturnValue(secondViewport);
+    fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+    await settleLoad();
+
+    chartHarness.handle.restoreViewport.mockClear();
+    fireEvent.click(screen.getByRole("button", { name: "切换到 15m" }));
+    await settleLoad();
+    fireEvent.click(screen.getByRole("button", { name: "切换到 1D" }));
+    await settleLoad();
+
+    fireEvent.click(await decisionButton(1));
+    await waitFor(() => expect(chartHarness.handle.restoreViewport).toHaveBeenCalledWith(firstViewport));
+    fireEvent.click(await decisionButton(2));
+    await waitFor(() => expect(chartHarness.handle.restoreViewport).toHaveBeenCalledWith(secondViewport));
+  });
+
+  it("persists the viewport of the decision left before destination navigation", async () => {
+    vi.useFakeTimers();
+    const initial = createRecallDocument(episode, "2026-01-20T10:00:00.000Z");
+    let persisted = initial;
+    const repository: RecallRepository = {
+      load: vi.fn(() => Promise.resolve(persisted)),
+      save: vi.fn(async (next) => {
+        persisted = { ...next, revision: next.revision + 1 };
+        return persisted;
+      }),
+      fetch: vi.fn(),
+    };
+    renderRecall(episode, initial, repository);
+    await settleLoad();
+
+    openMoreRecords();
+    fireEvent.click(screen.getByRole("button", { name: "完整历史" }));
+    await settleLoad();
+    fireEvent.click(await decisionButton(1));
+    await settleLoad();
+    const firstViewport = { ...chartHarness.viewport, rightOffset: 17, logicalRange: { from: 13, to: 25 } };
+    chartHarness.handle.getViewport.mockReturnValue(firstViewport);
+    fireEvent.click(await decisionButton(2));
+    await settleLoad();
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
+      await Promise.resolve();
+    });
+
+    expect(persisted.working.decisionDrafts?.find((draft) => draft.decisionId === "fill-1")?.viewport).toEqual(firstViewport);
+    vi.useRealTimers();
+  });
+
+  it("lets an explicit execution marker reveal its target without restoring an offscreen work window", async () => {
+    const initial = createRecallDocument(episode, "2026-01-20T10:00:00.000Z");
+    renderRecall(episode, initial, repositoryFor(initial));
+    await settleLoad();
+
+    fireEvent.click(await decisionButton(2));
+    const offscreenViewport = { ...chartHarness.viewport, rightOffset: 29, logicalRange: { from: 44, to: 58 } };
+    chartHarness.handle.getViewport.mockReturnValue(offscreenViewport);
+    fireEvent.click(await decisionButton(1));
+    fireEvent.click(await decisionButton(2));
+    await waitFor(() => expect(chartHarness.handle.restoreViewport).toHaveBeenCalledWith(offscreenViewport));
+    chartHarness.handle.restoreViewport.mockClear();
+
+    await act(async () => chartHarness.onExecutionSelect?.("fill-2"));
+    expect(chartHarness.handle.restoreViewport).not.toHaveBeenCalled();
+    expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", "fill-2");
+  });
+
+  it("keeps a separate viewport for each timeframe in one decision graph", async () => {
+    const initial = createRecallDocument(episode, "2026-01-20T10:00:00.000Z");
+    const repository = repositoryFor(initial);
+    renderRecall(episode, initial, repository);
+    await settleLoad();
+
+    const oneDayViewport = { ...chartHarness.viewport, rightOffset: 9, logicalRange: { from: 24, to: 40 } };
+    const fifteenMinuteViewport = { ...chartHarness.viewport, rightOffset: 2, logicalRange: { from: 3, to: 15 } };
+    fireEvent.click(await decisionButton(1));
+    await settleLoad();
+    chartHarness.handle.getViewport.mockReturnValue(oneDayViewport);
+    fireEvent.click(screen.getByRole("button", { name: "切换到 15m" }));
+    await settleLoad();
+
+    chartHarness.handle.getViewport.mockReturnValue(fifteenMinuteViewport);
+    chartHarness.handle.restoreViewport.mockClear();
+    fireEvent.click(screen.getByRole("button", { name: "切换到 1D" }));
+    await waitFor(() => expect(chartHarness.handle.restoreViewport).toHaveBeenCalledWith(oneDayViewport));
+  });
+
+  it("does not rebuild the live chart window for a same-boundary market refresh", async () => {
+    const initial = createRecallDocument(episode, "2026-01-20T10:00:00.000Z");
+    const repository = repositoryFor(initial);
+    const props = recallProps(episode, initial, repository);
+    const view = render(<RecallWorkspace {...props} />);
+    await settleLoad();
+
+    chartHarness.handle.restoreViewport.mockClear();
+    expect(chartHarness.handle.restoreViewport).not.toHaveBeenCalled();
+    fireEvent.click(await decisionButton(2));
+    await waitFor(() => expect(chartHarness.handle.restoreViewport).toHaveBeenCalledWith(chartHarness.viewport));
+    const liveViewport = { ...chartHarness.viewport, rightOffset: 19, logicalRange: { from: 11, to: 23 } };
+    chartHarness.handle.getViewport.mockReturnValue(liveViewport);
+    chartHarness.handle.restoreViewport.mockClear();
+
+    view.rerender(
+      <RecallWorkspace
+        {...props}
+        candlesByTimeframe={{
+          ...props.candlesByTimeframe,
+          "1D": props.candlesByTimeframe!["1D"]!.map((item, index) => index === 0 ? { ...item, close: 99 } : item),
+        }}
+      />,
+    );
+    await settleLoad();
+
+    expect(chartHarness.handle.restoreViewport).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.getByTestId("review-chart")).toHaveAttribute("data-last-candle-close", "99"));
   });
 
   it("inherits the nearest earlier stage drawings when the next decision has no snapshot", async () => {
@@ -500,7 +785,7 @@ describe("independent Recall integration review", () => {
     renderRecall(episode, initial, repository);
     await settleLoad();
 
-    fireEvent.click(decisionButton(2));
+    fireEvent.click(await decisionButton(2));
     await waitFor(() => {
       const visible = JSON.parse(screen.getByTestId("review-chart").getAttribute("data-drawings")!) as NormalizedDrawing[];
       expect(visible.some((item) => item.id === "inherited-text")).toBe(true);
@@ -529,7 +814,7 @@ describe("independent Recall integration review", () => {
     renderRecall(episode, initial, repository);
     await settleLoad();
 
-    fireEvent.click(decisionButton(1));
+    fireEvent.click(await decisionButton(1));
     fireEvent.click(document.querySelector(".recall-nav-item.global")!);
     await waitFor(() => {
       const visible = JSON.parse(screen.getByTestId("review-chart").getAttribute("data-drawings")!) as NormalizedDrawing[];
@@ -564,7 +849,8 @@ describe("independent Recall integration review", () => {
     renderRecall(episode, initial, repository);
     await settleLoad();
 
-    fireEvent.click(decisionButton(1));
+    await clickElementAndSettle(await decisionButton(1));
+    expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", "fill-1");
     fireEvent.click(screen.getByRole("button", { name: "add text" }));
     await act(async () => {
       await vi.advanceTimersByTimeAsync(1000);
@@ -625,7 +911,7 @@ describe("independent Recall integration review", () => {
     renderRecall(episode, initial, repository);
     await settleLoad();
 
-    fireEvent.click(decisionButton(1));
+    fireEvent.click(await decisionButton(1));
     chartHarness.handle.capture.mockImplementationOnce(async () => {
       chartHarness.onCommand?.({ type: "add", drawing: stageDraft });
       return { imageDataUrl: "data:image/png;base64,AA==", viewport: chartHarness.viewport };
@@ -686,7 +972,8 @@ describe("independent Recall integration review", () => {
     renderRecall(episode, initial, repository);
     await settleLoad();
 
-    fireEvent.click(decisionButton(1));
+    await clickElementAndSettle(await decisionButton(1));
+    await waitForExecutionCursor("fill-1");
     fireEvent.click(screen.getByRole("button", { name: "add text" }));
     openMoreRecords();
     fireEvent.click(screen.getByRole("button", { name: /保存并完成回合复盘/ }));
@@ -707,7 +994,7 @@ describe("independent Recall integration review", () => {
     cleanup();
     renderRecall(episode, persisted, repository);
     await settleLoad();
-    fireEvent.click(decisionButton(1));
+    fireEvent.click(await decisionButton(1));
     await waitFor(() => {
       const visible = JSON.parse(screen.getByTestId("review-chart").getAttribute("data-drawings")!) as NormalizedDrawing[];
       expect(visible.some((item) => item.id === "unretained-stage-text")).toBe(true);
@@ -729,7 +1016,8 @@ describe("independent Recall integration review", () => {
     renderRecall(episode, initial, repository);
     await settleLoad();
 
-    fireEvent.click(decisionButton(1));
+    await clickElementAndSettle(await decisionButton(1));
+    await waitForExecutionCursor("fill-1");
     await act(async () => {
       await chartHarness.handle.flush();
     });
@@ -758,10 +1046,16 @@ describe("independent Recall integration review", () => {
     await settleLoad();
 
     openAllSnapshotRecords();
-    fireEvent.click(screen.getByRole("button", { name: "编辑决策 1快照" }));
-    fireEvent.click(screen.getByRole("button", { name: "add text" }));
+    await clickAndSettle("完整历史");
+    await settleLoad();
+    expect(screen.getByRole("button", { name: "编辑决策 1快照" })).toBeInTheDocument();
+    await clickAndSettle("编辑决策 1快照");
+    await settleLoad();
+    expect(screen.getByRole("button", { name: "返回工作图" })).toBeInTheDocument();
+    await clickAndSettle("add text");
     const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
-    fireEvent.click(screen.getByRole("button", { name: "返回工作图" }));
+    await clickAndSettle("返回工作图");
+    await settleLoad();
     expect(screen.getByRole("button", { name: "更新此快照" })).toBeTruthy();
 
     await act(async () => {
@@ -791,13 +1085,14 @@ describe("independent Recall integration review", () => {
     await settleLoad();
 
     openAllSnapshotRecords();
-    fireEvent.click(screen.getByRole("button", { name: "编辑决策 1快照" }));
+    await clickAndSettle("完整历史");
+    await clickAndSettle("编辑决策 1快照");
     const nextDecisionButton = screen.getByRole("button", { name: "下一笔决策" });
     expect(nextDecisionButton).toBeDisabled();
-    expect(nextDecisionButton).toHaveAttribute("title", expect.stringMatching(/正在编辑快照/));
-    fireEvent.click(screen.getByRole("button", { name: "切换到 15m" }));
+    expect(nextDecisionButton).toHaveAttribute("title", expect.stringMatching(/完整历史查看中/));
+    await clickAndSettle("切换到 15m");
     const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
-    fireEvent.click(screen.getByRole("button", { name: "返回工作图" }));
+    await clickAndSettle("返回工作图");
 
     expect(confirmSpy).toHaveBeenCalled();
     confirmSpy.mockRestore();
@@ -846,7 +1141,7 @@ describe("independent Recall integration review", () => {
     renderRecall(prefillEpisode, persisted, repository);
     await settleLoad();
 
-    fireEvent.click(screen.getByRole("button", { name: "上一根 K 线" }));
+    await clickAndSettle("上一根 K 线");
     expect(screen.getByTestId("review-chart")).toHaveAttribute("data-cursor", candle.knowledgeAt);
     expect(screen.getByTestId("review-chart")).not.toHaveAttribute("data-execution-cursor");
     await act(async () => {
@@ -954,8 +1249,9 @@ it("restores the completed bar boundary independently of its last execution", as
   await settleLoad();
   await act(async () => fireEvent.click(screen.getByRole("button", { name: "买入前判断" })));
   await act(async () => fireEvent.click(screen.getByRole("button", { name: "持仓过程" })));
-  fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
-  fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+    await clickAndSettle("下一根 K 线");
+    await clickAndSettle("下一根 K 线");
+    await waitForCandleCount(2);
   expect(screen.getByTestId("review-chart").getAttribute("data-candle-count")).toBe("2");
   await act(async () => fireEvent.click(screen.getByRole("button", { name: "买入前判断" })));
   expect(screen.getAllByText(/已看后续补记/).length).toBeGreaterThan(0);
@@ -1033,8 +1329,9 @@ it("explains terminal replay controls and offers a non-destructive early return"
   renderRecall(episode, initial, repository);
   await settleLoad();
 
-  fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
-  fireEvent.click(screen.getByRole("button", { name: "下一根 K 线" }));
+  await clickAndSettle("下一根 K 线");
+  await clickAndSettle("下一根 K 线");
+  await waitForCandleCount(2);
 
   expect(screen.getByRole("button", { name: "下一根 K 线" })).toBeDisabled();
   expect(screen.getByRole("button", { name: "播放" })).toBeDisabled();
@@ -1055,7 +1352,8 @@ it("plays exactly one replay bar per second", async () => {
   await settleLoad();
 
   expect(screen.getByTestId("review-chart")).toHaveAttribute("data-candle-count", "0");
-  fireEvent.click(screen.getByRole("button", { name: "播放" }));
+  await clickAndSettle("播放");
+  expect(screen.getByRole("button", { name: "暂停" })).toHaveAttribute("aria-pressed", "true");
   await act(async () => { await vi.advanceTimersByTimeAsync(999); });
   expect(screen.getByTestId("review-chart")).toHaveAttribute("data-candle-count", "0");
   await act(async () => { await vi.advanceTimersByTimeAsync(1); });
@@ -1073,9 +1371,10 @@ it("hides a selected future fill after rewinding to an earlier cutoff", async ()
   renderRecall(episode, initial, repositoryFor(initial));
   await settleLoad();
 
-  fireEvent.click(decisionButton(2));
+  await clickElementAndSettle(await decisionButton(2));
   expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", "fill-2");
-  fireEvent.click(screen.getByRole("button", { name: "上一根 K 线" }));
+  await clickAndSettle("上一根 K 线");
+  await waitForExecutionCursor("fill-1");
 
   expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", "fill-1");
   expect(document.querySelector(".recall-selected-fill")).toBeNull();
@@ -1093,13 +1392,13 @@ it("selects a chart execution only after it is visible at the current cutoff", a
   await settleLoad();
 
   await act(async () => chartHarness.onExecutionSelect?.("fill-2"));
-  expect(decisionButton(2)).not.toHaveAttribute("aria-current", "true");
+  expect(document.querySelectorAll<HTMLElement>(".recall-decision-wrap > .recall-nav-item")[1]).toBeUndefined();
 
   await act(async () => fireEvent.click(screen.getByRole("button", { name: "下一笔决策" })));
   await act(async () => fireEvent.click(screen.getByRole("button", { name: "下一笔决策" })));
   expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", "fill-2");
   await act(async () => chartHarness.onExecutionSelect?.("fill-2"));
-  expect(decisionButton(2)).toHaveAttribute("aria-current", "true");
+  expect(await decisionButton(2)).toHaveAttribute("aria-current", "true");
 });
 
 it("uses the clicked execution boundary while retaining that decision's Text draft", async () => {
@@ -1150,7 +1449,8 @@ it("ignores chart execution selection while editing a retained snapshot", async 
   await settleLoad();
 
   openAllSnapshotRecords();
-  fireEvent.click(screen.getByRole("button", { name: "编辑决策 2快照" }));
+  await clickAndSettle("完整历史");
+  await clickAndSettle("编辑决策 2快照");
   expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", "fill-2");
 
   await act(async () => chartHarness.onExecutionSelect?.("fill-1"));
@@ -1165,8 +1465,8 @@ it("leaves explicit full history when a chart execution is selected", async () =
   await settleLoad();
 
   openMoreRecords();
-  fireEvent.click(screen.getByRole("button", { name: "完整历史" }));
-  expect(screen.getByText(/完整历史：当前回合成交全部显示/)).toBeInTheDocument();
+  await clickAndSettle("完整历史");
+  await waitForFullHistory();
 
   await act(async () => chartHarness.onExecutionSelect?.("fill-1"));
 
@@ -1184,8 +1484,10 @@ it("marks future exposure when an early view opens a later holding snapshot", as
   await act(async () => fireEvent.click(screen.getByRole("button", { name: "买入前判断" })));
   const earlyCursor = screen.getByTestId("review-chart").getAttribute("data-cursor")!;
   openMoreRecords();
-  fireEvent.click(screen.getByText("全部记录与快照（1）"));
-  fireEvent.click(screen.getByRole("button", { name: "编辑决策 2快照" }));
+  await clickAndSettle("完整历史");
+  await waitForFullHistory();
+  openAllSnapshotRecords();
+  await clickAndSettle("编辑决策 2快照");
   expect(screen.getByTestId("review-chart").getAttribute("data-execution-cursor")).toBe("fill-2");
   fireEvent.click(screen.getByRole("button", { name: "返回工作图" }));
   chartHarness.nextDrawing = { ...drawing("exposed-text", "后来补充"), createdAtCursor: earlyCursor };
@@ -1219,10 +1521,10 @@ it("starts next decision from the first fill after returning to pre-entry", asyn
   renderRecall(episode, initial, repositoryFor(initial));
   await settleLoad();
 
-  fireEvent.click(screen.getByRole("button", { name: "下一笔决策" }));
+  await clickAndSettle("下一笔决策");
   await settleLoad();
   expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", "fill-1");
-  fireEvent.click(screen.getByRole("button", { name: "下一笔决策" }));
+  await clickAndSettle("下一笔决策");
   await settleLoad();
   expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", "fill-2");
 
@@ -1299,9 +1601,9 @@ it("keeps same-candle decisions in stable execution order", async () => {
   renderRecall(sameCandleEpisode, initial, repositoryFor(initial));
   await settleLoad();
 
-  fireEvent.click(screen.getByRole("button", { name: "下一笔决策" }));
+  await clickAndSettle("下一笔决策");
   expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", "same-fill-1");
-  fireEvent.click(screen.getByRole("button", { name: "下一笔决策" }));
+  await clickAndSettle("下一笔决策");
   expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", "same-fill-2");
 });
 
@@ -1313,7 +1615,7 @@ it("keeps future provenance after direct decision navigation and returning early
   if (!document.querySelector(".recall-decision-wrap")) {
     fireEvent.click(screen.getByRole("button", { name: "展开复盘导航，切换到标准布局" }));
   }
-  fireEvent.click(document.querySelectorAll<HTMLElement>(".recall-decision-wrap > .recall-nav-item")[1]!);
+  fireEvent.click(await decisionButton(2));
   expect(screen.getByTestId("review-chart")).toHaveAttribute("data-execution-cursor", "fill-2");
   fireEvent.click(screen.getByRole("button", { name: "买入前判断" }));
   await settleLoad();

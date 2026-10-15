@@ -702,6 +702,19 @@ describe("applyMonthlyHistoryEvidence scoped documents", () => {
 
 
 describe("persisted date-only simulation knowledge", () => {
+  it("accepts retained execution evidence without hydrated account or instrument fields", () => {
+    const retainedExecution = {
+      executedAt: "2025-01-02T16:00:00.000Z",
+      source: {
+        platform: "retained-bundle",
+        row: 1,
+        timePrecision: "date-only",
+        sourceTimezone: "Asia/Shanghai",
+      } as const,
+    };
+    expect(replayExecutionAt(retainedExecution)).toBe("2025-01-03T23:59:59.999Z");
+  });
+
   const simulation: TradeExecution = {
     id: "persisted-simulation", accountId: "simulation-run", accountLabel: "Simulation",
     instrument: { id: "CN-SH:600000", market: "CN-SH", symbol: "600000", name: "Test", currency: "CNY" },

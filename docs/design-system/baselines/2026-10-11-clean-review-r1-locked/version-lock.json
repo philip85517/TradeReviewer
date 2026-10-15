@@ -1,0 +1,868 @@
+{
+  "releaseId": "TR-REVIEW-CLEAN-R1-20261011",
+  "lockedAt": "2026-10-11T06:44:55.931562+00:00",
+  "approval": {
+    "quote": "确认，锁定当前的文档版本，并拆解任务",
+    "scope": "document/design contract lock and task planning only"
+  },
+  "kind": "approved-document-baseline-not-runtime-golden",
+  "sourceRoot": "docs/design-system/baselines/2026-10-11-clean-review",
+  "codeReference": "75b06cca43fc3fb71c3a7e12fcb0b5e52d11aca4",
+  "sourceFiles": [
+    {
+      "path": "README.md",
+      "bytes": 11956,
+      "sha256": "2fb4829d1b5dad08060b2d2781eea086fd049f1663c40c4c190bec7deabcc8cc"
+    },
+    {
+      "path": "acceptance.md",
+      "bytes": 15873,
+      "sha256": "e0979091dbcc6d1f119f76dbe511bf077b37bfaff35d2dc86b8e4d9d116cf6d9"
+    },
+    {
+      "path": "entry-compatibility.md",
+      "bytes": 11030,
+      "sha256": "7b53fb98cd0cdab2f3363563d2811d8e8704ca71604623f07f2d78d0b4b44611"
+    },
+    {
+      "path": "illustrated-guide-r0.md",
+      "bytes": 30334,
+      "sha256": "51ec48178ede0bfa64b504179f43c15465170043afd0dc020db2505995d136a7"
+    },
+    {
+      "path": "illustrated-guide.md",
+      "bytes": 37421,
+      "sha256": "0371d9b5616010ae91cdd4a4d5d0e8eb747692e02709a18add1255c8795172ae"
+    },
+    {
+      "path": "image-manifest-r1.json",
+      "bytes": 5797,
+      "sha256": "59e57b21f808aca82bb3cf0cc30af5b367ba6aa562288c00122636c730b205f8"
+    },
+    {
+      "path": "image-manifest.json",
+      "bytes": 3499,
+      "sha256": "016624ebbb1b82b728c0ad957f57aaf26e717d348fef6c0884eafebc15706451"
+    },
+    {
+      "path": "images/01-workspace-s1.html",
+      "bytes": 64271,
+      "sha256": "c1ba7bd714c67ed06e5578a03f795737b7e0f8e1bcc995ab8c11c8dfac8c8fd3"
+    },
+    {
+      "path": "images/01-workspace-s1.png",
+      "bytes": 197079,
+      "sha256": "95cd7167c1354b3e553438b2da94fcba41db9a5d6741854b82635f9016b69245",
+      "pixelWidth": 1440,
+      "pixelHeight": 900
+    },
+    {
+      "path": "images/02-frame-controls.html",
+      "bytes": 34140,
+      "sha256": "4bf6227e8151f334cfcdd93db13891f55e4b62a367a1f05a6ab9f6a01623af3d"
+    },
+    {
+      "path": "images/02-frame-controls.png",
+      "bytes": 158781,
+      "sha256": "31e5c6c08baee262bf726a1877dbfb120e7dd54abd8e693f2644010dc479ade7",
+      "pixelWidth": 1440,
+      "pixelHeight": 945
+    },
+    {
+      "path": "images/03-typography-spacing.html",
+      "bytes": 20256,
+      "sha256": "d59439b207c49a077e396938a7e4072f6d4cd96e990947d44e31da60c293fb5b"
+    },
+    {
+      "path": "images/03-typography-spacing.png",
+      "bytes": 147742,
+      "sha256": "70d4ae7316c972c71e56378105a827942468cbabe0c9b3ccef54403255cd410a",
+      "pixelWidth": 1440,
+      "pixelHeight": 902
+    },
+    {
+      "path": "images/04-colors-control-states.html",
+      "bytes": 23097,
+      "sha256": "0d3b2ad4c3a8acb7cb1a7256946b3098830690579027525b2dcaafb97a038282"
+    },
+    {
+      "path": "images/04-colors-control-states.png",
+      "bytes": 118166,
+      "sha256": "79d74e21e84f75cdebead00ce8893188f029c8fafa4c15490512c5d4f02c9762",
+      "pixelWidth": 1440,
+      "pixelHeight": 900
+    },
+    {
+      "path": "images/05-sidebar.html",
+      "bytes": 22942,
+      "sha256": "e1e9048eb939ea1d86349bcfe875128be92977593f06efec07dd893764e7666f"
+    },
+    {
+      "path": "images/05-sidebar.png",
+      "bytes": 266349,
+      "sha256": "ebbd1ec7eb024bc63b3e788f74158c2b3c3ea981ca87fa01a331efa12ca3deb2",
+      "pixelWidth": 1440,
+      "pixelHeight": 1178
+    },
+    {
+      "path": "images/06-text-states.html",
+      "bytes": 24578,
+      "sha256": "ecd24e6fca1b80e7a2e440589ff6d03ac86919a6c99dfc75651244244f7cbac7"
+    },
+    {
+      "path": "images/06-text-states.png",
+      "bytes": 209275,
+      "sha256": "bd0355277c8aeab8df820c4d03f8f016544ce21040b9e1e041fb5493f78e2ad4",
+      "pixelWidth": 1440,
+      "pixelHeight": 1020
+    },
+    {
+      "path": "images/07-anchor-journey.html",
+      "bytes": 22205,
+      "sha256": "dbf4283fb66a184101e4f97adca8eb658ce3cb694752b8ea3b2fef6636ac7cb1"
+    },
+    {
+      "path": "images/07-anchor-journey.png",
+      "bytes": 149590,
+      "sha256": "a2d25d1f463567a44ebbbdae6801f3861f6961004a3a6fdc43129817a5d6794a",
+      "pixelWidth": 1440,
+      "pixelHeight": 920
+    },
+    {
+      "path": "images/08-drawing-selection-risk.html",
+      "bytes": 23845,
+      "sha256": "946b1866ccaa767b01d704ff40e107bf6a73725ff09d36e82cdaf8be57265976"
+    },
+    {
+      "path": "images/08-drawing-selection-risk.png",
+      "bytes": 157330,
+      "sha256": "3854e78c4b869dc5f2dce7994c4563f64d4833ba83cc5b0de6ace38990f8f01b",
+      "pixelWidth": 1440,
+      "pixelHeight": 1223
+    },
+    {
+      "path": "images/09-phases-cutoffs.html",
+      "bytes": 111010,
+      "sha256": "b0e8b316ccf4646fc0929821ce02929e24358ec5c7ab53e625e821a50e3c64e2"
+    },
+    {
+      "path": "images/09-phases-cutoffs.png",
+      "bytes": 193278,
+      "sha256": "cede2efae85cb0636b227388fdc5d8e2399b67c5a3ea307e459befe912c275df",
+      "pixelWidth": 1440,
+      "pixelHeight": 1101
+    },
+    {
+      "path": "images/10-responsive-long-text.html",
+      "bytes": 56274,
+      "sha256": "ff75d6a058e19b9bfdb95d50348af230167064992f95490a61bc523a86d9f3d3"
+    },
+    {
+      "path": "images/10-responsive-long-text.png",
+      "bytes": 207324,
+      "sha256": "bff59109e025484604ff77920ca33d836c5dff14ccdee37590a77e2d55072a96",
+      "pixelWidth": 1440,
+      "pixelHeight": 1041
+    },
+    {
+      "path": "images/11-save-states.html",
+      "bytes": 20688,
+      "sha256": "4452ad6dd2b720b579c8300c125a05d240c70883584858a2cd60f9317ab104af"
+    },
+    {
+      "path": "images/11-save-states.png",
+      "bytes": 152837,
+      "sha256": "ef0c1193a2e1e4a90ab335443931c742689e3c7d81a108fda2803d2ffc9054e5",
+      "pixelWidth": 1440,
+      "pixelHeight": 900
+    },
+    {
+      "path": "images/12-three-stage-export.html",
+      "bytes": 101520,
+      "sha256": "9a8a835b84dcd57eaf350370b0760d265b16563d2734951299aaef2bab63fdcb"
+    },
+    {
+      "path": "images/12-three-stage-export.png",
+      "bytes": 141856,
+      "sha256": "be1ce684186c21ada33bcab0069ccb1666bb60e18483394a14fd2ea9f34e06cd",
+      "pixelWidth": 1440,
+      "pixelHeight": 810
+    },
+    {
+      "path": "images/r1/01-workspace-s1.html",
+      "bytes": 64423,
+      "sha256": "a7ac598945850ee6644bac70cf03c793a858a40227311ec7055b14e4408e3e61"
+    },
+    {
+      "path": "images/r1/01-workspace-s1.png",
+      "bytes": 192657,
+      "sha256": "8841e323e8dd88c847b39f99845bd799a3b278d550d12d54d6e00d963e06840b",
+      "pixelWidth": 1440,
+      "pixelHeight": 900
+    },
+    {
+      "path": "images/r1/02-frame-controls.html",
+      "bytes": 34133,
+      "sha256": "c873f43ba8eb37c9dc6bf96246c3c18223fc463e0e4ee3d3a6fc5597d4c1d0c2"
+    },
+    {
+      "path": "images/r1/02-frame-controls.png",
+      "bytes": 158875,
+      "sha256": "dfbdde5b75a9bd0c7ed2b5b21a4b03d4dee7f3f799bf510058cc7881ade35e74",
+      "pixelWidth": 1440,
+      "pixelHeight": 945
+    },
+    {
+      "path": "images/r1/04-colors-control-states.html",
+      "bytes": 23114,
+      "sha256": "da93d40369cc74a661196d4604cf37ce1501c81b29b6678983fe3fecdacbb2a7"
+    },
+    {
+      "path": "images/r1/04-colors-control-states.png",
+      "bytes": 117338,
+      "sha256": "938963bd2455e6d85232065affecff36694d1d7dde25cd5e721c228aaa02f0b0",
+      "pixelWidth": 1440,
+      "pixelHeight": 900
+    },
+    {
+      "path": "images/r1/09-phases-cutoffs.html",
+      "bytes": 110972,
+      "sha256": "164ed8d1fd6dc1ad393fb3bcbcb3926e85d292b74997281033afd1f38c722a00"
+    },
+    {
+      "path": "images/r1/09-phases-cutoffs.png",
+      "bytes": 194364,
+      "sha256": "6de9b1a8b8c9f176042920a9b761481f5276c41c1c590590d96d7827f685bdc9",
+      "pixelWidth": 1440,
+      "pixelHeight": 1101
+    },
+    {
+      "path": "images/r1/10-responsive-long-text.html",
+      "bytes": 57302,
+      "sha256": "544fb74172ae3326b5904e718e9bb46b30471b60c681ae4fac95607f986f953e"
+    },
+    {
+      "path": "images/r1/10-responsive-long-text.png",
+      "bytes": 205803,
+      "sha256": "204732fdbe807ccf5aafcf1d430e3e3c975fed49062d5f024d5747de785d703b",
+      "pixelWidth": 1440,
+      "pixelHeight": 1041
+    },
+    {
+      "path": "images/r1/12-three-stage-export.html",
+      "bytes": 108079,
+      "sha256": "28ce20175163b25ef79328f52bacaf0cc35ec4a9cc9ec29d9c24c96ae7106cc7"
+    },
+    {
+      "path": "images/r1/12-three-stage-export.png",
+      "bytes": 147016,
+      "sha256": "9fb116dfdf32d066b4af17fbdbd429895a995707f5a4cd932779627aef7aa019",
+      "pixelWidth": 1440,
+      "pixelHeight": 810
+    },
+    {
+      "path": "images/r1/13-tool-state-machine.html",
+      "bytes": 26224,
+      "sha256": "c5eb255cdd8a2bd26d9f5d1f7f9efcd0be6322b607221dffc20e058b32c44592"
+    },
+    {
+      "path": "images/r1/13-tool-state-machine.png",
+      "bytes": 191626,
+      "sha256": "10b7a7ef1463be32a8664f72dd1d0df8128b3cdafc31d355561879dbf75536d3",
+      "pixelWidth": 1440,
+      "pixelHeight": 1029
+    },
+    {
+      "path": "images/r1/14-entry-context.html",
+      "bytes": 20312,
+      "sha256": "e1e4774cd2d038efd3356963f90f41c4f36f46fdec87868a2e4b51394a37b577"
+    },
+    {
+      "path": "images/r1/14-entry-context.png",
+      "bytes": 164763,
+      "sha256": "ace262ebb45aba1e7235098338797739a20a86ce256ea095f38e06161031ac45",
+      "pixelWidth": 1440,
+      "pixelHeight": 950
+    },
+    {
+      "path": "images/r1/15-plan-axis-detail.html",
+      "bytes": 72170,
+      "sha256": "f11c342db786eb9a1d9cab7d25f33577387ee254814fa8b96be1e4617993e4a3"
+    },
+    {
+      "path": "images/r1/15-plan-axis-detail.png",
+      "bytes": 174867,
+      "sha256": "b16819e5d11e1b1e36cbfb6128aab430804efdcef0695e6e48830c51a76beacc",
+      "pixelWidth": 1440,
+      "pixelHeight": 980
+    },
+    {
+      "path": "images/selection-motion.svg",
+      "bytes": 2021,
+      "sha256": "a26d97ce04e6604b4ccb17f8bc5c614c106f4dc313b2a223727358c927149c8f"
+    },
+    {
+      "path": "images/source-canvas-0.png",
+      "bytes": 30227,
+      "sha256": "1f6be215bfb797e03a034ba31d90db0346bbc5509d52fc555cd93429788f22ef",
+      "pixelWidth": 698,
+      "pixelHeight": 728
+    },
+    {
+      "path": "images/source-canvas-1.png",
+      "bytes": 30227,
+      "sha256": "1f6be215bfb797e03a034ba31d90db0346bbc5509d52fc555cd93429788f22ef",
+      "pixelWidth": 698,
+      "pixelHeight": 728
+    },
+    {
+      "path": "images/source-canvas-2.png",
+      "bytes": 8178,
+      "sha256": "2d540e7563311425dc0919bc923bc7c2e5d324804d20892d6ca4b203b15cc459",
+      "pixelWidth": 84,
+      "pixelHeight": 728
+    },
+    {
+      "path": "images/source-canvas-3.png",
+      "bytes": 8178,
+      "sha256": "2d540e7563311425dc0919bc923bc7c2e5d324804d20892d6ca4b203b15cc459",
+      "pixelWidth": 84,
+      "pixelHeight": 728
+    },
+    {
+      "path": "images/source-canvas-4.png",
+      "bytes": 4195,
+      "sha256": "a977850eb3c5f066ee3b24b532066abf94731b0980b86fc6357774b28dcb14b5",
+      "pixelWidth": 698,
+      "pixelHeight": 28
+    },
+    {
+      "path": "images/source-canvas-5.png",
+      "bytes": 4195,
+      "sha256": "a977850eb3c5f066ee3b24b532066abf94731b0980b86fc6357774b28dcb14b5",
+      "pixelWidth": 698,
+      "pixelHeight": 28
+    },
+    {
+      "path": "images/source-canvas-6.png",
+      "bytes": 190,
+      "sha256": "7ae8d95c186c0ebc64b8dbf50a402bc77e1daa40e59eb274f039f1e4d7bc1536",
+      "pixelWidth": 84,
+      "pixelHeight": 28
+    },
+    {
+      "path": "images/source-canvas-7.png",
+      "bytes": 50830,
+      "sha256": "04ab4c31df21da53ef020a3694705f12b39f8520c2da6b9f946adead2f25dc8f",
+      "pixelWidth": 782,
+      "pixelHeight": 756
+    },
+    {
+      "path": "images/source-current-1440.png",
+      "bytes": 174547,
+      "sha256": "e666d383cdfb49d5cdf10ffe9886811704c99ea87d89198c3bc8eb711fb72dd8",
+      "pixelWidth": 1440,
+      "pixelHeight": 900
+    },
+    {
+      "path": "implementation-plan.md",
+      "bytes": 9016,
+      "sha256": "0e47ef6c8bb2a9f862986baf2828d4c03a584fdd1310057089b9d4603b587518"
+    },
+    {
+      "path": "references/reference-manifest.json",
+      "bytes": 995,
+      "sha256": "3c0eba99dba25217230e679aff16792a1d3d7fefc1aae7271a508e46407ee71e"
+    },
+    {
+      "path": "references/user-control-states.png",
+      "bytes": 377553,
+      "sha256": "9bc5555bba76b0f504c4a3b2078c1031e038b7513fc9826294f96fca1ae7062e",
+      "pixelWidth": 2272,
+      "pixelHeight": 1334
+    },
+    {
+      "path": "references/user-plan-overlap.png",
+      "bytes": 593257,
+      "sha256": "a95ddb09a1bc4758542664a49a411fcab10f5e5e001790c4224525243defad4b",
+      "pixelWidth": 2220,
+      "pixelHeight": 1302
+    },
+    {
+      "path": "sources-and-decisions.md",
+      "bytes": 18209,
+      "sha256": "03151ca0bf9e0686fbacff73b50217f678f5e0236ad97c524a0b99dc463a3eb9"
+    },
+    {
+      "path": "visual-baseline-r0.md",
+      "bytes": 14524,
+      "sha256": "cd79fa3d3a3bcc999fd2b819fe64581cac37743d37b8bcef03c61242c8d0bfe6"
+    },
+    {
+      "path": "visual-baseline.md",
+      "bytes": 18623,
+      "sha256": "eb3f67240d2c434adc723387b6129072583cb8cc460951bd15e7b7ba64b6f11f"
+    },
+    {
+      "path": "visual-spec-r0.html",
+      "bytes": 43879,
+      "sha256": "b2746d09000d3807713becafaa736641581950f9d565e18ad4d50635c9ad0f88"
+    },
+    {
+      "path": "visual-spec.html",
+      "bytes": 52885,
+      "sha256": "c4550607fc3b06c32018d64146cc40fba1130f90077f8df5e03abbfd448c3728"
+    }
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 11956,
+      "sha256": "2fb4829d1b5dad08060b2d2781eea086fd049f1663c40c4c190bec7deabcc8cc"
+    },
+    {
+      "path": "RELEASE.md",
+      "bytes": 3889,
+      "sha256": "a77150e132fb280680583c3021a296d564c9bfb67404e1f8572a12da9827a218"
+    },
+    {
+      "path": "acceptance.md",
+      "bytes": 15873,
+      "sha256": "e0979091dbcc6d1f119f76dbe511bf077b37bfaff35d2dc86b8e4d9d116cf6d9"
+    },
+    {
+      "path": "entry-compatibility.md",
+      "bytes": 11030,
+      "sha256": "7b53fb98cd0cdab2f3363563d2811d8e8704ca71604623f07f2d78d0b4b44611"
+    },
+    {
+      "path": "illustrated-guide-r0.md",
+      "bytes": 30334,
+      "sha256": "51ec48178ede0bfa64b504179f43c15465170043afd0dc020db2505995d136a7"
+    },
+    {
+      "path": "illustrated-guide.md",
+      "bytes": 37421,
+      "sha256": "0371d9b5616010ae91cdd4a4d5d0e8eb747692e02709a18add1255c8795172ae"
+    },
+    {
+      "path": "image-manifest-r1.json",
+      "bytes": 5797,
+      "sha256": "59e57b21f808aca82bb3cf0cc30af5b367ba6aa562288c00122636c730b205f8"
+    },
+    {
+      "path": "image-manifest.json",
+      "bytes": 3499,
+      "sha256": "016624ebbb1b82b728c0ad957f57aaf26e717d348fef6c0884eafebc15706451"
+    },
+    {
+      "path": "images/01-workspace-s1.html",
+      "bytes": 64271,
+      "sha256": "c1ba7bd714c67ed06e5578a03f795737b7e0f8e1bcc995ab8c11c8dfac8c8fd3"
+    },
+    {
+      "path": "images/01-workspace-s1.png",
+      "bytes": 197079,
+      "sha256": "95cd7167c1354b3e553438b2da94fcba41db9a5d6741854b82635f9016b69245",
+      "pixelWidth": 1440,
+      "pixelHeight": 900
+    },
+    {
+      "path": "images/02-frame-controls.html",
+      "bytes": 34140,
+      "sha256": "4bf6227e8151f334cfcdd93db13891f55e4b62a367a1f05a6ab9f6a01623af3d"
+    },
+    {
+      "path": "images/02-frame-controls.png",
+      "bytes": 158781,
+      "sha256": "31e5c6c08baee262bf726a1877dbfb120e7dd54abd8e693f2644010dc479ade7",
+      "pixelWidth": 1440,
+      "pixelHeight": 945
+    },
+    {
+      "path": "images/03-typography-spacing.html",
+      "bytes": 20256,
+      "sha256": "d59439b207c49a077e396938a7e4072f6d4cd96e990947d44e31da60c293fb5b"
+    },
+    {
+      "path": "images/03-typography-spacing.png",
+      "bytes": 147742,
+      "sha256": "70d4ae7316c972c71e56378105a827942468cbabe0c9b3ccef54403255cd410a",
+      "pixelWidth": 1440,
+      "pixelHeight": 902
+    },
+    {
+      "path": "images/04-colors-control-states.html",
+      "bytes": 23097,
+      "sha256": "0d3b2ad4c3a8acb7cb1a7256946b3098830690579027525b2dcaafb97a038282"
+    },
+    {
+      "path": "images/04-colors-control-states.png",
+      "bytes": 118166,
+      "sha256": "79d74e21e84f75cdebead00ce8893188f029c8fafa4c15490512c5d4f02c9762",
+      "pixelWidth": 1440,
+      "pixelHeight": 900
+    },
+    {
+      "path": "images/05-sidebar.html",
+      "bytes": 22942,
+      "sha256": "e1e9048eb939ea1d86349bcfe875128be92977593f06efec07dd893764e7666f"
+    },
+    {
+      "path": "images/05-sidebar.png",
+      "bytes": 266349,
+      "sha256": "ebbd1ec7eb024bc63b3e788f74158c2b3c3ea981ca87fa01a331efa12ca3deb2",
+      "pixelWidth": 1440,
+      "pixelHeight": 1178
+    },
+    {
+      "path": "images/06-text-states.html",
+      "bytes": 24578,
+      "sha256": "ecd24e6fca1b80e7a2e440589ff6d03ac86919a6c99dfc75651244244f7cbac7"
+    },
+    {
+      "path": "images/06-text-states.png",
+      "bytes": 209275,
+      "sha256": "bd0355277c8aeab8df820c4d03f8f016544ce21040b9e1e041fb5493f78e2ad4",
+      "pixelWidth": 1440,
+      "pixelHeight": 1020
+    },
+    {
+      "path": "images/07-anchor-journey.html",
+      "bytes": 22205,
+      "sha256": "dbf4283fb66a184101e4f97adca8eb658ce3cb694752b8ea3b2fef6636ac7cb1"
+    },
+    {
+      "path": "images/07-anchor-journey.png",
+      "bytes": 149590,
+      "sha256": "a2d25d1f463567a44ebbbdae6801f3861f6961004a3a6fdc43129817a5d6794a",
+      "pixelWidth": 1440,
+      "pixelHeight": 920
+    },
+    {
+      "path": "images/08-drawing-selection-risk.html",
+      "bytes": 23845,
+      "sha256": "946b1866ccaa767b01d704ff40e107bf6a73725ff09d36e82cdaf8be57265976"
+    },
+    {
+      "path": "images/08-drawing-selection-risk.png",
+      "bytes": 157330,
+      "sha256": "3854e78c4b869dc5f2dce7994c4563f64d4833ba83cc5b0de6ace38990f8f01b",
+      "pixelWidth": 1440,
+      "pixelHeight": 1223
+    },
+    {
+      "path": "images/09-phases-cutoffs.html",
+      "bytes": 111010,
+      "sha256": "b0e8b316ccf4646fc0929821ce02929e24358ec5c7ab53e625e821a50e3c64e2"
+    },
+    {
+      "path": "images/09-phases-cutoffs.png",
+      "bytes": 193278,
+      "sha256": "cede2efae85cb0636b227388fdc5d8e2399b67c5a3ea307e459befe912c275df",
+      "pixelWidth": 1440,
+      "pixelHeight": 1101
+    },
+    {
+      "path": "images/10-responsive-long-text.html",
+      "bytes": 56274,
+      "sha256": "ff75d6a058e19b9bfdb95d50348af230167064992f95490a61bc523a86d9f3d3"
+    },
+    {
+      "path": "images/10-responsive-long-text.png",
+      "bytes": 207324,
+      "sha256": "bff59109e025484604ff77920ca33d836c5dff14ccdee37590a77e2d55072a96",
+      "pixelWidth": 1440,
+      "pixelHeight": 1041
+    },
+    {
+      "path": "images/11-save-states.html",
+      "bytes": 20688,
+      "sha256": "4452ad6dd2b720b579c8300c125a05d240c70883584858a2cd60f9317ab104af"
+    },
+    {
+      "path": "images/11-save-states.png",
+      "bytes": 152837,
+      "sha256": "ef0c1193a2e1e4a90ab335443931c742689e3c7d81a108fda2803d2ffc9054e5",
+      "pixelWidth": 1440,
+      "pixelHeight": 900
+    },
+    {
+      "path": "images/12-three-stage-export.html",
+      "bytes": 101520,
+      "sha256": "9a8a835b84dcd57eaf350370b0760d265b16563d2734951299aaef2bab63fdcb"
+    },
+    {
+      "path": "images/12-three-stage-export.png",
+      "bytes": 141856,
+      "sha256": "be1ce684186c21ada33bcab0069ccb1666bb60e18483394a14fd2ea9f34e06cd",
+      "pixelWidth": 1440,
+      "pixelHeight": 810
+    },
+    {
+      "path": "images/r1/01-workspace-s1.html",
+      "bytes": 64423,
+      "sha256": "a7ac598945850ee6644bac70cf03c793a858a40227311ec7055b14e4408e3e61"
+    },
+    {
+      "path": "images/r1/01-workspace-s1.png",
+      "bytes": 192657,
+      "sha256": "8841e323e8dd88c847b39f99845bd799a3b278d550d12d54d6e00d963e06840b",
+      "pixelWidth": 1440,
+      "pixelHeight": 900
+    },
+    {
+      "path": "images/r1/02-frame-controls.html",
+      "bytes": 34133,
+      "sha256": "c873f43ba8eb37c9dc6bf96246c3c18223fc463e0e4ee3d3a6fc5597d4c1d0c2"
+    },
+    {
+      "path": "images/r1/02-frame-controls.png",
+      "bytes": 158875,
+      "sha256": "dfbdde5b75a9bd0c7ed2b5b21a4b03d4dee7f3f799bf510058cc7881ade35e74",
+      "pixelWidth": 1440,
+      "pixelHeight": 945
+    },
+    {
+      "path": "images/r1/04-colors-control-states.html",
+      "bytes": 23114,
+      "sha256": "da93d40369cc74a661196d4604cf37ce1501c81b29b6678983fe3fecdacbb2a7"
+    },
+    {
+      "path": "images/r1/04-colors-control-states.png",
+      "bytes": 117338,
+      "sha256": "938963bd2455e6d85232065affecff36694d1d7dde25cd5e721c228aaa02f0b0",
+      "pixelWidth": 1440,
+      "pixelHeight": 900
+    },
+    {
+      "path": "images/r1/09-phases-cutoffs.html",
+      "bytes": 110972,
+      "sha256": "164ed8d1fd6dc1ad393fb3bcbcb3926e85d292b74997281033afd1f38c722a00"
+    },
+    {
+      "path": "images/r1/09-phases-cutoffs.png",
+      "bytes": 194364,
+      "sha256": "6de9b1a8b8c9f176042920a9b761481f5276c41c1c590590d96d7827f685bdc9",
+      "pixelWidth": 1440,
+      "pixelHeight": 1101
+    },
+    {
+      "path": "images/r1/10-responsive-long-text.html",
+      "bytes": 57302,
+      "sha256": "544fb74172ae3326b5904e718e9bb46b30471b60c681ae4fac95607f986f953e"
+    },
+    {
+      "path": "images/r1/10-responsive-long-text.png",
+      "bytes": 205803,
+      "sha256": "204732fdbe807ccf5aafcf1d430e3e3c975fed49062d5f024d5747de785d703b",
+      "pixelWidth": 1440,
+      "pixelHeight": 1041
+    },
+    {
+      "path": "images/r1/12-three-stage-export.html",
+      "bytes": 108079,
+      "sha256": "28ce20175163b25ef79328f52bacaf0cc35ec4a9cc9ec29d9c24c96ae7106cc7"
+    },
+    {
+      "path": "images/r1/12-three-stage-export.png",
+      "bytes": 147016,
+      "sha256": "9fb116dfdf32d066b4af17fbdbd429895a995707f5a4cd932779627aef7aa019",
+      "pixelWidth": 1440,
+      "pixelHeight": 810
+    },
+    {
+      "path": "images/r1/13-tool-state-machine.html",
+      "bytes": 26224,
+      "sha256": "c5eb255cdd8a2bd26d9f5d1f7f9efcd0be6322b607221dffc20e058b32c44592"
+    },
+    {
+      "path": "images/r1/13-tool-state-machine.png",
+      "bytes": 191626,
+      "sha256": "10b7a7ef1463be32a8664f72dd1d0df8128b3cdafc31d355561879dbf75536d3",
+      "pixelWidth": 1440,
+      "pixelHeight": 1029
+    },
+    {
+      "path": "images/r1/14-entry-context.html",
+      "bytes": 20312,
+      "sha256": "e1e4774cd2d038efd3356963f90f41c4f36f46fdec87868a2e4b51394a37b577"
+    },
+    {
+      "path": "images/r1/14-entry-context.png",
+      "bytes": 164763,
+      "sha256": "ace262ebb45aba1e7235098338797739a20a86ce256ea095f38e06161031ac45",
+      "pixelWidth": 1440,
+      "pixelHeight": 950
+    },
+    {
+      "path": "images/r1/15-plan-axis-detail.html",
+      "bytes": 72170,
+      "sha256": "f11c342db786eb9a1d9cab7d25f33577387ee254814fa8b96be1e4617993e4a3"
+    },
+    {
+      "path": "images/r1/15-plan-axis-detail.png",
+      "bytes": 174867,
+      "sha256": "b16819e5d11e1b1e36cbfb6128aab430804efdcef0695e6e48830c51a76beacc",
+      "pixelWidth": 1440,
+      "pixelHeight": 980
+    },
+    {
+      "path": "images/selection-motion.svg",
+      "bytes": 2021,
+      "sha256": "a26d97ce04e6604b4ccb17f8bc5c614c106f4dc313b2a223727358c927149c8f"
+    },
+    {
+      "path": "images/source-canvas-0.png",
+      "bytes": 30227,
+      "sha256": "1f6be215bfb797e03a034ba31d90db0346bbc5509d52fc555cd93429788f22ef",
+      "pixelWidth": 698,
+      "pixelHeight": 728
+    },
+    {
+      "path": "images/source-canvas-1.png",
+      "bytes": 30227,
+      "sha256": "1f6be215bfb797e03a034ba31d90db0346bbc5509d52fc555cd93429788f22ef",
+      "pixelWidth": 698,
+      "pixelHeight": 728
+    },
+    {
+      "path": "images/source-canvas-2.png",
+      "bytes": 8178,
+      "sha256": "2d540e7563311425dc0919bc923bc7c2e5d324804d20892d6ca4b203b15cc459",
+      "pixelWidth": 84,
+      "pixelHeight": 728
+    },
+    {
+      "path": "images/source-canvas-3.png",
+      "bytes": 8178,
+      "sha256": "2d540e7563311425dc0919bc923bc7c2e5d324804d20892d6ca4b203b15cc459",
+      "pixelWidth": 84,
+      "pixelHeight": 728
+    },
+    {
+      "path": "images/source-canvas-4.png",
+      "bytes": 4195,
+      "sha256": "a977850eb3c5f066ee3b24b532066abf94731b0980b86fc6357774b28dcb14b5",
+      "pixelWidth": 698,
+      "pixelHeight": 28
+    },
+    {
+      "path": "images/source-canvas-5.png",
+      "bytes": 4195,
+      "sha256": "a977850eb3c5f066ee3b24b532066abf94731b0980b86fc6357774b28dcb14b5",
+      "pixelWidth": 698,
+      "pixelHeight": 28
+    },
+    {
+      "path": "images/source-canvas-6.png",
+      "bytes": 190,
+      "sha256": "7ae8d95c186c0ebc64b8dbf50a402bc77e1daa40e59eb274f039f1e4d7bc1536",
+      "pixelWidth": 84,
+      "pixelHeight": 28
+    },
+    {
+      "path": "images/source-canvas-7.png",
+      "bytes": 50830,
+      "sha256": "04ab4c31df21da53ef020a3694705f12b39f8520c2da6b9f946adead2f25dc8f",
+      "pixelWidth": 782,
+      "pixelHeight": 756
+    },
+    {
+      "path": "images/source-current-1440.png",
+      "bytes": 174547,
+      "sha256": "e666d383cdfb49d5cdf10ffe9886811704c99ea87d89198c3bc8eb711fb72dd8",
+      "pixelWidth": 1440,
+      "pixelHeight": 900
+    },
+    {
+      "path": "implementation-plan.md",
+      "bytes": 9016,
+      "sha256": "0e47ef6c8bb2a9f862986baf2828d4c03a584fdd1310057089b9d4603b587518"
+    },
+    {
+      "path": "references/reference-manifest.json",
+      "bytes": 995,
+      "sha256": "3c0eba99dba25217230e679aff16792a1d3d7fefc1aae7271a508e46407ee71e"
+    },
+    {
+      "path": "references/user-control-states.png",
+      "bytes": 377553,
+      "sha256": "9bc5555bba76b0f504c4a3b2078c1031e038b7513fc9826294f96fca1ae7062e",
+      "pixelWidth": 2272,
+      "pixelHeight": 1334
+    },
+    {
+      "path": "references/user-plan-overlap.png",
+      "bytes": 593257,
+      "sha256": "a95ddb09a1bc4758542664a49a411fcab10f5e5e001790c4224525243defad4b",
+      "pixelWidth": 2220,
+      "pixelHeight": 1302
+    },
+    {
+      "path": "sources-and-decisions.md",
+      "bytes": 18209,
+      "sha256": "03151ca0bf9e0686fbacff73b50217f678f5e0236ad97c524a0b99dc463a3eb9"
+    },
+    {
+      "path": "visual-baseline-r0.md",
+      "bytes": 14524,
+      "sha256": "cd79fa3d3a3bcc999fd2b819fe64581cac37743d37b8bcef03c61242c8d0bfe6"
+    },
+    {
+      "path": "visual-baseline.md",
+      "bytes": 18623,
+      "sha256": "eb3f67240d2c434adc723387b6129072583cb8cc460951bd15e7b7ba64b6f11f"
+    },
+    {
+      "path": "visual-spec-r0.html",
+      "bytes": 43879,
+      "sha256": "b2746d09000d3807713becafaa736641581950f9d565e18ad4d50635c9ad0f88"
+    },
+    {
+      "path": "visual-spec.html",
+      "bytes": 52885,
+      "sha256": "c4550607fc3b06c32018d64146cc40fba1130f90077f8df5e03abbfd448c3728"
+    }
+  ],
+  "externalReferences": [
+    {
+      "path": "docs/specs/2026-10-11-review-visual-baseline.md",
+      "bytes": 12231,
+      "sha256": "bd6e22a57ebbba48b84655fe3caf408ec5cf6d9129f33118e20ef5e2ea6657c0"
+    },
+    {
+      "path": "docs/specs/2026-09-25-chart-first-review-ui-elements.md",
+      "bytes": 14132,
+      "sha256": "65cc18cfc8eef309d20783c2a2bccb99683066cd95c3e5c97f6ad6b03033c6c5"
+    },
+    {
+      "path": "docs/specs/2026-09-25-chart-first-review-ui.md",
+      "bytes": 41647,
+      "sha256": "4b215909e326d24bb1a28b2ff24667578ec0f48238711d09c109edaa9542a839"
+    },
+    {
+      "path": "docs/specs/2026-09-19-trading-room-homepage.md",
+      "bytes": 22236,
+      "sha256": "adbfe3d6497ab3d7060bf4476c09d29f8bae0056cc1903db5b9113848032b9d7"
+    },
+    {
+      "path": "docs/specs/2026-09-21-trading-room-homepage-feedback.md",
+      "bytes": 18548,
+      "sha256": "9783d018d41cb55df369abedec27db44dd1a356c0bacb0ea1e6aaa4e3215aead"
+    },
+    {
+      "path": "docs/design-system/drawing-selection-feedback.md",
+      "bytes": 16695,
+      "sha256": "8b02b3bd292d5dbbafee41f17fd405f31faca3a8974be17038f0620cd03c9b62"
+    }
+  ],
+  "excludedFromOwnDigest": [
+    "version-lock.json"
+  ],
+  "runtimeGates": {
+    "G1": "NOT VERIFIED",
+    "G2": "NOT VERIFIED",
+    "G3": "NOT VERIFIED"
+  }
+}

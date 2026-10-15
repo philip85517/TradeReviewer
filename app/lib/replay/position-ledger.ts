@@ -260,8 +260,11 @@ export function replayPositionAtPrice(input: {
         quantity = newQuantity;
       } else if (event.kind === "corporate-action") {
         // Unsupported company actions must remain evidence for review; they do
-        // not become inventory or a synthetic execution.
+        // not become inventory or a synthetic execution. A non-zero quantity
+        // is still an unresolved inventory claim, so later exits must not
+        // certify a clear until an authoritative position restores it.
         reasons.add("position-event");
+        if (event.quantity !== undefined && !isZero(event.quantity)) quantityUncertain = true;
         hasHistory = true;
         continue;
       } else if (event.kind === "transfer-in" || event.kind === "transfer-out") {

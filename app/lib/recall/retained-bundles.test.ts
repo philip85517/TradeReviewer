@@ -4,7 +4,8 @@ import type { TradeExecution } from '../trades/types';
 import { createRecallDocument } from './document';
 import { upsertRecallExitEvaluationDraft, type RecallExitEvaluationDraft } from './exit-evaluations';
 import { upsertRecallManualEvaluationDraft, type RecallManualEvaluationDraft } from './manual-evaluations';
-import { freezeRecallSnapshotBundle } from './retained-bundles';
+import { confirmRecallRetainedState, freezeRecallSnapshotBundle } from './retained-bundles';
+import { sha256 } from './retained-digest';
 import type { RecallSnapshot } from './types';
 
 function fixture(phase: RecallSnapshot['phase'] = 'post-review', owner = 'entry') {
@@ -38,6 +39,23 @@ const capture = (f: ReturnType<typeof fixture>, sourceBundleId?: string | null) 
 });
 
 describe('phase-aware retained exit evaluations', () => {
+    it('rejects tampering with a retained derived capture', () => {
+        const f = fixture();
+        Object.assign(f.document.snapshots[0], {
+            derivedCapture: {
+                version: 1,
+                imageDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+                imageFrame: { version: 1, width: 432, height: 280, pixelRatio: 2 },
+                rendererVersion: 'r9', sourceCanonicalDigest: sha256('data:image/png;base64,AAAA'), textOverlayPolicy: 'body-only', textSourceKeys: [], warnings: [],
+            },
+        });
+        const saved = capture(f);
+        const changed = structuredClone(saved);
+        (changed.snapshots[0] as unknown as { derivedCapture: { rendererVersion: string } }).derivedCapture.rendererVersion = 'r9-tampered';
+
+        expect(() => confirmRecallRetainedState(saved, changed, f.episode, 2)).toThrow(/snapshotContentDigest/);
+    });
+
     it('keeps manual evaluation fields absent for legacy captures without labels', () => {
         const saved = capture(fixture('holding', 'global'));
         expect(saved.retainedBundles![0]).not.toHaveProperty('manualEvaluationRevisionIds');

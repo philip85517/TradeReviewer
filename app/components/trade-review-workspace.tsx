@@ -1604,6 +1604,10 @@ export function TradeReviewWorkspace({
   const selectedMarketHydrationKey = selectedRawImportedInstrument
     ? `${selectedRawImportedInstrument.instrument.id}:${selectedRawImportedInstrument.tradeCount}:${selectedRawImportedInstrument.firstTradeAt}:${selectedRawImportedInstrument.lastTradeAt}`
     : undefined;
+  const selectedMarketHydrated = Boolean(
+    selectedRawImportedInstrument &&
+      hydratedMarketIds.has(selectedRawImportedInstrument.instrument.id),
+  );
   const selectedIntradayReady = Boolean(
     selectedRawImportedInstrument &&
       selectedMarketHydrationKey &&
@@ -2984,7 +2988,7 @@ export function TradeReviewWorkspace({
       !hydrated ||
       activeView !== "review" ||
       !selectedRawImportedInstrument ||
-      !hydratedMarketIds.has(selectedRawImportedInstrument.instrument.id)
+      !selectedMarketHydrated
     ) {
       return;
     }
@@ -3108,10 +3112,10 @@ export function TradeReviewWorkspace({
   }, [
     activeView,
     hydrated,
-    hydratedMarketIds,
     marketDataRepository,
     marketReadScheduler,
     selectedRawImportedInstrument,
+    selectedMarketHydrated,
   ]);
 
   function setDrawingSaveError(episodeId: string, message: string) {
@@ -6101,6 +6105,7 @@ export function TradeReviewWorkspace({
                   onLeaveGuardChange={registerRecallLeaveGuard}
                   focused={focusedChart}
                   onFocusedChange={setFocusedChart}
+                  compactControls
                   episode={selectedEpisode!}
                   episodes={episodes}
                   instrument={selectedImportedInstrument.instrument}

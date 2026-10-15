@@ -93,6 +93,29 @@ function snapshot(id: string, decisionId: RecallSnapshot["decisionId"]): RecallS
 }
 
 describe("Recall document domain", () => {
+  it("rejects an out-of-contract derived capture frame while preserving legacy snapshots", () => {
+    const document = createRecallDocument(episode([execution("one", "2025-01-01T00:00:00.000Z")]));
+    document.snapshots = [snapshot("derived-stage", "one")];
+
+    expect(() => validateRecallDocument(document)).not.toThrow();
+
+    Object.assign(document.snapshots[0], {
+      derivedCapture: {
+        version: 1,
+        imageDataUrl:
+          "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+        imageFrame: { version: 1, width: 431, height: 280, pixelRatio: 2 },
+        rendererVersion: "r9",
+        sourceCanonicalDigest: "a".repeat(64),
+        textOverlayPolicy: "body-only",
+        textSourceKeys: ["derived-stage:stage:1"],
+        warnings: [],
+      },
+    });
+
+    expect(() => validateRecallDocument(document)).toThrow(/derivedCapture|432/);
+  });
+
   it("creates one explicit decision per execution without guessing groups", () => {
     const tradeEpisode = episode([
       execution("buy-1", "2026-01-01T00:00:00.000Z"),

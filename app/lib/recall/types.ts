@@ -2,6 +2,42 @@ import type { NormalizedDrawing } from "../chart/drawings";
 import type { Candle, Timeframe } from "../market/types";
 import type { TradeEpisode } from "../trades/types";
 
+export type RecallCaptureFrame = {
+  version: 1;
+  width: number;
+  height: number;
+  pixelRatio: number;
+};
+
+export const RECALL_DERIVED_CAPTURE_RENDERERS = [
+  "canonical-chart-capture-r9",
+  "canonical-chart-capture-r10",
+] as const;
+
+export type RecallTextSourceStatus = "visible-anchor" | "off-range" | "canvas-position" | "missing-anchor";
+
+export type RecallTextSourceBinding = {
+  sourceKey: string;
+  sourceNumber: number;
+  drawingId: string;
+  status: RecallTextSourceStatus;
+  anchorTime?: string;
+  anchorPrice?: number;
+};
+
+export type RecallDerivedCapture = {
+  version: 1;
+  imageDataUrl: string;
+  imageFrame: RecallCaptureFrame;
+  rendererVersion: string;
+  sourceCanonicalDigest: string;
+  textOverlayPolicy: "body-only";
+  textSourceKeys: string[];
+  /** Numbered source anchors retained when body-only projection omits Text cards. */
+  textSourceBindings?: RecallTextSourceBinding[];
+  warnings: string[];
+};
+
 /** A chart viewport is intentionally open ended so the chart package can add fields without a migration. */
 export type RecallViewport = {
   version: 1;
@@ -43,6 +79,8 @@ export type RecallSnapshot = {
   drawings: RecallDrawing[];
   viewport?: RecallViewport;
   imageDataUrl: string;
+  /** Optional readable PNG projection; canonical imageDataUrl remains authoritative for legacy exports. */
+  derivedCapture?: RecallDerivedCapture;
   createdAt: string;
   updatedAt: string;
 };

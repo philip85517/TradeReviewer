@@ -563,7 +563,7 @@ export function replayCursorAt(value: string): string {
   return value.length === 10 ? `${value}T23:59:59.999Z` : new Date(value).toISOString();
 }
 
-export function replayExecutionAt(execution: TradeExecution): string {
+export function replayExecutionAt(execution: Pick<TradeExecution, "executedAt" | "source">): string {
   if (execution.executedAt.length !== 10 && execution.source.timePrecision !== "date-only") {
     return replayCursorAt(execution.executedAt);
   }

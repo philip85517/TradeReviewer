@@ -116,6 +116,8 @@ install -m 755 deploy/ops/tradeReview.command "$HOME/Desktop/tradeReview.command
 
 ## 验证
 
+视觉设计资料统一从[设计规范与版本索引](docs/design-system/README.md)进入。新建或更新视觉设计文档按[图文设计文档标准](docs/design-system/documentation-standard.md)使用[可复制模板](docs/design-system/templates/visual-design.template.md)，以“图片＋说明＋具体规则＋验收”记录，并区分待确认设计、已确认契约与真实运行证据。当前[复盘r1图文基线](docs/design-system/baselines/2026-10-11-clean-review-r1-locked/RELEASE.md)已确认锁定，候选参数仍需校准，产品验收未完成；后续按[决策与开发/验收任务包](.scratch/review-clean-r1-implementation-plan-20261011/README.md)执行。
+
 项目默认采用[协调者 + Luna 分布式开发与预览交付流程](docs/agents/development-workflow.md)：Luna 负责实现，协调者独立验收，并在聊天交付已启动、可打开的预览链接。
 
 前端控件测试、点击检查、交互验收、视觉跳动、布局对齐或无响应诊断等同义请求，以及影响前端交互或布局的开发完成后，默认按[前端控件与视觉空间诊断规范](docs/agents/frontend-control-audit.md)执行。规范包含完整控件登记、覆盖率口径、真实操作、问题表、空间修复方案和分项验收模板；通过 [AGENTS.md](AGENTS.md)、开发流程和 UI 任务模板接入代理工作流，无需用户额外点名。纯文档修改按文档范围验证。

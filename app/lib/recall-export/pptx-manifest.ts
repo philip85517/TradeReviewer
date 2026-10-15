@@ -6,13 +6,25 @@ import type { RecallActualMetric } from '../recall/actual-metrics';
 import { RecallExportError, selectRecallExportDocument } from './manifest';
 import { sha256 } from '../recall/retained-digest';
 import type { RecallExportSource } from './types';
+import { visibleRecallExecutions } from '../replay/recall-replay';
+import { replayExecutionAt } from '../import/statement-evidence';
+import { executionFeeCurrency, type TradeExecution } from '../trades/types';
+import { canonicalRecallJson } from '../recall/retained-bundles';
+import { formatThreeStageDisplayDate } from './three-stage-manifest';
 
 export type RecallPptxOptions = { source?: RecallExportSource; generatedAt?: string; globalBundleId?: string };
 export type RecallPptxText = { key: string; drawingId: string; revision: string; ownerId: string; text: string; snapshotIds: string[] };
 export type RecallPptxStage = { phase: RecallPhase; title: string; snapshot: RecallSnapshot | null; bundle: RecallRetainedBundle | null; warnings: string[] };
+export type RecallPptxExecutionFacts = {
+    snapshotId: string | null;
+    bundle: RecallRetainedBundle | null;
+    executionIds: string[];
+    rows: string[][];
+    warnings: string[];
+};
 export type RecallPptxManifest = {
     version: 1; source: RecallExportSource; documentRevision: number; episodeId: string; generatedAt: string; fileName: string;
-    stages: RecallPptxStage[]; texts: RecallPptxText[];
+    stages: RecallPptxStage[]; texts: RecallPptxText[]; executionFacts: RecallPptxExecutionFacts;
     summary: { snapshotId: string | null; bundle: RecallRetainedBundle | null; rows: string[][]; details: string[][] };
 };
 
@@ -29,6 +41,100 @@ function freeze<T>(value: T): T {
 }
 function acceptedBundle(document: RecallDocument, snapshot: RecallSnapshot) {
     return document.retainedBundles?.find(bundle => bundle.id === snapshot.retainedBundleId && bundle.snapshotId === snapshot.id && bundle.documentRevision > 0) ?? null;
+}
+
+function snapshotCaptureContext(snapshot: RecallSnapshot) {
+    return {
+        phase: snapshot.phase, cursor: snapshot.cursor, executionCursor: snapshot.executionCursor,
+        timeframe: snapshot.timeframe, viewport: snapshot.viewport, hasSeenFuture: snapshot.hasSeenFuture,
+        priceBasis: snapshot.priceBasis,
+    };
+}
+
+function snapshotContentDigest(snapshot: RecallSnapshot): string {
+    return sha256(canonicalRecallJson({
+        context: snapshotCaptureContext(snapshot), candles: snapshot.candles, imageDataUrl: snapshot.imageDataUrl,
+        derivedCapture: snapshot.derivedCapture,
+        drawings: snapshot.drawings.map(({ recallOwnerId, ...drawing }) => { void recallOwnerId; return drawing; }),
+    }));
+}
+
+type RetainedExecution = RecallRetainedBundle['executionEvidence']['payload']['executions'][number];
+
+function validExecutionFactsBundle(document: RecallDocument, snapshot: RecallSnapshot, bundle: RecallRetainedBundle | undefined): bundle is RecallRetainedBundle {
+    if (!bundle || snapshot.retainedBundleId !== bundle.id || bundle.snapshotId !== snapshot.id || !Number.isInteger(bundle.documentRevision) || bundle.documentRevision <= 0) return false;
+    if (!Number.isFinite(Date.parse(bundle.retainedAt))) return false;
+    if (canonicalRecallJson(snapshotCaptureContext(snapshot)) !== canonicalRecallJson(bundle.captureContext)) return false;
+    if (bundle.snapshotContentDigest !== undefined && bundle.snapshotContentDigest !== snapshotContentDigest(snapshot)) return false;
+    const evidence = bundle.executionEvidence;
+    if (evidence.version !== 1 || !Array.isArray(evidence.executionIds) || !evidence.payload || !Array.isArray(evidence.payload.executions)) return false;
+    if (evidence.payload.episode?.id !== document.episodeId) return false;
+    const payloadIds = evidence.payload.executions.map(execution => execution.id);
+    if (payloadIds.some(id => typeof id !== 'string') || new Set(payloadIds).size !== payloadIds.length) return false;
+    if (canonicalRecallJson(payloadIds) !== canonicalRecallJson(evidence.executionIds)) return false;
+    return evidence.digest === sha256(canonicalRecallJson(evidence.payload));
+}
+
+function settledFee(execution: RetainedExecution): string {
+    if (execution.source.feeStatus === 'unknown') return '未知';
+    try {
+        const fee = new Decimal(execution.fee);
+        return fee.isFinite() ? `${fee.toString()} ${executionFeeCurrency(execution as unknown as TradeExecution)}` : '未知';
+    } catch {
+        return '未知';
+    }
+}
+
+function executionDisplayDate(execution: RetainedExecution): string {
+    const isDateOnly = execution.source.timePrecision === 'date-only'
+        || execution.source.sourceTimeKind === 'date'
+        || /^\d{4}-\d{2}-\d{2}$/.test(execution.executedAt);
+    if (!isDateOnly) return formatThreeStageDisplayDate(execution.executedAt);
+    const sourceDate = execution.source.marketCalendarDate
+        ?? execution.source.tradingDate
+        ?? (/^\d{4}-\d{2}-\d{2}$/.test(execution.source.sourceTimestampText?.trim() ?? '')
+            ? execution.source.sourceTimestampText!.trim()
+            : undefined)
+        ?? replayExecutionAt(execution).slice(0, 10);
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(sourceDate);
+    return match ? `${match[1]}年${match[2]}月${match[3]}日（仅日期；时刻未提供）` : '仅日期；时刻未提供';
+}
+
+function executionFactRow(execution: RetainedExecution): string[] {
+    return [
+        executionDisplayDate(execution),
+        execution.side === 'buy' ? '买入' : '卖出',
+        `${execution.quantity} 股`,
+        `${execution.price} ${execution.instrument.currency}`,
+        settledFee(execution),
+    ];
+}
+
+function selectExecutionFacts(document: RecallDocument): RecallPptxExecutionFacts {
+    const candidates = document.snapshots.flatMap(snapshot => {
+        const bundle = document.retainedBundles?.find(item => item.id === snapshot.retainedBundleId);
+        if (!validExecutionFactsBundle(document, snapshot, bundle)) return [];
+        const visible = visibleRecallExecutions(
+            bundle.executionEvidence.payload.executions as unknown as TradeExecution[],
+            snapshot.executionCursor,
+            snapshot.cursor,
+        ) as unknown as RetainedExecution[];
+        return [{ snapshot, bundle, visible }];
+    }).sort((left, right) => right.visible.length - left.visible.length
+        || right.bundle.retainedAt.localeCompare(left.bundle.retainedAt)
+        || right.bundle.documentRevision - left.bundle.documentRevision
+        || right.snapshot.id.localeCompare(left.snapshot.id)
+        || right.bundle.id.localeCompare(left.bundle.id));
+    const selected = candidates[0];
+    if (!selected) return { snapshotId: null, bundle: null, executionIds: [], rows: [], warnings: ['缺少有效已留存成交事实'] };
+    const visible = selected.visible;
+    return {
+        snapshotId: selected.snapshot.id,
+        bundle: selected.bundle,
+        executionIds: visible.map(execution => execution.id),
+        rows: visible.map(executionFactRow),
+        warnings: visible.length ? [] : ['当前双截止下无已揭示成交事实'],
+    };
 }
 export function recallPptxGlobalChoices(input: RecallDocument, source: RecallExportSource = 'draft') {
     const { document } = selectRecallExportDocument(input, source);
@@ -157,5 +263,6 @@ export function createRecallPptxManifest(input: RecallDocument, options: RecallP
     const symbol = bundle?.executionEvidence.payload.episode.instrument.symbol ?? '复盘';
     const name = Array.from(pptxText(`${symbol}_${selected.source === 'completed' ? '正式' : '草稿'}_${generatedAt.slice(0, 10)}`).replace(/[<>:"/\\|?*]/g, '_')).slice(0, 100).join('');
     return freeze({ version: 1, source: selected.source, documentRevision: document.revision, episodeId: document.episodeId, generatedAt, fileName: `${name}.pptx`, stages, texts,
+        executionFacts: selectExecutionFacts(document),
         summary: { snapshotId: global?.snapshotId ?? null, bundle, ...summaryRows(document, bundle) } });
 }

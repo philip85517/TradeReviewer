@@ -1,15 +1,31 @@
 "use client";
 
-import { flushSync } from "react-dom";
 import {
   CANONICAL_CAPTURE_FRAME,
+  DERIVED_CAPTURE_FRAME,
+  DERIVED_CAPTURE_RENDERER_VERSION,
+  DERIVED_CAPTURE_TEXT_POLICY,
   copyChartOptions,
   drawExecutionMarkers,
   renderCanonicalChartCapture,
   type CanonicalCaptureScene,
   type CanonicalChartMarker,
 } from "./canonical-chart-capture";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import type { RecallDerivedCapture } from "../../lib/recall/types";
+import { sha256 } from "../../lib/recall/retained-digest";
+import {
+  PLAN_AXIS_COLUMN_GAP,
+  PLAN_AXIS_TEXT_FONT,
+  PLAN_AXIS_TEXT_FONT_FAMILY,
+  PLAN_AXIS_TEXT_LINE_HEIGHT,
+  PLAN_AXIS_TEXT_SIZE,
+  PLAN_AXIS_TEXT_WEIGHT,
+  layoutPlanAxisLabels,
+  planAxisLineOptions,
+  type PlanAxisLabel,
+  type PlanAxisLine,
+} from "../../lib/chart/plan-axis-labels";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type {
   IChartApi,
   IPrimitivePaneRenderer,
@@ -28,6 +44,10 @@ import type {
   NormalizedDrawing,
 } from "../../lib/chart/drawings";
 import type { DrawingCommand } from "../../lib/chart/drawing-commands";
+import type {
+  TextDraftIntentReason,
+  TextDraftPrepareHandle,
+} from "../../lib/chart/text-draft-guard";
 import type { StatementEvent } from "../../lib/import/monthly-statement";
 import type { Candle, Timeframe } from "../../lib/market/types";
 import {
@@ -37,9 +57,12 @@ import {
 import type { ChartSettings } from "../../lib/storage/chart-settings";
 import { markerDisplayGeometry, markerLogicalPosition, markerRightLabelBoundary, markerTimelineTimes } from "../../lib/chart/marker-geometry";
 import { displayTimeForCandle } from "../../lib/replay/display-time";
+import { replayExecutionAt } from "../../lib/import/statement-evidence";
+import { replayPositionAtPrice } from "../../lib/replay/position-ledger";
 import type { TradeExecution } from "../../lib/trades/types";
 import { Eye, Maximize2 } from "lucide-react";
 import { tradeScopeKey } from "../../lib/trades/types";
+import { canonicalInstrumentId } from "../../lib/instruments/display-name";
 import {
   mapExecutionsToCandles,
 } from "../../lib/replay/execution-markers";
@@ -49,6 +72,7 @@ import type {
 } from "../../lib/replay/chart-location";
 import { resolveExecutionChartLocation } from "../../lib/replay/chart-location";
 import { episodeViewport, type EpisodeViewport } from "../../lib/reviews/episode-viewport";
+import type { DrawingControlObstacle } from "../../lib/chart/text-geometry";
 import {
   DrawingCanvas,
   type ChartCoordinateAdapter,
@@ -65,7 +89,7 @@ export type ChartViewport = {
   height: number;
   priceRange?: { from: number; to: number };
   priceScaleOptions?: { mode: number; invertScale: boolean; autoScale: boolean; scaleMargins: { top: number; bottom: number } };
-  imageFrame?: typeof CANONICAL_CAPTURE_FRAME;
+  imageFrame?: typeof CANONICAL_CAPTURE_FRAME | typeof DERIVED_CAPTURE_FRAME;
 };
 
 export type ChartCapture = {
@@ -73,16 +97,26 @@ export type ChartCapture = {
   viewport: ChartViewport;
   /** Present when visible text/drawings touch the capture boundary. */
   warnings?: string[];
+  derivedCapture?: RecallDerivedCapture;
+};
+
+export type ReplayPlotLayout = ChartPlotBounds & {
+  axisWidth: number;
+  plotCenterX: number;
 };
 
 export type ChartHandle = {
   capture: () => Promise<ChartCapture>;
+  /** Optional only for older parent handles; a live ReplayChart always supplies it. */
+  prepareTextDraft?: TextDraftPrepareHandle["prepareTextDraft"];
   /** Resolve after pending chart invalidations have been drawn synchronously. */
   flush: () => Promise<void>;
   getViewport: () => ChartViewport;
   restoreViewport: (viewport: ChartViewport) => void;
   fitAll: () => void;
 };
+
+type ReadyChartHandle = Omit<ChartHandle, "prepareTextDraft"> & TextDraftPrepareHandle;
 
 type Props = {
   candles: Candle[];
@@ -94,7 +128,9 @@ type Props = {
   onPlanPriceChange?: (id: string, price: string) => void;
   onPlanInteractionStart?: () => void;
   onPlanPriceSelect?: (id: string) => void;
-  planPriceLines?: { id: string; price: number; title: string }[];
+  onPlotLayoutChange?: (layout: ReplayPlotLayout) => void;
+  onRequestCursorTool?: () => void;
+  planPriceLines?: PlanAxisLine[];
   compactControls?: boolean;
   drawings: NormalizedDrawing[];
   activeTool: DrawingTool;
@@ -426,9 +462,92 @@ function actionLabelForExecution(
   }
 }
 
+function markerScopeKey(execution: TradeExecution) {
+  return `${execution.accountId}:${canonicalInstrumentId(execution.instrument.symbol, execution.instrument.market)}:${tradeScopeKey(execution)}`;
+}
+
+function markerStateFromLedger(
+  quantity: string,
+  quantityKnown: boolean,
+  directionUnknown: boolean,
+): MarkerPositionState {
+  const parsed = Number(quantity);
+  if (!quantityKnown || !Number.isFinite(parsed)) {
+    return { long: 0, short: 0, unknown: true, directionUnknown };
+  }
+  return {
+    long: Math.max(0, parsed),
+    short: Math.max(0, -parsed),
+    unknown: false,
+    directionUnknown,
+  };
+}
+
+function authoritativeMarkerStates(
+  facts: readonly MarkerExecutionFact[],
+  factIndex: number,
+  positionEvents: readonly StatementEvent[],
+): { before: MarkerPositionState; after: MarkerPositionState } | null {
+  const fact = facts[factIndex];
+  if (!fact) return null;
+  const stateKey = markerScopeKey(fact.execution);
+  const scopeFacts = facts.filter((candidate) => markerScopeKey(candidate.execution) === stateKey);
+  const scopeIndex = scopeFacts.findIndex((candidate) => candidate.execution.id === fact.execution.id);
+  if (scopeIndex < 0) return null;
+  const prefixFacts = scopeFacts.slice(0, scopeIndex + 1);
+  const prefixExecutions = prefixFacts.map((candidate) => candidate.execution);
+  const visibleBefore = prefixExecutions.slice(0, -1).map((execution) => execution.id);
+  const visibleAfter = prefixExecutions.map((execution) => execution.id);
+  const priorDirectionUnknown = prefixExecutions.slice(0, -1).some((execution) => !execution.source.positionEffect);
+  const directionUnknown = priorDirectionUnknown || !fact.execution.source.positionEffect;
+  const evidence = positionEvents.length > 0
+    ? [{ positions: [], events: [...positionEvents], month: undefined, accountId: undefined }]
+    : undefined;
+  const markPrice = fact.execution.price;
+  try {
+    const beforeSnapshot = replayPositionAtPrice({
+      executions: prefixExecutions,
+      markPrice,
+      cursor: replayExecutionAt(fact.execution),
+      visibleExecutionIds: visibleBefore,
+      evidence,
+    });
+    const afterSnapshot = replayPositionAtPrice({
+      executions: prefixExecutions,
+      markPrice,
+      cursor: replayExecutionAt(fact.execution),
+      visibleExecutionIds: visibleAfter,
+      evidence,
+    });
+    return {
+      before: markerStateFromLedger(beforeSnapshot.quantity, beforeSnapshot.quantityKnown !== false, priorDirectionUnknown),
+      after: markerStateFromLedger(afterSnapshot.quantity, afterSnapshot.quantityKnown !== false, directionUnknown),
+    };
+  } catch {
+    // Invalid source quantities stay conservative through the legacy fallback.
+    return null;
+  }
+}
+
 type ReplayExecutionMarkerPrimitive = ISeriesPrimitive<Time> & {
   setMarkers: (markers: readonly ReplayChartMarker[]) => void;
 };
+
+function logicalToCoordinateByInterpolation(
+  timeScale: ReturnType<IChartApi["timeScale"]>,
+  logical: number,
+) {
+  if (!Number.isFinite(logical)) return null;
+  if (Number.isInteger(logical)) {
+    return timeScale.logicalToCoordinate(logical as Logical) ?? null;
+  }
+  const lowerLogical = Math.floor(logical);
+  const upperLogical = Math.ceil(logical);
+  const lower = timeScale.logicalToCoordinate(lowerLogical as Logical);
+  const upper = timeScale.logicalToCoordinate(upperLogical as Logical);
+  if (lower === null || lower === undefined || upper === null || upper === undefined) return null;
+  return lower + (upper - lower) * (logical - lowerLogical);
+}
 
 export function createExecutionMarkerPrimitive(
   getCandleData: () => readonly ChartTimelineData[],
@@ -446,7 +565,7 @@ export function createExecutionMarkerPrimitive(
     const exactCandleTime = Number.isInteger(logical);
     return exactCandleTime
       ? chart.timeScale().timeToCoordinate(time) ?? chart.timeScale().logicalToCoordinate(logical as Logical) ?? null
-      : chart.timeScale().logicalToCoordinate(logical as Logical) ?? null;
+      : logicalToCoordinateByInterpolation(chart.timeScale(), logical);
   };
   const renderer: IPrimitivePaneRenderer = {
     draw(target: CanvasRenderingTarget2D) {
@@ -652,9 +771,9 @@ export function buildReplayChartMarkers(
     });
   }
   const stateByScope = new Map<string, MarkerPositionState>();
-  const executionMarkers = executionFacts.flatMap((fact): ReplayChartMarker[] => {
+  const executionMarkers = executionFacts.flatMap((fact, factIndex): ReplayChartMarker[] => {
     const { execution } = fact;
-    const stateKey = `${execution.accountId}:${tradeScopeKey(execution)}`;
+    const stateKey = markerScopeKey(execution);
     const before = stateByScope.get(stateKey) ?? { long: 0, short: 0, unknown: false, directionUnknown: false };
     const after = { ...before };
     const delta = markerDelta(execution);
@@ -669,8 +788,11 @@ export function buildReplayChartMarkers(
         after.long = Math.max(0, after.long + delta.long);
       }
     }
-    const actionLabel = actionLabelForExecution(execution, before, after);
-    stateByScope.set(stateKey, after);
+    const authoritative = authoritativeMarkerStates(executionFacts, factIndex, positionEvents);
+    const resolvedBefore = authoritative?.before ?? before;
+    const resolvedAfter = authoritative?.after ?? after;
+    const actionLabel = actionLabelForExecution(execution, resolvedBefore, resolvedAfter);
+    stateByScope.set(stateKey, resolvedAfter);
     const price = fact.candle
       ? execution.side === "buy" ? fact.candle.low : fact.candle.high
       : Number(execution.price);
@@ -836,6 +958,8 @@ export function ReplayChart({
   onPlanPriceChange,
   onPlanInteractionStart,
   onPlanPriceSelect,
+  onPlotLayoutChange,
+  onRequestCursorTool,
   drawings,
   activeTool,
   settings,
@@ -858,6 +982,10 @@ export function ReplayChart({
 }: Props) {
   const planHitControls = useRef(new Map<string, HTMLButtonElement>());
   const planDrag = useRef<{id:string;original:string;pointerId:number} | null>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const ohlcRef = useRef<HTMLDivElement>(null);
+  const compactToolbarRef = useRef<HTMLDivElement>(null);
+  const planActionRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -865,9 +993,10 @@ export function ReplayChart({
   const executionMarkerPrimitiveRef = useRef<ReplayExecutionMarkerPrimitive | null>(null);
   const costLineRef = useRef<IPriceLine | null>(null);
   const drawingCanvasRef = useRef<DrawingCanvasHandle | null>(null);
-  const chartHandleRef = useRef<ChartHandle | null>(null);
+  const chartHandleRef = useRef<ReadyChartHandle | null>(null);
   const candlesRef = useRef(candles);
   const drawingsRef = useRef(drawings);
+  const onCommandRef = useRef(onCommand);
   const onExecutionSelectRef = useRef(onExecutionSelect);
   const visibleExecutionIdsRef = useRef<Set<string>>(new Set());
   const chartClickHandlerRef = useRef<((param: ReplayChartClickParam) => void) | null>(null);
@@ -875,11 +1004,13 @@ export function ReplayChart({
   const viewportKeyRef = useRef(viewportKey);
   const coordinateAdapterRef = useRef<ChartCoordinateAdapter | null>(null);
   const chartSizeRef = useRef({ width: 0, height: 0 });
+  const plotBoundsMeasureFrameRef = useRef<number | null>(null);
   const initialFitDoneRef = useRef(false);
   const waitingForUsableSizeRef = useRef(false);
   const captureRef = useRef<ChartHandle["capture"]>(async () => {
     throw new Error("图表尚未就绪");
   });
+  const prepareTextDraftRef = useRef<TextDraftPrepareHandle["prepareTextDraft"]>(async () => false);
   const flushRef = useRef<ChartHandle["flush"]>(async () => undefined);
   const getViewportRef = useRef<ChartHandle["getViewport"]>(() => {
     throw new Error("图表尚未就绪");
@@ -903,10 +1034,27 @@ export function ReplayChart({
   const pendingPriceRangeRef = useRef<{ from: number; to: number } | null>(null);
   const pendingLogicalRangeVersionRef = useRef(0);
   const [chartReady, setChartReady] = useState(false);
+  // A chart instance can be replaced while React preserves this component's
+  // state (for example during Activity/Fast Refresh lifecycle work). In that
+  // case chartReady may remain true across the replacement, so publishing the
+  // handle must also track the concrete chart generation.
+  const [chartGeneration, setChartGeneration] = useState(0);
   const [coordinateVersion, setCoordinateVersion] = useState(0);
+  const [planAxisLabels, setPlanAxisLabels] = useState<PlanAxisLabel[]>([]);
+  const [coarsePointer, setCoarsePointer] = useState(false);
   const [crosshair, setCrosshair] = useState<CrosshairCandle | null>(
     null,
   );
+  const planAxisHitHeight = coarsePointer ? 44 : 36;
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
+    const media = window.matchMedia("(pointer: coarse)");
+    const update = () => setCoarsePointer(media.matches);
+    update();
+    media.addEventListener?.("change", update);
+    return () => media.removeEventListener?.("change", update);
+  }, []);
 
   const requestLogicalRange = useCallback((
     scale: ReturnType<IChartApi["timeScale"]>,
@@ -965,9 +1113,11 @@ export function ReplayChart({
   );
 
   const [plotBounds, setPlotBounds] = useState<ChartPlotBounds | undefined>();
+  const [planAxisMinimumWidth, setPlanAxisMinimumWidth] = useState(84);
+  const [controlObstacles, setControlObstacles] = useState<readonly DrawingControlObstacle[]>([]);
+  const appliedPlanAxisMinimumWidthRef = useRef(84);
 
-  useLayoutEffect(() => {
-    if (!chartReady) return;
+  const measurePlotBounds = useCallback(() => {
     const chart = chartRef.current;
     const fullWidth = chartSizeRef.current.width;
     const fullHeight = chartSizeRef.current.height;
@@ -983,7 +1133,16 @@ export function ReplayChart({
         : fullHeight,
     };
     setPlotBounds((current) => current?.width === nextBounds.width && current.height === nextBounds.height ? current : nextBounds);
-  }, [chartReady, coordinateVersion]);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!chartReady) return;
+    measurePlotBounds();
+  }, [chartGeneration, chartReady, coordinateVersion, measurePlotBounds]);
+
+  useLayoutEffect(() => {
+    appliedPlanAxisMinimumWidthRef.current = 84;
+  }, [chartGeneration]);
 
   useLayoutEffect(() => {
     candlesRef.current = candles;
@@ -991,7 +1150,40 @@ export function ReplayChart({
     viewportKeyRef.current = viewportKey;
     coordinateAdapterRef.current = coordinateAdapter;
     onExecutionSelectRef.current = onExecutionSelect;
-  }, [candles, coordinateAdapter, drawings, onExecutionSelect, viewportKey]);
+    onCommandRef.current = onCommand;
+  }, [candles, coordinateAdapter, drawings, onCommand, onExecutionSelect, viewportKey]);
+
+  // Keep the capture snapshot current at the command boundary. The parent
+  // still owns persistence; this local mirror prevents a capture that follows
+  // a resolved text-draft guard from observing React's pending render.
+  const handleDrawingCommand = useCallback((command: DrawingCommand) => {
+    const current = drawingsRef.current;
+    if (command.type === "add") drawingsRef.current = [...current, command.drawing];
+    else if (command.type === "replace") drawingsRef.current = current.map((drawing) => drawing.id === command.drawing.id ? command.drawing : drawing);
+    else if (command.type === "delete") drawingsRef.current = current.filter((drawing) => drawing.id !== command.id);
+    else if (command.type === "clear-unlocked") drawingsRef.current = current.filter((drawing) => drawing.locked);
+    else if (command.type === "rename") drawingsRef.current = current.map((drawing) => drawing.id === command.id ? { ...drawing, name: command.name } : drawing);
+    else if (command.type === "toggle-hidden") drawingsRef.current = current.map((drawing) => drawing.id === command.id ? { ...drawing, hidden: !drawing.hidden } : drawing);
+    else if (command.type === "toggle-locked") drawingsRef.current = current.map((drawing) => drawing.id === command.id ? { ...drawing, locked: !drawing.locked } : drawing);
+    else if (command.type === "set-locked") {
+      const ids = new Set(command.ids);
+      drawingsRef.current = current.map((drawing) => ids.has(drawing.id) ? { ...drawing, locked: command.locked } : drawing);
+    } else if (command.type === "move") {
+      const index = current.findIndex((drawing) => drawing.id === command.id);
+      if (index >= 0) {
+        const step = command.direction === "up" ? 1 : -1;
+        let target = index + step;
+        const eligible = command.eligibleIds ? new Set(command.eligibleIds) : null;
+        while (eligible && target >= 0 && target < current.length && !eligible.has(current[target].id)) target += step;
+        if (target >= 0 && target < current.length) {
+          const next = [...current];
+          [next[index], next[target]] = [next[target], next[index]];
+          drawingsRef.current = next;
+        }
+      }
+    }
+    onCommandRef.current(command);
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -1021,6 +1213,7 @@ export function ReplayChart({
           layout: {
             background: { type: ColorType.Solid, color: "#101722" },
             textColor: "#8392a7",
+            fontSize: PLAN_AXIS_TEXT_SIZE,
             attributionLogo: true,
           },
           grid: {
@@ -1051,6 +1244,10 @@ export function ReplayChart({
             borderColor: "#273345",
             timeVisible: true,
             secondsVisible: false,
+            // Keep a restored logical window anchored when the SDK recalculates
+            // its pane width after a delayed ResizeObserver/full paint. This
+            // lets the SDK adjust bar spacing without shifting the saved bars.
+            lockVisibleTimeRangeOnResize: true,
             rightOffset: 4,
             barSpacing: 8,
             tickMarkFormatter: (time: Time, tickMarkType: TickMarkType) =>
@@ -1085,7 +1282,7 @@ export function ReplayChart({
         (candleSeries as ISeriesApi<"Candlestick"> & { attachPrimitive?: (primitive: ISeriesPrimitive<Time>) => void }).attachPrimitive?.(executionMarkerPrimitive);
         const costLine = candleSeries.createPriceLine({
           price: 0,
-          color: "#f3ba2f",
+          color: "#adbbcf",
           lineWidth: 1,
           lineStyle: LineStyle.Dashed,
           axisLabelVisible: false,
@@ -1108,6 +1305,8 @@ export function ReplayChart({
               low: value.low,
               close: value.close,
             });
+          } else {
+            setCrosshair(null);
           }
         });
         const handleChartClick = (param: ReplayChartClickParam) => {
@@ -1153,6 +1352,7 @@ export function ReplayChart({
         volumeSeriesRef.current = volumeSeries;
         executionMarkerPrimitiveRef.current = executionMarkerPrimitive;
         costLineRef.current = costLine;
+        setChartGeneration((generation) => generation + 1);
         setChartReady(true);
 
         observer = new ResizeObserver(() => {
@@ -1191,6 +1391,14 @@ export function ReplayChart({
             fittedRef.current = viewportIdentity(viewportKeyRef.current);
           }
           setCoordinateVersion((version) => version + 1);
+          if (plotBoundsMeasureFrameRef.current !== null) {
+            cancelAnimationFrame(plotBoundsMeasureFrameRef.current);
+          }
+          plotBoundsMeasureFrameRef.current = requestAnimationFrame(() => {
+            plotBoundsMeasureFrameRef.current = null;
+            if (disposed || chartRef.current !== chart) return;
+            measurePlotBounds();
+          });
         });
         observer.observe(container);
       },
@@ -1218,6 +1426,10 @@ export function ReplayChart({
       initialFitDoneRef.current = false;
       waitingForUsableSizeRef.current = true;
       observer?.disconnect();
+      if (plotBoundsMeasureFrameRef.current !== null) {
+        cancelAnimationFrame(plotBoundsMeasureFrameRef.current);
+        plotBoundsMeasureFrameRef.current = null;
+      }
       const clickCapableChart = chartRef.current as (IChartApi & {
         unsubscribeClick?: (handler: (param: ReplayChartClickParam) => void) => void;
       }) | null;
@@ -1240,14 +1452,14 @@ export function ReplayChart({
       executionMarkerPrimitiveRef.current = null;
       costLineRef.current = null;
     };
-  }, [requestLogicalRange]);
+  }, [measurePlotBounds, requestLogicalRange]);
 
   useEffect(() => {
     chartRef.current?.applyOptions({
       handleScroll: activeTool === "cursor",
       handleScale: activeTool === "cursor",
     });
-  }, [activeTool, chartReady]);
+  }, [activeTool, chartGeneration, chartReady]);
 
   const candleSignature = candleDataSignature(candles);
   const mappingSignature = candleMappingSignature(candles);
@@ -1375,7 +1587,7 @@ export function ReplayChart({
     setCoordinateVersion((version) => version + 1);
   // Value signature dependencies intentionally ignore refreshed array identity.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chartReady, requestLogicalRange, timelineSignature, viewportKey]);
+  }, [chartGeneration, chartReady, requestLogicalRange, timelineSignature, viewportKey]);
 
   useLayoutEffect(() => {
     const scale = chartRef.current?.timeScale();
@@ -1467,6 +1679,7 @@ export function ReplayChart({
       setCoordinateVersion((version) => version + 1);
     });
   }, [
+    chartGeneration,
     chartReady,
     candleSignature,
     revealRequest?.id,
@@ -1493,7 +1706,7 @@ export function ReplayChart({
     markerPrimitive.setMarkers(markerData);
   // Marker values are derived from the signature; array identity is irrelevant.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chartReady, markerSignature]);
+  }, [chartGeneration, chartReady, markerSignature]);
 
   useEffect(() => {
     const scale = chartRef.current?.timeScale();
@@ -1514,6 +1727,7 @@ export function ReplayChart({
     setCrosshair(null);
     setCoordinateVersion((version) => version + 1);
   }, [
+    chartGeneration,
     chartReady,
     candleSignature,
     focusRange,
@@ -1580,6 +1794,7 @@ export function ReplayChart({
     setCoordinateVersion((version) => version + 1);
   }, [
     candles,
+    chartGeneration,
     chartReady,
     executions,
     episodeId,
@@ -1597,9 +1812,11 @@ export function ReplayChart({
   useEffect(() => {
     const series = seriesRef.current;
     if (!chartReady || !series) return;
-    const lines = (planPriceLines ?? []).filter(line => Number.isFinite(line.price) && line.price > 0).map(line => series.createPriceLine({ price: line.price, title: line.title, color: "#f3ba2f", lineWidth: 1, lineStyle: 2, axisLabelVisible: true }));
+    const lines = (planPriceLines ?? [])
+      .filter(line => Number.isFinite(line.price) && line.price > 0)
+      .map(line => series.createPriceLine(planAxisLineOptions(line)));
     return () => { for (const line of lines) series.removePriceLine(line); };
-  }, [chartReady, planPriceLines]);
+  }, [chartGeneration, chartReady, planPriceLines]);
 
   useEffect(() => {
     if (!chartReady) return;
@@ -1607,7 +1824,7 @@ export function ReplayChart({
       price: averageCost > 0 ? averageCost : validCandleData.at(-1)?.close ?? 0,
       axisLabelVisible: settings.showAverageCost && averageCost > 0,
     });
-  }, [averageCost, chartReady, candleSignature, settings.showAverageCost, validCandleData]);
+  }, [averageCost, chartGeneration, chartReady, candleSignature, settings.showAverageCost, validCandleData]);
 
   useEffect(() => {
     if (!chartReady) return;
@@ -1643,6 +1860,7 @@ export function ReplayChart({
     });
   }, [
     averageCost,
+    chartGeneration,
     chartReady,
     settings.colorScheme,
     settings.showAverageCost,
@@ -1701,6 +1919,17 @@ export function ReplayChart({
     // LWC's explicit-range setter disables auto scaling. Restore the saved
     // mode last so revisiting an automatic viewport keeps following new bars.
     if (viewport.priceScaleOptions) seriesRef.current?.priceScale().setAutoScale(viewport.priceScaleOptions.autoScale);
+    // A persisted restore is the first authoritative layout for this chart.
+    // Mark it as initialized before the next ResizeObserver notification;
+    // otherwise a restore whose pending range was already consumed can be
+    // mistaken for an uninitialized chart and fit over the saved viewport.
+    fittedRef.current = viewportIdentity(viewportKeyRef.current);
+    initialFitDoneRef.current = true;
+    waitingForUsableSizeRef.current = false;
+    // Price/time scale setters invalidate LWC lazily. Drain that invalidation
+    // before publishing coordinateVersion; DrawingCanvas must never project a
+    // persisted anchor against the pre-restore price transform.
+    chart.takeScreenshot(false, false);
     setCoordinateVersion((version) => version + 1);
   }, [requestLogicalRange]);
 
@@ -1715,20 +1944,25 @@ export function ReplayChart({
     if (!chart || !series || !volume) throw new Error("图表截图不可用");
     capturePendingRef.current = true;
     try {
-      // Commands and React layout refs must commit before the immutable scene
-      // is frozen. No asynchronous boundary precedes this revision barrier.
-      let textCommitReady = true;
-      flushSync(() => {
-        textCommitReady = drawingCanvasRef.current?.commitText() ?? true;
-      });
+      // Snapshot source inputs before the async guard. The guard decides
+      // whether text is safe to freeze; it must not let a concurrent prop
+      // update replace the chart data selected by this capture request.
+      const captureInputsAtStart = captureInputRef.current;
+      const viewportAtStart = getViewport();
+      // Task13 owns the single text-draft buffer. The capture seam must await
+      // its decision before freezing chart state; never implicitly commit text.
+      const textCommitReady = await prepareTextDraftRef.current("capture");
       if (!textCommitReady) {
         throw new Error("文字编辑或关联取点尚未完成，请先完成或取消编辑；草稿已保留");
       }
+      // Task13 may resolve after committing React-backed editor state. Let the
+      // resulting draft snapshot settle before the canonical scene is frozen.
+      await Promise.resolve();
       chart.takeScreenshot(false, false);
-      const viewport = getViewport();
+      const viewport = viewportAtStart;
       if (!viewport.logicalRange || !viewport.priceRange) throw new Error("图表可见范围尚未就绪，无法截图");
       if (viewport.width <= 0 || viewport.height <= 0) throw new Error("图表尺寸无效，无法截图");
-      const current = captureInputRef.current;
+      const current = captureInputsAtStart;
       const chartOptions = { ...copyChartOptions(chart.options()), timeScale: {
         ...copyChartOptions(chart.options().timeScale),
         tickMarkFormatter: (time: Time, tickMarkType: TickMarkType) => chartTickLabel(time, tickMarkType, current.timeframe ?? "1D"),
@@ -1739,7 +1973,13 @@ export function ReplayChart({
         volumeScaleOptions: copyChartOptions(volume.priceScale().options()),
         candles: structuredClone(validCandles(current.candles)),
         markers: structuredClone(current.markerData),
-        priceLines: [copyChartOptions(costLineRef.current!.options()), ...(current.planPriceLines ?? []).filter(line => Number.isFinite(line.price) && line.price > 0).map(line => ({ price: line.price, title: line.title, color: "#f3ba2f", lineWidth: 1 as const, lineStyle: 2, axisLabelVisible: true }))],
+        priceLines: [copyChartOptions(costLineRef.current!.options()), ...(current.planPriceLines ?? [])
+          .filter(line => Number.isFinite(line.price) && line.price > 0)
+          .map(line => planAxisLineOptions(line))],
+        planPriceLines: structuredClone((current.planPriceLines ?? [])
+          .filter(line => Number.isFinite(line.price) && line.price > 0)),
+        planAxisMinimumWidth,
+        currentPrice: [...appliedCandleDataRef.current].reverse().find(point => point.open !== undefined && Number.isFinite(point.close))?.close,
         drawings: structuredClone(drawingsRef.current),
         logicalRange: { ...viewport.logicalRange }, priceRange: { ...viewport.priceRange },
         currency: current.currency, plannedRiskAmount: current.plannedRiskAmount,
@@ -1749,12 +1989,38 @@ export function ReplayChart({
       const fonts = document.fonts?.ready;
       if (fonts) await fonts;
       const rendered = await renderCanonicalChartCapture(scene);
-      return { imageDataUrl: rendered.imageDataUrl, viewport: { ...viewport, imageFrame: { ...CANONICAL_CAPTURE_FRAME } }, ...(rendered.warnings.length ? { warnings: rendered.warnings } : {}) };
+      const derived = await renderCanonicalChartCapture(scene, {
+        frame: DERIVED_CAPTURE_FRAME,
+        drawings: scene.drawings.filter(drawing => drawing.tool !== "text"),
+        textOverlayPolicy: DERIVED_CAPTURE_TEXT_POLICY,
+      });
+      const derivedCapture: RecallDerivedCapture = {
+        version: 1,
+        imageDataUrl: derived.imageDataUrl,
+        imageFrame: { ...DERIVED_CAPTURE_FRAME },
+        rendererVersion: DERIVED_CAPTURE_RENDERER_VERSION,
+        sourceCanonicalDigest: sha256(rendered.imageDataUrl),
+        textOverlayPolicy: DERIVED_CAPTURE_TEXT_POLICY,
+        textSourceKeys: derived.textSourceKeys,
+        textSourceBindings: derived.textSourceBindings,
+        warnings: [...new Set(derived.warnings)],
+      };
+      return {
+        imageDataUrl: rendered.imageDataUrl,
+        viewport: { ...viewport, imageFrame: { ...CANONICAL_CAPTURE_FRAME } },
+        ...(rendered.warnings.length ? { warnings: rendered.warnings } : {}),
+        derivedCapture,
+      };
     } finally { capturePendingRef.current = false; }
-  }, [getViewport]);
+  }, [getViewport, planAxisMinimumWidth]);
 
   useEffect(() => {
     captureRef.current = capture;
+    prepareTextDraftRef.current = (reason: TextDraftIntentReason) => {
+      const drawingCanvas = drawingCanvasRef.current;
+      if (!drawingCanvas) return Promise.resolve(false);
+      return drawingCanvas.prepareTextDraft(reason);
+    };
     flushRef.current = flush;
     getViewportRef.current = getViewport;
     restoreViewportRef.current = restoreViewport;
@@ -1766,40 +2032,140 @@ export function ReplayChart({
       onReady?.(null);
       return;
     }
-    if (!chartHandleRef.current) {
-      chartHandleRef.current = {
-        capture: () => captureRef.current(),
-        flush: () => flushRef.current(),
-        getViewport: () => getViewportRef.current(),
-        restoreViewport: (viewport) => restoreViewportRef.current(viewport),
-        fitAll: () => fitAllRef.current(),
-      };
-    }
+    chartHandleRef.current = {
+      capture: () => captureRef.current(),
+      prepareTextDraft: (reason) => prepareTextDraftRef.current(reason),
+      flush: () => flushRef.current(),
+      getViewport: () => getViewportRef.current(),
+      restoreViewport: (viewport) => restoreViewportRef.current(viewport),
+      fitAll: () => fitAllRef.current(),
+    } satisfies ReadyChartHandle;
     onReady?.(chartHandleRef.current);
     return () => onReady?.(null);
-  }, [chartReady, onReady]);
+  }, [chartGeneration, chartReady, onReady]);
 
   const displayCandle = crosshair ?? candles.at(-1);
 
   const safePlanLines = (planPriceLines ?? []).filter(
     line => Number.isFinite(line.price) && line.price > 0,
   );
-  // Position the HTML controls against the chart's committed external scale.
   useLayoutEffect(() => {
-    for (const line of planPriceLines ?? []) {
-      const button = planHitControls.current.get(line.id);
-      if (!button) continue;
-      const y = seriesRef.current?.priceToCoordinate(line.price);
-      const halfHeight = compactControls
-        ? Math.max(18, button.offsetHeight / 2, Number.parseFloat(getComputedStyle(button).minHeight) / 2 || 0)
-        : 18;
-      const visible = y != null && (compactControls
-        ? y >= halfHeight && y <= chartSizeRef.current.height - halfHeight
-        : y >= 20 && y <= chartSizeRef.current.height - 20);
-      button.style.display = visible ? "" : "none";
-      if (visible) button.style.top = `${y - halfHeight}px`;
+    const stage = stageRef.current;
+    const control = compactControls ? compactToolbarRef.current : planActionRef.current;
+    const hud = ohlcRef.current;
+    const clearObstacle = () => {
+      setControlObstacles(current => current.length === 0 ? current : []);
+    };
+    if (!stage) {
+      clearObstacle();
+      return;
     }
-  }, [chartReady, compactControls, coordinateVersion, planPriceLines]);
+
+    const measure = () => {
+      const stageRect = stage.getBoundingClientRect();
+      const next = [
+        control ? {
+          id: compactControls ? "compact-toolbar" : "plan-price-action",
+          rect: control.getBoundingClientRect(),
+        } : null,
+        hud ? { id: "chart-ohlc", rect: hud.getBoundingClientRect() } : null,
+      ].flatMap((item) => {
+        if (!item) return [];
+        const width = item.rect.right - item.rect.left;
+        const height = item.rect.bottom - item.rect.top;
+        const values = [stageRect.left, stageRect.top, item.rect.left, item.rect.top, item.rect.right, item.rect.bottom, width, height];
+        if (!values.every(Number.isFinite) || width <= 0 || height <= 0) return [];
+        return [{
+          id: item.id,
+          left: item.rect.left - stageRect.left,
+          top: item.rect.top - stageRect.top,
+          right: item.rect.right - stageRect.left,
+          bottom: item.rect.bottom - stageRect.top,
+        } satisfies DrawingControlObstacle];
+      });
+      setControlObstacles(current => {
+        return current.length === next.length && current.every((previous, index) => {
+          const obstacle = next[index]!;
+          return previous.id === obstacle.id && previous.left === obstacle.left && previous.top === obstacle.top
+            && previous.right === obstacle.right && previous.bottom === obstacle.bottom;
+        }) ? current : next;
+      });
+    };
+
+    measure();
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    observer?.observe(stage);
+    if (control) observer?.observe(control);
+    if (hud) observer?.observe(hud);
+    window.addEventListener("resize", measure);
+    window.addEventListener("scroll", measure, true);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("scroll", measure, true);
+    };
+  }, [compactControls, planAxisHitHeight, planAxisMinimumWidth, plotBounds, safePlanLines.length]);
+  // Use the same measured label layout as canonical capture. The chart owns
+  // the price coordinate; only the outside text row may move to avoid a clash.
+  useLayoutEffect(() => {
+    if (!chartReady || !seriesRef.current) {
+      setPlanAxisLabels([]);
+      return;
+    }
+    const width = chartSizeRef.current.width;
+    const height = chartSizeRef.current.height;
+    if (width <= 0 || height <= 0) return;
+    const plotRight = plotBounds?.width ?? width;
+    const measureCanvas = document.createElement("canvas");
+    const context = measureCanvas.getContext("2d");
+    if (context) context.font = PLAN_AXIS_TEXT_FONT;
+    const latestCandle = [...appliedCandleDataRef.current].reverse().find(point => point.open !== undefined && Number.isFinite(point.close));
+    const nativeObstaclePrices = [
+      ...(latestCandle?.close == null ? [] : [latestCandle.close]),
+      ...(settings.showAverageCost && averageCost > 0 ? [averageCost] : []),
+    ];
+    const obstacleYs = nativeObstaclePrices
+      .map(price => {
+        const coordinate = seriesRef.current?.priceToCoordinate(price);
+        return coordinate == null ? null : Number(coordinate);
+      })
+      .filter((value): value is number => value != null && Number.isFinite(value));
+    const labels = layoutPlanAxisLabels(
+      (planPriceLines ?? []).filter(line => Number.isFinite(line.price) && line.price > 0)
+        .map(line => ({ ...line, trueY: seriesRef.current?.priceToCoordinate(line.price) ?? null })),
+      { plotRight, axisRight: width, top: 20, bottom: Math.max(20, height - 20), lineHeight: PLAN_AXIS_TEXT_LINE_HEIGHT, gap: 4, rowClearance: planAxisHitHeight, obstacleYs: [...new Set(obstacleYs)] },
+      text => typeof context?.measureText === "function" ? context.measureText(text).width : text.length * 7,
+    );
+    setPlanAxisLabels(labels);
+    // Keep the existing synchronous hit-target seam: a scale/prop update can
+    // move an already-mounted button before React paints the next label row.
+    for (const label of labels) {
+      for (const id of label.sourceIds) {
+        const button = planHitControls.current.get(id);
+        if (!button) continue;
+        button.style.left = `${label.rect.x}px`;
+        button.style.top = `${label.rect.y - (planAxisHitHeight - PLAN_AXIS_TEXT_LINE_HEIGHT) / 2}px`;
+        button.style.width = `${label.rect.width}px`;
+        button.style.display = label.offscreen || !label.layoutFeasible ? "none" : "grid";
+        button.setAttribute("aria-label", `${label.text}，精确编辑`);
+      }
+    }
+    const measuredMinimumWidth = Math.max(84, ...labels.map(label => label.neededAxisWidth));
+    setPlanAxisMinimumWidth(current => current === measuredMinimumWidth ? current : measuredMinimumWidth);
+    if (appliedPlanAxisMinimumWidthRef.current !== measuredMinimumWidth) {
+      seriesRef.current.priceScale().applyOptions({ minimumWidth: measuredMinimumWidth });
+      appliedPlanAxisMinimumWidthRef.current = measuredMinimumWidth;
+      setCoordinateVersion(version => version + 1);
+    }
+  }, [averageCost, chartGeneration, chartReady, compactControls, coordinateVersion, planAxisHitHeight, plotBounds, planPriceLines, settings.showAverageCost]);
+  useLayoutEffect(() => {
+    if (!plotBounds) return;
+    onPlotLayoutChange?.({
+      ...plotBounds,
+      axisWidth: planAxisMinimumWidth,
+      plotCenterX: plotBounds.width / 2,
+    });
+  }, [onPlotLayoutChange, planAxisMinimumWidth, plotBounds]);
   const fitPlanPrices = () => {
     const revealedPrices = validChartCandles
       .filter(candle => Date.parse(candle.time) <= Date.parse(cursor))
@@ -1815,9 +2181,19 @@ export function ReplayChart({
     });
     setCoordinateVersion(version => version + 1);
   };
+  const stageStyle: CSSProperties = {
+    ...(plotBounds ? {
+      "--replay-plot-width": `${plotBounds.width}px`,
+      "--replay-plot-center-x": `${plotBounds.width / 2}px`,
+      "--replay-plot-height": `${plotBounds.height}px`,
+    } : {}),
+    "--replay-axis-width": `${planAxisMinimumWidth}px`,
+  } as CSSProperties;
   return (
     <div
+      ref={stageRef}
       className="chart-stage"
+      style={stageStyle}
       data-show-grid={settings.showGrid}
       data-show-volume={settings.showVolume}
       data-show-executions={settings.showExecutions}
@@ -1830,7 +2206,7 @@ export function ReplayChart({
         setCoordinateVersion((version) => version + 1)
       }
     >
-      <div className="chart-ohlc">
+      <div ref={ohlcRef} className="chart-ohlc">
         <span>
           {crosshair
             ? formatBeijingDateTime(crosshair.time)
@@ -1855,7 +2231,7 @@ export function ReplayChart({
       </div>
       <div ref={containerRef} className="lightweight-chart" />
       {compactControls ? (
-        <div className="replay-chart-compact-controls" role="toolbar" aria-label="图表视野操作"
+        <div ref={compactToolbarRef} className="replay-chart-compact-controls" role="toolbar" aria-label="图表视野操作"
           style={{ left: plotBounds ? `${plotBounds.width / 2}px` : "50%" }}>
           <button type="button" className="replay-chart-compact-control" onClick={() => fitAllRef.current()} aria-label="适应全部" title="适应全部">
             <Maximize2 size={18} aria-hidden="true" />
@@ -1865,37 +2241,130 @@ export function ReplayChart({
           </button>}
         </div>
       ) : safePlanLines.length > 0 && (
-        <button type="button" className="recall-plan-price-action" onClick={fitPlanPrices}
+        <button ref={planActionRef} type="button" className="recall-plan-price-action" onClick={fitPlanPrices}
           aria-label="显示计划价格" title="显示计划价格"
           style={{ position: "absolute", left: 76, bottom: 48, zIndex: 8 }}>
           显示计划价格
         </button>
       )}
-      {chartReady && safePlanLines.map(line => {
+      {chartReady && planAxisLabels.length > 0 && planAxisLabels.every(label => label.layoutFeasible) && (
+        <svg
+          aria-hidden="true"
+          data-plan-axis-connectors="true"
+          width="100%"
+          height="100%"
+          style={{ position: "absolute", inset: 0, zIndex: 7, pointerEvents: "none", overflow: "visible" }}
+        >
+          {planAxisLabels.filter(label => !label.offscreen && label.connectorY != null && Number.isFinite(label.connectorY)).flatMap(label => {
+            const plotRight = plotBounds?.width ?? 0;
+            const connectorY = label.connectorY as number;
+            const first = [
+              <line key={`${label.key}-horizontal`} x1={plotRight} y1={connectorY} x2={label.rect.x} y2={connectorY} stroke={label.color} strokeWidth="1" strokeDasharray="4 4" />,
+            ];
+            return connectorY === label.labelY
+              ? first
+              : [...first, <line key={`${label.key}-vertical`} x1={label.rect.x} y1={connectorY} x2={label.rect.x} y2={label.labelY} stroke={label.color} strokeWidth="1" strokeDasharray="4 4" />];
+          })}
+        </svg>
+      )}
+      {chartReady && planAxisLabels.some(label => !label.layoutFeasible) && (
+        <div
+          data-plan-axis-status="infeasible"
+          role="alert"
+          aria-label="计划价格轴空间不足"
+          style={{
+            position: "absolute",
+            left: plotBounds?.width ?? "100%",
+            right: 0,
+            top: 8,
+            maxHeight: "calc(100% - 16px)",
+            overflowY: "auto",
+            zIndex: 9,
+            boxSizing: "border-box",
+            padding: "4px 8px",
+            pointerEvents: "auto",
+            fontFamily: PLAN_AXIS_TEXT_FONT_FAMILY,
+            fontSize: `${PLAN_AXIS_TEXT_SIZE}px`,
+            fontWeight: PLAN_AXIS_TEXT_WEIGHT,
+            lineHeight: `${PLAN_AXIS_TEXT_LINE_HEIGHT}px`,
+          }}
+        >
+          <div data-plan-axis-status-message>计划价格轴空间不足，请扩大图表高度</div>
+          {planAxisLabels.map(axisLabel => (
+            <div
+              key={`fallback-${axisLabel.key}`}
+              data-plan-axis-fallback-row="true"
+              data-plan-source-ids={axisLabel.sourceIds.join(",")}
+              data-plan-true-y={axisLabel.trueY == null ? "" : String(axisLabel.trueY)}
+              data-plan-connector-y={axisLabel.connectorY == null ? "" : String(axisLabel.connectorY)}
+              style={{ display: "grid", gridTemplateColumns: `${axisLabel.nameWidth}px ${axisLabel.valueWidth}px`, columnGap: PLAN_AXIS_COLUMN_GAP, minHeight: PLAN_AXIS_TEXT_LINE_HEIGHT }}
+            >
+              <span data-plan-axis-name>{axisLabel.nameText}</span>
+              <span data-plan-axis-value style={{ textAlign: "right" }}>{axisLabel.valueText}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {chartReady && planAxisLabels.filter(label => label.layoutFeasible).map(axisLabel => {
+        const line = safePlanLines.find(candidate => candidate.id === axisLabel.sourceIds[0]);
+        if (!line) return null;
+        const sourceId = line.id;
+        const displayPrice = axisLabel.text;
         return (
-          <button key={line.id} type="button"
+          <button key={axisLabel.key} type="button"
             className={compactControls ? "replay-chart-plan-hit" : undefined}
             ref={element => {
-              if (element) planHitControls.current.set(line.id, element);
-              else planHitControls.current.delete(line.id);
+              if (element) planHitControls.current.set(sourceId, element);
+              else planHitControls.current.delete(sourceId);
             }}
-            aria-label={`${line.title} ${line.price}，精确编辑`}
+            data-plan-source-ids={axisLabel.sourceIds.join(",")}
+            aria-label={`${displayPrice}，精确编辑`}
             title={planLinesEditable ? "拖动调整；点击精确输入；Escape 取消拖动" : "查看计划"}
             style={{
-              position: "absolute", left: 8, zIndex: 8,
-              minHeight: 36, touchAction: "none",
+              position: "absolute",
+              left: axisLabel?.rect.x ?? 8,
+              top: (axisLabel?.rect.y ?? 0) - (planAxisHitHeight - PLAN_AXIS_TEXT_LINE_HEIGHT) / 2,
+              width: axisLabel?.rect.width,
+              display: axisLabel?.offscreen ? "none" : "grid",
+              zIndex: 8,
+              boxSizing: "border-box",
+              gridTemplateColumns: `${axisLabel.nameWidth}px ${axisLabel.valueWidth}px`,
+              columnGap: PLAN_AXIS_COLUMN_GAP,
+              alignItems: "center",
+              padding: 0,
+              background: "transparent",
+              border: "0px",
+              color: "inherit",
+              fontFamily: PLAN_AXIS_TEXT_FONT_FAMILY,
+              fontSize: `${PLAN_AXIS_TEXT_SIZE}px`,
+              fontWeight: PLAN_AXIS_TEXT_WEIGHT,
+              lineHeight: `${PLAN_AXIS_TEXT_LINE_HEIGHT}px`,
+              textAlign: "left",
+              appearance: "none",
+              overflow: "visible",
+              minHeight: planAxisHitHeight,
+              height: planAxisHitHeight,
+              touchAction: "none",
               cursor: planLinesEditable ? "ns-resize" : "pointer",
             }}
-            onClick={() => onPlanPriceSelect?.(line.id)}
+            onFocus={event => {
+              event.currentTarget.style.outline = "2px solid #77aef5";
+              event.currentTarget.style.outlineOffset = "2px";
+            }}
+            onBlur={event => {
+              event.currentTarget.style.outline = "none";
+              event.currentTarget.style.outlineOffset = "0";
+            }}
+            onClick={() => onPlanPriceSelect?.(sourceId)}
             onPointerDown={event => {
               event.stopPropagation();
               if (!planLinesEditable || !onPlanPriceChange) return;
               onPlanInteractionStart?.();
-              planDrag.current = { id: line.id, original: String(line.price), pointerId: event.pointerId };
+              planDrag.current = { id: sourceId, original: line.displayPrice?.trim() || String(line.price), pointerId: event.pointerId };
               event.currentTarget.setPointerCapture?.(event.pointerId);
             }}
             onPointerMove={event => {
-              if (planDrag.current?.id !== line.id) return;
+              if (planDrag.current?.id !== sourceId) return;
               event.stopPropagation();
               const rect = containerRef.current?.getBoundingClientRect();
               if (!rect) return;
@@ -1924,7 +2393,20 @@ export function ReplayChart({
                 planDrag.current = null;
               }
             }}>
-            {line.title} {line.price}
+            <span data-plan-axis-name style={{ whiteSpace: "nowrap", display: "block", height: PLAN_AXIS_TEXT_LINE_HEIGHT, lineHeight: `${PLAN_AXIS_TEXT_LINE_HEIGHT}px`, justifySelf: "start" }}>
+              {axisLabel.parts.map((part, index) => (
+                <span key={`${part.id}-name`} style={{ color: part.color }}>
+                  {index > 0 ? <span style={{ color: "#dbe5f3" }}> / </span> : null}{part.title}
+                </span>
+              ))}
+            </span>
+            <span data-plan-axis-value style={{ whiteSpace: "nowrap", display: "block", height: PLAN_AXIS_TEXT_LINE_HEIGHT, lineHeight: `${PLAN_AXIS_TEXT_LINE_HEIGHT}px`, textAlign: "right", justifySelf: "stretch" }}>
+              {axisLabel.parts.map((part, index) => (
+                <span key={`${part.id}-value`} style={{ color: part.color }}>
+                  {index > 0 ? <span style={{ color: "#dbe5f3" }}> / </span> : null}{part.displayPrice}
+                </span>
+              ))}
+            </span>
           </button>
         );
       })}
@@ -1942,11 +2424,13 @@ export function ReplayChart({
         plannedRiskAmount={plannedRiskAmount}
         currency={currency}
         onSelectDrawing={onSelectDrawing}
-        onCommand={onCommand}
+        onCommand={handleDrawingCommand}
         onDrawingInteractionStart={onDrawingInteractionStart}
+        onRequestCursorTool={onRequestCursorTool}
         coordinateAdapter={coordinateAdapter}
         coordinateVersion={coordinateVersion}
         plotBounds={plotBounds}
+        controlObstacles={controlObstacles}
       />
     </div>
   );

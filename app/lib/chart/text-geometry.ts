@@ -39,6 +39,145 @@ export type TextCardLayout = TextLayout & {
 
 export type TextCardPoint = { x: number; y: number };
 
+export type DrawingControlRect = {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+};
+
+/** A transient chart-local obstruction; never persisted with a drawing. */
+export type DrawingControlObstacle = DrawingControlRect & {
+  id: string;
+};
+
+export type TextCardControlObstacleSource = {
+  id: string;
+  body: DrawingControlRect;
+};
+
+/**
+ * Build transient obstacles for sibling text cards. The body prevents a
+ * control from landing on another card's readable surface. Sibling expand /
+ * collapse buttons are rendered at the card's right edge, so reserve only
+ * their top and bottom bands instead of treating the entire card halo as an
+ * unavailable surface.
+ */
+export function textCardControlObstacles(
+  cards: readonly TextCardControlObstacleSource[],
+  currentId: string,
+  controlSize: number,
+  gap = 6,
+): DrawingControlObstacle[] {
+  const controlBand = controlSize + gap;
+  return cards
+    .filter((card) => card.id !== currentId)
+    .flatMap((card) => {
+      const { body } = card;
+      return [
+        { ...body, id: `text-body-${card.id}` },
+        {
+          left: body.right - controlBand,
+          top: body.top - gap,
+          right: body.right + gap,
+          bottom: body.top + controlBand,
+          id: `text-controls-top-${card.id}`,
+        },
+        {
+          left: body.right - controlBand,
+          top: body.bottom - controlBand,
+          right: body.right + gap,
+          bottom: body.bottom + gap,
+          id: `text-controls-bottom-${card.id}`,
+        },
+      ];
+    });
+}
+
+export type AvailableControlRect = {
+  rect: DrawingControlRect;
+  available: boolean;
+};
+
+export type ControlPlacement = AvailableControlRect & {
+  index: number;
+};
+
+export type JointControlPlacementInput = {
+  id: string;
+  candidates: readonly DrawingControlRect[];
+  obstacles?: readonly DrawingControlObstacle[];
+};
+
+
+function controlRectsOverlap(left: DrawingControlRect, right: DrawingControlRect) {
+  return left.left < right.right && right.left < left.right &&
+    left.top < right.bottom && right.top < left.bottom;
+}
+
+/**
+ * Keep the first candidate as the explicit fallback so keyboard activation
+ * remains possible when a tiny chart leaves no pointer-safe rectangle.
+ */
+export function chooseAvailableControlRect(
+  candidates: readonly DrawingControlRect[],
+  obstacles: readonly DrawingControlObstacle[] = [],
+): AvailableControlRect | null {
+  const placement = chooseAvailableControlPlacement(candidates, obstacles);
+  if (!placement) return null;
+  return { rect: placement.rect, available: placement.available };
+}
+
+/**
+ * Return the first pointer-safe candidate while retaining its index for
+ * callers that render only one of several transient controls. The first
+ * candidate remains the explicit keyboard fallback when every candidate is
+ * blocked, preserving the existing compatibility contract.
+ */
+export function chooseAvailableControlPlacement(
+  candidates: readonly DrawingControlRect[],
+  obstacles: readonly DrawingControlObstacle[] = [],
+): ControlPlacement | null {
+  const fallback = candidates[0];
+  if (!fallback) return null;
+  const index = candidates.findIndex((candidate) =>
+    !obstacles.some((obstacle) => controlRectsOverlap(candidate, obstacle)),
+  );
+  const resolvedIndex = index >= 0 ? index : 0;
+  return {
+    index: resolvedIndex,
+    rect: candidates[resolvedIndex]!,
+    available: index >= 0,
+  };
+}
+
+/**
+ * Place a small group of same-card controls in one transient space. Each
+ * later control sees both the external obstacles and the already placed
+ * controls, while the first candidate remains the explicit keyboard
+ * fallback when no pointer-safe candidate exists.
+ */
+export function chooseJointControlPlacements(
+  inputs: readonly JointControlPlacementInput[],
+  obstacles: readonly DrawingControlObstacle[] = [],
+): ReadonlyMap<string, ControlPlacement> {
+  const occupied: DrawingControlObstacle[] = [...obstacles];
+  const placements = new Map<string, ControlPlacement>();
+
+  for (const input of inputs) {
+    const placement = chooseAvailableControlPlacement(
+      input.candidates,
+      [...occupied, ...(input.obstacles ?? [])],
+    );
+    if (!placement) continue;
+    placements.set(input.id, placement);
+    occupied.push({ ...placement.rect, id: `text-control-${input.id}` });
+  }
+
+  return placements;
+}
+
+
 export type TextCardGeometry = {
   x: number;
   y: number;
@@ -49,11 +188,23 @@ export type TextCardGeometry = {
   connectorEnd: TextCardPoint;
 };
 
+export type TextCardGeometryPlacementInput = {
+  id: string;
+  geometry: TextCardGeometry;
+};
+
+export type TextCardGeometryResolution = {
+  placements: ReadonlyMap<string, TextCardGeometry>;
+  unresolvedIds: readonly string[];
+};
+
 const TEXT_HORIZONTAL_PADDING = 4;
-// The visible label stays compact, while the control itself keeps a 44px
-// touch target. The reserved lane prevents it from covering the final line.
-const TEXT_CARD_CONTROL_WIDTH = 44;
+// The operation row is laid out below the body. It needs vertical reserve,
+// while the body keeps its full horizontal budget. Coarse pointers enlarge
+// the row without changing text wrapping.
+const TEXT_CARD_CONTROL_WIDTH = 36;
 const TEXT_CARD_CONTROL_HEIGHT = 44;
+const TEXT_CARD_COARSE_CONTROL_HEIGHT = 44;
 const NO_LINE_START_PUNCTUATION = new Set("，。！？；：、）》」』】〕〉》’”〗〙〛".split(""));
 
 function wrapText(
@@ -171,31 +322,45 @@ export function textCardLayout(
   maxWidth: number,
   expanded = false,
   maxHeight = Number.POSITIVE_INFINITY,
-  reserveRight = 0,
+  _legacyReserveRight = 0,
   reserveBottom = 0,
+  allowFold = false,
 ): TextCardLayout {
+  // Keep the positional argument for existing callers; card controls no
+  // longer consume horizontal body space.
+  void _legacyReserveRight;
   const full = textLayout(
     value,
-    Math.max(
-      textWidth,
-      reserveRight + TEXT_HORIZONTAL_PADDING * 2,
-    ),
+    textWidth,
     fontSize,
     maxWidth,
-    reserveRight,
+    // Card controls live in the bottom operation row. Keep them out of the
+    // body width budget so live paint, hit testing, editor placement, and
+    // capture warnings share the same full-width wrapping.
+    0,
   );
-  const canExpand = full.lines.length > 2;
+  // Fold is an explicit normal-card affordance for short cards, while legacy
+  // callers retain their historical long-body collapse behavior. A two-line
+  // normal card gets a compact one-line summary; longer cards keep the
+  // established two-line summary and ellipsis treatment.
+  const canExpand = full.lines.length > 2 || (allowFold && full.lines.length > 1);
   const collapsed = canExpand && !expanded;
   const summaryLines = collapsed
-    ? full.lines.slice(0, 2).map((line, index, all) =>
-        index === all.length - 1
-          ? summaryLine(
-              line,
-              fontSize,
-              Math.max(1, full.width - TEXT_HORIZONTAL_PADDING * 2 - Math.max(0, reserveRight)),
-            )
-          : line,
-      )
+    ? full.lines.length === 2
+      ? [summaryLine(
+          full.lines[0],
+          fontSize,
+          Math.max(1, full.width - TEXT_HORIZONTAL_PADDING * 2),
+        )]
+      : full.lines.slice(0, 2).map((line, index, all) =>
+          index === all.length - 1
+            ? summaryLine(
+                line,
+                fontSize,
+                Math.max(1, full.width - TEXT_HORIZONTAL_PADDING * 2),
+              )
+            : line,
+        )
     : [...full.lines];
   const boundedHeight = Number.isFinite(maxHeight)
     ? Math.max(full.lineHeight + 8 + reserveBottom, maxHeight)
@@ -210,7 +375,7 @@ export function textCardLayout(
           ? summaryLine(
               line,
               fontSize,
-              Math.max(1, full.width - TEXT_HORIZONTAL_PADDING * 2 - Math.max(0, reserveRight)),
+              Math.max(1, full.width - TEXT_HORIZONTAL_PADDING * 2),
             )
           : line,
       )
@@ -249,14 +414,44 @@ function nearestPointOnRect(
   }
 
   const distances = [
-    { distance: point.x - x, point: { x, y: point.y } },
-    { distance: right - point.x, point: { x: right, y: point.y } },
-    { distance: point.y - y, point: { x: point.x, y } },
-    { distance: bottom - point.y, point: { x: point.x, y: bottom } },
-  ];
-  return distances.reduce((nearest, candidate) =>
-    candidate.distance < nearest.distance ? candidate : nearest,
-  ).point;
+    { edge: "left", distance: point.x - x, point: { x, y: point.y } },
+    { edge: "right", distance: right - point.x, point: { x: right, y: point.y } },
+    { edge: "top", distance: point.y - y, point: { x: point.x, y } },
+    { edge: "bottom", distance: bottom - point.y, point: { x: point.x, y: bottom } },
+  ] as const;
+  const nearest = distances.reduce((candidate, current) =>
+    current.distance < candidate.distance ? current : candidate,
+  );
+  if (nearest.distance > 0) return nearest.point;
+
+  // A card whose position is exactly the anchor can otherwise produce a
+  // zero-length connector. Keep the anchor fixed and move only the card-edge
+  // endpoint by a small bounded amount. Prefer a horizontal edge for a wider
+  // card (and a vertical edge for a taller card) at a corner, which makes the
+  // seam deterministic without changing ordinary nearest-edge attachment.
+  const zeroEdges = distances.filter((candidate) => candidate.distance === 0);
+  const preferredEdges = width >= height
+    ? ["top", "bottom", "left", "right"]
+    : ["left", "right", "top", "bottom"];
+  const edge = preferredEdges.find((candidate) =>
+    zeroEdges.some((item) => item.edge === candidate),
+  ) ?? nearest.edge;
+  const boundary = zeroEdges.find((candidate) => candidate.edge === edge)?.point ?? nearest.point;
+  const span = edge === "top" || edge === "bottom" ? width : height;
+  const nudge = span > 1 ? Math.min(4, span / 2) : 0;
+  if (nudge === 0) return boundary;
+  if (edge === "top" || edge === "bottom") {
+    const towardRight = right - point.x >= point.x - x;
+    return {
+      x: point.x + (towardRight ? nudge : -nudge),
+      y: boundary.y,
+    };
+  }
+  const towardBottom = bottom - point.y >= point.y - y;
+  return {
+    x: boundary.x,
+    y: point.y + (towardBottom ? nudge : -nudge),
+  };
 }
 
 /**
@@ -274,10 +469,14 @@ export function textCardGeometry(
   const margin = 4;
   const width = Math.min(layout.width, Math.max(1, plotWidth - margin * 2));
   const height = Math.min(layout.height, Math.max(1, plotHeight - margin * 2));
-  const maxX = Math.max(margin, plotWidth - width - margin);
-  const maxY = Math.max(margin, plotHeight - height - margin);
-  const x = Math.max(margin, Math.min(maxX, desired.x));
-  const y = Math.max(margin, Math.min(maxY, desired.y));
+  const horizontalSpace = Math.max(0, plotWidth - width);
+  const verticalSpace = Math.max(0, plotHeight - height);
+  const minX = horizontalSpace >= margin * 2 ? margin : 0;
+  const maxX = horizontalSpace >= margin * 2 ? horizontalSpace - margin : horizontalSpace;
+  const minY = verticalSpace >= margin * 2 ? margin : 0;
+  const maxY = verticalSpace >= margin * 2 ? verticalSpace - margin : verticalSpace;
+  const x = Math.max(minX, Math.min(maxX, desired.x));
+  const y = Math.max(minY, Math.min(maxY, desired.y));
   return {
     x,
     y,
@@ -289,8 +488,85 @@ export function textCardGeometry(
   };
 }
 
+function geometryRect(geometry: Pick<TextCardGeometry, "x" | "y" | "width" | "height">): DrawingControlRect {
+  return {
+    left: geometry.x,
+    top: geometry.y,
+    right: geometry.x + geometry.width,
+    bottom: geometry.y + geometry.height,
+  };
+}
+
+function rectsOverlap(left: DrawingControlRect, right: DrawingControlRect) {
+  return left.left < right.right && right.left < left.right &&
+    left.top < right.bottom && right.top < left.bottom;
+}
+
+/**
+ * Resolve the readable bodies into one transient plot-local space. This is a
+ * layout pass only: width, height, anchor and persisted canvas coordinates
+ * stay untouched. A card that cannot fit is reported so its owner can widen
+ * the plot rather than hiding its body or making its controls keyboard-only.
+ */
+export function resolveTextCardGeometries(
+  entries: readonly TextCardGeometryPlacementInput[],
+  obstacles: readonly DrawingControlObstacle[],
+  plotWidth: number,
+  plotHeight: number,
+  gap = 8,
+): TextCardGeometryResolution {
+  const placements = new Map<string, TextCardGeometry>();
+  const unresolvedIds: string[] = [];
+  const placedRects: DrawingControlRect[] = [];
+  const ordered = [...entries].sort((left, right) =>
+    left.geometry.y - right.geometry.y || left.id.localeCompare(right.id),
+  );
+
+  for (const entry of ordered) {
+    const { geometry } = entry;
+    const candidates = [
+      geometry.y,
+      4,
+      ...obstacles.map((obstacle) => obstacle.bottom + gap),
+      ...placedRects.map((rect) => rect.bottom + gap),
+    ];
+    const candidate = candidates
+      .map((y) => textCardGeometry(
+        geometry.anchor,
+        { x: geometry.x, y },
+        { width: geometry.width, height: geometry.height },
+        plotWidth,
+        plotHeight,
+      ))
+      .filter((next, index, all) => all.findIndex((other) => other.x === next.x && other.y === next.y) === index)
+      .filter((next) => {
+        const rect = geometryRect(next);
+        return !obstacles.some((obstacle) => rectsOverlap(rect, obstacle)) &&
+          !placedRects.some((placed) => rectsOverlap(rect, placed));
+      })
+      .sort((left, right) =>
+        Math.abs(left.y - geometry.y) - Math.abs(right.y - geometry.y) || left.y - right.y,
+      )[0];
+
+    if (!candidate) {
+      placements.set(entry.id, geometry);
+      unresolvedIds.push(entry.id);
+      // Keep unresolved cards in the collision set. This reports the full
+      // capacity failure and prevents later cards from claiming the same
+      // visual surface as if the failed card were absent.
+      placedRects.push(geometryRect(geometry));
+      continue;
+    }
+    placements.set(entry.id, candidate);
+    placedRects.push(geometryRect(candidate));
+  }
+
+  return { placements, unresolvedIds };
+}
+
 export const textCardLayoutOptions = {
   controlWidth: TEXT_CARD_CONTROL_WIDTH,
   controlHeight: TEXT_CARD_CONTROL_HEIGHT,
+  coarseControlHeight: TEXT_CARD_COARSE_CONTROL_HEIGHT,
   horizontalPadding: TEXT_HORIZONTAL_PADDING,
 } as const;

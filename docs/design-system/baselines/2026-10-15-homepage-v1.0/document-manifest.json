@@ -1,0 +1,2130 @@
+{
+  "schema": "strategy-document-manifest/1",
+  "documentId": "HOME-DOC",
+  "version": "1.0",
+  "fingerprint": "373a0c4c28c6d247daeaf467f1599c835e402d5c0a78b6ab6535dca90eb57318",
+  "sourceFile": "docs/design-system/baselines/2026-10-15-homepage-v1.0/visual-design.md",
+  "documentUrl": "visual-spec.html",
+  "blocks": [
+    {
+      "id": "HOME-DOC-B002",
+      "chapter": "DOC",
+      "kind": "paragraph",
+      "text": "本文解释 TradeReview「我的交易室」当前为什么这样组织、每块希望你注意什么，以及后续实现和验收需要保留什么。唯一产品基线是 master 7a5d137d（2026-10-15 核对）；其它 worktree 用于追溯需求和取舍。正文记录现状，独立的《现状问题评估》讨论改进。",
+      "sourceLine": 3,
+      "sourceKey": "0206a34234d2b77037fa6c17"
+    },
+    {
+      "id": "HOME-DOC-B003",
+      "chapter": "DOC",
+      "kind": "caption",
+      "text": "图 HOME-00A｜由 home-desktop-first.jpg、holdings-table.jpg、history-workspace.jpg 构成的三段真实截图板，用于确认当前首页的分段顺序和工作区关系；整页分段浏览，非单张拼接像素基准。",
+      "sourceLine": 7,
+      "sourceKey": "0217dd55a66f80462ade6277"
+    },
+    {
+      "id": "HOME-DOC-B001",
+      "chapter": "DOC",
+      "kind": "caption",
+      "text": "图 HOME-00｜完整结构示意，按当前组件顺序绘制，不作为像素截图。各章紧接真实基线截图，标准桌面对照为1440×1000。数据为本地隔离副本的采集样本，金额、数量、行情覆盖会更新，不是固定验收数值。",
+      "sourceLine": 11,
+      "sourceKey": "edd39416de84ee84c8799c57"
+    },
+    {
+      "id": "HOME-HP01-B014",
+      "chapter": "HP01",
+      "kind": "caption",
+      "text": "图 HOME-01｜1440×1000 首屏。先看到共享范围、持仓摘要、持仓曲线和分布；历史复盘在继续向下阅读后出现。",
+      "sourceLine": 17,
+      "sourceKey": "521178879f12f3e26b499964"
+    },
+    {
+      "id": "HOME-HP01-B015",
+      "chapter": "HP01",
+      "kind": "paragraph",
+      "text": "首页要帮助你连续回答三个问题：我正在看哪一组交易；现在的持仓处境如何；过去的交易有什么值得复盘。它把“当前状态”和“已完成交易”分成上下两个工作区，因为持仓市值、未实现盈亏与已平仓回合净盈亏的时点和统计口径不同。把它们合成一个“总收益”会让读者误以为可以直接相加。",
+      "sourceLine": 19,
+      "sourceKey": "9b1bda5cb644ca0cc4d200d4"
+    },
+    {
+      "id": "HOME-HP01-B016",
+      "chapter": "HP01",
+      "kind": "paragraph",
+      "text": "目前的阅读顺序是：全局导航 → 共享范围 → 持仓照看（摘要、历史估值、分布、持仓行）→ 历史交易与复盘（期间、摘要、趋势、贡献、日历、待复盘）。持仓放在前面，是现有组合对日常照看任务的优先排序；它同时把复盘入口推到了页面下方。这一顺序是当前实现事实，不能把旧稿中“业绩优先”的顺序套到当前首页。",
+      "sourceLine": 21,
+      "sourceKey": "846719e981f97acf6d5b80e9"
+    },
+    {
+      "id": "HOME-HP01-B017",
+      "chapter": "HP01",
+      "kind": "paragraph",
+      "text": "这里的设计取舍可以概括为：先保证数字可解释，再压缩展示；先保留范围与数据边界，再追求一个醒目的总数。小计、覆盖数、币种和缺失原因因此占用了较多版面。它们解决的是“这个数能不能相信”的问题，而不是新增交易指标。这个取舍有价值，但信息密度也构成了当前最大的可读性负担，详见最后的独立评估入口。",
+      "sourceLine": 23,
+      "sourceKey": "ad6aecdb61e529ca01c97f68"
+    },
+    {
+      "id": "HOME-HP01-B018",
+      "chapter": "HP01",
+      "kind": "tablecell",
+      "text": "设计对象",
+      "sourceLine": 25,
+      "sourceKey": "63ff6784baca1b0fb5212dc7"
+    },
+    {
+      "id": "HOME-HP01-B019",
+      "chapter": "HP01",
+      "kind": "tablecell",
+      "text": "当前规则与希望你注意的事",
+      "sourceLine": 25,
+      "sourceKey": "11277e2e5ffb0136c4f379c9"
+    },
+    {
+      "id": "HOME-HP01-B002",
+      "chapter": "HP01",
+      "kind": "tablecell",
+      "text": "验收方式",
+      "sourceLine": 25,
+      "sourceKey": "ef592a9a61f6adc72bd24b81"
+    },
+    {
+      "id": "HOME-HP01-B021",
+      "chapter": "HP01",
+      "kind": "tablecell",
+      "text": "两个工作区",
+      "sourceLine": 27,
+      "sourceKey": "f784b859944611f22ba7cd6d"
+    },
+    {
+      "id": "HOME-HP01-B022",
+      "chapter": "HP01",
+      "kind": "tablecell",
+      "text": "当前持仓与已完成交易分开；每区有标题、说明和时间含义",
+      "sourceLine": 27,
+      "sourceKey": "ccf49e3c6947e1a2af8cca48"
+    },
+    {
+      "id": "HOME-HP01-B023",
+      "chapter": "HP01",
+      "kind": "tablecell",
+      "text": "对照全貌图，确认顺序和两种时间不被合并",
+      "sourceLine": 27,
+      "sourceKey": "7262a3518fc32ecc611ab8d5"
+    },
+    {
+      "id": "HOME-HP01-B024",
+      "chapter": "HP01",
+      "kind": "tablecell",
+      "text": "共享范围",
+      "sourceLine": 28,
+      "sourceKey": "0ee2a7fe3c997927d7c5d750"
+    },
+    {
+      "id": "HOME-HP01-B025",
+      "chapter": "HP01",
+      "kind": "tablecell",
+      "text": "性质、账户、报告计价放在页头，说明所有数字的阅读前提",
+      "sourceLine": 28,
+      "sourceKey": "077447b79b54dd8bbe6c3017"
+    },
+    {
+      "id": "HOME-HP01-B026",
+      "chapter": "HP01",
+      "kind": "tablecell",
+      "text": "改变范围时核对各模块的范围说明",
+      "sourceLine": 28,
+      "sourceKey": "186afc2c325a5cd556f9920a"
+    },
+    {
+      "id": "HOME-HP01-B027",
+      "chapter": "HP01",
+      "kind": "tablecell",
+      "text": "局部控制",
+      "sourceLine": 29,
+      "sourceKey": "64074eb2aa65d5bb1aa0597b"
+    },
+    {
+      "id": "HOME-HP01-B028",
+      "chapter": "HP01",
+      "kind": "tablecell",
+      "text": "指标、粒度、日期、排序贴近所属模块",
+      "sourceLine": 29,
+      "sourceKey": "96d052cde0a8e4dd5187b61d"
+    },
+    {
+      "id": "HOME-HP01-B029",
+      "chapter": "HP01",
+      "kind": "tablecell",
+      "text": "不把持仓搜索解释为全局搜索，不把图表粒度解释为总统计期间",
+      "sourceLine": 29,
+      "sourceKey": "69dd5d62a510ae0362901976"
+    },
+    {
+      "id": "HOME-HP01-B030",
+      "chapter": "HP01",
+      "kind": "tablecell",
+      "text": "证据层",
+      "sourceLine": 30,
+      "sourceKey": "00fefc63804c85e358002776"
+    },
+    {
+      "id": "HOME-HP01-B031",
+      "chapter": "HP01",
+      "kind": "tablecell",
+      "text": "结论旁留短状态，长原因放在详情中",
+      "sourceLine": 30,
+      "sourceKey": "c0b9d890b79cdd0896a41233"
+    },
+    {
+      "id": "HOME-HP01-B032",
+      "chapter": "HP01",
+      "kind": "tablecell",
+      "text": "缺数据时仍能找到原因；未知不写成零",
+      "sourceLine": 30,
+      "sourceKey": "2b6ef009b4c6967ba08f619c"
+    },
+    {
+      "id": "HOME-HP01-B033",
+      "chapter": "HP01",
+      "kind": "paragraph",
+      "text": "2026-09-19 的首页规格强调范围统一、交易表现和待复盘入口；2026-09-21 的反馈强调简约、清晰、展开日期必须有可见结果、金额口径可解释、持仓异常可处理。当前代码保留了其中不少语义要求，但布局已经演变为两个工作区。旧规格中的“默认本月”、三段视图和若干布局描述不能视为当前已落地事实；当前默认期间是今年至今。",
+      "sourceLine": 34,
+      "sourceKey": "945ddbd43a3c646ba7986509"
+    },
+    {
+      "id": "HOME-HP01-B034",
+      "chapter": "HP01",
+      "kind": "paragraph",
+      "text": "其它 worktree 中的首页 v0.2/v0.3 视觉拉齐稿、市场页签和估值修复方案作为候选背景使用，不能覆盖当前截图。本次文档中的“为什么”是根据公开的需求、迭代记录和当前行为整理的设计解释；没有记录支持的动机不写成历史上已经确认的决策。",
+      "sourceLine": 36,
+      "sourceKey": "218885931d89359a67492e7e"
+    },
+    {
+      "id": "HOME-HP02-B001",
+      "chapter": "HP02",
+      "kind": "caption",
+      "text": "图 HOME-02｜页头实际裁切。标题建立位置感，范围标签说明上下文，右侧搜索承担快速查找。",
+      "sourceLine": 42,
+      "sourceKey": "ed21d2255dc1915e5e6b392a"
+    },
+    {
+      "id": "HOME-HP02-B002",
+      "chapter": "HP02",
+      "kind": "paragraph",
+      "text": "左侧导航提供跨模块位置感，当前项以底色和蓝色标记突出；“策略”带未开放状态并禁用，不能做成可以进入的假入口。页头说明“我的交易室”是什么，右侧更新时间和待处理数量提供信任与工作提示。底部状态条持续呈现行情和汇率状态。",
+      "sourceLine": 44,
+      "sourceKey": "c25639f8900287b44e63ceb6"
+    },
+    {
+      "id": "HOME-HP02-B003",
+      "chapter": "HP02",
+      "kind": "paragraph",
+      "text": "页面用深色底、略亮面板、边线和间距划分区域。工作区边框将一组相关任务包起来，内部曲线和分布再做局部分区。这减少了在多个页面之间切换的成本，也使边框层级偏多。后续按现状复现时应保留结构；减少嵌套层级属于另一次设计变更。",
+      "sourceLine": 46,
+      "sourceKey": "961d7534070cc6d2575294e0"
+    },
+    {
+      "id": "HOME-HP02-B004",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "层级",
+      "sourceLine": 48,
+      "sourceKey": "92649db5f110c29dc595ece9"
+    },
+    {
+      "id": "HOME-HP02-B005",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "当前样式和位置",
+      "sourceLine": 48,
+      "sourceKey": "f8a10d672fb20869ed47539a"
+    },
+    {
+      "id": "HOME-HP02-B006",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "验收基准",
+      "sourceLine": 48,
+      "sourceKey": "a4d8879db5d9ec3699ed43e2"
+    },
+    {
+      "id": "HOME-HP02-B007",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "页面标题",
+      "sourceLine": 50,
+      "sourceKey": "d8d175c65a7b0f0956a7d4da"
+    },
+    {
+      "id": "HOME-HP02-B008",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "实测 24px / 32px；位于正文左上，宽屏左右内距 24px",
+      "sourceLine": 50,
+      "sourceKey": "d87454dcd4875c0b8fccea5a"
+    },
+    {
+      "id": "HOME-HP02-B009",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "1440×1000 对照 HOME-02；不套用旧 CSS 中被覆盖的 19px 标题规则",
+      "sourceLine": 50,
+      "sourceKey": "9c5a325b2dc0e3477a22bd70"
+    },
+    {
+      "id": "HOME-HP02-B010",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "工作区标题",
+      "sourceLine": 51,
+      "sourceKey": "449dc75cf50beb68e3116517"
+    },
+    {
+      "id": "HOME-HP02-B011",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "持仓照看、历史交易与复盘为 19px；标题下有任务说明",
+      "sourceLine": 51,
+      "sourceKey": "63d653e6122fc01e655dac16"
+    },
+    {
+      "id": "HOME-HP02-B012",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "两区标题同级；内部小图表标题不能抢同样视觉重量",
+      "sourceLine": 51,
+      "sourceKey": "6c838b99e18efc2621bed372"
+    },
+    {
+      "id": "HOME-HP02-B013",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "内部图表标题",
+      "sourceLine": 52,
+      "sourceKey": "d0d37f4e9640f0cb578d4f9c"
+    },
+    {
+      "id": "HOME-HP02-B014",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "1440px 下持仓总览、分布、趋势、贡献为 13px；390px 下多处为 14px",
+      "sourceLine": 52,
+      "sourceKey": "08f807437a7e61b6b49f29e2"
+    },
+    {
+      "id": "HOME-HP02-B015",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "数值是现状实测，未作为推荐可读性目标",
+      "sourceLine": 52,
+      "sourceKey": "05c65b21ddec2ac83aa2f758"
+    },
+    {
+      "id": "HOME-HP02-B016",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "工作区布局",
+      "sourceLine": 53,
+      "sourceKey": "3f22a360fe38b87600a6a07d"
+    },
+    {
+      "id": "HOME-HP02-B017",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "桌面持仓曲线与分布约 2:1，间隔 8px；两个工作区纵向间隔 16px",
+      "sourceLine": 53,
+      "sourceKey": "947090a5abd608417dcab8a8"
+    },
+    {
+      "id": "HOME-HP02-B018",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "不拉伸成等宽；1054px 及以下按源码转单列",
+      "sourceLine": 53,
+      "sourceKey": "23d11510aebb3df134ca3e40"
+    },
+    {
+      "id": "HOME-HP02-B019",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "当前持仓标题",
+      "sourceLine": 54,
+      "sourceKey": "c714bc2c28a77e4d4524845f"
+    },
+    {
+      "id": "HOME-HP02-B020",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "1440px 实测 18px；其表格比摘要紧凑",
+      "sourceLine": 54,
+      "sourceKey": "af69e6cb4ffd25953a62e05c"
+    },
+    {
+      "id": "HOME-HP02-B021",
+      "chapter": "HP02",
+      "kind": "tablecell",
+      "text": "媒体条件下有紧凑样式，详见规则附录",
+      "sourceLine": 54,
+      "sourceKey": "79fcf55ea8e83f28987a3c86"
+    },
+    {
+      "id": "HOME-HP03-B001",
+      "chapter": "HP03",
+      "kind": "caption",
+      "text": "图 HOME-03｜筛选展开态。主控件持续可见，市场与更多筛选按需出现。",
+      "sourceLine": 60,
+      "sourceKey": "98c71d1021051f5c7ccccb29"
+    },
+    {
+      "id": "HOME-HP03-B002",
+      "chapter": "HP03",
+      "kind": "paragraph",
+      "text": "性质、账户和报告计价决定“在看谁、用什么口径读”。默认实盘、全部账户、原币；模拟盘要求选定一次运行，不能把不同模拟运行混成一个账户。原币模式下不同币种分别展示，是为了避免未经汇率转换就把 CNY、HKD、USD 加总。",
+      "sourceLine": 62,
+      "sourceKey": "37ee39a56b10069f057ae01d"
+    },
+    {
+      "id": "HOME-HP03-B007",
+      "chapter": "HP03",
+      "kind": "paragraph",
+      "text": "“筛选”采用按需展开，降低默认页头的占用。展开后是市场分类及更多条件；选中条件形成可移除标签。清除附加筛选会清空账户选择及附加条件，但保留性质、模拟运行和日期。恢复默认范围则恢复实盘、全部账户和今年至今；报告计价维持当前选择。两者影响不同，按钮文案必须让用户知道操作范围。",
+      "sourceLine": 64,
+      "sourceKey": "fca22119c326fe82f52dc8a2"
+    },
+    {
+      "id": "HOME-HP03-B004",
+      "chapter": "HP03",
+      "kind": "paragraph",
+      "text": "全局搜索帮助快速找到已导入标的；持仓区搜索只缩小持仓列表。通知按钮的 99+ 是数量溢出表达，不表示只有 99 条。用户菜单是本地账户与范围辅助入口，不能暗示云账号能力。",
+      "sourceLine": 66,
+      "sourceKey": "dd3677630d5e40eb985477b8"
+    },
+    {
+      "id": "HOME-HP03-B005",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "控件",
+      "sourceLine": 68,
+      "sourceKey": "9c424566fedc5d7ef53ac782"
+    },
+    {
+      "id": "HOME-HP03-B006",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "交互与注意力目标",
+      "sourceLine": 68,
+      "sourceKey": "d2424027cae2672a11ba286c"
+    },
+    {
+      "id": "HOME-HP03-B023",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "验收步骤",
+      "sourceLine": 68,
+      "sourceKey": "8c272674fc8f4b82ef77d85e"
+    },
+    {
+      "id": "HOME-HP03-B008",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "性质 / 账户 / 计价",
+      "sourceLine": 70,
+      "sourceKey": "7e870b0512966651a14e8e2f"
+    },
+    {
+      "id": "HOME-HP03-B009",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "选中值持续可见；模拟盘出现运行选择；不能跨运行合并",
+      "sourceLine": 70,
+      "sourceKey": "6f3306aa921875739745841e"
+    },
+    {
+      "id": "HOME-HP03-B010",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "初始实盘 → 模拟盘未选运行 → 明确提示；再选运行核对范围",
+      "sourceLine": 70,
+      "sourceKey": "f9b9d94b4e310b480f94d299"
+    },
+    {
+      "id": "HOME-HP03-B011",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "筛选",
+      "sourceLine": 71,
+      "sourceKey": "0f03c2a80968577ca9dfaad0"
+    },
+    {
+      "id": "HOME-HP03-B012",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "默认收起；点击后展开，同一位置可收起；有附加条件显示数量",
+      "sourceLine": 71,
+      "sourceKey": "d7a128d3b7558281b7326b95"
+    },
+    {
+      "id": "HOME-HP03-B013",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "点击一次看到实际条件区，检查 expanded 状态",
+      "sourceLine": 71,
+      "sourceKey": "75f773203220d00786d0cef0"
+    },
+    {
+      "id": "HOME-HP03-B014",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "条件标签",
+      "sourceLine": 72,
+      "sourceKey": "1f29005653cbdefc6bedddfd"
+    },
+    {
+      "id": "HOME-HP03-B015",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "标签表示已生效范围，删除只移除该项",
+      "sourceLine": 72,
+      "sourceKey": "47615afccfe4489e3ab61dd4"
+    },
+    {
+      "id": "HOME-HP03-B016",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "先组合两项，再移除一项，确认另一项仍在",
+      "sourceLine": 72,
+      "sourceKey": "7d0f7ab7c5f3fb363a560be3"
+    },
+    {
+      "id": "HOME-HP03-B017",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "全局搜索",
+      "sourceLine": 73,
+      "sourceKey": "707230cc99097d0f5b307504"
+    },
+    {
+      "id": "HOME-HP03-B018",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "输入、加载、结果、无结果和失败分开表达",
+      "sourceLine": 73,
+      "sourceKey": "68bc1f9a973c9aef23ceb907"
+    },
+    {
+      "id": "HOME-HP03-B019",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "搜索存在与不存在标的；结果选择进入相应标的上下文",
+      "sourceLine": 73,
+      "sourceKey": "142cb27ff233601a8f596526"
+    },
+    {
+      "id": "HOME-HP03-B020",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "铃铛 / 用户菜单",
+      "sourceLine": 74,
+      "sourceKey": "b28bb8f98f95c5206412fed5"
+    },
+    {
+      "id": "HOME-HP03-B021",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "打开局部浮层，关闭后回到原上下文",
+      "sourceLine": 74,
+      "sourceKey": "d85e64867d5dfb88e9626546"
+    },
+    {
+      "id": "HOME-HP03-B022",
+      "chapter": "HP03",
+      "kind": "tablecell",
+      "text": "鼠标、Esc、外点关闭分别核验，不以一个入口代表全部通过",
+      "sourceLine": 74,
+      "sourceKey": "65ff95b8a79a66c76f125f02"
+    },
+    {
+      "id": "HOME-HP04-B004",
+      "chapter": "HP04",
+      "kind": "caption",
+      "text": "图 HOME-04｜当前持仓工作区上部。上排回答规模、未实现盈亏、当日变化和数量；右侧说明持仓结构。",
+      "sourceLine": 80,
+      "sourceKey": "9598f3708f3e15e8741fbc16"
+    },
+    {
+      "id": "HOME-HP04-B012",
+      "chapter": "HP04",
+      "kind": "paragraph",
+      "text": "摘要四格分别是持仓市值、未实现盈亏、当日盈亏、持仓标的数。粗体主值是第一阅读层，估值覆盖、成本和当日原因是第二层。大数字的意义依赖覆盖说明：7/8 是部分估值，不能因为有小计就称为完整组合。",
+      "sourceLine": 82,
+      "sourceKey": "a675ddcefe0cf49312c9a2b5"
+    },
+    {
+      "id": "HOME-HP04-B013",
+      "chapter": "HP04",
+      "kind": "paragraph",
+      "text": "分布图希望你注意集中度，支持“按市场”和“按资产类型”。原币下用币种页签选择可比较的集合；缺失估值时圆环只表达当前可用状态，不能用不完整小计画出可信的百分比分布。现金条把今日卖出回款与参考现金并列，二者含义不同，回款不等于账户余额。",
+      "sourceLine": 84,
+      "sourceKey": "e2b2e3f9eca4234d0bb49a51"
+    },
+    {
+      "id": "HOME-HP04-B014",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "元素",
+      "sourceLine": 86,
+      "sourceKey": "18294c7ecf868b3b1ad5ab35"
+    },
+    {
+      "id": "HOME-HP04-B015",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "现状与设计意图",
+      "sourceLine": 86,
+      "sourceKey": "c73c42e20c1d123c1bc05a9e"
+    },
+    {
+      "id": "HOME-HP04-B002",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "验收方式",
+      "sourceLine": 86,
+      "sourceKey": "ef592a9a61f6adc72bd24b81"
+    },
+    {
+      "id": "HOME-HP04-B017",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "主值与覆盖",
+      "sourceLine": 88,
+      "sourceKey": "bac438fca8261c4d154322e9"
+    },
+    {
+      "id": "HOME-HP04-B018",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "金额 / 不可用在第一层，覆盖数与小计说明紧邻",
+      "sourceLine": 88,
+      "sourceKey": "67dd2686e3c7ac06c8410983"
+    },
+    {
+      "id": "HOME-HP04-B019",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "未完整覆盖时，“部分估值/可用小计”不能因窄屏消失",
+      "sourceLine": 88,
+      "sourceKey": "f5648d5b9ab2e895ef8ed88c"
+    },
+    {
+      "id": "HOME-HP04-B020",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "不可用",
+      "sourceLine": 89,
+      "sourceKey": "819818ef567fc40e491674f4"
+    },
+    {
+      "id": "HOME-HP04-B021",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "没有可靠的分母或当日基准时显示暂不可用",
+      "sourceLine": 89,
+      "sourceKey": "cfd5a49ff3e9c77f19ed4aef"
+    },
+    {
+      "id": "HOME-HP04-B022",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "与真实 0.00 分开；保留可展开原因",
+      "sourceLine": 89,
+      "sourceKey": "14d1e9cbcc6efff8ea2caa29"
+    },
+    {
+      "id": "HOME-HP04-B023",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "分布切换",
+      "sourceLine": 90,
+      "sourceKey": "6f8ad5bf0173d7164854b26b"
+    },
+    {
+      "id": "HOME-HP04-B024",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "按市场 / 按资产类型是同级按钮；CNY/USD 等为币种页签",
+      "sourceLine": 90,
+      "sourceKey": "5fad955d0df4078c3fbe7321"
+    },
+    {
+      "id": "HOME-HP04-B025",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "切维度与切币种分别核验，不误写为账户维度",
+      "sourceLine": 90,
+      "sourceKey": "60ceef7cde24f5abd37eec56"
+    },
+    {
+      "id": "HOME-HP04-B026",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "原因详情",
+      "sourceLine": 91,
+      "sourceKey": "55d64995a1a4abe824b466d4"
+    },
+    {
+      "id": "HOME-HP04-B027",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "短说明先给判断，完整解释按需展开",
+      "sourceLine": 91,
+      "sourceKey": "03ec59d91af3b9b13bbf3931"
+    },
+    {
+      "id": "HOME-HP04-B028",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "原因多时可读且不挤出主数值；可用状态不能遮住全卡缺口",
+      "sourceLine": 91,
+      "sourceKey": "e943f3c9207cc3c182bb83be"
+    },
+    {
+      "id": "HOME-HP04-B029",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "现金条",
+      "sourceLine": 92,
+      "sourceKey": "5f3103df93c879473e96a86e"
+    },
+    {
+      "id": "HOME-HP04-B030",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "今日回款和参考现金标明各自口径",
+      "sourceLine": 92,
+      "sourceKey": "8c48c790b220c185d6502692"
+    },
+    {
+      "id": "HOME-HP04-B031",
+      "chapter": "HP04",
+      "kind": "tablecell",
+      "text": "不把缺失现金基准显示成零余额",
+      "sourceLine": 92,
+      "sourceKey": "ea6998274d3993f9ef79c72f"
+    },
+    {
+      "id": "HOME-HP05-B001",
+      "chapter": "HP05",
+      "kind": "caption",
+      "text": "图 HOME-05｜观察期编辑在图表附近展开。输入是草稿，应用之后才改变生效区间。",
+      "sourceLine": 98,
+      "sourceKey": "f61af9ddc278143d2d20d1df"
+    },
+    {
+      "id": "HOME-HP05-B002",
+      "chapter": "HP05",
+      "kind": "paragraph",
+      "text": "持仓曲线把“当前有哪些仓位”延伸为“过去的组合如何变化”。总市值、未实现盈亏、未实现收益率回答不同问题，因此作为指标切换；日、周、月改变曲线粒度。观察日期属于持仓历史，历史交易的统计日期属于下方已完成交易，两者不能共用一个模糊的“日期”标签。",
+      "sourceLine": 100,
+      "sourceKey": "9174ed5752a9758936c6341b"
+    },
+    {
+      "id": "HOME-HP05-B003",
+      "chapter": "HP05",
+      "kind": "paragraph",
+      "text": "当前近1月的语义是本自然月，近3月是近3个自然月；不是滚动30/90天。自定义编辑必须保留“应用/取消”边界。所选期间没有完整估值时保留缺失状态和已知小计入口，不能用一条零线制造“组合没有变化”的印象。",
+      "sourceLine": 102,
+      "sourceKey": "81decc52c0c07d440d442219"
+    },
+    {
+      "id": "HOME-HP05-B004",
+      "chapter": "HP05",
+      "kind": "caption",
+      "text": "图 HOME-06｜真实日期选择后的详情采集。该截图用于说明已知小计与不可用共存；提示框可能随指针离开或重算关闭，当前行为还需独立稳定性复核。",
+      "sourceLine": 106,
+      "sourceKey": "1da38f9810dc82db0e5c7966"
+    },
+    {
+      "id": "HOME-HP05-B005",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "控件 / 状态",
+      "sourceLine": 108,
+      "sourceKey": "b130e5a7111ba8a70d58cb36"
+    },
+    {
+      "id": "HOME-HP05-B006",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "期望表达与当前实现",
+      "sourceLine": 108,
+      "sourceKey": "4735b7b62dba738dd1f5361e"
+    },
+    {
+      "id": "HOME-HP05-B007",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "验收方式",
+      "sourceLine": 108,
+      "sourceKey": "ef592a9a61f6adc72bd24b81"
+    },
+    {
+      "id": "HOME-HP05-B008",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "指标与粒度",
+      "sourceLine": 110,
+      "sourceKey": "eeb2f4deca2be659b14f5024"
+    },
+    {
+      "id": "HOME-HP05-B009",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "选中态持续高亮，维持同一观察区间",
+      "sourceLine": 110,
+      "sourceKey": "a712d38f9fd2a81d4a5e0744"
+    },
+    {
+      "id": "HOME-HP05-B010",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "切指标、切粒度后分别核对标题、单位、点值",
+      "sourceLine": 110,
+      "sourceKey": "a039c1e73a877d3c55beea5e"
+    },
+    {
+      "id": "HOME-HP05-B011",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "自定义日期",
+      "sourceLine": 111,
+      "sourceKey": "7d2796500171d3fd36c47777"
+    },
+    {
+      "id": "HOME-HP05-B012",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "点击展开输入；应用提交草稿；取消保留原范围",
+      "sourceLine": 111,
+      "sourceKey": "00f8662b4dcf9d966ef25102"
+    },
+    {
+      "id": "HOME-HP05-B013",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "先输入不合法起止，检查错误和旧范围；再应用合法期间",
+      "sourceLine": 111,
+      "sourceKey": "4ec2a24e22676e48e58fbcd3"
+    },
+    {
+      "id": "HOME-HP05-B014",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "日期选点",
+      "sourceLine": 112,
+      "sourceKey": "932b779ea489aad7e9ab7544"
+    },
+    {
+      "id": "HOME-HP05-B015",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "指针、日期下拉和键盘入口提供时点详情",
+      "sourceLine": 112,
+      "sourceKey": "d037976c3b436f3afd6041c8"
+    },
+    {
+      "id": "HOME-HP05-B016",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "左右 / Home / End / Esc 逐一检查；无数据点仍能解释缺口",
+      "sourceLine": 112,
+      "sourceKey": "3a20cba1a404bd82498f9c92"
+    },
+    {
+      "id": "HOME-HP05-B017",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "重算与失败",
+      "sourceLine": 113,
+      "sourceKey": "b4e748e858b0d56792e197e9"
+    },
+    {
+      "id": "HOME-HP05-B018",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "正在更新、失败和重试有独立反馈",
+      "sourceLine": 113,
+      "sourceKey": "da7dc420d060771b33854ee3"
+    },
+    {
+      "id": "HOME-HP05-B019",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "不把旧曲线误标为新期间已完成；重试成功再恢复完成状态",
+      "sourceLine": 113,
+      "sourceKey": "055446a2f27029940a3b8109"
+    },
+    {
+      "id": "HOME-HP05-B020",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "断点与缺口",
+      "sourceLine": 114,
+      "sourceKey": "8cd6a58f08b1a2f8450978fc"
+    },
+    {
+      "id": "HOME-HP05-B021",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "不跨缺失区间虚构连续数据",
+      "sourceLine": 114,
+      "sourceKey": "b961d032a461f4d84bebc46a"
+    },
+    {
+      "id": "HOME-HP05-B022",
+      "chapter": "HP05",
+      "kind": "tablecell",
+      "text": "缺失行情样本下核对曲线和覆盖说明",
+      "sourceLine": 114,
+      "sourceKey": "1c3edd278e99590935f29289"
+    },
+    {
+      "id": "HOME-HP05-B023",
+      "chapter": "HP05",
+      "kind": "paragraph",
+      "text": "下方是实际截图的状态对照，可点击下一步回看。它用于讲解行为，不是首页产品动画，也不证明所有产品交互已验收。",
+      "sourceLine": 118,
+      "sourceKey": "c60785141aa10193af27f08e"
+    },
+    {
+      "id": "HOME-HP06-B001",
+      "chapter": "HP06",
+      "kind": "caption",
+      "text": "图 HOME-07｜持仓表每页5行。证券识别在左，数量与价格在中，短趋势、最近记录和看图记录在右。",
+      "sourceLine": 130,
+      "sourceKey": "f1e8b428205ba66ff4150fd2"
+    },
+    {
+      "id": "HOME-HP06-B002",
+      "chapter": "HP06",
+      "kind": "paragraph",
+      "text": "表格把跨标的比较压在同一水平线上，适合快速扫描仓位和变化。名称下补代码与资产类型，避免同名或简称误认；市值和盈亏保留币种；近30日小图表达价格走势，不是仓位收益曲线。最近记录让你看见哪些仓位缺少记录，“看图·记录”把观察接到复盘工作流。",
+      "sourceLine": 132,
+      "sourceKey": "1e220f62e237a622d0bf306d"
+    },
+    {
+      "id": "HOME-HP06-B003",
+      "chapter": "HP06",
+      "kind": "paragraph",
+      "text": "默认最近成交排序，能把近期活动放前面。跨币种不可比较时禁用浮盈亏排序并解释原因，比强行排出一个错误名次更重要。搜索只影响本表，CSV导出当前筛选集合；分页不应把导出误缩成当前5行。",
+      "sourceLine": 134,
+      "sourceKey": "a73e2480fe9f2db41f00fd01"
+    },
+    {
+      "id": "HOME-HP06-B004",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "列 / 控件",
+      "sourceLine": 136,
+      "sourceKey": "d56b8f466a8b9d1bdaf97149"
+    },
+    {
+      "id": "HOME-HP06-B005",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "视觉与行为规则",
+      "sourceLine": 136,
+      "sourceKey": "f3620bc7bee651d297ac398b"
+    },
+    {
+      "id": "HOME-HP06-B006",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "验收要点",
+      "sourceLine": 136,
+      "sourceKey": "15fe9b1d1561ceb37576a4ed"
+    },
+    {
+      "id": "HOME-HP06-B007",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "证券 + 详情",
+      "sourceLine": 138,
+      "sourceKey": "ca697c0f791458f4240eed94"
+    },
+    {
+      "id": "HOME-HP06-B008",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "名称优先，代码与类型次级；完整证据按需展开",
+      "sourceLine": 138,
+      "sourceKey": "58445e4cd24e10c846b109d2"
+    },
+    {
+      "id": "HOME-HP06-B009",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "长名称、同代码多账户、异常数量都应可辨认",
+      "sourceLine": 138,
+      "sourceKey": "578e49b7774ea4030819a431"
+    },
+    {
+      "id": "HOME-HP06-B010",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "数值列",
+      "sourceLine": 139,
+      "sourceKey": "704d3a488fef803325f45585"
+    },
+    {
+      "id": "HOME-HP06-B011",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "数量、均价、估值、市值、盈亏分列；金额保留符号和币种",
+      "sourceLine": 139,
+      "sourceKey": "15c0e35af4d4ea2e2327b36f"
+    },
+    {
+      "id": "HOME-HP06-B012",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "不为了列宽改变底层精度；精确值可核对",
+      "sourceLine": 139,
+      "sourceKey": "4c832c41f3e17ccb36d744cc"
+    },
+    {
+      "id": "HOME-HP06-B013",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "30日小图",
+      "sourceLine": 140,
+      "sourceKey": "26e92200c648e66956d5f5b4"
+    },
+    {
+      "id": "HOME-HP06-B014",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "价格走势与覆盖数同显，缺数据处断开",
+      "sourceLine": 140,
+      "sourceKey": "8c5056533255643aa4e610f7"
+    },
+    {
+      "id": "HOME-HP06-B015",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "不把缺口连成完整走势，不标成收益率",
+      "sourceLine": 140,
+      "sourceKey": "5bd721754927d947e1d4a853"
+    },
+    {
+      "id": "HOME-HP06-B016",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "搜索与导出",
+      "sourceLine": 141,
+      "sourceKey": "a50f91211983876566941dbc"
+    },
+    {
+      "id": "HOME-HP06-B017",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "搜索后回第1页；无匹配时明确空态、导出禁用",
+      "sourceLine": 141,
+      "sourceKey": "84e16166e3b9601b41dca5e0"
+    },
+    {
+      "id": "HOME-HP06-B018",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "本次已观察“没有匹配的持仓”和 CSV（0）禁用",
+      "sourceLine": 141,
+      "sourceKey": "a30234e2e6095e7456680596"
+    },
+    {
+      "id": "HOME-HP06-B019",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "行动作",
+      "sourceLine": 142,
+      "sourceKey": "7e1cae062594440cc55e79ee"
+    },
+    {
+      "id": "HOME-HP06-B020",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "看图记录是主动作，核对 / 重试随问题出现",
+      "sourceLine": 142,
+      "sourceKey": "2a152d9b130788ec2cd254d6"
+    },
+    {
+      "id": "HOME-HP06-B021",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "按实际行携带回合信息；后续写入验收必须查持久化",
+      "sourceLine": 142,
+      "sourceKey": "85b91d7bf60bb6ca1e644cce"
+    },
+    {
+      "id": "HOME-HP06-B022",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "分页",
+      "sourceLine": 143,
+      "sourceKey": "33afb23908ea4eb0da966ec2"
+    },
+    {
+      "id": "HOME-HP06-B023",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "每页5行；当前页与边界禁用有差别于可点击页",
+      "sourceLine": 143,
+      "sourceKey": "dbe9401ceabd13b0b5e1356a"
+    },
+    {
+      "id": "HOME-HP06-B024",
+      "chapter": "HP06",
+      "kind": "tablecell",
+      "text": "第二页、上一页、搜索后页码归位分别检查",
+      "sourceLine": 143,
+      "sourceKey": "100efbac11ca6c31d2bc787c"
+    },
+    {
+      "id": "HOME-HP07-B001",
+      "chapter": "HP07",
+      "kind": "caption",
+      "text": "图 HOME-08｜历史区把结论、解释和行动串在一起。已平仓统计不能包含未实现盈亏。",
+      "sourceLine": 149,
+      "sourceKey": "971cbdab577a673cd178d459"
+    },
+    {
+      "id": "HOME-HP07-B002",
+      "chapter": "HP07",
+      "kind": "paragraph",
+      "text": "历史摘要先回答赚亏、完成多少回合、胜率和待复盘数量；趋势回答变化发生在什么时候；贡献回答哪些市场、标的或账户形成变化；日历帮助定位具体日期。三个图表不是重复同一个数字，而是时间变化、来源分解与日期定位三种不同阅读方式。",
+      "sourceLine": 151,
+      "sourceKey": "3ec531a25ebfa28add5b7cbc"
+    },
+    {
+      "id": "HOME-HP07-B003",
+      "chapter": "HP07",
+      "kind": "paragraph",
+      "text": "“进入交易库”提供更完整的明细入口；“查看口径说明”承接计算解释。主卡不应被误读为全资产账户收益：当前统计按回合平仓日期，已扣交易费用，且排除不可信样本。多币种缺完整换算条件时显示无法合计，原币曲线仍可分别呈现。",
+      "sourceLine": 153,
+      "sourceKey": "eec6a22e16451f65deef0504"
+    },
+    {
+      "id": "HOME-HP07-B004",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "模块",
+      "sourceLine": 155,
+      "sourceKey": "5d4fc2c833be2b1b543d78b7"
+    },
+    {
+      "id": "HOME-HP07-B005",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "当前规则与注意力目标",
+      "sourceLine": 155,
+      "sourceKey": "0ba0f317d13a4a15944122be"
+    },
+    {
+      "id": "HOME-HP07-B006",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "验收方式",
+      "sourceLine": 155,
+      "sourceKey": "ef592a9a61f6adc72bd24b81"
+    },
+    {
+      "id": "HOME-HP07-B007",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "历史统计期",
+      "sourceLine": 157,
+      "sourceKey": "8a3d0c08b53bf8c1a4eefdc1"
+    },
+    {
+      "id": "HOME-HP07-B008",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "近3月 / 今年 / 全部 + 自定义统计日期",
+      "sourceLine": 157,
+      "sourceKey": "d55fff5b4f87980b0ccd67f9"
+    },
+    {
+      "id": "HOME-HP07-B009",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "区间文字与摘要一致；切换不应把当前仓位删掉",
+      "sourceLine": 157,
+      "sourceKey": "58a8228683c61eaf172815f3"
+    },
+    {
+      "id": "HOME-HP07-B010",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "四个摘要",
+      "sourceLine": 158,
+      "sourceKey": "9716a8e9790838cd74df1d81"
+    },
+    {
+      "id": "HOME-HP07-B011",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "已平仓净盈亏、完整回合数、合计胜率、待复盘",
+      "sourceLine": 158,
+      "sourceKey": "59e7edac8203810ca2e4a38f"
+    },
+    {
+      "id": "HOME-HP07-B012",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "胜率有分母；缺换算显示无法合计而非合并原币",
+      "sourceLine": 158,
+      "sourceKey": "8b4ced42f6cead080c7a145e"
+    },
+    {
+      "id": "HOME-HP07-B013",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "趋势",
+      "sourceLine": 159,
+      "sourceKey": "c10e7ad77b2b23168c0683b1"
+    },
+    {
+      "id": "HOME-HP07-B014",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "日周月分桶、累计盈亏 / 自然月胜率；横轴时间、纵轴数值",
+      "sourceLine": 159,
+      "sourceKey": "c6346c5377c23aac405d51e2"
+    },
+    {
+      "id": "HOME-HP07-B015",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "原币多线需图例；改变分桶不改变统计定义",
+      "sourceLine": 159,
+      "sourceKey": "c4dae44a3bde9c94191fa920"
+    },
+    {
+      "id": "HOME-HP07-B016",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "贡献",
+      "sourceLine": 160,
+      "sourceKey": "ce31ca50ba2ea0a8b289db61"
+    },
+    {
+      "id": "HOME-HP07-B017",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "市场 / 标的 / 账户；正负金额和样本数",
+      "sourceLine": 160,
+      "sourceKey": "1eeb8052f8ee7f7551130586"
+    },
+    {
+      "id": "HOME-HP07-B018",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "与资产分布维度区分；亏损同时有负号",
+      "sourceLine": 160,
+      "sourceKey": "c3e90572243ebe3c0ad6976e"
+    },
+    {
+      "id": "HOME-HP07-B019",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "日历",
+      "sourceLine": 161,
+      "sourceKey": "34a9e191972e1efd66e9008d"
+    },
+    {
+      "id": "HOME-HP07-B020",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "月 / 年 / 全部年份；翻页、范围下钻、日期详情",
+      "sourceLine": 161,
+      "sourceKey": "a998ac870538ef8d7b317987"
+    },
+    {
+      "id": "HOME-HP07-B021",
+      "chapter": "HP07",
+      "kind": "tablecell",
+      "text": "无样本 / 范围外 / 未来分开；有样本日期可定位交易",
+      "sourceLine": 161,
+      "sourceKey": "3c88f9f3d8e815ccd2a104c5"
+    },
+    {
+      "id": "HOME-HP07-B022",
+      "chapter": "HP07",
+      "kind": "paragraph",
+      "text": "图 HOME-09｜真实日历鼠标操作的状态分镜。这里的1回合、金额和日期仅作为采集样本，验收使用对应测试数据的期望值。",
+      "sourceLine": 170,
+      "sourceKey": "6b848f9f44f42f78fa5214db"
+    },
+    {
+      "id": "HOME-HP08-B001",
+      "chapter": "HP08",
+      "kind": "caption",
+      "text": "图 HOME-10｜待复盘列表显示平仓时间、标的、成交信息、净盈亏和状态；开始复盘是每行末尾的明确行动。",
+      "sourceLine": 176,
+      "sourceKey": "fdeaa39c5c588b19378f7306"
+    },
+    {
+      "id": "HOME-HP08-B002",
+      "chapter": "HP08",
+      "kind": "paragraph",
+      "text": "待复盘把“知道发生什么”转成“留下判断与经验”。它只列当前范围内未完成、未暂缓的已平仓回合，按最近平仓日期排序；盈亏待核对不应使交易失去复盘入口。查看全部待复盘提供完整工作队列，页码使首页长度受控。",
+      "sourceLine": 178,
+      "sourceKey": "91a95a0710af5ca1a977ae4b"
+    },
+    {
+      "id": "HOME-HP08-B003",
+      "chapter": "HP08",
+      "kind": "tablecell",
+      "text": "对象",
+      "sourceLine": 180,
+      "sourceKey": "763f5e224aa772445ddae65e"
+    },
+    {
+      "id": "HOME-HP08-B004",
+      "chapter": "HP08",
+      "kind": "tablecell",
+      "text": "现状要求",
+      "sourceLine": 180,
+      "sourceKey": "45eeeab9c47138030195cc7f"
+    },
+    {
+      "id": "HOME-HP08-B005",
+      "chapter": "HP08",
+      "kind": "tablecell",
+      "text": "验收步骤",
+      "sourceLine": 180,
+      "sourceKey": "8c272674fc8f4b82ef77d85e"
+    },
+    {
+      "id": "HOME-HP08-B006",
+      "chapter": "HP08",
+      "kind": "tablecell",
+      "text": "状态与数量",
+      "sourceLine": 182,
+      "sourceKey": "d5713fb2e9b49d1aa08b4d50"
+    },
+    {
+      "id": "HOME-HP08-B007",
+      "chapter": "HP08",
+      "kind": "tablecell",
+      "text": "标题数量、分页总数、当前范围相互一致",
+      "sourceLine": 182,
+      "sourceKey": "668e93d8742f9f9d67759009"
+    },
+    {
+      "id": "HOME-HP08-B008",
+      "chapter": "HP08",
+      "kind": "tablecell",
+      "text": "切范围后检查；空列表不能保留旧交易",
+      "sourceLine": 182,
+      "sourceKey": "03360b71162c7d82ed1a8c40"
+    },
+    {
+      "id": "HOME-HP08-B009",
+      "chapter": "HP08",
+      "kind": "tablecell",
+      "text": "行信息",
+      "sourceLine": 183,
+      "sourceKey": "c1ca23f5b541d15e4e500ae8"
+    },
+    {
+      "id": "HOME-HP08-B010",
+      "chapter": "HP08",
+      "kind": "tablecell",
+      "text": "标的和账户可识别，方向、均价、数量、净盈亏分列",
+      "sourceLine": 183,
+      "sourceKey": "98ca4bfa1be5101f8b9c1c8e"
+    },
+    {
+      "id": "HOME-HP08-B011",
+      "chapter": "HP08",
+      "kind": "tablecell",
+      "text": "长名称换行不遮挡开始复盘",
+      "sourceLine": 183,
+      "sourceKey": "39fe9c2958e9ce17e98aefe6"
+    },
+    {
+      "id": "HOME-HP08-B012",
+      "chapter": "HP08",
+      "kind": "tablecell",
+      "text": "开始复盘",
+      "sourceLine": 184,
+      "sourceKey": "b37951f8f625fd53a63770ff"
+    },
+    {
+      "id": "HOME-HP08-B013",
+      "chapter": "HP08",
+      "kind": "tablecell",
+      "text": "进入所点回合，而不是默认第一回合",
+      "sourceLine": 184,
+      "sourceKey": "603dabd5211bc6a3de5ecdf9"
+    },
+    {
+      "id": "HOME-HP08-B014",
+      "chapter": "HP08",
+      "kind": "tablecell",
+      "text": "点击不同两行、返回、刷新，核对对象与状态",
+      "sourceLine": 184,
+      "sourceKey": "a781ec68613064c45d1a3373"
+    },
+    {
+      "id": "HOME-HP08-B015",
+      "chapter": "HP08",
+      "kind": "tablecell",
+      "text": "完成闭环",
+      "sourceLine": 185,
+      "sourceKey": "ca212f904339bc92a1862969"
+    },
+    {
+      "id": "HOME-HP08-B016",
+      "chapter": "HP08",
+      "kind": "tablecell",
+      "text": "保存后实际持久化，并更新待复盘语义",
+      "sourceLine": 185,
+      "sourceKey": "ff9269d13cbc5d1b1b523f6f"
+    },
+    {
+      "id": "HOME-HP08-B017",
+      "chapter": "HP08",
+      "kind": "tablecell",
+      "text": "本次仅记录现有契约，未执行业务写入，不宣称该链已验收",
+      "sourceLine": 185,
+      "sourceKey": "95cf3150446d706edec024db"
+    },
+    {
+      "id": "HOME-HP09-B001",
+      "chapter": "HP09",
+      "kind": "caption",
+      "text": "图 HOME-11｜390×844 实测。导航收成顶部入口，范围控件重排，摘要形成两列；这张图是当前状态样例，不代表已完成全部触摸验收。",
+      "sourceLine": 191,
+      "sourceKey": "743f89d7e94a44b1978dfff0"
+    },
+    {
+      "id": "HOME-HP09-B002",
+      "chapter": "HP09",
+      "kind": "paragraph",
+      "text": "深色主题依靠明度差和边线区分区域。蓝色用于操作和选中，绿/红用于正负结果，但必须同时有正负号、文本或状态。币种曲线还有独立图例色，不能把所有绿色曲线理解为盈利。禁用状态必须结合真实 disabled 语义，不仅是把文字调暗。",
+      "sourceLine": 193,
+      "sourceKey": "c6ecbd7f817228ddf609f338"
+    },
+    {
+      "id": "HOME-HP09-B046",
+      "chapter": "HP09",
+      "kind": "caption",
+      "text": "图 HOME-STYLE｜规范样例，非产品截图。具体标题、面板与控件来自1280×900实时DOM样式；精确值见 evidence/computed-styles.json 与 computed-controls.json。焦点状态未完整采集，标为待验。",
+      "sourceLine": 197,
+      "sourceKey": "db4733cb4eb51636928ed631"
+    },
+    {
+      "id": "HOME-HP09-B003",
+      "chapter": "HP09",
+      "kind": "paragraph",
+      "text": "当前首页存在多套密度：大标题、摘要主值、图表标题、表格正文、说明与日历小字并不统一。这份规范保留实际数值以便比对，不把现状的小字包装成推荐标准。源码细则与适用断点见《规则附录》；浏览器实测优先于从旧选择器推断的值。",
+      "sourceLine": 199,
+      "sourceKey": "c9fd35ded98f34525594e571"
+    },
+    {
+      "id": "HOME-HP09-B004",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "视觉项",
+      "sourceLine": 201,
+      "sourceKey": "11dba50fe7837e00829e7946"
+    },
+    {
+      "id": "HOME-HP09-B005",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "当前基线 / 状态规则",
+      "sourceLine": 201,
+      "sourceKey": "6c041d8063f0da17a2deab35"
+    },
+    {
+      "id": "HOME-HP09-B006",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "验收说明",
+      "sourceLine": 201,
+      "sourceKey": "c852ee11fe86d3f14afe43e1"
+    },
+    {
+      "id": "HOME-HP09-B007",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "背景层级",
+      "sourceLine": 203,
+      "sourceKey": "25361df892556c00340a728b"
+    },
+    {
+      "id": "HOME-HP09-B008",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "页面深蓝黑；面板略亮；区域边线低对比；准确 computed 值见证据文件",
+      "sourceLine": 203,
+      "sourceKey": "c7a7a3db0f1442ca90b04f3e"
+    },
+    {
+      "id": "HOME-HP09-B009",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "保持背景、容器、选中三层区别，不以截图采样替代 CSS 值",
+      "sourceLine": 203,
+      "sourceKey": "63c4082e93fc5a33d8bb0a89"
+    },
+    {
+      "id": "HOME-HP09-B010",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "字体",
+      "sourceLine": 204,
+      "sourceKey": "4f581a053a615ecd1a28b77a"
+    },
+    {
+      "id": "HOME-HP09-B011",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "UI sans-serif，含中文系统回退；标题24、工作区19、桌面图表标题13px为本次实测",
+      "sourceLine": 204,
+      "sourceKey": "d34f2ee9cf4cd4035ad36152"
+    },
+    {
+      "id": "HOME-HP09-B012",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "字体文件未加载时的具体中文字体未鉴定，不承诺固定字面宽度",
+      "sourceLine": 204,
+      "sourceKey": "28d949888dd0e3ea9de2aa5d"
+    },
+    {
+      "id": "HOME-HP09-B013",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "空间",
+      "sourceLine": 205,
+      "sourceKey": "dd40fb53ec1977e5b791a834"
+    },
+    {
+      "id": "HOME-HP09-B014",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "桌面正文左右24px；工作区16px纵距、12px内距、9px圆角；图表两列8px间隔",
+      "sourceLine": 205,
+      "sourceKey": "d045f4c0b19b971af7f42e59"
+    },
+    {
+      "id": "HOME-HP09-B015",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "嵌套组件各有条件样式，不能把一个圆角推广到所有控件",
+      "sourceLine": 205,
+      "sourceKey": "81c1f685d990fc4bff5f00c0"
+    },
+    {
+      "id": "HOME-HP09-B016",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "输入与按钮",
+      "sourceLine": 206,
+      "sourceKey": "2e1cb1de200819668cc7b4dd"
+    },
+    {
+      "id": "HOME-HP09-B017",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "页头桌面36px；主要窄屏/粗指针控件按源码≥44px；贡献局部按钮桌面存在23px紧凑值",
+      "sourceLine": 206,
+      "sourceKey": "27bd1497dda738ffd9ed92be"
+    },
+    {
+      "id": "HOME-HP09-B018",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "23px是已记录问题背景，不能据此宣称符合触摸目标",
+      "sourceLine": 206,
+      "sourceKey": "09474ec0257f427a2b18af6a"
+    },
+    {
+      "id": "HOME-HP09-B019",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "选中 / 聚焦",
+      "sourceLine": 207,
+      "sourceKey": "113438741724dbc646599150"
+    },
+    {
+      "id": "HOME-HP09-B020",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "选中用蓝色底和边框；键盘聚焦应可辨识且不改变选中值",
+      "sourceLine": 207,
+      "sourceKey": "3407cd956785745c091c7062"
+    },
+    {
+      "id": "HOME-HP09-B021",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "键盘和鼠标分别验收；截图只证明被采集的状态",
+      "sourceLine": 207,
+      "sourceKey": "1599d3c7e744726d8afeda98"
+    },
+    {
+      "id": "HOME-HP09-B022",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "加载 / 错误",
+      "sourceLine": 208,
+      "sourceKey": "42be5910a6e217c464327701"
+    },
+    {
+      "id": "HOME-HP09-B023",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "状态文字、更新中、不可用和重试各有语义",
+      "sourceLine": 208,
+      "sourceKey": "1c715fd02ddac33381f44125"
+    },
+    {
+      "id": "HOME-HP09-B024",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "不用空白或持续旧值掩盖失败",
+      "sourceLine": 208,
+      "sourceKey": "8d0f1906204673c1b46cab62"
+    },
+    {
+      "id": "HOME-HP09-B025",
+      "chapter": "HP09",
+      "kind": "paragraph",
+      "text": "本首页主要以状态切换提供反馈：筛选展开、日期草稿、按钮选中、详情打开、分页替换、图表选点与重算。没有证据支持统一的弹簧动效、数字翻滚或200ms入场规范，因此不能在现状文档中补造这些参数。若后续需要统一动效，应作为独立提案确认时长、缓动和 reduced-motion 行为。",
+      "sourceLine": 212,
+      "sourceKey": "79b455bdb73579babc7dc718"
+    },
+    {
+      "id": "HOME-HP09-B026",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "触发",
+      "sourceLine": 214,
+      "sourceKey": "e8ef21d98c23b602cb51efe5"
+    },
+    {
+      "id": "HOME-HP09-B027",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "前态 → 后态",
+      "sourceLine": 214,
+      "sourceKey": "bbcaa7cc3a4faf2a3baadc7d"
+    },
+    {
+      "id": "HOME-HP09-B028",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "动态验收重点",
+      "sourceLine": 214,
+      "sourceKey": "0533eb46a41905f30bd04ce1"
+    },
+    {
+      "id": "HOME-HP09-B029",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "筛选 / details",
+      "sourceLine": 216,
+      "sourceKey": "8a5cde561acfd15327b726ae"
+    },
+    {
+      "id": "HOME-HP09-B030",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "收起 → 同区域展开",
+      "sourceLine": 216,
+      "sourceKey": "3c8626eadc43ac31372aaf86"
+    },
+    {
+      "id": "HOME-HP09-B031",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "用户能立即看到结果；焦点可继续进入内容",
+      "sourceLine": 216,
+      "sourceKey": "881a72c310449967a59a9ef0"
+    },
+    {
+      "id": "HOME-HP09-B032",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "日期应用",
+      "sourceLine": 217,
+      "sourceKey": "86d02bd9aaafc9b664883fea"
+    },
+    {
+      "id": "HOME-HP09-B033",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "草稿 → 校验 / 计算中 → 新范围",
+      "sourceLine": 217,
+      "sourceKey": "2ae6a5a7c7de26db82bb0ad2"
+    },
+    {
+      "id": "HOME-HP09-B034",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "失败保持原生效范围，避免假完成",
+      "sourceLine": 217,
+      "sourceKey": "bf71a0841370790ce0835ad0"
+    },
+    {
+      "id": "HOME-HP09-B035",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "选点",
+      "sourceLine": 218,
+      "sourceKey": "dc9a867baa380102f9522cd5"
+    },
+    {
+      "id": "HOME-HP09-B036",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "默认图 → 日期与点详情",
+      "sourceLine": 218,
+      "sourceKey": "33a760e0ca6e7486e3a8cbf0"
+    },
+    {
+      "id": "HOME-HP09-B037",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "文本、日期、金额同一时点；离开/关闭行为一致",
+      "sourceLine": 218,
+      "sourceKey": "bc4c763822131ebdda8d3108"
+    },
+    {
+      "id": "HOME-HP09-B038",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "翻页",
+      "sourceLine": 219,
+      "sourceKey": "f33b08ed175dac57c1985a59"
+    },
+    {
+      "id": "HOME-HP09-B039",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "当前行集合 → 新行集合",
+      "sourceLine": 219,
+      "sourceKey": "48ba697fab2d0f03fae06ef4"
+    },
+    {
+      "id": "HOME-HP09-B040",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "页码与列表一致；不发生持久业务写入",
+      "sourceLine": 219,
+      "sourceKey": "928539b2dcbeefbd9dd3fa50"
+    },
+    {
+      "id": "HOME-HP09-B041",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "重试",
+      "sourceLine": 220,
+      "sourceKey": "bb082beda4776e35bc0123cf"
+    },
+    {
+      "id": "HOME-HP09-B042",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "可点击 → 请求中 → 成功/错误",
+      "sourceLine": 220,
+      "sourceKey": "d1f41499ee07addf70a5930b"
+    },
+    {
+      "id": "HOME-HP09-B043",
+      "chapter": "HP09",
+      "kind": "tablecell",
+      "text": "请求中不重复触发；失败保留原因",
+      "sourceLine": 220,
+      "sourceKey": "231dcf4992c74b8f3aec84e3"
+    },
+    {
+      "id": "HOME-HP09-B044",
+      "chapter": "HP09",
+      "kind": "caption",
+      "text": "图 HOME-12｜390px 下观察期、指标、粒度分行。缺失数据下仍保持图表位置与解释入口。",
+      "sourceLine": 226,
+      "sourceKey": "23b0c09d90f718b0ef746625"
+    },
+    {
+      "id": "HOME-HP09-B045",
+      "chapter": "HP09",
+      "kind": "paragraph",
+      "text": "持仓总览在1054px及以下改为单列；页头在759px及以下重新排列；320px进一步压缩页边距。持仓表在窄屏保留宽表并允许局部横向滚动，以保持列之间的关系，而不是把所有数值压成难读的小字。移动端存在更长的纵向路径，需要单独评估；不能以“没有整体横向溢出”代替可读性判断。",
+      "sourceLine": 228,
+      "sourceKey": "d4e3468e43a9360160a671ac"
+    },
+    {
+      "id": "HOME-HP10-B001",
+      "chapter": "HP10",
+      "kind": "paragraph",
+      "text": "本规范包含三类内容：当前源码事实、实际浏览器采集状态、基于证据的设计解释。历史候选方案另外标明。后续实现时先选择要遵循的基线或已批准变更，再逐项核对；不要一边复现当前首页，一边悄悄采用未合入的候选样式。",
+      "sourceLine": 232,
+      "sourceKey": "5b40139ffd5274ad0a20637b"
+    },
+    {
+      "id": "HOME-HP10-B002",
+      "chapter": "HP10",
+      "kind": "tablecell",
+      "text": "验收层",
+      "sourceLine": 234,
+      "sourceKey": "01b4c75c6099d02b14c374b5"
+    },
+    {
+      "id": "HOME-HP10-B003",
+      "chapter": "HP10",
+      "kind": "tablecell",
+      "text": "需要的证据",
+      "sourceLine": 234,
+      "sourceKey": "8f68fdba6ddee412ed201d00"
+    },
+    {
+      "id": "HOME-HP10-B004",
+      "chapter": "HP10",
+      "kind": "tablecell",
+      "text": "本次交付边界",
+      "sourceLine": 234,
+      "sourceKey": "b5043c85f72dd7a1333b2655"
+    },
+    {
+      "id": "HOME-HP10-B005",
+      "chapter": "HP10",
+      "kind": "tablecell",
+      "text": "结构与视觉",
+      "sourceLine": 236,
+      "sourceKey": "db977b01cf3964b3c45342da"
+    },
+    {
+      "id": "HOME-HP10-B006",
+      "chapter": "HP10",
+      "kind": "tablecell",
+      "text": "同视口、同范围、同展开状态截图；比较布局、层级、密度和关键元素",
+      "sourceLine": 236,
+      "sourceKey": "0b0d735ef22742d66db497fe"
+    },
+    {
+      "id": "HOME-HP10-B022",
+      "chapter": "HP10",
+      "kind": "tablecell",
+      "text": "已采集1440×1000、390×844及各区域状态；详见验收记录",
+      "sourceLine": 236,
+      "sourceKey": "57a6961f94d2f121afcb0fe6"
+    },
+    {
+      "id": "HOME-HP10-B008",
+      "chapter": "HP10",
+      "kind": "tablecell",
+      "text": "功能与状态",
+      "sourceLine": 237,
+      "sourceKey": "152448f9d4763ee4209a3830"
+    },
+    {
+      "id": "HOME-HP10-B009",
+      "chapter": "HP10",
+      "kind": "tablecell",
+      "text": "控件触发后可见结果、范围一致性、错误和空态",
+      "sourceLine": 237,
+      "sourceKey": "a506b24a40cbf3bd5b31be0f"
+    },
+    {
+      "id": "HOME-HP10-B010",
+      "chapter": "HP10",
+      "kind": "tablecell",
+      "text": "代表性采集不等于所有控件通过；未覆盖旅程明确未验证",
+      "sourceLine": 237,
+      "sourceKey": "6abc910b49d56d09d45f1091"
+    },
+    {
+      "id": "HOME-HP10-B011",
+      "chapter": "HP10",
+      "kind": "tablecell",
+      "text": "数据与持久化",
+      "sourceLine": 238,
+      "sourceKey": "7bab4e5ceb2aa99b6dbb1a7c"
+    },
+    {
+      "id": "HOME-HP10-B012",
+      "chapter": "HP10",
+      "kind": "tablecell",
+      "text": "独立测试库中保存、返回、刷新、重新读取",
+      "sourceLine": 238,
+      "sourceKey": "308248d059fa63914af86aef"
+    },
+    {
+      "id": "HOME-HP10-B013",
+      "chapter": "HP10",
+      "kind": "tablecell",
+      "text": "产品业务写入不在本次文档任务内；文档评论另行验证",
+      "sourceLine": 238,
+      "sourceKey": "0bab44fd5bbd33c66483c334"
+    },
+    {
+      "id": "HOME-HP10-B014",
+      "chapter": "HP10",
+      "kind": "tablecell",
+      "text": "文档阅读与评论",
+      "sourceLine": 239,
+      "sourceKey": "1f2e21bca4d6db81cef121ff"
+    },
+    {
+      "id": "HOME-HP10-B015",
+      "chapter": "HP10",
+      "kind": "tablecell",
+      "text": "目录、图片原图、状态分镜、文字/图片评论、连续保存和刷新恢复",
+      "sourceLine": 239,
+      "sourceKey": "5a97af11fbc3a307f014ffe5"
+    },
+    {
+      "id": "HOME-HP10-B016",
+      "chapter": "HP10",
+      "kind": "tablecell",
+      "text": "使用独立本地评论存储；正文与图片都有稳定锚点",
+      "sourceLine": 239,
+      "sourceKey": "3bb79801cba88758ebfd9f91"
+    },
+    {
+      "id": "HOME-HP10-B017",
+      "chapter": "HP10",
+      "kind": "paragraph",
+      "text": "建议按“默认范围 → 筛选 → 持仓观察日期 → 持仓列表 → 历史日期 → 日历下钻 → 待复盘”逐条走查。具体规则编号R01–R16、控件来源和各断点见规则附录。实际采集和未验证项见验收记录。",
+      "sourceLine": 241,
+      "sourceKey": "e5c0ee7a72ecc2a3349d9965"
+    },
+    {
+      "id": "HOME-HP10-B018",
+      "chapter": "HP10",
+      "kind": "listitem",
+      "text": "现状问题评估：最大的设计问题是什么：单独讨论，不改变本文的现状契约。",
+      "sourceLine": 245,
+      "sourceKey": "565255144ceb840df3136b17"
+    },
+    {
+      "id": "HOME-HP10-B019",
+      "chapter": "HP10",
+      "kind": "listitem",
+      "text": "来源与版本说明：master、其它worktree、历史需求和截图来源。",
+      "sourceLine": 246,
+      "sourceKey": "b42c5751e52c95c22717f2cb"
+    },
+    {
+      "id": "HOME-HP10-B020",
+      "chapter": "HP10",
+      "kind": "listitem",
+      "text": "规则附录：实现与验收的逐项规则。",
+      "sourceLine": 247,
+      "sourceKey": "bc0810da2ae47484aab623d6"
+    },
+    {
+      "id": "HOME-HP10-B021",
+      "chapter": "HP10",
+      "kind": "paragraph",
+      "text": "评论可以针对选中文字或单张图片；保存后可继续下一条。请优先指出“哪个区域、哪个状态、希望注意什么”，便于把意见落到对应规则。评论保存在本机文件，不是多人实时云协作。",
+      "sourceLine": 249,
+      "sourceKey": "5509a3a6bfe10c50eb88f12e"
+    }
+  ],
+  "images": [
+    {
+      "id": "HOME-00A",
+      "occurrenceId": "HOME-00A@5",
+      "sharedImageId": "HOME-00A",
+      "src": "images/structure-board.svg",
+      "fingerprint": "2b771fc09d21cc529e765a79658d20a0bd7cfb6137f8eb887985653362b712f5",
+      "chapter": "DOC",
+      "sourceLine": 5,
+      "alt": "首页三段真实截图结构板：整页分段浏览，非单张拼接像素基准"
+    },
+    {
+      "id": "HOME-00",
+      "occurrenceId": "HOME-00@9",
+      "sharedImageId": "HOME-00",
+      "src": "images/layout-map.svg",
+      "fingerprint": "92f5ac74c55c937ae372fe19e778e39338e6d249e7fef10c8b39846a495e3010",
+      "chapter": "DOC",
+      "sourceLine": 9,
+      "alt": "首页完整结构示意：当前持仓在上，历史交易与复盘在下"
+    },
+    {
+      "id": "HOME-01",
+      "occurrenceId": "HOME-01@15",
+      "sharedImageId": "HOME-01",
+      "src": "images/home-desktop-first.jpg",
+      "fingerprint": "250b79d8277f5284b9ce91b21b1d28e3a561e7bb99b2e071e47650a84521e5ee",
+      "chapter": "HP01",
+      "sourceLine": 15,
+      "alt": "标准桌面首屏及其信息顺序"
+    },
+    {
+      "id": "HOME-02",
+      "occurrenceId": "HOME-02@40",
+      "sharedImageId": "HOME-02",
+      "src": "images/header.jpg",
+      "fingerprint": "03b5b72f6b0cdc376d41d01220124bedb800309ab088176c6cc524dbf3bbe632",
+      "chapter": "HP02",
+      "sourceLine": 40,
+      "alt": "页头与范围控件"
+    },
+    {
+      "id": "HOME-03",
+      "occurrenceId": "HOME-03@58",
+      "sharedImageId": "HOME-03",
+      "src": "images/filter-open.jpg",
+      "fingerprint": "1121041562d0031351fb1bdb183c6bb75404e3242ef125fa40444bd7f96c2a7c",
+      "chapter": "HP03",
+      "sourceLine": 58,
+      "alt": "筛选展开后的主页"
+    },
+    {
+      "id": "HOME-04",
+      "occurrenceId": "HOME-04@78",
+      "sharedImageId": "HOME-04",
+      "src": "images/holdings-overview.jpg",
+      "fingerprint": "8284486e68f53a8774911ad3cf85662c2e7892ccb4eb5157fbb5801d1cf517e8",
+      "chapter": "HP04",
+      "sourceLine": 78,
+      "alt": "持仓摘要、历史曲线与资产分布的组合"
+    },
+    {
+      "id": "HOME-05",
+      "occurrenceId": "HOME-05@96",
+      "sharedImageId": "HOME-05",
+      "src": "images/observation-date.jpg",
+      "fingerprint": "490b5174f4e42cc4e2ba4448b9348468a5c84e2f7d0de6ecc2b359fc7d7986aa",
+      "chapter": "HP05",
+      "sourceLine": 96,
+      "alt": "自定义观察日期展开态"
+    },
+    {
+      "id": "HOME-06",
+      "occurrenceId": "HOME-06@104",
+      "sharedImageId": "HOME-06",
+      "src": "images/holding-point.jpg",
+      "fingerprint": "5e372c811b4212a5b6c074c0fb44a1ca4bd003045726d584be39a514225c8acf",
+      "chapter": "HP05",
+      "sourceLine": 104,
+      "alt": "历史日期选点详情"
+    },
+    {
+      "id": "HOME-07",
+      "occurrenceId": "HOME-07@128",
+      "sharedImageId": "HOME-07",
+      "src": "images/holdings-table.jpg",
+      "fingerprint": "7632c331cef49aa45ee7f28f425078f3250b9a69cdcf4aed0e6ea0508593f97c",
+      "chapter": "HP06",
+      "sourceLine": 128,
+      "alt": "当前持仓表格及局部工具"
+    },
+    {
+      "id": "HOME-08",
+      "occurrenceId": "HOME-08@147",
+      "sharedImageId": "HOME-08",
+      "src": "images/history-workspace.jpg",
+      "fingerprint": "f18db3746654f6c585f9ca66a9ebc5e33658c72b186dee401704fad3dcab4863",
+      "chapter": "HP07",
+      "sourceLine": 147,
+      "alt": "历史交易与复盘工作区"
+    },
+    {
+      "id": "HOME-10",
+      "occurrenceId": "HOME-10@174",
+      "sharedImageId": "HOME-10",
+      "src": "images/pending-reviews.jpg",
+      "fingerprint": "2cc3909f996511ae03eced28785db7658019518cc3ef5beea312fc4dad6fecd0",
+      "chapter": "HP08",
+      "sourceLine": 174,
+      "alt": "待复盘交易列表"
+    },
+    {
+      "id": "HOME-11",
+      "occurrenceId": "HOME-11@189",
+      "sharedImageId": "HOME-11",
+      "src": "images/home-mobile.jpg",
+      "fingerprint": "3fa80abc5f068baadb8273e45db9c348ae369b78988ad48a4beea4dcd7322254",
+      "chapter": "HP09",
+      "sourceLine": 189,
+      "alt": "窄屏首页首屏"
+    },
+    {
+      "id": "HOME-STYLE",
+      "occurrenceId": "HOME-STYLE@195",
+      "sharedImageId": "HOME-STYLE",
+      "src": "images/style-samples.svg",
+      "fingerprint": "ffed93327cbf6a21ba174516065c53a81dae3a73124b1b092f99a36f4c7ca12b",
+      "chapter": "HP09",
+      "sourceLine": 195,
+      "alt": "视觉样式与控件状态规范样例，非产品截图"
+    },
+    {
+      "id": "HOME-12",
+      "occurrenceId": "HOME-12@224",
+      "sharedImageId": "HOME-12",
+      "src": "images/mobile-chart.jpg",
+      "fingerprint": "9cfd5e95baa8d868f308e88cc4b2a52b1b0939e2675046e0a5ef40d2357d3196",
+      "chapter": "HP09",
+      "sourceLine": 224,
+      "alt": "窄屏持仓曲线与控件重排"
+    },
+    {
+      "id": "state-home-before",
+      "occurrenceId": "state-home-before@state-demo-1-1",
+      "sharedImageId": "state-home-before",
+      "src": "images/state-home-before.svg",
+      "fingerprint": "8acff4569aa5484022739a79fd09ab4564b17e84ff11340e54d13212d23f15bc",
+      "chapter": "HP05",
+      "sourceLine": 120,
+      "alt": "浏览首页"
+    },
+    {
+      "id": "state-home-date",
+      "occurrenceId": "state-home-date@state-demo-1-2",
+      "sharedImageId": "state-home-date",
+      "src": "images/state-home-date.svg",
+      "fingerprint": "8c5c485fa8bc97d0e01faea176a718c9420bbec0a763b41551a8ac835b61c057",
+      "chapter": "HP05",
+      "sourceLine": 120,
+      "alt": "打开观察日期"
+    },
+    {
+      "id": "state-home-point",
+      "occurrenceId": "state-home-point@state-demo-1-3",
+      "sharedImageId": "state-home-point",
+      "src": "images/state-home-point.svg",
+      "fingerprint": "8f1611b02ba7922ed3eb8146077794d075e3239da0243d750f2e804e1a47427c",
+      "chapter": "HP05",
+      "sourceLine": 120,
+      "alt": "查看时点"
+    },
+    {
+      "id": "state-calendar-before",
+      "occurrenceId": "state-calendar-before@state-demo-2-1",
+      "sharedImageId": "state-calendar-before",
+      "src": "images/state-calendar-before.svg",
+      "fingerprint": "c4fccbb2f1e6c018d1f7e826b6ad14a6068e3932139fd529ecd67319e5628b78",
+      "chapter": "HP07",
+      "sourceLine": 165,
+      "alt": "定位月份"
+    },
+    {
+      "id": "state-calendar-detail",
+      "occurrenceId": "state-calendar-detail@state-demo-2-2",
+      "sharedImageId": "state-calendar-detail",
+      "src": "images/state-calendar-detail.svg",
+      "fingerprint": "7e3bdb545ddb4c388aa73aa9621c4d675c1d15df684b1a6f579521517fdb1cb5",
+      "chapter": "HP07",
+      "sourceLine": 165,
+      "alt": "选择日期"
+    }
+  ]
+}

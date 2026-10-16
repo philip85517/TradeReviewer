@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>首页现状问题评估</title><style>
+:root { color-scheme: dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; color: #e7edf6; background: #0b1220; }
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body { margin: 0; min-width: 0; font-size: 16px; line-height: 1.8; background: #0b1220; }
+.layout { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+nav { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 32px 20px; background: #0d1726; border-right: 1px solid #263650; }
+nav strong { display: block; margin-bottom: 5px; font-size: 14px; color: #e7edf6; letter-spacing: .03em; }
+nav .nav-meta { margin: 0 0 18px; color: #8292a8; font-size: 12px; line-height: 1.5; }
+nav a { display: block; padding: 3px 0; color: #adbbcf; text-decoration: none; font-size: 13px; line-height: 1.5; }
+nav a:hover, nav a:focus-visible, nav a.is-current { color: #8cbdff; text-decoration: none; }
+nav a.is-current { border-left: 2px solid #3797ff; padding-left: 8px; margin-left: -10px; }
+main { width: min(100%, 1032px); padding: 40px 40px 88px; margin: 0 auto; overflow-wrap: anywhere; }
+h1 { margin: 0 0 20px; font-size: 32px; line-height: 1.3; color: #e7edf6; }
+h2 { margin: 48px 0 14px; font-size: 24px; line-height: 1.5; color: #e7edf6; border-bottom: 1px solid #263650; padding-bottom: 6px; }
+h3, h4, h5, h6 { margin: 32px 0 10px; line-height: 1.5; color: #e7edf6; }
+p { margin: 0 0 18px; }
+a { color: #8cbdff; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px solid #9ecaff; outline-offset: 2px; }
+ul, ol { margin: 0 0 20px; padding-left: 28px; }
+li { margin: 2px 0; }
+strong { color: #e7edf6; }
+code { padding: .1em .35em; border-radius: 4px; background: #182337; font-size: .9em; }
+pre { overflow-x: auto; margin: 20px 0; padding: 16px; border-radius: 6px; background: #111a2b; color: #e7edf6; line-height: 1.5; }
+.table-wrap { max-width: 100%; overflow-x: auto; margin: 18px 0 24px; }
+table { min-width: 620px; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
+th, td { padding: 9px 12px; border: 1px solid #263650; text-align: left; vertical-align: top; }
+th { background: #182337; color: #e7edf6; font-weight: 650; }
+.figure { margin: 24px 0 8px; }
+.plate-figure { width: 100%; }
+.image-pan { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.plate-figure .image-pan img { width: 952px; max-width: none; }
+.image-pan-hint { display: block; margin-bottom: 5px; color: #8292a8; font-size: 12px; }
+.image-action { display: inline-block; margin: 7px 0 1px; font-size: 12px; }
+.document-image img { max-width: 100%; }
+.image-link { display: block; }
+img { display: block; max-width: 100%; height: auto; border: 1px solid #263650; }
+.caption { display: block; margin: 0 0 20px; font-size: 12px; line-height: 1.5; color: #adbbcf; }
+h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
+[data-comment-block].review-highlight { background: #163d63; box-shadow: 0 0 0 2px #3797ff; border-radius: 3px; }
+@media (max-width: 1080px) { .layout { grid-template-columns: 210px minmax(0, 1fr); } main { padding-left: 32px; padding-right: 32px; } }
+@media (max-width: 720px) { .layout { display: block; } nav { position: static; height: auto; max-height: 42vh; border-right: 0; border-bottom: 1px solid #263650; padding: 18px 20px; } main { padding: 28px 18px 56px; } h1 { font-size: 32px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+.replay-demo { margin: 28px 0; padding: 22px; border: 1px solid #31517a; border-radius: 10px; background: #101c2f; }
+.replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; }
+.replay-demo h3 { margin: 0 0 6px; font-size: 20px; }
+.demo-kicker { margin: 0 0 3px; color: #8cbdff; font-size: 12px; letter-spacing: .04em; }
+.demo-limit { margin: 0; color: #adbbcf; font-size: 14px; line-height: 1.6; }
+.replay-controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.replay-controls button { min-height: 36px; padding: 5px 11px; border: 1px solid #45678f; border-radius: 6px; color: #e7edf6; background: #182a43; cursor: pointer; font: inherit; font-size: 13px; }
+.replay-controls button:hover:not(:disabled), .replay-controls button:focus-visible { background: #24558a; }
+.replay-controls button:disabled { opacity: .45; cursor: default; }
+.replay-stage { margin-top: 18px; min-height: 510px; }
+.replay-frame { width: 100%; height: 510px; margin: 0; }
+.replay-frame[hidden] { display: none; }
+.replay-frame-label { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; color: #d4e1f2; font-size: 13px; }
+.replay-frame-label span:last-child { color: #d6b66c; }
+.replay-frame img { display: block; width: 100%; height: 450px; object-fit: contain; background: #0b1220; }
+.replay-frame figcaption { margin-top: 8px; color: #adbbcf; font-size: 13px; line-height: 1.6; }
+.replay-comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.replay-comparison article { border: 1px solid #31517a; border-radius: 8px; padding: 14px; background: #0b1729; }
+.replay-comparison h4 { margin: 0 0 8px; color: #eef6ff; }
+.replay-comparison dl { margin: 0; }
+.replay-comparison dl > div { display: grid; grid-template-columns: 10.5rem minmax(0, 1fr); gap: 8px; padding: 7px 0; border-top: 1px solid #243d5e; }
+.replay-comparison dt { color: #dcecff; font-weight: 700; }
+.replay-comparison dd { margin: 0; color: #b8c9df; }
+.replay-comparison p { margin: 10px 0 0; color: #9eb4cf; font-size: 13px; }
+.replay-progress { margin: 12px 0 0; color: #8cbdff; font-size: 13px; }
+.source-details { margin: 22px 0; padding: 16px; border: 1px solid #31517a; border-radius: 8px; background: #0d192b; }
+.source-details h3 { margin: 0 0 5px; font-size: 17px; }
+.source-details-intro { margin: 0 0 12px; color: #adbbcf; font-size: 13px; }
+.source-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.source-detail-card { min-width: 0; margin: 0; }
+.source-detail-label { margin-bottom: 6px; color: #dcecff; font-weight: 700; font-size: 13px; }
+.source-crop { position: relative; width: 100%; overflow-x: auto; overflow-y: hidden; background: #0b1220; border: 1px solid #345477; }
+.source-crop .image-link { position: relative; display: block; width: 400px; height: 100%; overflow: hidden; }
+.source-crop img { position: absolute; left: 0; top: 0; max-width: none; width: 1440px; height: auto; border: 0; }
+.source-crop figcaption { color: #adbbcf; }
+.crop-date { height: 55px; }
+.crop-date img { left: -100px; top: -213px; }
+.crop-event { height: 132px; max-width: 290px; }
+.crop-event .image-link { width: 290px; }
+.crop-event img { left: -1034px; top: -724px; }
+.crop-replay-plot { height: 260px; max-width: 270px; }
+.crop-replay-plot .image-link, .crop-replay-before .image-link { width: 270px; }
+.crop-replay-plot img { left: -740px; top: -385px; }
+.crop-replay-before { height: 260px; max-width: 270px; }
+.crop-replay-before img { left: -740px; top: -385px; }
+.crop-replay-date { height: 55px; }
+.crop-replay-date .image-link { width: 480px; }
+.crop-replay-date img { left: -100px; top: -213px; }
+@media (max-width: 720px) { .replay-demo { padding: 16px; } .replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: block; } .replay-controls { justify-content: flex-start; margin-top: 12px; } .replay-stage { min-height: 460px; } .replay-frame { height: 460px; } .replay-frame img { height: 400px; } .replay-comparison { grid-template-columns: 1fr; } .replay-comparison dl > div { grid-template-columns: 8.5rem minmax(0, 1fr); } }
+@media (max-width: 720px) { .source-detail-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .replay-frame img { transition: none; } }
+</style></head>
+<body><div class="layout"><nav aria-label="文档目录"><strong>首页现状问题评估</strong><p class="nav-meta">VDF-002 · 文档 1.0 · 本地可读副本</p><a href="#首页现状问题评估">首页现状问题评估</a><a href="#最大问题可信度说明占据主路径下一步行动不够突出">最大问题：可信度说明占据主路径，下一步行动不够突出</a><a href="#1-同级信息密度不一致">1. 同级信息密度不一致</a><a href="#2-多套范围控制需要更清楚地说明作用域">2. 多套范围控制需要更清楚地说明作用域</a><a href="#3-原币模式保护了正确性也增加比较成本">3. 原币模式保护了正确性，也增加比较成本</a><a href="#4-复盘闭环的入口位置偏后">4. 复盘闭环的入口位置偏后</a><a href="#5-当前观察中需要后续复核的行为">5. 当前观察中需要后续复核的行为</a><a href="#建议优先级与边界">建议优先级与边界</a></nav><main class="rule-details" id="companion-document"><header class="reader-header"><p class="document-status">文档附页 · 1.0</p><a class="review-open" href="visual-spec.html">返回正文阅读器</a></header><h1 id="首页现状问题评估">首页现状问题评估</h1>
+<p>本评估独立于《首页视觉与交互规范》。对象是 master 7a5d137d；以下是基于实际截图、源码和历史要求作出的判断，不是已批准的新设计，也不表示本次已修复产品。</p>
+<h2 id="最大问题可信度说明占据主路径下一步行动不够突出">最大问题：可信度说明占据主路径，下一步行动不够突出</h2>
+<p>首页已经认真处理了估值缺失、币种不可合计和样本不可信，但读者要穿过大量小字、边框、折叠解释和空图，才到达具体行动。当前默认范围里，持仓历史图大面积没有完整估值；分布卡同时出现局部覆盖、全卡缺口、完整解释和现金原因。它们分别有正确理由，却没有形成一个明确的“现在先处理什么”。</p>
+<figure class="document-image figure"><a class="image-link" href="images/home-desktop-first.jpg"><img data-comment-image="home-desktop-first" data-comment-occurrence="home-desktop-first@9" src="images/home-desktop-first.jpg" alt="当前首屏：摘要、缺失曲线和多层原因" width="1401" height="1000"></a>
+</figure>
+<p>这会造成两个阅读成本：一是用户把精力花在理解不可用的差别；二是首次打开页面难以判断该补数据、看某个持仓，还是开始复盘。当前“看图·记录”和“开始复盘”都在较下方，视觉上也与很多局部按钮相似。问题的核心是任务优先级，而不是简单把卡片换色。</p>
+<p>建议下一轮先明确每日主任务，并为每类缺口给一个最相关的动作：概览保留“当前结论 + 覆盖 + 下一步”，详细原因进入可追溯的展开层。仍然必须保留未知值、币种、时点和样本边界，不能为了简洁制造一个假总数。</p>
+<h2 id="1-同级信息密度不一致">1. 同级信息密度不一致</h2>
+<p>1440px 下页面标题24px，工作区19px；部分图表标题13px，贡献文字及日历更小。短时间扫读时，用户容易只看见图形却读不清口径。分布、贡献和待复盘表各自采用不同按钮尺寸，视觉上不像同一套工作台。</p>
+<p>影响：可解释性虽然被保留，解释本身却不容易阅读。建议先建立字号和间距层级，再处理局部紧凑规则；不能用全局放大导致图表相互挤压。</p>
+<p>验证方法：在1440、1280、390和320视口，用真实长名称、跨币种、部分估值和大量待复盘数据对照；读者无需放大即可识别主结论、覆盖和动作。</p>
+<h2 id="2-多套范围控制需要更清楚地说明作用域">2. 多套范围控制需要更清楚地说明作用域</h2>
+<p>页头有共享范围，持仓图有观察日期，下方历史有统计日期，图表又有日周月。它们在业务上可以同时存在，但“今年”“月”“日期”的外观近似，用户容易以为改变其中一个会影响整页。</p>
+<p>建议在相邻位置持续展示“影响什么”的简短说明，验证两个日期作用域之间的联动或独立规则。现状文档已经按源码区分，不把这个建议预写成实现。</p>
+<p>验证方法：切换历史统计期后，当前持仓保留当前时点；切持仓图粒度后，摘要数值不能被误当成同一统计变化。实际状态关系必须通过浏览器对比，不能只看按钮高亮。</p>
+<h2 id="3-原币模式保护了正确性也增加比较成本">3. 原币模式保护了正确性，也增加比较成本</h2>
+<p>摘要分币种写在同一个大数字区域，长值换行；历史趋势把不同币种画在共用数值尺度上。页面明确标了不可合计，但读者仍可能用线高比较跨币种表现。</p>
+<p>建议在保持原币真实性的前提下，验证分币种展示的阅读方式；有完整FX证据时再考虑统一计价。不能默认把同一图里的较高线解释为更好的回报。</p>
+<h2 id="4-复盘闭环的入口位置偏后">4. 复盘闭环的入口位置偏后</h2>
+<figure class="document-image figure"><a class="image-link" href="images/history-workspace.jpg"><img data-comment-image="history-workspace" data-comment-occurrence="history-workspace@39" src="images/history-workspace.jpg" alt="历史区与待复盘入口" width="1440" height="1000"></a>
+</figure>
+<p>待复盘提供了真实工作队列，但位于持仓表和历史图表之后，样本中21个页码同时出现。首页因此兼有概览、诊断、长表和待办工作台四种角色。</p>
+<p>建议下一轮明确首页承担多少工作量，比较“首页显示少量明确优先项”与“继续在首页完整分页”的成本。该建议需要用户决定工作习惯，本次不调整列表内容或默认顺序。</p>
+<h2 id="5-当前观察中需要后续复核的行为">5. 当前观察中需要后续复核的行为</h2>
+<p>日期选点详情在一次选择后能够出现，但随后操作时已不在DOM中；页面也出现持仓历史更新中的状态。尚未证明是正常指针离开、后台重算还是状态稳定性问题，因此记录为待复核，不能直接定性为产品缺陷。</p>
+<p>本次隔离样本的当前持仓小计与历史同一天选点小计不同。两者可能有不同计算/行情覆盖边界；在未核对完整模型前不判定金额错误。下一轮应核对同一日期、账户、币种、估值与交易截点，明确界面是否已足够解释差异。</p>
+<h2 id="建议优先级与边界">建议优先级与边界</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">优先级</th>
+<th scope="col">要解决的问题</th>
+<th scope="col">先验证什么</th>
+</tr></thead><tbody>
+<tr>
+<td>P1</td>
+<td>首屏不能快速指向下一步</td>
+<td>默认真实数据下，读者能否说出当前最需要处理的一件事</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>小字与解释密度</td>
+<td>不放大时能否读清结论、币种、覆盖和动作</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>范围作用域容易混淆</td>
+<td>三类控件改变后，用户能否正确预测影响区域</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>跨币种线图容易误比较</td>
+<td>读者是否误把线高当成统一收益比较</td>
+</tr>
+<tr>
+<td>待复核</td>
+<td>时点详情消失、同日小计差异</td>
+<td>以固定数据和明确截点重现，区分正常语义和缺陷</td>
+</tr>
+</tbody></table></div>
+<p>以上改进不应混进现状验收，也不授权本次修改首页。</p></main></div></body></html>

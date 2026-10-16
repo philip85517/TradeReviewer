@@ -1,0 +1,341 @@
+{
+  "baseline": "7a5d137d",
+  "headings": [
+    {
+      "styles": {
+        "color": "rgb(241, 245, 251)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "24px",
+        "lineHeight": "32px"
+      },
+      "text": "我的交易室"
+    },
+    {
+      "styles": {
+        "color": "rgb(240, 244, 251)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "19px",
+        "lineHeight": "28.5px"
+      },
+      "text": "持仓照看"
+    },
+    {
+      "styles": {
+        "color": "rgb(232, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "15.6px"
+      },
+      "text": "持仓总览"
+    },
+    {
+      "styles": {
+        "color": "rgb(234, 243, 255)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "16.25px"
+      },
+      "text": "资产分布（持仓市值）"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "18px",
+        "lineHeight": "27px"
+      },
+      "text": "当前持仓"
+    },
+    {
+      "styles": {
+        "color": "rgb(240, 244, 251)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "19px",
+        "lineHeight": "28.5px"
+      },
+      "text": "历史交易与复盘"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "19.5px"
+      },
+      "text": "已完成交易表现"
+    },
+    {
+      "styles": {
+        "color": "rgb(237, 245, 255)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "19.5px"
+      },
+      "text": "盈亏贡献分解"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "13px",
+        "lineHeight": "13.65px"
+      },
+      "text": "盈亏日历 单位：原币"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "15px",
+        "lineHeight": "22.5px"
+      },
+      "text": "待复盘的已完成交易（62）"
+    },
+    {
+      "styles": {
+        "color": "rgb(241, 245, 251)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "24px",
+        "lineHeight": "32px"
+      },
+      "text": "数据"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "16px",
+        "lineHeight": "24px"
+      },
+      "text": "导入交易数据"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "16px",
+        "lineHeight": "24px"
+      },
+      "text": "行情数据更新"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "18px",
+        "lineHeight": "27px"
+      },
+      "text": "数据质量明细"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "14px",
+        "lineHeight": "21px"
+      },
+      "text": "交易盈亏可信度"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "14px",
+        "lineHeight": "21px"
+      },
+      "text": "持仓估值行情"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "14px",
+        "lineHeight": "21px"
+      },
+      "text": "历史复盘 K 线"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "14px",
+        "lineHeight": "21px"
+      },
+      "text": "人民币估算汇率"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "16px",
+        "lineHeight": "24px"
+      },
+      "text": "待检查问题"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "16px",
+        "lineHeight": "24px"
+      },
+      "text": "TradingView 账户迁移预览"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "18px",
+        "lineHeight": "27px"
+      },
+      "text": "单一模拟账户迁移"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "16px",
+        "lineHeight": "24px"
+      },
+      "text": "本金与参考收益率配置"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "18px",
+        "lineHeight": "27px"
+      },
+      "text": "参考分配资本"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "16px",
+        "lineHeight": "24px"
+      },
+      "text": "汇率"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "16px",
+        "lineHeight": "24px"
+      },
+      "text": "现金基准"
+    },
+    {
+      "styles": {
+        "color": "rgb(231, 237, 246)",
+        "fontFamily": "Geist, sans-serif, \"PingFang SC\", \"Microsoft YaHei\", sans-serif",
+        "fontSize": "18px",
+        "lineHeight": "27px"
+      },
+      "text": "现金基准"
+    }
+  ],
+  "panels": [
+    {
+      "class": "_dashboard_nl57t_1",
+      "styles": {
+        "backgroundColor": "rgb(11, 18, 32)",
+        "backgroundImage": "radial-gradient(circle at 64% -18%, rgba(47, 128, 237, 0.1), rgba(0, 0, 0, 0) 42%), none",
+        "borderColor": "rgb(231, 237, 246)",
+        "borderRadius": "0px",
+        "color": "rgb(231, 237, 246)",
+        "gap": "normal",
+        "padding": "0px 24px 34px"
+      }
+    },
+    {
+      "class": "",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "borderColor": "rgb(231, 237, 246)",
+        "borderRadius": "0px",
+        "color": "rgb(231, 237, 246)",
+        "gap": "normal",
+        "padding": "0px"
+      }
+    },
+    {
+      "class": "_workspace_nl57t_1204",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "linear-gradient(135deg, rgba(18, 116, 152, 0.12), rgb(16, 29, 49) 58%)",
+        "borderColor": "rgb(42, 77, 115)",
+        "borderRadius": "9px",
+        "color": "rgb(231, 237, 246)",
+        "gap": "normal",
+        "padding": "12px"
+      }
+    },
+    {
+      "class": "_summary_1jd0k_1",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "borderColor": "rgb(231, 237, 246)",
+        "borderRadius": "0px",
+        "color": "rgb(231, 237, 246)",
+        "gap": "4px",
+        "padding": "0px"
+      }
+    },
+    {
+      "class": "_panel_f84wh_1",
+      "styles": {
+        "backgroundColor": "rgb(16, 29, 49)",
+        "backgroundImage": "none",
+        "borderColor": "rgb(42, 70, 103)",
+        "borderRadius": "12px",
+        "color": "rgb(232, 237, 246)",
+        "gap": "normal",
+        "padding": "8px 9px 7px"
+      }
+    },
+    {
+      "class": "_panel_1mjl4_1",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "linear-gradient(145deg, rgba(17, 38, 62, 0.86), rgba(15, 27, 44, 0.98))",
+        "borderColor": "rgb(36, 58, 85)",
+        "borderRadius": "9px",
+        "color": "rgb(231, 237, 246)",
+        "gap": "normal",
+        "padding": "7px 8px"
+      }
+    },
+    {
+      "class": "_panel_noq92_1",
+      "styles": {
+        "backgroundColor": "rgb(16, 29, 49)",
+        "backgroundImage": "none",
+        "borderColor": "rgb(42, 70, 103)",
+        "borderRadius": "12px",
+        "color": "rgb(231, 237, 246)",
+        "gap": "10px",
+        "padding": "14px"
+      }
+    },
+    {
+      "class": "_roomScopeSection_nl57t_84 _workspace_nl57t_1204",
+      "styles": {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "linear-gradient(135deg, rgba(18, 116, 152, 0.12), rgb(16, 29, 49) 58%)",
+        "borderColor": "rgb(42, 77, 115)",
+        "borderRadius": "9px",
+        "color": "rgb(231, 237, 246)",
+        "gap": "normal",
+        "padding": "12px"
+      }
+    }
+  ],
+  "viewport": [
+    1280,
+    900
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "baseline": "7a5d137da3dcdf0f133a29714ee269693746472b",
+  "productURL": "http://127.0.0.1:3333/",
+  "database": "isolated .data/tradereview-test.sqlite",
+  "date": "2026-10-15",
+  "note": "Screenshots are representative states, not a full functional pass. home-desktop-full and overview are incomplete scroll captures and are not used as full-page evidence. Actual state labels are in visual-design.md.",
+  "assets": [
+    {
+      "file": "images/calendar-august.jpg",
+      "sha256": "cf33163f633fe2e6e78f2c1dda965eef58ef96c21062cd98e465c5354be4bca0",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/calendar-detail.jpg",
+      "sha256": "f97b19db4952d331259ec968e1edb20417a7be43a7d120afd544824ca21bfd50",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/calendar-september.jpg",
+      "sha256": "efe360b4ce11fdc29fbe3aa12c9e0c2acb742c484932d4405e552744b8c90d63",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/filter-open.jpg",
+      "sha256": "1121041562d0031351fb1bdb183c6bb75404e3242ef125fa40444bd7f96c2a7c",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/header.jpg",
+      "sha256": "03b5b72f6b0cdc376d41d01220124bedb800309ab088176c6cc524dbf3bbe632",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/history-charts.jpg",
+      "sha256": "f7869b1707b57f4c4373ba4584d4714a588fd24974b812fc8ffea45f527e827f",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/history-workspace.jpg",
+      "sha256": "f18db3746654f6c585f9ca66a9ebc5e33658c72b186dee401704fad3dcab4863",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/holding-point.jpg",
+      "sha256": "5e372c811b4212a5b6c074c0fb44a1ca4bd003045726d584be39a514225c8acf",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/holdings-overview.jpg",
+      "sha256": "8284486e68f53a8774911ad3cf85662c2e7892ccb4eb5157fbb5801d1cf517e8",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/holdings-table.jpg",
+      "sha256": "7632c331cef49aa45ee7f28f425078f3250b9a69cdcf4aed0e6ea0508593f97c",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/home-desktop-first.jpg",
+      "sha256": "250b79d8277f5284b9ce91b21b1d28e3a561e7bb99b2e071e47650a84521e5ee",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/home-desktop-full.jpg",
+      "sha256": "9e9614382cc74ea077fa7c8207ab30d32db782cdfc36196448cca93a6259f524",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/home-desktop-overview.jpg",
+      "sha256": "5a763314fbc99370426e497ecf326c95d1fee37402d8d5358e6bcfaf921f7418",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/home-mobile.jpg",
+      "sha256": "3fa80abc5f068baadb8273e45db9c348ae369b78988ad48a4beea4dcd7322254",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/layout-map.svg",
+      "sha256": "92f5ac74c55c937ae372fe19e778e39338e6d249e7fef10c8b39846a495e3010",
+      "kind": "authored SVG diagram / original screenshot viewport"
+    },
+    {
+      "file": "images/mobile-chart.jpg",
+      "sha256": "9cfd5e95baa8d868f308e88cc4b2a52b1b0939e2675046e0a5ef40d2357d3196",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/mobile-empty-holdings.jpg",
+      "sha256": "2615bb10adfc4506b1430a488682f9b138e8745dde611a374f0aa8115f2e2a96",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/observation-date.jpg",
+      "sha256": "490b5174f4e42cc4e2ba4448b9348468a5c84e2f7d0de6ecc2b359fc7d7986aa",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/pending-reviews.jpg",
+      "sha256": "2cc3909f996511ae03eced28785db7658019518cc3ef5beea312fc4dad6fecd0",
+      "kind": "browser screenshot"
+    },
+    {
+      "file": "images/state-calendar-before.svg",
+      "sha256": "c4fccbb2f1e6c018d1f7e826b6ad14a6068e3932139fd529ecd67319e5628b78",
+      "kind": "authored SVG diagram / original screenshot viewport"
+    },
+    {
+      "file": "images/state-calendar-detail.svg",
+      "sha256": "7e3bdb545ddb4c388aa73aa9621c4d675c1d15df684b1a6f579521517fdb1cb5",
+      "kind": "authored SVG diagram / original screenshot viewport"
+    },
+    {
+      "file": "images/state-calendar.svg",
+      "sha256": "145ca2ae7768b59233daf48d354735a220b134f8fcb7cd69e13333bb691088e8",
+      "kind": "authored SVG diagram / original screenshot viewport"
+    },
+    {
+      "file": "images/state-home-before.svg",
+      "sha256": "8acff4569aa5484022739a79fd09ab4564b17e84ff11340e54d13212d23f15bc",
+      "kind": "authored SVG diagram / original screenshot viewport"
+    },
+    {
+      "file": "images/state-home-date.svg",
+      "sha256": "8c5c485fa8bc97d0e01faea176a718c9420bbec0a763b41551a8ac835b61c057",
+      "kind": "authored SVG diagram / original screenshot viewport"
+    },
+    {
+      "file": "images/state-home-point.svg",
+      "sha256": "8f1611b02ba7922ed3eb8146077794d075e3239da0243d750f2e804e1a47427c",
+      "kind": "authored SVG diagram / original screenshot viewport"
+    },
+    {
+      "file": "images/state-home.svg",
+      "sha256": "00793c0bd3f3b0ba0be5b2ecfd7fe74fab4fba9dd9c52652cb194c50c668326c",
+      "kind": "authored SVG diagram / original screenshot viewport"
+    },
+    {
+      "file": "images/structure-board.svg",
+      "sha256": "2b771fc09d21cc529e765a79658d20a0bd7cfb6137f8eb887985653362b712f5",
+      "kind": "authored SVG diagram / original screenshot viewport"
+    },
+    {
+      "file": "images/style-samples.svg",
+      "sha256": "ffed93327cbf6a21ba174516065c53a81dae3a73124b1b092f99a36f4c7ca12b",
+      "kind": "authored SVG diagram / original screenshot viewport"
+    }
+  ]
+}

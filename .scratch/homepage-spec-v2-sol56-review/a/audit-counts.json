@@ -1,0 +1,45 @@
+{
+  "scope": {
+    "chapters": ["HP01", "HP02", "HP03", "HP04"],
+    "parentComments": ["C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08", "C10", "C11", "C12", "C13", "C14", "C15", "C16", "C17", "C18", "C20", "C21"],
+    "parentCommentCount": 19
+  },
+  "columns": ["responded", "partial", "omitted", "pendingDecision"],
+  "byComment": {
+    "C01": [3, 0, 0, 0],
+    "C02": [2, 0, 0, 0],
+    "C03": [5, 3, 0, 0],
+    "C04": [6, 0, 0, 0],
+    "C05": [4, 0, 0, 0],
+    "C06": [2, 0, 0, 0],
+    "C07": [2, 1, 0, 0],
+    "C08": [2, 2, 0, 0],
+    "C10": [2, 0, 0, 0],
+    "C11": [4, 1, 0, 0],
+    "C12": [3, 0, 0, 0],
+    "C13": [2, 0, 0, 0],
+    "C14": [3, 0, 0, 0],
+    "C15": [3, 0, 0, 0],
+    "C16": [4, 2, 1, 0],
+    "C17": [5, 0, 0, 0],
+    "C18": [4, 2, 1, 1],
+    "C20": [2, 2, 0, 0],
+    "C21": [2, 1, 0, 0]
+  },
+  "totals": {
+    "subrequirements": 77,
+    "responded": 60,
+    "partial": 14,
+    "omitted": 2,
+    "pendingDecision": 1,
+    "fullyRespondedParents": 11,
+    "affectedParents": 8
+  },
+  "fullyRespondedParents": ["C01", "C02", "C04", "C05", "C06", "C10", "C12", "C13", "C14", "C15", "C17"],
+  "affectedParents": ["C03", "C07", "C08", "C11", "C16", "C18", "C20", "C21"],
+  "notes": {
+    "C10": "Verified against original anchor: current default period is year-to-date; opinion says use this as authoritative. It is not treated as approval of the profit formula.",
+    "D01": "Counted once under C18.8 as pendingDecision, never PASS or omitted.",
+    "C34_C38": "Narrow-screen exclusions are outside this HP01-HP04 parent-comment denominator."
+  }
+}

@@ -1,0 +1,429 @@
+[
+  {
+    "file": "account-menu.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "chart-gap.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "chart-hover.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "cold-error.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "contribution-0.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "contribution-10.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "contribution-20.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "contribution-5.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "contribution-50.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "contribution-history.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "contribution-market.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "controls-states.svg",
+    "reviewers": [
+      "C"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "controls.svg",
+    "reviewers": [
+      "C"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "date-draft.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "date-invalid.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "filter-applied.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "filter-open.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "filter-reset.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "history.svg",
+    "reviewers": [
+      "A",
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "holding-detail.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "holdings-0.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "holdings-10.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "holdings-20.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "holdings-5.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "holdings-50.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "holdings-extreme.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "holdings-last-page.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "holdings-name-tooltip.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "holdings-no-match.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "home-1280.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "evidence/home-1280.png",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "home-1440.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "evidence/home-1440.png",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "library-handoff.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "local-search.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "market-a.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "market-all.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "market-hk.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "market-us.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "metric-detail.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "motion.svg",
+    "reviewers": [
+      "B",
+      "C"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "period-month.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "period-week.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "retry-result.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "scope-menu.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "search-open.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "search-selected.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "snapshot-options.svg",
+    "reviewers": [
+      "A"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "state-error.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "state-loading.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "state-no-fx.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "state-partial.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "state-stale.svg",
+    "reviewers": [
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "state-updating.svg",
+    "reviewers": [
+      "A",
+      "B"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  },
+  {
+    "file": "tokens.svg",
+    "reviewers": [
+      "C"
+    ],
+    "evidence": "对应代理证据清单/浏览器PNG",
+    "result": "已查看；设计判定见报告"
+  }
+]

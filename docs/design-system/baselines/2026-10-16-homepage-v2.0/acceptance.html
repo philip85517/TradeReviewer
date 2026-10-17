@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>V2 设计稿验收记录</title><style>
+:root { color-scheme: dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; color: #e7edf6; background: #0b1220; }
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body { margin: 0; min-width: 0; font-size: 16px; line-height: 1.8; background: #0b1220; }
+.layout { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+nav { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 32px 20px; background: #0d1726; border-right: 1px solid #263650; }
+nav strong { display: block; margin-bottom: 5px; font-size: 14px; color: #e7edf6; letter-spacing: .03em; }
+nav .nav-meta { margin: 0 0 18px; color: #8292a8; font-size: 12px; line-height: 1.5; }
+nav a { display: block; padding: 3px 0; color: #adbbcf; text-decoration: none; font-size: 13px; line-height: 1.5; }
+nav a:hover, nav a:focus-visible, nav a.is-current { color: #8cbdff; text-decoration: none; }
+nav a.is-current { border-left: 2px solid #3797ff; padding-left: 8px; margin-left: -10px; }
+main { width: min(100%, 1032px); padding: 40px 40px 88px; margin: 0 auto; overflow-wrap: anywhere; }
+h1 { margin: 0 0 20px; font-size: 32px; line-height: 1.3; color: #e7edf6; }
+h2 { margin: 48px 0 14px; font-size: 24px; line-height: 1.5; color: #e7edf6; border-bottom: 1px solid #263650; padding-bottom: 6px; }
+h3, h4, h5, h6 { margin: 32px 0 10px; line-height: 1.5; color: #e7edf6; }
+p { margin: 0 0 18px; }
+a { color: #8cbdff; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px solid #9ecaff; outline-offset: 2px; }
+ul, ol { margin: 0 0 20px; padding-left: 28px; }
+li { margin: 2px 0; }
+strong { color: #e7edf6; }
+code { padding: .1em .35em; border-radius: 4px; background: #182337; font-size: .9em; }
+pre { overflow-x: auto; margin: 20px 0; padding: 16px; border-radius: 6px; background: #111a2b; color: #e7edf6; line-height: 1.5; }
+.table-wrap { max-width: 100%; overflow-x: auto; margin: 18px 0 24px; }
+table { min-width: 620px; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
+th, td { padding: 9px 12px; border: 1px solid #263650; text-align: left; vertical-align: top; }
+th { background: #182337; color: #e7edf6; font-weight: 650; }
+.figure { margin: 24px 0 8px; }
+.plate-figure { width: 100%; }
+.image-pan { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.plate-figure .image-pan img { width: 952px; max-width: none; }
+.image-pan-hint { display: block; margin-bottom: 5px; color: #8292a8; font-size: 12px; }
+.image-action { display: inline-block; margin: 7px 0 1px; font-size: 12px; }
+.document-image img { max-width: 100%; }
+.image-link { display: block; }
+img { display: block; max-width: 100%; height: auto; border: 1px solid #263650; }
+.caption { display: block; margin: 0 0 20px; font-size: 12px; line-height: 1.5; color: #adbbcf; }
+h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
+[data-comment-block].review-highlight { background: #163d63; box-shadow: 0 0 0 2px #3797ff; border-radius: 3px; }
+@media (max-width: 1080px) { .layout { grid-template-columns: 210px minmax(0, 1fr); } main { padding-left: 32px; padding-right: 32px; } }
+@media (max-width: 720px) { .layout { display: block; } nav { position: static; height: auto; max-height: 42vh; border-right: 0; border-bottom: 1px solid #263650; padding: 18px 20px; } main { padding: 28px 18px 56px; } h1 { font-size: 32px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+.replay-demo { margin: 28px 0; padding: 22px; border: 1px solid #31517a; border-radius: 10px; background: #101c2f; }
+.replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; }
+.replay-demo h3 { margin: 0 0 6px; font-size: 20px; }
+.demo-kicker { margin: 0 0 3px; color: #8cbdff; font-size: 12px; letter-spacing: .04em; }
+.demo-limit { margin: 0; color: #adbbcf; font-size: 14px; line-height: 1.6; }
+.replay-controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.replay-controls button { min-height: 36px; padding: 5px 11px; border: 1px solid #45678f; border-radius: 6px; color: #e7edf6; background: #182a43; cursor: pointer; font: inherit; font-size: 13px; }
+.replay-controls button:hover:not(:disabled), .replay-controls button:focus-visible { background: #24558a; }
+.replay-controls button:disabled { opacity: .45; cursor: default; }
+.replay-stage { margin-top: 18px; min-height: 510px; }
+.replay-frame { width: 100%; height: 510px; margin: 0; }
+.replay-frame[hidden] { display: none; }
+.replay-frame-label { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; color: #d4e1f2; font-size: 13px; }
+.replay-frame-label span:last-child { color: #d6b66c; }
+.replay-frame img { display: block; width: 100%; height: 450px; object-fit: contain; background: #0b1220; }
+.replay-frame figcaption { margin-top: 8px; color: #adbbcf; font-size: 13px; line-height: 1.6; }
+.replay-comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.replay-comparison article { border: 1px solid #31517a; border-radius: 8px; padding: 14px; background: #0b1729; }
+.replay-comparison h4 { margin: 0 0 8px; color: #eef6ff; }
+.replay-comparison dl { margin: 0; }
+.replay-comparison dl > div { display: grid; grid-template-columns: 10.5rem minmax(0, 1fr); gap: 8px; padding: 7px 0; border-top: 1px solid #243d5e; }
+.replay-comparison dt { color: #dcecff; font-weight: 700; }
+.replay-comparison dd { margin: 0; color: #b8c9df; }
+.replay-comparison p { margin: 10px 0 0; color: #9eb4cf; font-size: 13px; }
+.replay-progress { margin: 12px 0 0; color: #8cbdff; font-size: 13px; }
+.source-details { margin: 22px 0; padding: 16px; border: 1px solid #31517a; border-radius: 8px; background: #0d192b; }
+.source-details h3 { margin: 0 0 5px; font-size: 17px; }
+.source-details-intro { margin: 0 0 12px; color: #adbbcf; font-size: 13px; }
+.source-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.source-detail-card { min-width: 0; margin: 0; }
+.source-detail-label { margin-bottom: 6px; color: #dcecff; font-weight: 700; font-size: 13px; }
+.source-crop { position: relative; width: 100%; overflow-x: auto; overflow-y: hidden; background: #0b1220; border: 1px solid #345477; }
+.source-crop .image-link { position: relative; display: block; width: 400px; height: 100%; overflow: hidden; }
+.source-crop img { position: absolute; left: 0; top: 0; max-width: none; width: 1440px; height: auto; border: 0; }
+.source-crop figcaption { color: #adbbcf; }
+.crop-date { height: 55px; }
+.crop-date img { left: -100px; top: -213px; }
+.crop-event { height: 132px; max-width: 290px; }
+.crop-event .image-link { width: 290px; }
+.crop-event img { left: -1034px; top: -724px; }
+.crop-replay-plot { height: 260px; max-width: 270px; }
+.crop-replay-plot .image-link, .crop-replay-before .image-link { width: 270px; }
+.crop-replay-plot img { left: -740px; top: -385px; }
+.crop-replay-before { height: 260px; max-width: 270px; }
+.crop-replay-before img { left: -740px; top: -385px; }
+.crop-replay-date { height: 55px; }
+.crop-replay-date .image-link { width: 480px; }
+.crop-replay-date img { left: -100px; top: -213px; }
+@media (max-width: 720px) { .replay-demo { padding: 16px; } .replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: block; } .replay-controls { justify-content: flex-start; margin-top: 12px; } .replay-stage { min-height: 460px; } .replay-frame { height: 460px; } .replay-frame img { height: 400px; } .replay-comparison { grid-template-columns: 1fr; } .replay-comparison dl > div { grid-template-columns: 8.5rem minmax(0, 1fr); } }
+@media (max-width: 720px) { .source-detail-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .replay-frame img { transition: none; } }
+</style></head>
+<body><div class="layout"><nav aria-label="文档目录"><strong>V2 设计稿验收记录</strong><p class="nav-meta">VDF-002 · 文档 2.0 · 本地可读副本</p><a href="#v2-设计稿验收记录">V2 设计稿验收记录</a><a href="#验收触发与责任">验收触发与责任</a><a href="#版本绑定覆盖">版本绑定覆盖</a><a href="#最终证据与预览">最终证据与预览</a><a href="#未决项与复用规则">未决项与复用规则</a></nav><main class="rule-details" id="companion-document"><header class="reader-header"><p class="document-status">文档附页 · 2.0</p><a class="review-open" href="visual-spec.html">返回正文阅读器</a></header><h1 id="v2-设计稿验收记录">V2 设计稿验收记录</h1>
+<p>日期：2026-10-16。范围：V1 评论驱动的首页视觉规范 V2、静态设计图、可评论阅读器。状态：设计评审版可交付。37 条设计覆盖 PASS，C34/C38 用户排除；D01 去留待用户决定。没有产品实现或业务数据库写入。</p>
+<h2 id="验收触发与责任">验收触发与责任</h2>
+<p>本任务修改图稿、布局规范和文档分镜，按项目 frontend-control-audit 流程检查设计与阅读器。协调者负责最终正文、全部生成器、整页一致性和浏览器验收；未实施这些改动的 v2_review 独立逐项对照原评论与实际渲染图。原审查失败保留，最终以 <a href="evidence/independent-review.html">独立审查 R4</a> 为准。</p>
+<h2 id="版本绑定覆盖">版本绑定覆盖</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">门槛</th>
+<th scope="col">结果与直接证据</th>
+<th scope="col">边界</th>
+</tr></thead><tbody>
+<tr>
+<td>39 条原评论与子要求</td>
+<td>37 PASS、2 用户排除；原 ID 保留，<a href="comment-review.html">逐条记录</a>、<a href="DESIGN-COVERAGE.html">精确映射</a></td>
+<td>D01 的 A/B 方案已呈现，去留未定</td>
+</tr>
+<tr>
+<td>视觉图稿</td>
+<td>53 张 SVG 均有效并嵌入；独立 QuickLook 渲染直接比较；协调者实际浏览器看 1440/1280 原宽长画板</td>
+<td>静态设计，不是产品截图</td>
+</tr>
+<tr>
+<td>量级与状态</td>
+<td>持仓/贡献 0/5/10/20/50；搜索空态、极端值、8槽末页；四市场/三期间、更新、缺行情、缺汇率、缓存失败、无缓存失败、重试四态</td>
+<td>场景为合成数据；不同独立示例不代表同一真实账户</td>
+</tr>
+<tr>
+<td>阅读器</td>
+<td>实际视口1280×720，文档宽1265，无页面水平溢出；可见图片无破图；6组分镜可切换；播放/暂停/重播已检查</td>
+<td>图板自身横向滚动为原尺寸查看设计；未虚报1440×1000浏览器视口</td>
+</tr>
+<tr>
+<td>评论持久化</td>
+<td>隔离3080服务保存图片锚点评论，文件revision1/count1，刷新后恢复；<a href="evidence/comment-restored.png">截图</a>、<a href="evidence/browser-checks.json">检查数据</a></td>
+<td>没有污染3078正式评论；未重复测试未修改的文字选区和导入导出功能</td>
+</tr>
+<tr>
+<td>V1冻结完整性</td>
+<td>64 个文件 SHA256 未变；<a href="evidence/integrity.json">完整性结果</a></td>
+<td>V1 原评论状态、作者和历史未改</td>
+</tr>
+<tr>
+<td>产品真实交互、业务数据库、物理触摸</td>
+<td>NOT APPLICABLE：仅设计文档任务</td>
+<td>后续实施必须独立验证点击/键盘、数据持久化和1440×1000/1280×800目标视口</td>
+</tr>
+</tbody></table></div>
+<h2 id="最终证据与预览">最终证据与预览</h2>
+<ul>
+<li><a href="evidence/home-1440.png">1440 原宽完整画板浏览器截图</a></li>
+<li><a href="evidence/home-1280.png">1280 原宽完整画板浏览器截图</a></li>
+<li><a href="evidence/reader.png">阅读器截图</a></li>
+<li><a href="evidence/exception-storyboard.png">异常分镜切换截图</a></li>
+<li><a href="sources.html">来源与借鉴边界</a>：实际查阅 TradingView 官方 watchlists、symbol search、chart overrides；不声称复刻其私有字体/设计系统。</li>
+</ul>
+<p><a href="visual-spec.html">打开 V2</a>。服务3078继续运行；完整带路径启动命令及重建/评论归档方法见 <a href="README.html">README</a>。本次文件已落盘，未将 V2 推送远端。</p>
+<h2 id="未决项与复用规则">未决项与复用规则</h2>
+<p>D01：建议把“查看该日敞口”置于曲线图点详情二级入口；是否保留由用户决定。没有使用频次数据，不假称已证明需求。日期检索/待复盘队列迁移交易库已经确定，不属于此待决项。</p>
+<p>子模块复用 HP08 的 tokens、11 个原子控件与适用状态矩阵；必须同时继承尺寸、状态、键盘路径、作用域和错误恢复合同。新需求改变合同需记录差异，不能只复制颜色。</p>
+<p>后续正式评论写入被 Git 忽略的实时 JSON。评审完成后须按 README 冻结文档及评论快照并提交，才能在另一机器恢复；单独提交 HTML 不会自动带上新增评论。</p></main></div></body></html>

@@ -1,0 +1,1136 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>首页 V2.3 共享控件状态手册</title><style>
+:root { color-scheme: dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; color: #e7edf6; background: #0b1220; }
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body { margin: 0; min-width: 0; font-size: 16px; line-height: 1.8; background: #0b1220; }
+.layout { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+nav { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 32px 20px; background: #0d1726; border-right: 1px solid #263650; }
+nav strong { display: block; margin-bottom: 5px; font-size: 14px; color: #e7edf6; letter-spacing: .03em; }
+nav .nav-meta { margin: 0 0 18px; color: #8292a8; font-size: 12px; line-height: 1.5; }
+nav a { --nav-indent: 0px; position: relative; display: block; padding: 3px 8px 3px calc(8px + var(--nav-indent)); color: #adbbcf; text-decoration: none; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+nav a.toc-level-1 { --nav-indent: 0px; margin-top: 4px; color: #e7edf6; font-size: 14px; font-weight: 700; }
+nav a.toc-level-2 { --nav-indent: 12px; color: #c8d5e6; font-size: 13px; font-weight: 650; }
+nav a.toc-level-3 { --nav-indent: 24px; font-size: 12.5px; }
+nav a.toc-level-4, nav a.toc-level-5, nav a.toc-level-6 { --nav-indent: 36px; font-size: 12px; }
+nav a:hover, nav a:focus-visible, nav a.is-current { color: #8cbdff; text-decoration: none; }
+nav a::before { content: ""; position: absolute; left: 0; top: 3px; bottom: 3px; width: 2px; border-radius: 2px; background: #3797ff; opacity: 0; }
+nav a.is-current::before { opacity: 1; }
+main { width: min(100%, 1032px); padding: 40px 40px 88px; margin: 0 auto; overflow-wrap: anywhere; }
+h1 { margin: 0 0 20px; font-size: 32px; line-height: 1.3; color: #e7edf6; }
+h2 { margin: 48px 0 14px; font-size: 24px; line-height: 1.5; color: #e7edf6; border-bottom: 1px solid #263650; padding-bottom: 6px; }
+h3, h4, h5, h6 { margin: 32px 0 10px; line-height: 1.5; color: #e7edf6; }
+p { margin: 0 0 18px; }
+a { color: #8cbdff; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px solid #9ecaff; outline-offset: 2px; }
+ul, ol { margin: 0 0 20px; padding-left: 28px; }
+li { margin: 2px 0; }
+strong { color: #e7edf6; }
+code { padding: .1em .35em; border-radius: 4px; background: #182337; font-size: .9em; }
+pre { overflow-x: auto; margin: 20px 0; padding: 16px; border-radius: 6px; background: #111a2b; color: #e7edf6; line-height: 1.5; }
+.table-wrap { max-width: 100%; overflow-x: auto; margin: 18px 0 24px; }
+table { min-width: 620px; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
+th, td { padding: 9px 12px; border: 1px solid #263650; text-align: left; vertical-align: top; }
+th { background: #182337; color: #e7edf6; font-weight: 650; }
+.figure { margin: 24px 0 8px; }
+.plate-figure { width: 100%; }
+.image-pan { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.plate-figure .image-pan img { width: 952px; max-width: none; }
+.image-pan-hint { display: block; margin-bottom: 5px; color: #8292a8; font-size: 12px; }
+.image-action { display: inline-block; margin: 7px 0 1px; font-size: 12px; }
+.document-image img { max-width: 100%; }
+.image-link { display: block; }
+img { display: block; max-width: 100%; height: auto; border: 1px solid #263650; }
+.caption { display: block; margin: 0 0 20px; font-size: 12px; line-height: 1.5; color: #adbbcf; }
+h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
+[data-comment-block].review-highlight { background: #163d63; box-shadow: 0 0 0 2px #3797ff; border-radius: 3px; }
+@media (max-width: 1080px) { .layout { grid-template-columns: 210px minmax(0, 1fr); } main { padding-left: 32px; padding-right: 32px; } }
+@media (max-width: 720px) { .layout { display: block; } nav { position: static; height: auto; max-height: 42vh; border-right: 0; border-bottom: 1px solid #263650; padding: 18px 20px; } main { padding: 28px 18px 56px; } h1 { font-size: 32px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+.replay-demo { margin: 28px 0; padding: 22px; border: 1px solid #31517a; border-radius: 10px; background: #101c2f; }
+.replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; }
+.replay-demo h3 { margin: 0 0 6px; font-size: 20px; }
+.demo-kicker { margin: 0 0 3px; color: #8cbdff; font-size: 12px; letter-spacing: .04em; }
+.demo-limit { margin: 0; color: #adbbcf; font-size: 14px; line-height: 1.6; }
+.replay-controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.replay-controls button { min-height: 36px; padding: 5px 11px; border: 1px solid #45678f; border-radius: 6px; color: #e7edf6; background: #182a43; cursor: pointer; font: inherit; font-size: 13px; }
+.replay-controls button:hover:not(:disabled), .replay-controls button:focus-visible { background: #24558a; }
+.replay-controls button:disabled { opacity: .45; cursor: default; }
+.replay-stage { margin-top: 18px; min-height: 510px; }
+.replay-frame { display: flow-root; width: 100%; height: auto; margin: 0; }
+.replay-frame[hidden] { display: none; }
+.replay-frame-label { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; color: #d4e1f2; font-size: 13px; }
+.replay-frame-label span:last-child { color: #d6b66c; }
+.replay-frame img { display: block; width: 100%; height: 450px; object-fit: contain; background: #0b1220; }
+.replay-frame figcaption { margin-top: 8px; color: #adbbcf; font-size: 13px; line-height: 1.6; }
+.replay-comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.replay-comparison article { border: 1px solid #31517a; border-radius: 8px; padding: 14px; background: #0b1729; }
+.replay-comparison h4 { margin: 0 0 8px; color: #eef6ff; }
+.replay-comparison dl { margin: 0; }
+.replay-comparison dl > div { display: grid; grid-template-columns: 10.5rem minmax(0, 1fr); gap: 8px; padding: 7px 0; border-top: 1px solid #243d5e; }
+.replay-comparison dt { color: #dcecff; font-weight: 700; }
+.replay-comparison dd { margin: 0; color: #b8c9df; }
+.replay-comparison p { margin: 10px 0 0; color: #9eb4cf; font-size: 13px; }
+.replay-progress { margin: 12px 0 0; color: #8cbdff; font-size: 13px; }
+.source-details { margin: 22px 0; padding: 16px; border: 1px solid #31517a; border-radius: 8px; background: #0d192b; }
+.source-details h3 { margin: 0 0 5px; font-size: 17px; }
+.source-details-intro { margin: 0 0 12px; color: #adbbcf; font-size: 13px; }
+.source-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.source-detail-card { min-width: 0; margin: 0; }
+.source-detail-label { margin-bottom: 6px; color: #dcecff; font-weight: 700; font-size: 13px; }
+.source-crop { position: relative; width: 100%; overflow-x: auto; overflow-y: hidden; background: #0b1220; border: 1px solid #345477; }
+.source-crop .image-link { position: relative; display: block; width: 400px; height: 100%; overflow: hidden; }
+.source-crop img { position: absolute; left: 0; top: 0; max-width: none; width: 1440px; height: auto; border: 0; }
+.source-crop figcaption { color: #adbbcf; }
+.crop-date { height: 55px; }
+.crop-date img { left: -100px; top: -213px; }
+.crop-event { height: 132px; max-width: 290px; }
+.crop-event .image-link { width: 290px; }
+.crop-event img { left: -1034px; top: -724px; }
+.crop-replay-plot { height: 260px; max-width: 270px; }
+.crop-replay-plot .image-link, .crop-replay-before .image-link { width: 270px; }
+.crop-replay-plot img { left: -740px; top: -385px; }
+.crop-replay-before { height: 260px; max-width: 270px; }
+.crop-replay-before img { left: -740px; top: -385px; }
+.crop-replay-date { height: 55px; }
+.crop-replay-date .image-link { width: 480px; }
+.crop-replay-date img { left: -100px; top: -213px; }
+@media (max-width: 720px) { .replay-demo { padding: 16px; } .replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: block; } .replay-controls { justify-content: flex-start; margin-top: 12px; } .replay-stage { min-height: 460px; } .replay-frame { height: auto; } .replay-frame img { height: 400px; } .replay-comparison { grid-template-columns: 1fr; } .replay-comparison dl > div { grid-template-columns: 8.5rem minmax(0, 1fr); } }
+@media (max-width: 720px) { .source-detail-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .replay-frame img { transition: none; } }
+</style></head>
+<body><div class="layout"><nav aria-label="文档目录"><strong>首页 V2.3 控件状态手册</strong><p class="nav-meta">文档 2.3 · 控件与参考附页</p><a class="toc-level-1" href="#首页-v23-控件状态手册" data-target="首页-v23-控件状态手册">首页 V2.3 控件状态手册</a><a class="toc-level-2" href="#全局对齐与内层尺寸" data-target="全局对齐与内层尺寸">全局对齐与内层尺寸</a><a class="toc-level-2" href="#图标按钮iconbutton" data-target="图标按钮iconbutton">图标按钮（IconButton）</a><a class="toc-level-2" href="#分段标签segmentedtabs" data-target="分段标签segmentedtabs">分段标签（SegmentedTabs）</a><a class="toc-level-2" href="#账户选择器select" data-target="账户选择器select">账户选择器（Select）</a><a class="toc-level-2" href="#搜索浮层popover" data-target="搜索浮层popover">搜索浮层（Popover）</a><a class="toc-level-2" href="#筛选浮层filterpopover" data-target="筛选浮层filterpopover">筛选浮层（FilterPopover）</a><a class="toc-level-2" href="#筛选条件标签token" data-target="筛选条件标签token">筛选条件标签（Token）</a><a class="toc-level-2" href="#指标卡metric" data-target="指标卡metric">指标卡（Metric）</a><a class="toc-level-2" href="#状态徽章statusbadge" data-target="状态徽章statusbadge">状态徽章（StatusBadge）</a><a class="toc-level-2" href="#持仓数据表datatable" data-target="持仓数据表datatable">持仓数据表（DataTable）</a><a class="toc-level-2" href="#图表点提示charttooltip" data-target="图表点提示charttooltip">图表点提示（ChartTooltip）</a><a class="toc-level-2" href="#空结果状态emptystate" data-target="空结果状态emptystate">空结果状态（EmptyState）</a><a class="toc-level-2" href="#重试动作retryaction" data-target="重试动作retryaction">重试动作（RetryAction）</a><a class="toc-level-2" href="#使用边界" data-target="使用边界">使用边界</a></nav><main class="rule-details" id="companion-document"><header class="reader-header"><p class="document-status">共享控件附页 · 2.3</p><p class="manual-count">控件覆盖：12 类；96 个状态行；85 个适用状态、11 个不适用/不渲染状态。每类保留完整八态合同；不适用状态仍保留在表格中用于说明边界。</p><a class="review-open" href="../visual-spec.html">返回正文阅读器</a></header><h1 id="首页-v23-控件状态手册">首页 V2.3 共享控件状态手册</h1>
+<p>版本身份：本手册属于当前 V2.3 设计规范；文中出现的 V2.2 仅表示继承的历史合同，不是当前版本标题或验收结论。</p>
+<p>这份手册按控件用途整理首页的交互方式。阅读每章时，先看尺寸基准，再按“默认、悬停、聚焦、按下、禁用、加载、空、错误”的顺序了解控件在不同情境下如何出现、如何操作，以及异常时怎样回到稳定状态。</p>
+<p>表格中的尺寸是该控件的状态样例尺寸；账户选择器的样例宽度为 180px，首页页头实际建议宽度为 176px，两者是同一控件在不同位置的布局差异，不产生新的尺寸规范。每个状态样例还应与 <a href="integration-assets/images/single-frame/visual-samples-board--full.svg">布局与颜色样例板</a> 对照；样例中的文字、表头、金额和颜色 token 是可视化校准，不是新增入口。</p>
+<h2 id="全局对齐与内层尺寸">全局对齐与内层尺寸</h2>
+<p>按钮、分段标签、日期快捷项和“应用”在命中盒内水平、垂直居中；输入文本左对齐，金额表头与数据右对齐，名称、说明和错误文案左对齐。持仓表列比例固定为 25% / 8% / 10% / 11% / 11% / 15% / 14% / 6%，表头和值由同一列定义生成锚点，数值共用右边界，查看动作在 6% 列中心的 36px 命中盒内居中。列定义同时给出最小宽度与溢出策略。全局搜索使用覆盖页头与首页内容的全屏搜索遮罩，桌面舞台最大 960px、左右至少 24px，结果区独立滚动并阻断底层操作；窄屏使用两侧 24px 内边距。交易库持仓搜索保持页面内的独立筛选输入，不打开全屏搜索遮罩。筛选浮层宽 320px，字段高 36px。详情中的“查看交易”在主动作命中盒内居中。</p>
+<p>价格展示保留两位小数，原始精度只在详情、提示、悬停/聚焦读数或复制/导出中提供。金额按绝对值达到 1 万显示“万”、达到 1 亿显示“亿”，均保留两位小数；不增加“万亿”单位。悬停或键盘聚焦查看完整值，复制和导出均保留完整值；单价仍保留两位小数。展示缩写不改变原始数据。表格保持八行槽；“没有持仓”和“搜索无匹配”是两种不同空态，后者只保留输入框尾部 X 作为清空入口，不增加重复空态按钮。日期快捷范围使用自然本周、自然本月、自然本年，并显示提交后的实际起止日期；具体日期/区间使用日历图标，纯年份使用下拉箭头，静态日期不使用图标。历史年份选择只刷新历史模块，历史下方插图属于同一模块的局部状态示意，不是新页面。</p>
+<h2 id="图标按钮iconbutton">图标按钮（IconButton）</h2>
+<p>用于搜索、筛选、查看详情等单一图标动作；每个按钮都有清楚的名称，桌面命中区保持 36px。</p>
+<p>尺寸基准：外观 36×36px；命中 36×36px。</p>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="图标按钮的八种状态示例"><a class="image-link" href="images/atom-iconbutton.svg"><img data-comment-image="atom-iconbutton" data-comment-occurrence="atom-iconbutton@21" src="images/atom-iconbutton.svg" alt="图标按钮的八种状态示例" width="1100" height="1100"></a></div><a class="image-action" href="images/atom-iconbutton.svg">查看原尺寸</a>
+</figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">状态</th>
+<th scope="col">尺寸</th>
+<th scope="col">触发</th>
+<th scope="col">呈现</th>
+<th scope="col">退出</th>
+<th scope="col">键盘</th>
+<th scope="col">恢复</th>
+</tr></thead><tbody>
+<tr>
+<td>默认</td>
+<td>外观 36×36px；命中 36×36px</td>
+<td>进入页面或恢复默认值</td>
+<td>显示稳定默认内容与可操作边界</td>
+<td>激活、悬停或聚焦进入下一状态</td>
+<td>按 Tab 到达；Enter 或 Space 键激活</td>
+<td>数据缺失显示明确占位并保留上下文</td>
+</tr>
+<tr>
+<td>悬停</td>
+<td>外观 36×36px；命中 36×36px</td>
+<td>指针进入按钮；用 120ms 渐变立即开始高亮，提示框延迟 300ms</td>
+<td>按钮立即变亮；300ms 后显示提示框</td>
+<td>指针离开按钮或关闭提示框</td>
+<td>键盘操作不依赖悬停；Tab 可进入同一动作</td>
+<td>错误提示框显示原因；等待全局修复入口处理</td>
+</tr>
+<tr>
+<td>聚焦</td>
+<td>外观 36×36px；命中 36×36px</td>
+<td>Tab 或 Shift+Tab 将焦点移入</td>
+<td>显示 2px 焦点环与当前值，焦点可见</td>
+<td>按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消</td>
+<td>Tab 或 Shift+Tab 移动；Esc 键取消</td>
+<td>焦点环不遮挡内容；失败后焦点留在原控件</td>
+</tr>
+<tr>
+<td>按下</td>
+<td>外观 36×36px；命中 36×36px</td>
+<td>指针按下并完成点击，或按 Enter 或 Space 键</td>
+<td>显示按下反馈并提交一次动作</td>
+<td>动作完成、取消或返回稳定状态</td>
+<td>Enter 或 Space 键只提交一次；Esc 键取消未提交动作</td>
+<td>重复提交会锁住按钮；失败后恢复默认并保留错误原因</td>
+</tr>
+<tr>
+<td>禁用</td>
+<td>外观 36×36px；命中 36×36px</td>
+<td>权限、不可用数据或父级表单明确设置禁用</td>
+<td>降低对比度且不响应指针/键盘激活</td>
+<td>权限恢复或父级表单重新启用</td>
+<td>按 Tab 跳过；Enter 或 Space 键不产生动作</td>
+<td>禁用原因必须由相邻文案说明，不伪造成功</td>
+</tr>
+<tr>
+<td>加载</td>
+<td>外观 36×36px；命中 36×36px</td>
+<td>点击查看动作后请求等待中</td>
+<td>显示旋转环和“更新中”；锁定重复点击</td>
+<td>请求完成或出现错误提示框</td>
+<td>按 Tab 保持顺序；等待期间按 Enter 或 Space 键不重复提交</td>
+<td>超时保留按钮与错误原因；等待全局修复入口处理</td>
+</tr>
+<tr>
+<td>空</td>
+<td>不适用</td>
+<td>不渲染（图标动作始终有明确动作名；没有空内容状态）</td>
+<td>不渲染</td>
+<td>不渲染</td>
+<td>不适用</td>
+<td>不适用</td>
+</tr>
+<tr>
+<td>错误</td>
+<td>外观 36×36px；命中 36×36px</td>
+<td>查看动作返回错误</td>
+<td>显示错误图标与原因提示框</td>
+<td>关闭提示框或返回稳定状态</td>
+<td>Tab 到错误说明；Esc 键关闭说明</td>
+<td>错误原因保留；等待全局修复入口处理</td>
+</tr>
+</tbody></table></div>
+<h2 id="分段标签segmentedtabs">分段标签（SegmentedTabs）</h2>
+<p>用于全部、A股、港股、美股等互斥范围切换；选择生效后联动对应期间数据。</p>
+<p>尺寸基准：外观 244×36px；命中 244×36px。</p>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="分段标签的八种状态示例"><a class="image-link" href="images/atom-segmentedtabs.svg"><img data-comment-image="atom-segmentedtabs" data-comment-occurrence="atom-segmentedtabs@40" src="images/atom-segmentedtabs.svg" alt="分段标签的八种状态示例" width="1100" height="1100"></a></div><a class="image-action" href="images/atom-segmentedtabs.svg">查看原尺寸</a>
+</figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">状态</th>
+<th scope="col">尺寸</th>
+<th scope="col">触发</th>
+<th scope="col">呈现</th>
+<th scope="col">退出</th>
+<th scope="col">键盘</th>
+<th scope="col">恢复</th>
+</tr></thead><tbody>
+<tr>
+<td>默认</td>
+<td>外观 244×36px；命中 244×36px</td>
+<td>进入页面或恢复默认值</td>
+<td>显示稳定默认内容与可操作边界</td>
+<td>激活、悬停或聚焦进入下一状态</td>
+<td>按 Tab 到达；方向键/Home/End 选择；Enter 或 Space 键提交</td>
+<td>数据缺失显示明确占位并保留上下文</td>
+</tr>
+<tr>
+<td>悬停</td>
+<td>外观 244×36px；命中 244×36px</td>
+<td>指针进入单一分段；用 120ms 渐变立即开始高亮目标段</td>
+<td>仅目标段悬停边框/底色变化，选中段保持选中</td>
+<td>指针离开目标段</td>
+<td>键盘操作不依赖悬停；按 Tab 到达后方向键切换</td>
+<td>不提交、不改变选中段；离开后恢复</td>
+</tr>
+<tr>
+<td>聚焦</td>
+<td>外观 244×36px；命中 244×36px</td>
+<td>Tab 或 Shift+Tab 将焦点移入</td>
+<td>显示 2px 焦点环与当前值，焦点可见</td>
+<td>按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消</td>
+<td>方向键/Home/End 移动；Enter 或 Space 键提交；Esc 键取消</td>
+<td>焦点环不遮挡内容；失败后焦点留在原控件</td>
+</tr>
+<tr>
+<td>按下</td>
+<td>外观 244×36px；命中 244×36px</td>
+<td>指针按下并完成点击，或按 Enter 或 Space 键</td>
+<td>显示按下反馈并提交一次动作</td>
+<td>动作完成、取消或返回稳定状态</td>
+<td>Enter 或 Space 键只提交当前分段；Esc 键取消</td>
+<td>重复提交会锁住按钮；失败后恢复默认并保留错误原因</td>
+</tr>
+<tr>
+<td>禁用</td>
+<td>外观 244×36px；命中 244×36px</td>
+<td>权限、不可用数据或父级表单明确设置禁用</td>
+<td>降低对比度且不响应指针/键盘激活</td>
+<td>权限恢复或父级表单重新启用</td>
+<td>按 Tab 跳过；方向键与 Enter 不产生选择</td>
+<td>禁用原因必须由相邻文案说明，不伪造成功</td>
+</tr>
+<tr>
+<td>加载</td>
+<td>外观 244×36px；命中 244×36px</td>
+<td>点击分段后请求等待中</td>
+<td>保留旧选中段并显示请求中标记</td>
+<td>请求成功切换，或失败回滚旧段</td>
+<td>方向键可读当前分段；Enter 或 Space 键在等待期间不重复提交</td>
+<td>迟到响应按请求序号丢弃；失败显示回滚原因</td>
+</tr>
+<tr>
+<td>空</td>
+<td>不适用</td>
+<td>不渲染（分段组始终至少包含一个分段）</td>
+<td>不渲染</td>
+<td>不渲染</td>
+<td>不适用</td>
+<td>不适用</td>
+</tr>
+<tr>
+<td>错误</td>
+<td>外观 244×36px；命中 244×36px</td>
+<td>分段请求失败</td>
+<td>保留旧选中段并显示失败文案</td>
+<td>离开错误状态或返回稳定选择</td>
+<td>Tab 到错误文案；方向键不改变旧分段；Esc 键返回</td>
+<td>迟到响应丢弃；失败回滚到旧段</td>
+</tr>
+</tbody></table></div>
+<h2 id="账户选择器select">账户选择器（Select）</h2>
+<p>用于选择当前账户；首页只显示实盘账户，长名称省略但可读全称。</p>
+<p>尺寸基准：外观 180×36px；命中 180×36px。</p>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="账户选择器的八种状态示例"><a class="image-link" href="images/atom-select.svg"><img data-comment-image="atom-select" data-comment-occurrence="atom-select@59" src="images/atom-select.svg" alt="账户选择器的八种状态示例" width="1100" height="1100"></a></div><a class="image-action" href="images/atom-select.svg">查看原尺寸</a>
+</figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">状态</th>
+<th scope="col">尺寸</th>
+<th scope="col">触发</th>
+<th scope="col">呈现</th>
+<th scope="col">退出</th>
+<th scope="col">键盘</th>
+<th scope="col">恢复</th>
+</tr></thead><tbody>
+<tr>
+<td>默认</td>
+<td>外观 180×36px；命中 180×36px</td>
+<td>进入页面或恢复默认值</td>
+<td>显示稳定默认内容与可操作边界</td>
+<td>激活、悬停或聚焦进入下一状态</td>
+<td>按 Tab 到达；Enter 或 Space 键打开菜单；方向键选项</td>
+<td>数据缺失显示明确占位并保留上下文</td>
+</tr>
+<tr>
+<td>悬停</td>
+<td>外观 180×36px；命中 180×36px</td>
+<td>指针进入选择框；用 120ms 渐变立即开始高亮</td>
+<td>选择框底色变化，不打开菜单</td>
+<td>指针离开选择框或点击打开</td>
+<td>键盘操作不依赖悬停；Tab 后按 Enter 打开菜单</td>
+<td>值保持不变</td>
+</tr>
+<tr>
+<td>聚焦</td>
+<td>外观 180×36px；命中 180×36px</td>
+<td>Tab 或 Shift+Tab 将焦点移入</td>
+<td>显示 2px 焦点环与当前值，焦点可见</td>
+<td>按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消</td>
+<td>方向键移动菜单选项；按 Enter 选择；Esc 键返回触发器</td>
+<td>焦点环不遮挡内容；失败后焦点留在原控件</td>
+</tr>
+<tr>
+<td>按下</td>
+<td>外观 180×36px；命中 180×36px</td>
+<td>指针按下并完成点击，或按 Enter 或 Space 键</td>
+<td>显示按下反馈并提交一次动作</td>
+<td>动作完成、取消或返回稳定状态</td>
+<td>方向键移动；按 Enter 选择账户；Esc 键关闭菜单</td>
+<td>重复提交会锁住按钮；失败后恢复默认并保留错误原因</td>
+</tr>
+<tr>
+<td>禁用</td>
+<td>外观 180×36px；命中 180×36px</td>
+<td>权限、不可用数据或父级表单明确设置禁用</td>
+<td>降低对比度且不响应指针/键盘激活</td>
+<td>权限恢复或父级表单重新启用</td>
+<td>按 Tab 跳过；Enter 或 Space 键不打开菜单</td>
+<td>禁用原因必须由相邻文案说明，不伪造成功</td>
+</tr>
+<tr>
+<td>加载</td>
+<td>外观 180×36px；命中 180×36px</td>
+<td>账户列表请求等待中</td>
+<td>显示加载账户中与旋转提示，保留当前值</td>
+<td>请求完成打开可选项，或显示错误状态</td>
+<td>按 Tab 保持选择顺序；Enter 或 Space 键在加载期间不重复打开</td>
+<td>失败保留原值并显示错误原因；等待全局修复入口处理</td>
+</tr>
+<tr>
+<td>空</td>
+<td>外观 180×36px；命中 180×36px</td>
+<td>账户列表为空</td>
+<td>显示暂无可选账户与导入账户下一步按钮</td>
+<td>点击/Enter 导入账户，或 Esc 键返回</td>
+<td>Tab 到导入账户下一步按钮；按 Enter 执行导入；Esc 键返回</td>
+<td>导入失败保留空原因与下一步按钮</td>
+</tr>
+<tr>
+<td>错误</td>
+<td>外观 180×36px；命中 180×36px</td>
+<td>账户列表读取失败</td>
+<td>保留当前值与错误文案</td>
+<td>离开错误状态或 Esc 键返回</td>
+<td>Tab 到错误说明；Esc 键返回原值</td>
+<td>失败保持原值与错误原因；等待全局修复入口处理</td>
+</tr>
+</tbody></table></div>
+<h2 id="搜索浮层popover">搜索浮层（Popover）</h2>
+<p>用于实体搜索和筛选编辑；覆盖内容，不推动标题、KPI 或表格。实体搜索在触发器点击后打开覆盖页头的独立全屏搜索遮罩，桌面舞台最大 960px、左右至少 24px，窄屏保留两侧 24px 内边距，结果区独立滚动并阻断底层操作。筛选另使用 320px 浮层。交易库内部搜索保持页面内的独立筛选输入，不调用此全屏搜索遮罩。</p>
+<p>尺寸基准：桌面舞台最大960px、左右至少24px；窄屏使用可用宽度减去两侧24px，空间不足时全宽；输入与结果共用舞台列锚点。</p>
+<figure class="document-image figure plate-figure single-frame-figure" data-single-frame-source="search" data-replaces="atom-popover.svg"><span class="image-pan-hint">单帧候选图（保留下方完整状态规则）</span><div class="single-frame-set"><div class="single-frame-item" data-frame-index="1"><p class="single-frame-caption"><strong>搜索结果</strong> · 搜索返回结果</p><div class="image-pan" tabindex="0" role="region" aria-label="搜索浮层的八种状态示例：搜索结果"><a class="image-link" href="integration-assets/images/single-frame/search--normal.svg" title="搜索结果"><img src="integration-assets/images/single-frame/search--normal.svg" alt="搜索浮层的八种状态示例：搜索结果" width="1100" height="690"></a></div><a class="image-action" href="integration-assets/images/single-frame/search--normal.svg">查看原尺寸：搜索结果</a></div><div class="single-frame-item" data-frame-index="2"><p class="single-frame-caption"><strong>无匹配</strong> · 搜索无匹配</p><div class="image-pan" tabindex="0" role="region" aria-label="搜索浮层的八种状态示例：无匹配"><a class="image-link" href="integration-assets/images/single-frame/search--detail.svg" title="无匹配"><img src="integration-assets/images/single-frame/search--detail.svg" alt="搜索浮层的八种状态示例：无匹配" width="1100" height="690"></a></div><a class="image-action" href="integration-assets/images/single-frame/search--detail.svg">查看原尺寸：无匹配</a></div><div class="single-frame-item" data-frame-index="3"><p class="single-frame-caption"><strong>请求失败</strong> · 搜索请求失败</p><div class="image-pan" tabindex="0" role="region" aria-label="搜索浮层的八种状态示例：请求失败"><a class="image-link" href="integration-assets/images/single-frame/search--empty.svg" title="请求失败"><img src="integration-assets/images/single-frame/search--empty.svg" alt="搜索浮层的八种状态示例：请求失败" width="1100" height="690"></a></div><a class="image-action" href="integration-assets/images/single-frame/search--empty.svg">查看原尺寸：请求失败</a></div></div></figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">状态</th>
+<th scope="col">尺寸</th>
+<th scope="col">触发</th>
+<th scope="col">呈现</th>
+<th scope="col">退出</th>
+<th scope="col">键盘</th>
+<th scope="col">恢复</th>
+</tr></thead><tbody>
+<tr>
+<td>默认</td>
+<td>舞台最大960px；命中为实际控件</td>
+<td>进入页面或恢复默认值</td>
+<td>显示稳定默认内容与可操作边界</td>
+<td>激活、悬停或聚焦进入下一状态</td>
+<td>Tab 到触发器；按 Enter 打开并聚焦搜索字段</td>
+<td>数据缺失显示明确占位并保留上下文</td>
+</tr>
+<tr>
+<td>悬停</td>
+<td>舞台最大960px；命中为实际控件</td>
+<td>指针进入触发器；用 120ms 渐变立即开始高亮，浮层不因悬停自动打开</td>
+<td>触发器高亮；点击后才打开全局遮罩舞台</td>
+<td>指针离开或点击遮罩外</td>
+<td>键盘操作不依赖悬停；Tab 到触发器后按 Enter 打开</td>
+<td>外部点击关闭且不改草稿</td>
+</tr>
+<tr>
+<td>聚焦</td>
+<td>舞台最大960px；命中为实际控件</td>
+<td>Tab 或 Shift+Tab 将焦点移入</td>
+<td>显示2px焦点环与当前值，焦点可见</td>
+<td>按Tab离开、Enter或Space激活或Esc取消</td>
+<td>Tab循环搜索与结果；Shift+Tab回触发器；Esc关闭</td>
+<td>焦点环不遮挡内容；失败后焦点留在原控件</td>
+</tr>
+<tr>
+<td>按下</td>
+<td>舞台最大960px；命中为实际控件</td>
+<td>指针按下并完成点击，或按Enter或Space</td>
+<td>显示按下反馈并提交一次动作</td>
+<td>动作完成、取消或返回稳定状态</td>
+<td>Enter提交搜索；Esc关闭遮罩</td>
+<td>重复提交会锁住按钮；失败后恢复默认并保留错误原因</td>
+</tr>
+<tr>
+<td>禁用</td>
+<td>舞台最大960px；命中为实际控件</td>
+<td>权限、不可用数据或父级表单明确设置禁用</td>
+<td>降低对比度且不响应指针/键盘激活</td>
+<td>权限恢复或父级表单重新启用</td>
+<td>Tab跳过不可用触发器；Enter不打开</td>
+<td>禁用原因必须由相邻文案说明，不伪造成功</td>
+</tr>
+<tr>
+<td>加载</td>
+<td>舞台最大960px；命中为实际控件</td>
+<td>搜索提交后请求等待中</td>
+<td>搜索字段保留草稿并显示查询中提示</td>
+<td>请求完成更新结果，或显示错误状态</td>
+<td>Tab保持搜索字段；Enter在等待期间不重复查询</td>
+<td>失败保留草稿与错误原因；等待全局修复入口处理</td>
+</tr>
+<tr>
+<td>空</td>
+<td>舞台最大960px；命中为实际控件</td>
+<td>搜索无匹配结果</td>
+<td>显示没有匹配结果；输入框尾部 X 是唯一清除入口</td>
+<td>清除搜索、改写查询或点击遮罩外关闭</td>
+<td>Tab 回到输入框；Enter 在输入框触发 X；Esc 键返回触发器</td>
+<td>清除失败保留原查询和空原因</td>
+</tr>
+<tr>
+<td>错误</td>
+<td>舞台最大960px；命中为实际控件</td>
+<td>搜索校验失败</td>
+<td>保留草稿与错误原因</td>
+<td>Esc关闭或点击遮罩外关闭；非模态可退出</td>
+<td>Tab到错误说明；Esc关闭错误</td>
+<td>失败不改变已提交范围；外部点击可关闭</td>
+</tr>
+</tbody></table></div>
+<h2 id="筛选浮层filterpopover">筛选浮层（FilterPopover）</h2>
+<p>筛选浮层是独立的 320px 浮层，不复用全局搜索遮罩的舞台或滚动容器。浮层编辑区承载标的类别、是否有未实现数据、是否待复盘等附加条件；市场和账户仍由页头控制。编辑值先进入草稿，只有“应用”成功后才改变已生效范围。</p>
+<p>尺寸基准：外观 320px 宽；字段和按钮高 36px；浮层底部与第二行操作区保留 16px 间距。清除附加只移除附加条件，恢复全部默认还原市场、账户及附加条件，二者不能合并成同一动作。</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">状态/动作</th>
+<th scope="col">触发</th>
+<th scope="col">呈现与数据边界</th>
+<th scope="col">退出/恢复</th>
+<th scope="col">键盘</th>
+</tr></thead><tbody>
+<tr>
+<td>默认</td>
+<td>点击筛选入口或重新打开</td>
+<td>显示已生效条件；草稿初始化为当前已生效范围；不推动页面内容</td>
+<td>进入草稿编辑</td>
+<td>Tab 到字段；Enter 或 Space 打开</td>
+</tr>
+<tr>
+<td>草稿</td>
+<td>直接多选附加条件</td>
+<td>复选框即时反映草稿；页面数据、计数和标签仍保持已生效范围</td>
+<td>点击应用、清除附加、恢复全部默认、Esc 或外点</td>
+<td>Tab 按字段顺序；输入和复选框不触发页面查询</td>
+</tr>
+<tr>
+<td>应用</td>
+<td>点击“应用”或按 Enter</td>
+<td>一次提交当前草稿；成功后更新已生效条件、计数、标签和数据</td>
+<td>成功关闭浮层并回到筛选入口；失败进入错误并保留草稿</td>
+<td>Enter 只提交一次；请求中不重复提交</td>
+</tr>
+<tr>
+<td>清除附加</td>
+<td>点击“清除附加”</td>
+<td>仅把附加条件清空并按应用规则提交；市场、账户和实盘范围不变</td>
+<td>成功后回到无附加条件的默认附加状态；失败保留原已生效范围和草稿</td>
+<td>Enter 执行清除；焦点留在操作区</td>
+</tr>
+<tr>
+<td>恢复全部默认</td>
+<td>点击“恢复全部默认”</td>
+<td>将市场、账户及附加条件恢复默认；日期期间不改变；按应用规则一次提交</td>
+<td>成功后关闭并显示默认范围；失败进入错误并保留原完整值</td>
+<td>Enter 执行恢复；请求中不重复提交</td>
+</tr>
+<tr>
+<td>Esc / 外点</td>
+<td>按 Esc 或点击浮层外部</td>
+<td>关闭浮层，不提交草稿；已生效范围不变，未提交草稿保留以便再次编辑</td>
+<td>重新打开恢复上次草稿；切换市场或账户时丢弃旧范围草稿</td>
+<td>Esc 关闭并把焦点返回筛选入口</td>
+</tr>
+<tr>
+<td>加载</td>
+<td>应用、清除附加或恢复默认请求等待</td>
+<td>锁定重复提交，保留草稿和原已生效条件；不显示伪造的新数据</td>
+<td>成功进入默认或关闭状态；失败进入错误</td>
+<td>Tab 保持顺序；Enter 不重复提交</td>
+</tr>
+<tr>
+<td>错误</td>
+<td>请求或校验失败</td>
+<td>显示明确失败原因；保留提交前的完整已生效条件与当前草稿，不留下新标签配旧数据</td>
+<td>关闭错误可继续编辑；重新点击“应用”“清除附加”或“恢复全部默认”才提交新请求；失败恢复使用首页唯一全局修复入口，不增加局部重试按钮；Esc 关闭但保留草稿</td>
+<td>Tab 到错误说明；Esc 关闭说明并返回入口</td>
+</tr>
+</tbody></table></div>
+<figure class="document-image figure plate-figure single-frame-figure" data-single-frame-source="filter" data-replaces="filter.svg"><span class="image-pan-hint">单帧候选图（保留下方完整状态规则）</span><div class="single-frame-set"><div class="single-frame-item" data-frame-index="1"><p class="single-frame-caption"><strong>完整状态</strong> · 进入该资产状态</p><div class="image-pan" tabindex="0" role="region" aria-label="筛选浮层的编辑、应用与清理状态：完整状态"><a class="image-link" href="integration-assets/images/single-frame/filter--full.svg" title="完整状态"><img src="integration-assets/images/single-frame/filter--full.svg" alt="筛选浮层的编辑、应用与清理状态：完整状态" width="1100" height="910"></a></div><a class="image-action" href="integration-assets/images/single-frame/filter--full.svg">查看原尺寸：完整状态</a></div></div></figure>
+<h2 id="筛选条件标签token">筛选条件标签（Token）</h2>
+<p>用于显示已应用的可移除筛选条件；清除附加与恢复全部默认保持不同语义。</p>
+<p>尺寸基准：外观 104×24px；命中 104×36px。</p>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="条件标签的八种状态示例"><a class="image-link" href="images/atom-token.svg"><img data-comment-image="atom-token" data-comment-occurrence="atom-token@116" src="images/atom-token.svg" alt="条件标签的八种状态示例" width="1100" height="1100"></a></div><a class="image-action" href="images/atom-token.svg">查看原尺寸</a>
+</figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">状态</th>
+<th scope="col">尺寸</th>
+<th scope="col">触发</th>
+<th scope="col">呈现</th>
+<th scope="col">退出</th>
+<th scope="col">键盘</th>
+<th scope="col">恢复</th>
+</tr></thead><tbody>
+<tr>
+<td>默认</td>
+<td>外观 104×24px；命中 104×36px</td>
+<td>进入页面或恢复默认值</td>
+<td>显示稳定默认内容与可操作边界</td>
+<td>激活、悬停或聚焦进入下一状态</td>
+<td>按 Tab 到 36px 删除命中区；Enter 或 Space 键删除</td>
+<td>数据缺失显示明确占位并保留上下文</td>
+</tr>
+<tr>
+<td>悬停</td>
+<td>外观 104×24px；命中 104×36px</td>
+<td>指针进入删除命中区；用 120ms 渐变立即开始高亮</td>
+<td>仅删除图标变红/高亮，条件标签文本保持</td>
+<td>指针离开命中区</td>
+<td>指针进入删除命中区；键盘仍由 Tab 到达</td>
+<td>不提交删除</td>
+</tr>
+<tr>
+<td>聚焦</td>
+<td>外观 104×24px；命中 104×36px</td>
+<td>Tab 或 Shift+Tab 将焦点移入</td>
+<td>显示 2px 焦点环与当前值，焦点可见</td>
+<td>按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消</td>
+<td>Tab 到删除区；Enter 或 Space 键删除；Esc 键取消</td>
+<td>焦点环不遮挡内容；失败后焦点留在原控件</td>
+</tr>
+<tr>
+<td>按下</td>
+<td>外观 104×24px；命中 104×36px</td>
+<td>指针按下并完成点击，或按 Enter 或 Space 键</td>
+<td>显示按下反馈并提交一次动作</td>
+<td>动作完成、取消或返回稳定状态</td>
+<td>Enter 或 Space 键只删除一次；Esc 键取消</td>
+<td>重复提交会锁住按钮；失败后恢复默认并保留错误原因</td>
+</tr>
+<tr>
+<td>禁用</td>
+<td>不适用</td>
+<td>不渲染（已提交条件标签可移除；权限应禁用父级表单）</td>
+<td>不渲染</td>
+<td>不渲染</td>
+<td>不适用</td>
+<td>不适用</td>
+</tr>
+<tr>
+<td>加载</td>
+<td>外观 104×24px；命中 104×36px</td>
+<td>点击删除后删除请求等待中</td>
+<td>保留筛选条件标签并显示等待反馈</td>
+<td>删除成功移除，或失败恢复筛选条件标签</td>
+<td>按 Tab 保持顺序；Enter 或 Space 键在删除请求等待期间不重复提交</td>
+<td>锁定重复删除；失败恢复原筛选条件标签与焦点</td>
+</tr>
+<tr>
+<td>空</td>
+<td>外观 104×24px；命中 104×36px</td>
+<td>筛选条件集合为空</td>
+<td>不渲染筛选条件标签；焦点返回筛选入口</td>
+<td>返回筛选入口或添加筛选条件</td>
+<td>集合为空；焦点返回筛选入口；无筛选条件标签命中区</td>
+<td>空集合不创建删除焦点；筛选入口保持可达</td>
+</tr>
+<tr>
+<td>错误</td>
+<td>外观 104×24px；命中 104×36px</td>
+<td>删除请求失败</td>
+<td>保留筛选条件标签并显示移除失败原因</td>
+<td>离开错误状态或返回筛选入口</td>
+<td>Tab 到删除区；Esc 键保留筛选条件标签</td>
+<td>失败恢复原筛选条件标签、删除命中区与焦点；等待全局修复入口处理</td>
+</tr>
+</tbody></table></div>
+<h2 id="指标卡metric">指标卡（Metric）</h2>
+<p>用于展示四个 KPI，前三项随期间变化，当前持仓市值保持最新时点。</p>
+<p>尺寸基准：外观 276×88px；命中 276×88px。</p>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="指标卡的八种状态示例"><a class="image-link" href="images/atom-metric.svg"><img data-comment-image="atom-metric" data-comment-occurrence="atom-metric@135" src="images/atom-metric.svg" alt="指标卡的八种状态示例" width="1100" height="1100"></a></div><a class="image-action" href="images/atom-metric.svg">查看原尺寸</a>
+</figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">状态</th>
+<th scope="col">尺寸</th>
+<th scope="col">触发</th>
+<th scope="col">呈现</th>
+<th scope="col">退出</th>
+<th scope="col">键盘</th>
+<th scope="col">恢复</th>
+</tr></thead><tbody>
+<tr>
+<td>默认</td>
+<td>外观 276×88px；命中 276×88px</td>
+<td>进入页面或恢复默认值</td>
+<td>显示稳定默认内容与可操作边界</td>
+<td>激活、悬停或聚焦进入下一状态</td>
+<td>Tab 到详情动作；按 Enter 打开口径</td>
+<td>数据缺失显示明确占位并保留上下文</td>
+</tr>
+<tr>
+<td>悬停</td>
+<td>外观 276×88px；命中 276×88px</td>
+<td>指针进入指标详情操作提示；立即 120ms 提示</td>
+<td>指标值不变，仅详情入口高亮</td>
+<td>指针离开详情入口</td>
+<td>键盘操作不依赖悬停；Tab 到详情动作</td>
+<td>不发起请求、不改变指标值</td>
+</tr>
+<tr>
+<td>聚焦</td>
+<td>外观 276×88px；命中 276×88px</td>
+<td>Tab 或 Shift+Tab 将焦点移入</td>
+<td>显示 2px 焦点环与当前值，焦点可见</td>
+<td>按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消</td>
+<td>Tab 进入口径详情；Esc 键关闭并返回指标</td>
+<td>焦点环不遮挡内容；失败后焦点留在原控件</td>
+</tr>
+<tr>
+<td>按下</td>
+<td>不适用</td>
+<td>不渲染（指标有详情动作，但没有持久按下状态）</td>
+<td>不渲染</td>
+<td>不渲染</td>
+<td>不适用</td>
+<td>不适用</td>
+</tr>
+<tr>
+<td>禁用</td>
+<td>不适用</td>
+<td>不渲染（指标是只读信息，使用不可用/错误文案，不使用禁用）</td>
+<td>不渲染</td>
+<td>不渲染</td>
+<td>不适用</td>
+<td>不适用</td>
+</tr>
+<tr>
+<td>加载</td>
+<td>外观 276×88px；命中 276×88px</td>
+<td>指标数据请求等待中</td>
+<td>保留原值并显示骨架/加载反馈</td>
+<td>请求完成更新值，或显示原因</td>
+<td>按 Tab 保持指标顺序；Enter 不重复请求</td>
+<td>超时保留原值；不将等待中显示为 0</td>
+</tr>
+<tr>
+<td>空</td>
+<td>外观 276×88px；命中 276×88px</td>
+<td>当前范围没有可计算指标</td>
+<td>显示破折号与口径说明，不显示下一步按钮</td>
+<td>切换范围或返回上一筛选</td>
+<td>Tab 到替代说明；Esc 键返回</td>
+<td>范围切换失败保留破折号与上下文</td>
+</tr>
+<tr>
+<td>错误</td>
+<td>外观 276×88px；命中 276×88px</td>
+<td>指标计算失败</td>
+<td>保留指标区域并提供“查看原因”入口</td>
+<td>点击原因入口或返回上一范围</td>
+<td>Tab 到原因；按 Enter 打开原因详情；Esc 键返回</td>
+<td>不显示 0；原因入口保留失败上下文</td>
+</tr>
+</tbody></table></div>
+<h2 id="状态徽章statusbadge">状态徽章（StatusBadge）</h2>
+<p>用于异常或数据状态的短文本提示；正常态不显示无意义徽章。</p>
+<p>尺寸基准：外观 124×24px；命中 124×36px。</p>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="状态徽章的八种状态示例"><a class="image-link" href="images/atom-statusbadge.svg"><img data-comment-image="atom-statusbadge" data-comment-occurrence="atom-statusbadge@154" src="images/atom-statusbadge.svg" alt="状态徽章的八种状态示例" width="1100" height="1100"></a></div><a class="image-action" href="images/atom-statusbadge.svg">查看原尺寸</a>
+</figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">状态</th>
+<th scope="col">尺寸</th>
+<th scope="col">触发</th>
+<th scope="col">呈现</th>
+<th scope="col">退出</th>
+<th scope="col">键盘</th>
+<th scope="col">恢复</th>
+</tr></thead><tbody>
+<tr>
+<td>默认</td>
+<td>外观 124×24px；命中 124×36px</td>
+<td>进入页面或恢复默认值</td>
+<td>显示稳定默认内容与可操作边界</td>
+<td>激活、悬停或聚焦进入下一状态</td>
+<td>按 Tab 到达；按 Enter 打开详情</td>
+<td>数据缺失显示明确占位并保留上下文</td>
+</tr>
+<tr>
+<td>悬停</td>
+<td>外观 124×24px；命中 124×36px</td>
+<td>指针进入徽章；用 120ms 渐变立即开始高亮，详情提示延迟 300ms</td>
+<td>徽章高亮并在延迟后显示更新时间</td>
+<td>指针离开徽章</td>
+<td>键盘操作不依赖悬停；按 Tab 到达徽章</td>
+<td>提示失败保持徽章文案</td>
+</tr>
+<tr>
+<td>聚焦</td>
+<td>外观 124×24px；命中 124×36px</td>
+<td>Tab 或 Shift+Tab 将焦点移入</td>
+<td>显示 2px 焦点环与当前值，焦点可见</td>
+<td>按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消</td>
+<td>按 Tab 到达；按 Enter 打开原因；Esc 键关闭详情</td>
+<td>焦点环不遮挡内容；失败后焦点留在原控件</td>
+</tr>
+<tr>
+<td>按下</td>
+<td>外观 124×24px；命中 124×36px</td>
+<td>Enter 或 Space 键激活状态徽标详情</td>
+<td>打开更新时间或过期原因详情</td>
+<td>Esc 键关闭详情并返回徽章</td>
+<td>按 Enter 打开详情；Esc 键关闭详情</td>
+<td>详情失败保持徽章原文案</td>
+</tr>
+<tr>
+<td>禁用</td>
+<td>不适用</td>
+<td>不渲染（状态是只读指示器，不使用禁用）</td>
+<td>不渲染</td>
+<td>不渲染</td>
+<td>不适用</td>
+<td>不适用</td>
+</tr>
+<tr>
+<td>加载</td>
+<td>外观 124×24px；命中 124×36px</td>
+<td>状态刷新请求等待中</td>
+<td>显示更新中徽章，不伪造更新时间</td>
+<td>刷新成功显示时间，或显示过期原因</td>
+<td>按 Tab 到达；Enter 不重复刷新</td>
+<td>失败保留更新中/过期原因，不显示成功</td>
+</tr>
+<tr>
+<td>空</td>
+<td>外观 124×24px；命中 124×36px</td>
+<td>没有可显示的更新时间或状态</td>
+<td>显示暂无状态徽章</td>
+<td>数据出现或离开上下文</td>
+<td>按 Tab 到达只读暂无状态；按 Enter 打开说明</td>
+<td>缺失继续显示暂无状态</td>
+</tr>
+<tr>
+<td>错误</td>
+<td>外观 124×24px；命中 124×36px</td>
+<td>状态刷新失败</td>
+<td>显示过期·原因徽章</td>
+<td>聚焦打开原因或离开徽章</td>
+<td>按 Tab 到达；按 Enter 打开过期原因；Esc 键关闭详情</td>
+<td>保留过期原因，不提供不存在的重试按钮</td>
+</tr>
+</tbody></table></div>
+<h2 id="持仓数据表datatable">持仓数据表（DataTable）</h2>
+<p>用于当前持仓展示、排序、查看详情和固定八行分页。</p>
+<p>尺寸基准：外观 620×520px；命中 620×520px。</p>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="数据表的八种状态示例"><a class="image-link" href="images/atom-datatable.svg"><img data-comment-image="atom-datatable" data-comment-occurrence="atom-datatable@173" src="images/atom-datatable.svg" alt="数据表的八种状态示例" width="2180" height="2900"></a></div><a class="image-action" href="images/atom-datatable.svg">查看原尺寸</a>
+</figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">状态</th>
+<th scope="col">尺寸</th>
+<th scope="col">触发</th>
+<th scope="col">呈现</th>
+<th scope="col">退出</th>
+<th scope="col">键盘</th>
+<th scope="col">恢复</th>
+</tr></thead><tbody>
+<tr>
+<td>默认</td>
+<td>外观 620×520px；命中 620×520px</td>
+<td>进入页面或恢复默认值</td>
+<td>显示稳定默认内容与可操作边界</td>
+<td>激活、悬停或聚焦进入下一状态</td>
+<td>Tab 顺序：搜索、表头、8 行查看、分页</td>
+<td>数据缺失显示明确占位并保留上下文</td>
+</tr>
+<tr>
+<td>悬停</td>
+<td>外观 620×520px；命中 620×520px</td>
+<td>指针进入单一表格行；用 120ms 渐变立即开始高亮目标行</td>
+<td>仅目标行高亮，表头/其他行不变</td>
+<td>指针离开该行</td>
+<td>指针进入行；键盘 Tab 仍按搜索→表头→行→分页</td>
+<td>不改变排序、分页或行数据</td>
+</tr>
+<tr>
+<td>聚焦</td>
+<td>外观 620×520px；命中 620×520px</td>
+<td>Tab 或 Shift+Tab 将焦点移入</td>
+<td>显示 2px 焦点环与当前值，焦点可见</td>
+<td>按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消</td>
+<td>Tab 进入表头/行操作；Enter 排序或查看；Esc 键取消</td>
+<td>焦点环不遮挡内容；失败后焦点留在原控件</td>
+</tr>
+<tr>
+<td>按下</td>
+<td>外观 620×520px；命中 620×520px</td>
+<td>指针按下并完成点击，或按 Enter 或 Space 键</td>
+<td>显示按下反馈并提交一次动作</td>
+<td>动作完成、取消或返回稳定状态</td>
+<td>Enter 激活排序/查看/分页；Esc 键取消未提交动作</td>
+<td>重复提交会锁住按钮；失败后恢复默认并保留错误原因</td>
+</tr>
+<tr>
+<td>禁用</td>
+<td>外观 620×520px；命中 620×520px</td>
+<td>权限、不可用数据或父级表单明确设置禁用</td>
+<td>降低对比度且不响应指针/键盘激活</td>
+<td>权限恢复或父级表单重新启用</td>
+<td>按 Tab 跳过禁用操作；Enter 不排序或查看</td>
+<td>禁用原因必须由相邻文案说明，不伪造成功</td>
+</tr>
+<tr>
+<td>加载</td>
+<td>外观 620×520px；命中 620×520px</td>
+<td>排序、分页或查询请求等待中</td>
+<td>保留 8 行槽位；分页槽位置灰且不可用</td>
+<td>成功替换 8 行并恢复分页，或保留原表显示错误</td>
+<td>Tab 保留搜索、表头和分页顺序；Enter 不重复请求</td>
+<td>迟到响应丢弃；错误保留原表并显示原因</td>
+</tr>
+<tr>
+<td>空</td>
+<td>外观 620×520px；命中 620×520px</td>
+<td>当前范围无持仓行</td>
+<td>行区显示空原因，分页槽位显示 0 项且不提供分页按钮</td>
+<td>切换范围、导入或清除筛选</td>
+<td>Tab 到空原因与下一步；Enter 切换范围或导入</td>
+<td>下一步失败保留查询范围与空原因；不创建虚假的第 1 页</td>
+</tr>
+<tr>
+<td>错误</td>
+<td>外观 620×520px；命中 620×520px</td>
+<td>表格请求失败</td>
+<td>保留原表与错误条</td>
+<td>离开错误条或 Esc 键关闭原因</td>
+<td>Tab 到原表和错误说明；Esc 键关闭原因</td>
+<td>迟到响应丢弃；失败继续保留原表</td>
+</tr>
+</tbody></table></div>
+<h2 id="图表点提示charttooltip">图表点提示（ChartTooltip）</h2>
+<p>用于曲线有效数据点的悬停/聚焦详情，显示完整日期、金额、费用和覆盖状态。</p>
+<p>尺寸基准：外观 264×112px；命中 264×112px。</p>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="图表提示的八种状态示例"><a class="image-link" href="images/atom-charttooltip.svg"><img data-comment-image="atom-charttooltip" data-comment-occurrence="atom-charttooltip@192" src="images/atom-charttooltip.svg" alt="图表提示的八种状态示例" width="1100" height="1100"></a></div><a class="image-action" href="images/atom-charttooltip.svg">查看原尺寸</a>
+</figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">状态</th>
+<th scope="col">尺寸</th>
+<th scope="col">触发</th>
+<th scope="col">呈现</th>
+<th scope="col">退出</th>
+<th scope="col">键盘</th>
+<th scope="col">恢复</th>
+</tr></thead><tbody>
+<tr>
+<td>默认</td>
+<td>外观 264×112px；命中 264×112px</td>
+<td>进入页面或恢复默认值</td>
+<td>显示稳定默认内容与可操作边界</td>
+<td>激活、悬停或聚焦进入下一状态</td>
+<td>按 Tab 聚焦图表；方向键移动数据点</td>
+<td>数据缺失显示明确占位并保留上下文</td>
+</tr>
+<tr>
+<td>悬停</td>
+<td>外观 264×112px；命中 264×112px</td>
+<td>指针进入数据点；立即 120ms 显示点反馈</td>
+<td>数据点高亮，提示框内容按 300ms 延迟显示</td>
+<td>指针离开数据点</td>
+<td>指针进入数据点；键盘用方向键选择点</td>
+<td>无数据点时不插值，移除旧提示框</td>
+</tr>
+<tr>
+<td>聚焦</td>
+<td>外观 264×112px；命中 264×112px</td>
+<td>Tab 或 Shift+Tab 将焦点移入</td>
+<td>显示 2px 焦点环与当前值，焦点可见</td>
+<td>按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消</td>
+<td>方向键切换数据点；Esc 键移除提示框</td>
+<td>焦点环不遮挡内容；失败后焦点留在原控件</td>
+</tr>
+<tr>
+<td>按下</td>
+<td>外观 264×112px；命中 264×112px</td>
+<td>指针按下并完成点击，或按 Enter 或 Space 键</td>
+<td>显示按下反馈并提交一次动作</td>
+<td>动作完成、取消或返回稳定状态</td>
+<td>Enter 固定当前点；Esc 键解除固定</td>
+<td>重复提交会锁住按钮；失败后恢复默认并保留错误原因</td>
+</tr>
+<tr>
+<td>禁用</td>
+<td>不适用</td>
+<td>不渲染（图表不可用时不显示提示框）</td>
+<td>不渲染</td>
+<td>不渲染</td>
+<td>不适用</td>
+<td>不适用</td>
+</tr>
+<tr>
+<td>加载</td>
+<td>外观 264×112px；命中 264×112px</td>
+<td>图表行情请求等待中</td>
+<td>保留日期并显示行情加载中与旋转提示</td>
+<td>行情完成显示值，或显示缺口原因</td>
+<td>按 Tab 保持图表顺序；方向键不读取未就绪点</td>
+<td>不显示旧提示框数值冒充新值</td>
+</tr>
+<tr>
+<td>空</td>
+<td>外观 264×112px；命中 264×112px</td>
+<td>该日期缺少行情</td>
+<td>显示缺行情原因，不插值</td>
+<td>切换数据点或 Esc 键移除提示框</td>
+<td>Tab 到缺口说明；Esc 键移除提示框</td>
+<td>缺口继续明确显示，不伪造数值</td>
+</tr>
+<tr>
+<td>错误</td>
+<td>外观 264×112px；命中 264×112px</td>
+<td>该数据点读取失败</td>
+<td>显示缺口原因入口，不提供重试按钮</td>
+<td>聚焦/点击原因入口或 Esc 键移除提示框</td>
+<td>Tab 到缺口原因；Esc 键移除过期提示框</td>
+<td>保留缺口原因；不显示过期或成功数值</td>
+</tr>
+</tbody></table></div>
+<h2 id="空结果状态emptystate">空结果状态（EmptyState）</h2>
+<p>用于明确表达无结果，并提供符合范围的下一步。</p>
+<p>尺寸基准：外观 300×120px；命中 300×120px。</p>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="空状态的八种状态示例"><a class="image-link" href="images/atom-emptystate.svg"><img data-comment-image="atom-emptystate" data-comment-occurrence="atom-emptystate@211" src="images/atom-emptystate.svg" alt="空状态的八种状态示例" width="1100" height="1100"></a></div><a class="image-action" href="images/atom-emptystate.svg">查看原尺寸</a>
+</figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">状态</th>
+<th scope="col">尺寸</th>
+<th scope="col">触发</th>
+<th scope="col">呈现</th>
+<th scope="col">退出</th>
+<th scope="col">键盘</th>
+<th scope="col">恢复</th>
+</tr></thead><tbody>
+<tr>
+<td>默认</td>
+<td>外观 300×120px；命中 300×120px</td>
+<td>进入页面或恢复默认值</td>
+<td>显示稳定默认内容与可操作边界</td>
+<td>激活、悬停或聚焦进入下一状态</td>
+<td>Tab 到切换市场按钮；Enter 或 Space 键执行</td>
+<td>数据缺失显示明确占位并保留上下文</td>
+</tr>
+<tr>
+<td>悬停</td>
+<td>外观 300×120px；命中 300×120px</td>
+<td>指针进入切换市场按钮；用 120ms 渐变立即开始高亮</td>
+<td>仅下一步按钮高亮，空原因不变</td>
+<td>指针离开下一步按钮</td>
+<td>指针进入下一步按钮；键盘仍由 Tab 到切换市场按钮</td>
+<td>不触发导航</td>
+</tr>
+<tr>
+<td>聚焦</td>
+<td>外观 300×120px；命中 300×120px</td>
+<td>Tab 或 Shift+Tab 将焦点移入</td>
+<td>显示 2px 焦点环与当前值，焦点可见</td>
+<td>按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消</td>
+<td>按 Tab 聚焦切换市场按钮；Enter 或 Space 键执行；Esc 键返回</td>
+<td>焦点环不遮挡内容；失败后焦点留在原控件</td>
+</tr>
+<tr>
+<td>按下</td>
+<td>外观 300×120px；命中 300×120px</td>
+<td>指针按下并完成点击，或按 Enter 或 Space 键</td>
+<td>显示按下反馈并提交一次动作</td>
+<td>动作完成、取消或返回稳定状态</td>
+<td>Enter 或 Space 键只提交切换市场按钮一次；Esc 键取消</td>
+<td>重复提交会锁住按钮；失败后恢复默认并保留错误原因</td>
+</tr>
+<tr>
+<td>禁用</td>
+<td>不适用</td>
+<td>不渲染（切换市场按钮有独立禁用原因；空状态本身不禁用）</td>
+<td>不渲染</td>
+<td>不渲染</td>
+<td>不适用</td>
+<td>不适用</td>
+</tr>
+<tr>
+<td>加载</td>
+<td>不适用</td>
+<td>不渲染（加载时使用父级区块骨架；不与空状态同时显示）</td>
+<td>不渲染</td>
+<td>不渲染</td>
+<td>不适用</td>
+<td>不适用</td>
+</tr>
+<tr>
+<td>空</td>
+<td>外观 300×120px；命中 300×120px</td>
+<td>查询范围无结果</td>
+<td>显示空原因与切换市场按钮</td>
+<td>点击/Enter 切换市场或导入交易</td>
+<td>Tab 到切换市场按钮；Enter 或 Space 键执行下一步</td>
+<td>下一步失败保留查询上下文与空原因</td>
+</tr>
+<tr>
+<td>错误</td>
+<td>外观 300×120px；命中 300×120px</td>
+<td>空态数据读取失败</td>
+<td>显示数据暂不可用与切换市场按钮</td>
+<td>点击切换市场按钮切换范围或返回</td>
+<td>Tab 到现有范围操作与错误原因；Enter 或 Space 键执行范围切换</td>
+<td>失败保留错误上下文，不伪造无结果</td>
+</tr>
+</tbody></table></div>
+<h2 id="重试动作retryaction">重试动作（RetryAction）</h2>
+<p>用于异常上下文的唯一恢复动作；首页全局只保留一键修复入口。</p>
+<p>尺寸基准：外观 110×32px；命中 110×36px。</p>
+<figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="全局修复按钮的八种状态示例"><a class="image-link" href="images/atom-retryaction.svg"><img data-comment-image="atom-retryaction" data-comment-occurrence="atom-retryaction@230" src="images/atom-retryaction.svg" alt="全局修复按钮的八种状态示例" width="1100" height="1100"></a></div><a class="image-action" href="images/atom-retryaction.svg">查看原尺寸</a>
+</figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">状态</th>
+<th scope="col">尺寸</th>
+<th scope="col">触发</th>
+<th scope="col">呈现</th>
+<th scope="col">退出</th>
+<th scope="col">键盘</th>
+<th scope="col">恢复</th>
+</tr></thead><tbody>
+<tr>
+<td>默认</td>
+<td>外观 110×32px；命中 110×36px</td>
+<td>进入页面或恢复默认值</td>
+<td>显示稳定默认内容与可操作边界</td>
+<td>激活、悬停或聚焦进入下一状态</td>
+<td>错误上下文 Tab 到重试；Enter 或 Space 键执行</td>
+<td>数据缺失显示明确占位并保留上下文</td>
+</tr>
+<tr>
+<td>悬停</td>
+<td>外观 110×32px；命中 110×36px</td>
+<td>指针进入重试按钮；用 120ms 渐变立即开始高亮</td>
+<td>按钮高亮但不提交请求</td>
+<td>指针离开按钮</td>
+<td>指针进入重试按钮；键盘仍由 Tab 到达</td>
+<td>不改变错误上下文</td>
+</tr>
+<tr>
+<td>聚焦</td>
+<td>外观 110×32px；命中 110×36px</td>
+<td>Tab 或 Shift+Tab 将焦点移入</td>
+<td>显示 2px 焦点环与当前值，焦点可见</td>
+<td>按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消</td>
+<td>按 Tab 聚焦重试；Enter 或 Space 键执行；Esc 键取消</td>
+<td>焦点环不遮挡内容；失败后焦点留在原控件</td>
+</tr>
+<tr>
+<td>按下</td>
+<td>外观 110×32px；命中 110×36px</td>
+<td>指针按下并完成点击，或按 Enter 或 Space 键</td>
+<td>显示按下反馈并提交一次动作</td>
+<td>动作完成、取消或返回稳定状态</td>
+<td>Enter 或 Space 键只重试一次；Esc 键取消</td>
+<td>重复提交会锁住按钮；失败后恢复默认并保留错误原因</td>
+</tr>
+<tr>
+<td>禁用</td>
+<td>外观 110×32px；命中 110×36px</td>
+<td>权限、不可用数据或父级表单明确设置禁用</td>
+<td>降低对比度且不响应指针/键盘激活</td>
+<td>权限恢复或父级表单重新启用</td>
+<td>按 Tab 跳过重试；Enter 或 Space 键不提交</td>
+<td>禁用原因必须由相邻文案说明，不伪造成功</td>
+</tr>
+<tr>
+<td>加载</td>
+<td>外观 110×32px；命中 110×36px</td>
+<td>点击/Enter 重试后请求等待中</td>
+<td>显示重试中并阻止重复提交</td>
+<td>成功移除错误入口，或失败恢复重试按钮</td>
+<td>按 Tab 保持顺序；Enter 或 Space 键在等待期间不重复提交</td>
+<td>迟到响应丢弃；失败恢复按钮与错误原因</td>
+</tr>
+<tr>
+<td>空</td>
+<td>不适用</td>
+<td>不渲染（重试只在发生错误时显示）</td>
+<td>不渲染</td>
+<td>不渲染</td>
+<td>不适用</td>
+<td>不适用</td>
+</tr>
+<tr>
+<td>错误</td>
+<td>外观 110×32px；命中 110×36px</td>
+<td>错误上下文已建立且重试可用</td>
+<td>显示异步重试按钮</td>
+<td>点击或按 Enter 进入加载，或 Esc 键离开</td>
+<td>Tab 到重试；Enter 或 Space 键重试；Esc 键关闭原因</td>
+<td>失败恢复按钮；保留具体错误原因</td>
+</tr>
+</tbody></table></div>
+<h2 id="使用边界">使用边界</h2>
+<p>控件状态只描述可观察交互，不改变首页已确认的信息层级、数据口径或布局顺序。搜索与筛选的草稿在明确应用前不改变已生效范围；外点或 Esc 键关闭筛选时保留草稿，账户或市场切换时丢弃旧草稿。请求失败保留上一组完整有效值，冷启动失败不伪造零值；缺失行情、汇率或结果时使用明确原因。</p>
+<p>文档对齐和注释层默认关闭，仅用于审查时辅助定位；状态图、分镜和说明图只用于说明状态，不作为产品界面或默认内容。</p>
+<p>图表提示的有效点支持左右键、Home/End、Enter 固定与 Esc 键关闭；缺口不插值，不用最新值回填。数据表固定八行槽，空表不显示误导性的第 1/1 页。所有重试动作都遵循首页唯一恢复入口的约定。</p></main></div></body></html>

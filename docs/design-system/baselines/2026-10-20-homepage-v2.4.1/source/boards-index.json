@@ -1,0 +1,552 @@
+{
+  "version": "2.3",
+  "generatedBy": "build-boards.py",
+  "stateSchema": {
+    "version": "v2.2-shared",
+    "required": [
+      "id",
+      "viewport",
+      "states",
+      "scope",
+      "keyboard",
+      "focus",
+      "motion"
+    ],
+    "zeroRows": "hide-pagination"
+  },
+  "frames": [
+    {
+      "id": "home-1440",
+      "path": "images/home-1440.svg",
+      "viewport": "1440x2300",
+      "states": [
+        "normal"
+      ]
+    },
+    {
+      "id": "home-1280",
+      "path": "images/home-1280.svg",
+      "viewport": "1280x2300",
+      "states": [
+        "normal"
+      ]
+    },
+    {
+      "id": "atoms",
+      "path": "images/atoms.svg",
+      "viewport": "1100x1060",
+      "states": [
+        "normal",
+        "hover",
+        "focus",
+        "pressed",
+        "disabled",
+        "loading",
+        "error",
+        "empty",
+        "positive",
+        "negative",
+        "zero",
+        "unknown"
+      ]
+    },
+    {
+      "id": "period",
+      "path": "images/period.svg",
+      "viewport": "1100x1100",
+      "states": [
+        "default",
+        "invalid-range",
+        "valid-draft",
+        "applied"
+      ]
+    },
+    {
+      "id": "contribution",
+      "path": "images/contribution.svg",
+      "viewport": "1100x1464",
+      "states": [
+        "mixed-sign",
+        "market-drill",
+        "restore",
+        "partial-close",
+        "cross-year",
+        "fee-once"
+      ]
+    },
+    {
+      "id": "history",
+      "path": "images/history.svg",
+      "viewport": "1100x1100",
+      "states": [
+        "hover-right",
+        "hover-left",
+        "keyboard-equivalent"
+      ]
+    },
+    {
+      "id": "search",
+      "path": "images/search.svg",
+      "viewport": "1100x2380",
+      "states": [
+        "results",
+        "no-result",
+        "request-error"
+      ]
+    },
+    {
+      "id": "filter",
+      "path": "images/filter.svg",
+      "viewport": "1100x910",
+      "states": [
+        "normal"
+      ]
+    },
+    {
+      "id": "chart-hover",
+      "path": "images/chart-hover.svg",
+      "viewport": "1100x910",
+      "states": [
+        "hover-right",
+        "hover-left",
+        "keyboard-equivalent"
+      ]
+    },
+    {
+      "id": "account",
+      "path": "images/account.svg",
+      "viewport": "1100x760",
+      "states": [
+        "open",
+        "long-name",
+        "selected"
+      ]
+    },
+    {
+      "id": "search-detail",
+      "path": "images/search-detail.svg",
+      "viewport": "1100x760",
+      "states": [
+        "detail",
+        "return-context"
+      ]
+    },
+    {
+      "id": "chart-gap",
+      "path": "images/chart-gap.svg",
+      "viewport": "1100x1000",
+      "states": [
+        "interior-gap",
+        "all-missing"
+      ]
+    },
+    {
+      "id": "repair",
+      "path": "images/repair.svg",
+      "viewport": "1100x960",
+      "states": [
+        "missing",
+        "in-progress",
+        "success",
+        "partial-failure",
+        "failure",
+        "normal-hidden"
+      ]
+    },
+    {
+      "id": "detail",
+      "path": "images/detail.svg",
+      "viewport": "1100x850",
+      "states": [
+        "normal",
+        "missing"
+      ]
+    },
+    {
+      "id": "handoff",
+      "path": "images/handoff.svg",
+      "viewport": "1100x760",
+      "states": [
+        "handoff",
+        "return-context",
+        "empty-contract"
+      ]
+    },
+    {
+      "id": "search-motion",
+      "path": "images/search-motion.svg",
+      "viewport": "1100x980",
+      "states": [
+        "before",
+        "during",
+        "after",
+        "reverse",
+        "reduced-motion"
+      ]
+    },
+    {
+      "id": "holding-return",
+      "path": "images/holding-return.svg",
+      "viewport": "1100x2220",
+      "states": [
+        "holding-row-focus",
+        "holding-detail",
+        "close-return-row",
+        "row-removed-header-fallback"
+      ]
+    },
+    {
+      "id": "chart-scale",
+      "path": "images/chart-scale.svg",
+      "viewport": "1100x1600",
+      "states": [
+        "extreme",
+        "dense",
+        "start-gap",
+        "end-gap"
+      ]
+    },
+    {
+      "id": "contribution-states",
+      "path": "images/contribution-states.svg",
+      "viewport": "1100x1830",
+      "states": [
+        "fifty-page-one",
+        "fifty-page-seven",
+        "loss-first",
+        "market-securities",
+        "restore"
+      ]
+    },
+    {
+      "id": "journeys-date",
+      "path": "images/journeys-date.svg",
+      "viewport": "1100x4040",
+      "states": [
+        "date-detail",
+        "refresh-same-conditions",
+        "invalid-market",
+        "return-context"
+      ]
+    },
+    {
+      "id": "journeys-pending",
+      "path": "images/journeys-pending.svg",
+      "viewport": "1100x3460",
+      "states": [
+        "count-0",
+        "count-12",
+        "count-99-plus",
+        "pending-results",
+        "return-context"
+      ]
+    },
+    {
+      "id": "journeys-year",
+      "path": "images/journeys-year.svg",
+      "viewport": "1100x6040",
+      "states": [
+        "year-2026",
+        "year-2025-empty",
+        "history-symbol-list",
+        "history-symbol-detail",
+        "history-close-context",
+        "market-currency"
+      ]
+    },
+    {
+      "id": "empty",
+      "path": "images/empty.svg",
+      "viewport": "1100x1244",
+      "states": [
+        "no-match",
+        "zero-holdings"
+      ]
+    },
+    {
+      "id": "loading",
+      "path": "images/loading.svg",
+      "viewport": "1100x1320",
+      "states": [
+        "initial-skeleton",
+        "stale-data",
+        "updating"
+      ]
+    },
+    {
+      "id": "error",
+      "path": "images/error.svg",
+      "viewport": "1100x1070",
+      "states": [
+        "cold-error",
+        "retry",
+        "update-failure",
+        "old-data-retained"
+      ]
+    },
+    {
+      "id": "50-items",
+      "path": "images/50-items.svg",
+      "viewport": "1100x1210",
+      "states": [
+        "page-1-of-7",
+        "page-7-of-7",
+        "fixed-eight-slots"
+      ]
+    },
+    {
+      "id": "count-boundaries",
+      "path": "images/count-boundaries.svg",
+      "viewport": "1100x1210",
+      "states": [
+        "one-item",
+        "nine-items-last-page"
+      ]
+    },
+    {
+      "id": "extreme",
+      "path": "images/extreme.svg",
+      "viewport": "1100x850",
+      "states": [
+        "large-positive",
+        "large-negative",
+        "long-name",
+        "zero",
+        "unknown",
+        "exact-value"
+      ]
+    },
+    {
+      "id": "local-search-pages",
+      "path": "images/local-search-pages.svg",
+      "viewport": "1100x1860",
+      "states": [
+        "page-3-before-search",
+        "one-match-page-1",
+        "clear-page-1"
+      ]
+    },
+    {
+      "id": "count-scales",
+      "path": "images/count-scales.svg",
+      "viewport": "1100x1810",
+      "states": [
+        "five-items",
+        "ten-items",
+        "twenty-items",
+        "fixed-eight-slots"
+      ]
+    },
+    {
+      "id": "multi-applied",
+      "path": "images/multi-applied.svg",
+      "viewport": "1100x560",
+      "states": [
+        "draft",
+        "applied",
+        "badge-count-3",
+        "unrealized",
+        "pending-review"
+      ]
+    },
+    {
+      "id": "clear-attachments",
+      "path": "images/clear-attachments.svg",
+      "viewport": "1100x590",
+      "states": [
+        "applied",
+        "clear-attachments",
+        "market-hk-preserved",
+        "cash-account-preserved"
+      ]
+    },
+    {
+      "id": "reset",
+      "path": "images/reset.svg",
+      "viewport": "1100x570",
+      "states": [
+        "applied",
+        "restore-all-defaults",
+        "all-markets",
+        "all-accounts"
+      ]
+    },
+    {
+      "id": "cancel",
+      "path": "images/cancel.svg",
+      "viewport": "1100x570",
+      "states": [
+        "applied",
+        "draft",
+        "esc-close",
+        "outside-close",
+        "reopened-draft-retained"
+      ]
+    },
+    {
+      "id": "atom-iconbutton",
+      "path": "images/atom-iconbutton.svg",
+      "viewport": "1100x1100",
+      "states": [
+        "default",
+        "hover",
+        "focus",
+        "pressed",
+        "disabled",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "atom-segmentedtabs",
+      "path": "images/atom-segmentedtabs.svg",
+      "viewport": "1100x1100",
+      "states": [
+        "default",
+        "hover",
+        "focus",
+        "pressed",
+        "disabled",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "atom-select",
+      "path": "images/atom-select.svg",
+      "viewport": "1100x1100",
+      "states": [
+        "default",
+        "hover",
+        "focus",
+        "pressed",
+        "disabled",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "atom-popover",
+      "path": "images/atom-popover.svg",
+      "viewport": "2180x2900",
+      "states": [
+        "default",
+        "hover",
+        "focus",
+        "pressed",
+        "disabled",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "atom-token",
+      "path": "images/atom-token.svg",
+      "viewport": "1100x1100",
+      "states": [
+        "default",
+        "hover",
+        "focus",
+        "pressed",
+        "disabled",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "atom-metric",
+      "path": "images/atom-metric.svg",
+      "viewport": "1100x1100",
+      "states": [
+        "default",
+        "hover",
+        "focus",
+        "pressed",
+        "disabled",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "atom-statusbadge",
+      "path": "images/atom-statusbadge.svg",
+      "viewport": "1100x1100",
+      "states": [
+        "default",
+        "hover",
+        "focus",
+        "pressed",
+        "disabled",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "atom-datatable",
+      "path": "images/atom-datatable.svg",
+      "viewport": "2180x2900",
+      "states": [
+        "default",
+        "hover",
+        "focus",
+        "pressed",
+        "disabled",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "atom-charttooltip",
+      "path": "images/atom-charttooltip.svg",
+      "viewport": "1100x1100",
+      "states": [
+        "default",
+        "hover",
+        "focus",
+        "pressed",
+        "disabled",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "atom-emptystate",
+      "path": "images/atom-emptystate.svg",
+      "viewport": "1100x1100",
+      "states": [
+        "default",
+        "hover",
+        "focus",
+        "pressed",
+        "disabled",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "atom-retryaction",
+      "path": "images/atom-retryaction.svg",
+      "viewport": "1100x1100",
+      "states": [
+        "default",
+        "hover",
+        "focus",
+        "pressed",
+        "disabled",
+        "loading",
+        "empty",
+        "error"
+      ]
+    }
+  ]
+}

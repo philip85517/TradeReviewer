@@ -1,0 +1,17 @@
+{
+  "version": "hcr04-v5-integration",
+  "asOf": "2026-10-15",
+  "normalSource": {"year": 2026, "asOf": "2026-10-15", "monthly": {"p": [12000, null, -4000, 6000, null, 4000, 12000, null, -2000, 2000, null, null], "w": [2,0,1,1,0,1,2,0,0,2,0,0], "r": [3,0,2,2,0,1,3,0,1,2,0,0], "f": [200,0,0,460,0,320,500,0,0,960,0,0]}, "status": ["normal","no-rounds","normal","normal","no-rounds","normal","normal","no-rounds","normal","normal","future-uncovered","future-uncovered"]},
+  "derived": {"monthToYear": {"p": 30000, "w": 9, "r": 14, "f": 2440}, "yearToAlltime2026": {"p": 30000, "w": 9, "r": 14, "f": 2440}},
+  "rootComposition": {
+    "id": "hcr04-with-hcr05-history-12240",
+    "historyTotal2026": 12240,
+    "asOf": "2026-10-15",
+    "monthly": {"x": ["01","02","03","04","05","06","07","08","09","10","11","12"], "p": [2400,-800,3200,7440,0,0,0,0,0,0,null,null], "w": [2,0,2,2,0,0,0,0,0,0,0,0], "r": [2,1,3,4,0,0,0,0,0,0,0,0], "f": [100,40,160,340,0,0,0,0,0,0,0,0], "status": ["normal","normal","normal","normal","no-rounds","no-rounds","no-rounds","no-rounds","no-rounds","no-rounds","future-uncovered","future-uncovered"]},
+    "coverage": {"asOf": "2026-10-15", "coveredMonths": ["01","02","03","04","05","06","07","08","09","10"], "uncoveredMonths": ["11","12"], "noRoundMonths": ["05","06","07","08","09","10"], "uncoveredStatus": "future-uncovered", "note": "按批准的全年/月度显示契约显式保留已覆盖但无回合月份与未来未覆盖月份；不等同于源缺失"},
+    "derived": {"profit": 12240, "wins": 6, "rounds": 10, "fees": 640, "winRate": "60.0%", "cumulativeProfit": [2400,1600,4800,12240,12240,12240,12240,12240,12240,12240,null,null]},
+    "source": "HCR-05 historical baseline: 10 rounds / 6 wins / fees 640",
+    "note": "可注入 04+05 组合；不覆盖本切片正常 30000 压力数据，也不与 HCR-07 独立 24 回合样本混称同一范围"
+  },
+  "assertions": ["sum(normal monthly p excluding null) === annual 2026 p", "sum(monthly w/r/f) === annual 2026 w/r/f", "negative p months have normal status and r > 0", "null p months have no-rounds status"]
+}

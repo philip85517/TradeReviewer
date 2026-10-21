@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>V2.3 累计修订说明</title><style>
+:root { color-scheme: dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; color: #e7edf6; background: #0b1220; }
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body { margin: 0; min-width: 0; font-size: 16px; line-height: 1.8; background: #0b1220; }
+.layout { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+nav { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 32px 20px; background: #0d1726; border-right: 1px solid #263650; }
+nav strong { display: block; margin-bottom: 5px; font-size: 14px; color: #e7edf6; letter-spacing: .03em; }
+nav .nav-meta { margin: 0 0 18px; color: #8292a8; font-size: 12px; line-height: 1.5; }
+nav a { --nav-indent: 0px; position: relative; display: block; padding: 3px 8px 3px calc(8px + var(--nav-indent)); color: #adbbcf; text-decoration: none; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+nav a.toc-level-1 { --nav-indent: 0px; margin-top: 4px; color: #e7edf6; font-size: 14px; font-weight: 700; }
+nav a.toc-level-2 { --nav-indent: 12px; color: #c8d5e6; font-size: 13px; font-weight: 650; }
+nav a.toc-level-3 { --nav-indent: 24px; font-size: 12.5px; }
+nav a.toc-level-4, nav a.toc-level-5, nav a.toc-level-6 { --nav-indent: 36px; font-size: 12px; }
+nav a:hover, nav a:focus-visible, nav a.is-current { color: #8cbdff; text-decoration: none; }
+nav a::before { content: ""; position: absolute; left: 0; top: 3px; bottom: 3px; width: 2px; border-radius: 2px; background: #3797ff; opacity: 0; }
+nav a.is-current::before { opacity: 1; }
+main { width: min(100%, 1032px); padding: 40px 40px 88px; margin: 0 auto; overflow-wrap: anywhere; }
+h1 { margin: 0 0 20px; font-size: 32px; line-height: 1.3; color: #e7edf6; }
+h2 { margin: 48px 0 14px; font-size: 24px; line-height: 1.5; color: #e7edf6; border-bottom: 1px solid #263650; padding-bottom: 6px; }
+h3, h4, h5, h6 { margin: 32px 0 10px; line-height: 1.5; color: #e7edf6; }
+p { margin: 0 0 18px; }
+a { color: #8cbdff; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px solid #9ecaff; outline-offset: 2px; }
+ul, ol { margin: 0 0 20px; padding-left: 28px; }
+li { margin: 2px 0; }
+strong { color: #e7edf6; }
+code { padding: .1em .35em; border-radius: 4px; background: #182337; font-size: .9em; }
+pre { overflow-x: auto; margin: 20px 0; padding: 16px; border-radius: 6px; background: #111a2b; color: #e7edf6; line-height: 1.5; }
+.table-wrap { max-width: 100%; overflow-x: auto; margin: 18px 0 24px; }
+table { min-width: 620px; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
+th, td { padding: 9px 12px; border: 1px solid #263650; text-align: left; vertical-align: top; }
+th { background: #182337; color: #e7edf6; font-weight: 650; }
+.figure { margin: 24px 0 8px; }
+.plate-figure { width: 100%; }
+.image-pan { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.plate-figure .image-pan img { width: 952px; max-width: none; }
+.image-pan-hint { display: block; margin-bottom: 5px; color: #8292a8; font-size: 12px; }
+.image-action { display: inline-block; margin: 7px 0 1px; font-size: 12px; }
+.document-image img { max-width: 100%; }
+.image-link { display: block; }
+img { display: block; max-width: 100%; height: auto; border: 1px solid #263650; }
+.caption { display: block; margin: 0 0 20px; font-size: 12px; line-height: 1.5; color: #adbbcf; }
+h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
+[data-comment-block].review-highlight { background: #163d63; box-shadow: 0 0 0 2px #3797ff; border-radius: 3px; }
+@media (max-width: 1080px) { .layout { grid-template-columns: 210px minmax(0, 1fr); } main { padding-left: 32px; padding-right: 32px; } }
+@media (max-width: 720px) { .layout { display: block; } nav { position: static; height: auto; max-height: 42vh; border-right: 0; border-bottom: 1px solid #263650; padding: 18px 20px; } main { padding: 28px 18px 56px; } h1 { font-size: 32px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+.replay-demo { margin: 28px 0; padding: 22px; border: 1px solid #31517a; border-radius: 10px; background: #101c2f; }
+.replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; }
+.replay-demo h3 { margin: 0 0 6px; font-size: 20px; }
+.demo-kicker { margin: 0 0 3px; color: #8cbdff; font-size: 12px; letter-spacing: .04em; }
+.demo-limit { margin: 0; color: #adbbcf; font-size: 14px; line-height: 1.6; }
+.replay-controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.replay-controls button { min-height: 36px; padding: 5px 11px; border: 1px solid #45678f; border-radius: 6px; color: #e7edf6; background: #182a43; cursor: pointer; font: inherit; font-size: 13px; }
+.replay-controls button:hover:not(:disabled), .replay-controls button:focus-visible { background: #24558a; }
+.replay-controls button:disabled { opacity: .45; cursor: default; }
+.replay-stage { margin-top: 18px; min-height: 510px; }
+.replay-frame { display: flow-root; width: 100%; height: auto; margin: 0; }
+.replay-frame[hidden] { display: none; }
+.replay-frame-label { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; color: #d4e1f2; font-size: 13px; }
+.replay-frame-label span:last-child { color: #d6b66c; }
+.replay-frame img { display: block; width: 100%; height: 450px; object-fit: contain; background: #0b1220; }
+.replay-frame figcaption { margin-top: 8px; color: #adbbcf; font-size: 13px; line-height: 1.6; }
+.replay-comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.replay-comparison article { border: 1px solid #31517a; border-radius: 8px; padding: 14px; background: #0b1729; }
+.replay-comparison h4 { margin: 0 0 8px; color: #eef6ff; }
+.replay-comparison dl { margin: 0; }
+.replay-comparison dl > div { display: grid; grid-template-columns: 10.5rem minmax(0, 1fr); gap: 8px; padding: 7px 0; border-top: 1px solid #243d5e; }
+.replay-comparison dt { color: #dcecff; font-weight: 700; }
+.replay-comparison dd { margin: 0; color: #b8c9df; }
+.replay-comparison p { margin: 10px 0 0; color: #9eb4cf; font-size: 13px; }
+.replay-progress { margin: 12px 0 0; color: #8cbdff; font-size: 13px; }
+.source-details { margin: 22px 0; padding: 16px; border: 1px solid #31517a; border-radius: 8px; background: #0d192b; }
+.source-details h3 { margin: 0 0 5px; font-size: 17px; }
+.source-details-intro { margin: 0 0 12px; color: #adbbcf; font-size: 13px; }
+.source-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.source-detail-card { min-width: 0; margin: 0; }
+.source-detail-label { margin-bottom: 6px; color: #dcecff; font-weight: 700; font-size: 13px; }
+.source-crop { position: relative; width: 100%; overflow-x: auto; overflow-y: hidden; background: #0b1220; border: 1px solid #345477; }
+.source-crop .image-link { position: relative; display: block; width: 400px; height: 100%; overflow: hidden; }
+.source-crop img { position: absolute; left: 0; top: 0; max-width: none; width: 1440px; height: auto; border: 0; }
+.source-crop figcaption { color: #adbbcf; }
+.crop-date { height: 55px; }
+.crop-date img { left: -100px; top: -213px; }
+.crop-event { height: 132px; max-width: 290px; }
+.crop-event .image-link { width: 290px; }
+.crop-event img { left: -1034px; top: -724px; }
+.crop-replay-plot { height: 260px; max-width: 270px; }
+.crop-replay-plot .image-link, .crop-replay-before .image-link { width: 270px; }
+.crop-replay-plot img { left: -740px; top: -385px; }
+.crop-replay-before { height: 260px; max-width: 270px; }
+.crop-replay-before img { left: -740px; top: -385px; }
+.crop-replay-date { height: 55px; }
+.crop-replay-date .image-link { width: 480px; }
+.crop-replay-date img { left: -100px; top: -213px; }
+@media (max-width: 720px) { .replay-demo { padding: 16px; } .replay-demo-head { position: sticky; top: 76px; z-index: 5; background: #101c2f; padding-bottom: 10px; display: block; } .replay-controls { justify-content: flex-start; margin-top: 12px; } .replay-stage { min-height: 460px; } .replay-frame { height: auto; } .replay-frame img { height: 400px; } .replay-comparison { grid-template-columns: 1fr; } .replay-comparison dl > div { grid-template-columns: 8.5rem minmax(0, 1fr); } }
+@media (max-width: 720px) { .source-detail-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .replay-frame img { transition: none; } }
+</style></head>
+<body><div class="layout"><nav aria-label="文档目录"><strong>V2.3 累计修订说明</strong><p class="nav-meta">文档 2.3 · 控件与参考附页</p><a class="toc-level-1" href="#v23-累计修订说明" data-target="v23-累计修订说明">V2.3 累计修订说明</a><a class="toc-level-2" href="#这次先-review-哪些内容" data-target="这次先-review-哪些内容">这次先 review 哪些内容</a><a class="toc-level-2" href="#版本沿革" data-target="版本沿革">版本沿革</a><a class="toc-level-2" href="#v22-已明确的修订与恢复" data-target="v22-已明确的修订与恢复">V2.2 已明确的修订与恢复</a><a class="toc-level-2" href="#评论与回溯" data-target="评论与回溯">评论与回溯</a><a class="toc-level-2" href="#2026-10-17-文档结构重写" data-target="2026-10-17-文档结构重写">2026-10-17 文档结构重写</a><a class="toc-level-2" href="#2026-10-18-辅助线配色确认" data-target="2026-10-18-辅助线配色确认">2026-10-18 辅助线配色确认</a><a class="toc-level-2" href="#v23-本轮修订" data-target="v23-本轮修订">V2.3 本轮修订</a><a class="toc-level-2" href="#v23-修复审查更正附录" data-target="v23-修复审查更正附录">V2.3 修复审查更正（附录）</a><a class="toc-level-2" href="#v23-评论逐项响应" data-target="v23-评论逐项响应">V2.3 评论逐项响应</a><a class="toc-level-2" href="#v23-修复轮次附录正文合同同步2026-10-18" data-target="v23-修复轮次附录正文合同同步2026-10-18">V2.3 修复轮次附录：正文合同同步（2026-10-18）</a><a class="toc-level-3" href="#o05-金额规则确认" data-target="o05-金额规则确认">O05 金额规则确认</a></nav><main class="rule-details" id="companion-document"><aside style="padding:20px;border:2px solid #ffc66d;margin-bottom:24px"><strong>历史记录 · 保留当时意见与决定</strong><p>以下文字不代表V2.4.1当前规则，包括当时未决项和布局。当前采用底部唯一贡献区、持仓C方案；O02仍沿用24px。请以<a href="../visual-spec.html">V2.4.1完整规范</a>及<a href="../review-records/integration-report.html">本版整合记录</a>为准。</p></aside><header class="reader-header"><p class="document-status">文档附页 · 2.3</p><a class="review-open" href="historical/v2.2/visual-spec.html">返回正文阅读器</a></header><h1 id="v23-累计修订说明">V2.3 累计修订说明</h1>
+<p>本文档按 V1.0 → V2.0 → V2.1 → V2.2 → V2.3 累计演进。当前正文和本轮附录属于 V2.3；V2.2 内容仅作为历史继承和对照，不能替代当前版本的验收。版本号表示修订快照，不能理解为允许删除以前已确认内容。当前正文汇总有效规则；历史版用于溯源，已被明确修订的规则不再作为当前实现默认。未确认的提案不因出现在旧版就自动成为共识。</p>
+<h2 id="这次先-review-哪些内容">这次先 review 哪些内容</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">范围</th>
+<th scope="col">标识</th>
+<th scope="col">本次变化</th>
+<th scope="col">依据</th>
+</tr></thead><tbody>
+<tr>
+<td>HP03 筛选</td>
+<td>V2.2 本轮修订</td>
+<td>修复清理操作布局，保留清除附加/恢复默认语义</td>
+<td>最新 C01</td>
+</tr>
+<tr>
+<td>HP04 表格</td>
+<td>V2.2 本轮修订</td>
+<td>价格两位小数、数值表头和内容同右边界</td>
+<td>最新 C02/C03</td>
+</tr>
+<tr>
+<td>HP06 交易库</td>
+<td>V2.2 本轮修订</td>
+<td>搜索与刷新独立摆放，避免表头和内容遮挡</td>
+<td>最新 C04</td>
+</tr>
+<tr>
+<td>各章正文</td>
+<td>沿用 · 完整收录</td>
+<td>补回设计取舍、数据、键盘、异常和复用规则</td>
+<td>V1/V2/V2.1 有效内容；不新增产品决策</td>
+</tr>
+<tr>
+<td>HP08</td>
+<td>沿用 · 完整收录</td>
+<td>主文说明关键规则，88 格完整状态作为同版规范性附件</td>
+<td>原继承合同，78 适用/10 N/A</td>
+</tr>
+</tbody></table></div>
+<h2 id="版本沿革">版本沿革</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">版本</th>
+<th scope="col">作用</th>
+<th scope="col">当前如何继承</th>
+</tr></thead><tbody>
+<tr>
+<td><a data-unavailable-href="../2026-10-15-homepage-v1.0/visual-spec.html" aria-disabled="true" title="历史源缺失：../2026-10-15-homepage-v1.0/visual-spec.html">V1.0</a></td>
+<td>实际首页基线，39条原始意见的来源</td>
+<td>保留任务目的、时间口径、范围与查看/复盘边界；旧常驻资产分布、日历和待复盘列表按后续明确意见退出默认首页</td>
+</tr>
+<tr>
+<td><a data-unavailable-href="../2026-10-16-homepage-v2.0/visual-spec.html" aria-disabled="true" title="历史源缺失：../2026-10-16-homepage-v2.0/visual-spec.html">V2.0</a></td>
+<td>基于评论形成新方案</td>
+<td>继承表现优先、四KPI、单层布局、固定持仓表、共享原子；后续局部修订有记录</td>
+</tr>
+<tr>
+<td><a data-unavailable-href="../2026-10-17-homepage-v2.1/visual-spec.html" aria-disabled="true" title="历史源缺失：../2026-10-17-homepage-v2.1/visual-spec.html">V2.1</a></td>
+<td>补细状态、焦点、竞态和交接</td>
+<td>继承所有未被明确修订的细节；模拟盘首页入口、贡献逐10行展开、D01候选按后续决定修订</td>
+</tr>
+<tr>
+<td>V2.2</td>
+<td>历史累计规范</td>
+<td>保留已确认内容，叠加27条意见及当轮4条图稿修正；仅作为V2.3继承来源，未决项保持OPEN</td>
+</tr>
+<tr>
+<td>V2.3</td>
+<td>当前规范</td>
+<td>增补21条当前评论的追踪说明，并记录审查发现的部分落实项与待协调者验收的修复；未决项保持OPEN</td>
+</tr>
+</tbody></table></div>
+<h2 id="v22-已明确的修订与恢复">V2.2 已明确的修订与恢复</h2>
+<ul>
+<li>主布局沿用 V2.1：当前表现 → 当前持仓 → 当前期间贡献 → 历史已平仓。</li>
+<li>首页固定实盘，子模块模拟盘能力不因此删除。</li>
+<li>保留市场 tabs、四 KPI、持仓天数、日期详情完整字段、旧 palette 与表格几何；这是恢复继承，不是新方案。</li>
+<li>图表增加网格、双向十字线、轴端标签和缺口原因；首页唯一全局“一键修复”。</li>
+<li>D01 仅删除“查看该日敞口”二级入口，日期数据仍保留。</li>
+<li>当前期间贡献改为固定 8 行分页，明确替代旧10行展开及其高度动画。</li>
+<li>跨年未平仓贡献、紧凑徽章仍按<a href="open-decisions.html">待确认清单</a>处理，不能因累计合并而默认为通过。</li>
+</ul>
+<h2 id="评论与回溯">评论与回溯</h2>
+<p><a data-unavailable-href="reviews/2026-10-17-latest/comments.html" aria-disabled="true" title="历史源缺失：reviews/2026-10-17-latest/comments.html">本轮4条原评论及对应原图</a> · <a data-unavailable-href="reviews/2026-10-17-latest/HOME-DOC-V22.json" aria-disabled="true" title="历史源缺失：reviews/2026-10-17-latest/HOME-DOC-V22.json">原始JSON</a> · <a data-unavailable-href="reviews/2026-10-17-latest/visual-spec.html" aria-disabled="true" title="历史源缺失：reviews/2026-10-17-latest/visual-spec.html">修订前V2.2文档</a>。当前正文中的评论 ID 与原始意见不改写，也不替用户标记解决。</p>
+<p>每次交付继续使用同一规则：保存修订前快照和评论；新正文保持完整有效合同；在章节开头标注沿用/新增/修订；列出依据、前后差异及未决项。最终版以全部待决策关闭并经用户确认作为条件，不用版本号或技术检查代替用户批准。</p>
+<h2 id="2026-10-17-文档结构重写">2026-10-17 文档结构重写</h2>
+<p>按设计目标、布局、模块、控件、分镜、异常和验收重新组织完整正文；原有有效设计规则继续收录。逐类控件说明整理为独立可读手册，包含11类控件、88种状态组合及对应图示。版本来源与待决项归入附录。</p>
+<p>图稿只调整说明文字，未改图形位置、尺寸或颜色。修订前文档与评论保存在 <code>reviews/2026-10-17-before-editorial/</code>。新发现的辅助线配色冲突单列待确认，未自行选择。详见 <a data-unavailable-href="editorial/acceptance.html" aria-disabled="true" title="历史源缺失：editorial/acceptance.html">独立复核与编辑验收</a>。</p>
+<h2 id="2026-10-18-辅助线配色确认">2026-10-18 辅助线配色确认</h2>
+<p>用户确认保留V2.2现有图稿颜色：零线#A8B6CB、网格#283448。正文补齐精确色值，附录关闭该项分歧；图稿无需变更。跨年贡献与紧凑徽章仍待确认。</p>
+<h2 id="v23-本轮修订">V2.3 本轮修订</h2>
+<p>本版本在 V2.2 完整正文上增补规则和修正图稿，保留历史已确认内容。目录另外修正章节层级、缩进和长标题换行。未确认的跨年贡献与紧凑徽章继续单列，不设为新默认。</p>
+<p>原始21条评论及对应文档已<a href="reviews/2026-10-18-source/comments.html">静态归档</a>。评论原文与状态保持不变，新版本使用独立评论身份。逐项验收见本轮评论响应表；旧验收记录只证明旧版本。</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">范围</th>
+<th scope="col">本轮变化</th>
+</tr></thead><tbody>
+<tr>
+<td>视觉基础</td>
+<td>为布局尺寸与配色补充可视样例，明确按钮、输入和表头对齐</td>
+</tr>
+<tr>
+<td>范围与搜索</td>
+<td>统一账户浮层、搜索框和结果区边界，补详情动作和复选框规范</td>
+</tr>
+<tr>
+<td>当前表现</td>
+<td>补自定义日期触发路径、按钮文字对齐与日期详情的数值层级</td>
+</tr>
+<tr>
+<td>当前持仓</td>
+<td>补标题、汇总、表格列宽及局部控件子规范，修正无持仓和无匹配状态</td>
+</tr>
+<tr>
+<td>历史已平仓</td>
+<td>整页与局部保持同一指标卡和曲线布局，补默认位置、年度切换和悬停路径</td>
+</tr>
+</tbody></table></div>
+<p>这些是设计文档的修订，不代表业务首页已实现。</p>
+<h2 id="v23-修复审查更正附录">V2.3 修复审查更正（附录）</h2>
+<p>本附录保留修复轮次的追踪信息，不提前替协调者作出通过结论。此前把“本轮关键视觉修正”记为 PASS 的旧验收文字已被当前审查取代：审查发现 C05、C10、C14、C16、C21 仍为部分落实，且相关视觉证据不足，因此旧 PASS 不能作为 V2.3 放行依据。原历史判断继续保留在 V2.2 记录中，当前 V2.3 以 <a data-unavailable-href="acceptance-review-fix.html" aria-disabled="true" title="历史源缺失：acceptance-review-fix.html">修复验收记录</a> 的最终结论为准。</p>
+<p>本轮文案修复补齐了独立 320px FilterPopover 的草稿、应用、清除附加、恢复默认、Esc/外点和错误状态合同，并修正当前版本与历史版本的身份说明。图稿、生成器行为和评论状态不因本附录自动视为已验收。</p>
+<h2 id="v23-评论逐项响应">V2.3 评论逐项响应</h2>
+<p>原始意见与版本图稿保存在 <a href="reviews/2026-10-18-source/comments.html">本轮评论归档</a>。以下编号与 current-comment-responses.json 一致。</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
+<th scope="col">评论</th>
+<th scope="col">修订章节</th>
+<th scope="col">处理内容</th>
+<th scope="col">图稿</th>
+</tr></thead><tbody>
+<tr>
+<td>1</td>
+<td>三、筛选</td>
+<td>清空动作独占筛选底部操作区，保持间距。</td>
+<td><a href="historical/v2.2/images/filter.svg">查看</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>五、极值</td>
+<td>价格统一保留两位小数。</td>
+<td><a href="historical/v2.2/images/extreme.svg">查看</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td>五、列表</td>
+<td>数值表头与数值共用右边界。</td>
+<td><a href="historical/v2.2/images/count-scales.svg">查看</a></td>
+</tr>
+<tr>
+<td>4</td>
+<td>七、搜索与刷新</td>
+<td>交易搜索与刷新独立排布，避免覆盖下方内容。</td>
+<td><a href="historical/v2.2/images/journeys-date.svg">查看</a></td>
+</tr>
+<tr>
+<td>5</td>
+<td>二、布局</td>
+<td>六项布局尺寸逐项补充可视化样例。</td>
+<td><a href="historical/v2.2/images/visual-samples-board.svg">查看</a></td>
+</tr>
+<tr>
+<td>6</td>
+<td>二、颜色</td>
+<td>颜色 token 对应实际控件及状态。</td>
+<td><a href="historical/v2.2/images/visual-samples-board.svg">查看</a></td>
+</tr>
+<tr>
+<td>7</td>
+<td>二、全局对齐</td>
+<td>按钮与快捷期间文字水平垂直居中。</td>
+<td><a href="historical/v2.2/images/visual-samples-board.svg">查看</a></td>
+</tr>
+<tr>
+<td>8</td>
+<td>五、表头</td>
+<td>名称左对齐、数值右对齐，并明确列宽比例。</td>
+<td><a href="historical/v2.2/images/visual-samples-board.svg">查看</a></td>
+</tr>
+<tr>
+<td>9</td>
+<td>三、账户</td>
+<td>账户下拉与入口保持176px同宽。</td>
+<td><a href="historical/v2.2/images/account.svg">查看</a></td>
+</tr>
+<tr>
+<td>10</td>
+<td>三、搜索</td>
+<td>搜索使用独立360px浮层，内部输入328px。</td>
+<td><a href="historical/v2.2/images/search.svg">查看</a></td>
+</tr>
+<tr>
+<td>11</td>
+<td>三、详情</td>
+<td>查看交易采用36px高、14px文字居中按钮。</td>
+<td><a href="historical/v2.2/images/detail.svg">查看</a></td>
+</tr>
+<tr>
+<td>12</td>
+<td>三、筛选</td>
+<td>复选框采用清晰独立勾线。</td>
+<td><a href="historical/v2.2/images/filter.svg">查看</a></td>
+</tr>
+<tr>
+<td>13</td>
+<td>四、期间</td>
+<td>点击日期范围展开日期浮层；输入左对齐，快捷项与应用居中。</td>
+<td><a href="historical/v2.2/images/period.svg">查看</a></td>
+</tr>
+<tr>
+<td>14</td>
+<td>四、曲线</td>
+<td>区分中性市值、语义盈亏与次级描述字号颜色。</td>
+<td><a href="historical/v2.2/images/chart-hover.svg">查看</a></td>
+</tr>
+<tr>
+<td>15</td>
+<td>五、列表</td>
+<td>补充标题、汇总、列宽、色彩与真实数据展示规则。</td>
+<td><a href="historical/v2.2/images/count-scales.svg">查看</a></td>
+</tr>
+<tr>
+<td>16</td>
+<td>五、搜索与分页</td>
+<td>补充搜索、导出、分页字体和对齐。</td>
+<td><a href="historical/v2.2/images/count-scales.svg">查看</a></td>
+</tr>
+<tr>
+<td>17</td>
+<td>五、详情</td>
+<td>详情和返回分镜使用同一查看交易按钮规范。</td>
+<td><a href="historical/v2.2/images/holding-return.svg">查看</a></td>
+</tr>
+<tr>
+<td>18</td>
+<td>五、空态</td>
+<td>无持仓与无搜索结果分开，移除错误汇总及无效分页。</td>
+<td><a href="historical/v2.2/images/empty.svg">查看</a></td>
+</tr>
+<tr>
+<td>19</td>
+<td>五、空态</td>
+<td>无结果仅保留一个查询入口，清空动作置于空态内容中。</td>
+<td><a href="historical/v2.2/images/empty.svg">查看</a></td>
+</tr>
+<tr>
+<td>20</td>
+<td>五、数量边界</td>
+<td>补充0/1/8/9及末页边界的稳定布局规则。</td>
+<td><a href="historical/v2.2/images/count-boundaries.svg">查看</a></td>
+</tr>
+<tr>
+<td>21</td>
+<td>六、历史已平仓</td>
+<td>整页与局部统一四张历史卡片；明确默认内联、年度切换、悬停详情路径。</td>
+<td><a href="historical/v2.2/images/history.svg">查看</a></td>
+</tr>
+</tbody></table></div>
+<h2 id="v23-修复轮次附录正文合同同步2026-10-18">V2.3 修复轮次附录：正文合同同步（2026-10-18）</h2>
+<p>本附录记录本轮对既有正文的同步，不把候选决定写入历史沿革，也不替协调者作最终验收。保留既有确认：首页顺序为当前表现 → 当前持仓 → 当前期间贡献 → 历史已平仓；当前期间贡献固定8行；D01“查看该日敞口”已删除；零线与网格颜色分别为 <code>#A8B6CB</code> 与 <code>#283448</code>。</p>
+<p>已同步的正文合同：全局实体搜索改为覆盖页头的桌面最大960px舞台、两侧至少24px、窄屏全宽；持仓与交易库局部搜索保持 inline filter。输入框尾部 X 是局部搜索唯一清空入口，空态不再放同义清空按钮。表头和值由同一列定义生成锚点，动作列在列中心使用36px命中盒，并明确最小宽度与溢出策略。具体日期/日期区间使用日历图标，纯年份使用下拉箭头，静态日期不使用图标。历史局部画面标明上游模块省略并由向下滚动进入；市场汇总按“市场行 → 证券列表 → 既有详情容器”进入，返回恢复完整上下文。</p>
+<p>数字展示候选写入待确认项：金额绝对值大于等于10,000可显示“万”，大于等于100,000,000可显示“亿”；价格保留两位小数；悬停、聚焦、详情及复制/导出提供精确值。缩写位数、负值/零/未知写法与复制口径仍待确认。全局搜索最终尺寸、市场到标的再到既有详情的进入链路，以及历史详情的产品焦点规则均已按批准报告执行；说明性蓝框只在画布外；画布内蓝色描边仅用于具体控件的操作或焦点状态。跨年未平仓贡献与紧凑徽章继续保持 OPEN。</p>
+<p>本轮补充：搜索外宽统一960px（最大值），内框928px；旧360/328记录仅描述历史版本，已由本轮替代。输入框×为唯一清空入口。历史分镜采用明确的文档省略带；市场行→A股标的列表→复用标的详情→关闭回原列表。</p>
+<h3 id="o05-金额规则确认">O05 金额规则确认</h3>
+<p>用户明确采用：金额绝对值达到1亿显示“亿”，否则达到1万显示“万”；缩写保留2位小数。悬停/键盘聚焦查看完整值，复制与导出均为完整值；单价保留2位小数。此决定取代上文候选状态，正文、控件手册与极值图稿已同步；O01/O02仍待确认。</p></main></div></body></html>

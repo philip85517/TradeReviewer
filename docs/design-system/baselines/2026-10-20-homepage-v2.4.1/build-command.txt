@@ -1,0 +1,4 @@
+cd /Users/zhoulin/.codex/worktrees/12f2/TradeReview/docs/design-system/baselines/2026-10-20-homepage-v2.4.1
+python3 build-visual-spec.py --source source/visual-design.candidate.md --version 2.4.1 --output-dir .
+python3 refresh-comment-mapping.py
+python3 verify-package.py

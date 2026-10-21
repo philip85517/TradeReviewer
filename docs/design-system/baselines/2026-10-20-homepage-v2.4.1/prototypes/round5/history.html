@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>历史统计 · 完整曲线原型</title>
+  <link rel="stylesheet" href="./history.css">
+</head>
+<body>
+  <header class="doc-head">
+    <div class="eyebrow">第五轮完整原型 · History chart review</div>
+    <h1>历史已平仓</h1>
+    <p>首页历史模块局部裁切；上方当前表现、当前持仓以及下方贡献区保持原位。本页只用于确认完整读数、状态辨识和范围切换。</p>
+    <div class="doc-links"><a href="./index.html">返回原型索引</a><a href="./history-reference.svg">查看原整页位置参考</a><span>原型说明在产品画布外</span></div>
+    <div class="doc-tools"><label>状态示例<select id="state-select" aria-label="示例状态"><option value="normal">正常</option><option value="extreme">大额正负</option><option value="zero">真实零</option><option value="empty">无已平仓回合</option><option value="future">未来区间</option><option value="missing">数据缺失</option><option value="loading">加载中</option><option value="failed">读取失败</option></select></label><span>文档控制，不属于产品画布</span></div>
+    <div class="current-reference" aria-label="当前表现风格参考"><span>当前表现风格参考</span><svg viewBox="0 0 180 36" role="img"><line x1="4" y1="25" x2="176" y2="25" stroke="#a8b6cb"/><polyline points="6,23 38,18 68,21 100,10 132,14 174,5" fill="none" stroke="#6ca8ff" stroke-width="2"/></svg><small>线条样式示意：2px 线与零线；完整参考见原整页图</small></div>
+  </header>
+  <main id="history-module" aria-labelledby="history-title">
+    <div class="module-head">
+      <div><h2 id="history-title">历史已平仓</h2><p id="range-caption">按平仓时间 · 2026</p></div>
+      <div class="toolbar" aria-label="历史文档示例控制">
+        <div class="choice-a"><label class="custom-select">范围<select id="year-select" aria-label="历史范围"><option value="2026">2026</option><option value="2025">2025</option><option value="2024-2026">2024–2026</option><option value="all">全部</option></select></label><label class="custom-select">展示方式<select id="metric-select" aria-label="历史指标"><option value="net">每月净盈亏</option><option value="cumulative">累计净盈亏</option><option value="win">胜率</option><option value="rounds">回合数</option></select></label></div>
+      </div>
+    </div>
+    <div id="status-note" class="status-note" role="status"><span id="status-text"></span><button id="retry" type="button" hidden>重试读取</button></div>
+    <section class="kpis" aria-label="历史统计指标">
+      <article class="kpi"><span>已平仓净盈亏</span><strong id="kpi-net">+12,240.00</strong><small>CNY</small></article>
+      <article class="kpi"><span>已平仓回合</span><strong id="kpi-rounds">10</strong><small>回合</small></article>
+      <article class="kpi win-kpi"><span>胜率</span><strong id="kpi-win">60.0%</strong><small class="win-denominator"><span>盈利回合</span><b id="kpi-win-denom">6 / 10</b></small></article>
+      <article class="kpi"><span>费用（已扣除）</span><strong id="kpi-fees">640.00</strong><small>CNY</small></article>
+    </section>
+    <section class="chart-card" aria-labelledby="chart-title">
+      <div class="chart-head"><h3 id="chart-title">各期净盈亏</h3><span id="unit-label">CNY</span></div>
+      <div class="chart-wrap" id="chart-wrap"><svg id="history-chart" viewBox="0 0 1100 360" role="group" aria-label="历史统计图"></svg><div id="tooltip" class="tooltip" role="tooltip" hidden></div></div>
+      <div id="empty-note" class="empty-note" hidden></div>
+      <p class="chart-hint">鼠标悬停或 Tab 聚焦点位查看完整读数；左右键选择相邻期间，Home/End 跳到首尾，Enter 固定，Esc 关闭。</p>
+    </section>
+  </main>
+    <section class="state-explainer doc-footer" aria-label="原型状态说明"><span class="legend-dot normal"></span><span>数据点</span><span class="legend-dot missing"></span><span>缺失/未来留缺口</span><span class="legend-line"></span><span>零线</span><span class="candidate">已确认：点径与状态色阶采用本原型规范</span></section>
+  <script src="./history.js"></script><script src="../round4/ui-select.js"></script>
+</body>
+</html>

@@ -1,0 +1,780 @@
+{
+  "version": "2.4.1",
+  "sourceRevision": 32,
+  "entries": [
+    {
+      "commentId": "comment-fa4fb3f1fa8f4fffa6ba73e729683c2d",
+      "originalChapter": "HP04",
+      "currentChapter": "HP04（五、当前持仓：稳定扫描与逐行查看）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP04",
+          "title": "五、当前持仓：稳定扫描与逐行查看",
+          "href": "../visual-spec.html#chapter-HP04"
+        }
+      ],
+      "mappingSubject": "持仓查看图标与行内操作",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "holding-return"
+    },
+    {
+      "commentId": "comment-46d442c4b2784ca2b9a198fb34d766fd",
+      "originalChapter": "HP01",
+      "currentChapter": "HP05（六、历史统计与底部贡献区）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP05",
+          "title": "六、历史统计与底部贡献区",
+          "href": "../visual-spec.html#chapter-HP05"
+        }
+      ],
+      "mappingSubject": "历史年份范围、粒度与统计",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "home-1440"
+    },
+    {
+      "commentId": "comment-f5fc106179a84677962bdcc194ae2e36",
+      "originalChapter": "HP01",
+      "currentChapter": "HP11（二、整页布局与视觉基础）；HP05（六、历史统计与底部贡献区）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP11",
+          "title": "二、整页布局与视觉基础",
+          "href": "../visual-spec.html#chapter-HP11"
+        },
+        {
+          "chapter": "HP05",
+          "title": "六、历史统计与底部贡献区",
+          "href": "../visual-spec.html#chapter-HP05"
+        }
+      ],
+      "mappingSubject": "底部唯一贡献区及当前/历史模式",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "home-1280"
+    },
+    {
+      "commentId": "comment-157c15abd5234d51bfea92618b7f7090",
+      "originalChapter": "HP01",
+      "currentChapter": "HP11（二、整页布局与视觉基础）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP11",
+          "title": "二、整页布局与视觉基础",
+          "href": "../visual-spec.html#chapter-HP11"
+        }
+      ],
+      "mappingSubject": "布局、色彩与预渲染样例",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [
+        "HOME-HP01-B055"
+      ]
+    },
+    {
+      "commentId": "comment-be74243f81284103bd817fa48c44a9dd",
+      "originalChapter": "HP03",
+      "currentChapter": "HP03（三、页头范围、搜索与筛选）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP03",
+          "title": "三、页头范围、搜索与筛选",
+          "href": "../visual-spec.html#chapter-HP03"
+        }
+      ],
+      "mappingSubject": "全局搜索舞台尺寸",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "search"
+    },
+    {
+      "commentId": "comment-aae2a88ebb554b47844b3a429ce30cf9",
+      "originalChapter": "HP03",
+      "currentChapter": "HP03（三、页头范围、搜索与筛选）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP03",
+          "title": "三、页头范围、搜索与筛选",
+          "href": "../visual-spec.html#chapter-HP03"
+        }
+      ],
+      "mappingSubject": "筛选项使用易懂名称",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "cancel"
+    },
+    {
+      "commentId": "comment-685afcfc6e27448d937d9a8bf6fc313c",
+      "originalChapter": "HP02",
+      "currentChapter": "HP02（四、当前表现：指标、期间与曲线）；HP08（十、共享控件与状态标准）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP02",
+          "title": "四、当前表现：指标、期间与曲线",
+          "href": "../visual-spec.html#chapter-HP02"
+        },
+        {
+          "chapter": "HP08",
+          "title": "十、共享控件与状态标准",
+          "href": "../visual-spec.html#chapter-HP08"
+        }
+      ],
+      "mappingSubject": "轴读数去外框、文字高亮",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "chart-hover"
+    },
+    {
+      "commentId": "comment-e060950542ca4bd9bfc3d7e064cde967",
+      "originalChapter": "HP04",
+      "currentChapter": "HP04（五、当前持仓：稳定扫描与逐行查看）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP04",
+          "title": "五、当前持仓：稳定扫描与逐行查看",
+          "href": "../visual-spec.html#chapter-HP04"
+        }
+      ],
+      "mappingSubject": "持仓标题汇总与控件预览",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [
+        "HOME-HP04-B042"
+      ]
+    },
+    {
+      "commentId": "comment-9de55ebf84ac40628022d725f4ab550c",
+      "originalChapter": "HP04",
+      "currentChapter": "HP04（五、当前持仓：稳定扫描与逐行查看）；HP08（十、共享控件与状态标准）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP04",
+          "title": "五、当前持仓：稳定扫描与逐行查看",
+          "href": "../visual-spec.html#chapter-HP04"
+        },
+        {
+          "chapter": "HP08",
+          "title": "十、共享控件与状态标准",
+          "href": "../visual-spec.html#chapter-HP08"
+        }
+      ],
+      "mappingSubject": "持仓数字列右对齐",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [
+        "HOME-HP04-B060"
+      ]
+    },
+    {
+      "commentId": "comment-0f9d2f5583944cd2bed95b0fb1a860c4",
+      "originalChapter": "HP04",
+      "currentChapter": "HP04（五、当前持仓：稳定扫描与逐行查看）；HP08（十、共享控件与状态标准）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP04",
+          "title": "五、当前持仓：稳定扫描与逐行查看",
+          "href": "../visual-spec.html#chapter-HP04"
+        },
+        {
+          "chapter": "HP08",
+          "title": "十、共享控件与状态标准",
+          "href": "../visual-spec.html#chapter-HP08"
+        }
+      ],
+      "mappingSubject": "带币种表头可见文字右缘",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "count-scales"
+    },
+    {
+      "commentId": "comment-3feb55774db8428a9feedbae68f62683",
+      "originalChapter": "HP04",
+      "currentChapter": "HP04（五、当前持仓：稳定扫描与逐行查看）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP04",
+          "title": "五、当前持仓：稳定扫描与逐行查看",
+          "href": "../visual-spec.html#chapter-HP04"
+        }
+      ],
+      "mappingSubject": "持仓C方案汇总位置",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "local-search-pages"
+    },
+    {
+      "commentId": "comment-3f389a05ebda45288d042f475234adf6",
+      "originalChapter": "HP04",
+      "currentChapter": "HP04（五、当前持仓：稳定扫描与逐行查看）；HP08（十、共享控件与状态标准）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP04",
+          "title": "五、当前持仓：稳定扫描与逐行查看",
+          "href": "../visual-spec.html#chapter-HP04"
+        },
+        {
+          "chapter": "HP08",
+          "title": "十、共享控件与状态标准",
+          "href": "../visual-spec.html#chapter-HP08"
+        }
+      ],
+      "mappingSubject": "持仓列边界与对齐契约",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "50-items"
+    },
+    {
+      "commentId": "comment-46d96184dde049898bd14815ce0ee511",
+      "originalChapter": "HP05",
+      "currentChapter": "HP05（六、历史统计与底部贡献区）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP05",
+          "title": "六、历史统计与底部贡献区",
+          "href": "../visual-spec.html#chapter-HP05"
+        }
+      ],
+      "mappingSubject": "历史范围与已平仓口径",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [
+        "HOME-HP05-B004"
+      ]
+    },
+    {
+      "commentId": "comment-9c1f70e9c11449ac9fcdebe20e44daf0",
+      "originalChapter": "HP05",
+      "currentChapter": "HP05（六、历史统计与底部贡献区）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP05",
+          "title": "六、历史统计与底部贡献区",
+          "href": "../visual-spec.html#chapter-HP05"
+        }
+      ],
+      "mappingSubject": "胜率及样本回合数",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "history"
+    },
+    {
+      "commentId": "comment-22c012f2ea1a4c49a6c418e8d0ea9032",
+      "originalChapter": "HP05",
+      "currentChapter": "HP05（六、历史统计与底部贡献区）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP05",
+          "title": "六、历史统计与底部贡献区",
+          "href": "../visual-spec.html#chapter-HP05"
+        }
+      ],
+      "mappingSubject": "贡献分类与组成",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "contribution"
+    },
+    {
+      "commentId": "comment-792d132cc6e64345b6663df8dc2ddc0f",
+      "originalChapter": "HP05",
+      "currentChapter": "HP05（六、历史统计与底部贡献区）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP05",
+          "title": "六、历史统计与底部贡献区",
+          "href": "../visual-spec.html#chapter-HP05"
+        }
+      ],
+      "mappingSubject": "全部市场和单市场贡献",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "journeys-year"
+    },
+    {
+      "commentId": "comment-02ca3e065306472d89aab388582ea300",
+      "originalChapter": "HP06",
+      "currentChapter": "HP06（七、从首页进入交易与复盘）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP06",
+          "title": "七、从首页进入交易与复盘",
+          "href": "../visual-spec.html#chapter-HP06"
+        }
+      ],
+      "mappingSubject": "日期点进入交易库动线",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [
+        "HOME-HP06-B007"
+      ]
+    },
+    {
+      "commentId": "comment-1daefa1b38624ceb8bd0b0d69c37e826",
+      "originalChapter": "HP06",
+      "currentChapter": "HP06（七、从首页进入交易与复盘）；HP07（八、交易库内部规范）；HP08（十、共享控件与状态标准）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP06",
+          "title": "七、从首页进入交易与复盘",
+          "href": "../visual-spec.html#chapter-HP06"
+        },
+        {
+          "chapter": "HP07",
+          "title": "八、交易库内部规范",
+          "href": "../visual-spec.html#chapter-HP07"
+        },
+        {
+          "chapter": "HP08",
+          "title": "十、共享控件与状态标准",
+          "href": "../visual-spec.html#chapter-HP08"
+        }
+      ],
+      "mappingSubject": "来源交接与交易库共享控件",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [
+        "HOME-HP06-B005"
+      ]
+    },
+    {
+      "commentId": "comment-2d14e13e4d9f42feaee845d62e5581cb",
+      "originalChapter": "HP06",
+      "currentChapter": "HP06（七、从首页进入交易与复盘）；HP07（八、交易库内部规范）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP06",
+          "title": "七、从首页进入交易与复盘",
+          "href": "../visual-spec.html#chapter-HP06"
+        },
+        {
+          "chapter": "HP07",
+          "title": "八、交易库内部规范",
+          "href": "../visual-spec.html#chapter-HP07"
+        }
+      ],
+      "mappingSubject": "动线入口职责与交易库去重",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "journeys-date"
+    },
+    {
+      "commentId": "comment-167f4c92664e48029de326fa7810d09d",
+      "originalChapter": "HP07",
+      "currentChapter": "HP06（七、从首页进入交易与复盘）；HP07（八、交易库内部规范）；HP11（二、整页布局与视觉基础）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP06",
+          "title": "七、从首页进入交易与复盘",
+          "href": "../visual-spec.html#chapter-HP06"
+        },
+        {
+          "chapter": "HP07",
+          "title": "八、交易库内部规范",
+          "href": "../visual-spec.html#chapter-HP07"
+        },
+        {
+          "chapter": "HP11",
+          "title": "二、整页布局与视觉基础",
+          "href": "../visual-spec.html#chapter-HP11"
+        }
+      ],
+      "mappingSubject": "返回首页恢复原布局与上下文",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "journeys-date"
+    },
+    {
+      "commentId": "comment-c2275cbee9aa4691bb06a5bc416bd934",
+      "originalChapter": "HP07",
+      "currentChapter": "HP07（八、交易库内部规范）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP07",
+          "title": "八、交易库内部规范",
+          "href": "../visual-spec.html#chapter-HP07"
+        }
+      ],
+      "mappingSubject": "实盘/模拟互斥范围",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [
+        "HOME-HP07-B004"
+      ]
+    },
+    {
+      "commentId": "comment-95767e40d6054707991ee46df585acbc",
+      "originalChapter": "HP07",
+      "currentChapter": "HP07（八、交易库内部规范）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP07",
+          "title": "八、交易库内部规范",
+          "href": "../visual-spec.html#chapter-HP07"
+        }
+      ],
+      "mappingSubject": "交易库日期条件及视图隔离",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [
+        "HOME-HP07-B004"
+      ]
+    },
+    {
+      "commentId": "comment-52d491fa928d4cd08b51d9dcb6f4c5ad",
+      "originalChapter": "HP07",
+      "currentChapter": "HP07（八、交易库内部规范）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP07",
+          "title": "八、交易库内部规范",
+          "href": "../visual-spec.html#chapter-HP07"
+        }
+      ],
+      "mappingSubject": "交易库范围统计",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "journeys-date"
+    },
+    {
+      "commentId": "comment-d8e062905eea496fa19e410cc8be7774",
+      "originalChapter": "HP10",
+      "currentChapter": "HP10（十一、实现与验收）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP10",
+          "title": "十一、实现与验收",
+          "href": "../visual-spec.html#chapter-HP10"
+        }
+      ],
+      "mappingSubject": "量化视觉与动效验收",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [
+        "HOME-HP09-B017"
+      ]
+    },
+    {
+      "commentId": "comment-a8e46fd41069482caedfcb2ff8238a01",
+      "originalChapter": "HP10",
+      "currentChapter": "HP08（十、共享控件与状态标准）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP08",
+          "title": "十、共享控件与状态标准",
+          "href": "../visual-spec.html#chapter-HP08"
+        }
+      ],
+      "mappingSubject": "共享组件复用与新增规则",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [
+        "HOME-HP09-B017"
+      ]
+    },
+    {
+      "commentId": "comment-f3183a28da2244b58276a123703e3353",
+      "originalChapter": "HP10",
+      "currentChapter": "HP08（十、共享控件与状态标准）；HP11（二、整页布局与视觉基础）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP08",
+          "title": "十、共享控件与状态标准",
+          "href": "../visual-spec.html#chapter-HP08"
+        },
+        {
+          "chapter": "HP11",
+          "title": "二、整页布局与视觉基础",
+          "href": "../visual-spec.html#chapter-HP11"
+        }
+      ],
+      "mappingSubject": "共享搜索、图标、字体与颜色",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [
+        "HOME-HP09-B017"
+      ]
+    },
+    {
+      "commentId": "comment-73b7ef80503143e8b6552b256dc83ca8",
+      "originalChapter": "HP10",
+      "currentChapter": "HP08（十、共享控件与状态标准）；HP10（十一、实现与验收）",
+      "issues": "V2.4 继承共识",
+      "resolution": "保留 V2.4 累计正文与对应分镜；本轮不重新打开已确认选择。原评论状态不变，不将继承条目标记为重新验收通过。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.3",
+      "sourceFingerprint": "2ea12dfcec12a53365d64682735cca7efe4129cdaad4b69e7b70f5d620f711f0",
+      "currentTargets": [
+        {
+          "chapter": "HP08",
+          "title": "十、共享控件与状态标准",
+          "href": "../visual-spec.html#chapter-HP08"
+        },
+        {
+          "chapter": "HP10",
+          "title": "十一、实现与验收",
+          "href": "../visual-spec.html#chapter-HP10"
+        }
+      ],
+      "mappingSubject": "公共组件迭代与重复组件治理",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [
+        "HOME-HP09-B026"
+      ]
+    },
+    {
+      "commentId": "comment-dec82c5186214a12bbb91d6e991bf537",
+      "originalChapter": "HP01",
+      "currentChapter": "HP11（二、整页布局与视觉基础）；HP02（四、当前表现：指标、期间与曲线）；HP04（五、当前持仓：稳定扫描与逐行查看）；HP05（六、历史统计与底部贡献区）；HP08（十、共享控件与状态标准）",
+      "issues": "D01–D06",
+      "resolution": "表头可见右缘、C 汇总、标题层级与公共边界、金额单位及日期刻度；见正文第二、四、五、十章。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.4",
+      "sourceFingerprint": "d5542230468bb2b41dfe1785eafc3ca0121d4ad580583902368527c73211201f",
+      "currentTargets": [
+        {
+          "chapter": "HP11",
+          "title": "二、整页布局与视觉基础",
+          "href": "../visual-spec.html#chapter-HP11"
+        },
+        {
+          "chapter": "HP02",
+          "title": "四、当前表现：指标、期间与曲线",
+          "href": "../visual-spec.html#chapter-HP02"
+        },
+        {
+          "chapter": "HP04",
+          "title": "五、当前持仓：稳定扫描与逐行查看",
+          "href": "../visual-spec.html#chapter-HP04"
+        },
+        {
+          "chapter": "HP05",
+          "title": "六、历史统计与底部贡献区",
+          "href": "../visual-spec.html#chapter-HP05"
+        },
+        {
+          "chapter": "HP08",
+          "title": "十、共享控件与状态标准",
+          "href": "../visual-spec.html#chapter-HP08"
+        }
+      ],
+      "mappingSubject": "整页、持仓、图表及标题统一",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "home-history-1440"
+    },
+    {
+      "commentId": "comment-764e82100ea147469cda22550950f541",
+      "originalChapter": "HP01",
+      "currentChapter": "HP05（六、历史统计与底部贡献区）",
+      "issues": "D07–D09",
+      "resolution": "A 组合选择器，单年按月／跨年按年；无回合、缺失、未来以背景区分。第五轮历史原型已确认。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.4",
+      "sourceFingerprint": "d5542230468bb2b41dfe1785eafc3ca0121d4ad580583902368527c73211201f",
+      "currentTargets": [
+        {
+          "chapter": "HP05",
+          "title": "六、历史统计与底部贡献区",
+          "href": "../visual-spec.html#chapter-HP05"
+        }
+      ],
+      "mappingSubject": "历史范围、粒度及数据状态",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "home-history-1440"
+    },
+    {
+      "commentId": "comment-d68efb00024148e7aaee5e84dde7831d",
+      "originalChapter": "HP01",
+      "currentChapter": "HP05（六、历史统计与底部贡献区）；HP08（十、共享控件与状态标准）",
+      "issues": "D10",
+      "resolution": "常规 A、窄卡 B；百分比与回合计数共享文字基线。第四轮已确认，第五轮整合。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.4",
+      "sourceFingerprint": "d5542230468bb2b41dfe1785eafc3ca0121d4ad580583902368527c73211201f",
+      "currentTargets": [
+        {
+          "chapter": "HP05",
+          "title": "六、历史统计与底部贡献区",
+          "href": "../visual-spec.html#chapter-HP05"
+        },
+        {
+          "chapter": "HP08",
+          "title": "十、共享控件与状态标准",
+          "href": "../visual-spec.html#chapter-HP08"
+        }
+      ],
+      "mappingSubject": "胜率卡常规A/窄B及共基线",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "home-history-1440"
+    },
+    {
+      "commentId": "comment-c08f791d6f41402ba3e9e660752a2af6",
+      "originalChapter": "HP01",
+      "currentChapter": "HP05（六、历史统计与底部贡献区）",
+      "issues": "D11–D13",
+      "resolution": "B 细筛选；柱体可见高度14px、实心／中空区分组成、同方向同色。第五轮贡献原型已确认。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.4",
+      "sourceFingerprint": "d5542230468bb2b41dfe1785eafc3ca0121d4ad580583902368527c73211201f",
+      "currentTargets": [
+        {
+          "chapter": "HP05",
+          "title": "六、历史统计与底部贡献区",
+          "href": "../visual-spec.html#chapter-HP05"
+        }
+      ],
+      "mappingSubject": "贡献筛选、14px柱与同方向同色",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "home-history-1440"
+    },
+    {
+      "commentId": "comment-d0cd94a94168446f9ed740e2fd6599fb",
+      "originalChapter": "HP01",
+      "currentChapter": "HP11（二、整页布局与视觉基础）；HP08（十、共享控件与状态标准）",
+      "issues": "D14–D17",
+      "resolution": "公共图表／表格／卡片规格归入第二、十章；当前章节映射修正，原评论锚点保留。",
+      "originalStatus": "pending-review",
+      "sourceVersion": "2.4",
+      "sourceFingerprint": "d5542230468bb2b41dfe1785eafc3ca0121d4ad580583902368527c73211201f",
+      "currentTargets": [
+        {
+          "chapter": "HP11",
+          "title": "二、整页布局与视觉基础",
+          "href": "../visual-spec.html#chapter-HP11"
+        },
+        {
+          "chapter": "HP08",
+          "title": "十、共享控件与状态标准",
+          "href": "../visual-spec.html#chapter-HP08"
+        }
+      ],
+      "mappingSubject": "公共图表/表格/卡片规格与章节定位",
+      "mappingBasis": "按意见语义定位当前规范；原章节、图稿与文字锚点保留在原始评论，不据此推定修复或验收状态。",
+      "originalBlockIds": [],
+      "originalImageId": "visual-samples-board"
+    }
+  ]
+}

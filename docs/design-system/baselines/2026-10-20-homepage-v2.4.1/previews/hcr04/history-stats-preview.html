@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>历史已平仓交互演示</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1019;--surface:#111a26;--line:#283448;--text:#e6edf7;--muted:#a8b6cb;--blue:#6ca8ff;--green:#53d7a0;--yellow:#ffc66d;--red:#ff7d88}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}main{width:calc(100% - 112px);max-width:1328px;margin:0 auto;padding:32px 0 48px}header{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}h1{margin:0;font-size:26px}p{margin:6px 0;color:var(--muted)}.controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}button{height:40px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--text);padding:0 14px;font:inherit;cursor:pointer}button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:34px}.card,.chart{background:var(--surface);border:1px solid var(--line);border-radius:10px}.card{padding:18px 20px;min-height:94px}.label{color:var(--muted)}.value{font-size:30px;font-weight:600;margin-top:7px}.sub{font-size:11px;color:var(--muted)}.green{color:var(--green)}.chart{margin-top:24px;padding:22px 24px 18px}.chart-head{display:flex;justify-content:space-between;align-items:center}.chart-head h2{font-size:18px;margin:0}.chart-wrap{height:320px;margin-top:18px;display:grid;grid-template-columns:82px 1fr;grid-template-rows:1fr 28px}.ylabels{display:flex;flex-direction:column;justify-content:space-between;text-align:right;padding:3px 14px 3px 0;color:var(--muted);font-size:12px}.plot{position:relative;border-left:1px solid var(--line);border-bottom:1px solid var(--line);background:repeating-linear-gradient(to bottom,transparent 0,transparent calc(25% - 1px),var(--line) 25%)}.plot svg{width:100%;height:100%;display:block}.xlabels{grid-column:2;display:flex;justify-content:space-between;padding:7px 0 0;color:var(--muted);font-size:12px}.retry{display:none;position:absolute;left:50%;top:62%;transform:translate(-50%,-50%);height:36px}.retry.show{display:block}.review{max-width:1328px;margin:18px auto 48px;padding:14px 18px;border:1px dashed var(--line);color:var(--muted);font-size:12px}.review button{height:30px;font-size:12px;margin:0 8px 8px 0}@media(max-width:1100px){main{width:calc(100% - 64px)}}@media(max-width:900px){main{padding:24px 0}.kpis{grid-template-columns:repeat(2,1fr)}header{display:block}.controls{justify-content:flex-start;margin-top:18px}.review{margin:18px;padding:14px}}@media(max-width:560px){.kpis{grid-template-columns:1fr}.chart{padding:16px}.chart-wrap{grid-template-columns:60px 1fr}.ylabels{font-size:11px;padding-right:8px}.value{font-size:26px}}
+</style></head><body>
+<main><header><div><h1>历史已平仓</h1><p>历史完成交易 · 当前持仓浮动盈亏独立展示，不进入历史胜率</p></div><div class="controls"><button id="range" aria-label="选择范围"></button><button id="mode" aria-label="选择分期或累计"></button><button id="metric" aria-label="选择指标"></button></div></header>
+<section class="kpis"><div class="card"><div class="label">历史已平仓净盈亏</div><div class="value green" id="total"></div><div class="sub">CNY · 已扣费用</div></div><div class="card"><div class="label">已平仓回合</div><div class="value" id="rounds"></div><div class="sub">最近开仓优先配对</div></div><div class="card"><div class="label">范围胜率</div><div class="value" id="win"></div><div class="sub" id="winSub"></div></div><div class="card"><div class="label">费用（已扣除）</div><div class="value" id="fees"></div><div class="sub">CNY · 历史已平仓范围</div></div></section>
+<section class="chart"><div class="chart-head"><h2 id="chartTitle"></h2><span class="label" id="unit"></span></div><div class="chart-wrap"><div class="ylabels" id="ylabels"></div><div class="plot"><svg id="trend" viewBox="0 0 1000 220" preserveAspectRatio="none" aria-label="历史趋势"></svg><button id="retry" class="retry" type="button">重试</button></div><div></div><div class="xlabels" id="xlabels"></div></div></section></main>
+<aside class="review" aria-label="设计审查演示区"><div>审查演示区（不属于产品画布）：</div><button data-state="normal">正常</button><button data-state="loading">加载</button><button data-state="empty">无交易</button><button data-state="gap">源数据缺口</button><button data-state="valuation">当前估值缺失（不进入历史）</button><button data-state="error">加载失败</button><span id="reviewText"></span></aside>
+<script src="history-stats-render.js"></script><script src="fixture.js"></script><script>if (false) {
+const q=s=>document.querySelector(s),sum=a=>a.reduce((n,v)=>n+(v||0),0),fmt=n=>n.toLocaleString('en-US');let fixture=window.HCR04_FIXTURE,ranges=Object.keys(fixture.ranges),ri=0,metric='profit',cumulative=false,state='normal';const defs={profit:{name:'净盈亏',unit:'CNY'},win:{name:'胜率',unit:'%'},rounds:{name:'已平仓回合',unit:'回合'}};function ticks(min,max){const step=(max-min)/4;return[max,max-step,max-step*2,max-step*3,min].map(v=>Math.round(v*10)/10)}function y(v,min,max){return 220-((v-min)/(max-min))*220}
+function render(){const d=fixture.ranges[ranges[ri]],def=defs[metric],rounds=sum(d.r),wins=sum(d.w),profit=sum(d.p),fees=sum(d.f);let vals=metric==='profit'?d.p:metric==='rounds'?d.r:d.r.map((v,i)=>v?d.w[i]/v*100:null);if(cumulative)vals=vals.map((v,i)=>v===null?null:metric==='win'?sum(d.w.slice(0,i+1))/Math.max(1,sum(d.r.slice(0,i+1)))*100:sum(vals.slice(0,i+1).filter(x=>x!==null)));const valid=vals.filter(v=>v!==null),rawMin=Math.min(...valid,0),rawMax=Math.max(...valid,0);let vmin=metric==='win'?0:metric==='rounds'?0:Math.min(0,Math.floor(rawMin*1.2/1000)*1000),vmax=metric==='win'?100:metric==='rounds'?Math.max(4,Math.ceil(rawMax/10)*10):Math.max(1000,Math.ceil(rawMax*1.2/1000)*1000);if(vmax===vmin)vmax=vmin+1;const labels=ticks(vmin,vmax);q('#range').textContent=d.label+'⌄';q('#mode').textContent=(cumulative?'累计':'分期')+'⌄';q('#metric').textContent=def.name+'⌄';q('#chartTitle').textContent=def.name+' · '+(cumulative?'累计':'分期');q('#unit').textContent=def.unit;q('#ylabels').innerHTML=labels.map(v=>'<span>'+(metric==='win'?v+'%':fmt(v))+'</span>').join('');q('#xlabels').innerHTML=d.x.map(x=>'<span>'+x+'</span>').join('');q('#total').textContent=state==='empty'?'—':(profit>=0?'+':'')+fmt(profit);q('#rounds').textContent=state==='empty'?'0':fmt(rounds);q('#win').textContent=state==='empty'?'—':rounds?((wins/rounds*100).toFixed(1)+'%'):'—';q('#winSub').textContent=state==='empty'?'无已平仓回合':wins+' / '+rounds+' 盈利回合 · 持平计入分母';q('#fees').textContent=state==='empty'?'0':fmt(fees);let body='';if(state==='empty')body='<text x="500" y="108" text-anchor="middle" fill="var(--muted)" font-size="15">所选范围无已平仓交易</text>';else if(state==='loading')body='<text x="500" y="108" text-anchor="middle" fill="var(--yellow)" font-size="15">正在加载历史统计…</text>';else if(state==='error')body='<text x="500" y="88" text-anchor="middle" fill="var(--red)" font-size="15">加载失败</text><text x="500" y="118" text-anchor="middle" fill="var(--muted)" font-size="13">请点击重试，当前筛选条件保持不变</text>';else if(state==='gap')body='<text x="500" y="94" text-anchor="middle" fill="var(--yellow)" font-size="15">源数据缺口</text><text x="500" y="122" text-anchor="middle" fill="var(--muted)" font-size="13">该期间不可计算，不等同于零回合</text>';else if(state==='valuation')body='<text x="500" y="94" text-anchor="middle" fill="var(--yellow)" font-size="15">当前持仓浮盈估值缺失</text><text x="500" y="122" text-anchor="middle" fill="var(--muted)" font-size="13">只影响当前估值，不进入历史已平仓统计</text>';else{let segment=[];vals.forEach((v,i)=>{if(v===null){if(segment.length)body+='<polyline points="'+segment.join(' ')+'" fill="none" stroke="var(--blue)" stroke-width="3"/>';segment=[];body+='<text x="'+(i/(vals.length-1||1)*1000)+'" y="205" text-anchor="middle" fill="var(--yellow)" font-size="11">缺口</text>'}else segment.push(i/(vals.length-1||1)*1000+','+y(v,vmin,vmax))});if(segment.length)body+='<polyline points="'+segment.join(' ')+'" fill="none" stroke="var(--blue)" stroke-width="3"/>';vals.forEach((v,i)=>{if(v!==null)body+='<circle cx="'+(i/(vals.length-1||1)*1000)+'" cy="'+y(v,vmin,vmax)+'" r="5" fill="var(--blue)"/>'})}q('#trend').innerHTML=body;q('#retry').classList.toggle('show',state==='error');q('#reviewText').textContent=state==='normal'?'同一范围内由顶部单一指标控件切换净盈亏、胜率、回合数。':state==='loading'?'加载中：保留图表槽位。':state==='empty'?'真实空态：无已平仓交易，回合数为0、胜率为—。':state==='gap'?'源数据缺口：明确不可计算，不伪造为0。':state==='valuation'?'当前估值缺失：边界说明，不替代历史交易数据。':'失败态：点击“重试”恢复当前条件。'}
+q('#range').onclick=()=>{ri=(ri+1)%ranges.length;state='normal';render()};q('#mode').onclick=()=>{cumulative=!cumulative;render()};q('#metric').onclick=()=>{metric=metric==='profit'?'win':metric==='win'?'rounds':'profit';render()};document.querySelectorAll('[data-state]').forEach(b=>b.onclick=()=>{state=b.dataset.state;render()});q('#retry').onclick=()=>{state='normal';render()};render();
+}</script><script>if (false) {
+// v4 audit patch: integer count ticks, marker-safe viewBox, and explicit gap detail.
+const hcrTicks=ticks; ticks=function(min,max){if(metric==='rounds'){const step=Math.max(1,Math.ceil((max-min)/4)),top=step*4;return[top,top-step,top-step*2,top-step*3,0]}return hcrTicks(min,max)};
+const hcrY=y; y=function(v,min,max){return 10+((max-v)/(max-min))*200}; document.querySelector('#trend').setAttribute('viewBox','-10 -10 1020 240'); render();
+document.querySelector('[data-state="gap"]').addEventListener('click',()=>{render();q('#trend').innerHTML='<text x="500" y="82" text-anchor="middle" fill="var(--yellow)" font-size="15">2026-02—2026-03 · 源数据缺口</text><text x="500" y="112" text-anchor="middle" fill="var(--muted)" font-size="13">缺少成交记录，无法计算；不等同于零回合</text>';q('#reviewText').textContent='源数据缺口：2026-02—2026-03，缺少成交记录，不伪造为0。'});
+}</script><script>if (false) {
+document.querySelector('[data-state="gap"]').addEventListener('click',()=>{const g=fixture.states.sourceMissing;q('#trend').innerHTML='<text x="500" y="82" text-anchor="middle" fill="var(--yellow)" font-size="15">'+g.label+' · 源数据缺口</text><text x="500" y="112" text-anchor="middle" fill="var(--muted)" font-size="13">'+g.reason+'；不可计算，不等同于零回合</text>';q('#reviewText').textContent='源数据缺口：'+g.label+'，'+g.reason+'，不伪造为0。'});
+}</script><script>if (false) {
+const hcrRender=render; render=function(){const d=fixture.ranges[ranges[ri]],def=defs[metric],values=HCR04_RENDER.series({metric,p:d.p,w:d.w,r:d.r,cumulative}),chart=HCR04_RENDER.renderChartSvg({values,metric,status:d.s||[]}),rounds=HCR04_RENDER.sum(d.r),wins=HCR04_RENDER.sum(d.w),profit=HCR04_RENDER.sum(d.p),fees=HCR04_RENDER.sum(d.f),labels=chart.scale.ticks; q('#range').textContent=d.label+'⌄';q('#mode').textContent=(cumulative?'累计':'分期')+'⌄';q('#metric').textContent=def.name+'⌄';q('#chartTitle').textContent=def.name+' · '+(cumulative?'累计':'分期');q('#unit').textContent=def.unit;q('#ylabels').innerHTML=labels.map(v=>'<span>'+(metric==='win'?v+'%':fmt(v))+'</span>').join('');q('#xlabels').innerHTML=d.x.map(x=>'<span>'+x+'</span>').join('');q('#total').textContent=state==='empty'?'—':(profit>=0?'+':'')+fmt(profit);q('#rounds').textContent=state==='empty'?'0':fmt(rounds);q('#win').textContent=state==='empty'?'—':rounds?((wins/rounds*100).toFixed(1)+'%'):'—';q('#winSub').textContent=state==='empty'?'无已平仓回合':wins+' / '+rounds+' 盈利回合 · 持平计入分母';q('#fees').textContent=state==='empty'?'0':fmt(fees);let body=chart.svg;if(state==='empty')body='<text x="500" y="108" text-anchor="middle" fill="var(--muted)" font-size="15">所选范围无已平仓交易</text>';else if(state==='loading')body='<text x="500" y="108" text-anchor="middle" fill="var(--yellow)" font-size="15">正在加载历史统计…</text>';else if(state==='error')body='<text x="500" y="88" text-anchor="middle" fill="var(--red)" font-size="15">加载失败</text><text x="500" y="118" text-anchor="middle" fill="var(--muted)" font-size="13">请点击重试，当前筛选条件保持不变</text>';else if(state==='gap')body='<text x="500" y="94" text-anchor="middle" fill="var(--yellow)" font-size="15">源数据缺口</text><text x="500" y="122" text-anchor="middle" fill="var(--muted)" font-size="13">该期间不可计算，不等同于零回合</text>';else if(state==='valuation')body='<text x="500" y="94" text-anchor="middle" fill="var(--yellow)" font-size="15">当前持仓浮盈估值缺失</text><text x="500" y="122" text-anchor="middle" fill="var(--muted)" font-size="13">只影响当前估值，不进入历史已平仓统计</text>';q('#trend').innerHTML=body;q('#retry').classList.toggle('show',state==='error');q('#reviewText').textContent=state==='normal'?'同一范围内由顶部单一指标控件切换净盈亏、胜率、回合数。':state==='loading'?'加载中：保留图表槽位。':state==='empty'?'真实空态：无已平仓交易，回合数为0、胜率为—。':state==='gap'?'源数据缺口：明确不可计算，不伪造为0。':state==='valuation'?'当前估值缺失：边界说明，不替代历史交易数据。':'失败态：点击“重试”恢复当前条件。'};render();
+}</script>
+<style>
+/* Round 5: the page consumes the shared renderer's coordinate system directly. */
+h1{font-size:18px}
+button{height:36px}
+.kpis{gap:12px}
+.card{height:88px;min-height:88px;padding:12px 16px;overflow:hidden}
+.chart-head h2{font-size:18px}
+.chart-wrap{height:320px;grid-template-columns:1fr;grid-template-rows:292px 28px}
+.ylabels{display:none}
+.plot{border:0;background:none;height:292px}
+.xlabels{display:none}
+.point{cursor:crosshair;outline:none}
+.point:focus-visible{stroke:var(--yellow);stroke-width:3}
+</style>
+<script>
+(() => {
+  const q = selector => document.querySelector(selector);
+  const fixture = window.HCR04_FIXTURE;
+  const ranges = Object.keys(fixture.ranges);
+  let ri = 0, metric = 'profit', cumulative = false, state = 'normal';
+  const defs = { profit: { name: '净盈亏', unit: 'CNY' }, win: { name: '胜率', unit: '%' }, rounds: { name: '已平仓回合', unit: '回合' } };
+  const shared = window.HCR04_RENDER;
+  const formatAmount = value => Number(value).toLocaleString('en-US');
+  const formatValue = (value, metricName) => metricName === 'win' ? `${Number(value).toFixed(1)}%` : formatAmount(value);
+  const escapeAttr = value => String(value).replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
+  const stateMessage = {
+    empty: ['所选范围无已平仓交易', ''],
+    loading: ['正在加载历史统计…', ''],
+    error: ['加载失败', '请点击重试，当前筛选条件保持不变'],
+    gap: ['源数据缺口', '该期间不可计算，不等同于零回合'],
+    valuation: ['当前持仓浮盈估值缺失', '只影响当前估值，不进入历史已平仓统计']
+  };
+
+  function axisMarkup(chart, metricName) {
+    return chart.scale.ticks.map(tick => {
+      const yPos = shared.y(tick, chart.scale.min, chart.scale.max, 220);
+      const label = metricName === 'win' ? `${tick}%` : formatAmount(tick);
+      return `<line x1="0" y1="${yPos}" x2="1000" y2="${yPos}" stroke="var(--line)"/><text x="-8" y="${yPos + 4}" text-anchor="end" fill="var(--muted)" font-size="11">${escapeAttr(label)}</text>`;
+    }).join('');
+  }
+
+  function renderUnified() {
+    const d = fixture.ranges[ranges[ri]];
+    const def = defs[metric];
+    const model = shared.normalizeModel(d);
+    const values = shared.series({ metric, p: model.p, w: model.w, r: model.r, cumulative, status: model.status });
+    const chart = shared.renderChartSvg({ values, metric, status: model.status, dimensions: { width: 1000, height: 220 } });
+    const rounds = shared.sum(model.r), wins = shared.sum(model.w), profit = shared.sum(model.p), fees = shared.sum(model.f);
+    q('#range').textContent = `${d.label}⌄`;
+    q('#mode').textContent = `${cumulative ? '累计' : '分期'}⌄`;
+    q('#metric').textContent = `${def.name}⌄`;
+    q('#chartTitle').textContent = `${def.name} · ${cumulative ? '累计' : '分期'}`;
+    q('#unit').textContent = def.unit;
+    q('#xlabels').innerHTML = model.x.map(x => `<span>${x}</span>`).join('');
+    q('#total').textContent = state === 'empty' ? '—' : `${profit >= 0 ? '+' : ''}${formatAmount(profit)}`;
+    q('#rounds').textContent = state === 'empty' ? '0' : formatAmount(rounds);
+    q('#win').textContent = state === 'empty' ? '—' : rounds ? `${(wins / rounds * 100).toFixed(1)}%` : '—';
+    q('#winSub').textContent = state === 'empty' ? '无已平仓回合' : `${wins} / ${rounds} 盈利回合 · 持平计入分母`;
+    q('#fees').textContent = state === 'empty' ? '0' : formatAmount(fees);
+
+    const validIndices = values.map((value, index) => value === null ? null : index).filter(index => index !== null);
+    let pointCursor = 0;
+    let body = chart.svg.replace(/<circle\b[^>]*>/g, tag => {
+      const index = validIndices[pointCursor++];
+      const label = `${model.x[index]} · ${def.name} ${formatValue(values[index], metric)}`;
+      return tag.replace('<circle', `<circle class="point" tabindex="0" role="img" data-point-index="${index}" aria-label="${escapeAttr(label)}"`);
+    });
+    const futureRuns = [];
+    model.status.forEach((status, index) => {
+      if (status === 'future-uncovered') {
+        const last = futureRuns[futureRuns.length - 1];
+        if (last && last[1] === index - 1) last[1] = index;
+        else futureRuns.push([index, index]);
+      }
+    });
+    body = body.replaceAll(/<text[^>]*>未来未覆盖<\/text>/g, '') + futureRuns.map(([start, end]) => {
+      const xPos = shared.xAt((start + end) / 2, model.x.length, 1000);
+      return `<text x="${xPos}" y="205" text-anchor="middle" fill="var(--yellow)" font-size="11">未来未覆盖</text>`;
+    }).join('');
+    if (stateMessage[state]) {
+      const [primary, secondary] = stateMessage[state];
+      body = `<text x="500" y="${secondary ? 88 : 108}" text-anchor="middle" fill="var(${state === 'error' ? '--red' : '--yellow'})" font-size="15">${primary}</text>${secondary ? `<text x="500" y="118" text-anchor="middle" fill="var(--muted)" font-size="13">${secondary}</text>` : ''}`;
+    }
+    q('#trend').setAttribute('viewBox', '-55 0 1055 220');
+    q('#trend').innerHTML = `<g aria-hidden="true">${axisMarkup(chart, metric)}</g>${body}<g id="pointOverlay" hidden><line id="crosshairX" stroke="var(--yellow)" stroke-dasharray="3 3" y1="0" y2="220"/><line id="crosshairY" stroke="var(--yellow)" stroke-dasharray="3 3" x1="0" x2="1000"/><g id="pointAxisLabels"><text id="axisLabelX" fill="var(--text)" font-size="12" text-anchor="middle"/><text id="axisLabelY" fill="var(--text)" font-size="12" text-anchor="end"/></g><g id="tooltipBox" width="264" height="112" transform="translate(0 0)"><rect width="264" height="112" rx="8" fill="#162233" stroke="var(--yellow)"/><text id="tooltipDate" x="12" y="14" fill="var(--muted)" font-size="12"/><text id="tooltipCoverage" x="252" y="14" fill="var(--muted)" font-size="12" text-anchor="end"/><text x="12" y="28" fill="var(--muted)" font-size="12">市值</text><text id="tooltipMarket" x="252" y="28" fill="var(--text)" font-size="12" font-weight="600" text-anchor="end"/><text x="12" y="42" fill="var(--muted)" font-size="12">浮盈</text><text id="tooltipFloating" x="252" y="42" fill="var(--green)" font-size="12" font-weight="600" text-anchor="end"/><text x="12" y="56" fill="var(--muted)" font-size="12">累计已实现</text><text id="tooltipRealized" x="252" y="56" fill="var(--green)" font-size="12" font-weight="600" text-anchor="end"/><text x="12" y="70" fill="var(--muted)" font-size="12">累计净盈亏</text><text id="tooltipCumulative" x="252" y="70" fill="var(--green)" font-size="12" font-weight="600" text-anchor="end"/><text x="12" y="84" fill="var(--muted)" font-size="13">期间净盈亏</text><text id="tooltipPeriod" x="252" y="84" fill="var(--green)" font-size="13" font-weight="600" text-anchor="end"/><text x="12" y="98" fill="var(--muted)" font-size="12">费用</text><text id="tooltipFees" x="252" y="98" fill="var(--muted)" font-size="12" font-weight="600" text-anchor="end"/></g></g>`;
+    q('#retry').classList.toggle('show', state === 'error');
+    q('#reviewText').textContent = state === 'normal' ? '同一范围内由顶部单一指标控件切换净盈亏、胜率、回合数。' : state === 'loading' ? '加载中：保留图表槽位。' : state === 'empty' ? '真实空态：无已平仓交易，回合数为0、胜率为—。' : state === 'gap' ? '源数据缺口：明确不可计算，不伪造为0。' : state === 'valuation' ? '当前估值缺失：边界说明，不替代历史交易数据。' : '失败态：点击“重试”恢复当前条件。';
+    q('#chartTitle').setAttribute('tabindex', '-1');
+    q('#chartTitle').setAttribute('aria-live', 'polite');
+    const overlay = q('#pointOverlay');
+    let dismissed = false;
+    const hidePoint = () => { overlay.setAttribute('hidden', ''); };
+    const showPoint = circle => {
+      dismissed = false;
+      const index = Number(circle.dataset.pointIndex), cx = Number(circle.getAttribute('cx')), cy = Number(circle.getAttribute('cy'));
+      const label = `${model.x[index]} · ${def.name} ${formatValue(values[index], metric)}`;
+      q('#crosshairX').setAttribute('x1', cx); q('#crosshairX').setAttribute('x2', cx);
+      q('#crosshairY').setAttribute('y1', cy); q('#crosshairY').setAttribute('y2', cy);
+      const boxX = cx > 700 ? cx - 264 : cx + 12;
+      const boxY = cy > 124 ? 4 : 104;
+      q('#tooltipBox').setAttribute('transform', `translate(${Math.max(0, Math.min(736, boxX))} ${boxY})`);
+      q('#tooltipDate').textContent = `${model.x[index]} CNY`;
+      q('#tooltipCoverage').textContent = '汇率✓ 行情✓';
+      q('#tooltipMarket').textContent = '—';
+      q('#tooltipFloating').textContent = '—';
+      q('#tooltipRealized').textContent = formatValue(values[index], metric);
+      q('#tooltipCumulative').textContent = formatValue(cumulative ? values[index] : shared.series({ metric, p: model.p, w: model.w, r: model.r, cumulative: true, status: model.status })[index], metric);
+      q('#tooltipPeriod').textContent = formatValue(values[index], metric);
+      q('#tooltipFees').textContent = `${formatAmount(model.f[index] ?? 0)} 已扣`;
+      const axisX = Math.max(42, Math.min(958, cx));
+      q('#axisLabelX').setAttribute('x', axisX); q('#axisLabelX').setAttribute('y', 212); q('#axisLabelX').textContent = model.x[index];
+      const axisY = Math.max(18, Math.min(202, cy));
+      q('#axisLabelY').setAttribute('x', 36); q('#axisLabelY').setAttribute('y', axisY); q('#axisLabelY').textContent = formatValue(values[index], metric);
+      overlay.removeAttribute('hidden');
+    };
+    q('#trend').querySelectorAll('.point').forEach(circle => {
+      circle.addEventListener('mouseenter', () => showPoint(circle));
+      circle.addEventListener('mouseleave', hidePoint);
+      circle.addEventListener('focus', () => showPoint(circle));
+      circle.addEventListener('blur', hidePoint);
+      circle.addEventListener('keydown', event => { if (event.key === 'Escape') { dismissed = true; hidePoint(); event.preventDefault(); event.stopPropagation(); } });
+    });
+  }
+
+  window.render = renderUnified;
+  q('#range').onclick = () => { ri = (ri + 1) % ranges.length; state = 'normal'; renderUnified(); };
+  q('#mode').onclick = () => { cumulative = !cumulative; renderUnified(); };
+  q('#metric').onclick = () => { metric = metric === 'profit' ? 'win' : metric === 'win' ? 'rounds' : 'profit'; renderUnified(); };
+  document.querySelectorAll('[data-state]').forEach(button => button.onclick = () => { state = button.dataset.state; renderUnified(); });
+  q('#retry').onclick = () => { state = 'normal'; renderUnified(); q('#chartTitle').focus(); };
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') { const overlay = q('#pointOverlay'); if (overlay) overlay.setAttribute('hidden', ''); event.preventDefault(); event.stopImmediatePropagation(); } }, true);
+  renderUnified();
+})();
+</script>
+<style>
+/* Round 7: keep the shared SVG overlay hidden and put month labels in its coordinate system. */
+#pointOverlay[hidden]{display:none!important}
+#pointOverlay{pointer-events:none}
+</style>
+<script>
+(() => {
+  const trend = document.querySelector('#trend');
+  const labels = document.querySelector('#xlabels');
+  if (!trend || !labels) return;
+  let syncing = false;
+  const syncSvgLabels = () => {
+    if (syncing) return;
+    syncing = true;
+    trend.querySelectorAll('.hcr-x-label').forEach(node => node.remove());
+    const spans = [...labels.querySelectorAll('span')];
+    const width = 1000;
+    spans.forEach((span, index) => {
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      const x = index / (spans.length - 1 || 1) * width;
+      text.setAttribute('class', 'hcr-x-label');
+      text.setAttribute('x', String(x));
+      text.setAttribute('y', '218');
+      text.setAttribute('fill', 'var(--muted)');
+      text.setAttribute('font-size', '11');
+      text.setAttribute('text-anchor', index === 0 ? 'start' : index === spans.length - 1 ? 'end' : 'middle');
+      text.setAttribute('pointer-events', 'none');
+      text.textContent = span.textContent;
+      trend.appendChild(text);
+    });
+    syncing = false;
+  };
+  new MutationObserver(syncSvgLabels).observe(labels, { childList: true, subtree: true });
+  syncSvgLabels();
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    const overlay = document.querySelector('#pointOverlay');
+    if (overlay) overlay.setAttribute('hidden', '');
+    event.stopImmediatePropagation();
+  }, true);
+})();
+</script></body></html>

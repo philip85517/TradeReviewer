@@ -1,0 +1,650 @@
+[
+  {
+    "chapter": "二、整页布局与视觉基础",
+    "src": "source/images/home-1440.svg",
+    "occurrence": "home-1440@state-demo-1-1",
+    "alt": "当前期间贡献 · 1440px"
+  },
+  {
+    "chapter": "二、整页布局与视觉基础",
+    "src": "source/images/home-history-1440.svg",
+    "occurrence": "home-history-1440@state-demo-1-2",
+    "alt": "历史已平仓贡献 · 1440px"
+  },
+  {
+    "chapter": "二、整页布局与视觉基础",
+    "src": "source/images/home-1280.svg",
+    "occurrence": "home-1280@state-demo-2-1",
+    "alt": "当前期间贡献 · 1280px"
+  },
+  {
+    "chapter": "二、整页布局与视觉基础",
+    "src": "source/images/home-history-1280.svg",
+    "occurrence": "home-history-1280@state-demo-2-2",
+    "alt": "历史已平仓贡献 · 1280px"
+  },
+  {
+    "chapter": "二、整页布局与视觉基础",
+    "src": "source/images/visual-samples-board.svg",
+    "occurrence": "visual-samples-board@69",
+    "alt": "布局尺寸与颜色控件样例"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/account.svg",
+    "occurrence": "account@116",
+    "alt": "账户选择与当前范围"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/search.svg",
+    "occurrence": "search@state-demo-3-1",
+    "alt": "搜索结果"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/search--detail.svg",
+    "occurrence": "search--detail@state-demo-3-2",
+    "alt": "无匹配"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/search--empty.svg",
+    "occurrence": "search--empty@state-demo-3-3",
+    "alt": "请求失败"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/search-detail.svg",
+    "occurrence": "search-detail@state-demo-3-4",
+    "alt": "打开详情"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/search-motion.svg",
+    "occurrence": "search-motion@state-demo-3-5",
+    "alt": "搜索遮罩关闭"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/search-overlay-open.svg",
+    "occurrence": "search-overlay-open@state-demo-3-6",
+    "alt": "输入聚焦"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/search-overlay-reduced-motion.svg",
+    "occurrence": "search-overlay-reduced-motion@state-demo-3-7",
+    "alt": "减弱动效：直接呈现结果面板"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/detail.svg",
+    "occurrence": "detail@149",
+    "alt": "标的详情的信息组织"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/filter.svg",
+    "occurrence": "filter@state-demo-4-1",
+    "alt": "编辑条件"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/multi-applied.svg",
+    "occurrence": "multi-applied@state-demo-4-2",
+    "alt": "筛选已应用"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/multi-applied--reopen.svg",
+    "occurrence": "multi-applied--reopen@state-demo-4-3",
+    "alt": "重新打开筛选"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/clear-attachments.svg",
+    "occurrence": "clear-attachments@state-demo-4-4",
+    "alt": "清除前"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/clear-attachments--after-clear.svg",
+    "occurrence": "clear-attachments--after-clear@state-demo-4-5",
+    "alt": "清除后"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/reset.svg",
+    "occurrence": "reset@state-demo-4-6",
+    "alt": "未保存修改"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/reset--reset.svg",
+    "occurrence": "reset--reset@state-demo-4-7",
+    "alt": "已重置"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/cancel.svg",
+    "occurrence": "cancel@state-demo-4-8",
+    "alt": "日期草稿"
+  },
+  {
+    "chapter": "三、页头范围、搜索与筛选",
+    "src": "source/images/cancel--cancelled.svg",
+    "occurrence": "cancel--cancelled@state-demo-4-9",
+    "alt": "取消日期"
+  },
+  {
+    "chapter": "四、当前表现：指标、期间与曲线",
+    "src": "source/images/period.svg",
+    "occurrence": "period@208",
+    "alt": "快捷期间与自定义日期"
+  },
+  {
+    "chapter": "四、当前表现：指标、期间与曲线",
+    "src": "source/images/chart-hover.svg",
+    "occurrence": "chart-hover@state-demo-5-1",
+    "alt": "鼠标悬停"
+  },
+  {
+    "chapter": "四、当前表现：指标、期间与曲线",
+    "src": "source/images/chart-hover--keyboard.svg",
+    "occurrence": "chart-hover--keyboard@state-demo-5-2",
+    "alt": "键盘聚焦"
+  },
+  {
+    "chapter": "四、当前表现：指标、期间与曲线",
+    "src": "source/images/chart-gap.svg",
+    "occurrence": "chart-gap@state-demo-5-3",
+    "alt": "遇到数据缺口"
+  },
+  {
+    "chapter": "四、当前表现：指标、期间与曲线",
+    "src": "source/images/chart-scale.svg",
+    "occurrence": "chart-scale@state-demo-5-4",
+    "alt": "紧凑比例"
+  },
+  {
+    "chapter": "四、当前表现：指标、期间与曲线",
+    "src": "source/images/chart-scale--normal.svg",
+    "occurrence": "chart-scale--normal@state-demo-5-5",
+    "alt": "常规金额范围"
+  },
+  {
+    "chapter": "四、当前表现：指标、期间与曲线",
+    "src": "source/images/chart-scale--wide.svg",
+    "occurrence": "chart-scale--wide@state-demo-5-6",
+    "alt": "宽图表"
+  },
+  {
+    "chapter": "四、当前表现：指标、期间与曲线",
+    "src": "source/images/chart-scale--extreme.svg",
+    "occurrence": "chart-scale--extreme@state-demo-5-7",
+    "alt": "极值比例"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/count-scales.svg",
+    "occurrence": "count-scales@state-demo-6-1",
+    "alt": "5 条"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/count-scales--ten-items.svg",
+    "occurrence": "count-scales--ten-items@state-demo-6-2",
+    "alt": "10 条"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/count-scales--twenty-items.svg",
+    "occurrence": "count-scales--twenty-items@state-demo-6-3",
+    "alt": "20 条"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/local-search-pages.svg",
+    "occurrence": "local-search-pages@state-demo-7-1",
+    "alt": "第 3 页"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/local-search-pages--one-match.svg",
+    "occurrence": "local-search-pages--one-match@state-demo-7-2",
+    "alt": "单条匹配"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/local-search-pages--clear.svg",
+    "occurrence": "local-search-pages--clear@state-demo-7-3",
+    "alt": "清除搜索"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/50-items.svg",
+    "occurrence": "50-items@state-demo-8-1",
+    "alt": "第 1 页"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/50-items--page-7.svg",
+    "occurrence": "50-items--page-7@state-demo-8-2",
+    "alt": "第 7 页"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/holding-return.svg",
+    "occurrence": "holding-return@state-demo-9-1",
+    "alt": "进入详情前"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/holding-return--detail.svg",
+    "occurrence": "holding-return--detail@state-demo-9-2",
+    "alt": "详情"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/holding-return--after.svg",
+    "occurrence": "holding-return--after@state-demo-9-3",
+    "alt": "返回详情后"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/empty.svg",
+    "occurrence": "empty@state-demo-10-1",
+    "alt": "无匹配"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/empty--zero-holdings.svg",
+    "occurrence": "empty--zero-holdings@state-demo-10-2",
+    "alt": "零持仓"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/count-boundaries.svg",
+    "occurrence": "count-boundaries@state-demo-11-1",
+    "alt": "单条记录"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/count-boundaries--nine-items-last-page.svg",
+    "occurrence": "count-boundaries--nine-items-last-page@state-demo-11-2",
+    "alt": "9 条末页"
+  },
+  {
+    "chapter": "五、当前持仓：稳定扫描与逐行查看",
+    "src": "source/images/extreme.svg",
+    "occurrence": "extreme@335",
+    "alt": "极值、零值、缺失数据与长名称"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/history.svg",
+    "occurrence": "history@state-demo-12-1",
+    "alt": "各期盈亏"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/history-stats-cumulative.svg",
+    "occurrence": "history-stats-cumulative@state-demo-12-2",
+    "alt": "累计盈亏"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/history-stats-win.svg",
+    "occurrence": "history-stats-win@state-demo-12-3",
+    "alt": "各期胜率"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/history-stats-rounds.svg",
+    "occurrence": "history-stats-rounds@state-demo-12-4",
+    "alt": "回合数"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/journeys-year.svg",
+    "occurrence": "journeys-year@state-demo-13-1",
+    "alt": "读取新范围"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/history-stats-empty.svg",
+    "occurrence": "history-stats-empty@state-demo-13-2",
+    "alt": "范围无回合"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/history-stats-error.svg",
+    "occurrence": "history-stats-error@state-demo-13-3",
+    "alt": "读取失败"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/history-stats-source-missing.svg",
+    "occurrence": "history-stats-source-missing@state-demo-13-4",
+    "alt": "数据缺失"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/history-stats-extreme.svg",
+    "occurrence": "history-stats-extreme@state-demo-13-5",
+    "alt": "大额与边界"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/contribution-states.svg",
+    "occurrence": "contribution-states@state-demo-14-1",
+    "alt": "全部市场"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/contribution-current-a-share.svg",
+    "occurrence": "contribution-current-a-share@state-demo-14-2",
+    "alt": "A股明细"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/contribution-historical-a-share.svg",
+    "occurrence": "contribution-historical-a-share@state-demo-14-3",
+    "alt": "历史已平仓"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/contribution.svg",
+    "occurrence": "contribution@state-demo-15-1",
+    "alt": "估值缺失"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/contribution-loading.svg",
+    "occurrence": "contribution-loading@state-demo-15-2",
+    "alt": "等待数据"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/contribution-empty.svg",
+    "occurrence": "contribution-empty@state-demo-15-3",
+    "alt": "没有贡献"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/contribution-error.svg",
+    "occurrence": "contribution-error@state-demo-15-4",
+    "alt": "读取失败"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/contribution-extreme.svg",
+    "occurrence": "contribution-extreme@state-demo-15-5",
+    "alt": "极值"
+  },
+  {
+    "chapter": "六、历史统计与底部贡献区",
+    "src": "source/images/contribution-mixed-sign-demo.svg",
+    "occurrence": "contribution-mixed-sign-demo@state-demo-15-6",
+    "alt": "同一市场内的正负贡献"
+  },
+  {
+    "chapter": "七、从首页进入交易与复盘",
+    "src": "source/images/handoff.svg",
+    "occurrence": "handoff@431",
+    "alt": "首页到交易库的条件交接"
+  },
+  {
+    "chapter": "七、从首页进入交易与复盘",
+    "src": "source/images/journeys-date.svg",
+    "occurrence": "journeys-date@state-demo-16-1",
+    "alt": "带条件到达"
+  },
+  {
+    "chapter": "七、从首页进入交易与复盘",
+    "src": "source/images/hcr06-final-return.svg",
+    "occurrence": "hcr06-final-return@state-demo-16-2",
+    "alt": "返回来源"
+  },
+  {
+    "chapter": "七、从首页进入交易与复盘",
+    "src": "source/images/journeys-pending.svg",
+    "occurrence": "journeys-pending@state-demo-17-1",
+    "alt": "没有待复盘"
+  },
+  {
+    "chapter": "七、从首页进入交易与复盘",
+    "src": "source/images/journeys-pending-normal.svg",
+    "occurrence": "journeys-pending-normal@state-demo-17-2",
+    "alt": "查看待复盘数量"
+  },
+  {
+    "chapter": "七、从首页进入交易与复盘",
+    "src": "source/images/journeys-pending-99plus.svg",
+    "occurrence": "journeys-pending-99plus@state-demo-17-3",
+    "alt": "超过九十九条"
+  },
+  {
+    "chapter": "七、从首页进入交易与复盘",
+    "src": "source/images/hcr06-final-pending-library.svg",
+    "occurrence": "hcr06-final-pending-library@state-demo-17-4",
+    "alt": "到达待复盘列表"
+  },
+  {
+    "chapter": "七、从首页进入交易与复盘",
+    "src": "source/images/hcr06-final-pending-library-1280.svg",
+    "occurrence": "hcr06-final-pending-library-1280@state-demo-17-5",
+    "alt": "较窄桌面"
+  },
+  {
+    "chapter": "七、从首页进入交易与复盘",
+    "src": "source/images/hcr06-final-pending-return.svg",
+    "occurrence": "hcr06-final-pending-return@state-demo-17-6",
+    "alt": "返回首页来源"
+  },
+  {
+    "chapter": "八、交易库内部规范",
+    "src": "source/images/hcr06-final-sim-ab.svg",
+    "occurrence": "hcr06-final-sim-ab@state-demo-18-1",
+    "alt": "练习列表"
+  },
+  {
+    "chapter": "八、交易库内部规范",
+    "src": "source/images/hcr06-final-rounds-a.svg",
+    "occurrence": "hcr06-final-rounds-a@state-demo-18-2",
+    "alt": "一次练习的回合集"
+  },
+  {
+    "chapter": "八、交易库内部规范",
+    "src": "source/images/hcr06-final-replay-a1.svg",
+    "occurrence": "hcr06-final-replay-a1@state-demo-18-3",
+    "alt": "第一个回合"
+  },
+  {
+    "chapter": "八、交易库内部规范",
+    "src": "source/images/hcr06-final-replay-a2.svg",
+    "occurrence": "hcr06-final-replay-a2@state-demo-18-4",
+    "alt": "第二个回合"
+  },
+  {
+    "chapter": "八、交易库内部规范",
+    "src": "source/images/hcr06-final-replay-b1.svg",
+    "occurrence": "hcr06-final-replay-b1@state-demo-18-5",
+    "alt": "另一练习"
+  },
+  {
+    "chapter": "八、交易库内部规范",
+    "src": "source/images/01-live-normal.svg",
+    "occurrence": "01-live-normal@state-demo-19-1",
+    "alt": "实盘统计"
+  },
+  {
+    "chapter": "八、交易库内部规范",
+    "src": "source/images/02-simulation-normal.svg",
+    "occurrence": "02-simulation-normal@state-demo-19-2",
+    "alt": "练习统计"
+  },
+  {
+    "chapter": "八、交易库内部规范",
+    "src": "source/images/03-distribution-selected.svg",
+    "occurrence": "03-distribution-selected@state-demo-19-3",
+    "alt": "分布下钻"
+  },
+  {
+    "chapter": "八、交易库内部规范",
+    "src": "source/images/04-return.svg",
+    "occurrence": "04-return@state-demo-19-4",
+    "alt": "复盘后返回"
+  },
+  {
+    "chapter": "八、交易库内部规范",
+    "src": "source/images/05-loading.svg",
+    "occurrence": "05-loading@state-demo-19-5",
+    "alt": "切换范围时等待"
+  },
+  {
+    "chapter": "八、交易库内部规范",
+    "src": "source/images/06-empty.svg",
+    "occurrence": "06-empty@state-demo-19-6",
+    "alt": "范围没有已平仓回合"
+  },
+  {
+    "chapter": "八、交易库内部规范",
+    "src": "source/images/07-error.svg",
+    "occurrence": "07-error@state-demo-19-7",
+    "alt": "读取失败与重试"
+  },
+  {
+    "chapter": "八、交易库内部规范",
+    "src": "source/images/08-extreme.svg",
+    "occurrence": "08-extreme@state-demo-19-8",
+    "alt": "极端分布"
+  },
+  {
+    "chapter": "八、交易库内部规范",
+    "src": "source/images/09-missing-input.svg",
+    "occurrence": "09-missing-input@state-demo-19-9",
+    "alt": "计算输入缺失"
+  },
+  {
+    "chapter": "九、异常状态与动效",
+    "src": "source/images/empty.svg",
+    "occurrence": "empty@state-demo-20-1",
+    "alt": "无匹配"
+  },
+  {
+    "chapter": "九、异常状态与动效",
+    "src": "source/images/empty--zero-holdings.svg",
+    "occurrence": "empty--zero-holdings@state-demo-20-2",
+    "alt": "零持仓"
+  },
+  {
+    "chapter": "九、异常状态与动效",
+    "src": "source/images/loading.svg",
+    "occurrence": "loading@state-demo-20-3",
+    "alt": "初始加载骨架"
+  },
+  {
+    "chapter": "九、异常状态与动效",
+    "src": "source/images/loading--stale-data.svg",
+    "occurrence": "loading--stale-data@state-demo-20-4",
+    "alt": "旧数据加载"
+  },
+  {
+    "chapter": "九、异常状态与动效",
+    "src": "source/images/error.svg",
+    "occurrence": "error@state-demo-20-5",
+    "alt": "首次读取错误"
+  },
+  {
+    "chapter": "九、异常状态与动效",
+    "src": "source/images/error--update-failure.svg",
+    "occurrence": "error--update-failure@state-demo-20-6",
+    "alt": "更新失败"
+  },
+  {
+    "chapter": "九、异常状态与动效",
+    "src": "source/images/repair.svg",
+    "occurrence": "repair@state-demo-20-7",
+    "alt": "全局修复"
+  },
+  {
+    "chapter": "十、共享控件与状态标准",
+    "src": "source/images/atoms.svg",
+    "occurrence": "atoms@568",
+    "alt": "共享控件的状态示例"
+  },
+  {
+    "chapter": "附录一、版本变化与待决策",
+    "src": "source/images/holding-option-A-normal-1440.svg",
+    "occurrence": "holding-option-A-normal-1440@state-demo-21-1",
+    "alt": "普通金额 · 1440px"
+  },
+  {
+    "chapter": "附录一、版本变化与待决策",
+    "src": "source/images/holding-option-A-normal-1280.svg",
+    "occurrence": "holding-option-A-normal-1280@state-demo-21-2",
+    "alt": "普通金额 · 1280px"
+  },
+  {
+    "chapter": "附录一、版本变化与待决策",
+    "src": "source/images/holding-option-A-large-1440.svg",
+    "occurrence": "holding-option-A-large-1440@state-demo-21-3",
+    "alt": "大额与长名称 · 1440px"
+  },
+  {
+    "chapter": "附录一、版本变化与待决策",
+    "src": "source/images/holding-option-A-large-1280.svg",
+    "occurrence": "holding-option-A-large-1280@state-demo-21-4",
+    "alt": "大额与长名称 · 1280px"
+  },
+  {
+    "chapter": "附录一、版本变化与待决策",
+    "src": "source/images/holding-option-B-normal-1440.svg",
+    "occurrence": "holding-option-B-normal-1440@state-demo-22-1",
+    "alt": "普通金额 · 1440px"
+  },
+  {
+    "chapter": "附录一、版本变化与待决策",
+    "src": "source/images/holding-option-B-normal-1280.svg",
+    "occurrence": "holding-option-B-normal-1280@state-demo-22-2",
+    "alt": "普通金额 · 1280px"
+  },
+  {
+    "chapter": "附录一、版本变化与待决策",
+    "src": "source/images/holding-option-B-large-1440.svg",
+    "occurrence": "holding-option-B-large-1440@state-demo-22-3",
+    "alt": "大额与长名称 · 1440px"
+  },
+  {
+    "chapter": "附录一、版本变化与待决策",
+    "src": "source/images/holding-option-B-large-1280.svg",
+    "occurrence": "holding-option-B-large-1280@state-demo-22-4",
+    "alt": "大额与长名称 · 1280px"
+  },
+  {
+    "chapter": "附录一、版本变化与待决策",
+    "src": "source/images/holding-option-C-normal-1440.svg",
+    "occurrence": "holding-option-C-normal-1440@state-demo-23-1",
+    "alt": "普通金额 · 1440px"
+  },
+  {
+    "chapter": "附录一、版本变化与待决策",
+    "src": "source/images/holding-option-C-normal-1280.svg",
+    "occurrence": "holding-option-C-normal-1280@state-demo-23-2",
+    "alt": "普通金额 · 1280px"
+  },
+  {
+    "chapter": "附录一、版本变化与待决策",
+    "src": "source/images/holding-option-C-large-1440.svg",
+    "occurrence": "holding-option-C-large-1440@state-demo-23-3",
+    "alt": "大额与长名称 · 1440px"
+  },
+  {
+    "chapter": "附录一、版本变化与待决策",
+    "src": "source/images/holding-option-C-large-1280.svg",
+    "occurrence": "holding-option-C-large-1280@state-demo-23-4",
+    "alt": "大额与长名称 · 1280px"
+  }
+]

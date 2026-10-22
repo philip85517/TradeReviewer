@@ -852,7 +852,7 @@
       "sourceLine": 134
     },
     {
-      "id": "HOME-HP03-B023",
+      "id": "HOME-HP03-B031",
       "kind": "tablecell",
       "chapter": "HP03",
       "text": "用户动作",
@@ -916,7 +916,7 @@
       "sourceLine": 137
     },
     {
-      "id": "HOME-HP03-B031",
+      "id": "HOME-HP03-B062",
       "kind": "tablecell",
       "chapter": "HP03",
       "text": "查看",
@@ -1428,19 +1428,19 @@
       "sourceLine": 231
     },
     {
-      "id": "HOME-HP02-B036",
+      "id": "HOME-HP02-B043",
       "kind": "tablecell",
       "chapter": "HP02",
-      "text": "显示状态与缺失原因；金额可查看完整精度和原币",
-      "sourceKey": "b5cf3e9620fc1ea56b22ec9b",
+      "text": "费用保留；行情和汇率正常时不常显勾选，异常时由表头说明图标提供缺失原因；金额可查看完整精度和原币",
+      "sourceKey": "cea1d1cdec173bf093306ba4",
       "sourceLine": 231
     },
     {
-      "id": "HOME-HP02-B037",
+      "id": "HOME-HP02-B044",
       "kind": "paragraph",
       "chapter": "HP02",
-      "text": "日期详情使用264×112px紧凑提示框。日期和说明使用12px次要色；市值为12px正文色，浮盈、已实现及净盈亏按数值正负使用绿色或红色，零值使用正文色；当前图点的期间净盈亏为13px。标签与值分开着色，不能让“市值”和“盈利”共用一段绿色文字。缺失值使用“—”与原因，费用说明不使用盈亏色。",
-      "sourceKey": "a2c79ccb8cd31aca82a651eb",
+      "text": "日期详情宽264px，高度随实际字段和换行增长，不固定为112px。内容四周至少留12px，末行文字的可见底边也必须在内边距内；先按完整内容确定高度，再避让绘图区上下左右边缘，不通过裁切文字或压缩字号塞入旧容器。六行金额与日期使用同一份字段顺序，鼠标和键盘状态保持一致。正常行情与汇率不显示勾选文字；出现异常时，表头使用16px说明图标，悬停或键盘聚焦可读具体原因。日期和说明使用12px次要色；市值为12px正文色，浮盈、已实现及净盈亏按数值正负使用绿色或红色，零值使用正文色；当前图点的期间净盈亏为13px。标签与值分开着色，不能让“市值”和“盈利”共用一段绿色文字。缺失值使用“—”与原因，费用说明不使用盈亏色。",
+      "sourceKey": "9e10164145653ad7d0d696f8",
       "sourceLine": 233
     },
     {
@@ -2164,11 +2164,11 @@
       "sourceLine": 368
     },
     {
-      "id": "HOME-HP05-B003",
+      "id": "HOME-HP05-B025",
       "kind": "paragraph",
       "chapter": "HP05",
-      "text": "读图范围： 以下保留的静态分镜说明首页历史模块的位置和状态衔接，其他模块省略。历史曲线的最新选择器、刻度、线点与异常背景，请直接查看已确认的完整交互原型；不要从继承分镜中提取旧样式作为实现规格。",
-      "sourceKey": "3fb76e8e7897754d4a3f0092",
+      "text": "读图范围： 以下静态分镜展示首页历史模块，其他模块省略且保持原位。图稿说明选择器、刻度、线点与异常背景；操作过程可在历史图表交互原型中查看。",
+      "sourceKey": "ff78a957a7c7a50d167125f4",
       "sourceLine": 370
     },
     {
@@ -2204,11 +2204,11 @@
       "sourceLine": 395
     },
     {
-      "id": "HOME-HP05-B042",
+      "id": "HOME-HP05-B026",
       "kind": "paragraph",
       "chapter": "HP05",
-      "text": "“做多 / 做空 / 打新”互斥，切换时摘要、条形或明细、合计与分页同时更新。分类、排序和“仅看未平仓”是三个独立状态；标签使用14px文本下划线，排序选择器使用28px视觉表面和36px命中区，并与同一行其他元素对齐。打新只包含获配及后续卖出，上市后自行买入归做多。“盈利最高”按值降序，“亏损最大”按值升序；下钻保留全量合计，让读者区分局部结果与整个范围的结果。",
-      "sourceKey": "dea3d006f80fb6dec7693a66",
+      "text": "“做多 / 做空 / 打新”互斥，切换时摘要、条形或明细、合计与分页同时更新。分类、排序和“仅看未平仓”是三个独立状态；标签使用14px文本下划线，排序选择器使用28px视觉表面和36px命中区，并与同一行其他元素对齐。“仅看未平仓”使用16px复选框和文字，命中区高36px；历史已平仓模式保留该控件但禁用，切回当前期间恢复原选择，避免工具行跳动。打新只包含获配及后续卖出，上市后自行买入归做多。“盈利最高”按值降序，“亏损最大”按值升序；下钻保留全量合计，让读者区分局部结果与整个范围的结果。",
+      "sourceKey": "49a929bdc628005d9b718cda",
       "sourceLine": 397
     },
     {
@@ -2236,11 +2236,11 @@
       "sourceLine": 403
     },
     {
-      "id": "HOME-HP05-B006",
+      "id": "HOME-HP05-B031",
       "kind": "paragraph",
       "chapter": "HP05",
-      "text": "以下各帧只展示底部贡献区；上方当前表现、持仓和历史统计均保持原位。静态图用于解释数据及位置；当前筛选控件和条形几何以已确认的贡献原型为准，详情仍遵循本章的完整返回规则。",
-      "sourceKey": "3ada656979ddcbbf3c5b7f55",
+      "text": "以下各帧只展示底部贡献区；上方当前表现、持仓和历史统计均保持原位。静态图展示筛选控件、条形构成和状态；贡献交互原型可操作市场下钻、模式切换、分页与返回。详情遵循本章的完整返回规则。",
+      "sourceKey": "63a97c2b0ac6591b2306c8f1",
       "sourceLine": 405
     },
     {
@@ -2407,8 +2407,8 @@
       "id": "HOME-HP06-B018",
       "kind": "paragraph",
       "chapter": "HP06",
-      "text": "首页只规定这次交接的来源和返回；交易库内部的搜索、刷新、日期、表格和详情容器由下一章统一规定。",
-      "sourceKey": "67ea620ec112db2d556aeff0",
+      "text": "图稿仅呈现用户实际看到的页面；来源条件、焦点恢复和参数传递规则写在本章正文，不作为产品界面文案。入口帧的导航按钮负责进入交易库；到达帧显示已经生效的条件与交易列表，不再要求重复点击“进入交易库”。",
+      "sourceKey": "10114ba8185fb3b06ed2d9af",
       "sourceLine": 445
     },
     {
@@ -2428,11 +2428,11 @@
       "sourceLine": 454
     },
     {
-      "id": "HOME-HP07-B001",
+      "id": "HOME-HP07-B003",
       "kind": "paragraph",
       "chapter": "HP07",
-      "text": "本章定义交易库自身的布局与状态；首页只负责交接来源日期、市场、账户、标的和返回上下文。首页入口默认进入实盘，来源条件到达后立即生效。交易库内修改条件不回写首页；返回首页恢复原期间、滚动位置和触发焦点。",
-      "sourceKey": "dbe65a1ffa9b2ce2e0e446cd",
+      "text": "首页入口默认进入实盘。来源日期、市场、账户、标的和返回上下文随入口传入，条件到达后立即生效。交易库内修改条件不回写首页；返回首页恢复原期间、滚动位置和触发焦点。",
+      "sourceKey": "2543476e8d98d3d925f09d55",
       "sourceLine": 467
     },
     {
@@ -2468,11 +2468,11 @@
       "sourceLine": 475
     },
     {
-      "id": "HOME-HP07-B006",
+      "id": "HOME-HP07-B009",
       "kind": "paragraph",
       "chapter": "HP07",
-      "text": "统计页复用趋势与盈亏分布。日期跨度不超过31天按日、超过31天且不超过两年按月、超过两年按年展示。分布默认使用回合收益率，可切金额。点击分布区间只展开该区间的回合明细，不改变顶部条件、不重算原分布；进入复盘并返回后，恢复原区间与列表位置。",
-      "sourceKey": "dd80512fcee92dfe27e1c158",
+      "text": "统计页复用趋势与盈亏分布。日期跨度不超过31天按日、超过31天且不超过两年按月、超过两年按年展示。分布默认使用回合收益率，可切金额。每个区间显示回合数与占比，占比保留2位小数；窄栏将占比放到回合数下一行。占比分母固定为当前范围全部有效回合，展开区间明细不改变分母。点击分布区间只展开该区间的回合明细，不改变顶部条件、不重算原分布；进入复盘并返回后，恢复原区间与列表位置。",
+      "sourceKey": "8b805adb4b7c389c2cf47831",
       "sourceLine": 477
     },
     {
@@ -2484,12 +2484,188 @@
       "sourceLine": 479
     },
     {
+      "id": "HOME-HP07-B010",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "阶段",
+      "sourceKey": "1d94e4ba27708d78cf6ef529",
+      "sourceLine": 487
+    },
+    {
+      "id": "HOME-HP07-B001",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "用户动作",
+      "sourceKey": "15c2fd5ae7c7f51dbbc5c636",
+      "sourceLine": 487
+    },
+    {
+      "id": "HOME-HP07-B012",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "界面与退出结果",
+      "sourceKey": "efd4d5a8df86f163129b7f9c",
+      "sourceLine": 487
+    },
+    {
+      "id": "HOME-HP07-B013",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "首页日期点",
+      "sourceKey": "7949753727f3c0e9d815af01",
+      "sourceLine": 489
+    },
+    {
+      "id": "HOME-HP07-B014",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "打开日期详情后点击查看交易",
+      "sourceKey": "668baf61052757c6d6f70e6c",
+      "sourceLine": 489
+    },
+    {
+      "id": "HOME-HP07-B015",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "进入实盘交易库，来源日期、市场和账户立即生效；无需再次应用",
+      "sourceKey": "cd2734e766ca2360bc8c2d1c",
+      "sourceLine": 489
+    },
+    {
+      "id": "HOME-HP07-B016",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "实盘列表",
+      "sourceKey": "973a7d745384750fb745052e",
+      "sourceLine": 490
+    },
+    {
+      "id": "HOME-HP07-B017",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "打开某个标的的交易",
+      "sourceKey": "615b5c55ef400ecefe295a56",
+      "sourceLine": 490
+    },
+    {
+      "id": "HOME-HP07-B018",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "在已确认的详情容器内查看该标的的回合集，不增加中间页面",
+      "sourceKey": "05cb738a1b039cf4eaa5866c",
+      "sourceLine": 490
+    },
+    {
+      "id": "HOME-HP07-B019",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "练习列表",
+      "sourceKey": "1699a01830998837d53850fb",
+      "sourceLine": 491
+    },
+    {
+      "id": "HOME-HP07-B020",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "切换到模拟盘并打开一次练习",
+      "sourceKey": "593e91df2cc5c36e68e47bef",
+      "sourceLine": 491
+    },
+    {
+      "id": "HOME-HP07-B021",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "直接显示这次练习的回合集；同标的的其他练习不混入",
+      "sourceKey": "c1e1a67fa7adbf91ae1a4f70",
+      "sourceLine": 491
+    },
+    {
+      "id": "HOME-HP07-B022",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "回合集",
+      "sourceKey": "107b92f0b1f0d7cef8c03a48",
+      "sourceLine": 492
+    },
+    {
+      "id": "HOME-HP07-B023",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "选择一个回合进入复盘",
+      "sourceKey": "78c9dabf73720928697ebfd3",
+      "sourceLine": 492
+    },
+    {
+      "id": "HOME-HP07-B024",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "携带该回合及必要的开仓上下文；范围外上下文不改变统计归属",
+      "sourceKey": "f75d6da034a9d6dfbcda1703",
+      "sourceLine": 492
+    },
+    {
+      "id": "HOME-HP07-B025",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "复盘返回",
+      "sourceKey": "fbb2a2d41574b9594d9bd5a7",
+      "sourceLine": 493
+    },
+    {
+      "id": "HOME-HP07-B026",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "关闭或返回回合集",
+      "sourceKey": "34d1e9e3297ba9b6b32965aa",
+      "sourceLine": 493
+    },
+    {
+      "id": "HOME-HP07-B027",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "恢复原标的或练习、筛选、排序、页码、滚动与触发焦点",
+      "sourceKey": "454bf4aa6a73581b068fd714",
+      "sourceLine": 493
+    },
+    {
+      "id": "HOME-HP07-B028",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "交易库返回首页",
+      "sourceKey": "9c7ea7edcb6ea1c713bac424",
+      "sourceLine": 494
+    },
+    {
+      "id": "HOME-HP07-B029",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "使用返回来源入口",
+      "sourceKey": "f4e7b3abb438b305406cd7d0",
+      "sourceLine": 494
+    },
+    {
+      "id": "HOME-HP07-B030",
+      "kind": "tablecell",
+      "chapter": "HP07",
+      "text": "恢复首页原期间、贡献模式、表格状态、滚动与触发焦点",
+      "sourceKey": "d59d985dad4eb2b10ac802d5",
+      "sourceLine": 494
+    },
+    {
+      "id": "HOME-HP07-B031",
+      "kind": "paragraph",
+      "chapter": "HP07",
+      "text": "列表、统计和复盘是同一链路的不同阶段。图外分镜标题用于解释当前阶段，不属于网站界面。按日期到达、待复盘到达、练习到回合及复盘返回分别由本章对应分镜展示，不能把两帧拼接成新的首页布局。",
+      "sourceKey": "23ec48823ea938c0119febd0",
+      "sourceLine": 496
+    },
+    {
       "id": "HOME-HP09-B001",
       "kind": "paragraph",
       "chapter": "HP09",
       "text": "正常状态保持简洁，不展示“估值完整”等常驻徽章。异常才出现简短原因，颜色辅助识别：加载为灰蓝，更新为蓝，数据过期为黄，失败为红。所有状态都提供文字或可访问名称。",
       "sourceKey": "ec89dc56af15f26ac00d9cf9",
-      "sourceLine": 513
+      "sourceLine": 526
     },
     {
       "id": "HOME-HP09-B002",
@@ -2497,7 +2673,7 @@
       "chapter": "HP09",
       "text": "状态",
       "sourceKey": "bad79813cdfe69394f02395e",
-      "sourceLine": 515
+      "sourceLine": 528
     },
     {
       "id": "HOME-HP09-B003",
@@ -2505,7 +2681,7 @@
       "chapter": "HP09",
       "text": "画面",
       "sourceKey": "542b7449eef6676a7b2b9529",
-      "sourceLine": 515
+      "sourceLine": 528
     },
     {
       "id": "HOME-HP09-B004",
@@ -2513,7 +2689,7 @@
       "chapter": "HP09",
       "text": "用户可以做什么",
       "sourceKey": "f733d0a0ed79e8bb137989cb",
-      "sourceLine": 515
+      "sourceLine": 528
     },
     {
       "id": "HOME-HP09-B005",
@@ -2521,7 +2697,7 @@
       "chapter": "HP09",
       "text": "首次加载",
       "sourceKey": "c90051122087d5dda32012bb",
-      "sourceLine": 517
+      "sourceLine": 530
     },
     {
       "id": "HOME-HP09-B006",
@@ -2529,7 +2705,7 @@
       "chapter": "HP09",
       "text": "标题、四指标、图表、表头和八行槽按最终尺寸占位",
       "sourceKey": "2c0c4b68d301934d9c8c2169",
-      "sourceLine": 517
+      "sourceLine": 530
     },
     {
       "id": "HOME-HP09-B007",
@@ -2537,7 +2713,7 @@
       "chapter": "HP09",
       "text": "等待数据，不被布局跳动打断",
       "sourceKey": "1e0f17c9794260c1a91f7c2b",
-      "sourceLine": 517
+      "sourceLine": 530
     },
     {
       "id": "HOME-HP09-B008",
@@ -2545,7 +2721,7 @@
       "chapter": "HP09",
       "text": "已有数据、后台更新",
       "sourceKey": "be98b809033e409359629110",
-      "sourceLine": 518
+      "sourceLine": 531
     },
     {
       "id": "HOME-HP09-B009",
@@ -2553,7 +2729,7 @@
       "chapter": "HP09",
       "text": "保留上一组完整有效数据",
       "sourceKey": "62d42dbd5864be072902d78d",
-      "sourceLine": 518
+      "sourceLine": 531
     },
     {
       "id": "HOME-HP09-B010",
@@ -2561,7 +2737,7 @@
       "chapter": "HP09",
       "text": "继续阅读，辨认更新状态",
       "sourceKey": "a02b9312b1e2fe6e15add7b4",
-      "sourceLine": 518
+      "sourceLine": 531
     },
     {
       "id": "HOME-HP09-B011",
@@ -2569,7 +2745,7 @@
       "chapter": "HP09",
       "text": "没有数据",
       "sourceKey": "91092eb91e7c05515144e4c8",
-      "sourceLine": 519
+      "sourceLine": 532
     },
     {
       "id": "HOME-HP09-B012",
@@ -2577,7 +2753,7 @@
       "chapter": "HP09",
       "text": "区分空持仓、搜索无匹配、零贡献、零待复盘",
       "sourceKey": "1ae033c9f0defe2cc2c9e3e0",
-      "sourceLine": 519
+      "sourceLine": 532
     },
     {
       "id": "HOME-HP09-B013",
@@ -2585,7 +2761,7 @@
       "chapter": "HP09",
       "text": "按照对应空态继续操作",
       "sourceKey": "a72cf97893765ee2e9e422ec",
-      "sourceLine": 519
+      "sourceLine": 532
     },
     {
       "id": "HOME-HP09-B014",
@@ -2593,7 +2769,7 @@
       "chapter": "HP09",
       "text": "缺行情或汇率",
       "sourceKey": "b335e976cdf17fc0d3e4ba1a",
-      "sourceLine": 520
+      "sourceLine": 533
     },
     {
       "id": "HOME-HP09-B015",
@@ -2601,7 +2777,7 @@
       "chapter": "HP09",
       "text": "未知金额用“—”，曲线缺口断开",
       "sourceKey": "a9e552eb57827e135f632dc4",
-      "sourceLine": 520
+      "sourceLine": 533
     },
     {
       "id": "HOME-HP09-B016",
@@ -2609,7 +2785,7 @@
       "chapter": "HP09",
       "text": "查看原因，使用全局修复",
       "sourceKey": "8cb9996b278b04c20e2a270f",
-      "sourceLine": 520
+      "sourceLine": 533
     },
     {
       "id": "HOME-HP09-B017",
@@ -2617,7 +2793,7 @@
       "chapter": "HP09",
       "text": "首次加载失败",
       "sourceKey": "6bd2db743a9e9681e7fbe4a7",
-      "sourceLine": 521
+      "sourceLine": 534
     },
     {
       "id": "HOME-HP09-B018",
@@ -2625,7 +2801,7 @@
       "chapter": "HP09",
       "text": "明确不可用，不伪造零值",
       "sourceKey": "95d485e4b23b5bdfa2f6b7e6",
-      "sourceLine": 521
+      "sourceLine": 534
     },
     {
       "id": "HOME-HP09-B019",
@@ -2633,7 +2809,7 @@
       "chapter": "HP09",
       "text": "使用全局恢复入口",
       "sourceKey": "52cc48181eb33c203394e505",
-      "sourceLine": 521
+      "sourceLine": 534
     },
     {
       "id": "HOME-HP09-B020",
@@ -2641,7 +2817,7 @@
       "chapter": "HP09",
       "text": "更新失败或超时",
       "sourceKey": "1fd640ecd0c1efea55a5d80d",
-      "sourceLine": 522
+      "sourceLine": 535
     },
     {
       "id": "HOME-HP09-B021",
@@ -2649,7 +2825,7 @@
       "chapter": "HP09",
       "text": "保留旧范围和有效值，说明新范围未应用",
       "sourceKey": "abe7f458b5d80f4b5aa3a44d",
-      "sourceLine": 522
+      "sourceLine": 535
     },
     {
       "id": "HOME-HP09-B022",
@@ -2657,7 +2833,7 @@
       "chapter": "HP09",
       "text": "通过同一全局入口重试",
       "sourceKey": "754eebfff3f0249a1532b225",
-      "sourceLine": 522
+      "sourceLine": 535
     },
     {
       "id": "HOME-HP09-B023",
@@ -2665,7 +2841,7 @@
       "chapter": "HP09",
       "text": "部分修复成功",
       "sourceKey": "80a3ca1b4726a0a992b71333",
-      "sourceLine": 523
+      "sourceLine": 536
     },
     {
       "id": "HOME-HP09-B024",
@@ -2673,7 +2849,7 @@
       "chapter": "HP09",
       "text": "更新已完成部分，仍显示剩余缺失",
       "sourceKey": "c92305b3d664d8b42de33521",
-      "sourceLine": 523
+      "sourceLine": 536
     },
     {
       "id": "HOME-HP09-B025",
@@ -2681,7 +2857,7 @@
       "chapter": "HP09",
       "text": "了解未完成原因，再次使用同一入口",
       "sourceKey": "79008a51e11886cc291e1d61",
-      "sourceLine": 523
+      "sourceLine": 536
     },
     {
       "id": "HOME-HP09-B026",
@@ -2689,7 +2865,7 @@
       "chapter": "HP09",
       "text": "首页只有一个全局“一键修复”。修复中禁止重复提交；成功后相关数据一起刷新，失败后恢复同一按钮。图点和局部模块只说明原因，不增加第二个补全、日志或修复入口。",
       "sourceKey": "6d2dfd5188887bfb0f6eaefb",
-      "sourceLine": 525
+      "sourceLine": 538
     },
     {
       "id": "HOME-HP09-B027",
@@ -2697,7 +2873,7 @@
       "chapter": "HP09",
       "text": "用户连续切换范围时，只应用最后一次仍然有效的选择。等待期间，标题、币种和数据继续对应原范围；较早的请求即使晚到，也不能覆盖新选择。新请求失败时保留原范围，并说明新选择没有应用。",
       "sourceKey": "298215242fa49ab8db90a30a",
-      "sourceLine": 539
+      "sourceLine": 552
     },
     {
       "id": "HOME-HP09-B028",
@@ -2705,7 +2881,7 @@
       "chapter": "HP09",
       "text": "例如，用户正查看全部市场，先选港股、随即又选美股：选择器显示等待反馈，标题、币种、指标、曲线、贡献和表格仍共同指向全部市场。港股请求被取消，迟到结果不显示；只有美股读取成功后整组切换。若失败，则明确提示“美股未应用”，继续保留全部市场的数据。",
       "sourceKey": "a55daaaa6946ff2ad7541af5",
-      "sourceLine": 541
+      "sourceLine": 554
     },
     {
       "id": "HOME-HP09-B029",
@@ -2713,7 +2889,7 @@
       "chapter": "HP09",
       "text": "日期切换同步替换期间指标、曲线与“当前期间”贡献数据，不切换贡献模式；历史统计和历史贡献保持不变，当前持仓始终保持最新时点。请求超过15秒转为手动恢复，不无限自动重试。开发所需的请求识别方式放在附录中。",
       "sourceKey": "847a32e0b698028f4b351ba2",
-      "sourceLine": 543
+      "sourceLine": 556
     },
     {
       "id": "HOME-HP09-B030",
@@ -2721,7 +2897,7 @@
       "chapter": "HP09",
       "text": "变化",
       "sourceKey": "c09fc2dcea84492197dd2ee6",
-      "sourceLine": 547
+      "sourceLine": 560
     },
     {
       "id": "HOME-HP09-B031",
@@ -2729,7 +2905,7 @@
       "chapter": "HP09",
       "text": "动效",
       "sourceKey": "621dd2518d9c18b883f10c11",
-      "sourceLine": 547
+      "sourceLine": 560
     },
     {
       "id": "HOME-HP09-B032",
@@ -2737,7 +2913,7 @@
       "chapter": "HP09",
       "text": "不应发生的结果",
       "sourceKey": "86e89b3c364cf8af6b10a615",
-      "sourceLine": 547
+      "sourceLine": 560
     },
     {
       "id": "HOME-HP09-B033",
@@ -2745,7 +2921,7 @@
       "chapter": "HP09",
       "text": "浮层打开 / 关闭",
       "sourceKey": "35f5917c2a5efd7328f6e717",
-      "sourceLine": 549
+      "sourceLine": 562
     },
     {
       "id": "HOME-HP09-B034",
@@ -2753,7 +2929,7 @@
       "chapter": "HP09",
       "text": "160ms缓出，透明度变化并移动4px",
       "sourceKey": "e27ab179e2b53c442da47b99",
-      "sourceLine": 549
+      "sourceLine": 562
     },
     {
       "id": "HOME-HP09-B035",
@@ -2761,7 +2937,7 @@
       "chapter": "HP09",
       "text": "不能推动触发器、标题或表格底边",
       "sourceKey": "64239dd8415354ccd54821a1",
-      "sourceLine": 549
+      "sourceLine": 562
     },
     {
       "id": "HOME-HP09-B036",
@@ -2769,7 +2945,7 @@
       "chapter": "HP09",
       "text": "鼠标悬停",
       "sourceKey": "f0afab68bd8ee94ff17ffdbb",
-      "sourceLine": 550
+      "sourceLine": 563
     },
     {
       "id": "HOME-HP09-B037",
@@ -2777,7 +2953,7 @@
       "chapter": "HP09",
       "text": "120ms颜色变化",
       "sourceKey": "a4037db6a69ca584f795e2c1",
-      "sourceLine": 550
+      "sourceLine": 563
     },
     {
       "id": "HOME-HP09-B038",
@@ -2785,7 +2961,7 @@
       "chapter": "HP09",
       "text": "不能改变控件大小",
       "sourceKey": "34b50bbfdf6a0c890db62ed9",
-      "sourceLine": 550
+      "sourceLine": 563
     },
     {
       "id": "HOME-HP09-B039",
@@ -2793,7 +2969,7 @@
       "chapter": "HP09",
       "text": "数据替换",
       "sourceKey": "ba7e0c73329077db2153d963",
-      "sourceLine": 551
+      "sourceLine": 564
     },
     {
       "id": "HOME-HP09-B040",
@@ -2801,7 +2977,7 @@
       "chapter": "HP09",
       "text": "150ms淡入",
       "sourceKey": "d659e3bcae3478a7643632e6",
-      "sourceLine": 551
+      "sourceLine": 564
     },
     {
       "id": "HOME-HP09-B041",
@@ -2809,7 +2985,7 @@
       "chapter": "HP09",
       "text": "金额不滚动跳数，不出现半组新数据",
       "sourceKey": "3902a6abf4278f446bac5414",
-      "sourceLine": 551
+      "sourceLine": 564
     },
     {
       "id": "HOME-HP09-B042",
@@ -2817,7 +2993,7 @@
       "chapter": "HP09",
       "text": "翻页",
       "sourceKey": "f33b08ed175dac57c1985a59",
-      "sourceLine": 552
+      "sourceLine": 565
     },
     {
       "id": "HOME-HP09-B043",
@@ -2825,7 +3001,7 @@
       "chapter": "HP09",
       "text": "替换行，保持容器高度",
       "sourceKey": "9a0a10540199297545c7783e",
-      "sourceLine": 552
+      "sourceLine": 565
     },
     {
       "id": "HOME-HP09-B044",
@@ -2833,7 +3009,7 @@
       "chapter": "HP09",
       "text": "其他模块不移动",
       "sourceKey": "e1b2956ecd8c9598a46d66b3",
-      "sourceLine": 552
+      "sourceLine": 565
     },
     {
       "id": "HOME-HP09-B045",
@@ -2841,7 +3017,7 @@
       "chapter": "HP09",
       "text": "键盘焦点",
       "sourceKey": "746a9d0ba7ce14d87bf688fb",
-      "sourceLine": 553
+      "sourceLine": 566
     },
     {
       "id": "HOME-HP09-B046",
@@ -2849,7 +3025,7 @@
       "chapter": "HP09",
       "text": "立即移动、清晰描边",
       "sourceKey": "66ed6ffd6d2bfafaea268626",
-      "sourceLine": 553
+      "sourceLine": 566
     },
     {
       "id": "HOME-HP09-B047",
@@ -2857,7 +3033,7 @@
       "chapter": "HP09",
       "text": "不靠动画才能辨认当前位置",
       "sourceKey": "9b80473f948408fa4e6fb83b",
-      "sourceLine": 553
+      "sourceLine": 566
     },
     {
       "id": "HOME-HP09-B048",
@@ -2865,7 +3041,7 @@
       "chapter": "HP09",
       "text": "图表提示",
       "sourceKey": "6a9a3a3722c00d7ecd459cdc",
-      "sourceLine": 554
+      "sourceLine": 567
     },
     {
       "id": "HOME-HP09-B049",
@@ -2873,7 +3049,7 @@
       "chapter": "HP09",
       "text": "显示和关闭，不缩放",
       "sourceKey": "25e91e2980a701bd086cd52d",
-      "sourceLine": 554
+      "sourceLine": 567
     },
     {
       "id": "HOME-HP09-B050",
@@ -2881,7 +3057,7 @@
       "chapter": "HP09",
       "text": "不遮住主要曲线或超出边界",
       "sourceKey": "c3b1cd4c6f42bf25c4df3a04",
-      "sourceLine": 554
+      "sourceLine": 567
     },
     {
       "id": "HOME-HP09-B051",
@@ -2889,7 +3065,7 @@
       "chapter": "HP09",
       "text": "用户启用减弱动效时，移除位移、计数和淡入，直接显示最终状态。",
       "sourceKey": "7a14a6eade1527c12bbe87b0",
-      "sourceLine": 556
+      "sourceLine": 569
     },
     {
       "id": "HOME-HP08-B003",
@@ -2897,7 +3073,7 @@
       "chapter": "HP08",
       "text": "子模块必须优先复用这些控件的尺寸、颜色、焦点和状态规则；新增组件前先检查与现有组件合并或扩展的可能，并明确自身的数据范围。不能因为都使用同一种按钮，就把搜索、筛选、修复或详情混成一个操作。",
       "sourceKey": "c7854f00e0715cd181a3ab49",
-      "sourceLine": 562
+      "sourceLine": 575
     },
     {
       "id": "HOME-HP08-B002",
@@ -2905,7 +3081,7 @@
       "chapter": "HP08",
       "text": "控件",
       "sourceKey": "9c424566fedc5d7ef53ac782",
-      "sourceLine": 564
+      "sourceLine": 577
     },
     {
       "id": "HOME-HP08-B029",
@@ -2913,7 +3089,7 @@
       "chapter": "HP08",
       "text": "用途",
       "sourceKey": "a3fd9a995df3b999b108f3f1",
-      "sourceLine": 564
+      "sourceLine": 577
     },
     {
       "id": "HOME-HP08-B004",
@@ -2921,7 +3097,7 @@
       "chapter": "HP08",
       "text": "关键尺寸",
       "sourceKey": "c6a805f18b7c57d0dd6e66b0",
-      "sourceLine": 564
+      "sourceLine": 577
     },
     {
       "id": "HOME-HP08-B005",
@@ -2929,7 +3105,7 @@
       "chapter": "HP08",
       "text": "图标按钮",
       "sourceKey": "17489958291607849f848285",
-      "sourceLine": 566
+      "sourceLine": 579
     },
     {
       "id": "HOME-HP08-B006",
@@ -2937,7 +3113,7 @@
       "chapter": "HP08",
       "text": "单一语义动作，如搜索、筛选、查看",
       "sourceKey": "9cf51af94b72bdfe5b126c3b",
-      "sourceLine": 566
+      "sourceLine": 579
     },
     {
       "id": "HOME-HP08-B007",
@@ -2945,7 +3121,7 @@
       "chapter": "HP08",
       "text": "36×36px命中；通用图标16×16坐标，页头搜索/筛选使用18px视觉图标、24×24坐标",
       "sourceKey": "11c984a01ea7c1d13435c06f",
-      "sourceLine": 566
+      "sourceLine": 579
     },
     {
       "id": "HOME-HP08-B008",
@@ -2953,7 +3129,7 @@
       "chapter": "HP08",
       "text": "分段标签",
       "sourceKey": "8b0fb4edad8276e95fb83f77",
-      "sourceLine": 567
+      "sourceLine": 580
     },
     {
       "id": "HOME-HP08-B009",
@@ -2961,7 +3137,7 @@
       "chapter": "HP08",
       "text": "少量互斥范围，如市场",
       "sourceKey": "198743d390394a6e89fe97cf",
-      "sourceLine": 567
+      "sourceLine": 580
     },
     {
       "id": "HOME-HP08-B010",
@@ -2969,7 +3145,7 @@
       "chapter": "HP08",
       "text": "高36px",
       "sourceKey": "57c68f0b7b1cdcf5fdf2a9b5",
-      "sourceLine": 567
+      "sourceLine": 580
     },
     {
       "id": "HOME-HP08-B011",
@@ -2977,7 +3153,7 @@
       "chapter": "HP08",
       "text": "选择器",
       "sourceKey": "bad25ce7aa2e671984b07032",
-      "sourceLine": 568
+      "sourceLine": 581
     },
     {
       "id": "HOME-HP08-B012",
@@ -2985,7 +3161,7 @@
       "chapter": "HP08",
       "text": "显示并选择当前账户",
       "sourceKey": "b1dc94b411a3d388afbaf8ee",
-      "sourceLine": 568
+      "sourceLine": 581
     },
     {
       "id": "HOME-HP08-B013",
@@ -2993,7 +3169,7 @@
       "chapter": "HP08",
       "text": "高36px、最小宽120px；页头建议176px",
       "sourceKey": "e24b636aa65973a6b9a077c4",
-      "sourceLine": 568
+      "sourceLine": 581
     },
     {
       "id": "HOME-HP08-B014",
@@ -3001,7 +3177,7 @@
       "chapter": "HP08",
       "text": "浮层",
       "sourceKey": "51d2fe6f2493c3908a285e8d",
-      "sourceLine": 569
+      "sourceLine": 582
     },
     {
       "id": "HOME-HP08-B015",
@@ -3009,7 +3185,7 @@
       "chapter": "HP08",
       "text": "全局实体搜索或编辑筛选",
       "sourceKey": "611e032a9295354fc4a1ac01",
-      "sourceLine": 569
+      "sourceLine": 582
     },
     {
       "id": "HOME-HP08-B016",
@@ -3017,7 +3193,7 @@
       "chapter": "HP08",
       "text": "搜索舞台最大960px、桌面两侧至少24px且窄屏全宽；筛选宽320px、输入高36px",
       "sourceKey": "6e32edf966423d9c3d9ee369",
-      "sourceLine": 569
+      "sourceLine": 582
     },
     {
       "id": "HOME-HP08-B017",
@@ -3025,7 +3201,7 @@
       "chapter": "HP08",
       "text": "条件标签",
       "sourceKey": "1f29005653cbdefc6bedddfd",
-      "sourceLine": 570
+      "sourceLine": 583
     },
     {
       "id": "HOME-HP08-B018",
@@ -3033,7 +3209,7 @@
       "chapter": "HP08",
       "text": "显示与移除已应用条件",
       "sourceKey": "9c67cde329875c974b37c0dd",
-      "sourceLine": 570
+      "sourceLine": 583
     },
     {
       "id": "HOME-HP08-B019",
@@ -3041,7 +3217,7 @@
       "chapter": "HP08",
       "text": "可见高24px，外层与删除命中高36px",
       "sourceKey": "4c85eccfb1dacf788990f3f6",
-      "sourceLine": 570
+      "sourceLine": 583
     },
     {
       "id": "HOME-HP08-B020",
@@ -3049,7 +3225,7 @@
       "chapter": "HP08",
       "text": "指标卡",
       "sourceKey": "534345295ff2915a61469be2",
-      "sourceLine": 571
+      "sourceLine": 584
     },
     {
       "id": "HOME-HP08-B021",
@@ -3057,7 +3233,7 @@
       "chapter": "HP08",
       "text": "结果与口径说明",
       "sourceKey": "57cf8cc1d5094be65c66ebe9",
-      "sourceLine": 571
+      "sourceLine": 584
     },
     {
       "id": "HOME-HP08-B022",
@@ -3065,7 +3241,7 @@
       "chapter": "HP08",
       "text": "高88px，主值28px",
       "sourceKey": "5e3da5015ceec9e38b55fb5d",
-      "sourceLine": 571
+      "sourceLine": 584
     },
     {
       "id": "HOME-HP08-B023",
@@ -3073,7 +3249,7 @@
       "chapter": "HP08",
       "text": "状态徽章",
       "sourceKey": "b27c9988e5f4bd0e145cc5a9",
-      "sourceLine": 572
+      "sourceLine": 585
     },
     {
       "id": "HOME-HP08-B024",
@@ -3081,7 +3257,7 @@
       "chapter": "HP08",
       "text": "需要注意的状态",
       "sourceKey": "94488f465152acd3f795d614",
-      "sourceLine": 572
+      "sourceLine": 585
     },
     {
       "id": "HOME-HP08-B025",
@@ -3089,7 +3265,7 @@
       "chapter": "HP08",
       "text": "当前高24px",
       "sourceKey": "64c0f172a0c8df52b9294cef",
-      "sourceLine": 572
+      "sourceLine": 585
     },
     {
       "id": "HOME-HP08-B026",
@@ -3097,7 +3273,7 @@
       "chapter": "HP08",
       "text": "数据表",
       "sourceKey": "e03bb4e7c7bdd146f6cf0417",
-      "sourceLine": 573
+      "sourceLine": 586
     },
     {
       "id": "HOME-HP08-B027",
@@ -3105,7 +3281,7 @@
       "chapter": "HP08",
       "text": "稳定扫描与逐行操作",
       "sourceKey": "1d0844f184c1fb673393af50",
-      "sourceLine": 573
+      "sourceLine": 586
     },
     {
       "id": "HOME-HP08-B028",
@@ -3113,15 +3289,15 @@
       "chapter": "HP08",
       "text": "表头40px、行48px、分页48px",
       "sourceKey": "4e1dcf742f951eefa3e2ec96",
-      "sourceLine": 573
+      "sourceLine": 586
     },
     {
-      "id": "HOME-HP08-B041",
+      "id": "HOME-HP08-B031",
       "kind": "tablecell",
       "chapter": "HP08",
       "text": "图表提示",
       "sourceKey": "6a9a3a3722c00d7ecd459cdc",
-      "sourceLine": 574
+      "sourceLine": 587
     },
     {
       "id": "HOME-HP08-B030",
@@ -3129,15 +3305,15 @@
       "chapter": "HP08",
       "text": "解释选中日期与金额",
       "sourceKey": "f2c47fc7abf4f20549610cdb",
-      "sourceLine": 574
+      "sourceLine": 587
     },
     {
-      "id": "HOME-HP08-B031",
+      "id": "HOME-HP08-B041",
       "kind": "tablecell",
       "chapter": "HP08",
-      "text": "基础尺寸264×112px，内容完整并避让边缘",
-      "sourceKey": "10c4ebe3bd761b1cc52a1aad",
-      "sourceLine": 574
+      "text": "宽264px，高度按内容计算；四周至少12px内边距，完整显示后避让边缘",
+      "sourceKey": "8783058115f9706604b1e7ac",
+      "sourceLine": 587
     },
     {
       "id": "HOME-HP08-B032",
@@ -3145,7 +3321,7 @@
       "chapter": "HP08",
       "text": "空状态",
       "sourceKey": "ef98e405cc078bdb1fbfccfb",
-      "sourceLine": 575
+      "sourceLine": 588
     },
     {
       "id": "HOME-HP08-B033",
@@ -3153,7 +3329,7 @@
       "chapter": "HP08",
       "text": "说明没有结果及下一步",
       "sourceKey": "8746c76a030fdb0908589d21",
-      "sourceLine": 575
+      "sourceLine": 588
     },
     {
       "id": "HOME-HP08-B034",
@@ -3161,7 +3337,7 @@
       "chapter": "HP08",
       "text": "最小高120px",
       "sourceKey": "1edeeabf49ffc07afb9a1265",
-      "sourceLine": 575
+      "sourceLine": 588
     },
     {
       "id": "HOME-HP08-B035",
@@ -3169,7 +3345,7 @@
       "chapter": "HP08",
       "text": "全局修复按钮",
       "sourceKey": "90295f0dc29a31949018d449",
-      "sourceLine": 576
+      "sourceLine": 589
     },
     {
       "id": "HOME-HP08-B036",
@@ -3177,7 +3353,7 @@
       "chapter": "HP08",
       "text": "恢复缺失数据或失败请求",
       "sourceKey": "02d85a8d8317cac0f590439a",
-      "sourceLine": 576
+      "sourceLine": 589
     },
     {
       "id": "HOME-HP08-B037",
@@ -3185,7 +3361,23 @@
       "chapter": "HP08",
       "text": "可见高32px、命中高36px",
       "sourceKey": "d6023d86f210c80cb4c8a944",
-      "sourceLine": 576
+      "sourceLine": 589
+    },
+    {
+      "id": "HOME-HP08-B044",
+      "kind": "paragraph",
+      "chapter": "HP08",
+      "text": "正文、控件手册和各状态图共用以下边界：数值表头与数据列使用同一列右边界，并在字体就绪后检查可见字形右缘；不能把相同坐标误当作视觉对齐。日期、搜索和刷新控件以36px高度的中心线排列，文字14px，刷新使用SVG图标，不使用字体字符代替。日期使用日历图标，年份选择使用下拉箭头，静态日期不添加可点击暗示。",
+      "sourceKey": "015bb64c892e1636f0705a33",
+      "sourceLine": 591
+    },
+    {
+      "id": "HOME-HP08-B040",
+      "kind": "paragraph",
+      "chapter": "HP08",
+      "text": "产品图只保留指标名称、当前范围、数值及必要操作。历史范围选择器下方不再常驻重复的“按平仓时间 · 年份”副行。次要统计口径通过统一说明图标在悬停和键盘聚焦时展示；参数名、请求约定、恢复规则和设计解释写在正文或附录，不能作为网站常驻文案。正常状态不展示成功勾选，异常说明必须有可访问名称，不能只依赖颜色。",
+      "sourceKey": "8599f0f1a3f87f82660eaa6a",
+      "sourceLine": 593
     },
     {
       "id": "HOME-HP08-B042",
@@ -3193,7 +3385,7 @@
       "chapter": "HP08",
       "text": "常用控件的局部样例见 布局与颜色样例板；样例呈现选择器、表头、数值、按钮及状态颜色。其余控件的完整状态见下方手册与各模块分镜。",
       "sourceKey": "b9f1b2685dd6d56ab03786d0",
-      "sourceLine": 578
+      "sourceLine": 595
     },
     {
       "id": "HOME-HP08-B039",
@@ -3201,7 +3393,7 @@
       "chapter": "HP08",
       "text": "默认态说明可操作边界；悬停态提供轻反馈；焦点态支持键盘定位；按下态确认触发；禁用态说明为什么不能操作；加载态保留上下文；空态区分没有数据与没有匹配；错误态说明原因和恢复位置。",
       "sourceKey": "58b72e483bf5ada6d05bb01f",
-      "sourceLine": 584
+      "sourceLine": 601
     },
     {
       "id": "HOME-HP08-B043",
@@ -3209,7 +3401,7 @@
       "chapter": "HP08",
       "text": "控件状态手册逐一列出12类控件的八种状态，包含触发、反馈、退出、键盘和错误恢复，以及对应图稿。共96个状态组合，其中85个适用、11个因控件性质不适用；不适用的状态也明确说明，不用一张缩略图代替完整交互规则。",
       "sourceKey": "171801ec10e9523f1759d2ae",
-      "sourceLine": 586
+      "sourceLine": 603
     },
     {
       "id": "HOME-HP10-B001",
@@ -3217,7 +3409,7 @@
       "chapter": "HP10",
       "text": "检查范围",
       "sourceKey": "87fb333e4bfd7c5c413e3844",
-      "sourceLine": 592
+      "sourceLine": 609
     },
     {
       "id": "HOME-HP10-B002",
@@ -3225,7 +3417,7 @@
       "chapter": "HP10",
       "text": "必须观察到的结果",
       "sourceKey": "48268fe02cc2b7b8df47678e",
-      "sourceLine": 592
+      "sourceLine": 609
     },
     {
       "id": "HOME-HP10-B003",
@@ -3233,7 +3425,7 @@
       "chapter": "HP10",
       "text": "整页布局",
       "sourceKey": "86e614309fb7498028489d3b",
-      "sourceLine": 594
+      "sourceLine": 611
     },
     {
       "id": "HOME-HP10-B004",
@@ -3241,7 +3433,7 @@
       "chapter": "HP10",
       "text": "表现、持仓、历史、底部唯一贡献区顺序一致；两个桌面尺寸保持相同层级",
       "sourceKey": "6c6b96ddedfeb1a16d72f646",
-      "sourceLine": 594
+      "sourceLine": 611
     },
     {
       "id": "HOME-HP10-B005",
@@ -3249,7 +3441,7 @@
       "chapter": "HP10",
       "text": "范围切换",
       "sourceKey": "999557a429b0dca24abe2504",
-      "sourceLine": 595
+      "sourceLine": 612
     },
     {
       "id": "HOME-HP10-B006",
@@ -3257,7 +3449,7 @@
       "chapter": "HP10",
       "text": "市场、账户、币种和数据一致；失败不留下新标签配旧数字",
       "sourceKey": "3508b194a643a8a705796e02",
-      "sourceLine": 595
+      "sourceLine": 612
     },
     {
       "id": "HOME-HP10-B007",
@@ -3265,7 +3457,7 @@
       "chapter": "HP10",
       "text": "期间选择",
       "sourceKey": "ec67f9757ba021b7d5b802d7",
-      "sourceLine": 596
+      "sourceLine": 613
     },
     {
       "id": "HOME-HP10-B008",
@@ -3273,7 +3465,7 @@
       "chapter": "HP10",
       "text": "三项期间指标、曲线与当前期间贡献数据一起更新；不切换贡献模式，持仓、历史统计与历史贡献不变",
       "sourceKey": "fabe3a8e59433272f6d0b469",
-      "sourceLine": 596
+      "sourceLine": 613
     },
     {
       "id": "HOME-HP10-B009",
@@ -3281,7 +3473,7 @@
       "chapter": "HP10",
       "text": "搜索与筛选",
       "sourceKey": "1977d261fe2d1073a2a2471c",
-      "sourceLine": 597
+      "sourceLine": 614
     },
     {
       "id": "HOME-HP10-B010",
@@ -3289,7 +3481,7 @@
       "chapter": "HP10",
       "text": "输入法、清除、应用、Esc与外点符合各自规则；浮层不推动页面",
       "sourceKey": "85c34d0cab434eabd24b0580",
-      "sourceLine": 597
+      "sourceLine": 614
     },
     {
       "id": "HOME-HP10-B011",
@@ -3297,7 +3489,7 @@
       "chapter": "HP10",
       "text": "持仓表",
       "sourceKey": "59a4a81d06568b220af3ca18",
-      "sourceLine": 598
+      "sourceLine": 615
     },
     {
       "id": "HOME-HP10-B012",
@@ -3305,7 +3497,7 @@
       "chapter": "HP10",
       "text": "0、5、10、20、50条及末页保持结构；数值右对齐；长名和缺失值可理解",
       "sourceKey": "b5d4c0e0ecf75068715e7d74",
-      "sourceLine": 598
+      "sourceLine": 615
     },
     {
       "id": "HOME-HP10-B013",
@@ -3313,7 +3505,7 @@
       "chapter": "HP10",
       "text": "贡献与历史",
       "sourceKey": "9bc75d943ef35bd874a8c5fd",
-      "sourceLine": 599
+      "sourceLine": 616
     },
     {
       "id": "HOME-HP10-B014",
@@ -3321,7 +3513,7 @@
       "chapter": "HP10",
       "text": "全量合计不随分页变化；历史范围切换与零样本口径正确",
       "sourceKey": "983a81dcd00bc3b25cb19b46",
-      "sourceLine": 599
+      "sourceLine": 616
     },
     {
       "id": "HOME-HP10-B015",
@@ -3329,7 +3521,7 @@
       "chapter": "HP10",
       "text": "查看和返回",
       "sourceKey": "5b88db70db77b6f9cb37e118",
-      "sourceLine": 600
+      "sourceLine": 617
     },
     {
       "id": "HOME-HP10-B016",
@@ -3337,7 +3529,7 @@
       "chapter": "HP10",
       "text": "恢复来源行、页码、筛选、排序与滚动；来源消失时有合理焦点",
       "sourceKey": "03280ae60e44c29f89728609",
-      "sourceLine": 600
+      "sourceLine": 617
     },
     {
       "id": "HOME-HP10-B017",
@@ -3345,7 +3537,7 @@
       "chapter": "HP10",
       "text": "异常恢复",
       "sourceKey": "2fb3008c059a5c1fbbab67d0",
-      "sourceLine": 601
+      "sourceLine": 618
     },
     {
       "id": "HOME-HP10-B018",
@@ -3353,7 +3545,7 @@
       "chapter": "HP10",
       "text": "首次失败和更新失败不同；只存在一个全局修复入口",
       "sourceKey": "7a74e7fb334b36a09cc48554",
-      "sourceLine": 601
+      "sourceLine": 618
     },
     {
       "id": "HOME-HP10-B019",
@@ -3361,7 +3553,7 @@
       "chapter": "HP10",
       "text": "可访问操作",
       "sourceKey": "ac722e1d02e991d3ed9a1d3b",
-      "sourceLine": 602
+      "sourceLine": 619
     },
     {
       "id": "HOME-HP10-B020",
@@ -3369,7 +3561,7 @@
       "chapter": "HP10",
       "text": "鼠标与键盘均能完成核心路径，焦点和说明清楚可见",
       "sourceKey": "94a0373e2762f91190e90da5",
-      "sourceLine": 602
+      "sourceLine": 619
     },
     {
       "id": "HOME-HP10-B021",
@@ -3377,7 +3569,7 @@
       "chapter": "HP10",
       "text": "视觉检查使用1440×1000和1280×800、100%缩放，分别比较布局、字号、行高、颜色、边线、空白和层级；不能用“没有溢出”代替视觉对照。窄屏和触屏需要单独设计与验证，不能把桌面证据当作触屏证据。",
       "sourceKey": "06501a5bc4030f85d187bd29",
-      "sourceLine": 604
+      "sourceLine": 621
     },
     {
       "id": "HOME-HP10-B022",
@@ -3385,7 +3577,7 @@
       "chapter": "HP10",
       "text": "功能、数据持久化与视觉分别验收。从交易进入复盘并保存时，要在隔离测试数据库中检查保存、返回、刷新和重新打开后的结果；静态分镜只说明预期行为，不证明产品已实现。",
       "sourceKey": "aa1b7ba1f074d6502d392e9a",
-      "sourceLine": 606
+      "sourceLine": 623
     },
     {
       "id": "HOME-HP10-B023",
@@ -3393,7 +3585,7 @@
       "chapter": "HP10",
       "text": "正文描述当前完整设计。本表集中说明版本来源与变化，阅读各模块时无需来回查阅历史文档。",
       "sourceKey": "9f85fdcf3e97ab2c1b761ecf",
-      "sourceLine": 610
+      "sourceLine": 627
     },
     {
       "id": "HOME-HP10-B024",
@@ -3401,7 +3593,7 @@
       "chapter": "HP10",
       "text": "版本身份：这是累计修订的 V2.4.1 规范，保留此前确认的布局与共识，并整合 D01–D17 的决定、评论和第五轮原型结果。历史版本与候选用于追溯；验收以当前正文和图稿为准。第五轮原型是设计合同的局部证据，不等于正式产品全部状态已验收。",
       "sourceKey": "38c9dbc7297d2ae8f34e0cc7",
-      "sourceLine": 612
+      "sourceLine": 629
     },
     {
       "id": "HOME-HP10-B025",
@@ -3409,7 +3601,7 @@
       "chapter": "HP10",
       "text": "内容",
       "sourceKey": "40a7a35f455beab76d755cec",
-      "sourceLine": 614
+      "sourceLine": 631
     },
     {
       "id": "HOME-HP10-B026",
@@ -3417,7 +3609,7 @@
       "chapter": "HP10",
       "text": "来源与演进",
       "sourceKey": "80a0d5e8691b6127415a075a",
-      "sourceLine": 614
+      "sourceLine": 631
     },
     {
       "id": "HOME-HP10-B027",
@@ -3425,7 +3617,7 @@
       "chapter": "HP10",
       "text": "当前规则",
       "sourceKey": "a0fd041aaf9942f794d47dbf",
-      "sourceLine": 614
+      "sourceLine": 631
     },
     {
       "id": "HOME-HP10-B028",
@@ -3433,7 +3625,7 @@
       "chapter": "HP10",
       "text": "首页任务与数据口径",
       "sourceKey": "1259ee885d6aadeca64993d0",
-      "sourceLine": 616
+      "sourceLine": 633
     },
     {
       "id": "HOME-HP10-B029",
@@ -3441,7 +3633,7 @@
       "chapter": "HP10",
       "text": "V1提出核心任务；V2重新组织页面",
       "sourceKey": "bc6f9f4e67bc40db81181897",
-      "sourceLine": 616
+      "sourceLine": 633
     },
     {
       "id": "HOME-HP10-B030",
@@ -3449,7 +3641,7 @@
       "chapter": "HP10",
       "text": "表现、持仓、历史、底部唯一贡献区分区，日期检索和复盘任务通过交易库衔接",
       "sourceKey": "cd76518eea3b908d27c2607d",
-      "sourceLine": 616
+      "sourceLine": 633
     },
     {
       "id": "HOME-HP10-B031",
@@ -3457,7 +3649,7 @@
       "chapter": "HP10",
       "text": "主布局、四指标与视觉体系",
       "sourceKey": "80e1383399ce5c977a137531",
-      "sourceLine": 617
+      "sourceLine": 634
     },
     {
       "id": "HOME-HP10-B032",
@@ -3465,7 +3657,7 @@
       "chapter": "HP10",
       "text": "V2形成，V2.1补细",
       "sourceKey": "fdbe54f24aa885932557acf5",
-      "sourceLine": 617
+      "sourceLine": 634
     },
     {
       "id": "HOME-HP10-B033",
@@ -3473,7 +3665,7 @@
       "chapter": "HP10",
       "text": "表现优先，单层表面，保留四指标和既定颜色、文字、表格尺寸",
       "sourceKey": "6677172752ff118dd5c459a9",
-      "sourceLine": 617
+      "sourceLine": 634
     },
     {
       "id": "HOME-HP10-B034",
@@ -3481,7 +3673,7 @@
       "chapter": "HP10",
       "text": "搜索、详情、请求与返回",
       "sourceKey": "d5b6f43137de296d6f571061",
-      "sourceLine": 618
+      "sourceLine": 635
     },
     {
       "id": "HOME-HP10-B035",
@@ -3489,7 +3681,7 @@
       "chapter": "HP10",
       "text": "V2.1补齐边界",
       "sourceKey": "dcc3f1a9a2c844e2b5c70f76",
-      "sourceLine": 618
+      "sourceLine": 635
     },
     {
       "id": "HOME-HP10-B036",
@@ -3497,7 +3689,7 @@
       "chapter": "HP10",
       "text": "输入法处理、焦点返回、连续请求、刷新与直达保持上下文",
       "sourceKey": "e5b0360dccb25f653249b7c5",
-      "sourceLine": 618
+      "sourceLine": 635
     },
     {
       "id": "HOME-HP10-B037",
@@ -3505,7 +3697,7 @@
       "chapter": "HP10",
       "text": "贡献位置与分页",
       "sourceKey": "9a71f0b3a4e2d21b27463697",
-      "sourceLine": 619
+      "sourceLine": 636
     },
     {
       "id": "HOME-HP10-B038",
@@ -3513,7 +3705,7 @@
       "chapter": "HP10",
       "text": "本轮共识修订",
       "sourceKey": "b27dcbb7cc51e646eaa41237",
-      "sourceLine": 619
+      "sourceLine": 636
     },
     {
       "id": "HOME-HP10-B039",
@@ -3521,7 +3713,7 @@
       "chapter": "HP10",
       "text": "历史之后只保留一个贡献区；当前期间与历史已平仓复用组件，标的明细每页八行",
       "sourceKey": "3f6b8c157d83c59b16f42f8c",
-      "sourceLine": 619
+      "sourceLine": 636
     },
     {
       "id": "HOME-HP10-B040",
@@ -3529,7 +3721,7 @@
       "chapter": "HP10",
       "text": "实盘范围与恢复动作",
       "sourceKey": "100937d8e70d3ca8bc2d65a2",
-      "sourceLine": 620
+      "sourceLine": 637
     },
     {
       "id": "HOME-HP10-B041",
@@ -3537,7 +3729,7 @@
       "chapter": "HP10",
       "text": "V2.2修订",
       "sourceKey": "2c83181cfab4b4f26f81f07e",
-      "sourceLine": 620
+      "sourceLine": 637
     },
     {
       "id": "HOME-HP10-B042",
@@ -3545,7 +3737,7 @@
       "chapter": "HP10",
       "text": "首页只呈现实盘，唯一全局修复入口",
       "sourceKey": "863ba718146a85c561cce6f6",
-      "sourceLine": 620
+      "sourceLine": 637
     },
     {
       "id": "HOME-HP10-B043",
@@ -3553,7 +3745,7 @@
       "chapter": "HP10",
       "text": "图表读数辅助",
       "sourceKey": "74d45a4f016acdbb76de16ff",
-      "sourceLine": 621
+      "sourceLine": 638
     },
     {
       "id": "HOME-HP10-B044",
@@ -3561,7 +3753,7 @@
       "chapter": "HP10",
       "text": "V2.2新增；2026-10-18确认配色",
       "sourceKey": "50b9a786d2c8f69f817966ee",
-      "sourceLine": 621
+      "sourceLine": 638
     },
     {
       "id": "HOME-HP10-B045",
@@ -3569,7 +3761,7 @@
       "chapter": "HP10",
       "text": "网格、双向十字线、轴端标签、缺口说明与边缘避让；零线#A8B6CB、网格#283448",
       "sourceKey": "07ef4db586cc1354dff537fd",
-      "sourceLine": 621
+      "sourceLine": 638
     },
     {
       "id": "HOME-HP10-B046",
@@ -3577,7 +3769,7 @@
       "chapter": "HP10",
       "text": "V2.3 视觉样例与对齐",
       "sourceKey": "5ebe2cb9bae3228c3135bb3a",
-      "sourceLine": 622
+      "sourceLine": 639
     },
     {
       "id": "HOME-HP10-B047",
@@ -3585,7 +3777,7 @@
       "chapter": "HP10",
       "text": "本轮评论5–20补充",
       "sourceKey": "2aab04a746c6450ea78f08e8",
-      "sourceLine": 622
+      "sourceLine": 639
     },
     {
       "id": "HOME-HP10-B050",
@@ -3593,7 +3785,7 @@
       "chapter": "HP10",
       "text": "补充布局与控件局部样例；全局按钮文字居中，输入左对齐、数值表头右对齐，名称与说明左对齐；颜色 token 落到实际控件",
       "sourceKey": "c74db698af217b53737c376e",
-      "sourceLine": 622
+      "sourceLine": 639
     },
     {
       "id": "HOME-HP10-B107",
@@ -3601,7 +3793,7 @@
       "chapter": "HP10",
       "text": "V2.4.1 D01–D17",
       "sourceKey": "13dc9a41721ca3125b3ff037",
-      "sourceLine": 623
+      "sourceLine": 640
     },
     {
       "id": "HOME-HP10-B108",
@@ -3609,7 +3801,7 @@
       "chapter": "HP10",
       "text": "2026-10-20—21 评论、决定与第五轮原型",
       "sourceKey": "21524b17255234e61e9577ce",
-      "sourceLine": 623
+      "sourceLine": 640
     },
     {
       "id": "HOME-HP10-B109",
@@ -3617,7 +3809,31 @@
       "chapter": "HP10",
       "text": "表头可见字形右缘、持仓 C 方案、18/16px 标题层级、公共内容边界、图表单位与粒度、状态背景与说明、胜率 A/窄 B、贡献筛选密度、贡献几何与同号同色，以及图表/表格/KPI 公共样例；章节二稳定锚点为 chapter-HP11",
       "sourceKey": "847bda73e9b2633f4a9435b8",
-      "sourceLine": 623
+      "sourceLine": 640
+    },
+    {
+      "id": "HOME-HP10-B066",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "V2.4.1 评论修复",
+      "sourceKey": "19696bef3b99a230d6db3eba",
+      "sourceLine": 641
+    },
+    {
+      "id": "HOME-HP10-B067",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "2026-10-22，C01—C10",
+      "sourceKey": "60e0c552bcf6c9251d085374",
+      "sourceLine": 641
+    },
+    {
+      "id": "HOME-HP10-B068",
+      "kind": "tablecell",
+      "chapter": "HP10",
+      "text": "将批准的表头字形校准固化到图稿；提示框按内容容纳；交易库动线合章；共享控件一致；回合占比保留2位小数，窄栏换行",
+      "sourceKey": "735c0988ae228dad5e6e911c",
+      "sourceLine": 641
     },
     {
       "id": "HOME-HP10-B049",
@@ -3625,7 +3841,7 @@
       "chapter": "HP10",
       "text": "日期详情入口",
       "sourceKey": "9149700e24fa92f387daf941",
-      "sourceLine": 624
+      "sourceLine": 642
     },
     {
       "id": "HOME-HP10-B053",
@@ -3633,7 +3849,7 @@
       "chapter": "HP10",
       "text": "V2.2修订",
       "sourceKey": "2c83181cfab4b4f26f81f07e",
-      "sourceLine": 624
+      "sourceLine": 642
     },
     {
       "id": "HOME-HP10-B051",
@@ -3641,7 +3857,7 @@
       "chapter": "HP10",
       "text": "移除“查看该日敞口”，保留全部日期详情字段",
       "sourceKey": "5136de4aa5d6b3ac92127723",
-      "sourceLine": 624
+      "sourceLine": 642
     },
     {
       "id": "HOME-HP10-B052",
@@ -3649,7 +3865,7 @@
       "chapter": "HP10",
       "text": "筛选、价格与对齐",
       "sourceKey": "5c24050816b8edcccad4b3ec",
-      "sourceLine": 625
+      "sourceLine": 643
     },
     {
       "id": "HOME-HP10-B056",
@@ -3657,7 +3873,7 @@
       "chapter": "HP10",
       "text": "V2.2修订",
       "sourceKey": "2c83181cfab4b4f26f81f07e",
-      "sourceLine": 625
+      "sourceLine": 643
     },
     {
       "id": "HOME-HP10-B054",
@@ -3665,7 +3881,7 @@
       "chapter": "HP10",
       "text": "恢复默认独立一行；价格两位小数；数值标题和内容共用右边界",
       "sourceKey": "f6ff4354eefb145b001f44b1",
-      "sourceLine": 625
+      "sourceLine": 643
     },
     {
       "id": "HOME-HP10-B055",
@@ -3673,15 +3889,15 @@
       "chapter": "HP10",
       "text": "交易表工具区",
       "sourceKey": "b7dda2e51416718bab60659a",
-      "sourceLine": 626
+      "sourceLine": 644
     },
     {
-      "id": "HOME-HP10-B063",
+      "id": "HOME-HP10-B061",
       "kind": "tablecell",
       "chapter": "HP10",
       "text": "V2.2修订",
       "sourceKey": "2c83181cfab4b4f26f81f07e",
-      "sourceLine": 626
+      "sourceLine": 644
     },
     {
       "id": "HOME-HP10-B057",
@@ -3689,7 +3905,7 @@
       "chapter": "HP10",
       "text": "搜索和刷新独立占位，空态图标与文字分开",
       "sourceKey": "c0c30e28365850e012eba75b",
-      "sourceLine": 626
+      "sourceLine": 644
     },
     {
       "id": "HOME-HP10-B058",
@@ -3697,7 +3913,7 @@
       "chapter": "HP10",
       "text": "本次文档组织",
       "sourceKey": "af15524b78f286442c73e2b1",
-      "sourceLine": 627
+      "sourceLine": 645
     },
     {
       "id": "HOME-HP10-B059",
@@ -3705,7 +3921,7 @@
       "chapter": "HP10",
       "text": "V2.2编辑整理",
       "sourceKey": "e2ba830eb09134439f67e851",
-      "sourceLine": 627
+      "sourceLine": 645
     },
     {
       "id": "HOME-HP10-B060",
@@ -3713,7 +3929,7 @@
       "chapter": "HP10",
       "text": "从任务与原则起笔，按模块完整叙述；版本记录集中到附录，设计规则不变",
       "sourceKey": "d69f50560449d8e0c6e93a86",
-      "sourceLine": 627
+      "sourceLine": 645
     },
     {
       "id": "HOME-HP10-B126",
@@ -3721,7 +3937,7 @@
       "chapter": "HP10",
       "text": "未决项",
       "sourceKey": "45c1f9348fff1f031e0fe3f7",
-      "sourceLine": 629
+      "sourceLine": 647
     },
     {
       "id": "HOME-HP10-B062",
@@ -3729,7 +3945,7 @@
       "chapter": "HP10",
       "text": "当前使用的规则",
       "sourceKey": "fa3318ca5ff09283858cc6ce",
-      "sourceLine": 629
+      "sourceLine": 647
     },
     {
       "id": "HOME-HP10-B128",
@@ -3737,7 +3953,7 @@
       "chapter": "HP10",
       "text": "边界",
       "sourceKey": "ce59cf9859d557fcb98d09e6",
-      "sourceLine": 629
+      "sourceLine": 647
     },
     {
       "id": "HOME-HP10-B129",
@@ -3745,7 +3961,7 @@
       "chapter": "HP10",
       "text": "O02 状态徽章是否进一步紧凑",
       "sourceKey": "7f690eec0fd103ff7afc7028",
-      "sourceLine": 631
+      "sourceLine": 649
     },
     {
       "id": "HOME-HP10-B130",
@@ -3753,7 +3969,7 @@
       "chapter": "HP10",
       "text": "继续使用24px高",
       "sourceKey": "829fc6da4de5dcbe60b8b546",
-      "sourceLine": 631
+      "sourceLine": 649
     },
     {
       "id": "HOME-HP10-B131",
@@ -3761,15 +3977,15 @@
       "chapter": "HP10",
       "text": "20px高、自适应宽方案仍待确认；不改变本版已确认的功能区、图表和贡献布局",
       "sourceKey": "cbaf535aa831fbfb55a9cb3e",
-      "sourceLine": 631
+      "sourceLine": 649
     },
     {
-      "id": "HOME-HP10-B061",
+      "id": "HOME-HP10-B106",
       "kind": "paragraph",
       "chapter": "HP10",
-      "text": "历史修订依据 · 历史21条评论与图稿 · 旧轮评论回应 · 当前未决项 · V2.4.1 评论整合记录 · 整合报告",
-      "sourceKey": "9674a9bb9ea208bc0b85dd2c",
-      "sourceLine": 633
+      "text": "本轮排查与修复验收 · 历史修订依据 · 历史21条评论与图稿 · 旧轮评论回应 · 当前未决项 · V2.4.1 评论整合记录 · 整合报告",
+      "sourceKey": "64eefe20113381bf0f3f37d0",
+      "sourceLine": 651
     },
     {
       "id": "HOME-HP10-B071",
@@ -3777,7 +3993,7 @@
       "chapter": "HP10",
       "text": "文档中的对齐辅助层仅供检查表头、列宽和边界，默认关闭，不属于产品界面，也不应复制到视觉基线。",
       "sourceKey": "929f34bf4b9171b188426f07",
-      "sourceLine": 635
+      "sourceLine": 653
     },
     {
       "id": "HOME-HP10-B133",
@@ -3785,7 +4001,7 @@
       "chapter": "HP10",
       "text": "正文和 V2.4.1 展示图统一使用 C：标题右侧并列汇总。搜索与导出保持独立空间，正常金额、大额、1280px 和1440px 状态均沿用同一结构。A/B 仅作为历史候选保留，不能作为当前默认。",
       "sourceKey": "9052544c3c66a490594fc968",
-      "sourceLine": 639
+      "sourceLine": 657
     },
     {
       "id": "HOME-HP10-B089",
@@ -3793,7 +4009,7 @@
       "chapter": "HP10",
       "text": "方案",
       "sourceKey": "f24dd1cce8f36b70a8921641",
-      "sourceLine": 641
+      "sourceLine": 659
     },
     {
       "id": "HOME-HP10-B112",
@@ -3801,15 +4017,15 @@
       "chapter": "HP10",
       "text": "优点",
       "sourceKey": "f804998bea7b89e452435a46",
-      "sourceLine": 641
+      "sourceLine": 659
     },
     {
-      "id": "HOME-HP10-B064",
+      "id": "HOME-HP10-B063",
       "kind": "tablecell",
       "chapter": "HP10",
       "text": "取舍",
       "sourceKey": "d4d0ef78d3d6ba0bcaae9139",
-      "sourceLine": 641
+      "sourceLine": 659
     },
     {
       "id": "HOME-HP10-B114",
@@ -3817,7 +4033,7 @@
       "chapter": "HP10",
       "text": "A 标题内副行",
       "sourceKey": "da6914f987a00364a9c5dfba",
-      "sourceLine": 643
+      "sourceLine": 661
     },
     {
       "id": "HOME-HP10-B115",
@@ -3825,7 +4041,7 @@
       "chapter": "HP10",
       "text": "延续已有阅读顺序，占用较少空间",
       "sourceKey": "6616fd55280c863676cb6395",
-      "sourceLine": 643
+      "sourceLine": 661
     },
     {
       "id": "HOME-HP10-B116",
@@ -3833,7 +4049,7 @@
       "chapter": "HP10",
       "text": "长金额需要保持与工具栏的间距",
       "sourceKey": "a3b7561c9b5554fd6a437005",
-      "sourceLine": 643
+      "sourceLine": 661
     },
     {
       "id": "HOME-HP10-B117",
@@ -3841,7 +4057,7 @@
       "chapter": "HP10",
       "text": "B 独立紧凑栏",
       "sourceKey": "f9cab82217ad9af5344ba964",
-      "sourceLine": 644
+      "sourceLine": 662
     },
     {
       "id": "HOME-HP10-B118",
@@ -3849,7 +4065,7 @@
       "chapter": "HP10",
       "text": "汇总与标题、操作各自清晰",
       "sourceKey": "0fc379237ac69c3213175d8d",
-      "sourceLine": 644
+      "sourceLine": 662
     },
     {
       "id": "HOME-HP10-B119",
@@ -3857,7 +4073,7 @@
       "chapter": "HP10",
       "text": "增加一行高度",
       "sourceKey": "d0cf4a0bf3955a53d0319a2c",
-      "sourceLine": 644
+      "sourceLine": 662
     },
     {
       "id": "HOME-HP10-B120",
@@ -3865,7 +4081,7 @@
       "chapter": "HP10",
       "text": "C 标题右侧并列",
       "sourceKey": "6056bbc214de9111bef887af",
-      "sourceLine": 645
+      "sourceLine": 663
     },
     {
       "id": "HOME-HP10-B121",
@@ -3873,7 +4089,7 @@
       "chapter": "HP10",
       "text": "汇总醒目，纵向较紧凑",
       "sourceKey": "5f9fdbc0539e3e35727c3943",
-      "sourceLine": 645
+      "sourceLine": 663
     },
     {
       "id": "HOME-HP10-B122",
@@ -3881,7 +4097,7 @@
       "chapter": "HP10",
       "text": "横向空间更紧，需要检查较窄桌面",
       "sourceKey": "111d496c0f0dc4dc4da77b6c",
-      "sourceLine": 645
+      "sourceLine": 663
     },
     {
       "id": "HOME-HP10-B072",
@@ -3889,7 +4105,7 @@
       "chapter": "HP10",
       "text": "本附录保存实现所需的精确约定，避免把接口参数写进界面文案。",
       "sourceKey": "b21f2754ab88f97a02004415",
-      "sourceLine": 676
+      "sourceLine": 694
     },
     {
       "id": "HOME-HP10-B073",
@@ -3897,7 +4113,7 @@
       "chapter": "HP10",
       "text": "项目",
       "sourceKey": "8c1b6e60498e11c5e140a231",
-      "sourceLine": 678
+      "sourceLine": 696
     },
     {
       "id": "HOME-HP10-B074",
@@ -3905,7 +4121,7 @@
       "chapter": "HP10",
       "text": "约定",
       "sourceKey": "e3a5e6456b27c24042055b46",
-      "sourceLine": 678
+      "sourceLine": 696
     },
     {
       "id": "HOME-HP10-B075",
@@ -3913,7 +4129,7 @@
       "chapter": "HP10",
       "text": "按日期进入交易库",
       "sourceKey": "c22d70222eb65610caa047a4",
-      "sourceLine": 680
+      "sourceLine": 698
     },
     {
       "id": "HOME-HP10-B076",
@@ -3921,15 +4137,15 @@
       "chapter": "HP10",
       "text": "/trades?date=YYYY-MM-DD&market=<market>&scope=<scope>&accounts=<accounts>",
       "sourceKey": "88e969d1d7bab458e5c6c40b",
-      "sourceLine": 680
+      "sourceLine": 698
     },
     {
-      "id": "HOME-HP10-B065",
+      "id": "HOME-HP10-B064",
       "kind": "tablecell",
       "chapter": "HP10",
       "text": "进入待复盘",
       "sourceKey": "4467c3f45559cd9eeb116405",
-      "sourceLine": 681
+      "sourceLine": 699
     },
     {
       "id": "HOME-HP10-B078",
@@ -3937,7 +4153,7 @@
       "chapter": "HP10",
       "text": "/trades?queue=pending-review&rangeMode=<mode>&from=<YYYY-MM-DD>&to=<YYYY-MM-DD>&market=<market>&scope=live&accounts=<accounts>；传递首页已应用范围，全部范围使用rangeMode=all且不带起止日期",
       "sourceKey": "28ccd5f410865ce123b8ed6d",
-      "sourceLine": 681
+      "sourceLine": 699
     },
     {
       "id": "HOME-HP10-B079",
@@ -3945,7 +4161,7 @@
       "chapter": "HP10",
       "text": "按标的进入交易库",
       "sourceKey": "e9f2ec43b153476f2255e6db",
-      "sourceLine": 682
+      "sourceLine": 700
     },
     {
       "id": "HOME-HP10-B080",
@@ -3953,7 +4169,7 @@
       "chapter": "HP10",
       "text": "/trades?symbol=<symbolIdentity>&rangeMode=<mode>&from=<YYYY-MM-DD>&to=<YYYY-MM-DD>&market=<market>&scope=live&accounts=<accounts>；标的身份包含交易所与代码，必要时包含资产类别；目标为该标的的交易集合，不代入固定首行",
       "sourceKey": "48359533d818edd9970aa496",
-      "sourceLine": 682
+      "sourceLine": 700
     },
     {
       "id": "HOME-HP10-B081",
@@ -3961,7 +4177,7 @@
       "chapter": "HP10",
       "text": "范围重建",
       "sourceKey": "a6623e8cac78173cbd86a537",
-      "sourceLine": 683
+      "sourceLine": 701
     },
     {
       "id": "HOME-HP10-B082",
@@ -3969,7 +4185,7 @@
       "chapter": "HP10",
       "text": "刷新与直达按URL重建已应用范围；自然快捷项交接实际起止日期。非法或不完整范围显示可修正提示，不静默扩大全部；来源快照不能替代目标页范围",
       "sourceKey": "1381969bf38a09856fd3e6a6",
-      "sourceLine": 683
+      "sourceLine": 701
     },
     {
       "id": "HOME-HP10-B083",
@@ -3977,7 +4193,7 @@
       "chapter": "HP10",
       "text": "市场参数",
       "sourceKey": "74d33f34a362ea7990884455",
-      "sourceLine": 684
+      "sourceLine": 702
     },
     {
       "id": "HOME-HP10-B084",
@@ -3985,7 +4201,7 @@
       "chapter": "HP10",
       "text": "all/a/hk/us；非法值回all并提示",
       "sourceKey": "c8719e3eaf575ac566cfb9e9",
-      "sourceLine": 684
+      "sourceLine": 702
     },
     {
       "id": "HOME-HP10-B085",
@@ -3993,7 +4209,7 @@
       "chapter": "HP10",
       "text": "交易范围参数",
       "sourceKey": "2fd6a6d7e1e581c49459a72a",
-      "sourceLine": 685
+      "sourceLine": 703
     },
     {
       "id": "HOME-HP10-B086",
@@ -4001,7 +4217,7 @@
       "chapter": "HP10",
       "text": "live/sim；首页只产生live",
       "sourceKey": "c15f98eac669d054a74a02ac",
-      "sourceLine": 685
+      "sourceLine": 703
     },
     {
       "id": "HOME-HP10-B087",
@@ -4009,7 +4225,7 @@
       "chapter": "HP10",
       "text": "账户参数",
       "sourceKey": "81bdcfd90eed4879731a9b83",
-      "sourceLine": 686
+      "sourceLine": 704
     },
     {
       "id": "HOME-HP10-B088",
@@ -4017,15 +4233,15 @@
       "chapter": "HP10",
       "text": "必须显式传递；刷新与直达以URL参数为准",
       "sourceKey": "81cd07023b5490f418381856",
-      "sourceLine": 686
+      "sourceLine": 704
     },
     {
-      "id": "HOME-HP10-B106",
+      "id": "HOME-HP10-B065",
       "kind": "tablecell",
       "chapter": "HP10",
       "text": "返回首页",
       "sourceKey": "f02c45ab416e9b014db36b8e",
-      "sourceLine": 687
+      "sourceLine": 705
     },
     {
       "id": "HOME-HP10-B090",
@@ -4033,7 +4249,7 @@
       "chapter": "HP10",
       "text": "/home，恢复来源上下文并重新读取数据；快照包含当前期间、历史范围、全局市场、账户及附加筛选，持仓搜索/排序/页码，贡献当前模式及两模式各自的分类/排序/下钻/页码，以及滚动和原触发焦点。原对象消失只回退到来源容器标题，不清空仍有效条件",
       "sourceKey": "ad68b673fccf04d6145b1bbe",
-      "sourceLine": 687
+      "sourceLine": 705
     },
     {
       "id": "HOME-HP10-B091",
@@ -4041,7 +4257,7 @@
       "chapter": "HP10",
       "text": "请求一致性",
       "sourceKey": "107133239fd0deaf5b15ffe9",
-      "sourceLine": 688
+      "sourceLine": 706
     },
     {
       "id": "HOME-HP10-B092",
@@ -4049,7 +4265,7 @@
       "chapter": "HP10",
       "text": "递增请求编号（generation）与完整范围标识（scope key）同时匹配才允许更新；取消旧请求并忽略迟到结果；重试创建新编号",
       "sourceKey": "517b4850418af6c4259cf9a7",
-      "sourceLine": 688
+      "sourceLine": 706
     },
     {
       "id": "HOME-HP10-B093",
@@ -4057,7 +4273,7 @@
       "chapter": "HP10",
       "text": "输入法",
       "sourceKey": "eb7b13867518f9393a165294",
-      "sourceLine": 689
+      "sourceLine": 707
     },
     {
       "id": "HOME-HP10-B094",
@@ -4065,7 +4281,7 @@
       "chapter": "HP10",
       "text": "compositionstart至compositionend之间不提交查询；结束后提交最新完整词",
       "sourceKey": "34d7e215834bb27aa0bca9a4",
-      "sourceLine": 689
+      "sourceLine": 707
     },
     {
       "id": "HOME-HP10-B095",
@@ -4073,7 +4289,7 @@
       "chapter": "HP10",
       "text": "业务时区",
       "sourceKey": "046ab182dd88e555923b7ed4",
-      "sourceLine": 690
+      "sourceLine": 708
     },
     {
       "id": "HOME-HP10-B096",
@@ -4081,7 +4297,7 @@
       "chapter": "HP10",
       "text": "Asia/Shanghai",
       "sourceKey": "7cd241ea71fc3a009775605e",
-      "sourceLine": 690
+      "sourceLine": 708
     },
     {
       "id": "HOME-HP10-B097",
@@ -4089,7 +4305,7 @@
       "chapter": "HP10",
       "text": "字体",
       "sourceKey": "4f581a053a615ecd1a28b77a",
-      "sourceLine": 691
+      "sourceLine": 709
     },
     {
       "id": "HOME-HP10-B098",
@@ -4097,7 +4313,7 @@
       "chapter": "HP10",
       "text": "ui-sans-serif, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif；数字启用tabular-nums",
       "sourceKey": "1fc71dfce3030c43543708fa",
-      "sourceLine": 691
+      "sourceLine": 709
     },
     {
       "id": "HOME-HP10-B099",
@@ -4105,7 +4321,7 @@
       "chapter": "HP10",
       "text": "浮层动效",
       "sourceKey": "57cae3f470d2ee9ae2dcaea7",
-      "sourceLine": 692
+      "sourceLine": 710
     },
     {
       "id": "HOME-HP10-B100",
@@ -4113,7 +4329,7 @@
       "chapter": "HP10",
       "text": "translateY(-4px)到0及透明度变化，160ms ease-out；关闭反向",
       "sourceKey": "3fbe0954f76fac4dac00f8b7",
-      "sourceLine": 692
+      "sourceLine": 710
     },
     {
       "id": "HOME-HP10-B101",
@@ -4121,7 +4337,7 @@
       "chapter": "HP10",
       "text": "减弱动效",
       "sourceKey": "a5b7ca3cb389125b9c414874",
-      "sourceLine": 693
+      "sourceLine": 711
     },
     {
       "id": "HOME-HP10-B102",
@@ -4129,7 +4345,7 @@
       "chapter": "HP10",
       "text": "prefers-reduced-motion时直接呈现最终态",
       "sourceKey": "b583f1314808c0c38a0c95e8",
-      "sourceLine": 693
+      "sourceLine": 711
     },
     {
       "id": "HOME-HP10-B103",
@@ -4137,7 +4353,7 @@
       "chapter": "HP10",
       "text": "图标绘制与实现",
       "sourceKey": "0d86a91ec56aabcb435126d3",
-      "sourceLine": 694
+      "sourceLine": 712
     },
     {
       "id": "HOME-HP10-B104",
@@ -4145,7 +4361,7 @@
       "chapter": "HP10",
       "text": "部分分镜SVG用24×24坐标绘制路径；产品通用图标仍遵循16×16坐标规范，页头搜索/筛选为24×24例外。分镜源文件不能直接当作产品图标库",
       "sourceKey": "9af7e7aeff810e87ee381420",
-      "sourceLine": 694
+      "sourceLine": 712
     },
     {
       "id": "HOME-HP10-B127",
@@ -4153,7 +4369,7 @@
       "chapter": "HP10",
       "text": "完整控件状态手册 · 当前控件状态数据 · 图稿索引",
       "sourceKey": "15e7ade2d1faff9c5c349527",
-      "sourceLine": 696
+      "sourceLine": 714
     }
   ],
   "images": [
@@ -4207,11 +4423,11 @@
     },
     {
       "id": "atoms",
-      "occurrenceId": "atoms@580",
+      "occurrenceId": "atoms@597",
       "sharedImageId": "atoms",
       "src": "source/images/atoms.svg",
       "chapter": "HP08",
-      "sourceLine": 580
+      "sourceLine": 597
     },
     {
       "id": "home-1440",
@@ -4763,7 +4979,7 @@
       "sharedImageId": "hcr06-final-sim-ab",
       "src": "source/images/hcr06-final-sim-ab.svg",
       "chapter": "HP07",
-      "sourceLine": 487
+      "sourceLine": 500
     },
     {
       "id": "hcr06-final-rounds-a",
@@ -4771,7 +4987,7 @@
       "sharedImageId": "hcr06-final-rounds-a",
       "src": "source/images/hcr06-final-rounds-a.svg",
       "chapter": "HP07",
-      "sourceLine": 487
+      "sourceLine": 500
     },
     {
       "id": "hcr06-final-replay-a1",
@@ -4779,7 +4995,7 @@
       "sharedImageId": "hcr06-final-replay-a1",
       "src": "source/images/hcr06-final-replay-a1.svg",
       "chapter": "HP07",
-      "sourceLine": 487
+      "sourceLine": 500
     },
     {
       "id": "hcr06-final-replay-a2",
@@ -4787,7 +5003,7 @@
       "sharedImageId": "hcr06-final-replay-a2",
       "src": "source/images/hcr06-final-replay-a2.svg",
       "chapter": "HP07",
-      "sourceLine": 487
+      "sourceLine": 500
     },
     {
       "id": "hcr06-final-replay-b1",
@@ -4795,7 +5011,7 @@
       "sharedImageId": "hcr06-final-replay-b1",
       "src": "source/images/hcr06-final-replay-b1.svg",
       "chapter": "HP07",
-      "sourceLine": 487
+      "sourceLine": 500
     },
     {
       "id": "01-live-normal",
@@ -4803,7 +5019,7 @@
       "sharedImageId": "01-live-normal",
       "src": "source/images/01-live-normal.svg",
       "chapter": "HP07",
-      "sourceLine": 497
+      "sourceLine": 510
     },
     {
       "id": "02-simulation-normal",
@@ -4811,7 +5027,7 @@
       "sharedImageId": "02-simulation-normal",
       "src": "source/images/02-simulation-normal.svg",
       "chapter": "HP07",
-      "sourceLine": 497
+      "sourceLine": 510
     },
     {
       "id": "03-distribution-selected",
@@ -4819,7 +5035,7 @@
       "sharedImageId": "03-distribution-selected",
       "src": "source/images/03-distribution-selected.svg",
       "chapter": "HP07",
-      "sourceLine": 497
+      "sourceLine": 510
     },
     {
       "id": "04-return",
@@ -4827,7 +5043,7 @@
       "sharedImageId": "04-return",
       "src": "source/images/04-return.svg",
       "chapter": "HP07",
-      "sourceLine": 497
+      "sourceLine": 510
     },
     {
       "id": "05-loading",
@@ -4835,7 +5051,7 @@
       "sharedImageId": "05-loading",
       "src": "source/images/05-loading.svg",
       "chapter": "HP07",
-      "sourceLine": 497
+      "sourceLine": 510
     },
     {
       "id": "06-empty",
@@ -4843,7 +5059,7 @@
       "sharedImageId": "06-empty",
       "src": "source/images/06-empty.svg",
       "chapter": "HP07",
-      "sourceLine": 497
+      "sourceLine": 510
     },
     {
       "id": "07-error",
@@ -4851,7 +5067,7 @@
       "sharedImageId": "07-error",
       "src": "source/images/07-error.svg",
       "chapter": "HP07",
-      "sourceLine": 497
+      "sourceLine": 510
     },
     {
       "id": "08-extreme",
@@ -4859,7 +5075,7 @@
       "sharedImageId": "08-extreme",
       "src": "source/images/08-extreme.svg",
       "chapter": "HP07",
-      "sourceLine": 497
+      "sourceLine": 510
     },
     {
       "id": "09-missing-input",
@@ -4867,7 +5083,7 @@
       "sharedImageId": "09-missing-input",
       "src": "source/images/09-missing-input.svg",
       "chapter": "HP07",
-      "sourceLine": 497
+      "sourceLine": 510
     },
     {
       "id": "empty",
@@ -4875,7 +5091,7 @@
       "sharedImageId": "empty",
       "src": "source/images/empty.svg",
       "chapter": "HP09",
-      "sourceLine": 527
+      "sourceLine": 540
     },
     {
       "id": "empty--zero-holdings",
@@ -4883,7 +5099,7 @@
       "sharedImageId": "empty--zero-holdings",
       "src": "source/images/empty--zero-holdings.svg",
       "chapter": "HP09",
-      "sourceLine": 527
+      "sourceLine": 540
     },
     {
       "id": "loading",
@@ -4891,7 +5107,7 @@
       "sharedImageId": "loading",
       "src": "source/images/loading.svg",
       "chapter": "HP09",
-      "sourceLine": 527
+      "sourceLine": 540
     },
     {
       "id": "loading--stale-data",
@@ -4899,7 +5115,7 @@
       "sharedImageId": "loading--stale-data",
       "src": "source/images/loading--stale-data.svg",
       "chapter": "HP09",
-      "sourceLine": 527
+      "sourceLine": 540
     },
     {
       "id": "error",
@@ -4907,7 +5123,7 @@
       "sharedImageId": "error",
       "src": "source/images/error.svg",
       "chapter": "HP09",
-      "sourceLine": 527
+      "sourceLine": 540
     },
     {
       "id": "error--update-failure",
@@ -4915,7 +5131,7 @@
       "sharedImageId": "error--update-failure",
       "src": "source/images/error--update-failure.svg",
       "chapter": "HP09",
-      "sourceLine": 527
+      "sourceLine": 540
     },
     {
       "id": "repair",
@@ -4923,7 +5139,7 @@
       "sharedImageId": "repair",
       "src": "source/images/repair.svg",
       "chapter": "HP09",
-      "sourceLine": 527
+      "sourceLine": 540
     },
     {
       "id": "holding-option-A-normal-1440",
@@ -4931,7 +5147,7 @@
       "sharedImageId": "holding-option-A-normal-1440",
       "src": "source/images/holding-option-A-normal-1440.svg",
       "chapter": "HP10",
-      "sourceLine": 649
+      "sourceLine": 667
     },
     {
       "id": "holding-option-A-normal-1280",
@@ -4939,7 +5155,7 @@
       "sharedImageId": "holding-option-A-normal-1280",
       "src": "source/images/holding-option-A-normal-1280.svg",
       "chapter": "HP10",
-      "sourceLine": 649
+      "sourceLine": 667
     },
     {
       "id": "holding-option-A-large-1440",
@@ -4947,7 +5163,7 @@
       "sharedImageId": "holding-option-A-large-1440",
       "src": "source/images/holding-option-A-large-1440.svg",
       "chapter": "HP10",
-      "sourceLine": 649
+      "sourceLine": 667
     },
     {
       "id": "holding-option-A-large-1280",
@@ -4955,7 +5171,7 @@
       "sharedImageId": "holding-option-A-large-1280",
       "src": "source/images/holding-option-A-large-1280.svg",
       "chapter": "HP10",
-      "sourceLine": 649
+      "sourceLine": 667
     },
     {
       "id": "holding-option-B-normal-1440",
@@ -4963,7 +5179,7 @@
       "sharedImageId": "holding-option-B-normal-1440",
       "src": "source/images/holding-option-B-normal-1440.svg",
       "chapter": "HP10",
-      "sourceLine": 658
+      "sourceLine": 676
     },
     {
       "id": "holding-option-B-normal-1280",
@@ -4971,7 +5187,7 @@
       "sharedImageId": "holding-option-B-normal-1280",
       "src": "source/images/holding-option-B-normal-1280.svg",
       "chapter": "HP10",
-      "sourceLine": 658
+      "sourceLine": 676
     },
     {
       "id": "holding-option-B-large-1440",
@@ -4979,7 +5195,7 @@
       "sharedImageId": "holding-option-B-large-1440",
       "src": "source/images/holding-option-B-large-1440.svg",
       "chapter": "HP10",
-      "sourceLine": 658
+      "sourceLine": 676
     },
     {
       "id": "holding-option-B-large-1280",
@@ -4987,7 +5203,7 @@
       "sharedImageId": "holding-option-B-large-1280",
       "src": "source/images/holding-option-B-large-1280.svg",
       "chapter": "HP10",
-      "sourceLine": 658
+      "sourceLine": 676
     },
     {
       "id": "holding-option-C-normal-1440",
@@ -4995,7 +5211,7 @@
       "sharedImageId": "holding-option-C-normal-1440",
       "src": "source/images/holding-option-C-normal-1440.svg",
       "chapter": "HP10",
-      "sourceLine": 667
+      "sourceLine": 685
     },
     {
       "id": "holding-option-C-normal-1280",
@@ -5003,7 +5219,7 @@
       "sharedImageId": "holding-option-C-normal-1280",
       "src": "source/images/holding-option-C-normal-1280.svg",
       "chapter": "HP10",
-      "sourceLine": 667
+      "sourceLine": 685
     },
     {
       "id": "holding-option-C-large-1440",
@@ -5011,7 +5227,7 @@
       "sharedImageId": "holding-option-C-large-1440",
       "src": "source/images/holding-option-C-large-1440.svg",
       "chapter": "HP10",
-      "sourceLine": 667
+      "sourceLine": 685
     },
     {
       "id": "holding-option-C-large-1280",
@@ -5019,7 +5235,7 @@
       "sharedImageId": "holding-option-C-large-1280",
       "src": "source/images/holding-option-C-large-1280.svg",
       "chapter": "HP10",
-      "sourceLine": 667
+      "sourceLine": 685
     }
   ]
 }

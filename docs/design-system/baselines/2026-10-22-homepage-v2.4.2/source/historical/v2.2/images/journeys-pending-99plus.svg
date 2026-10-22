@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="220" viewBox="0 0 480 220" role="img" aria-label="待复盘入口 · 数量99以上">
+  <style>text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-variant-numeric:tabular-nums}</style>
+  <rect width="480" height="220" fill="#0B1019"/>
+  <text x="24" y="30" font-size="16" fill="#E6EDF7" font-weight="600">待复盘入口 · 99+</text>
+  <text x="24" y="52" font-size="11" fill="#A8B6CB">首页 → 带首页已应用范围的待复盘队列 → 返回来源</text>
+  <rect x="24" y="76" width="432" height="104" rx="8" fill="#111A26" stroke="#283448"/>
+  <text x="44" y="108" font-size="14" fill="#E6EDF7" font-weight="600">我的交易室</text>
+  <text x="142" y="108" font-size="13" fill="#6CA8FF" font-weight="600">首页</text>
+  <text x="206" y="108" font-size="13" fill="#A8B6CB">待复盘</text>
+  <rect x="258" y="91" width="30" height="24" rx="8" fill="#162233"/>
+  <text x="273" y="108" text-anchor="middle" font-size="11" fill="#6CA8FF" font-weight="600">99+</text>
+  <text x="44" y="140" font-size="13" fill="#E6EDF7">待复盘队列</text>
+  <text x="44" y="162" font-size="11" fill="#A8B6CB">超过99条：显示紧凑“99+”，不扩展徽章宽度语义</text>
+  <text x="328" y="162" font-size="11" fill="#6CA8FF">返回来源</text>
+</svg>

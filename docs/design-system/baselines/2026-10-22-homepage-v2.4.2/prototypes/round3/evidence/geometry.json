@@ -1,0 +1,216 @@
+{
+  "d11": [
+    {
+      "before": {
+        "h": "28px",
+        "top": "4px"
+      },
+      "font": "14px / 28px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", sans-serif",
+      "rect": {
+        "bottom": 511.921875,
+        "height": 36,
+        "left": 75,
+        "right": 127,
+        "top": 475.921875,
+        "width": 52,
+        "x": 75,
+        "y": 475.921875
+      },
+      "text": "做多"
+    },
+    {
+      "before": {
+        "h": "28px",
+        "top": "4px"
+      },
+      "font": "14px / 28px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", sans-serif",
+      "rect": {
+        "bottom": 511.921875,
+        "height": 36,
+        "left": 127,
+        "right": 179,
+        "top": 475.921875,
+        "width": 52,
+        "x": 127,
+        "y": 475.921875
+      },
+      "text": "做空"
+    },
+    {
+      "before": {
+        "h": "28px",
+        "top": "4px"
+      },
+      "font": "14px / 28px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", sans-serif",
+      "rect": {
+        "bottom": 511.921875,
+        "height": 36,
+        "left": 179,
+        "right": 231,
+        "top": 475.921875,
+        "width": 52,
+        "x": 179,
+        "y": 475.921875
+      },
+      "text": "打新"
+    },
+    {
+      "before": {
+        "h": "28px",
+        "top": "4px"
+      },
+      "font": "14px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", sans-serif",
+      "rect": {
+        "bottom": 511.921875,
+        "height": 36,
+        "left": 275,
+        "right": 389.578125,
+        "top": 475.921875,
+        "width": 114.578125,
+        "x": 275,
+        "y": 475.921875
+      },
+      "text": "盈利最高 ↓"
+    },
+    {
+      "before": {
+        "h": "auto",
+        "top": "auto"
+      },
+      "font": "14px / 20.3px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", sans-serif",
+      "rect": {
+        "bottom": 511.921875,
+        "height": 36,
+        "left": 401.578125,
+        "right": 493.578125,
+        "top": 475.921875,
+        "width": 92,
+        "x": 401.578125,
+        "y": 475.921875
+      },
+      "text": "仅看未平仓"
+    },
+    {
+      "before": {
+        "h": "auto",
+        "top": "auto"
+      },
+      "font": "700 14px / 20.3px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", sans-serif",
+      "rect": {
+        "bottom": 504.0703125,
+        "height": 20.296875,
+        "left": 561.578125,
+        "right": 617.578125,
+        "top": 483.7734375,
+        "width": 56,
+        "x": 561.578125,
+        "y": 483.7734375
+      },
+      "text": "全部市场"
+    }
+  ],
+  "d07": [
+    {
+      "candidate": 0,
+      "field": "年份：2026 (按月)",
+      "shift": 0
+    },
+    {
+      "candidate": 0,
+      "field": "模式：按月",
+      "shift": 0
+    },
+    {
+      "candidate": 0,
+      "field": "指标：净盈亏",
+      "shift": 0
+    },
+    {
+      "candidate": 1,
+      "field": "年份：2026 (按月)",
+      "shift": 0
+    },
+    {
+      "candidate": 1,
+      "field": "模式：按月",
+      "shift": 0
+    },
+    {
+      "candidate": 1,
+      "field": "指标：净盈亏",
+      "shift": 0
+    }
+  ],
+  "finalD11": [
+    {
+      "height": 36,
+      "pressed": "true",
+      "text": "做多"
+    },
+    {
+      "height": 36,
+      "pressed": "false",
+      "text": "做空"
+    },
+    {
+      "height": 36,
+      "pressed": "false",
+      "text": "打新"
+    },
+    {
+      "height": 36,
+      "pressed": null,
+      "text": "亏损最大 ↑"
+    },
+    {
+      "height": 0,
+      "pressed": null,
+      "text": "盈利最高 ↓"
+    },
+    {
+      "height": 0,
+      "pressed": null,
+      "text": "亏损最大 ↑"
+    }
+  ],
+  "at600": {
+    "buttons": [
+      {
+        "height": 36,
+        "text": "2025 (按月)",
+        "width": 123.953125
+      },
+      {
+        "height": 36,
+        "text": "累计",
+        "width": 76
+      },
+      {
+        "height": 36,
+        "text": "净盈亏",
+        "width": 90
+      },
+      {
+        "height": 36,
+        "text": "2026 (按月)",
+        "width": 126.2109375
+      },
+      {
+        "height": 36,
+        "text": "按月",
+        "width": 126.2109375
+      },
+      {
+        "height": 36,
+        "text": "净盈亏",
+        "width": 126.2109375
+      }
+    ],
+    "scroll": 600,
+    "viewport": 600
+  },
+  "at601": {
+    "scroll": 601,
+    "viewport": 601
+  }
+}

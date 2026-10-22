@@ -1,0 +1,109 @@
+{
+  "symbol": "600519",
+  "date": "2026-10-15",
+  "pnlAudit": {
+    "unit": "CNY",
+    "netField": "amount",
+    "rule": "netAmount = grossAmount - feeAmount; classification uses netAmount",
+    "samples": [
+      {"roundId":"A-01","grossAmount":1020,"feeAmount":20,"netAmount":1000},
+      {"roundId":"E-02","grossAmount":-880,"feeAmount":20,"netAmount":-900},
+      {"roundId":"H-02","grossAmount":20,"feeAmount":20,"netAmount":0}
+    ]
+  },
+  "practices": [
+    {"id":"practice-A-20261015-01","label":"练习 A","roundCount":3},
+    {"id":"practice-B-20261015-02","label":"练习 B","roundCount":1},
+    {"id":"practice-C-20261014-01","label":"练习 C","roundCount":3},
+    {"id":"practice-D-20261013-01","label":"练习 D","roundCount":3},
+    {"id":"practice-E-20261012-01","label":"练习 E","roundCount":3},
+    {"id":"practice-F-20261011-01","label":"练习 F","roundCount":3},
+    {"id":"practice-G-20261010-01","label":"练习 G","roundCount":4},
+    {"id":"practice-H-20261009-01","label":"练习 H","roundCount":4}
+  ],
+  "rounds": [
+    {"id":"A-01","practice":"练习 A","category":"profit-gt-50","returnPct":72,"amount":1000,"status":"closed","replay":{"entry":"买40 → 卖95","pairs":"40","unclosed":"无"}},
+    {"id":"A-02","practice":"练习 A","category":"profit-0-50","returnPct":32,"amount":1280,"status":"closed","replay":{"entry":"买100 / 买50 → 卖80","pairs":"50、30","unclosed":"70"}},
+    {"id":"A-03","practice":"练习 A","category":"profit-0-50","returnPct":18,"amount":720,"status":"closed","replay":{"entry":"买80 → 卖80","pairs":"80","unclosed":"无"}},
+    {"id":"B-01","practice":"练习 B","category":"profit-0-50","returnPct":8,"amount":240,"status":"closed","replay":{"entry":"买120 → 卖120","pairs":"120","unclosed":"无"}},
+    {"id":"C-01","practice":"练习 C","category":"profit-gt-50","returnPct":65,"amount":3000,"status":"closed","replay":{"entry":"买30 / 买20 → 卖50","pairs":"20、30","unclosed":"无"}},
+    {"id":"C-02","practice":"练习 C","category":"profit-0-50","returnPct":24,"amount":3000,"status":"closed","replay":{"entry":"买60 / 买40 → 卖70","pairs":"40、30","unclosed":"30"}},
+    {"id":"C-03","practice":"练习 C","category":"profit-0-50","returnPct":16,"amount":3000,"status":"closed","replay":{"entry":"买90 → 卖60","pairs":"60","unclosed":"30"}},
+    {"id":"D-01","practice":"练习 D","category":"profit-0-50","returnPct":12,"amount":3000,"status":"closed","replay":{"entry":"买75 → 卖75","pairs":"75","unclosed":"无"}},
+    {"id":"D-02","practice":"练习 D","category":"profit-0-50","returnPct":10,"amount":3000,"status":"closed","replay":{"entry":"买110 / 买20 → 卖100","pairs":"20、80","unclosed":"30"}},
+    {"id":"D-03","practice":"练习 D","category":"profit-0-50","returnPct":6,"amount":3000,"status":"closed","replay":{"entry":"买55 → 卖50","pairs":"50","unclosed":"5"}},
+    {"id":"E-01","practice":"练习 E","category":"profit-gt-50","returnPct":58,"amount":3360,"status":"closed","replay":{"entry":"买25 → 卖45","pairs":"25","unclosed":"无"}},
+    {"id":"E-02","practice":"练习 E","category":"loss-0-50","returnPct":-20,"amount":-900,"status":"closed","replay":{"entry":"买70 → 卖55","pairs":"55","unclosed":"15"}},
+    {"id":"E-03","practice":"练习 E","category":"loss-0-50","returnPct":-28,"amount":-900,"status":"closed","replay":{"entry":"买65 / 买15 → 卖40","pairs":"40","unclosed":"40"}},
+    {"id":"F-01","practice":"练习 F","category":"loss-gt-50","returnPct":-72,"amount":-1800,"status":"closed","replay":{"entry":"买90 → 卖30","pairs":"30","unclosed":"60"}},
+    {"id":"F-02","practice":"练习 F","category":"loss-gt-50","returnPct":-68,"amount":-1800,"status":"closed","replay":{"entry":"买85 / 买15 → 卖25","pairs":"25","unclosed":"75"}},
+    {"id":"F-03","practice":"练习 F","category":"loss-gt-50","returnPct":-64,"amount":-900,"status":"closed","replay":{"entry":"买60 → 卖20","pairs":"20","unclosed":"40"}},
+    {"id":"G-01","practice":"练习 G","category":"loss-gt-50","returnPct":-60,"amount":-1800,"status":"closed","replay":{"entry":"买100 / 买10 → 卖35","pairs":"35","unclosed":"75"}},
+    {"id":"G-02","practice":"练习 G","category":"loss-0-50","returnPct":-40,"amount":-900,"status":"closed","replay":{"entry":"买48 → 卖32","pairs":"32","unclosed":"16"}},
+    {"id":"G-03","practice":"练习 G","category":"loss-0-50","returnPct":-35,"amount":-900,"status":"closed","replay":{"entry":"买52 / 买8 → 卖30","pairs":"30","unclosed":"30"}},
+    {"id":"G-04","practice":"练习 G","category":"loss-0-50","returnPct":-30,"amount":-900,"status":"closed","replay":{"entry":"买45 → 卖28","pairs":"28","unclosed":"17"}},
+    {"id":"H-01","practice":"练习 H","category":"loss-0-50","returnPct":-25,"amount":-1560,"status":"closed","replay":{"entry":"买70 → 卖42","pairs":"42","unclosed":"28"}},
+    {"id":"H-02","practice":"练习 H","category":"net-zero","returnPct":0,"amount":0,"status":"closed","replay":{"entry":"买36 → 卖36","pairs":"36","unclosed":"无"}},
+    {"id":"H-03","practice":"练习 H","category":"net-zero","returnPct":0,"amount":0,"status":"closed","replay":{"entry":"买44 / 买6 → 卖50","pairs":"50","unclosed":"无"}},
+    {"id":"H-04","practice":"练习 H","category":"net-zero","returnPct":0,"amount":0,"status":"closed","replay":{"entry":"买28 → 卖28","pairs":"28","unclosed":"无"}}
+  ],
+  "missingInput": {
+    "perspective": "simulation",
+    "missingInputs": ["exitPrice"],
+    "rows": [
+      {"id":"MISSING-01","practice":"练习 C","category":null,"returnPct":null,"amount":null,"status":"closed","symbol":"000001","date":"2026-10-16","missingInputs":["exitPrice"],"replay":{"entry":"买60 → 等待平仓估值","pairs":"无法完成金额配对","unclosed":"待补齐平仓估值"}},
+      {"id":"MISSING-02","practice":"练习 C","category":null,"returnPct":null,"amount":null,"status":"closed","symbol":"000001","date":"2026-10-16","missingInputs":["exitPrice"],"replay":{"entry":"买90 → 等待平仓估值","pairs":"无法完成金额配对","unclosed":"待补齐平仓估值"}}
+    ]
+  },
+  "extreme": {
+    "live": {
+      "symbol":"000001",
+      "date":"2026-10-15",
+      "rounds":[
+        {"id":"EXTREME-01","identity":"极值实盘回合 01","category":"profit-gt-50","returnPct":1000000,"amount":1000000,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买1 股 → 卖1 股","pairs":"1 股已平仓","unclosed":"无"}}
+      ]
+    }
+  },
+  "trend": {
+    "metric": "amount",
+    "unit": "CNY",
+    "aggregation": "sumByDate",
+    "normal": {
+      "live": [{"date":"2026-10-15","amount":12240}],
+      "simulation": [{"date":"2026-10-15","amount":12240}]
+    },
+    "extreme": [{"date":"2026-10-15","amount":1000000}]
+  },
+  "live": {
+    "symbol":"000001",
+    "date":"2026-10-15",
+    "market":"实盘样例",
+    "roundPrefix":"LIVE",
+    "rounds":[
+      {"id":"LIVE-01","identity":"实盘回合 01","category":"profit-gt-50","returnPct":72,"amount":890,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买42 → 卖98","pairs":"42","unclosed":"无"}},
+      {"id":"LIVE-02","identity":"实盘回合 02","category":"profit-0-50","returnPct":33,"amount":1280,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买105 股 → 卖83 股","pairs":"83 股已平仓","unclosed":"6 股未平仓"}},
+      {"id":"LIVE-03","identity":"实盘回合 03","category":"profit-0-50","returnPct":19,"amount":970,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买88 股 → 卖71 股","pairs":"71 股已平仓","unclosed":"17 股未平仓"}},
+      {"id":"LIVE-04","identity":"实盘回合 04","category":"profit-0-50","returnPct":9,"amount":260,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买64 股 → 卖52 股","pairs":"52 股已平仓","unclosed":"12 股未平仓"}},
+      {"id":"LIVE-05","identity":"实盘回合 05","category":"profit-gt-50","returnPct":66,"amount":3020,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买38 股 / 买12 股 → 卖50 股","pairs":"50 股已平仓","unclosed":"无"}},
+      {"id":"LIVE-06","identity":"实盘回合 06","category":"profit-0-50","returnPct":25,"amount":3010,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买76 股 / 买18 股 → 卖68 股","pairs":"68 股已平仓","unclosed":"26 股未平仓"}},
+      {"id":"LIVE-07","identity":"实盘回合 07","category":"profit-0-50","returnPct":17,"amount":2990,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买81 股 → 卖63 股","pairs":"63 股已平仓","unclosed":"18 股未平仓"}},
+      {"id":"LIVE-08","identity":"实盘回合 08","category":"profit-0-50","returnPct":13,"amount":2980,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买59 股 / 买21 股 → 卖70 股","pairs":"70 股已平仓","unclosed":"10 股未平仓"}},
+      {"id":"LIVE-09","identity":"实盘回合 09","category":"profit-0-50","returnPct":11,"amount":3015,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买72 股 → 卖58 股","pairs":"58 股已平仓","unclosed":"14 股未平仓"}},
+      {"id":"LIVE-10","identity":"实盘回合 10","category":"profit-0-50","returnPct":7,"amount":3025,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买67 股 → 卖55 股","pairs":"55 股已平仓","unclosed":"12 股未平仓"}},
+      {"id":"LIVE-11","identity":"实盘回合 11","category":"profit-gt-50","returnPct":59,"amount":3170,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买31 股 → 卖49 股","pairs":"31 股已平仓","unclosed":"无"}},
+      {"id":"LIVE-12","identity":"实盘回合 12","category":"loss-0-50","returnPct":-21,"amount":-880,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买74 股 → 卖56 股","pairs":"56 股已平仓","unclosed":"18 股未平仓"}},
+      {"id":"LIVE-13","identity":"实盘回合 13","category":"loss-0-50","returnPct":-27,"amount":-920,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买62 股 / 买11 股 → 卖39 股","pairs":"39 股已平仓","unclosed":"34 股未平仓"}},
+      {"id":"LIVE-14","identity":"实盘回合 14","category":"loss-gt-50","returnPct":-71,"amount":-1790,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买94 股 → 卖29 股","pairs":"29 股已平仓","unclosed":"65 股未平仓"}},
+      {"id":"LIVE-15","identity":"实盘回合 15","category":"loss-gt-50","returnPct":-67,"amount":-1810,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买86 股 / 买14 股 → 卖24 股","pairs":"24 股已平仓","unclosed":"76 股未平仓"}},
+      {"id":"LIVE-16","identity":"实盘回合 16","category":"loss-gt-50","returnPct":-63,"amount":-910,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买61 股 → 卖19 股","pairs":"19 股已平仓","unclosed":"42 股未平仓"}},
+      {"id":"LIVE-17","identity":"实盘回合 17","category":"loss-gt-50","returnPct":-61,"amount":-1795,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买102 股 / 买9 股 → 卖34 股","pairs":"34 股已平仓","unclosed":"77 股未平仓"}},
+      {"id":"LIVE-18","identity":"实盘回合 18","category":"loss-0-50","returnPct":-41,"amount":-890,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买49 股 → 卖31 股","pairs":"31 股已平仓","unclosed":"18 股未平仓"}},
+      {"id":"LIVE-19","identity":"实盘回合 19","category":"loss-0-50","returnPct":-36,"amount":-905,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买54 股 / 买7 股 → 卖29 股","pairs":"29 股已平仓","unclosed":"32 股未平仓"}},
+      {"id":"LIVE-20","identity":"实盘回合 20","category":"loss-0-50","returnPct":-31,"amount":-895,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买47 股 → 卖27 股","pairs":"27 股已平仓","unclosed":"20 股未平仓"}},
+      {"id":"LIVE-21","identity":"实盘回合 21","category":"loss-0-50","returnPct":-26,"amount":-1575,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买73 股 → 卖41 股","pairs":"41 股已平仓","unclosed":"32 股未平仓"}},
+      {"id":"LIVE-22","identity":"实盘回合 22","category":"net-zero","returnPct":0,"amount":0,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买37 股 → 卖37 股","pairs":"37 股已平仓","unclosed":"无"}},
+      {"id":"LIVE-23","identity":"实盘回合 23","category":"net-zero","returnPct":0,"amount":0,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买46 股 / 买5 股 → 卖51 股","pairs":"51 股已平仓","unclosed":"无"}},
+      {"id":"LIVE-24","identity":"实盘回合 24","category":"net-zero","returnPct":0,"amount":0,"status":"closed","symbol":"000001","date":"2026-10-15","replay":{"entry":"买29 股 → 卖29 股","pairs":"29 股已平仓","unclosed":"无"}}
+    ]
+  }
+}

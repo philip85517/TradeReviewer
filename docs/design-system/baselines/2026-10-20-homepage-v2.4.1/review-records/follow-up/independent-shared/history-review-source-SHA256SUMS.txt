@@ -1,0 +1,115 @@
+# Scoped source/reference hashes
+
+## Current source images (captured 2026-10-21 Asia/Shanghai)
+b1254fd56684a33d251a8a60299096255fa0ae25d9e2fce47e9b0c1630352a03  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-cumulative.svg
+73a5259f6b6f97d2586b15a5237df883797d619b9ab4c78ea39ddd2e23f0b3d3  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-empty.svg
+3b7595aad16ce8c8be10288548dd609b2e959a9f31f51152788637c3cae3eeb0  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-error.svg
+36afe3661a7e271c32cd11513690b8cee9b6ca97139db206486ed9182329c3c3  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-extreme.svg
+4aa93b102202ff074533c9e343b03a3079f5f814e8ac189ff1e790611ee27d93  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-rounds.svg
+1d2edf69405e3cafb7bf9ef9494b49e1e38488879eab18db53c766d65a868412  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-source-missing.svg
+f7f32106516d8300ae01efa774f6a027a797715a4c316aec58176e393789eec9  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-win.svg
+b6b512c9ca2ee8b0548a6abeac9b8bf40cc2ffef21044d6dafd2ca9f7c678f91  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history.svg
+c0b8c5fab4f67518a95adc82a6f1692a718000904dfc234297e2593566084503  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/journeys-year.svg
+47a01bb212d85d860c845f67f9398b54fbb64ff8e79c67ebcc1f3204fd8e6b32  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-current-a-share.svg
+26a2a00226b21420f41f4becbded567a52194fa6005bdefd826214a19a847872  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-empty.svg
+e4860b5d48fbc66be543941f61c390abbfa8d9ceba8342f62b7e85768447db51  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-error.svg
+b25b1a1a74062b342e3f7f516b6cbdeef72824c99e53f3a46d8f9ea63bbe4590  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-extreme.svg
+528ab653172f32c7d8f1941e9324d7c6950cc2363097bc5774010579ff042d05  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-historical-a-share.svg
+9a0ef1de3556dfdd11d45d14fe75728e9d16fb463f8706698587fb522e4becd0  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-loading.svg
+50c353b09dc53dd273b311cd30759d027ce053bc75cb4dbd3bf0d40c35811226  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-mixed-sign-demo.svg
+f6638fd6dd05c45c31b2cbc049842f3f9a16951b84a7df05c78dac802c8728cf  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-states.svg
+944bbbdeb94dd3032b30b0ccf6e45e2c7cad32f8669387ef20a14d216e24349b  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution.svg
+
+## Round5 references used
+6b62c6b7be428fdfc55f7f84fc47c956079e3bf231bba1b1dafb1c24f2af256e  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/prototypes/round5/history.html
+e8dd7485f216c95aa4fce2ceb7e21ed1fb004796125a1b14e4593c1c090eb0b0  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/prototypes/round5/history.css
+ae567ca67aff8e8409d1f3710e9c97631d37e7e5b2c3385548aeb4e285f9fd61  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/prototypes/round5/history.js
+362e8032d761e9dc911afbb47ed72dd8b7395c7bd5c36dd8f2efacd5d71833e8  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/prototypes/round5/contribution.html
+cee73ab85fb7d439b1894c3affb97b326651a942a03eeee0d3e8fc3b034c4f25  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/prototypes/round5/contribution.css
+983ac51b412eab5e9505a002b3ac207f4c609edfa6ea49a8dfde93f784a83af0  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/prototypes/round5/contribution.js
+
+## Browser captures
+94a0c1a9dbc511680201c24f6447ea6bf2d2d2624e015037649f55dc634634c2  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/contribution-1440.png
+badbe4dc3434a6bf2b886168e192267ccf397e345ba3603d6a98a81ca936502c  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/contribution-current-a-share-1440.png
+0d79814efead65d15d4a32e719ad0520421ffa4760e9ba14d38e33f62e6b9159  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/contribution-empty-1440.png
+da17e8b843c805b970184dc10b2307727ac78338e57f783b75a43fb80c2f0860  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/contribution-error-1440.png
+9ef810403d300d4f0effc69a4de59bb320271bfc3205cc8026cd50da33b2e57b  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/contribution-extreme-1440.png
+ffd99458490874a514be1985a8f93d74fb526d9e54628f8ce79ce662fa876a1e  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/contribution-historical-a-share-1440.png
+ad097180d146f702dda6d27e2f4c29d0ef2b6549efeef04ba2691bb55b623732  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/contribution-loading-1440.png
+7f0fd3bc73f3b3f8fc8f46367b12694fada888ebebdb0a34a5995272e7a54319  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/contribution-mixed-sign-demo-1440.png
+c432cbb715f768143d84b5da9030a8402eeb4cf9e190be7eb141becb7674f897  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/contribution-states-1440.png
+ae733578c1618a49962c4b8e826d7975d3609b4be408fbfec39013e7f9c6d01f  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/history-1440.png
+749f1f7bcec1ec0cf00e3317688f984451bacf35fa1d87705914db640131ee5f  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/history-stats-cumulative-1440.png
+633635ccc7ddffa2993244ec8288550572713f7bdde4a679cbda25da29a5c364  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/history-stats-empty-1440.png
+e3a34fd332c5e18c9d0d8726b17dd0edf6282fba34b8618fce4a473a05dbe77e  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/history-stats-error-1440.png
+0e13ac47fb7f3948231e69a21718fbeb64856d922e406a6ee2d22db674617138  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/history-stats-extreme-1440.png
+8d5f5b72d389e1da47ef35127148761c44293052e022f039571f40687bd399fc  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/history-stats-rounds-1440.png
+b54172fd48bfc27fe70bc27f036283827bd48354b74a9e5d3d55fb43376c9f4e  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/history-stats-source-missing-1440.png
+73e7441a40c0acbaadd693806ec8052ce5b04641676f88cf1a04693e4451bf4b  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/history-stats-win-1440.png
+ae733578c1618a49962c4b8e826d7975d3609b4be408fbfec39013e7f9c6d01f  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/history-test.png
+7e03b22dc621115d5eb78f55a3b81ce9854231326a1b2df35c77671b5879ea56  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/home-1440-2400.png
+82797ebe8401b7dbabb2116da6838cce2b17cb1d85db269cf5e7e61af30eebe2  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/home-contribution-current-1440-crop.png
+d7babac1e248256fd53ac47cd2d821ef91ce9194ff9511f66f9f3d2c112202f0  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/home-contribution-history-1440-crop.png
+decb0be5c8ca659b07fe31d851093887e590670c28a65057d9654f7cc6cd0905  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/home-history-1440-2400.png
+75156e282325e1aee6941f4fb41b47ee80ba6fbe8662fc3fb101e5af905bede7  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/journeys-year-1440.png
+95bb3f56c723d7e5a37ca646cecb69087d169ec27d31d18fee54681e853820ec  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/journeys-year-d10-crop.png
+61d7943bbe9fa32d0673e1095e31dc366a02ef51f9fcfcc48b1ee4d2e0ae07a6  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/journeys-year-selector-crop.png
+6d9cb5437c09464c50446a5b5ca12dafd9c8b5447e880b00d16779168da3ccdb  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/round5-contribution-live-1440.png
+286f49bd976517de89716aa2d75616540f52ae3db265d31392f5f5712af397dc  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/round5-contribution-live-controls-crop.png
+6f9ea3d4e671f65ec411830198a76f80eb593280154f28c83e49e1e792a38241  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/round5-history-live-1440.png
+0b39e5f8e657bff82e4440b3d70fe39b52f93ba317ad066faf79571e5b2355c7  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/round5-history-live-chart-crop.png
+
+## Whole-page D11 cross-check (read-only)
+729d6095050ae31be571a4327597cd46895fb1f84255dfd37e292502573c2eaa  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/home-1440.svg
+32075a69eb86bc737a0b60c6145fec85e4c9ba7d7cdd9fcfabffbd76d567c480  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/home-history-1440.svg
+609c6e79bfb6268a16915d56841ab096f23422bcd5e5f999c23b34a238ddfba7  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/prototypes/round5/reference/home-1440.svg
+4808289399f619ef5e14310bff42e585aa3d63d02deb69b7bee1590143f9220e  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/prototypes/round5/evidence/contribution-historical.png
+
+## Current re-test (2026-10-21)
+56b9c578ae05aa6bb7ef6342ee7438ee472de0d3a2dc24d378e15db3700d8bf8  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/journeys-year.svg
+2d38cf0ba496021da78f1b36c6729dacc59e26815122616472ddec6c7b6bf050  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/journeys-year-current-retest.png
+2d38cf0ba496021da78f1b36c6729dacc59e26815122616472ddec6c7b6bf050  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/journeys-year-latest-retest.png
+
+## Root four-home refresh (2026-10-21; Chrome 1440x2346)
+1d6dc464ffb34dfb02f92687929c8763d4279279c887884eae195cedb52a0e3c  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/home-history-1440.svg
+d6a1f7187ee7b38d19833b40e3e94a39f7607b0daf5abb0cbdf6d5856fbdb25e  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-home-history-1440-final-1440.png
+
+## Current 19-image re-render (2026-10-21; Chrome 1440x1000 unless noted)
+cf984c63b88a738d75c7ee4ac18dcf2cb2e93a298fefa767aa8dce8e26ceb528  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-current-a-share.svg
+26a2a00226b21420f41f4becbded567a52194fa6005bdefd826214a19a847872  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-empty.svg
+e4860b5d48fbc66be543941f61c390abbfa8d9ceba8342f62b7e85768447db51  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-error.svg
+b25b1a1a74062b342e3f7f516b6cbdeef72824c99e53f3a46d8f9ea63bbe4590  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-extreme.svg
+528ab653172f32c7d8f1941e9324d7c6950cc2363097bc5774010579ff042d05  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-historical-a-share.svg
+9a0ef1de3556dfdd11d45d14fe75728e9d16fb463f8706698587fb522e4becd0  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-loading.svg
+50c353b09dc53dd273b311cd30759d027ce053bc75cb4dbd3bf0d40c35811226  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-mixed-sign-demo.svg
+f6638fd6dd05c45c31b2cbc049842f3f9a16951b84a7df05c78dac802c8728cf  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution-states.svg
+944bbbdeb94dd3032b30b0ccf6e45e2c7cad32f8669387ef20a14d216e24349b  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/contribution.svg
+cb48191c2c933c87c54566c0fe9d90a68c7e130f1c41d936dfa9a19b1165b298  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-cumulative.svg
+31373b67e8c671f25d9969dbb10772f75784785321ce1a25ff3ea03c556cc6e6  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-empty.svg
+6cde268ce8b12553557565dc9dfcbba2d4b1b20feba9e74b4d1bae595bdc897a  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-error.svg
+d4656e46487508c095aed0f5194fd1e5196c814d9e1f146d439f7bdf588ba840  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-extreme.svg
+973fcff8f47771eebbaf53174dec736378b4b50d4b48a85a56206461dbcf7b72  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-rounds.svg
+108099294b134377912499d794f79e15186ecd88450a0f4eeec2526b535722f9  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-source-missing.svg
+24974a7cd7b45d879556faa74250a58586e2a1781e07b4328e52f812ae7c38d5  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history-stats-win.svg
+71b470909ca2bc25da61f83f06cf4f00869f1949dedb378b3ae094a82edf153c  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/history.svg
+32075a69eb86bc737a0b60c6145fec85e4c9ba7d7cdd9fcfabffbd76d567c480  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/home-history-1440.svg
+3c4ef7647ecd9aaac3c446f190ac625b823b6d08b672cdb2f8d7426a5628677d  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/images/journeys-year.svg
+20f77198ec2797853bb64b3eb2b0406446441cef750ab23d23820661a2e106a4  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-contribution-current-a-share-1440.png
+92ad7317ff61acd95617c5fef3d16ff1d5b93778ae59bf20d5ee556a4e948161  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-contribution-empty-1440.png
+773adef808217ada11623d7d646592bec922e9f554fcdcb5b714cddec0261626  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-contribution-error-1440.png
+4212a1d48cbc921364b9ffc5fee77b563cea9d9ee44488486ab700b3a1310d41  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-contribution-extreme-1440.png
+9112b8a24ca594693ae175eb991711a40ad5975dfde66c7b88d9080bab7ad9ca  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-contribution-historical-a-share-1440.png
+1f1ea83de5f593e8309b0409a03d92f4a29e9c732ecc99ac40b3b137ff706b73  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-contribution-loading-1440.png
+3b673e176bc65c9f9122c5255d5381c1e5456656ccd538c9b57dd86609de3dd4  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-contribution-mixed-sign-demo-1440.png
+9871ec75e6f22be64072f1de3ea940e3dc28706d2f59c54196b097a918564649  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-contribution-states-1440.png
+4c28e847013d6de82aa2acee03990d7b45f92f013f744f0e6805adc5765034a5  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-contribution-1440.png
+d159ac81368521b435ccdb3a23e46bd3fbd2aaf92300cba2642d1682e9b13497  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-history-stats-cumulative-1440.png
+7dbd0845b2a844059891eb7a1e3aaa08bdc3bfd5bc242093b64533be63f50538  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-history-stats-empty-1440.png
+5f63773ebfb339d36126849956e7934680a8adbbd2ac2a0031d163a86883f96d  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-history-stats-error-1440.png
+66c7db241e4572abd51d216a08d46e9831799b739299ff594c31a7111d57968c  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-history-stats-extreme-1440.png
+e85c8b7203343a833bbf5aa2c15f0a10237f130fd130eb12f6b3197c1009bea3  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-history-stats-rounds-1440.png
+84f386832d44274363d5414d95d4500d2402fdcff41707abe16a446f97b90d4a  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-history-stats-source-missing-1440.png
+6cb168c3507512cc9a8dbd5101a39fbb43df65dfb8f5b123b7317ee5505e0c69  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-history-stats-win-1440.png
+5ce7cdd3fe6cf57b96d34a681f673fcb649777ccdd5355608f8af403f2f7d729  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-history-1440.png
+7120be168fe3588992c6f04e3de6d546a6f14d64e9ead162a25d2cf2ed20e1ea  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-home-history-1440-1440.png
+ef93637e659f64baa6e7b94a6f13f6fdca49f159614b0663bfc863c78e10c898  .scratch/homepage-v241-repair/work/shared/evidence/history-review/browser/current-journeys-year-1440.png

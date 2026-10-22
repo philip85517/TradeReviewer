@@ -1,0 +1,131 @@
+{
+  "rows": [
+    [
+      "#1",
+      "(748, 150) · 264×144",
+      "7 行 / 13 text",
+      "(760, 162.27)–(1000, 280.35)",
+      "12 / 12",
+      "12.27 / 13.65",
+      "≥12 四边",
+      "完整",
+      "未检测到裁剪"
+    ],
+    [
+      "#2",
+      "(128, 468) · 264×144",
+      "0 行 / 0 text",
+      "—",
+      "— / —",
+      "— / —",
+      "不足 12",
+      "CLIPPED",
+      "越过 viewBox/clipPath"
+    ],
+    [
+      "#1",
+      "(748, -256) · 264×144",
+      "0 行 / 0 text",
+      "—",
+      "— / —",
+      "— / —",
+      "不足 12",
+      "CLIPPED",
+      "越过 viewBox/clipPath"
+    ],
+    [
+      "#2",
+      "(128, 62) · 264×144",
+      "7 行 / 13 text",
+      "(140, 74.27)–(380, 192.35)",
+      "12 / 12",
+      "12.27 / 13.65",
+      "≥12 四边",
+      "完整",
+      "未检测到裁剪"
+    ],
+    [
+      "#1",
+      "(44, 134) · 264×124",
+      "7 行 / 13 text",
+      "(56, 146.27)–(296, 244.35)",
+      "12 / 12",
+      "12.27 / 13.65",
+      "≥12 四边",
+      "完整",
+      "未检测到裁剪"
+    ],
+    [
+      "#2",
+      "(584, 134) · 264×124",
+      "7 行 / 13 text",
+      "(596, 146.27)–(836, 244.35)",
+      "12 / 12",
+      "12.27 / 13.65",
+      "≥12 四边",
+      "完整",
+      "未检测到裁剪"
+    ],
+    [
+      "#3",
+      "(44, 379) · 264×124",
+      "7 行 / 13 text",
+      "(56, 391.27)–(296, 489.35)",
+      "12 / 12",
+      "12.27 / 13.65",
+      "≥12 四边",
+      "完整",
+      "未检测到裁剪"
+    ],
+    [
+      "#4",
+      "(584, 379) · 264×124",
+      "7 行 / 13 text",
+      "(596, 391.27)–(836, 489.35)",
+      "12 / 12",
+      "12.27 / 13.65",
+      "≥12 四边",
+      "完整",
+      "未检测到裁剪"
+    ],
+    [
+      "#5",
+      "(584, 624) · 264×124",
+      "7 行 / 13 text",
+      "(596, 636.27)–(836, 734.35)",
+      "12 / 12",
+      "12.27 / 13.65",
+      "≥12 四边",
+      "完整",
+      "未检测到裁剪"
+    ],
+    [
+      "#6",
+      "(44, 869) · 264×124",
+      "7 行 / 13 text",
+      "(56, 881.27)–(296, 979.35)",
+      "12 / 12",
+      "12.27 / 13.65",
+      "≥12 四边",
+      "完整",
+      "未检测到裁剪"
+    ],
+    [
+      "#7",
+      "(584, 869) · 264×124",
+      "7 行 / 13 text",
+      "(596, 881.27)–(836, 979.35)",
+      "12 / 12",
+      "12.27 / 13.65",
+      "≥12 四边",
+      "完整",
+      "未检测到裁剪"
+    ]
+  ],
+  "text": "V2.4.1 · C02 / C03 / C04 / C05\n\nChart comment repair · source acceptance\n\n本页内嵌 owner 范围内的 13 个 source SVG。下方测量在浏览器加载后读取 SVG 用户坐标：tooltip 外框、可见文字 bbox、四边剩余内边距（验收下限 12px），以及是否被 root viewBox 或祖先 clipPath 裁剪。它供 3088 端口的 CUA 视觉复核使用。\n\ngreen：矩形与文字完整相交，未检测到裁剪\namber：矩形越过 viewBox 或祖先 clipPath\nChart hover · pointer\nC02 / C03\nChart hover · keyboard\nC02 / C03\nShared ChartTooltip · eight states\nC02 / C03\nChart gap · missing-data info\nC03\nHistory · monthly\nC04 / C05\nHistory · cumulative\nC04 / C05\nHistory · empty\nC04 / C05\nHistory · error\nC04 / C05\nHistory · extreme\nC04 / C05\nHistory · rounds\nC04 / C05\nHistory · source missing\nC04 / C05\nHistory · win\nC04 / C05\nHistory · yearly\nC04 / C05\n\nC02 / C03\n\nChart hover · pointer\n\nsource/images/chart-hover.svg\n\n回到目录 ↑\n期间净盈亏\nCNY\n2.00万\n1.50万\n1.00万\n5,000\n0\n01-01\n03-01\n05-01\n07-01\n09-01\n2026-10-15 CNY\n市值\n26.01 万\n浮盈\n+2.32 万\n累计已实现\n+1.22 万\n累计净盈亏\n+3.54 万\n期间净盈亏\n+1.84 万\n费用\n640.00\n10-15\n+18,420\ntooltip shells: 2\nmeasured: 2\n1 padding failures\n1 clipped\nshell\trect bbox（root user coords）\trows / text\ttext bbox union\tleft / right pad\ttop / bottom pad\tpadding ≥12\tclip\t说明\n#1\t(748, 150) · 264×144\t7 行 / 13 text\t(760, 162.27)–(1000, 280.35)\t12 / 12\t12.27 / 13.65\t≥12 四边\t完整\t未检测到裁剪\n#2\t(128, 468) · 264×144\t0 行 / 0 text\t—\t— / —\t— / —\t不足 12\tCLIPPED\t越过 viewBox/clipPath\n\nC02 / C03\n\nChart hover · keyboard\n\nsource/images/chart-hover--keyboard.svg\n\n回到目录 ↑\n期间净盈亏\nCNY\n2.00万\n1.50万\n1.00万\n5,000\n03-01\n05-01\n07-01\n09-01\n2026-01-01 CNY\n市值\n24.00 万\n浮盈\n+1.70 万\n累计已实现\n0.00\n累计净盈亏\n+1.70 万\n期间净盈亏\n0.00\n费用\n640.00\n01-01\n+0\ntooltip shells: 2\nmeasured: 2\n1 padding failures\n1 clipped\nshell\trect bbox（root user coords）\trows / text\ttext bbox union\tleft / right pad\ttop / bottom pad\tpadding ≥12\tclip\t说明\n#1\t(748, -256) · 264×144\t0 行 / 0 text\t—\t— / —\t— / —\t不足 12\tCLIPPED\t越过 viewBox/clipPath\n#2\t(128, 62) · 264×144\t7 行 / 13 text\t(140, 74.27)–(380, 192.35)\t12 / 12\t12.27 / 13.65\t≥12 四边\t完整\t未检测到裁剪\n\nC02 / C03\n\nShared ChartTooltip · eight states\n\nsource/images/atom-charttooltip.svg\n\n回到目录 ↑\n图表提示 · 八种状态\n每格展示一种状态；不适用时说明原因。完整操作过程见对应模块分镜。\n默认\n2026-10-15 CNY\n市值\n260,102\n浮盈\n+23,153\n累计已实现\n+12,240\n累计净盈亏\n+35,393\n期间净盈亏\n+18,420\n费用\n640 已扣\n悬停\n2026-10-15 CNY\n市值\n260,102\n浮盈\n+23,153\n累计已实现\n+12,240\n累计净盈亏\n+35,393\n期间净盈亏\n+18,420\n费用\n640 已扣\n聚焦\n2026-10-15 CNY\n市值\n260,102\n浮盈\n+23,153\n累计已实现\n+12,240\n累计净盈亏\n+35,393\n期间净盈亏\n+18,420\n费用\n640 已扣\n按下\n2026-10-15 CNY\n市值\n260,102\n浮盈\n+23,153\n累计已实现\n+12,240\n累计净盈亏\n+35,393\n期间净盈亏\n+18,420\n费用\n640 已扣\n已固定\n禁用\n外观 264×124 · 命中 264×124\n不适用\n图表不可用时不显示 提示框\n加载\n2026-10-15 CNY\n市值\n—\n浮盈\n—\n累计已实现\n—\n累计净盈亏\n—\n期间净盈亏\n—\n费用\n—\n空\n2026-10-15 CNY\n市值\n—\n浮盈\n—\n累计已实现\n—\n累计净盈亏\n—\n期间净盈亏\n—\n费用\n—\n错误\n2026-10-15 CNY\n市值\n—\n浮盈\n—\n累计已实现\n—\n累计净盈亏\n—\n期间净盈亏\n—\n费用\n—\ntooltip shells: 7\nmeasured: 7\nall pads ≥12\nno clip detected\nshell\trect bbox（root user coords）\trows / text\ttext bbox union\tleft / right pad\ttop / bottom pad\tpadding ≥12\tclip\t说明\n#1\t(44, 134) · 264×124\t7 行 / 13 text\t(56, 146.27)–(296, 244.35)\t12 / 12\t12.27 / 13.65\t≥12 四边\t完整\t未检测到裁剪\n#2\t(584, 134) · 264×124\t7 行 / 13 text\t(596, 146.27)–(836, 244.35)\t12 / 12\t12.27 / 13.65\t≥12 四边\t完整\t未检测到裁剪\n#3\t(44, 379) · 264×124\t7 行 / 13 text\t(56, 391.27)–(296, 489.35)\t12 / 12\t12.27 / 13.65\t≥12 四边\t完整\t未检测到裁剪\n#4\t(584, 379) · 264×124\t7 行 / 13 text\t(596, 391.27)–(836, 489.35)\t12 / 12\t12.27 / 13.65\t≥12 四边\t完整\t未检测到裁剪\n#5\t(584, 624) · 264×124\t7 行 / 13 text\t(596, 636.27)–(836, 734.35)\t12 / 12\t12.27 / 13.65\t≥12 四边\t完整\t未检测到裁剪\n#6\t(44, 869) · 264×124\t7 行 / 13 text\t(56, 881.27)–(296, 979.35)\t12 / 12\t12.27 / 13.65\t≥12 四边\t完整\t未检测到裁剪\n#7\t(584, 869) · 264×124\t7 行 / 13 text\t(596, 881.27)–(836, 979.35)\t12 / 12\t12.27 / 13.65\t≥12 四边\t完整\t未检测到裁剪\n\nC03\n\nChart gap · missing-data info\n\nsource/images/chart-gap.svg\n\n回到目录 ↑\n缺失数据 · 未知不等于零\n未知段仅展示日期和缺失提示；没有插值金额，没有局部修复按钮\n期间净盈亏\nCNY\n2.00万\n1.50万\n1.00万\n5,000\n0\n01-01\n03-01\n05-01\n07-01\n09-01\n10-15\n数据缺失 · 金额 —\n2026-05-01 — 2026-07-31\n全段缺失：保留空间，不画数据线和伪造零值\n数据缺失 · 2026-01-01 — 2026-10-15\n金额 —\nV2.4.1 · 设计状态图，非产品运行截图\ntooltip shells: 0\nmeasured: 0\nall pads ≥12\nno clip detected\n\n此图稿没有 ChartTooltip shell；保留图稿视觉检查。\n\nC04 / C05\n\nHistory · monthly\n\nsource/images/history.svg\n\n回到目录 ↑\n历史已平仓\n2026\n每月净盈亏\n已平仓净盈亏\n+3.00万\n已平仓回合\n14\n范围胜率\n64.3%\n9 / 14 盈利回合\n费用（已扣除）\n2,440\n每月净盈亏\nCNY\n1.50万\n1.00万\n5,000\n0\n-5,000\n1月\n2月\n3月\n4月\n5月\n6月\n7月\n8月\n9月\n10月\n11月\n12月\ntooltip shells: 0\nmeasured: 0\nall pads ≥12\nno clip detected\n\n此图稿没有 ChartTooltip shell；保留图稿视觉检查。\n\nC04 / C05\n\nHistory · cumulative\n\nsource/images/history-stats-cumulative.svg\n\n回到目录 ↑\n历史已平仓\n2026\n累计净盈亏\n已平仓净盈亏\n+3.00万\n已平仓回合\n14\n范围胜率\n64.3%\n9 / 14 盈利回合\n费用（已扣除）\n2,440\n累计净盈亏\nCNY\n3.60万\n2.70万\n1.80万\n9,000\n0\n1月\n2月\n3月\n4月\n5月\n6月\n7月\n8月\n9月\n10月\n11月\n12月\ntooltip shells: 0\nmeasured: 0\nall pads ≥12\nno clip detected\n\n此图稿没有 ChartTooltip shell；保留图稿视觉检查。\n\nC04 / C05\n\nHistory · empty\n\nsource/images/history-stats-empty.svg\n\n回到目录 ↑\n历史已平仓\n2026\n每月净盈亏\n已平仓净盈亏\n—\n已平仓回合\n0\n范围胜率\n—\n费用（已扣除）\n0\n每月净盈亏\nCNY\n1.50万\n1.00万\n5,000\n0\n-5,000\n所选范围无已平仓交易\n1月\n2月\n3月\n4月\n5月\n6月\n7月\n8月\n9月\n10月\n11月\n12月\ntooltip shells: 0\nmeasured: 0\nall pads ≥12\nno clip detected\n\n此图稿没有 ChartTooltip shell；保留图稿视觉检查。\n\nC04 / C05\n\nHistory · error\n\nsource/images/history-stats-error.svg\n\n回到目录 ↑\n历史已平仓\n2026\n每月净盈亏\n已平仓净盈亏\n+3.00万\n已平仓回合\n14\n范围胜率\n64.3%\n9 / 14 盈利回合\n费用（已扣除）\n2,440\n每月净盈亏\nCNY\n1.50万\n1.00万\n5,000\n0\n-5,000\n加载失败\n请点击重试，当前筛选条件保持不变\n1月\n2月\n3月\n4月\n5月\n6月\n7月\n8月\n9月\n10月\n11月\n12月\ntooltip shells: 0\nmeasured: 0\nall pads ≥12\nno clip detected\n\n此图稿没有 ChartTooltip shell；保留图稿视觉检查。\n\nC04 / C05\n\nHistory · extreme\n\nsource/images/history-stats-extreme.svg\n\n回到目录 ↑\n历史已平仓\n2026\n每月净盈亏\n已平仓净盈亏\n+50.00万\n已平仓回合\n5\n范围胜率\n0.0%\n0 / 5 盈利回合\n费用（已扣除）\n0\n每月净盈亏\nCNY\n120.00万\n60.00万\n0\n-60.00万\n-120.00万\n1月\n2月\n3月\n4月\n5月\ntooltip shells: 0\nmeasured: 0\nall pads ≥12\nno clip detected\n\n此图稿没有 ChartTooltip shell；保留图稿视觉检查。\n\nC04 / C05\n\nHistory · rounds\n\nsource/images/history-stats-rounds.svg\n\n回到目录 ↑\n历史已平仓\n2026\n各期回合数\n已平仓净盈亏\n+3.00万\n已平仓回合\n14\n范围胜率\n64.3%\n9 / 14 盈利回合\n费用（已扣除）\n2,440\n各期回合数\n回合\n4\n3\n2\n1\n0\n1月\n2月\n3月\n4月\n5月\n6月\n7月\n8月\n9月\n10月\n11月\n12月\ntooltip shells: 0\nmeasured: 0\nall pads ≥12\nno clip detected\n\n此图稿没有 ChartTooltip shell；保留图稿视觉检查。\n\nC04 / C05\n\nHistory · source missing\n\nsource/images/history-stats-source-missing.svg\n\n回到目录 ↑\n历史已平仓\n2026\n每月净盈亏\n已平仓净盈亏\n+3.00万\n已平仓回合\n14\n范围胜率\n64.3%\n9 / 14 盈利回合\n费用（已扣除）\n2,440\n每月净盈亏\nCNY\n1.50万\n1.00万\n5,000\n0\n-5,000\n源文件未返回成交记录\n不可计算，不等同于零回合\n1月\n2月\n3月\n4月\n5月\n6月\n7月\n8月\n9月\n10月\n11月\n12月\ntooltip shells: 0\nmeasured: 0\nall pads ≥12\nno clip detected\n\n此图稿没有 ChartTooltip shell；保留图稿视觉检查。\n\nC04 / C05\n\nHistory · win\n\nsource/images/history-stats-win.svg\n\n回到目录 ↑\n历史已平仓\n2026\n各期胜率\n已平仓净盈亏\n+3.00万\n已平仓回合\n14\n范围胜率\n64.3%\n9 / 14 盈利回合\n费用（已扣除）\n2,440\n各期胜率\n%\n100%\n75%\n50%\n25%\n0%\n1月\n2月\n3月\n4月\n5月\n6月\n7月\n8月\n9月\n10月\n11月\n12月\ntooltip shells: 0\nmeasured: 0\nall pads ≥12\nno clip detected\n\n此图稿没有 ChartTooltip shell；保留图稿视觉检查。\n\nC04 / C05\n\nHistory · yearly\n\nsource/images/journeys-year.svg\n\n回到目录 ↑\n历史已平仓\n2024–2026\n每年净盈亏\n已平仓净盈亏\n+3.00万\n已平仓回合\n14\n范围胜率\n64.3%\n9 / 14 盈利回合\n费用（已扣除）\n2,440\n每年净盈亏\nCNY\n1.50万\n1.00万\n5,000\n0\n-5,000\n正在加载历史统计…\n2024\n2025\n2026\ntooltip shells: 0\nmeasured: 0\nall pads ≥12\nno clip detected\n\n此图稿没有 ChartTooltip shell；保留图稿视觉检查。\n\n生成器：build-chart-acceptance.mjs · 数据来自当前 source/images 文件 · 测量不会修改 source SVG。",
+  "viewport": {
+    "dpr": 2,
+    "height": 720,
+    "width": 1280
+  }
+}

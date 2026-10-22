@@ -1,0 +1,6 @@
+f5a947389865e6beb51de583bdde47fc4dbd48dc822344a0906776fb83deba65  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/review-records/follow-up/independent-tables/evidence/shared-latest/home-history-1280.svg
+1d6dc464ffb34dfb02f92687929c8763d4279279c887884eae195cedb52a0e3c  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/review-records/follow-up/independent-tables/evidence/shared-latest/home-history-1440.svg
+649136459fe97960ad1c539c1cf7a15e7630c27ecb31a9e3f61d771d8961aaaf  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/review-records/follow-up/independent-tables/evidence/shared-rendered-latest/home-history-1280.png
+d91c4c64ecb9adffedec81e2ad4b39fe78d58efaf445b94dd1dfe0fd572ac5b6  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/review-records/follow-up/independent-tables/evidence/shared-rendered-latest/home-history-1440.png
+04549a062b54a8fb57c6b538aebf048877c2036722ba8ad43208f339ac9ca483  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/review-records/follow-up/independent-tables/evidence/history-embedded-preview/home-history-1280-contribution-controls-latest.png
+16631b4a5ac341bf6eaa26d0f271cdbfb6be89ab3caae8b750fd1bcc5c5ebcdb  docs/design-system/baselines/2026-10-20-homepage-v2.4.1/review-records/follow-up/independent-tables/evidence/history-embedded-preview/home-history-1440-contribution-controls-latest.png

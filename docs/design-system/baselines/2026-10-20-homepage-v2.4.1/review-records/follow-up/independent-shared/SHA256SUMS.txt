@@ -1,0 +1,142 @@
+# Independent shared review SHA-256 manifest
+
+Generated 2026-10-21 (Asia/Shanghai) from the current repository and copied evidence files. Source hashes are bound to the exact SVG/HTML rendered; copied PNG hashes are bound to the archived browser captures.
+
+## Current history/contribution source images (19)
+
+cf984c63b88a738d75c7ee4ac18dcf2cb2e93a298fefa767aa8dce8e26ceb528  source/images/contribution-current-a-share.svg
+26a2a00226b21420f41f4becbded567a52194fa6005bdefd826214a19a847872  source/images/contribution-empty.svg
+e4860b5d48fbc66be543941f61c390abbfa8d9ceba8342f62b7e85768447db51  source/images/contribution-error.svg
+b25b1a1a74062b342e3f7f516b6cbdeef72824c99e53f3a46d8f9ea63bbe4590  source/images/contribution-extreme.svg
+528ab653172f32c7d8f1941e9324d7c6950cc2363097bc5774010579ff042d05  source/images/contribution-historical-a-share.svg
+9a0ef1de3556dfdd11d45d14fe75728e9d16fb463f8706698587fb522e4becd0  source/images/contribution-loading.svg
+50c353b09dc53dd273b311cd30759d027ce053bc75cb4dbd3bf0d40c35811226  source/images/contribution-mixed-sign-demo.svg
+f6638fd6dd05c45c31b2cbc049842f3f9a16951b84a7df05c78dac802c8728cf  source/images/contribution-states.svg
+944bbbdeb94dd3032b30b0ccf6e45e2c7cad32f8669387ef20a14d216e24349b  source/images/contribution.svg
+cb48191c2c933c87c54566c0fe9d90a68c7e130f1c41d936dfa9a19b1165b298  source/images/history-stats-cumulative.svg
+31373b67e8c671f25d9969dbb10772f75784785321ce1a25ff3ea03c556cc6e6  source/images/history-stats-empty.svg
+6cde268ce8b12553557565dc9dfcbba2d4b1b20feba9e74b4d1bae595bdc897a  source/images/history-stats-error.svg
+d4656e46487508c095aed0f5194fd1e5196c814d9e1f146d439f7bdf588ba840  source/images/history-stats-extreme.svg
+973fcff8f47771eebbaf53174dec736378b4b50d4b48a85a56206461dbcf7b72  source/images/history-stats-rounds.svg
+108099294b134377912499d794f79e15186ecd88450a0f4eeec2526b535722f9  source/images/history-stats-source-missing.svg
+24974a7cd7b45d879556faa74250a58586e2a1781e07b4328e52f812ae7c38d5  source/images/history-stats-win.svg
+71b470909ca2bc25da61f83f06cf4f00869f1949dedb378b3ae094a82edf153c  source/images/history.svg
+1d6dc464ffb34dfb02f92687929c8763d4279279c887884eae195cedb52a0e3c  source/images/home-history-1440.svg
+3c4ef7647ecd9aaac3c446f190ac625b823b6d08b672cdb2f8d7426a5628677d  source/images/journeys-year.svg
+
+## Current history/contribution Chrome evidence (19)
+
+4c28e847013d6de82aa2acee03990d7b45f92f013f744f0e6805adc5765034a5  evidence/history/current-contribution-1440.png
+20f77198ec2797853bb64b3eb2b0406446441cef750ab23d23820661a2e106a4  evidence/history/current-contribution-current-a-share-1440.png
+92ad7317ff61acd95617c5fef3d16ff1d5b93778ae59bf20d5ee556a4e948161  evidence/history/current-contribution-empty-1440.png
+773adef808217ada11623d7d646592bec922e9f554fcdcb5b714cddec0261626  evidence/history/current-contribution-error-1440.png
+4212a1d48cbc921364b9ffc5fee77b563cea9d9ee44488486ab700b3a1310d41  evidence/history/current-contribution-extreme-1440.png
+9112b8a24ca594693ae175eb991711a40ad5975dfde66c7b88d9080bab7ad9ca  evidence/history/current-contribution-historical-a-share-1440.png
+1f1ea83de5f593e8309b0409a03d92f4a29e9c732ecc99ac40b3b137ff706b73  evidence/history/current-contribution-loading-1440.png
+3b673e176bc65c9f9122c5255d5381c1e5456656ccd538c9b57dd86609de3dd4  evidence/history/current-contribution-mixed-sign-demo-1440.png
+9871ec75e6f22be64072f1de3ea940e3dc28706d2f59c54196b097a918564649  evidence/history/current-contribution-states-1440.png
+5ce7cdd3fe6cf57b96d34a681f673fcb649777ccdd5355608f8af403f2f7d729  evidence/history/current-history-1440.png
+d159ac81368521b435ccdb3a23e46bd3fbd2aaf92300cba2642d1682e9b13497  evidence/history/current-history-stats-cumulative-1440.png
+7dbd0845b2a844059891eb7a1e3aaa08bdc3bfd5bc242093b64533be63f50538  evidence/history/current-history-stats-empty-1440.png
+5f63773ebfb339d36126849956e7934680a8adbbd2ac2a0031d163a86883f96d  evidence/history/current-history-stats-error-1440.png
+66c7db241e4572abd51d216a08d46e9831799b739299ff594c31a7111d57968c  evidence/history/current-history-stats-extreme-1440.png
+e85c8b7203343a833bbf5aa2c15f0a10237f130fd130eb12f6b3197c1009bea3  evidence/history/current-history-stats-rounds-1440.png
+84f386832d44274363d5414d95d4500d2402fdcff41707abe16a446f97b90d4a  evidence/history/current-history-stats-source-missing-1440.png
+6cb168c3507512cc9a8dbd5101a39fbb43df65dfb8f5b123b7317ee5505e0c69  evidence/history/current-history-stats-win-1440.png
+d6a1f7187ee7b38d19833b40e3e94a39f7607b0daf5abb0cbdf6d5856fbdb25e  evidence/history/current-home-history-1440-final-1440.png
+ef93637e659f64baa6e7b94a6f13f6fdca49f159614b0663bfc863c78e10c898  evidence/history/current-journeys-year-1440.png
+
+## Superseded home-history capture (retained)
+
+7120be168fe3588992c6f04e3de6d546a6f14d64e9ead162a25d2cf2ed20e1ea  evidence/history/current-home-history-1440-1440.png
+
+## Historical history FAIL evidence (preserved)
+
+2d38cf0ba496021da78f1b36c6729dacc59e26815122616472ddec6c7b6bf050  evidence/history-history-failures/journeys-year-current-retest.png
+95bb3f56c723d7e5a37ca646cecb69087d169ec27d31d18fee54681e853820ec  evidence/history-history-failures/journeys-year-d10-crop.png
+2d38cf0ba496021da78f1b36c6729dacc59e26815122616472ddec6c7b6bf050  evidence/history-history-failures/journeys-year-latest-retest.png
+61d7943bbe9fa32d0673e1095e31dc366a02ef51f9fcfcc48b1ee4d2e0ae07a6  evidence/history-history-failures/journeys-year-selector-crop.png
+
+## Current tables/holdings source images (23)
+
+b56a8b82eeb4f246147ccd0711a8097397d2f433a194ddb658f072abcd9132b2  source/images/holding-option-C-normal-1280.svg
+4d89991d74de2a9c0cd6f151d49349aa374fdef36a3a84bde76a99ef2834056b  source/images/holding-option-C-normal-1440.svg
+b0be3a1f5964bf2e988559d98c788e48bc7f5c7fb2ee1217308584e60d61d010  source/images/holding-option-C-large-1280.svg
+c948d7598d3c0c5a4b2ca4e99de1280d691af77544eefe09f8b2f30c4d82a499  source/images/holding-option-C-large-1440.svg
+2919c8c86e1287afceee49fc6f7e97c1f7182e37f93df364997cbc5b0659c123  source/images/holding-return.svg
+500d9ef4a7861796db36e086f152c3e56377679088a4dcaaae781b0c524dbb5a  source/images/holding-return--detail.svg
+d8ec41af5b346f37f87b7422a18644b79e1f2024e452a7d9d3b01fd2579e69a7  source/images/holding-return--after.svg
+446d061a3c7e00dbd22d89726b44163a7259582f1c1fa6e8f692ebd24425cf1b  source/images/count-boundaries.svg
+aa5523723eed34f40b91db75b3215a78287902c313d4da046e0ac2ec2d12ca08  source/images/count-boundaries--nine-items-last-page.svg
+6d0cda2ce2cdde1841c51df62700e89044ab43ac766adbcbb3fc008b252479f5  source/images/count-scales.svg
+478ef062563c6d73cf26107fe9c33891486d79f677dcf253e185507ef917682a  source/images/count-scales--ten-items.svg
+a4219afb5c90b20c2a966513130576c777f5fd6968c1e4612e41f9873dca60b7  source/images/count-scales--twenty-items.svg
+a2f21f907ff99aa445bc505b99608786c66ffa9d0f33834039edd4b767625e59  source/images/50-items.svg
+c4243b3ee6c7c226fa88c3ae2e765a92654e1023fde180c4f075352f5181c4a7  source/images/50-items--page-7.svg
+0b53c43a52b02173fc81dca5b9ec4df29225abe63a7bbe78edfa8565eaecf21a  source/images/local-search-pages.svg
+0ff2df22d77d57762ce976f3e26fd83520faea7539bfdd8ac86036a61c9eab58  source/images/local-search-pages--one-match.svg
+e10217122ce59480b8ca24f8c43390448afdc469d8a55d054b8a9fe51e28a7ec  source/images/local-search-pages--clear.svg
+65fb3072c63e3ba7a8bd73e200b12a17934ba44f8403df4e54c9f648bdb4b6d7  source/images/empty.svg
+66e69cd4cda73f941f59f3bd510dfde1b558a6a0a563b21900c8494092176778  source/images/empty--zero-holdings.svg
+7b91c7e90c09ee4722abb129f7461ce1396af118672628b276f79181a4b67bef  source/images/loading.svg
+1a28221daa6452591d8cb539246578eeb9831de817b4a1fcbb059dac920b4db3  source/images/loading--stale-data.svg
+98617362bbae84d585dc15b876428db02c38fc2e0011be1fe3175d5ef7467db9  source/images/extreme.svg
+35c35043b8de1a60285d5ed0a413e71c3d314e9f45f49aad11122c21af08ea03  source/images/atom-datatable.svg
+
+## Current tables/holdings Chrome evidence (archived captures)
+
+7b23391a713195706df4beb4167faf5c7bb664236fa005c7f325359bbd33a9de  evidence/tables/50-items--page-7.png
+eb6431a7524ebf1a2384c0ed24a05c4659557a363d0a4f6da35ae031a8626048  evidence/tables/50-items.png
+176dc5e6408e51a24962f3b716ca84809b3196c5af5f4899b515fdc3526c8007  evidence/tables/atom-datatable.png
+41bd87408b3fdaa3cae283fc86f3b8563c8401f8a324e72add5709a686f5f489  evidence/tables/count-boundaries--nine-items-last-page.png
+0506eccccb698555cdb4ff08a807cca9839676486e999d7db4415a16fc9abb6f  evidence/tables/count-boundaries.png
+87b6f3a015ade7c21fdba8e824c80170e18034085950d87a5bfd4d27efaf946c  evidence/tables/count-scales--ten-items.png
+5e83966603ef73df2916581d5e89795428d115278afe55b712284a556dee2316  evidence/tables/count-scales--twenty-items.png
+c67153eb71f0a7fc6f2e74eab16a04284955ae5b18c5dea7bbfe582ac98fd22e  evidence/tables/count-scales.png
+9844927a1bd6b8176efd935de2222e862922dbabc8049e739f4c15c8bae15fde  evidence/tables/empty--zero-holdings.png
+632a35e979e647721864dd5273a6f541968601e59c4fadec38efb9cdd49089da  evidence/tables/empty.png
+9f9f8c1064d6ce562e380a384b4d32e463ae919bf4bdb748de8bb3ac376cf877  evidence/tables/extreme.png
+47ef85dd39d32dee8ca3b71081fb73385e8ea9990d97e4da1fb6048cd97c2aaa  evidence/tables/holding-option-C-large-1280.png
+025c79aa25f7d87c69aa4ec717dd01fad86acfc3dd7dd6034723fa73b5b794a3  evidence/tables/holding-option-C-large-1440.png
+09d78969c13a2268e016047ac045afe3fef304a4ef4005aa0888339a92086cf1  evidence/tables/holding-option-C-normal-1280.png
+1b2d19c7fbfac2913e6036feb8c37ef51aac98169dcd7bd6831c05ad1d66505b  evidence/tables/holding-option-C-normal-1440.png
+8760d0ad32b72c46fac5ab401c3001a531d4bbfc986b8dc3a1e4073ed1788a36  evidence/tables/holding-return--after.png
+7a002f2eb3ea839fdd539b497a20b3c3350d3dc408c87e0e703bd1368932b3a1  evidence/tables/holding-return--detail.png
+85e5dbf6918c2c9ceff7ec290b3ef014e7ea1d75f062fb48efc25c4386e87600  evidence/tables/holding-return.png
+2abf1b2f9ee9c6621a93c687f221eb59869277235e73cc682301c9214f39d71f  evidence/tables/loading--stale-data.png
+4c61ffb9c5cfd96e6c985a8fe0c90b2b5fef0e23a326532c19b9775639d019cc  evidence/tables/loading.png
+76426b3649d851b5c19a6338e68e5c6d778f7ed59ddecbd09246f04c7461fd79  evidence/tables/local-search-pages--clear-current-retest.png
+e369c4c8fb81e70527497c5a9d36ed1a0ee8f8ff90e6be73dc7bc8e2f575523e  evidence/tables/local-search-pages--clear-final-retest.png
+476a3a84c3a0e1b1185c9647b6dbb0cbe3a67d74d849034d53c64cb0d9906098  evidence/tables/local-search-pages--clear-retest.png
+476a3a84c3a0e1b1185c9647b6dbb0cbe3a67d74d849034d53c64cb0d9906098  evidence/tables/local-search-pages--clear.png
+12f1bbc3bb124a581388aa795e1d42387b74b153283a7a3defa246c226630529  evidence/tables/local-search-pages--one-match.png
+85f710cd1223c277f4e6431ecfde68d9d925ad949c2b2acf1a2cdcc58fc92bf2  evidence/tables/local-search-pages.png
+
+## Shared manual
+
+3975b7e0206dc4681fc293a80a8f35fa3cdaa7b2deba81fd6e414ee71914aae0  source/component-manual.html
+2470c0bcf3301d6aa19d363db84ec27db25b41dc477ec05cfbcc1d31935b8e6b  evidence/manual/component-manual-final-retest-1440x2400.png
+
+## Root-owned sample board cross-check evidence
+
+d9218c2a03551b2bdc2c9ab05925f946d74eb093c8fe8c67f595b06c7bda8af8  source/images/atoms.svg
+c397d997d3ee608851a4329375796c2d5ed60006ab313d8543d5cc945570f7f7  evidence/board/board-atoms-1440.png
+c397d997d3ee608851a4329375796c2d5ed60006ab313d8543d5cc945570f7f7  evidence/board/visual-samples-board-1440.png
+c4b89d23ecbfc7aa0a6041d3827a513a7e59bacc2d3b03bbe43964c6c214726d  evidence/board/visual-samples-board-d14-d16.png
+3911834e4489f728a06c3f08d5fb8f50bf9264cea215710d0ea6059296814a5c  evidence/board/visual-samples-board-full-1440.png
+
+## Historical board FAIL evidence (preserved)
+
+# superseded source hash (old 1060px background)
+b7466204423ca0fafc94469e3231c2b9ca386fae29dad46e0277824214b29fb8  source/images/visual-samples-board.svg
+9ac6609514d766bde626acbe299906b06c1eafa9340343bf76095da6c8ee6050  evidence/board/visual-samples-board-final-1100x1720.png
+
+## Current final board retest (2026-10-21; Chrome 1100x1720)
+
+9e44de3e8c22de4d22ee3029f7ea1be21b966e1aa37968866a45eb237ecd2397  source/images/visual-samples-board.svg
+7e88ec1baec915c7429ddd93ca0909558e89fce9d3b8d99b57cd5fcee849021e  evidence/board/visual-samples-board-final-1100x1720-r2.png
+
+## Current final local-search clear binding
+
+e10217122ce59480b8ca24f8c43390448afdc469d8a55d054b8a9fe51e28a7ec  source/images/local-search-pages--clear.svg
+e369c4c8fb81e70527497c5a9d36ed1a0ee8f8ff90e6be73dc7bc8e2f575523e  evidence/tables/local-search-pages--clear-final-retest.png

@@ -1,0 +1,783 @@
+{
+  "source": "docs/design-system/baselines/2026-10-20-homepage-v2.4.1/source/visual-design.candidate.md",
+  "source_sha256": "ab30e98efcc9d661b968123d61364145528202872dc81bc7343e078a79701280",
+  "occurrences": [
+    {
+      "chapter": "二、整页布局与视觉基础 {#chapter-HP11}",
+      "line": 51,
+      "reference": "images/home-1440.svg",
+      "exists": true,
+      "sha256": "31b86b78189c7b61a17069d3b8e33274fe662add297dca598e2e3026835c0640"
+    },
+    {
+      "chapter": "二、整页布局与视觉基础 {#chapter-HP11}",
+      "line": 52,
+      "reference": "images/home-history-1440.svg",
+      "exists": true,
+      "sha256": "ec652d262f92a2645e0ddfd2d5884a21e7083c049e89e9d745531f313d80fbd2"
+    },
+    {
+      "chapter": "二、整页布局与视觉基础 {#chapter-HP11}",
+      "line": 56,
+      "reference": "images/home-1280.svg",
+      "exists": true,
+      "sha256": "faa76ebe3ccdd92b298262f44102b975f660b450de98912cafc738d560d452b6"
+    },
+    {
+      "chapter": "二、整页布局与视觉基础 {#chapter-HP11}",
+      "line": 57,
+      "reference": "images/home-history-1280.svg",
+      "exists": true,
+      "sha256": "33daff10a841507533e24507892a23a028b032699db45cece6b78e9d86a661e3"
+    },
+    {
+      "chapter": "二、整页布局与视觉基础 {#chapter-HP11}",
+      "line": 71,
+      "reference": "images/visual-samples-board.svg",
+      "exists": true,
+      "sha256": "85cba555dcdff5feabedf61a500bd63d968e36de89262412f88f2a365ccf80b6"
+    },
+    {
+      "chapter": "二、整页布局与视觉基础 {#chapter-HP11}",
+      "line": 73,
+      "reference": "images/visual-samples-board.svg",
+      "exists": true,
+      "sha256": "85cba555dcdff5feabedf61a500bd63d968e36de89262412f88f2a365ccf80b6"
+    },
+    {
+      "chapter": "二、整页布局与视觉基础 {#chapter-HP11}",
+      "line": 101,
+      "reference": "images/visual-samples-board.svg",
+      "exists": true,
+      "sha256": "85cba555dcdff5feabedf61a500bd63d968e36de89262412f88f2a365ccf80b6"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 122,
+      "reference": "images/account.svg",
+      "exists": true,
+      "sha256": "9aebf212e28ac3854dcaca0103ea947f52e0d6dd4fdaac8ce4c27229ffa6b0f5"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 146,
+      "reference": "images/search.svg",
+      "exists": true,
+      "sha256": "35b47cf593f0d5ac294704bc136dec6309ac78a66550d3d5e3ee1355e6dbbfa3"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 147,
+      "reference": "images/search--detail.svg",
+      "exists": true,
+      "sha256": "5c6b0ed321449b8cb578e51afaf91c0b3b19470f423222ac17579339f1ae55bf"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 148,
+      "reference": "images/search--empty.svg",
+      "exists": true,
+      "sha256": "c920da86e0b1434fee1af6751ebb3847f89ff88bff5345451df01ddf2912bdea"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 149,
+      "reference": "images/search-detail.svg",
+      "exists": true,
+      "sha256": "559b99e859532056908ebb5fbcf05e4d50d5a789c35d0a5a94ea5ed7c9212403"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 150,
+      "reference": "images/search-motion.svg",
+      "exists": true,
+      "sha256": "94a0e96de0d86c7ba1e9733de369c9152ba65ac512e65cd00d79a59e5acbbc99"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 151,
+      "reference": "images/search-overlay-open.svg",
+      "exists": true,
+      "sha256": "8b6dea74e53ed088241bb28190a9bcaa7396745f3c19b99035d34e83720c80fc"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 152,
+      "reference": "images/search-overlay-reduced-motion.svg",
+      "exists": true,
+      "sha256": "15cbbf92ad31c4c9f936b8c27572fa61a85abfecaf88fb7d05c04c7eeaf242ce"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 155,
+      "reference": "images/detail.svg",
+      "exists": true,
+      "sha256": "81040028c66d19348545174c133476e36ebb0ce87c20ad67d6b843c46e0632c7"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 176,
+      "reference": "images/filter.svg",
+      "exists": true,
+      "sha256": "099afc02a0cfb1e6e99a6113f4fc2c7798889b4faf06d25d1180fbaa64a72ef6"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 177,
+      "reference": "images/multi-applied.svg",
+      "exists": true,
+      "sha256": "d03db33e3660ca3a0054b7cb4e912ae6df59ba60237da0b0e06b57c27a415181"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 178,
+      "reference": "images/multi-applied--reopen.svg",
+      "exists": true,
+      "sha256": "54fb6956e21cd5e72e6e8d58dc5afe18c9bdda740433c235257daab3e5fb9405"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 179,
+      "reference": "images/clear-attachments.svg",
+      "exists": true,
+      "sha256": "f16dec43c9457a46b161b891604e61d171ff4747f120a3c15aed7e949f1fc456"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 180,
+      "reference": "images/clear-attachments--after-clear.svg",
+      "exists": true,
+      "sha256": "b937d08da29d52a225b9664ed00c14b70b48f6d747512d9837189af74d8272a5"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 181,
+      "reference": "images/reset.svg",
+      "exists": true,
+      "sha256": "7beba1abdc564bb19f9e7e8aebd51e1204f0445b4db81f2a2dfd96d5b4207e43"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 182,
+      "reference": "images/reset--reset.svg",
+      "exists": true,
+      "sha256": "0019ea5a874eb9449dfc9da0ff455f98f8a350f6b4de28468befb797726d05e6"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 183,
+      "reference": "images/cancel.svg",
+      "exists": true,
+      "sha256": "4567ad852e2c1ba70f054397f7f55042ebd3e2faebc9bb68a3a9e3f8ed9d1b7c"
+    },
+    {
+      "chapter": "三、页头范围、搜索与筛选 {#chapter-HP03}",
+      "line": 184,
+      "reference": "images/cancel--cancelled.svg",
+      "exists": true,
+      "sha256": "9288b0cabf7d432b2b67b4ca6967ec90c3dcd95aed5f12e71f6e6de4548bf887"
+    },
+    {
+      "chapter": "四、当前表现：指标、期间与曲线 {#chapter-HP02}",
+      "line": 214,
+      "reference": "images/period.svg",
+      "exists": true,
+      "sha256": "9454786027b6d9c9875b5ee49f503557e58ae77d1c2584e168724c81a77b01f2"
+    },
+    {
+      "chapter": "四、当前表现：指标、期间与曲线 {#chapter-HP02}",
+      "line": 240,
+      "reference": "images/chart-hover.svg",
+      "exists": true,
+      "sha256": "856091744b956f37ab080494c46d5484d03ffa0c2fa91838d3034f0bac100b02"
+    },
+    {
+      "chapter": "四、当前表现：指标、期间与曲线 {#chapter-HP02}",
+      "line": 241,
+      "reference": "images/chart-hover--keyboard.svg",
+      "exists": true,
+      "sha256": "a90ce3547100588eb3a033e46c06f49e414e328828bd3823b9ce029f504624e9"
+    },
+    {
+      "chapter": "四、当前表现：指标、期间与曲线 {#chapter-HP02}",
+      "line": 242,
+      "reference": "images/chart-gap.svg",
+      "exists": true,
+      "sha256": "951e2ce4641f595c744cf6eeb25b805ee865c2f2b1873c4c4728d479dedd94db"
+    },
+    {
+      "chapter": "四、当前表现：指标、期间与曲线 {#chapter-HP02}",
+      "line": 243,
+      "reference": "images/chart-scale.svg",
+      "exists": true,
+      "sha256": "5e5e4200cf8733e0c6a8f478bb9f15fb80e5dbdf5e7cfb6f1363493bd651f5b7"
+    },
+    {
+      "chapter": "四、当前表现：指标、期间与曲线 {#chapter-HP02}",
+      "line": 244,
+      "reference": "images/chart-scale--normal.svg",
+      "exists": true,
+      "sha256": "5d4af3a400cf93317f5f4e9c99c7df245554462ecfd19d44349cc70023bebe35"
+    },
+    {
+      "chapter": "四、当前表现：指标、期间与曲线 {#chapter-HP02}",
+      "line": 245,
+      "reference": "images/chart-scale--wide.svg",
+      "exists": true,
+      "sha256": "f56a3becdc0abc70c2022f9cefd02e9703490f49d7cd0e5c1d4198ea92e4cd22"
+    },
+    {
+      "chapter": "四、当前表现：指标、期间与曲线 {#chapter-HP02}",
+      "line": 246,
+      "reference": "images/chart-scale--extreme.svg",
+      "exists": true,
+      "sha256": "5a55263f83ded74305163dabe085d007ec5159c5dc373d1608acb6b4b45dfacc"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 286,
+      "reference": "images/count-scales.svg",
+      "exists": true,
+      "sha256": "45afefcc798e14a60c8db26d4c07eeb8a401109044178fc85e46de860b909666"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 287,
+      "reference": "images/count-scales--ten-items.svg",
+      "exists": true,
+      "sha256": "f3ff07d66f49df69e74a507644bb35fa69de03959a44cfd1d235593098738a2c"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 288,
+      "reference": "images/count-scales--twenty-items.svg",
+      "exists": true,
+      "sha256": "0154d9933807d919193c07fbac879c3090fe38b95bfa3c789095c4c9e8d61326"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 298,
+      "reference": "images/local-search-pages.svg",
+      "exists": true,
+      "sha256": "3c04971cc2fb71b7c2b13b112d1ad3945158ee787ac5563cdc8bce2c5bfe492e"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 299,
+      "reference": "images/local-search-pages--one-match.svg",
+      "exists": true,
+      "sha256": "2df28ef572dc7fe0792456718e9153fa734b1398b39f7251a3eb8d1c1b679598"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 300,
+      "reference": "images/local-search-pages--clear.svg",
+      "exists": true,
+      "sha256": "76e7b5dad3f53a5bd3cdee9ffab88b6080ce8dac881f3452e876026d8decf896"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 304,
+      "reference": "images/50-items.svg",
+      "exists": true,
+      "sha256": "ef18a0a00394ce518ebd68d98b6af7d5038a8f62702312a817784304c796d1f4"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 305,
+      "reference": "images/50-items--page-7.svg",
+      "exists": true,
+      "sha256": "0cffc8e3545ebf118c441e9a2bb4f4d96957a704034fb13f011cb16a07404b92"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 315,
+      "reference": "images/holding-return.svg",
+      "exists": true,
+      "sha256": "233214e473c66ba1a4fb34a26093c0b4e079f6d151d5f3d826abbc09f4f54131"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 316,
+      "reference": "images/holding-return--detail.svg",
+      "exists": true,
+      "sha256": "4af41f1a427f4e7759bf8bd10195cf5df152b60a19a108cff6f21ec1905e4b42"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 317,
+      "reference": "images/holding-return--after.svg",
+      "exists": true,
+      "sha256": "e518b57cdc1c65a77847f6a9e7fcdba27320c79a1c8acef0419ac8129a14cd2d"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 332,
+      "reference": "images/empty.svg",
+      "exists": true,
+      "sha256": "151614669173cc1dd192f73a1fccf7b13e91501d95fa6276a94d4610e3282a30"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 333,
+      "reference": "images/empty--zero-holdings.svg",
+      "exists": true,
+      "sha256": "5329153a75ca7ba87aaf8787e40b3b63208e3e3cceca3f6cb87016005b2a8668"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 337,
+      "reference": "images/count-boundaries.svg",
+      "exists": true,
+      "sha256": "cb96f579455255528b07bfdca5a288bf5205f54068f6a274d4ab252f936395cb"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 338,
+      "reference": "images/count-boundaries--nine-items-last-page.svg",
+      "exists": true,
+      "sha256": "1caf44aa77e55bbc328682e13e406ef709cc48d08edd567901a00a61dbecf1b5"
+    },
+    {
+      "chapter": "五、当前持仓：稳定扫描与逐行查看 {#chapter-HP04}",
+      "line": 341,
+      "reference": "images/extreme.svg",
+      "exists": true,
+      "sha256": "69e50bfb5e7cbe4b873d07727ad9cf5a6a38b7233d0df773128d74b9f18c4523"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 373,
+      "reference": "images/history.svg",
+      "exists": true,
+      "sha256": "6c592b0cb91729a112f618d7a6424faecbddcf34a4d5d2998cd317a2ede97dca"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 374,
+      "reference": "images/history-stats-cumulative.svg",
+      "exists": true,
+      "sha256": "46c259398344ca01a09d93053ebb9c9bddcd47870c0d2eff205a4b66cddbd81f"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 375,
+      "reference": "images/history-stats-win.svg",
+      "exists": true,
+      "sha256": "d82dc4e0459a5fd6db579b28e7bb6a468f6e8348fd30bbf50145ca018faa2f42"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 376,
+      "reference": "images/history-stats-rounds.svg",
+      "exists": true,
+      "sha256": "65a1e1248f4b941a1bdcf2190b2f720dce7dc3d914de48ec19a11fc8ea1dff0a"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 384,
+      "reference": "images/journeys-year.svg",
+      "exists": true,
+      "sha256": "46b67310f1c2ae1ca63a756f9af21c8f210d13d519ba826600020b6ba87c3be2"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 385,
+      "reference": "images/history-stats-empty.svg",
+      "exists": true,
+      "sha256": "1845d2546f14fd58980b8aa29133320dc61d7be45d8884829128f3a0e5b60640"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 386,
+      "reference": "images/history-stats-error.svg",
+      "exists": true,
+      "sha256": "9fbbfcd75490daf0c8395c591f39ad59b55e5746f697a2eae7862dfc9198b82a"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 387,
+      "reference": "images/history-stats-source-missing.svg",
+      "exists": true,
+      "sha256": "4f130fd8e514d7c105f467cf025760ea886a41d47c64bcd42e63a39a2b6375d1"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 388,
+      "reference": "images/history-stats-extreme.svg",
+      "exists": true,
+      "sha256": "0a84155977e3011ce2f56b9b002536e0a0d5c1e0cb314a07f96eadc5f8dd4491"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 408,
+      "reference": "images/contribution-states.svg",
+      "exists": true,
+      "sha256": "354aed46ef06327ef128d02f7b01fd2ea87d279cfab94bd1d750b6fc2e69252f"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 409,
+      "reference": "images/contribution-current-a-share.svg",
+      "exists": true,
+      "sha256": "403abe87a377d5317d5bdfaabdc4e6cb70135b7819de4d97b3d56a4c55a99d3d"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 410,
+      "reference": "images/contribution-historical-a-share.svg",
+      "exists": true,
+      "sha256": "eb16a429d4caa1cf9564f0bc178e9e180c702e3c7420bffaa161a1d8446f9037"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 416,
+      "reference": "images/contribution.svg",
+      "exists": true,
+      "sha256": "4c0c9918cf79fb27c782652878f333e2b8e740695d06f7a74909a121523eb013"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 417,
+      "reference": "images/contribution-loading.svg",
+      "exists": true,
+      "sha256": "8bd45904be4220f399123d062478a247089c96445cdd7dd40f2e6cc8e3327dcd"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 418,
+      "reference": "images/contribution-empty.svg",
+      "exists": true,
+      "sha256": "9b60cd897a7fcbaa39fdec304185caaa5615f7c867775f603362446305091c75"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 419,
+      "reference": "images/contribution-error.svg",
+      "exists": true,
+      "sha256": "23e782d5f8419b850ff763fe553659a4286a91c5bb7b64c1c18a79d7a178a30d"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 420,
+      "reference": "images/contribution-extreme.svg",
+      "exists": true,
+      "sha256": "03072cbd7f00c6ef7abc7e88d859f6938890778c4e0bc7480804427347742e6d"
+    },
+    {
+      "chapter": "六、历史统计与底部贡献区 {#chapter-HP05}",
+      "line": 421,
+      "reference": "images/contribution-mixed-sign-demo.svg",
+      "exists": true,
+      "sha256": "0d52af0f0a1c592f8415c4bf3e00c3ec259b71a15e12f45a7a42ecf323f64bcb"
+    },
+    {
+      "chapter": "七、从首页进入交易与复盘 {#chapter-HP06}",
+      "line": 443,
+      "reference": "images/handoff.svg",
+      "exists": true,
+      "sha256": "f9ddd3d554a56c398ad1e9370537b77c9968741253c938a27de3a9cceb2a7b2f"
+    },
+    {
+      "chapter": "七、从首页进入交易与复盘 {#chapter-HP06}",
+      "line": 450,
+      "reference": "images/journeys-date.svg",
+      "exists": true,
+      "sha256": "3c27543f863b57c4cbb944122a30833ad8e7e2d6c1c2bae60b36fb308ce86332"
+    },
+    {
+      "chapter": "七、从首页进入交易与复盘 {#chapter-HP06}",
+      "line": 451,
+      "reference": "images/hcr06-final-return.svg",
+      "exists": true,
+      "sha256": "d3a60dc9ce39074ed503f09ddc95971df233181c98cb8e8d3ca8255f9bb4664e"
+    },
+    {
+      "chapter": "七、从首页进入交易与复盘 {#chapter-HP06}",
+      "line": 457,
+      "reference": "images/journeys-pending.svg",
+      "exists": true,
+      "sha256": "e867f00fc2d004f0b36038682cd62cbec633b9b13c54b71239c1307a01c354ef"
+    },
+    {
+      "chapter": "七、从首页进入交易与复盘 {#chapter-HP06}",
+      "line": 458,
+      "reference": "images/journeys-pending-normal.svg",
+      "exists": true,
+      "sha256": "8e5389d967bde61a688edee16909ec0b3944a7de50d98ec350bec7f40415d558"
+    },
+    {
+      "chapter": "七、从首页进入交易与复盘 {#chapter-HP06}",
+      "line": 459,
+      "reference": "images/journeys-pending-99plus.svg",
+      "exists": true,
+      "sha256": "b05a9944711e4902574c3e623b392acaa7bdb2f8219ca493e7e8ca37537b0262"
+    },
+    {
+      "chapter": "七、从首页进入交易与复盘 {#chapter-HP06}",
+      "line": 460,
+      "reference": "images/hcr06-final-pending-library.svg",
+      "exists": true,
+      "sha256": "460c461caf1adb0dc542c21174161a887ac6588f014327ccc88ab6a6a038307d"
+    },
+    {
+      "chapter": "七、从首页进入交易与复盘 {#chapter-HP06}",
+      "line": 461,
+      "reference": "images/hcr06-final-pending-library-1280.svg",
+      "exists": true,
+      "sha256": "6e2b9432f48f416f86b20a14318c50ecee52c02a55da9769b49660279a0744c0"
+    },
+    {
+      "chapter": "七、从首页进入交易与复盘 {#chapter-HP06}",
+      "line": 462,
+      "reference": "images/hcr06-final-pending-return.svg",
+      "exists": true,
+      "sha256": "9fa80d1ee26bd08b543131896b50e42fa3e18adeb4d77953d4215a072acca8f4"
+    },
+    {
+      "chapter": "八、交易库内部规范 {#chapter-HP07}",
+      "line": 488,
+      "reference": "images/hcr06-final-sim-ab.svg",
+      "exists": true,
+      "sha256": "2d836105b43f4fd684a77a20c9541699569039b959ebe667da7b9d74302a6d80"
+    },
+    {
+      "chapter": "八、交易库内部规范 {#chapter-HP07}",
+      "line": 489,
+      "reference": "images/hcr06-final-rounds-a.svg",
+      "exists": true,
+      "sha256": "1669f726874229fe4a2b34d41c06a3057743cf0dae1398a4e4452f1339d062c6"
+    },
+    {
+      "chapter": "八、交易库内部规范 {#chapter-HP07}",
+      "line": 490,
+      "reference": "images/hcr06-final-replay-a1.svg",
+      "exists": true,
+      "sha256": "b382bc2f7c5eb0e2fed40907974e75b8651259fc885696a39c6ed7af81f60b55"
+    },
+    {
+      "chapter": "八、交易库内部规范 {#chapter-HP07}",
+      "line": 491,
+      "reference": "images/hcr06-final-replay-a2.svg",
+      "exists": true,
+      "sha256": "31fa2d14cc9f97eb83d64b4e2b9b728692526d038aa3b855961e3109772e7bc4"
+    },
+    {
+      "chapter": "八、交易库内部规范 {#chapter-HP07}",
+      "line": 492,
+      "reference": "images/hcr06-final-replay-b1.svg",
+      "exists": true,
+      "sha256": "58cacca068ce051c12f64979c6c93dd80da5a066b894cfac0d26535d422a6701"
+    },
+    {
+      "chapter": "八、交易库内部规范 {#chapter-HP07}",
+      "line": 498,
+      "reference": "images/01-live-normal.svg",
+      "exists": true,
+      "sha256": "5e4773167286baebd1cfdaf595a24964d99bc2be115f2ccdb31f0c75e3d64e36"
+    },
+    {
+      "chapter": "八、交易库内部规范 {#chapter-HP07}",
+      "line": 499,
+      "reference": "images/02-simulation-normal.svg",
+      "exists": true,
+      "sha256": "8631743af6b6d2325746ccef1c295d0e141b4f282bd49f127e5823af73a914f7"
+    },
+    {
+      "chapter": "八、交易库内部规范 {#chapter-HP07}",
+      "line": 500,
+      "reference": "images/03-distribution-selected.svg",
+      "exists": true,
+      "sha256": "00e987d15455298eeaf6b04a3d4228fb2631f18961226aec72de2c8001cc262d"
+    },
+    {
+      "chapter": "八、交易库内部规范 {#chapter-HP07}",
+      "line": 501,
+      "reference": "images/04-return.svg",
+      "exists": true,
+      "sha256": "8161ef6b9a1e51d0016e14a1c04992c3fbdfb16657a3c0ae1c4be2a295c3529d"
+    },
+    {
+      "chapter": "八、交易库内部规范 {#chapter-HP07}",
+      "line": 502,
+      "reference": "images/05-loading.svg",
+      "exists": true,
+      "sha256": "8679a46c2de0a37076dbfb8f996d3212b8695ef9447795a66504422d5bd6bd3a"
+    },
+    {
+      "chapter": "八、交易库内部规范 {#chapter-HP07}",
+      "line": 503,
+      "reference": "images/06-empty.svg",
+      "exists": true,
+      "sha256": "894efc9ce29d7ba3f55645a7ba7280fd9a152821a7579c8d480b1402a282adba"
+    },
+    {
+      "chapter": "八、交易库内部规范 {#chapter-HP07}",
+      "line": 504,
+      "reference": "images/07-error.svg",
+      "exists": true,
+      "sha256": "a826e40a4dd0ea863235a82bca65abaf6df7e1b748e0ca5c59754592507d8ccd"
+    },
+    {
+      "chapter": "八、交易库内部规范 {#chapter-HP07}",
+      "line": 505,
+      "reference": "images/08-extreme.svg",
+      "exists": true,
+      "sha256": "4b03887774be7d9fbeb3471afc7d187e5ed71a83dac957d98de4cefb185805e7"
+    },
+    {
+      "chapter": "八、交易库内部规范 {#chapter-HP07}",
+      "line": 506,
+      "reference": "images/09-missing-input.svg",
+      "exists": true,
+      "sha256": "cd820af742bc595b11e5da856a42fe6249b6b49711c8966157aec628351b7f93"
+    },
+    {
+      "chapter": "九、异常状态与动效 {#chapter-HP09}",
+      "line": 528,
+      "reference": "images/empty.svg",
+      "exists": true,
+      "sha256": "151614669173cc1dd192f73a1fccf7b13e91501d95fa6276a94d4610e3282a30"
+    },
+    {
+      "chapter": "九、异常状态与动效 {#chapter-HP09}",
+      "line": 529,
+      "reference": "images/empty--zero-holdings.svg",
+      "exists": true,
+      "sha256": "5329153a75ca7ba87aaf8787e40b3b63208e3e3cceca3f6cb87016005b2a8668"
+    },
+    {
+      "chapter": "九、异常状态与动效 {#chapter-HP09}",
+      "line": 530,
+      "reference": "images/loading.svg",
+      "exists": true,
+      "sha256": "d418a430911de4b91ebb73c229927e91bef1eb60d0f790fe037de4acd467b7d1"
+    },
+    {
+      "chapter": "九、异常状态与动效 {#chapter-HP09}",
+      "line": 531,
+      "reference": "images/loading--stale-data.svg",
+      "exists": true,
+      "sha256": "7104cf7fbe6ac3bcaed1fbef394ea7ab53356ee58daa985682f42a49dc8eef1a"
+    },
+    {
+      "chapter": "九、异常状态与动效 {#chapter-HP09}",
+      "line": 532,
+      "reference": "images/error.svg",
+      "exists": true,
+      "sha256": "d97d6e67e0eedebb80646c8e88bd86ad4634733f697cd5f668df10cbc1db6646"
+    },
+    {
+      "chapter": "九、异常状态与动效 {#chapter-HP09}",
+      "line": 533,
+      "reference": "images/error--update-failure.svg",
+      "exists": true,
+      "sha256": "97111a10a399dd6b76badf81d30fa3a8d7b1c030dc26e465f5a5e31d7ed7717b"
+    },
+    {
+      "chapter": "九、异常状态与动效 {#chapter-HP09}",
+      "line": 534,
+      "reference": "images/repair.svg",
+      "exists": true,
+      "sha256": "61627f6521823f0e552138b481a0f90625918622d081caa1f3c24bdc1c7b66e5"
+    },
+    {
+      "chapter": "十、共享控件与状态标准 {#chapter-HP08}",
+      "line": 578,
+      "reference": "images/visual-samples-board.svg",
+      "exists": true,
+      "sha256": "85cba555dcdff5feabedf61a500bd63d968e36de89262412f88f2a365ccf80b6"
+    },
+    {
+      "chapter": "十、共享控件与状态标准 {#chapter-HP08}",
+      "line": 580,
+      "reference": "images/atoms.svg",
+      "exists": true,
+      "sha256": "0ef51c36649f9cb8ba275f832b9844a12bf1ba34f3ea377cc56c78b46f00bfb5"
+    },
+    {
+      "chapter": "附录一、版本变化与待决策",
+      "line": 650,
+      "reference": "images/holding-option-A-normal-1440.svg",
+      "exists": true,
+      "sha256": "11ce9f7571e14ff2109d959465566ac9dff9b451f6ecc7220e9dfd2f6a7e99f5"
+    },
+    {
+      "chapter": "附录一、版本变化与待决策",
+      "line": 651,
+      "reference": "images/holding-option-A-normal-1280.svg",
+      "exists": true,
+      "sha256": "8943e1df8cc8ae477681f524422ed89de6936f20235729796bd6104582a64fd2"
+    },
+    {
+      "chapter": "附录一、版本变化与待决策",
+      "line": 652,
+      "reference": "images/holding-option-A-large-1440.svg",
+      "exists": true,
+      "sha256": "8cd233750c3926cc960f1fdf2ae45124dc24a8582b5d3c8d71dc512101317cba"
+    },
+    {
+      "chapter": "附录一、版本变化与待决策",
+      "line": 653,
+      "reference": "images/holding-option-A-large-1280.svg",
+      "exists": true,
+      "sha256": "9408c23e986be6064bfc0c667cba692507329739f5da8a625a1fe0646d51822a"
+    },
+    {
+      "chapter": "附录一、版本变化与待决策",
+      "line": 659,
+      "reference": "images/holding-option-B-normal-1440.svg",
+      "exists": true,
+      "sha256": "04051cfff278b3ea3176b66be35d1e05dffd7fdea5cd83e40ec5695ab5ebebd4"
+    },
+    {
+      "chapter": "附录一、版本变化与待决策",
+      "line": 660,
+      "reference": "images/holding-option-B-normal-1280.svg",
+      "exists": true,
+      "sha256": "651abb97cdff3dfba71be5cf44373fb0c6ab7c45c4012984e0e5ec832ab444f3"
+    },
+    {
+      "chapter": "附录一、版本变化与待决策",
+      "line": 661,
+      "reference": "images/holding-option-B-large-1440.svg",
+      "exists": true,
+      "sha256": "f133f596f9b9f20662fd7f670bbbbf22c6ec4eaf2bc1969ce63d81e8afd0b56a"
+    },
+    {
+      "chapter": "附录一、版本变化与待决策",
+      "line": 662,
+      "reference": "images/holding-option-B-large-1280.svg",
+      "exists": true,
+      "sha256": "353871f59f004f12cfd29fd358ce8eb919727b6bcc92075e352dd6bb84178b26"
+    },
+    {
+      "chapter": "附录一、版本变化与待决策",
+      "line": 668,
+      "reference": "images/holding-option-C-normal-1440.svg",
+      "exists": true,
+      "sha256": "0b2e7037cd24384d6abedab917eddb21138ecda1c093b85c833e63b53cb5d182"
+    },
+    {
+      "chapter": "附录一、版本变化与待决策",
+      "line": 669,
+      "reference": "images/holding-option-C-normal-1280.svg",
+      "exists": true,
+      "sha256": "a2a113e0f77a4fb2450db5d80ecd6fb2d7161720cd9974fc6410785d4cc93cf2"
+    },
+    {
+      "chapter": "附录一、版本变化与待决策",
+      "line": 670,
+      "reference": "images/holding-option-C-large-1440.svg",
+      "exists": true,
+      "sha256": "882c1b76f244d49b544a08aab678828884bf00b856451067c29b751b54457021"
+    },
+    {
+      "chapter": "附录一、版本变化与待决策",
+      "line": 671,
+      "reference": "images/holding-option-C-large-1280.svg",
+      "exists": true,
+      "sha256": "a291f3bc739bdf4364fd61f92e7fe9a9ffed751b3e061839dcef1fc749aff11a"
+    }
+  ]
+}

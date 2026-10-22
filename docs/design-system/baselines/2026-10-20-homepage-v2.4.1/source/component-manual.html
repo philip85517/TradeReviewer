@@ -99,13 +99,13 @@ h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
 @media (max-width: 720px) { .source-detail-grid { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .replay-frame img { transition: none; } }
 </style></head>
-<body><div class="layout"><nav aria-label="文档目录"><strong>首页 V2.4.1 控件状态手册</strong><p class="nav-meta">文档 2.4.1 · 控件与参考附页</p><a class="toc-level-1" href="#首页-v23-控件状态手册" data-target="首页-v23-控件状态手册">首页 V2.4.1 控件状态手册</a><a class="toc-level-2" href="#全局对齐与内层尺寸" data-target="全局对齐与内层尺寸">全局对齐与内层尺寸</a><a class="toc-level-2" href="#图标按钮iconbutton" data-target="图标按钮iconbutton">图标按钮（IconButton）</a><a class="toc-level-2" href="#分段标签segmentedtabs" data-target="分段标签segmentedtabs">分段标签（SegmentedTabs）</a><a class="toc-level-2" href="#账户选择器select" data-target="账户选择器select">账户选择器（Select）</a><a class="toc-level-2" href="#搜索浮层popover" data-target="搜索浮层popover">搜索浮层（Popover）</a><a class="toc-level-2" href="#筛选浮层filterpopover" data-target="筛选浮层filterpopover">筛选浮层（FilterPopover）</a><a class="toc-level-2" href="#筛选条件标签token" data-target="筛选条件标签token">筛选条件标签（Token）</a><a class="toc-level-2" href="#指标卡metric" data-target="指标卡metric">指标卡（Metric）</a><a class="toc-level-2" href="#状态徽章statusbadge" data-target="状态徽章statusbadge">状态徽章（StatusBadge）</a><a class="toc-level-2" href="#持仓数据表datatable" data-target="持仓数据表datatable">持仓数据表（DataTable）</a><a class="toc-level-2" href="#图表点提示charttooltip" data-target="图表点提示charttooltip">图表点提示（ChartTooltip）</a><a class="toc-level-2" href="#空结果状态emptystate" data-target="空结果状态emptystate">空结果状态（EmptyState）</a><a class="toc-level-2" href="#重试动作retryaction" data-target="重试动作retryaction">重试动作（RetryAction）</a><a class="toc-level-2" href="#使用边界" data-target="使用边界">使用边界</a></nav><main class="rule-details" id="companion-document"><header class="reader-header"><p class="document-status">共享控件附页 · 2.4.1</p><p class="manual-count">控件覆盖：12 类；96 个状态行；85 个适用状态、11 个不适用/不渲染状态。每类保留完整八态合同；不适用状态仍保留在表格中用于说明边界。</p><a class="review-open" href="../visual-spec.html">返回正文阅读器</a></header><h1 id="首页-v23-控件状态手册">首页 V2.4.1 共享控件状态手册</h1>
-<section aria-label="本版组合控件补充"><h2>V2.4.1 组合控件补充</h2><p>以下规则与继承的96态共同构成当前规范：历史范围采用A组合选择器；胜率卡采用常规A、窄卡B，百分比与计数共享文字基线；贡献筛选采用B细文本下划线，标签14px，排序表面28px、命中36px；持仓汇总采用C，金额表头按可见字形右缘对齐。组合形态见<a href="../prototypes/round5/index.html">已确认原型</a>和<a href="../visual-spec.html#chapter-HP05">正文第六章</a>。通用选择器36px规格不覆盖贡献排序的28px表面例外。</p></section><p>版本身份：本手册属于当前 V2.4.1 设计规范；文中出现的 V2.2 仅表示继承的历史合同，不是当前版本标题或验收结论。</p>
+<body><div class="layout"><nav aria-label="文档目录"><strong>首页 V2.4.1 控件状态手册</strong><p class="nav-meta">文档 2.4.1 · 控件与参考附页</p><a class="toc-level-1" href="#首页-v23-控件状态手册" data-target="首页-v23-控件状态手册">首页 V2.4.1 控件状态手册</a><a class="toc-level-2" href="#组合控件补充" data-target="组合控件补充">组合控件补充</a><a class="toc-level-2" href="#全局对齐与内层尺寸" data-target="全局对齐与内层尺寸">全局对齐与内层尺寸</a><a class="toc-level-2" href="#图标按钮iconbutton" data-target="图标按钮iconbutton">图标按钮（IconButton）</a><a class="toc-level-2" href="#分段标签segmentedtabs" data-target="分段标签segmentedtabs">分段标签（SegmentedTabs）</a><a class="toc-level-2" href="#账户选择器select" data-target="账户选择器select">账户选择器（Select）</a><a class="toc-level-2" href="#搜索浮层popover" data-target="搜索浮层popover">搜索浮层（Popover）</a><a class="toc-level-2" href="#筛选浮层filterpopover" data-target="筛选浮层filterpopover">筛选浮层（FilterPopover）</a><a class="toc-level-2" href="#筛选条件标签token" data-target="筛选条件标签token">筛选条件标签（Token）</a><a class="toc-level-2" href="#指标卡metric" data-target="指标卡metric">指标卡（Metric）</a><a class="toc-level-2" href="#状态徽章statusbadge" data-target="状态徽章statusbadge">状态徽章（StatusBadge）</a><a class="toc-level-2" href="#持仓数据表datatable" data-target="持仓数据表datatable">持仓数据表（DataTable）</a><a class="toc-level-2" href="#图表点提示charttooltip" data-target="图表点提示charttooltip">图表点提示（ChartTooltip）</a><a class="toc-level-2" href="#空结果状态emptystate" data-target="空结果状态emptystate">空结果状态（EmptyState）</a><a class="toc-level-2" href="#重试动作retryaction" data-target="重试动作retryaction">重试动作（RetryAction）</a><a class="toc-level-2" href="#使用边界" data-target="使用边界">使用边界</a></nav><main class="rule-details" id="companion-document"><header class="reader-header"><p class="document-status">共享控件附页 · 2.4.1</p><p class="manual-count">控件覆盖：12 类；96 个状态行；85 个适用状态、11 个不适用/不渲染状态。每类保留完整八态合同；不适用状态仍保留在表格中用于说明边界。</p><a class="review-open" href="../visual-spec.html">返回正文阅读器</a></header><h1 id="首页-v23-控件状态手册">首页 V2.4.1 共享控件状态手册</h1>
+<section aria-label="本版组合控件补充"><h2 id="组合控件补充">V2.4.1 组合控件补充</h2><p>以下规则与继承的96态共同构成当前规范：历史范围采用A组合选择器；胜率卡采用常规 A（321×88px）与窄卡 B（278×104px）：常规卡的百分比主值与计数共用文字基线，窄卡的百分比与计数共享视觉底线，说明固定在计数正上方 4px（不强制与左侧标题对齐）；贡献筛选采用B细文本下划线，标签14px，排序表面28px、命中36px；贡献图例中实心表示期间已实现贡献，中空表示期间浮盈变化，正负从真实零线两侧展开，同方向同色，填充/中空只表达构成；贡献柱/图例的正值使用 #53D7A0、负值使用 #EF7F89；普通亏损数字仍使用 #FF8592，零值与未知保持中性，缺少估值显示“不可计算”，真零不绘制假柱，历史模式不混入当前浮盈；持仓汇总采用C，金额表头按可见字形右缘对齐。组合形态见<a href="../prototypes/round5/index.html">已确认原型</a>和<a href="../visual-spec.html#chapter-HP05">正文第六章</a>。通用选择器36px规格不覆盖贡献排序的28px表面例外。历史范围选择器下方不再常驻重复的“按平仓时间 · 年份”副行；平仓时间口径由说明图标展示。</p></section><p>版本身份：本手册属于当前 V2.4.1 设计规范；文中出现的 V2.2 仅表示继承的历史合同，不是当前版本标题或验收结论。</p>
 <p>这份手册按控件用途整理首页的交互方式。阅读每章时，先看尺寸基准，再按“默认、悬停、聚焦、按下、禁用、加载、空、错误”的顺序了解控件在不同情境下如何出现、如何操作，以及异常时怎样回到稳定状态。</p>
-<p>表格中的尺寸是该控件的状态样例尺寸；账户选择器的样例宽度为 180px，首页页头实际建议宽度为 176px，两者是同一控件在不同位置的布局差异，不产生新的尺寸规范。每个状态样例还应与 <a href="integration-assets/images/single-frame/visual-samples-board--full.svg">布局与颜色样例板</a> 对照；样例中的文字、表头、金额和颜色 token 是可视化校准，不是新增入口。</p>
+<p>表格中的尺寸是该控件的状态样例尺寸；账户选择器与首页页头实际宽度均为 176px；空列表浮层也沿用 176px 宽度，不因状态改变几何。每个状态样例还应与 <a href="images/visual-samples-board.svg">布局与颜色样例板</a> 对照；样例中的文字、表头、金额和颜色 token 是可视化校准，不是新增入口。</p>
 <h2 id="全局对齐与内层尺寸">全局对齐与内层尺寸</h2>
-<p>按钮、分段标签、日期快捷项和“应用”在命中盒内水平、垂直居中；输入文本左对齐，金额表头与数据右对齐，名称、说明和错误文案左对齐。持仓表列比例固定为 25% / 8% / 10% / 11% / 11% / 15% / 14% / 6%，表头和值由同一列定义生成锚点，数值共用右边界，查看动作在 6% 列中心的 36px 命中盒内居中。列定义同时给出最小宽度与溢出策略。全局搜索使用覆盖页头与首页内容的全屏搜索遮罩，桌面舞台最大 960px、左右至少 24px，结果区独立滚动并阻断底层操作；窄屏使用两侧 24px 内边距。交易库持仓搜索保持页面内的独立筛选输入，不打开全屏搜索遮罩。筛选浮层宽 320px，字段高 36px。详情中的“查看交易”在主动作命中盒内居中。</p>
-<p>价格展示保留两位小数，原始精度只在详情、提示、悬停/聚焦读数或复制/导出中提供。金额按绝对值达到 1 万显示“万”、达到 1 亿显示“亿”，均保留两位小数；不增加“万亿”单位。悬停或键盘聚焦查看完整值，复制和导出均保留完整值；单价仍保留两位小数。展示缩写不改变原始数据。表格保持八行槽；“没有持仓”和“搜索无匹配”是两种不同空态，后者只保留输入框尾部 X 作为清空入口，不增加重复空态按钮。日期快捷范围使用自然本周、自然本月、自然本年，并显示提交后的实际起止日期；具体日期/区间使用日历图标，纯年份使用下拉箭头，静态日期不使用图标。历史年份选择只刷新历史模块，历史下方插图属于同一模块的局部状态示意，不是新页面。</p>
+<p>按钮、分段标签、日期快捷项和“应用”在命中盒内水平、垂直居中；输入文本左对齐，金额表头与数据右对齐，名称、说明和错误文案左对齐。持仓表列比例固定为 25% / 8% / 10% / 11% / 11% / 15% / 14% / 6%，表头和值由同一列定义生成锚点，数值共用右边界，查看动作在 6% 列中心的 36px 命中盒内居中。列定义同时给出最小宽度与溢出策略。全局搜索使用覆盖页头与首页内容的全屏搜索遮罩，桌面舞台最大 960px、左右至少 24px，结果区独立滚动并阻断底层操作；窄屏使用两侧 24px 内边距。交易库持仓搜索保持页面内的独立筛选输入，不打开全屏搜索遮罩。筛选浮层宽 320px，字段高 36px。详情中的“查看交易”在主动作命中盒内居中。共享图标视觉尺寸为16px，页头搜索与筛选图标为18px；外层图标按钮与动作按钮保持36px命中盒。</p>
+<p>价格展示保留两位小数，原始精度只在详情、提示、悬停/聚焦读数或复制/导出中提供。金额按绝对值达到 1 万显示“万”、达到 1 亿显示“亿”，均保留两位小数；不增加“万亿”单位。悬停或键盘聚焦查看完整值，复制和导出均保留完整值；单价仍保留两位小数。展示缩写不改变原始数据。表格保持八行槽；“没有持仓”和“搜索无匹配”是两种不同空态，后者只保留输入框尾部 X 作为清空入口，不增加重复空态按钮。日期快捷范围使用自然本周、自然本月、自然本年，并显示提交后的实际起止日期；具体日期/区间使用日历图标，纯年份使用下拉箭头，静态日期不使用图标。历史年份选择只刷新历史模块，历史下方插图属于同一模块的局部状态示意，不是新页面。实盘交易库列表按成交日筛选并保留未平仓成交，统计仅按回合平仓日纳入已闭合回合；“仅看未平仓”仅在当前/实盘模式可勾选，checkbox 视觉尺寸为16px、命中盒为36px，历史模式保留同位置的禁用控件，切回当前模式恢复原选中状态且工具行不跳动；模拟盘以同一标的一次练习承载多个回合，同标的同日的再次练习保持独立身份，回合入口返回原练习并恢复过滤、排序、页码、滚动与焦点上下文。</p>
 <h2 id="图标按钮iconbutton">图标按钮（IconButton）</h2>
 <p>用于搜索、筛选、查看详情等单一图标动作；每个按钮都有清楚的名称，桌面命中区保持 36px。</p>
 <p>尺寸基准：外观 36×36px；命中 36×36px。</p>
@@ -370,7 +370,7 @@ h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
 <h2 id="搜索浮层popover">搜索浮层（Popover）</h2>
 <p>用于实体搜索和筛选编辑；覆盖内容，不推动标题、KPI 或表格。实体搜索在触发器点击后打开覆盖页头的独立全屏搜索遮罩，桌面舞台最大 960px、左右至少 24px，窄屏保留两侧 24px 内边距，结果区独立滚动并阻断底层操作。筛选另使用 320px 浮层。交易库内部搜索保持页面内的独立筛选输入，不调用此全屏搜索遮罩。</p>
 <p>尺寸基准：桌面舞台最大960px、左右至少24px；窄屏使用可用宽度减去两侧24px，空间不足时全宽；输入与结果共用舞台列锚点。</p>
-<figure class="document-image figure plate-figure single-frame-figure" data-single-frame-source="search" data-replaces="atom-popover.svg"><span class="image-pan-hint">单帧候选图（保留下方完整状态规则）</span><div class="single-frame-set"><div class="single-frame-item" data-frame-index="1"><p class="single-frame-caption"><strong>搜索结果</strong> · 搜索返回结果</p><div class="image-pan" tabindex="0" role="region" aria-label="搜索浮层的八种状态示例：搜索结果"><a class="image-link" href="integration-assets/images/single-frame/search--normal.svg" title="搜索结果"><img src="integration-assets/images/single-frame/search--normal.svg" alt="搜索浮层的八种状态示例：搜索结果" width="1100" height="690"></a></div><a class="image-action" href="integration-assets/images/single-frame/search--normal.svg">查看原尺寸：搜索结果</a></div><div class="single-frame-item" data-frame-index="2"><p class="single-frame-caption"><strong>无匹配</strong> · 搜索无匹配</p><div class="image-pan" tabindex="0" role="region" aria-label="搜索浮层的八种状态示例：无匹配"><a class="image-link" href="integration-assets/images/single-frame/search--detail.svg" title="无匹配"><img src="integration-assets/images/single-frame/search--detail.svg" alt="搜索浮层的八种状态示例：无匹配" width="1100" height="690"></a></div><a class="image-action" href="integration-assets/images/single-frame/search--detail.svg">查看原尺寸：无匹配</a></div><div class="single-frame-item" data-frame-index="3"><p class="single-frame-caption"><strong>请求失败</strong> · 搜索请求失败</p><div class="image-pan" tabindex="0" role="region" aria-label="搜索浮层的八种状态示例：请求失败"><a class="image-link" href="integration-assets/images/single-frame/search--empty.svg" title="请求失败"><img src="integration-assets/images/single-frame/search--empty.svg" alt="搜索浮层的八种状态示例：请求失败" width="1100" height="690"></a></div><a class="image-action" href="integration-assets/images/single-frame/search--empty.svg">查看原尺寸：请求失败</a></div></div></figure>
+<figure class="document-image figure plate-figure single-frame-figure" data-single-frame-source="search" data-replaces="atom-popover.svg"><span class="image-pan-hint">单帧候选图（保留下方完整状态规则）</span><div class="single-frame-set"><div class="single-frame-item" data-frame-index="1"><p class="single-frame-caption"><strong>搜索结果</strong> · 搜索返回结果</p><div class="image-pan" tabindex="0" role="region" aria-label="搜索浮层的八种状态示例：搜索结果"><a class="image-link" href="images/search.svg" title="搜索结果"><img src="images/search.svg" alt="搜索浮层的八种状态示例：搜索结果" width="1100" height="690"></a></div><a class="image-action" href="images/search.svg">查看原尺寸：搜索结果</a></div><div class="single-frame-item" data-frame-index="2"><p class="single-frame-caption"><strong>无匹配</strong> · 搜索无匹配</p><div class="image-pan" tabindex="0" role="region" aria-label="搜索浮层的八种状态示例：无匹配"><a class="image-link" href="images/search--detail.svg" title="无匹配"><img src="images/search--detail.svg" alt="搜索浮层的八种状态示例：无匹配" width="1100" height="690"></a></div><a class="image-action" href="images/search--detail.svg">查看原尺寸：无匹配</a></div><div class="single-frame-item" data-frame-index="3"><p class="single-frame-caption"><strong>请求失败</strong> · 搜索请求失败</p><div class="image-pan" tabindex="0" role="region" aria-label="搜索浮层的八种状态示例：请求失败"><a class="image-link" href="images/search--empty.svg" title="请求失败"><img src="images/search--empty.svg" alt="搜索浮层的八种状态示例：请求失败" width="1100" height="690"></a></div><a class="image-action" href="images/search--empty.svg">查看原尺寸：请求失败</a></div></div></figure>
 <div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
 <th scope="col">状态</th>
 <th scope="col">尺寸</th>
@@ -520,7 +520,7 @@ h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
 <td>Tab 到错误说明；Esc 关闭说明并返回入口</td>
 </tr>
 </tbody></table></div>
-<figure class="document-image figure plate-figure single-frame-figure" data-single-frame-source="filter" data-replaces="filter.svg"><span class="image-pan-hint">单帧候选图（保留下方完整状态规则）</span><div class="single-frame-set"><div class="single-frame-item" data-frame-index="1"><p class="single-frame-caption"><strong>完整状态</strong> · 进入该资产状态</p><div class="image-pan" tabindex="0" role="region" aria-label="筛选浮层的编辑、应用与清理状态：完整状态"><a class="image-link" href="integration-assets/images/single-frame/filter--full.svg" title="完整状态"><img src="integration-assets/images/single-frame/filter--full.svg" alt="筛选浮层的编辑、应用与清理状态：完整状态" width="1100" height="910"></a></div><a class="image-action" href="integration-assets/images/single-frame/filter--full.svg">查看原尺寸：完整状态</a></div></div></figure>
+<figure class="document-image figure plate-figure single-frame-figure" data-single-frame-source="filter" data-replaces="filter.svg"><span class="image-pan-hint">单帧候选图（保留下方完整状态规则）</span><div class="single-frame-set"><div class="single-frame-item" data-frame-index="1"><p class="single-frame-caption"><strong>完整状态</strong> · 进入该资产状态</p><div class="image-pan" tabindex="0" role="region" aria-label="筛选浮层的编辑、应用与清理状态：完整状态"><a class="image-link" href="images/filter.svg" title="完整状态"><img src="images/filter.svg" alt="筛选浮层的编辑、应用与清理状态：完整状态" width="1100" height="910"></a></div><a class="image-action" href="images/filter.svg">查看原尺寸：完整状态</a></div></div></figure>
 <h2 id="筛选条件标签token">筛选条件标签（Token）</h2>
 <p>用于显示已应用的可移除筛选条件；清除附加与恢复全部默认保持不同语义。</p>
 <p>尺寸基准：外观 104×24px；命中 104×36px。</p>
@@ -870,8 +870,8 @@ h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
 </tr>
 </tbody></table></div>
 <h2 id="图表点提示charttooltip">图表点提示（ChartTooltip）</h2>
-<p>用于曲线有效数据点的悬停/聚焦详情，显示完整日期、金额、费用和覆盖状态。</p>
-<p>尺寸基准：外观 264×112px；命中 264×112px。</p>
+<p>用于曲线有效数据点的悬停/聚焦详情，显示完整日期、金额与费用；行情或汇率异常时提供原因，正常时不常显成功勾选。</p>
+<p>尺寸基准：宽264px；高度按内容计算，四周内边距至少12px；完整显示并避让边缘。</p>
 <figure class="document-image figure plate-figure"><span class="image-pan-hint">图板可横向滚动查看</span><div class="image-pan" tabindex="0" role="region" aria-label="图表提示的八种状态示例"><a class="image-link" href="images/atom-charttooltip.svg"><img data-comment-image="atom-charttooltip" data-comment-occurrence="atom-charttooltip@192" src="images/atom-charttooltip.svg" alt="图表提示的八种状态示例" width="1100" height="1100"></a></div><a class="image-action" href="images/atom-charttooltip.svg">查看原尺寸</a>
 </figure>
 <div class="table-wrap" tabindex="0" role="region" aria-label="规则表"><table><thead><tr>
@@ -885,7 +885,7 @@ h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
 </tr></thead><tbody>
 <tr>
 <td>默认</td>
-<td>外观 264×112px；命中 264×112px</td>
+<td>宽264px；高度按内容计算，四周内边距至少12px；完整显示并避让边缘</td>
 <td>进入页面或恢复默认值</td>
 <td>显示稳定默认内容与可操作边界</td>
 <td>激活、悬停或聚焦进入下一状态</td>
@@ -894,7 +894,7 @@ h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
 </tr>
 <tr>
 <td>悬停</td>
-<td>外观 264×112px；命中 264×112px</td>
+<td>宽264px；高度按内容计算，四周内边距至少12px；完整显示并避让边缘</td>
 <td>指针进入数据点；立即 120ms 显示点反馈</td>
 <td>数据点高亮，提示框内容按 300ms 延迟显示</td>
 <td>指针离开数据点</td>
@@ -903,7 +903,7 @@ h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
 </tr>
 <tr>
 <td>聚焦</td>
-<td>外观 264×112px；命中 264×112px</td>
+<td>宽264px；高度按内容计算，四周内边距至少12px；完整显示并避让边缘</td>
 <td>Tab 或 Shift+Tab 将焦点移入</td>
 <td>显示 2px 焦点环与当前值，焦点可见</td>
 <td>按 Tab 离开、Enter 或 Space 键激活或 Esc 键取消</td>
@@ -912,7 +912,7 @@ h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
 </tr>
 <tr>
 <td>按下</td>
-<td>外观 264×112px；命中 264×112px</td>
+<td>宽264px；高度按内容计算，四周内边距至少12px；完整显示并避让边缘</td>
 <td>指针按下并完成点击，或按 Enter 或 Space 键</td>
 <td>显示按下反馈并提交一次动作</td>
 <td>动作完成、取消或返回稳定状态</td>
@@ -930,16 +930,16 @@ h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
 </tr>
 <tr>
 <td>加载</td>
-<td>外观 264×112px；命中 264×112px</td>
+<td>宽264px；高度按内容计算，四周内边距至少12px；完整显示并避让边缘</td>
 <td>图表行情请求等待中</td>
-<td>保留日期并显示行情加载中与旋转提示</td>
+<td>保留日期并显示行情加载中；16px 说明图标提供原因，不另设旋转提示</td>
 <td>行情完成显示值，或显示缺口原因</td>
 <td>按 Tab 保持图表顺序；方向键不读取未就绪点</td>
 <td>不显示旧提示框数值冒充新值</td>
 </tr>
 <tr>
 <td>空</td>
-<td>外观 264×112px；命中 264×112px</td>
+<td>宽264px；高度按内容计算，四周内边距至少12px；完整显示并避让边缘</td>
 <td>该日期缺少行情</td>
 <td>显示缺行情原因，不插值</td>
 <td>切换数据点或 Esc 键移除提示框</td>
@@ -948,7 +948,7 @@ h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
 </tr>
 <tr>
 <td>错误</td>
-<td>外观 264×112px；命中 264×112px</td>
+<td>宽264px；高度按内容计算，四周内边距至少12px；完整显示并避让边缘</td>
 <td>该数据点读取失败</td>
 <td>显示缺口原因入口，不提供重试按钮</td>
 <td>聚焦/点击原因入口或 Esc 键移除提示框</td>
@@ -1130,6 +1130,8 @@ h1, h2, h3, h4, h5, h6, [data-comment-block] { scroll-margin-top: 64px; }
 <td>失败恢复按钮；保留具体错误原因</td>
 </tr>
 </tbody></table></div>
+<p>数值表头与数据列共享右边界，字体就绪后另验可见字形右缘。日期、局部搜索与刷新共用36px高度中心线和14px文字；图标使用统一SVG。产品图只显示用户内容，实现约定留在正文；说明图标支持悬停和键盘聚焦。</p>
+<p>回合分布同时显示回合数与占比，占比保留2位小数；窄栏换行到回合数下方。分母固定为当前范围全部有效回合，下钻不改变分母。</p>
 <h2 id="使用边界">使用边界</h2>
 <p>控件状态只描述可观察交互，不改变首页已确认的信息层级、数据口径或布局顺序。搜索与筛选的草稿在明确应用前不改变已生效范围；外点或 Esc 键关闭筛选时保留草稿，账户或市场切换时丢弃旧草稿。请求失败保留上一组完整有效值，冷启动失败不伪造零值；缺失行情、汇率或结果时使用明确原因。</p>
 <p>文档对齐和注释层默认关闭，仅用于审查时辅助定位；状态图、分镜和说明图只用于说明状态，不作为产品界面或默认内容。</p>

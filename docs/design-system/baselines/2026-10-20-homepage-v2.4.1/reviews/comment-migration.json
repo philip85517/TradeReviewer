@@ -1,7 +1,7 @@
 {
   "schema": "hcr02-comment-migration/1",
   "documentId": "HOME-DOC-V23",
-  "fingerprint": "ab30e98efcc9d661b968123d61364145528202872dc81bc7343e078a79701280",
+  "fingerprint": "6aea7a7df1f858daef742b0e0af4bde919e4dd851ae8b2d5aa40add44d42c1c4",
   "entries": [
     {
       "commentId": "comment-fa4fb3f1fa8f4fffa6ba73e729683c2d",

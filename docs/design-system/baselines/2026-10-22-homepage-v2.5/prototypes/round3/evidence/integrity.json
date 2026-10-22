@@ -1,0 +1,14 @@
+{
+  "round2": {
+    "files": 20,
+    "changed": []
+  },
+  "frozen": {
+    "files": 533,
+    "changed": []
+  },
+  "sourceHashes": {
+    "index.html": "fd98e8778b54702b258a6031ab788f4fd9bedef3170d36784a7feb31813de2d3",
+    "ui-select.js": "81c7d4628f670a7fbe980790929e319087acdaeef41b02214908b88dc4e871e8"
+  }
+}
